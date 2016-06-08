@@ -9,9 +9,9 @@ import java.util.Hashtable;
 
 public class MysqlConnector {
 
-	private static String url = "jdbc:mysql://kucha.informatik.hu-berlin.de/infosys?useUnicode=true&characterEncoding=UTF-8";
-	private static String user = "infosys";
-	private static String password = "didPfdKIS";
+	private static String url = "jdbc:mysql://kucha.informatik.hu-berlin.de/infosys?useUnicode=true&characterEncoding=UTF-8"; //$NON-NLS-1$
+	private static String user = Messages.getString("MysqlConnector.db.user"); //$NON-NLS-1$
+	private static String password = Messages.getString("MysqlConnector.db.password"); //$NON-NLS-1$
 
 	private static MysqlConnector instance = null;
 
@@ -27,9 +27,9 @@ public class MysqlConnector {
 	private MysqlConnector() {
 
 		try {
-			Class.forName("org.mariadb.jdbc.Driver");
+			Class.forName("org.mariadb.jdbc.Driver"); //$NON-NLS-1$
 
-			System.err.println("class loaded");
+			System.err.println("class loaded"); //$NON-NLS-1$
 
 			try {
 				connection = DriverManager.getConnection(MysqlConnector.url, MysqlConnector.user, MysqlConnector.password);
@@ -61,7 +61,7 @@ public class MysqlConnector {
 		try {
 			stmt = dbc.createStatement();
 
-			String sql = "SELECT * FROM test";
+			String sql = "SELECT * FROM test"; //$NON-NLS-1$
 
 			ResultSet rs = stmt.executeQuery(sql);
 
@@ -69,16 +69,16 @@ public class MysqlConnector {
 
 			String name, age;
 			while (rs.next()) {
-				name = rs.getString("Name");
-				age = rs.getString("Age");
+				name = rs.getString("Name"); //$NON-NLS-1$
+				age = rs.getString("Age"); //$NON-NLS-1$
 				results.put(name, age);
-				System.err.println("(" + name + "," + age + ") read from database");
+				System.err.println("(" + name + "," + age + ") read from database"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			}
 
 			rs.close();
 			stmt.close();
 			dbc.close();
-			System.err.println("Database request finished");
+			System.err.println("Database request finished"); //$NON-NLS-1$
 			return results;
 
 		} catch (SQLException e) {
