@@ -16,10 +16,13 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
+import de.cses.client.ornamentic.CreateOrnamentic;
+
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class TestApplication implements EntryPoint {
+	static CreateOrnamentic CreateOrnamentic = new CreateOrnamentic();
 	/**
 	 * The message displayed to the user when the server cannot be reached or
 	 * returns an error.
@@ -37,6 +40,7 @@ public class TestApplication implements EntryPoint {
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
+		
 		final Button sendButton = new Button("Send");
 		final TextBox nameField = new TextBox();
 		nameField.setText("Maja");
@@ -50,6 +54,9 @@ public class TestApplication implements EntryPoint {
 		RootPanel.get("nameFieldContainer").add(nameField);
 		RootPanel.get("sendButtonContainer").add(sendButton);
 		RootPanel.get("errorLabelContainer").add(errorLabel);
+
+		RootPanel.get().add(CreateOrnamentic);
+		CreateOrnamentic.asWidget().setPixelSize(400, 600);
 
 		// Focus the cursor on the name field when the app loads
 		nameField.setFocus(true);
@@ -170,4 +177,13 @@ public class TestApplication implements EntryPoint {
 		sendButton.addClickHandler(handler);
 		nameField.addKeyUpHandler(handler);
 	}
+
+	public static CreateOrnamentic getCreateOrnamentic() {
+		return CreateOrnamentic;
+	}
+
+	public static void setCreateOrnamentic(CreateOrnamentic createOrnamentic) {
+		CreateOrnamentic = createOrnamentic;
+	}
+	
 }

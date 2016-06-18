@@ -5,13 +5,16 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Hashtable;
+
+import de.cses.shared.District;
 
 public class MysqlConnector {
 
-	private static String url = "jdbc:mysql://kucha.informatik.hu-berlin.de/infosys?useUnicode=true&characterEncoding=UTF-8"; //$NON-NLS-1$
-	private static String user = Messages.getString("MysqlConnector.db.user"); //$NON-NLS-1$
-	private static String password = Messages.getString("MysqlConnector.db.password"); //$NON-NLS-1$
+	private static String url = "jdbc:mysql://kucha.informatik.hu-berlin.de/ninadb?useUnicode=true&characterEncoding=UTF-8"; //$NON-NLS-1$
+	private static String user = "ninadb"; //$NON-NLS-1$
+	private static String password = "dpinvSg?"; //$NON-NLS-1$
 
 	private static MysqlConnector instance = null;
 
@@ -86,6 +89,32 @@ public class MysqlConnector {
 		}
 
 		return null;
+	}
+	
+	public ArrayList<District>getDistricts(){
+		ArrayList<District> Districts = new ArrayList<District>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			String sql = "SELECT * FROM Districts"; //$NON-NLS-1$
+
+			ResultSet rs = stmt.executeQuery(sql);
+			
+			while (rs.next()) {
+				District District = new District();
+				District.setDistrictID(rs.getInt("DistrictID"));
+				District.setName(rs.getString("Name")); 
+				District.setDescription(rs.getString("Description")); 
+				Districts.add(District);
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+	
+		return Districts;
 	}
 
 }
