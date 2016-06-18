@@ -12,9 +12,9 @@ import de.cses.shared.District;
 
 public class MysqlConnector {
 
-	private static String url = "jdbc:mysql://kucha.informatik.hu-berlin.de/ninadb?useUnicode=true&characterEncoding=UTF-8"; //$NON-NLS-1$
-	private static String user = "ninadb"; //$NON-NLS-1$
-	private static String password = "dpinvSg?"; //$NON-NLS-1$
+	private static String url = "jdbc:mysql://kucha.informatik.hu-berlin.de/infosys?useUnicode=true&characterEncoding=UTF-8"; //$NON-NLS-1$
+	private static String user = Messages.getString("user"); 
+	private static String password = Messages.getString("password"); 
 
 	private static MysqlConnector instance = null;
 
