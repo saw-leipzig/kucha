@@ -6,11 +6,14 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TabLayoutPanel;
 
+import de.cses.client.ornamentic.CreateOrnamentic;
+
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class TestApplication implements EntryPoint {
 
+	static CreateOrnamentic CreateOrnamentic = new CreateOrnamentic();
 
 	private TabLayoutPanel main;
 	
@@ -23,12 +26,18 @@ public class TestApplication implements EntryPoint {
 		main = new TabLayoutPanel(3.0, Unit.EM);
 		RootPanel.get().add(main);
 		
+		CreateOrnamentic co = new CreateOrnamentic();
+		
 		main.setHeight(Window.getClientHeight()+"px");
 		main.add(new TestPanel("Maja"), "Tab 1");
-		main.add(new TestPanel("Anton"), "Tab 2");
-		
-	}
-	
-	
+		main.add(co.asWidget(), "Tab 2");
+	}		
 
+	public static CreateOrnamentic getCreateOrnamentic() {
+		return CreateOrnamentic;
+	}
+
+	public static void setCreateOrnamentic(CreateOrnamentic createOrnamentic) {
+		CreateOrnamentic = createOrnamentic;
+	}
 }

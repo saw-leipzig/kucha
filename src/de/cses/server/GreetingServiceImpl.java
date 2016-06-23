@@ -21,6 +21,8 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements Greetin
 
 		String serverInfo = getServletContext().getServerInfo();
 		String userAgent = getThreadLocalRequest().getHeader("User-Agent");
+		
+		System.err.println("Fehler");
 
 		// Escape data from the client to avoid cross-site script vulnerabilities.
 		input = escapeHtml(input);
