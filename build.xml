@@ -17,11 +17,10 @@
 	<path id="webinflib.class.path">
 		<fileset dir="war/WEB-INF/lib" includes="**/*.jar" />
 	</path>
-<!--	<path id="gxt.class.path">
-		<fileset dir="lib" includes="gxt-3.1.0.jar" />
-		<fileset dir="lib" includes="gxt-chart-3.1.0.jar" />
+	<path id="gxt.class.path">
+		<fileset dir="lib" includes="*.jar" />
+<!--		<fileset dir="lib" includes="gxt-chart.jar" />  -->
 	</path>
--->
 	<target name="compile-servlets" description="Compiles the servlets source">
 		<delete dir="war/WEB-INF/classes" failonerror="false" />
 		<mkdir dir="war/WEB-INF/classes" />
@@ -29,9 +28,10 @@
 			<classpath>
 				<path refid="webinflib.class.path"/>
 				<path refid="gwt.class.path"/>
+				<path refid="gxt.class.path"/>
 			</classpath>
 		</javac>
-		<copyfile src="src/de/cses/server/mysql/messages.properties" dest="war/WEB-INF/classes/de/cses/server/mysql/messages.properties"/>
+		<copy file="src/de/cses/server/mysql/messages.properties" todir="war/WEB-INF/classes/de/cses/server/mysql" />
 	</target>
 	<target name="war" depends="compile-servlets,gwtc">
 		<available file="war/testapplication/testapplication.nocache.js" property="gwt_compiled" />
@@ -46,7 +46,7 @@
 			<classpath>
 				<pathelement location="src" />
 				<path refid="webinflib.class.path"/>
-<!--				<path refid="gxt.class.path"/>    -->
+				<path refid="gxt.class.path"/>
 				<path refid="gwt.class.path"/>
 			</classpath>
 			<!-- add jvmarg -Xss16M or similar if you see a StackOverflowError -->
@@ -59,7 +59,7 @@
 			<classpath>
 				<pathelement location="src" />
 				<path refid="webinflib"/>
-<!--				<path refid="gxt.class.path"/>    -->
+				<path refid="gxt.class.path"/>
 				<path refid="gwt.class.path"/>
 			</classpath>
 			<jvmarg value="-Xmx512M" />

@@ -1,19 +1,18 @@
 package de.cses.client;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.sencha.gxt.widget.core.client.box.ConfirmMessageBox;
+import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.event.DialogHideEvent;
+import com.sencha.gxt.widget.core.client.event.DialogHideEvent.DialogHideHandler;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
 public class TestPanel extends LayoutPanel {
 	
@@ -22,7 +21,8 @@ public class TestPanel extends LayoutPanel {
 	 * returns an error.
 	 */
 	private static final String SERVER_ERROR = "An error occurred while "
-			+ "attempting to contact the server. Please check your network " + "connection and try again.";
+			+ "attempting to contact the server. Please check your network " 
+			+ "connection and try again.";
 
 	/**
 	 * Create a remote service proxy to talk to the server-side Greeting service.
@@ -30,39 +30,35 @@ public class TestPanel extends LayoutPanel {
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	
 	VerticalPanel mainPanel;
-	
+
+	/**
+	 * This class extends a LayoutPanel and displays the input field and the send button for a database request.
+	 * It also tests the GXT installation.
+	 * @param name
+	 */
 	public TestPanel(String name) {
-		final Button sendButton = new Button("Send");
+		final TextButton gxtSendButton = new TextButton("sendButton");
 		final TextBox nameField = new TextBox();
 		nameField.setText(name);
 		final Label errorLabel = new Label();
-
+		
 		// We can add style names to widgets
-		sendButton.addStyleName("sendButton");
+		gxtSendButton.addStyleName("sendButton");
 
 		// Add the nameField and sendButton to the RootPanel
-		// Use RootPanel.get() to get the entire body element
 		mainPanel = new VerticalPanel();
-		
 		mainPanel.add(nameField);
-		mainPanel.add(sendButton);
+		mainPanel.add(gxtSendButton);
 		mainPanel.add(errorLabel);
-
 		this.add(mainPanel);
 		
 		// Focus the cursor on the name field when the app loads
 		nameField.setFocus(true);
 		nameField.selectAll();
 
-		// Create the popup dialog box
-		final DialogBox dialogBox = new DialogBox();
-		dialogBox.setText("Remote Procedure Call");
-		dialogBox.setAnimationEnabled(true);
-		final Button closeButton = new Button("Close");
-		// We can set the id of a widget by accessing its Element
-		closeButton.getElement().setId("closeButton");
 		final Label textToServerLabel = new Label();
 		final HTML serverResponseLabel = new HTML();
+
 		VerticalPanel dialogVPanel = new VerticalPanel();
 		dialogVPanel.addStyleName("dialogVPanel");
 		dialogVPanel.add(new HTML("<b>Sending name to the server:</b>"));
@@ -70,69 +66,61 @@ public class TestPanel extends LayoutPanel {
 		dialogVPanel.add(new HTML("<br><b>Server replies:</b>"));
 		dialogVPanel.add(serverResponseLabel);
 		dialogVPanel.setHorizontalAlignment(VerticalPanel.ALIGN_RIGHT);
-		dialogVPanel.add(closeButton);
-		dialogBox.setWidget(dialogVPanel);
+//		dialogVPanel.add(closeButton);
+//		dialogBox.setWidget(dialogVPanel);
+		
+    final ConfirmMessageBox gxtMessageBox = new ConfirmMessageBox("Remote Procedure Call","");   
+    
+    gxtMessageBox.addDialogHideHandler(new DialogHideHandler() {
+      @Override
+      public void onDialogHide(DialogHideEvent event) {
+			  gxtSendButton.setEnabled(true);
+  		  gxtSendButton.focus();
+      }
+    });
 
-		// Add a handler to close the DialogBox
-		closeButton.addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent event) {
-				dialogBox.hide();
-				sendButton.setEnabled(true);
-				sendButton.setFocus(true);
-			}
-		});
-
+		
 		// Create a handler for the sendButton and nameField
-		class MyHandler implements ClickHandler, KeyUpHandler {
-			/**
-			 * Fired when the user clicks on the sendButton.
-			 */
-			public void onClick(ClickEvent event) {
+    /**
+     * 
+     * @author alingnau
+     * An inner class that will handle the send button request.
+     */
+		class MyHandler implements SelectHandler {
+			@Override
+			public void onSelect(SelectEvent event) {
 				requestAgeFromServer();
-				//sendNameToServer();
 			}
 
-			/**
-			 * Fired when the user types in the nameField.
-			 */
-			public void onKeyUp(KeyUpEvent event) {
-				if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
-					requestAgeFromServer();
-				}
-			}
-			
 			private void requestAgeFromServer() {
 				String textToServer = nameField.getText();
 
-				sendButton.setEnabled(false);
+				gxtSendButton.setEnabled(false);
 				textToServerLabel.setText(textToServer);
 				serverResponseLabel.setText("");
 				dbService.dbServer(textToServer, new AsyncCallback<String>() {
 					public void onFailure(Throwable caught) {
 						// Show the RPC error message to the user
-						dialogBox.setText("Remote Procedure Call - Failure");
+						gxtMessageBox.setMessage("Remote Procedure Call - Failure");
 						serverResponseLabel.addStyleName("serverResponseLabelError");
 						serverResponseLabel.setHTML(SERVER_ERROR);
-						dialogBox.center();
-						closeButton.setFocus(true);
+						gxtMessageBox.center();
+						gxtMessageBox.show();
 					}
 
 					public void onSuccess(String result) {
-						dialogBox.setText("Remote Procedure Call");
-						serverResponseLabel.removeStyleName("serverResponseLabelError");
-						serverResponseLabel.setHTML(result);
-						dialogBox.center();
-						closeButton.setFocus(true);
+						gxtMessageBox.setMessage(result);
+						gxtMessageBox.center();
+						gxtMessageBox.show();
 					}
 				});
 			}
-
 		}
 
 		// Add a handler to send the name to the server
 		MyHandler handler = new MyHandler();
-		sendButton.addClickHandler(handler);
-		nameField.addKeyUpHandler(handler);
+		gxtSendButton.addSelectHandler(handler);
+		
 	}
 
 }
