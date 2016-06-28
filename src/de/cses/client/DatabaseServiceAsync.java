@@ -8,7 +8,7 @@ import de.cses.shared.District;
 
 public interface DatabaseServiceAsync {
 
-	void dbServer(String name, AsyncCallback<String> callback) throws IllegalArgumentException;;
-	void  getDistricts(AsyncCallback<ArrayList<District>> callback) throws IllegalArgumentException;;
+	void dbServer(String name, AsyncCallback<String> callback) throws IllegalArgumentException;
+	void getDistricts(AsyncCallback<ArrayList<District>> callback) throws IllegalArgumentException;
 
 }

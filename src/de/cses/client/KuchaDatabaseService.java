@@ -35,12 +35,9 @@ public class KuchaDatabaseService {
 			 
 			  ListStore<District> store = TestApplication.getCreateOrnamentic().getStore();
 			  store.addAll(Districts);
-			  ComboBox<District> combo = TestApplication.getCreateOrnamentic().getCombo();
+			  combo = TestApplication.getCreateOrnamentic().getCombo();
 			  combo.setStore(store);
 	
-
-			  
-				
 			}
 			
 		});

@@ -13,8 +13,8 @@ import de.cses.shared.District;
 public class MysqlConnector {
 
 	private static String url = "jdbc:mysql://kucha.informatik.hu-berlin.de/infosys?useUnicode=true&characterEncoding=UTF-8"; //$NON-NLS-1$
-	private static String user = Messages.getString("user"); 
-	private static String password = Messages.getString("password"); 
+	private static String user = Messages.getString("MysqlConnector.db.user"); 
+	private static String password = Messages.getString("MysqlConnector.db.password"); 
 
 	private static MysqlConnector instance = null;
 
@@ -91,7 +91,7 @@ public class MysqlConnector {
 		return null;
 	}
 	
-	public ArrayList<District>getDistricts(){
+	public synchronized ArrayList<District> getDistricts(){
 		ArrayList<District> Districts = new ArrayList<District>();
 		Connection dbc = getConnection();
 		Statement stmt;

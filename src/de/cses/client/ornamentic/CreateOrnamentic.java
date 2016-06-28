@@ -53,6 +53,7 @@ public Widget createForm(){
   vlc.add(new FieldLabel(OrnamentID, "Ornament ID"));
   
   KuchaDatabaseService KuchaDatabaseService = new KuchaDatabaseService();
+  
   KuchaDatabaseService.getDistricts();
   DistrictProperties properties = GWT.create(DistrictProperties.class);
   store = new ListStore<District>(properties.key());
