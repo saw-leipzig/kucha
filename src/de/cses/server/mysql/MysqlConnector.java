@@ -13,8 +13,8 @@ import de.cses.shared.District;
 public class MysqlConnector {
 
 	private static String url = "jdbc:mysql://kucha.informatik.hu-berlin.de/infosys?useUnicode=true&characterEncoding=UTF-8"; //$NON-NLS-1$
-	private static String user = Messages.getString("MysqlConnector.db.user"); 
-	private static String password = Messages.getString("MysqlConnector.db.password"); 
+	private static String user = Messages.getString("MysqlConnector.db.user");
+	private static String password = Messages.getString("MysqlConnector.db.password");
 
 	private static MysqlConnector instance = null;
 
@@ -90,8 +90,8 @@ public class MysqlConnector {
 
 		return null;
 	}
-	
-	public synchronized ArrayList<District> getDistricts(){
+
+	public synchronized ArrayList<District> getDistricts() {
 		ArrayList<District> Districts = new ArrayList<District>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -100,21 +100,49 @@ public class MysqlConnector {
 			String sql = "SELECT * FROM Districts"; //$NON-NLS-1$
 
 			ResultSet rs = stmt.executeQuery(sql);
-			
+
 			while (rs.next()) {
 				District District = new District();
 				District.setDistrictID(rs.getInt("DistrictID"));
-				District.setName(rs.getString("Name")); 
-				District.setDescription(rs.getString("Description")); 
+				District.setName(rs.getString("Name"));
+				District.setDescription(rs.getString("Description"));
 				Districts.add(District);
 			}
-			
+
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}	
-	
+		}
+
 		return Districts;
+	}
+
+	public synchronized int createNewImageEntry() {
+		Connection dbc = getConnection();
+		Statement stmt;
+		int generatedKey = -1;
+		try {
+			stmt = dbc.createStatement();
+
+			String sql = "INSERT INTO Images (Comment) VALUES ('please type your comment here')";
+			stmt.execute(sql, Statement.RETURN_GENERATED_KEYS);
+			ResultSet keys = stmt.getGeneratedKeys();
+			while (keys.next()) { 
+				// there should only be 1 key returned here but we need to modify this in case
+				// we have requested multiple new entries. works for the moment
+				generatedKey = keys.getInt(1);
+				System.err.println("result key " + generatedKey);
+			}
+			keys.close();
+			stmt.close();
+			dbc.close();
+			System.err.println("Database request finished"); //$NON-NLS-1$
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return generatedKey;
 	}
 
 }

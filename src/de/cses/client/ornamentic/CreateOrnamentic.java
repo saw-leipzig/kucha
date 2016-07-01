@@ -2,7 +2,6 @@ package de.cses.client.ornamentic;
 
 
 import com.google.gwt.core.shared.GWT;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.util.Margins;

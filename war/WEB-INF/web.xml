@@ -26,6 +26,24 @@
     <url-pattern>/testapplication/db</url-pattern>
   </servlet-mapping>
   
+  <servlet>
+  	<servlet-name>imgUploader</servlet-name>
+  	<servlet-class>de.cses.server.images.ImageServiceImpl</servlet-class>
+    <multipart-config>
+    	<location>/var/lib/tomcat8/webapps/images</location>
+    	<max-file-size>20848820</max-file-size>
+    	<max-request-size>418018841</max-request-size>
+    	<file-size-threshold>1048576</file-size-threshold>
+    </multipart-config>
+  	
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>imgUploader</servlet-name>
+    <url-pattern>/testapplication/imgUploader</url-pattern>
+  </servlet-mapping>
+  
+  
   <!-- Default page to serve -->
   <welcome-file-list>
     <welcome-file>TestApplication.html</welcome-file>

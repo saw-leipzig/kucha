@@ -22,7 +22,6 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		return result;		
 	}
 
-	@Override
 	public ArrayList<District> getDistricts() throws IllegalArgumentException {
 		// TODO Auto-generated method stub
 		MysqlConnector connector = MysqlConnector.getInstance();

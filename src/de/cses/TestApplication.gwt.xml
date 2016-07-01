@@ -32,6 +32,8 @@
   <source path='client'/>
   <source path='shared'/>
 
+  <collapse-property name="gxt.device" values="*" />
+
   <!-- allow Super Dev Mode -->
   <add-linker name="xsiframe"/>
 </module>

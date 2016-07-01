@@ -7,9 +7,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
-import com.sencha.gxt.widget.core.client.form.FieldLabel;
 
-import de.cses.client.ornamentic.CreateOrnamentic;
 import de.cses.shared.District;
 
 public class KuchaDatabaseService {
