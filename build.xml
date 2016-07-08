@@ -34,7 +34,7 @@
 		<copy file="src/de/cses/server/mysql/messages.properties" todir="war/WEB-INF/classes/de/cses/server/mysql" />
 	</target>
 	<target name="war" depends="compile-servlets,gwtc">
-		<available file="war/testapplication/testapplication.nocache.js" property="gwt_compiled" />
+		<available file="war/infosystem/infosystem.nocache.js" property="gwt_compiled" />
 		<fail unless="gwt_compiled">GWT must be compiled first!</fail>
 		<zip destfile="testapplication.war">
 			<zipfileset dir="war" />

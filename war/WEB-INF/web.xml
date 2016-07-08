@@ -13,7 +13,7 @@
   
   <servlet-mapping>
     <servlet-name>greetServlet</servlet-name>
-    <url-pattern>/testapplication/greet</url-pattern>
+    <url-pattern>/infosystem/greet</url-pattern>
   </servlet-mapping>
   
   <servlet>
@@ -23,7 +23,7 @@
   
   <servlet-mapping>
     <servlet-name>dbServlet</servlet-name>
-    <url-pattern>/testapplication/db</url-pattern>
+    <url-pattern>/infosystem/db</url-pattern>
   </servlet-mapping>
   
   <servlet>
@@ -40,7 +40,7 @@
   
   <servlet-mapping>
     <servlet-name>imgUploader</servlet-name>
-    <url-pattern>/testapplication/imgUploader</url-pattern>
+    <url-pattern>/infosystem/imgUploader</url-pattern>
   </servlet-mapping>
   
   

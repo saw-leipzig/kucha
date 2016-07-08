@@ -3,13 +3,13 @@
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
- * GNU Affero General Public License version 3 (GNU AGPLv3) as published by the Free Software Foundation.
+ * GNU General Public License version 3 (GPL v3) as published by the Free Software Foundation.
  * 
  * This software is distributed WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. Please read the GNU AGPLv3 for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. Please read the GPL v3 for more details.
  * 
- * You should have received a copy of the GNU AGPLv3 along with the software. 
- * If not, you can access it from here: <https://www.gnu.org/licenses/agpl-3.0.txt>.
+ * You should have received a copy of the GPL v3 along with the software. 
+ * If not, you can access it from here: <https://www.gnu.org/licenses/gpl-3.0.txt>.
  */
 package de.cses.server.mysql;
 
@@ -22,9 +22,10 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 
 import de.cses.shared.District;
+import de.cses.shared.ImageEntry;
 
 /**
- * 
+ * This is the central Database connector. 
  * @author alingnau
  *
  */
@@ -36,6 +37,10 @@ public class MysqlConnector {
 
 	private static MysqlConnector instance = null;
 
+	/**
+	 * We try to avoid that a new instance will be created if there is already one existing.
+	 * @return
+	 */
 	public static synchronized MysqlConnector getInstance() {
 		if (instance == null) {
 			instance = new MysqlConnector();
@@ -75,6 +80,11 @@ public class MysqlConnector {
 		return connection;
 	}
 
+	/**
+	 * This is a test method that can be used for testing purpose only. 
+	 * Likely to disappear in later versions!
+	 * @return
+	 */
 	public synchronized Hashtable<String, String> getTestTable() {
 
 		Connection dbc = getConnection();
@@ -109,6 +119,10 @@ public class MysqlConnector {
 		return null;
 	}
 
+	/**
+	 * Selects all districts from the table 'Districts' in the database
+	 * @return
+	 */
 	public synchronized ArrayList<District> getDistricts() {
 		ArrayList<District> Districts = new ArrayList<District>();
 		Connection dbc = getConnection();
@@ -135,6 +149,10 @@ public class MysqlConnector {
 		return Districts;
 	}
 
+	/**
+	 * Creates a new image entry in the table 'Images'
+	 * @return auto incremented primary key 'ImageID'
+	 */
 	public synchronized int createNewImageEntry() {
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -142,8 +160,7 @@ public class MysqlConnector {
 		try {
 			stmt = dbc.createStatement();
 
-			String sql = "INSERT INTO Images (Comment) VALUES ('please type your comment here')";
-			stmt.execute(sql, Statement.RETURN_GENERATED_KEYS);
+			stmt.execute("INSERT INTO Images (Title,Comment) VALUES ('Image Title','please type your comment here')", Statement.RETURN_GENERATED_KEYS);
 			ResultSet keys = stmt.getGeneratedKeys();
 			while (keys.next()) { 
 				// there should only be 1 key returned here but we need to modify this in case
@@ -155,12 +172,81 @@ public class MysqlConnector {
 			stmt.close();
 			dbc.close();
 			System.err.println("Database request finished"); //$NON-NLS-1$
-
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 
 		return generatedKey;
+	}
+	
+	/**
+	 * Executes an SQL update using a pre-defined SQL UPDATE string
+	 * @param sqlUpdate 
+	 * @return
+	 */
+	public synchronized boolean updateEntry(String sqlUpdate) {
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			stmt.executeUpdate(sqlUpdate);
+			stmt.close();
+			dbc.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+
+		return true;
+	}
+	
+	/**
+	 * 
+	 * @return ArrayList<String> with result from 'SELECT * FROM Images'
+	 */
+	public ArrayList<ImageEntry> getImageEntries() {
+		ArrayList<ImageEntry> results = new ArrayList<ImageEntry>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Images");
+			while (rs.next()) { 
+				results.add(new ImageEntry(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getInt(4), rs.getInt(5), rs.getString(6), rs.getInt(7), rs.getString(8), rs.getDate(9)));
+			}
+			rs.close();
+			stmt.close();
+			dbc.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return results;
+	}
+
+	/**
+	 * 
+	 * @param imageID
+	 * @return ImageEntry that matches imageID, or NULL 
+	 */
+	public ImageEntry getImageEntry(int imageID) {
+		Connection dbc = getConnection();
+		ImageEntry result = null;
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Images WHERE ImageID="+imageID);
+			while (rs.next()) { 
+				result = new ImageEntry(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getInt(4), rs.getInt(5), rs.getString(6), rs.getInt(7), rs.getString(8), rs.getDate(9));
+			}
+			rs.close();
+			stmt.close();
+			dbc.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return result;
 	}
 
 }

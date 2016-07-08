@@ -1,3 +1,16 @@
+/*
+ * Copyright 2016 
+ * Saxon Academy of Science in Leipzig, Germany
+ * 
+ * This is free software: you can redistribute it and/or modify it under the terms of the 
+ * GNU General Public License version 3 (GPL v3) as published by the Free Software Foundation.
+ * 
+ * This software is distributed WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. Please read the GPL v3 for more details.
+ * 
+ * You should have received a copy of the GPL v3 along with the software. 
+ * If not, you can access it from here: <https://www.gnu.org/licenses/gpl-3.0.txt>.
+ */
 package de.cses.server.images;
 
 import java.io.File;
@@ -19,10 +32,18 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import de.cses.server.mysql.MysqlConnector;
+import de.cses.shared.ImageEntry;
 
+/**
+ * This HttpServlet is used to upload images to the server's main image directory. 
+ * It also creates a new entry in the Images table of the database.
+ * @author alingnau
+ *
+ */
 @MultipartConfig
 public class ImageServiceImpl extends HttpServlet {
 	
+	private static final String SERVER_IMAGES_PATHNAME = System.getProperty("user.dir")+"/webapps/images";
 	MysqlConnector connector = MysqlConnector.getInstance();
 
 	public static final void copyInputStreamAndClose(InputStream in, OutputStream out) throws IOException {
@@ -36,43 +57,45 @@ public class ImageServiceImpl extends HttpServlet {
 		out.close();
 	}
 
+	/**
+	 * This method is called when the submit button in the image uploader is pressed.
+	 * Images are not stored in the SERVER_IMAGES_PATHNAME but in the correspoding subfolder
+	 * that is received from the fieldName set in @see de.cses.client.images.ImageUploader
+	 * 
+	 */
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String uploadFileName;
 		String uploadSubdirName;
-		String fileType;
+		String fileType, filename="default.jpg";
 
 		response.setContentType("text/plain");
 
-		File imgHomeDir = new File(System.getProperty("user.dir")+"/webapps/images");
-//		File uploadDir = new File("/tmp/kucha");
+		File imgHomeDir = new File(SERVER_IMAGES_PATHNAME);
 		FileItemFactory factory = new DiskFileItemFactory(1000000, imgHomeDir);
 		ServletFileUpload upload = new ServletFileUpload(factory);
 		File target = null;
 		try {
 			try {
-//				System.err.println("Step 2: ");
 				List<?> items = upload.parseRequest(request);
-//				System.err.println("Step 3: ");
 				Iterator<?> it = items.iterator();
-//				System.err.println("Step 4: ");
 				while (it.hasNext()) {
 					FileItem item = (FileItem) it.next();
 					uploadFileName = item.getName(); 
+					// we take the sub dir from the field name which corresponds with the purpose of the upload (e.g. depictions, backgrounds, ...)
 					uploadSubdirName = item.getFieldName();
 					fileType = uploadFileName.substring(uploadFileName.lastIndexOf("."));
 					if (item.isFormField()) {
 						throw new ServletException("Unsupported non-file property [" + item.getFieldName() + "] with value: " + item.getString());
 					} else {
-//						target = File.createTempFile("temp_", fileType, uploadDir);
-						
 						int newImageID = connector.createNewImageEntry();
 						if (newImageID >= 0) {
-							target = new File(imgHomeDir, uploadSubdirName+"/"+ newImageID + fileType);
-//						System.err.println("Try to create file: " + target.getAbsolutePath());
-						} else {
-							target = new File(imgHomeDir, uploadSubdirName+"/unknown" + fileType);
+							filename = newImageID + fileType;
+							ImageEntry ie = connector.getImageEntry(newImageID);
+							ie.setFilename(filename);
+							connector.updateEntry(ie.getSqlUpdate(ImageEntry.FILENAME));
 						}
+						target = new File(imgHomeDir, uploadSubdirName + "/" + filename);
 						item.write(target);
 						item.delete();
 					}
