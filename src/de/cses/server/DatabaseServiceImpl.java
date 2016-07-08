@@ -21,6 +21,7 @@ import de.cses.client.DatabaseService;
 import de.cses.server.mysql.MysqlConnector;
 import de.cses.shared.District;
 import de.cses.shared.ImageEntry;
+import de.cses.shared.PhotographerEntry;
 
 /**
  * The server-side implementation of the RPC service.
@@ -46,6 +47,11 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public ArrayList<ImageEntry> getImages() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getImageEntries();
+	}
+	
+	public ArrayList<PhotographerEntry> getPhotographer() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getPhotographerEntries();
 	}
 
 }

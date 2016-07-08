@@ -23,6 +23,7 @@ import java.util.Hashtable;
 
 import de.cses.shared.District;
 import de.cses.shared.ImageEntry;
+import de.cses.shared.PhotographerEntry;
 
 /**
  * This is the central Database connector. 
@@ -247,6 +248,26 @@ public class MysqlConnector {
 			return null;
 		}
 		return result;
+	}
+
+	public ArrayList<PhotographerEntry> getPhotographerEntries() {
+		ArrayList<PhotographerEntry> results = new ArrayList<PhotographerEntry>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Photographers");
+			while (rs.next()) { 
+				results.add(new PhotographerEntry(rs.getInt(1), rs.getString(2)));
+			}
+			rs.close();
+			stmt.close();
+			dbc.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return results;
 	}
 
 }

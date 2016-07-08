@@ -21,6 +21,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 import de.cses.shared.District;
 import de.cses.shared.ImageEntry;
+import de.cses.shared.PhotographerEntry;
 
 /**
  * The client-side stub for the RPC service.
@@ -31,5 +32,6 @@ public interface DatabaseService extends RemoteService {
 	String dbServer(String name) throws IllegalArgumentException;
 	ArrayList<District> getDistricts() throws IllegalArgumentException;
 	ArrayList<ImageEntry> getImages() throws IllegalArgumentException;
+	ArrayList<PhotographerEntry> getPhotographer() throws IllegalArgumentException;
 
 }

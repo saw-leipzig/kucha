@@ -64,10 +64,12 @@ import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.Selecti
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.shared.ImageEntry;
+import de.cses.shared.PhotographerEntry;
 
 public class ImageEditor implements IsWidget {
 
 	private int currentImageID;
+	private TextField titleField;
 	private TextField copyrightField;
 	private TextArea commentArea;
 	private DateField dateField;
@@ -75,7 +77,8 @@ public class ImageEditor implements IsWidget {
 	private FramedPanel panel;
 	private ComboBox<ImageEntry> imageCombo;
 	private ListStore<ImageEntry> imageEntryList;
-	private ImageProperties properties ;
+	private ImageProperties properties;
+	private ArrayList<PhotographerEntry> photographerList;
 
 	// private VBoxLayoutContainer vlc;
 	/**
@@ -99,6 +102,19 @@ public class ImageEditor implements IsWidget {
 	public ImageEditor() {
 		properties = GWT.create(ImageProperties.class);
 		imageEntryList = new ListStore<ImageEntry>(properties.imageID());
+		dbService.getPhotographer(new AsyncCallback<ArrayList<PhotographerEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onSuccess(ArrayList<PhotographerEntry> result) {
+				photographerList = result;
+			}
+		});
 	}
 
 	@Override
@@ -113,13 +129,7 @@ public class ImageEditor implements IsWidget {
 	private void initPanel() {
 		VBoxLayoutContainer vlc = new VBoxLayoutContainer(VBoxLayoutAlign.STRETCH);
 		HBoxLayoutContainer hlc = new HBoxLayoutContainer(HBoxLayoutAlign.STRETCH);
-		
-	  // vlc = new VBoxLayoutContainer();
-		// vlc.setVBoxLayoutAlign(VBoxLayoutAlign.STRETCH);
 		BoxLayoutData bld = new BoxLayoutData(new Margins(10));
-		// vlc.add(new TextButton("Button 1"), layoutData);
-		// vlc.add(new TextButton("Button 2"), layoutData);
-		// vlc.add(new TextButton("Button 3"), layoutData);
 		
     ListView<ImageEntry, ImageEntry> listView = new ListView<ImageEntry, ImageEntry>(imageEntryList, new IdentityValueProvider<ImageEntry>() {
       @Override
@@ -145,16 +155,20 @@ public class ImageEditor implements IsWidget {
 				ImageEntry ie;
 			  if (!event.getSelection().isEmpty()) {
 			  	ie = event.getSelection().get(0);
+			  	titleField.setText(ie.getTitle());
 					copyrightField.setText(ie.getCopyright());
 					commentArea.setText(ie.getComment());
 					dateField.setValue(ie.getCaptureDate());
-					photographerSelection.setText("id will become name..."+ie.getPhotographerID());
+					photographerSelection.setText(photographerList.get(ie.getPhotographerID()).getName());
 			  }
 			}
     });
     listView.setBorders(false);
     
-		copyrightField = new TextField();
+    titleField = new TextField();
+    vlc.add(new FieldLabel(titleField, "Title"));
+    
+    copyrightField = new TextField();
 		vlc.add(new FieldLabel(copyrightField, "Copyright"));
 
 		commentArea = new TextArea();
