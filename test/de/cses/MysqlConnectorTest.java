@@ -1,14 +1,8 @@
 package de.cses;
 
-import static org.junit.Assert.*;
-
-import java.sql.Date;
-import java.util.ArrayList;
-
 import org.junit.Test;
 
 import de.cses.server.mysql.MysqlConnector;
-import de.cses.shared.ImageEntry;
 
 public class MysqlConnectorTest {
 	

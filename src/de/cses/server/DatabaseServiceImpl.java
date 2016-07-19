@@ -38,7 +38,6 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	}
 
 	public ArrayList<District> getDistricts() throws IllegalArgumentException {
-		// TODO Auto-generated method stub
 		MysqlConnector connector = MysqlConnector.getInstance();
 		ArrayList<District> Regionen = connector.getDistricts();;
 		return Regionen;
@@ -52,6 +51,24 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public ArrayList<PhotographerEntry> getPhotographer() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getPhotographerEntries();
+	}
+
+	/**
+	 * A universal SQL update call for the Kucha database
+	 * The String needs to contain the full sql command, including the UPDATE statement at the beginning!
+	 */
+	public boolean updateEntry(String sqlUpdate) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.updateEntry(sqlUpdate);
+	}
+
+	/**
+	 * A universal SQL delete call for the Kucha database
+	 * The String needs to contain the full sql command, including the DELETE statement at the beginning!
+	 */
+	public boolean deleteEntry(String sqlDelete) {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.deleteEntry(sqlDelete);
 	}
 
 }

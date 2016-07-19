@@ -44,8 +44,8 @@ public class TestApplication implements EntryPoint {
 		RootPanel.get().add(main);
 
 		CreateOrnamentic co = new CreateOrnamentic();
-		ImageUploader imageUploader = new ImageUploader(ImageUploader.DEPICTIONS);
 		ImageEditor imgEditor = new ImageEditor();
+		ImageUploader imageUploader = new ImageUploader(imgEditor);
 
 		main.setHeight(Window.getClientHeight() + "px");
 		// main.add(new TestPanel("Maja"), "Test Panel");

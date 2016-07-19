@@ -16,7 +16,6 @@ package de.cses.client;
 import java.util.ArrayList;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
@@ -36,19 +35,15 @@ public class KuchaDatabaseService {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				// TODO Auto-generated method stub
-				
+				caught.printStackTrace();
 			}
 
 			@Override
 			public void onSuccess(ArrayList<District> Districts) {
-				Window.alert(Integer.toString(Districts.size()));
-			 
 			  ListStore<District> store = TestApplication.getCreateOrnamentic().getStore();
 			  store.addAll(Districts);
 			  combo = TestApplication.getCreateOrnamentic().getCombo();
 			  combo.setStore(store);
-	
 			}
 			
 		});

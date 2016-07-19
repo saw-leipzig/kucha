@@ -33,5 +33,7 @@ public interface DatabaseService extends RemoteService {
 	ArrayList<District> getDistricts() throws IllegalArgumentException;
 	ArrayList<ImageEntry> getImages() throws IllegalArgumentException;
 	ArrayList<PhotographerEntry> getPhotographer() throws IllegalArgumentException;
+	boolean updateEntry(String sqlUpdate);
+	boolean deleteEntry(String sqlDelete);
 
 }

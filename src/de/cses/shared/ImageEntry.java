@@ -18,23 +18,34 @@ import java.sql.Date;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class ImageEntry implements IsSerializable {
-	
+
 	private int imageID, depictionID, ornamentID, photographerID;
 	private String copyright, comment, filename, title;
 	private Date captureDate;
 
 	public static final int FILENAME = 2;
-	
+
 	public ImageEntry() {
 		imageID = 0;
 		depictionID = 0;
 		ornamentID = 0;
 		photographerID = 0;
 	}
-
-	public ImageEntry(int imageID, String filename, String title, int depictionID, int ornamentID, String copyright, int photographerID, String comment,
-			Date captureDate) {
-		super();
+	
+	/**
+	 * 
+	 * @param imageID
+	 * @param filename
+	 * @param title
+	 * @param depictionID
+	 * @param ornamentID
+	 * @param copyright
+	 * @param photographerID
+	 * @param comment
+	 * @param captureDate
+	 */
+	public ImageEntry(int imageID, String filename, String title, int depictionID, int ornamentID, String copyright,
+			int photographerID, String comment, Date captureDate) {
 		this.imageID = imageID;
 		this.filename = filename;
 		this.title = title;
@@ -45,7 +56,7 @@ public class ImageEntry implements IsSerializable {
 		this.comment = comment;
 		this.captureDate = captureDate;
 	}
-	
+
 	public int getImageID() {
 		return imageID;
 	}
@@ -126,10 +137,9 @@ public class ImageEntry implements IsSerializable {
 	public String getSqlUpdate(int id) {
 		switch (id) {
 		case FILENAME:
-			return "UPDATE Images SET Filename='" + filename + "' WHERE ImageID="+imageID;
+			return "UPDATE Images SET Filename='" + filename + "' WHERE ImageID=" + imageID;
 		default:
 			return null;
 		}
 	}
-	
 }

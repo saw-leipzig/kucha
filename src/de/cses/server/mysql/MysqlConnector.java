@@ -143,7 +143,6 @@ public class MysqlConnector {
 			}
 
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -182,8 +181,8 @@ public class MysqlConnector {
 	
 	/**
 	 * Executes an SQL update using a pre-defined SQL UPDATE string
-	 * @param sqlUpdate 
-	 * @return
+	 * @param sqlUpdate The full sql string including the UPDATE statement
+	 * @return true if sucessful
 	 */
 	public synchronized boolean updateEntry(String sqlUpdate) {
 		Connection dbc = getConnection();
@@ -202,10 +201,33 @@ public class MysqlConnector {
 	}
 	
 	/**
+	 * Executes a SQL delete using a predefined SQL DELETE string
+	 * @param sqlDelete The full sql string including the DELETE statement
+	 * @return true if sucessful
+	 */
+	public synchronized boolean deleteEntry(String sqlDelete) {
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			stmt.execute(sqlDelete);
+			stmt.close();
+			dbc.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+
+		return true;
+	}
+
+
+	
+	/**
 	 * 
 	 * @return ArrayList<String> with result from 'SELECT * FROM Images'
 	 */
-	public ArrayList<ImageEntry> getImageEntries() {
+	public synchronized ArrayList<ImageEntry> getImageEntries() {
 		ArrayList<ImageEntry> results = new ArrayList<ImageEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -230,7 +252,7 @@ public class MysqlConnector {
 	 * @param imageID
 	 * @return ImageEntry that matches imageID, or NULL 
 	 */
-	public ImageEntry getImageEntry(int imageID) {
+	public synchronized ImageEntry getImageEntry(int imageID) {
 		Connection dbc = getConnection();
 		ImageEntry result = null;
 		Statement stmt;
@@ -250,7 +272,11 @@ public class MysqlConnector {
 		return result;
 	}
 
-	public ArrayList<PhotographerEntry> getPhotographerEntries() {
+	/**
+	 * 
+	 * @return
+	 */
+	public synchronized ArrayList<PhotographerEntry> getPhotographerEntries() {
 		ArrayList<PhotographerEntry> results = new ArrayList<PhotographerEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -270,4 +296,18 @@ public class MysqlConnector {
 		return results;
 	}
 
+//	public synchronized boolean updateImage(String data) {
+//		Connection dbc = getConnection();
+//		Statement stmt;
+//		try {
+//			stmt = dbc.createStatement();
+//			int result= stmt.executeUpdate(data);
+//			stmt.close();
+//			dbc.close();
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//			return false;
+//		}
+//		return true;
+//	}
 }

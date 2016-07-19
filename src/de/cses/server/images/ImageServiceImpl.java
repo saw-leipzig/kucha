@@ -13,13 +13,14 @@
  */
 package de.cses.server.images;
 
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
@@ -43,19 +44,19 @@ import de.cses.shared.ImageEntry;
 @MultipartConfig
 public class ImageServiceImpl extends HttpServlet {
 	
-	private static final String SERVER_IMAGES_PATHNAME = System.getProperty("user.dir")+"/webapps/images";
+	public static final String SERVER_IMAGES_PATHNAME = System.getProperty("user.dir")+"/webapps/images";
 	MysqlConnector connector = MysqlConnector.getInstance();
 
-	public static final void copyInputStreamAndClose(InputStream in, OutputStream out) throws IOException {
-		byte[] buffer = new byte[1024];
-		int len;
-
-		while ((len = in.read(buffer)) >= 0) {
-			out.write(buffer, 0, len);
-		}
-		in.close();
-		out.close();
-	}
+//	public static final void copyInputStreamAndClose(InputStream in, OutputStream out) throws IOException {
+//		byte[] buffer = new byte[1024];
+//		int len;
+//
+//		while ((len = in.read(buffer)) >= 0) {
+//			out.write(buffer, 0, len);
+//		}
+//		in.close();
+//		out.close();
+//	}
 
 	/**
 	 * This method is called when the submit button in the image uploader is pressed.
@@ -66,7 +67,6 @@ public class ImageServiceImpl extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String uploadFileName;
-		String uploadSubdirName;
 		String fileType, filename="default.jpg";
 
 		response.setContentType("text/plain");
@@ -83,7 +83,6 @@ public class ImageServiceImpl extends HttpServlet {
 					FileItem item = (FileItem) it.next();
 					uploadFileName = item.getName(); 
 					// we take the sub dir from the field name which corresponds with the purpose of the upload (e.g. depictions, backgrounds, ...)
-					uploadSubdirName = item.getFieldName();
 					fileType = uploadFileName.substring(uploadFileName.lastIndexOf("."));
 					if (item.isFormField()) {
 						throw new ServletException("Unsupported non-file property [" + item.getFieldName() + "] with value: " + item.getString());
@@ -95,7 +94,7 @@ public class ImageServiceImpl extends HttpServlet {
 							ie.setFilename(filename);
 							connector.updateEntry(ie.getSqlUpdate(ImageEntry.FILENAME));
 						}
-						target = new File(imgHomeDir, uploadSubdirName + "/" + filename);
+						target = new File(imgHomeDir, filename);
 						item.write(target);
 						item.delete();
 					}
@@ -110,7 +109,30 @@ public class ImageServiceImpl extends HttpServlet {
 		} finally {
 			if (target != null && target.exists()) {
 				System.err.println("Uploaded file: " + target.getAbsolutePath());
+				createThumbnail(imgHomeDir, filename);
 			}
+		}
+	}
+	
+	/**
+	 * Create a thumbnail file of size 200x200 
+	 * @param path the directory where the image is located
+	 * @param filename of the image
+	 */
+	private void createThumbnail(File path, String filename) {
+		File tnFile;
+		String type;
+		BufferedImage tnImg;
+
+		tnImg = new BufferedImage(200, 200, BufferedImage.TYPE_INT_RGB);
+		tnFile = new File(path, "tn" + filename);
+		File readFile = new File(path, filename);
+		type = filename.substring(filename.lastIndexOf(".")+1).toUpperCase();
+		try {
+			tnImg.createGraphics().drawImage(ImageIO.read(readFile).getScaledInstance(200, 200, Image.SCALE_SMOOTH), 0, 0, null);
+			ImageIO.write(tnImg, type, tnFile);
+		} catch (IOException e) {
+			System.out.println("Thumbnail could not be created!");
 		}
 	}
 
