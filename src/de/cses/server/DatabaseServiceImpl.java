@@ -19,8 +19,11 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 import de.cses.client.DatabaseService;
 import de.cses.server.mysql.MysqlConnector;
-import de.cses.shared.District;
+import de.cses.shared.CaveEntry;
+import de.cses.shared.DistrictEntry;
 import de.cses.shared.ImageEntry;
+import de.cses.shared.OrnamentEntry;
+import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.PhotographerEntry;
 
 /**
@@ -37,10 +40,10 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		return result;		
 	}
 
-	public ArrayList<District> getDistricts() throws IllegalArgumentException {
+	public ArrayList<DistrictEntry> getDistricts() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
-		ArrayList<District> Regionen = connector.getDistricts();;
-		return Regionen;
+		ArrayList<DistrictEntry> districts = connector.getDistricts();;
+		return districts;
 	}
 
 	public ArrayList<ImageEntry> getImages() throws IllegalArgumentException {
@@ -69,6 +72,36 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public boolean deleteEntry(String sqlDelete) {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.deleteEntry(sqlDelete);
+	}
+
+	@Override
+	public ArrayList<CaveEntry> getCaves() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getCaves();
+	}
+
+	@Override
+	public ArrayList<CaveEntry> getCavesbyDistrictID(int DistrictID) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getCavesbyDistrictID(DistrictID);
+	}
+
+	@Override
+	public ArrayList<OrnamentEntry> getOrnaments() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getOrnaments();
+	}
+
+	@Override
+	public ArrayList<OrnamentOfOtherCulturesEntry> getOrnamentsOfOtherCultures() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getOrnametsOfOtherCultures();
+	}
+
+	@Override
+	public boolean saveOrnamentEntry(OrnamentEntry ornamentEntry) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.saveOrnamentEntry(ornamentEntry);
 	}
 
 }

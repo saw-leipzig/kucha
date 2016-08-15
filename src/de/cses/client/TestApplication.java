@@ -23,14 +23,14 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.Verti
 
 import de.cses.client.images.ImageEditor;
 import de.cses.client.images.ImageUploader;
-import de.cses.client.ornamentic.CreateOrnamentic;
+import de.cses.client.ornamentic.Ornamentic;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class TestApplication implements EntryPoint {
 
-	static CreateOrnamentic CreateOrnamentic = new CreateOrnamentic();
+	static Ornamentic Ornamentic = new Ornamentic();
 
 	private TabLayoutPanel main;
 
@@ -43,7 +43,7 @@ public class TestApplication implements EntryPoint {
 		main = new TabLayoutPanel(3.0, Unit.EM);
 		RootPanel.get().add(main);
 
-		CreateOrnamentic co = new CreateOrnamentic();
+		Ornamentic co = new Ornamentic();
 		ImageEditor imgEditor = new ImageEditor();
 		ImageUploader imageUploader = new ImageUploader(imgEditor);
 
@@ -61,11 +61,11 @@ public class TestApplication implements EntryPoint {
 
 	}
 
-	public static CreateOrnamentic getCreateOrnamentic() {
-		return CreateOrnamentic;
+	public static Ornamentic getCreateOrnamentic() {
+		return Ornamentic;
 	}
 
-	public static void setCreateOrnamentic(CreateOrnamentic createOrnamentic) {
-		CreateOrnamentic = createOrnamentic;
+	public static void setCreateOrnamentic(Ornamentic ornamentic) {
+		Ornamentic = ornamentic;
 	}
 }

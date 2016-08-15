@@ -1,41 +1,57 @@
 package de.cses.client.ornamentic;
 
+import java.util.ArrayList;
 
-import com.google.gwt.core.shared.GWT;
+import com.gargoylesoftware.htmlunit.Page;
+import com.gargoylesoftware.htmlunit.attachment.AttachmentHandler;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.AttachEvent;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.sencha.gxt.core.client.util.Margins;
+import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.ListStore;
+import com.sencha.gxt.data.shared.ModelKeyProvider;
+import com.sencha.gxt.data.shared.PropertyAccess;
+import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
+import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutData;
-import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.container.VBoxLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VBoxLayoutContainer.VBoxLayoutAlign;
-import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.TextField;
 
-import de.cses.client.DistrictProperties;
-import de.cses.client.KuchaDatabaseService;
-import de.cses.shared.District;
+import de.cses.client.DatabaseService;
+import de.cses.client.DatabaseServiceAsync;
+import de.cses.shared.CaveEntry;
+import de.cses.shared.OrnamentCaveRelation;
+import de.cses.shared.OrnamentEntry;
 
-public class CreateOrnamentic implements IsWidget{
+
+public class Ornamentic implements IsWidget{
 	 private VBoxLayoutContainer widget;
-	 private ListStore<District> store;
-	 VBoxLayoutContainer vlc;
-	 ComboBox<District> combo;
-	
-	public CreateOrnamentic(){
-		
-	}
+	 ContentPanel cavesContentPanel;
+	 private OrnamentCaveRelationProperties ornamentCaveRelationProps;
+	 private ListStore<OrnamentCaveRelation> caveOrnamentRelationList;
+	 private Ornamentic ornamentic = this;
+	 private ListView<OrnamentCaveRelation, String> cavesList;
+	 private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
+
 
 @Override
 public Widget asWidget() {
   if (widget == null) {
-    BoxLayoutData flex = new BoxLayoutData(new Margins(0, 0, 20, 0));
+    BoxLayoutData flex = new BoxLayoutData();
     flex.setFlex(1);
-    widget = new VBoxLayoutContainer(VBoxLayoutAlign.STRETCH);
+    widget = new VBoxLayoutContainer();
     widget.add(createForm(), flex);
   }
 
@@ -43,94 +59,182 @@ public Widget asWidget() {
 }
 
 public Widget createForm(){
-	
-	vlc = new VBoxLayoutContainer(VBoxLayoutAlign.STRETCH);
-	
-  TextField OrnamentID = new TextField();
-  OrnamentID.setAllowBlank(false);
-  OrnamentID.setEmptyText("Enter Ornaments ID...");
-  vlc.add(new FieldLabel(OrnamentID, "Ornament ID"));
-  
-  KuchaDatabaseService KuchaDatabaseService = new KuchaDatabaseService();
-  
-  KuchaDatabaseService.getDistricts();
-  DistrictProperties properties = GWT.create(DistrictProperties.class);
-  store = new ListStore<District>(properties.key());
-  combo = new ComboBox<District>(store, properties.NameLabel());
-  vlc.add(new FieldLabel(combo, "Site"));
-//  Window.alert("filled combobox");
- 
 
+	ornamentCaveRelationProps = GWT.create(OrnamentCaveRelationProperties.class);
+	
+	VBoxLayoutContainer vlc = new VBoxLayoutContainer(VBoxLayoutAlign.STRETCH);
+	
+  final TextField ornamentCode = new TextField();
+  ornamentCode.setAllowBlank(false);
+  vlc.add(new FieldLabel(ornamentCode, "Ornament Code"));
   
-  //Place for File-Upload
   
-  TextField Discription = new TextField();
-  Discription.setAllowBlank(true);
-  vlc.add(new FieldLabel(Discription, "Discription"));
+  //Place for File-Upload Sketch + Photo
   
-  TextField Remarks = new TextField();
-  Remarks.setAllowBlank(true);
-  vlc.add(new FieldLabel(Remarks, "Remarks"));
+  final TextField discription = new TextField();
+  discription.setAllowBlank(true);
+  vlc.add(new FieldLabel(discription, "Discription"));
   
-  TextField Annotations = new TextField();
-  Annotations.setAllowBlank(true);
-  vlc.add(new FieldLabel(Annotations, "Annotations"));
+  final TextField remarks = new TextField();
+  remarks.setAllowBlank(true);
+  vlc.add(new FieldLabel(remarks, "Remarks"));
   
-  //Place for Caves
+  final TextField annotations = new TextField();
+  annotations.setAllowBlank(true);
+  vlc.add(new FieldLabel(annotations, "Annotations"));
   
-  //Place for Occupied Position in Cave
+  final TextField sketch = new TextField();
+  sketch.setAllowBlank(true);
+  vlc.add(new FieldLabel(sketch, "Sketch"));
   
-  TextField RelationToOtherOrnamentsOrElementsText = new TextField();
-  RelationToOtherOrnamentsOrElementsText.setAllowBlank(true);
-  vlc.add(new FieldLabel(RelationToOtherOrnamentsOrElementsText, "Relation to other Ornaments or Elements"));
-  //Here is a possibility to make a real relation to other Ornaments by ID
+  final TextField interpretation = new TextField();
+  interpretation.setAllowBlank(true);
+  vlc.add(new FieldLabel(interpretation, "Interpretation"));
   
-  TextField GroupOfOrnaments = new TextField();
-  GroupOfOrnaments.setAllowBlank(true);
-  vlc.add(new FieldLabel(GroupOfOrnaments, "Group of Ornaments"));
-  
-  TextField Interpretation = new TextField();
-  Interpretation.setAllowBlank(true);
-  vlc.add(new FieldLabel(Interpretation, "Interpretation"));
-  
-  TextField References = new TextField();
-  References.setAllowBlank(true);
-  vlc.add(new FieldLabel(References, "Group of Ornaments"));
+  final TextField references = new TextField();
+  references.setAllowBlank(true);
+  vlc.add(new FieldLabel(references, "References"));
   //Maybe change to a real relation to References
   
-  FramedPanel panel = new FramedPanel();
-  panel.setHeading("New Ornament");
-  panel.add(vlc, new MarginData(15, 15, 0, 15));
-  panel.addButton(new TextButton("Save"));
-  panel.addButton(new TextButton("Cancel"));
+
   
-  return panel;
+  Button addCaveButton = new Button();
+  addCaveButton.setText("Add related Caves");
+  vlc.add(new FieldLabel(addCaveButton, "Add cave relations"));
+  addCaveButton.setSize("60px", "40px");
+  
+  
+//Place for Caves
+  ClickHandler addCaveClickHandler = new ClickHandler(){
+  	
+
+		@Override
+		public void onClick(ClickEvent event) {
+			OrnamentCaveAttributes attributespopup  = new OrnamentCaveAttributes();
+      attributespopup.setOrnamentic(ornamentic);
+			attributespopup.setGlassEnabled(true);
+			attributespopup.center();
+			
+		}
+  	
+  };
+  
+  addCaveButton.addClickHandler(addCaveClickHandler);
+  
+  cavesContentPanel = new ContentPanel();
+  vlc.add(cavesContentPanel);
+  caveOrnamentRelationList = new ListStore<OrnamentCaveRelation>(ornamentCaveRelationProps.caveID());
+  
+  
+
+  
+  
+  cavesList = new ListView<OrnamentCaveRelation,String>(caveOrnamentRelationList, ornamentCaveRelationProps.name());
+  cavesList.setAllowTextSelection(true);
+
+  
+  cavesContentPanel.setHeading("Added caves:");
+  cavesContentPanel.add(cavesList);
+  TextButton edit = new TextButton("edit");
+  TextButton delete = new TextButton("delete");
+  HorizontalPanel buttonCaveEditPanel = new HorizontalPanel();
+  buttonCaveEditPanel.add(edit);
+  buttonCaveEditPanel.add(delete);
+  
+  
+  ClickHandler deleteClickHandler = new ClickHandler(){
+
+		@Override
+		public void onClick(ClickEvent event) {
+	caveOrnamentRelationList.remove(cavesList.getSelectionModel().getSelectedItem());
+		
+		}
+  };
+  delete.addHandler(deleteClickHandler, ClickEvent.getType());
+  vlc.add(buttonCaveEditPanel);
+  
+  TextButton save = new TextButton("save"); 
+  
+  ClickHandler saveClickHandler = new ClickHandler(){
+
+		@Override
+		public void onClick(ClickEvent event) {
+		OrnamentEntry ornament = new OrnamentEntry();
+		for(int i = 0; i < caveOrnamentRelationList.size();i++){
+			ornament.getCavesRelations().add(caveOrnamentRelationList.get(i));
+		}
+		ornament.setCode(ornamentCode.getText());
+		ornament.setDescription(discription.getText());
+		ornament.setRemarks(remarks.getText());
+		ornament.setAnnotations(annotations.getText());
+		ornament.setSketch(sketch.getText());
+		ornament.setInterpretation(interpretation.getText());
+		ornament.setReferences(references.getText());
+		//send ornament to server
+		dbService.saveOrnamentEntry(ornament, new AsyncCallback<Boolean>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+				Window.alert("Saving failed");
+				Window.alert(caught.getMessage());
+			}
+
+			@Override
+			public void onSuccess(Boolean result) {
+				Window.alert("saved");
+				
+			}
+		});
+		
+		}
+  };
+  save.addHandler(saveClickHandler, ClickEvent.getType());
+  
+  TextButton cancel = new TextButton("cancel");
+  
+  HorizontalPanel buttonPanel= new HorizontalPanel();
+  buttonPanel.add(save);
+  buttonPanel.add(cancel);
+  
+  VerticalPanel panel = new VerticalPanel();
+ panel.add(vlc);
+panel.add(buttonPanel);
+
+ 
+  FramedPanel framedpanelornamentic = new FramedPanel();
+  framedpanelornamentic.setHeading("Create Ornamentic");
+  framedpanelornamentic.add(panel);
+
+
+  
+  return framedpanelornamentic;
 	
 }
+interface OrnamentCaveRelationProperties extends PropertyAccess<CaveEntry> {
+	ModelKeyProvider<OrnamentCaveRelation> caveID();
 
-public VBoxLayoutContainer getVlc() {
-	return vlc;
-}
-
-public void setVlc(VBoxLayoutContainer vlc) {
-	this.vlc = vlc;
-}
-
-public ListStore<District> getStore() {
-	return store;
-}
-
-public void setStore(ListStore<District> store) {
-	this.store = store;
-}
-
-public ComboBox<District> getCombo() {
-	return combo;
-}
-
-public void setCombo(ComboBox<District> combo) {
-	this.combo = combo;
+	ValueProvider<OrnamentCaveRelation, String> name();
 }
 
 
+public ListStore<OrnamentCaveRelation> getCaveOrnamentRelationList() {
+	return caveOrnamentRelationList;
 }
+
+public void setCaveOrnamentRelationList(ListStore<OrnamentCaveRelation> caveOrnamentRelationList) {
+	this.caveOrnamentRelationList = caveOrnamentRelationList;
+}
+
+public ListView<OrnamentCaveRelation, String> getCavesList() {
+	return cavesList;
+}
+
+public void setCavesList(ListView<OrnamentCaveRelation, String> cavesList) {
+	this.cavesList = cavesList;
+}
+
+
+
+}
+

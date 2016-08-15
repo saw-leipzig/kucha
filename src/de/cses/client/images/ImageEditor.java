@@ -122,30 +122,29 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 	/**
 	 * This widget allows to edit the information of an ImageEntry, i.e. an image
 	 * in the database.
-	 */
-	public ImageEditor() {
-		properties = GWT.create(ImageProperties.class);
-		photographerProps = GWT.create(PhotographerProperties.class);
-		imageEntryList = new ListStore<ImageEntry>(properties.imageID());
-		photographerEntryList = new ListStore<PhotographerEntry>(photographerProps.photographerID());
+	 */	public ImageEditor() {
+			properties = GWT.create(ImageProperties.class);
+			photographerProps = GWT.create(PhotographerProperties.class);
+			imageEntryList = new ListStore<ImageEntry>(properties.imageID());
+			photographerEntryList = new ListStore<PhotographerEntry>(photographerProps.photographerID());
 
-		dbService.getPhotographer(new AsyncCallback<ArrayList<PhotographerEntry>>() {
+			dbService.getPhotographer(new AsyncCallback<ArrayList<PhotographerEntry>>() {
 
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(ArrayList<PhotographerEntry> result) {
-				photographerEntryList.clear();
-				for (PhotographerEntry pe : result) {
-					photographerEntryList.add(pe);
+				@Override
+				public void onFailure(Throwable caught) {
+					caught.printStackTrace();
 				}
-			}
-		});
 
-	}
+				@Override
+				public void onSuccess(ArrayList<PhotographerEntry> result) {
+					photographerEntryList.clear();
+					for (PhotographerEntry pe : result) {
+						photographerEntryList.add(pe);
+					}
+				}
+			});
+
+		}
 
 	@Override
 	public Widget asWidget() {

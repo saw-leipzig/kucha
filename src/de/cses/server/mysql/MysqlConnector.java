@@ -21,8 +21,11 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-import de.cses.shared.District;
+import de.cses.shared.CaveEntry;
+import de.cses.shared.DistrictEntry;
 import de.cses.shared.ImageEntry;
+import de.cses.shared.OrnamentEntry;
+import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.PhotographerEntry;
 
 /**
@@ -35,6 +38,7 @@ public class MysqlConnector {
 	private static String url = "jdbc:mysql://kucha.informatik.hu-berlin.de/infosys?useUnicode=true&characterEncoding=UTF-8"; //$NON-NLS-1$
 	private static String user = Messages.getString("MysqlConnector.db.user");
 	private static String password = Messages.getString("MysqlConnector.db.password");
+	private int auto_increment_id;
 
 	private static MysqlConnector instance = null;
 
@@ -124,8 +128,8 @@ public class MysqlConnector {
 	 * Selects all districts from the table 'Districts' in the database
 	 * @return
 	 */
-	public synchronized ArrayList<District> getDistricts() {
-		ArrayList<District> Districts = new ArrayList<District>();
+	public synchronized ArrayList<DistrictEntry> getDistricts() {
+		ArrayList<DistrictEntry> DistrictEntries = new ArrayList<DistrictEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
 		try {
@@ -135,18 +139,18 @@ public class MysqlConnector {
 			ResultSet rs = stmt.executeQuery(sql);
 
 			while (rs.next()) {
-				District District = new District();
-				District.setDistrictID(rs.getInt("DistrictID"));
-				District.setName(rs.getString("Name"));
-				District.setDescription(rs.getString("Description"));
-				Districts.add(District);
+				DistrictEntry DistrictEntry = new DistrictEntry();
+				DistrictEntry.setDistrictID(rs.getInt("DistrictID"));
+				DistrictEntry.setName(rs.getString("Name"));
+				DistrictEntry.setDescription(rs.getString("Description"));
+				DistrictEntries.add(DistrictEntry);
 			}
 
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 
-		return Districts;
+		return DistrictEntries;
 	}
 
 	/**
@@ -310,4 +314,124 @@ public class MysqlConnector {
 //		}
 //		return true;
 //	}
+	public synchronized ArrayList<CaveEntry> getCaves() {
+		ArrayList<CaveEntry> results = new ArrayList<CaveEntry>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Caves");
+			while (rs.next()) { 
+				results.add(new CaveEntry(rs.getInt("CaveID"), rs.getString("OfficialName")));
+			}
+			rs.close();
+			stmt.close();
+			dbc.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return results;
+	}
+	
+	public synchronized ArrayList<CaveEntry> getCavesbyDistrictID(int DistrictID) {
+		ArrayList<CaveEntry> results = new ArrayList<CaveEntry>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Caves WHERE DistrictID ="+DistrictID);
+			while (rs.next()) { 
+				results.add(new CaveEntry(rs.getInt("CaveID"), rs.getString("OfficialName")));
+			}
+			rs.close();
+			stmt.close();
+			dbc.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return results;
+	}
+	
+	public synchronized ArrayList<OrnamentEntry> getOrnaments() {
+		ArrayList<OrnamentEntry> results = new ArrayList<OrnamentEntry>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Ornaments");
+			while (rs.next()) { 
+				results.add(new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code")));
+			}
+			rs.close();
+			stmt.close();
+			dbc.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return results;
+	}
+	public synchronized ArrayList<OrnamentOfOtherCulturesEntry> getOrnametsOfOtherCultures() {
+		ArrayList<OrnamentOfOtherCulturesEntry> results = new ArrayList<OrnamentOfOtherCulturesEntry>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM OrnamentsOfOtherCultures");
+			while (rs.next()) { 
+				results.add(new OrnamentOfOtherCulturesEntry(rs.getInt("OtherOrnamentID"), rs.getString("Description")));
+			}
+			rs.close();
+			stmt.close();
+			dbc.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return results;
+	}
+	
+	public synchronized boolean saveOrnamentEntry(OrnamentEntry ornamentEntry) {
+		System.err.println("reached saving function");
+		
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("INSERT INTO Ornaments (Code, Description, Remarks, Interpretation, Sketch, OrnamentReferences) VALUES (" + ornamentEntry.getCode() +","+ ornamentEntry.getDescription()+","+ ornamentEntry.getRemarks()+ "," + ornamentEntry.getInterpretation()+","+ ornamentEntry.getSketch()+ ","+ ornamentEntry.getReferences()+")");
+			rs = stmt.executeQuery("SELECT LAST_INSERT_ID()");
+			while (rs.next()) { 
+				auto_increment_id = rs.getInt(1);
+			}
+			System.err.println("inserted into ornaments got autoid");
+			for(int i = 0; i< ornamentEntry.getCavesRelations().size(); i++){
+				stmt = dbc.createStatement();
+				for(int j = 0; j < ornamentEntry.getCavesRelations().get(i).getRelatedOrnamentsRelationID().size(); j++){
+					rs= stmt.executeQuery("INSERT INTO RelatedOrnamentsRelation (OrnamentID1, OrnamentID2, CaveID) VALUES ("+auto_increment_id+ ","+ ornamentEntry.getCavesRelations().get(i).getRelatedOrnamentsRelationID().get(j)+","+ornamentEntry.getCavesRelations().get(i).getCaveID()+")");			
+				}
+				System.err.println("inserted related ornaments");
+				for(int j = 0; j < ornamentEntry.getCavesRelations().get(i).getSimilarOrnamentsRelationID().size(); j++){
+					rs= stmt.executeQuery("INSERT INTO SimilarOrnamentsRelation (OrnamentID1, OrnamentID2, CaveID) VALUES ("+auto_increment_id+ ","+ ornamentEntry.getCavesRelations().get(i).getSimilarOrnamentsRelationID().get(j)+","+ornamentEntry.getCavesRelations().get(i).getCaveID()+")");			
+				}
+				System.err.println("inserted similar ornaments");
+				for(int j = 0; j < ornamentEntry.getCavesRelations().get(i).getOtherCulturalOrnamentsRelationID().size(); j++){
+					rs= stmt.executeQuery("INSERT INTO OrnamentsOfOtherCulturesRelation (OrnamentID, OrnamentOfOtherCulturesID, CaveID) VALUES ("+auto_increment_id+ ","+ ornamentEntry.getCavesRelations().get(i).getOtherCulturalOrnamentsRelationID().get(j)+","+ornamentEntry.getCavesRelations().get(i).getCaveID()+")");			
+				}
+				System.err.println("inserted ornaments of other cultures");
+				rs= stmt.executeQuery("INSERT INTO CaveOrnamentRelation (CaveID, OrnamentID, Style, Orientation, Structure, MainTypologicalClass, Colours, Position, Function, CavePart, Notes,GroupOfOrnaments) VALUES ("+ ornamentEntry.getCavesRelations().get(i).getCaveID()+","+ auto_increment_id +","+ ornamentEntry.getCavesRelations().get(i).getStyle()+","+ornamentEntry.getCavesRelations().get(i).getOrientation()+","+ ornamentEntry.getCavesRelations().get(i).getStructure()+","+ ornamentEntry.getCavesRelations().get(i).getMainTopologycalClass()+","+ ornamentEntry.getCavesRelations().get(i).getColours()+","+ ornamentEntry.getCavesRelations().get(i).getPosition()+","+ ornamentEntry.getCavesRelations().get(i).getFunction()+","+ ornamentEntry.getCavesRelations().get(i).getCavepart()+","+ ornamentEntry.getCavesRelations().get(i).getNotes()+","+ ornamentEntry.getCavesRelations().get(i).getGroup()+")");
+				System.err.println("inserted cave relation");
+			}
+			rs.close();
+			stmt.close();
+			dbc.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+	
+	
 }
