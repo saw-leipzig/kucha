@@ -7,7 +7,7 @@ public class CaveEntry implements IsSerializable {
 
 	private int districtID;
 	private String officialName;
-	private int officialNumber;
+	private String officialNumber;
 	private String historicalName;
 	private int caveTypeID;
 	private String stateOfPerservation;
@@ -21,7 +21,7 @@ public class CaveEntry implements IsSerializable {
 	public CaveEntry() {
 	}
 
-	public CaveEntry(int caveID,int districtID, String officialName, int officialNumber, String historicalName, int caveTypeID, String stateOfPerservation, String orientationAccordingToTheSkyDirection, String pedestals, String findings) {
+	public CaveEntry(int caveID,int districtID, String officialName, String officialNumber, String historicalName, int caveTypeID, String stateOfPerservation, String orientationAccordingToTheSkyDirection, String pedestals, String findings) {
 		super();
 		this.districtID= districtID;
 		this.caveID = caveID;
@@ -58,11 +58,11 @@ public class CaveEntry implements IsSerializable {
 		this.officialName = officialName;
 	}
 
-	public int getOfficialNumber() {
+	public String getOfficialNumber() {
 		return officialNumber;
 	}
 
-	public void setOfficialNumber(int officialNumber) {
+	public void setOfficialNumber(String officialNumber) {
 		this.officialNumber = officialNumber;
 	}
 
