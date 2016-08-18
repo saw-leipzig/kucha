@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project default="war" name="KUCHA" xmlns:if="ant:if">
 	<!-- Configure path to GWT SDK -->
-	<property name="GWT_HOME" value="/Applications/Eclipse.app/Contents/Eclipse/plugins/com.google.gwt.eclipse.sdkbundle_2.7.0" />
+	<property name="GWT_HOME" value="/Applications/Eclipse.app/Contents/Eclipse/plugins/com.google.gwt.eclipse.sdkbundle_2.7.0/gwt-2.7.0" />
 
 	<!-- enable the following property for devmode debugging in an IDE; for Eclipse create an "Remote Java Application" launcher conneting to port 8000 -->
 	<property name="enable.debug.port" value="false" />
@@ -17,11 +17,10 @@
 	<path id="webinflib.class.path">
 		<fileset dir="war/WEB-INF/lib" includes="**/*.jar" />
 	</path>
-<!--	<path id="gxt.class.path">
-		<fileset dir="lib" includes="gxt-3.1.0.jar" />
-		<fileset dir="lib" includes="gxt-chart-3.1.0.jar" />
+	<path id="gxt.class.path">
+		<fileset dir="lib" includes="*.jar" />
+<!--		<fileset dir="lib" includes="gxt-chart.jar" />  -->
 	</path>
--->
 	<target name="compile-servlets" description="Compiles the servlets source">
 		<delete dir="war/WEB-INF/classes" failonerror="false" />
 		<mkdir dir="war/WEB-INF/classes" />
@@ -29,11 +28,13 @@
 			<classpath>
 				<path refid="webinflib.class.path"/>
 				<path refid="gwt.class.path"/>
+				<path refid="gxt.class.path"/>
 			</classpath>
 		</javac>
+		<copy file="src/de/cses/server/mysql/messages.properties" todir="war/WEB-INF/classes/de/cses/server/mysql" />
 	</target>
 	<target name="war" depends="compile-servlets,gwtc">
-		<available file="war/testapplication/testapplication.nocache.js" property="gwt_compiled" />
+		<available file="war/infosystem/infosystem.nocache.js" property="gwt_compiled" />
 		<fail unless="gwt_compiled">GWT must be compiled first!</fail>
 		<zip destfile="testapplication.war">
 			<zipfileset dir="war" />
@@ -45,7 +46,7 @@
 			<classpath>
 				<pathelement location="src" />
 				<path refid="webinflib.class.path"/>
-<!--				<path refid="gxt.class.path"/>    -->
+				<path refid="gxt.class.path"/>
 				<path refid="gwt.class.path"/>
 			</classpath>
 			<!-- add jvmarg -Xss16M or similar if you see a StackOverflowError -->
@@ -58,7 +59,7 @@
 			<classpath>
 				<pathelement location="src" />
 				<path refid="webinflib"/>
-<!--				<path refid="gxt.class.path"/>    -->
+				<path refid="gxt.class.path"/>
 				<path refid="gwt.class.path"/>
 			</classpath>
 			<jvmarg value="-Xmx512M" />
