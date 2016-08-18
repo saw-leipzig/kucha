@@ -322,7 +322,7 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Caves");
 			while (rs.next()) { 
-				results.add(new CaveEntry(rs.getInt("CaveID"), rs.getInt("DistrictID"),rs.getString("OfficialName"),rs.getInt("OfficialNumber") ,rs.getString("HistoricalName"), rs.getInt("CaveTypeID"), rs.getString("StateOfPerservation"), rs.getString("Orientation"),rs.getString("Pedestals"), rs.getString("Findings")));
+				results.add(new CaveEntry(rs.getInt("CaveID"), rs.getInt("DistrictID"),rs.getString("OfficialName"),rs.getString("OfficialNumber") ,rs.getString("HistoricalName"), rs.getInt("CaveTypeID"), rs.getString("StateOfPerservation"), rs.getString("Orientation"),rs.getString("Pedestals"), rs.getString("Findings")));
 			}
 			rs.close();
 			stmt.close();
@@ -342,7 +342,7 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Caves WHERE DistrictID ="+DistrictID);
 			while (rs.next()) { 
-				results.add(new CaveEntry(rs.getInt("CaveID"), rs.getInt("DistrictID"),rs.getString("OfficialName"),rs.getInt("OfficialNumber") ,rs.getString("HistoricalName"), rs.getInt("CaveTypeID"), rs.getString("StateOfPerservation"), rs.getString("Orientation"),rs.getString("Pedestals"), rs.getString("Findings")));
+				results.add(new CaveEntry(rs.getInt("CaveID"), rs.getInt("DistrictID"),rs.getString("OfficialName"),rs.getString("OfficialNumber") ,rs.getString("HistoricalName"), rs.getInt("CaveTypeID"), rs.getString("StateOfPerservation"), rs.getString("Orientation"),rs.getString("Pedestals"), rs.getString("Findings")));
 			}
 			rs.close();
 			stmt.close();
