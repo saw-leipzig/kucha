@@ -20,7 +20,8 @@ import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.widget.core.client.FramedPanel;
-import com.sencha.gxt.widget.core.client.box.AutoProgressMessageBox;
+import com.sencha.gxt.widget.core.client.Status;
+import com.sencha.gxt.widget.core.client.Window;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutPack;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
@@ -40,11 +41,11 @@ public class ImageUploader implements IsWidget {
 	protected static final int MAX_WIDHT = 500;
 	protected static final int MIN_HEIGHT = 150;
 	protected static final int MIN_WIDTH = 350;
-	
+
 	private FramedPanel panel;
 	private FormPanel form;
-	protected AutoProgressMessageBox amb;
 	private ArrayList<ImageUploadListener> uploadListener;
+	protected Window uploadInfoWindow;
 
 	public ImageUploader(ImageUploadListener listener) {
 		uploadListener = new ArrayList<ImageUploadListener>();
@@ -58,7 +59,7 @@ public class ImageUploader implements IsWidget {
 		}
 		return panel;
 	}
-	
+
 	private void initPanel() {
 		final FileUploadField file = new FileUploadField();
 		file.addChangeHandler(new ChangeHandler() {
@@ -73,34 +74,41 @@ public class ImageUploader implements IsWidget {
 		form.setAction("infosystem/imgUploader");
 		form.setEncoding(Encoding.MULTIPART);
 		form.setMethod(Method.POST);
-//		file.setName(purpose);
-		
+		// file.setName(purpose);
+
 		form.addSubmitCompleteHandler(new SubmitCompleteHandler() {
-	    public void onSubmitComplete(SubmitCompleteEvent event) {
-	      String resultHtml = event.getResults();
-	      amb.hide();
-	      for (ImageUploadListener listener : uploadListener) {
-	      	listener.uploadCompleted();
-	      }
-	    }
-	  });
+			public void onSubmitComplete(SubmitCompleteEvent event) {
+				String resultHtml = event.getResults();
+				uploadInfoWindow.hide();
+				for (ImageUploadListener listener : uploadListener) {
+					listener.uploadCompleted();
+				}
+			}
+		});
 		form.add(new FieldLabel(file, "File"));
 		form.setSize("450px", "100px");
-//		titleField = new TextField();
-//		form.add(new FieldLabel(titleField, "Title"), new MarginData(64));
-		
+		// titleField = new TextField();
+		// form.add(new FieldLabel(titleField, "Title"), new MarginData(64));
 
 		TextButton submitButton = new TextButton("Submit");
 		submitButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-//				form.setAction("infosystem/imgUploader");
-//				form.setEncoding(Encoding.MULTIPART);
-//				form.setMethod(Method.POST);
+				// form.setAction("infosystem/imgUploader");
+				// form.setEncoding(Encoding.MULTIPART);
+				// form.setMethod(Method.POST);
 				if (form.isValid()) {
 					form.submit();
-					amb = new AutoProgressMessageBox("File upload", "please wait ...");
-					amb.show();
+					uploadInfoWindow = new Window();
+					uploadInfoWindow.setHeading("Please wait!");
+					uploadInfoWindow.setModal(true);
+					uploadInfoWindow.setPixelSize(150, 50);
+					uploadInfoWindow.setMaximizable(false);
+					uploadInfoWindow.setClosable(false);
+					Status s = new Status();
+					s.setBusy("uploading image ...");
+					uploadInfoWindow.setWidget(s);
+					uploadInfoWindow.show();
 				}
 			}
 		});
@@ -113,7 +121,6 @@ public class ImageUploader implements IsWidget {
 				file.reset();
 			}
 		});
-		
 
 		panel = new FramedPanel();
 		panel.setHeading("Upload image");
@@ -121,9 +128,9 @@ public class ImageUploader implements IsWidget {
 		panel.add(form);
 		panel.addButton(resetButton);
 		panel.addButton(submitButton);
-		
-//		panel.setWidth(MIN_WIDTH);
-//		panel.setHeight(MAX_HEIGHT);		
+
+		// panel.setWidth(MIN_WIDTH);
+		// panel.setHeight(MAX_HEIGHT);
 	}
 
 }
