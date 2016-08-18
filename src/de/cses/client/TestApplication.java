@@ -21,6 +21,7 @@ import com.google.gwt.user.client.ui.TabLayoutPanel;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 
+import de.cses.client.caves.Caves;
 import de.cses.client.images.ImageEditor;
 import de.cses.client.images.ImageUploader;
 import de.cses.client.ornamentic.Ornamentic;
@@ -44,12 +45,14 @@ public class TestApplication implements EntryPoint {
 		RootPanel.get().add(main);
 
 		Ornamentic co = new Ornamentic();
+		Caves caves = new Caves();
 		ImageEditor imgEditor = new ImageEditor();
 		ImageUploader imageUploader = new ImageUploader(imgEditor);
 
 		main.setHeight(Window.getClientHeight() + "px");
 		// main.add(new TestPanel("Maja"), "Test Panel");
 		main.add(co.asWidget(), "Ornamentic Editor");
+		main.add(caves.asWidget(), "Cave Editor");
 
 		VerticalLayoutContainer c = new VerticalLayoutContainer();
 		c.add(imgEditor, new VerticalLayoutData(1, .5));
