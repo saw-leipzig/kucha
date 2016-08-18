@@ -19,8 +19,11 @@ import java.util.ArrayList;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
-import de.cses.shared.District;
+import de.cses.shared.CaveEntry;
+import de.cses.shared.DistrictEntry;
 import de.cses.shared.ImageEntry;
+import de.cses.shared.OrnamentEntry;
+import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.PhotographerEntry;
 
 /**
@@ -30,10 +33,16 @@ import de.cses.shared.PhotographerEntry;
 public interface DatabaseService extends RemoteService {
 	
 	String dbServer(String name) throws IllegalArgumentException;
-	ArrayList<District> getDistricts() throws IllegalArgumentException;
+	ArrayList<DistrictEntry> getDistricts() throws IllegalArgumentException;
 	ArrayList<ImageEntry> getImages() throws IllegalArgumentException;
 	ArrayList<PhotographerEntry> getPhotographer() throws IllegalArgumentException;
+	ArrayList<CaveEntry> getCaves() throws IllegalArgumentException;
+	ArrayList<CaveEntry> getCavesbyDistrictID(int DistrictID) throws IllegalArgumentException;
+	ArrayList<OrnamentEntry> getOrnaments() throws IllegalArgumentException;
+	ArrayList<OrnamentOfOtherCulturesEntry> getOrnamentsOfOtherCultures() throws IllegalArgumentException;
 	boolean updateEntry(String sqlUpdate);
 	boolean deleteEntry(String sqlDelete);
+	boolean saveOrnamentEntry(OrnamentEntry ornamentEntry) throws IllegalArgumentException;
+	
 
 }
