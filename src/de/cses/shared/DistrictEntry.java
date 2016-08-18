@@ -2,37 +2,37 @@ package de.cses.shared;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class DistrictEntry implements IsSerializable {
-private int districtID;
-private String name;
-private String description;
+public class District implements IsSerializable {
+int DistrictID;
+String Name;
+String Description;
 
-public DistrictEntry(){
+public District(){
 	
 }
-public DistrictEntry(String name, String description) {
+public District(String Name, String Description) {
   this();
-  this.name = name;
-  this.description = description;
+  this.Name = Name;
+  this.Description = Description;
 
 }
 public String getName() {
-	return name;
+	return Name;
 }
 public void setName(String name) {
-	this.name = name;
+	Name = name;
 }
 public String getDescription() {
-	return description;
+	return Description;
 }
 public void setDescription(String description) {
-	this.description = description;
+	Description = description;
 }
 public int getDistrictID() {
-	return districtID;
+	return DistrictID;
 }
 public void setDistrictID(int districtID) {
-	this.districtID = districtID;
+	DistrictID = districtID;
 }
 
 

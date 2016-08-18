@@ -6,18 +6,18 @@ import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 
-import de.cses.shared.DistrictEntry;
+import de.cses.shared.District;
 
-public interface DistrictProperties extends PropertyAccess<DistrictEntry> {
+public interface DistrictProperties extends PropertyAccess<District> {
 	
   @Path("districtID")
-  ModelKeyProvider<DistrictEntry> key();
+  ModelKeyProvider<District> key();
   
   @Path("name")
-  LabelProvider<DistrictEntry> NameLabel();
+  LabelProvider<District> NameLabel();
 
-  ValueProvider<DistrictEntry, String> Name();
+  ValueProvider<District, String> Name();
   
-  ValueProvider<DistrictEntry, String> Description();
+  ValueProvider<District, String> Description();
 
 }
