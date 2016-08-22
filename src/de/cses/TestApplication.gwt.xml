@@ -19,7 +19,7 @@
 
   <!-- Other module inherits                                      -->
   <inherits name='com.sencha.gxt.ui.GXT' />
-
+  
   <!-- GXT Stylesheet                                             -->
   <stylesheet src="reset.css" /> 
   
