@@ -18,7 +18,7 @@ public class Caves implements IsWidget{
 	public Widget asWidget() {
 		 if (widget == null) {
 		    BoxLayoutData flex = new BoxLayoutData();
-		    flex.setFlex(1);
+		    //flex.setFlex(1);
 		    widget = new VBoxLayoutContainer();
 		    widget.add(createForm(), flex);
 		  }
@@ -28,7 +28,7 @@ public class Caves implements IsWidget{
 public Widget createForm(){
 	VerticalPanel MainVerticalPanel = new VerticalPanel();
 
-	VBoxLayoutContainer vlc = new VBoxLayoutContainer(VBoxLayoutAlign.STRETCH);
+	VBoxLayoutContainer vlc = new VBoxLayoutContainer(VBoxLayoutAlign.LEFT);
 	
   final TextField officialName = new TextField();
   officialName.setAllowBlank(false);
