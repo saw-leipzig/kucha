@@ -16,12 +16,17 @@ package de.cses.client;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TabLayoutPanel;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 
+import de.cses.client.caves.Antechamber;
+import de.cses.client.caves.CaveType;
 import de.cses.client.caves.Caves;
+import de.cses.client.caves.Cella;
+import de.cses.client.caves.Niches;
 import de.cses.client.images.ImageEditor;
 import de.cses.client.images.ImageUploader;
 import de.cses.client.ornamentic.Ornamentic;
@@ -42,17 +47,24 @@ public class TestApplication implements EntryPoint {
 	public void onModuleLoad() {
 
 		main = new TabLayoutPanel(3.0, Unit.EM);
-		RootPanel.get().add(main);
+		RootLayoutPanel.get().add(main);
 
 		Ornamentic co = new Ornamentic();
 		Caves caves = new Caves();
+		Cella cella = new Cella();
+		CaveType caveType = new CaveType();
+		Niches niches = new Niches();
+		Antechamber antechamber = new Antechamber();
 		ImageEditor imgEditor = new ImageEditor();
 		ImageUploader imageUploader = new ImageUploader(imgEditor);
 
-		main.setHeight(Window.getClientHeight() + "px");
 		// main.add(new TestPanel("Maja"), "Test Panel");
 		main.add(co.asWidget(), "Ornamentic Editor");
 		main.add(caves.asWidget(), "Cave Editor");
+		main.add(cella.asWidget(), "Cella Editor");
+		main.add(caveType.asWidget(),"Cave Type Editor");
+		main.add(niches.asWidget(), "Niches Editor");
+		main.add(antechamber.asWidget(), "Antechamber Editor");
 
 		VerticalLayoutContainer c = new VerticalLayoutContainer();
 		c.add(imgEditor, new VerticalLayoutData(1, .5));
