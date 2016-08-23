@@ -153,6 +153,9 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 			refreshImages();
 			initPanel();
 		}
+		panel.setBounds(0, 0, 600, 500);
+//		panel.setSize("600", "500");
+		panel.setResize(false);
 		return panel;
 	}
 
