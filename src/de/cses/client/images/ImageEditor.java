@@ -437,9 +437,9 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 					@Override
 					public void onSuccess(Boolean result) {
 						if (result) {
-							Info.display("Image informaion", "Image information has been updated!");
+							Info.display("Image information", "Image information has been updated!");
 						} else {
-							Info.display("Image informaion", "Image information has been updated!");
+							Info.display("Image information", "Image information has been updated!");
 						}
 						refreshImages();
 					}

@@ -145,6 +145,7 @@ public class ImageUploader implements IsWidget {
 
 		// panel.setWidth(MIN_WIDTH);
 		// panel.setHeight(MAX_HEIGHT);
+
 	}
 
 }

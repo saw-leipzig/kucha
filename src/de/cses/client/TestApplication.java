@@ -13,37 +13,33 @@
  */
 package de.cses.client;
 
-import javax.swing.RootPaneContainer;
-
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TabLayoutPanel;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.core.client.util.Margins;
-import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.MarginData;
-import com.sencha.gxt.widget.core.client.container.VBoxLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.VBoxLayoutContainer.VBoxLayoutAlign;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.container.Viewport;
 
+import de.cses.client.caves.Antechamber;
+import de.cses.client.caves.CaveType;
+import de.cses.client.caves.Caves;
+import de.cses.client.caves.Cella;
+import de.cses.client.caves.Niches;
 import de.cses.client.images.ImageEditor;
 import de.cses.client.images.ImageUploader;
 import de.cses.client.images.PhotographerEditor;
-import de.cses.client.ornamentic.CreateOrnamentic;
+import de.cses.client.ornamentic.Ornamentic;
+
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class TestApplication implements EntryPoint {
 
-	static CreateOrnamentic CreateOrnamentic = new CreateOrnamentic();
+	static Ornamentic ornamentic = new Ornamentic();
 
 	private TabLayoutPanel main;
 
@@ -61,12 +57,24 @@ public class TestApplication implements EntryPoint {
     v.add(main);
 		RootPanel.get().add(v); // use RootPanel, not RootLayoutPanel here!
 
-		CreateOrnamentic co = new CreateOrnamentic();
+		Ornamentic co = new Ornamentic();
+		Caves caves = new Caves();
+		Cella cella = new Cella();
+		CaveType caveType = new CaveType();
+		Niches niches = new Niches();
+		Antechamber antechamber = new Antechamber();
+	
+		
 		ImageEditor imgEditor = new ImageEditor();
 		ImageUploader imageUploader = new ImageUploader(imgEditor);
 		PhotographerEditor pEditor = new PhotographerEditor();
 
 		main.add(co.asWidget(), "Ornamentic Editor");
+		main.add(caves.asWidget(), "Cave Editor");
+		main.add(cella.asWidget(), "Cella Editor");
+		main.add(caveType.asWidget(),"Cave Type Editor");
+		main.add(niches.asWidget(), "Niches Editor");
+		main.add(antechamber.asWidget(), "Antechamber Editor");
 
 		// we are using FlowLayoutContainer 
 		FlowLayoutContainer flowLC = new FlowLayoutContainer();
@@ -79,11 +87,11 @@ public class TestApplication implements EntryPoint {
 		main.add(pEditor, "Photographer Editor");
 	}
 
-	public static CreateOrnamentic getCreateOrnamentic() {
-		return CreateOrnamentic;
-	}
-
-	public static void setCreateOrnamentic(CreateOrnamentic createOrnamentic) {
-		CreateOrnamentic = createOrnamentic;
-	}
+//	public static CreateOrnamentic getCreateOrnamentic() {
+//		return CreateOrnamentic;
+//	}
+//
+//	public static void setCreateOrnamentic(CreateOrnamentic createOrnamentic) {
+//		CreateOrnamentic = createOrnamentic;
+//	}
 }
