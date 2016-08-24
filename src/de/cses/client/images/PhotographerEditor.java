@@ -93,7 +93,8 @@ public class PhotographerEditor implements IsWidget {
 	}
 	
 	private void initPanel() {
-		VerticalLayoutContainer vlc = new VerticalLayoutContainer();
+//		VerticalLayoutContainer vlc = new VerticalLayoutContainer();
+		VBoxLayoutContainer vlc = new VBoxLayoutContainer(VBoxLayoutAlign.CENTER);
 		
 		photographerSelection = new ComboBox<PhotographerEntry>(photographerEntryList, photographerProps.name(),
 				new AbstractSafeHtmlRenderer<PhotographerEntry>() {
@@ -125,14 +126,15 @@ public class PhotographerEditor implements IsWidget {
 			}
 		});
 		
+		
 		panel = new FramedPanel();
 		panel.setHeading("Photographer Editor");
 		panel.setButtonAlign(BoxLayoutPack.CENTER);
-		vlc.add(new FieldLabel(photographerSelection, "Photographer"), new VerticalLayoutData(1, .5));
+		vlc.add(new FieldLabel(photographerSelection, "Photographer"));
 		
 		titleField = new TextField();
 		titleField.setWidth(300);
-		vlc.add(new FieldLabel(titleField, "Title"), new VerticalLayoutData(1, .5));
+		vlc.add(new FieldLabel(titleField, "Title"));
 
 		panel.add(vlc);
 		panel.addButton(newButton);

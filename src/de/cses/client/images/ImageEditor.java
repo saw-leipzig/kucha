@@ -35,17 +35,18 @@ import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
+import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.Dialog;
 import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
-import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
+import com.sencha.gxt.widget.core.client.button.ButtonBar;
 import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutData;
-import com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutPack;
-import com.sencha.gxt.widget.core.client.container.HBoxLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.HBoxLayoutContainer.HBoxLayoutAlign;
-import com.sencha.gxt.widget.core.client.container.VBoxLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.VBoxLayoutContainer.VBoxLayoutAlign;
+import com.sencha.gxt.widget.core.client.container.MarginData;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
@@ -71,7 +72,7 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 	private TextArea commentArea;
 	private DateField dateField;
 	private ComboBox<PhotographerEntry> photographerSelection;
-	private FramedPanel panel;
+	private ContentPanel panel;
 	private ListStore<ImageEntry> imageEntryList;
 	private ImageProperties properties;
 	private PhotographerProperties photographerProps;
@@ -153,9 +154,6 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 			refreshImages();
 			initPanel();
 		}
-		panel.setBounds(0, 0, 600, 500);
-//		panel.setSize("600", "500");
-		panel.setResize(false);
 		return panel;
 	}
 
@@ -164,9 +162,23 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 	 * usually only be called once a session is started!
 	 */
 	private void initPanel() {
-		VBoxLayoutContainer vlc = new VBoxLayoutContainer(VBoxLayoutAlign.STRETCH);
-		HBoxLayoutContainer hlc = new HBoxLayoutContainer(HBoxLayoutAlign.STRETCH);
-		BoxLayoutData bld = new BoxLayoutData(new Margins(10));
+    BoxLayoutData vBoxData = new BoxLayoutData();
+    vBoxData.setMargins(new Margins(5, 5, 5, 5));
+    vBoxData.setMinSize(100);
+    vBoxData.setMaxSize(500);
+    vBoxData.setFlex(0);
+		
+//		VBoxLayoutContainer vlc = new VBoxLayoutContainer();
+//		vlc.setPadding(new Padding(5));
+//		vlc.setVBoxLayoutAlign(VBoxLayoutAlign.STRETCHMAX);	
+		
+		VerticalLayoutContainer vlc = new VerticalLayoutContainer();
+		VerticalLayoutData vLayoutData = new VerticalLayoutData(150, 300);
+		vlc.setLayoutData(vLayoutData);
+//		vlc.setScrollMode(ScrollMode.AUTOY);
+		
+//		HBoxLayoutContainer hlc = new HBoxLayoutContainer(HBoxLayoutAlign.MIDDLE);
+//		BoxLayoutData bld = new BoxLayoutData(new Margins(10));
 
 		ListView<ImageEntry, ImageEntry> imageListView = new ListView<ImageEntry, ImageEntry>(imageEntryList,
 				new IdentityValueProvider<ImageEntry>() {
@@ -269,24 +281,37 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 				deleteSelectedImageEntry();
 			}
 		});
+		
+		ButtonBar bb = new ButtonBar();
+		bb.add(saveButton);
+		bb.add(deleteButton);		
+		vlc.add(bb);
 
-		// HorizontalLayoutData layoutData = new HorizontalLayoutData(100, 100, new
-		// Margins(5));
-
-		imageListView.setSize("250", "350px");
+		imageListView.setSize("250", "350");
 		ListField<ImageEntry, ImageEntry> lf = new ListField<ImageEntry, ImageEntry>(imageListView);
-		lf.setSize("240px", "340px");
-		// hlc.setScrollMode(ScrollMode.AUTOY);
-		hlc.add(lf);
-		hlc.add(vlc);
+		lf.setSize("240", "340");
 
-		panel = new FramedPanel();
+    BorderLayoutData west = new BorderLayoutData(150);
+    west.setMargins(new Margins(5));
+
+    MarginData center = new MarginData();
+
+    BorderLayoutContainer borderLayoutContainer = new BorderLayoutContainer();
+//    BorderLayoutData bld = new BorderLayoutData();
+    borderLayoutContainer.setBounds(0, 0, 600, 500);
+    borderLayoutContainer.setWestWidget(lf, west);
+    borderLayoutContainer.setCenterWidget(vlc, center);
+
+    panel = new ContentPanel();
+//    panel.setHeading("Horizontal Box Layout");
+    /** here we set the size and position, but be careful
+     * to make it larger than the widget that is inserted
+     */
+    panel.setPixelSize(610, 510);
+    panel.setPosition(5, 5);
 		panel.setHeading("Image Editor");
-		panel.setButtonAlign(BoxLayoutPack.CENTER);
-		panel.add(hlc, bld);
-		panel.addButton(saveButton);
-		panel.addButton(deleteButton);
-
+    panel.add(borderLayoutContainer);		
+		
 	}
 
 	/**
@@ -318,9 +343,9 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 								@Override
 								public void onSuccess(Boolean result) {
 									if (result) {
-										Info.display("Image informaion", "Image information has been updated!");
+										Info.display("Image information", "Image information has been updated!");
 									} else {
-										Info.display("Image informaion", "Image information has been updated!");
+										Info.display("Image information", "Image information has been updated!");
 									}
 									refreshImages();
 								}
