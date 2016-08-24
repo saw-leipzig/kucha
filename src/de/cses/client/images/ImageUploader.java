@@ -19,11 +19,17 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
+import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.Status;
 import com.sencha.gxt.widget.core.client.Window;
+import com.sencha.gxt.widget.core.client.button.ButtonBar;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutPack;
+import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VBoxLayoutContainer.VBoxLayoutAlign;
+import com.sencha.gxt.widget.core.client.container.VBoxLayoutContainer;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.event.SubmitCompleteEvent;
@@ -42,7 +48,7 @@ public class ImageUploader implements IsWidget {
 	protected static final int MIN_HEIGHT = 150;
 	protected static final int MIN_WIDTH = 350;
 
-	private FramedPanel panel;
+	private ContentPanel panel;
 	private FormPanel form;
 	private ArrayList<ImageUploadListener> uploadListener;
 	protected Window uploadInfoWindow;
@@ -121,13 +127,21 @@ public class ImageUploader implements IsWidget {
 				file.reset();
 			}
 		});
+		
+		FlowLayoutContainer fl = new FlowLayoutContainer();
+		fl.setScrollMode(ScrollMode.NONE);
+		fl.add(form);
+		ButtonBar bb = new ButtonBar();
+		bb.add(resetButton);
+		bb.add(submitButton);
+		fl.add(bb);	
+		fl.setBounds(0, 0, 600, 200);
 
-		panel = new FramedPanel();
+		panel = new ContentPanel();
 		panel.setHeading("Upload image");
-		panel.setButtonAlign(BoxLayoutPack.CENTER);
-		panel.add(form);
-		panel.addButton(resetButton);
-		panel.addButton(submitButton);
+    panel.setPixelSize(610, 210);
+    panel.setPosition(5, 5);
+		panel.add(fl);
 
 		// panel.setWidth(MIN_WIDTH);
 		// panel.setHeight(MAX_HEIGHT);
