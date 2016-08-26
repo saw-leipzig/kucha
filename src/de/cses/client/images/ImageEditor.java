@@ -162,24 +162,11 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 	 * usually only be called once a session is started!
 	 */
 	private void initPanel() {
-    BoxLayoutData vBoxData = new BoxLayoutData();
-    vBoxData.setMargins(new Margins(5, 5, 5, 5));
-    vBoxData.setMinSize(100);
-    vBoxData.setMaxSize(500);
-    vBoxData.setFlex(0);
-		
-//		VBoxLayoutContainer vlc = new VBoxLayoutContainer();
-//		vlc.setPadding(new Padding(5));
-//		vlc.setVBoxLayoutAlign(VBoxLayoutAlign.STRETCHMAX);	
-		
+
 		VerticalLayoutContainer vlc = new VerticalLayoutContainer();
 		VerticalLayoutData vLayoutData = new VerticalLayoutData(150, 300);
 		vlc.setLayoutData(vLayoutData);
-//		vlc.setScrollMode(ScrollMode.AUTOY);
 		
-//		HBoxLayoutContainer hlc = new HBoxLayoutContainer(HBoxLayoutAlign.MIDDLE);
-//		BoxLayoutData bld = new BoxLayoutData(new Margins(10));
-
 		ListView<ImageEntry, ImageEntry> imageListView = new ListView<ImageEntry, ImageEntry>(imageEntryList,
 				new IdentityValueProvider<ImageEntry>() {
 					@Override
@@ -213,27 +200,6 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 
 		});
 		imageListView.setBorders(true);
-
-		// ListView<PhotographerEntry, PhotographerEntry>photographerListView = new
-		// ListView<PhotographerEntry, PhotographerEntry>(photographerEntryList,
-		// new IdentityValueProvider<PhotographerEntry>() {
-		// @Override
-		// public void setValue(PhotographerEntry object, PhotographerEntry value) {
-		//
-		// }
-		// });
-		// photographerListView.getSelectionModel().addSelectionChangedHandler(new
-		// SelectionChangedHandler<PhotographerEntry>() {
-		//
-		// @Override
-		// public void onSelectionChanged(SelectionChangedEvent<PhotographerEntry>
-		// event) {
-		// if (!event.getSelection().isEmpty()) {
-		// selectedPhotographerItem = event.getSelection().get(0);
-		// }
-		// }
-		//
-		// });
 
 		titleField = new TextField();
 		titleField.setWidth(300);
