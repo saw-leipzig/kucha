@@ -13,13 +13,8 @@
  */
 package de.cses.client.images;
 
-/**
- * Listener for image uploads e.g. in ImageUploader
- * @author alingnau
- *
- */
-public interface ImageUploadListener {
+public interface ImageSelectorListener {
 	
-	public void uploadCompleted();
+	public void imageSelected(int imageID);
 
 }

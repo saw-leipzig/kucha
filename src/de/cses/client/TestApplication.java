@@ -19,9 +19,11 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TabLayoutPanel;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.core.client.util.Margins;
+import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.container.Viewport;
+import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.caves.Antechamber;
 import de.cses.client.caves.CaveType;
@@ -29,6 +31,8 @@ import de.cses.client.caves.Caves;
 import de.cses.client.caves.Cella;
 import de.cses.client.caves.Niches;
 import de.cses.client.images.ImageEditor;
+import de.cses.client.images.ImageSelector;
+import de.cses.client.images.ImageSelectorListener;
 import de.cses.client.images.ImageUploader;
 import de.cses.client.images.PhotographerEditor;
 import de.cses.client.ornamentic.Ornamentic;
@@ -37,7 +41,7 @@ import de.cses.client.ornamentic.Ornamentic;
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
-public class TestApplication implements EntryPoint {
+public class TestApplication implements EntryPoint, ImageSelectorListener {
 
 	static Ornamentic ornamentic = new Ornamentic();
 
@@ -85,6 +89,17 @@ public class TestApplication implements EntryPoint {
 
 		main.add(flowLC, "Image Manager");
 		main.add(pEditor, "Photographer Editor");
+		
+		ImageSelector selector = new ImageSelector(ImageSelector.MAP, this);
+		FlowLayoutContainer selectorFlc = new FlowLayoutContainer();
+		selectorFlc.setScrollMode(ScrollMode.AUTO);
+		selectorFlc.add(selector.asWidget(), layoutData);
+		main.add(selectorFlc, "Selector Test");
+	}
+
+	@Override
+	public void imageSelected(int imageID) {
+		Info.display("Selection made", "Image no. " + imageID + " has been selected");
 	}
 
 //	public static CreateOrnamentic getCreateOrnamentic() {
