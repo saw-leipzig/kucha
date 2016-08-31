@@ -36,38 +36,29 @@ import de.cses.server.mysql.MysqlConnector;
 import de.cses.shared.ImageEntry;
 
 /**
- * This HttpServlet is used to upload images to the server's main image directory. 
- * It also creates a new entry in the Images table of the database.
+ * This HttpServlet is used to upload images to the server's main image
+ * directory. It also creates a new entry in the Images table of the database.
+ * 
  * @author alingnau
  *
  */
+@SuppressWarnings("serial")
 @MultipartConfig
 public class ImageServiceImpl extends HttpServlet {
-	
-	public static final String SERVER_IMAGES_PATHNAME = System.getProperty("user.dir")+"/webapps/images";
+
+	public static final String SERVER_IMAGES_PATHNAME = System.getProperty("user.dir") + "/webapps/images";
 	MysqlConnector connector = MysqlConnector.getInstance();
 
-//	public static final void copyInputStreamAndClose(InputStream in, OutputStream out) throws IOException {
-//		byte[] buffer = new byte[1024];
-//		int len;
-//
-//		while ((len = in.read(buffer)) >= 0) {
-//			out.write(buffer, 0, len);
-//		}
-//		in.close();
-//		out.close();
-//	}
-
 	/**
-	 * This method is called when the submit button in the image uploader is pressed.
-	 * Images are not stored in the SERVER_IMAGES_PATHNAME but in the correspoding subfolder
-	 * that is received from the fieldName set in @see de.cses.client.images.ImageUploader
+	 * This method is called when the submit button in the image uploader is
+	 * pressed. Images are stored in the SERVER_IMAGES_PATHNAME
 	 * 
+	 * @see de.cses.client.images.ImageUploader
 	 */
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String uploadFileName;
-		String fileType, filename="default.jpg";
+		String fileType, filename = "default.jpg";
 
 		response.setContentType("text/plain");
 
@@ -81,11 +72,13 @@ public class ImageServiceImpl extends HttpServlet {
 				Iterator<?> it = items.iterator();
 				while (it.hasNext()) {
 					FileItem item = (FileItem) it.next();
-					uploadFileName = item.getName(); 
-					// we take the sub dir from the field name which corresponds with the purpose of the upload (e.g. depictions, backgrounds, ...)
+					uploadFileName = item.getName();
+					// we take the sub dir from the field name which corresponds with the
+					// purpose of the upload (e.g. depictions, backgrounds, ...)
 					fileType = uploadFileName.substring(uploadFileName.lastIndexOf("."));
 					if (item.isFormField()) {
-						throw new ServletException("Unsupported non-file property [" + item.getFieldName() + "] with value: " + item.getString());
+						throw new ServletException(
+								"Unsupported non-file property [" + item.getFieldName() + "] with value: " + item.getString());
 					} else {
 						int newImageID = connector.createNewImageEntry();
 						if (newImageID >= 0) {
@@ -104,20 +97,23 @@ public class ImageServiceImpl extends HttpServlet {
 			} catch (Exception e) {
 				throw new IllegalStateException(e);
 			}
-			response.getWriter().write("File length: " + target.length());
-			response.getWriter().close();
 		} finally {
 			if (target != null && target.exists()) {
 				System.err.println("Uploaded file: " + target.getAbsolutePath());
 				createThumbnail(imgHomeDir, filename);
+				response.getWriter().write("File length: " + target.length());
+				response.getWriter().close();
 			}
 		}
 	}
-	
+
 	/**
-	 * Create a thumbnail file of size 200x200 
-	 * @param path the directory where the image is located
-	 * @param filename of the image
+	 * Create a thumbnail file of size 200x200
+	 * 
+	 * @param path
+	 *          the directory where the image is located
+	 * @param filename
+	 *          of the image
 	 */
 	private void createThumbnail(File path, String filename) {
 		File tnFile;
@@ -127,9 +123,10 @@ public class ImageServiceImpl extends HttpServlet {
 		tnImg = new BufferedImage(200, 200, BufferedImage.TYPE_INT_RGB);
 		tnFile = new File(path, "tn" + filename);
 		File readFile = new File(path, filename);
-		type = filename.substring(filename.lastIndexOf(".")+1).toUpperCase();
+		type = filename.substring(filename.lastIndexOf(".") + 1).toUpperCase();
 		try {
-			tnImg.createGraphics().drawImage(ImageIO.read(readFile).getScaledInstance(200, 200, Image.SCALE_SMOOTH), 0, 0, null);
+			tnImg.createGraphics().drawImage(ImageIO.read(readFile).getScaledInstance(200, 200, Image.SCALE_SMOOTH), 0, 0,
+					null);
 			ImageIO.write(tnImg, type, tnFile);
 		} catch (IOException e) {
 			System.out.println("Thumbnail could not be created!");

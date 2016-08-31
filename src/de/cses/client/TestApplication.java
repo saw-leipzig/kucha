@@ -66,7 +66,7 @@ public class TestApplication implements EntryPoint {
 	
 		
 		ImageEditor imgEditor = new ImageEditor();
-		ImageUploader imageUploader = new ImageUploader(imgEditor);
+//		ImageUploader imageUploader = new ImageUploader(imgEditor);
 		PhotographerEditor pEditor = new PhotographerEditor();
 
 		main.add(co.asWidget(), "Ornamentic Editor");
@@ -81,7 +81,7 @@ public class TestApplication implements EntryPoint {
 		flowLC.setScrollMode(ScrollMode.ALWAYS);
     MarginData layoutData = new MarginData(new Margins(0, 5, 0, 0));
     flowLC.add(imgEditor, layoutData);
-    flowLC.add(imageUploader, layoutData);
+//    flowLC.add(imageUploader, layoutData);
 
 		main.add(flowLC, "Image Manager");
 		main.add(pEditor, "Photographer Editor");

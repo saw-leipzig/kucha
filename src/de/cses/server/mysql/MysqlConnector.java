@@ -163,8 +163,7 @@ public class MysqlConnector {
 		int generatedKey = -1;
 		try {
 			stmt = dbc.createStatement();
-
-			stmt.execute("INSERT INTO Images (Title,Comment) VALUES ('Image Title','please type your comment here')", Statement.RETURN_GENERATED_KEYS);
+			stmt.execute("INSERT INTO Images (Title,Comment) VALUES ('New Image','please type your comment here')", Statement.RETURN_GENERATED_KEYS);
 			ResultSet keys = stmt.getGeneratedKeys();
 			while (keys.next()) { 
 				// there should only be 1 key returned here but we need to modify this in case
