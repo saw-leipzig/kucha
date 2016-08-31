@@ -56,18 +56,11 @@ import com.sencha.gxt.widget.core.client.info.Info;
 
 public class ImageUploader implements IsWidget {
 
-//	protected static final int MAX_HEIGHT = 250;
-//	protected static final int MAX_WIDHT = 500;
-//	protected static final int MIN_HEIGHT = 150;
-//	protected static final int MIN_WIDTH = 350;
-
-	private ContentPanel panel;
 	private FormPanel form;
 	private ArrayList<ImageUploadListener> uploadListener;
 	protected Window uploadInfoWindow;
 	private FileUploadField file;
-	private TextField titleField;
-	private ContentPanel imageContentPanel;
+	private VerticalLayoutContainer vlc;
 
 	public ImageUploader(ImageUploadListener listener) {
 		uploadListener = new ArrayList<ImageUploadListener>();
@@ -76,25 +69,27 @@ public class ImageUploader implements IsWidget {
 
 	@Override
 	public Widget asWidget() {
-		if (panel == null) {
+		if (vlc == null) {
 			initPanel();
 		}
-		return panel;
+		form.reset();
+		file.reset();
+		return vlc;
 	}
 
 	private void initPanel() {
 		
-		VerticalLayoutContainer vlc = new VerticalLayoutContainer();
-		VerticalLayoutData vLayoutData = new VerticalLayoutData(600, 200);
-		vlc.setLayoutData(vLayoutData);
+		vlc = new VerticalLayoutContainer();
+//		VerticalLayoutData vLayoutData = new VerticalLayoutData(400, 150);
+//		vlc.setLayoutData(vLayoutData);
 		
 		file = new FileUploadField();
-		file.addChangeHandler(new ChangeHandler() {
-			@Override
-			public void onChange(ChangeEvent event) {
-				Info.display("File Changed", "You selected " + file);
-			}
-		});
+//		file.addChangeHandler(new ChangeHandler() {
+//			@Override
+//			public void onChange(ChangeEvent event) {
+//				Info.display("File Changed", "You selected " + file);
+//			}
+//		});
 		file.setAllowBlank(false);
 
 		form = new FormPanel();
@@ -106,7 +101,8 @@ public class ImageUploader implements IsWidget {
 
 		form.addSubmitCompleteHandler(new SubmitCompleteHandler() {
 			public void onSubmitComplete(SubmitCompleteEvent event) {
-				String resultHtml = event.getResults();
+//				String resultHtml = event.getResults();
+//				Info.display("Upload result", resultHtml);
 				uploadInfoWindow.hide();
 				for (ImageUploadListener listener : uploadListener) {
 					//ToDo: send information after image upload for database
@@ -121,11 +117,11 @@ public class ImageUploader implements IsWidget {
 		
 		vlc.add(form);
 		
-		titleField = new TextField();
-		titleField.setWidth(300);
-		vlc.add(new FieldLabel(titleField, "Title"));
+//		titleField = new TextField();
+//		titleField.setWidth(300);
+//		vlc.add(new FieldLabel(titleField, "Title"));
 
-		TextButton submitButton = new TextButton("Submit");
+		TextButton submitButton = new TextButton("Upload");
 		submitButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
@@ -170,20 +166,20 @@ public class ImageUploader implements IsWidget {
 //		fl.add(bb);	
 //		fl.setBounds(0, 0, 600, 200);
 
-    BorderLayoutData west = new BorderLayoutData(150);
-    west.setMargins(new Margins(5));
-    MarginData center = new MarginData();
-    BorderLayoutContainer borderLayoutContainer = new BorderLayoutContainer();
-    borderLayoutContainer.setBounds(0, 0, 600, 200);
-    borderLayoutContainer.setWestWidget(imageContentPanel, west);
-    borderLayoutContainer.setCenterWidget(vlc, center);
+//    BorderLayoutData west = new BorderLayoutData(150);
+//    west.setMargins(new Margins(5));
+//    MarginData center = new MarginData();
+//    BorderLayoutContainer borderLayoutContainer = new BorderLayoutContainer();
+//    borderLayoutContainer.setBounds(0, 0, 600, 200);
+//    borderLayoutContainer.setWestWidget(imageContentPanel, west);
+//    borderLayoutContainer.setCenterWidget(vlc, center);
 
 
-		panel = new ContentPanel();
-		panel.setHeading("Upload image");
-    panel.setPixelSize(610, 210);
-    panel.setPosition(5, 5);
-		panel.add(vlc);
+//		panel = new ContentPanel();
+//		panel.setHeading("Upload image");
+//    panel.setPixelSize(610, 210);
+//    panel.setPosition(5, 5);
+//		panel.add(vlc);
 
 	}
 
