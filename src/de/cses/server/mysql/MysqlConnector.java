@@ -239,7 +239,27 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Images");
 			while (rs.next()) { 
-				results.add(new ImageEntry(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getInt(5), rs.getString(6), rs.getDate(7)));
+				results.add(new ImageEntry(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getInt(5), rs.getString(6), rs.getDate(7), rs.getString(8)));
+			}
+			rs.close();
+			stmt.close();
+			dbc.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return results;
+	}
+	
+	public synchronized ArrayList<ImageEntry> getImageEntries(String sqlWhere) {
+		ArrayList<ImageEntry> results = new ArrayList<ImageEntry>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Images WHERE "+sqlWhere);
+			while (rs.next()) { 
+				results.add(new ImageEntry(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getInt(5), rs.getString(6), rs.getDate(7), rs.getString(8)));
 			}
 			rs.close();
 			stmt.close();
@@ -264,7 +284,7 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Images WHERE ImageID="+imageID);
 			while (rs.next()) { 
-				result = new ImageEntry(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getInt(5), rs.getString(6), rs.getDate(7));
+				result = new ImageEntry(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getInt(5), rs.getString(6), rs.getDate(7), rs.getString(8));
 			}
 			rs.close();
 			stmt.close();

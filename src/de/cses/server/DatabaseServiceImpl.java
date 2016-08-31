@@ -51,6 +51,11 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		return connector.getImageEntries();
 	}
 	
+	public ArrayList<ImageEntry> getImages(String sqlWhere) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getImageEntries(sqlWhere);
+	}
+	
 	public ArrayList<PhotographerEntry> getPhotographer() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getPhotographerEntries();

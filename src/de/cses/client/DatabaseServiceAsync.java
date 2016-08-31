@@ -29,6 +29,7 @@ public interface DatabaseServiceAsync {
 	void dbServer(String name, AsyncCallback<String> callback) throws IllegalArgumentException;
 	void getDistricts(AsyncCallback<ArrayList<DistrictEntry>> callback) throws IllegalArgumentException;
 	void getImages(AsyncCallback<ArrayList<ImageEntry>> callback) throws IllegalArgumentException;
+	void getImages(String where, AsyncCallback<ArrayList<ImageEntry>> callback) throws IllegalArgumentException;
 	void getPhotographer(AsyncCallback<ArrayList<PhotographerEntry>> callback) throws IllegalArgumentException;
 	void getCaves(AsyncCallback<ArrayList<CaveEntry>> callback) throws IllegalArgumentException;
 	void getCavesbyDistrictID(int DistrictID,AsyncCallback<ArrayList<CaveEntry>> callback) throws IllegalArgumentException;

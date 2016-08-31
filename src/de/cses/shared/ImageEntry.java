@@ -20,7 +20,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class ImageEntry implements IsSerializable {
 
 	private int imageID, photographerID;
-	private String copyright, comment, filename, title;
+	private String copyright, comment, filename, title, type;
 	private Date captureDate;
 
 	public static final int FILENAME = 2;
@@ -41,7 +41,7 @@ public class ImageEntry implements IsSerializable {
 	 * @param captureDate
 	 */
 	public ImageEntry(int imageID, String filename, String title, String copyright,
-			int photographerID, String comment, Date captureDate) {
+			int photographerID, String comment, Date captureDate, String type) {
 		this.imageID = imageID;
 		this.filename = filename;
 		this.title = title;
@@ -49,6 +49,7 @@ public class ImageEntry implements IsSerializable {
 		this.photographerID = photographerID;
 		this.comment = comment;
 		this.captureDate = captureDate;
+		this.type = type;
 	}
 
 	public int getImageID() {
@@ -105,6 +106,14 @@ public class ImageEntry implements IsSerializable {
 
 	public void setCaptureDate(Date captureDate) {
 		this.captureDate = captureDate;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	/**
