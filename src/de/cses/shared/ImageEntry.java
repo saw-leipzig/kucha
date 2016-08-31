@@ -19,7 +19,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class ImageEntry implements IsSerializable {
 
-	private int imageID, depictionID, ornamentID, photographerID;
+	private int imageID, photographerID;
 	private String copyright, comment, filename, title;
 	private Date captureDate;
 
@@ -27,8 +27,6 @@ public class ImageEntry implements IsSerializable {
 
 	public ImageEntry() {
 		imageID = 0;
-		depictionID = 0;
-		ornamentID = 0;
 		photographerID = 0;
 	}
 	
@@ -37,20 +35,16 @@ public class ImageEntry implements IsSerializable {
 	 * @param imageID
 	 * @param filename
 	 * @param title
-	 * @param depictionID
-	 * @param ornamentID
 	 * @param copyright
 	 * @param photographerID
 	 * @param comment
 	 * @param captureDate
 	 */
-	public ImageEntry(int imageID, String filename, String title, int depictionID, int ornamentID, String copyright,
+	public ImageEntry(int imageID, String filename, String title, String copyright,
 			int photographerID, String comment, Date captureDate) {
 		this.imageID = imageID;
 		this.filename = filename;
 		this.title = title;
-		this.depictionID = depictionID;
-		this.ornamentID = ornamentID;
 		this.copyright = copyright;
 		this.photographerID = photographerID;
 		this.comment = comment;
@@ -79,22 +73,6 @@ public class ImageEntry implements IsSerializable {
 
 	public void setTitle(String title) {
 		this.title = title;
-	}
-
-	public int getDepictionID() {
-		return depictionID;
-	}
-
-	public void setDepictionID(int depictionID) {
-		this.depictionID = depictionID;
-	}
-
-	public int getOrnamentID() {
-		return ornamentID;
-	}
-
-	public void setOrnamentID(int ornamentID) {
-		this.ornamentID = ornamentID;
 	}
 
 	public int getPhotographerID() {
