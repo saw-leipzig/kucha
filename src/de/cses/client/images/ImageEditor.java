@@ -48,6 +48,7 @@ import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutData;
+import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
@@ -87,6 +88,9 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 	 * Create a remote service proxy to talk to the server-side service.
 	 */
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
+	private TextField searchField;
+	private StoreFilter<ImageEntry> searchFilter;
+	private StoreFilter<ImageEntry> newImageFilter;
 
 //	protected ImageEntry selectedImageItem;
 	// protected PhotographerEntry selectedPhotographerItem;
@@ -133,14 +137,14 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 		properties = GWT.create(ImageProperties.class);
 		photographerProps = GWT.create(PhotographerProperties.class);
 		imageEntryList = new ListStore<ImageEntry>(properties.imageID());
-		imageEntryList.addFilter(new StoreFilter<ImageEntry>() {
+		newImageFilter = new StoreFilter<ImageEntry>() {
 			@Override
 			public boolean select(Store<ImageEntry> store, ImageEntry parent, ImageEntry item) {
 				if ("New Image".equals(item.getTitle())) 
 					return true;
 				return false;
 			}
-		});
+		};
 		
 		photographerEntryList = new ListStore<PhotographerEntry>(photographerProps.photographerID());
 
@@ -277,9 +281,48 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
     BorderLayoutData west = new BorderLayoutData(150);
     west.setMargins(new Margins(5));
 
-//    BorderLayoutData south = new BorderLayoutData(200);
-//    south.setMargins(new Margins(5));
-
+    BorderLayoutData south = new BorderLayoutData();
+    south.setMargins(new Margins(5));
+    
+    /**
+     * here we add the search for image titles
+     */
+    searchField = new TextField();
+    searchField.setSize("150", "50");
+    searchFilter = new StoreFilter<ImageEntry>() {
+			@Override
+			public boolean select(Store<ImageEntry> store, ImageEntry parent, ImageEntry item) {
+				if (item.getTitle().toLowerCase().contains(searchField.getCurrentValue().toLowerCase())) {
+					return true;
+				}
+				return false;
+			}
+		};
+		imageEntryList.addFilter(searchFilter);
+    TextButton searchButton = new TextButton("search");
+    searchButton.addSelectHandler(new SelectHandler() {
+			@Override
+			public void onSelect(SelectEvent event) {
+				if (searchField.getCurrentValue() != null) {
+					imageEntryList.addFilter(searchFilter);
+					imageEntryList.setEnableFilters(true);
+				}
+			}
+		});
+    TextButton resetButton = new TextButton("reset");
+    resetButton.addSelectHandler(new SelectHandler() {
+			@Override
+			public void onSelect(SelectEvent event) {
+				imageEntryList.setEnableFilters(false);
+				imageEntryList.removeFilter(searchFilter);
+			}
+		});
+    FlowLayoutContainer searchLayoutContainer = new FlowLayoutContainer();
+    MarginData searchLayoutData = new MarginData(new Margins(5, 0, 5, 0));
+    searchLayoutContainer.add(searchField, searchLayoutData);
+    searchLayoutContainer.add(searchButton, searchLayoutData);
+    searchLayoutContainer.add(resetButton, searchLayoutData);
+    
     MarginData center = new MarginData();
 
     BorderLayoutContainer borderLayoutContainer = new BorderLayoutContainer();
@@ -287,7 +330,7 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
     borderLayoutContainer.setBounds(5, 5, 600, 500);
     borderLayoutContainer.setWestWidget(lf, west);
     borderLayoutContainer.setCenterWidget(vlc, center);
-//    borderLayoutContainer.setSouthWidget(imgUploader, south);
+    borderLayoutContainer.setSouthWidget(searchLayoutContainer, south);
 
     panel = new ContentPanel();
 //    panel.setHeading("Horizontal Box Layout");
@@ -453,6 +496,7 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 							Info.display("Image information", "Image information has been updated!");
 						}
 						imageEntryList.setEnableFilters(false);
+						imageEntryList.removeFilter(newImageFilter);
 						refreshImages();
 					}
 				});
@@ -470,6 +514,7 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 
 	@Override
 	public void uploadCompleted() {
+		imageEntryList.addFilter(newImageFilter);
 		imageEntryList.setEnableFilters(true);
 		refreshImages();
 //		Iterator<ImageEntry> list = imageEntryList.getAll().iterator();
