@@ -39,11 +39,14 @@ import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
+import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.form.ListField;
+import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.info.Info;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
@@ -70,6 +73,8 @@ public class ImageSelector implements IsWidget {
 	private BorderLayoutContainer borderLayoutContainer;
 	private FlowLayoutContainer imageContainer;
 	private String imageType;
+	private TextField searchField;
+	private StoreFilter<ImageEntry> searchFilter;
 
 	interface ImageProperties extends PropertyAccess<ImageEntry> {
 		ModelKeyProvider<ImageEntry> imageID();
@@ -168,6 +173,45 @@ public class ImageSelector implements IsWidget {
 			}
 		});
 		
+    /**
+     * here we add the search for image titles
+     */
+    searchField = new TextField();
+    searchField.setSize("150", "40");
+    searchFilter = new StoreFilter<ImageEntry>() {
+			@Override
+			public boolean select(Store<ImageEntry> store, ImageEntry parent, ImageEntry item) {
+				if (item.getTitle().toLowerCase().contains(searchField.getCurrentValue().toLowerCase())) {
+					return true;
+				}
+				return false;
+			}
+		};
+		imageEntryList.addFilter(searchFilter);
+    TextButton searchButton = new TextButton("search");
+    searchButton.addSelectHandler(new SelectHandler() {
+			@Override
+			public void onSelect(SelectEvent event) {
+				if (searchField.getCurrentValue() != null) {
+					imageEntryList.addFilter(searchFilter);
+					imageEntryList.setEnableFilters(true);
+				}
+			}
+		});
+    TextButton resetButton = new TextButton("reset");
+    resetButton.addSelectHandler(new SelectHandler() {
+			@Override
+			public void onSelect(SelectEvent event) {
+				imageEntryList.setEnableFilters(false);
+				imageEntryList.removeFilter(searchFilter);
+			}
+		});
+    FlowLayoutContainer flc = new FlowLayoutContainer();
+    flc.add(searchField, new MarginData(15,0,0,0));
+    flc.add(searchButton, new MarginData(5,5,5,0));
+    flc.add(resetButton, new MarginData(5,5,5,5));
+    flc.add(selectButton, new MarginData(5,0,5,20));
+		
 		imageContainer = new FlowLayoutContainer();
 		imageContainer.setScrollMode(ScrollMode.AUTO);
 		
@@ -179,7 +223,7 @@ public class ImageSelector implements IsWidget {
     
     borderLayoutContainer.setBounds(5, 5, 600, 500);
     borderLayoutContainer.setWestWidget(lf, west);
-    borderLayoutContainer.setSouthWidget(selectButton, south);
+    borderLayoutContainer.setSouthWidget(flc, south);
     borderLayoutContainer.setCenterWidget(imageContainer, new MarginData());
 
 		return borderLayoutContainer;
