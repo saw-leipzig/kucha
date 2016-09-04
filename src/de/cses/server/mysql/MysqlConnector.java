@@ -322,6 +322,8 @@ public class MysqlConnector {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Caves");
 			while (rs.next()) { 
 				results.add(new CaveEntry(rs.getInt("CaveID"), rs.getInt("DistrictID"),rs.getString("OfficialName"),rs.getString("OfficialNumber") ,rs.getString("HistoricName"), rs.getInt("CaveTypeID"), rs.getString("StateOfPreservation"), rs.getString("Orientation"),rs.getString("Pedestals"), rs.getString("Findings")));
+
+			
 			}
 			rs.close();
 			stmt.close();
@@ -342,6 +344,7 @@ public class MysqlConnector {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Caves WHERE DistrictID ="+DistrictID);
 			while (rs.next()) { 
 				results.add(new CaveEntry(rs.getInt("CaveID"), rs.getInt("DistrictID"),rs.getString("OfficialName"),rs.getString("OfficialNumber") ,rs.getString("HistoricName"), rs.getInt("CaveTypeID"), rs.getString("StateOfPreservation"), rs.getString("Orientation"),rs.getString("Pedestals"), rs.getString("Findings")));
+
 			}
 			rs.close();
 			stmt.close();

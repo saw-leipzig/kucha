@@ -38,7 +38,7 @@ public class Cella implements IsWidget{
 	  vlc.add(new FieldLabel(height, "Height"));
 	  
 
-	  /*final TextField width = new TextField();
+	  final TextField width = new TextField();
 	  width.setAllowBlank(false);
 	  vlc.add(new FieldLabel(width, "Width"));
 	  
@@ -90,8 +90,7 @@ public class Cella implements IsWidget{
 	  
 	  final CheckBox niche = new CheckBox();
 	  vlc.add(new FieldLabel(niche, "Niche"));
-	  
-	*/  
+	   
 	  final CheckBox floor = new CheckBox();
 	  vlc.add(new FieldLabel(floor, "Floor"));
 	  

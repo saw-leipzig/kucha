@@ -222,6 +222,5 @@ public class CellaEntry implements IsSerializable{
 		this.floor = floor;
 	}
 	
-	
 
 }

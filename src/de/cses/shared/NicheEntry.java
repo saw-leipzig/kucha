@@ -80,7 +80,5 @@ public class NicheEntry implements IsSerializable{
 	public void setNichesInCave(boolean nichesInCave) {
 		this.nichesInCave = nichesInCave;
 	}
-	
-	
 
 }
