@@ -35,6 +35,7 @@ public interface DatabaseService extends RemoteService {
 	String dbServer(String name) throws IllegalArgumentException;
 	ArrayList<DistrictEntry> getDistricts() throws IllegalArgumentException;
 	ArrayList<ImageEntry> getImages() throws IllegalArgumentException;
+	ArrayList<ImageEntry> getImages(String where) throws IllegalArgumentException;
 	ArrayList<PhotographerEntry> getPhotographer() throws IllegalArgumentException;
 	ArrayList<CaveEntry> getCaves() throws IllegalArgumentException;
 	ArrayList<CaveEntry> getCavesbyDistrictID(int DistrictID) throws IllegalArgumentException;
@@ -43,6 +44,5 @@ public interface DatabaseService extends RemoteService {
 	boolean updateEntry(String sqlUpdate);
 	boolean deleteEntry(String sqlDelete);
 	boolean saveOrnamentEntry(OrnamentEntry ornamentEntry) throws IllegalArgumentException;
-	
 
 }
