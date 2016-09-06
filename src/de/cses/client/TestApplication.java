@@ -81,19 +81,23 @@ public class TestApplication implements EntryPoint, ImageSelectorListener {
 		main.add(antechamber.asWidget(), "Antechamber Editor");
 
 		// we are using FlowLayoutContainer 
-		FlowLayoutContainer flowLC = new FlowLayoutContainer();
-		flowLC.setScrollMode(ScrollMode.ALWAYS);
-    MarginData layoutData = new MarginData(new Margins(0, 5, 0, 0));
-    flowLC.add(imgEditor, layoutData);
-//    flowLC.add(imageUploader, layoutData);
+//    MarginData flowLayoutData = new MarginData(new Margins(0, 5, 0, 0));
 
+    FlowLayoutContainer flowLC = new FlowLayoutContainer();
+		flowLC.setScrollMode(ScrollMode.ALWAYS);
+    flowLC.add(imgEditor);
+//    flowLC.add(imageUploader, layoutData);
 		main.add(flowLC, "Image Manager");
-		main.add(pEditor, "Photographer Editor");
+
+		FlowLayoutContainer pEditorContainer = new FlowLayoutContainer();
+		pEditorContainer.setScrollMode(ScrollMode.AUTOY);
+		pEditorContainer.add(pEditor);
+		main.add(pEditorContainer, "Photographer Editor");
 		
 		ImageSelector selector = new ImageSelector(ImageSelector.MAP, this);
 		FlowLayoutContainer selectorFlc = new FlowLayoutContainer();
 		selectorFlc.setScrollMode(ScrollMode.AUTO);
-		selectorFlc.add(selector.asWidget(), layoutData);
+		selectorFlc.add(selector.asWidget());
 		main.add(selectorFlc, "Selector Test");
 	}
 
