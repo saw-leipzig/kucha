@@ -43,6 +43,7 @@ import de.cses.client.ornamentic.Ornamentic;
  */
 public class TestApplication implements EntryPoint, ImageSelectorListener {
 
+
 	static Ornamentic ornamentic = new Ornamentic();
 
 	private TabLayoutPanel main;
@@ -85,7 +86,7 @@ public class TestApplication implements EntryPoint, ImageSelectorListener {
 		flowLC.setScrollMode(ScrollMode.ALWAYS);
     MarginData layoutData = new MarginData(new Margins(0, 5, 0, 0));
     flowLC.add(imgEditor, layoutData);
-//    flowLC.add(imageUploader, layoutData);
+    //flowLC.add(imageUploader, layoutData);
 
 		main.add(flowLC, "Image Manager");
 		main.add(pEditor, "Photographer Editor");
@@ -101,12 +102,7 @@ public class TestApplication implements EntryPoint, ImageSelectorListener {
 	public void imageSelected(int imageID) {
 		Info.display("Selection made", "Image no. " + imageID + " has been selected");
 	}
+	
 
-//	public static CreateOrnamentic getCreateOrnamentic() {
-//		return CreateOrnamentic;
-//	}
-//
-//	public static void setCreateOrnamentic(CreateOrnamentic createOrnamentic) {
-//		CreateOrnamentic = createOrnamentic;
-//	}
+	
 }

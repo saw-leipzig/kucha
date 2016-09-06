@@ -1,9 +1,12 @@
 package de.cses.client.caves;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.widget.core.client.FramedPanel;
+import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.VBoxLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutData;
 import com.sencha.gxt.widget.core.client.container.VBoxLayoutContainer.VBoxLayoutAlign;
@@ -13,6 +16,7 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 
 public class Antechamber implements IsWidget {
 	private VBoxLayoutContainer widget;
+	Caves caves;
 	
 	@Override
 	public Widget asWidget() {
@@ -65,10 +69,48 @@ public class Antechamber implements IsWidget {
 	  vlc.add(new FieldLabel(floor, "Floor"));
 		
 		
+	  
+	  TextButton save = new TextButton("save");
+	  TextButton cancel = new TextButton("cancel");
+	  
+
+	  ClickHandler saveClickHandler = new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				caves.getCellaPanel().hide();	
+			}
+	  	
+	  };
+	  save.addHandler(saveClickHandler, ClickEvent.getType());
+	  
+	  
+	  ClickHandler cancelClickHandler = new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				caves.getAntechamberPanel().hide();	
+			}
+	  	
+	  };
+	  cancel.addHandler(cancelClickHandler, ClickEvent.getType());
+	  
+	  vlc.add(cancel);
+	  vlc.add(save);
+	  
 	  FramedPanel framedPanelCaves = new FramedPanel();
 	  framedPanelCaves.setHeading("Create new Antechamber");
 	  framedPanelCaves.add(MainVerticalPanel);
 	  MainVerticalPanel.add(vlc);
 		return framedPanelCaves;
 	}
+
+	public Caves getCaves() {
+		return caves;
+	}
+
+	public void setCaves(Caves caves) {
+		this.caves = caves;
+	}
+	
 }

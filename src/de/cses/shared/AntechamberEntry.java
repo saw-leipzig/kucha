@@ -16,6 +16,10 @@ public class AntechamberEntry implements IsSerializable{
 	private boolean ceiling;
 	private boolean floor;
 	
+	public AntechamberEntry(){
+		
+	}
+	
 	public int getcaveID() {
 		return caveID;
 	}
