@@ -184,6 +184,37 @@ public class MysqlConnector {
 	}
 	
 	/**
+	 * Executes a pre-defined SQL INSERT statement and returns the generated (auto-increment) unique key
+	 * from the table.
+	 * @return auto incremented primary key
+	 */
+	public synchronized int insertEntry(String sqlInsert) {
+		Connection dbc = getConnection();
+		Statement stmt;
+		int generatedKey = -1;
+		try {
+			stmt = dbc.createStatement();
+			stmt.execute(sqlInsert, Statement.RETURN_GENERATED_KEYS);
+			ResultSet keys = stmt.getGeneratedKeys();
+			while (keys.next()) { 
+				// there should only be 1 key returned here but we need to modify this in case
+				// we have requested multiple new entries. works for the moment
+				generatedKey = keys.getInt(1);
+				System.err.println("result key " + generatedKey);
+			}
+			keys.close();
+			stmt.close();
+			dbc.close();
+			System.err.println("Database request finished"); //$NON-NLS-1$
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return generatedKey;
+	}
+	
+	
+	/**
 	 * Executes an SQL update using a pre-defined SQL UPDATE string
 	 * @param sqlUpdate The full sql string including the UPDATE statement
 	 * @return true if sucessful

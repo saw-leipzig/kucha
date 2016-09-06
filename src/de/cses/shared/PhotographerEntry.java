@@ -45,4 +45,12 @@ public class PhotographerEntry implements IsSerializable {
 		this.name = name;
 	}
 
+	public String getInsertSql() {
+		return "INSERT INTO Photographers(Name) VALUES ('" + name + "')";
+	}
+
+	public String getDeleteSql() {
+		return "DELETE FROM Photographers WHERE PhotographerID="+photographerID; 
+	}
+
 }

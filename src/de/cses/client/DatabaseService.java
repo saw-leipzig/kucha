@@ -43,6 +43,7 @@ public interface DatabaseService extends RemoteService {
 	ArrayList<OrnamentOfOtherCulturesEntry> getOrnamentsOfOtherCultures() throws IllegalArgumentException;
 	boolean updateEntry(String sqlUpdate);
 	boolean deleteEntry(String sqlDelete);
+	int insertEntry(String sqlInsert);
 	boolean saveOrnamentEntry(OrnamentEntry ornamentEntry) throws IllegalArgumentException;
 
 }
