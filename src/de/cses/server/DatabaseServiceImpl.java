@@ -67,7 +67,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	}
 
 	/**
-	 * A universal SQL update call for the Kucha database
+	 * A universal SQL UPDATE call for the Kucha database
 	 * The String needs to contain the full sql command, including the UPDATE statement at the beginning!
 	 */
 	public boolean updateEntry(String sqlUpdate) throws IllegalArgumentException {
@@ -76,12 +76,23 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	}
 
 	/**
-	 * A universal SQL delete call for the Kucha database
+	 * A universal SQL DELETE call for the Kucha database
 	 * The String needs to contain the full sql command, including the DELETE statement at the beginning!
 	 */
 	public boolean deleteEntry(String sqlDelete) {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.deleteEntry(sqlDelete);
+	}
+	
+	/**
+	 * A universal SQL INSERT call for the Kucha database
+	 * The String needs to contain the full sql command, including the INSERT statement at the beginning!
+	 * @param sqlInsert
+	 * @return
+	 */
+	public int insertEntry(String sqlInsert) {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.insertEntry(sqlInsert);
 	}
 
 	@Override
