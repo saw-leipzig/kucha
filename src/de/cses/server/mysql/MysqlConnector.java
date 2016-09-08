@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 
 import de.cses.shared.CaveEntry;
+import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.OrnamentEntry;
@@ -123,7 +124,7 @@ public class MysqlConnector {
 
 		return null;
 	}
-
+	
 	/**
 	 * Selects all districts from the table 'Districts' in the database
 	 * @return
@@ -256,6 +257,30 @@ public class MysqlConnector {
 		return true;
 	}
 
+	public synchronized ArrayList<DepictionEntry> getDepictions() {
+		ArrayList<DepictionEntry> results = new ArrayList<DepictionEntry>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Depictions");
+			while (rs.next()) {
+				results.add(new DepictionEntry(rs.getInt("DepictionID"), rs.getString("Style"), rs.getString("Inscriptions"),
+						rs.getString("Dating"), rs.getString("Description"), rs.getString("BackgroundColour"),
+						rs.getString("Material"), rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"),
+						rs.getInt("Dimension.width"), rs.getInt("Dimension.height"), rs.getDate("DateOfAcquisition"),
+						rs.getInt("ExpeditionID"), rs.getDate("PurchaseDate"), rs.getInt("CurrentLocationID"),
+						rs.getInt("VendorID"), rs.getInt("StoryID"), rs.getInt("CaveID")));
+			}
+			rs.close();
+			stmt.close();
+			dbc.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return results;
+	}
 
 	
 	/**

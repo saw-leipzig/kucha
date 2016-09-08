@@ -18,10 +18,7 @@ import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TabLayoutPanel;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
-import com.sencha.gxt.core.client.util.Margins;
-import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.container.Viewport;
 import com.sencha.gxt.widget.core.client.info.Info;
 
@@ -30,10 +27,10 @@ import de.cses.client.caves.CaveType;
 import de.cses.client.caves.Caves;
 import de.cses.client.caves.Cella;
 import de.cses.client.caves.Niches;
+import de.cses.client.depictions.DepictionEditor;
 import de.cses.client.images.ImageEditor;
 import de.cses.client.images.ImageSelector;
 import de.cses.client.images.ImageSelectorListener;
-import de.cses.client.images.ImageUploader;
 import de.cses.client.images.PhotographerEditor;
 import de.cses.client.ornamentic.Ornamentic;
 
@@ -94,11 +91,17 @@ public class TestApplication implements EntryPoint, ImageSelectorListener {
 		pEditorContainer.add(pEditor);
 		main.add(pEditorContainer, "Photographer Editor");
 		
-		ImageSelector selector = new ImageSelector(ImageSelector.MAP, this);
+		ImageSelector selector = new ImageSelector(ImageSelector.PHOTO, this);
 		FlowLayoutContainer selectorFlc = new FlowLayoutContainer();
 		selectorFlc.setScrollMode(ScrollMode.AUTO);
-		selectorFlc.add(selector.asWidget());
+		selectorFlc.add(selector);
 		main.add(selectorFlc, "Selector Test");
+		
+		DepictionEditor depEditor = new DepictionEditor();
+		FlowLayoutContainer depictionFlc = new FlowLayoutContainer();
+		depictionFlc.setScrollMode(ScrollMode.AUTOY);
+		depictionFlc.add(depEditor);
+		main.add(depictionFlc, "Depiction Editor");
 	}
 
 	@Override
@@ -106,11 +109,4 @@ public class TestApplication implements EntryPoint, ImageSelectorListener {
 		Info.display("Selection made", "Image no. " + imageID + " has been selected");
 	}
 
-//	public static CreateOrnamentic getCreateOrnamentic() {
-//		return CreateOrnamentic;
-//	}
-//
-//	public static void setCreateOrnamentic(CreateOrnamentic createOrnamentic) {
-//		CreateOrnamentic = createOrnamentic;
-//	}
 }

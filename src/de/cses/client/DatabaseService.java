@@ -20,6 +20,7 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 import de.cses.shared.CaveEntry;
+import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.OrnamentEntry;
@@ -41,9 +42,9 @@ public interface DatabaseService extends RemoteService {
 	ArrayList<CaveEntry> getCavesbyDistrictID(int DistrictID) throws IllegalArgumentException;
 	ArrayList<OrnamentEntry> getOrnaments() throws IllegalArgumentException;
 	ArrayList<OrnamentOfOtherCulturesEntry> getOrnamentsOfOtherCultures() throws IllegalArgumentException;
+	ArrayList<DepictionEntry> getDepictions() throws IllegalArgumentException;
 	boolean updateEntry(String sqlUpdate);
 	boolean deleteEntry(String sqlDelete);
 	int insertEntry(String sqlInsert);
 	boolean saveOrnamentEntry(OrnamentEntry ornamentEntry) throws IllegalArgumentException;
-
 }
