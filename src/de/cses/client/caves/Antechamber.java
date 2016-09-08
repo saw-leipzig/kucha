@@ -3,37 +3,37 @@ package de.cses.client.caves;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.sencha.gxt.widget.core.client.FramedPanel;
+import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
+import com.sencha.gxt.core.client.util.Margins;
+import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.button.ButtonBar;
 import com.sencha.gxt.widget.core.client.button.TextButton;
-import com.sencha.gxt.widget.core.client.container.VBoxLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutData;
-import com.sencha.gxt.widget.core.client.container.VBoxLayoutContainer.VBoxLayoutAlign;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.TextField;
 
 public class Antechamber implements IsWidget {
-	private VBoxLayoutContainer widget;
-	Caves caves;
+	 ContentPanel panel;
+	 Caves caves;
 	
-	@Override
-	public Widget asWidget() {
-		 if (widget == null) {
-		    BoxLayoutData flex = new BoxLayoutData();
-		    //flex.setFlex(1);
-		    widget = new VBoxLayoutContainer();
-		    widget.add(createForm(), flex);
-		  }
-
-		  return widget;
-	}
+		@Override
+		public Widget asWidget() {
+			if (panel == null) {
+				createForm();
+			}
+			return panel;
+		}
 
 	private Widget createForm(){
-		VerticalPanel MainVerticalPanel = new VerticalPanel();
+		
 
-		VBoxLayoutContainer vlc = new VBoxLayoutContainer(VBoxLayoutAlign.LEFT);
+
+		VerticalLayoutContainer vlc = new VerticalLayoutContainer();
+		VerticalLayoutData vLayoutData = new VerticalLayoutData(400, 300, new Margins(15, 10, 10,10));
+		vlc.setLayoutData(vLayoutData);
 		
 		
 	  final TextField height = new TextField();
@@ -95,14 +95,16 @@ public class Antechamber implements IsWidget {
 	  };
 	  cancel.addHandler(cancelClickHandler, ClickEvent.getType());
 	  
-	  vlc.add(cancel);
-	  vlc.add(save);
+	  ButtonBar buttonbar = new ButtonBar();
+	  vlc.add(buttonbar);
+	  buttonbar.add(cancel);
+	  buttonbar.add(save);
 	  
-	  FramedPanel framedPanelCaves = new FramedPanel();
-	  framedPanelCaves.setHeading("Create new Antechamber");
-	  framedPanelCaves.add(MainVerticalPanel);
-	  MainVerticalPanel.add(vlc);
-		return framedPanelCaves;
+	  panel = new ContentPanel();
+	  panel.setHeading("Create new Antechamber");
+	  panel.add(vlc);
+	  vlc.setScrollMode(ScrollMode.AUTOY);
+		return panel;
 	}
 
 	public Caves getCaves() {

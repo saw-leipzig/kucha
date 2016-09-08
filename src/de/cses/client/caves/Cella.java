@@ -4,9 +4,11 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.sencha.gxt.widget.core.client.FramedPanel;
+import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
+import com.sencha.gxt.core.client.util.Margins;
+import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.button.ButtonBar;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
@@ -16,24 +18,23 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 
 
 public class Cella implements IsWidget{
-	 private VerticalLayoutContainer widget;
+	 ContentPanel panel;
 	 Caves caves;
 	
-	@Override
-	public Widget asWidget() {
-		 if (widget == null) {
-		    VerticalLayoutData flex = new VerticalLayoutData ();
-		    widget = new VerticalLayoutContainer();
-		    widget.add(createForm(), flex);
-		  }
-
-		  return widget;
-	}
+		@Override
+		public Widget asWidget() {
+			if (panel == null) {
+				createForm();
+			}
+			return panel;
+		}
+		
+		
 	private Widget createForm(){
-		VerticalPanel MainVerticalPanel = new VerticalPanel();
 
 		VerticalLayoutContainer vlc = new VerticalLayoutContainer();
-		MainVerticalPanel.add(vlc);
+		VerticalLayoutData vLayoutData = new VerticalLayoutData(400, 300, new Margins(15, 10, 10,10));
+		vlc.setLayoutData(vLayoutData);
 		
 	  final TextField height = new TextField();
 	  height.setAllowBlank(false);
@@ -283,13 +284,19 @@ public class Cella implements IsWidget{
 	  };
 	  cancel.addHandler(cancelClickHandler, ClickEvent.getType());
 	  
-	  vlc.add(cancel);
-	  vlc.add(save);
-	  FramedPanel framedPanelCaves = new FramedPanel();
-	  framedPanelCaves.setSize("1000000px", "100000px");
-	  framedPanelCaves.setHeading("Create new cella");
-	  framedPanelCaves.add(MainVerticalPanel);
-		return framedPanelCaves;
+	  ButtonBar buttonbar = new ButtonBar();
+	  vlc.add(buttonbar);
+	  buttonbar.add(cancel);
+	  buttonbar.add(save);
+	  
+		panel = new ContentPanel();
+		panel.add(vlc);
+		vlc.setScrollMode(ScrollMode.AUTOY);
+		panel.setHeading("Cella Editor");
+    panel.setPixelSize(500, 500);
+   // panel.setBounds(0, 0, 510, 500);
+   // panel.setPosition(5, 5);
+		return panel;
 		
 	}
 	public Caves getCaves() {

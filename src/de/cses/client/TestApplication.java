@@ -29,6 +29,7 @@ import de.cses.client.caves.Antechamber;
 import de.cses.client.caves.CaveType;
 import de.cses.client.caves.Caves;
 import de.cses.client.caves.Cella;
+import de.cses.client.caves.Districts;
 import de.cses.client.caves.Niches;
 import de.cses.client.images.ImageEditor;
 import de.cses.client.images.ImageSelector;
@@ -67,6 +68,7 @@ public class TestApplication implements EntryPoint, ImageSelectorListener {
 		CaveType caveType = new CaveType();
 		Niches niches = new Niches();
 		Antechamber antechamber = new Antechamber();
+		 Districts districts = new Districts();
 	
 		
 		ImageEditor imgEditor = new ImageEditor();
@@ -75,10 +77,10 @@ public class TestApplication implements EntryPoint, ImageSelectorListener {
 
 		main.add(co.asWidget(), "Ornamentic Editor");
 		main.add(caves.asWidget(), "Cave Editor");
-		main.add(cella.asWidget(), "Cella Editor");
 		main.add(caveType.asWidget(),"Cave Type Editor");
 		main.add(niches.asWidget(), "Niches Editor");
 		main.add(antechamber.asWidget(), "Antechamber Editor");
+		main.add(districts.asWidget(), "District Editor");
 
 		// we are using FlowLayoutContainer 
 		FlowLayoutContainer flowLC = new FlowLayoutContainer();
@@ -86,7 +88,15 @@ public class TestApplication implements EntryPoint, ImageSelectorListener {
     MarginData layoutData = new MarginData(new Margins(0, 5, 0, 0));
     flowLC.add(imgEditor, layoutData);
 //    flowLC.add(imageUploader, layoutData);
-
+    
+	/*	FlowLayoutContainer flowLCcella = new FlowLayoutContainer();
+		flowLCcella.setScrollMode(ScrollMode.AUTOY);
+    MarginData layoutDatacella = new MarginData(new Margins(0, 5, 0, 0));
+    flowLCcella.add(cella, layoutDatacella);
+    main.add(flowLCcella, "Cella Editor");
+    */
+   
+    main.add(cella,"Cella Editor");
 		main.add(flowLC, "Image Manager");
 		main.add(pEditor, "Photographer Editor");
 		
