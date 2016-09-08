@@ -82,20 +82,24 @@ public class TestApplication implements EntryPoint, ImageSelectorListener {
 		main.add(antechamber.asWidget(), "Antechamber Editor");
 		main.add(districts.asWidget(), "District Editor");
 
-		// we are using FlowLayoutContainer 
-		FlowLayoutContainer flowLC = new FlowLayoutContainer();
+    FlowLayoutContainer flowLC = new FlowLayoutContainer();
 		flowLC.setScrollMode(ScrollMode.ALWAYS);
-    MarginData layoutData = new MarginData(new Margins(0, 5, 0, 0));
-    flowLC.add(imgEditor, layoutData);
+    flowLC.add(imgEditor);
 //    flowLC.add(imageUploader, layoutData);
+		main.add(flowLC, "Image Manager");
+
+		FlowLayoutContainer pEditorContainer = new FlowLayoutContainer();
+		pEditorContainer.setScrollMode(ScrollMode.AUTOY);
+		pEditorContainer.add(pEditor);
+		main.add(pEditorContainer, "Photographer Editor");
+		
+//		// we are using FlowLayoutContainer 
+//		FlowLayoutContainer flowLC = new FlowLayoutContainer();
+//		flowLC.setScrollMode(ScrollMode.ALWAYS);
+    MarginData layoutData = new MarginData(new Margins(0, 5, 0, 0));
+//    flowLC.add(imgEditor, layoutData);
+////    flowLC.add(imageUploader, layoutData);
     
-	/*	FlowLayoutContainer flowLCcella = new FlowLayoutContainer();
-		flowLCcella.setScrollMode(ScrollMode.AUTOY);
-    MarginData layoutDatacella = new MarginData(new Margins(0, 5, 0, 0));
-    flowLCcella.add(cella, layoutDatacella);
-    main.add(flowLCcella, "Cella Editor");
-    */
-   
     main.add(cella,"Cella Editor");
 		main.add(flowLC, "Image Manager");
 		main.add(pEditor, "Photographer Editor");
@@ -107,16 +111,10 @@ public class TestApplication implements EntryPoint, ImageSelectorListener {
 		main.add(selectorFlc, "Selector Test");
 	}
 
+	
 	@Override
 	public void imageSelected(int imageID) {
 		Info.display("Selection made", "Image no. " + imageID + " has been selected");
 	}
 
-//	public static CreateOrnamentic getCreateOrnamentic() {
-//		return CreateOrnamentic;
-//	}
-//
-//	public static void setCreateOrnamentic(CreateOrnamentic createOrnamentic) {
-//		CreateOrnamentic = createOrnamentic;
-//	}
 }
