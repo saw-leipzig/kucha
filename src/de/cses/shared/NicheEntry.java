@@ -14,6 +14,10 @@ public class NicheEntry implements IsSerializable{
 	private boolean ceiling;
 	private boolean floor;
 	private boolean nichesInCave;
+	
+	public NicheEntry(){
+		
+	}
 	public int getCaveID() {
 		return caveID;
 	}
@@ -80,7 +84,5 @@ public class NicheEntry implements IsSerializable{
 	public void setNichesInCave(boolean nichesInCave) {
 		this.nichesInCave = nichesInCave;
 	}
-	
-	
 
 }

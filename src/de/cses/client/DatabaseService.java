@@ -38,6 +38,7 @@ public interface DatabaseService extends RemoteService {
 	ArrayList<ImageEntry> getImages() throws IllegalArgumentException;
 	ArrayList<ImageEntry> getImages(String where) throws IllegalArgumentException;
 	ArrayList<PhotographerEntry> getPhotographer() throws IllegalArgumentException;
+	ImageEntry getImage(int imageID)throws IllegalArgumentException;
 	ArrayList<CaveEntry> getCaves() throws IllegalArgumentException;
 	ArrayList<CaveEntry> getCavesbyDistrictID(int DistrictID) throws IllegalArgumentException;
 	ArrayList<OrnamentEntry> getOrnaments() throws IllegalArgumentException;

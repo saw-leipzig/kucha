@@ -35,6 +35,10 @@ public class CellaEntry implements IsSerializable{
 	private boolean colouring;
 	private boolean zenith;
 	private boolean floor;
+	
+	public CellaEntry(){
+		
+	}
 	public int getCaveID() {
 		return caveID;
 	}
@@ -221,7 +225,6 @@ public class CellaEntry implements IsSerializable{
 	public void setFloor(boolean floor) {
 		this.floor = floor;
 	}
-	
 	
 
 }

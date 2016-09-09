@@ -5,6 +5,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class CaveEntry implements IsSerializable {
 	private int caveID;
 
+
 	private int districtID;
 	private String officialName;
 	private String officialNumber;
@@ -63,6 +64,7 @@ public class CaveEntry implements IsSerializable {
 	}
 
 	public void setOfficialNumber(String officialNumber) {
+
 		this.officialNumber = officialNumber;
 	}
 

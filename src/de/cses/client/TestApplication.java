@@ -26,6 +26,7 @@ import de.cses.client.caves.Antechamber;
 import de.cses.client.caves.CaveType;
 import de.cses.client.caves.Caves;
 import de.cses.client.caves.Cella;
+import de.cses.client.caves.Districts;
 import de.cses.client.caves.Niches;
 import de.cses.client.depictions.DepictionEditor;
 import de.cses.client.images.ImageEditor;
@@ -33,7 +34,6 @@ import de.cses.client.images.ImageSelector;
 import de.cses.client.images.ImageSelectorListener;
 import de.cses.client.images.PhotographerEditor;
 import de.cses.client.ornamentic.Ornamentic;
-
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -64,6 +64,8 @@ public class TestApplication implements EntryPoint, ImageSelectorListener {
 		CaveType caveType = new CaveType();
 		Niches niches = new Niches();
 		Antechamber antechamber = new Antechamber();
+		Districts districts = new Districts();
+		
 	
 		
 		ImageEditor imgEditor = new ImageEditor();
@@ -76,9 +78,7 @@ public class TestApplication implements EntryPoint, ImageSelectorListener {
 		main.add(caveType.asWidget(),"Cave Type Editor");
 		main.add(niches.asWidget(), "Niches Editor");
 		main.add(antechamber.asWidget(), "Antechamber Editor");
-
-		// we are using FlowLayoutContainer 
-//    MarginData flowLayoutData = new MarginData(new Margins(0, 5, 0, 0));
+		main.add(districts.asWidget(), "District Editor");
 
     FlowLayoutContainer flowLC = new FlowLayoutContainer();
 		flowLC.setScrollMode(ScrollMode.ALWAYS);

@@ -153,7 +153,6 @@ public class ImageUploader implements IsWidget {
 //    borderLayoutContainer.setWestWidget(imageContentPanel, west);
 //    borderLayoutContainer.setCenterWidget(vlc, center);
 
-
 //		panel = new ContentPanel();
 //		panel.setHeading("Upload image");
 //    panel.setPixelSize(610, 210);

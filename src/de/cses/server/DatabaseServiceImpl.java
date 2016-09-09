@@ -46,6 +46,11 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		ArrayList<DistrictEntry> districts = connector.getDistricts();;
 		return districts;
 	}
+	public ImageEntry getImage(int imageID) throws IllegalArgumentException{
+		MysqlConnector connector = MysqlConnector.getInstance();
+		ImageEntry image = connector.getImageEntry(imageID);
+		return image;
+	}
 
 	public ArrayList<ImageEntry> getImages() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();

@@ -207,7 +207,6 @@ panel.add(buttonPanel);
   framedpanelornamentic.add(panel);
 
 
-  
   return framedpanelornamentic;
 	
 }

@@ -164,7 +164,6 @@ public class MysqlConnector {
 		int generatedKey = -1;
 		try {
 			stmt = dbc.createStatement();
-
 			stmt.execute("INSERT INTO Images (Title,Comment) VALUES ('New Image','please type your comment here')", Statement.RETURN_GENERATED_KEYS);
 			ResultSet keys = stmt.getGeneratedKeys();
 			while (keys.next()) { 
@@ -399,6 +398,8 @@ public class MysqlConnector {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Caves");
 			while (rs.next()) { 
 				results.add(new CaveEntry(rs.getInt("CaveID"), rs.getInt("DistrictID"),rs.getString("OfficialName"),rs.getString("OfficialNumber") ,rs.getString("HistoricName"), rs.getInt("CaveTypeID"), rs.getString("StateOfPreservation"), rs.getString("Orientation"),rs.getString("Pedestals"), rs.getString("Findings")));
+
+			
 			}
 			rs.close();
 			stmt.close();
@@ -419,6 +420,7 @@ public class MysqlConnector {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Caves WHERE DistrictID ="+DistrictID);
 			while (rs.next()) { 
 				results.add(new CaveEntry(rs.getInt("CaveID"), rs.getInt("DistrictID"),rs.getString("OfficialName"),rs.getString("OfficialNumber") ,rs.getString("HistoricName"), rs.getInt("CaveTypeID"), rs.getString("StateOfPreservation"), rs.getString("Orientation"),rs.getString("Pedestals"), rs.getString("Findings")));
+
 			}
 			rs.close();
 			stmt.close();

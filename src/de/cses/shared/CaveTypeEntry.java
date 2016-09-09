@@ -7,7 +7,9 @@ public class CaveTypeEntry implements IsSerializable{
 	private String enShortname;
 	private String enDescription;
 	
-	
+	public CaveTypeEntry(){
+		
+	}
 	public int getCaveTypeID() {
 		return caveTypeID;
 	}
