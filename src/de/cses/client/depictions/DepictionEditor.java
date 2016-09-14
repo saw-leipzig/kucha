@@ -39,8 +39,11 @@ import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.button.ButtonBar;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
+import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutData;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
@@ -227,20 +230,31 @@ public class DepictionEditor implements IsWidget {
 			}
 		});
 		
+		HorizontalLayoutContainer hlc = new HorizontalLayoutContainer();
 		ButtonBar bb = new ButtonBar();
-		bb.setHorizontalSpacing(25);
-		bb.setHeight(80);
-		bb.setWidth(200);
-		bb.add(newButton);
-		bb.add(deleteButton);
-		vlc.add(bb);
+//		bb.setPixelSize(200, 80);
+//		BoxLayoutData bLayout = new BoxLayoutData(new Margins(10, 20, 10, 10));
+		hlc.add(newButton, new HorizontalLayoutData(80, 40));
+		hlc.add(deleteButton, new HorizontalLayoutData(80, 40));
+		hlc.setPixelSize(200, 50);
+		
+    MarginData center = new MarginData();
+
+    BorderLayoutData south = new BorderLayoutData();
+    south.setMargins(new Margins(10, 20, 10, 10));
+    
+    BorderLayoutContainer borderLayoutContainer = new BorderLayoutContainer();
+//    BorderLayoutData bld = new BorderLayoutData();
+//    borderLayoutContainer.setBounds(0, 0, 605, 505);
+    borderLayoutContainer.setCenterWidget(vlc, center);
+    borderLayoutContainer.setSouthWidget(hlc);
 
 		panel = new ContentPanel();
 		panel.setPixelSize(610, 510);
 		panel.setBounds(0, 0, 610, 510);
 		panel.setPosition(5, 5);
 		panel.setHeading("Depiction Editor");
-		panel.add(vlc);
+		panel.add(borderLayoutContainer);
 	}
 
 	protected void setFields(DepictionEntry de) {

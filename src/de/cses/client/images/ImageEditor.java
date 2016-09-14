@@ -302,12 +302,6 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 		ListField<ImageEntry, ImageEntry> lf = new ListField<ImageEntry, ImageEntry>(imageListView);
 		lf.setSize("250", "350");
 		
-    BorderLayoutData west = new BorderLayoutData(150);
-    west.setMargins(new Margins(5));
-
-    BorderLayoutData south = new BorderLayoutData();
-    south.setMargins(new Margins(5));
-    
     /**
      * here we add the search for image titles
      */
@@ -349,6 +343,12 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
     
     MarginData center = new MarginData();
 
+    BorderLayoutData west = new BorderLayoutData(150);
+    west.setMargins(new Margins(5));
+
+    BorderLayoutData south = new BorderLayoutData();
+    south.setMargins(new Margins(5));
+    
     BorderLayoutContainer borderLayoutContainer = new BorderLayoutContainer();
 //    BorderLayoutData bld = new BorderLayoutData();
     borderLayoutContainer.setBounds(0, 0, 600, 500);
