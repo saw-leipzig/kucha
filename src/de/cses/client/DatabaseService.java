@@ -18,10 +18,12 @@ import java.util.ArrayList;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.sencha.gxt.data.shared.TreeStore;
 
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
+import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
@@ -47,5 +49,6 @@ public interface DatabaseService extends RemoteService {
 	boolean updateEntry(String sqlUpdate);
 	boolean deleteEntry(String sqlDelete);
 	int insertEntry(String sqlInsert);
-	boolean saveOrnamentEntry(OrnamentEntry ornamentEntry) throws IllegalArgumentException;
+	boolean saveOrnamentEntry(OrnamentEntry ornamentEntry);
+	ArrayList<IconographyEntry> getIconography() throws IllegalArgumentException;
 }

@@ -24,6 +24,7 @@ import java.util.Hashtable;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
+import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
@@ -511,5 +512,46 @@ public class MysqlConnector {
 		return true;
 	}
 	
+	public synchronized ArrayList<IconographyEntry> getIconography() {
+		ArrayList<IconographyEntry> root = getIconographyEntries(0);
+		
+    for (IconographyEntry item : root) {
+      processIconographyTree(item);
+    }		
+		return root;
+	}
+	
+  private synchronized void processIconographyTree(IconographyEntry parent) {
+		ArrayList<IconographyEntry> children = getIconographyEntries(parent.getIconographyID());
+    if (children != null) {
+    	parent.setChildren(children);
+      for (IconographyEntry child : children) {
+      	processIconographyTree(child);
+      }
+    }
+  }
+	
+	protected synchronized ArrayList<IconographyEntry> getIconographyEntries(int parentID) {
+		ArrayList<IconographyEntry> results = new ArrayList<IconographyEntry>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		String where = (parentID == 0) ? "IS NULL" : "= "+parentID;
+		
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Iconography WHERE ParentID "+where);
+			while (rs.next()) { 
+				results.add(new IconographyEntry(rs.getInt("IconographyID"), rs.getInt("ParentID"), rs.getString("Text")));
+			}
+			rs.close();
+			stmt.close();
+			dbc.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return results;
+	}
+
 	
 }
