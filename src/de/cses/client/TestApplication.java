@@ -104,8 +104,8 @@ public class TestApplication implements EntryPoint, ImageSelectorListener {
 		depictionFlc.add(depEditor);
 		main.add(depictionFlc, "Depiction Editor");
 		
-		IconographySelector iconoSelector = new IconographySelector();
-		main.add(iconoSelector, "Iconography Selector");
+//		IconographySelector iconoSelector = new IconographySelector();
+//		main.add(iconoSelector, "Iconography Selector");
 	}
 
 	@Override

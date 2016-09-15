@@ -46,6 +46,7 @@ public class IconographySelector implements IsWidget {
 	private TreeStore<IconographyEntry> store;
 	private Tree<IconographyEntry, String> tree;
 	private ContentPanel panel;
+	private VerticalLayoutContainer vlc;
 
 	public IconographySelector() {
 		store = new TreeStore<IconographyEntry>(new KeyProvider());
@@ -78,7 +79,7 @@ public class IconographySelector implements IsWidget {
 					store.add(item);
 					if (item.getChildren() != null) {
 						processParent(store, item);
-						Info.display("Children added", item.getText());
+//						Info.display("Children added", item.getText());
 					}
 				}
 			}
@@ -90,11 +91,11 @@ public class IconographySelector implements IsWidget {
 		if (panel == null) {
 			initPanel();
 		}
-		return panel;
+		return vlc;
 	}
 
 	private void initPanel() {
-		VerticalLayoutContainer vlc = new VerticalLayoutContainer();
+		vlc = new VerticalLayoutContainer();
 
 		tree = new Tree<IconographyEntry, String>(store, new ValueProvider<IconographyEntry, String>() {
 
@@ -119,12 +120,16 @@ public class IconographySelector implements IsWidget {
 		vlc.add(tree, new VerticalLayoutData(1, 1));
 		vlc.setScrollMode(ScrollMode.AUTOY);
 
-		panel = new ContentPanel();
-		panel.setPixelSize(610, 510);
-		panel.setBounds(0, 0, 610, 510);
-		panel.setPosition(5, 5);
-		panel.setHeading("Iconography Tree");
-		panel.add(vlc);
+//		panel = new ContentPanel();
+//		panel.setPixelSize(610, 510);
+//		panel.setBounds(0, 0, 610, 510);
+//		panel.setPosition(5, 5);
+//		panel.setHeading("Iconography Tree");
+//		panel.add(vlc);
+	}
+	
+	public IconographyEntry getSelectedIconography() {
+		return tree.getSelectionModel().getSelectedItem();
 	}
 
 }

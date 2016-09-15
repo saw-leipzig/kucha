@@ -36,6 +36,8 @@ import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.theme.base.client.field.FieldLabelDefaultAppearance;
 import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.Dialog;
+import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.button.ButtonBar;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
@@ -62,6 +64,7 @@ import com.sencha.gxt.widget.core.client.info.Info;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.shared.DepictionEntry;
+import de.cses.shared.IconographyEntry;
 
 public class DepictionEditor implements IsWidget {
 
@@ -86,6 +89,8 @@ public class DepictionEditor implements IsWidget {
 	private TextField materialField;
 	private TextArea generalRemarksArea;
 	private TextArea othersSuggestedIdentificationsArea;
+	private Label iconographyField;
+	protected IconographySelector iconographySelector;
 	
 
 	interface DepictionProperties extends PropertyAccess<DepictionEntry> {
@@ -102,6 +107,7 @@ public class DepictionEditor implements IsWidget {
 		depictionProps = GWT.create(DepictionProperties.class);
 		depictionEntryList = new ListStore<DepictionEntry>(depictionProps.depictionID());
 		refreshDepictionList();
+		iconographySelector = new IconographySelector(); 
 	}
 
 	private void refreshDepictionList() {
@@ -214,6 +220,41 @@ public class DepictionEditor implements IsWidget {
 		othersSuggestedIdentificationsArea.setSize("300", "100");
 		vlc.add(new FieldLabel(othersSuggestedIdentificationsArea, "Other suggested identifications"));
 		
+		iconographyField = new Label("select iconography...");
+		iconographyField.setSize("150", "50");
+		TextButton iconographyButton = new TextButton("select iconography");
+		iconographyButton.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				Dialog id = new Dialog();
+				id.setHeading("Select Iconography");
+				id.setWidget(iconographySelector);
+				id.setBodyStyle("fontWeight:bold;padding:13px;");
+				id.setPixelSize(610, 510);
+				id.setHideOnButtonClick(true);
+				id.setPredefinedButtons(PredefinedButton.OK, PredefinedButton.CANCEL);
+				id.getButton(PredefinedButton.OK).addSelectHandler(new SelectHandler() {
+					
+					private IconographyEntry selectedIconography;
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						selectedIconography = iconographySelector.getSelectedIconography();
+						if (selectedIconography != null) {
+							iconographyField.setText(selectedIconography.getText());
+						}
+					}
+				});
+				id.show();
+			}
+		});
+		HorizontalLayoutContainer hlc = new HorizontalLayoutContainer();
+		hlc.add(iconographyField, new HorizontalLayoutData(300, 60));
+		hlc.add(iconographyButton, new HorizontalLayoutData(80, 40));
+		hlc.setPixelSize(250, 80);
+		vlc.add(new FieldLabel(hlc, "Iconography"));
+		
 		TextButton newButton = new TextButton("new entry");
 		newButton.addSelectHandler(new SelectHandler() {
 			@Override
@@ -230,10 +271,7 @@ public class DepictionEditor implements IsWidget {
 			}
 		});
 		
-		HorizontalLayoutContainer hlc = new HorizontalLayoutContainer();
-		ButtonBar bb = new ButtonBar();
-//		bb.setPixelSize(200, 80);
-//		BoxLayoutData bLayout = new BoxLayoutData(new Margins(10, 20, 10, 10));
+		hlc = new HorizontalLayoutContainer();
 		hlc.add(newButton, new HorizontalLayoutData(80, 40));
 		hlc.add(deleteButton, new HorizontalLayoutData(80, 40));
 		hlc.setPixelSize(200, 50);
