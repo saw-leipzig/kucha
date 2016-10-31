@@ -28,6 +28,7 @@ import de.cses.shared.ImageEntry;
 import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.PhotographerEntry;
+import de.cses.shared.PictorialElementEntry;
 
 /**
  * The client-side stub for the RPC service.
@@ -51,4 +52,5 @@ public interface DatabaseService extends RemoteService {
 	int insertEntry(String sqlInsert);
 	boolean saveOrnamentEntry(OrnamentEntry ornamentEntry);
 	ArrayList<IconographyEntry> getIconography() throws IllegalArgumentException;
+	ArrayList<PictorialElementEntry> getPictorialElements();
 }

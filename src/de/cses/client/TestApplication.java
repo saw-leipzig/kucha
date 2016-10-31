@@ -30,6 +30,7 @@ import de.cses.client.caves.Districts;
 import de.cses.client.caves.Niches;
 import de.cses.client.depictions.DepictionEditor;
 import de.cses.client.depictions.IconographySelector;
+import de.cses.client.depictions.PictorialElementSelector;
 import de.cses.client.images.ImageEditor;
 import de.cses.client.images.ImageSelector;
 import de.cses.client.images.ImageSelectorListener;
@@ -104,8 +105,11 @@ public class TestApplication implements EntryPoint, ImageSelectorListener {
 		depictionFlc.add(depEditor);
 		main.add(depictionFlc, "Depiction Editor");
 		
-//		IconographySelector iconoSelector = new IconographySelector();
-//		main.add(iconoSelector, "Iconography Selector");
+		IconographySelector iconoSelector = new IconographySelector();
+		main.add(iconoSelector, "Iconography Selector");
+		
+		PictorialElementSelector peSelector = new PictorialElementSelector();
+		main.add(peSelector, "Pictorial Element Selector");
 	}
 
 	@Override

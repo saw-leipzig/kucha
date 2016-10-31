@@ -28,6 +28,7 @@ import de.cses.shared.ImageEntry;
 import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.PhotographerEntry;
+import de.cses.shared.PictorialElementEntry;
 
 /**
  * The server-side implementation of the RPC service.
@@ -138,6 +139,12 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public ArrayList<IconographyEntry> getIconography() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getIconography();
+	}
+
+	@Override
+	public ArrayList<PictorialElementEntry> getPictorialElements() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getPictorialElements();
 	}
 
 }

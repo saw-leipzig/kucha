@@ -26,6 +26,7 @@ import de.cses.shared.ImageEntry;
 import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.PhotographerEntry;
+import de.cses.shared.PictorialElementEntry;
 
 public interface DatabaseServiceAsync {
 
@@ -45,5 +46,5 @@ public interface DatabaseServiceAsync {
 	void insertEntry(String sqlInsert, AsyncCallback<Integer> callback) throws IllegalArgumentException;
 	void getDepictions(AsyncCallback<ArrayList<DepictionEntry>> callback) throws IllegalArgumentException;
 	void getIconography(AsyncCallback<ArrayList<IconographyEntry>> callback) throws IllegalArgumentException;
-	
+	void getPictorialElements(AsyncCallback<ArrayList<PictorialElementEntry>> asyncCallback) throws IllegalArgumentException;
 }

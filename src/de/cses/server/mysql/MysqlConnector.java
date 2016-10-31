@@ -29,6 +29,7 @@ import de.cses.shared.ImageEntry;
 import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.PhotographerEntry;
+import de.cses.shared.PictorialElementEntry;
 
 /**
  * This is the central Database connector. 
@@ -553,5 +554,45 @@ public class MysqlConnector {
 		return results;
 	}
 
+	public synchronized ArrayList<PictorialElementEntry> getPictorialElements() {
+		ArrayList<PictorialElementEntry> root = getPictorialElementEntries(0);
+		
+		for (PictorialElementEntry item : root) {
+			processPictorialElementsTree(item);
+		}
+		return root;
+	}
+	
+	private synchronized void processPictorialElementsTree(PictorialElementEntry parent) {
+		ArrayList<PictorialElementEntry> children = getPictorialElementEntries(parent.getPictorialElementID());
+    if (children != null) {
+    	parent.setChildren(children);
+      for (PictorialElementEntry child : children) {
+      	processPictorialElementsTree(child);
+      }
+    }
+	}
+	
+	protected synchronized ArrayList<PictorialElementEntry> getPictorialElementEntries(int parentID) {
+		ArrayList<PictorialElementEntry> results = new ArrayList<PictorialElementEntry>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		String where = (parentID == 0) ? "IS NULL" : "= "+parentID;
+		
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM PictorialElements WHERE ParentID "+where);
+			while (rs.next()) { 
+				results.add(new PictorialElementEntry(rs.getInt("PictorialElementID"), rs.getInt("ParentID"), rs.getString("Text")));
+			}
+			rs.close();
+			stmt.close();
+			dbc.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return results;
+	}
 	
 }
