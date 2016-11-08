@@ -82,11 +82,7 @@ public class TestApplication implements EntryPoint, ImageSelectorListener {
 		main.add(antechamber.asWidget(), "Antechamber Editor");
 		main.add(districts.asWidget(), "District Editor");
 
-    FlowLayoutContainer flowLC = new FlowLayoutContainer();
-		flowLC.setScrollMode(ScrollMode.ALWAYS);
-    flowLC.add(imgEditor);
-//    flowLC.add(imageUploader, layoutData);
-		main.add(flowLC, "Image Manager");
+		// we are using FlowLayoutContainer 
 
 		FlowLayoutContainer pEditorContainer = new FlowLayoutContainer();
 		pEditorContainer.setScrollMode(ScrollMode.AUTOY);
@@ -101,7 +97,6 @@ public class TestApplication implements EntryPoint, ImageSelectorListener {
 ////    flowLC.add(imageUploader, layoutData);
     
     main.add(cella,"Cella Editor");
-		main.add(flowLC, "Image Manager");
 		main.add(pEditor, "Photographer Editor");
 		
 		ImageSelector selector = new ImageSelector(ImageSelector.MAP, this);
@@ -111,10 +106,11 @@ public class TestApplication implements EntryPoint, ImageSelectorListener {
 		main.add(selectorFlc, "Selector Test");
 	}
 
-	
 	@Override
 	public void imageSelected(int imageID) {
-		Info.display("Selection made", "Image no. " + imageID + " has been selected");
+		// TODO Auto-generated method stub
+		
 	}
+
 
 }
