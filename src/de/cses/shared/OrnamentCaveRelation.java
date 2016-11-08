@@ -21,6 +21,7 @@ public class OrnamentCaveRelation implements IsSerializable{
 	private ArrayList<Integer> similarOrnamentsRelationID= new ArrayList<Integer>();
 	private ArrayList<Integer> relatedOrnamentsRelationID = new ArrayList<Integer>();
 	private ArrayList<Integer>otherCulturalOrnamentsRelationID = new ArrayList<Integer>();
+	private ArrayList<Integer> relatedElementsRelationID = new ArrayList<Integer>();
 	
 	
 	public OrnamentCaveRelation(){
@@ -175,6 +176,17 @@ public class OrnamentCaveRelation implements IsSerializable{
 
 	public void setOtherCulturalOrnamentsRelationID(ArrayList<Integer> otherCulturalOrnamentsRelationID) {
 		this.otherCulturalOrnamentsRelationID = otherCulturalOrnamentsRelationID;
+	}
+	
+
+
+	public ArrayList<Integer> getRelatedElementsRelationID() {
+		return relatedElementsRelationID;
+	}
+
+
+	public void setRelatedElementsRelationID(ArrayList<Integer> relatedElementsRelationID) {
+		this.relatedElementsRelationID = relatedElementsRelationID;
 	}
 
 

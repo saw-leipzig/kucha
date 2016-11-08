@@ -1,28 +1,37 @@
 package de.cses.client.caves;
 
+import java.util.ArrayList;
+
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.sencha.gxt.cell.core.client.form.TextAreaInputCell.Resizable;
+import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.core.client.util.Margins;
+import com.sencha.gxt.data.shared.LabelProvider;
+import com.sencha.gxt.data.shared.ListStore;
+import com.sencha.gxt.data.shared.ModelKeyProvider;
+import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.fx.client.Draggable;
 import com.sencha.gxt.widget.core.client.ContentPanel;
-import com.sencha.gxt.widget.core.client.FramedPanel;
-import com.sencha.gxt.widget.core.client.Resizable.Dir;
 import com.sencha.gxt.widget.core.client.button.ButtonBar;
 import com.sencha.gxt.widget.core.client.button.TextButton;
-import com.sencha.gxt.widget.core.client.container.VBoxLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutData;
-import com.sencha.gxt.widget.core.client.container.VBoxLayoutContainer.VBoxLayoutAlign;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
+import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import de.cses.client.DatabaseService;
+import de.cses.client.DatabaseServiceAsync;
+import de.cses.shared.CaveTypeEntry;
+
 
 
 public class Caves implements IsWidget{
@@ -31,6 +40,11 @@ public class Caves implements IsWidget{
 	 PopupPanel cellaPanel = new PopupPanel();
 		PopupPanel antechamberPanel = new PopupPanel();
 		PopupPanel nichesPanel = new PopupPanel();
+		private ComboBox<CaveTypeEntry> caveTypeEntryComboBox;
+		private CaveTypeEntryProperties caveTypeEntryProps  = GWT.create(CaveTypeEntryProperties.class);
+		private ListStore<CaveTypeEntry> caveTypeEntryList = new ListStore<CaveTypeEntry>(caveTypeEntryProps.caveTypeID()); 
+		
+		private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 
 		@Override
 		public Widget asWidget() {
@@ -58,7 +72,35 @@ public Widget createForm(){
   historicalName.setAllowBlank(false);
   vlc.add(new FieldLabel(historicalName, "Historical name"));
   
- //TODO caveType
+	dbService.getCaveTypes(new AsyncCallback<ArrayList<CaveTypeEntry>>() {
+
+
+		@Override
+		public void onFailure(Throwable caught) {
+			caught.printStackTrace();
+		}
+
+		@Override
+		public void onSuccess(ArrayList<CaveTypeEntry> result) {
+			caveTypeEntryList.clear();
+			
+			for (CaveTypeEntry pe : result) {
+				caveTypeEntryList.add(pe);
+	
+			}
+		}
+	});
+	caveTypeEntryComboBox = new ComboBox<CaveTypeEntry>(caveTypeEntryList, caveTypeEntryProps.enShortname(),
+			new AbstractSafeHtmlRenderer<CaveTypeEntry>() {
+
+				@Override
+				public SafeHtml render(CaveTypeEntry item) {
+					final CaveTypeEntryViewTemplates pvTemplates = GWT.create(CaveTypeEntryViewTemplates.class);
+					return pvTemplates.district(item.getEnShortname());
+				}
+			});
+	
+	vlc.add(new FieldLabel(caveTypeEntryComboBox, "Select Cave Type"));
   
   final TextField state = new TextField();
   state.setAllowBlank(false);
@@ -181,6 +223,15 @@ public PopupPanel getNichesPanel() {
 }
 public void setNichesPanel(PopupPanel nichesPanel) {
 	this.nichesPanel = nichesPanel;
+}
+interface CaveTypeEntryProperties extends PropertyAccess<CaveTypeEntry> {
+	ModelKeyProvider<CaveTypeEntry> caveTypeID();
+
+	LabelProvider<CaveTypeEntry> enShortname();
+}
+interface CaveTypeEntryViewTemplates extends XTemplates {
+	@XTemplate("<div>{enShortname}</div>")
+	SafeHtml district(String enShortname);
 }
 
 

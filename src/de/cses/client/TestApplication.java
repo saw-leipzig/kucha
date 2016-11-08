@@ -42,7 +42,7 @@ import de.cses.client.ornamentic.Ornamentic;
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
-public class TestApplication implements EntryPoint, ImageSelectorListener {
+public class TestApplication implements EntryPoint {
 
 	static Ornamentic ornamentic = new Ornamentic();
 
@@ -56,6 +56,7 @@ public class TestApplication implements EntryPoint, ImageSelectorListener {
 
 		/* apparently, the viewport is important since it guarantees that the content of all 
 		 * tabs will be updated in the background and look nice and clean all the time
+	
 		 */
 		main = new TabLayoutPanel(3.0, Unit.EM);
     Viewport v = new Viewport();
@@ -83,40 +84,21 @@ public class TestApplication implements EntryPoint, ImageSelectorListener {
 		main.add(districts.asWidget(), "District Editor");
 
 		// we are using FlowLayoutContainer 
-		FlowLayoutContainer flowLC = new FlowLayoutContainer();
-		flowLC.setScrollMode(ScrollMode.ALWAYS);
-    MarginData layoutData = new MarginData(new Margins(0, 5, 0, 0));
-    flowLC.add(imgEditor, layoutData);
-//    flowLC.add(imageUploader, layoutData);
+
     
-	/*	FlowLayoutContainer flowLCcella = new FlowLayoutContainer();
+		FlowLayoutContainer flowLCcella = new FlowLayoutContainer();
 		flowLCcella.setScrollMode(ScrollMode.AUTOY);
     MarginData layoutDatacella = new MarginData(new Margins(0, 5, 0, 0));
     flowLCcella.add(cella, layoutDatacella);
     main.add(flowLCcella, "Cella Editor");
-    */
+    
    
     main.add(cella,"Cella Editor");
-		main.add(flowLC, "Image Manager");
 		main.add(pEditor, "Photographer Editor");
 		
-		ImageSelector selector = new ImageSelector(ImageSelector.MAP, this);
-		FlowLayoutContainer selectorFlc = new FlowLayoutContainer();
-		selectorFlc.setScrollMode(ScrollMode.AUTO);
-		selectorFlc.add(selector.asWidget(), layoutData);
-		main.add(selectorFlc, "Selector Test");
+
 	}
 
-	@Override
-	public void imageSelected(int imageID) {
-		Info.display("Selection made", "Image no. " + imageID + " has been selected");
-	}
 
-//	public static CreateOrnamentic getCreateOrnamentic() {
-//		return CreateOrnamentic;
-//	}
-//
-//	public static void setCreateOrnamentic(CreateOrnamentic createOrnamentic) {
-//		CreateOrnamentic = createOrnamentic;
-//	}
+
 }

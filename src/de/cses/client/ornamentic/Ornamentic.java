@@ -1,13 +1,12 @@
 package de.cses.client.ornamentic;
 
-import java.util.ArrayList;
 
-import com.gargoylesoftware.htmlunit.Page;
-import com.gargoylesoftware.htmlunit.attachment.AttachmentHandler;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -19,6 +18,7 @@ import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
+import com.sencha.gxt.fx.client.Draggable;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
@@ -28,6 +28,9 @@ import com.sencha.gxt.widget.core.client.container.VBoxLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VBoxLayoutContainer.VBoxLayoutAlign;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
+import com.sencha.gxt.widget.core.client.grid.ColumnModel;
+import com.sencha.gxt.widget.core.client.grid.Grid;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -42,7 +45,6 @@ public class Ornamentic implements IsWidget{
 	 private OrnamentCaveRelationProperties ornamentCaveRelationProps;
 	 private ListStore<OrnamentCaveRelation> caveOrnamentRelationList;
 	 private Ornamentic ornamentic = this;
-	 private ListView<OrnamentCaveRelation, String> cavesList;
 	 private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 
 
@@ -61,7 +63,7 @@ public Widget asWidget() {
 public Widget createForm(){
 
 	ornamentCaveRelationProps = GWT.create(OrnamentCaveRelationProperties.class);
-	
+	caveOrnamentRelationList = new ListStore<OrnamentCaveRelation>(ornamentCaveRelationProps.caveID());
 	VBoxLayoutContainer vlc = new VBoxLayoutContainer(VBoxLayoutAlign.STRETCH);
 	
   final TextField ornamentCode = new TextField();
@@ -74,6 +76,14 @@ public Widget createForm(){
   final TextField discription = new TextField();
   discription.setAllowBlank(true);
   vlc.add(new FieldLabel(discription, "Discription"));
+  
+  final TextField mainTopologycalclass = new TextField();
+  mainTopologycalclass.setAllowBlank(true);
+  vlc.add(new FieldLabel(mainTopologycalclass, "Main typologycal class"));
+  
+  final TextField structureOrganization = new TextField();
+  structureOrganization.setAllowBlank(true);
+  vlc.add(new FieldLabel(structureOrganization, "Structure-Organization"));
   
   final TextField remarks = new TextField();
   remarks.setAllowBlank(true);
@@ -114,6 +124,7 @@ public Widget createForm(){
       attributespopup.setOrnamentic(ornamentic);
 			attributespopup.setGlassEnabled(true);
 			attributespopup.center();
+			Draggable b = new Draggable(attributespopup);
 			
 		}
   	
@@ -121,37 +132,24 @@ public Widget createForm(){
   
   addCaveButton.addClickHandler(addCaveClickHandler);
   
-  cavesContentPanel = new ContentPanel();
-  vlc.add(cavesContentPanel);
-  caveOrnamentRelationList = new ListStore<OrnamentCaveRelation>(ornamentCaveRelationProps.caveID());
   
   
+  ColumnConfig<OrnamentCaveRelation, String> nameColOrnamentrelation = new ColumnConfig<OrnamentCaveRelation, String>(ornamentCaveRelationProps.name(), 200, "Ornament Name");
+  List<ColumnConfig<OrnamentCaveRelation, ?>> columnsrelation = new ArrayList<ColumnConfig<OrnamentCaveRelation, ?>>();
+  columnsrelation.add(nameColOrnamentrelation);
+  ColumnModel<OrnamentCaveRelation> cmrelation = new ColumnModel<OrnamentCaveRelation>(columnsrelation);
+  final Grid<OrnamentCaveRelation> ornamentGridrelation= new Grid<OrnamentCaveRelation>(caveOrnamentRelationList,cmrelation);
+  FramedPanel ornamentsrelation = new FramedPanel();
+  VerticalPanel ornamentsrelationVertical = new VerticalPanel();
+  ornamentsrelation.add(ornamentsrelationVertical);
+  ornamentsrelation.setHeading("Added Cave relations");
+  ornamentsrelationVertical.add(ornamentGridrelation);
+
 
   
-  
-  cavesList = new ListView<OrnamentCaveRelation,String>(caveOrnamentRelationList, ornamentCaveRelationProps.name());
-  cavesList.setAllowTextSelection(true);
+ 
 
-  
-  cavesContentPanel.setHeading("Added caves:");
-  cavesContentPanel.add(cavesList);
-  TextButton edit = new TextButton("edit");
-  TextButton delete = new TextButton("delete");
-  HorizontalPanel buttonCaveEditPanel = new HorizontalPanel();
-  buttonCaveEditPanel.add(edit);
-  buttonCaveEditPanel.add(delete);
-  
-  
-  ClickHandler deleteClickHandler = new ClickHandler(){
 
-		@Override
-		public void onClick(ClickEvent event) {
-	caveOrnamentRelationList.remove(cavesList.getSelectionModel().getSelectedItem());
-		
-		}
-  };
-  delete.addHandler(deleteClickHandler, ClickEvent.getType());
-  vlc.add(buttonCaveEditPanel);
   
   TextButton save = new TextButton("save"); 
   
@@ -170,6 +168,9 @@ public Widget createForm(){
 		ornament.setSketch(sketch.getText());
 		ornament.setInterpretation(interpretation.getText());
 		ornament.setReferences(references.getText());
+		ornament.setMaintypologycalClass(Integer.parseInt(mainTopologycalclass.getText()));
+		ornament.setStructureOrganization(structureOrganization.getText());
+		
 		//send ornament to server
 		dbService.saveOrnamentEntry(ornament, new AsyncCallback<Boolean>() {
 
@@ -191,6 +192,24 @@ public Widget createForm(){
   };
   save.addHandler(saveClickHandler, ClickEvent.getType());
   
+  TextButton edit = new TextButton("edit");
+  TextButton delete = new TextButton("delete");
+  HorizontalPanel buttonCaveEditPanel = new HorizontalPanel();
+  buttonCaveEditPanel.add(edit);
+  buttonCaveEditPanel.add(delete);
+  
+  
+  ClickHandler deleteClickHandler = new ClickHandler(){
+
+		@Override
+		public void onClick(ClickEvent event) {
+	caveOrnamentRelationList.remove(ornamentGridrelation.getSelectionModel().getSelectedItem());
+		
+		}
+  };
+  delete.addHandler(deleteClickHandler, ClickEvent.getType());
+ 
+  
   TextButton cancel = new TextButton("cancel");
   
   HorizontalPanel buttonPanel= new HorizontalPanel();
@@ -199,6 +218,8 @@ public Widget createForm(){
   
   VerticalPanel panel = new VerticalPanel();
  panel.add(vlc);
+ panel.add(ornamentsrelation);
+ ornamentsrelationVertical.add(buttonCaveEditPanel);
 panel.add(buttonPanel);
 
  
@@ -225,13 +246,7 @@ public void setCaveOrnamentRelationList(ListStore<OrnamentCaveRelation> caveOrna
 	this.caveOrnamentRelationList = caveOrnamentRelationList;
 }
 
-public ListView<OrnamentCaveRelation, String> getCavesList() {
-	return cavesList;
-}
 
-public void setCavesList(ListView<OrnamentCaveRelation, String> cavesList) {
-	this.cavesList = cavesList;
-}
 
 
 
