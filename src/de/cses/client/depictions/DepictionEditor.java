@@ -16,15 +16,17 @@ package de.cses.client.depictions;
 import java.util.ArrayList;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeUri;
+import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.XTemplates;
@@ -34,19 +36,18 @@ import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
-import com.sencha.gxt.theme.base.client.field.FieldLabelDefaultAppearance;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.Dialog;
 import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
-import com.sencha.gxt.widget.core.client.button.ButtonBar;
 import com.sencha.gxt.widget.core.client.button.TextButton;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutData;
+import com.sencha.gxt.widget.core.client.container.CenterLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
+import com.sencha.gxt.widget.core.client.container.MarginData;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
@@ -54,7 +55,6 @@ import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.DateField;
 import com.sencha.gxt.widget.core.client.form.DateTimePropertyEditor;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
-import com.sencha.gxt.widget.core.client.form.FieldLabel.FieldLabelOptions;
 import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.TextArea;
@@ -63,10 +63,13 @@ import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.images.ImageSelector;
+import de.cses.client.images.ImageSelectorListener;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.IconographyEntry;
+import de.cses.shared.ImageEntry;
 
-public class DepictionEditor implements IsWidget {
+public class DepictionEditor implements IsWidget, ImageSelectorListener {
 
 	private DepictionProperties depictionProps;
 	private ListStore<DepictionEntry> depictionEntryList;
@@ -90,7 +93,12 @@ public class DepictionEditor implements IsWidget {
 	private TextArea generalRemarksArea;
 	private TextArea othersSuggestedIdentificationsArea;
 	private Label iconographyField;
+//	private Label imageField;
 	protected IconographySelector iconographySelector;
+	protected PictorialElementSelector peSelector;
+	protected ImageSelector imageSelector;
+	private ContentPanel imagePanel;
+	private CenterLayoutContainer imageContainer; 
 	
 
 	interface DepictionProperties extends PropertyAccess<DepictionEntry> {
@@ -108,6 +116,7 @@ public class DepictionEditor implements IsWidget {
 		depictionEntryList = new ListStore<DepictionEntry>(depictionProps.depictionID());
 		refreshDepictionList();
 		iconographySelector = new IconographySelector(); 
+		peSelector = new PictorialElementSelector();
 	}
 
 	private void refreshDepictionList() {
@@ -166,6 +175,54 @@ public class DepictionEditor implements IsWidget {
 		});
 		
 		vlc.add(new FieldLabel(depictionSelection, "Depiction"));
+		
+		//******************************
+		
+		imageSelector = new ImageSelector(ImageSelector.PHOTO, this);
+//		imageField = new Label("select image...");
+		imageContainer = new CenterLayoutContainer();
+		imageContainer.setPixelSize(150, 150);
+		
+//		imageField.setSize("150", "50");
+		TextButton imageButton = new TextButton("select image");
+		imageButton.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				Dialog imageSelectionDialog = new Dialog();
+				imageSelectionDialog.setModal(true);
+				imageSelectionDialog.setHeading("Select Image");
+				imageSelectionDialog.setWidget(imageSelector.asWidget());
+				imageSelectionDialog.setBodyStyle("fontWeight:bold;padding:13px;");
+				imageSelectionDialog.setPixelSize(610, 510);
+				imageSelectionDialog.setHideOnButtonClick(true);
+				imageSelectionDialog.setPredefinedButtons(PredefinedButton.OK, PredefinedButton.CANCEL);
+				imageSelectionDialog.getButton(PredefinedButton.OK).addSelectHandler(new SelectHandler() {
+					
+					private ImageEntry selectedImage;
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						selectedImage = imageSelector.getSelectedImageEntry();
+						if (selectedImage != null) {
+							SafeUri imageUri = UriUtils
+									.fromString("http://kucha.informatik.hu-berlin.de/tomcat/images/tn" + selectedImage.getFilename());
+							Image img = new Image(imageUri);
+							imageContainer.clear();
+							imageContainer.add(img);
+//							imageField.setText(selectedImage.getTitle());
+						}
+					}
+				});
+				imageSelectionDialog.show();
+			}
+		});
+		HorizontalLayoutContainer hlc = new HorizontalLayoutContainer();
+		hlc.add(imageContainer, new HorizontalLayoutData(350, 60));
+		hlc.add(imageButton, new HorizontalLayoutData(80, 40));
+		hlc.setPixelSize(250, 80);
+		vlc.add(new FieldLabel(hlc, "Image"));		
+		//******************************
 
 		styleField = new TextField();
 		styleField.setWidth(65);
@@ -201,7 +258,7 @@ public class DepictionEditor implements IsWidget {
 		vlc.add(new Label("Current location"));
 		
 		descriptionArea = new TextArea();
-		descriptionArea.setSize("300", "100");
+		descriptionArea.setSize("350", "100");
 		vlc.add(new FieldLabel(descriptionArea, "Description"));
 		
 		backgroundColourField = new TextField();
@@ -213,11 +270,11 @@ public class DepictionEditor implements IsWidget {
 		vlc.add(new FieldLabel(materialField, "Material"));
 		
 		generalRemarksArea = new TextArea();
-		generalRemarksArea.setSize("300", "100");
+		generalRemarksArea.setSize("350", "100");
 		vlc.add(new FieldLabel(generalRemarksArea, "General remarks"));
 		
 		othersSuggestedIdentificationsArea = new TextArea();
-		othersSuggestedIdentificationsArea.setSize("300", "100");
+		othersSuggestedIdentificationsArea.setSize("350", "100");
 		vlc.add(new FieldLabel(othersSuggestedIdentificationsArea, "Other suggested identifications"));
 		
 		iconographyField = new Label("select iconography...");
@@ -227,14 +284,15 @@ public class DepictionEditor implements IsWidget {
 			
 			@Override
 			public void onSelect(SelectEvent event) {
-				Dialog id = new Dialog();
-				id.setHeading("Select Iconography");
-				id.setWidget(iconographySelector);
-				id.setBodyStyle("fontWeight:bold;padding:13px;");
-				id.setPixelSize(610, 510);
-				id.setHideOnButtonClick(true);
-				id.setPredefinedButtons(PredefinedButton.OK, PredefinedButton.CANCEL);
-				id.getButton(PredefinedButton.OK).addSelectHandler(new SelectHandler() {
+				Dialog iconographySelectionDialog = new Dialog();
+				iconographySelectionDialog.setModal(true);
+				iconographySelectionDialog.setHeading("Select Iconography");
+				iconographySelectionDialog.setWidget(iconographySelector);
+				iconographySelectionDialog.setBodyStyle("fontWeight:bold;padding:13px;");
+				iconographySelectionDialog.setPixelSize(610, 510);
+				iconographySelectionDialog.setHideOnButtonClick(true);
+				iconographySelectionDialog.setPredefinedButtons(PredefinedButton.OK, PredefinedButton.CANCEL);
+				iconographySelectionDialog.getButton(PredefinedButton.OK).addSelectHandler(new SelectHandler() {
 					
 					private IconographyEntry selectedIconography;
 
@@ -246,35 +304,63 @@ public class DepictionEditor implements IsWidget {
 						}
 					}
 				});
-				id.show();
+				iconographySelectionDialog.show();
 			}
 		});
-		HorizontalLayoutContainer hlc = new HorizontalLayoutContainer();
-		hlc.add(iconographyField, new HorizontalLayoutData(300, 60));
+		hlc = new HorizontalLayoutContainer();
+		hlc.add(iconographyField, new HorizontalLayoutData(350, 60));
 		hlc.add(iconographyButton, new HorizontalLayoutData(80, 40));
 		hlc.setPixelSize(250, 80);
 		vlc.add(new FieldLabel(hlc, "Iconography"));
-		
-		TextButton newButton = new TextButton("new entry");
-		newButton.addSelectHandler(new SelectHandler() {
+
+		TextButton expandButton = new TextButton("expand tree");
+		expandButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-				newDepictionEntry();
+				peSelector.expandAll();
 			}
 		});
 
-		TextButton deleteButton = new TextButton("delete entry");
-		deleteButton.addSelectHandler(new SelectHandler() {
+		TextButton collapseButton = new TextButton("collapse tree");
+		collapseButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-				deleteSelectedDepictionEntry();
+				peSelector.collapseAll();
+			}
+		});
+
+		VerticalPanel vp = new VerticalPanel();
+		vp.add(expandButton);
+		vp.add(collapseButton);
+		hlc = new HorizontalLayoutContainer();
+		hlc.add(peSelector, new HorizontalLayoutData(350, 200));
+		hlc.add(vp, new HorizontalLayoutData(80, 40));
+		hlc.setPixelSize(400, 200);
+		vlc.add(new FieldLabel(hlc, "Pictorial Elements"));
+		
+		TextButton imgSelectionButton = new TextButton("select image");
+		imgSelectionButton.addSelectHandler(new SelectHandler() {			
+			@Override
+			public void onSelect(SelectEvent event) {
+				
 			}
 		});
 		
-		hlc = new HorizontalLayoutContainer();
-		hlc.add(newButton, new HorizontalLayoutData(80, 40));
-		hlc.add(deleteButton, new HorizontalLayoutData(80, 40));
-		hlc.setPixelSize(200, 50);
+		TextButton saveButton = new TextButton("save");
+		saveButton.addSelectHandler(new SelectHandler() {
+			@Override
+			public void onSelect(SelectEvent event) {
+				saveDepictionEntry();
+			}
+		});
+
+//		hlc = new HorizontalLayoutContainer();
+//		hlc.add(newButton, new HorizontalLayoutData(80, 40));
+//		hlc.add(deleteButton, new HorizontalLayoutData(80, 40));
+//		hlc.setPixelSize(200, 50);
+
+		ImageSelector imgSelector = new ImageSelector(ImageSelector.PHOTO, this);
+		
 		
     MarginData center = new MarginData();
 
@@ -285,7 +371,7 @@ public class DepictionEditor implements IsWidget {
 //    BorderLayoutData bld = new BorderLayoutData();
 //    borderLayoutContainer.setBounds(0, 0, 605, 505);
     borderLayoutContainer.setCenterWidget(vlc, center);
-    borderLayoutContainer.setSouthWidget(hlc);
+    borderLayoutContainer.setSouthWidget(saveButton);
 
 		panel = new ContentPanel();
 		panel.setPixelSize(610, 510);
@@ -304,9 +390,15 @@ public class DepictionEditor implements IsWidget {
 		refreshDepictionList();
 	}
 
-	protected void deleteSelectedDepictionEntry() {
+	protected void saveDepictionEntry() {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void imageSelected(int imageID) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

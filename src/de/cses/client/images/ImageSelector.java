@@ -40,11 +40,13 @@ import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.container.MarginData;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.form.ListField;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.info.Info;
@@ -70,7 +72,8 @@ public class ImageSelector implements IsWidget {
 	 * Create a remote service proxy to talk to the server-side service.
 	 */
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
-	private BorderLayoutContainer borderLayoutContainer;
+	private BorderLayoutContainer borderLayoutContainer = null;
+	private VerticalLayoutContainer vlc = null;
 	private FlowLayoutContainer imageContainer;
 	private String imageType;
 	private TextField searchField;
@@ -98,7 +101,7 @@ public class ImageSelector implements IsWidget {
 		// @XTemplate("<div qtip=\"{slogan}\" qtitle=\"State Slogan\">{name}</div>")
 		// SafeHtml state(String slogan, String name);
 	}
-
+	
 	public ImageSelector(String type, ImageSelectorListener listener) {
 		imageType = type;
 		selectorListener = new ArrayList<ImageSelectorListener>();
@@ -119,9 +122,17 @@ public class ImageSelector implements IsWidget {
 
 	@Override
 	public Widget asWidget() {
-		refreshImages();
+		if (vlc == null) {
+			refreshImages();
+			initPanel();
+		}
+		return vlc;
+	}
+	
+	private void initPanel() {
 
     borderLayoutContainer = new BorderLayoutContainer();
+		vlc = new VerticalLayoutContainer();
 		
 		imageListView = new ListView<ImageEntry, ImageEntry>(imageEntryList,
 				new IdentityValueProvider<ImageEntry>() {
@@ -225,8 +236,10 @@ public class ImageSelector implements IsWidget {
     borderLayoutContainer.setWestWidget(lf, west);
     borderLayoutContainer.setSouthWidget(flc, south);
     borderLayoutContainer.setCenterWidget(imageContainer, new MarginData());
+    
+		vlc.add(borderLayoutContainer, new VerticalLayoutData(1, 1));
+		vlc.setScrollMode(ScrollMode.NONE);
 
-		return borderLayoutContainer;
 	}
 	
 	/**
@@ -253,5 +266,8 @@ public class ImageSelector implements IsWidget {
 		});
 	}
 
+	public ImageEntry getSelectedImageEntry() {
+		return imageListView.getSelectionModel().getSelectedItem();
+	}
 
 }

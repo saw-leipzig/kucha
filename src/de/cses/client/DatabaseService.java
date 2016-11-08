@@ -52,5 +52,5 @@ public interface DatabaseService extends RemoteService {
 	int insertEntry(String sqlInsert);
 	boolean saveOrnamentEntry(OrnamentEntry ornamentEntry);
 	ArrayList<IconographyEntry> getIconography() throws IllegalArgumentException;
-	ArrayList<PictorialElementEntry> getPictorialElements();
+	ArrayList<PictorialElementEntry> getPictorialElements() throws IllegalArgumentException;
 }

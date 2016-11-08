@@ -14,6 +14,7 @@
 package de.cses.client.depictions;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -28,6 +29,7 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.info.Info;
 import com.sencha.gxt.widget.core.client.tree.Tree;
+import com.sencha.gxt.widget.core.client.tree.Tree.CheckCascade;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -50,7 +52,7 @@ public class PictorialElementSelector implements IsWidget {
 
 	public PictorialElementSelector() {
 		store = new TreeStore<PictorialElementEntry>(new KeyProvider());
-		refreshIconographyStore();
+		refreshPEStore();
 	}
 
 	private void processParent(TreeStore<PictorialElementEntry> store, PictorialElementEntry item) {
@@ -62,7 +64,7 @@ public class PictorialElementSelector implements IsWidget {
 		}
 	}
 
-	private void refreshIconographyStore() {
+	private void refreshPEStore() {
 		store.clear();
 		dbService.getPictorialElements(new AsyncCallback<ArrayList<PictorialElementEntry>>() {
 
@@ -88,12 +90,12 @@ public class PictorialElementSelector implements IsWidget {
 
 	@Override
 	public Widget asWidget() {
-		if (panel == null) {
+		if (vlc == null) {
 			initPanel();
 		}
 		return vlc;
 	}
-
+	
 	private void initPanel() {
 		vlc = new VerticalLayoutContainer();
 
@@ -116,20 +118,32 @@ public class PictorialElementSelector implements IsWidget {
 			}
 		});
 		tree.setWidth(300);
+		tree.setCheckable(true);
+    tree.setCheckStyle(CheckCascade.TRI);
+    tree.setAutoLoad(true);
 
 		vlc.add(tree, new VerticalLayoutData(1, 1));
 		vlc.setScrollMode(ScrollMode.AUTOY);
-
+		vlc.setPixelSize(300, 200);
+		
 //		panel = new ContentPanel();
-//		panel.setPixelSize(610, 510);
-//		panel.setBounds(0, 0, 610, 510);
+//		panel.setPixelSize(300, 200);
+//		panel.setBounds(0, 0, 310, 210);
 //		panel.setPosition(5, 5);
-//		panel.setHeading("Iconography Tree");
+//		panel.setHeading("Pictorial Elements");
 //		panel.add(vlc);
 	}
 	
-	public PictorialElementEntry getSelectedIconography() {
-		return tree.getSelectionModel().getSelectedItem();
+	public List<PictorialElementEntry> getSelectedPE() {
+		return tree.getSelectionModel().getSelectedItems();
+	}
+
+	public void expandAll() {
+		tree.expandAll();
+	}
+
+	public void collapseAll() {
+		tree.collapseAll();
 	}
 
 }

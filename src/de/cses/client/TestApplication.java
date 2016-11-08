@@ -93,11 +93,11 @@ public class TestApplication implements EntryPoint, ImageSelectorListener {
 		pEditorContainer.add(pEditor);
 		main.add(pEditorContainer, "Photographer Editor");
 		
-		ImageSelector selector = new ImageSelector(ImageSelector.PHOTO, this);
-		FlowLayoutContainer selectorFlc = new FlowLayoutContainer();
-		selectorFlc.setScrollMode(ScrollMode.AUTO);
-		selectorFlc.add(selector);
-		main.add(selectorFlc, "Selector Test");
+//		ImageSelector selector = new ImageSelector(ImageSelector.PHOTO, this);
+//		FlowLayoutContainer selectorFlc = new FlowLayoutContainer();
+//		selectorFlc.setScrollMode(ScrollMode.AUTO);
+//		selectorFlc.add(selector);
+//		main.add(selectorFlc, "Selector Test");
 		
 		DepictionEditor depEditor = new DepictionEditor();
 		FlowLayoutContainer depictionFlc = new FlowLayoutContainer();
@@ -105,11 +105,11 @@ public class TestApplication implements EntryPoint, ImageSelectorListener {
 		depictionFlc.add(depEditor);
 		main.add(depictionFlc, "Depiction Editor");
 		
-		IconographySelector iconoSelector = new IconographySelector();
-		main.add(iconoSelector, "Iconography Selector");
-		
-		PictorialElementSelector peSelector = new PictorialElementSelector();
-		main.add(peSelector, "Pictorial Element Selector");
+//		IconographySelector iconoSelector = new IconographySelector();
+//		main.add(iconoSelector, "Iconography Selector");
+//		
+//		PictorialElementSelector peSelector = new PictorialElementSelector();
+//		main.add(peSelector, "Pictorial Element Selector");
 	}
 
 	@Override
