@@ -15,11 +15,19 @@ package de.cses.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TabLayoutPanel;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
+import com.sencha.gxt.core.client.util.Margins;
+import com.sencha.gxt.fx.client.Draggable;
+import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.container.Viewport;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.caves.Antechamber;
@@ -29,13 +37,13 @@ import de.cses.client.caves.Cella;
 import de.cses.client.caves.Districts;
 import de.cses.client.caves.Niches;
 import de.cses.client.depictions.DepictionEditor;
-import de.cses.client.depictions.IconographySelector;
-import de.cses.client.depictions.PictorialElementSelector;
 import de.cses.client.images.ImageEditor;
 import de.cses.client.images.ImageSelector;
 import de.cses.client.images.ImageSelectorListener;
+import de.cses.client.images.ImageUploader;
 import de.cses.client.images.PhotographerEditor;
 import de.cses.client.ornamentic.Ornamentic;
+
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -45,6 +53,8 @@ public class TestApplication implements EntryPoint, ImageSelectorListener {
 	static Ornamentic ornamentic = new Ornamentic();
 
 	private TabLayoutPanel main;
+
+	private PopupPanel depictionEditorPanel;
 
 	/**
 	 * This is the entry point method.
@@ -66,8 +76,7 @@ public class TestApplication implements EntryPoint, ImageSelectorListener {
 		CaveType caveType = new CaveType();
 		Niches niches = new Niches();
 		Antechamber antechamber = new Antechamber();
-		Districts districts = new Districts();
-		
+		 Districts districts = new Districts();
 	
 		
 		ImageEditor imgEditor = new ImageEditor();
@@ -76,45 +85,57 @@ public class TestApplication implements EntryPoint, ImageSelectorListener {
 
 		main.add(co.asWidget(), "Ornamentic Editor");
 		main.add(caves.asWidget(), "Cave Editor");
-		main.add(cella.asWidget(), "Cella Editor");
 		main.add(caveType.asWidget(),"Cave Type Editor");
 		main.add(niches.asWidget(), "Niches Editor");
 		main.add(antechamber.asWidget(), "Antechamber Editor");
 		main.add(districts.asWidget(), "District Editor");
 
-    FlowLayoutContainer flowLC = new FlowLayoutContainer();
-		flowLC.setScrollMode(ScrollMode.ALWAYS);
-    flowLC.add(imgEditor);
-//    flowLC.add(imageUploader, layoutData);
-		main.add(flowLC, "Image Manager");
+		// we are using FlowLayoutContainer 
 
 		FlowLayoutContainer pEditorContainer = new FlowLayoutContainer();
 		pEditorContainer.setScrollMode(ScrollMode.AUTOY);
 		pEditorContainer.add(pEditor);
 		main.add(pEditorContainer, "Photographer Editor");
 		
-//		ImageSelector selector = new ImageSelector(ImageSelector.PHOTO, this);
-//		FlowLayoutContainer selectorFlc = new FlowLayoutContainer();
-//		selectorFlc.setScrollMode(ScrollMode.AUTO);
-//		selectorFlc.add(selector);
-//		main.add(selectorFlc, "Selector Test");
+//		// we are using FlowLayoutContainer 
+//		FlowLayoutContainer flowLC = new FlowLayoutContainer();
+//		flowLC.setScrollMode(ScrollMode.ALWAYS);
+    MarginData layoutData = new MarginData(new Margins(0, 5, 0, 0));
+//    flowLC.add(imgEditor, layoutData);
+////    flowLC.add(imageUploader, layoutData);
+    
+    main.add(cella,"Cella Editor");
+		main.add(pEditor, "Photographer Editor");
 		
-		DepictionEditor depEditor = new DepictionEditor();
-		FlowLayoutContainer depictionFlc = new FlowLayoutContainer();
-		depictionFlc.setScrollMode(ScrollMode.AUTOY);
-		depictionFlc.add(depEditor);
-		main.add(depictionFlc, "Depiction Editor");
+		ImageSelector selector = new ImageSelector(ImageSelector.MAP, this);
+		FlowLayoutContainer selectorFlc = new FlowLayoutContainer();
+		selectorFlc.setScrollMode(ScrollMode.AUTO);
+		selectorFlc.add(selector.asWidget(), layoutData);
+		main.add(selectorFlc, "Selector Test");
 		
-//		IconographySelector iconoSelector = new IconographySelector();
-//		main.add(iconoSelector, "Iconography Selector");
-//		
-//		PictorialElementSelector peSelector = new PictorialElementSelector();
-//		main.add(peSelector, "Pictorial Element Selector");
+		TextButton depictionButton = new TextButton("Edit Depiction");
+		depictionEditorPanel = new PopupPanel(false);
+		depictionEditorPanel.add(new DepictionEditor());
+		new Draggable(depictionEditorPanel);
+		depictionButton.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				depictionEditorPanel.setGlassEnabled(true);
+//				depictionEditorPanel.setModal(true);
+				depictionEditorPanel.center();
+				depictionEditorPanel.show();
+			}
+		});
+		main.add(depictionButton, "Depiction Editor");
+		
 	}
 
 	@Override
 	public void imageSelected(int imageID) {
-		Info.display("Selection made", "Image no. " + imageID + " has been selected");
+		// TODO Auto-generated method stub
+		
 	}
+
 
 }

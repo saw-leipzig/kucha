@@ -10,6 +10,14 @@ public class CaveTypeEntry implements IsSerializable{
 	public CaveTypeEntry(){
 		
 	}
+	
+	public CaveTypeEntry(int caveTypeID, String enShortname, String enDescription){
+		this.caveTypeID= caveTypeID;
+		this.enShortname = enShortname;
+		this.enDescription = enDescription;
+		
+	}
+	
 	public int getCaveTypeID() {
 		return caveTypeID;
 	}

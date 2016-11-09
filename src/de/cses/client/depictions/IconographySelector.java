@@ -115,21 +115,23 @@ public class IconographySelector implements IsWidget {
 				return "name";
 			}
 		});
-		tree.setWidth(300);
+		tree.setWidth(350);
 
 		vlc.add(tree, new VerticalLayoutData(1, 1));
 		vlc.setScrollMode(ScrollMode.AUTOY);
-
-//		panel = new ContentPanel();
-//		panel.setPixelSize(610, 510);
-//		panel.setBounds(0, 0, 610, 510);
-//		panel.setPosition(5, 5);
-//		panel.setHeading("Iconography Tree");
-//		panel.add(vlc);
+		vlc.setPixelSize(350, 300);
 	}
 	
 	public IconographyEntry getSelectedIconography() {
 		return tree.getSelectionModel().getSelectedItem();
+	}
+
+	public void expandAll() {
+		tree.expandAll();
+	}
+
+	public void collapseAll() {
+		tree.collapseAll();
 	}
 
 }

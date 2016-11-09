@@ -23,6 +23,7 @@ import java.util.Hashtable;
 
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
+import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
@@ -471,6 +472,53 @@ public class MysqlConnector {
 			return null;
 		}
 		return results;
+	}
+	public synchronized CaveTypeEntry getCaveTypebyID(int caveTypeID){
+		Connection dbc = getConnection();
+		CaveTypeEntry resultCaveType = new CaveTypeEntry();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM CaveType WHERE CaveTypeID ="+caveTypeID);
+			while (rs.next()) { 
+				resultCaveType.setEnDescription(rs.getString("en.description"));
+				resultCaveType.setEnShortname(rs.getString("en.shortname"));
+				
+			}
+			rs.close();
+			stmt.close();
+			dbc.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return resultCaveType;
+		
+	}
+	
+	public synchronized ArrayList<CaveTypeEntry> getCaveTypes(){
+		System.err.println("IN METHODE DRIN");
+		Connection dbc = getConnection();
+		ArrayList<CaveTypeEntry> results = new ArrayList<CaveTypeEntry>();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM CaveType");
+			while (rs.next()) { 
+				System.err.println("cave type gefunden");
+				CaveTypeEntry caveType = new CaveTypeEntry(rs.getInt("CaveTypeID"), rs.getString("en.shortname"), rs.getString("en.description"));
+				results.add(caveType);
+			}
+			rs.close();
+			stmt.close();
+			dbc.close();
+		} catch (SQLException e) {
+			System.err.println("error in db zugriff");
+			e.printStackTrace();
+			return results;
+		}
+		return results;
+		
 	}
 	
 	public synchronized boolean saveOrnamentEntry(OrnamentEntry ornamentEntry) {

@@ -22,6 +22,7 @@ import com.sencha.gxt.data.shared.TreeStore;
 
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
+import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
@@ -50,7 +51,9 @@ public interface DatabaseService extends RemoteService {
 	boolean updateEntry(String sqlUpdate);
 	boolean deleteEntry(String sqlDelete);
 	int insertEntry(String sqlInsert);
-	boolean saveOrnamentEntry(OrnamentEntry ornamentEntry);
 	ArrayList<IconographyEntry> getIconography() throws IllegalArgumentException;
 	ArrayList<PictorialElementEntry> getPictorialElements() throws IllegalArgumentException;
+	boolean saveOrnamentEntry(OrnamentEntry ornamentEntry) throws IllegalArgumentException;
+	CaveTypeEntry getCaveTypebyID(int caveTypeID) throws IllegalArgumentException;
+	ArrayList<CaveTypeEntry> getCaveTypes() throws IllegalArgumentException;
 }

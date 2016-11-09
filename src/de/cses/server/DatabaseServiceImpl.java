@@ -22,6 +22,7 @@ import de.cses.client.DatabaseService;
 import de.cses.server.mysql.MysqlConnector;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
+import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
@@ -127,6 +128,17 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public boolean saveOrnamentEntry(OrnamentEntry ornamentEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.saveOrnamentEntry(ornamentEntry);
+	}
+	@Override
+	public CaveTypeEntry getCaveTypebyID(int caveTypeID) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getCaveTypebyID(caveTypeID);
+	}
+
+	@Override
+	public ArrayList<CaveTypeEntry> getCaveTypes() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getCaveTypes();
 	}
 
 	@Override

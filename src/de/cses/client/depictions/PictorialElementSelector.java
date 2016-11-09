@@ -117,21 +117,14 @@ public class PictorialElementSelector implements IsWidget {
 				return "name";
 			}
 		});
-		tree.setWidth(300);
+		tree.setWidth(350);
 		tree.setCheckable(true);
     tree.setCheckStyle(CheckCascade.TRI);
     tree.setAutoLoad(true);
 
 		vlc.add(tree, new VerticalLayoutData(1, 1));
 		vlc.setScrollMode(ScrollMode.AUTOY);
-		vlc.setPixelSize(300, 200);
-		
-//		panel = new ContentPanel();
-//		panel.setPixelSize(300, 200);
-//		panel.setBounds(0, 0, 310, 210);
-//		panel.setPosition(5, 5);
-//		panel.setHeading("Pictorial Elements");
-//		panel.add(vlc);
+		vlc.setPixelSize(350, 300);
 	}
 	
 	public List<PictorialElementEntry> getSelectedPE() {

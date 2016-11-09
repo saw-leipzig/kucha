@@ -20,6 +20,7 @@ import com.sencha.gxt.data.shared.TreeStore;
 
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
+import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
@@ -47,4 +48,6 @@ public interface DatabaseServiceAsync {
 	void getDepictions(AsyncCallback<ArrayList<DepictionEntry>> callback) throws IllegalArgumentException;
 	void getIconography(AsyncCallback<ArrayList<IconographyEntry>> callback) throws IllegalArgumentException;
 	void getPictorialElements(AsyncCallback<ArrayList<PictorialElementEntry>> asyncCallback) throws IllegalArgumentException;
+	void getCaveTypebyID(int caveTypeID, AsyncCallback<CaveTypeEntry> callback) throws IllegalArgumentException;
+	void getCaveTypes( AsyncCallback<ArrayList<CaveTypeEntry>> callback) throws IllegalArgumentException;
 }

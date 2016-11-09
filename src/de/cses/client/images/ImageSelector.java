@@ -35,6 +35,7 @@ import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.Store.StoreFilter;
+import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
@@ -73,11 +74,12 @@ public class ImageSelector implements IsWidget {
 	 */
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	private BorderLayoutContainer borderLayoutContainer = null;
-	private VerticalLayoutContainer vlc = null;
+	private VerticalLayoutContainer vlc;
 	private FlowLayoutContainer imageContainer;
 	private String imageType;
 	private TextField searchField;
 	private StoreFilter<ImageEntry> searchFilter;
+	private FramedPanel mainPanel = null;
 
 	interface ImageProperties extends PropertyAccess<ImageEntry> {
 		ModelKeyProvider<ImageEntry> imageID();
@@ -122,15 +124,17 @@ public class ImageSelector implements IsWidget {
 
 	@Override
 	public Widget asWidget() {
-		if (vlc == null) {
+		if (mainPanel == null) {
 			refreshImages();
 			initPanel();
 		}
-		return vlc;
+		return mainPanel;
 	}
 	
 	private void initPanel() {
 
+		mainPanel = new FramedPanel();
+		mainPanel.setHeading("Image Selector");
     borderLayoutContainer = new BorderLayoutContainer();
 		vlc = new VerticalLayoutContainer();
 		
@@ -170,7 +174,7 @@ public class ImageSelector implements IsWidget {
 		ListField<ImageEntry, ImageEntry> lf = new ListField<ImageEntry, ImageEntry>(imageListView);
 		lf.setSize("250", "350");
 
-		TextButton selectButton = new TextButton("select");
+		TextButton selectButton = new TextButton("Select");
 		selectButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
@@ -180,6 +184,17 @@ public class ImageSelector implements IsWidget {
 				}
 				for (ImageSelectorListener listener : selectorListener) {
 					listener.imageSelected(imageListView.getSelectionModel().getSelectedItem().getImageID());
+				}
+			}
+		});
+		
+		TextButton cancelButton = new TextButton("Cancel");
+		cancelButton.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				for (ImageSelectorListener listener : selectorListener) {
+					listener.imageSelected(0);
 				}
 			}
 		});
@@ -222,6 +237,7 @@ public class ImageSelector implements IsWidget {
     flc.add(searchButton, new MarginData(5,5,5,0));
     flc.add(resetButton, new MarginData(5,5,5,5));
     flc.add(selectButton, new MarginData(5,0,5,20));
+    flc.add(cancelButton, new MarginData(5, 5, 5, 5));
 		
 		imageContainer = new FlowLayoutContainer();
 		imageContainer.setScrollMode(ScrollMode.AUTO);
@@ -240,6 +256,9 @@ public class ImageSelector implements IsWidget {
 		vlc.add(borderLayoutContainer, new VerticalLayoutData(1, 1));
 		vlc.setScrollMode(ScrollMode.NONE);
 
+		vlc.setPixelSize(600, 500);
+		mainPanel.add(vlc);
+		mainPanel.setPixelSize(610, 510);
 	}
 	
 	/**
@@ -266,8 +285,8 @@ public class ImageSelector implements IsWidget {
 		});
 	}
 
-	public ImageEntry getSelectedImageEntry() {
-		return imageListView.getSelectionModel().getSelectedItem();
-	}
-
+//	public ImageEntry getSelectedImageEntry() {
+//		return imageListView.getSelectionModel().getSelectedItem();
+//	}
+//
 }

@@ -82,6 +82,7 @@ public class Districts implements IsWidget, ImageSelectorListener{
 	@Override
 	public void imageSelected(int imageID) {
 		imagePanel.hide();
+		// imageID == 0  =>  Cancel Button pressed!
 	}
 
 }
