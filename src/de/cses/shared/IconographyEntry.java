@@ -20,8 +20,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class IconographyEntry implements IsSerializable {
 	
 	private int iconographyID, parentID;
-	String text;
-	ArrayList<IconographyEntry> children;
+	private String text;
+	private ArrayList<IconographyEntry> children;
 	
 	public IconographyEntry() {
 		super();

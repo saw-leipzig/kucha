@@ -11,24 +11,38 @@
  * You should have received a copy of the GPL v3 along with the software. 
  * If not, you can access it from here: <https://www.gnu.org/licenses/gpl-3.0.txt>.
  */
-package de.cses.server.mysql;
+package de.cses.shared;
 
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class Messages {
-	private static final String BUNDLE_NAME = "de.cses.server.mysql.messages"; //$NON-NLS-1$
+public class VendorEntry implements IsSerializable {
+	
+	private int vendorID;
+	private String vendorName;
 
-	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
-
-	private Messages() {
+	public VendorEntry() {
+		super();
+	}
+	
+	public VendorEntry(int vendorID, String vendorName) {
+		this.setVendorID(vendorID);
+		this.setVendorName(vendorName);
 	}
 
-	public static String getString(String key) {
-		try {
-			return RESOURCE_BUNDLE.getString(key);
-		} catch (MissingResourceException e) {
-			return '!' + key + '!';
-		}
+	public int getVendorID() {
+		return vendorID;
 	}
+
+	public void setVendorID(int vendorID) {
+		this.vendorID = vendorID;
+	}
+
+	public String getVendorName() {
+		return vendorName;
+	}
+
+	public void setVendorName(String vendorName) {
+		this.vendorName = vendorName;
+	}
+
 }

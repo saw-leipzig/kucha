@@ -24,12 +24,15 @@ import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.DistrictEntry;
+import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PictorialElementEntry;
+import de.cses.shared.StyleEntry;
+import de.cses.shared.VendorEntry;
 
 /**
  * The server-side implementation of the RPC service.
@@ -148,6 +151,13 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	}
 
 	@Override
+	public DepictionEntry getDepictionEntry(int depictionID) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getDepictionEntry(depictionID);
+//		this.getThreadLocalRequest().getAttribute("user");
+	}
+
+	@Override
 	public ArrayList<IconographyEntry> getIconography() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getIconography();
@@ -157,6 +167,24 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public ArrayList<PictorialElementEntry> getPictorialElements() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getPictorialElements();
+	}
+
+	@Override
+	public ArrayList<VendorEntry> getVendors() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getVendors();
+	}
+
+	@Override
+	public ArrayList<StyleEntry> getStyles() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getStyles();
+	}
+
+	@Override
+	public ArrayList<ExpeditionEntry> getExpeditions() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getExpeditions();
 	}
 
 }

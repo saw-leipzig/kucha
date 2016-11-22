@@ -37,18 +37,20 @@ import de.cses.client.caves.Cella;
 import de.cses.client.caves.Districts;
 import de.cses.client.caves.Niches;
 import de.cses.client.depictions.DepictionEditor;
+import de.cses.client.depictions.DepictionEditorListener;
 import de.cses.client.images.ImageEditor;
 import de.cses.client.images.ImageSelector;
 import de.cses.client.images.ImageSelectorListener;
 import de.cses.client.images.ImageUploader;
 import de.cses.client.images.PhotographerEditor;
 import de.cses.client.ornamentic.Ornamentic;
+import de.cses.shared.DepictionEntry;
 
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
-public class TestApplication implements EntryPoint, ImageSelectorListener {
+public class TestApplication implements EntryPoint, ImageSelectorListener, DepictionEditorListener {
 
 	static Ornamentic ornamentic = new Ornamentic();
 
@@ -107,15 +109,15 @@ public class TestApplication implements EntryPoint, ImageSelectorListener {
     main.add(cella,"Cella Editor");
 		main.add(pEditor, "Photographer Editor");
 		
-		ImageSelector selector = new ImageSelector(ImageSelector.MAP, this);
-		FlowLayoutContainer selectorFlc = new FlowLayoutContainer();
-		selectorFlc.setScrollMode(ScrollMode.AUTO);
-		selectorFlc.add(selector.asWidget(), layoutData);
-		main.add(selectorFlc, "Selector Test");
+//		ImageSelector selector = new ImageSelector(ImageSelector.MAP, this);
+//		FlowLayoutContainer selectorFlc = new FlowLayoutContainer();
+//		selectorFlc.setScrollMode(ScrollMode.AUTO);
+//		selectorFlc.add(selector.asWidget(), layoutData);
+//		main.add(selectorFlc, "Selector Test");
 		
 		TextButton depictionButton = new TextButton("Edit Depiction");
 		depictionEditorPanel = new PopupPanel(false);
-		depictionEditorPanel.add(new DepictionEditor());
+		depictionEditorPanel.add(new DepictionEditor(0, this));
 		new Draggable(depictionEditorPanel);
 		depictionButton.addSelectHandler(new SelectHandler() {
 			
@@ -135,6 +137,11 @@ public class TestApplication implements EntryPoint, ImageSelectorListener {
 	public void imageSelected(int imageID) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void depictionSaved(DepictionEntry depictionEntry) {
+		depictionEditorPanel.hide();
 	}
 
 

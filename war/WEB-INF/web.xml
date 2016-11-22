@@ -35,7 +35,6 @@
     	<max-request-size>418018841</max-request-size>
     	<file-size-threshold>1048576</file-size-threshold>
     </multipart-config>
-  	
   </servlet>
   
   <servlet-mapping>
@@ -43,6 +42,15 @@
     <url-pattern>/infosystem/imgUploader</url-pattern>
   </servlet-mapping>
   
+  <servlet>
+  	<servlet-name>images</servlet-name>
+  	<servlet-class>de.cses.server.ResourceDownloadServlet</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+  	<servlet-name>images</servlet-name>
+  	<url-pattern>/infosystem/images</url-pattern>
+  </servlet-mapping>
   
   <!-- Default page to serve -->
   <welcome-file-list>

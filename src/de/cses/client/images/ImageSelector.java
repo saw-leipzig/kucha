@@ -25,6 +25,10 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
+import com.sencha.gxt.chart.client.draw.DrawComponent;
+import com.sencha.gxt.chart.client.draw.DrawFx;
+import com.sencha.gxt.chart.client.draw.sprite.RectangleSprite;
+import com.sencha.gxt.chart.client.draw.sprite.Sprite;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
@@ -35,6 +39,7 @@ import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.Store.StoreFilter;
+import com.sencha.gxt.fx.client.Draggable;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.button.TextButton;
@@ -148,8 +153,7 @@ public class ImageSelector implements IsWidget {
 			final ImageViewTemplates imageViewTemplates = GWT.create(ImageViewTemplates.class);
 
 			public SafeHtml render(ImageEntry item) {
-				SafeUri imageUri = UriUtils
-						.fromString("http://kucha.informatik.hu-berlin.de/tomcat/images/tn" + item.getFilename());
+				SafeUri imageUri = UriUtils.fromString("infosystem/images?imageID="+item.getImageID()+"&thumb=true");
 				return imageViewTemplates.image(imageUri, item.getTitle());
 			}
 
@@ -160,21 +164,20 @@ public class ImageSelector implements IsWidget {
 			@Override
 			public void onSelectionChanged(SelectionChangedEvent<ImageEntry> event) {
 				ImageEntry item = event.getSelection().get(0);
-				SafeUri imageUri = UriUtils
-						.fromString("http://kucha.informatik.hu-berlin.de/tomcat/images/" + item.getFilename());
+				SafeUri imageUri = UriUtils.fromString("infosystem/images?imageID="+item.getImageID());
 				Image img = new Image(imageUri);
 				imageContainer.clear();
 				imageContainer.add(img);
 			}
-			
 		});
-
+		
 		imageListView.setSize("240", "340");
 
 		ListField<ImageEntry, ImageEntry> lf = new ListField<ImageEntry, ImageEntry>(imageListView);
 		lf.setSize("250", "350");
 
 		TextButton selectButton = new TextButton("Select");
+		
 		selectButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {

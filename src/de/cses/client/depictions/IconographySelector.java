@@ -119,7 +119,7 @@ public class IconographySelector implements IsWidget {
 
 		vlc.add(tree, new VerticalLayoutData(1, 1));
 		vlc.setScrollMode(ScrollMode.AUTOY);
-		vlc.setPixelSize(350, 300);
+		vlc.setPixelSize(350, 200);
 	}
 	
 	public IconographyEntry getSelectedIconography() {

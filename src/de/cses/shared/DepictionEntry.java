@@ -1,3 +1,16 @@
+/*
+ * Copyright 2016 
+ * Saxon Academy of Science in Leipzig, Germany
+ * 
+ * This is free software: you can redistribute it and/or modify it under the terms of the 
+ * GNU General Public License version 3 (GPL v3) as published by the Free Software Foundation.
+ * 
+ * This software is distributed WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. Please read the GPL v3 for more details.
+ * 
+ * You should have received a copy of the GPL v3 along with the software. 
+ * If not, you can access it from here: <https://www.gnu.org/licenses/gpl-3.0.txt>.
+ */
 package de.cses.shared;
 
 import java.sql.Date;
@@ -13,7 +26,7 @@ public class DepictionEntry implements IsSerializable {
  */
 	
 	private int depictionID;
-	private String style;
+	private int styleID;
 	private String inscriptions;
 	private String dating;
 	private String description;
@@ -21,7 +34,7 @@ public class DepictionEntry implements IsSerializable {
 	private String material;
 	private String generalRemarks;
 	private String otherSuggestedIdentifications;
-	private int width, height;
+	private double width, height;
 	private Date dateOfAcquisition;
 	private int expeditionID;
 	private Date purchaseDate;
@@ -34,13 +47,13 @@ public class DepictionEntry implements IsSerializable {
 		depictionID = 0;
 	}
 
-	public DepictionEntry(int depictionID, String style, String inscriptions, String dating, String description,
+	public DepictionEntry(int depictionID, int styleID, String inscriptions, String dating, String description,
 			String backgroundColour, String material, String generalRemarks, String otherSuggestedIdentifications, int width,
 			int height, Date dateOfAcquisition, int expeditionID, Date purchaseDate, int currentLocationID, int vendorID,
 			int storyID, int caveID) {
 		super();
 		this.depictionID = depictionID;
-		this.style = style;
+		this.styleID = styleID;
 		this.inscriptions = inscriptions;
 		this.dating = dating;
 		this.description = description;
@@ -67,12 +80,12 @@ public class DepictionEntry implements IsSerializable {
 		this.depictionID = depictionID;
 	}
 
-	public String getStyle() {
-		return style;
+	public int getStyleID() {
+		return styleID;
 	}
 
-	public void setStyle(String style) {
-		this.style = style;
+	public void setStyleID(int styleID) {
+		this.styleID = styleID;
 	}
 
 	public String getInscriptions() {
@@ -131,7 +144,7 @@ public class DepictionEntry implements IsSerializable {
 		this.otherSuggestedIdentifications = otherSuggestedIdentifications;
 	}
 
-	public int getWidth() {
+	public double getWidth() {
 		return width;
 	}
 
@@ -139,7 +152,7 @@ public class DepictionEntry implements IsSerializable {
 		this.width = width;
 	}
 
-	public int getHeight() {
+	public double getHeight() {
 		return height;
 	}
 
@@ -211,4 +224,5 @@ public class DepictionEntry implements IsSerializable {
 	public String getName() {
 		return "Cave: "+caveID+" Depiction: "+depictionID;
 	}
+
 }

@@ -25,12 +25,15 @@ import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.DistrictEntry;
+import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PictorialElementEntry;
+import de.cses.shared.StyleEntry;
+import de.cses.shared.VendorEntry;
 
 /**
  * This is the central Database connector. 
@@ -267,7 +270,7 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Depictions");
 			while (rs.next()) {
-				results.add(new DepictionEntry(rs.getInt("DepictionID"), rs.getString("Style"), rs.getString("Inscriptions"),
+				results.add(new DepictionEntry(rs.getInt("DepictionID"), rs.getInt("StyleID"), rs.getString("Inscriptions"),
 						rs.getString("Dating"), rs.getString("Description"), rs.getString("BackgroundColour"),
 						rs.getString("Material"), rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"),
 						rs.getInt("Dimension.width"), rs.getInt("Dimension.height"), rs.getDate("DateOfAcquisition"),
@@ -283,6 +286,32 @@ public class MysqlConnector {
 		}
 		return results;
 	}
+	
+	public DepictionEntry getDepictionEntry(int depictionID) {
+		Connection dbc = getConnection();
+		DepictionEntry result = null;
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Depictions WHERE DepictionID="+depictionID);
+			if (rs.next()) {  // we only need to call this once, since we do not expect more than 1 result! 
+				result = new DepictionEntry(rs.getInt("DepictionID"), rs.getInt("StyleID"), rs.getString("Inscriptions"),
+						rs.getString("Dating"), rs.getString("Description"), rs.getString("BackgroundColour"),
+						rs.getString("Material"), rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"),
+						rs.getInt("Dimension.width"), rs.getInt("Dimension.height"), rs.getDate("DateOfAcquisition"),
+						rs.getInt("ExpeditionID"), rs.getDate("PurchaseDate"), rs.getInt("CurrentLocationID"),
+						rs.getInt("VendorID"), rs.getInt("StoryID"), rs.getInt("CaveID"));
+			}
+			rs.close();
+			stmt.close();
+			dbc.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+
 
 	
 	/**
@@ -392,6 +421,7 @@ public class MysqlConnector {
 //		}
 //		return true;
 //	}
+	
 	public synchronized ArrayList<CaveEntry> getCaves() {
 		ArrayList<CaveEntry> results = new ArrayList<CaveEntry>();
 		Connection dbc = getConnection();
@@ -454,6 +484,7 @@ public class MysqlConnector {
 		}
 		return results;
 	}
+	
 	public synchronized ArrayList<OrnamentOfOtherCulturesEntry> getOrnametsOfOtherCultures() {
 		ArrayList<OrnamentOfOtherCulturesEntry> results = new ArrayList<OrnamentOfOtherCulturesEntry>();
 		Connection dbc = getConnection();
@@ -473,6 +504,7 @@ public class MysqlConnector {
 		}
 		return results;
 	}
+	
 	public synchronized CaveTypeEntry getCaveTypebyID(int caveTypeID){
 		Connection dbc = getConnection();
 		CaveTypeEntry resultCaveType = new CaveTypeEntry();
@@ -493,7 +525,6 @@ public class MysqlConnector {
 			return null;
 		}
 		return resultCaveType;
-		
 	}
 	
 	public synchronized ArrayList<CaveTypeEntry> getCaveTypes(){
@@ -642,5 +673,66 @@ public class MysqlConnector {
 		}
 		return results;
 	}
-	
+
+	public ArrayList<VendorEntry> getVendors() {
+		ArrayList<VendorEntry> results = new ArrayList<VendorEntry>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Vendors");
+			while (rs.next()) { 
+				results.add(new VendorEntry(rs.getInt("VendorID"), rs.getString("VendorName")));
+			}
+			rs.close();
+			stmt.close();
+			dbc.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return results;
+	}
+
+	public ArrayList<StyleEntry> getStyles() {
+		ArrayList<StyleEntry> results = new ArrayList<StyleEntry>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Styles");
+			while (rs.next()) { 
+				results.add(new StyleEntry(rs.getInt("StyleID"), rs.getString("StyleName")));
+			}
+			rs.close();
+			stmt.close();
+			dbc.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return results;
+	}
+
+	public ArrayList<ExpeditionEntry> getExpeditions() {
+		ArrayList<ExpeditionEntry> results = new ArrayList<ExpeditionEntry>();
+		Connection dbc = getConnection();
+		
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Expeditions");
+			while (rs.next()) { 
+				results.add(new ExpeditionEntry(rs.getInt("ExpeditionID"), rs.getString("Name"), rs.getString("Leader"), rs.getDate("StartDate"), rs.getDate("EndDate")));
+			}
+			rs.close();
+			stmt.close();
+			dbc.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return results;
+	}
+
 }
