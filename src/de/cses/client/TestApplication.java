@@ -18,13 +18,16 @@ import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TabLayoutPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.fx.client.Draggable;
 import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.MarginData;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.Viewport;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
@@ -41,6 +44,7 @@ import de.cses.client.depictions.DepictionEditorListener;
 import de.cses.client.images.ImageEditor;
 import de.cses.client.images.ImageSelector;
 import de.cses.client.images.ImageSelectorListener;
+import de.cses.client.images.ImageUploadListener;
 import de.cses.client.images.ImageUploader;
 import de.cses.client.images.PhotographerEditor;
 import de.cses.client.ornamentic.Ornamentic;
@@ -50,13 +54,17 @@ import de.cses.shared.DepictionEntry;
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
-public class TestApplication implements EntryPoint, ImageSelectorListener, DepictionEditorListener {
+public class TestApplication implements EntryPoint, DepictionEditorListener, ImageUploadListener {
 
 	static Ornamentic ornamentic = new Ornamentic();
 
 	private TabLayoutPanel main;
 
 	private PopupPanel depictionEditorPanel;
+
+	private PopupPanel imageEditorPanel;
+
+	private PopupPanel imageUploadPanel;
 
 	/**
 	 * This is the entry point method.
@@ -81,7 +89,6 @@ public class TestApplication implements EntryPoint, ImageSelectorListener, Depic
 		 Districts districts = new Districts();
 	
 		
-		ImageEditor imgEditor = new ImageEditor();
 //		ImageUploader imageUploader = new ImageUploader(imgEditor);
 		PhotographerEditor pEditor = new PhotographerEditor();
 
@@ -99,22 +106,21 @@ public class TestApplication implements EntryPoint, ImageSelectorListener, Depic
 		pEditorContainer.add(pEditor);
 		main.add(pEditorContainer, "Photographer Editor");
 		
-//		// we are using FlowLayoutContainer 
-//		FlowLayoutContainer flowLC = new FlowLayoutContainer();
-//		flowLC.setScrollMode(ScrollMode.ALWAYS);
-    MarginData layoutData = new MarginData(new Margins(0, 5, 0, 0));
-//    flowLC.add(imgEditor, layoutData);
-////    flowLC.add(imageUploader, layoutData);
-    
-    main.add(cella,"Cella Editor");
-		main.add(pEditor, "Photographer Editor");
-		
-//		ImageSelector selector = new ImageSelector(ImageSelector.MAP, this);
-//		FlowLayoutContainer selectorFlc = new FlowLayoutContainer();
-//		selectorFlc.setScrollMode(ScrollMode.AUTO);
-//		selectorFlc.add(selector.asWidget(), layoutData);
-//		main.add(selectorFlc, "Selector Test");
-		
+    TextButton imgEditorButton = new TextButton("Edit Image");
+    imageEditorPanel = new PopupPanel(false);
+    imageEditorPanel.add(new ImageEditor());
+    new Draggable(imageEditorPanel);
+    imgEditorButton.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				imageEditorPanel.setGlassEnabled(true);
+				imageEditorPanel.center();
+				imageEditorPanel.show();
+			}
+		});
+    main.add(imgEditorButton, "Image Editor");
+    		
 		TextButton depictionButton = new TextButton("Edit Depiction");
 		depictionEditorPanel = new PopupPanel(false);
 		depictionEditorPanel.add(new DepictionEditor(0, this));
@@ -129,19 +135,37 @@ public class TestApplication implements EntryPoint, ImageSelectorListener, Depic
 				depictionEditorPanel.show();
 			}
 		});
-		main.add(depictionButton, "Depiction Editor");
 		
-	}
-
-	@Override
-	public void imageSelected(int imageID) {
-		// TODO Auto-generated method stub
+		TextButton uploadButton = new TextButton("Image Uploader");
+		imageUploadPanel = new PopupPanel(false);
+		imageUploadPanel.add(new ImageUploader(this));
+		new Draggable(imageUploadPanel);
+		uploadButton.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				imageUploadPanel.setGlassEnabled(true);
+				imageUploadPanel.center();
+				imageUploadPanel.show();
+			}
+		});
+		
+		VerticalPanel vp = new VerticalPanel();
+		vp.add(depictionButton);
+		vp.add(uploadButton);
+		
+		main.add(vp, "Depiction Editor");
 		
 	}
 
 	@Override
 	public void depictionSaved(DepictionEntry depictionEntry) {
 		depictionEditorPanel.hide();
+	}
+
+	@Override
+	public void uploadCompleted() {
+		imageUploadPanel.hide();
 	}
 
 

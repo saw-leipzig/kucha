@@ -21,38 +21,27 @@ import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
-import com.sencha.gxt.chart.client.draw.DrawComponent;
-import com.sencha.gxt.chart.client.draw.DrawFx;
-import com.sencha.gxt.chart.client.draw.sprite.RectangleSprite;
-import com.sencha.gxt.chart.client.draw.sprite.Sprite;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
-import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.Store.StoreFilter;
-import com.sencha.gxt.fx.client.Draggable;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.button.TextButton;
-import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
-import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
-import com.sencha.gxt.widget.core.client.container.MarginData;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.form.ListField;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.info.Info;
@@ -78,8 +67,6 @@ public class ImageSelector implements IsWidget {
 	 * Create a remote service proxy to talk to the server-side service.
 	 */
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
-	private BorderLayoutContainer borderLayoutContainer = null;
-	private VerticalLayoutContainer vlc;
 	private FlowLayoutContainer imageContainer;
 	private String imageType;
 	private TextField searchField;
@@ -88,12 +75,11 @@ public class ImageSelector implements IsWidget {
 
 	interface ImageProperties extends PropertyAccess<ImageEntry> {
 		ModelKeyProvider<ImageEntry> imageID();
-
 		LabelProvider<ImageEntry> title();
 	}
 
 	/**
-	 * creates the view how a thumbnail of an image entry will be shown currently
+	 * Creates the view how a thumbnail of an image entry will be shown currently
 	 * we are relying on the url of the image until we have user management
 	 * implemented and protect images from being viewed from the outside without
 	 * permission
@@ -102,15 +88,20 @@ public class ImageSelector implements IsWidget {
 	 *
 	 */
 	interface ImageViewTemplates extends XTemplates {
-		@XTemplate("<img align=\"center\" width=\"150\" height=\"150\" margin=\"20\" src=\"{imageUri}\"><br> {title}")
+		@XTemplate("<img align=\"center\" width=\"175\" height=\"175\" margin=\"20\" src=\"{imageUri}\"><br> {title}")
 		SafeHtml image(SafeUri imageUri, String title);
-
-		// @XTemplate("<div qtip=\"{slogan}\" qtitle=\"State Slogan\">{name}</div>")
-		// SafeHtml state(String slogan, String name);
 	}
 	
-	public ImageSelector(String type, ImageSelectorListener listener) {
-		imageType = type;
+	/**
+	 * 
+	 * @param type The type of image the selector should display for selection. 
+	 * @see ImageSelecor.PHOTO
+ 	 * @see ImageSelector.SKETCH
+ 	 * @see ImageSelector.MAP
+	 * @param listener
+	 */
+	public ImageSelector(String imageType, ImageSelectorListener listener) {
+		this.imageType = imageType;
 		selectorListener = new ArrayList<ImageSelectorListener>();
 		selectorListener.add(listener);
 		properties = GWT.create(ImageProperties.class);
@@ -140,8 +131,6 @@ public class ImageSelector implements IsWidget {
 
 		mainPanel = new FramedPanel();
 		mainPanel.setHeading("Image Selector");
-    borderLayoutContainer = new BorderLayoutContainer();
-		vlc = new VerticalLayoutContainer();
 		
 		imageListView = new ListView<ImageEntry, ImageEntry>(imageEntryList,
 				new IdentityValueProvider<ImageEntry>() {
@@ -171,10 +160,10 @@ public class ImageSelector implements IsWidget {
 			}
 		});
 		
-		imageListView.setSize("240", "340");
+		imageListView.setSize("180", "350");
 
 		ListField<ImageEntry, ImageEntry> lf = new ListField<ImageEntry, ImageEntry>(imageListView);
-		lf.setSize("250", "350");
+		lf.setSize("180", "305");
 
 		TextButton selectButton = new TextButton("Select");
 		
@@ -206,7 +195,7 @@ public class ImageSelector implements IsWidget {
      * here we add the search for image titles
      */
     searchField = new TextField();
-    searchField.setSize("150", "40");
+    searchField.setSize("180", "30");
     searchFilter = new StoreFilter<ImageEntry>() {
 			@Override
 			public boolean select(Store<ImageEntry> store, ImageEntry parent, ImageEntry item) {
@@ -235,33 +224,38 @@ public class ImageSelector implements IsWidget {
 				imageEntryList.removeFilter(searchFilter);
 			}
 		});
-    FlowLayoutContainer flc = new FlowLayoutContainer();
-    flc.add(searchField, new MarginData(15,0,0,0));
-    flc.add(searchButton, new MarginData(5,5,5,0));
-    flc.add(resetButton, new MarginData(5,5,5,5));
-    flc.add(selectButton, new MarginData(5,0,5,20));
-    flc.add(cancelButton, new MarginData(5, 5, 5, 5));
 		
 		imageContainer = new FlowLayoutContainer();
 		imageContainer.setScrollMode(ScrollMode.AUTO);
 		
-		BorderLayoutData west = new BorderLayoutData(150);
-		west.setMargins(new Margins(5));
+    HorizontalPanel hPanel = new HorizontalPanel();
+    VerticalPanel vPanel = new VerticalPanel();
     
-    BorderLayoutData south = new BorderLayoutData();
-    south.setMargins(new Margins(5));
+    FramedPanel fp = new FramedPanel();
+    fp.setHeading("Images");
+    fp.add(lf);
+    vPanel.add(fp);
     
-    borderLayoutContainer.setBounds(5, 5, 600, 500);
-    borderLayoutContainer.setWestWidget(lf, west);
-    borderLayoutContainer.setSouthWidget(flc, south);
-    borderLayoutContainer.setCenterWidget(imageContainer, new MarginData());
-    
-		vlc.add(borderLayoutContainer, new VerticalLayoutData(1, 1));
-		vlc.setScrollMode(ScrollMode.NONE);
+    fp = new FramedPanel();
+    fp.setHeading("Filter");
+    fp.add(searchField);
+    fp.addButton(searchButton);
+    fp.addButton(resetButton);
+    vPanel.add(fp);  
 
-		vlc.setPixelSize(600, 500);
-		mainPanel.add(vlc);
-		mainPanel.setPixelSize(610, 510);
+    hPanel.add(vPanel);
+    vPanel = new VerticalPanel();
+    
+    fp = new FramedPanel();
+    fp.setHeading("Preview");
+    imageContainer.setPixelSize(400, 400);
+    fp.add(imageContainer);
+    hPanel.add(fp);
+    
+		mainPanel.add(hPanel);
+		mainPanel.addButton(selectButton);
+		mainPanel.addButton(cancelButton);
+//		mainPanel.setPixelSize(620, 500);
 	}
 	
 	/**

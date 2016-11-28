@@ -22,41 +22,36 @@ import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RadioButton;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
-import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.core.client.util.Rectangle;
+import com.sencha.gxt.core.client.util.ToggleGroup;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.Store.StoreFilter;
-import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.Dialog;
 import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
+import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
-import com.sencha.gxt.widget.core.client.button.ButtonBar;
 import com.sencha.gxt.widget.core.client.button.TextButton;
-import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
-import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.MarginData;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.DateField;
 import com.sencha.gxt.widget.core.client.form.DateTimePropertyEditor;
-import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.ListField;
+import com.sencha.gxt.widget.core.client.form.Radio;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.info.Info;
@@ -75,7 +70,7 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 	private TextArea commentArea;
 	private DateField dateField;
 	private ComboBox<PhotographerEntry> photographerSelection;
-	private ContentPanel panel;
+	private FramedPanel panel;
 	private ListStore<ImageEntry> imageEntryList;
 	private ImageProperties properties;
 	private PhotographerProperties photographerProps;
@@ -89,16 +84,12 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 	private TextField searchField;
 	private StoreFilter<ImageEntry> searchFilter;
 	private StoreFilter<ImageEntry> newImageFilter;
-	private RadioButton rbPhoto;
-	private RadioButton rbSketch;
-	private RadioButton rbMap;
-
-//	protected ImageEntry selectedImageItem;
-	// protected PhotographerEntry selectedPhotographerItem;
+	private Radio rPhoto;
+	private Radio rSketch;
+	private Radio rMap;
 
 	interface ImageProperties extends PropertyAccess<ImageEntry> {
 		ModelKeyProvider<ImageEntry> imageID();
-
 		LabelProvider<ImageEntry> title();
 	}
 
@@ -108,7 +99,7 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 	}
 
 	/**
-	 * creates the view how a thumbnail of an image entry will be shown currently
+	 * Creates the view how a thumbnail of an image entry will be shown currently
 	 * we are relying on the url of the image until we have user management
 	 * implemented and protect images from being viewed from the outside without
 	 * permission
@@ -119,9 +110,6 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 	interface ImageViewTemplates extends XTemplates {
 		@XTemplate("<img align=\"center\" width=\"150\" height=\"150\" margin=\"20\" src=\"{imageUri}\"><br> {title}")
 		SafeHtml image(SafeUri imageUri, String title);
-
-		// @XTemplate("<div qtip=\"{slogan}\" qtitle=\"State Slogan\">{name}</div>")
-		// SafeHtml state(String slogan, String name);
 	}
 
 	interface PhotographerViewTemplates extends XTemplates {
@@ -131,7 +119,7 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 
 	/**
 	 * This widget allows to edit the information of an ImageEntry, i.e. an image
-	 * in the database.
+	 * in the database. It also allows for uploading new images to the database.
 	 */
 	public ImageEditor() {
 		properties = GWT.create(ImageProperties.class);
@@ -180,11 +168,11 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 	 * usually only be called once a session is started!
 	 */
 	private void initPanel() {
+    panel = new FramedPanel();
+    HorizontalPanel hPanel = new HorizontalPanel();
+		VerticalPanel imgPanel = new VerticalPanel();
+		VerticalPanel editPanel = new VerticalPanel();
 
-		VerticalLayoutContainer vlc = new VerticalLayoutContainer();
-		VerticalLayoutData vLayoutData = new VerticalLayoutData(150, 300, new Margins(15, 5, 0, 0));
-		vlc.setLayoutData(vLayoutData);
-		
 		imageListView = new ListView<ImageEntry, ImageEntry>(imageEntryList,
 				new IdentityValueProvider<ImageEntry>() {
 					@Override
@@ -215,13 +203,13 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 							photographerEntryList.findModelWithKey(Integer.toString(selectedImageItem.getPhotographerID())), true);
 					switch (selectedImageItem.getType()) {
 					case "photo":
-						rbPhoto.setValue(true);
+						rPhoto.setValue(true);
 						break;
 					case "sketch":
-						rbSketch.setValue(true);
+						rSketch.setValue(true);
 						break;
 					case "map":
-						rbMap.setValue(true);
+						rMap.setValue(true);
 						break;
 					default:
 						break;
@@ -231,22 +219,35 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 		});
 
 		imageListView.setBorders(true);
-
+		
+		FramedPanel attributePanel = new FramedPanel();
 		titleField = new TextField();
 		titleField.setWidth(300);
-		vlc.add(new FieldLabel(titleField, "Title"));
+		attributePanel.setHeading("Title");
+		attributePanel.add(titleField);
+		editPanel.add(attributePanel);
 
+		attributePanel = new FramedPanel();
 		copyrightField = new TextField();
 		copyrightField.setWidth(300);
-		vlc.add(new FieldLabel(copyrightField, "Copyright"));
+		attributePanel.setHeading("Copyright");
+		attributePanel.add(copyrightField);
+		editPanel.add(attributePanel);
 
+		attributePanel = new FramedPanel();
 		commentArea = new TextArea();
 		commentArea.setSize("300px", "100px");
-		vlc.add(new FieldLabel(commentArea, "Comment"));
+		attributePanel.add(commentArea);
+		attributePanel.setHeading("Comment");
+		editPanel.add(attributePanel);
 
+		attributePanel = new FramedPanel();
 		dateField = new DateField(new DateTimePropertyEditor("dd MMMM yyyy"));
-		vlc.add(new FieldLabel(dateField, "Date captured"));
+		attributePanel.add(dateField);
+		attributePanel.setHeading("Date captured");
+		editPanel.add(attributePanel);
 
+		attributePanel = new FramedPanel();
 		photographerSelection = new ComboBox<PhotographerEntry>(photographerEntryList, photographerProps.name(),
 				new AbstractSafeHtmlRenderer<PhotographerEntry>() {
 
@@ -260,19 +261,29 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 		photographerSelection.setTypeAhead(false);
 		photographerSelection.setEditable(false);
 		photographerSelection.setTriggerAction(TriggerAction.ALL);
+		attributePanel.add(photographerSelection);
+		attributePanel.setHeading("Photographer");
+		editPanel.add(attributePanel);
 
-		vlc.add(new FieldLabel(photographerSelection, "Photographer"));
-
-		final String IMAGE_TYPE_GROUP = "imageTypeSelection";
-		rbPhoto = new RadioButton(IMAGE_TYPE_GROUP, "Photo");
-		rbSketch = new RadioButton(IMAGE_TYPE_GROUP, "Sketch");
-		rbMap = new RadioButton(IMAGE_TYPE_GROUP, "Map");
-		FlowLayoutContainer radioButtonContainer = new FlowLayoutContainer();
-		MarginData radioButtonLayoutData = new MarginData(10, 5, 10, 5);
-		radioButtonContainer.add(rbPhoto, radioButtonLayoutData);
-		radioButtonContainer.add(rbSketch, radioButtonLayoutData);
-		radioButtonContainer.add(rbMap, radioButtonLayoutData);
-		vlc.add(new FieldLabel(radioButtonContainer, "Image Type"));
+		attributePanel = new FramedPanel();
+		rPhoto = new Radio();
+		rPhoto.setBoxLabel("Photo");
+		rSketch = new Radio();
+		rSketch.setBoxLabel("Sketch");
+		rMap = new Radio();
+		rMap.setBoxLabel("Map");
+		ToggleGroup tg = new ToggleGroup();
+		tg.add(rPhoto);
+		tg.add(rSketch);
+		tg.add(rMap);
+		HorizontalPanel rbPanel = new HorizontalPanel();
+		rbPanel.add(rPhoto);
+		rbPanel.add(rSketch);
+		rbPanel.add(rMap);
+		rbPanel.setWidth("250px");
+		attributePanel.add(rbPanel);
+		attributePanel.setHeading("Image Type");
+		editPanel.add(attributePanel);
 
 		TextButton saveButton = new TextButton("save");
 		saveButton.addSelectHandler(new SelectHandler() {
@@ -290,23 +301,22 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 			}
 		});
 		
-		ButtonBar bb = new ButtonBar();
-		bb.add(saveButton);
-		bb.add(deleteButton);		
-		vlc.add(bb);
-		
-		ImageUploader imgUploader = new ImageUploader(this);
-		vlc.add(imgUploader);
+//		ImageUploader imgUploader = new ImageUploader(this);
+//		vlc.add(imgUploader);
 
-		imageListView.setSize("240", "340");
+		imageListView.setSize("250", "350");
 		ListField<ImageEntry, ImageEntry> lf = new ListField<ImageEntry, ImageEntry>(imageListView);
 		lf.setSize("250", "350");
+		attributePanel = new FramedPanel();
+		attributePanel.setHeading("Image Selection");
+		attributePanel.add(lf);
+		imgPanel.add(attributePanel);
 		
     /**
      * here we add the search for image titles
      */
     searchField = new TextField();
-    searchField.setSize("150", "50");
+    searchField.setSize("200", "30");
     searchFilter = new StoreFilter<ImageEntry>() {
 			@Override
 			public boolean select(Store<ImageEntry> store, ImageEntry parent, ImageEntry item) {
@@ -335,37 +345,23 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 				imageEntryList.removeFilter(searchFilter);
 			}
 		});
-    FlowLayoutContainer searchLayoutContainer = new FlowLayoutContainer();
-    MarginData searchLayoutData = new MarginData(new Margins(5, 0, 5, 0));
-    searchLayoutContainer.add(searchField, searchLayoutData);
-    searchLayoutContainer.add(searchButton, searchLayoutData);
-    searchLayoutContainer.add(resetButton, searchLayoutData);
     
-    MarginData center = new MarginData();
-
-    BorderLayoutData west = new BorderLayoutData(150);
-    west.setMargins(new Margins(5));
-
-    BorderLayoutData south = new BorderLayoutData();
-    south.setMargins(new Margins(5));
+    FramedPanel searchPanel = new FramedPanel();
+    searchPanel.setHeading("Search");
+    searchPanel.add(searchField);
+    searchPanel.addButton(searchButton);
+    searchPanel.addButton(resetButton);
+    imgPanel.add(searchPanel);
     
-    BorderLayoutContainer borderLayoutContainer = new BorderLayoutContainer();
-//    BorderLayoutData bld = new BorderLayoutData();
-    borderLayoutContainer.setBounds(0, 0, 600, 500);
-    borderLayoutContainer.setWestWidget(lf, west);
-    borderLayoutContainer.setCenterWidget(vlc, center);
-    borderLayoutContainer.setSouthWidget(searchLayoutContainer, south);
+    hPanel.add(imgPanel);
+    hPanel.add(editPanel);
 
-    panel = new ContentPanel();
-//    panel.setHeading("Horizontal Box Layout");
-    /** here we set the size and position, but be careful
-     * to make it larger than the widget that is inserted
-     */
-    panel.setPixelSize(610, 510);
-    panel.setBounds(0, 0, 610, 510);
-    panel.setPosition(5, 5);
 		panel.setHeading("Image Editor");
-    panel.add(borderLayoutContainer);		
+		panel.add(hPanel);
+		panel.addButton(saveButton);
+		panel.addButton(deleteButton);
+		
+//    panel.add(borderLayoutContainer);		
 		
 	}
 
@@ -505,11 +501,11 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 				if (dateField.getValue() != null) {
 					sqlUpdate = sqlUpdate.concat(",CaptureDate='" + dtf.format(dateField.getValue()) + "'");
 				}
-				if (rbPhoto.getValue()) {
+				if (rPhoto.getValue()) {
 					sqlUpdate = sqlUpdate.concat(",ImageType='photo'");
-				} else if (rbSketch.getValue()) {
+				} else if (rSketch.getValue()) {
 					sqlUpdate = sqlUpdate.concat(",ImageType='sketch'");
-				} else if (rbMap.getValue()) {
+				} else if (rMap.getValue()) {
 					sqlUpdate = sqlUpdate.concat(",ImageType='map'");
 				}
 				

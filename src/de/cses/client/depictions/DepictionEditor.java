@@ -629,8 +629,6 @@ public class DepictionEditor implements IsWidget, ImageSelectorListener {
 		});
 		mainPanel.addButton(saveButton);
 		mainPanel.addButton(cancelButton);
-
-		mainPanel.setPixelSize(1000, 800);
 	}
 
 	protected void cancelDepictionEditor() {

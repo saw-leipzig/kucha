@@ -16,7 +16,9 @@ package de.cses.client.images;
 import java.util.ArrayList;
 
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.Status;
 import com.sencha.gxt.widget.core.client.Window;
 import com.sencha.gxt.widget.core.client.button.ButtonBar;
@@ -30,6 +32,7 @@ import com.sencha.gxt.widget.core.client.event.SubmitCompleteEvent.SubmitComplet
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.FileUploadField;
 import com.sencha.gxt.widget.core.client.form.FormPanel;
+import com.sencha.gxt.widget.core.client.form.FileUploadField.FileUploadFieldAppearance;
 import com.sencha.gxt.widget.core.client.form.FormPanel.Encoding;
 import com.sencha.gxt.widget.core.client.form.FormPanel.Method;
 
@@ -39,7 +42,7 @@ public class ImageUploader implements IsWidget {
 	private ArrayList<ImageUploadListener> uploadListener;
 	protected Window uploadInfoWindow;
 	private FileUploadField file;
-	private VerticalLayoutContainer vlc;
+	private FramedPanel mainPanel;
 
 	public ImageUploader(ImageUploadListener listener) {
 		uploadListener = new ArrayList<ImageUploadListener>();
@@ -48,40 +51,31 @@ public class ImageUploader implements IsWidget {
 
 	@Override
 	public Widget asWidget() {
-		if (vlc == null) {
+		if (mainPanel == null) {
 			initPanel();
 		}
 		form.reset();
 		file.reset();
-		return vlc;
+		return mainPanel;
 	}
 
 	private void initPanel() {
 		
-		vlc = new VerticalLayoutContainer();
-//		VerticalLayoutData vLayoutData = new VerticalLayoutData(400, 150);
-//		vlc.setLayoutData(vLayoutData);
+		mainPanel = new FramedPanel();
+		mainPanel.setHeading("Image Uploader");
 		
 		file = new FileUploadField();
-//		file.addChangeHandler(new ChangeHandler() {
-//			@Override
-//			public void onChange(ChangeEvent event) {
-//				Info.display("File Changed", "You selected " + file);
-//			}
-//		});
-		file.setAllowBlank(false);
+    file.setName("uploadedfile");
+    file.setAllowBlank(false);
+    file.setPixelSize(300, 30);
 
 		form = new FormPanel();
 		form.setAction("infosystem/imgUploader");
 		form.setEncoding(Encoding.MULTIPART);
 		form.setMethod(Method.POST);
-//		form.setPixelSize(500, 120);
-		// file.setName(purpose);
 
 		form.addSubmitCompleteHandler(new SubmitCompleteHandler() {
 			public void onSubmitComplete(SubmitCompleteEvent event) {
-//				String resultHtml = event.getResults();
-//				Info.display("Upload result", resultHtml);
 				uploadInfoWindow.hide();
 				for (ImageUploadListener listener : uploadListener) {
 					//ToDo: send information after image upload for database
@@ -89,24 +83,14 @@ public class ImageUploader implements IsWidget {
 				}
 			}
 		});
-		form.add(new FieldLabel(file, "File"));
-//		form.setSize("450px", "100px");
-		// titleField = new TextField();
-		// form.add(new FieldLabel(titleField, "Title"), new MarginData(64));
+		form.add(file);
 		form.setLayoutData(new MarginData(10, 0, 0, 0));
-		vlc.add(form);
+		mainPanel.add(form);
 		
-//		titleField = new TextField();
-//		titleField.setWidth(300);
-//		vlc.add(new FieldLabel(titleField, "Title"));
-
 		TextButton submitButton = new TextButton("Upload");
 		submitButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-				// form.setAction("infosystem/imgUploader");
-				// form.setEncoding(Encoding.MULTIPART);
-				// form.setMethod(Method.POST);
 				if (form.isValid()) {
 					form.submit();
 					uploadInfoWindow = new Window();
@@ -132,33 +116,8 @@ public class ImageUploader implements IsWidget {
 			}
 		});
 		
-		ButtonBar bb = new ButtonBar();
-		bb.add(resetButton);
-		bb.add(submitButton);
-		
-		vlc.add(bb);
-		
-		
-//		FlowLayoutContainer fl = new FlowLayoutContainer();
-//		fl.setScrollMode(ScrollMode.NONE);
-//		fl.add(form);
-//		fl.add(bb);	
-//		fl.setBounds(0, 0, 600, 200);
-
-//    BorderLayoutData west = new BorderLayoutData(150);
-//    west.setMargins(new Margins(5));
-//    MarginData center = new MarginData();
-//    BorderLayoutContainer borderLayoutContainer = new BorderLayoutContainer();
-//    borderLayoutContainer.setBounds(0, 0, 600, 200);
-//    borderLayoutContainer.setWestWidget(imageContentPanel, west);
-//    borderLayoutContainer.setCenterWidget(vlc, center);
-
-//		panel = new ContentPanel();
-//		panel.setHeading("Upload image");
-//    panel.setPixelSize(610, 210);
-//    panel.setPosition(5, 5);
-//		panel.add(vlc);
-
+		mainPanel.addButton(resetButton);
+		mainPanel.addButton(submitButton);
 	}
 
 }
