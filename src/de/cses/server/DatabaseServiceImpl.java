@@ -20,6 +20,7 @@ import com.sencha.gxt.data.shared.TreeStore;
 
 import de.cses.client.DatabaseService;
 import de.cses.server.mysql.MysqlConnector;
+import de.cses.shared.AuthorEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.CaveTypeEntry;
@@ -31,6 +32,7 @@ import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PictorialElementEntry;
+import de.cses.shared.PublicationEntry;
 import de.cses.shared.StyleEntry;
 import de.cses.shared.VendorEntry;
 
@@ -185,6 +187,34 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public ArrayList<ExpeditionEntry> getExpeditions() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getExpeditions();
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#getPublicationEntry(int)
+	 */
+	@Override
+	public PublicationEntry getPublicationEntry(int id) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getPublicationEntry(id);
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#getAuthorEntry(int)
+	 */
+	@Override
+	public AuthorEntry getAuthorEntry(int id) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getAuthorEntry(id);
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#getMasterImageEntryForDepiction(int)
+	 */
+	@Override
+	public ImageEntry getMasterImageEntryForDepiction(int depictionID) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		int relatedImageID = connector.getRelatedMasterImageID(depictionID);
+		return connector.getImageEntry(relatedImageID);
 	}
 
 }

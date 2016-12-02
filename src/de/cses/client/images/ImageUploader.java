@@ -60,14 +60,14 @@ public class ImageUploader implements IsWidget {
 	}
 
 	private void initPanel() {
-		
+
 		mainPanel = new FramedPanel();
 		mainPanel.setHeading("Image Uploader");
-		
+
 		file = new FileUploadField();
-    file.setName("uploadedfile");
-    file.setAllowBlank(false);
-    file.setPixelSize(300, 30);
+		file.setName("uploadedfile");
+		file.setAllowBlank(false);
+		file.setPixelSize(300, 30);
 
 		form = new FormPanel();
 		form.setAction("infosystem/imgUploader");
@@ -78,7 +78,7 @@ public class ImageUploader implements IsWidget {
 			public void onSubmitComplete(SubmitCompleteEvent event) {
 				uploadInfoWindow.hide();
 				for (ImageUploadListener listener : uploadListener) {
-					//ToDo: send information after image upload for database
+					// ToDo: send information after image upload for database
 					listener.uploadCompleted();
 				}
 			}
@@ -86,7 +86,7 @@ public class ImageUploader implements IsWidget {
 		form.add(file);
 		form.setLayoutData(new MarginData(10, 0, 0, 0));
 		mainPanel.add(form);
-		
+
 		TextButton submitButton = new TextButton("Upload");
 		submitButton.addSelectHandler(new SelectHandler() {
 			@Override
@@ -115,7 +115,7 @@ public class ImageUploader implements IsWidget {
 				file.reset();
 			}
 		});
-		
+
 		mainPanel.addButton(resetButton);
 		mainPanel.addButton(submitButton);
 	}

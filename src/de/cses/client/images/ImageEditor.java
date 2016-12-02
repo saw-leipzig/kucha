@@ -25,7 +25,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
@@ -90,11 +89,13 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 
 	interface ImageProperties extends PropertyAccess<ImageEntry> {
 		ModelKeyProvider<ImageEntry> imageID();
+
 		LabelProvider<ImageEntry> title();
 	}
 
 	interface PhotographerProperties extends PropertyAccess<PhotographerEntry> {
 		ModelKeyProvider<PhotographerEntry> photographerID();
+
 		LabelProvider<PhotographerEntry> name();
 	}
 
@@ -128,12 +129,12 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 		newImageFilter = new StoreFilter<ImageEntry>() {
 			@Override
 			public boolean select(Store<ImageEntry> store, ImageEntry parent, ImageEntry item) {
-				if ("New Image".equals(item.getTitle())) 
+				if ("New Image".equals(item.getTitle()))
 					return true;
 				return false;
 			}
 		};
-		
+
 		photographerEntryList = new ListStore<PhotographerEntry>(photographerProps.photographerID());
 
 		dbService.getPhotographer(new AsyncCallback<ArrayList<PhotographerEntry>>() {
@@ -168,28 +169,29 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 	 * usually only be called once a session is started!
 	 */
 	private void initPanel() {
-    panel = new FramedPanel();
-    HorizontalPanel hPanel = new HorizontalPanel();
+		panel = new FramedPanel();
+		HorizontalPanel hPanel = new HorizontalPanel();
 		VerticalPanel imgPanel = new VerticalPanel();
 		VerticalPanel editPanel = new VerticalPanel();
 
-		imageListView = new ListView<ImageEntry, ImageEntry>(imageEntryList,
-				new IdentityValueProvider<ImageEntry>() {
-					@Override
-					public void setValue(ImageEntry object, ImageEntry value) {
-					}
-				});
+		imageListView = new ListView<ImageEntry, ImageEntry>(imageEntryList, new IdentityValueProvider<ImageEntry>() {
+			@Override
+			public void setValue(ImageEntry object, ImageEntry value) {
+			}
+		});
 		imageListView.setCell(new SimpleSafeHtmlCell<ImageEntry>(new AbstractSafeHtmlRenderer<ImageEntry>() {
 			final ImageViewTemplates imageViewTemplates = GWT.create(ImageViewTemplates.class);
 
 			public SafeHtml render(ImageEntry item) {
-				SafeUri imageUri = UriUtils
-						.fromString("http://kucha.informatik.hu-berlin.de/tomcat/images/tn" + item.getFilename());
+				// SafeUri imageUri = UriUtils
+				// .fromString("http://kucha.informatik.hu-berlin.de/tomcat/images/tn" +
+				// item.getFilename());
+				SafeUri imageUri = UriUtils.fromString("infosystem/images?imageID=" + item.getImageID() + "&thumb=true");
 				return imageViewTemplates.image(imageUri, item.getTitle());
 			}
 
 		}));
-		
+
 		imageListView.getSelectionModel().addSelectionChangedHandler(new SelectionChangedHandler<ImageEntry>() {
 			@Override
 			public void onSelectionChanged(SelectionChangedEvent<ImageEntry> event) {
@@ -199,8 +201,8 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 					copyrightField.setValue(selectedImageItem.getCopyright());
 					commentArea.setValue(selectedImageItem.getComment());
 					dateField.setValue(selectedImageItem.getCaptureDate());
-					photographerSelection.setValue(
-							photographerEntryList.findModelWithKey(Integer.toString(selectedImageItem.getPhotographerID())), true);
+					photographerSelection
+							.setValue(photographerEntryList.findModelWithKey(Integer.toString(selectedImageItem.getPhotographerID())), true);
 					switch (selectedImageItem.getType()) {
 					case "photo":
 						rPhoto.setValue(true);
@@ -219,7 +221,7 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 		});
 
 		imageListView.setBorders(true);
-		
+
 		FramedPanel attributePanel = new FramedPanel();
 		titleField = new TextField();
 		titleField.setWidth(300);
@@ -300,9 +302,9 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 				deleteSelectedImageEntry();
 			}
 		});
-		
-//		ImageUploader imgUploader = new ImageUploader(this);
-//		vlc.add(imgUploader);
+
+		// ImageUploader imgUploader = new ImageUploader(this);
+		// vlc.add(imgUploader);
 
 		imageListView.setSize("250", "350");
 		ListField<ImageEntry, ImageEntry> lf = new ListField<ImageEntry, ImageEntry>(imageListView);
@@ -311,13 +313,13 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 		attributePanel.setHeading("Image Selection");
 		attributePanel.add(lf);
 		imgPanel.add(attributePanel);
-		
-    /**
-     * here we add the search for image titles
-     */
-    searchField = new TextField();
-    searchField.setSize("200", "30");
-    searchFilter = new StoreFilter<ImageEntry>() {
+
+		/**
+		 * here we add the search for image titles
+		 */
+		searchField = new TextField();
+		searchField.setSize("200", "30");
+		searchFilter = new StoreFilter<ImageEntry>() {
 			@Override
 			public boolean select(Store<ImageEntry> store, ImageEntry parent, ImageEntry item) {
 				if (item.getTitle().toLowerCase().contains(searchField.getCurrentValue().toLowerCase())) {
@@ -327,8 +329,8 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 			}
 		};
 		imageEntryList.addFilter(searchFilter);
-    TextButton searchButton = new TextButton("search");
-    searchButton.addSelectHandler(new SelectHandler() {
+		TextButton searchButton = new TextButton("search");
+		searchButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
 				if (searchField.getCurrentValue() != null) {
@@ -337,32 +339,32 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 				}
 			}
 		});
-    TextButton resetButton = new TextButton("reset");
-    resetButton.addSelectHandler(new SelectHandler() {
+		TextButton resetButton = new TextButton("reset");
+		resetButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
 				imageEntryList.setEnableFilters(false);
 				imageEntryList.removeFilter(searchFilter);
 			}
 		});
-    
-    FramedPanel searchPanel = new FramedPanel();
-    searchPanel.setHeading("Search");
-    searchPanel.add(searchField);
-    searchPanel.addButton(searchButton);
-    searchPanel.addButton(resetButton);
-    imgPanel.add(searchPanel);
-    
-    hPanel.add(imgPanel);
-    hPanel.add(editPanel);
+
+		FramedPanel searchPanel = new FramedPanel();
+		searchPanel.setHeading("Search");
+		searchPanel.add(searchField);
+		searchPanel.addButton(searchButton);
+		searchPanel.addButton(resetButton);
+		imgPanel.add(searchPanel);
+
+		hPanel.add(imgPanel);
+		hPanel.add(editPanel);
 
 		panel.setHeading("Image Editor");
 		panel.add(hPanel);
 		panel.addButton(saveButton);
 		panel.addButton(deleteButton);
-		
-//    panel.add(borderLayoutContainer);		
-		
+
+		// panel.add(borderLayoutContainer);
+
 	}
 
 	/**
@@ -386,23 +388,22 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 					// only of the yes button is selected, we will perform the command
 					// to simplify we just ignore the no button event by doing nothing
 					int imageID = imageListView.getSelectionModel().getSelectedItem().getImageID();
-					dbService.updateEntry("DELETE FROM Images WHERE ImageID=" + imageID,
-							new AsyncCallback<Boolean>() {
-								public void onFailure(Throwable caught) {
-									Info.display("Error", "Problem with database connection!");
-								}
+					dbService.updateEntry("DELETE FROM Images WHERE ImageID=" + imageID, new AsyncCallback<Boolean>() {
+						public void onFailure(Throwable caught) {
+							Info.display("Error", "Problem with database connection!");
+						}
 
-								@Override
-								public void onSuccess(Boolean result) {
-									if (result) {
-										Info.display("Image information", "Image information has been updated!");
-									} else {
-										Info.display("Image information", "Image information has been updated!");
-									}
-									refreshImages();
-									imageListView.getSelectionModel().select(imageEntryList.get(0), true);
-								}
-							});
+						@Override
+						public void onSuccess(Boolean result) {
+							if (result) {
+								Info.display("Image information", "Image information has been updated!");
+							} else {
+								Info.display("Image information", "Image information has been updated!");
+							}
+							refreshImages();
+							imageListView.getSelectionModel().select(imageEntryList.get(0), true);
+						}
+					});
 				}
 			});
 			simple.show();
@@ -508,7 +509,7 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 				} else if (rMap.getValue()) {
 					sqlUpdate = sqlUpdate.concat(",ImageType='map'");
 				}
-				
+
 				sqlUpdate = sqlUpdate.concat(" WHERE ImageID=" + imageListView.getSelectionModel().getSelectedItem().getImageID());
 
 				dbService.updateEntry(sqlUpdate, new AsyncCallback<Boolean>() {
@@ -545,19 +546,21 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 		imageEntryList.addFilter(newImageFilter);
 		imageEntryList.setEnableFilters(true);
 		refreshImages();
-//		Iterator<ImageEntry> list = imageEntryList.getAll().iterator();
+		// Iterator<ImageEntry> list = imageEntryList.getAll().iterator();
 		imageListView.getSelectionModel().select(imageEntryList.get(0), true);
-//		ImageEntry ie;
-//		while (list.hasNext()) {
-//			ie = list.next();
-//			if ("New Image".equals(ie.getTitle())) {
-////				Info.display("New Image", "imageID = " + ie.getImageID());
-////				imageListView.getSelectionModel().select(ie, false);
-////				imageListView.getSelectionModel().select(imageEntryList.findModelWithKey(Integer.toString(ie.getImageID())), false);
-//				imageListView.getSelectionModel().select(imageEntryList.indexOf(ie), false);
-//				return;
-//			}
-//		}
+		// ImageEntry ie;
+		// while (list.hasNext()) {
+		// ie = list.next();
+		// if ("New Image".equals(ie.getTitle())) {
+		//// Info.display("New Image", "imageID = " + ie.getImageID());
+		//// imageListView.getSelectionModel().select(ie, false);
+		//// imageListView.getSelectionModel().select(imageEntryList.findModelWithKey(Integer.toString(ie.getImageID())),
+		// false);
+		// imageListView.getSelectionModel().select(imageEntryList.indexOf(ie),
+		// false);
+		// return;
+		// }
+		// }
 	}
 
 }

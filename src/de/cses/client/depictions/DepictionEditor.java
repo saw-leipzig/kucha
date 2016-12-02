@@ -315,9 +315,6 @@ public class DepictionEditor implements IsWidget, ImageSelectorListener {
 
 			public SafeHtml render(ImageEntry item) {
 				SafeUri imageUri = UriUtils.fromString("infosystem/images?imageID=" + item.getImageID() + "&thumb=true");
-				// SafeUri imageUri = UriUtils
-				// .fromString("http://kucha.informatik.hu-berlin.de/tomcat/images/tn" +
-				// item.getFilename());
 				return imageViewTemplates.image(imageUri, item.getTitle());
 			}
 		}));

@@ -15,14 +15,13 @@ package de.cses.client;
 
 import java.util.ArrayList;
 
-
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
-import com.sencha.gxt.data.shared.TreeStore;
 
+import de.cses.shared.AuthorEntry;
 import de.cses.shared.CaveEntry;
-import de.cses.shared.DepictionEntry;
 import de.cses.shared.CaveTypeEntry;
+import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
@@ -31,6 +30,7 @@ import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PictorialElementEntry;
+import de.cses.shared.PublicationEntry;
 import de.cses.shared.StyleEntry;
 import de.cses.shared.VendorEntry;
 
@@ -39,28 +39,57 @@ import de.cses.shared.VendorEntry;
  */
 @RemoteServiceRelativePath("db")
 public interface DatabaseService extends RemoteService {
-	
+
 	String dbServer(String name) throws IllegalArgumentException;
+
 	ArrayList<DistrictEntry> getDistricts() throws IllegalArgumentException;
+
 	ArrayList<ImageEntry> getImages() throws IllegalArgumentException;
+
 	ArrayList<ImageEntry> getImages(String where) throws IllegalArgumentException;
+
 	ArrayList<PhotographerEntry> getPhotographer() throws IllegalArgumentException;
+
 	ImageEntry getImage(int imageID) throws IllegalArgumentException;
+
 	ArrayList<CaveEntry> getCaves() throws IllegalArgumentException;
+
 	ArrayList<CaveEntry> getCavesbyDistrictID(int DistrictID) throws IllegalArgumentException;
+
 	ArrayList<OrnamentEntry> getOrnaments() throws IllegalArgumentException;
+
 	ArrayList<OrnamentOfOtherCulturesEntry> getOrnamentsOfOtherCultures() throws IllegalArgumentException;
+
 	ArrayList<DepictionEntry> getDepictions() throws IllegalArgumentException;
+
 	DepictionEntry getDepictionEntry(int depictionID) throws IllegalArgumentException;
+
 	boolean updateEntry(String sqlUpdate);
+
 	boolean deleteEntry(String sqlDelete);
+
 	int insertEntry(String sqlInsert);
+
 	ArrayList<IconographyEntry> getIconography() throws IllegalArgumentException;
+
 	ArrayList<PictorialElementEntry> getPictorialElements() throws IllegalArgumentException;
+
 	boolean saveOrnamentEntry(OrnamentEntry ornamentEntry) throws IllegalArgumentException;
+
 	CaveTypeEntry getCaveTypebyID(int caveTypeID) throws IllegalArgumentException;
+
 	ArrayList<CaveTypeEntry> getCaveTypes() throws IllegalArgumentException;
+
 	ArrayList<VendorEntry> getVendors() throws IllegalArgumentException;
+
 	ArrayList<StyleEntry> getStyles() throws IllegalArgumentException;
+
 	ArrayList<ExpeditionEntry> getExpeditions() throws IllegalArgumentException;
+
+	PublicationEntry getPublicationEntry(int id);
+
+	AuthorEntry getAuthorEntry(int id);
+
+	ImageEntry getMasterImageEntryForDepiction(int depictionID);
+
 }

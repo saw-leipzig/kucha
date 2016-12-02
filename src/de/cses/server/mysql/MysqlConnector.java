@@ -21,6 +21,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
+import de.cses.shared.AuthorEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.CaveTypeEntry;
@@ -32,6 +33,7 @@ import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PictorialElementEntry;
+import de.cses.shared.PublicationEntry;
 import de.cses.shared.StyleEntry;
 import de.cses.shared.VendorEntry;
 
@@ -712,7 +714,7 @@ public class MysqlConnector {
 		return results;
 	}
 
-	public ArrayList<VendorEntry> getVendors() {
+	public synchronized ArrayList<VendorEntry> getVendors() {
 		ArrayList<VendorEntry> results = new ArrayList<VendorEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -732,7 +734,7 @@ public class MysqlConnector {
 		return results;
 	}
 
-	public ArrayList<StyleEntry> getStyles() {
+	public synchronized ArrayList<StyleEntry> getStyles() {
 		ArrayList<StyleEntry> results = new ArrayList<StyleEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -752,7 +754,7 @@ public class MysqlConnector {
 		return results;
 	}
 
-	public ArrayList<ExpeditionEntry> getExpeditions() {
+	public synchronized ArrayList<ExpeditionEntry> getExpeditions() {
 		ArrayList<ExpeditionEntry> results = new ArrayList<ExpeditionEntry>();
 		Connection dbc = getConnection();
 
@@ -772,6 +774,95 @@ public class MysqlConnector {
 			return null;
 		}
 		return results;
+	}
+
+	public synchronized ArrayList<PublicationEntry> getPublications() {
+		ArrayList<PublicationEntry> results = new ArrayList<PublicationEntry>();
+		Connection dbc = getConnection();
+
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Publications");
+			while (rs.next()) {
+				results.add(
+						new PublicationEntry(rs.getInt("PublicationID"), rs.getString("Editors"), rs.getString("Type"), rs.getString("DOI"),
+								rs.getString("Pages"), rs.getDate("Year"), rs.getInt("PublisherID"), rs.getString("Title.English"),
+								rs.getString("Title.Phonetic"), rs.getString("Title.Original"), rs.getString("Abstract")));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return results;
+	}
+
+	public synchronized PublicationEntry getPublicationEntry(int id) {
+		PublicationEntry result = null;
+		Connection dbc = getConnection();
+
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Publications WHERE PublicationID=" + id);
+			while (rs.next()) {
+				result = new PublicationEntry(rs.getInt("PublicationID"), rs.getString("Editors"), rs.getString("Type"),
+						rs.getString("DOI"), rs.getString("Pages"), rs.getDate("Year"), rs.getInt("PublisherID"),
+						rs.getString("Title.English"), rs.getString("Title.Phonetic"), rs.getString("Title.Original"),
+						rs.getString("Abstract"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return result;
+	}
+
+	/**
+	 * @param id
+	 * @return
+	 */
+	public synchronized AuthorEntry getAuthorEntry(int id) {
+		AuthorEntry result = null;
+		Connection dbc = getConnection();
+
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Authors WHERE AuthorID=" + id);
+			while (rs.next()) {
+				result = new AuthorEntry(rs.getInt("AuthorID"), rs.getString("Lastname"), rs.getString("Firstname"),
+						rs.getDate("KuchaVisitDate"), rs.getString("Affiliation"), rs.getString("Email"), rs.getString("Homepage"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return result;
+	}
+
+	/**
+	 * @param depictionID
+	 * @return
+	 */
+	public synchronized int getRelatedMasterImageID(int depictionID) {
+		int result = 0;
+		Connection dbc = getConnection();
+
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM DepictionImageRelation WHERE DepictionID=" + depictionID);
+			while (rs.next() && (result == 0)) {
+				if (rs.getBoolean("IsMaster")) {
+					result = rs.getInt("ImageID");
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return 0;
+		}
+		return result;
 	}
 
 }

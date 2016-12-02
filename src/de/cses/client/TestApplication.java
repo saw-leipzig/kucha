@@ -33,6 +33,8 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.info.Info;
 
+import de.cses.client.bibliography.AuthorEditor;
+import de.cses.client.bibliography.AuthorEditorListener;
 import de.cses.client.caves.Antechamber;
 import de.cses.client.caves.CaveType;
 import de.cses.client.caves.Caves;
@@ -48,13 +50,14 @@ import de.cses.client.images.ImageUploadListener;
 import de.cses.client.images.ImageUploader;
 import de.cses.client.images.PhotographerEditor;
 import de.cses.client.ornamentic.Ornamentic;
+import de.cses.shared.AuthorEntry;
 import de.cses.shared.DepictionEntry;
 
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
-public class TestApplication implements EntryPoint, DepictionEditorListener, ImageUploadListener {
+public class TestApplication implements EntryPoint {
 
 	static Ornamentic ornamentic = new Ornamentic();
 
@@ -65,6 +68,8 @@ public class TestApplication implements EntryPoint, DepictionEditorListener, Ima
 	private PopupPanel imageEditorPanel;
 
 	private PopupPanel imageUploadPanel;
+
+	private PopupPanel authorEditorPanel;
 
 	/**
 	 * This is the entry point method.
@@ -123,7 +128,13 @@ public class TestApplication implements EntryPoint, DepictionEditorListener, Ima
     		
 		TextButton depictionButton = new TextButton("Edit Depiction");
 		depictionEditorPanel = new PopupPanel(false);
-		depictionEditorPanel.add(new DepictionEditor(0, this));
+		depictionEditorPanel.add(new DepictionEditor(0, new DepictionEditorListener() {
+			
+			@Override
+			public void depictionSaved(DepictionEntry depictionEntry) {
+				depictionEditorPanel.hide();
+			}
+		}));
 		new Draggable(depictionEditorPanel);
 		depictionButton.addSelectHandler(new SelectHandler() {
 			
@@ -138,7 +149,13 @@ public class TestApplication implements EntryPoint, DepictionEditorListener, Ima
 		
 		TextButton uploadButton = new TextButton("Image Uploader");
 		imageUploadPanel = new PopupPanel(false);
-		imageUploadPanel.add(new ImageUploader(this));
+		imageUploadPanel.add(new ImageUploader(new ImageUploadListener() {
+			
+			@Override
+			public void uploadCompleted() {
+				imageUploadPanel.hide();
+			}
+		}));
 		new Draggable(imageUploadPanel);
 		uploadButton.addSelectHandler(new SelectHandler() {
 			
@@ -150,23 +167,33 @@ public class TestApplication implements EntryPoint, DepictionEditorListener, Ima
 			}
 		});
 		
+		TextButton authorEditorButton = new TextButton("Author Editor");
+		authorEditorPanel = new PopupPanel(false);
+		authorEditorPanel.add(new AuthorEditor(0, new AuthorEditorListener() {
+			
+			@Override
+			public void authorSaved(AuthorEntry entry) {
+				authorEditorPanel.hide();
+			}
+		}));
+		new Draggable(authorEditorPanel);
+		authorEditorButton.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				authorEditorPanel.setGlassEnabled(true);
+				authorEditorPanel.center();
+				authorEditorPanel.show();
+			}
+		});
+		
 		VerticalPanel vp = new VerticalPanel();
 		vp.add(depictionButton);
 		vp.add(uploadButton);
+		vp.add(authorEditorButton);
 		
 		main.add(vp, "Depiction Editor");
 		
 	}
-
-	@Override
-	public void depictionSaved(DepictionEntry depictionEntry) {
-		depictionEditorPanel.hide();
-	}
-
-	@Override
-	public void uploadCompleted() {
-		imageUploadPanel.hide();
-	}
-
 
 }
