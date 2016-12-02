@@ -37,6 +37,7 @@ import de.cses.client.images.ImageSelectorListener;
 import de.cses.client.images.ImageUploader;
 import de.cses.client.images.PhotographerEditor;
 import de.cses.client.ornamentic.Ornamentic;
+import de.cses.client.walls.Walls;
 
 
 /**
@@ -95,6 +96,8 @@ public class TestApplication implements EntryPoint {
    
     main.add(cella,"Cella Editor");
 		main.add(pEditor, "Photographer Editor");
+		Walls wall = new Walls();
+		main.add(wall, "Wall Editor");
 		
 
 	}
