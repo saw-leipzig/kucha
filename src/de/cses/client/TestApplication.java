@@ -52,6 +52,7 @@ import de.cses.client.images.PhotographerEditor;
 import de.cses.client.ornamentic.Ornamentic;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.DepictionEntry;
+import de.cses.client.walls.Walls;
 
 
 /**
@@ -106,10 +107,17 @@ public class TestApplication implements EntryPoint {
 
 		// we are using FlowLayoutContainer 
 
-		FlowLayoutContainer pEditorContainer = new FlowLayoutContainer();
-		pEditorContainer.setScrollMode(ScrollMode.AUTOY);
-		pEditorContainer.add(pEditor);
-		main.add(pEditorContainer, "Photographer Editor");
+		FlowLayoutContainer flowLCcella = new FlowLayoutContainer();
+		flowLCcella.setScrollMode(ScrollMode.AUTOY);
+    MarginData layoutDatacella = new MarginData(new Margins(0, 5, 0, 0));
+    flowLCcella.add(cella, layoutDatacella);
+    main.add(flowLCcella, "Cella Editor");
+    
+   
+    main.add(cella,"Cella Editor");
+		main.add(pEditor, "Photographer Editor");
+		Walls wall = new Walls();
+		main.add(wall, "Wall Editor");
 		
     TextButton imgEditorButton = new TextButton("Edit Image");
     imageEditorPanel = new PopupPanel(false);

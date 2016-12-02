@@ -20,6 +20,21 @@ h1 {
   width: 400px;
 }
 
+.DoorCSS{
+	background-color: black;
+}
+.BackgroundStyle{
+	background-color: #dfdfdf;
+	outline: 2px solid;
+}
+.ButtonStyle{
+	border:0;
+	color: rgba(0, 0, 0, 0);
+	background-repeat: no-repeat !important ;
+	background: url("https://thumbs.dreamstime.com/x/weie-buddha-hhle-der-yungang-grotten-22895251.jpg");
+	background-size: contain !important ;
+}
+
 .dialogVPanel {
   margin: 5px;
 }
@@ -29,8 +44,6 @@ h1 {
 }
 
 /** Set ids using widget.getElement().setId("idOfElement") */
-#cancelButton {
+#closeButton {
   margin: 15px 6px 6px;
-  background-color: lightgreen;
-  font: italic 36px Arial, sans-serif;
 }
