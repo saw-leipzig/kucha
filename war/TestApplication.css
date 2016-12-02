@@ -29,6 +29,8 @@ h1 {
 }
 
 /** Set ids using widget.getElement().setId("idOfElement") */
-#closeButton {
+#cancelButton {
   margin: 15px 6px 6px;
+  background-color: lightgreen;
+  font: italic 36px Arial, sans-serif;
 }
