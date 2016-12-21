@@ -17,39 +17,43 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class CaveTypeEntry implements IsSerializable{
 	private int caveTypeID;
-	private String enShortname;
-	private String enDescription;
+	private String nameEN;
+	private String descriptionEN;
 	
 	public CaveTypeEntry(){
 		
 	}
-	
-	public CaveTypeEntry(int caveTypeID, String enShortname, String enDescription){
-		this.caveTypeID= caveTypeID;
-		this.enShortname = enShortname;
-		this.enDescription = enDescription;
-		
+
+	public CaveTypeEntry(int caveTypeID, String nameEN, String descriptionEN) {
+		super();
+		this.caveTypeID = caveTypeID;
+		this.nameEN = nameEN;
+		this.descriptionEN = descriptionEN;
 	}
-	
+
 	public int getCaveTypeID() {
 		return caveTypeID;
 	}
+
 	public void setCaveTypeID(int caveTypeID) {
 		this.caveTypeID = caveTypeID;
 	}
-	public String getEnShortname() {
-		return enShortname;
+
+	public String getNameEN() {
+		return nameEN;
 	}
-	public void setEnShortname(String enShortname) {
-		this.enShortname = enShortname;
+
+	public void setNameEN(String nameEN) {
+		this.nameEN = nameEN;
 	}
-	public String getEnDescription() {
-		return enDescription;
+
+	public String getDescriptionEN() {
+		return descriptionEN;
 	}
-	public void setEnDescription(String enDescription) {
-		this.enDescription = enDescription;
+
+	public void setDescriptionEN(String descriptionEN) {
+		this.descriptionEN = descriptionEN;
 	}
-	
 	
 
 }

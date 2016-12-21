@@ -249,8 +249,9 @@ public class ImageSelector implements IsWidget {
 	}
 
 	/**
-	 * refreshes the list of images which will automatically update the view of the
-	 * thumbnails
+	 * refreshes the list of images which will automatically update the view of
+	 * the thumbnails
+	 * 
 	 * @see imageEntryList
 	 */
 	private void refreshImages() {

@@ -1,3 +1,16 @@
+/*
+ * Copyright 2016 
+ * Saxon Academy of Science in Leipzig, Germany
+ * 
+ * This is free software: you can redistribute it and/or modify it under the terms of the 
+ * GNU General Public License version 3 (GPL v3) as published by the Free Software Foundation.
+ * 
+ * This software is distributed WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. Please read the GPL v3 for more details.
+ * 
+ * You should have received a copy of the GPL v3 along with the software. 
+ * If not, you can access it from here: <https://www.gnu.org/licenses/gpl-3.0.txt>.
+ */
 package de.cses.client.caves;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -17,7 +30,7 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 
 public class Antechamber implements IsWidget {
 	 ContentPanel panel;
-	 Caves caves;
+	 CaveEditor caveEditor;
 	
 		@Override
 		public Widget asWidget() {
@@ -78,7 +91,7 @@ public class Antechamber implements IsWidget {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				caves.getCellaPanel().hide();	
+//				caveEditor.getCellaPanel().hide();	
 			}
 	  	
 	  };
@@ -89,7 +102,7 @@ public class Antechamber implements IsWidget {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				caves.getAntechamberPanel().hide();	
+//				caveEditor.getAntechamberPanel().hide();	
 			}
 	  	
 	  };
@@ -107,12 +120,12 @@ public class Antechamber implements IsWidget {
 		return panel;
 	}
 
-	public Caves getCaves() {
-		return caves;
+	public CaveEditor getCaves() {
+		return caveEditor;
 	}
 
-	public void setCaves(Caves caves) {
-		this.caves = caves;
+	public void setCaves(CaveEditor caveEditor) {
+		this.caveEditor = caveEditor;
 	}
 	
 }

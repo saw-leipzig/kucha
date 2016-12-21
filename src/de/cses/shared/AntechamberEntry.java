@@ -17,87 +17,90 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class AntechamberEntry implements IsSerializable{
 
-	private int caveID;
-	private int dimensionHeight;
-	private int dimensionWidth;
-	private int dimensionDepth;
-	private boolean frontWall;
-	private boolean leftSideWall;
-	private boolean rightSideWall;
-	private boolean MainWall;
-	private boolean niches;
-	private boolean ceiling;
-	private boolean floor;
+	private int antechamberID, frontWallID, leftWallID, rightWallID, rearWallID;
+	private double height, width, depth;
 	
 	public AntechamberEntry(){
 		
 	}
+
+	public AntechamberEntry(int antechamberID, int frontWallID, int leftWallID, int rightWallID, int rearWallID, double height,
+			double width, double depth) {
+		super();
+		this.antechamberID = antechamberID;
+		this.frontWallID = frontWallID;
+		this.leftWallID = leftWallID;
+		this.rightWallID = rightWallID;
+		this.rearWallID = rearWallID;
+		this.height = height;
+		this.width = width;
+		this.depth = depth;
+	}
+
+	public int getAntechamberID() {
+		return antechamberID;
+	}
+
+	public void setAntechamberID(int antechamberID) {
+		this.antechamberID = antechamberID;
+	}
+
+	public int getFrontWallID() {
+		return frontWallID;
+	}
+
+	public void setFrontWallID(int frontWallID) {
+		this.frontWallID = frontWallID;
+	}
+
+	public int getLeftWallID() {
+		return leftWallID;
+	}
+
+	public void setLeftWallID(int leftWallID) {
+		this.leftWallID = leftWallID;
+	}
+
+	public int getRightWallID() {
+		return rightWallID;
+	}
+
+	public void setRightWallID(int rightWallID) {
+		this.rightWallID = rightWallID;
+	}
+
+	public int getRearWallID() {
+		return rearWallID;
+	}
+
+	public void setRearWallID(int rearWallID) {
+		this.rearWallID = rearWallID;
+	}
+
+	public double getHeight() {
+		return height;
+	}
+
+	public void setHeight(double height) {
+		this.height = height;
+	}
+
+	public double getWidth() {
+		return width;
+	}
+
+	public void setWidth(double width) {
+		this.width = width;
+	}
+
+	public double getDepth() {
+		return depth;
+	}
+
+	public void setDepth(double depth) {
+		this.depth = depth;
+	}
 	
-	public int getcaveID() {
-		return caveID;
-	}
-	public void setcaveID(int caveID) {
-		this.caveID = caveID;
-	}
-	public int getDimensionHeight() {
-		return dimensionHeight;
-	}
-	public void setDimensionHeight(int dimensionHeight) {
-		this.dimensionHeight = dimensionHeight;
-	}
-	public int getDimensionWidth() {
-		return dimensionWidth;
-	}
-	public void setDimensionWidth(int dimensionWidth) {
-		this.dimensionWidth = dimensionWidth;
-	}
-	public int getDimensionDepth() {
-		return dimensionDepth;
-	}
-	public void setDimensionDepth(int dimensionDepth) {
-		this.dimensionDepth = dimensionDepth;
-	}
-	public boolean isFrontWall() {
-		return frontWall;
-	}
-	public void setFrontWall(boolean frontWall) {
-		this.frontWall = frontWall;
-	}
-	public boolean isLeftSideWall() {
-		return leftSideWall;
-	}
-	public void setLeftSideWall(boolean leftSideWall) {
-		this.leftSideWall = leftSideWall;
-	}
-	public boolean isRightSideWall() {
-		return rightSideWall;
-	}
-	public void setRightSideWall(boolean rightSideWall) {
-		this.rightSideWall = rightSideWall;
-	}
-	public boolean isMainWall() {
-		return MainWall;
-	}
-	public void setMainWall(boolean mainWall) {
-		MainWall = mainWall;
-	}
-	public boolean isNiches() {
-		return niches;
-	}
-	public void setNiches(boolean niches) {
-		this.niches = niches;
-	}
-	public boolean isCeiling() {
-		return ceiling;
-	}
-	public void setCeiling(boolean ceiling) {
-		this.ceiling = ceiling;
-	}
-	public boolean isFloor() {
-		return floor;
-	}
-	public void setFloor(boolean floor) {
-		this.floor = floor;
-	}
+
 	
 }

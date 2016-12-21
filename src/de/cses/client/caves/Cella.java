@@ -19,7 +19,7 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 
 public class Cella implements IsWidget{
 	 ContentPanel panel;
-	 Caves caves;
+	 CaveEditor caveEditor;
 	
 		@Override
 		public Widget asWidget() {
@@ -267,7 +267,7 @@ public class Cella implements IsWidget{
 
 			@Override
 			public void onClick(ClickEvent event) {
-				caves.getCellaPanel().hide();	
+//				caveEditor.getCellaPanel().hide();	
 			}
 	  	
 	  };
@@ -278,7 +278,7 @@ public class Cella implements IsWidget{
 
 			@Override
 			public void onClick(ClickEvent event) {
-				caves.getCellaPanel().hide();	
+//				caveEditor.getCellaPanel().hide();	
 			}
 	  	
 	  };
@@ -299,11 +299,11 @@ public class Cella implements IsWidget{
 		return panel;
 		
 	}
-	public Caves getCaves() {
-		return caves;
+	public CaveEditor getCaves() {
+		return caveEditor;
 	}
-	public void setCaves(Caves caves) {
-		this.caves = caves;
+	public void setCaves(CaveEditor caveEditor) {
+		this.caveEditor = caveEditor;
 	}
 	
 	

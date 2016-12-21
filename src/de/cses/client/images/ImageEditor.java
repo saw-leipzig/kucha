@@ -75,6 +75,7 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 	private PhotographerProperties photographerProps;
 	private ListStore<PhotographerEntry> photographerEntryList;
 	private ListView<ImageEntry, ImageEntry> imageListView;
+	private ArrayList<ImageEditorListener> editorListenerList;
 
 	/**
 	 * Create a remote service proxy to talk to the server-side service.
@@ -122,7 +123,9 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 	 * This widget allows to edit the information of an ImageEntry, i.e. an image
 	 * in the database. It also allows for uploading new images to the database.
 	 */
-	public ImageEditor() {
+	public ImageEditor(ImageEditorListener listener) {
+		editorListenerList = new ArrayList<ImageEditorListener>();
+		editorListenerList.add(listener);
 		properties = GWT.create(ImageProperties.class);
 		photographerProps = GWT.create(PhotographerProperties.class);
 		imageEntryList = new ListStore<ImageEntry>(properties.imageID());
@@ -286,6 +289,17 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 		attributePanel.add(rbPanel);
 		attributePanel.setHeading("Image Type");
 		editPanel.add(attributePanel);
+		
+		TextButton closeButton = new TextButton("close");
+		closeButton.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				for (ImageEditorListener listener : editorListenerList) {
+					listener.closeImageEditor();
+				}
+			}
+		});
 
 		TextButton saveButton = new TextButton("save");
 		saveButton.addSelectHandler(new SelectHandler() {
@@ -360,11 +374,20 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 
 		panel.setHeading("Image Editor");
 		panel.add(hPanel);
+		panel.add(closeButton);
 		panel.addButton(saveButton);
 		panel.addButton(deleteButton);
 
 		// panel.add(borderLayoutContainer);
 
+	}
+
+	/**
+	 * 
+	 */
+	protected void cancelEditing() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	/**
