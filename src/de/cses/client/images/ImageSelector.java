@@ -75,7 +75,6 @@ public class ImageSelector implements IsWidget {
 
 	interface ImageProperties extends PropertyAccess<ImageEntry> {
 		ModelKeyProvider<ImageEntry> imageID();
-
 		LabelProvider<ImageEntry> title();
 	}
 

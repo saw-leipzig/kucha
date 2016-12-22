@@ -122,7 +122,7 @@ public class DepictionEditor implements IsWidget, ImageSelectorListener {
 	}
 
 	interface CaveViewTemplates extends XTemplates {
-		@XTemplate("<div>{officialNumber}<br>{officialName}</div>")
+		@XTemplate("<div>{officialNumber}: {officialName}</div>")
 		SafeHtml caveLabel(String officialNumber, String officialName);
 		
 		@XTemplate("<div>{officialNumber}</div>")
