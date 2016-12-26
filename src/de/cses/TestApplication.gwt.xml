@@ -22,6 +22,7 @@
   
   <!-- GXT Stylesheet                                             -->
   <stylesheet src="reset.css" /> 
+  <stylesheet src="kuchaMapStyle.css" /> 
   
   <set-configuration-property name="CssResource.legacy" value="true" />
 
@@ -30,6 +31,7 @@
 
   <!-- Specify the paths for translatable code                    -->
   <source path='client'/>
+  <source path='kuchaMap'/>
   <source path='shared'/>
 
   <collapse-property name="gxt.device" values="*" />

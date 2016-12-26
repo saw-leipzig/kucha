@@ -33,6 +33,7 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.info.Info;
 
+import de.cses.client.KuchaMapProject.Home;
 import de.cses.client.bibliography.AuthorEditor;
 import de.cses.client.bibliography.AuthorEditorListener;
 import de.cses.client.caves.Antechamber;
@@ -103,6 +104,8 @@ public class TestApplication implements EntryPoint {
 		main.add(niches.asWidget(), "Niches Editor");
 		main.add(antechamber.asWidget(), "Antechamber Editor");
 		main.add(districts.asWidget(), "District Editor");
+		Home kuchaMap = new Home();
+		main.add(kuchaMap,"KuchaMap");
 
 		// we are using FlowLayoutContainer 
 

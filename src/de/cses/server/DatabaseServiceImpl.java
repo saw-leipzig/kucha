@@ -13,19 +13,25 @@
  */
 package de.cses.server;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.sencha.gxt.data.shared.TreeStore;
 
 import de.cses.client.DatabaseService;
+import de.cses.client.kuchaMapPopupPanels.HoehlenUebersichtPopUpPanelContainer;
+import de.cses.client.kuchaMapPopupPanels.RegionenUebersichtPopUpPanelContainer;
 import de.cses.server.mysql.MysqlConnector;
+import de.cses.shared.AntechamberEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.CaveTypeEntry;
+import de.cses.shared.CellaEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
+import de.cses.shared.HoehlenContainer;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.OrnamentEntry;
@@ -33,6 +39,7 @@ import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PictorialElementEntry;
 import de.cses.shared.PublicationEntry;
+import de.cses.shared.RegionContainer;
 import de.cses.shared.StyleEntry;
 import de.cses.shared.VendorEntry;
 
@@ -111,11 +118,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		return connector.getCaves();
 	}
 
-	@Override
-	public ArrayList<CaveEntry> getCavesbyDistrictID(int DistrictID) throws IllegalArgumentException {
-		MysqlConnector connector = MysqlConnector.getInstance();
-		return connector.getCavesbyDistrictID(DistrictID);
-	}
+
 
 	@Override
 	public ArrayList<OrnamentEntry> getOrnaments() throws IllegalArgumentException {
@@ -215,6 +218,150 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		MysqlConnector connector = MysqlConnector.getInstance();
 		int relatedImageID = connector.getRelatedMasterImageID(depictionID);
 		return connector.getImageEntry(relatedImageID);
+	}
+	
+	public HoehlenUebersichtPopUpPanelContainer getHoehlenInfosbyID(int id) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		HoehlenUebersichtPopUpPanelContainer result = connector.getHoehleInfosbyID(id);
+		return result;		
+	}
+	
+	public RegionenUebersichtPopUpPanelContainer getRegionenInfosbyID(int ID) throws IllegalArgumentException {
+		MysqlConnector connector =MysqlConnector.getInstance();
+		RegionenUebersichtPopUpPanelContainer result = connector.getRegionenInfosbyID(ID);;
+		return result;		
+	}
+	
+	public ArrayList<HoehlenContainer> getCavesbyDistrictIDKucha(int DistrictID) throws IllegalArgumentException {
+		MysqlConnector connector =MysqlConnector.getInstance();
+		return connector.getCavesbyDistrictIDKucha(DistrictID);
+	}
+
+	
+	public ArrayList<RegionContainer> createRegionen() throws IllegalArgumentException {
+		System.err.println("in server side imple");
+		MysqlConnector connector = MysqlConnector.getInstance();
+		ArrayList<RegionContainer> Regionen = connector.createRegionen();;
+		return Regionen;
+	}
+
+
+	public ArrayList<HoehlenContainer> createHoehlenbyRegion(int iD ) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		ArrayList<HoehlenContainer> Hoehlen = connector.getHoehlenbyRegionID(iD);
+		return Hoehlen;
+	}
+
+	
+	public String saveRegion(ArrayList<HoehlenContainer> hoehlen, int regionID, int buttonSize, int imageID) throws IllegalArgumentException {
+		MysqlConnector connector =MysqlConnector.getInstance();
+		String saved = connector.saveRegion(hoehlen, regionID, buttonSize, imageID);
+		return saved;
+	}
+	public String deleteHoehlebyID( int hoehlenID) throws IllegalArgumentException {
+		MysqlConnector connector =MysqlConnector.getInstance();
+		String saved = connector.deleteHoehlebyID(hoehlenID);
+		return saved;
+	}
+
+	public String setRegionFoto(int imageID, int regionID) throws IllegalArgumentException{
+		MysqlConnector connector =MysqlConnector.getInstance();
+		String saved="";
+		try {
+			saved = connector.setRegionFoto(imageID, regionID);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return saved;
+	}
+
+	@Override
+	public ArrayList<CaveEntry> getCavesbyCella(ArrayList<CellaEntry> cellas) throws IllegalArgumentException {
+		MysqlConnector connector =MysqlConnector.getInstance();
+		ArrayList<CaveEntry> caves = new ArrayList<CaveEntry>();
+		try {
+			caves = connector.getCavesbyCella(cellas);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return caves;
+	}
+
+	@Override
+	public ArrayList<CaveEntry> getCavesbyAntechamber(ArrayList<AntechamberEntry> antechamber)
+			throws IllegalArgumentException {
+		MysqlConnector connector =MysqlConnector.getInstance();
+		ArrayList<CaveEntry> caves = new ArrayList<CaveEntry>();
+		try {
+			caves = connector.getCavesbyAntechamber(antechamber);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return caves;
+	}
+
+	@Override
+	public ArrayList<CaveEntry> getCavesbyCaveType(ArrayList<CaveTypeEntry> caveType) throws IllegalArgumentException {
+		MysqlConnector connector =MysqlConnector.getInstance();
+		ArrayList<CaveEntry> caves = new ArrayList<CaveEntry>();;
+		try {
+			caves = connector.getCavesbyCaveType(caveType);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return caves;
+	}
+
+	@Override
+	public ArrayList<CaveEntry> getCavesbyDistrict(ArrayList<DistrictEntry> districts) throws IllegalArgumentException {
+		MysqlConnector connector =MysqlConnector.getInstance();
+		ArrayList<CaveEntry> caves = new ArrayList<CaveEntry>();
+		try {
+			caves = connector.getCavesbyDistrict(districts);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return caves;
+	}
+
+	@Override
+	public ArrayList<CaveEntry> getCavesbyDepiction(ArrayList<DepictionEntry> depictions){
+	MysqlConnector connector =MysqlConnector.getInstance();
+	ArrayList<CaveEntry> caves = new ArrayList<CaveEntry>();
+	try {
+		caves = connector.getCavesbyDepiction(depictions);
+	} catch (SQLException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	return caves;
+	}
+
+	@Override
+	public ArrayList<CaveEntry> getCavesbyOrnaments(ArrayList<OrnamentEntry> ornaments){
+	MysqlConnector connector =MysqlConnector.getInstance();
+	ArrayList<CaveEntry> caves = new ArrayList<CaveEntry>();;
+	try {
+		caves = connector.getCavesbyOrnament(ornaments);
+	} catch (SQLException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	return caves;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#getCavesbyDistrictID(int)
+	 */
+	@Override
+	public ArrayList<CaveEntry> getCavesbyDistrictID(int DistrictID) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getCavesbyDistrictID(DistrictID);
 	}
 
 }

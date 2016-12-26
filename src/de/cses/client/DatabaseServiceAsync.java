@@ -17,12 +17,17 @@ import java.util.ArrayList;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import de.cses.client.kuchaMapPopupPanels.HoehlenUebersichtPopUpPanelContainer;
+import de.cses.client.kuchaMapPopupPanels.RegionenUebersichtPopUpPanelContainer;
+import de.cses.shared.AntechamberEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveTypeEntry;
+import de.cses.shared.CellaEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
+import de.cses.shared.HoehlenContainer;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.OrnamentEntry;
@@ -30,6 +35,7 @@ import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PictorialElementEntry;
 import de.cses.shared.PublicationEntry;
+import de.cses.shared.RegionContainer;
 import de.cses.shared.StyleEntry;
 import de.cses.shared.VendorEntry;
 
@@ -50,6 +56,8 @@ public interface DatabaseServiceAsync {
 	void getCaves(AsyncCallback<ArrayList<CaveEntry>> callback) throws IllegalArgumentException;
 
 	void getCavesbyDistrictID(int DistrictID, AsyncCallback<ArrayList<CaveEntry>> callback) throws IllegalArgumentException;
+	
+	void getCavesbyDistrictIDKucha(int DistrictID, AsyncCallback<ArrayList<HoehlenContainer>> callback) throws IllegalArgumentException;
 
 	void getOrnaments(AsyncCallback<ArrayList<OrnamentEntry>> callback) throws IllegalArgumentException;
 
@@ -87,5 +95,19 @@ public interface DatabaseServiceAsync {
 	void getAuthorEntry(int id, AsyncCallback<AuthorEntry> asyncCallback) throws IllegalArgumentException;
 	
 	void getMasterImageEntryForDepiction(int depictionID, AsyncCallback<ImageEntry> asyncCallback) throws IllegalArgumentException;
+	
+	void getHoehlenInfosbyID(int iD, AsyncCallback<HoehlenUebersichtPopUpPanelContainer> callback) throws IllegalArgumentException;
+	void deleteHoehlebyID(int iD, AsyncCallback<String> callback) throws IllegalArgumentException;
+	void getRegionenInfosbyID(int iD, AsyncCallback<RegionenUebersichtPopUpPanelContainer> callback) throws IllegalArgumentException;
+	void createRegionen( AsyncCallback<ArrayList<RegionContainer>> callback) throws IllegalArgumentException;
+	void createHoehlenbyRegion (int iD,  AsyncCallback<ArrayList<HoehlenContainer>> callback) throws IllegalArgumentException;
+	void saveRegion (ArrayList<HoehlenContainer> hoehlen, int regionID, int buttonSize,int imageID,  AsyncCallback<String> callback) throws IllegalArgumentException;
+	void setRegionFoto(int imageID, int regionID, AsyncCallback<String> callback) throws IllegalArgumentException;
+	void getCavesbyAntechamber(ArrayList<AntechamberEntry> antechambers, AsyncCallback<ArrayList<CaveEntry>> callback) throws IllegalArgumentException;
+	void getCavesbyCaveType(ArrayList<CaveTypeEntry> caveTypes, AsyncCallback<ArrayList<CaveEntry>> callback) throws IllegalArgumentException;
+	void getCavesbyCella(ArrayList<CellaEntry> cellas, AsyncCallback<ArrayList<CaveEntry>> callback) throws IllegalArgumentException;
+	void getCavesbyDistrict(ArrayList<DistrictEntry> districts, AsyncCallback<ArrayList<CaveEntry>> callback) throws IllegalArgumentException;
+	void getCavesbyDepiction(ArrayList<DepictionEntry> depictions, AsyncCallback<ArrayList<CaveEntry>> callback) throws IllegalArgumentException;
+	void getCavesbyOrnaments(ArrayList<OrnamentEntry> ornaments, AsyncCallback<ArrayList<CaveEntry>> callback) throws IllegalArgumentException;
 	
 }

@@ -15,18 +15,24 @@ package de.cses.server.mysql;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
+import de.cses.client.kuchaMapPopupPanels.HoehlenUebersichtPopUpPanelContainer;
+import de.cses.client.kuchaMapPopupPanels.RegionenUebersichtPopUpPanelContainer;
+import de.cses.shared.AntechamberEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.CaveTypeEntry;
+import de.cses.shared.CellaEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
+import de.cses.shared.HoehlenContainer;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.OrnamentEntry;
@@ -34,6 +40,7 @@ import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PictorialElementEntry;
 import de.cses.shared.PublicationEntry;
+import de.cses.shared.RegionContainer;
 import de.cses.shared.StyleEntry;
 import de.cses.shared.VendorEntry;
 
@@ -529,8 +536,8 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM CaveType WHERE CaveTypeID =" + caveTypeID);
 			while (rs.next()) {
-				resultCaveType.setEnDescription(rs.getString("en.description"));
-				resultCaveType.setEnShortname(rs.getString("en.shortname"));
+				resultCaveType.setEnDescription(rs.getString("DescriptionEN"));
+				resultCaveType.setEnShortname(rs.getString("NameEN"));
 
 			}
 			rs.close();
@@ -553,8 +560,8 @@ public class MysqlConnector {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM CaveType");
 			while (rs.next()) {
 				System.err.println("cave type gefunden");
-				CaveTypeEntry caveType = new CaveTypeEntry(rs.getInt("CaveTypeID"), rs.getString("en.shortname"),
-						rs.getString("en.description"));
+				CaveTypeEntry caveType = new CaveTypeEntry(rs.getInt("CaveTypeID"), rs.getString("NameEN"),
+						rs.getString("DescriptionEN"));
 				results.add(caveType);
 			}
 			rs.close();
@@ -863,6 +870,446 @@ public class MysqlConnector {
 			return 0;
 		}
 		return result;
+	}
+	public  synchronized RegionenUebersichtPopUpPanelContainer getRegionenInfosbyID(int ID ){
+		Connection dbc = getConnection();
+		
+		System.out.println("reached");
+		Statement stmt;
+	
+			try {
+			stmt = dbc.createStatement();
+			String sql = "SELECT * FROM Districts WHERE DistrictID = "+ "'"+ID+"'"; //$NON-NLS-1$
+			ResultSet rs = stmt.executeQuery(sql);
+			RegionenUebersichtPopUpPanelContainer popup = new RegionenUebersichtPopUpPanelContainer();
+			while(rs.next()){
+				popup.setID(rs.getInt("DistrictID")); 
+				popup.setName(rs.getString("Name"));
+				popup.setDescription(rs.getString("Description"));
+				
+			}
+			int imageID=0;
+			sql = "SELECT * FROM KuchaMapDistricts WHERE ID = "+ "'"+ID+"'";
+			rs = stmt.executeQuery(sql);
+				while(rs.next()){
+					imageID = rs.getInt("ImageID");
+				}
+			sql = "SELECT * FROM Images WHERE ImageID = "+ "'"+imageID+"'";
+			rs = stmt.executeQuery(sql);
+			while(rs.next()){
+				popup.setUrl("http://kucha.informatik.hu-berlin.de/tomcat/images/tn" + rs.getString("Filename"));
+			}
+			
+			
+			
+			rs.close();
+			stmt.close();
+			dbc.close();
+			System.err.println("Database request finished"); //$NON-NLS-1$
+			return popup;
+
+			}
+				catch (SQLException e) {
+			
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return null;
+		
+
+}
+	public synchronized HoehlenUebersichtPopUpPanelContainer getHoehleInfosbyID(int ID) {
+
+		Connection dbc = getConnection();
+		
+		System.out.println("reached");
+		Statement stmt;
+		int caveTypeID = 0;
+		ArrayList<Integer> depictionID = new ArrayList<Integer>();
+		ArrayList<Integer> imageIDArrayList = new ArrayList<Integer>();
+		try {
+			stmt = dbc.createStatement();
+
+			String sql = "SELECT * FROM Caves WHERE CaveID = "+ "'"+ID+"'"; //$NON-NLS-1$
+
+			ResultSet rs = stmt.executeQuery(sql);
+			HoehlenUebersichtPopUpPanelContainer popup = new HoehlenUebersichtPopUpPanelContainer();
+
+			while (rs.next()) {
+				popup.setOfficialName(rs.getString("OfficialName"));; //$NON-NLS-1$
+				popup.setHoehlenID(rs.getInt("CaveID"));
+				popup.setHistoricName(rs.getString("HistoricName"));
+				caveTypeID = rs.getInt("CaveTypeID");
+			}
+
+			sql = "SELECT * FROM CaveType WHERE CaveTypeID = "+ "'"+caveTypeID+"'"; //$NON-NLS-1$
+
+			rs = stmt.executeQuery(sql);
+
+			while (rs.next()) {
+				popup.setCaveTypeDescription(rs.getString("DescriptionEN"));
+				System.err.println("cavetype description funktioniert ");
+			}
+			sql = "SELECT * FROM Depictions WHERE CaveID = "+ "'"+ID+"'"; //$NON-NLS-1$
+			System.err.println("sql query wurde auf get depiction geändert ");
+			rs = stmt.executeQuery(sql);
+			while (rs.next()) {
+				depictionID.add(rs.getInt("DepictionID")); 
+				System.err.println("depiction id wurde gefunden " + depictionID);
+			}
+			for(int k = 0; k < depictionID.size(); k++){
+			sql = "SELECT * FROM DepictionImageRelation WHERE DepictionID = "+ "'"+depictionID.get(k)+"'"; //$NON-NLS-1$
+            int i = 0;
+            System.err.println("sql wurde gändert auf depictionimageRelation ");
+			rs = stmt.executeQuery(sql);
+			while (rs.next() && i<10) {
+				imageIDArrayList.add(rs.getInt("ImageID")); 
+				i++;
+				System.err.println("imageid wurde gefunden");
+			}
+			}
+			System.err.println(imageIDArrayList.size() + " ist imageidarraysize");
+			
+			for(int p = 0; p < imageIDArrayList.size(); p ++){
+				sql = "SELECT * FROM Images WHERE ImageID = "+ "'"+imageIDArrayList.get(p)+"'"; //$NON-NLS-1$
+				rs = stmt.executeQuery(sql);
+				while (rs.next()) {
+					System.err.println("ein bild eingetragen");
+					String filename = rs.getString("Filename");
+					popup.getBilderURLs().add("http://kucha.informatik.hu-berlin.de/tomcat/images/tn" +filename);
+				}
+			}
+
+			rs.close();
+			stmt.close();
+			dbc.close();
+			System.err.println("Database request finished"); //$NON-NLS-1$
+			return popup;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+	public synchronized String saveRegion(ArrayList<HoehlenContainer> Hoehlen, int RegionID, int ButtonSize, int imageID){
+		Connection dbc = getConnection();
+		String sql = "REPLACE INTO KuchaMapCaves(ID,ButtonPosLeft, ButtonPosTop, RegionID) VALUES (?,?,?,?)";
+		PreparedStatement pstmt;
+		
+	try {
+		setRegionFoto(imageID, RegionID);
+	} catch (SQLException e1) {
+		// TODO Auto-generated catch block
+		e1.printStackTrace();
+	}
+		
+	if (RegionID==-1){
+		sql = "UPDATE KuchaMapDistricts SET ButtonPosLeft = ? ,ButtonPosTop = ? WHERE ID = ? ";
+	}
+		for (int i=0; i< Hoehlen.size(); i++){
+			System.err.println(Hoehlen.size() + "Runde: " + i);
+			
+			
+			try {
+				if(RegionID == -1){
+					pstmt = dbc.prepareStatement(sql);
+					System.err.println("startseite case");
+				    pstmt.setInt(1, Hoehlen.get(i).getButtonPositionLeft());
+				    System.err.println("set buttonpos left");
+				    pstmt.setInt(2, Hoehlen.get(i).getButtonPositionTop());
+				    System.err.println("set button pos top");
+				    pstmt.setInt(3, Hoehlen.get(i).getID());
+				    System.err.println("set hoehlen id");
+				    pstmt.executeUpdate();
+				    System.err.println("executet");
+				}
+				else{
+				pstmt = dbc.prepareStatement(sql);
+				System.err.println(pstmt);
+				System.err.println("prepared in not NUll case");
+			    pstmt.setInt(1, Hoehlen.get(i).getID());
+			    System.err.println("settet int ID");
+			    pstmt.setInt(2, Hoehlen.get(i).getButtonPositionLeft());
+			    System.err.println("settet int buttonpositionleft");
+			    pstmt.setInt(3, Hoehlen.get(i).getButtonPositionTop());
+			    System.err.println("settet int buttonpositiontop");
+			    pstmt.setInt(4, Hoehlen.get(i).getRegionID());
+			    System.err.println("settet int regionID");
+			    pstmt.executeUpdate();
+				}
+			} catch (SQLException e) {
+				System.err.println("Hoehlen speichern failed");
+				e.printStackTrace();
+			}
+		}
+			sql = "UPDATE KuchaMapDistricts SET ButtonSize = "+ "'"+ButtonSize+"'" + "WHERE ID = "+  "'"+RegionID+"'";
+			try {
+				System.err.println("buttonsize setzen ");
+				pstmt = dbc.prepareStatement(sql);
+			    pstmt.executeUpdate();
+			    ResultSet rs = pstmt.getGeneratedKeys();
+			    System.err.println("buttonsize setzen kram erledigt ");
+			    int idreturn = -1;
+			    if (rs.next()) {
+			      idreturn = rs.getInt(1);
+			    }
+			    if(idreturn == 1){
+				    rs.close();
+				    pstmt.close();
+			    	return "saving failed";
+			    }
+			    else{
+				    rs.close();
+				    pstmt.close();
+			    	return "saved";
+			    }
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+		return "saved";
+		
+	}
+	public synchronized String getImageURLbyImageID(int imageID) throws SQLException{
+		Connection dbc = getConnection();
+		Statement stmt = dbc.createStatement();
+		String sql = "SELECT * FROM Images WHERE ImageID = "+ imageID; 
+		ResultSet rs = stmt.executeQuery(sql);
+		while(rs.next()){
+			return rs.getString("Filename");
+		}
+		return null;
+	}
+	public  synchronized ArrayList<RegionContainer> createRegionen(){
+		System.err.println("in createregionenmethode drin");
+		Connection dbc = getConnection();
+		Statement stmt;
+		System.err.println("initialized everything");
+		ArrayList<RegionContainer> Regionen = new ArrayList<RegionContainer>();
+		System.err.println("created arraylist");
+			try {
+			stmt = dbc.createStatement();
+			System.err.println("created statement");
+			String sql = "SELECT * FROM KuchaMapDistricts"; //$NON-NLS-1$
+			ResultSet rs = stmt.executeQuery(sql);
+			System.err.println("executed query");
+			while(rs.next()){
+				RegionContainer region = new RegionContainer();
+				region.setID(rs.getInt("ID"));
+				System.err.println(rs.getInt("ID"));
+				region.setName(rs.getString("Name"));
+				region.setImageID(rs.getInt("ImageID"));
+				region.setHoehlenButtonSize(rs.getInt("ButtonSize"));
+				region.setRegionButtonPositionX(rs.getInt("ButtonPosLeft"));
+				region.setRegionButtonPositionX(rs.getInt("ButtonPosTop"));
+				Regionen.add(region);
+				
+			}
+		for(int i = 0; i< Regionen.size(); i++){
+			sql = "SELECT * FROM Images WHERE ImageID ="+ Regionen.get(i).getImageID(); 
+			rs = stmt.executeQuery(sql);
+			while(rs.next()){
+				Regionen.get(i).setFotoURL("http://kucha.informatik.hu-berlin.de/tomcat/images/"+ rs.getString("Filename"));
+			}
+		}
+
+			
+			rs.close();
+			stmt.close();
+			dbc.close();
+			System.err.println("Database request finished"); //$NON-NLS-1$
+			
+			return Regionen;
+			}
+				catch (SQLException e) {
+			System.err.println("fuuuuuuuuuuuuu");
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				
+			}
+			return Regionen;
+			
+	}
+	public synchronized ArrayList<HoehlenContainer> getHoehlenbyRegionID(int ID){
+		Connection dbc = getConnection();
+		Statement stmt;
+		ArrayList<HoehlenContainer> Hoehlen = new ArrayList<HoehlenContainer>();
+		System.err.println(ID);
+
+		
+		try {
+			stmt = dbc.createStatement();
+			System.err.println("created statement");
+
+			String sql = "SELECT * FROM KuchaMapCaves WHERE RegionID =" + "'"+ID+"'"; //$NON-NLS-1$
+			if(ID == -1){
+				sql = "SELECT * FROM KuchaMapDistricts";
+			}
+			ResultSet rs = stmt.executeQuery(sql);
+			System.err.println("executed query");
+		
+			while(rs.next()){
+			System.err.println("creating HoehlenContainer and filling list");
+				HoehlenContainer Hoehle = new HoehlenContainer();
+				System.err.println("created HoehlenContainer");
+				Hoehle.setID(rs.getInt("ID"));		
+				System.err.println("got the ID");
+				Hoehle.setButtonPositionLeft(rs.getInt("ButtonPosLeft"));
+				System.err.println("got the button pos left");
+				Hoehle.setButtonPositionTop(rs.getInt("ButtonPosTop"));
+				System.err.println("got buttonpos right");
+				if(ID !=-1){
+				Hoehle.setRegionID(rs.getInt("RegionID"));
+				System.err.println("got regionID");
+				}
+				
+				Hoehlen.add(Hoehle);
+				System.err.println("set everything");
+				
+				
+			}
+			
+			rs.close();
+			stmt.close();
+			dbc.close();
+			System.err.println("Database request finished");
+			return Hoehlen;
+		
+		
+	}
+		catch(SQLException e){
+			return null;
+		}
+	}
+	public synchronized ArrayList<HoehlenContainer> getCavesbyDistrictIDKucha(int DistrictID) {
+		ArrayList<HoehlenContainer> results = new ArrayList<HoehlenContainer>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Caves WHERE DistrictID ="+DistrictID);
+			while (rs.next()) { 
+				results.add(new HoehlenContainer(rs.getInt("DistrictID"),rs.getInt("CaveID"),rs.getString("OfficialName")));
+			}
+			rs.close();
+			stmt.close();
+			dbc.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return results;
+	}
+	public synchronized String deleteHoehlebyID(int hoehlenID) {
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("DELETE FROM KuchaMapCaves WHERE ID ="+hoehlenID);
+			rs.close();
+			stmt.close();
+			dbc.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return "failed";
+		}
+		return "deleted";
+	}
+	public synchronized String setRegionFoto(int imageID, int regionID) throws SQLException{
+		Connection dbc = getConnection();
+		Statement stmt = dbc.createStatement();
+		String sql = "UPDATE KuchaMapDistricts SET ImageID = "+ imageID +" "+ "WHERE ID = "+regionID; 
+		ResultSet rs = stmt.executeQuery(sql);
+		while(rs.next()){
+			return "saved";
+		}
+		return "saved";
+	}
+	public synchronized ArrayList<CaveEntry> getCavesbyAntechamber(ArrayList<AntechamberEntry> antechambers) throws SQLException{
+		Connection dbc = getConnection();
+		Statement stmt = dbc.createStatement();
+		ArrayList<CaveEntry> caves = new ArrayList<CaveEntry>();
+		for(int i =0; i< antechambers.size(); i++){
+		String sql = "SELECT * FROM Caves WHERE CaveID = "+ antechambers.get(i).getcaveID(); 
+		ResultSet rs = stmt.executeQuery(sql);
+		while(rs.next()){
+			CaveEntry newCave = new CaveEntry();
+			newCave.setCaveID(rs.getInt("CaveID"));
+			caves.add(newCave);
+		}
+		}
+		return caves;
+	}
+	public synchronized ArrayList<CaveEntry> getCavesbyCaveType(ArrayList<CaveTypeEntry> caveTypes) throws SQLException{
+		Connection dbc = getConnection();
+		Statement stmt = dbc.createStatement();
+		ArrayList<CaveEntry> caves = new ArrayList<CaveEntry>();
+		for(int i =0; i< caveTypes.size(); i++){
+		String sql = "SELECT * FROM Caves WHERE CaveTypeID = "+ caveTypes.get(i).getCaveTypeID(); 
+		ResultSet rs = stmt.executeQuery(sql);
+		while(rs.next()){
+			CaveEntry newCave = new CaveEntry();
+			newCave.setCaveID(rs.getInt("CaveID"));
+			caves.add(newCave);
+		}
+		}
+		return caves;
+	}
+	public synchronized ArrayList<CaveEntry> getCavesbyCella(ArrayList<CellaEntry> cellas) throws SQLException{
+		Connection dbc = getConnection();
+		Statement stmt = dbc.createStatement();
+		ArrayList<CaveEntry> caves = new ArrayList<CaveEntry>();
+		for(int i =0; i< cellas.size(); i++){
+		String sql = "SELECT * FROM Caves WHERE CaveID = "+ cellas.get(i).getCaveID(); 
+		ResultSet rs = stmt.executeQuery(sql);
+		while(rs.next()){
+			CaveEntry newCave = new CaveEntry();
+			newCave.setCaveID(rs.getInt("CaveID"));
+			caves.add(newCave);
+		}
+		}
+		return caves;
+	}
+	public synchronized ArrayList<CaveEntry> getCavesbyDistrict(ArrayList<DistrictEntry> districts) throws SQLException{
+		Connection dbc = getConnection();
+		Statement stmt = dbc.createStatement();
+		ArrayList<CaveEntry> caves = new ArrayList<CaveEntry>();
+		for(int i =0; i< districts.size(); i++){
+		String sql = "SELECT * FROM Caves WHERE DistrictID = "+ districts.get(i).getDistrictID();
+		ResultSet rs = stmt.executeQuery(sql);
+		while(rs.next()){
+			CaveEntry newCave = new CaveEntry();
+			newCave.setCaveID(rs.getInt("CaveID"));
+			caves.add(newCave);
+		}
+		}
+		return caves;
+	}
+	
+	public synchronized ArrayList<CaveEntry> getCavesbyDepiction(ArrayList<DepictionEntry> depictions)throws SQLException{
+		Connection dbc = getConnection();
+		Statement stmt = dbc.createStatement();
+		ArrayList<CaveEntry> caves = new ArrayList<CaveEntry>();
+		
+		return null;
+	}
+	
+	public synchronized ArrayList<CaveEntry> getCavesbyOrnament(ArrayList<OrnamentEntry> ornaments)throws SQLException{
+		Connection dbc = getConnection();
+		Statement stmt = dbc.createStatement();
+		ArrayList<CaveEntry> caves = new ArrayList<CaveEntry>();
+		for(int i =0; i< ornaments.size(); i++){
+		String sql = "SELECT * FROM CaveOrnamentRelation WHERE OrnamentID = "+ ornaments.get(i).getOrnamentID();
+		ResultSet rs = stmt.executeQuery(sql);
+		while(rs.next()){
+			CaveEntry newCave = new CaveEntry();
+			newCave.setCaveID(rs.getInt("CaveID"));
+			caves.add(newCave);
+		}
+		}
+		return caves;
 	}
 
 }
