@@ -40,17 +40,34 @@ public class Suche {
 	public ArrayList<CaveEntry> search (){
 		findRelatedCaves(caveArrayList);
 		findRelatedCavesbyOrnament(ornamentArrayList);
-		findRelatedCavesbyDepiction(depictionArrayList);
+		//findRelatedCavesbyDepiction(depictionArrayList);
 		findRelatedCavesbyCaveType(caveTypeArrayList);
+		
+		if(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getID()==-1){
+			for(int i = 0; i< Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getRegionen().size(); i++){
+				for(int j = 0; j< finaleHoehlen.size(); j++){
+					if(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getRegionen().get(i).getID() == finaleHoehlen.get(j).getDistrictID()){
+						Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getRegionen().get(i).getRegionButton().removeStyleDependentName("HoehlenButtonStyle");
+						Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getRegionen().get(i).getRegionButton().removeStyleDependentName("HoehlenButtonStyleFound");
+					}
+					else{
+						Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getRegionen().get(i).getRegionButton().removeStyleDependentName("HoehlenButtonStyleFound");
+						Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getRegionen().get(i).getRegionButton().removeStyleDependentName("HoehlenButtonStyle");
+					}
+				}
+				
+			}
+		}
 		
 		for(int i = 0; i< Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().size();i++){
 			if(finaleHoehlen.contains(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(i))){
-				Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(i).getButton().removeStyleDependentName("");
-				Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(i).getButton().addStyleDependentName("");
+				Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(i).getButton().removeStyleDependentName("HoehlenButtonStyle");
+				Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(i).getButton().addStyleDependentName("HoehlenButtonStyleFound");
+				
 			}
 			else{
-				Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(i).getButton().removeStyleDependentName("");
-				Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(i).getButton().addStyleDependentName("");
+				Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(i).getButton().removeStyleDependentName("HoehlenButtonStyleFound");
+				Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(i).getButton().addStyleDependentName("HoehlenButtonStyle");
 			}
 		}
 		return null;

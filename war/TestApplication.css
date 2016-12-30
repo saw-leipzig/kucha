@@ -1090,6 +1090,16 @@ td.datePickerYear {
 	background: url("http://kucha.informatik.hu-berlin.de/tomcat/images/BUTTONHOEHLEpngblau.png");
 	background-size: contain !important ;
 }
+
+.HoehlenButtonStyleFound{
+	border:0;
+	color: rgba(0, 0, 0, 0);
+	height: 40px;
+	width: 40px;
+	background-repeat: no-repeat !important ;
+	background: url("http://kucha.informatik.hu-berlin.de/tomcat/images/BUTTONHOEHLEpngblau.png");
+	background-size: contain !important ;
+}
 .FotoZoomSlider{
 	
 }
