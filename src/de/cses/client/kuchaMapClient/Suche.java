@@ -7,6 +7,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.KuchaMapProject.Home;
 import de.cses.shared.AntechamberEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveTypeEntry;
@@ -37,7 +38,21 @@ public class Suche {
 	
 	
 	public ArrayList<CaveEntry> search (){
-		// übertragung der id von Cave Entry in Hoehlen(Container)? oder nur vergleich der IDs
+		findRelatedCaves(caveArrayList);
+		findRelatedCavesbyOrnament(ornamentArrayList);
+		findRelatedCavesbyDepiction(depictionArrayList);
+		findRelatedCavesbyCaveType(caveTypeArrayList);
+		
+		for(int i = 0; i< Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().size();i++){
+			if(finaleHoehlen.contains(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(i))){
+				Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(i).getButton().removeStyleDependentName("");
+				Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(i).getButton().addStyleDependentName("");
+			}
+			else{
+				Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(i).getButton().removeStyleDependentName("");
+				Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(i).getButton().addStyleDependentName("");
+			}
+		}
 		return null;
 	}
 	

@@ -17,7 +17,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-import com.sencha.gxt.data.shared.TreeStore;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.kuchaMapPopupPanels.HoehlenUebersichtPopUpPanelContainer;
@@ -48,6 +47,8 @@ import de.cses.shared.VendorEntry;
  */
 @SuppressWarnings("serial")
 public class DatabaseServiceImpl extends RemoteServiceServlet implements DatabaseService {
+	
+	int i = 0;
 
 	public String dbServer(String name) throws IllegalArgumentException {
 		
@@ -221,34 +222,45 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	}
 	
 	public HoehlenUebersichtPopUpPanelContainer getHoehlenInfosbyID(int id) throws IllegalArgumentException {
+		System.err.println("in gethoehelninfos by id");
 		MysqlConnector connector = MysqlConnector.getInstance();
 		HoehlenUebersichtPopUpPanelContainer result = connector.getHoehleInfosbyID(id);
+		System.err.println("in gethoehelninfos by id fertig");
 		return result;		
 	}
 	
 	public RegionenUebersichtPopUpPanelContainer getRegionenInfosbyID(int ID) throws IllegalArgumentException {
+		System.err.println("in get regionen lninfos by id");
 		MysqlConnector connector =MysqlConnector.getInstance();
-		RegionenUebersichtPopUpPanelContainer result = connector.getRegionenInfosbyID(ID);;
+		RegionenUebersichtPopUpPanelContainer result = connector.getRegionenInfosbyID(ID);
+		System.err.println("in get regionen ninfos by id fertig");
 		return result;		
 	}
 	
 	public ArrayList<HoehlenContainer> getCavesbyDistrictIDKucha(int DistrictID) throws IllegalArgumentException {
+		System.err.println("in get caves by district id");
 		MysqlConnector connector =MysqlConnector.getInstance();
+		System.err.println("caves by district fertig");
 		return connector.getCavesbyDistrictIDKucha(DistrictID);
 	}
 
 	
 	public ArrayList<RegionContainer> createRegionen() throws IllegalArgumentException {
-		System.err.println("in server side imple");
+		System.err.println("in server side imple create regionen");
+		i++;
+		System.err.println(Integer.toString(i));
 		MysqlConnector connector = MysqlConnector.getInstance();
-		ArrayList<RegionContainer> Regionen = connector.createRegionen();;
+		ArrayList<RegionContainer> Regionen = connector.createRegionen();
+		System.err.println("fertig mit create regionen");
 		return Regionen;
 	}
 
 
 	public ArrayList<HoehlenContainer> createHoehlenbyRegion(int iD ) throws IllegalArgumentException {
+		System.err.println("in create hoehlen by region ");
 		MysqlConnector connector = MysqlConnector.getInstance();
 		ArrayList<HoehlenContainer> Hoehlen = connector.getHoehlenbyRegionID(iD);
+		System.err.println("in create hoehlen by region fertig");
 		return Hoehlen;
 	}
 
@@ -305,6 +317,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 
 	@Override
 	public ArrayList<CaveEntry> getCavesbyCaveType(ArrayList<CaveTypeEntry> caveType) throws IllegalArgumentException {
+		System.err.println("in caves by cavetype ");
 		MysqlConnector connector =MysqlConnector.getInstance();
 		ArrayList<CaveEntry> caves = new ArrayList<CaveEntry>();;
 		try {
@@ -313,6 +326,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		System.err.println("in caves by cavetype fertig");
 		return caves;
 	}
 
@@ -331,6 +345,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 
 	@Override
 	public ArrayList<CaveEntry> getCavesbyDepiction(ArrayList<DepictionEntry> depictions){
+		System.err.println("in caves by depiction ");
 	MysqlConnector connector =MysqlConnector.getInstance();
 	ArrayList<CaveEntry> caves = new ArrayList<CaveEntry>();
 	try {
@@ -339,6 +354,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
+	System.err.println("in caves by depiction fertig");
 	return caves;
 	}
 

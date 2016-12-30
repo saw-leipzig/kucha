@@ -63,7 +63,7 @@ public class KuchaMapPrototyp {
 		environmentVerwaltung.iniEnvironmentVerwaltung();
 		editierenVerwaltung.iniEditierenVerwaltung();
 		
-		kuchaDatabase.loadRegionen(true);
+		
 	
 
 	}
@@ -97,8 +97,16 @@ public class KuchaMapPrototyp {
 	}
 	public void Start(){
 		Window.alert("in der start methode");
-		detailansichtVerwaltung.setaktiveRegion(detailansichtVerwaltung.getRegionbyID(-1));
 		detailansicht.CreateDetailansicht();
+		kuchaDatabase.loadRegionen(true);
+
+		
+		
+	
+	}
+	
+	public void createPanels(){
+		
 		environment.CreateEnvironment();
 		environment.CreateHeaderTop();
 		Home.getRootLayoutPanel().add(mainPanel);
@@ -113,9 +121,8 @@ public class KuchaMapPrototyp {
 		environment.createHeaderBottom();
 		
 		mainPanel.addStyleName("Main");
-		editierenVerwaltung.switchEDundAN();
-		detailansichtVerwaltung.loadRegion();
 	}
+	
 	public KuchaDatabase getSaveOnDatabase() {
 		return kuchaDatabase;
 	}

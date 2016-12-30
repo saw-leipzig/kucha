@@ -21,12 +21,16 @@ public class Home implements IsWidget {
 		kuchaMapPrototyp = new KuchaMapPrototyp();
 		Window.alert("kuchaprototyp erstellt");
 		kuchaMapPrototyp.iniKuchaMapPrototyp();
+		
 		Window.alert("initialisiert");
 		kuchaMapPrototyp.create();
+		
 		Window.alert("created");
 		kuchaMapPrototyp.inititialize();
 		Window.alert("2.ini");
+		kuchaMapPrototyp.Start();
 		//TestCommit
+	
 
 	}
 

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 
@@ -129,11 +130,14 @@ public class DetailansichtVerwaltung{
 			aktiveRegion = region;
 		}
 		public void loadRegion(){
+			Window.alert("load regionen wird ausgefuehrt");
 			kuchaDatabase.loadRegionen(false);
-			fotoAbsolutePanel.clear();
+			/*fotoAbsolutePanel.clear();
+			Window.alert(aktiveRegion.getFoto());
 			detailansicht.getHoehlenFotoIMG().setUrl(aktiveRegion.getFoto());
 			fotoAbsolutePanel.add(detailansicht.getHoehlenFotoIMG());
 			editierenVerwaltung.switchEDundAN();
+			*/
 		}
 		
 		public Detailansicht getDetailansicht(){
@@ -176,6 +180,19 @@ public class DetailansichtVerwaltung{
 		public void setLoaded(boolean loaded) {
 			this.loaded = loaded;
 		}
+		public AbsolutePanel getFotoAbsolutePanel() {
+			return fotoAbsolutePanel;
+		}
+		public void setFotoAbsolutePanel(AbsolutePanel fotoAbsolutePanel) {
+			this.fotoAbsolutePanel = fotoAbsolutePanel;
+		}
+		public EditierenVerwaltung getEditierenVerwaltung() {
+			return editierenVerwaltung;
+		}
+		public void setEditierenVerwaltung(EditierenVerwaltung editierenVerwaltung) {
+			this.editierenVerwaltung = editierenVerwaltung;
+		}
+		
 		
 		
 }

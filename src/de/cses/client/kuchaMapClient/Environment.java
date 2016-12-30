@@ -13,6 +13,7 @@ import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -248,8 +249,9 @@ public class Environment implements ImageSelectorListener {
 		    	for(int i = 0; i< loeschenListe.size(); i++){
 		    	kuchaDatabase.deleteHoehlebyID(loeschenListe.get(i));
 		    	}
+		    	Window.alert(Integer.toString(detailansichtVerwaltung.getaktiveRegion().getImageID()));
 		    	kuchaDatabase.save(hoehlenContainerList, detailansichtVerwaltung.getaktiveRegion().getID(), detailansichtVerwaltung.getaktiveRegion().getHoehlenButtonsize(), detailansichtVerwaltung.getaktiveRegion().getImageID());
-		    	
+		    
 		    }
 		});
 		
