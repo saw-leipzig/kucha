@@ -54,14 +54,35 @@ public class Environment implements ImageSelectorListener {
 	Button save = new Button("Save&Exit");
 	private ArrayList<Integer>loeschenListe = new ArrayList<Integer>();
 	Environment environment = this;
+	Suche suche;
+
 
 	
 	public Environment(){
-
+		
 	}
 	
 	public void iniEnvironment(){
 		suchenButton = new Button("Suchen");
+		suche = Home.getKuchaMapPrototyp().getSuche();
+		
+		final ClickHandler sucheClickHandler = new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				Window.alert("ich bin in der click funktion");
+				SucheSminulation.sucheSimulation(suchenBox.getText());
+				//suche.setCaveArrayList(SucheSminulation.caveArrayList);
+				Window.alert("cave array list gesettet ");
+				Window.alert(Integer.toString(SucheSminulation.caveArrayList.size()));
+				//suche.setCaveTypeArrayList(SucheSminulation.caveTypeArrayList);
+				//suche.setDistrictArrayList(SucheSminulation.districtArrayList);
+				//suche.setOrnamentArrayList(SucheSminulation.ornamentArrayList);
+				suche.search();
+			}
+			
+		};
+		suchenButton.addClickHandler(sucheClickHandler);
 		suchenBox = new TextBox();
 		fotoUpload = new Button("FotoUpload");
 		fotoUpload.removeStyleName("gwt-Button");

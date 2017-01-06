@@ -14,6 +14,7 @@ import de.cses.client.kuchaMapClient.Environment;
 import de.cses.client.kuchaMapClient.EnvironmentVerwaltung;
 import de.cses.client.kuchaMapClient.HoehlenUebersicht;
 import de.cses.client.kuchaMapClient.RegionenUebersicht;
+import de.cses.client.kuchaMapClient.Suche;
 
 
 
@@ -31,6 +32,7 @@ public class KuchaMapPrototyp {
 	 private HorizontalPanel inhalt;
 	 private KuchaDatabase kuchaDatabase;
 	 private RegionenUebersicht regionenUebersicht;
+	 private Suche suche;
 	
 	public KuchaMapPrototyp(){
 		
@@ -52,6 +54,7 @@ public class KuchaMapPrototyp {
 		editierenVerwaltung = new EditierenVerwaltung();
 		//hilfePanels = new HilfePanels();
 		kuchaDatabase = new KuchaDatabase();
+		suche = new Suche();
 
 		
 		
@@ -146,6 +149,12 @@ public class KuchaMapPrototyp {
 	}
 	public void setRegionenUebersicht(RegionenUebersicht regionenUebersicht) {
 		this.regionenUebersicht = regionenUebersicht;
+	}
+	public Suche getSuche() {
+		return suche;
+	}
+	public void setSuche(Suche suche) {
+		this.suche = suche;
 	}
 	
 	

@@ -110,4 +110,11 @@ public interface DatabaseServiceAsync {
 	void getCavesbyDepiction(ArrayList<DepictionEntry> depictions, AsyncCallback<ArrayList<CaveEntry>> callback) throws IllegalArgumentException;
 	void getCavesbyOrnaments(ArrayList<OrnamentEntry> ornaments, AsyncCallback<ArrayList<CaveEntry>> callback) throws IllegalArgumentException;
 	
+	void getRandomOrnaments(AsyncCallback<ArrayList<OrnamentEntry>> callback) throws IllegalArgumentException;
+	
+	void getRandomCaves(AsyncCallback<ArrayList<CaveEntry>> callback) throws IllegalArgumentException;
+	
+	void getRandomCaveTypes(AsyncCallback<ArrayList<CaveTypeEntry>> callback) throws IllegalArgumentException;
+	
+	void getRandomDistricts(AsyncCallback<ArrayList<DistrictEntry>> callback) throws IllegalArgumentException;
 }

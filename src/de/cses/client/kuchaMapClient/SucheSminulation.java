@@ -13,10 +13,103 @@
  */
 package de.cses.client.kuchaMapClient;
 
+import java.util.ArrayList;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+
+import de.cses.client.DatabaseService;
+import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.KuchaMapProject.Home;
+import de.cses.shared.CaveEntry;
+import de.cses.shared.CaveTypeEntry;
+import de.cses.shared.DistrictEntry;
+import de.cses.shared.OrnamentEntry;
+
 /**
  * @author nina
  *
  */
 public class SucheSminulation {
+	private static  DatabaseServiceAsync dbService = GWT.create(DatabaseService.class); 
+	static ArrayList<OrnamentEntry> ornamentArrayList = new ArrayList<OrnamentEntry>();
+	static ArrayList<CaveTypeEntry> caveTypeArrayList = new ArrayList<CaveTypeEntry>();
+	static ArrayList<DistrictEntry> districtArrayList = new ArrayList<DistrictEntry>();
+	static ArrayList<CaveEntry> caveArrayList = new ArrayList<CaveEntry>();
+	static Suche suche = Home.getKuchaMapPrototyp().getSuche();
+	
+public static void sucheSimulation(String eingabe){
+	
+	// get some example caves
+	dbService.getRandomOrnaments( new AsyncCallback<ArrayList<OrnamentEntry>>(){
+		public void onFailure(Throwable caught) {
+			// Show the RPC error message to the user
+		}
 
+		@Override
+		public synchronized void onSuccess(ArrayList<OrnamentEntry> randomOrnaments) {
+			for(int i= 0; i < randomOrnaments.size(); i++){
+		ornamentArrayList.add(randomOrnaments.get(i));
+			}
+			suche.setOrnamentArrayList(ornamentArrayList);
+			Window.alert("ornaments arraylist size: "+ Integer.toString(ornamentArrayList.size()));
+			suche.findRelatedCavesbyOrnament(ornamentArrayList);
+		}
+			
+		}
+	);	
+	
+	// get some example ornaments
+	dbService.getRandomCaves( new AsyncCallback<ArrayList<CaveEntry>>(){
+		public void onFailure(Throwable caught) {
+			// Show the RPC error message to the user
+		}
+
+		@Override
+		public synchronized void onSuccess(ArrayList<CaveEntry> hoehlenContainerArrayList) {
+		for(int i =0; i < hoehlenContainerArrayList.size(); i++){
+		caveArrayList.add(hoehlenContainerArrayList.get(i));
+		}
+		suche.setCaveArrayList(caveArrayList);
+		Window.alert("random caves arraylist size: "+ Integer.toString(caveArrayList.size()));
+		suche.findRelatedCaves(caveArrayList);
+		}
+	});
+	
+	// get some example cave types
+	dbService.getRandomDistricts( new AsyncCallback<ArrayList<DistrictEntry>>(){
+		public void onFailure(Throwable caught) {
+			// Show the RPC error message to the user
+		}
+
+		@Override
+		public synchronized void onSuccess(ArrayList<DistrictEntry> hoehlenContainerArrayList) {
+		for(int i =0; i < hoehlenContainerArrayList.size(); i++){
+		districtArrayList.add(hoehlenContainerArrayList.get(i));
+		}
+		suche.setDistrictArrayList(districtArrayList);
+		Window.alert("district arraylist size: "+Integer.toString(districtArrayList.size()));
+		suche.findRelatedCavesbyDistrict(districtArrayList);
+		}
+	});
+	
+	// get some example districts
+	dbService.getRandomCaveTypes( new AsyncCallback<ArrayList<CaveTypeEntry>>(){
+		public void onFailure(Throwable caught) {
+			// Show the RPC error message to the user
+		}
+
+		@Override
+		public synchronized void onSuccess(ArrayList<CaveTypeEntry> hoehlenContainerArrayList) {
+		for(int i =0; i < hoehlenContainerArrayList.size(); i++){
+		caveTypeArrayList.add(hoehlenContainerArrayList.get(i));
+		}
+		suche.setCaveTypeArrayList(caveTypeArrayList);
+		Window.alert("cavetypearraylist size: "+Integer.toString( caveTypeArrayList.size()));
+		suche.findRelatedCavesbyCaveType(caveTypeArrayList);
+		}
+	});
+	
+}
 }

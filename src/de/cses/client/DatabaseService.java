@@ -160,9 +160,13 @@ public interface DatabaseService extends RemoteService {
 	ImageEntry getMasterImageEntryForDepiction(int depictionID) throws IllegalArgumentException;
 
 
+	ArrayList<CaveEntry> getRandomCaves() throws IllegalArgumentException;
+	
+	ArrayList<OrnamentEntry> getRandomOrnaments() throws IllegalArgumentException;
 
-
-
+	ArrayList<CaveTypeEntry> getRandomCaveTypes() throws IllegalArgumentException;
+	
+	ArrayList<DistrictEntry> getRandomDistricts() throws IllegalArgumentException;
 
 }
 

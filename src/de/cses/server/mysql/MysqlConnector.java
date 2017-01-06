@@ -1237,6 +1237,11 @@ public class MysqlConnector {
 		while(rs.next()){
 			CaveEntry newCave = new CaveEntry();
 			newCave.setCaveID(rs.getInt("CaveID"));
+			newCave.setDistrictID(rs.getInt("DistrictID"));
+			newCave.setAlterationDate(rs.getString("AlterationDate"));
+			newCave.setHistoricalName(rs.getString("HistoricName"));
+			newCave.setName(rs.getString("OfficialName"));
+			newCave.setOfficialNumber(rs.getString("OfficialNumber"));
 			caves.add(newCave);
 		}
 		}
@@ -1250,8 +1255,14 @@ public class MysqlConnector {
 		String sql = "SELECT * FROM Caves WHERE CaveTypeID = "+ caveTypes.get(i).getCaveTypeID(); 
 		ResultSet rs = stmt.executeQuery(sql);
 		while(rs.next()){
+			System.err.println("cavetype hoehle gefunden");
 			CaveEntry newCave = new CaveEntry();
 			newCave.setCaveID(rs.getInt("CaveID"));
+			newCave.setDistrictID(rs.getInt("DistrictID"));
+			newCave.setAlterationDate(rs.getString("AlterationDate"));
+			newCave.setHistoricalName(rs.getString("HistoricName"));
+			newCave.setName(rs.getString("OfficialName"));
+			newCave.setOfficialNumber(rs.getString("OfficialNumber"));
 			caves.add(newCave);
 		}
 		}
@@ -1265,8 +1276,14 @@ public class MysqlConnector {
 		String sql = "SELECT * FROM Caves WHERE CaveID = "+ cellas.get(i).getCaveID(); 
 		ResultSet rs = stmt.executeQuery(sql);
 		while(rs.next()){
+			
 			CaveEntry newCave = new CaveEntry();
 			newCave.setCaveID(rs.getInt("CaveID"));
+			newCave.setDistrictID(rs.getInt("DistrictID"));
+			newCave.setAlterationDate(rs.getString("AlterationDate"));
+			newCave.setHistoricalName(rs.getString("HistoricName"));
+			newCave.setName(rs.getString("OfficialName"));
+			newCave.setOfficialNumber(rs.getString("OfficialNumber"));
 			caves.add(newCave);
 		}
 		}
@@ -1280,8 +1297,14 @@ public class MysqlConnector {
 		String sql = "SELECT * FROM Caves WHERE DistrictID = "+ districts.get(i).getDistrictID();
 		ResultSet rs = stmt.executeQuery(sql);
 		while(rs.next()){
+			System.err.println("district hoehle gefunden");
 			CaveEntry newCave = new CaveEntry();
 			newCave.setCaveID(rs.getInt("CaveID"));
+			newCave.setDistrictID(rs.getInt("DistrictID"));
+			newCave.setAlterationDate(rs.getString("AlterationDate"));
+			newCave.setHistoricalName(rs.getString("HistoricName"));
+			newCave.setName(rs.getString("OfficialName"));
+			newCave.setOfficialNumber(rs.getString("OfficialNumber"));
 			caves.add(newCave);
 		}
 		}
@@ -1301,15 +1324,108 @@ public class MysqlConnector {
 		Statement stmt = dbc.createStatement();
 		ArrayList<CaveEntry> caves = new ArrayList<CaveEntry>();
 		for(int i =0; i< ornaments.size(); i++){
-		String sql = "SELECT * FROM CaveOrnamentRelation WHERE OrnamentID = "+ ornaments.get(i).getOrnamentID();
+		String sql = "SELECT * FROM CaveOrnamentRelation JOIN Caves ON CaveOrnamentRelation.CaveID = Caves.CaveID WHERE OrnamentID = "+ ornaments.get(i).getOrnamentID();
 		ResultSet rs = stmt.executeQuery(sql);
 		while(rs.next()){
+			System.err.println("ornament hoehle gefunden");
 			CaveEntry newCave = new CaveEntry();
 			newCave.setCaveID(rs.getInt("CaveID"));
+			newCave.setDistrictID(rs.getInt("DistrictID"));
+			newCave.setAlterationDate(rs.getString("AlterationDate"));
+			newCave.setHistoricalName(rs.getString("HistoricName"));
+			newCave.setName(rs.getString("OfficialName"));
+			newCave.setOfficialNumber(rs.getString("OfficialNumber"));
 			caves.add(newCave);
 		}
 		}
 		return caves;
 	}
+	
+	public synchronized ArrayList<OrnamentEntry> getRandomOrnaments()throws SQLException{
+		System.err.println("ger random elements gestartet");
+		Connection dbc = getConnection();
+		Statement stmt = dbc.createStatement();
+		ArrayList<OrnamentEntry> ornaments = new ArrayList<OrnamentEntry>();
+		for(int i =3; i< 6; i++){
+		String sql = "SELECT * FROM Ornaments WHERE OrnamentID = "+ i;
+		ResultSet rs = stmt.executeQuery(sql);
+		while(rs.next()){
+			System.err.println("ornament gefunden");
+			OrnamentEntry newOrnament = new OrnamentEntry();
+			newOrnament.setCode(rs.getString("Code"));
+			newOrnament.setOrnamentID(rs.getInt("OrnamentID"));
+			newOrnament.setDescription(rs.getString("Description"));
+			newOrnament.setRemarks(rs.getString("Remarks"));
+			newOrnament.setReferences("OrnamentReferences");
+			ornaments.add(newOrnament);
+		}
+		}
+		return ornaments;
+	}
 
+	
+	public synchronized ArrayList<CaveEntry> getRandomCaves()throws SQLException{
+		Connection dbc = getConnection();
+		Statement stmt = dbc.createStatement();
+		System.err.println("in get random caves");
+		ArrayList<CaveEntry> caves = new ArrayList<CaveEntry>();
+		for(int i =4; i< 9; i++){
+		String sql = "SELECT * FROM Caves WHERE CaveID = "+ i;
+		ResultSet rs = stmt.executeQuery(sql);
+		while(rs.next()){
+			CaveEntry newCave = new CaveEntry();
+			System.err.println("random cave gefunden");
+			newCave.setCaveID(rs.getInt("CaveID"));
+			newCave.setDistrictID(rs.getInt("DistrictID"));
+			newCave.setAlterationDate(rs.getString("AlterationDate"));
+			newCave.setHistoricalName(rs.getString("HistoricName"));
+			newCave.setName(rs.getString("OfficialName"));
+			newCave.setOfficialNumber(rs.getString("OfficialNumber"));
+			caves.add(newCave);
+		}
+		}
+		return caves;
+	}
+	
+	
+	public synchronized ArrayList<CaveTypeEntry> getRandomCaveTypes()throws SQLException{
+		Connection dbc = getConnection();
+		Statement stmt = dbc.createStatement();
+		System.err.println("in random cavetype methode");
+		ArrayList<CaveTypeEntry> caveTypes = new ArrayList<CaveTypeEntry>();
+		for(int i =1; i< 2; i++){
+		String sql = "SELECT * FROM CaveType WHERE CaveTypeID = "+ i;
+		ResultSet rs = stmt.executeQuery(sql);
+		while(rs.next()){
+			System.err.println("cave type gefunden");
+			CaveTypeEntry newCaveType = new CaveTypeEntry();
+			newCaveType.setCaveTypeID(rs.getInt("CaveTypeID"));
+			newCaveType.setEnDescription(rs.getString("DescriptionEN"));
+			newCaveType.setEnShortname(rs.getString("NameEN"));
+			caveTypes.add(newCaveType);
+		}
+		}
+		return caveTypes;
+	}
+	
+	public synchronized ArrayList<DistrictEntry> getRandomDistricts() throws SQLException{
+		System.err.println("get random district gestartet");
+		Connection dbc = getConnection();
+		Statement stmt = dbc.createStatement();
+		ArrayList<DistrictEntry> districts = new ArrayList<DistrictEntry>();
+		for(int i =1; i< 2; i++){
+		String sql = "SELECT * FROM Districts WHERE DistrictID = "+ i;
+		ResultSet rs = stmt.executeQuery(sql);
+		while(rs.next()){
+			System.err.println("district gefunden");
+			DistrictEntry newDistrict= new DistrictEntry();
+			newDistrict.setDistrictID(rs.getInt("DistrictID"));
+			newDistrict.setName(rs.getString("Name"));
+			newDistrict.setDescription(rs.getString("Description"));
+			districts.add(newDistrict);
+		}
+		}
+		return districts;
+	}
+	
 }

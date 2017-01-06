@@ -340,6 +340,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		System.err.println("district caves arraygroesse: " + caves.size());
 		return caves;
 	}
 
@@ -368,6 +369,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
+	System.err.println("ornamentarraygroesse: " + ornaments.size());
 	return caves;
 	}
 
@@ -379,5 +381,58 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getCavesbyDistrictID(DistrictID);
 	}
+	
+	public ArrayList<OrnamentEntry> getRandomOrnaments() throws IllegalArgumentException {
+		ArrayList<OrnamentEntry> ornaments = new ArrayList<OrnamentEntry>();
+		MysqlConnector connector = MysqlConnector.getInstance();
+		try {
+			ornaments=  connector.getRandomOrnaments();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.err.println("ornamentarraygroesse: " + ornaments.size());
+		return ornaments;
+	}
+	
+	public ArrayList<CaveTypeEntry> getRandomCaveTypes() throws IllegalArgumentException {
+		ArrayList<CaveTypeEntry> caveTypes = new ArrayList<CaveTypeEntry>();
+		MysqlConnector connector = MysqlConnector.getInstance();
+		try {
+			caveTypes=  connector.getRandomCaveTypes();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return caveTypes;
+	}
+	public ArrayList<CaveEntry> getRandomCaves() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		ArrayList<CaveEntry> caveEntrys = new ArrayList<CaveEntry>();
+		try {
+			caveEntrys = connector.getRandomCaves();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return caveEntrys;
+	}
+	
+	public ArrayList<DistrictEntry> getRandomDistricts() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		ArrayList<DistrictEntry> districtEntrys = new ArrayList<DistrictEntry>();
+		try {
+			districtEntrys= connector.getRandomDistricts();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return districtEntrys;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#getRandomCaveTypes()
+	 */
+
 
 }

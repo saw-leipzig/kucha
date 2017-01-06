@@ -3,6 +3,7 @@ package de.cses.client.kuchaMapClient;
 import java.util.ArrayList;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import de.cses.client.DatabaseService;
@@ -37,48 +38,23 @@ public class Suche {
 	ArrayList<CaveEntry> finaleHoehlen = new ArrayList<CaveEntry>();
 	
 	
-	public ArrayList<CaveEntry> search (){
-		findRelatedCaves(caveArrayList);
-		findRelatedCavesbyOrnament(ornamentArrayList);
-		//findRelatedCavesbyDepiction(depictionArrayList);
-		findRelatedCavesbyCaveType(caveTypeArrayList);
-		
-		if(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getID()==-1){
-			for(int i = 0; i< Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getRegionen().size(); i++){
-				for(int j = 0; j< finaleHoehlen.size(); j++){
-					if(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getRegionen().get(i).getID() == finaleHoehlen.get(j).getDistrictID()){
-						Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getRegionen().get(i).getRegionButton().removeStyleDependentName("HoehlenButtonStyle");
-						Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getRegionen().get(i).getRegionButton().removeStyleDependentName("HoehlenButtonStyleFound");
-					}
-					else{
-						Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getRegionen().get(i).getRegionButton().removeStyleDependentName("HoehlenButtonStyleFound");
-						Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getRegionen().get(i).getRegionButton().removeStyleDependentName("HoehlenButtonStyle");
-					}
-				}
-				
-			}
+	public void search (){
+		for(int i = 0; i < Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().size();i++){
+			Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getRegionen().get(i).getRegionButton().removeStyleDependentName("HoehlenButtonStyle");
+			Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getRegionen().get(i).getRegionButton().addStyleDependentName("HoehlenButtonStyleFound");
+			Window.alert("change einen style 2");
 		}
 		
-		for(int i = 0; i< Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().size();i++){
-			if(finaleHoehlen.contains(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(i))){
-				Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(i).getButton().removeStyleDependentName("HoehlenButtonStyle");
-				Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(i).getButton().addStyleDependentName("HoehlenButtonStyleFound");
-				
-			}
-			else{
-				Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(i).getButton().removeStyleDependentName("HoehlenButtonStyleFound");
-				Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(i).getButton().addStyleDependentName("HoehlenButtonStyle");
-			}
-		}
-		return null;
 	}
 	
 	 public ArrayList<CaveEntry> findRelatedCaves(ArrayList<CaveEntry> hoehlen){
+		 Window.alert("in find related caves");
+		 final ArrayList<CaveEntry> hoehlenErgebnisse = new ArrayList<CaveEntry>();
 			for(int i =0; i < hoehlen.size(); i++){
-				finaleHoehlen.add(hoehlen.get(i));
+				hoehlenErgebnisse.add(hoehlen.get(i));
 			}
-		 
-		 return null;
+		 changeStyle(hoehlenErgebnisse);
+		 return hoehlen;
 		 
 	 }
 	 /*
@@ -117,18 +93,23 @@ public class Suche {
 			});
 	 }
 	 */
-	 /*
+	 
 	 public ArrayList<CaveEntry> findRelatedCavesbyDistrict(ArrayList<DistrictEntry> districts){
+		 final ArrayList<CaveEntry> hoehlenErgebnisse = new ArrayList<CaveEntry>();
 			dbService.getCavesbyDistrict(districts, new AsyncCallback<ArrayList<CaveEntry>>(){
 				public void onFailure(Throwable caught) {
 					// Show the RPC error message to the user
+					Window.alert("fail find related cavesbydistrict");
 				}
 
 				@Override
 				public synchronized void onSuccess(ArrayList<CaveEntry> hoehlenContainerArrayList) {
 				for(int i =0; i < hoehlenContainerArrayList.size(); i++){
-				finaleHoehlen.add(hoehlenContainerArrayList.get(i));
+					Window.alert("caves by disctrict einen geadded");
+					hoehlenErgebnisse.add(hoehlenContainerArrayList.get(i));
 				}
+				Window.alert("success find related cavesbydistrict");
+				changeStyle(hoehlenErgebnisse);
 					
 				}
 			});
@@ -137,7 +118,7 @@ public class Suche {
 		 
 		 
 	 }
-*/
+
 	/* public ArrayList<CaveEntry> findRelatedCavesbyNiche(ArrayList<NicheEntry> niches){
 		 
 			dbService.getCavesbyNiches(niches, new AsyncCallback<ArrayList<CaveEntry>>(){
@@ -158,23 +139,29 @@ public class Suche {
 	 }
 	 */
 	 public void findRelatedCavesbyOrnament(ArrayList<OrnamentEntry> ornaments){
+		 final ArrayList<CaveEntry> hoehlenErgebnisse = new ArrayList<CaveEntry>();
 			dbService.getCavesbyOrnaments(ornaments, new AsyncCallback<ArrayList<CaveEntry>>(){
 				public void onFailure(Throwable caught) {
 					// Show the RPC error message to the user
+					Window.alert("fail find related cavesby ornament");
 				}
 
 				@Override
 				public synchronized void onSuccess(ArrayList<CaveEntry> hoehlenContainerArrayList) {
 				for(int i =0; i < hoehlenContainerArrayList.size(); i++){
-				finaleHoehlen.add(hoehlenContainerArrayList.get(i));
+					Window.alert("caves by ornament einen geadded");
+					hoehlenErgebnisse.add(hoehlenContainerArrayList.get(i));
 				}
-					
+				Window.alert("success find related cavesbyornament");
+					changeStyle(hoehlenErgebnisse);
 				}
 			});	 
 	 }
 	 
 	 public void findRelatedCavesbyDepiction(ArrayList<DepictionEntry> depictions){
+		 final ArrayList<CaveEntry> hoehlenErgebnisse = new ArrayList<CaveEntry>();
 		 dbService.getCavesbyDepiction(depictions, new AsyncCallback<ArrayList<CaveEntry>>(){
+			 
 				public void onFailure(Throwable caught) {
 					// Show the RPC error message to the user
 				}
@@ -182,24 +169,32 @@ public class Suche {
 				@Override
 				public synchronized void onSuccess(ArrayList<CaveEntry> hoehlenContainerArrayList) {
 				for(int i =0; i < hoehlenContainerArrayList.size(); i++){
-				finaleHoehlen.add(hoehlenContainerArrayList.get(i));
+				hoehlenErgebnisse.add(hoehlenContainerArrayList.get(i));
+				Window.alert("caves by depiction einen geadded");
 				}
+				changeStyle(hoehlenErgebnisse);
+				
 				}
 			});	
 	 }
 	 
 	 
 	 public void findRelatedCavesbyCaveType(ArrayList<CaveTypeEntry> caveTypes){
+		 final ArrayList<CaveEntry> hoehlenErgebnisse = new ArrayList<CaveEntry>();
 		 dbService.getCavesbyCaveType(caveTypes, new AsyncCallback<ArrayList<CaveEntry>>(){
 				public void onFailure(Throwable caught) {
 					// Show the RPC error message to the user
+					Window.alert("fail find related cavesby cave type");
 				}
 
 				@Override
 				public synchronized void onSuccess(ArrayList<CaveEntry> hoehlenContainerArrayList) {
 				for(int i =0; i < hoehlenContainerArrayList.size(); i++){
-				finaleHoehlen.add(hoehlenContainerArrayList.get(i));
+				hoehlenErgebnisse.add(hoehlenContainerArrayList.get(i));
+				Window.alert("caves by cave type einen geadded");
 				}
+				Window.alert("success find related cavesby cave type");
+				changeStyle(hoehlenErgebnisse);
 				}
 			});	
 	 }
@@ -339,6 +334,50 @@ public class Suche {
 
 	public void setFinaleHoehlen(ArrayList<CaveEntry> finaleHoehlen) {
 		this.finaleHoehlen = finaleHoehlen;
+	}
+
+	public ArrayList<OrnamentEntry> getOrnamentArrayList() {
+		return ornamentArrayList;
+	}
+
+	public void setOrnamentArrayList(ArrayList<OrnamentEntry> ornamentArrayList) {
+		this.ornamentArrayList = ornamentArrayList;
+	}
+	
+	
+	
+	
+	public void changeStyle(ArrayList<CaveEntry> hoehlenErgebnisse){
+		Window.alert("in change style");
+		
+	if(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getID()==-1){
+		Window.alert("die aktive region ist -1");
+		Window.alert(Integer.toString(hoehlenErgebnisse.size()));
+		for(int i = 0; i< Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getRegionen().size(); i++){
+			for(int j = 0; j< hoehlenErgebnisse.size(); j++){
+				Window.alert("Regionen ID: "+Integer.toString(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getRegionen().get(i).getID()) + "HoehlenRegionID: "+hoehlenErgebnisse.get(j).getDistrictID());
+				if(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getRegionen().get(i).getID() == hoehlenErgebnisse.get(j).getDistrictID()){
+					Window.alert("Regionen ID: "+Integer.toString(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getRegionen().get(i).getID()) + "HoehlenRegionID: "+hoehlenErgebnisse.get(j).getDistrictID());
+					Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getRegionen().get(i).getRegionButton().removeStyleDependentName("HoehlenButtonStyle");
+					Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getRegionen().get(i).getRegionButton().addStyleDependentName("HoehlenButtonStyleFound");
+					Window.alert("change einen style 1");
+				}
+			
+			}
+			
+		}
+	}
+	
+	for(int i = 0; i< Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().size();i++){
+		for(int u = 0; u < hoehlenErgebnisse.size(); u++){
+			if(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(i).getID()== hoehlenErgebnisse.get(u).getCaveID()){
+			Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(i).getButton().removeStyleDependentName("HoehlenButtonStyle");
+			Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(i).getButton().addStyleDependentName("HoehlenButtonStyleFound");
+			Window.alert("style in fall 2 changed");
+			}
+			
+		}
+	}
 	}
 	 
 	
