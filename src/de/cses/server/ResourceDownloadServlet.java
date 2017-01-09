@@ -61,26 +61,35 @@ public class ResourceDownloadServlet extends HttpServlet {
 					out.write(buffer, 0, bytesRead);
 				out.close();
 				fis.close();
+			} else {
+				response.setStatus(404);
+				return;
 			}
-			return;
 		} else if (request.getParameter("background") != null) {
 			String filename = request.getParameter("background");
-			File inputFile = new File(SERVER_BACKGROUNDS_PATHNAME, filename);
-			if (inputFile.exists()) {
-				FileInputStream fis = new FileInputStream(inputFile);
-				response.setContentType(filename.toLowerCase().endsWith("png") ? "image/png" : "image/jpeg");
-				ServletOutputStream out = response.getOutputStream();
-				byte buffer[] = new byte[4096];
-				int bytesRead = 0;
-				while ((bytesRead = fis.read(buffer)) > 0)
-					out.write(buffer, 0, bytesRead);
-				out.close();
-				fis.close();
+			if (filename.startsWith(".")) {
+				response.setStatus(400);
+				return;
+			} else {
+				File inputFile = new File(SERVER_BACKGROUNDS_PATHNAME, filename);
+				if (inputFile.exists()) {
+					FileInputStream fis = new FileInputStream(inputFile);
+					response.setContentType(filename.toLowerCase().endsWith("png") ? "image/png" : "image/jpeg");
+					ServletOutputStream out = response.getOutputStream();
+					byte buffer[] = new byte[4096];
+					int bytesRead = 0;
+					while ((bytesRead = fis.read(buffer)) > 0)
+						out.write(buffer, 0, bytesRead);
+					out.close();
+					fis.close();
+				} else {
+					response.setStatus(404);
+					return;
+				}
 			}
-			return;
+		} else {
+			response.setStatus(403);
 		}
-		response.setStatus(403);
-		return;
 	}
 
 }
