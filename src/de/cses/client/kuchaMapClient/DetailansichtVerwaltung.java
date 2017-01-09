@@ -8,6 +8,8 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.Image;
+import com.sencha.gxt.widget.core.client.container.SimpleContainer;
 
 import de.cses.client.KuchaMapProject.Home;
 import de.cses.client.KuchaMapProject.KuchaDatabase;
@@ -25,6 +27,7 @@ public class DetailansichtVerwaltung{
 	 private ArrayList<Region> regionen = new ArrayList<Region>();
 	 private KuchaDatabase kuchaDatabase;
 	 boolean loaded;
+	 Image image;
 	 private Environment environment;
 	 RegionenUebersicht regionenUebersicht;
 	 
@@ -74,7 +77,7 @@ public class DetailansichtVerwaltung{
 			HoehleErstellenPanel.show();
 			
 		}
-		public void addHoehleLoeschenClickHandler(Button button, int HoehlenID){
+		public void addHoehleLoeschenClickHandler(SimpleContainer button, int HoehlenID){
 			CustomClickHandler costum = new CustomClickHandler();
 			costum.setButton(button);
 			costum.setHoehlenID(HoehlenID);
@@ -84,7 +87,7 @@ public class DetailansichtVerwaltung{
 		
 		public synchronized void createHoehlenButton(int ArrayListPosition){
 			
-			Button createdHoehlenButton = aktiveRegion.getHoehlenArrayList().get(ArrayListPosition).getButton();
+			SimpleContainer createdHoehlenButton = aktiveRegion.getHoehlenArrayList().get(ArrayListPosition).getButton();
 			Hoehle Hoehle= aktiveRegion.getHoehlenArrayList().get(ArrayListPosition);
 			aktiveRegion.getHoehlenArrayList().get(ArrayListPosition).getDrag().setContainer(fotoAbsolutePanel);
 			if(aktiveRegion.getID()!=-1){
@@ -109,8 +112,8 @@ public class DetailansichtVerwaltung{
 			
 		
 			
-			createdHoehlenButton.addStyleName("HoehlenButtonStyle");
-			createdHoehlenButton.removeStyleName("gwt-Button");
+			image = new Image("http://kucha.informatik.hu-berlin.de/tomcat/images/BUTTONHOEHLEpngblau.png");
+			createdHoehlenButton.add(image);
 			createdHoehlenButton.setTitle(Hoehle.getname());
 			createdHoehlenButton.setPixelSize(aktiveRegion.getHoehlenButtonsize(), aktiveRegion.getHoehlenButtonsize());
 			fotoAbsolutePanel.add(createdHoehlenButton);
@@ -191,6 +194,12 @@ public class DetailansichtVerwaltung{
 		}
 		public void setEditierenVerwaltung(EditierenVerwaltung editierenVerwaltung) {
 			this.editierenVerwaltung = editierenVerwaltung;
+		}
+		public Image getImage() {
+			return image;
+		}
+		public void setImage(Image image) {
+			this.image = image;
 		}
 		
 		

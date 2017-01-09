@@ -4,6 +4,7 @@ package de.cses.client.kuchaMapClient;
 import java.util.ArrayList;
 
 import com.google.gwt.user.client.ui.Button;
+import com.sencha.gxt.widget.core.client.container.SimpleContainer;
 
 import de.cses.client.kuchaMapPopupPanels.RegionenUebersichtPopUpPanel;
 
@@ -19,7 +20,7 @@ public class Region{
 	private   ArrayList<Hoehle> hoehlenArrayList = new ArrayList<>();
 	private int regionButtonPositionX = 30;
 	private int regionButtonPositionY = 100;
-	private Button regionButton = new Button();
+	private SimpleContainer regionButton = new SimpleContainer();
 	private int hoehlenButtonSize= 20;
 	private RegionenUebersichtPopUpPanel regionUebersichtPopUp;
 	
@@ -79,11 +80,11 @@ public class Region{
 	public RegionenUebersichtPopUpPanel getRegionUebersichtPopUp(){
 		return regionUebersichtPopUp;
 	}
-	public void setRegionButton(Button regionButton){
+	public void setRegionButton(SimpleContainer regionButton){
 		this.regionButton= regionButton;
 		
 	}
-	public Button getRegionButton(){
+	public SimpleContainer getRegionButton(){
 		return regionButton;
 	}
 	public int getID(){

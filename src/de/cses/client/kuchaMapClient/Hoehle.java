@@ -3,6 +3,10 @@ package de.cses.client.kuchaMapClient;
 
 import com.google.gwt.user.client.ui.Button;
 import com.sencha.gxt.fx.client.Draggable;
+import com.sencha.gxt.widget.core.client.ModalPanel;
+import com.sencha.gxt.widget.core.client.container.Container;
+import com.sencha.gxt.widget.core.client.container.InsertContainer;
+import com.sencha.gxt.widget.core.client.container.SimpleContainer;
 
 import de.cses.client.kuchaMapPopupPanels.HoehlenUebersichtPopUpPanel;
 import de.cses.client.kuchaMapPopupPanels.RegionenUebersichtPopUpPanel;
@@ -14,7 +18,7 @@ public class Hoehle{
 	private String name;
 	private int buttonPositionLeft;
 	private int buttonPositionTop;
-	private Button hoehlenButton = new Button();
+	private SimpleContainer hoehlenButton = new SimpleContainer();
 	private HoehlenUebersichtPopUpPanel hoehlenUebersichtPopUp;
 	private RegionenUebersichtPopUpPanel regionUebersichtPopUp;
 	private Draggable drag = new Draggable(hoehlenButton);
@@ -43,7 +47,7 @@ public void setButtonpositiontop(int buttonPositionTop){
 	this.buttonPositionTop= buttonPositionTop;
 }
 
-public Button getButton(){
+public SimpleContainer getButton(){
 	return hoehlenButton;
 }
 

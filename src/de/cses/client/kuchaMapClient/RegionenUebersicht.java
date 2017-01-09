@@ -12,6 +12,8 @@ import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.sencha.gxt.widget.core.client.container.Container;
+import com.sencha.gxt.widget.core.client.container.SimpleContainer;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -23,7 +25,7 @@ import de.cses.client.kuchaMapPopupPanels.RegionenUebersichtPopUpPanelContainer;
 public class RegionenUebersicht {
  
 	 Hoehle region;
-	 Button b;
+	 SimpleContainer b;
 	 MouseOverEvent event;
 	 String regionname;
 	 DetailansichtVerwaltung detailansichtVerwaltung;
@@ -72,9 +74,9 @@ public synchronized void createToolTips(){
 		}
 		
 	};
-	b.addClickHandler(clickhandler);
-	b.addMouseOverHandler(handlermouse);
-	b.addMouseOutHandler(handlermouseout);
+	b.getWidget().addHandler(clickhandler, ClickEvent.getType());
+	b.getWidget().addHandler(handlermouse, MouseOverEvent.getType());
+	b.getWidget().addHandler(handlermouseout, MouseOutEvent.getType());
 	
 	
 	 
@@ -111,10 +113,10 @@ public void getRegionenInfos() {
 	
 }
 
-public Button getB() {
+public Container getB() {
 	return b;
 }
-public void setB(Button b) {
+public void setB(SimpleContainer b) {
 	this.b = b;
 }
 public MouseOverEvent getEvent() {

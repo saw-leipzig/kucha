@@ -5,10 +5,12 @@ import java.util.ArrayList;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Image;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.KuchaMapProject.Home;
+import de.cses.client.kuchaMapPopupPanels.RegionenUebersichtPopUpPanel;
 import de.cses.shared.AntechamberEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveTypeEntry;
@@ -36,12 +38,14 @@ public class Suche {
 	ArrayList<DepictionEntry> depictionArrayList = new ArrayList<DepictionEntry>();
 	private  DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	ArrayList<CaveEntry> finaleHoehlen = new ArrayList<CaveEntry>();
+	boolean searching = false;
 	
 	
 	public void search (){
+		searching = true;
 		for(int i = 0; i < Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().size();i++){
-			Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getRegionen().get(i).getRegionButton().removeStyleDependentName("HoehlenButtonStyle");
-			Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getRegionen().get(i).getRegionButton().addStyleDependentName("HoehlenButtonStyleFound");
+			Image image = new Image("http://kucha.informatik.hu-berlin.de/tomcat/images/BUTTONHOEHLEpngblau.png");
+			Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(i).getButton().add(image);
 			Window.alert("change einen style 2");
 		}
 		
@@ -354,31 +358,62 @@ public class Suche {
 		Window.alert("die aktive region ist -1");
 		Window.alert(Integer.toString(hoehlenErgebnisse.size()));
 		for(int i = 0; i< Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getRegionen().size(); i++){
+			Window.alert("change einen style 1 kurz davor pos1");
 			for(int j = 0; j< hoehlenErgebnisse.size(); j++){
+				Window.alert("change einen style 1 kurz davor pos2");
 				Window.alert("Regionen ID: "+Integer.toString(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getRegionen().get(i).getID()) + "HoehlenRegionID: "+hoehlenErgebnisse.get(j).getDistrictID());
 				if(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getRegionen().get(i).getID() == hoehlenErgebnisse.get(j).getDistrictID()){
+					Window.alert("change einen style 1 kurz davor pos3");
 					Window.alert("Regionen ID: "+Integer.toString(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getRegionen().get(i).getID()) + "HoehlenRegionID: "+hoehlenErgebnisse.get(j).getDistrictID());
-					Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getRegionen().get(i).getRegionButton().removeStyleDependentName("HoehlenButtonStyle");
-					Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getRegionen().get(i).getRegionButton().addStyleDependentName("HoehlenButtonStyleFound");
-					Window.alert("change einen style 1");
+					Image image = new Image("https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Wegzeichen_gr%C3%BCner_Punkt.svg/599px-Wegzeichen_gr%C3%BCner_Punkt.svg.png");
+					for(int k = 0; k< Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().size(); k++){
+						Window.alert("change einen style 1 kurz davor pos4");
+						if(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(k).getID()==Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getRegionen().get(i).getID() ){
+				
+							Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(k).getButton().add(image);
+							
+
+							Window.alert("change einen style 1");
+						}
+					}
+			
 				}
 			
 			}
 			
 		}
 	}
-	
+	else{
 	for(int i = 0; i< Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().size();i++){
 		for(int u = 0; u < hoehlenErgebnisse.size(); u++){
 			if(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(i).getID()== hoehlenErgebnisse.get(u).getCaveID()){
-			Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(i).getButton().removeStyleDependentName("HoehlenButtonStyle");
-			Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(i).getButton().addStyleDependentName("HoehlenButtonStyleFound");
+				Image image = new Image("https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Wegzeichen_gr%C3%BCner_Punkt.svg/599px-Wegzeichen_gr%C3%BCner_Punkt.svg.png");
+				Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(u).getButton().add(image);
+				
+				HoehlenUebersicht hoehlenUebersicht = new HoehlenUebersicht();
+				
+				hoehlenUebersicht.setButton(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(u).getButton());
+				hoehlenUebersicht.setHoehle(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(u));
+				hoehlenUebersicht.setID(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(u).getID());
+			
+				hoehlenUebersicht.getHoehlenInfos();
+				
 			Window.alert("style in fall 2 changed");
 			}
 			
 		}
 	}
 	}
+	}
+
+	public boolean isSearching() {
+		return searching;
+	}
+
+	public void setSearching(boolean searching) {
+		this.searching = searching;
+	}
+	
 	 
 	
 

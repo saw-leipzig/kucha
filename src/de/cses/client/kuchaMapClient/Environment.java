@@ -43,6 +43,7 @@ public class Environment implements ImageSelectorListener {
 	private HorizontalPanel bottomHeaderHorizontalPanel = new HorizontalPanel();
 	private HorizontalPanel topHeaderHorizontalPanel = new HorizontalPanel();
 	private Button suchenButton;
+	private Button resetSuche;
 	private TextBox suchenBox;
 	private Button fotoUpload;
 	private EditierenVerwaltung editierenVerwaltung;
@@ -64,6 +65,7 @@ public class Environment implements ImageSelectorListener {
 	
 	public void iniEnvironment(){
 		suchenButton = new Button("Suchen");
+		resetSuche = new Button("Reset");
 		suche = Home.getKuchaMapPrototyp().getSuche();
 		
 		final ClickHandler sucheClickHandler = new ClickHandler(){
@@ -205,8 +207,22 @@ public class Environment implements ImageSelectorListener {
 		topHeaderHorizontalPanel.add(lupe);
 		topHeaderHorizontalPanel.add(suchenBox);
 		topHeaderHorizontalPanel.add(suchenButton);
+		topHeaderHorizontalPanel.add(resetSuche);
 		topHeaderHorizontalPanel.addStyleName("FlowPanel");
 		topHeaderHorizontalPanel.add(fotoUpload);
+		
+		ClickHandler sucheResetHandler = new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				suche.setSearching(false);
+				detailansichtVerwaltung.loadRegion();
+				
+			}
+			
+		};
+		
+		resetSuche.addClickHandler(sucheResetHandler);
 		
 		ClickHandler fotoUploadClickHandler = new ClickHandler(){
 

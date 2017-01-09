@@ -13,6 +13,7 @@ import de.cses.client.kuchaMapClient.DetailansichtVerwaltung;
 import de.cses.client.kuchaMapClient.Environment;
 import de.cses.client.kuchaMapClient.Hoehle;
 import de.cses.client.kuchaMapClient.Region;
+import de.cses.client.kuchaMapClient.Suche;
 import de.cses.shared.HoehlenContainer;
 import de.cses.shared.RegionContainer;
 
@@ -25,10 +26,13 @@ public class KuchaDatabase {
 	Environment environment;
 	boolean firsttime;
 	int aufgerufen = 0;
+	Suche suche;
 	public KuchaDatabase(){
 		Window.alert("kucha database erzeugt");
 		detailansichtVerwaltung = Home.getKuchaMapPrototyp().getDetailansichtVerwaltung();
 		environment = Home.getKuchaMapPrototyp().getEnvironment();
+		suche = Home.getKuchaMapPrototyp().getSuche();
+		
 		
 	}
 	
@@ -85,6 +89,9 @@ public class KuchaDatabase {
 		detailansichtVerwaltung.getDetailansicht().getHoehlenFotoIMG().setUrl(detailansichtVerwaltung.getaktiveRegion().getFoto());
 		detailansichtVerwaltung.getFotoAbsolutePanel().add(detailansichtVerwaltung.getDetailansicht().getHoehlenFotoIMG());
 		detailansichtVerwaltung.getEditierenVerwaltung().switchEDundAN();
+		if(suche.isSearching()){
+			suche.search();
+		}
 			}
 	});
 	

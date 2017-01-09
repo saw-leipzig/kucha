@@ -4,15 +4,16 @@ package de.cses.client.kuchaMapClient;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.PopupPanel.PositionCallback;
+import com.sencha.gxt.widget.core.client.ModalPanel;
+import com.sencha.gxt.widget.core.client.container.SimpleContainer;
 
 import de.cses.client.kuchaMapPopupPanels.HoehleLoeschenPopupPanel;
 
 
 public class CustomClickHandler implements ClickHandler{
 
-	Button button;
+	SimpleContainer button;
 	int hoehlenID;
 	DetailansichtVerwaltung detailansichtVerwaltung;
 	HoehleLoeschenPopupPanel hoehleLoeschenPopupPanel;
@@ -22,10 +23,10 @@ public class CustomClickHandler implements ClickHandler{
 	}
 	
 	
-	public Button getButton() {
+	public SimpleContainer getButton() {
 		return button;
 	}
-	public void setButton(Button button) {
+	public void setButton(SimpleContainer button) {
 		this.button = button;
 	}
 	public int getHoehlenID() {

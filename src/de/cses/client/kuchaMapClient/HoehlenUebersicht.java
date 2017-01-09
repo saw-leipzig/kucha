@@ -11,6 +11,7 @@ import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.sencha.gxt.widget.core.client.container.SimpleContainer;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -22,7 +23,7 @@ public class HoehlenUebersicht {
 
  DatabaseServiceAsync  dbService = GWT.create(DatabaseService.class);
  int iD;
- Button button;
+ SimpleContainer button;
  Hoehle hoehle;
  String Hoehlenname;
  MouseOverEvent event;
@@ -56,8 +57,8 @@ public void createToolTips(){
 		
 	};
 	
-	button.addMouseOverHandler(handlermouse);
-	button.addMouseOutHandler(handlermouseout);
+	button.getWidget().addHandler(handlermouse,MouseOverEvent.getType());
+	button.getWidget().addHandler(handlermouseout,MouseOutEvent.getType());
 	
 	
 	 
@@ -90,10 +91,10 @@ public void getHoehlenInfos() {
 	});
 	
 }
-public Button getButton() {
+public SimpleContainer getButton() {
 	return button;
 }
-public void setButton(Button button) {
+public void setButton(SimpleContainer button) {
 	this.button = button;
 }
 public Hoehle getHoehle() {

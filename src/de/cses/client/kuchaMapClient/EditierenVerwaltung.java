@@ -1,6 +1,7 @@
 package de.cses.client.kuchaMapClient;
 
 
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.DoubleClickEvent;
 import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -66,7 +67,7 @@ public class EditierenVerwaltung{
 					hoehleLoeschenPanelHandler.setButton(detailansichtVerwaltung.getaktiveRegion().getHoehlenArrayList().get(i).getButton());
 					hoehleLoeschenPanelHandler.setHoehlenID(detailansichtVerwaltung.getaktiveRegion().getHoehlenArrayList().get(i).getID());
 					detailansichtVerwaltung = Home.getKuchaMapPrototyp().getDetailansichtVerwaltung();
-					HandlerRegistration handlerRegistration = detailansichtVerwaltung.getaktiveRegion().getHoehlenArrayList().get(i).getButton().addClickHandler(hoehleLoeschenPanelHandler);
+					HandlerRegistration handlerRegistration = detailansichtVerwaltung.getaktiveRegion().getHoehlenArrayList().get(i).getButton().getWidget().addHandler(hoehleLoeschenPanelHandler, ClickEvent.getType());
 					detailansichtVerwaltung.getHandlerArrayList().add(handlerRegistration);
 				
 					
