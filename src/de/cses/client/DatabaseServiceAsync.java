@@ -21,6 +21,7 @@ import de.cses.client.kuchaMapPopupPanels.HoehlenUebersichtPopUpPanelContainer;
 import de.cses.client.kuchaMapPopupPanels.RegionenUebersichtPopUpPanelContainer;
 import de.cses.shared.AntechamberEntry;
 import de.cses.shared.AuthorEntry;
+import de.cses.shared.BackAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CellaEntry;
@@ -30,12 +31,15 @@ import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.HoehlenContainer;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
+import de.cses.shared.MainChamberEntry;
 import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PictorialElementEntry;
 import de.cses.shared.PublicationEntry;
 import de.cses.shared.RegionContainer;
+import de.cses.shared.RegionEntry;
+import de.cses.shared.SiteEntry;
 import de.cses.shared.StyleEntry;
 import de.cses.shared.VendorEntry;
 
@@ -95,6 +99,19 @@ public interface DatabaseServiceAsync {
 	void getAuthorEntry(int id, AsyncCallback<AuthorEntry> asyncCallback) throws IllegalArgumentException;
 	
 	void getMasterImageEntryForDepiction(int depictionID, AsyncCallback<ImageEntry> asyncCallback) throws IllegalArgumentException;
+/*
+	void getCaveEntry(int id, AsyncCallback<CaveEntry> asyncCallback) throws IllegalArgumentException;
+
+	void getAntechamberEntry(int id, AsyncCallback<AntechamberEntry> asyncCallback) throws IllegalArgumentException;
+
+	void getMainChamberEntry(int id, AsyncCallback<MainChamberEntry> asyncCallback) throws IllegalArgumentException;
+
+	void getBackAreaEntry(int id, AsyncCallback<BackAreaEntry> asyncCallback) throws IllegalArgumentException;
+
+	void getRegions(AsyncCallback<ArrayList<RegionEntry>> asyncCallback) throws IllegalArgumentException;
+
+	void getSites(AsyncCallback<ArrayList<SiteEntry>> asyncCallback) throws IllegalArgumentException;
+	*/
 	
 	void getHoehlenInfosbyID(int iD, AsyncCallback<HoehlenUebersichtPopUpPanelContainer> callback) throws IllegalArgumentException;
 	void deleteHoehlebyID(int iD, AsyncCallback<String> callback) throws IllegalArgumentException;

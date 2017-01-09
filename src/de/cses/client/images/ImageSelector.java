@@ -75,7 +75,6 @@ public class ImageSelector implements IsWidget {
 
 	interface ImageProperties extends PropertyAccess<ImageEntry> {
 		ModelKeyProvider<ImageEntry> imageID();
-
 		LabelProvider<ImageEntry> title();
 	}
 
@@ -249,8 +248,9 @@ public class ImageSelector implements IsWidget {
 	}
 
 	/**
-	 * refreshes the list of images which will automatically update the view of the
-	 * thumbnails
+	 * refreshes the list of images which will automatically update the view of
+	 * the thumbnails
+	 * 
 	 * @see imageEntryList
 	 */
 	private void refreshImages() {

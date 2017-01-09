@@ -16,37 +16,70 @@ package de.cses.shared;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class DistrictEntry implements IsSerializable {
-private int districtID;
-private String name;
-private String description;
+	private int districtID;
+	private String name;
+	private int siteID;
+	private String description, map, arialMap;
 
-public DistrictEntry(){
-	
-}
-public DistrictEntry(String name, String description) {
-  this();
-  this.name = name;
-  this.description = description;
+	public DistrictEntry() {
+	}
 
-}
-public String getName() {
-	return name;
-}
-public void setName(String name) {
-	this.name = name;
-}
-public String getDescription() {
-	return description;
-}
-public void setDescription(String description) {
-	this.description = description;
-}
-public int getDistrictID() {
-	return districtID;
-}
-public void setDistrictID(int districtID) {
-	this.districtID = districtID;
-}
+	public DistrictEntry(int districtID, String name, int siteID, String description, String map, String arialMap) {
+		super();
+		this.districtID = districtID;
+		this.name = name;
+		this.siteID = siteID;
+		this.description = description;
+		this.map = map;
+		this.arialMap = arialMap;
+	}
 
+	public int getDistrictID() {
+		return districtID;
+	}
+
+	public void setDistrictID(int districtID) {
+		this.districtID = districtID;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public int getSiteID() {
+		return siteID;
+	}
+
+	public void setSiteID(int siteID) {
+		this.siteID = siteID;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getMap() {
+		return map;
+	}
+
+	public void setMap(String map) {
+		this.map = map;
+	}
+
+	public String getArialMap() {
+		return arialMap;
+	}
+
+	public void setArialMap(String arialMap) {
+		this.arialMap = arialMap;
+	}
 
 }

@@ -17,15 +17,10 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class CaveEntry implements IsSerializable {
 	private int caveID;
-
-
-	private int districtID;
-	private String officialName;
-	private String officialNumber;
-	private String historicalName;
-	private int caveTypeID;
+	private String officialNumber, officialName, historicName;
+	private int caveTypeID, districtID, regionID; 
 	private String stateOfPerservation;
-	private String orientationAccordingToSkyDirection;
+	private String orientation;
 	private String pedestals;
 	private String findings;
 	private String alterationDate;
@@ -35,17 +30,21 @@ public class CaveEntry implements IsSerializable {
 	public CaveEntry() {
 	}
 
-	public CaveEntry(int caveID,int districtID, String officialName, String officialNumber, String historicalName, int caveTypeID, String stateOfPerservation, String orientationAccordingToTheSkyDirection, String pedestals, String findings) {
+	public CaveEntry(int caveID, String officialNumber, String officialName, String historicalName, int caveTypeID, int districtID,
+			int regionID, String stateOfPerservation, String orientation, String pedestals, String findings, String alterationDate) {
 		super();
-		this.districtID= districtID;
 		this.caveID = caveID;
+		this.officialNumber = officialNumber;
 		this.officialName = officialName;
-		this.officialNumber= officialNumber;
-		this.historicalName = historicalName;
+		this.historicName = historicalName;
 		this.caveTypeID = caveTypeID;
+		this.districtID = districtID;
+		this.setRegionID(regionID);
 		this.stateOfPerservation = stateOfPerservation;
-		this.orientationAccordingToSkyDirection = orientationAccordingToTheSkyDirection;
+		this.setOrientation(orientation);
 		this.pedestals = pedestals;
+		this.findings = findings;
+		this.alterationDate = alterationDate;
 	}
 
 	public int getCaveID() {
@@ -56,12 +55,12 @@ public class CaveEntry implements IsSerializable {
 		this.caveID = caveID;
 	}
 
-	public String getName() {
-		return officialName;
+	public String getOfficialNumber() {
+		return officialNumber;
 	}
 
-	public void setName(String name) {
-		this.officialName = name;
+	public void setOfficialNumber(String officialNumber) {
+		this.officialNumber = officialNumber;
 	}
 
 	public String getOfficialName() {
@@ -72,29 +71,36 @@ public class CaveEntry implements IsSerializable {
 		this.officialName = officialName;
 	}
 
-	public String getOfficialNumber() {
-		return officialNumber;
+	public String getHistoricName() {
+		return historicName;
 	}
 
-	public void setOfficialNumber(String officialNumber) {
-
-		this.officialNumber = officialNumber;
+	public void setHistoricName(String historicalName) {
+		this.historicName = historicalName;
 	}
 
-	public String getHistoricalName() {
-		return historicalName;
-	}
-
-	public void setHistoricalName(String historicalName) {
-		this.historicalName = historicalName;
-	}
-
-	public int getCaveType() {
+	public int getCaveTypeID() {
 		return caveTypeID;
 	}
 
-	public void setCaveType(int caveTypeID) {
+	public void setCaveTypeID(int caveTypeID) {
 		this.caveTypeID = caveTypeID;
+	}
+
+	public int getDistrictID() {
+		return districtID;
+	}
+
+	public void setDistrictID(int districtID) {
+		this.districtID = districtID;
+	}
+
+	public int getRegionID() {
+		return regionID;
+	}
+
+	public void setRegionID(int regionID) {
+		this.regionID = regionID;
 	}
 
 	public String getStateOfPerservation() {
@@ -105,12 +111,12 @@ public class CaveEntry implements IsSerializable {
 		this.stateOfPerservation = stateOfPerservation;
 	}
 
-	public String getOrientationAccordingToSkyDirection() {
-		return orientationAccordingToSkyDirection;
+	public String getOrientation() {
+		return orientation;
 	}
 
-	public void setOrientationAccordingToSkyDirection(String orientationAccordingToSkyDirection) {
-		this.orientationAccordingToSkyDirection = orientationAccordingToSkyDirection;
+	public void setOrientation(String orientation) {
+		this.orientation = orientation;
 	}
 
 	public String getPedestals() {
@@ -137,16 +143,6 @@ public class CaveEntry implements IsSerializable {
 		this.alterationDate = alterationDate;
 	}
 
-	public int getDistrictID() {
-		return districtID;
-	}
-
-	public void setDistrictID(int districtID) {
-		this.districtID = districtID;
-	}
-	
-	
-	
 
 
 }

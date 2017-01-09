@@ -109,12 +109,12 @@ public Widget createForm(){
 
   
   Button addCaveButton = new Button();
-  addCaveButton.setText("Add related Caves");
+  addCaveButton.setText("Add related CaveEditor");
   vlc.add(new FieldLabel(addCaveButton, "Add cave relations"));
   addCaveButton.setSize("60px", "40px");
   
   
-//Place for Caves
+//Place for CaveEditor
   ClickHandler addCaveClickHandler = new ClickHandler(){
   	
 

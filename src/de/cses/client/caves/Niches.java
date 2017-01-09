@@ -17,7 +17,7 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 
 public class Niches implements IsWidget{
 	 ContentPanel panel;
-	 private Caves caves;
+	 //private CaveEditor caveEditor;
 
 		@Override
 		public Widget asWidget() {
@@ -78,7 +78,7 @@ public class Niches implements IsWidget{
 
 			@Override
 			public void onClick(ClickEvent event) {
-				caves.getCellaPanel().hide();	
+//				caveEditor.getCellaPanel().hide();	
 			}
 	  	
 	  };
@@ -89,7 +89,7 @@ public class Niches implements IsWidget{
 
 			@Override
 			public void onClick(ClickEvent event) {
-				caves.getNichesPanel().hide();	
+//				caveEditor.getNichesPanel().hide();	
 			}
 	  	
 	  };
@@ -106,12 +106,13 @@ public class Niches implements IsWidget{
 		vlc.setScrollMode(ScrollMode.AUTOY);
 		return panel;
 	}
-	public Caves getCaves() {
-		return caves;
+	/*
+	public CaveEditor getCaves() {
+		return caveEditor;
 	}
-	public void setCaves(Caves caves) {
-		this.caves = caves;
+	public void setCaves(CaveEditor caveEditor) {
+		this.caveEditor = caveEditor;
 	}
 
-	
+	*/
 }
