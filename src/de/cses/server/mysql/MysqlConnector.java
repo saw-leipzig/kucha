@@ -325,7 +325,7 @@ public class MysqlConnector {
 		return results;
 	}
 
-	public DepictionEntry getDepictionEntry(int depictionID) {
+	public synchronized DepictionEntry getDepictionEntry(int depictionID) {
 		Connection dbc = getConnection();
 		DepictionEntry result = null;
 		Statement stmt;
@@ -1001,7 +1001,7 @@ public class MysqlConnector {
 	/**
 	 * @return A list of all Regions as RegionEntry objects
 	 */
-	public ArrayList<RegionEntry> getRegions() {
+	public synchronized ArrayList<RegionEntry> getRegions() {
 		ArrayList<RegionEntry> result = new ArrayList<RegionEntry>();
 		Connection dbc = getConnection();
 
@@ -1025,7 +1025,7 @@ public class MysqlConnector {
 	/**
 	 * @return
 	 */
-	public ArrayList<SiteEntry> getSites() {
+	public synchronized ArrayList<SiteEntry> getSites() {
 		ArrayList<SiteEntry> result = new ArrayList<SiteEntry>();
 		Connection dbc = getConnection();
 
