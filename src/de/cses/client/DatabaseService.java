@@ -45,7 +45,7 @@ import de.cses.shared.VendorEntry;
 @RemoteServiceRelativePath("db")
 public interface DatabaseService extends RemoteService {
 
-	String dbServer(String name) throws IllegalArgumentException;
+//	String dbServer(String name) throws IllegalArgumentException;
 
 	ArrayList<DistrictEntry> getDistricts() throws IllegalArgumentException;
 

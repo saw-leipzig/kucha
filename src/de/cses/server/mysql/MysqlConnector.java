@@ -43,8 +43,8 @@ import de.cses.shared.StyleEntry;
 import de.cses.shared.VendorEntry;
 
 /**
- * This is the central Database connector. Here are all method located that we
- * need for standard database operations, including use login and access
+ * This is the central Database connector. Here are all methods that we
+ * need for standard database operations, including user login and access
  * management.
  * 
  * @author alingnau
@@ -80,6 +80,7 @@ public class MysqlConnector {
 		try {
 			Class.forName("org.mariadb.jdbc.Driver"); //$NON-NLS-1$
 			connection = DriverManager.getConnection(MysqlConnector.url, MysqlConnector.user, MysqlConnector.password);
+			System.err.println("MysqlConnector() init");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
@@ -95,56 +96,56 @@ public class MysqlConnector {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-
+		System.err.println("getConnection() called");
 		return connection;
 	}
 
-	/**
-	 * This is a test method that can be used for testing purpose only. Likely to
-	 * disappear in later versions!
-	 * 
-	 * @return
-	 */
-	public synchronized Hashtable<String, String> getTestTable() {
-
-		Connection dbc = getConnection();
-		Statement stmt;
-		try {
-			stmt = dbc.createStatement();
-
-			String sql = "SELECT * FROM test"; //$NON-NLS-1$
-
-			ResultSet rs = stmt.executeQuery(sql);
-
-			Hashtable<String, String> results = new Hashtable<String, String>();
-
-			String name, age;
-			while (rs.next()) {
-				name = rs.getString("Name"); //$NON-NLS-1$
-				age = rs.getString("Age"); //$NON-NLS-1$
-				results.put(name, age);
-				System.err.println("(" + name + "," + age + ") read from database"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			}
-
-			rs.close();
-			stmt.close();
-			dbc.close();
-			System.err.println("Database request finished"); //$NON-NLS-1$
-			return results;
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-		return null;
-	}
+//	/**
+//	 * This is a test method that can be used for testing purpose only. Likely to
+//	 * disappear in later versions!
+//	 * 
+//	 * @return
+//	 */
+//	public synchronized Hashtable<String, String> getTestTable() {
+//
+//		Connection dbc = getConnection();
+//		Statement stmt;
+//		try {
+//			stmt = dbc.createStatement();
+//
+//			String sql = "SELECT * FROM test"; //$NON-NLS-1$
+//
+//			ResultSet rs = stmt.executeQuery(sql);
+//
+//			Hashtable<String, String> results = new Hashtable<String, String>();
+//
+//			String name, age;
+//			while (rs.next()) {
+//				name = rs.getString("Name"); //$NON-NLS-1$
+//				age = rs.getString("Age"); //$NON-NLS-1$
+//				results.put(name, age);
+//				System.err.println("(" + name + "," + age + ") read from database"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+//			}
+//
+//			rs.close();
+//			stmt.close();
+//			dbc.close();
+//			System.err.println("Database request finished"); //$NON-NLS-1$
+//			return results;
+//
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
+//
+//		return null;
+//	}
 
 	/**
 	 * Selects all districts from the table 'Districts' in the database
 	 * 
 	 * @return
 	 */
-	public synchronized ArrayList<DistrictEntry> getDistricts() {
+	public ArrayList<DistrictEntry> getDistricts() {
 		ArrayList<DistrictEntry> result = new ArrayList<DistrictEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -157,7 +158,7 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-			dbc.close();
+//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -171,7 +172,7 @@ public class MysqlConnector {
 	 *          DistrictID
 	 * @return The corresponding DistrictEntry from the table Districts
 	 */
-	public synchronized DistrictEntry getDistrict(int id) {
+	public DistrictEntry getDistrict(int id) {
 		DistrictEntry result = null;
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -184,7 +185,7 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-			dbc.close();
+//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -214,7 +215,7 @@ public class MysqlConnector {
 			}
 			keys.close();
 			stmt.close();
-			dbc.close();
+//			dbc.close();
 			System.err.println("Database request finished"); //$NON-NLS-1$
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -246,7 +247,7 @@ public class MysqlConnector {
 			}
 			keys.close();
 			stmt.close();
-			dbc.close();
+//			dbc.close();
 			System.err.println("Database request finished"); //$NON-NLS-1$
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -269,7 +270,7 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			stmt.executeUpdate(sqlUpdate);
 			stmt.close();
-			dbc.close();
+//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
@@ -292,7 +293,7 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			stmt.execute(sqlDelete);
 			stmt.close();
-			dbc.close();
+//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
@@ -301,7 +302,7 @@ public class MysqlConnector {
 		return true;
 	}
 
-	public synchronized ArrayList<DepictionEntry> getDepictions() {
+	public ArrayList<DepictionEntry> getDepictions() {
 		ArrayList<DepictionEntry> results = new ArrayList<DepictionEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -317,7 +318,7 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-			dbc.close();
+//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -325,7 +326,7 @@ public class MysqlConnector {
 		return results;
 	}
 
-	public synchronized DepictionEntry getDepictionEntry(int depictionID) {
+	public DepictionEntry getDepictionEntry(int depictionID) {
 		Connection dbc = getConnection();
 		DepictionEntry result = null;
 		Statement stmt;
@@ -342,7 +343,7 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-			dbc.close();
+//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -353,7 +354,7 @@ public class MysqlConnector {
 	 * 
 	 * @return ArrayList<String> with result from 'SELECT * FROM Images'
 	 */
-	public synchronized ArrayList<ImageEntry> getImageEntries() {
+	public ArrayList<ImageEntry> getImageEntries() {
 		ArrayList<ImageEntry> results = new ArrayList<ImageEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -366,7 +367,7 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-			dbc.close();
+//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -374,7 +375,7 @@ public class MysqlConnector {
 		return results;
 	}
 
-	public synchronized ArrayList<ImageEntry> getImageEntries(String sqlWhere) {
+	public ArrayList<ImageEntry> getImageEntries(String sqlWhere) {
 		ArrayList<ImageEntry> results = new ArrayList<ImageEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -387,7 +388,7 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-			dbc.close();
+//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -400,7 +401,7 @@ public class MysqlConnector {
 	 * @param imageID
 	 * @return ImageEntry that matches imageID, or NULL
 	 */
-	public synchronized ImageEntry getImageEntry(int imageID) {
+	public ImageEntry getImageEntry(int imageID) {
 		Connection dbc = getConnection();
 		ImageEntry result = null;
 		Statement stmt;
@@ -413,7 +414,7 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-			dbc.close();
+//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -425,7 +426,7 @@ public class MysqlConnector {
 	 * 
 	 * @return
 	 */
-	public synchronized ArrayList<PhotographerEntry> getPhotographerEntries() {
+	public ArrayList<PhotographerEntry> getPhotographerEntries() {
 		ArrayList<PhotographerEntry> results = new ArrayList<PhotographerEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -437,7 +438,7 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-			dbc.close();
+//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -445,10 +446,11 @@ public class MysqlConnector {
 		return results;
 	}
 
-	public synchronized ArrayList<CaveEntry> getCaves() {
+	public ArrayList<CaveEntry> getCaves() {
 		ArrayList<CaveEntry> results = new ArrayList<CaveEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
+		System.err.println("getCaves() called");
 		try {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Caves");
@@ -460,7 +462,7 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-			dbc.close();
+//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -468,7 +470,7 @@ public class MysqlConnector {
 		return results;
 	}
 
-	public synchronized CaveEntry getCave(int id) {
+	public CaveEntry getCave(int id) {
 		CaveEntry result = null;
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -483,7 +485,7 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-			dbc.close();
+//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -491,7 +493,7 @@ public class MysqlConnector {
 		return result;
 	}
 
-	public synchronized ArrayList<CaveEntry> getCavesbyDistrictID(int DistrictID) {
+	public ArrayList<CaveEntry> getCavesbyDistrictID(int DistrictID) {
 		ArrayList<CaveEntry> results = new ArrayList<CaveEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -507,7 +509,7 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-			dbc.close();
+//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -515,7 +517,7 @@ public class MysqlConnector {
 		return results;
 	}
 
-	public synchronized ArrayList<OrnamentEntry> getOrnaments() {
+	public ArrayList<OrnamentEntry> getOrnaments() {
 		ArrayList<OrnamentEntry> results = new ArrayList<OrnamentEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -527,7 +529,7 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-			dbc.close();
+//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -535,7 +537,7 @@ public class MysqlConnector {
 		return results;
 	}
 
-	public synchronized ArrayList<OrnamentOfOtherCulturesEntry> getOrnametsOfOtherCultures() {
+	public ArrayList<OrnamentOfOtherCulturesEntry> getOrnametsOfOtherCultures() {
 		ArrayList<OrnamentOfOtherCulturesEntry> results = new ArrayList<OrnamentOfOtherCulturesEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -547,7 +549,7 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-			dbc.close();
+//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -555,7 +557,7 @@ public class MysqlConnector {
 		return results;
 	}
 
-	public synchronized CaveTypeEntry getCaveTypebyID(int caveTypeID) {
+	public CaveTypeEntry getCaveTypebyID(int caveTypeID) {
 		CaveTypeEntry result = null;
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -567,14 +569,14 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-			dbc.close();
+//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return result;
 	}
 
-	public synchronized ArrayList<CaveTypeEntry> getCaveTypes() {
+	public ArrayList<CaveTypeEntry> getCaveTypes() {
 		System.err.println("IN METHODE DRIN");
 		Connection dbc = getConnection();
 		ArrayList<CaveTypeEntry> results = new ArrayList<CaveTypeEntry>();
@@ -590,7 +592,7 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-			dbc.close();
+//			dbc.close();
 		} catch (SQLException e) {
 			System.err.println("error in db zugriff");
 			e.printStackTrace();
@@ -655,7 +657,7 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-			dbc.close();
+//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
@@ -663,7 +665,7 @@ public class MysqlConnector {
 		return true;
 	}
 
-	public synchronized ArrayList<IconographyEntry> getIconography() {
+	public ArrayList<IconographyEntry> getIconography() {
 		ArrayList<IconographyEntry> root = getIconographyEntries(0);
 
 		for (IconographyEntry item : root) {
@@ -672,7 +674,7 @@ public class MysqlConnector {
 		return root;
 	}
 
-	protected synchronized void processIconographyTree(IconographyEntry parent) {
+	protected void processIconographyTree(IconographyEntry parent) {
 		ArrayList<IconographyEntry> children = getIconographyEntries(parent.getIconographyID());
 		if (children != null) {
 			parent.setChildren(children);
@@ -682,7 +684,7 @@ public class MysqlConnector {
 		}
 	}
 
-	protected synchronized ArrayList<IconographyEntry> getIconographyEntries(int parentID) {
+	protected ArrayList<IconographyEntry> getIconographyEntries(int parentID) {
 		ArrayList<IconographyEntry> results = new ArrayList<IconographyEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -696,7 +698,7 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-			dbc.close();
+//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -704,7 +706,7 @@ public class MysqlConnector {
 		return results;
 	}
 
-	public synchronized ArrayList<PictorialElementEntry> getPictorialElements() {
+	public ArrayList<PictorialElementEntry> getPictorialElements() {
 		ArrayList<PictorialElementEntry> root = getPictorialElementEntries(0);
 
 		for (PictorialElementEntry item : root) {
@@ -713,7 +715,7 @@ public class MysqlConnector {
 		return root;
 	}
 
-	private synchronized void processPictorialElementsTree(PictorialElementEntry parent) {
+	private void processPictorialElementsTree(PictorialElementEntry parent) {
 		ArrayList<PictorialElementEntry> children = getPictorialElementEntries(parent.getPictorialElementID());
 		if (children != null) {
 			parent.setChildren(children);
@@ -723,7 +725,7 @@ public class MysqlConnector {
 		}
 	}
 
-	protected synchronized ArrayList<PictorialElementEntry> getPictorialElementEntries(int parentID) {
+	protected ArrayList<PictorialElementEntry> getPictorialElementEntries(int parentID) {
 		ArrayList<PictorialElementEntry> results = new ArrayList<PictorialElementEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -737,7 +739,7 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-			dbc.close();
+//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -745,7 +747,7 @@ public class MysqlConnector {
 		return results;
 	}
 
-	public synchronized ArrayList<VendorEntry> getVendors() {
+	public ArrayList<VendorEntry> getVendors() {
 		ArrayList<VendorEntry> results = new ArrayList<VendorEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -757,7 +759,7 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-			dbc.close();
+//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -765,7 +767,7 @@ public class MysqlConnector {
 		return results;
 	}
 
-	public synchronized ArrayList<StyleEntry> getStyles() {
+	public ArrayList<StyleEntry> getStyles() {
 		ArrayList<StyleEntry> results = new ArrayList<StyleEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -777,7 +779,7 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-			dbc.close();
+//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -785,7 +787,7 @@ public class MysqlConnector {
 		return results;
 	}
 
-	public synchronized ArrayList<ExpeditionEntry> getExpeditions() {
+	public ArrayList<ExpeditionEntry> getExpeditions() {
 		ArrayList<ExpeditionEntry> results = new ArrayList<ExpeditionEntry>();
 		Connection dbc = getConnection();
 
@@ -799,7 +801,7 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-			dbc.close();
+//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -807,7 +809,7 @@ public class MysqlConnector {
 		return results;
 	}
 
-	public synchronized ArrayList<PublicationEntry> getPublications() {
+	public ArrayList<PublicationEntry> getPublications() {
 		ArrayList<PublicationEntry> results = new ArrayList<PublicationEntry>();
 		Connection dbc = getConnection();
 
@@ -823,7 +825,7 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-			dbc.close();
+//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -831,7 +833,7 @@ public class MysqlConnector {
 		return results;
 	}
 
-	public synchronized PublicationEntry getPublicationEntry(int id) {
+	public PublicationEntry getPublicationEntry(int id) {
 		PublicationEntry result = null;
 		Connection dbc = getConnection();
 
@@ -847,7 +849,7 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-			dbc.close();
+//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -859,7 +861,7 @@ public class MysqlConnector {
 	 * @param id
 	 * @return
 	 */
-	public synchronized AuthorEntry getAuthorEntry(int id) {
+	public AuthorEntry getAuthorEntry(int id) {
 		AuthorEntry result = null;
 		Connection dbc = getConnection();
 
@@ -873,7 +875,7 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-			dbc.close();
+//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -885,7 +887,7 @@ public class MysqlConnector {
 	 * @param depictionID
 	 * @return
 	 */
-	public synchronized int getRelatedMasterImageID(int depictionID) {
+	public int getRelatedMasterImageID(int depictionID) {
 		int result = 0;
 		Connection dbc = getConnection();
 
@@ -900,7 +902,7 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-			dbc.close();
+//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return 0;
@@ -916,7 +918,7 @@ public class MysqlConnector {
 	 *          antechamber is located
 	 * @return The AntechamberEntry for the corresponding id
 	 */
-	public synchronized AntechamberEntry getAntechamberEntry(int id) {
+	public AntechamberEntry getAntechamberEntry(int id) {
 		AntechamberEntry result = null;
 		Connection dbc = getConnection();
 
@@ -931,7 +933,7 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-			dbc.close();
+//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -946,7 +948,7 @@ public class MysqlConnector {
 	 *          BackArea is located
 	 * @return The BackAreaEntry for the corresponding id
 	 */
-	public synchronized BackAreaEntry getBackArea(int id) {
+	public BackAreaEntry getBackArea(int id) {
 		BackAreaEntry result = null;
 		Connection dbc = getConnection();
 
@@ -962,7 +964,7 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-			dbc.close();
+//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -976,7 +978,7 @@ public class MysqlConnector {
 	 *          MainChamber is located
 	 * @return The MainChamberEntry for the corresponding id
 	 */
-	public synchronized MainChamberEntry getMainChamber(int id) {
+	public MainChamberEntry getMainChamber(int id) {
 		MainChamberEntry result = null;
 		Connection dbc = getConnection();
 
@@ -991,7 +993,7 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-			dbc.close();
+//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -1001,7 +1003,7 @@ public class MysqlConnector {
 	/**
 	 * @return A list of all Regions as RegionEntry objects
 	 */
-	public synchronized ArrayList<RegionEntry> getRegions() {
+	public ArrayList<RegionEntry> getRegions() {
 		ArrayList<RegionEntry> result = new ArrayList<RegionEntry>();
 		Connection dbc = getConnection();
 
@@ -1015,7 +1017,7 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-			dbc.close();
+//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -1025,7 +1027,7 @@ public class MysqlConnector {
 	/**
 	 * @return
 	 */
-	public synchronized ArrayList<SiteEntry> getSites() {
+	public ArrayList<SiteEntry> getSites() {
 		ArrayList<SiteEntry> result = new ArrayList<SiteEntry>();
 		Connection dbc = getConnection();
 
@@ -1038,7 +1040,7 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-			dbc.close();
+//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

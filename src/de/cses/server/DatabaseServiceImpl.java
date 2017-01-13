@@ -46,13 +46,13 @@ import de.cses.shared.VendorEntry;
 @SuppressWarnings("serial")
 public class DatabaseServiceImpl extends RemoteServiceServlet implements DatabaseService {
 
-	public String dbServer(String name) throws IllegalArgumentException {
-
-		MysqlConnector connector = MysqlConnector.getInstance();
-		System.err.println("looking for " + name + " in database");
-		String result = name + " is " + connector.getTestTable().get(name) + " years old!";
-		return result;
-	}
+//	public String dbServer(String name) throws IllegalArgumentException {
+//
+//		MysqlConnector connector = MysqlConnector.getInstance();
+//		System.err.println("looking for " + name + " in database");
+//		String result = name + " is " + connector.getTestTable().get(name) + " years old!";
+//		return result;
+//	}
 
 	public ArrayList<DistrictEntry> getDistricts() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();

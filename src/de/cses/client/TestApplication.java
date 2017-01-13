@@ -221,7 +221,7 @@ public class TestApplication implements EntryPoint, ImageEditorListener {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				// TODO Auto-generated method stub
+				caught.printStackTrace(System.err);
 			}
 
 			@Override
