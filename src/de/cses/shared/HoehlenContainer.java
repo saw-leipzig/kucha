@@ -19,7 +19,7 @@ public class HoehlenContainer implements IsSerializable{
 	private int buttonPositionLeft;
 	private int buttonPositionTop;
 	
-	public HoehlenContainer(int regionID, int caveID, String name){
+	public HoehlenContainer(int caveID, int regionID,  String name){
 		this.regionID=regionID;
 		this.caveID = caveID;
 		this.name= name;

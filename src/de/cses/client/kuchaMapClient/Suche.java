@@ -46,20 +46,46 @@ public class Suche {
 		for(int i = 0; i < Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().size();i++){
 			Image image = new Image("http://kucha.informatik.hu-berlin.de/tomcat/images/BUTTONHOEHLEpngblau.png");
 			Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(i).getButton().add(image);
+			 image.setPixelSize(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenButtonsize(), Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenButtonsize());
 			Window.alert("change einen style 2");
+			if(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getID()== -1){
+				
+				RegionenUebersicht regionenUebersicht = new RegionenUebersicht();
+				
+				regionenUebersicht.setB(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(i).getButton());
+				regionenUebersicht.setRegion(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(i));
+				regionenUebersicht.setID(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(i).getID());
+				regionenUebersicht.setRegionname(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(i).getname());
+			
+				regionenUebersicht.getRegionenInfos();
+			}
+			else{
+				HoehlenUebersicht hoehlenUebersicht = new HoehlenUebersicht();
+				
+				hoehlenUebersicht.setButton(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(i).getButton());
+				hoehlenUebersicht.setHoehle(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(i));
+				hoehlenUebersicht.setID(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(i).getID());
+			
+				hoehlenUebersicht.getHoehlenInfos();
+			}
 		}
 		
 	}
 	
-	 public ArrayList<CaveEntry> findRelatedCaves(ArrayList<CaveEntry> hoehlen){
+	 public ArrayList<CaveEntry> findRelatedCaves(ArrayList<CaveEntry> hoehlenContainerArrayList){
 		 Window.alert("in find related caves");
 		 final ArrayList<CaveEntry> hoehlenErgebnisse = new ArrayList<CaveEntry>();
-			for(int i =0; i < hoehlen.size(); i++){
-				hoehlenErgebnisse.add(hoehlen.get(i));
-			}
+			for(int i =0; i < hoehlenContainerArrayList.size(); i++){
+				for(int j = 0; j< Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().size(); j++){
+				if(hoehlenContainerArrayList.get(i).getCaveID() == Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(j).getID()){
+					hoehlenErgebnisse.add(hoehlenContainerArrayList.get(i));
+					Window.alert("caves by cave einen geadded");
+				}	
+				}
+				}
 		 changeStyle(hoehlenErgebnisse);
-		 return hoehlen;
-		 
+		 return hoehlenContainerArrayList;
+				
 	 }
 	 /*
 	 public ArrayList<CaveEntry> findRelatedCavesbyCella(ArrayList<CellaEntry> cellas){
@@ -109,8 +135,12 @@ public class Suche {
 				@Override
 				public synchronized void onSuccess(ArrayList<CaveEntry> hoehlenContainerArrayList) {
 				for(int i =0; i < hoehlenContainerArrayList.size(); i++){
-					Window.alert("caves by disctrict einen geadded");
-					hoehlenErgebnisse.add(hoehlenContainerArrayList.get(i));
+					for(int j = 0; j< Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().size(); j++){
+					if(hoehlenContainerArrayList.get(i).getCaveID() == Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(j).getID()){
+						hoehlenErgebnisse.add(hoehlenContainerArrayList.get(i));
+						Window.alert("caves by disctrict einen geadded");
+					}	
+				}
 				}
 				Window.alert("success find related cavesbydistrict");
 				changeStyle(hoehlenErgebnisse);
@@ -152,10 +182,14 @@ public class Suche {
 
 				@Override
 				public synchronized void onSuccess(ArrayList<CaveEntry> hoehlenContainerArrayList) {
-				for(int i =0; i < hoehlenContainerArrayList.size(); i++){
-					Window.alert("caves by ornament einen geadded");
-					hoehlenErgebnisse.add(hoehlenContainerArrayList.get(i));
-				}
+					for(int i =0; i < hoehlenContainerArrayList.size(); i++){
+						for(int j = 0; j< Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().size(); j++){
+						if(hoehlenContainerArrayList.get(i).getCaveID() == Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(j).getID()){
+							hoehlenErgebnisse.add(hoehlenContainerArrayList.get(i));
+							Window.alert("caves by ornament einen geadded");
+						}	
+					}
+					}
 				Window.alert("success find related cavesbyornament");
 					changeStyle(hoehlenErgebnisse);
 				}
@@ -172,10 +206,14 @@ public class Suche {
 
 				@Override
 				public synchronized void onSuccess(ArrayList<CaveEntry> hoehlenContainerArrayList) {
-				for(int i =0; i < hoehlenContainerArrayList.size(); i++){
-				hoehlenErgebnisse.add(hoehlenContainerArrayList.get(i));
-				Window.alert("caves by depiction einen geadded");
-				}
+					for(int i =0; i < hoehlenContainerArrayList.size(); i++){
+						for(int j = 0; j< Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().size(); j++){
+						if(hoehlenContainerArrayList.get(i).getCaveID() == Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(j).getID()){
+							hoehlenErgebnisse.add(hoehlenContainerArrayList.get(i));
+							Window.alert("caves by depiction einen geadded");
+						}	
+					}
+					}
 				changeStyle(hoehlenErgebnisse);
 				
 				}
@@ -193,11 +231,23 @@ public class Suche {
 
 				@Override
 				public synchronized void onSuccess(ArrayList<CaveEntry> hoehlenContainerArrayList) {
-				for(int i =0; i < hoehlenContainerArrayList.size(); i++){
-				hoehlenErgebnisse.add(hoehlenContainerArrayList.get(i));
-				Window.alert("caves by cave type einen geadded");
+					for(int i =0; i < hoehlenContainerArrayList.size(); i++){
+						if(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getID()==-1){
+							if(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().allCaveIDs.contains(hoehlenContainerArrayList.get(i).getCaveID() )){
+								Window.alert("Die gefundene Hoehle hat die ID: " + Integer.toString(hoehlenContainerArrayList.get(i).getCaveID()));
+								hoehlenErgebnisse.add(hoehlenContainerArrayList.get(i));
+							}
+						}
+						else {
+						for(int j = 0; j< Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().size(); j++){
+						if(hoehlenContainerArrayList.get(i).getCaveID() == Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(j).getID()){
+							hoehlenErgebnisse.add(hoehlenContainerArrayList.get(i));
+							Window.alert("Die gefundene Hoehle hat die ID: " + Integer.toString(hoehlenContainerArrayList.get(i).getCaveID()));
+							Window.alert("caves by cavetype einen geadded");
+						}	
+							}
+					}
 				}
-				Window.alert("success find related cavesby cave type");
 				changeStyle(hoehlenErgebnisse);
 				}
 			});	
@@ -358,21 +408,31 @@ public class Suche {
 		Window.alert("die aktive region ist -1");
 		Window.alert(Integer.toString(hoehlenErgebnisse.size()));
 		for(int i = 0; i< Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getRegionen().size(); i++){
-			Window.alert("change einen style 1 kurz davor pos1");
+			Window.alert("Größe der Regionenliste ist: " + Integer.toString(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getRegionen().size()));
 			for(int j = 0; j< hoehlenErgebnisse.size(); j++){
-				Window.alert("change einen style 1 kurz davor pos2");
+				Window.alert("Anzahl der Hoehlen mit übereinstimmung:"+ Integer.toString(hoehlenErgebnisse.size()));
 				Window.alert("Regionen ID: "+Integer.toString(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getRegionen().get(i).getID()) + "HoehlenRegionID: "+hoehlenErgebnisse.get(j).getDistrictID());
 				if(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getRegionen().get(i).getID() == hoehlenErgebnisse.get(j).getDistrictID()){
 					Window.alert("change einen style 1 kurz davor pos3");
 					Window.alert("Regionen ID: "+Integer.toString(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getRegionen().get(i).getID()) + "HoehlenRegionID: "+hoehlenErgebnisse.get(j).getDistrictID());
-					Image image = new Image("https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Wegzeichen_gr%C3%BCner_Punkt.svg/599px-Wegzeichen_gr%C3%BCner_Punkt.svg.png");
+					Image image = new Image("http://kucha.informatik.hu-berlin.de/tomcat/images/BUTTONHOEHLEgruen.png");
 					for(int k = 0; k< Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().size(); k++){
 						Window.alert("change einen style 1 kurz davor pos4");
 						if(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(k).getID()==Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getRegionen().get(i).getID() ){
 				
 							Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(k).getButton().add(image);
+							image.setPixelSize(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenButtonsize(), Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenButtonsize());
 							
-
+							RegionenUebersicht regionenUebersicht = new RegionenUebersicht();
+							
+							regionenUebersicht.setB(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(k).getButton());
+							regionenUebersicht.setRegion(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(k));
+							regionenUebersicht.setID(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(k).getID());
+							regionenUebersicht.setRegionname(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(k).getname());
+							
+						
+							regionenUebersicht.getRegionenInfos();
+							
 							Window.alert("change einen style 1");
 						}
 					}
@@ -387,14 +447,15 @@ public class Suche {
 	for(int i = 0; i< Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().size();i++){
 		for(int u = 0; u < hoehlenErgebnisse.size(); u++){
 			if(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(i).getID()== hoehlenErgebnisse.get(u).getCaveID()){
-				Image image = new Image("https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Wegzeichen_gr%C3%BCner_Punkt.svg/599px-Wegzeichen_gr%C3%BCner_Punkt.svg.png");
-				Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(u).getButton().add(image);
+				Image image = new Image("http://kucha.informatik.hu-berlin.de/tomcat/images/BUTTONHOEHLEgruen.png");
+				Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(i).getButton().add(image);
+				 image.setPixelSize(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenButtonsize(), Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenButtonsize());
 				
 				HoehlenUebersicht hoehlenUebersicht = new HoehlenUebersicht();
 				
-				hoehlenUebersicht.setButton(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(u).getButton());
-				hoehlenUebersicht.setHoehle(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(u));
-				hoehlenUebersicht.setID(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(u).getID());
+				hoehlenUebersicht.setButton(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(i).getButton());
+				hoehlenUebersicht.setHoehle(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(i));
+				hoehlenUebersicht.setID(Home.getKuchaMapPrototyp().getDetailansichtVerwaltung().getaktiveRegion().getHoehlenArrayList().get(i).getID());
 			
 				hoehlenUebersicht.getHoehlenInfos();
 				

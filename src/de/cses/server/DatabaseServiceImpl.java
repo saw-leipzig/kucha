@@ -446,8 +446,22 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	}
 
 	/* (non-Javadoc)
-	 * @see de.cses.client.DatabaseService#getRandomCaveTypes()
+	 * @see de.cses.client.DatabaseService#getallCaveIDs()
 	 */
+	@Override
+	public ArrayList<Integer> getallCaveIDs() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		ArrayList<Integer> caveIDs = new ArrayList<Integer>();
+		try {
+			caveIDs= connector.getallCaveIDs();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return caveIDs;
+	}
+	
+
 
 
 }

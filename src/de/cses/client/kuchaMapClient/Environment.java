@@ -73,6 +73,7 @@ public class Environment implements ImageSelectorListener {
 			@Override
 			public void onClick(ClickEvent event) {
 				Window.alert("ich bin in der click funktion");
+				suche.search();
 				SucheSminulation.sucheSimulation(suchenBox.getText());
 				//suche.setCaveArrayList(SucheSminulation.caveArrayList);
 				Window.alert("cave array list gesettet ");
@@ -80,7 +81,7 @@ public class Environment implements ImageSelectorListener {
 				//suche.setCaveTypeArrayList(SucheSminulation.caveTypeArrayList);
 				//suche.setDistrictArrayList(SucheSminulation.districtArrayList);
 				//suche.setOrnamentArrayList(SucheSminulation.ornamentArrayList);
-				suche.search();
+			
 			}
 			
 		};

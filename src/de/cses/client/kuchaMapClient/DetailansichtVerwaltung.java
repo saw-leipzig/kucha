@@ -30,6 +30,7 @@ public class DetailansichtVerwaltung{
 	 Image image;
 	 private Environment environment;
 	 RegionenUebersicht regionenUebersicht;
+	 ArrayList<Integer> allCaveIDs;
 	 
 	 public DetailansichtVerwaltung(){
 		 
@@ -115,7 +116,7 @@ public class DetailansichtVerwaltung{
 			image = new Image("http://kucha.informatik.hu-berlin.de/tomcat/images/BUTTONHOEHLEpngblau.png");
 			createdHoehlenButton.add(image);
 			createdHoehlenButton.setTitle(Hoehle.getname());
-			createdHoehlenButton.setPixelSize(aktiveRegion.getHoehlenButtonsize(), aktiveRegion.getHoehlenButtonsize());
+			image.setPixelSize(aktiveRegion.getHoehlenButtonsize(), aktiveRegion.getHoehlenButtonsize());
 			fotoAbsolutePanel.add(createdHoehlenButton);
 			fotoAbsolutePanel.setWidgetPosition(createdHoehlenButton,Hoehle.getButtonPositionLeft(), Hoehle.getButtonPositionTop());
 		
@@ -201,6 +202,13 @@ public class DetailansichtVerwaltung{
 		public void setImage(Image image) {
 			this.image = image;
 		}
+		public ArrayList<Integer> getAllCaveIDs() {
+			return allCaveIDs;
+		}
+		public void setAllCaveIDs(ArrayList<Integer> allCaveIDs) {
+			this.allCaveIDs = allCaveIDs;
+		}
+		
 		
 		
 		

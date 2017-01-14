@@ -10,6 +10,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -56,7 +57,7 @@ public class HoehleErstellenPanel extends DialogBox{
 		   this.center();
 		   detailansichtVerwaltung = Home.getKuchaMapPrototyp().getDetailansichtVerwaltung();
 		   HoehlenContainerProps = GWT.create(HoehlenContainerProperties.class);
-		   HoehlenContainerList = new ListStore<HoehlenContainer>(HoehlenContainerProps.caveID());
+		   HoehlenContainerList = new ListStore<HoehlenContainer>(HoehlenContainerProps.getID());
 			int p = detailansichtVerwaltung.getaktiveRegion().getID();
 			HoehlenContainerList.clear();
 			
@@ -69,12 +70,17 @@ public class HoehleErstellenPanel extends DialogBox{
 
 				@Override
 				public void onSuccess(ArrayList<HoehlenContainer> result) {
-					for (HoehlenContainer pe : result) {
-						HoehlenContainerList.add(pe);
+					Window.alert("die groeﬂe des ergebnisses ist : " + Integer.toString(result.size()));
+					for (int i = 0;i< result.size(); i++) {
+						Window.alert("gefundene Hoehle mit ID" + Integer.toString(result.get(i).getID()) +"und regionsID: "+ Integer.toString( result.get(i).getRegionID()));
+						HoehlenContainerList.add(result.get(i));
+						Window.alert("added eine Hoehle zum Store");
 					}
+					
 				}
 			});
-		   createHoehleErstellenPopupPanel();
+			createHoehleErstellenPopupPanel();
+		   
 	   }
 	   public void createHoehleErstellenPopupPanel(){
 		 
@@ -147,7 +153,7 @@ public class HoehleErstellenPanel extends DialogBox{
 		this.top = top;
 	}
 	interface HoehlenContainerProperties extends PropertyAccess<HoehlenContainer> {
-		ModelKeyProvider<HoehlenContainer> caveID();
+		ModelKeyProvider<HoehlenContainer> getID();
 
 		LabelProvider<HoehlenContainer> name();
 	}

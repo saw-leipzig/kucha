@@ -14,6 +14,7 @@ import de.cses.client.kuchaMapClient.Environment;
 import de.cses.client.kuchaMapClient.Hoehle;
 import de.cses.client.kuchaMapClient.Region;
 import de.cses.client.kuchaMapClient.Suche;
+import de.cses.client.kuchaMapClient.SucheSminulation;
 import de.cses.shared.HoehlenContainer;
 import de.cses.shared.RegionContainer;
 
@@ -27,6 +28,7 @@ public class KuchaDatabase {
 	boolean firsttime;
 	int aufgerufen = 0;
 	Suche suche;
+	int w;
 	public KuchaDatabase(){
 		Window.alert("kucha database erzeugt");
 		detailansichtVerwaltung = Home.getKuchaMapPrototyp().getDetailansichtVerwaltung();
@@ -36,8 +38,10 @@ public class KuchaDatabase {
 		
 	}
 	
-	public void loadRegionen(boolean firsttimebool){
-		
+	public void loadRegionen(final boolean firsttimebool){
+		if(!firsttimebool){
+			Window.alert("is searching ist: " + Boolean.toString(suche.isSearching()));
+		}
 		Window.alert("in regionen laden teil 1");
 		aufgerufen++;
 		Window.alert("aufgerufen anzahl: "+ aufgerufen);
@@ -83,6 +87,7 @@ public class KuchaDatabase {
 					
 				}
 		getHoehlenbyRegionID(detailansichtVerwaltung.getaktiveRegion().getID());
+		fillHoehlenArrayLists();
 		Window.alert("ganzen region laden mist fertig");
 		detailansichtVerwaltung.getFotoAbsolutePanel().clear();
 		Window.alert(detailansichtVerwaltung.getaktiveRegion().getFoto());
@@ -90,7 +95,12 @@ public class KuchaDatabase {
 		detailansichtVerwaltung.getFotoAbsolutePanel().add(detailansichtVerwaltung.getDetailansicht().getHoehlenFotoIMG());
 		detailansichtVerwaltung.getEditierenVerwaltung().switchEDundAN();
 		if(suche.isSearching()){
+			Window.alert("is searching ist: " + Boolean.toString(suche.isSearching()));
 			suche.search();
+			SucheSminulation.sucheSimulation(environment.getSuchenBox().getText());
+		}
+		if(!firsttimebool){
+		Window.alert("is searching ist: " + Boolean.toString(suche.isSearching()));
 		}
 			}
 	});
@@ -168,6 +178,27 @@ public class KuchaDatabase {
 	});
 }
 	
+	public void fillHoehlenArrayLists(){
+		Window.alert("in methode fill array lists");
+
+		 dbService.getallCaveIDs( new AsyncCallback<ArrayList<Integer>>(){
+
+			@Override
+			public void onFailure(Throwable caught) {
+				
+				
+			}
+
+			@Override
+			public void onSuccess(ArrayList<Integer> allCaveIDs) {
+				detailansichtVerwaltung.setAllCaveIDs(allCaveIDs);
+		 
+			}
+	});
+		
+		
+	
+	}
 }
 
 

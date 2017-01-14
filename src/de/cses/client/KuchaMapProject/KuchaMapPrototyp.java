@@ -45,6 +45,7 @@ public class KuchaMapPrototyp {
 	}
 	public void create(){
 		
+		suche = new Suche();
 		detailansicht = new Detailansicht();
 		hoehlenUebersicht = new HoehlenUebersicht();
 		detailansichtVerwaltung = new DetailansichtVerwaltung();
@@ -54,7 +55,7 @@ public class KuchaMapPrototyp {
 		editierenVerwaltung = new EditierenVerwaltung();
 		//hilfePanels = new HilfePanels();
 		kuchaDatabase = new KuchaDatabase();
-		suche = new Suche();
+		
 
 		
 		

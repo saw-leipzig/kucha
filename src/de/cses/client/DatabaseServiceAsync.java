@@ -134,4 +134,6 @@ public interface DatabaseServiceAsync {
 	void getRandomCaveTypes(AsyncCallback<ArrayList<CaveTypeEntry>> callback) throws IllegalArgumentException;
 	
 	void getRandomDistricts(AsyncCallback<ArrayList<DistrictEntry>> callback) throws IllegalArgumentException;
+	
+	void getallCaveIDs(AsyncCallback<ArrayList<Integer>> callback) throws IllegalArgumentException;
 }

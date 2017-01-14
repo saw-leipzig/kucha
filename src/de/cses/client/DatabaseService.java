@@ -168,6 +168,7 @@ public interface DatabaseService extends RemoteService {
 	
 	ArrayList<DistrictEntry> getRandomDistricts() throws IllegalArgumentException;
 
+	ArrayList<Integer> getallCaveIDs() throws IllegalArgumentException;
 }
 
 

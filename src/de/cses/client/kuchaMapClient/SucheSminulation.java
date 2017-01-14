@@ -40,6 +40,10 @@ public class SucheSminulation {
 	static Suche suche = Home.getKuchaMapPrototyp().getSuche();
 	
 public static void sucheSimulation(String eingabe){
+	ornamentArrayList = new ArrayList<OrnamentEntry>();
+	caveTypeArrayList = new ArrayList<CaveTypeEntry>();
+	districtArrayList = new ArrayList<DistrictEntry>();
+	caveArrayList = new ArrayList<CaveEntry>();
 	
 	// get some example caves
 	dbService.getRandomOrnaments( new AsyncCallback<ArrayList<OrnamentEntry>>(){

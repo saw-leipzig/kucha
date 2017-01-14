@@ -56,7 +56,7 @@ import de.cses.shared.VendorEntry;
  */
 public class MysqlConnector {
 
-	private static String url = "jdbc:mysql://kucha.informatik.hu-berlin.de/infosys?useUnicode=true&characterEncoding=UTF-8"; //$NON-NLS-1$
+	private static String url = "jdbc:mysql://kucha.informatik.hu-berlin.de/infotest?useUnicode=true&characterEncoding=UTF-8"; //$NON-NLS-1$
 	private static String user = Messages.getString("MysqlConnector.db.user");
 	private static String password = Messages.getString("MysqlConnector.db.password");
 	private int auto_increment_id;
@@ -1228,15 +1228,18 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Caves WHERE DistrictID ="+DistrictID);
 			while (rs.next()) { 
-				results.add(new HoehlenContainer(rs.getInt("DistrictID"),rs.getInt("CaveID"),rs.getString("OfficialName")));
+				System.err.println("eine hoehle gefunden mit district ID" + Integer.toString(DistrictID) + "und caveID: "+ Integer.toString(rs.getInt("CaveID")));
+				results.add(new HoehlenContainer(rs.getInt("CaveID"),rs.getInt("DistrictID"),rs.getString("OfficialName")));
 			}
 			rs.close();
 			stmt.close();
 			dbc.close();
 		} catch (SQLException e) {
+			System.err.println("Fehler gefunden in get caves by district Kucha");
 			e.printStackTrace();
-			return null;
+			return results;
 		}
+		System.err.println("gefundene Hoehlen ArrayListe: " + Integer.toString(results.size()));
 		return results;
 	}
 	public synchronized String deleteHoehlebyID(int hoehlenID) {
@@ -1385,7 +1388,7 @@ public class MysqlConnector {
 		Connection dbc = getConnection();
 		Statement stmt = dbc.createStatement();
 		ArrayList<OrnamentEntry> ornaments = new ArrayList<OrnamentEntry>();
-		for(int i =3; i< 6; i++){
+		for(int i =6; i< 6; i++){
 		String sql = "SELECT * FROM Ornaments WHERE OrnamentID = "+ i;
 		ResultSet rs = stmt.executeQuery(sql);
 		while(rs.next()){
@@ -1408,7 +1411,7 @@ public class MysqlConnector {
 		Statement stmt = dbc.createStatement();
 		System.err.println("in get random caves");
 		ArrayList<CaveEntry> caves = new ArrayList<CaveEntry>();
-		for(int i =4; i< 9; i++){
+		for(int i =9; i< 9; i++){
 		String sql = "SELECT * FROM Caves WHERE CaveID = "+ i;
 		ResultSet rs = stmt.executeQuery(sql);
 		while(rs.next()){
@@ -1432,7 +1435,7 @@ public class MysqlConnector {
 		Statement stmt = dbc.createStatement();
 		System.err.println("in random cavetype methode");
 		ArrayList<CaveTypeEntry> caveTypes = new ArrayList<CaveTypeEntry>();
-		for(int i =1; i< 2; i++){
+		for(int i =4; i< 5; i++){
 		String sql = "SELECT * FROM CaveType WHERE CaveTypeID = "+ i;
 		ResultSet rs = stmt.executeQuery(sql);
 		while(rs.next()){
@@ -1452,19 +1455,39 @@ public class MysqlConnector {
 		Connection dbc = getConnection();
 		Statement stmt = dbc.createStatement();
 		ArrayList<DistrictEntry> districts = new ArrayList<DistrictEntry>();
-		for(int i =1; i< 2; i++){
-		String sql = "SELECT * FROM Districts WHERE DistrictID = "+ i;
+		for(int i =0; i< 0; i++){
+		String sql = "SELECT * FROM Sites WHERE SiteID = "+ i;
 		ResultSet rs = stmt.executeQuery(sql);
 		while(rs.next()){
 			System.err.println("district gefunden");
 			DistrictEntry newDistrict= new DistrictEntry();
-			newDistrict.setDistrictID(rs.getInt("DistrictID"));
+			newDistrict.setDistrictID(rs.getInt("SiteID"));
 			newDistrict.setName(rs.getString("Name"));
-			newDistrict.setDescription(rs.getString("Description"));
+			newDistrict.setDescription(rs.getString("AlternativeName"));
 			districts.add(newDistrict);
 		}
 		}
 		return districts;
+	}
+	
+	public ArrayList<Integer> getallCaveIDs() throws SQLException{
+		ArrayList<Integer> caveIDs = new ArrayList<Integer>();
+		Connection dbc = getConnection();
+		Statement stmt = dbc.createStatement();
+		try {
+			stmt = dbc.createStatement();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		String sql = "SELECT ID FROM KuchaMapCaves";
+		ResultSet rs = stmt.executeQuery(sql);
+		while(rs.next()){
+			int p = rs.getInt("ID");
+			caveIDs.add(p);
+		}
+		return caveIDs;
 	}
 	
 }
