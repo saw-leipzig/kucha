@@ -1,7 +1,6 @@
 package de.cses.client.KuchaMapProject;
 
 
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.IsWidget;
 
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -19,15 +18,11 @@ public class Home implements IsWidget {
 	
 	public Home() {
 		kuchaMapPrototyp = new KuchaMapPrototyp();
-		Window.alert("kuchaprototyp erstellt");
 		kuchaMapPrototyp.iniKuchaMapPrototyp();
 		
-		Window.alert("initialisiert");
-		kuchaMapPrototyp.create();
 		
-		Window.alert("created");
+		kuchaMapPrototyp.create();
 		kuchaMapPrototyp.inititialize();
-		Window.alert("2.ini");
 		kuchaMapPrototyp.Start();
 		//TestCommit
 	
@@ -45,7 +40,6 @@ public class Home implements IsWidget {
 	
 	@Override
 	public Widget asWidget() {
-		Window.alert("in der as widget methode");
 		  if (widget == null) {
 			    BoxLayoutData flex = new BoxLayoutData();
 			    flex.setFlex(1);

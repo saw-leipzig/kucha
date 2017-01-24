@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import de.cses.client.DatabaseService;
@@ -30,7 +29,6 @@ public class KuchaDatabase {
 	Suche suche;
 	int w;
 	public KuchaDatabase(){
-		Window.alert("kucha database erzeugt");
 		detailansichtVerwaltung = Home.getKuchaMapPrototyp().getDetailansichtVerwaltung();
 		environment = Home.getKuchaMapPrototyp().getEnvironment();
 		suche = Home.getKuchaMapPrototyp().getSuche();
@@ -40,24 +38,22 @@ public class KuchaDatabase {
 	
 	public void loadRegionen(final boolean firsttimebool){
 		if(!firsttimebool){
-			Window.alert("is searching ist: " + Boolean.toString(suche.isSearching()));
+			
 		}
-		Window.alert("in regionen laden teil 1");
 		aufgerufen++;
-		Window.alert("aufgerufen anzahl: "+ aufgerufen);
 		this.firsttime= firsttimebool;
 		
 		 dbService.createRegionen( new AsyncCallback<ArrayList<RegionContainer>>(){
 
 			@Override
 			public void onFailure(Throwable caught) {
-			Window.alert("regionen laden failed");
+			
 				System.err.println("failed");
 			}
 
 			@Override
 			public void onSuccess(ArrayList<RegionContainer> regionenContainer) {
-				Window.alert("regionen laden fertig");
+				
 				ArrayList<Region> regionen = new ArrayList<Region>();
 				for (int i = 0; i< regionenContainer.size(); i++){
 					Region region = new Region();
@@ -72,12 +68,10 @@ public class KuchaDatabase {
 		
 				}
 				detailansichtVerwaltung.setRegionen(regionen);
-				Window.alert("in regionen laden teil 2");
+			
 				if(firsttime){
-					Window.alert("vor dem starten");
+					
 					detailansichtVerwaltung.setaktiveRegion(detailansichtVerwaltung.getRegionbyID(-1));
-					Window.alert("die erste geladene region ist die "+detailansichtVerwaltung.getaktiveRegion().getName());
-				Window.alert("gestartet");
 				Home.getKuchaMapPrototyp().createPanels();
 				
 				
@@ -88,19 +82,17 @@ public class KuchaDatabase {
 				}
 		getHoehlenbyRegionID(detailansichtVerwaltung.getaktiveRegion().getID());
 		fillHoehlenArrayLists();
-		Window.alert("ganzen region laden mist fertig");
 		detailansichtVerwaltung.getFotoAbsolutePanel().clear();
-		Window.alert(detailansichtVerwaltung.getaktiveRegion().getFoto());
 		detailansichtVerwaltung.getDetailansicht().getHoehlenFotoIMG().setUrl(detailansichtVerwaltung.getaktiveRegion().getFoto());
 		detailansichtVerwaltung.getFotoAbsolutePanel().add(detailansichtVerwaltung.getDetailansicht().getHoehlenFotoIMG());
 		detailansichtVerwaltung.getEditierenVerwaltung().switchEDundAN();
 		if(suche.isSearching()){
-			Window.alert("is searching ist: " + Boolean.toString(suche.isSearching()));
+			
 			suche.search();
 			SucheSminulation.sucheSimulation(environment.getSuchenBox().getText());
 		}
 		if(!firsttimebool){
-		Window.alert("is searching ist: " + Boolean.toString(suche.isSearching()));
+		
 		}
 			}
 	});
@@ -152,7 +144,7 @@ public class KuchaDatabase {
 
 			@Override
 			public void onSuccess(String result) {
-				Window.alert("speichern successful");
+				
 				detailansichtVerwaltung.loadRegion();
 				
 			}
@@ -179,7 +171,7 @@ public class KuchaDatabase {
 }
 	
 	public void fillHoehlenArrayLists(){
-		Window.alert("in methode fill array lists");
+		
 
 		 dbService.getallCaveIDs( new AsyncCallback<ArrayList<Integer>>(){
 

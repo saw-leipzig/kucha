@@ -919,13 +919,13 @@ public class MysqlConnector {
 	
 			try {
 			stmt = dbc.createStatement();
-			String sql = "SELECT * FROM Districts WHERE DistrictID = "+ "'"+ID+"'"; //$NON-NLS-1$
+			String sql = "SELECT * FROM Sites WHERE SiteID = "+ "'"+ID+"'"; //$NON-NLS-1$
 			ResultSet rs = stmt.executeQuery(sql);
 			RegionenUebersichtPopUpPanelContainer popup = new RegionenUebersichtPopUpPanelContainer();
 			while(rs.next()){
-				popup.setID(rs.getInt("DistrictID")); 
+				popup.setID(rs.getInt("SiteID")); 
 				popup.setName(rs.getString("Name"));
-				popup.setDescription(rs.getString("Description"));
+				popup.setDescription(rs.getString("AlternativeName"));
 				
 			}
 			int imageID=0;
@@ -1388,7 +1388,7 @@ public class MysqlConnector {
 		Connection dbc = getConnection();
 		Statement stmt = dbc.createStatement();
 		ArrayList<OrnamentEntry> ornaments = new ArrayList<OrnamentEntry>();
-		for(int i =6; i< 6; i++){
+		for(int i =3; i< 4; i++){
 		String sql = "SELECT * FROM Ornaments WHERE OrnamentID = "+ i;
 		ResultSet rs = stmt.executeQuery(sql);
 		while(rs.next()){
@@ -1411,7 +1411,7 @@ public class MysqlConnector {
 		Statement stmt = dbc.createStatement();
 		System.err.println("in get random caves");
 		ArrayList<CaveEntry> caves = new ArrayList<CaveEntry>();
-		for(int i =9; i< 9; i++){
+		for(int i =1; i< 2; i++){
 		String sql = "SELECT * FROM Caves WHERE CaveID = "+ i;
 		ResultSet rs = stmt.executeQuery(sql);
 		while(rs.next()){
@@ -1455,7 +1455,7 @@ public class MysqlConnector {
 		Connection dbc = getConnection();
 		Statement stmt = dbc.createStatement();
 		ArrayList<DistrictEntry> districts = new ArrayList<DistrictEntry>();
-		for(int i =0; i< 0; i++){
+		for(int i =2; i< 3; i++){
 		String sql = "SELECT * FROM Sites WHERE SiteID = "+ i;
 		ResultSet rs = stmt.executeQuery(sql);
 		while(rs.next()){

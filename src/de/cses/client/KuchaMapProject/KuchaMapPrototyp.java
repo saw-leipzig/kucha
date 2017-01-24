@@ -1,7 +1,6 @@
 package de.cses.client.KuchaMapProject;
 
 
-import com.google.gwt.user.client.Window;
 //import com.KuchaMapPrototyp6.client.popuppanels.HilfePanels;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -100,7 +99,6 @@ public class KuchaMapPrototyp {
 		return inhalt;
 	}
 	public void Start(){
-		Window.alert("in der start methode");
 		detailansicht.CreateDetailansicht();
 		kuchaDatabase.loadRegionen(true);
 
@@ -114,7 +112,6 @@ public class KuchaMapPrototyp {
 		environment.CreateEnvironment();
 		environment.CreateHeaderTop();
 		Home.getRootLayoutPanel().add(mainPanel);
-		Window.alert("pannel geaddet");
 		mainPanel.add(inhalt);
 		mainPanel.setSize("100%", "100%");
 		inhalt.addStyleName("inhalt");

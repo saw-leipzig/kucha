@@ -10,7 +10,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -70,11 +69,9 @@ public class HoehleErstellenPanel extends DialogBox{
 
 				@Override
 				public void onSuccess(ArrayList<HoehlenContainer> result) {
-					Window.alert("die groeﬂe des ergebnisses ist : " + Integer.toString(result.size()));
+					
 					for (int i = 0;i< result.size(); i++) {
-						Window.alert("gefundene Hoehle mit ID" + Integer.toString(result.get(i).getID()) +"und regionsID: "+ Integer.toString( result.get(i).getRegionID()));
 						HoehlenContainerList.add(result.get(i));
-						Window.alert("added eine Hoehle zum Store");
 					}
 					
 				}

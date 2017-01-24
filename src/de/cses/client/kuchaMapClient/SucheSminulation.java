@@ -16,7 +16,6 @@ package de.cses.client.kuchaMapClient;
 import java.util.ArrayList;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import de.cses.client.DatabaseService;
@@ -57,7 +56,7 @@ public static void sucheSimulation(String eingabe){
 		ornamentArrayList.add(randomOrnaments.get(i));
 			}
 			suche.setOrnamentArrayList(ornamentArrayList);
-			Window.alert("ornaments arraylist size: "+ Integer.toString(ornamentArrayList.size()));
+			
 			suche.findRelatedCavesbyOrnament(ornamentArrayList);
 		}
 			
@@ -76,7 +75,6 @@ public static void sucheSimulation(String eingabe){
 		caveArrayList.add(hoehlenContainerArrayList.get(i));
 		}
 		suche.setCaveArrayList(caveArrayList);
-		Window.alert("random caves arraylist size: "+ Integer.toString(caveArrayList.size()));
 		suche.findRelatedCaves(caveArrayList);
 		}
 	});
@@ -93,7 +91,6 @@ public static void sucheSimulation(String eingabe){
 		districtArrayList.add(hoehlenContainerArrayList.get(i));
 		}
 		suche.setDistrictArrayList(districtArrayList);
-		Window.alert("district arraylist size: "+Integer.toString(districtArrayList.size()));
 		suche.findRelatedCavesbyDistrict(districtArrayList);
 		}
 	});
@@ -110,7 +107,6 @@ public static void sucheSimulation(String eingabe){
 		caveTypeArrayList.add(hoehlenContainerArrayList.get(i));
 		}
 		suche.setCaveTypeArrayList(caveTypeArrayList);
-		Window.alert("cavetypearraylist size: "+Integer.toString( caveTypeArrayList.size()));
 		suche.findRelatedCavesbyCaveType(caveTypeArrayList);
 		}
 	});

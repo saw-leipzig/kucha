@@ -2,7 +2,6 @@ package de.cses.client.kuchaMapClient;
 
 
 
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.ScrollPanel;

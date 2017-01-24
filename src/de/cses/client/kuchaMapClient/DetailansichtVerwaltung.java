@@ -5,9 +5,7 @@ import java.util.ArrayList;
 
 
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Image;
 import com.sencha.gxt.widget.core.client.container.SimpleContainer;
 
@@ -134,7 +132,6 @@ public class DetailansichtVerwaltung{
 			aktiveRegion = region;
 		}
 		public void loadRegion(){
-			Window.alert("load regionen wird ausgefuehrt");
 			kuchaDatabase.loadRegionen(false);
 			/*fotoAbsolutePanel.clear();
 			Window.alert(aktiveRegion.getFoto());

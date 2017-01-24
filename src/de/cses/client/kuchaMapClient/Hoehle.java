@@ -1,11 +1,7 @@
 package de.cses.client.kuchaMapClient;
 
 
-import com.google.gwt.user.client.ui.Button;
 import com.sencha.gxt.fx.client.Draggable;
-import com.sencha.gxt.widget.core.client.ModalPanel;
-import com.sencha.gxt.widget.core.client.container.Container;
-import com.sencha.gxt.widget.core.client.container.InsertContainer;
 import com.sencha.gxt.widget.core.client.container.SimpleContainer;
 
 import de.cses.client.kuchaMapPopupPanels.HoehlenUebersichtPopUpPanel;

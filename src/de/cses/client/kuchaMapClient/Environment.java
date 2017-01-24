@@ -13,7 +13,6 @@ import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -64,7 +63,7 @@ public class Environment implements ImageSelectorListener {
 	}
 	
 	public void iniEnvironment(){
-		suchenButton = new Button("Suchen");
+		suchenButton = new Button("Search");
 		resetSuche = new Button("Reset");
 		suche = Home.getKuchaMapPrototyp().getSuche();
 		
@@ -72,15 +71,9 @@ public class Environment implements ImageSelectorListener {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				Window.alert("ich bin in der click funktion");
+				
 				suche.search();
 				SucheSminulation.sucheSimulation(suchenBox.getText());
-				//suche.setCaveArrayList(SucheSminulation.caveArrayList);
-				Window.alert("cave array list gesettet ");
-				Window.alert(Integer.toString(SucheSminulation.caveArrayList.size()));
-				//suche.setCaveTypeArrayList(SucheSminulation.caveTypeArrayList);
-				//suche.setDistrictArrayList(SucheSminulation.districtArrayList);
-				//suche.setOrnamentArrayList(SucheSminulation.ornamentArrayList);
 			
 			}
 			
@@ -107,7 +100,7 @@ public class Environment implements ImageSelectorListener {
 		helpItem.setId("enable");
 		MenuItem helpItemDisable = new MenuItem("Disable Tipps");
 		helpItemDisable.setId("disable");
-		MenuItem regionenMenu = new MenuItem("Regionen");
+		MenuItem regionenMenu = new MenuItem("Sites");
 		editMenu.setToolTip("Enables to move caves");
 	
 		
@@ -121,13 +114,13 @@ public class Environment implements ImageSelectorListener {
 			 regionenItem.setId(Integer.toString(detailansichtVerwaltung.getRegionen().get(i).getID()));
 			 regionen.add(regionenItem);
 		 }
-		MenuItem startseiteitem = new MenuItem("Startseite");
+		MenuItem startseiteitem = new MenuItem("Main");
 		startseiteitem.setId("-1");
 		
 		goTo.add(startseiteitem);
 		goTo.add(regionenMenu);
 		MenuBarItem menugoto = new MenuBarItem("Go to..", goTo);
-		edit = new MenuBarItem("Edit district", editMenu);
+		edit = new MenuBarItem("Edit site", editMenu);
 		//MenuBarItem help = new MenuBarItem("Help", helpMenu);
 		menue.add(menugoto);
 		//menue.add(help);
@@ -287,7 +280,7 @@ public class Environment implements ImageSelectorListener {
 		    	for(int i = 0; i< loeschenListe.size(); i++){
 		    	kuchaDatabase.deleteHoehlebyID(loeschenListe.get(i));
 		    	}
-		    	Window.alert(Integer.toString(detailansichtVerwaltung.getaktiveRegion().getImageID()));
+		    	
 		    	kuchaDatabase.save(hoehlenContainerList, detailansichtVerwaltung.getaktiveRegion().getID(), detailansichtVerwaltung.getaktiveRegion().getHoehlenButtonsize(), detailansichtVerwaltung.getaktiveRegion().getImageID());
 		    
 		    }
