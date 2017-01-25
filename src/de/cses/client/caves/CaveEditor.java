@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
@@ -26,6 +28,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
@@ -44,6 +47,7 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -60,9 +64,9 @@ public class CaveEditor implements IsWidget {
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	private FramedPanel mainPanel;
 	private CaveEntry correspondingCaveEntry;
-	private AntechamberEntry correspondingAntechamberEntry;
-	private MainChamberEntry correspondingMainChamberEntry;
-	private BackAreaEntry correspondingBackAreaEntry;
+//	private AntechamberEntry correspondingAntechamberEntry;
+//	private MainChamberEntry correspondingMainChamberEntry;
+//	private BackAreaEntry correspondingBackAreaEntry;
 	private ComboBox<CaveTypeEntry> caveTypeSelection;
 	private CaveTypeProperties caveTypeProps;
 	private ListStore<CaveTypeEntry> caveTypeEntryList;
@@ -71,7 +75,6 @@ public class CaveEditor implements IsWidget {
 	private RegionProperties regionProps;
 	private ListStore<RegionEntry> regionEntryList;
 	private SiteProperties siteProps;
-	
 
 	private TextField officialNumberField;
 	private TextField officialNameField;
@@ -83,6 +86,11 @@ public class CaveEditor implements IsWidget {
 	private StoreFilter<RegionEntry> regionFilter;
 	private ComboBox<SiteEntry> siteSelection;
 	private StoreFilter<DistrictEntry> districtFilter;
+	protected Object siteEntryAccess;
+	private ArrayList<CaveEditorListener> listenerList;
+	private Label siteDisplay;
+	private TextField alterationDateField;
+	private TextArea findingsTextArea;
 
 	interface CaveTypeProperties extends PropertyAccess<CaveTypeEntry> {
 		ModelKeyProvider<CaveTypeEntry> caveTypeID();
@@ -110,8 +118,11 @@ public class CaveEditor implements IsWidget {
 	}
 	
 	interface RegionViewTemplates extends XTemplates {
-		@XTemplate("<div>{phoneticName} ({englishName})</div>")
-		SafeHtml regionLabel(String phoneticName, String englishName);
+		@XTemplate("<div>{phoneticName} ({originalName} / {englishName})</div>")
+		SafeHtml regionLabel(String phoneticName, String originalName, String englishName);
+		
+		@XTemplate("<div>{englishName}</div>")
+		SafeHtml regionLabel(String englishName);
 	}
 	
 	interface SiteProperties extends PropertyAccess<SiteEntry> {
@@ -129,17 +140,33 @@ public class CaveEditor implements IsWidget {
 		SafeHtml image(SafeUri imageUri, String title);
 	}
 
-	public CaveEditor(int caveID) {
-		super();
-
-		if (caveID == 0) {
-			createCorrespondingCaveEntry();
+	public CaveEditor(CaveEntry caveEntry, CaveEditorListener listener) {
+		if (caveEntry == null) {
+			createNewCaveEntry();
 		} else {
-			loadCorrespondingEntries(caveID);
+			correspondingCaveEntry = caveEntry;
 		}
-		
+		listenerList = new ArrayList<CaveEditorListener>();
+		listenerList.add(listener);
 		caveTypeProps = GWT.create(CaveTypeProperties.class);
 		caveTypeEntryList = new ListStore<CaveTypeEntry>(caveTypeProps.caveTypeID());
+		siteProps = GWT.create(SiteProperties.class);
+		siteEntryList = new ListStore<SiteEntry>(siteProps.siteID());
+		regionProps = GWT.create(RegionProperties.class);
+		regionEntryList = new ListStore<RegionEntry>(regionProps.regionID());
+		districtProps = GWT.create(DistrictProperties.class);
+		districtEntryList = new ListStore<DistrictEntry>(districtProps.districtID());
+		initPanel();
+		loadCaveTypes();
+		loadDistricts();
+		loadRegions();
+		loadSites();
+	}
+
+	/**
+	 * 
+	 */
+	private void loadCaveTypes() {
 		dbService.getCaveTypes(new AsyncCallback<ArrayList<CaveTypeEntry>>() {
 
 			@Override
@@ -153,20 +180,11 @@ public class CaveEditor implements IsWidget {
 				for (CaveTypeEntry pe : result) {
 					caveTypeEntryList.add(pe);
 				}
+				if (correspondingCaveEntry.getCaveTypeID() > 0) {
+					caveTypeSelection.setValue(caveTypeEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getCaveTypeID())));
+				}
 			}
 		});
-		
-		districtProps = GWT.create(DistrictProperties.class);
-		districtEntryList = new ListStore<DistrictEntry>(districtProps.districtID());
-		loadDistricts();
-		
-		regionProps = GWT.create(RegionProperties.class);
-		regionEntryList = new ListStore<RegionEntry>(regionProps.regionID());
-		loadRegions();
-		
-		siteProps = GWT.create(SiteProperties.class);
-		siteEntryList = new ListStore<SiteEntry>(siteProps.siteID());
-		loadSites();
 	}
 
 	/**
@@ -190,7 +208,7 @@ public class CaveEditor implements IsWidget {
 		});
 	}
 
-	/**
+	/* 
 	 * 
 	 */
 	private void loadRegions() {
@@ -207,17 +225,11 @@ public class CaveEditor implements IsWidget {
 				for (RegionEntry re : result) {
 					regionEntryList.add(re);
 				}
+				if (correspondingCaveEntry.getRegionID() > 0) {
+					regionSelection.setValue(regionEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getRegionID())));
+				}
 			}
 		});
-		regionFilter = new StoreFilter<RegionEntry>() {
-
-			@Override
-			public boolean select(Store<RegionEntry> store, RegionEntry parent, RegionEntry item) {
-				return (item.getSiteID() == siteSelection.getCurrentValue().getSiteID());
-			}
-		};
-		regionEntryList.addFilter(regionFilter);
-		regionEntryList.setEnableFilters(true);
 	}
 
 	/**
@@ -237,88 +249,38 @@ public class CaveEditor implements IsWidget {
 				for (DistrictEntry de : result) {
 					districtEntryList.add(de);
 				}
+				if (correspondingCaveEntry.getDistrictID() > 0) {
+					DistrictEntry de = districtEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getDistrictID()));
+					districtSelection.setValue(de);
+					dbService.getSite(de.getSiteID(), new AsyncCallback<SiteEntry>() {
+
+						@Override
+						public void onFailure(Throwable caught) {
+							caught.printStackTrace(System.err);
+						}
+
+						@Override
+						public void onSuccess(SiteEntry result) {
+							siteDisplay.setText(result.getName());
+						}
+					});
+					
+				}
 			}
 		});
-		districtFilter = new StoreFilter<DistrictEntry>() {
-
-			@Override
-			public boolean select(Store<DistrictEntry> store, DistrictEntry parent, DistrictEntry item) {
-				return (item.getSiteID() == siteSelection.getCurrentValue().getSiteID());
-			}
-			
-		};
-		districtEntryList.addFilter(districtFilter);
-		districtEntryList.setEnableFilters(true);
-	}
-
-	/**
-	 * @param caveID
-	 */
-	private void loadCorrespondingEntries(int id) {
-		dbService.getCaveEntry(id, new AsyncCallback<CaveEntry>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				correspondingCaveEntry = null;
-			}
-
-			@Override
-			public void onSuccess(CaveEntry result) {
-				correspondingCaveEntry = result;
-			}
-		});
-		
-		dbService.getAntechamberEntry(id, new AsyncCallback<AntechamberEntry>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				correspondingAntechamberEntry = null;
-			}
-
-			@Override
-			public void onSuccess(AntechamberEntry result) {
-				correspondingAntechamberEntry = result;
-			}
-		});
-		
-		dbService.getMainChamberEntry(id, new AsyncCallback<MainChamberEntry>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				correspondingMainChamberEntry = null;
-			}
-
-			@Override
-			public void onSuccess(MainChamberEntry result) {
-				correspondingMainChamberEntry = result;
-			}
-		});
-		
-		dbService.getBackAreaEntry(id, new AsyncCallback<BackAreaEntry>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				correspondingBackAreaEntry = null;
-			}
-
-			@Override
-			public void onSuccess(BackAreaEntry result) {
-				correspondingBackAreaEntry = result;
-			}
-		});
-		
 	}
 
 	/**
 	 * 
 	 */
-	private void createCorrespondingCaveEntry() {
+	private void createNewCaveEntry() {
 		correspondingCaveEntry = new CaveEntry(0, "enter official cave number", "enter official cave name", "optional historic name", 0, 0,
 				0, null, null, null, "enter findings here", null);
 	}
 
 	@Override
 	public Widget asWidget() {
+		Info.display("asWidget", "called");
 		if (mainPanel == null) {
 			initPanel();
 		}
@@ -340,6 +302,13 @@ public class CaveEditor implements IsWidget {
 		officialNumberField = new TextField();
 		officialNumberField.setAllowBlank(false);
 		officialNumberField.setValue(correspondingCaveEntry.getOfficialNumber());
+		officialNumberField.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				correspondingCaveEntry.setOfficialNumber(event.getValue());
+			}
+		});
 		attributePanel.add(officialNumberField);
 		vPanel.add(attributePanel);
 
@@ -347,6 +316,13 @@ public class CaveEditor implements IsWidget {
 		attributePanel.setHeading("Official Name");
 		officialNameField = new TextField();
 		officialNameField.setValue(correspondingCaveEntry.getOfficialName());
+		officialNameField.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				correspondingCaveEntry.setOfficialName(event.getValue());
+			}
+		});
 		attributePanel.add(officialNameField);
 		vPanel.add(attributePanel);
 
@@ -354,66 +330,67 @@ public class CaveEditor implements IsWidget {
 		attributePanel.setHeading("Historic Name");
 		historicNameField = new TextField();
 		historicNameField.setValue(correspondingCaveEntry.getHistoricName());
+		historicNameField.addValueChangeHandler(new ValueChangeHandler<String>() {
+			
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				correspondingCaveEntry.setHistoricName(event.getValue());
+			}
+		});
 		attributePanel.add(historicNameField);
 		vPanel.add(attributePanel);
 		
 		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Cave Type");
-		caveTypeSelection = new ComboBox<CaveTypeEntry>(caveTypeEntryList, caveTypeProps.nameEN(),
-				new AbstractSafeHtmlRenderer<CaveTypeEntry>() {
-
-					@Override
-					public SafeHtml render(CaveTypeEntry item) {
-						final CaveTypeViewTemplates ctvTemplates = GWT.create(CaveTypeViewTemplates.class);
-						return ctvTemplates.caveTypeLabel(item.getNameEN());
-					}
-				});
-		caveTypeSelection.setEmptyText("select cave type");
-		caveTypeSelection.setTypeAhead(false);
-		caveTypeSelection.setEditable(false);
-		caveTypeSelection.setTriggerAction(TriggerAction.ALL);
-		caveTypeSelection.addSelectionHandler(new SelectionHandler<CaveTypeEntry>() {
-			
-			@Override
-			public void onSelection(SelectionEvent<CaveTypeEntry> event) {
-				correspondingCaveEntry.setCaveTypeID(event.getSelectedItem().getCaveTypeID());
-			}
-		});
-		if (correspondingCaveEntry.getCaveTypeID() > 0) {
-			caveTypeSelection.select(caveTypeEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getCaveTypeID())));
-		}
-		caveTypeSelection.setWidth(250);
-		attributePanel.add(caveTypeSelection);
-		vPanel.add(attributePanel);
-		
-		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Site");
-		siteSelection = new ComboBox<SiteEntry>(siteEntryList, siteProps.name(), 
-				new AbstractSafeHtmlRenderer<SiteEntry>() {
+		if (correspondingCaveEntry.getCaveID() > 0) {
+			siteDisplay = new Label();
+			siteDisplay.setWidth("20em");
+			attributePanel.add(siteDisplay);
+		} else {
+			siteSelection = new ComboBox<SiteEntry>(siteEntryList, siteProps.name(), 
+					new AbstractSafeHtmlRenderer<SiteEntry>() {
 
-					@Override
-					public SafeHtml render(SiteEntry item) {
-						final SiteViewTemplates svTemplates = GWT.create(SiteViewTemplates.class);
-						return svTemplates.siteLabel(item.getName());
-					}
-				});
-		siteSelection.setEmptyText("select site");
-		siteSelection.setTypeAhead(false);
-		siteSelection.setEditable(false);
-		siteSelection.setTriggerAction(TriggerAction.ALL);
-		siteSelection.addSelectionHandler(new SelectionHandler<SiteEntry>() {
+						@Override
+						public SafeHtml render(SiteEntry item) {
+							final SiteViewTemplates svTemplates = GWT.create(SiteViewTemplates.class);
+							return svTemplates.siteLabel(item.getName());
+						}
+					});
+			siteSelection.setEmptyText("select site");
+			siteSelection.setTypeAhead(false);
+			siteSelection.setEditable(false);
+			siteSelection.setTriggerAction(TriggerAction.ALL);
+			siteSelection.addSelectionHandler(new SelectionHandler<SiteEntry>() {
 
-			@Override
-			public void onSelection(SelectionEvent<SiteEntry> event) {
-				districtEntryList.setEnableFilters(true);
-				regionEntryList.setEnableFilters(true);
-			}
-		});
-		if (correspondingCaveEntry.getDistrictID() > 0) {
-			siteSelection.select(districtEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getDistrictID())).getSiteID());			
+				@Override
+				public void onSelection(SelectionEvent<SiteEntry> event) {
+					regionFilter = new StoreFilter<RegionEntry>() {
+
+						@Override
+						public boolean select(Store<RegionEntry> store, RegionEntry parent, RegionEntry item) {
+							return (item.getSiteID() == siteSelection.getCurrentValue().getSiteID());
+						}
+					};
+					regionEntryList.addFilter(regionFilter);
+					regionEntryList.setEnableFilters(true);
+					regionSelection.setEnabled(true);
+					districtFilter = new StoreFilter<DistrictEntry>() {
+
+						@Override
+						public boolean select(Store<DistrictEntry> store, DistrictEntry parent, DistrictEntry item) {
+							return (item.getSiteID() == siteSelection.getCurrentValue().getSiteID());
+						}
+
+					};
+					districtEntryList.addFilter(districtFilter);
+					districtEntryList.setEnableFilters(true);
+					districtEntryList.setEnableFilters(true);
+					districtSelection.setEnabled(true);
+				}
+			});
+			siteSelection.setWidth(250);
+			attributePanel.add(siteSelection);			
 		}
-		siteSelection.setWidth(250);
-		attributePanel.add(siteSelection);
 		vPanel.add(attributePanel);		
 
 		attributePanel = new FramedPanel();
@@ -438,10 +415,10 @@ public class CaveEditor implements IsWidget {
 				correspondingCaveEntry.setDistrictID(event.getSelectedItem().getDistrictID());
 			}
 		});
-		if (correspondingCaveEntry.getDistrictID() > 0) {
-			districtSelection.select(districtEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getDistrictID())));
-		}
 		districtSelection.setWidth(250);
+		if (correspondingCaveEntry.getCaveID() == 0) {
+			districtSelection.setEnabled(false);
+		}
 		attributePanel.add(districtSelection);
 		vPanel.add(attributePanel);
 
@@ -453,7 +430,11 @@ public class CaveEditor implements IsWidget {
 					@Override
 					public SafeHtml render(RegionEntry item) {
 						final RegionViewTemplates rvTemplates = GWT.create(RegionViewTemplates.class);
-						return rvTemplates.regionLabel(item.getPhoneticName(), item.getEnglishName());
+						if (!item.getPhoneticName().isEmpty() && !item.getOriginalName().isEmpty()) {
+							return rvTemplates.regionLabel(item.getPhoneticName(), item.getOriginalName(), item.getEnglishName());
+						} else {
+							return rvTemplates.regionLabel(item.getEnglishName());
+						}
 					}
 				});
 		regionSelection.setEmptyText("select region");
@@ -467,27 +448,97 @@ public class CaveEditor implements IsWidget {
 				correspondingCaveEntry.setRegionID(event.getSelectedItem().getRegionID());
 			}
 		});
-		if (correspondingCaveEntry.getRegionID() > 0) {
-			regionSelection.select(regionEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getRegionID())));
-		}
 		regionSelection.setWidth(250);
+		if (correspondingCaveEntry.getCaveID() == 0) {
+			regionSelection.setEnabled(false);
+		}
 		attributePanel.add(regionSelection);
 		vPanel.add(attributePanel);
+		
+		attributePanel = new FramedPanel();
+		attributePanel.setHeading("Alteration date");
+		alterationDateField = new TextField();
+		alterationDateField.setValue(correspondingCaveEntry.getAlterationDate());
+		alterationDateField.addValueChangeHandler(new ValueChangeHandler<String>() {
 
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				correspondingCaveEntry.setAlterationDate(event.getValue());
+			}
+		});
+		alterationDateField.setWidth("250px");
+		attributePanel.add(alterationDateField);
+		vPanel.add(attributePanel);
+
+		hPanel.add(vPanel);
+		vPanel = new VerticalPanel();
+		
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("State of Preservation");
 		stateOfPreservationTextArea = new TextArea();
 		stateOfPreservationTextArea.setValue(correspondingCaveEntry.getStateOfPerservation());
+		stateOfPreservationTextArea.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				correspondingCaveEntry.setStateOfPerservation(event.getValue());
+			}
+		});
+		stateOfPreservationTextArea.setSize("250px", "200px");
 		attributePanel.add(stateOfPreservationTextArea);
 		vPanel.add(attributePanel);
 		
+		attributePanel = new FramedPanel();
+		attributePanel.setHeading("Findings");
+		findingsTextArea = new TextArea();
+		findingsTextArea.setValue(correspondingCaveEntry.getFindings());
+		findingsTextArea.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				correspondingCaveEntry.setFindings(event.getValue());
+			}
+		});
+		findingsTextArea.setSize("250px", "350px");
+		attributePanel.add(findingsTextArea);
+		vPanel.add(attributePanel);
+		
 		hPanel.add(vPanel);
+		vPanel = new VerticalPanel();
+
+		attributePanel = new FramedPanel();
+		attributePanel.setHeading("Cave Type");
+		caveTypeSelection = new ComboBox<CaveTypeEntry>(caveTypeEntryList, caveTypeProps.nameEN(),
+				new AbstractSafeHtmlRenderer<CaveTypeEntry>() {
+
+					@Override
+					public SafeHtml render(CaveTypeEntry item) {
+						final CaveTypeViewTemplates ctvTemplates = GWT.create(CaveTypeViewTemplates.class);
+						return ctvTemplates.caveTypeLabel(item.getNameEN());
+					}
+				});
+		caveTypeSelection.setEmptyText("select cave type");
+		caveTypeSelection.setTypeAhead(false);
+		caveTypeSelection.setEditable(false);
+		caveTypeSelection.setTriggerAction(TriggerAction.ALL);
+		caveTypeSelection.addSelectionHandler(new SelectionHandler<CaveTypeEntry>() {
+			
+			@Override
+			public void onSelection(SelectionEvent<CaveTypeEntry> event) {
+				correspondingCaveEntry.setCaveTypeID(event.getSelectedItem().getCaveTypeID());
+			}
+		});
+		caveTypeSelection.setWidth(250);
+		attributePanel.add(caveTypeSelection);
+		vPanel.add(attributePanel);
 		
 		final ImageViewTemplates imageViewTemplates = GWT.create(ImageViewTemplates.class);	
 		SafeUri imageUri = UriUtils.fromString("infosystem/images?background=centralPillarCave.jpeg");
 		FlowLayoutContainer imageContainer = new FlowLayoutContainer();
 		imageContainer.add(new HTMLPanel(imageViewTemplates.image(imageUri, "Central Pillar Cave")));
-		hPanel.add(imageContainer);
+		vPanel.add(imageContainer);
+		
+		hPanel.add(vPanel);
 
 		mainPanel.add(hPanel);
 		
@@ -514,16 +565,46 @@ public class CaveEditor implements IsWidget {
 	 * 
 	 */
 	protected void cancelCaveEditor() {
-		// TODO Auto-generated method stub
-		
+		for (CaveEditorListener l : listenerList) {
+			l.closeRequest();
+		}
 	}
 
 	/**
 	 * 
 	 */
 	protected void saveEntries() {
-		// TODO Auto-generated method stub
-		
+		if (correspondingCaveEntry.getCaveID() > 0) {
+			dbService.updateEntry(correspondingCaveEntry.getUpdateSql(), new AsyncCallback<Boolean>() {
+
+				@Override
+				public void onFailure(Throwable caught) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void onSuccess(Boolean result) {
+					// TODO Auto-generated method stub
+					
+				}
+			});
+		} else { // then its 0 and we need to create a new entry
+			dbService.insertEntry(correspondingCaveEntry.getInsertSql(), new AsyncCallback<Integer>() {
+
+				@Override
+				public void onFailure(Throwable caught) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void onSuccess(Integer result) {
+					correspondingCaveEntry.setCaveID(result);
+				}
+			});
+		}
+		cancelCaveEditor();
 	}
 
 }

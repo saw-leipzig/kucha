@@ -46,14 +46,6 @@ import de.cses.shared.VendorEntry;
 @SuppressWarnings("serial")
 public class DatabaseServiceImpl extends RemoteServiceServlet implements DatabaseService {
 
-//	public String dbServer(String name) throws IllegalArgumentException {
-//
-//		MysqlConnector connector = MysqlConnector.getInstance();
-//		System.err.println("looking for " + name + " in database");
-//		String result = name + " is " + connector.getTestTable().get(name) + " years old!";
-//		return result;
-//	}
-
 	public ArrayList<DistrictEntry> getDistricts() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		ArrayList<DistrictEntry> districts = connector.getDistricts();
@@ -290,6 +282,15 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public ArrayList<SiteEntry> getSites() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getSites();
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#getSite(int)
+	 */
+	@Override
+	public SiteEntry getSite(int id) {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getSite(id);
 	}
 
 }

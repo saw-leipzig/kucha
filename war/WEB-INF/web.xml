@@ -7,16 +7,6 @@
 
   <!-- Servlets -->
   <servlet>
-    <servlet-name>greetServlet</servlet-name>
-    <servlet-class>de.cses.server.GreetingServiceImpl</servlet-class>
-  </servlet>
-  
-  <servlet-mapping>
-    <servlet-name>greetServlet</servlet-name>
-    <url-pattern>/infosystem/greet</url-pattern>
-  </servlet-mapping>
-  
-  <servlet>
     <servlet-name>dbServlet</servlet-name>
     <servlet-class>de.cses.server.DatabaseServiceImpl</servlet-class>
   </servlet>
@@ -54,7 +44,7 @@
   
   <!-- Default page to serve -->
   <welcome-file-list>
-    <welcome-file>TestApplication.html</welcome-file>
+    <welcome-file>KuchaApplication.html</welcome-file>
   </welcome-file-list>
 
 </web-app>

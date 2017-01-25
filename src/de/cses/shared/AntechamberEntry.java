@@ -20,8 +20,7 @@ public class AntechamberEntry implements IsSerializable{
 	private int antechamberID, frontWallID, leftWallID, rightWallID, rearWallID;
 	private double height, width, depth;
 	
-	public AntechamberEntry(){
-		
+	public AntechamberEntry() {
 	}
 
 	public AntechamberEntry(int antechamberID, int frontWallID, int leftWallID, int rightWallID, int rearWallID, double height,

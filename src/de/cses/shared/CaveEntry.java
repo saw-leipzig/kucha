@@ -24,8 +24,9 @@ public class CaveEntry implements IsSerializable {
 	private String pedestals;
 	private String findings;
 	private String alterationDate;
-	
-	
+	private AntechamberEntry antechamberEntry = null;
+	private MainChamberEntry mainChamberEntry = null;
+	private BackAreaEntry backAreaEntry = null;	
 
 	public CaveEntry() {
 	}
@@ -143,6 +144,62 @@ public class CaveEntry implements IsSerializable {
 		this.alterationDate = alterationDate;
 	}
 
+	/**
+	 * @return the antechamberEntry
+	 */
+	public AntechamberEntry getAntechamberEntry() {
+		return antechamberEntry;
+	}
+
+	/**
+	 * @param antechamberEntry the antechamberEntry to set
+	 */
+	public void setAntechamberEntry(AntechamberEntry antechamberEntry) {
+		this.antechamberEntry = antechamberEntry;
+	}
+
+	/**
+	 * @return the mainChamberEntry
+	 */
+	public MainChamberEntry getMainChamberEntry() {
+		return mainChamberEntry;
+	}
+
+	/**
+	 * @param mainChamberEntry the mainChamberEntry to set
+	 */
+	public void setMainChamberEntry(MainChamberEntry mainChamberEntry) {
+		this.mainChamberEntry = mainChamberEntry;
+	}
+
+	/**
+	 * @return the backAreaEntry
+	 */
+	public BackAreaEntry getBackAreaEntry() {
+		return backAreaEntry;
+	}
+
+	/**
+	 * @param backAreaEntry the backAreaEntry to set
+	 */
+	public void setBackAreaEntry(BackAreaEntry backAreaEntry) {
+		this.backAreaEntry = backAreaEntry;
+	}
+
+	/*
+	 * ATTENTION: Orientation is currently not inlcuded!!
+	 */
+	public String getInsertSql() {		
+		return "INSERT INTO Caves (OfficialNumber,OfficialName,HistoricName,CaveTypeID,DistrictID,RegionID,StateOfPreservation,Pedestals,Findings,AlterationDate) VALUES "
+				+ "('" + officialNumber + "','" + officialName + "','" + historicName + "'," + caveTypeID + "," + districtID + "," + regionID + ",'" + stateOfPerservation + "',"
+				+ pedestals + ",'" + findings + "','" + alterationDate + "')";
+	}
+
+	public String getUpdateSql() {
+		return "UPDATE Caves SET OfficialNumber='" + officialNumber + "', OfficialName='" + officialName + "', HistoricName='" + historicName
+				+ "', CaveTypeID=" + caveTypeID + ", DistrictID=" + districtID + ", RegionID=" + regionID + ", StateOfPreservation='" + stateOfPerservation
+				+ "', Pedestals=" + pedestals + ", Findings='" + findings + "', AlterationDate='" + alterationDate + "' WHERE CaveID=" + caveID;
+	}
 
 
 }

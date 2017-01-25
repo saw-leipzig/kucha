@@ -7,7 +7,7 @@
 	<property name="enable.debug.port" value="false" />
 
 	<property name="target.java.version" value="1.7" />
-	<property name="main.class" value="de.cses.Testapplication" />
+	<property name="main.class" value="de.cses.KuchaApplication" />
 	<path id="gwt.class.path">
 		<pathelement location="${GWT_HOME}/gwt-servlet.jar" />
 		<pathelement location="${GWT_HOME}/gwt-user.jar" />
@@ -36,7 +36,7 @@
 	<target name="war" depends="compile-servlets,gwtc">
 		<available file="war/infosystem/infosystem.nocache.js" property="gwt_compiled" />
 		<fail unless="gwt_compiled">GWT must be compiled first!</fail>
-		<zip destfile="testapplication.war">
+		<zip destfile="kis.war">
 			<zipfileset dir="war" />
 			<zipfileset dir="${GWT_HOME}" includes="gwt-servlet.jar" prefix="WEB-INF/lib/" />
 		</zip>

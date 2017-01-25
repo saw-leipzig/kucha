@@ -40,8 +40,6 @@ import de.cses.shared.VendorEntry;
 
 public interface DatabaseServiceAsync {
 
-//	void dbServer(String name, AsyncCallback<String> callback) throws IllegalArgumentException;
-
 	void getDistricts(AsyncCallback<ArrayList<DistrictEntry>> callback) throws IllegalArgumentException;
 
 	void getImage(int imageID, AsyncCallback<ImageEntry> callback) throws IllegalArgumentException;
@@ -105,4 +103,5 @@ public interface DatabaseServiceAsync {
 
 	void getSites(AsyncCallback<ArrayList<SiteEntry>> asyncCallback) throws IllegalArgumentException;
 	
+	void getSite(int id, AsyncCallback<SiteEntry> asyncCallback) throws IllegalArgumentException;
 }

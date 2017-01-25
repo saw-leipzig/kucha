@@ -22,12 +22,12 @@
   <inherits name='com.sencha.gxt.chart.Chart' />
   
   <!-- GXT Stylesheet                                             -->
-  <stylesheet src="/TestApplication.css"/>
+  <stylesheet src="/KuchaApplication.css"/>
   
   <set-configuration-property name="CssResource.legacy" value="true" />
 
   <!-- Specify the app entry point class.                         -->
-  <entry-point class='de.cses.client.TestApplication'/>
+  <entry-point class='de.cses.client.KuchaApplication'/>
 
   <!-- Specify the paths for translatable code                    -->
   <source path='client'/>

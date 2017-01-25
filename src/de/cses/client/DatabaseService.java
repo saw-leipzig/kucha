@@ -109,4 +109,6 @@ public interface DatabaseService extends RemoteService {
 
 	ArrayList<SiteEntry> getSites() throws IllegalArgumentException;
 
+	SiteEntry getSite(int id);
+
 }

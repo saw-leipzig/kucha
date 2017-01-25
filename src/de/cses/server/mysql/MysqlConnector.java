@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 
+ * Copyright 2016-2017 
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -19,14 +19,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Hashtable;
 
 import de.cses.shared.AntechamberEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.BackAreaEntry;
 import de.cses.shared.CaveEntry;
-import de.cses.shared.DepictionEntry;
 import de.cses.shared.CaveTypeEntry;
+import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
@@ -80,7 +79,6 @@ public class MysqlConnector {
 		try {
 			Class.forName("org.mariadb.jdbc.Driver"); //$NON-NLS-1$
 			connection = DriverManager.getConnection(MysqlConnector.url, MysqlConnector.user, MysqlConnector.password);
-			System.err.println("MysqlConnector() init");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
@@ -96,49 +94,8 @@ public class MysqlConnector {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		System.err.println("getConnection() called");
 		return connection;
 	}
-
-//	/**
-//	 * This is a test method that can be used for testing purpose only. Likely to
-//	 * disappear in later versions!
-//	 * 
-//	 * @return
-//	 */
-//	public synchronized Hashtable<String, String> getTestTable() {
-//
-//		Connection dbc = getConnection();
-//		Statement stmt;
-//		try {
-//			stmt = dbc.createStatement();
-//
-//			String sql = "SELECT * FROM test"; //$NON-NLS-1$
-//
-//			ResultSet rs = stmt.executeQuery(sql);
-//
-//			Hashtable<String, String> results = new Hashtable<String, String>();
-//
-//			String name, age;
-//			while (rs.next()) {
-//				name = rs.getString("Name"); //$NON-NLS-1$
-//				age = rs.getString("Age"); //$NON-NLS-1$
-//				results.put(name, age);
-//				System.err.println("(" + name + "," + age + ") read from database"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-//			}
-//
-//			rs.close();
-//			stmt.close();
-//			dbc.close();
-//			System.err.println("Database request finished"); //$NON-NLS-1$
-//			return results;
-//
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		}
-//
-//		return null;
-//	}
 
 	/**
 	 * Selects all districts from the table 'Districts' in the database
@@ -158,7 +115,6 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -185,7 +141,6 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -211,12 +166,9 @@ public class MysqlConnector {
 				// in case
 				// we have requested multiple new entries. works for the moment
 				generatedKey = keys.getInt(1);
-				System.err.println("result key " + generatedKey);
 			}
 			keys.close();
 			stmt.close();
-//			dbc.close();
-			System.err.println("Database request finished"); //$NON-NLS-1$
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -243,12 +195,9 @@ public class MysqlConnector {
 				// in case
 				// we have requested multiple new entries. works for the moment
 				generatedKey = keys.getInt(1);
-				System.err.println("result key " + generatedKey);
 			}
 			keys.close();
 			stmt.close();
-//			dbc.close();
-			System.err.println("Database request finished"); //$NON-NLS-1$
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -270,7 +219,6 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			stmt.executeUpdate(sqlUpdate);
 			stmt.close();
-//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
@@ -293,7 +241,6 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			stmt.execute(sqlDelete);
 			stmt.close();
-//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
@@ -318,7 +265,6 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -343,7 +289,6 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -367,7 +312,6 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -388,7 +332,6 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -414,7 +357,6 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -438,7 +380,6 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -450,19 +391,21 @@ public class MysqlConnector {
 		ArrayList<CaveEntry> results = new ArrayList<CaveEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
-		System.err.println("getCaves() called");
 		try {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Caves");
 			while (rs.next()) {
-				results.add(new CaveEntry(rs.getInt("CaveID"), rs.getString("OfficialNumber"), rs.getString("OfficialName"),
+				CaveEntry ce = new CaveEntry(rs.getInt("CaveID"), rs.getString("OfficialNumber"), rs.getString("OfficialName"),
 						rs.getString("HistoricName"), rs.getInt("CaveTypeID"), rs.getInt("DistrictID"), rs.getInt("RegionID"),
 						rs.getString("StateOfPreservation"), rs.getString("Orientation"), rs.getString("Pedestals"), rs.getString("Findings"),
-						rs.getString("AlterationDate")));
+						rs.getString("AlterationDate"));
+				ce.setAntechamberEntry(getAntechamberEntry(ce.getCaveID()));
+				ce.setMainChamberEntry(getMainChamber(ce.getCaveID()));
+				ce.setBackAreaEntry(getBackArea(ce.getCaveID()));
+				results.add(ce);
 			}
 			rs.close();
 			stmt.close();
-//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -485,7 +428,6 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -509,7 +451,6 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -529,7 +470,6 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -549,7 +489,6 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -569,7 +508,6 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -577,7 +515,6 @@ public class MysqlConnector {
 	}
 
 	public ArrayList<CaveTypeEntry> getCaveTypes() {
-		System.err.println("IN METHODE DRIN");
 		Connection dbc = getConnection();
 		ArrayList<CaveTypeEntry> results = new ArrayList<CaveTypeEntry>();
 		Statement stmt;
@@ -585,16 +522,13 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM CaveType");
 			while (rs.next()) {
-				System.err.println("cave type gefunden");
 				CaveTypeEntry caveType = new CaveTypeEntry(rs.getInt("CaveTypeID"), rs.getString("NameEN"),
 						rs.getString("DescriptionEN"));
 				results.add(caveType);
 			}
 			rs.close();
 			stmt.close();
-//			dbc.close();
 		} catch (SQLException e) {
-			System.err.println("error in db zugriff");
 			e.printStackTrace();
 			return results;
 		}
@@ -603,8 +537,6 @@ public class MysqlConnector {
 	}
 
 	public synchronized boolean saveOrnamentEntry(OrnamentEntry ornamentEntry) {
-		System.err.println("reached saving function");
-
 		Connection dbc = getConnection();
 		Statement stmt;
 		try {
@@ -617,7 +549,6 @@ public class MysqlConnector {
 			while (rs.next()) {
 				auto_increment_id = rs.getInt(1);
 			}
-			System.err.println("inserted into ornaments got autoid");
 			for (int i = 0; i < ornamentEntry.getCavesRelations().size(); i++) {
 				stmt = dbc.createStatement();
 				for (int j = 0; j < ornamentEntry.getCavesRelations().get(i).getRelatedOrnamentsRelationID().size(); j++) {
@@ -625,13 +556,11 @@ public class MysqlConnector {
 							+ auto_increment_id + "," + ornamentEntry.getCavesRelations().get(i).getRelatedOrnamentsRelationID().get(j) + ","
 							+ ornamentEntry.getCavesRelations().get(i).getCaveID() + ")");
 				}
-				System.err.println("inserted related ornaments");
 				for (int j = 0; j < ornamentEntry.getCavesRelations().get(i).getSimilarOrnamentsRelationID().size(); j++) {
 					rs = stmt.executeQuery("INSERT INTO SimilarOrnamentsRelation (OrnamentID1, OrnamentID2, CaveID) VALUES ("
 							+ auto_increment_id + "," + ornamentEntry.getCavesRelations().get(i).getSimilarOrnamentsRelationID().get(j) + ","
 							+ ornamentEntry.getCavesRelations().get(i).getCaveID() + ")");
 				}
-				System.err.println("inserted similar ornaments");
 				for (int j = 0; j < ornamentEntry.getCavesRelations().get(i).getOtherCulturalOrnamentsRelationID().size(); j++) {
 					rs = stmt.executeQuery(
 							"INSERT INTO OrnamentsOfOtherCulturesRelation (OrnamentID, OrnamentOfOtherCulturesID, CaveID) VALUES ("
@@ -639,7 +568,6 @@ public class MysqlConnector {
 									+ ornamentEntry.getCavesRelations().get(i).getOtherCulturalOrnamentsRelationID().get(j) + ","
 									+ ornamentEntry.getCavesRelations().get(i).getCaveID() + ")");
 				}
-				System.err.println("inserted ornaments of other cultures");
 				rs = stmt.executeQuery(
 						"INSERT INTO CaveOrnamentRelation (CaveID, OrnamentID, Style, Orientation, Structure, MainTypologicalClass, Colours, Position, Function, CavePart, Notes,GroupOfOrnaments) VALUES ("
 								+ ornamentEntry.getCavesRelations().get(i).getCaveID() + "," + auto_increment_id + ","
@@ -653,11 +581,9 @@ public class MysqlConnector {
 								+ ornamentEntry.getCavesRelations().get(i).getCavepart() + ","
 								+ ornamentEntry.getCavesRelations().get(i).getNotes() + "," + ornamentEntry.getCavesRelations().get(i).getGroup()
 								+ ")");
-				System.err.println("inserted cave relation");
 			}
 			rs.close();
 			stmt.close();
-//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
@@ -698,7 +624,6 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -739,7 +664,6 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -759,7 +683,6 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -779,7 +702,6 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -801,7 +723,6 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -825,7 +746,6 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -849,7 +769,6 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -875,7 +794,6 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -902,7 +820,6 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return 0;
@@ -933,7 +850,6 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -964,7 +880,6 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -993,7 +908,6 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -1011,13 +925,12 @@ public class MysqlConnector {
 		try {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Regions");
-			if (rs.first()) {
+			while (rs.next()) {
 				result.add(new RegionEntry(rs.getInt("RegionID"), rs.getString("PhoneticName"), rs.getString("OriginalName"),
 						rs.getString("EnglishName"), rs.getInt("SiteID")));
 			}
 			rs.close();
 			stmt.close();
-//			dbc.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -1040,7 +953,28 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
-//			dbc.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	/**
+	 * @param id
+	 * @return
+	 */
+	public SiteEntry getSite(int id) {
+		SiteEntry result = null;
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Sites WHERE SiteID=" + id);
+			if (rs.first()) {
+				result = new SiteEntry(rs.getInt("SiteID"), rs.getString("Name"), rs.getString("AlternativeName"));
+			}
+			rs.close();
+			stmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
