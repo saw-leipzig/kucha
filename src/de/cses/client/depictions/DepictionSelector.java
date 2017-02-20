@@ -11,36 +11,34 @@
  * You should have received a copy of the GPL v3 along with the software. 
  * If not, you can access it from here: <https://www.gnu.org/licenses/gpl-3.0.txt>.
  */
-package de.cses.client.caves;
+package de.cses.client.depictions;
 
 import java.util.ArrayList;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.sencha.gxt.cell.core.client.ButtonCell.ButtonScale;
-import com.sencha.gxt.widget.core.client.button.TextButton;
-import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.ui.AbstractFilter;
+import de.cses.client.ui.AbstractResultView;
 import de.cses.client.ui.AbstractSelector;
-import de.cses.shared.CaveEntry;
+import de.cses.shared.DepictionEntry;
 
 /**
  * @author alingnau
  *
  */
-public class CaveSelector extends AbstractSelector {
-	
+public class DepictionSelector extends AbstractSelector {
+
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 
 	/**
 	 * @param selectorTitle
-	 * @param caveResultView 
+	 * @param resultView
 	 */
-	public CaveSelector(String selectorTitle, CaveResultView caveResultView) {
-		super(selectorTitle, caveResultView);
+	public DepictionSelector(String selectorTitle, AbstractResultView resultView) {
+		super(selectorTitle, resultView);
 	}
 
 	/* (non-Javadoc)
@@ -50,7 +48,7 @@ public class CaveSelector extends AbstractSelector {
 	public void invokeSearch() {
 		ArrayList<String> sqlWhereClauses = new ArrayList<String>();
 		for (AbstractFilter filter : getRelatedFilter()) {
-			if (filter != null) {
+			if ((filter != null) && (filter.getSqlWhereClause() != null)) {
 				sqlWhereClauses.addAll(filter.getSqlWhereClause());
 			}
 		}
@@ -62,7 +60,7 @@ public class CaveSelector extends AbstractSelector {
 				sqlWhere = sqlWhere + " AND " + sqlWhereClauses.get(i);
 			}
 		}
-		dbService.getCaves(sqlWhere, new AsyncCallback<ArrayList<CaveEntry>>() {
+		dbService.getDepictions(sqlWhere, new AsyncCallback<ArrayList<DepictionEntry>>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
@@ -70,10 +68,10 @@ public class CaveSelector extends AbstractSelector {
 			}
 
 			@Override
-			public void onSuccess(ArrayList<CaveEntry> result) {
+			public void onSuccess(ArrayList<DepictionEntry> result) {
 				getResultView().reset();
-				for (CaveEntry ce : result) {
-					getResultView().addResult(new CaveView(ce));	
+				for (DepictionEntry de : result) {
+					getResultView().addResult(new DepictionView(de));
 				}
 			}
 		});

@@ -252,6 +252,19 @@ public class LocationFilter extends AbstractFilter {
 		districtSelection.setWidth(180);
 	
 	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.ui.AbstractFilter#getSqlWhereClause()
+	 */
+	@Override
+	public ArrayList<String> getSqlWhereClause() {
+		ArrayList<String> result = new ArrayList<String>();
+		if (districtSelection.getValue() != null) {
+			result.add("DistrictID=" + districtSelection.getValue().getDistrictID());
+		}
+		
+		return result;
+	}
 	
 
 }

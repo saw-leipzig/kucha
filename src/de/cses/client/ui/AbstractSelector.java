@@ -13,7 +13,11 @@
  */
 package de.cses.client.ui;
 
+import java.util.ArrayList;
+
 import com.sencha.gxt.widget.core.client.button.ToggleButton;
+
+import de.cses.client.caves.CaveResultView;
 
 /**
  * @author alingnau
@@ -22,26 +26,43 @@ import com.sencha.gxt.widget.core.client.button.ToggleButton;
 public abstract class AbstractSelector extends ToggleButton {
 	
 	String selectorTitle;
-	AbstractFilter filter;
-
+	ArrayList<AbstractFilter> relatedFilter;
+	AbstractResultView resultView;
+		
 	/**
 	 * 
+	 * @param selectorTitle
+	 * @param resultView 
 	 */
-	public AbstractSelector(String selectorTitle, AbstractFilter filter) {
+	public AbstractSelector(String selectorTitle, AbstractResultView resultView) {
+		super();
 		this.selectorTitle = selectorTitle;
-		this.filter = filter;
+		this.resultView = resultView;
+		relatedFilter = new ArrayList<AbstractFilter>();
 		setText(selectorTitle);
 		setSize("50px", "50px");
 	}
-	
+
+	public void addRelatedFilter(AbstractFilter filter) {
+		relatedFilter.add(filter);
+	}
 	
 	public String getSelectorTitle() {
 		return selectorTitle;
 	}
 
-
-	public AbstractFilter getFilter() {
-		return filter;
+	public ArrayList <AbstractFilter> getRelatedFilter() {
+		return relatedFilter;
 	}
+
+	public AbstractResultView getResultView() {
+		return resultView;
+	}
+
+	public void setResultView(AbstractResultView resultView) {
+		this.resultView = resultView;
+	}
+
+	public abstract void invokeSearch();
 
 }

@@ -293,4 +293,22 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		return connector.getSite(id);
 	}
 
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#getCaves(java.lang.String)
+	 */
+	@Override
+	public ArrayList<CaveEntry> getCaves(String sqlWhere) {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getCaves(sqlWhere);
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#getDepictions(java.lang.String)
+	 */
+	@Override
+	public ArrayList<DepictionEntry> getDepictions(String sqlWhere) {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getDepictions(sqlWhere);
+	}
+
 }

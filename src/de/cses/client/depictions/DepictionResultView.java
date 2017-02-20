@@ -11,21 +11,32 @@
  * You should have received a copy of the GPL v3 along with the software. 
  * If not, you can access it from here: <https://www.gnu.org/licenses/gpl-3.0.txt>.
  */
-package de.cses.client.ui;
+package de.cses.client.depictions;
+
+import com.sencha.gxt.widget.core.client.button.TextButton;
+
+import de.cses.client.ui.AbstractResultView;
 
 /**
  * @author alingnau
  *
  */
-public class LocationSelector extends AbstractSelector {
+public class DepictionResultView extends AbstractResultView {
 
 	/**
-	 * @param selectorTitle
-	 * @param filter
-	 * @param resultView
+	 * @param title
 	 */
-	public LocationSelector(String selectorTitle, LocationFilter filter) {
-		super(selectorTitle, filter);
+	public DepictionResultView(String title) {
+		super(title);
+		setHeight(300);
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.ui.AbstractResultView#newElementButton()
+	 */
+	@Override
+	public TextButton newElementButton() {
+		return new DepictionView();
 	}
 
 }

@@ -114,10 +114,22 @@ public class CaveFilter extends AbstractFilter {
 			
 			@Override
 			public void onSelection(SelectionEvent<CaveTypeEntry> event) {
-//				correspondingCaveEntry.setCaveTypeID(event.getSelectedItem().getCaveTypeID());
+				// ToDo
 			}
 		});
 		caveTypeSelection.setWidth(180);
 	}	
+	
+	/* (non-Javadoc)
+	 * @see de.cses.client.ui.AbstractFilter#getSqlWhereClause()
+	 */
+	@Override
+	public ArrayList<String> getSqlWhereClause() {
+		ArrayList<String> result = new ArrayList<String>();
+		if (caveTypeSelection.getValue() != null) {
+			result.add("CaveTypeID=" + caveTypeSelection.getCurrentValue().getCaveTypeID());
+		}
+		return result;
+	}
 
 }

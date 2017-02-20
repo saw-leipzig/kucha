@@ -13,29 +13,57 @@
  */
 package de.cses.client.ui;
 
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
+import com.sencha.gxt.widget.core.client.Portlet;
+import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.MarginData;
 
 /**
  * @author alingnau
  *
  */
-public abstract class AbstractResultView implements IsWidget {
+public abstract class AbstractResultView extends Portlet {
+	
+	private ToolButton toolButton;
+	private FlowLayoutContainer resultContainer;
+	private MarginData resultLayoutData;
+
+	public AbstractResultView(String title) {
+		super();
+		setCollapsible(true);
+		setAnimCollapse(true);
+		toolButton = new ToolButton(ToolButton.GEAR);
+		getHeader().addTool(toolButton);
+		resultContainer = new FlowLayoutContainer();
+		resultContainer.setScrollMode(ScrollMode.AUTOY);
+		resultLayoutData = new MarginData(20);
+		if (true) { // check here if the user has permission to edit and add elements
+			resultContainer.add(newElementButton());
+		}
+		this.add(resultContainer);
+	}
+	
+	public void addResult(Widget w) {
+		resultContainer.add(w, resultLayoutData);
+	}
 
 	/**
 	 * 
 	 */
-	public AbstractResultView() {
-		// TODO Auto-generated constructor stub
+	public void reset() {
+		resultContainer.clear();
+		if (true) { // check here if the user has permission to edit and add elements
+			resultContainer.add(newElementButton());
+		}
 	}
-
-	/* (non-Javadoc)
-	 * @see com.google.gwt.user.client.ui.IsWidget#asWidget()
+	
+	/**
+	 * Implements the specific Button to create and add a new element
+	 * @return
 	 */
-	@Override
-	public Widget asWidget() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public abstract TextButton newElementButton();
 
 }

@@ -181,14 +181,14 @@ public class DepictionEditor implements IsWidget, ImageSelectorListener {
 		// SafeHtml state(String slogan, String name);
 	}
 
-	public DepictionEditor(int depictionID, DepictionEditorListener deListener) {
+	public DepictionEditor(DepictionEntry entry, DepictionEditorListener deListener) {
+		if (entry != null) {
+			this.correspondingDepictionEntry = entry;
+		} else {
+			createCorrespondingDepictionEntry();
+		}
 		listener = new ArrayList<DepictionEditorListener>();
 		listener.add(deListener);
-		if (depictionID == 0) {
-			createCorrespondingDepictionEntry();
-		} else {
-			loadCorrespondingDepictionEntry(depictionID);
-		}
 		// depictionEntryList = new
 		// ListStore<DepictionEntry>(depictionProps.depictionID());
 		// refreshDepictionList();
@@ -273,21 +273,21 @@ public class DepictionEditor implements IsWidget, ImageSelectorListener {
 				"add text here", "add text here", "add text here", 0, 0, null, 0, null, 0, 0, 0, 0);
 	}
 
-	private void loadCorrespondingDepictionEntry(int id) {
-		dbService.getDepictionEntry(id, new AsyncCallback<DepictionEntry>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				Info.display("getDepictionEntry", "failed");
-				correspondingDepictionEntry = null;
-			}
-
-			@Override
-			public void onSuccess(DepictionEntry result) {
-				correspondingDepictionEntry = result;
-			}
-		});
-	}
+//	private void loadCorrespondingDepictionEntry(int id) {
+//		dbService.getDepictionEntry(id, new AsyncCallback<DepictionEntry>() {
+//
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				Info.display("getDepictionEntry", "failed");
+//				correspondingDepictionEntry = null;
+//			}
+//
+//			@Override
+//			public void onSuccess(DepictionEntry result) {
+//				correspondingDepictionEntry = result;
+//			}
+//		});
+//	}
 
 	@Override
 	public Widget asWidget() {

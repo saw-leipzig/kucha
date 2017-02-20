@@ -11,45 +11,47 @@
  * You should have received a copy of the GPL v3 along with the software. 
  * If not, you can access it from here: <https://www.gnu.org/licenses/gpl-3.0.txt>.
  */
-package de.cses.client.ui;
+package de.cses.client.depictions;
 
 import java.util.ArrayList;
 
-import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.sencha.gxt.widget.core.client.FramedPanel;
+import com.sencha.gxt.widget.core.client.form.TextField;
+
+import de.cses.client.ui.AbstractFilter;
 
 /**
  * @author alingnau
  *
  */
-public abstract class AbstractFilter implements IsWidget {
-
-	private FramedPanel panel = null;
-	private String filterName;
+public class DepictionFilter extends AbstractFilter {
 
 	/**
-	 * 
+	 * @param filterName
 	 */
-	public AbstractFilter(String filterName) {
-		this.filterName = filterName;
+	public DepictionFilter(String filterName) {
+		super(filterName);
 	}
 
 	/* (non-Javadoc)
-	 * @see com.google.gwt.user.client.ui.IsWidget#asWidget()
+	 * @see de.cses.client.ui.AbstractFilter#getFilterUI()
 	 */
 	@Override
-	public Widget asWidget() {
-		if (panel == null) {
-			panel = new FramedPanel();
-			panel.setHeading(filterName);
-			panel.add(getFilterUI());
-		}
-		return panel;
+	protected Widget getFilterUI() {
+		VerticalPanel vp = new VerticalPanel();
+		TextField tf = new TextField();
+		tf.setText("TEST");
+		vp.add(tf);
+		return vp;
 	}
 
-	protected abstract Widget getFilterUI();
-	
-	public abstract ArrayList<String> getSqlWhereClause();
+	/* (non-Javadoc)
+	 * @see de.cses.client.ui.AbstractFilter#getSqlWhereClause()
+	 */
+	@Override
+	public ArrayList<String> getSqlWhereClause() {
+		return null;
+	}
 
 }

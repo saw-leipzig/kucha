@@ -111,4 +111,8 @@ public interface DatabaseService extends RemoteService {
 
 	SiteEntry getSite(int id);
 
+	ArrayList<CaveEntry> getCaves(String sqlWhere);
+
+	ArrayList<DepictionEntry> getDepictions(String sqlWhere);
+
 }

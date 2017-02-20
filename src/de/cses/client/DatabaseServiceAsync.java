@@ -52,6 +52,8 @@ public interface DatabaseServiceAsync {
 
 	void getCaves(AsyncCallback<ArrayList<CaveEntry>> callback) throws IllegalArgumentException;
 
+	void getCaves(String sqlWhere, AsyncCallback<ArrayList<CaveEntry>> callback) throws IllegalArgumentException;
+
 	void getCavesbyDistrictID(int DistrictID, AsyncCallback<ArrayList<CaveEntry>> callback) throws IllegalArgumentException;
 
 	void getOrnaments(AsyncCallback<ArrayList<OrnamentEntry>> callback) throws IllegalArgumentException;
@@ -104,4 +106,6 @@ public interface DatabaseServiceAsync {
 	void getSites(AsyncCallback<ArrayList<SiteEntry>> asyncCallback) throws IllegalArgumentException;
 	
 	void getSite(int id, AsyncCallback<SiteEntry> asyncCallback) throws IllegalArgumentException;
+
+	void getDepictions(String sqlWhere, AsyncCallback<ArrayList<DepictionEntry>> asyncCallback) throws IllegalArgumentException;
 }

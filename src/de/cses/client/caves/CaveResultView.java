@@ -13,19 +13,30 @@
  */
 package de.cses.client.caves;
 
+import com.sencha.gxt.widget.core.client.button.TextButton;
+
 import de.cses.client.ui.AbstractResultView;
 
 /**
  * @author alingnau
  *
  */
-public class CaveSearchView extends AbstractResultView {
+public class CaveResultView extends AbstractResultView {
 
 	/**
 	 * 
 	 */
-	public CaveSearchView() {
-		// TODO Auto-generated constructor stub
+	public CaveResultView(String title) {
+		super(title);
+		setHeight(300);
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.ui.AbstractResultView#newElementButton()
+	 */
+	@Override
+	public TextButton newElementButton() {
+		return new CaveView();
 	}
 
 }

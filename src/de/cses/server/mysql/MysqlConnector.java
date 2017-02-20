@@ -249,13 +249,21 @@ public class MysqlConnector {
 		return true;
 	}
 
+	/**
+	 * @param sqlWhere
+	 * @return
+	 */
 	public ArrayList<DepictionEntry> getDepictions() {
+		return getDepictions(null);
+	}
+
+	public ArrayList<DepictionEntry> getDepictions(String sqlWhere) {
 		ArrayList<DepictionEntry> results = new ArrayList<DepictionEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Depictions");
+			ResultSet rs = stmt.executeQuery((sqlWhere == null) ? "SELECT * FROM Depictions" : "SELECT * FROM Depictions WHERE "+sqlWhere);
 			while (rs.next()) {
 				results.add(new DepictionEntry(rs.getInt("DepictionID"), rs.getInt("StyleID"), rs.getString("Inscriptions"),
 						rs.getString("Dating"), rs.getString("Description"), rs.getString("BackgroundColour"), rs.getString("Material"),
@@ -386,14 +394,19 @@ public class MysqlConnector {
 		}
 		return results;
 	}
-
+	
 	public ArrayList<CaveEntry> getCaves() {
+		return getCaves(null);
+	}
+
+
+	public ArrayList<CaveEntry> getCaves(String sqlWhere) {
 		ArrayList<CaveEntry> results = new ArrayList<CaveEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Caves");
+			ResultSet rs = stmt.executeQuery((sqlWhere == null) ? "SELECT * FROM Caves" : "SELECT * FROM Caves WHERE "+sqlWhere);
 			while (rs.next()) {
 				CaveEntry ce = new CaveEntry(rs.getInt("CaveID"), rs.getString("OfficialNumber"), rs.getString("OfficialName"),
 						rs.getString("HistoricName"), rs.getInt("CaveTypeID"), rs.getInt("DistrictID"), rs.getInt("RegionID"),
