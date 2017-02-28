@@ -99,13 +99,13 @@ public class HoehleErstellenPanel extends DialogBox{
 			vlcHoehleErstellen.add(new FieldLabel(HoehlenContainerComboBox, "Select Cave"));
 		   
 		
-		      setText("Hoehle erstellen");
+		      setText("Create cave");
 
 		      setAnimationEnabled(true);
 		  
 		      setGlassEnabled(true);
 		     
-		      Button speichern = new Button("speichern");
+		      Button speichern = new Button("Save&Exit");
 		      vlcHoehleErstellen.add(speichern);
 		      speichern.addClickHandler(new ClickHandler() {
 					@Override
@@ -125,7 +125,7 @@ public class HoehleErstellenPanel extends DialogBox{
 			      });
 		      
 		      
-		      Button abbrechen = new Button("Abbrechen");
+		      Button abbrechen = new Button("Cancel");
 		      vlcHoehleErstellen.add(abbrechen);
 		      abbrechen.addClickHandler(new ClickHandler() {
 					@Override

@@ -31,7 +31,7 @@ public class HoehleLoeschenPopupPanel extends PopupPanel{
 		        }
 		      }; 
 		    MenuBar hoehleLoeschenMenuBar = new MenuBar(true);
-		    hoehleLoeschenMenuBar.addItem("loeschen", cmd);
+		    hoehleLoeschenMenuBar.addItem("delete", cmd);
 		    setWidget(hoehleLoeschenMenuBar);
 	}
 	

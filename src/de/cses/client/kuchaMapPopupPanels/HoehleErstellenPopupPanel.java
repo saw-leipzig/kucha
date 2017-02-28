@@ -41,7 +41,7 @@ public class HoehleErstellenPopupPanel extends PopupPanel{
 		        }
 		      };
 		    MenuBar hoehleErstellenMenu = new MenuBar(true);
-		    hoehleErstellenMenu.addItem("neue Hoehle erstellen", cmd);
+		    hoehleErstellenMenu.addItem("Create new cave", cmd);
 		    setWidget(hoehleErstellenMenu);
 		
 	}
