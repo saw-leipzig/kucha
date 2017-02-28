@@ -94,6 +94,9 @@ public class HoehleErstellenPanel extends DialogBox{
 								return cvTemplates.caveLabel(item.getCaveID(), item.getOfficialName());
 							}
 						});
+		   
+				caveSelection.setTypeAhead(false);
+				caveSelection.setEditable(false);
 			
 			vlcHoehleErstellen.add(new FieldLabel(caveSelection, "Select Cave"));
 		   
