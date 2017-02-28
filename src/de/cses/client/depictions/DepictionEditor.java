@@ -118,15 +118,13 @@ public class DepictionEditor implements IsWidget, ImageSelectorListener {
 
 	interface CaveProperties extends PropertyAccess<CaveEntry> {
 		ModelKeyProvider<CaveEntry> caveID();
-		LabelProvider<CaveEntry> officialNumber();
+
+		LabelProvider<CaveEntry> officialName();
 	}
 
 	interface CaveViewTemplates extends XTemplates {
-		@XTemplate("<div>{officialNumber}: {officialName}</div>")
-		SafeHtml caveLabel(String officialNumber, String officialName);
-		
-		@XTemplate("<div>{officialNumber}</div>")
-		SafeHtml caveLabel(String officialNumber);	
+		@XTemplate("<div>Cave {number}<br>{name}</div>")
+		SafeHtml caveLabel(int number, String name);
 	}
 
 	interface ExpeditionProperties extends PropertyAccess<ExpeditionEntry> {
@@ -217,7 +215,6 @@ public class DepictionEditor implements IsWidget, ImageSelectorListener {
 				for (CaveEntry ce : result) {
 					caveEntryList.add(ce);
 				}
-				Info.display("CaveID", "loaded "+caveEntryList.size() + " caveEditor");
 			}
 		});
 
@@ -369,17 +366,13 @@ public class DepictionEditor implements IsWidget, ImageSelectorListener {
 			}
 		});
 
-		caveSelection = new ComboBox<CaveEntry>(caveEntryList, caveProps.officialNumber(),
+		caveSelection = new ComboBox<CaveEntry>(caveEntryList, caveProps.officialName(),
 				new AbstractSafeHtmlRenderer<CaveEntry>() {
 
 					@Override
 					public SafeHtml render(CaveEntry item) {
 						final CaveViewTemplates cvTemplates = GWT.create(CaveViewTemplates.class);
-						if ((item.getOfficialName() != null) && (item.getOfficialName().length() == 0)) {
-							return cvTemplates.caveLabel(item.getOfficialNumber());
-						} else {
-							return cvTemplates.caveLabel(item.getOfficialNumber(), item.getOfficialName());
-						}
+						return cvTemplates.caveLabel(item.getCaveID(), item.getOfficialName());
 					}
 				});
 		caveSelection.setEmptyText("Select a Cave ...");

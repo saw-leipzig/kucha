@@ -26,7 +26,7 @@ import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.KuchaMapProject.Home;
-import de.cses.shared.HoehlenContainer;
+import de.cses.shared.CaveEntry;
 
 
 
@@ -38,9 +38,9 @@ import de.cses.shared.HoehlenContainer;
 
 public class HoehleErstellenPanel extends DialogBox{
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
-	private ComboBox<HoehlenContainer> HoehlenContainerComboBox;
-	private ListStore<HoehlenContainer> HoehlenContainerList;
-	private HoehlenContainerProperties HoehlenContainerProps;
+	private CaveProperties caveProps;
+	private ListStore<CaveEntry> caveEntryList;
+	private ComboBox<CaveEntry> caveSelection;
 
 	TextBox iDbox = new TextBox();
 	 int left;
@@ -55,23 +55,22 @@ public class HoehleErstellenPanel extends DialogBox{
 	   public void iniHoehleErstellenPanel(){
 		   this.center();
 		   detailansichtVerwaltung = Home.getKuchaMapPrototyp().getDetailansichtVerwaltung();
-		   HoehlenContainerProps = GWT.create(HoehlenContainerProperties.class);
-		   HoehlenContainerList = new ListStore<HoehlenContainer>(HoehlenContainerProps.getID());
+				caveProps = GWT.create(CaveProperties.class);
+				caveEntryList = new ListStore<CaveEntry>(caveProps.caveID());
 			int p = detailansichtVerwaltung.getaktiveRegion().getID();
-			HoehlenContainerList.clear();
+			caveEntryList.clear();
 			
-			dbService.getCavesbyDistrictIDKucha(p,new AsyncCallback<ArrayList<HoehlenContainer>>() {
+			dbService.getCavesbyDistrictID(p,new AsyncCallback<ArrayList<CaveEntry>>() {
 
 				@Override
 				public void onFailure(Throwable caught) {
 					caught.printStackTrace();
 				}
 
-				@Override
-				public void onSuccess(ArrayList<HoehlenContainer> result) {
+				public void onSuccess(ArrayList<CaveEntry> result) {
 					
 					for (int i = 0;i< result.size(); i++) {
-						HoehlenContainerList.add(result.get(i));
+						caveEntryList.add(result.get(i));
 					}
 					
 				}
@@ -86,17 +85,17 @@ public class HoehleErstellenPanel extends DialogBox{
 		   
 		   VBoxLayoutContainer vlcHoehleErstellen = new VBoxLayoutContainer();
 		   
-			HoehlenContainerComboBox = new ComboBox<HoehlenContainer>(HoehlenContainerList, HoehlenContainerProps.name(),
-					new AbstractSafeHtmlRenderer<HoehlenContainer>() {
+		   caveSelection = new ComboBox<CaveEntry>(caveEntryList, caveProps.officialName(),
+						new AbstractSafeHtmlRenderer<CaveEntry>() {
 
-						@Override
-						public SafeHtml render(HoehlenContainer item) {
-							final CaveViewTemplates pvTemplates = GWT.create(CaveViewTemplates.class);
-							return pvTemplates.caver(item.getName());
-						}
-					});
+							@Override
+							public SafeHtml render(CaveEntry item) {
+								final CaveViewTemplates cvTemplates = GWT.create(CaveViewTemplates.class);
+								return cvTemplates.caveLabel(item.getCaveID(), item.getOfficialName());
+							}
+						});
 			
-			vlcHoehleErstellen.add(new FieldLabel(HoehlenContainerComboBox, "Select Cave"));
+			vlcHoehleErstellen.add(new FieldLabel(caveSelection, "Select Cave"));
 		   
 		
 		      setText("Create cave");
@@ -114,8 +113,8 @@ public class HoehleErstellenPanel extends DialogBox{
 						Hoehle neueHoehle = new Hoehle();
 						neueHoehle.setButtonpositiontop(top);
 						neueHoehle.setButtonpositionleft(left);
-						neueHoehle.setID(HoehlenContainerComboBox.getValue().getID());
-						neueHoehle.setname(HoehlenContainerComboBox.getValue().getName());
+						neueHoehle.setID(caveSelection.getValue().getCaveID());
+						neueHoehle.setname(caveSelection.getValue().getOfficialName());
 						Region aktiv = detailansichtVerwaltung.getaktiveRegion();
 						aktiv.getHoehlenArrayList().add(neueHoehle);
 						neueHoehle.setRegionID(aktiv.getID());
@@ -149,14 +148,15 @@ public class HoehleErstellenPanel extends DialogBox{
 	public void setTop(int top) {
 		this.top = top;
 	}
-	interface HoehlenContainerProperties extends PropertyAccess<HoehlenContainer> {
-		ModelKeyProvider<HoehlenContainer> getID();
+	interface CaveProperties extends PropertyAccess<CaveEntry> {
+		ModelKeyProvider<CaveEntry> caveID();
 
-		LabelProvider<HoehlenContainer> name();
+		LabelProvider<CaveEntry> officialName();
 	}
+	
 	interface CaveViewTemplates extends XTemplates {
-		@XTemplate("<div>{name}</div>")
-		SafeHtml caver(String name);
+		@XTemplate("<div>Cave {number}<br>{name}</div>")
+		SafeHtml caveLabel(int number, String name);
 	}
 	   
 	}
