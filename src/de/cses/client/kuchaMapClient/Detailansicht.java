@@ -12,8 +12,6 @@ public class Detailansicht  {
 	private AbsolutePanel fotoAbsolutePanel;
 	Image hoehlenFotoIMG ;
 	boolean startseiteVisibility = true;
-	// Attributes 
-	int test;
 
 
 	public Detailansicht(){
