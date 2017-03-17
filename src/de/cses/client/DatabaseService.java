@@ -109,10 +109,16 @@ public interface DatabaseService extends RemoteService {
 
 	ArrayList<SiteEntry> getSites() throws IllegalArgumentException;
 
-	SiteEntry getSite(int id);
+	SiteEntry getSite(int id)  throws IllegalArgumentException;
 
-	ArrayList<CaveEntry> getCaves(String sqlWhere);
+	ArrayList<CaveEntry> getCaves(String sqlWhere) throws IllegalArgumentException;
 
-	ArrayList<DepictionEntry> getDepictions(String sqlWhere);
+	ArrayList<DepictionEntry> getDepictions(String sqlWhere) throws IllegalArgumentException;
+	
+	ArrayList<DepictionEntry> getDepictionsbyWallID(int wallID) throws IllegalArgumentException;
+	
+	String saveDepiction(int depictionID, int absoluteLeft, int absoluteTop) throws IllegalArgumentException;
+
+	ArrayList<ImageEntry> getRelatedImages(int depictionID) throws IllegalArgumentException;
 
 }

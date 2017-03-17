@@ -315,8 +315,8 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Images");
 			while (rs.next()) {
-				results.add(new ImageEntry(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getInt(5), rs.getString(6),
-						rs.getDate(7), rs.getString(8)));
+				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"),
+						rs.getDate("CaptureDate"), rs.getString("ImageType")));
 			}
 			rs.close();
 			stmt.close();
@@ -335,8 +335,8 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Images WHERE " + sqlWhere);
 			while (rs.next()) {
-				results.add(new ImageEntry(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getInt(5), rs.getString(6),
-						rs.getDate(7), rs.getString(8)));
+				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"),
+						rs.getDate("CaptureDate"), rs.getString("ImageType")));
 			}
 			rs.close();
 			stmt.close();
@@ -531,6 +531,8 @@ public class MysqlConnector {
 		Connection dbc = getConnection();
 		ArrayList<CaveTypeEntry> results = new ArrayList<CaveTypeEntry>();
 		Statement stmt;
+		
+		
 		try {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM CaveType");
@@ -838,6 +840,70 @@ public class MysqlConnector {
 			return 0;
 		}
 		return result;
+	}
+	
+	/**
+	 * @param depictionID
+	 * @return
+	 */
+	public ArrayList<ImageEntry> getRelatedImages(int depictionID) {
+		ArrayList<ImageEntry> results = new ArrayList<ImageEntry>();
+		Connection dbc = getConnection();
+
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Images WHERE ImageID IN (SELECT ImageID FROM DepictionImageRelation WHERE DepictionID=" + depictionID + ")");
+			while (rs.next()) {
+				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"),
+						rs.getDate("CaptureDate"), rs.getString("ImageType")));
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return results;
+	}
+	
+	public ArrayList<DepictionEntry> getAllDepictionsbyWall(int wallID){
+		ArrayList<DepictionEntry> depictions = new ArrayList<DepictionEntry>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT DepictionID, AbsoluteLeft, AbsoluteTop FROM Depictions WHERE WallID = " + wallID);
+			while (rs.next()) {
+				DepictionEntry depiction = new DepictionEntry();
+				depiction.setDepictionID(rs.getInt("DepictionID"));
+				depiction.setAbsoluteLeft(rs.getInt("AbsoluteLeft"));
+				depiction.setAbsoluteTop(rs.getInt("AbsoluteTop"));
+				
+				depictions.add(depiction);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return depictions;
+	}
+	
+	public String saveDepiction(int depictionID, int AbsoluteLeft, int AbsoluteTop){
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			stmt.executeQuery("UPDATE Depictions SET AbsoluteLeft ="+ AbsoluteLeft + ", AbsoluteTop ="+ AbsoluteTop+ " WHERE DepictionID ="+ depictionID );
+	
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return "failed to save depiction";
+			
+		}
+		return "saved";
+		
+		
 	}
 
 	/**

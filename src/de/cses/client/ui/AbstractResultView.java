@@ -41,7 +41,7 @@ public abstract class AbstractResultView extends Portlet {
 		resultContainer.setScrollMode(ScrollMode.AUTOY);
 		resultLayoutData = new MarginData(20);
 		if (true) { // check here if the user has permission to edit and add elements
-			resultContainer.add(newElementButton());
+			resultContainer.add(newElementButton(), resultLayoutData);
 		}
 		this.add(resultContainer);
 	}
@@ -56,7 +56,7 @@ public abstract class AbstractResultView extends Portlet {
 	public void reset() {
 		resultContainer.clear();
 		if (true) { // check here if the user has permission to edit and add elements
-			resultContainer.add(newElementButton());
+			resultContainer.add(newElementButton(), resultLayoutData);
 		}
 	}
 	

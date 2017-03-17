@@ -16,9 +16,13 @@ package de.cses.server.images;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
+import java.util.ResourceBundle;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
@@ -31,6 +35,8 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+
+import com.google.gwt.dev.cfg.ResourceLoaders;
 
 import de.cses.server.mysql.MysqlConnector;
 import de.cses.shared.ImageEntry;
@@ -46,8 +52,24 @@ import de.cses.shared.ImageEntry;
 @MultipartConfig
 public class ImageServiceImpl extends HttpServlet {
 
-	public static final String SERVER_IMAGES_PATHNAME = System.getProperty("user.dir") + "/webapps/images";
+//	public static final String SERVER_IMAGES_PATHNAME = System.getProperty("user.dir") + "/webapps/images";
+	private Properties serverProperties = new Properties();
 	MysqlConnector connector = MysqlConnector.getInstance();
+
+	public ImageServiceImpl() {
+		super();
+		FileReader fReader;
+		try {
+			fReader = new FileReader(System.getProperty("user.dir") + "/kucha.properties");
+			serverProperties.load(fReader);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 * This method is called when the submit button in the image uploader is
@@ -62,7 +84,7 @@ public class ImageServiceImpl extends HttpServlet {
 
 		response.setContentType("text/plain");
 
-		File imgHomeDir = new File(SERVER_IMAGES_PATHNAME);
+		File imgHomeDir = new File(serverProperties.getProperty("imageHomeDir"));
 		FileItemFactory factory = new DiskFileItemFactory(1000000, imgHomeDir);
 		ServletFileUpload upload = new ServletFileUpload(factory);
 		File target = null;

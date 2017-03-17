@@ -135,7 +135,7 @@ public class CaveEditor implements IsWidget {
 		SafeHtml siteLabel(String name);
 	}
 	
-	interface ImageViewTemplates extends XTemplates {
+	interface CaveLayoutViewTemplates extends XTemplates {
 		@XTemplate("<img align=\"center\" width=\"242\" height=\"440\" margin=\"20\" src=\"{imageUri}\"><br> {title}")
 		SafeHtml image(SafeUri imageUri, String title);
 	}
@@ -532,10 +532,10 @@ public class CaveEditor implements IsWidget {
 		attributePanel.add(caveTypeSelection);
 		vPanel.add(attributePanel);
 		
-		final ImageViewTemplates imageViewTemplates = GWT.create(ImageViewTemplates.class);	
+		final CaveLayoutViewTemplates caveLayoutViewTemplates = GWT.create(CaveLayoutViewTemplates.class);	
 		SafeUri imageUri = UriUtils.fromString("infosystem/images?background=centralPillarCave.jpeg");
 		FlowLayoutContainer imageContainer = new FlowLayoutContainer();
-		imageContainer.add(new HTMLPanel(imageViewTemplates.image(imageUri, "Central Pillar Cave")));
+		imageContainer.add(new HTMLPanel(caveLayoutViewTemplates.image(imageUri, "Central Pillar Cave")));
 		vPanel.add(imageContainer);
 		
 		hPanel.add(vPanel);
@@ -568,6 +568,10 @@ public class CaveEditor implements IsWidget {
 		for (CaveEditorListener l : listenerList) {
 			l.closeRequest();
 		}
+	}
+	
+	public void addCaveEditorListener(CaveEditorListener l) {
+		listenerList.add(l);
 	}
 
 	/**

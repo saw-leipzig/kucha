@@ -30,10 +30,9 @@ public class Util {
 	protected static SafeUri imageUri;
 
 	/**
-	 * 
+	 * This class only contains static methods for utility purpose, so we never want to create an instance
 	 */
-	public Util() {
-	}
+	private Util() { }
 	
 	/**
 	 * Returns a SafeUri for either the full image or the thumbnail related to 

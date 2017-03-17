@@ -67,12 +67,6 @@ import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
-import de.cses.client.depictions.DepictionEditor2.CaveLayoutViewTemplates;
-import de.cses.client.depictions.DepictionEditor2.CaveViewTemplates;
-import de.cses.client.depictions.DepictionEditor2.ExpeditionViewTemplates;
-import de.cses.client.depictions.DepictionEditor2.ImageViewTemplates;
-import de.cses.client.depictions.DepictionEditor2.StyleViewTemplates;
-import de.cses.client.depictions.DepictionEditor2.VendorViewTemplates;
 import de.cses.client.images.ImageSelector;
 import de.cses.client.images.ImageSelectorListener;
 import de.cses.client.walls.Walls;
@@ -83,7 +77,7 @@ import de.cses.shared.ImageEntry;
 import de.cses.shared.StyleEntry;
 import de.cses.shared.VendorEntry;
 
-public class DepictionEditor implements IsWidget, ImageSelectorListener {
+public class DepictionEditor2 implements IsWidget, ImageSelectorListener {
 
 	/**
 	 * Create a remote service proxy to talk to the server-side service.
@@ -205,7 +199,7 @@ public class DepictionEditor implements IsWidget, ImageSelectorListener {
 		SafeHtml image(SafeUri imageUri, String title);
 	}
 
-	public DepictionEditor(DepictionEntry entry, DepictionEditorListener deListener) {
+	public DepictionEditor2(DepictionEntry entry, DepictionEditorListener deListener) {
 		if (entry != null) {
 			this.correspondingDepictionEntry = entry;
 		} else {
@@ -328,9 +322,6 @@ public class DepictionEditor implements IsWidget, ImageSelectorListener {
 		return mainPanel;
 	}
 
-	/**
-	 * Here the view is initialised. This is only done once at the beginning!
-	 */
 	private void initPanel() {
 		mainPanel = new FramedPanel();
 		mainPanel.setHeading("Depiction Editor");
