@@ -7,16 +7,6 @@
 
   <!-- Servlets -->
   <servlet>
-    <servlet-name>greetServlet</servlet-name>
-    <servlet-class>de.cses.server.GreetingServiceImpl</servlet-class>
-  </servlet>
-  
-  <servlet-mapping>
-    <servlet-name>greetServlet</servlet-name>
-    <url-pattern>/infosystem/greet</url-pattern>
-  </servlet-mapping>
-  
-  <servlet>
     <servlet-name>dbServlet</servlet-name>
     <servlet-class>de.cses.server.DatabaseServiceImpl</servlet-class>
   </servlet>

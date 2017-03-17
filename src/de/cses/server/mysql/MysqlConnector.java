@@ -988,7 +988,7 @@ public class MysqlConnector {
 				System.err.println("cavetype description funktioniert ");
 			}
 			sql = "SELECT * FROM Depictions WHERE CaveID = "+ "'"+ID+"'"; //$NON-NLS-1$
-			System.err.println("sql query wurde auf get depiction geändert ");
+			System.err.println("sql query wurde auf get depiction geaendert ");
 			rs = stmt.executeQuery(sql);
 			while (rs.next()) {
 				depictionID.add(rs.getInt("DepictionID")); 
@@ -997,7 +997,7 @@ public class MysqlConnector {
 			for(int k = 0; k < depictionID.size(); k++){
 			sql = "SELECT * FROM DepictionImageRelation WHERE DepictionID = "+ "'"+depictionID.get(k)+"'"; //$NON-NLS-1$
             int i = 0;
-            System.err.println("sql wurde gändert auf depictionimageRelation ");
+            System.err.println("sql wurde geaendert auf depictionimageRelation ");
 			rs = stmt.executeQuery(sql);
 			while (rs.next() && i<10) {
 				imageIDArrayList.add(rs.getInt("ImageID")); 

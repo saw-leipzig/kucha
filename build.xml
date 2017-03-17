@@ -36,7 +36,7 @@
 	<target name="war" depends="compile-servlets,gwtc">
 		<available file="war/infosystem/infosystem.nocache.js" property="gwt_compiled" />
 		<fail unless="gwt_compiled">GWT must be compiled first!</fail>
-		<zip destfile="testapplication.war">
+		<zip destfile="nina.war">
 			<zipfileset dir="war" />
 			<zipfileset dir="${GWT_HOME}" includes="gwt-servlet.jar" prefix="WEB-INF/lib/" />
 		</zip>

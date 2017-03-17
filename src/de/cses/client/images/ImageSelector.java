@@ -143,6 +143,7 @@ public class ImageSelector implements IsWidget {
 			@Override
 			public void onSelectionChanged(SelectionChangedEvent<ImageEntry> event) {
 				ImageEntry item = event.getSelection().get(0);
+
 				SafeUri imageUri = UriUtils.fromString("http://kucha.informatik.hu-berlin.de/tomcat/images/"+item.getFilename());
 				Image img = new Image(imageUri);
 				imageContainer.clear();
