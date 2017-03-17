@@ -132,7 +132,7 @@ public class ImageSelector implements IsWidget {
 			final ImageViewTemplates imageViewTemplates = GWT.create(ImageViewTemplates.class);
 
 			public SafeHtml render(ImageEntry item) {
-				SafeUri imageUri = UriUtils.fromString("http://kucha.informatik.hu-berlin.de/tomcat/testapplication/infosystem/images?imageID=" + item.getImageID() + "&thumb=true");
+				SafeUri imageUri = UriUtils.fromString("http://kucha.informatik.hu-berlin.de/tomcat/images/"+item.getFilename());
 				return imageViewTemplates.image(imageUri, item.getTitle());
 			}
 
@@ -143,7 +143,7 @@ public class ImageSelector implements IsWidget {
 			@Override
 			public void onSelectionChanged(SelectionChangedEvent<ImageEntry> event) {
 				ImageEntry item = event.getSelection().get(0);
-				SafeUri imageUri = UriUtils.fromString("http://kucha.informatik.hu-berlin.de/tomcat/testapplication/infosystem/images?imageID=" + item.getImageID());
+				SafeUri imageUri = UriUtils.fromString("http://kucha.informatik.hu-berlin.de/tomcat/images/"+item.getFilename());
 				Image img = new Image(imageUri);
 				imageContainer.clear();
 				imageContainer.add(img);

@@ -281,7 +281,7 @@ public class Environment implements ImageSelectorListener {
 		    	kuchaDatabase.deleteHoehlebyID(loeschenListe.get(i));
 		    	}
 		    	
-		    	kuchaDatabase.save(hoehlenContainerList, detailansichtVerwaltung.getaktiveRegion().getID(), detailansichtVerwaltung.getaktiveRegion().getHoehlenButtonsize(), detailansichtVerwaltung.getaktiveRegion().getImageID());
+		    	kuchaDatabase.saveRegion(hoehlenContainerList, detailansichtVerwaltung.getaktiveRegion().getID(), detailansichtVerwaltung.getaktiveRegion().getHoehlenButtonsize(), detailansichtVerwaltung.getaktiveRegion().getImageID());
 		    
 		    }
 		});
@@ -309,7 +309,8 @@ public class Environment implements ImageSelectorListener {
 				
 				detailansichtVerwaltung.getaktiveRegion().setHoehlenButtonsize(event.getValue()); 
 				for(int i = 0 ; i < detailansichtVerwaltung.getaktiveRegion().getHoehlenArrayList().size(); i++){
-					detailansichtVerwaltung.getaktiveRegion().getHoehlenArrayList().get(i).getButton().setPixelSize(event.getValue(),event.getValue());
+					//detailansichtVerwaltung.getaktiveRegion().getHoehlenArrayList().get(i).getButton().setPixelSize(event.getValue(),event.getValue());
+					detailansichtVerwaltung.getaktiveRegion().getHoehlenArrayList().get(i).getButton().getWidget().setPixelSize(event.getValue(),event.getValue());
 				}
 				
 		
@@ -388,7 +389,7 @@ public class Environment implements ImageSelectorListener {
 
 		@Override
 		public void onSuccess(ImageEntry result) {
-			detailansichtVerwaltung.getDetailansicht().getHoehlenFotoIMG().setUrl("http://kucha.informatik.hu-berlin.de/tomcat/images/"+result.getFilename());;
+			detailansichtVerwaltung.getDetailansicht().getHoehlenFotoIMG().setUrl("http://kucha.informatik.hu-berlin.de/tomcat/images/"+result.getFilename());
 			
 			
 		}

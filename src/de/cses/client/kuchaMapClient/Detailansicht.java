@@ -24,7 +24,7 @@ public class Detailansicht  {
 		hoehlenFotoIMG = new Image("http://e03-elmundo.uecdn.es/assets/multimedia/imagenes/2015/11/13/14474300157302.jpg");
 	}
 	
-	public void CreateDetailansicht(){
+	public void createDetailansicht(){
 		
 		
 		ScrollPanel hoehlenFotoScrollPanel = new ScrollPanel();

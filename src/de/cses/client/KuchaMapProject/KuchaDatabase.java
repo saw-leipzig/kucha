@@ -133,7 +133,7 @@ public class KuchaDatabase {
 	});
 	
 }
-	public void save(ArrayList<HoehlenContainer> hoehlen, int regionID, int buttonSize, int imageID){
+	public void saveRegion(ArrayList<HoehlenContainer> hoehlen, int regionID, int buttonSize, int imageID){
 		dbService.saveRegion( hoehlen , regionID, buttonSize,imageID, new AsyncCallback<String>(){
 
 			@Override

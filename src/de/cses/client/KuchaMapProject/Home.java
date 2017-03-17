@@ -23,7 +23,7 @@ public class Home implements IsWidget {
 		
 		kuchaMapPrototyp.create();
 		kuchaMapPrototyp.inititialize();
-		kuchaMapPrototyp.Start();
+		kuchaMapPrototyp.start();
 		//TestCommit
 	
 

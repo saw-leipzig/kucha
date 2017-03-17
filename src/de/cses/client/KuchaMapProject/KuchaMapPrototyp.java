@@ -98,8 +98,8 @@ public class KuchaMapPrototyp {
 	public HorizontalPanel getInhalt() {
 		return inhalt;
 	}
-	public void Start(){
-		detailansicht.CreateDetailansicht();
+	public void start(){
+		detailansicht.createDetailansicht();
 		kuchaDatabase.loadRegionen(true);
 
 		

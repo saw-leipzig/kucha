@@ -55,8 +55,6 @@ public static void sucheSimulation(String eingabe){
 			for(int i= 0; i < randomOrnaments.size(); i++){
 		ornamentArrayList.add(randomOrnaments.get(i));
 			}
-			suche.setOrnamentArrayList(ornamentArrayList);
-			
 			suche.findRelatedCavesbyOrnament(ornamentArrayList);
 		}
 			
@@ -74,7 +72,7 @@ public static void sucheSimulation(String eingabe){
 		for(int i =0; i < hoehlenContainerArrayList.size(); i++){
 		caveArrayList.add(hoehlenContainerArrayList.get(i));
 		}
-		suche.setCaveArrayList(caveArrayList);
+
 		suche.findRelatedCaves(caveArrayList);
 		}
 	});
@@ -90,7 +88,7 @@ public static void sucheSimulation(String eingabe){
 		for(int i =0; i < hoehlenContainerArrayList.size(); i++){
 		districtArrayList.add(hoehlenContainerArrayList.get(i));
 		}
-		suche.setDistrictArrayList(districtArrayList);
+
 		suche.findRelatedCavesbyDistrict(districtArrayList);
 		}
 	});
@@ -106,7 +104,7 @@ public static void sucheSimulation(String eingabe){
 		for(int i =0; i < hoehlenContainerArrayList.size(); i++){
 		caveTypeArrayList.add(hoehlenContainerArrayList.get(i));
 		}
-		suche.setCaveTypeArrayList(caveTypeArrayList);
+		
 		suche.findRelatedCavesbyCaveType(caveTypeArrayList);
 		}
 	});
