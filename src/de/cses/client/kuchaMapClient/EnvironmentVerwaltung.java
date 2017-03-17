@@ -30,6 +30,7 @@ public class EnvironmentVerwaltung  {
 		environment.getFotoUpload().setVisible(true);
 		environment.getSuchenBox().setEnabled(false);
 		environment.getHoehlenButtonSlider().setVisible(true);
+		environment.getResetSuche().setEnabled(false);
 		
 	}
 	public void disableEditierenEnvironment(){
@@ -38,6 +39,7 @@ public class EnvironmentVerwaltung  {
 		environment.getFotoUpload().setVisible(false);
 		environment.getSuchenBox().setEnabled(true);
 		environment.getHoehlenButtonSlider().setVisible(false);
+		environment.getResetSuche().setEnabled(true);
 		
 	}
 	public ArrayList<HandlerRegistration> getHandlerArrayList() {

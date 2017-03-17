@@ -396,6 +396,15 @@ public class Environment implements ImageSelectorListener {
 	});
 
 	}
+
+	public Button getResetSuche() {
+		return resetSuche;
+	}
+
+	public void setResetSuche(Button resetSuche) {
+		this.resetSuche = resetSuche;
+	}
+	
 	
 	
 
