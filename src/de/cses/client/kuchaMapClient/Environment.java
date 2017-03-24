@@ -120,7 +120,7 @@ public class Environment implements ImageSelectorListener {
 		goTo.add(startseiteitem);
 		goTo.add(regionenMenu);
 		MenuBarItem menugoto = new MenuBarItem("Go to..", goTo);
-		edit = new MenuBarItem("Edit site", editMenu);
+		edit = new MenuBarItem("Edit Site", editMenu);
 		//MenuBarItem help = new MenuBarItem("Help", helpMenu);
 		menue.add(menugoto);
 		//menue.add(help);
