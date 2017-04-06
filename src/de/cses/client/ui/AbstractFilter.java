@@ -20,8 +20,11 @@ import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 
 /**
+ * This class shall be extended to implement a new filter. To make sure all filters
+ * follow a common structure, a <code>FramedPanel</code> is provided where the Widget from {@link #getFilterUI()} is 
+ * placed. 
+ * 
  * @author alingnau
- *
  */
 public abstract class AbstractFilter implements IsWidget {
 
@@ -48,8 +51,21 @@ public abstract class AbstractFilter implements IsWidget {
 		return panel;
 	}
 
+	/**
+	 * 
+	 * @return 
+	 * A Widget representing the individual filter UI. This UI is placed inside the panel provided in {@link #asWidget()}. 
+	 * Never try to call this method directly!
+	 */
 	protected abstract Widget getFilterUI();
 	
+	/**
+	 * 
+	 * @return
+	 * An <code>ArrayList</code> of type <code>String</code> that can be used to create the <code>WHERE</code> clause for
+	 * the SQL request.
+	 * @see de.cses.client.caves.CaveFilter#getSqlWhereClause()
+	 */
 	public abstract ArrayList<String> getSqlWhereClause();
 
 }

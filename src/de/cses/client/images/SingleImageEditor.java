@@ -13,9 +13,12 @@
  */
 package de.cses.client.images;
 
+import java.sql.Date;
 import java.util.ArrayList;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
@@ -23,13 +26,12 @@ import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
-import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.core.client.util.Rectangle;
 import com.sencha.gxt.core.client.util.ToggleGroup;
@@ -37,32 +39,27 @@ import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
-import com.sencha.gxt.data.shared.Store;
-import com.sencha.gxt.data.shared.Store.StoreFilter;
 import com.sencha.gxt.widget.core.client.Dialog;
 import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.FramedPanel;
-import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.DateField;
 import com.sencha.gxt.widget.core.client.form.DateTimePropertyEditor;
-import com.sencha.gxt.widget.core.client.form.ListField;
 import com.sencha.gxt.widget.core.client.form.Radio;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.info.Info;
-import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
-import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.PhotographerEntry;
 
-public class ImageEditor implements IsWidget, ImageUploadListener {
+public class SingleImageEditor implements IsWidget {
 
 	private TextField titleField;
 	private TextField copyrightField;
@@ -70,29 +67,25 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 	private DateField dateField;
 	private ComboBox<PhotographerEntry> photographerSelection;
 	private FramedPanel panel;
-	private ListStore<ImageEntry> imageEntryList;
-	private ImageProperties properties;
 	private PhotographerProperties photographerProps;
 	private ListStore<PhotographerEntry> photographerEntryList;
-	private ListView<ImageEntry, ImageEntry> imageListView;
 	private ArrayList<ImageEditorListener> editorListenerList;
 
 	/**
 	 * Create a remote service proxy to talk to the server-side service.
 	 */
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
-	private TextField searchField;
-	private StoreFilter<ImageEntry> searchFilter;
-	private StoreFilter<ImageEntry> newImageFilter;
 	private Radio rPhoto;
 	private Radio rSketch;
 	private Radio rMap;
+	private ImageEntry imgEntry;
+	private FlowLayoutContainer imageContainer;
 
-	interface ImageProperties extends PropertyAccess<ImageEntry> {
-		ModelKeyProvider<ImageEntry> imageID();
-
-		LabelProvider<ImageEntry> title();
-	}
+//	interface ImageProperties extends PropertyAccess<ImageEntry> {
+//		ModelKeyProvider<ImageEntry> imageID();
+//
+//		LabelProvider<ImageEntry> title();
+//	}
 
 	interface PhotographerProperties extends PropertyAccess<PhotographerEntry> {
 		ModelKeyProvider<PhotographerEntry> photographerID();
@@ -123,23 +116,14 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 	 * This widget allows to edit the information of an ImageEntry, i.e. an image
 	 * in the database. It also allows for uploading new images to the database.
 	 */
-	public ImageEditor(ImageEditorListener listener) {
+	public SingleImageEditor(ImageEntry imgEntry, ImageEditorListener listener) {
+		this.imgEntry = imgEntry;
 		editorListenerList = new ArrayList<ImageEditorListener>();
 		editorListenerList.add(listener);
-		properties = GWT.create(ImageProperties.class);
+//		GWT.create(ImageProperties.class);
+
 		photographerProps = GWT.create(PhotographerProperties.class);
-		imageEntryList = new ListStore<ImageEntry>(properties.imageID());
-		newImageFilter = new StoreFilter<ImageEntry>() {
-			@Override
-			public boolean select(Store<ImageEntry> store, ImageEntry parent, ImageEntry item) {
-				if ("New Image".equals(item.getTitle()))
-					return true;
-				return false;
-			}
-		};
-
 		photographerEntryList = new ListStore<PhotographerEntry>(photographerProps.photographerID());
-
 		dbService.getPhotographer(new AsyncCallback<ArrayList<PhotographerEntry>>() {
 
 			@Override
@@ -161,77 +145,48 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 	@Override
 	public Widget asWidget() {
 		if (panel == null) {
-			refreshImages();
 			initPanel();
 		}
 		return panel;
 	}
 
 	/**
-	 * Initialises the editor's panel if it this has not already been done. Should
+	 * Initializes the editor's panel if it this has not already been done. Should
 	 * usually only be called once a session is started!
 	 */
 	private void initPanel() {
 		panel = new FramedPanel();
 		HorizontalPanel hPanel = new HorizontalPanel();
-		VerticalPanel imgPanel = new VerticalPanel();
+		imageContainer = new FlowLayoutContainer();
+		// VerticalPanel imgPanel = new VerticalPanel();
 		VerticalPanel editPanel = new VerticalPanel();
-
-		imageListView = new ListView<ImageEntry, ImageEntry>(imageEntryList, new IdentityValueProvider<ImageEntry>() {
-			@Override
-			public void setValue(ImageEntry object, ImageEntry value) {
-			}
-		});
-		imageListView.setCell(new SimpleSafeHtmlCell<ImageEntry>(new AbstractSafeHtmlRenderer<ImageEntry>() {
-			final ImageViewTemplates imageViewTemplates = GWT.create(ImageViewTemplates.class);
-
-			public SafeHtml render(ImageEntry item) {
-				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=true");
-				return imageViewTemplates.image(imageUri, item.getTitle());
-			}
-
-		}));
-
-		imageListView.getSelectionModel().addSelectionChangedHandler(new SelectionChangedHandler<ImageEntry>() {
-			@Override
-			public void onSelectionChanged(SelectionChangedEvent<ImageEntry> event) {
-				if (!event.getSelection().isEmpty()) {
-					ImageEntry selectedImageItem = event.getSelection().get(0);
-					titleField.setValue(selectedImageItem.getTitle());
-					copyrightField.setValue(selectedImageItem.getCopyright());
-					commentArea.setValue(selectedImageItem.getComment());
-					dateField.setValue(selectedImageItem.getCaptureDate());
-					photographerSelection
-							.setValue(photographerEntryList.findModelWithKey(Integer.toString(selectedImageItem.getPhotographerID())), true);
-					switch (selectedImageItem.getType()) {
-					case "photo":
-						rPhoto.setValue(true);
-						break;
-					case "sketch":
-						rSketch.setValue(true);
-						break;
-					case "map":
-						rMap.setValue(true);
-						break;
-					default:
-						break;
-					}
-				}
-			}
-		});
-
-		imageListView.setBorders(true);
 
 		FramedPanel attributePanel = new FramedPanel();
 		titleField = new TextField();
 		titleField.setWidth(300);
 		attributePanel.setHeading("Title");
+		titleField.setValue(imgEntry.getTitle());
+		titleField.addValueChangeHandler(new ValueChangeHandler<String>() {
+			
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				imgEntry.setTitle(event.getValue());
+			}
+		});
 		attributePanel.add(titleField);
 		editPanel.add(attributePanel);
 
 		attributePanel = new FramedPanel();
 		copyrightField = new TextField();
 		copyrightField.setWidth(300);
+		copyrightField.setValue(imgEntry.getCopyright());
+		copyrightField.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				imgEntry.setCopyright(event.getValue());
+			}
+		});
 		attributePanel.setHeading("Copyright");
 		attributePanel.add(copyrightField);
 		editPanel.add(attributePanel);
@@ -239,12 +194,28 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 		attributePanel = new FramedPanel();
 		commentArea = new TextArea();
 		commentArea.setSize("300px", "100px");
+		commentArea.setValue(imgEntry.getComment());
+		commentArea.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				imgEntry.setComment(event.getValue());
+			}
+		});
 		attributePanel.add(commentArea);
 		attributePanel.setHeading("Comment");
 		editPanel.add(attributePanel);
 
 		attributePanel = new FramedPanel();
 		dateField = new DateField(new DateTimePropertyEditor("dd MMMM yyyy"));
+		dateField.setValue(imgEntry.getCaptureDate());
+		dateField.addValueChangeHandler(new ValueChangeHandler<java.util.Date>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<java.util.Date> event) {
+				imgEntry.setCaptureDate(new Date(event.getValue().getTime()));
+			}
+		});		
 		attributePanel.add(dateField);
 		attributePanel.setHeading("Date captured");
 		editPanel.add(attributePanel);
@@ -263,6 +234,14 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 		photographerSelection.setTypeAhead(false);
 		photographerSelection.setEditable(false);
 		photographerSelection.setTriggerAction(TriggerAction.ALL);
+		photographerSelection.setValue(photographerEntryList.findModelWithKey(Integer.toString(imgEntry.getPhotographerID())), true);
+		photographerSelection.addValueChangeHandler(new ValueChangeHandler<PhotographerEntry>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<PhotographerEntry> event) {
+				imgEntry.setPhotographerID(event.getValue().getPhotographerID());
+			}
+		});
 		attributePanel.add(photographerSelection);
 		attributePanel.setHeading("Photographer");
 		editPanel.add(attributePanel);
@@ -285,16 +264,51 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 		rbPanel.setWidth("250px");
 		attributePanel.add(rbPanel);
 		attributePanel.setHeading("Image Type");
+		switch (imgEntry.getType()) {
+		case "photo":
+			rPhoto.setValue(true);
+			break;
+		case "sketch":
+			rSketch.setValue(true);
+			break;
+		case "map":
+			rMap.setValue(true);
+			break;
+		default:
+			break;
+		}
+		rPhoto.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				if (event.getValue())
+					imgEntry.setType("photo");
+			}
+		});
+		rSketch.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				if (event.getValue())
+					imgEntry.setType("sketch");
+			}
+		});
+		rMap.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				if (event.getValue())
+					imgEntry.setType("map");
+			}
+		});
 		editPanel.add(attributePanel);
-		
+
 		TextButton closeButton = new TextButton("close");
 		closeButton.addSelectHandler(new SelectHandler() {
-			
+
 			@Override
 			public void onSelect(SelectEvent event) {
-				for (ImageEditorListener listener : editorListenerList) {
-					listener.closeImageEditor();
-				}
+				closeDialog();
 			}
 		});
 
@@ -302,160 +316,41 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 		saveButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-				saveSelectedImageEntry();
+				saveImageEntry();
 			}
 		});
 
-		TextButton deleteButton = new TextButton("delete");
-		deleteButton.addSelectHandler(new SelectHandler() {
-			@Override
-			public void onSelect(SelectEvent event) {
-				deleteSelectedImageEntry();
-			}
-		});
-
-		// ImageUploader imgUploader = new ImageUploader(this);
-		// vlc.add(imgUploader);
-
-		imageListView.setSize("250", "350");
-		ListField<ImageEntry, ImageEntry> lf = new ListField<ImageEntry, ImageEntry>(imageListView);
-		lf.setSize("250", "350");
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Image Selection");
-		attributePanel.add(lf);
-		imgPanel.add(attributePanel);
-
-		/**
-		 * here we add the search for image titles
-		 */
-		searchField = new TextField();
-		searchField.setSize("200", "30");
-		searchFilter = new StoreFilter<ImageEntry>() {
-			@Override
-			public boolean select(Store<ImageEntry> store, ImageEntry parent, ImageEntry item) {
-				if (item.getTitle().toLowerCase().contains(searchField.getCurrentValue().toLowerCase())) {
-					return true;
-				}
-				return false;
-			}
-		};
-		imageEntryList.addFilter(searchFilter);
-		TextButton searchButton = new TextButton("search");
-		searchButton.addSelectHandler(new SelectHandler() {
-			@Override
-			public void onSelect(SelectEvent event) {
-				if (searchField.getCurrentValue() != null) {
-					imageEntryList.addFilter(searchFilter);
-					imageEntryList.setEnableFilters(true);
-				}
-			}
-		});
-		TextButton resetButton = new TextButton("reset");
-		resetButton.addSelectHandler(new SelectHandler() {
-			@Override
-			public void onSelect(SelectEvent event) {
-				imageEntryList.setEnableFilters(false);
-				imageEntryList.removeFilter(searchFilter);
-			}
-		});
-
-		FramedPanel searchPanel = new FramedPanel();
-		searchPanel.setHeading("Search");
-		searchPanel.add(searchField);
-		searchPanel.addButton(searchButton);
-		searchPanel.addButton(resetButton);
-		imgPanel.add(searchPanel);
-
-		hPanel.add(imgPanel);
+		SafeUri imageUri = UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() +"&thumb=true");
+		Image img = new Image(imageUri);
+		imageContainer.add(img);
+		imageContainer.setPixelSize(210, 210);
+		hPanel.add(imageContainer);
 		hPanel.add(editPanel);
 
 		panel.setHeading("Image Editor");
 		panel.add(hPanel);
 		panel.addButton(closeButton);
 		panel.addButton(saveButton);
-		panel.addButton(deleteButton);
+		// panel.addButton(deleteButton);
 
 	}
 
 	/**
 	 * 
 	 */
-	protected void cancelEditing() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	/**
-	 * Deletes the currently selected ImageEntry (shows a yes/no dialog first)
-	 */
-	private void deleteSelectedImageEntry() {
-		if (imageListView.getSelectionModel().getSelectedItem() != null) {
-			Dialog simple = new Dialog();
-			simple.setHeading("Delete");
-			simple.setWidth(300);
-			simple.setResizable(false);
-			simple.setHideOnButtonClick(true);
-			simple.setPredefinedButtons(PredefinedButton.YES, PredefinedButton.NO);
-			simple.setBodyStyleName("pad-text");
-			simple.getBody().addClassName("pad-text");
-			simple.add(new Label("Do you really want to delete the selected entry?"));
-			simple.getButton(PredefinedButton.YES).addSelectHandler(new SelectHandler() {
-
-				@Override
-				public void onSelect(SelectEvent event) {
-					// only of the yes button is selected, we will perform the command
-					// to simplify we just ignore the no button event by doing nothing
-					int imageID = imageListView.getSelectionModel().getSelectedItem().getImageID();
-					dbService.updateEntry("DELETE FROM Images WHERE ImageID=" + imageID, new AsyncCallback<Boolean>() {
-						public void onFailure(Throwable caught) {
-							Info.display("Error", "Problem with database connection!");
-						}
-
-						@Override
-						public void onSuccess(Boolean result) {
-							if (result) {
-								Info.display("Image information", "Image information has been updated!");
-							} else {
-								Info.display("Image information", "Image information has been updated!");
-							}
-							refreshImages();
-							imageListView.getSelectionModel().select(imageEntryList.get(0), true);
-						}
-					});
-				}
-			});
-			simple.show();
-			// constrain the dialog to the viewport (for small mobile screen sizes)
-			Rectangle bounds = simple.getElement().getBounds();
-			Rectangle adjusted = simple.getElement().adjustForConstraints(bounds);
-			if (adjusted.getWidth() != bounds.getWidth() || adjusted.getHeight() != bounds.getHeight()) {
-				simple.setPixelSize(adjusted.getWidth(), adjusted.getHeight());
-			}
+	protected void closeDialog() {
+		for (ImageEditorListener listener : editorListenerList) {
+			listener.closeImageEditor();
 		}
 	}
 
 	/**
-	 * refreshes @imageEntryList which will automatically update the view of the
-	 * thumbnails
+	 * 
 	 */
-	private void refreshImages() {
-		// Info.display("refreshImages()", "starting....");
-		dbService.getImages(new AsyncCallback<ArrayList<ImageEntry>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				Info.display("Refresh Image List", "failed");
-			}
-
-			@Override
-			public void onSuccess(ArrayList<ImageEntry> result) {
-				imageEntryList.clear();
-				// Info.display("Refresh Image List", "success");
-				for (ImageEntry ie : result) {
-					imageEntryList.add(ie);
-				}
-			}
-		});
+	protected void cancelEditing() {
+		for (ImageEditorListener listener : editorListenerList) {
+			listener.cancelImageEditor();
+		}
 	}
 
 	/**
@@ -464,12 +359,9 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 	 * the Photographer ID us currently not mapped to the text entry in this box.
 	 * (shows a yes/no dialog first)
 	 */
-	private void saveSelectedImageEntry() {
-		ImageEntry selectedItem = imageListView.getSelectionModel().getSelectedItem();
-		if (selectedItem == null) {
-			Info.display("Save Image", "There is no image selected for editing!");
-			return;
-		} else if ("New Image".equals(titleField.getCurrentValue())) {
+	private void saveImageEntry() {
+//		ImageEntry selectedItem = imageListView.getSelectionModel().getSelectedItem();
+		if ("New Image".equals(titleField.getCurrentValue())) {
 			Dialog warning = new Dialog();
 			warning.setHeading("A problem occurred!");
 			warning.setWidth(300);
@@ -508,43 +400,41 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 				// to simplify we just ignore the no button event by doing nothing
 				DateTimeFormat dtf = DateTimeFormat.getFormat("yyyy-MM-dd");
 				String sqlUpdate = "UPDATE Images SET Title='" + titleField.getText() + "'";
-				if (copyrightField.getValue() != null) {
-					sqlUpdate = sqlUpdate.concat(",Copyright='" + copyrightField.getText() + "'");
+				if (imgEntry.getCopyright() != null) {
+					sqlUpdate = sqlUpdate.concat(",Copyright='" + imgEntry.getCopyright() + "'");
 				}
-				if (photographerSelection.getValue() != null) {
-					sqlUpdate = sqlUpdate.concat(",PhotographerID=" + photographerSelection.getValue().getPhotographerID());
+				if (imgEntry.getPhotographerID() > 0) {
+					sqlUpdate = sqlUpdate.concat(",PhotographerID=" + imgEntry.getPhotographerID());
 				}
-				if (commentArea.getValue() != null) {
-					sqlUpdate = sqlUpdate.concat(",Comment='" + commentArea.getText() + "'");
+				if (imgEntry.getComment() != null) {
+					sqlUpdate = sqlUpdate.concat(",Comment='" + imgEntry.getComment() + "'");
 				}
-				if (dateField.getValue() != null) {
-					sqlUpdate = sqlUpdate.concat(",CaptureDate='" + dtf.format(dateField.getValue()) + "'");
+				if (imgEntry.getCaptureDate() != null) {
+					sqlUpdate = sqlUpdate.concat(",CaptureDate='" + dtf.format(imgEntry.getCaptureDate()) + "'");
 				}
-				if (rPhoto.getValue()) {
-					sqlUpdate = sqlUpdate.concat(",ImageType='photo'");
-				} else if (rSketch.getValue()) {
-					sqlUpdate = sqlUpdate.concat(",ImageType='sketch'");
-				} else if (rMap.getValue()) {
-					sqlUpdate = sqlUpdate.concat(",ImageType='map'");
-				}
+				sqlUpdate = sqlUpdate.concat(",ImageType='" + imgEntry.getType() + "'");
+//				if (rPhoto.getValue()) {
+//					sqlUpdate = sqlUpdate.concat(",ImageType='photo'");
+//				} else if (rSketch.getValue()) {
+//					sqlUpdate = sqlUpdate.concat(",ImageType='sketch'");
+//				} else if (rMap.getValue()) {
+//					sqlUpdate = sqlUpdate.concat(",ImageType='map'");
+//				}
 
-				sqlUpdate = sqlUpdate.concat(" WHERE ImageID=" + imageListView.getSelectionModel().getSelectedItem().getImageID());
+				sqlUpdate = sqlUpdate.concat(" WHERE ImageID=" + imgEntry.getImageID());
 
 				dbService.updateEntry(sqlUpdate, new AsyncCallback<Boolean>() {
 					public void onFailure(Throwable caught) {
-						Info.display("Error", "Problem with database connection!");
+						Info.display("ERROR", "Image information has NOT been updated!");
 					}
 
 					@Override
 					public void onSuccess(Boolean result) {
 						if (result) {
-							Info.display("Image information", "Image information has been updated!");
+							closeDialog();
 						} else {
-							Info.display("Image information", "Image information has been updated!");
+							Info.display("ERROR", "Image information has NOT been updated!");
 						}
-						imageEntryList.setEnableFilters(false);
-						imageEntryList.removeFilter(newImageFilter);
-						refreshImages();
 					}
 				});
 			}
@@ -557,23 +447,6 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 			simple.setPixelSize(adjusted.getWidth(), adjusted.getHeight());
 		}
 
-	}
-
-	@Override
-	public void uploadCompleted() {
-		imageEntryList.addFilter(newImageFilter);
-		imageEntryList.setEnableFilters(true);
-		refreshImages();
-		imageListView.getSelectionModel().select(imageEntryList.get(0), true);
-	}
-
-	/* (non-Javadoc)
-	 * @see de.cses.client.images.ImageUploadListener#uploadCanceled()
-	 */
-	@Override
-	public void uploadCanceled() {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

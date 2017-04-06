@@ -49,7 +49,7 @@ public class Util {
 
 			@Override
 			public void onSuccess(ImageEntry result) {
-				imageUri  = UriUtils.fromString("infosystem/images?imageID=" + result.getImageID() + (thumbnail ? "&thumb=true" : "") );
+				imageUri  = UriUtils.fromString("resource?imageID=" + result.getImageID() + (thumbnail ? "&thumb=true" : "") );
 			}
 		});
 		return imageUri;

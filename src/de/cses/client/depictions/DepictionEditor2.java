@@ -344,7 +344,7 @@ public class DepictionEditor2 implements IsWidget, ImageSelectorListener {
 			final ImageViewTemplates imageViewTemplates = GWT.create(ImageViewTemplates.class);
 
 			public SafeHtml render(ImageEntry item) {
-				SafeUri imageUri = UriUtils.fromString("infosystem/images?imageID=" + item.getImageID() + "&thumb=true");
+				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=true");
 				return imageViewTemplates.image(imageUri, item.getTitle());
 			}
 		}));
@@ -546,7 +546,7 @@ public class DepictionEditor2 implements IsWidget, ImageSelectorListener {
 		attributePanel.setButtonAlign(BoxLayoutPack.CENTER);
 
 		final CaveLayoutViewTemplates caveLayoutViewTemplates = GWT.create(CaveLayoutViewTemplates.class);	
-		SafeUri imageUri = UriUtils.fromString("infosystem/images?background=centralPillarCave.jpeg");
+		SafeUri imageUri = UriUtils.fromString("resource?background=centralPillarCave.jpeg");
 		FlowLayoutContainer imageContainer = new FlowLayoutContainer();
 		imageContainer.add(new HTMLPanel(caveLayoutViewTemplates.image(imageUri, "Central Pillar Cave")));
 		attributePanel.add(imageContainer);

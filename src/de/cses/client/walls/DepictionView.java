@@ -32,53 +32,52 @@ import de.cses.shared.ImageEntry;
  * @author nina
  *
  */
-public class DepictionView extends SimpleContainer{
+public class DepictionView extends SimpleContainer {
 
 	/**
 	 * 
 	 */
-	
+
 	int depictionID;
 	DepictionView depictionview = this;
 	private DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
-	
-	
-	public DepictionView(int depictionID, final boolean editable) {
-		
-		super();
-		
-		this.depictionID= depictionID;
-	
-		dbService.getMasterImageEntryForDepiction(depictionID,new AsyncCallback<ImageEntry>() {
 
+	public DepictionView(int depictionID, final boolean editable) {
+
+		super();
+
+		this.depictionID = depictionID;
+
+		dbService.getMasterImageEntryForDepiction(depictionID, new AsyncCallback<ImageEntry>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
 				caught.printStackTrace();
-			} 
+			}
+
 			@Override
 			public void onSuccess(ImageEntry imageresult) {
-		
-				SafeUri uri =  UriUtils.fromString("http://kucha.informatik.hu-berlin.de/tomcat/kis/infosystem/images?imageID=" + imageresult.getImageID());
+
+				SafeUri uri = UriUtils.fromString("resource?imageID=" + imageresult.getImageID());
 				final Image image = new Image(uri);
 				depictionview.add(image);
-				 if(editable){
-				 Draggable drag = new Draggable(depictionview);
-				 }
-				 depictionview.setPixelSize(50, 50);
-				 Resizable resize = new Resizable(depictionview, Resizable.Dir.NE,Resizable.Dir.NW, Resizable.Dir.SE, Resizable.Dir.SW);
-				 resize.setPreserveRatio(true);
-				 
-					ResizeHandler resizeHandler =new ResizeHandler(){
+				if (editable) {
+					Draggable drag = new Draggable(depictionview);
+				}
+				depictionview.setPixelSize(50, 50);
+				Resizable resize = new Resizable(depictionview, Resizable.Dir.NE, Resizable.Dir.NW, Resizable.Dir.SE, Resizable.Dir.SW);
+				resize.setPreserveRatio(true);
 
-						@Override
-						public void onResize(ResizeEvent event) {
-							
-							image.setPixelSize(depictionview.getOffsetWidth(),depictionview.getOffsetHeight());
-						}
-						
-					};
-					depictionview.addHandler(resizeHandler, ResizeEvent.getType());
+				ResizeHandler resizeHandler = new ResizeHandler() {
+
+					@Override
+					public void onResize(ResizeEvent event) {
+
+						image.setPixelSize(depictionview.getOffsetWidth(), depictionview.getOffsetHeight());
+					}
+
+				};
+				depictionview.addHandler(resizeHandler, ResizeEvent.getType());
 			}
 		});
 	}
@@ -98,7 +97,5 @@ public class DepictionView extends SimpleContainer{
 	public void setDepictionID(int depictionID) {
 		this.depictionID = depictionID;
 	}
-	
-	
 
 }

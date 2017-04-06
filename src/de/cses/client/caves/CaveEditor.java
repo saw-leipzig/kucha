@@ -533,7 +533,7 @@ public class CaveEditor implements IsWidget {
 		vPanel.add(attributePanel);
 		
 		final CaveLayoutViewTemplates caveLayoutViewTemplates = GWT.create(CaveLayoutViewTemplates.class);	
-		SafeUri imageUri = UriUtils.fromString("infosystem/images?background=centralPillarCave.jpeg");
+		SafeUri imageUri = UriUtils.fromString("resource?background=centralPillarCave.jpeg");
 		FlowLayoutContainer imageContainer = new FlowLayoutContainer();
 		imageContainer.add(new HTMLPanel(caveLayoutViewTemplates.image(imageUri, "Central Pillar Cave")));
 		vPanel.add(imageContainer);

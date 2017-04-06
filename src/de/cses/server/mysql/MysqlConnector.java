@@ -20,6 +20,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import com.sencha.gxt.widget.core.client.info.Info;
+
+import de.cses.server.ServerProperties;
 import de.cses.shared.AntechamberEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.BackAreaEntry;
@@ -51,12 +54,15 @@ import de.cses.shared.VendorEntry;
  */
 public class MysqlConnector {
 
-	private static String url = "jdbc:mysql://kucha.informatik.hu-berlin.de/infosys?useUnicode=true&characterEncoding=UTF-8"; //$NON-NLS-1$
-	private static String user = Messages.getString("MysqlConnector.db.user");
-	private static String password = Messages.getString("MysqlConnector.db.password");
+	private String url; // MysqlConnector.db.url
+	private String user; // MysqlConnector.db.user
+	private String password; // MysqlConnector.db.password
+
 	private int auto_increment_id;
 
 	private static MysqlConnector instance = null;
+	private ServerProperties serverProperties = ServerProperties.getInstance();
+
 
 	/**
 	 * By calling this method, we avoid that a new instance will be created if
@@ -76,9 +82,12 @@ public class MysqlConnector {
 
 	private MysqlConnector() {
 
+		user = serverProperties.getProperty("MysqlConnector.db.user");
+		password = serverProperties.getProperty("MysqlConnector.db.password");
+		url = serverProperties.getProperty("MysqlConnector.db.url");
 		try {
 			Class.forName("org.mariadb.jdbc.Driver"); //$NON-NLS-1$
-			connection = DriverManager.getConnection(MysqlConnector.url, MysqlConnector.user, MysqlConnector.password);
+			connection = DriverManager.getConnection(url, user, password);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
@@ -89,7 +98,7 @@ public class MysqlConnector {
 	private Connection getConnection() {
 		try {
 			if (connection == null || !connection.isValid(5)) {
-				connection = DriverManager.getConnection(MysqlConnector.url, MysqlConnector.user, MysqlConnector.password);
+				connection = DriverManager.getConnection(url, user, password);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project default="war" name="KUCHA" xmlns:if="ant:if">
 	<!-- Configure path to GWT SDK -->
-	<property name="GWT_HOME" value="/Applications/Eclipse.app/Contents/Eclipse/plugins/com.google.gwt.eclipse.sdkbundle_2.7.0/gwt-2.7.0" />
+	<property name="GWT_HOME" value="/Users/alingnau/.p2/pool/plugins/com.gwtplugins.gwt.eclipse.sdkbundle.gwt28_2.8.0.201703272136/gwt-2.8.0" />
 
 	<!-- enable the following property for devmode debugging in an IDE; for Eclipse create an "Remote Java Application" launcher conneting to port 8000 -->
 	<property name="enable.debug.port" value="false" />
 
-	<property name="target.java.version" value="1.7" />
+	<property name="target.java.version" value="1.8" />
 	<property name="main.class" value="de.cses.KuchaApplication" />
 	<path id="gwt.class.path">
 		<pathelement location="${GWT_HOME}/gwt-servlet.jar" />
@@ -31,7 +31,7 @@
 				<path refid="gxt.class.path"/>
 			</classpath>
 		</javac>
-		<copy file="src/de/cses/server/mysql/messages.properties" todir="war/WEB-INF/classes/de/cses/server/mysql" />
+<!--		<copy file="src/de/cses/server/mysql/messages.properties" todir="war/WEB-INF/classes/de/cses/server/mysql" /> -->
 	</target>
 	<target name="war" depends="compile-servlets,gwtc">
 		<available file="war/infosystem/infosystem.nocache.js" property="gwt_compiled" />

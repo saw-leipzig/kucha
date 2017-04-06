@@ -13,8 +13,6 @@
  */
 package de.cses.client.caves;
 
-import org.apache.xpath.operations.Plus;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
@@ -25,7 +23,6 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import com.sencha.gxt.cell.core.client.ButtonCell.ButtonScale;
 import com.sencha.gxt.cell.core.client.ButtonCell.IconAlign;
 import com.sencha.gxt.core.client.XTemplates;
-import com.sencha.gxt.core.client.XTemplates.XTemplate;
 import com.sencha.gxt.fx.client.Draggable;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;

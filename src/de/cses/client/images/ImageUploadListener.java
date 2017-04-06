@@ -22,4 +22,6 @@ public interface ImageUploadListener {
 	
 	public void uploadCompleted();
 
+	public void uploadCanceled();
+
 }

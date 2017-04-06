@@ -70,7 +70,7 @@ public class PictorialElementSelector implements IsWidget {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				Info.display("Loading Iconography", "failed");
+				Info.display("Loading Pictorial Elements", "failed");
 				tree = null;
 			}
 

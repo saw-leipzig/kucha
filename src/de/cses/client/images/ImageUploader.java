@@ -70,7 +70,7 @@ public class ImageUploader implements IsWidget {
 		file.setPixelSize(300, 30);
 
 		form = new FormPanel();
-		form.setAction("infosystem/imgUploader");
+		form.setAction("imgUpload");
 		form.setEncoding(Encoding.MULTIPART);
 		form.setMethod(Method.POST);
 
@@ -115,7 +115,21 @@ public class ImageUploader implements IsWidget {
 				file.reset();
 			}
 		});
+		
+		TextButton cancelButton = new TextButton("Cancel");
+		cancelButton.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				for (ImageUploadListener listener : uploadListener) {
+					// ToDo: send information after image upload for database
+					listener.uploadCanceled();
+				}
+				
+			}
+		});
 
+		mainPanel.addButton(cancelButton);
 		mainPanel.addButton(resetButton);
 		mainPanel.addButton(submitButton);
 	}

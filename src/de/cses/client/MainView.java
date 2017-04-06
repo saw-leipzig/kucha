@@ -41,12 +41,15 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 
 import de.cses.client.caves.CaveFilter;
 import de.cses.client.caves.CaveResultView;
-import de.cses.client.caves.CaveSelector;
+import de.cses.client.caves.CaveSearchController;
 import de.cses.client.depictions.DepictionFilter;
 import de.cses.client.depictions.DepictionResultView;
-import de.cses.client.depictions.DepictionSelector;
+import de.cses.client.depictions.DepictionSearchController;
+import de.cses.client.images.ImageFilter;
+import de.cses.client.images.ImageResultView;
+import de.cses.client.images.ImageSearchController;
 import de.cses.client.ui.AbstractFilter;
-import de.cses.client.ui.AbstractSelector;
+import de.cses.client.ui.AbstractSearchController;
 import de.cses.client.ui.LocationFilter;
 
 /**
@@ -56,7 +59,7 @@ import de.cses.client.ui.LocationFilter;
 public class MainView implements IsWidget {
 
 	private BorderLayoutContainer view = null;
-	private CaveSelector caveSelector;
+	private CaveSearchController caveSearchController;
 	private ContentPanel filterPanel;
 	private VerticalLayoutContainer filterView;
 	private VerticalLayoutContainer resultView;
@@ -67,7 +70,8 @@ public class MainView implements IsWidget {
 	private VerticalPanel northPanel;
 	private FramedPanel searchTextPanel;
 	private HorizontalLayoutContainer selectorLayoutContainer;
-	private DepictionSelector depictionSelector;
+	private DepictionSearchController depictionSearchController;
+	private ImageSearchController imageSearchController;
 
 	/**
 	 * 
@@ -105,54 +109,79 @@ public class MainView implements IsWidget {
     CaveFilter cFilter = new CaveFilter("Cave Filter");
     filterLayoutData = new VerticalLayoutData(-1, -1, new Margins(5, 0, 5, 0));
 
-		caveSelector = new CaveSelector("Caves", new CaveResultView("Caves"));
-		caveSelector.addRelatedFilter(cFilter);
-		caveSelector.addRelatedFilter(lFilter);
-		caveSelector.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+		caveSearchController = new CaveSearchController("Caves", new CaveResultView("Caves"));
+		caveSearchController.addRelatedFilter(cFilter);
+		caveSearchController.addRelatedFilter(lFilter);
+		caveSearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 			
 			@Override
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
 				if (event.getValue()) {
-					for (AbstractFilter filter : caveSelector.getRelatedFilter()) {
+					for (AbstractFilter filter : caveSearchController.getRelatedFilter()) {
 						filterView.add(filter, filterLayoutData);
 					}
-					resultView.add(caveSelector.getResultView(), resultLayoutData);
+					resultView.add(caveSearchController.getResultView(), resultLayoutData);
 				} else {
 					ArrayList<AbstractFilter> usedFilter = getUsedFilter();
-					for (AbstractFilter filter : caveSelector.getRelatedFilter()) {
+					for (AbstractFilter filter : caveSearchController.getRelatedFilter()) {
 						if (!usedFilter.contains(filter)){
 							filterView.remove(filter);
 						}
 					}
-					caveSelector.getResultView().removeFromParent();
+					caveSearchController.getResultView().removeFromParent();
 				}
 			}
 		});
-		selectorLayoutContainer.add(caveSelector, hLayoutData);
+		selectorLayoutContainer.add(caveSearchController, hLayoutData);
 		
-		depictionSelector = new DepictionSelector("Depictions", new DepictionResultView("Depictions"));
-		depictionSelector.addRelatedFilter(new DepictionFilter("Depiction Filter"));
-		depictionSelector.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+		depictionSearchController = new DepictionSearchController("Depictions", new DepictionResultView("Depictions"));
+		depictionSearchController.addRelatedFilter(new DepictionFilter("Depiction Filter"));
+		depictionSearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
 				if (event.getValue()) {
-					for (AbstractFilter filter : depictionSelector.getRelatedFilter()) {
+					for (AbstractFilter filter : depictionSearchController.getRelatedFilter()) {
 						filterView.add(filter, filterLayoutData);
 					}
-					resultView.add(depictionSelector.getResultView(), resultLayoutData);
+					resultView.add(depictionSearchController.getResultView(), resultLayoutData);
 				} else {
 					ArrayList<AbstractFilter> usedFilter = getUsedFilter();
-					for (AbstractFilter filter : depictionSelector.getRelatedFilter()) {
+					for (AbstractFilter filter : depictionSearchController.getRelatedFilter()) {
 						if (!usedFilter.contains(filter)){
 							filterView.remove(filter);
 						}
 					}
-					depictionSelector.getResultView().removeFromParent();
+					depictionSearchController.getResultView().removeFromParent();
 				}
 			}
 		});
-		selectorLayoutContainer.add(depictionSelector, hLayoutData);
+		selectorLayoutContainer.add(depictionSearchController, hLayoutData);
+		
+		imageSearchController = new ImageSearchController("Images", new ImageResultView("Images"));
+		imageSearchController.addRelatedFilter(new ImageFilter("Image Filter"));
+		imageSearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				if (event.getValue()) {
+					for (AbstractFilter filter : imageSearchController.getRelatedFilter()) {
+						filterView.add(filter, filterLayoutData);
+					}
+					resultView.add(imageSearchController.getResultView(), resultLayoutData);
+				} else {
+					ArrayList<AbstractFilter> usedFilter = getUsedFilter();
+					for (AbstractFilter filter : imageSearchController.getRelatedFilter()) {
+						if (!usedFilter.contains(filter)) {
+							filterView.remove(filter);
+						}
+					}
+					imageSearchController.getResultView().removeFromParent();
+				}
+			}
+			
+		});
+		selectorLayoutContainer.add(imageSearchController, hLayoutData);
 		
 		
     ContentPanel centerPanel = new ContentPanel();
@@ -184,7 +213,7 @@ public class MainView implements IsWidget {
 			
 			@Override
 			public void onSelect(SelectEvent event) {
-				for (AbstractSelector s : getActiveSelectors()) {
+				for (AbstractSearchController s : getActiveFilters()) {
 					s.invokeSearch();
 				}
 			}
@@ -222,12 +251,12 @@ public class MainView implements IsWidget {
 		ArrayList<AbstractFilter> usedFilter = new ArrayList<AbstractFilter>();
 		Widget w;
 		Iterator<Widget> it;
-		AbstractSelector selector;
+		AbstractSearchController selector;
 		it = selectorLayoutContainer.iterator();
 		while (it.hasNext()) {
 			w = it.next();
-			if (w instanceof AbstractSelector) {
-				selector = ((AbstractSelector) w);
+			if (w instanceof AbstractSearchController) {
+				selector = ((AbstractSearchController) w);
 				if (selector.getValue()) {
 					usedFilter.addAll(selector.getRelatedFilter());
 				}
@@ -239,16 +268,16 @@ public class MainView implements IsWidget {
 	/**
 	 * 
 	 */
-	protected ArrayList<AbstractSelector> getActiveSelectors() {
-		ArrayList<AbstractSelector> activeSelectors = new ArrayList<AbstractSelector>();
+	protected ArrayList<AbstractSearchController> getActiveFilters() {
+		ArrayList<AbstractSearchController> activeSelectors = new ArrayList<AbstractSearchController>();
 		Widget w;
 		Iterator<Widget> it;
-		AbstractSelector selector;
+		AbstractSearchController selector;
 		it = selectorLayoutContainer.iterator();
 		while (it.hasNext()) {
 			w = it.next();
-			if (w instanceof AbstractSelector) {
-				selector = ((AbstractSelector) w);
+			if (w instanceof AbstractSearchController) {
+				selector = ((AbstractSearchController) w);
 				if (selector.getValue()) {
 					activeSelectors.add(selector);
 				}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 
+ * Copyright 2017 
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -11,24 +11,33 @@
  * You should have received a copy of the GPL v3 along with the software. 
  * If not, you can access it from here: <https://www.gnu.org/licenses/gpl-3.0.txt>.
  */
-package de.cses.server.mysql;
+package de.cses.client.images;
 
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.widget.core.client.button.TextButton;
 
-public class Messages {
-	private static final String BUNDLE_NAME = "de.cses.server.mysql.messages"; //$NON-NLS-1$
+import de.cses.client.ui.AbstractResultView;
 
-	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
+/**
+ * @author alingnau
+ *
+ */
+public class ImageResultView extends AbstractResultView {
 
-	private Messages() {
+	/**
+	 * @param title
+	 */
+	public ImageResultView(String title) {
+		super(title);
+		setHeight(300);
 	}
 
-	public static String getString(String key) {
-		try {
-			return RESOURCE_BUNDLE.getString(key);
-		} catch (MissingResourceException e) {
-			return '!' + key + '!';
-		}
+	/* (non-Javadoc)
+	 * @see de.cses.client.ui.AbstractResultView#newElementButton()
+	 */
+	@Override
+	public Widget newElementButton() {
+		return new ImageView();
 	}
+
 }

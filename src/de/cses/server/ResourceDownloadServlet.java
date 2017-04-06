@@ -15,8 +15,6 @@ package de.cses.server;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -32,22 +30,24 @@ import de.cses.server.mysql.MysqlConnector;
 public class ResourceDownloadServlet extends HttpServlet {
 
 //	public static final String SERVER_IMAGES_PATHNAME = System.getProperty("user.dir") + "/webapps/images";
-	public static final String SERVER_BACKGROUNDS_PATHNAME = System.getProperty("user.dir") + "/webapps/backgrounds";
-	private Properties serverProperties = new Properties();
-	MysqlConnector connector = MysqlConnector.getInstance();
+//	public static final String SERVER_BACKGROUNDS_PATHNAME = System.getProperty("user.dir") + "/webapps/backgrounds";
+//	private Properties serverProperties = new Properties();
+	private MysqlConnector connector = MysqlConnector.getInstance();
+	private ServerProperties serverProperties = ServerProperties.getInstance();
 
 	public ResourceDownloadServlet() {
-		FileReader fReader;
-		try {
-			fReader = new FileReader(System.getProperty("user.dir") + "/kucha.properties");
-			serverProperties.load(fReader);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		FileReader fReader;
+//		try {
+//			fReader = new FileReader(System.getProperty("user.dir") + "/kucha.properties");
+//			serverProperties.load(fReader);
+//			serverProperties.storeToXML(new FileOutputStream(System.getProperty("user.dir") + "/kucha.xml"), "test");
+//		} catch (FileNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}
 
 	/*
@@ -64,7 +64,7 @@ public class ResourceDownloadServlet extends HttpServlet {
 		if (request.getParameter("imageID") != null) {
 			String imageID = request.getParameter("imageID");
 			String filename = connector.getImageEntry(Integer.parseInt(imageID)).getFilename();
-			File inputFile = new File(serverProperties.getProperty("imageHomeDir"), (request.getParameter("thumb") != null ? "tn" : "") + filename);
+			File inputFile = new File(serverProperties.getProperty("home.images"), (request.getParameter("thumb") != null ? "tn" : "") + filename);
 			if (inputFile.exists()) {
 				FileInputStream fis = new FileInputStream(inputFile);
 				response.setContentType(filename.toLowerCase().endsWith("png") ? "image/png" : "image/jpeg");
@@ -85,7 +85,7 @@ public class ResourceDownloadServlet extends HttpServlet {
 				response.setStatus(400);
 				return;
 			} else {
-				File inputFile = new File(SERVER_BACKGROUNDS_PATHNAME, filename);
+				File inputFile = new File(serverProperties.getProperty("home.backgrounds"), filename);
 				if (inputFile.exists()) {
 					FileInputStream fis = new FileInputStream(inputFile);
 					response.setContentType(filename.toLowerCase().endsWith("png") ? "image/png" : "image/jpeg");
