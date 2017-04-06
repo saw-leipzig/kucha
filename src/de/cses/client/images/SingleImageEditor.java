@@ -303,12 +303,12 @@ public class SingleImageEditor implements IsWidget {
 		});
 		editPanel.add(attributePanel);
 
-		TextButton closeButton = new TextButton("close");
-		closeButton.addSelectHandler(new SelectHandler() {
+		TextButton cancelButton = new TextButton("cancel");
+		cancelButton.addSelectHandler(new SelectHandler() {
 
 			@Override
 			public void onSelect(SelectEvent event) {
-				closeDialog();
+				cancelDialog();
 			}
 		});
 
@@ -329,7 +329,7 @@ public class SingleImageEditor implements IsWidget {
 
 		panel.setHeading("Image Editor");
 		panel.add(hPanel);
-		panel.addButton(closeButton);
+		panel.addButton(cancelButton);
 		panel.addButton(saveButton);
 		// panel.addButton(deleteButton);
 
@@ -338,9 +338,14 @@ public class SingleImageEditor implements IsWidget {
 	/**
 	 * 
 	 */
-	protected void closeDialog() {
-		for (ImageEditorListener listener : editorListenerList) {
-			listener.closeImageEditor();
+	protected void cancelDialog() {
+		if ("New Image".equals(titleField.getCurrentValue())) {
+			showTitleWarningDialog();
+			return;
+		} else {
+			for (ImageEditorListener listener : editorListenerList) {
+				listener.cancelImageEditor();
+			}
 		}
 	}
 
@@ -362,23 +367,7 @@ public class SingleImageEditor implements IsWidget {
 	private void saveImageEntry() {
 //		ImageEntry selectedItem = imageListView.getSelectionModel().getSelectedItem();
 		if ("New Image".equals(titleField.getCurrentValue())) {
-			Dialog warning = new Dialog();
-			warning.setHeading("A problem occurred!");
-			warning.setWidth(300);
-			warning.setResizable(false);
-			warning.setHideOnButtonClick(true);
-			warning.setPredefinedButtons(PredefinedButton.OK);
-			warning.setBodyStyleName("pad-text");
-			warning.getBody().addClassName("pad-text");
-			warning.add(new Label(
-					"Please change at least the title of the uploaded image! If necessary, all other information can be changed at a later time."));
-			warning.show();
-			// constrain the dialog to the viewport (for small mobile screen sizes)
-			Rectangle bounds = warning.getElement().getBounds();
-			Rectangle adjusted = warning.getElement().adjustForConstraints(bounds);
-			if (adjusted.getWidth() != bounds.getWidth() || adjusted.getHeight() != bounds.getHeight()) {
-				warning.setPixelSize(adjusted.getWidth(), adjusted.getHeight());
-			}
+			showTitleWarningDialog();
 			return;
 		}
 
@@ -413,13 +402,6 @@ public class SingleImageEditor implements IsWidget {
 					sqlUpdate = sqlUpdate.concat(",CaptureDate='" + dtf.format(imgEntry.getCaptureDate()) + "'");
 				}
 				sqlUpdate = sqlUpdate.concat(",ImageType='" + imgEntry.getType() + "'");
-//				if (rPhoto.getValue()) {
-//					sqlUpdate = sqlUpdate.concat(",ImageType='photo'");
-//				} else if (rSketch.getValue()) {
-//					sqlUpdate = sqlUpdate.concat(",ImageType='sketch'");
-//				} else if (rMap.getValue()) {
-//					sqlUpdate = sqlUpdate.concat(",ImageType='map'");
-//				}
 
 				sqlUpdate = sqlUpdate.concat(" WHERE ImageID=" + imgEntry.getImageID());
 
@@ -431,7 +413,7 @@ public class SingleImageEditor implements IsWidget {
 					@Override
 					public void onSuccess(Boolean result) {
 						if (result) {
-							closeDialog();
+							cancelDialog();
 						} else {
 							Info.display("ERROR", "Image information has NOT been updated!");
 						}
@@ -447,6 +429,30 @@ public class SingleImageEditor implements IsWidget {
 			simple.setPixelSize(adjusted.getWidth(), adjusted.getHeight());
 		}
 
+	}
+
+	/**
+	 * 
+	 */
+	private void showTitleWarningDialog() {
+		Dialog warning = new Dialog();
+		warning.setHeading("A problem occurred!");
+		warning.setWidth(300);
+		warning.setResizable(false);
+		warning.setHideOnButtonClick(true);
+		warning.setPredefinedButtons(PredefinedButton.OK);
+		warning.setBodyStyleName("pad-text");
+		warning.getBody().addClassName("pad-text");
+		warning.add(new Label(
+				"Please change at least the title of the uploaded image! If necessary, all other information can be changed at a later time."));
+		warning.show();
+		// constrain the dialog to the viewport (for small mobile screen sizes)
+		Rectangle bounds = warning.getElement().getBounds();
+		Rectangle adjusted = warning.getElement().adjustForConstraints(bounds);
+		if (adjusted.getWidth() != bounds.getWidth() || adjusted.getHeight() != bounds.getHeight()) {
+			warning.setPixelSize(adjusted.getWidth(), adjusted.getHeight());
+		}
+		return;
 	}
 
 }

@@ -16,25 +16,27 @@ package de.cses.client.images;
 import java.util.ArrayList;
 
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.xml.client.NodeList;
+import com.google.gwt.xml.client.XMLParser;
+import com.sencha.gxt.widget.core.client.Dialog;
+import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.Status;
 import com.sencha.gxt.widget.core.client.Window;
-import com.sencha.gxt.widget.core.client.button.ButtonBar;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.MarginData;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.event.SubmitCompleteEvent;
 import com.sencha.gxt.widget.core.client.event.SubmitCompleteEvent.SubmitCompleteHandler;
-import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.FileUploadField;
 import com.sencha.gxt.widget.core.client.form.FormPanel;
-import com.sencha.gxt.widget.core.client.form.FileUploadField.FileUploadFieldAppearance;
 import com.sencha.gxt.widget.core.client.form.FormPanel.Encoding;
 import com.sencha.gxt.widget.core.client.form.FormPanel.Method;
+import com.google.gwt.xml.client.Document;
+import com.google.gwt.xml.client.Node;
 
 public class ImageUploader implements IsWidget {
 
@@ -77,9 +79,12 @@ public class ImageUploader implements IsWidget {
 		form.addSubmitCompleteHandler(new SubmitCompleteHandler() {
 			public void onSubmitComplete(SubmitCompleteEvent event) {
 				uploadInfoWindow.hide();
+				Document doc = XMLParser.parse(event.getResults());
+				NodeList nodelist = doc.getElementsByTagName("pre");
+				Node node = nodelist.item(0);
 				for (ImageUploadListener listener : uploadListener) {
 					// ToDo: send information after image upload for database
-					listener.uploadCompleted();
+					listener.uploadCompleted(Integer.parseInt(node.getFirstChild().toString()));
 				}
 			}
 		});

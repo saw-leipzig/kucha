@@ -47,9 +47,10 @@ import de.cses.shared.ImageEntry;
 @MultipartConfig
 public class ImageServiceImpl extends HttpServlet {
 
-	private static final int MAX_THUMBNAIL_SIZE = 200;
+	private static final int THUMBNAIL_SIZE = 200;
 	private MysqlConnector connector = MysqlConnector.getInstance();
 	private ServerProperties serverProperties = ServerProperties.getInstance();
+	private int newImageID = 0;
 
 	public ImageServiceImpl() {
 		super();
@@ -85,8 +86,8 @@ public class ImageServiceImpl extends HttpServlet {
 						throw new ServletException(
 								"Unsupported non-file property [" + item.getFieldName() + "] with value: " + item.getString());
 					} else {
-						int newImageID = connector.createNewImageEntry();
-						if (newImageID >= 0) {
+						newImageID  = connector.createNewImageEntry();
+						if (newImageID > 0) {
 							filename = newImageID + fileType;
 							ImageEntry ie = connector.getImageEntry(newImageID);
 							ie.setFilename(filename);
@@ -106,7 +107,7 @@ public class ImageServiceImpl extends HttpServlet {
 			if (target != null && target.exists()) {
 				System.err.println("Uploaded file: " + target.getAbsolutePath());
 				createThumbnail(imgHomeDir, filename);
-				response.getWriter().write("File length: " + target.length());
+				response.getWriter().write(String.valueOf(newImageID));
 				response.getWriter().close();
 			}
 		}
@@ -130,17 +131,8 @@ public class ImageServiceImpl extends HttpServlet {
 		type = filename.substring(filename.lastIndexOf(".") + 1).toUpperCase();
 		try {
 			BufferedImage buf = ImageIO.read(readFile);
-			int w = buf.getWidth();
-			int h = buf.getHeight();
-			if (w > h) {
-				h = h / w * MAX_THUMBNAIL_SIZE;
-				w = MAX_THUMBNAIL_SIZE;
-			} else {
-				w = w / h * MAX_THUMBNAIL_SIZE;
-				h = MAX_THUMBNAIL_SIZE;
-			}
-			tnImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
-			tnImg.createGraphics().drawImage(buf.getScaledInstance(w, h, Image.SCALE_SMOOTH), 0, 0, null);
+			tnImg = new BufferedImage(THUMBNAIL_SIZE, THUMBNAIL_SIZE, BufferedImage.TYPE_INT_RGB);
+			tnImg.createGraphics().drawImage(buf.getScaledInstance(THUMBNAIL_SIZE, THUMBNAIL_SIZE, Image.SCALE_SMOOTH), 0, 0, null);
 			ImageIO.write(tnImg, type, tnFile);
 		} catch (IOException e) {
 			System.out.println("Thumbnail could not be created!");

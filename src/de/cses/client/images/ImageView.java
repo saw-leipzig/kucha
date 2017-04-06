@@ -20,11 +20,14 @@ import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.sencha.gxt.fx.client.Draggable;
 
+import de.cses.client.DatabaseService;
+import de.cses.client.DatabaseServiceAsync;
 import de.cses.shared.ImageEntry;
 
 /**
@@ -39,6 +42,7 @@ public class ImageView extends Button {
 	}
 
 	private ImageEntry imgEntry;
+	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 
 	/**
 	 * 
@@ -51,6 +55,7 @@ public class ImageView extends Button {
 		
 		setHTML(html);
 		setPixelSize(150, 160);
+		imgEntry = null;
 		initAddImage();
 	}
 
@@ -117,24 +122,36 @@ public class ImageView extends Button {
 				ImageUploader iu = new ImageUploader(new ImageUploadListener() {
 
 					@Override
-					public void uploadCompleted() {
+					public void uploadCompleted(int newImageID) {
 						imageUploadPanel.hide();
-						ImageEditor ie = new ImageEditor(new ImageEditorListener() {
-
+						dbService.getImage(newImageID, new AsyncCallback<ImageEntry>() {
+							
 							@Override
-							public void closeImageEditor() {
-								imageEditorPanel.hide();
+							public void onSuccess(ImageEntry result) {
+								imgEntry = result;
+								SingleImageEditor singleIE = new SingleImageEditor(imgEntry, new ImageEditorListener() {
+
+									@Override
+									public void closeImageEditor() {
+										imageEditorPanel.hide();
+									}
+
+									@Override
+									public void cancelImageEditor() {
+									}
+								});
+								imageEditorPanel.add(singleIE);
+								new Draggable(imageEditorPanel);
+								imageEditorPanel.setGlassEnabled(true);
+								imageEditorPanel.center();
+								imageEditorPanel.show();
 							}
-
+							
 							@Override
-							public void cancelImageEditor() {
+							public void onFailure(Throwable caught) {
+								imgEntry = null;
 							}
 						});
-						imageEditorPanel.add(ie);
-						new Draggable(imageEditorPanel);
-						imageEditorPanel.setGlassEnabled(true);
-						imageEditorPanel.center();
-						imageEditorPanel.show();
 					}
 
 					@Override

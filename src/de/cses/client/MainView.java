@@ -103,7 +103,7 @@ public class MainView implements IsWidget {
     northPanel.add(headline);
     
     selectorLayoutContainer = new HorizontalLayoutContainer();
-    HorizontalLayoutData hLayoutData = new HorizontalLayoutData(-1, 60, new Margins(margins, 0, margins, margins));
+    HorizontalLayoutData hLayoutData = new HorizontalLayoutData(80, 60, new Margins(margins, 0, margins, margins));
     
     LocationFilter lFilter = new LocationFilter("Location Filter");
     CaveFilter cFilter = new CaveFilter("Cave Filter");

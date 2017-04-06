@@ -560,7 +560,7 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 	}
 
 	@Override
-	public void uploadCompleted() {
+	public void uploadCompleted(int newImageID) {
 		imageEntryList.addFilter(newImageFilter);
 		imageEntryList.setEnableFilters(true);
 		refreshImages();
