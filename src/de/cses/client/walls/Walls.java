@@ -1,31 +1,44 @@
 package de.cses.client.walls;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 
-
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.sencha.gxt.chart.client.draw.DrawComponent;
-import com.sencha.gxt.chart.client.draw.sprite.RectangleSprite;
-import com.sencha.gxt.fx.client.Draggable;
-import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
-import com.sencha.gxt.widget.core.client.Resizable;
-import com.sencha.gxt.widget.core.client.WidgetComponent;
-import com.sencha.gxt.widget.core.client.button.ButtonBar;
+
 import com.sencha.gxt.widget.core.client.container.VBoxLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutData;
-import com.sencha.gxt.widget.core.client.container.HtmlLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.SimpleContainer;
 
+import de.cses.client.DatabaseService;
+import de.cses.client.DatabaseServiceAsync;
+import de.cses.shared.DepictionEntry;
+
+/**
+ * 
+ * @author alingnau
+ *
+ */
 public class Walls implements IsWidget{
+	private DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	private VBoxLayoutContainer widget;
+	private int wallID;
+	private AbsolutePanel background;
+	private boolean editable = false;
+	HorizontalPanel buttonbar = new HorizontalPanel();
+	private PopupPanel panel;
+	private Button save = new Button("save & exit");
+	private Button uploadBackgorund = new Button("upload Background");
 
 	@Override
 	public Widget asWidget() {
@@ -39,85 +52,149 @@ public class Walls implements IsWidget{
 
 	  return widget;
 	}
+	
+	public Walls(int wallID, boolean editable){
+		this.editable = editable;
+		this.wallID= wallID; 
+		
+	}
+	
 	public Widget createForm(){
-
 		
 		FramedPanel framePanel = new FramedPanel();
 		framePanel.setHeading("Wall editor");
 	
 		VerticalPanel main = new VerticalPanel();
-		final AbsolutePanel background = new AbsolutePanel();
+		background = new AbsolutePanel();
 		main.add(background);
 		background.setSize("800px", "400px");
-		background.setStyleName("BackgroundStyle");
-		background.addStyleDependentName("BackgroundStyle");
 		framePanel.add(main);
 	
-		ButtonBar buttonbar = new ButtonBar();
-		Button newOrnament = new Button("add new Ornament");
-		Button newBorder = new Button("add new Border");
-		Button newDoor = new Button("add new Door");
-		buttonbar.add(newOrnament);
-		buttonbar.add(newDoor);
-		buttonbar.add(newBorder);
+
 		
-		ClickHandler borderHandler = new ClickHandler(){
+		Button cancel = new Button("cancel & close");
+		buttonbar.add(cancel);
+		buttonbar.add(save);
+		buttonbar.add(uploadBackgorund);
+		save.setVisible(false);
+		uploadBackgorund.setVisible(false);
+		
+		cancel.addClickHandler(new ClickHandler(){
 
 			@Override
 			public void onClick(ClickEvent event) {
- Button border = new Button();
- border.addStyleName("ButtonStyle");
- border.removeStyleName("gwt-Button");
- background.add(border);
- border.setSize("100%", "40px");
- Draggable drag = new Draggable(border);
- 
+				panel.hide();
 			}
-		};
+		});
 		
-		ClickHandler ornamentHandler = new ClickHandler(){
-
-			@Override
-			public void onClick(ClickEvent event) {
-				 Button ornament = new Button();
-				 ornament.addStyleName("ButtonStyle");
-				 ornament.removeStyleName("gwt-Button");
-				 background.add(ornament);
-				 ornament.setSize("40px", "40px");
-				 Draggable drag = new Draggable(ornament);
-			}
-		};
-		
-		ClickHandler doorHandler = new ClickHandler(){
-
-			@Override
-			public void onClick(ClickEvent event) {
-				 SimpleContainer door = new SimpleContainer();
-				 background.add(door);
-				 //door.addStyleName("ButtonStyle");
-				 Image image = new Image("https://thumbs.dreamstime.com/x/weie-buddha-hhle-der-yungang-grotten-22895251.jpg");
-				 door.add(image);
-				 //door.removeStyleName("gwt-Button");
-				 Draggable drag = new Draggable(door);
-				// WidgetComponent component = new WidgetComponent(door);
-				 Resizable resize = new Resizable(door, Resizable.Dir.NE,Resizable.Dir.NW, Resizable.Dir.SE, Resizable.Dir.SW);
-				 resize.setPreserveRatio(true);
-				 
-				 
-			}
-		};
-		
-		newDoor.addClickHandler(doorHandler);
-		newOrnament.addClickHandler(ornamentHandler);
-		newBorder.addClickHandler(borderHandler);
-		
+	 
 		main.add(buttonbar);
-		
-		
-		
-		
 		return framePanel;
 		
 	}
 	
+	public void createNewDepictionOnWall(DepictionEntry depiction, boolean editable, boolean firstTime){
+		
+				DepictionView depictionview = new DepictionView(depiction.getDepictionID(), editable );
+			
+				 background.add(depictionview);
+				 if(firstTime){
+					 background.setWidgetPosition(depictionview, 30, 30);
+				 }
+				 else{
+				 background.setWidgetPosition(depictionview, depiction.getAbsoluteLeft(), depiction.getAbsoluteTop());
+				 }
+		
+	}
+	public void getAllDepictionIDsbyWall(){
+		dbService.getDepictionsbyWallID(wallID, new AsyncCallback<ArrayList<DepictionEntry>>() {
+
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(ArrayList<DepictionEntry> result) {
+				
+				
+				for (final DepictionEntry depiction : result) {
+					if(depiction.getAbsoluteLeft() != -1 && depiction.getAbsoluteTop() != -1 ){
+						
+					createNewDepictionOnWall(depiction, editable, false);
+					
+					}
+		
+				}
+			}
+		});
+	}
+	
+	public void add(DepictionEntry depiction){
+	displayButtons(true);
+	createNewDepictionOnWall(depiction, true, true);
+	}
+	public void show(){
+		getAllDepictionIDsbyWall();
+		
+	}
+
+	public PopupPanel getPanel() {
+		return panel;
+	}
+
+	public void setPanel(PopupPanel panel) {
+		this.panel = panel;
+	}
+	
+	public void displayButtons(boolean display){
+		if(display){	
+			save.addClickHandler(new ClickHandler(){
+
+				@Override
+				public void onClick(ClickEvent event) {
+					
+					Iterator<Widget> iterator = background.iterator();
+					
+					while(iterator.hasNext() ){
+						Widget w = iterator.next();
+						if(w instanceof DepictionView){
+					DepictionView depictionView =(DepictionView) w;
+						
+					int absoluteLeft = 	depictionView.getAbsoluteLeft();
+					int absoluteTop = 	depictionView.getAbsoluteTop();
+					dbService.saveDepiction(depictionView.getDepictionID(), absoluteLeft, absoluteTop, new AsyncCallback<String>() {
+
+
+						@Override
+						public void onFailure(Throwable caught) {
+							caught.printStackTrace();
+						}
+
+						@Override
+						public void onSuccess(String result) {
+						
+						}
+					});
+						
+					}
+					}
+					panel.hide();
+					}
+					
+				//}
+				});
+				save.setVisible(true);
+				uploadBackgorund.setVisible(true);
+			
+		}
+		else{
+				save.setVisible(false);
+				uploadBackgorund.setVisible(false);
+			
+		}
+					
+	
+					}
 }

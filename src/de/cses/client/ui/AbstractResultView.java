@@ -22,8 +22,12 @@ import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.MarginData;
 
 /**
+ * AbstractResultView is the base for the result views shown in MainView. Here the 
+ * search results are added using the method {@link #addResult(Widget)}.
+ * 
  * @author alingnau
- *
+ * @see de.cses.client.MainView
+ * 
  */
 public abstract class AbstractResultView extends Portlet {
 	
@@ -41,7 +45,7 @@ public abstract class AbstractResultView extends Portlet {
 		resultContainer.setScrollMode(ScrollMode.AUTOY);
 		resultLayoutData = new MarginData(20);
 		if (true) { // check here if the user has permission to edit and add elements
-			resultContainer.add(newElementButton());
+			resultContainer.add(newElementButton(), resultLayoutData);
 		}
 		this.add(resultContainer);
 	}
@@ -56,7 +60,7 @@ public abstract class AbstractResultView extends Portlet {
 	public void reset() {
 		resultContainer.clear();
 		if (true) { // check here if the user has permission to edit and add elements
-			resultContainer.add(newElementButton());
+			resultContainer.add(newElementButton(), resultLayoutData);
 		}
 	}
 	
@@ -64,6 +68,6 @@ public abstract class AbstractResultView extends Portlet {
 	 * Implements the specific Button to create and add a new element
 	 * @return
 	 */
-	public abstract TextButton newElementButton();
+	public abstract Widget newElementButton();
 
 }

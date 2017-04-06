@@ -32,6 +32,7 @@ import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
+import de.cses.server.ServerProperties;
 import de.cses.server.mysql.MysqlConnector;
 import de.cses.shared.ImageEntry;
 
@@ -46,8 +47,14 @@ import de.cses.shared.ImageEntry;
 @MultipartConfig
 public class ImageServiceImpl extends HttpServlet {
 
-	public static final String SERVER_IMAGES_PATHNAME = System.getProperty("user.dir") + "/webapps/images";
-	MysqlConnector connector = MysqlConnector.getInstance();
+	private static final int THUMBNAIL_SIZE = 200;
+	private MysqlConnector connector = MysqlConnector.getInstance();
+	private ServerProperties serverProperties = ServerProperties.getInstance();
+	private int newImageID = 0;
+
+	public ImageServiceImpl() {
+		super();
+	}
 
 	/**
 	 * This method is called when the submit button in the image uploader is
@@ -61,8 +68,7 @@ public class ImageServiceImpl extends HttpServlet {
 		String fileType, filename = "default.jpg";
 
 		response.setContentType("text/plain");
-
-		File imgHomeDir = new File(SERVER_IMAGES_PATHNAME);
+		File imgHomeDir = new File(serverProperties.getProperty("home.images"));
 		FileItemFactory factory = new DiskFileItemFactory(1000000, imgHomeDir);
 		ServletFileUpload upload = new ServletFileUpload(factory);
 		File target = null;
@@ -80,8 +86,8 @@ public class ImageServiceImpl extends HttpServlet {
 						throw new ServletException(
 								"Unsupported non-file property [" + item.getFieldName() + "] with value: " + item.getString());
 					} else {
-						int newImageID = connector.createNewImageEntry();
-						if (newImageID >= 0) {
+						newImageID  = connector.createNewImageEntry();
+						if (newImageID > 0) {
 							filename = newImageID + fileType;
 							ImageEntry ie = connector.getImageEntry(newImageID);
 							ie.setFilename(filename);
@@ -101,14 +107,14 @@ public class ImageServiceImpl extends HttpServlet {
 			if (target != null && target.exists()) {
 				System.err.println("Uploaded file: " + target.getAbsolutePath());
 				createThumbnail(imgHomeDir, filename);
-				response.getWriter().write("File length: " + target.length());
+				response.getWriter().write(String.valueOf(newImageID));
 				response.getWriter().close();
 			}
 		}
 	}
 
 	/**
-	 * Create a thumbnail file of size 200x200
+	 * Create a thumbnail file of size a * b with (a,b) <= MAX_THUMBNAIL_SIZE
 	 * 
 	 * @param path
 	 *          the directory where the image is located
@@ -120,13 +126,13 @@ public class ImageServiceImpl extends HttpServlet {
 		String type;
 		BufferedImage tnImg;
 
-		tnImg = new BufferedImage(200, 200, BufferedImage.TYPE_INT_RGB);
 		tnFile = new File(path, "tn" + filename);
 		File readFile = new File(path, filename);
 		type = filename.substring(filename.lastIndexOf(".") + 1).toUpperCase();
 		try {
-			tnImg.createGraphics().drawImage(ImageIO.read(readFile).getScaledInstance(200, 200, Image.SCALE_SMOOTH), 0, 0,
-					null);
+			BufferedImage buf = ImageIO.read(readFile);
+			tnImg = new BufferedImage(THUMBNAIL_SIZE, THUMBNAIL_SIZE, BufferedImage.TYPE_INT_RGB);
+			tnImg.createGraphics().drawImage(buf.getScaledInstance(THUMBNAIL_SIZE, THUMBNAIL_SIZE, Image.SCALE_SMOOTH), 0, 0, null);
 			ImageIO.write(tnImg, type, tnFile);
 		} catch (IOException e) {
 			System.out.println("Thumbnail could not be created!");

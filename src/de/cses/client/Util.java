@@ -30,10 +30,9 @@ public class Util {
 	protected static SafeUri imageUri;
 
 	/**
-	 * 
+	 * This class only contains static methods for utility purpose, so we never want to create an instance
 	 */
-	public Util() {
-	}
+	private Util() { }
 	
 	/**
 	 * Returns a SafeUri for either the full image or the thumbnail related to 
@@ -50,7 +49,7 @@ public class Util {
 
 			@Override
 			public void onSuccess(ImageEntry result) {
-				imageUri  = UriUtils.fromString("infosystem/images?imageID=" + result.getImageID() + (thumbnail ? "&thumb=true" : "") );
+				imageUri  = UriUtils.fromString("resource?imageID=" + result.getImageID() + (thumbnail ? "&thumb=true" : "") );
 			}
 		});
 		return imageUri;

@@ -186,10 +186,7 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 			final ImageViewTemplates imageViewTemplates = GWT.create(ImageViewTemplates.class);
 
 			public SafeHtml render(ImageEntry item) {
-				// SafeUri imageUri = UriUtils
-				// .fromString("http://kucha.informatik.hu-berlin.de/tomcat/images/tn" +
-				// item.getFilename());
-				SafeUri imageUri = UriUtils.fromString("infosystem/images?imageID=" + item.getImageID() + "&thumb=true");
+				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=true");
 				return imageViewTemplates.image(imageUri, item.getTitle());
 			}
 
@@ -563,25 +560,20 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 	}
 
 	@Override
-	public void uploadCompleted() {
+	public void uploadCompleted(int newImageID) {
 		imageEntryList.addFilter(newImageFilter);
 		imageEntryList.setEnableFilters(true);
 		refreshImages();
-		// Iterator<ImageEntry> list = imageEntryList.getAll().iterator();
 		imageListView.getSelectionModel().select(imageEntryList.get(0), true);
-		// ImageEntry ie;
-		// while (list.hasNext()) {
-		// ie = list.next();
-		// if ("New Image".equals(ie.getTitle())) {
-		//// Info.display("New Image", "imageID = " + ie.getImageID());
-		//// imageListView.getSelectionModel().select(ie, false);
-		//// imageListView.getSelectionModel().select(imageEntryList.findModelWithKey(Integer.toString(ie.getImageID())),
-		// false);
-		// imageListView.getSelectionModel().select(imageEntryList.indexOf(ie),
-		// false);
-		// return;
-		// }
-		// }
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.images.ImageUploadListener#uploadCanceled()
+	 */
+	@Override
+	public void uploadCanceled() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

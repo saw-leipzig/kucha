@@ -29,17 +29,17 @@
   
   <servlet-mapping>
     <servlet-name>imgUploader</servlet-name>
-    <url-pattern>/infosystem/imgUploader</url-pattern>
+    <url-pattern>/imgUpload</url-pattern>
   </servlet-mapping>
   
   <servlet>
-  	<servlet-name>images</servlet-name>
+  	<servlet-name>resourceServlet</servlet-name>
   	<servlet-class>de.cses.server.ResourceDownloadServlet</servlet-class>
   </servlet>
   
   <servlet-mapping>
-  	<servlet-name>images</servlet-name>
-  	<url-pattern>/infosystem/images</url-pattern>
+  	<servlet-name>resourceServlet</servlet-name>
+  	<url-pattern>/resource</url-pattern>
   </servlet-mapping>
   
   <!-- Default page to serve -->

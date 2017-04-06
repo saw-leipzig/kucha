@@ -108,4 +108,10 @@ public interface DatabaseServiceAsync {
 	void getSite(int id, AsyncCallback<SiteEntry> asyncCallback) throws IllegalArgumentException;
 
 	void getDepictions(String sqlWhere, AsyncCallback<ArrayList<DepictionEntry>> asyncCallback) throws IllegalArgumentException;
-}
+
+	void getDepictionsbyWallID(int wallID, AsyncCallback<ArrayList<DepictionEntry>> asyncCallback) throws IllegalArgumentException;
+	
+	void saveDepiction(int depictionID, int absoluteLeft,int absoluteTop, AsyncCallback<String> asyncCallback) throws IllegalArgumentException;
+
+	void getRelatedImages(int depictionID, AsyncCallback<ArrayList<ImageEntry>> asyncCallback) throws IllegalArgumentException;
+	}

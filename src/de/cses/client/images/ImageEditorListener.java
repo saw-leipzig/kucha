@@ -20,5 +20,6 @@ package de.cses.client.images;
 public interface ImageEditorListener {
 	
 	void closeImageEditor();
+	void cancelImageEditor();
 
 }

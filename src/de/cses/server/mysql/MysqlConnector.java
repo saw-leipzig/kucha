@@ -20,6 +20,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import com.sencha.gxt.widget.core.client.info.Info;
+
+import de.cses.server.ServerProperties;
 import de.cses.shared.AntechamberEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.BackAreaEntry;
@@ -51,12 +54,15 @@ import de.cses.shared.VendorEntry;
  */
 public class MysqlConnector {
 
-	private static String url = "jdbc:mysql://kucha.informatik.hu-berlin.de/infosys?useUnicode=true&characterEncoding=UTF-8"; //$NON-NLS-1$
-	private static String user = Messages.getString("MysqlConnector.db.user");
-	private static String password = Messages.getString("MysqlConnector.db.password");
+	private String url; // MysqlConnector.db.url
+	private String user; // MysqlConnector.db.user
+	private String password; // MysqlConnector.db.password
+
 	private int auto_increment_id;
 
 	private static MysqlConnector instance = null;
+	private ServerProperties serverProperties = ServerProperties.getInstance();
+
 
 	/**
 	 * By calling this method, we avoid that a new instance will be created if
@@ -76,9 +82,12 @@ public class MysqlConnector {
 
 	private MysqlConnector() {
 
+		user = serverProperties.getProperty("MysqlConnector.db.user");
+		password = serverProperties.getProperty("MysqlConnector.db.password");
+		url = serverProperties.getProperty("MysqlConnector.db.url");
 		try {
 			Class.forName("org.mariadb.jdbc.Driver"); //$NON-NLS-1$
-			connection = DriverManager.getConnection(MysqlConnector.url, MysqlConnector.user, MysqlConnector.password);
+			connection = DriverManager.getConnection(url, user, password);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
@@ -89,7 +98,7 @@ public class MysqlConnector {
 	private Connection getConnection() {
 		try {
 			if (connection == null || !connection.isValid(5)) {
-				connection = DriverManager.getConnection(MysqlConnector.url, MysqlConnector.user, MysqlConnector.password);
+				connection = DriverManager.getConnection(url, user, password);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -315,8 +324,8 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Images");
 			while (rs.next()) {
-				results.add(new ImageEntry(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getInt(5), rs.getString(6),
-						rs.getDate(7), rs.getString(8)));
+				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"),
+						rs.getDate("CaptureDate"), rs.getString("ImageType")));
 			}
 			rs.close();
 			stmt.close();
@@ -335,8 +344,8 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Images WHERE " + sqlWhere);
 			while (rs.next()) {
-				results.add(new ImageEntry(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getInt(5), rs.getString(6),
-						rs.getDate(7), rs.getString(8)));
+				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"),
+						rs.getDate("CaptureDate"), rs.getString("ImageType")));
 			}
 			rs.close();
 			stmt.close();
@@ -531,6 +540,8 @@ public class MysqlConnector {
 		Connection dbc = getConnection();
 		ArrayList<CaveTypeEntry> results = new ArrayList<CaveTypeEntry>();
 		Statement stmt;
+		
+		
 		try {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM CaveType");
@@ -838,6 +849,70 @@ public class MysqlConnector {
 			return 0;
 		}
 		return result;
+	}
+	
+	/**
+	 * @param depictionID
+	 * @return
+	 */
+	public ArrayList<ImageEntry> getRelatedImages(int depictionID) {
+		ArrayList<ImageEntry> results = new ArrayList<ImageEntry>();
+		Connection dbc = getConnection();
+
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Images WHERE ImageID IN (SELECT ImageID FROM DepictionImageRelation WHERE DepictionID=" + depictionID + ")");
+			while (rs.next()) {
+				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"),
+						rs.getDate("CaptureDate"), rs.getString("ImageType")));
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return results;
+	}
+	
+	public ArrayList<DepictionEntry> getAllDepictionsbyWall(int wallID){
+		ArrayList<DepictionEntry> depictions = new ArrayList<DepictionEntry>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT DepictionID, AbsoluteLeft, AbsoluteTop FROM Depictions WHERE WallID = " + wallID);
+			while (rs.next()) {
+				DepictionEntry depiction = new DepictionEntry();
+				depiction.setDepictionID(rs.getInt("DepictionID"));
+				depiction.setAbsoluteLeft(rs.getInt("AbsoluteLeft"));
+				depiction.setAbsoluteTop(rs.getInt("AbsoluteTop"));
+				
+				depictions.add(depiction);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return depictions;
+	}
+	
+	public String saveDepiction(int depictionID, int AbsoluteLeft, int AbsoluteTop){
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			stmt.executeQuery("UPDATE Depictions SET AbsoluteLeft ="+ AbsoluteLeft + ", AbsoluteTop ="+ AbsoluteTop+ " WHERE DepictionID ="+ depictionID );
+	
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return "failed to save depiction";
+			
+		}
+		return "saved";
+		
+		
 	}
 
 	/**

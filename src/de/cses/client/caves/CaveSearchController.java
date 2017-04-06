@@ -17,34 +17,31 @@ import java.util.ArrayList;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.sencha.gxt.cell.core.client.ButtonCell.ButtonScale;
-import com.sencha.gxt.widget.core.client.button.TextButton;
-import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.ui.AbstractFilter;
-import de.cses.client.ui.AbstractSelector;
+import de.cses.client.ui.AbstractSearchController;
 import de.cses.shared.CaveEntry;
 
 /**
  * @author alingnau
  *
  */
-public class CaveSelector extends AbstractSelector {
+public class CaveSearchController extends AbstractSearchController {
 	
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 
 	/**
-	 * @param selectorTitle
+	 * @param searchControllerTitle
 	 * @param caveResultView 
 	 */
-	public CaveSelector(String selectorTitle, CaveResultView caveResultView) {
+	public CaveSearchController(String selectorTitle, CaveResultView caveResultView) {
 		super(selectorTitle, caveResultView);
 	}
 
 	/* (non-Javadoc)
-	 * @see de.cses.client.ui.AbstractSelector#invokeSearch()
+	 * @see de.cses.client.ui.AbstractSearchController#invokeSearch()
 	 */
 	@Override
 	public void invokeSearch() {

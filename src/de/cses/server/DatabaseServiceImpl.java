@@ -311,4 +311,28 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		return connector.getDepictions(sqlWhere);
 	}
 
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#getDepictionsbyWallID(int)
+	 */
+	@Override
+	public ArrayList<DepictionEntry> getDepictionsbyWallID(int wallID) {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		ArrayList<DepictionEntry> depictions = connector.getAllDepictionsbyWall(wallID);
+		return depictions;
+	}
+	public String saveDepiction(int depictionID, int absoluteLeft, int absoluteTop){
+		MysqlConnector connector = MysqlConnector.getInstance();
+		String saved = connector.saveDepiction(depictionID, absoluteLeft, absoluteTop);
+		return saved;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#getRelatedImages(int)
+	 */
+	@Override
+	public ArrayList<ImageEntry> getRelatedImages(int depictionID) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getRelatedImages(depictionID);
+	}
+
 }
