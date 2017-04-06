@@ -1,19 +1,7 @@
-/*
- * Copyright 2016 
- * Saxon Academy of Science in Leipzig, Germany
- * 
- * This is free software: you can redistribute it and/or modify it under the terms of the 
- * GNU General Public License version 3 (GPL v3) as published by the Free Software Foundation.
- * 
- * This software is distributed WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. Please read the GPL v3 for more details.
- * 
- * You should have received a copy of the GPL v3 along with the software. 
- * If not, you can access it from here: <https://www.gnu.org/licenses/gpl-3.0.txt>.
- */
 package de.cses.shared;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -31,10 +19,9 @@ public class OrnamentCaveRelation implements IsSerializable{
 	private String cavepart;
 	private String notes;
 	private int group;
-	private ArrayList<Integer> similarOrnamentsRelationID= new ArrayList<Integer>();
-	private ArrayList<Integer> relatedOrnamentsRelationID = new ArrayList<Integer>();
-	private ArrayList<Integer>otherCulturalOrnamentsRelationID = new ArrayList<Integer>();
-	private ArrayList<Integer> relatedElementsRelationID = new ArrayList<Integer>();
+	private List<OrnamentEntry> similarOrnamentsRelationID= new ArrayList<OrnamentEntry>();
+	private List<OrnamentEntry> relatedOrnamentsRelationID = new ArrayList<OrnamentEntry>();
+	private List<OrnamentOfOtherCulturesEntry>otherCulturalOrnamentsRelationID = new ArrayList<OrnamentOfOtherCulturesEntry>();
 	
 	
 	public OrnamentCaveRelation(){
@@ -162,44 +149,41 @@ public class OrnamentCaveRelation implements IsSerializable{
 	}
 
 
-	public ArrayList<Integer> getSimilarOrnamentsRelationID() {
+
+
+	public List<OrnamentEntry> getSimilarOrnamentsRelationID() {
 		return similarOrnamentsRelationID;
 	}
 
 
-	public void setSimilarOrnamentsRelationID(ArrayList<Integer> similarOrnamentsRelationID) {
+	public void setSimilarOrnamentsRelationID(List<OrnamentEntry> similarOrnamentsRelationID) {
 		this.similarOrnamentsRelationID = similarOrnamentsRelationID;
 	}
 
 
-	public ArrayList<Integer> getRelatedOrnamentsRelationID() {
+	public List<OrnamentEntry> getRelatedOrnamentsRelationID() {
 		return relatedOrnamentsRelationID;
 	}
 
 
-	public void setRelatedOrnamentsRelationID(ArrayList<Integer> relatedOrnamentsRelationID) {
+	public void setRelatedOrnamentsRelationID(List<OrnamentEntry> relatedOrnamentsRelationID) {
 		this.relatedOrnamentsRelationID = relatedOrnamentsRelationID;
 	}
 
 
-	public ArrayList<Integer> getOtherCulturalOrnamentsRelationID() {
+	public List<OrnamentOfOtherCulturesEntry> getOtherCulturalOrnamentsRelationID() {
 		return otherCulturalOrnamentsRelationID;
 	}
 
 
-	public void setOtherCulturalOrnamentsRelationID(ArrayList<Integer> otherCulturalOrnamentsRelationID) {
+	public void setOtherCulturalOrnamentsRelationID(List<OrnamentOfOtherCulturesEntry> otherCulturalOrnamentsRelationID) {
 		this.otherCulturalOrnamentsRelationID = otherCulturalOrnamentsRelationID;
 	}
-	
 
 
-	public ArrayList<Integer> getRelatedElementsRelationID() {
-		return relatedElementsRelationID;
-	}
-
-
-	public void setRelatedElementsRelationID(ArrayList<Integer> relatedElementsRelationID) {
-		this.relatedElementsRelationID = relatedElementsRelationID;
+	public void setOtherCulturalOrnamentsRelationID(
+			ArrayList<OrnamentOfOtherCulturesEntry> otherCulturalOrnamentsRelationID) {
+		this.otherCulturalOrnamentsRelationID = otherCulturalOrnamentsRelationID;
 	}
 
 
