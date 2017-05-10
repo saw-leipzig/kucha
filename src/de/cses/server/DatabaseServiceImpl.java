@@ -23,6 +23,7 @@ import de.cses.shared.AntechamberEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.BackAreaEntry;
 import de.cses.shared.CaveEntry;
+import de.cses.shared.CavePart;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
@@ -30,15 +31,22 @@ import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.MainChamberEntry;
+import de.cses.shared.MainTypologicalClass;
+import de.cses.shared.OrnamentCaveType;
 import de.cses.shared.OrnamentEntry;
+import de.cses.shared.OrnamentFunction;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
+import de.cses.shared.OrnamentOrientation;
+import de.cses.shared.OrnamentPosition;
 import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PictorialElementEntry;
 import de.cses.shared.PublicationEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
+import de.cses.shared.StructureOrganization;
 import de.cses.shared.StyleEntry;
 import de.cses.shared.VendorEntry;
+import de.cses.shared.WallEntry;
 
 /**
  * The server-side implementation of the RPC service.
@@ -334,5 +342,50 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getRelatedImages(depictionID);
 	}
+	
+	public ArrayList<OrnamentOrientation> getOrientations() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getOrientations();
+	}
+	public ArrayList<MainTypologicalClass> getMainTypologicalClasses() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getMainTypologicalClass();
+	}
+	
+	public ArrayList<StructureOrganization> getStructureOrganizations() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getStructureOrganizations();
+	}
+	
+	public ArrayList<CavePart> getCaveParts() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getCaveParts();
+	}
+	
+	public ArrayList<OrnamentFunction> getOrnamentFunctions() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getOrnamentFunction();
+	}
+	
+	public ArrayList<OrnamentPosition> getOrnamentPositions() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getOrnamentPosition();
+	}
+
+	public ArrayList<OrnamentCaveType> getOrnamentCaveTypes() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getOrnamentCaveTypes();
+	}
+	
+	public ArrayList<WallEntry> getWalls() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getWalls();
+	}
+	public ArrayList<OrnamentEntry> getOrnamentsWHERE(String sqlWhere) {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getOrnamentsWHERE(sqlWhere);
+	}
+
+
 
 }

@@ -27,6 +27,7 @@ import de.cses.shared.AntechamberEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.BackAreaEntry;
 import de.cses.shared.CaveEntry;
+import de.cses.shared.CavePart;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
@@ -34,15 +35,22 @@ import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.MainChamberEntry;
+import de.cses.shared.MainTypologicalClass;
+import de.cses.shared.OrnamentCaveType;
 import de.cses.shared.OrnamentEntry;
+import de.cses.shared.OrnamentFunction;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
+import de.cses.shared.OrnamentOrientation;
+import de.cses.shared.OrnamentPosition;
 import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PictorialElementEntry;
 import de.cses.shared.PublicationEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
+import de.cses.shared.StructureOrganization;
 import de.cses.shared.StyleEntry;
 import de.cses.shared.VendorEntry;
+import de.cses.shared.WallEntry;
 
 /**
  * This is the central Database connector. Here are all methods that we
@@ -1068,5 +1076,181 @@ public class MysqlConnector {
 		}
 		return result;
 	}
+	
+	public ArrayList<OrnamentOrientation> getOrientations() {
+		OrnamentOrientation result = null;
+		ArrayList<OrnamentOrientation> orientations = new ArrayList<OrnamentOrientation>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM OrnamenticOrientation");
+			while (rs.next()) {
+				result = new OrnamentOrientation(rs.getInt("OrnamenticOrientationID"), rs.getString("Name"));
+				orientations.add(result);
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return orientations;
+	}
 
+	public ArrayList<MainTypologicalClass> getMainTypologicalClass() {
+		MainTypologicalClass result = null;
+		ArrayList<MainTypologicalClass> maintypologicalclasses = new ArrayList<MainTypologicalClass>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM MainTypologicalClass");
+			while (rs.next()) {
+				result = new MainTypologicalClass(rs.getInt("MainTypologicalClassID"), rs.getString("Name"));
+				maintypologicalclasses.add(result);
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return maintypologicalclasses;
+	}
+	
+	public ArrayList<WallEntry> getWalls() {
+		WallEntry result = null;
+		ArrayList<WallEntry> walls = new ArrayList<WallEntry>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Walls");
+			while (rs.next()) {
+				result = new WallEntry(rs.getInt("WallID"));
+				walls.add(result);
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return walls;
+	}
+	public ArrayList<StructureOrganization> getStructureOrganizations() {
+		StructureOrganization result = null;
+		ArrayList<StructureOrganization> structureOrganizations = new ArrayList<StructureOrganization>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM StructureOrganization");
+			while (rs.next()) {
+				result = new StructureOrganization(rs.getInt("StructureOrganizationID"), rs.getString("Name"));
+				structureOrganizations.add(result);
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return structureOrganizations;
+	}
+	
+	public ArrayList<CavePart> getCaveParts() {
+		CavePart result = null;
+		ArrayList<CavePart> caveparts = new ArrayList<CavePart>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM CavePart");
+			while (rs.next()) {
+				result = new CavePart(rs.getInt("CavePartID"), rs.getString("Name"));
+				caveparts.add(result);
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return caveparts;
+	}
+	
+	public ArrayList<OrnamentPosition> getOrnamentPosition() {
+		OrnamentPosition result = null;
+		ArrayList<OrnamentPosition> positions = new ArrayList<OrnamentPosition>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM OrnamenticPosition");
+			while (rs.next()) {
+				result = new OrnamentPosition(rs.getInt("OrnamenticPositionID"), rs.getString("Name"));
+				positions.add(result);
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return positions;
+	}
+	
+	public ArrayList<OrnamentFunction> getOrnamentFunction() {
+		OrnamentFunction result = null;
+		ArrayList<OrnamentFunction> functions = new ArrayList<OrnamentFunction>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM OrnamenticFunction");
+			while (rs.next()) {
+				result = new OrnamentFunction(rs.getInt("OrnamenticFunctionID"), rs.getString("Name"));
+				functions.add(result);
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return functions;
+	}
+	
+	public ArrayList<OrnamentCaveType> getOrnamentCaveTypes() {
+		OrnamentCaveType result = null;
+		ArrayList<OrnamentCaveType> cavetypes = new ArrayList<OrnamentCaveType>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM OrnamentCaveType");
+			while (rs.next()) {
+				result = new OrnamentCaveType(rs.getInt("OrnamentCaveTypeID"), rs.getString("Name"));
+				cavetypes.add(result);
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return cavetypes;
+	}
+	public ArrayList<OrnamentEntry> getOrnamentsWHERE(String sqlWhere) {
+		ArrayList<OrnamentEntry> results = new ArrayList<OrnamentEntry>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery((sqlWhere == null) ? "SELECT * FROM Ornaments" : "SELECT * FROM Ornaments WHERE "+sqlWhere);
+			while (rs.next()) {
+				results.add(new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code")));
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return results;
+	}
 }

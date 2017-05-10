@@ -48,6 +48,9 @@ import de.cses.client.depictions.DepictionSearchController;
 import de.cses.client.images.ImageFilter;
 import de.cses.client.images.ImageResultView;
 import de.cses.client.images.ImageSearchController;
+import de.cses.client.ornamentic.OrnamenticFilter;
+import de.cses.client.ornamentic.OrnamenticResultView;
+import de.cses.client.ornamentic.OrnamenticSearchController;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.client.ui.AbstractSearchController;
 import de.cses.client.ui.LocationFilter;
@@ -72,6 +75,7 @@ public class MainView implements IsWidget {
 	private HorizontalLayoutContainer selectorLayoutContainer;
 	private DepictionSearchController depictionSearchController;
 	private ImageSearchController imageSearchController;
+	private OrnamenticSearchController ornamenticSearchController;
 
 	/**
 	 * 
@@ -182,6 +186,31 @@ public class MainView implements IsWidget {
 			
 		});
 		selectorLayoutContainer.add(imageSearchController, hLayoutData);
+		
+		
+		ornamenticSearchController = new OrnamenticSearchController("Ornamentic", new OrnamenticResultView("Ornamentic"));
+		ornamenticSearchController.addRelatedFilter(new OrnamenticFilter("Ornamentic Filter"));
+		ornamenticSearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				if (event.getValue()) {
+					for (AbstractFilter filter : ornamenticSearchController.getRelatedFilter()) {
+						filterView.add(filter, filterLayoutData);
+					}
+					resultView.add(ornamenticSearchController.getResultView(), resultLayoutData);
+				} else {
+					ArrayList<AbstractFilter> usedFilter = getUsedFilter();
+					for (AbstractFilter filter : ornamenticSearchController.getRelatedFilter()) {
+						if (!usedFilter.contains(filter)){
+							filterView.remove(filter);
+						}
+					}
+					ornamenticSearchController.getResultView().removeFromParent();
+				}
+			}
+		});
+		selectorLayoutContainer.add(ornamenticSearchController, hLayoutData);
 		
 		
     ContentPanel centerPanel = new ContentPanel();
