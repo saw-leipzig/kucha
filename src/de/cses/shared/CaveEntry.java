@@ -18,9 +18,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class CaveEntry implements IsSerializable {
 	private int caveID;
 	private String officialNumber, officialName, historicName;
-	private int caveTypeID, districtID, regionID; 
+	private int caveTypeID, districtID, regionID, orientationID; 
 	private String stateOfPerservation;
-	private String orientation;
 	private String pedestals;
 	private String findings;
 	private String alterationDate;
@@ -32,7 +31,7 @@ public class CaveEntry implements IsSerializable {
 	}
 
 	public CaveEntry(int caveID, String officialNumber, String officialName, String historicalName, int caveTypeID, int districtID,
-			int regionID, String stateOfPerservation, String orientation, String pedestals, String findings, String alterationDate) {
+			int regionID, int orientationID, String stateOfPerservation, String pedestals, String findings, String alterationDate) {
 		super();
 		this.caveID = caveID;
 		this.officialNumber = officialNumber;
@@ -41,8 +40,8 @@ public class CaveEntry implements IsSerializable {
 		this.caveTypeID = caveTypeID;
 		this.districtID = districtID;
 		this.setRegionID(regionID);
+		this.setOrientationID(orientationID);
 		this.stateOfPerservation = stateOfPerservation;
-		this.setOrientation(orientation);
 		this.pedestals = pedestals;
 		this.findings = findings;
 		this.alterationDate = alterationDate;
@@ -110,14 +109,6 @@ public class CaveEntry implements IsSerializable {
 
 	public void setStateOfPerservation(String stateOfPerservation) {
 		this.stateOfPerservation = stateOfPerservation;
-	}
-
-	public String getOrientation() {
-		return orientation;
-	}
-
-	public void setOrientation(String orientation) {
-		this.orientation = orientation;
 	}
 
 	public String getPedestals() {
@@ -190,15 +181,30 @@ public class CaveEntry implements IsSerializable {
 	 * ATTENTION: Orientation is currently not inlcuded!!
 	 */
 	public String getInsertSql() {		
-		return "INSERT INTO Caves (OfficialNumber,OfficialName,HistoricName,CaveTypeID,DistrictID,RegionID,StateOfPreservation,Pedestals,Findings,AlterationDate) VALUES "
-				+ "('" + officialNumber + "','" + officialName + "','" + historicName + "'," + caveTypeID + "," + districtID + "," + regionID + ",'" + stateOfPerservation + "',"
-				+ pedestals + ",'" + findings + "','" + alterationDate + "')";
+		return "INSERT INTO Caves (OfficialNumber,OfficialName,HistoricName,CaveTypeID,DistrictID,RegionID, OrientationID,StateOfPreservation,Pedestals,Findings,AlterationDate) VALUES "
+				+ "('" + officialNumber + "','" + officialName + "','" + historicName + "'," + caveTypeID + "," + districtID + "," + regionID + "," + orientationID + ",'" + stateOfPerservation
+				+ "','" + pedestals + "','" + findings + "','" + alterationDate + "')";
 	}
 
 	public String getUpdateSql() {
 		return "UPDATE Caves SET OfficialNumber='" + officialNumber + "', OfficialName='" + officialName + "', HistoricName='" + historicName
-				+ "', CaveTypeID=" + caveTypeID + ", DistrictID=" + districtID + ", RegionID=" + regionID + ", StateOfPreservation='" + stateOfPerservation
-				+ "', Pedestals=" + pedestals + ", Findings='" + findings + "', AlterationDate='" + alterationDate + "' WHERE CaveID=" + caveID;
+				+ "', CaveTypeID=" + caveTypeID + ", DistrictID=" + districtID + ", RegionID=" + regionID + ", OrientationID=" + orientationID + ", StateOfPreservation='" + stateOfPerservation
+				+ "', Pedestals='" + pedestals + "', Findings='" + findings + "', AlterationDate='" + alterationDate + "' "
+				+ "WHERE CaveID=" + caveID;
+	}
+
+	/**
+	 * @return the orientationID
+	 */
+	public int getOrientationID() {
+		return orientationID;
+	}
+
+	/**
+	 * @param orientationID the orientationID to set
+	 */
+	public void setOrientationID(int orientationID) {
+		this.orientationID = orientationID;
 	}
 
 

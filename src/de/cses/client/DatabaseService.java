@@ -29,6 +29,7 @@ import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.MainChamberEntry;
+import de.cses.shared.OrientationEntry;
 import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.PhotographerEntry;
@@ -120,5 +121,11 @@ public interface DatabaseService extends RemoteService {
 	String saveDepiction(int depictionID, int absoluteLeft, int absoluteTop) throws IllegalArgumentException;
 
 	ArrayList<ImageEntry> getRelatedImages(int depictionID) throws IllegalArgumentException;
+
+	ArrayList<OrientationEntry> getOrientationInformation() throws IllegalArgumentException;
+
+	IconographyEntry getIconographyEntry(int iconographyID) throws IllegalArgumentException;
+
+	ArrayList<PictorialElementEntry> getRelatedPE(int depictionID) throws IllegalArgumentException;
 
 }

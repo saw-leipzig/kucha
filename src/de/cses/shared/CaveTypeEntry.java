@@ -19,16 +19,18 @@ public class CaveTypeEntry implements IsSerializable{
 	private int caveTypeID;
 	private String nameEN;
 	private String descriptionEN;
+	private String sketchName;
 	
 	public CaveTypeEntry(){
 		
 	}
 
-	public CaveTypeEntry(int caveTypeID, String nameEN, String descriptionEN) {
+	public CaveTypeEntry(int caveTypeID, String nameEN, String descriptionEN, String sketchName) {
 		super();
 		this.caveTypeID = caveTypeID;
 		this.nameEN = nameEN;
 		this.descriptionEN = descriptionEN;
+		this.setSketchName(sketchName);
 	}
 
 	public int getCaveTypeID() {
@@ -53,6 +55,20 @@ public class CaveTypeEntry implements IsSerializable{
 
 	public void setDescriptionEN(String descriptionEN) {
 		this.descriptionEN = descriptionEN;
+	}
+
+	/**
+	 * @return the sketchName
+	 */
+	public String getSketchName() {
+		return sketchName;
+	}
+
+	/**
+	 * @param sketchName the sketchName to set
+	 */
+	public void setSketchName(String sketchName) {
+		this.sketchName = sketchName;
 	}
 	
 

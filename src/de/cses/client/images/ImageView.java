@@ -97,7 +97,7 @@ public class ImageView extends Button {
 					}
 				});
 				imageEditorPanel.add(singleIE);
-				new Draggable(imageEditorPanel);
+//				new Draggable(imageEditorPanel);
 				imageEditorPanel.setGlassEnabled(true);
 				imageEditorPanel.center();
 				imageEditorPanel.show();
@@ -138,10 +138,11 @@ public class ImageView extends Button {
 
 									@Override
 									public void cancelImageEditor() {
+										imageEditorPanel.hide();
 									}
 								});
 								imageEditorPanel.add(singleIE);
-								new Draggable(imageEditorPanel);
+//								new Draggable(imageEditorPanel);
 								imageEditorPanel.setGlassEnabled(true);
 								imageEditorPanel.center();
 								imageEditorPanel.show();
@@ -160,7 +161,7 @@ public class ImageView extends Button {
 					}
 				});
 				imageUploadPanel.add(iu);
-				new Draggable(imageUploadPanel);
+//				new Draggable(imageUploadPanel);
 				imageUploadPanel.setGlassEnabled(true);
 				imageUploadPanel.center();
 				imageUploadPanel.show();

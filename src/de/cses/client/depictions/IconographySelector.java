@@ -24,8 +24,12 @@ import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.FramedPanel;
+import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.info.Info;
 import com.sencha.gxt.widget.core.client.tree.Tree;
 
@@ -45,11 +49,14 @@ public class IconographySelector implements IsWidget {
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	private TreeStore<IconographyEntry> store;
 	private Tree<IconographyEntry, String> tree;
-	private ContentPanel panel;
+	private FramedPanel mainPanel;
 	private VerticalLayoutContainer vlc;
+	private ArrayList<IconographySelectorListener> listenerList;
 
-	public IconographySelector() {
+	public IconographySelector(IconographySelectorListener listener) {
 		store = new TreeStore<IconographyEntry>(new KeyProvider());
+		listenerList = new ArrayList<IconographySelectorListener>();
+		listenerList.add(listener);
 		refreshIconographyStore();
 	}
 
@@ -88,13 +95,16 @@ public class IconographySelector implements IsWidget {
 
 	@Override
 	public Widget asWidget() {
-		if (panel == null) {
+		if (mainPanel == null) {
 			initPanel();
 		}
-		return vlc;
+		return mainPanel;
 	}
 
 	private void initPanel() {
+		mainPanel = new FramedPanel();
+		mainPanel.setHeading("Iconography Selector");
+		
 		vlc = new VerticalLayoutContainer();
 
 		tree = new Tree<IconographyEntry, String>(store, new ValueProvider<IconographyEntry, String>() {
@@ -120,9 +130,40 @@ public class IconographySelector implements IsWidget {
 		vlc.add(tree, new VerticalLayoutData(1, 1));
 		vlc.setScrollMode(ScrollMode.AUTOY);
 		vlc.setPixelSize(700, 450);
+		
+		mainPanel.add(vlc);
+		
+		TextButton iconographyExpandButton = new TextButton("expand tree");
+		iconographyExpandButton.addSelectHandler(new SelectHandler() {
+			@Override
+			public void onSelect(SelectEvent event) {
+				expandAll();
+			}
+		});
+		mainPanel.addButton(iconographyExpandButton);
+		
+		TextButton iconographyCollapseButton = new TextButton("collapse tree");
+		iconographyCollapseButton.addSelectHandler(new SelectHandler() {
+			@Override
+			public void onSelect(SelectEvent event) {
+				collapseAll();
+			}
+		});
+		mainPanel.addButton(iconographyCollapseButton);
+		
+		TextButton closeButton = new TextButton("close");
+		closeButton.addSelectHandler(new SelectHandler() {
+			@Override
+			public void onSelect(SelectEvent event) {
+				for (IconographySelectorListener l : listenerList) {
+					l.iconographySelected(getSelectedIconography());
+				}
+			}
+		});
+		mainPanel.addButton(closeButton);
 	}
 	
-	public IconographyEntry getSelectedIconography() {
+	private IconographyEntry getSelectedIconography() {
 		return tree.getSelectionModel().getSelectedItem();
 	}
 

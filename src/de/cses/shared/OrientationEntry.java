@@ -11,33 +11,45 @@
  * You should have received a copy of the GPL v3 along with the software. 
  * If not, you can access it from here: <https://www.gnu.org/licenses/gpl-3.0.txt>.
  */
-package de.cses.client.depictions;
+package de.cses.shared;
 
-import com.google.gwt.user.client.ui.Widget;
-import com.sencha.gxt.widget.core.client.button.TextButton;
-
-import de.cses.client.ui.AbstractResultView;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * @author alingnau
  *
  */
-public class DepictionResultView extends AbstractResultView {
+public class OrientationEntry implements IsSerializable {
+	
+	private int orientationID;
+	private String nameEN;
 
 	/**
-	 * @param title
+	 * 
 	 */
-	public DepictionResultView(String title) {
-		super(title);
-		setHeight(300);
+	public OrientationEntry() {
 	}
 
-	/* (non-Javadoc)
-	 * @see de.cses.client.ui.AbstractResultView#newElementButton()
-	 */
-	@Override
-	public Widget newElementButton() {
-		return new DepictionView();
+	public OrientationEntry(int orientatiationID, String nameEN) {
+		super();
+		this.orientationID = orientatiationID;
+		this.nameEN = nameEN;
 	}
 
+	public int getOrientationID() {
+		return orientationID;
+	}
+
+	public void setOrientationID(int orientatiationID) {
+		this.orientationID = orientatiationID;
+	}
+
+	public String getNameEN() {
+		return nameEN;
+	}
+
+	public void setNameEN(String nameEN) {
+		this.nameEN = nameEN;
+	}
+	
 }

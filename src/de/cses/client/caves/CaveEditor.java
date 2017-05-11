@@ -51,12 +51,10 @@ import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
-import de.cses.shared.AntechamberEntry;
-import de.cses.shared.BackAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.DistrictEntry;
-import de.cses.shared.MainChamberEntry;
+import de.cses.shared.OrientationEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 
@@ -75,6 +73,8 @@ public class CaveEditor implements IsWidget {
 	private RegionProperties regionProps;
 	private ListStore<RegionEntry> regionEntryList;
 	private SiteProperties siteProps;
+	private OrientationProperties orientationProps;
+	private CaveLayoutViewTemplates caveLayoutViewTemplates;
 
 	private TextField officialNumberField;
 	private TextField officialNameField;
@@ -84,6 +84,7 @@ public class CaveEditor implements IsWidget {
 	private TextArea stateOfPreservationTextArea;
 	private ListStore<SiteEntry> siteEntryList;
 	private StoreFilter<RegionEntry> regionFilter;
+	private ListStore<OrientationEntry> orientationEntryList;
 	private ComboBox<SiteEntry> siteSelection;
 	private StoreFilter<DistrictEntry> districtFilter;
 	protected Object siteEntryAccess;
@@ -91,6 +92,9 @@ public class CaveEditor implements IsWidget {
 	private Label siteDisplay;
 	private TextField alterationDateField;
 	private TextArea findingsTextArea;
+	private FlowLayoutContainer imageContainer;
+	private Label orientationDisplay;
+	private ComboBox<OrientationEntry> orientationSelection;
 
 	interface CaveTypeProperties extends PropertyAccess<CaveTypeEntry> {
 		ModelKeyProvider<CaveTypeEntry> caveTypeID();
@@ -135,9 +139,20 @@ public class CaveEditor implements IsWidget {
 		SafeHtml siteLabel(String name);
 	}
 	
+	interface OrientationProperties extends PropertyAccess<OrientationEntry> {
+		ModelKeyProvider<OrientationEntry> orientationID();
+		LabelProvider<OrientationEntry> nameEN();
+	}
+	
+	interface OrientationViewTemplates extends XTemplates {
+		@XTemplate("<div>{name}</div>")
+		SafeHtml orientationLabel(String name);
+	}
+	
 	interface CaveLayoutViewTemplates extends XTemplates {
-		@XTemplate("<img align=\"center\" width=\"242\" height=\"440\" margin=\"20\" src=\"{imageUri}\"><br> {title}")
-		SafeHtml image(SafeUri imageUri, String title);
+//		@XTemplate("<img align=\"center\" width=\"242\" height=\"440\" margin=\"20\" src=\"{imageUri}\">")
+		@XTemplate("<img align=\"center\" margin=\"10\" src=\"{imageUri}\">")
+		SafeHtml image(SafeUri imageUri);
 	}
 
 	public CaveEditor(CaveEntry caveEntry, CaveEditorListener listener) {
@@ -152,15 +167,20 @@ public class CaveEditor implements IsWidget {
 		caveTypeEntryList = new ListStore<CaveTypeEntry>(caveTypeProps.caveTypeID());
 		siteProps = GWT.create(SiteProperties.class);
 		siteEntryList = new ListStore<SiteEntry>(siteProps.siteID());
+		orientationProps = GWT.create(OrientationProperties.class);
+		orientationEntryList = new ListStore<OrientationEntry>(orientationProps.orientationID());
 		regionProps = GWT.create(RegionProperties.class);
 		regionEntryList = new ListStore<RegionEntry>(regionProps.regionID());
 		districtProps = GWT.create(DistrictProperties.class);
 		districtEntryList = new ListStore<DistrictEntry>(districtProps.districtID());
+		caveLayoutViewTemplates = GWT.create(CaveLayoutViewTemplates.class);	
+		
 		initPanel();
 		loadCaveTypes();
 		loadDistricts();
 		loadRegions();
 		loadSites();
+		loadOrientation();
 	}
 
 	/**
@@ -181,7 +201,10 @@ public class CaveEditor implements IsWidget {
 					caveTypeEntryList.add(pe);
 				}
 				if (correspondingCaveEntry.getCaveTypeID() > 0) {
-					caveTypeSelection.setValue(caveTypeEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getCaveTypeID())));
+					CaveTypeEntry correspondingCaveTypeEntry = caveTypeEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getCaveTypeID()));
+					caveTypeSelection.setValue(correspondingCaveTypeEntry);
+					imageContainer.clear();
+					imageContainer.add(new HTMLPanel(caveLayoutViewTemplates.image(UriUtils.fromString("resource?background=" + correspondingCaveTypeEntry.getSketchName()))));
 				}
 			}
 		});
@@ -203,6 +226,31 @@ public class CaveEditor implements IsWidget {
 				siteEntryList.clear();
 				for (SiteEntry se : result) {
 					siteEntryList.add(se);
+				}
+			}
+		});
+	}
+	
+	/**
+	 * 
+	 */
+	private void loadOrientation() {
+		dbService.getOrientationInformation(new AsyncCallback<ArrayList<OrientationEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				System.err.println("Problem loading OrientationEntry");
+			}
+
+			@Override
+			public void onSuccess(ArrayList<OrientationEntry> result) {
+				orientationEntryList.clear();
+				for (OrientationEntry entry : result) {
+					orientationEntryList.add(entry);
+					if (correspondingCaveEntry.getOrientationID() > 0) {
+						orientationSelection.setValue(orientationEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getOrientationID())));
+					}
+
 				}
 			}
 		});
@@ -275,7 +323,7 @@ public class CaveEditor implements IsWidget {
 	 */
 	private void createNewCaveEntry() {
 		correspondingCaveEntry = new CaveEntry(0, "enter official cave number", "enter official cave name", "optional historic name", 0, 0,
-				0, null, null, null, "enter findings here", null);
+				0, 0, null, null, "enter findings here", null);
 	}
 
 	@Override
@@ -338,6 +386,29 @@ public class CaveEditor implements IsWidget {
 			}
 		});
 		attributePanel.add(historicNameField);
+		vPanel.add(attributePanel);
+		
+		attributePanel = new FramedPanel();
+		attributePanel.setHeading("Orientation");
+		orientationSelection = new ComboBox<OrientationEntry>(orientationEntryList, orientationProps.nameEN(), new AbstractSafeHtmlRenderer<OrientationEntry>() {
+
+			@Override
+			public SafeHtml render(OrientationEntry item) {
+				final OrientationViewTemplates ovTemplates = GWT.create(OrientationViewTemplates.class);
+				return ovTemplates.orientationLabel(item.getNameEN());
+			}
+		});
+		orientationSelection.setTriggerAction(TriggerAction.ALL);
+		orientationSelection.setEditable(false);
+		orientationSelection.setTypeAhead(false);
+		orientationSelection.addSelectionHandler(new SelectionHandler<OrientationEntry>() {
+
+			@Override
+			public void onSelection(SelectionEvent<OrientationEntry> event) {
+				correspondingCaveEntry.setOrientationID(event.getSelectedItem().getOrientationID());
+			}
+		});
+		attributePanel.add(orientationSelection);
 		vPanel.add(attributePanel);
 		
 		attributePanel = new FramedPanel();
@@ -526,17 +597,21 @@ public class CaveEditor implements IsWidget {
 			@Override
 			public void onSelection(SelectionEvent<CaveTypeEntry> event) {
 				correspondingCaveEntry.setCaveTypeID(event.getSelectedItem().getCaveTypeID());
+				CaveTypeEntry correspondingCaveTypeEntry = caveTypeEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getCaveTypeID()));
+				imageContainer.clear();
+				imageContainer.add(new HTMLPanel(caveLayoutViewTemplates.image(UriUtils.fromString("resource?background=" + correspondingCaveTypeEntry.getSketchName()))));
 			}
 		});
 		caveTypeSelection.setWidth(250);
 		attributePanel.add(caveTypeSelection);
 		vPanel.add(attributePanel);
-		
-		final CaveLayoutViewTemplates caveLayoutViewTemplates = GWT.create(CaveLayoutViewTemplates.class);	
-		SafeUri imageUri = UriUtils.fromString("resource?background=centralPillarCave.jpeg");
-		FlowLayoutContainer imageContainer = new FlowLayoutContainer();
-		imageContainer.add(new HTMLPanel(caveLayoutViewTemplates.image(imageUri, "Central Pillar Cave")));
-		vPanel.add(imageContainer);
+
+		attributePanel = new FramedPanel();
+		attributePanel.setHeading("Cave Layout");
+		imageContainer = new FlowLayoutContainer();
+		imageContainer.setSize("300px", "500px");
+		attributePanel.add(imageContainer);
+		vPanel.add(attributePanel);
 		
 		hPanel.add(vPanel);
 

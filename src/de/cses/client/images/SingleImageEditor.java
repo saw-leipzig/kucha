@@ -344,7 +344,7 @@ public class SingleImageEditor implements IsWidget {
 			return;
 		} else {
 			for (ImageEditorListener listener : editorListenerList) {
-				listener.cancelImageEditor();
+				listener.closeImageEditor();
 			}
 		}
 	}

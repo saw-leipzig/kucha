@@ -28,6 +28,7 @@ import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.MainChamberEntry;
+import de.cses.shared.OrientationEntry;
 import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.PhotographerEntry;
@@ -61,12 +62,34 @@ public interface DatabaseServiceAsync {
 	void getOrnamentsOfOtherCultures(AsyncCallback<ArrayList<OrnamentOfOtherCulturesEntry>> callback)
 			throws IllegalArgumentException;
 
+	/**
+	 * Executes an SQL update using a pre-defined SQL UPDATE string
+	 * 
+	 * @param sqlUpdate
+	 * @param callback
+	 * @throws IllegalArgumentException
+	 */
 	void updateEntry(String sqlUpdate, AsyncCallback<Boolean> callback) throws IllegalArgumentException;
 
+	/**
+	 * Executes a SQL delete using a predefined SQL DELETE string
+	 * 
+	 * @param sqlDelete
+	 * @param callback
+	 * @throws IllegalArgumentException
+	 */
 	void deleteEntry(String sqlDelete, AsyncCallback<Boolean> callback) throws IllegalArgumentException;
 
 	void saveOrnamentEntry(OrnamentEntry ornamentEntry, AsyncCallback<Boolean> callback) throws IllegalArgumentException;
 
+	/**
+	 * Executes a pre-defined SQL INSERT statement and returns the generated
+	 * (auto-increment) unique key from the table.
+	 * 
+	 * @param sqlInsert
+	 * @param callback
+	 * @throws IllegalArgumentException
+	 */
 	void insertEntry(String sqlInsert, AsyncCallback<Integer> callback) throws IllegalArgumentException;
 
 	void getDepictions(AsyncCallback<ArrayList<DepictionEntry>> callback) throws IllegalArgumentException;
@@ -114,4 +137,15 @@ public interface DatabaseServiceAsync {
 	void saveDepiction(int depictionID, int absoluteLeft,int absoluteTop, AsyncCallback<String> asyncCallback) throws IllegalArgumentException;
 
 	void getRelatedImages(int depictionID, AsyncCallback<ArrayList<ImageEntry>> asyncCallback) throws IllegalArgumentException;
-	}
+
+	void getOrientationInformation(AsyncCallback<ArrayList<OrientationEntry>> asyncCallback) throws IllegalArgumentException;
+
+	void getIconographyEntry(int iconographyID, AsyncCallback<IconographyEntry> asyncCallback) throws IllegalArgumentException;
+
+	/**
+	 * @param depictionID
+	 * @param asyncCallback
+	 */
+	void getRelatedPE(int depictionID, AsyncCallback<ArrayList<PictorialElementEntry>> asyncCallback) throws IllegalArgumentException;
+
+}

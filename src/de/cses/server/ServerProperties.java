@@ -13,14 +13,12 @@
  */
 package de.cses.server;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.InvalidPropertiesFormatException;
 import java.util.Properties;
-
-import de.cses.server.mysql.MysqlConnector;
 
 /**
  * @author alingnau
@@ -34,13 +32,15 @@ public class ServerProperties extends Properties {
 	 * 
 	 */
 	public ServerProperties() {
+		File f = new File(getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
+		String propertyFileName = System.getProperty("user.dir") + "/lib/" + f.getParentFile().getParentFile().getName() + ".xml";
 		try {
-			loadFromXML(new FileInputStream(System.getProperty("user.dir") + "/lib/kucha.xml"));
+			loadFromXML(new FileInputStream(propertyFileName));
 		} catch (InvalidPropertiesFormatException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
-			System.err.println("Couldn't find file: " + System.getProperty("user.dir") + "/lib/kucha.xml");
+			System.err.println("Couldn't find file: " + propertyFileName);
 //			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

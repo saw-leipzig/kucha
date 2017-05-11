@@ -30,6 +30,7 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.Verti
 import com.sencha.gxt.widget.core.client.info.Info;
 import com.sencha.gxt.widget.core.client.tree.Tree;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckCascade;
+import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -47,12 +48,35 @@ public class PictorialElementSelector implements IsWidget {
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	private TreeStore<PictorialElementEntry> store;
 	private Tree<PictorialElementEntry, String> tree;
-	private ContentPanel panel;
 	private VerticalLayoutContainer vlc;
+	private int depictionID;
 
-	public PictorialElementSelector() {
+	public PictorialElementSelector(int depictionID) {
+		this.depictionID = depictionID;
 		store = new TreeStore<PictorialElementEntry>(new KeyProvider());
-		refreshPEStore();
+		tree = new Tree<PictorialElementEntry, String>(store, new ValueProvider<PictorialElementEntry, String>() {
+
+			@Override
+			public String getValue(PictorialElementEntry object) {
+				return object.getText();
+			}
+
+			@Override
+			public void setValue(PictorialElementEntry object, String value) {
+				// TODO Auto-generated method stub
+			}
+
+			@Override
+			public String getPath() {
+				return "name";
+			}
+		});
+		tree.setWidth(350);
+		tree.setCheckable(true);
+    tree.setCheckStyle(CheckCascade.TRI);
+    tree.setAutoLoad(true);
+		loadPEStore();
+		initPanel();
 	}
 
 	private void processParent(TreeStore<PictorialElementEntry> store, PictorialElementEntry item) {
@@ -64,8 +88,7 @@ public class PictorialElementSelector implements IsWidget {
 		}
 	}
 
-	private void refreshPEStore() {
-		store.clear();
+	private void loadPEStore() {
 		dbService.getPictorialElements(new AsyncCallback<ArrayList<PictorialElementEntry>>() {
 
 			@Override
@@ -75,15 +98,34 @@ public class PictorialElementSelector implements IsWidget {
 			}
 
 			@Override
-			public void onSuccess(ArrayList<PictorialElementEntry> result) {
+			public void onSuccess(ArrayList<PictorialElementEntry> peList) {
 
-				for (PictorialElementEntry item : result) {
+				for (PictorialElementEntry item : peList) {
 					store.add(item);
 					if (item.getChildren() != null) {
 						processParent(store, item);
 //						Info.display("Children added", item.getText());
 					}
 				}
+//				dbService.getRelatedPE(depictionID, new AsyncCallback<ArrayList<PictorialElementEntry>>() {
+//
+//					@Override
+//					public void onFailure(Throwable caught) {
+//						caught.printStackTrace();
+//					}
+//
+//					@Override
+//					public void onSuccess(ArrayList<PictorialElementEntry> peRelationList) {
+//						Info.display("Selected PE", "no = " + peRelationList.size());
+//						Info.display("Store", "no = " + store.getAllItemsCount());
+//  					tree.getSelectionModel().select(peRelationList, false);
+//  					tree.getSelectionModel().setSelection(peRelationList);
+//  					tree.setCheckedSelection(peRelationList);
+//						for (PictorialElementEntry peEntry : peRelationList) {
+//	  					tree.setChecked(peEntry, CheckState.CHECKED);
+//						}
+//					}
+//				});
 			}
 		});
 	}
@@ -98,45 +140,42 @@ public class PictorialElementSelector implements IsWidget {
 	
 	private void initPanel() {
 		vlc = new VerticalLayoutContainer();
-
-		tree = new Tree<PictorialElementEntry, String>(store, new ValueProvider<PictorialElementEntry, String>() {
-
-			@Override
-			public String getValue(PictorialElementEntry object) {
-				return object.getText();
-			}
-
-			@Override
-			public void setValue(PictorialElementEntry object, String value) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public String getPath() {
-				return "name";
-			}
-		});
-		tree.setWidth(350);
-		tree.setCheckable(true);
-    tree.setCheckStyle(CheckCascade.TRI);
-    tree.setAutoLoad(true);
-
 		vlc.add(tree, new VerticalLayoutData(1, 1));
 		vlc.setScrollMode(ScrollMode.AUTOY);
 		vlc.setPixelSize(700, 450);
 	}
 	
 	public List<PictorialElementEntry> getSelectedPE() {
-		return tree.getSelectionModel().getSelectedItems();
+		return tree.getCheckedSelection();
 	}
 
 	public void expandAll() {
 		tree.expandAll();
+		dbService.getRelatedPE(depictionID, new AsyncCallback<ArrayList<PictorialElementEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(ArrayList<PictorialElementEntry> peRelationList) {
+				Info.display("Selected PE", "no = " + peRelationList.size());
+				Info.display("Store", "no = " + store.getAllItemsCount());
+//				tree.getSelectionModel().select(peRelationList, false);
+//				tree.getSelectionModel().setSelection(peRelationList);
+				tree.setCheckedSelection(peRelationList);
+//				for (PictorialElementEntry peEntry : peRelationList) {
+//					tree.setChecked(peEntry, CheckState.CHECKED);
+//				}
+			}
+		});
+		
+		
 	}
 
 	public void collapseAll() {
 		tree.collapseAll();
 	}
-
+	
 }

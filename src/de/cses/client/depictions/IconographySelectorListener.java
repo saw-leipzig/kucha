@@ -13,31 +13,14 @@
  */
 package de.cses.client.depictions;
 
-import com.google.gwt.user.client.ui.Widget;
-import com.sencha.gxt.widget.core.client.button.TextButton;
-
-import de.cses.client.ui.AbstractResultView;
+import de.cses.shared.IconographyEntry;
 
 /**
  * @author alingnau
  *
  */
-public class DepictionResultView extends AbstractResultView {
-
-	/**
-	 * @param title
-	 */
-	public DepictionResultView(String title) {
-		super(title);
-		setHeight(300);
-	}
-
-	/* (non-Javadoc)
-	 * @see de.cses.client.ui.AbstractResultView#newElementButton()
-	 */
-	@Override
-	public Widget newElementButton() {
-		return new DepictionView();
-	}
+public interface IconographySelectorListener {
+	
+	public void iconographySelected(IconographyEntry entry);
 
 }
