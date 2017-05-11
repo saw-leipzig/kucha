@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 
+ * Copyright 2017 
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -15,40 +15,35 @@ package de.cses.shared;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class WallEntry implements IsSerializable{
+/**
+ * @author nina
+ *
+ */
+public class StructureOrganization implements IsSerializable{
 	
-	private int socketBorderID;
-	private int corniceBorderID;
-	private int wallID;
+	int structureOrganizationID;
+	String name;
 	
-	public WallEntry(){
+	public StructureOrganization(int structureOrganizationID, String name){
+		this.structureOrganizationID = structureOrganizationID;
+		this.name = name; 
+	}
+	public StructureOrganization(){
 		
 	}
-	public WallEntry(int wallID){
-		this.wallID= wallID;
+	public int getStructureOrganizationID() {
+		return structureOrganizationID;
+	}
+	public void setStructureOrganizationID(int structureOrganizationID) {
+		this.structureOrganizationID = structureOrganizationID;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
 	}
 	
-	public int getSocketBorderID() {
-		return socketBorderID;
-	}
-	public void setSocketBorderID(int socketBorderID) {
-		this.socketBorderID = socketBorderID;
-	}
-	public int getCorniceBorderID() {
-		return corniceBorderID;
-	}
-	public void setCorniceBorderID(int corniceBorderID) {
-		this.corniceBorderID = corniceBorderID;
-	}
-	public int getWallID() {
-		return wallID;
-	}
-	public void setWallID(int wallID) {
-		this.wallID = wallID;
-	}
-	public int getWallIDLabel() {
-		return wallID;
-	}
 	
 
 }

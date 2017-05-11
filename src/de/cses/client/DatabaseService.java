@@ -22,6 +22,7 @@ import de.cses.shared.AntechamberEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.BackAreaEntry;
 import de.cses.shared.CaveEntry;
+import de.cses.shared.CavePart;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
@@ -30,15 +31,22 @@ import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.MainChamberEntry;
 import de.cses.shared.OrientationEntry;
+import de.cses.shared.MainTypologicalClass;
+import de.cses.shared.OrnamentCaveType;
 import de.cses.shared.OrnamentEntry;
+import de.cses.shared.OrnamentFunction;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
+import de.cses.shared.OrnamentOrientation;
+import de.cses.shared.OrnamentPosition;
 import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PictorialElementEntry;
 import de.cses.shared.PublicationEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
+import de.cses.shared.StructureOrganization;
 import de.cses.shared.StyleEntry;
 import de.cses.shared.VendorEntry;
+import de.cses.shared.WallEntry;
 
 /**
  * The client-side stub for the RPC service.
@@ -121,6 +129,16 @@ public interface DatabaseService extends RemoteService {
 	String saveDepiction(int depictionID, int absoluteLeft, int absoluteTop) throws IllegalArgumentException;
 
 	ArrayList<ImageEntry> getRelatedImages(int depictionID) throws IllegalArgumentException;
+	
+	ArrayList<OrnamentOrientation> getOrientations() throws IllegalArgumentException;
+	ArrayList<MainTypologicalClass> getMainTypologicalClasses() throws IllegalArgumentException;
+	ArrayList<OrnamentCaveType> getOrnamentCaveTypes() throws IllegalArgumentException;
+	ArrayList<WallEntry> getWalls() throws IllegalArgumentException;
+	ArrayList<OrnamentFunction> getOrnamentFunctions() throws IllegalArgumentException;
+	ArrayList<OrnamentPosition> getOrnamentPositions() throws IllegalArgumentException;
+	ArrayList<StructureOrganization> getStructureOrganizations() throws IllegalArgumentException;
+	ArrayList<CavePart> getCaveParts() throws IllegalArgumentException;
+	ArrayList<OrnamentEntry> getOrnamentsWHERE(String sqlWhere) throws IllegalArgumentException;
 
 	ArrayList<OrientationEntry> getOrientationInformation() throws IllegalArgumentException;
 

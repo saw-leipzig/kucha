@@ -21,6 +21,7 @@ import de.cses.shared.AntechamberEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.BackAreaEntry;
 import de.cses.shared.CaveEntry;
+import de.cses.shared.CavePart;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
@@ -29,15 +30,22 @@ import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.MainChamberEntry;
 import de.cses.shared.OrientationEntry;
+import de.cses.shared.MainTypologicalClass;
+import de.cses.shared.OrnamentCaveType;
 import de.cses.shared.OrnamentEntry;
+import de.cses.shared.OrnamentFunction;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
+import de.cses.shared.OrnamentOrientation;
+import de.cses.shared.OrnamentPosition;
 import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PictorialElementEntry;
 import de.cses.shared.PublicationEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
+import de.cses.shared.StructureOrganization;
 import de.cses.shared.StyleEntry;
 import de.cses.shared.VendorEntry;
+import de.cses.shared.WallEntry;
 
 public interface DatabaseServiceAsync {
 
@@ -148,4 +156,22 @@ public interface DatabaseServiceAsync {
 	 */
 	void getRelatedPE(int depictionID, AsyncCallback<ArrayList<PictorialElementEntry>> asyncCallback) throws IllegalArgumentException;
 
-}
+	void getOrientations( AsyncCallback<ArrayList<OrnamentOrientation>> asyncCallback) throws IllegalArgumentException;
+	
+	void getMainTypologicalClasses( AsyncCallback<ArrayList<MainTypologicalClass>> asyncCallback) throws IllegalArgumentException;
+	
+	void getStructureOrganizations ( AsyncCallback<ArrayList<StructureOrganization>> asyncCallback) throws IllegalArgumentException;
+	
+	void getOrnamentCaveTypes ( AsyncCallback<ArrayList<OrnamentCaveType>> asyncCallback) throws IllegalArgumentException;
+	
+	void getCaveParts (AsyncCallback<ArrayList<CavePart>> asyncCallback) throws IllegalArgumentException;
+	
+	void getWalls (AsyncCallback<ArrayList<WallEntry>> asyncCallback) throws IllegalArgumentException;
+	
+	void getOrnamentPositions (AsyncCallback<ArrayList<OrnamentPosition>> asyncCallback) throws IllegalArgumentException;
+	
+	void getOrnamentFunctions (AsyncCallback<ArrayList<OrnamentFunction>> asyncCallback) throws IllegalArgumentException;
+	
+	void getOrnamentsWHERE(String sqlWhere, AsyncCallback<ArrayList<OrnamentEntry>> asyncCallback) throws IllegalArgumentException;
+	
+	}

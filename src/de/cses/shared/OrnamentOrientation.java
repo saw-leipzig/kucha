@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 
+ * Copyright 2017 
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -15,40 +15,40 @@ package de.cses.shared;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class WallEntry implements IsSerializable{
+/**
+ * @author nina
+ *
+ */
+public class OrnamentOrientation implements IsSerializable {
+	private int ornamentOrientationID;
+	private String name;
 	
-	private int socketBorderID;
-	private int corniceBorderID;
-	private int wallID;
-	
-	public WallEntry(){
+	/**
+	 * @param int1
+	 * @param string
+	 */
+	public OrnamentOrientation(int orientationID, String name) {
+		this.name= name;
+		this.ornamentOrientationID = orientationID;
 		
 	}
-	public WallEntry(int wallID){
-		this.wallID= wallID;
+	public OrnamentOrientation(){
+		
 	}
+	public int getOrnamentOrientationID() {
+		return ornamentOrientationID;
+	}
+	public void setOrnamentOrientationID(int ornamentOrientationID) {
+		this.ornamentOrientationID = ornamentOrientationID;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	
-	public int getSocketBorderID() {
-		return socketBorderID;
-	}
-	public void setSocketBorderID(int socketBorderID) {
-		this.socketBorderID = socketBorderID;
-	}
-	public int getCorniceBorderID() {
-		return corniceBorderID;
-	}
-	public void setCorniceBorderID(int corniceBorderID) {
-		this.corniceBorderID = corniceBorderID;
-	}
-	public int getWallID() {
-		return wallID;
-	}
-	public void setWallID(int wallID) {
-		this.wallID = wallID;
-	}
-	public int getWallIDLabel() {
-		return wallID;
-	}
 	
 
 }
