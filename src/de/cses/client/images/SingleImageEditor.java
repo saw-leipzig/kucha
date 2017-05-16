@@ -261,7 +261,7 @@ public class SingleImageEditor implements IsWidget {
 		rbPanel.add(rPhoto);
 		rbPanel.add(rSketch);
 		rbPanel.add(rMap);
-		rbPanel.setWidth("250px");
+		rbPanel.setWidth("100%");
 		attributePanel.add(rbPanel);
 		attributePanel.setHeading("Image Type");
 		switch (imgEntry.getType()) {

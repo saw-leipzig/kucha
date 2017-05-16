@@ -63,7 +63,7 @@ public class ImageFilter extends AbstractFilter {
 		vp.add(rPhoto);
 		vp.add(rSketch);
 		vp.add(rMap);
-		vp.setWidth("250px");		
+//		vp.setWidth("250px");		
 		return vp;
 	}
 

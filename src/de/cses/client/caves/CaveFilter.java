@@ -74,7 +74,8 @@ public class CaveFilter extends AbstractFilter {
 	protected Widget getFilterUI() {
 		VerticalPanel vp = new VerticalPanel();
 		vp.add(caveTypeSelection);
-		return vp;
+//		return vp;
+		return caveTypeSelection;
 	}
 	
 	/**

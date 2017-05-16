@@ -17,7 +17,9 @@ import java.util.ArrayList;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.core.client.Style.HideMode;
 import com.sencha.gxt.widget.core.client.FramedPanel;
+import com.sencha.gxt.widget.core.client.Portlet;
 
 /**
  * This class shall be extended to implement a new filter. To make sure all filters
@@ -28,7 +30,7 @@ import com.sencha.gxt.widget.core.client.FramedPanel;
  */
 public abstract class AbstractFilter implements IsWidget {
 
-	private FramedPanel panel = null;
+	private Portlet panel = null;
 	private String filterName;
 
 	/**
@@ -44,7 +46,9 @@ public abstract class AbstractFilter implements IsWidget {
 	@Override
 	public Widget asWidget() {
 		if (panel == null) {
-			panel = new FramedPanel();
+			panel = new Portlet();
+			panel.setWidth("100%");
+			panel.setCollapsible(true);
 			panel.setHeading(filterName);
 			panel.add(getFilterUI());
 		}

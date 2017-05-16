@@ -16,6 +16,8 @@ package de.cses.client.ui;
 import java.util.ArrayList;
 
 import com.sencha.gxt.widget.core.client.button.ToggleButton;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
 import de.cses.client.caves.CaveResultView;
 
@@ -42,6 +44,13 @@ public abstract class AbstractSearchController extends ToggleButton {
 		super();
 		this.searchControllerTitle = searchControllerTitle;
 		this.resultView = resultView;
+		this.resultView.addSearchSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				invokeSearch();
+			}
+		});
 		relatedFilter = new ArrayList<AbstractFilter>();
 		setText(searchControllerTitle);
 		setSize("50px", "50px");

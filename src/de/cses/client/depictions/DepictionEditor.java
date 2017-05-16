@@ -573,7 +573,7 @@ public class DepictionEditor implements IsWidget {
 			@Override
 			public void onSelect(SelectEvent event) {
 				wallEditorDialog = new PopupPanel();
-				new Draggable(wallEditorDialog);
+//				new Draggable(wallEditorDialog);
 				wallEditorDialog.add(wallEditor);
 				wallEditor.createNewDepictionOnWall(correspondingDepictionEntry, true, true);
 				wallEditor.setPanel(wallEditorDialog);
@@ -657,7 +657,7 @@ public class DepictionEditor implements IsWidget {
 			@Override
 			public void onSelect(SelectEvent event) {
 				iconographySelectionDialog = new PopupPanel();
-				new Draggable(iconographySelectionDialog);
+//				new Draggable(iconographySelectionDialog);
 				iconographySelectionDialog.add(iconographySelector);
 				iconographySelectionDialog.setModal(true);
 				iconographySelectionDialog.center();
@@ -716,7 +716,7 @@ public class DepictionEditor implements IsWidget {
 			@Override
 			public void onSelect(SelectEvent event) {
 				imageSelectionDialog = new PopupPanel();
-				new Draggable(imageSelectionDialog);
+//				new Draggable(imageSelectionDialog);
 				imageSelectionDialog.add(imageSelector);
 				imageSelectionDialog.setModal(true);
 				imageSelectionDialog.center();

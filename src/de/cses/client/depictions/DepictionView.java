@@ -101,12 +101,6 @@ public class DepictionView extends Button {
 	 * 
 	 */
 	private void init() {
-		// this.setIconAlign(IconAlign.TOP);
-		//
-		// Resources resources = GWT.create(Resources.class);
-		// this.setIcon(resources.logo());
-		// setScale(ButtonScale.LARGE);
-
 		addClickHandler(new ClickHandler() {
 
 			private PopupPanel depictionEditorPanel;
@@ -129,28 +123,6 @@ public class DepictionView extends Button {
 			}
 		});
 
-		// addSelectHandler(new SelectHandler() {
-		//
-		// private PopupPanel depictionEditorPanel;
-		//
-		// @Override
-		// public void onSelect(SelectEvent event) {
-		// depictionEditorPanel = new PopupPanel(false);
-		// DepictionEditor de = new DepictionEditor(entry, new
-		// DepictionEditorListener() {
-		//
-		// @Override
-		// public void depictionSaved(DepictionEntry depictionEntry) {
-		// depictionEditorPanel.hide();
-		// }
-		// });
-		// depictionEditorPanel.add(de);
-		// new Draggable(depictionEditorPanel);
-		// depictionEditorPanel.setGlassEnabled(true);
-		// depictionEditorPanel.center();
-		// depictionEditorPanel.show();
-		// }
-		// });
 	}
 
 }

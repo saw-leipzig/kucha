@@ -21,18 +21,22 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.core.client.dom.ScrollSupport;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.Header;
+import com.sencha.gxt.widget.core.client.Portlet;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutPack;
+import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.MarginData;
+import com.sencha.gxt.widget.core.client.container.PortalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
@@ -64,12 +68,12 @@ public class MainView implements IsWidget {
 	private BorderLayoutContainer view = null;
 	private CaveSearchController caveSearchController;
 	private ContentPanel filterPanel;
-	private VerticalLayoutContainer filterView;
-	private VerticalLayoutContainer resultView;
+	private PortalLayoutContainer filterView;
+	private PortalLayoutContainer resultView;
 	private VerticalLayoutData filterLayoutData;
 	private TextButton searchButton;
 	private TextField searchText;
-	private VerticalLayoutData resultLayoutData;
+//	private VerticalLayoutData resultLayoutData;
 	private VerticalPanel northPanel;
 	private FramedPanel searchTextPanel;
 	private HorizontalLayoutContainer selectorLayoutContainer;
@@ -97,7 +101,6 @@ public class MainView implements IsWidget {
 	
 	private void initView() {
     final boolean borders = true;
-    final int margins = 5;
     
     northPanel = new VerticalPanel();
 
@@ -107,11 +110,13 @@ public class MainView implements IsWidget {
     northPanel.add(headline);
     
     selectorLayoutContainer = new HorizontalLayoutContainer();
-    HorizontalLayoutData hLayoutData = new HorizontalLayoutData(80, 60, new Margins(margins, 0, margins, margins));
+    HorizontalLayoutData hLayoutData = new HorizontalLayoutData(80, 60, new Margins(5, 0, 5, 5));
+    
+//    resultLayoutData = new VerticalLayoutData(-1, -1, new Margins(margins, 0, margins, 0));
     
     LocationFilter lFilter = new LocationFilter("Location Filter");
     CaveFilter cFilter = new CaveFilter("Cave Filter");
-    filterLayoutData = new VerticalLayoutData(-1, -1, new Margins(5, 0, 5, 0));
+//    filterLayoutData = new VerticalLayoutData(-1, -1, new Margins(5, 0, 5, 0));
 
 		caveSearchController = new CaveSearchController("Caves", new CaveResultView("Caves"));
 		caveSearchController.addRelatedFilter(cFilter);
@@ -122,14 +127,14 @@ public class MainView implements IsWidget {
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
 				if (event.getValue()) {
 					for (AbstractFilter filter : caveSearchController.getRelatedFilter()) {
-						filterView.add(filter, filterLayoutData);
+						filterView.add(filter, 0);
 					}
-					resultView.add(caveSearchController.getResultView(), resultLayoutData);
+					resultView.add(caveSearchController.getResultView(), 0);
 				} else {
 					ArrayList<AbstractFilter> usedFilter = getUsedFilter();
 					for (AbstractFilter filter : caveSearchController.getRelatedFilter()) {
 						if (!usedFilter.contains(filter)){
-							filterView.remove(filter);
+							filterView.remove(filter, 0);
 						}
 					}
 					caveSearchController.getResultView().removeFromParent();
@@ -146,14 +151,14 @@ public class MainView implements IsWidget {
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
 				if (event.getValue()) {
 					for (AbstractFilter filter : depictionSearchController.getRelatedFilter()) {
-						filterView.add(filter, filterLayoutData);
+						filterView.add(filter, 0);
 					}
-					resultView.add(depictionSearchController.getResultView(), resultLayoutData);
+					resultView.add(depictionSearchController.getResultView(), 0);
 				} else {
 					ArrayList<AbstractFilter> usedFilter = getUsedFilter();
 					for (AbstractFilter filter : depictionSearchController.getRelatedFilter()) {
 						if (!usedFilter.contains(filter)){
-							filterView.remove(filter);
+							filterView.remove(filter, 0);
 						}
 					}
 					depictionSearchController.getResultView().removeFromParent();
@@ -170,14 +175,14 @@ public class MainView implements IsWidget {
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
 				if (event.getValue()) {
 					for (AbstractFilter filter : imageSearchController.getRelatedFilter()) {
-						filterView.add(filter, filterLayoutData);
+						filterView.add(filter, 0);
 					}
-					resultView.add(imageSearchController.getResultView(), resultLayoutData);
+					resultView.add(imageSearchController.getResultView(), 1);
 				} else {
 					ArrayList<AbstractFilter> usedFilter = getUsedFilter();
 					for (AbstractFilter filter : imageSearchController.getRelatedFilter()) {
 						if (!usedFilter.contains(filter)) {
-							filterView.remove(filter);
+							filterView.remove(filter, 0);
 						}
 					}
 					imageSearchController.getResultView().removeFromParent();
@@ -196,14 +201,14 @@ public class MainView implements IsWidget {
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
 				if (event.getValue()) {
 					for (AbstractFilter filter : ornamenticSearchController.getRelatedFilter()) {
-						filterView.add(filter, filterLayoutData);
+						filterView.add(filter, 0);
 					}
-					resultView.add(ornamenticSearchController.getResultView(), resultLayoutData);
+					resultView.add(ornamenticSearchController.getResultView(), 1);
 				} else {
 					ArrayList<AbstractFilter> usedFilter = getUsedFilter();
 					for (AbstractFilter filter : ornamenticSearchController.getRelatedFilter()) {
 						if (!usedFilter.contains(filter)){
-							filterView.remove(filter);
+							filterView.remove(filter, 0);
 						}
 					}
 					ornamenticSearchController.getResultView().removeFromParent();
@@ -212,13 +217,20 @@ public class MainView implements IsWidget {
 		});
 		selectorLayoutContainer.add(ornamenticSearchController, hLayoutData);
 		
-		
     ContentPanel centerPanel = new ContentPanel();
     centerPanel.setHeading("Results");
-    centerPanel.setResize(false);
-    resultView = new VerticalLayoutContainer();
-    resultLayoutData = new VerticalLayoutData(-1, -1, new Margins(margins, 0, margins, 0));
-    resultView.setScrollMode(ScrollMode.AUTOY);
+    centerPanel.setResize(true);
+
+    /*
+     * Currently we implement a 2-column layout with a spacing of 10. 
+     */
+    resultView = new PortalLayoutContainer(2);
+    resultView.setSpacing(10);
+    resultView.setColumnWidth(0, .50);
+    resultView.setColumnWidth(1, .50);
+//    FlowLayoutContainer testContainer = new FlowLayoutContainer();
+//    testContainer.setScrollMode(ScrollMode.AUTOY);
+//    testContainer.add(resultView);
     centerPanel.add(resultView);
 
     ContentPanel north = new ContentPanel();
@@ -227,15 +239,15 @@ public class MainView implements IsWidget {
     north.setHeight("80px");
     northPanel.add(north);
     
-    filterView = new VerticalLayoutContainer();
-    filterView.setScrollMode(ScrollMode.AUTOY);
+    filterView = new PortalLayoutContainer(1);
+    filterView.setSpacing(10);
+    filterView.setColumnWidth(0, 1.00);
 		searchText = new TextField();
-		searchText.setEmptyText("search for ...");
-		searchText.setWidth(185);
-		searchTextPanel = new FramedPanel();
+//		searchText.setWidth(180);
+		searchTextPanel = new Portlet();
 		searchTextPanel.add(searchText);
-		searchTextPanel.setHeaderVisible(false);
-		filterView.add(searchTextPanel, filterLayoutData);		
+		searchTextPanel.setHeading("search for");
+		filterView.add(searchTextPanel, 0);		
 
 		searchButton = new TextButton("search");
 		searchButton.addSelectHandler(new SelectHandler() {
@@ -249,21 +261,22 @@ public class MainView implements IsWidget {
 		});
 		
     filterPanel = new ContentPanel();
+    filterPanel.setResize(true);
     filterPanel.setHeading("Filter");
     filterPanel.add(filterView);
     filterPanel.addButton(searchButton);
     filterPanel.setButtonAlign(BoxLayoutPack.CENTER);
     
     BorderLayoutData northData = new BorderLayoutData(150);
-    northData.setMargins(new Margins(margins));
+    northData.setMargins(new Margins(5));
     northData.setCollapseHeaderVisible(true);
 
-    BorderLayoutData westData = new BorderLayoutData(200);
-    westData.setMargins(new Margins(0, margins, margins, margins));
+    BorderLayoutData westData = new BorderLayoutData(220);
+    westData.setMargins(new Margins(0));
     westData.setCollapsible(true);
     westData.setCollapseHeaderVisible(true);
 
-    MarginData centerData = new MarginData(0, margins, margins, 0);
+    MarginData centerData = new MarginData(0);
 
     view = new BorderLayoutContainer();
     view.setBorders(borders);
@@ -272,7 +285,7 @@ public class MainView implements IsWidget {
     view.setCenterWidget(centerPanel, centerData);
 
 	}
-
+	
 	/**
 	 * 
 	 */

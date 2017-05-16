@@ -415,7 +415,7 @@ public class CaveEditor implements IsWidget {
 		attributePanel.setHeading("Site");
 		if (correspondingCaveEntry.getCaveID() > 0) {
 			siteDisplay = new Label();
-			siteDisplay.setWidth("20em");
+			siteDisplay.setWidth("100%");
 			attributePanel.add(siteDisplay);
 		} else {
 			siteSelection = new ComboBox<SiteEntry>(siteEntryList, siteProps.name(), 
@@ -430,6 +430,7 @@ public class CaveEditor implements IsWidget {
 			siteSelection.setEmptyText("select site");
 			siteSelection.setTypeAhead(false);
 			siteSelection.setEditable(false);
+			siteSelection.setWidth("100%");
 			siteSelection.setTriggerAction(TriggerAction.ALL);
 			siteSelection.addSelectionHandler(new SelectionHandler<SiteEntry>() {
 

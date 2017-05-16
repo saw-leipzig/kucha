@@ -21,14 +21,23 @@ import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.XTemplates;
+import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
+import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutData;
+import com.sencha.gxt.widget.core.client.container.MarginData;
+import com.sencha.gxt.widget.core.client.container.VBoxLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VBoxLayoutContainer.VBoxLayoutAlign;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 
 import de.cses.client.DatabaseService;
@@ -111,12 +120,21 @@ public class LocationFilter extends AbstractFilter {
 	protected Widget getFilterUI() {
 		if (vp == null) {
 			vp  = new VerticalPanel();
-			vp.setSpacing(5);
+//			vp.setWidth("200px");
+//			vp.setSpacing(2);
+//			vp.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 			vp.add(siteSelection);
 			vp.add(districtSelection);
 			vp.add(regionSelection);
 		}
-		return vp;
+		VBoxLayoutContainer c = new VBoxLayoutContainer();
+    c.setVBoxLayoutAlign(VBoxLayoutAlign.CENTER);
+    c.setWidth("100%");
+    BoxLayoutData layoutData = new BoxLayoutData(new Margins(5, 0, 0, 0));
+    c.add(siteSelection, layoutData);
+    c.add(districtSelection, layoutData);
+    c.add(regionSelection, layoutData);
+		return c;
 	}
 	
 	/**
@@ -151,6 +169,7 @@ public class LocationFilter extends AbstractFilter {
 		siteSelection.setEmptyText("select site");
 		siteSelection.setTypeAhead(false);
 		siteSelection.setEditable(false);
+		siteSelection.setWidth("100%");
 		siteSelection.setTriggerAction(TriggerAction.ALL);
 		siteSelection.addSelectionHandler(new SelectionHandler<SiteEntry>() {
 

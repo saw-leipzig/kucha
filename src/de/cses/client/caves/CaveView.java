@@ -119,7 +119,7 @@ public class CaveView extends TextButton {
 					}
 				});
 				caveEditorPanel.add(ced);
-				new Draggable(caveEditorPanel);
+//				new Draggable(caveEditorPanel);
 				caveEditorPanel.setGlassEnabled(true);
 				caveEditorPanel.center();
 				caveEditorPanel.show();

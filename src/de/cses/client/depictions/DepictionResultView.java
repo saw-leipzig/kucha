@@ -29,7 +29,6 @@ public class DepictionResultView extends AbstractResultView {
 	 */
 	public DepictionResultView(String title) {
 		super(title);
-		setHeight(300);
 	}
 
 	/* (non-Javadoc)
