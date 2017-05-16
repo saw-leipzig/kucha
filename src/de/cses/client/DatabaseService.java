@@ -139,11 +139,8 @@ public interface DatabaseService extends RemoteService {
 	ArrayList<StructureOrganization> getStructureOrganizations() throws IllegalArgumentException;
 	ArrayList<CavePart> getCaveParts() throws IllegalArgumentException;
 	ArrayList<OrnamentEntry> getOrnamentsWHERE(String sqlWhere) throws IllegalArgumentException;
-
 	ArrayList<OrientationEntry> getOrientationInformation() throws IllegalArgumentException;
-
 	IconographyEntry getIconographyEntry(int iconographyID) throws IllegalArgumentException;
-
 	ArrayList<PictorialElementEntry> getRelatedPE(int depictionID) throws IllegalArgumentException;
 
 }

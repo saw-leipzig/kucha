@@ -18,22 +18,13 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.safehtml.shared.SafeUri;
-import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.PopupPanel;
-import com.sencha.gxt.cell.core.client.ButtonCell.ButtonScale;
-import com.sencha.gxt.cell.core.client.ButtonCell.IconAlign;
-import com.sencha.gxt.fx.client.Draggable;
-import com.sencha.gxt.widget.core.client.button.TextButton;
-import com.sencha.gxt.widget.core.client.event.SelectEvent;
-import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
-import de.cses.client.Util;
 //import de.cses.client.images.ImageView.Resources;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.ImageEntry;
@@ -49,7 +40,7 @@ public class DepictionView extends Button {
 		ImageResource logo();
 	}
 
-	private DepictionEntry entry;
+	private DepictionEntry depictionEntry;
 	private static final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 
 	/**
@@ -63,7 +54,7 @@ public class DepictionView extends Button {
 				+ "' height = '128px' width = '128px'></img></center><label> New Depiction </label></br></div>";
 		setHTML(html);
 		setPixelSize(150, 160);
-		entry = null;
+		depictionEntry = null;
 		init();
 	}
 
@@ -71,8 +62,8 @@ public class DepictionView extends Button {
 	 * @param text
 	 */
 	public DepictionView(DepictionEntry entry) {
-		// super("DepictionID: " + entry.getDepictionID());
-		this.entry = entry;
+		// super("DepictionID: " + depictionEntry.getDepictionID());
+		depictionEntry = entry;
 		dbService.getMasterImageEntryForDepiction(entry.getDepictionID(), new AsyncCallback<ImageEntry>() {
 
 			@Override
@@ -80,7 +71,7 @@ public class DepictionView extends Button {
 				Resources resources = GWT.create(Resources.class);
 				Image img = new Image(resources.logo());
 				String html = "<div><center><img src='" + img.getUrl()
-						+ "' height = '128px' width = '128px'></img></center><label> DepictionID " + entry.getDepictionID()
+						+ "' height = '128px' width = '128px'></img></center><label> DepictionID " + depictionEntry.getDepictionID()
 						+ "</label></br></div>";
 				setHTML(html);
 			}
@@ -88,7 +79,7 @@ public class DepictionView extends Button {
 			@Override
 			public void onSuccess(ImageEntry result) {
 				String html = "<div><center><img src='resource?imageID=" + result.getImageID() + "&thumb=true'"
-						+ "' height = '128px' width = '128px'></img></center><label> DepictionID " + entry.getDepictionID()
+						+ "' height = '128px' width = '128px'></img></center><label> DepictionID " + depictionEntry.getDepictionID()
 						+ "</label></br></div>";
 				setHTML(html);
 			}
@@ -108,7 +99,7 @@ public class DepictionView extends Button {
 			@Override
 			public void onClick(ClickEvent event) {
 				depictionEditorPanel = new PopupPanel(false);
-				DepictionEditor de = new DepictionEditor(entry, new DepictionEditorListener() {
+				DepictionEditor de = new DepictionEditor(depictionEntry, new DepictionEditorListener() {
 
 					@Override
 					public void depictionSaved(DepictionEntry depictionEntry) {

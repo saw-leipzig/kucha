@@ -387,8 +387,6 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		return connector.getOrnamentsWHERE(sqlWhere);
 	}
 
-
-
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getOrientationInformation()
 	 */
