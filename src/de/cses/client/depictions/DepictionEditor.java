@@ -37,6 +37,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
+import com.sencha.gxt.cell.core.client.form.TextAreaInputCell;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.core.client.util.Margins;
@@ -53,8 +54,10 @@ import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderL
 import com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutPack;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
@@ -389,7 +392,7 @@ public class DepictionEditor implements IsWidget {
 		HorizontalLayoutContainer hPanel = new HorizontalLayoutContainer();
 		hPanel.setSize("100%", "100%");
 		VerticalLayoutContainer vPanel = new VerticalLayoutContainer();
-		vPanel.setSize("40%", "100%");
+//		vPanel.setSize("40%", "100%");
 
 		imageListView = new ListView<ImageEntry, ImageEntry>(imageEntryList, new IdentityValueProvider<ImageEntry>() {
 			@Override
@@ -453,12 +456,12 @@ public class DepictionEditor implements IsWidget {
 		// TODO check if wall id is set, then set caveSelection.editable(false)
 		attributePanel.add(caveSelection);
 //		attributePanel.setWidth("40%");
-		vPanel.add(attributePanel);
+		vPanel.add(attributePanel, new VerticalLayoutData(1.0, .1));
 		
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Belongs to wall");
 		attributePanel.add(new Label("Wall selection"));
-		vPanel.add(attributePanel);
+		vPanel.add(attributePanel, new VerticalLayoutData(1.0, .1));
 		
 		HorizontalPanel dimPanel = new HorizontalPanel();
 		attributePanel = new FramedPanel();
@@ -475,8 +478,8 @@ public class DepictionEditor implements IsWidget {
 		heightField.setValue(correspondingDepictionEntry.getHeight());
 		attributePanel.add(heightField);
 		dimPanel.add(attributePanel);
-		vPanel.add(dimPanel);
-		dimPanel.setWidth("100%");
+		vPanel.add(dimPanel, new VerticalLayoutData(1.0, .1));
+//		dimPanel.setWidth("100%");
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Acquired by expedition");
@@ -505,14 +508,14 @@ public class DepictionEditor implements IsWidget {
 //		expedSelection.setWidth("100%");
 		attributePanel.add(expedSelection);
 //		attributePanel.setWidth("100%");
-		vPanel.add(attributePanel);
+		vPanel.add(attributePanel, new VerticalLayoutData(1.0, .1));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Date of acquisition");
 		dateOfAcquisitionField = new DateField(new DateTimePropertyEditor("dd MMMM yyyy"));
 		attributePanel.add(dateOfAcquisitionField);
 //		attributePanel.setWidth("100%");
-		vPanel.add(attributePanel);
+		vPanel.add(attributePanel, new VerticalLayoutData(1.0, .1));
 		
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Vendor");
@@ -540,7 +543,7 @@ public class DepictionEditor implements IsWidget {
 //		vendorSelection.setWidth("100%");
 		attributePanel.add(vendorSelection);
 //		attributePanel.setWidth("100%");
-		vPanel.add(attributePanel);
+		vPanel.add(attributePanel, new VerticalLayoutData(1.0, .1));
 		
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Date purchased");
@@ -548,12 +551,12 @@ public class DepictionEditor implements IsWidget {
 		purchaseDateField.setValue(correspondingDepictionEntry.getPurchaseDate());
 		attributePanel.add(purchaseDateField);
 //		attributePanel.setWidth("100%");
-		vPanel.add(attributePanel);
+		vPanel.add(attributePanel, new VerticalLayoutData(1.0, .1));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Current location");
 //		attributePanel.setWidth("100%");
-		vPanel.add(attributePanel);
+		vPanel.add(attributePanel, new VerticalLayoutData(1.0, .1));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Background colour");
@@ -561,7 +564,7 @@ public class DepictionEditor implements IsWidget {
 //		backgroundColourField.setWidth("100%");
 		attributePanel.add(backgroundColourField);
 //		attributePanel.setWidth("100%");
-		vPanel.add(attributePanel);
+		vPanel.add(attributePanel, new VerticalLayoutData(1.0, .1));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Material");
@@ -569,10 +572,10 @@ public class DepictionEditor implements IsWidget {
 //		materialField.setWidth("100%");
 		attributePanel.add(materialField);
 //		attributePanel.setWidth("100%");
-		vPanel.add(attributePanel);
-		hPanel.add(vPanel);
+		vPanel.add(attributePanel, new VerticalLayoutData(1.0, .1));
+		hPanel.add(vPanel, new HorizontalLayoutData(.4, 1.0));
 		
-//		vPanel = new VerticalPanel();
+		vPanel = new VerticalLayoutContainer();
 //		vPanel.setWidth("60%");
 
 		attributePanel = new FramedPanel();
@@ -602,15 +605,15 @@ public class DepictionEditor implements IsWidget {
 //		caveSketchContainer.add(new HTMLPanel(caveLayoutViewTemplates.image(imageUri)));
 //		caveSketchContainer.setSize("100%", "100%");
 		attributePanel.add(caveSketchContainer);
-		attributePanel.setSize("60%", "100%");
-		hPanel.add(attributePanel);
+		vPanel.add(attributePanel, new VerticalLayoutData(1.0, 1.0));
+		hPanel.add(vPanel, new HorizontalLayoutData(.6, 1.0));
 		tabPanel.add(hPanel, "Basics");
 	
 		hPanel = new HorizontalLayoutContainer();
 		hPanel.setSize("100%", "100%");
 		
 		vPanel = new VerticalLayoutContainer();
-		vPanel.setSize("35%", "100%");
+//		vPanel.setSize("35%", "100%");
 		
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Style");
@@ -636,7 +639,7 @@ public class DepictionEditor implements IsWidget {
 		});
 //		styleSelection.setWidth(300);
 		attributePanel.add(styleSelection);
-		vPanel.add(attributePanel);
+		vPanel.add(attributePanel, new VerticalLayoutData(1.0, .15));
 		
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Iconography");
@@ -680,7 +683,7 @@ public class DepictionEditor implements IsWidget {
 			}
 		});
 		attributePanel.addButton(selectIconographyButton);
-		vPanel.add(attributePanel);
+		vPanel.add(attributePanel, new VerticalLayoutData(1.0, .25));
 		
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Inscriptions");
@@ -693,9 +696,9 @@ public class DepictionEditor implements IsWidget {
 				correspondingDepictionEntry.setInscriptions(event.getValue());
 			}
 		});
-		inscriptionsField.setWidth(130);
+//		inscriptionsField.setWidth(130);
 		attributePanel.add(inscriptionsField);
-		vPanel.add(attributePanel);
+		vPanel.add(attributePanel, new VerticalLayoutData(1.0, .15));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Dating");
@@ -703,7 +706,7 @@ public class DepictionEditor implements IsWidget {
 		datingField.setWidth(130);
 		datingField.setText(correspondingDepictionEntry.getDating());
 		attributePanel.add(datingField);
-		vPanel.add(attributePanel);
+		vPanel.add(attributePanel, new VerticalLayoutData(1.0, .15));
 
 		imageSelector = new ImageSelector(ImageSelector.PHOTO, new ImageSelectorListener() {
 			
@@ -759,15 +762,14 @@ public class DepictionEditor implements IsWidget {
 			}
 		});
 
-		hPanel.add(vPanel);
+		hPanel.add(vPanel, new HorizontalLayoutData(.35, 1.0));
 		
 		vPanel = new VerticalLayoutContainer();
-		vPanel.setSize("65%", "100%");
+//		vPanel.setSize("65%", "100%");
 		
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Description");
 		descriptionArea = new TextArea();
-		descriptionArea.setSize("100px", "100px");
 		descriptionArea.setValue(correspondingDepictionEntry.getDescription());
 		descriptionArea.addValueChangeHandler(new ValueChangeHandler<String>() {
 			
@@ -777,8 +779,8 @@ public class DepictionEditor implements IsWidget {
 			}
 		});
 		attributePanel.add(descriptionArea);
-		attributePanel.setSize("100%", "33%");
-		vPanel.add(attributePanel);
+		
+		vPanel.add(attributePanel, new VerticalLayoutData(1.0, .33));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("General remarks");
@@ -791,18 +793,18 @@ public class DepictionEditor implements IsWidget {
 				correspondingDepictionEntry.setGeneralRemarks(event.getValue());
 			}
 		});
-		generalRemarksArea.setSize("100%", "33%");
+//		generalRemarksArea.setSize("100%", "33%");
 		attributePanel.add(generalRemarksArea);
-		vPanel.add(attributePanel);
+		vPanel.add(attributePanel, new VerticalLayoutData(1.0, .33));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Other suggested identifications");
 		othersSuggestedIdentificationsArea = new TextArea();
 		othersSuggestedIdentificationsArea.setSize("100%", "33%");
 		attributePanel.add(othersSuggestedIdentificationsArea);
-		vPanel.add(attributePanel);
+		vPanel.add(attributePanel, new VerticalLayoutData(1.0, .33));
 
-		hPanel.add(vPanel);
+		hPanel.add(vPanel, new HorizontalLayoutData(.65, 1.0));
 		tabPanel.add(hPanel, "Description");
 
 		hPanel = new HorizontalLayoutContainer();
