@@ -630,9 +630,21 @@ public class CaveEditor implements IsWidget {
 				imageContainer.add(new HTMLPanel(caveLayoutViewTemplates.image(UriUtils.fromString("resource?background=" + correspondingCaveTypeEntry.getSketchName()))));
 			}
 		});
-//		caveTypeSelection.setWidth(250);
 		attributePanel.add(caveTypeSelection);
 		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
+		
+		attributePanel = new FramedPanel();
+		attributePanel.setHeading("Rear Area Ceiling");
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
+		
+		attributePanel = new FramedPanel();
+		attributePanel.setHeading("Main Chamber Ceiling");
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
+
+		attributePanel = new FramedPanel();
+		attributePanel.setHeading("Antechamber Ceiling");
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
+
 		hlContainer.add(vlContainer, new HorizontalLayoutData(.4, 1.0));
 		
 		vlContainer = new VerticalLayoutContainer();
@@ -640,13 +652,12 @@ public class CaveEditor implements IsWidget {
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Cave Layout");
 		imageContainer = new FlowLayoutContainer();
-//		imageContainer.setSize("300px", "500px");
 		attributePanel.add(imageContainer);
 		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0));
 		
 		hlContainer.add(vlContainer, new HorizontalLayoutData(.6, 1.0));
 
-		tabPanel.add(hlContainer, "Cave Type Descriptions");
+		tabPanel.add(hlContainer, "Cave Layout");
 		mainHlContainer.add(tabPanel, new HorizontalLayoutData(.7, 1.0));
 
 		/**
@@ -691,7 +702,7 @@ public class CaveEditor implements IsWidget {
 	}
 
 	/**
-	 * Will be called when the save button is selected. After savong <code>CaveEditorListener.closeRequest()</code> is called to inform all listener.
+	 * Will be called when the save button is selected. After saving <code>CaveEditorListener.closeRequest()</code> is called to inform all listener.
 	 */
 	protected void saveEntries() {
 		if (correspondingCaveEntry.getCaveID() > 0) {
