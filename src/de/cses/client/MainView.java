@@ -143,7 +143,7 @@ public class MainView implements IsWidget {
 		});
 		selectorLayoutContainer.add(caveSearchController, hLayoutData);
 		
-		depictionSearchController = new DepictionSearchController("Depictions", new DepictionResultView("Depictions"));
+		depictionSearchController = new DepictionSearchController("Painted Representations", new DepictionResultView("Painted Representations"));
 		depictionSearchController.addRelatedFilter(new DepictionFilter("Depiction Filter"));
 		depictionSearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 

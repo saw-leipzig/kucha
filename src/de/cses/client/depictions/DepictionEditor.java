@@ -383,7 +383,7 @@ public class DepictionEditor implements IsWidget {
 	private void initPanel() {
 		mainPanel = new FramedPanel();
 		// the name is set depending on wheter we have a new or an existing entry
-		mainPanel.setHeading("Depiction Editor ("
+		mainPanel.setHeading("Painted Representation Editor ("
 				+ (correspondingDepictionEntry.getDepictionID() > 0 ? "ID = " + correspondingDepictionEntry.getDepictionID() : "NEW") + ")");
 
 		// this panel is used for the different fields in the editor

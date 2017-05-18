@@ -47,11 +47,10 @@ public class DepictionView extends Button {
 	 * 
 	 */
 	public DepictionView() {
-		// super("Add New Depiction");
 		Resources resources = GWT.create(Resources.class);
 		Image img = new Image(resources.logo());
 		String html = "<div><center><img src='" + img.getUrl()
-				+ "' height = '128px' width = '128px'></img></center><label> New Depiction </label></br></div>";
+				+ "' height = '128px' width = '128px'></img></center><label> New Painted Representation </label></br></div>";
 		setHTML(html);
 		setPixelSize(150, 160);
 		depictionEntry = null;
