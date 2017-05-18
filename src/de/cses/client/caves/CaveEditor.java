@@ -42,6 +42,10 @@ import com.sencha.gxt.data.shared.Store.StoreFilter;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
@@ -335,15 +339,16 @@ public class CaveEditor implements IsWidget {
 		return mainPanel;
 	}
 
-	public void initPanel() {
+	private void initPanel() {
 		FramedPanel attributePanel;
 		
 		mainPanel = new FramedPanel();
 		mainPanel.setHeading("Cave Editor");
+		mainPanel.setSize("800px", "600px");
 
-		HorizontalPanel hPanel = new HorizontalPanel();
+		HorizontalLayoutContainer hPanel = new HorizontalLayoutContainer();
 
-		VerticalPanel vPanel = new VerticalPanel();
+		VerticalLayoutContainer vPanel = new VerticalLayoutContainer();
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Official Number");
@@ -358,7 +363,7 @@ public class CaveEditor implements IsWidget {
 			}
 		});
 		attributePanel.add(officialNumberField);
-		vPanel.add(attributePanel);
+		vPanel.add(attributePanel, new VerticalLayoutData(1.0, .125));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Official Name");
@@ -372,7 +377,7 @@ public class CaveEditor implements IsWidget {
 			}
 		});
 		attributePanel.add(officialNameField);
-		vPanel.add(attributePanel);
+		vPanel.add(attributePanel, new VerticalLayoutData(1.0, .125));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Historic Name");
@@ -386,7 +391,7 @@ public class CaveEditor implements IsWidget {
 			}
 		});
 		attributePanel.add(historicNameField);
-		vPanel.add(attributePanel);
+		vPanel.add(attributePanel, new VerticalLayoutData(1.0, .125));
 		
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Orientation");
@@ -409,7 +414,7 @@ public class CaveEditor implements IsWidget {
 			}
 		});
 		attributePanel.add(orientationSelection);
-		vPanel.add(attributePanel);
+		vPanel.add(attributePanel, new VerticalLayoutData(1.0, .125));
 		
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Site");
@@ -463,7 +468,7 @@ public class CaveEditor implements IsWidget {
 			siteSelection.setWidth(250);
 			attributePanel.add(siteSelection);			
 		}
-		vPanel.add(attributePanel);		
+		vPanel.add(attributePanel, new VerticalLayoutData(1.0, .125));		
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("District");
@@ -492,7 +497,7 @@ public class CaveEditor implements IsWidget {
 			districtSelection.setEnabled(false);
 		}
 		attributePanel.add(districtSelection);
-		vPanel.add(attributePanel);
+		vPanel.add(attributePanel, new VerticalLayoutData(1.0, .125));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Region");
@@ -525,7 +530,7 @@ public class CaveEditor implements IsWidget {
 			regionSelection.setEnabled(false);
 		}
 		attributePanel.add(regionSelection);
-		vPanel.add(attributePanel);
+		vPanel.add(attributePanel, new VerticalLayoutData(1.0, .125));
 		
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Alteration date");
@@ -538,12 +543,12 @@ public class CaveEditor implements IsWidget {
 				correspondingCaveEntry.setAlterationDate(event.getValue());
 			}
 		});
-		alterationDateField.setWidth("250px");
+//		alterationDateField.setWidth("250px");
 		attributePanel.add(alterationDateField);
-		vPanel.add(attributePanel);
+		vPanel.add(attributePanel, new VerticalLayoutData(1.0, .125));
 
-		hPanel.add(vPanel);
-		vPanel = new VerticalPanel();
+		hPanel.add(vPanel, new HorizontalLayoutData(.3, 1.0));
+		vPanel = new VerticalLayoutContainer();
 		
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("State of Preservation");
@@ -556,9 +561,9 @@ public class CaveEditor implements IsWidget {
 				correspondingCaveEntry.setStateOfPerservation(event.getValue());
 			}
 		});
-		stateOfPreservationTextArea.setSize("250px", "200px");
+//		stateOfPreservationTextArea.setSize("250px", "200px");
 		attributePanel.add(stateOfPreservationTextArea);
-		vPanel.add(attributePanel);
+		vPanel.add(attributePanel, new VerticalLayoutData(1.0, .4));
 		
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Findings");
@@ -571,12 +576,12 @@ public class CaveEditor implements IsWidget {
 				correspondingCaveEntry.setFindings(event.getValue());
 			}
 		});
-		findingsTextArea.setSize("250px", "350px");
+//		findingsTextArea.setSize("250px", "350px");
 		attributePanel.add(findingsTextArea);
-		vPanel.add(attributePanel);
+		vPanel.add(attributePanel, new VerticalLayoutData(1.0, .6));
 		
-		hPanel.add(vPanel);
-		vPanel = new VerticalPanel();
+		hPanel.add(vPanel, new HorizontalLayoutData(.3, 1.0));
+		vPanel = new VerticalLayoutContainer();
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Cave Type");
@@ -603,18 +608,18 @@ public class CaveEditor implements IsWidget {
 				imageContainer.add(new HTMLPanel(caveLayoutViewTemplates.image(UriUtils.fromString("resource?background=" + correspondingCaveTypeEntry.getSketchName()))));
 			}
 		});
-		caveTypeSelection.setWidth(250);
+//		caveTypeSelection.setWidth(250);
 		attributePanel.add(caveTypeSelection);
-		vPanel.add(attributePanel);
+		vPanel.add(attributePanel, new VerticalLayoutData(1.0, .15));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Cave Layout");
 		imageContainer = new FlowLayoutContainer();
-		imageContainer.setSize("300px", "500px");
+//		imageContainer.setSize("300px", "500px");
 		attributePanel.add(imageContainer);
-		vPanel.add(attributePanel);
+		vPanel.add(attributePanel, new VerticalLayoutData(1.0, .85));
 		
-		hPanel.add(vPanel);
+		hPanel.add(vPanel, new HorizontalLayoutData(.4, 1.0));
 
 		mainPanel.add(hPanel);
 		
