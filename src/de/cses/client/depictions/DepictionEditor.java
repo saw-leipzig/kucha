@@ -378,7 +378,7 @@ public class DepictionEditor implements IsWidget {
 	}
 
 	/**
-	 * Here the view is initialised. This is only done once at the beginning!
+	 * Here the view is created. This is only done once at the beginning!
 	 */
 	private void initPanel() {
 		mainPanel = new FramedPanel();
@@ -591,6 +591,7 @@ public class DepictionEditor implements IsWidget {
 
 		caveLayoutViewTemplates = GWT.create(CaveLayoutViewTemplates.class);
 		caveSketchContainer = new FlowLayoutContainer();
+		// TODO implementation of cave representation for wall selection
 		// SafeUri imageUri = UriUtils.fromString("resource?background=centralPillarCave.png");
 		// caveSketchContainer.add(new HTMLPanel(caveLayoutViewTemplates.image(imageUri)));
 		// caveSketchContainer.setSize("100%", "100%");
@@ -696,6 +697,52 @@ public class DepictionEditor implements IsWidget {
 		attributePanel.add(datingField);
 		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
 
+		hlContainer.add(vlContainer, new HorizontalLayoutData(.35, 1.0));
+
+		vlContainer = new VerticalLayoutContainer();
+
+		attributePanel = new FramedPanel();
+		attributePanel.setHeading("Description");
+		descriptionArea = new TextArea();
+		descriptionArea.setValue(correspondingDepictionEntry.getDescription());
+		descriptionArea.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				correspondingDepictionEntry.setDescription(event.getValue());
+			}
+		});
+		attributePanel.add(descriptionArea);
+
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .33));
+
+		attributePanel = new FramedPanel();
+		attributePanel.setHeading("General remarks");
+		generalRemarksArea = new TextArea();
+		generalRemarksArea.setValue(correspondingDepictionEntry.getGeneralRemarks());
+		generalRemarksArea.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				correspondingDepictionEntry.setGeneralRemarks(event.getValue());
+			}
+		});
+		attributePanel.add(generalRemarksArea);
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .33));
+
+		attributePanel = new FramedPanel();
+		attributePanel.setHeading("Other suggested identifications");
+		othersSuggestedIdentificationsArea = new TextArea();
+		othersSuggestedIdentificationsArea.setSize("100%", "33%");
+		attributePanel.add(othersSuggestedIdentificationsArea);
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .33));
+
+		hlContainer.add(vlContainer, new HorizontalLayoutData(.65, 1.0));
+		tabPanel.add(hlContainer, "Description");
+
+		/**
+		 * --------------------- definition of image panel on right side starts here --------------------------------
+		 */
 		imageSelector = new ImageSelector(ImageSelector.PHOTO, new ImageSelectorListener() {
 
 			@Override
@@ -748,53 +795,7 @@ public class DepictionEditor implements IsWidget {
 				}
 			}
 		});
-
-		hlContainer.add(vlContainer, new HorizontalLayoutData(.35, 1.0));
-
-		vlContainer = new VerticalLayoutContainer();
-
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Description");
-		descriptionArea = new TextArea();
-		descriptionArea.setValue(correspondingDepictionEntry.getDescription());
-		descriptionArea.addValueChangeHandler(new ValueChangeHandler<String>() {
-
-			@Override
-			public void onValueChange(ValueChangeEvent<String> event) {
-				correspondingDepictionEntry.setDescription(event.getValue());
-			}
-		});
-		attributePanel.add(descriptionArea);
-
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .33));
-
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("General remarks");
-		generalRemarksArea = new TextArea();
-		generalRemarksArea.setValue(correspondingDepictionEntry.getGeneralRemarks());
-		generalRemarksArea.addValueChangeHandler(new ValueChangeHandler<String>() {
-
-			@Override
-			public void onValueChange(ValueChangeEvent<String> event) {
-				correspondingDepictionEntry.setGeneralRemarks(event.getValue());
-			}
-		});
-		attributePanel.add(generalRemarksArea);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .33));
-
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Other suggested identifications");
-		othersSuggestedIdentificationsArea = new TextArea();
-		othersSuggestedIdentificationsArea.setSize("100%", "33%");
-		attributePanel.add(othersSuggestedIdentificationsArea);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .33));
-
-		hlContainer.add(vlContainer, new HorizontalLayoutData(.65, 1.0));
-		tabPanel.add(hlContainer, "Description");
-
-		/**
-		 * --------------------- definition of image panel on right side starts here --------------------------------
-		 */
+		
 		FramedPanel depictionImagesPanel = new FramedPanel();
 		depictionImagesPanel.setHeading("Images");
 		depictionImagesPanel.add(lf);
@@ -839,8 +840,7 @@ public class DepictionEditor implements IsWidget {
 		BorderLayoutData eastData = new BorderLayoutData(.25);
 		eastData.setMargins(new Margins(0, 5, 5, 5));
 		eastData.setCollapsible(true);
-		// set header visible to false because of bug when clicking on collapsed header
-		eastData.setCollapseHeaderVisible(false);
+		eastData.setCollapseHeaderVisible(true);
 		eastData.setSplit(true);
 
 		MarginData centerData = new MarginData(0, 5, 5, 0);
