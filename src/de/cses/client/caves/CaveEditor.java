@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 
+ * Copyright 2016-2017
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -26,10 +26,8 @@ import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.XTemplates;
@@ -40,6 +38,7 @@ import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.Store.StoreFilter;
 import com.sencha.gxt.widget.core.client.FramedPanel;
+import com.sencha.gxt.widget.core.client.TabPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
@@ -97,7 +96,6 @@ public class CaveEditor implements IsWidget {
 	private TextField alterationDateField;
 	private TextArea findingsTextArea;
 	private FlowLayoutContainer imageContainer;
-	private Label orientationDisplay;
 	private ComboBox<OrientationEntry> orientationSelection;
 
 	interface CaveTypeProperties extends PropertyAccess<CaveTypeEntry> {
@@ -340,16 +338,27 @@ public class CaveEditor implements IsWidget {
 	}
 
 	private void initPanel() {
+		// all fields added are encapsulated by a FramedPanel
 		FramedPanel attributePanel;
 		
 		mainPanel = new FramedPanel();
 		mainPanel.setHeading("Cave Editor");
 		mainPanel.setSize("800px", "600px");
+		
+		TabPanel tabPanel = new TabPanel();
+		tabPanel.setTabScroll(false);
+		// the tab only gets 70% of the width and the added images get the 25% on the right to be shown all the time
+//		tabPanel.setSize("70%", "100%");
 
-		HorizontalLayoutContainer hPanel = new HorizontalLayoutContainer();
+		// the tab will use the right 70% of the main HorizontalLayoutPanel
+		HorizontalLayoutContainer mainHlContainer = new HorizontalLayoutContainer();
+		
+		// each column is represented by a VerticalLayoutPanel
+		VerticalLayoutContainer vlContainer = new VerticalLayoutContainer();
 
-		VerticalLayoutContainer vPanel = new VerticalLayoutContainer();
-
+		/**
+		 * ------------------------- this is the first column on the left side -------------------------
+		 */
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Official Number");
 		officialNumberField = new TextField();
@@ -363,7 +372,7 @@ public class CaveEditor implements IsWidget {
 			}
 		});
 		attributePanel.add(officialNumberField);
-		vPanel.add(attributePanel, new VerticalLayoutData(1.0, .125));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .125));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Official Name");
@@ -377,7 +386,7 @@ public class CaveEditor implements IsWidget {
 			}
 		});
 		attributePanel.add(officialNameField);
-		vPanel.add(attributePanel, new VerticalLayoutData(1.0, .125));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .125));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Historic Name");
@@ -391,7 +400,7 @@ public class CaveEditor implements IsWidget {
 			}
 		});
 		attributePanel.add(historicNameField);
-		vPanel.add(attributePanel, new VerticalLayoutData(1.0, .125));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .125));
 		
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Orientation");
@@ -414,7 +423,7 @@ public class CaveEditor implements IsWidget {
 			}
 		});
 		attributePanel.add(orientationSelection);
-		vPanel.add(attributePanel, new VerticalLayoutData(1.0, .125));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .125));
 		
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Site");
@@ -468,7 +477,7 @@ public class CaveEditor implements IsWidget {
 			siteSelection.setWidth(250);
 			attributePanel.add(siteSelection);			
 		}
-		vPanel.add(attributePanel, new VerticalLayoutData(1.0, .125));		
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .125));		
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("District");
@@ -497,7 +506,7 @@ public class CaveEditor implements IsWidget {
 			districtSelection.setEnabled(false);
 		}
 		attributePanel.add(districtSelection);
-		vPanel.add(attributePanel, new VerticalLayoutData(1.0, .125));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .125));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Region");
@@ -530,7 +539,7 @@ public class CaveEditor implements IsWidget {
 			regionSelection.setEnabled(false);
 		}
 		attributePanel.add(regionSelection);
-		vPanel.add(attributePanel, new VerticalLayoutData(1.0, .125));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .125));
 		
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Alteration date");
@@ -543,13 +552,19 @@ public class CaveEditor implements IsWidget {
 				correspondingCaveEntry.setAlterationDate(event.getValue());
 			}
 		});
-//		alterationDateField.setWidth("250px");
 		attributePanel.add(alterationDateField);
-		vPanel.add(attributePanel, new VerticalLayoutData(1.0, .125));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .125));
 
-		hPanel.add(vPanel, new HorizontalLayoutData(.3, 1.0));
-		vPanel = new VerticalLayoutContainer();
+		mainHlContainer.add(vlContainer, new HorizontalLayoutData(.3, 1.0));
 		
+		/**
+		 * ------------------------------ the column with the text fields (first tab) ----------------------------
+		 */
+		
+		// we will use this HLC for the tabs
+		HorizontalLayoutContainer hlContainer = new HorizontalLayoutContainer();
+		vlContainer = new VerticalLayoutContainer();
+
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("State of Preservation");
 		stateOfPreservationTextArea = new TextArea();
@@ -563,7 +578,7 @@ public class CaveEditor implements IsWidget {
 		});
 //		stateOfPreservationTextArea.setSize("250px", "200px");
 		attributePanel.add(stateOfPreservationTextArea);
-		vPanel.add(attributePanel, new VerticalLayoutData(1.0, .4));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .4));
 		
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Findings");
@@ -578,10 +593,17 @@ public class CaveEditor implements IsWidget {
 		});
 //		findingsTextArea.setSize("250px", "350px");
 		attributePanel.add(findingsTextArea);
-		vPanel.add(attributePanel, new VerticalLayoutData(1.0, .6));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .6));
 		
-		hPanel.add(vPanel, new HorizontalLayoutData(.3, 1.0));
-		vPanel = new VerticalLayoutContainer();
+		hlContainer.add(vlContainer, new HorizontalLayoutData(1.0, 1.0));
+		tabPanel.add(hlContainer, "Descriptions");
+		
+		/**
+		 * ------------------------- the cave type and layout description (second tab) -----------------------------
+		 */
+		
+		hlContainer = new HorizontalLayoutContainer();
+		vlContainer = new VerticalLayoutContainer();
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Cave Type");
@@ -608,20 +630,40 @@ public class CaveEditor implements IsWidget {
 				imageContainer.add(new HTMLPanel(caveLayoutViewTemplates.image(UriUtils.fromString("resource?background=" + correspondingCaveTypeEntry.getSketchName()))));
 			}
 		});
-//		caveTypeSelection.setWidth(250);
 		attributePanel.add(caveTypeSelection);
-		vPanel.add(attributePanel, new VerticalLayoutData(1.0, .15));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
+		
+		attributePanel = new FramedPanel();
+		attributePanel.setHeading("Rear Area Ceiling");
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
+		
+		attributePanel = new FramedPanel();
+		attributePanel.setHeading("Main Chamber Ceiling");
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
+
+		attributePanel = new FramedPanel();
+		attributePanel.setHeading("Antechamber Ceiling");
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
+
+		hlContainer.add(vlContainer, new HorizontalLayoutData(.4, 1.0));
+		
+		vlContainer = new VerticalLayoutContainer();
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Cave Layout");
 		imageContainer = new FlowLayoutContainer();
-//		imageContainer.setSize("300px", "500px");
 		attributePanel.add(imageContainer);
-		vPanel.add(attributePanel, new VerticalLayoutData(1.0, .85));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0));
 		
-		hPanel.add(vPanel, new HorizontalLayoutData(.4, 1.0));
+		hlContainer.add(vlContainer, new HorizontalLayoutData(.6, 1.0));
 
-		mainPanel.add(hPanel);
+		tabPanel.add(hlContainer, "Cave Layout");
+		mainHlContainer.add(tabPanel, new HorizontalLayoutData(.7, 1.0));
+
+		/**
+		 * adding the mainHlContainer to the FramedPanel and adding the buttons
+		 */
+		mainPanel.add(mainHlContainer);
 		
 		TextButton saveButton = new TextButton("Save & Exit");
 		saveButton.addSelectHandler(new SelectHandler() {
@@ -643,20 +685,24 @@ public class CaveEditor implements IsWidget {
 	}
 
 	/**
-	 * 
+	 * Will be called when the cancel button is selected. Calls <code>CaveEditorListener.closeRequest()</code>
 	 */
 	protected void cancelCaveEditor() {
 		for (CaveEditorListener l : listenerList) {
 			l.closeRequest();
 		}
 	}
-	
+
+	/**
+	 * Adds a <code>CaveEditorListener</code>
+	 * @param l
+	 */
 	public void addCaveEditorListener(CaveEditorListener l) {
 		listenerList.add(l);
 	}
 
 	/**
-	 * 
+	 * Will be called when the save button is selected. After saving <code>CaveEditorListener.closeRequest()</code> is called to inform all listener.
 	 */
 	protected void saveEntries() {
 		if (correspondingCaveEntry.getCaveID() > 0) {

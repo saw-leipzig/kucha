@@ -21,8 +21,6 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.sencha.gxt.core.client.dom.ScrollSupport;
-import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
@@ -32,13 +30,10 @@ import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutPack;
-import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.container.PortalLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.TextField;
@@ -70,10 +65,8 @@ public class MainView implements IsWidget {
 	private ContentPanel filterPanel;
 	private PortalLayoutContainer filterView;
 	private PortalLayoutContainer resultView;
-	private VerticalLayoutData filterLayoutData;
 	private TextButton searchButton;
 	private TextField searchText;
-//	private VerticalLayoutData resultLayoutData;
 	private VerticalPanel northPanel;
 	private FramedPanel searchTextPanel;
 	private HorizontalLayoutContainer selectorLayoutContainer;
@@ -110,13 +103,10 @@ public class MainView implements IsWidget {
     northPanel.add(headline);
     
     selectorLayoutContainer = new HorizontalLayoutContainer();
-    HorizontalLayoutData hLayoutData = new HorizontalLayoutData(80, 60, new Margins(5, 0, 5, 5));
-    
-//    resultLayoutData = new VerticalLayoutData(-1, -1, new Margins(margins, 0, margins, 0));
+    HorizontalLayoutData hLayoutData = new HorizontalLayoutData(140, 1.0, new Margins(5, 0, 5, 5));
     
     LocationFilter lFilter = new LocationFilter("Location Filter");
     CaveFilter cFilter = new CaveFilter("Cave Filter");
-//    filterLayoutData = new VerticalLayoutData(-1, -1, new Margins(5, 0, 5, 0));
 
 		caveSearchController = new CaveSearchController("Caves", new CaveResultView("Caves"));
 		caveSearchController.addRelatedFilter(cFilter);
@@ -143,7 +133,7 @@ public class MainView implements IsWidget {
 		});
 		selectorLayoutContainer.add(caveSearchController, hLayoutData);
 		
-		depictionSearchController = new DepictionSearchController("Depictions", new DepictionResultView("Depictions"));
+		depictionSearchController = new DepictionSearchController("Painted Representations", new DepictionResultView("Painted Representations"));
 		depictionSearchController.addRelatedFilter(new DepictionFilter("Depiction Filter"));
 		depictionSearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
@@ -269,7 +259,7 @@ public class MainView implements IsWidget {
     
     BorderLayoutData northData = new BorderLayoutData(150);
     northData.setMargins(new Margins(5));
-    northData.setCollapseHeaderVisible(true);
+//    northData.setCollapseHeaderVisible(true);
 
     BorderLayoutData westData = new BorderLayoutData(220);
     westData.setMargins(new Margins(0));
