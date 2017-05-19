@@ -160,8 +160,8 @@ public class DepictionEditor implements IsWidget {
 	}
 
 	interface ExpeditionViewTemplates extends XTemplates {
-		@XTemplate("<div>{name}<br>{startYear} - {endYear}</div>")
-		SafeHtml expedLabel(String name, String startYear, String endYear);
+		@XTemplate("<div>{expedName}<br>Leader: {leaderName}<br>{startYear} - {endYear}</div>")
+		SafeHtml expedLabel(String expedName, String leaderName, String startYear, String endYear);
 	}
 
 	interface VendorProperties extends PropertyAccess<VendorEntry> {
@@ -436,7 +436,7 @@ public class DepictionEditor implements IsWidget {
 			}
 		});
 		caveSelection.setEmptyText("Select a Cave ...");
-		caveSelection.setTypeAhead(false);
+		caveSelection.setTypeAhead(true);
 		caveSelection.setEditable(false);
 		caveSelection.setTriggerAction(TriggerAction.ALL);
 		caveSelection.addSelectionHandler(new SelectionHandler<CaveEntry>() {
@@ -496,7 +496,7 @@ public class DepictionEditor implements IsWidget {
 			public SafeHtml render(ExpeditionEntry item) {
 				final ExpeditionViewTemplates expedTemplates = GWT.create(ExpeditionViewTemplates.class);
 				DateTimeFormat dtf = DateTimeFormat.getFormat("yyyy");
-				return expedTemplates.expedLabel(item.getName(), dtf.format(item.getStartDate()), dtf.format(item.getEndDate()));
+				return expedTemplates.expedLabel(item.getName(), item.getLeader(), dtf.format(item.getStartDate()), dtf.format(item.getEndDate()));
 			}
 		});
 		expedSelection.setEmptyText("Select an expedition ...");
