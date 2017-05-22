@@ -50,9 +50,9 @@ public class DepictionView extends Button {
 		Resources resources = GWT.create(Resources.class);
 		Image img = new Image(resources.logo());
 		String html = "<div><center><img src='" + img.getUrl()
-				+ "' height = '128px' width = '128px'></img></center><label> New Painted Representation </label></br></div>";
+				+ "' height = '80px' width = '80px'></img></center><label>AddNew</label></br></div>";
 		setHTML(html);
-		setPixelSize(150, 160);
+		setPixelSize(110, 110);
 		depictionEntry = null;
 		init();
 	}
@@ -70,7 +70,7 @@ public class DepictionView extends Button {
 				Resources resources = GWT.create(Resources.class);
 				Image img = new Image(resources.logo());
 				String html = "<div><center><img src='" + img.getUrl()
-						+ "' height = '128px' width = '128px'></img></center><label> DepictionID " + depictionEntry.getDepictionID()
+						+ "' height = '80px' width = '80px'></img></center><label> DepictionID " + depictionEntry.getDepictionID()
 						+ "</label></br></div>";
 				setHTML(html);
 			}
@@ -78,12 +78,12 @@ public class DepictionView extends Button {
 			@Override
 			public void onSuccess(ImageEntry result) {
 				String html = "<div><center><img src='resource?imageID=" + result.getImageID() + "&thumb=true'"
-						+ "' height = '128px' width = '128px'></img></center><label> DepictionID " + depictionEntry.getDepictionID()
+						+ "' height = '80px' width = '80px'></img></center><label> DepictionID " + depictionEntry.getDepictionID()
 						+ "</label></br></div>";
 				setHTML(html);
 			}
 		});
-		setPixelSize(150, 160);
+		setPixelSize(110, 110);
 		init();
 	}
 

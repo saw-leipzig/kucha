@@ -466,10 +466,10 @@ public class DepictionEditor implements IsWidget {
 		// attributePanel.setWidth("40%");
 		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .1));
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Belongs to wall");
-		attributePanel.add(new Label("Wall selection"));
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .1));
+//		attributePanel = new FramedPanel();
+//		attributePanel.setHeading("Belongs to wall");
+//		attributePanel.add(new Label("Wall selection"));
+//		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .1));
 
 		HorizontalPanel dimPanel = new HorizontalPanel();
 		attributePanel = new FramedPanel();
@@ -500,6 +500,7 @@ public class DepictionEditor implements IsWidget {
 			}
 		});
 		expedSelection.setEmptyText("Select an expedition ...");
+		expedSelection.setHeight("1.0");
 		expedSelection.setTypeAhead(false);
 		expedSelection.setEditable(false);
 		expedSelection.setTriggerAction(TriggerAction.ALL);
@@ -511,7 +512,7 @@ public class DepictionEditor implements IsWidget {
 			}
 		});
 		attributePanel.add(expedSelection);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .1));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .2));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Date of acquisition");

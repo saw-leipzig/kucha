@@ -23,7 +23,6 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import com.sencha.gxt.cell.core.client.ButtonCell.ButtonScale;
 import com.sencha.gxt.cell.core.client.ButtonCell.IconAlign;
 import com.sencha.gxt.core.client.XTemplates;
-import com.sencha.gxt.fx.client.Draggable;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
@@ -101,8 +100,8 @@ public class CaveView extends TextButton {
 	 */
 	private void init() {
 		this.setIconAlign(IconAlign.TOP);
-
 		setScale(ButtonScale.LARGE);
+		setPixelSize(110, 110);
 
 		addSelectHandler(new SelectHandler() {
 

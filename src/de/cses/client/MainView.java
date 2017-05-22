@@ -34,6 +34,8 @@ import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.container.PortalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.TextField;
@@ -67,7 +69,7 @@ public class MainView implements IsWidget {
 	private PortalLayoutContainer resultView;
 	private TextButton searchButton;
 	private TextField searchText;
-	private VerticalPanel northPanel;
+	private VerticalLayoutContainer northPanel;
 	private FramedPanel searchTextPanel;
 	private HorizontalLayoutContainer selectorLayoutContainer;
 	private DepictionSearchController depictionSearchController;
@@ -95,12 +97,12 @@ public class MainView implements IsWidget {
 	private void initView() {
     final boolean borders = true;
     
-    northPanel = new VerticalPanel();
+    northPanel = new VerticalLayoutContainer();
 
     Header headline = new Header();
     headline.setHTML("<h1>Welcome to the Kucha Information System</h1>");
     headline.setHeight("2em");
-    northPanel.add(headline);
+    northPanel.add(headline, new VerticalLayoutData(1.0, .4));
     
     selectorLayoutContainer = new HorizontalLayoutContainer();
     HorizontalLayoutData hLayoutData = new HorizontalLayoutData(140, 1.0, new Margins(5, 0, 5, 5));
@@ -226,8 +228,8 @@ public class MainView implements IsWidget {
     ContentPanel north = new ContentPanel();
     north.setHeading("What are you looking for?");
     north.add(selectorLayoutContainer);
-    north.setHeight("80px");
-    northPanel.add(north);
+//    north.setHeight("80px");
+    northPanel.add(north, new VerticalLayoutData(1.0, .6));
     
     filterView = new PortalLayoutContainer(1);
     filterView.setSpacing(10);
