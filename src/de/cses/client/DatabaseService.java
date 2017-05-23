@@ -20,7 +20,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 import de.cses.shared.AntechamberEntry;
 import de.cses.shared.AuthorEntry;
-import de.cses.shared.BackAreaEntry;
+import de.cses.shared.RearAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CavePart;
 import de.cses.shared.CaveTypeEntry;
@@ -112,7 +112,7 @@ public interface DatabaseService extends RemoteService {
 
 	MainChamberEntry getMainChamberEntry(int id) throws IllegalArgumentException;
 
-	BackAreaEntry getBackAreaEntry(int id) throws IllegalArgumentException;
+	RearAreaEntry getRearAreaEntry(int id) throws IllegalArgumentException;
 
 	ArrayList<RegionEntry> getRegions() throws IllegalArgumentException;
 

@@ -50,14 +50,16 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
-import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.shared.AntechamberEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.DistrictEntry;
+import de.cses.shared.MainChamberEntry;
 import de.cses.shared.OrientationEntry;
+import de.cses.shared.RearAreaEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 
@@ -65,9 +67,6 @@ public class CaveEditor implements IsWidget {
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	private FramedPanel mainPanel;
 	private CaveEntry correspondingCaveEntry;
-//	private AntechamberEntry correspondingAntechamberEntry;
-//	private MainChamberEntry correspondingMainChamberEntry;
-//	private BackAreaEntry correspondingBackAreaEntry;
 	private ComboBox<CaveTypeEntry> caveTypeSelection;
 	private CaveTypeProperties caveTypeProps;
 	private ListStore<CaveTypeEntry> caveTypeEntryList;
@@ -174,9 +173,8 @@ public class CaveEditor implements IsWidget {
 		regionProps = GWT.create(RegionProperties.class);
 		regionEntryList = new ListStore<RegionEntry>(regionProps.regionID());
 		districtProps = GWT.create(DistrictProperties.class);
-		districtEntryList = new ListStore<DistrictEntry>(districtProps.districtID());
-		caveLayoutViewTemplates = GWT.create(CaveLayoutViewTemplates.class);	
-		
+		districtEntryList = new ListStore<DistrictEntry>(districtProps.districtID());	
+		caveLayoutViewTemplates = GWT.create(CaveLayoutViewTemplates.class);
 		initPanel();
 		loadCaveTypes();
 		loadDistricts();

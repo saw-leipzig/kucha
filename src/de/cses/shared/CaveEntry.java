@@ -25,7 +25,7 @@ public class CaveEntry implements IsSerializable {
 	private String alterationDate;
 	private AntechamberEntry antechamberEntry = null;
 	private MainChamberEntry mainChamberEntry = null;
-	private BackAreaEntry backAreaEntry = null;	
+	private RearAreaEntry rearAreaEntry = null;	
 
 	public CaveEntry() {
 	}
@@ -164,17 +164,17 @@ public class CaveEntry implements IsSerializable {
 	}
 
 	/**
-	 * @return the backAreaEntry
+	 * @return the rearAreaEntry
 	 */
-	public BackAreaEntry getBackAreaEntry() {
-		return backAreaEntry;
+	public RearAreaEntry getRearAreaEntry() {
+		return rearAreaEntry;
 	}
 
 	/**
-	 * @param backAreaEntry the backAreaEntry to set
+	 * @param rearAreaEntry the rearAreaEntry to set
 	 */
-	public void setBackAreaEntry(BackAreaEntry backAreaEntry) {
-		this.backAreaEntry = backAreaEntry;
+	public void setRearAreaEntry(RearAreaEntry rearAreaEntry) {
+		this.rearAreaEntry = rearAreaEntry;
 	}
 
 	/*

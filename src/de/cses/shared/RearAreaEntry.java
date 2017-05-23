@@ -19,23 +19,23 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author alingnau
  *
  */
-public class BackAreaEntry implements IsSerializable {
+public class RearAreaEntry implements IsSerializable {
 	
-	private int backAreaID, leftCorridorOuterWallID, leftCorridorInnerWallID, rightCorridorInnerWallID, rightCorridorOuterWallID, innerWallID, leftWallID, rightWallID, outerWallID;
+	private int rearAreaID, leftCorridorOuterWallID, leftCorridorInnerWallID, rightCorridorInnerWallID, rightCorridorOuterWallID, innerWallID, leftWallID, rightWallID, outerWallID;
 	private boolean isBackChamber;
 	private double height, width, depth;
 
 	/**
 	 * 
 	 */
-	public BackAreaEntry() {
+	public RearAreaEntry() {
 	}
 
-	public BackAreaEntry(int backAreaID, int leftCorridorOuterWallID, int leftCorridorInnerWallID, int rightCorridorInnerWallID,
+	public RearAreaEntry(int rearAreaID, int leftCorridorOuterWallID, int leftCorridorInnerWallID, int rightCorridorInnerWallID,
 			int rightCorridorOuterWallID, int innerWallID, int leftWallID, int rightWallID, int outerWallID, boolean isBackChamber,
 			double height, double width, double depth) {
 		super();
-		this.backAreaID = backAreaID;
+		this.rearAreaID = rearAreaID;
 		this.leftCorridorOuterWallID = leftCorridorOuterWallID;
 		this.leftCorridorInnerWallID = leftCorridorInnerWallID;
 		this.rightCorridorInnerWallID = rightCorridorInnerWallID;
@@ -50,12 +50,12 @@ public class BackAreaEntry implements IsSerializable {
 		this.depth = depth;
 	}
 
-	public int getBackAreaID() {
-		return backAreaID;
+	public int getRearAreaID() {
+		return rearAreaID;
 	}
 
-	public void setBackAreaID(int backAreaID) {
-		this.backAreaID = backAreaID;
+	public void setRearAreaID(int rearAreaID) {
+		this.rearAreaID = rearAreaID;
 	}
 
 	public int getLeftCorridorOuterWallID() {

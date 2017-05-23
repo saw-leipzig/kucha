@@ -16,30 +16,18 @@ package de.cses.client.caves;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.MouseOverEvent;
-import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.PopupPanel;
-import com.sencha.gxt.cell.core.client.ButtonCell.ButtonScale;
-import com.sencha.gxt.cell.core.client.ButtonCell.IconAlign;
 import com.sencha.gxt.core.client.XTemplates;
-import com.sencha.gxt.widget.core.client.ContentPanel;
-import com.sencha.gxt.widget.core.client.button.TextButton;
-import com.sencha.gxt.widget.core.client.event.SelectEvent;
-import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
-import com.sencha.gxt.widget.core.client.info.Info;
-import com.sencha.gxt.widget.core.client.tips.ToolTip;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.shared.CaveEntry;
-import de.cses.shared.CaveTypeEntry;
 
 /**
  * @author alingnau
@@ -64,11 +52,11 @@ public class CaveView extends Button {
 		SafeHtml image(SafeUri imageUri, String title);
 	}
 	
-	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
+//	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	private CaveEntry cEntry;
 	private Resources resources;
 	protected String caveType;
-	private CaveViewTemplates cvTemplate;
+//	private CaveViewTemplates cvTemplate;
 	
 	
 	public CaveView() {

@@ -19,7 +19,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import de.cses.shared.AntechamberEntry;
 import de.cses.shared.AuthorEntry;
-import de.cses.shared.BackAreaEntry;
+import de.cses.shared.RearAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CavePart;
 import de.cses.shared.CaveTypeEntry;
@@ -130,7 +130,7 @@ public interface DatabaseServiceAsync {
 
 	void getMainChamberEntry(int id, AsyncCallback<MainChamberEntry> asyncCallback) throws IllegalArgumentException;
 
-	void getBackAreaEntry(int id, AsyncCallback<BackAreaEntry> asyncCallback) throws IllegalArgumentException;
+	void getRearAreaEntry(int id, AsyncCallback<RearAreaEntry> asyncCallback) throws IllegalArgumentException;
 
 	void getRegions(AsyncCallback<ArrayList<RegionEntry>> asyncCallback) throws IllegalArgumentException;
 
