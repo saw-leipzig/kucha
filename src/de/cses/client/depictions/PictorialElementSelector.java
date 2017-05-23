@@ -93,7 +93,7 @@ public class PictorialElementSelector implements IsWidget {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				Info.display("Loading Pictorial Elements", "failed");
+//				Info.display("Loading Pictorial Elements", "failed");
 				tree = null;
 			}
 
@@ -160,8 +160,8 @@ public class PictorialElementSelector implements IsWidget {
 
 			@Override
 			public void onSuccess(ArrayList<PictorialElementEntry> peRelationList) {
-				Info.display("Selected PE", "no = " + peRelationList.size());
-				Info.display("Store", "no = " + store.getAllItemsCount());
+//				Info.display("Selected PE", "no = " + peRelationList.size());
+//				Info.display("Store", "no = " + store.getAllItemsCount());
 //				tree.getSelectionModel().select(peRelationList, false);
 //				tree.getSelectionModel().setSelection(peRelationList);
 				tree.setCheckedSelection(peRelationList);

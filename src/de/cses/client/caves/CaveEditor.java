@@ -330,7 +330,6 @@ public class CaveEditor implements IsWidget {
 
 	@Override
 	public Widget asWidget() {
-		Info.display("asWidget", "called");
 		if (mainPanel == null) {
 			initPanel();
 		}

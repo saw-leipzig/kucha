@@ -14,18 +14,27 @@
 package de.cses.client.caves;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.sencha.gxt.cell.core.client.ButtonCell.ButtonScale;
 import com.sencha.gxt.cell.core.client.ButtonCell.IconAlign;
 import com.sencha.gxt.core.client.XTemplates;
+import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
+import com.sencha.gxt.widget.core.client.info.Info;
+import com.sencha.gxt.widget.core.client.tips.ToolTip;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -36,7 +45,7 @@ import de.cses.shared.CaveTypeEntry;
  * @author alingnau
  *
  */
-public class CaveView extends TextButton {
+public class CaveView extends Button {
 
 	interface Resources extends ClientBundle {
 		@Source("cave.png")
@@ -51,7 +60,7 @@ public class CaveView extends TextButton {
 				+ "Cavetype: {caveType}</div>")
 		SafeHtml tooltip(String officialNumber, String officialName, String historicName, String caveType);
 		
-		@XTemplate("<img align=\"center\" width=\"80\" height=\"80\" margin=\"20\" src=\"{imageUri}\"><br><h3>{title}</h3>")
+		@XTemplate("<div><center><img align=\"center\" width=\"80\" height=\"80\" margin=\"20\" src=\"{imageUri}\"></center><label>{title}</label></div>")
 		SafeHtml image(SafeUri imageUri, String title);
 	}
 	
@@ -63,10 +72,12 @@ public class CaveView extends TextButton {
 	
 	
 	public CaveView() {
-		super("Add New");
 		resources = GWT.create(Resources.class);
-		this.setIcon(resources.plus());
+		Image img = new Image(resources.logo());
+		String html = "<div><center><img src='" + img.getUrl() + "' height = '80px' width = '80px'></img></center><label>Add New</label></br></div>";
+		setHTML(html);
 		cEntry = null;
+		setPixelSize(110, 110);
 		init();
 	}
 
@@ -75,23 +86,12 @@ public class CaveView extends TextButton {
 	 * @param icon
 	 */
 	public CaveView(CaveEntry entry) {
-		super("Cave no. " + entry.getOfficialNumber());
-		cEntry = entry;
 		resources = GWT.create(Resources.class);
-		this.setIcon(resources.logo());
-		cvTemplate = GWT.create(CaveViewTemplates.class);
-		dbService.getCaveTypebyID(cEntry.getCaveID(), new AsyncCallback<CaveTypeEntry>() {
-			
-			@Override
-			public void onSuccess(CaveTypeEntry result) {
-				setToolTip(cvTemplate.tooltip(cEntry.getOfficialNumber(), cEntry.getOfficialName(), cEntry.getHistoricName(), result.getNameEN()));
-			}
-			
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-		});
+		Image img = new Image(resources.logo());
+		String html = "<div><center><img src='" + img.getUrl() + "' height = '80px' width = '80px'></img></center><label>Cave no. " + entry.getOfficialNumber() + "</label></br></div>";
+		setHTML(html);
+		cEntry = entry;
+		setPixelSize(110, 110);
 		init();
 	}
 
@@ -99,16 +99,14 @@ public class CaveView extends TextButton {
 	 * 
 	 */
 	private void init() {
-		this.setIconAlign(IconAlign.TOP);
-		setScale(ButtonScale.LARGE);
-		setPixelSize(110, 110);
+//		this.setIconAlign(IconAlign.TOP);
+//		setScale(ButtonScale.LARGE);
 
-		addSelectHandler(new SelectHandler() {
-
+		addClickHandler(new ClickHandler() {
 			private PopupPanel caveEditorPanel;
-
+			
 			@Override
-			public void onSelect(SelectEvent event) {
+			public void onClick(ClickEvent event) {
 				caveEditorPanel = new PopupPanel(false);
 				CaveEditor ced = new CaveEditor(cEntry, new CaveEditorListener() {
 
@@ -118,7 +116,6 @@ public class CaveView extends TextButton {
 					}
 				});
 				caveEditorPanel.add(ced);
-//				new Draggable(caveEditorPanel);
 				caveEditorPanel.setGlassEnabled(true);
 				caveEditorPanel.center();
 				caveEditorPanel.show();

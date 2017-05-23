@@ -50,7 +50,7 @@ public class DepictionView extends Button {
 		Resources resources = GWT.create(Resources.class);
 		Image img = new Image(resources.logo());
 		String html = "<div><center><img src='" + img.getUrl()
-				+ "' height = '80px' width = '80px'></img></center><label>AddNew</label></br></div>";
+				+ "' height = '80px' width = '80px'></img></center><label>Add New</label></br></div>";
 		setHTML(html);
 		setPixelSize(110, 110);
 		depictionEntry = null;

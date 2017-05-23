@@ -13,7 +13,7 @@
  */
 package de.cses.client.caves;
 
-import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.google.gwt.user.client.ui.Widget;
 
 import de.cses.client.ui.AbstractResultView;
 
@@ -35,7 +35,7 @@ public class CaveResultView extends AbstractResultView {
 	 * @see de.cses.client.ui.AbstractResultView#newElementButton()
 	 */
 	@Override
-	public TextButton newElementButton() {
+	public Widget newElementButton() {
 		return new CaveView();
 	}
 

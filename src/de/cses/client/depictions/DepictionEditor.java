@@ -956,11 +956,11 @@ public class DepictionEditor implements IsWidget {
 		if (list.isEmpty()) {
 			return false;
 		}
-		Info.display("List<PictorialElementEntry>", "no. = " + list.size() + " first = " + list.get(0).getText());
+//		Info.display("List<PictorialElementEntry>", "no. = " + list.size() + " first = " + list.get(0).getText());
 		Iterator<PictorialElementEntry> it = list.iterator();
 		while (it.hasNext()) {
 			PictorialElementEntry entry = it.next();
-			Info.display("entry", entry.getText());
+//			Info.display("entry", entry.getText());
 			if (list.indexOf(entry) == 0) {
 				insertSqlString = insertSqlString
 						.concat("(" + correspondingDepictionEntry.getDepictionID() + ", " + entry.getPictorialElementID() + ")");
