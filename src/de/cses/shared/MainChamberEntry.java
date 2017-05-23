@@ -13,14 +13,12 @@
  */
 package de.cses.shared;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
 /**
  * @author alingnau
  *
  */
-public class MainChamberEntry implements IsSerializable {
-	
+public class MainChamberEntry extends AbstractEntry {
+
 	private int mainChamberID, ceilingTypeID, frontWallID, leftWallID, rightWallID, rearWallID;
 	private double height, width, depth;
 
@@ -31,8 +29,8 @@ public class MainChamberEntry implements IsSerializable {
 		this(0, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0);
 	}
 
-	public MainChamberEntry(int mainChamberID, int ceilingTypeID, int frontWallID, int leftWallID, int rightWallID, int rearWallID, double height,
-			double width, double depth) {
+	public MainChamberEntry(int mainChamberID, int ceilingTypeID, int frontWallID, int leftWallID, int rightWallID, int rearWallID,
+			double height, double width, double depth) {
 		super();
 		this.mainChamberID = mainChamberID;
 		this.frontWallID = frontWallID;
@@ -60,7 +58,8 @@ public class MainChamberEntry implements IsSerializable {
 	}
 
 	/**
-	 * @param ceilingTypeID the ceilingTypeID to set
+	 * @param ceilingTypeID
+	 *          the ceilingTypeID to set
 	 */
 	public void setCeilingTypeID(int ceilingTypeID) {
 		this.ceilingTypeID = ceilingTypeID;
@@ -120,6 +119,30 @@ public class MainChamberEntry implements IsSerializable {
 
 	public void setDepth(double depth) {
 		this.depth = depth;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.cses.shared.AbstractEntry#getInsertSql()
+	 */
+	@Override
+	public String getInsertSql() {
+		return "INSERT INTO MainChamber (CeilingTypeID, FrontWallID, LeftWallID, RightWallID, RearWallID, Height, Width, Depth) VALUES " + "("
+				+ ceilingTypeID + "," + frontWallID + "," + leftWallID + "," + rightWallID + "," + rearWallID + "," + height + "," + width + ","
+				+ depth + ")";
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.cses.shared.AbstractEntry#getUpdateSql()
+	 */
+	@Override
+	public String getUpdateSql() {
+		return "UPDATE MainChamber SET CeilingTypeID=" + ceilingTypeID + ", FrontWallID=" + frontWallID + ", LeftWallID=" + leftWallID
+				+ ", RightWallID=" + rightWallID + ", RearWallID=" + rearWallID + ", Height=" + height + ", Width=" + width + ", Depth=" + depth
+				+ " WHERE MainChamberID=" + mainChamberID;
 	}
 
 }
