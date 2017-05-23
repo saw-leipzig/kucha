@@ -23,6 +23,9 @@ public class CaveEntry implements IsSerializable {
 	private String pedestals;
 	private String findings;
 	private String alterationDate;
+	private AntechamberEntry antechamberEntry;
+	private MainChamberEntry mainChamberEntry;
+	private RearAreaEntry rearAreaEntry;
 
 	public CaveEntry() {
 		this(0, "enter official cave number", "enter official cave name", "optional historic name", 0, 0, 0, 0, null, null, "enter findings here", null);
@@ -131,6 +134,30 @@ public class CaveEntry implements IsSerializable {
 
 	public void setAlterationDate(String alterationDate) {
 		this.alterationDate = alterationDate;
+	}
+
+	public AntechamberEntry getAntechamberEntry() {
+		return antechamberEntry;
+	}
+
+	public void setAntechamberEntry(AntechamberEntry antechamberEntry) {
+		this.antechamberEntry = antechamberEntry;
+	}
+
+	public MainChamberEntry getMainChamberEntry() {
+		return mainChamberEntry;
+	}
+
+	public void setMainChamberEntry(MainChamberEntry mainChamberEntry) {
+		this.mainChamberEntry = mainChamberEntry;
+	}
+
+	public RearAreaEntry getRearAreaEntry() {
+		return rearAreaEntry;
+	}
+
+	public void setRearAreaEntry(RearAreaEntry rearAreaEntry) {
+		this.rearAreaEntry = rearAreaEntry;
 	}
 
 	/*

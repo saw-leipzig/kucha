@@ -430,9 +430,9 @@ public class MysqlConnector {
 						rs.getString("HistoricName"), rs.getInt("CaveTypeID"), rs.getInt("DistrictID"), rs.getInt("RegionID"), rs.getInt("OrientationID"),
 						rs.getString("StateOfPreservation"), rs.getString("Pedestals"), rs.getString("Findings"),
 						rs.getString("AlterationDate"));
-//				ce.setAntechamberEntry(getAntechamberEntry(ce.getCaveID()));
-//				ce.setMainChamberEntry(getMainChamber(ce.getCaveID()));
-//				ce.setRearAreaEntry(getRearArea(ce.getCaveID()));
+				ce.setAntechamberEntry(getAntechamberEntry(ce.getCaveID()));
+				ce.setMainChamberEntry(getMainChamber(ce.getCaveID()));
+				ce.setRearAreaEntry(getRearArea(ce.getCaveID()));
 				results.add(ce);
 			}
 			rs.close();
@@ -456,6 +456,9 @@ public class MysqlConnector {
 						rs.getString("HistoricName"), rs.getInt("CaveTypeID"), rs.getInt("DistrictID"), rs.getInt("RegionID"), rs.getInt("OrientationID"),
 						rs.getString("StateOfPreservation"), rs.getString("Pedestals"), rs.getString("Findings"),
 						rs.getString("AlterationDate"));
+				result.setAntechamberEntry(getAntechamberEntry(id));
+				result.setMainChamberEntry(getMainChamber(id));
+				result.setRearAreaEntry(getRearArea(id));
 			}
 			rs.close();
 			stmt.close();
@@ -960,6 +963,9 @@ public class MysqlConnector {
 				result = new AntechamberEntry(rs.getInt("AntechamberID"), rs.getInt("CeilingTypeID"), rs.getInt("FrontWallID"), rs.getInt("LeftWallID"),
 						rs.getInt("RightWallID"), rs.getInt("RearWallID"), rs.getDouble("Height"), rs.getDouble("Width"),
 						rs.getDouble("Depth"));
+			} else { // in case there is no entry we send back a new one
+				result = new AntechamberEntry();
+				result.setAntechamberID(id);
 			}
 			rs.close();
 			stmt.close();
@@ -990,6 +996,9 @@ public class MysqlConnector {
 						rs.getInt("LeftCorridorInnerWallID"), rs.getInt("RightCorridorInnerWallID"), rs.getInt("RightCorridorOuterWallID"),
 						rs.getInt("InnerWallID"), rs.getInt("LeftWallID"), rs.getInt("RightWallID"), rs.getInt("OuterWallID"),
 						rs.getBoolean("IsBackChamber"), rs.getDouble("Height"), rs.getDouble("Width"), rs.getDouble("Depth"));
+			} else { // in case there is no entry we send back a new one
+				result = new RearAreaEntry();
+				result.setRearAreaID(id);
 			}
 			rs.close();
 			stmt.close();
@@ -1018,6 +1027,9 @@ public class MysqlConnector {
 				result = new MainChamberEntry(rs.getInt("MainChamberID"), rs.getInt("CeilingTypeID"), rs.getInt("FrontWallID"), rs.getInt("LeftWallID"),
 						rs.getInt("RightWallID"), rs.getInt("RearWallID"), rs.getDouble("Height"), rs.getDouble("Width"),
 						rs.getDouble("Depth"));
+			} else { // in case there is no entry we send back a new one
+				result = new MainChamberEntry();
+				result.setMainChamberID(id);
 			}
 			rs.close();
 			stmt.close();

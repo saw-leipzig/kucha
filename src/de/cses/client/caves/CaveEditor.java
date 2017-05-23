@@ -180,6 +180,7 @@ public class CaveEditor implements IsWidget {
 			createNewCaveEntry();
 		} else {
 			correspondingCaveEntry = caveEntry;
+			loadChambers();
 		}
 		listenerList = new ArrayList<CaveEditorListener>();
 		listenerList.add(listener);
@@ -203,6 +204,48 @@ public class CaveEditor implements IsWidget {
 		loadRegions();
 		loadSites();
 		loadOrientation();
+	}
+
+	/**
+	 * 
+	 */
+	private void loadChambers() {
+		dbService.getAntechamberEntry(correspondingCaveEntry.getCaveID(), new AsyncCallback<AntechamberEntry>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(AntechamberEntry result) {
+				correspondingAntechamberEntry = result;
+			}
+		});
+		dbService.getMainChamberEntry(correspondingCaveEntry.getCaveID(), new AsyncCallback<MainChamberEntry>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(MainChamberEntry result) {
+				correspondingMainChamberEntry = result;
+			}
+		});
+		dbService.getRearAreaEntry(correspondingCaveEntry.getCaveID(), new AsyncCallback<RearAreaEntry>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(RearAreaEntry result) {
+				correspondingRearAreaEntry = result;
+			}
+		});
 	}
 
 	/**
