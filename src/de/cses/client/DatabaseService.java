@@ -24,6 +24,7 @@ import de.cses.shared.RearAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CavePart;
 import de.cses.shared.CaveTypeEntry;
+import de.cses.shared.CeilingTypeEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
@@ -142,5 +143,7 @@ public interface DatabaseService extends RemoteService {
 	ArrayList<OrientationEntry> getOrientationInformation() throws IllegalArgumentException;
 	IconographyEntry getIconographyEntry(int iconographyID) throws IllegalArgumentException;
 	ArrayList<PictorialElementEntry> getRelatedPE(int depictionID) throws IllegalArgumentException;
+
+	ArrayList<CeilingTypeEntry> getCeilingTypes() throws IllegalArgumentException;
 
 }

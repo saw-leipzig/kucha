@@ -29,6 +29,7 @@ import de.cses.shared.RearAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CavePart;
 import de.cses.shared.CaveTypeEntry;
+import de.cses.shared.CeilingTypeEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
@@ -429,9 +430,9 @@ public class MysqlConnector {
 						rs.getString("HistoricName"), rs.getInt("CaveTypeID"), rs.getInt("DistrictID"), rs.getInt("RegionID"), rs.getInt("OrientationID"),
 						rs.getString("StateOfPreservation"), rs.getString("Pedestals"), rs.getString("Findings"),
 						rs.getString("AlterationDate"));
-				ce.setAntechamberEntry(getAntechamberEntry(ce.getCaveID()));
-				ce.setMainChamberEntry(getMainChamber(ce.getCaveID()));
-				ce.setRearAreaEntry(getRearArea(ce.getCaveID()));
+//				ce.setAntechamberEntry(getAntechamberEntry(ce.getCaveID()));
+//				ce.setMainChamberEntry(getMainChamber(ce.getCaveID()));
+//				ce.setRearAreaEntry(getRearArea(ce.getCaveID()));
 				results.add(ce);
 			}
 			rs.close();
@@ -956,7 +957,7 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Antechamber WHERE AntechamberID=" + id);
 			if (rs.first()) {
-				result = new AntechamberEntry(rs.getInt("AntechamberID"), rs.getInt("FrontWallID"), rs.getInt("LeftWallID"),
+				result = new AntechamberEntry(rs.getInt("AntechamberID"), rs.getInt("CeilingTypeID"), rs.getInt("FrontWallID"), rs.getInt("LeftWallID"),
 						rs.getInt("RightWallID"), rs.getInt("RearWallID"), rs.getDouble("Height"), rs.getDouble("Width"),
 						rs.getDouble("Depth"));
 			}
@@ -985,7 +986,7 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM RearArea WHERE RearAreaID=" + id);
 			if (rs.first()) {
-				result = new RearAreaEntry(rs.getInt("RearAreaID"), rs.getInt("LeftCorridorOuterWallID"),
+				result = new RearAreaEntry(rs.getInt("RearAreaID"), rs.getInt("CeilingTypeID"), rs.getInt("LeftCorridorOuterWallID"),
 						rs.getInt("LeftCorridorInnerWallID"), rs.getInt("RightCorridorInnerWallID"), rs.getInt("RightCorridorOuterWallID"),
 						rs.getInt("InnerWallID"), rs.getInt("LeftWallID"), rs.getInt("RightWallID"), rs.getInt("OuterWallID"),
 						rs.getBoolean("IsBackChamber"), rs.getDouble("Height"), rs.getDouble("Width"), rs.getDouble("Depth"));
@@ -1014,7 +1015,7 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM MainChamber WHERE MainChamberID=" + id);
 			if (rs.first()) {
-				result = new MainChamberEntry(rs.getInt("MainChamberID"), rs.getInt("FrontWallID"), rs.getInt("LeftWallID"),
+				result = new MainChamberEntry(rs.getInt("MainChamberID"), rs.getInt("CeilingTypeID"), rs.getInt("FrontWallID"), rs.getInt("LeftWallID"),
 						rs.getInt("RightWallID"), rs.getInt("RearWallID"), rs.getDouble("Height"), rs.getDouble("Width"),
 						rs.getDouble("Depth"));
 			}
@@ -1311,5 +1312,27 @@ public class MysqlConnector {
 			return null;
 		}
 		return results;
+	}
+
+	/**
+	 * @return
+	 */
+	public ArrayList<CeilingTypeEntry> getCeilingTypes() {
+		ArrayList<CeilingTypeEntry> result = new ArrayList<CeilingTypeEntry>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM CeilingTypes");
+			while (rs.next()) {
+				result.add(new CeilingTypeEntry(rs.getInt("CeilingTypeID"), rs.getString("Name")));
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return result;
 	}
 }

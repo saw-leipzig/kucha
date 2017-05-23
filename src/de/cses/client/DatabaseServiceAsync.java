@@ -23,6 +23,7 @@ import de.cses.shared.RearAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CavePart;
 import de.cses.shared.CaveTypeEntry;
+import de.cses.shared.CeilingTypeEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
@@ -173,5 +174,7 @@ public interface DatabaseServiceAsync {
 	void getOrnamentFunctions (AsyncCallback<ArrayList<OrnamentFunction>> asyncCallback) throws IllegalArgumentException;
 	
 	void getOrnamentsWHERE(String sqlWhere, AsyncCallback<ArrayList<OrnamentEntry>> asyncCallback) throws IllegalArgumentException;
+
+	void getCeilingTypes(AsyncCallback<ArrayList<CeilingTypeEntry>> asyncCallback);
 	
 	}

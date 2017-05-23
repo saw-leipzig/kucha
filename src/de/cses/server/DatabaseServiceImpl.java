@@ -25,6 +25,7 @@ import de.cses.shared.RearAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CavePart;
 import de.cses.shared.CaveTypeEntry;
+import de.cses.shared.CeilingTypeEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
@@ -412,6 +413,15 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public ArrayList<PictorialElementEntry> getRelatedPE(int depictionID) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getRelatedPE(depictionID);
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#getCeilingTypes()
+	 */
+	@Override
+	public ArrayList<CeilingTypeEntry> getCeilingTypes() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getCeilingTypes();
 	}
 
 }

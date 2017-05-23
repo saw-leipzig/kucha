@@ -23,11 +23,9 @@ public class CaveEntry implements IsSerializable {
 	private String pedestals;
 	private String findings;
 	private String alterationDate;
-	private AntechamberEntry antechamberEntry = null;
-	private MainChamberEntry mainChamberEntry = null;
-	private RearAreaEntry rearAreaEntry = null;	
 
 	public CaveEntry() {
+		this(0, "enter official cave number", "enter official cave name", "optional historic name", 0, 0, 0, 0, null, null, "enter findings here", null);
 	}
 
 	public CaveEntry(int caveID, String officialNumber, String officialName, String historicalName, int caveTypeID, int districtID,
@@ -133,48 +131,6 @@ public class CaveEntry implements IsSerializable {
 
 	public void setAlterationDate(String alterationDate) {
 		this.alterationDate = alterationDate;
-	}
-
-	/**
-	 * @return the antechamberEntry
-	 */
-	public AntechamberEntry getAntechamberEntry() {
-		return antechamberEntry;
-	}
-
-	/**
-	 * @param antechamberEntry the antechamberEntry to set
-	 */
-	public void setAntechamberEntry(AntechamberEntry antechamberEntry) {
-		this.antechamberEntry = antechamberEntry;
-	}
-
-	/**
-	 * @return the mainChamberEntry
-	 */
-	public MainChamberEntry getMainChamberEntry() {
-		return mainChamberEntry;
-	}
-
-	/**
-	 * @param mainChamberEntry the mainChamberEntry to set
-	 */
-	public void setMainChamberEntry(MainChamberEntry mainChamberEntry) {
-		this.mainChamberEntry = mainChamberEntry;
-	}
-
-	/**
-	 * @return the rearAreaEntry
-	 */
-	public RearAreaEntry getRearAreaEntry() {
-		return rearAreaEntry;
-	}
-
-	/**
-	 * @param rearAreaEntry the rearAreaEntry to set
-	 */
-	public void setRearAreaEntry(RearAreaEntry rearAreaEntry) {
-		this.rearAreaEntry = rearAreaEntry;
 	}
 
 	/*

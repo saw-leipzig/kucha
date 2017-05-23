@@ -21,7 +21,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public class RearAreaEntry implements IsSerializable {
 	
-	private int rearAreaID, leftCorridorOuterWallID, leftCorridorInnerWallID, rightCorridorInnerWallID, rightCorridorOuterWallID, innerWallID, leftWallID, rightWallID, outerWallID;
+	private int rearAreaID, ceilingTypeID, leftCorridorOuterWallID, leftCorridorInnerWallID, rightCorridorInnerWallID, rightCorridorOuterWallID, innerWallID, leftWallID, rightWallID, outerWallID;
 	private boolean isBackChamber;
 	private double height, width, depth;
 
@@ -29,13 +29,15 @@ public class RearAreaEntry implements IsSerializable {
 	 * 
 	 */
 	public RearAreaEntry() {
+		this(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0.0, 0.0, 0.0);
 	}
 
-	public RearAreaEntry(int rearAreaID, int leftCorridorOuterWallID, int leftCorridorInnerWallID, int rightCorridorInnerWallID,
+	public RearAreaEntry(int rearAreaID, int ceiligTypeID, int leftCorridorOuterWallID, int leftCorridorInnerWallID, int rightCorridorInnerWallID,
 			int rightCorridorOuterWallID, int innerWallID, int leftWallID, int rightWallID, int outerWallID, boolean isBackChamber,
 			double height, double width, double depth) {
 		super();
 		this.rearAreaID = rearAreaID;
+		this.setCeilingTypeID(ceiligTypeID);
 		this.leftCorridorOuterWallID = leftCorridorOuterWallID;
 		this.leftCorridorInnerWallID = leftCorridorInnerWallID;
 		this.rightCorridorInnerWallID = rightCorridorInnerWallID;
@@ -56,6 +58,20 @@ public class RearAreaEntry implements IsSerializable {
 
 	public void setRearAreaID(int rearAreaID) {
 		this.rearAreaID = rearAreaID;
+	}
+
+	/**
+	 * @return the ceilingTypeID
+	 */
+	public int getCeilingTypeID() {
+		return ceilingTypeID;
+	}
+
+	/**
+	 * @param ceilingTypeID the ceilingTypeID to set
+	 */
+	public void setCeilingTypeID(int ceilingTypeID) {
+		this.ceilingTypeID = ceilingTypeID;
 	}
 
 	public int getLeftCorridorOuterWallID() {

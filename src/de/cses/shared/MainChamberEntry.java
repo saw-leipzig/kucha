@@ -21,16 +21,17 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public class MainChamberEntry implements IsSerializable {
 	
-	private int mainChamberID, frontWallID, leftWallID, rightWallID, rearWallID;
+	private int mainChamberID, ceilingTypeID, frontWallID, leftWallID, rightWallID, rearWallID;
 	private double height, width, depth;
 
 	/**
 	 * 
 	 */
 	public MainChamberEntry() {
+		this(0, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0);
 	}
 
-	public MainChamberEntry(int mainChamberID, int frontWallID, int leftWallID, int rightWallID, int rearWallID, double height,
+	public MainChamberEntry(int mainChamberID, int ceilingTypeID, int frontWallID, int leftWallID, int rightWallID, int rearWallID, double height,
 			double width, double depth) {
 		super();
 		this.mainChamberID = mainChamberID;
@@ -49,6 +50,20 @@ public class MainChamberEntry implements IsSerializable {
 
 	public void setMainChamberID(int mainChamberID) {
 		this.mainChamberID = mainChamberID;
+	}
+
+	/**
+	 * @return the ceilingTypeID
+	 */
+	public int getCeilingTypeID() {
+		return ceilingTypeID;
+	}
+
+	/**
+	 * @param ceilingTypeID the ceilingTypeID to set
+	 */
+	public void setCeilingTypeID(int ceilingTypeID) {
+		this.ceilingTypeID = ceilingTypeID;
 	}
 
 	public int getFrontWallID() {
