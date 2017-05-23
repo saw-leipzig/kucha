@@ -128,8 +128,8 @@ public class MainChamberEntry extends AbstractEntry {
 	 */
 	@Override
 	public String getInsertSql() {
-		return "INSERT INTO MainChamber (CeilingTypeID, FrontWallID, LeftWallID, RightWallID, RearWallID, Height, Width, Depth) VALUES " + "("
-				+ ceilingTypeID + "," + frontWallID + "," + leftWallID + "," + rightWallID + "," + rearWallID + "," + height + "," + width + ","
+		return "INSERT INTO MainChamber (MainChamberID, CeilingTypeID, FrontWallID, LeftWallID, RightWallID, RearWallID, Height, Width, Depth) VALUES " + "("
+				+ mainChamberID + ", " + ceilingTypeID + ", " + frontWallID + ", " + leftWallID + ", " + rightWallID + ", " + rearWallID + ", " + height + ", " + width + ", "
 				+ depth + ")";
 	}
 

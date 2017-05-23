@@ -113,8 +113,8 @@ public class AntechamberEntry extends AbstractEntry {
 	 */
 	@Override
 	public String getInsertSql() {
-		return "INSERT INTO Antechamber (CeilingTypeID, FrontWallID, LeftWallID, RightWallID, RearWallID, Height, Width, Depth) VALUES (" + ceilingTypeID 
-				+ ","+ frontWallID + "," + leftWallID + "," + rightWallID + "," + rearWallID + "," + height + "," + width + "," + depth + ")";
+		return "INSERT INTO Antechamber (AntechamberID, CeilingTypeID, FrontWallID, LeftWallID, RightWallID, RearWallID, Height, Width, Depth) VALUES (" + antechamberID + ", " + ceilingTypeID 
+				+ ", "+ frontWallID + ", " + leftWallID + ", " + rightWallID + ", " + rearWallID + ", " + height + ", " + width + ", " + depth + ")";
 	}
 
 	/* (non-Javadoc)

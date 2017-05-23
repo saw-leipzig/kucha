@@ -68,9 +68,9 @@ public class CaveEditor implements IsWidget {
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	private FramedPanel mainPanel;
 	private CaveEntry correspondingCaveEntry;
-	private AntechamberEntry correspondingAntechamberEntry;
-	private MainChamberEntry correspondingMainChamberEntry;
-	private RearAreaEntry correspondingRearAreaEntry;
+//	private AntechamberEntry correspondingAntechamberEntry;
+//	private MainChamberEntry correspondingMainChamberEntry;
+//	private RearAreaEntry correspondingRearAreaEntry;
 	private ComboBox<CaveTypeEntry> caveTypeSelection;
 	private CaveTypeProperties caveTypeProps;
 	private ListStore<CaveTypeEntry> caveTypeEntryList;
@@ -180,7 +180,6 @@ public class CaveEditor implements IsWidget {
 			createNewCaveEntry();
 		} else {
 			correspondingCaveEntry = caveEntry;
-			loadChambers();
 		}
 		listenerList = new ArrayList<CaveEditorListener>();
 		listenerList.add(listener);
@@ -206,47 +205,47 @@ public class CaveEditor implements IsWidget {
 		loadOrientation();
 	}
 
-	/**
-	 * 
-	 */
-	private void loadChambers() {
-		dbService.getAntechamberEntry(correspondingCaveEntry.getCaveID(), new AsyncCallback<AntechamberEntry>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(AntechamberEntry result) {
-				correspondingAntechamberEntry = result;
-			}
-		});
-		dbService.getMainChamberEntry(correspondingCaveEntry.getCaveID(), new AsyncCallback<MainChamberEntry>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(MainChamberEntry result) {
-				correspondingMainChamberEntry = result;
-			}
-		});
-		dbService.getRearAreaEntry(correspondingCaveEntry.getCaveID(), new AsyncCallback<RearAreaEntry>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(RearAreaEntry result) {
-				correspondingRearAreaEntry = result;
-			}
-		});
-	}
+//	/**
+//	 * 
+//	 */
+//	private void loadChambers() {
+//		dbService.getAntechamberEntry(correspondingCaveEntry.getCaveID(), new AsyncCallback<AntechamberEntry>() {
+//
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				caught.printStackTrace();
+//			}
+//
+//			@Override
+//			public void onSuccess(AntechamberEntry result) {
+//				correspondingAntechamberEntry = result;
+//			}
+//		});
+//		dbService.getMainChamberEntry(correspondingCaveEntry.getCaveID(), new AsyncCallback<MainChamberEntry>() {
+//
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				caught.printStackTrace();
+//			}
+//
+//			@Override
+//			public void onSuccess(MainChamberEntry result) {
+//				correspondingMainChamberEntry = result;
+//			}
+//		});
+//		dbService.getRearAreaEntry(correspondingCaveEntry.getCaveID(), new AsyncCallback<RearAreaEntry>() {
+//
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				caught.printStackTrace();
+//			}
+//
+//			@Override
+//			public void onSuccess(RearAreaEntry result) {
+//				correspondingRearAreaEntry = result;
+//			}
+//		});
+//	}
 
 	/**
 	 * 
@@ -412,9 +411,12 @@ public class CaveEditor implements IsWidget {
 	 */
 	private void createNewCaveEntry() {
 		correspondingCaveEntry = new CaveEntry();
-		correspondingAntechamberEntry = null;
-		correspondingMainChamberEntry = null;
-		correspondingRearAreaEntry = null;
+		correspondingCaveEntry.setAntechamberEntry(new AntechamberEntry());
+		correspondingCaveEntry.setMainChamberEntry(new MainChamberEntry());
+		correspondingCaveEntry.setRearAreaEntry(new RearAreaEntry());
+//		correspondingAntechamberEntry = null;
+//		correspondingMainChamberEntry = null;
+//		correspondingRearAreaEntry = null;
 	}
 
 	@Override
@@ -739,7 +741,7 @@ public class CaveEditor implements IsWidget {
 
 			@Override
 			public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
-				correspondingRearAreaEntry.setCeilingTypeID(event.getSelectedItem().getCeilingTypeID());
+				correspondingCaveEntry.getRearAreaEntry().setCeilingTypeID(event.getSelectedItem().getCeilingTypeID());
 			}
 		});
 		attributePanel.add(rearAreaCeilingTypeSelector);
@@ -762,7 +764,7 @@ public class CaveEditor implements IsWidget {
 
 			@Override
 			public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
-				correspondingMainChamberEntry.setCeilingTypeID(event.getSelectedItem().getCeilingTypeID());
+				correspondingCaveEntry.getMainChamberEntry().setCeilingTypeID(event.getSelectedItem().getCeilingTypeID());
 			}
 		});
 		attributePanel.add(mainChamberCeilingTypeSelector);
@@ -785,7 +787,7 @@ public class CaveEditor implements IsWidget {
 
 			@Override
 			public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
-				correspondingAntechamberEntry.setCeilingTypeID(event.getSelectedItem().getCeilingTypeID());
+				correspondingCaveEntry.getAntechamberEntry().setCeilingTypeID(event.getSelectedItem().getCeilingTypeID());
 			}
 		});
 		attributePanel.add(antechamberCeilingTypeSelector);
@@ -856,14 +858,45 @@ public class CaveEditor implements IsWidget {
 
 				@Override
 				public void onFailure(Throwable caught) {
-					// TODO Auto-generated method stub
-					
+					caught.printStackTrace();
 				}
 
 				@Override
 				public void onSuccess(Boolean result) {
-					// TODO Auto-generated method stub
-					
+					dbService.updateEntry(correspondingCaveEntry.getAntechamberEntry().getUpdateSql(), new AsyncCallback<Boolean>() {
+
+						@Override
+						public void onFailure(Throwable caught) {
+							caught.printStackTrace();
+						}
+
+						@Override
+						public void onSuccess(Boolean result) {
+						}
+						
+					});
+					dbService.updateEntry(correspondingCaveEntry.getMainChamberEntry().getUpdateSql(), new AsyncCallback<Boolean>() {
+
+						@Override
+						public void onFailure(Throwable caught) {
+							caught.printStackTrace();
+						}
+
+						@Override
+						public void onSuccess(Boolean result) {
+						}
+					});
+					dbService.updateEntry(correspondingCaveEntry.getRearAreaEntry().getUpdateSql(), new AsyncCallback<Boolean>() {
+
+						@Override
+						public void onFailure(Throwable caught) {
+							caught.printStackTrace();
+						}
+
+						@Override
+						public void onSuccess(Boolean result) {
+						}
+					});
 				}
 			});
 		} else { // then its 0 and we need to create a new entry
@@ -871,14 +904,49 @@ public class CaveEditor implements IsWidget {
 
 				@Override
 				public void onFailure(Throwable caught) {
-					// TODO Auto-generated method stub
-					
+					caught.printStackTrace();
 				}
 
 				@Override
 				public void onSuccess(Integer result) {
-					correspondingCaveEntry.setCaveID(result);
-				}
+					correspondingCaveEntry.setCaveID(result.intValue());
+					correspondingCaveEntry.getAntechamberEntry().setAntechamberID(result.intValue());
+					correspondingCaveEntry.getMainChamberEntry().setMainChamberID(result.intValue());
+					correspondingCaveEntry.getRearAreaEntry().setRearAreaID(result.intValue());
+					dbService.updateEntry(correspondingCaveEntry.getAntechamberEntry().getUpdateSql(), new AsyncCallback<Boolean>() {
+
+						@Override
+						public void onFailure(Throwable caught) {
+							caught.printStackTrace();
+						}
+
+						@Override
+						public void onSuccess(Boolean result) {
+						}
+						
+					});
+					dbService.updateEntry(correspondingCaveEntry.getMainChamberEntry().getUpdateSql(), new AsyncCallback<Boolean>() {
+
+						@Override
+						public void onFailure(Throwable caught) {
+							caught.printStackTrace();
+						}
+
+						@Override
+						public void onSuccess(Boolean result) {
+						}
+					});
+					dbService.updateEntry(correspondingCaveEntry.getRearAreaEntry().getUpdateSql(), new AsyncCallback<Boolean>() {
+
+						@Override
+						public void onFailure(Throwable caught) {
+							caught.printStackTrace();
+						}
+
+						@Override
+						public void onSuccess(Boolean result) {
+						}
+					});				}
 			});
 		}
 		cancelCaveEditor();

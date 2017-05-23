@@ -19,9 +19,10 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author alingnau
  *
  */
-public class RearAreaEntry implements IsSerializable {
-	
-	private int rearAreaID, ceilingTypeID, leftCorridorOuterWallID, leftCorridorInnerWallID, rightCorridorInnerWallID, rightCorridorOuterWallID, innerWallID, leftWallID, rightWallID, outerWallID;
+public class RearAreaEntry extends AbstractEntry {
+
+	private int rearAreaID, ceilingTypeID, leftCorridorOuterWallID, leftCorridorInnerWallID, rightCorridorInnerWallID,
+			rightCorridorOuterWallID, innerWallID, leftWallID, rightWallID, outerWallID;
 	private boolean isBackChamber;
 	private double height, width, depth;
 
@@ -32,9 +33,9 @@ public class RearAreaEntry implements IsSerializable {
 		this(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0.0, 0.0, 0.0);
 	}
 
-	public RearAreaEntry(int rearAreaID, int ceiligTypeID, int leftCorridorOuterWallID, int leftCorridorInnerWallID, int rightCorridorInnerWallID,
-			int rightCorridorOuterWallID, int innerWallID, int leftWallID, int rightWallID, int outerWallID, boolean isBackChamber,
-			double height, double width, double depth) {
+	public RearAreaEntry(int rearAreaID, int ceiligTypeID, int leftCorridorOuterWallID, int leftCorridorInnerWallID,
+			int rightCorridorInnerWallID, int rightCorridorOuterWallID, int innerWallID, int leftWallID, int rightWallID, int outerWallID,
+			boolean isBackChamber, double height, double width, double depth) {
 		super();
 		this.rearAreaID = rearAreaID;
 		this.setCeilingTypeID(ceiligTypeID);
@@ -68,7 +69,8 @@ public class RearAreaEntry implements IsSerializable {
 	}
 
 	/**
-	 * @param ceilingTypeID the ceilingTypeID to set
+	 * @param ceilingTypeID
+	 *          the ceilingTypeID to set
 	 */
 	public void setCeilingTypeID(int ceilingTypeID) {
 		this.ceilingTypeID = ceilingTypeID;
@@ -168,6 +170,34 @@ public class RearAreaEntry implements IsSerializable {
 
 	public void setDepth(double depth) {
 		this.depth = depth;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.cses.shared.AbstractEntry#getInsertSql()
+	 */
+	@Override
+	public String getInsertSql() {
+		return "INSERT INTO RearArea (RearAreaID, CeiligTypeID, LeftCorridorOuterWallID, LeftCorridorInnerWallID, RightCorridorInnerWallID, "
+				+ "RightCorridorOuterWallID, InnerWallID, LeftWallID, RightWallID, OuterWallID, IsBackChamber, Height, Width, Depth) VALUES " + "("
+				+ rearAreaID + ", " + ceilingTypeID + ", " + leftCorridorOuterWallID + ", " + leftCorridorInnerWallID + ", "
+				+ rightCorridorInnerWallID + ", " + rightCorridorOuterWallID + ", " + innerWallID + ", " + leftWallID + ", " + rightWallID + ", "
+				+ outerWallID + ", " + isBackChamber + ", " + height + ", " + width + ", " + depth + ")";
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.cses.shared.AbstractEntry#getUpdateSql()
+	 */
+	@Override
+	public String getUpdateSql() {
+		return "UPDATE RearArea SET CeilingTypeID=" + ceilingTypeID + ", LeftCorridorOuterWallID=" + leftCorridorOuterWallID
+				+ ", LeftCorridorInnerWallID=" + leftCorridorInnerWallID + ", RightCorridorInnerWallID=" + rightCorridorInnerWallID
+				+ ", RightCorridorOuterWallID=" + rightCorridorOuterWallID + ", InnerWallID=" + innerWallID + ", LeftWallID=" + leftWallID
+				+ ", RightWallID=" + rightWallID + ", OuterWallID=" + outerWallID + ", IsBackChamber=" + isBackChamber + ", Height=" + height
+				+ ", Width=" + width + ", Depth=" + depth + ")";
 	}
 
 }
