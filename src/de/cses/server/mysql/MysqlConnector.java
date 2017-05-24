@@ -1347,4 +1347,26 @@ public class MysqlConnector {
 		}
 		return result;
 	}
+
+	/**
+	 * @return
+	 */
+	public CeilingTypeEntry getCeilingType(int id) {
+		CeilingTypeEntry result = new CeilingTypeEntry();
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM CeilingTypes WHERE CeilingTypeID=" + id);
+			if (rs.first()) {
+				result = new CeilingTypeEntry(rs.getInt("CeilingTypeID"), rs.getString("Name"));
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return result;
+	}
 }

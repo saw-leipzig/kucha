@@ -913,7 +913,7 @@ public class CaveEditor implements IsWidget {
 					correspondingCaveEntry.getAntechamberEntry().setAntechamberID(result.intValue());
 					correspondingCaveEntry.getMainChamberEntry().setMainChamberID(result.intValue());
 					correspondingCaveEntry.getRearAreaEntry().setRearAreaID(result.intValue());
-					dbService.updateEntry(correspondingCaveEntry.getAntechamberEntry().getUpdateSql(), new AsyncCallback<Boolean>() {
+					dbService.updateEntry(correspondingCaveEntry.getAntechamberEntry().getInsertSql(), new AsyncCallback<Boolean>() {
 
 						@Override
 						public void onFailure(Throwable caught) {
@@ -925,7 +925,7 @@ public class CaveEditor implements IsWidget {
 						}
 						
 					});
-					dbService.updateEntry(correspondingCaveEntry.getMainChamberEntry().getUpdateSql(), new AsyncCallback<Boolean>() {
+					dbService.updateEntry(correspondingCaveEntry.getMainChamberEntry().getInsertSql(), new AsyncCallback<Boolean>() {
 
 						@Override
 						public void onFailure(Throwable caught) {
@@ -936,7 +936,7 @@ public class CaveEditor implements IsWidget {
 						public void onSuccess(Boolean result) {
 						}
 					});
-					dbService.updateEntry(correspondingCaveEntry.getRearAreaEntry().getUpdateSql(), new AsyncCallback<Boolean>() {
+					dbService.updateEntry(correspondingCaveEntry.getRearAreaEntry().getInsertSql(), new AsyncCallback<Boolean>() {
 
 						@Override
 						public void onFailure(Throwable caught) {

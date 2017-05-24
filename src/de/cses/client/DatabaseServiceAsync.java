@@ -175,6 +175,6 @@ public interface DatabaseServiceAsync {
 	
 	void getOrnamentsWHERE(String sqlWhere, AsyncCallback<ArrayList<OrnamentEntry>> asyncCallback) throws IllegalArgumentException;
 
-	void getCeilingTypes(AsyncCallback<ArrayList<CeilingTypeEntry>> asyncCallback);
+	void getCeilingTypes(AsyncCallback<ArrayList<CeilingTypeEntry>> asyncCallback) throws IllegalArgumentException;
 	
 	}
