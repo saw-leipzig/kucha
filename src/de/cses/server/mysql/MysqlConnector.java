@@ -999,6 +999,7 @@ public class MysqlConnector {
 			} else { // in case there is no entry we send back a new one
 				result = new RearAreaEntry();
 				result.setRearAreaID(id);
+				
 			}
 			rs.close();
 			stmt.close();

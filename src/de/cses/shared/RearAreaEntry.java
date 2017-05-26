@@ -197,7 +197,7 @@ public class RearAreaEntry extends AbstractEntry {
 				+ ", LeftCorridorInnerWallID=" + leftCorridorInnerWallID + ", RightCorridorInnerWallID=" + rightCorridorInnerWallID
 				+ ", RightCorridorOuterWallID=" + rightCorridorOuterWallID + ", InnerWallID=" + innerWallID + ", LeftWallID=" + leftWallID
 				+ ", RightWallID=" + rightWallID + ", OuterWallID=" + outerWallID + ", IsBackChamber=" + isBackChamber + ", Height=" + height
-				+ ", Width=" + width + ", Depth=" + depth + "WHERE RearAreaID=" + rearAreaID;
+				+ ", Width=" + width + ", Depth=" + depth + " WHERE RearAreaID=" + rearAreaID;
 	}
 
 }
