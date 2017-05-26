@@ -15,8 +15,6 @@ package de.cses.client.caves;
 
 import java.util.ArrayList;
 
-import org.eclipse.jdt.core.CorrectionEngine;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
@@ -52,6 +50,7 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -70,9 +69,6 @@ public class CaveEditor implements IsWidget {
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	private FramedPanel mainPanel;
 	private CaveEntry correspondingCaveEntry;
-//	private AntechamberEntry correspondingAntechamberEntry;
-//	private MainChamberEntry correspondingMainChamberEntry;
-//	private RearAreaEntry correspondingRearAreaEntry;
 	private ComboBox<CaveTypeEntry> caveTypeSelection;
 	private CaveTypeProperties caveTypeProps;
 	private ListStore<CaveTypeEntry> caveTypeEntryList;
@@ -243,9 +239,15 @@ public class CaveEditor implements IsWidget {
 							ceilingTypeEntryList.add(cte);
 						}
 						if (correspondingCaveEntry.getCaveTypeID() > 0) {
-							rearAreaCeilingTypeSelector.setValue(ceilingTypeEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getRearAreaEntry().getCeilingTypeID())));
-							mainChamberCeilingTypeSelector.setValue(ceilingTypeEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getMainChamberEntry().getCeilingTypeID())));
-							antechamberCeilingTypeSelector.setValue(ceilingTypeEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getAntechamberEntry().getCeilingTypeID())));
+							CeilingTypeEntry ctEntry = ceilingTypeEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getRearAreaEntry().getCeilingTypeID()));
+							rearAreaCeilingTypeSelector.setValue(ctEntry);
+//							Info.display("RearArea.CeilingTypeID", "id = " + ctEntry.getCeilingTypeID());
+							ctEntry = ceilingTypeEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getMainChamberEntry().getCeilingTypeID()));
+							mainChamberCeilingTypeSelector.setValue(ctEntry);
+							Info.display("MainChamber.CeilingTypeID", "id = " + correspondingCaveEntry.getMainChamberEntry().getCeilingTypeID());
+							ctEntry = ceilingTypeEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getAntechamberEntry().getCeilingTypeID()));
+							antechamberCeilingTypeSelector.setValue(ctEntry);
+//							Info.display("AnteChamber.CeilingTypeID", "id = " + ctEntry.getCeilingTypeID());
 						}
 					}
 				});

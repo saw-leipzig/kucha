@@ -1017,7 +1017,7 @@ public class MysqlConnector {
 	 * created and saved.
 	 * 
 	 * @param id
-	 *          MainChamberID from the tabe that equals the CaveID where the
+	 *          MainChamberID from the table that equals the CaveID where the
 	 *          MainChamber is located
 	 * @return The MainChamberEntry for the corresponding id
 	 */
@@ -1033,6 +1033,7 @@ public class MysqlConnector {
 				result = new MainChamberEntry(rs.getInt("MainChamberID"), rs.getInt("CeilingTypeID"), rs.getInt("FrontWallID"), rs.getInt("LeftWallID"),
 						rs.getInt("RightWallID"), rs.getInt("RearWallID"), rs.getDouble("Height"), rs.getDouble("Width"),
 						rs.getDouble("Depth"));
+				System.err.println("MainChamberEntry loaded for id=" + id);
 			} else { // in case there is no entry we send back a new one
 				result = new MainChamberEntry();
 				result.setMainChamberID(id);
