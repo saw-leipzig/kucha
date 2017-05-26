@@ -199,60 +199,17 @@ public class CaveEditor implements IsWidget {
 		districtEntryList = new ListStore<DistrictEntry>(districtProps.districtID());	
 		caveLayoutViewTemplates = GWT.create(CaveLayoutViewTemplates.class);
 		initPanel();
-		loadCaveTypes();
-//		loadCeilingTypes();
+		loadCaveAndCeilingTypes();
 		loadDistricts();
 		loadRegions();
 		loadSites();
 		loadOrientation();
 	}
 
-//	/**
-//	 * 
-//	 */
-//	private void loadChambers() {
-//		dbService.getAntechamberEntry(correspondingCaveEntry.getCaveID(), new AsyncCallback<AntechamberEntry>() {
-//
-//			@Override
-//			public void onFailure(Throwable caught) {
-//				caught.printStackTrace();
-//			}
-//
-//			@Override
-//			public void onSuccess(AntechamberEntry result) {
-//				correspondingAntechamberEntry = result;
-//			}
-//		});
-//		dbService.getMainChamberEntry(correspondingCaveEntry.getCaveID(), new AsyncCallback<MainChamberEntry>() {
-//
-//			@Override
-//			public void onFailure(Throwable caught) {
-//				caught.printStackTrace();
-//			}
-//
-//			@Override
-//			public void onSuccess(MainChamberEntry result) {
-//				correspondingMainChamberEntry = result;
-//			}
-//		});
-//		dbService.getRearAreaEntry(correspondingCaveEntry.getCaveID(), new AsyncCallback<RearAreaEntry>() {
-//
-//			@Override
-//			public void onFailure(Throwable caught) {
-//				caught.printStackTrace();
-//			}
-//
-//			@Override
-//			public void onSuccess(RearAreaEntry result) {
-//				correspondingRearAreaEntry = result;
-//			}
-//		});
-//	}
-
 	/**
 	 * 
 	 */
-	private void loadCaveTypes() {
+	private void loadCaveAndCeilingTypes() {
 		dbService.getCaveTypes(new AsyncCallback<ArrayList<CaveTypeEntry>>() {
 
 			@Override
