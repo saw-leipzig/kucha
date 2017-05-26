@@ -200,7 +200,7 @@ public class CaveEditor implements IsWidget {
 		caveLayoutViewTemplates = GWT.create(CaveLayoutViewTemplates.class);
 		initPanel();
 		loadCaveTypes();
-		loadCeilingTypes();
+//		loadCeilingTypes();
 		loadDistricts();
 		loadRegions();
 		loadSites();
@@ -272,42 +272,30 @@ public class CaveEditor implements IsWidget {
 					imageContainer.clear();
 					imageContainer.add(new HTMLPanel(caveLayoutViewTemplates.image(UriUtils.fromString("resource?background=" + correspondingCaveTypeEntry.getSketchName()))));
 				}
+				dbService.getCeilingTypes(new AsyncCallback<ArrayList<CeilingTypeEntry>>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+					}
+
+					@Override
+					public void onSuccess(ArrayList<CeilingTypeEntry> result) {
+						ceilingTypeEntryList.clear();
+						for (CeilingTypeEntry cte : result) {
+							ceilingTypeEntryList.add(cte);
+						}
+						if (correspondingCaveEntry.getCaveTypeID() > 0) {
+							rearAreaCeilingTypeSelector.setValue(ceilingTypeEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getRearAreaEntry().getCeilingTypeID())));
+							mainChamberCeilingTypeSelector.setValue(ceilingTypeEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getMainChamberEntry().getCeilingTypeID())));
+							antechamberCeilingTypeSelector.setValue(ceilingTypeEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getAntechamberEntry().getCeilingTypeID())));
+						}
+					}
+				});
 			}
 		});
 	}
 	
-	/**
-	 * 
-	 */
-	private void loadCeilingTypes() {
-		dbService.getCeilingTypes(new AsyncCallback<ArrayList<CeilingTypeEntry>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(ArrayList<CeilingTypeEntry> result) {
-				ceilingTypeEntryList.clear();
-				for (CeilingTypeEntry cte : result) {
-					ceilingTypeEntryList.add(cte);
-				}
-				if (correspondingCaveEntry.getCaveTypeID() > 0) {
-					if (correspondingCaveEntry.getRearAreaEntry().getCeilingTypeID() > 0) {
-						rearAreaCeilingTypeSelector.setValue(ceilingTypeEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getRearAreaEntry().getCeilingTypeID())));
-					}
-					if (correspondingCaveEntry.getMainChamberEntry().getCeilingTypeID() > 0) {
-						mainChamberCeilingTypeSelector.setValue(ceilingTypeEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getMainChamberEntry().getCeilingTypeID())));
-					}
-					if (correspondingCaveEntry.getAntechamberEntry().getCeilingTypeID() > 0) {
-						antechamberCeilingTypeSelector.setValue(ceilingTypeEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getAntechamberEntry().getCeilingTypeID())));
-					}
-				}
-			}
-		});
-	}
-
 	/**
 	 * 
 	 */
