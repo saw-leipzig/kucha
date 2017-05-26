@@ -428,7 +428,7 @@ public class MysqlConnector {
 			while (rs.next()) {
 				CaveEntry ce = new CaveEntry(rs.getInt("CaveID"), rs.getString("OfficialNumber"), rs.getString("OfficialName"),
 						rs.getString("HistoricName"), rs.getInt("CaveTypeID"), rs.getInt("DistrictID"), rs.getInt("RegionID"), rs.getInt("OrientationID"),
-						rs.getString("StateOfPreservation"), rs.getString("Pedestals"), rs.getString("Findings"),
+						rs.getString("StateOfPreservation"), rs.getString("Findings"),
 						rs.getString("AlterationDate"));
 				ce.setAntechamberEntry(getAntechamberEntry(ce.getCaveID()));
 				ce.setMainChamberEntry(getMainChamber(ce.getCaveID()));
@@ -454,7 +454,7 @@ public class MysqlConnector {
 			if (rs.first()) {
 				result = new CaveEntry(rs.getInt("CaveID"), rs.getString("OfficialNumber"), rs.getString("OfficialName"),
 						rs.getString("HistoricName"), rs.getInt("CaveTypeID"), rs.getInt("DistrictID"), rs.getInt("RegionID"), rs.getInt("OrientationID"),
-						rs.getString("StateOfPreservation"), rs.getString("Pedestals"), rs.getString("Findings"),
+						rs.getString("StateOfPreservation"), rs.getString("Findings"),
 						rs.getString("AlterationDate"));
 				result.setAntechamberEntry(getAntechamberEntry(id));
 				result.setMainChamberEntry(getMainChamber(id));
@@ -479,7 +479,7 @@ public class MysqlConnector {
 			while (rs.next()) {
 				results.add(new CaveEntry(rs.getInt("CaveID"), rs.getString("OfficialNumber"), rs.getString("OfficialName"),
 						rs.getString("HistoricName"), rs.getInt("CaveTypeID"), rs.getInt("DistrictID"), rs.getInt("RegionID"), rs.getInt("OrientationID"), 
-						rs.getString("StateOfPreservation"), rs.getString("Pedestals"), rs.getString("Findings"),
+						rs.getString("StateOfPreservation"), rs.getString("Findings"),
 						rs.getString("AlterationDate")));
 
 			}

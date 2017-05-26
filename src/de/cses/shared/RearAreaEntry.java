@@ -179,7 +179,7 @@ public class RearAreaEntry extends AbstractEntry {
 	 */
 	@Override
 	public String getInsertSql() {
-		return "INSERT INTO RearArea (RearAreaID, CeiligTypeID, LeftCorridorOuterWallID, LeftCorridorInnerWallID, RightCorridorInnerWallID, "
+		return "INSERT INTO RearArea (RearAreaID, CeilingTypeID, LeftCorridorOuterWallID, LeftCorridorInnerWallID, RightCorridorInnerWallID, "
 				+ "RightCorridorOuterWallID, InnerWallID, LeftWallID, RightWallID, OuterWallID, IsBackChamber, Height, Width, Depth) VALUES " + "("
 				+ rearAreaID + ", " + ceilingTypeID + ", " + leftCorridorOuterWallID + ", " + leftCorridorInnerWallID + ", "
 				+ rightCorridorInnerWallID + ", " + rightCorridorOuterWallID + ", " + innerWallID + ", " + leftWallID + ", " + rightWallID + ", "

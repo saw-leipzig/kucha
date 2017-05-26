@@ -15,6 +15,8 @@ package de.cses.client.caves;
 
 import java.util.ArrayList;
 
+import org.eclipse.jdt.core.CorrectionEngine;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
@@ -292,7 +294,15 @@ public class CaveEditor implements IsWidget {
 					ceilingTypeEntryList.add(cte);
 				}
 				if (correspondingCaveEntry.getCaveTypeID() > 0) {
-					// TODO set the ceilingTypes of the three part to the correct values
+					if (correspondingCaveEntry.getRearAreaEntry().getCeilingTypeID() > 0) {
+						rearAreaCeilingTypeSelector.setValue(ceilingTypeEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getRearAreaEntry().getCeilingTypeID())));
+					}
+					if (correspondingCaveEntry.getMainChamberEntry().getCeilingTypeID() > 0) {
+						mainChamberCeilingTypeSelector.setValue(ceilingTypeEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getMainChamberEntry().getCeilingTypeID())));
+					}
+					if (correspondingCaveEntry.getAntechamberEntry().getCeilingTypeID() > 0) {
+						antechamberCeilingTypeSelector.setValue(ceilingTypeEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getAntechamberEntry().getCeilingTypeID())));
+					}
 				}
 			}
 		});
@@ -430,11 +440,12 @@ public class CaveEditor implements IsWidget {
 	private void initPanel() {
 		// all fields added are encapsulated by a FramedPanel
 		FramedPanel attributePanel;
+		
 		CaveTypeViewTemplates ctvt = GWT.create(CaveTypeViewTemplates.class);
 		
 		mainPanel = new FramedPanel();
 		mainPanel.setHeading("Cave Editor");
-		mainPanel.setSize("800px", "600px");
+		mainPanel.setSize("800px", "600px"); // here we set the size of the panel
 		
 		TabPanel tabPanel = new TabPanel();
 		tabPanel.setTabScroll(false);
@@ -909,6 +920,8 @@ public class CaveEditor implements IsWidget {
 
 				@Override
 				public void onSuccess(Integer result) {
+					int newID = result.intValue();
+					
 					correspondingCaveEntry.setCaveID(result.intValue());
 					correspondingCaveEntry.getAntechamberEntry().setAntechamberID(result.intValue());
 					correspondingCaveEntry.getMainChamberEntry().setMainChamberID(result.intValue());
