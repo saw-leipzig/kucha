@@ -944,7 +944,8 @@ public class MysqlConnector {
 	}
 
 	/**
-	 * 
+	 * In case the AntechamberEntry hasn't been created before, it will be
+	 * created and saved.
 	 * 
 	 * @param id
 	 *          the AntechamberID from the table that equals the CaveID where the
@@ -966,6 +967,7 @@ public class MysqlConnector {
 			} else { // in case there is no entry we send back a new one
 				result = new AntechamberEntry();
 				result.setAntechamberID(id);
+				insertEntry(result.getInsertSql());
 			}
 			rs.close();
 			stmt.close();
@@ -976,7 +978,8 @@ public class MysqlConnector {
 	}
 
 	/**
-	 * 
+	 * In case the RearAreaEntry hasn't been created before, it will be
+	 * created and saved.
 	 * 
 	 * @param id
 	 *          the RearAreaID from the table that equals the CaveID where the
@@ -999,7 +1002,7 @@ public class MysqlConnector {
 			} else { // in case there is no entry we send back a new one
 				result = new RearAreaEntry();
 				result.setRearAreaID(id);
-				
+				insertEntry(result.getInsertSql());
 			}
 			rs.close();
 			stmt.close();
@@ -1010,6 +1013,8 @@ public class MysqlConnector {
 	}
 
 	/**
+	 * In case the MainChamberEntry hasn't been created before, it will be
+	 * created and saved.
 	 * 
 	 * @param id
 	 *          MainChamberID from the tabe that equals the CaveID where the
@@ -1031,6 +1036,7 @@ public class MysqlConnector {
 			} else { // in case there is no entry we send back a new one
 				result = new MainChamberEntry();
 				result.setMainChamberID(id);
+				insertEntry(result.getInsertSql());
 			}
 			rs.close();
 			stmt.close();
