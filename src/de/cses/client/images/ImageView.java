@@ -51,10 +51,10 @@ public class ImageView extends Button {
 		Resources resources = GWT.create(Resources.class);
 		Image img = new Image(resources.plus());
 		String html = "<div><center><img src='" + img.getUrl()
-				+ "' height = '128px' width = '128px'></img></center><label> New Image </label></br></div>";
+				+ "' height = '80' width = '80px'></img></center><label> New Image </label></br></div>";
 		
 		setHTML(html);
-		setPixelSize(150, 160);
+		setPixelSize(110, 110);
 		imgEntry = null;
 		initAddImage();
 	}
@@ -65,9 +65,9 @@ public class ImageView extends Button {
 	public ImageView(ImageEntry imgEntry) {
 		this.imgEntry = imgEntry;
 		String html = "<div><center><img src='resource?imageID=" + imgEntry.getImageID() + "&thumb=true'"
-				+ "' height = '128px' width = '128px'></img></center><label>" + imgEntry.getTitle() + "</label></br></div>";
+				+ "' height = '80px' width = '80px'></img></center><label>" + imgEntry.getTitle() + "</label></br></div>";
 		setHTML(html);
-		setPixelSize(150, 160);
+		setPixelSize(110, 110);
 		initEditImage();
 	}
 
@@ -87,7 +87,7 @@ public class ImageView extends Button {
 					public void closeImageEditor() {
 						imageEditorPanel.hide();
 						String html = "<div><center><img src='resource?imageID=" + imgEntry.getImageID() + "&thumb=true'"
-								+ "' height = '128px' width = '128px'></img></center><label>" + imgEntry.getTitle() + "</label></br></div>";
+								+ "' height = '80px' width = '80px'></img></center><label>" + imgEntry.getTitle() + "</label></br></div>";
 						setHTML(html);
 					}
 
@@ -97,7 +97,6 @@ public class ImageView extends Button {
 					}
 				});
 				imageEditorPanel.add(singleIE);
-//				new Draggable(imageEditorPanel);
 				imageEditorPanel.setGlassEnabled(true);
 				imageEditorPanel.center();
 				imageEditorPanel.show();
@@ -142,7 +141,6 @@ public class ImageView extends Button {
 									}
 								});
 								imageEditorPanel.add(singleIE);
-//								new Draggable(imageEditorPanel);
 								imageEditorPanel.setGlassEnabled(true);
 								imageEditorPanel.center();
 								imageEditorPanel.show();
@@ -161,7 +159,6 @@ public class ImageView extends Button {
 					}
 				});
 				imageUploadPanel.add(iu);
-//				new Draggable(imageUploadPanel);
 				imageUploadPanel.setGlassEnabled(true);
 				imageUploadPanel.center();
 				imageUploadPanel.show();

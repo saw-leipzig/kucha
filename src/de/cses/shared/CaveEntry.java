@@ -20,18 +20,18 @@ public class CaveEntry implements IsSerializable {
 	private String officialNumber, officialName, historicName;
 	private int caveTypeID, districtID, regionID, orientationID; 
 	private String stateOfPerservation;
-	private String pedestals;
 	private String findings;
 	private String alterationDate;
-	private AntechamberEntry antechamberEntry = null;
-	private MainChamberEntry mainChamberEntry = null;
-	private BackAreaEntry backAreaEntry = null;	
+	private AntechamberEntry antechamberEntry;
+	private MainChamberEntry mainChamberEntry;
+	private RearAreaEntry rearAreaEntry;
 
 	public CaveEntry() {
+		this(0, "enter official cave number", "enter official cave name", "optional historic name", 0, 0, 0, 0, "enter state of preservation", "enter findings here", null);
 	}
 
 	public CaveEntry(int caveID, String officialNumber, String officialName, String historicalName, int caveTypeID, int districtID,
-			int regionID, int orientationID, String stateOfPerservation, String pedestals, String findings, String alterationDate) {
+			int regionID, int orientationID, String stateOfPerservation, String findings, String alterationDate) {
 		super();
 		this.caveID = caveID;
 		this.officialNumber = officialNumber;
@@ -42,7 +42,6 @@ public class CaveEntry implements IsSerializable {
 		this.setRegionID(regionID);
 		this.setOrientationID(orientationID);
 		this.stateOfPerservation = stateOfPerservation;
-		this.pedestals = pedestals;
 		this.findings = findings;
 		this.alterationDate = alterationDate;
 	}
@@ -111,14 +110,6 @@ public class CaveEntry implements IsSerializable {
 		this.stateOfPerservation = stateOfPerservation;
 	}
 
-	public String getPedestals() {
-		return pedestals;
-	}
-
-	public void setPedestals(String pedestals) {
-		this.pedestals = pedestals;
-	}
-
 	public String getFindings() {
 		return findings;
 	}
@@ -135,61 +126,43 @@ public class CaveEntry implements IsSerializable {
 		this.alterationDate = alterationDate;
 	}
 
-	/**
-	 * @return the antechamberEntry
-	 */
 	public AntechamberEntry getAntechamberEntry() {
 		return antechamberEntry;
 	}
 
-	/**
-	 * @param antechamberEntry the antechamberEntry to set
-	 */
 	public void setAntechamberEntry(AntechamberEntry antechamberEntry) {
 		this.antechamberEntry = antechamberEntry;
 	}
 
-	/**
-	 * @return the mainChamberEntry
-	 */
 	public MainChamberEntry getMainChamberEntry() {
 		return mainChamberEntry;
 	}
 
-	/**
-	 * @param mainChamberEntry the mainChamberEntry to set
-	 */
 	public void setMainChamberEntry(MainChamberEntry mainChamberEntry) {
 		this.mainChamberEntry = mainChamberEntry;
 	}
 
-	/**
-	 * @return the backAreaEntry
-	 */
-	public BackAreaEntry getBackAreaEntry() {
-		return backAreaEntry;
+	public RearAreaEntry getRearAreaEntry() {
+		return rearAreaEntry;
 	}
 
-	/**
-	 * @param backAreaEntry the backAreaEntry to set
-	 */
-	public void setBackAreaEntry(BackAreaEntry backAreaEntry) {
-		this.backAreaEntry = backAreaEntry;
+	public void setRearAreaEntry(RearAreaEntry rearAreaEntry) {
+		this.rearAreaEntry = rearAreaEntry;
 	}
 
 	/*
 	 * ATTENTION: Orientation is currently not inlcuded!!
 	 */
 	public String getInsertSql() {		
-		return "INSERT INTO Caves (OfficialNumber,OfficialName,HistoricName,CaveTypeID,DistrictID,RegionID, OrientationID,StateOfPreservation,Pedestals,Findings,AlterationDate) VALUES "
+		return "INSERT INTO Caves (OfficialNumber,OfficialName,HistoricName,CaveTypeID,DistrictID,RegionID, OrientationID,StateOfPreservation,Findings,AlterationDate) VALUES "
 				+ "('" + officialNumber + "','" + officialName + "','" + historicName + "'," + caveTypeID + "," + districtID + "," + regionID + "," + orientationID + ",'" + stateOfPerservation
-				+ "','" + pedestals + "','" + findings + "','" + alterationDate + "')";
+				+ "','" + findings + "','" + alterationDate + "')";
 	}
 
 	public String getUpdateSql() {
 		return "UPDATE Caves SET OfficialNumber='" + officialNumber + "', OfficialName='" + officialName + "', HistoricName='" + historicName
 				+ "', CaveTypeID=" + caveTypeID + ", DistrictID=" + districtID + ", RegionID=" + regionID + ", OrientationID=" + orientationID + ", StateOfPreservation='" + stateOfPerservation
-				+ "', Pedestals='" + pedestals + "', Findings='" + findings + "', AlterationDate='" + alterationDate + "' "
+				+ "', Findings='" + findings + "', AlterationDate='" + alterationDate + "' "
 				+ "WHERE CaveID=" + caveID;
 	}
 

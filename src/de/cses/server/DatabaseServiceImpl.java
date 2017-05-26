@@ -21,10 +21,11 @@ import de.cses.client.DatabaseService;
 import de.cses.server.mysql.MysqlConnector;
 import de.cses.shared.AntechamberEntry;
 import de.cses.shared.AuthorEntry;
-import de.cses.shared.BackAreaEntry;
+import de.cses.shared.RearAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CavePart;
 import de.cses.shared.CaveTypeEntry;
+import de.cses.shared.CeilingTypeEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
@@ -267,12 +268,12 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	}
 
 	/* (non-Javadoc)
-	 * @see de.cses.client.DatabaseService#getBackAreaEntry(int)
+	 * @see de.cses.client.DatabaseService#getRearAreaEntry(int)
 	 */
 	@Override
-	public BackAreaEntry getBackAreaEntry(int id) throws IllegalArgumentException {
+	public RearAreaEntry getRearAreaEntry(int id) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
-		return connector.getBackArea(id);
+		return connector.getRearArea(id);
 	}
 
 	/* (non-Javadoc)
@@ -412,6 +413,15 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public ArrayList<PictorialElementEntry> getRelatedPE(int depictionID) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getRelatedPE(depictionID);
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#getCeilingTypes()
+	 */
+	@Override
+	public ArrayList<CeilingTypeEntry> getCeilingTypes() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getCeilingTypes();
 	}
 
 }

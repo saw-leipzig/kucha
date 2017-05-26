@@ -20,10 +20,11 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 import de.cses.shared.AntechamberEntry;
 import de.cses.shared.AuthorEntry;
-import de.cses.shared.BackAreaEntry;
+import de.cses.shared.RearAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CavePart;
 import de.cses.shared.CaveTypeEntry;
+import de.cses.shared.CeilingTypeEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
@@ -112,7 +113,7 @@ public interface DatabaseService extends RemoteService {
 
 	MainChamberEntry getMainChamberEntry(int id) throws IllegalArgumentException;
 
-	BackAreaEntry getBackAreaEntry(int id) throws IllegalArgumentException;
+	RearAreaEntry getRearAreaEntry(int id) throws IllegalArgumentException;
 
 	ArrayList<RegionEntry> getRegions() throws IllegalArgumentException;
 
@@ -142,5 +143,7 @@ public interface DatabaseService extends RemoteService {
 	ArrayList<OrientationEntry> getOrientationInformation() throws IllegalArgumentException;
 	IconographyEntry getIconographyEntry(int iconographyID) throws IllegalArgumentException;
 	ArrayList<PictorialElementEntry> getRelatedPE(int depictionID) throws IllegalArgumentException;
+
+	ArrayList<CeilingTypeEntry> getCeilingTypes() throws IllegalArgumentException;
 
 }

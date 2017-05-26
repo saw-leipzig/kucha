@@ -13,27 +13,27 @@
  */
 package de.cses.shared;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
+public class AntechamberEntry extends AbstractEntry {
 
-public class AntechamberEntry implements IsSerializable{
-
-	private int antechamberID, frontWallID, leftWallID, rightWallID, rearWallID;
+	private int antechamberID, ceilingTypeID, frontWallID, leftWallID, rightWallID, rearWallID;
 	private double height, width, depth;
 	
 	public AntechamberEntry() {
+		this(0, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0);
 	}
 
-	public AntechamberEntry(int antechamberID, int frontWallID, int leftWallID, int rightWallID, int rearWallID, double height,
+	public AntechamberEntry(int antechamberID, int ceilingTypeID, int frontWallID, int leftWallID, int rightWallID, int rearWallID, double height,
 			double width, double depth) {
 		super();
-		this.antechamberID = antechamberID;
-		this.frontWallID = frontWallID;
-		this.leftWallID = leftWallID;
-		this.rightWallID = rightWallID;
-		this.rearWallID = rearWallID;
-		this.height = height;
-		this.width = width;
-		this.depth = depth;
+		setAntechamberID(antechamberID);
+		setCeilingTypeID(ceilingTypeID);
+		setFrontWallID(frontWallID);
+		setLeftWallID(leftWallID);
+		setRightWallID(rightWallID);
+		setRearWallID(rearWallID);
+		setHeight(height);
+		setWidth(width);
+		setDepth(depth);
 	}
 
 	public int getAntechamberID() {
@@ -42,6 +42,14 @@ public class AntechamberEntry implements IsSerializable{
 
 	public void setAntechamberID(int antechamberID) {
 		this.antechamberID = antechamberID;
+	}
+	
+		public int getCeilingTypeID() {
+		return ceilingTypeID;
+	}
+
+	public void setCeilingTypeID(int ceilingTypeID) {
+		this.ceilingTypeID = ceilingTypeID;
 	}
 
 	public int getFrontWallID() {
@@ -98,6 +106,24 @@ public class AntechamberEntry implements IsSerializable{
 
 	public void setDepth(double depth) {
 		this.depth = depth;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.shared.AbstractEntry#getInsertSql()
+	 */
+	@Override
+	public String getInsertSql() {
+		return "INSERT INTO Antechamber (AntechamberID, CeilingTypeID, FrontWallID, LeftWallID, RightWallID, RearWallID, Height, Width, Depth) VALUES (" + antechamberID + ", " + ceilingTypeID 
+				+ ", "+ frontWallID + ", " + leftWallID + ", " + rightWallID + ", " + rearWallID + ", " + height + ", " + width + ", " + depth + ")";
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.shared.AbstractEntry#getUpdateSql()
+	 */
+	@Override
+	public String getUpdateSql() {
+		return "UPDATE Antechamber SET CeilingTypeID=" + ceilingTypeID + ", FrontWallID=" + frontWallID + ", LeftWallID=" + leftWallID + ", RightWallID=" + rightWallID
+				+ ", RearWallID=" + rearWallID + ", Height=" + height + ", Width=" + width + ", Depth=" + depth + " WHERE AntechamberID=" + antechamberID;
 	}
 	
 

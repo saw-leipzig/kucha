@@ -75,7 +75,7 @@ public class IconographySelector implements IsWidget {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				Info.display("Loading Iconography", "failed");
+//				Info.display("Loading Iconography", "failed");
 				tree = null;
 			}
 

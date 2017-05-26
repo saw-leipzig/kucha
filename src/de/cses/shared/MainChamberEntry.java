@@ -13,34 +13,34 @@
  */
 package de.cses.shared;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
 /**
  * @author alingnau
  *
  */
-public class MainChamberEntry implements IsSerializable {
-	
-	private int mainChamberID, frontWallID, leftWallID, rightWallID, rearWallID;
+public class MainChamberEntry extends AbstractEntry {
+
+	private int mainChamberID, ceilingTypeID, frontWallID, leftWallID, rightWallID, rearWallID;
 	private double height, width, depth;
 
 	/**
 	 * 
 	 */
 	public MainChamberEntry() {
+		this(0, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0);
 	}
 
-	public MainChamberEntry(int mainChamberID, int frontWallID, int leftWallID, int rightWallID, int rearWallID, double height,
-			double width, double depth) {
+	public MainChamberEntry(int mainChamberID, int ceilingTypeID, int frontWallID, int leftWallID, int rightWallID, int rearWallID,
+			double height, double width, double depth) {
 		super();
-		this.mainChamberID = mainChamberID;
-		this.frontWallID = frontWallID;
-		this.leftWallID = leftWallID;
-		this.rightWallID = rightWallID;
-		this.rearWallID = rearWallID;
-		this.height = height;
-		this.width = width;
-		this.depth = depth;
+		setMainChamberID(mainChamberID);
+		this.setCeilingTypeID(ceilingTypeID);
+		setFrontWallID(frontWallID);
+		setLeftWallID(leftWallID);
+		setRightWallID(rightWallID);
+		setRearWallID(rearWallID);
+		setHeight(height);
+		setWidth(width);
+		setDepth(depth);
 	}
 
 	public int getMainChamberID() {
@@ -49,6 +49,21 @@ public class MainChamberEntry implements IsSerializable {
 
 	public void setMainChamberID(int mainChamberID) {
 		this.mainChamberID = mainChamberID;
+	}
+
+	/**
+	 * @return the ceilingTypeID
+	 */
+	public int getCeilingTypeID() {
+		return ceilingTypeID;
+	}
+
+	/**
+	 * @param ceilingTypeID
+	 *          the ceilingTypeID to set
+	 */
+	public void setCeilingTypeID(int ceilingTypeID) {
+		this.ceilingTypeID = ceilingTypeID;
 	}
 
 	public int getFrontWallID() {
@@ -105,6 +120,30 @@ public class MainChamberEntry implements IsSerializable {
 
 	public void setDepth(double depth) {
 		this.depth = depth;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.cses.shared.AbstractEntry#getInsertSql()
+	 */
+	@Override
+	public String getInsertSql() {
+		return "INSERT INTO MainChamber (MainChamberID, CeilingTypeID, FrontWallID, LeftWallID, RightWallID, RearWallID, Height, Width, Depth) VALUES " + "("
+				+ mainChamberID + ", " + ceilingTypeID + ", " + frontWallID + ", " + leftWallID + ", " + rightWallID + ", " + rearWallID + ", " + height + ", " + width + ", "
+				+ depth + ")";
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.cses.shared.AbstractEntry#getUpdateSql()
+	 */
+	@Override
+	public String getUpdateSql() {
+		return "UPDATE MainChamber SET CeilingTypeID=" + ceilingTypeID + ", FrontWallID=" + frontWallID + ", LeftWallID=" + leftWallID
+				+ ", RightWallID=" + rightWallID + ", RearWallID=" + rearWallID + ", Height=" + height + ", Width=" + width + ", Depth=" + depth
+				+ " WHERE MainChamberID=" + mainChamberID;
 	}
 
 }

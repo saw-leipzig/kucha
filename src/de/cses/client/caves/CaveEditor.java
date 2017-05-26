@@ -54,10 +54,14 @@ import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.shared.AntechamberEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveTypeEntry;
+import de.cses.shared.CeilingTypeEntry;
 import de.cses.shared.DistrictEntry;
+import de.cses.shared.MainChamberEntry;
 import de.cses.shared.OrientationEntry;
+import de.cses.shared.RearAreaEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 
@@ -65,9 +69,6 @@ public class CaveEditor implements IsWidget {
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	private FramedPanel mainPanel;
 	private CaveEntry correspondingCaveEntry;
-//	private AntechamberEntry correspondingAntechamberEntry;
-//	private MainChamberEntry correspondingMainChamberEntry;
-//	private BackAreaEntry correspondingBackAreaEntry;
 	private ComboBox<CaveTypeEntry> caveTypeSelection;
 	private CaveTypeProperties caveTypeProps;
 	private ListStore<CaveTypeEntry> caveTypeEntryList;
@@ -97,17 +98,32 @@ public class CaveEditor implements IsWidget {
 	private TextArea findingsTextArea;
 	private FlowLayoutContainer imageContainer;
 	private ComboBox<OrientationEntry> orientationSelection;
+	private CeilingTypeProperties ceilingTypeProps;
+	private ListStore<CeilingTypeEntry> ceilingTypeEntryList;
+	private ComboBox<CeilingTypeEntry> rearAreaCeilingTypeSelector;
+	private ComboBox<CeilingTypeEntry> mainChamberCeilingTypeSelector;
+	private ComboBox<CeilingTypeEntry> antechamberCeilingTypeSelector;
 
 	interface CaveTypeProperties extends PropertyAccess<CaveTypeEntry> {
 		ModelKeyProvider<CaveTypeEntry> caveTypeID();
 		LabelProvider<CaveTypeEntry> nameEN();
 	}
-
+	
 	interface CaveTypeViewTemplates extends XTemplates {
 		@XTemplate("<div>{name}</div>")
 		SafeHtml caveTypeLabel(String name);
 	}
 	
+	interface CeilingTypeProperties extends PropertyAccess<CeilingTypeEntry> {
+		ModelKeyProvider<CeilingTypeEntry> ceilingTypeID();
+		LabelProvider<CeilingTypeEntry> name();
+	}
+	
+	interface CeilingTypeViewTemplates extends XTemplates {
+		@XTemplate("<div>{name}</div>")
+		SafeHtml ceilingTypeLabel(String name);
+	}
+
 	interface DistrictProperties extends PropertyAccess<DistrictEntry> {
 		ModelKeyProvider<DistrictEntry> districtID();
 		LabelProvider<DistrictEntry> name();
@@ -167,6 +183,8 @@ public class CaveEditor implements IsWidget {
 		listenerList.add(listener);
 		caveTypeProps = GWT.create(CaveTypeProperties.class);
 		caveTypeEntryList = new ListStore<CaveTypeEntry>(caveTypeProps.caveTypeID());
+		ceilingTypeProps = GWT.create(CeilingTypeProperties.class);
+		ceilingTypeEntryList = new ListStore<CeilingTypeEntry>(ceilingTypeProps.ceilingTypeID());
 		siteProps = GWT.create(SiteProperties.class);
 		siteEntryList = new ListStore<SiteEntry>(siteProps.siteID());
 		orientationProps = GWT.create(OrientationProperties.class);
@@ -174,11 +192,10 @@ public class CaveEditor implements IsWidget {
 		regionProps = GWT.create(RegionProperties.class);
 		regionEntryList = new ListStore<RegionEntry>(regionProps.regionID());
 		districtProps = GWT.create(DistrictProperties.class);
-		districtEntryList = new ListStore<DistrictEntry>(districtProps.districtID());
-		caveLayoutViewTemplates = GWT.create(CaveLayoutViewTemplates.class);	
-		
+		districtEntryList = new ListStore<DistrictEntry>(districtProps.districtID());	
+		caveLayoutViewTemplates = GWT.create(CaveLayoutViewTemplates.class);
 		initPanel();
-		loadCaveTypes();
+		loadCaveAndCeilingTypes();
 		loadDistricts();
 		loadRegions();
 		loadSites();
@@ -188,7 +205,7 @@ public class CaveEditor implements IsWidget {
 	/**
 	 * 
 	 */
-	private void loadCaveTypes() {
+	private void loadCaveAndCeilingTypes() {
 		dbService.getCaveTypes(new AsyncCallback<ArrayList<CaveTypeEntry>>() {
 
 			@Override
@@ -208,10 +225,36 @@ public class CaveEditor implements IsWidget {
 					imageContainer.clear();
 					imageContainer.add(new HTMLPanel(caveLayoutViewTemplates.image(UriUtils.fromString("resource?background=" + correspondingCaveTypeEntry.getSketchName()))));
 				}
+				dbService.getCeilingTypes(new AsyncCallback<ArrayList<CeilingTypeEntry>>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+					}
+
+					@Override
+					public void onSuccess(ArrayList<CeilingTypeEntry> result) {
+						ceilingTypeEntryList.clear();
+						for (CeilingTypeEntry cte : result) {
+							ceilingTypeEntryList.add(cte);
+						}
+						if (correspondingCaveEntry.getCaveTypeID() > 0) {
+							CeilingTypeEntry ctEntry = ceilingTypeEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getRearAreaEntry().getCeilingTypeID()));
+							rearAreaCeilingTypeSelector.setValue(ctEntry);
+//							Info.display("RearArea.CeilingTypeID", "id = " + ctEntry.getCeilingTypeID());
+							ctEntry = ceilingTypeEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getMainChamberEntry().getCeilingTypeID()));
+							mainChamberCeilingTypeSelector.setValue(ctEntry);
+							Info.display("MainChamber.CeilingTypeID", "id = " + correspondingCaveEntry.getMainChamberEntry().getCeilingTypeID());
+							ctEntry = ceilingTypeEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getAntechamberEntry().getCeilingTypeID()));
+							antechamberCeilingTypeSelector.setValue(ctEntry);
+//							Info.display("AnteChamber.CeilingTypeID", "id = " + ctEntry.getCeilingTypeID());
+						}
+					}
+				});
 			}
 		});
 	}
-
+	
 	/**
 	 * 
 	 */
@@ -324,13 +367,14 @@ public class CaveEditor implements IsWidget {
 	 * 
 	 */
 	private void createNewCaveEntry() {
-		correspondingCaveEntry = new CaveEntry(0, "enter official cave number", "enter official cave name", "optional historic name", 0, 0,
-				0, 0, null, null, "enter findings here", null);
+		correspondingCaveEntry = new CaveEntry();
+		correspondingCaveEntry.setAntechamberEntry(new AntechamberEntry());
+		correspondingCaveEntry.setMainChamberEntry(new MainChamberEntry());
+		correspondingCaveEntry.setRearAreaEntry(new RearAreaEntry());
 	}
 
 	@Override
 	public Widget asWidget() {
-		Info.display("asWidget", "called");
 		if (mainPanel == null) {
 			initPanel();
 		}
@@ -341,9 +385,11 @@ public class CaveEditor implements IsWidget {
 		// all fields added are encapsulated by a FramedPanel
 		FramedPanel attributePanel;
 		
+		CaveTypeViewTemplates ctvt = GWT.create(CaveTypeViewTemplates.class);
+		
 		mainPanel = new FramedPanel();
 		mainPanel.setHeading("Cave Editor");
-		mainPanel.setSize("800px", "600px");
+		mainPanel.setSize("800px", "600px"); // here we set the size of the panel
 		
 		TabPanel tabPanel = new TabPanel();
 		tabPanel.setTabScroll(false);
@@ -634,15 +680,72 @@ public class CaveEditor implements IsWidget {
 		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
 		
 		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Rear Area Ceiling");
+		attributePanel.setHeading("Rear Area Ceiling Type");
+		rearAreaCeilingTypeSelector = new ComboBox<CeilingTypeEntry>(ceilingTypeEntryList, ceilingTypeProps.name(), new AbstractSafeHtmlRenderer<CeilingTypeEntry>() {
+
+			@Override
+			public SafeHtml render(CeilingTypeEntry item) {
+				return ctvt.caveTypeLabel(item.getName());
+			}
+		});
+		rearAreaCeilingTypeSelector.setEmptyText("select ceiling type");
+		rearAreaCeilingTypeSelector.setTypeAhead(false);
+		rearAreaCeilingTypeSelector.setEditable(false);
+		rearAreaCeilingTypeSelector.setTriggerAction(TriggerAction.ALL);
+		rearAreaCeilingTypeSelector.addSelectionHandler(new SelectionHandler<CeilingTypeEntry>() {
+
+			@Override
+			public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
+				correspondingCaveEntry.getRearAreaEntry().setCeilingTypeID(event.getSelectedItem().getCeilingTypeID());
+			}
+		});
+		attributePanel.add(rearAreaCeilingTypeSelector);
 		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
 		
 		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Main Chamber Ceiling");
+		attributePanel.setHeading("Main Chamber Ceiling Type");
+		mainChamberCeilingTypeSelector = new ComboBox<>(ceilingTypeEntryList, ceilingTypeProps.name(), new AbstractSafeHtmlRenderer<CeilingTypeEntry>() {
+
+			@Override
+			public SafeHtml render(CeilingTypeEntry item) {
+				return ctvt.caveTypeLabel(item.getName());
+			}
+		});
+		mainChamberCeilingTypeSelector.setEmptyText("select ceiling type");
+		mainChamberCeilingTypeSelector.setTypeAhead(false);
+		mainChamberCeilingTypeSelector.setEditable(false);
+		mainChamberCeilingTypeSelector.setTriggerAction(TriggerAction.ALL);
+		mainChamberCeilingTypeSelector.addSelectionHandler(new SelectionHandler<CeilingTypeEntry>() {
+
+			@Override
+			public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
+				correspondingCaveEntry.getMainChamberEntry().setCeilingTypeID(event.getSelectedItem().getCeilingTypeID());
+			}
+		});
+		attributePanel.add(mainChamberCeilingTypeSelector);
 		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
 
 		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Antechamber Ceiling");
+		attributePanel.setHeading("Antechamber Ceiling Type");
+		antechamberCeilingTypeSelector = new ComboBox<>(ceilingTypeEntryList, ceilingTypeProps.name(), new AbstractSafeHtmlRenderer<CeilingTypeEntry>() {
+
+			@Override
+			public SafeHtml render(CeilingTypeEntry item) {
+				return ctvt.caveTypeLabel(item.getName());
+			}
+		});
+		antechamberCeilingTypeSelector.setEmptyText("select ceiling type");
+		antechamberCeilingTypeSelector.setTypeAhead(false);
+		antechamberCeilingTypeSelector.setEditable(false);
+		antechamberCeilingTypeSelector.setTriggerAction(TriggerAction.ALL);
+		antechamberCeilingTypeSelector.addSelectionHandler(new SelectionHandler<CeilingTypeEntry>() {
+
+			@Override
+			public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
+				correspondingCaveEntry.getAntechamberEntry().setCeilingTypeID(event.getSelectedItem().getCeilingTypeID());
+			}
+		});
+		attributePanel.add(antechamberCeilingTypeSelector);
 		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
 
 		hlContainer.add(vlContainer, new HorizontalLayoutData(.4, 1.0));
@@ -710,14 +813,45 @@ public class CaveEditor implements IsWidget {
 
 				@Override
 				public void onFailure(Throwable caught) {
-					// TODO Auto-generated method stub
-					
+					caught.printStackTrace();
 				}
 
 				@Override
 				public void onSuccess(Boolean result) {
-					// TODO Auto-generated method stub
-					
+					dbService.updateEntry(correspondingCaveEntry.getAntechamberEntry().getUpdateSql(), new AsyncCallback<Boolean>() {
+
+						@Override
+						public void onFailure(Throwable caught) {
+							caught.printStackTrace();
+						}
+
+						@Override
+						public void onSuccess(Boolean result) {
+						}
+						
+					});
+					dbService.updateEntry(correspondingCaveEntry.getMainChamberEntry().getUpdateSql(), new AsyncCallback<Boolean>() {
+
+						@Override
+						public void onFailure(Throwable caught) {
+							caught.printStackTrace();
+						}
+
+						@Override
+						public void onSuccess(Boolean result) {
+						}
+					});
+					dbService.updateEntry(correspondingCaveEntry.getRearAreaEntry().getUpdateSql(), new AsyncCallback<Boolean>() {
+
+						@Override
+						public void onFailure(Throwable caught) {
+							caught.printStackTrace();
+						}
+
+						@Override
+						public void onSuccess(Boolean result) {
+						}
+					});
 				}
 			});
 		} else { // then its 0 and we need to create a new entry
@@ -725,14 +859,51 @@ public class CaveEditor implements IsWidget {
 
 				@Override
 				public void onFailure(Throwable caught) {
-					// TODO Auto-generated method stub
-					
+					caught.printStackTrace();
 				}
 
 				@Override
 				public void onSuccess(Integer result) {
-					correspondingCaveEntry.setCaveID(result);
-				}
+					int newID = result.intValue();
+					
+					correspondingCaveEntry.setCaveID(result.intValue());
+					correspondingCaveEntry.getAntechamberEntry().setAntechamberID(result.intValue());
+					correspondingCaveEntry.getMainChamberEntry().setMainChamberID(result.intValue());
+					correspondingCaveEntry.getRearAreaEntry().setRearAreaID(result.intValue());
+					dbService.updateEntry(correspondingCaveEntry.getAntechamberEntry().getInsertSql(), new AsyncCallback<Boolean>() {
+
+						@Override
+						public void onFailure(Throwable caught) {
+							caught.printStackTrace();
+						}
+
+						@Override
+						public void onSuccess(Boolean result) {
+						}
+						
+					});
+					dbService.updateEntry(correspondingCaveEntry.getMainChamberEntry().getInsertSql(), new AsyncCallback<Boolean>() {
+
+						@Override
+						public void onFailure(Throwable caught) {
+							caught.printStackTrace();
+						}
+
+						@Override
+						public void onSuccess(Boolean result) {
+						}
+					});
+					dbService.updateEntry(correspondingCaveEntry.getRearAreaEntry().getInsertSql(), new AsyncCallback<Boolean>() {
+
+						@Override
+						public void onFailure(Throwable caught) {
+							caught.printStackTrace();
+						}
+
+						@Override
+						public void onSuccess(Boolean result) {
+						}
+					});				}
 			});
 		}
 		cancelCaveEditor();

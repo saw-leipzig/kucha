@@ -11,32 +11,36 @@
  * You should have received a copy of the GPL v3 along with the software. 
  * If not, you can access it from here: <https://www.gnu.org/licenses/gpl-3.0.txt>.
  */
-package de.cses.client.caves;
+package de.cses.shared;
 
-import com.google.gwt.user.client.ui.Widget;
-
-import de.cses.client.ui.AbstractResultView;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * @author alingnau
  *
  */
-public class CaveResultView extends AbstractResultView {
+public abstract class AbstractEntry implements IsSerializable {
 
 	/**
 	 * 
 	 */
-	public CaveResultView(String title) {
-		super(title);
-		setHeight(300);
+	public AbstractEntry() {
+		// TODO Auto-generated constructor stub
 	}
 
-	/* (non-Javadoc)
-	 * @see de.cses.client.ui.AbstractResultView#newElementButton()
+	/**
+	 * 
+	 * @return a full SQL string containing everything from INSERT to all fields
+	 * @see de.cses.server.mysql.MysqlConnector#insertEntry(String sqlInsert)
 	 */
-	@Override
-	public Widget newElementButton() {
-		return new CaveView();
-	}
-
+	abstract public String getInsertSql();
+	
+	/**
+	 * 
+	 * @return a full SQL string containing everything from INSERT to all fields
+	 * @see de.cses.server.mysql.MysqlConnector#updateEntry(String sqlUpdate)
+	 */
+	abstract public String getUpdateSql();
+	
+	
 }

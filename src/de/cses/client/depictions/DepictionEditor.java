@@ -160,8 +160,8 @@ public class DepictionEditor implements IsWidget {
 	}
 
 	interface ExpeditionViewTemplates extends XTemplates {
-		@XTemplate("<div>{name}<br>{startYear} - {endYear}</div>")
-		SafeHtml expedLabel(String name, String startYear, String endYear);
+		@XTemplate("<div>{expedName}<br>Leader: {leaderName}<br>{startYear} - {endYear}</div>")
+		SafeHtml expedLabel(String expedName, String leaderName, String startYear, String endYear);
 	}
 
 	interface VendorProperties extends PropertyAccess<VendorEntry> {
@@ -436,7 +436,7 @@ public class DepictionEditor implements IsWidget {
 			}
 		});
 		caveSelection.setEmptyText("Select a Cave ...");
-		caveSelection.setTypeAhead(false);
+		caveSelection.setTypeAhead(true);
 		caveSelection.setEditable(false);
 		caveSelection.setTriggerAction(TriggerAction.ALL);
 		caveSelection.addSelectionHandler(new SelectionHandler<CaveEntry>() {
@@ -466,10 +466,10 @@ public class DepictionEditor implements IsWidget {
 		// attributePanel.setWidth("40%");
 		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .1));
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Belongs to wall");
-		attributePanel.add(new Label("Wall selection"));
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .1));
+//		attributePanel = new FramedPanel();
+//		attributePanel.setHeading("Belongs to wall");
+//		attributePanel.add(new Label("Wall selection"));
+//		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .1));
 
 		HorizontalPanel dimPanel = new HorizontalPanel();
 		attributePanel = new FramedPanel();
@@ -496,10 +496,11 @@ public class DepictionEditor implements IsWidget {
 			public SafeHtml render(ExpeditionEntry item) {
 				final ExpeditionViewTemplates expedTemplates = GWT.create(ExpeditionViewTemplates.class);
 				DateTimeFormat dtf = DateTimeFormat.getFormat("yyyy");
-				return expedTemplates.expedLabel(item.getName(), dtf.format(item.getStartDate()), dtf.format(item.getEndDate()));
+				return expedTemplates.expedLabel(item.getName(), item.getLeader(), dtf.format(item.getStartDate()), dtf.format(item.getEndDate()));
 			}
 		});
 		expedSelection.setEmptyText("Select an expedition ...");
+		expedSelection.setHeight("1.0");
 		expedSelection.setTypeAhead(false);
 		expedSelection.setEditable(false);
 		expedSelection.setTriggerAction(TriggerAction.ALL);
@@ -511,7 +512,7 @@ public class DepictionEditor implements IsWidget {
 			}
 		});
 		attributePanel.add(expedSelection);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .1));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .2));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Date of acquisition");
@@ -955,11 +956,11 @@ public class DepictionEditor implements IsWidget {
 		if (list.isEmpty()) {
 			return false;
 		}
-		Info.display("List<PictorialElementEntry>", "no. = " + list.size() + " first = " + list.get(0).getText());
+//		Info.display("List<PictorialElementEntry>", "no. = " + list.size() + " first = " + list.get(0).getText());
 		Iterator<PictorialElementEntry> it = list.iterator();
 		while (it.hasNext()) {
 			PictorialElementEntry entry = it.next();
-			Info.display("entry", entry.getText());
+//			Info.display("entry", entry.getText());
 			if (list.indexOf(entry) == 0) {
 				insertSqlString = insertSqlString
 						.concat("(" + correspondingDepictionEntry.getDepictionID() + ", " + entry.getPictorialElementID() + ")");
