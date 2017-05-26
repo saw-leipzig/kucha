@@ -1033,7 +1033,6 @@ public class MysqlConnector {
 				result = new MainChamberEntry(rs.getInt("MainChamberID"), rs.getInt("CeilingTypeID"), rs.getInt("FrontWallID"), rs.getInt("LeftWallID"),
 						rs.getInt("RightWallID"), rs.getInt("RearWallID"), rs.getDouble("Height"), rs.getDouble("Width"),
 						rs.getDouble("Depth"));
-				System.err.println("MainChamberEntry loaded for id=" + id);
 			} else { // in case there is no entry we send back a new one
 				result = new MainChamberEntry();
 				result.setMainChamberID(id);

@@ -31,9 +31,9 @@ public class AntechamberEntry extends AbstractEntry {
 		setLeftWallID(leftWallID);
 		setRightWallID(rightWallID);
 		setRearWallID(rearWallID);
-		this.height = height;
-		this.width = width;
-		this.depth = depth;
+		setHeight(height);
+		setWidth(width);
+		setDepth(depth);
 	}
 
 	public int getAntechamberID() {

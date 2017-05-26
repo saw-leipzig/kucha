@@ -371,9 +371,6 @@ public class CaveEditor implements IsWidget {
 		correspondingCaveEntry.setAntechamberEntry(new AntechamberEntry());
 		correspondingCaveEntry.setMainChamberEntry(new MainChamberEntry());
 		correspondingCaveEntry.setRearAreaEntry(new RearAreaEntry());
-//		correspondingAntechamberEntry = null;
-//		correspondingMainChamberEntry = null;
-//		correspondingRearAreaEntry = null;
 	}
 
 	@Override

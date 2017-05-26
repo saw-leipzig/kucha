@@ -32,14 +32,15 @@ public class MainChamberEntry extends AbstractEntry {
 	public MainChamberEntry(int mainChamberID, int ceilingTypeID, int frontWallID, int leftWallID, int rightWallID, int rearWallID,
 			double height, double width, double depth) {
 		super();
-		this.mainChamberID = mainChamberID;
-		this.frontWallID = frontWallID;
-		this.leftWallID = leftWallID;
-		this.rightWallID = rightWallID;
-		this.rearWallID = rearWallID;
-		this.height = height;
-		this.width = width;
-		this.depth = depth;
+		setMainChamberID(mainChamberID);
+		this.setCeilingTypeID(ceilingTypeID);
+		setFrontWallID(frontWallID);
+		setLeftWallID(leftWallID);
+		setRightWallID(rightWallID);
+		setRearWallID(rearWallID);
+		setHeight(height);
+		setWidth(width);
+		setDepth(depth);
 	}
 
 	public int getMainChamberID() {

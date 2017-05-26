@@ -37,20 +37,20 @@ public class RearAreaEntry extends AbstractEntry {
 			int rightCorridorInnerWallID, int rightCorridorOuterWallID, int innerWallID, int leftWallID, int rightWallID, int outerWallID,
 			boolean isBackChamber, double height, double width, double depth) {
 		super();
-		this.rearAreaID = rearAreaID;
-		this.setCeilingTypeID(ceiligTypeID);
-		this.leftCorridorOuterWallID = leftCorridorOuterWallID;
-		this.leftCorridorInnerWallID = leftCorridorInnerWallID;
-		this.rightCorridorInnerWallID = rightCorridorInnerWallID;
-		this.rightCorridorOuterWallID = rightCorridorOuterWallID;
-		this.innerWallID = innerWallID;
-		this.leftWallID = leftWallID;
-		this.rightWallID = rightWallID;
-		this.outerWallID = outerWallID;
-		this.isBackChamber = isBackChamber;
-		this.height = height;
-		this.width = width;
-		this.depth = depth;
+		setRearAreaID(rearAreaID);
+		setCeilingTypeID(ceiligTypeID);
+		setLeftCorridorOuterWallID(leftCorridorOuterWallID);
+		setLeftCorridorInnerWallID(leftCorridorInnerWallID);
+		setRightCorridorInnerWallID(rightCorridorInnerWallID);
+		setRightCorridorOuterWallID(rightCorridorOuterWallID);
+		setInnerWallID(innerWallID);
+		setLeftWallID(leftWallID);
+		setRightWallID(rightWallID);
+		setOuterWallID(outerWallID);
+		setBackChamber(isBackChamber);
+		setHeight(height);
+		setWidth(width);
+		setDepth(depth);
 	}
 
 	public int getRearAreaID() {
