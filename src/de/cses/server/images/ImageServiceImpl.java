@@ -47,7 +47,7 @@ import de.cses.shared.ImageEntry;
 @MultipartConfig
 public class ImageServiceImpl extends HttpServlet {
 
-	private static final int THUMBNAIL_SIZE = 200;
+	private static final int THUMBNAIL_SIZE = 300;
 	private MysqlConnector connector = MysqlConnector.getInstance();
 	private ServerProperties serverProperties = ServerProperties.getInstance();
 	private int newImageID = 0;

@@ -19,11 +19,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Properties;
 
 import javax.imageio.ImageIO;
-import javax.imageio.stream.ImageOutputStream;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
@@ -35,28 +32,15 @@ import de.cses.server.mysql.MysqlConnector;
 @SuppressWarnings("serial")
 public class ResourceDownloadServlet extends HttpServlet {
 
-	// public static final String SERVER_IMAGES_PATHNAME = System.getProperty("user.dir") + "/webapps/images";
-	// public static final String SERVER_BACKGROUNDS_PATHNAME = System.getProperty("user.dir") + "/webapps/backgrounds";
-	// private Properties serverProperties = new Properties();
 	private MysqlConnector connector = MysqlConnector.getInstance();
 	private ServerProperties serverProperties = ServerProperties.getInstance();
 
 	public ResourceDownloadServlet() {
-		// FileReader fReader;
-		// try {
-		// fReader = new FileReader(System.getProperty("user.dir") + "/kucha.properties");
-		// serverProperties.load(fReader);
-		// serverProperties.storeToXML(new FileOutputStream(System.getProperty("user.dir") + "/kucha.xml"), "test");
-		// } catch (FileNotFoundException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// } catch (IOException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
 	}
 
 	/*
+	 * Using the parameter <code>thumb=xx</code> where <code>xx</code> is an integer >0 returns a scaled thumbnail
+	 * with a max. side length of <code>xx</code>.
 	 * (non-Javadoc)
 	 * 
 	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
@@ -74,7 +58,7 @@ public class ResourceDownloadServlet extends HttpServlet {
 			response.setContentType(filename.toLowerCase().endsWith("png") ? "image/png" : "image/jpeg");
 			if (inputFile.exists()) {
 				if (request.getParameter("thumb") != null) {
-					int tnSize = Integer.valueOf(request.getParameter("thumb"));
+					int tnSize = Integer.valueOf(request.getParameter("thumb")); // the requested size is given as a parameter
 					out.write(createThumbnail(inputFile, filename.toLowerCase().endsWith("png") ? "png" : "jpg", tnSize));
 				} else { // load the original file
 					FileInputStream fis = new FileInputStream(inputFile);
