@@ -114,7 +114,7 @@ public class ImageServiceImpl extends HttpServlet {
 	}
 
 	/**
-	 * Create a thumbnail file of size a * b with (a,b) <= MAX_THUMBNAIL_SIZE
+	 * Create a thumbnail image file with a max side length of THUMBNAIL_SIZE
 	 * 
 	 * @param path
 	 *          the directory where the image is located
@@ -131,9 +131,25 @@ public class ImageServiceImpl extends HttpServlet {
 		type = filename.substring(filename.lastIndexOf(".") + 1).toUpperCase();
 		try {
 			BufferedImage buf = ImageIO.read(readFile);
-			tnImg = new BufferedImage(THUMBNAIL_SIZE, THUMBNAIL_SIZE, BufferedImage.TYPE_INT_RGB);
-			tnImg.createGraphics().drawImage(buf.getScaledInstance(THUMBNAIL_SIZE, THUMBNAIL_SIZE, Image.SCALE_SMOOTH), 0, 0, null);
-			ImageIO.write(tnImg, type, tnFile);
+			float w = buf.getWidth();
+			float h = buf.getHeight();
+			if (w == h) {
+				tnImg = new BufferedImage(THUMBNAIL_SIZE, THUMBNAIL_SIZE, BufferedImage.TYPE_INT_RGB);
+				tnImg.createGraphics().drawImage(buf.getScaledInstance(THUMBNAIL_SIZE, THUMBNAIL_SIZE, Image.SCALE_SMOOTH), 0, 0, null);
+				ImageIO.write(tnImg, type, tnFile);
+			} else if (w > h) {
+				float factor = THUMBNAIL_SIZE / w;
+				float tnHeight = h * factor; 
+				tnImg = new BufferedImage(THUMBNAIL_SIZE, Math.round(tnHeight), BufferedImage.TYPE_INT_RGB);
+				tnImg.createGraphics().drawImage(buf.getScaledInstance(THUMBNAIL_SIZE, Math.round(tnHeight), Image.SCALE_SMOOTH), 0, 0, null);
+				ImageIO.write(tnImg, type, tnFile);
+			} else {
+				float factor = THUMBNAIL_SIZE / h;
+				float tnWidth = w * factor; 
+				tnImg = new BufferedImage(Math.round(tnWidth), THUMBNAIL_SIZE, BufferedImage.TYPE_INT_RGB);
+				tnImg.createGraphics().drawImage(buf.getScaledInstance(Math.round(tnWidth), THUMBNAIL_SIZE, Image.SCALE_SMOOTH), 0, 0, null);
+				ImageIO.write(tnImg, type, tnFile);
+			}
 		} catch (IOException e) {
 			System.out.println("Thumbnail could not be created!");
 		}
