@@ -110,7 +110,7 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 	 *
 	 */
 	interface ImageViewTemplates extends XTemplates {
-		@XTemplate("<img align=\"center\" width=\"150\" height=\"150\" margin=\"20\" src=\"{imageUri}\"><br> {title}")
+		@XTemplate("<img align=\"center\" margin=\"20\" src=\"{imageUri}\"><br> {title}")
 		SafeHtml image(SafeUri imageUri, String title);
 	}
 
@@ -186,7 +186,7 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 			final ImageViewTemplates imageViewTemplates = GWT.create(ImageViewTemplates.class);
 
 			public SafeHtml render(ImageEntry item) {
-				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=true");
+				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=150");
 				return imageViewTemplates.image(imageUri, item.getTitle());
 			}
 

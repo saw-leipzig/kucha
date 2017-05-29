@@ -320,7 +320,7 @@ public class SingleImageEditor implements IsWidget {
 			}
 		});
 
-		SafeUri imageUri = UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() +"&thumb=true");
+		SafeUri imageUri = UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() +"&thumb=200");
 		Image img = new Image(imageUri);
 		imageContainer.add(img);
 		imageContainer.setPixelSize(210, 210);

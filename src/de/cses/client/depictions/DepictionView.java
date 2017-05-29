@@ -77,8 +77,8 @@ public class DepictionView extends Button {
 
 			@Override
 			public void onSuccess(ImageEntry result) {
-				String html = "<div><center><img src='resource?imageID=" + result.getImageID() + "&thumb=true'"
-						+ "' height = '80px' width = '80px'></img></center><label> DepictionID " + depictionEntry.getDepictionID()
+				String html = "<div><center><img src='resource?imageID=" + result.getImageID() + "&thumb=80'"
+						+ "' ></img></center><label> DepictionID " + depictionEntry.getDepictionID()
 						+ "</label></br></div>";
 				setHTML(html);
 			}

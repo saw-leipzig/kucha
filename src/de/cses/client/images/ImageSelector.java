@@ -89,7 +89,7 @@ public class ImageSelector implements IsWidget {
 	 *
 	 */
 	interface ImageViewTemplates extends XTemplates {
-		@XTemplate("<img align=\"center\" width=\"175\" height=\"175\" margin=\"20\" src=\"{imageUri}\"><br> {title}")
+		@XTemplate("<img align=\"center\" margin=\"20\" src=\"{imageUri}\"><br> {title}")
 		SafeHtml image(SafeUri imageUri, String title);
 	}
 
@@ -133,7 +133,7 @@ public class ImageSelector implements IsWidget {
 			final ImageViewTemplates imageViewTemplates = GWT.create(ImageViewTemplates.class);
 
 			public SafeHtml render(ImageEntry item) {
-				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=true");
+				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=175");
 				return imageViewTemplates.image(imageUri, item.getTitle());
 			}
 
