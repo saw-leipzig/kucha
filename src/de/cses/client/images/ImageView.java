@@ -24,8 +24,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.PopupPanel;
-import com.sencha.gxt.fx.client.Draggable;
-
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.shared.ImageEntry;
@@ -51,8 +49,9 @@ public class ImageView extends Button {
 		Resources resources = GWT.create(Resources.class);
 		Image img = new Image(resources.plus());
 		String html = "<div><center><img src='" + img.getUrl()
-				+ "' height = '80' width = '80px'></img></center><label> New Image </label></br></div>";
-		
+				+ "' height = '80px' width = '80px'></img></center><label> New Image </label></br></div>";
+//		+ "' height = '80px' width = '80px'></img></center><label> New Image </label></br></div>";
+
 		setHTML(html);
 		setPixelSize(110, 110);
 		imgEntry = null;
@@ -64,8 +63,8 @@ public class ImageView extends Button {
 	 */
 	public ImageView(ImageEntry imgEntry) {
 		this.imgEntry = imgEntry;
-		String html = "<div><center><img src='resource?imageID=" + imgEntry.getImageID() + "&thumb=true'"
-				+ "' height = '80px' width = '80px'></img></center><label>" + imgEntry.getTitle() + "</label></br></div>";
+		 String html = "<div><center><img src='resource?imageID=" + imgEntry.getImageID() + "&thumb=80'"
+		 + "' ></img></center><label>" + imgEntry.getTitle() + "</label></br></div>";
 		setHTML(html);
 		setPixelSize(110, 110);
 		initEditImage();
@@ -77,17 +76,17 @@ public class ImageView extends Button {
 	private void initEditImage() {
 		addClickHandler(new ClickHandler() {
 			PopupPanel imageEditorPanel;
-			
+
 			@Override
 			public void onClick(ClickEvent event) {
 				imageEditorPanel = new PopupPanel(false);
 				SingleImageEditor singleIE = new SingleImageEditor(imgEntry, new ImageEditorListener() {
-					
+
 					@Override
 					public void closeImageEditor() {
 						imageEditorPanel.hide();
-						String html = "<div><center><img src='resource?imageID=" + imgEntry.getImageID() + "&thumb=true'"
-								+ "' height = '80px' width = '80px'></img></center><label>" + imgEntry.getTitle() + "</label></br></div>";
+						String html = "<div><center><img src='resource?imageID=" + imgEntry.getImageID() + "&thumb=80'"
+								+ "' ></img></center><label>" + imgEntry.getTitle() + "</label></br></div>";
 						setHTML(html);
 					}
 
@@ -124,7 +123,7 @@ public class ImageView extends Button {
 					public void uploadCompleted(int newImageID) {
 						imageUploadPanel.hide();
 						dbService.getImage(newImageID, new AsyncCallback<ImageEntry>() {
-							
+
 							@Override
 							public void onSuccess(ImageEntry result) {
 								imgEntry = result;
@@ -145,7 +144,7 @@ public class ImageView extends Button {
 								imageEditorPanel.center();
 								imageEditorPanel.show();
 							}
-							
+
 							@Override
 							public void onFailure(Throwable caught) {
 								imgEntry = null;
