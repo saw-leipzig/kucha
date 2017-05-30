@@ -64,7 +64,7 @@ public abstract class AbstractResultView extends Portlet {
 //		getHeader().addTool(saveToolButton);
 		
 		plusToolButton = new ToolButton(ToolButton.PLUS);
-		plusToolButton.setToolTip("save");
+		plusToolButton.setToolTip("Add New");
 		plusToolButton.addSelectHandler(new SelectHandler() {
 			
 			@Override

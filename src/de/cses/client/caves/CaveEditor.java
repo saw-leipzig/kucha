@@ -241,13 +241,11 @@ public class CaveEditor implements IsWidget {
 						if (correspondingCaveEntry.getCaveTypeID() > 0) {
 							CeilingTypeEntry ctEntry = ceilingTypeEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getRearAreaEntry().getCeilingTypeID()));
 							rearAreaCeilingTypeSelector.setValue(ctEntry);
-//							Info.display("RearArea.CeilingTypeID", "id = " + ctEntry.getCeilingTypeID());
 							ctEntry = ceilingTypeEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getMainChamberEntry().getCeilingTypeID()));
 							mainChamberCeilingTypeSelector.setValue(ctEntry);
 							Info.display("MainChamber.CeilingTypeID", "id = " + correspondingCaveEntry.getMainChamberEntry().getCeilingTypeID());
 							ctEntry = ceilingTypeEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getAntechamberEntry().getCeilingTypeID()));
 							antechamberCeilingTypeSelector.setValue(ctEntry);
-//							Info.display("AnteChamber.CeilingTypeID", "id = " + ctEntry.getCeilingTypeID());
 						}
 					}
 				});
@@ -394,7 +392,7 @@ public class CaveEditor implements IsWidget {
 		TabPanel tabPanel = new TabPanel();
 		tabPanel.setTabScroll(false);
 		// the tab only gets 70% of the width and the added images get the 25% on the right to be shown all the time
-//		tabPanel.setSize("70%", "100%");
+		// tabPanel.setSize("70%", "100%");
 
 		// the tab will use the right 70% of the main HorizontalLayoutPanel
 		HorizontalLayoutContainer mainHlContainer = new HorizontalLayoutContainer();
@@ -604,11 +602,31 @@ public class CaveEditor implements IsWidget {
 		mainHlContainer.add(vlContainer, new HorizontalLayoutData(.3, 1.0));
 		
 		/**
-		 * ------------------------------ the column with the text fields (first tab) ----------------------------
+		 * ------------------------------ the column with the text fields (state of preservation tab) ----------------------------
 		 */
 		
 		// we will use this HLC for the tabs
-		HorizontalLayoutContainer hlContainer = new HorizontalLayoutContainer();
+		HorizontalLayoutContainer stateOfPreservationHLC = new HorizontalLayoutContainer();
+		vlContainer = new VerticalLayoutContainer();
+		
+		attributePanel = new FramedPanel();
+		attributePanel.setHeading("Overall Preservation");
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
+
+		attributePanel = new FramedPanel();
+		attributePanel.setHeading("Rear Area Preservation");
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
+
+		attributePanel = new FramedPanel();
+		attributePanel.setHeading("Main Chamber Preservation");
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
+
+		attributePanel = new FramedPanel();
+		attributePanel.setHeading("Antechamber Preservation");
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
+
+		stateOfPreservationHLC.add(vlContainer, new HorizontalLayoutData(.4, 1.0));
+		
 		vlContainer = new VerticalLayoutContainer();
 
 		attributePanel = new FramedPanel();
@@ -624,8 +642,17 @@ public class CaveEditor implements IsWidget {
 		});
 //		stateOfPreservationTextArea.setSize("250px", "200px");
 		attributePanel.add(stateOfPreservationTextArea);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .4));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0));
 		
+		stateOfPreservationHLC.add(vlContainer, new HorizontalLayoutData(.6, 1.0));
+		
+		/**
+		 * ------------------------------ the column with the text fields (description tab) ----------------------------
+		 */
+		
+		HorizontalLayoutContainer descriptionHLC = new HorizontalLayoutContainer();
+		vlContainer = new VerticalLayoutContainer();
+
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Findings");
 		findingsTextArea = new TextArea();
@@ -637,18 +664,16 @@ public class CaveEditor implements IsWidget {
 				correspondingCaveEntry.setFindings(event.getValue());
 			}
 		});
-//		findingsTextArea.setSize("250px", "350px");
 		attributePanel.add(findingsTextArea);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .6));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0));
 		
-		hlContainer.add(vlContainer, new HorizontalLayoutData(1.0, 1.0));
-		tabPanel.add(hlContainer, "Descriptions");
+		descriptionHLC.add(vlContainer, new HorizontalLayoutData(1.0, 1.0));
 		
 		/**
-		 * ------------------------- the cave type and layout description (second tab) -----------------------------
+		 * ------------------------- the cave type and layout description (cave type tab) -----------------------------
 		 */
 		
-		hlContainer = new HorizontalLayoutContainer();
+		HorizontalLayoutContainer caveTypeHLC = new HorizontalLayoutContainer();
 		vlContainer = new VerticalLayoutContainer();
 
 		attributePanel = new FramedPanel();
@@ -748,7 +773,7 @@ public class CaveEditor implements IsWidget {
 		attributePanel.add(antechamberCeilingTypeSelector);
 		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
 
-		hlContainer.add(vlContainer, new HorizontalLayoutData(.4, 1.0));
+		caveTypeHLC.add(vlContainer, new HorizontalLayoutData(.4, 1.0));
 		
 		vlContainer = new VerticalLayoutContainer();
 
@@ -758,9 +783,15 @@ public class CaveEditor implements IsWidget {
 		attributePanel.add(imageContainer);
 		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0));
 		
-		hlContainer.add(vlContainer, new HorizontalLayoutData(.6, 1.0));
+		caveTypeHLC.add(vlContainer, new HorizontalLayoutData(.6, 1.0));
+		
+		/**
+		 * now we are assembling the tabs and add them to the main hlc
+		 */
 
-		tabPanel.add(hlContainer, "Cave Layout");
+		tabPanel.add(caveTypeHLC, "Cave Layout");
+		tabPanel.add(stateOfPreservationHLC, "State of Preservation");
+		tabPanel.add(descriptionHLC, "Descriptions");
 		mainHlContainer.add(tabPanel, new HorizontalLayoutData(.7, 1.0));
 
 		/**
