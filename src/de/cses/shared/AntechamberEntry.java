@@ -15,15 +15,15 @@ package de.cses.shared;
 
 public class AntechamberEntry extends AbstractEntry {
 
-	private int antechamberID, ceilingTypeID, frontWallID, leftWallID, rightWallID, rearWallID;
+	private int antechamberID, ceilingTypeID, frontWallID, leftWallID, rightWallID, rearWallID, preservationID;
 	private double height, width, depth;
 	
 	public AntechamberEntry() {
-		this(0, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0);
+		this(0, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0, 0);
 	}
 
 	public AntechamberEntry(int antechamberID, int ceilingTypeID, int frontWallID, int leftWallID, int rightWallID, int rearWallID, double height,
-			double width, double depth) {
+			double width, double depth, int preservationID) {
 		super();
 		setAntechamberID(antechamberID);
 		setCeilingTypeID(ceilingTypeID);
@@ -34,6 +34,7 @@ public class AntechamberEntry extends AbstractEntry {
 		setHeight(height);
 		setWidth(width);
 		setDepth(depth);
+		this.setPreservationID(preservationID);
 	}
 
 	public int getAntechamberID() {
@@ -106,6 +107,20 @@ public class AntechamberEntry extends AbstractEntry {
 
 	public void setDepth(double depth) {
 		this.depth = depth;
+	}
+
+	/**
+	 * @return the preservationID
+	 */
+	public int getPreservationID() {
+		return preservationID;
+	}
+
+	/**
+	 * @param preservationID the preservationID to set
+	 */
+	public void setPreservationID(int preservationID) {
+		this.preservationID = preservationID;
 	}
 
 	/* (non-Javadoc)

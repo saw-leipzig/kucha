@@ -42,6 +42,7 @@ import de.cses.shared.OrnamentOrientation;
 import de.cses.shared.OrnamentPosition;
 import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PictorialElementEntry;
+import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.PublicationEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
@@ -422,6 +423,15 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public ArrayList<CeilingTypeEntry> getCeilingTypes() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getCeilingTypes();
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#getPreservationClassifications()
+	 */
+	@Override
+	public ArrayList<PreservationClassificationEntry> getPreservationClassifications() {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getPreservationClassifications();
 	}
 
 }

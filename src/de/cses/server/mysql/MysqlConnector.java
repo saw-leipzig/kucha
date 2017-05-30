@@ -46,6 +46,7 @@ import de.cses.shared.OrnamentOrientation;
 import de.cses.shared.OrnamentPosition;
 import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PictorialElementEntry;
+import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.PublicationEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
@@ -963,7 +964,7 @@ public class MysqlConnector {
 			if (rs.first()) {
 				result = new AntechamberEntry(rs.getInt("AntechamberID"), rs.getInt("CeilingTypeID"), rs.getInt("FrontWallID"), rs.getInt("LeftWallID"),
 						rs.getInt("RightWallID"), rs.getInt("RearWallID"), rs.getDouble("Height"), rs.getDouble("Width"),
-						rs.getDouble("Depth"));
+						rs.getDouble("Depth"), rs.getInt("PreservationClassificationID"));
 			} else { // in case there is no entry we send back a new one
 				result = new AntechamberEntry();
 				result.setAntechamberID(id);
@@ -998,7 +999,7 @@ public class MysqlConnector {
 				result = new RearAreaEntry(rs.getInt("RearAreaID"), rs.getInt("CeilingTypeID"), rs.getInt("LeftCorridorOuterWallID"),
 						rs.getInt("LeftCorridorInnerWallID"), rs.getInt("RightCorridorInnerWallID"), rs.getInt("RightCorridorOuterWallID"),
 						rs.getInt("InnerWallID"), rs.getInt("LeftWallID"), rs.getInt("RightWallID"), rs.getInt("OuterWallID"),
-						rs.getBoolean("IsBackChamber"), rs.getDouble("Height"), rs.getDouble("Width"), rs.getDouble("Depth"));
+						rs.getBoolean("IsBackChamber"), rs.getDouble("Height"), rs.getDouble("Width"), rs.getDouble("Depth"), rs.getInt("PreservationClassificationID"));
 			} else { // in case there is no entry we send back a new one
 				result = new RearAreaEntry();
 				result.setRearAreaID(id);
@@ -1032,7 +1033,7 @@ public class MysqlConnector {
 			if (rs.first()) {
 				result = new MainChamberEntry(rs.getInt("MainChamberID"), rs.getInt("CeilingTypeID"), rs.getInt("FrontWallID"), rs.getInt("LeftWallID"),
 						rs.getInt("RightWallID"), rs.getInt("RearWallID"), rs.getDouble("Height"), rs.getDouble("Width"),
-						rs.getDouble("Depth"));
+						rs.getDouble("Depth"), rs.getInt("PreservationClassificationID"));
 			} else { // in case there is no entry we send back a new one
 				result = new MainChamberEntry();
 				result.setMainChamberID(id);
@@ -1367,6 +1368,28 @@ public class MysqlConnector {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM CeilingTypes WHERE CeilingTypeID=" + id);
 			if (rs.first()) {
 				result = new CeilingTypeEntry(rs.getInt("CeilingTypeID"), rs.getString("Name"));
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return result;
+	}
+
+	/**
+	 * @return
+	 */
+	public ArrayList<PreservationClassificationEntry> getPreservationClassifications() {
+		ArrayList<PreservationClassificationEntry> result = new ArrayList<PreservationClassificationEntry>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM PreservationClassifications");
+			while (rs.next()) {
+				result.add(new PreservationClassificationEntry(rs.getInt("PreservationClassificationID"), rs.getString("Name")));
 			}
 			rs.close();
 			stmt.close();

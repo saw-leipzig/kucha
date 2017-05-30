@@ -22,7 +22,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class RearAreaEntry extends AbstractEntry {
 
 	private int rearAreaID, ceilingTypeID, leftCorridorOuterWallID, leftCorridorInnerWallID, rightCorridorInnerWallID,
-			rightCorridorOuterWallID, innerWallID, leftWallID, rightWallID, outerWallID;
+			rightCorridorOuterWallID, innerWallID, leftWallID, rightWallID, outerWallID, preservationID;
 	private boolean isBackChamber;
 	private double height, width, depth;
 
@@ -30,12 +30,12 @@ public class RearAreaEntry extends AbstractEntry {
 	 * 
 	 */
 	public RearAreaEntry() {
-		this(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0.0, 0.0, 0.0);
+		this(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0.0, 0.0, 0.0, 0);
 	}
 
 	public RearAreaEntry(int rearAreaID, int ceiligTypeID, int leftCorridorOuterWallID, int leftCorridorInnerWallID,
 			int rightCorridorInnerWallID, int rightCorridorOuterWallID, int innerWallID, int leftWallID, int rightWallID, int outerWallID,
-			boolean isBackChamber, double height, double width, double depth) {
+			boolean isBackChamber, double height, double width, double depth, int preservationID) {
 		super();
 		setRearAreaID(rearAreaID);
 		setCeilingTypeID(ceiligTypeID);
@@ -51,6 +51,7 @@ public class RearAreaEntry extends AbstractEntry {
 		setHeight(height);
 		setWidth(width);
 		setDepth(depth);
+		this.setPreservationID(preservationID);
 	}
 
 	public int getRearAreaID() {
@@ -166,6 +167,20 @@ public class RearAreaEntry extends AbstractEntry {
 
 	public double getDepth() {
 		return depth;
+	}
+
+	/**
+	 * @return the preservationID
+	 */
+	public int getPreservationID() {
+		return preservationID;
+	}
+
+	/**
+	 * @param preservationID the preservationID to set
+	 */
+	public void setPreservationID(int preservationID) {
+		this.preservationID = preservationID;
 	}
 
 	public void setDepth(double depth) {

@@ -19,18 +19,18 @@ package de.cses.shared;
  */
 public class MainChamberEntry extends AbstractEntry {
 
-	private int mainChamberID, ceilingTypeID, frontWallID, leftWallID, rightWallID, rearWallID;
+	private int mainChamberID, ceilingTypeID, frontWallID, leftWallID, rightWallID, rearWallID, preservationID;
 	private double height, width, depth;
 
 	/**
 	 * 
 	 */
 	public MainChamberEntry() {
-		this(0, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0);
+		this(0, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0, 0);
 	}
 
 	public MainChamberEntry(int mainChamberID, int ceilingTypeID, int frontWallID, int leftWallID, int rightWallID, int rearWallID,
-			double height, double width, double depth) {
+			double height, double width, double depth, int preservationID) {
 		super();
 		setMainChamberID(mainChamberID);
 		this.setCeilingTypeID(ceilingTypeID);
@@ -41,6 +41,7 @@ public class MainChamberEntry extends AbstractEntry {
 		setHeight(height);
 		setWidth(width);
 		setDepth(depth);
+		this.setPreservationID(preservationID);
 	}
 
 	public int getMainChamberID() {
@@ -120,6 +121,20 @@ public class MainChamberEntry extends AbstractEntry {
 
 	public void setDepth(double depth) {
 		this.depth = depth;
+	}
+
+	/**
+	 * @return the preservationID
+	 */
+	public int getPreservationID() {
+		return preservationID;
+	}
+
+	/**
+	 * @param preservationID the preservationID to set
+	 */
+	public void setPreservationID(int preservationID) {
+		this.preservationID = preservationID;
 	}
 
 	/*

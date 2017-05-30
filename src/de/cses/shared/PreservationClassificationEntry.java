@@ -19,36 +19,37 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author alingnau
  *
  */
-public class CeilingTypeEntry implements IsSerializable {
+public class PreservationClassificationEntry implements IsSerializable {
 	
-	private int ceilingTypeID;
+	private int preservationClassificationID;
 	private String name;
-
+	
+	public PreservationClassificationEntry() { }
+	
 	/**
-	 * 
+	 * @param preservationClassificationID
+	 * @param name
 	 */
-	public CeilingTypeEntry() {	}
-
-	public CeilingTypeEntry(int ceilingTypeID, String name) {
+	public PreservationClassificationEntry(int classificationID, String text) {
 		super();
-		this.ceilingTypeID = ceilingTypeID;
-		this.name = name;
+		this.preservationClassificationID = classificationID;
+		this.name = text;
 	}
 
-	public int getCeilingTypeID() {
-		return ceilingTypeID;
+	public int getPreservationClassificationID() {
+		return preservationClassificationID;
 	}
-
-	public void setCeilingTypeID(int ceilingTypeID) {
-		this.ceilingTypeID = ceilingTypeID;
+	
+	public void setPreservationClassificationID(int classificationID) {
+		this.preservationClassificationID = classificationID;
 	}
-
+	
 	public String getName() {
 		return name;
 	}
-
-	public void setName(String name) {
-		this.name = name;
-	}	
-
+	
+	public void setText(String text) {
+		this.name = text;
+	}
+	
 }
