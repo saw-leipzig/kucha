@@ -294,11 +294,11 @@ public class CaveEditor implements IsWidget {
 							preservationClassificationEntryList.add(pce);
 						}
 						rearAreaPreservationSelector.setValue(preservationClassificationEntryList
-								.findModelWithKey(Integer.toString(correspondingCaveEntry.getRearAreaEntry().getPreservationID())));
+								.findModelWithKey(Integer.toString(correspondingCaveEntry.getRearAreaEntry().getPreservationClassificationID())));
 						mainChamberPreservationSelector.setValue(preservationClassificationEntryList
-								.findModelWithKey(Integer.toString(correspondingCaveEntry.getMainChamberEntry().getPreservationID())));
+								.findModelWithKey(Integer.toString(correspondingCaveEntry.getMainChamberEntry().getPreservationClassificationID())));
 						antechamberPreservationSelector.setValue(preservationClassificationEntryList
-								.findModelWithKey(Integer.toString(correspondingCaveEntry.getAntechamberEntry().getPreservationID())));
+								.findModelWithKey(Integer.toString(correspondingCaveEntry.getAntechamberEntry().getPreservationClassificationID())));
 					}
 
 				});
@@ -680,7 +680,7 @@ public class CaveEditor implements IsWidget {
 
 			@Override
 			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getRearAreaEntry().setPreservationID(event.getSelectedItem().getPreservationClassificationID());
+				correspondingCaveEntry.getRearAreaEntry().setPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
 			}
 		});
 		attributePanel.add(rearAreaCeilingTypeSelector);
@@ -688,6 +688,22 @@ public class CaveEditor implements IsWidget {
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Main Chamber Preservation");
+		mainChamberPreservationSelector = new ComboBox<PreservationClassificationEntry>(preservationClassificationEntryList,
+				preservationClassificationProps.name(), new AbstractSafeHtmlRenderer<PreservationClassificationEntry>() {
+
+					@Override
+					public SafeHtml render(PreservationClassificationEntry item) {
+						return pcvt.preservationClassificationLabel(item.getName());
+					}
+				});
+		mainChamberPreservationSelector.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
+
+			@Override
+			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
+				correspondingCaveEntry.getMainChamberEntry().setPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
+			}
+		});
+		attributePanel.add(rearAreaCeilingTypeSelector);
 		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
 
 		attributePanel = new FramedPanel();

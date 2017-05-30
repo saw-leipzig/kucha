@@ -19,7 +19,7 @@ package de.cses.shared;
  */
 public class MainChamberEntry extends AbstractEntry {
 
-	private int mainChamberID, ceilingTypeID, frontWallID, leftWallID, rightWallID, rearWallID, preservationID;
+	private int mainChamberID, ceilingTypeID, frontWallID, leftWallID, rightWallID, rearWallID, preservationClassificationID;
 	private double height, width, depth;
 
 	/**
@@ -30,7 +30,7 @@ public class MainChamberEntry extends AbstractEntry {
 	}
 
 	public MainChamberEntry(int mainChamberID, int ceilingTypeID, int frontWallID, int leftWallID, int rightWallID, int rearWallID,
-			double height, double width, double depth, int preservationID) {
+			double height, double width, double depth, int preservationClassificationID) {
 		super();
 		setMainChamberID(mainChamberID);
 		this.setCeilingTypeID(ceilingTypeID);
@@ -41,7 +41,7 @@ public class MainChamberEntry extends AbstractEntry {
 		setHeight(height);
 		setWidth(width);
 		setDepth(depth);
-		this.setPreservationID(preservationID);
+		setPreservationClassificationID(preservationClassificationID);
 	}
 
 	public int getMainChamberID() {
@@ -124,17 +124,18 @@ public class MainChamberEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @return the preservationID
+	 * @return the preservationClassificationID
 	 */
-	public int getPreservationID() {
-		return preservationID;
+	public int getPreservationClassificationID() {
+		return preservationClassificationID;
 	}
 
 	/**
-	 * @param preservationID the preservationID to set
+	 * @param preservationClassificationID
+	 *          the preservationClassificationID to set
 	 */
-	public void setPreservationID(int preservationID) {
-		this.preservationID = preservationID;
+	public void setPreservationClassificationID(int preservationID) {
+		this.preservationClassificationID = preservationID;
 	}
 
 	/*
@@ -144,9 +145,9 @@ public class MainChamberEntry extends AbstractEntry {
 	 */
 	@Override
 	public String getInsertSql() {
-		return "INSERT INTO MainChamber (MainChamberID, CeilingTypeID, FrontWallID, LeftWallID, RightWallID, RearWallID, Height, Width, Depth) VALUES " + "("
-				+ mainChamberID + ", " + ceilingTypeID + ", " + frontWallID + ", " + leftWallID + ", " + rightWallID + ", " + rearWallID + ", " + height + ", " + width + ", "
-				+ depth + ")";
+		return "INSERT INTO MainChamber (MainChamberID, CeilingTypeID, FrontWallID, LeftWallID, RightWallID, RearWallID, Height, Width, Depth, PreservationClassificationID) VALUES "
+				+ "(" + mainChamberID + ", " + ceilingTypeID + ", " + frontWallID + ", " + leftWallID + ", " + rightWallID + ", " + rearWallID
+				+ ", " + height + ", " + width + ", " + depth + ", " + preservationClassificationID + ")";
 	}
 
 	/*
@@ -158,7 +159,7 @@ public class MainChamberEntry extends AbstractEntry {
 	public String getUpdateSql() {
 		return "UPDATE MainChamber SET CeilingTypeID=" + ceilingTypeID + ", FrontWallID=" + frontWallID + ", LeftWallID=" + leftWallID
 				+ ", RightWallID=" + rightWallID + ", RearWallID=" + rearWallID + ", Height=" + height + ", Width=" + width + ", Depth=" + depth
-				+ " WHERE MainChamberID=" + mainChamberID;
+				+ ", PreservationClassificationID=" + preservationClassificationID + " WHERE MainChamberID=" + mainChamberID;
 	}
 
 }
