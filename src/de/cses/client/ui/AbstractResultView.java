@@ -39,7 +39,7 @@ import com.sencha.gxt.widget.core.client.menu.MenuItem;
  */
 public abstract class AbstractResultView extends Portlet {
 	
-	private ToolButton searchToolButton, saveToolButton;
+	private ToolButton searchToolButton, saveToolButton, plusToolButton;
 	private FlowLayoutContainer resultContainer;
 	private MarginData resultLayoutData;
 
@@ -53,16 +53,25 @@ public abstract class AbstractResultView extends Portlet {
 		searchToolButton.setToolTip("start search");
 		getHeader().addTool(searchToolButton);
 		
-		saveToolButton = new ToolButton(ToolButton.SAVE);
-		saveToolButton.setToolTip("save");
-		saveToolButton.addSelectHandler(new SelectHandler() {
+//		saveToolButton = new ToolButton(ToolButton.SAVE);
+//		saveToolButton.setToolTip("save");
+//		saveToolButton.addSelectHandler(new SelectHandler() {
+//			
+//			@Override
+//			public void onSelect(SelectEvent event) {
+//			}
+//		});
+//		getHeader().addTool(saveToolButton);
+		
+		plusToolButton = new ToolButton(ToolButton.PLUS);
+		plusToolButton.setToolTip("save");
+		plusToolButton.addSelectHandler(new SelectHandler() {
 			
 			@Override
 			public void onSelect(SelectEvent event) {
 			}
 		});
-		getHeader().addTool(saveToolButton);
-		
+		getHeader().addTool(plusToolButton);
 		
 		ToolButton toolButton = new ToolButton(ToolButton.MINIMIZE);
 		toolButton.addSelectHandler(new SelectHandler() {
@@ -83,6 +92,7 @@ public abstract class AbstractResultView extends Portlet {
 			}
 		});
 		getHeader().addTool(toolButton);
+		
 		
 		resultContainer = new FlowLayoutContainer();
 		resultContainer.setScrollMode(ScrollMode.AUTOY);
