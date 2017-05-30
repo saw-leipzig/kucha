@@ -29,7 +29,6 @@ public class DepictionEntry implements IsSerializable {
 	private String generalRemarks;
 	private String otherSuggestedIdentifications;
 	private double width, height;
-	private Date dateOfAcquisition;
 	private int expeditionID;
 	private Date purchaseDate;
 	private int currentLocationID;
@@ -41,35 +40,14 @@ public class DepictionEntry implements IsSerializable {
 	private int absoluteLeft;
 	private int absoluteTop;
 
-	
 	public DepictionEntry() {
-		depictionID = 0;
-		this.depictionID = 0;
-		this.styleID = 0;
-		this.inscriptions = "add inscriptions";
-		this.dating = "add dating";
-		this.description = "add description";
-		this.backgroundColour = "add colour";
-		this.material = "add material";
-		this.generalRemarks = "add remarks";
-		this.otherSuggestedIdentifications = "add other identificationa";
-		this.width = 0;
-		this.height = 0;
-		this.dateOfAcquisition = new Date(0);
-		this.expeditionID = 0;
-		this.purchaseDate = new Date(0);
-		this.currentLocationID = 0;
-		this.vendorID = 0;
-		this.storyID = 0;
-		this.caveID = 0;
-		this.wallID = 0;
-		this.iconographyID = 0;
+		this(0, 0, "add inscriptions", "add dating", "add description", "add colour", "add material", "add remarks",
+				"add other identificationa", 0, 0, 0, new Date(0), 0, 0, 0, 0, 0, 0);
 	}
 
-	public DepictionEntry(int depictionID, int styleID, String inscriptions, String dating, String description,
-			String backgroundColour, String material, String generalRemarks, String otherSuggestedIdentifications, double width,
-			double height, Date dateOfAcquisition, int expeditionID, Date purchaseDate, int currentLocationID, int vendorID,
-			int storyID, int caveID, int wallID, int iconographyID) {
+	public DepictionEntry(int depictionID, int styleID, String inscriptions, String dating, String description, String backgroundColour,
+			String material, String generalRemarks, String otherSuggestedIdentifications, double width, double height, int expeditionID,
+			Date purchaseDate, int currentLocationID, int vendorID, int storyID, int caveID, int wallID, int iconographyID) {
 		super();
 		this.depictionID = depictionID;
 		this.styleID = styleID;
@@ -82,7 +60,6 @@ public class DepictionEntry implements IsSerializable {
 		this.otherSuggestedIdentifications = otherSuggestedIdentifications;
 		this.width = width;
 		this.height = height;
-		this.dateOfAcquisition = dateOfAcquisition;
 		this.expeditionID = expeditionID;
 		this.purchaseDate = purchaseDate;
 		this.currentLocationID = currentLocationID;
@@ -181,14 +158,6 @@ public class DepictionEntry implements IsSerializable {
 		this.height = height;
 	}
 
-	public Date getDateOfAcquisition() {
-		return dateOfAcquisition;
-	}
-
-	public void setDateOfAcquisition(Date dateOfAcquisition) {
-		this.dateOfAcquisition = dateOfAcquisition;
-	}
-
 	public int getExpeditionID() {
 		return expeditionID;
 	}
@@ -236,14 +205,15 @@ public class DepictionEntry implements IsSerializable {
 	public void setCaveID(int caveID) {
 		this.caveID = caveID;
 	}
-	
+
 	/**
-	 * This method is needed by for the DepictionViewTemplate 
+	 * This method is needed by for the DepictionViewTemplate
+	 * 
 	 * @see de.cses.client.depictions.DepictionEditor
 	 * @return String containing caveID and depictionID
 	 */
 	public String getName() {
-		return "Cave: "+caveID+" Depiction: "+depictionID;
+		return "Cave: " + caveID + " Depiction: " + depictionID;
 	}
 
 	public int getAbsoluteLeft() {
@@ -269,7 +239,7 @@ public class DepictionEntry implements IsSerializable {
 	public void setIconographyID(int iconographyID) {
 		this.iconographyID = iconographyID;
 	}
-	
+
 	public int getWallID() {
 		return wallID;
 	}
@@ -279,24 +249,24 @@ public class DepictionEntry implements IsSerializable {
 	}
 
 	public String getInsertSql() {
-		return "INSERT INTO Depictions ("
-				+ "StyleID,Inscriptions,Dating,Height,Width,PurchaseDate,VendorID,ExpeditionID,DateOfAcquisition,CurrentLocationID,"
+		return "INSERT INTO Depictions (" + "StyleID,Inscriptions,Dating,Height,Width,PurchaseDate,VendorID,ExpeditionID,CurrentLocationID,"
 				+ "Description,BackgroundColour,Material,GeneralRemarks,OtherSuggestedIdentifications,StoryID,CaveID,WallID,AbsoluteLeft,AbsoluteTop,IconographyID"
-				+ ") VALUES ("
-				+ styleID + ",'" + inscriptions + "','" + dating + "'," + height + "," + width + ",'" +purchaseDate + "'," + vendorID + "," + expeditionID + ",'" + dateOfAcquisition + "',"
-				+ currentLocationID + ",'" + description + "','" + backgroundColour + "','" + material + "','" + generalRemarks + "','" + otherSuggestedIdentifications + "'," + storyID + ","
-				+ caveID + "," + wallID + "," + absoluteLeft + "," + absoluteTop + "," + iconographyID
-				+ ")"; // TODO finish sql string
+				+ ") VALUES (" + styleID + ",'" + inscriptions + "','" + dating + "'," + height + "," + width + ",'" + purchaseDate + "',"
+				+ vendorID + "," + expeditionID + "," + currentLocationID + ",'" + description + "','" + backgroundColour + "','" + material + "','"
+				+ generalRemarks + "','" + otherSuggestedIdentifications + "'," + storyID + "," + caveID + "," + wallID + "," + absoluteLeft + ","
+				+ absoluteTop + "," + iconographyID + ")"; // TODO finish sql string
 	}
-	
+
 	public String getUpdateSql() {
-		return "UPDATE Depictions SET "
-				+ "StyleID=" + styleID + ", Inscriptions='" + inscriptions + "', Dating='" + dating + "', Height=" + height + ", Width=" + width 
-				+ ", PurchaseDate='" + purchaseDate + "', VendorID=" + vendorID + ", ExpeditionID=" + expeditionID + ", DateOfAcquisition='" + dateOfAcquisition 
-				+ "', CurrentLocationID=" + currentLocationID + ", Description='" + description + "', BackgroundColour='" + backgroundColour + "', Material='" + material
-				+ "', GeneralRemarks='" + generalRemarks + "', OtherSuggestedIdentifications='" + otherSuggestedIdentifications + "', StoryID=" + storyID + ", CaveID=" + caveID
-				+ ", WallID=" + wallID + ", AbsoluteLeft=" + absoluteLeft + ", AbsoluteTop=" + absoluteTop + ", IconographyID=" + iconographyID
-				+ " WHERE DepictionID=" + depictionID; // TODO Add sql string
+		return "UPDATE Depictions SET " + "StyleID=" + styleID + ", Inscriptions='" + inscriptions + "', Dating='" + dating + "', Height="
+				+ height + ", Width=" + width + ", PurchaseDate='" + purchaseDate + "', VendorID=" + vendorID + ", ExpeditionID=" + expeditionID
+				+ ", CurrentLocationID=" + currentLocationID + ", Description='" + description + "', BackgroundColour='" + backgroundColour
+				+ "', Material='" + material + "', GeneralRemarks='" + generalRemarks + "', OtherSuggestedIdentifications='"
+				+ otherSuggestedIdentifications + "', StoryID=" + storyID + ", CaveID=" + caveID + ", WallID=" + wallID + ", AbsoluteLeft="
+				+ absoluteLeft + ", AbsoluteTop=" + absoluteTop + ", IconographyID=" + iconographyID + " WHERE DepictionID=" + depictionID; // TODO
+																																																																		// Add
+																																																																		// sql
+																																																																		// string
 	}
 
 }

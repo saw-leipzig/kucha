@@ -515,12 +515,6 @@ public class DepictionEditor implements IsWidget {
 		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .2));
 
 		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Date of acquisition");
-		dateOfAcquisitionField = new DateField(new DateTimePropertyEditor("dd MMMM yyyy"));
-		attributePanel.add(dateOfAcquisitionField);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .1));
-
-		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Vendor");
 		vendorSelection = new ComboBox<VendorEntry>(vendorEntryList, vendorProps.vendorName(), new AbstractSafeHtmlRenderer<VendorEntry>() {
 

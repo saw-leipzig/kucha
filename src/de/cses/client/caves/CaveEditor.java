@@ -673,6 +673,10 @@ public class CaveEditor implements IsWidget {
 						return pcvt.preservationClassificationLabel(item.getName());
 					}
 				});
+		overallPreservationSelector.setEmptyText("select cave type");
+		overallPreservationSelector.setTypeAhead(false);
+		overallPreservationSelector.setEditable(false);
+		overallPreservationSelector.setTriggerAction(TriggerAction.ALL);
 		overallPreservationSelector.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
 			@Override
@@ -680,6 +684,7 @@ public class CaveEditor implements IsWidget {
 				correspondingCaveEntry.setPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
 			}
 		});
+		
 		attributePanel.add(overallPreservationSelector);
 		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
 
@@ -693,6 +698,10 @@ public class CaveEditor implements IsWidget {
 						return pcvt.preservationClassificationLabel(item.getName());
 					}
 				});
+		rearAreaPreservationSelector.setEmptyText("select cave type");
+		rearAreaPreservationSelector.setTypeAhead(false);
+		rearAreaPreservationSelector.setEditable(false);
+		rearAreaPreservationSelector.setTriggerAction(TriggerAction.ALL);
 		rearAreaPreservationSelector.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
 			@Override
@@ -700,7 +709,7 @@ public class CaveEditor implements IsWidget {
 				correspondingCaveEntry.getRearAreaEntry().setPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
 			}
 		});
-		attributePanel.add(rearAreaCeilingTypeSelector);
+		attributePanel.add(rearAreaPreservationSelector);
 		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
 
 		attributePanel = new FramedPanel();
@@ -713,6 +722,10 @@ public class CaveEditor implements IsWidget {
 						return pcvt.preservationClassificationLabel(item.getName());
 					}
 				});
+		mainChamberPreservationSelector.setEmptyText("select cave type");
+		mainChamberPreservationSelector.setTypeAhead(false);
+		mainChamberPreservationSelector.setEditable(false);
+		mainChamberPreservationSelector.setTriggerAction(TriggerAction.ALL);
 		mainChamberPreservationSelector.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
 			@Override
@@ -733,6 +746,10 @@ public class CaveEditor implements IsWidget {
 						return pcvt.preservationClassificationLabel(item.getName());
 					}
 				});
+		antechamberPreservationSelector.setEmptyText("select cave type");
+		antechamberPreservationSelector.setTypeAhead(false);
+		antechamberPreservationSelector.setEditable(false);
+		antechamberPreservationSelector.setTriggerAction(TriggerAction.ALL);
 		antechamberPreservationSelector.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
 			@Override
