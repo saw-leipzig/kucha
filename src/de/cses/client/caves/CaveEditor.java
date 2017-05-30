@@ -109,6 +109,7 @@ public class CaveEditor implements IsWidget {
 	private ComboBox<PreservationClassificationEntry> rearAreaPreservationSelector;
 	private ComboBox<PreservationClassificationEntry> mainChamberPreservationSelector;
 	private ComboBox<PreservationClassificationEntry> antechamberPreservationSelector;
+	private ComboBox<PreservationClassificationEntry> overallPreservationSelector;
 
 	interface CaveTypeProperties extends PropertyAccess<CaveTypeEntry> {
 		ModelKeyProvider<CaveTypeEntry> caveTypeID();
@@ -664,6 +665,22 @@ public class CaveEditor implements IsWidget {
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Overall Preservation");
+		overallPreservationSelector = new ComboBox<PreservationClassificationEntry>(preservationClassificationEntryList,
+				preservationClassificationProps.name(), new AbstractSafeHtmlRenderer<PreservationClassificationEntry>() {
+
+					@Override
+					public SafeHtml render(PreservationClassificationEntry item) {
+						return pcvt.preservationClassificationLabel(item.getName());
+					}
+				});
+		overallPreservationSelector.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
+
+			@Override
+			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
+				correspondingCaveEntry.setPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
+			}
+		});
+		attributePanel.add(overallPreservationSelector);
 		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
 
 		attributePanel = new FramedPanel();
@@ -703,11 +720,27 @@ public class CaveEditor implements IsWidget {
 				correspondingCaveEntry.getMainChamberEntry().setPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
 			}
 		});
-		attributePanel.add(rearAreaCeilingTypeSelector);
+		attributePanel.add(mainChamberPreservationSelector);
 		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Antechamber Preservation");
+		antechamberPreservationSelector = new ComboBox<PreservationClassificationEntry>(preservationClassificationEntryList,
+				preservationClassificationProps.name(), new AbstractSafeHtmlRenderer<PreservationClassificationEntry>() {
+
+					@Override
+					public SafeHtml render(PreservationClassificationEntry item) {
+						return pcvt.preservationClassificationLabel(item.getName());
+					}
+				});
+		antechamberPreservationSelector.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
+
+			@Override
+			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
+				correspondingCaveEntry.getAntechamberEntry().setPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
+			}
+		});
+		attributePanel.add(antechamberPreservationSelector);
 		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
 
 		stateOfPreservationHLC.add(vlContainer, new HorizontalLayoutData(.4, 1.0));
