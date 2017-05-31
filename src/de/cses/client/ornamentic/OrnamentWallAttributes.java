@@ -42,9 +42,11 @@ import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CavePart;
+import de.cses.shared.OrnamentCaveRelation;
 import de.cses.shared.OrnamentFunction;
 import de.cses.shared.OrnamentPosition;
 import de.cses.shared.WallEntry;
+import de.cses.shared.WallOrnamentCaveRelation;
 
 /**
  * @author nina
@@ -56,6 +58,8 @@ public class OrnamentWallAttributes extends PopupPanel {
 	
 	private CaveEntry cave;
 	private PopupPanel popup;
+	private FramedPanel header;
+	private OrnamentCaveAttributes ornamentCaveRelation;
 	
 	
 	private OrnamentPositionProperties ornamentPositionProps;
@@ -73,6 +77,8 @@ public class OrnamentWallAttributes extends PopupPanel {
 	
 	private ListStore<WallEntry> walls;
 	private ComboBox<WallEntry> wallsComboBox;
+	
+
 	
 	
 	public OrnamentWallAttributes(){
@@ -161,7 +167,12 @@ public class OrnamentWallAttributes extends PopupPanel {
 					}
 				});
 		
-	  vlcWalls.add(new FieldLabel(wallsComboBox, "Select Wall"));
+		
+		header = new FramedPanel();
+		header.setHeading("Select Wall");
+		header.add(wallsComboBox);
+		vlcWalls.add(header);
+	
 	  
 
 	  
@@ -175,7 +186,11 @@ public class OrnamentWallAttributes extends PopupPanel {
 					}
 				});
 		
-	  vlcWalls.add(new FieldLabel(ornamentPositionComboBox, "Select the ornament position"));
+	  
+		header = new FramedPanel();
+		header.setHeading("Select ornament position");
+		header.add(ornamentPositionComboBox);
+		vlcWalls.add(header);
 	  
 		ornamentfunctionComboBox = new ComboBox<OrnamentFunction>(ornamentfunction, ornamentFunctionProps.name(),
 				new AbstractSafeHtmlRenderer<OrnamentFunction>() {
@@ -187,23 +202,48 @@ public class OrnamentWallAttributes extends PopupPanel {
 					}
 				});
 		
-	  vlcWalls.add(new FieldLabel(ornamentfunctionComboBox, "Select the ornament function"));
+		header = new FramedPanel();
+		header.setHeading("Select the ornament function");
+		header.add(ornamentfunctionComboBox);
+		vlcWalls.add(header);
+	  
 	  
 	  
 		
 	  final TextField notes = new TextField();
 	  notes.setAllowBlank(true);
-	  vlcWalls.add(new FieldLabel(notes, "Notes"));
-		
 	  
-	  HorizontalPanel buttonsPanel = new HorizontalPanel();
+		header = new FramedPanel();
+		header.setHeading("Notes");
+		header.add(notes);
+		vlcWalls.add(header);
+	  
+	
 	  
 	  TextButton save = new TextButton("save");
 	  
 	  TextButton cancel = new TextButton("cancel");
-	  buttonsPanel.add(save);
-	  buttonsPanel.add(cancel);
-	  wallrelationMainVerticalPanel.add(buttonsPanel);
+
+	wallrelationFramedPanel.addButton(save);
+	wallrelationFramedPanel.addButton(cancel);
+	
+ClickHandler saveHandler = new ClickHandler(){
+
+	@Override
+	public void onClick(ClickEvent event) {
+		
+		WallOrnamentCaveRelation relation = new WallOrnamentCaveRelation();
+		relation.setFunction(ornamentfunctionComboBox.getValue().getOrnamentFunctionID());
+		relation.setPosition(ornamentPositionComboBox.getValue().getOrnamentPositionID());
+		relation.setNotes(notes.getText());
+		relation.setWallID(wallsComboBox.getValue().getWallID());
+		ornamentCaveRelation.getWalls().add(relation);
+		Window.alert("Wall relation hinzugefuegt");
+		popup.hide();
+	}
+	
+};
+save.addHandler(saveHandler, ClickEvent.getType());
 	  
 	  ClickHandler cancelClickHandler = new ClickHandler(){
 
@@ -227,6 +267,24 @@ public class OrnamentWallAttributes extends PopupPanel {
 	public void setCave(CaveEntry cave) {
 		this.cave = cave;
 	}
+	
+
+
+
+
+	public OrnamentCaveAttributes getOrnamentCaveRelation() {
+		return ornamentCaveRelation;
+	}
+
+
+	public void setOrnamentCaveRelation(OrnamentCaveAttributes ornamentCaveRelation) {
+		this.ornamentCaveRelation = ornamentCaveRelation;
+	}
+
+
+
+
+
 
 
 	interface CavePartProperties extends PropertyAccess<CavePart> {

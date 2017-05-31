@@ -568,51 +568,72 @@ public class MysqlConnector {
 
 	}
 
-	public synchronized boolean saveOrnamentEntry(OrnamentEntry ornamentEntry) {
+	public boolean saveOrnamentEntry(OrnamentEntry ornamentEntry) {
+		System.err.println("aufgerufen save ornament entry");
 		Connection dbc = getConnection();
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt
-					.executeQuery("INSERT INTO Ornaments (Code, Description, Remarks, Interpretation, Sketch, OrnamentReferences) VALUES ("
-							+ ornamentEntry.getCode() + "," + ornamentEntry.getDescription() + "," + ornamentEntry.getRemarks() + ","
-							+ ornamentEntry.getInterpretation() + "," + ornamentEntry.getSketch() + "," + ornamentEntry.getReferences() + ")");
+			ResultSet rs = stmt.executeQuery("INSERT INTO Ornaments (Code, Description, Remarks, Interpretation, OrnamentReferences, Annotation , MainTypologicalClass, StructureOrganization ) VALUES ('"
+							+ ornamentEntry.getCode() + "','" 
+					    + ornamentEntry.getDescription() + "','" 
+							+ ornamentEntry.getRemarks() + "','"
+							+ ornamentEntry.getInterpretation() + "','"  
+							+  ornamentEntry.getReferences() + "','"
+							+ ornamentEntry.getAnnotations() + "','" 
+							+ ornamentEntry.getMaintypologycalClass() + "','" 
+							+ ornamentEntry.getStructureOrganization() 
+							+ "')");
 			rs = stmt.executeQuery("SELECT LAST_INSERT_ID()");
 			while (rs.next()) {
 				auto_increment_id = rs.getInt(1);
 			}
 			for (int i = 0; i < ornamentEntry.getCavesRelations().size(); i++) {
-				stmt = dbc.createStatement();
-				for (int j = 0; j < ornamentEntry.getCavesRelations().get(i).getRelatedOrnamentsRelationID().size(); j++) {
-					rs = stmt.executeQuery("INSERT INTO RelatedOrnamentsRelation (OrnamentID1, OrnamentID2, CaveID) VALUES ("
-							+ auto_increment_id + "," + ornamentEntry.getCavesRelations().get(i).getRelatedOrnamentsRelationID().get(j) + ","
-							+ ornamentEntry.getCavesRelations().get(i).getCaveID() + ")");
-				}
-				for (int j = 0; j < ornamentEntry.getCavesRelations().get(i).getSimilarOrnamentsRelationID().size(); j++) {
-					rs = stmt.executeQuery("INSERT INTO SimilarOrnamentsRelation (OrnamentID1, OrnamentID2, CaveID) VALUES ("
-							+ auto_increment_id + "," + ornamentEntry.getCavesRelations().get(i).getSimilarOrnamentsRelationID().get(j) + ","
-							+ ornamentEntry.getCavesRelations().get(i).getCaveID() + ")");
-				}
-				for (int j = 0; j < ornamentEntry.getCavesRelations().get(i).getOtherCulturalOrnamentsRelationID().size(); j++) {
-					rs = stmt.executeQuery(
-							"INSERT INTO OrnamentsOfOtherCulturesRelation (OrnamentID, OrnamentOfOtherCulturesID, CaveID) VALUES ("
-									+ auto_increment_id + ","
-									+ ornamentEntry.getCavesRelations().get(i).getOtherCulturalOrnamentsRelationID().get(j) + ","
-									+ ornamentEntry.getCavesRelations().get(i).getCaveID() + ")");
-				}
+				stmt = dbc.createStatement();			
 				rs = stmt.executeQuery(
-						"INSERT INTO CaveOrnamentRelation (CaveID, OrnamentID, Style, Orientation, Structure, MainTypologicalClass, Colours, Position, Function, CavePart, Notes,GroupOfOrnaments) VALUES ("
-								+ ornamentEntry.getCavesRelations().get(i).getCaveID() + "," + auto_increment_id + ","
+						"INSERT INTO CaveOrnamentRelation (CaveID, OrnamentID, Style, Orientation, Colours, Notes, GroupOfOrnaments,RelatedElementsOfOtherCultures, SimilarElementsOfOtherCultures ) VALUES ("
+								+ ornamentEntry.getCavesRelations().get(i).getCaveID() + "," 
+								+ auto_increment_id + ","
 								+ ornamentEntry.getCavesRelations().get(i).getStyle() + ","
-								+ ornamentEntry.getCavesRelations().get(i).getOrientation() + ","
-								+ ornamentEntry.getCavesRelations().get(i).getStructure() + ","
-								+ ornamentEntry.getCavesRelations().get(i).getMainTopologycalClass() + ","
-								+ ornamentEntry.getCavesRelations().get(i).getColours() + ","
-								+ ornamentEntry.getCavesRelations().get(i).getPosition() + ","
-								+ ornamentEntry.getCavesRelations().get(i).getFunction() + ","
-								+ ornamentEntry.getCavesRelations().get(i).getCavepart() + ","
-								+ ornamentEntry.getCavesRelations().get(i).getNotes() + "," + ornamentEntry.getCavesRelations().get(i).getGroup()
-								+ ")");
+								+ ornamentEntry.getCavesRelations().get(i).getOrientation() + ",'"
+								+ ornamentEntry.getCavesRelations().get(i).getColours() + "','"
+								+ ornamentEntry.getCavesRelations().get(i).getNotes() + "',"
+								+ ornamentEntry.getCavesRelations().get(i).getGroup() + ",'"
+								+ ornamentEntry.getCavesRelations().get(i).getRelatedelementeofOtherCultures() + "','"
+								+ ornamentEntry.getCavesRelations().get(i).getSimilarelementsOfOtherCultures() 
+								+ "')");
+				rs = stmt.executeQuery("SELECT LAST_INSERT_ID()");
+				while (rs.next()) {
+					auto_increment_id = rs.getInt(1);
+				}
+				
+				// save images
+				System.err.println("related ornaments wird hinzugefuegt, anzahl ist " + ornamentEntry.getCavesRelations().get(i).getRelatedOrnamentsRelationID().size());
+				for (int j = 0; j < ornamentEntry.getCavesRelations().get(i).getRelatedOrnamentsRelationID().size(); j++) {
+					rs = stmt.executeQuery("INSERT INTO RelatedOrnamentsRelation (OrnamentID, OrnamentCaveRelationID) VALUES ("
+							+ ornamentEntry.getCavesRelations().get(i).getRelatedOrnamentsRelationID().get(j) + ","
+							+ auto_increment_id 
+						  + ")");
+				}
+				System.err.println("similar ornament wird hinzugefuegt wird hinzugefuegt, anzahl ist " + ornamentEntry.getCavesRelations().get(i).getSimilarOrnamentsRelationID().size());
+				for (int j = 0; j < ornamentEntry.getCavesRelations().get(i).getSimilarOrnamentsRelationID().size(); j++) {
+					rs = stmt.executeQuery("INSERT INTO SimilarOrnamentsRelation (OrnamentID, OrnamentCaveRelationID) VALUES ("
+							+ ornamentEntry.getCavesRelations().get(i).getSimilarOrnamentsRelationID().get(j) + ","
+							+ auto_increment_id 
+							+ ")");
+				}
+				System.err.println("wallcaveornamentrelation wird hinzugefuegt, anzahl ist " + ornamentEntry.getCavesRelations().get(i).getWalls().size());
+				for (int j = 0; j < ornamentEntry.getCavesRelations().get(i).getWalls().size(); j++) {
+					System.err.println("wallcaveornamentrelation wird hinzugefuegt, anzahl ist " + ornamentEntry.getCavesRelations().get(i).getWalls().size());
+					rs = stmt.executeQuery("INSERT INTO WallCaveOrnamentRelation (OrnamentCaveRelationID, WallID, Position, Function, Notes) VALUES ("
+							+ auto_increment_id + ","
+							+ ornamentEntry.getCavesRelations().get(i).getWalls().get(j).getWallID() + ",'"
+							+ ornamentEntry.getCavesRelations().get(i).getWalls().get(j).getPosition() + "','"
+							+ ornamentEntry.getCavesRelations().get(i).getWalls().get(j).getFunction() + "','"
+							+ ornamentEntry.getCavesRelations().get(i).getWalls().get(j).getNotes()
+							+ "')");
+				}
+				
 			}
 			rs.close();
 			stmt.close();
