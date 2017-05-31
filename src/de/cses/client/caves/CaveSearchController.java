@@ -17,6 +17,7 @@ import java.util.ArrayList;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.PopupPanel;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -74,6 +75,25 @@ public class CaveSearchController extends AbstractSearchController {
 				}
 			}
 		});
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.ui.AbstractSearchController#addNewElement()
+	 */
+	@Override
+	public void addNewElement() {
+		PopupPanel caveEditorPanel = new PopupPanel(false);
+		CaveEditor ced = new CaveEditor(null, new CaveEditorListener() {
+
+			@Override
+			public void closeRequest() {
+				caveEditorPanel.hide();
+			}
+		});
+		caveEditorPanel.add(ced);
+		caveEditorPanel.setGlassEnabled(true);
+		caveEditorPanel.center();
+		caveEditorPanel.show();
 	}
 
 }

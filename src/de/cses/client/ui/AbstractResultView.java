@@ -13,8 +13,6 @@
  */
 package de.cses.client.ui;
 
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.widget.core.client.Portlet;
@@ -23,11 +21,6 @@ import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
-import com.sencha.gxt.widget.core.client.info.Info;
-import com.sencha.gxt.widget.core.client.menu.Item;
-import com.sencha.gxt.widget.core.client.menu.Menu;
-import com.sencha.gxt.widget.core.client.menu.Menu.MenuAppearance;
-import com.sencha.gxt.widget.core.client.menu.MenuItem;
 
 /**
  * AbstractResultView is the base for the result views shown in MainView. Here the 
@@ -39,7 +32,9 @@ import com.sencha.gxt.widget.core.client.menu.MenuItem;
  */
 public abstract class AbstractResultView extends Portlet {
 	
-	private ToolButton searchToolButton, saveToolButton;
+	protected static final int MAX_HEIGHT = 700;
+	protected static final int MIN_HEIGHT = 300;
+	private ToolButton searchToolButton, saveToolButton, plusToolButton;
 	private FlowLayoutContainer resultContainer;
 	private MarginData resultLayoutData;
 
@@ -48,28 +43,32 @@ public abstract class AbstractResultView extends Portlet {
 		this.setHeading(title);
 		setCollapsible(true);
 		setAnimCollapse(true);
+		setHeight(MIN_HEIGHT);
 		
 		searchToolButton = new ToolButton(ToolButton.SEARCH);
 		searchToolButton.setToolTip("start search");
 		getHeader().addTool(searchToolButton);
 		
-		saveToolButton = new ToolButton(ToolButton.SAVE);
-		saveToolButton.setToolTip("save");
-		saveToolButton.addSelectHandler(new SelectHandler() {
-			
-			@Override
-			public void onSelect(SelectEvent event) {
-			}
-		});
-		getHeader().addTool(saveToolButton);
+//		saveToolButton = new ToolButton(ToolButton.SAVE);
+//		saveToolButton.setToolTip("save");
+//		saveToolButton.addSelectHandler(new SelectHandler() {
+//			
+//			@Override
+//			public void onSelect(SelectEvent event) {
+//			}
+//		});
+//		getHeader().addTool(saveToolButton);
 		
+		plusToolButton = new ToolButton(ToolButton.PLUS);
+		plusToolButton.setToolTip("Add New");
+		getHeader().addTool(plusToolButton);
 		
 		ToolButton toolButton = new ToolButton(ToolButton.MINIMIZE);
 		toolButton.addSelectHandler(new SelectHandler() {
 			
 			@Override
 			public void onSelect(SelectEvent event) {
-				setHeight(300);
+				setHeight(MIN_HEIGHT);
 			}
 		});
 		getHeader().addTool(toolButton);
@@ -79,17 +78,15 @@ public abstract class AbstractResultView extends Portlet {
 			
 			@Override
 			public void onSelect(SelectEvent event) {
-				setHeight(700);
+				setHeight(MAX_HEIGHT);
 			}
 		});
 		getHeader().addTool(toolButton);
 		
+		
 		resultContainer = new FlowLayoutContainer();
 		resultContainer.setScrollMode(ScrollMode.AUTOY);
 		resultLayoutData = new MarginData(20);
-		if (true) { // check here if the user has permission to edit and add elements
-			resultContainer.add(newElementButton(), resultLayoutData);
-		}
 		this.add(resultContainer);
 	}
 	
@@ -97,8 +94,20 @@ public abstract class AbstractResultView extends Portlet {
 		resultContainer.add(w, resultLayoutData);
 	}
 	
+	/**
+	 * adds a handler to the SEARCH ToolButton
+	 * @param handler
+	 */
 	public void addSearchSelectHandler(SelectHandler handler) {
 		searchToolButton.addSelectHandler(handler);
+	}
+	
+	/**
+	 * adds a handler to the PLUS ToolButton
+	 * @param handler
+	 */
+	public void addPlusSelectHandler(SelectHandler handler) {
+		plusToolButton.addSelectHandler(handler);
 	}
 
 	/**
@@ -106,15 +115,12 @@ public abstract class AbstractResultView extends Portlet {
 	 */
 	public void reset() {
 		resultContainer.clear();
-		if (true) { // check here if the user has permission to edit and add elements
-			resultContainer.add(newElementButton(), resultLayoutData);
-		}
 	}
 	
-	/**
-	 * Implements the specific Button to create and add a new element
-	 * @return
-	 */
-	public abstract Widget newElementButton();
+//	/**
+//	 * Implements the specific Button to create and add a new element
+//	 * @return
+//	 */
+//	public abstract Widget newElementButton();
 
 }

@@ -41,19 +41,79 @@ public class PictorialElementSelector implements IsWidget {
 	class KeyProvider implements ModelKeyProvider<PictorialElementEntry> {
 		@Override
 		public String getKey(PictorialElementEntry item) {
-			return (item.getChildren() != null ? "f-" : "m-") + item.getPictorialElementID();
+			return Integer.toString(item.getPictorialElementID());
+//			return (item.getChildren() != null ? "f-" : "m-") + item.getPictorialElementID();
 		}
 	}
 
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	private TreeStore<PictorialElementEntry> store;
 	private Tree<PictorialElementEntry, String> tree;
-	private VerticalLayoutContainer vlc;
+	private VerticalLayoutContainer vlc=null;
 	private int depictionID;
 
 	public PictorialElementSelector(int depictionID) {
 		this.depictionID = depictionID;
 		store = new TreeStore<PictorialElementEntry>(new KeyProvider());
+		loadPEStore();
+	}
+
+	private void processParent(TreeStore<PictorialElementEntry> store, PictorialElementEntry item) {
+		for (PictorialElementEntry child : item.getChildren()) {
+			store.add(item, child);
+			if (child.getChildren() != null) {
+				processParent(store, child);
+			}
+		}
+	}
+
+	private void loadPEStore() {
+		dbService.getPictorialElements(new AsyncCallback<ArrayList<PictorialElementEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				tree = null;
+			}
+
+			@Override
+			public void onSuccess(ArrayList<PictorialElementEntry> peList) {
+
+				for (PictorialElementEntry item : peList) {
+					store.add(item);
+					if (item.getChildren() != null) {
+						processParent(store, item);
+					}
+				}
+				dbService.getRelatedPE(depictionID, new AsyncCallback<ArrayList<PictorialElementEntry>>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+					}
+
+					@Override
+					public void onSuccess(ArrayList<PictorialElementEntry> peRelationList) {
+						for (PictorialElementEntry peEntry : peRelationList) {
+							
+	  					tree.setChecked(peEntry, CheckState.CHECKED);
+						}
+					}
+				});
+			}
+		});
+	}
+
+	@Override
+	public Widget asWidget() {
+		if (vlc == null) {
+			initPanel();
+		}
+		return vlc;
+	}
+	
+	private void initPanel() {
+		vlc = new VerticalLayoutContainer();
+		
 		tree = new Tree<PictorialElementEntry, String>(store, new ValueProvider<PictorialElementEntry, String>() {
 
 			@Override
@@ -74,75 +134,11 @@ public class PictorialElementSelector implements IsWidget {
 		tree.setWidth(350);
 		tree.setCheckable(true);
     tree.setCheckStyle(CheckCascade.TRI);
-    tree.setAutoLoad(true);
-		loadPEStore();
-		initPanel();
-	}
-
-	private void processParent(TreeStore<PictorialElementEntry> store, PictorialElementEntry item) {
-		for (PictorialElementEntry child : item.getChildren()) {
-			store.add(item, child);
-			if (child.getChildren() != null) {
-				processParent(store, child);
-			}
-		}
-	}
-
-	private void loadPEStore() {
-		dbService.getPictorialElements(new AsyncCallback<ArrayList<PictorialElementEntry>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-//				Info.display("Loading Pictorial Elements", "failed");
-				tree = null;
-			}
-
-			@Override
-			public void onSuccess(ArrayList<PictorialElementEntry> peList) {
-
-				for (PictorialElementEntry item : peList) {
-					store.add(item);
-					if (item.getChildren() != null) {
-						processParent(store, item);
-//						Info.display("Children added", item.getText());
-					}
-				}
-//				dbService.getRelatedPE(depictionID, new AsyncCallback<ArrayList<PictorialElementEntry>>() {
-//
-//					@Override
-//					public void onFailure(Throwable caught) {
-//						caught.printStackTrace();
-//					}
-//
-//					@Override
-//					public void onSuccess(ArrayList<PictorialElementEntry> peRelationList) {
-//						Info.display("Selected PE", "no = " + peRelationList.size());
-//						Info.display("Store", "no = " + store.getAllItemsCount());
-//  					tree.getSelectionModel().select(peRelationList, false);
-//  					tree.getSelectionModel().setSelection(peRelationList);
-//  					tree.setCheckedSelection(peRelationList);
-//						for (PictorialElementEntry peEntry : peRelationList) {
-//	  					tree.setChecked(peEntry, CheckState.CHECKED);
-//						}
-//					}
-//				});
-			}
-		});
-	}
-
-	@Override
-	public Widget asWidget() {
-		if (vlc == null) {
-			initPanel();
-		}
-		return vlc;
-	}
-	
-	private void initPanel() {
-		vlc = new VerticalLayoutContainer();
-		vlc.add(tree, new VerticalLayoutData(1, 1));
+		
+		vlc.add(tree, new VerticalLayoutData(1.0, 1.0));
 		vlc.setScrollMode(ScrollMode.AUTOY);
 		vlc.setPixelSize(700, 450);
+		vlc.setBorders(true);
 	}
 	
 	public List<PictorialElementEntry> getSelectedPE() {
@@ -151,27 +147,20 @@ public class PictorialElementSelector implements IsWidget {
 
 	public void expandAll() {
 		tree.expandAll();
-		dbService.getRelatedPE(depictionID, new AsyncCallback<ArrayList<PictorialElementEntry>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(ArrayList<PictorialElementEntry> peRelationList) {
-//				Info.display("Selected PE", "no = " + peRelationList.size());
-//				Info.display("Store", "no = " + store.getAllItemsCount());
-//				tree.getSelectionModel().select(peRelationList, false);
-//				tree.getSelectionModel().setSelection(peRelationList);
-				tree.setCheckedSelection(peRelationList);
-//				for (PictorialElementEntry peEntry : peRelationList) {
-//					tree.setChecked(peEntry, CheckState.CHECKED);
-//				}
-			}
-		});
-		
-		
+//		dbService.getRelatedPE(depictionID, new AsyncCallback<ArrayList<PictorialElementEntry>>() {
+//
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				caught.printStackTrace();
+//			}
+//
+//			@Override
+//			public void onSuccess(ArrayList<PictorialElementEntry> peRelationList) {
+//				tree.setCheckedSelection(peRelationList);
+//			}
+//		});
+//		
+//		
 	}
 
 	public void collapseAll() {

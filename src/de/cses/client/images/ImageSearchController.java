@@ -17,6 +17,7 @@ import java.util.ArrayList;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.PopupPanel;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -77,5 +78,57 @@ public class ImageSearchController extends AbstractSearchController {
 			}
 		});
 	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.ui.AbstractSearchController#addNewElement()
+	 */
+	@Override
+	public void addNewElement() {
+		PopupPanel imageUploadPanel = new PopupPanel(false);
+		PopupPanel imageEditorPanel = new PopupPanel(false);
+
+		ImageUploader iu = new ImageUploader(new ImageUploadListener() {
+
+			@Override
+			public void uploadCompleted(int newImageID) {
+				imageUploadPanel.hide();
+				dbService.getImage(newImageID, new AsyncCallback<ImageEntry>() {
+
+					@Override
+					public void onSuccess(ImageEntry result) {
+						SingleImageEditor singleIE = new SingleImageEditor(result, new ImageEditorListener() {
+
+							@Override
+							public void closeImageEditor() {
+								imageEditorPanel.hide();
+							}
+
+							@Override
+							public void cancelImageEditor() {
+								imageEditorPanel.hide();
+							}
+						});
+						imageEditorPanel.add(singleIE);
+						imageEditorPanel.setGlassEnabled(true);
+						imageEditorPanel.center();
+						imageEditorPanel.show();
+					}
+
+					@Override
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+					}
+				});
+			}
+
+			@Override
+			public void uploadCanceled() {
+				imageUploadPanel.hide();
+			}
+		});
+		imageUploadPanel.add(iu);
+		imageUploadPanel.setGlassEnabled(true);
+		imageUploadPanel.center();
+		imageUploadPanel.show();	}
 
 }

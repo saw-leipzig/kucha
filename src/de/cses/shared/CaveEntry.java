@@ -18,7 +18,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class CaveEntry implements IsSerializable {
 	private int caveID;
 	private String officialNumber, officialName, historicName;
-	private int caveTypeID, districtID, regionID, orientationID; 
+	private int caveTypeID, districtID, regionID, orientationID, preservationClassificationID; 
 	private String stateOfPerservation;
 	private String findings;
 	private String alterationDate;
@@ -27,11 +27,11 @@ public class CaveEntry implements IsSerializable {
 	private RearAreaEntry rearAreaEntry;
 
 	public CaveEntry() {
-		this(0, "enter official cave number", "enter official cave name", "optional historic name", 0, 0, 0, 0, "enter state of preservation", "enter findings here", null);
+		this(0, "enter official cave number", "enter official cave name", "optional historic name", 0, 0, 0, 0, "enter state of preservation", "enter findings here", null, 0);
 	}
 
 	public CaveEntry(int caveID, String officialNumber, String officialName, String historicalName, int caveTypeID, int districtID,
-			int regionID, int orientationID, String stateOfPerservation, String findings, String alterationDate) {
+			int regionID, int orientationID, String stateOfPerservation, String findings, String alterationDate, int preservationClassificationID) {
 		super();
 		this.caveID = caveID;
 		this.officialNumber = officialNumber;
@@ -154,16 +154,16 @@ public class CaveEntry implements IsSerializable {
 	 * ATTENTION: Orientation is currently not inlcuded!!
 	 */
 	public String getInsertSql() {		
-		return "INSERT INTO Caves (OfficialNumber,OfficialName,HistoricName,CaveTypeID,DistrictID,RegionID, OrientationID,StateOfPreservation,Findings,AlterationDate) VALUES "
+		return "INSERT INTO Caves (OfficialNumber,OfficialName,HistoricName,CaveTypeID,DistrictID,RegionID, OrientationID,StateOfPreservation,Findings,AlterationDate, PreservationClassificationID) VALUES "
 				+ "('" + officialNumber + "','" + officialName + "','" + historicName + "'," + caveTypeID + "," + districtID + "," + regionID + "," + orientationID + ",'" + stateOfPerservation
-				+ "','" + findings + "','" + alterationDate + "')";
+				+ "','" + findings + "','" + alterationDate + "'," + preservationClassificationID + ")";
 	}
 
 	public String getUpdateSql() {
 		return "UPDATE Caves SET OfficialNumber='" + officialNumber + "', OfficialName='" + officialName + "', HistoricName='" + historicName
 				+ "', CaveTypeID=" + caveTypeID + ", DistrictID=" + districtID + ", RegionID=" + regionID + ", OrientationID=" + orientationID + ", StateOfPreservation='" + stateOfPerservation
-				+ "', Findings='" + findings + "', AlterationDate='" + alterationDate + "' "
-				+ "WHERE CaveID=" + caveID;
+				+ "', Findings='" + findings + "', AlterationDate='" + alterationDate + "', PreservationClassificationID=" + preservationClassificationID
+				+ " WHERE CaveID=" + caveID;
 	}
 
 	/**
@@ -178,6 +178,20 @@ public class CaveEntry implements IsSerializable {
 	 */
 	public void setOrientationID(int orientationID) {
 		this.orientationID = orientationID;
+	}
+
+	/**
+	 * @return the preservationClassificationID
+	 */
+	public int getPreservationClassificationID() {
+		return preservationClassificationID;
+	}
+
+	/**
+	 * @param preservationClassificationID the preservationClassificationID to set
+	 */
+	public void setPreservationClassificationID(int preservationClassificationID) {
+		this.preservationClassificationID = preservationClassificationID;
 	}
 
 

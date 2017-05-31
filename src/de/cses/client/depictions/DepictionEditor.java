@@ -200,7 +200,7 @@ public class DepictionEditor implements IsWidget {
 	 *
 	 */
 	interface ImageViewTemplates extends XTemplates {
-		@XTemplate("<img align=\"center\" width=\"150\" height=\"150\" margin=\"20\" src=\"{imageUri}\"><br> {title}")
+		@XTemplate("<img align=\"center\" margin=\"20\" src=\"{imageUri}\"><br> {title}")
 		SafeHtml image(SafeUri imageUri, String title);
 
 		// @XTemplate("<div qtip=\"{slogan}\" qtitle=\"State Slogan\">{name}</div>")
@@ -409,7 +409,7 @@ public class DepictionEditor implements IsWidget {
 			final ImageViewTemplates imageViewTemplates = GWT.create(ImageViewTemplates.class);
 
 			public SafeHtml render(ImageEntry item) {
-				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=true");
+				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=150");
 				return imageViewTemplates.image(imageUri, item.getTitle());
 			}
 		}));
@@ -515,12 +515,6 @@ public class DepictionEditor implements IsWidget {
 		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .2));
 
 		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Date of acquisition");
-		dateOfAcquisitionField = new DateField(new DateTimePropertyEditor("dd MMMM yyyy"));
-		attributePanel.add(dateOfAcquisitionField);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .1));
-
-		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Vendor");
 		vendorSelection = new ComboBox<VendorEntry>(vendorEntryList, vendorProps.vendorName(), new AbstractSafeHtmlRenderer<VendorEntry>() {
 
@@ -554,6 +548,7 @@ public class DepictionEditor implements IsWidget {
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Current location");
+		
 		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .1));
 
 		attributePanel = new FramedPanel();
@@ -809,7 +804,7 @@ public class DepictionEditor implements IsWidget {
 		 * --------------------- content of third tab (Pictorial Elements) starts here --------------------------------
 		 */
 		hlContainer = new HorizontalLayoutContainer();
-		hlContainer.setSize("100%", "100%");
+		VerticalLayoutContainer peVLC = new VerticalLayoutContainer();
 
 		TextButton peExpandButton = new TextButton("expand tree");
 		peExpandButton.addSelectHandler(new SelectHandler() {

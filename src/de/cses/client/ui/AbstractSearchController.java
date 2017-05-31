@@ -51,6 +51,13 @@ public abstract class AbstractSearchController extends ToggleButton {
 				invokeSearch();
 			}
 		});
+		this.resultView.addPlusSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				addNewElement();
+			}
+		});
 		relatedFilter = new ArrayList<AbstractFilter>();
 		setText(searchControllerTitle);
 		setSize("50px", "50px");
@@ -92,4 +99,9 @@ public abstract class AbstractSearchController extends ToggleButton {
 	 */
 	public abstract void invokeSearch();
 
+	/**
+	 * This abstract method needs to be implemented for each controller. It should open the corresponding editor in a mode
+	 * where a new element is created and added to the database.
+	 */
+	public abstract void addNewElement();
 }

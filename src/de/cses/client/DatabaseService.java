@@ -41,6 +41,7 @@ import de.cses.shared.OrnamentOrientation;
 import de.cses.shared.OrnamentPosition;
 import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PictorialElementEntry;
+import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.PublicationEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
@@ -145,5 +146,7 @@ public interface DatabaseService extends RemoteService {
 	ArrayList<PictorialElementEntry> getRelatedPE(int depictionID) throws IllegalArgumentException;
 
 	ArrayList<CeilingTypeEntry> getCeilingTypes() throws IllegalArgumentException;
+
+	ArrayList<PreservationClassificationEntry> getPreservationClassifications();
 
 }

@@ -31,12 +31,4 @@ public class DepictionResultView extends AbstractResultView {
 		super(title);
 	}
 
-	/* (non-Javadoc)
-	 * @see de.cses.client.ui.AbstractResultView#newElementButton()
-	 */
-	@Override
-	public Widget newElementButton() {
-		return new DepictionView();
-	}
-
 }

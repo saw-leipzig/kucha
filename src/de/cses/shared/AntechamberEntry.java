@@ -15,15 +15,15 @@ package de.cses.shared;
 
 public class AntechamberEntry extends AbstractEntry {
 
-	private int antechamberID, ceilingTypeID, frontWallID, leftWallID, rightWallID, rearWallID;
+	private int antechamberID, ceilingTypeID, frontWallID, leftWallID, rightWallID, rearWallID, preservationClassificationID;
 	private double height, width, depth;
-	
+
 	public AntechamberEntry() {
-		this(0, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0);
+		this(0, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0, 0);
 	}
 
-	public AntechamberEntry(int antechamberID, int ceilingTypeID, int frontWallID, int leftWallID, int rightWallID, int rearWallID, double height,
-			double width, double depth) {
+	public AntechamberEntry(int antechamberID, int ceilingTypeID, int frontWallID, int leftWallID, int rightWallID, int rearWallID,
+			double height, double width, double depth, int preservationClassificationID) {
 		super();
 		setAntechamberID(antechamberID);
 		setCeilingTypeID(ceilingTypeID);
@@ -34,6 +34,7 @@ public class AntechamberEntry extends AbstractEntry {
 		setHeight(height);
 		setWidth(width);
 		setDepth(depth);
+		setPreservationClassificationID(preservationClassificationID);
 	}
 
 	public int getAntechamberID() {
@@ -43,8 +44,8 @@ public class AntechamberEntry extends AbstractEntry {
 	public void setAntechamberID(int antechamberID) {
 		this.antechamberID = antechamberID;
 	}
-	
-		public int getCeilingTypeID() {
+
+	public int getCeilingTypeID() {
 		return ceilingTypeID;
 	}
 
@@ -108,24 +109,43 @@ public class AntechamberEntry extends AbstractEntry {
 		this.depth = depth;
 	}
 
-	/* (non-Javadoc)
+	/**
+	 * @return the preservationClassificationID
+	 */
+	public int getPreservationClassificationID() {
+		return preservationClassificationID;
+	}
+
+	/**
+	 * @param preservationClassificationID
+	 *          the preservationClassificationID to set
+	 */
+	public void setPreservationClassificationID(int preservationID) {
+		this.preservationClassificationID = preservationID;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.cses.shared.AbstractEntry#getInsertSql()
 	 */
 	@Override
 	public String getInsertSql() {
-		return "INSERT INTO Antechamber (AntechamberID, CeilingTypeID, FrontWallID, LeftWallID, RightWallID, RearWallID, Height, Width, Depth) VALUES (" + antechamberID + ", " + ceilingTypeID 
-				+ ", "+ frontWallID + ", " + leftWallID + ", " + rightWallID + ", " + rearWallID + ", " + height + ", " + width + ", " + depth + ")";
+		return "INSERT INTO Antechamber (AntechamberID, CeilingTypeID, FrontWallID, LeftWallID, RightWallID, RearWallID, Height, Width, Depth, PreservationClassificationID) VALUES ("
+				+ antechamberID + ", " + ceilingTypeID + ", " + frontWallID + ", " + leftWallID + ", " + rightWallID + ", " + rearWallID + ", "
+				+ height + ", " + width + ", " + depth + ", " + preservationClassificationID + ")";
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.cses.shared.AbstractEntry#getUpdateSql()
 	 */
 	@Override
 	public String getUpdateSql() {
-		return "UPDATE Antechamber SET CeilingTypeID=" + ceilingTypeID + ", FrontWallID=" + frontWallID + ", LeftWallID=" + leftWallID + ", RightWallID=" + rightWallID
-				+ ", RearWallID=" + rearWallID + ", Height=" + height + ", Width=" + width + ", Depth=" + depth + " WHERE AntechamberID=" + antechamberID;
+		return "UPDATE Antechamber SET CeilingTypeID=" + ceilingTypeID + ", FrontWallID=" + frontWallID + ", LeftWallID=" + leftWallID
+				+ ", RightWallID=" + rightWallID + ", RearWallID=" + rearWallID + ", Height=" + height + ", Width=" + width + ", Depth=" + depth
+				+ ", PreservationClassificationID=" + preservationClassificationID + " WHERE AntechamberID=" + antechamberID;
 	}
-	
 
-	
 }

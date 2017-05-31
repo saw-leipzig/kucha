@@ -22,7 +22,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class RearAreaEntry extends AbstractEntry {
 
 	private int rearAreaID, ceilingTypeID, leftCorridorOuterWallID, leftCorridorInnerWallID, rightCorridorInnerWallID,
-			rightCorridorOuterWallID, innerWallID, leftWallID, rightWallID, outerWallID;
+			rightCorridorOuterWallID, innerWallID, leftWallID, rightWallID, outerWallID, preservationClassificationID;
 	private boolean isBackChamber;
 	private double height, width, depth;
 
@@ -30,12 +30,12 @@ public class RearAreaEntry extends AbstractEntry {
 	 * 
 	 */
 	public RearAreaEntry() {
-		this(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0.0, 0.0, 0.0);
+		this(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0.0, 0.0, 0.0, 0);
 	}
 
 	public RearAreaEntry(int rearAreaID, int ceiligTypeID, int leftCorridorOuterWallID, int leftCorridorInnerWallID,
 			int rightCorridorInnerWallID, int rightCorridorOuterWallID, int innerWallID, int leftWallID, int rightWallID, int outerWallID,
-			boolean isBackChamber, double height, double width, double depth) {
+			boolean isBackChamber, double height, double width, double depth, int preservationClassificationID) {
 		super();
 		setRearAreaID(rearAreaID);
 		setCeilingTypeID(ceiligTypeID);
@@ -51,6 +51,7 @@ public class RearAreaEntry extends AbstractEntry {
 		setHeight(height);
 		setWidth(width);
 		setDepth(depth);
+		setPreservationClassificationID(preservationClassificationID);
 	}
 
 	public int getRearAreaID() {
@@ -168,6 +169,21 @@ public class RearAreaEntry extends AbstractEntry {
 		return depth;
 	}
 
+	/**
+	 * @return the preservationClassificationID
+	 */
+	public int getPreservationClassificationID() {
+		return preservationClassificationID;
+	}
+
+	/**
+	 * @param preservationClassificationID
+	 *          the preservationClassificationID to set
+	 */
+	public void setPreservationClassificationID(int preservationID) {
+		this.preservationClassificationID = preservationID;
+	}
+
 	public void setDepth(double depth) {
 		this.depth = depth;
 	}
@@ -180,10 +196,10 @@ public class RearAreaEntry extends AbstractEntry {
 	@Override
 	public String getInsertSql() {
 		return "INSERT INTO RearArea (RearAreaID, CeilingTypeID, LeftCorridorOuterWallID, LeftCorridorInnerWallID, RightCorridorInnerWallID, "
-				+ "RightCorridorOuterWallID, InnerWallID, LeftWallID, RightWallID, OuterWallID, IsBackChamber, Height, Width, Depth) VALUES " + "("
-				+ rearAreaID + ", " + ceilingTypeID + ", " + leftCorridorOuterWallID + ", " + leftCorridorInnerWallID + ", "
+				+ "RightCorridorOuterWallID, InnerWallID, LeftWallID, RightWallID, OuterWallID, IsBackChamber, Height, Width, Depth, PreservationClassificationID) VALUES "
+				+ "(" + rearAreaID + ", " + ceilingTypeID + ", " + leftCorridorOuterWallID + ", " + leftCorridorInnerWallID + ", "
 				+ rightCorridorInnerWallID + ", " + rightCorridorOuterWallID + ", " + innerWallID + ", " + leftWallID + ", " + rightWallID + ", "
-				+ outerWallID + ", " + isBackChamber + ", " + height + ", " + width + ", " + depth + ")";
+				+ outerWallID + ", " + isBackChamber + ", " + height + ", " + width + ", " + depth + ", " + preservationClassificationID + ")";
 	}
 
 	/*
@@ -197,7 +213,8 @@ public class RearAreaEntry extends AbstractEntry {
 				+ ", LeftCorridorInnerWallID=" + leftCorridorInnerWallID + ", RightCorridorInnerWallID=" + rightCorridorInnerWallID
 				+ ", RightCorridorOuterWallID=" + rightCorridorOuterWallID + ", InnerWallID=" + innerWallID + ", LeftWallID=" + leftWallID
 				+ ", RightWallID=" + rightWallID + ", OuterWallID=" + outerWallID + ", IsBackChamber=" + isBackChamber + ", Height=" + height
-				+ ", Width=" + width + ", Depth=" + depth + " WHERE RearAreaID=" + rearAreaID;
+				+ ", Width=" + width + ", Depth=" + depth + ", PreservationClassificationID=" + preservationClassificationID + " WHERE RearAreaID="
+				+ rearAreaID;
 	}
 
 }

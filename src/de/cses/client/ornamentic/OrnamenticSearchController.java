@@ -17,6 +17,7 @@ import java.util.ArrayList;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.PopupPanel;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -77,6 +78,19 @@ public class OrnamenticSearchController extends AbstractSearchController {
 				}
 			}
 		});
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.ui.AbstractSearchController#addNewElement()
+	 */
+	@Override
+	public void addNewElement() {
+		PopupPanel ornamentEditorPanel = new PopupPanel(false);
+		Ornamentic ornamentic = new Ornamentic();
+		ornamentEditorPanel.add(ornamentic);
+//		new Draggable(ornamentEditorPanel);
+		ornamentEditorPanel.setGlassEnabled(true);
+		ornamentEditorPanel.center();
 	}
 
 }

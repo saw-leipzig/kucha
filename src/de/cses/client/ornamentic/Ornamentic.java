@@ -382,7 +382,7 @@ public Widget createForm(){
 		final ImageViewTemplates imageViewTemplates = GWT.create(ImageViewTemplates.class);
 
 		public SafeHtml render(ImageEntry item) {
-			SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=true");
+			SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=150");
 			return imageViewTemplates.image(imageUri, item.getTitle());
 		}
 	}));
@@ -462,7 +462,7 @@ interface ImageProperties extends PropertyAccess<ImageEntry> {
 	LabelProvider<ImageEntry> title();
 }
 interface ImageViewTemplates extends XTemplates {
-	@XTemplate("<img align=\"center\" width=\"150\" height=\"150\" margin=\"20\" src=\"{imageUri}\"><br> {title}")
+	@XTemplate("<img align=\"center\" margin=\"20\" src=\"{imageUri}\"><br> {title}")
 	SafeHtml image(SafeUri imageUri, String title);
 
 	// @XTemplate("<div qtip=\"{slogan}\" qtitle=\"State Slogan\">{name}</div>")
