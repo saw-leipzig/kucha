@@ -134,8 +134,7 @@ public class CaveEditor implements IsWidget {
 	}
 
 	interface PreservationClassificationProperties extends PropertyAccess<PreservationClassificationEntry> {
-		ModelKeyProvider<PreservationClassificationEntry> classificationID();
-
+		ModelKeyProvider<PreservationClassificationEntry> preservationClassificationID();
 		LabelProvider<PreservationClassificationEntry> name();
 	}
 
@@ -211,7 +210,7 @@ public class CaveEditor implements IsWidget {
 		ceilingTypeEntryList = new ListStore<CeilingTypeEntry>(ceilingTypeProps.ceilingTypeID());
 		preservationClassificationProps = GWT.create(PreservationClassificationProperties.class);
 		preservationClassificationEntryList = new ListStore<PreservationClassificationEntry>(
-				preservationClassificationProps.classificationID());
+				preservationClassificationProps.preservationClassificationID());
 		siteProps = GWT.create(SiteProperties.class);
 		siteEntryList = new ListStore<SiteEntry>(siteProps.siteID());
 		orientationProps = GWT.create(OrientationProperties.class);
