@@ -23,14 +23,12 @@ import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.TreeStore;
-import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
-import com.sencha.gxt.widget.core.client.info.Info;
 import com.sencha.gxt.widget.core.client.tree.Tree;
 
 import de.cses.client.DatabaseService;
@@ -42,7 +40,7 @@ public class IconographySelector implements IsWidget {
 	class KeyProvider implements ModelKeyProvider<IconographyEntry> {
 		@Override
 		public String getKey(IconographyEntry item) {
-			return (item.getChildren() != null ? "f-" : "m-") + item.getIconographyID();
+			return Integer.toString(item.getIconographyID());
 		}
 	}
 
@@ -75,7 +73,6 @@ public class IconographySelector implements IsWidget {
 
 			@Override
 			public void onFailure(Throwable caught) {
-//				Info.display("Loading Iconography", "failed");
 				tree = null;
 			}
 
@@ -86,7 +83,6 @@ public class IconographySelector implements IsWidget {
 					store.add(item);
 					if (item.getChildren() != null) {
 						processParent(store, item);
-//						Info.display("Children added", item.getText());
 					}
 				}
 			}

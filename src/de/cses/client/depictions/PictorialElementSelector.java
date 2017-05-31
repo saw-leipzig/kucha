@@ -131,12 +131,9 @@ public class PictorialElementSelector implements IsWidget {
 				return "name";
 			}
 		});
-//		tree.setSize("400px", "400px");
 		tree.setWidth(350);
 		tree.setCheckable(true);
     tree.setCheckStyle(CheckCascade.TRI);
-//    tree.setAutoLoad(true);
-		
 		
 		vlc.add(tree, new VerticalLayoutData(1.0, 1.0));
 		vlc.setScrollMode(ScrollMode.AUTOY);
@@ -150,21 +147,20 @@ public class PictorialElementSelector implements IsWidget {
 
 	public void expandAll() {
 		tree.expandAll();
-		dbService.getRelatedPE(depictionID, new AsyncCallback<ArrayList<PictorialElementEntry>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(ArrayList<PictorialElementEntry> peRelationList) {
-				tree.setCheckedSelection(peRelationList);
-//				}
-			}
-		});
-		
-		
+//		dbService.getRelatedPE(depictionID, new AsyncCallback<ArrayList<PictorialElementEntry>>() {
+//
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				caught.printStackTrace();
+//			}
+//
+//			@Override
+//			public void onSuccess(ArrayList<PictorialElementEntry> peRelationList) {
+//				tree.setCheckedSelection(peRelationList);
+//			}
+//		});
+//		
+//		
 	}
 
 	public void collapseAll() {
