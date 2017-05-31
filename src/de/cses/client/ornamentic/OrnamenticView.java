@@ -75,7 +75,7 @@ public class OrnamenticView extends TextButton{
 				ornamentEditorPanel = new PopupPanel(false);
 				Ornamentic ornamentic = new Ornamentic();
 				ornamentEditorPanel.add(ornamentic);
-				new Draggable(ornamentEditorPanel);
+//				new Draggable(ornamentEditorPanel);
 				ornamentEditorPanel.setGlassEnabled(true);
 				ornamentEditorPanel.center();
 			}

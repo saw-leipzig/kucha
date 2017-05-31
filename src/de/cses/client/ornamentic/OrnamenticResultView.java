@@ -27,12 +27,4 @@ public class OrnamenticResultView extends AbstractResultView{
 		setHeight(300);
 	}
 
-	/* (non-Javadoc)
-	 * @see de.cses.client.ui.AbstractResultView#newElementButton()
-	 */
-	@Override
-	public TextButton newElementButton() {
-		return new OrnamenticView();
-	}
-
 }

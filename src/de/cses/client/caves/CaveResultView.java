@@ -31,12 +31,4 @@ public class CaveResultView extends AbstractResultView {
 		setHeight(300);
 	}
 
-	/* (non-Javadoc)
-	 * @see de.cses.client.ui.AbstractResultView#newElementButton()
-	 */
-	@Override
-	public Widget newElementButton() {
-		return new CaveView();
-	}
-
 }

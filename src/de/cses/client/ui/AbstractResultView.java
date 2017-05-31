@@ -39,6 +39,8 @@ import com.sencha.gxt.widget.core.client.menu.MenuItem;
  */
 public abstract class AbstractResultView extends Portlet {
 	
+	protected static final int MAX_HEIGHT = 700;
+	protected static final int MIN_HEIGHT = 300;
 	private ToolButton searchToolButton, saveToolButton, plusToolButton;
 	private FlowLayoutContainer resultContainer;
 	private MarginData resultLayoutData;
@@ -48,6 +50,7 @@ public abstract class AbstractResultView extends Portlet {
 		this.setHeading(title);
 		setCollapsible(true);
 		setAnimCollapse(true);
+		setHeight(MIN_HEIGHT);
 		
 		searchToolButton = new ToolButton(ToolButton.SEARCH);
 		searchToolButton.setToolTip("start search");
@@ -65,12 +68,6 @@ public abstract class AbstractResultView extends Portlet {
 		
 		plusToolButton = new ToolButton(ToolButton.PLUS);
 		plusToolButton.setToolTip("Add New");
-		plusToolButton.addSelectHandler(new SelectHandler() {
-			
-			@Override
-			public void onSelect(SelectEvent event) {
-			}
-		});
 		getHeader().addTool(plusToolButton);
 		
 		ToolButton toolButton = new ToolButton(ToolButton.MINIMIZE);
@@ -78,7 +75,7 @@ public abstract class AbstractResultView extends Portlet {
 			
 			@Override
 			public void onSelect(SelectEvent event) {
-				setHeight(300);
+				setHeight(MIN_HEIGHT);
 			}
 		});
 		getHeader().addTool(toolButton);
@@ -88,7 +85,7 @@ public abstract class AbstractResultView extends Portlet {
 			
 			@Override
 			public void onSelect(SelectEvent event) {
-				setHeight(700);
+				setHeight(MAX_HEIGHT);
 			}
 		});
 		getHeader().addTool(toolButton);
@@ -97,9 +94,6 @@ public abstract class AbstractResultView extends Portlet {
 		resultContainer = new FlowLayoutContainer();
 		resultContainer.setScrollMode(ScrollMode.AUTOY);
 		resultLayoutData = new MarginData(20);
-		if (true) { // check here if the user has permission to edit and add elements
-			resultContainer.add(newElementButton(), resultLayoutData);
-		}
 		this.add(resultContainer);
 	}
 	
@@ -107,8 +101,20 @@ public abstract class AbstractResultView extends Portlet {
 		resultContainer.add(w, resultLayoutData);
 	}
 	
+	/**
+	 * adds a handler to the SEARCH ToolButton
+	 * @param handler
+	 */
 	public void addSearchSelectHandler(SelectHandler handler) {
 		searchToolButton.addSelectHandler(handler);
+	}
+	
+	/**
+	 * adds a handler to the PLUS ToolButton
+	 * @param handler
+	 */
+	public void addPlusSelectHandler(SelectHandler handler) {
+		plusToolButton.addSelectHandler(handler);
 	}
 
 	/**
@@ -116,15 +122,12 @@ public abstract class AbstractResultView extends Portlet {
 	 */
 	public void reset() {
 		resultContainer.clear();
-		if (true) { // check here if the user has permission to edit and add elements
-			resultContainer.add(newElementButton(), resultLayoutData);
-		}
 	}
 	
-	/**
-	 * Implements the specific Button to create and add a new element
-	 * @return
-	 */
-	public abstract Widget newElementButton();
+//	/**
+//	 * Implements the specific Button to create and add a new element
+//	 * @return
+//	 */
+//	public abstract Widget newElementButton();
 
 }

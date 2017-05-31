@@ -17,6 +17,7 @@ import java.util.ArrayList;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.PopupPanel;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -75,6 +76,25 @@ public class DepictionSearchController extends AbstractSearchController {
 				}
 			}
 		});
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.ui.AbstractSearchController#addNewElement()
+	 */
+	@Override
+	public void addNewElement() {
+		PopupPanel depictionEditorPanel = new PopupPanel(false);
+		DepictionEditor de = new DepictionEditor(null, new DepictionEditorListener() {
+
+			@Override
+			public void depictionSaved(DepictionEntry depictionEntry) {
+				depictionEditorPanel.hide();
+			}
+		});
+		depictionEditorPanel.add(de);
+		depictionEditorPanel.setGlassEnabled(true);
+		depictionEditorPanel.center();
+		depictionEditorPanel.show();
 	}
 
 }
