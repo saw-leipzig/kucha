@@ -13,8 +13,6 @@
  */
 package de.cses.client.ui;
 
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.widget.core.client.Portlet;
@@ -23,11 +21,6 @@ import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
-import com.sencha.gxt.widget.core.client.info.Info;
-import com.sencha.gxt.widget.core.client.menu.Item;
-import com.sencha.gxt.widget.core.client.menu.Menu;
-import com.sencha.gxt.widget.core.client.menu.Menu.MenuAppearance;
-import com.sencha.gxt.widget.core.client.menu.MenuItem;
 
 /**
  * AbstractResultView is the base for the result views shown in MainView. Here the 
