@@ -548,6 +548,7 @@ public class DepictionEditor implements IsWidget {
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Current location");
+		
 		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .1));
 
 		attributePanel = new FramedPanel();
@@ -803,7 +804,7 @@ public class DepictionEditor implements IsWidget {
 		 * --------------------- content of third tab (Pictorial Elements) starts here --------------------------------
 		 */
 		hlContainer = new HorizontalLayoutContainer();
-		hlContainer.setSize("100%", "100%");
+		VerticalLayoutContainer peVLC = new VerticalLayoutContainer();
 
 		TextButton peExpandButton = new TextButton("expand tree");
 		peExpandButton.addSelectHandler(new SelectHandler() {
