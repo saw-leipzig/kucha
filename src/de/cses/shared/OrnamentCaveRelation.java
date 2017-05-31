@@ -10,18 +10,16 @@ public class OrnamentCaveRelation implements IsSerializable{
 	private String name;
 	private int caveID;
 	private int style;
-	private String orientation;
-	private String structure;
-	private int mainTopologycalClass;
+	private int orientation;
 	private String colours;
-	private String position;
-	private String function;
-	private String cavepart;
 	private String notes;
 	private int group;
-	private List<OrnamentEntry> similarOrnamentsRelationID= new ArrayList<OrnamentEntry>();
-	private List<OrnamentEntry> relatedOrnamentsRelationID = new ArrayList<OrnamentEntry>();
-	private List<OrnamentOfOtherCulturesEntry>otherCulturalOrnamentsRelationID = new ArrayList<OrnamentOfOtherCulturesEntry>();
+	private String relatedelementeofOtherCultures;
+	private String similarelementsOfOtherCultures;
+	private ArrayList<Integer> similarOrnamentsRelationID= new ArrayList<Integer>();
+	private ArrayList<Integer> relatedOrnamentsRelationID = new ArrayList<Integer>();
+	private ArrayList<WallOrnamentCaveRelation> walls = new ArrayList<WallOrnamentCaveRelation>();
+
 	
 	
 	public OrnamentCaveRelation(){
@@ -59,34 +57,15 @@ public class OrnamentCaveRelation implements IsSerializable{
 	}
 
 
-	public String getOrientation() {
+	public int getOrientation() {
 		return orientation;
 	}
 
 
-	public void setOrientation(String orientation) {
+	public void setOrientation(int orientation) {
 		this.orientation = orientation;
 	}
 
-
-	public String getStructure() {
-		return structure;
-	}
-
-
-	public void setStructure(String structure) {
-		this.structure = structure;
-	}
-
-
-	public int getMainTopologycalClass() {
-		return mainTopologycalClass;
-	}
-
-
-	public void setMainTopologycalClass(int mainTopologycalClass) {
-		this.mainTopologycalClass = mainTopologycalClass;
-	}
 
 
 	public String getColours() {
@@ -99,34 +78,6 @@ public class OrnamentCaveRelation implements IsSerializable{
 	}
 
 
-	public String getPosition() {
-		return position;
-	}
-
-
-	public void setPosition(String position) {
-		this.position = position;
-	}
-
-
-	public String getFunction() {
-		return function;
-	}
-
-
-	public void setFunction(String function) {
-		this.function = function;
-	}
-
-
-	public String getCavepart() {
-		return cavepart;
-	}
-
-
-	public void setCavepart(String cavepart) {
-		this.cavepart = cavepart;
-	}
 
 
 	public String getNotes() {
@@ -151,40 +102,8 @@ public class OrnamentCaveRelation implements IsSerializable{
 
 
 
-	public List<OrnamentEntry> getSimilarOrnamentsRelationID() {
-		return similarOrnamentsRelationID;
-	}
 
 
-	public void setSimilarOrnamentsRelationID(List<OrnamentEntry> similarOrnamentsRelationID) {
-		this.similarOrnamentsRelationID = similarOrnamentsRelationID;
-	}
-
-
-	public List<OrnamentEntry> getRelatedOrnamentsRelationID() {
-		return relatedOrnamentsRelationID;
-	}
-
-
-	public void setRelatedOrnamentsRelationID(List<OrnamentEntry> relatedOrnamentsRelationID) {
-		this.relatedOrnamentsRelationID = relatedOrnamentsRelationID;
-	}
-
-
-	public List<OrnamentOfOtherCulturesEntry> getOtherCulturalOrnamentsRelationID() {
-		return otherCulturalOrnamentsRelationID;
-	}
-
-
-	public void setOtherCulturalOrnamentsRelationID(List<OrnamentOfOtherCulturesEntry> otherCulturalOrnamentsRelationID) {
-		this.otherCulturalOrnamentsRelationID = otherCulturalOrnamentsRelationID;
-	}
-
-
-	public void setOtherCulturalOrnamentsRelationID(
-			ArrayList<OrnamentOfOtherCulturesEntry> otherCulturalOrnamentsRelationID) {
-		this.otherCulturalOrnamentsRelationID = otherCulturalOrnamentsRelationID;
-	}
 
 
 	public String getName() {
@@ -196,6 +115,58 @@ public class OrnamentCaveRelation implements IsSerializable{
 		this.name = name;
 	}
 
+
+	public List<WallOrnamentCaveRelation> getWalls() {
+		return walls;
+	}
+
+
+
+	public ArrayList<Integer> getSimilarOrnamentsRelationID() {
+		return similarOrnamentsRelationID;
+	}
+
+
+	public void setSimilarOrnamentsRelationID(ArrayList<Integer> similarOrnamentsRelationID) {
+		this.similarOrnamentsRelationID = similarOrnamentsRelationID;
+	}
+
+
+	public ArrayList<Integer> getRelatedOrnamentsRelationID() {
+		return relatedOrnamentsRelationID;
+	}
+
+
+	public void setRelatedOrnamentsRelationID(ArrayList<Integer> relatedOrnamentsRelationID) {
+		this.relatedOrnamentsRelationID = relatedOrnamentsRelationID;
+	}
+
+
+	public void setWalls(ArrayList<WallOrnamentCaveRelation> walls) {
+		this.walls = walls;
+	}
+
+
+	public String getRelatedelementeofOtherCultures() {
+		return relatedelementeofOtherCultures;
+	}
+
+
+	public void setRelatedelementeofOtherCultures(String relatedelementeofOtherCultures) {
+		this.relatedelementeofOtherCultures = relatedelementeofOtherCultures;
+	}
+
+
+	public String getSimilarelementsOfOtherCultures() {
+		return similarelementsOfOtherCultures;
+	}
+
+
+	public void setSimilarelementsOfOtherCultures(String similarelementsOfOtherCultures) {
+		this.similarelementsOfOtherCultures = similarelementsOfOtherCultures;
+	}
+
+	
 
 
 	
