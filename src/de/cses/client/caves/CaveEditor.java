@@ -273,7 +273,7 @@ public class CaveEditor implements IsWidget {
 							ctEntry = ceilingTypeEntryList
 									.findModelWithKey(Integer.toString(correspondingCaveEntry.getMainChamberEntry().getCeilingTypeID()));
 							mainChamberCeilingTypeSelector.setValue(ctEntry);
-							Info.display("MainChamber.CeilingTypeID", "id = " + correspondingCaveEntry.getMainChamberEntry().getCeilingTypeID());
+//							Info.display("MainChamber.CeilingTypeID", "id = " + correspondingCaveEntry.getMainChamberEntry().getCeilingTypeID());
 							ctEntry = ceilingTypeEntryList
 									.findModelWithKey(Integer.toString(correspondingCaveEntry.getAntechamberEntry().getCeilingTypeID()));
 							antechamberCeilingTypeSelector.setValue(ctEntry);

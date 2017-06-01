@@ -414,9 +414,9 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 						@Override
 						public void onSuccess(Boolean result) {
 							if (result) {
-								Info.display("Image information", "Image information has been updated!");
+//								Info.display("Image information", "Image information has been updated!");
 							} else {
-								Info.display("Image information", "Image information has been updated!");
+//								Info.display("Image information", "Image information has been updated!");
 							}
 							refreshImages();
 							imageListView.getSelectionModel().select(imageEntryList.get(0), true);
@@ -538,9 +538,9 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 					@Override
 					public void onSuccess(Boolean result) {
 						if (result) {
-							Info.display("Image information", "Image information has been updated!");
+//							Info.display("Image information", "Image information has been updated!");
 						} else {
-							Info.display("Image information", "Image information has been updated!");
+//							Info.display("Image information", "Image information has been updated!");
 						}
 						imageEntryList.setEnableFilters(false);
 						imageEntryList.removeFilter(newImageFilter);
@@ -560,7 +560,7 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 	}
 
 	@Override
-	public void uploadCompleted(int newImageID) {
+	public void uploadCompleted(int newImageID, String filename) {
 		imageEntryList.addFilter(newImageFilter);
 		imageEntryList.setEnableFilters(true);
 		refreshImages();

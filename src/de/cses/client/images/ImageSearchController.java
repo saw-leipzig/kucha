@@ -90,13 +90,15 @@ public class ImageSearchController extends AbstractSearchController {
 		ImageUploader iu = new ImageUploader(new ImageUploadListener() {
 
 			@Override
-			public void uploadCompleted(int newImageID) {
+			public void uploadCompleted(int newImageID, String filename) {
 				imageUploadPanel.hide();
 				dbService.getImage(newImageID, new AsyncCallback<ImageEntry>() {
 
 					@Override
 					public void onSuccess(ImageEntry result) {
-						SingleImageEditor singleIE = new SingleImageEditor(result, new ImageEditorListener() {
+						ImageEntry imgEntry = result;
+						imgEntry.setTitle(filename);
+						SingleImageEditor singleIE = new SingleImageEditor(imgEntry, new ImageEditorListener() {
 
 							@Override
 							public void closeImageEditor() {

@@ -20,7 +20,7 @@ package de.cses.client.images;
  */
 public interface ImageUploadListener {
 	
-	public void uploadCompleted(int newImageID);
+	public void uploadCompleted(int newImageID, String imageFilename);
 
 	public void uploadCanceled();
 
