@@ -83,7 +83,7 @@ public class ImageUploader implements IsWidget {
 					String filename = file.getValue();
 					int startIdx = Math.max(filename.lastIndexOf("\\"), filename.lastIndexOf("/"));
 					listener.uploadCompleted(Integer.parseInt(node.getFirstChild().toString()),
-							filename.substring(startIdx, filename.lastIndexOf("."))
+							filename.substring( startIdx>0 ? startIdx+1 : 0, filename.lastIndexOf("."))
 						);
 				}
 			}
