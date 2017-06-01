@@ -39,7 +39,7 @@ public class Util {
 	 * @param entry
 	 * @return The main (master) image representing the depiction as a preview
 	 */
-	public static SafeUri getMasterImageUri(int depictionID, final boolean thumbnail) {
+	public static SafeUri getMasterImageUri(int depictionID, final int thumbnail) {
 		dbService.getMasterImageEntryForDepiction(depictionID, new AsyncCallback<ImageEntry>() {
 
 			@Override
@@ -49,7 +49,7 @@ public class Util {
 
 			@Override
 			public void onSuccess(ImageEntry result) {
-				imageUri  = UriUtils.fromString("resource?imageID=" + result.getImageID() + (thumbnail ? "&thumb=true" : "") );
+				imageUri  = UriUtils.fromString("resource?imageID=" + result.getImageID() + (thumbnail>0 ? "&thumb=" + thumbnail : "") );
 			}
 		});
 		return imageUri;
