@@ -388,6 +388,11 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getOrnamentsWHERE(sqlWhere);
 	}
+	public ArrayList<PictorialElementEntry> getPictorialElementsObjects() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getPictorialElements(5); // start with the 5th element subtree
+	}
+
 
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getOrientationInformation()

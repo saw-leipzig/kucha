@@ -66,6 +66,7 @@ public class OrnamentCaveAttributes extends PopupPanel{
 	private OrnamentCaveAttributes ornamentCaveAttributes =this;
 	private ListStore<OrnamentEntry>selectedSimilarOrnaments;
 	private ListStore<OrnamentEntry>selectedRedlatedOrnaments;
+	private PictorialElementSelectorObjects selector;
 	private Ornamentic ornamentic;
 	// neue comboboxen
 	private ListStore<OrnamentOrientation> orientation;
@@ -195,6 +196,7 @@ public class OrnamentCaveAttributes extends PopupPanel{
 	public Widget createForm(){
 		TabPanel tabPanel = new TabPanel();
 		tabPanel.setWidth(650);
+		tabPanel.setHeight(570);
 		tabPanel.setTabScroll(true);
 		
 		VerticalPanel caveAttributesVerticalPanel = new VerticalPanel();
@@ -373,17 +375,16 @@ public class OrnamentCaveAttributes extends PopupPanel{
 	 
 	  FramedPanel relationToOtherOrnaments = new FramedPanel();
 	  relationToOtherOrnaments.setHeading("Similar of related elements or ornaments");
-	  VBoxLayoutContainer vlcRelationToTherornaments = new VBoxLayoutContainer();
+	  VBoxLayoutContainer vlcRelationToTherornaments1= new VBoxLayoutContainer();
+	  VBoxLayoutContainer vlcRelationToTherornaments2 = new VBoxLayoutContainer();
+	  HorizontalPanel backgroundHorizontalPanel = new HorizontalPanel();
 	  
-	  relationToOtherOrnaments.add(vlcRelationToTherornaments);
+	  relationToOtherOrnaments.add(backgroundHorizontalPanel);
+	  backgroundHorizontalPanel.add(vlcRelationToTherornaments1);
+	  backgroundHorizontalPanel.add(vlcRelationToTherornaments2);
 	  
-	  final TextField groupOfOrnaments = new TextField();
-	  groupOfOrnaments.setAllowBlank(true);
-		header = new FramedPanel();
-		header.setHeading("Group of Ornaments");
-		header.add(groupOfOrnaments);
-		vlcRelationToTherornaments.add(header);
-		groupOfOrnaments.setWidth(200);
+	  
+	  
 	  
 	  HorizontalPanel relatedOrnamentsHorizontalPanel = new HorizontalPanel();
 	  
@@ -404,8 +405,8 @@ public class OrnamentCaveAttributes extends PopupPanel{
 		header = new FramedPanel();
 		header.setHeading("Select related ornaments");
 		header.add(relatedOrnamentsHorizontalPanel);
-		 HorizontalPanel relationsHorizontal1 = new HorizontalPanel();
-		 relationsHorizontal1.add(header);
+		
+		 vlcRelationToTherornaments1.add(header);
 		
 		
 	  
@@ -430,8 +431,8 @@ public class OrnamentCaveAttributes extends PopupPanel{
 		header = new FramedPanel();
 		header.setHeading("Select similar ornaments");
 		header.add(similarOrnamentsHorizontalPanel);
-		relationsHorizontal1.add(header);
-		vlcRelationToTherornaments.add(relationsHorizontal1);
+		vlcRelationToTherornaments2.add(header);
+		
 	  
 	  
 	  HorizontalPanel similarElementsHorizontalPanel = new HorizontalPanel();
@@ -449,8 +450,24 @@ public class OrnamentCaveAttributes extends PopupPanel{
     new ListViewDropTarget<OrnamentOfOtherCulturesEntry>(elementsListViewSimilar).setGroup("similarElement");
     new ListViewDropTarget<OrnamentOfOtherCulturesEntry>(selectedSimilarElementsListView).setGroup("similarElement");
     
+    selector = new PictorialElementSelectorObjects();
+		header = new FramedPanel();
+		selector.asWidget().setHeight("300px");
+		selector.asWidget().setWidth("320px");
+		header.setHeading("Select similar objects");
+		header.add(selector.asWidget());
+		header.setHeight(300);
+		header.setWidth(320);
+		vlcRelationToTherornaments2.add(header);
+    
 	 
-
+    final TextField groupOfOrnaments = new TextField();
+	  groupOfOrnaments.setAllowBlank(true);
+		header = new FramedPanel();
+		header.setHeading("Group of Ornaments");
+		header.add(groupOfOrnaments);
+		vlcRelationToTherornaments1.add(header);
+		groupOfOrnaments.setWidth(300);
 	 
 	  final TextField relatedElementsofOtherCultures = new TextField();
 	  relatedElementsofOtherCultures.setWidth(300);
@@ -458,7 +475,7 @@ public class OrnamentCaveAttributes extends PopupPanel{
 		header = new FramedPanel();
 		header.setHeading("Describe related elements of other cultures");
 		header.add(relatedElementsofOtherCultures);
-		vlcRelationToTherornaments.add(header);
+		vlcRelationToTherornaments1.add(header);
 		
 	  final TextField similarElementsofOtherCultures = new TextField();
 	  similarElementsofOtherCultures.setWidth(300);
@@ -466,7 +483,7 @@ public class OrnamentCaveAttributes extends PopupPanel{
 		header = new FramedPanel();
 		header.setHeading("Describe similar elements of other cultures");
 		header.add(similarElementsofOtherCultures);
-		vlcRelationToTherornaments.add(header);
+		vlcRelationToTherornaments1.add(header);
 	  
 	  
 	  
@@ -512,6 +529,11 @@ public class OrnamentCaveAttributes extends PopupPanel{
 			List<OrnamentEntry> similarOrnaments = selectedSimilarOrnaments.getAll();
 			for( OrnamentEntry ornament : similarOrnaments){
 				ornamentCaveRelation.getSimilarOrnamentsRelationID().add(ornament.getOrnamentID());
+			}
+			Window.alert("kurz vor pictorial hinzugefuegt anzahl ist: "+ selector.getSelectedPE().size());
+			for(int i = 0; i <selector.getSelectedPE().size(); i++){
+				ornamentCaveRelation.getPictorialElementIDs().add(selector.getSelectedPE().get(i).getPictorialElementID());
+				Window.alert("pictorial hinzugefuegt");
 			}
 			ornamentCaveRelation.setWalls(walls);
 			ornamentCaveRelation.setRelatedelementeofOtherCultures(relatedElementsofOtherCultures.getText());

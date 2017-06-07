@@ -29,6 +29,7 @@ public class OrnamentEntry implements IsSerializable{
 	private String sketch;
 	private int maintypologycalClass;
 	private int structureOrganization;
+	private ArrayList<Integer> imageIDs = new ArrayList<Integer>();
 	private ArrayList<OrnamentCaveRelation> cavesRelations = new ArrayList<OrnamentCaveRelation>();
 
 	
@@ -127,6 +128,15 @@ public class OrnamentEntry implements IsSerializable{
 	public void setStructureOrganization(int structureOrganization) {
 		this.structureOrganization = structureOrganization;
 	}
+
+	public ArrayList<Integer> getImageIDs() {
+		return imageIDs;
+	}
+
+	public void setImageIDs(ArrayList<Integer> imageIDs) {
+		this.imageIDs = imageIDs;
+	}
+	
 	
 	
 	
