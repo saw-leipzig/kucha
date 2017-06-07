@@ -335,6 +335,7 @@ public Widget createForm(){
 			@Override
 			public void onSuccess(Boolean result) {
 				Window.alert("saved");
+				popup.hide();
 				
 			}
 		});

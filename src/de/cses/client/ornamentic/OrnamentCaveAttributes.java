@@ -66,6 +66,7 @@ public class OrnamentCaveAttributes extends PopupPanel{
 	private OrnamentCaveAttributes ornamentCaveAttributes =this;
 	private ListStore<OrnamentEntry>selectedSimilarOrnaments;
 	private ListStore<OrnamentEntry>selectedRedlatedOrnaments;
+	private PictorialElementSelectorObjects selector;
 	private Ornamentic ornamentic;
 	// neue comboboxen
 	private ListStore<OrnamentOrientation> orientation;
@@ -449,7 +450,7 @@ public class OrnamentCaveAttributes extends PopupPanel{
     new ListViewDropTarget<OrnamentOfOtherCulturesEntry>(elementsListViewSimilar).setGroup("similarElement");
     new ListViewDropTarget<OrnamentOfOtherCulturesEntry>(selectedSimilarElementsListView).setGroup("similarElement");
     
-    PictorialElementSelectorObjects selector = new PictorialElementSelectorObjects();
+    selector = new PictorialElementSelectorObjects();
 		header = new FramedPanel();
 		selector.asWidget().setHeight("300px");
 		selector.asWidget().setWidth("320px");
@@ -529,8 +530,10 @@ public class OrnamentCaveAttributes extends PopupPanel{
 			for( OrnamentEntry ornament : similarOrnaments){
 				ornamentCaveRelation.getSimilarOrnamentsRelationID().add(ornament.getOrnamentID());
 			}
+			Window.alert("kurz vor pictorial hinzugefuegt anzahl ist: "+ selector.getSelectedPE().size());
 			for(int i = 0; i <selector.getSelectedPE().size(); i++){
 				ornamentCaveRelation.getPictorialElementIDs().add(selector.getSelectedPE().get(i).getPictorialElementID());
+				Window.alert("pictorial hinzugefuegt");
 			}
 			ornamentCaveRelation.setWalls(walls);
 			ornamentCaveRelation.setRelatedelementeofOtherCultures(relatedElementsofOtherCultures.getText());
