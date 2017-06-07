@@ -13,6 +13,8 @@
  */
 package de.cses.client.images;
 
+import java.io.File;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -119,13 +121,14 @@ public class ImageView extends Button {
 				ImageUploader iu = new ImageUploader(new ImageUploadListener() {
 
 					@Override
-					public void uploadCompleted(int newImageID) {
+					public void uploadCompleted(int newImageID, String filename) {
 						imageUploadPanel.hide();
 						dbService.getImage(newImageID, new AsyncCallback<ImageEntry>() {
 
 							@Override
 							public void onSuccess(ImageEntry result) {
 								imgEntry = result;
+								imgEntry.setTitle(filename);
 								SingleImageEditor singleIE = new SingleImageEditor(imgEntry, new ImageEditorListener() {
 
 									@Override

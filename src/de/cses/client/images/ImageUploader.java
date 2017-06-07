@@ -16,12 +16,11 @@ package de.cses.client.images;
 import java.util.ArrayList;
 
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.xml.client.Document;
+import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
 import com.google.gwt.xml.client.XMLParser;
-import com.sencha.gxt.widget.core.client.Dialog;
-import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.Status;
 import com.sencha.gxt.widget.core.client.Window;
@@ -35,8 +34,6 @@ import com.sencha.gxt.widget.core.client.form.FileUploadField;
 import com.sencha.gxt.widget.core.client.form.FormPanel;
 import com.sencha.gxt.widget.core.client.form.FormPanel.Encoding;
 import com.sencha.gxt.widget.core.client.form.FormPanel.Method;
-import com.google.gwt.xml.client.Document;
-import com.google.gwt.xml.client.Node;
 
 public class ImageUploader implements IsWidget {
 
@@ -83,8 +80,11 @@ public class ImageUploader implements IsWidget {
 				NodeList nodelist = doc.getElementsByTagName("pre");
 				Node node = nodelist.item(0);
 				for (ImageUploadListener listener : uploadListener) {
-					// ToDo: send information after image upload for database
-					listener.uploadCompleted(Integer.parseInt(node.getFirstChild().toString()));
+					String filename = file.getValue();
+					int startIdx = Math.max(filename.lastIndexOf("\\"), filename.lastIndexOf("/"));
+					listener.uploadCompleted(Integer.parseInt(node.getFirstChild().toString()),
+							filename.substring( startIdx>0 ? startIdx+1 : 0, filename.lastIndexOf("."))
+						);
 				}
 			}
 		});
@@ -120,17 +120,17 @@ public class ImageUploader implements IsWidget {
 				file.reset();
 			}
 		});
-		
+
 		TextButton cancelButton = new TextButton("Cancel");
 		cancelButton.addSelectHandler(new SelectHandler() {
-			
+
 			@Override
 			public void onSelect(SelectEvent event) {
 				for (ImageUploadListener listener : uploadListener) {
 					// ToDo: send information after image upload for database
 					listener.uploadCanceled();
 				}
-				
+
 			}
 		});
 

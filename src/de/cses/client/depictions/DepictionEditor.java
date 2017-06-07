@@ -464,7 +464,7 @@ public class DepictionEditor implements IsWidget {
 		// TODO check if wall id is set, then set caveSelection.editable(false)
 		attributePanel.add(caveSelection);
 		// attributePanel.setWidth("40%");
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .1));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0/8));
 
 //		attributePanel = new FramedPanel();
 //		attributePanel.setHeading("Belongs to wall");
@@ -486,7 +486,7 @@ public class DepictionEditor implements IsWidget {
 		heightField.setValue(correspondingDepictionEntry.getHeight());
 		attributePanel.add(heightField);
 		dimPanel.add(attributePanel);
-		vlContainer.add(dimPanel, new VerticalLayoutData(1.0, .1));
+		vlContainer.add(dimPanel, new VerticalLayoutData(1.0, 1.0/8));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Acquired by expedition");
@@ -512,7 +512,7 @@ public class DepictionEditor implements IsWidget {
 			}
 		});
 		attributePanel.add(expedSelection);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .2));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0/8));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Vendor");
@@ -537,31 +537,32 @@ public class DepictionEditor implements IsWidget {
 			}
 		});
 		attributePanel.add(vendorSelection);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .1));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0/8));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Date purchased");
 		purchaseDateField = new DateField(new DateTimePropertyEditor("dd MMMM yyyy"));
 		purchaseDateField.setValue(correspondingDepictionEntry.getPurchaseDate());
 		attributePanel.add(purchaseDateField);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .1));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0/8));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Current location");
 		
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .1));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0/8));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Background colour");
 		backgroundColourField = new TextField();
 		attributePanel.add(backgroundColourField);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .1));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0/8));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Material");
 		materialField = new TextField();
 		attributePanel.add(materialField);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .1));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0/8));
+		
 		hlContainer.add(vlContainer, new HorizontalLayoutData(.4, 1.0));
 
 		vlContainer = new VerticalLayoutContainer();
