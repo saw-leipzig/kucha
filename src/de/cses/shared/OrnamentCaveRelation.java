@@ -17,6 +17,7 @@ public class OrnamentCaveRelation implements IsSerializable{
 	private String relatedelementeofOtherCultures;
 	private String similarelementsOfOtherCultures;
 	private ArrayList<Integer> similarOrnamentsRelationID= new ArrayList<Integer>();
+	private ArrayList<Integer> PictorialElementIDs = new ArrayList<Integer>();
 	private ArrayList<Integer> relatedOrnamentsRelationID = new ArrayList<Integer>();
 	private ArrayList<WallOrnamentCaveRelation> walls = new ArrayList<WallOrnamentCaveRelation>();
 
@@ -164,6 +165,16 @@ public class OrnamentCaveRelation implements IsSerializable{
 
 	public void setSimilarelementsOfOtherCultures(String similarelementsOfOtherCultures) {
 		this.similarelementsOfOtherCultures = similarelementsOfOtherCultures;
+	}
+
+
+	public ArrayList<Integer> getPictorialElementIDs() {
+		return PictorialElementIDs;
+	}
+
+
+	public void setPictorialElementIDs(ArrayList<Integer> pictorialElementIDs) {
+		PictorialElementIDs = pictorialElementIDs;
 	}
 
 	

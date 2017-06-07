@@ -1279,4 +1279,14 @@ public class MysqlConnector {
 		}
 		return results;
 	}
+	
+
+	public ArrayList<PictorialElementEntry> getPictorialElementsObjects() {
+		ArrayList<PictorialElementEntry> root = getPictorialElementEntries(5);
+
+		for (PictorialElementEntry item : root) {
+			processPictorialElementsTree(item);
+		}
+		return root;
+	}
 }

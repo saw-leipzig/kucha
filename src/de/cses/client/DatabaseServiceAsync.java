@@ -139,6 +139,9 @@ public interface DatabaseServiceAsync {
 	
 	void getOrnamentFunctions (AsyncCallback<ArrayList<OrnamentFunction>> asyncCallback) throws IllegalArgumentException;
 	
+
 	void getOrnamentsWHERE(String sqlWhere, AsyncCallback<ArrayList<OrnamentEntry>> asyncCallback) throws IllegalArgumentException;
 	
+	void getPictorialElementsObjects(AsyncCallback<ArrayList<PictorialElementEntry>> asyncCallback) throws IllegalArgumentException;
+
 	}
