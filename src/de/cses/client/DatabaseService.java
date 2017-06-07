@@ -149,4 +149,6 @@ public interface DatabaseService extends RemoteService {
 
 	ArrayList<PreservationClassificationEntry> getPreservationClassifications();
 
+	ArrayList<PictorialElementEntry> getPictorialElementsObjects() throws IllegalArgumentException;
+
 }

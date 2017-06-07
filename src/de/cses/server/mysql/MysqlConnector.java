@@ -13,6 +13,7 @@
  */
 package de.cses.server.mysql;
 
+import java.awt.Window;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -593,6 +594,11 @@ public class MysqlConnector {
 			while (rs.next()) {
 				auto_increment_id = rs.getInt(1);
 			}
+			for(Integer id : ornamentEntry.getImageIDs()){
+				rs = stmt.executeQuery("INSERT INTO OrnamentImageRelation (OrnamentID, ImageID) VALUES('"
+						+ auto_increment_id + " ','" 
+						+ id+"')");
+			}
 			for (int i = 0; i < ornamentEntry.getCavesRelations().size(); i++) {
 				stmt = dbc.createStatement();			
 				rs = stmt.executeQuery(
@@ -611,16 +617,21 @@ public class MysqlConnector {
 				while (rs.next()) {
 					auto_increment_id = rs.getInt(1);
 				}
+				System.err.println("pictorial gespeichert Anzahl ist: "+  ornamentEntry.getCavesRelations().get(i).getPictorialElementIDs().size() );
+				for (int j = 0; j < ornamentEntry.getCavesRelations().get(i).getPictorialElementIDs().size(); j++) {
+					System.err.println("pictorial gespeichert");
+					rs = stmt.executeQuery("INSERT INTO OrnamentCavePictorialRelation (OrnamentCaveRelationID, PictorialElementID) VALUES ("
+							+ auto_increment_id  + ","
+							+ ornamentEntry.getCavesRelations().get(i).getPictorialElementIDs().get(j)
+						  + ")");
+				}
 				
-				// save images
-				System.err.println("related ornaments wird hinzugefuegt, anzahl ist " + ornamentEntry.getCavesRelations().get(i).getRelatedOrnamentsRelationID().size());
 				for (int j = 0; j < ornamentEntry.getCavesRelations().get(i).getRelatedOrnamentsRelationID().size(); j++) {
 					rs = stmt.executeQuery("INSERT INTO RelatedOrnamentsRelation (OrnamentID, OrnamentCaveRelationID) VALUES ("
 							+ ornamentEntry.getCavesRelations().get(i).getRelatedOrnamentsRelationID().get(j) + ","
 							+ auto_increment_id 
 						  + ")");
 				}
-				System.err.println("similar ornament wird hinzugefuegt wird hinzugefuegt, anzahl ist " + ornamentEntry.getCavesRelations().get(i).getSimilarOrnamentsRelationID().size());
 				for (int j = 0; j < ornamentEntry.getCavesRelations().get(i).getSimilarOrnamentsRelationID().size(); j++) {
 					rs = stmt.executeQuery("INSERT INTO SimilarOrnamentsRelation (OrnamentID, OrnamentCaveRelationID) VALUES ("
 							+ ornamentEntry.getCavesRelations().get(i).getSimilarOrnamentsRelationID().get(j) + ","
@@ -1419,5 +1430,6 @@ public class MysqlConnector {
 			return null;
 		}
 		return result;
+
 	}
 }

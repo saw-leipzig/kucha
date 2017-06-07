@@ -20,7 +20,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -238,7 +237,6 @@ ClickHandler saveHandler = new ClickHandler(){
 		relation.setNotes(notes.getText());
 		relation.setWallID(wallsComboBox.getValue().getWallID());
 		ornamentCaveRelation.getWalls().add(relation);
-		Window.alert("Wall relation hinzugefuegt");
 		popup.hide();
 	}
 	
