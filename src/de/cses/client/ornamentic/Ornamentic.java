@@ -311,6 +311,9 @@ public Widget createForm(){
 		for(int i = 0; i < caveOrnamentRelationList.size();i++){
 			ornament.getCavesRelations().add(caveOrnamentRelationList.get(i));
 		}
+		for(int i = 0; i< imageEntryList.size(); i++){
+			ornament.getImageIDs().add(imageEntryList.get(i).getImageID());
+		}
 		ornament.setCode(ornamentCode.getText());
 		ornament.setDescription(discription.getText());
 		ornament.setRemarks(remarks.getText());

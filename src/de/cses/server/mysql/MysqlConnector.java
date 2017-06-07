@@ -588,6 +588,11 @@ public class MysqlConnector {
 			while (rs.next()) {
 				auto_increment_id = rs.getInt(1);
 			}
+			for(Integer id : ornamentEntry.getImageIDs()){
+				rs = stmt.executeQuery("INSERT INTO OrnamentImageRelation (OrnamentID, ImageID) VALUES('"
+						+ auto_increment_id + " ','" 
+						+ id+"')");
+			}
 			for (int i = 0; i < ornamentEntry.getCavesRelations().size(); i++) {
 				stmt = dbc.createStatement();			
 				rs = stmt.executeQuery(
