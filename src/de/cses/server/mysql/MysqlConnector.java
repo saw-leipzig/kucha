@@ -707,8 +707,8 @@ public class MysqlConnector {
 		return results;
 	}
 
-	public ArrayList<PictorialElementEntry> getPictorialElements() {
-		ArrayList<PictorialElementEntry> root = getPictorialElementEntries(0);
+	public ArrayList<PictorialElementEntry> getPictorialElements(int rootID) {
+		ArrayList<PictorialElementEntry> root = getPictorialElementEntries(rootID);
 
 		for (PictorialElementEntry item : root) {
 			processPictorialElementsTree(item);
