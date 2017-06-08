@@ -1224,13 +1224,12 @@ public class CaveEditor implements IsWidget {
 
 				@Override
 				public void onFailure(Throwable caught) {
-					caught.printStackTrace();
+					Util.showWarning("A problem occurred", "The changes could not be saved!");
 				}
 
 				@Override
 				public void onSuccess(Boolean result) {
-					// TODO Auto-generated method stub
-					
+					closeCaveEditor();
 				}
 			});
 			
@@ -1239,17 +1238,17 @@ public class CaveEditor implements IsWidget {
 
 				@Override
 				public void onFailure(Throwable caught) {
-					caught.printStackTrace();
+					Util.showWarning("A problem occurred", "The new Cave could not be saved!");
 				}
 
 				@Override
 				public void onSuccess(Integer result) {
 					correspondingCaveEntry.setCaveID(result.intValue());
+					closeCaveEditor();
 				}
 			});
 			
 		}
-		closeCaveEditor();
 	}
 	
 }
