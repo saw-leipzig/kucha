@@ -642,7 +642,11 @@ public class CaveEditor implements IsWidget {
 			
 			@Override
 			public void onSelect(SelectEvent event) {
-				PopupPanel pp = new PopupPanel();
+				if (siteSelection.getCurrentValue() == null) {
+					showSaveWarningDialog("Please select Site first!");
+					return;
+				}
+				PopupPanel addNewRegionDialog = new PopupPanel();
 				FramedPanel newRegionFP = new FramedPanel();
 				newRegionFP.setHeading("Add Region");
 				RegionEntry re = new RegionEntry();
@@ -651,16 +655,19 @@ public class CaveEditor implements IsWidget {
 				FramedPanel fp = new FramedPanel();
 				fp.setHeading("Phonetic Name");
 				TextField phoneticNameField = new TextField();
+				phoneticNameField.setValue("");
 				fp.add(phoneticNameField);
 				newRegionVLC.add(fp, new VerticalLayoutData(1.0, 1.0 / 3));
 				fp = new FramedPanel();
 				fp.setHeading("Original Name");
 				TextField originalNameField = new TextField();
+				originalNameField.setValue("");
 				fp.add(originalNameField);
 				newRegionVLC.add(fp, new VerticalLayoutData(1.0, 1.0 / 3));
 				fp = new FramedPanel();
 				fp.setHeading("Original Name");
 				TextField englishNameField = new TextField();
+				englishNameField.setValue("");
 				fp.add(englishNameField);
 				newRegionVLC.add(fp, new VerticalLayoutData(1.0, 1.0 / 3));
 				newRegionFP.add(newRegionVLC);
@@ -670,10 +677,11 @@ public class CaveEditor implements IsWidget {
 					@Override
 					public void onSelect(SelectEvent event) {
 						if (englishNameField.getValue().isEmpty()) {
-							showSaveWarningDialog();
+							showSaveWarningDialog("Please add at least an english name!");
+							return;
 						} else {
-							re.setPhoneticName(phoneticNameField.getValue());
-							re.setOriginalName(originalNameField.getValue());
+							re.setPhoneticName(phoneticNameField.getValue().isEmpty() ? "" : phoneticNameField.getValue());
+							re.setOriginalName(originalNameField.getValue().isEmpty() ? "" : originalNameField.getValue());
 							re.setEnglishName(englishNameField.getValue());
 							dbService.insertEntry(re.getInsertSql(), new AsyncCallback<Integer>() {
 
@@ -688,21 +696,23 @@ public class CaveEditor implements IsWidget {
 								}
 							});
 						}
-						pp.hide();
+						addNewRegionDialog.hide();
 					}
 				});
+				newRegionFP.addButton(saveButton);
 				TextButton closeButton = new TextButton("close");
 				closeButton.addSelectHandler(new SelectHandler() {
 					
 					@Override
 					public void onSelect(SelectEvent event) {
-						pp.hide();
+						addNewRegionDialog.hide();
 					}
 				});
-				newRegionFP.add(closeButton);
-				pp.add(newRegionFP);
-				pp.setSize("250", "350");
-				pp.show();
+				newRegionFP.addButton(closeButton);
+				newRegionFP.setSize("250", "200");
+				addNewRegionDialog.add(newRegionFP);
+				addNewRegionDialog.setModal(true);
+				addNewRegionDialog.center();
 			}
 		});
 		attributePanel.addButton(addRegionButton);
@@ -1166,7 +1176,7 @@ public class CaveEditor implements IsWidget {
 		cancelCaveEditor();
 	}
 	
-	private void showSaveWarningDialog() {
+	private void showSaveWarningDialog(String message) {
 		Dialog warning = new Dialog();
 		warning.setHeading("A problem occurred!");
 		warning.setWidth(300);
@@ -1175,7 +1185,7 @@ public class CaveEditor implements IsWidget {
 		warning.setPredefinedButtons(PredefinedButton.OK);
 		warning.setBodyStyleName("pad-text");
 		warning.getBody().addClassName("pad-text");
-		warning.add(new Label("Please add at least an english name!"));
+		warning.add(new Label(message));
 		warning.show();
 		// constrain the dialog to the viewport (for small mobile screen sizes)
 		Rectangle bounds = warning.getElement().getBounds();

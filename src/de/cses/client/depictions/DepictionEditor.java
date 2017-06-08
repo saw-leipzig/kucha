@@ -550,7 +550,7 @@ public class DepictionEditor implements IsWidget {
 				wallEditor.setPanel(wallEditorDialog);
 				wallEditorDialog.setModal(true);
 				wallEditorDialog.center();
-				wallEditorDialog.show();
+//				wallEditorDialog.show();
 			}
 		});
 		attributePanel.addButton(wallEditorButton);
