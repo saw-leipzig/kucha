@@ -423,9 +423,6 @@ public class CaveEditor implements IsWidget {
 	 */
 	private void createNewCaveEntry() {
 		correspondingCaveEntry = new CaveEntry();
-		correspondingCaveEntry.setAntechamberEntry(new AntechamberEntry());
-		correspondingCaveEntry.setMainChamberEntry(new MainChamberEntry());
-		correspondingCaveEntry.setRearAreaEntry(new RearAreaEntry());
 	}
 
 	@Override
@@ -1071,8 +1068,7 @@ public class CaveEditor implements IsWidget {
 
 				@Override
 				public void onFailure(Throwable caught) {
-					// TODO Auto-generated method stub
-					
+					caught.printStackTrace();
 				}
 
 				@Override
@@ -1083,9 +1079,7 @@ public class CaveEditor implements IsWidget {
 			});
 			
 		} else { // then its 0 and we need to create a new entry
-			
-			
-			dbService.insertEntry(correspondingCaveEntry.getInsertSql(), new AsyncCallback<Integer>() {
+			dbService.insertCaveEntry(correspondingCaveEntry, new AsyncCallback<Integer>() {
 
 				@Override
 				public void onFailure(Throwable caught) {
@@ -1094,48 +1088,10 @@ public class CaveEditor implements IsWidget {
 
 				@Override
 				public void onSuccess(Integer result) {
-					int newID = result.intValue();
-
 					correspondingCaveEntry.setCaveID(result.intValue());
-					correspondingCaveEntry.getAntechamberEntry().setAntechamberID(result.intValue());
-					correspondingCaveEntry.getMainChamberEntry().setMainChamberID(result.intValue());
-					correspondingCaveEntry.getRearAreaEntry().setRearAreaID(result.intValue());
-					dbService.updateEntry(correspondingCaveEntry.getAntechamberEntry().getInsertSql(), new AsyncCallback<Boolean>() {
-
-						@Override
-						public void onFailure(Throwable caught) {
-							caught.printStackTrace();
-						}
-
-						@Override
-						public void onSuccess(Boolean result) {
-						}
-
-					});
-					dbService.updateEntry(correspondingCaveEntry.getMainChamberEntry().getInsertSql(), new AsyncCallback<Boolean>() {
-
-						@Override
-						public void onFailure(Throwable caught) {
-							caught.printStackTrace();
-						}
-
-						@Override
-						public void onSuccess(Boolean result) {
-						}
-					});
-					dbService.updateEntry(correspondingCaveEntry.getRearAreaEntry().getInsertSql(), new AsyncCallback<Boolean>() {
-
-						@Override
-						public void onFailure(Throwable caught) {
-							caught.printStackTrace();
-						}
-
-						@Override
-						public void onSuccess(Boolean result) {
-						}
-					});
 				}
 			});
+			
 		}
 		cancelCaveEditor();
 	}

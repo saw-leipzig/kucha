@@ -185,4 +185,6 @@ public interface DatabaseServiceAsync {
 
 	void updateCaveEntry(CaveEntry caveEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
+	void insertCaveEntry(CaveEntry caveEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
+
 	}

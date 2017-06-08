@@ -164,4 +164,6 @@ public interface DatabaseService extends RemoteService {
 
 	boolean updateCaveEntry(CaveEntry caveEntry) throws IllegalArgumentException;
 
+	int insertCaveEntry(CaveEntry caveEntry) throws IllegalArgumentException;
+
 }
