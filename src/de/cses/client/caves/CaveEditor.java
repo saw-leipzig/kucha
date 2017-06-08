@@ -28,6 +28,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.XTemplates;
@@ -50,19 +51,16 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
-import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
-import de.cses.shared.AntechamberEntry;
+import de.cses.client.Util;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
 import de.cses.shared.DistrictEntry;
-import de.cses.shared.MainChamberEntry;
 import de.cses.shared.OrientationEntry;
 import de.cses.shared.PreservationClassificationEntry;
-import de.cses.shared.RearAreaEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 
@@ -423,9 +421,6 @@ public class CaveEditor implements IsWidget {
 	 */
 	private void createNewCaveEntry() {
 		correspondingCaveEntry = new CaveEntry();
-		correspondingCaveEntry.setAntechamberEntry(new AntechamberEntry());
-		correspondingCaveEntry.setMainChamberEntry(new MainChamberEntry());
-		correspondingCaveEntry.setRearAreaEntry(new RearAreaEntry());
 	}
 
 	@Override
@@ -464,6 +459,7 @@ public class CaveEditor implements IsWidget {
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Official Number");
 		officialNumberField = new TextField();
+		officialNumberField.setEmptyText("mandatory cave number");
 		officialNumberField.setAllowBlank(false);
 		officialNumberField.setValue(correspondingCaveEntry.getOfficialNumber());
 		officialNumberField.addValueChangeHandler(new ValueChangeHandler<String>() {
@@ -474,11 +470,12 @@ public class CaveEditor implements IsWidget {
 			}
 		});
 		attributePanel.add(officialNumberField);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .125));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .11));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Official Name");
 		officialNameField = new TextField();
+		officialNameField.setEmptyText("optional cave name");
 		officialNameField.setValue(correspondingCaveEntry.getOfficialName());
 		officialNameField.addValueChangeHandler(new ValueChangeHandler<String>() {
 
@@ -488,11 +485,12 @@ public class CaveEditor implements IsWidget {
 			}
 		});
 		attributePanel.add(officialNameField);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .125));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .11));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Historic Name");
 		historicNameField = new TextField();
+		historicNameField.setEmptyText("optional historic name");
 		historicNameField.setValue(correspondingCaveEntry.getHistoricName());
 		historicNameField.addValueChangeHandler(new ValueChangeHandler<String>() {
 
@@ -502,7 +500,7 @@ public class CaveEditor implements IsWidget {
 			}
 		});
 		attributePanel.add(historicNameField);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .125));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .11));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Orientation");
@@ -526,7 +524,7 @@ public class CaveEditor implements IsWidget {
 			}
 		});
 		attributePanel.add(orientationSelection);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .125));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .11));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Site");
@@ -579,7 +577,7 @@ public class CaveEditor implements IsWidget {
 			siteSelection.setWidth(250);
 			attributePanel.add(siteSelection);
 		}
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .125));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .11));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("District");
@@ -607,7 +605,80 @@ public class CaveEditor implements IsWidget {
 			districtSelection.setEnabled(false);
 		}
 		attributePanel.add(districtSelection);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .125));
+		
+		TextButton addDistrictButton = new TextButton("New District");
+		addDistrictButton.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				if (siteSelection.getCurrentValue() == null) {
+					Util.showWarning("A problem occurred", "Please select Site first!");
+					return;
+				}
+				PopupPanel addNewDistrictDialog = new PopupPanel();
+				FramedPanel newDistrictFP = new FramedPanel();
+				newDistrictFP.setHeading("Add District in " + siteSelection.getCurrentValue().getName());
+				DistrictEntry de = new DistrictEntry();
+				de.setSiteID(siteSelection.getCurrentValue().getSiteID());
+				VerticalLayoutContainer newDistrictVLC = new VerticalLayoutContainer();
+				FramedPanel fp = new FramedPanel();
+				fp.setHeading("District Name");
+				TextField districtNameField = new TextField();
+				districtNameField.setValue("");
+				fp.add(districtNameField);
+				newDistrictVLC.add(fp, new VerticalLayoutData(1.0, 1.0 / 3));
+				fp = new FramedPanel();
+				fp.setHeading("Descritpion");
+				TextArea descriptionField = new TextArea();
+				descriptionField.setValue("");
+				fp.add(descriptionField);
+				newDistrictVLC.add(fp, new VerticalLayoutData(1.0, 2.0 / 3));
+				newDistrictFP.add(newDistrictVLC);
+				TextButton saveButton = new TextButton("save");
+				saveButton.addSelectHandler(new SelectHandler() {
+					
+					@Override
+					public void onSelect(SelectEvent event) {
+						if (districtNameField.getValue().isEmpty()) {
+							Util.showWarning("A problem occurred", "Please add at least a district name!");
+						} else {
+							de.setName(districtNameField.getValue());
+							de.setDescription(descriptionField.getValue().isEmpty() ? "" : descriptionField.getValue());
+							dbService.insertEntry(de.getInsertSql(), new AsyncCallback<Integer>() {
+
+								@Override
+								public void onFailure(Throwable caught) {
+									caught.printStackTrace();
+								}
+
+								@Override
+								public void onSuccess(Integer result) {
+									loadDistricts();
+								}
+							});
+							addNewDistrictDialog.hide();
+						}
+					}
+				});
+				newDistrictFP.addButton(saveButton);
+				TextButton closeButton = new TextButton("close");
+				closeButton.addSelectHandler(new SelectHandler() {
+					
+					@Override
+					public void onSelect(SelectEvent event) {
+						addNewDistrictDialog.hide();
+					}
+				});
+				newDistrictFP.addButton(closeButton);
+				newDistrictFP.setSize("250", "250");
+				addNewDistrictDialog.add(newDistrictFP);
+				addNewDistrictDialog.setModal(true);
+				addNewDistrictDialog.center();
+			}
+		});
+		attributePanel.addButton(addDistrictButton);
+		
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .17));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Region");
@@ -639,7 +710,86 @@ public class CaveEditor implements IsWidget {
 			regionSelection.setEnabled(false);
 		}
 		attributePanel.add(regionSelection);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .125));
+		
+		TextButton addRegionButton = new TextButton("New Region");
+		addRegionButton.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				if (siteSelection.getCurrentValue() == null) {
+					Util.showWarning("A problem occurred", "Please select Site first!");
+					return;
+				}
+				PopupPanel addNewRegionDialog = new PopupPanel();
+				FramedPanel newRegionFP = new FramedPanel();
+				newRegionFP.setHeading("Add Region in " + siteSelection.getCurrentValue().getName());
+				RegionEntry re = new RegionEntry();
+				re.setSiteID(siteSelection.getCurrentValue().getSiteID());
+				VerticalLayoutContainer newRegionVLC = new VerticalLayoutContainer();
+				FramedPanel fp = new FramedPanel();
+				fp.setHeading("Phonetic Name");
+				TextField phoneticNameField = new TextField();
+				phoneticNameField.setValue("");
+				fp.add(phoneticNameField);
+				newRegionVLC.add(fp, new VerticalLayoutData(1.0, 1.0 / 3));
+				fp = new FramedPanel();
+				fp.setHeading("Original Name");
+				TextField originalNameField = new TextField();
+				originalNameField.setValue("");
+				fp.add(originalNameField);
+				newRegionVLC.add(fp, new VerticalLayoutData(1.0, 1.0 / 3));
+				fp = new FramedPanel();
+				fp.setHeading("English Name");
+				TextField englishNameField = new TextField();
+				englishNameField.setValue("");
+				fp.add(englishNameField);
+				newRegionVLC.add(fp, new VerticalLayoutData(1.0, 1.0 / 3));
+				newRegionFP.add(newRegionVLC);
+				TextButton saveButton = new TextButton("save");
+				saveButton.addSelectHandler(new SelectHandler() {
+					
+					@Override
+					public void onSelect(SelectEvent event) {
+						if (englishNameField.getValue().isEmpty()) {
+							Util.showWarning("A problem occurred", "Please add at least an english name!");
+						} else {
+							re.setPhoneticName(phoneticNameField.getValue().isEmpty() ? "" : phoneticNameField.getValue());
+							re.setOriginalName(originalNameField.getValue().isEmpty() ? "" : originalNameField.getValue());
+							re.setEnglishName(englishNameField.getValue());
+							dbService.insertEntry(re.getInsertSql(), new AsyncCallback<Integer>() {
+
+								@Override
+								public void onFailure(Throwable caught) {
+									caught.printStackTrace();
+								}
+
+								@Override
+								public void onSuccess(Integer result) {
+									loadRegions();
+								}
+							});
+							addNewRegionDialog.hide();
+						}
+					}
+				});
+				newRegionFP.addButton(saveButton);
+				TextButton closeButton = new TextButton("close");
+				closeButton.addSelectHandler(new SelectHandler() {
+					
+					@Override
+					public void onSelect(SelectEvent event) {
+						addNewRegionDialog.hide();
+					}
+				});
+				newRegionFP.addButton(closeButton);
+				newRegionFP.setSize("250", "250");
+				addNewRegionDialog.add(newRegionFP);
+				addNewRegionDialog.setModal(true);
+				addNewRegionDialog.center();
+			}
+		});
+		attributePanel.addButton(addRegionButton);
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .17));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Alteration date");
@@ -653,7 +803,7 @@ public class CaveEditor implements IsWidget {
 			}
 		});
 		attributePanel.add(alterationDateField);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .125));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .11));
 
 		mainHlContainer.add(vlContainer, new HorizontalLayoutData(.3, 1.0));
 
@@ -844,6 +994,7 @@ public class CaveEditor implements IsWidget {
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Further Comments");
 		stateOfPreservationTextArea = new TextArea();
+		stateOfPreservationTextArea.setEmptyText("This field is for remarks on the state of the preservation");
 		stateOfPreservationTextArea.setValue(correspondingCaveEntry.getStateOfPerservation());
 		stateOfPreservationTextArea.addValueChangeHandler(new ValueChangeHandler<String>() {
 
@@ -868,6 +1019,7 @@ public class CaveEditor implements IsWidget {
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Findings");
 		findingsTextArea = new TextArea();
+		findingsTextArea.setEmptyText("research findings");
 		findingsTextArea.setValue(correspondingCaveEntry.getFindings());
 		findingsTextArea.addValueChangeHandler(new ValueChangeHandler<String>() {
 
@@ -1035,7 +1187,7 @@ public class CaveEditor implements IsWidget {
 		cancelButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-				cancelCaveEditor();
+				closeCaveEditor();
 			}
 		});
 		mainPanel.addButton(saveButton);
@@ -1046,7 +1198,7 @@ public class CaveEditor implements IsWidget {
 	/**
 	 * Will be called when the cancel button is selected. Calls <code>CaveEditorListener.closeRequest()</code>
 	 */
-	protected void cancelCaveEditor() {
+	protected void closeCaveEditor() {
 		for (CaveEditorListener l : listenerList) {
 			l.closeRequest();
 		}
@@ -1066,106 +1218,40 @@ public class CaveEditor implements IsWidget {
 	 * listener.
 	 */
 	protected void saveEntries() {
+		if (correspondingCaveEntry.getOfficialNumber().isEmpty()) {
+			officialNumberField.getElement().getStyle().setBackgroundColor("#FFFF00");
+			Util.showWarning("Missing information", "Please fill in mandatory cave number!");
+			return;
+		}
 		if (correspondingCaveEntry.getCaveID() > 0) {
-			dbService.updateEntry(correspondingCaveEntry.getUpdateSql(), new AsyncCallback<Boolean>() {
+			dbService.updateCaveEntry(correspondingCaveEntry, new AsyncCallback<Boolean>() {
 
 				@Override
 				public void onFailure(Throwable caught) {
-					caught.printStackTrace();
+					Util.showWarning("A problem occurred", "The changes could not be saved!");
 				}
 
 				@Override
 				public void onSuccess(Boolean result) {
-					dbService.updateEntry(correspondingCaveEntry.getAntechamberEntry().getUpdateSql(), new AsyncCallback<Boolean>() {
-
-						@Override
-						public void onFailure(Throwable caught) {
-							caught.printStackTrace();
-						}
-
-						@Override
-						public void onSuccess(Boolean result) {
-						}
-
-					});
-					dbService.updateEntry(correspondingCaveEntry.getMainChamberEntry().getUpdateSql(), new AsyncCallback<Boolean>() {
-
-						@Override
-						public void onFailure(Throwable caught) {
-							caught.printStackTrace();
-						}
-
-						@Override
-						public void onSuccess(Boolean result) {
-						}
-					});
-					dbService.updateEntry(correspondingCaveEntry.getRearAreaEntry().getUpdateSql(), new AsyncCallback<Boolean>() {
-
-						@Override
-						public void onFailure(Throwable caught) {
-							caught.printStackTrace();
-						}
-
-						@Override
-						public void onSuccess(Boolean result) {
-						}
-					});
+					closeCaveEditor();
 				}
 			});
-		} else { // then its 0 and we need to create a new entry
-			dbService.insertEntry(correspondingCaveEntry.getInsertSql(), new AsyncCallback<Integer>() {
+			
+		} else { // its 0 and we need to create a new entry
+			dbService.insertCaveEntry(correspondingCaveEntry, new AsyncCallback<Integer>() {
 
 				@Override
 				public void onFailure(Throwable caught) {
-					caught.printStackTrace();
+					Util.showWarning("A problem occurred", "The new Cave could not be saved!");
 				}
 
 				@Override
 				public void onSuccess(Integer result) {
-					int newID = result.intValue();
-
 					correspondingCaveEntry.setCaveID(result.intValue());
-					correspondingCaveEntry.getAntechamberEntry().setAntechamberID(result.intValue());
-					correspondingCaveEntry.getMainChamberEntry().setMainChamberID(result.intValue());
-					correspondingCaveEntry.getRearAreaEntry().setRearAreaID(result.intValue());
-					dbService.updateEntry(correspondingCaveEntry.getAntechamberEntry().getInsertSql(), new AsyncCallback<Boolean>() {
-
-						@Override
-						public void onFailure(Throwable caught) {
-							caught.printStackTrace();
-						}
-
-						@Override
-						public void onSuccess(Boolean result) {
-						}
-
-					});
-					dbService.updateEntry(correspondingCaveEntry.getMainChamberEntry().getInsertSql(), new AsyncCallback<Boolean>() {
-
-						@Override
-						public void onFailure(Throwable caught) {
-							caught.printStackTrace();
-						}
-
-						@Override
-						public void onSuccess(Boolean result) {
-						}
-					});
-					dbService.updateEntry(correspondingCaveEntry.getRearAreaEntry().getInsertSql(), new AsyncCallback<Boolean>() {
-
-						@Override
-						public void onFailure(Throwable caught) {
-							caught.printStackTrace();
-						}
-
-						@Override
-						public void onSuccess(Boolean result) {
-						}
-					});
+					closeCaveEditor();
 				}
 			});
 		}
-		cancelCaveEditor();
 	}
-
+	
 }

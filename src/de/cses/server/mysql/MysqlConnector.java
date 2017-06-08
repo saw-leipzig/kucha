@@ -1432,4 +1432,32 @@ public class MysqlConnector {
 		return result;
 
 	}
+
+	/**
+	 * @param caveEntry
+	 * @return
+	 */
+	public boolean updateCaveEntry(CaveEntry caveEntry) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	/**
+	 * @param caveEntry
+	 * @return
+	 */
+	public int insertCaveEntry(CaveEntry caveEntry) {
+		int newCaveID;
+		
+		newCaveID = insertEntry(caveEntry.getInsertSql());
+		if (newCaveID > 0) {
+			caveEntry.getAntechamberEntry().setAntechamberID(newCaveID);
+			caveEntry.getMainChamberEntry().setMainChamberID(newCaveID);
+			caveEntry.getRearAreaEntry().setRearAreaID(newCaveID);
+			insertEntry(caveEntry.getAntechamberEntry().getInsertSql());
+			insertEntry(caveEntry.getMainChamberEntry().getInsertSql());
+			insertEntry(caveEntry.getRearAreaEntry().getInsertSql());
+		}
+		return newCaveID;
+	}
 }

@@ -71,6 +71,7 @@ import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.images.ImageSelector;
 import de.cses.client.images.ImageSelectorListener;
+import de.cses.client.walls.WallSelector;
 import de.cses.client.walls.Walls;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveTypeEntry;
@@ -125,8 +126,7 @@ public class DepictionEditor implements IsWidget {
 	private Walls wallEditor;
 	private Label iconographyLabel;
 	protected PopupPanel iconographySelectionDialog;
-	private FlowLayoutContainer caveSketchContainer;
-	private CaveLayoutViewTemplates caveLayoutViewTemplates;
+	private WallSelector caveSketchContainer;
 
 	interface DepictionProperties extends PropertyAccess<DepictionEntry> {
 		ModelKeyProvider<DepictionEntry> depictionID();
@@ -205,11 +205,6 @@ public class DepictionEditor implements IsWidget {
 
 		// @XTemplate("<div qtip=\"{slogan}\" qtitle=\"State Slogan\">{name}</div>")
 		// SafeHtml state(String slogan, String name);
-	}
-
-	interface CaveLayoutViewTemplates extends XTemplates {
-		@XTemplate("<img align=\"center\" margin=\"10\" src=\"{imageUri}\">")
-		SafeHtml image(SafeUri imageUri);
 	}
 
 	public DepictionEditor(DepictionEntry entry, DepictionEditorListener deListener) {
@@ -330,20 +325,7 @@ public class DepictionEditor implements IsWidget {
 				if (correspondingDepictionEntry.getCaveID() > 0) {
 					CaveEntry ce = caveEntryList.findModelWithKey(Integer.toString(correspondingDepictionEntry.getCaveID()));
 					caveSelection.setValue(ce);
-					dbService.getCaveTypebyID(ce.getCaveTypeID(), new AsyncCallback<CaveTypeEntry>() {
-
-						@Override
-						public void onFailure(Throwable caught) {
-							caught.printStackTrace();
-						}
-
-						@Override
-						public void onSuccess(CaveTypeEntry ctEntry) {
-							caveSketchContainer.clear();
-							caveSketchContainer
-									.add(new HTMLPanel(caveLayoutViewTemplates.image(UriUtils.fromString("resource?background=" + ctEntry.getSketchName()))));
-						}
-					});
+					caveSketchContainer.setCave(ce);
 				}
 			}
 		});
@@ -444,20 +426,7 @@ public class DepictionEditor implements IsWidget {
 			@Override
 			public void onSelection(SelectionEvent<CaveEntry> event) {
 				correspondingDepictionEntry.setCaveID(event.getSelectedItem().getCaveID());
-				dbService.getCaveTypebyID(event.getSelectedItem().getCaveTypeID(), new AsyncCallback<CaveTypeEntry>() {
-
-					@Override
-					public void onFailure(Throwable caught) {
-						caught.printStackTrace();
-					}
-
-					@Override
-					public void onSuccess(CaveTypeEntry ctEntry) {
-						caveSketchContainer.clear();
-						caveSketchContainer
-								.add(new HTMLPanel(caveLayoutViewTemplates.image(UriUtils.fromString("resource?background=" + ctEntry.getSketchName()))));
-					}
-				});
+				caveSketchContainer.setCave(event.getSelectedItem());
 			}
 		});
 		caveSelection.setToolTip("This field can only be changed until a depiction is allocated to a wall");
@@ -581,13 +550,12 @@ public class DepictionEditor implements IsWidget {
 				wallEditor.setPanel(wallEditorDialog);
 				wallEditorDialog.setModal(true);
 				wallEditorDialog.center();
-				wallEditorDialog.show();
+//				wallEditorDialog.show();
 			}
 		});
 		attributePanel.addButton(wallEditorButton);
 
-		caveLayoutViewTemplates = GWT.create(CaveLayoutViewTemplates.class);
-		caveSketchContainer = new FlowLayoutContainer();
+		caveSketchContainer = new WallSelector();
 		// TODO implementation of cave representation for wall selection
 		// SafeUri imageUri = UriUtils.fromString("resource?background=centralPillarCave.png");
 		// caveSketchContainer.add(new HTMLPanel(caveLayoutViewTemplates.image(imageUri)));

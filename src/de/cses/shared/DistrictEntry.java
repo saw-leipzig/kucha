@@ -13,15 +13,14 @@
  */
 package de.cses.shared;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
-public class DistrictEntry implements IsSerializable {
+public class DistrictEntry extends AbstractEntry {
 	private int districtID;
 	private String name;
 	private int siteID;
 	private String description, map, arialMap;
 
 	public DistrictEntry() {
+		this(0,"",0,"","","");
 	}
 
 	public DistrictEntry(int districtID, String name, int siteID, String description, String map, String arialMap) {
@@ -80,6 +79,22 @@ public class DistrictEntry implements IsSerializable {
 
 	public void setArialMap(String arialMap) {
 		this.arialMap = arialMap;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.shared.AbstractEntry#getInsertSql()
+	 */
+	@Override
+	public String getInsertSql() {
+		return "INSERT INTO Districts (Name, SiteID, Description, Map, ArialMap) VALUES ('" + name + "', " + siteID + ", '" + description + "', '" + map + "', '" + arialMap + "')";
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.shared.AbstractEntry#getUpdateSql()
+	 */
+	@Override
+	public String getUpdateSql() {
+		return "UPDATE Districts SET Name='" + name + "', SiteID=" + siteID + ", Description='" + description + "', Map='" + map + "', ArialMap='" + arialMap + "' WHERE DistrictID=" + districtID;
 	}
 
 }

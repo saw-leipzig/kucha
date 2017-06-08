@@ -27,7 +27,10 @@ public class CaveEntry implements IsSerializable {
 	private RearAreaEntry rearAreaEntry;
 
 	public CaveEntry() {
-		this(0, "enter official cave number", "enter official cave name", "optional historic name", 0, 0, 0, 0, "enter state of preservation", "enter findings here", null, 0);
+		this(0, "", "", "", 0, 0, 0, 0, "", "", null, 0);
+		antechamberEntry = new AntechamberEntry();
+		mainChamberEntry = new MainChamberEntry();
+		rearAreaEntry = new RearAreaEntry();
 	}
 
 	public CaveEntry(int caveID, String officialNumber, String officialName, String historicalName, int caveTypeID, int districtID,
@@ -52,6 +55,9 @@ public class CaveEntry implements IsSerializable {
 
 	public void setCaveID(int caveID) {
 		this.caveID = caveID;
+		antechamberEntry.setAntechamberID(caveID);
+		mainChamberEntry.setMainChamberID(caveID);
+		rearAreaEntry.setRearAreaID(caveID);
 	}
 
 	public String getOfficialNumber() {

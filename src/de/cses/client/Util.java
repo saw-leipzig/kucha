@@ -17,6 +17,12 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.sencha.gxt.widget.core.client.FramedPanel;
+import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
 import de.cses.shared.ImageEntry;
 
@@ -54,5 +60,26 @@ public class Util {
 		});
 		return imageUri;
 	}
+	
+	public static void showWarning(String header, String message) {
+		PopupPanel dialog = new PopupPanel();
+		FramedPanel dialogPanel = new FramedPanel();
+		dialog.getElement().getStyle().setBorderColor("#FF0000");
+		dialogPanel.setHeading(header);
+		dialogPanel.add(new Label(message));
+		TextButton okButton = new TextButton("OK");
+		okButton.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				dialog.hide();
+			}
+		});
+		dialogPanel.addButton(okButton);
+		dialog.add(dialogPanel);
+		dialog.setModal(true);
+		dialog.center();
+	}
+
 
 }

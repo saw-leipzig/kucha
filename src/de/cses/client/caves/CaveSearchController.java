@@ -88,12 +88,12 @@ public class CaveSearchController extends AbstractSearchController {
 			@Override
 			public void closeRequest() {
 				caveEditorPanel.hide();
+				invokeSearch();
 			}
 		});
 		caveEditorPanel.add(ced);
 		caveEditorPanel.setGlassEnabled(true);
 		caveEditorPanel.center();
-		caveEditorPanel.show();
 	}
 
 }
