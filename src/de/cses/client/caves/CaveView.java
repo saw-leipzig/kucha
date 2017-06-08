@@ -87,9 +87,6 @@ public class CaveView extends Button {
 	 * 
 	 */
 	private void init() {
-//		this.setIconAlign(IconAlign.TOP);
-//		setScale(ButtonScale.LARGE);
-
 		addClickHandler(new ClickHandler() {
 			private PopupPanel caveEditorPanel;
 			

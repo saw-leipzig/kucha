@@ -1188,7 +1188,7 @@ public class CaveEditor implements IsWidget {
 		cancelButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-				cancelCaveEditor();
+				closeCaveEditor();
 			}
 		});
 		mainPanel.addButton(saveButton);
@@ -1199,7 +1199,7 @@ public class CaveEditor implements IsWidget {
 	/**
 	 * Will be called when the cancel button is selected. Calls <code>CaveEditorListener.closeRequest()</code>
 	 */
-	protected void cancelCaveEditor() {
+	protected void closeCaveEditor() {
 		for (CaveEditorListener l : listenerList) {
 			l.closeRequest();
 		}
@@ -1249,7 +1249,7 @@ public class CaveEditor implements IsWidget {
 			});
 			
 		}
-		cancelCaveEditor();
+		closeCaveEditor();
 	}
 	
 }
