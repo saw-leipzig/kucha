@@ -15,6 +15,7 @@ package de.cses.client.caves;
 
 import java.util.ArrayList;
 
+import com.google.gwt.cell.client.SafeHtmlCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
@@ -25,6 +26,8 @@ import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
@@ -57,6 +60,7 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.Util;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
@@ -611,12 +615,12 @@ public class CaveEditor implements IsWidget {
 			@Override
 			public void onSelect(SelectEvent event) {
 				if (siteSelection.getCurrentValue() == null) {
-					showSaveWarningDialog("Please select Site first!");
+					Util.showWarning("A problem occurred", "Please select Site first!");
 					return;
 				}
 				PopupPanel addNewDistrictDialog = new PopupPanel();
 				FramedPanel newDistrictFP = new FramedPanel();
-				newDistrictFP.setHeading("Add District");
+				newDistrictFP.setHeading("Add District in " + siteSelection.getCurrentValue().getName());
 				DistrictEntry de = new DistrictEntry();
 				de.setSiteID(siteSelection.getCurrentValue().getSiteID());
 				VerticalLayoutContainer newDistrictVLC = new VerticalLayoutContainer();
@@ -639,7 +643,7 @@ public class CaveEditor implements IsWidget {
 					@Override
 					public void onSelect(SelectEvent event) {
 						if (districtNameField.getValue().isEmpty()) {
-							showSaveWarningDialog("Please add at least a district name!");
+							Util.showWarning("A problem occurred", "Please add at least a district name!");
 						} else {
 							de.setName(districtNameField.getValue());
 							de.setDescription(descriptionField.getValue().isEmpty() ? "" : descriptionField.getValue());
@@ -716,12 +720,12 @@ public class CaveEditor implements IsWidget {
 			@Override
 			public void onSelect(SelectEvent event) {
 				if (siteSelection.getCurrentValue() == null) {
-					showSaveWarningDialog("Please select Site first!");
+					Util.showWarning("A problem occurred", "Please select Site first!");
 					return;
 				}
 				PopupPanel addNewRegionDialog = new PopupPanel();
 				FramedPanel newRegionFP = new FramedPanel();
-				newRegionFP.setHeading("Add Region");
+				newRegionFP.setHeading("Add Region in " + siteSelection.getCurrentValue().getName());
 				RegionEntry re = new RegionEntry();
 				re.setSiteID(siteSelection.getCurrentValue().getSiteID());
 				VerticalLayoutContainer newRegionVLC = new VerticalLayoutContainer();
@@ -738,7 +742,7 @@ public class CaveEditor implements IsWidget {
 				fp.add(originalNameField);
 				newRegionVLC.add(fp, new VerticalLayoutData(1.0, 1.0 / 3));
 				fp = new FramedPanel();
-				fp.setHeading("Original Name");
+				fp.setHeading("English Name");
 				TextField englishNameField = new TextField();
 				englishNameField.setValue("");
 				fp.add(englishNameField);
@@ -750,7 +754,7 @@ public class CaveEditor implements IsWidget {
 					@Override
 					public void onSelect(SelectEvent event) {
 						if (englishNameField.getValue().isEmpty()) {
-							showSaveWarningDialog("Please add at least an english name!");
+							Util.showWarning("A problem occurred", "Please add at least an english name!");
 						} else {
 							re.setPhoneticName(phoneticNameField.getValue().isEmpty() ? "" : phoneticNameField.getValue());
 							re.setOriginalName(originalNameField.getValue().isEmpty() ? "" : originalNameField.getValue());
@@ -1230,7 +1234,7 @@ public class CaveEditor implements IsWidget {
 				}
 			});
 			
-		} else { // then its 0 and we need to create a new entry
+		} else { // its 0 and we need to create a new entry
 			dbService.insertCaveEntry(correspondingCaveEntry, new AsyncCallback<Integer>() {
 
 				@Override
@@ -1248,25 +1252,4 @@ public class CaveEditor implements IsWidget {
 		cancelCaveEditor();
 	}
 	
-	private void showSaveWarningDialog(String message) {
-		Dialog warning = new Dialog();
-		warning.setHeading("A problem occurred!");
-		warning.setWidth(300);
-		warning.setResizable(false);
-		warning.setModal(true);
-		warning.setHideOnButtonClick(true);
-		warning.setPredefinedButtons(PredefinedButton.OK);
-		warning.setBodyStyleName("pad-text");
-		warning.getBody().addClassName("pad-text");
-		warning.add(new Label(message));
-		warning.show();
-		// constrain the dialog to the viewport (for small mobile screen sizes)
-		Rectangle bounds = warning.getElement().getBounds();
-		Rectangle adjusted = warning.getElement().adjustForConstraints(bounds);
-		if (adjusted.getWidth() != bounds.getWidth() || adjusted.getHeight() != bounds.getHeight()) {
-			warning.setPixelSize(adjusted.getWidth(), adjusted.getHeight());
-		}
-	}
-
-
 }
