@@ -471,7 +471,7 @@ public class CaveEditor implements IsWidget {
 			}
 		});
 		attributePanel.add(officialNumberField);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .1));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .11));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Official Name");
@@ -485,7 +485,7 @@ public class CaveEditor implements IsWidget {
 			}
 		});
 		attributePanel.add(officialNameField);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .1));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .11));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Historic Name");
@@ -499,7 +499,7 @@ public class CaveEditor implements IsWidget {
 			}
 		});
 		attributePanel.add(historicNameField);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .1));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .11));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Orientation");
@@ -523,7 +523,7 @@ public class CaveEditor implements IsWidget {
 			}
 		});
 		attributePanel.add(orientationSelection);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .1));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .11));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Site");
@@ -576,7 +576,7 @@ public class CaveEditor implements IsWidget {
 			siteSelection.setWidth(250);
 			attributePanel.add(siteSelection);
 		}
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .1));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .11));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("District");
@@ -604,7 +604,80 @@ public class CaveEditor implements IsWidget {
 			districtSelection.setEnabled(false);
 		}
 		attributePanel.add(districtSelection);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .2));
+		
+		TextButton addDistrictButton = new TextButton("New District");
+		addDistrictButton.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				if (siteSelection.getCurrentValue() == null) {
+					showSaveWarningDialog("Please select Site first!");
+					return;
+				}
+				PopupPanel addNewDistrictDialog = new PopupPanel();
+				FramedPanel newDistrictFP = new FramedPanel();
+				newDistrictFP.setHeading("Add District");
+				DistrictEntry de = new DistrictEntry();
+				de.setSiteID(siteSelection.getCurrentValue().getSiteID());
+				VerticalLayoutContainer newDistrictVLC = new VerticalLayoutContainer();
+				FramedPanel fp = new FramedPanel();
+				fp.setHeading("District Name");
+				TextField districtNameField = new TextField();
+				districtNameField.setValue("");
+				fp.add(districtNameField);
+				newDistrictVLC.add(fp, new VerticalLayoutData(1.0, 1.0 / 3));
+				fp = new FramedPanel();
+				fp.setHeading("Descritpion");
+				TextArea descriptionField = new TextArea();
+				descriptionField.setValue("");
+				fp.add(descriptionField);
+				newDistrictVLC.add(fp, new VerticalLayoutData(1.0, 2.0 / 3));
+				newDistrictFP.add(newDistrictVLC);
+				TextButton saveButton = new TextButton("save");
+				saveButton.addSelectHandler(new SelectHandler() {
+					
+					@Override
+					public void onSelect(SelectEvent event) {
+						if (districtNameField.getValue().isEmpty()) {
+							showSaveWarningDialog("Please add at least a district name!");
+						} else {
+							de.setName(districtNameField.getValue());
+							de.setDescription(descriptionField.getValue().isEmpty() ? "" : descriptionField.getValue());
+							dbService.insertEntry(de.getInsertSql(), new AsyncCallback<Integer>() {
+
+								@Override
+								public void onFailure(Throwable caught) {
+									caught.printStackTrace();
+								}
+
+								@Override
+								public void onSuccess(Integer result) {
+									loadDistricts();
+								}
+							});
+							addNewDistrictDialog.hide();
+						}
+					}
+				});
+				newDistrictFP.addButton(saveButton);
+				TextButton closeButton = new TextButton("close");
+				closeButton.addSelectHandler(new SelectHandler() {
+					
+					@Override
+					public void onSelect(SelectEvent event) {
+						addNewDistrictDialog.hide();
+					}
+				});
+				newDistrictFP.addButton(closeButton);
+				newDistrictFP.setSize("250", "250");
+				addNewDistrictDialog.add(newDistrictFP);
+				addNewDistrictDialog.setModal(true);
+				addNewDistrictDialog.center();
+			}
+		});
+		attributePanel.addButton(addDistrictButton);
+		
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .17));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Region");
@@ -678,7 +751,6 @@ public class CaveEditor implements IsWidget {
 					public void onSelect(SelectEvent event) {
 						if (englishNameField.getValue().isEmpty()) {
 							showSaveWarningDialog("Please add at least an english name!");
-							return;
 						} else {
 							re.setPhoneticName(phoneticNameField.getValue().isEmpty() ? "" : phoneticNameField.getValue());
 							re.setOriginalName(originalNameField.getValue().isEmpty() ? "" : originalNameField.getValue());
@@ -695,8 +767,8 @@ public class CaveEditor implements IsWidget {
 									loadRegions();
 								}
 							});
+							addNewRegionDialog.hide();
 						}
-						addNewRegionDialog.hide();
 					}
 				});
 				newRegionFP.addButton(saveButton);
@@ -709,14 +781,14 @@ public class CaveEditor implements IsWidget {
 					}
 				});
 				newRegionFP.addButton(closeButton);
-				newRegionFP.setSize("250", "200");
+				newRegionFP.setSize("250", "250");
 				addNewRegionDialog.add(newRegionFP);
 				addNewRegionDialog.setModal(true);
 				addNewRegionDialog.center();
 			}
 		});
 		attributePanel.addButton(addRegionButton);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .2));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .17));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Alteration date");
@@ -730,7 +802,7 @@ public class CaveEditor implements IsWidget {
 			}
 		});
 		attributePanel.add(alterationDateField);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .1));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .11));
 
 		mainHlContainer.add(vlContainer, new HorizontalLayoutData(.3, 1.0));
 
@@ -1181,6 +1253,7 @@ public class CaveEditor implements IsWidget {
 		warning.setHeading("A problem occurred!");
 		warning.setWidth(300);
 		warning.setResizable(false);
+		warning.setModal(true);
 		warning.setHideOnButtonClick(true);
 		warning.setPredefinedButtons(PredefinedButton.OK);
 		warning.setBodyStyleName("pad-text");
