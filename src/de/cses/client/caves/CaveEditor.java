@@ -28,17 +28,21 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.XTemplates;
+import com.sencha.gxt.core.client.util.Rectangle;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.Store.StoreFilter;
+import com.sencha.gxt.widget.core.client.Dialog;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.TabPanel;
+import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
@@ -50,19 +54,15 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
-import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
-import de.cses.shared.AntechamberEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
 import de.cses.shared.DistrictEntry;
-import de.cses.shared.MainChamberEntry;
 import de.cses.shared.OrientationEntry;
 import de.cses.shared.PreservationClassificationEntry;
-import de.cses.shared.RearAreaEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 
@@ -471,7 +471,7 @@ public class CaveEditor implements IsWidget {
 			}
 		});
 		attributePanel.add(officialNumberField);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .125));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .1));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Official Name");
@@ -485,7 +485,7 @@ public class CaveEditor implements IsWidget {
 			}
 		});
 		attributePanel.add(officialNameField);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .125));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .1));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Historic Name");
@@ -499,7 +499,7 @@ public class CaveEditor implements IsWidget {
 			}
 		});
 		attributePanel.add(historicNameField);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .125));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .1));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Orientation");
@@ -523,7 +523,7 @@ public class CaveEditor implements IsWidget {
 			}
 		});
 		attributePanel.add(orientationSelection);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .125));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .1));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Site");
@@ -576,7 +576,7 @@ public class CaveEditor implements IsWidget {
 			siteSelection.setWidth(250);
 			attributePanel.add(siteSelection);
 		}
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .125));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .1));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("District");
@@ -604,7 +604,7 @@ public class CaveEditor implements IsWidget {
 			districtSelection.setEnabled(false);
 		}
 		attributePanel.add(districtSelection);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .125));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .2));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Region");
@@ -636,7 +636,77 @@ public class CaveEditor implements IsWidget {
 			regionSelection.setEnabled(false);
 		}
 		attributePanel.add(regionSelection);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .125));
+		
+		TextButton addRegionButton = new TextButton("New Region");
+		addRegionButton.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				PopupPanel pp = new PopupPanel();
+				FramedPanel newRegionFP = new FramedPanel();
+				newRegionFP.setHeading("Add Region");
+				RegionEntry re = new RegionEntry();
+				re.setSiteID(siteSelection.getCurrentValue().getSiteID());
+				VerticalLayoutContainer newRegionVLC = new VerticalLayoutContainer();
+				FramedPanel fp = new FramedPanel();
+				fp.setHeading("Phonetic Name");
+				TextField phoneticNameField = new TextField();
+				fp.add(phoneticNameField);
+				newRegionVLC.add(fp, new VerticalLayoutData(1.0, 1.0 / 3));
+				fp = new FramedPanel();
+				fp.setHeading("Original Name");
+				TextField originalNameField = new TextField();
+				fp.add(originalNameField);
+				newRegionVLC.add(fp, new VerticalLayoutData(1.0, 1.0 / 3));
+				fp = new FramedPanel();
+				fp.setHeading("Original Name");
+				TextField englishNameField = new TextField();
+				fp.add(englishNameField);
+				newRegionVLC.add(fp, new VerticalLayoutData(1.0, 1.0 / 3));
+				newRegionFP.add(newRegionVLC);
+				TextButton saveButton = new TextButton("save");
+				saveButton.addSelectHandler(new SelectHandler() {
+					
+					@Override
+					public void onSelect(SelectEvent event) {
+						if (englishNameField.getValue().isEmpty()) {
+							showSaveWarningDialog();
+						} else {
+							re.setPhoneticName(phoneticNameField.getValue());
+							re.setOriginalName(originalNameField.getValue());
+							re.setEnglishName(englishNameField.getValue());
+							dbService.insertEntry(re.getInsertSql(), new AsyncCallback<Integer>() {
+
+								@Override
+								public void onFailure(Throwable caught) {
+									caught.printStackTrace();
+								}
+
+								@Override
+								public void onSuccess(Integer result) {
+									loadRegions();
+								}
+							});
+						}
+						pp.hide();
+					}
+				});
+				TextButton closeButton = new TextButton("close");
+				closeButton.addSelectHandler(new SelectHandler() {
+					
+					@Override
+					public void onSelect(SelectEvent event) {
+						pp.hide();
+					}
+				});
+				newRegionFP.add(closeButton);
+				pp.add(newRegionFP);
+				pp.setSize("250", "350");
+				pp.show();
+			}
+		});
+		attributePanel.addButton(addRegionButton);
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .2));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Alteration date");
@@ -650,7 +720,7 @@ public class CaveEditor implements IsWidget {
 			}
 		});
 		attributePanel.add(alterationDateField);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .125));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .1));
 
 		mainHlContainer.add(vlContainer, new HorizontalLayoutData(.3, 1.0));
 
@@ -1095,5 +1165,25 @@ public class CaveEditor implements IsWidget {
 		}
 		cancelCaveEditor();
 	}
+	
+	private void showSaveWarningDialog() {
+		Dialog warning = new Dialog();
+		warning.setHeading("A problem occurred!");
+		warning.setWidth(300);
+		warning.setResizable(false);
+		warning.setHideOnButtonClick(true);
+		warning.setPredefinedButtons(PredefinedButton.OK);
+		warning.setBodyStyleName("pad-text");
+		warning.getBody().addClassName("pad-text");
+		warning.add(new Label("Please add at least an english name!"));
+		warning.show();
+		// constrain the dialog to the viewport (for small mobile screen sizes)
+		Rectangle bounds = warning.getElement().getBounds();
+		Rectangle adjusted = warning.getElement().adjustForConstraints(bounds);
+		if (adjusted.getWidth() != bounds.getWidth() || adjusted.getHeight() != bounds.getHeight()) {
+			warning.setPixelSize(adjusted.getWidth(), adjusted.getHeight());
+		}
+	}
+
 
 }

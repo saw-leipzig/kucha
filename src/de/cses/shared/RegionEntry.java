@@ -13,13 +13,11 @@
  */
 package de.cses.shared;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
 /**
  * @author alingnau
  *
  */
-public class RegionEntry implements IsSerializable {
+public class RegionEntry extends AbstractEntry {
 	
 	private int regionID;
 	private String phoneticName, originalName, englishName;
@@ -29,6 +27,7 @@ public class RegionEntry implements IsSerializable {
 	 * 
 	 */
 	public RegionEntry() {
+		this(0,"","","",0);
 	}
 
 	public RegionEntry(int regionID, String phoneticName, String originalName, String englishName, int siteID) {
@@ -78,6 +77,22 @@ public class RegionEntry implements IsSerializable {
 
 	public void setSiteID(int siteID) {
 		this.siteID = siteID;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.shared.AbstractEntry#getInsertSql()
+	 */
+	@Override
+	public String getInsertSql() {
+		return "INSERT INTO Regions (PhoneticName, OriginalName, EnglishName, SiteID) VALUES ('" + phoneticName + "', '" + originalName + "', '" + englishName + "', " + siteID + ")";
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.shared.AbstractEntry#getUpdateSql()
+	 */
+	@Override
+	public String getUpdateSql() {
+		return "UPDATE Regions SET PhoneticName='" + phoneticName + "', OriginalName='" + originalName + "', EnglishName='" + englishName + "', SiteID=" + siteID + "WHERE RegionID=" + regionID;
 	}
 
 }
