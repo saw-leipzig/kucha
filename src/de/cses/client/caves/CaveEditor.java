@@ -1067,52 +1067,24 @@ public class CaveEditor implements IsWidget {
 	 */
 	protected void saveEntries() {
 		if (correspondingCaveEntry.getCaveID() > 0) {
-			dbService.updateEntry(correspondingCaveEntry.getUpdateSql(), new AsyncCallback<Boolean>() {
+			dbService.updateCaveEntry(correspondingCaveEntry, new AsyncCallback<Boolean>() {
 
 				@Override
 				public void onFailure(Throwable caught) {
-					caught.printStackTrace();
+					// TODO Auto-generated method stub
+					
 				}
 
 				@Override
 				public void onSuccess(Boolean result) {
-					dbService.updateEntry(correspondingCaveEntry.getAntechamberEntry().getUpdateSql(), new AsyncCallback<Boolean>() {
-
-						@Override
-						public void onFailure(Throwable caught) {
-							caught.printStackTrace();
-						}
-
-						@Override
-						public void onSuccess(Boolean result) {
-						}
-
-					});
-					dbService.updateEntry(correspondingCaveEntry.getMainChamberEntry().getUpdateSql(), new AsyncCallback<Boolean>() {
-
-						@Override
-						public void onFailure(Throwable caught) {
-							caught.printStackTrace();
-						}
-
-						@Override
-						public void onSuccess(Boolean result) {
-						}
-					});
-					dbService.updateEntry(correspondingCaveEntry.getRearAreaEntry().getUpdateSql(), new AsyncCallback<Boolean>() {
-
-						@Override
-						public void onFailure(Throwable caught) {
-							caught.printStackTrace();
-						}
-
-						@Override
-						public void onSuccess(Boolean result) {
-						}
-					});
+					// TODO Auto-generated method stub
+					
 				}
 			});
+			
 		} else { // then its 0 and we need to create a new entry
+			
+			
 			dbService.insertEntry(correspondingCaveEntry.getInsertSql(), new AsyncCallback<Integer>() {
 
 				@Override

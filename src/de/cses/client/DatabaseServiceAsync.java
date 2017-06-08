@@ -183,4 +183,6 @@ public interface DatabaseServiceAsync {
 	
 	void getPictorialElementsObjects(AsyncCallback<ArrayList<PictorialElementEntry>> asyncCallback) throws IllegalArgumentException;
 
+	void updateCaveEntry(CaveEntry caveEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
+
 	}

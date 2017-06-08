@@ -439,4 +439,13 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		return connector.getPreservationClassifications();
 	}
 
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#updateCaveEntry(de.cses.shared.CaveEntry)
+	 */
+	@Override
+	public boolean updateCaveEntry(CaveEntry caveEntry) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.updateCaveEntry(caveEntry);
+	}
+
 }

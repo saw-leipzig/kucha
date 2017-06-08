@@ -1432,4 +1432,13 @@ public class MysqlConnector {
 		return result;
 
 	}
+
+	/**
+	 * @param caveEntry
+	 * @return
+	 */
+	public boolean updateCaveEntry(CaveEntry caveEntry) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

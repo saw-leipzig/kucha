@@ -133,16 +133,27 @@ public interface DatabaseService extends RemoteService {
 	ArrayList<ImageEntry> getRelatedImages(int depictionID) throws IllegalArgumentException;
 	
 	ArrayList<OrnamentOrientation> getOrientations() throws IllegalArgumentException;
+
 	ArrayList<MainTypologicalClass> getMainTypologicalClasses() throws IllegalArgumentException;
+	
 	ArrayList<OrnamentCaveType> getOrnamentCaveTypes() throws IllegalArgumentException;
+	
 	ArrayList<WallEntry> getWalls() throws IllegalArgumentException;
+	
 	ArrayList<OrnamentFunction> getOrnamentFunctions() throws IllegalArgumentException;
+	
 	ArrayList<OrnamentPosition> getOrnamentPositions() throws IllegalArgumentException;
+	
 	ArrayList<StructureOrganization> getStructureOrganizations() throws IllegalArgumentException;
+	
 	ArrayList<CavePart> getCaveParts() throws IllegalArgumentException;
+	
 	ArrayList<OrnamentEntry> getOrnamentsWHERE(String sqlWhere) throws IllegalArgumentException;
+	
 	ArrayList<OrientationEntry> getOrientationInformation() throws IllegalArgumentException;
+	
 	IconographyEntry getIconographyEntry(int iconographyID) throws IllegalArgumentException;
+	
 	ArrayList<PictorialElementEntry> getRelatedPE(int depictionID) throws IllegalArgumentException;
 
 	ArrayList<CeilingTypeEntry> getCeilingTypes() throws IllegalArgumentException;
@@ -150,5 +161,7 @@ public interface DatabaseService extends RemoteService {
 	ArrayList<PreservationClassificationEntry> getPreservationClassifications();
 
 	ArrayList<PictorialElementEntry> getPictorialElementsObjects() throws IllegalArgumentException;
+
+	boolean updateCaveEntry(CaveEntry caveEntry) throws IllegalArgumentException;
 
 }

@@ -26,6 +26,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.data.shared.LabelProvider;
+import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.widget.core.client.ContentPanel;
@@ -140,46 +141,48 @@ public class WallSelector implements IsWidget {
 	 * 
 	 */
 	private void refreshWallSelector() {
-		wallSelector.clear();
+		ListStore<WallNames> store = new ListStore<>(wallProps.wallID());
 		// Antechamber is not available at in cave types
 		if ((currentCave.getCaveTypeID() == 4) || (currentCave.getCaveTypeID() == 6))  {
 			AntechamberEntry entry = currentCave.getAntechamberEntry();
-			wallSelector.add(new WallNames(entry.getFrontWallID(), "Antechamber Front Wall"));
-			wallSelector.add(new WallNames(entry.getLeftWallID(), "Antechamber Left Wall"));
-			wallSelector.add(new WallNames(entry.getRightWallID(), "Antechamber Right Wall"));
-			wallSelector.add(new WallNames(entry.getRearWallID(), "Antechamber Rear Wall"));
+			store.add(new WallNames(entry.getFrontWallID(), "Antechamber Front Wall"));
+			store.add(new WallNames(entry.getLeftWallID(), "Antechamber Left Wall"));
+			store.add(new WallNames(entry.getRightWallID(), "Antechamber Right Wall"));
+			store.add(new WallNames(entry.getRearWallID(), "Antechamber Rear Wall"));
 		}
 
 		// main chamber is always available
 		if ((currentCave.getCaveTypeID() == 2) || (currentCave.getCaveTypeID() == 3) || (currentCave.getCaveTypeID() == 4) || (currentCave.getCaveTypeID() == 6))  {
 			MainChamberEntry entry = currentCave.getMainChamberEntry();
-			wallSelector.add(new WallNames(entry.getFrontWallID(), "Main Chamber Front Wall"));
-			wallSelector.add(new WallNames(entry.getLeftWallID(), "Main Chamber Left Wall"));
-			wallSelector.add(new WallNames(entry.getRightWallID(), "Main Chamber Right Wall"));
-			wallSelector.add(new WallNames(entry.getRearWallID(), "Main Chamber Rear Wall"));
+			store.add(new WallNames(entry.getFrontWallID(), "Main Chamber Front Wall"));
+			store.add(new WallNames(entry.getLeftWallID(), "Main Chamber Left Wall"));
+			store.add(new WallNames(entry.getRightWallID(), "Main Chamber Right Wall"));
+			store.add(new WallNames(entry.getRearWallID(), "Main Chamber Rear Wall"));
 		}
 		
 		if ((currentCave.getCaveTypeID() == 4) || (currentCave.getCaveTypeID() == 6))  {
 			RearAreaEntry entry = currentCave.getRearAreaEntry();
-			wallSelector.add(new WallNames(entry.getLeftCorridorOuterWallID(), "Rear Area Left Corridor Outer Wall"));
-			wallSelector.add(new WallNames(entry.getLeftCorridorInnerWallID(), "Rear Area Left Corridor Inner Wall"));
-			wallSelector.add(new WallNames(entry.getRightCorridorInnerWallID(), "Rear Area Right Corridor Inner Wall"));
-			wallSelector.add(new WallNames(entry.getRightCorridorOuterWallID(), "Rear Area Right Corridor Outer Wall"));
+			store.add(new WallNames(entry.getLeftCorridorOuterWallID(), "Rear Area Left Corridor Outer Wall"));
+			store.add(new WallNames(entry.getLeftCorridorInnerWallID(), "Rear Area Left Corridor Inner Wall"));
+			store.add(new WallNames(entry.getRightCorridorInnerWallID(), "Rear Area Right Corridor Inner Wall"));
+			store.add(new WallNames(entry.getRightCorridorOuterWallID(), "Rear Area Right Corridor Outer Wall"));
 		}
 		
 		if ((currentCave.getCaveTypeID() == 4))  {
 			RearAreaEntry entry = currentCave.getRearAreaEntry();
-			wallSelector.add(new WallNames(entry.getInnerWallID(), "Rear Corridor Inner Wall"));
-			wallSelector.add(new WallNames(entry.getOuterWallID(), "Rear Corridor Outer Wall"));
-			wallSelector.add(new WallNames(entry.getRightWallID(), "Rear Corridor Right Wall"));
-			wallSelector.add(new WallNames(entry.getLeftWallID(), "Rear Corridor Left Wall"));
+			store.add(new WallNames(entry.getInnerWallID(), "Rear Corridor Inner Wall"));
+			store.add(new WallNames(entry.getOuterWallID(), "Rear Corridor Outer Wall"));
+			store.add(new WallNames(entry.getRightWallID(), "Rear Corridor Right Wall"));
+			store.add(new WallNames(entry.getLeftWallID(), "Rear Corridor Left Wall"));
 		} else if ((currentCave.getCaveTypeID() == 6))  {
 			RearAreaEntry entry = currentCave.getRearAreaEntry();
-			wallSelector.add(new WallNames(entry.getInnerWallID(), "Rear Chamber Inner Wall"));
-			wallSelector.add(new WallNames(entry.getOuterWallID(), "Rear Chamber Outer Wall"));
-			wallSelector.add(new WallNames(entry.getRightWallID(), "Rear Chamber Right Wall"));
-			wallSelector.add(new WallNames(entry.getLeftWallID(), "Rear Chamber Left Wall"));
+			store.add(new WallNames(entry.getInnerWallID(), "Rear Chamber Inner Wall"));
+			store.add(new WallNames(entry.getOuterWallID(), "Rear Chamber Outer Wall"));
+			store.add(new WallNames(entry.getRightWallID(), "Rear Chamber Right Wall"));
+			store.add(new WallNames(entry.getLeftWallID(), "Rear Chamber Left Wall"));
 		}
+		
+		wallSelector.setStore(store);
 	}
 
 	/**
