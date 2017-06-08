@@ -15,7 +15,6 @@ package de.cses.client.caves;
 
 import java.util.ArrayList;
 
-import com.google.gwt.cell.client.SafeHtmlCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
@@ -26,8 +25,6 @@ import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
@@ -35,17 +32,14 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.XTemplates;
-import com.sencha.gxt.core.client.util.Rectangle;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.Store.StoreFilter;
-import com.sencha.gxt.widget.core.client.Dialog;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.TabPanel;
-import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
@@ -465,6 +459,7 @@ public class CaveEditor implements IsWidget {
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Official Number");
 		officialNumberField = new TextField();
+		officialNumberField.setEmptyText("mandatory cave number");
 		officialNumberField.setAllowBlank(false);
 		officialNumberField.setValue(correspondingCaveEntry.getOfficialNumber());
 		officialNumberField.addValueChangeHandler(new ValueChangeHandler<String>() {
@@ -480,6 +475,7 @@ public class CaveEditor implements IsWidget {
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Official Name");
 		officialNameField = new TextField();
+		officialNameField.setEmptyText("optional cave name");
 		officialNameField.setValue(correspondingCaveEntry.getOfficialName());
 		officialNameField.addValueChangeHandler(new ValueChangeHandler<String>() {
 
@@ -494,6 +490,7 @@ public class CaveEditor implements IsWidget {
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Historic Name");
 		historicNameField = new TextField();
+		historicNameField.setEmptyText("optional historic name");
 		historicNameField.setValue(correspondingCaveEntry.getHistoricName());
 		historicNameField.addValueChangeHandler(new ValueChangeHandler<String>() {
 
@@ -997,6 +994,7 @@ public class CaveEditor implements IsWidget {
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Further Comments");
 		stateOfPreservationTextArea = new TextArea();
+		stateOfPreservationTextArea.setEmptyText("This field is for remarks on the state of the preservation");
 		stateOfPreservationTextArea.setValue(correspondingCaveEntry.getStateOfPerservation());
 		stateOfPreservationTextArea.addValueChangeHandler(new ValueChangeHandler<String>() {
 
@@ -1021,6 +1019,7 @@ public class CaveEditor implements IsWidget {
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Findings");
 		findingsTextArea = new TextArea();
+		findingsTextArea.setEmptyText("research findings");
 		findingsTextArea.setValue(correspondingCaveEntry.getFindings());
 		findingsTextArea.addValueChangeHandler(new ValueChangeHandler<String>() {
 
@@ -1219,6 +1218,11 @@ public class CaveEditor implements IsWidget {
 	 * listener.
 	 */
 	protected void saveEntries() {
+		if (correspondingCaveEntry.getOfficialNumber().isEmpty()) {
+			officialNumberField.getElement().getStyle().setBackgroundColor("#FFFF00");
+			Util.showWarning("Missing information", "Please fill in mandatory cave number!");
+			return;
+		}
 		if (correspondingCaveEntry.getCaveID() > 0) {
 			dbService.updateCaveEntry(correspondingCaveEntry, new AsyncCallback<Boolean>() {
 
@@ -1247,7 +1251,6 @@ public class CaveEditor implements IsWidget {
 					closeCaveEditor();
 				}
 			});
-			
 		}
 	}
 	
