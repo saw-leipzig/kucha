@@ -1434,6 +1434,8 @@ public class MysqlConnector {
 	}
 
 	/**
+	 * TODO: only save existing areas depeding on cave type!
+	 * 
 	 * @param caveEntry
 	 * @return
 	 */
@@ -1442,6 +1444,7 @@ public class MysqlConnector {
 			updateEntry(caveEntry.getAntechamberEntry().getUpdateSql());
 			updateEntry(caveEntry.getMainChamberEntry().getUpdateSql());
 			updateEntry(caveEntry.getRearAreaEntry().getUpdateSql());
+			return true;
 		}
 		return false;
 	}
