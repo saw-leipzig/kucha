@@ -156,9 +156,6 @@ public class CaveEntry implements IsSerializable {
 		this.rearAreaEntry = rearAreaEntry;
 	}
 
-	/*
-	 * ATTENTION: Orientation is currently not inlcuded!!
-	 */
 	public String getInsertSql() {		
 		return "INSERT INTO Caves (OfficialNumber,OfficialName,HistoricName,CaveTypeID,DistrictID,RegionID, OrientationID,StateOfPreservation,Findings,AlterationDate, PreservationClassificationID) VALUES "
 				+ "('" + officialNumber + "','" + officialName + "','" + historicName + "'," + caveTypeID + "," + districtID + "," + regionID + "," + orientationID + ",'" + stateOfPerservation
