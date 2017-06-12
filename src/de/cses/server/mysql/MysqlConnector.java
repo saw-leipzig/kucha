@@ -1438,7 +1438,11 @@ public class MysqlConnector {
 	 * @return
 	 */
 	public boolean updateCaveEntry(CaveEntry caveEntry) {
-		// TODO Auto-generated method stub
+		if (updateEntry(caveEntry.getUpdateSql())) {
+			updateEntry(caveEntry.getAntechamberEntry().getUpdateSql());
+			updateEntry(caveEntry.getMainChamberEntry().getUpdateSql());
+			updateEntry(caveEntry.getRearAreaEntry().getUpdateSql());
+		}
 		return false;
 	}
 
