@@ -84,13 +84,13 @@ public class ImageSearchController extends AbstractSearchController {
 	 */
 	@Override
 	public void addNewElement() {
-		PopupPanel imageUploadPanel = new PopupPanel(false);
-		PopupPanel imageEditorPanel = new PopupPanel(false);
+		final PopupPanel imageUploadPanel = new PopupPanel(false);
+		final PopupPanel imageEditorPanel = new PopupPanel(false);
 
 		ImageUploader iu = new ImageUploader(new ImageUploadListener() {
 
 			@Override
-			public void uploadCompleted(int newImageID, String filename) {
+			public void uploadCompleted(int newImageID, final String filename) {
 				imageUploadPanel.hide();
 				dbService.getImage(newImageID, new AsyncCallback<ImageEntry>() {
 

@@ -83,7 +83,7 @@ public class DepictionSearchController extends AbstractSearchController {
 	 */
 	@Override
 	public void addNewElement() {
-		PopupPanel depictionEditorPanel = new PopupPanel(false);
+		final PopupPanel depictionEditorPanel = new PopupPanel(false);
 		DepictionEditor de = new DepictionEditor(null, new DepictionEditorListener() {
 
 			@Override
