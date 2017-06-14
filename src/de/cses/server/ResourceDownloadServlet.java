@@ -59,7 +59,7 @@ public class ResourceDownloadServlet extends HttpServlet {
 			if (inputFile.exists()) {
 				if (request.getParameter("thumb") != null) {
 					int tnSize = Integer.valueOf(request.getParameter("thumb")); // the requested size is given as a parameter
-					out.write(createThumbnail(inputFile, filename.toLowerCase().endsWith("png") ? "png" : "jpg", tnSize));
+					out.write(getScaledThumbnailInstance(inputFile, filename.toLowerCase().endsWith("png") ? "png" : "jpg", tnSize));
 				} else { // load the original file
 					FileInputStream fis = new FileInputStream(inputFile);
 					byte buffer[] = new byte[4096];
@@ -111,7 +111,7 @@ public class ResourceDownloadServlet extends HttpServlet {
 	 *          of the image
 	 * @return
 	 */
-	private byte[] createThumbnail(File readFile, String imgType, int thumbnailSize) {
+	private byte[] getScaledThumbnailInstance(File readFile, String imgType, int thumbnailSize) {
 		// File tnFile;
 		// String type;
 		BufferedImage tnImg = null;
@@ -145,7 +145,7 @@ public class ResourceDownloadServlet extends HttpServlet {
 				// ImageIO.write(tnImg, type, tnFile);
 			}
 		} catch (IOException e) {
-			System.out.println("Thumbnail could not be created!");
+			System.out.println("Scaled instance of thumbnail could not be created!");
 		}
 		return baos.toByteArray();
 	}
