@@ -102,18 +102,8 @@ public class ImageSearchController extends AbstractSearchController {
 					public void onSuccess(ImageEntry result) {
 						ImageEntry imgEntry = result;
 						imgEntry.setTitle(filename);
-						SingleImageEditor singleIE = new SingleImageEditor(imgEntry, new ImageEditorListener() {
-
-							@Override
-							public void closeImageEditor() {
-								imageEditorPanel.hide();
-							}
-
-							@Override
-							public void cancelImageEditor() {
-								imageEditorPanel.hide();
-							}
-						});
+						SingleImageEditor singleIE = new SingleImageEditor(imgEntry);
+//						singleIE.addEditorListener(this);
 						imageEditorPanel.add(singleIE);
 						imageEditorPanel.setGlassEnabled(true);
 						imageEditorPanel.center();

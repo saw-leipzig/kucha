@@ -56,10 +56,11 @@ import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.ui.AbstractEditor;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.PhotographerEntry;
 
-public class SingleImageEditor implements IsWidget {
+public class SingleImageEditor extends AbstractEditor {
 
 	private TextField titleField;
 	private TextField copyrightField;
@@ -69,7 +70,6 @@ public class SingleImageEditor implements IsWidget {
 	private FramedPanel panel;
 	private PhotographerProperties photographerProps;
 	private ListStore<PhotographerEntry> photographerEntryList;
-	private ArrayList<ImageEditorListener> editorListenerList;
 
 	/**
 	 * Create a remote service proxy to talk to the server-side service.
@@ -116,11 +116,8 @@ public class SingleImageEditor implements IsWidget {
 	 * This widget allows to edit the information of an ImageEntry, i.e. an image
 	 * in the database. It also allows for uploading new images to the database.
 	 */
-	public SingleImageEditor(ImageEntry imgEntry, ImageEditorListener listener) {
+	public SingleImageEditor(ImageEntry imgEntry) {
 		this.imgEntry = imgEntry;
-		editorListenerList = new ArrayList<ImageEditorListener>();
-		editorListenerList.add(listener);
-//		GWT.create(ImageProperties.class);
 
 		photographerProps = GWT.create(PhotographerProperties.class);
 		photographerEntryList = new ListStore<PhotographerEntry>(photographerProps.photographerID());
@@ -343,9 +340,7 @@ public class SingleImageEditor implements IsWidget {
 			showTitleWarningDialog();
 			return;
 		} else {
-			for (ImageEditorListener listener : editorListenerList) {
-				listener.closeImageEditor();
-			}
+			closeEditor();
 		}
 	}
 
@@ -353,9 +348,7 @@ public class SingleImageEditor implements IsWidget {
 	 * 
 	 */
 	protected void cancelEditing() {
-		for (ImageEditorListener listener : editorListenerList) {
-			listener.cancelImageEditor();
-		}
+		closeEditor();
 	}
 
 	/**
