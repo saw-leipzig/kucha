@@ -45,6 +45,7 @@ public class DepictionView extends AbstractView {
 	 * 
 	 */
 	public DepictionView() {
+		super();
 		Resources resources = GWT.create(Resources.class);
 		Image img = new Image(resources.logo());
 		String html = "<div><center><img src='" + img.getUrl()

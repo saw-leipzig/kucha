@@ -34,9 +34,9 @@ public class CaveView extends AbstractView {
 	interface Resources extends ClientBundle {
 		@Source("cave.png")
 		ImageResource logo();
-		
-		@Source("plus.png")
-		ImageResource plus();
+//		
+//		@Source("plus.png")
+//		ImageResource plus();
 	}
 	
 	interface CaveViewTemplates extends XTemplates {
@@ -55,21 +55,23 @@ public class CaveView extends AbstractView {
 //	private CaveViewTemplates cvTemplate;
 	
 	
-	public CaveView() {
-		resources = GWT.create(Resources.class);
-		Image img = new Image(resources.logo());
-		String html = "<div><center><img src='" + img.getUrl() + "' height = '80px' width = '80px'></img></center><label>Add New</label></br></div>";
-		setHTML(html);
-		cEntry = null;
-		setPixelSize(110, 110);
-//		init();
-	}
+//	public CaveView() {
+//		super();
+//		resources = GWT.create(Resources.class);
+//		Image img = new Image(resources.logo());
+//		String html = "<div><center><img src='" + img.getUrl() + "' height = '80px' width = '80px'></img></center><label>Add New</label></br></div>";
+//		setHTML(html);
+//		cEntry = null;
+//		setPixelSize(110, 110);
+////		init();
+//	}
 
 	/**
 	 * @param text
 	 * @param icon
 	 */
 	public CaveView(CaveEntry entry) {
+		super();
 		resources = GWT.create(Resources.class);
 		Image img = new Image(resources.logo());
 		String html = "<div><center><img src='" + img.getUrl() + "' height = '80px' width = '80px'></img></center><label>Cave no. " + entry.getOfficialNumber() + "</label></br></div>";
