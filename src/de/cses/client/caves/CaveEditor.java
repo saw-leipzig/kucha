@@ -435,8 +435,8 @@ public class CaveEditor implements IsWidget {
 		// all fields added are encapsulated by a FramedPanel
 		FramedPanel attributePanel;
 
-		CaveTypeViewTemplates ctvt = GWT.create(CaveTypeViewTemplates.class);
-		PreservationClassificationViewTemplates pcvt = GWT.create(PreservationClassificationViewTemplates.class);
+		final CaveTypeViewTemplates ctvt = GWT.create(CaveTypeViewTemplates.class);
+		final PreservationClassificationViewTemplates pcvt = GWT.create(PreservationClassificationViewTemplates.class);
 
 		mainPanel = new FramedPanel();
 		mainPanel.setHeading("Cave Editor");

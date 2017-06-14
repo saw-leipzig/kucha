@@ -121,7 +121,7 @@ public class ImageView extends Button {
 				ImageUploader iu = new ImageUploader(new ImageUploadListener() {
 
 					@Override
-					public void uploadCompleted(int newImageID, String filename) {
+					public void uploadCompleted(int newImageID, final String filename) {
 						imageUploadPanel.hide();
 						dbService.getImage(newImageID, new AsyncCallback<ImageEntry>() {
 
