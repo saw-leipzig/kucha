@@ -17,8 +17,6 @@ import java.util.ArrayList;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
-import com.sencha.gxt.core.client.Style.HideMode;
-import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.Portlet;
 
 /**

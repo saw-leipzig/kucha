@@ -28,9 +28,7 @@ import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -49,7 +47,6 @@ import com.sencha.gxt.widget.core.client.TabPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
-import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.MarginData;
@@ -65,16 +62,15 @@ import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
-import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.images.ImageSelector;
 import de.cses.client.images.ImageSelectorListener;
+import de.cses.client.ui.AbstractEditor;
 import de.cses.client.walls.WallSelector;
 import de.cses.client.walls.Walls;
 import de.cses.shared.CaveEntry;
-import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
@@ -83,7 +79,7 @@ import de.cses.shared.PictorialElementEntry;
 import de.cses.shared.StyleEntry;
 import de.cses.shared.VendorEntry;
 
-public class DepictionEditor implements IsWidget {
+public class DepictionEditor extends AbstractEditor {
 
 	/**
 	 * Create a remote service proxy to talk to the server-side service.
@@ -105,7 +101,7 @@ public class DepictionEditor implements IsWidget {
 	protected ImageSelector imageSelector;
 	private FramedPanel mainPanel;
 	protected PopupPanel imageSelectionDialog;
-	private ArrayList<DepictionEditorListener> listener;
+//	private ArrayList<DepictionEditorListener> listener;
 	private ListView<ImageEntry, ImageEntry> imageListView;
 	private ListStore<ImageEntry> imageEntryList;
 	private ImageProperties imgProperties;
@@ -207,14 +203,14 @@ public class DepictionEditor implements IsWidget {
 		// SafeHtml state(String slogan, String name);
 	}
 
-	public DepictionEditor(DepictionEntry entry, DepictionEditorListener deListener) {
+	public DepictionEditor(DepictionEntry entry) {
 		if (entry != null) {
 			correspondingDepictionEntry = entry;
 		} else {
 			correspondingDepictionEntry = new DepictionEntry();
 		}
-		listener = new ArrayList<DepictionEditorListener>();
-		listener.add(deListener);
+//		listener = new ArrayList<DepictionEditorListener>();
+//		listener.add(deListener);
 		peSelector = new PictorialElementSelector(correspondingDepictionEntry.getDepictionID());
 		imgProperties = GWT.create(ImageProperties.class);
 		imageEntryList = new ListStore<ImageEntry>(imgProperties.imageID());
@@ -829,22 +825,22 @@ public class DepictionEditor implements IsWidget {
 		cancelButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-				cancelDepictionEditor();
+				closeEditor();
 			}
 		});
 		mainPanel.addButton(saveButton);
 		mainPanel.addButton(cancelButton);
 	}
 
-	/**
-	 * Called when the save button is pressed. Calls <code>DepictionEditorListener.depictionSaved(null)<code>
-	 */
-	protected void cancelDepictionEditor() {
-		Iterator<DepictionEditorListener> deIterator = listener.iterator();
-		while (deIterator.hasNext()) {
-			deIterator.next().depictionSaved(null);
-		}
-	}
+//	/**
+//	 * Called when the save button is pressed. Calls <code>DepictionEditorListener.depictionSaved(null)<code>
+//	 */
+//	protected void cancelDepictionEditor() {
+//		Iterator<DepictionEditorListener> deIterator = listener.iterator();
+//		while (deIterator.hasNext()) {
+//			deIterator.next().depictionSaved(null);
+//		}
+//	}
 
 	/**
 	 * Called when the save button is pressed. Calls <code>DepictionEditorListener.depictionSaved(correspondingDepictionEntry)<code>
@@ -904,11 +900,7 @@ public class DepictionEditor implements IsWidget {
 						}
 					});
 		}
-
-		Iterator<DepictionEditorListener> deIterator = listener.iterator();
-		while (deIterator.hasNext()) {
-			deIterator.next().depictionSaved(correspondingDepictionEntry);
-		}
+		closeEditor();
 	}
 
 	/**

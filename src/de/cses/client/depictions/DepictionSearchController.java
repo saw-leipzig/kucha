@@ -21,6 +21,7 @@ import com.google.gwt.user.client.ui.PopupPanel;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.ui.AbstractEditor;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.client.ui.AbstractResultView;
 import de.cses.client.ui.AbstractSearchController;
@@ -33,6 +34,7 @@ import de.cses.shared.DepictionEntry;
 public class DepictionSearchController extends AbstractSearchController {
 
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
+	private PopupPanel depictionEditorPanel;
 
 	/**
 	 * @param searchControllerTitle
@@ -83,18 +85,21 @@ public class DepictionSearchController extends AbstractSearchController {
 	 */
 	@Override
 	public void addNewElement() {
-		final PopupPanel depictionEditorPanel = new PopupPanel(false);
-		DepictionEditor de = new DepictionEditor(null, new DepictionEditorListener() {
-
-			@Override
-			public void depictionSaved(DepictionEntry depictionEntry) {
-				depictionEditorPanel.hide();
-			}
-		});
+		depictionEditorPanel = new PopupPanel(false);
+		DepictionEditor de = new DepictionEditor(null);
+		de.addEditorListener(this);
 		depictionEditorPanel.add(de);
 		depictionEditorPanel.setGlassEnabled(true);
 		depictionEditorPanel.center();
 		depictionEditorPanel.show();
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.ui.EditorListener#closeRequest()
+	 */
+	@Override
+	public void closeRequest() {
+		depictionEditorPanel.hide();
 	}
 
 }

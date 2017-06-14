@@ -21,11 +21,9 @@ import com.google.gwt.user.client.ui.PopupPanel;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
-import de.cses.client.depictions.DepictionView;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.client.ui.AbstractResultView;
 import de.cses.client.ui.AbstractSearchController;
-import de.cses.shared.DepictionEntry;
 import de.cses.shared.OrnamentEntry;
 
 /**
@@ -92,6 +90,15 @@ public class OrnamenticSearchController extends AbstractSearchController {
 //		new Draggable(ornamentEditorPanel);
 		ornamentEditorPanel.setGlassEnabled(true);
 		ornamentEditorPanel.center();
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.ui.EditorListener#closeRequest()
+	 */
+	@Override
+	public void closeRequest() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

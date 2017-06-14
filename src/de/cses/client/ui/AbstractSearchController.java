@@ -19,8 +19,6 @@ import com.sencha.gxt.widget.core.client.button.ToggleButton;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
-import de.cses.client.caves.CaveResultView;
-
 /**
  * This abstract class is extended every time a new type (e.g. Caves, Ornaments, Images, Depictions, ...) shall be 
  * added to the UI. Is is representing the C in the MVC approach, visually represented by a ToggleButton
@@ -29,11 +27,12 @@ import de.cses.client.caves.CaveResultView;
  *  
  * @author alingnau
  */
-public abstract class AbstractSearchController extends ToggleButton {
+public abstract class AbstractSearchController extends ToggleButton implements EditorListener {
 	
-	String searchControllerTitle;
-	ArrayList<AbstractFilter> relatedFilter;
-	AbstractResultView resultView;
+	private String searchControllerTitle;
+	private ArrayList<AbstractFilter> relatedFilter;
+	private AbstractResultView resultView;
+	
 		
 	/**
 	 * 
@@ -104,4 +103,5 @@ public abstract class AbstractSearchController extends ToggleButton {
 	 * where a new element is created and added to the database.
 	 */
 	public abstract void addNewElement();
+	
 }

@@ -14,26 +14,22 @@
 package de.cses.client.caves;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.PopupPanel;
 import com.sencha.gxt.core.client.XTemplates;
 
-import de.cses.client.DatabaseService;
-import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.ui.AbstractEditor;
+import de.cses.client.ui.AbstractView;
 import de.cses.shared.CaveEntry;
 
 /**
  * @author alingnau
  *
  */
-public class CaveView extends Button {
+public class CaveView extends AbstractView {
 
 	interface Resources extends ClientBundle {
 		@Source("cave.png")
@@ -66,7 +62,7 @@ public class CaveView extends Button {
 		setHTML(html);
 		cEntry = null;
 		setPixelSize(110, 110);
-		init();
+//		init();
 	}
 
 	/**
@@ -80,33 +76,41 @@ public class CaveView extends Button {
 		setHTML(html);
 		cEntry = entry;
 		setPixelSize(110, 110);
-		init();
+//		init();
 	}
 
-	/**
-	 * 
+	/* (non-Javadoc)
+	 * @see de.cses.client.ui.AbstractView#getEditor()
 	 */
-	private void init() {
-		addClickHandler(new ClickHandler() {
-			private PopupPanel caveEditorPanel;
-			
-			@Override
-			public void onClick(ClickEvent event) {
-				caveEditorPanel = new PopupPanel(false);
-				CaveEditor ced = new CaveEditor(cEntry, new CaveEditorListener() {
-
-					@Override
-					public void closeRequest() {
-						caveEditorPanel.hide();
-					}
-				});
-				caveEditorPanel.add(ced);
-				caveEditorPanel.setGlassEnabled(true);
-				caveEditorPanel.center();
-				caveEditorPanel.show();
-			}
-		});
+	@Override
+	protected AbstractEditor getEditor() {
+		return new CaveEditor(cEntry);
 	}
+
+//	/**
+//	 * 
+//	 */
+//	private void init() {
+//		addClickHandler(new ClickHandler() {
+//			private PopupPanel caveEditorPanel;
+//			
+//			@Override
+//			public void onClick(ClickEvent event) {
+//				caveEditorPanel = new PopupPanel(false);
+//				CaveEditor ced = new CaveEditor(cEntry, new CaveEditorListener() {
+//
+//					@Override
+//					public void closeRequest() {
+//						caveEditorPanel.hide();
+//					}
+//				});
+//				caveEditorPanel.add(ced);
+//				caveEditorPanel.setGlassEnabled(true);
+//				caveEditorPanel.center();
+//				caveEditorPanel.show();
+//			}
+//		});
+//	}
 	
 	
 

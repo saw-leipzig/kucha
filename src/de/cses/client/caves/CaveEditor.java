@@ -26,7 +26,6 @@ import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -55,6 +54,7 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.Util;
+import de.cses.client.ui.AbstractEditor;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
@@ -64,7 +64,7 @@ import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 
-public class CaveEditor implements IsWidget {
+public class CaveEditor extends AbstractEditor {
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	private FramedPanel mainPanel;
 	private CaveEntry correspondingCaveEntry;
@@ -91,7 +91,7 @@ public class CaveEditor implements IsWidget {
 	private ComboBox<SiteEntry> siteSelection;
 	private StoreFilter<DistrictEntry> districtFilter;
 	protected Object siteEntryAccess;
-	private ArrayList<CaveEditorListener> listenerList;
+//	private ArrayList<CaveEditorListener> listenerList;
 	private Label siteDisplay;
 	private TextField alterationDateField;
 	private TextArea findingsTextArea;
@@ -197,14 +197,12 @@ public class CaveEditor implements IsWidget {
 		SafeHtml image(SafeUri imageUri);
 	}
 
-	public CaveEditor(CaveEntry caveEntry, CaveEditorListener listener) {
+	public CaveEditor(CaveEntry caveEntry) {
 		if (caveEntry == null) {
 			createNewCaveEntry();
 		} else {
 			correspondingCaveEntry = caveEntry;
 		}
-		listenerList = new ArrayList<CaveEditorListener>();
-		listenerList.add(listener);
 		caveTypeProps = GWT.create(CaveTypeProperties.class);
 		caveTypeEntryList = new ListStore<CaveTypeEntry>(caveTypeProps.caveTypeID());
 		ceilingTypeProps = GWT.create(CeilingTypeProperties.class);
@@ -1187,7 +1185,7 @@ public class CaveEditor implements IsWidget {
 		cancelButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-				closeCaveEditor();
+				closeEditor();
 			}
 		});
 		mainPanel.addButton(saveButton);
@@ -1195,23 +1193,23 @@ public class CaveEditor implements IsWidget {
 
 	}
 
-	/**
-	 * Will be called when the cancel button is selected. Calls <code>CaveEditorListener.closeRequest()</code>
-	 */
-	protected void closeCaveEditor() {
-		for (CaveEditorListener l : listenerList) {
-			l.closeRequest();
-		}
-	}
-
-	/**
-	 * Adds a <code>CaveEditorListener</code>
-	 * 
-	 * @param l
-	 */
-	public void addCaveEditorListener(CaveEditorListener l) {
-		listenerList.add(l);
-	}
+//	/**
+//	 * Will be called when the cancel button is selected. Calls <code>CaveEditorListener.closeRequest()</code>
+//	 */
+//	protected void closeCaveEditor() {
+//		for (CaveEditorListener l : listenerList) {
+//			l.closeRequest();
+//		}
+//	}
+//
+//	/**
+//	 * Adds a <code>CaveEditorListener</code>
+//	 * 
+//	 * @param l
+//	 */
+//	public void addCaveEditorListener(CaveEditorListener l) {
+//		listenerList.add(l);
+//	}
 
 	/**
 	 * Will be called when the save button is selected. After saving <code>CaveEditorListener.closeRequest()</code> is called to inform all
@@ -1233,7 +1231,7 @@ public class CaveEditor implements IsWidget {
 
 				@Override
 				public void onSuccess(Boolean result) {
-					closeCaveEditor();
+					closeEditor();
 				}
 			});
 			
@@ -1248,7 +1246,7 @@ public class CaveEditor implements IsWidget {
 				@Override
 				public void onSuccess(Integer result) {
 					correspondingCaveEntry.setCaveID(result.intValue());
-					closeCaveEditor();
+					closeEditor();
 				}
 			});
 		}
