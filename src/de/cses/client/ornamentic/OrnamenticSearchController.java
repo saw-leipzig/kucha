@@ -87,6 +87,7 @@ public class OrnamenticSearchController extends AbstractSearchController {
 	public void addNewElement() {
 		PopupPanel ornamentEditorPanel = new PopupPanel(false);
 		Ornamentic ornamentic = new Ornamentic();
+		ornamentic.setPopup(ornamentEditorPanel);
 		ornamentEditorPanel.add(ornamentic);
 //		new Draggable(ornamentEditorPanel);
 		ornamentEditorPanel.setGlassEnabled(true);
