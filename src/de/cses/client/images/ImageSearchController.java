@@ -24,6 +24,7 @@ import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.client.ui.AbstractResultView;
 import de.cses.client.ui.AbstractSearchController;
+import de.cses.client.ui.EditorListener;
 import de.cses.shared.ImageEntry;
 
 /**
@@ -103,7 +104,13 @@ public class ImageSearchController extends AbstractSearchController {
 						ImageEntry imgEntry = result;
 						imgEntry.setTitle(filename);
 						SingleImageEditor singleIE = new SingleImageEditor(imgEntry);
-//						singleIE.addEditorListener(this);
+						singleIE.addEditorListener(new EditorListener() {
+							
+							@Override
+							public void closeRequest() {
+								imageEditorPanel.hide();
+							}
+						});
 						imageEditorPanel.add(singleIE);
 						imageEditorPanel.setGlassEnabled(true);
 						imageEditorPanel.center();
@@ -126,17 +133,6 @@ public class ImageSearchController extends AbstractSearchController {
 		imageUploadPanel.setGlassEnabled(true);
 		imageUploadPanel.center();
 		imageUploadPanel.show();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.cses.client.ui.EditorListener#closeRequest()
-	 */
-	@Override
-	public void closeRequest() {
-		// TODO Auto-generated method stub
-
 	}
 
 }

@@ -87,18 +87,8 @@ public class OrnamenticSearchController extends AbstractSearchController {
 		Ornamentic ornamentic = new Ornamentic();
 		ornamentic.setPopup(ornamentEditorPanel);
 		ornamentEditorPanel.add(ornamentic);
-//		new Draggable(ornamentEditorPanel);
 		ornamentEditorPanel.setGlassEnabled(true);
 		ornamentEditorPanel.center();
-	}
-
-	/* (non-Javadoc)
-	 * @see de.cses.client.ui.EditorListener#closeRequest()
-	 */
-	@Override
-	public void closeRequest() {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

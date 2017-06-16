@@ -27,7 +27,7 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
  *  
  * @author alingnau
  */
-public abstract class AbstractSearchController extends ToggleButton implements EditorListener {
+public abstract class AbstractSearchController extends ToggleButton {
 	
 	private String searchControllerTitle;
 	private ArrayList<AbstractFilter> relatedFilter;

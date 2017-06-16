@@ -23,6 +23,7 @@ import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.client.ui.AbstractSearchController;
+import de.cses.client.ui.EditorListener;
 import de.cses.shared.CaveEntry;
 
 /**
@@ -32,7 +33,6 @@ import de.cses.shared.CaveEntry;
 public class CaveSearchController extends AbstractSearchController {
 	
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
-	private PopupPanel caveEditorPanel;
 
 	/**
 	 * @param searchControllerTitle
@@ -83,20 +83,18 @@ public class CaveSearchController extends AbstractSearchController {
 	 */
 	@Override
 	public void addNewElement() {
-		caveEditorPanel = new PopupPanel(false);
+		PopupPanel caveEditorPanel = new PopupPanel(false);
 		CaveEditor ced = new CaveEditor(null);
-		ced.addEditorListener(this);
+		ced.addEditorListener(new EditorListener() {
+			
+			@Override
+			public void closeRequest() {
+				caveEditorPanel.hide();
+			}
+		});
 		caveEditorPanel.add(ced);
 		caveEditorPanel.setGlassEnabled(true);
 		caveEditorPanel.center();
-	}
-
-	/* (non-Javadoc)
-	 * @see de.cses.client.ui.EditorListener#closeRequest()
-	 */
-	@Override
-	public void closeRequest() {
-		caveEditorPanel.hide();
 	}
 
 }
