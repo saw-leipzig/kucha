@@ -92,7 +92,7 @@ public class CaveEditor extends AbstractEditor {
 	private StoreFilter<DistrictEntry> districtFilter;
 	protected Object siteEntryAccess;
 //	private ArrayList<CaveEditorListener> listenerList;
-	private Label siteDisplay;
+//	private Label siteDisplay;
 	private TextField alterationDateField;
 	private TextArea findingsTextArea;
 	private FlowLayoutContainer imageContainer;
@@ -405,10 +405,11 @@ public class CaveEditor extends AbstractEditor {
 
 						@Override
 						public void onSuccess(SiteEntry result) {
-							siteDisplay.setText(result.getName());
+							siteSelection.setValue(result);
+							activateRegionFilter();
+							activateDistrictFilter();
 						}
 					});
-
 				}
 			}
 		});
@@ -526,11 +527,11 @@ public class CaveEditor extends AbstractEditor {
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Site");
-		if (correspondingCaveEntry.getCaveID() > 0) {
-			siteDisplay = new Label();
-			siteDisplay.setWidth("100%");
-			attributePanel.add(siteDisplay);
-		} else {
+//		if (correspondingCaveEntry.getCaveID() > 0) {
+//			siteDisplay = new Label();
+//			siteDisplay.setWidth("100%");
+//			attributePanel.add(siteDisplay);
+//		} else {
 			siteSelection = new ComboBox<SiteEntry>(siteEntryList, siteProps.name(), new AbstractSafeHtmlRenderer<SiteEntry>() {
 
 				@Override
@@ -548,33 +549,13 @@ public class CaveEditor extends AbstractEditor {
 
 				@Override
 				public void onSelection(SelectionEvent<SiteEntry> event) {
-					regionFilter = new StoreFilter<RegionEntry>() {
-
-						@Override
-						public boolean select(Store<RegionEntry> store, RegionEntry parent, RegionEntry item) {
-							return (item.getSiteID() == siteSelection.getCurrentValue().getSiteID());
-						}
-					};
-					regionEntryList.addFilter(regionFilter);
-					regionEntryList.setEnableFilters(true);
-					regionSelection.setEnabled(true);
-					districtFilter = new StoreFilter<DistrictEntry>() {
-
-						@Override
-						public boolean select(Store<DistrictEntry> store, DistrictEntry parent, DistrictEntry item) {
-							return (item.getSiteID() == siteSelection.getCurrentValue().getSiteID());
-						}
-
-					};
-					districtEntryList.addFilter(districtFilter);
-					districtEntryList.setEnableFilters(true);
-					districtEntryList.setEnableFilters(true);
-					districtSelection.setEnabled(true);
+					activateRegionFilter();
+					activateDistrictFilter();
 				}
 			});
 			siteSelection.setWidth(250);
 			attributePanel.add(siteSelection);
-		}
+//		}
 		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .11));
 
 		attributePanel = new FramedPanel();
@@ -1250,6 +1231,40 @@ public class CaveEditor extends AbstractEditor {
 				}
 			});
 		}
+	}
+
+	/**
+	 * 
+	 */
+	private void activateRegionFilter() {
+		regionFilter = new StoreFilter<RegionEntry>() {
+
+			@Override
+			public boolean select(Store<RegionEntry> store, RegionEntry parent, RegionEntry item) {
+				return (item.getSiteID() == siteSelection.getCurrentValue().getSiteID());
+			}
+		};
+		regionEntryList.addFilter(regionFilter);
+		regionEntryList.setEnableFilters(true);
+		regionSelection.setEnabled(true);
+	}
+
+	/**
+	 * 
+	 */
+	private void activateDistrictFilter() {
+		districtFilter = new StoreFilter<DistrictEntry>() {
+
+			@Override
+			public boolean select(Store<DistrictEntry> store, DistrictEntry parent, DistrictEntry item) {
+				return (item.getSiteID() == siteSelection.getCurrentValue().getSiteID());
+			}
+
+		};
+		districtEntryList.addFilter(districtFilter);
+		districtEntryList.setEnableFilters(true);
+		districtEntryList.setEnableFilters(true);
+		districtSelection.setEnabled(true);
 	}
 	
 }
