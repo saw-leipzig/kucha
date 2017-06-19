@@ -14,17 +14,15 @@
 package de.cses.client.depictions;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.PopupPanel;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.ui.AbstractEditor;
+import de.cses.client.ui.AbstractView;
 //import de.cses.client.images.ImageView.Resources;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.ImageEntry;
@@ -33,7 +31,7 @@ import de.cses.shared.ImageEntry;
  * @author alingnau
  *
  */
-public class DepictionView extends Button {
+public class DepictionView extends AbstractView {
 
 	interface Resources extends ClientBundle {
 		@Source("buddha.png")
@@ -47,6 +45,7 @@ public class DepictionView extends Button {
 	 * 
 	 */
 	public DepictionView() {
+		super();
 		Resources resources = GWT.create(Resources.class);
 		Image img = new Image(resources.logo());
 		String html = "<div><center><img src='" + img.getUrl()
@@ -54,7 +53,7 @@ public class DepictionView extends Button {
 		setHTML(html);
 		setPixelSize(110, 110);
 		depictionEntry = null;
-		init();
+//		init();
 	}
 
 	/**
@@ -84,35 +83,43 @@ public class DepictionView extends Button {
 			}
 		});
 		setPixelSize(110, 110);
-		init();
+//		init();
 	}
 
-	/**
-	 * 
+//	/**
+//	 * 
+//	 */
+//	private void init() {
+//		addClickHandler(new ClickHandler() {
+//
+//			private PopupPanel depictionEditorPanel;
+//
+//			@Override
+//			public void onClick(ClickEvent event) {
+//				depictionEditorPanel = new PopupPanel(false);
+//				DepictionEditor de = new DepictionEditor(depictionEntry, new DepictionEditorListener() {
+//
+//					@Override
+//					public void depictionSaved(DepictionEntry depictionEntry) {
+//						depictionEditorPanel.hide();
+//					}
+//				});
+//				depictionEditorPanel.add(de);
+//				// new Draggable(depictionEditorPanel);
+//				depictionEditorPanel.setGlassEnabled(true);
+//				depictionEditorPanel.center();
+//				depictionEditorPanel.show();
+//			}
+//		});
+//
+//	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.ui.AbstractView#getEditor()
 	 */
-	private void init() {
-		addClickHandler(new ClickHandler() {
-
-			private PopupPanel depictionEditorPanel;
-
-			@Override
-			public void onClick(ClickEvent event) {
-				depictionEditorPanel = new PopupPanel(false);
-				DepictionEditor de = new DepictionEditor(depictionEntry, new DepictionEditorListener() {
-
-					@Override
-					public void depictionSaved(DepictionEntry depictionEntry) {
-						depictionEditorPanel.hide();
-					}
-				});
-				depictionEditorPanel.add(de);
-				// new Draggable(depictionEditorPanel);
-				depictionEditorPanel.setGlassEnabled(true);
-				depictionEditorPanel.center();
-				depictionEditorPanel.show();
-			}
-		});
-
+	@Override
+	protected AbstractEditor getEditor() {
+		return new DepictionEditor(depictionEntry);
 	}
 
 }

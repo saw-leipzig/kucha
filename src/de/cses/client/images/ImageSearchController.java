@@ -24,6 +24,7 @@ import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.client.ui.AbstractResultView;
 import de.cses.client.ui.AbstractSearchController;
+import de.cses.client.ui.EditorListener;
 import de.cses.shared.ImageEntry;
 
 /**
@@ -42,7 +43,9 @@ public class ImageSearchController extends AbstractSearchController {
 		super(selectorTitle, resultView);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.cses.client.ui.AbstractSearchController#invokeSearch()
 	 */
 	@Override
@@ -54,7 +57,7 @@ public class ImageSearchController extends AbstractSearchController {
 			}
 		}
 		String sqlWhere = null;
-		for (int i=0; i<sqlWhereClauses.size(); ++i) {
+		for (int i = 0; i < sqlWhereClauses.size(); ++i) {
 			if (i == 0) {
 				sqlWhere = sqlWhereClauses.get(i);
 			} else {
@@ -63,7 +66,7 @@ public class ImageSearchController extends AbstractSearchController {
 		}
 		System.err.println("search for images WHERE " + sqlWhere);
 		dbService.getImages(sqlWhere, new AsyncCallback<ArrayList<ImageEntry>>() {
-			
+
 			@Override
 			public void onSuccess(ArrayList<ImageEntry> result) {
 				getResultView().reset();
@@ -71,7 +74,7 @@ public class ImageSearchController extends AbstractSearchController {
 					getResultView().addResult(new ImageView(ie));
 				}
 			}
-			
+
 			@Override
 			public void onFailure(Throwable caught) {
 				caught.printStackTrace();
@@ -79,7 +82,9 @@ public class ImageSearchController extends AbstractSearchController {
 		});
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.cses.client.ui.AbstractSearchController#addNewElement()
 	 */
 	@Override
@@ -98,15 +103,11 @@ public class ImageSearchController extends AbstractSearchController {
 					public void onSuccess(ImageEntry result) {
 						ImageEntry imgEntry = result;
 						imgEntry.setTitle(filename);
-						SingleImageEditor singleIE = new SingleImageEditor(imgEntry, new ImageEditorListener() {
-
+						SingleImageEditor singleIE = new SingleImageEditor(imgEntry);
+						singleIE.addEditorListener(new EditorListener() {
+							
 							@Override
-							public void closeImageEditor() {
-								imageEditorPanel.hide();
-							}
-
-							@Override
-							public void cancelImageEditor() {
+							public void closeRequest() {
 								imageEditorPanel.hide();
 							}
 						});
@@ -131,6 +132,7 @@ public class ImageSearchController extends AbstractSearchController {
 		imageUploadPanel.add(iu);
 		imageUploadPanel.setGlassEnabled(true);
 		imageUploadPanel.center();
-		imageUploadPanel.show();	}
+		imageUploadPanel.show();
+	}
 
 }

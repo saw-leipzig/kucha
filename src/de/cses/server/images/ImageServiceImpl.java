@@ -37,8 +37,8 @@ import de.cses.server.mysql.MysqlConnector;
 import de.cses.shared.ImageEntry;
 
 /**
- * This HttpServlet is used to upload images to the server's main image
- * directory. It also creates a new entry in the Images table of the database.
+ * This HttpServlet is used to upload images to the server's main image directory. It also creates a new entry in the Images table of the
+ * database.
  * 
  * @author alingnau
  *
@@ -57,18 +57,20 @@ public class ImageServiceImpl extends HttpServlet {
 	}
 
 	/**
-	 * This method is called when the submit button in the image uploader is
-	 * pressed. Images are stored in the SERVER_IMAGES_PATHNAME
+	 * This method is called when the submit button in the image uploader is pressed. Images are stored in the SERVER_IMAGES_PATHNAME
 	 * 
 	 * @see de.cses.client.images.ImageUploader
 	 */
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String uploadFileName;
-		String fileType, filename = "default.jpg";
+		String fileType, filename = "0.jpg";
 
 		response.setContentType("text/plain");
 		File imgHomeDir = new File(serverProperties.getProperty("home.images"));
+		if (!imgHomeDir.exists()) {
+			imgHomeDir.mkdirs();
+		}
 		FileItemFactory factory = new DiskFileItemFactory(1000000, imgHomeDir);
 		ServletFileUpload upload = new ServletFileUpload(factory);
 		File target = null;
@@ -83,10 +85,9 @@ public class ImageServiceImpl extends HttpServlet {
 					// purpose of the upload (e.g. depictions, backgrounds, ...)
 					fileType = uploadFileName.substring(uploadFileName.lastIndexOf("."));
 					if (item.isFormField()) {
-						throw new ServletException(
-								"Unsupported non-file property [" + item.getFieldName() + "] with value: " + item.getString());
+						throw new ServletException("Unsupported non-file property [" + item.getFieldName() + "] with value: " + item.getString());
 					} else {
-						newImageID  = connector.createNewImageEntry();
+						newImageID = connector.createNewImageEntry();
 						if (newImageID > 0) {
 							filename = newImageID + fileType;
 							ImageEntry ie = connector.getImageEntry(newImageID);
@@ -99,8 +100,9 @@ public class ImageServiceImpl extends HttpServlet {
 					}
 				}
 			} catch (ServletException e) {
-				throw e;
+				System.err.println("ServletException");
 			} catch (Exception e) {
+				System.err.println("IllegalStateException");
 				throw new IllegalStateException(e);
 			}
 		} finally {
@@ -139,19 +141,21 @@ public class ImageServiceImpl extends HttpServlet {
 				ImageIO.write(tnImg, type, tnFile);
 			} else if (w > h) {
 				float factor = THUMBNAIL_SIZE / w;
-				float tnHeight = h * factor; 
+				float tnHeight = h * factor;
 				tnImg = new BufferedImage(THUMBNAIL_SIZE, Math.round(tnHeight), BufferedImage.TYPE_INT_RGB);
 				tnImg.createGraphics().drawImage(buf.getScaledInstance(THUMBNAIL_SIZE, Math.round(tnHeight), Image.SCALE_SMOOTH), 0, 0, null);
 				ImageIO.write(tnImg, type, tnFile);
 			} else {
 				float factor = THUMBNAIL_SIZE / h;
-				float tnWidth = w * factor; 
+				float tnWidth = w * factor;
 				tnImg = new BufferedImage(Math.round(tnWidth), THUMBNAIL_SIZE, BufferedImage.TYPE_INT_RGB);
 				tnImg.createGraphics().drawImage(buf.getScaledInstance(Math.round(tnWidth), THUMBNAIL_SIZE, Image.SCALE_SMOOTH), 0, 0, null);
 				ImageIO.write(tnImg, type, tnFile);
 			}
 		} catch (IOException e) {
-			System.out.println("Thumbnail could not be created!");
+			System.err.println("I/O Exception - thumbnail could not be created!");
+		} catch (OutOfMemoryError e) {
+			System.err.println("An OutOfMemoryError has occurred while scaling the image!");
 		}
 	}
 

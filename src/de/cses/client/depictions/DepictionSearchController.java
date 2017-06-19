@@ -24,6 +24,7 @@ import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.client.ui.AbstractResultView;
 import de.cses.client.ui.AbstractSearchController;
+import de.cses.client.ui.EditorListener;
 import de.cses.shared.DepictionEntry;
 
 /**
@@ -83,11 +84,12 @@ public class DepictionSearchController extends AbstractSearchController {
 	 */
 	@Override
 	public void addNewElement() {
-		final PopupPanel depictionEditorPanel = new PopupPanel(false);
-		DepictionEditor de = new DepictionEditor(null, new DepictionEditorListener() {
-
+		PopupPanel depictionEditorPanel = new PopupPanel(false);
+		DepictionEditor de = new DepictionEditor(null);
+		de.addEditorListener(new EditorListener() {
+			
 			@Override
-			public void depictionSaved(DepictionEntry depictionEntry) {
+			public void closeRequest() {
 				depictionEditorPanel.hide();
 			}
 		});

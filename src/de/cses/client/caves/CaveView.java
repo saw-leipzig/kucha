@@ -14,100 +14,74 @@
 package de.cses.client.caves;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.PopupPanel;
 import com.sencha.gxt.core.client.XTemplates;
+import com.sencha.gxt.data.shared.LabelProvider;
+import com.sencha.gxt.data.shared.ModelKeyProvider;
+import com.sencha.gxt.data.shared.PropertyAccess;
 
-import de.cses.client.DatabaseService;
-import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.ui.AbstractEditor;
+import de.cses.client.ui.AbstractView;
 import de.cses.shared.CaveEntry;
+import de.cses.shared.CaveTypeEntry;
 
 /**
  * @author alingnau
  *
  */
-public class CaveView extends Button {
+public class CaveView extends AbstractView {
 
 	interface Resources extends ClientBundle {
 		@Source("cave.png")
 		ImageResource logo();
-		
-		@Source("plus.png")
-		ImageResource plus();
 	}
-	
+
 	interface CaveViewTemplates extends XTemplates {
-		@XTemplate("<div><h3>Cave number {officialNumber}</h3><br>Name: {officialName}<br>Historic name: {historicName}<br>"
-				+ "Cavetype: {caveType}</div>")
-		SafeHtml tooltip(String officialNumber, String officialName, String historicName, String caveType);
-		
-		@XTemplate("<div><center><img align=\"center\" width=\"80\" height=\"80\" margin=\"20\" src=\"{imageUri}\"></center><label>{title}</label></div>")
-		SafeHtml image(SafeUri imageUri, String title);
+		@XTemplate("<div><center><img src='{imgUri}' height='16px' width='16px'><b style='font-size: 20px'> {officialNumber} </b><p style='font-size:9px; word-wrap:break-word'> {officialName} <br> {historicName} </p></center></div>")
+		SafeHtml view(SafeUri imgUri, String officialNumber, String officialName, String historicName);
+
+		@XTemplate("<div><center><img src='{imgUri}' height='80px' width='80px' ><br><b> {officialNumber} </b></center></div>")
+		SafeHtml view(SafeUri imgUri, String officialNumber);
 	}
-	
-//	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
+
+	interface CaveTypeProperties extends PropertyAccess<CaveTypeEntry> {
+		ModelKeyProvider<CaveTypeEntry> caveTypeID();
+
+		LabelProvider<CaveTypeEntry> nameEN();
+	}
+
 	private CaveEntry cEntry;
 	private Resources resources;
 	protected String caveType;
-//	private CaveViewTemplates cvTemplate;
-	
-	
-	public CaveView() {
-		resources = GWT.create(Resources.class);
-		Image img = new Image(resources.logo());
-		String html = "<div><center><img src='" + img.getUrl() + "' height = '80px' width = '80px'></img></center><label>Add New</label></br></div>";
-		setHTML(html);
-		cEntry = null;
-		setPixelSize(110, 110);
-		init();
-	}
+	private CaveViewTemplates cvTemplate;
 
 	/**
 	 * @param text
 	 * @param icon
 	 */
 	public CaveView(CaveEntry entry) {
-		resources = GWT.create(Resources.class);
-		Image img = new Image(resources.logo());
-		String html = "<div><center><img src='" + img.getUrl() + "' height = '80px' width = '80px'></img></center><label>Cave no. " + entry.getOfficialNumber() + "</label></br></div>";
-		setHTML(html);
+		super();
 		cEntry = entry;
+		resources = GWT.create(Resources.class);
+		cvTemplate = GWT.create(CaveViewTemplates.class);
+		SafeHtml html = cvTemplate.view(resources.logo().getSafeUri(), entry.getOfficialNumber(),
+				(!entry.getOfficialName().isEmpty() ? entry.getOfficialName() : "Name N/A"),
+				(!entry.getHistoricName().isEmpty() ? entry.getHistoricName() : "Historic N/A"));
+		setHTML(html);
 		setPixelSize(110, 110);
-		init();
 	}
 
-	/**
+	/*
+	 * (non-Javadoc)
 	 * 
+	 * @see de.cses.client.ui.AbstractView#getEditor()
 	 */
-	private void init() {
-		addClickHandler(new ClickHandler() {
-			private PopupPanel caveEditorPanel;
-			
-			@Override
-			public void onClick(ClickEvent event) {
-				caveEditorPanel = new PopupPanel(false);
-				CaveEditor ced = new CaveEditor(cEntry, new CaveEditorListener() {
-
-					@Override
-					public void closeRequest() {
-						caveEditorPanel.hide();
-					}
-				});
-				caveEditorPanel.add(ced);
-				caveEditorPanel.setGlassEnabled(true);
-				caveEditorPanel.center();
-				caveEditorPanel.show();
-			}
-		});
+	@Override
+	protected AbstractEditor getEditor() {
+		return new CaveEditor(cEntry);
 	}
-	
-	
 
 }

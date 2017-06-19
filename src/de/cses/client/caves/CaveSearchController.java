@@ -23,6 +23,7 @@ import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.client.ui.AbstractSearchController;
+import de.cses.client.ui.EditorListener;
 import de.cses.shared.CaveEntry;
 
 /**
@@ -82,13 +83,13 @@ public class CaveSearchController extends AbstractSearchController {
 	 */
 	@Override
 	public void addNewElement() {
-		final PopupPanel caveEditorPanel = new PopupPanel(false);
-		CaveEditor ced = new CaveEditor(null, new CaveEditorListener() {
-
+		PopupPanel caveEditorPanel = new PopupPanel(false);
+		CaveEditor ced = new CaveEditor(null);
+		ced.addEditorListener(new EditorListener() {
+			
 			@Override
 			public void closeRequest() {
 				caveEditorPanel.hide();
-				invokeSearch();
 			}
 		});
 		caveEditorPanel.add(ced);

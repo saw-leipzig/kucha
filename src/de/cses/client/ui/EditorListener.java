@@ -11,14 +11,14 @@
  * You should have received a copy of the GPL v3 along with the software. 
  * If not, you can access it from here: <https://www.gnu.org/licenses/gpl-3.0.txt>.
  */
-package de.cses.client.caves;
+package de.cses.client.ui;
 
 /**
  * @author alingnau
  *
  */
-public interface CaveEditorListener {
-	
+public interface EditorListener {
+
 	public void closeRequest();
 
 }
