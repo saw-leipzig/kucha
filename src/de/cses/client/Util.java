@@ -81,5 +81,4 @@ public class Util {
 		dialog.center();
 	}
 
-
 }

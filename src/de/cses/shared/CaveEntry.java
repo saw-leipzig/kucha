@@ -27,7 +27,7 @@ public class CaveEntry implements IsSerializable {
 	private RearAreaEntry rearAreaEntry;
 
 	public CaveEntry() {
-		this(0, "", "", "", 0, 0, 0, 0, "", "", null, 0);
+		this(0, "", "", "", 0, 0, 0, 0, "", "", "", 0);
 		antechamberEntry = new AntechamberEntry();
 		mainChamberEntry = new MainChamberEntry();
 		rearAreaEntry = new RearAreaEntry();
