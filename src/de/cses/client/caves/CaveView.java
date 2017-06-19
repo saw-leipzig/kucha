@@ -67,10 +67,9 @@ public class CaveView extends AbstractView {
 		cEntry = entry;
 		resources = GWT.create(Resources.class);
 		cvTemplate = GWT.create(CaveViewTemplates.class);
-		SafeHtml html = cvTemplate.view(resources.logo().getSafeUri(), entry.getOfficialNumber(),
-				(!entry.getOfficialName().isEmpty() ? entry.getOfficialName() : "Name N/A"),
-				(!entry.getHistoricName().isEmpty() ? entry.getHistoricName() : "Historic N/A"));
-		setHTML(html);
+		setHTML(cvTemplate.view(
+				resources.logo().getSafeUri(), entry.getOfficialNumber(), entry.getOfficialName(), entry.getHistoricName()
+			));
 		setPixelSize(110, 110);
 	}
 
