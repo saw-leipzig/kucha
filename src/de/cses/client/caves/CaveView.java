@@ -43,10 +43,10 @@ public class CaveView extends AbstractView {
 	}
 
 	interface CaveViewTemplates extends XTemplates {
-		@XTemplate("<div><center><img src='{imgUri}' height='16px' width='16px'><b style='font-size: 20px'> {officialNumber} </b><p style='font-size:9px; word-wrap:break-word'> {officialName} <br> {historicName} </p></center></div>")
+		@XTemplate("<div><center><img src='{imgUri}' height='16px' width='16px'> <b style='font-size: 20px'> {officialNumber} </b><p style='font-size:9px; word-wrap:break-word'> {officialName} <br> {historicName} </p></center></div>")
 		SafeHtml view(SafeUri imgUri, String officialNumber, String officialName, String historicName);
 
-		@XTemplate("<div><center><img src='{imgUri}' height='80px' width='80px' ><br><b> {officialNumber} </b></center></div>")
+		@XTemplate("<div><center><img src='{imgUri}' height='16px' width='16px' > <b style='font-size: 20px'> {officialNumber} </b></center></div>")
 		SafeHtml view(SafeUri imgUri, String officialNumber);
 	}
 
@@ -81,6 +81,7 @@ public class CaveView extends AbstractView {
 			protected void onDragStart(DndDragStartEvent event) {
 				super.onDragStart(event);
 				event.setData(cEntry);
+				event.getStatusProxy().update(cvTemplate.view(resources.logo().getSafeUri(), entry.getOfficialNumber()));
 			}
 			
 		};
