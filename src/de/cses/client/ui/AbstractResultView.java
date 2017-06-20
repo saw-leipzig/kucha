@@ -13,6 +13,8 @@
  */
 package de.cses.client.ui;
 
+import java.util.Iterator;
+
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.widget.core.client.Portlet;
@@ -21,6 +23,8 @@ import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
+
+import de.cses.shared.AbstractEntry;
 
 /**
  * AbstractResultView is the base for the result views shown in MainView. Here the 
@@ -83,15 +87,26 @@ public abstract class AbstractResultView extends Portlet {
 		});
 		getHeader().addTool(toolButton);
 		
-		
 		resultContainer = new FlowLayoutContainer();
 		resultContainer.setScrollMode(ScrollMode.AUTOY);
 		resultLayoutData = new MarginData(20);
 		this.add(resultContainer);
+		
 	}
 	
 	public void addResult(Widget w) {
 		resultContainer.add(w, resultLayoutData);
+	}
+	
+	public boolean containsResult(AbstractEntry entry) {
+		Iterator<Widget> wIterator = resultContainer.iterator();
+		while (wIterator.hasNext()) {
+			Widget w = wIterator.next();
+			if (w instanceof AbstractView) {
+				return (entry.equals(((AbstractView)w).getEntry()));
+			}
+		}
+		return false;
 	}
 	
 	/**

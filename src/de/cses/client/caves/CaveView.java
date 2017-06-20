@@ -22,9 +22,12 @@ import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
+import com.sencha.gxt.dnd.core.client.DndDragStartEvent;
+import com.sencha.gxt.dnd.core.client.DragSource;
 
 import de.cses.client.ui.AbstractEditor;
 import de.cses.client.ui.AbstractView;
+import de.cses.shared.AbstractEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveTypeEntry;
 
@@ -71,6 +74,17 @@ public class CaveView extends AbstractView {
 				resources.logo().getSafeUri(), entry.getOfficialNumber(), entry.getOfficialName(), entry.getHistoricName()
 			));
 		setPixelSize(110, 110);
+		
+		DragSource source = new DragSource(this) {
+
+			@Override
+			protected void onDragStart(DndDragStartEvent event) {
+				super.onDragStart(event);
+				event.setData(cEntry);
+			}
+			
+		};
+
 	}
 
 	/*
@@ -81,6 +95,14 @@ public class CaveView extends AbstractView {
 	@Override
 	protected AbstractEditor getEditor() {
 		return new CaveEditor(cEntry);
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.ui.AbstractView#getEntry()
+	 */
+	@Override
+	protected AbstractEntry getEntry() {
+		return cEntry;
 	}
 
 }

@@ -54,6 +54,8 @@ import de.cses.client.ornamentic.OrnamenticSearchController;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.client.ui.AbstractSearchController;
 import de.cses.client.ui.LocationFilter;
+import de.cses.client.ui.ResultCollectorController;
+import de.cses.client.ui.ResultCollectorView;
 
 /**
  * @author alingnau
@@ -74,6 +76,7 @@ public class MainView implements IsWidget {
 	private DepictionSearchController depictionSearchController;
 	private ImageSearchController imageSearchController;
 	private OrnamenticSearchController ornamenticSearchController;
+	private ResultCollectorController resultCollectorController;
 
 	/**
 	 * 
@@ -207,6 +210,20 @@ public class MainView implements IsWidget {
 			}
 		});
 		selectorLayoutContainer.add(ornamenticSearchController, hLayoutData);
+		
+		resultCollectorController = new ResultCollectorController("Result Collector", new ResultCollectorView("Result Collector"));
+		resultCollectorController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				if (event.getValue()) {
+					resultView.add(resultCollectorController.getResultView(), 1);
+				} else {
+					resultCollectorController.getResultView().removeFromParent();
+				}
+			}
+		});
+		selectorLayoutContainer.add(resultCollectorController, hLayoutData);
 		
     ContentPanel centerPanel = new ContentPanel();
     centerPanel.setHeading("Results");

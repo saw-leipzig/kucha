@@ -30,6 +30,7 @@ import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.client.ui.AbstractView;
 import de.cses.client.ui.EditorListener;
+import de.cses.shared.AbstractEntry;
 import de.cses.shared.ImageEntry;
 
 /**
@@ -171,6 +172,14 @@ public class ImageView extends AbstractView {
 		String html = "<div><center><img src='resource?imageID=" + imgEntry.getImageID() + "&thumb=80'"
 				+ "' ></img></center><label>" + imgEntry.getTitle() + "</label></br></div>";
 		setHTML(html);
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.ui.AbstractView#getEntry()
+	 */
+	@Override
+	protected AbstractEntry getEntry() {
+		return imgEntry;
 	}
 
 }

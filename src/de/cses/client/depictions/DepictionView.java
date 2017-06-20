@@ -23,6 +23,7 @@ import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.client.ui.AbstractView;
+import de.cses.shared.AbstractEntry;
 //import de.cses.client.images.ImageView.Resources;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.ImageEntry;
@@ -120,6 +121,14 @@ public class DepictionView extends AbstractView {
 	@Override
 	protected AbstractEditor getEditor() {
 		return new DepictionEditor(depictionEntry);
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.ui.AbstractView#getEntry()
+	 */
+	@Override
+	protected AbstractEntry getEntry() {
+		return depictionEntry;
 	}
 
 }
