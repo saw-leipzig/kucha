@@ -17,8 +17,10 @@ import com.sencha.gxt.dnd.core.client.DndDropEvent;
 import com.sencha.gxt.dnd.core.client.DropTarget;
 
 import de.cses.client.caves.CaveView;
+import de.cses.client.depictions.DepictionView;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.CaveEntry;
+import de.cses.shared.DepictionEntry;
 
 /**
  * @author alingnau
@@ -39,6 +41,8 @@ public class ResultCollectorView extends AbstractResultView {
 				if ((event.getData() instanceof AbstractEntry) && !containsResult((AbstractEntry) event.getData())) {
 					if (event.getData() instanceof CaveEntry) {
 						addResult(new CaveView((CaveEntry) event.getData()));
+					} else if (event.getData() instanceof DepictionEntry) {
+						addResult(new DepictionView((DepictionEntry) event.getData()));
 					}
 				}
 			}
