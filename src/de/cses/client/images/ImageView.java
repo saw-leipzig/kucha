@@ -36,7 +36,7 @@ public class ImageView extends AbstractView {
 		@XTemplate("<div><center><img src='{imgUri}'></img></center></div>")
 		SafeHtml view(SafeUri imgUri);
 		
-		@XTemplate("<div><center><img src='{imgUri}'></img></center><label style='font-size:9px>{title}</label></div>")
+		@XTemplate("<div><center><img src='{imgUri}'></img></center><label style='font-size:9px' >{title}</label></div>")
 		SafeHtml view(SafeUri imgUri, String title);
 	}
 	
@@ -131,7 +131,7 @@ public class ImageView extends AbstractView {
 	@Override
 	public void closeRequest() {
 		super.closeRequest();
-		setHTML(ivTemplates.view(UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=80"), imgEntry.getTitle().substring(0, 11)));
+		setHTML(ivTemplates.view(UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=80"), imgEntry.getTitle().substring(0, 14)));
 	}
 
 	/* (non-Javadoc)
