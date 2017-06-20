@@ -89,24 +89,17 @@ public abstract class AbstractResultView extends Portlet {
 		
 		resultContainer = new FlowLayoutContainer();
 		resultContainer.setScrollMode(ScrollMode.AUTOY);
-		resultLayoutData = new MarginData(20);
+		resultLayoutData = new MarginData(10);
 		this.add(resultContainer);
 		
 	}
-	
-	public void addResult(Widget w) {
-		resultContainer.add(w, resultLayoutData);
-	}
-	
-	public boolean containsResult(AbstractEntry entry) {
-		Iterator<Widget> wIterator = resultContainer.iterator();
-		while (wIterator.hasNext()) {
-			Widget w = wIterator.next();
-			if (w instanceof AbstractView) {
-				return (entry.equals(((AbstractView)w).getEntry()));
-			}
-		}
-		return false;
+
+	/**
+	 * Adds an element 
+	 * @param w
+	 */
+	public void addResult(Widget view) {
+		resultContainer.add(view, resultLayoutData);
 	}
 	
 	/**

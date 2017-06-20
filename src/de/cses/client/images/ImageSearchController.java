@@ -109,6 +109,7 @@ public class ImageSearchController extends AbstractSearchController {
 							@Override
 							public void closeRequest() {
 								imageEditorPanel.hide();
+								getResultView().addResult(new ImageView(imgEntry));
 							}
 						});
 						imageEditorPanel.add(singleIE);

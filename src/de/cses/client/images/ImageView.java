@@ -52,7 +52,7 @@ public class ImageView extends AbstractView {
 		super();
 		ivTemplates = GWT.create(ImageViewTemplates.class);
 		this.imgEntry = imgEntry;
-		setHTML(ivTemplates.view(UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=80"), imgEntry.getTitle().substring(0, 11)));
+		setHTML(ivTemplates.view(UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=80"), imgEntry.getTitle().substring(0, 15)));
 		setPixelSize(110, 110);
 
 		DragSource source = new DragSource(this) {
@@ -67,59 +67,6 @@ public class ImageView extends AbstractView {
 		};
 	}
 
-	/**
-	 * 
-	 */
-//	private void initAddImage() {
-//		addClickHandler(new ClickHandler() {
-//			PopupPanel imageUploadPanel;
-//			PopupPanel imageEditorPanel;
-//
-//			@Override
-//			public void onClick(ClickEvent event) {
-//				imageUploadPanel = new PopupPanel(false);
-//				imageEditorPanel = new PopupPanel(false);
-//
-//				ImageUploader iu = new ImageUploader(new ImageUploadListener() {
-//
-//					@Override
-//					public void uploadCompleted(int newImageID, final String filename) {
-//						imageUploadPanel.hide();
-//						dbService.getImage(newImageID, new AsyncCallback<ImageEntry>() {
-//
-//							@Override
-//							public void onSuccess(ImageEntry result) {
-//								imgEntry = result;
-//								imgEntry.setTitle(filename);
-//								SingleImageEditor singleIE = new SingleImageEditor(imgEntry);
-//								singleIE.addEditorListener(this);
-//								imageEditorPanel.add(singleIE);
-//								imageEditorPanel.setGlassEnabled(true);
-//								imageEditorPanel.center();
-//								imageEditorPanel.show();
-//							}
-//
-//							@Override
-//							public void onFailure(Throwable caught) {
-//								imgEntry = null;
-//							}
-//						});
-//					}
-//
-//					@Override
-//					public void uploadCanceled() {
-//						imageUploadPanel.hide();
-//					}
-//				});
-//				imageUploadPanel.add(iu);
-//				imageUploadPanel.setGlassEnabled(true);
-//				imageUploadPanel.center();
-//				imageUploadPanel.show();
-//			}
-//		});
-//
-//	}
-
 	/* (non-Javadoc)
 	 * @see de.cses.client.ui.AbstractView#getEditor()
 	 */
@@ -131,7 +78,7 @@ public class ImageView extends AbstractView {
 	@Override
 	public void closeRequest() {
 		super.closeRequest();
-		setHTML(ivTemplates.view(UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=80"), imgEntry.getTitle().substring(0, 14)));
+		setHTML(ivTemplates.view(UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=80"), imgEntry.getTitle().substring(0, 15)));
 	}
 
 	/* (non-Javadoc)

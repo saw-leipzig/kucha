@@ -47,7 +47,7 @@ public class DepictionView extends AbstractView {
 		@XTemplate("<div><center><img src='{imgUri}'></img></center></div>")
 		SafeHtml view(SafeUri imgUri);
 		
-		@XTemplate("<div><center><img src='{imgUri}'></img></center><label> DepictionID {id} </label></br></div>")
+		@XTemplate("<div><center><img src='{imgUri}'></img></center><label style='font-size:9px' > DepictionID {id} </label></br></div>")
 		SafeHtml view(SafeUri imgUri, int id);
 	}
 

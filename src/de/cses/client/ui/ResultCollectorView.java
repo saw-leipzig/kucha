@@ -42,16 +42,14 @@ public class ResultCollectorView extends AbstractResultView {
 			@Override
 			protected void onDragDrop(DndDropEvent event) {
 				super.onDragDrop(event);
-				if ((event.getData() instanceof AbstractEntry) && !containsResult((AbstractEntry) event.getData())) {
-					if (event.getData() instanceof CaveEntry) {
-						addResult(new CaveView((CaveEntry) event.getData()));
-					} else if (event.getData() instanceof DepictionEntry) {
-						addResult(new DepictionView((DepictionEntry) event.getData()));
-					} else if (event.getData() instanceof ImageEntry) {
-						addResult(new ImageView((ImageEntry) event.getData()));
-					} else if (event.getData() instanceof OrnamentEntry) {
-						addResult(new OrnamenticView((OrnamentEntry) event.getData()));
-					}
+				if (event.getData() instanceof CaveEntry) {
+					addResult(new CaveView((CaveEntry) event.getData()));
+				} else if (event.getData() instanceof DepictionEntry) {
+					addResult(new DepictionView((DepictionEntry) event.getData()));
+				} else if (event.getData() instanceof ImageEntry) {
+					addResult(new ImageView((ImageEntry) event.getData()));
+				} else if (event.getData() instanceof OrnamentEntry) {
+//					addResult(new OrnamenticView((OrnamentEntry) event.getData()));
 				}
 			}
 		};

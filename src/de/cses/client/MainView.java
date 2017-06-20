@@ -171,7 +171,7 @@ public class MainView implements IsWidget {
 					for (AbstractFilter filter : imageSearchController.getRelatedFilter()) {
 						filterView.add(filter, 0);
 					}
-					resultView.add(imageSearchController.getResultView(), 1);
+					resultView.add(imageSearchController.getResultView(), 0);
 				} else {
 					ArrayList<AbstractFilter> usedFilter = getUsedFilter();
 					for (AbstractFilter filter : imageSearchController.getRelatedFilter()) {
@@ -197,7 +197,7 @@ public class MainView implements IsWidget {
 					for (AbstractFilter filter : ornamenticSearchController.getRelatedFilter()) {
 						filterView.add(filter, 0);
 					}
-					resultView.add(ornamenticSearchController.getResultView(), 1);
+					resultView.add(ornamenticSearchController.getResultView(), 0);
 				} else {
 					ArrayList<AbstractFilter> usedFilter = getUsedFilter();
 					for (AbstractFilter filter : ornamenticSearchController.getRelatedFilter()) {
@@ -234,8 +234,8 @@ public class MainView implements IsWidget {
      */
     resultView = new PortalLayoutContainer(2);
     resultView.setSpacing(10);
-    resultView.setColumnWidth(0, .50);
-    resultView.setColumnWidth(1, .50);
+    resultView.setColumnWidth(0, .60);
+    resultView.setColumnWidth(1, .40);
 //    FlowLayoutContainer testContainer = new FlowLayoutContainer();
 //    testContainer.setScrollMode(ScrollMode.AUTOY);
 //    testContainer.add(resultView);

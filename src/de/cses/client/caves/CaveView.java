@@ -43,7 +43,7 @@ public class CaveView extends AbstractView {
 	}
 
 	interface CaveViewTemplates extends XTemplates {
-		@XTemplate("<div><center><img src='{imgUri}' height='16px' width='16px'> <b style='font-size: 20px'> {officialNumber} </b><p style='font-size:9px; word-wrap:break-word'> {officialName} <br> {historicName} </p></center></div>")
+		@XTemplate("<div><center><img src='{imgUri}' height='16px' width='16px'> <b style='font-size: 20px'> {officialNumber} </b></center><label style='font-size:9px'> {officialName} <br> {historicName} </label></div>")
 		SafeHtml view(SafeUri imgUri, String officialNumber, String officialName, String historicName);
 
 		@XTemplate("<div><center><img src='{imgUri}' height='16px' width='16px' > <b style='font-size: 20px'> {officialNumber} </b></center></div>")
@@ -71,7 +71,7 @@ public class CaveView extends AbstractView {
 		resources = GWT.create(Resources.class);
 		cvTemplate = GWT.create(CaveViewTemplates.class);
 		setHTML(cvTemplate.view(
-				resources.logo().getSafeUri(), entry.getOfficialNumber().substring(0, 11), entry.getOfficialName().substring(0, 11), entry.getHistoricName().substring(0, 11)
+				resources.logo().getSafeUri(), entry.getOfficialNumber().substring(0, 15), entry.getOfficialName().substring(0, 15), entry.getHistoricName().substring(0, 15)
 			));
 		setPixelSize(110, 110);
 		
