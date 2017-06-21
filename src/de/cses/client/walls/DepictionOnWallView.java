@@ -32,17 +32,17 @@ import de.cses.shared.ImageEntry;
  * @author nina
  *
  */
-public class DepictionView extends SimpleContainer {
+public class DepictionOnWallView extends SimpleContainer {
 
 	/**
 	 * 
 	 */
 
 	int depictionID;
-	DepictionView depictionview = this;
+	DepictionOnWallView depictionview = this;
 	private DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 
-	public DepictionView(int depictionID, final boolean editable) {
+	public DepictionOnWallView(int depictionID, final boolean editable) {
 
 		super();
 
@@ -85,7 +85,7 @@ public class DepictionView extends SimpleContainer {
 	/**
 	 * @param deferElement
 	 */
-	public DepictionView(boolean deferElement) {
+	public DepictionOnWallView(boolean deferElement) {
 		super(deferElement);
 		// TODO Auto-generated constructor stub
 	}

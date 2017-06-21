@@ -51,7 +51,6 @@ public abstract class AbstractView extends Button implements EditorListener {
 		editorPanel.add(editor);
 		editorPanel.setGlassEnabled(true);
 		editorPanel.center();
-		editorPanel.show();
 	}
 
 	abstract protected AbstractEditor getEditor();
