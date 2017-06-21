@@ -17,6 +17,11 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.sencha.gxt.dnd.core.client.DndDragStartEvent;
+import com.sencha.gxt.dnd.core.client.DragSource;
+import com.sencha.gxt.fx.client.Draggable;
+
+import de.cses.shared.AbstractEntry;
 
 /**
  * @author alingnau
@@ -38,7 +43,7 @@ public abstract class AbstractView extends Button implements EditorListener {
 			}
 		});
 	}
-	
+
 	private void showEditor() {
 		AbstractEditor editor = getEditor();
 		editor.addEditorListener(this);
@@ -46,10 +51,11 @@ public abstract class AbstractView extends Button implements EditorListener {
 		editorPanel.add(editor);
 		editorPanel.setGlassEnabled(true);
 		editorPanel.center();
-		editorPanel.show();
 	}
 
 	abstract protected AbstractEditor getEditor();
+	
+	abstract protected AbstractEntry getEntry();
 	
 	@Override
 	public void closeRequest() {

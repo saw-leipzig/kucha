@@ -16,14 +16,19 @@ package de.cses.client.depictions;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeUri;
+import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Image;
+import com.sencha.gxt.core.client.XTemplates;
+import com.sencha.gxt.dnd.core.client.DndDragStartEvent;
+import com.sencha.gxt.dnd.core.client.DragSource;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.client.ui.AbstractView;
-//import de.cses.client.images.ImageView.Resources;
+import de.cses.shared.AbstractEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.ImageEntry;
 
@@ -38,23 +43,18 @@ public class DepictionView extends AbstractView {
 		ImageResource logo();
 	}
 
-	private DepictionEntry depictionEntry;
-	private static final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
-
-	/**
-	 * 
-	 */
-	public DepictionView() {
-		super();
-		Resources resources = GWT.create(Resources.class);
-		Image img = new Image(resources.logo());
-		String html = "<div><center><img src='" + img.getUrl()
-				+ "' height = '80px' width = '80px'></img></center><label>Add New</label></br></div>";
-		setHTML(html);
-		setPixelSize(110, 110);
-		depictionEntry = null;
-//		init();
+	interface DepictionViewTemplates extends XTemplates {
+		@XTemplate("<div><center><img src='{imgUri}'></img></center></div>")
+		SafeHtml view(SafeUri imgUri);
+		
+		@XTemplate("<div><center><img src='{imgUri}'></img></center><label style='font-size:9px' > DepictionID {id} </label></br></div>")
+		SafeHtml view(SafeUri imgUri, int id);
 	}
+
+	private DepictionEntry depictionEntry;
+	private DepictionViewTemplates dvTemplates;
+	private Resources resources;
+	private static final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 
 	/**
 	 * @param text
@@ -62,57 +62,33 @@ public class DepictionView extends AbstractView {
 	public DepictionView(DepictionEntry entry) {
 		// super("DepictionID: " + depictionEntry.getDepictionID());
 		depictionEntry = entry;
+		resources = GWT.create(Resources.class);
+		dvTemplates = GWT.create(DepictionViewTemplates.class);
 		dbService.getMasterImageEntryForDepiction(entry.getDepictionID(), new AsyncCallback<ImageEntry>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				Resources resources = GWT.create(Resources.class);
-				Image img = new Image(resources.logo());
-				String html = "<div><center><img src='" + img.getUrl()
-						+ "' height = '80px' width = '80px'></img></center><label> DepictionID " + depictionEntry.getDepictionID()
-						+ "</label></br></div>";
-				setHTML(html);
+				setHTML(dvTemplates.view(resources.logo().getSafeUri()));
 			}
 
 			@Override
 			public void onSuccess(ImageEntry result) {
-				String html = "<div><center><img src='resource?imageID=" + result.getImageID() + "&thumb=80'"
-						+ "' ></img></center><label> DepictionID " + depictionEntry.getDepictionID()
-						+ "</label></br></div>";
-				setHTML(html);
+				setHTML(dvTemplates.view(UriUtils.fromString("resource?imageID=" + result.getImageID() + "&thumb=80"), depictionEntry.getDepictionID()));
 			}
 		});
 		setPixelSize(110, 110);
-//		init();
-	}
 
-//	/**
-//	 * 
-//	 */
-//	private void init() {
-//		addClickHandler(new ClickHandler() {
-//
-//			private PopupPanel depictionEditorPanel;
-//
-//			@Override
-//			public void onClick(ClickEvent event) {
-//				depictionEditorPanel = new PopupPanel(false);
-//				DepictionEditor de = new DepictionEditor(depictionEntry, new DepictionEditorListener() {
-//
-//					@Override
-//					public void depictionSaved(DepictionEntry depictionEntry) {
-//						depictionEditorPanel.hide();
-//					}
-//				});
-//				depictionEditorPanel.add(de);
-//				// new Draggable(depictionEditorPanel);
-//				depictionEditorPanel.setGlassEnabled(true);
-//				depictionEditorPanel.center();
-//				depictionEditorPanel.show();
-//			}
-//		});
-//
-//	}
+		DragSource source = new DragSource(this) {
+
+			@Override
+			protected void onDragStart(DndDragStartEvent event) {
+				super.onDragStart(event);
+				event.setData(depictionEntry);
+				event.getStatusProxy().update(dvTemplates.view(resources.logo().getSafeUri()));
+			}
+			
+		};
+	}
 
 	/* (non-Javadoc)
 	 * @see de.cses.client.ui.AbstractView#getEditor()
@@ -120,6 +96,14 @@ public class DepictionView extends AbstractView {
 	@Override
 	protected AbstractEditor getEditor() {
 		return new DepictionEditor(depictionEntry);
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.ui.AbstractView#getEntry()
+	 */
+	@Override
+	protected AbstractEntry getEntry() {
+		return depictionEntry;
 	}
 
 }

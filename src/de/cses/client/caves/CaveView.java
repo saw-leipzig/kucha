@@ -22,9 +22,12 @@ import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
+import com.sencha.gxt.dnd.core.client.DndDragStartEvent;
+import com.sencha.gxt.dnd.core.client.DragSource;
 
 import de.cses.client.ui.AbstractEditor;
 import de.cses.client.ui.AbstractView;
+import de.cses.shared.AbstractEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveTypeEntry;
 
@@ -40,10 +43,10 @@ public class CaveView extends AbstractView {
 	}
 
 	interface CaveViewTemplates extends XTemplates {
-		@XTemplate("<div><center><img src='{imgUri}' height='16px' width='16px'><b style='font-size: 20px'> {officialNumber} </b><p style='font-size:9px; word-wrap:break-word'> {officialName} <br> {historicName} </p></center></div>")
+		@XTemplate("<div><center><img src='{imgUri}' height='16px' width='16px'> <b style='font-size: 20px'> {officialNumber} </b></center><label style='font-size:9px'> {officialName} <br> {historicName} </label></div>")
 		SafeHtml view(SafeUri imgUri, String officialNumber, String officialName, String historicName);
 
-		@XTemplate("<div><center><img src='{imgUri}' height='80px' width='80px' ><br><b> {officialNumber} </b></center></div>")
+		@XTemplate("<div><center><img src='{imgUri}' height='16px' width='16px' > <b style='font-size: 20px'> {officialNumber} </b></center></div>")
 		SafeHtml view(SafeUri imgUri, String officialNumber);
 	}
 
@@ -67,11 +70,22 @@ public class CaveView extends AbstractView {
 		cEntry = entry;
 		resources = GWT.create(Resources.class);
 		cvTemplate = GWT.create(CaveViewTemplates.class);
-		SafeHtml html = cvTemplate.view(resources.logo().getSafeUri(), entry.getOfficialNumber(),
-				(!entry.getOfficialName().isEmpty() ? entry.getOfficialName() : "Name N/A"),
-				(!entry.getHistoricName().isEmpty() ? entry.getHistoricName() : "Historic N/A"));
-		setHTML(html);
+		setHTML(cvTemplate.view(
+				resources.logo().getSafeUri(), entry.getOfficialNumber().substring(0, 15), entry.getOfficialName().substring(0, 15), entry.getHistoricName().substring(0, 15)
+			));
 		setPixelSize(110, 110);
+		
+		DragSource source = new DragSource(this) {
+
+			@Override
+			protected void onDragStart(DndDragStartEvent event) {
+				super.onDragStart(event);
+				event.setData(cEntry);
+				event.getStatusProxy().update(cvTemplate.view(resources.logo().getSafeUri(), entry.getOfficialNumber()));
+			}
+			
+		};
+
 	}
 
 	/*
@@ -82,6 +96,14 @@ public class CaveView extends AbstractView {
 	@Override
 	protected AbstractEditor getEditor() {
 		return new CaveEditor(cEntry);
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.ui.AbstractView#getEntry()
+	 */
+	@Override
+	protected AbstractEntry getEntry() {
+		return cEntry;
 	}
 
 }

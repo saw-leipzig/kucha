@@ -13,9 +13,7 @@
  */
 package de.cses.shared;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
-public class CaveEntry implements IsSerializable {
+public class CaveEntry extends AbstractEntry {
 	private int caveID;
 	private String officialNumber, officialName, historicName;
 	private int caveTypeID, districtID, regionID, orientationID, preservationClassificationID; 

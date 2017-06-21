@@ -15,9 +15,7 @@ package de.cses.shared;
 
 import java.sql.Date;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
-public class DepictionEntry implements IsSerializable {
+public class DepictionEntry extends AbstractEntry {
 
 	private int depictionID;
 	private int styleID;
@@ -257,16 +255,16 @@ public class DepictionEntry implements IsSerializable {
 				+ absoluteTop + "," + iconographyID + ")"; // TODO finish sql string
 	}
 
+	/**
+	 * 
+	 */
 	public String getUpdateSql() {
 		return "UPDATE Depictions SET " + "StyleID=" + styleID + ", Inscriptions='" + inscriptions + "', Dating='" + dating + "', Height="
 				+ height + ", Width=" + width + ", PurchaseDate='" + purchaseDate + "', VendorID=" + vendorID + ", ExpeditionID=" + expeditionID
 				+ ", CurrentLocationID=" + currentLocationID + ", Description='" + description + "', BackgroundColour='" + backgroundColour
 				+ "', Material='" + material + "', GeneralRemarks='" + generalRemarks + "', OtherSuggestedIdentifications='"
 				+ otherSuggestedIdentifications + "', StoryID=" + storyID + ", CaveID=" + caveID + ", WallID=" + wallID + ", AbsoluteLeft="
-				+ absoluteLeft + ", AbsoluteTop=" + absoluteTop + ", IconographyID=" + iconographyID + " WHERE DepictionID=" + depictionID; // TODO
-																																																																		// Add
-																																																																		// sql
-																																																																		// string
+				+ absoluteLeft + ", AbsoluteTop=" + absoluteTop + ", IconographyID=" + iconographyID + " WHERE DepictionID=" + depictionID; 
 	}
 
 }

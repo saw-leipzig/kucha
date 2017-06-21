@@ -17,7 +17,7 @@ import java.sql.Date;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class ImageEntry implements IsSerializable {
+public class ImageEntry extends AbstractEntry {
 
 	private int imageID, photographerID;
 	private String copyright, comment, filename, title, type;
@@ -128,5 +128,23 @@ public class ImageEntry implements IsSerializable {
 		default:
 			return null;
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.shared.AbstractEntry#getInsertSql()
+	 */
+	@Override
+	public String getInsertSql() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.shared.AbstractEntry#getUpdateSql()
+	 */
+	@Override
+	public String getUpdateSql() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

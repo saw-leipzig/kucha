@@ -30,7 +30,7 @@ import de.cses.shared.OrnamentEntry;
  * @author nina
  *
  */
-public class OrnamenticView extends TextButton{
+public class OrnamenticView extends TextButton {
 	interface Resources extends ClientBundle {
 		@Source("buddha.png")
 		ImageResource logo();

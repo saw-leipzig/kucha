@@ -54,6 +54,8 @@ import de.cses.client.ornamentic.OrnamenticSearchController;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.client.ui.AbstractSearchController;
 import de.cses.client.ui.LocationFilter;
+import de.cses.client.ui.ResultCollectorController;
+import de.cses.client.ui.ResultCollectorView;
 
 /**
  * @author alingnau
@@ -74,6 +76,7 @@ public class MainView implements IsWidget {
 	private DepictionSearchController depictionSearchController;
 	private ImageSearchController imageSearchController;
 	private OrnamenticSearchController ornamenticSearchController;
+	private ResultCollectorController resultCollectorController;
 
 	/**
 	 * 
@@ -168,7 +171,7 @@ public class MainView implements IsWidget {
 					for (AbstractFilter filter : imageSearchController.getRelatedFilter()) {
 						filterView.add(filter, 0);
 					}
-					resultView.add(imageSearchController.getResultView(), 1);
+					resultView.add(imageSearchController.getResultView(), 0);
 				} else {
 					ArrayList<AbstractFilter> usedFilter = getUsedFilter();
 					for (AbstractFilter filter : imageSearchController.getRelatedFilter()) {
@@ -194,7 +197,7 @@ public class MainView implements IsWidget {
 					for (AbstractFilter filter : ornamenticSearchController.getRelatedFilter()) {
 						filterView.add(filter, 0);
 					}
-					resultView.add(ornamenticSearchController.getResultView(), 1);
+					resultView.add(ornamenticSearchController.getResultView(), 0);
 				} else {
 					ArrayList<AbstractFilter> usedFilter = getUsedFilter();
 					for (AbstractFilter filter : ornamenticSearchController.getRelatedFilter()) {
@@ -208,6 +211,20 @@ public class MainView implements IsWidget {
 		});
 		selectorLayoutContainer.add(ornamenticSearchController, hLayoutData);
 		
+		resultCollectorController = new ResultCollectorController("Result Collector", new ResultCollectorView("Result Collector"));
+		resultCollectorController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				if (event.getValue()) {
+					resultView.add(resultCollectorController.getResultView(), 1);
+				} else {
+					resultCollectorController.getResultView().removeFromParent();
+				}
+			}
+		});
+		selectorLayoutContainer.add(resultCollectorController, hLayoutData);
+		
     ContentPanel centerPanel = new ContentPanel();
     centerPanel.setHeading("Results");
     centerPanel.setResize(true);
@@ -217,8 +234,8 @@ public class MainView implements IsWidget {
      */
     resultView = new PortalLayoutContainer(2);
     resultView.setSpacing(10);
-    resultView.setColumnWidth(0, .50);
-    resultView.setColumnWidth(1, .50);
+    resultView.setColumnWidth(0, .60);
+    resultView.setColumnWidth(1, .40);
 //    FlowLayoutContainer testContainer = new FlowLayoutContainer();
 //    testContainer.setScrollMode(ScrollMode.AUTOY);
 //    testContainer.add(resultView);

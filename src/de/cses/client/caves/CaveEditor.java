@@ -370,7 +370,25 @@ public class CaveEditor extends AbstractEditor {
 					regionEntryList.add(re);
 				}
 				if (correspondingCaveEntry.getRegionID() > 0) {
-					regionSelection.setValue(regionEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getRegionID())));
+					RegionEntry re = regionEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getRegionID()));
+					regionSelection.setValue(re);
+					if (siteSelection.getCurrentValue() == null || siteSelection.getCurrentValue().getSiteID() != re.getSiteID()) {
+						dbService.getSite(re.getSiteID(), new AsyncCallback<SiteEntry>() {
+
+							@Override
+							public void onFailure(Throwable caught) {
+								caught.printStackTrace(System.err);
+							}
+
+							@Override
+							public void onSuccess(SiteEntry result) {
+								siteSelection.setValue(result);
+								activateRegionFilter();
+								activateDistrictFilter();
+							}
+						});
+					}
+					
 				}
 			}
 		});
@@ -396,20 +414,22 @@ public class CaveEditor extends AbstractEditor {
 				if (correspondingCaveEntry.getDistrictID() > 0) {
 					DistrictEntry de = districtEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getDistrictID()));
 					districtSelection.setValue(de);
-					dbService.getSite(de.getSiteID(), new AsyncCallback<SiteEntry>() {
+					if (siteSelection.getCurrentValue() == null || siteSelection.getCurrentValue().getSiteID() != de.getSiteID()) {
+						dbService.getSite(de.getSiteID(), new AsyncCallback<SiteEntry>() {
 
-						@Override
-						public void onFailure(Throwable caught) {
-							caught.printStackTrace(System.err);
-						}
+							@Override
+							public void onFailure(Throwable caught) {
+								caught.printStackTrace(System.err);
+							}
 
-						@Override
-						public void onSuccess(SiteEntry result) {
-							siteSelection.setValue(result);
-							activateRegionFilter();
-							activateDistrictFilter();
-						}
-					});
+							@Override
+							public void onSuccess(SiteEntry result) {
+								siteSelection.setValue(result);
+								activateRegionFilter();
+								activateDistrictFilter();
+							}
+						});
+					}
 				}
 			}
 		});
