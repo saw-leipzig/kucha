@@ -13,7 +13,7 @@ public class OrnamentCaveRelation implements IsSerializable{
 	private int orientation;
 	private String colours;
 	private String notes;
-	private int group;
+	private String group;
 	private String relatedelementeofOtherCultures;
 	private String similarelementsOfOtherCultures;
 	private ArrayList<Integer> similarOrnamentsRelationID= new ArrayList<Integer>();
@@ -91,20 +91,24 @@ public class OrnamentCaveRelation implements IsSerializable{
 	}
 
 
-	public int getGroup() {
+
+
+
+
+	/**
+	 * @return the group
+	 */
+	public String getGroup() {
 		return group;
 	}
 
 
-	public void setGroup(int group) {
+	/**
+	 * @param group the group to set
+	 */
+	public void setGroup(String group) {
 		this.group = group;
 	}
-
-
-
-
-
-
 
 
 	public String getName() {

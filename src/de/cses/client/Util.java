@@ -62,7 +62,7 @@ public class Util {
 	}
 	
 	public static void showWarning(String header, String message) {
-		PopupPanel dialog = new PopupPanel();
+		final PopupPanel dialog = new PopupPanel();
 		FramedPanel dialogPanel = new FramedPanel();
 		dialog.getElement().getStyle().setBorderColor("#FF0000");
 		dialogPanel.setHeading(header);

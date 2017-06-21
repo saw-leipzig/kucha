@@ -40,7 +40,7 @@ public class PictorialElementSelectorObjects implements IsWidget {
 	class KeyProvider implements ModelKeyProvider<PictorialElementEntry> {
 		@Override
 		public String getKey(PictorialElementEntry item) {
-			return (item.getChildren() != null ? "f-" : "m-") + item.getPictorialElementID();
+			return Integer.toString(item.getPictorialElementID());
 		}
 	}
 

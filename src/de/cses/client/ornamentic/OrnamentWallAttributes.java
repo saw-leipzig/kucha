@@ -168,6 +168,7 @@ public class OrnamentWallAttributes extends PopupPanel {
 		
 		
 		header = new FramedPanel();
+		header.setWidth(300);
 		header.setHeading("Select Wall");
 		header.add(wallsComboBox);
 		vlcWalls.add(header);
@@ -187,6 +188,7 @@ public class OrnamentWallAttributes extends PopupPanel {
 		
 	  
 		header = new FramedPanel();
+		header.setWidth(300);
 		header.setHeading("Select ornament position");
 		header.add(ornamentPositionComboBox);
 		vlcWalls.add(header);
@@ -202,6 +204,7 @@ public class OrnamentWallAttributes extends PopupPanel {
 				});
 		
 		header = new FramedPanel();
+		header.setWidth(300);
 		header.setHeading("Select the ornament function");
 		header.add(ornamentfunctionComboBox);
 		vlcWalls.add(header);
@@ -213,6 +216,7 @@ public class OrnamentWallAttributes extends PopupPanel {
 	  notes.setAllowBlank(true);
 	  
 		header = new FramedPanel();
+		header.setWidth(300);
 		header.setHeading("Notes");
 		header.add(notes);
 		vlcWalls.add(header);
@@ -236,7 +240,7 @@ ClickHandler saveHandler = new ClickHandler(){
 		relation.setPosition(ornamentPositionComboBox.getValue().getOrnamentPositionID());
 		relation.setNotes(notes.getText());
 		relation.setWallID(wallsComboBox.getValue().getWallID());
-		ornamentCaveRelation.getWalls().add(relation);
+		ornamentCaveRelation.getWallsListStore().add(relation);
 		popup.hide();
 	}
 	

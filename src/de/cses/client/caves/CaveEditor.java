@@ -390,11 +390,11 @@ public class CaveEditor extends AbstractEditor {
 			@Override
 			public void onSuccess(ArrayList<DistrictEntry> result) {
 				districtEntryList.clear();
-				for (DistrictEntry de : result) {
+				for (final DistrictEntry de : result) {
 					districtEntryList.add(de);
 				}
 				if (correspondingCaveEntry.getDistrictID() > 0) {
-					DistrictEntry de = districtEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getDistrictID()));
+				final	DistrictEntry de = districtEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getDistrictID()));
 					districtSelection.setValue(de);
 					dbService.getSite(de.getSiteID(), new AsyncCallback<SiteEntry>() {
 
@@ -594,21 +594,21 @@ public class CaveEditor extends AbstractEditor {
 					Util.showWarning("A problem occurred", "Please select Site first!");
 					return;
 				}
-				PopupPanel addNewDistrictDialog = new PopupPanel();
+				final PopupPanel addNewDistrictDialog = new PopupPanel();
 				FramedPanel newDistrictFP = new FramedPanel();
 				newDistrictFP.setHeading("Add District in " + siteSelection.getCurrentValue().getName());
-				DistrictEntry de = new DistrictEntry();
+				final DistrictEntry de = new DistrictEntry();
 				de.setSiteID(siteSelection.getCurrentValue().getSiteID());
 				VerticalLayoutContainer newDistrictVLC = new VerticalLayoutContainer();
 				FramedPanel fp = new FramedPanel();
 				fp.setHeading("District Name");
-				TextField districtNameField = new TextField();
+				final TextField districtNameField = new TextField();
 				districtNameField.setValue("");
 				fp.add(districtNameField);
 				newDistrictVLC.add(fp, new VerticalLayoutData(1.0, 1.0 / 3));
 				fp = new FramedPanel();
 				fp.setHeading("Descritpion");
-				TextArea descriptionField = new TextArea();
+				final TextArea descriptionField = new TextArea();
 				descriptionField.setValue("");
 				fp.add(descriptionField);
 				newDistrictVLC.add(fp, new VerticalLayoutData(1.0, 2.0 / 3));
@@ -699,27 +699,27 @@ public class CaveEditor extends AbstractEditor {
 					Util.showWarning("A problem occurred", "Please select Site first!");
 					return;
 				}
-				PopupPanel addNewRegionDialog = new PopupPanel();
+				final PopupPanel addNewRegionDialog = new PopupPanel();
 				FramedPanel newRegionFP = new FramedPanel();
 				newRegionFP.setHeading("Add Region in " + siteSelection.getCurrentValue().getName());
-				RegionEntry re = new RegionEntry();
+				final RegionEntry re = new RegionEntry();
 				re.setSiteID(siteSelection.getCurrentValue().getSiteID());
 				VerticalLayoutContainer newRegionVLC = new VerticalLayoutContainer();
 				FramedPanel fp = new FramedPanel();
 				fp.setHeading("Phonetic Name");
-				TextField phoneticNameField = new TextField();
+				final TextField phoneticNameField = new TextField();
 				phoneticNameField.setValue("");
 				fp.add(phoneticNameField);
 				newRegionVLC.add(fp, new VerticalLayoutData(1.0, 1.0 / 3));
 				fp = new FramedPanel();
 				fp.setHeading("Original Name");
-				TextField originalNameField = new TextField();
+				final TextField originalNameField = new TextField();
 				originalNameField.setValue("");
 				fp.add(originalNameField);
 				newRegionVLC.add(fp, new VerticalLayoutData(1.0, 1.0 / 3));
 				fp = new FramedPanel();
 				fp.setHeading("English Name");
-				TextField englishNameField = new TextField();
+				final TextField englishNameField = new TextField();
 				englishNameField.setValue("");
 				fp.add(englishNameField);
 				newRegionVLC.add(fp, new VerticalLayoutData(1.0, 1.0 / 3));
@@ -820,7 +820,7 @@ public class CaveEditor extends AbstractEditor {
 //		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
 
 		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Rear Area");
+		attributePanel.setHeading("ar Area");
 		rearAreaPreservationSelector = new ComboBox<PreservationClassificationEntry>(preservationClassificationEntryList,
 				preservationClassificationProps.name(), new AbstractSafeHtmlRenderer<PreservationClassificationEntry>() {
 
