@@ -95,10 +95,22 @@ public abstract class AbstractResultView extends Portlet {
 	}
 
 	/**
-	 * Adds an element 
+	 * Adds an element that is not contained in the result view
 	 * @param w
 	 */
 	public void addResult(Widget view) {
+		// TODO implementation is quite ugly, should be a better way
+		if (view instanceof AbstractView) {
+			Iterator<Widget> widgetIterator = resultContainer.iterator();
+			while (widgetIterator.hasNext()) {
+				Widget w = widgetIterator.next();
+				if (w instanceof AbstractView) {
+					if (((AbstractView)w).getEntry().equals(((AbstractView)view).getEntry())){
+						return;
+					}
+				}
+			}
+		}
 		resultContainer.add(view, resultLayoutData);
 	}
 	
