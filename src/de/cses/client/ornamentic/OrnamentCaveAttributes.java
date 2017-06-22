@@ -261,7 +261,7 @@ public class OrnamentCaveAttributes extends PopupPanel{
 					@Override
 					public SafeHtml render(CaveEntry item) {
 						final CaveViewTemplates pvTemplates = GWT.create(CaveViewTemplates.class);
-						return pvTemplates.caver(item.getOfficialName());
+						return pvTemplates.caver(item.getHistoricName());
 					}
 				});
 		
@@ -287,7 +287,7 @@ public class OrnamentCaveAttributes extends PopupPanel{
 
 			@Override
 			public void onSelection(SelectionEvent<CaveEntry> event) {
-				String p = event.getSelectedItem().getOfficialName();
+				String p = event.getSelectedItem().getHistoricName();
 				caveType.setText(p);
 			}
 			
