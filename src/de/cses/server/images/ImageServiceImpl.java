@@ -138,15 +138,12 @@ public class ImageServiceImpl extends HttpServlet {
 	 *          the new thumbnail file
 	 */
 	private void createThumbnail(File readFile, File tnFile) {
-//		File tnFile;
 		String type = "png";
 		BufferedImage tnImg;
 
-//		tnFile = new File(path, "tn" + filename.substring(0,filename.lastIndexOf(".")) + ".png");
-//		File readFile = new File(path, filename);
-		
 		try {
-			// we need to call the scanner in order to detect the additional libraries!
+			// we need to call the scanner in order to detect the additional libraries
+			// the libraries used are from https://haraldk.github.io/TwelveMonkeys/
 			ImageIO.scanForPlugins();
 			
 			BufferedImage buf = ImageIO.read(readFile);

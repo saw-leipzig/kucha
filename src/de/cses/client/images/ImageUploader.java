@@ -85,7 +85,7 @@ public class ImageUploader implements IsWidget {
 			@Override
 			public void onChange(ChangeEvent event) {
 				String selected = file.getValue().toLowerCase();
-				if (!typeList.contains(selected)) {
+				if ((selected.lastIndexOf(".") < 0) || !typeList.contains(selected.substring(selected.lastIndexOf(".")+1))) {
 					Util.showWarning("Unsopported Image Type", "Please select JPG, PNG or TIFF!");
 					file.reset();
 				}
