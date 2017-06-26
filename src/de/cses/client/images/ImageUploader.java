@@ -15,6 +15,8 @@ package de.cses.client.images;
 
 import java.util.ArrayList;
 
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.xml.client.Document;
@@ -35,6 +37,8 @@ import com.sencha.gxt.widget.core.client.form.FormPanel;
 import com.sencha.gxt.widget.core.client.form.FormPanel.Encoding;
 import com.sencha.gxt.widget.core.client.form.FormPanel.Method;
 
+import de.cses.client.Util;
+
 public class ImageUploader implements IsWidget {
 
 	private FormPanel form;
@@ -42,6 +46,8 @@ public class ImageUploader implements IsWidget {
 	protected Window uploadInfoWindow;
 	private FileUploadField file;
 	private FramedPanel mainPanel;
+	private ArrayList<String> typeList;
+
 
 	public ImageUploader(ImageUploadListener listener) {
 		uploadListener = new ArrayList<ImageUploadListener>();
@@ -59,6 +65,13 @@ public class ImageUploader implements IsWidget {
 	}
 
 	private void initPanel() {
+		
+		typeList = new ArrayList<String>();
+		typeList.add("jpg");
+		typeList.add("jpeg");
+		typeList.add("png");
+		typeList.add("tif");
+		typeList.add("tiff");
 
 		mainPanel = new FramedPanel();
 		mainPanel.setHeading("Image Uploader");
@@ -67,7 +80,17 @@ public class ImageUploader implements IsWidget {
 		file.setName("uploadedfile");
 		file.setAllowBlank(false);
 		file.setPixelSize(300, 30);
-
+		file.addChangeHandler(new ChangeHandler() {
+			
+			@Override
+			public void onChange(ChangeEvent event) {
+				String selected = file.getValue().toLowerCase();
+				if (!typeList.contains(selected)) {
+					Util.showWarning("Unsopported Image Type", "Please select JPG, PNG or TIFF!");
+					file.reset();
+				}
+			}
+		});
 		form = new FormPanel();
 		form.setAction("imgUpload");
 		form.setEncoding(Encoding.MULTIPART);
