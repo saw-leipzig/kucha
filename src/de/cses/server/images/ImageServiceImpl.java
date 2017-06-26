@@ -15,12 +15,16 @@ package de.cses.server.images;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageOutputStream;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
@@ -31,6 +35,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 
 import de.cses.server.ServerProperties;
 import de.cses.server.mysql.MysqlConnector;
@@ -51,6 +56,7 @@ public class ImageServiceImpl extends HttpServlet {
 	private MysqlConnector connector = MysqlConnector.getInstance();
 	private ServerProperties serverProperties = ServerProperties.getInstance();
 	private int newImageID = 0;
+	private ImageEntry ie;
 
 	public ImageServiceImpl() {
 		super();
@@ -64,7 +70,7 @@ public class ImageServiceImpl extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String uploadFileName;
-		String fileType, filename = "0.jpg";
+		String fileType, filename=null;
 
 		response.setContentType("text/plain");
 		File imgHomeDir = new File(serverProperties.getProperty("home.images"));
@@ -83,20 +89,28 @@ public class ImageServiceImpl extends HttpServlet {
 					uploadFileName = item.getName();
 					// we take the sub dir from the field name which corresponds with the
 					// purpose of the upload (e.g. depictions, backgrounds, ...)
-					fileType = uploadFileName.substring(uploadFileName.lastIndexOf("."));
+					fileType = uploadFileName.substring(uploadFileName.lastIndexOf(".")).toLowerCase();
 					if (item.isFormField()) {
 						throw new ServletException("Unsupported non-file property [" + item.getFieldName() + "] with value: " + item.getString());
 					} else {
 						newImageID = connector.createNewImageEntry();
 						if (newImageID > 0) {
 							filename = newImageID + fileType;
-							ImageEntry ie = connector.getImageEntry(newImageID);
+							ie = connector.getImageEntry(newImageID);
 							ie.setFilename(filename);
 							connector.updateEntry(ie.getSqlUpdate(ImageEntry.FILENAME));
+							target = new File(imgHomeDir, filename);
+							item.write(target);
+							item.delete();
 						}
-						target = new File(imgHomeDir, filename);
-						item.write(target);
-						item.delete();
+//						if (filename.endsWith("tif") || filename.endsWith("tiff")) {
+//							final BufferedImage tif = ImageIO.read(target);
+//							filename = newImageID + ".png";
+//					    ImageIO.write(tif, "png", new File(imgHomeDir, filename));
+//					    ie.setFilename(filename);
+//					    connector.updateEntry(ie.getSqlUpdate(ImageEntry.FILENAME));
+//					    target.delete();
+//					  }
 					}
 				}
 			} catch (ServletException e) {
@@ -108,7 +122,7 @@ public class ImageServiceImpl extends HttpServlet {
 		} finally {
 			if (target != null && target.exists()) {
 				System.err.println("Uploaded file: " + target.getAbsolutePath());
-				createThumbnail(imgHomeDir, filename);
+			  createThumbnail(target, new File(imgHomeDir, "tn" + newImageID + ".png"));
 				response.getWriter().write(String.valueOf(newImageID));
 				response.getWriter().close();
 			}
@@ -119,44 +133,48 @@ public class ImageServiceImpl extends HttpServlet {
 	 * Create a thumbnail image file with a max side length of THUMBNAIL_SIZE
 	 * 
 	 * @param path
-	 *          the directory where the image is located
-	 * @param filename
-	 *          of the image
+	 *          the file of the image
+	 * @param tnFile
+	 *          the new thumbnail file
 	 */
-	private void createThumbnail(File path, String filename) {
-		File tnFile;
-		String type;
+	private void createThumbnail(File readFile, File tnFile) {
+//		File tnFile;
+		String type = "png";
 		BufferedImage tnImg;
 
-		tnFile = new File(path, "tn" + filename);
-		File readFile = new File(path, filename);
-		type = filename.substring(filename.lastIndexOf(".") + 1).toUpperCase();
+//		tnFile = new File(path, "tn" + filename.substring(0,filename.lastIndexOf(".")) + ".png");
+//		File readFile = new File(path, filename);
+		
 		try {
+			// we need to call the scanner in order to detect the additional libraries!
+			ImageIO.scanForPlugins();
+			
 			BufferedImage buf = ImageIO.read(readFile);
 			float w = buf.getWidth();
 			float h = buf.getHeight();
+			System.err.println("w=" + w + " h=" + h);
 			if (w == h) {
 				tnImg = new BufferedImage(THUMBNAIL_SIZE, THUMBNAIL_SIZE, BufferedImage.TYPE_INT_RGB);
 				tnImg.createGraphics().drawImage(buf.getScaledInstance(THUMBNAIL_SIZE, THUMBNAIL_SIZE, Image.SCALE_SMOOTH), 0, 0, null);
-				ImageIO.write(tnImg, type, tnFile);
 			} else if (w > h) {
 				float factor = THUMBNAIL_SIZE / w;
 				float tnHeight = h * factor;
 				tnImg = new BufferedImage(THUMBNAIL_SIZE, Math.round(tnHeight), BufferedImage.TYPE_INT_RGB);
 				tnImg.createGraphics().drawImage(buf.getScaledInstance(THUMBNAIL_SIZE, Math.round(tnHeight), Image.SCALE_SMOOTH), 0, 0, null);
-				ImageIO.write(tnImg, type, tnFile);
 			} else {
 				float factor = THUMBNAIL_SIZE / h;
 				float tnWidth = w * factor;
 				tnImg = new BufferedImage(Math.round(tnWidth), THUMBNAIL_SIZE, BufferedImage.TYPE_INT_RGB);
 				tnImg.createGraphics().drawImage(buf.getScaledInstance(Math.round(tnWidth), THUMBNAIL_SIZE, Image.SCALE_SMOOTH), 0, 0, null);
-				ImageIO.write(tnImg, type, tnFile);
 			}
+			ImageIO.write(tnImg, type, tnFile);
 		} catch (IOException e) {
 			System.err.println("I/O Exception - thumbnail could not be created!");
 		} catch (OutOfMemoryError e) {
 			System.err.println("An OutOfMemoryError has occurred while scaling the image!");
+		} catch (Exception e) {
+			System.err.println("An unknown exception occurred during thumbnail creation!");
 		}
 	}
-
+	
 }
