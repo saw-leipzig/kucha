@@ -15,16 +15,12 @@ package de.cses.server.images;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
 import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageOutputStream;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
@@ -35,7 +31,6 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.io.output.ByteArrayOutputStream;
 
 import de.cses.server.ServerProperties;
 import de.cses.server.mysql.MysqlConnector;
@@ -103,14 +98,6 @@ public class ImageServiceImpl extends HttpServlet {
 							item.write(target);
 							item.delete();
 						}
-//						if (filename.endsWith("tif") || filename.endsWith("tiff")) {
-//							final BufferedImage tif = ImageIO.read(target);
-//							filename = newImageID + ".png";
-//					    ImageIO.write(tif, "png", new File(imgHomeDir, filename));
-//					    ie.setFilename(filename);
-//					    connector.updateEntry(ie.getSqlUpdate(ImageEntry.FILENAME));
-//					    target.delete();
-//					  }
 					}
 				}
 			} catch (ServletException e) {
