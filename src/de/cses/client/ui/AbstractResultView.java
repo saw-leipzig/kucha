@@ -13,6 +13,8 @@
  */
 package de.cses.client.ui;
 
+import java.util.Iterator;
+
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.widget.core.client.Portlet;
@@ -21,6 +23,8 @@ import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
+
+import de.cses.shared.AbstractEntry;
 
 /**
  * AbstractResultView is the base for the result views shown in MainView. Here the 
@@ -83,15 +87,31 @@ public abstract class AbstractResultView extends Portlet {
 		});
 		getHeader().addTool(toolButton);
 		
-		
 		resultContainer = new FlowLayoutContainer();
 		resultContainer.setScrollMode(ScrollMode.AUTOY);
-		resultLayoutData = new MarginData(20);
+		resultLayoutData = new MarginData(10);
 		this.add(resultContainer);
+		
 	}
-	
-	public void addResult(Widget w) {
-		resultContainer.add(w, resultLayoutData);
+
+	/**
+	 * Adds an element that is not contained in the result view
+	 * @param w
+	 */
+	public void addResult(Widget view) {
+		// TODO implementation is quite ugly, should be a better way
+		if (view instanceof AbstractView) {
+			Iterator<Widget> widgetIterator = resultContainer.iterator();
+			while (widgetIterator.hasNext()) {
+				Widget w = widgetIterator.next();
+				if (w instanceof AbstractView) {
+					if (((AbstractView)w).getEntry().equals(((AbstractView)view).getEntry())){
+						return;
+					}
+				}
+			}
+		}
+		resultContainer.add(view, resultLayoutData);
 	}
 	
 	/**

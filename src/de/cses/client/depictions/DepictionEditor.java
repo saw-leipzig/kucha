@@ -406,10 +406,10 @@ public class DepictionEditor extends AbstractEditor {
 			@Override
 			public SafeHtml render(CaveEntry item) {
 				final CaveViewTemplates cvTemplates = GWT.create(CaveViewTemplates.class);
-				if ((item.getOfficialName() != null) && (item.getOfficialName().length() == 0)) {
+				if ((item.getHistoricName() != null) && (item.getHistoricName().length() == 0)) {
 					return cvTemplates.caveLabel(item.getOfficialNumber());
 				} else {
-					return cvTemplates.caveLabel(item.getOfficialNumber(), item.getOfficialName());
+					return cvTemplates.caveLabel(item.getOfficialNumber(), item.getHistoricName());
 				}
 			}
 		});

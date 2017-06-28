@@ -95,7 +95,7 @@ public class Walls implements IsWidget{
 	
 	public void createNewDepictionOnWall(DepictionEntry depiction, boolean editable, boolean firstTime){
 		
-				DepictionView depictionview = new DepictionView(depiction.getDepictionID(), editable );
+				DepictionOnWallView depictionview = new DepictionOnWallView(depiction.getDepictionID(), editable );
 			
 				 background.add(depictionview);
 				 if(firstTime){
@@ -159,12 +159,12 @@ public class Walls implements IsWidget{
 					
 					while(iterator.hasNext() ){
 						Widget w = iterator.next();
-						if(w instanceof DepictionView){
-					DepictionView depictionView =(DepictionView) w;
+						if(w instanceof DepictionOnWallView){
+					DepictionOnWallView depictionOnWallView =(DepictionOnWallView) w;
 						
-					int absoluteLeft = 	depictionView.getAbsoluteLeft();
-					int absoluteTop = 	depictionView.getAbsoluteTop();
-					dbService.saveDepiction(depictionView.getDepictionID(), absoluteLeft, absoluteTop, new AsyncCallback<String>() {
+					int absoluteLeft = 	depictionOnWallView.getAbsoluteLeft();
+					int absoluteTop = 	depictionOnWallView.getAbsoluteTop();
+					dbService.saveDepiction(depictionOnWallView.getDepictionID(), absoluteLeft, absoluteTop, new AsyncCallback<String>() {
 
 
 						@Override

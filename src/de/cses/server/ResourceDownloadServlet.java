@@ -52,15 +52,24 @@ public class ResourceDownloadServlet extends HttpServlet {
 		if (request.getParameter("imageID") != null) {
 			String imageID = request.getParameter("imageID");
 			String filename = connector.getImageEntry(Integer.parseInt(imageID)).getFilename();
-			File inputFile = new File(serverProperties.getProperty("home.images"), (request.getParameter("thumb") != null ? "tn" : "") + filename);
+			File inputFile = new File(
+					serverProperties.getProperty("home.images"), 
+					(request.getParameter("thumb") != null ? "tn" + filename.substring(0, filename.lastIndexOf(".")) + ".png" : filename) 
+				);
 //			File inputFile = new File(serverProperties.getProperty("home.images"), filename);
 			ServletOutputStream out = response.getOutputStream();
-			response.setContentType(filename.toLowerCase().endsWith("png") ? "image/png" : "image/jpeg");
 			if (inputFile.exists()) {
 				if (request.getParameter("thumb") != null) {
 					int tnSize = Integer.valueOf(request.getParameter("thumb")); // the requested size is given as a parameter
-					out.write(getScaledThumbnailInstance(inputFile, filename.toLowerCase().endsWith("png") ? "png" : "jpg", tnSize));
+					out.write(getScaledThumbnailInstance(inputFile, "png", tnSize));
 				} else { // load the original file
+					if (filename.toLowerCase().endsWith("png")) {
+						response.setContentType("image/png");
+					} else if (filename.toLowerCase().endsWith("jpg")) {
+						response.setContentType("image/jpeg");
+					} else if (filename.toLowerCase().endsWith("tiff")) {
+						response.setContentType("image/tiff");
+					}
 					FileInputStream fis = new FileInputStream(inputFile);
 					byte buffer[] = new byte[4096];
 					int bytesRead = 0;

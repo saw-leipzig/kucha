@@ -80,8 +80,8 @@ public class CaveEditor extends AbstractEditor {
 	private CaveLayoutViewTemplates caveLayoutViewTemplates;
 
 	private TextField officialNumberField;
-	private TextField officialNameField;
 	private TextField historicNameField;
+	private TextField optionalHistoricNameField;
 	private ComboBox<DistrictEntry> districtSelection;
 	private ComboBox<RegionEntry> regionSelection;
 	private TextArea stateOfPreservationTextArea;
@@ -370,7 +370,25 @@ public class CaveEditor extends AbstractEditor {
 					regionEntryList.add(re);
 				}
 				if (correspondingCaveEntry.getRegionID() > 0) {
-					regionSelection.setValue(regionEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getRegionID())));
+					RegionEntry re = regionEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getRegionID()));
+					regionSelection.setValue(re);
+					if (siteSelection.getCurrentValue() == null || siteSelection.getCurrentValue().getSiteID() != re.getSiteID()) {
+						dbService.getSite(re.getSiteID(), new AsyncCallback<SiteEntry>() {
+
+							@Override
+							public void onFailure(Throwable caught) {
+								caught.printStackTrace(System.err);
+							}
+
+							@Override
+							public void onSuccess(SiteEntry result) {
+								siteSelection.setValue(result);
+								activateRegionFilter();
+								activateDistrictFilter();
+							}
+						});
+					}
+					
 				}
 			}
 		});
@@ -396,20 +414,22 @@ public class CaveEditor extends AbstractEditor {
 				if (correspondingCaveEntry.getDistrictID() > 0) {
 				final	DistrictEntry de = districtEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getDistrictID()));
 					districtSelection.setValue(de);
-					dbService.getSite(de.getSiteID(), new AsyncCallback<SiteEntry>() {
+					if (siteSelection.getCurrentValue() == null || siteSelection.getCurrentValue().getSiteID() != de.getSiteID()) {
+						dbService.getSite(de.getSiteID(), new AsyncCallback<SiteEntry>() {
 
-						@Override
-						public void onFailure(Throwable caught) {
-							caught.printStackTrace(System.err);
-						}
+							@Override
+							public void onFailure(Throwable caught) {
+								caught.printStackTrace(System.err);
+							}
 
-						@Override
-						public void onSuccess(SiteEntry result) {
-							siteSelection.setValue(result);
-							activateRegionFilter();
-							activateDistrictFilter();
-						}
-					});
+							@Override
+							public void onSuccess(SiteEntry result) {
+								siteSelection.setValue(result);
+								activateRegionFilter();
+								activateDistrictFilter();
+							}
+						});
+					}
 				}
 			}
 		});
@@ -472,24 +492,9 @@ public class CaveEditor extends AbstractEditor {
 		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .11));
 
 		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Official Name");
-		officialNameField = new TextField();
-		officialNameField.setEmptyText("optional cave name");
-		officialNameField.setValue(correspondingCaveEntry.getOfficialName());
-		officialNameField.addValueChangeHandler(new ValueChangeHandler<String>() {
-
-			@Override
-			public void onValueChange(ValueChangeEvent<String> event) {
-				correspondingCaveEntry.setOfficialName(event.getValue());
-			}
-		});
-		attributePanel.add(officialNameField);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .11));
-
-		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Historic Name");
 		historicNameField = new TextField();
-		historicNameField.setEmptyText("optional historic name");
+		historicNameField.setEmptyText("historic cave name");
 		historicNameField.setValue(correspondingCaveEntry.getHistoricName());
 		historicNameField.addValueChangeHandler(new ValueChangeHandler<String>() {
 
@@ -499,6 +504,21 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		attributePanel.add(historicNameField);
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .11));
+
+		attributePanel = new FramedPanel();
+		attributePanel.setHeading("Optional Historic Name");
+		optionalHistoricNameField = new TextField();
+		optionalHistoricNameField.setEmptyText("optional historic name");
+		optionalHistoricNameField.setValue(correspondingCaveEntry.getOptionalHistoricName());
+		optionalHistoricNameField.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				correspondingCaveEntry.setOptionalHistoricName(event.getValue());
+			}
+		});
+		attributePanel.add(optionalHistoricNameField);
 		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .11));
 
 		attributePanel = new FramedPanel();

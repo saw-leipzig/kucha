@@ -78,6 +78,7 @@ public class Util {
 		dialogPanel.addButton(okButton);
 		dialog.add(dialogPanel);
 		dialog.setModal(true);
+		dialog.setGlassEnabled(true);
 		dialog.center();
 	}
 

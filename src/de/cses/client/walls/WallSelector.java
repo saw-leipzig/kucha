@@ -143,7 +143,7 @@ public class WallSelector implements IsWidget {
 	private void refreshWallSelector() {
 		ListStore<WallNames> store = new ListStore<>(wallProps.wallID());
 		// Antechamber is not available at in cave types
-		if ((currentCave.getCaveTypeID() == 4) || (currentCave.getCaveTypeID() == 6))  {
+		if ((currentCave.getCaveTypeID() == 2) || (currentCave.getCaveTypeID() == 4) || (currentCave.getCaveTypeID() == 6))  {
 			AntechamberEntry entry = currentCave.getAntechamberEntry();
 			store.add(new WallNames(entry.getFrontWallID(), "Antechamber Front Wall"));
 			store.add(new WallNames(entry.getLeftWallID(), "Antechamber Left Wall"));
