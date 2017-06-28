@@ -602,14 +602,12 @@ public class MysqlConnector {
 			for (int i = 0; i < ornamentEntry.getCavesRelations().size(); i++) {
 				stmt = dbc.createStatement();			
 				rs = stmt.executeQuery(
-						"INSERT INTO CaveOrnamentRelation (CaveID, OrnamentID, Style, Orientation, Colours, Notes, GroupOfOrnaments,RelatedElementsOfOtherCultures, SimilarElementsOfOtherCultures ) VALUES ("
+						"INSERT INTO CaveOrnamentRelation (CaveID, OrnamentID, Colours, Notes, GroupOfOrnaments,RelatedElementsOfOtherCultures, SimilarElementsOfOtherCultures ) VALUES ("
 								+ ornamentEntry.getCavesRelations().get(i).getCaveID() + "," 
-								+ auto_increment_id + ","
-								+ ornamentEntry.getCavesRelations().get(i).getStyle() + ","
-								+ ornamentEntry.getCavesRelations().get(i).getOrientation() + ",'"
+								+ auto_increment_id + ",'"
 								+ ornamentEntry.getCavesRelations().get(i).getColours() + "','"
-								+ ornamentEntry.getCavesRelations().get(i).getNotes() + "',"
-								+ ornamentEntry.getCavesRelations().get(i).getGroup() + ",'"
+								+ ornamentEntry.getCavesRelations().get(i).getNotes() + "','"
+								+ ornamentEntry.getCavesRelations().get(i).getGroup() + "','"
 								+ ornamentEntry.getCavesRelations().get(i).getRelatedelementeofOtherCultures() + "','"
 								+ ornamentEntry.getCavesRelations().get(i).getSimilarelementsOfOtherCultures() 
 								+ "')");
@@ -617,6 +615,15 @@ public class MysqlConnector {
 				while (rs.next()) {
 					auto_increment_id = rs.getInt(1);
 				}
+				
+				for (int j = 0; j < ornamentEntry.getCavesRelations().get(i).getOrientationID().size(); j++) {
+					System.err.println("orientation");
+					rs = stmt.executeQuery("INSERT INTO OrnamentOrientationRelation (OrnamentCaveRelationID, OrientationID) VALUES ("
+							+ auto_increment_id  + ","
+							+ ornamentEntry.getCavesRelations().get(i).getOrientationID().get(i)
+						  + ")");
+				}
+				
 				System.err.println("pictorial gespeichert Anzahl ist: "+  ornamentEntry.getCavesRelations().get(i).getPictorialElementIDs().size() );
 				for (int j = 0; j < ornamentEntry.getCavesRelations().get(i).getPictorialElementIDs().size(); j++) {
 					System.err.println("pictorial gespeichert");

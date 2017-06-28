@@ -77,6 +77,7 @@ public class OrnamentCaveAttributes extends PopupPanel{
 	private Ornamentic ornamentic;
 	// neue comboboxen
 	private ListStore<OrnamentOrientation> orientation;
+	private ListStore<OrnamentOrientation> selectedorientation;
 	private ComboBox<OrnamentOrientation> orientationComboBox;
 
 	
@@ -111,7 +112,7 @@ public class OrnamentCaveAttributes extends PopupPanel{
 	
 	
 
-		
+		selectedorientation = new ListStore<OrnamentOrientation>(orientationProps.ornamentOrientationID());
 		orientation = new ListStore<OrnamentOrientation>(orientationProps.ornamentOrientationID());
 
 
@@ -317,7 +318,7 @@ public class OrnamentCaveAttributes extends PopupPanel{
 			
 		};
 	  final TextField style = new TextField();
-	  style.setAllowBlank(true);
+	  style.setEnabled(false);
 		header = new FramedPanel();
 	  header.setWidth(300);
 		header.setHeading("Style in which it is used");
@@ -332,11 +333,15 @@ public class OrnamentCaveAttributes extends PopupPanel{
 
 			@Override
 			public void onClick(ClickEvent event) {
-				OrnamentWallAttributes attributespopup  = new OrnamentWallAttributes();
+				if(!caveEntryComboBox.getValue().equals(null)){
+				OrnamentWallAttributes attributespopup  = new OrnamentWallAttributes(caveEntryComboBox.getValue());
 				attributespopup.setOrnamentCaveRelation(ornamentCaveAttributes);
-	      attributespopup.setCave(caveEntryComboBox.getValue());
 	      attributespopup.setGlassEnabled(true);
 				attributespopup.center();
+				}
+				else{
+					Window.alert("Selector Cave before adding walls");
+				}
 				
 			}
 	  	
@@ -388,22 +393,26 @@ public class OrnamentCaveAttributes extends PopupPanel{
 	  
 
 	  
-		orientationComboBox = new ComboBox<OrnamentOrientation>(orientation, orientationProps.name(),
-				new AbstractSafeHtmlRenderer<OrnamentOrientation>() {
+	  HorizontalPanel orientationHorizontalPanel = new HorizontalPanel();
+	  
+	  ListView<OrnamentOrientation, String> orientationView = new ListView<OrnamentOrientation, String>(orientation, orientationProps.name());
+	  orientationView.setPixelSize(150, 150);
+	  ListView<OrnamentOrientation, String> selectedOrientationView = new ListView<OrnamentOrientation, String>(selectedorientation,orientationProps.name());
+	  selectedOrientationView.setPixelSize(150, 150);
+	  orientationHorizontalPanel.add(orientationView);
+	  orientationHorizontalPanel.add(selectedOrientationView);
+	  
+    new ListViewDragSource<OrnamentOrientation>(orientationView).setGroup("Orientation");
+    new ListViewDragSource<OrnamentOrientation>(selectedOrientationView).setGroup("Orientation");
 
-					@Override
-					public SafeHtml render(OrnamentOrientation item) {
-						final OrientationViewTemplates pvTemplates = GWT.create(OrientationViewTemplates.class);
-						return pvTemplates.orientation(item.getName());
-					}
-				});
-		
-
-	 
+    new ListViewDropTarget<OrnamentOrientation>(selectedOrientationView).setGroup("Orientation");
+    new ListViewDropTarget<OrnamentOrientation>(orientationView).setGroup("Orientation");
+    
+    
 		header = new FramedPanel();
-		header.setWidth(300);
-		header.setHeading("Orientation");
-		header.add(orientationComboBox);
+		header.setHeading("Select Orientation");
+		header.add(orientationHorizontalPanel);
+		
 		vlcAttributes.add(header);
 	  
 
@@ -411,8 +420,8 @@ public class OrnamentCaveAttributes extends PopupPanel{
 	  
 	  final TextField colours = new TextField();
 	  colours.setAllowBlank(true);
-	  header.setWidth(300);
 		header = new FramedPanel();
+		 header.setWidth(300);
 		header.setHeading("Colours");
 		header.add(colours);
 		vlcAttributes.add(header);
@@ -581,9 +590,10 @@ public class OrnamentCaveAttributes extends PopupPanel{
 			ornamentCaveRelation.setCaveID(caveEntryComboBox.getValue().getCaveID());
 			ornamentCaveRelation.setColours(colours.getText());
 			ornamentCaveRelation.setGroup(groupOfOrnaments.getText());
-			ornamentCaveRelation.setOrientation(orientationComboBox.getValue().getOrnamentOrientationID());
+			for(int i = 0; i< selectedorientation.size(); i ++){
+				ornamentCaveRelation.getOrientationID().add(selectedorientation.get(i).getOrnamentOrientationID());
+			}
 			ornamentCaveRelation.setNotes(notes.getText());
-			ornamentCaveRelation.setStyle(Integer.parseInt(style.getText()));
 			List<OrnamentEntry> relatedOrnaments = selectedRedlatedOrnaments.getAll();
 			for( OrnamentEntry ornament : relatedOrnaments){
 				ornamentCaveRelation.getRelatedOrnamentsRelationID().add(ornament.getOrnamentID());
@@ -683,7 +693,7 @@ public class OrnamentCaveAttributes extends PopupPanel{
 	interface OrientationProperties extends PropertyAccess<OrnamentOrientation> {
 		ModelKeyProvider<OrnamentOrientation> ornamentOrientationID();
 
-		LabelProvider<OrnamentOrientation> name();
+		ValueProvider<OrnamentOrientation, String> name();
 	}
 	
 	interface MainTypologicalClassProperties extends PropertyAccess<MainTypologicalClass> {

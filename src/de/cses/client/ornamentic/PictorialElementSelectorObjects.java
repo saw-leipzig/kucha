@@ -127,7 +127,7 @@ public class PictorialElementSelectorObjects implements IsWidget {
 	}
 	
 	public List<PictorialElementEntry> getSelectedPE() {
-		return tree.getSelectionModel().getSelectedItems();
+		return tree.getCheckedSelection();
 	}
 
 	public void expandAll() {

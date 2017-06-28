@@ -39,6 +39,7 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.walls.WallSelector;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CavePart;
 import de.cses.shared.OrnamentCaveRelation;
@@ -80,10 +81,11 @@ public class OrnamentWallAttributes extends PopupPanel {
 
 	
 	
-	public OrnamentWallAttributes(){
+	public OrnamentWallAttributes(CaveEntry cave){
 		super(false);
 	
 		popup = this;
+		this.cave = cave;
 		ornamentPositionProps = GWT.create(OrnamentPositionProperties.class);
 	
 		ornamentFunctionProps = GWT.create(OrnamentFunctionProperties.class);
@@ -155,22 +157,16 @@ public class OrnamentWallAttributes extends PopupPanel {
 		wallrelationFramedPanel.setHeading("Select Walls");
 		wallrelationFramedPanel.add(wallrelationMainVerticalPanel);
 		
+		WallSelector wallselector = new WallSelector();
+		wallselector.setCave(cave);
 		
-		wallsComboBox = new ComboBox<WallEntry>(walls, wallProps.wallIDLabel(),
-				new AbstractSafeHtmlRenderer<WallEntry>() {
-
-					@Override
-					public SafeHtml render(WallEntry item) {
-						final WallsViewTemplates pvTemplates = GWT.create(WallsViewTemplates.class);
-						return pvTemplates.walls(item.getWallID());
-					}
-				});
 		
 		
 		header = new FramedPanel();
-		header.setWidth(300);
+		header.setWidth(500);
+		header.setHeight(400);
 		header.setHeading("Select Wall");
-		header.add(wallsComboBox);
+		header.add(wallselector);
 		vlcWalls.add(header);
 	
 	  
