@@ -83,7 +83,7 @@ public class CaveSearchController extends AbstractSearchController {
 	 */
 	@Override
 	public void addNewElement() {
-		PopupPanel caveEditorPanel = new PopupPanel(false);
+		final PopupPanel caveEditorPanel = new PopupPanel(false);
 		CaveEditor ced = new CaveEditor(null);
 		ced.addEditorListener(new EditorListener() {
 			

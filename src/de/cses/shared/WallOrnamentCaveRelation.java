@@ -20,8 +20,9 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  *
  */
 public class WallOrnamentCaveRelation implements IsSerializable{
-	int WallOrnamentCaveRelationID;
-	int WallID;
+	int wallOrnamentCaveRelationID;
+	int wallID;
+	String name;
 	int OrnamentCaveRelationID;
 	int position;
 	int function;
@@ -31,16 +32,16 @@ public class WallOrnamentCaveRelation implements IsSerializable{
 		
 	}
 	public int getWallOrnamentCaveRelationID() {
-		return WallOrnamentCaveRelationID;
+		return wallOrnamentCaveRelationID;
 	}
 	public void setWallOrnamentCaveRelationID(int wallOrnamentCaveRelationID) {
-		WallOrnamentCaveRelationID = wallOrnamentCaveRelationID;
+		this.wallOrnamentCaveRelationID = wallOrnamentCaveRelationID;
 	}
 	public int getWallID() {
-		return WallID;
+		return wallID;
 	}
 	public void setWallID(int wallID) {
-		WallID = wallID;
+		this.wallID = wallID;
 	}
 	public int getOrnamentCaveRelationID() {
 		return OrnamentCaveRelationID;
@@ -66,6 +67,20 @@ public class WallOrnamentCaveRelation implements IsSerializable{
 	public void setNotes(String notes) {
 		this.notes = notes;
 	}
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		String name = "Wallnumber: " + Integer.toString(wallID);
+		return name;
+	}
+	/**
+	 * @param name the name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+	
 	
 	
 
