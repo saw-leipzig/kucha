@@ -3,8 +3,6 @@ package de.cses.client.ornamentic;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.tools.ant.taskdefs.Sleep;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor.Path;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -267,7 +265,7 @@ public class OrnamentCaveAttributes extends PopupPanel{
 		districtComboBox.addSelectionHandler(districtSelectionHandler);
 		
 		
-		caveEntryComboBox = new ComboBox<CaveEntry>(caveEntryList, caveEntryProps.OfficialName(),
+		caveEntryComboBox = new ComboBox<CaveEntry>(caveEntryList, caveEntryProps.historicName(),
 				new AbstractSafeHtmlRenderer<CaveEntry>() {
 
 					@Override
@@ -633,7 +631,7 @@ public class OrnamentCaveAttributes extends PopupPanel{
 	interface CaveEntryProperties extends PropertyAccess<CaveEntry> {
 		ModelKeyProvider<CaveEntry> caveID();
 
-		LabelProvider<CaveEntry> OfficialName();
+		LabelProvider<CaveEntry> historicName();
 	}
 	interface CaveViewTemplates extends XTemplates {
 		@XTemplate("<div>{name}</div>")
