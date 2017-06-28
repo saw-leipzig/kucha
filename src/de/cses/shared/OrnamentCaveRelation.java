@@ -9,14 +9,13 @@ public class OrnamentCaveRelation implements IsSerializable{
 	private int ornamentID;
 	private String name;
 	private int caveID;
-	private int style;
-	private int orientation;
 	private String colours;
 	private String notes;
-	private int group;
+	private String group;
 	private String relatedelementeofOtherCultures;
 	private String similarelementsOfOtherCultures;
 	private ArrayList<Integer> similarOrnamentsRelationID= new ArrayList<Integer>();
+	private ArrayList<Integer> orientationID = new ArrayList<Integer>();
 	private ArrayList<Integer> PictorialElementIDs = new ArrayList<Integer>();
 	private ArrayList<Integer> relatedOrnamentsRelationID = new ArrayList<Integer>();
 	private ArrayList<WallOrnamentCaveRelation> walls = new ArrayList<WallOrnamentCaveRelation>();
@@ -48,25 +47,26 @@ public class OrnamentCaveRelation implements IsSerializable{
 	}
 
 
-	public int getStyle() {
-		return style;
+
+
+
+
+
+
+	/**
+	 * @return the orientationID
+	 */
+	public ArrayList<Integer> getOrientationID() {
+		return orientationID;
 	}
 
 
-	public void setStyle(int style) {
-		this.style = style;
+	/**
+	 * @param orientationID the orientationID to set
+	 */
+	public void setOrientationID(ArrayList<Integer> orientationID) {
+		this.orientationID = orientationID;
 	}
-
-
-	public int getOrientation() {
-		return orientation;
-	}
-
-
-	public void setOrientation(int orientation) {
-		this.orientation = orientation;
-	}
-
 
 
 	public String getColours() {
@@ -91,20 +91,24 @@ public class OrnamentCaveRelation implements IsSerializable{
 	}
 
 
-	public int getGroup() {
+
+
+
+
+	/**
+	 * @return the group
+	 */
+	public String getGroup() {
 		return group;
 	}
 
 
-	public void setGroup(int group) {
+	/**
+	 * @param group the group to set
+	 */
+	public void setGroup(String group) {
 		this.group = group;
 	}
-
-
-
-
-
-
 
 
 	public String getName() {

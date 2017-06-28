@@ -39,6 +39,7 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.walls.WallSelector;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CavePart;
 import de.cses.shared.OrnamentCaveRelation;
@@ -80,10 +81,11 @@ public class OrnamentWallAttributes extends PopupPanel {
 
 	
 	
-	public OrnamentWallAttributes(){
+	public OrnamentWallAttributes(CaveEntry cave){
 		super(false);
 	
 		popup = this;
+		this.cave = cave;
 		ornamentPositionProps = GWT.create(OrnamentPositionProperties.class);
 	
 		ornamentFunctionProps = GWT.create(OrnamentFunctionProperties.class);
@@ -155,25 +157,16 @@ public class OrnamentWallAttributes extends PopupPanel {
 		wallrelationFramedPanel.setHeading("Select Walls");
 		wallrelationFramedPanel.add(wallrelationMainVerticalPanel);
 		
-		
-		wallsComboBox = new ComboBox<WallEntry>(walls, wallProps.wallIDLabel(),
-				new AbstractSafeHtmlRenderer<WallEntry>() {
-
-					@Override
-					public SafeHtml render(WallEntry item) {
-						final WallsViewTemplates pvTemplates = GWT.create(WallsViewTemplates.class);
-						return pvTemplates.walls(item.getWallID());
-					}
-				});
-		
+		WallSelector wallselector = new WallSelector();
 		
 		header = new FramedPanel();
+		header.setWidth(500);
+		header.setHeight(400);
 		header.setHeading("Select Wall");
-		header.add(wallsComboBox);
+		header.add(wallselector);
 		vlcWalls.add(header);
 	
-	  
-
+		wallselector.setCave(cave);
 	  
 		ornamentPositionComboBox = new ComboBox<OrnamentPosition>(ornamentPosition, ornamentPositionProps.name(),
 				new AbstractSafeHtmlRenderer<OrnamentPosition>() {
@@ -187,6 +180,7 @@ public class OrnamentWallAttributes extends PopupPanel {
 		
 	  
 		header = new FramedPanel();
+		header.setWidth(300);
 		header.setHeading("Select ornament position");
 		header.add(ornamentPositionComboBox);
 		vlcWalls.add(header);
@@ -202,6 +196,7 @@ public class OrnamentWallAttributes extends PopupPanel {
 				});
 		
 		header = new FramedPanel();
+		header.setWidth(300);
 		header.setHeading("Select the ornament function");
 		header.add(ornamentfunctionComboBox);
 		vlcWalls.add(header);
@@ -213,6 +208,7 @@ public class OrnamentWallAttributes extends PopupPanel {
 	  notes.setAllowBlank(true);
 	  
 		header = new FramedPanel();
+		header.setWidth(300);
 		header.setHeading("Notes");
 		header.add(notes);
 		vlcWalls.add(header);
@@ -236,7 +232,7 @@ ClickHandler saveHandler = new ClickHandler(){
 		relation.setPosition(ornamentPositionComboBox.getValue().getOrnamentPositionID());
 		relation.setNotes(notes.getText());
 		relation.setWallID(wallsComboBox.getValue().getWallID());
-		ornamentCaveRelation.getWalls().add(relation);
+		ornamentCaveRelation.getWallsListStore().add(relation);
 		popup.hide();
 	}
 	
