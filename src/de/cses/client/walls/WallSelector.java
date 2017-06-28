@@ -103,8 +103,6 @@ public class WallSelector implements IsWidget {
 	@Override
 	public Widget asWidget() {
 		if (mainPanel == null) {
-			mainPanel = new ContentPanel();
-			mainPanel.setHeaderVisible(false);
 			init();
 		}
 		return mainPanel;
@@ -114,6 +112,9 @@ public class WallSelector implements IsWidget {
 	 * 
 	 */
 	private void init() {
+		mainPanel = new ContentPanel();
+		mainPanel.setHeaderVisible(false);
+		
 		VerticalLayoutContainer vlc = new VerticalLayoutContainer();
 		caveSketchContainer = new FlowLayoutContainer();
 		vlc.add(caveSketchContainer, new VerticalLayoutData(1.0, 0.8));

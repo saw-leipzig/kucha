@@ -158,9 +158,6 @@ public class OrnamentWallAttributes extends PopupPanel {
 		wallrelationFramedPanel.add(wallrelationMainVerticalPanel);
 		
 		WallSelector wallselector = new WallSelector();
-		wallselector.setCave(cave);
-		
-		
 		
 		header = new FramedPanel();
 		header.setWidth(500);
@@ -169,8 +166,7 @@ public class OrnamentWallAttributes extends PopupPanel {
 		header.add(wallselector);
 		vlcWalls.add(header);
 	
-	  
-
+		wallselector.setCave(cave);
 	  
 		ornamentPositionComboBox = new ComboBox<OrnamentPosition>(ornamentPosition, ornamentPositionProps.name(),
 				new AbstractSafeHtmlRenderer<OrnamentPosition>() {
