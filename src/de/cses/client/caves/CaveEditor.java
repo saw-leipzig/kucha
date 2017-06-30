@@ -26,7 +26,6 @@ import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
@@ -50,6 +49,8 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
+import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -478,6 +479,7 @@ public class CaveEditor extends AbstractEditor {
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Official Number");
 		officialNumberField = new TextField();
+		officialNumberField.addValidator(new MinLengthValidator(1));
 		officialNumberField.setEmptyText("mandatory cave number");
 		officialNumberField.setAllowBlank(false);
 		officialNumberField.setValue(correspondingCaveEntry.getOfficialNumber());
@@ -494,6 +496,7 @@ public class CaveEditor extends AbstractEditor {
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Historic Name");
 		historicNameField = new TextField();
+		historicNameField.addValidator(new MaxLengthValidator(64));
 		historicNameField.setEmptyText("historic cave name");
 		historicNameField.setValue(correspondingCaveEntry.getHistoricName());
 		historicNameField.addValueChangeHandler(new ValueChangeHandler<String>() {
@@ -509,6 +512,7 @@ public class CaveEditor extends AbstractEditor {
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Optional Historic Name");
 		optionalHistoricNameField = new TextField();
+		optionalHistoricNameField.addValidator(new MaxLengthValidator(64));
 		optionalHistoricNameField.setEmptyText("optional historic name");
 		optionalHistoricNameField.setValue(correspondingCaveEntry.getOptionalHistoricName());
 		optionalHistoricNameField.addValueChangeHandler(new ValueChangeHandler<String>() {
@@ -1217,6 +1221,9 @@ public class CaveEditor extends AbstractEditor {
 	 * listener.
 	 */
 	protected void saveEntries() {
+		if (!validateFields()) {
+			return;
+		}
 		if (correspondingCaveEntry.getOfficialNumber().isEmpty()) {
 			officialNumberField.getElement().getStyle().setBackgroundColor("#FFFF00");
 			Util.showWarning("Missing information", "Please fill in mandatory cave number!");
@@ -1251,6 +1258,13 @@ public class CaveEditor extends AbstractEditor {
 				}
 			});
 		}
+	}
+
+	/**
+	 * @return
+	 */
+	private boolean validateFields() {
+		return officialNumberField.validate() && historicNameField.validate() && optionalHistoricNameField.validate();
 	}
 
 	/**
