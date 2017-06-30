@@ -52,7 +52,7 @@ public class ImageView extends AbstractView {
 		super();
 		ivTemplates = GWT.create(ImageViewTemplates.class);
 		this.imgEntry = imgEntry;
-		setHTML(ivTemplates.view(UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=80"), imgEntry.getTitle().substring(0, 15)));
+		setHTML(ivTemplates.view(UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=80"), imgEntry.getShortName()));
 		setPixelSize(110, 110);
 
 		DragSource source = new DragSource(this) {
@@ -78,7 +78,7 @@ public class ImageView extends AbstractView {
 	@Override
 	public void closeRequest() {
 		super.closeRequest();
-		setHTML(ivTemplates.view(UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=80"), imgEntry.getTitle().substring(0, 15)));
+		setHTML(ivTemplates.view(UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=80"), imgEntry.getShortName()));
 	}
 
 	/* (non-Javadoc)

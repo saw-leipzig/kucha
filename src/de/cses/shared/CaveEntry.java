@@ -16,7 +16,7 @@ package de.cses.shared;
 public class CaveEntry extends AbstractEntry {
 	private int caveID;
 	private String officialNumber, historicName, optionalHistoricName;
-	private int caveTypeID, districtID, regionID, orientationID, preservationClassificationID; 
+	private int caveTypeID, districtID, regionID, orientationID, preservationClassificationID, caveGroupID;
 	private String stateOfPerservation;
 	private String findings;
 	private String alterationDate;
@@ -25,14 +25,15 @@ public class CaveEntry extends AbstractEntry {
 	private RearAreaEntry rearAreaEntry;
 
 	public CaveEntry() {
-		this(0, "", "", "", 0, 0, 0, 0, "", "", "", 0);
+		this(0, "", "", "", 0, 0, 0, 0, "", "", "", 0, 0);
 		antechamberEntry = new AntechamberEntry();
 		mainChamberEntry = new MainChamberEntry();
 		rearAreaEntry = new RearAreaEntry();
 	}
 
 	public CaveEntry(int caveID, String officialNumber, String historicName, String optionalHistoricName, int caveTypeID, int districtID,
-			int regionID, int orientationID, String stateOfPerservation, String findings, String alterationDate, int preservationClassificationID) {
+			int regionID, int orientationID, String stateOfPerservation, String findings, String alterationDate, int preservationClassificationID,
+			int caveGroupID) {
 		super();
 		this.caveID = caveID;
 		this.officialNumber = officialNumber;
@@ -45,6 +46,7 @@ public class CaveEntry extends AbstractEntry {
 		this.stateOfPerservation = stateOfPerservation;
 		this.findings = findings;
 		this.alterationDate = alterationDate;
+		this.setCaveGroupID(caveGroupID);
 	}
 
 	public int getCaveID() {
@@ -154,17 +156,20 @@ public class CaveEntry extends AbstractEntry {
 		this.rearAreaEntry = rearAreaEntry;
 	}
 
-	public String getInsertSql() {		
-		return "INSERT INTO Caves (OfficialNumber,OfficialName,OptionalHistoricName,CaveTypeID,DistrictID,RegionID, OrientationID,StateOfPreservation,Findings,AlterationDate, PreservationClassificationID) VALUES "
-				+ "('" + officialNumber + "','" + historicName + "','" + optionalHistoricName + "'," + caveTypeID + "," + districtID + "," + regionID + "," + orientationID + ",'" + stateOfPerservation
-				+ "','" + findings + "','" + alterationDate + "'," + preservationClassificationID + ")";
+	public String getInsertSql() {
+		return "INSERT INTO Caves (OfficialNumber, HistoricName, OptionalHistoricName, CaveTypeID, DistrictID, RegionID, OrientationID, StateOfPreservation, "
+				+ "Findings, AlterationDate, PreservationClassificationID, CaveGroupID) VALUES "
+				+ "('" + officialNumber + "','" + historicName + "','" + optionalHistoricName + "'," + caveTypeID + "," + districtID + ","
+				+ regionID + "," + orientationID + ",'" + stateOfPerservation + "','" + findings + "','" + alterationDate + "',"
+				+ preservationClassificationID + ", " + caveGroupID + ")";
 	}
 
 	public String getUpdateSql() {
-		return "UPDATE Caves SET OfficialNumber='" + officialNumber + "', OfficialName='" + historicName + "', OptionalHistoricName='" + optionalHistoricName
-				+ "', CaveTypeID=" + caveTypeID + ", DistrictID=" + districtID + ", RegionID=" + regionID + ", OrientationID=" + orientationID + ", StateOfPreservation='" + stateOfPerservation
-				+ "', Findings='" + findings + "', AlterationDate='" + alterationDate + "', PreservationClassificationID=" + preservationClassificationID
-				+ " WHERE CaveID=" + caveID;
+		return "UPDATE Caves SET OfficialNumber='" + officialNumber + "', HistoricName='" + historicName + "', OptionalHistoricName='"
+				+ optionalHistoricName + "', CaveTypeID=" + caveTypeID + ", DistrictID=" + districtID + ", RegionID=" + regionID
+				+ ", OrientationID=" + orientationID + ", StateOfPreservation='" + stateOfPerservation + "', Findings='" + findings
+				+ "', AlterationDate='" + alterationDate + "', PreservationClassificationID=" + preservationClassificationID + ", CaveGroupID="
+				+ caveGroupID + " WHERE CaveID=" + caveID;
 	}
 
 	/**
@@ -175,7 +180,8 @@ public class CaveEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param orientationID the orientationID to set
+	 * @param orientationID
+	 *          the orientationID to set
 	 */
 	public void setOrientationID(int orientationID) {
 		this.orientationID = orientationID;
@@ -189,11 +195,26 @@ public class CaveEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param preservationClassificationID the preservationClassificationID to set
+	 * @param preservationClassificationID
+	 *          the preservationClassificationID to set
 	 */
 	public void setPreservationClassificationID(int preservationClassificationID) {
 		this.preservationClassificationID = preservationClassificationID;
 	}
 
+	/**
+	 * @return the caveGroupID
+	 */
+	public int getCaveGroupID() {
+		return caveGroupID;
+	}
+
+	/**
+	 * @param caveGroupID
+	 *          the caveGroupID to set
+	 */
+	public void setCaveGroupID(int caveGroupID) {
+		this.caveGroupID = caveGroupID;
+	}
 
 }

@@ -24,6 +24,7 @@ import de.cses.server.ServerProperties;
 import de.cses.shared.AntechamberEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.CaveEntry;
+import de.cses.shared.CaveGroupEntry;
 import de.cses.shared.CavePart;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
@@ -332,8 +333,8 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Images");
 			while (rs.next()) {
-				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"),
-						rs.getDate("CaptureDate"), rs.getString("ImageType")));
+				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"), rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"),
+						rs.getString("ImageType"), rs.getString("Date")));
 			}
 			rs.close();
 			stmt.close();
@@ -352,8 +353,8 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Images WHERE " + sqlWhere);
 			while (rs.next()) {
-				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"),
-						rs.getDate("CaptureDate"), rs.getString("ImageType")));
+				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"), rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"),
+						rs.getString("ImageType"), rs.getString("Date")));
 			}
 			rs.close();
 			stmt.close();
@@ -376,9 +377,9 @@ public class MysqlConnector {
 		try {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Images WHERE ImageID=" + imageID);
-			while (rs.next()) {
-				result = new ImageEntry(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getInt(5), rs.getString(6),
-						rs.getDate(7), rs.getString(8));
+			if (rs.first()) {
+				result = new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"), rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"),
+						rs.getString("ImageType"), rs.getString("Date"));
 			}
 			rs.close();
 			stmt.close();
@@ -428,7 +429,7 @@ public class MysqlConnector {
 				CaveEntry ce = new CaveEntry(rs.getInt("CaveID"), rs.getString("OfficialNumber"), rs.getString("HistoricName"),
 						rs.getString("OptionalHistoricName"), rs.getInt("CaveTypeID"), rs.getInt("DistrictID"), rs.getInt("RegionID"), rs.getInt("OrientationID"),
 						rs.getString("StateOfPreservation"), rs.getString("Findings"),
-						rs.getString("AlterationDate"), rs.getInt("PreservationClassificationID"));
+						rs.getString("AlterationDate"), rs.getInt("PreservationClassificationID"), rs.getInt("CaveGroupID"));
 				ce.setAntechamberEntry(getAntechamberEntry(ce.getCaveID()));
 				ce.setMainChamberEntry(getMainChamber(ce.getCaveID()));
 				ce.setRearAreaEntry(getRearArea(ce.getCaveID()));
@@ -454,7 +455,7 @@ public class MysqlConnector {
 				result = new CaveEntry(rs.getInt("CaveID"), rs.getString("OfficialNumber"), rs.getString("HistoricName"),
 						rs.getString("OptionalHistoricName"), rs.getInt("CaveTypeID"), rs.getInt("DistrictID"), rs.getInt("RegionID"), rs.getInt("OrientationID"),
 						rs.getString("StateOfPreservation"), rs.getString("Findings"),
-						rs.getString("AlterationDate"), rs.getInt("PreservationClassificationID"));
+						rs.getString("AlterationDate"), rs.getInt("PreservationClassificationID"), rs.getInt("CaveGroupID"));
 				result.setAntechamberEntry(getAntechamberEntry(id));
 				result.setMainChamberEntry(getMainChamber(id));
 				result.setRearAreaEntry(getRearArea(id));
@@ -479,8 +480,7 @@ public class MysqlConnector {
 				results.add(new CaveEntry(rs.getInt("CaveID"), rs.getString("OfficialNumber"), rs.getString("HistoricName"),
 						rs.getString("OptionalHistoricName"), rs.getInt("CaveTypeID"), rs.getInt("DistrictID"), rs.getInt("RegionID"), rs.getInt("OrientationID"), 
 						rs.getString("StateOfPreservation"), rs.getString("Findings"),
-						rs.getString("AlterationDate"), rs.getInt("PreservationClassificationID")));
-
+						rs.getString("AlterationDate"), rs.getInt("PreservationClassificationID"), rs.getInt("CaveGroupID")));
 			}
 			rs.close();
 			stmt.close();
@@ -929,8 +929,8 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Images WHERE ImageID IN (SELECT ImageID FROM DepictionImageRelation WHERE DepictionID=" + depictionID + ")");
 			while (rs.next()) {
-				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"),
-						rs.getDate("CaptureDate"), rs.getString("ImageType")));
+				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"), rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"),
+						rs.getString("ImageType"), rs.getString("Date")));
 			}
 			rs.close();
 			stmt.close();
@@ -1434,7 +1434,6 @@ public class MysqlConnector {
 			return null;
 		}
 		return result;
-
 	}
 
 	/**
@@ -1470,5 +1469,27 @@ public class MysqlConnector {
 			insertEntry(caveEntry.getRearAreaEntry().getInsertSql());
 		}
 		return newCaveID;
+	}
+
+	/**
+	 * @return
+	 */
+	public ArrayList<CaveGroupEntry> getCaveGroups() {
+		ArrayList<CaveGroupEntry> result = new ArrayList<CaveGroupEntry>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM CaveGroups");
+			while (rs.next()) {
+				result.add(new CaveGroupEntry(rs.getInt("CaveGroupID"), rs.getString("Name")));
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return result;
 	}
 }

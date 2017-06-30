@@ -21,6 +21,7 @@ import de.cses.shared.AntechamberEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.RearAreaEntry;
 import de.cses.shared.CaveEntry;
+import de.cses.shared.CaveGroupEntry;
 import de.cses.shared.CavePart;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
@@ -186,5 +187,7 @@ public interface DatabaseServiceAsync {
 	void updateCaveEntry(CaveEntry caveEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
 	void insertCaveEntry(CaveEntry caveEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
+
+	void getCaveGroups(AsyncCallback<ArrayList<CaveGroupEntry>> asyncCallback) throws IllegalArgumentException;
 
 	}

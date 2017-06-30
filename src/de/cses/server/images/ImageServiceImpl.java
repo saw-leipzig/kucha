@@ -15,16 +15,12 @@ package de.cses.server.images;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
 import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageOutputStream;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
@@ -35,7 +31,6 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.io.output.ByteArrayOutputStream;
 
 import de.cses.server.ServerProperties;
 import de.cses.server.mysql.MysqlConnector;
@@ -98,19 +93,11 @@ public class ImageServiceImpl extends HttpServlet {
 							filename = newImageID + fileType;
 							ie = connector.getImageEntry(newImageID);
 							ie.setFilename(filename);
-							connector.updateEntry(ie.getSqlUpdate(ImageEntry.FILENAME));
+							connector.updateEntry(ie.getSingleFieldUpdateSql(ImageEntry.FILENAME));
 							target = new File(imgHomeDir, filename);
 							item.write(target);
 							item.delete();
 						}
-//						if (filename.endsWith("tif") || filename.endsWith("tiff")) {
-//							final BufferedImage tif = ImageIO.read(target);
-//							filename = newImageID + ".png";
-//					    ImageIO.write(tif, "png", new File(imgHomeDir, filename));
-//					    ie.setFilename(filename);
-//					    connector.updateEntry(ie.getSqlUpdate(ImageEntry.FILENAME));
-//					    target.delete();
-//					  }
 					}
 				}
 			} catch (ServletException e) {
@@ -138,15 +125,12 @@ public class ImageServiceImpl extends HttpServlet {
 	 *          the new thumbnail file
 	 */
 	private void createThumbnail(File readFile, File tnFile) {
-//		File tnFile;
 		String type = "png";
 		BufferedImage tnImg;
 
-//		tnFile = new File(path, "tn" + filename.substring(0,filename.lastIndexOf(".")) + ".png");
-//		File readFile = new File(path, filename);
-		
 		try {
-			// we need to call the scanner in order to detect the additional libraries!
+			// we need to call the scanner in order to detect the additional libraries
+			// the libraries used are from https://haraldk.github.io/TwelveMonkeys/
 			ImageIO.scanForPlugins();
 			
 			BufferedImage buf = ImageIO.read(readFile);

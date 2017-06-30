@@ -13,15 +13,10 @@
  */
 package de.cses.shared;
 
-import java.sql.Date;
-
-import com.google.gwt.user.client.rpc.IsSerializable;
-
 public class ImageEntry extends AbstractEntry {
 
 	private int imageID, photographerID;
-	private String copyright, comment, filename, title, type;
-	private Date captureDate;
+	private String copyright, comment, filename, title, shortName, type, date;
 
 	public static final int FILENAME = 2;
 
@@ -40,16 +35,17 @@ public class ImageEntry extends AbstractEntry {
 	 * @param comment
 	 * @param captureDate
 	 */
-	public ImageEntry(int imageID, String filename, String title, String copyright,
-			int photographerID, String comment, Date captureDate, String type) {
+	public ImageEntry(int imageID, String filename, String title, String shortName, String copyright,
+			int photographerID, String comment, String type, String date) {
 		this.imageID = imageID;
 		this.filename = filename;
 		this.title = title;
+		this.shortName = shortName;
 		this.copyright = copyright;
 		this.photographerID = photographerID;
 		this.comment = comment;
-		this.captureDate = captureDate;
 		this.type = type;
+		this.date = date;
 	}
 
 	public int getImageID() {
@@ -100,14 +96,6 @@ public class ImageEntry extends AbstractEntry {
 		this.comment = comment;
 	}
 
-	public Date getCaptureDate() {
-		return captureDate;
-	}
-
-	public void setCaptureDate(Date captureDate) {
-		this.captureDate = captureDate;
-	}
-
 	public String getType() {
 		return type;
 	}
@@ -121,7 +109,7 @@ public class ImageEntry extends AbstractEntry {
 	 * @param imageID
 	 * @return String with the SQL UPDATE command for this ImageEntry
 	 */
-	public String getSqlUpdate(int id) {
+	public String getSingleFieldUpdateSql(int id) {
 		switch (id) {
 		case FILENAME:
 			return "UPDATE Images SET Filename='" + filename + "' WHERE ImageID=" + imageID;
@@ -135,8 +123,8 @@ public class ImageEntry extends AbstractEntry {
 	 */
 	@Override
 	public String getInsertSql() {
-		// TODO Auto-generated method stub
-		return null;
+		return "INSERT INTO Images (Filename, Title, ShortName, Copyright, PhotographerID, Comment, Date, ImageType) VALUES ('" + filename + "', '" + title + "', '" + shortName + "', '" + copyright + "'," 
+				+ photographerID + ", '" + comment + "', '" + date + "', '" + type + "')";
 	}
 
 	/* (non-Javadoc)
@@ -144,7 +132,35 @@ public class ImageEntry extends AbstractEntry {
 	 */
 	@Override
 	public String getUpdateSql() {
-		// TODO Auto-generated method stub
-		return null;
+		return "UPDATE Images SET Title='" + title + "', ShortName='" + shortName + "', Copyright='" + copyright + "', PhotographerID=" + photographerID + ", Comment='" + comment 
+				+ "', Date='" + date + "', ImageType='" + type + "'  WHERE ImageID=" + imageID;
+	}
+
+	/**
+	 * @return the date
+	 */
+	public String getDate() {
+		return date;
+	}
+
+	/**
+	 * @param date the date to set
+	 */
+	public void setDate(String date) {
+		this.date = date;
+	}
+
+	/**
+	 * @return the shortName
+	 */
+	public String getShortName() {
+		return shortName;
+	}
+
+	/**
+	 * @param shortName the shortName to set
+	 */
+	public void setShortName(String shortName) {
+		this.shortName = shortName;
 	}
 }

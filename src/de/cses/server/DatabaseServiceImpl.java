@@ -23,6 +23,7 @@ import de.cses.shared.AntechamberEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.RearAreaEntry;
 import de.cses.shared.CaveEntry;
+import de.cses.shared.CaveGroupEntry;
 import de.cses.shared.CavePart;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
@@ -455,6 +456,15 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public int insertCaveEntry(CaveEntry caveEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.insertCaveEntry(caveEntry);
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#getCaveGroups()
+	 */
+	@Override
+	public ArrayList<CaveGroupEntry> getCaveGroups() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getCaveGroups();
 	}
 
 }
