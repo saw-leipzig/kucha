@@ -22,6 +22,7 @@ import de.cses.shared.AntechamberEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.RearAreaEntry;
 import de.cses.shared.CaveEntry;
+import de.cses.shared.CaveGroupEntry;
 import de.cses.shared.CavePart;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
@@ -165,5 +166,7 @@ public interface DatabaseService extends RemoteService {
 	boolean updateCaveEntry(CaveEntry caveEntry) throws IllegalArgumentException;
 
 	int insertCaveEntry(CaveEntry caveEntry) throws IllegalArgumentException;
+
+	ArrayList<CaveGroupEntry> getCaveGroups() throws IllegalArgumentException;
 
 }
