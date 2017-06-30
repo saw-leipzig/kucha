@@ -14,9 +14,12 @@
 package de.cses.client.images;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.editor.client.Editor;
+import com.google.gwt.editor.client.EditorError;
+import com.google.gwt.editor.client.testing.MockEditorError;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
@@ -47,12 +50,12 @@ import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
-import com.sencha.gxt.widget.core.client.form.DateField;
-import com.sencha.gxt.widget.core.client.form.DateTimePropertyEditor;
 import com.sencha.gxt.widget.core.client.form.ListField;
 import com.sencha.gxt.widget.core.client.form.Radio;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.form.Validator;
+import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.info.Info;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
@@ -65,6 +68,7 @@ import de.cses.shared.PhotographerEntry;
 public class ImageEditor implements IsWidget, ImageUploadListener {
 
 	private TextField titleField;
+	private TextField shortNameField;
 	private TextField copyrightField;
 	private TextArea commentArea;
 	private TextField dateField;
@@ -198,6 +202,7 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 				if (!event.getSelection().isEmpty()) {
 					ImageEntry selectedImageItem = event.getSelection().get(0);
 					titleField.setValue(selectedImageItem.getTitle());
+					shortNameField.setValue(selectedImageItem.getShortName());
 					copyrightField.setValue(selectedImageItem.getCopyright());
 					commentArea.setValue(selectedImageItem.getComment());
 					dateField.setValue(selectedImageItem.getDate());
@@ -224,13 +229,51 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 
 		FramedPanel attributePanel = new FramedPanel();
 		titleField = new TextField();
+		titleField.addValidator(new MaxLengthValidator(128));
+		titleField.addValidator(new Validator<String>() {
+
+			@Override
+			public List<EditorError> validate(Editor<String> editor, String value) {
+				List<EditorError> errors = new ArrayList<EditorError>();
+				if ("New Image".equals(value)) {
+					errors.add(new MockEditorError() {
+
+						@Override
+						public String getMessage() {
+							return "Please change at least the title of the uploaded image!";
+						}
+					});
+				}
+				if (value.contains("'")) {
+					errors.add(new MockEditorError() {
+
+						@Override
+						public String getMessage() {
+							return "Quotes [' and \"] cannot be used!";
+						}
+					});
+				}
+				return errors;
+			}
+		});
+		titleField = new TextField();
 		titleField.setWidth(300);
 		attributePanel.setHeading("Title");
 		attributePanel.add(titleField);
 		editPanel.add(attributePanel);
 
 		attributePanel = new FramedPanel();
+		shortNameField = new TextField();
+		shortNameField.setWidth(300);
+		shortNameField.setToolTip("A short name can only have 12 characters");
+		shortNameField.addValidator(new MaxLengthValidator(12));
+		attributePanel.setHeading("Short Name");
+		attributePanel.add(shortNameField);
+		editPanel.add(attributePanel);
+
+		attributePanel = new FramedPanel();
 		copyrightField = new TextField();
+		copyrightField.addValidator(new MaxLengthValidator(64));
 		copyrightField.setWidth(300);
 		attributePanel.setHeading("Copyright");
 		attributePanel.add(copyrightField);
@@ -245,6 +288,7 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 
 		attributePanel = new FramedPanel();
 		dateField = new TextField();
+		dateField.addValidator(new MaxLengthValidator(32));
 		attributePanel.add(dateField);
 		attributePanel.setHeading("Date captured");
 		editPanel.add(attributePanel);
@@ -469,24 +513,7 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 		if (selectedItem == null) {
 			Info.display("Save Image", "There is no image selected for editing!");
 			return;
-		} else if ("New Image".equals(titleField.getCurrentValue())) {
-			Dialog warning = new Dialog();
-			warning.setHeading("A problem occurred!");
-			warning.setWidth(300);
-			warning.setResizable(false);
-			warning.setHideOnButtonClick(true);
-			warning.setPredefinedButtons(PredefinedButton.OK);
-			warning.setBodyStyleName("pad-text");
-			warning.getBody().addClassName("pad-text");
-			warning.add(new Label(
-					"Please change at least the title of the uploaded image! If necessary, all other information can be changed at a later time."));
-			warning.show();
-			// constrain the dialog to the viewport (for small mobile screen sizes)
-			Rectangle bounds = warning.getElement().getBounds();
-			Rectangle adjusted = warning.getElement().adjustForConstraints(bounds);
-			if (adjusted.getWidth() != bounds.getWidth() || adjusted.getHeight() != bounds.getHeight()) {
-				warning.setPixelSize(adjusted.getWidth(), adjusted.getHeight());
-			}
+		} else if (!verifyInputs()) {
 			return;
 		}
 
@@ -506,31 +533,20 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 			public void onSelect(SelectEvent event) {
 				// only of the yes button is selected, we will perform the command
 				// to simplify we just ignore the no button event by doing nothing
-				DateTimeFormat dtf = DateTimeFormat.getFormat("yyyy-MM-dd");
-				String sqlUpdate = "UPDATE Images SET Title='" + titleField.getText() + "'";
-				if (copyrightField.getValue() != null) {
-					sqlUpdate = sqlUpdate.concat(",Copyright='" + copyrightField.getText() + "'");
+				selectedItem.setTitle(titleField.getCurrentValue().replaceAll("'", "\u0027"));
+				selectedItem.setShortName(shortNameField.getCurrentValue());
+				selectedItem.setCopyright(copyrightField.getCurrentValue());
+				selectedItem.setComment(commentArea.getCurrentValue());
+				selectedItem.setDate(dateField.getCurrentValue());
+				selectedItem.setPhotographerID(photographerSelection.getCurrentValue()!=null ? photographerSelection.getCurrentValue().getPhotographerID() : 0);
+				if (rPhoto.isEnabled()) {
+					selectedItem.setType("photo");
+				} else if (rSketch.isEnabled()) {
+					selectedItem.setType("sketch");
+				} else {
+					selectedItem.setType("map");
 				}
-				if (photographerSelection.getValue() != null) {
-					sqlUpdate = sqlUpdate.concat(",PhotographerID=" + photographerSelection.getValue().getPhotographerID());
-				}
-				if (commentArea.getValue() != null) {
-					sqlUpdate = sqlUpdate.concat(",Comment='" + commentArea.getText() + "'");
-				}
-				if (rPhoto.getValue()) {
-					sqlUpdate = sqlUpdate.concat(",ImageType='photo'");
-				} else if (rSketch.getValue()) {
-					sqlUpdate = sqlUpdate.concat(",ImageType='sketch'");
-				} else if (rMap.getValue()) {
-					sqlUpdate = sqlUpdate.concat(",ImageType='map'");
-				}
-				if (dateField.getValue() != null) {
-					sqlUpdate = sqlUpdate.concat(", Date='" + dateField.getValue() + "'");
-				}
-
-				sqlUpdate = sqlUpdate.concat(" WHERE ImageID=" + imageListView.getSelectionModel().getSelectedItem().getImageID());
-
-				dbService.updateEntry(sqlUpdate, new AsyncCallback<Boolean>() {
+				dbService.updateEntry(selectedItem.getUpdateSql(), new AsyncCallback<Boolean>() {
 					public void onFailure(Throwable caught) {
 						Info.display("Error", "Problem with database connection!");
 					}
@@ -575,5 +591,13 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	/**
+	 * @return
+	 */
+	private boolean verifyInputs() {
+		return titleField.isValid() && shortNameField.isValid() && copyrightField.validate() && dateField.validate();
+	}
 
+	
 }

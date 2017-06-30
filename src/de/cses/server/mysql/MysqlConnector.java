@@ -332,7 +332,7 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Images");
 			while (rs.next()) {
-				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"),
+				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"), rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"),
 						rs.getString("ImageType"), rs.getString("Date")));
 			}
 			rs.close();
@@ -352,7 +352,7 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Images WHERE " + sqlWhere);
 			while (rs.next()) {
-				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"),
+				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"), rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"),
 						rs.getString("ImageType"), rs.getString("Date")));
 			}
 			rs.close();
@@ -377,7 +377,7 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Images WHERE ImageID=" + imageID);
 			if (rs.first()) {
-				result = new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"),
+				result = new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"), rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"),
 						rs.getString("ImageType"), rs.getString("Date"));
 			}
 			rs.close();
@@ -929,7 +929,7 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Images WHERE ImageID IN (SELECT ImageID FROM DepictionImageRelation WHERE DepictionID=" + depictionID + ")");
 			while (rs.next()) {
-				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"),
+				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"), rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"),
 						rs.getString("ImageType"), rs.getString("Date")));
 			}
 			rs.close();

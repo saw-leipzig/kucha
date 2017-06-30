@@ -14,8 +14,12 @@
 package de.cses.client.images;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.editor.client.Editor;
+import com.google.gwt.editor.client.EditorError;
+import com.google.gwt.editor.client.testing.MockEditorError;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
@@ -45,6 +49,8 @@ import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.Radio;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.form.Validator;
+import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
@@ -56,6 +62,7 @@ import de.cses.shared.PhotographerEntry;
 public class SingleImageEditor extends AbstractEditor {
 
 	private TextField titleField;
+	private TextField shortNameField;
 	private TextField copyrightField;
 	private TextArea commentArea;
 	private TextField dateField;
@@ -74,11 +81,11 @@ public class SingleImageEditor extends AbstractEditor {
 	private ImageEntry imgEntry;
 	private FlowLayoutContainer imageContainer;
 
-//	interface ImageProperties extends PropertyAccess<ImageEntry> {
-//		ModelKeyProvider<ImageEntry> imageID();
-//
-//		LabelProvider<ImageEntry> title();
-//	}
+	// interface ImageProperties extends PropertyAccess<ImageEntry> {
+	// ModelKeyProvider<ImageEntry> imageID();
+	//
+	// LabelProvider<ImageEntry> title();
+	// }
 
 	interface PhotographerProperties extends PropertyAccess<PhotographerEntry> {
 		ModelKeyProvider<PhotographerEntry> photographerID();
@@ -87,10 +94,8 @@ public class SingleImageEditor extends AbstractEditor {
 	}
 
 	/**
-	 * Creates the view how a thumbnail of an image entry will be shown currently
-	 * we are relying on the url of the image until we have user management
-	 * implemented and protect images from being viewed from the outside without
-	 * permission
+	 * Creates the view how a thumbnail of an image entry will be shown currently we are relying on the url of the image until we have user
+	 * management implemented and protect images from being viewed from the outside without permission
 	 * 
 	 * @author alingnau
 	 *
@@ -106,8 +111,8 @@ public class SingleImageEditor extends AbstractEditor {
 	}
 
 	/**
-	 * This widget allows to edit the information of an ImageEntry, i.e. an image
-	 * in the database. It also allows for uploading new images to the database.
+	 * This widget allows to edit the information of an ImageEntry, i.e. an image in the database. It also allows for uploading new images to
+	 * the database.
 	 */
 	public SingleImageEditor(ImageEntry imgEntry) {
 		this.imgEntry = imgEntry;
@@ -141,8 +146,7 @@ public class SingleImageEditor extends AbstractEditor {
 	}
 
 	/**
-	 * Initializes the editor's panel if it this has not already been done. Should
-	 * usually only be called once a session is started!
+	 * Initializes the editor's panel if it this has not already been done. Should usually only be called once a session is started!
 	 */
 	private void initPanel() {
 		panel = new FramedPanel();
@@ -153,6 +157,33 @@ public class SingleImageEditor extends AbstractEditor {
 
 		FramedPanel attributePanel = new FramedPanel();
 		titleField = new TextField();
+		titleField.addValidator(new MaxLengthValidator(128));
+		titleField.addValidator(new Validator<String>() {
+
+			@Override
+			public List<EditorError> validate(Editor<String> editor, String value) {
+				List<EditorError> errors = new ArrayList<EditorError>();
+				if ("New Image".equals(value)) {
+					errors.add(new MockEditorError() {
+
+						@Override
+						public String getMessage() {
+							return "Please change at least the title of the uploaded image!";
+						}
+					});
+				}
+				if (value.contains("'")) {
+					errors.add(new MockEditorError() {
+
+						@Override
+						public String getMessage() {
+							return "Quotes [' and \"] cannot be used!";
+						}
+					});
+				}
+				return errors;
+			}
+		});
 		titleField.setWidth(300);
 		attributePanel.setHeading("Title");
 		titleField.setValue(imgEntry.getTitle());
@@ -160,8 +191,18 @@ public class SingleImageEditor extends AbstractEditor {
 		editPanel.add(attributePanel);
 
 		attributePanel = new FramedPanel();
+		shortNameField = new TextField();
+		shortNameField.addValidator(new MaxLengthValidator(12));
+		shortNameField.setWidth(300);
+		attributePanel.setHeading("Short Name");
+		shortNameField.setValue(imgEntry.getShortName());
+		attributePanel.add(shortNameField);
+		editPanel.add(attributePanel);
+
+		attributePanel = new FramedPanel();
 		copyrightField = new TextField();
 		copyrightField.setWidth(300);
+		copyrightField.addValidator(new MaxLengthValidator(64));
 		copyrightField.setValue(imgEntry.getCopyright());
 		attributePanel.setHeading("Copyright");
 		attributePanel.add(copyrightField);
@@ -177,6 +218,7 @@ public class SingleImageEditor extends AbstractEditor {
 
 		attributePanel = new FramedPanel();
 		dateField = new TextField();
+		dateField.addValidator(new MaxLengthValidator(32));
 		dateField.setValue(imgEntry.getDate());
 		attributePanel.add(dateField);
 		attributePanel.setHeading("Date");
@@ -232,30 +274,6 @@ public class SingleImageEditor extends AbstractEditor {
 		default:
 			break;
 		}
-//		rPhoto.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-//
-//			@Override
-//			public void onValueChange(ValueChangeEvent<Boolean> event) {
-//				if (event.getValue())
-//					imgEntry.setType("photo");
-//			}
-//		});
-//		rSketch.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-//
-//			@Override
-//			public void onValueChange(ValueChangeEvent<Boolean> event) {
-//				if (event.getValue())
-//					imgEntry.setType("sketch");
-//			}
-//		});
-//		rMap.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-//
-//			@Override
-//			public void onValueChange(ValueChangeEvent<Boolean> event) {
-//				if (event.getValue())
-//					imgEntry.setType("map");
-//			}
-//		});
 		editPanel.add(attributePanel);
 
 		TextButton cancelButton = new TextButton("cancel");
@@ -275,7 +293,7 @@ public class SingleImageEditor extends AbstractEditor {
 			}
 		});
 
-		SafeUri imageUri = UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() +"&thumb=200");
+		SafeUri imageUri = UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=200");
 		Image img = new Image(imageUri);
 		imageContainer.add(img);
 		imageContainer.setPixelSize(210, 210);
@@ -294,31 +312,23 @@ public class SingleImageEditor extends AbstractEditor {
 	 * 
 	 */
 	protected void cancelDialog() {
-		if ("New Image".equals(titleField.getCurrentValue())) {
-			showTitleWarningDialog();
-			return;
-		} else {
-			closeEditor();
-		}
-	}
-
-	/**
-	 * 
-	 */
-	protected void cancelEditing() {
 		closeEditor();
 	}
 
+	// /**
+	// *
+	// */
+	// protected void cancelEditing() {
+	// closeEditor();
+	// }
+
 	/**
-	 * This method will save the currently selected ImageEntry from the left list
-	 * of previews. In future versions, the missing fields will be added. Also,
-	 * the Photographer ID us currently not mapped to the text entry in this box.
-	 * (shows a yes/no dialog first)
+	 * This method will save the currently selected ImageEntry from the left list of previews. In future versions, the missing fields will be
+	 * added. Also, the Photographer ID us currently not mapped to the text entry in this box. (shows a yes/no dialog first)
 	 */
 	private void saveImageEntry() {
-//		ImageEntry selectedItem = imageListView.getSelectionModel().getSelectedItem();
-		if ("New Image".equals(titleField.getCurrentValue())) {
-			showTitleWarningDialog();
+		// ImageEntry selectedItem = imageListView.getSelectionModel().getSelectedItem();
+		if (!verifyInputs()) {
 			return;
 		}
 
@@ -330,8 +340,8 @@ public class SingleImageEditor extends AbstractEditor {
 		simple.setPredefinedButtons(PredefinedButton.YES, PredefinedButton.NO);
 		simple.setBodyStyleName("pad-text");
 		simple.getBody().addClassName("pad-text");
-		simple.add(new Label(
-				"Saving will overwrite the existing information in the Database. This cannot be reversed! Do you want to continue?"));
+		simple.add(
+				new Label("Saving will overwrite the existing information in the Database. This cannot be reversed! Do you want to continue?"));
 		simple.getButton(PredefinedButton.YES).addSelectHandler(new SelectHandler() {
 
 			@Override
@@ -366,36 +376,37 @@ public class SingleImageEditor extends AbstractEditor {
 
 	}
 
-	/**
-	 * 
-	 */
-	private void showTitleWarningDialog() {
-		Dialog warning = new Dialog();
-		warning.setHeading("A problem occurred!");
-		warning.setWidth(300);
-		warning.setResizable(false);
-		warning.setHideOnButtonClick(true);
-		warning.setPredefinedButtons(PredefinedButton.OK);
-		warning.setBodyStyleName("pad-text");
-		warning.getBody().addClassName("pad-text");
-		warning.add(new Label(
-				"Please change at least the title of the uploaded image! If necessary, all other information can be changed at a later time."));
-		warning.show();
-		// constrain the dialog to the viewport (for small mobile screen sizes)
-		Rectangle bounds = warning.getElement().getBounds();
-		Rectangle adjusted = warning.getElement().adjustForConstraints(bounds);
-		if (adjusted.getWidth() != bounds.getWidth() || adjusted.getHeight() != bounds.getHeight()) {
-			warning.setPixelSize(adjusted.getWidth(), adjusted.getHeight());
-		}
-		return;
-	}
-	
+	// /**
+	// *
+	// */
+	// private void showTitleWarningDialog() {
+	// Dialog warning = new Dialog();
+	// warning.setHeading("A problem occurred!");
+	// warning.setWidth(300);
+	// warning.setResizable(false);
+	// warning.setHideOnButtonClick(true);
+	// warning.setPredefinedButtons(PredefinedButton.OK);
+	// warning.setBodyStyleName("pad-text");
+	// warning.getBody().addClassName("pad-text");
+	// warning.add(new Label(
+	// "Please change at least the title of the uploaded image! If necessary, all other information can be changed at a later time."));
+	// warning.show();
+	// // constrain the dialog to the viewport (for small mobile screen sizes)
+	// Rectangle bounds = warning.getElement().getBounds();
+	// Rectangle adjusted = warning.getElement().adjustForConstraints(bounds);
+	// if (adjusted.getWidth() != bounds.getWidth() || adjusted.getHeight() != bounds.getHeight()) {
+	// warning.setPixelSize(adjusted.getWidth(), adjusted.getHeight());
+	// }
+	// return;
+	// }
+	//
 	private void updateImageEntry() {
-		imgEntry.setTitle(titleField.getCurrentValue());
+		imgEntry.setTitle(titleField.getCurrentValue().replaceAll("'", "\u0027"));
+		imgEntry.setShortName(shortNameField.getCurrentValue());
 		imgEntry.setCopyright(copyrightField.getCurrentValue());
 		imgEntry.setComment(commentArea.getCurrentValue());
 		imgEntry.setDate(dateField.getCurrentValue());
-		imgEntry.setPhotographerID(authorSelection.getCurrentValue()!=null ? authorSelection.getCurrentValue().getPhotographerID() : 0);
+		imgEntry.setPhotographerID(authorSelection.getCurrentValue() != null ? authorSelection.getCurrentValue().getPhotographerID() : 0);
 		if (rPhoto.isEnabled()) {
 			imgEntry.setType("photo");
 		} else if (rSketch.isEnabled()) {
@@ -405,5 +416,11 @@ public class SingleImageEditor extends AbstractEditor {
 		}
 	}
 
+	/**
+	 * @return
+	 */
+	private boolean verifyInputs() {
+		return titleField.isValid() && shortNameField.isValid() && copyrightField.validate() && dateField.validate();
+	}
 
 }
