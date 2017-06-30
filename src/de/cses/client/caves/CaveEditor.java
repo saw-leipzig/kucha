@@ -597,15 +597,11 @@ public class CaveEditor extends AbstractEditor {
 				PopupPanel addNewCaveGroupDialog = new PopupPanel();
 				FramedPanel newCaveGroupFP = new FramedPanel();
 				newCaveGroupFP.setHeading("Add Cave Group");
-				VerticalLayoutContainer newCaveGroupVLC = new VerticalLayoutContainer();
-				FramedPanel fp = new FramedPanel();
-				fp.setHeading("Cave Group Name");
 				TextField caveGroupNameField = new TextField();
 				caveGroupNameField.addValidator(new MinLengthValidator(2));
+				caveGroupNameField.addValidator(new MaxLengthValidator(32));
 				caveGroupNameField.setValue("");
-				fp.add(caveGroupNameField);
-				newCaveGroupVLC.add(fp, new VerticalLayoutData(1.0, 1.0 / 2));
-				newCaveGroupFP.add(newCaveGroupVLC);
+				newCaveGroupFP.add(caveGroupNameField);
 				TextButton saveButton = new TextButton("save");
 				saveButton.addSelectHandler(new SelectHandler() {
 					
@@ -640,38 +636,15 @@ public class CaveEditor extends AbstractEditor {
 					}
 				});
 				newCaveGroupFP.addButton(closeButton);
-				newCaveGroupFP.setSize("250", "250");
+//				newCaveGroupFP.setSize("250", "150");
 				addNewCaveGroupDialog.add(newCaveGroupFP);
+				addNewCaveGroupDialog.setSize("250px", "150px");
 				addNewCaveGroupDialog.setModal(true);
 				addNewCaveGroupDialog.center();
 			}
 		});
 		attributePanel.addButton(addCaveGroupButton);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .11));
-
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Orientation");
-		orientationSelection = new ComboBox<OrientationEntry>(orientationEntryList, orientationProps.nameEN(),
-				new AbstractSafeHtmlRenderer<OrientationEntry>() {
-
-					@Override
-					public SafeHtml render(OrientationEntry item) {
-						final OrientationViewTemplates ovTemplates = GWT.create(OrientationViewTemplates.class);
-						return ovTemplates.orientationLabel(item.getNameEN());
-					}
-				});
-		orientationSelection.setTriggerAction(TriggerAction.ALL);
-		orientationSelection.setEditable(false);
-		orientationSelection.setTypeAhead(false);
-		orientationSelection.addSelectionHandler(new SelectionHandler<OrientationEntry>() {
-
-			@Override
-			public void onSelection(SelectionEvent<OrientationEntry> event) {
-				correspondingCaveEntry.setOrientationID(event.getSelectedItem().getOrientationID());
-			}
-		});
-		attributePanel.add(orientationSelection);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .11));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .18));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Site");
@@ -804,7 +777,7 @@ public class CaveEditor extends AbstractEditor {
 		});
 		attributePanel.addButton(addDistrictButton);
 		
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .17));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .18));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Region");
@@ -915,7 +888,7 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		attributePanel.addButton(addRegionButton);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .17));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .18));
 
 		mainHlContainer.add(vlContainer, new HorizontalLayoutData(.3, 1.0));
 
@@ -1188,7 +1161,7 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		attributePanel.add(caveTypeSelection);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .12));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Rear Area Ceiling Type");
@@ -1212,7 +1185,7 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		attributePanel.add(rearAreaCeilingTypeSelector);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .12));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Main Chamber Ceiling Type");
@@ -1236,7 +1209,7 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		attributePanel.add(mainChamberCeilingTypeSelector);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .12));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Antechamber Ceiling Type");
@@ -1260,7 +1233,31 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		attributePanel.add(antechamberCeilingTypeSelector);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .12));
+
+		attributePanel = new FramedPanel();
+		attributePanel.setHeading("Orientation");
+		orientationSelection = new ComboBox<OrientationEntry>(orientationEntryList, orientationProps.nameEN(),
+				new AbstractSafeHtmlRenderer<OrientationEntry>() {
+
+					@Override
+					public SafeHtml render(OrientationEntry item) {
+						final OrientationViewTemplates ovTemplates = GWT.create(OrientationViewTemplates.class);
+						return ovTemplates.orientationLabel(item.getNameEN());
+					}
+				});
+		orientationSelection.setTriggerAction(TriggerAction.ALL);
+		orientationSelection.setEditable(false);
+		orientationSelection.setTypeAhead(false);
+		orientationSelection.addSelectionHandler(new SelectionHandler<OrientationEntry>() {
+
+			@Override
+			public void onSelection(SelectionEvent<OrientationEntry> event) {
+				correspondingCaveEntry.setOrientationID(event.getSelectedItem().getOrientationID());
+			}
+		});
+		attributePanel.add(orientationSelection);
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .12));
 		
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Alteration date");
@@ -1274,7 +1271,7 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		attributePanel.add(alterationDateField);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .12));
 
 		caveTypeHLC.add(vlContainer, new HorizontalLayoutData(.4, 1.0));
 
@@ -1345,11 +1342,6 @@ public class CaveEditor extends AbstractEditor {
 	 */
 	protected void saveEntries() {
 		if (!validateFields()) {
-			return;
-		}
-		if (correspondingCaveEntry.getOfficialNumber().isEmpty()) {
-			officialNumberField.getElement().getStyle().setBackgroundColor("#FFFF00");
-			Util.showWarning("Missing information", "Please fill in mandatory cave number!");
 			return;
 		}
 		if (correspondingCaveEntry.getCaveID() > 0) {

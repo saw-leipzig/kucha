@@ -157,18 +157,19 @@ public class CaveEntry extends AbstractEntry {
 	}
 
 	public String getInsertSql() {
-		return "INSERT INTO Caves (OfficialNumber,OfficialName,OptionalHistoricName,CaveTypeID,DistrictID,RegionID, OrientationID,StateOfPreservation,Findings,AlterationDate, PreservationClassificationID, CaveGroupID) VALUES "
+		return "INSERT INTO Caves (OfficialNumber, HistoricName, OptionalHistoricName, CaveTypeID, DistrictID, RegionID, OrientationID, StateOfPreservation, "
+				+ "Findings, AlterationDate, PreservationClassificationID, CaveGroupID) VALUES "
 				+ "('" + officialNumber + "','" + historicName + "','" + optionalHistoricName + "'," + caveTypeID + "," + districtID + ","
 				+ regionID + "," + orientationID + ",'" + stateOfPerservation + "','" + findings + "','" + alterationDate + "',"
 				+ preservationClassificationID + ", " + caveGroupID + ")";
 	}
 
 	public String getUpdateSql() {
-		return "UPDATE Caves SET OfficialNumber='" + officialNumber + "', OfficialName='" + historicName + "', OptionalHistoricName='"
+		return "UPDATE Caves SET OfficialNumber='" + officialNumber + "', HistoricName='" + historicName + "', OptionalHistoricName='"
 				+ optionalHistoricName + "', CaveTypeID=" + caveTypeID + ", DistrictID=" + districtID + ", RegionID=" + regionID
 				+ ", OrientationID=" + orientationID + ", StateOfPreservation='" + stateOfPerservation + "', Findings='" + findings
-				+ "', AlterationDate='" + alterationDate + "', PreservationClassificationID=" + preservationClassificationID + ", CaveGroupID=" + caveGroupID + " WHERE CaveID="
-				+ caveID;
+				+ "', AlterationDate='" + alterationDate + "', PreservationClassificationID=" + preservationClassificationID + ", CaveGroupID="
+				+ caveGroupID + " WHERE CaveID=" + caveID;
 	}
 
 	/**
