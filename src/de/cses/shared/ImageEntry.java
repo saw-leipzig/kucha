@@ -112,7 +112,7 @@ public class ImageEntry extends AbstractEntry {
 	 * @param imageID
 	 * @return String with the SQL UPDATE command for this ImageEntry
 	 */
-	public String getSqlUpdate(int id) {
+	public String getUpdateFilenameSql(int id) {
 		switch (id) {
 		case FILENAME:
 			return "UPDATE Images SET Filename='" + filename + "' WHERE ImageID=" + imageID;

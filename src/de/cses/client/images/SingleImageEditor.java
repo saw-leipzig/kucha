@@ -59,7 +59,7 @@ public class SingleImageEditor extends AbstractEditor {
 	private TextField copyrightField;
 	private TextArea commentArea;
 	private TextField dateField;
-	private ComboBox<PhotographerEntry> photographerSelection;
+	private ComboBox<PhotographerEntry> authorSelection;
 	private FramedPanel panel;
 	private PhotographerProperties photographerProps;
 	private ListStore<PhotographerEntry> photographerEntryList;
@@ -156,13 +156,6 @@ public class SingleImageEditor extends AbstractEditor {
 		titleField.setWidth(300);
 		attributePanel.setHeading("Title");
 		titleField.setValue(imgEntry.getTitle());
-//		titleField.addValueChangeHandler(new ValueChangeHandler<String>() {
-//			
-//			@Override
-//			public void onValueChange(ValueChangeEvent<String> event) {
-//				imgEntry.setTitle(event.getValue());
-//			}
-//		});
 		attributePanel.add(titleField);
 		editPanel.add(attributePanel);
 
@@ -170,13 +163,6 @@ public class SingleImageEditor extends AbstractEditor {
 		copyrightField = new TextField();
 		copyrightField.setWidth(300);
 		copyrightField.setValue(imgEntry.getCopyright());
-//		copyrightField.addValueChangeHandler(new ValueChangeHandler<String>() {
-//
-//			@Override
-//			public void onValueChange(ValueChangeEvent<String> event) {
-//				imgEntry.setCopyright(event.getValue());
-//			}
-//		});
 		attributePanel.setHeading("Copyright");
 		attributePanel.add(copyrightField);
 		editPanel.add(attributePanel);
@@ -185,13 +171,6 @@ public class SingleImageEditor extends AbstractEditor {
 		commentArea = new TextArea();
 		commentArea.setSize("300px", "100px");
 		commentArea.setValue(imgEntry.getComment());
-//		commentArea.addValueChangeHandler(new ValueChangeHandler<String>() {
-//
-//			@Override
-//			public void onValueChange(ValueChangeEvent<String> event) {
-//				imgEntry.setComment(event.getValue());
-//			}
-//		});
 		attributePanel.add(commentArea);
 		attributePanel.setHeading("Comment");
 		editPanel.add(attributePanel);
@@ -199,19 +178,12 @@ public class SingleImageEditor extends AbstractEditor {
 		attributePanel = new FramedPanel();
 		dateField = new TextField();
 		dateField.setValue(imgEntry.getDate());
-//		dateField.addValueChangeHandler(new ValueChangeHandler<java.util.Date>() {
-//
-//			@Override
-//			public void onValueChange(ValueChangeEvent<java.util.Date> event) {
-//				imgEntry.setCaptureDate(new Date(event.getValue().getTime()));
-//			}
-//		});		
 		attributePanel.add(dateField);
 		attributePanel.setHeading("Date");
 		editPanel.add(attributePanel);
 
 		attributePanel = new FramedPanel();
-		photographerSelection = new ComboBox<PhotographerEntry>(photographerEntryList, photographerProps.name(),
+		authorSelection = new ComboBox<PhotographerEntry>(photographerEntryList, photographerProps.name(),
 				new AbstractSafeHtmlRenderer<PhotographerEntry>() {
 
 					@Override
@@ -220,20 +192,13 @@ public class SingleImageEditor extends AbstractEditor {
 						return pvTemplates.photographer(item.getName());
 					}
 				});
-		photographerSelection.setEmptyText("Select a Photographer ...");
-		photographerSelection.setTypeAhead(false);
-		photographerSelection.setEditable(false);
-		photographerSelection.setTriggerAction(TriggerAction.ALL);
-		photographerSelection.setValue(photographerEntryList.findModelWithKey(Integer.toString(imgEntry.getPhotographerID())), true);
-//		photographerSelection.addValueChangeHandler(new ValueChangeHandler<PhotographerEntry>() {
-//
-//			@Override
-//			public void onValueChange(ValueChangeEvent<PhotographerEntry> event) {
-//				imgEntry.setPhotographerID(event.getValue().getPhotographerID());
-//			}
-//		});
-		attributePanel.add(photographerSelection);
-		attributePanel.setHeading("Photographer");
+		authorSelection.setEmptyText("Select an author ...");
+		authorSelection.setTypeAhead(false);
+		authorSelection.setEditable(false);
+		authorSelection.setTriggerAction(TriggerAction.ALL);
+		authorSelection.setValue(photographerEntryList.findModelWithKey(Integer.toString(imgEntry.getPhotographerID())), true);
+		attributePanel.add(authorSelection);
+		attributePanel.setHeading("Author");
 		editPanel.add(attributePanel);
 
 		attributePanel = new FramedPanel();
@@ -430,7 +395,7 @@ public class SingleImageEditor extends AbstractEditor {
 		imgEntry.setCopyright(copyrightField.getCurrentValue());
 		imgEntry.setComment(commentArea.getCurrentValue());
 		imgEntry.setDate(dateField.getCurrentValue());
-		imgEntry.setPhotographerID(photographerSelection.getCurrentValue()!=null ? photographerSelection.getCurrentValue().getPhotographerID() : 0);
+		imgEntry.setPhotographerID(authorSelection.getCurrentValue()!=null ? authorSelection.getCurrentValue().getPhotographerID() : 0);
 		if (rPhoto.isEnabled()) {
 			imgEntry.setType("photo");
 		} else if (rSketch.isEnabled()) {
