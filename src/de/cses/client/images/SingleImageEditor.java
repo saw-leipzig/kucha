@@ -13,13 +13,9 @@
  */
 package de.cses.client.images;
 
-import java.sql.Date;
 import java.util.ArrayList;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
@@ -27,7 +23,6 @@ import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -47,8 +42,6 @@ import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
-import com.sencha.gxt.widget.core.client.form.DateField;
-import com.sencha.gxt.widget.core.client.form.DateTimePropertyEditor;
 import com.sencha.gxt.widget.core.client.form.Radio;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
@@ -65,7 +58,7 @@ public class SingleImageEditor extends AbstractEditor {
 	private TextField titleField;
 	private TextField copyrightField;
 	private TextArea commentArea;
-	private DateField dateField;
+	private TextField dateField;
 	private ComboBox<PhotographerEntry> photographerSelection;
 	private FramedPanel panel;
 	private PhotographerProperties photographerProps;
@@ -163,13 +156,13 @@ public class SingleImageEditor extends AbstractEditor {
 		titleField.setWidth(300);
 		attributePanel.setHeading("Title");
 		titleField.setValue(imgEntry.getTitle());
-		titleField.addValueChangeHandler(new ValueChangeHandler<String>() {
-			
-			@Override
-			public void onValueChange(ValueChangeEvent<String> event) {
-				imgEntry.setTitle(event.getValue());
-			}
-		});
+//		titleField.addValueChangeHandler(new ValueChangeHandler<String>() {
+//			
+//			@Override
+//			public void onValueChange(ValueChangeEvent<String> event) {
+//				imgEntry.setTitle(event.getValue());
+//			}
+//		});
 		attributePanel.add(titleField);
 		editPanel.add(attributePanel);
 
@@ -177,13 +170,13 @@ public class SingleImageEditor extends AbstractEditor {
 		copyrightField = new TextField();
 		copyrightField.setWidth(300);
 		copyrightField.setValue(imgEntry.getCopyright());
-		copyrightField.addValueChangeHandler(new ValueChangeHandler<String>() {
-
-			@Override
-			public void onValueChange(ValueChangeEvent<String> event) {
-				imgEntry.setCopyright(event.getValue());
-			}
-		});
+//		copyrightField.addValueChangeHandler(new ValueChangeHandler<String>() {
+//
+//			@Override
+//			public void onValueChange(ValueChangeEvent<String> event) {
+//				imgEntry.setCopyright(event.getValue());
+//			}
+//		});
 		attributePanel.setHeading("Copyright");
 		attributePanel.add(copyrightField);
 		editPanel.add(attributePanel);
@@ -192,29 +185,29 @@ public class SingleImageEditor extends AbstractEditor {
 		commentArea = new TextArea();
 		commentArea.setSize("300px", "100px");
 		commentArea.setValue(imgEntry.getComment());
-		commentArea.addValueChangeHandler(new ValueChangeHandler<String>() {
-
-			@Override
-			public void onValueChange(ValueChangeEvent<String> event) {
-				imgEntry.setComment(event.getValue());
-			}
-		});
+//		commentArea.addValueChangeHandler(new ValueChangeHandler<String>() {
+//
+//			@Override
+//			public void onValueChange(ValueChangeEvent<String> event) {
+//				imgEntry.setComment(event.getValue());
+//			}
+//		});
 		attributePanel.add(commentArea);
 		attributePanel.setHeading("Comment");
 		editPanel.add(attributePanel);
 
 		attributePanel = new FramedPanel();
-		dateField = new DateField(new DateTimePropertyEditor("dd MMMM yyyy"));
-		dateField.setValue(imgEntry.getCaptureDate());
-		dateField.addValueChangeHandler(new ValueChangeHandler<java.util.Date>() {
-
-			@Override
-			public void onValueChange(ValueChangeEvent<java.util.Date> event) {
-				imgEntry.setCaptureDate(new Date(event.getValue().getTime()));
-			}
-		});		
+		dateField = new TextField();
+		dateField.setValue(imgEntry.getDate());
+//		dateField.addValueChangeHandler(new ValueChangeHandler<java.util.Date>() {
+//
+//			@Override
+//			public void onValueChange(ValueChangeEvent<java.util.Date> event) {
+//				imgEntry.setCaptureDate(new Date(event.getValue().getTime()));
+//			}
+//		});		
 		attributePanel.add(dateField);
-		attributePanel.setHeading("Date captured");
+		attributePanel.setHeading("Date");
 		editPanel.add(attributePanel);
 
 		attributePanel = new FramedPanel();
@@ -232,13 +225,13 @@ public class SingleImageEditor extends AbstractEditor {
 		photographerSelection.setEditable(false);
 		photographerSelection.setTriggerAction(TriggerAction.ALL);
 		photographerSelection.setValue(photographerEntryList.findModelWithKey(Integer.toString(imgEntry.getPhotographerID())), true);
-		photographerSelection.addValueChangeHandler(new ValueChangeHandler<PhotographerEntry>() {
-
-			@Override
-			public void onValueChange(ValueChangeEvent<PhotographerEntry> event) {
-				imgEntry.setPhotographerID(event.getValue().getPhotographerID());
-			}
-		});
+//		photographerSelection.addValueChangeHandler(new ValueChangeHandler<PhotographerEntry>() {
+//
+//			@Override
+//			public void onValueChange(ValueChangeEvent<PhotographerEntry> event) {
+//				imgEntry.setPhotographerID(event.getValue().getPhotographerID());
+//			}
+//		});
 		attributePanel.add(photographerSelection);
 		attributePanel.setHeading("Photographer");
 		editPanel.add(attributePanel);
@@ -274,30 +267,30 @@ public class SingleImageEditor extends AbstractEditor {
 		default:
 			break;
 		}
-		rPhoto.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-
-			@Override
-			public void onValueChange(ValueChangeEvent<Boolean> event) {
-				if (event.getValue())
-					imgEntry.setType("photo");
-			}
-		});
-		rSketch.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-
-			@Override
-			public void onValueChange(ValueChangeEvent<Boolean> event) {
-				if (event.getValue())
-					imgEntry.setType("sketch");
-			}
-		});
-		rMap.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-
-			@Override
-			public void onValueChange(ValueChangeEvent<Boolean> event) {
-				if (event.getValue())
-					imgEntry.setType("map");
-			}
-		});
+//		rPhoto.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+//
+//			@Override
+//			public void onValueChange(ValueChangeEvent<Boolean> event) {
+//				if (event.getValue())
+//					imgEntry.setType("photo");
+//			}
+//		});
+//		rSketch.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+//
+//			@Override
+//			public void onValueChange(ValueChangeEvent<Boolean> event) {
+//				if (event.getValue())
+//					imgEntry.setType("sketch");
+//			}
+//		});
+//		rMap.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+//
+//			@Override
+//			public void onValueChange(ValueChangeEvent<Boolean> event) {
+//				if (event.getValue())
+//					imgEntry.setType("map");
+//			}
+//		});
 		editPanel.add(attributePanel);
 
 		TextButton cancelButton = new TextButton("cancel");
@@ -378,27 +371,11 @@ public class SingleImageEditor extends AbstractEditor {
 
 			@Override
 			public void onSelect(SelectEvent event) {
+				updateImageEntry();
 				// only of the yes button is selected, we will perform the command
 				// to simplify we just ignore the no button event by doing nothing
-				DateTimeFormat dtf = DateTimeFormat.getFormat("yyyy-MM-dd");
-				String sqlUpdate = "UPDATE Images SET Title='" + titleField.getText() + "'";
-				if (imgEntry.getCopyright() != null) {
-					sqlUpdate = sqlUpdate.concat(",Copyright='" + imgEntry.getCopyright() + "'");
-				}
-				if (imgEntry.getPhotographerID() > 0) {
-					sqlUpdate = sqlUpdate.concat(",PhotographerID=" + imgEntry.getPhotographerID());
-				}
-				if (imgEntry.getComment() != null) {
-					sqlUpdate = sqlUpdate.concat(",Comment='" + imgEntry.getComment() + "'");
-				}
-				if (imgEntry.getCaptureDate() != null) {
-					sqlUpdate = sqlUpdate.concat(",CaptureDate='" + dtf.format(imgEntry.getCaptureDate()) + "'");
-				}
-				sqlUpdate = sqlUpdate.concat(",ImageType='" + imgEntry.getType() + "'");
 
-				sqlUpdate = sqlUpdate.concat(" WHERE ImageID=" + imgEntry.getImageID());
-
-				dbService.updateEntry(sqlUpdate, new AsyncCallback<Boolean>() {
+				dbService.updateEntry(imgEntry.getUpdateSql(), new AsyncCallback<Boolean>() {
 					public void onFailure(Throwable caught) {
 						Info.display("ERROR", "Image information has NOT been updated!");
 					}
@@ -447,5 +424,21 @@ public class SingleImageEditor extends AbstractEditor {
 		}
 		return;
 	}
+	
+	private void updateImageEntry() {
+		imgEntry.setTitle(titleField.getCurrentValue());
+		imgEntry.setCopyright(copyrightField.getCurrentValue());
+		imgEntry.setComment(commentArea.getCurrentValue());
+		imgEntry.setDate(dateField.getCurrentValue());
+		imgEntry.setPhotographerID(photographerSelection.getCurrentValue()!=null ? photographerSelection.getCurrentValue().getPhotographerID() : 0);
+		if (rPhoto.isEnabled()) {
+			imgEntry.setType("photo");
+		} else if (rSketch.isEnabled()) {
+			imgEntry.setType("sketch");
+		} else {
+			imgEntry.setType("map");
+		}
+	}
+
 
 }

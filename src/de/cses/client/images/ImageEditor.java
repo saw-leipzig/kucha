@@ -67,7 +67,7 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 	private TextField titleField;
 	private TextField copyrightField;
 	private TextArea commentArea;
-	private DateField dateField;
+	private TextField dateField;
 	private ComboBox<PhotographerEntry> photographerSelection;
 	private FramedPanel panel;
 	private ListStore<ImageEntry> imageEntryList;
@@ -200,7 +200,7 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 					titleField.setValue(selectedImageItem.getTitle());
 					copyrightField.setValue(selectedImageItem.getCopyright());
 					commentArea.setValue(selectedImageItem.getComment());
-					dateField.setValue(selectedImageItem.getCaptureDate());
+					dateField.setValue(selectedImageItem.getDate());
 					photographerSelection
 							.setValue(photographerEntryList.findModelWithKey(Integer.toString(selectedImageItem.getPhotographerID())), true);
 					switch (selectedImageItem.getType()) {
@@ -244,7 +244,7 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 		editPanel.add(attributePanel);
 
 		attributePanel = new FramedPanel();
-		dateField = new DateField(new DateTimePropertyEditor("dd MMMM yyyy"));
+		dateField = new TextField();
 		attributePanel.add(dateField);
 		attributePanel.setHeading("Date captured");
 		editPanel.add(attributePanel);
@@ -517,15 +517,15 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 				if (commentArea.getValue() != null) {
 					sqlUpdate = sqlUpdate.concat(",Comment='" + commentArea.getText() + "'");
 				}
-				if (dateField.getValue() != null) {
-					sqlUpdate = sqlUpdate.concat(",CaptureDate='" + dtf.format(dateField.getValue()) + "'");
-				}
 				if (rPhoto.getValue()) {
 					sqlUpdate = sqlUpdate.concat(",ImageType='photo'");
 				} else if (rSketch.getValue()) {
 					sqlUpdate = sqlUpdate.concat(",ImageType='sketch'");
 				} else if (rMap.getValue()) {
 					sqlUpdate = sqlUpdate.concat(",ImageType='map'");
+				}
+				if (dateField.getValue() != null) {
+					sqlUpdate = sqlUpdate.concat(", Date='" + dateField.getValue() + "'");
 				}
 
 				sqlUpdate = sqlUpdate.concat(" WHERE ImageID=" + imageListView.getSelectionModel().getSelectedItem().getImageID());

@@ -20,8 +20,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class ImageEntry extends AbstractEntry {
 
 	private int imageID, photographerID;
-	private String copyright, comment, filename, title, type;
-	private Date captureDate;
+	private String copyright, comment, filename, title, type, date;
 
 	public static final int FILENAME = 2;
 
@@ -41,15 +40,15 @@ public class ImageEntry extends AbstractEntry {
 	 * @param captureDate
 	 */
 	public ImageEntry(int imageID, String filename, String title, String copyright,
-			int photographerID, String comment, Date captureDate, String type) {
+			int photographerID, String comment, String type, String date) {
 		this.imageID = imageID;
 		this.filename = filename;
 		this.title = title;
 		this.copyright = copyright;
 		this.photographerID = photographerID;
 		this.comment = comment;
-		this.captureDate = captureDate;
 		this.type = type;
+		this.date = date;
 	}
 
 	public int getImageID() {
@@ -100,14 +99,6 @@ public class ImageEntry extends AbstractEntry {
 		this.comment = comment;
 	}
 
-	public Date getCaptureDate() {
-		return captureDate;
-	}
-
-	public void setCaptureDate(Date captureDate) {
-		this.captureDate = captureDate;
-	}
-
 	public String getType() {
 		return type;
 	}
@@ -135,8 +126,8 @@ public class ImageEntry extends AbstractEntry {
 	 */
 	@Override
 	public String getInsertSql() {
-		// TODO Auto-generated method stub
-		return null;
+		return "INSERT INTO Images (Title, Copyright, PhotographerID, Comment, Date, ImageType) VALUES ('" + title + "', '" + copyright + "'," 
+				+ photographerID + ", '" + comment + "', '" + date + "', '" + type + "')";
 	}
 
 	/* (non-Javadoc)
@@ -144,7 +135,21 @@ public class ImageEntry extends AbstractEntry {
 	 */
 	@Override
 	public String getUpdateSql() {
-		// TODO Auto-generated method stub
-		return null;
+		return "UPDATE Images SET Title='" + title + "', Copyright='" + copyright + "', PhotographerID=" + photographerID + ", Comment='" + comment 
+				+ "', Date='" + date + "', ImageType='" + type + "'  WHERE ImageID=" + imageID;
+	}
+
+	/**
+	 * @return the date
+	 */
+	public String getDate() {
+		return date;
+	}
+
+	/**
+	 * @param date the date to set
+	 */
+	public void setDate(String date) {
+		this.date = date;
 	}
 }
