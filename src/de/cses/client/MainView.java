@@ -106,7 +106,7 @@ public class MainView implements IsWidget {
 //    headline.setHTML("<h1>Welcome to the Kucha Information System</h1>");
 //    northPanel.add(headline, new VerticalLayoutData(1.0, .2));
     
-    northPanel.add(UserLogin.getInstance(), new VerticalLayoutData(1.0, .4));
+    northPanel.add(UserLogin.getInstance(), new VerticalLayoutData(1.0, .25));
     
     selectorLayoutContainer = new HorizontalLayoutContainer();
     HorizontalLayoutData hLayoutData = new HorizontalLayoutData(140, 1.0, new Margins(5, 0, 5, 5));
@@ -238,22 +238,17 @@ public class MainView implements IsWidget {
     resultView.setSpacing(10);
     resultView.setColumnWidth(0, .60);
     resultView.setColumnWidth(1, .40);
-//    FlowLayoutContainer testContainer = new FlowLayoutContainer();
-//    testContainer.setScrollMode(ScrollMode.AUTOY);
-//    testContainer.add(resultView);
     centerPanel.add(resultView);
 
     ContentPanel north = new ContentPanel();
     north.setHeading("What are you looking for?");
     north.add(selectorLayoutContainer);
-//    north.setHeight("80px");
-    northPanel.add(north, new VerticalLayoutData(1.0, .6));
+    northPanel.add(north, new VerticalLayoutData(1.0, .75));
     
     filterView = new PortalLayoutContainer(1);
     filterView.setSpacing(10);
     filterView.setColumnWidth(0, 1.00);
 		searchText = new TextField();
-//		searchText.setWidth(180);
 		searchTextPanel = new Portlet();
 		searchTextPanel.add(searchText);
 		searchTextPanel.setHeading("search for");
@@ -279,7 +274,6 @@ public class MainView implements IsWidget {
     
     BorderLayoutData northData = new BorderLayoutData(150);
     northData.setMargins(new Margins(5));
-//    northData.setCollapseHeaderVisible(true);
 
     BorderLayoutData westData = new BorderLayoutData(220);
     westData.setMargins(new Margins(0));

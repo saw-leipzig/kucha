@@ -115,12 +115,10 @@ public class UserLogin extends SimpleContainer {
 				checkLogin();
 			}
 		});
-		loginView.add(loginHeadline, new HorizontalLayoutData(-1.0, 1.0));
-		VerticalLayoutContainer vlc = new VerticalLayoutContainer();
-		vlc.add(usernameField, new VerticalLayoutData(1.0, .5));
-		vlc.add(passwordField, new VerticalLayoutData(1.0, .5));
-		loginView.add(vlc, new HorizontalLayoutData(100.0, 1.0));
-		loginView.add(loginButton, new HorizontalLayoutData(50.0, .5));
+		loginView.add(loginHeadline, new HorizontalLayoutData(1.0, 1.0));
+		loginView.add(usernameField, new HorizontalLayoutData(120.0, 1.0));
+		loginView.add(passwordField, new HorizontalLayoutData(120.0, 1.0));
+		loginView.add(loginButton, new HorizontalLayoutData(50.0, 1.0));
 	}
 
 	private void initUserView() {
@@ -135,8 +133,8 @@ public class UserLogin extends SimpleContainer {
 			}
 		});
     headline.setHTML("<h1>Welcome to the Kucha Information System</h1>");
-		userView.add(headline, new HorizontalLayoutData(-1.0, 1.0));
-		userView.add(logoutButton, new HorizontalLayoutData(50.0, .5));
+		userView.add(headline, new HorizontalLayoutData(1.0, 1.0));
+		userView.add(logoutButton, new HorizontalLayoutData(50.0, 1.0));
 	}
 
 	public int getAccessRights() {
