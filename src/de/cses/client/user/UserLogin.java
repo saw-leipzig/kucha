@@ -18,12 +18,13 @@ import java.security.NoSuchAlgorithmException;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.sencha.gxt.widget.core.client.ContentPanel;
-import com.sencha.gxt.widget.core.client.FramedPanel;
+import com.sencha.gxt.widget.core.client.Header;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
-import com.sencha.gxt.widget.core.client.container.MarginData;
+import com.sencha.gxt.widget.core.client.container.SimpleContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
@@ -39,7 +40,7 @@ import de.cses.shared.UserEntry;
  * @author alingnau
  *
  */
-public class UserLogin extends ContentPanel {
+public class UserLogin extends SimpleContainer {
 
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 
@@ -48,18 +49,17 @@ public class UserLogin extends ContentPanel {
 	private TextButton loginButton, logoutButton;
 	private TextField usernameField;
 	private PasswordField passwordField;
-	private FramedPanel loginPanel, userPanel;
-
-	private FieldLabel userDisplay;
+	private HorizontalLayoutContainer loginView, userView;
+//	private FieldLabel userDisplay;
+	private Header headline;
 
 	/**
 	 * 
 	 */
 	private UserLogin() {
-		this.setSize("250", "80");
 		initLoginView();
 		initUserView();
-		this.add(loginPanel);
+		add(loginView);
 	}
 
 	public static synchronized UserLogin getInstance() {
@@ -87,29 +87,30 @@ public class UserLogin extends ContentPanel {
 
 	private void setUser(UserEntry entry) {
 		user = entry;
-		userDisplay.setText(user.getFirstname() + " " + user.getLastname());
-		loginPanel.removeFromParent();
-		this.add(userPanel);
+    headline.setHTML("<h1>Welcome to the Kucha Information System, " + user.getFirstname() + " " + user.getLastname() + "</h1>");
+		loginView.removeFromParent();
+		add(userView);
 	}
 
 	private void logout() {
 		usernameField.setValue(user.getUsername());
 		passwordField.reset();
-		userPanel.removeFromParent();
+		userView.removeFromParent();
 		user = null;
-		userDisplay.setText("");
-		this.add(loginPanel);
+    headline.setHTML("<h1>Welcome to the Kucha Information System</h1>");
+		add(loginView);
 	}
 
 	private void initLoginView() {
-		loginPanel = new FramedPanel();
-		loginPanel.setHeading("Please enter ...");
-		HorizontalLayoutContainer vlc = new HorizontalLayoutContainer();
+		loginView = new HorizontalLayoutContainer();
 		usernameField = new TextField();
+		usernameField.setWidth("100px");
 		usernameField.setEmptyText("username");
 		passwordField = new PasswordField();
+		passwordField.setWidth("100px");
 		passwordField.setEmptyText("password");
-		loginButton = new TextButton("login");
+		loginButton = new TextButton("submit");
+		loginButton.setSize("80", "40");
 		loginButton.addSelectHandler(new SelectHandler() {
 
 			@Override
@@ -117,16 +118,18 @@ public class UserLogin extends ContentPanel {
 				checkLogin();
 			}
 		});
-		vlc.add(new FieldLabel(usernameField, "username: "), new HorizontalLayoutData(.4, .8));
-		vlc.add(new FieldLabel(passwordField, "password: "), new HorizontalLayoutData(.4, .8));
-		vlc.add(loginButton, new HorizontalLayoutData(.2, 1.0));
-		loginPanel.add(vlc);
+		loginView.add(headline, new HorizontalLayoutData(.6, 1.0));
+		VerticalLayoutContainer vlc = new VerticalLayoutContainer();
+		vlc.add(new FieldLabel(usernameField, "username"), new VerticalLayoutData(1.0, .5));
+		vlc.add(new FieldLabel(passwordField, "password"), new VerticalLayoutData(1.0, .5));
+		loginView.add(vlc, new HorizontalLayoutData(.3, 1.0));
+		loginView.add(loginButton, new HorizontalLayoutData(.1, 1.0));
 	}
 
 	private void initUserView() {
-		userPanel = new FramedPanel();
-		userPanel.setHeading("Welcome");
+		userView = new HorizontalLayoutContainer();
 		logoutButton = new TextButton("logout");
+		logoutButton.setSize("80", "40");
 		logoutButton.addSelectHandler(new SelectHandler() {
 
 			@Override
@@ -134,8 +137,9 @@ public class UserLogin extends ContentPanel {
 				logout();
 			}
 		});
-		userDisplay = new FieldLabel(logoutButton, "");
-		userPanel.add(userDisplay, new MarginData(5));
+    headline.setHTML("<h1>Welcome to the Kucha Information System</h1>");
+		userView.add(headline, new HorizontalLayoutData(.9, 1.0));
+		userView.add(logoutButton, new HorizontalLayoutData(.1, 1.0));
 	}
 
 	public int getAccessRights() {

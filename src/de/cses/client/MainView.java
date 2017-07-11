@@ -104,9 +104,9 @@ public class MainView implements IsWidget {
 
     Header headline = new Header();
     headline.setHTML("<h1>Welcome to the Kucha Information System</h1>");
-    northPanel.add(headline, new VerticalLayoutData(1.0, .2));
+//    northPanel.add(headline, new VerticalLayoutData(1.0, .2));
     
-    northPanel.add(UserLogin.getInstance(), new VerticalLayoutData(1.0, .3));
+    northPanel.add(UserLogin.getInstance(), new VerticalLayoutData(1.0, .4));
     
     selectorLayoutContainer = new HorizontalLayoutContainer();
     HorizontalLayoutData hLayoutData = new HorizontalLayoutData(140, 1.0, new Margins(5, 0, 5, 5));
@@ -247,7 +247,7 @@ public class MainView implements IsWidget {
     north.setHeading("What are you looking for?");
     north.add(selectorLayoutContainer);
 //    north.setHeight("80px");
-    northPanel.add(north, new VerticalLayoutData(1.0, .5));
+    northPanel.add(north, new VerticalLayoutData(1.0, .6));
     
     filterView = new PortalLayoutContainer(1);
     filterView.setSpacing(10);

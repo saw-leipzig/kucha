@@ -1505,7 +1505,7 @@ public class MysqlConnector {
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Users WHERE Username='" + username + "' AND Password='" + password + "'");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Users WHERE Username = '" + username + "' AND Password = '" + password + "'");
 			if (rs.first()) {
 				result = new UserEntry(rs.getInt("UserID"), rs.getString("Username"), rs.getString("Firstname"), rs.getString("Lastname"), rs.getString("Email"), 
 						rs.getString("Affiliation"), rs.getInt("Accessrights"));
