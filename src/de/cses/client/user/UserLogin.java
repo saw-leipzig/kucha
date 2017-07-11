@@ -27,7 +27,6 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
-import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.PasswordField;
 import com.sencha.gxt.widget.core.client.form.TextField;
 
@@ -50,8 +49,7 @@ public class UserLogin extends SimpleContainer {
 	private TextField usernameField;
 	private PasswordField passwordField;
 	private HorizontalLayoutContainer loginView, userView;
-//	private FieldLabel userDisplay;
-	private Header headline;
+	private Header loginHeadline, headline;
 
 	/**
 	 * 
@@ -102,15 +100,14 @@ public class UserLogin extends SimpleContainer {
 	}
 
 	private void initLoginView() {
+		loginHeadline = new Header();
+		loginHeadline.setHTML("<h1>Welcome to the Kucha Information System</h1>");
 		loginView = new HorizontalLayoutContainer();
 		usernameField = new TextField();
-		usernameField.setWidth("100px");
 		usernameField.setEmptyText("username");
 		passwordField = new PasswordField();
-		passwordField.setWidth("100px");
 		passwordField.setEmptyText("password");
 		loginButton = new TextButton("submit");
-		loginButton.setSize("80", "40");
 		loginButton.addSelectHandler(new SelectHandler() {
 
 			@Override
@@ -118,18 +115,18 @@ public class UserLogin extends SimpleContainer {
 				checkLogin();
 			}
 		});
-		loginView.add(headline, new HorizontalLayoutData(.6, 1.0));
+		loginView.add(loginHeadline, new HorizontalLayoutData(-1.0, 1.0));
 		VerticalLayoutContainer vlc = new VerticalLayoutContainer();
-		vlc.add(new FieldLabel(usernameField, "username"), new VerticalLayoutData(1.0, .5));
-		vlc.add(new FieldLabel(passwordField, "password"), new VerticalLayoutData(1.0, .5));
-		loginView.add(vlc, new HorizontalLayoutData(.3, 1.0));
-		loginView.add(loginButton, new HorizontalLayoutData(.1, 1.0));
+		vlc.add(usernameField, new VerticalLayoutData(1.0, .5));
+		vlc.add(passwordField, new VerticalLayoutData(1.0, .5));
+		loginView.add(vlc, new HorizontalLayoutData(100.0, 1.0));
+		loginView.add(loginButton, new HorizontalLayoutData(50.0, .5));
 	}
 
 	private void initUserView() {
+		headline = new Header();
 		userView = new HorizontalLayoutContainer();
 		logoutButton = new TextButton("logout");
-		logoutButton.setSize("80", "40");
 		logoutButton.addSelectHandler(new SelectHandler() {
 
 			@Override
@@ -138,8 +135,8 @@ public class UserLogin extends SimpleContainer {
 			}
 		});
     headline.setHTML("<h1>Welcome to the Kucha Information System</h1>");
-		userView.add(headline, new HorizontalLayoutData(.9, 1.0));
-		userView.add(logoutButton, new HorizontalLayoutData(.1, 1.0));
+		userView.add(headline, new HorizontalLayoutData(-1.0, 1.0));
+		userView.add(logoutButton, new HorizontalLayoutData(50.0, .5));
 	}
 
 	public int getAccessRights() {
