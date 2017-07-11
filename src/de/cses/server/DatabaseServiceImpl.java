@@ -39,7 +39,7 @@ import de.cses.shared.OrnamentCaveType;
 import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamentFunction;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
-import de.cses.shared.OrnamentOrientation;
+import de.cses.shared.OrientationEntry;
 import de.cses.shared.OrnamentPosition;
 import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PictorialElementEntry;
@@ -347,7 +347,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		return connector.getRelatedImages(depictionID);
 	}
 	
-	public ArrayList<OrnamentOrientation> getOrientations() throws IllegalArgumentException {
+	public ArrayList<OrientationEntry> getOrientations() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getOrientations();
 	}

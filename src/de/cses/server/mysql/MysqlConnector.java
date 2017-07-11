@@ -40,7 +40,7 @@ import de.cses.shared.OrnamentCaveType;
 import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamentFunction;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
-import de.cses.shared.OrnamentOrientation;
+import de.cses.shared.OrientationEntry;
 import de.cses.shared.OrnamentPosition;
 import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PictorialElementEntry;
@@ -473,18 +473,25 @@ public class MysqlConnector {
 		ArrayList<CaveEntry> results = new ArrayList<CaveEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
+		CaveEntry result = null; 
 		try {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Caves WHERE DistrictID =" + DistrictID);
 			while (rs.next()) {
-				results.add(new CaveEntry(rs.getInt("CaveID"), rs.getString("OfficialNumber"), rs.getString("HistoricName"),
-						rs.getString("OptionalHistoricName"), rs.getInt("CaveTypeID"), rs.getInt("DistrictID"), rs.getInt("RegionID"), rs.getInt("OrientationID"), 
+				result = new CaveEntry(rs.getInt("CaveID"), rs.getString("OfficialNumber"), rs.getString("HistoricName"),
+						rs.getString("OptionalHistoricName"),
+						rs.getInt("CaveTypeID"), rs.getInt("DistrictID"), rs.getInt("RegionID"), rs.getInt("OrientationID"), 
 						rs.getString("StateOfPreservation"), rs.getString("Findings"),
-						rs.getString("AlterationDate"), rs.getInt("PreservationClassificationID"), rs.getInt("CaveGroupID")));
+						rs.getString("AlterationDate"), rs.getInt("PreservationClassificationID"), rs.getInt("CaveGroupID"));
+				result.setAntechamberEntry(getAntechamberEntry(result.getCaveID()));
+				result.setMainChamberEntry(getMainChamber(result.getCaveID()));
+				result.setRearAreaEntry(getRearArea(result.getCaveID()));
+				results.add(result);
 			}
 			rs.close();
 			stmt.close();
 		} catch (SQLException e) {
+			System.err.println("Fehler beim erstellen der CaveEntrys");
 			e.printStackTrace();
 			return null;
 		}
@@ -584,23 +591,23 @@ public class MysqlConnector {
 							+ ornamentEntry.getInterpretation() + "','"  
 							+  ornamentEntry.getReferences() + "','"
 							+ ornamentEntry.getAnnotations() + "','" 
-							+ ornamentEntry.getMaintypologycalClass() + "','" 
-							+ ornamentEntry.getStructureOrganization() 
+							+ ornamentEntry.getMaintypologycalClass().getMainTypologicalClassID() + "','" 
+							+ ornamentEntry.getStructureOrganization().getStructureOrganizationID()
 							+ "')");
 			rs = stmt.executeQuery("SELECT LAST_INSERT_ID()");
 			while (rs.next()) {
 				auto_increment_id = rs.getInt(1);
 			}
-			for(Integer id : ornamentEntry.getImageIDs()){
+			for(ImageEntry entry : ornamentEntry.getImages()){
 				rs = stmt.executeQuery("INSERT INTO OrnamentImageRelation (OrnamentID, ImageID) VALUES('"
 						+ auto_increment_id + " ','" 
-						+ id+"')");
+						+ entry.getImageID()+"')");
 			}
 			for (int i = 0; i < ornamentEntry.getCavesRelations().size(); i++) {
 				stmt = dbc.createStatement();			
 				rs = stmt.executeQuery(
 						"INSERT INTO CaveOrnamentRelation (CaveID, OrnamentID, Colours, Notes, GroupOfOrnaments,RelatedElementsOfOtherCultures, SimilarElementsOfOtherCultures ) VALUES ("
-								+ ornamentEntry.getCavesRelations().get(i).getCaveID() + "," 
+								+ ornamentEntry.getCavesRelations().get(i).getCave().getCaveID() + "," 
 								+ auto_increment_id + ",'"
 								+ ornamentEntry.getCavesRelations().get(i).getColours() + "','"
 								+ ornamentEntry.getCavesRelations().get(i).getNotes() + "','"
@@ -613,32 +620,32 @@ public class MysqlConnector {
 					auto_increment_id = rs.getInt(1);
 				}
 				
-				for (int j = 0; j < ornamentEntry.getCavesRelations().get(i).getOrientationID().size(); j++) {
+				for (int j = 0; j < ornamentEntry.getCavesRelations().get(i).getOrientations().size(); j++) {
 					System.err.println("orientation");
 					rs = stmt.executeQuery("INSERT INTO OrnamentOrientationRelation (OrnamentCaveRelationID, OrientationID) VALUES ("
 							+ auto_increment_id  + ","
-							+ ornamentEntry.getCavesRelations().get(i).getOrientationID().get(i)
+							+ ornamentEntry.getCavesRelations().get(i).getOrientations().get(i).getOrientationID()
 						  + ")");
 				}
 				
-				System.err.println("pictorial gespeichert Anzahl ist: "+  ornamentEntry.getCavesRelations().get(i).getPictorialElementIDs().size() );
-				for (int j = 0; j < ornamentEntry.getCavesRelations().get(i).getPictorialElementIDs().size(); j++) {
+				System.err.println("pictorial gespeichert Anzahl ist: "+  ornamentEntry.getCavesRelations().get(i).getPictorialElements().size() );
+				for (int j = 0; j < ornamentEntry.getCavesRelations().get(i).getPictorialElements().size(); j++) {
 					System.err.println("pictorial gespeichert");
 					rs = stmt.executeQuery("INSERT INTO OrnamentCavePictorialRelation (OrnamentCaveRelationID, PictorialElementID) VALUES ("
 							+ auto_increment_id  + ","
-							+ ornamentEntry.getCavesRelations().get(i).getPictorialElementIDs().get(j)
+							+ ornamentEntry.getCavesRelations().get(i).getPictorialElements().get(j).getPictorialElementID()
 						  + ")");
 				}
 				
-				for (int j = 0; j < ornamentEntry.getCavesRelations().get(i).getRelatedOrnamentsRelationID().size(); j++) {
+				for (int j = 0; j < ornamentEntry.getCavesRelations().get(i).getRelatedOrnamentsRelations().size(); j++) {
 					rs = stmt.executeQuery("INSERT INTO RelatedOrnamentsRelation (OrnamentID, OrnamentCaveRelationID) VALUES ("
-							+ ornamentEntry.getCavesRelations().get(i).getRelatedOrnamentsRelationID().get(j) + ","
+							+ ornamentEntry.getCavesRelations().get(i).getRelatedOrnamentsRelations().get(j).getOrnamentID() + ","
 							+ auto_increment_id 
 						  + ")");
 				}
-				for (int j = 0; j < ornamentEntry.getCavesRelations().get(i).getSimilarOrnamentsRelationID().size(); j++) {
+				for (int j = 0; j < ornamentEntry.getCavesRelations().get(i).getSimilarOrnamentsRelations().size(); j++) {
 					rs = stmt.executeQuery("INSERT INTO SimilarOrnamentsRelation (OrnamentID, OrnamentCaveRelationID) VALUES ("
-							+ ornamentEntry.getCavesRelations().get(i).getSimilarOrnamentsRelationID().get(j) + ","
+							+ ornamentEntry.getCavesRelations().get(i).getSimilarOrnamentsRelations().get(j).getOrnamentID() + ","
 							+ auto_increment_id 
 							+ ")");
 				}
@@ -1150,16 +1157,16 @@ public class MysqlConnector {
 		return result;
 	}
 	
-	public ArrayList<OrnamentOrientation> getOrientations() {
-		OrnamentOrientation result = null;
-		ArrayList<OrnamentOrientation> orientations = new ArrayList<OrnamentOrientation>();
+	public ArrayList<OrientationEntry> getOrientations() {
+		OrientationEntry result = null;
+		ArrayList<OrientationEntry> orientations = new ArrayList<OrientationEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM OrnamenticOrientation");
 			while (rs.next()) {
-				result = new OrnamentOrientation(rs.getInt("OrnamenticOrientationID"), rs.getString("Name"));
+				result = new OrientationEntry(rs.getInt("OrnamenticOrientationID"), rs.getString("Name"));
 				orientations.add(result);
 			}
 			rs.close();
@@ -1231,6 +1238,24 @@ public class MysqlConnector {
 			e.printStackTrace();
 		}
 		return maintypologicalclasses;
+	}
+	public MainTypologicalClass getMainTypologicalClassbyID(int maintypoID) {
+		MainTypologicalClass result = null;
+		
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM MainTypologicalClass WHERE MainTypologicalClassID = "+ maintypoID);
+			while (rs.next()) {
+				result = new MainTypologicalClass(rs.getInt("MainTypologicalClassID"), rs.getString("Name"));
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 	
 	public ArrayList<WallEntry> getWalls() {

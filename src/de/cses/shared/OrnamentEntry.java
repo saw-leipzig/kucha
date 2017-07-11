@@ -27,9 +27,9 @@ public class OrnamentEntry implements IsSerializable{
 	private String interpretation;
 	private String references;
 	private String sketch;
-	private int maintypologycalClass;
-	private int structureOrganization;
-	private ArrayList<Integer> imageIDs = new ArrayList<Integer>();
+	private MainTypologicalClass maintypologycalClass;
+	private StructureOrganization structureOrganization;
+	private ArrayList<ImageEntry> images = new ArrayList<ImageEntry>();
 	private ArrayList<OrnamentCaveRelation> cavesRelations = new ArrayList<OrnamentCaveRelation>();
 
 	
@@ -113,29 +113,50 @@ public class OrnamentEntry implements IsSerializable{
 		this.annotations = annotations;
 	}
 
-	public int getMaintypologycalClass() {
+
+
+	/**
+	 * @return the maintypologycalClass
+	 */
+	public MainTypologicalClass getMaintypologycalClass() {
 		return maintypologycalClass;
 	}
 
-	public void setMaintypologycalClass(int maintypologycalClass) {
+	/**
+	 * @param maintypologycalClass the maintypologycalClass to set
+	 */
+	public void setMaintypologycalClass(MainTypologicalClass maintypologycalClass) {
 		this.maintypologycalClass = maintypologycalClass;
 	}
 
-	public int getStructureOrganization() {
+	/**
+	 * @return the structureOrganization
+	 */
+	public StructureOrganization getStructureOrganization() {
 		return structureOrganization;
 	}
 
-	public void setStructureOrganization(int structureOrganization) {
+	/**
+	 * @param structureOrganization the structureOrganization to set
+	 */
+	public void setStructureOrganization(StructureOrganization structureOrganization) {
 		this.structureOrganization = structureOrganization;
 	}
 
-	public ArrayList<Integer> getImageIDs() {
-		return imageIDs;
+	/**
+	 * @return the images
+	 */
+	public ArrayList<ImageEntry> getImages() {
+		return images;
 	}
 
-	public void setImageIDs(ArrayList<Integer> imageIDs) {
-		this.imageIDs = imageIDs;
+	/**
+	 * @param images the images to set
+	 */
+	public void setImages(ArrayList<ImageEntry> images) {
+		this.images = images;
 	}
+
 	
 	
 	
