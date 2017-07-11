@@ -18,6 +18,7 @@ import java.security.NoSuchAlgorithmException;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.widget.core.client.Header;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
@@ -85,7 +86,7 @@ public class UserLogin extends SimpleContainer {
 
 	private void setUser(UserEntry entry) {
 		user = entry;
-    headline.setHTML("<h1>Welcome to the Kucha Information System, " + user.getFirstname() + " " + user.getLastname() + "</h1>");
+    headline.setHTML("<h1>Hello " + user.getFirstname() + " " + user.getLastname() + "! Welcome to the Kucha Information System!</h1>");
 		loginView.removeFromParent();
 		add(userView);
 	}
@@ -115,10 +116,10 @@ public class UserLogin extends SimpleContainer {
 				checkLogin();
 			}
 		});
-		loginView.add(loginHeadline, new HorizontalLayoutData(1.0, 1.0));
-		loginView.add(usernameField, new HorizontalLayoutData(120.0, 1.0));
-		loginView.add(passwordField, new HorizontalLayoutData(120.0, 1.0));
-		loginView.add(loginButton, new HorizontalLayoutData(50.0, 1.0));
+		loginView.add(loginHeadline, new HorizontalLayoutData(1.0, 1.0, new Margins(5)));
+		loginView.add(usernameField, new HorizontalLayoutData(120.0, 1.0, new Margins(5)));
+		loginView.add(passwordField, new HorizontalLayoutData(120.0, 1.0, new Margins(5)));
+		loginView.add(loginButton, new HorizontalLayoutData(50.0, 1.0, new Margins(5)));
 	}
 
 	private void initUserView() {
@@ -133,8 +134,8 @@ public class UserLogin extends SimpleContainer {
 			}
 		});
     headline.setHTML("<h1>Welcome to the Kucha Information System</h1>");
-		userView.add(headline, new HorizontalLayoutData(1.0, 1.0));
-		userView.add(logoutButton, new HorizontalLayoutData(50.0, 1.0));
+		userView.add(headline, new HorizontalLayoutData(1.0, 1.0, new Margins(5)));
+		userView.add(logoutButton, new HorizontalLayoutData(50.0, 1.0, new Margins(5)));
 	}
 
 	public int getAccessRights() {
