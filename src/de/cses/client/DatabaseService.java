@@ -48,6 +48,7 @@ import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 import de.cses.shared.StructureOrganization;
 import de.cses.shared.StyleEntry;
+import de.cses.shared.UserEntry;
 import de.cses.shared.VendorEntry;
 import de.cses.shared.WallEntry;
 
@@ -168,5 +169,7 @@ public interface DatabaseService extends RemoteService {
 	int insertCaveEntry(CaveEntry caveEntry) throws IllegalArgumentException;
 
 	ArrayList<CaveGroupEntry> getCaveGroups() throws IllegalArgumentException;
+
+	UserEntry userLogin(String username, String password) throws IllegalArgumentException;
 
 }

@@ -56,6 +56,7 @@ import de.cses.client.ui.AbstractSearchController;
 import de.cses.client.ui.LocationFilter;
 import de.cses.client.ui.ResultCollectorController;
 import de.cses.client.ui.ResultCollectorView;
+import de.cses.client.user.UserLogin;
 
 /**
  * @author alingnau
@@ -103,8 +104,9 @@ public class MainView implements IsWidget {
 
     Header headline = new Header();
     headline.setHTML("<h1>Welcome to the Kucha Information System</h1>");
-    headline.setHeight("2em");
-    northPanel.add(headline, new VerticalLayoutData(1.0, .4));
+    northPanel.add(headline, new VerticalLayoutData(1.0, .2));
+    
+    northPanel.add(UserLogin.getInstance(), new VerticalLayoutData(1.0, .3));
     
     selectorLayoutContainer = new HorizontalLayoutContainer();
     HorizontalLayoutData hLayoutData = new HorizontalLayoutData(140, 1.0, new Margins(5, 0, 5, 5));
@@ -245,7 +247,7 @@ public class MainView implements IsWidget {
     north.setHeading("What are you looking for?");
     north.add(selectorLayoutContainer);
 //    north.setHeight("80px");
-    northPanel.add(north, new VerticalLayoutData(1.0, .6));
+    northPanel.add(north, new VerticalLayoutData(1.0, .5));
     
     filterView = new PortalLayoutContainer(1);
     filterView.setSpacing(10);
