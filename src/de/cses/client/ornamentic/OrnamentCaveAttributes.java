@@ -24,6 +24,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
+import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
@@ -34,6 +35,9 @@ import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.TabPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
+import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.container.VBoxLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
@@ -476,14 +480,14 @@ public class OrnamentCaveAttributes extends PopupPanel{
 	  
 
 	  
-	  HorizontalPanel orientationHorizontalPanel = new HorizontalPanel();
+	  HorizontalLayoutContainer orientationHorizontalPanel = new HorizontalLayoutContainer();
 	  
 	  ListView<OrientationEntry, String> orientationView = new ListView<OrientationEntry, String>(orientation, orientationProps.nameEN());
 	 // orientationView.setPixelSize(150, 150);
 	  ListView<OrientationEntry, String> selectedOrientationView = new ListView<OrientationEntry, String>(selectedorientation,orientationProps.nameEN());
 	  // selectedOrientationView.setPixelSize(150, 150);
-	  orientationHorizontalPanel.add(orientationView);
-	  orientationHorizontalPanel.add(selectedOrientationView);
+	  orientationHorizontalPanel.add(orientationView, new HorizontalLayoutData(.5, 1.0, new Margins(1)));
+	  orientationHorizontalPanel.add(selectedOrientationView, new HorizontalLayoutData(.5, 1.0, new Margins(1)));
 	  
     new ListViewDragSource<OrientationEntry>(orientationView).setGroup("Orientation");
     new ListViewDragSource<OrientationEntry>(selectedOrientationView).setGroup("Orientation");
@@ -502,7 +506,7 @@ public class OrnamentCaveAttributes extends PopupPanel{
 		}
 		header.add(orientationHorizontalPanel);
 		
-		vlcAttributes.add(header, new VerticalLayoutData(0.5, .125));
+		vlcAttributes.add(header, new VerticalLayoutData(0.5, .4));
 	  
 
 	  
