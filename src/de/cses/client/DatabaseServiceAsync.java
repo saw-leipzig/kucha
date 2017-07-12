@@ -37,7 +37,7 @@ import de.cses.shared.OrnamentCaveType;
 import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamentFunction;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
-import de.cses.shared.OrnamentOrientation;
+import de.cses.shared.OrientationEntry;
 import de.cses.shared.OrnamentPosition;
 import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PictorialElementEntry;
@@ -160,7 +160,7 @@ public interface DatabaseServiceAsync {
 	 */
 	void getRelatedPE(int depictionID, AsyncCallback<ArrayList<PictorialElementEntry>> asyncCallback) throws IllegalArgumentException;
 
-	void getOrientations( AsyncCallback<ArrayList<OrnamentOrientation>> asyncCallback) throws IllegalArgumentException;
+	void getOrientations( AsyncCallback<ArrayList<OrientationEntry>> asyncCallback) throws IllegalArgumentException;
 	
 	void getMainTypologicalClasses( AsyncCallback<ArrayList<MainTypologicalClass>> asyncCallback) throws IllegalArgumentException;
 	

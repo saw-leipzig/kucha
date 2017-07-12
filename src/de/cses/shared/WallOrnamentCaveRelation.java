@@ -24,8 +24,8 @@ public class WallOrnamentCaveRelation implements IsSerializable{
 	int wallID;
 	String name;
 	int OrnamentCaveRelationID;
-	int position;
-	int function;
+	OrnamentPosition position;
+	OrnamentFunction function;
 	String notes;
 	
 	public WallOrnamentCaveRelation(){
@@ -49,16 +49,29 @@ public class WallOrnamentCaveRelation implements IsSerializable{
 	public void setOrnamentCaveRelationID(int ornamentCaveRelationID) {
 		OrnamentCaveRelationID = ornamentCaveRelationID;
 	}
-	public int getPosition() {
+
+	/**
+	 * @return the position
+	 */
+	public OrnamentPosition getPosition() {
 		return position;
 	}
-	public void setPosition(int position) {
+	/**
+	 * @param position the position to set
+	 */
+	public void setPosition(OrnamentPosition position) {
 		this.position = position;
 	}
-	public int getFunction() {
+	/**
+	 * @return the function
+	 */
+	public OrnamentFunction getFunction() {
 		return function;
 	}
-	public void setFunction(int function) {
+	/**
+	 * @param function the function to set
+	 */
+	public void setFunction(OrnamentFunction function) {
 		this.function = function;
 	}
 	public String getNotes() {

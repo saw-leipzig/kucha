@@ -8,16 +8,17 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class OrnamentCaveRelation implements IsSerializable{
 	private int ornamentID;
 	private String name;
-	private int caveID;
+	private CaveEntry cave;
 	private String colours;
 	private String notes;
+	private DistrictEntry district;
 	private String group;
 	private String relatedelementeofOtherCultures;
 	private String similarelementsOfOtherCultures;
-	private ArrayList<Integer> similarOrnamentsRelationID= new ArrayList<Integer>();
-	private ArrayList<Integer> orientationID = new ArrayList<Integer>();
-	private ArrayList<Integer> PictorialElementIDs = new ArrayList<Integer>();
-	private ArrayList<Integer> relatedOrnamentsRelationID = new ArrayList<Integer>();
+	private ArrayList<OrnamentEntry> similarOrnamentsRelations= new ArrayList<OrnamentEntry>();
+	private ArrayList<OrientationEntry> orientations = new ArrayList<OrientationEntry>();
+	private ArrayList<PictorialElementEntry> PictorialElements = new ArrayList<PictorialElementEntry>();
+	private ArrayList<OrnamentEntry> relatedOrnamentsRelations = new ArrayList<OrnamentEntry>();
 	private ArrayList<WallOrnamentCaveRelation> walls = new ArrayList<WallOrnamentCaveRelation>();
 
 	
@@ -37,35 +38,36 @@ public class OrnamentCaveRelation implements IsSerializable{
 	}
 
 
-	public int getCaveID() {
-		return caveID;
-	}
-
-
-	public void setCaveID(int caveID) {
-		this.caveID = caveID;
-	}
-
-
-
-
-
-
-
 
 	/**
-	 * @return the orientationID
+	 * @return the district
 	 */
-	public ArrayList<Integer> getOrientationID() {
-		return orientationID;
+	public DistrictEntry getDistrict() {
+		return district;
 	}
 
 
 	/**
-	 * @param orientationID the orientationID to set
+	 * @param district the district to set
 	 */
-	public void setOrientationID(ArrayList<Integer> orientationID) {
-		this.orientationID = orientationID;
+	public void setDistrict(DistrictEntry district) {
+		this.district = district;
+	}
+
+
+	/**
+	 * @return the cave
+	 */
+	public CaveEntry getCave() {
+		return cave;
+	}
+
+
+	/**
+	 * @param cave the cave to set
+	 */
+	public void setCave(CaveEntry cave) {
+		this.cave = cave;
 	}
 
 
@@ -127,24 +129,6 @@ public class OrnamentCaveRelation implements IsSerializable{
 
 
 
-	public ArrayList<Integer> getSimilarOrnamentsRelationID() {
-		return similarOrnamentsRelationID;
-	}
-
-
-	public void setSimilarOrnamentsRelationID(ArrayList<Integer> similarOrnamentsRelationID) {
-		this.similarOrnamentsRelationID = similarOrnamentsRelationID;
-	}
-
-
-	public ArrayList<Integer> getRelatedOrnamentsRelationID() {
-		return relatedOrnamentsRelationID;
-	}
-
-
-	public void setRelatedOrnamentsRelationID(ArrayList<Integer> relatedOrnamentsRelationID) {
-		this.relatedOrnamentsRelationID = relatedOrnamentsRelationID;
-	}
 
 
 	public void setWalls(ArrayList<WallOrnamentCaveRelation> walls) {
@@ -172,14 +156,70 @@ public class OrnamentCaveRelation implements IsSerializable{
 	}
 
 
-	public ArrayList<Integer> getPictorialElementIDs() {
-		return PictorialElementIDs;
+	/**
+	 * @return the similarOrnamentsRelations
+	 */
+	public ArrayList<OrnamentEntry> getSimilarOrnamentsRelations() {
+		return similarOrnamentsRelations;
 	}
 
 
-	public void setPictorialElementIDs(ArrayList<Integer> pictorialElementIDs) {
-		PictorialElementIDs = pictorialElementIDs;
+	/**
+	 * @param similarOrnamentsRelations the similarOrnamentsRelations to set
+	 */
+	public void setSimilarOrnamentsRelations(ArrayList<OrnamentEntry> similarOrnamentsRelations) {
+		this.similarOrnamentsRelations = similarOrnamentsRelations;
 	}
+
+
+	/**
+	 * @return the orientations
+	 */
+	public ArrayList<OrientationEntry> getOrientations() {
+		return orientations;
+	}
+
+
+	/**
+	 * @param orientations the orientations to set
+	 */
+	public void setOrientations(ArrayList<OrientationEntry> orientations) {
+		this.orientations = orientations;
+	}
+
+
+	/**
+	 * @return the pictorialElements
+	 */
+	public ArrayList<PictorialElementEntry> getPictorialElements() {
+		return PictorialElements;
+	}
+
+
+	/**
+	 * @param pictorialElements the pictorialElements to set
+	 */
+	public void setPictorialElements(ArrayList<PictorialElementEntry> pictorialElements) {
+		PictorialElements = pictorialElements;
+	}
+
+
+	/**
+	 * @return the relatedOrnamentsRelations
+	 */
+	public ArrayList<OrnamentEntry> getRelatedOrnamentsRelations() {
+		return relatedOrnamentsRelations;
+	}
+
+
+	/**
+	 * @param relatedOrnamentsRelations the relatedOrnamentsRelations to set
+	 */
+	public void setRelatedOrnamentsRelations(ArrayList<OrnamentEntry> relatedOrnamentsRelations) {
+		this.relatedOrnamentsRelations = relatedOrnamentsRelations;
+	}
+
+
 
 	
 
