@@ -655,8 +655,8 @@ public class MysqlConnector {
 					rs = stmt.executeQuery("INSERT INTO WallCaveOrnamentRelation (OrnamentCaveRelationID, WallID, Position, Function, Notes) VALUES ("
 							+ auto_increment_id + ","
 							+ ornamentEntry.getCavesRelations().get(i).getWalls().get(j).getWallID() + ",'"
-							+ ornamentEntry.getCavesRelations().get(i).getWalls().get(j).getPosition() + "','"
-							+ ornamentEntry.getCavesRelations().get(i).getWalls().get(j).getFunction() + "','"
+							+ ornamentEntry.getCavesRelations().get(i).getWalls().get(j).getPosition().getOrnamentPositionID() + "','"
+							+ ornamentEntry.getCavesRelations().get(i).getWalls().get(j).getFunction().getOrnamentFunctionID() + "','"
 							+ ornamentEntry.getCavesRelations().get(i).getWalls().get(j).getNotes()
 							+ "')");
 				}

@@ -21,10 +21,10 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
@@ -33,16 +33,15 @@ import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.VBoxLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
-import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.TextField;
-
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.walls.WallSelector;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CavePart;
-import de.cses.shared.OrnamentCaveRelation;
 import de.cses.shared.OrnamentFunction;
 import de.cses.shared.OrnamentPosition;
 import de.cses.shared.WallEntry;
@@ -77,12 +76,20 @@ public class OrnamentWallAttributes extends PopupPanel {
 	
 	private ListStore<WallEntry> walls;
 	private ComboBox<WallEntry> wallsComboBox;
-	
+	private  WallOrnamentCaveRelation wallOrnamentCaveRelation;
 
-	
 	
 	public OrnamentWallAttributes(CaveEntry cave){
 		super(false);
+		initOrnamentWallAttributes(cave);
+	}
+	public OrnamentWallAttributes(CaveEntry cave, WallOrnamentCaveRelation wallOrnamentCaveRelation){
+		super(false);
+		this.wallOrnamentCaveRelation = wallOrnamentCaveRelation;
+		initOrnamentWallAttributes(cave);
+	}
+	
+	public void initOrnamentWallAttributes(CaveEntry cave){
 	
 		popup = this;
 		this.cave = cave;
@@ -94,6 +101,8 @@ public class OrnamentWallAttributes extends PopupPanel {
 		ornamentPosition = new ListStore<OrnamentPosition>(ornamentPositionProps.ornamentPositionID());
 		ornamentfunction = new ListStore<OrnamentFunction>(ornamentFunctionProps.ornamentFunctionID());
 		walls = new ListStore<WallEntry>(wallProps.wallID());
+		
+	
 		
 		dbService.getWalls(new AsyncCallback<ArrayList<WallEntry>>() {
 
@@ -149,7 +158,7 @@ public class OrnamentWallAttributes extends PopupPanel {
 	
 	public Widget createForm(){
 		VerticalPanel wallrelationMainVerticalPanel = new VerticalPanel();
-		VBoxLayoutContainer vlcWalls = new VBoxLayoutContainer();
+		VerticalLayoutContainer vlcWalls = new VerticalLayoutContainer();
 		wallrelationMainVerticalPanel.add(vlcWalls);
 		
 		
@@ -160,11 +169,9 @@ public class OrnamentWallAttributes extends PopupPanel {
 		WallSelector wallselector = new WallSelector();
 		
 		header = new FramedPanel();
-		header.setWidth(500);
-		header.setHeight(400);
 		header.setHeading("Select Wall");
 		header.add(wallselector);
-		vlcWalls.add(header);
+		vlcWalls.add(header, new VerticalLayoutData(1.0, .125));
 	
 		wallselector.setCave(cave);
 	  
@@ -181,6 +188,10 @@ public class OrnamentWallAttributes extends PopupPanel {
 	  
 		header = new FramedPanel();
 		header.setWidth(300);
+		ornamentPositionComboBox.setTriggerAction(TriggerAction.ALL);
+		if( wallOrnamentCaveRelation != null){
+			ornamentPositionComboBox.setValue(wallOrnamentCaveRelation.getPosition());
+		}
 		header.setHeading("Select ornament position");
 		header.add(ornamentPositionComboBox);
 		vlcWalls.add(header);
@@ -197,9 +208,13 @@ public class OrnamentWallAttributes extends PopupPanel {
 		
 		header = new FramedPanel();
 		header.setWidth(300);
+		if( wallOrnamentCaveRelation != null){
+			ornamentfunctionComboBox.setValue(wallOrnamentCaveRelation.getFunction());
+		}
 		header.setHeading("Select the ornament function");
+		ornamentfunctionComboBox.setTriggerAction(TriggerAction.ALL);
 		header.add(ornamentfunctionComboBox);
-		vlcWalls.add(header);
+		vlcWalls.add(header, new VerticalLayoutData(1.0, .125));
 	  
 	  
 	  
@@ -209,9 +224,12 @@ public class OrnamentWallAttributes extends PopupPanel {
 	  
 		header = new FramedPanel();
 		header.setWidth(300);
+		if( wallOrnamentCaveRelation != null){
+			notes.setText(wallOrnamentCaveRelation.getNotes());
+		}
 		header.setHeading("Notes");
 		header.add(notes);
-		vlcWalls.add(header);
+		vlcWalls.add(header, new VerticalLayoutData(1.0, .125));
 	  
 	
 	  
@@ -228,8 +246,8 @@ ClickHandler saveHandler = new ClickHandler(){
 	public void onClick(ClickEvent event) {
 		
 		WallOrnamentCaveRelation relation = new WallOrnamentCaveRelation();
-		relation.setFunction(ornamentfunctionComboBox.getValue().getOrnamentFunctionID());
-		relation.setPosition(ornamentPositionComboBox.getValue().getOrnamentPositionID());
+		relation.setFunction(ornamentfunctionComboBox.getValue());
+		relation.setPosition(ornamentPositionComboBox.getValue());
 		relation.setNotes(notes.getText());
 		relation.setWallID(wallsComboBox.getValue().getWallID());
 		ornamentCaveRelation.getWallsListStore().add(relation);

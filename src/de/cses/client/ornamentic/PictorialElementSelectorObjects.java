@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
@@ -30,9 +31,11 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.Verti
 import com.sencha.gxt.widget.core.client.info.Info;
 import com.sencha.gxt.widget.core.client.tree.Tree;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckCascade;
+import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.shared.OrnamentCaveRelation;
 import de.cses.shared.PictorialElementEntry;
 
 public class PictorialElementSelectorObjects implements IsWidget {
@@ -48,15 +51,31 @@ public class PictorialElementSelectorObjects implements IsWidget {
 	private TreeStore<PictorialElementEntry> store;
 	private Tree<PictorialElementEntry, String> tree;
 	private VerticalLayoutContainer vlc;
+	private OrnamentCaveRelation ornamentCaveRelationEntry;
 
-	public PictorialElementSelectorObjects() {
+	public void initPictorialElementSelectorObjects() {
 		store = new TreeStore<PictorialElementEntry>(new KeyProvider());
 		refreshPEStore();
+	}
+	public PictorialElementSelectorObjects(){
+		initPictorialElementSelectorObjects();
+	}
+	public PictorialElementSelectorObjects(OrnamentCaveRelation ornamentCaveRelation){
+		this.ornamentCaveRelationEntry = ornamentCaveRelation;
+		initPictorialElementSelectorObjects();
 	}
 
 	private void processParent(TreeStore<PictorialElementEntry> store, PictorialElementEntry item) {
 		for (PictorialElementEntry child : item.getChildren()) {
 			store.add(item, child);
+			if(ornamentCaveRelationEntry != null){
+			
+				for(PictorialElementEntry pe: ornamentCaveRelationEntry.getPictorialElements()){
+					if(pe.getPictorialElementID() == item.getPictorialElementID()){
+						tree.setChecked(item, CheckState.CHECKED);
+					}
+				}
+			}
 			if (child.getChildren() != null) {
 				processParent(store, child);
 			}
@@ -78,6 +97,13 @@ public class PictorialElementSelectorObjects implements IsWidget {
 
 				for (PictorialElementEntry item : result) {
 					store.add(item);
+					if(ornamentCaveRelationEntry != null){
+						for(PictorialElementEntry pe: ornamentCaveRelationEntry.getPictorialElements()){
+							if(pe.getPictorialElementID() == item.getPictorialElementID()){
+								tree.setChecked(item, CheckState.CHECKED);
+							}
+						}
+					}
 					if (item.getChildren() != null) {
 						processParent(store, item);
 //						Info.display("Children added", item.getText());
@@ -137,5 +163,20 @@ public class PictorialElementSelectorObjects implements IsWidget {
 	public void collapseAll() {
 		tree.collapseAll();
 	}
+
+	/**
+	 * @return the ornamentCaveRelationEntry
+	 */
+	public OrnamentCaveRelation getOrnamentCaveRelationEntry() {
+		return ornamentCaveRelationEntry;
+	}
+
+	/**
+	 * @param ornamentCaveRelationEntry the ornamentCaveRelationEntry to set
+	 */
+	public void setOrnamentCaveRelationEntry(OrnamentCaveRelation ornamentCaveRelationEntry) {
+		this.ornamentCaveRelationEntry = ornamentCaveRelationEntry;
+	}
+	
 
 }
