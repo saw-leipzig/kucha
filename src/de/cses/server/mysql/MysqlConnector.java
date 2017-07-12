@@ -51,6 +51,7 @@ import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 import de.cses.shared.StructureOrganization;
 import de.cses.shared.StyleEntry;
+import de.cses.shared.UserEntry;
 import de.cses.shared.VendorEntry;
 import de.cses.shared.WallEntry;
 
@@ -1483,6 +1484,33 @@ public class MysqlConnector {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM CaveGroups");
 			while (rs.next()) {
 				result.add(new CaveGroupEntry(rs.getInt("CaveGroupID"), rs.getString("Name")));
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return result;
+	}
+
+	/**
+	 * @param username
+	 * @param password
+	 * @return
+	 */
+	public UserEntry userLogin(String username, String password) {
+		UserEntry result = null;
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Users WHERE Username = '" + username + "' AND Password = '" + password + "'");
+			if (rs.first()) {
+				result = new UserEntry(rs.getInt("UserID"), rs.getString("Username"), rs.getString("Firstname"), rs.getString("Lastname"), rs.getString("Email"), 
+						rs.getString("Affiliation"), rs.getInt("Accessrights"));
+			} else {
+				System.err.println("pw hash: " + password);
 			}
 			rs.close();
 			stmt.close();

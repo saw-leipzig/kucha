@@ -49,6 +49,7 @@ import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 import de.cses.shared.StructureOrganization;
 import de.cses.shared.StyleEntry;
+import de.cses.shared.UserEntry;
 import de.cses.shared.VendorEntry;
 import de.cses.shared.WallEntry;
 
@@ -465,6 +466,15 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public ArrayList<CaveGroupEntry> getCaveGroups() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getCaveGroups();
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#userLogin(java.lang.String, java.lang.String)
+	 */
+	@Override
+	public UserEntry userLogin(String username, String password) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.userLogin(username, password);
 	}
 
 }

@@ -21,7 +21,10 @@ import com.sencha.gxt.dnd.core.client.DndDragStartEvent;
 import com.sencha.gxt.dnd.core.client.DragSource;
 import com.sencha.gxt.fx.client.Draggable;
 
+import de.cses.client.Util;
+import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
+import de.cses.shared.UserEntry;
 
 /**
  * @author alingnau
@@ -39,7 +42,11 @@ public abstract class AbstractView extends Button implements EditorListener {
 			
 			@Override
 			public void onClick(ClickEvent event) {
-				showEditor();
+				if (UserLogin.getInstance().getAccessRights() == UserEntry.FULL) {
+					showEditor();
+				} else {
+					Util.showWarning("You are not logged in", "Sorry, but in future versions a view only display will appear!");
+				}
 			}
 		});
 	}

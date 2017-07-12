@@ -19,6 +19,9 @@ import com.sencha.gxt.widget.core.client.button.ToggleButton;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
+import de.cses.client.Util;
+import de.cses.client.user.UserLogin;
+
 /**
  * This abstract class is extended every time a new type (e.g. Caves, Ornaments, Images, Depictions, ...) shall be 
  * added to the UI. Is is representing the C in the MVC approach, visually represented by a ToggleButton
@@ -54,7 +57,11 @@ public abstract class AbstractSearchController extends ToggleButton {
 			
 			@Override
 			public void onSelect(SelectEvent event) {
-				addNewElement();
+				if (UserLogin.getInstance().getAccessRights() > 1) {
+					addNewElement();
+				} else {
+					Util.showWarning("You are not logged in", "You need to log in first\n to add new elements!");
+				}
 			}
 		});
 		relatedFilter = new ArrayList<AbstractFilter>();

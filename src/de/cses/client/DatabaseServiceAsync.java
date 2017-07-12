@@ -47,6 +47,7 @@ import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 import de.cses.shared.StructureOrganization;
 import de.cses.shared.StyleEntry;
+import de.cses.shared.UserEntry;
 import de.cses.shared.VendorEntry;
 import de.cses.shared.WallEntry;
 
@@ -189,5 +190,7 @@ public interface DatabaseServiceAsync {
 	void insertCaveEntry(CaveEntry caveEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 
 	void getCaveGroups(AsyncCallback<ArrayList<CaveGroupEntry>> asyncCallback) throws IllegalArgumentException;
+
+	void userLogin(String username, String password, AsyncCallback<UserEntry> asyncCallback) throws IllegalArgumentException;
 
 	}
