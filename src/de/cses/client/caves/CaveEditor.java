@@ -926,7 +926,7 @@ public class CaveEditor extends AbstractEditor {
 //		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
 
 		attributePanel = new FramedPanel();
-		attributePanel.setHeading("ar Area");
+		attributePanel.setHeading("Rear Area");
 		rearAreaPreservationSelector = new ComboBox<PreservationClassificationEntry>(preservationClassificationEntryList,
 				preservationClassificationProps.name(), new AbstractSafeHtmlRenderer<PreservationClassificationEntry>() {
 
