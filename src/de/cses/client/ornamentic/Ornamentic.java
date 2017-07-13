@@ -280,7 +280,7 @@ public class Ornamentic implements IsWidget, ImageSelectorListener {
 
 		cavesContentPanel = new FramedPanel();
 		cavesPanel.add(cavesContentPanel);
-		caveOrnamentRelationList = new ListStore<OrnamentCaveRelation>(ornamentCaveRelationProps.caveID());
+		caveOrnamentRelationList = new ListStore<OrnamentCaveRelation>(ornamentCaveRelationProps.ornamentID());
 
 		cavesList = new ListView<OrnamentCaveRelation, String>(caveOrnamentRelationList, ornamentCaveRelationProps.name());
 		cavesList.setAllowTextSelection(true);
@@ -497,8 +497,7 @@ public class Ornamentic implements IsWidget, ImageSelectorListener {
 	}
 
 	interface OrnamentCaveRelationProperties extends PropertyAccess<CaveEntry> {
-		ModelKeyProvider<OrnamentCaveRelation> caveID();
-
+		ModelKeyProvider<OrnamentCaveRelation> ornamentID(); // changed to ornamentID (was caveID) (Andreas)
 		ValueProvider<OrnamentCaveRelation, String> name();
 	}
 
