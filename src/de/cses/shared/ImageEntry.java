@@ -21,8 +21,7 @@ public class ImageEntry extends AbstractEntry {
 	public static final int FILENAME = 2;
 
 	public ImageEntry() {
-		imageID = 0;
-		photographerID = 0;
+		this(0, "", "", "", "", 0, "", "", "");
 	}
 	
 	/**

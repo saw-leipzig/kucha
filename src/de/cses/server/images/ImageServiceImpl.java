@@ -88,7 +88,7 @@ public class ImageServiceImpl extends HttpServlet {
 					if (item.isFormField()) {
 						throw new ServletException("Unsupported non-file property [" + item.getFieldName() + "] with value: " + item.getString());
 					} else {
-						newImageID = connector.createNewImageEntry();
+						newImageID = connector.createNewImageEntry().getImageID();
 						if (newImageID > 0) {
 							filename = newImageID + fileType;
 							ie = connector.getImageEntry(newImageID);

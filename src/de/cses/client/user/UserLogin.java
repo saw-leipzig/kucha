@@ -86,8 +86,8 @@ public class UserLogin extends SimpleContainer {
 
 	private void setUser(UserEntry entry) {
 		user = entry;
-    headline.setHTML("<h1>Hello " + user.getFirstname() + " " + user.getLastname() + "! Welcome to the Kucha Information System!</h1>");
 		loginView.removeFromParent();
+    headline.setHTML("<h1>Hello " + user.getFirstname() + " " + user.getLastname() + "! Welcome to the Kucha Information System!</h1>");
 		add(userView);
 	}
 
@@ -96,7 +96,6 @@ public class UserLogin extends SimpleContainer {
 		passwordField.reset();
 		userView.removeFromParent();
 		user = null;
-    headline.setHTML("<h1>Welcome to the Kucha Information System</h1>");
 		add(loginView);
 	}
 
@@ -142,7 +141,7 @@ public class UserLogin extends SimpleContainer {
 		return (user == null ? 0 : user.getAccessrights());
 	}
 
-	public static String cryptWithMD5(String pass) {
+	private static String cryptWithMD5(String pass) {
 		try {
 			MessageDigest md = MessageDigest.getInstance("MD5");
 			byte[] passBytes = pass.getBytes();

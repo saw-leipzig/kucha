@@ -56,6 +56,7 @@ import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.Validator;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
+import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
 import com.sencha.gxt.widget.core.client.info.Info;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
@@ -265,8 +266,9 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 		attributePanel = new FramedPanel();
 		shortNameField = new TextField();
 		shortNameField.setWidth(300);
-		shortNameField.setToolTip("A short name can only have 12 characters");
+		shortNameField.setToolTip("A short name needs 3 to 12 characters");
 		shortNameField.addValidator(new MaxLengthValidator(12));
+		shortNameField.addValidator(new MinLengthValidator(3));
 		attributePanel.setHeading("Short Name");
 		attributePanel.add(shortNameField);
 		editPanel.add(attributePanel);
