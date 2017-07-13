@@ -172,20 +172,20 @@ public class MysqlConnector {
 	 * 
 	 * @return auto incremented primary key 'ImageID'
 	 */
-	public synchronized int createNewImageEntry() {
+	public synchronized ImageEntry createNewImageEntry() {
+		ImageEntry result = new ImageEntry();
 		Connection dbc = getConnection();
 		Statement stmt;
 		int generatedKey = -1;
 		try {
 			stmt = dbc.createStatement();
-			stmt.execute("INSERT INTO Images (Title,Comment,ImageType) VALUES ('New Image','please type your comment here','photo')",
-					Statement.RETURN_GENERATED_KEYS);
+			stmt.execute(result.getInsertSql(), Statement.RETURN_GENERATED_KEYS);
 			ResultSet keys = stmt.getGeneratedKeys();
-			while (keys.next()) {
+			if (keys.first()) {
 				// there should only be 1 key returned here but we need to modify this
 				// in case
 				// we have requested multiple new entries. works for the moment
-				generatedKey = keys.getInt(1);
+				result.setImageID(keys.getInt(1));
 			}
 			keys.close();
 			stmt.close();
@@ -193,7 +193,7 @@ public class MysqlConnector {
 			e.printStackTrace();
 		}
 
-		return generatedKey;
+		return result;
 	}
 
 	/**
