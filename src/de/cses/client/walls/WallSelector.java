@@ -19,7 +19,6 @@ import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -147,8 +146,6 @@ public class WallSelector implements IsWidget {
 		// Antechamber is not available at in cave types
 		if ((currentCave.getCaveTypeID() == 2) || (currentCave.getCaveTypeID() == 4) || (currentCave.getCaveTypeID() == 6))  {
 			AntechamberEntry entry = currentCave.getAntechamberEntry();
-			Window.alert(currentCave.getHistoricName());
-			Window.alert(Integer.toString(currentCave.getAntechamberEntry().getAntechamberID()));
 			store.add(new WallNames(entry.getFrontWallID(), "Antechamber Front Wall"));
 			store.add(new WallNames(entry.getLeftWallID(), "Antechamber Left Wall"));
 			store.add(new WallNames(entry.getRightWallID(), "Antechamber Right Wall"));
@@ -158,7 +155,6 @@ public class WallSelector implements IsWidget {
 		// main chamber is always available
 		if ((currentCave.getCaveTypeID() == 2) || (currentCave.getCaveTypeID() == 3) || (currentCave.getCaveTypeID() == 4) || (currentCave.getCaveTypeID() == 6))  {
 			MainChamberEntry entry = currentCave.getMainChamberEntry();
-			Window.alert("in mainchamber");
 			store.add(new WallNames(entry.getFrontWallID(), "Main Chamber Front Wall"));
 			store.add(new WallNames(entry.getLeftWallID(), "Main Chamber Left Wall"));
 			store.add(new WallNames(entry.getRightWallID(), "Main Chamber Right Wall"));
