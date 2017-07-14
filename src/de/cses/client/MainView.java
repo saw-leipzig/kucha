@@ -106,7 +106,7 @@ public class MainView implements IsWidget {
 //    headline.setHTML("<h1>Welcome to the Kucha Information System</h1>");
 //    northPanel.add(headline, new VerticalLayoutData(1.0, .2));
     
-    northPanel.add(UserLogin.getInstance(), new VerticalLayoutData(1.0, .25));
+    northPanel.add(UserLogin.getInstance(), new VerticalLayoutData(1.0, .4));
     
     selectorLayoutContainer = new HorizontalLayoutContainer();
     HorizontalLayoutData hLayoutData = new HorizontalLayoutData(140, 1.0, new Margins(5, 0, 5, 5));
@@ -243,7 +243,7 @@ public class MainView implements IsWidget {
     ContentPanel north = new ContentPanel();
     north.setHeading("What are you looking for?");
     north.add(selectorLayoutContainer);
-    northPanel.add(north, new VerticalLayoutData(1.0, .75));
+    northPanel.add(north, new VerticalLayoutData(1.0, .6));
     
     filterView = new PortalLayoutContainer(1);
     filterView.setSpacing(10);
@@ -276,11 +276,11 @@ public class MainView implements IsWidget {
     northData.setMargins(new Margins(5));
 
     BorderLayoutData westData = new BorderLayoutData(220);
-    westData.setMargins(new Margins(0));
+    westData.setMargins(new Margins(5));
     westData.setCollapsible(true);
     westData.setCollapseHeaderVisible(true);
 
-    MarginData centerData = new MarginData(0);
+    MarginData centerData = new MarginData(5);
 
     view = new BorderLayoutContainer();
     view.setBorders(borders);

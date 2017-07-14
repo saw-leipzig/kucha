@@ -601,6 +601,7 @@ public class CaveEditor extends AbstractEditor {
 				caveGroupNameField.addValidator(new MinLengthValidator(2));
 				caveGroupNameField.addValidator(new MaxLengthValidator(32));
 				caveGroupNameField.setValue("");
+				caveGroupNameField.setWidth(200);
 				newCaveGroupFP.add(caveGroupNameField);
 				TextButton saveButton = new TextButton("save");
 				saveButton.addSelectHandler(new SelectHandler() {
@@ -627,18 +628,18 @@ public class CaveEditor extends AbstractEditor {
 					}
 				});
 				newCaveGroupFP.addButton(saveButton);
-				TextButton closeButton = new TextButton("close");
-				closeButton.addSelectHandler(new SelectHandler() {
+				TextButton cancelButton = new TextButton("cancel");
+				cancelButton.addSelectHandler(new SelectHandler() {
 					
 					@Override
 					public void onSelect(SelectEvent event) {
 						addNewCaveGroupDialog.hide();
 					}
 				});
-				newCaveGroupFP.addButton(closeButton);
+				newCaveGroupFP.addButton(cancelButton);
 //				newCaveGroupFP.setSize("250", "150");
 				addNewCaveGroupDialog.add(newCaveGroupFP);
-				addNewCaveGroupDialog.setSize("250px", "150px");
+//				addNewCaveGroupDialog.setSize("250px", "150px");
 				addNewCaveGroupDialog.setModal(true);
 				addNewCaveGroupDialog.center();
 			}
