@@ -107,7 +107,7 @@ public class UserLogin extends SimpleContainer {
 		usernameField.setEmptyText("username");
 		passwordField = new PasswordField();
 		passwordField.setEmptyText("password");
-		loginButton = new TextButton("submit");
+		loginButton = new TextButton("login");
 		loginButton.addSelectHandler(new SelectHandler() {
 
 			@Override
@@ -118,7 +118,7 @@ public class UserLogin extends SimpleContainer {
 		loginView.add(loginHeadline, new HorizontalLayoutData(1.0, 1.0, new Margins(5)));
 		loginView.add(usernameField, new HorizontalLayoutData(120.0, 1.0, new Margins(5)));
 		loginView.add(passwordField, new HorizontalLayoutData(120.0, 1.0, new Margins(5)));
-		loginView.add(loginButton, new HorizontalLayoutData(50.0, 1.0, new Margins(5)));
+		loginView.add(loginButton, new HorizontalLayoutData(50.0, 30.0, new Margins(5)));
 	}
 
 	private void initUserView() {
@@ -134,7 +134,7 @@ public class UserLogin extends SimpleContainer {
 		});
     headline.setHTML("<h1>Welcome to the Kucha Information System</h1>");
 		userView.add(headline, new HorizontalLayoutData(1.0, 1.0, new Margins(5)));
-		userView.add(logoutButton, new HorizontalLayoutData(50.0, 1.0, new Margins(5)));
+		userView.add(logoutButton, new HorizontalLayoutData(50.0, 30.0, new Margins(5)));
 	}
 
 	public int getAccessRights() {

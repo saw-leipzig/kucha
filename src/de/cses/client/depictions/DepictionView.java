@@ -106,4 +106,20 @@ public class DepictionView extends AbstractView {
 		return depictionEntry;
 	}
 
+	@Override
+	public void closeRequest() {
+		super.closeRequest();
+		// try to refresh the master image
+		dbService.getMasterImageEntryForDepiction(depictionEntry.getDepictionID(), new AsyncCallback<ImageEntry>() {
+
+			@Override
+			public void onFailure(Throwable caught) { } // nothing happens, just leave the old master image
+
+			@Override
+			public void onSuccess(ImageEntry result) {
+				setHTML(dvTemplates.view(UriUtils.fromString("resource?imageID=" + result.getImageID() + "&thumb=80"), depictionEntry.getDepictionID()));
+			}
+		});
+	}
+
 }
