@@ -265,10 +265,10 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 
 		attributePanel = new FramedPanel();
 		shortNameField = new TextField();
-		shortNameField.setWidth(300);
-		shortNameField.setToolTip("A short name needs 3 to 12 characters");
 		shortNameField.addValidator(new MinLengthValidator(3));
 		shortNameField.addValidator(new MaxLengthValidator(12));
+		shortNameField.setWidth(300);
+		shortNameField.setValue("");
 		attributePanel.setHeading("Short Name");
 		attributePanel.add(shortNameField);
 		editPanel.add(attributePanel);
