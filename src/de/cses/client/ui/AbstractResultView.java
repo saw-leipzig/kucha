@@ -38,7 +38,7 @@ public abstract class AbstractResultView extends Portlet {
 	
 	protected static final int MAX_HEIGHT = 700;
 	protected static final int MIN_HEIGHT = 300;
-	private ToolButton searchToolButton, saveToolButton, plusToolButton;
+	private ToolButton searchToolButton, saveToolButton, plusToolButton, resetButton;
 	private FlowLayoutContainer resultContainer;
 	private MarginData resultLayoutData;
 
@@ -87,6 +87,17 @@ public abstract class AbstractResultView extends Portlet {
 		});
 		getHeader().addTool(toolButton);
 		
+		resetButton = new ToolButton(ToolButton.REFRESH);
+		resetButton.setToolTip("Reset Results");
+		resetButton.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				reset();
+			}
+		});
+		getHeader().addTool(resetButton);
+		
 		resultContainer = new FlowLayoutContainer();
 		resultContainer.setScrollMode(ScrollMode.AUTOY);
 		resultLayoutData = new MarginData(10);
@@ -100,12 +111,13 @@ public abstract class AbstractResultView extends Portlet {
 	 */
 	public void addResult(Widget view) {
 		// TODO implementation is quite ugly, should be a better way
-		if (view instanceof AbstractView) {
+		if (view instanceof AbstractView && ((AbstractView)view).getEntry() instanceof AbstractEntry) {
+			AbstractEntry droppedEntry = (AbstractEntry)((AbstractView)view).getEntry();
 			Iterator<Widget> widgetIterator = resultContainer.iterator();
 			while (widgetIterator.hasNext()) {
 				Widget w = widgetIterator.next();
-				if (w instanceof AbstractView) {
-					if (((AbstractView)w).getEntry().equals(((AbstractView)view).getEntry())){
+				if (w instanceof AbstractView && ((AbstractView)w).getEntry() instanceof AbstractEntry) {
+					if (((AbstractEntry)((AbstractView)w).getEntry()).uniqueID().equals(droppedEntry.uniqueID())) {
 						return;
 					}
 				}

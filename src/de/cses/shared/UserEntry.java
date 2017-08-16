@@ -130,6 +130,14 @@ public class UserEntry extends AbstractEntry {
 	public void setAccessrights(int accessrights) {
 		this.accessrights = accessrights;
 	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.shared.AbstractEntry#uniqueID()
+	 */
+	@Override
+	public String uniqueID() {
+		return "User-" + userID;
+	}
 	
 	
 

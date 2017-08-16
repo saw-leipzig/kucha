@@ -279,9 +279,14 @@ public class LocationFilter extends AbstractFilter {
 	public ArrayList<String> getSqlWhereClause() {
 		ArrayList<String> result = new ArrayList<String>();
 		if (districtSelection.getValue() != null) {
-			result.add("DistrictID=" + districtSelection.getValue().getDistrictID());
+			result.add("DistrictID = " + districtSelection.getValue().getDistrictID());
 		}
-		
+		if (regionSelection.getValue() != null) {
+			result.add("RegionID = " + regionSelection.getValue().getRegionID());
+		}
+		if (siteSelection.getValue() != null) {
+			result.add("SiteID = " + siteSelection.getValue().getSiteID());
+		}
 		return result;
 	}
 	

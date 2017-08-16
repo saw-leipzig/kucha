@@ -162,4 +162,12 @@ public class MainChamberEntry extends AbstractEntry {
 				+ ", PreservationClassificationID=" + preservationClassificationID + " WHERE MainChamberID=" + mainChamberID;
 	}
 
+	/* (non-Javadoc)
+	 * @see de.cses.shared.AbstractEntry#uniqueID()
+	 */
+	@Override
+	public String uniqueID() {
+		return "MainChamber-" + mainChamberID;
+	}
+
 }

@@ -97,4 +97,12 @@ public class DistrictEntry extends AbstractEntry {
 		return "UPDATE Districts SET Name='" + name + "', SiteID=" + siteID + ", Description='" + description + "', Map='" + map + "', ArialMap='" + arialMap + "' WHERE DistrictID=" + districtID;
 	}
 
+	/* (non-Javadoc)
+	 * @see de.cses.shared.AbstractEntry#uniqueID()
+	 */
+	@Override
+	public String uniqueID() {
+		return "District-" + districtID;
+	}
+
 }

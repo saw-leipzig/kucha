@@ -148,4 +148,12 @@ public class AntechamberEntry extends AbstractEntry {
 				+ ", PreservationClassificationID=" + preservationClassificationID + " WHERE AntechamberID=" + antechamberID;
 	}
 
+	/* (non-Javadoc)
+	 * @see de.cses.shared.AbstractEntry#uniqueID()
+	 */
+	@Override
+	public String uniqueID() {
+		return "Antechamber-" + antechamberID;
+	}
+
 }

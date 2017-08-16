@@ -217,4 +217,12 @@ public class RearAreaEntry extends AbstractEntry {
 				+ rearAreaID;
 	}
 
+	/* (non-Javadoc)
+	 * @see de.cses.shared.AbstractEntry#uniqueID()
+	 */
+	@Override
+	public String uniqueID() {
+		return "RearArea-" + rearAreaID;
+	}
+
 }

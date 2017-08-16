@@ -252,7 +252,7 @@ public class MainView implements IsWidget {
 		searchTextPanel = new Portlet();
 		searchTextPanel.add(searchText);
 		searchTextPanel.setHeading("search for");
-		filterView.add(searchTextPanel, 0);		
+//		filterView.add(searchTextPanel, 0);		
 
 		searchButton = new TextButton("search");
 		searchButton.addSelectHandler(new SelectHandler() {

@@ -13,10 +13,19 @@
  */
 package de.cses.client.images;
 
-import com.google.gwt.user.client.ui.Widget;
-import com.sencha.gxt.widget.core.client.button.TextButton;
+import java.util.ArrayList;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.sencha.gxt.dnd.core.client.DndDropEvent;
+import com.sencha.gxt.dnd.core.client.DropTarget;
+
+import de.cses.client.DatabaseService;
+import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.depictions.DepictionView;
 import de.cses.client.ui.AbstractResultView;
+import de.cses.shared.DepictionEntry;
+import de.cses.shared.ImageEntry;
 
 /**
  * @author alingnau
@@ -24,12 +33,38 @@ import de.cses.client.ui.AbstractResultView;
  */
 public class ImageResultView extends AbstractResultView {
 
+	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
+	
 	/**
 	 * @param title
 	 */
 	public ImageResultView(String title) {
 		super(title);
 		setHeight(300);
-	}
+		
+		DropTarget target = new DropTarget(this) {
 
+			@Override
+			protected void onDragDrop(DndDropEvent event) {
+				super.onDragDrop(event);
+				if (event.getData() instanceof DepictionEntry) {
+					int depictionID = ((DepictionEntry) event.getData()).getDepictionID();
+					dbService.getRelatedImages(depictionID, new AsyncCallback<ArrayList<ImageEntry>>() {
+						
+						@Override
+						public void onSuccess(ArrayList<ImageEntry> result) {
+							
+							for (ImageEntry ie : result) {
+								addResult(new ImageView(ie));
+							}
+						}
+						
+						@Override
+						public void onFailure(Throwable caught) { }
+					});
+				}
+			}
+		};
+	}
+		
 }
