@@ -70,6 +70,14 @@ public class CaveGroupEntry extends AbstractEntry {
 	public void setName(String name) {
 		this.name = name;
 	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.shared.AbstractEntry#uniqueID()
+	 */
+	@Override
+	public String uniqueID() {
+		return "CaveGroup-" + caveGroupID;
+	}
 	
 	
 

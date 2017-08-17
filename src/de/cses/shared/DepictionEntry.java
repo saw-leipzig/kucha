@@ -267,4 +267,12 @@ public class DepictionEntry extends AbstractEntry {
 				+ absoluteLeft + ", AbsoluteTop=" + absoluteTop + ", IconographyID=" + iconographyID + " WHERE DepictionID=" + depictionID; 
 	}
 
+	/* (non-Javadoc)
+	 * @see de.cses.shared.AbstractEntry#uniqueID()
+	 */
+	@Override
+	public String uniqueID() {
+		return "Depiction-" + depictionID;
+	}
+
 }

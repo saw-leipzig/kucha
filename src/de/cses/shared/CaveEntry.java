@@ -217,4 +217,12 @@ public class CaveEntry extends AbstractEntry {
 		this.caveGroupID = caveGroupID;
 	}
 
+	/* (non-Javadoc)
+	 * @see de.cses.shared.AbstractEntry#uniqueID()
+	 */
+	@Override
+	public String uniqueID() {
+		return "Cave-" + caveID;
+	}
+
 }

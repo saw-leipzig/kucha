@@ -162,4 +162,12 @@ public class ImageEntry extends AbstractEntry {
 	public void setShortName(String shortName) {
 		this.shortName = shortName;
 	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.shared.AbstractEntry#uniqueID()
+	 */
+	@Override
+	public String uniqueID() {
+		return "Image-" + imageID;
+	}
 }

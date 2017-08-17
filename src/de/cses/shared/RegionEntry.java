@@ -95,4 +95,12 @@ public class RegionEntry extends AbstractEntry {
 		return "UPDATE Regions SET PhoneticName='" + phoneticName + "', OriginalName='" + originalName + "', EnglishName='" + englishName + "', SiteID=" + siteID + "WHERE RegionID=" + regionID;
 	}
 
+	/* (non-Javadoc)
+	 * @see de.cses.shared.AbstractEntry#uniqueID()
+	 */
+	@Override
+	public String uniqueID() {
+		return "Region-" + regionID;
+	}
+
 }
