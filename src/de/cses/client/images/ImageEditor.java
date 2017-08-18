@@ -540,7 +540,7 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 				} else {
 					selectedItem.setType("map");
 				}
-				dbService.updateEntry(selectedItem.getUpdateSql(), new AsyncCallback<Boolean>() {
+				dbService.updateImageEntry(selectedItem, new AsyncCallback<Boolean>() {
 					public void onFailure(Throwable caught) {
 						Info.display("Error", "Problem with database connection!");
 					}

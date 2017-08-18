@@ -345,7 +345,7 @@ public class SingleImageEditor extends AbstractEditor {
 				// only of the yes button is selected, we will perform the command
 				// to simplify we just ignore the no button event by doing nothing
 
-				dbService.updateEntry(imgEntry.getUpdateSql(), new AsyncCallback<Boolean>() {
+				dbService.updateImageEntry(imgEntry, new AsyncCallback<Boolean>() {
 					public void onFailure(Throwable caught) {
 						Info.display("ERROR", "Image information has NOT been updated!");
 					}

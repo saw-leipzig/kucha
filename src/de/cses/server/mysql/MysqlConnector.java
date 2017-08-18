@@ -171,27 +171,34 @@ public class MysqlConnector {
 	 * @return auto incremented primary key 'ImageID'
 	 */
 	public synchronized ImageEntry createNewImageEntry() {
-		ImageEntry result = new ImageEntry();
+		ImageEntry entry = new ImageEntry();
 		Connection dbc = getConnection();
-		Statement stmt;
-		int generatedKey = -1;
+		PreparedStatement pstmt;
+
 		try {
-			stmt = dbc.createStatement();
-			stmt.execute(result.getInsertSql(), Statement.RETURN_GENERATED_KEYS);
-			ResultSet keys = stmt.getGeneratedKeys();
+			pstmt = dbc.prepareStatement(
+					"INSERT INTO Images (Filename, Title, ShortName, Copyright, PhotographerID, Comment, Date, ImageType) VALUES (?, ?, ?, ?, ?, ?, ?)");
+			pstmt.setString(1, entry.getTitle());
+			pstmt.setString(2, entry.getShortName());
+			pstmt.setString(3, entry.getCopyright());
+			pstmt.setInt(4, entry.getPhotographerID());
+			pstmt.setString(5, entry.getComment());
+			pstmt.setString(6, entry.getDate());
+			pstmt.setString(7, entry.getType());
+			pstmt.execute();
+			ResultSet keys = pstmt.getGeneratedKeys();
 			if (keys.first()) {
 				// there should only be 1 key returned here but we need to modify this
 				// in case
 				// we have requested multiple new entries. works for the moment
-				result.setImageID(keys.getInt(1));
+				entry.setImageID(keys.getInt(1));
 			}
 			keys.close();
-			stmt.close();
+			pstmt.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			return null;
 		}
-
-		return result;
+		return entry;
 	}
 
 	/**
@@ -972,6 +979,12 @@ public class MysqlConnector {
 		return "saved";
 	}
 
+	/**
+	 * Updates the information of the entry given as parameter in the SQL database.
+	 * 
+	 * @param entry
+	 * @return
+	 */
 	public Boolean updateImageEntry(ImageEntry entry) {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
