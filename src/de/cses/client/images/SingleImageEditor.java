@@ -51,6 +51,7 @@ import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.Validator;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
+import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
@@ -154,7 +155,7 @@ public class SingleImageEditor extends AbstractEditor {
 		imageContainer = new FlowLayoutContainer();
 		// VerticalPanel imgPanel = new VerticalPanel();
 		VerticalPanel editPanel = new VerticalPanel();
-
+		
 		FramedPanel attributePanel = new FramedPanel();
 		titleField = new TextField();
 		titleField.addValidator(new MaxLengthValidator(128));
@@ -163,21 +164,12 @@ public class SingleImageEditor extends AbstractEditor {
 			@Override
 			public List<EditorError> validate(Editor<String> editor, String value) {
 				List<EditorError> errors = new ArrayList<EditorError>();
-				if ("New Image".equals(value)) {
+				if (value.contains("New Image")) {
 					errors.add(new MockEditorError() {
 
 						@Override
 						public String getMessage() {
-							return "Please change at least the title of the uploaded image!";
-						}
-					});
-				}
-				if (value.contains("'")) {
-					errors.add(new MockEditorError() {
-
-						@Override
-						public String getMessage() {
-							return "Quotes [' and \"] cannot be used!";
+							return "Please don't use 'New Image' as part of the title!";
 						}
 					});
 				}
@@ -193,6 +185,7 @@ public class SingleImageEditor extends AbstractEditor {
 		attributePanel = new FramedPanel();
 		shortNameField = new TextField();
 		shortNameField.addValidator(new MaxLengthValidator(12));
+//		shortNameField.addValidator(noQuoteValidator);
 		shortNameField.setWidth(300);
 		attributePanel.setHeading("Short Name");
 		shortNameField.setValue(imgEntry.getShortName());
@@ -203,6 +196,7 @@ public class SingleImageEditor extends AbstractEditor {
 		copyrightField = new TextField();
 		copyrightField.setWidth(300);
 		copyrightField.addValidator(new MaxLengthValidator(64));
+//		copyrightField.addValidator(noQuoteValidator);
 		copyrightField.setValue(imgEntry.getCopyright());
 		attributePanel.setHeading("Copyright");
 		attributePanel.add(copyrightField);
@@ -212,6 +206,7 @@ public class SingleImageEditor extends AbstractEditor {
 		commentArea = new TextArea();
 		commentArea.setSize("300px", "100px");
 		commentArea.setValue(imgEntry.getComment());
+//		commentArea.addValidator(noQuoteValidator);
 		attributePanel.add(commentArea);
 		attributePanel.setHeading("Comment");
 		editPanel.add(attributePanel);
@@ -401,7 +396,7 @@ public class SingleImageEditor extends AbstractEditor {
 	// }
 	//
 	private void updateImageEntry() {
-		imgEntry.setTitle(titleField.getCurrentValue().replaceAll("'", "\u0027"));
+		imgEntry.setTitle(titleField.getCurrentValue());
 		imgEntry.setShortName(shortNameField.getCurrentValue());
 		imgEntry.setCopyright(copyrightField.getCurrentValue());
 		imgEntry.setComment(commentArea.getCurrentValue());

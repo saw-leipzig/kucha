@@ -57,6 +57,7 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.Validator;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
+import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 import com.sencha.gxt.widget.core.client.info.Info;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
@@ -236,21 +237,12 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 			@Override
 			public List<EditorError> validate(Editor<String> editor, String value) {
 				List<EditorError> errors = new ArrayList<EditorError>();
-				if ("New Image".equals(value)) {
+				if (value.contains("New Image")) {
 					errors.add(new MockEditorError() {
 
 						@Override
 						public String getMessage() {
-							return "Please change at least the title of the uploaded image!";
-						}
-					});
-				}
-				if (value.contains("'")) {
-					errors.add(new MockEditorError() {
-
-						@Override
-						public String getMessage() {
-							return "Quotes [' and \"] cannot be used!";
+							return "Please don't use 'New Image' as part of the title!";
 						}
 					});
 				}
@@ -535,7 +527,7 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 			public void onSelect(SelectEvent event) {
 				// only of the yes button is selected, we will perform the command
 				// to simplify we just ignore the no button event by doing nothing
-				selectedItem.setTitle(titleField.getCurrentValue().replaceAll("'", "\u0027"));
+				selectedItem.setTitle(titleField.getCurrentValue());
 				selectedItem.setShortName(shortNameField.getCurrentValue());
 				selectedItem.setCopyright(copyrightField.getCurrentValue());
 				selectedItem.setComment(commentArea.getCurrentValue());

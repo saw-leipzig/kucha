@@ -477,4 +477,13 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		return connector.userLogin(username, password);
 	}
 
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#updateImageEntry(de.cses.shared.ImageEntry)
+	 */
+	@Override
+	public boolean updateImageEntry(ImageEntry imgEntry) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.updateImageEntry(imgEntry);
+	}
+
 }

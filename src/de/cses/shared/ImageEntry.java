@@ -131,7 +131,7 @@ public class ImageEntry extends AbstractEntry {
 	 */
 	@Override
 	public String getUpdateSql() {
-		return "UPDATE Images SET Title='" + title + "', ShortName='" + shortName + "', Copyright='" + copyright + "', PhotographerID=" + photographerID + ", Comment='" + comment 
+		return "UPDATE Images SET Title='" + title + "', ShortName='" + shortName + "', Copyright='" + copyright + "', PhotographerID=" + photographerID + ", Comment='" + comment.replaceAll("'", "''") 
 				+ "', Date='" + date + "', ImageType='" + type + "'  WHERE ImageID=" + imageID;
 	}
 
