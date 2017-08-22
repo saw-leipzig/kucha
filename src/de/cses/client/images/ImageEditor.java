@@ -77,7 +77,7 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 
 	private TextField titleField;
 	private TextField shortNameField;
-	private TextField copyrightField;
+	private TextArea copyrightArea;
 	private TextArea commentArea;
 	private TextField dateField;
 	private ComboBox<PhotographerEntry> photographerSelection;
@@ -240,7 +240,7 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 					ImageEntry selectedImageItem = event.getSelection().get(0);
 					titleField.setValue(selectedImageItem.getTitle());
 					shortNameField.setValue(selectedImageItem.getShortName());
-					copyrightField.setValue(selectedImageItem.getCopyright());
+					copyrightArea.setValue(selectedImageItem.getCopyright());
 					commentArea.setValue(selectedImageItem.getComment());
 					dateField.setValue(selectedImageItem.getDate());
 					photographerSelection.setValue(photographerEntryList.findModelWithKey(Integer.toString(selectedImageItem.getPhotographerID())), true);
@@ -288,11 +288,11 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 		editPanel.add(attributePanel);
 
 		attributePanel = new FramedPanel();
-		copyrightField = new TextField();
-		copyrightField.addValidator(new MaxLengthValidator(64));
-		copyrightField.setWidth(300);
+		copyrightArea = new TextArea();
+		copyrightArea.addValidator(new MaxLengthValidator(128));
+		copyrightArea.setSize("300px", "50px");
 		attributePanel.setHeading("Copyright");
-		attributePanel.add(copyrightField);
+		attributePanel.add(copyrightArea);
 		editPanel.add(attributePanel);
 
 		attributePanel = new FramedPanel();
@@ -556,7 +556,7 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 				// to simplify we just ignore the no button event by doing nothing
 				selectedItem.setTitle(titleField.getCurrentValue());
 				selectedItem.setShortName(shortNameField.getCurrentValue());
-				selectedItem.setCopyright(copyrightField.getCurrentValue());
+				selectedItem.setCopyright(copyrightArea.getCurrentValue());
 				selectedItem.setComment(commentArea.getCurrentValue());
 				selectedItem.setDate(dateField.getCurrentValue());
 				selectedItem.setPhotographerID(photographerSelection.getCurrentValue()!=null ? photographerSelection.getCurrentValue().getPhotographerID() : 0);
@@ -611,7 +611,7 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 	 * @return
 	 */
 	private boolean verifyInputs() {
-		return titleField.isValid() && shortNameField.isValid() && copyrightField.validate() && dateField.validate();
+		return titleField.isValid() && shortNameField.isValid() && copyrightArea.validate() && dateField.validate();
 	}
 
 	

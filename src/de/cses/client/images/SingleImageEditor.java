@@ -64,7 +64,7 @@ public class SingleImageEditor extends AbstractEditor {
 
 	private TextField titleField;
 	private TextField shortNameField;
-	private TextField copyrightField;
+	private TextArea copyrightArea;
 	private TextArea commentArea;
 	private TextField dateField;
 	private ComboBox<PhotographerEntry> authorSelection;
@@ -218,7 +218,6 @@ public class SingleImageEditor extends AbstractEditor {
 		attributePanel = new FramedPanel();
 		shortNameField = new TextField();
 		shortNameField.addValidator(new MaxLengthValidator(12));
-//		shortNameField.addValidator(noQuoteValidator);
 		shortNameField.setWidth(300);
 		attributePanel.setHeading("Short Name");
 		shortNameField.setValue(imgEntry.getShortName());
@@ -226,20 +225,18 @@ public class SingleImageEditor extends AbstractEditor {
 		editPanel.add(attributePanel);
 
 		attributePanel = new FramedPanel();
-		copyrightField = new TextField();
-		copyrightField.setWidth(300);
-		copyrightField.addValidator(new MaxLengthValidator(64));
-//		copyrightField.addValidator(noQuoteValidator);
-		copyrightField.setValue(imgEntry.getCopyright());
+		copyrightArea = new TextArea();
+		copyrightArea.setSize("300px", "50px");
+		copyrightArea.addValidator(new MaxLengthValidator(128));
+		copyrightArea.setValue(imgEntry.getCopyright());
 		attributePanel.setHeading("Copyright");
-		attributePanel.add(copyrightField);
+		attributePanel.add(copyrightArea);
 		editPanel.add(attributePanel);
 
 		attributePanel = new FramedPanel();
 		commentArea = new TextArea();
 		commentArea.setSize("300px", "100px");
 		commentArea.setValue(imgEntry.getComment());
-//		commentArea.addValidator(noQuoteValidator);
 		attributePanel.add(commentArea);
 		attributePanel.setHeading("Comment");
 		editPanel.add(attributePanel);
@@ -400,7 +397,7 @@ public class SingleImageEditor extends AbstractEditor {
 	private void updateImageEntry() {
 		imgEntry.setTitle(titleField.getCurrentValue());
 		imgEntry.setShortName(shortNameField.getCurrentValue());
-		imgEntry.setCopyright(copyrightField.getCurrentValue());
+		imgEntry.setCopyright(copyrightArea.getCurrentValue());
 		imgEntry.setComment(commentArea.getCurrentValue());
 		imgEntry.setDate(dateField.getCurrentValue());
 		imgEntry.setPhotographerID(authorSelection.getCurrentValue() != null ? authorSelection.getCurrentValue().getPhotographerID() : 0);
@@ -411,7 +408,7 @@ public class SingleImageEditor extends AbstractEditor {
 	 * @return
 	 */
 	private boolean verifyInputs() {
-		return titleField.isValid() && shortNameField.isValid() && copyrightField.validate() && dateField.validate();
+		return titleField.isValid() && shortNameField.isValid() && copyrightArea.validate() && dateField.validate();
 	}
 
 }
