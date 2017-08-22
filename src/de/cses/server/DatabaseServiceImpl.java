@@ -32,6 +32,7 @@ import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
+import de.cses.shared.ImageTypeEntry;
 import de.cses.shared.MainChamberEntry;
 import de.cses.shared.OrientationEntry;
 import de.cses.shared.MainTypologicalClass;
@@ -475,6 +476,24 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public UserEntry userLogin(String username, String password) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.userLogin(username, password);
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#updateImageEntry(de.cses.shared.ImageEntry)
+	 */
+	@Override
+	public boolean updateImageEntry(ImageEntry imgEntry) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.updateImageEntry(imgEntry);
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#getImageTypes()
+	 */
+	@Override
+	public ArrayList<ImageTypeEntry> getImageTypes() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getImageTypes();
 	}
 
 }

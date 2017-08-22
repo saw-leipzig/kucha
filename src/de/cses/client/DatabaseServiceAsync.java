@@ -30,6 +30,7 @@ import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
+import de.cses.shared.ImageTypeEntry;
 import de.cses.shared.MainChamberEntry;
 import de.cses.shared.OrientationEntry;
 import de.cses.shared.MainTypologicalClass;
@@ -192,5 +193,9 @@ public interface DatabaseServiceAsync {
 	void getCaveGroups(AsyncCallback<ArrayList<CaveGroupEntry>> asyncCallback) throws IllegalArgumentException;
 
 	void userLogin(String username, String password, AsyncCallback<UserEntry> asyncCallback) throws IllegalArgumentException;
+
+	void updateImageEntry(ImageEntry imgEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
+
+	void getImageTypes(AsyncCallback<ArrayList<ImageTypeEntry>> asyncCallback) throws IllegalArgumentException;
 
 	}
