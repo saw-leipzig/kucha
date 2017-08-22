@@ -15,13 +15,13 @@ package de.cses.shared;
 
 public class ImageEntry extends AbstractEntry {
 
-	private int imageID, photographerID;
-	private String copyright, comment, filename, title, shortName, type, date;
+	private int imageID, photographerID, imageTypeID;
+	private String copyright, comment, filename, title, shortName, date;
 
 	public static final int FILENAME = 2;
 
 	public ImageEntry() {
-		this(0, "", "", "", "", 0, "", "", "");
+		this(0, "", "", "", "", 0, "", "", 1);
 	}
 	
 	/**
@@ -35,7 +35,7 @@ public class ImageEntry extends AbstractEntry {
 	 * @param captureDate
 	 */
 	public ImageEntry(int imageID, String filename, String title, String shortName, String copyright,
-			int photographerID, String comment, String type, String date) {
+			int photographerID, String comment, String date, int imageTypeID) {
 		this.imageID = imageID;
 		this.filename = filename;
 		this.title = title;
@@ -43,8 +43,8 @@ public class ImageEntry extends AbstractEntry {
 		this.copyright = copyright;
 		this.photographerID = photographerID;
 		this.comment = comment;
-		this.type = type;
 		this.date = date;
+		this.setImageTypeID(imageTypeID);
 	}
 
 	public int getImageID() {
@@ -95,14 +95,6 @@ public class ImageEntry extends AbstractEntry {
 		this.comment = comment;
 	}
 
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
 	/**
 	 * 
 	 * @param imageID
@@ -122,8 +114,7 @@ public class ImageEntry extends AbstractEntry {
 	 */
 	@Override
 	public String getInsertSql() {
-		return "INSERT INTO Images (Filename, Title, ShortName, Copyright, PhotographerID, Comment, Date, ImageType) VALUES ('" + filename + "', '" + title + "', '" + shortName + "', '" + copyright + "'," 
-				+ photographerID + ", '" + comment + "', '" + date + "', '" + type + "')";
+		return "";
 	}
 
 	/* (non-Javadoc)
@@ -131,8 +122,7 @@ public class ImageEntry extends AbstractEntry {
 	 */
 	@Override
 	public String getUpdateSql() {
-		return "UPDATE Images SET Title='" + title + "', ShortName='" + shortName + "', Copyright='" + copyright + "', PhotographerID=" + photographerID + ", Comment='" + comment.replaceAll("'", "''") 
-				+ "', Date='" + date + "', ImageType='" + type + "'  WHERE ImageID=" + imageID;
+		return "";
 	}
 
 	/**
@@ -169,5 +159,19 @@ public class ImageEntry extends AbstractEntry {
 	@Override
 	public String uniqueID() {
 		return "Image-" + imageID;
+	}
+
+	/**
+	 * @return the imageTypeID
+	 */
+	public int getImageTypeID() {
+		return imageTypeID;
+	}
+
+	/**
+	 * @param imageTypeID the imageTypeID to set
+	 */
+	public void setImageTypeID(int imageTypeID) {
+		this.imageTypeID = imageTypeID;
 	}
 }

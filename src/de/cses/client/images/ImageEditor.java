@@ -20,6 +20,8 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.editor.client.testing.MockEditorError;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
@@ -34,6 +36,7 @@ import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
+import com.sencha.gxt.core.client.XTemplates.XTemplate;
 import com.sencha.gxt.core.client.util.Rectangle;
 import com.sencha.gxt.core.client.util.ToggleGroup;
 import com.sencha.gxt.data.shared.LabelProvider;
@@ -64,7 +67,10 @@ import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.Selecti
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.images.SingleImageEditor.ImageTypeProperties;
+import de.cses.client.images.SingleImageEditor.ImageTypeViewTemplates;
 import de.cses.shared.ImageEntry;
+import de.cses.shared.ImageTypeEntry;
 import de.cses.shared.PhotographerEntry;
 
 public class ImageEditor implements IsWidget, ImageUploadListener {
@@ -82,6 +88,9 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 	private ListStore<PhotographerEntry> photographerEntryList;
 	private ListView<ImageEntry, ImageEntry> imageListView;
 	private ArrayList<ImageEditorListener> editorListenerList;
+	private ComboBox<ImageTypeEntry> imageTypeSelection;
+	private ImageTypeProperties imageTypeProps;
+	private ListStore<ImageTypeEntry> imageTypeEntryList;
 
 	/**
 	 * Create a remote service proxy to talk to the server-side service.
@@ -90,9 +99,6 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 	private TextField searchField;
 	private StoreFilter<ImageEntry> searchFilter;
 	private StoreFilter<ImageEntry> newImageFilter;
-	private Radio rPhoto;
-	private Radio rSketch;
-	private Radio rMap;
 
 	interface ImageProperties extends PropertyAccess<ImageEntry> {
 		ModelKeyProvider<ImageEntry> imageID();
@@ -104,6 +110,16 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 		ModelKeyProvider<PhotographerEntry> photographerID();
 
 		LabelProvider<PhotographerEntry> name();
+	}
+
+	interface ImageTypeProperties extends PropertyAccess<ImageTypeEntry> {
+		ModelKeyProvider<ImageTypeEntry> imageTypeID();
+		LabelProvider<ImageTypeEntry> name();
+	}
+
+	interface ImageTypeViewTemplates extends XTemplates {
+		@XTemplate("<div>{name}</div>")
+		SafeHtml imageTypeLabel(String name);
 	}
 
 	/**
@@ -133,7 +149,6 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 		editorListenerList = new ArrayList<ImageEditorListener>();
 		editorListenerList.add(listener);
 		properties = GWT.create(ImageProperties.class);
-		photographerProps = GWT.create(PhotographerProperties.class);
 		imageEntryList = new ListStore<ImageEntry>(properties.imageID());
 		newImageFilter = new StoreFilter<ImageEntry>() {
 			@Override
@@ -144,7 +159,10 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 			}
 		};
 
+		photographerProps = GWT.create(PhotographerProperties.class);
 		photographerEntryList = new ListStore<PhotographerEntry>(photographerProps.photographerID());
+		imageTypeProps = GWT.create(ImageTypeProperties.class);
+		imageTypeEntryList = new ListStore<ImageTypeEntry>(imageTypeProps.imageTypeID());
 
 		dbService.getPhotographer(new AsyncCallback<ArrayList<PhotographerEntry>>() {
 
@@ -159,6 +177,23 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 				for (PhotographerEntry pe : result) {
 					photographerEntryList.add(pe);
 				}
+			}
+		});
+		
+		dbService.getImageTypes(new AsyncCallback<ArrayList<ImageTypeEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onSuccess(ArrayList<ImageTypeEntry> result) {
+				for (ImageTypeEntry ite : result) {
+					imageTypeEntryList.add(ite);
+				}
+//				imageTypeSelection.setValue(imageTypeEntryList.findModelWithKey(Integer.toString(imgEntry.getImageTypeID())));
 			}
 		});
 
@@ -208,21 +243,8 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 					copyrightField.setValue(selectedImageItem.getCopyright());
 					commentArea.setValue(selectedImageItem.getComment());
 					dateField.setValue(selectedImageItem.getDate());
-					photographerSelection
-							.setValue(photographerEntryList.findModelWithKey(Integer.toString(selectedImageItem.getPhotographerID())), true);
-					switch (selectedImageItem.getType()) {
-					case "photo":
-						rPhoto.setValue(true);
-						break;
-					case "sketch":
-						rSketch.setValue(true);
-						break;
-					case "map":
-						rMap.setValue(true);
-						break;
-					default:
-						break;
-					}
+					photographerSelection.setValue(photographerEntryList.findModelWithKey(Integer.toString(selectedImageItem.getPhotographerID())), true);
+					imageTypeSelection.setValue(imageTypeEntryList.findModelWithKey(Integer.toString(selectedImageItem.getImageTypeID())));
 				}
 			}
 		});
@@ -306,22 +328,27 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 		editPanel.add(attributePanel);
 
 		attributePanel = new FramedPanel();
-		rPhoto = new Radio();
-		rPhoto.setBoxLabel("Photo");
-		rSketch = new Radio();
-		rSketch.setBoxLabel("Sketch");
-		rMap = new Radio();
-		rMap.setBoxLabel("Map");
-		ToggleGroup tg = new ToggleGroup();
-		tg.add(rPhoto);
-		tg.add(rSketch);
-		tg.add(rMap);
-		HorizontalPanel rbPanel = new HorizontalPanel();
-		rbPanel.add(rPhoto);
-		rbPanel.add(rSketch);
-		rbPanel.add(rMap);
-		rbPanel.setWidth("250px");
-		attributePanel.add(rbPanel);
+		imageTypeSelection = new ComboBox<ImageTypeEntry>(imageTypeEntryList, imageTypeProps.name(),
+				new AbstractSafeHtmlRenderer<ImageTypeEntry>() {
+
+					@Override
+					public SafeHtml render(ImageTypeEntry item) {
+						final ImageTypeViewTemplates itvTemplates = GWT.create(ImageTypeViewTemplates.class);
+						return itvTemplates.imageTypeLabel(item.getName());
+					}
+				});
+		imageTypeSelection.setEmptyText("select image type");
+		imageTypeSelection.setTypeAhead(false);
+		imageTypeSelection.setEditable(false);
+		imageTypeSelection.setTriggerAction(TriggerAction.ALL);
+//		imageTypeSelection.addSelectionHandler(new SelectionHandler<ImageTypeEntry>() {
+//			
+//			@Override
+//			public void onSelection(SelectionEvent<ImageTypeEntry> event) {
+//				imgEntry.setImageTypeID(event.getSelectedItem().getImageTypeID());
+//			}
+//		});
+		attributePanel.add(imageTypeSelection);
 		attributePanel.setHeading("Image Type");
 		editPanel.add(attributePanel);
 		
@@ -533,13 +560,7 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 				selectedItem.setComment(commentArea.getCurrentValue());
 				selectedItem.setDate(dateField.getCurrentValue());
 				selectedItem.setPhotographerID(photographerSelection.getCurrentValue()!=null ? photographerSelection.getCurrentValue().getPhotographerID() : 0);
-				if (rPhoto.isEnabled()) {
-					selectedItem.setType("photo");
-				} else if (rSketch.isEnabled()) {
-					selectedItem.setType("sketch");
-				} else {
-					selectedItem.setType("map");
-				}
+				selectedItem.setImageTypeID(imageTypeSelection.getCurrentValue().getImageTypeID());
 				dbService.updateImageEntry(selectedItem, new AsyncCallback<Boolean>() {
 					public void onFailure(Throwable caught) {
 						Info.display("Error", "Problem with database connection!");

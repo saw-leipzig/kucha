@@ -20,6 +20,8 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.editor.client.testing.MockEditorError;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
@@ -33,7 +35,6 @@ import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.core.client.util.Rectangle;
-import com.sencha.gxt.core.client.util.ToggleGroup;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
@@ -46,18 +47,17 @@ import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
-import com.sencha.gxt.widget.core.client.form.Radio;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.Validator;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
-import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.shared.ImageEntry;
+import de.cses.shared.ImageTypeEntry;
 import de.cses.shared.PhotographerEntry;
 
 public class SingleImageEditor extends AbstractEditor {
@@ -71,14 +71,14 @@ public class SingleImageEditor extends AbstractEditor {
 	private FramedPanel panel;
 	private PhotographerProperties photographerProps;
 	private ListStore<PhotographerEntry> photographerEntryList;
+	private ComboBox<ImageTypeEntry> imageTypeSelection;
+	private ImageTypeProperties imageTypeProps;
+	private ListStore<ImageTypeEntry> imageTypeEntryList;
 
 	/**
 	 * Create a remote service proxy to talk to the server-side service.
 	 */
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
-	private Radio rPhoto;
-	private Radio rSketch;
-	private Radio rMap;
 	private ImageEntry imgEntry;
 	private FlowLayoutContainer imageContainer;
 
@@ -111,6 +111,16 @@ public class SingleImageEditor extends AbstractEditor {
 		SafeHtml photographer(String name);
 	}
 
+	interface ImageTypeProperties extends PropertyAccess<ImageTypeEntry> {
+		ModelKeyProvider<ImageTypeEntry> imageTypeID();
+		LabelProvider<ImageTypeEntry> name();
+	}
+
+	interface ImageTypeViewTemplates extends XTemplates {
+		@XTemplate("<div>{name}</div>")
+		SafeHtml imageTypeLabel(String name);
+	}
+
 	/**
 	 * This widget allows to edit the information of an ImageEntry, i.e. an image in the database. It also allows for uploading new images to
 	 * the database.
@@ -120,6 +130,12 @@ public class SingleImageEditor extends AbstractEditor {
 
 		photographerProps = GWT.create(PhotographerProperties.class);
 		photographerEntryList = new ListStore<PhotographerEntry>(photographerProps.photographerID());
+		
+		imageTypeProps = GWT.create(ImageTypeProperties.class);
+		imageTypeEntryList = new ListStore<ImageTypeEntry>(imageTypeProps.imageTypeID());
+		
+		initPanel();
+		
 		dbService.getPhotographer(new AsyncCallback<ArrayList<PhotographerEntry>>() {
 
 			@Override
@@ -133,6 +149,23 @@ public class SingleImageEditor extends AbstractEditor {
 				for (PhotographerEntry pe : result) {
 					photographerEntryList.add(pe);
 				}
+			}
+		});
+		
+		dbService.getImageTypes(new AsyncCallback<ArrayList<ImageTypeEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onSuccess(ArrayList<ImageTypeEntry> result) {
+				for (ImageTypeEntry ite : result) {
+					imageTypeEntryList.add(ite);
+				}
+				imageTypeSelection.setValue(imageTypeEntryList.findModelWithKey(Integer.toString(imgEntry.getImageTypeID())));
 			}
 		});
 
@@ -239,36 +272,29 @@ public class SingleImageEditor extends AbstractEditor {
 		editPanel.add(attributePanel);
 
 		attributePanel = new FramedPanel();
-		rPhoto = new Radio();
-		rPhoto.setBoxLabel("Photo");
-		rSketch = new Radio();
-		rSketch.setBoxLabel("Sketch");
-		rMap = new Radio();
-		rMap.setBoxLabel("Map");
-		ToggleGroup tg = new ToggleGroup();
-		tg.add(rPhoto);
-		tg.add(rSketch);
-		tg.add(rMap);
-		HorizontalPanel rbPanel = new HorizontalPanel();
-		rbPanel.add(rPhoto);
-		rbPanel.add(rSketch);
-		rbPanel.add(rMap);
-		rbPanel.setWidth("100%");
-		attributePanel.add(rbPanel);
+		imageTypeSelection = new ComboBox<ImageTypeEntry>(imageTypeEntryList, imageTypeProps.name(),
+				new AbstractSafeHtmlRenderer<ImageTypeEntry>() {
+
+					@Override
+					public SafeHtml render(ImageTypeEntry item) {
+						final ImageTypeViewTemplates itvTemplates = GWT.create(ImageTypeViewTemplates.class);
+						return itvTemplates.imageTypeLabel(item.getName());
+					}
+				});
+		imageTypeSelection.setEmptyText("select image type");
+		imageTypeSelection.setTypeAhead(false);
+		imageTypeSelection.setEditable(false);
+		imageTypeSelection.setTriggerAction(TriggerAction.ALL);
+		imageTypeSelection.addSelectionHandler(new SelectionHandler<ImageTypeEntry>() {
+			
+			@Override
+			public void onSelection(SelectionEvent<ImageTypeEntry> event) {
+				imgEntry.setImageTypeID(event.getSelectedItem().getImageTypeID());
+			}
+		});
+
+		attributePanel.add(imageTypeSelection);
 		attributePanel.setHeading("Image Type");
-		switch (imgEntry.getType()) {
-		case "photo":
-			rPhoto.setValue(true);
-			break;
-		case "sketch":
-			rSketch.setValue(true);
-			break;
-		case "map":
-			rMap.setValue(true);
-			break;
-		default:
-			break;
-		}
 		editPanel.add(attributePanel);
 
 		TextButton cancelButton = new TextButton("cancel");
@@ -371,30 +397,6 @@ public class SingleImageEditor extends AbstractEditor {
 
 	}
 
-	// /**
-	// *
-	// */
-	// private void showTitleWarningDialog() {
-	// Dialog warning = new Dialog();
-	// warning.setHeading("A problem occurred!");
-	// warning.setWidth(300);
-	// warning.setResizable(false);
-	// warning.setHideOnButtonClick(true);
-	// warning.setPredefinedButtons(PredefinedButton.OK);
-	// warning.setBodyStyleName("pad-text");
-	// warning.getBody().addClassName("pad-text");
-	// warning.add(new Label(
-	// "Please change at least the title of the uploaded image! If necessary, all other information can be changed at a later time."));
-	// warning.show();
-	// // constrain the dialog to the viewport (for small mobile screen sizes)
-	// Rectangle bounds = warning.getElement().getBounds();
-	// Rectangle adjusted = warning.getElement().adjustForConstraints(bounds);
-	// if (adjusted.getWidth() != bounds.getWidth() || adjusted.getHeight() != bounds.getHeight()) {
-	// warning.setPixelSize(adjusted.getWidth(), adjusted.getHeight());
-	// }
-	// return;
-	// }
-	//
 	private void updateImageEntry() {
 		imgEntry.setTitle(titleField.getCurrentValue());
 		imgEntry.setShortName(shortNameField.getCurrentValue());
@@ -402,13 +404,7 @@ public class SingleImageEditor extends AbstractEditor {
 		imgEntry.setComment(commentArea.getCurrentValue());
 		imgEntry.setDate(dateField.getCurrentValue());
 		imgEntry.setPhotographerID(authorSelection.getCurrentValue() != null ? authorSelection.getCurrentValue().getPhotographerID() : 0);
-		if (rPhoto.isEnabled()) {
-			imgEntry.setType("photo");
-		} else if (rSketch.isEnabled()) {
-			imgEntry.setType("sketch");
-		} else {
-			imgEntry.setType("map");
-		}
+		imgEntry.setImageTypeID(imageTypeSelection.getCurrentValue().getImageTypeID());
 	}
 
 	/**

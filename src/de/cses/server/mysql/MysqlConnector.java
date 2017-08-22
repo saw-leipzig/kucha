@@ -34,6 +34,7 @@ import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
+import de.cses.shared.ImageTypeEntry;
 import de.cses.shared.MainChamberEntry;
 import de.cses.shared.MainTypologicalClass;
 import de.cses.shared.OrientationEntry;
@@ -177,14 +178,14 @@ public class MysqlConnector {
 
 		try {
 			pstmt = dbc.prepareStatement(
-					"INSERT INTO Images (Filename, Title, ShortName, Copyright, PhotographerID, Comment, Date, ImageType) VALUES (?, ?, ?, ?, ?, ?, ?)");
+					"INSERT INTO Images (Filename, Title, ShortName, Copyright, PhotographerID, Comment, Date, ImageTypeID) VALUES (?, ?, ?, ?, ?, ?, ?)");
 			pstmt.setString(1, entry.getTitle());
 			pstmt.setString(2, entry.getShortName());
 			pstmt.setString(3, entry.getCopyright());
 			pstmt.setInt(4, entry.getPhotographerID());
 			pstmt.setString(5, entry.getComment());
 			pstmt.setString(6, entry.getDate());
-			pstmt.setString(7, entry.getType());
+			pstmt.setInt(7, entry.getImageTypeID());
 			pstmt.execute();
 			ResultSet keys = pstmt.getGeneratedKeys();
 			if (keys.first()) {
@@ -339,8 +340,7 @@ public class MysqlConnector {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Images");
 			while (rs.next()) {
 				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
-						rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"), rs.getString("ImageType"),
-						rs.getString("Date")));
+						rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID")));
 			}
 			rs.close();
 			stmt.close();
@@ -360,8 +360,7 @@ public class MysqlConnector {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Images WHERE " + sqlWhere);
 			while (rs.next()) {
 				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
-						rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"), rs.getString("ImageType"),
-						rs.getString("Date")));
+						rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID")));
 			}
 			rs.close();
 			stmt.close();
@@ -386,8 +385,7 @@ public class MysqlConnector {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Images WHERE ImageID=" + imageID);
 			if (rs.first()) {
 				result = new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
-						rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"), rs.getString("ImageType"),
-						rs.getString("Date"));
+						rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"));
 			}
 			rs.close();
 			stmt.close();
@@ -930,8 +928,7 @@ public class MysqlConnector {
 					"SELECT * FROM Images WHERE ImageID IN (SELECT ImageID FROM DepictionImageRelation WHERE DepictionID=" + depictionID + ")");
 			while (rs.next()) {
 				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
-						rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"), rs.getString("ImageType"),
-						rs.getString("Date")));
+						rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID")));
 			}
 			rs.close();
 			stmt.close();
@@ -990,14 +987,14 @@ public class MysqlConnector {
 		PreparedStatement pstmt;
 		try {
 			pstmt = dbc.prepareStatement(
-					"UPDATE Images SET Title = ?, ShortName = ?, Copyright = ?, PhotographerID = ?, Comment = ?, Date = ?, ImageType = ? WHERE ImageID = ?");
+					"UPDATE Images SET Title = ?, ShortName = ?, Copyright = ?, PhotographerID = ?, Comment = ?, Date = ?, ImageTypeID = ? WHERE ImageID = ?");
 			pstmt.setString(1, entry.getTitle());
 			pstmt.setString(2, entry.getShortName());
 			pstmt.setString(3, entry.getCopyright());
 			pstmt.setInt(4, entry.getPhotographerID());
 			pstmt.setString(5, entry.getComment());
 			pstmt.setString(6, entry.getDate());
-			pstmt.setString(7, entry.getType());
+			pstmt.setInt(7, entry.getImageTypeID());
 			pstmt.setInt(8, entry.getImageID());
 			pstmt.execute();
 			pstmt.close();
@@ -1554,6 +1551,28 @@ public class MysqlConnector {
 						rs.getString("Email"), rs.getString("Affiliation"), rs.getInt("Accessrights"));
 			} else {
 				System.err.println("pw hash: " + password);
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return result;
+	}
+
+	/**
+	 * @return
+	 */
+	public ArrayList<ImageTypeEntry> getImageTypes() {
+		ArrayList<ImageTypeEntry> result = new ArrayList<ImageTypeEntry>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM ImageTypes");
+			while (rs.next()) {
+				result.add(new ImageTypeEntry(rs.getInt("ImageTypeID"), rs.getString("Name")));
 			}
 			rs.close();
 			stmt.close();

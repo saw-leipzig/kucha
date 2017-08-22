@@ -30,6 +30,7 @@ import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
+import de.cses.shared.ImageTypeEntry;
 import de.cses.shared.MainChamberEntry;
 import de.cses.shared.MainTypologicalClass;
 import de.cses.shared.OrientationEntry;
@@ -172,5 +173,7 @@ public interface DatabaseService extends RemoteService {
 	UserEntry userLogin(String username, String password) throws IllegalArgumentException;
 
 	boolean updateImageEntry(ImageEntry imgEntry) throws IllegalArgumentException;
+
+	ArrayList<ImageTypeEntry> getImageTypes() throws IllegalArgumentException;
 
 }
