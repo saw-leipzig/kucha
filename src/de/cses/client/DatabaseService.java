@@ -180,6 +180,6 @@ public interface DatabaseService extends RemoteService {
 	int insertDepictionEntry(DepictionEntry depictionEntry, List<ImageEntry> imgEntryList, List<PictorialElementEntry> peEntryList);
 
 	boolean updateDepictionEntry(DepictionEntry correspondingDepictionEntry, List<ImageEntry> imgEntryList,
-			List<PictorialElementEntry> selectedPEList);
+			List<PictorialElementEntry> selectedPEList) throws IllegalArgumentException;
 
 }
