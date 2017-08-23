@@ -1637,7 +1637,7 @@ public class MysqlConnector {
 	 * @param correspondingDepictionEntry
 	 * @param imgEntryList
 	 * @param selectedPEList
-	 * @return
+	 * @return <code>true</code> when operation is successful
 	 */
 	public boolean updateDepictionEntry(DepictionEntry de, List<ImageEntry> imgEntryList, List<PictorialElementEntry> selectedPEList) {
 		Connection dbc = getConnection();
