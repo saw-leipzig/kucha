@@ -61,7 +61,7 @@ public interface DatabaseServiceAsync {
 
 	void getImages(AsyncCallback<ArrayList<ImageEntry>> callback) throws IllegalArgumentException;
 
-	void getImages(String where, AsyncCallback<ArrayList<ImageEntry>> callback) throws IllegalArgumentException;
+	void getImages(String sqlWhere, AsyncCallback<ArrayList<ImageEntry>> callback) throws IllegalArgumentException;
 
 	void getPhotographer(AsyncCallback<ArrayList<PhotographerEntry>> callback) throws IllegalArgumentException;
 

@@ -59,16 +59,16 @@ public class ImageSelector implements IsWidget {
 	private ListView<ImageEntry, ImageEntry> imageListView;
 	private ArrayList<ImageSelectorListener> selectorListener;
 
-	public static final String PHOTO = "photo";
-	public static final String SKETCH = "sketch";
-	public static final String MAP = "map";
+	public static final int PHOTO = 1;
+	public static final int SKETCH = 2;
+	public static final int MAP = 3;
 
 	/**
 	 * Create a remote service proxy to talk to the server-side service.
 	 */
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	private FlowLayoutContainer imageContainer;
-	private String imageType;
+	private int imageTypeID;
 	private TextField searchField;
 	private StoreFilter<ImageEntry> searchFilter;
 	private FramedPanel mainPanel = null;
@@ -101,8 +101,8 @@ public class ImageSelector implements IsWidget {
 	 * @see ImageSelector.MAP
 	 * @param listener
 	 */
-	public ImageSelector(String imageType, ImageSelectorListener listener) {
-		this.imageType = imageType;
+	public ImageSelector(int imageTypeID, ImageSelectorListener listener) {
+		this.imageTypeID = imageTypeID;
 		selectorListener = new ArrayList<ImageSelectorListener>();
 		selectorListener.add(listener);
 		properties = GWT.create(ImageProperties.class);
@@ -254,7 +254,7 @@ public class ImageSelector implements IsWidget {
 	 * @see imageEntryList
 	 */
 	private void refreshImages() {
-		dbService.getImages("ImageType='" + imageType + "'", new AsyncCallback<ArrayList<ImageEntry>>() {
+		dbService.getImages("ImageTypeID=" + imageTypeID, new AsyncCallback<ArrayList<ImageEntry>>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
