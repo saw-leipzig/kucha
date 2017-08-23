@@ -1644,10 +1644,9 @@ public class MysqlConnector {
 		PreparedStatement pstmt;
 		try {
 			pstmt = dbc.prepareStatement(
-					"INSERT INTO Depictions (StyleID, Inscriptions, Dating, Height, Width, PurchaseDate, VendorID, ExpeditionID, "
-					+ "CurrentLocationID, Description, BackgroundColour, Material, GeneralRemarks, OtherSuggestedIdentifications, "
-					+ "StoryID, CaveID, WallID, AbsoluteLeft, AbsoluteTop, IconographyID) "
-					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+					"UPDATE Depictions SET StyleID=?, Inscriptions=?, Dating=?, Height=?, Width=?, PurchaseDate=?, VendorID=?, ExpeditionID=?, "
+							+ "CurrentLocationID=?, Description=?, BackgroundColour=?, Material=?, GeneralRemarks=?, OtherSuggestedIdentifications=?, "
+							+ "StoryID=?, CaveID=?, WallID=?, AbsoluteLeft=?, AbsoluteTop=?, IconographyID=? WHERE DepictionID=?"); 
 			pstmt.setInt(1, de.getStyleID());
 			pstmt.setString(2, de.getInscriptions());
 			pstmt.setString(3, de.getDating());
@@ -1668,6 +1667,7 @@ public class MysqlConnector {
 			pstmt.setInt(18, de.getAbsoluteLeft());
 			pstmt.setInt(19, de.getAbsoluteTop());
 			pstmt.setInt(20, de.getIconographyID());
+			pstmt.setInt(21, de.getDepictionID());
 			pstmt.close();
 		} catch (SQLException ex) {
 			ex.printStackTrace();
