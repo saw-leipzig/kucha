@@ -24,8 +24,6 @@ import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.SimpleContainer;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.PasswordField;
@@ -79,7 +77,13 @@ public class UserLogin extends SimpleContainer {
 
 			@Override
 			public void onSuccess(UserEntry result) {
-				setUser(result);
+				if (result != null) {
+					setUser(result);
+				} else {
+					Util.showWarning("Login Message", "Login error! Please check username / password!");
+					usernameField.reset();
+					passwordField.reset();
+				}
 			}
 		});
 	}
