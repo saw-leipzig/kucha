@@ -20,6 +20,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import de.cses.server.ServerProperties;
 import de.cses.shared.AntechamberEntry;
@@ -1582,4 +1584,83 @@ public class MysqlConnector {
 		}
 		return result;
 	}
+
+	/**
+	 * @param list 
+	 * @param depictionEntry
+	 * @return
+	 */
+	public int insertDepictionEntry(DepictionEntry de, List<ImageEntry> imgEntryList, List<PictorialElementEntry> peEntryList) {
+		int newDepictionID;
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement(
+					"INSERT INTO Depictions (StyleID, Inscriptions, Dating, Height, Width, PurchaseDate, VendorID, ExpeditionID, "
+					+ "CurrentLocationID, Description, BackgroundColour, Material, GeneralRemarks, OtherSuggestedIdentifications, "
+					+ "StoryID, CaveID, WallID, AbsoluteLeft, AbsoluteTop, IconographyID) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			pstmt.setInt(1, de.getStyleID());
+			pstmt.setString(2, de.getInscriptions());
+			pstmt.setString(3, de.getDating());
+			pstmt.setDouble(4, de.getHeight());
+			pstmt.setDouble(5, de.getWidth());
+			pstmt.setDate(6, de.getPurchaseDate());
+			pstmt.setInt(7, de.getVendorID());
+			pstmt.setInt(8, de.getExpeditionID());
+			pstmt.setInt(9, de.getCurrentLocationID());
+			pstmt.setString(10, de.getDescription());
+			pstmt.setString(11, de.getBackgroundColour());
+			pstmt.setString(12, de.getMaterial());
+			pstmt.setString(13, de.getGeneralRemarks());
+			pstmt.setString(14, de.getOtherSuggestedIdentifications());
+			pstmt.setInt(15, de.getStoryID());
+			pstmt.setInt(16, de.getCaveID());
+			pstmt.setInt(17, de.getWallID());
+			pstmt.setInt(18, de.getAbsoluteLeft());
+			pstmt.setInt(19, de.getAbsoluteTop());
+			pstmt.setInt(20, de.getIconographyID());
+			newDepictionID = pstmt.executeUpdate();
+			pstmt.close();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			return 0;
+		}
+		if (newDepictionID > 0) {
+			updateDepictionImageRelation(newDepictionID, imgEntryList);
+			updateDepictionPERelation(newDepictionID, peEntryList);
+		}
+		return newDepictionID;
+	}
+	
+	private void updateDepictionImageRelation(int depictionID, List<ImageEntry> imgEntryList) {
+		deleteEntry("DELETE FROM DepictionImageRelation WHERE DepictionID=" + depictionID);
+		String insertSqlString = "INSERT INTO DepictionImageRelation VALUES ";
+		if (imgEntryList.size() > 0) {
+			for (ImageEntry entry : imgEntryList) {
+				if (imgEntryList.indexOf(entry) == 0) {
+					insertSqlString = insertSqlString.concat("(" + depictionID + ", " + entry.getImageID() + ", " + true + ")");
+				} else {
+					insertSqlString = insertSqlString.concat(", (" + depictionID + ", " + entry.getImageID() + ", " + false + ")");
+				}
+			}
+			insertEntry(insertSqlString);
+		}
+	}
+	
+	private void updateDepictionPERelation(int depictionID, List<PictorialElementEntry> peEntryList) {
+		deleteEntry("DELETE FROM DepictionPERelation WHERE DepictionID=" + depictionID);
+		String insertSqlString = "INSERT INTO DepictionPERelation VALUES ";
+		Iterator<PictorialElementEntry> it = peEntryList.iterator();
+		while (it.hasNext()) {
+			PictorialElementEntry entry = it.next();
+			if (peEntryList.indexOf(entry) == 0) {
+				insertSqlString = insertSqlString.concat("(" + depictionID + ", " + entry.getPictorialElementID() + ")");
+			} else {
+				insertSqlString = insertSqlString.concat(", (" + depictionID + ", " + entry.getPictorialElementID() + ")");
+			}
+		}
+		insertEntry(insertSqlString);
+	}
+	
 }

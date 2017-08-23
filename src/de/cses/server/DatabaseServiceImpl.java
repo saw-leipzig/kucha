@@ -14,6 +14,7 @@
 package de.cses.server;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -494,6 +495,15 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public ArrayList<ImageTypeEntry> getImageTypes() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getImageTypes();
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#insertDepictionEntry(de.cses.shared.DepictionEntry, java.util.List)
+	 */
+	@Override
+	public int insertDepictionEntry(DepictionEntry depictionEntry, List<ImageEntry> imgEntryList, List<PictorialElementEntry> peEntryList) {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.insertDepictionEntry(depictionEntry, imgEntryList, peEntryList);
 	}
 
 }

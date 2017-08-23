@@ -847,13 +847,11 @@ public class DepictionEditor extends AbstractEditor {
 	 */
 	protected void saveDepictionEntry() {
 		if (correspondingDepictionEntry.getDepictionID() == 0) {
-			dbService.insertEntry(correspondingDepictionEntry.getInsertSql(), new AsyncCallback<Integer>() {
+			dbService.insertDepictionEntry(correspondingDepictionEntry, imageEntryList.getAll(), peSelector.getSelectedPE(), new AsyncCallback<Integer>() {
 
 				@Override
 				public void onSuccess(Integer newDepictionID) {
 					correspondingDepictionEntry.setDepictionID(newDepictionID.intValue());
-					insertDepictionImageRelations();
-					insertDepictionPERelations();
 				}
 
 				@Override
@@ -873,103 +871,103 @@ public class DepictionEditor extends AbstractEditor {
 				public void onSuccess(Boolean updateSucessful) {
 				}
 			});
-			dbService.deleteEntry("DELETE FROM DepictionImageRelation WHERE DepictionID=" + correspondingDepictionEntry.getDepictionID(),
-					new AsyncCallback<Boolean>() {
-
-						@Override
-						public void onFailure(Throwable caught) {
-							caught.printStackTrace();
-						}
-
-						@Override
-						public void onSuccess(Boolean diRelationResult) {
-							insertDepictionImageRelations();
-						}
-					});
-			dbService.deleteEntry("DELETE FROM DepictionPERelation WHERE DepictionID=" + correspondingDepictionEntry.getDepictionID(),
-					new AsyncCallback<Boolean>() {
-
-						@Override
-						public void onFailure(Throwable caught) {
-							caught.printStackTrace();
-						}
-
-						@Override
-						public void onSuccess(Boolean dpeRelationResult) {
-							insertDepictionPERelations();
-						}
-					});
+//			dbService.deleteEntry("DELETE FROM DepictionImageRelation WHERE DepictionID=" + correspondingDepictionEntry.getDepictionID(),
+//					new AsyncCallback<Boolean>() {
+//
+//						@Override
+//						public void onFailure(Throwable caught) {
+//							caught.printStackTrace();
+//						}
+//
+//						@Override
+//						public void onSuccess(Boolean diRelationResult) {
+//							insertDepictionImageRelations();
+//						}
+//					});
+//			dbService.deleteEntry("DELETE FROM DepictionPERelation WHERE DepictionID=" + correspondingDepictionEntry.getDepictionID(),
+//					new AsyncCallback<Boolean>() {
+//
+//						@Override
+//						public void onFailure(Throwable caught) {
+//							caught.printStackTrace();
+//						}
+//
+//						@Override
+//						public void onSuccess(Boolean dpeRelationResult) {
+//							insertDepictionPERelations();
+//						}
+//					});
 		}
 		closeEditor();
 	}
 
-	/**
-	 * @return <code>true</code> when operation is successful
-	 */
-	private boolean insertDepictionPERelations() {
-		String insertSqlString = "INSERT INTO DepictionPERelation VALUES ";
-		List<PictorialElementEntry> list = peSelector.getSelectedPE();
-		if (list.isEmpty()) {
-			return false;
-		}
-//		Info.display("List<PictorialElementEntry>", "no. = " + list.size() + " first = " + list.get(0).getText());
-		Iterator<PictorialElementEntry> it = list.iterator();
-		while (it.hasNext()) {
-			PictorialElementEntry entry = it.next();
-//			Info.display("entry", entry.getText());
-			if (list.indexOf(entry) == 0) {
-				insertSqlString = insertSqlString
-						.concat("(" + correspondingDepictionEntry.getDepictionID() + ", " + entry.getPictorialElementID() + ")");
-			} else {
-				insertSqlString = insertSqlString
-						.concat(", (" + correspondingDepictionEntry.getDepictionID() + ", " + entry.getPictorialElementID() + ")");
-			}
-		}
-		dbService.insertEntry(insertSqlString, new AsyncCallback<Integer>() {
+//	/**
+//	 * @return <code>true</code> when operation is successful
+//	 */
+//	private boolean insertDepictionPERelations() {
+//		String insertSqlString = "INSERT INTO DepictionPERelation VALUES ";
+//		List<PictorialElementEntry> list = peSelector.getSelectedPE();
+//		if (list.isEmpty()) {
+//			return false;
+//		}
+////		Info.display("List<PictorialElementEntry>", "no. = " + list.size() + " first = " + list.get(0).getText());
+//		Iterator<PictorialElementEntry> it = list.iterator();
+//		while (it.hasNext()) {
+//			PictorialElementEntry entry = it.next();
+////			Info.display("entry", entry.getText());
+//			if (list.indexOf(entry) == 0) {
+//				insertSqlString = insertSqlString
+//						.concat("(" + correspondingDepictionEntry.getDepictionID() + ", " + entry.getPictorialElementID() + ")");
+//			} else {
+//				insertSqlString = insertSqlString
+//						.concat(", (" + correspondingDepictionEntry.getDepictionID() + ", " + entry.getPictorialElementID() + ")");
+//			}
+//		}
+//		dbService.insertEntry(insertSqlString, new AsyncCallback<Integer>() {
+//
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				caught.printStackTrace();
+//			}
+//
+//			@Override
+//			public void onSuccess(Integer insertSqlStringResult) {
+//				// TODO Auto-generated method stub
+//			}
+//		});
+//		return true;
+//	}
 
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(Integer insertSqlStringResult) {
-				// TODO Auto-generated method stub
-			}
-		});
-		return true;
-	}
-
-	/**
-	 * @return <code>true</code> when operation is successful
-	 */
-	private boolean insertDepictionImageRelations() {
-		String insertSqlString = "INSERT INTO DepictionImageRelation VALUES ";
-		if (imageEntryList.size() == 0) {
-			return false;
-		}
-		for (ImageEntry entry : imageEntryList.getAll()) {
-			if (imageEntryList.indexOf(entry) == 0) {
-				insertSqlString = insertSqlString
-						.concat("(" + correspondingDepictionEntry.getDepictionID() + ", " + entry.getImageID() + ", " + true + ")");
-			} else {
-				insertSqlString = insertSqlString
-						.concat(", (" + correspondingDepictionEntry.getDepictionID() + ", " + entry.getImageID() + ", " + false + ")");
-			}
-		}
-		dbService.insertEntry(insertSqlString, new AsyncCallback<Integer>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(Integer insertSqlStringResult) {
-				// TODO Auto-generated method stub
-			}
-		});
-		return true;
-	}
+//	/**
+//	 * @return <code>true</code> when operation is successful
+//	 */
+//	private boolean insertDepictionImageRelations() {
+//		String insertSqlString = "INSERT INTO DepictionImageRelation VALUES ";
+//		if (imageEntryList.size() == 0) {
+//			return false;
+//		}
+//		for (ImageEntry entry : imageEntryList.getAll()) {
+//			if (imageEntryList.indexOf(entry) == 0) {
+//				insertSqlString = insertSqlString
+//						.concat("(" + correspondingDepictionEntry.getDepictionID() + ", " + entry.getImageID() + ", " + true + ")");
+//			} else {
+//				insertSqlString = insertSqlString
+//						.concat(", (" + correspondingDepictionEntry.getDepictionID() + ", " + entry.getImageID() + ", " + false + ")");
+//			}
+//		}
+//		dbService.insertEntry(insertSqlString, new AsyncCallback<Integer>() {
+//
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				caught.printStackTrace();
+//			}
+//
+//			@Override
+//			public void onSuccess(Integer insertSqlStringResult) {
+//				// TODO Auto-generated method stub
+//			}
+//		});
+//		return true;
+//	}
 
 }
