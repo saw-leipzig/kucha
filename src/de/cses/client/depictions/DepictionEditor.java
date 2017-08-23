@@ -860,7 +860,7 @@ public class DepictionEditor extends AbstractEditor {
 				}
 			});
 		} else {
-			dbService.updateEntry(correspondingDepictionEntry.getUpdateSql(), new AsyncCallback<Boolean>() {
+			dbService.updateDepictionEntry(correspondingDepictionEntry, imageEntryList.getAll(), peSelector.getSelectedPE(), new AsyncCallback<Boolean>() {
 
 				@Override
 				public void onFailure(Throwable caught) {

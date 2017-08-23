@@ -506,4 +506,14 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		return connector.insertDepictionEntry(depictionEntry, imgEntryList, peEntryList);
 	}
 
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#updateDepictionEntry(de.cses.shared.DepictionEntry, java.util.List, java.util.List)
+	 */
+	@Override
+	public boolean updateDepictionEntry(DepictionEntry correspondingDepictionEntry, List<ImageEntry> imgEntryList,
+			List<PictorialElementEntry> selectedPEList) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.updateDepictionEntry(correspondingDepictionEntry, imgEntryList, selectedPEList);
+	}
+
 }

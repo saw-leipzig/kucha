@@ -1632,6 +1632,51 @@ public class MysqlConnector {
 		}
 		return newDepictionID;
 	}
+
+	/**
+	 * @param correspondingDepictionEntry
+	 * @param imgEntryList
+	 * @param selectedPEList
+	 * @return
+	 */
+	public boolean updateDepictionEntry(DepictionEntry de, List<ImageEntry> imgEntryList, List<PictorialElementEntry> selectedPEList) {
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement(
+					"INSERT INTO Depictions (StyleID, Inscriptions, Dating, Height, Width, PurchaseDate, VendorID, ExpeditionID, "
+					+ "CurrentLocationID, Description, BackgroundColour, Material, GeneralRemarks, OtherSuggestedIdentifications, "
+					+ "StoryID, CaveID, WallID, AbsoluteLeft, AbsoluteTop, IconographyID) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			pstmt.setInt(1, de.getStyleID());
+			pstmt.setString(2, de.getInscriptions());
+			pstmt.setString(3, de.getDating());
+			pstmt.setDouble(4, de.getHeight());
+			pstmt.setDouble(5, de.getWidth());
+			pstmt.setDate(6, de.getPurchaseDate());
+			pstmt.setInt(7, de.getVendorID());
+			pstmt.setInt(8, de.getExpeditionID());
+			pstmt.setInt(9, de.getCurrentLocationID());
+			pstmt.setString(10, de.getDescription());
+			pstmt.setString(11, de.getBackgroundColour());
+			pstmt.setString(12, de.getMaterial());
+			pstmt.setString(13, de.getGeneralRemarks());
+			pstmt.setString(14, de.getOtherSuggestedIdentifications());
+			pstmt.setInt(15, de.getStoryID());
+			pstmt.setInt(16, de.getCaveID());
+			pstmt.setInt(17, de.getWallID());
+			pstmt.setInt(18, de.getAbsoluteLeft());
+			pstmt.setInt(19, de.getAbsoluteTop());
+			pstmt.setInt(20, de.getIconographyID());
+			pstmt.close();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			return false;
+		}
+		updateDepictionImageRelation(de.getDepictionID(), imgEntryList);
+		updateDepictionPERelation(de.getDepictionID(), selectedPEList);
+		return true;
+	}
 	
 	private void updateDepictionImageRelation(int depictionID, List<ImageEntry> imgEntryList) {
 		deleteEntry("DELETE FROM DepictionImageRelation WHERE DepictionID=" + depictionID);
@@ -1662,5 +1707,5 @@ public class MysqlConnector {
 		}
 		insertEntry(insertSqlString);
 	}
-	
+
 }

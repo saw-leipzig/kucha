@@ -201,4 +201,7 @@ public interface DatabaseServiceAsync {
 
 	void insertDepictionEntry(DepictionEntry depictionEntry, List<ImageEntry> imgEntryList, List<PictorialElementEntry> peEntryList, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 
+	void updateDepictionEntry(DepictionEntry correspondingDepictionEntry, List<ImageEntry> imgEntryList, List<PictorialElementEntry> selectedPEList,
+			AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
+
 	}
