@@ -42,9 +42,9 @@ public class ImageFilter extends AbstractFilter {
 	private Radio andSearch;
 	private Radio orSearch;
 
-	public static final String PHOTO = "photo";
-	public static final String SKETCH = "sketch";
-	public static final String MAP = "map";
+	public static final int PHOTO = 1;
+	public static final int SKETCH = 2;
+	public static final int MAP = 3;
 
 	/**
 	 * @param filterName

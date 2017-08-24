@@ -24,6 +24,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
@@ -40,6 +41,8 @@ import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ListField;
@@ -88,8 +91,8 @@ public class ImageSelector implements IsWidget {
 	 *
 	 */
 	interface ImageViewTemplates extends XTemplates {
-		@XTemplate("<img align=\"center\" margin=\"20\" src=\"{imageUri}\"><br> {title}")
-		SafeHtml image(SafeUri imageUri, String title);
+		@XTemplate("<img align=\"center\" margin=\"20\" src=\"{imageUri}\"><br> {title}<br> {shortName}")
+		SafeHtml image(SafeUri imageUri, String title, String shortName);
 	}
 
 	/**
@@ -122,6 +125,7 @@ public class ImageSelector implements IsWidget {
 
 		mainPanel = new FramedPanel();
 		mainPanel.setHeading("Image Selector");
+		mainPanel.setSize("750", "500");
 		
 		imageListView = new ListView<ImageEntry, ImageEntry>(imageEntryList, new IdentityValueProvider<ImageEntry>() {
 			@Override
@@ -132,8 +136,8 @@ public class ImageSelector implements IsWidget {
 			final ImageViewTemplates imageViewTemplates = GWT.create(ImageViewTemplates.class);
 
 			public SafeHtml render(ImageEntry item) {
-				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=175");
-				return imageViewTemplates.image(imageUri, item.getTitle());
+				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=250");
+				return imageViewTemplates.image(imageUri, item.getTitle(), item.getShortName());
 			}
 
 		}));
@@ -150,10 +154,23 @@ public class ImageSelector implements IsWidget {
 			}
 		});
 
-		imageListView.setSize("180", "350");
+		imageListView.setSize("1.0", "1.0");
 
 		ListField<ImageEntry, ImageEntry> lf = new ListField<ImageEntry, ImageEntry>(imageListView);
-		lf.setSize("180", "305");
+		
+		lf.setSize("1.0", "1.0");
+
+		TextButton previewButton = new TextButton("Preview");
+
+		previewButton.addSelectHandler(new SelectHandler() {
+			@Override
+			public void onSelect(SelectEvent event) {
+				PopupPanel previewPanel = new PopupPanel(true);
+				previewPanel.add(imageContainer);
+				previewPanel.center();
+				previewPanel.show();
+			}
+		});
 
 		TextButton selectButton = new TextButton("Select");
 
@@ -185,7 +202,7 @@ public class ImageSelector implements IsWidget {
 		 * here we add the search for image titles
 		 */
 		searchField = new TextField();
-		searchField.setSize("180", "30");
+		searchField.setSize("1.0", ".5");
 		searchFilter = new StoreFilter<ImageEntry>() {
 			@Override
 			public boolean select(Store<ImageEntry> store, ImageEntry parent, ImageEntry item) {
@@ -218,31 +235,35 @@ public class ImageSelector implements IsWidget {
 		imageContainer = new FlowLayoutContainer();
 		imageContainer.setScrollMode(ScrollMode.AUTO);
 
-		HorizontalPanel hPanel = new HorizontalPanel();
-		VerticalPanel vPanel = new VerticalPanel();
+//		HorizontalPanel hPanel = new HorizontalPanel();
+		HorizontalLayoutContainer hlc = new HorizontalLayoutContainer();
+//		VerticalPanel vPanel = new VerticalPanel();
 
 		FramedPanel fp = new FramedPanel();
-		fp.setHeading("Images");
-		fp.add(lf);
-		vPanel.add(fp);
-
-		fp = new FramedPanel();
 		fp.setHeading("Filter");
 		fp.add(searchField);
 		fp.addButton(searchButton);
 		fp.addButton(resetButton);
-		vPanel.add(fp);
-
-		hPanel.add(vPanel);
-		vPanel = new VerticalPanel();
+		hlc.add(fp, new HorizontalLayoutData(.4, 1.0));
 
 		fp = new FramedPanel();
-		fp.setHeading("Preview");
-		imageContainer.setPixelSize(400, 400);
-		fp.add(imageContainer);
-		hPanel.add(fp);
+		fp.setHeading("Images");
+		fp.add(lf);
+		hlc.add(lf, new HorizontalLayoutData(.6, 1.0));
+//		vPanel.add(fp);
 
-		mainPanel.add(hPanel);
+
+//		hlc.add(vPanel, new HorizontalLayoutData(.35, 1.0));
+//		vPanel = new VerticalPanel();
+
+//		fp = new FramedPanel();
+//		fp.setHeading("Preview");
+//		imageContainer.setPixelSize(400, 400);
+//		fp.add(imageContainer);
+//		hlc.add(fp, new HorizontalLayoutData(.65, 1.0));
+
+		mainPanel.add(hlc);
+		mainPanel.addButton(previewButton);
 		mainPanel.addButton(selectButton);
 		mainPanel.addButton(cancelButton);
 	}
