@@ -21,11 +21,9 @@ import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
 import com.sencha.gxt.core.client.IdentityValueProvider;
@@ -167,7 +165,6 @@ public class ImageSelector implements IsWidget {
 			public void onSelect(SelectEvent event) {
 				PopupPanel previewPanel = new PopupPanel(true);
 				previewPanel.add(imageContainer);
-				previewPanel.setSize("600px", "600px");
 				previewPanel.center();
 				previewPanel.show();
 			}
@@ -234,6 +231,7 @@ public class ImageSelector implements IsWidget {
 		});
 
 		imageContainer = new FlowLayoutContainer();
+		imageContainer.setSize("600px", "600px");
 		imageContainer.setScrollMode(ScrollMode.AUTO);
 
 //		HorizontalPanel hPanel = new HorizontalPanel();
