@@ -46,7 +46,7 @@ public abstract class AbstractFilter implements IsWidget {
 		if (panel == null) {
 			panel = new Portlet();
 			panel.setWidth("100%");
-			panel.setCollapsible(true);
+//			panel.setCollapsible(true);
 			panel.setHeading(filterName);
 			panel.add(getFilterUI());
 		}

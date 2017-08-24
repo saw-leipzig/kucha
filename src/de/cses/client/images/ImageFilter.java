@@ -131,9 +131,9 @@ public class ImageFilter extends AbstractFilter {
 		
 		DualListField<ImageTypeEntry, String> dualListField = new DualListField<ImageTypeEntry, String>(imageTypeEntryList, selectedImagesTypesList, imageTypeProps.name(), new TextCell());
 		dualListField.setEnableDnd(true);
-		dualListField.getUpButton().getParent().removeFromParent();
-    dualListField.getDownButton().setVisible(false);
-    dualListField.getUpButton().setVisible(false);
+//		dualListField.getUpButton().getParent().removeFromParent();
+    dualListField.getDownButton().removeFromParent();
+    dualListField.getUpButton().removeFromParent();
     dualListField.setMode(DualListField.Mode.INSERT);
 		
 		vlc.add(dualListField, new VerticalLayoutData(1.0, .50));
