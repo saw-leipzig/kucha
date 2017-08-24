@@ -101,7 +101,7 @@ public class DistrictEntry extends AbstractEntry {
 	 * @see de.cses.shared.AbstractEntry#uniqueID()
 	 */
 	@Override
-	public String uniqueID() {
+	public String getUniqueID() {
 		return "District-" + districtID;
 	}
 

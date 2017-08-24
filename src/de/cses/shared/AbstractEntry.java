@@ -47,7 +47,7 @@ public abstract class AbstractEntry implements IsSerializable {
 	 * comparable throughout the graphic UI
 	 * @return a unique ID for the specific entry data
 	 */
-	abstract public String uniqueID();
+	abstract public String getUniqueID();
 	
 	
 }

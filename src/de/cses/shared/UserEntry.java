@@ -135,7 +135,7 @@ public class UserEntry extends AbstractEntry {
 	 * @see de.cses.shared.AbstractEntry#uniqueID()
 	 */
 	@Override
-	public String uniqueID() {
+	public String getUniqueID() {
 		return "User-" + userID;
 	}
 	

@@ -221,7 +221,7 @@ public class RearAreaEntry extends AbstractEntry {
 	 * @see de.cses.shared.AbstractEntry#uniqueID()
 	 */
 	@Override
-	public String uniqueID() {
+	public String getUniqueID() {
 		return "RearArea-" + rearAreaID;
 	}
 

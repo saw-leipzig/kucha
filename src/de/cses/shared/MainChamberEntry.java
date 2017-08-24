@@ -166,7 +166,7 @@ public class MainChamberEntry extends AbstractEntry {
 	 * @see de.cses.shared.AbstractEntry#uniqueID()
 	 */
 	@Override
-	public String uniqueID() {
+	public String getUniqueID() {
 		return "MainChamber-" + mainChamberID;
 	}
 

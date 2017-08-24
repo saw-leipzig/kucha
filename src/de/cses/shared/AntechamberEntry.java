@@ -152,7 +152,7 @@ public class AntechamberEntry extends AbstractEntry {
 	 * @see de.cses.shared.AbstractEntry#uniqueID()
 	 */
 	@Override
-	public String uniqueID() {
+	public String getUniqueID() {
 		return "Antechamber-" + antechamberID;
 	}
 

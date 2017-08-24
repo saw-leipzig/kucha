@@ -99,7 +99,7 @@ public class RegionEntry extends AbstractEntry {
 	 * @see de.cses.shared.AbstractEntry#uniqueID()
 	 */
 	@Override
-	public String uniqueID() {
+	public String getUniqueID() {
 		return "Region-" + regionID;
 	}
 
