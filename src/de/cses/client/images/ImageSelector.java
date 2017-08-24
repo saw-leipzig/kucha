@@ -167,6 +167,7 @@ public class ImageSelector implements IsWidget {
 			public void onSelect(SelectEvent event) {
 				PopupPanel previewPanel = new PopupPanel(true);
 				previewPanel.add(imageContainer);
+				previewPanel.setSize("600px", "600px");
 				previewPanel.center();
 				previewPanel.show();
 			}
