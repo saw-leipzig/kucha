@@ -15,30 +15,26 @@ package de.cses.client.ui;
 
 import java.util.ArrayList;
 
+import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
+import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
-import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
-import com.sencha.gxt.widget.core.client.ContentPanel;
-import com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutData;
-import com.sencha.gxt.widget.core.client.container.MarginData;
-import com.sencha.gxt.widget.core.client.container.VBoxLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.VBoxLayoutContainer.VBoxLayoutAlign;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
+import com.sencha.gxt.widget.core.client.form.DualListField;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -61,8 +57,9 @@ public class LocationFilter extends AbstractFilter {
 	private ListStore<DistrictEntry> districtEntryList;
 	private ComboBox<DistrictEntry> districtSelection;
 	private ComboBox<RegionEntry> regionSelection;
-	private ComboBox<SiteEntry> siteSelection;
-	private VerticalPanel vp = null;
+//	private ComboBox<SiteEntry> siteSelection;
+	private DualListField<SiteEntry, String> siteSelection;
+	private ListStore<SiteEntry> selectedSitesList;
 
 	interface DistrictProperties extends PropertyAccess<DistrictEntry> {
 		ModelKeyProvider<DistrictEntry> districtID();
@@ -89,7 +86,9 @@ public class LocationFilter extends AbstractFilter {
 	
 	interface SiteProperties extends PropertyAccess<SiteEntry> {
 		ModelKeyProvider<SiteEntry> siteID();
-		LabelProvider<SiteEntry> name();
+		LabelProvider<SiteEntry> uniqueID();
+		ValueProvider<SiteEntry, String> name();
+		
 	}
 	
 	interface SiteViewTemplates extends XTemplates {
@@ -104,13 +103,17 @@ public class LocationFilter extends AbstractFilter {
 		super(filterName);
 		siteProps = GWT.create(SiteProperties.class);
 		siteEntryList = new ListStore<SiteEntry>(siteProps.siteID());
+		selectedSitesList = new ListStore<SiteEntry>(siteProps.siteID());
+
 		regionProps = GWT.create(RegionProperties.class);
 		regionEntryList = new ListStore<RegionEntry>(regionProps.regionID());
+
 		districtProps = GWT.create(DistrictProperties.class);
 		districtEntryList = new ListStore<DistrictEntry>(districtProps.districtID());
+
+		loadSites();		
 		loadDistricts();
 		loadRegions();
-		loadSites();		
 	}
 
 	/* (non-Javadoc)
@@ -118,23 +121,20 @@ public class LocationFilter extends AbstractFilter {
 	 */
 	@Override
 	protected Widget getFilterUI() {
-		if (vp == null) {
-			vp  = new VerticalPanel();
-//			vp.setWidth("200px");
-//			vp.setSpacing(2);
-//			vp.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-			vp.add(siteSelection);
-			vp.add(districtSelection);
-			vp.add(regionSelection);
-		}
-		VBoxLayoutContainer c = new VBoxLayoutContainer();
-    c.setVBoxLayoutAlign(VBoxLayoutAlign.CENTER);
-    c.setWidth("100%");
-    BoxLayoutData layoutData = new BoxLayoutData(new Margins(5, 0, 0, 0));
-    c.add(siteSelection, layoutData);
-    c.add(districtSelection, layoutData);
-    c.add(regionSelection, layoutData);
-		return c;
+		VerticalLayoutContainer vlc = new VerticalLayoutContainer();
+
+		siteSelection = new DualListField<SiteEntry, String>(siteEntryList, selectedSitesList, siteProps.name(), new TextCell());
+		siteSelection.setEnableDnd(true);
+		siteSelection.getDownButton().removeFromParent();
+		siteSelection.getUpButton().removeFromParent();
+		siteSelection.setMode(DualListField.Mode.INSERT);
+		
+    vlc.add(siteSelection, new VerticalLayoutData(1.0, .5));
+    vlc.add(districtSelection, new VerticalLayoutData(1.0, .25));
+    vlc.add(regionSelection, new VerticalLayoutData(1.0, .25));
+
+    vlc.setHeight("300px");
+		return vlc;
 	}
 	
 	/**
@@ -156,29 +156,6 @@ public class LocationFilter extends AbstractFilter {
 				}
 			}
 		});
-		
-		siteSelection = new ComboBox<SiteEntry>(siteEntryList, siteProps.name(), 
-				new AbstractSafeHtmlRenderer<SiteEntry>() {
-
-					@Override
-					public SafeHtml render(SiteEntry item) {
-						final SiteViewTemplates svTemplates = GWT.create(SiteViewTemplates.class);
-						return svTemplates.siteLabel(item.getName());
-					}
-				});
-		siteSelection.setEmptyText("select site");
-		siteSelection.setTypeAhead(false);
-		siteSelection.setEditable(false);
-		siteSelection.setWidth("100%");
-		siteSelection.setTriggerAction(TriggerAction.ALL);
-		siteSelection.addSelectionHandler(new SelectionHandler<SiteEntry>() {
-
-			@Override
-			public void onSelection(SelectionEvent<SiteEntry> event) {
-				// ToDo
-			}
-		});
-		siteSelection.setWidth(180);	
 	}
 
 	/* 
@@ -225,7 +202,7 @@ public class LocationFilter extends AbstractFilter {
 //				correspondingCaveEntry.setRegionID(event.getSelectedItem().getRegionID());
 			}
 		});
-		regionSelection.setWidth(180);		
+		regionSelection.setWidth(180);
 	}
 
 	/**
@@ -284,9 +261,9 @@ public class LocationFilter extends AbstractFilter {
 		if (regionSelection.getValue() != null) {
 			result.add("RegionID = " + regionSelection.getValue().getRegionID());
 		}
-		if (siteSelection.getValue() != null) {
-			result.add("SiteID = " + siteSelection.getValue().getSiteID());
-		}
+//		if (siteSelection.getValue() != null) {
+//			result.add("SiteID = " + siteSelection.getValue().getSiteID());
+//		}
 		return result;
 	}
 	

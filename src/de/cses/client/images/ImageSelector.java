@@ -201,7 +201,7 @@ public class ImageSelector implements IsWidget {
 				Status s = new Status();
 				s.setBusy("loading image ...");
 				loadZoomInfoWindow.setWidget(s);
-				loadZoomInfoWindow.center();
+				loadZoomInfoWindow.show();
 			}
 		});
 
@@ -270,14 +270,15 @@ public class ImageSelector implements IsWidget {
 //		VerticalPanel vPanel = new VerticalPanel();
 
 		ContentPanel cp = new ContentPanel();
-		FramedPanel fp = new FramedPanel();
-		fp.setHeading("Filter");
+//		FramedPanel fp = new FramedPanel();
+//		fp.setHeading("Filter");
+		cp.setHeaderVisible(false);
 		cp.add(imgFilter);
 		cp.addButton(searchButton);
 		cp.addButton(resetButton);
 		hlc.add(cp, new HorizontalLayoutData(.4, 1.0));
 
-		fp = new FramedPanel();
+		FramedPanel fp = new FramedPanel();
 		fp.setHeading("Images");
 		fp.add(lf);
 		hlc.add(lf, new HorizontalLayoutData(.6, 1.0));
