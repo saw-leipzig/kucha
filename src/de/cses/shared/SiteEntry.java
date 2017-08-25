@@ -84,7 +84,7 @@ public class SiteEntry extends AbstractEntry {
 	 */
 	@Override
 	public String getUniqueID() {
-		return "SiteEntry-"+siteID;
+		return "Site-"+siteID;
 	}
 
 }
