@@ -16,6 +16,9 @@ package de.cses.client.images;
 import java.util.ArrayList;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.event.dom.client.LoadEvent;
+import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
@@ -24,6 +27,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
 import com.sencha.gxt.core.client.IdentityValueProvider;
@@ -33,10 +37,11 @@ import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
-import com.sencha.gxt.data.shared.Store;
-import com.sencha.gxt.data.shared.Store.StoreFilter;
+import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
+import com.sencha.gxt.widget.core.client.Status;
+import com.sencha.gxt.widget.core.client.Window;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
@@ -70,11 +75,14 @@ public class ImageSelector implements IsWidget {
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	private FlowLayoutContainer imageContainer;
 	private int imageTypeID;
-	private TextField searchField;
+//	private TextField searchField;
 //	private StoreFilter<ImageEntry> searchFilter;
 	private ImageFilter imgFilter;
 	private FramedPanel mainPanel = null;
 	private PopupPanel zoomPanel;
+	protected SafeUri zoomImageUri;
+	protected Window loadZoomInfoWindow;
+	private Image zoomImage;
 
 	interface ImageProperties extends PropertyAccess<ImageEntry> {
 		ModelKeyProvider<ImageEntry> imageID();
@@ -134,6 +142,8 @@ public class ImageSelector implements IsWidget {
 		zoomPanel = new PopupPanel(true);
 //		zoomPanel.setSize("600px", "600px");
 		zoomPanel.add(imageContainer);
+		loadZoomInfoWindow = new Window();
+
 		
 		imgFilter = new ImageFilter("Selector Filter");
 		
@@ -157,11 +167,7 @@ public class ImageSelector implements IsWidget {
 			@Override
 			public void onSelectionChanged(SelectionChangedEvent<ImageEntry> event) {
 				ImageEntry item = event.getSelection().get(0);
-				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID());
-				Image img = new Image(imageUri);
-//				img.setSize("1.0", "1.0");
-				imageContainer.clear();
-				imageContainer.add(img);
+				zoomImageUri = UriUtils.fromString("resource?imageID=" + item.getImageID());
 			}
 		});
 
@@ -172,11 +178,30 @@ public class ImageSelector implements IsWidget {
 		lf.setSize("1.0", "1.0");
 
 		TextButton zoomButton = new TextButton("Zoom");
-
+		
+		zoomImage = Image.wrap( Document.get().createImageElement() );
+		zoomImage.addLoadHandler(new LoadHandler() {
+			
+			@Override
+			public void onLoad(LoadEvent event) {
+				loadZoomInfoWindow.hide();
+			}
+		});
+		imageContainer.add(zoomImage);
 		zoomButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
+				zoomImage.setUrl(zoomImageUri);
 				zoomPanel.center();
+				loadZoomInfoWindow.setHeading("Please wait");
+				loadZoomInfoWindow.setModal(true);
+				loadZoomInfoWindow.setPixelSize(150, 50);
+				loadZoomInfoWindow.setMaximizable(false);
+				loadZoomInfoWindow.setClosable(false);
+				Status s = new Status();
+				s.setBusy("loading image ...");
+				loadZoomInfoWindow.setWidget(s);
+				loadZoomInfoWindow.center();
 			}
 		});
 
@@ -244,12 +269,13 @@ public class ImageSelector implements IsWidget {
 		HorizontalLayoutContainer hlc = new HorizontalLayoutContainer();
 //		VerticalPanel vPanel = new VerticalPanel();
 
+		ContentPanel cp = new ContentPanel();
 		FramedPanel fp = new FramedPanel();
 		fp.setHeading("Filter");
-		fp.add(imgFilter);
-		fp.addButton(searchButton);
-		fp.addButton(resetButton);
-		hlc.add(fp, new HorizontalLayoutData(.4, 1.0));
+		cp.add(imgFilter);
+		cp.addButton(searchButton);
+		cp.addButton(resetButton);
+		hlc.add(cp, new HorizontalLayoutData(.4, 1.0));
 
 		fp = new FramedPanel();
 		fp.setHeading("Images");
