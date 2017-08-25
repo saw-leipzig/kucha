@@ -18,14 +18,9 @@ import java.util.List;
 
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.core.client.util.Margins;
@@ -36,13 +31,11 @@ import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
-import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.DualListField;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.shared.DistrictEntry;
-import de.cses.shared.ImageTypeEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 
@@ -241,6 +234,8 @@ public class LocationFilter extends AbstractFilter {
 		ArrayList<String> result = new ArrayList<String>();
 		String districtQuery = "";
 		String regionQuery = "";
+		List<DistrictEntry> nonSelectedDistricts = districtEntryList.getAll();
+		List<RegionEntry> nonSelectedRegions = regionEntryList.getAll();
 		
 		if (selectedDistrictsList.size() > 0) {
 			for (DistrictEntry de : selectedDistrictsList.getAll()) {
@@ -262,10 +257,36 @@ public class LocationFilter extends AbstractFilter {
 			}
 		}
 		
-		
+		if (selectedSitesList.size() > 0) {
+			for (SiteEntry se : selectedSitesList.getAll()) {
+
+				for (DistrictEntry nsde : nonSelectedDistricts) {
+					if (se.getSiteID() == nsde.getSiteID()) {
+						if (districtQuery.isEmpty()) {
+							districtQuery = "" + nsde.getDistrictID();
+						} else {
+							districtQuery = districtQuery.concat(", " + nsde.getDistrictID());
+						}
+					}
+				}
+				
+				for (RegionEntry nsre : nonSelectedRegions) {
+					if (se.getSiteID() == nsre.getSiteID()) {
+						if (regionQuery.isEmpty()) {
+							regionQuery = "" + nsre.getRegionID();
+						} else {
+							regionQuery = regionQuery.concat(", " + nsre.getRegionID());
+						}
+					}
+				}
+			}
+		}
 
 		if (!districtQuery.isEmpty()) {
 			result.add("(DistrictID IN (" + districtQuery + "))");
+		}
+		if (!regionQuery.isEmpty()) {
+			result.add("(RegionID IN (" + regionQuery + "))");
 		}
 		return result;
 	}
