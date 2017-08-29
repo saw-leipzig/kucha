@@ -14,6 +14,8 @@
 package de.cses.client.depictions;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style.BorderStyle;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeHtml;
@@ -109,6 +111,8 @@ public class DepictionView extends AbstractView {
 	@Override
 	public void closeRequest() {
 		super.closeRequest();
+		getElement().getStyle().setBorderColor("#FFA500");
+		getElement().getStyle().setBorderWidth(3.0, Unit.PX);
 		// try to refresh the master image
 		dbService.getMasterImageEntryForDepiction(depictionEntry.getDepictionID(), new AsyncCallback<ImageEntry>() {
 
