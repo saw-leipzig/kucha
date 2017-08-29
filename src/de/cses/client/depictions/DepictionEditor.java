@@ -35,6 +35,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.IdentityValueProvider;
+import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.LabelProvider;
@@ -62,9 +63,11 @@ import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.form.validator.MinNumberValidator;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.Util;
 import de.cses.client.images.ImageSelector;
 import de.cses.client.images.ImageSelectorListener;
 import de.cses.client.ui.AbstractEditor;
@@ -173,7 +176,6 @@ public class DepictionEditor extends AbstractEditor {
 
 	interface StyleProperties extends PropertyAccess<StyleEntry> {
 		ModelKeyProvider<StyleEntry> styleID();
-
 		LabelProvider<StyleEntry> styleName();
 	}
 
@@ -184,8 +186,8 @@ public class DepictionEditor extends AbstractEditor {
 
 	interface ImageProperties extends PropertyAccess<ImageEntry> {
 		ModelKeyProvider<ImageEntry> imageID();
-
 		LabelProvider<ImageEntry> title();
+		ValueProvider<ImageEntry, String> shortName();
 	}
 
 	/**
@@ -441,14 +443,30 @@ public class DepictionEditor extends AbstractEditor {
 		attributePanel.setHeading("Width");
 		widthField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
 		widthField.setWidth("60%");
+		widthField.addValidator(new MinNumberValidator<Double>((double) 0));
 		widthField.setValue(correspondingDepictionEntry.getWidth());
+		widthField.addValueChangeHandler(new ValueChangeHandler<Double>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Double> event) {
+				correspondingDepictionEntry.setWidth(event.getValue());
+			}
+		});
 		attributePanel.add(widthField);
 		dimPanel.add(attributePanel);
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Height");
 		heightField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
 		heightField.setWidth("60%");
+		heightField.addValidator(new MinNumberValidator<Double>((double) 0));
 		heightField.setValue(correspondingDepictionEntry.getHeight());
+		heightField.addValueChangeHandler(new ValueChangeHandler<Double>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Double> event) {
+				correspondingDepictionEntry.setHeight(event.getValue());
+			}
+		});
 		attributePanel.add(heightField);
 		dimPanel.add(attributePanel);
 		vlContainer.add(dimPanel, new VerticalLayoutData(1.0, 1.0/8));
@@ -465,6 +483,13 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		expedSelection.setEmptyText("Select an expedition ...");
+		expedSelection.addSelectionHandler(new SelectionHandler<ExpeditionEntry>() {
+
+			@Override
+			public void onSelection(SelectionEvent<ExpeditionEntry> event) {
+				correspondingDepictionEntry.setExpeditionID(event.getSelectedItem().getExpeditionID());
+			}
+		});
 		expedSelection.setHeight("1.0");
 		expedSelection.setTypeAhead(false);
 		expedSelection.setEditable(false);
@@ -506,19 +531,28 @@ public class DepictionEditor extends AbstractEditor {
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Date purchased");
-		purchaseDateField = new DateField(new DateTimePropertyEditor("dd MMMM yyyy"));
+		purchaseDateField = new DateField(new DateTimePropertyEditor("yyyy"));
 		purchaseDateField.setValue(correspondingDepictionEntry.getPurchaseDate());
+		// TODO add change handler
 		attributePanel.add(purchaseDateField);
 		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0/8));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Current location");
-		
+		// TODO add currentLocationID selector
 		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0/8));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Background colour");
 		backgroundColourField = new TextField();
+		backgroundColourField.setValue(correspondingDepictionEntry.getBackgroundColour());
+		backgroundColourField.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				correspondingDepictionEntry.setBackgroundColour(event.getValue());
+			}
+		});
 		attributePanel.add(backgroundColourField);
 		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0/8));
 
@@ -546,6 +580,7 @@ public class DepictionEditor extends AbstractEditor {
 				wallEditor.setPanel(wallEditorDialog);
 				wallEditorDialog.setModal(true);
 				wallEditorDialog.center();
+				// TODO integrate WallEditor
 //				wallEditorDialog.show();
 			}
 		});
@@ -655,6 +690,13 @@ public class DepictionEditor extends AbstractEditor {
 		datingField = new TextField();
 		datingField.setWidth(130);
 		datingField.setText(correspondingDepictionEntry.getDating());
+		datingField.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				correspondingDepictionEntry.setDating(event.getValue());
+			}
+		});
 		attributePanel.add(datingField);
 		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
 
@@ -814,22 +856,22 @@ public class DepictionEditor extends AbstractEditor {
 		mainPanel.add(view);
 		mainPanel.setSize("900px", "650px");
 
-		TextButton saveButton = new TextButton("Save & Exit");
+		TextButton saveButton = new TextButton("Save");
 		saveButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
 				saveDepictionEntry();
 			}
 		});
-		TextButton cancelButton = new TextButton("Cancel");
-		cancelButton.addSelectHandler(new SelectHandler() {
+		TextButton closeButton = new TextButton("Close");
+		closeButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
 				closeEditor();
 			}
 		});
 		mainPanel.addButton(saveButton);
-		mainPanel.addButton(cancelButton);
+		mainPanel.addButton(closeButton);
 	}
 
 //	/**
@@ -846,14 +888,20 @@ public class DepictionEditor extends AbstractEditor {
 	 * Called when the save button is pressed. Calls <code>DepictionEditorListener.depictionSaved(correspondingDepictionEntry)<code>
 	 */
 	protected void saveDepictionEntry() {
+		ArrayList<ImageEntry> associatedImageEntryList = new ArrayList<ImageEntry>();
+		for (int i=0; i < imageEntryList.size(); ++i) {
+			associatedImageEntryList.add(imageEntryList.get(i));
+		}
+		ArrayList<PictorialElementEntry> selectedPEList = new ArrayList<PictorialElementEntry>();
+		for (PictorialElementEntry pe : peSelector.getSelectedPE()) {
+			selectedPEList.add(pe);
+		}
 		if (correspondingDepictionEntry.getDepictionID() == 0) {
-			dbService.insertEntry(correspondingDepictionEntry.getInsertSql(), new AsyncCallback<Integer>() {
+			dbService.insertDepictionEntry(correspondingDepictionEntry, associatedImageEntryList, selectedPEList, new AsyncCallback<Integer>() {
 
 				@Override
 				public void onSuccess(Integer newDepictionID) {
 					correspondingDepictionEntry.setDepictionID(newDepictionID.intValue());
-					insertDepictionImageRelations();
-					insertDepictionPERelations();
 				}
 
 				@Override
@@ -862,7 +910,7 @@ public class DepictionEditor extends AbstractEditor {
 				}
 			});
 		} else {
-			dbService.updateEntry(correspondingDepictionEntry.getUpdateSql(), new AsyncCallback<Boolean>() {
+			dbService.updateDepictionEntry(correspondingDepictionEntry, associatedImageEntryList, selectedPEList, new AsyncCallback<Boolean>() {
 
 				@Override
 				public void onFailure(Throwable caught) {
@@ -873,103 +921,7 @@ public class DepictionEditor extends AbstractEditor {
 				public void onSuccess(Boolean updateSucessful) {
 				}
 			});
-			dbService.deleteEntry("DELETE FROM DepictionImageRelation WHERE DepictionID=" + correspondingDepictionEntry.getDepictionID(),
-					new AsyncCallback<Boolean>() {
-
-						@Override
-						public void onFailure(Throwable caught) {
-							caught.printStackTrace();
-						}
-
-						@Override
-						public void onSuccess(Boolean diRelationResult) {
-							insertDepictionImageRelations();
-						}
-					});
-			dbService.deleteEntry("DELETE FROM DepictionPERelation WHERE DepictionID=" + correspondingDepictionEntry.getDepictionID(),
-					new AsyncCallback<Boolean>() {
-
-						@Override
-						public void onFailure(Throwable caught) {
-							caught.printStackTrace();
-						}
-
-						@Override
-						public void onSuccess(Boolean dpeRelationResult) {
-							insertDepictionPERelations();
-						}
-					});
 		}
-		closeEditor();
-	}
-
-	/**
-	 * @return <code>true</code> when operation is successful
-	 */
-	private boolean insertDepictionPERelations() {
-		String insertSqlString = "INSERT INTO DepictionPERelation VALUES ";
-		List<PictorialElementEntry> list = peSelector.getSelectedPE();
-		if (list.isEmpty()) {
-			return false;
-		}
-//		Info.display("List<PictorialElementEntry>", "no. = " + list.size() + " first = " + list.get(0).getText());
-		Iterator<PictorialElementEntry> it = list.iterator();
-		while (it.hasNext()) {
-			PictorialElementEntry entry = it.next();
-//			Info.display("entry", entry.getText());
-			if (list.indexOf(entry) == 0) {
-				insertSqlString = insertSqlString
-						.concat("(" + correspondingDepictionEntry.getDepictionID() + ", " + entry.getPictorialElementID() + ")");
-			} else {
-				insertSqlString = insertSqlString
-						.concat(", (" + correspondingDepictionEntry.getDepictionID() + ", " + entry.getPictorialElementID() + ")");
-			}
-		}
-		dbService.insertEntry(insertSqlString, new AsyncCallback<Integer>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(Integer insertSqlStringResult) {
-				// TODO Auto-generated method stub
-			}
-		});
-		return true;
-	}
-
-	/**
-	 * @return <code>true</code> when operation is successful
-	 */
-	private boolean insertDepictionImageRelations() {
-		String insertSqlString = "INSERT INTO DepictionImageRelation VALUES ";
-		if (imageEntryList.size() == 0) {
-			return false;
-		}
-		for (ImageEntry entry : imageEntryList.getAll()) {
-			if (imageEntryList.indexOf(entry) == 0) {
-				insertSqlString = insertSqlString
-						.concat("(" + correspondingDepictionEntry.getDepictionID() + ", " + entry.getImageID() + ", " + true + ")");
-			} else {
-				insertSqlString = insertSqlString
-						.concat(", (" + correspondingDepictionEntry.getDepictionID() + ", " + entry.getImageID() + ", " + false + ")");
-			}
-		}
-		dbService.insertEntry(insertSqlString, new AsyncCallback<Integer>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(Integer insertSqlStringResult) {
-				// TODO Auto-generated method stub
-			}
-		});
-		return true;
 	}
 
 }

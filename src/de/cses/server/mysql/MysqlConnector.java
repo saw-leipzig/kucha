@@ -20,6 +20,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import de.cses.server.ServerProperties;
 import de.cses.shared.AntechamberEntry;
@@ -42,7 +44,6 @@ import de.cses.shared.OrnamentCaveType;
 import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamentFunction;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
-import de.cses.shared.OrientationEntry;
 import de.cses.shared.OrnamentPosition;
 import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PictorialElementEntry;
@@ -91,7 +92,7 @@ public class MysqlConnector {
 	private Connection connection;
 
 	private MysqlConnector() {
-
+		
 		user = serverProperties.getProperty("MysqlConnector.db.user");
 		password = serverProperties.getProperty("MysqlConnector.db.password");
 		url = serverProperties.getProperty("MysqlConnector.db.url");
@@ -207,7 +208,7 @@ public class MysqlConnector {
 	 * 
 	 * @return auto incremented primary key
 	 */
-	public synchronized int insertEntry(String sqlInsert) {
+	public int insertEntry(String sqlInsert) {
 		Connection dbc = getConnection();
 		Statement stmt;
 		int generatedKey = -1;
@@ -237,7 +238,7 @@ public class MysqlConnector {
 	 *          The full sql string including the UPDATE statement
 	 * @return true if sucessful
 	 */
-	public synchronized boolean updateEntry(String sqlUpdate) {
+	public boolean updateEntry(String sqlUpdate) {
 		Connection dbc = getConnection();
 		Statement stmt;
 		try {
@@ -259,7 +260,7 @@ public class MysqlConnector {
 	 *          The full sql string including the DELETE statement
 	 * @return true if sucessful
 	 */
-	public synchronized boolean deleteEntry(String sqlDelete) {
+	public boolean deleteEntry(String sqlDelete) {
 		Connection dbc = getConnection();
 		Statement stmt;
 		try {
@@ -1582,4 +1583,155 @@ public class MysqlConnector {
 		}
 		return result;
 	}
+
+	/**
+	 * @param list 
+	 * @param depictionEntry
+	 * @return
+	 */
+	public int insertDepictionEntry(DepictionEntry de, ArrayList<ImageEntry> imgEntryList, ArrayList<PictorialElementEntry> peEntryList) {
+		int newDepictionID;
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement(
+					"INSERT INTO Depictions (StyleID, Inscriptions, Dating, Height, Width, PurchaseDate, VendorID, ExpeditionID, "
+					+ "CurrentLocationID, Description, BackgroundColour, Material, GeneralRemarks, OtherSuggestedIdentifications, "
+					+ "StoryID, CaveID, WallID, AbsoluteLeft, AbsoluteTop, IconographyID) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			pstmt.setInt(1, de.getStyleID());
+			pstmt.setString(2, de.getInscriptions());
+			pstmt.setString(3, de.getDating());
+			pstmt.setDouble(4, de.getHeight());
+			pstmt.setDouble(5, de.getWidth());
+			pstmt.setDate(6, de.getPurchaseDate());
+			pstmt.setInt(7, de.getVendorID());
+			pstmt.setInt(8, de.getExpeditionID());
+			pstmt.setInt(9, de.getCurrentLocationID());
+			pstmt.setString(10, de.getDescription());
+			pstmt.setString(11, de.getBackgroundColour());
+			pstmt.setString(12, de.getMaterial());
+			pstmt.setString(13, de.getGeneralRemarks());
+			pstmt.setString(14, de.getOtherSuggestedIdentifications());
+			pstmt.setInt(15, de.getStoryID());
+			pstmt.setInt(16, de.getCaveID());
+			pstmt.setInt(17, de.getWallID());
+			pstmt.setInt(18, de.getAbsoluteLeft());
+			pstmt.setInt(19, de.getAbsoluteTop());
+			pstmt.setInt(20, de.getIconographyID());
+			newDepictionID = pstmt.executeUpdate();
+			pstmt.close();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			return 0;
+		}
+		if (newDepictionID > 0) {
+			updateDepictionImageRelation(newDepictionID, imgEntryList);
+			updateDepictionPERelation(newDepictionID, peEntryList);
+		}
+		return newDepictionID;
+	}
+
+	/**
+	 * @param correspondingDepictionEntry
+	 * @param imgEntryList
+	 * @param selectedPEList
+	 * @return <code>true</code> when operation is successful
+	 */
+	public boolean updateDepictionEntry(DepictionEntry de, ArrayList<ImageEntry> imgEntryList, ArrayList<PictorialElementEntry> selectedPEList) {
+		System.err.println("==> updateDepictionEntry called");
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement(
+					"UPDATE Depictions SET StyleID=?, Inscriptions=?, Dating=?, Height=?, Width=?, PurchaseDate=?, VendorID=?, ExpeditionID=?, "
+							+ "CurrentLocationID=?, Description=?, BackgroundColour=?, Material=?, GeneralRemarks=?, OtherSuggestedIdentifications=?, "
+							+ "StoryID=?, CaveID=?, WallID=?, AbsoluteLeft=?, AbsoluteTop=?, IconographyID=? WHERE DepictionID=?"); 
+			pstmt.setInt(1, de.getStyleID());
+			pstmt.setString(2, de.getInscriptions());
+			pstmt.setString(3, de.getDating());
+			pstmt.setDouble(4, de.getHeight());
+			pstmt.setDouble(5, de.getWidth());
+			pstmt.setDate(6, de.getPurchaseDate());
+			pstmt.setInt(7, de.getVendorID());
+			pstmt.setInt(8, de.getExpeditionID());
+			pstmt.setInt(9, de.getCurrentLocationID());
+			pstmt.setString(10, de.getDescription());
+			pstmt.setString(11, de.getBackgroundColour());
+			pstmt.setString(12, de.getMaterial());
+			pstmt.setString(13, de.getGeneralRemarks());
+			pstmt.setString(14, de.getOtherSuggestedIdentifications());
+			pstmt.setInt(15, de.getStoryID());
+			pstmt.setInt(16, de.getCaveID());
+			pstmt.setInt(17, de.getWallID());
+			pstmt.setInt(18, de.getAbsoluteLeft());
+			pstmt.setInt(19, de.getAbsoluteTop());
+			pstmt.setInt(20, de.getIconographyID());
+			pstmt.setInt(21, de.getDepictionID());
+			pstmt.executeUpdate();
+			pstmt.close();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			return false;
+		}
+		if (imgEntryList.size() > 0) {
+			updateDepictionImageRelation(de.getDepictionID(), imgEntryList);
+		}
+		if (selectedPEList.size() > 0) {
+			updateDepictionPERelation(de.getDepictionID(), selectedPEList);
+		}
+		return true;
+	}
+	
+	private void updateDepictionImageRelation(int depictionID, ArrayList<ImageEntry> imgEntryList) {
+		deleteEntry("DELETE FROM DepictionImageRelation WHERE DepictionID=" + depictionID);
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		System.err.println("==> updateDepictionImageRelation called");
+		try {
+			String insertSqlString = "INSERT INTO DepictionImageRelation VALUES ";
+			for (int i=0; i < imgEntryList.size(); ++i) {
+				if (i == 0) {
+					insertSqlString = insertSqlString.concat("(?, ?, ?)");
+				} else {
+					insertSqlString = insertSqlString.concat(", (?, ?, ?)");
+				}
+			}
+			pstmt = dbc.prepareStatement(insertSqlString);
+			for (ImageEntry entry : imgEntryList) {
+				if (imgEntryList.indexOf(entry) == 0) {
+					pstmt.setInt(1, depictionID);
+					pstmt.setInt(2, entry.getImageID());
+					pstmt.setInt(3, 1);
+				} else {
+					int idx = imgEntryList.indexOf(entry);
+					pstmt.setInt(idx*3 + 1, depictionID);
+					pstmt.setInt(idx*3 + 2, entry.getImageID());
+					pstmt.setInt(idx*3 + 3, 0);
+				}
+			}
+			pstmt.executeUpdate();
+			pstmt.close();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			return;
+		}
+	}
+	
+	private void updateDepictionPERelation(int depictionID, ArrayList<PictorialElementEntry> peEntryList) {
+		deleteEntry("DELETE FROM DepictionPERelation WHERE DepictionID=" + depictionID);
+		String insertSqlString = "INSERT INTO DepictionPERelation VALUES ";
+		Iterator<PictorialElementEntry> it = peEntryList.iterator();
+		System.err.println("==> updateDepictionPERelation called");
+		while (it.hasNext()) {
+			PictorialElementEntry entry = it.next();
+			if (peEntryList.indexOf(entry) == 0) {
+				insertSqlString = insertSqlString.concat("(" + depictionID + ", " + entry.getPictorialElementID() + ")");
+			} else {
+				insertSqlString = insertSqlString.concat(", (" + depictionID + ", " + entry.getPictorialElementID() + ")");
+			}
+		}
+		insertEntry(insertSqlString);
+	}
+
 }

@@ -117,7 +117,7 @@ public abstract class AbstractResultView extends Portlet {
 			while (widgetIterator.hasNext()) {
 				Widget w = widgetIterator.next();
 				if (w instanceof AbstractView && ((AbstractView)w).getEntry() instanceof AbstractEntry) {
-					if (((AbstractEntry)((AbstractView)w).getEntry()).uniqueID().equals(droppedEntry.uniqueID())) {
+					if (((AbstractEntry)((AbstractView)w).getEntry()).getUniqueID().equals(droppedEntry.getUniqueID())) {
 						return;
 					}
 				}

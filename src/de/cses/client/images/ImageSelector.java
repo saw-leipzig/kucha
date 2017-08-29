@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 
+ * Copyright 2016-2017 
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -16,15 +16,18 @@ package de.cses.client.images;
 import java.util.ArrayList;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.event.dom.client.LoadEvent;
+import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
 import com.sencha.gxt.core.client.IdentityValueProvider;
@@ -34,12 +37,15 @@ import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
-import com.sencha.gxt.data.shared.Store;
-import com.sencha.gxt.data.shared.Store.StoreFilter;
+import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
+import com.sencha.gxt.widget.core.client.Status;
+import com.sencha.gxt.widget.core.client.Window;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ListField;
@@ -59,19 +65,24 @@ public class ImageSelector implements IsWidget {
 	private ListView<ImageEntry, ImageEntry> imageListView;
 	private ArrayList<ImageSelectorListener> selectorListener;
 
-	public static final String PHOTO = "photo";
-	public static final String SKETCH = "sketch";
-	public static final String MAP = "map";
+	public static final int PHOTO = 1;
+	public static final int SKETCH = 2;
+	public static final int MAP = 3;
 
 	/**
 	 * Create a remote service proxy to talk to the server-side service.
 	 */
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	private FlowLayoutContainer imageContainer;
-	private String imageType;
-	private TextField searchField;
-	private StoreFilter<ImageEntry> searchFilter;
+	private int imageTypeID;
+//	private TextField searchField;
+//	private StoreFilter<ImageEntry> searchFilter;
+	private ImageFilter imgFilter;
 	private FramedPanel mainPanel = null;
+	private PopupPanel zoomPanel;
+	protected SafeUri zoomImageUri;
+	protected Window loadZoomInfoWindow;
+	private Image zoomImage;
 
 	interface ImageProperties extends PropertyAccess<ImageEntry> {
 		ModelKeyProvider<ImageEntry> imageID();
@@ -88,8 +99,8 @@ public class ImageSelector implements IsWidget {
 	 *
 	 */
 	interface ImageViewTemplates extends XTemplates {
-		@XTemplate("<img align=\"center\" margin=\"20\" src=\"{imageUri}\"><br> {title}")
-		SafeHtml image(SafeUri imageUri, String title);
+		@XTemplate("<img align=\"center\" margin=\"20\" src=\"{imageUri}\"><br> {title}<br> {shortName}")
+		SafeHtml image(SafeUri imageUri, String title, String shortName);
 	}
 
 	/**
@@ -101,8 +112,8 @@ public class ImageSelector implements IsWidget {
 	 * @see ImageSelector.MAP
 	 * @param listener
 	 */
-	public ImageSelector(String imageType, ImageSelectorListener listener) {
-		this.imageType = imageType;
+	public ImageSelector(int imageTypeID, ImageSelectorListener listener) {
+		this.imageTypeID = imageTypeID;
 		selectorListener = new ArrayList<ImageSelectorListener>();
 		selectorListener.add(listener);
 		properties = GWT.create(ImageProperties.class);
@@ -112,7 +123,7 @@ public class ImageSelector implements IsWidget {
 	@Override
 	public Widget asWidget() {
 		if (mainPanel == null) {
-			refreshImages();
+//			refreshImages();
 			initPanel();
 		}
 		return mainPanel;
@@ -122,6 +133,19 @@ public class ImageSelector implements IsWidget {
 
 		mainPanel = new FramedPanel();
 		mainPanel.setHeading("Image Selector");
+		mainPanel.setSize("750", "500");
+		
+		imageContainer = new FlowLayoutContainer();
+		imageContainer.setSize("600px", "600px");
+		imageContainer.setScrollMode(ScrollMode.AUTO);
+
+		zoomPanel = new PopupPanel(true);
+//		zoomPanel.setSize("600px", "600px");
+		zoomPanel.add(imageContainer);
+		loadZoomInfoWindow = new Window();
+
+		
+		imgFilter = new ImageFilter("Selector Filter");
 		
 		imageListView = new ListView<ImageEntry, ImageEntry>(imageEntryList, new IdentityValueProvider<ImageEntry>() {
 			@Override
@@ -132,8 +156,8 @@ public class ImageSelector implements IsWidget {
 			final ImageViewTemplates imageViewTemplates = GWT.create(ImageViewTemplates.class);
 
 			public SafeHtml render(ImageEntry item) {
-				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=175");
-				return imageViewTemplates.image(imageUri, item.getTitle());
+				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=400");
+				return imageViewTemplates.image(imageUri, item.getTitle(), item.getShortName());
 			}
 
 		}));
@@ -143,17 +167,43 @@ public class ImageSelector implements IsWidget {
 			@Override
 			public void onSelectionChanged(SelectionChangedEvent<ImageEntry> event) {
 				ImageEntry item = event.getSelection().get(0);
-				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID());
-				Image img = new Image(imageUri);
-				imageContainer.clear();
-				imageContainer.add(img);
+				zoomImageUri = UriUtils.fromString("resource?imageID=" + item.getImageID());
 			}
 		});
 
-		imageListView.setSize("180", "350");
+		imageListView.setSize("1.0", "1.0");
 
 		ListField<ImageEntry, ImageEntry> lf = new ListField<ImageEntry, ImageEntry>(imageListView);
-		lf.setSize("180", "305");
+		
+		lf.setSize("1.0", "1.0");
+
+		TextButton zoomButton = new TextButton("Zoom");
+		
+		zoomImage = Image.wrap( Document.get().createImageElement() );
+		zoomImage.addLoadHandler(new LoadHandler() {
+			
+			@Override
+			public void onLoad(LoadEvent event) {
+				loadZoomInfoWindow.hide();
+			}
+		});
+		imageContainer.add(zoomImage);
+		zoomButton.addSelectHandler(new SelectHandler() {
+			@Override
+			public void onSelect(SelectEvent event) {
+				zoomImage.setUrl(zoomImageUri);
+				zoomPanel.center();
+				loadZoomInfoWindow.setHeading("Please wait");
+				loadZoomInfoWindow.setModal(true);
+				loadZoomInfoWindow.setPixelSize(150, 50);
+				loadZoomInfoWindow.setMaximizable(false);
+				loadZoomInfoWindow.setClosable(false);
+				Status s = new Status();
+				s.setBusy("loading image ...");
+				loadZoomInfoWindow.setWidget(s);
+				loadZoomInfoWindow.show();
+			}
+		});
 
 		TextButton selectButton = new TextButton("Select");
 
@@ -184,65 +234,57 @@ public class ImageSelector implements IsWidget {
 		/**
 		 * here we add the search for image titles
 		 */
-		searchField = new TextField();
-		searchField.setSize("180", "30");
-		searchFilter = new StoreFilter<ImageEntry>() {
-			@Override
-			public boolean select(Store<ImageEntry> store, ImageEntry parent, ImageEntry item) {
-				if (item.getTitle().toLowerCase().contains(searchField.getCurrentValue().toLowerCase())) {
-					return true;
-				}
-				return false;
-			}
-		};
-		imageEntryList.addFilter(searchFilter);
+//		searchField = new TextField();
+//		searchField.setSize("1.0", ".5");
+//		searchFilter = new StoreFilter<ImageEntry>() {
+//			@Override
+//			public boolean select(Store<ImageEntry> store, ImageEntry parent, ImageEntry item) {
+//				if (item.getTitle().toLowerCase().contains(searchField.getCurrentValue().toLowerCase())) {
+//					return true;
+//				}
+//				return false;
+//			}
+//		};
+//		imageEntryList.addFilter(searchFilter);
 		TextButton searchButton = new TextButton("search");
 		searchButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-				if (searchField.getCurrentValue() != null) {
-					imageEntryList.addFilter(searchFilter);
-					imageEntryList.setEnableFilters(true);
-				}
+				refreshImages();
+//				if (searchField.getCurrentValue() != null) {
+//					imageEntryList.addFilter(searchFilter);
+//					imageEntryList.setEnableFilters(true);
+//				}
 			}
 		});
 		TextButton resetButton = new TextButton("reset");
 		resetButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-				imageEntryList.setEnableFilters(false);
-				imageEntryList.removeFilter(searchFilter);
+				imageEntryList.clear();
 			}
 		});
 
-		imageContainer = new FlowLayoutContainer();
-		imageContainer.setScrollMode(ScrollMode.AUTO);
+//		HorizontalPanel hPanel = new HorizontalPanel();
+		HorizontalLayoutContainer hlc = new HorizontalLayoutContainer();
+//		VerticalPanel vPanel = new VerticalPanel();
 
-		HorizontalPanel hPanel = new HorizontalPanel();
-		VerticalPanel vPanel = new VerticalPanel();
+		ContentPanel cp = new ContentPanel();
+//		FramedPanel fp = new FramedPanel();
+//		fp.setHeading("Filter");
+		cp.setHeaderVisible(false);
+		cp.add(imgFilter);
+		cp.addButton(searchButton);
+		cp.addButton(resetButton);
+		hlc.add(cp, new HorizontalLayoutData(.4, 1.0));
 
 		FramedPanel fp = new FramedPanel();
 		fp.setHeading("Images");
 		fp.add(lf);
-		vPanel.add(fp);
+		hlc.add(lf, new HorizontalLayoutData(.6, 1.0));
 
-		fp = new FramedPanel();
-		fp.setHeading("Filter");
-		fp.add(searchField);
-		fp.addButton(searchButton);
-		fp.addButton(resetButton);
-		vPanel.add(fp);
-
-		hPanel.add(vPanel);
-		vPanel = new VerticalPanel();
-
-		fp = new FramedPanel();
-		fp.setHeading("Preview");
-		imageContainer.setPixelSize(400, 400);
-		fp.add(imageContainer);
-		hPanel.add(fp);
-
-		mainPanel.add(hPanel);
+		mainPanel.add(hlc);
+		mainPanel.addButton(zoomButton);
 		mainPanel.addButton(selectButton);
 		mainPanel.addButton(cancelButton);
 	}
@@ -254,7 +296,17 @@ public class ImageSelector implements IsWidget {
 	 * @see imageEntryList
 	 */
 	private void refreshImages() {
-		dbService.getImages("ImageType='" + imageType + "'", new AsyncCallback<ArrayList<ImageEntry>>() {
+		String sqlWhere = null;
+		ArrayList<String> sqlWhereList = imgFilter.getSqlWhereClause();
+		for (int i = 0; i < sqlWhereList.size(); ++i) {
+			if (i == 0) {
+				sqlWhere = sqlWhereList.get(i);
+			} else {
+				sqlWhere = sqlWhere + " AND " + sqlWhereList.get(i);
+			}
+		}
+		
+		dbService.getImages(sqlWhere, new AsyncCallback<ArrayList<ImageEntry>>() {
 
 			@Override
 			public void onFailure(Throwable caught) {

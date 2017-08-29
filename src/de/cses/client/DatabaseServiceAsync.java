@@ -14,6 +14,7 @@
 package de.cses.client;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -60,7 +61,7 @@ public interface DatabaseServiceAsync {
 
 	void getImages(AsyncCallback<ArrayList<ImageEntry>> callback) throws IllegalArgumentException;
 
-	void getImages(String where, AsyncCallback<ArrayList<ImageEntry>> callback) throws IllegalArgumentException;
+	void getImages(String sqlWhere, AsyncCallback<ArrayList<ImageEntry>> callback) throws IllegalArgumentException;
 
 	void getPhotographer(AsyncCallback<ArrayList<PhotographerEntry>> callback) throws IllegalArgumentException;
 
@@ -197,5 +198,11 @@ public interface DatabaseServiceAsync {
 	void updateImageEntry(ImageEntry imgEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
 	void getImageTypes(AsyncCallback<ArrayList<ImageTypeEntry>> asyncCallback) throws IllegalArgumentException;
+
+	void insertDepictionEntry(DepictionEntry depictionEntry, ArrayList<ImageEntry> imgEntryList, ArrayList<PictorialElementEntry> peEntryList,
+			AsyncCallback<Integer> asyncCallback);
+
+	void updateDepictionEntry(DepictionEntry correspondingDepictionEntry, ArrayList<ImageEntry> all, ArrayList<PictorialElementEntry> selectedPE,
+			AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
 	}

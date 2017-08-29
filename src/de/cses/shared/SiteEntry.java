@@ -19,7 +19,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author alingnau
  *
  */
-public class SiteEntry implements IsSerializable {
+public class SiteEntry extends AbstractEntry {
 	
 	private int siteID;
 	private String name, alternativeName;
@@ -59,6 +59,32 @@ public class SiteEntry implements IsSerializable {
 
 	public void setAlternativeName(String alternativeName) {
 		this.alternativeName = alternativeName;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.shared.AbstractEntry#getInsertSql()
+	 */
+	@Override
+	public String getInsertSql() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.shared.AbstractEntry#getUpdateSql()
+	 */
+	@Override
+	public String getUpdateSql() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.shared.AbstractEntry#getUniqueID()
+	 */
+	@Override
+	public String getUniqueID() {
+		return "Site-"+siteID;
 	}
 
 }

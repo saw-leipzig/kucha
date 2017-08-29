@@ -14,6 +14,7 @@
 package de.cses.server;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -21,7 +22,6 @@ import de.cses.client.DatabaseService;
 import de.cses.server.mysql.MysqlConnector;
 import de.cses.shared.AntechamberEntry;
 import de.cses.shared.AuthorEntry;
-import de.cses.shared.RearAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveGroupEntry;
 import de.cses.shared.CavePart;
@@ -34,18 +34,18 @@ import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageTypeEntry;
 import de.cses.shared.MainChamberEntry;
-import de.cses.shared.OrientationEntry;
 import de.cses.shared.MainTypologicalClass;
+import de.cses.shared.OrientationEntry;
 import de.cses.shared.OrnamentCaveType;
 import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamentFunction;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
-import de.cses.shared.OrientationEntry;
 import de.cses.shared.OrnamentPosition;
 import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PictorialElementEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.PublicationEntry;
+import de.cses.shared.RearAreaEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 import de.cses.shared.StructureOrganization;
@@ -494,6 +494,25 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public ArrayList<ImageTypeEntry> getImageTypes() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getImageTypes();
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#insertDepictionEntry(de.cses.shared.DepictionEntry, java.util.List)
+	 */
+	@Override
+	public int insertDepictionEntry(DepictionEntry depictionEntry, ArrayList<ImageEntry> imgEntryList, ArrayList<PictorialElementEntry> peEntryList) {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.insertDepictionEntry(depictionEntry, imgEntryList, peEntryList);
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#updateDepictionEntry(de.cses.shared.DepictionEntry, java.util.List, java.util.List)
+	 */
+	@Override
+	public boolean updateDepictionEntry(DepictionEntry correspondingDepictionEntry, ArrayList<ImageEntry> all,
+			ArrayList<PictorialElementEntry> selectedPE) {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.updateDepictionEntry(correspondingDepictionEntry, all, selectedPE);
 	}
 
 }

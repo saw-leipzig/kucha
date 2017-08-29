@@ -15,17 +15,29 @@ package de.cses.client.images;
 
 import java.util.ArrayList;
 
+import com.google.gwt.cell.client.TextCell;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.core.client.ValueProvider;
+import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.core.client.util.ToggleGroup;
-import com.sencha.gxt.widget.core.client.button.ToggleButton;
+import com.sencha.gxt.data.shared.LabelProvider;
+import com.sencha.gxt.data.shared.ListStore;
+import com.sencha.gxt.data.shared.ModelKeyProvider;
+import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
+import com.sencha.gxt.widget.core.client.form.DualListField;
 import com.sencha.gxt.widget.core.client.form.Radio;
 import com.sencha.gxt.widget.core.client.form.TextField;
 
+import de.cses.client.DatabaseService;
+import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.ui.AbstractFilter;
+import de.cses.shared.ImageTypeEntry;
 
 /**
  * @author alingnau
@@ -33,24 +45,53 @@ import de.cses.client.ui.AbstractFilter;
  */
 public class ImageFilter extends AbstractFilter {
 	
-	private Radio rPhoto;
-	private Radio rSketch;
-	private Radio rMap;
 	private TextField shortnameSearch;
 	private TextField titleSearch;
 	private TextField copyrightSearch;
 	private Radio andSearch;
 	private Radio orSearch;
+	private ImageTypeProperties imageTypeProps;
+	private ListStore<ImageTypeEntry> imageTypeEntryList, selectedImagesTypesList;
+	
+	/**
+	 * Create a remote service proxy to talk to the server-side service.
+	 */
+	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 
-	public static final String PHOTO = "photo";
-	public static final String SKETCH = "sketch";
-	public static final String MAP = "map";
+
+	interface ImageTypeProperties extends PropertyAccess<ImageTypeEntry> {
+		ModelKeyProvider<ImageTypeEntry> imageTypeID();
+		LabelProvider<ImageTypeEntry> uniqueID();
+		ValueProvider<ImageTypeEntry, String> name();
+	}
+
+	interface ImageTypeViewTemplates extends XTemplates {
+		@XTemplate("<div>{name}</div>")
+		SafeHtml imageTypeLabel(String name);
+	}
 
 	/**
 	 * @param filterName
 	 */
 	public ImageFilter(String filterName) {
 		super(filterName);
+		imageTypeProps = GWT.create(ImageTypeProperties.class);
+		imageTypeEntryList = new ListStore<ImageTypeEntry>(imageTypeProps.imageTypeID());
+		selectedImagesTypesList = new ListStore<ImageTypeEntry>(imageTypeProps.imageTypeID());
+		dbService.getImageTypes(new AsyncCallback<ArrayList<ImageTypeEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub
+			}
+
+			@Override
+			public void onSuccess(ArrayList<ImageTypeEntry> result) {
+				for (ImageTypeEntry ite : result) {
+					imageTypeEntryList.add(ite);
+				}
+			}
+		});
 	}		
 
 	/* (non-Javadoc)
@@ -63,17 +104,17 @@ public class ImageFilter extends AbstractFilter {
 		titleSearch = new TextField();
 		titleSearch.setValue("");
 		titleSearch.setEmptyText("search image title");
-		vlc.add(titleSearch, new VerticalLayoutData(1.0, 0.15));
+		vlc.add(titleSearch, new VerticalLayoutData(1.0, .125));
 		
 		shortnameSearch = new TextField();
 		shortnameSearch.setValue("");
 		shortnameSearch.setEmptyText("search image short name");
-		vlc.add(shortnameSearch, new VerticalLayoutData(1.0, .15));
+		vlc.add(shortnameSearch, new VerticalLayoutData(1.0, .125));
 		
 		copyrightSearch = new TextField();
 		copyrightSearch.setValue("");
 		copyrightSearch.setEmptyText("search image copyright");
-		vlc.add(copyrightSearch, new VerticalLayoutData(1.0, 0.15));
+		vlc.add(copyrightSearch, new VerticalLayoutData(1.0, .125));
 		
 		HorizontalPanel searchTypeHP = new HorizontalPanel();
 		andSearch = new Radio();
@@ -86,26 +127,18 @@ public class ImageFilter extends AbstractFilter {
 		andSearch.setValue(true);
 		searchTypeHP.add(andSearch);
 		searchTypeHP.add(orSearch);
-		vlc.add(searchTypeHP, new VerticalLayoutData(1.0, .15));
+		vlc.add(searchTypeHP, new VerticalLayoutData(1.0, .125));
 		
-		VerticalPanel imageTypeVP = new VerticalPanel();
-		rPhoto = new Radio();
-		rPhoto.setBoxLabel("Photo");
-		rSketch = new Radio();
-		rSketch.setBoxLabel("Sketch");
-		rMap = new Radio();
-		rMap.setBoxLabel("Map");
-		tg = new ToggleGroup();
-		tg.add(rPhoto);
-		tg.add(rSketch);
-		tg.add(rMap);
-		rPhoto.setValue(true);
-		imageTypeVP.add(rPhoto);
-		imageTypeVP.add(rSketch);
-		imageTypeVP.add(rMap);
-		vlc.add(imageTypeVP, new VerticalLayoutData(1.0, .40));
+		DualListField<ImageTypeEntry, String> dualListField = new DualListField<ImageTypeEntry, String>(imageTypeEntryList, selectedImagesTypesList, imageTypeProps.name(), new TextCell());
+		dualListField.setEnableDnd(true);
+//		dualListField.getUpButton().getParent().removeFromParent();
+    dualListField.getDownButton().removeFromParent();
+    dualListField.getUpButton().removeFromParent();
+    dualListField.setMode(DualListField.Mode.INSERT);
 		
-		vlc.setHeight("200px");
+		vlc.add(dualListField, new VerticalLayoutData(1.0, .50));
+		
+		vlc.setHeight("250px");
 		return vlc;
 	}
 
@@ -114,6 +147,8 @@ public class ImageFilter extends AbstractFilter {
 	 */
 	@Override
 	public ArrayList<String> getSqlWhereClause() {
+		ArrayList<String> result = new ArrayList<String>();
+
 		String textFieldQuery = "";
 		if (!titleSearch.getValue().isEmpty()) {
 			textFieldQuery = "Title LIKE '%" + titleSearch.getValue() + "%'";
@@ -124,16 +159,22 @@ public class ImageFilter extends AbstractFilter {
 		if (!copyrightSearch.getValue().isEmpty()) {
 			textFieldQuery = textFieldQuery.concat((!textFieldQuery.isEmpty() ? (andSearch.getValue() ? " AND " : " OR ") : "") + "Copyright LIKE '%" + copyrightSearch.getValue() + "%'");
 		}
-		ArrayList<String> result = new ArrayList<String>();
 		if (!textFieldQuery.isEmpty()) {
 			result.add("(" + textFieldQuery + ")");
 		}
-		if (rPhoto.getValue()) {
-			result.add("ImageType='photo'");
-		} else if (rSketch.getValue()) {
-			result.add("ImageType='sketch'");
-		} else if (rMap.getValue()) {
-			result.add("ImageType='map'");
+		
+		String imageTypeQuery = "";
+		if (selectedImagesTypesList.size() > 0) {
+			for (ImageTypeEntry ite : selectedImagesTypesList.getAll()) {
+				if (imageTypeQuery.isEmpty()) {
+					imageTypeQuery = "" + ite.getImageTypeID();
+				} else {
+					imageTypeQuery = imageTypeQuery.concat(", " + ite.getImageTypeID());
+				}
+			}
+			if (!imageTypeQuery.isEmpty()) {
+				result.add("(ImageTypeID IN (" + imageTypeQuery + "))");
+			}
 		}
 		return result;
 	}
