@@ -35,6 +35,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.IdentityValueProvider;
+import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.LabelProvider;
@@ -66,6 +67,7 @@ import com.sencha.gxt.widget.core.client.form.validator.MinNumberValidator;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.Util;
 import de.cses.client.images.ImageSelector;
 import de.cses.client.images.ImageSelectorListener;
 import de.cses.client.ui.AbstractEditor;
@@ -174,7 +176,6 @@ public class DepictionEditor extends AbstractEditor {
 
 	interface StyleProperties extends PropertyAccess<StyleEntry> {
 		ModelKeyProvider<StyleEntry> styleID();
-
 		LabelProvider<StyleEntry> styleName();
 	}
 
@@ -185,8 +186,8 @@ public class DepictionEditor extends AbstractEditor {
 
 	interface ImageProperties extends PropertyAccess<ImageEntry> {
 		ModelKeyProvider<ImageEntry> imageID();
-
 		LabelProvider<ImageEntry> title();
+		ValueProvider<ImageEntry, String> shortName();
 	}
 
 	/**
@@ -887,8 +888,16 @@ public class DepictionEditor extends AbstractEditor {
 	 * Called when the save button is pressed. Calls <code>DepictionEditorListener.depictionSaved(correspondingDepictionEntry)<code>
 	 */
 	protected void saveDepictionEntry() {
+		ArrayList<ImageEntry> associatedImageEntryList = new ArrayList<ImageEntry>();
+		for (int i=0; i < imageEntryList.size(); ++i) {
+			associatedImageEntryList.add(imageEntryList.get(i));
+		}
+		ArrayList<PictorialElementEntry> selectedPEList = new ArrayList<PictorialElementEntry>();
+		for (PictorialElementEntry pe : peSelector.getSelectedPE()) {
+			selectedPEList.add(pe);
+		}
 		if (correspondingDepictionEntry.getDepictionID() == 0) {
-			dbService.insertDepictionEntry(correspondingDepictionEntry, imageEntryList.getAll(), peSelector.getSelectedPE(), new AsyncCallback<Integer>() {
+			dbService.insertDepictionEntry(correspondingDepictionEntry, associatedImageEntryList, selectedPEList, new AsyncCallback<Integer>() {
 
 				@Override
 				public void onSuccess(Integer newDepictionID) {
@@ -901,7 +910,7 @@ public class DepictionEditor extends AbstractEditor {
 				}
 			});
 		} else {
-			dbService.updateDepictionEntry(correspondingDepictionEntry, imageEntryList.getAll(), peSelector.getSelectedPE(), new AsyncCallback<Boolean>() {
+			dbService.updateDepictionEntry(correspondingDepictionEntry, associatedImageEntryList, selectedPEList, new AsyncCallback<Boolean>() {
 
 				@Override
 				public void onFailure(Throwable caught) {

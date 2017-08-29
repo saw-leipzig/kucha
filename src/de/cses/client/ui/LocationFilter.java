@@ -282,10 +282,12 @@ public class LocationFilter extends AbstractFilter {
 			}
 		}
 
-		if (!districtQuery.isEmpty()) {
+		
+		if (!districtQuery.isEmpty() && !regionQuery.isEmpty()) {
+			result.add("(DistrictID IN (" + districtQuery + ") OR RegionID IN (" + regionQuery + "))");
+		} else if (!districtQuery.isEmpty()) {
 			result.add("(DistrictID IN (" + districtQuery + "))");
-		}
-		if (!regionQuery.isEmpty()) {
+		} else if (!regionQuery.isEmpty()) {
 			result.add("(RegionID IN (" + regionQuery + "))");
 		}
 		return result;

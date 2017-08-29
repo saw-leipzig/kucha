@@ -39,8 +39,7 @@ public class DepictionEntry extends AbstractEntry {
 	private int absoluteTop;
 
 	public DepictionEntry() {
-		this(0, 0, "add inscriptions", "add dating", "add description", "add colour", "add material", "add remarks",
-				"add other identificationa", 0, 0, 0, new Date(0), 0, 0, 0, 0, 0, 0);
+		this(0, 0, "", "", "", "", "", "", "", 0, 0, 0, new Date(0), 0, 0, 0, 0, 0, 0);
 	}
 
 	public DepictionEntry(int depictionID, int styleID, String inscriptions, String dating, String description, String backgroundColour,
@@ -247,24 +246,14 @@ public class DepictionEntry extends AbstractEntry {
 	}
 
 	public String getInsertSql() {
-		return "INSERT INTO Depictions (" + "StyleID,Inscriptions,Dating,Height,Width,PurchaseDate,VendorID,ExpeditionID,CurrentLocationID,"
-				+ "Description,BackgroundColour,Material,GeneralRemarks,OtherSuggestedIdentifications,StoryID,CaveID,WallID,AbsoluteLeft,AbsoluteTop,IconographyID"
-				+ ") VALUES (" + styleID + ",'" + inscriptions + "','" + dating + "'," + height + "," + width + ",'" + purchaseDate + "',"
-				+ vendorID + "," + expeditionID + "," + currentLocationID + ",'" + description + "','" + backgroundColour + "','" + material + "','"
-				+ generalRemarks + "','" + otherSuggestedIdentifications + "'," + storyID + "," + caveID + "," + wallID + "," + absoluteLeft + ","
-				+ absoluteTop + "," + iconographyID + ")"; // TODO finish sql string
+		return ""; // TODO finish sql string
 	}
 
 	/**
 	 * 
 	 */
 	public String getUpdateSql() {
-		return "UPDATE Depictions SET " + "StyleID=" + styleID + ", Inscriptions='" + inscriptions + "', Dating='" + dating + "', Height="
-				+ height + ", Width=" + width + ", PurchaseDate='" + purchaseDate + "', VendorID=" + vendorID + ", ExpeditionID=" + expeditionID
-				+ ", CurrentLocationID=" + currentLocationID + ", Description='" + description + "', BackgroundColour='" + backgroundColour
-				+ "', Material='" + material + "', GeneralRemarks='" + generalRemarks + "', OtherSuggestedIdentifications='"
-				+ otherSuggestedIdentifications + "', StoryID=" + storyID + ", CaveID=" + caveID + ", WallID=" + wallID + ", AbsoluteLeft="
-				+ absoluteLeft + ", AbsoluteTop=" + absoluteTop + ", IconographyID=" + iconographyID + " WHERE DepictionID=" + depictionID; 
+		return ""; 
 	}
 
 	/* (non-Javadoc)

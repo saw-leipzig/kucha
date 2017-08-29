@@ -199,9 +199,10 @@ public interface DatabaseServiceAsync {
 
 	void getImageTypes(AsyncCallback<ArrayList<ImageTypeEntry>> asyncCallback) throws IllegalArgumentException;
 
-	void insertDepictionEntry(DepictionEntry depictionEntry, List<ImageEntry> imgEntryList, List<PictorialElementEntry> peEntryList, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
+	void insertDepictionEntry(DepictionEntry depictionEntry, ArrayList<ImageEntry> imgEntryList, ArrayList<PictorialElementEntry> peEntryList,
+			AsyncCallback<Integer> asyncCallback);
 
-	void updateDepictionEntry(DepictionEntry correspondingDepictionEntry, List<ImageEntry> imgEntryList, List<PictorialElementEntry> selectedPEList,
+	void updateDepictionEntry(DepictionEntry correspondingDepictionEntry, ArrayList<ImageEntry> all, ArrayList<PictorialElementEntry> selectedPE,
 			AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
 	}
