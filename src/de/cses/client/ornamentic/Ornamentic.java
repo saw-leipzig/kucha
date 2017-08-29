@@ -316,7 +316,6 @@ public class Ornamentic implements IsWidget, ImageSelectorListener {
 			@Override
 			public void onClick(ClickEvent event) {
 				OrnamentCaveAttributes attributespopup = new OrnamentCaveAttributes(cavesList.getSelectionModel().getSelectedItem());
-
 				attributespopup.setOrnamentic(ornamentic);
 				attributespopup.setGlassEnabled(true);
 				attributespopup.center();
@@ -339,14 +338,31 @@ public class Ornamentic implements IsWidget, ImageSelectorListener {
 				for (int i = 0; i < imageEntryList.size(); i++) {
 					ornament.getImages().add(imageEntryList.get(i));
 				}
+				if(ornamentCode.getText() == "") {
+					Window.alert("Please insert Ornamentation Code");
+					return;
+				}
 				ornament.setCode(ornamentCode.getText());
 				ornament.setDescription(discription.getText());
 				ornament.setRemarks(remarks.getText());
 				ornament.setAnnotations(annotations.getText());
 				ornament.setInterpretation(interpretation.getText());
 				ornament.setReferences(references.getText());
+				if(mainTypologicalClassComboBox.getCurrentValue() == null) {
+					MainTypologicalClass main = new MainTypologicalClass(0, "unknown");
+					ornament.setMaintypologycalClass(main);
+				}
+				else {
 				ornament.setMaintypologycalClass(mainTypologicalClassComboBox.getCurrentValue());
-				ornament.setStructureOrganization(structureorganizationComboBox.getCurrentValue());
+				}
+				if(structureorganizationComboBox.getCurrentValue() == null) {
+					StructureOrganization struct = new StructureOrganization(0, "unknown");
+					ornament.setStructureOrganization(struct);
+				}
+				else {
+					ornament.setStructureOrganization(structureorganizationComboBox.getCurrentValue());
+				}
+				
 				// send ornament to server
 				dbService.saveOrnamentEntry(ornament, new AsyncCallback<Boolean>() {
 

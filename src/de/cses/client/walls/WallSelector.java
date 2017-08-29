@@ -19,6 +19,7 @@ import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -146,6 +147,7 @@ public class WallSelector implements IsWidget {
 		// Antechamber is not available at in cave types
 		if ((currentCave.getCaveTypeID() == 2) || (currentCave.getCaveTypeID() == 4) || (currentCave.getCaveTypeID() == 6))  {
 			AntechamberEntry entry = currentCave.getAntechamberEntry();
+			Window.alert("FrontWallID: "+ currentCave.getAntechamberEntry().getFrontWallID() + "LeftWallID: " + currentCave.getAntechamberEntry().getLeftWallID() );
 			store.add(new WallNames(entry.getFrontWallID(), "Antechamber Front Wall"));
 			store.add(new WallNames(entry.getLeftWallID(), "Antechamber Left Wall"));
 			store.add(new WallNames(entry.getRightWallID(), "Antechamber Right Wall"));
@@ -209,6 +211,7 @@ public class WallSelector implements IsWidget {
 
 			@Override
 			public void onSuccess(CaveTypeEntry ctEntry) {
+				Window.alert(ctEntry.getNameEN());
 				setCaveType(ctEntry);
 			}
 		});
