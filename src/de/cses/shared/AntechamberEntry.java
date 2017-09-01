@@ -124,28 +124,6 @@ public class AntechamberEntry extends AbstractEntry {
 		this.preservationClassificationID = preservationID;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.cses.shared.AbstractEntry#getInsertSql()
-	 */
-	public String getInsertSql() {
-		return "INSERT INTO Antechamber (AntechamberID, CeilingTypeID, FrontWallID, LeftWallID, RightWallID, RearWallID, Height, Width, Depth, PreservationClassificationID) VALUES ("
-				+ antechamberID + ", " + ceilingTypeID + ", " + frontWallID + ", " + leftWallID + ", " + rightWallID + ", " + rearWallID + ", "
-				+ height + ", " + width + ", " + depth + ", " + preservationClassificationID + ")";
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.cses.shared.AbstractEntry#getUpdateSql()
-	 */
-	public String getUpdateSql() {
-		return "UPDATE Antechamber SET CeilingTypeID=" + ceilingTypeID + ", FrontWallID=" + frontWallID + ", LeftWallID=" + leftWallID
-				+ ", RightWallID=" + rightWallID + ", RearWallID=" + rearWallID + ", Height=" + height + ", Width=" + width + ", Depth=" + depth
-				+ ", PreservationClassificationID=" + preservationClassificationID + " WHERE AntechamberID=" + antechamberID;
-	}
-
 	/* (non-Javadoc)
 	 * @see de.cses.shared.AbstractEntry#uniqueID()
 	 */

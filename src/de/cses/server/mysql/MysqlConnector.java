@@ -1027,7 +1027,7 @@ public class MysqlConnector {
 			} else { // in case there is no entry we send back a new one
 				result = new AntechamberEntry();
 				result.setAntechamberID(id);
-				insertEntry(result.getInsertSql());
+				insertAntechamber(result);
 			}
 			rs.close();
 			stmt.close();
@@ -1035,6 +1035,57 @@ public class MysqlConnector {
 			e.printStackTrace();
 		}
 		return result;
+	}
+	
+	private boolean insertAntechamber(AntechamberEntry entry) {
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement(
+					"INSERT INTO Antechamber (AntechamberID, CeilingTypeID, FrontWallID, LeftWallID, RightWallID, RearWallID, Height, Width, Depth, PreservationClassificationID) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			pstmt.setInt(1, entry.getAntechamberID());
+			pstmt.setInt(2,  entry.getCeilingTypeID());
+			pstmt.setInt(3, entry.getFrontWallID());
+			pstmt.setInt(4, entry.getLeftWallID());
+			pstmt.setInt(5, entry.getRightWallID());
+			pstmt.setInt(6, entry.getRearWallID());
+			pstmt.setDouble(7, entry.getHeight());
+			pstmt.setDouble(8, entry.getWidth());
+			pstmt.setDouble(9, entry.getDepth());
+			pstmt.setDouble(10, entry.getPreservationClassificationID());
+			pstmt.executeUpdate();
+			pstmt.close();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			return false;
+		}
+		return true;	
+	}
+
+	private boolean updateAntechamber(AntechamberEntry entry) {
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("UPDATE Antechamber SET CeilingTypeID=?, FrontWallID=?, LeftWallID=?, RightWallID=?, RearWallID=?, Height=?, Width=?, "
+					+ "Depth=?, PreservationClassificationID=?, WHERE AntechamberID=?");
+			pstmt.setInt(1,  entry.getCeilingTypeID());
+			pstmt.setInt(2, entry.getFrontWallID());
+			pstmt.setInt(3, entry.getLeftWallID());
+			pstmt.setInt(4, entry.getRightWallID());
+			pstmt.setInt(5, entry.getRearWallID());
+			pstmt.setDouble(6, entry.getHeight());
+			pstmt.setDouble(7, entry.getWidth());
+			pstmt.setDouble(8, entry.getDepth());
+			pstmt.setDouble(9, entry.getPreservationClassificationID());
+			pstmt.setInt(10, entry.getAntechamberID());
+			pstmt.executeUpdate();
+			pstmt.close();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			return false;
+		}
+		return true;	
 	}
 
 	/**
@@ -1077,7 +1128,7 @@ public class MysqlConnector {
 	 * @param entry
 	 * @return
 	 */
-	public boolean updateRearArea(RearAreaEntry entry) {
+	private boolean updateRearArea(RearAreaEntry entry) {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		if (entry.getLeftCorridorEntry().getCorridorID() == 0) {
@@ -1120,16 +1171,16 @@ public class MysqlConnector {
 	 * @param entry
 	 * @return
 	 */
-	public boolean insertRearArea(RearAreaEntry entry) {
+	private boolean insertRearArea(RearAreaEntry entry) {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		if (entry.getLeftCorridorEntry().getCorridorID() == 0) {
-			entry.getLeftCorridorEntry().setCorridorID(updateCorridor(entry.getLeftCorridorEntry()));
+			entry.getLeftCorridorEntry().setCorridorID(insertCorridor(entry.getLeftCorridorEntry()));
 		} else {
 			updateCorridor(entry.getLeftCorridorEntry());
 		}
 		if (entry.getRightCorridorEntry().getCorridorID() == 0) {
-			entry.getRightCorridorEntry().setCorridorID(updateCorridor(entry.getRightCorridorEntry()));
+			entry.getRightCorridorEntry().setCorridorID(insertCorridor(entry.getRightCorridorEntry()));
 		} else {
 			updateCorridor(entry.getRightCorridorEntry());
 		}
@@ -1222,16 +1273,16 @@ public class MysqlConnector {
 	 * @param leftCorridorEntry
 	 * @return
 	 */
-	private int updateCorridor(CorridorEntry leftCorridorEntry) {
+	private boolean updateCorridor(CorridorEntry entry) {
 		// TODO Auto-generated method stub
-		return 0;
+		return true;
 	}
 
 	/**
 	 * @param rightCorridorEntry
 	 * @return
 	 */
-	private int insertCorridor(CorridorEntry rightCorridorEntry) {
+	private int insertCorridor(CorridorEntry entry) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
@@ -1620,7 +1671,7 @@ public class MysqlConnector {
 	 */
 	public boolean updateCaveEntry(CaveEntry caveEntry) {
 		if (updateEntry(caveEntry.getUpdateSql())) {
-			updateEntry(caveEntry.getAntechamberEntry().getUpdateSql());
+			updateAntechamber(caveEntry.getAntechamberEntry());
 			updateEntry(caveEntry.getMainChamberEntry().getUpdateSql());
 			updateRearArea(caveEntry.getRearAreaEntry());
 			return true;
@@ -1640,7 +1691,7 @@ public class MysqlConnector {
 			caveEntry.getAntechamberEntry().setAntechamberID(newCaveID);
 			caveEntry.getMainChamberEntry().setMainChamberID(newCaveID);
 			caveEntry.getRearAreaEntry().setRearAreaID(newCaveID);
-			insertEntry(caveEntry.getAntechamberEntry().getInsertSql());
+			insertAntechamber(caveEntry.getAntechamberEntry());
 			insertEntry(caveEntry.getMainChamberEntry().getInsertSql());
 			insertRearArea(caveEntry.getRearAreaEntry());
 		}
