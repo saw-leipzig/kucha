@@ -29,20 +29,6 @@ public abstract class AbstractEntry implements IsSerializable {
 	}
 
 	/**
-	 * 
-	 * @return a full SQL string containing everything from INSERT to all fields
-	 * @see de.cses.server.mysql.MysqlConnector#insertEntry(String sqlInsert)
-	 */
-	abstract public String getInsertSql();
-	
-	/**
-	 * 
-	 * @return a full SQL string containing everything from INSERT to all fields
-	 * @see de.cses.server.mysql.MysqlConnector#updateEntry(String sqlUpdate)
-	 */
-	abstract public String getUpdateSql();
-	
-	/**
 	 * This method will deliver a unique identifier to make the entry information 
 	 * comparable throughout the graphic UI
 	 * @return a unique ID for the specific entry data

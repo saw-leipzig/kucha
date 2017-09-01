@@ -39,26 +39,6 @@ public class ImageTypeEntry extends AbstractEntry {
 		this.name = name;
 	}
 
-
-
-	/* (non-Javadoc)
-	 * @see de.cses.shared.AbstractEntry#getInsertSql()
-	 */
-	@Override
-	public String getInsertSql() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see de.cses.shared.AbstractEntry#getUpdateSql()
-	 */
-	@Override
-	public String getUpdateSql() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	/* (non-Javadoc)
 	 * @see de.cses.shared.AbstractEntry#uniqueID()
 	 */

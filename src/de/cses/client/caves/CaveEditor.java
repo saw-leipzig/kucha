@@ -104,6 +104,7 @@ public class CaveEditor extends AbstractEditor {
 	private ComboBox<CeilingTypeEntry> rearAreaCeilingTypeSelector;
 	private ComboBox<CeilingTypeEntry> mainChamberCeilingTypeSelector;
 	private ComboBox<CeilingTypeEntry> antechamberCeilingTypeSelector;
+	private ComboBox<CeilingTypeEntry> corridorCeilingTypeSelector;
 	private PreservationClassificationProperties preservationClassificationProps;
 	private ListStore<PreservationClassificationEntry> preservationClassificationEntryList;
 	private ComboBox<PreservationClassificationEntry> rearAreaPreservationSelector;
@@ -112,7 +113,8 @@ public class CaveEditor extends AbstractEditor {
 	private ComboBox<PreservationClassificationEntry> mainChamberCeilingPreservationSelector;
 	private ComboBox<PreservationClassificationEntry> antechamberPreservationSelector;
 	private ComboBox<PreservationClassificationEntry> antechamberCeilingPreservationSelector;
-//	private ComboBox<PreservationClassificationEntry> overallPreservationSelector;
+	private ComboBox<PreservationClassificationEntry> corridorPreservationSelector;
+	private ComboBox<PreservationClassificationEntry> corridorCeilingPreservationSelector;
 	private ComboBox<CaveGroupEntry> caveGroupSelector;
 	private CaveGroupProperties caveGroupProps;
 	private ListStore<CaveGroupEntry> caveGroupEntryList;
@@ -224,8 +226,7 @@ public class CaveEditor extends AbstractEditor {
 		ceilingTypeProps = GWT.create(CeilingTypeProperties.class);
 		ceilingTypeEntryList = new ListStore<CeilingTypeEntry>(ceilingTypeProps.ceilingTypeID());
 		preservationClassificationProps = GWT.create(PreservationClassificationProperties.class);
-		preservationClassificationEntryList = new ListStore<PreservationClassificationEntry>(
-				preservationClassificationProps.preservationClassificationID());
+		preservationClassificationEntryList = new ListStore<PreservationClassificationEntry>(preservationClassificationProps.preservationClassificationID());
 		siteProps = GWT.create(SiteProperties.class);
 		siteEntryList = new ListStore<SiteEntry>(siteProps.siteID());
 		orientationProps = GWT.create(OrientationProperties.class);

@@ -164,10 +164,10 @@ public class WallSelector implements IsWidget {
 		
 		if ((currentCave.getCaveTypeID() == 4) || (currentCave.getCaveTypeID() == 6))  {
 			RearAreaEntry entry = currentCave.getRearAreaEntry();
-			store.add(new WallNames(entry.getLeftCorridorOuterWallID(), "Rear Area Left Corridor Outer Wall"));
-			store.add(new WallNames(entry.getLeftCorridorInnerWallID(), "Rear Area Left Corridor Inner Wall"));
-			store.add(new WallNames(entry.getRightCorridorInnerWallID(), "Rear Area Right Corridor Inner Wall"));
-			store.add(new WallNames(entry.getRightCorridorOuterWallID(), "Rear Area Right Corridor Outer Wall"));
+			store.add(new WallNames(entry.getLeftCorridorEntry().getOuterWallID(), "Rear Area Left Corridor Outer Wall"));
+			store.add(new WallNames(entry.getLeftCorridorEntry().getInnerWallID(), "Rear Area Left Corridor Inner Wall"));
+			store.add(new WallNames(entry.getRightCorridorEntry().getInnerWallID(), "Rear Area Right Corridor Inner Wall"));
+			store.add(new WallNames(entry.getRightCorridorEntry().getOuterWallID(), "Rear Area Right Corridor Outer Wall"));
 		}
 		
 		if ((currentCave.getCaveTypeID() == 4))  {
