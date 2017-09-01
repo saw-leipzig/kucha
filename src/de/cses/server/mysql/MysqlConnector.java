@@ -1062,7 +1062,7 @@ public class MysqlConnector {
 			} else { // in case there is no entry we send back a new one
 				result = new RearAreaEntry();
 				result.setRearAreaID(id);
-				insertEntry(result.getInsertSql());
+				insertRearArea(result);
 			}
 			rs.close();
 			stmt.close();
@@ -1070,6 +1070,93 @@ public class MysqlConnector {
 			e.printStackTrace();
 		}
 		return result;
+	}
+
+	/**
+	 * 
+	 * @param entry
+	 * @return
+	 */
+	public boolean updateRearArea(RearAreaEntry entry) {
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		if (entry.getLeftCorridorEntry().getCorridorID() == 0) {
+			entry.getLeftCorridorEntry().setCorridorID(insertCorridor(entry.getLeftCorridorEntry()));
+		} else {
+			updateCorridor(entry.getLeftCorridorEntry());
+		}
+		if (entry.getRightCorridorEntry().getCorridorID() == 0) {
+			entry.getRightCorridorEntry().setCorridorID(insertCorridor(entry.getRightCorridorEntry()));
+		} else {
+			updateCorridor(entry.getRightCorridorEntry());
+		}
+		try {
+			pstmt = dbc.prepareStatement("UPDATE RearArea SET CeilingTypeID=?, InnerWallID=?, LeftWallID=?, RightWallID=?, OuterWallID=?, LeftCorridorID=?, "
+					+ "RightCorridorID=?, IsBackChamber=?, Height=?, Width=?, Depth=?, PreservationClassificationID=? WHERE RearAreaID=?");
+			pstmt.setInt(1,  entry.getCeilingTypeID());
+			pstmt.setInt(2, entry.getInnerWallID());
+			pstmt.setInt(3, entry.getLeftWallID());
+			pstmt.setInt(4, entry.getRightWallID());
+			pstmt.setInt(5, entry.getOuterWallID());
+			pstmt.setInt(6, entry.getLeftCorridorEntry().getCorridorID());
+			pstmt.setInt(7, entry.getRightCorridorEntry().getCorridorID());
+			pstmt.setBoolean(8, entry.isBackChamber());
+			pstmt.setDouble(9, entry.getHeight());
+			pstmt.setDouble(10, entry.getWidth());
+			pstmt.setDouble(11, entry.getDepth());
+			pstmt.setDouble(12, entry.getPreservationClassificationID());
+			pstmt.setInt(13, entry.getRearAreaID());
+			pstmt.executeUpdate();
+			pstmt.close();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * 
+	 * @param entry
+	 * @return
+	 */
+	public boolean insertRearArea(RearAreaEntry entry) {
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		if (entry.getLeftCorridorEntry().getCorridorID() == 0) {
+			entry.getLeftCorridorEntry().setCorridorID(updateCorridor(entry.getLeftCorridorEntry()));
+		} else {
+			updateCorridor(entry.getLeftCorridorEntry());
+		}
+		if (entry.getRightCorridorEntry().getCorridorID() == 0) {
+			entry.getRightCorridorEntry().setCorridorID(updateCorridor(entry.getRightCorridorEntry()));
+		} else {
+			updateCorridor(entry.getRightCorridorEntry());
+		}
+		try {
+			pstmt = dbc.prepareStatement(
+					"INSERT INTO RearArea (RearAreaID, CeilingTypeID, InnerWallID, LeftWallID, RightWallID, OuterWallID, LeftCorridorID, RightCorridorID, IsBackChamber, "
+					+ "Height, Width, Depth, PreservationClassificationID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			pstmt.setInt(1, entry.getRearAreaID());
+			pstmt.setInt(2,  entry.getCeilingTypeID());
+			pstmt.setInt(3, entry.getInnerWallID());
+			pstmt.setInt(4, entry.getLeftWallID());
+			pstmt.setInt(5, entry.getRightWallID());
+			pstmt.setInt(6, entry.getOuterWallID());
+			pstmt.setInt(7, entry.getLeftCorridorEntry().getCorridorID());
+			pstmt.setInt(8, entry.getRightCorridorEntry().getCorridorID());
+			pstmt.setBoolean(9, entry.isBackChamber());
+			pstmt.setDouble(10, entry.getHeight());
+			pstmt.setDouble(11, entry.getWidth());
+			pstmt.setDouble(12, entry.getDepth());
+			pstmt.setDouble(13, entry.getPreservationClassificationID());
+			pstmt.executeUpdate();
+			pstmt.close();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -1129,6 +1216,24 @@ public class MysqlConnector {
 			e.printStackTrace();
 		}
 		return result;
+	}
+
+	/**
+	 * @param leftCorridorEntry
+	 * @return
+	 */
+	private int updateCorridor(CorridorEntry leftCorridorEntry) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	/**
+	 * @param rightCorridorEntry
+	 * @return
+	 */
+	private int insertCorridor(CorridorEntry rightCorridorEntry) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 	/**
@@ -1517,7 +1622,7 @@ public class MysqlConnector {
 		if (updateEntry(caveEntry.getUpdateSql())) {
 			updateEntry(caveEntry.getAntechamberEntry().getUpdateSql());
 			updateEntry(caveEntry.getMainChamberEntry().getUpdateSql());
-			updateEntry(caveEntry.getRearAreaEntry().getUpdateSql());
+			updateRearArea(caveEntry.getRearAreaEntry());
 			return true;
 		}
 		return false;
@@ -1537,7 +1642,7 @@ public class MysqlConnector {
 			caveEntry.getRearAreaEntry().setRearAreaID(newCaveID);
 			insertEntry(caveEntry.getAntechamberEntry().getInsertSql());
 			insertEntry(caveEntry.getMainChamberEntry().getInsertSql());
-			insertEntry(caveEntry.getRearAreaEntry().getInsertSql());
+			insertRearArea(caveEntry.getRearAreaEntry());
 		}
 		return newCaveID;
 	}

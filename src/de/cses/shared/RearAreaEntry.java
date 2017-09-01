@@ -158,29 +158,6 @@ public class RearAreaEntry extends AbstractEntry {
 		this.depth = depth;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.cses.shared.AbstractEntry#getInsertSql()
-	 */
-	public String getInsertSql() {
-		return "INSERT INTO RearArea (RearAreaID, CeilingTypeID, InnerWallID, LeftWallID, RightWallID, OuterWallID, IsBackChamber, Height, Width, Depth, PreservationClassificationID) VALUES "
-				+ "(" + rearAreaID + ", " + ceilingTypeID + ", " + ", " + innerWallID + ", " + leftWallID + ", " + rightWallID + ", "
-				+ outerWallID + ", " + isBackChamber + ", " + height + ", " + width + ", " + depth + ", " + preservationClassificationID + ")";
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.cses.shared.AbstractEntry#getUpdateSql()
-	 */
-	public String getUpdateSql() {
-		return "UPDATE RearArea SET CeilingTypeID=" + ceilingTypeID + ", InnerWallID=" + innerWallID + ", LeftWallID=" + leftWallID
-				+ ", RightWallID=" + rightWallID + ", OuterWallID=" + outerWallID + ", IsBackChamber=" + isBackChamber + ", Height=" + height
-				+ ", Width=" + width + ", Depth=" + depth + ", PreservationClassificationID=" + preservationClassificationID + " WHERE RearAreaID="
-				+ rearAreaID;
-	}
-
 	/* (non-Javadoc)
 	 * @see de.cses.shared.AbstractEntry#uniqueID()
 	 */
