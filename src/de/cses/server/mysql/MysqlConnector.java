@@ -31,6 +31,7 @@ import de.cses.shared.CaveGroupEntry;
 import de.cses.shared.CavePart;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
+import de.cses.shared.CorridorEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
@@ -1056,6 +1057,8 @@ public class MysqlConnector {
 						rs.getInt("InnerWallID"), rs.getInt("LeftWallID"), rs.getInt("RightWallID"), rs.getInt("OuterWallID"),
 						rs.getBoolean("IsBackChamber"), rs.getDouble("Height"), rs.getDouble("Width"), rs.getDouble("Depth"),
 						rs.getInt("PreservationClassificationID"));
+				result.setLeftCorridorEntry(getCorridor(rs.getInt("LeftCorridorID")));
+				result.setRightCorridorEntry(getCorridor(rs.getInt("RightCorridorID")));
 			} else { // in case there is no entry we send back a new one
 				result = new RearAreaEntry();
 				result.setRearAreaID(id);
@@ -1088,10 +1091,37 @@ public class MysqlConnector {
 				result = new MainChamberEntry(rs.getInt("MainChamberID"), rs.getInt("CeilingTypeID"), rs.getInt("FrontWallID"),
 						rs.getInt("LeftWallID"), rs.getInt("RightWallID"), rs.getInt("RearWallID"), rs.getDouble("Height"), rs.getDouble("Width"),
 						rs.getDouble("Depth"), rs.getInt("PreservationClassificationID"));
+				result.setCorridor(getCorridor(rs.getInt("CorridorID")));
 			} else { // in case there is no entry we send back a new one
 				result = new MainChamberEntry();
 				result.setMainChamberID(id);
 				insertEntry(result.getInsertSql());
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	/**
+	 * 
+	 * @param id
+	 * @return
+	 */
+	private CorridorEntry getCorridor(int id) {
+		CorridorEntry result = null;
+		Connection dbc = getConnection();
+
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Corridor WHERE CorridorID=" + id);
+			if (rs.first()) {
+				result = new CorridorEntry(rs.getInt("CorridorID"), rs.getInt("OuterWallID"), rs.getInt("InnerWallID"), rs.getInt("CeilingTypeID"));
+			} else { // in case there is no entry we send back a new one
+				result = new CorridorEntry();
 			}
 			rs.close();
 			stmt.close();
