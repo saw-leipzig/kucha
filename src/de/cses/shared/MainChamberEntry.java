@@ -27,14 +27,14 @@ public class MainChamberEntry extends AbstractEntry {
 	private int rearWallID;
 	private int preservationClassificationID;
 	private double height, width, depth;
-	private CorridorEntry corridor;
+	private CorridorEntry corridorEntry;
 
 	/**
 	 * 
 	 */
 	public MainChamberEntry() {
 		this(0, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0, 0);
-		corridor = new CorridorEntry();
+		corridorEntry = new CorridorEntry();
 	}
 
 	public MainChamberEntry(int mainChamberID, int ceilingTypeID, int frontWallID, int leftWallID, int rightWallID, int rearWallID,
@@ -146,28 +146,6 @@ public class MainChamberEntry extends AbstractEntry {
 		this.preservationClassificationID = preservationID;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.cses.shared.AbstractEntry#getInsertSql()
-	 */
-	public String getInsertSql() {
-		return "INSERT INTO MainChamber (MainChamberID, CeilingTypeID, FrontWallID, LeftWallID, RightWallID, RearWallID, Height, Width, Depth, PreservationClassificationID) VALUES "
-				+ "(" + mainChamberID + ", " + ceilingTypeID + ", " + frontWallID + ", " + leftWallID + ", " + rightWallID + ", " + rearWallID
-				+ ", " + height + ", " + width + ", " + depth + ", " + preservationClassificationID + ")";
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.cses.shared.AbstractEntry#getUpdateSql()
-	 */
-	public String getUpdateSql() {
-		return "UPDATE MainChamber SET CeilingTypeID=" + ceilingTypeID + ", FrontWallID=" + frontWallID + ", LeftWallID=" + leftWallID
-				+ ", RightWallID=" + rightWallID + ", RearWallID=" + rearWallID + ", Height=" + height + ", Width=" + width + ", Depth=" + depth
-				+ ", PreservationClassificationID=" + preservationClassificationID + " WHERE MainChamberID=" + mainChamberID;
-	}
-
 	/* (non-Javadoc)
 	 * @see de.cses.shared.AbstractEntry#uniqueID()
 	 */
@@ -179,15 +157,15 @@ public class MainChamberEntry extends AbstractEntry {
 	/**
 	 * @return the corridor
 	 */
-	public CorridorEntry getCorridor() {
-		return corridor;
+	public CorridorEntry getCorridorEntry() {
+		return corridorEntry;
 	}
 
 	/**
 	 * @param corridor the corridor to set
 	 */
-	public void setCorridor(CorridorEntry corridor) {
-		this.corridor = corridor;
+	public void setCorridorEntry(CorridorEntry corridorEntry) {
+		this.corridorEntry = corridorEntry;
 	}
 
 }

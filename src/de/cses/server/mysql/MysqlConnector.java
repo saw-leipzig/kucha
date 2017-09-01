@@ -1229,11 +1229,11 @@ public class MysqlConnector {
 				result = new MainChamberEntry(rs.getInt("MainChamberID"), rs.getInt("CeilingTypeID"), rs.getInt("FrontWallID"),
 						rs.getInt("LeftWallID"), rs.getInt("RightWallID"), rs.getInt("RearWallID"), rs.getDouble("Height"), rs.getDouble("Width"),
 						rs.getDouble("Depth"), rs.getInt("PreservationClassificationID"));
-				result.setCorridor(getCorridor(rs.getInt("CorridorID")));
+				result.setCorridorEntry(getCorridor(rs.getInt("CorridorID")));
 			} else { // in case there is no entry we send back a new one
 				result = new MainChamberEntry();
 				result.setMainChamberID(id);
-				insertEntry(result.getInsertSql());
+				insertMainChamber(result);
 			}
 			rs.close();
 			stmt.close();
@@ -1241,6 +1241,68 @@ public class MysqlConnector {
 			e.printStackTrace();
 		}
 		return result;
+	}
+	
+	private boolean updateMainChamber(MainChamberEntry entry) {
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		if (entry.getCorridorEntry().getCorridorID() == 0) {
+			entry.getCorridorEntry().setCorridorID(insertCorridor(entry.getCorridorEntry()));
+		} else {
+			updateCorridor(entry.getCorridorEntry());
+		}
+		try {
+			pstmt = dbc.prepareStatement("UPDATE MainChamber SET CeilingTypeID=?, FrontWallID=?, LeftWallID=?, RightWallID=?, RearWallID=?, CorridorID=?, Height=?, Width=?, "
+					+ "Depth=?, PreservationClassificationID=? WHERE MainChamberID=?");
+			pstmt.setInt(1,  entry.getCeilingTypeID());
+			pstmt.setInt(2, entry.getFrontWallID());
+			pstmt.setInt(3, entry.getLeftWallID());
+			pstmt.setInt(4, entry.getRightWallID());
+			pstmt.setInt(5, entry.getRearWallID());
+			pstmt.setInt(6, entry.getCorridorEntry().getCorridorID());
+			pstmt.setDouble(7, entry.getHeight());
+			pstmt.setDouble(8, entry.getWidth());
+			pstmt.setDouble(9, entry.getDepth());
+			pstmt.setInt(10, entry.getPreservationClassificationID());
+			pstmt.setInt(11, entry.getMainChamberID());
+			pstmt.executeUpdate();
+			pstmt.close();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
+	private boolean insertMainChamber(MainChamberEntry entry) {
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		if (entry.getCorridorEntry().getCorridorID() == 0) {
+			entry.getCorridorEntry().setCorridorID(insertCorridor(entry.getCorridorEntry()));
+		} else {
+			updateCorridor(entry.getCorridorEntry());
+		}
+		try {
+			pstmt = dbc.prepareStatement("INSERT INTO MainChamber (MainChamberID, CeilingTypeID, FrontWallID, LeftWallID, RightWallID, RearWallID, CorridorID, "
+					+ "Height, Width, Depth, PreservationClassificationID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			pstmt.setInt(1, entry.getMainChamberID());
+			pstmt.setInt(2,  entry.getCeilingTypeID());
+			pstmt.setInt(3, entry.getFrontWallID());
+			pstmt.setInt(4, entry.getLeftWallID());
+			pstmt.setInt(5, entry.getRightWallID());
+			pstmt.setInt(6, entry.getRearWallID());
+			pstmt.setInt(7, entry.getCorridorEntry().getCorridorID());
+			pstmt.setDouble(8, entry.getHeight());
+			pstmt.setDouble(9, entry.getWidth());
+			pstmt.setDouble(10, entry.getDepth());
+			pstmt.setInt(11, entry.getPreservationClassificationID());
+			pstmt.executeUpdate();
+			pstmt.close();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -1672,7 +1734,7 @@ public class MysqlConnector {
 	public boolean updateCaveEntry(CaveEntry caveEntry) {
 		if (updateEntry(caveEntry.getUpdateSql())) {
 			updateAntechamber(caveEntry.getAntechamberEntry());
-			updateEntry(caveEntry.getMainChamberEntry().getUpdateSql());
+			updateMainChamber(caveEntry.getMainChamberEntry());
 			updateRearArea(caveEntry.getRearAreaEntry());
 			return true;
 		}
@@ -1692,7 +1754,7 @@ public class MysqlConnector {
 			caveEntry.getMainChamberEntry().setMainChamberID(newCaveID);
 			caveEntry.getRearAreaEntry().setRearAreaID(newCaveID);
 			insertAntechamber(caveEntry.getAntechamberEntry());
-			insertEntry(caveEntry.getMainChamberEntry().getInsertSql());
+			insertMainChamber(caveEntry.getMainChamberEntry());
 			insertRearArea(caveEntry.getRearAreaEntry());
 		}
 		return newCaveID;
