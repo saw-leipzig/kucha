@@ -1023,7 +1023,7 @@ public class MysqlConnector {
 			if (rs.first()) {
 				result = new AntechamberEntry(rs.getInt("AntechamberID"), rs.getInt("CeilingTypeID"), rs.getInt("FrontWallID"),
 						rs.getInt("LeftWallID"), rs.getInt("RightWallID"), rs.getInt("RearWallID"), rs.getDouble("Height"), rs.getDouble("Width"),
-						rs.getDouble("Depth"), rs.getInt("PreservationClassificationID"));
+						rs.getDouble("Depth"), rs.getInt("PreservationClassificationID"), rs.getInt("CeilingPreservationClassificationID"));
 			} else { // in case there is no entry we send back a new one
 				result = new AntechamberEntry();
 				result.setAntechamberID(id);
@@ -1042,8 +1042,8 @@ public class MysqlConnector {
 		PreparedStatement pstmt;
 		try {
 			pstmt = dbc.prepareStatement(
-					"INSERT INTO Antechamber (AntechamberID, CeilingTypeID, FrontWallID, LeftWallID, RightWallID, RearWallID, Height, Width, Depth, PreservationClassificationID) "
-					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+					"INSERT INTO Antechamber (AntechamberID, CeilingTypeID, FrontWallID, LeftWallID, RightWallID, RearWallID, Height, Width, Depth, PreservationClassificationID, CeilingPreservationClassificationID) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			pstmt.setInt(1, entry.getAntechamberID());
 			pstmt.setInt(2,  entry.getCeilingTypeID());
 			pstmt.setInt(3, entry.getFrontWallID());
@@ -1053,7 +1053,8 @@ public class MysqlConnector {
 			pstmt.setDouble(7, entry.getHeight());
 			pstmt.setDouble(8, entry.getWidth());
 			pstmt.setDouble(9, entry.getDepth());
-			pstmt.setDouble(10, entry.getPreservationClassificationID());
+			pstmt.setInt(10, entry.getPreservationClassificationID());
+			pstmt.setInt(11, entry.getCeilingPreservationClassificationID());
 			pstmt.executeUpdate();
 			pstmt.close();
 		} catch (SQLException ex) {
@@ -1068,7 +1069,7 @@ public class MysqlConnector {
 		PreparedStatement pstmt;
 		try {
 			pstmt = dbc.prepareStatement("UPDATE Antechamber SET CeilingTypeID=?, FrontWallID=?, LeftWallID=?, RightWallID=?, RearWallID=?, Height=?, Width=?, "
-					+ "Depth=?, PreservationClassificationID=?, WHERE AntechamberID=?");
+					+ "Depth=?, PreservationClassificationID=?, CeilingPreservationClassificationID=? WHERE AntechamberID=?");
 			pstmt.setInt(1,  entry.getCeilingTypeID());
 			pstmt.setInt(2, entry.getFrontWallID());
 			pstmt.setInt(3, entry.getLeftWallID());
@@ -1077,8 +1078,9 @@ public class MysqlConnector {
 			pstmt.setDouble(6, entry.getHeight());
 			pstmt.setDouble(7, entry.getWidth());
 			pstmt.setDouble(8, entry.getDepth());
-			pstmt.setDouble(9, entry.getPreservationClassificationID());
-			pstmt.setInt(10, entry.getAntechamberID());
+			pstmt.setInt(9, entry.getPreservationClassificationID());
+			pstmt.setInt(10, entry.getCeilingPreservationClassificationID());
+			pstmt.setInt(11, entry.getAntechamberID());
 			pstmt.executeUpdate();
 			pstmt.close();
 		} catch (SQLException ex) {
@@ -1107,7 +1109,7 @@ public class MysqlConnector {
 				result = new RearAreaEntry(rs.getInt("RearAreaID"), rs.getInt("CeilingTypeID"), 
 						rs.getInt("InnerWallID"), rs.getInt("LeftWallID"), rs.getInt("RightWallID"), rs.getInt("OuterWallID"),
 						rs.getBoolean("IsBackChamber"), rs.getDouble("Height"), rs.getDouble("Width"), rs.getDouble("Depth"),
-						rs.getInt("PreservationClassificationID"));
+						rs.getInt("PreservationClassificationID"), rs.getInt("CeilingPreservationClassificationID"));
 				result.setLeftCorridorEntry(getCorridor(rs.getInt("LeftCorridorID")));
 				result.setRightCorridorEntry(getCorridor(rs.getInt("RightCorridorID")));
 			} else { // in case there is no entry we send back a new one
@@ -1143,7 +1145,7 @@ public class MysqlConnector {
 		}
 		try {
 			pstmt = dbc.prepareStatement("UPDATE RearArea SET CeilingTypeID=?, InnerWallID=?, LeftWallID=?, RightWallID=?, OuterWallID=?, LeftCorridorID=?, "
-					+ "RightCorridorID=?, IsBackChamber=?, Height=?, Width=?, Depth=?, PreservationClassificationID=? WHERE RearAreaID=?");
+					+ "RightCorridorID=?, IsBackChamber=?, Height=?, Width=?, Depth=?, PreservationClassificationID=?, CeilingPreservationClassificationID=? WHERE RearAreaID=?");
 			pstmt.setInt(1,  entry.getCeilingTypeID());
 			pstmt.setInt(2, entry.getInnerWallID());
 			pstmt.setInt(3, entry.getLeftWallID());
@@ -1155,8 +1157,9 @@ public class MysqlConnector {
 			pstmt.setDouble(9, entry.getHeight());
 			pstmt.setDouble(10, entry.getWidth());
 			pstmt.setDouble(11, entry.getDepth());
-			pstmt.setDouble(12, entry.getPreservationClassificationID());
-			pstmt.setInt(13, entry.getRearAreaID());
+			pstmt.setInt(12, entry.getPreservationClassificationID());
+			pstmt.setInt(13, entry.getCeilingPreservationClassificationID());
+			pstmt.setInt(14, entry.getRearAreaID());
 			pstmt.executeUpdate();
 			pstmt.close();
 		} catch (SQLException ex) {
@@ -1187,7 +1190,7 @@ public class MysqlConnector {
 		try {
 			pstmt = dbc.prepareStatement(
 					"INSERT INTO RearArea (RearAreaID, CeilingTypeID, InnerWallID, LeftWallID, RightWallID, OuterWallID, LeftCorridorID, RightCorridorID, IsBackChamber, "
-					+ "Height, Width, Depth, PreservationClassificationID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+					+ "Height, Width, Depth, PreservationClassificationID, CeilingPreservationClassificationID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			pstmt.setInt(1, entry.getRearAreaID());
 			pstmt.setInt(2,  entry.getCeilingTypeID());
 			pstmt.setInt(3, entry.getInnerWallID());
@@ -1200,7 +1203,8 @@ public class MysqlConnector {
 			pstmt.setDouble(10, entry.getHeight());
 			pstmt.setDouble(11, entry.getWidth());
 			pstmt.setDouble(12, entry.getDepth());
-			pstmt.setDouble(13, entry.getPreservationClassificationID());
+			pstmt.setInt(13, entry.getPreservationClassificationID());
+			pstmt.setInt(14, entry.getCeilingPreservationClassificationID());
 			pstmt.executeUpdate();
 			pstmt.close();
 		} catch (SQLException ex) {
@@ -1228,7 +1232,7 @@ public class MysqlConnector {
 			if (rs.first()) {
 				result = new MainChamberEntry(rs.getInt("MainChamberID"), rs.getInt("CeilingTypeID"), rs.getInt("FrontWallID"),
 						rs.getInt("LeftWallID"), rs.getInt("RightWallID"), rs.getInt("RearWallID"), rs.getDouble("Height"), rs.getDouble("Width"),
-						rs.getDouble("Depth"), rs.getInt("PreservationClassificationID"));
+						rs.getDouble("Depth"), rs.getInt("PreservationClassificationID"), rs.getInt("CeilingPreservationClassificationID"));
 				result.setCorridorEntry(getCorridor(rs.getInt("CorridorID")));
 			} else { // in case there is no entry we send back a new one
 				result = new MainChamberEntry();
@@ -1253,7 +1257,7 @@ public class MysqlConnector {
 		}
 		try {
 			pstmt = dbc.prepareStatement("UPDATE MainChamber SET CeilingTypeID=?, FrontWallID=?, LeftWallID=?, RightWallID=?, RearWallID=?, CorridorID=?, Height=?, Width=?, "
-					+ "Depth=?, PreservationClassificationID=? WHERE MainChamberID=?");
+					+ "Depth=?, PreservationClassificationID=?, CeilingPreservationClassificationID=? WHERE MainChamberID=?");
 			pstmt.setInt(1,  entry.getCeilingTypeID());
 			pstmt.setInt(2, entry.getFrontWallID());
 			pstmt.setInt(3, entry.getLeftWallID());
@@ -1264,7 +1268,8 @@ public class MysqlConnector {
 			pstmt.setDouble(8, entry.getWidth());
 			pstmt.setDouble(9, entry.getDepth());
 			pstmt.setInt(10, entry.getPreservationClassificationID());
-			pstmt.setInt(11, entry.getMainChamberID());
+			pstmt.setInt(11, entry.getCeilingPreservationClassificationID());
+			pstmt.setInt(12, entry.getMainChamberID());
 			pstmt.executeUpdate();
 			pstmt.close();
 		} catch (SQLException ex) {
@@ -1284,7 +1289,7 @@ public class MysqlConnector {
 		}
 		try {
 			pstmt = dbc.prepareStatement("INSERT INTO MainChamber (MainChamberID, CeilingTypeID, FrontWallID, LeftWallID, RightWallID, RearWallID, CorridorID, "
-					+ "Height, Width, Depth, PreservationClassificationID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+					+ "Height, Width, Depth, PreservationClassificationID, CeilingPreservationClassificationID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			pstmt.setInt(1, entry.getMainChamberID());
 			pstmt.setInt(2,  entry.getCeilingTypeID());
 			pstmt.setInt(3, entry.getFrontWallID());
@@ -1296,6 +1301,7 @@ public class MysqlConnector {
 			pstmt.setDouble(9, entry.getWidth());
 			pstmt.setDouble(10, entry.getDepth());
 			pstmt.setInt(11, entry.getPreservationClassificationID());
+			pstmt.setInt(12, entry.getCeilingPreservationClassificationID());
 			pstmt.executeUpdate();
 			pstmt.close();
 		} catch (SQLException ex) {
@@ -1319,7 +1325,8 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Corridor WHERE CorridorID=" + id);
 			if (rs.first()) {
-				result = new CorridorEntry(rs.getInt("CorridorID"), rs.getInt("OuterWallID"), rs.getInt("InnerWallID"), rs.getInt("CeilingTypeID"), rs.getInt("PreservationClassificationID"));
+				result = new CorridorEntry(rs.getInt("CorridorID"), rs.getInt("OuterWallID"), rs.getInt("InnerWallID"), rs.getInt("CeilingTypeID"), 
+						rs.getInt("PreservationClassificationID"), rs.getInt("CeilingPreservationClassificationID"));
 			} else { // in case there is no entry we send back a new one
 				result = new CorridorEntry();
 			}
@@ -1339,12 +1346,13 @@ public class MysqlConnector {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
-			pstmt = dbc.prepareStatement("UPDATE Corridor SET OuterWallID=?, InnerWallID=?, CeilingTypeID=?, PreservationClassificationID=? WHERE CorridorID=?");
+			pstmt = dbc.prepareStatement("UPDATE Corridor SET OuterWallID=?, InnerWallID=?, CeilingTypeID=?, PreservationClassificationID=?, CeilingPreservationClassificationID=? WHERE CorridorID=?");
 			pstmt.setInt(1, entry.getOuterWallID());
 			pstmt.setInt(2, entry.getInnerWallID());
 			pstmt.setInt(3, entry.getCeilingTypeID());
 			pstmt.setInt(4, entry.getPreservationClassificationID());
-			pstmt.setInt(5,  entry.getCeilingTypeID());
+			pstmt.setInt(5, entry.getCeilingPreservationClassificationID());
+			pstmt.setInt(6,  entry.getCeilingTypeID());
 			pstmt.executeUpdate();
 			pstmt.close();
 		} catch (SQLException ex) {
@@ -1363,12 +1371,12 @@ public class MysqlConnector {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
-			pstmt = dbc.prepareStatement("INSERT INTO Corridor (OuterWallID, InnerWallID, CeilingTypeID, PreservationClassificationID) VALUES (?, ?, ?, ?)");
+			pstmt = dbc.prepareStatement("INSERT INTO Corridor (OuterWallID, InnerWallID, CeilingTypeID, PreservationClassificationID, CeilingPreservationClassificationID) VALUES (?, ?, ?, ?, ?)");
 			pstmt.setInt(1, entry.getOuterWallID());
 			pstmt.setInt(2, entry.getInnerWallID());
 			pstmt.setInt(3, entry.getCeilingTypeID());
 			pstmt.setInt(4, entry.getPreservationClassificationID());
-			pstmt.setInt(5,  entry.getCeilingTypeID());
+			pstmt.setInt(5, entry.getCeilingPreservationClassificationID());
 			newID = pstmt.executeUpdate();
 			pstmt.close();
 		} catch (SQLException ex) {

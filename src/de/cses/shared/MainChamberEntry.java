@@ -26,6 +26,7 @@ public class MainChamberEntry extends AbstractEntry {
 	private int rightWallID; 
 	private int rearWallID;
 	private int preservationClassificationID;
+	private int ceilingPreservationClassificationID;
 	private double height, width, depth;
 	private CorridorEntry corridorEntry;
 
@@ -33,12 +34,12 @@ public class MainChamberEntry extends AbstractEntry {
 	 * 
 	 */
 	public MainChamberEntry() {
-		this(0, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0, 0);
+		this(0, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0, 0, 0);
 		corridorEntry = new CorridorEntry();
 	}
 
 	public MainChamberEntry(int mainChamberID, int ceilingTypeID, int frontWallID, int leftWallID, int rightWallID, int rearWallID,
-			double height, double width, double depth, int preservationClassificationID) {
+			double height, double width, double depth, int preservationClassificationID, int ceilingPreservationClassificationID) {
 		super();
 		setMainChamberID(mainChamberID);
 		this.setCeilingTypeID(ceilingTypeID);
@@ -50,6 +51,7 @@ public class MainChamberEntry extends AbstractEntry {
 		setWidth(width);
 		setDepth(depth);
 		setPreservationClassificationID(preservationClassificationID);
+		setCeilingPreservationClassificationID(ceilingPreservationClassificationID);
 	}
 
 	public int getMainChamberID() {
@@ -166,6 +168,14 @@ public class MainChamberEntry extends AbstractEntry {
 	 */
 	public void setCorridorEntry(CorridorEntry corridorEntry) {
 		this.corridorEntry = corridorEntry;
+	}
+
+	public int getCeilingPreservationClassificationID() {
+		return ceilingPreservationClassificationID;
+	}
+
+	public void setCeilingPreservationClassificationID(int ceilingPreservationClassificationID) {
+		this.ceilingPreservationClassificationID = ceilingPreservationClassificationID;
 	}
 
 }

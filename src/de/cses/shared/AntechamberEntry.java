@@ -15,15 +15,15 @@ package de.cses.shared;
 
 public class AntechamberEntry extends AbstractEntry {
 
-	private int antechamberID, ceilingTypeID, frontWallID, leftWallID, rightWallID, rearWallID, preservationClassificationID;
+	private int antechamberID, ceilingTypeID, frontWallID, leftWallID, rightWallID, rearWallID, preservationClassificationID, ceilingPreservationClassificationID;
 	private double height, width, depth;
 
 	public AntechamberEntry() {
-		this(0, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0, 0);
+		this(0, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0, 0, 0);
 	}
 
 	public AntechamberEntry(int antechamberID, int ceilingTypeID, int frontWallID, int leftWallID, int rightWallID, int rearWallID,
-			double height, double width, double depth, int preservationClassificationID) {
+			double height, double width, double depth, int preservationClassificationID, int ceilingPreservationClassificationID) {
 		super();
 		setAntechamberID(antechamberID);
 		setCeilingTypeID(ceilingTypeID);
@@ -35,6 +35,7 @@ public class AntechamberEntry extends AbstractEntry {
 		setWidth(width);
 		setDepth(depth);
 		setPreservationClassificationID(preservationClassificationID);
+		setCeilingPreservationClassificationID(ceilingPreservationClassificationID);
 	}
 
 	public int getAntechamberID() {
@@ -130,6 +131,14 @@ public class AntechamberEntry extends AbstractEntry {
 	@Override
 	public String getUniqueID() {
 		return "Antechamber-" + antechamberID;
+	}
+
+	public int getCeilingPreservationClassificationID() {
+		return ceilingPreservationClassificationID;
+	}
+
+	public void setCeilingPreservationClassificationID(int ceilingPreservationClassificationID) {
+		this.ceilingPreservationClassificationID = ceilingPreservationClassificationID;
 	}
 
 }

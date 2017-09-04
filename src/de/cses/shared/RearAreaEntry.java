@@ -26,6 +26,7 @@ public class RearAreaEntry extends AbstractEntry {
 	private int rightWallID; 
 	private int outerWallID; 
 	private int preservationClassificationID;
+	private int ceilingPreservationClassificationID;
 	private boolean isBackChamber;
 	private double height, width, depth;
 	private CorridorEntry leftCorridorEntry;
@@ -35,13 +36,13 @@ public class RearAreaEntry extends AbstractEntry {
 	 * 
 	 */
 	public RearAreaEntry() {
-		this(0, 0, 0, 0, 0, 0, false, 0.0, 0.0, 0.0, 0);
+		this(0, 0, 0, 0, 0, 0, false, 0.0, 0.0, 0.0, 0, 0);
 		leftCorridorEntry = new CorridorEntry();
 		rightCorridorEntry = new CorridorEntry();
 	}
 
 	public RearAreaEntry(int rearAreaID, int ceiligTypeID, int innerWallID, int leftWallID, int rightWallID, int outerWallID,
-			boolean isBackChamber, double height, double width, double depth, int preservationClassificationID) {
+			boolean isBackChamber, double height, double width, double depth, int preservationClassificationID, int ceilingPreservationClassificationID) {
 		super();
 		setRearAreaID(rearAreaID);
 		setCeilingTypeID(ceiligTypeID);
@@ -54,6 +55,7 @@ public class RearAreaEntry extends AbstractEntry {
 		setWidth(width);
 		setDepth(depth);
 		setPreservationClassificationID(preservationClassificationID);
+		setCeilingPreservationClassificationID(ceilingPreservationClassificationID);
 	}
 
 	public int getRearAreaID() {
@@ -180,6 +182,20 @@ public class RearAreaEntry extends AbstractEntry {
 
 	public void setRightCorridorEntry(CorridorEntry rightCorridorEntry) {
 		this.rightCorridorEntry = rightCorridorEntry;
+	}
+
+	/**
+	 * @return the ceilingPreservationClassificationID
+	 */
+	public int getCeilingPreservationClassificationID() {
+		return ceilingPreservationClassificationID;
+	}
+
+	/**
+	 * @param ceilingPreservationClassificationID the ceilingPreservationClassificationID to set
+	 */
+	public void setCeilingPreservationClassificationID(int ceilingPreservationClassificationID) {
+		this.ceilingPreservationClassificationID = ceilingPreservationClassificationID;
 	}
 
 }

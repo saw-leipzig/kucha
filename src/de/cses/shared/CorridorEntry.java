@@ -24,12 +24,13 @@ public class CorridorEntry extends AbstractEntry {
 	private int innerWallID;
 	private int ceilingTypeID;
 	private int preservationClassificationID;
+	private int ceilingPreservationClassificationID;
 
 	/**
 	 * 
 	 */
 	public CorridorEntry() {
-		this(0,0,0,0,0);
+		this(0,0,0,0,0,0);
 	}
 
 	/**
@@ -39,13 +40,14 @@ public class CorridorEntry extends AbstractEntry {
 	 * @param ceilingTypeID
 	 * @param preservationClassificationID
 	 */
-	public CorridorEntry(int corridorID, int outerWallID, int innerWallID, int ceilingTypeID, int preservationClassificationID) {
+	public CorridorEntry(int corridorID, int outerWallID, int innerWallID, int ceilingTypeID, int preservationClassificationID, int ceilingPreservationClassificationID) {
 		super();
 		setCorridorID(corridorID);
 		setOuterWallID(outerWallID);
 		setInnerWallID(innerWallID);
 		setCeilingTypeID(ceilingTypeID);
 		setPreservationClassificationID(preservationClassificationID);
+		setCeilingPreservationClassificationID(ceilingPreservationClassificationID);
 	}
 
 	/* (non-Javadoc)
@@ -100,6 +102,14 @@ public class CorridorEntry extends AbstractEntry {
 	 */
 	public void setPreservationClassificationID(int preservationClassificationID) {
 		this.preservationClassificationID = preservationClassificationID;
+	}
+
+	public int getCeilingPreservationClassificationID() {
+		return ceilingPreservationClassificationID;
+	}
+
+	public void setCeilingPreservationClassificationID(int ceilingPreservationClassificationID) {
+		this.ceilingPreservationClassificationID = ceilingPreservationClassificationID;
 	}
 
 }
