@@ -1319,7 +1319,7 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Corridor WHERE CorridorID=" + id);
 			if (rs.first()) {
-				result = new CorridorEntry(rs.getInt("CorridorID"), rs.getInt("OuterWallID"), rs.getInt("InnerWallID"), rs.getInt("CeilingTypeID"));
+				result = new CorridorEntry(rs.getInt("CorridorID"), rs.getInt("OuterWallID"), rs.getInt("InnerWallID"), rs.getInt("CeilingTypeID"), rs.getInt("PreservationClassificationID"));
 			} else { // in case there is no entry we send back a new one
 				result = new CorridorEntry();
 			}
@@ -1336,7 +1336,21 @@ public class MysqlConnector {
 	 * @return
 	 */
 	private boolean updateCorridor(CorridorEntry entry) {
-		// TODO Auto-generated method stub
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("UPDATE Corridor SET OuterWallID=?, InnerWallID=?, CeilingTypeID=?, PreservationClassificationID=? WHERE CorridorID=?");
+			pstmt.setInt(1, entry.getOuterWallID());
+			pstmt.setInt(2, entry.getInnerWallID());
+			pstmt.setInt(3, entry.getCeilingTypeID());
+			pstmt.setInt(4, entry.getPreservationClassificationID());
+			pstmt.setInt(5,  entry.getCeilingTypeID());
+			pstmt.executeUpdate();
+			pstmt.close();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			return false;
+		}
 		return true;
 	}
 
@@ -1345,8 +1359,23 @@ public class MysqlConnector {
 	 * @return
 	 */
 	private int insertCorridor(CorridorEntry entry) {
-		// TODO Auto-generated method stub
-		return 0;
+		int newID;
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("INSERT INTO Corridor (OuterWallID, InnerWallID, CeilingTypeID, PreservationClassificationID) VALUES (?, ?, ?, ?)");
+			pstmt.setInt(1, entry.getOuterWallID());
+			pstmt.setInt(2, entry.getInnerWallID());
+			pstmt.setInt(3, entry.getCeilingTypeID());
+			pstmt.setInt(4, entry.getPreservationClassificationID());
+			pstmt.setInt(5,  entry.getCeilingTypeID());
+			newID = pstmt.executeUpdate();
+			pstmt.close();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			return 0;
+		}
+		return newID;
 	}
 
 	/**

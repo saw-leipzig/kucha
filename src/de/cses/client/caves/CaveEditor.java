@@ -44,7 +44,6 @@ import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
-import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
@@ -127,12 +126,19 @@ public class CaveEditor extends AbstractEditor {
 	private CaveGroupProperties caveGroupProps;
 	private ListStore<CaveGroupEntry> caveGroupEntryList;
 	private VerticalLayoutContainer ceilingTypeVLC;
+	private VerticalLayoutContainer stateOfPreservationVLC;
 	private FramedPanel rearAreaCeilingTypePanel;
 	private FramedPanel mainChamberCeilingTypePanel;
 	private FramedPanel antechamberCeilingTypePanel;
 	private FramedPanel corridorCeilingTypePanel;
 	private FramedPanel leftCorridorCeilingTypePanel;
 	private FramedPanel rightCorridorCeilingTypePanel;
+	private FramedPanel rearAreaStateOfPreservationPanel;
+	private FramedPanel mainChamberStateOfPreservationPanel;
+	private FramedPanel antechamberStateOfPreservationPanel;
+	private FramedPanel rearAreaCeilingStateOfPreservationPanel;
+	private FramedPanel mainChamberCeilingStateOfPreservationPanel;
+	private ContentPanel antechamberCeilingStateOfPreservationPanel;
 
 	interface CaveTypeProperties extends PropertyAccess<CaveTypeEntry> {
 		ModelKeyProvider<CaveTypeEntry> caveTypeID();
@@ -917,6 +923,8 @@ public class CaveEditor extends AbstractEditor {
 
 		// we will use this HLC for the tabs
 		HorizontalLayoutContainer stateOfPreservationHLC = new HorizontalLayoutContainer();
+		stateOfPreservationVLC = new VerticalLayoutContainer();
+
 		vlContainer = new VerticalLayoutContainer();
 
 		// attributePanel = new FramedPanel();
@@ -944,8 +952,8 @@ public class CaveEditor extends AbstractEditor {
 		// attributePanel.add(overallPreservationSelector);
 		// vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Rear Area");
+		rearAreaStateOfPreservationPanel = new FramedPanel();
+		rearAreaStateOfPreservationPanel.setHeading("Rear Area");
 		rearAreaPreservationSelector = new ComboBox<PreservationClassificationEntry>(preservationClassificationEntryList,
 				preservationClassificationProps.name(), new AbstractSafeHtmlRenderer<PreservationClassificationEntry>() {
 
@@ -966,11 +974,10 @@ public class CaveEditor extends AbstractEditor {
 						.setPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
 			}
 		});
-		attributePanel.add(rearAreaPreservationSelector);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0 / 6));
+		rearAreaStateOfPreservationPanel.add(rearAreaPreservationSelector);
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Main Chamber");
+		mainChamberStateOfPreservationPanel = new FramedPanel();
+		mainChamberStateOfPreservationPanel.setHeading("Main Chamber");
 		mainChamberPreservationSelector = new ComboBox<PreservationClassificationEntry>(preservationClassificationEntryList,
 				preservationClassificationProps.name(), new AbstractSafeHtmlRenderer<PreservationClassificationEntry>() {
 
@@ -991,11 +998,10 @@ public class CaveEditor extends AbstractEditor {
 						.setPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
 			}
 		});
-		attributePanel.add(mainChamberPreservationSelector);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0 / 6));
+		mainChamberStateOfPreservationPanel.add(mainChamberPreservationSelector);
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Antechamber");
+		antechamberStateOfPreservationPanel = new FramedPanel();
+		antechamberStateOfPreservationPanel.setHeading("Antechamber");
 		antechamberPreservationSelector = new ComboBox<PreservationClassificationEntry>(preservationClassificationEntryList,
 				preservationClassificationProps.name(), new AbstractSafeHtmlRenderer<PreservationClassificationEntry>() {
 
@@ -1016,11 +1022,10 @@ public class CaveEditor extends AbstractEditor {
 						.setPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
 			}
 		});
-		attributePanel.add(antechamberPreservationSelector);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0 / 6));
+		antechamberStateOfPreservationPanel.add(antechamberPreservationSelector);
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Rear Area Ceiling");
+		rearAreaCeilingStateOfPreservationPanel = new FramedPanel();
+		rearAreaCeilingStateOfPreservationPanel.setHeading("Rear Area Ceiling");
 		rearAreaCeilingPreservationSelector = new ComboBox<PreservationClassificationEntry>(preservationClassificationEntryList,
 				preservationClassificationProps.name(), new AbstractSafeHtmlRenderer<PreservationClassificationEntry>() {
 
@@ -1041,11 +1046,14 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 
-		attributePanel.add(rearAreaCeilingPreservationSelector);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0 / 6));
+		rearAreaCeilingStateOfPreservationPanel.add(rearAreaCeilingPreservationSelector);
+//	vContainer.add(rearAreaStateOfPreservationPanel, new VerticalLayoutData(1.0, 1.0 / 6));
+//	vlContainer.add(mainChamberStateOfPreservationPanel, new VerticalLayoutData(1.0, 1.0 / 6));
+//		vlContainer.add(antechamberStateOfPreservationPanel, new VerticalLayoutData(1.0, 1.0 / 6));
+//		vlContainer.add(rearAreaCeilingStateOfPreservationPanel, new VerticalLayoutData(1.0, 1.0 / 6));
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Main Chamber Ceiling");
+		mainChamberCeilingStateOfPreservationPanel = new FramedPanel();
+		mainChamberCeilingStateOfPreservationPanel.setHeading("Main Chamber Ceiling");
 		mainChamberCeilingPreservationSelector = new ComboBox<PreservationClassificationEntry>(preservationClassificationEntryList,
 				preservationClassificationProps.name(), new AbstractSafeHtmlRenderer<PreservationClassificationEntry>() {
 
@@ -1066,11 +1074,10 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 
-		attributePanel.add(mainChamberCeilingPreservationSelector);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0 / 6));
+		mainChamberCeilingStateOfPreservationPanel.add(mainChamberCeilingPreservationSelector);
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Antechamber Ceiling");
+		antechamberCeilingStateOfPreservationPanel = new FramedPanel();
+		antechamberCeilingStateOfPreservationPanel.setHeading("Antechamber Ceiling");
 		antechamberCeilingPreservationSelector = new ComboBox<PreservationClassificationEntry>(preservationClassificationEntryList,
 				preservationClassificationProps.name(), new AbstractSafeHtmlRenderer<PreservationClassificationEntry>() {
 
@@ -1091,8 +1098,7 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 
-		attributePanel.add(antechamberCeilingPreservationSelector);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0 / 6));
+		antechamberCeilingStateOfPreservationPanel.add(antechamberCeilingPreservationSelector);
 
 		stateOfPreservationHLC.add(vlContainer, new HorizontalLayoutData(.4, 1.0));
 
@@ -1211,7 +1217,7 @@ public class CaveEditor extends AbstractEditor {
 
 		// here we prepare all elements and later call updateCeilingTypePanel()
 		ceilingTypeVLC = new VerticalLayoutContainer();
-
+		
 		rearAreaCeilingTypePanel = new FramedPanel();
 		rearAreaCeilingTypePanel.setHeading("Rear Area Ceiling Type");
 		rearAreaCeilingTypeSelector = new ComboBox<CeilingTypeEntry>(ceilingTypeEntryList, ceilingTypeProps.name(),
@@ -1442,7 +1448,44 @@ public class CaveEditor extends AbstractEditor {
 			ceilingTypeVLC.add(new Label("select cave type"));
 			break;
 		}
+	}
 
+	private void updateStateOfPreservationPanel() {
+		
+//	vContainer.add(rearAreaStateOfPreservationPanel, new VerticalLayoutData(1.0, 1.0 / 6));
+//	vlContainer.add(mainChamberStateOfPreservationPanel, new VerticalLayoutData(1.0, 1.0 / 6));
+//		vlContainer.add(antechamberStateOfPreservationPanel, new VerticalLayoutData(1.0, 1.0 / 6));
+//		vlContainer.add(rearAreaCeilingStateOfPreservationPanel, new VerticalLayoutData(1.0, 1.0 / 6));
+//		vlContainer.add(mainChamberCeilingStateOfPreservationPanel, new VerticalLayoutData(1.0, 1.0 / 6));
+//		vlContainer.add(antechamberCeilingStateOfPreservationPanel, new VerticalLayoutData(1.0, 1.0 / 6));
+		stateOfPreservationVLC.clear();
+
+		switch (correspondingCaveEntry.getCaveTypeID()) {
+		case 2: // square cave
+			stateOfPreservationVLC.add(mainChamberCeilingTypePanel, new VerticalLayoutData(1.0, .2));
+			stateOfPreservationVLC.add(antechamberCeilingTypePanel, new VerticalLayoutData(1.0, .2));
+			break;
+
+		case 3: // residential cave
+			stateOfPreservationVLC.add(rearAreaStateOfPreservationPanel, new VerticalLayoutData(1.0, .2));
+			stateOfPreservationVLC.add(mainChamberStateOfPreservationPanel, new VerticalLayoutData(1.0, .2));
+			stateOfPreservationVLC.add(corridorCeilingTypePanel, new VerticalLayoutData(1.0, .2));
+			stateOfPreservationVLC.add(antechamberStateOfPreservationPanel, new VerticalLayoutData(1.0, .2));
+			break;
+
+		case 4: // central-pillar cave
+		case 6: // monumental image cave
+			stateOfPreservationVLC.add(rearAreaStateOfPreservationPanel, new VerticalLayoutData(1.0, .2));
+			stateOfPreservationVLC.add(leftCorridorCeilingTypePanel, new VerticalLayoutData(1.0, .2));
+			stateOfPreservationVLC.add(rightCorridorCeilingTypePanel, new VerticalLayoutData(1.0, .2));
+			stateOfPreservationVLC.add(mainChamberStateOfPreservationPanel, new VerticalLayoutData(1.0, .2));
+			stateOfPreservationVLC.add(antechamberStateOfPreservationPanel, new VerticalLayoutData(1.0, .2));
+			break;
+
+		default:
+			ceilingTypeVLC.add(new Label("select cave type"));
+			break;
+		}
 	}
 
 	// /**
