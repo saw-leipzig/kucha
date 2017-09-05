@@ -13,10 +13,6 @@
  */
 package de.cses.client.caves;
 
-import java.beans.XMLEncoder;
-import java.io.BufferedOutputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 
 import com.google.gwt.core.client.GWT;
@@ -33,7 +29,6 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.xml.client.XMLParser;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.data.shared.LabelProvider;
@@ -54,6 +49,8 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.Verti
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
+import com.sencha.gxt.widget.core.client.form.NumberField;
+import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
@@ -105,7 +102,8 @@ public class CaveEditor extends AbstractEditor {
 	protected Object siteEntryAccess;
 	// private ArrayList<CaveEditorListener> listenerList;
 	// private Label siteDisplay;
-	private TextField alterationDateField;
+	private TextField firstDocumentedByField;
+	private NumberField<Integer> firstDocumentedInYear;
 	private TextArea findingsTextArea;
 	private FlowLayoutContainer imageContainer;
 	private ComboBox<OrientationEntry> orientationSelection;
@@ -576,11 +574,12 @@ public class CaveEditor extends AbstractEditor {
 		HorizontalLayoutContainer mainHlContainer = new HorizontalLayoutContainer();
 
 		// each column is represented by a VerticalLayoutPanel
-		VerticalLayoutContainer vlContainer = new VerticalLayoutContainer();
 
 		/**
 		 * ------------------------- this is the first column on the left side -------------------------
 		 */
+		VerticalLayoutContainer mainInformationVLC = new VerticalLayoutContainer();
+		
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Official Number");
 		officialNumberField = new TextField();
@@ -596,7 +595,7 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		attributePanel.add(officialNumberField);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .11));
+		mainInformationVLC.add(attributePanel, new VerticalLayoutData(1.0, .1));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Historic Name");
@@ -612,7 +611,7 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		attributePanel.add(historicNameField);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .11));
+		mainInformationVLC.add(attributePanel, new VerticalLayoutData(1.0, .1));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Optional Historic Name");
@@ -628,7 +627,33 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		attributePanel.add(optionalHistoricNameField);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .11));
+		mainInformationVLC.add(attributePanel, new VerticalLayoutData(1.0, .1));
+		
+		attributePanel = new FramedPanel();
+		attributePanel.setHeading("First documented");
+		firstDocumentedByField = new TextField();
+		firstDocumentedByField.setValue(correspondingCaveEntry.getFirstDocumentedBy());
+		firstDocumentedByField.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				correspondingCaveEntry.setFirstDocumentedBy(event.getValue());
+			}
+		});
+		
+		firstDocumentedInYear = new NumberField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
+		firstDocumentedInYear.addValueChangeHandler(new ValueChangeHandler<Integer>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Integer> event) {
+				correspondingCaveEntry.setFirstDocumentedInYear(event.getValue());
+			}
+		});
+		VerticalLayoutContainer firstDocVLC = new VerticalLayoutContainer();
+		firstDocVLC.add(firstDocumentedByField, new VerticalLayoutData(1.0, .5));
+		firstDocVLC.add(firstDocumentedInYear, new VerticalLayoutData(1.0, .5));
+		attributePanel.add(firstDocVLC);
+		mainInformationVLC.add(attributePanel, new VerticalLayoutData(1.0, .14));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Cave Group");
@@ -706,7 +731,7 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		attributePanel.addButton(addCaveGroupButton);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .18));
+		mainInformationVLC.add(attributePanel, new VerticalLayoutData(1.0, .15));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Site");
@@ -734,7 +759,7 @@ public class CaveEditor extends AbstractEditor {
 		siteSelection.setWidth(250);
 		attributePanel.add(siteSelection);
 		// }
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .11));
+		mainInformationVLC.add(attributePanel, new VerticalLayoutData(1.0, .1));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("District");
@@ -833,8 +858,7 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		attributePanel.addButton(addDistrictButton);
-
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .18));
+		mainInformationVLC.add(attributePanel, new VerticalLayoutData(1.0, .15));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Region");
@@ -945,9 +969,9 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		attributePanel.addButton(addRegionButton);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .18));
+		mainInformationVLC.add(attributePanel, new VerticalLayoutData(1.0, .15));
 
-		mainHlContainer.add(vlContainer, new HorizontalLayoutData(.3, 1.0));
+		mainHlContainer.add(mainInformationVLC, new HorizontalLayoutData(.3, 1.0));
 
 		/**
 		 * ------------------------------ the column with the text fields (state of preservation tab) ----------------------------
@@ -1245,10 +1269,10 @@ public class CaveEditor extends AbstractEditor {
 		updateStateOfPreservationPanel();
 		stateOfPreservationHLC.add(stateOfPreservationVLC, new HorizontalLayoutData(.4, 1.0));
 
-		vlContainer = new VerticalLayoutContainer();
+//		vlContainer = new VerticalLayoutContainer();
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Further Comments");
+		FramedPanel furtherCommentsPanel = new FramedPanel();
+		furtherCommentsPanel.setHeading("Further Comments");
 		stateOfPreservationTextArea = new TextArea();
 		stateOfPreservationTextArea.setEmptyText("This field is for remarks on the state of the preservation");
 		stateOfPreservationTextArea.setValue(correspondingCaveEntry.getStateOfPerservation());
@@ -1260,10 +1284,10 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		// stateOfPreservationTextArea.setSize("250px", "200px");
-		attributePanel.add(stateOfPreservationTextArea);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0));
+		furtherCommentsPanel.add(stateOfPreservationTextArea);
+//		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0));
 
-		stateOfPreservationHLC.add(vlContainer, new HorizontalLayoutData(.6, 1.0));
+		stateOfPreservationHLC.add(furtherCommentsPanel, new HorizontalLayoutData(.6, 1.0));
 
 
 		/**
@@ -1271,7 +1295,7 @@ public class CaveEditor extends AbstractEditor {
 		 */
 
 		HorizontalLayoutContainer descriptionHLC = new HorizontalLayoutContainer();
-		vlContainer = new VerticalLayoutContainer();
+		VerticalLayoutContainer descriptionsVLC = new VerticalLayoutContainer();
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Findings");
@@ -1286,23 +1310,22 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		attributePanel.add(findingsTextArea);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .7));
+		descriptionsVLC.add(attributePanel, new VerticalLayoutData(1.0, .7));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("C14 Analysis (link)");
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
+		descriptionsVLC.add(attributePanel, new VerticalLayoutData(1.0, .15));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("C14 additional documents");
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
+		descriptionsVLC.add(attributePanel, new VerticalLayoutData(1.0, .15));
 
-		descriptionHLC.add(vlContainer, new HorizontalLayoutData(1.0, 1.0));
+		descriptionHLC.add(descriptionsVLC, new HorizontalLayoutData(1.0, 1.0));
 
 		/**
 		 * ------------------------- the cave type and layout description (cave type tab) -----------------------------
 		 */
 
-		vlContainer = new VerticalLayoutContainer();
 		HorizontalLayoutContainer caveTypeHLC = new HorizontalLayoutContainer();
 		VerticalLayoutContainer caveTypeVLC = new VerticalLayoutContainer();
 
@@ -1500,35 +1523,22 @@ public class CaveEditor extends AbstractEditor {
 		});
 		rightCorridorCeilingTypePanel.add(rightCorridorCeilingTypeSelector);
 
-		// attributePanel = new FramedPanel();
-		// attributePanel.setHeading("Alteration date");
-		// alterationDateField = new TextField();
-		// alterationDateField.setValue(correspondingCaveEntry.getAlterationDate());
-		// alterationDateField.addValueChangeHandler(new ValueChangeHandler<String>() {
-		//
-		// @Override
-		// public void onValueChange(ValueChangeEvent<String> event) {
-		// correspondingCaveEntry.setAlterationDate(event.getValue());
-		// }
-		// });
-		// attributePanel.add(alterationDateField);
-		// vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .12));
-		
 		updateCeilingTypePanel();
+		
+		VerticalLayoutContainer caveLayoutVLC = new VerticalLayoutContainer();
+		caveLayoutVLC.add(caveTypeVLC, new VerticalLayoutData(1.0, .25));
+		caveLayoutVLC.add(ceilingTypeVLC, new VerticalLayoutData(1.0, .75));
+		caveTypeHLC.add(caveLayoutVLC, new HorizontalLayoutData(.4, 1.0));
 
-		vlContainer.add(caveTypeVLC, new VerticalLayoutData(1.0, .25));
-		vlContainer.add(ceilingTypeVLC, new VerticalLayoutData(1.0, .75));
-		caveTypeHLC.add(vlContainer, new HorizontalLayoutData(.4, 1.0));
+//		vlContainer = new VerticalLayoutContainer();
 
-		vlContainer = new VerticalLayoutContainer();
-
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Cave Layout");
+		FramedPanel caveLayoutPanel = new FramedPanel();
+		caveLayoutPanel.setHeading("Cave Layout");
 		imageContainer = new FlowLayoutContainer();
-		attributePanel.add(imageContainer);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0));
+		caveLayoutPanel.add(imageContainer);
+//		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0));
 
-		caveTypeHLC.add(vlContainer, new HorizontalLayoutData(.6, 1.0));
+		caveTypeHLC.add(caveLayoutPanel, new HorizontalLayoutData(.6, 1.0));
 
 		/**
 		 * now we are assembling the tabs and add them to the main hlc

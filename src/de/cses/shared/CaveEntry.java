@@ -43,7 +43,7 @@ public class CaveEntry extends AbstractEntry {
 			int regionID, int orientationID, String stateOfPerservation, String findings, String firstDocumentedBy, int firstDocumentedInYear, int preservationClassificationID,
 			int caveGroupID) {
 		super();
-		setCaveID(caveID);
+		this.caveID = caveID;
 		setOfficialNumber(officialNumber);
 		setHistoricName(historicName);
 		setOptionalHistoricName(optionalHistoricName);

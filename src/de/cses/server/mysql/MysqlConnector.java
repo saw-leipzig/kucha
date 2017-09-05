@@ -435,7 +435,7 @@ public class MysqlConnector {
 			while (rs.next()) {
 				CaveEntry ce = new CaveEntry(rs.getInt("CaveID"), rs.getString("OfficialNumber"), rs.getString("HistoricName"),
 						rs.getString("OptionalHistoricName"), rs.getInt("CaveTypeID"), rs.getInt("DistrictID"), rs.getInt("RegionID"),
-						rs.getInt("OrientationID"), rs.getString("StateOfPreservation"), rs.getString("Findings"), rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedYear"),
+						rs.getInt("OrientationID"), rs.getString("StateOfPreservation"), rs.getString("Findings"), rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedInYear"),
 						rs.getInt("PreservationClassificationID"), rs.getInt("CaveGroupID"));
 				ce.setAntechamberEntry(getAntechamberEntry(ce.getCaveID()));
 				ce.setMainChamberEntry(getMainChamber(ce.getCaveID()));
@@ -461,7 +461,7 @@ public class MysqlConnector {
 			if (rs.first()) {
 				result = new CaveEntry(rs.getInt("CaveID"), rs.getString("OfficialNumber"), rs.getString("HistoricName"),
 						rs.getString("OptionalHistoricName"), rs.getInt("CaveTypeID"), rs.getInt("DistrictID"), rs.getInt("RegionID"),
-						rs.getInt("OrientationID"), rs.getString("StateOfPreservation"), rs.getString("Findings"), rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedYear"),
+						rs.getInt("OrientationID"), rs.getString("StateOfPreservation"), rs.getString("Findings"), rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedInYear"),
 						rs.getInt("PreservationClassificationID"), rs.getInt("CaveGroupID"));
 				result.setAntechamberEntry(getAntechamberEntry(id));
 				result.setMainChamberEntry(getMainChamber(id));
@@ -487,7 +487,7 @@ public class MysqlConnector {
 			while (rs.next()) {
 				result = new CaveEntry(rs.getInt("CaveID"), rs.getString("OfficialNumber"), rs.getString("HistoricName"),
 						rs.getString("OptionalHistoricName"), rs.getInt("CaveTypeID"), rs.getInt("DistrictID"), rs.getInt("RegionID"),
-						rs.getInt("OrientationID"), rs.getString("StateOfPreservation"), rs.getString("Findings"), rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedYear"),
+						rs.getInt("OrientationID"), rs.getString("StateOfPreservation"), rs.getString("Findings"), rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedInYear"),
 						rs.getInt("PreservationClassificationID"), rs.getInt("CaveGroupID"));
 				result.setAntechamberEntry(getAntechamberEntry(result.getCaveID()));
 				result.setMainChamberEntry(getMainChamber(result.getCaveID()));
