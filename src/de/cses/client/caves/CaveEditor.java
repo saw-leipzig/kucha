@@ -13,31 +13,24 @@
  */
 package de.cses.client.caves;
 
-import java.sql.Date;
 import java.util.ArrayList;
-
-import org.apache.james.mime4j.field.datetime.DateTime;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.validation.client.constraints.MinValidatorForNumber;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.XTemplates;
-import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
@@ -45,8 +38,6 @@ import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.Store.StoreFilter;
 import com.sencha.gxt.widget.core.client.ContentPanel;
-import com.sencha.gxt.widget.core.client.DatePicker;
-import com.sencha.gxt.widget.core.client.DatePicker.DatePickerDateTimeFormatInfo;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.Slider;
 import com.sencha.gxt.widget.core.client.TabPanel;
@@ -1392,7 +1383,7 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		attributePanel.add(caveTypeSelection);
-		caveTypeVLC.add(attributePanel, new VerticalLayoutData(1.0, .12));
+		caveTypeVLC.add(attributePanel, new VerticalLayoutData(1.0, .25));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Orientation");
@@ -1416,7 +1407,11 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		attributePanel.add(orientationSelection);
-		caveTypeVLC.add(attributePanel, new VerticalLayoutData(1.0, .12));
+		caveTypeVLC.add(attributePanel, new VerticalLayoutData(1.0, .25));
+		
+		attributePanel = new FramedPanel();
+		attributePanel.setHeading("Expedition measurement");
+		
 
 		// here we prepare all elements and later call updateCeilingTypePanel()
 		ceilingTypeVLC = new VerticalLayoutContainer();
@@ -1562,8 +1557,8 @@ public class CaveEditor extends AbstractEditor {
 		updateCeilingTypePanel();
 		
 		VerticalLayoutContainer caveLayoutVLC = new VerticalLayoutContainer();
-		caveLayoutVLC.add(caveTypeVLC, new VerticalLayoutData(1.0, .25));
-		caveLayoutVLC.add(ceilingTypeVLC, new VerticalLayoutData(1.0, .75));
+		caveLayoutVLC.add(caveTypeVLC, new VerticalLayoutData(1.0, .35));
+		caveLayoutVLC.add(ceilingTypeVLC, new VerticalLayoutData(1.0, .65));
 		caveTypeHLC.add(caveLayoutVLC, new HorizontalLayoutData(.4, 1.0));
 
 //		vlContainer = new VerticalLayoutContainer();
