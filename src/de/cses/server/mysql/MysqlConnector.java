@@ -435,7 +435,7 @@ public class MysqlConnector {
 			while (rs.next()) {
 				CaveEntry ce = new CaveEntry(rs.getInt("CaveID"), rs.getString("OfficialNumber"), rs.getString("HistoricName"),
 						rs.getString("OptionalHistoricName"), rs.getInt("CaveTypeID"), rs.getInt("DistrictID"), rs.getInt("RegionID"),
-						rs.getInt("OrientationID"), rs.getString("StateOfPreservation"), rs.getString("Findings"), rs.getString("AlterationDate"),
+						rs.getInt("OrientationID"), rs.getString("StateOfPreservation"), rs.getString("Findings"), rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedYear"),
 						rs.getInt("PreservationClassificationID"), rs.getInt("CaveGroupID"));
 				ce.setAntechamberEntry(getAntechamberEntry(ce.getCaveID()));
 				ce.setMainChamberEntry(getMainChamber(ce.getCaveID()));
@@ -461,7 +461,7 @@ public class MysqlConnector {
 			if (rs.first()) {
 				result = new CaveEntry(rs.getInt("CaveID"), rs.getString("OfficialNumber"), rs.getString("HistoricName"),
 						rs.getString("OptionalHistoricName"), rs.getInt("CaveTypeID"), rs.getInt("DistrictID"), rs.getInt("RegionID"),
-						rs.getInt("OrientationID"), rs.getString("StateOfPreservation"), rs.getString("Findings"), rs.getString("AlterationDate"),
+						rs.getInt("OrientationID"), rs.getString("StateOfPreservation"), rs.getString("Findings"), rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedYear"),
 						rs.getInt("PreservationClassificationID"), rs.getInt("CaveGroupID"));
 				result.setAntechamberEntry(getAntechamberEntry(id));
 				result.setMainChamberEntry(getMainChamber(id));
@@ -487,7 +487,7 @@ public class MysqlConnector {
 			while (rs.next()) {
 				result = new CaveEntry(rs.getInt("CaveID"), rs.getString("OfficialNumber"), rs.getString("HistoricName"),
 						rs.getString("OptionalHistoricName"), rs.getInt("CaveTypeID"), rs.getInt("DistrictID"), rs.getInt("RegionID"),
-						rs.getInt("OrientationID"), rs.getString("StateOfPreservation"), rs.getString("Findings"), rs.getString("AlterationDate"),
+						rs.getInt("OrientationID"), rs.getString("StateOfPreservation"), rs.getString("Findings"), rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedYear"),
 						rs.getInt("PreservationClassificationID"), rs.getInt("CaveGroupID"));
 				result.setAntechamberEntry(getAntechamberEntry(result.getCaveID()));
 				result.setMainChamberEntry(getMainChamber(result.getCaveID()));
@@ -497,7 +497,7 @@ public class MysqlConnector {
 			rs.close();
 			stmt.close();
 		} catch (SQLException e) {
-			System.err.println("Fehler beim erstellen der CaveEntrys");
+			System.err.println("Error while creating CaveEntries");
 			e.printStackTrace();
 			return null;
 		}
@@ -1769,13 +1769,36 @@ public class MysqlConnector {
 	 * @return
 	 */
 	public boolean updateCaveEntry(CaveEntry caveEntry) {
-		if (updateEntry(caveEntry.getUpdateSql())) {
-			updateAntechamber(caveEntry.getAntechamberEntry());
-			updateMainChamber(caveEntry.getMainChamberEntry());
-			updateRearArea(caveEntry.getRearAreaEntry());
-			return true;
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("UPDATE Caves SET OfficialNumber=?, HistoricName=?, OptionalHistoricName=?, CaveTypeID=?, DistrictID=?, "
+					+ "RegionID=?, OrientationID=?, StateOfPreservation=?, Findings=?, FirstDocumentedBy=?, FirstDocumentedInYear=?, PreservationClassificationID=?, " 
+					+ "CaveGroupID=? WHERE CaveID=?");
+			pstmt.setString(1, caveEntry.getOfficialNumber());
+			pstmt.setString(2, caveEntry.getHistoricName());
+			pstmt.setString(3, caveEntry.getOptionalHistoricName());
+			pstmt.setInt(4, caveEntry.getCaveTypeID());
+			pstmt.setInt(5, caveEntry.getDistrictID());
+			pstmt.setInt(6, caveEntry.getRegionID());
+			pstmt.setInt(7, caveEntry.getOrientationID());
+			pstmt.setString(8, caveEntry.getStateOfPerservation());
+			pstmt.setString(9, caveEntry.getFindings());
+			pstmt.setString(10, caveEntry.getFirstDocumentedBy());
+			pstmt.setInt(11, caveEntry.getFirstDocumentedInYear());
+			pstmt.setInt(12, caveEntry.getPreservationClassificationID());
+			pstmt.setInt(13, caveEntry.getCaveGroupID());
+			pstmt.setInt(14, caveEntry.getCaveID());
+			pstmt.executeUpdate();
+			pstmt.close();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			return false;
 		}
-		return false;
+		updateAntechamber(caveEntry.getAntechamberEntry());
+		updateMainChamber(caveEntry.getMainChamberEntry());
+		updateRearArea(caveEntry.getRearAreaEntry());
+		return true;
 	}
 
 	/**
@@ -1784,8 +1807,31 @@ public class MysqlConnector {
 	 */
 	public int insertCaveEntry(CaveEntry caveEntry) {
 		int newCaveID;
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("INSERT INTO Caves (OfficialNumber, HistoricName, OptionalHistoricName, CaveTypeID, DistrictID, RegionID, OrientationID, StateOfPreservation, "
+				+ "Findings, FirstDocumentedBy, FirstDocumentedInYear, PreservationClassificationID, CaveGroupID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			pstmt.setString(1, caveEntry.getOfficialNumber());
+			pstmt.setString(2, caveEntry.getHistoricName());
+			pstmt.setString(3, caveEntry.getOptionalHistoricName());
+			pstmt.setInt(4, caveEntry.getCaveTypeID());
+			pstmt.setInt(5, caveEntry.getDistrictID());
+			pstmt.setInt(6, caveEntry.getRegionID());
+			pstmt.setInt(7, caveEntry.getOrientationID());
+			pstmt.setString(8, caveEntry.getStateOfPerservation());
+			pstmt.setString(9, caveEntry.getFindings());
+			pstmt.setString(10, caveEntry.getFirstDocumentedBy());
+			pstmt.setInt(11, caveEntry.getFirstDocumentedInYear());
+			pstmt.setInt(12, caveEntry.getPreservationClassificationID());
+			pstmt.setInt(13, caveEntry.getCaveGroupID());
+			newCaveID = pstmt.executeUpdate();
+			pstmt.close();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			return 0;
+		}
 
-		newCaveID = insertEntry(caveEntry.getInsertSql());
 		if (newCaveID > 0) {
 			caveEntry.getAntechamberEntry().setAntechamberID(newCaveID);
 			caveEntry.getMainChamberEntry().setMainChamberID(newCaveID);

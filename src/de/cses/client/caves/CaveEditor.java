@@ -13,6 +13,10 @@
  */
 package de.cses.client.caves;
 
+import java.beans.XMLEncoder;
+import java.io.BufferedOutputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 
 import com.google.gwt.core.client.GWT;
@@ -29,6 +33,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.xml.client.XMLParser;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.data.shared.LabelProvider;
@@ -1324,6 +1329,7 @@ public class CaveEditor extends AbstractEditor {
 				imageContainer.clear();
 				imageContainer.add(new HTMLPanel(caveLayoutViewTemplates.image(UriUtils.fromString("resource?background=" + correspondingCaveTypeEntry.getSketchName()))));
 				updateCeilingTypePanel();
+				updateStateOfPreservationPanel();
 			}
 		});
 		attributePanel.add(caveTypeSelection);
