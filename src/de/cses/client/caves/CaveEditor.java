@@ -13,24 +13,31 @@
  */
 package de.cses.client.caves;
 
+import java.sql.Date;
 import java.util.ArrayList;
+
+import org.apache.james.mime4j.field.datetime.DateTime;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.validation.client.constraints.MinValidatorForNumber;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.XTemplates;
+import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
@@ -38,7 +45,10 @@ import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.Store.StoreFilter;
 import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.DatePicker;
+import com.sencha.gxt.widget.core.client.DatePicker.DatePickerDateTimeFormatInfo;
 import com.sencha.gxt.widget.core.client.FramedPanel;
+import com.sencha.gxt.widget.core.client.Slider;
 import com.sencha.gxt.widget.core.client.TabPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
@@ -54,7 +64,9 @@ import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
+import com.sencha.gxt.widget.core.client.form.validator.MaxNumberValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
+import com.sencha.gxt.widget.core.client.form.validator.MinNumberValidator;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -103,7 +115,7 @@ public class CaveEditor extends AbstractEditor {
 	// private ArrayList<CaveEditorListener> listenerList;
 	// private Label siteDisplay;
 	private TextField firstDocumentedByField;
-	private NumberField<Integer> firstDocumentedInYear;
+	private NumberField<Integer> firstDocumentedInYearField;
 	private TextArea findingsTextArea;
 	private FlowLayoutContainer imageContainer;
 	private ComboBox<OrientationEntry> orientationSelection;
@@ -152,6 +164,7 @@ public class CaveEditor extends AbstractEditor {
 	private FramedPanel rightCorridorCeilingStateOfPreservationPanel;
 	private FramedPanel corridorStateOfPreservationPanel;
 	private FramedPanel corridorCeilingStateOfPreservationPanel;
+	private Slider firstDocumentedInYearSlider;
 
 	interface CaveTypeProperties extends PropertyAccess<CaveTypeEntry> {
 		ModelKeyProvider<CaveTypeEntry> caveTypeID();
@@ -632,6 +645,7 @@ public class CaveEditor extends AbstractEditor {
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("First documented");
 		firstDocumentedByField = new TextField();
+		firstDocumentedByField.setEmptyText("name");
 		firstDocumentedByField.setValue(correspondingCaveEntry.getFirstDocumentedBy());
 		firstDocumentedByField.addValueChangeHandler(new ValueChangeHandler<String>() {
 
@@ -641,17 +655,39 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		
-		firstDocumentedInYear = new NumberField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
-		firstDocumentedInYear.addValueChangeHandler(new ValueChangeHandler<Integer>() {
+		firstDocumentedInYearSlider = new Slider();
+		firstDocumentedInYearSlider.setIncrement(1);
+		firstDocumentedInYearSlider.setMinValue(1850);
+		firstDocumentedInYearSlider.setMaxValue(2017);
+		firstDocumentedInYearSlider.setValue(correspondingCaveEntry.getFirstDocumentedInYear());
+		firstDocumentedInYearSlider.setOriginalValue(1850);
+		firstDocumentedInYearSlider.addValueChangeHandler(new ValueChangeHandler<Integer>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Integer> event) {
 				correspondingCaveEntry.setFirstDocumentedInYear(event.getValue());
+				firstDocumentedInYearField.setValue(event.getValue());
+			}
+		});
+
+		firstDocumentedInYearField = new NumberField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
+		firstDocumentedInYearField.addValidator(new MinNumberValidator<Integer>(1850));
+		firstDocumentedInYearField.addValidator(new MaxNumberValidator<Integer>(2017));
+		firstDocumentedInYearField.setValue(correspondingCaveEntry.getFirstDocumentedInYear());
+		firstDocumentedInYearField.addValueChangeHandler(new ValueChangeHandler<Integer>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Integer> event) {
+				correspondingCaveEntry.setFirstDocumentedInYear(event.getValue());
+				firstDocumentedInYearSlider.setValue(event.getValue());
 			}
 		});
 		VerticalLayoutContainer firstDocVLC = new VerticalLayoutContainer();
+		HorizontalLayoutContainer firstDocInYearHLC = new HorizontalLayoutContainer();
+		firstDocInYearHLC.add(firstDocumentedInYearSlider, new HorizontalLayoutData(.7, 1.0));
+		firstDocInYearHLC.add(firstDocumentedInYearField, new HorizontalLayoutData(.3, 1.0));
 		firstDocVLC.add(firstDocumentedByField, new VerticalLayoutData(1.0, .5));
-		firstDocVLC.add(firstDocumentedInYear, new VerticalLayoutData(1.0, .5));
+		firstDocVLC.add(firstDocInYearHLC, new VerticalLayoutData(1.0, .5));
 		attributePanel.add(firstDocVLC);
 		mainInformationVLC.add(attributePanel, new VerticalLayoutData(1.0, .14));
 
