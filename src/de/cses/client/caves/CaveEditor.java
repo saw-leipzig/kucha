@@ -1050,7 +1050,8 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.setPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
+				correspondingCaveEntry.getRearAreaEntry()
+						.setCeilingPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
 			}
 		});
 		rearAreaCeilingStateOfPreservationPanel.add(rearAreaCeilingPreservationSelector);
@@ -1193,7 +1194,7 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.setPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
+				correspondingCaveEntry.getMainChamberEntry().setCeilingPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
 			}
 		});
 		mainChamberCeilingStateOfPreservationPanel.add(mainChamberCeilingPreservationSelector);
@@ -1288,7 +1289,8 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.setPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
+				correspondingCaveEntry.getAntechamberEntry()
+						.setCeilingPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
 			}
 		});
 		antechamberCeilingStateOfPreservationPanel.add(antechamberCeilingPreservationSelector);
@@ -1383,7 +1385,7 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		attributePanel.add(caveTypeSelection);
-		caveTypeVLC.add(attributePanel, new VerticalLayoutData(1.0, .25));
+		caveTypeVLC.add(attributePanel, new VerticalLayoutData(1.0, .5));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Orientation");
@@ -1407,7 +1409,7 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		attributePanel.add(orientationSelection);
-		caveTypeVLC.add(attributePanel, new VerticalLayoutData(1.0, .25));
+		caveTypeVLC.add(attributePanel, new VerticalLayoutData(1.0, .5));
 		
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Expedition measurement");
@@ -1557,8 +1559,8 @@ public class CaveEditor extends AbstractEditor {
 		updateCeilingTypePanel();
 		
 		VerticalLayoutContainer caveLayoutVLC = new VerticalLayoutContainer();
-		caveLayoutVLC.add(caveTypeVLC, new VerticalLayoutData(1.0, .35));
-		caveLayoutVLC.add(ceilingTypeVLC, new VerticalLayoutData(1.0, .65));
+		caveLayoutVLC.add(caveTypeVLC, new VerticalLayoutData(1.0, .3));
+		caveLayoutVLC.add(ceilingTypeVLC, new VerticalLayoutData(1.0, .7));
 		caveTypeHLC.add(caveLayoutVLC, new HorizontalLayoutData(.4, 1.0));
 
 //		vlContainer = new VerticalLayoutContainer();
