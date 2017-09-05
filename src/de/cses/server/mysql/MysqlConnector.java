@@ -1352,7 +1352,7 @@ public class MysqlConnector {
 			pstmt.setInt(3, entry.getCeilingTypeID());
 			pstmt.setInt(4, entry.getPreservationClassificationID());
 			pstmt.setInt(5, entry.getCeilingPreservationClassificationID());
-			pstmt.setInt(6,  entry.getCeilingTypeID());
+			pstmt.setInt(6, entry.getCorridorID());
 			pstmt.executeUpdate();
 			pstmt.close();
 		} catch (SQLException ex) {
