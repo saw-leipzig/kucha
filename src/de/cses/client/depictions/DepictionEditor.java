@@ -14,8 +14,6 @@
 package de.cses.client.depictions;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -67,7 +65,6 @@ import com.sencha.gxt.widget.core.client.form.validator.MinNumberValidator;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
-import de.cses.client.Util;
 import de.cses.client.images.ImageSelector;
 import de.cses.client.images.ImageSelectorListener;
 import de.cses.client.ui.AbstractEditor;
@@ -88,7 +85,7 @@ public class DepictionEditor extends AbstractEditor {
 	 * Create a remote service proxy to talk to the server-side service.
 	 */
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
-	private TextField inscriptionsField;
+	private TextArea inscriptionsTestArea;
 	private TextField datingField;
 	private NumberField<Double> widthField;
 	private NumberField<Double> heightField;
@@ -126,6 +123,7 @@ public class DepictionEditor extends AbstractEditor {
 	private Label iconographyLabel;
 	protected PopupPanel iconographySelectionDialog;
 	private WallSelector caveSketchContainer;
+	private TextArea separateAksarasTextArea;
 
 	interface DepictionProperties extends PropertyAccess<DepictionEntry> {
 		ModelKeyProvider<DepictionEntry> depictionID();
@@ -673,22 +671,36 @@ public class DepictionEditor extends AbstractEditor {
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Inscriptions");
-		inscriptionsField = new TextField();
-		inscriptionsField.setText(correspondingDepictionEntry.getInscriptions());
-		inscriptionsField.addValueChangeHandler(new ValueChangeHandler<String>() {
+		inscriptionsTestArea = new TextArea();
+		inscriptionsTestArea.setText(correspondingDepictionEntry.getInscriptions());
+		inscriptionsTestArea.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<String> event) {
 				correspondingDepictionEntry.setInscriptions(event.getValue());
 			}
 		});
-		attributePanel.add(inscriptionsField);
+		attributePanel.add(inscriptionsTestArea);
 		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
+		
+		attributePanel = new FramedPanel();
+		attributePanel.setHeading("Separate Akṣaras");
+		separateAksarasTextArea = new TextArea();
+		separateAksarasTextArea.setText(correspondingDepictionEntry.getSeparateAksaras());
+		separateAksarasTextArea.addValueChangeHandler(new ValueChangeHandler<String>() {
 
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				correspondingDepictionEntry.setSeparateAksaras(event.getValue());
+			}
+		});
+		attributePanel.add(separateAksarasTextArea);
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
+		
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Dating");
 		datingField = new TextField();
-		datingField.setWidth(130);
+//		datingField.setWidth(130);
 		datingField.setText(correspondingDepictionEntry.getDating());
 		datingField.addValueChangeHandler(new ValueChangeHandler<String>() {
 
