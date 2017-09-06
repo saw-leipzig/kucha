@@ -60,7 +60,6 @@ public class UserEntry extends AbstractEntry {
 	/* (non-Javadoc)
 	 * @see de.cses.shared.AbstractEntry#getInsertSql()
 	 */
-	@Override
 	public String getInsertSql() {
 		return "INSERT INTO Users (Username, Firstname, Lastname, Email, Affiliation, Accessrights) VALUES ('" + username + "', '" + firstname + "', '" + lastname
 				+ "', '" + email + "', '" + affiliation + "', " + accessrights + ")";
@@ -69,7 +68,6 @@ public class UserEntry extends AbstractEntry {
 	/* (non-Javadoc)
 	 * @see de.cses.shared.AbstractEntry#getUpdateSql()
 	 */
-	@Override
 	public String getUpdateSql() {
 		return "UPDATE Users SET Username='" + username + "', Firstname='" + firstname + "', Lastname='" + lastname + "', Email='" + email + "', Affiliation='" + affiliation
 				+ "', Accessrights=" + accessrights + " WHERE UserID=" + userID;

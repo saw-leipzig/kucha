@@ -19,18 +19,27 @@ package de.cses.shared;
  */
 public class MainChamberEntry extends AbstractEntry {
 
-	private int mainChamberID, ceilingTypeID, frontWallID, leftWallID, rightWallID, rearWallID, preservationClassificationID;
+	private int mainChamberID;
+	private int ceilingTypeID;
+	private int frontWallID;
+	private int leftWallID; 
+	private int rightWallID; 
+	private int rearWallID;
+	private int preservationClassificationID;
+	private int ceilingPreservationClassificationID;
 	private double height, width, depth;
+	private CorridorEntry corridorEntry;
 
 	/**
 	 * 
 	 */
 	public MainChamberEntry() {
-		this(0, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0, 0);
+		this(0, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0, 0, 0);
+		corridorEntry = new CorridorEntry();
 	}
 
 	public MainChamberEntry(int mainChamberID, int ceilingTypeID, int frontWallID, int leftWallID, int rightWallID, int rearWallID,
-			double height, double width, double depth, int preservationClassificationID) {
+			double height, double width, double depth, int preservationClassificationID, int ceilingPreservationClassificationID) {
 		super();
 		setMainChamberID(mainChamberID);
 		this.setCeilingTypeID(ceilingTypeID);
@@ -42,6 +51,7 @@ public class MainChamberEntry extends AbstractEntry {
 		setWidth(width);
 		setDepth(depth);
 		setPreservationClassificationID(preservationClassificationID);
+		setCeilingPreservationClassificationID(ceilingPreservationClassificationID);
 	}
 
 	public int getMainChamberID() {
@@ -138,36 +148,34 @@ public class MainChamberEntry extends AbstractEntry {
 		this.preservationClassificationID = preservationID;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.cses.shared.AbstractEntry#getInsertSql()
-	 */
-	@Override
-	public String getInsertSql() {
-		return "INSERT INTO MainChamber (MainChamberID, CeilingTypeID, FrontWallID, LeftWallID, RightWallID, RearWallID, Height, Width, Depth, PreservationClassificationID) VALUES "
-				+ "(" + mainChamberID + ", " + ceilingTypeID + ", " + frontWallID + ", " + leftWallID + ", " + rightWallID + ", " + rearWallID
-				+ ", " + height + ", " + width + ", " + depth + ", " + preservationClassificationID + ")";
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.cses.shared.AbstractEntry#getUpdateSql()
-	 */
-	@Override
-	public String getUpdateSql() {
-		return "UPDATE MainChamber SET CeilingTypeID=" + ceilingTypeID + ", FrontWallID=" + frontWallID + ", LeftWallID=" + leftWallID
-				+ ", RightWallID=" + rightWallID + ", RearWallID=" + rearWallID + ", Height=" + height + ", Width=" + width + ", Depth=" + depth
-				+ ", PreservationClassificationID=" + preservationClassificationID + " WHERE MainChamberID=" + mainChamberID;
-	}
-
 	/* (non-Javadoc)
 	 * @see de.cses.shared.AbstractEntry#uniqueID()
 	 */
 	@Override
 	public String getUniqueID() {
 		return "MainChamber-" + mainChamberID;
+	}
+
+	/**
+	 * @return the corridor
+	 */
+	public CorridorEntry getCorridorEntry() {
+		return corridorEntry;
+	}
+
+	/**
+	 * @param corridor the corridor to set
+	 */
+	public void setCorridorEntry(CorridorEntry corridorEntry) {
+		this.corridorEntry = corridorEntry;
+	}
+
+	public int getCeilingPreservationClassificationID() {
+		return ceilingPreservationClassificationID;
+	}
+
+	public void setCeilingPreservationClassificationID(int ceilingPreservationClassificationID) {
+		this.ceilingPreservationClassificationID = ceilingPreservationClassificationID;
 	}
 
 }

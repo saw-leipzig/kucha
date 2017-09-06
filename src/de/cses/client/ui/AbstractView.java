@@ -13,6 +13,7 @@
  */
 package de.cses.client.ui;
 
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
@@ -67,6 +68,8 @@ public abstract class AbstractView extends Button implements EditorListener {
 	@Override
 	public void closeRequest() {
 		editorPanel.hide();
+		getElement().getStyle().setBorderColor("#FFA500");
+		getElement().getStyle().setBorderWidth(3.0, Unit.PX);
 	}
 
 	

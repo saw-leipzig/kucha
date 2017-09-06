@@ -15,38 +15,48 @@ package de.cses.shared;
 
 public class CaveEntry extends AbstractEntry {
 	private int caveID;
-	private String officialNumber, historicName, optionalHistoricName;
-	private int caveTypeID, districtID, regionID, orientationID, preservationClassificationID, caveGroupID;
+	private String officialNumber; 
+	private String historicName;
+	private String optionalHistoricName;
+	private int caveTypeID;
+	private int districtID;
+	private int regionID;
+	private int orientationID;
+	private int preservationClassificationID;
+	private int caveGroupID;
 	private String stateOfPerservation;
 	private String findings;
-	private String alterationDate;
+	private String firstDocumentedBy;
+	private int firstDocumentedInYear;
 	private AntechamberEntry antechamberEntry;
 	private MainChamberEntry mainChamberEntry;
 	private RearAreaEntry rearAreaEntry;
 
 	public CaveEntry() {
-		this(0, "", "", "", 0, 0, 0, 0, "", "", "", 0, 0);
+		this(0, "", "", "", 0, 0, 0, 0, "", "", "", 0, 0, 0);
 		antechamberEntry = new AntechamberEntry();
 		mainChamberEntry = new MainChamberEntry();
 		rearAreaEntry = new RearAreaEntry();
 	}
 
 	public CaveEntry(int caveID, String officialNumber, String historicName, String optionalHistoricName, int caveTypeID, int districtID,
-			int regionID, int orientationID, String stateOfPerservation, String findings, String alterationDate, int preservationClassificationID,
+			int regionID, int orientationID, String stateOfPerservation, String findings, String firstDocumentedBy, int firstDocumentedInYear, int preservationClassificationID,
 			int caveGroupID) {
 		super();
 		this.caveID = caveID;
-		this.officialNumber = officialNumber;
-		this.historicName = historicName;
-		this.optionalHistoricName = optionalHistoricName;
-		this.caveTypeID = caveTypeID;
-		this.districtID = districtID;
-		this.setRegionID(regionID);
-		this.setOrientationID(orientationID);
-		this.stateOfPerservation = stateOfPerservation;
-		this.findings = findings;
-		this.alterationDate = alterationDate;
-		this.setCaveGroupID(caveGroupID);
+		setOfficialNumber(officialNumber);
+		setHistoricName(historicName);
+		setOptionalHistoricName(optionalHistoricName);
+		setCaveTypeID(caveTypeID);
+		setDistrictID(districtID);
+		setRegionID(regionID);
+		setOrientationID(orientationID);
+		setStateOfPerservation(stateOfPerservation);
+		setFindings(findings);
+		setFirstDocumentedBy(firstDocumentedBy);
+		setFirstDocumentedInYear(firstDocumentedInYear);
+		setPreservationClassificationID(preservationClassificationID);
+		setCaveGroupID(caveGroupID);
 	}
 
 	public int getCaveID() {
@@ -124,14 +134,6 @@ public class CaveEntry extends AbstractEntry {
 		this.findings = findings;
 	}
 
-	public String getAlterationDate() {
-		return alterationDate;
-	}
-
-	public void setAlterationDate(String alterationDate) {
-		this.alterationDate = alterationDate;
-	}
-
 	public AntechamberEntry getAntechamberEntry() {
 		return antechamberEntry;
 	}
@@ -156,22 +158,14 @@ public class CaveEntry extends AbstractEntry {
 		this.rearAreaEntry = rearAreaEntry;
 	}
 
-	public String getInsertSql() {
-		return "INSERT INTO Caves (OfficialNumber, HistoricName, OptionalHistoricName, CaveTypeID, DistrictID, RegionID, OrientationID, StateOfPreservation, "
-				+ "Findings, AlterationDate, PreservationClassificationID, CaveGroupID) VALUES "
-				+ "('" + officialNumber + "','" + historicName + "','" + optionalHistoricName + "'," + caveTypeID + "," + districtID + ","
-				+ regionID + "," + orientationID + ",'" + stateOfPerservation + "','" + findings + "','" + alterationDate + "',"
-				+ preservationClassificationID + ", " + caveGroupID + ")";
-	}
-
-	public String getUpdateSql() {
-		return "UPDATE Caves SET OfficialNumber='" + officialNumber + "', HistoricName='" + historicName + "', OptionalHistoricName='"
-				+ optionalHistoricName + "', CaveTypeID=" + caveTypeID + ", DistrictID=" + districtID + ", RegionID=" + regionID
-				+ ", OrientationID=" + orientationID + ", StateOfPreservation='" + stateOfPerservation + "', Findings='" + findings
-				+ "', AlterationDate='" + alterationDate + "', PreservationClassificationID=" + preservationClassificationID + ", CaveGroupID="
-				+ caveGroupID + " WHERE CaveID=" + caveID;
-	}
-
+//	public String getUpdateSql() {
+//		return "UPDATE Caves SET OfficialNumber='" + officialNumber + "', HistoricName='" + historicName + "', OptionalHistoricName='"
+//				+ optionalHistoricName + "', CaveTypeID=" + caveTypeID + ", DistrictID=" + districtID + ", RegionID=" + regionID
+//				+ ", OrientationID=" + orientationID + ", StateOfPreservation='" + stateOfPerservation + "', Findings='" + findings
+//				+ "', AlterationDate='" + firstDocumentedBy + "', PreservationClassificationID=" + preservationClassificationID + ", CaveGroupID="
+//				+ caveGroupID + " WHERE CaveID=" + caveID;
+//	}
+//
 	/**
 	 * @return the orientationID
 	 */
@@ -223,6 +217,22 @@ public class CaveEntry extends AbstractEntry {
 	@Override
 	public String getUniqueID() {
 		return "Cave-" + caveID;
+	}
+
+	public int getFirstDocumentedInYear() {
+		return firstDocumentedInYear;
+	}
+
+	public void setFirstDocumentedInYear(int firstDocumentedInYear) {
+		this.firstDocumentedInYear = firstDocumentedInYear;
+	}
+
+	public String getFirstDocumentedBy() {
+		return firstDocumentedBy;
+	}
+
+	public void setFirstDocumentedBy(String firstDocumentedBy) {
+		this.firstDocumentedBy = firstDocumentedBy;
 	}
 
 }

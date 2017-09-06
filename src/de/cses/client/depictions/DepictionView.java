@@ -111,8 +111,6 @@ public class DepictionView extends AbstractView {
 	@Override
 	public void closeRequest() {
 		super.closeRequest();
-		getElement().getStyle().setBorderColor("#FFA500");
-		getElement().getStyle().setBorderWidth(3.0, Unit.PX);
 		// try to refresh the master image
 		dbService.getMasterImageEntryForDepiction(depictionEntry.getDepictionID(), new AsyncCallback<ImageEntry>() {
 
