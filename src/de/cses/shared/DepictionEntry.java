@@ -20,6 +20,7 @@ public class DepictionEntry extends AbstractEntry {
 	private int depictionID;
 	private int styleID;
 	private String inscriptions;
+	private String separateAksaras;
 	private String dating;
 	private String description;
 	private String backgroundColour;
@@ -39,32 +40,33 @@ public class DepictionEntry extends AbstractEntry {
 	private int absoluteTop;
 
 	public DepictionEntry() {
-		this(0, 0, "", "", "", "", "", "", "", 0, 0, 0, new Date(0), 0, 0, 0, 0, 0, 0);
+		this(0, 0, "", "", "", "", "", "", "", "", 0, 0, 0, new Date(0), 0, 0, 0, 0, 0, 0);
 	}
 
-	public DepictionEntry(int depictionID, int styleID, String inscriptions, String dating, String description, String backgroundColour,
+	public DepictionEntry(int depictionID, int styleID, String inscriptions, String separateAksaras, String dating, String description, String backgroundColour,
 			String material, String generalRemarks, String otherSuggestedIdentifications, double width, double height, int expeditionID,
 			Date purchaseDate, int currentLocationID, int vendorID, int storyID, int caveID, int wallID, int iconographyID) {
 		super();
-		this.depictionID = depictionID;
-		this.styleID = styleID;
-		this.inscriptions = inscriptions;
-		this.dating = dating;
-		this.description = description;
-		this.backgroundColour = backgroundColour;
-		this.material = material;
-		this.generalRemarks = generalRemarks;
-		this.otherSuggestedIdentifications = otherSuggestedIdentifications;
-		this.width = width;
-		this.height = height;
-		this.expeditionID = expeditionID;
-		this.purchaseDate = purchaseDate;
-		this.currentLocationID = currentLocationID;
-		this.vendorID = vendorID;
-		this.storyID = storyID;
-		this.caveID = caveID;
-		this.wallID = wallID;
-		this.iconographyID = iconographyID;
+		setDepictionID(depictionID);
+		setStyleID(styleID);
+		setInscriptions(inscriptions);
+		setSeparateAksaras(separateAksaras);
+		setDating(dating);
+		setDescription(description);
+		setBackgroundColour(backgroundColour);
+		setMaterial(material);
+		setGeneralRemarks(generalRemarks);
+		setOtherSuggestedIdentifications(otherSuggestedIdentifications);
+		setWidth(width);
+		setHeight(height);
+		setExpeditionID(expeditionID);
+		setPurchaseDate(purchaseDate);
+		setCurrentLocationID(currentLocationID);
+		setVendorID(vendorID);
+		setStoryID(storyID);
+		setCaveID(caveID);
+		setWallID(wallID);
+		setIconographyID(iconographyID);
 	}
 
 	public int getDepictionID() {
@@ -245,23 +247,26 @@ public class DepictionEntry extends AbstractEntry {
 		this.wallID = wallID;
 	}
 
-	public String getInsertSql() {
-		return ""; // TODO finish sql string
-	}
-
-	/**
-	 * 
-	 */
-	public String getUpdateSql() {
-		return ""; 
-	}
-
 	/* (non-Javadoc)
 	 * @see de.cses.shared.AbstractEntry#uniqueID()
 	 */
 	@Override
 	public String getUniqueID() {
 		return "Depiction-" + depictionID;
+	}
+
+	/**
+	 * @return the separateAksaras
+	 */
+	public String getSeparateAksaras() {
+		return separateAksaras;
+	}
+
+	/**
+	 * @param separateAksaras the separateAksaras to set
+	 */
+	public void setSeparateAksaras(String separateAksaras) {
+		this.separateAksaras = separateAksaras;
 	}
 
 }
