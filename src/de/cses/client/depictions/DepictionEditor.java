@@ -657,6 +657,7 @@ public class DepictionEditor extends AbstractEditor {
 
 			@Override
 			public void cancel() {
+				iconographySelectionDialog.hide();
 			}
 		});
 		TextButton selectIconographyButton = new TextButton("select Iconography");
