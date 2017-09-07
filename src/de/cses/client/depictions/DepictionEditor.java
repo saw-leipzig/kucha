@@ -646,13 +646,17 @@ public class DepictionEditor extends AbstractEditor {
 			});
 		}
 		attributePanel.add(iconographyLabel);
-		iconographySelector = new IconographySelector(new IconographySelectorListener() {
+		iconographySelector = new IconographySelector(correspondingDepictionEntry.getIconographyID(), new IconographySelectorListener() {
 
 			@Override
 			public void iconographySelected(IconographyEntry entry) {
 				correspondingDepictionEntry.setIconographyID(entry.getIconographyID());
 				iconographyLabel.setText(entry.getText());
 				iconographySelectionDialog.hide();
+			}
+
+			@Override
+			public void cancel() {
 			}
 		});
 		TextButton selectIconographyButton = new TextButton("select Iconography");

@@ -19,10 +19,12 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.TreeStore;
+import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
@@ -30,6 +32,7 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.Verti
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.tree.Tree;
+import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -37,24 +40,46 @@ import de.cses.shared.IconographyEntry;
 
 public class IconographySelector implements IsWidget {
 
-	class KeyProvider implements ModelKeyProvider<IconographyEntry> {
+	class IconographyKeyProvider implements ModelKeyProvider<IconographyEntry> {
 		@Override
 		public String getKey(IconographyEntry item) {
 			return Integer.toString(item.getIconographyID());
 		}
 	}
+	
+	class IconographyValueProvider implements ValueProvider<IconographyEntry, String> {
 
+		@Override
+		public String getValue(IconographyEntry object) {
+			return object.getText();
+		}
+
+		@Override
+		public void setValue(IconographyEntry object, String value) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public String getPath() {
+			return "name";
+		}
+	}
+	
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	private TreeStore<IconographyEntry> store;
 	private Tree<IconographyEntry, String> tree;
 	private FramedPanel mainPanel;
 	private VerticalLayoutContainer vlc;
 	private ArrayList<IconographySelectorListener> listenerList;
+	private int selectedIconographyID;
 
-	public IconographySelector(IconographySelectorListener listener) {
-		store = new TreeStore<IconographyEntry>(new KeyProvider());
+	public IconographySelector(int selectedIconographyID, IconographySelectorListener listener) {
+		this.selectedIconographyID = selectedIconographyID;
+		store = new TreeStore<IconographyEntry>(new IconographyKeyProvider());
 		listenerList = new ArrayList<IconographySelectorListener>();
 		listenerList.add(listener);
+		initPanel();
 		refreshIconographyStore();
 	}
 
@@ -79,11 +104,20 @@ public class IconographySelector implements IsWidget {
 			@Override
 			public void onSuccess(ArrayList<IconographyEntry> result) {
 
+				IconographyEntry selectedEntry=null;
 				for (IconographyEntry item : result) {
 					store.add(item);
+					if (item.getIconographyID() == selectedIconographyID) {
+						selectedEntry = item;
+					}
 					if (item.getChildren() != null) {
 						processParent(store, item);
 					}
+				}
+				if (selectedEntry!=null) {
+					tree.getSelectionModel().select(selectedEntry, false);
+					tree.expandAll();
+					tree.scrollIntoView(selectedEntry);
 				}
 			}
 		});
@@ -103,31 +137,18 @@ public class IconographySelector implements IsWidget {
 		
 		vlc = new VerticalLayoutContainer();
 
-		tree = new Tree<IconographyEntry, String>(store, new ValueProvider<IconographyEntry, String>() {
-
-			@Override
-			public String getValue(IconographyEntry object) {
-				return object.getText();
-			}
-
-			@Override
-			public void setValue(IconographyEntry object, String value) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public String getPath() {
-				return "name";
-			}
-		});
+		tree = new Tree<IconographyEntry, String>(store, new IconographyValueProvider());
+		tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		tree.setWidth(350);
-
+		
 		vlc.add(tree, new VerticalLayoutData(1, 1));
 		vlc.setScrollMode(ScrollMode.AUTOY);
 		vlc.setPixelSize(700, 450);
+		ContentPanel treePanel = new ContentPanel();
+		treePanel.setHeaderVisible(false);
+		treePanel.add(vlc);
 		
-		mainPanel.add(vlc);
+		mainPanel.add(treePanel);
 		
 		TextButton iconographyExpandButton = new TextButton("expand tree");
 		iconographyExpandButton.addSelectHandler(new SelectHandler() {
@@ -146,9 +167,9 @@ public class IconographySelector implements IsWidget {
 			}
 		});
 		mainPanel.addButton(iconographyCollapseButton);
-		
-		TextButton closeButton = new TextButton("close");
-		closeButton.addSelectHandler(new SelectHandler() {
+
+		TextButton cancelButton = new TextButton("cancel");
+		cancelButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
 				for (IconographySelectorListener l : listenerList) {
@@ -156,7 +177,18 @@ public class IconographySelector implements IsWidget {
 				}
 			}
 		});
-		mainPanel.addButton(closeButton);
+		mainPanel.addButton(cancelButton);
+
+		TextButton selectButton = new TextButton("select");
+		selectButton.addSelectHandler(new SelectHandler() {
+			@Override
+			public void onSelect(SelectEvent event) {
+				for (IconographySelectorListener l : listenerList) {
+					l.iconographySelected(getSelectedIconography());
+				}
+			}
+		});
+		mainPanel.addButton(selectButton);
 	}
 	
 	private IconographyEntry getSelectedIconography() {
