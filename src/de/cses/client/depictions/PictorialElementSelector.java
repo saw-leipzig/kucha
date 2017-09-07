@@ -22,39 +22,60 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
+import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
+import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
-import com.sencha.gxt.widget.core.client.info.Info;
+import com.sencha.gxt.widget.core.client.form.StoreFilterField;
 import com.sencha.gxt.widget.core.client.tree.Tree;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckCascade;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.shared.IconographyEntry;
 import de.cses.shared.PictorialElementEntry;
 
 public class PictorialElementSelector implements IsWidget {
 
-	class KeyProvider implements ModelKeyProvider<PictorialElementEntry> {
+	class PictorialElementKeyProvider implements ModelKeyProvider<PictorialElementEntry> {
 		@Override
 		public String getKey(PictorialElementEntry item) {
 			return Integer.toString(item.getPictorialElementID());
-//			return (item.getChildren() != null ? "f-" : "m-") + item.getPictorialElementID();
+		}
+	}
+	
+	class PictorialElementValueProvider implements ValueProvider<PictorialElementEntry, String> {
+
+		@Override
+		public String getValue(PictorialElementEntry object) {
+			return object.getText();
+		}
+
+		@Override
+		public void setValue(PictorialElementEntry object, String value) {
+			// TODO Auto-generated method stub
+		}
+
+		@Override
+		public String getPath() {
+			return "name";
 		}
 	}
 
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	private TreeStore<PictorialElementEntry> store;
 	private Tree<PictorialElementEntry, String> tree;
-	private VerticalLayoutContainer vlc=null;
 	private int depictionID;
+	private ContentPanel treePanel;
+	private VerticalLayoutContainer mainVLC = null;
 
 	public PictorialElementSelector(int depictionID) {
 		this.depictionID = depictionID;
-		store = new TreeStore<PictorialElementEntry>(new KeyProvider());
+		store = new TreeStore<PictorialElementEntry>(new PictorialElementKeyProvider());
 		loadPEStore();
 	}
 
@@ -94,7 +115,6 @@ public class PictorialElementSelector implements IsWidget {
 					@Override
 					public void onSuccess(ArrayList<PictorialElementEntry> peRelationList) {
 						for (PictorialElementEntry peEntry : peRelationList) {
-							
 	  					tree.setChecked(peEntry, CheckState.CHECKED);
 						}
 					}
@@ -105,40 +125,51 @@ public class PictorialElementSelector implements IsWidget {
 
 	@Override
 	public Widget asWidget() {
-		if (vlc == null) {
+		if (mainVLC == null) {
 			initPanel();
 		}
-		return vlc;
+		return mainVLC;
 	}
 	
 	private void initPanel() {
-		vlc = new VerticalLayoutContainer();
+		VerticalLayoutContainer vlc = new VerticalLayoutContainer();
 		
-		tree = new Tree<PictorialElementEntry, String>(store, new ValueProvider<PictorialElementEntry, String>() {
-
-			@Override
-			public String getValue(PictorialElementEntry object) {
-				return object.getText();
-			}
-
-			@Override
-			public void setValue(PictorialElementEntry object, String value) {
-				// TODO Auto-generated method stub
-			}
-
-			@Override
-			public String getPath() {
-				return "name";
-			}
-		});
+		tree = new Tree<PictorialElementEntry, String>(store, new PictorialElementValueProvider());
 		tree.setWidth(350);
 		tree.setCheckable(true);
     tree.setCheckStyle(CheckCascade.TRI);
 		
 		vlc.add(tree, new VerticalLayoutData(1.0, 1.0));
 		vlc.setScrollMode(ScrollMode.AUTOY);
-		vlc.setPixelSize(700, 450);
+		vlc.setPixelSize(700, 475);
 		vlc.setBorders(true);
+		
+		treePanel = new ContentPanel();
+		treePanel.setHeaderVisible(false);
+		treePanel.add(vlc);
+		
+		StoreFilterField<PictorialElementEntry> filterField = new StoreFilterField<PictorialElementEntry>() {
+
+			@Override
+			protected boolean doSelect(Store<PictorialElementEntry> store, PictorialElementEntry parent, PictorialElementEntry item, String filter) {
+				TreeStore<PictorialElementEntry> treeStore = (TreeStore<PictorialElementEntry>) store;
+				do {
+					String name = item.getText().toLowerCase();
+					if (name.contains(filter.toLowerCase())) {
+						return true;
+					}
+					item = treeStore.getParent(item);
+				} while (item != null);
+				return false;
+			}
+		};
+		filterField.bind(store);
+
+		mainVLC = new VerticalLayoutContainer();
+		mainVLC.add(treePanel, new VerticalLayoutData(1.0, .85));
+		mainVLC.add(filterField, new VerticalLayoutData(.5, .15, new Margins(10, 0, 0, 0)));
+
+		
 	}
 	
 	public List<PictorialElementEntry> getSelectedPE() {

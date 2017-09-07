@@ -159,7 +159,6 @@ public class CaveEditor extends AbstractEditor {
 
 	interface CaveTypeProperties extends PropertyAccess<CaveTypeEntry> {
 		ModelKeyProvider<CaveTypeEntry> caveTypeID();
-
 		LabelProvider<CaveTypeEntry> nameEN();
 	}
 
@@ -170,7 +169,6 @@ public class CaveEditor extends AbstractEditor {
 
 	interface CeilingTypeProperties extends PropertyAccess<CeilingTypeEntry> {
 		ModelKeyProvider<CeilingTypeEntry> ceilingTypeID();
-
 		LabelProvider<CeilingTypeEntry> name();
 	}
 
@@ -181,7 +179,6 @@ public class CaveEditor extends AbstractEditor {
 
 	interface PreservationClassificationProperties extends PropertyAccess<PreservationClassificationEntry> {
 		ModelKeyProvider<PreservationClassificationEntry> preservationClassificationID();
-
 		LabelProvider<PreservationClassificationEntry> name();
 	}
 
