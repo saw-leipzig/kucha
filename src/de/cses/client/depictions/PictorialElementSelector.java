@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 
+ * Copyright 2016-2017
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -14,7 +14,9 @@
 package de.cses.client.depictions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -26,17 +28,24 @@ import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.TreeStore;
+import com.sencha.gxt.data.shared.event.StoreFilterEvent;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
+import com.sencha.gxt.widget.core.client.event.BlurEvent;
+import com.sencha.gxt.widget.core.client.event.BlurEvent.BlurHandler;
+import com.sencha.gxt.widget.core.client.event.CheckChangeEvent;
+import com.sencha.gxt.widget.core.client.event.CheckChangeEvent.CheckChangeHandler;
+import com.sencha.gxt.widget.core.client.event.CheckChangedEvent;
+import com.sencha.gxt.widget.core.client.event.CheckChangedEvent.CheckChangedHandler;
 import com.sencha.gxt.widget.core.client.form.StoreFilterField;
+import com.sencha.gxt.widget.core.client.info.Info;
 import com.sencha.gxt.widget.core.client.tree.Tree;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckCascade;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
-import de.cses.shared.IconographyEntry;
 import de.cses.shared.PictorialElementEntry;
 
 public class PictorialElementSelector implements IsWidget {
@@ -57,7 +66,7 @@ public class PictorialElementSelector implements IsWidget {
 
 		@Override
 		public void setValue(PictorialElementEntry object, String value) {
-			// TODO Auto-generated method stub
+			object.setText(value);
 		}
 
 		@Override
@@ -67,15 +76,18 @@ public class PictorialElementSelector implements IsWidget {
 	}
 
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
-	private TreeStore<PictorialElementEntry> store;
+	private TreeStore<PictorialElementEntry> peStore;
 	private Tree<PictorialElementEntry, String> tree;
 	private int depictionID;
 	private ContentPanel treePanel;
 	private VerticalLayoutContainer mainVLC = null;
+	private Map<String, PictorialElementEntry> selectedPictorialElementsMap;
+
 
 	public PictorialElementSelector(int depictionID) {
 		this.depictionID = depictionID;
-		store = new TreeStore<PictorialElementEntry>(new PictorialElementKeyProvider());
+		peStore = new TreeStore<PictorialElementEntry>(new PictorialElementKeyProvider());
+		selectedPictorialElementsMap = new HashMap<String, PictorialElementEntry>();
 		loadPEStore();
 	}
 
@@ -100,9 +112,9 @@ public class PictorialElementSelector implements IsWidget {
 			public void onSuccess(ArrayList<PictorialElementEntry> peList) {
 
 				for (PictorialElementEntry item : peList) {
-					store.add(item);
+					peStore.add(item);
 					if (item.getChildren() != null) {
-						processParent(store, item);
+						processParent(peStore, item);
 					}
 				}
 				dbService.getRelatedPE(depictionID, new AsyncCallback<ArrayList<PictorialElementEntry>>() {
@@ -116,6 +128,7 @@ public class PictorialElementSelector implements IsWidget {
 					public void onSuccess(ArrayList<PictorialElementEntry> peRelationList) {
 						for (PictorialElementEntry peEntry : peRelationList) {
 	  					tree.setChecked(peEntry, CheckState.CHECKED);
+	  					selectedPictorialElementsMap.put(peEntry.getUniqueID(), peEntry);
 						}
 					}
 				});
@@ -134,10 +147,37 @@ public class PictorialElementSelector implements IsWidget {
 	private void initPanel() {
 		VerticalLayoutContainer vlc = new VerticalLayoutContainer();
 		
-		tree = new Tree<PictorialElementEntry, String>(store, new PictorialElementValueProvider());
+		tree = new Tree<PictorialElementEntry, String>(peStore, new PictorialElementValueProvider()){
+
+			@Override
+			protected void onFilter(StoreFilterEvent<PictorialElementEntry> se) {
+				super.onFilter(se);
+				for (PictorialElementEntry peEntry : selectedPictorialElementsMap.values()) {
+					if (tree.getStore().findModel(peEntry) != null) {
+						tree.setChecked(peEntry, CheckState.CHECKED);
+					}
+				}
+			}
+			
+		};
 		tree.setWidth(350);
 		tree.setCheckable(true);
-    tree.setCheckStyle(CheckCascade.TRI);
+    tree.setCheckStyle(CheckCascade.NONE);
+    
+    tree.addCheckChangeHandler(new CheckChangeHandler<PictorialElementEntry>() {
+
+			@Override
+			public void onCheckChange(CheckChangeEvent<PictorialElementEntry> event) {
+				PictorialElementEntry pe = event.getItem();
+				if (event.getChecked() == CheckState.CHECKED) {
+					if (!selectedPictorialElementsMap.containsKey(pe.getUniqueID())) {
+						selectedPictorialElementsMap.put(pe.getUniqueID(), pe);
+					}
+				} else {
+					selectedPictorialElementsMap.remove(pe.getUniqueID());
+				}
+			}
+    });
 		
 		vlc.add(tree, new VerticalLayoutData(1.0, 1.0));
 		vlc.setScrollMode(ScrollMode.AUTOY);
@@ -163,7 +203,7 @@ public class PictorialElementSelector implements IsWidget {
 				return false;
 			}
 		};
-		filterField.bind(store);
+		filterField.bind(peStore);
 
 		mainVLC = new VerticalLayoutContainer();
 		mainVLC.add(treePanel, new VerticalLayoutData(1.0, .85));

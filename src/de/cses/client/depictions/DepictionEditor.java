@@ -884,11 +884,20 @@ public class DepictionEditor extends AbstractEditor {
 		closeButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
+				saveDepictionEntry();
+				closeEditor();
+			}
+		});
+		TextButton cancelButton = new TextButton("Cancel");
+		cancelButton.addSelectHandler(new SelectHandler() {
+			@Override
+			public void onSelect(SelectEvent event) {
 				closeEditor();
 			}
 		});
 		mainPanel.addButton(saveButton);
 		mainPanel.addButton(closeButton);
+		mainPanel.addButton(cancelButton);
 	}
 
 //	/**

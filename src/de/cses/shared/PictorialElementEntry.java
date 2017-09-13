@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class PictorialElementEntry implements IsSerializable {
+public class PictorialElementEntry extends AbstractEntry {
 	
 	private int pictorialElementID, parentID;
 	String text;
@@ -64,6 +64,14 @@ public class PictorialElementEntry implements IsSerializable {
 
 	public void setChildren(ArrayList<PictorialElementEntry> children) {
 		this.children = children;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.shared.AbstractEntry#getUniqueID()
+	 */
+	@Override
+	public String getUniqueID() {
+		return "PictorialElement-" + pictorialElementID;
 	}
 
 }
