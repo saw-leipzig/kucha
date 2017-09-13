@@ -59,6 +59,7 @@ public class WallSelector implements IsWidget {
 	private SimpleComboBox<WallNames> wallSelector;
 	private WallProperties wallProps;
 	private CaveEntry currentCave;
+	private int selectedWallID = 0;
 
 	class WallNames {
 		private int wallID;
@@ -131,6 +132,7 @@ public class WallSelector implements IsWidget {
 			@Override
 			public void onSelection(SelectionEvent<WallNames> event) {
 				Info.display("Wall Selection", "WallID = " + event.getSelectedItem().getWallID());
+				selectedWallID = event.getSelectedItem().getWallID();
 			}
 		});
 		vlc.add(wallSelector, new VerticalLayoutData(1.0, 0.2));
@@ -215,4 +217,8 @@ public class WallSelector implements IsWidget {
 		});
 	}
 
+	public int getSelectedWallID() {
+		return selectedWallID;
+	}
+	
 }
