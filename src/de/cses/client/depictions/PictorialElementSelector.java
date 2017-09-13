@@ -151,7 +151,6 @@ public class PictorialElementSelector implements IsWidget {
 
 			@Override
 			protected void onFilter(StoreFilterEvent<PictorialElementEntry> se) {
-				Info.display("PictorialElementSelector", "onFilter");
 				super.onFilter(se);
 				for (PictorialElementEntry peEntry : selectedPictorialElementsMap.values()) {
 					if (tree.getStore().findModel(peEntry) != null) {
