@@ -53,7 +53,7 @@ public class PictorialElementSelector implements IsWidget {
 	class PictorialElementKeyProvider implements ModelKeyProvider<PictorialElementEntry> {
 		@Override
 		public String getKey(PictorialElementEntry item) {
-			return Integer.toString(item.getPictorialElementID());
+			return item.getUniqueID();
 		}
 	}
 	
@@ -153,15 +153,16 @@ public class PictorialElementSelector implements IsWidget {
 			protected void onFilter(StoreFilterEvent<PictorialElementEntry> se) {
 				super.onFilter(se);
 				for (PictorialElementEntry peEntry : selectedPictorialElementsMap.values()) {
-					if (tree.getStore().findModel(peEntry) != null) {
+//					if (tree.getStore().findModel(peEntry) != null) {
 						tree.setChecked(peEntry, CheckState.CHECKED);
-					}
+//					}
 				}
 			}
 			
 		};
 		tree.setWidth(350);
 		tree.setCheckable(true);
+		tree.setAutoLoad(true);
     tree.setCheckStyle(CheckCascade.NONE);
     
     tree.addCheckChangeHandler(new CheckChangeHandler<PictorialElementEntry>() {
