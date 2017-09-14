@@ -31,6 +31,7 @@ import de.cses.shared.ImageTypeEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
+import de.cses.shared.StyleEntry;
 
 /**
  * @author alingnau
@@ -50,6 +51,7 @@ public class StaticTables {
 	protected HashMap<Integer, PreservationClassificationEntry> preservationClassificationEntryMap;
 	protected HashMap<Integer, ImageTypeEntry> imageTypeEntryMap;
 	protected HashMap<Integer, ExpeditionEntry> expeditionEntryMap;
+	protected HashMap<Integer, StyleEntry> styleEntryMap;
 
 	interface SiteProperties extends PropertyAccess<SiteEntry> {
 		ModelKeyProvider<SiteEntry> siteID();
@@ -84,6 +86,8 @@ public class StaticTables {
 		loadCeilingTypes();
 		loadPreservationClassification();
 		loadImageTypes();
+		loadExpeditions();
+		loadStyles();
 	}
 
 	
@@ -244,6 +248,26 @@ public class StaticTables {
 		});
 	}
 
+	/**
+	 * 
+	 */
+	private void loadStyles() {
+		dbService.getStyles(new AsyncCallback<ArrayList<StyleEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(ArrayList<StyleEntry> styleResults) {
+				for (StyleEntry se : styleResults) {
+					styleEntryMap.put(se.getStyleID(), se);
+				}
+			}
+		});
+	}
+
 	public Map<Integer, DistrictEntry> getDistrictEntries() {
 		return districtEntryMap;
 	}
@@ -274,6 +298,10 @@ public class StaticTables {
 	
 	public Map<Integer, ExpeditionEntry> getExpeditionEntries() {
 		return expeditionEntryMap;
+	}
+	
+	public Map<Integer, StyleEntry> getStyleEntries() {
+		return styleEntryMap;
 	}
 	
 }

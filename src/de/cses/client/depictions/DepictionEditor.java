@@ -281,23 +281,12 @@ public class DepictionEditor extends AbstractEditor {
 	 * 
 	 */
 	private void loadStyles() {
-		dbService.getStyles(new AsyncCallback<ArrayList<StyleEntry>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(ArrayList<StyleEntry> styleResults) {
-				for (StyleEntry se : styleResults) {
-					styleEntryList.add(se);
-				}
-				if (correspondingDepictionEntry.getStyleID() > 0) {
-					styleSelection.setValue(styleEntryList.findModelWithKey(Integer.toString(correspondingDepictionEntry.getStyleID())));
-				}
-			}
-		});
+		for (StyleEntry se : StaticTables.getInstance().getStyleEntries().values()) {
+			styleEntryList.add(se);
+		}
+		if (correspondingDepictionEntry.getStyleID() > 0) {
+			styleSelection.setValue(styleEntryList.findModelWithKey(Integer.toString(correspondingDepictionEntry.getStyleID())));
+		}
 	}
 
 	/**
