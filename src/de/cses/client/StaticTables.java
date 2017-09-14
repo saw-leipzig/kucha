@@ -27,6 +27,7 @@ import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
+import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageTypeEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.RegionEntry;
@@ -52,6 +53,7 @@ public class StaticTables {
 	protected HashMap<Integer, ImageTypeEntry> imageTypeEntryMap;
 	protected HashMap<Integer, ExpeditionEntry> expeditionEntryMap;
 	protected HashMap<Integer, StyleEntry> styleEntryMap;
+	protected HashMap<Integer, IconographyEntry> iconographyEntryMap;
 
 	interface SiteProperties extends PropertyAccess<SiteEntry> {
 		ModelKeyProvider<SiteEntry> siteID();
@@ -88,6 +90,7 @@ public class StaticTables {
 		loadImageTypes();
 		loadExpeditions();
 		loadStyles();
+		loadIconographyStore();
 	}
 
 	
@@ -212,6 +215,7 @@ public class StaticTables {
 	}
 	
 	private void loadImageTypes() {
+		imageTypeEntryMap = new HashMap<Integer, ImageTypeEntry>();
 		dbService.getImageTypes(new AsyncCallback<ArrayList<ImageTypeEntry>>() {
 
 			@Override
@@ -232,6 +236,7 @@ public class StaticTables {
 	 * 
 	 */
 	private void loadExpeditions() {
+		expeditionEntryMap = new HashMap<Integer, ExpeditionEntry>();
 		dbService.getExpeditions(new AsyncCallback<ArrayList<ExpeditionEntry>>() {
 
 			@Override
@@ -252,6 +257,7 @@ public class StaticTables {
 	 * 
 	 */
 	private void loadStyles() {
+		styleEntryMap = new HashMap<Integer, StyleEntry>();
 		dbService.getStyles(new AsyncCallback<ArrayList<StyleEntry>>() {
 
 			@Override
@@ -267,6 +273,24 @@ public class StaticTables {
 			}
 		});
 	}
+	
+	private void loadIconographyStore() {
+		iconographyEntryMap = new HashMap<Integer, IconographyEntry>();
+		dbService.getIconography(new AsyncCallback<ArrayList<IconographyEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+			}
+
+			@Override
+			public void onSuccess(ArrayList<IconographyEntry> result) {
+				for (IconographyEntry ie : result) {
+					iconographyEntryMap.put(ie.getIconographyID(), ie);
+				}
+			}
+		});
+	}
+	
 
 	public Map<Integer, DistrictEntry> getDistrictEntries() {
 		return districtEntryMap;
@@ -302,6 +326,10 @@ public class StaticTables {
 	
 	public Map<Integer, StyleEntry> getStyleEntries() {
 		return styleEntryMap;
+	}
+	
+	public Map<Integer, IconographyEntry> getIconographyEntries() {
+		return iconographyEntryMap;
 	}
 	
 }
