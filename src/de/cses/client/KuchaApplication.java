@@ -21,8 +21,7 @@ import com.sencha.gxt.widget.core.client.container.Viewport;
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class KuchaApplication implements EntryPoint {
-
-
+	
 	/**
 	 * This is the entry point method.
 	 */
@@ -35,6 +34,7 @@ public class KuchaApplication implements EntryPoint {
 		 * clean all the time
 		 */
 		MainView main = new MainView();
+		StaticTables st = StaticTables.getInstance();
 		Viewport v = new Viewport();
 		v.add(main);
 		RootPanel.get().add(v); // use RootPanel, not RootLayoutPanel here!
