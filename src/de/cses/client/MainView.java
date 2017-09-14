@@ -140,7 +140,7 @@ public class MainView implements IsWidget {
 		selectorLayoutContainer.add(caveSearchController, hLayoutData);
 		
 		depictionSearchController = new DepictionSearchController("Painted Representations", new DepictionResultView("Painted Representations"));
-		depictionSearchController.addRelatedFilter(new DepictionFilter("Depiction Filter"));
+		depictionSearchController.addRelatedFilter(new DepictionFilter("Painted Representation Filter"));
 		depictionSearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
 			@Override

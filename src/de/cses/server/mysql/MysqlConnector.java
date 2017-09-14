@@ -180,7 +180,7 @@ public class MysqlConnector {
 
 		try {
 			pstmt = dbc.prepareStatement(
-					"INSERT INTO Images (Filename, Title, ShortName, Copyright, PhotographerID, Comment, Date, ImageTypeID) VALUES (?, ?, ?, ?, ?, ?, ?)");
+					"INSERT INTO Images (Filename, Title, ShortName, Copyright, PhotographerID, Comment, Date, ImageTypeID, ImageMode) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 			pstmt.setString(1, entry.getTitle());
 			pstmt.setString(2, entry.getShortName());
 			pstmt.setString(3, entry.getCopyright());
@@ -188,6 +188,7 @@ public class MysqlConnector {
 			pstmt.setString(5, entry.getComment());
 			pstmt.setString(6, entry.getDate());
 			pstmt.setInt(7, entry.getImageTypeID());
+			pstmt.setBoolean(8, entry.isPublicImage());
 			pstmt.execute();
 			ResultSet keys = pstmt.getGeneratedKeys();
 			if (keys.first()) {
@@ -342,7 +343,7 @@ public class MysqlConnector {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Images");
 			while (rs.next()) {
 				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
-						rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID")));
+						rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"), rs.getBoolean("ImageMode")));
 			}
 			rs.close();
 			stmt.close();
@@ -362,7 +363,7 @@ public class MysqlConnector {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Images WHERE " + sqlWhere);
 			while (rs.next()) {
 				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
-						rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID")));
+						rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"), rs.getBoolean("ImageMode")));
 			}
 			rs.close();
 			stmt.close();
@@ -387,7 +388,7 @@ public class MysqlConnector {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Images WHERE ImageID=" + imageID);
 			if (rs.first()) {
 				result = new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
-						rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"));
+						rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"), rs.getBoolean("ImageMode"));
 			}
 			rs.close();
 			stmt.close();
@@ -930,7 +931,7 @@ public class MysqlConnector {
 					"SELECT * FROM Images WHERE ImageID IN (SELECT ImageID FROM DepictionImageRelation WHERE DepictionID=" + depictionID + ")");
 			while (rs.next()) {
 				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
-						rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID")));
+						rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"), rs.getBoolean("ImageMode")));
 			}
 			rs.close();
 			stmt.close();
@@ -989,7 +990,7 @@ public class MysqlConnector {
 		PreparedStatement pstmt;
 		try {
 			pstmt = dbc.prepareStatement(
-					"UPDATE Images SET Title = ?, ShortName = ?, Copyright = ?, PhotographerID = ?, Comment = ?, Date = ?, ImageTypeID = ? WHERE ImageID = ?");
+					"UPDATE Images SET Title = ?, ShortName = ?, Copyright = ?, PhotographerID = ?, Comment = ?, Date = ?, ImageTypeID = ?, ImageMode = ? WHERE ImageID = ?");
 			pstmt.setString(1, entry.getTitle());
 			pstmt.setString(2, entry.getShortName());
 			pstmt.setString(3, entry.getCopyright());
@@ -997,7 +998,8 @@ public class MysqlConnector {
 			pstmt.setString(5, entry.getComment());
 			pstmt.setString(6, entry.getDate());
 			pstmt.setInt(7, entry.getImageTypeID());
-			pstmt.setInt(8, entry.getImageID());
+			pstmt.setBoolean(8, entry.isPublicImage());
+			pstmt.setInt(9, entry.getImageID());
 			pstmt.execute();
 			pstmt.close();
 		} catch (SQLException e) {

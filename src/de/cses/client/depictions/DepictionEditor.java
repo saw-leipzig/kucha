@@ -72,10 +72,12 @@ import de.cses.client.walls.WallSelector;
 import de.cses.client.walls.Walls;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
+import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.PictorialElementEntry;
+import de.cses.shared.SiteEntry;
 import de.cses.shared.StyleEntry;
 import de.cses.shared.VendorEntry;
 
@@ -124,6 +126,11 @@ public class DepictionEditor extends AbstractEditor {
 	protected PopupPanel iconographySelectionDialog;
 	private WallSelector caveSketchContainer;
 	private TextArea separateAksarasTextArea;
+	private SiteProperties siteProps;
+	private ListStore<SiteEntry> siteEntryList;
+	private DistrictProperties districtProps;
+	private ListStore<DistrictEntry> districtEntryList;
+
 
 	interface DepictionProperties extends PropertyAccess<DepictionEntry> {
 		ModelKeyProvider<DepictionEntry> depictionID();
@@ -143,11 +150,11 @@ public class DepictionEditor extends AbstractEditor {
 	}
 
 	interface CaveViewTemplates extends XTemplates {
-		@XTemplate("<div>{officialNumber}: {officialName}</div>")
-		SafeHtml caveLabel(String officialNumber, String officialName);
+		@XTemplate("<div>{siteName} #{officialNumber}: {officialName}</div>")
+		SafeHtml caveLabel(String siteName, String officialNumber, String officialName);
 
-		@XTemplate("<div>{officialNumber}</div>")
-		SafeHtml caveLabel(String officialNumber);
+		@XTemplate("<div>{siteName} #{officialNumber}</div>")
+		SafeHtml caveLabel(String siteName, String officialNumber);
 	}
 
 	interface ExpeditionProperties extends PropertyAccess<ExpeditionEntry> {
@@ -187,6 +194,18 @@ public class DepictionEditor extends AbstractEditor {
 		LabelProvider<ImageEntry> title();
 		ValueProvider<ImageEntry, String> shortName();
 	}
+	
+	interface SiteProperties extends PropertyAccess<SiteEntry> {
+		ModelKeyProvider<SiteEntry> siteID();
+
+		LabelProvider<SiteEntry> name();
+	}
+
+	interface DistrictProperties extends PropertyAccess<DistrictEntry> {
+		ModelKeyProvider<DistrictEntry> districtID();
+		LabelProvider<DistrictEntry> name();
+	}
+
 
 	/**
 	 * creates the view how a thumbnail of an image entry will be shown currently we are relying on the url of the image until we have user
@@ -225,12 +244,18 @@ public class DepictionEditor extends AbstractEditor {
 		caveEntryList = new ListStore<CaveEntry>(caveProps.caveID());
 		expedProps = GWT.create(ExpeditionProperties.class);
 		expedEntryList = new ListStore<ExpeditionEntry>(expedProps.expeditionID());
+		siteProps = GWT.create(SiteProperties.class);
+		siteEntryList = new ListStore<SiteEntry>(siteProps.siteID());
+		districtProps = GWT.create(DistrictProperties.class);
+		districtEntryList = new ListStore<DistrictEntry>(districtProps.districtID());
 
 		initPanel();
 		loadCaves();
 		loadStyles();
 		loadVendors();
 		loadExpeditions();
+		loadSites();
+		loadDistricts();
 	}
 
 	/**
@@ -255,7 +280,49 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 	}
+	
+	/**
+	 * 
+	 */
+	private void loadSites() {
+		dbService.getSites(new AsyncCallback<ArrayList<SiteEntry>>() {
 
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(ArrayList<SiteEntry> result) {
+				siteEntryList.clear();
+				for (SiteEntry se : result) {
+					siteEntryList.add(se);
+				}
+			}
+		});
+	}
+
+	/**
+	 * 
+	 */
+	private void loadDistricts() {
+		dbService.getDistricts(new AsyncCallback<ArrayList<DistrictEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(ArrayList<DistrictEntry> result) {
+				districtEntryList.clear();
+				for (final DistrictEntry de : result) {
+					districtEntryList.add(de);
+				}
+			}
+		});
+	}
+	
 	/**
 	 * 
 	 */
@@ -406,10 +473,11 @@ public class DepictionEditor extends AbstractEditor {
 			@Override
 			public SafeHtml render(CaveEntry item) {
 				final CaveViewTemplates cvTemplates = GWT.create(CaveViewTemplates.class);
+				String site = siteEntryList.findModelWithKey(Integer.toString(districtEntryList.findModelWithKey(Integer.toString(item.getDistrictID())).getSiteID())).getName();
 				if ((item.getHistoricName() != null) && (item.getHistoricName().length() == 0)) {
-					return cvTemplates.caveLabel(item.getOfficialNumber());
+					return cvTemplates.caveLabel(site, item.getOfficialNumber());
 				} else {
-					return cvTemplates.caveLabel(item.getOfficialNumber(), item.getHistoricName());
+					return cvTemplates.caveLabel(site, item.getOfficialNumber(), item.getHistoricName());
 				}
 			}
 		});
