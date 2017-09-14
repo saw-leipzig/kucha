@@ -142,7 +142,6 @@ public class DepictionEditor extends AbstractEditor {
 
 	interface CaveProperties extends PropertyAccess<CaveEntry> {
 		ModelKeyProvider<CaveEntry> caveID();
-
 		LabelProvider<CaveEntry> officialNumber();
 	}
 
@@ -328,7 +327,7 @@ public class DepictionEditor extends AbstractEditor {
 				}
 				if (correspondingDepictionEntry.getCaveID() > 0) {
 					CaveEntry ce = caveEntryList.findModelWithKey(Integer.toString(correspondingDepictionEntry.getCaveID()));
-					caveSelection.select(ce);
+					caveSelection.setValue(ce);
 					caveSketchContainer.setCave(ce);
 				}
 			}

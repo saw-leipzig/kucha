@@ -1959,8 +1959,12 @@ public class MysqlConnector {
 			return 0;
 		}
 		if (newDepictionID > 0) {
-			updateDepictionImageRelation(newDepictionID, imgEntryList);
-			updateDepictionPERelation(newDepictionID, peEntryList);
+			if (imgEntryList.size() > 0) {
+				updateDepictionImageRelation(de.getDepictionID(), imgEntryList);
+			}
+			if (peEntryList.size() > 0) {
+				updateDepictionPERelation(de.getDepictionID(), peEntryList);
+			}
 		}
 		return newDepictionID;
 	}
