@@ -14,7 +14,6 @@
 package de.cses.client;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,6 +26,8 @@ import com.sencha.gxt.data.shared.PropertyAccess;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
 import de.cses.shared.DistrictEntry;
+import de.cses.shared.ExpeditionEntry;
+import de.cses.shared.ImageTypeEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
@@ -47,6 +48,8 @@ public class StaticTables {
 	protected HashMap<Integer, CaveTypeEntry> caveTypeEntryMap;
 	protected HashMap<Integer, CeilingTypeEntry> ceilingTypeEntryMap;
 	protected HashMap<Integer, PreservationClassificationEntry> preservationClassificationEntryMap;
+	protected HashMap<Integer, ImageTypeEntry> imageTypeEntryMap;
+	protected HashMap<Integer, ExpeditionEntry> expeditionEntryMap;
 
 	interface SiteProperties extends PropertyAccess<SiteEntry> {
 		ModelKeyProvider<SiteEntry> siteID();
@@ -80,6 +83,7 @@ public class StaticTables {
 		loadCaveTypes();
 		loadCeilingTypes();
 		loadPreservationClassification();
+		loadImageTypes();
 	}
 
 	
@@ -203,6 +207,42 @@ public class StaticTables {
 		});
 	}
 	
+	private void loadImageTypes() {
+		dbService.getImageTypes(new AsyncCallback<ArrayList<ImageTypeEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub
+			}
+
+			@Override
+			public void onSuccess(ArrayList<ImageTypeEntry> result) {
+				for (ImageTypeEntry ite : result) {
+					imageTypeEntryMap.put(ite.getImageTypeID(), ite);
+				}
+			}
+		});
+	}
+	
+	/**
+	 * 
+	 */
+	private void loadExpeditions() {
+		dbService.getExpeditions(new AsyncCallback<ArrayList<ExpeditionEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(ArrayList<ExpeditionEntry> expedResults) {
+				for (ExpeditionEntry exped : expedResults) {
+					expeditionEntryMap.put(exped.getExpeditionID(), exped);
+				}
+			}
+		});
+	}
 
 	public Map<Integer, DistrictEntry> getDistrictEntries() {
 		return districtEntryMap;
@@ -226,6 +266,14 @@ public class StaticTables {
 	
 	public Map<Integer, PreservationClassificationEntry> getPreservationClassificationEntries() {
 		return preservationClassificationEntryMap;
+	}
+	
+	public Map<Integer, ImageTypeEntry> getImageTypeEntries() {
+		return imageTypeEntryMap;
+	}
+	
+	public Map<Integer, ExpeditionEntry> getExpeditionEntries() {
+		return expeditionEntryMap;
 	}
 	
 }

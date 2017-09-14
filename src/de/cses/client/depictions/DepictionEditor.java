@@ -104,7 +104,7 @@ public class DepictionEditor extends AbstractEditor {
 	protected ImageSelector imageSelector;
 	private FramedPanel mainPanel;
 	protected PopupPanel imageSelectionDialog;
-//	private ArrayList<DepictionEditorListener> listener;
+	// private ArrayList<DepictionEditorListener> listener;
 	private ListView<ImageEntry, ImageEntry> imageListView;
 	private ListStore<ImageEntry> imageEntryList;
 	private ImageProperties imgProperties;
@@ -128,7 +128,6 @@ public class DepictionEditor extends AbstractEditor {
 	private WallSelector caveSketchContainer;
 	private TextArea separateAksarasTextArea;
 
-
 	interface DepictionProperties extends PropertyAccess<DepictionEntry> {
 		ModelKeyProvider<DepictionEntry> depictionID();
 
@@ -142,6 +141,7 @@ public class DepictionEditor extends AbstractEditor {
 
 	interface CaveProperties extends PropertyAccess<CaveEntry> {
 		ModelKeyProvider<CaveEntry> caveID();
+
 		LabelProvider<CaveEntry> officialNumber();
 	}
 
@@ -180,6 +180,7 @@ public class DepictionEditor extends AbstractEditor {
 
 	interface StyleProperties extends PropertyAccess<StyleEntry> {
 		ModelKeyProvider<StyleEntry> styleID();
+
 		LabelProvider<StyleEntry> styleName();
 	}
 
@@ -190,14 +191,15 @@ public class DepictionEditor extends AbstractEditor {
 
 	interface ImageProperties extends PropertyAccess<ImageEntry> {
 		ModelKeyProvider<ImageEntry> imageID();
+
 		LabelProvider<ImageEntry> title();
+
 		ValueProvider<ImageEntry, String> shortName();
 	}
-	
 
 	/**
-	 * creates the view how a thumbnail of an image entry will be shown currently we are relying on the url of the image until we have user
-	 * management implemented and protect images from being viewed from the outside without permission
+	 * creates the view how a thumbnail of an image entry will be shown currently we are relying on the url of the image until we have user management implemented
+	 * and protect images from being viewed from the outside without permission
 	 * 
 	 * @author alingnau
 	 *
@@ -216,8 +218,8 @@ public class DepictionEditor extends AbstractEditor {
 		} else {
 			correspondingDepictionEntry = new DepictionEntry();
 		}
-//		listener = new ArrayList<DepictionEditorListener>();
-//		listener.add(deListener);
+		// listener = new ArrayList<DepictionEditorListener>();
+		// listener.add(deListener);
 		peSelector = new PictorialElementSelector(correspondingDepictionEntry.getDepictionID());
 		imgProperties = GWT.create(ImageProperties.class);
 		imageEntryList = new ListStore<ImageEntry>(imgProperties.imageID());
@@ -232,8 +234,6 @@ public class DepictionEditor extends AbstractEditor {
 		caveEntryList = new ListStore<CaveEntry>(caveProps.caveID());
 		expedProps = GWT.create(ExpeditionProperties.class);
 		expedEntryList = new ListStore<ExpeditionEntry>(expedProps.expeditionID());
-		
-		
 
 		initPanel();
 		loadCaves();
@@ -246,25 +246,14 @@ public class DepictionEditor extends AbstractEditor {
 	 * 
 	 */
 	private void loadExpeditions() {
-		dbService.getExpeditions(new AsyncCallback<ArrayList<ExpeditionEntry>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(ArrayList<ExpeditionEntry> expedResults) {
-				for (ExpeditionEntry exped : expedResults) {
-					expedEntryList.add(exped);
-				}
-				if (correspondingDepictionEntry.getExpeditionID() > 0) {
-					expedSelection.setValue(expedEntryList.findModelWithKey(Integer.toString(correspondingDepictionEntry.getExpeditionID())));
-				}
-			}
-		});
+		for (ExpeditionEntry exped : StaticTables.getInstance().getExpeditionEntries().values()) {
+			expedEntryList.add(exped);
+		}
+		if (correspondingDepictionEntry.getExpeditionID() > 0) {
+			expedSelection.setValue(expedEntryList.findModelWithKey(Integer.toString(correspondingDepictionEntry.getExpeditionID())));
+		}
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -420,9 +409,9 @@ public class DepictionEditor extends AbstractEditor {
 				SiteEntry se = null;
 				de = st.getDistrictEntries().get(item.getDistrictID());
 				if (de != null) {
-					se = st.getSiteEntries().get(de.getSiteID()); 
+					se = st.getSiteEntries().get(de.getSiteID());
 				}
-//				String site = "test";
+				// String site = "test";
 				if ((se != null) && (item.getHistoricName() != null) && (item.getHistoricName().length() > 0)) {
 					return cvTemplates.caveLabel(se.getName(), item.getOfficialNumber(), item.getHistoricName());
 				} else if (se != null) {
@@ -448,12 +437,12 @@ public class DepictionEditor extends AbstractEditor {
 		// TODO check if wall id is set, then set caveSelection.editable(false)
 		attributePanel.add(caveSelection);
 		// attributePanel.setWidth("40%");
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0/8));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0 / 8));
 
-//		attributePanel = new FramedPanel();
-//		attributePanel.setHeading("Belongs to wall");
-//		attributePanel.add(new Label("Wall selection"));
-//		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .1));
+		// attributePanel = new FramedPanel();
+		// attributePanel.setHeading("Belongs to wall");
+		// attributePanel.add(new Label("Wall selection"));
+		// vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .1));
 
 		HorizontalPanel dimPanel = new HorizontalPanel();
 		attributePanel = new FramedPanel();
@@ -486,7 +475,7 @@ public class DepictionEditor extends AbstractEditor {
 		});
 		attributePanel.add(heightField);
 		dimPanel.add(attributePanel);
-		vlContainer.add(dimPanel, new VerticalLayoutData(1.0, 1.0/8));
+		vlContainer.add(dimPanel, new VerticalLayoutData(1.0, 1.0 / 8));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Acquired by expedition");
@@ -519,7 +508,7 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		attributePanel.add(expedSelection);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0/8));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0 / 8));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Vendor");
@@ -544,7 +533,7 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		attributePanel.add(vendorSelection);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0/8));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0 / 8));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Date purchased");
@@ -553,12 +542,12 @@ public class DepictionEditor extends AbstractEditor {
 		purchaseDateField.setEmptyText("please select year");
 		// TODO add change handler
 		attributePanel.add(purchaseDateField);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0/8));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0 / 8));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Current location");
 		// TODO add currentLocationID selector
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0/8));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0 / 8));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Background colour");
@@ -572,14 +561,14 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		attributePanel.add(backgroundColourField);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0/8));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0 / 8));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Material");
 		materialField = new TextField();
 		attributePanel.add(materialField);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0/8));
-		
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0 / 8));
+
 		hlContainer.add(vlContainer, new HorizontalLayoutData(.4, 1.0));
 
 		vlContainer = new VerticalLayoutContainer();
@@ -599,7 +588,7 @@ public class DepictionEditor extends AbstractEditor {
 				wallEditorDialog.setModal(true);
 				wallEditorDialog.center();
 				// TODO integrate WallEditor
-//				wallEditorDialog.show();
+				// wallEditorDialog.show();
 			}
 		});
 		attributePanel.addButton(wallEditorButton);
@@ -707,7 +696,7 @@ public class DepictionEditor extends AbstractEditor {
 		});
 		attributePanel.add(inscriptionsTestArea);
 		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
-		
+
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Separate Akṣaras");
 		separateAksarasTextArea = new TextArea();
@@ -721,11 +710,11 @@ public class DepictionEditor extends AbstractEditor {
 		});
 		attributePanel.add(separateAksarasTextArea);
 		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
-		
+
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Dating");
 		datingField = new TextField();
-//		datingField.setWidth(130);
+		// datingField.setWidth(130);
 		datingField.setText(correspondingDepictionEntry.getDating());
 		datingField.addValueChangeHandler(new ValueChangeHandler<String>() {
 
@@ -835,7 +824,7 @@ public class DepictionEditor extends AbstractEditor {
 				}
 			}
 		});
-		
+
 		FramedPanel depictionImagesPanel = new FramedPanel();
 		depictionImagesPanel.setHeading("Images");
 		depictionImagesPanel.add(lf);
@@ -920,22 +909,22 @@ public class DepictionEditor extends AbstractEditor {
 		mainPanel.addButton(cancelButton);
 	}
 
-//	/**
-//	 * Called when the save button is pressed. Calls <code>DepictionEditorListener.depictionSaved(null)<code>
-//	 */
-//	protected void cancelDepictionEditor() {
-//		Iterator<DepictionEditorListener> deIterator = listener.iterator();
-//		while (deIterator.hasNext()) {
-//			deIterator.next().depictionSaved(null);
-//		}
-//	}
+	// /**
+	// * Called when the save button is pressed. Calls <code>DepictionEditorListener.depictionSaved(null)<code>
+	// */
+	// protected void cancelDepictionEditor() {
+	// Iterator<DepictionEditorListener> deIterator = listener.iterator();
+	// while (deIterator.hasNext()) {
+	// deIterator.next().depictionSaved(null);
+	// }
+	// }
 
 	/**
 	 * Called when the save button is pressed. Calls <code>DepictionEditorListener.depictionSaved(correspondingDepictionEntry)<code>
 	 */
 	protected void saveDepictionEntry() {
 		ArrayList<ImageEntry> associatedImageEntryList = new ArrayList<ImageEntry>();
-		for (int i=0; i < imageEntryList.size(); ++i) {
+		for (int i = 0; i < imageEntryList.size(); ++i) {
 			associatedImageEntryList.add(imageEntryList.get(i));
 		}
 		ArrayList<PictorialElementEntry> selectedPEList = new ArrayList<PictorialElementEntry>();

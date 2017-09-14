@@ -62,6 +62,7 @@ import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.StaticTables;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageTypeEntry;
@@ -102,8 +103,8 @@ public class SingleImageEditor extends AbstractEditor {
 	}
 
 	/**
-	 * Creates the view how a thumbnail of an image entry will be shown currently we are relying on the url of the image until we have user
-	 * management implemented and protect images from being viewed from the outside without permission
+	 * Creates the view how a thumbnail of an image entry will be shown currently we are relying on the url of the image until we have user management implemented
+	 * and protect images from being viewed from the outside without permission
 	 * 
 	 * @author alingnau
 	 *
@@ -120,6 +121,7 @@ public class SingleImageEditor extends AbstractEditor {
 
 	interface ImageTypeProperties extends PropertyAccess<ImageTypeEntry> {
 		ModelKeyProvider<ImageTypeEntry> imageTypeID();
+
 		LabelProvider<ImageTypeEntry> name();
 	}
 
@@ -129,20 +131,19 @@ public class SingleImageEditor extends AbstractEditor {
 	}
 
 	/**
-	 * This widget allows to edit the information of an ImageEntry, i.e. an image in the database. It also allows for uploading new images to
-	 * the database.
+	 * This widget allows to edit the information of an ImageEntry, i.e. an image in the database. It also allows for uploading new images to the database.
 	 */
 	public SingleImageEditor(ImageEntry imgEntry) {
 		this.imgEntry = imgEntry;
 
 		photographerProps = GWT.create(PhotographerProperties.class);
 		photographerEntryList = new ListStore<PhotographerEntry>(photographerProps.photographerID());
-		
+
 		imageTypeProps = GWT.create(ImageTypeProperties.class);
 		imageTypeEntryList = new ListStore<ImageTypeEntry>(imageTypeProps.imageTypeID());
-		
+
 		initPanel();
-		
+
 		dbService.getPhotographer(new AsyncCallback<ArrayList<PhotographerEntry>>() {
 
 			@Override
@@ -158,23 +159,11 @@ public class SingleImageEditor extends AbstractEditor {
 				}
 			}
 		});
-		
-		dbService.getImageTypes(new AsyncCallback<ArrayList<ImageTypeEntry>>() {
 
-			@Override
-			public void onFailure(Throwable caught) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void onSuccess(ArrayList<ImageTypeEntry> result) {
-				for (ImageTypeEntry ite : result) {
-					imageTypeEntryList.add(ite);
-				}
-				imageTypeSelection.setValue(imageTypeEntryList.findModelWithKey(Integer.toString(imgEntry.getImageTypeID())));
-			}
-		});
+		for (ImageTypeEntry ite : StaticTables.getInstance().getImageTypeEntries().values()) {
+			imageTypeEntryList.add(ite);
+		}
+		imageTypeSelection.setValue(imageTypeEntryList.findModelWithKey(Integer.toString(imgEntry.getImageTypeID())));
 
 	}
 
@@ -195,7 +184,7 @@ public class SingleImageEditor extends AbstractEditor {
 		imageContainer = new FlowLayoutContainer();
 		// VerticalPanel imgPanel = new VerticalPanel();
 		VerticalLayoutContainer editPanel = new VerticalLayoutContainer();
-		
+
 		FramedPanel attributePanel = new FramedPanel();
 		titleField = new TextField();
 		titleField.addValidator(new MaxLengthValidator(128));
@@ -216,7 +205,7 @@ public class SingleImageEditor extends AbstractEditor {
 				return errors;
 			}
 		});
-//		titleField.setWidth(300);
+		// titleField.setWidth(300);
 		attributePanel.setHeading("Title");
 		titleField.setValue(imgEntry.getTitle());
 		attributePanel.add(titleField);
@@ -225,7 +214,7 @@ public class SingleImageEditor extends AbstractEditor {
 		attributePanel = new FramedPanel();
 		shortNameField = new TextField();
 		shortNameField.addValidator(new MaxLengthValidator(12));
-//		shortNameField.setWidth(300);
+		// shortNameField.setWidth(300);
 		attributePanel.setHeading("Short Name");
 		shortNameField.setValue(imgEntry.getShortName());
 		attributePanel.add(shortNameField);
@@ -233,7 +222,7 @@ public class SingleImageEditor extends AbstractEditor {
 
 		attributePanel = new FramedPanel();
 		copyrightArea = new TextArea();
-//		copyrightArea.setSize("300px", "50px");
+		// copyrightArea.setSize("300px", "50px");
 		copyrightArea.addValidator(new MaxLengthValidator(128));
 		copyrightArea.setValue(imgEntry.getCopyright());
 		attributePanel.setHeading("Copyright");
@@ -242,7 +231,7 @@ public class SingleImageEditor extends AbstractEditor {
 
 		attributePanel = new FramedPanel();
 		commentArea = new TextArea();
-//		commentArea.setSize("300px", "100px");
+		// commentArea.setSize("300px", "100px");
 		commentArea.setValue(imgEntry.getComment());
 		attributePanel.add(commentArea);
 		attributePanel.setHeading("Comment");
@@ -290,7 +279,7 @@ public class SingleImageEditor extends AbstractEditor {
 		imageTypeSelection.setEditable(false);
 		imageTypeSelection.setTriggerAction(TriggerAction.ALL);
 		imageTypeSelection.addSelectionHandler(new SelectionHandler<ImageTypeEntry>() {
-			
+
 			@Override
 			public void onSelection(SelectionEvent<ImageTypeEntry> event) {
 				imgEntry.setImageTypeID(event.getSelectedItem().getImageTypeID());
@@ -299,13 +288,13 @@ public class SingleImageEditor extends AbstractEditor {
 
 		imageTypeSelectionPanel.add(imageTypeSelection);
 		imageTypeSelectionPanel.setHeading("Image Type");
-		
+
 		FramedPanel publicImagePanel = new FramedPanel();
 		CheckBox publicImageCB = new CheckBox();
 		publicImageCB.setBoxLabel("is public");
 		publicImageCB.setValue(imgEntry.isPublicImage());
 		publicImageCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-			
+
 			@Override
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
 				imgEntry.setPublicImage(event.getValue());
@@ -367,8 +356,8 @@ public class SingleImageEditor extends AbstractEditor {
 	// }
 
 	/**
-	 * This method will save the currently selected ImageEntry from the left list of previews. In future versions, the missing fields will be
-	 * added. Also, the Photographer ID us currently not mapped to the text entry in this box. (shows a yes/no dialog first)
+	 * This method will save the currently selected ImageEntry from the left list of previews. In future versions, the missing fields will be added. Also, the
+	 * Photographer ID us currently not mapped to the text entry in this box. (shows a yes/no dialog first)
 	 */
 	private void saveImageEntry() {
 		// ImageEntry selectedItem = imageListView.getSelectionModel().getSelectedItem();
