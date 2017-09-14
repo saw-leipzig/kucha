@@ -14,15 +14,21 @@
 package de.cses.client;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.sencha.gxt.data.shared.LabelProvider;
-import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 
+import de.cses.shared.CaveTypeEntry;
+import de.cses.shared.CeilingTypeEntry;
 import de.cses.shared.DistrictEntry;
+import de.cses.shared.PreservationClassificationEntry;
+import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 
 /**
@@ -35,20 +41,26 @@ public class StaticTables {
 
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	
-	private ListStore<SiteEntry> siteEntryList;
-	private ListStore<DistrictEntry> districtEntryList;
-	private SiteProperties siteProps;
-	private DistrictProperties districtProps;
-	
+	protected HashMap<Integer, SiteEntry> siteEntryMap;
+	protected HashMap<Integer, DistrictEntry> districtEntryMap;
+	protected HashMap<Integer, RegionEntry> regionEntryMap;
+	protected HashMap<Integer, CaveTypeEntry> caveTypeEntryMap;
+	protected HashMap<Integer, CeilingTypeEntry> ceilingTypeEntryMap;
+	protected HashMap<Integer, PreservationClassificationEntry> preservationClassificationEntryMap;
+
 	interface SiteProperties extends PropertyAccess<SiteEntry> {
 		ModelKeyProvider<SiteEntry> siteID();
-
 		LabelProvider<SiteEntry> name();
 	}
 
 	interface DistrictProperties extends PropertyAccess<DistrictEntry> {
 		ModelKeyProvider<DistrictEntry> districtID();
 		LabelProvider<DistrictEntry> name();
+	}
+	
+	interface RegionProperties extends PropertyAccess<RegionEntry> {
+		ModelKeyProvider<RegionEntry> regionID();
+		LabelProvider<RegionEntry> englishName();
 	}
 
 	public static synchronized StaticTables getInstance() {
@@ -62,13 +74,12 @@ public class StaticTables {
 	 * 
 	 */
 	private StaticTables() {
-		siteProps = GWT.create(SiteProperties.class);
-		siteEntryList = new ListStore<SiteEntry>(siteProps.siteID());
-		districtProps = GWT.create(DistrictProperties.class);
-		districtEntryList = new ListStore<DistrictEntry>(districtProps.districtID());
-		
 		loadDistricts();
 		loadSites();
+		loadRegions();
+		loadCaveTypes();
+		loadCeilingTypes();
+		loadPreservationClassification();
 	}
 
 	
@@ -76,6 +87,7 @@ public class StaticTables {
 	 * 
 	 */
 	private void loadSites() {
+		siteEntryMap = new HashMap<Integer, SiteEntry>();
 		dbService.getSites(new AsyncCallback<ArrayList<SiteEntry>>() {
 
 			@Override
@@ -85,9 +97,8 @@ public class StaticTables {
 
 			@Override
 			public void onSuccess(ArrayList<SiteEntry> result) {
-				siteEntryList.clear();
 				for (SiteEntry se : result) {
-					siteEntryList.add(se);
+					siteEntryMap.put(se.getSiteID(), se);
 				}
 			}
 		});
@@ -97,6 +108,7 @@ public class StaticTables {
 	 * 
 	 */
 	private void loadDistricts() {
+		districtEntryMap = new HashMap<Integer, DistrictEntry>();
 		dbService.getDistricts(new AsyncCallback<ArrayList<DistrictEntry>>() {
 
 			@Override
@@ -106,21 +118,114 @@ public class StaticTables {
 
 			@Override
 			public void onSuccess(ArrayList<DistrictEntry> result) {
-				districtEntryList.clear();
-				for (final DistrictEntry de : result) {
-					districtEntryList.add(de);
+				for (DistrictEntry de : result) {
+					districtEntryMap.put(de.getDistrictID(), de);
 				}
 			}
 		});
 	}
 
-	public ListStore<DistrictEntry> getDistrictEntryList() {
-		return districtEntryList;
+	/* 
+	 * 
+	 */
+	private void loadRegions() {
+		regionEntryMap = new HashMap<Integer, RegionEntry>();
+		dbService.getRegions(new AsyncCallback<ArrayList<RegionEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(ArrayList<RegionEntry> result) {
+				for (RegionEntry re : result) {
+					regionEntryMap.put(re.getRegionID(), re);
+				}
+			}
+		});
+	}
+	
+	/**
+	 * 
+	 */
+	private void loadCaveTypes() {
+		caveTypeEntryMap = new HashMap<Integer, CaveTypeEntry>();
+		dbService.getCaveTypes(new AsyncCallback<ArrayList<CaveTypeEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(ArrayList<CaveTypeEntry> result) {
+				for (CaveTypeEntry cte : result) {
+					caveTypeEntryMap.put(cte.getCaveTypeID(), cte);
+				}
+			}
+		});
+	}
+	
+	private void loadCeilingTypes() {
+		ceilingTypeEntryMap = new HashMap<Integer, CeilingTypeEntry>();
+		dbService.getCeilingTypes(new AsyncCallback<ArrayList<CeilingTypeEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(ArrayList<CeilingTypeEntry> result) {
+				for (CeilingTypeEntry cte : result) {
+					ceilingTypeEntryMap.put(cte.getCeilingTypeID(), cte);
+				}
+			}		
+		});
+	}
+	
+	private void loadPreservationClassification() {
+		preservationClassificationEntryMap = new HashMap<Integer, PreservationClassificationEntry>();
+		dbService.getPreservationClassifications(new AsyncCallback<ArrayList<PreservationClassificationEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(ArrayList<PreservationClassificationEntry> result) {
+				for (PreservationClassificationEntry pce : result) {
+					preservationClassificationEntryMap.put(pce.getPreservationClassificationID(), pce);
+				}
+			}
+		});
+	}
+	
+
+	public Map<Integer, DistrictEntry> getDistrictEntries() {
+		return districtEntryMap;
 	}
 
-	public ListStore<SiteEntry> getSiteEntryList() {
-		return siteEntryList;
+	public Map<Integer, SiteEntry> getSiteEntries() {
+		return siteEntryMap;
 	}
 
+	public Map<Integer, RegionEntry> getRegionEntries() {
+		return regionEntryMap;
+	}
+
+	public Map<Integer, CaveTypeEntry> getCaveTypeEntries() {
+		return caveTypeEntryMap;
+	}
+	
+	public Map<Integer, CeilingTypeEntry> getCeilingTypeEntries() {
+		return ceilingTypeEntryMap;
+	}
+	
+	public Map<Integer, PreservationClassificationEntry> getPreservationClassificationEntries() {
+		return preservationClassificationEntryMap;
+	}
 	
 }

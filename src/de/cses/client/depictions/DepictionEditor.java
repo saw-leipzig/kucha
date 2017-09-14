@@ -232,6 +232,8 @@ public class DepictionEditor extends AbstractEditor {
 		caveEntryList = new ListStore<CaveEntry>(caveProps.caveID());
 		expedProps = GWT.create(ExpeditionProperties.class);
 		expedEntryList = new ListStore<ExpeditionEntry>(expedProps.expeditionID());
+		
+		
 
 		initPanel();
 		loadCaves();
@@ -416,9 +418,9 @@ public class DepictionEditor extends AbstractEditor {
 				StaticTables st = StaticTables.getInstance();
 				DistrictEntry de = null;
 				SiteEntry se = null;
-				de = st.getDistrictEntryList().findModelWithKey(Integer.toString(item.getDistrictID()));
+				de = st.getDistrictEntries().get(item.getDistrictID());
 				if (de != null) {
-					se = st.getSiteEntryList().findModelWithKey(Integer.toString(de.getSiteID())); 
+					se = st.getSiteEntries().get(de.getSiteID()); 
 				}
 //				String site = "test";
 				if ((se != null) && (item.getHistoricName() != null) && (item.getHistoricName().length() > 0)) {

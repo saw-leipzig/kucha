@@ -61,6 +61,7 @@ import com.sencha.gxt.widget.core.client.form.validator.MinNumberValidator;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.StaticTables;
 import de.cses.client.Util;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.shared.CaveEntry;
@@ -79,11 +80,11 @@ public class CaveEditor extends AbstractEditor {
 	private CaveEntry correspondingCaveEntry;
 	private ComboBox<CaveTypeEntry> caveTypeSelection;
 	private CaveTypeProperties caveTypeProps;
-	private ListStore<CaveTypeEntry> caveTypeEntryList;
+	private ListStore<CaveTypeEntry> caveTypeEntryListStore;
 	private DistrictProperties districtProps;
 	private ListStore<DistrictEntry> districtEntryList;
 	private RegionProperties regionProps;
-	private ListStore<RegionEntry> regionEntryList;
+	private ListStore<RegionEntry> regionEntryListStore;
 	private SiteProperties siteProps;
 	private OrientationProperties orientationProps;
 	private CaveLayoutViewTemplates caveLayoutViewTemplates;
@@ -97,7 +98,7 @@ public class CaveEditor extends AbstractEditor {
 	private ComboBox<DistrictEntry> districtSelection;
 	private ComboBox<RegionEntry> regionSelection;
 	private TextArea stateOfPreservationTextArea;
-	private ListStore<SiteEntry> siteEntryList;
+	private ListStore<SiteEntry> siteEntryListStore;
 	private StoreFilter<RegionEntry> regionFilter;
 	private ListStore<OrientationEntry> orientationEntryList;
 	private ComboBox<SiteEntry> siteSelection;
@@ -200,7 +201,6 @@ public class CaveEditor extends AbstractEditor {
 
 	interface RegionProperties extends PropertyAccess<RegionEntry> {
 		ModelKeyProvider<RegionEntry> regionID();
-
 		LabelProvider<RegionEntry> englishName();
 	}
 
@@ -258,19 +258,19 @@ public class CaveEditor extends AbstractEditor {
 			correspondingCaveEntry = caveEntry;
 		}
 		caveTypeProps = GWT.create(CaveTypeProperties.class);
-		caveTypeEntryList = new ListStore<CaveTypeEntry>(caveTypeProps.caveTypeID());
+		caveTypeEntryListStore = new ListStore<CaveTypeEntry>(caveTypeProps.caveTypeID());
 		ceilingTypeProps = GWT.create(CeilingTypeProperties.class);
 		ceilingTypeEntryList = new ListStore<CeilingTypeEntry>(ceilingTypeProps.ceilingTypeID());
 		preservationClassificationProps = GWT.create(PreservationClassificationProperties.class);
 		preservationClassificationEntryList = new ListStore<PreservationClassificationEntry>(preservationClassificationProps.preservationClassificationID());
 		siteProps = GWT.create(SiteProperties.class);
-		siteEntryList = new ListStore<SiteEntry>(siteProps.siteID());
+		siteEntryListStore = new ListStore<SiteEntry>(siteProps.siteID());
 		orientationProps = GWT.create(OrientationProperties.class);
 		orientationEntryList = new ListStore<OrientationEntry>(orientationProps.orientationID());
 		caveGroupProps = GWT.create(CaveGroupProperties.class);
 		caveGroupEntryList = new ListStore<CaveGroupEntry>(caveGroupProps.caveGroupID());
 		regionProps = GWT.create(RegionProperties.class);
-		regionEntryList = new ListStore<RegionEntry>(regionProps.regionID());
+		regionEntryListStore = new ListStore<RegionEntry>(regionProps.regionID());
 		districtProps = GWT.create(DistrictProperties.class);
 		districtEntryList = new ListStore<DistrictEntry>(districtProps.districtID());
 		caveLayoutViewTemplates = GWT.create(CaveLayoutViewTemplates.class);
@@ -280,9 +280,9 @@ public class CaveEditor extends AbstractEditor {
 
 		initPanel();
 		loadCaveAndCeilingTypes();
+		loadSites();
 		loadDistricts();
 		loadRegions();
-		loadSites();
 		loadOrientation();
 		loadCaveGroups();
 	}
@@ -291,125 +291,74 @@ public class CaveEditor extends AbstractEditor {
 	 * 
 	 */
 	private void loadCaveAndCeilingTypes() {
-		dbService.getCaveTypes(new AsyncCallback<ArrayList<CaveTypeEntry>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(ArrayList<CaveTypeEntry> result) {
-				caveTypeEntryList.clear();
-				for (CaveTypeEntry pe : result) {
-					caveTypeEntryList.add(pe);
-				}
-				if (correspondingCaveEntry.getCaveTypeID() > 0) {
-					CaveTypeEntry correspondingCaveTypeEntry = caveTypeEntryList
-							.findModelWithKey(Integer.toString(correspondingCaveEntry.getCaveTypeID()));
-					caveTypeSelection.setValue(correspondingCaveTypeEntry);
-					imageContainer.clear();
-					imageContainer.add(new HTMLPanel(
-							caveLayoutViewTemplates.image(UriUtils.fromString("resource?background=" + correspondingCaveTypeEntry.getSketchName()))));
-					updateCeilingTypePanel();
-					updateStateOfPreservationPanel();
-				}
-				dbService.getCeilingTypes(new AsyncCallback<ArrayList<CeilingTypeEntry>>() {
-
-					@Override
-					public void onFailure(Throwable caught) {
-						caught.printStackTrace();
-					}
-
-					@Override
-					public void onSuccess(ArrayList<CeilingTypeEntry> result) {
-						ceilingTypeEntryList.clear();
-						for (CeilingTypeEntry cte : result) {
-							ceilingTypeEntryList.add(cte);
-						}
-						if (correspondingCaveEntry.getCaveTypeID() > 0) {
-							CeilingTypeEntry ctEntry = ceilingTypeEntryList
-									.findModelWithKey(Integer.toString(correspondingCaveEntry.getRearAreaEntry().getCeilingTypeID()));
-							rearAreaCeilingTypeSelector.setValue(ctEntry);
-							ctEntry = ceilingTypeEntryList
-									.findModelWithKey(Integer.toString(correspondingCaveEntry.getRearAreaEntry().getLeftCorridorEntry().getCeilingTypeID()));
-							leftCorridorCeilingTypeSelector.setValue(ctEntry);
-							ctEntry = ceilingTypeEntryList
-									.findModelWithKey(Integer.toString(correspondingCaveEntry.getRearAreaEntry().getRightCorridorEntry().getCeilingTypeID()));
-							rightCorridorCeilingTypeSelector.setValue(ctEntry);
-							ctEntry = ceilingTypeEntryList
-									.findModelWithKey(Integer.toString(correspondingCaveEntry.getMainChamberEntry().getCeilingTypeID()));
-							mainChamberCeilingTypeSelector.setValue(ctEntry);
-							ctEntry = ceilingTypeEntryList
-									.findModelWithKey(Integer.toString(correspondingCaveEntry.getMainChamberEntry().getCorridorEntry().getCeilingTypeID()));
-							corridorCeilingTypeSelector.setValue(ctEntry);
-							ctEntry = ceilingTypeEntryList
-									.findModelWithKey(Integer.toString(correspondingCaveEntry.getAntechamberEntry().getCeilingTypeID()));
-							antechamberCeilingTypeSelector.setValue(ctEntry);
-						}
-					}
-				});
-				dbService.getPreservationClassifications(new AsyncCallback<ArrayList<PreservationClassificationEntry>>() {
-
-					@Override
-					public void onFailure(Throwable caught) {
-						caught.printStackTrace();
-					}
-
-					@Override
-					public void onSuccess(ArrayList<PreservationClassificationEntry> result) {
-						preservationClassificationEntryList.clear();
-						for (PreservationClassificationEntry pce : result) {
-							preservationClassificationEntryList.add(pce);
-						}
-						rearAreaPreservationSelector.setValue(preservationClassificationEntryList
-								.findModelWithKey(Integer.toString(correspondingCaveEntry.getRearAreaEntry().getPreservationClassificationID())));
-						rearAreaCeilingPreservationSelector.setValue(preservationClassificationEntryList
-								.findModelWithKey(Integer.toString(correspondingCaveEntry.getRearAreaEntry().getCeilingPreservationClassificationID())));
-						leftCorridorPreservationSelector.setValue(preservationClassificationEntryList
-								.findModelWithKey(Integer.toString(correspondingCaveEntry.getRearAreaEntry().getLeftCorridorEntry().getPreservationClassificationID())));
-						leftCorridorCeilingPreservationSelector.setValue(preservationClassificationEntryList
-								.findModelWithKey(Integer.toString(correspondingCaveEntry.getRearAreaEntry().getLeftCorridorEntry().getCeilingPreservationClassificationID())));
-						rightCorridorPreservationSelector.setValue(preservationClassificationEntryList
-								.findModelWithKey(Integer.toString(correspondingCaveEntry.getRearAreaEntry().getRightCorridorEntry().getPreservationClassificationID())));
-						rightCorridorCeilingPreservationSelector.setValue(preservationClassificationEntryList
-								.findModelWithKey(Integer.toString(correspondingCaveEntry.getRearAreaEntry().getRightCorridorEntry().getCeilingPreservationClassificationID())));
-						mainChamberPreservationSelector.setValue(preservationClassificationEntryList
-								.findModelWithKey(Integer.toString(correspondingCaveEntry.getMainChamberEntry().getPreservationClassificationID())));
-						mainChamberCeilingPreservationSelector.setValue(preservationClassificationEntryList
-								.findModelWithKey(Integer.toString(correspondingCaveEntry.getMainChamberEntry().getCeilingPreservationClassificationID())));
-						corridorPreservationSelector.setValue(preservationClassificationEntryList
-								.findModelWithKey(Integer.toString(correspondingCaveEntry.getMainChamberEntry().getCorridorEntry().getPreservationClassificationID())));
-						antechamberPreservationSelector.setValue(preservationClassificationEntryList
-								.findModelWithKey(Integer.toString(correspondingCaveEntry.getAntechamberEntry().getPreservationClassificationID())));
-						antechamberCeilingPreservationSelector.setValue(preservationClassificationEntryList
-								.findModelWithKey(Integer.toString(correspondingCaveEntry.getAntechamberEntry().getCeilingPreservationClassificationID())));
-					}
-
-				});
-			}
-		});
+		for (CaveTypeEntry pe : StaticTables.getInstance().getCaveTypeEntries().values()) {
+			caveTypeEntryListStore.add(pe);
+		}
+		if (correspondingCaveEntry.getCaveTypeID() > 0) {
+			CaveTypeEntry correspondingCaveTypeEntry = caveTypeEntryListStore
+					.findModelWithKey(Integer.toString(correspondingCaveEntry.getCaveTypeID()));
+			caveTypeSelection.setValue(correspondingCaveTypeEntry);
+			imageContainer.clear();
+			imageContainer.add(new HTMLPanel(
+					caveLayoutViewTemplates.image(UriUtils.fromString("resource?background=" + correspondingCaveTypeEntry.getSketchName()))));
+			updateCeilingTypePanel();
+			updateStateOfPreservationPanel();
+		}
+		for (CeilingTypeEntry cte : StaticTables.getInstance().getCeilingTypeEntries().values()) {
+			ceilingTypeEntryList.add(cte);
+		}
+		if (correspondingCaveEntry.getCaveTypeID() > 0) {
+			CeilingTypeEntry ctEntry = ceilingTypeEntryList
+					.findModelWithKey(Integer.toString(correspondingCaveEntry.getRearAreaEntry().getCeilingTypeID()));
+			rearAreaCeilingTypeSelector.setValue(ctEntry);
+			ctEntry = ceilingTypeEntryList
+					.findModelWithKey(Integer.toString(correspondingCaveEntry.getRearAreaEntry().getLeftCorridorEntry().getCeilingTypeID()));
+			leftCorridorCeilingTypeSelector.setValue(ctEntry);
+			ctEntry = ceilingTypeEntryList
+					.findModelWithKey(Integer.toString(correspondingCaveEntry.getRearAreaEntry().getRightCorridorEntry().getCeilingTypeID()));
+			rightCorridorCeilingTypeSelector.setValue(ctEntry);
+			ctEntry = ceilingTypeEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getMainChamberEntry().getCeilingTypeID()));
+			mainChamberCeilingTypeSelector.setValue(ctEntry);
+			ctEntry = ceilingTypeEntryList
+					.findModelWithKey(Integer.toString(correspondingCaveEntry.getMainChamberEntry().getCorridorEntry().getCeilingTypeID()));
+			corridorCeilingTypeSelector.setValue(ctEntry);
+			ctEntry = ceilingTypeEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getAntechamberEntry().getCeilingTypeID()));
+			antechamberCeilingTypeSelector.setValue(ctEntry);
+		}
+		for (PreservationClassificationEntry pce : StaticTables.getInstance().getPreservationClassificationEntries().values()) {
+			preservationClassificationEntryList.add(pce);
+		}
+		rearAreaPreservationSelector.setValue(preservationClassificationEntryList
+				.findModelWithKey(Integer.toString(correspondingCaveEntry.getRearAreaEntry().getPreservationClassificationID())));
+		rearAreaCeilingPreservationSelector.setValue(preservationClassificationEntryList
+				.findModelWithKey(Integer.toString(correspondingCaveEntry.getRearAreaEntry().getCeilingPreservationClassificationID())));
+		leftCorridorPreservationSelector.setValue(preservationClassificationEntryList.findModelWithKey(
+				Integer.toString(correspondingCaveEntry.getRearAreaEntry().getLeftCorridorEntry().getPreservationClassificationID())));
+		leftCorridorCeilingPreservationSelector.setValue(preservationClassificationEntryList.findModelWithKey(
+				Integer.toString(correspondingCaveEntry.getRearAreaEntry().getLeftCorridorEntry().getCeilingPreservationClassificationID())));
+		rightCorridorPreservationSelector.setValue(preservationClassificationEntryList.findModelWithKey(
+				Integer.toString(correspondingCaveEntry.getRearAreaEntry().getRightCorridorEntry().getPreservationClassificationID())));
+		rightCorridorCeilingPreservationSelector.setValue(preservationClassificationEntryList.findModelWithKey(
+				Integer.toString(correspondingCaveEntry.getRearAreaEntry().getRightCorridorEntry().getCeilingPreservationClassificationID())));
+		mainChamberPreservationSelector.setValue(preservationClassificationEntryList
+				.findModelWithKey(Integer.toString(correspondingCaveEntry.getMainChamberEntry().getPreservationClassificationID())));
+		mainChamberCeilingPreservationSelector.setValue(preservationClassificationEntryList
+				.findModelWithKey(Integer.toString(correspondingCaveEntry.getMainChamberEntry().getCeilingPreservationClassificationID())));
+		corridorPreservationSelector.setValue(preservationClassificationEntryList.findModelWithKey(
+				Integer.toString(correspondingCaveEntry.getMainChamberEntry().getCorridorEntry().getPreservationClassificationID())));
+		antechamberPreservationSelector.setValue(preservationClassificationEntryList
+				.findModelWithKey(Integer.toString(correspondingCaveEntry.getAntechamberEntry().getPreservationClassificationID())));
+		antechamberCeilingPreservationSelector.setValue(preservationClassificationEntryList
+				.findModelWithKey(Integer.toString(correspondingCaveEntry.getAntechamberEntry().getCeilingPreservationClassificationID())));
 	}
 
 	/**
 	 * 
 	 */
 	private void loadSites() {
-		dbService.getSites(new AsyncCallback<ArrayList<SiteEntry>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(ArrayList<SiteEntry> result) {
-				siteEntryList.clear();
-				for (SiteEntry se : result) {
-					siteEntryList.add(se);
-				}
-			}
-		});
+		for (SiteEntry se : StaticTables.getInstance().getSiteEntries().values()) {
+			siteEntryListStore.add(se);
+		}
 	}
 
 	/**
@@ -466,42 +415,48 @@ public class CaveEditor extends AbstractEditor {
 	 * 
 	 */
 	private void loadRegions() {
-		dbService.getRegions(new AsyncCallback<ArrayList<RegionEntry>>() {
+		for (RegionEntry re : StaticTables.getInstance().getRegionEntries().values()) {
+			regionEntryListStore.add(re);
+		}
+		if (correspondingCaveEntry.getRegionID() > 0) {
+			RegionEntry re = regionEntryListStore.findModelWithKey(Integer.toString(correspondingCaveEntry.getRegionID()));
+			regionSelection.setValue(re);
+			if (siteSelection.getCurrentValue() == null || siteSelection.getCurrentValue().getSiteID() != re.getSiteID()) {
+				dbService.getSite(re.getSiteID(), new AsyncCallback<SiteEntry>() {
 
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(ArrayList<RegionEntry> result) {
-				regionEntryList.clear();
-				for (RegionEntry re : result) {
-					regionEntryList.add(re);
-				}
-				if (correspondingCaveEntry.getRegionID() > 0) {
-					RegionEntry re = regionEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getRegionID()));
-					regionSelection.setValue(re);
-					if (siteSelection.getCurrentValue() == null || siteSelection.getCurrentValue().getSiteID() != re.getSiteID()) {
-						dbService.getSite(re.getSiteID(), new AsyncCallback<SiteEntry>() {
-
-							@Override
-							public void onFailure(Throwable caught) {
-								caught.printStackTrace(System.err);
-							}
-
-							@Override
-							public void onSuccess(SiteEntry result) {
-								siteSelection.setValue(result);
-								activateRegionFilter();
-								activateDistrictFilter();
-							}
-						});
+					@Override
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace(System.err);
 					}
 
-				}
+					@Override
+					public void onSuccess(SiteEntry result) {
+						siteSelection.setValue(result);
+						activateRegionFilter();
+						activateDistrictFilter();
+					}
+				});
 			}
-		});
+
+		}
+		
+		
+//		dbService.getRegions(new AsyncCallback<ArrayList<RegionEntry>>() {
+//
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				caught.printStackTrace();
+//			}
+//
+//			@Override
+//			public void onSuccess(ArrayList<RegionEntry> result) {
+//				regionEntryListStore.clear();
+//				for (RegionEntry re : result) {
+//					regionEntryListStore.add(re);
+//				}
+//			}
+//		});
+//		
 	}
 
 	/**
@@ -525,20 +480,10 @@ public class CaveEditor extends AbstractEditor {
 					final DistrictEntry de = districtEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getDistrictID()));
 					districtSelection.setValue(de);
 					if (siteSelection.getCurrentValue() == null || siteSelection.getCurrentValue().getSiteID() != de.getSiteID()) {
-						dbService.getSite(de.getSiteID(), new AsyncCallback<SiteEntry>() {
-
-							@Override
-							public void onFailure(Throwable caught) {
-								caught.printStackTrace(System.err);
-							}
-
-							@Override
-							public void onSuccess(SiteEntry result) {
-								siteSelection.setValue(result);
-								activateRegionFilter();
-								activateDistrictFilter();
-							}
-						});
+						SiteEntry se = siteEntryListStore.findModelWithKey(Integer.toString(de.getSiteID()));
+						siteSelection.setValue(se);
+						activateRegionFilter();
+						activateDistrictFilter();
 					}
 				}
 			}
@@ -759,7 +704,7 @@ public class CaveEditor extends AbstractEditor {
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Site");
-		siteSelection = new ComboBox<SiteEntry>(siteEntryList, siteProps.name(), new AbstractSafeHtmlRenderer<SiteEntry>() {
+		siteSelection = new ComboBox<SiteEntry>(siteEntryListStore, siteProps.name(), new AbstractSafeHtmlRenderer<SiteEntry>() {
 
 			@Override
 			public SafeHtml render(SiteEntry item) {
@@ -886,7 +831,7 @@ public class CaveEditor extends AbstractEditor {
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Region");
-		regionSelection = new ComboBox<RegionEntry>(regionEntryList, regionProps.englishName(), new AbstractSafeHtmlRenderer<RegionEntry>() {
+		regionSelection = new ComboBox<RegionEntry>(regionEntryListStore, regionProps.englishName(), new AbstractSafeHtmlRenderer<RegionEntry>() {
 
 			@Override
 			public SafeHtml render(RegionEntry item) {
@@ -1357,7 +1302,7 @@ public class CaveEditor extends AbstractEditor {
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Cave Type");
-		caveTypeSelection = new ComboBox<CaveTypeEntry>(caveTypeEntryList, caveTypeProps.nameEN(),
+		caveTypeSelection = new ComboBox<CaveTypeEntry>(caveTypeEntryListStore, caveTypeProps.nameEN(),
 				new AbstractSafeHtmlRenderer<CaveTypeEntry>() {
 
 					@Override
@@ -1374,7 +1319,7 @@ public class CaveEditor extends AbstractEditor {
 			@Override
 			public void onSelection(SelectionEvent<CaveTypeEntry> event) {
 				correspondingCaveEntry.setCaveTypeID(event.getSelectedItem().getCaveTypeID());
-				CaveTypeEntry correspondingCaveTypeEntry = caveTypeEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getCaveTypeID()));
+				CaveTypeEntry correspondingCaveTypeEntry = caveTypeEntryListStore.findModelWithKey(Integer.toString(correspondingCaveEntry.getCaveTypeID()));
 				imageContainer.clear();
 				imageContainer.add(new HTMLPanel(caveLayoutViewTemplates.image(UriUtils.fromString("resource?background=" + correspondingCaveTypeEntry.getSketchName()))));
 				updateCeilingTypePanel();
@@ -1751,8 +1696,8 @@ public class CaveEditor extends AbstractEditor {
 				return (item.getSiteID() == siteSelection.getCurrentValue().getSiteID());
 			}
 		};
-		regionEntryList.addFilter(regionFilter);
-		regionEntryList.setEnableFilters(true);
+		regionEntryListStore.addFilter(regionFilter);
+		regionEntryListStore.setEnableFilters(true);
 		regionSelection.setEnabled(true);
 	}
 
