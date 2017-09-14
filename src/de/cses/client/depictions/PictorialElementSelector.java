@@ -32,20 +32,16 @@ import com.sencha.gxt.data.shared.event.StoreFilterEvent;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
-import com.sencha.gxt.widget.core.client.event.BlurEvent;
-import com.sencha.gxt.widget.core.client.event.BlurEvent.BlurHandler;
 import com.sencha.gxt.widget.core.client.event.CheckChangeEvent;
 import com.sencha.gxt.widget.core.client.event.CheckChangeEvent.CheckChangeHandler;
-import com.sencha.gxt.widget.core.client.event.CheckChangedEvent;
-import com.sencha.gxt.widget.core.client.event.CheckChangedEvent.CheckChangedHandler;
 import com.sencha.gxt.widget.core.client.form.StoreFilterField;
-import com.sencha.gxt.widget.core.client.info.Info;
 import com.sencha.gxt.widget.core.client.tree.Tree;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckCascade;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.StaticTables;
 import de.cses.shared.PictorialElementEntry;
 
 public class PictorialElementSelector implements IsWidget {
@@ -56,7 +52,7 @@ public class PictorialElementSelector implements IsWidget {
 			return item.getUniqueID();
 		}
 	}
-	
+
 	class PictorialElementValueProvider implements ValueProvider<PictorialElementEntry, String> {
 
 		@Override
@@ -83,7 +79,6 @@ public class PictorialElementSelector implements IsWidget {
 	private VerticalLayoutContainer mainVLC = null;
 	private Map<String, PictorialElementEntry> selectedPictorialElementsMap;
 
-
 	public PictorialElementSelector(int depictionID) {
 		this.depictionID = depictionID;
 		peStore = new TreeStore<PictorialElementEntry>(new PictorialElementKeyProvider());
@@ -101,37 +96,25 @@ public class PictorialElementSelector implements IsWidget {
 	}
 
 	private void loadPEStore() {
-		dbService.getPictorialElements(new AsyncCallback<ArrayList<PictorialElementEntry>>() {
+		for (PictorialElementEntry item : StaticTables.getInstance().getPictorialElementEntries().values()) {
+			peStore.add(item);
+			if (item.getChildren() != null) {
+				processParent(peStore, item);
+			}
+		}
+		dbService.getRelatedPE(depictionID, new AsyncCallback<ArrayList<PictorialElementEntry>>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				tree = null;
+				caught.printStackTrace();
 			}
 
 			@Override
-			public void onSuccess(ArrayList<PictorialElementEntry> peList) {
-
-				for (PictorialElementEntry item : peList) {
-					peStore.add(item);
-					if (item.getChildren() != null) {
-						processParent(peStore, item);
-					}
+			public void onSuccess(ArrayList<PictorialElementEntry> peRelationList) {
+				for (PictorialElementEntry peEntry : peRelationList) {
+					tree.setChecked(peEntry, CheckState.CHECKED);
+					selectedPictorialElementsMap.put(peEntry.getUniqueID(), peEntry);
 				}
-				dbService.getRelatedPE(depictionID, new AsyncCallback<ArrayList<PictorialElementEntry>>() {
-
-					@Override
-					public void onFailure(Throwable caught) {
-						caught.printStackTrace();
-					}
-
-					@Override
-					public void onSuccess(ArrayList<PictorialElementEntry> peRelationList) {
-						for (PictorialElementEntry peEntry : peRelationList) {
-	  					tree.setChecked(peEntry, CheckState.CHECKED);
-	  					selectedPictorialElementsMap.put(peEntry.getUniqueID(), peEntry);
-						}
-					}
-				});
 			}
 		});
 	}
@@ -143,29 +126,29 @@ public class PictorialElementSelector implements IsWidget {
 		}
 		return mainVLC;
 	}
-	
+
 	private void initPanel() {
 		VerticalLayoutContainer vlc = new VerticalLayoutContainer();
-		
-		tree = new Tree<PictorialElementEntry, String>(peStore, new PictorialElementValueProvider()){
+
+		tree = new Tree<PictorialElementEntry, String>(peStore, new PictorialElementValueProvider()) {
 
 			@Override
 			protected void onFilter(StoreFilterEvent<PictorialElementEntry> se) {
 				super.onFilter(se);
 				for (PictorialElementEntry peEntry : selectedPictorialElementsMap.values()) {
-//					if (tree.getStore().findModel(peEntry) != null) {
-						tree.setChecked(peEntry, CheckState.CHECKED);
-//					}
+					// if (tree.getStore().findModel(peEntry) != null) {
+					tree.setChecked(peEntry, CheckState.CHECKED);
+					// }
 				}
 			}
-			
+
 		};
 		tree.setWidth(350);
 		tree.setCheckable(true);
 		tree.setAutoLoad(true);
-    tree.setCheckStyle(CheckCascade.NONE);
-    
-    tree.addCheckChangeHandler(new CheckChangeHandler<PictorialElementEntry>() {
+		tree.setCheckStyle(CheckCascade.NONE);
+
+		tree.addCheckChangeHandler(new CheckChangeHandler<PictorialElementEntry>() {
 
 			@Override
 			public void onCheckChange(CheckChangeEvent<PictorialElementEntry> event) {
@@ -178,21 +161,22 @@ public class PictorialElementSelector implements IsWidget {
 					selectedPictorialElementsMap.remove(pe.getUniqueID());
 				}
 			}
-    });
-		
+		});
+
 		vlc.add(tree, new VerticalLayoutData(1.0, 1.0));
 		vlc.setScrollMode(ScrollMode.AUTOY);
 		vlc.setPixelSize(700, 475);
 		vlc.setBorders(true);
-		
+
 		treePanel = new ContentPanel();
 		treePanel.setHeaderVisible(false);
 		treePanel.add(vlc);
-		
+
 		StoreFilterField<PictorialElementEntry> filterField = new StoreFilterField<PictorialElementEntry>() {
 
 			@Override
-			protected boolean doSelect(Store<PictorialElementEntry> store, PictorialElementEntry parent, PictorialElementEntry item, String filter) {
+			protected boolean doSelect(Store<PictorialElementEntry> store, PictorialElementEntry parent, PictorialElementEntry item,
+					String filter) {
 				TreeStore<PictorialElementEntry> treeStore = (TreeStore<PictorialElementEntry>) store;
 				do {
 					String name = item.getText().toLowerCase();
@@ -210,33 +194,32 @@ public class PictorialElementSelector implements IsWidget {
 		mainVLC.add(treePanel, new VerticalLayoutData(1.0, .85));
 		mainVLC.add(filterField, new VerticalLayoutData(.5, .15, new Margins(10, 0, 0, 0)));
 
-		
 	}
-	
+
 	public List<PictorialElementEntry> getSelectedPE() {
 		return tree.getCheckedSelection();
 	}
 
 	public void expandAll() {
 		tree.expandAll();
-//		dbService.getRelatedPE(depictionID, new AsyncCallback<ArrayList<PictorialElementEntry>>() {
-//
-//			@Override
-//			public void onFailure(Throwable caught) {
-//				caught.printStackTrace();
-//			}
-//
-//			@Override
-//			public void onSuccess(ArrayList<PictorialElementEntry> peRelationList) {
-//				tree.setCheckedSelection(peRelationList);
-//			}
-//		});
-//		
-//		
+		// dbService.getRelatedPE(depictionID, new AsyncCallback<ArrayList<PictorialElementEntry>>() {
+		//
+		// @Override
+		// public void onFailure(Throwable caught) {
+		// caught.printStackTrace();
+		// }
+		//
+		// @Override
+		// public void onSuccess(ArrayList<PictorialElementEntry> peRelationList) {
+		// tree.setCheckedSelection(peRelationList);
+		// }
+		// });
+		//
+		//
 	}
 
 	public void collapseAll() {
 		tree.collapseAll();
 	}
-	
+
 }

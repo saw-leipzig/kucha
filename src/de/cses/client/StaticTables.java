@@ -29,6 +29,7 @@ import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageTypeEntry;
+import de.cses.shared.PictorialElementEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
@@ -54,6 +55,7 @@ public class StaticTables {
 	protected HashMap<Integer, ExpeditionEntry> expeditionEntryMap;
 	protected HashMap<Integer, StyleEntry> styleEntryMap;
 	protected HashMap<Integer, IconographyEntry> iconographyEntryMap;
+	protected HashMap<Integer, PictorialElementEntry> pictorialElementEntryMap;
 
 	interface SiteProperties extends PropertyAccess<SiteEntry> {
 		ModelKeyProvider<SiteEntry> siteID();
@@ -90,7 +92,8 @@ public class StaticTables {
 		loadImageTypes();
 		loadExpeditions();
 		loadStyles();
-		loadIconographyStore();
+		loadIconography();
+		loadPictorialElements();
 	}
 
 	
@@ -274,7 +277,7 @@ public class StaticTables {
 		});
 	}
 	
-	private void loadIconographyStore() {
+	private void loadIconography() {
 		iconographyEntryMap = new HashMap<Integer, IconographyEntry>();
 		dbService.getIconography(new AsyncCallback<ArrayList<IconographyEntry>>() {
 
@@ -286,6 +289,24 @@ public class StaticTables {
 			public void onSuccess(ArrayList<IconographyEntry> result) {
 				for (IconographyEntry ie : result) {
 					iconographyEntryMap.put(ie.getIconographyID(), ie);
+				}
+			}
+		});
+	}
+	
+	private void loadPictorialElements() {
+		pictorialElementEntryMap = new HashMap<Integer, PictorialElementEntry>();
+		dbService.getPictorialElements(new AsyncCallback<ArrayList<PictorialElementEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+			}
+
+			@Override
+			public void onSuccess(ArrayList<PictorialElementEntry> peList) {
+
+				for (PictorialElementEntry item : peList) {
+					pictorialElementEntryMap.put(item.getPictorialElementID(), item);
 				}
 			}
 		});
@@ -331,5 +352,8 @@ public class StaticTables {
 	public Map<Integer, IconographyEntry> getIconographyEntries() {
 		return iconographyEntryMap;
 	}
-	
+
+	public Map<Integer, PictorialElementEntry> getPictorialElementEntries() {
+		return pictorialElementEntryMap;
+	}
 }
