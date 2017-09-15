@@ -77,6 +77,7 @@ import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
+import de.cses.shared.ModeOfRepresentationEntry;
 import de.cses.shared.PictorialElementEntry;
 import de.cses.shared.SiteEntry;
 import de.cses.shared.StyleEntry;
@@ -96,7 +97,6 @@ public class DepictionEditor extends AbstractEditor {
 	private DateField dateOfAcquisitionField;
 	private TextArea descriptionArea;
 	private TextField backgroundColourField;
-	private TextField materialField;
 	private TextArea generalRemarksArea;
 	private TextArea othersSuggestedIdentificationsArea;
 	protected IconographySelector iconographySelector;
@@ -121,12 +121,15 @@ public class DepictionEditor extends AbstractEditor {
 	private ExpeditionProperties expedProps;
 	private ListStore<ExpeditionEntry> expedEntryList;
 	private ComboBox<ExpeditionEntry> expedSelection;
+	private ComboBox<ModeOfRepresentationEntry> modeOfRepresentationSelection;
 	protected PopupPanel wallEditorDialog;
 	private Walls wallEditor;
 	private Label iconographyLabel;
 	protected PopupPanel iconographySelectionDialog;
 	private WallSelector caveSketchContainer;
 	private TextArea separateAksarasTextArea;
+	private ModesOfRepresentationProperties morProps;
+	private ListStore<ModeOfRepresentationEntry> morEntryList;
 
 	interface DepictionProperties extends PropertyAccess<DepictionEntry> {
 		ModelKeyProvider<DepictionEntry> depictionID();
@@ -158,13 +161,22 @@ public class DepictionEditor extends AbstractEditor {
 
 	interface ExpeditionProperties extends PropertyAccess<ExpeditionEntry> {
 		ModelKeyProvider<ExpeditionEntry> expeditionID();
-
 		LabelProvider<ExpeditionEntry> name();
 	}
 
 	interface ExpeditionViewTemplates extends XTemplates {
 		@XTemplate("<div>{expedName}<br>Leader: {leaderName}<br>{startYear} - {endYear}</div>")
 		SafeHtml expedLabel(String expedName, String leaderName, String startYear, String endYear);
+	}
+	
+	interface ModesOfRepresentationProperties extends PropertyAccess<ModeOfRepresentationEntry> {
+		ModelKeyProvider<ModeOfRepresentationEntry> modeOfRepresentationID();
+		LabelProvider<ModeOfRepresentationEntry> name();
+	}
+	
+	interface ModesOfRepresentationViewTemplates extends XTemplates {
+		@XTemplate("<div>{name}")
+		SafeHtml morLabel(String name);
 	}
 
 	interface VendorProperties extends PropertyAccess<VendorEntry> {
@@ -234,12 +246,15 @@ public class DepictionEditor extends AbstractEditor {
 		caveEntryList = new ListStore<CaveEntry>(caveProps.caveID());
 		expedProps = GWT.create(ExpeditionProperties.class);
 		expedEntryList = new ListStore<ExpeditionEntry>(expedProps.expeditionID());
+		morProps = GWT.create(ModesOfRepresentationProperties.class);
+		morEntryList = new ListStore<ModeOfRepresentationEntry>(morProps.modeOfRepresentationID());
 
 		initPanel();
 		loadCaves();
 		loadStyles();
 		loadVendors();
 		loadExpeditions();
+		loadModesOfRepresentation();
 	}
 
 	/**
@@ -275,6 +290,18 @@ public class DepictionEditor extends AbstractEditor {
 				}
 			}
 		});
+	}
+	
+	/**
+	 * 
+	 */
+	private void loadModesOfRepresentation() {
+		for (ModeOfRepresentationEntry morEntry : StaticTables.getInstance().getModesOfRepresentationEntries().values()) {
+			morEntryList.add(morEntry);
+		}
+		if (correspondingDepictionEntry.getModeOfRepresentationID() > 0) {
+			modeOfRepresentationSelection.setValue(morEntryList.findModelWithKey(Integer.toString(correspondingDepictionEntry.getModeOfRepresentationID())));
+		}
 	}
 
 	/**
@@ -410,7 +437,7 @@ public class DepictionEditor extends AbstractEditor {
 				}
 			}
 		});
-		caveSelection.setEmptyText("Select a Cave ...");
+		caveSelection.setEmptyText("nothing selected");
 		caveSelection.setTypeAhead(true);
 		caveSelection.setEditable(false);
 		caveSelection.setTriggerAction(TriggerAction.ALL);
@@ -477,7 +504,7 @@ public class DepictionEditor extends AbstractEditor {
 				return expedTemplates.expedLabel(item.getName(), item.getLeader(), dtf.format(item.getStartDate()), dtf.format(item.getEndDate()));
 			}
 		});
-		expedSelection.setEmptyText("Select an expedition ...");
+		expedSelection.setEmptyText("nothing selected");
 		expedSelection.addSelectionHandler(new SelectionHandler<ExpeditionEntry>() {
 
 			@Override
@@ -510,7 +537,7 @@ public class DepictionEditor extends AbstractEditor {
 			}
 
 		});
-		vendorSelection.setEmptyText("Select a Vendor ...");
+		vendorSelection.setEmptyText("nothing selected");
 		vendorSelection.setTypeAhead(false);
 		vendorSelection.setEditable(false);
 		vendorSelection.setTriggerAction(TriggerAction.ALL);
@@ -528,7 +555,7 @@ public class DepictionEditor extends AbstractEditor {
 		attributePanel.setHeading("Date purchased");
 		purchaseDateField = new DateField(new DateTimePropertyEditor("yyyy"));
 		purchaseDateField.setValue(correspondingDepictionEntry.getPurchaseDate());
-		purchaseDateField.setEmptyText("please select year");
+		purchaseDateField.setEmptyText("nothing selected");
 		// TODO add change handler
 		attributePanel.add(purchaseDateField);
 		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0 / 8));
@@ -553,9 +580,28 @@ public class DepictionEditor extends AbstractEditor {
 		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0 / 8));
 
 		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Material");
-		materialField = new TextField();
-		attributePanel.add(materialField);
+		attributePanel.setHeading("Modes of Representation");
+		modeOfRepresentationSelection = new ComboBox<ModeOfRepresentationEntry>(morEntryList, morProps.name(), new AbstractSafeHtmlRenderer<ModeOfRepresentationEntry>() {
+
+			@Override
+			public SafeHtml render(ModeOfRepresentationEntry morEntry) {
+				ModesOfRepresentationViewTemplates morTemplates = GWT.create(ModesOfRepresentationViewTemplates.class);
+				return morTemplates.morLabel(morEntry.getName());
+			}
+			
+		});
+		modeOfRepresentationSelection.setEmptyText("nothing selected");
+		modeOfRepresentationSelection.setTypeAhead(false);
+		modeOfRepresentationSelection.setEditable(false);
+		modeOfRepresentationSelection.setTriggerAction(TriggerAction.ALL);
+		modeOfRepresentationSelection.addSelectionHandler(new SelectionHandler<ModeOfRepresentationEntry>() {
+
+			@Override
+			public void onSelection(SelectionEvent<ModeOfRepresentationEntry> event) {
+				correspondingDepictionEntry.setModeOfRepresentationID(event.getSelectedItem().getModeOfRepresentationID());
+			}
+		});
+		attributePanel.add(modeOfRepresentationSelection);
 		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0 / 8));
 
 		hlContainer.add(vlContainer, new HorizontalLayoutData(.4, 1.0));
@@ -610,7 +656,7 @@ public class DepictionEditor extends AbstractEditor {
 				return svTemplates.styleName(item.getStyleName());
 			}
 		});
-		styleSelection.setEmptyText("Select a Style ...");
+		styleSelection.setEmptyText("nothing selected");
 		styleSelection.setTypeAhead(false);
 		styleSelection.setEditable(false);
 		styleSelection.setTriggerAction(TriggerAction.ALL);

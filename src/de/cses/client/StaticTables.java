@@ -29,6 +29,7 @@ import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageTypeEntry;
+import de.cses.shared.ModeOfRepresentationEntry;
 import de.cses.shared.PictorialElementEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.RegionEntry;
@@ -40,7 +41,7 @@ import de.cses.shared.StyleEntry;
  *
  */
 public class StaticTables {
-
+	
 	private static StaticTables instance = null;
 
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
@@ -56,6 +57,7 @@ public class StaticTables {
 	protected HashMap<Integer, StyleEntry> styleEntryMap;
 	protected HashMap<Integer, IconographyEntry> iconographyEntryMap;
 	protected HashMap<Integer, PictorialElementEntry> pictorialElementEntryMap;
+	protected HashMap<Integer, ModeOfRepresentationEntry> modesOfRepresentationEntryMap;
 
 	private int loadCounter;
 
@@ -63,24 +65,6 @@ public class StaticTables {
 
 	public interface ListsLoadedListener {
 		void listsLoaded(double progressCounter);
-	}
-
-	interface SiteProperties extends PropertyAccess<SiteEntry> {
-		ModelKeyProvider<SiteEntry> siteID();
-
-		LabelProvider<SiteEntry> name();
-	}
-
-	interface DistrictProperties extends PropertyAccess<DistrictEntry> {
-		ModelKeyProvider<DistrictEntry> districtID();
-
-		LabelProvider<DistrictEntry> name();
-	}
-
-	interface RegionProperties extends PropertyAccess<RegionEntry> {
-		ModelKeyProvider<RegionEntry> regionID();
-
-		LabelProvider<RegionEntry> englishName();
 	}
 
 	public static synchronized StaticTables getInstance() {
@@ -98,7 +82,7 @@ public class StaticTables {
 	 */
 	public StaticTables(ListsLoadedListener l) {
 		listener = l;
-		loadCounter = 11;
+		loadCounter = 12;
 		loadDistricts();
 		loadSites();
 		loadRegions();
@@ -110,11 +94,12 @@ public class StaticTables {
 		loadStyles();
 		loadIconography();
 		loadPictorialElements();
+		loadModesOfRepresentation();
 	}
 
 	private void listLoaded() {
 		--loadCounter;
-		listener.listsLoaded((11.0 - loadCounter) / 11.0);
+		listener.listsLoaded((12.0 - loadCounter) / 12.0);
 	}
 
 	/**
@@ -351,6 +336,25 @@ public class StaticTables {
 			}
 		});
 	}
+	
+	private void loadModesOfRepresentation() {
+		modesOfRepresentationEntryMap = new HashMap<Integer, ModeOfRepresentationEntry>();
+		dbService.getModesOfRepresentation(new AsyncCallback<ArrayList<ModeOfRepresentationEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				listLoaded();
+			}
+
+			@Override
+			public void onSuccess(ArrayList<ModeOfRepresentationEntry> result) {
+				for (ModeOfRepresentationEntry mor : result) {
+					modesOfRepresentationEntryMap.put(mor.getModeOfRepresentationID(), mor);
+				}
+				listLoaded();
+			}
+		});
+	}
 
 	public Map<Integer, DistrictEntry> getDistrictEntries() {
 		return districtEntryMap;
@@ -394,5 +398,9 @@ public class StaticTables {
 
 	public Map<Integer, PictorialElementEntry> getPictorialElementEntries() {
 		return pictorialElementEntryMap;
+	}
+	
+	public Map<Integer, ModeOfRepresentationEntry> getModesOfRepresentationEntries() {
+		return modesOfRepresentationEntryMap;
 	}
 }

@@ -24,7 +24,6 @@ public class DepictionEntry extends AbstractEntry {
 	private String dating;
 	private String description;
 	private String backgroundColour;
-	private String material;
 	private String generalRemarks;
 	private String otherSuggestedIdentifications;
 	private double width, height;
@@ -38,14 +37,15 @@ public class DepictionEntry extends AbstractEntry {
 	private int iconographyID;
 	private int absoluteLeft;
 	private int absoluteTop;
+	private int modeOfRepresentationID;
 
 	public DepictionEntry() {
-		this(0, 0, "", "", "", "", "", "", "", "", 0, 0, 0, null, 0, 0, 0, 0, 0, 0);
+		this(0, 0, "", "", "", "", "", "", "", 0, 0, 0, null, 0, 0, 0, 0, 0, 0, 0);
 	}
 
 	public DepictionEntry(int depictionID, int styleID, String inscriptions, String separateAksaras, String dating, String description, String backgroundColour,
-			String material, String generalRemarks, String otherSuggestedIdentifications, double width, double height, int expeditionID,
-			Date purchaseDate, int currentLocationID, int vendorID, int storyID, int caveID, int wallID, int iconographyID) {
+			String generalRemarks, String otherSuggestedIdentifications, double width, double height, int expeditionID,
+			Date purchaseDate, int currentLocationID, int vendorID, int storyID, int caveID, int wallID, int iconographyID, int modeOfRepresentationID) {
 		super();
 		setDepictionID(depictionID);
 		setStyleID(styleID);
@@ -54,7 +54,6 @@ public class DepictionEntry extends AbstractEntry {
 		setDating(dating);
 		setDescription(description);
 		setBackgroundColour(backgroundColour);
-		setMaterial(material);
 		setGeneralRemarks(generalRemarks);
 		setOtherSuggestedIdentifications(otherSuggestedIdentifications);
 		setWidth(width);
@@ -67,6 +66,7 @@ public class DepictionEntry extends AbstractEntry {
 		setCaveID(caveID);
 		setWallID(wallID);
 		setIconographyID(iconographyID);
+		setModeOfRepresentationID(modeOfRepresentationID);
 	}
 
 	public int getDepictionID() {
@@ -115,14 +115,6 @@ public class DepictionEntry extends AbstractEntry {
 
 	public void setBackgroundColour(String backgroundColour) {
 		this.backgroundColour = backgroundColour;
-	}
-
-	public String getMaterial() {
-		return material;
-	}
-
-	public void setMaterial(String material) {
-		this.material = material;
 	}
 
 	public String getGeneralRemarks() {
@@ -267,6 +259,14 @@ public class DepictionEntry extends AbstractEntry {
 	 */
 	public void setSeparateAksaras(String separateAksaras) {
 		this.separateAksaras = separateAksaras;
+	}
+
+	public int getModeOfRepresentationID() {
+		return modeOfRepresentationID;
+	}
+
+	public void setModeOfRepresentationID(int modeOfRepresentationID) {
+		this.modeOfRepresentationID = modeOfRepresentationID;
 	}
 
 }

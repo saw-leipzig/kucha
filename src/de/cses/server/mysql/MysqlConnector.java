@@ -40,6 +40,7 @@ import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageTypeEntry;
 import de.cses.shared.MainChamberEntry;
 import de.cses.shared.MainTypologicalClass;
+import de.cses.shared.ModeOfRepresentationEntry;
 import de.cses.shared.OrientationEntry;
 import de.cses.shared.OrnamentCaveType;
 import de.cses.shared.OrnamentEntry;
@@ -210,7 +211,7 @@ public class MysqlConnector {
 	 * 
 	 * @return auto incremented primary key
 	 */
-	public int insertEntry(String sqlInsert) {
+	public synchronized int insertEntry(String sqlInsert) {
 		Connection dbc = getConnection();
 		Statement stmt;
 		int generatedKey = -1;
@@ -240,7 +241,7 @@ public class MysqlConnector {
 	 *          The full sql string including the UPDATE statement
 	 * @return true if sucessful
 	 */
-	public boolean updateEntry(String sqlUpdate) {
+	public synchronized boolean updateEntry(String sqlUpdate) {
 		Connection dbc = getConnection();
 		Statement stmt;
 		try {
@@ -293,10 +294,10 @@ public class MysqlConnector {
 			ResultSet rs = stmt.executeQuery((sqlWhere == null) ? "SELECT * FROM Depictions" : "SELECT * FROM Depictions WHERE " + sqlWhere);
 			while (rs.next()) {
 				results.add(new DepictionEntry(rs.getInt("DepictionID"), rs.getInt("StyleID"), rs.getString("Inscriptions"), rs.getString("SeparateAksaras"), rs.getString("Dating"),
-						rs.getString("Description"), rs.getString("BackgroundColour"), rs.getString("Material"), rs.getString("GeneralRemarks"),
+						rs.getString("Description"), rs.getString("BackgroundColour"), rs.getString("GeneralRemarks"),
 						rs.getString("OtherSuggestedIdentifications"), rs.getDouble("Width"), rs.getDouble("Height"), rs.getInt("ExpeditionID"),
 						rs.getDate("PurchaseDate"), rs.getInt("CurrentLocationID"), rs.getInt("VendorID"), rs.getInt("StoryID"), rs.getInt("CaveID"),
-						rs.getInt("WallID"), rs.getInt("IconographyID")));
+						rs.getInt("WallID"), rs.getInt("IconographyID"), rs.getInt("ModeOfRepresentationID")));
 			}
 			rs.close();
 			stmt.close();
@@ -317,10 +318,10 @@ public class MysqlConnector {
 			if (rs.next()) { // we only need to call this once, since we do not expect
 												// more than 1 result!
 				result = new DepictionEntry(rs.getInt("DepictionID"), rs.getInt("StyleID"), rs.getString("Inscriptions"), rs.getString("SeparateAksaras"), rs.getString("Dating"),
-						rs.getString("Description"), rs.getString("BackgroundColour"), rs.getString("Material"), rs.getString("GeneralRemarks"),
+						rs.getString("Description"), rs.getString("BackgroundColour"), rs.getString("GeneralRemarks"),
 						rs.getString("OtherSuggestedIdentifications"), rs.getInt("Dimension.width"), rs.getInt("Dimension.height"),
 						rs.getInt("ExpeditionID"), rs.getDate("PurchaseDate"), rs.getInt("CurrentLocationID"), rs.getInt("VendorID"),
-						rs.getInt("StoryID"), rs.getInt("CaveID"), rs.getInt("WallID"), rs.getInt("IconographyID"));
+						rs.getInt("StoryID"), rs.getInt("CaveID"), rs.getInt("WallID"), rs.getInt("IconographyID"), rs.getInt("ModeOfRepresentationID"));
 			}
 			rs.close();
 			stmt.close();
@@ -985,7 +986,7 @@ public class MysqlConnector {
 	 * @param entry
 	 * @return
 	 */
-	public Boolean updateImageEntry(ImageEntry entry) {
+	public synchronized boolean updateImageEntry(ImageEntry entry) {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
@@ -1039,7 +1040,7 @@ public class MysqlConnector {
 		return result;
 	}
 	
-	private boolean insertAntechamber(AntechamberEntry entry) {
+	private synchronized boolean insertAntechamber(AntechamberEntry entry) {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
@@ -1066,7 +1067,7 @@ public class MysqlConnector {
 		return true;	
 	}
 
-	private boolean updateAntechamber(AntechamberEntry entry) {
+	private synchronized boolean updateAntechamber(AntechamberEntry entry) {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
@@ -1132,7 +1133,7 @@ public class MysqlConnector {
 	 * @param entry
 	 * @return
 	 */
-	private boolean updateRearArea(RearAreaEntry entry) {
+	private synchronized boolean updateRearArea(RearAreaEntry entry) {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		if (entry.getLeftCorridorEntry().getCorridorID() == 0) {
@@ -1176,7 +1177,7 @@ public class MysqlConnector {
 	 * @param entry
 	 * @return
 	 */
-	private boolean insertRearArea(RearAreaEntry entry) {
+	private synchronized boolean insertRearArea(RearAreaEntry entry) {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		if (entry.getLeftCorridorEntry().getCorridorID() == 0) {
@@ -1249,7 +1250,7 @@ public class MysqlConnector {
 		return result;
 	}
 	
-	private boolean updateMainChamber(MainChamberEntry entry) {
+	private synchronized boolean updateMainChamber(MainChamberEntry entry) {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		if (entry.getCorridorEntry().getCorridorID() == 0) {
@@ -1281,7 +1282,7 @@ public class MysqlConnector {
 		return true;
 	}
 
-	private boolean insertMainChamber(MainChamberEntry entry) {
+	private synchronized boolean insertMainChamber(MainChamberEntry entry) {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		if (entry.getCorridorEntry().getCorridorID() == 0) {
@@ -1344,7 +1345,7 @@ public class MysqlConnector {
 	 * @param leftCorridorEntry
 	 * @return
 	 */
-	private boolean updateCorridor(CorridorEntry entry) {
+	private synchronized boolean updateCorridor(CorridorEntry entry) {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
@@ -1368,7 +1369,7 @@ public class MysqlConnector {
 	 * @param rightCorridorEntry
 	 * @return
 	 */
-	private int insertCorridor(CorridorEntry entry) {
+	private synchronized int insertCorridor(CorridorEntry entry) {
 		int newID;
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -1770,7 +1771,7 @@ public class MysqlConnector {
 	 * @param caveEntry
 	 * @return
 	 */
-	public boolean updateCaveEntry(CaveEntry caveEntry) {
+	public synchronized boolean updateCaveEntry(CaveEntry caveEntry) {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
@@ -1807,7 +1808,7 @@ public class MysqlConnector {
 	 * @param caveEntry
 	 * @return
 	 */
-	public int insertCaveEntry(CaveEntry caveEntry) {
+	public synchronized int insertCaveEntry(CaveEntry caveEntry) {
 		int newCaveID;
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -1883,7 +1884,7 @@ public class MysqlConnector {
 				result = new UserEntry(rs.getInt("UserID"), rs.getString("Username"), rs.getString("Firstname"), rs.getString("Lastname"),
 						rs.getString("Email"), rs.getString("Affiliation"), rs.getInt("Accessrights"));
 			} else {
-				System.err.println("pw hash: " + password);
+				System.err.println("wrong password for user " + username + ": hash = " + password);
 			}
 			rs.close();
 			stmt.close();
@@ -1921,15 +1922,15 @@ public class MysqlConnector {
 	 * @param depictionEntry
 	 * @return
 	 */
-	public int insertDepictionEntry(DepictionEntry de, ArrayList<ImageEntry> imgEntryList, ArrayList<PictorialElementEntry> peEntryList) {
+	public synchronized int insertDepictionEntry(DepictionEntry de, ArrayList<ImageEntry> imgEntryList, ArrayList<PictorialElementEntry> peEntryList) {
 		int newDepictionID;
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
 			pstmt = dbc.prepareStatement(
 					"INSERT INTO Depictions (StyleID, Inscriptions, SeparateAksaras, Dating, Height, Width, PurchaseDate, VendorID, ExpeditionID, "
-					+ "CurrentLocationID, Description, BackgroundColour, Material, GeneralRemarks, OtherSuggestedIdentifications, "
-					+ "StoryID, CaveID, WallID, AbsoluteLeft, AbsoluteTop, IconographyID) "
+					+ "CurrentLocationID, Description, BackgroundColour, GeneralRemarks, OtherSuggestedIdentifications, "
+					+ "StoryID, CaveID, WallID, AbsoluteLeft, AbsoluteTop, IconographyID, ModeOfRepresentationID) "
 					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			pstmt.setInt(1, de.getStyleID());
 			pstmt.setString(2, de.getInscriptions());
@@ -1943,15 +1944,15 @@ public class MysqlConnector {
 			pstmt.setInt(10, de.getCurrentLocationID());
 			pstmt.setString(11, de.getDescription());
 			pstmt.setString(12, de.getBackgroundColour());
-			pstmt.setString(13, de.getMaterial());
-			pstmt.setString(14, de.getGeneralRemarks());
-			pstmt.setString(15, de.getOtherSuggestedIdentifications());
-			pstmt.setInt(16, de.getStoryID());
-			pstmt.setInt(17, de.getCaveID());
-			pstmt.setInt(18, de.getWallID());
-			pstmt.setInt(19, de.getAbsoluteLeft());
-			pstmt.setInt(20, de.getAbsoluteTop());
-			pstmt.setInt(21, de.getIconographyID());
+			pstmt.setString(13, de.getGeneralRemarks());
+			pstmt.setString(14, de.getOtherSuggestedIdentifications());
+			pstmt.setInt(15, de.getStoryID());
+			pstmt.setInt(16, de.getCaveID());
+			pstmt.setInt(17, de.getWallID());
+			pstmt.setInt(18, de.getAbsoluteLeft());
+			pstmt.setInt(19, de.getAbsoluteTop());
+			pstmt.setInt(20, de.getIconographyID());
+			pstmt.setInt(21, de.getModeOfRepresentationID());
 			newDepictionID = pstmt.executeUpdate();
 			pstmt.close();
 		} catch (SQLException ex) {
@@ -1975,15 +1976,15 @@ public class MysqlConnector {
 	 * @param selectedPEList
 	 * @return <code>true</code> when operation is successful
 	 */
-	public boolean updateDepictionEntry(DepictionEntry de, ArrayList<ImageEntry> imgEntryList, ArrayList<PictorialElementEntry> selectedPEList) {
+	public synchronized boolean updateDepictionEntry(DepictionEntry de, ArrayList<ImageEntry> imgEntryList, ArrayList<PictorialElementEntry> selectedPEList) {
 //		System.err.println("==> updateDepictionEntry called");
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
 			pstmt = dbc.prepareStatement(
 					"UPDATE Depictions SET StyleID=?, Inscriptions=?, SeparateAksaras=?, Dating=?, Height=?, Width=?, PurchaseDate=?, VendorID=?, ExpeditionID=?, "
-							+ "CurrentLocationID=?, Description=?, BackgroundColour=?, Material=?, GeneralRemarks=?, OtherSuggestedIdentifications=?, "
-							+ "StoryID=?, CaveID=?, WallID=?, AbsoluteLeft=?, AbsoluteTop=?, IconographyID=? WHERE DepictionID=?"); 
+							+ "CurrentLocationID=?, Description=?, BackgroundColour=?, GeneralRemarks=?, OtherSuggestedIdentifications=?, "
+							+ "StoryID=?, CaveID=?, WallID=?, AbsoluteLeft=?, AbsoluteTop=?, IconographyID=?, ModeOfRepresentationID=? WHERE DepictionID=?"); 
 			pstmt.setInt(1, de.getStyleID());
 			pstmt.setString(2, de.getInscriptions());
 			pstmt.setString(3, de.getSeparateAksaras());
@@ -1996,15 +1997,15 @@ public class MysqlConnector {
 			pstmt.setInt(10, de.getCurrentLocationID());
 			pstmt.setString(11, de.getDescription());
 			pstmt.setString(12, de.getBackgroundColour());
-			pstmt.setString(13, de.getMaterial());
-			pstmt.setString(14, de.getGeneralRemarks());
-			pstmt.setString(15, de.getOtherSuggestedIdentifications());
-			pstmt.setInt(16, de.getStoryID());
-			pstmt.setInt(17, de.getCaveID());
-			pstmt.setInt(18, de.getWallID());
-			pstmt.setInt(19, de.getAbsoluteLeft());
-			pstmt.setInt(20, de.getAbsoluteTop());
-			pstmt.setInt(21, de.getIconographyID());
+			pstmt.setString(13, de.getGeneralRemarks());
+			pstmt.setString(14, de.getOtherSuggestedIdentifications());
+			pstmt.setInt(15, de.getStoryID());
+			pstmt.setInt(16, de.getCaveID());
+			pstmt.setInt(17, de.getWallID());
+			pstmt.setInt(18, de.getAbsoluteLeft());
+			pstmt.setInt(19, de.getAbsoluteTop());
+			pstmt.setInt(20, de.getIconographyID());
+			pstmt.setInt(21, de.getModeOfRepresentationID());
 			pstmt.setInt(22, de.getDepictionID());
 			pstmt.executeUpdate();
 			pstmt.close();
@@ -2021,7 +2022,7 @@ public class MysqlConnector {
 		return true;
 	}
 	
-	private void updateDepictionImageRelation(int depictionID, ArrayList<ImageEntry> imgEntryList) {
+	private synchronized void updateDepictionImageRelation(int depictionID, ArrayList<ImageEntry> imgEntryList) {
 		deleteEntry("DELETE FROM DepictionImageRelation WHERE DepictionID=" + depictionID);
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -2056,7 +2057,7 @@ public class MysqlConnector {
 		}
 	}
 	
-	private void updateDepictionPERelation(int depictionID, ArrayList<PictorialElementEntry> peEntryList) {
+	private synchronized void updateDepictionPERelation(int depictionID, ArrayList<PictorialElementEntry> peEntryList) {
 		deleteEntry("DELETE FROM DepictionPERelation WHERE DepictionID=" + depictionID);
 		String insertSqlString = "INSERT INTO DepictionPERelation VALUES ";
 		Iterator<PictorialElementEntry> it = peEntryList.iterator();
@@ -2070,6 +2071,28 @@ public class MysqlConnector {
 			}
 		}
 		insertEntry(insertSqlString);
+	}
+
+	/**
+	 * @return
+	 */
+	public ArrayList<ModeOfRepresentationEntry> getModesOfRepresentations() {
+		ArrayList<ModeOfRepresentationEntry> result = new ArrayList<ModeOfRepresentationEntry>();
+		Connection dbc = getConnection();
+
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM ModesOfRepresentation");
+			while (rs.next()) {
+				result.add(new ModeOfRepresentationEntry(rs.getInt("ModeOfRepresentationID"), rs.getString("Name")));
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 
 }
