@@ -175,7 +175,7 @@ public class DepictionEditor extends AbstractEditor {
 	}
 	
 	interface ModesOfRepresentationViewTemplates extends XTemplates {
-		@XTemplate("<div>{name}")
+		@XTemplate("<div>{name}</div>")
 		SafeHtml morLabel(String name);
 	}
 
