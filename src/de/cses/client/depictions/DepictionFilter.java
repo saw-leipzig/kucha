@@ -41,7 +41,7 @@ public class DepictionFilter extends AbstractFilter {
 	protected Widget getFilterUI() {
 		VerticalPanel vp = new VerticalPanel();
 		TextField tf = new TextField();
-		tf.setText("TEST");
+//		tf.setText("TEST");
 		vp.add(tf);
 		return vp;
 	}

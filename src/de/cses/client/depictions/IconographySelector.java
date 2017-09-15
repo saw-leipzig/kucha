@@ -43,6 +43,7 @@ import com.sencha.gxt.widget.core.client.tree.Tree;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.StaticTables;
 import de.cses.shared.IconographyEntry;
 
 public class IconographySelector implements IsWidget {
@@ -96,7 +97,7 @@ public class IconographySelector implements IsWidget {
 			}
 		};
 		initPanel();
-		refreshIconographyStore();
+		loadIconographyStore();
 	}
 
 	private void processParent(TreeStore<IconographyEntry> store, IconographyEntry item) {
@@ -108,35 +109,22 @@ public class IconographySelector implements IsWidget {
 		}
 	}
 
-	private void refreshIconographyStore() {
-		store.clear();
-		dbService.getIconography(new AsyncCallback<ArrayList<IconographyEntry>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				tree = null;
+	private void loadIconographyStore() {
+		IconographyEntry selectedEntry = null;
+		for (IconographyEntry item : StaticTables.getInstance().getIconographyEntries().values()) {
+			store.add(item);
+			if (item.getIconographyID() == selectedIconographyID) {
+				selectedEntry = item;
 			}
-
-			@Override
-			public void onSuccess(ArrayList<IconographyEntry> result) {
-
-				IconographyEntry selectedEntry = null;
-				for (IconographyEntry item : result) {
-					store.add(item);
-					if (item.getIconographyID() == selectedIconographyID) {
-						selectedEntry = item;
-					}
-					if (item.getChildren() != null) {
-						processParent(store, item);
-					}
-				}
-				if (selectedEntry != null) {
-					tree.getSelectionModel().select(selectedEntry, false);
-					tree.expandAll();
-					tree.scrollIntoView(selectedEntry);
-				}
+			if (item.getChildren() != null) {
+				processParent(store, item);
 			}
-		});
+		}
+		if (selectedEntry != null) {
+			tree.getSelectionModel().select(selectedEntry, false);
+			tree.expandAll();
+			tree.scrollIntoView(selectedEntry);
+		}
 	}
 
 	@Override

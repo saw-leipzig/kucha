@@ -23,7 +23,6 @@ import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
-import com.sencha.gxt.widget.core.client.Header;
 import com.sencha.gxt.widget.core.client.Portlet;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
@@ -69,7 +68,7 @@ public class MainView implements IsWidget {
 	private ContentPanel filterPanel;
 	private PortalLayoutContainer filterView;
 	private PortalLayoutContainer resultView;
-	private TextButton searchButton;
+//	private TextButton searchButton;
 	private TextField searchText;
 	private VerticalLayoutContainer northPanel;
 	private FramedPanel searchTextPanel;
@@ -98,7 +97,7 @@ public class MainView implements IsWidget {
 	}
 	
 	private void initView() {
-    final boolean borders = true;
+    boolean borders = true;
     
     northPanel = new VerticalLayoutContainer();
 
@@ -140,7 +139,7 @@ public class MainView implements IsWidget {
 		selectorLayoutContainer.add(caveSearchController, hLayoutData);
 		
 		depictionSearchController = new DepictionSearchController("Painted Representations", new DepictionResultView("Painted Representations"));
-		depictionSearchController.addRelatedFilter(new DepictionFilter("Depiction Filter"));
+		depictionSearchController.addRelatedFilter(new DepictionFilter("Painted Representation Filter"));
 		depictionSearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
 			@Override
@@ -248,29 +247,30 @@ public class MainView implements IsWidget {
     filterView = new PortalLayoutContainer(1);
     filterView.setSpacing(10);
     filterView.setColumnWidth(0, 1.00);
+    
 		searchText = new TextField();
 		searchTextPanel = new Portlet();
 		searchTextPanel.add(searchText);
 		searchTextPanel.setHeading("search for");
 //		filterView.add(searchTextPanel, 0);		
 
-		searchButton = new TextButton("search");
-		searchButton.addSelectHandler(new SelectHandler() {
-			
-			@Override
-			public void onSelect(SelectEvent event) {
-				for (AbstractSearchController s : getActiveFilters()) {
-					s.invokeSearch();
-				}
-			}
-		});
+//		searchButton = new TextButton("search");
+//		searchButton.addSelectHandler(new SelectHandler() {
+//			
+//			@Override
+//			public void onSelect(SelectEvent event) {
+//				for (AbstractSearchController s : getActiveFilters()) {
+//					s.invokeSearch();
+//				}
+//			}
+//		});
 		
     filterPanel = new ContentPanel();
     filterPanel.setResize(true);
     filterPanel.setHeading("Filter");
     filterPanel.add(filterView);
-    filterPanel.addButton(searchButton);
-    filterPanel.setButtonAlign(BoxLayoutPack.CENTER);
+//    filterPanel.addButton(searchButton);
+//    filterPanel.setButtonAlign(BoxLayoutPack.CENTER);
     
     BorderLayoutData northData = new BorderLayoutData(150);
     northData.setMargins(new Margins(5));

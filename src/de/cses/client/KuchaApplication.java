@@ -15,14 +15,18 @@ package de.cses.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.sencha.gxt.core.client.util.Margins;
+import com.sencha.gxt.widget.core.client.ProgressBar;
+import com.sencha.gxt.widget.core.client.container.CenterLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.container.Viewport;
+
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class KuchaApplication implements EntryPoint {
-
-
+	
 	/**
 	 * This is the entry point method.
 	 */
@@ -34,10 +38,27 @@ public class KuchaApplication implements EntryPoint {
 		 * content of all tabs will be updated in the background and look nice and
 		 * clean all the time
 		 */
-		MainView main = new MainView();
 		Viewport v = new Viewport();
-		v.add(main);
-		RootPanel.get().add(v); // use RootPanel, not RootLayoutPanel here!
+		CenterLayoutContainer c = new CenterLayoutContainer();
+		ProgressBar bar = new ProgressBar();
+		bar.setSize("250px", "50px");
+		c.add(bar);
+		
+		v.add(c);
+		StaticTables.createInstance(new StaticTables.ListsLoadedListener() {
+			
+			@Override
+			public void listsLoaded(double progressCounter) {
+				bar.updateProgress(progressCounter, Math.round(progressCounter * 100) + "% loaded");
+				if (progressCounter == 1.0) {
+					MainView main = new MainView();
+					v.remove(c);
+					v.add(main);
+					v.forceLayout();
+				}
+			}
+		});
+		RootPanel.get().add(v, 0, 0); // use RootPanel, not RootLayoutPanel here!
 	}
 
 }

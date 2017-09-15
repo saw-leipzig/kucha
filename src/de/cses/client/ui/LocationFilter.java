@@ -35,6 +35,7 @@ import com.sencha.gxt.widget.core.client.form.DualListField;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.StaticTables;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
@@ -101,10 +102,6 @@ public class LocationFilter extends AbstractFilter {
 	 */
 	public LocationFilter(String filterName) {
 		super(filterName);
-		siteProps = GWT.create(SiteProperties.class);
-		siteEntryList = new ListStore<SiteEntry>(siteProps.siteID());
-		selectedSitesList = new ListStore<SiteEntry>(siteProps.siteID());
-
 		regionProps = GWT.create(RegionProperties.class);
 		regionEntryList = new ListStore<RegionEntry>(regionProps.regionID());
 		selectedRegionsList = new ListStore<RegionEntry>(regionProps.regionID());
@@ -167,63 +164,31 @@ public class LocationFilter extends AbstractFilter {
 	 * 
 	 */
 	private void loadSites() {
-		dbService.getSites(new AsyncCallback<ArrayList<SiteEntry>>() {
+		siteProps = GWT.create(SiteProperties.class);
+		siteEntryList = new ListStore<SiteEntry>(siteProps.siteID());
+		selectedSitesList = new ListStore<SiteEntry>(siteProps.siteID());
 
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(ArrayList<SiteEntry> result) {
-				siteEntryList.clear();
-				for (SiteEntry se : result) {
-					siteEntryList.add(se);
-				}
-			}
-		});
+		for (SiteEntry se : StaticTables.getInstance().getSiteEntries().values()) {
+			siteEntryList.add(se);
+		}
 	}
 
 	/* 
 	 * 
 	 */
 	private void loadRegions() {
-		dbService.getRegions(new AsyncCallback<ArrayList<RegionEntry>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(ArrayList<RegionEntry> result) {
-				regionEntryList.clear();
-				for (RegionEntry re : result) {
-					regionEntryList.add(re);
-				}
-			}
-		});
+		for (RegionEntry re : StaticTables.getInstance().getRegionEntries().values()) {
+			regionEntryList.add(re);
+		}
 	}
 
 	/**
 	 * 
 	 */
 	private void loadDistricts() {
-		dbService.getDistricts(new AsyncCallback<ArrayList<DistrictEntry>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(ArrayList<DistrictEntry> result) {
-				districtEntryList.clear();
-				for (DistrictEntry de : result) {
-					districtEntryList.add(de);
-				}
-			}
-		});
+		for (DistrictEntry de : StaticTables.getInstance().getDistrictEntries().values()) {
+			districtEntryList.add(de);
+		}
 	}
 
 	/* (non-Javadoc)

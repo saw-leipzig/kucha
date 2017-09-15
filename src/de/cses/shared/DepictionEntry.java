@@ -40,7 +40,7 @@ public class DepictionEntry extends AbstractEntry {
 	private int absoluteTop;
 
 	public DepictionEntry() {
-		this(0, 0, "", "", "", "", "", "", "", "", 0, 0, 0, new Date(0), 0, 0, 0, 0, 0, 0);
+		this(0, 0, "", "", "", "", "", "", "", "", 0, 0, 0, null, 0, 0, 0, 0, 0, 0);
 	}
 
 	public DepictionEntry(int depictionID, int styleID, String inscriptions, String separateAksaras, String dating, String description, String backgroundColour,

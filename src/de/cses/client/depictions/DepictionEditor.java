@@ -65,6 +65,7 @@ import com.sencha.gxt.widget.core.client.form.validator.MinNumberValidator;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.StaticTables;
 import de.cses.client.images.ImageSelector;
 import de.cses.client.images.ImageSelectorListener;
 import de.cses.client.ui.AbstractEditor;
@@ -72,10 +73,12 @@ import de.cses.client.walls.WallSelector;
 import de.cses.client.walls.Walls;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
+import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.PictorialElementEntry;
+import de.cses.shared.SiteEntry;
 import de.cses.shared.StyleEntry;
 import de.cses.shared.VendorEntry;
 
@@ -101,7 +104,7 @@ public class DepictionEditor extends AbstractEditor {
 	protected ImageSelector imageSelector;
 	private FramedPanel mainPanel;
 	protected PopupPanel imageSelectionDialog;
-//	private ArrayList<DepictionEditorListener> listener;
+	// private ArrayList<DepictionEditorListener> listener;
 	private ListView<ImageEntry, ImageEntry> imageListView;
 	private ListStore<ImageEntry> imageEntryList;
 	private ImageProperties imgProperties;
@@ -143,8 +146,11 @@ public class DepictionEditor extends AbstractEditor {
 	}
 
 	interface CaveViewTemplates extends XTemplates {
-		@XTemplate("<div>{officialNumber}: {officialName}</div>")
-		SafeHtml caveLabel(String officialNumber, String officialName);
+		@XTemplate("<div>{siteName} {officialNumber}: {officialName}</div>")
+		SafeHtml caveLabel(String siteName, String officialNumber, String officialName);
+
+		@XTemplate("<div>{siteName} {officialNumber}</div>")
+		SafeHtml caveLabel(String siteName, String officialNumber);
 
 		@XTemplate("<div>{officialNumber}</div>")
 		SafeHtml caveLabel(String officialNumber);
@@ -174,6 +180,7 @@ public class DepictionEditor extends AbstractEditor {
 
 	interface StyleProperties extends PropertyAccess<StyleEntry> {
 		ModelKeyProvider<StyleEntry> styleID();
+
 		LabelProvider<StyleEntry> styleName();
 	}
 
@@ -184,13 +191,15 @@ public class DepictionEditor extends AbstractEditor {
 
 	interface ImageProperties extends PropertyAccess<ImageEntry> {
 		ModelKeyProvider<ImageEntry> imageID();
+
 		LabelProvider<ImageEntry> title();
+
 		ValueProvider<ImageEntry, String> shortName();
 	}
 
 	/**
-	 * creates the view how a thumbnail of an image entry will be shown currently we are relying on the url of the image until we have user
-	 * management implemented and protect images from being viewed from the outside without permission
+	 * creates the view how a thumbnail of an image entry will be shown currently we are relying on the url of the image until we have user management implemented
+	 * and protect images from being viewed from the outside without permission
 	 * 
 	 * @author alingnau
 	 *
@@ -209,8 +218,8 @@ public class DepictionEditor extends AbstractEditor {
 		} else {
 			correspondingDepictionEntry = new DepictionEntry();
 		}
-//		listener = new ArrayList<DepictionEditorListener>();
-//		listener.add(deListener);
+		// listener = new ArrayList<DepictionEditorListener>();
+		// listener.add(deListener);
 		peSelector = new PictorialElementSelector(correspondingDepictionEntry.getDepictionID());
 		imgProperties = GWT.create(ImageProperties.class);
 		imageEntryList = new ListStore<ImageEntry>(imgProperties.imageID());
@@ -237,23 +246,12 @@ public class DepictionEditor extends AbstractEditor {
 	 * 
 	 */
 	private void loadExpeditions() {
-		dbService.getExpeditions(new AsyncCallback<ArrayList<ExpeditionEntry>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(ArrayList<ExpeditionEntry> expedResults) {
-				for (ExpeditionEntry exped : expedResults) {
-					expedEntryList.add(exped);
-				}
-				if (correspondingDepictionEntry.getExpeditionID() > 0) {
-					expedSelection.setValue(expedEntryList.findModelWithKey(Integer.toString(correspondingDepictionEntry.getExpeditionID())));
-				}
-			}
-		});
+		for (ExpeditionEntry exped : StaticTables.getInstance().getExpeditionEntries().values()) {
+			expedEntryList.add(exped);
+		}
+		if (correspondingDepictionEntry.getExpeditionID() > 0) {
+			expedSelection.setValue(expedEntryList.findModelWithKey(Integer.toString(correspondingDepictionEntry.getExpeditionID())));
+		}
 	}
 
 	/**
@@ -283,23 +281,12 @@ public class DepictionEditor extends AbstractEditor {
 	 * 
 	 */
 	private void loadStyles() {
-		dbService.getStyles(new AsyncCallback<ArrayList<StyleEntry>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(ArrayList<StyleEntry> styleResults) {
-				for (StyleEntry se : styleResults) {
-					styleEntryList.add(se);
-				}
-				if (correspondingDepictionEntry.getStyleID() > 0) {
-					styleSelection.setValue(styleEntryList.findModelWithKey(Integer.toString(correspondingDepictionEntry.getStyleID())));
-				}
-			}
-		});
+		for (StyleEntry se : StaticTables.getInstance().getStyleEntries().values()) {
+			styleEntryList.add(se);
+		}
+		if (correspondingDepictionEntry.getStyleID() > 0) {
+			styleSelection.setValue(styleEntryList.findModelWithKey(Integer.toString(correspondingDepictionEntry.getStyleID())));
+		}
 	}
 
 	/**
@@ -406,10 +393,20 @@ public class DepictionEditor extends AbstractEditor {
 			@Override
 			public SafeHtml render(CaveEntry item) {
 				final CaveViewTemplates cvTemplates = GWT.create(CaveViewTemplates.class);
-				if ((item.getHistoricName() != null) && (item.getHistoricName().length() == 0)) {
-					return cvTemplates.caveLabel(item.getOfficialNumber());
+				StaticTables st = StaticTables.getInstance();
+				DistrictEntry de = null;
+				SiteEntry se = null;
+				de = st.getDistrictEntries().get(item.getDistrictID());
+				if (de != null) {
+					se = st.getSiteEntries().get(de.getSiteID());
+				}
+				// String site = "test";
+				if ((se != null) && (item.getHistoricName() != null) && (item.getHistoricName().length() > 0)) {
+					return cvTemplates.caveLabel(se.getName(), item.getOfficialNumber(), item.getHistoricName());
+				} else if (se != null) {
+					return cvTemplates.caveLabel(se.getName(), item.getOfficialNumber());
 				} else {
-					return cvTemplates.caveLabel(item.getOfficialNumber(), item.getHistoricName());
+					return cvTemplates.caveLabel(item.getOfficialNumber());
 				}
 			}
 		});
@@ -429,12 +426,12 @@ public class DepictionEditor extends AbstractEditor {
 		// TODO check if wall id is set, then set caveSelection.editable(false)
 		attributePanel.add(caveSelection);
 		// attributePanel.setWidth("40%");
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0/8));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0 / 8));
 
-//		attributePanel = new FramedPanel();
-//		attributePanel.setHeading("Belongs to wall");
-//		attributePanel.add(new Label("Wall selection"));
-//		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .1));
+		// attributePanel = new FramedPanel();
+		// attributePanel.setHeading("Belongs to wall");
+		// attributePanel.add(new Label("Wall selection"));
+		// vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .1));
 
 		HorizontalPanel dimPanel = new HorizontalPanel();
 		attributePanel = new FramedPanel();
@@ -467,7 +464,7 @@ public class DepictionEditor extends AbstractEditor {
 		});
 		attributePanel.add(heightField);
 		dimPanel.add(attributePanel);
-		vlContainer.add(dimPanel, new VerticalLayoutData(1.0, 1.0/8));
+		vlContainer.add(dimPanel, new VerticalLayoutData(1.0, 1.0 / 8));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Acquired by expedition");
@@ -500,7 +497,7 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		attributePanel.add(expedSelection);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0/8));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0 / 8));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Vendor");
@@ -525,20 +522,21 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		attributePanel.add(vendorSelection);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0/8));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0 / 8));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Date purchased");
 		purchaseDateField = new DateField(new DateTimePropertyEditor("yyyy"));
 		purchaseDateField.setValue(correspondingDepictionEntry.getPurchaseDate());
+		purchaseDateField.setEmptyText("please select year");
 		// TODO add change handler
 		attributePanel.add(purchaseDateField);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0/8));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0 / 8));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Current location");
 		// TODO add currentLocationID selector
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0/8));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0 / 8));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Background colour");
@@ -552,14 +550,14 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		attributePanel.add(backgroundColourField);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0/8));
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0 / 8));
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Material");
 		materialField = new TextField();
 		attributePanel.add(materialField);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0/8));
-		
+		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0 / 8));
+
 		hlContainer.add(vlContainer, new HorizontalLayoutData(.4, 1.0));
 
 		vlContainer = new VerticalLayoutContainer();
@@ -579,7 +577,7 @@ public class DepictionEditor extends AbstractEditor {
 				wallEditorDialog.setModal(true);
 				wallEditorDialog.center();
 				// TODO integrate WallEditor
-//				wallEditorDialog.show();
+				// wallEditorDialog.show();
 			}
 		});
 		attributePanel.addButton(wallEditorButton);
@@ -687,7 +685,7 @@ public class DepictionEditor extends AbstractEditor {
 		});
 		attributePanel.add(inscriptionsTestArea);
 		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
-		
+
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Separate Akṣaras");
 		separateAksarasTextArea = new TextArea();
@@ -701,11 +699,11 @@ public class DepictionEditor extends AbstractEditor {
 		});
 		attributePanel.add(separateAksarasTextArea);
 		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
-		
+
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Dating");
 		datingField = new TextField();
-//		datingField.setWidth(130);
+		// datingField.setWidth(130);
 		datingField.setText(correspondingDepictionEntry.getDating());
 		datingField.addValueChangeHandler(new ValueChangeHandler<String>() {
 
@@ -815,7 +813,7 @@ public class DepictionEditor extends AbstractEditor {
 				}
 			}
 		});
-		
+
 		FramedPanel depictionImagesPanel = new FramedPanel();
 		depictionImagesPanel.setHeading("Images");
 		depictionImagesPanel.add(lf);
@@ -900,22 +898,22 @@ public class DepictionEditor extends AbstractEditor {
 		mainPanel.addButton(cancelButton);
 	}
 
-//	/**
-//	 * Called when the save button is pressed. Calls <code>DepictionEditorListener.depictionSaved(null)<code>
-//	 */
-//	protected void cancelDepictionEditor() {
-//		Iterator<DepictionEditorListener> deIterator = listener.iterator();
-//		while (deIterator.hasNext()) {
-//			deIterator.next().depictionSaved(null);
-//		}
-//	}
+	// /**
+	// * Called when the save button is pressed. Calls <code>DepictionEditorListener.depictionSaved(null)<code>
+	// */
+	// protected void cancelDepictionEditor() {
+	// Iterator<DepictionEditorListener> deIterator = listener.iterator();
+	// while (deIterator.hasNext()) {
+	// deIterator.next().depictionSaved(null);
+	// }
+	// }
 
 	/**
 	 * Called when the save button is pressed. Calls <code>DepictionEditorListener.depictionSaved(correspondingDepictionEntry)<code>
 	 */
 	protected void saveDepictionEntry() {
 		ArrayList<ImageEntry> associatedImageEntryList = new ArrayList<ImageEntry>();
-		for (int i=0; i < imageEntryList.size(); ++i) {
+		for (int i = 0; i < imageEntryList.size(); ++i) {
 			associatedImageEntryList.add(imageEntryList.get(i));
 		}
 		ArrayList<PictorialElementEntry> selectedPEList = new ArrayList<PictorialElementEntry>();

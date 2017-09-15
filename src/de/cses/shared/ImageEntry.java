@@ -17,11 +17,12 @@ public class ImageEntry extends AbstractEntry {
 
 	private int imageID, photographerID, imageTypeID;
 	private String copyright, comment, filename, title, shortName, date;
+	private boolean publicImage;
 
 	public static final int FILENAME = 2;
 
 	public ImageEntry() {
-		this(0, "", "", "", "", 0, "", "", 1);
+		this(0, "", "", "", "", 0, "", "", 1, false);
 	}
 	
 	/**
@@ -35,7 +36,7 @@ public class ImageEntry extends AbstractEntry {
 	 * @param captureDate
 	 */
 	public ImageEntry(int imageID, String filename, String title, String shortName, String copyright,
-			int photographerID, String comment, String date, int imageTypeID) {
+			int photographerID, String comment, String date, int imageTypeID, boolean publicImage) {
 		this.imageID = imageID;
 		this.filename = filename;
 		this.title = title;
@@ -45,6 +46,7 @@ public class ImageEntry extends AbstractEntry {
 		this.comment = comment;
 		this.date = date;
 		this.setImageTypeID(imageTypeID);
+		setPublicImage(publicImage);
 	}
 
 	public int getImageID() {
@@ -157,5 +159,19 @@ public class ImageEntry extends AbstractEntry {
 	 */
 	public void setImageTypeID(int imageTypeID) {
 		this.imageTypeID = imageTypeID;
+	}
+
+	/**
+	 * @return the publicImage
+	 */
+	public boolean isPublicImage() {
+		return publicImage;
+	}
+
+	/**
+	 * @param publicImage the publicImage to set
+	 */
+	public void setPublicImage(boolean publicImage) {
+		this.publicImage = publicImage;
 	}
 }
