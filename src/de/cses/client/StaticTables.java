@@ -40,11 +40,11 @@ import de.cses.shared.StyleEntry;
  *
  */
 public class StaticTables {
-	
+
 	private static StaticTables instance = null;
 
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
-	
+
 	protected HashMap<Integer, SiteEntry> siteEntryMap;
 	protected HashMap<Integer, DistrictEntry> districtEntryMap;
 	protected HashMap<Integer, RegionEntry> regionEntryMap;
@@ -57,32 +57,48 @@ public class StaticTables {
 	protected HashMap<Integer, IconographyEntry> iconographyEntryMap;
 	protected HashMap<Integer, PictorialElementEntry> pictorialElementEntryMap;
 
+	private int loadCounter;
+
+	private ListsLoadedListener listener;
+
+	public interface ListsLoadedListener {
+		void listsLoaded(double progressCounter);
+	}
+
 	interface SiteProperties extends PropertyAccess<SiteEntry> {
 		ModelKeyProvider<SiteEntry> siteID();
+
 		LabelProvider<SiteEntry> name();
 	}
 
 	interface DistrictProperties extends PropertyAccess<DistrictEntry> {
 		ModelKeyProvider<DistrictEntry> districtID();
+
 		LabelProvider<DistrictEntry> name();
 	}
-	
+
 	interface RegionProperties extends PropertyAccess<RegionEntry> {
 		ModelKeyProvider<RegionEntry> regionID();
+
 		LabelProvider<RegionEntry> englishName();
 	}
 
 	public static synchronized StaticTables getInstance() {
-		if (instance == null) {
-			instance = new StaticTables();
-		}
 		return instance;
+	}
+
+	public static synchronized void createInstance(ListsLoadedListener l) {
+		if (instance == null) {
+			instance = new StaticTables(l);
+		}
 	}
 
 	/**
 	 * 
 	 */
-	private StaticTables() {
+	public StaticTables(ListsLoadedListener l) {
+		listener = l;
+		loadCounter = 11;
 		loadDistricts();
 		loadSites();
 		loadRegions();
@@ -96,7 +112,11 @@ public class StaticTables {
 		loadPictorialElements();
 	}
 
-	
+	private void listLoaded() {
+		--loadCounter;
+		listener.listsLoaded((11.0 - loadCounter) / 11.0);
+	}
+
 	/**
 	 * 
 	 */
@@ -106,6 +126,7 @@ public class StaticTables {
 
 			@Override
 			public void onFailure(Throwable caught) {
+				listLoaded();
 				caught.printStackTrace();
 			}
 
@@ -114,6 +135,7 @@ public class StaticTables {
 				for (SiteEntry se : result) {
 					siteEntryMap.put(se.getSiteID(), se);
 				}
+				listLoaded();
 			}
 		});
 	}
@@ -127,6 +149,7 @@ public class StaticTables {
 
 			@Override
 			public void onFailure(Throwable caught) {
+				listLoaded();
 				caught.printStackTrace();
 			}
 
@@ -135,6 +158,7 @@ public class StaticTables {
 				for (DistrictEntry de : result) {
 					districtEntryMap.put(de.getDistrictID(), de);
 				}
+				listLoaded();
 			}
 		});
 	}
@@ -148,6 +172,7 @@ public class StaticTables {
 
 			@Override
 			public void onFailure(Throwable caught) {
+				listLoaded();
 				caught.printStackTrace();
 			}
 
@@ -156,10 +181,11 @@ public class StaticTables {
 				for (RegionEntry re : result) {
 					regionEntryMap.put(re.getRegionID(), re);
 				}
+				listLoaded();
 			}
 		});
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -169,6 +195,7 @@ public class StaticTables {
 
 			@Override
 			public void onFailure(Throwable caught) {
+				listLoaded();
 				caught.printStackTrace();
 			}
 
@@ -177,16 +204,18 @@ public class StaticTables {
 				for (CaveTypeEntry cte : result) {
 					caveTypeEntryMap.put(cte.getCaveTypeID(), cte);
 				}
+				listLoaded();
 			}
 		});
 	}
-	
+
 	private void loadCeilingTypes() {
 		ceilingTypeEntryMap = new HashMap<Integer, CeilingTypeEntry>();
 		dbService.getCeilingTypes(new AsyncCallback<ArrayList<CeilingTypeEntry>>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
+				listLoaded();
 				caught.printStackTrace();
 			}
 
@@ -195,16 +224,18 @@ public class StaticTables {
 				for (CeilingTypeEntry cte : result) {
 					ceilingTypeEntryMap.put(cte.getCeilingTypeID(), cte);
 				}
-			}		
+				listLoaded();
+			}
 		});
 	}
-	
+
 	private void loadPreservationClassification() {
 		preservationClassificationEntryMap = new HashMap<Integer, PreservationClassificationEntry>();
 		dbService.getPreservationClassifications(new AsyncCallback<ArrayList<PreservationClassificationEntry>>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
+				listLoaded();
 				caught.printStackTrace();
 			}
 
@@ -213,17 +244,18 @@ public class StaticTables {
 				for (PreservationClassificationEntry pce : result) {
 					preservationClassificationEntryMap.put(pce.getPreservationClassificationID(), pce);
 				}
+				listLoaded();
 			}
 		});
 	}
-	
+
 	private void loadImageTypes() {
 		imageTypeEntryMap = new HashMap<Integer, ImageTypeEntry>();
 		dbService.getImageTypes(new AsyncCallback<ArrayList<ImageTypeEntry>>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				// TODO Auto-generated method stub
+				listLoaded();
 			}
 
 			@Override
@@ -231,10 +263,11 @@ public class StaticTables {
 				for (ImageTypeEntry ite : result) {
 					imageTypeEntryMap.put(ite.getImageTypeID(), ite);
 				}
+				listLoaded();
 			}
 		});
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -244,6 +277,7 @@ public class StaticTables {
 
 			@Override
 			public void onFailure(Throwable caught) {
+				listLoaded();
 				caught.printStackTrace();
 			}
 
@@ -252,6 +286,7 @@ public class StaticTables {
 				for (ExpeditionEntry exped : expedResults) {
 					expeditionEntryMap.put(exped.getExpeditionID(), exped);
 				}
+				listLoaded();
 			}
 		});
 	}
@@ -265,6 +300,7 @@ public class StaticTables {
 
 			@Override
 			public void onFailure(Throwable caught) {
+				listLoaded();
 				caught.printStackTrace();
 			}
 
@@ -273,16 +309,18 @@ public class StaticTables {
 				for (StyleEntry se : styleResults) {
 					styleEntryMap.put(se.getStyleID(), se);
 				}
+				listLoaded();
 			}
 		});
 	}
-	
+
 	private void loadIconography() {
 		iconographyEntryMap = new HashMap<Integer, IconographyEntry>();
 		dbService.getIconography(new AsyncCallback<ArrayList<IconographyEntry>>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
+				listLoaded();
 			}
 
 			@Override
@@ -290,28 +328,29 @@ public class StaticTables {
 				for (IconographyEntry ie : result) {
 					iconographyEntryMap.put(ie.getIconographyID(), ie);
 				}
+				listLoaded();
 			}
 		});
 	}
-	
+
 	private void loadPictorialElements() {
 		pictorialElementEntryMap = new HashMap<Integer, PictorialElementEntry>();
 		dbService.getPictorialElements(new AsyncCallback<ArrayList<PictorialElementEntry>>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
+				listLoaded();
 			}
 
 			@Override
 			public void onSuccess(ArrayList<PictorialElementEntry> peList) {
-
 				for (PictorialElementEntry item : peList) {
 					pictorialElementEntryMap.put(item.getPictorialElementID(), item);
 				}
+				listLoaded();
 			}
 		});
 	}
-	
 
 	public Map<Integer, DistrictEntry> getDistrictEntries() {
 		return districtEntryMap;
@@ -328,27 +367,27 @@ public class StaticTables {
 	public Map<Integer, CaveTypeEntry> getCaveTypeEntries() {
 		return caveTypeEntryMap;
 	}
-	
+
 	public Map<Integer, CeilingTypeEntry> getCeilingTypeEntries() {
 		return ceilingTypeEntryMap;
 	}
-	
+
 	public Map<Integer, PreservationClassificationEntry> getPreservationClassificationEntries() {
 		return preservationClassificationEntryMap;
 	}
-	
+
 	public Map<Integer, ImageTypeEntry> getImageTypeEntries() {
 		return imageTypeEntryMap;
 	}
-	
+
 	public Map<Integer, ExpeditionEntry> getExpeditionEntries() {
 		return expeditionEntryMap;
 	}
-	
+
 	public Map<Integer, StyleEntry> getStyleEntries() {
 		return styleEntryMap;
 	}
-	
+
 	public Map<Integer, IconographyEntry> getIconographyEntries() {
 		return iconographyEntryMap;
 	}

@@ -102,10 +102,6 @@ public class LocationFilter extends AbstractFilter {
 	 */
 	public LocationFilter(String filterName) {
 		super(filterName);
-		siteProps = GWT.create(SiteProperties.class);
-		siteEntryList = new ListStore<SiteEntry>(siteProps.siteID());
-		selectedSitesList = new ListStore<SiteEntry>(siteProps.siteID());
-
 		regionProps = GWT.create(RegionProperties.class);
 		regionEntryList = new ListStore<RegionEntry>(regionProps.regionID());
 		selectedRegionsList = new ListStore<RegionEntry>(regionProps.regionID());
@@ -168,6 +164,10 @@ public class LocationFilter extends AbstractFilter {
 	 * 
 	 */
 	private void loadSites() {
+		siteProps = GWT.create(SiteProperties.class);
+		siteEntryList = new ListStore<SiteEntry>(siteProps.siteID());
+		selectedSitesList = new ListStore<SiteEntry>(siteProps.siteID());
+
 		for (SiteEntry se : StaticTables.getInstance().getSiteEntries().values()) {
 			siteEntryList.add(se);
 		}

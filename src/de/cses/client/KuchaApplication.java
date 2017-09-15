@@ -15,7 +15,10 @@ package de.cses.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.sencha.gxt.widget.core.client.ProgressBar;
+import com.sencha.gxt.widget.core.client.container.CenterLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.Viewport;
+
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -33,10 +36,26 @@ public class KuchaApplication implements EntryPoint {
 		 * content of all tabs will be updated in the background and look nice and
 		 * clean all the time
 		 */
-		MainView main = new MainView();
-		StaticTables st = StaticTables.getInstance();
 		Viewport v = new Viewport();
-		v.add(main);
+		CenterLayoutContainer c = new CenterLayoutContainer();
+		ProgressBar bar = new ProgressBar();
+		bar.setSize("250px", "50px");
+		c.add(bar);
+		
+		v.add(c);
+		StaticTables.createInstance(new StaticTables.ListsLoadedListener() {
+			
+			@Override
+			public void listsLoaded(double progressCounter) {
+				bar.updateProgress(progressCounter, "% loaded");
+				if (progressCounter == 1.0) {
+					MainView main = new MainView();
+					v.remove(c);
+					v.add(main);
+					v.forceLayout();
+				}
+			}
+		});
 		RootPanel.get().add(v); // use RootPanel, not RootLayoutPanel here!
 	}
 
