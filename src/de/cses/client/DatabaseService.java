@@ -34,6 +34,7 @@ import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageTypeEntry;
 import de.cses.shared.MainChamberEntry;
 import de.cses.shared.MainTypologicalClass;
+import de.cses.shared.ModeOfRepresentationEntry;
 import de.cses.shared.OrientationEntry;
 import de.cses.shared.OrnamentCaveType;
 import de.cses.shared.OrnamentEntry;
@@ -180,6 +181,8 @@ public interface DatabaseService extends RemoteService {
 	int insertDepictionEntry(DepictionEntry depictionEntry, ArrayList<ImageEntry> imgEntryList, ArrayList<PictorialElementEntry> peEntryList) throws IllegalArgumentException;
 
 	boolean updateDepictionEntry(DepictionEntry correspondingDepictionEntry, ArrayList<ImageEntry> all,
-			ArrayList<PictorialElementEntry> selectedPE);
+			ArrayList<PictorialElementEntry> selectedPE) throws IllegalArgumentException;
+
+	ArrayList<ModeOfRepresentationEntry> getModesOfRepresentation() throws IllegalArgumentException;
 
 }

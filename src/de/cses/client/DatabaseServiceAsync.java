@@ -35,6 +35,7 @@ import de.cses.shared.ImageTypeEntry;
 import de.cses.shared.MainChamberEntry;
 import de.cses.shared.OrientationEntry;
 import de.cses.shared.MainTypologicalClass;
+import de.cses.shared.ModeOfRepresentationEntry;
 import de.cses.shared.OrnamentCaveType;
 import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamentFunction;
@@ -200,9 +201,11 @@ public interface DatabaseServiceAsync {
 	void getImageTypes(AsyncCallback<ArrayList<ImageTypeEntry>> asyncCallback) throws IllegalArgumentException;
 
 	void insertDepictionEntry(DepictionEntry depictionEntry, ArrayList<ImageEntry> imgEntryList, ArrayList<PictorialElementEntry> peEntryList,
-			AsyncCallback<Integer> asyncCallback);
+			AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 
 	void updateDepictionEntry(DepictionEntry correspondingDepictionEntry, ArrayList<ImageEntry> all, ArrayList<PictorialElementEntry> selectedPE,
 			AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
+
+	void getModesOfRepresentation(AsyncCallback<ArrayList<ModeOfRepresentationEntry>> asyncCallback) throws IllegalArgumentException;
 
 	}

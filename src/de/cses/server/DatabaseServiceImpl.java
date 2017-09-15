@@ -35,6 +35,7 @@ import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageTypeEntry;
 import de.cses.shared.MainChamberEntry;
 import de.cses.shared.MainTypologicalClass;
+import de.cses.shared.ModeOfRepresentationEntry;
 import de.cses.shared.OrientationEntry;
 import de.cses.shared.OrnamentCaveType;
 import de.cses.shared.OrnamentEntry;
@@ -513,6 +514,15 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 			ArrayList<PictorialElementEntry> selectedPE) {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.updateDepictionEntry(correspondingDepictionEntry, all, selectedPE);
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#getModesOfRepresentation()
+	 */
+	@Override
+	public ArrayList<ModeOfRepresentationEntry> getModesOfRepresentation() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getModesOfRepresentations();
 	}
 
 }
