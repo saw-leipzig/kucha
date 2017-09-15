@@ -23,7 +23,6 @@ import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
-import com.sencha.gxt.widget.core.client.Header;
 import com.sencha.gxt.widget.core.client.Portlet;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
@@ -98,7 +97,7 @@ public class MainView implements IsWidget {
 	}
 	
 	private void initView() {
-    final boolean borders = true;
+    boolean borders = true;
     
     northPanel = new VerticalLayoutContainer();
 

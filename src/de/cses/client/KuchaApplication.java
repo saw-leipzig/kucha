@@ -15,8 +15,10 @@ package de.cses.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.widget.core.client.ProgressBar;
 import com.sencha.gxt.widget.core.client.container.CenterLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.container.Viewport;
 
 
@@ -47,7 +49,7 @@ public class KuchaApplication implements EntryPoint {
 			
 			@Override
 			public void listsLoaded(double progressCounter) {
-				bar.updateProgress(progressCounter, "% loaded");
+				bar.updateProgress(progressCounter, Math.round(progressCounter * 100) + "% loaded");
 				if (progressCounter == 1.0) {
 					MainView main = new MainView();
 					v.remove(c);
@@ -56,7 +58,7 @@ public class KuchaApplication implements EntryPoint {
 				}
 			}
 		});
-		RootPanel.get().add(v); // use RootPanel, not RootLayoutPanel here!
+		RootPanel.get().add(v, 0, 0); // use RootPanel, not RootLayoutPanel here!
 	}
 
 }
