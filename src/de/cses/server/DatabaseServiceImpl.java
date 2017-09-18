@@ -27,6 +27,7 @@ import de.cses.shared.CaveGroupEntry;
 import de.cses.shared.CavePart;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
+import de.cses.shared.ChamberTypeEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
@@ -54,6 +55,7 @@ import de.cses.shared.StyleEntry;
 import de.cses.shared.UserEntry;
 import de.cses.shared.VendorEntry;
 import de.cses.shared.WallEntry;
+import de.cses.shared.WallLocationEntry;
 
 /**
  * The server-side implementation of the RPC service.
@@ -523,6 +525,24 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public ArrayList<ModeOfRepresentationEntry> getModesOfRepresentation() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getModesOfRepresentations();
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#getChamberTypes()
+	 */
+	@Override
+	public ArrayList<ChamberTypeEntry> getChamberTypes() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getChamberTypes();
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#getWallLocations()
+	 */
+	@Override
+	public ArrayList<WallLocationEntry> getWallLocations() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getWallLocations();
 	}
 
 }

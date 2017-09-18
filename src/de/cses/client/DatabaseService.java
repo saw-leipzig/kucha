@@ -14,7 +14,6 @@
 package de.cses.client;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -26,6 +25,7 @@ import de.cses.shared.CaveGroupEntry;
 import de.cses.shared.CavePart;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
+import de.cses.shared.ChamberTypeEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
@@ -53,6 +53,7 @@ import de.cses.shared.StyleEntry;
 import de.cses.shared.UserEntry;
 import de.cses.shared.VendorEntry;
 import de.cses.shared.WallEntry;
+import de.cses.shared.WallLocationEntry;
 
 /**
  * The client-side stub for the RPC service.
@@ -184,5 +185,9 @@ public interface DatabaseService extends RemoteService {
 			ArrayList<PictorialElementEntry> selectedPE) throws IllegalArgumentException;
 
 	ArrayList<ModeOfRepresentationEntry> getModesOfRepresentation() throws IllegalArgumentException;
+
+	ArrayList<ChamberTypeEntry> getChamberTypes() throws IllegalArgumentException;
+
+	ArrayList<WallLocationEntry> getWallLocations() throws IllegalArgumentException;
 
 }

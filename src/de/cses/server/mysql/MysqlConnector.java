@@ -31,6 +31,7 @@ import de.cses.shared.CaveGroupEntry;
 import de.cses.shared.CavePart;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
+import de.cses.shared.ChamberTypeEntry;
 import de.cses.shared.CorridorEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
@@ -59,6 +60,7 @@ import de.cses.shared.StyleEntry;
 import de.cses.shared.UserEntry;
 import de.cses.shared.VendorEntry;
 import de.cses.shared.WallEntry;
+import de.cses.shared.WallLocationEntry;
 
 /**
  * This is the central Database connector. Here are all methods that we need for standard database operations, including user login and
@@ -1569,7 +1571,7 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Walls");
 			while (rs.next()) {
-				result = new WallEntry(rs.getInt("WallID"));
+				result = new WallEntry(rs.getInt("WallID"), rs.getInt("CaveID"), rs.getInt("WallLocationID"), rs.getInt("PreservationClassificationID"), rs.getDouble("Width"), rs.getDouble("Height"));
 				walls.add(result);
 			}
 			rs.close();
@@ -1578,6 +1580,45 @@ public class MysqlConnector {
 			e.printStackTrace();
 		}
 		return walls;
+	}
+
+	public WallEntry getWall(int wallID) {
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		WallEntry result = null;
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM Walls WHERE WallID=?");
+			pstmt.setInt(1, wallID);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.first()) {
+				result = new WallEntry(rs.getInt("WallID"), rs.getInt("CaveID"), rs.getInt("WallLocationID"), rs.getInt("PreservationClassificationID"), rs.getDouble("Width"), rs.getDouble("Height"));
+			}
+			pstmt.close();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			return null;
+		}
+		return result;
+	}
+
+	public WallEntry getWall(int caveID, int wallLocationID) {
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		WallEntry result = null;
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM Walls WHERE CaveID=? AND WallLocationID=?");
+			pstmt.setInt(1, caveID);
+			pstmt.setInt(2, wallLocationID);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.first()) {
+				result = new WallEntry(rs.getInt("WallID"), rs.getInt("CaveID"), rs.getInt("WallLocationID"), rs.getInt("PreservationClassificationID"), rs.getDouble("Width"), rs.getDouble("Height"));
+			}
+			pstmt.close();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			return null;
+		}
+		return result;
 	}
 
 	public ArrayList<StructureOrganization> getStructureOrganizations() {
@@ -2086,6 +2127,50 @@ public class MysqlConnector {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM ModesOfRepresentation");
 			while (rs.next()) {
 				result.add(new ModeOfRepresentationEntry(rs.getInt("ModeOfRepresentationID"), rs.getString("Name")));
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	/**
+	 * @return
+	 */
+	public ArrayList<ChamberTypeEntry> getChamberTypes() {
+		ArrayList<ChamberTypeEntry> result = new ArrayList<ChamberTypeEntry>();
+		Connection dbc = getConnection();
+
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM ChamberTypes");
+			while (rs.next()) {
+				result.add(new ChamberTypeEntry(rs.getInt("ChamberTypeID"), rs.getString("Label")));
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	/**
+	 * @return
+	 */
+	public ArrayList<WallLocationEntry> getWallLocations() {
+		ArrayList<WallLocationEntry> result = new ArrayList<WallLocationEntry>();
+		Connection dbc = getConnection();
+
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM WallLocations");
+			while (rs.next()) {
+				result.add(new WallLocationEntry(rs.getInt("WallLocationID"), rs.getString("Label")));
 			}
 			rs.close();
 			stmt.close();

@@ -26,6 +26,7 @@ import de.cses.shared.CaveGroupEntry;
 import de.cses.shared.CavePart;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
+import de.cses.shared.ChamberTypeEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
@@ -53,6 +54,7 @@ import de.cses.shared.StyleEntry;
 import de.cses.shared.UserEntry;
 import de.cses.shared.VendorEntry;
 import de.cses.shared.WallEntry;
+import de.cses.shared.WallLocationEntry;
 
 public interface DatabaseServiceAsync {
 
@@ -207,5 +209,9 @@ public interface DatabaseServiceAsync {
 			AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
 	void getModesOfRepresentation(AsyncCallback<ArrayList<ModeOfRepresentationEntry>> asyncCallback) throws IllegalArgumentException;
+
+	void getChamberTypes(AsyncCallback<ArrayList<ChamberTypeEntry>> asyncCallback) throws IllegalArgumentException;
+
+	void getWallLocations(AsyncCallback<ArrayList<WallLocationEntry>> asyncCallback) throws IllegalArgumentException;
 
 	}

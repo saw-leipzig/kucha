@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 
+ * Copyright 2016-2017
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -13,41 +13,87 @@
  */
 package de.cses.shared;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
+public class WallEntry extends AbstractEntry {
 
-public class WallEntry implements IsSerializable{
-	
-	private int socketBorderID;
-	private int corniceBorderID;
 	private int wallID;
+	private int caveID;
+	private int wallLocationID;
+	private int preservationClassificationID;
+	double width, height;
 	
 	public WallEntry(){
-		
-	}
-	public WallEntry(int wallID){
-		this.wallID= wallID;
+		this(0, 0, 0, 0, 0.0, 0.0);
 	}
 	
-	public int getSocketBorderID() {
-		return socketBorderID;
+	public WallEntry(int wallID, int caveID, int wallLocationID, int preservationClassificationID, double width, double height) {
+		setWallID(wallID);
+		setCaveID(caveID);
+		setWallLocationID(wallLocationID);
+		setPreservationClassificationID(preservationClassificationID);
+		setWidth(width);
+		setHeight(height);
 	}
-	public void setSocketBorderID(int socketBorderID) {
-		this.socketBorderID = socketBorderID;
+	
+	/* (non-Javadoc)
+	 * @see de.cses.shared.AbstractEntry#getUniqueID()
+	 */
+	@Override
+	public String getUniqueID() {
+		return "Wall_" + wallID;
 	}
-	public int getCorniceBorderID() {
-		return corniceBorderID;
-	}
-	public void setCorniceBorderID(int corniceBorderID) {
-		this.corniceBorderID = corniceBorderID;
-	}
+
 	public int getWallID() {
 		return wallID;
 	}
+
 	public void setWallID(int wallID) {
 		this.wallID = wallID;
 	}
-	public int getWallIDLabel() {
-		return wallID;
+
+	public int getCaveID() {
+		return caveID;
+	}
+
+	public void setCaveID(int caveID) {
+		this.caveID = caveID;
+	}
+
+	public int getWallLocationID() {
+		return wallLocationID;
+	}
+
+	public void setWallLocationID(int wallLocationID) {
+		this.wallLocationID = wallLocationID;
+	}
+
+	public double getWidth() {
+		return width;
+	}
+
+	public void setWidth(double width) {
+		this.width = width;
+	}
+
+	public double getHeight() {
+		return height;
+	}
+
+	public void setHeight(double height) {
+		this.height = height;
+	}
+
+	/**
+	 * @return the preservationClassificationID
+	 */
+	public int getPreservationClassificationID() {
+		return preservationClassificationID;
+	}
+
+	/**
+	 * @param preservationClassificationID the preservationClassificationID to set
+	 */
+	public void setPreservationClassificationID(int preservationClassificationID) {
+		this.preservationClassificationID = preservationClassificationID;
 	}
 	
 
