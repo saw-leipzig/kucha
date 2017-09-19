@@ -177,10 +177,13 @@ public interface DatabaseServiceAsync {
 	
 	void getWalls (AsyncCallback<ArrayList<WallEntry>> asyncCallback) throws IllegalArgumentException;
 	
+	void getWall(int wallID, AsyncCallback<WallEntry> callback) throws IllegalArgumentException;
+
+	void getWall(int caveID, int wallLocationID, AsyncCallback<WallEntry> callback) throws IllegalArgumentException;
+
 	void getOrnamentPositions (AsyncCallback<ArrayList<OrnamentPosition>> asyncCallback) throws IllegalArgumentException;
 	
 	void getOrnamentFunctions (AsyncCallback<ArrayList<OrnamentFunction>> asyncCallback) throws IllegalArgumentException;
-	
 
 	void getOrnamentsWHERE(String sqlWhere, AsyncCallback<ArrayList<OrnamentEntry>> asyncCallback) throws IllegalArgumentException;
 

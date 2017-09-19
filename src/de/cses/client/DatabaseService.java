@@ -144,7 +144,11 @@ public interface DatabaseService extends RemoteService {
 	ArrayList<OrnamentCaveType> getOrnamentCaveTypes() throws IllegalArgumentException;
 	
 	ArrayList<WallEntry> getWalls() throws IllegalArgumentException;
-	
+
+	WallEntry getWall(int wallID) throws IllegalArgumentException;
+
+	WallEntry getWall(int caveID, int wallLocationID) throws IllegalArgumentException;
+
 	ArrayList<OrnamentFunction> getOrnamentFunctions() throws IllegalArgumentException;
 	
 	ArrayList<OrnamentPosition> getOrnamentPositions() throws IllegalArgumentException;

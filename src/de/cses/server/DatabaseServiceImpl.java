@@ -390,10 +390,12 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getWalls();
 	}
+	
 	public ArrayList<OrnamentEntry> getOrnamentsWHERE(String sqlWhere) {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getOrnamentsWHERE(sqlWhere);
 	}
+	
 	public ArrayList<PictorialElementEntry> getPictorialElementsObjects() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getPictorialElements(5); // start with the 5th element subtree
@@ -543,6 +545,24 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public ArrayList<WallLocationEntry> getWallLocations() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getWallLocations();
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#getWall(int)
+	 */
+	@Override
+	public WallEntry getWall(int wallID) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getWall(wallID);
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#getWall(int, int)
+	 */
+	@Override
+	public WallEntry getWall(int caveID, int wallLocationID) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getWall(caveID, wallLocationID);
 	}
 
 }
