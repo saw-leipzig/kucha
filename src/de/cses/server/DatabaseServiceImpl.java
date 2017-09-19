@@ -530,15 +530,6 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	}
 
 	/* (non-Javadoc)
-	 * @see de.cses.client.DatabaseService#getChamberTypes()
-	 */
-	@Override
-	public ArrayList<ChamberTypeEntry> getChamberTypes() throws IllegalArgumentException {
-		MysqlConnector connector = MysqlConnector.getInstance();
-		return connector.getChamberTypes();
-	}
-
-	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getWallLocations()
 	 */
 	@Override

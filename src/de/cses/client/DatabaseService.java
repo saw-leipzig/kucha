@@ -190,8 +190,6 @@ public interface DatabaseService extends RemoteService {
 
 	ArrayList<ModeOfRepresentationEntry> getModesOfRepresentation() throws IllegalArgumentException;
 
-	ArrayList<ChamberTypeEntry> getChamberTypes() throws IllegalArgumentException;
-
 	ArrayList<WallLocationEntry> getWallLocations() throws IllegalArgumentException;
 
 }

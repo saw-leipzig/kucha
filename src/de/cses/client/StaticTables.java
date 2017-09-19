@@ -61,7 +61,6 @@ public class StaticTables {
 	protected HashMap<Integer, IconographyEntry> iconographyEntryMap;
 	protected HashMap<Integer, PictorialElementEntry> pictorialElementEntryMap;
 	protected HashMap<Integer, ModeOfRepresentationEntry> modesOfRepresentationEntryMap;
-	protected HashMap<Integer, ChamberTypeEntry> chamberTypeEntryMap;
 	protected HashMap<Integer, WallLocationEntry> wallLocationEntryMap;
 
 	private int loadCounter;
@@ -87,7 +86,7 @@ public class StaticTables {
 	 */
 	public StaticTables(ListsLoadedListener l) {
 		listener = l;
-		loadCounter = 14;
+		loadCounter = 13;
 		loadDistricts();
 		loadSites();
 		loadRegions();
@@ -100,12 +99,12 @@ public class StaticTables {
 		loadIconography();
 		loadPictorialElements();
 		loadModesOfRepresentation();
-		loadChamberTypes();
+		loadWallLocations();
 	}
 
 	private void listLoaded() {
 		--loadCounter;
-		listener.listsLoaded((14.0 - loadCounter) / 14.0);
+		listener.listsLoaded((13.0 - loadCounter) / 13.0);
 	}
 
 	/**
@@ -362,25 +361,6 @@ public class StaticTables {
 		});
 	}
 	
-	private void loadChamberTypes() {
-		chamberTypeEntryMap = new HashMap<Integer, ChamberTypeEntry>();
-		dbService.getChamberTypes(new AsyncCallback<ArrayList<ChamberTypeEntry>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				listLoaded();
-			}
-
-			@Override
-			public void onSuccess(ArrayList<ChamberTypeEntry> result) {
-				for (ChamberTypeEntry entry : result) {
-					chamberTypeEntryMap.put(entry.getChamberTypeID(), entry);
-				}
-				listLoaded();
-			}
-		});
-	}
-	
 	private void loadWallLocations() {
 		wallLocationEntryMap = new HashMap<Integer, WallLocationEntry>();
 		dbService.getWallLocations(new AsyncCallback<ArrayList<WallLocationEntry>>() {
@@ -448,7 +428,4 @@ public class StaticTables {
 		return modesOfRepresentationEntryMap;
 	}
 	
-	public Map<Integer, ChamberTypeEntry> getChamberTypeEntries() {
-		return chamberTypeEntryMap;
-	}
 }

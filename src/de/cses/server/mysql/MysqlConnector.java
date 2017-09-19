@@ -2139,28 +2139,6 @@ public class MysqlConnector {
 	/**
 	 * @return
 	 */
-	public ArrayList<ChamberTypeEntry> getChamberTypes() {
-		ArrayList<ChamberTypeEntry> result = new ArrayList<ChamberTypeEntry>();
-		Connection dbc = getConnection();
-
-		Statement stmt;
-		try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM ChamberTypes");
-			while (rs.next()) {
-				result.add(new ChamberTypeEntry(rs.getInt("ChamberTypeID"), rs.getString("Label")));
-			}
-			rs.close();
-			stmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return result;
-	}
-
-	/**
-	 * @return
-	 */
 	public ArrayList<WallLocationEntry> getWallLocations() {
 		ArrayList<WallLocationEntry> result = new ArrayList<WallLocationEntry>();
 		Connection dbc = getConnection();

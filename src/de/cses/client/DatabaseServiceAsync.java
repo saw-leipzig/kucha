@@ -213,8 +213,6 @@ public interface DatabaseServiceAsync {
 
 	void getModesOfRepresentation(AsyncCallback<ArrayList<ModeOfRepresentationEntry>> asyncCallback) throws IllegalArgumentException;
 
-	void getChamberTypes(AsyncCallback<ArrayList<ChamberTypeEntry>> asyncCallback) throws IllegalArgumentException;
-
 	void getWallLocations(AsyncCallback<ArrayList<WallLocationEntry>> asyncCallback) throws IllegalArgumentException;
 
 	}
