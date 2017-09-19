@@ -22,7 +22,7 @@ import java.util.Arrays;
  */
 public class CaveAreaEntry extends AbstractEntry {
 	
-	class Ceiling {
+	public static class Ceiling {
 		protected int ceilingTypeID;
 		protected int preservationClassificationID;
 		
@@ -34,6 +34,14 @@ public class CaveAreaEntry extends AbstractEntry {
 			this.ceilingTypeID = ceilingTypeID;
 			this.preservationClassificationID = preservationClassificationID;
 		}
+
+		public int getCeilingTypeID() {
+			return ceilingTypeID;
+		}
+
+		public int getPreservationClassificationID() {
+			return preservationClassificationID;
+		}
 	}
 
 	protected final ArrayList<String> caveAreaLabels = new ArrayList<String>(Arrays.asList("antechamber", "main chamber", "main chamber corridor",
@@ -42,7 +50,7 @@ public class CaveAreaEntry extends AbstractEntry {
 	private int caveAreaID;
 	private int caveID;
 	private String caveAreaLabel;
-	private int height, width, depth;
+	private double height, width, depth;
 	private int preservationClassificationID;
 	private ArrayList<Ceiling> ceilings;
 
@@ -50,7 +58,7 @@ public class CaveAreaEntry extends AbstractEntry {
 	 * 
 	 */
 	public CaveAreaEntry() {
-		this(0, "", 0, 0, 0, 0);
+		this(0, 0, "", 0, 0, 0, 0);
 	}
 
 	/**
@@ -61,14 +69,15 @@ public class CaveAreaEntry extends AbstractEntry {
 	 * @param depth
 	 * @param preservationClassificationID
 	 */
-	public CaveAreaEntry(int caveID, String caveAreaLabel, int height, int width, int depth, int preservationClassificationID) {
-		super();
+	public CaveAreaEntry(int caveAreaID, int caveID, String caveAreaLabel, double height, double width, double depth, int preservationClassificationID) {
+		this.caveAreaID = caveAreaID;
 		this.caveID = caveID;
 		this.caveAreaLabel = caveAreaLabel;
 		this.height = height;
 		this.width = width;
 		this.depth = depth;
 		this.preservationClassificationID = preservationClassificationID;
+		ceilings = new ArrayList<Ceiling>();
 	}
 
 	/*
@@ -116,27 +125,27 @@ public class CaveAreaEntry extends AbstractEntry {
 		}
 	}
 
-	public int getHeight() {
+	public double getHeight() {
 		return height;
 	}
 
-	public void setHeight(int height) {
+	public void setHeight(double height) {
 		this.height = height;
 	}
 
-	public int getWidth() {
+	public double getWidth() {
 		return width;
 	}
 
-	public void setWidth(int width) {
+	public void setWidth(double width) {
 		this.width = width;
 	}
 
-	public int getDepth() {
+	public double getDepth() {
 		return depth;
 	}
 
-	public void setDepth(int depth) {
+	public void setDepth(double depth) {
 		this.depth = depth;
 	}
 

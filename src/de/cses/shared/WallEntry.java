@@ -13,41 +13,53 @@
  */
 package de.cses.shared;
 
-public class WallEntry extends AbstractEntry {
+import java.util.ArrayList;
+import java.util.Arrays;
 
-	private int wallID;
+public class WallEntry extends AbstractEntry {
+	
+	protected final ArrayList<String> locations = new ArrayList<String>(
+			Arrays.asList("antechamber front wall", "antechamber left wall", "antechamber rear wall", "antechamber right wall",
+					"main chamber corridor inner wall", "main chamber corridor outer wall", "main chamber front wall", "main chamber left wall",
+					"main chamber rear wall", "main chamber right wall", "rear area left corridor inner wall", "rear area left corridor outer wall",
+					"rear area right corridor inner wall", "rear area right corridor outer wall", "rear chamber inner wall", "rear chamber left wall",
+					"rear chamber outer wall", "rear chamber right wall"));
+
 	private int caveID;
-	private int wallLocationID;
+	private String locationLabel;
 	private int preservationClassificationID;
 	double width, height;
 	
 	public WallEntry(){
-		this(0, 0, 0, 0, 0.0, 0.0);
+		this(0, "", 0, 0.0, 0.0);
 	}
 	
-	public WallEntry(int wallID, int caveID, int wallLocationID, int preservationClassificationID, double width, double height) {
-		setWallID(wallID);
-		setCaveID(caveID);
-		setWallLocationID(wallLocationID);
-		setPreservationClassificationID(preservationClassificationID);
-		setWidth(width);
-		setHeight(height);
-	}
 	
+	/**
+	 * @param caveID
+	 * @param wallLocationID
+	 * @param locationLabel
+	 * @param preservationClassificationID
+	 * @param width
+	 * @param height
+	 */
+	public WallEntry(int caveID, String locationLabel, int preservationClassificationID, double width, double height) {
+		super();
+		this.caveID = caveID;
+		this.locationLabel = locationLabel;
+		this.preservationClassificationID = preservationClassificationID;
+		this.width = width;
+		this.height = height;
+	}
+
+
+
 	/* (non-Javadoc)
 	 * @see de.cses.shared.AbstractEntry#getUniqueID()
 	 */
 	@Override
 	public String getUniqueID() {
-		return "Wall_" + wallID;
-	}
-
-	public int getWallID() {
-		return wallID;
-	}
-
-	public void setWallID(int wallID) {
-		this.wallID = wallID;
+		return "Wall_" + caveID + "_" + locationLabel;
 	}
 
 	public int getCaveID() {
@@ -56,14 +68,6 @@ public class WallEntry extends AbstractEntry {
 
 	public void setCaveID(int caveID) {
 		this.caveID = caveID;
-	}
-
-	public int getWallLocationID() {
-		return wallLocationID;
-	}
-
-	public void setWallLocationID(int wallLocationID) {
-		this.wallLocationID = wallLocationID;
 	}
 
 	public double getWidth() {
@@ -94,6 +98,25 @@ public class WallEntry extends AbstractEntry {
 	 */
 	public void setPreservationClassificationID(int preservationClassificationID) {
 		this.preservationClassificationID = preservationClassificationID;
+	}
+
+	/**
+	 * @return the locationLabel
+	 */
+	public String getLocationLabel() {
+		return locationLabel;
+	}
+
+	/**
+	 * @param locationLabel the locationLabel to set
+	 */
+	public boolean setLocationLabel(String locationLabel) {
+		if (locations.contains(locationLabel)) {
+			this.locationLabel = locationLabel;
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 

@@ -243,7 +243,8 @@ ClickHandler saveHandler = new ClickHandler(){
 		}
 		
 		relation.setNotes(notes.getText());
-		relation.setWallID(wallsComboBox.getValue().getWallID());
+		// TODO wallsConboBox needs to be build and added
+//		relation.setWallID(wallsComboBox.getValue().getLocationLabel());
 		ornamentCaveRelation.getWallsListStore().add(relation);
 		popup.hide();
 	}

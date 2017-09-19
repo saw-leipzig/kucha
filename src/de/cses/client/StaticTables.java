@@ -61,7 +61,6 @@ public class StaticTables {
 	protected HashMap<Integer, IconographyEntry> iconographyEntryMap;
 	protected HashMap<Integer, PictorialElementEntry> pictorialElementEntryMap;
 	protected HashMap<Integer, ModeOfRepresentationEntry> modesOfRepresentationEntryMap;
-	protected HashMap<Integer, WallLocationEntry> wallLocationEntryMap;
 
 	private int loadCounter;
 
@@ -86,7 +85,7 @@ public class StaticTables {
 	 */
 	public StaticTables(ListsLoadedListener l) {
 		listener = l;
-		loadCounter = 13;
+		loadCounter = 12;
 		loadDistricts();
 		loadSites();
 		loadRegions();
@@ -99,12 +98,11 @@ public class StaticTables {
 		loadIconography();
 		loadPictorialElements();
 		loadModesOfRepresentation();
-		loadWallLocations();
 	}
 
 	private void listLoaded() {
 		--loadCounter;
-		listener.listsLoaded((13.0 - loadCounter) / 13.0);
+		listener.listsLoaded((12.0 - loadCounter) / 12.0);
 	}
 
 	/**
@@ -361,25 +359,6 @@ public class StaticTables {
 		});
 	}
 	
-	private void loadWallLocations() {
-		wallLocationEntryMap = new HashMap<Integer, WallLocationEntry>();
-		dbService.getWallLocations(new AsyncCallback<ArrayList<WallLocationEntry>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				listLoaded();
-			}
-
-			@Override
-			public void onSuccess(ArrayList<WallLocationEntry> result) {
-				for (WallLocationEntry entry : result) {
-					wallLocationEntryMap.put(entry.getWallLocationID(), entry);
-				}
-				listLoaded();
-			}
-		});
-	}
-
 	public Map<Integer, DistrictEntry> getDistrictEntries() {
 		return districtEntryMap;
 	}

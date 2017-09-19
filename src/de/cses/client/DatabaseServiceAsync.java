@@ -177,9 +177,7 @@ public interface DatabaseServiceAsync {
 	
 	void getWalls (AsyncCallback<ArrayList<WallEntry>> asyncCallback) throws IllegalArgumentException;
 	
-	void getWall(int wallID, AsyncCallback<WallEntry> callback) throws IllegalArgumentException;
-
-	void getWall(int caveID, int wallLocationID, AsyncCallback<WallEntry> callback) throws IllegalArgumentException;
+	void getWall(int caveID, String locationLabel, AsyncCallback<WallEntry> callback);
 
 	void getOrnamentPositions (AsyncCallback<ArrayList<OrnamentPosition>> asyncCallback) throws IllegalArgumentException;
 	
@@ -213,6 +211,6 @@ public interface DatabaseServiceAsync {
 
 	void getModesOfRepresentation(AsyncCallback<ArrayList<ModeOfRepresentationEntry>> asyncCallback) throws IllegalArgumentException;
 
-	void getWallLocations(AsyncCallback<ArrayList<WallLocationEntry>> asyncCallback) throws IllegalArgumentException;
+	void getWalls(int caveID, AsyncCallback<ArrayList<WallEntry>> callback);
 
 	}
