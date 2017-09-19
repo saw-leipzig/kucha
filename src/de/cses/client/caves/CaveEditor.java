@@ -42,6 +42,7 @@ import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.Slider;
 import com.sencha.gxt.widget.core.client.TabPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
@@ -93,7 +94,7 @@ public class CaveEditor extends AbstractEditor {
 	private PreservationClassificationViewTemplates pcvt;
 
 	private TextField officialNumberField;
-	private TextField historicNameField;
+	private TextField historicalNameField;
 	private TextField optionalHistoricNameField;
 	private ComboBox<DistrictEntry> districtSelection;
 	private ComboBox<RegionEntry> regionSelection;
@@ -499,11 +500,10 @@ public class CaveEditor extends AbstractEditor {
 
 	private void initPanel() {
 		// all fields added are encapsulated by a FramedPanel
-		FramedPanel attributePanel;
 
 		mainPanel = new FramedPanel();
 		mainPanel.setHeading("Cave Editor");
-		mainPanel.setSize("800px", "650px"); // here we set the size of the panel
+		mainPanel.setSize("800px", "600px"); // here we set the size of the panel
 
 		TabPanel tabPanel = new TabPanel();
 		tabPanel.setTabScroll(false);
@@ -518,8 +518,8 @@ public class CaveEditor extends AbstractEditor {
 		 */
 		VerticalLayoutContainer mainInformationVLC = new VerticalLayoutContainer();
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Official Number");
+		FramedPanel officialNumberPanel = new FramedPanel();
+		officialNumberPanel.setHeading("Official Number");
 		officialNumberField = new TextField();
 		officialNumberField.addValidator(new MinLengthValidator(1));
 		officialNumberField.setEmptyText("mandatory cave number");
@@ -532,27 +532,27 @@ public class CaveEditor extends AbstractEditor {
 				correspondingCaveEntry.setOfficialNumber(event.getValue());
 			}
 		});
-		attributePanel.add(officialNumberField);
-		mainInformationVLC.add(attributePanel, new VerticalLayoutData(1.0, .1));
+		officialNumberPanel.add(officialNumberField);
+		mainInformationVLC.add(officialNumberPanel, new VerticalLayoutData(1.0, .12));
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Historic Name");
-		historicNameField = new TextField();
-		historicNameField.addValidator(new MaxLengthValidator(64));
-		historicNameField.setEmptyText("historic cave name");
-		historicNameField.setValue(correspondingCaveEntry.getHistoricName());
-		historicNameField.addValueChangeHandler(new ValueChangeHandler<String>() {
+		FramedPanel historicalNamePanel = new FramedPanel();
+		historicalNamePanel.setHeading("Historical Name");
+		historicalNameField = new TextField();
+		historicalNameField.addValidator(new MaxLengthValidator(64));
+		historicalNameField.setEmptyText("historic cave name");
+		historicalNameField.setValue(correspondingCaveEntry.getHistoricName());
+		historicalNameField.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<String> event) {
 				correspondingCaveEntry.setHistoricName(event.getValue());
 			}
 		});
-		attributePanel.add(historicNameField);
-		mainInformationVLC.add(attributePanel, new VerticalLayoutData(1.0, .1));
+		historicalNamePanel.add(historicalNameField);
+		mainInformationVLC.add(historicalNamePanel, new VerticalLayoutData(1.0, .12));
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Optional Historic Name");
+		FramedPanel optionalHistoricalNamePanel = new FramedPanel();
+		optionalHistoricalNamePanel.setHeading("Optional Historical Name");
 		optionalHistoricNameField = new TextField();
 		optionalHistoricNameField.addValidator(new MaxLengthValidator(64));
 		optionalHistoricNameField.setEmptyText("optional historic name");
@@ -564,11 +564,11 @@ public class CaveEditor extends AbstractEditor {
 				correspondingCaveEntry.setOptionalHistoricName(event.getValue());
 			}
 		});
-		attributePanel.add(optionalHistoricNameField);
-		mainInformationVLC.add(attributePanel, new VerticalLayoutData(1.0, .1));
+		optionalHistoricalNamePanel.add(optionalHistoricNameField);
+		mainInformationVLC.add(optionalHistoricalNamePanel, new VerticalLayoutData(1.0, .12));
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("First documented");
+		FramedPanel firstDocumentedPanel = new FramedPanel();
+		firstDocumentedPanel.setHeading("First documented");
 		firstDocumentedByField = new TextField();
 		firstDocumentedByField.setEmptyText("name");
 		firstDocumentedByField.setValue(correspondingCaveEntry.getFirstDocumentedBy());
@@ -613,11 +613,11 @@ public class CaveEditor extends AbstractEditor {
 		firstDocInYearHLC.add(firstDocumentedInYearField, new HorizontalLayoutData(.3, 1.0));
 		firstDocVLC.add(firstDocumentedByField, new VerticalLayoutData(1.0, .5));
 		firstDocVLC.add(firstDocInYearHLC, new VerticalLayoutData(1.0, .5));
-		attributePanel.add(firstDocVLC);
-		mainInformationVLC.add(attributePanel, new VerticalLayoutData(1.0, .14));
+		firstDocumentedPanel.add(firstDocVLC);
+		mainInformationVLC.add(firstDocumentedPanel, new VerticalLayoutData(1.0, .16));
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Cave Group");
+		FramedPanel caveGroupPanel = new FramedPanel();
+		caveGroupPanel.setHeading("Cave Group");
 		caveGroupSelector = new ComboBox<CaveGroupEntry>(caveGroupEntryList, caveGroupProps.name(),
 				new AbstractSafeHtmlRenderer<CaveGroupEntry>() {
 
@@ -637,9 +637,11 @@ public class CaveEditor extends AbstractEditor {
 				correspondingCaveEntry.setCaveGroupID(event.getSelectedItem().getCaveGroupID());
 			}
 		});
-		attributePanel.add(caveGroupSelector);
-		TextButton addCaveGroupButton = new TextButton("New Cave Group");
-		addCaveGroupButton.addSelectHandler(new SelectHandler() {
+		caveGroupPanel.add(caveGroupSelector);
+		ToolButton newCaveGroupPlusTool = new ToolButton(ToolButton.PLUS);
+		newCaveGroupPlusTool.setToolTip("New Cave Group");
+		caveGroupPanel.addTool(newCaveGroupPlusTool);
+		newCaveGroupPlusTool.addSelectHandler(new SelectHandler() {
 
 			@Override
 			public void onSelect(SelectEvent event) {
@@ -691,11 +693,10 @@ public class CaveEditor extends AbstractEditor {
 				addNewCaveGroupDialog.center();
 			}
 		});
-		attributePanel.addButton(addCaveGroupButton);
-		mainInformationVLC.add(attributePanel, new VerticalLayoutData(1.0, .15));
+		mainInformationVLC.add(caveGroupPanel, new VerticalLayoutData(1.0, .12));
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Site");
+		FramedPanel sitePanel = new FramedPanel();
+		sitePanel.setHeading("Site");
 		siteSelection = new ComboBox<SiteEntry>(siteEntryListStore, siteProps.name(), new AbstractSafeHtmlRenderer<SiteEntry>() {
 
 			@Override
@@ -718,12 +719,11 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		siteSelection.setWidth(250);
-		attributePanel.add(siteSelection);
-		// }
-		mainInformationVLC.add(attributePanel, new VerticalLayoutData(1.0, .1));
+		sitePanel.add(siteSelection);
+		mainInformationVLC.add(sitePanel, new VerticalLayoutData(1.0, .12));
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("District");
+		FramedPanel districtPanel = new FramedPanel();
+		districtPanel.setHeading("District");
 		districtSelection = new ComboBox<DistrictEntry>(districtEntryList, districtProps.name(), new AbstractSafeHtmlRenderer<DistrictEntry>() {
 
 			@Override
@@ -747,10 +747,12 @@ public class CaveEditor extends AbstractEditor {
 		if (correspondingCaveEntry.getCaveID() == 0) {
 			districtSelection.setEnabled(false);
 		}
-		attributePanel.add(districtSelection);
+		districtPanel.add(districtSelection);
 
-		TextButton addDistrictButton = new TextButton("New District");
-		addDistrictButton.addSelectHandler(new SelectHandler() {
+		ToolButton newDistrictPlusTool = new ToolButton(ToolButton.PLUS);
+		newDistrictPlusTool.setToolTip("New District");
+		districtPanel.addTool(newDistrictPlusTool);
+		newDistrictPlusTool.addSelectHandler(new SelectHandler() {
 
 			@Override
 			public void onSelect(SelectEvent event) {
@@ -818,11 +820,10 @@ public class CaveEditor extends AbstractEditor {
 				addNewDistrictDialog.center();
 			}
 		});
-		attributePanel.addButton(addDistrictButton);
-		mainInformationVLC.add(attributePanel, new VerticalLayoutData(1.0, .15));
+		mainInformationVLC.add(districtPanel, new VerticalLayoutData(1.0, .12));
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Region");
+		FramedPanel regionPanel = new FramedPanel();
+		regionPanel.setHeading("Region");
 		regionSelection = new ComboBox<RegionEntry>(regionEntryListStore, regionProps.englishName(),
 				new AbstractSafeHtmlRenderer<RegionEntry>() {
 
@@ -851,10 +852,12 @@ public class CaveEditor extends AbstractEditor {
 		if (correspondingCaveEntry.getCaveID() == 0) {
 			regionSelection.setEnabled(false);
 		}
-		attributePanel.add(regionSelection);
+		regionPanel.add(regionSelection);
 
-		TextButton addRegionButton = new TextButton("New Region");
-		addRegionButton.addSelectHandler(new SelectHandler() {
+		ToolButton addRegionPlusTool = new ToolButton(ToolButton.PLUS);
+		newDistrictPlusTool.setToolTip("Add Region");
+		regionPanel.addTool(addRegionPlusTool);
+		newDistrictPlusTool.addSelectHandler(new SelectHandler() {
 
 			@Override
 			public void onSelect(SelectEvent event) {
@@ -930,8 +933,7 @@ public class CaveEditor extends AbstractEditor {
 				addNewRegionDialog.center();
 			}
 		});
-		attributePanel.addButton(addRegionButton);
-		mainInformationVLC.add(attributePanel, new VerticalLayoutData(1.0, .15));
+		mainInformationVLC.add(regionPanel, new VerticalLayoutData(1.0, .12));
 
 		mainHlContainer.add(mainInformationVLC, new HorizontalLayoutData(.3, 1.0));
 
@@ -1261,8 +1263,8 @@ public class CaveEditor extends AbstractEditor {
 		HorizontalLayoutContainer descriptionHLC = new HorizontalLayoutContainer();
 		VerticalLayoutContainer descriptionsVLC = new VerticalLayoutContainer();
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Findings");
+		FramedPanel findingsPanel = new FramedPanel();
+		findingsPanel.setHeading("Findings");
 		findingsTextArea = new TextArea();
 		findingsTextArea.setEmptyText("research findings");
 		findingsTextArea.setValue(correspondingCaveEntry.getFindings());
@@ -1273,16 +1275,16 @@ public class CaveEditor extends AbstractEditor {
 				correspondingCaveEntry.setFindings(event.getValue());
 			}
 		});
-		attributePanel.add(findingsTextArea);
-		descriptionsVLC.add(attributePanel, new VerticalLayoutData(1.0, .7));
+		findingsPanel.add(findingsTextArea);
+		descriptionsVLC.add(findingsPanel, new VerticalLayoutData(1.0, .7));
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("C14 Analysis (link)");
-		descriptionsVLC.add(attributePanel, new VerticalLayoutData(1.0, .15));
+		FramedPanel c14AnalysisLinkPanel = new FramedPanel();
+		c14AnalysisLinkPanel.setHeading("C14 Analysis (link)");
+		descriptionsVLC.add(c14AnalysisLinkPanel, new VerticalLayoutData(1.0, .15));
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("C14 additional documents");
-		descriptionsVLC.add(attributePanel, new VerticalLayoutData(1.0, .15));
+		FramedPanel c14UploadPanel = new FramedPanel();
+		c14UploadPanel.setHeading("C14 additional documents");
+		descriptionsVLC.add(c14UploadPanel, new VerticalLayoutData(1.0, .15));
 
 		descriptionHLC.add(descriptionsVLC, new HorizontalLayoutData(1.0, 1.0));
 
@@ -1293,8 +1295,8 @@ public class CaveEditor extends AbstractEditor {
 		HorizontalLayoutContainer caveTypeHLC = new HorizontalLayoutContainer();
 		VerticalLayoutContainer caveTypeVLC = new VerticalLayoutContainer();
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Cave Type");
+		FramedPanel caveTypePanel = new FramedPanel();
+		caveTypePanel.setHeading("Cave Type");
 		caveTypeSelection = new ComboBox<CaveTypeEntry>(caveTypeEntryListStore, caveTypeProps.nameEN(),
 				new AbstractSafeHtmlRenderer<CaveTypeEntry>() {
 
@@ -1321,11 +1323,11 @@ public class CaveEditor extends AbstractEditor {
 				updateStateOfPreservationPanel();
 			}
 		});
-		attributePanel.add(caveTypeSelection);
-		caveTypeVLC.add(attributePanel, new VerticalLayoutData(1.0, .5));
+		caveTypePanel.add(caveTypeSelection);
+		caveTypeVLC.add(caveTypePanel, new VerticalLayoutData(1.0, .5));
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Orientation");
+		FramedPanel orientationPanel = new FramedPanel();
+		orientationPanel.setHeading("Orientation");
 		orientationSelection = new ComboBox<OrientationEntry>(orientationEntryList, orientationProps.nameEN(),
 				new AbstractSafeHtmlRenderer<OrientationEntry>() {
 
@@ -1345,11 +1347,11 @@ public class CaveEditor extends AbstractEditor {
 				correspondingCaveEntry.setOrientationID(event.getSelectedItem().getOrientationID());
 			}
 		});
-		attributePanel.add(orientationSelection);
-		caveTypeVLC.add(attributePanel, new VerticalLayoutData(1.0, .5));
+		orientationPanel.add(orientationSelection);
+		caveTypeVLC.add(orientationPanel, new VerticalLayoutData(1.0, .5));
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Expedition measurement");
+		FramedPanel expeditionMeasurementPanel = new FramedPanel();
+		expeditionMeasurementPanel.setHeading("Expedition measurement");
 
 		// here we prepare all elements and later call updateCeilingTypePanel()
 		ceilingTypeVLC = new VerticalLayoutContainer();
@@ -1676,7 +1678,7 @@ public class CaveEditor extends AbstractEditor {
 	 * @return
 	 */
 	private boolean validateFields() {
-		return officialNumberField.validate() && historicNameField.validate() && optionalHistoricNameField.validate();
+		return officialNumberField.validate() && historicalNameField.validate() && optionalHistoricNameField.validate();
 	}
 
 	/**
