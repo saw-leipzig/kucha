@@ -41,6 +41,7 @@ import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.Slider;
 import com.sencha.gxt.widget.core.client.TabPanel;
+import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
@@ -428,20 +429,21 @@ public class CaveEditor extends AbstractEditor {
 			RegionEntry re = regionEntryListStore.findModelWithKey(Integer.toString(correspondingCaveEntry.getRegionID()));
 			regionSelection.setValue(re);
 			if (siteSelection.getCurrentValue() == null || siteSelection.getCurrentValue().getSiteID() != re.getSiteID()) {
-				dbService.getSite(re.getSiteID(), new AsyncCallback<SiteEntry>() {
-
-					@Override
-					public void onFailure(Throwable caught) {
-						caught.printStackTrace(System.err);
-					}
-
-					@Override
-					public void onSuccess(SiteEntry result) {
-						siteSelection.setValue(result);
-						activateRegionFilter();
-						activateDistrictFilter();
-					}
-				});
+				siteSelection.setValue(StaticTables.getInstance().getSiteEntries().get(re.getSiteID()));
+				activateRegionFilter();
+				activateDistrictFilter();
+				
+//				dbService.getSite(re.getSiteID(), new AsyncCallback<SiteEntry>() {
+//
+//					@Override
+//					public void onFailure(Throwable caught) {
+//						caught.printStackTrace(System.err);
+//					}
+//
+//					@Override
+//					public void onSuccess(SiteEntry result) {
+//					}
+//				});
 			}
 
 		}
@@ -503,7 +505,7 @@ public class CaveEditor extends AbstractEditor {
 
 		mainPanel = new FramedPanel();
 		mainPanel.setHeading("Cave Editor");
-		mainPanel.setSize("800px", "600px"); // here we set the size of the panel
+		mainPanel.setSize("900px", "600px"); // here we set the size of the panel
 
 		TabPanel tabPanel = new TabPanel();
 		tabPanel.setTabScroll(false);
@@ -1499,7 +1501,7 @@ public class CaveEditor extends AbstractEditor {
 		VerticalLayoutContainer caveLayoutVLC = new VerticalLayoutContainer();
 		caveLayoutVLC.add(caveTypeVLC, new VerticalLayoutData(1.0, .3));
 		caveLayoutVLC.add(ceilingTypeVLC, new VerticalLayoutData(1.0, .7));
-		caveTypeHLC.add(caveLayoutVLC, new HorizontalLayoutData(.4, 1.0));
+		caveTypeHLC.add(caveLayoutVLC, new HorizontalLayoutData(.5, 1.0));
 
 		// vlContainer = new VerticalLayoutContainer();
 
@@ -1509,7 +1511,7 @@ public class CaveEditor extends AbstractEditor {
 		caveLayoutPanel.add(imageContainer);
 		// vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0));
 
-		caveTypeHLC.add(caveLayoutPanel, new HorizontalLayoutData(.6, 1.0));
+		caveTypeHLC.add(caveLayoutPanel, new HorizontalLayoutData(.5, 1.0));
 
 		/**
 		 * now we are assembling the tabs and add them to the main hlc
@@ -1525,22 +1527,36 @@ public class CaveEditor extends AbstractEditor {
 		 */
 		mainPanel.add(mainHlContainer);
 
-		TextButton saveButton = new TextButton("Save & Exit");
-		saveButton.addSelectHandler(new SelectHandler() {
+		ToolButton saveToolButton = new ToolButton(ToolButton.SAVE);
+		saveToolButton.setToolTip("save");
+		saveToolButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-				saveEntries();
+				saveEntries(false);
 			}
 		});
-		TextButton cancelButton = new TextButton("Cancel");
-		cancelButton.addSelectHandler(new SelectHandler() {
+
+		ToolButton cancelToolButton = new ToolButton(ToolButton.RESTORE);
+		cancelToolButton.setToolTip("cancel");
+		cancelToolButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
 				closeEditor();
 			}
 		});
-		mainPanel.addButton(saveButton);
-		mainPanel.addButton(cancelButton);
+		
+		ToolButton closeToolButton = new ToolButton(ToolButton.CLOSE);
+		closeToolButton.setToolTip("save & close");
+		closeToolButton.addSelectHandler(new SelectHandler() {
+			@Override
+			public void onSelect(SelectEvent event) {
+				saveEntries(true);
+			}
+		});
+
+		mainPanel.addTool(saveToolButton);
+		mainPanel.addTool(cancelToolButton);
+		mainPanel.addTool(closeToolButton);
 	}
 
 	private void updateCeilingTypePanel() {
@@ -1639,7 +1655,7 @@ public class CaveEditor extends AbstractEditor {
 	/**
 	 * Will be called when the save button is selected. After saving <code>CaveEditorListener.closeRequest()</code> is called to inform all listener.
 	 */
-	protected void saveEntries() {
+	protected void saveEntries(boolean close) {
 		if (!validateFields()) {
 			return;
 		}
@@ -1653,7 +1669,9 @@ public class CaveEditor extends AbstractEditor {
 
 				@Override
 				public void onSuccess(Boolean result) {
-					closeEditor();
+					if (close) {
+						closeEditor();
+					}
 				}
 			});
 
@@ -1668,7 +1686,9 @@ public class CaveEditor extends AbstractEditor {
 				@Override
 				public void onSuccess(Integer result) {
 					correspondingCaveEntry.setCaveID(result.intValue());
-					closeEditor();
+					if (close) {
+						closeEditor();
+					}
 				}
 			});
 		}

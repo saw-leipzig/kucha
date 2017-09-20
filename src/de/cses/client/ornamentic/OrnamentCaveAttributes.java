@@ -42,6 +42,7 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.StaticTables;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.DistrictEntry;
@@ -176,17 +177,17 @@ public class OrnamentCaveAttributes extends PopupPanel {
 			}
 		});
 
-		dbService.getDistricts(new AsyncCallback<ArrayList<DistrictEntry>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(ArrayList<DistrictEntry> result) {
-				districtEntryList.clear();
-				for (DistrictEntry pe : result) {
+//		dbService.getDistricts(new AsyncCallback<ArrayList<DistrictEntry>>() {
+//
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				caught.printStackTrace();
+//			}
+//
+//			@Override
+//			public void onSuccess(ArrayList<DistrictEntry> result) {
+//				districtEntryList.clear();
+				for (DistrictEntry pe : StaticTables.getInstance().getDistrictEntries().values()) {
 					districtEntryList.add(pe);
 				}
 				if (ornamentCaveRelationEntry != null) {
@@ -195,8 +196,8 @@ public class OrnamentCaveAttributes extends PopupPanel {
 					ValueChangeEvent.fire(districtComboBox, ornamentCaveRelationEntry.getDistrict());
 
 				}
-			}
-		});
+//			}
+//		});
 
 		dbService.getOrientations(new AsyncCallback<ArrayList<OrientationEntry>>() {
 
@@ -349,18 +350,19 @@ public class OrnamentCaveAttributes extends PopupPanel {
 			public void onSelection(SelectionEvent<CaveEntry> event) {
 				int p = event.getSelectedItem().getCaveTypeID();
 				wallsListStore.clear();
-				dbService.getCaveTypebyID(p, new AsyncCallback<CaveTypeEntry>() {
-
-					@Override
-					public void onFailure(Throwable caught) {
-						caught.printStackTrace();
-					}
-
-					@Override
-					public void onSuccess(CaveTypeEntry result) {
-						caveType.setText(result.getNameEN());
-					}
-				});
+				caveType.setText(StaticTables.getInstance().getCaveTypeEntries().get(p).getNameEN());
+//				dbService.getCaveTypebyID(p, new AsyncCallback<CaveTypeEntry>() {
+//
+//					@Override
+//					public void onFailure(Throwable caught) {
+//						caught.printStackTrace();
+//					}
+//
+//					@Override
+//					public void onSuccess(CaveTypeEntry result) {
+//						caveType.setText(result.getNameEN());
+//					}
+//				});
 				// style ueber hoehle raussuchen
 			}
 

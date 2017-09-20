@@ -20,7 +20,6 @@ import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
@@ -33,6 +32,7 @@ import com.sencha.gxt.widget.core.client.form.ComboBox;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.StaticTables;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.shared.CaveTypeEntry;
 
@@ -49,6 +49,7 @@ public class CaveFilter extends AbstractFilter {
 
 	interface CaveTypeProperties extends PropertyAccess<CaveTypeEntry> {
 		ModelKeyProvider<CaveTypeEntry> caveTypeID();
+
 		LabelProvider<CaveTypeEntry> nameEN();
 	}
 
@@ -56,7 +57,7 @@ public class CaveFilter extends AbstractFilter {
 		@XTemplate("<div>{name}</div>")
 		SafeHtml caveTypeLabel(String name);
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -67,37 +68,26 @@ public class CaveFilter extends AbstractFilter {
 		loadCaveTypes();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.cses.client.ui.AbstractFilter#getFilterUI()
 	 */
 	@Override
 	protected Widget getFilterUI() {
 		VerticalPanel vp = new VerticalPanel();
 		vp.add(caveTypeSelection);
-//		return vp;
+		// return vp;
 		return caveTypeSelection;
 	}
-	
+
 	/**
 	 * 
 	 */
 	private void loadCaveTypes() {
-		dbService.getCaveTypes(new AsyncCallback<ArrayList<CaveTypeEntry>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(ArrayList<CaveTypeEntry> result) {
-				caveTypeEntryList.clear();
-				for (CaveTypeEntry pe : result) {
-					caveTypeEntryList.add(pe);
-				}
-			}
-		});
-		
+		for (CaveTypeEntry pe : StaticTables.getInstance().getCaveTypeEntries().values()) {
+			caveTypeEntryList.add(pe);
+		}
 		caveTypeSelection = new ComboBox<CaveTypeEntry>(caveTypeEntryList, caveTypeProps.nameEN(),
 				new AbstractSafeHtmlRenderer<CaveTypeEntry>() {
 
@@ -112,16 +102,18 @@ public class CaveFilter extends AbstractFilter {
 		caveTypeSelection.setEditable(false);
 		caveTypeSelection.setTriggerAction(TriggerAction.ALL);
 		caveTypeSelection.addSelectionHandler(new SelectionHandler<CaveTypeEntry>() {
-			
+
 			@Override
 			public void onSelection(SelectionEvent<CaveTypeEntry> event) {
 				// ToDo
 			}
 		});
 		caveTypeSelection.setWidth(180);
-	}	
-	
-	/* (non-Javadoc)
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.cses.client.ui.AbstractFilter#getSqlWhereClause()
 	 */
 	@Override

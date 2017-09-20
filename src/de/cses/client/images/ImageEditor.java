@@ -67,6 +67,7 @@ import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.Selecti
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.StaticTables;
 import de.cses.client.images.SingleImageEditor.ImageTypeProperties;
 import de.cses.client.images.SingleImageEditor.ImageTypeViewTemplates;
 import de.cses.shared.ImageEntry;
@@ -180,22 +181,22 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 			}
 		});
 		
-		dbService.getImageTypes(new AsyncCallback<ArrayList<ImageTypeEntry>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void onSuccess(ArrayList<ImageTypeEntry> result) {
-				for (ImageTypeEntry ite : result) {
+//		dbService.getImageTypes(new AsyncCallback<ArrayList<ImageTypeEntry>>() {
+//
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//
+//			@Override
+//			public void onSuccess(ArrayList<ImageTypeEntry> result) {
+				for (ImageTypeEntry ite : StaticTables.getInstance().getImageTypeEntries().values()) {
 					imageTypeEntryList.add(ite);
 				}
 //				imageTypeSelection.setValue(imageTypeEntryList.findModelWithKey(Integer.toString(imgEntry.getImageTypeID())));
-			}
-		});
+//			}
+//		});
 
 	}
 

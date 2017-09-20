@@ -39,6 +39,7 @@ import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.StaticTables;
 import de.cses.shared.AntechamberEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveTypeEntry;
@@ -203,18 +204,19 @@ public class WallSelector implements IsWidget {
 	 */
 	public void setCave(CaveEntry selectedCave) {
 		currentCave = selectedCave;
-		dbService.getCaveTypebyID(selectedCave.getCaveTypeID(), new AsyncCallback<CaveTypeEntry>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(CaveTypeEntry ctEntry) {
-				setCaveType(ctEntry);
-			}
-		});
+		setCaveType(StaticTables.getInstance().getCaveTypeEntries().get(selectedCave.getCaveTypeID()));
+//		dbService.getCaveTypebyID(selectedCave.getCaveTypeID(), new AsyncCallback<CaveTypeEntry>() {
+//
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				caught.printStackTrace();
+//			}
+//
+//			@Override
+//			public void onSuccess(CaveTypeEntry ctEntry) {
+//				setCaveType(ctEntry);
+//			}
+//		});
 	}
 
 	public int getSelectedWallID() {
