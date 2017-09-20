@@ -18,7 +18,7 @@ import java.util.Arrays;
 
 public class WallEntry extends AbstractEntry {
 	
-	protected final ArrayList<String> locations = new ArrayList<String>(
+	protected transient ArrayList<String> locations = new ArrayList<String>(
 			Arrays.asList("antechamber front wall", "antechamber left wall", "antechamber rear wall", "antechamber right wall",
 					"main chamber corridor inner wall", "main chamber corridor outer wall", "main chamber front wall", "main chamber left wall",
 					"main chamber rear wall", "main chamber right wall", "rear area left corridor inner wall", "rear area left corridor outer wall",

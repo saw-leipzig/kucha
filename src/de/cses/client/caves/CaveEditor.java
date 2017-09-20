@@ -37,13 +37,18 @@ import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.Store.StoreFilter;
+import com.sencha.gxt.theme.base.client.tabs.TabPanelBaseAppearance;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.Slider;
+import com.sencha.gxt.widget.core.client.TabItemConfig;
 import com.sencha.gxt.widget.core.client.TabPanel;
-import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
+import com.sencha.gxt.widget.core.client.TabPanel.TabPanelBottomAppearance;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer.AccordionLayoutAppearance;
+import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer.ExpandMode;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
@@ -506,9 +511,6 @@ public class CaveEditor extends AbstractEditor {
 		mainPanel = new FramedPanel();
 		mainPanel.setHeading("Cave Editor");
 		mainPanel.setSize("900px", "600px"); // here we set the size of the panel
-
-		TabPanel tabPanel = new TabPanel();
-		tabPanel.setTabScroll(false);
 
 		// the tab will use the right 70% of the main HorizontalLayoutPanel
 		HorizontalLayoutContainer mainHlContainer = new HorizontalLayoutContainer();
@@ -1503,7 +1505,7 @@ public class CaveEditor extends AbstractEditor {
 		caveLayoutVLC.add(ceilingTypeVLC, new VerticalLayoutData(1.0, .7));
 		caveTypeHLC.add(caveLayoutVLC, new HorizontalLayoutData(.5, 1.0));
 
-		// vlContainer = new VerticalLayoutContainer();
+//		VerticalLayoutContainer caveSketchVLC = new VerticalLayoutContainer();
 
 		FramedPanel caveLayoutPanel = new FramedPanel();
 		caveLayoutPanel.setHeading("Cave Layout");
@@ -1516,11 +1518,14 @@ public class CaveEditor extends AbstractEditor {
 		/**
 		 * now we are assembling the tabs and add them to the main hlc
 		 */
+	  TabPanel tabPanel = new TabPanel();
+	  tabPanel.setTabScroll(true);
+	  tabPanel.setAnimScroll(true);
+	  tabPanel.add(caveTypeHLC, new TabItemConfig("Cave Layout", false));
+	  tabPanel.add(stateOfPreservationHLC, new TabItemConfig("State of Preservation", false));
+	  tabPanel.add(descriptionHLC, new TabItemConfig("Descriptions", false));
 
-		tabPanel.add(caveTypeHLC, "Cave Layout");
-		tabPanel.add(stateOfPreservationHLC, "State of Preservation");
-		tabPanel.add(descriptionHLC, "Descriptions");
-		mainHlContainer.add(tabPanel, new HorizontalLayoutData(.7, 1.0));
+	  mainHlContainer.add(tabPanel, new HorizontalLayoutData(.7, 1.0));
 
 		/**
 		 * adding the mainHlContainer to the FramedPanel and adding the buttons

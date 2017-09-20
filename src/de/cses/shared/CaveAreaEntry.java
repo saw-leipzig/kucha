@@ -44,7 +44,7 @@ public class CaveAreaEntry extends AbstractEntry {
 		}
 	}
 
-	protected final ArrayList<String> caveAreaLabels = new ArrayList<String>(Arrays.asList("antechamber", "main chamber", "main chamber corridor",
+	protected transient ArrayList<String> caveAreaLabels = new ArrayList<String>(Arrays.asList("antechamber", "main chamber", "main chamber corridor",
 			"rear area left corridor", "rear area right corridor", "rear chamber", "rear corridor"));
 
 	private int caveAreaID;

@@ -27,8 +27,8 @@
 	<inherits name='com.sencha.gxt.chart.Chart' />
 
 	<!-- GXT Stylesheet -->
-	<stylesheet src="/KuchaApplication.css" />
-
+	<!-- stylesheet src="/KuchaApplication.css" />  -->
+  <stylesheet src="reset.css" />
 
 	<!-- set-configuration-property name="CssResource.legacy" value="true" /> -->
 
