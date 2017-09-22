@@ -13,17 +13,26 @@
  */
 package de.cses.shared;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 public class WallEntry extends AbstractEntry {
 	
-	protected transient ArrayList<String> locations = new ArrayList<String>(
-			Arrays.asList("antechamber front wall", "antechamber left wall", "antechamber rear wall", "antechamber right wall",
-					"main chamber corridor inner wall", "main chamber corridor outer wall", "main chamber front wall", "main chamber left wall",
-					"main chamber rear wall", "main chamber right wall", "rear area left corridor inner wall", "rear area left corridor outer wall",
-					"rear area right corridor inner wall", "rear area right corridor outer wall", "rear chamber inner wall", "rear chamber left wall",
-					"rear chamber outer wall", "rear chamber right wall"));
+	public static String ANTECHAMBER_FRONT_WALL = "antechamber front wall";
+	public static String ANTECHAMBER_LEFT_WALL = "antechamber left wall";
+	public static String ANTECHAMBER_REAR_WALL = "antechamber rear wall";
+	public static String ANTECHAMBER_RIGHT_WALL = "antechamber right wall";
+	public static String MAIN_CHAMBER_CORRIDOR_INNER_WALL = "main chamber corridor inner wall";
+	public static String MAIN_CHAMBER_CORRIDOR_OUTER_WALL = "main chamber corridor outer wall";
+	public static String MAIN_CHAMBER_FRONT_WALL = "main chamber front wall";
+	public static String MAIN_CHAMBER_LEFT_WALL = "main chamber left wall";
+	public static String MAIN_CHAMBER_REAR_WALL = "main chamber rear wall";
+	public static String MAIN_CHAMBER_RIGHT_WALL = "main chamber right wall";
+	public static String REAR_AREA_LEFT_CORRIDOR_INNER_WALL = "rear area left corridor inner wall";
+	public static String REAR_AREA_LEFT_CORRIDOR_OUTER_WALL = "rear area left corridor outer wall";
+	public static String REAR_ARE_RIGHT_CORRIDOR_INNER_WALL = "rear area right corridor inner wall";
+	public static String REAR_AREA_RIGHT_CORRIDOR_OUTER_WALL = "rear area right corridor outer wall";
+	public static String REAR_CHAMBER_INNER_WALL = "rear chamber inner wall";
+	public static String REAR_CHAMBER_LEFT_WALL = "rear chamber left wall";
+	public static String REAR_CHAMBER_OUTER_WALL = "rear chamber outer wall";
+	public static String REAR_CHAMBER_RIGHT_WALL = "rear chamber right wall";
 
 	private int caveID;
 	private String locationLabel;
@@ -110,13 +119,8 @@ public class WallEntry extends AbstractEntry {
 	/**
 	 * @param locationLabel the locationLabel to set
 	 */
-	public boolean setLocationLabel(String locationLabel) {
-		if (locations.contains(locationLabel)) {
-			this.locationLabel = locationLabel;
-			return true;
-		} else {
-			return false;
-		}
+	public void setLocationLabel(String locationLabel) {
+		this.locationLabel = locationLabel;
 	}
 	
 

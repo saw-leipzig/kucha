@@ -19,7 +19,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author alingnau
  *
  */
-public class CeilingTypeEntry implements IsSerializable {
+public class CeilingTypeEntry extends AbstractEntry {
 	
 	private int ceilingTypeID;
 	private String name;
@@ -49,6 +49,14 @@ public class CeilingTypeEntry implements IsSerializable {
 
 	public void setName(String name) {
 		this.name = name;
-	}	
+	}
 
+	/* (non-Javadoc)
+	 * @see de.cses.shared.AbstractEntry#getUniqueID()
+	 */
+	@Override
+	public String getUniqueID() {
+		return "CeilingType_" + ceilingTypeID;
+	}	
+	
 }

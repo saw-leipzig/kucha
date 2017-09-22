@@ -13,13 +13,15 @@
  */
 package de.cses.shared;
 
+import org.w3c.dom.views.AbstractView;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * @author alingnau
  *
  */
-public class PreservationClassificationEntry implements IsSerializable {
+public class PreservationClassificationEntry extends AbstractEntry {
 	
 	private int preservationClassificationID;
 	private String name;
@@ -48,8 +50,16 @@ public class PreservationClassificationEntry implements IsSerializable {
 		return name;
 	}
 	
-	public void setText(String text) {
-		this.name = text;
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.shared.AbstractEntry#getUniqueID()
+	 */
+	@Override
+	public String getUniqueID() {
+		return "PreservationClassification_"+preservationClassificationID;
 	}
 	
 }

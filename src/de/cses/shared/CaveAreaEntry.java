@@ -14,7 +14,6 @@
 package de.cses.shared;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * @author alingnau
@@ -23,6 +22,14 @@ import java.util.Arrays;
 public class CaveAreaEntry extends AbstractEntry {
 	
 	public static class Ceiling {
+		public static String ANTECHAMBER = "antechamber";
+		public static String MAIN_CHAMBER = "main chamber";
+		public static String MAIN_CHAMBER_CORRIDOR = "main chamber corridor";
+		public static String REAR_AREA_LEFT_CORRIDOR = "rear area left corridor";
+		public static String REAR_AREA_RIGHT_CORRIDOR = "rear area right corridor";
+		public static String REAR_CHAMBER = "rear chamber";
+		public static String REAR_CORRIDOR = "rear corridor";
+		
 		protected int ceilingTypeID;
 		protected int preservationClassificationID;
 		
@@ -42,17 +49,15 @@ public class CaveAreaEntry extends AbstractEntry {
 		public int getPreservationClassificationID() {
 			return preservationClassificationID;
 		}
+		
 	}
 
-	protected transient ArrayList<String> caveAreaLabels = new ArrayList<String>(Arrays.asList("antechamber", "main chamber", "main chamber corridor",
-			"rear area left corridor", "rear area right corridor", "rear chamber", "rear corridor"));
-
-	private int caveAreaID;
-	private int caveID;
-	private String caveAreaLabel;
-	private double height, width, depth;
-	private int preservationClassificationID;
-	private ArrayList<Ceiling> ceilings;
+	protected int caveAreaID;
+	protected int caveID;
+	protected String caveAreaLabel;
+	protected double height, width, depth;
+	protected int preservationClassificationID;
+	protected ArrayList<Ceiling> ceilings;
 
 	/**
 	 * 
@@ -116,13 +121,8 @@ public class CaveAreaEntry extends AbstractEntry {
 	 * @param caveAreaLabel
 	 * @return true if the label is valid, otherwise false
 	 */
-	public boolean setCaveAreaLabel(String caveAreaLabel) {
-		if (caveAreaLabels.contains(caveAreaLabel)) {
-			this.caveAreaLabel = caveAreaLabel;
-			return true;
-		} else {
-			return false;
-		}
+	public void setCaveAreaLabel(String caveAreaLabel) {
+		this.caveAreaLabel = caveAreaLabel;
 	}
 
 	public double getHeight() {
@@ -155,10 +155,6 @@ public class CaveAreaEntry extends AbstractEntry {
 
 	public void setPreservationClassificationID(int preservationClassificationID) {
 		this.preservationClassificationID = preservationClassificationID;
-	}
-
-	public ArrayList<String> getCaveAreaLabels() {
-		return caveAreaLabels;
 	}
 
 	/**

@@ -1,3 +1,7 @@
 /** Add css rules here for your application. */
 
-
+h1 {
+	font-size: 24px;
+	text-align: center;
+	color: blue;
+}	

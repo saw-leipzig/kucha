@@ -13,6 +13,9 @@
  */
 package de.cses.shared;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public class CaveEntry extends AbstractEntry {
 	private int caveID;
 	private String officialNumber; 
@@ -28,6 +31,7 @@ public class CaveEntry extends AbstractEntry {
 	private String findings;
 	private String firstDocumentedBy;
 	private int firstDocumentedInYear;
+	private HashMap<String, CaveAreaEntry> caveAreas;
 	private AntechamberEntry antechamberEntry;
 	private MainChamberEntry mainChamberEntry;
 	private RearAreaEntry rearAreaEntry;
@@ -42,7 +46,6 @@ public class CaveEntry extends AbstractEntry {
 	public CaveEntry(int caveID, String officialNumber, String historicName, String optionalHistoricName, int caveTypeID, int districtID,
 			int regionID, int orientationID, String stateOfPerservation, String findings, String firstDocumentedBy, int firstDocumentedInYear, int preservationClassificationID,
 			int caveGroupID) {
-		super();
 		this.caveID = caveID;
 		setOfficialNumber(officialNumber);
 		setHistoricName(historicName);
@@ -233,6 +236,14 @@ public class CaveEntry extends AbstractEntry {
 
 	public void setFirstDocumentedBy(String firstDocumentedBy) {
 		this.firstDocumentedBy = firstDocumentedBy;
+	}
+
+	public HashMap<String, CaveAreaEntry> getCaveAreas() {
+		return caveAreas;
+	}
+
+	public void setCaveAreas(HashMap<String, CaveAreaEntry> caveAreas) {
+		this.caveAreas = caveAreas;
 	}
 
 }
