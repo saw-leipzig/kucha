@@ -191,6 +191,7 @@ public class CaveEditor extends AbstractEditor {
 	private ComboBox<CeilingTypeEntry> corridorCeilingTypeSelector2;
 	private ComboBox<CeilingTypeEntry> leftCorridorCeilingTypeSelector2;
 	private ComboBox<CeilingTypeEntry> rightCorridorCeilingTypeSelector2;
+	private TextArea caveLayoutCommentsTextArea;
 
 	interface CaveTypeProperties extends PropertyAccess<CaveTypeEntry> {
 		ModelKeyProvider<CaveTypeEntry> caveTypeID();
@@ -1519,7 +1520,7 @@ public class CaveEditor extends AbstractEditor {
 				correspondingCaveEntry.getRearAreaEntry().getLeftCorridorEntry().setCeilingTypeID(event.getSelectedItem().getCeilingTypeID());
 			}
 		});
-		rightCorridorCeilingTypeSelector2 = createCeilingTypeSelector("select ceiling type");
+		rightCorridorCeilingTypeSelector2 = createCeilingTypeSelector("optional 2nd type");
 		rightCorridorCeilingTypeSelector2.addSelectionHandler(new SelectionHandler<CeilingTypeEntry>() {
 
 			@Override
@@ -1533,9 +1534,18 @@ public class CaveEditor extends AbstractEditor {
 		rightCorridorCeilingTypeHLC.add(rightCorridorCeilingTypeSelector1,  new HorizontalLayoutData(.5, 1.0, new Margins(0, 5, 0, 0)));
 		rightCorridorCeilingTypeHLC.add(rightCorridorCeilingTypeSelector2,  new HorizontalLayoutData(.5, 1.0, new Margins(0)));
 		rightCorridorCeilingTypeFP.add(rightCorridorCeilingTypeHLC);
+		
+		/**
+		 * ======== cave leyout comments
+		 */
+		FramedPanel caveLayoutCommentsFP = new FramedPanel();
+		caveLayoutCommentsFP.setHeading("Comments on Cave Layout");
+		caveLayoutCommentsTextArea = new TextArea();
+		caveLayoutCommentsFP.add(caveLayoutCommentsTextArea);
 
-//		updateCeilingTypePanel();
-
+		/**
+		 * here we assemble the whole left column of the Cave Layout tab
+		 */
 		VerticalLayoutContainer caveLayoutLeftVLC = new VerticalLayoutContainer();
 		HorizontalLayoutContainer typeOrientationHLC = new HorizontalLayoutContainer();
 		typeOrientationHLC.add(caveTypeFP, new HorizontalLayoutData(.6, 1.0));
@@ -1548,7 +1558,8 @@ public class CaveEditor extends AbstractEditor {
 		caveLayoutLeftVLC.add(rightCorridorCeilingTypeFP, new VerticalLayoutData(1.0, 70, new Margins(0, 0, 10, 0)));
 		caveLayoutLeftVLC.add(mainChamberCeilingTypeFP, new VerticalLayoutData(1.0, 60));
 		caveLayoutLeftVLC.add(corridorCeilingTypeFP, new VerticalLayoutData(1.0, 70, new Margins(0, 0, 10, 0)));
-		caveLayoutLeftVLC.add(antechamberCeilingTypeFP, new VerticalLayoutData(1.0, 60));
+		caveLayoutLeftVLC.add(antechamberCeilingTypeFP, new VerticalLayoutData(1.0, 65, new Margins(0, 0, 5, 0)));
+		caveLayoutLeftVLC.add(caveLayoutCommentsFP, new VerticalLayoutData(1.0, 90));
 
 //		caveLayoutVLC.add(caveTypeVLC, new VerticalLayoutData(1.0, .3));
 //		caveLayoutVLC.add(ceilingTypeVLC, new VerticalLayoutData(1.0, .7));
