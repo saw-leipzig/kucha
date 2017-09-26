@@ -14,32 +14,22 @@
 package de.cses.client.caves;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.safecss.shared.SafeStyles;
-import com.google.gwt.safecss.shared.SafeStylesUtils;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.sencha.gxt.cell.core.client.form.ComboBoxCell;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
-import com.sencha.gxt.core.client.IdentityValueProvider;
-import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
-import com.sencha.gxt.core.client.resources.CommonStyles;
 import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
@@ -47,28 +37,20 @@ import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.Store.StoreFilter;
-import com.sencha.gxt.theme.base.client.tabs.TabPanelBaseAppearance;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.PlainTabPanel;
 import com.sencha.gxt.widget.core.client.Slider;
 import com.sencha.gxt.widget.core.client.TabItemConfig;
-import com.sencha.gxt.widget.core.client.TabPanel;
-import com.sencha.gxt.widget.core.client.TabPanel.TabPanelBottomAppearance;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
-import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer.AccordionLayoutAppearance;
-import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer.ExpandMode;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
-import com.sencha.gxt.widget.core.client.event.CellSelectionEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
-import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
@@ -78,12 +60,6 @@ import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MaxNumberValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinNumberValidator;
-import com.sencha.gxt.widget.core.client.grid.CheckBoxSelectionModel;
-import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
-import com.sencha.gxt.widget.core.client.grid.ColumnModel;
-import com.sencha.gxt.widget.core.client.grid.Grid;
-import com.sencha.gxt.widget.core.client.info.Info;
-import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -148,18 +124,18 @@ public class CaveEditor extends AbstractEditor {
 	private ComboBox<CeilingTypeEntry> rightCorridorCeilingTypeSelector1;
 	private PreservationClassificationProperties preservationClassificationProps;
 	private ListStore<PreservationClassificationEntry> preservationClassificationEntryList;
-	private ComboBox<PreservationClassificationEntry> rearAreaPreservationSelector;
-	private ComboBox<PreservationClassificationEntry> rearAreaCeilingPreservationSelector;
-	private ComboBox<PreservationClassificationEntry> mainChamberPreservationSelector;
-	private ComboBox<PreservationClassificationEntry> mainChamberCeilingPreservationSelector;
-	private ComboBox<PreservationClassificationEntry> antechamberPreservationSelector;
-	private ComboBox<PreservationClassificationEntry> antechamberCeilingPreservationSelector;
-	private ComboBox<PreservationClassificationEntry> corridorPreservationSelector;
-	private ComboBox<PreservationClassificationEntry> corridorCeilingPreservationSelector;
-	private ComboBox<PreservationClassificationEntry> leftCorridorPreservationSelector;
-	private ComboBox<PreservationClassificationEntry> leftCorridorCeilingPreservationSelector;
-	private ComboBox<PreservationClassificationEntry> rightCorridorPreservationSelector;
-	private ComboBox<PreservationClassificationEntry> rightCorridorCeilingPreservationSelector;
+	private ComboBox<PreservationClassificationEntry> rearAreaPreservationSelectorCB;
+	private ComboBox<PreservationClassificationEntry> rearAreaCeilingPreservationSelectorCB1;
+	private ComboBox<PreservationClassificationEntry> mainChamberPreservationSelectorCB;
+	private ComboBox<PreservationClassificationEntry> mainChamberCeilingPreservationSelectorCB1;
+	private ComboBox<PreservationClassificationEntry> antechamberPreservationSelectorCB;
+	private ComboBox<PreservationClassificationEntry> antechamberCeilingPreservationSelectorCB1;
+	private ComboBox<PreservationClassificationEntry> corridorPreservationSelectorCB;
+	private ComboBox<PreservationClassificationEntry> corridorCeilingPreservationSelectorCB1;
+	private ComboBox<PreservationClassificationEntry> leftCorridorPreservationSelectorCB;
+	private ComboBox<PreservationClassificationEntry> leftCorridorCeilingPreservationSelectorCB1;
+	private ComboBox<PreservationClassificationEntry> rightCorridorPreservationSelectorCB;
+	private ComboBox<PreservationClassificationEntry> rightCorridorCeilingPreservationSelectorCB1;
 	private ComboBox<CaveGroupEntry> caveGroupSelector;
 	private CaveGroupProperties caveGroupProps;
 	private ListStore<CaveGroupEntry> caveGroupEntryList;
@@ -171,18 +147,18 @@ public class CaveEditor extends AbstractEditor {
 	private FramedPanel corridorCeilingTypeFP;
 	private FramedPanel leftCorridorCeilingTypeFP;
 	private FramedPanel rightCorridorCeilingTypeFP;
-	private FramedPanel rearAreaStateOfPreservationPanel;
-	private FramedPanel mainChamberStateOfPreservationPanel;
-	private FramedPanel antechamberStateOfPreservationPanel;
-	private FramedPanel rearAreaCeilingStateOfPreservationPanel;
-	private FramedPanel mainChamberCeilingStateOfPreservationPanel;
-	private ContentPanel antechamberCeilingStateOfPreservationPanel;
-	private FramedPanel leftCorridorStateOfPreservationPanel;
-	private FramedPanel leftCorridorCeilingStateOfPreservationPanel;
-	private FramedPanel rightCorridorStateOfPreservationPanel;
-	private FramedPanel rightCorridorCeilingStateOfPreservationPanel;
-	private FramedPanel corridorStateOfPreservationPanel;
-	private FramedPanel corridorCeilingStateOfPreservationPanel;
+	private FramedPanel rearAreaStateOfPreservationFP;
+	private FramedPanel mainChamberStateOfPreservationFP;
+	private FramedPanel antechamberStateOfPreservationFP;
+	private FramedPanel rearAreaCeilingStateOfPreservationFP;
+	private FramedPanel mainChamberCeilingStateOfPreservationFP;
+	private ContentPanel antechamberCeilingStateOfPreservationFP;
+	private FramedPanel leftCorridorStateOfPreservationFP;
+	private FramedPanel leftCorridorCeilingStateOfPreservationFP;
+	private FramedPanel rightCorridorStateOfPreservationFP;
+	private FramedPanel rightCorridorCeilingStateOfPreservationFP;
+	private FramedPanel corridorStateOfPreservationFP;
+	private FramedPanel corridorCeilingStateOfPreservationFP;
 	private Slider firstDocumentedInYearSlider;
 	private CaveAreaProperties caveAreaProps;
 	private ComboBox<CeilingTypeEntry> rearAreaCeilingTypeSelector2;
@@ -192,6 +168,12 @@ public class CaveEditor extends AbstractEditor {
 	private ComboBox<CeilingTypeEntry> leftCorridorCeilingTypeSelector2;
 	private ComboBox<CeilingTypeEntry> rightCorridorCeilingTypeSelector2;
 	private TextArea caveLayoutCommentsTextArea;
+	private ComboBox<PreservationClassificationEntry> rearAreaCeilingPreservationSelectorCB2;
+	private ComboBox<PreservationClassificationEntry> leftCorridorCeilingPreservationSelectorCB2;
+	private ComboBox<PreservationClassificationEntry> rightCorridorCeilingPreservationSelectorCB2;
+	private ComboBox<PreservationClassificationEntry> mainChamberCeilingPreservationSelectorCB2;
+	private ComboBox<PreservationClassificationEntry> corridorCeilingPreservationSelectorCB2;
+	private ComboBox<PreservationClassificationEntry> antechamberCeilingPreservationSelectorCB2;
 
 	interface CaveTypeProperties extends PropertyAccess<CaveTypeEntry> {
 		ModelKeyProvider<CaveTypeEntry> caveTypeID();
@@ -347,7 +329,7 @@ public class CaveEditor extends AbstractEditor {
 			imageContainer.add(new HTMLPanel(
 					caveLayoutViewTemplates.image(UriUtils.fromString("resource?background=" + correspondingCaveTypeEntry.getSketchName()))));
 //			updateCeilingTypePanel();
-			updateStateOfPreservationPanel();
+//			updateStateOfPreservationPanel();
 		}
 		for (CeilingTypeEntry cte : StaticTables.getInstance().getCeilingTypeEntries().values()) {
 			ceilingTypeEntryList.add(cte);
@@ -373,27 +355,27 @@ public class CaveEditor extends AbstractEditor {
 		for (PreservationClassificationEntry pce : StaticTables.getInstance().getPreservationClassificationEntries().values()) {
 			preservationClassificationEntryList.add(pce);
 		}
-		rearAreaPreservationSelector.setValue(preservationClassificationEntryList
+		rearAreaPreservationSelectorCB.setValue(preservationClassificationEntryList
 				.findModelWithKey(Integer.toString(correspondingCaveEntry.getRearAreaEntry().getPreservationClassificationID())));
-		rearAreaCeilingPreservationSelector.setValue(preservationClassificationEntryList
+		rearAreaCeilingPreservationSelectorCB1.setValue(preservationClassificationEntryList
 				.findModelWithKey(Integer.toString(correspondingCaveEntry.getRearAreaEntry().getCeilingPreservationClassificationID())));
-		leftCorridorPreservationSelector.setValue(preservationClassificationEntryList.findModelWithKey(
+		leftCorridorPreservationSelectorCB.setValue(preservationClassificationEntryList.findModelWithKey(
 				Integer.toString(correspondingCaveEntry.getRearAreaEntry().getLeftCorridorEntry().getPreservationClassificationID())));
-		leftCorridorCeilingPreservationSelector.setValue(preservationClassificationEntryList.findModelWithKey(
+		leftCorridorCeilingPreservationSelectorCB1.setValue(preservationClassificationEntryList.findModelWithKey(
 				Integer.toString(correspondingCaveEntry.getRearAreaEntry().getLeftCorridorEntry().getCeilingPreservationClassificationID())));
-		rightCorridorPreservationSelector.setValue(preservationClassificationEntryList.findModelWithKey(
+		rightCorridorPreservationSelectorCB.setValue(preservationClassificationEntryList.findModelWithKey(
 				Integer.toString(correspondingCaveEntry.getRearAreaEntry().getRightCorridorEntry().getPreservationClassificationID())));
-		rightCorridorCeilingPreservationSelector.setValue(preservationClassificationEntryList.findModelWithKey(
+		rightCorridorCeilingPreservationSelectorCB1.setValue(preservationClassificationEntryList.findModelWithKey(
 				Integer.toString(correspondingCaveEntry.getRearAreaEntry().getRightCorridorEntry().getCeilingPreservationClassificationID())));
-		mainChamberPreservationSelector.setValue(preservationClassificationEntryList
+		mainChamberPreservationSelectorCB.setValue(preservationClassificationEntryList
 				.findModelWithKey(Integer.toString(correspondingCaveEntry.getMainChamberEntry().getPreservationClassificationID())));
-		mainChamberCeilingPreservationSelector.setValue(preservationClassificationEntryList
+		mainChamberCeilingPreservationSelectorCB1.setValue(preservationClassificationEntryList
 				.findModelWithKey(Integer.toString(correspondingCaveEntry.getMainChamberEntry().getCeilingPreservationClassificationID())));
-		corridorPreservationSelector.setValue(preservationClassificationEntryList.findModelWithKey(
+		corridorPreservationSelectorCB.setValue(preservationClassificationEntryList.findModelWithKey(
 				Integer.toString(correspondingCaveEntry.getMainChamberEntry().getCorridorEntry().getPreservationClassificationID())));
-		antechamberPreservationSelector.setValue(preservationClassificationEntryList
+		antechamberPreservationSelectorCB.setValue(preservationClassificationEntryList
 				.findModelWithKey(Integer.toString(correspondingCaveEntry.getAntechamberEntry().getPreservationClassificationID())));
-		antechamberCeilingPreservationSelector.setValue(preservationClassificationEntryList
+		antechamberCeilingPreservationSelectorCB1.setValue(preservationClassificationEntryList
 				.findModelWithKey(Integer.toString(correspondingCaveEntry.getAntechamberEntry().getCeilingPreservationClassificationID())));
 	}
 
@@ -953,21 +935,10 @@ public class CaveEditor extends AbstractEditor {
 		HorizontalLayoutContainer stateOfPreservationHLC = new HorizontalLayoutContainer();
 		stateOfPreservationVLC = new VerticalLayoutContainer();
 
-		rearAreaStateOfPreservationPanel = new FramedPanel();
-		rearAreaStateOfPreservationPanel.setHeading("Rear Area");
-		rearAreaPreservationSelector = new ComboBox<PreservationClassificationEntry>(preservationClassificationEntryList,
-				preservationClassificationProps.name(), new AbstractSafeHtmlRenderer<PreservationClassificationEntry>() {
-
-					@Override
-					public SafeHtml render(PreservationClassificationEntry item) {
-						return pcvt.preservationClassificationLabel(item.getName());
-					}
-				});
-		rearAreaPreservationSelector.setEmptyText("state of preservation");
-		rearAreaPreservationSelector.setTypeAhead(false);
-		rearAreaPreservationSelector.setEditable(false);
-		rearAreaPreservationSelector.setTriggerAction(TriggerAction.ALL);
-		rearAreaPreservationSelector.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
+		rearAreaStateOfPreservationFP = new FramedPanel();
+		rearAreaStateOfPreservationFP.setHeading("Rear Area");
+		rearAreaPreservationSelectorCB = createStateOfPreservationSelector("state of preservation");
+		rearAreaPreservationSelectorCB.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
 			@Override
 			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
@@ -975,23 +946,12 @@ public class CaveEditor extends AbstractEditor {
 						.setPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
 			}
 		});
-		rearAreaStateOfPreservationPanel.add(rearAreaPreservationSelector);
+		rearAreaStateOfPreservationFP.add(rearAreaPreservationSelectorCB);
 
-		rearAreaCeilingStateOfPreservationPanel = new FramedPanel();
-		rearAreaCeilingStateOfPreservationPanel.setHeading("Rear Area Ceiling");
-		rearAreaCeilingPreservationSelector = new ComboBox<PreservationClassificationEntry>(preservationClassificationEntryList,
-				preservationClassificationProps.name(), new AbstractSafeHtmlRenderer<PreservationClassificationEntry>() {
-
-					@Override
-					public SafeHtml render(PreservationClassificationEntry item) {
-						return pcvt.preservationClassificationLabel(item.getName());
-					}
-				});
-		rearAreaCeilingPreservationSelector.setEmptyText("state of preservation");
-		rearAreaCeilingPreservationSelector.setTypeAhead(false);
-		rearAreaCeilingPreservationSelector.setEditable(false);
-		rearAreaCeilingPreservationSelector.setTriggerAction(TriggerAction.ALL);
-		rearAreaCeilingPreservationSelector.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
+		rearAreaCeilingStateOfPreservationFP = new FramedPanel();
+		rearAreaCeilingStateOfPreservationFP.setHeading("Rear Area Ceiling Preservation");
+		rearAreaCeilingPreservationSelectorCB1 = createStateOfPreservationSelector("state of preservation");
+		rearAreaCeilingPreservationSelectorCB1.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
 			@Override
 			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
@@ -999,23 +959,24 @@ public class CaveEditor extends AbstractEditor {
 						.setCeilingPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
 			}
 		});
-		rearAreaCeilingStateOfPreservationPanel.add(rearAreaCeilingPreservationSelector);
+		rearAreaCeilingPreservationSelectorCB2 = createStateOfPreservationSelector("optional 2nd type");
+		rearAreaCeilingPreservationSelectorCB2.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
-		leftCorridorStateOfPreservationPanel = new FramedPanel();
-		leftCorridorStateOfPreservationPanel.setHeading("Left Corridor");
-		leftCorridorPreservationSelector = new ComboBox<PreservationClassificationEntry>(preservationClassificationEntryList,
-				preservationClassificationProps.name(), new AbstractSafeHtmlRenderer<PreservationClassificationEntry>() {
+			@Override
+			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
+				correspondingCaveEntry.getRearAreaEntry()
+						.setCeilingPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
+			}
+		});
+		HorizontalLayoutContainer rearAreaCeilingPreservationHLC = new HorizontalLayoutContainer();
+		rearAreaCeilingPreservationHLC.add(rearAreaCeilingPreservationSelectorCB1, new HorizontalLayoutData(.5, 1.0, new Margins(0, 5, 0, 0)));
+		rearAreaCeilingPreservationHLC.add(rearAreaCeilingPreservationSelectorCB2, new HorizontalLayoutData(.5, 1.0, new Margins(0)));
+		rearAreaCeilingStateOfPreservationFP.add(rearAreaCeilingPreservationHLC);
 
-					@Override
-					public SafeHtml render(PreservationClassificationEntry item) {
-						return pcvt.preservationClassificationLabel(item.getName());
-					}
-				});
-		leftCorridorPreservationSelector.setEmptyText("state of preservation");
-		leftCorridorPreservationSelector.setTypeAhead(false);
-		leftCorridorPreservationSelector.setEditable(false);
-		leftCorridorPreservationSelector.setTriggerAction(TriggerAction.ALL);
-		leftCorridorPreservationSelector.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
+		leftCorridorStateOfPreservationFP = new FramedPanel();
+		leftCorridorStateOfPreservationFP.setHeading("Left Corridor");
+		leftCorridorPreservationSelectorCB = createStateOfPreservationSelector("state of preservation");
+		leftCorridorPreservationSelectorCB.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
 			@Override
 			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
@@ -1023,23 +984,12 @@ public class CaveEditor extends AbstractEditor {
 						.setPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
 			}
 		});
-		leftCorridorStateOfPreservationPanel.add(leftCorridorPreservationSelector);
+		leftCorridorStateOfPreservationFP.add(leftCorridorPreservationSelectorCB);
 
-		leftCorridorCeilingStateOfPreservationPanel = new FramedPanel();
-		leftCorridorCeilingStateOfPreservationPanel.setHeading("Left Corridor Ceiling");
-		leftCorridorCeilingPreservationSelector = new ComboBox<PreservationClassificationEntry>(preservationClassificationEntryList,
-				preservationClassificationProps.name(), new AbstractSafeHtmlRenderer<PreservationClassificationEntry>() {
-
-					@Override
-					public SafeHtml render(PreservationClassificationEntry item) {
-						return pcvt.preservationClassificationLabel(item.getName());
-					}
-				});
-		leftCorridorCeilingPreservationSelector.setEmptyText("state of preservation");
-		leftCorridorCeilingPreservationSelector.setTypeAhead(false);
-		leftCorridorCeilingPreservationSelector.setEditable(false);
-		leftCorridorCeilingPreservationSelector.setTriggerAction(TriggerAction.ALL);
-		leftCorridorCeilingPreservationSelector.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
+		leftCorridorCeilingStateOfPreservationFP = new FramedPanel();
+		leftCorridorCeilingStateOfPreservationFP.setHeading("Left Corridor Ceiling");
+		leftCorridorCeilingPreservationSelectorCB1 = createStateOfPreservationSelector("state of preservation");
+		leftCorridorCeilingPreservationSelectorCB1.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
 			@Override
 			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
@@ -1047,23 +997,24 @@ public class CaveEditor extends AbstractEditor {
 						.setCeilingPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
 			}
 		});
-		leftCorridorCeilingStateOfPreservationPanel.add(leftCorridorCeilingPreservationSelector);
+		leftCorridorCeilingPreservationSelectorCB2 = createStateOfPreservationSelector("optional 2nd type");
+		leftCorridorCeilingPreservationSelectorCB2.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
-		rightCorridorStateOfPreservationPanel = new FramedPanel();
-		rightCorridorStateOfPreservationPanel.setHeading("Right Corridor");
-		rightCorridorPreservationSelector = new ComboBox<PreservationClassificationEntry>(preservationClassificationEntryList,
-				preservationClassificationProps.name(), new AbstractSafeHtmlRenderer<PreservationClassificationEntry>() {
+			@Override
+			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
+				correspondingCaveEntry.getRearAreaEntry().getLeftCorridorEntry()
+						.setCeilingPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
+			}
+		});
+		HorizontalLayoutContainer leftCorridorCeilingPreservationHLC = new HorizontalLayoutContainer();
+		leftCorridorCeilingPreservationHLC.add(leftCorridorCeilingPreservationSelectorCB1, new HorizontalLayoutData(.5, 1.0, new Margins(0, 5, 0, 0)));
+		leftCorridorCeilingPreservationHLC.add(leftCorridorCeilingPreservationSelectorCB2, new HorizontalLayoutData(.5, 1.0, new Margins(0)));
+		leftCorridorCeilingStateOfPreservationFP.add(leftCorridorCeilingPreservationHLC);
 
-					@Override
-					public SafeHtml render(PreservationClassificationEntry item) {
-						return pcvt.preservationClassificationLabel(item.getName());
-					}
-				});
-		rightCorridorPreservationSelector.setEmptyText("state of preservation");
-		rightCorridorPreservationSelector.setTypeAhead(false);
-		rightCorridorPreservationSelector.setEditable(false);
-		rightCorridorPreservationSelector.setTriggerAction(TriggerAction.ALL);
-		rightCorridorPreservationSelector.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
+		rightCorridorStateOfPreservationFP = new FramedPanel();
+		rightCorridorStateOfPreservationFP.setHeading("Right Corridor");
+		rightCorridorPreservationSelectorCB = createStateOfPreservationSelector("state of preservation");
+		rightCorridorPreservationSelectorCB.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
 			@Override
 			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
@@ -1071,23 +1022,12 @@ public class CaveEditor extends AbstractEditor {
 						.setPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
 			}
 		});
-		rightCorridorStateOfPreservationPanel.add(rightCorridorPreservationSelector);
+		rightCorridorStateOfPreservationFP.add(rightCorridorPreservationSelectorCB);
 
-		rightCorridorCeilingStateOfPreservationPanel = new FramedPanel();
-		rightCorridorCeilingStateOfPreservationPanel.setHeading("Right Corridor");
-		rightCorridorCeilingPreservationSelector = new ComboBox<PreservationClassificationEntry>(preservationClassificationEntryList,
-				preservationClassificationProps.name(), new AbstractSafeHtmlRenderer<PreservationClassificationEntry>() {
-
-					@Override
-					public SafeHtml render(PreservationClassificationEntry item) {
-						return pcvt.preservationClassificationLabel(item.getName());
-					}
-				});
-		rightCorridorCeilingPreservationSelector.setEmptyText("state of preservation");
-		rightCorridorCeilingPreservationSelector.setTypeAhead(false);
-		rightCorridorCeilingPreservationSelector.setEditable(false);
-		rightCorridorCeilingPreservationSelector.setTriggerAction(TriggerAction.ALL);
-		rightCorridorCeilingPreservationSelector.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
+		rightCorridorCeilingStateOfPreservationFP = new FramedPanel();
+		rightCorridorCeilingStateOfPreservationFP.setHeading("Right Corridor");
+		rightCorridorCeilingPreservationSelectorCB1 = createStateOfPreservationSelector("state of preservation");
+		rightCorridorCeilingPreservationSelectorCB1.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
 			@Override
 			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
@@ -1095,23 +1035,24 @@ public class CaveEditor extends AbstractEditor {
 						.setCeilingPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
 			}
 		});
-		rightCorridorCeilingStateOfPreservationPanel.add(rightCorridorCeilingPreservationSelector);
+		rightCorridorCeilingPreservationSelectorCB2 = createStateOfPreservationSelector("optional 2nd type");
+		rightCorridorCeilingPreservationSelectorCB2.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
-		mainChamberStateOfPreservationPanel = new FramedPanel();
-		mainChamberStateOfPreservationPanel.setHeading("Main Chamber");
-		mainChamberPreservationSelector = new ComboBox<PreservationClassificationEntry>(preservationClassificationEntryList,
-				preservationClassificationProps.name(), new AbstractSafeHtmlRenderer<PreservationClassificationEntry>() {
+			@Override
+			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
+				correspondingCaveEntry.getRearAreaEntry().getRightCorridorEntry()
+						.setCeilingPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
+			}
+		});
+		HorizontalLayoutContainer rightCorridorCeilingPreservationHLC = new HorizontalLayoutContainer();
+		rightCorridorCeilingPreservationHLC.add(rightCorridorCeilingPreservationSelectorCB1, new HorizontalLayoutData(.5, 1.0, new Margins(0, 5, 0, 0)));
+		rightCorridorCeilingPreservationHLC.add(rightCorridorCeilingPreservationSelectorCB2, new HorizontalLayoutData(.5, 1.0, new Margins(0)));
+		rightCorridorCeilingStateOfPreservationFP.add(rightCorridorCeilingPreservationHLC);
 
-					@Override
-					public SafeHtml render(PreservationClassificationEntry item) {
-						return pcvt.preservationClassificationLabel(item.getName());
-					}
-				});
-		mainChamberPreservationSelector.setEmptyText("state of preservation");
-		mainChamberPreservationSelector.setTypeAhead(false);
-		mainChamberPreservationSelector.setEditable(false);
-		mainChamberPreservationSelector.setTriggerAction(TriggerAction.ALL);
-		mainChamberPreservationSelector.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
+		mainChamberStateOfPreservationFP = new FramedPanel();
+		mainChamberStateOfPreservationFP.setHeading("Main Chamber");
+		mainChamberPreservationSelectorCB = createStateOfPreservationSelector("state of preservation");
+		mainChamberPreservationSelectorCB.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
 			@Override
 			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
@@ -1119,23 +1060,12 @@ public class CaveEditor extends AbstractEditor {
 						.setPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
 			}
 		});
-		mainChamberStateOfPreservationPanel.add(mainChamberPreservationSelector);
+		mainChamberStateOfPreservationFP.add(mainChamberPreservationSelectorCB);
 
-		mainChamberCeilingStateOfPreservationPanel = new FramedPanel();
-		mainChamberCeilingStateOfPreservationPanel.setHeading("Main Chamber Ceiling");
-		mainChamberCeilingPreservationSelector = new ComboBox<PreservationClassificationEntry>(preservationClassificationEntryList,
-				preservationClassificationProps.name(), new AbstractSafeHtmlRenderer<PreservationClassificationEntry>() {
-
-					@Override
-					public SafeHtml render(PreservationClassificationEntry item) {
-						return pcvt.preservationClassificationLabel(item.getName());
-					}
-				});
-		mainChamberCeilingPreservationSelector.setEmptyText("state of preservation");
-		mainChamberCeilingPreservationSelector.setTypeAhead(false);
-		mainChamberCeilingPreservationSelector.setEditable(false);
-		mainChamberCeilingPreservationSelector.setTriggerAction(TriggerAction.ALL);
-		mainChamberCeilingPreservationSelector.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
+		mainChamberCeilingStateOfPreservationFP = new FramedPanel();
+		mainChamberCeilingStateOfPreservationFP.setHeading("Main Chamber Ceiling");
+		mainChamberCeilingPreservationSelectorCB1 = createStateOfPreservationSelector("state of preservation");
+		mainChamberCeilingPreservationSelectorCB1.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
 			@Override
 			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
@@ -1143,23 +1073,24 @@ public class CaveEditor extends AbstractEditor {
 						.setCeilingPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
 			}
 		});
-		mainChamberCeilingStateOfPreservationPanel.add(mainChamberCeilingPreservationSelector);
+		mainChamberCeilingPreservationSelectorCB2 = createStateOfPreservationSelector("optional 2nd type");
+		mainChamberCeilingPreservationSelectorCB2.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
-		corridorStateOfPreservationPanel = new FramedPanel();
-		corridorStateOfPreservationPanel.setHeading("Corridor");
-		corridorPreservationSelector = new ComboBox<PreservationClassificationEntry>(preservationClassificationEntryList,
-				preservationClassificationProps.name(), new AbstractSafeHtmlRenderer<PreservationClassificationEntry>() {
+			@Override
+			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
+				correspondingCaveEntry.getMainChamberEntry()
+						.setCeilingPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
+			}
+		});
+		HorizontalLayoutContainer mainChamberCeilingPreservationHLC = new HorizontalLayoutContainer();
+		mainChamberCeilingPreservationHLC.add(mainChamberCeilingPreservationSelectorCB1, new HorizontalLayoutData(0.5, 1.0, new Margins(0, 5, 0, 0)));
+		mainChamberCeilingPreservationHLC.add(mainChamberCeilingPreservationSelectorCB2, new HorizontalLayoutData(0.5, 1.0, new Margins(0)));
+		mainChamberCeilingStateOfPreservationFP.add(mainChamberCeilingPreservationHLC);
 
-					@Override
-					public SafeHtml render(PreservationClassificationEntry item) {
-						return pcvt.preservationClassificationLabel(item.getName());
-					}
-				});
-		corridorPreservationSelector.setEmptyText("state of preservation");
-		corridorPreservationSelector.setTypeAhead(false);
-		corridorPreservationSelector.setEditable(false);
-		corridorPreservationSelector.setTriggerAction(TriggerAction.ALL);
-		corridorPreservationSelector.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
+		corridorStateOfPreservationFP = new FramedPanel();
+		corridorStateOfPreservationFP.setHeading("Corridor");
+		corridorPreservationSelectorCB = createStateOfPreservationSelector("state of preservation");
+		corridorPreservationSelectorCB.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
 			@Override
 			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
@@ -1167,23 +1098,12 @@ public class CaveEditor extends AbstractEditor {
 						.setPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
 			}
 		});
-		corridorStateOfPreservationPanel.add(corridorPreservationSelector);
+		corridorStateOfPreservationFP.add(corridorPreservationSelectorCB);
 
-		corridorCeilingStateOfPreservationPanel = new FramedPanel();
-		corridorCeilingStateOfPreservationPanel.setHeading("Corridor Ceiling");
-		corridorCeilingPreservationSelector = new ComboBox<PreservationClassificationEntry>(preservationClassificationEntryList,
-				preservationClassificationProps.name(), new AbstractSafeHtmlRenderer<PreservationClassificationEntry>() {
-
-					@Override
-					public SafeHtml render(PreservationClassificationEntry item) {
-						return pcvt.preservationClassificationLabel(item.getName());
-					}
-				});
-		corridorCeilingPreservationSelector.setEmptyText("state of preservation");
-		corridorCeilingPreservationSelector.setTypeAhead(false);
-		corridorCeilingPreservationSelector.setEditable(false);
-		corridorCeilingPreservationSelector.setTriggerAction(TriggerAction.ALL);
-		corridorCeilingPreservationSelector.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
+		corridorCeilingStateOfPreservationFP = new FramedPanel();
+		corridorCeilingStateOfPreservationFP.setHeading("Corridor Ceiling");
+		corridorCeilingPreservationSelectorCB1 = createStateOfPreservationSelector("state of preservation");
+		corridorCeilingPreservationSelectorCB1.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
 			@Override
 			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
@@ -1191,23 +1111,24 @@ public class CaveEditor extends AbstractEditor {
 						.setCeilingPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
 			}
 		});
-		corridorCeilingStateOfPreservationPanel.add(corridorCeilingPreservationSelector);
+		corridorCeilingPreservationSelectorCB2 = createStateOfPreservationSelector("optional 2nd type");
+		corridorCeilingPreservationSelectorCB2.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
-		antechamberStateOfPreservationPanel = new FramedPanel();
-		antechamberStateOfPreservationPanel.setHeading("Antechamber");
-		antechamberPreservationSelector = new ComboBox<PreservationClassificationEntry>(preservationClassificationEntryList,
-				preservationClassificationProps.name(), new AbstractSafeHtmlRenderer<PreservationClassificationEntry>() {
+			@Override
+			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
+				correspondingCaveEntry.getMainChamberEntry().getCorridorEntry()
+						.setCeilingPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
+			}
+		});
+		HorizontalLayoutContainer corridorCeilingPreservationHLC = new HorizontalLayoutContainer();
+		corridorCeilingPreservationHLC.add(corridorCeilingPreservationSelectorCB1, new HorizontalLayoutData(.5, 1.0, new Margins(0, 5, 0, 0)));
+		corridorCeilingPreservationHLC.add(corridorCeilingPreservationSelectorCB2, new HorizontalLayoutData(.5, 1.0, new Margins(0)));
+		corridorCeilingStateOfPreservationFP.add(corridorCeilingPreservationHLC);
 
-					@Override
-					public SafeHtml render(PreservationClassificationEntry item) {
-						return pcvt.preservationClassificationLabel(item.getName());
-					}
-				});
-		antechamberPreservationSelector.setEmptyText("state of preservation");
-		antechamberPreservationSelector.setTypeAhead(false);
-		antechamberPreservationSelector.setEditable(false);
-		antechamberPreservationSelector.setTriggerAction(TriggerAction.ALL);
-		antechamberPreservationSelector.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
+		antechamberStateOfPreservationFP = new FramedPanel();
+		antechamberStateOfPreservationFP.setHeading("Antechamber");
+		antechamberPreservationSelectorCB = createStateOfPreservationSelector("state of preservation");
+		antechamberPreservationSelectorCB.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
 			@Override
 			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
@@ -1215,23 +1136,12 @@ public class CaveEditor extends AbstractEditor {
 						.setPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
 			}
 		});
-		antechamberStateOfPreservationPanel.add(antechamberPreservationSelector);
+		antechamberStateOfPreservationFP.add(antechamberPreservationSelectorCB);
 
-		antechamberCeilingStateOfPreservationPanel = new FramedPanel();
-		antechamberCeilingStateOfPreservationPanel.setHeading("Antechamber Ceiling");
-		antechamberCeilingPreservationSelector = new ComboBox<PreservationClassificationEntry>(preservationClassificationEntryList,
-				preservationClassificationProps.name(), new AbstractSafeHtmlRenderer<PreservationClassificationEntry>() {
-
-					@Override
-					public SafeHtml render(PreservationClassificationEntry item) {
-						return pcvt.preservationClassificationLabel(item.getName());
-					}
-				});
-		antechamberCeilingPreservationSelector.setEmptyText("state of preservation");
-		antechamberCeilingPreservationSelector.setTypeAhead(false);
-		antechamberCeilingPreservationSelector.setEditable(false);
-		antechamberCeilingPreservationSelector.setTriggerAction(TriggerAction.ALL);
-		antechamberCeilingPreservationSelector.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
+		antechamberCeilingStateOfPreservationFP = new FramedPanel();
+		antechamberCeilingStateOfPreservationFP.setHeading("Antechamber Ceiling");
+		antechamberCeilingPreservationSelectorCB1 = createStateOfPreservationSelector("state of preservation");
+		antechamberCeilingPreservationSelectorCB1.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
 			@Override
 			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
@@ -1239,12 +1149,40 @@ public class CaveEditor extends AbstractEditor {
 						.setCeilingPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
 			}
 		});
-		antechamberCeilingStateOfPreservationPanel.add(antechamberCeilingPreservationSelector);
+		antechamberCeilingPreservationSelectorCB2 = createStateOfPreservationSelector("optional 2nd type");
+		antechamberCeilingPreservationSelectorCB2.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
-		updateStateOfPreservationPanel();
-		stateOfPreservationHLC.add(stateOfPreservationVLC, new HorizontalLayoutData(.4, 1.0));
+			@Override
+			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
+				correspondingCaveEntry.getAntechamberEntry()
+						.setCeilingPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
+			}
+		});
+		HorizontalLayoutContainer antechamberCeilingPreservationHLC = new HorizontalLayoutContainer();
+		antechamberCeilingPreservationHLC.add(antechamberCeilingPreservationSelectorCB1, new HorizontalLayoutData(.5, 1.0, new Margins(0, 5, 0, 0)));
+		antechamberCeilingPreservationHLC.add(antechamberCeilingPreservationSelectorCB2, new HorizontalLayoutData(.5, 1.0, new Margins(0)));
+		antechamberCeilingStateOfPreservationFP.add(antechamberCeilingPreservationHLC);
+		
+		HorizontalLayoutContainer rearAnteHLC = new HorizontalLayoutContainer();
+		rearAnteHLC.add(rearAreaStateOfPreservationFP, new HorizontalLayoutData(.5, 1.0));
+		rearAnteHLC.add(antechamberStateOfPreservationFP, new HorizontalLayoutData(.5, 1.0));
+		stateOfPreservationVLC.add(rearAnteHLC, new VerticalLayoutData(1.0, 60));
+		HorizontalLayoutContainer leftRightCorridorHLC = new HorizontalLayoutContainer();
+		leftRightCorridorHLC.add(leftCorridorStateOfPreservationFP, new HorizontalLayoutData(.5, 1.0));
+		leftRightCorridorHLC.add(rightCorridorStateOfPreservationFP, new HorizontalLayoutData(.5, 1.0));
+		stateOfPreservationVLC.add(leftRightCorridorHLC, new VerticalLayoutData(1.0, 60));
+		HorizontalLayoutContainer corridorMainChamberHLC = new HorizontalLayoutContainer();
+		corridorMainChamberHLC.add(corridorStateOfPreservationFP, new HorizontalLayoutData(.5, 1.0));
+		corridorMainChamberHLC.add(mainChamberStateOfPreservationFP, new HorizontalLayoutData(.5, 1.0));
+		stateOfPreservationVLC.add(corridorMainChamberHLC, new VerticalLayoutData(1.0, 60));
+//		stateOfPreservationVLC.add(antechamberStateOfPreservationFP, new VerticalLayoutData(1.0, 70, new Margins(0, 0, 10, 0)));
 
-		// vlContainer = new VerticalLayoutContainer();
+		stateOfPreservationVLC.add(rearAreaCeilingStateOfPreservationFP, new VerticalLayoutData(1.0, 60));
+		stateOfPreservationVLC.add(leftCorridorCeilingStateOfPreservationFP, new VerticalLayoutData(1.0, 60));
+		stateOfPreservationVLC.add(rightCorridorCeilingStateOfPreservationFP, new VerticalLayoutData(1.0, 60));
+		stateOfPreservationVLC.add(mainChamberCeilingStateOfPreservationFP, new VerticalLayoutData(1.0, 60));
+		stateOfPreservationVLC.add(corridorCeilingStateOfPreservationFP, new VerticalLayoutData(1.0, 60));
+		stateOfPreservationVLC.add(antechamberCeilingStateOfPreservationFP, new VerticalLayoutData(1.0, 60));
 
 		FramedPanel furtherCommentsPanel = new FramedPanel();
 		furtherCommentsPanel.setHeading("Further Comments");
@@ -1258,11 +1196,11 @@ public class CaveEditor extends AbstractEditor {
 				correspondingCaveEntry.setStateOfPerservation(event.getValue());
 			}
 		});
-		// stateOfPreservationTextArea.setSize("250px", "200px");
-		furtherCommentsPanel.add(stateOfPreservationTextArea);
-		// vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0));
 
-		stateOfPreservationHLC.add(furtherCommentsPanel, new HorizontalLayoutData(.6, 1.0));
+		furtherCommentsPanel.add(stateOfPreservationTextArea);
+
+		stateOfPreservationHLC.add(stateOfPreservationVLC, new HorizontalLayoutData(.5, 1.0));
+		stateOfPreservationHLC.add(furtherCommentsPanel, new HorizontalLayoutData(.5, 1.0));
 
 		/**
 		 * ------------------------------ the column with the text fields (description tab) ----------------------------
@@ -1331,7 +1269,7 @@ public class CaveEditor extends AbstractEditor {
 				imageContainer.add(new HTMLPanel(
 						caveLayoutViewTemplates.image(UriUtils.fromString("resource?background=" + correspondingCaveTypeEntry.getSketchName()))));
 //				updateCeilingTypePanel();
-				updateStateOfPreservationPanel();
+//				updateStateOfPreservationPanel();
 			}
 		});
 		caveTypeFP.add(caveTypeSelection);
@@ -1536,7 +1474,7 @@ public class CaveEditor extends AbstractEditor {
 		rightCorridorCeilingTypeFP.add(rightCorridorCeilingTypeHLC);
 		
 		/**
-		 * ======== cave leyout comments
+		 * ======== cave layout comments
 		 */
 		FramedPanel caveLayoutCommentsFP = new FramedPanel();
 		caveLayoutCommentsFP.setHeading("Comments on Cave Layout");
@@ -1664,48 +1602,26 @@ public class CaveEditor extends AbstractEditor {
 //		}
 //	}
 
-	private void updateStateOfPreservationPanel() {
-
-		stateOfPreservationVLC.clear();
-
-		switch (correspondingCaveEntry.getCaveTypeID()) {
-		case 2: // square cave
-			stateOfPreservationVLC.add(mainChamberStateOfPreservationPanel, new VerticalLayoutData(1.0, .25));
-			stateOfPreservationVLC.add(mainChamberCeilingStateOfPreservationPanel, new VerticalLayoutData(1.0, .25));
-			stateOfPreservationVLC.add(antechamberStateOfPreservationPanel, new VerticalLayoutData(1.0, .25));
-			stateOfPreservationVLC.add(antechamberCeilingStateOfPreservationPanel, new VerticalLayoutData(1.0, .25));
-			break;
-
-		case 3: // residential cave
-			stateOfPreservationVLC.add(rearAreaStateOfPreservationPanel, new VerticalLayoutData(1.0, .125));
-			stateOfPreservationVLC.add(rearAreaCeilingStateOfPreservationPanel, new VerticalLayoutData(1.0, .125));
-			stateOfPreservationVLC.add(mainChamberStateOfPreservationPanel, new VerticalLayoutData(1.0, .125));
-			stateOfPreservationVLC.add(mainChamberCeilingStateOfPreservationPanel, new VerticalLayoutData(1.0, .125));
-			stateOfPreservationVLC.add(corridorStateOfPreservationPanel, new VerticalLayoutData(1.0, .125));
-			stateOfPreservationVLC.add(corridorCeilingStateOfPreservationPanel, new VerticalLayoutData(1.0, .125));
-			stateOfPreservationVLC.add(antechamberStateOfPreservationPanel, new VerticalLayoutData(1.0, .125));
-			stateOfPreservationVLC.add(antechamberCeilingStateOfPreservationPanel, new VerticalLayoutData(1.0, .125));
-			break;
-
-		case 4: // central-pillar cave
-		case 6: // monumental image cave
-			stateOfPreservationVLC.add(rearAreaStateOfPreservationPanel, new VerticalLayoutData(1.0, .1));
-			stateOfPreservationVLC.add(rearAreaCeilingStateOfPreservationPanel, new VerticalLayoutData(1.0, .1));
-			stateOfPreservationVLC.add(leftCorridorStateOfPreservationPanel, new VerticalLayoutData(1.0, .1));
-			stateOfPreservationVLC.add(leftCorridorCeilingStateOfPreservationPanel, new VerticalLayoutData(1.0, .1));
-			stateOfPreservationVLC.add(rightCorridorStateOfPreservationPanel, new VerticalLayoutData(1.0, .1));
-			stateOfPreservationVLC.add(rightCorridorCeilingStateOfPreservationPanel, new VerticalLayoutData(1.0, .1));
-			stateOfPreservationVLC.add(mainChamberStateOfPreservationPanel, new VerticalLayoutData(1.0, .1));
-			stateOfPreservationVLC.add(mainChamberCeilingStateOfPreservationPanel, new VerticalLayoutData(1.0, .1));
-			stateOfPreservationVLC.add(antechamberStateOfPreservationPanel, new VerticalLayoutData(1.0, 1));
-			stateOfPreservationVLC.add(antechamberCeilingStateOfPreservationPanel, new VerticalLayoutData(1.0, .1));
-			break;
-
-		default:
-			stateOfPreservationVLC.add(new Label("select cave type"));
-			break;
-		}
-	}
+//	private void updateStateOfPreservationPanel() {
+//
+//		stateOfPreservationVLC.clear();
+//
+//		switch (correspondingCaveEntry.getCaveTypeID()) {
+//		case 2: // square cave
+//			break;
+//
+//		case 3: // residential cave
+//			break;
+//
+//		case 4: // central-pillar cave
+//		case 6: // monumental image cave
+//			break;
+//
+//		default:
+//			stateOfPreservationVLC.add(new Label("select cave type"));
+//			break;
+//		}
+//	}
 
 	// /**
 	// * Will be called when the cancel button is selected. Calls <code>CaveEditorListener.closeRequest()</code>
@@ -1822,6 +1738,22 @@ public class CaveEditor extends AbstractEditor {
 		ceilingTypeSelector.setEditable(false);
 		ceilingTypeSelector.setTriggerAction(TriggerAction.ALL);
 		return ceilingTypeSelector;
+	}
+	
+	private ComboBox<PreservationClassificationEntry> createStateOfPreservationSelector(String emptyText) {
+		ComboBox<PreservationClassificationEntry> selectorCB = new ComboBox<PreservationClassificationEntry>(preservationClassificationEntryList,
+				preservationClassificationProps.name(), new AbstractSafeHtmlRenderer<PreservationClassificationEntry>() {
+
+					@Override
+					public SafeHtml render(PreservationClassificationEntry item) {
+						return pcvt.preservationClassificationLabel(item.getName());
+					}
+				});
+		selectorCB.setEmptyText(emptyText);
+		selectorCB.setTypeAhead(false);
+		selectorCB.setEditable(false);
+		selectorCB.setTriggerAction(TriggerAction.ALL);
+		return selectorCB;
 	}
 	
 }
