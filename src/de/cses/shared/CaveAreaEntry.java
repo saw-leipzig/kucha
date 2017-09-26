@@ -13,59 +13,34 @@
  */
 package de.cses.shared;
 
-import java.util.ArrayList;
-
 /**
  * @author alingnau
  *
  */
 public class CaveAreaEntry extends AbstractEntry {
 	
-	public static class Ceiling {
-		public static String ANTECHAMBER = "antechamber";
-		public static String MAIN_CHAMBER = "main chamber";
-		public static String MAIN_CHAMBER_CORRIDOR = "main chamber corridor";
-		public static String REAR_AREA_LEFT_CORRIDOR = "rear area left corridor";
-		public static String REAR_AREA_RIGHT_CORRIDOR = "rear area right corridor";
-		public static String REAR_CHAMBER = "rear chamber";
-		public static String REAR_CORRIDOR = "rear corridor";
-		
-		protected int ceilingTypeID;
-		protected int preservationClassificationID;
-		
-		/**
-		 * @param ceilingTypeID
-		 * @param preservationClassificationID
-		 */
-		public Ceiling(int ceilingTypeID, int preservationClassificationID) {
-			this.ceilingTypeID = ceilingTypeID;
-			this.preservationClassificationID = preservationClassificationID;
-		}
+	public static String ANTECHAMBER = "antechamber";
+	public static String MAIN_CHAMBER = "main chamber";
+	public static String MAIN_CHAMBER_CORRIDOR = "main chamber corridor";
+	public static String REAR_AREA_LEFT_CORRIDOR = "rear area left corridor";
+	public static String REAR_AREA_RIGHT_CORRIDOR = "rear area right corridor";
+	public static String REAR_CHAMBER = "rear chamber";
+	public static String REAR_CORRIDOR = "rear corridor";
 
-		public int getCeilingTypeID() {
-			return ceilingTypeID;
-		}
-
-		public int getPreservationClassificationID() {
-			return preservationClassificationID;
-		}
-		
-	}
-
-	protected int caveAreaID;
 	protected int caveID;
 	protected String caveAreaLabel;
 	protected double height, width, depth;
 	protected int preservationClassificationID;
-	protected ArrayList<Ceiling> ceilings;
+	protected int ceilingTypeID1, ceilingTypeID2;
+	protected int ceilingPreservationClassificationID1, ceilingPreservationClassificationID2;
+	
 
 	/**
 	 * 
 	 */
 	public CaveAreaEntry() {
-		this(0, 0, "", 0, 0, 0, 0);
 	}
-
+	
 	/**
 	 * @param caveID
 	 * @param caveAreaLabel
@@ -73,17 +48,27 @@ public class CaveAreaEntry extends AbstractEntry {
 	 * @param width
 	 * @param depth
 	 * @param preservationClassificationID
+	 * @param ceilingTypeID1
+	 * @param ceilingTypeID2
+	 * @param ceilingPreservationClassificationID1
+	 * @param ceilingPreservationClassificationID2
 	 */
-	public CaveAreaEntry(int caveAreaID, int caveID, String caveAreaLabel, double height, double width, double depth, int preservationClassificationID) {
-		this.caveAreaID = caveAreaID;
+	public CaveAreaEntry(int caveID, String caveAreaLabel, double height, double width, double depth, int preservationClassificationID,
+			int ceilingTypeID1, int ceilingTypeID2, int ceilingPreservationClassificationID1, int ceilingPreservationClassificationID2) {
+		super();
 		this.caveID = caveID;
 		this.caveAreaLabel = caveAreaLabel;
 		this.height = height;
 		this.width = width;
 		this.depth = depth;
 		this.preservationClassificationID = preservationClassificationID;
-		ceilings = new ArrayList<Ceiling>();
+		this.ceilingTypeID1 = ceilingTypeID1;
+		this.ceilingTypeID2 = ceilingTypeID2;
+		this.ceilingPreservationClassificationID1 = ceilingPreservationClassificationID1;
+		this.ceilingPreservationClassificationID2 = ceilingPreservationClassificationID2;
 	}
+
+
 
 	/*
 	 * (non-Javadoc)
@@ -94,14 +79,6 @@ public class CaveAreaEntry extends AbstractEntry {
 	public String getUniqueID() {
 		// TODO Auto-generated method stub
 		return "CaveArea-" + caveID + caveAreaLabel;
-	}
-
-	public int getCaveAreaID() {
-		return caveAreaID;
-	}
-
-	public void setCaveAreaID(int caveAreaID) {
-		this.caveAreaID = caveAreaID;
 	}
 
 	public int getCaveID() {
@@ -116,11 +93,6 @@ public class CaveAreaEntry extends AbstractEntry {
 		return caveAreaLabel;
 	}
 
-	/**
-	 * We test if the label is valid for the database
-	 * @param caveAreaLabel
-	 * @return true if the label is valid, otherwise false
-	 */
 	public void setCaveAreaLabel(String caveAreaLabel) {
 		this.caveAreaLabel = caveAreaLabel;
 	}
@@ -157,24 +129,37 @@ public class CaveAreaEntry extends AbstractEntry {
 		this.preservationClassificationID = preservationClassificationID;
 	}
 
-	/**
-	 * @return the ceilings
-	 */
-	public ArrayList<Ceiling> getCeilings() {
-		return ceilings;
+	public int getCeilingTypeID1() {
+		return ceilingTypeID1;
 	}
 
-	/**
-	 * @param ceilings the ceilings to set
-	 */
-	public void setCeilings(ArrayList<Ceiling> ceilings) {
-		this.ceilings = ceilings;
+	public void setCeilingTypeID1(int ceilingTypeID1) {
+		this.ceilingTypeID1 = ceilingTypeID1;
 	}
-	
-	public void addCeiling(Ceiling ceiling) {
-		ceilings.add(ceiling);
-	}
-	
-	
 
+	public int getCeilingTypeID2() {
+		return ceilingTypeID2;
+	}
+
+	public void setCeilingTypeID2(int ceilingTypeID2) {
+		this.ceilingTypeID2 = ceilingTypeID2;
+	}
+
+	public int getCeilingPreservationClassificationID1() {
+		return ceilingPreservationClassificationID1;
+	}
+
+	public void setCeilingPreservationClassificationID1(int ceilingPreservationClassificationID1) {
+		this.ceilingPreservationClassificationID1 = ceilingPreservationClassificationID1;
+	}
+
+	public int getCeilingPreservationClassificationID2() {
+		return ceilingPreservationClassificationID2;
+	}
+
+	public void setCeilingPreservationClassificationID2(int ceilingPreservationClassificationID2) {
+		this.ceilingPreservationClassificationID2 = ceilingPreservationClassificationID2;
+	}
+
+	
 }

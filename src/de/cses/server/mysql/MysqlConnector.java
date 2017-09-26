@@ -26,7 +26,6 @@ import de.cses.server.ServerProperties;
 import de.cses.shared.AntechamberEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.CaveAreaEntry;
-import de.cses.shared.CaveAreaEntry.Ceiling;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveGroupEntry;
 import de.cses.shared.CavePart;
@@ -2156,22 +2155,18 @@ public class MysqlConnector {
 	public ArrayList<CaveAreaEntry> getCaveAreas(int caveID) {
 		CaveAreaEntry caEntry;
 		Connection dbc = getConnection();
-		PreparedStatement caveAreaStatement, relationStatement;
+		PreparedStatement caveAreaStatement;
 		ArrayList<CaveAreaEntry> result = new ArrayList<CaveAreaEntry>();
-		ResultSet caveAreaRS, relationRS;
+		ResultSet caveAreaRS;
 		try {
 			caveAreaStatement = dbc.prepareStatement("SELECT * FROM CaveAreas WHERE CaveID=?");
-			relationStatement = dbc.prepareStatement("SELECT * FROM CaveAreaCeilingTypeRelation WHERE CaveAreaID=?");
 			caveAreaStatement.setInt(1, caveID);
 			caveAreaRS = caveAreaStatement.executeQuery();
 			while (caveAreaRS.next()) {
-				caEntry = new CaveAreaEntry(caveAreaRS.getInt("CaveAreaID"), caveAreaRS.getInt("CaveID"), caveAreaRS.getString("CaveAreaLabel"), caveAreaRS.getDouble("Height"),
-						caveAreaRS.getDouble("Width"), caveAreaRS.getDouble("Depth"), caveAreaRS.getInt("PreservationClassificationID"));
-				relationStatement.setInt(1, caEntry.getCaveAreaID());
-				relationRS = relationStatement.executeQuery();
-				while (relationRS.next()) {
-					caEntry.addCeiling(new CaveAreaEntry.Ceiling(relationRS.getInt("CeilingTypeID"), relationRS.getInt("")));
-				}
+				caEntry = new CaveAreaEntry(caveAreaRS.getInt("CaveID"), caveAreaRS.getString("CaveAreaLabel"), caveAreaRS.getDouble("Height"),
+						caveAreaRS.getDouble("Width"), caveAreaRS.getDouble("Depth"), caveAreaRS.getInt("PreservationClassificationID"),
+						caveAreaRS.getInt("CeilingTypeID1"), caveAreaRS.getInt("CeilingTypeID2"), caveAreaRS.getInt("CeilingPreservationClassificationID1"),
+						caveAreaRS.getInt("CeilingPreservationClassificationID2"));
 				result.add(caEntry);
 			}
 			caveAreaStatement.close();
@@ -2185,26 +2180,23 @@ public class MysqlConnector {
 	public synchronized int insertCaveArea(CaveAreaEntry entry) {
 		int newID;
 		Connection dbc = getConnection();
-		PreparedStatement caveAreaStatement, relationStatement;
+		PreparedStatement caveAreaStatement;
 		try {
 			caveAreaStatement = dbc.prepareStatement(
-					"INSERT INTO CaveAreas (CaveID, CaveAreaLabel, Height, Width, Depth, PreservationClassificationID) VALUES (?, ?, ?, ?, ?, ?)");
+					"INSERT INTO CaveAreas (CaveID, CaveAreaLabel, Height, Width, Depth, PreservationClassificationID, CeilingTypeID1,"
+					+ "CeilingTypeID2, CeilingPreservationClassificationID1, CeilingPreservationClassificationID2) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			caveAreaStatement.setInt(1, entry.getCaveID());
 			caveAreaStatement.setString(2, entry.getCaveAreaLabel());
 			caveAreaStatement.setDouble(3, entry.getHeight());
 			caveAreaStatement.setDouble(4, entry.getWidth());
 			caveAreaStatement.setDouble(5, entry.getWidth());
 			caveAreaStatement.setInt(6, entry.getPreservationClassificationID());
+			caveAreaStatement.setInt(7, entry.getCeilingTypeID1());
+			caveAreaStatement.setInt(8, entry.getCeilingTypeID2());
+			caveAreaStatement.setInt(9, entry.getCeilingPreservationClassificationID1());
+			caveAreaStatement.setInt(10, entry.getCeilingPreservationClassificationID2());
 			newID = caveAreaStatement.executeUpdate();
-			if (newID > 0) {
-				deleteEntry("DELETE FROM CaveAreaCeilingTypeRelation WHERE CaveAreaID=" + newID);
-				relationStatement = dbc.prepareStatement("INSERT INTO CaveAreaCeilingTypeRelation (CaveAreaID, CeilingTypeID, PreservationClassificationID) VALUES (?, ?, ?)");
-				for (Ceiling ceiling : entry.getCeilings()) {
-					relationStatement.setInt(1, newID);
-					relationStatement.setInt(2, ceiling.getCeilingTypeID());
-					relationStatement.setInt(3, ceiling.getPreservationClassificationID());
-				}
-			}
 			caveAreaStatement.close();
 		} catch (SQLException ex) {
 			ex.printStackTrace();
@@ -2219,26 +2211,19 @@ public class MysqlConnector {
 		PreparedStatement caveAreaStatement, relationStatement;
 		try {
 			caveAreaStatement = dbc.prepareStatement(
-					"UPDATE CaveAreas SET CaveID=?, CaveAreaLabel=?, Height=?, Width=?, Depth=?, PreservationClassificationID=? WHERE CaveAreaID=?");
-			caveAreaStatement.setInt(1, entry.getCaveID());
-			caveAreaStatement.setString(2, entry.getCaveAreaLabel());
-			caveAreaStatement.setDouble(3, entry.getHeight());
-			caveAreaStatement.setDouble(4, entry.getWidth());
-			caveAreaStatement.setDouble(5, entry.getWidth());
-			caveAreaStatement.setInt(6, entry.getPreservationClassificationID());
-			caveAreaStatement.setInt(7, entry.getCaveAreaID());
+					"UPDATE CaveAreas SET Height=?, Width=?, Depth=?, PreservationClassificationID=?, CeilingTypeID1=?,"
+					+ "CeilingTypeID2=?, CeilingPreservationClassificationID1=?, CeilingPreservationClassificationID2=? WHERE CaveID=? AND CaveAreaLabel=?");
+			caveAreaStatement.setDouble(1, entry.getHeight());
+			caveAreaStatement.setDouble(2, entry.getWidth());
+			caveAreaStatement.setDouble(3, entry.getWidth());
+			caveAreaStatement.setInt(4, entry.getPreservationClassificationID());
+			caveAreaStatement.setInt(5, entry.getCeilingTypeID1());
+			caveAreaStatement.setInt(6, entry.getCeilingTypeID2());
+			caveAreaStatement.setInt(7, entry.getCeilingPreservationClassificationID1());
+			caveAreaStatement.setInt(8, entry.getCeilingPreservationClassificationID2());
+			caveAreaStatement.setInt(9, entry.getCaveID());
+			caveAreaStatement.setString(10, entry.getCaveAreaLabel());
 			newID = caveAreaStatement.executeUpdate();
-			if (newID == entry.getCaveAreaID()) { // otherwise something went wrong
-				deleteEntry("DELETE FROM CaveAreaCeilingTypeRelation WHERE CaveAreaID=" + entry.getCaveAreaID());
-				relationStatement = dbc.prepareStatement("INSERT INTO CaveAreaCeilingTypeRelation (CaveAreaID, CeilingTypeID, PreservationClassificationID) VALUES (?, ?, ?)");
-				for (Ceiling ceiling : entry.getCeilings()) {
-					relationStatement.setInt(1, entry.getCaveAreaID());
-					relationStatement.setInt(2, ceiling.getCeilingTypeID());
-					relationStatement.setInt(3, ceiling.getPreservationClassificationID());
-					relationStatement.executeUpdate();
-				}
-				relationStatement.close();
-			}
 			caveAreaStatement.close();
 		} catch (SQLException ex) {
 			ex.printStackTrace();

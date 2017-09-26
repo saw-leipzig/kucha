@@ -31,7 +31,7 @@ public class CaveEntry extends AbstractEntry {
 	private String findings;
 	private String firstDocumentedBy;
 	private int firstDocumentedInYear;
-	private HashMap<String, CaveAreaEntry> caveAreas;
+	private HashMap<String, CaveAreaEntry> caveAreas;	
 	private AntechamberEntry antechamberEntry;
 	private MainChamberEntry mainChamberEntry;
 	private RearAreaEntry rearAreaEntry;
