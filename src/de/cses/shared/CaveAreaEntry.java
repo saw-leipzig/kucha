@@ -24,17 +24,17 @@ public class CaveAreaEntry extends AbstractEntry {
 	public static String MAIN_CHAMBER_CORRIDOR = "main chamber corridor";
 	public static String REAR_AREA_LEFT_CORRIDOR = "rear area left corridor";
 	public static String REAR_AREA_RIGHT_CORRIDOR = "rear area right corridor";
-	public static String REAR_CHAMBER = "rear chamber";
-	public static String REAR_CORRIDOR = "rear corridor";
+	public static String REAR_AREA = "rear area";
 
 	protected int caveID;
 	protected String caveAreaLabel;
-	protected double height, width, depth;
-	protected int preservationClassificationID;
-	protected int ceilingTypeID1, ceilingTypeID2;
-	protected int ceilingPreservationClassificationID1, ceilingPreservationClassificationID2;
+	protected double height = 0;
+	protected double width= 0;
+	protected double depth = 0;
+	protected int preservationClassificationID = 0;
+	protected int ceilingTypeID1 = 0, ceilingTypeID2 = 0;
+	protected int ceilingPreservationClassificationID1 = 0, ceilingPreservationClassificationID2 = 0;
 	
-
 	/**
 	 * 
 	 */
@@ -69,6 +69,15 @@ public class CaveAreaEntry extends AbstractEntry {
 	}
 
 
+
+	/**
+	 * @param caveID2
+	 * @param aNTECHAMBER2
+	 */
+	public CaveAreaEntry(int caveID, String caveAreaLabel) {
+		this.caveID = caveID;
+		this.caveAreaLabel = caveAreaLabel;
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -160,6 +169,5 @@ public class CaveAreaEntry extends AbstractEntry {
 	public void setCeilingPreservationClassificationID2(int ceilingPreservationClassificationID2) {
 		this.ceilingPreservationClassificationID2 = ceilingPreservationClassificationID2;
 	}
-
 	
 }

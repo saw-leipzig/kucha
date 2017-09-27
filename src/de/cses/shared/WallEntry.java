@@ -36,11 +36,15 @@ public class WallEntry extends AbstractEntry {
 
 	private int caveID;
 	private String locationLabel;
-	private int preservationClassificationID;
-	double width, height;
+	private int preservationClassificationID = 0;
+	double width = 0, height = 0;
 	
 	public WallEntry(){
-		this(0, "", 0, 0.0, 0.0);
+	}
+	
+	public WallEntry(int caveID, String locationLabel) {
+		this.caveID = caveID;
+		this.locationLabel = locationLabel;
 	}
 	
 	

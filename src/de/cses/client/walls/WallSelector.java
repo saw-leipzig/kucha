@@ -45,6 +45,7 @@ import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.MainChamberEntry;
 import de.cses.shared.RearAreaEntry;
+import de.cses.shared.WallEntry;
 
 /**
  * @author alingnau
@@ -57,39 +58,39 @@ public class WallSelector implements IsWidget {
 	private FlowLayoutContainer caveSketchContainer;
 	private CaveLayoutViewTemplates caveLayoutViewTemplates;
 	private ContentPanel mainPanel = null;
-	private SimpleComboBox<WallNames> wallSelector;
+	private SimpleComboBox<WallEntry> wallSelectorSCB;
 	private WallProperties wallProps;
 	private CaveEntry currentCave;
-	private int selectedWallID = 0;
+	private String selectedWallLabel;
 
-	class WallNames {
-		private int wallID;
-		private String label;
-		/**
-		 * @param fieldName
-		 * @param label
-		 */
-		public WallNames(int wallID, String label) {
-			super();
-			this.wallID = wallID;
-			this.label = label;
-		}
-		public int getWallID() {
-			return wallID;
-		}
-		public String getLabel() {
-			return label;
-		}
-	}
+//	class WallNames {
+//		private int wallID;
+//		private String label;
+//		/**
+//		 * @param fieldName
+//		 * @param label
+//		 */
+//		public WallNames(int wallID, String label) {
+//			super();
+//			this.wallID = wallID;
+//			this.label = label;
+//		}
+//		public int getWallID() {
+//			return wallID;
+//		}
+//		public String getLabel() {
+//			return label;
+//		}
+//	}
 	
 	interface CaveLayoutViewTemplates extends XTemplates {
 		@XTemplate("<img align=\"center\" margin=\"10\" src=\"{imageUri}\">")
 		SafeHtml image(SafeUri imageUri);
 	}
 	
-	interface WallProperties extends PropertyAccess<WallNames> {
-		ModelKeyProvider<WallNames> wallID();
-		LabelProvider<WallNames> label();
+	interface WallProperties extends PropertyAccess<WallEntry> {
+		ModelKeyProvider<WallEntry> uniqueID();
+		LabelProvider<WallEntry> locationLabel();
 	}
 
 	/**
@@ -122,21 +123,19 @@ public class WallSelector implements IsWidget {
 		caveSketchContainer = new FlowLayoutContainer();
 		vlc.add(caveSketchContainer, new VerticalLayoutData(1.0, 0.8));
 		
-		wallSelector = new SimpleComboBox<WallNames>(wallProps.label());
-//		refreshWallSelector();
-		
-		wallSelector.setEditable(false);
-		wallSelector.setTypeAhead(false);
-		wallSelector.setTriggerAction(TriggerAction.ALL);
-		wallSelector.addSelectionHandler(new SelectionHandler<WallSelector.WallNames>() {
+		wallSelectorSCB = new SimpleComboBox<WallEntry>(wallProps.locationLabel());
+		wallSelectorSCB.setEditable(false);
+		wallSelectorSCB.setTypeAhead(false);
+		wallSelectorSCB.setTriggerAction(TriggerAction.ALL);
+		wallSelectorSCB.addSelectionHandler(new SelectionHandler<WallEntry>() {
 			
 			@Override
-			public void onSelection(SelectionEvent<WallNames> event) {
-				Info.display("Wall Selection", "WallID = " + event.getSelectedItem().getWallID());
-				selectedWallID = event.getSelectedItem().getWallID();
+			public void onSelection(SelectionEvent<WallEntry> event) {
+				Info.display("Wall Selection", "WallID = " + event.getSelectedItem().getLocationLabel());
+				selectedWallLabel = event.getSelectedItem().getLocationLabel();
 			}
 		});
-		vlc.add(wallSelector, new VerticalLayoutData(1.0, 0.2));
+		vlc.add(wallSelectorSCB, new VerticalLayoutData(1.0, 0.2));
 		
 		mainPanel.add(vlc);
 		mainPanel.setSize("1.0", "1.0");
@@ -146,48 +145,51 @@ public class WallSelector implements IsWidget {
 	 * 
 	 */
 	private void refreshWallSelector() {
-		ListStore<WallNames> store = new ListStore<>(wallProps.wallID());
+		ListStore<WallEntry> store = new ListStore<>(wallProps.uniqueID());
 		// Antechamber is not available at in cave types
-		if ((currentCave.getCaveTypeID() == 2) || (currentCave.getCaveTypeID() == 4) || (currentCave.getCaveTypeID() == 6))  {
-			AntechamberEntry entry = currentCave.getAntechamberEntry();
-			store.add(new WallNames(entry.getFrontWallID(), "Antechamber Front Wall"));
-			store.add(new WallNames(entry.getLeftWallID(), "Antechamber Left Wall"));
-			store.add(new WallNames(entry.getRightWallID(), "Antechamber Right Wall"));
-			store.add(new WallNames(entry.getRearWallID(), "Antechamber Rear Wall"));
+		for (WallEntry we : currentCave.getWallList()) { // TODO sort list alphabetically!
+			store.add(we);
 		}
-
-		// main chamber is always available
-		if ((currentCave.getCaveTypeID() == 2) || (currentCave.getCaveTypeID() == 3) || (currentCave.getCaveTypeID() == 4) || (currentCave.getCaveTypeID() == 6))  {
-			MainChamberEntry entry = currentCave.getMainChamberEntry();
-			store.add(new WallNames(entry.getFrontWallID(), "Main Chamber Front Wall"));
-			store.add(new WallNames(entry.getLeftWallID(), "Main Chamber Left Wall"));
-			store.add(new WallNames(entry.getRightWallID(), "Main Chamber Right Wall"));
-			store.add(new WallNames(entry.getRearWallID(), "Main Chamber Rear Wall"));
-		}
+//		if ((currentCave.getCaveTypeID() == 2) || (currentCave.getCaveTypeID() == 4) || (currentCave.getCaveTypeID() == 6))  {
+//			AntechamberEntry entry = currentCave.getAntechamberEntry();
+//			store.add(new WallNames(entry.getFrontWallID(), "Antechamber Front Wall"));
+//			store.add(new WallNames(entry.getLeftWallID(), "Antechamber Left Wall"));
+//			store.add(new WallNames(entry.getRightWallID(), "Antechamber Right Wall"));
+//			store.add(new WallNames(entry.getRearWallID(), "Antechamber Rear Wall"));
+//		}
+//
+//		// main chamber is always available
+//		if ((currentCave.getCaveTypeID() == 2) || (currentCave.getCaveTypeID() == 3) || (currentCave.getCaveTypeID() == 4) || (currentCave.getCaveTypeID() == 6))  {
+//			MainChamberEntry entry = currentCave.getMainChamberEntry();
+//			store.add(new WallNames(entry.getFrontWallID(), "Main Chamber Front Wall"));
+//			store.add(new WallNames(entry.getLeftWallID(), "Main Chamber Left Wall"));
+//			store.add(new WallNames(entry.getRightWallID(), "Main Chamber Right Wall"));
+//			store.add(new WallNames(entry.getRearWallID(), "Main Chamber Rear Wall"));
+//		}
+//		
+//		if ((currentCave.getCaveTypeID() == 4) || (currentCave.getCaveTypeID() == 6))  {
+//			RearAreaEntry entry = currentCave.getRearAreaEntry();
+//			store.add(new WallNames(entry.getLeftCorridorEntry().getOuterWallID(), "Rear Area Left Corridor Outer Wall"));
+//			store.add(new WallNames(entry.getLeftCorridorEntry().getInnerWallID(), "Rear Area Left Corridor Inner Wall"));
+//			store.add(new WallNames(entry.getRightCorridorEntry().getInnerWallID(), "Rear Area Right Corridor Inner Wall"));
+//			store.add(new WallNames(entry.getRightCorridorEntry().getOuterWallID(), "Rear Area Right Corridor Outer Wall"));
+//		}
+//		
+//		if ((currentCave.getCaveTypeID() == 4))  {
+//			RearAreaEntry entry = currentCave.getRearAreaEntry();
+//			store.add(new WallNames(entry.getInnerWallID(), "Rear Corridor Inner Wall"));
+//			store.add(new WallNames(entry.getOuterWallID(), "Rear Corridor Outer Wall"));
+//			store.add(new WallNames(entry.getRightWallID(), "Rear Corridor Right Wall"));
+//			store.add(new WallNames(entry.getLeftWallID(), "Rear Corridor Left Wall"));
+//		} else if ((currentCave.getCaveTypeID() == 6))  {
+//			RearAreaEntry entry = currentCave.getRearAreaEntry();
+//			store.add(new WallNames(entry.getInnerWallID(), "Rear Chamber Inner Wall"));
+//			store.add(new WallNames(entry.getOuterWallID(), "Rear Chamber Outer Wall"));
+//			store.add(new WallNames(entry.getRightWallID(), "Rear Chamber Right Wall"));
+//			store.add(new WallNames(entry.getLeftWallID(), "Rear Chamber Left Wall"));
+//		}
 		
-		if ((currentCave.getCaveTypeID() == 4) || (currentCave.getCaveTypeID() == 6))  {
-			RearAreaEntry entry = currentCave.getRearAreaEntry();
-			store.add(new WallNames(entry.getLeftCorridorEntry().getOuterWallID(), "Rear Area Left Corridor Outer Wall"));
-			store.add(new WallNames(entry.getLeftCorridorEntry().getInnerWallID(), "Rear Area Left Corridor Inner Wall"));
-			store.add(new WallNames(entry.getRightCorridorEntry().getInnerWallID(), "Rear Area Right Corridor Inner Wall"));
-			store.add(new WallNames(entry.getRightCorridorEntry().getOuterWallID(), "Rear Area Right Corridor Outer Wall"));
-		}
-		
-		if ((currentCave.getCaveTypeID() == 4))  {
-			RearAreaEntry entry = currentCave.getRearAreaEntry();
-			store.add(new WallNames(entry.getInnerWallID(), "Rear Corridor Inner Wall"));
-			store.add(new WallNames(entry.getOuterWallID(), "Rear Corridor Outer Wall"));
-			store.add(new WallNames(entry.getRightWallID(), "Rear Corridor Right Wall"));
-			store.add(new WallNames(entry.getLeftWallID(), "Rear Corridor Left Wall"));
-		} else if ((currentCave.getCaveTypeID() == 6))  {
-			RearAreaEntry entry = currentCave.getRearAreaEntry();
-			store.add(new WallNames(entry.getInnerWallID(), "Rear Chamber Inner Wall"));
-			store.add(new WallNames(entry.getOuterWallID(), "Rear Chamber Outer Wall"));
-			store.add(new WallNames(entry.getRightWallID(), "Rear Chamber Right Wall"));
-			store.add(new WallNames(entry.getLeftWallID(), "Rear Chamber Left Wall"));
-		}
-		
-		wallSelector.setStore(store);
+		wallSelectorSCB.setStore(store);
 	}
 
 	/**
@@ -205,22 +207,22 @@ public class WallSelector implements IsWidget {
 	public void setCave(CaveEntry selectedCave) {
 		currentCave = selectedCave;
 		setCaveType(StaticTables.getInstance().getCaveTypeEntries().get(selectedCave.getCaveTypeID()));
-//		dbService.getCaveTypebyID(selectedCave.getCaveTypeID(), new AsyncCallback<CaveTypeEntry>() {
-//
-//			@Override
-//			public void onFailure(Throwable caught) {
-//				caught.printStackTrace();
-//			}
-//
-//			@Override
-//			public void onSuccess(CaveTypeEntry ctEntry) {
-//				setCaveType(ctEntry);
-//			}
-//		});
+		dbService.getCaveTypebyID(selectedCave.getCaveTypeID(), new AsyncCallback<CaveTypeEntry>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(CaveTypeEntry ctEntry) {
+				setCaveType(ctEntry);
+			}
+		});
 	}
 
-	public int getSelectedWallID() {
-		return selectedWallID;
+	public String getSelectedWallLocationLabel() {
+		return selectedWallLabel;
 	}
 	
 }

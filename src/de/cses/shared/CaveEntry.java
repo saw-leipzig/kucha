@@ -14,7 +14,6 @@
 package de.cses.shared;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class CaveEntry extends AbstractEntry {
 	private int caveID;
@@ -31,16 +30,11 @@ public class CaveEntry extends AbstractEntry {
 	private String findings;
 	private String firstDocumentedBy;
 	private int firstDocumentedInYear;
-	private HashMap<String, CaveAreaEntry> caveAreas;	
-	private AntechamberEntry antechamberEntry;
-	private MainChamberEntry mainChamberEntry;
-	private RearAreaEntry rearAreaEntry;
+	private ArrayList<CaveAreaEntry> caveAreaList;
+	private ArrayList<WallEntry> wallList;
 
 	public CaveEntry() {
 		this(0, "", "", "", 0, 0, 0, 0, "", "", "", 0, 0, 0);
-		antechamberEntry = new AntechamberEntry();
-		mainChamberEntry = new MainChamberEntry();
-		rearAreaEntry = new RearAreaEntry();
 	}
 
 	public CaveEntry(int caveID, String officialNumber, String historicName, String optionalHistoricName, int caveTypeID, int districtID,
@@ -60,6 +54,8 @@ public class CaveEntry extends AbstractEntry {
 		setFirstDocumentedInYear(firstDocumentedInYear);
 		setPreservationClassificationID(preservationClassificationID);
 		setCaveGroupID(caveGroupID);
+		caveAreaList = new ArrayList<CaveAreaEntry>();
+		wallList = new ArrayList<WallEntry>();
 	}
 
 	public int getCaveID() {
@@ -68,9 +64,6 @@ public class CaveEntry extends AbstractEntry {
 
 	public void setCaveID(int caveID) {
 		this.caveID = caveID;
-		antechamberEntry.setAntechamberID(caveID);
-		mainChamberEntry.setMainChamberID(caveID);
-		rearAreaEntry.setRearAreaID(caveID);
 	}
 
 	public String getOfficialNumber() {
@@ -135,30 +128,6 @@ public class CaveEntry extends AbstractEntry {
 
 	public void setFindings(String findings) {
 		this.findings = findings;
-	}
-
-	public AntechamberEntry getAntechamberEntry() {
-		return antechamberEntry;
-	}
-
-	public void setAntechamberEntry(AntechamberEntry antechamberEntry) {
-		this.antechamberEntry = antechamberEntry;
-	}
-
-	public MainChamberEntry getMainChamberEntry() {
-		return mainChamberEntry;
-	}
-
-	public void setMainChamberEntry(MainChamberEntry mainChamberEntry) {
-		this.mainChamberEntry = mainChamberEntry;
-	}
-
-	public RearAreaEntry getRearAreaEntry() {
-		return rearAreaEntry;
-	}
-
-	public void setRearAreaEntry(RearAreaEntry rearAreaEntry) {
-		this.rearAreaEntry = rearAreaEntry;
 	}
 
 //	public String getUpdateSql() {
@@ -238,12 +207,48 @@ public class CaveEntry extends AbstractEntry {
 		this.firstDocumentedBy = firstDocumentedBy;
 	}
 
-	public HashMap<String, CaveAreaEntry> getCaveAreas() {
-		return caveAreas;
+	public CaveAreaEntry getCaveArea(String label) {
+		for (CaveAreaEntry ca : caveAreaList) {
+			if (label == ca.getCaveAreaLabel()) {
+				return ca;
+			}
+		}
+		return new CaveAreaEntry(caveID, label);
+	}
+	
+	public void addCaveArea(CaveAreaEntry entry) {
+		caveAreaList.remove(getCaveArea(entry.caveAreaLabel));
+		caveAreaList.add(entry);
 	}
 
-	public void setCaveAreas(HashMap<String, CaveAreaEntry> caveAreas) {
-		this.caveAreas = caveAreas;
+	public ArrayList<CaveAreaEntry> getCaveAreaList() {
+		return caveAreaList;
 	}
 
+	public void setCaveAreaList(ArrayList<CaveAreaEntry> caveAreaList) {
+		this.caveAreaList = caveAreaList;
+	}
+	
+	public WallEntry getWall(String label) {
+		for (WallEntry we : wallList) {
+			if (label == we.getLocationLabel()) {
+				return we;
+			}
+		}
+		return new WallEntry(caveID, label);
+	}
+	
+	public void addWall(WallEntry entry) {
+		wallList.remove(getWall(entry.getLocationLabel()));
+		wallList.add(entry);
+	}
+
+	public ArrayList<WallEntry> getWallList() {
+		return wallList;
+	}
+
+	public void setWallList(ArrayList<WallEntry> wallList) {
+		this.wallList = wallList;
+	}
+	
 }
