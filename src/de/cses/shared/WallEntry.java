@@ -34,7 +34,7 @@ public class WallEntry extends AbstractEntry {
 	public static String REAR_AREA_OUTER_WALL = "rear area outer wall";
 	public static String REAR_AREA_RIGHT_WALL = "rear area right wall";
 
-	private int caveID;
+	private int caveID = 0;
 	private String locationLabel;
 	private int preservationClassificationID = 0;
 	double width = 0, height = 0;
@@ -57,15 +57,12 @@ public class WallEntry extends AbstractEntry {
 	 * @param height
 	 */
 	public WallEntry(int caveID, String locationLabel, int preservationClassificationID, double width, double height) {
-		super();
 		this.caveID = caveID;
 		this.locationLabel = locationLabel;
 		this.preservationClassificationID = preservationClassificationID;
 		this.width = width;
 		this.height = height;
 	}
-
-
 
 	/* (non-Javadoc)
 	 * @see de.cses.shared.AbstractEntry#getUniqueID()

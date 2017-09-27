@@ -55,7 +55,6 @@ public class CaveAreaEntry extends AbstractEntry {
 	 */
 	public CaveAreaEntry(int caveID, String caveAreaLabel, double height, double width, double depth, int preservationClassificationID,
 			int ceilingTypeID1, int ceilingTypeID2, int ceilingPreservationClassificationID1, int ceilingPreservationClassificationID2) {
-		super();
 		this.caveID = caveID;
 		this.caveAreaLabel = caveAreaLabel;
 		this.height = height;
@@ -68,11 +67,9 @@ public class CaveAreaEntry extends AbstractEntry {
 		this.ceilingPreservationClassificationID2 = ceilingPreservationClassificationID2;
 	}
 
-
-
 	/**
-	 * @param caveID2
-	 * @param aNTECHAMBER2
+	 * @param caveID
+	 * @param caveAreaLabel
 	 */
 	public CaveAreaEntry(int caveID, String caveAreaLabel) {
 		this.caveID = caveID;

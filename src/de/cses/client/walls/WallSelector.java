@@ -19,7 +19,6 @@ import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -35,16 +34,12 @@ import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
-import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
-import de.cses.shared.AntechamberEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveTypeEntry;
-import de.cses.shared.MainChamberEntry;
-import de.cses.shared.RearAreaEntry;
 import de.cses.shared.WallEntry;
 
 /**
@@ -131,7 +126,6 @@ public class WallSelector implements IsWidget {
 			
 			@Override
 			public void onSelection(SelectionEvent<WallEntry> event) {
-				Info.display("Wall Selection", "WallID = " + event.getSelectedItem().getLocationLabel());
 				selectedWallLabel = event.getSelectedItem().getLocationLabel();
 			}
 		});

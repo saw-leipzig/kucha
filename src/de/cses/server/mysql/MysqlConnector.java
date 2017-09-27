@@ -1841,21 +1841,11 @@ public class MysqlConnector {
 			pstmt.setInt(14, caveEntry.getCaveID());
 			pstmt.executeUpdate();
 			pstmt.close();
-			pstmt = dbc.prepareStatement(
-					"UPDATE CaveAreas SET Height=?, Width=?, Depth=?, PreservationClassificationID=?, CeilingTypeID1=?, CeilingTypeID2=?, CeilingPreservationClassificationID1=?, CeilingPreservationClassificationID2=? "
-							+ "WHERE CaveID=? AND CaveAreaLabel=?");
 			for (CaveAreaEntry caEntry : caveEntry.getCaveAreaList()) {
-				pstmt.setDouble(1, caEntry.getHeight());
-				pstmt.setDouble(2, caEntry.getWidth());
-				pstmt.setDouble(3, caEntry.getDepth());
-				pstmt.setInt(4, caEntry.getPreservationClassificationID());
-				pstmt.setInt(5, caEntry.getCeilingTypeID1());
-				pstmt.setInt(6, caEntry.getCeilingTypeID2());
-				pstmt.setInt(7, caEntry.getCeilingPreservationClassificationID1());
-				pstmt.setInt(8, caEntry.getCeilingPreservationClassificationID2());
-				pstmt.setInt(9, caveEntry.getCaveID());
-				pstmt.setString(10, caEntry.getCaveAreaLabel());
-				pstmt.executeUpdate();
+				writeCaveArea(caEntry);
+			}
+			for (WallEntry wEntry : caveEntry.getWallList()) {
+				writeWall(wEntry);
 			}
 			pstmt.close();
 		} catch (SQLException ex) {
@@ -1893,23 +1883,12 @@ public class MysqlConnector {
 			newCaveID = pstmt.executeUpdate();
 			pstmt.close();
 			if (newCaveID > 0) {
-				pstmt = dbc.prepareStatement(
-						"INSERT INTO CaveAreas (CaveID, CaveAreaLabel, Height, Width, Depth, PreservationClassificationID, CeilingTypeID1, CeilingTypeID2, CeilingPreservationClassificationID1, CeilingPreservationClassificationID2) VALUES "
-								+ "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 				for (CaveAreaEntry caEntry : caveEntry.getCaveAreaList()) {
-					pstmt.setInt(1, caveEntry.getCaveID());
-					pstmt.setString(2, caEntry.getCaveAreaLabel());
-					pstmt.setDouble(3, caEntry.getHeight());
-					pstmt.setDouble(4, caEntry.getWidth());
-					pstmt.setDouble(5, caEntry.getDepth());
-					pstmt.setInt(6, caEntry.getPreservationClassificationID());
-					pstmt.setInt(7, caEntry.getCeilingTypeID1());
-					pstmt.setInt(8, caEntry.getCeilingTypeID2());
-					pstmt.setInt(9, caEntry.getCeilingPreservationClassificationID1());
-					pstmt.setInt(10, caEntry.getCeilingPreservationClassificationID2());
-					pstmt.executeUpdate();
+					writeCaveArea(caEntry);
 				}
-				pstmt.close();
+				for (WallEntry wEntry : caveEntry.getWallList()) {
+					writeWall(wEntry);
+				}
 			}
 		} catch (SQLException ex) {
 			ex.printStackTrace();
@@ -2194,7 +2173,7 @@ public class MysqlConnector {
 		return result;
 	}
 
-	public synchronized int insertCaveArea(CaveAreaEntry entry) {
+	protected synchronized boolean writeCaveArea(CaveAreaEntry entry) {
 		int newID;
 		Connection dbc = getConnection();
 		PreparedStatement caveAreaStatement;
@@ -2202,7 +2181,10 @@ public class MysqlConnector {
 			caveAreaStatement = dbc.prepareStatement(
 					"INSERT INTO CaveAreas (CaveID, CaveAreaLabel, Height, Width, Depth, PreservationClassificationID, CeilingTypeID1,"
 							+ "CeilingTypeID2, CeilingPreservationClassificationID1, CeilingPreservationClassificationID2) "
-							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
+							+ "ON DUPLICATE KEY UPDATE "
+							+ "Height=?, Width=?, Depth=?, PreservationClassificationID=?, CeilingTypeID1=?,"
+							+ "CeilingTypeID2=?, CeilingPreservationClassificationID1=?, CeilingPreservationClassificationID2=?");
 			caveAreaStatement.setInt(1, entry.getCaveID());
 			caveAreaStatement.setString(2, entry.getCaveAreaLabel());
 			caveAreaStatement.setDouble(3, entry.getHeight());
@@ -2213,41 +2195,77 @@ public class MysqlConnector {
 			caveAreaStatement.setInt(8, entry.getCeilingTypeID2());
 			caveAreaStatement.setInt(9, entry.getCeilingPreservationClassificationID1());
 			caveAreaStatement.setInt(10, entry.getCeilingPreservationClassificationID2());
+			caveAreaStatement.setDouble(11, entry.getHeight());
+			caveAreaStatement.setDouble(12, entry.getWidth());
+			caveAreaStatement.setDouble(13, entry.getWidth());
+			caveAreaStatement.setInt(14, entry.getPreservationClassificationID());
+			caveAreaStatement.setInt(15, entry.getCeilingTypeID1());
+			caveAreaStatement.setInt(16, entry.getCeilingTypeID2());
+			caveAreaStatement.setInt(17, entry.getCeilingPreservationClassificationID1());
+			caveAreaStatement.setInt(18, entry.getCeilingPreservationClassificationID2());
 			newID = caveAreaStatement.executeUpdate();
 			caveAreaStatement.close();
 		} catch (SQLException ex) {
 			ex.printStackTrace();
-			return 0;
+			return false;
 		}
-		return newID;
+		return (newID > 0);
 	}
 
-	public synchronized int updateCaveArea(CaveAreaEntry entry) {
+	protected synchronized boolean writeWall(WallEntry entry) {
 		int newID;
 		Connection dbc = getConnection();
-		PreparedStatement caveAreaStatement, relationStatement;
+		PreparedStatement wallStatement;
 		try {
-			caveAreaStatement = dbc
-					.prepareStatement("UPDATE CaveAreas SET Height=?, Width=?, Depth=?, PreservationClassificationID=?, CeilingTypeID1=?,"
-							+ "CeilingTypeID2=?, CeilingPreservationClassificationID1=?, CeilingPreservationClassificationID2=? WHERE CaveID=? AND CaveAreaLabel=?");
-			caveAreaStatement.setDouble(1, entry.getHeight());
-			caveAreaStatement.setDouble(2, entry.getWidth());
-			caveAreaStatement.setDouble(3, entry.getWidth());
-			caveAreaStatement.setInt(4, entry.getPreservationClassificationID());
-			caveAreaStatement.setInt(5, entry.getCeilingTypeID1());
-			caveAreaStatement.setInt(6, entry.getCeilingTypeID2());
-			caveAreaStatement.setInt(7, entry.getCeilingPreservationClassificationID1());
-			caveAreaStatement.setInt(8, entry.getCeilingPreservationClassificationID2());
-			caveAreaStatement.setInt(9, entry.getCaveID());
-			caveAreaStatement.setString(10, entry.getCaveAreaLabel());
-			newID = caveAreaStatement.executeUpdate();
-			caveAreaStatement.close();
+			wallStatement = dbc.prepareStatement(
+					"INSERT INTO Walls (CaveID, LocationLabel, PreservationClassificationID, Width, Height) "
+							+ "VALUES (?, ?, ?, ?, ?) "
+							+ "ON DUPLICATE KEY UPDATE "
+							+ "PreservationClassificationID=?, Width=?, Height=?");
+			wallStatement.setInt(1, entry.getCaveID());
+			wallStatement.setString(2, entry.getLocationLabel());
+			wallStatement.setInt(3, entry.getPreservationClassificationID());
+			wallStatement.setDouble(4, entry.getWidth());
+			wallStatement.setDouble(5, entry.getHeight());
+			wallStatement.setInt(6, entry.getPreservationClassificationID());
+			wallStatement.setDouble(7, entry.getWidth());
+			wallStatement.setDouble(8, entry.getHeight());
+			newID = wallStatement.executeUpdate();
+			wallStatement.close();
 		} catch (SQLException ex) {
 			ex.printStackTrace();
-			return 0;
+			return false;
 		}
-		return newID;
+		return (newID > 0);
 	}
+	
+
+//	public synchronized int updateCaveArea(CaveAreaEntry entry) {
+//		int newID;
+//		Connection dbc = getConnection();
+//		PreparedStatement caveAreaStatement;
+//		try {
+//			caveAreaStatement = dbc
+//					.prepareStatement("UPDATE CaveAreas SET Height=?, Width=?, Depth=?, PreservationClassificationID=?, CeilingTypeID1=?,"
+//							+ "CeilingTypeID2=?, CeilingPreservationClassificationID1=?, CeilingPreservationClassificationID2=? WHERE CaveID=? AND CaveAreaLabel=?");
+//			caveAreaStatement.setDouble(1, entry.getHeight());
+//			caveAreaStatement.setDouble(2, entry.getWidth());
+//			caveAreaStatement.setDouble(3, entry.getWidth());
+//			caveAreaStatement.setInt(4, entry.getPreservationClassificationID());
+//			caveAreaStatement.setInt(5, entry.getCeilingTypeID1());
+//			caveAreaStatement.setInt(6, entry.getCeilingTypeID2());
+//			caveAreaStatement.setInt(7, entry.getCeilingPreservationClassificationID1());
+//			caveAreaStatement.setInt(8, entry.getCeilingPreservationClassificationID2());
+//			caveAreaStatement.setInt(9, entry.getCaveID());
+//			caveAreaStatement.setString(10, entry.getCaveAreaLabel());
+//			newID = caveAreaStatement.executeUpdate();
+//			caveAreaStatement.close();
+//		} catch (SQLException ex) {
+//			ex.printStackTrace();
+//			return 0;
+//		}
+//		return newID;
+//	}
 
 	/**
 	 * @param caveID
