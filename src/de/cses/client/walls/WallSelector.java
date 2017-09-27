@@ -147,47 +147,34 @@ public class WallSelector implements IsWidget {
 	private void refreshWallSelector() {
 		ListStore<WallEntry> store = new ListStore<>(wallProps.uniqueID());
 		// Antechamber is not available at in cave types
-		for (WallEntry we : currentCave.getWallList()) { // TODO sort list alphabetically!
-			store.add(we);
+		if ((currentCave.getCaveTypeID() == 2) || (currentCave.getCaveTypeID() == 4) || (currentCave.getCaveTypeID() == 6))  {
+			store.add(currentCave.getWall(WallEntry.ANTECHAMBER_FRONT_WALL));
+			store.add(currentCave.getWall(WallEntry.ANTECHAMBER_LEFT_WALL));
+			store.add(currentCave.getWall(WallEntry.ANTECHAMBER_RIGHT_WALL));
+			store.add(currentCave.getWall(WallEntry.ANTECHAMBER_REAR_WALL));
 		}
-//		if ((currentCave.getCaveTypeID() == 2) || (currentCave.getCaveTypeID() == 4) || (currentCave.getCaveTypeID() == 6))  {
-//			AntechamberEntry entry = currentCave.getAntechamberEntry();
-//			store.add(new WallNames(entry.getFrontWallID(), "Antechamber Front Wall"));
-//			store.add(new WallNames(entry.getLeftWallID(), "Antechamber Left Wall"));
-//			store.add(new WallNames(entry.getRightWallID(), "Antechamber Right Wall"));
-//			store.add(new WallNames(entry.getRearWallID(), "Antechamber Rear Wall"));
-//		}
-//
-//		// main chamber is always available
-//		if ((currentCave.getCaveTypeID() == 2) || (currentCave.getCaveTypeID() == 3) || (currentCave.getCaveTypeID() == 4) || (currentCave.getCaveTypeID() == 6))  {
-//			MainChamberEntry entry = currentCave.getMainChamberEntry();
-//			store.add(new WallNames(entry.getFrontWallID(), "Main Chamber Front Wall"));
-//			store.add(new WallNames(entry.getLeftWallID(), "Main Chamber Left Wall"));
-//			store.add(new WallNames(entry.getRightWallID(), "Main Chamber Right Wall"));
-//			store.add(new WallNames(entry.getRearWallID(), "Main Chamber Rear Wall"));
-//		}
-//		
-//		if ((currentCave.getCaveTypeID() == 4) || (currentCave.getCaveTypeID() == 6))  {
-//			RearAreaEntry entry = currentCave.getRearAreaEntry();
-//			store.add(new WallNames(entry.getLeftCorridorEntry().getOuterWallID(), "Rear Area Left Corridor Outer Wall"));
-//			store.add(new WallNames(entry.getLeftCorridorEntry().getInnerWallID(), "Rear Area Left Corridor Inner Wall"));
-//			store.add(new WallNames(entry.getRightCorridorEntry().getInnerWallID(), "Rear Area Right Corridor Inner Wall"));
-//			store.add(new WallNames(entry.getRightCorridorEntry().getOuterWallID(), "Rear Area Right Corridor Outer Wall"));
-//		}
-//		
-//		if ((currentCave.getCaveTypeID() == 4))  {
-//			RearAreaEntry entry = currentCave.getRearAreaEntry();
-//			store.add(new WallNames(entry.getInnerWallID(), "Rear Corridor Inner Wall"));
-//			store.add(new WallNames(entry.getOuterWallID(), "Rear Corridor Outer Wall"));
-//			store.add(new WallNames(entry.getRightWallID(), "Rear Corridor Right Wall"));
-//			store.add(new WallNames(entry.getLeftWallID(), "Rear Corridor Left Wall"));
-//		} else if ((currentCave.getCaveTypeID() == 6))  {
-//			RearAreaEntry entry = currentCave.getRearAreaEntry();
-//			store.add(new WallNames(entry.getInnerWallID(), "Rear Chamber Inner Wall"));
-//			store.add(new WallNames(entry.getOuterWallID(), "Rear Chamber Outer Wall"));
-//			store.add(new WallNames(entry.getRightWallID(), "Rear Chamber Right Wall"));
-//			store.add(new WallNames(entry.getLeftWallID(), "Rear Chamber Left Wall"));
-//		}
+
+		// main chamber is always available
+		if ((currentCave.getCaveTypeID() == 2) || (currentCave.getCaveTypeID() == 3) || (currentCave.getCaveTypeID() == 4) || (currentCave.getCaveTypeID() == 6))  {
+			store.add(currentCave.getWall(WallEntry.MAIN_CHAMBER_FRONT_WALL));
+			store.add(currentCave.getWall(WallEntry.MAIN_CHAMBER_LEFT_WALL));
+			store.add(currentCave.getWall(WallEntry.MAIN_CHAMBER_RIGHT_WALL));
+			store.add(currentCave.getWall(WallEntry.MAIN_CHAMBER_REAR_WALL));
+		}
+		
+		if ((currentCave.getCaveTypeID() == 4) || (currentCave.getCaveTypeID() == 6))  {
+			store.add(currentCave.getWall(WallEntry.REAR_AREA_LEFT_CORRIDOR_OUTER_WALL));
+			store.add(currentCave.getWall(WallEntry.REAR_AREA_LEFT_CORRIDOR_INNER_WALL));
+			store.add(currentCave.getWall(WallEntry.REAR_AREA_RIGHT_CORRIDOR_INNER_WALL));
+			store.add(currentCave.getWall(WallEntry.REAR_AREA_RIGHT_CORRIDOR_OUTER_WALL));
+		}
+		
+		if ((currentCave.getCaveTypeID() == 4) || (currentCave.getCaveTypeID() == 6))  {
+			store.add(currentCave.getWall(WallEntry.REAR_AREA_INNER_WALL));
+			store.add(currentCave.getWall(WallEntry.REAR_AREA_OUTER_WALL));
+			store.add(currentCave.getWall(WallEntry.REAR_AREA_RIGHT_WALL));
+			store.add(currentCave.getWall(WallEntry.REAR_AREA_LEFT_WALL));
+		}
 		
 		wallSelectorSCB.setStore(store);
 	}

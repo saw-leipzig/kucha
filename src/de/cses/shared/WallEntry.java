@@ -27,12 +27,12 @@ public class WallEntry extends AbstractEntry {
 	public static String MAIN_CHAMBER_RIGHT_WALL = "main chamber right wall";
 	public static String REAR_AREA_LEFT_CORRIDOR_INNER_WALL = "rear area left corridor inner wall";
 	public static String REAR_AREA_LEFT_CORRIDOR_OUTER_WALL = "rear area left corridor outer wall";
-	public static String REAR_ARE_RIGHT_CORRIDOR_INNER_WALL = "rear area right corridor inner wall";
+	public static String REAR_AREA_RIGHT_CORRIDOR_INNER_WALL = "rear area right corridor inner wall";
 	public static String REAR_AREA_RIGHT_CORRIDOR_OUTER_WALL = "rear area right corridor outer wall";
-	public static String REAR_CHAMBER_INNER_WALL = "rear chamber inner wall";
-	public static String REAR_CHAMBER_LEFT_WALL = "rear chamber left wall";
-	public static String REAR_CHAMBER_OUTER_WALL = "rear chamber outer wall";
-	public static String REAR_CHAMBER_RIGHT_WALL = "rear chamber right wall";
+	public static String REAR_AREA_INNER_WALL = "rear area inner wall";
+	public static String REAR_AREA_LEFT_WALL = "rear area left wall";
+	public static String REAR_AREA_OUTER_WALL = "rear area outer wall";
+	public static String REAR_AREA_RIGHT_WALL = "rear area right wall";
 
 	private int caveID;
 	private String locationLabel;

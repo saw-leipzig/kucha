@@ -160,7 +160,7 @@ public class CaveEditor extends AbstractEditor {
 	private FramedPanel corridorStateOfPreservationFP;
 	private FramedPanel corridorCeilingStateOfPreservationFP;
 	private Slider firstDocumentedInYearSlider;
-	private CaveAreaProperties caveAreaProps;
+//	private CaveAreaProperties caveAreaProps;
 	private ComboBox<CeilingTypeEntry> rearAreaCeilingTypeSelector2;
 	private ComboBox<CeilingTypeEntry> mainChamberCeilingTypeSelector2;
 	private ComboBox<CeilingTypeEntry> antechamberCeilingTypeSelector2;
@@ -197,10 +197,10 @@ public class CaveEditor extends AbstractEditor {
 		SafeHtml ceilingTypeLabel(String name);
 	}
 
-	interface CaveAreaProperties extends PropertyAccess<CaveAreaEntry> {
-		ModelKeyProvider<CaveAreaEntry> caveAreaID();
-		LabelProvider<CaveAreaEntry> caveAreaLabel();
-	}
+//	interface CaveAreaProperties extends PropertyAccess<CaveAreaEntry> {
+//		ModelKeyProvider<CaveAreaEntry> caveAreaID();
+//		LabelProvider<CaveAreaEntry> caveAreaLabel();
+//	}
 
 	interface PreservationClassificationProperties extends PropertyAccess<PreservationClassificationEntry> {
 		ModelKeyProvider<PreservationClassificationEntry> preservationClassificationID();
@@ -287,7 +287,7 @@ public class CaveEditor extends AbstractEditor {
 		caveTypeEntryListStore = new ListStore<CaveTypeEntry>(caveTypeProps.caveTypeID());
 		ceilingTypeProps = GWT.create(CeilingTypeProperties.class);
 		ceilingTypeEntryList = new ListStore<CeilingTypeEntry>(ceilingTypeProps.ceilingTypeID());
-		caveAreaProps = GWT.create(CaveAreaProperties.class);
+//		caveAreaProps = GWT.create(CaveAreaProperties.class);
 		preservationClassificationProps = GWT.create(PreservationClassificationProperties.class);
 		preservationClassificationEntryList = new ListStore<PreservationClassificationEntry>(
 				preservationClassificationProps.preservationClassificationID());
