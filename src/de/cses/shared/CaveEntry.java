@@ -213,7 +213,9 @@ public class CaveEntry extends AbstractEntry {
 				return ca;
 			}
 		}
-		return new CaveAreaEntry(caveID, label);
+		CaveAreaEntry newEntry = new CaveAreaEntry(caveID, label);
+		caveAreaList.add(newEntry);
+		return newEntry;
 	}
 	
 	public void addCaveArea(CaveAreaEntry entry) {
@@ -235,7 +237,9 @@ public class CaveEntry extends AbstractEntry {
 				return we;
 			}
 		}
-		return new WallEntry(caveID, label);
+		WallEntry newEntry = new WallEntry(caveID, label);
+		wallList.add(newEntry);
+		return newEntry;
 	}
 	
 	public void addWall(WallEntry entry) {

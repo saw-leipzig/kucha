@@ -1847,7 +1847,6 @@ public class MysqlConnector {
 			for (WallEntry wEntry : caveEntry.getWallList()) {
 				writeWall(wEntry);
 			}
-			pstmt.close();
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 			return false;
@@ -2189,7 +2188,7 @@ public class MysqlConnector {
 			caveAreaStatement.setString(2, entry.getCaveAreaLabel());
 			caveAreaStatement.setDouble(3, entry.getHeight());
 			caveAreaStatement.setDouble(4, entry.getWidth());
-			caveAreaStatement.setDouble(5, entry.getWidth());
+			caveAreaStatement.setDouble(5, entry.getDepth());
 			caveAreaStatement.setInt(6, entry.getPreservationClassificationID());
 			caveAreaStatement.setInt(7, entry.getCeilingTypeID1());
 			caveAreaStatement.setInt(8, entry.getCeilingTypeID2());
@@ -2197,7 +2196,7 @@ public class MysqlConnector {
 			caveAreaStatement.setInt(10, entry.getCeilingPreservationClassificationID2());
 			caveAreaStatement.setDouble(11, entry.getHeight());
 			caveAreaStatement.setDouble(12, entry.getWidth());
-			caveAreaStatement.setDouble(13, entry.getWidth());
+			caveAreaStatement.setDouble(13, entry.getDepth());
 			caveAreaStatement.setInt(14, entry.getPreservationClassificationID());
 			caveAreaStatement.setInt(15, entry.getCeilingTypeID1());
 			caveAreaStatement.setInt(16, entry.getCeilingTypeID2());
