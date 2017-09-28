@@ -254,34 +254,34 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		return connector.getCave(id);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.cses.client.DatabaseService#getAntechamberEntry(int)
-	 */
-	@Override
-	public AntechamberEntry getAntechamberEntry(int id) throws IllegalArgumentException {
-		MysqlConnector connector = MysqlConnector.getInstance();
-		return connector.getAntechamberEntry(id);
-	}
-
-	/* (non-Javadoc)
-	 * @see de.cses.client.DatabaseService#getMainChamberEntry(int)
-	 */
-	@Override
-	public MainChamberEntry getMainChamberEntry(int id) throws IllegalArgumentException {
-		MysqlConnector connector = MysqlConnector.getInstance();
-		return connector.getMainChamber(id);
-	}
-
-	/* (non-Javadoc)
-	 * @see de.cses.client.DatabaseService#getRearAreaEntry(int)
-	 */
-	@Override
-	public RearAreaEntry getRearAreaEntry(int id) throws IllegalArgumentException {
-		MysqlConnector connector = MysqlConnector.getInstance();
-		return connector.getRearArea(id);
-	}
+//	/*
+//	 * (non-Javadoc)
+//	 * 
+//	 * @see de.cses.client.DatabaseService#getAntechamberEntry(int)
+//	 */
+//	@Override
+//	public AntechamberEntry getAntechamberEntry(int id) throws IllegalArgumentException {
+//		MysqlConnector connector = MysqlConnector.getInstance();
+//		return connector.getAntechamberEntry(id);
+//	}
+//
+//	/* (non-Javadoc)
+//	 * @see de.cses.client.DatabaseService#getMainChamberEntry(int)
+//	 */
+//	@Override
+//	public MainChamberEntry getMainChamberEntry(int id) throws IllegalArgumentException {
+//		MysqlConnector connector = MysqlConnector.getInstance();
+//		return connector.getMainChamber(id);
+//	}
+//
+//	/* (non-Javadoc)
+//	 * @see de.cses.client.DatabaseService#getRearAreaEntry(int)
+//	 */
+//	@Override
+//	public RearAreaEntry getRearAreaEntry(int id) throws IllegalArgumentException {
+//		MysqlConnector connector = MysqlConnector.getInstance();
+//		return connector.getRearArea(id);
+//	}
 
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getRegions()
