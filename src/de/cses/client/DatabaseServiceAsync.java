@@ -135,11 +135,11 @@ public interface DatabaseServiceAsync {
 
 	void getCaveEntry(int id, AsyncCallback<CaveEntry> asyncCallback) throws IllegalArgumentException;
 
-	void getAntechamberEntry(int id, AsyncCallback<AntechamberEntry> asyncCallback) throws IllegalArgumentException;
-
-	void getMainChamberEntry(int id, AsyncCallback<MainChamberEntry> asyncCallback) throws IllegalArgumentException;
-
-	void getRearAreaEntry(int id, AsyncCallback<RearAreaEntry> asyncCallback) throws IllegalArgumentException;
+//	void getAntechamberEntry(int id, AsyncCallback<AntechamberEntry> asyncCallback) throws IllegalArgumentException;
+//
+//	void getMainChamberEntry(int id, AsyncCallback<MainChamberEntry> asyncCallback) throws IllegalArgumentException;
+//
+//	void getRearAreaEntry(int id, AsyncCallback<RearAreaEntry> asyncCallback) throws IllegalArgumentException;
 
 	void getRegions(AsyncCallback<ArrayList<RegionEntry>> asyncCallback) throws IllegalArgumentException;
 

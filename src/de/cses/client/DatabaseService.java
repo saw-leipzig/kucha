@@ -115,11 +115,11 @@ public interface DatabaseService extends RemoteService {
 
 	CaveEntry getCaveEntry(int id) throws IllegalArgumentException;
 
-	AntechamberEntry getAntechamberEntry(int id) throws IllegalArgumentException;
-
-	MainChamberEntry getMainChamberEntry(int id) throws IllegalArgumentException;
-
-	RearAreaEntry getRearAreaEntry(int id) throws IllegalArgumentException;
+//	AntechamberEntry getAntechamberEntry(int id) throws IllegalArgumentException;
+//
+//	MainChamberEntry getMainChamberEntry(int id) throws IllegalArgumentException;
+//
+//	RearAreaEntry getRearAreaEntry(int id) throws IllegalArgumentException;
 
 	ArrayList<RegionEntry> getRegions() throws IllegalArgumentException;
 

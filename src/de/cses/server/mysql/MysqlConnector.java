@@ -1008,90 +1008,90 @@ public class MysqlConnector {
 		return true;
 	}
 
-	/**
-	 * In case the AntechamberEntry hasn't been created before, it will be created and saved.
-	 * 
-	 * @param id
-	 *          the AntechamberID from the table that equals the CaveID where the antechamber is located
-	 * @return The AntechamberEntry for the corresponding id
-	 */
-	public AntechamberEntry getAntechamberEntry(int id) {
-		AntechamberEntry result = null;
-		Connection dbc = getConnection();
-		Statement stmt;
-		try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Antechamber WHERE AntechamberID=" + id);
-			if (rs.first()) {
-				result = new AntechamberEntry(rs.getInt("AntechamberID"), rs.getInt("CeilingTypeID"), rs.getInt("FrontWallID"),
-						rs.getInt("LeftWallID"), rs.getInt("RightWallID"), rs.getInt("RearWallID"), rs.getDouble("Height"), rs.getDouble("Width"),
-						rs.getDouble("Depth"), rs.getInt("PreservationClassificationID"), rs.getInt("CeilingPreservationClassificationID"));
-			} else { // in case there is no entry we send back a new one
-				result = new AntechamberEntry();
-				result.setAntechamberID(id);
-				insertAntechamber(result);
-			}
-			rs.close();
-			stmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return result;
-	}
+//	/**
+//	 * In case the AntechamberEntry hasn't been created before, it will be created and saved.
+//	 * 
+//	 * @param id
+//	 *          the AntechamberID from the table that equals the CaveID where the antechamber is located
+//	 * @return The AntechamberEntry for the corresponding id
+//	 */
+//	public AntechamberEntry getAntechamberEntry(int id) {
+//		AntechamberEntry result = null;
+//		Connection dbc = getConnection();
+//		Statement stmt;
+//		try {
+//			stmt = dbc.createStatement();
+//			ResultSet rs = stmt.executeQuery("SELECT * FROM Antechamber WHERE AntechamberID=" + id);
+//			if (rs.first()) {
+//				result = new AntechamberEntry(rs.getInt("AntechamberID"), rs.getInt("CeilingTypeID"), rs.getInt("FrontWallID"),
+//						rs.getInt("LeftWallID"), rs.getInt("RightWallID"), rs.getInt("RearWallID"), rs.getDouble("Height"), rs.getDouble("Width"),
+//						rs.getDouble("Depth"), rs.getInt("PreservationClassificationID"), rs.getInt("CeilingPreservationClassificationID"));
+//			} else { // in case there is no entry we send back a new one
+//				result = new AntechamberEntry();
+//				result.setAntechamberID(id);
+//				insertAntechamber(result);
+//			}
+//			rs.close();
+//			stmt.close();
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
+//		return result;
+//	}
 
-	private synchronized boolean insertAntechamber(AntechamberEntry entry) {
-		Connection dbc = getConnection();
-		PreparedStatement pstmt;
-		try {
-			pstmt = dbc.prepareStatement(
-					"INSERT INTO Antechamber (AntechamberID, CeilingTypeID, FrontWallID, LeftWallID, RightWallID, RearWallID, Height, Width, Depth, PreservationClassificationID, CeilingPreservationClassificationID) "
-							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-			pstmt.setInt(1, entry.getAntechamberID());
-			pstmt.setInt(2, entry.getCeilingTypeID());
-			pstmt.setInt(3, entry.getFrontWallID());
-			pstmt.setInt(4, entry.getLeftWallID());
-			pstmt.setInt(5, entry.getRightWallID());
-			pstmt.setInt(6, entry.getRearWallID());
-			pstmt.setDouble(7, entry.getHeight());
-			pstmt.setDouble(8, entry.getWidth());
-			pstmt.setDouble(9, entry.getDepth());
-			pstmt.setInt(10, entry.getPreservationClassificationID());
-			pstmt.setInt(11, entry.getCeilingPreservationClassificationID());
-			pstmt.executeUpdate();
-			pstmt.close();
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-			return false;
-		}
-		return true;
-	}
-
-	private synchronized boolean updateAntechamber(AntechamberEntry entry) {
-		Connection dbc = getConnection();
-		PreparedStatement pstmt;
-		try {
-			pstmt = dbc.prepareStatement(
-					"UPDATE Antechamber SET CeilingTypeID=?, FrontWallID=?, LeftWallID=?, RightWallID=?, RearWallID=?, Height=?, Width=?, "
-							+ "Depth=?, PreservationClassificationID=?, CeilingPreservationClassificationID=? WHERE AntechamberID=?");
-			pstmt.setInt(1, entry.getCeilingTypeID());
-			pstmt.setInt(2, entry.getFrontWallID());
-			pstmt.setInt(3, entry.getLeftWallID());
-			pstmt.setInt(4, entry.getRightWallID());
-			pstmt.setInt(5, entry.getRearWallID());
-			pstmt.setDouble(6, entry.getHeight());
-			pstmt.setDouble(7, entry.getWidth());
-			pstmt.setDouble(8, entry.getDepth());
-			pstmt.setInt(9, entry.getPreservationClassificationID());
-			pstmt.setInt(10, entry.getCeilingPreservationClassificationID());
-			pstmt.setInt(11, entry.getAntechamberID());
-			pstmt.executeUpdate();
-			pstmt.close();
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-			return false;
-		}
-		return true;
-	}
+//	private synchronized boolean insertAntechamber(AntechamberEntry entry) {
+//		Connection dbc = getConnection();
+//		PreparedStatement pstmt;
+//		try {
+//			pstmt = dbc.prepareStatement(
+//					"INSERT INTO Antechamber (AntechamberID, CeilingTypeID, FrontWallID, LeftWallID, RightWallID, RearWallID, Height, Width, Depth, PreservationClassificationID, CeilingPreservationClassificationID) "
+//							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+//			pstmt.setInt(1, entry.getAntechamberID());
+//			pstmt.setInt(2, entry.getCeilingTypeID());
+//			pstmt.setInt(3, entry.getFrontWallID());
+//			pstmt.setInt(4, entry.getLeftWallID());
+//			pstmt.setInt(5, entry.getRightWallID());
+//			pstmt.setInt(6, entry.getRearWallID());
+//			pstmt.setDouble(7, entry.getHeight());
+//			pstmt.setDouble(8, entry.getWidth());
+//			pstmt.setDouble(9, entry.getDepth());
+//			pstmt.setInt(10, entry.getPreservationClassificationID());
+//			pstmt.setInt(11, entry.getCeilingPreservationClassificationID());
+//			pstmt.executeUpdate();
+//			pstmt.close();
+//		} catch (SQLException ex) {
+//			ex.printStackTrace();
+//			return false;
+//		}
+//		return true;
+//	}
+//
+//	private synchronized boolean updateAntechamber(AntechamberEntry entry) {
+//		Connection dbc = getConnection();
+//		PreparedStatement pstmt;
+//		try {
+//			pstmt = dbc.prepareStatement(
+//					"UPDATE Antechamber SET CeilingTypeID=?, FrontWallID=?, LeftWallID=?, RightWallID=?, RearWallID=?, Height=?, Width=?, "
+//							+ "Depth=?, PreservationClassificationID=?, CeilingPreservationClassificationID=? WHERE AntechamberID=?");
+//			pstmt.setInt(1, entry.getCeilingTypeID());
+//			pstmt.setInt(2, entry.getFrontWallID());
+//			pstmt.setInt(3, entry.getLeftWallID());
+//			pstmt.setInt(4, entry.getRightWallID());
+//			pstmt.setInt(5, entry.getRearWallID());
+//			pstmt.setDouble(6, entry.getHeight());
+//			pstmt.setDouble(7, entry.getWidth());
+//			pstmt.setDouble(8, entry.getDepth());
+//			pstmt.setInt(9, entry.getPreservationClassificationID());
+//			pstmt.setInt(10, entry.getCeilingPreservationClassificationID());
+//			pstmt.setInt(11, entry.getAntechamberID());
+//			pstmt.executeUpdate();
+//			pstmt.close();
+//		} catch (SQLException ex) {
+//			ex.printStackTrace();
+//			return false;
+//		}
+//		return true;
+//	}
 
 	/**
 	 * In case the RearAreaEntry hasn't been created before, it will be created and saved.
@@ -1100,123 +1100,123 @@ public class MysqlConnector {
 	 *          the RearAreaID from the table that equals the CaveID where the RearArea is located
 	 * @return The RearAreaEntry for the corresponding id
 	 */
-	public RearAreaEntry getRearArea(int id) {
-		RearAreaEntry result = null;
-		Connection dbc = getConnection();
-
-		Statement stmt;
-		try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM RearArea WHERE RearAreaID=" + id);
-			if (rs.first()) {
-				result = new RearAreaEntry(rs.getInt("RearAreaID"), rs.getInt("CeilingTypeID"), rs.getInt("InnerWallID"), rs.getInt("LeftWallID"),
-						rs.getInt("RightWallID"), rs.getInt("OuterWallID"), rs.getBoolean("IsBackChamber"), rs.getDouble("Height"),
-						rs.getDouble("Width"), rs.getDouble("Depth"), rs.getInt("PreservationClassificationID"),
-						rs.getInt("CeilingPreservationClassificationID"));
-				result.setLeftCorridorEntry(getCorridor(rs.getInt("LeftCorridorID")));
-				result.setRightCorridorEntry(getCorridor(rs.getInt("RightCorridorID")));
-			} else { // in case there is no entry we send back a new one
-				result = new RearAreaEntry();
-				result.setRearAreaID(id);
-				insertRearArea(result);
-			}
-			rs.close();
-			stmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return result;
-	}
-
-	/**
-	 * 
-	 * @param entry
-	 * @return
-	 */
-	private synchronized boolean updateRearArea(RearAreaEntry entry) {
-		Connection dbc = getConnection();
-		PreparedStatement pstmt;
-		if (entry.getLeftCorridorEntry().getCorridorID() == 0) {
-			entry.getLeftCorridorEntry().setCorridorID(insertCorridor(entry.getLeftCorridorEntry()));
-		} else {
-			updateCorridor(entry.getLeftCorridorEntry());
-		}
-		if (entry.getRightCorridorEntry().getCorridorID() == 0) {
-			entry.getRightCorridorEntry().setCorridorID(insertCorridor(entry.getRightCorridorEntry()));
-		} else {
-			updateCorridor(entry.getRightCorridorEntry());
-		}
-		try {
-			pstmt = dbc.prepareStatement(
-					"UPDATE RearArea SET CeilingTypeID=?, InnerWallID=?, LeftWallID=?, RightWallID=?, OuterWallID=?, LeftCorridorID=?, "
-							+ "RightCorridorID=?, IsBackChamber=?, Height=?, Width=?, Depth=?, PreservationClassificationID=?, CeilingPreservationClassificationID=? WHERE RearAreaID=?");
-			pstmt.setInt(1, entry.getCeilingTypeID());
-			pstmt.setInt(2, entry.getInnerWallID());
-			pstmt.setInt(3, entry.getLeftWallID());
-			pstmt.setInt(4, entry.getRightWallID());
-			pstmt.setInt(5, entry.getOuterWallID());
-			pstmt.setInt(6, entry.getLeftCorridorEntry().getCorridorID());
-			pstmt.setInt(7, entry.getRightCorridorEntry().getCorridorID());
-			pstmt.setBoolean(8, entry.isBackChamber());
-			pstmt.setDouble(9, entry.getHeight());
-			pstmt.setDouble(10, entry.getWidth());
-			pstmt.setDouble(11, entry.getDepth());
-			pstmt.setInt(12, entry.getPreservationClassificationID());
-			pstmt.setInt(13, entry.getCeilingPreservationClassificationID());
-			pstmt.setInt(14, entry.getRearAreaID());
-			pstmt.executeUpdate();
-			pstmt.close();
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-			return false;
-		}
-		return true;
-	}
-
-	/**
-	 * 
-	 * @param entry
-	 * @return
-	 */
-	private synchronized boolean insertRearArea(RearAreaEntry entry) {
-		Connection dbc = getConnection();
-		PreparedStatement pstmt;
-		if (entry.getLeftCorridorEntry().getCorridorID() == 0) {
-			entry.getLeftCorridorEntry().setCorridorID(insertCorridor(entry.getLeftCorridorEntry()));
-		} else {
-			updateCorridor(entry.getLeftCorridorEntry());
-		}
-		if (entry.getRightCorridorEntry().getCorridorID() == 0) {
-			entry.getRightCorridorEntry().setCorridorID(insertCorridor(entry.getRightCorridorEntry()));
-		} else {
-			updateCorridor(entry.getRightCorridorEntry());
-		}
-		try {
-			pstmt = dbc.prepareStatement(
-					"INSERT INTO RearArea (RearAreaID, CeilingTypeID, InnerWallID, LeftWallID, RightWallID, OuterWallID, LeftCorridorID, RightCorridorID, IsBackChamber, "
-							+ "Height, Width, Depth, PreservationClassificationID, CeilingPreservationClassificationID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-			pstmt.setInt(1, entry.getRearAreaID());
-			pstmt.setInt(2, entry.getCeilingTypeID());
-			pstmt.setInt(3, entry.getInnerWallID());
-			pstmt.setInt(4, entry.getLeftWallID());
-			pstmt.setInt(5, entry.getRightWallID());
-			pstmt.setInt(6, entry.getOuterWallID());
-			pstmt.setInt(7, entry.getLeftCorridorEntry().getCorridorID());
-			pstmt.setInt(8, entry.getRightCorridorEntry().getCorridorID());
-			pstmt.setBoolean(9, entry.isBackChamber());
-			pstmt.setDouble(10, entry.getHeight());
-			pstmt.setDouble(11, entry.getWidth());
-			pstmt.setDouble(12, entry.getDepth());
-			pstmt.setInt(13, entry.getPreservationClassificationID());
-			pstmt.setInt(14, entry.getCeilingPreservationClassificationID());
-			pstmt.executeUpdate();
-			pstmt.close();
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-			return false;
-		}
-		return true;
-	}
+//	public RearAreaEntry getRearArea(int id) {
+//		RearAreaEntry result = null;
+//		Connection dbc = getConnection();
+//
+//		Statement stmt;
+//		try {
+//			stmt = dbc.createStatement();
+//			ResultSet rs = stmt.executeQuery("SELECT * FROM RearArea WHERE RearAreaID=" + id);
+//			if (rs.first()) {
+//				result = new RearAreaEntry(rs.getInt("RearAreaID"), rs.getInt("CeilingTypeID"), rs.getInt("InnerWallID"), rs.getInt("LeftWallID"),
+//						rs.getInt("RightWallID"), rs.getInt("OuterWallID"), rs.getBoolean("IsBackChamber"), rs.getDouble("Height"),
+//						rs.getDouble("Width"), rs.getDouble("Depth"), rs.getInt("PreservationClassificationID"),
+//						rs.getInt("CeilingPreservationClassificationID"));
+//				result.setLeftCorridorEntry(getCorridor(rs.getInt("LeftCorridorID")));
+//				result.setRightCorridorEntry(getCorridor(rs.getInt("RightCorridorID")));
+//			} else { // in case there is no entry we send back a new one
+//				result = new RearAreaEntry();
+//				result.setRearAreaID(id);
+//				insertRearArea(result);
+//			}
+//			rs.close();
+//			stmt.close();
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
+//		return result;
+//	}
+//
+//	/**
+//	 * 
+//	 * @param entry
+//	 * @return
+//	 */
+//	private synchronized boolean updateRearArea(RearAreaEntry entry) {
+//		Connection dbc = getConnection();
+//		PreparedStatement pstmt;
+//		if (entry.getLeftCorridorEntry().getCorridorID() == 0) {
+//			entry.getLeftCorridorEntry().setCorridorID(insertCorridor(entry.getLeftCorridorEntry()));
+//		} else {
+//			updateCorridor(entry.getLeftCorridorEntry());
+//		}
+//		if (entry.getRightCorridorEntry().getCorridorID() == 0) {
+//			entry.getRightCorridorEntry().setCorridorID(insertCorridor(entry.getRightCorridorEntry()));
+//		} else {
+//			updateCorridor(entry.getRightCorridorEntry());
+//		}
+//		try {
+//			pstmt = dbc.prepareStatement(
+//					"UPDATE RearArea SET CeilingTypeID=?, InnerWallID=?, LeftWallID=?, RightWallID=?, OuterWallID=?, LeftCorridorID=?, "
+//							+ "RightCorridorID=?, IsBackChamber=?, Height=?, Width=?, Depth=?, PreservationClassificationID=?, CeilingPreservationClassificationID=? WHERE RearAreaID=?");
+//			pstmt.setInt(1, entry.getCeilingTypeID());
+//			pstmt.setInt(2, entry.getInnerWallID());
+//			pstmt.setInt(3, entry.getLeftWallID());
+//			pstmt.setInt(4, entry.getRightWallID());
+//			pstmt.setInt(5, entry.getOuterWallID());
+//			pstmt.setInt(6, entry.getLeftCorridorEntry().getCorridorID());
+//			pstmt.setInt(7, entry.getRightCorridorEntry().getCorridorID());
+//			pstmt.setBoolean(8, entry.isBackChamber());
+//			pstmt.setDouble(9, entry.getHeight());
+//			pstmt.setDouble(10, entry.getWidth());
+//			pstmt.setDouble(11, entry.getDepth());
+//			pstmt.setInt(12, entry.getPreservationClassificationID());
+//			pstmt.setInt(13, entry.getCeilingPreservationClassificationID());
+//			pstmt.setInt(14, entry.getRearAreaID());
+//			pstmt.executeUpdate();
+//			pstmt.close();
+//		} catch (SQLException ex) {
+//			ex.printStackTrace();
+//			return false;
+//		}
+//		return true;
+//	}
+//
+//	/**
+//	 * 
+//	 * @param entry
+//	 * @return
+//	 */
+//	private synchronized boolean insertRearArea(RearAreaEntry entry) {
+//		Connection dbc = getConnection();
+//		PreparedStatement pstmt;
+//		if (entry.getLeftCorridorEntry().getCorridorID() == 0) {
+//			entry.getLeftCorridorEntry().setCorridorID(insertCorridor(entry.getLeftCorridorEntry()));
+//		} else {
+//			updateCorridor(entry.getLeftCorridorEntry());
+//		}
+//		if (entry.getRightCorridorEntry().getCorridorID() == 0) {
+//			entry.getRightCorridorEntry().setCorridorID(insertCorridor(entry.getRightCorridorEntry()));
+//		} else {
+//			updateCorridor(entry.getRightCorridorEntry());
+//		}
+//		try {
+//			pstmt = dbc.prepareStatement(
+//					"INSERT INTO RearArea (RearAreaID, CeilingTypeID, InnerWallID, LeftWallID, RightWallID, OuterWallID, LeftCorridorID, RightCorridorID, IsBackChamber, "
+//							+ "Height, Width, Depth, PreservationClassificationID, CeilingPreservationClassificationID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+//			pstmt.setInt(1, entry.getRearAreaID());
+//			pstmt.setInt(2, entry.getCeilingTypeID());
+//			pstmt.setInt(3, entry.getInnerWallID());
+//			pstmt.setInt(4, entry.getLeftWallID());
+//			pstmt.setInt(5, entry.getRightWallID());
+//			pstmt.setInt(6, entry.getOuterWallID());
+//			pstmt.setInt(7, entry.getLeftCorridorEntry().getCorridorID());
+//			pstmt.setInt(8, entry.getRightCorridorEntry().getCorridorID());
+//			pstmt.setBoolean(9, entry.isBackChamber());
+//			pstmt.setDouble(10, entry.getHeight());
+//			pstmt.setDouble(11, entry.getWidth());
+//			pstmt.setDouble(12, entry.getDepth());
+//			pstmt.setInt(13, entry.getPreservationClassificationID());
+//			pstmt.setInt(14, entry.getCeilingPreservationClassificationID());
+//			pstmt.executeUpdate();
+//			pstmt.close();
+//		} catch (SQLException ex) {
+//			ex.printStackTrace();
+//			return false;
+//		}
+//		return true;
+//	}
 
 	/**
 	 * In case the MainChamberEntry hasn't been created before, it will be created and saved.
@@ -1225,174 +1225,174 @@ public class MysqlConnector {
 	 *          MainChamberID from the table that equals the CaveID where the MainChamber is located
 	 * @return The MainChamberEntry for the corresponding id
 	 */
-	public MainChamberEntry getMainChamber(int id) {
-		MainChamberEntry result = null;
-		Connection dbc = getConnection();
-
-		Statement stmt;
-		try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM MainChamber WHERE MainChamberID=" + id);
-			if (rs.first()) {
-				result = new MainChamberEntry(rs.getInt("MainChamberID"), rs.getInt("CeilingTypeID"), rs.getInt("FrontWallID"),
-						rs.getInt("LeftWallID"), rs.getInt("RightWallID"), rs.getInt("RearWallID"), rs.getDouble("Height"), rs.getDouble("Width"),
-						rs.getDouble("Depth"), rs.getInt("PreservationClassificationID"), rs.getInt("CeilingPreservationClassificationID"));
-				result.setCorridorEntry(getCorridor(rs.getInt("CorridorID")));
-			} else { // in case there is no entry we send back a new one
-				result = new MainChamberEntry();
-				result.setMainChamberID(id);
-				insertMainChamber(result);
-			}
-			rs.close();
-			stmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return result;
-	}
-
-	private synchronized boolean updateMainChamber(MainChamberEntry entry) {
-		Connection dbc = getConnection();
-		PreparedStatement pstmt;
-		if (entry.getCorridorEntry().getCorridorID() == 0) {
-			entry.getCorridorEntry().setCorridorID(insertCorridor(entry.getCorridorEntry()));
-		} else {
-			updateCorridor(entry.getCorridorEntry());
-		}
-		try {
-			pstmt = dbc.prepareStatement(
-					"UPDATE MainChamber SET CeilingTypeID=?, FrontWallID=?, LeftWallID=?, RightWallID=?, RearWallID=?, CorridorID=?, Height=?, Width=?, "
-							+ "Depth=?, PreservationClassificationID=?, CeilingPreservationClassificationID=? WHERE MainChamberID=?");
-			pstmt.setInt(1, entry.getCeilingTypeID());
-			pstmt.setInt(2, entry.getFrontWallID());
-			pstmt.setInt(3, entry.getLeftWallID());
-			pstmt.setInt(4, entry.getRightWallID());
-			pstmt.setInt(5, entry.getRearWallID());
-			pstmt.setInt(6, entry.getCorridorEntry().getCorridorID());
-			pstmt.setDouble(7, entry.getHeight());
-			pstmt.setDouble(8, entry.getWidth());
-			pstmt.setDouble(9, entry.getDepth());
-			pstmt.setInt(10, entry.getPreservationClassificationID());
-			pstmt.setInt(11, entry.getCeilingPreservationClassificationID());
-			pstmt.setInt(12, entry.getMainChamberID());
-			pstmt.executeUpdate();
-			pstmt.close();
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-			return false;
-		}
-		return true;
-	}
-
-	private synchronized boolean insertMainChamber(MainChamberEntry entry) {
-		Connection dbc = getConnection();
-		PreparedStatement pstmt;
-		if (entry.getCorridorEntry().getCorridorID() == 0) {
-			entry.getCorridorEntry().setCorridorID(insertCorridor(entry.getCorridorEntry()));
-		} else {
-			updateCorridor(entry.getCorridorEntry());
-		}
-		try {
-			pstmt = dbc.prepareStatement(
-					"INSERT INTO MainChamber (MainChamberID, CeilingTypeID, FrontWallID, LeftWallID, RightWallID, RearWallID, CorridorID, "
-							+ "Height, Width, Depth, PreservationClassificationID, CeilingPreservationClassificationID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-			pstmt.setInt(1, entry.getMainChamberID());
-			pstmt.setInt(2, entry.getCeilingTypeID());
-			pstmt.setInt(3, entry.getFrontWallID());
-			pstmt.setInt(4, entry.getLeftWallID());
-			pstmt.setInt(5, entry.getRightWallID());
-			pstmt.setInt(6, entry.getRearWallID());
-			pstmt.setInt(7, entry.getCorridorEntry().getCorridorID());
-			pstmt.setDouble(8, entry.getHeight());
-			pstmt.setDouble(9, entry.getWidth());
-			pstmt.setDouble(10, entry.getDepth());
-			pstmt.setInt(11, entry.getPreservationClassificationID());
-			pstmt.setInt(12, entry.getCeilingPreservationClassificationID());
-			pstmt.executeUpdate();
-			pstmt.close();
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-			return false;
-		}
-		return true;
-	}
+//	public MainChamberEntry getMainChamber(int id) {
+//		MainChamberEntry result = null;
+//		Connection dbc = getConnection();
+//
+//		Statement stmt;
+//		try {
+//			stmt = dbc.createStatement();
+//			ResultSet rs = stmt.executeQuery("SELECT * FROM MainChamber WHERE MainChamberID=" + id);
+//			if (rs.first()) {
+//				result = new MainChamberEntry(rs.getInt("MainChamberID"), rs.getInt("CeilingTypeID"), rs.getInt("FrontWallID"),
+//						rs.getInt("LeftWallID"), rs.getInt("RightWallID"), rs.getInt("RearWallID"), rs.getDouble("Height"), rs.getDouble("Width"),
+//						rs.getDouble("Depth"), rs.getInt("PreservationClassificationID"), rs.getInt("CeilingPreservationClassificationID"));
+//				result.setCorridorEntry(getCorridor(rs.getInt("CorridorID")));
+//			} else { // in case there is no entry we send back a new one
+//				result = new MainChamberEntry();
+//				result.setMainChamberID(id);
+//				insertMainChamber(result);
+//			}
+//			rs.close();
+//			stmt.close();
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
+//		return result;
+//	}
+//
+//	private synchronized boolean updateMainChamber(MainChamberEntry entry) {
+//		Connection dbc = getConnection();
+//		PreparedStatement pstmt;
+//		if (entry.getCorridorEntry().getCorridorID() == 0) {
+//			entry.getCorridorEntry().setCorridorID(insertCorridor(entry.getCorridorEntry()));
+//		} else {
+//			updateCorridor(entry.getCorridorEntry());
+//		}
+//		try {
+//			pstmt = dbc.prepareStatement(
+//					"UPDATE MainChamber SET CeilingTypeID=?, FrontWallID=?, LeftWallID=?, RightWallID=?, RearWallID=?, CorridorID=?, Height=?, Width=?, "
+//							+ "Depth=?, PreservationClassificationID=?, CeilingPreservationClassificationID=? WHERE MainChamberID=?");
+//			pstmt.setInt(1, entry.getCeilingTypeID());
+//			pstmt.setInt(2, entry.getFrontWallID());
+//			pstmt.setInt(3, entry.getLeftWallID());
+//			pstmt.setInt(4, entry.getRightWallID());
+//			pstmt.setInt(5, entry.getRearWallID());
+//			pstmt.setInt(6, entry.getCorridorEntry().getCorridorID());
+//			pstmt.setDouble(7, entry.getHeight());
+//			pstmt.setDouble(8, entry.getWidth());
+//			pstmt.setDouble(9, entry.getDepth());
+//			pstmt.setInt(10, entry.getPreservationClassificationID());
+//			pstmt.setInt(11, entry.getCeilingPreservationClassificationID());
+//			pstmt.setInt(12, entry.getMainChamberID());
+//			pstmt.executeUpdate();
+//			pstmt.close();
+//		} catch (SQLException ex) {
+//			ex.printStackTrace();
+//			return false;
+//		}
+//		return true;
+//	}
+//
+//	private synchronized boolean insertMainChamber(MainChamberEntry entry) {
+//		Connection dbc = getConnection();
+//		PreparedStatement pstmt;
+//		if (entry.getCorridorEntry().getCorridorID() == 0) {
+//			entry.getCorridorEntry().setCorridorID(insertCorridor(entry.getCorridorEntry()));
+//		} else {
+//			updateCorridor(entry.getCorridorEntry());
+//		}
+//		try {
+//			pstmt = dbc.prepareStatement(
+//					"INSERT INTO MainChamber (MainChamberID, CeilingTypeID, FrontWallID, LeftWallID, RightWallID, RearWallID, CorridorID, "
+//							+ "Height, Width, Depth, PreservationClassificationID, CeilingPreservationClassificationID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+//			pstmt.setInt(1, entry.getMainChamberID());
+//			pstmt.setInt(2, entry.getCeilingTypeID());
+//			pstmt.setInt(3, entry.getFrontWallID());
+//			pstmt.setInt(4, entry.getLeftWallID());
+//			pstmt.setInt(5, entry.getRightWallID());
+//			pstmt.setInt(6, entry.getRearWallID());
+//			pstmt.setInt(7, entry.getCorridorEntry().getCorridorID());
+//			pstmt.setDouble(8, entry.getHeight());
+//			pstmt.setDouble(9, entry.getWidth());
+//			pstmt.setDouble(10, entry.getDepth());
+//			pstmt.setInt(11, entry.getPreservationClassificationID());
+//			pstmt.setInt(12, entry.getCeilingPreservationClassificationID());
+//			pstmt.executeUpdate();
+//			pstmt.close();
+//		} catch (SQLException ex) {
+//			ex.printStackTrace();
+//			return false;
+//		}
+//		return true;
+//	}
 
 	/**
 	 * 
 	 * @param id
 	 * @return
 	 */
-	private CorridorEntry getCorridor(int id) {
-		CorridorEntry result = null;
-		Connection dbc = getConnection();
-
-		Statement stmt;
-		try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Corridor WHERE CorridorID=" + id);
-			if (rs.first()) {
-				result = new CorridorEntry(rs.getInt("CorridorID"), rs.getInt("OuterWallID"), rs.getInt("InnerWallID"), rs.getInt("CeilingTypeID"),
-						rs.getInt("PreservationClassificationID"), rs.getInt("CeilingPreservationClassificationID"));
-			} else { // in case there is no entry we send back a new one
-				result = new CorridorEntry();
-			}
-			rs.close();
-			stmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return result;
-	}
-
-	/**
-	 * @param leftCorridorEntry
-	 * @return
-	 */
-	private synchronized boolean updateCorridor(CorridorEntry entry) {
-		Connection dbc = getConnection();
-		PreparedStatement pstmt;
-		try {
-			pstmt = dbc.prepareStatement(
-					"UPDATE Corridor SET OuterWallID=?, InnerWallID=?, CeilingTypeID=?, PreservationClassificationID=?, CeilingPreservationClassificationID=? WHERE CorridorID=?");
-			pstmt.setInt(1, entry.getOuterWallID());
-			pstmt.setInt(2, entry.getInnerWallID());
-			pstmt.setInt(3, entry.getCeilingTypeID());
-			pstmt.setInt(4, entry.getPreservationClassificationID());
-			pstmt.setInt(5, entry.getCeilingPreservationClassificationID());
-			pstmt.setInt(6, entry.getCorridorID());
-			pstmt.executeUpdate();
-			pstmt.close();
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-			return false;
-		}
-		return true;
-	}
-
-	/**
-	 * @param rightCorridorEntry
-	 * @return
-	 */
-	private synchronized int insertCorridor(CorridorEntry entry) {
-		int newID;
-		Connection dbc = getConnection();
-		PreparedStatement pstmt;
-		try {
-			pstmt = dbc.prepareStatement(
-					"INSERT INTO Corridor (OuterWallID, InnerWallID, CeilingTypeID, PreservationClassificationID, CeilingPreservationClassificationID) VALUES (?, ?, ?, ?, ?)");
-			pstmt.setInt(1, entry.getOuterWallID());
-			pstmt.setInt(2, entry.getInnerWallID());
-			pstmt.setInt(3, entry.getCeilingTypeID());
-			pstmt.setInt(4, entry.getPreservationClassificationID());
-			pstmt.setInt(5, entry.getCeilingPreservationClassificationID());
-			newID = pstmt.executeUpdate();
-			pstmt.close();
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-			return 0;
-		}
-		return newID;
-	}
+//	private CorridorEntry getCorridor(int id) {
+//		CorridorEntry result = null;
+//		Connection dbc = getConnection();
+//
+//		Statement stmt;
+//		try {
+//			stmt = dbc.createStatement();
+//			ResultSet rs = stmt.executeQuery("SELECT * FROM Corridor WHERE CorridorID=" + id);
+//			if (rs.first()) {
+//				result = new CorridorEntry(rs.getInt("CorridorID"), rs.getInt("OuterWallID"), rs.getInt("InnerWallID"), rs.getInt("CeilingTypeID"),
+//						rs.getInt("PreservationClassificationID"), rs.getInt("CeilingPreservationClassificationID"));
+//			} else { // in case there is no entry we send back a new one
+//				result = new CorridorEntry();
+//			}
+//			rs.close();
+//			stmt.close();
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
+//		return result;
+//	}
+//
+//	/**
+//	 * @param leftCorridorEntry
+//	 * @return
+//	 */
+//	private synchronized boolean updateCorridor(CorridorEntry entry) {
+//		Connection dbc = getConnection();
+//		PreparedStatement pstmt;
+//		try {
+//			pstmt = dbc.prepareStatement(
+//					"UPDATE Corridor SET OuterWallID=?, InnerWallID=?, CeilingTypeID=?, PreservationClassificationID=?, CeilingPreservationClassificationID=? WHERE CorridorID=?");
+//			pstmt.setInt(1, entry.getOuterWallID());
+//			pstmt.setInt(2, entry.getInnerWallID());
+//			pstmt.setInt(3, entry.getCeilingTypeID());
+//			pstmt.setInt(4, entry.getPreservationClassificationID());
+//			pstmt.setInt(5, entry.getCeilingPreservationClassificationID());
+//			pstmt.setInt(6, entry.getCorridorID());
+//			pstmt.executeUpdate();
+//			pstmt.close();
+//		} catch (SQLException ex) {
+//			ex.printStackTrace();
+//			return false;
+//		}
+//		return true;
+//	}
+//
+//	/**
+//	 * @param rightCorridorEntry
+//	 * @return
+//	 */
+//	private synchronized int insertCorridor(CorridorEntry entry) {
+//		int newID;
+//		Connection dbc = getConnection();
+//		PreparedStatement pstmt;
+//		try {
+//			pstmt = dbc.prepareStatement(
+//					"INSERT INTO Corridor (OuterWallID, InnerWallID, CeilingTypeID, PreservationClassificationID, CeilingPreservationClassificationID) VALUES (?, ?, ?, ?, ?)");
+//			pstmt.setInt(1, entry.getOuterWallID());
+//			pstmt.setInt(2, entry.getInnerWallID());
+//			pstmt.setInt(3, entry.getCeilingTypeID());
+//			pstmt.setInt(4, entry.getPreservationClassificationID());
+//			pstmt.setInt(5, entry.getCeilingPreservationClassificationID());
+//			newID = pstmt.executeUpdate();
+//			pstmt.close();
+//		} catch (SQLException ex) {
+//			ex.printStackTrace();
+//			return 0;
+//		}
+//		return newID;
+//	}
 
 	/**
 	 * @return A list of all Regions as RegionEntry objects
