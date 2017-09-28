@@ -30,6 +30,7 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.XTemplates;
+import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
@@ -47,6 +48,7 @@ import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
+import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
@@ -60,11 +62,13 @@ import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MaxNumberValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinNumberValidator;
+import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
 import de.cses.client.Util;
+import de.cses.client.caves.CaveSketchUploader.CaveSketchUploadListener;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.shared.CaveAreaEntry;
 import de.cses.shared.CaveEntry;
@@ -112,7 +116,7 @@ public class CaveEditor extends AbstractEditor {
 	private TextField firstDocumentedByField;
 	private NumberField<Integer> firstDocumentedInYearField;
 	private TextArea findingsTextArea;
-	private FlowLayoutContainer imageContainer;
+	private FlowLayoutContainer caveSketchFLC;
 	private ComboBox<OrientationEntry> orientationSelection;
 	private CeilingTypeProperties ceilingTypeProps;
 	private ListStore<CeilingTypeEntry> ceilingTypeEntryList;
@@ -314,6 +318,18 @@ public class CaveEditor extends AbstractEditor {
 		loadOrientation();
 		loadCaveGroups();
 	}
+	
+	private void refreshCaveSketchFLC(String caveTypeSketchName, String optionalCaveSketchName) {
+		caveSketchFLC.clear();
+		if (optionalCaveSketchName != null) {
+			caveSketchFLC.add(new HTMLPanel(
+					caveLayoutViewTemplates.image(UriUtils.fromString("resource?cavesketch=" + optionalCaveSketchName))), new MarginData(5));
+		}
+		if (caveTypeSketchName != null) {
+			caveSketchFLC.add(new HTMLPanel(
+					caveLayoutViewTemplates.image(UriUtils.fromString("resource?background=" + caveTypeSketchName))), new MarginData(5));
+		}
+	}
 
 	/**
 	 * 
@@ -326,11 +342,7 @@ public class CaveEditor extends AbstractEditor {
 			CaveTypeEntry correspondingCaveTypeEntry = caveTypeEntryListStore
 					.findModelWithKey(Integer.toString(correspondingCaveEntry.getCaveTypeID()));
 			caveTypeSelection.setValue(correspondingCaveTypeEntry);
-			imageContainer.clear();
-			imageContainer.add(new HTMLPanel(
-					caveLayoutViewTemplates.image(UriUtils.fromString("resource?background=" + correspondingCaveTypeEntry.getSketchName()))));
-			// updateCeilingTypePanel();
-			// updateStateOfPreservationPanel();
+			refreshCaveSketchFLC(correspondingCaveTypeEntry.getSketchName(), correspondingCaveEntry.getOptionalCaveSketch());
 		}
 		for (CeilingTypeEntry cte : StaticTables.getInstance().getCeilingTypeEntries().values()) {
 			ceilingTypeEntryList.add(cte);
@@ -1302,11 +1314,7 @@ public class CaveEditor extends AbstractEditor {
 				correspondingCaveEntry.setCaveTypeID(event.getSelectedItem().getCaveTypeID());
 				CaveTypeEntry correspondingCaveTypeEntry = caveTypeEntryListStore
 						.findModelWithKey(Integer.toString(correspondingCaveEntry.getCaveTypeID()));
-				imageContainer.clear();
-				imageContainer.add(new HTMLPanel(
-						caveLayoutViewTemplates.image(UriUtils.fromString("resource?background=" + correspondingCaveTypeEntry.getSketchName()))));
-				// updateCeilingTypePanel();
-				// updateStateOfPreservationPanel();
+				refreshCaveSketchFLC(correspondingCaveTypeEntry.getSketchName(), correspondingCaveEntry.getOptionalCaveSketch());
 			}
 		});
 		caveTypeFP.add(caveTypeSelection);
@@ -1542,13 +1550,36 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onSelect(SelectEvent event) {
-				// TODO upload cave sketch
+				if (correspondingCaveEntry.getCaveID() == 0) {
+					Util.showWarning("Cave sketch upload problem", "For technical reasons, an optional cave sketch\n cannot be uploaded before the cave has been saved.");
+					return;
+				}
+				PopupPanel caveSketchUploadPanel = new PopupPanel();
+				CaveSketchUploader uploader = new CaveSketchUploader(correspondingCaveEntry.getCaveID(), new CaveSketchUploadListener() {
+					
+					@Override
+					public void uploadCompleted(String caveSketchFilename) {
+						correspondingCaveEntry.setOptionalCaveSketch(caveSketchFilename);
+						caveSketchUploadPanel.hide();
+						refreshCaveSketchFLC(caveTypeEntryListStore.findModelWithKey(Integer.toString(correspondingCaveEntry.getCaveTypeID())).getSketchName(), caveSketchFilename);
+					}
+					
+					@Override
+					public void uploadCanceled() {
+						caveSketchUploadPanel.hide();
+					}
+				});
+				caveSketchUploadPanel.add(uploader);
+				caveSketchUploadPanel.setGlassEnabled(true);
+				caveSketchUploadPanel.center();
+				caveSketchUploadPanel.show();
 			}
 		});
 		caveSketchFP.addTool(addSketchButton);
 		caveSketchFP.setHeading("Cave Sketch");
-		imageContainer = new FlowLayoutContainer();
-		caveSketchFP.add(imageContainer);
+		caveSketchFLC = new FlowLayoutContainer();
+		caveSketchFLC.setScrollMode(ScrollMode.AUTOY);
+		caveSketchFP.add(caveSketchFLC);
 		caveTypeHLC.add(caveSketchFP, new HorizontalLayoutData(.5, 1.0));
 
 		/**
