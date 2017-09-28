@@ -30,16 +30,17 @@ public class CaveEntry extends AbstractEntry {
 	private String findings;
 	private String firstDocumentedBy;
 	private int firstDocumentedInYear;
+	private String optionalCaveSketch;
 	private ArrayList<CaveAreaEntry> caveAreaList;
 	private ArrayList<WallEntry> wallList;
 
 	public CaveEntry() {
-		this(0, "", "", "", 0, 0, 0, 0, "", "", "", 0, 0, 0);
+		this(0, "", "", "", 0, 0, 0, 0, "", "", "", 0, 0, 0, "");
 	}
 
 	public CaveEntry(int caveID, String officialNumber, String historicName, String optionalHistoricName, int caveTypeID, int districtID,
 			int regionID, int orientationID, String stateOfPerservation, String findings, String firstDocumentedBy, int firstDocumentedInYear, int preservationClassificationID,
-			int caveGroupID) {
+			int caveGroupID, String optionalCaveSketch) {
 		this.caveID = caveID;
 		setOfficialNumber(officialNumber);
 		setHistoricName(historicName);
@@ -253,6 +254,20 @@ public class CaveEntry extends AbstractEntry {
 
 	public void setWallList(ArrayList<WallEntry> wallList) {
 		this.wallList = wallList;
+	}
+
+	/**
+	 * @return the optionalCaveSketch
+	 */
+	public String getOptionalCaveSketch() {
+		return optionalCaveSketch;
+	}
+
+	/**
+	 * @param optionalCaveSketch the optionalCaveSketch to set
+	 */
+	public void setOptionalCaveSketch(String optionalCaveSketch) {
+		this.optionalCaveSketch = optionalCaveSketch;
 	}
 	
 }

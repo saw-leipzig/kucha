@@ -443,7 +443,7 @@ public class MysqlConnector {
 				CaveEntry ce = new CaveEntry(rs.getInt("CaveID"), rs.getString("OfficialNumber"), rs.getString("HistoricName"),
 						rs.getString("OptionalHistoricName"), rs.getInt("CaveTypeID"), rs.getInt("DistrictID"), rs.getInt("RegionID"),
 						rs.getInt("OrientationID"), rs.getString("StateOfPreservation"), rs.getString("Findings"), rs.getString("FirstDocumentedBy"),
-						rs.getInt("FirstDocumentedInYear"), rs.getInt("PreservationClassificationID"), rs.getInt("CaveGroupID"));
+						rs.getInt("FirstDocumentedInYear"), rs.getInt("PreservationClassificationID"), rs.getInt("CaveGroupID"), rs.getString("OptionalCaveSketch"));
 				ce.setCaveAreaList(getCaveAreas(ce.getCaveID()));
 				results.add(ce);
 			}
@@ -467,7 +467,7 @@ public class MysqlConnector {
 				result = new CaveEntry(rs.getInt("CaveID"), rs.getString("OfficialNumber"), rs.getString("HistoricName"),
 						rs.getString("OptionalHistoricName"), rs.getInt("CaveTypeID"), rs.getInt("DistrictID"), rs.getInt("RegionID"),
 						rs.getInt("OrientationID"), rs.getString("StateOfPreservation"), rs.getString("Findings"), rs.getString("FirstDocumentedBy"),
-						rs.getInt("FirstDocumentedInYear"), rs.getInt("PreservationClassificationID"), rs.getInt("CaveGroupID"));
+						rs.getInt("FirstDocumentedInYear"), rs.getInt("PreservationClassificationID"), rs.getInt("CaveGroupID"), rs.getString("OptionalCaveSketch"));
 				result.setCaveAreaList(getCaveAreas(result.getCaveID()));
 			}
 			rs.close();
@@ -491,7 +491,7 @@ public class MysqlConnector {
 				CaveEntry ce = new CaveEntry(rs.getInt("CaveID"), rs.getString("OfficialNumber"), rs.getString("HistoricName"),
 						rs.getString("OptionalHistoricName"), rs.getInt("CaveTypeID"), rs.getInt("DistrictID"), rs.getInt("RegionID"),
 						rs.getInt("OrientationID"), rs.getString("StateOfPreservation"), rs.getString("Findings"), rs.getString("FirstDocumentedBy"),
-						rs.getInt("FirstDocumentedInYear"), rs.getInt("PreservationClassificationID"), rs.getInt("CaveGroupID"));
+						rs.getInt("FirstDocumentedInYear"), rs.getInt("PreservationClassificationID"), rs.getInt("CaveGroupID"), rs.getString("OptionalCaveSketch"));
 				ce.setCaveAreaList(getCaveAreas(ce.getCaveID()));
 				results.add(ce);
 			}
@@ -1824,7 +1824,7 @@ public class MysqlConnector {
 		try {
 			pstmt = dbc.prepareStatement("UPDATE Caves SET OfficialNumber=?, HistoricName=?, OptionalHistoricName=?, CaveTypeID=?, DistrictID=?, "
 					+ "RegionID=?, OrientationID=?, StateOfPreservation=?, Findings=?, FirstDocumentedBy=?, FirstDocumentedInYear=?, PreservationClassificationID=?, "
-					+ "CaveGroupID=? WHERE CaveID=?");
+					+ "CaveGroupID=?, OptionalCaveSketch=? WHERE CaveID=?");
 			pstmt.setString(1, caveEntry.getOfficialNumber());
 			pstmt.setString(2, caveEntry.getHistoricName());
 			pstmt.setString(3, caveEntry.getOptionalHistoricName());
@@ -1838,7 +1838,8 @@ public class MysqlConnector {
 			pstmt.setInt(11, caveEntry.getFirstDocumentedInYear());
 			pstmt.setInt(12, caveEntry.getPreservationClassificationID());
 			pstmt.setInt(13, caveEntry.getCaveGroupID());
-			pstmt.setInt(14, caveEntry.getCaveID());
+			pstmt.setString(14, caveEntry.getOptionalCaveSketch());
+			pstmt.setInt(15, caveEntry.getCaveID());
 			pstmt.executeUpdate();
 			pstmt.close();
 			for (CaveAreaEntry caEntry : caveEntry.getCaveAreaList()) {
@@ -1865,7 +1866,7 @@ public class MysqlConnector {
 		try {
 			pstmt = dbc.prepareStatement(
 					"INSERT INTO Caves (OfficialNumber, HistoricName, OptionalHistoricName, CaveTypeID, DistrictID, RegionID, OrientationID, StateOfPreservation, "
-							+ "Findings, FirstDocumentedBy, FirstDocumentedInYear, PreservationClassificationID, CaveGroupID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+							+ "Findings, FirstDocumentedBy, FirstDocumentedInYear, PreservationClassificationID, CaveGroupID, OptionalCaveSketch) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			pstmt.setString(1, caveEntry.getOfficialNumber());
 			pstmt.setString(2, caveEntry.getHistoricName());
 			pstmt.setString(3, caveEntry.getOptionalHistoricName());
@@ -1879,6 +1880,7 @@ public class MysqlConnector {
 			pstmt.setInt(11, caveEntry.getFirstDocumentedInYear());
 			pstmt.setInt(12, caveEntry.getPreservationClassificationID());
 			pstmt.setInt(13, caveEntry.getCaveGroupID());
+			pstmt.setString(14, caveEntry.getOptionalCaveSketch());
 			newCaveID = pstmt.executeUpdate();
 			pstmt.close();
 			if (newCaveID > 0) {
