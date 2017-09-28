@@ -318,15 +318,15 @@ public class CaveEditor extends AbstractEditor {
 		loadCaveGroups();
 	}
 	
-	private void refreshCaveSketchFLC(CaveTypeEntry ctEntry) {
+	private void refreshCaveSketchFLC(String caveTypeSketchName, String optionalCaveSketchName) {
 		caveSketchFLC.clear();
-		if (correspondingCaveEntry.getOptionalCaveSketch() != null) {
+		if (optionalCaveSketchName != null) {
 			caveSketchFLC.add(new HTMLPanel(
-					caveLayoutViewTemplates.image(UriUtils.fromString("resource?cavesketch=" + correspondingCaveEntry.getOptionalCaveSketch()))), new MarginData(5));
+					caveLayoutViewTemplates.image(UriUtils.fromString("resource?cavesketch=" + optionalCaveSketchName))), new MarginData(5));
 		}
-		if (ctEntry.getSketchName() != null) {
+		if (caveTypeSketchName != null) {
 			caveSketchFLC.add(new HTMLPanel(
-					caveLayoutViewTemplates.image(UriUtils.fromString("resource?background=" + ctEntry.getSketchName()))), new MarginData(5));
+					caveLayoutViewTemplates.image(UriUtils.fromString("resource?background=" + caveTypeSketchName))), new MarginData(5));
 		}
 	}
 
@@ -341,7 +341,7 @@ public class CaveEditor extends AbstractEditor {
 			CaveTypeEntry correspondingCaveTypeEntry = caveTypeEntryListStore
 					.findModelWithKey(Integer.toString(correspondingCaveEntry.getCaveTypeID()));
 			caveTypeSelection.setValue(correspondingCaveTypeEntry);
-			refreshCaveSketchFLC(correspondingCaveTypeEntry);
+			refreshCaveSketchFLC(correspondingCaveTypeEntry.getSketchName(), correspondingCaveEntry.getOptionalCaveSketch());
 		}
 		for (CeilingTypeEntry cte : StaticTables.getInstance().getCeilingTypeEntries().values()) {
 			ceilingTypeEntryList.add(cte);
@@ -1313,7 +1313,7 @@ public class CaveEditor extends AbstractEditor {
 				correspondingCaveEntry.setCaveTypeID(event.getSelectedItem().getCaveTypeID());
 				CaveTypeEntry correspondingCaveTypeEntry = caveTypeEntryListStore
 						.findModelWithKey(Integer.toString(correspondingCaveEntry.getCaveTypeID()));
-				refreshCaveSketchFLC(correspondingCaveTypeEntry);
+				refreshCaveSketchFLC(correspondingCaveTypeEntry.getSketchName(), correspondingCaveEntry.getOptionalCaveSketch());
 			}
 		});
 		caveTypeFP.add(caveTypeSelection);
@@ -1560,7 +1560,7 @@ public class CaveEditor extends AbstractEditor {
 					public void uploadCompleted(String caveSketchFilename) {
 						correspondingCaveEntry.setOptionalCaveSketch(caveSketchFilename);
 						caveSketchUploadPanel.hide();
-						refreshCaveSketchFLC(caveTypeEntryListStore.findModelWithKey(Integer.toString(correspondingCaveEntry.getCaveTypeID())));
+						refreshCaveSketchFLC(caveTypeEntryListStore.findModelWithKey(Integer.toString(correspondingCaveEntry.getCaveTypeID())).getSketchName(), caveSketchFilename);
 					}
 					
 					@Override
