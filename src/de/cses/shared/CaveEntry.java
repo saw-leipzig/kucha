@@ -42,19 +42,20 @@ public class CaveEntry extends AbstractEntry {
 			int regionID, int orientationID, String stateOfPerservation, String findings, String firstDocumentedBy, int firstDocumentedInYear, int preservationClassificationID,
 			int caveGroupID, String optionalCaveSketch) {
 		this.caveID = caveID;
-		setOfficialNumber(officialNumber);
-		setHistoricName(historicName);
-		setOptionalHistoricName(optionalHistoricName);
-		setCaveTypeID(caveTypeID);
-		setDistrictID(districtID);
-		setRegionID(regionID);
-		setOrientationID(orientationID);
-		setStateOfPerservation(stateOfPerservation);
-		setFindings(findings);
-		setFirstDocumentedBy(firstDocumentedBy);
-		setFirstDocumentedInYear(firstDocumentedInYear);
-		setPreservationClassificationID(preservationClassificationID);
-		setCaveGroupID(caveGroupID);
+		this.officialNumber = officialNumber;
+		this.historicName = historicName;
+		this.optionalHistoricName = optionalHistoricName;
+		this.caveTypeID = caveTypeID;
+		this.districtID = districtID;
+		this.regionID = regionID;
+		this.orientationID = orientationID;
+		this.stateOfPerservation = stateOfPerservation;
+		this.findings = findings;
+		this.firstDocumentedBy = firstDocumentedBy;
+		this.firstDocumentedInYear = firstDocumentedInYear;
+		this.preservationClassificationID = preservationClassificationID;
+		this.caveGroupID = caveGroupID;
+		this.optionalCaveSketch = optionalCaveSketch;
 		caveAreaList = new ArrayList<CaveAreaEntry>();
 		wallList = new ArrayList<WallEntry>();
 	}
