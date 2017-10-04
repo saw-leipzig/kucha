@@ -14,13 +14,15 @@
 package de.cses.client.caves;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.editor.client.Editor;
+import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.http.client.UrlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
@@ -59,6 +61,7 @@ import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.form.validator.AbstractValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MaxNumberValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
@@ -1298,7 +1301,7 @@ public class CaveEditor extends AbstractEditor {
 		c14AnalysisUrlTextField = new TextField();
 		c14AnalysisUrlTextField.setEmptyText("enter link URL to C14 analysis");
 		c14AnalysisUrlTextField.setValue(correspondingCaveEntry.getC14url());
-		c14AnalysisUrlTextField.addValidator(new RegExValidator("\b(https?|ftp|file|ldap)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]*[-A-Za-z0-9+&@#/%=~_|]"));
+		c14AnalysisUrlTextField.addValidator(new RegExValidator("^((((https?|ftps?)://)|(mailto:|news:))(%[0-9A-Fa-f]{2}|[-()_.!~*';/?:@&=+$,A-Za-z0-9])+)([).!';/?:,][[:blank:]])?$", "Please enter valid URL"));
 		c14AnalysisUrlTextField.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
@@ -1308,6 +1311,7 @@ public class CaveEditor extends AbstractEditor {
 				}
 			}
 		});
+		c14AnalysisLinkFP.add(c14AnalysisUrlTextField);
 		descriptionsVLC.add(c14AnalysisLinkFP, new VerticalLayoutData(1.0, .15));
 
 		FramedPanel c14UploadPanel = new FramedPanel();
@@ -1804,24 +1808,6 @@ public class CaveEditor extends AbstractEditor {
 				break;
 		}
 	}
-
-	// /**
-	// * Will be called when the cancel button is selected. Calls <code>CaveEditorListener.closeRequest()</code>
-	// */
-	// protected void closeCaveEditor() {
-	// for (CaveEditorListener l : listenerList) {
-	// l.closeRequest();
-	// }
-	// }
-	//
-	// /**
-	// * Adds a <code>CaveEditorListener</code>
-	// *
-	// * @param l
-	// */
-	// public void addCaveEditorListener(CaveEditorListener l) {
-	// listenerList.add(l);
-	// }
 
 	/**
 	 * Will be called when the save button is selected. After saving <code>CaveEditorListener.closeRequest()</code> is called to inform all listener.
