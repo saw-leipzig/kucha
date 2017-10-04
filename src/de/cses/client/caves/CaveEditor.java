@@ -20,6 +20,7 @@ import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.http.client.UrlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
@@ -62,6 +63,7 @@ import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MaxNumberValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinNumberValidator;
+import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -173,6 +175,8 @@ public class CaveEditor extends AbstractEditor {
 	private ComboBox<PreservationClassificationEntry> mainChamberCeilingPreservationSelectorCB2;
 	private ComboBox<PreservationClassificationEntry> corridorCeilingPreservationSelectorCB2;
 	private ComboBox<PreservationClassificationEntry> antechamberCeilingPreservationSelectorCB2;
+	private TextArea notesTextArea;
+	private TextField c14AnalysisUrlTextField;
 
 	interface CaveTypeProperties extends PropertyAccess<CaveTypeEntry> {
 		ModelKeyProvider<CaveTypeEntry> caveTypeID();
@@ -1256,10 +1260,10 @@ public class CaveEditor extends AbstractEditor {
 		HorizontalLayoutContainer descriptionHLC = new HorizontalLayoutContainer();
 		VerticalLayoutContainer descriptionsVLC = new VerticalLayoutContainer();
 
-		FramedPanel findingsPanel = new FramedPanel();
-		findingsPanel.setHeading("Findings");
+		FramedPanel findingsFP = new FramedPanel();
+		findingsFP.setHeading("Findings");
 		findingsTextArea = new TextArea();
-		findingsTextArea.setEmptyText("research findings");
+		findingsTextArea.setEmptyText("enter findings");
 		findingsTextArea.setValue(correspondingCaveEntry.getFindings());
 		findingsTextArea.addValueChangeHandler(new ValueChangeHandler<String>() {
 
@@ -1268,12 +1272,43 @@ public class CaveEditor extends AbstractEditor {
 				correspondingCaveEntry.setFindings(event.getValue());
 			}
 		});
-		findingsPanel.add(findingsTextArea);
-		descriptionsVLC.add(findingsPanel, new VerticalLayoutData(1.0, .7));
+		findingsFP.add(findingsTextArea);
+		
+		FramedPanel notesFP = new FramedPanel();
+		notesFP.setHeading("Notes");
+		notesTextArea = new TextArea();
+		notesTextArea.setEmptyText("enter notes");
+		notesTextArea.setValue(correspondingCaveEntry.getNotes());
+		notesTextArea.addValueChangeHandler(new ValueChangeHandler<String>() {
 
-		FramedPanel c14AnalysisLinkPanel = new FramedPanel();
-		c14AnalysisLinkPanel.setHeading("C14 Analysis (link)");
-		descriptionsVLC.add(c14AnalysisLinkPanel, new VerticalLayoutData(1.0, .15));
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				correspondingCaveEntry.setNotes(event.getValue());
+			}
+		});
+		notesFP.add(notesTextArea);
+		
+		HorizontalLayoutContainer findingsNotesHLC = new HorizontalLayoutContainer();
+		findingsNotesHLC.add(findingsFP, new HorizontalLayoutData(.5, 1.0, new Margins(0, 5, 0, 0)));
+		findingsNotesHLC.add(notesFP, new HorizontalLayoutData(.5, 1.0));
+		descriptionsVLC.add(findingsNotesHLC, new VerticalLayoutData(1.0, .7));
+
+		FramedPanel c14AnalysisLinkFP = new FramedPanel();
+		c14AnalysisLinkFP.setHeading("C14 Analysis (link)");
+		c14AnalysisUrlTextField = new TextField();
+		c14AnalysisUrlTextField.setEmptyText("enter link URL to C14 analysis");
+		c14AnalysisUrlTextField.setValue(correspondingCaveEntry.getC14url());
+		c14AnalysisUrlTextField.addValidator(new RegExValidator("\b(https?|ftp|file|ldap)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]*[-A-Za-z0-9+&@#/%=~_|]"));
+		c14AnalysisUrlTextField.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				if (c14AnalysisUrlTextField.validate()) {
+					correspondingCaveEntry.setC14url(event.getValue());
+				}
+			}
+		});
+		descriptionsVLC.add(c14AnalysisLinkFP, new VerticalLayoutData(1.0, .15));
 
 		FramedPanel c14UploadPanel = new FramedPanel();
 		c14UploadPanel.setHeading("C14 additional documents");
@@ -1834,7 +1869,7 @@ public class CaveEditor extends AbstractEditor {
 	 * @return
 	 */
 	private boolean validateFields() {
-		return officialNumberField.validate() && historicalNameField.validate() && optionalHistoricNameField.validate();
+		return officialNumberField.validate() && historicalNameField.validate() && optionalHistoricNameField.validate() && c14AnalysisUrlTextField.validate();
 	}
 
 	/**

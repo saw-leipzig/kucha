@@ -28,19 +28,21 @@ public class CaveEntry extends AbstractEntry {
 	private int caveGroupID;
 	private String stateOfPerservation;
 	private String findings;
+	private String notes;
 	private String firstDocumentedBy;
 	private int firstDocumentedInYear;
 	private String optionalCaveSketch;
+	private String c14url;
 	private ArrayList<CaveAreaEntry> caveAreaList;
 	private ArrayList<WallEntry> wallList;
 
 	public CaveEntry() {
-		this(0, "", "", "", 0, 0, 0, 0, "", "", "", 0, 0, 0, "");
+		this(0, "", "", "", 0, 0, 0, 0, "", "", "", "", 0, 0, 0, "", "");
 	}
 
 	public CaveEntry(int caveID, String officialNumber, String historicName, String optionalHistoricName, int caveTypeID, int districtID,
-			int regionID, int orientationID, String stateOfPerservation, String findings, String firstDocumentedBy, int firstDocumentedInYear, int preservationClassificationID,
-			int caveGroupID, String optionalCaveSketch) {
+			int regionID, int orientationID, String stateOfPerservation, String findings, String notes, String firstDocumentedBy, int firstDocumentedInYear, int preservationClassificationID,
+			int caveGroupID, String optionalCaveSketch, String c14url) {
 		this.caveID = caveID;
 		this.officialNumber = officialNumber;
 		this.historicName = historicName;
@@ -51,11 +53,13 @@ public class CaveEntry extends AbstractEntry {
 		this.orientationID = orientationID;
 		this.stateOfPerservation = stateOfPerservation;
 		this.findings = findings;
+		this.setNotes(notes);
 		this.firstDocumentedBy = firstDocumentedBy;
 		this.firstDocumentedInYear = firstDocumentedInYear;
 		this.preservationClassificationID = preservationClassificationID;
 		this.caveGroupID = caveGroupID;
 		this.optionalCaveSketch = optionalCaveSketch;
+		this.setC14url(c14url);
 		caveAreaList = new ArrayList<CaveAreaEntry>();
 		wallList = new ArrayList<WallEntry>();
 	}
@@ -269,6 +273,34 @@ public class CaveEntry extends AbstractEntry {
 	 */
 	public void setOptionalCaveSketch(String optionalCaveSketch) {
 		this.optionalCaveSketch = optionalCaveSketch;
+	}
+
+	/**
+	 * @return the notes
+	 */
+	public String getNotes() {
+		return notes;
+	}
+
+	/**
+	 * @param notes the notes to set
+	 */
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
+
+	/**
+	 * @return the c14url
+	 */
+	public String getC14url() {
+		return c14url;
+	}
+
+	/**
+	 * @param c14url the c14url to set
+	 */
+	public void setC14url(String c14url) {
+		this.c14url = c14url;
 	}
 	
 }
