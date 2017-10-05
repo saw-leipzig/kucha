@@ -74,7 +74,7 @@ public class DocumentServiceImpl extends HttpServlet {
 				if (item.isFormField()) {
 					throw new ServletException("Unsupported non-file property [" + item.getFieldName() + "] with value: " + item.getString());
 				} else {
-					filename = request.getParameter("docname") + fileType;
+					filename = request.getParameter("docFileName") + fileType;
 					System.err.println("writing filename " + filename);
 					target = new File(imgHomeDir, filename);
 					item.write(target);

@@ -70,9 +70,11 @@ import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.DocumentUploader;
 import de.cses.client.StaticTables;
 import de.cses.client.Util;
 import de.cses.client.caves.CaveSketchUploader.CaveSketchUploadListener;
+import de.cses.client.DocumentUploader.DocumentUploadListener;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.shared.CaveAreaEntry;
 import de.cses.shared.CaveEntry;
@@ -1316,6 +1318,38 @@ public class CaveEditor extends AbstractEditor {
 
 		FramedPanel c14UploadPanel = new FramedPanel();
 		c14UploadPanel.setHeading("C14 additional documents");
+		ToolButton uploadButton = new ToolButton(ToolButton.PLUS);
+		uploadButton.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				if (correspondingCaveEntry.getCaveID() == 0) {
+					Util.showWarning("Document upload problem",
+							"For technical reasons, an optional C14 document\n cannot be uploaded before the cave has been saved.");
+					return;
+				}
+				PopupPanel c14DocUploadPanel = new PopupPanel();
+				ArrayList<String> typeList = new ArrayList<String>();
+				typeList.add("pdf");
+				DocumentUploader uploader = new DocumentUploader(correspondingCaveEntry.getUniqueID() + "-c14", typeList, new DocumentUploadListener() {
+					
+					@Override
+					public void uploadCompleted(String documentFilename) {
+						correspondingCaveEntry.setC14DocumentFilename(documentFilename);
+						c14DocUploadPanel.hide();
+					}
+					
+					@Override
+					public void uploadCanceled() {
+						// TODO Auto-generated method stub
+					}
+				});
+				c14DocUploadPanel.add(uploader);
+				c14DocUploadPanel.setGlassEnabled(true);
+				c14DocUploadPanel.center();
+				c14DocUploadPanel.show();
+			}
+		});
 		descriptionsVLC.add(c14UploadPanel, new VerticalLayoutData(1.0, .15));
 
 		descriptionHLC.add(descriptionsVLC, new HorizontalLayoutData(1.0, 1.0));

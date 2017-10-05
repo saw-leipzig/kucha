@@ -380,7 +380,7 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 			}
 		});
 
-		// CaveSketchUploader imgUploader = new CaveSketchUploader(this);
+		// DocumentUploader imgUploader = new DocumentUploader(this);
 		// vlc.add(imgUploader);
 
 		imageListView.setSize("250", "350");
