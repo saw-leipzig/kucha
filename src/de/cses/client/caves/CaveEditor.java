@@ -29,6 +29,7 @@ import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
@@ -182,6 +183,7 @@ public class CaveEditor extends AbstractEditor {
 	private ComboBox<PreservationClassificationEntry> antechamberCeilingPreservationSelectorCB2;
 	private TextArea notesTextArea;
 	private TextField c14AnalysisUrlTextField;
+	private Label c14FilenameLabel;
 
 	interface CaveTypeProperties extends PropertyAccess<CaveTypeEntry> {
 		ModelKeyProvider<CaveTypeEntry> caveTypeID();
@@ -1294,9 +1296,9 @@ public class CaveEditor extends AbstractEditor {
 		notesFP.add(notesTextArea);
 		
 		HorizontalLayoutContainer findingsNotesHLC = new HorizontalLayoutContainer();
-		findingsNotesHLC.add(findingsFP, new HorizontalLayoutData(.5, 1.0, new Margins(0, 5, 0, 0)));
+		findingsNotesHLC.add(findingsFP, new HorizontalLayoutData(.5, 1.0));
 		findingsNotesHLC.add(notesFP, new HorizontalLayoutData(.5, 1.0));
-		descriptionsVLC.add(findingsNotesHLC, new VerticalLayoutData(1.0, .7));
+		descriptionsVLC.add(findingsNotesHLC, new VerticalLayoutData(1.0, .8));
 
 		FramedPanel c14AnalysisLinkFP = new FramedPanel();
 		c14AnalysisLinkFP.setHeading("C14 Analysis (link)");
@@ -1314,10 +1316,15 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		c14AnalysisLinkFP.add(c14AnalysisUrlTextField);
-		descriptionsVLC.add(c14AnalysisLinkFP, new VerticalLayoutData(1.0, .15));
+		descriptionsVLC.add(c14AnalysisLinkFP, new VerticalLayoutData(1.0, .1));
 
 		FramedPanel c14UploadPanel = new FramedPanel();
-		c14UploadPanel.setHeading("C14 additional documents");
+		c14UploadPanel.setHeading("C14 additional document");
+		c14FilenameLabel = new Label("no document");
+		c14UploadPanel.add(c14FilenameLabel);
+		if (correspondingCaveEntry.getC14DocumentFilename() != null) {
+			c14FilenameLabel.setText(correspondingCaveEntry.getC14DocumentFilename());
+		}
 		ToolButton uploadButton = new ToolButton(ToolButton.PLUS);
 		uploadButton.addSelectHandler(new SelectHandler() {
 			
@@ -1336,6 +1343,7 @@ public class CaveEditor extends AbstractEditor {
 					@Override
 					public void uploadCompleted(String documentFilename) {
 						correspondingCaveEntry.setC14DocumentFilename(documentFilename);
+						c14FilenameLabel.setText(documentFilename);
 						c14DocUploadPanel.hide();
 					}
 					
@@ -1350,7 +1358,8 @@ public class CaveEditor extends AbstractEditor {
 				c14DocUploadPanel.show();
 			}
 		});
-		descriptionsVLC.add(c14UploadPanel, new VerticalLayoutData(1.0, .15));
+		c14UploadPanel.addTool(uploadButton);
+		descriptionsVLC.add(c14UploadPanel, new VerticalLayoutData(1.0, .10));
 
 		descriptionHLC.add(descriptionsVLC, new HorizontalLayoutData(1.0, 1.0));
 
