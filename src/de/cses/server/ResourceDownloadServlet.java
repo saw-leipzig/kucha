@@ -129,6 +129,29 @@ public class ResourceDownloadServlet extends HttpServlet {
 					return;
 				}
 			}
+		} else if (request.getParameter("document") != null) {
+			String filename = request.getParameter("document");
+			if (filename.startsWith(".")) {
+				response.setStatus(400);
+				return;
+			} else {
+				File inputFile = new File(serverProperties.getProperty("home.documents"), filename);
+				if (inputFile.exists()) {
+					FileInputStream fis = new FileInputStream(inputFile);
+					response.setContentType(filename.toLowerCase().endsWith("pdf") ? "application/pdf" : "text/html");
+					ServletOutputStream out = response.getOutputStream();
+					byte buffer[] = new byte[4096];
+					int bytesRead = 0;
+					while ((bytesRead = fis.read(buffer)) > 0) {
+						out.write(buffer, 0, bytesRead);
+					}
+					out.close();
+					fis.close();
+				} else {
+					response.setStatus(404);
+					return;
+				}
+			}
 		} else {
 			response.setStatus(403);
 		}

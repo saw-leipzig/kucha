@@ -60,7 +60,8 @@ public class CaveEntry extends AbstractEntry {
 		this.preservationClassificationID = preservationClassificationID;
 		this.caveGroupID = caveGroupID;
 		this.optionalCaveSketch = optionalCaveSketch;
-		this.setC14url(c14url);
+		this.c14url = c14url;
+		this.c14DocumentFilename = c14DocumentFilename;
 		caveAreaList = new ArrayList<CaveAreaEntry>();
 		wallList = new ArrayList<WallEntry>();
 	}

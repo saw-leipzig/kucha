@@ -178,7 +178,8 @@ public class CaveEditor extends AbstractEditor {
 	private ComboBox<PreservationClassificationEntry> antechamberCeilingPreservationSelectorCB2;
 	private TextArea notesTextArea;
 	private TextField c14AnalysisUrlTextField;
-	private Label c14FilenameLabel;
+	private FramedPanel c14UploadPanel;
+	private DocumentLinkTemplate documentLinkTemplate;
 
 	interface CaveTypeProperties extends PropertyAccess<CaveTypeEntry> {
 		ModelKeyProvider<CaveTypeEntry> caveTypeID();
@@ -281,6 +282,11 @@ public class CaveEditor extends AbstractEditor {
 		@XTemplate("<img align=\"center\" margin=\"10\" src=\"{imageUri}\">")
 		SafeHtml image(SafeUri imageUri);
 	}
+	
+	interface DocumentLinkTemplate extends XTemplates {
+		@XTemplate("<a href=\"{documentUri}\">click here to open document</a>")
+		SafeHtml documentLink(SafeUri documentUri);
+	}
 
 	public CaveEditor(CaveEntry caveEntry) {
 		if (caveEntry == null) {
@@ -307,6 +313,7 @@ public class CaveEditor extends AbstractEditor {
 		districtProps = GWT.create(DistrictProperties.class);
 		districtEntryList = new ListStore<DistrictEntry>(districtProps.districtID());
 		caveLayoutViewTemplates = GWT.create(CaveLayoutViewTemplates.class);
+		documentLinkTemplate = GWT.create(DocumentLinkTemplate.class);
 		ctvTemplates = GWT.create(CaveTypeViewTemplates.class);
 		ctvt = GWT.create(CaveTypeViewTemplates.class);
 		pcvt = GWT.create(PreservationClassificationViewTemplates.class);
@@ -1313,12 +1320,10 @@ public class CaveEditor extends AbstractEditor {
 		c14AnalysisLinkFP.add(c14AnalysisUrlTextField);
 		descriptionsVLC.add(c14AnalysisLinkFP, new VerticalLayoutData(1.0, .12));
 
-		FramedPanel c14UploadPanel = new FramedPanel();
+		c14UploadPanel = new FramedPanel();
 		c14UploadPanel.setHeading("C14 additional document");
-		c14FilenameLabel = new Label("no document");
-		c14UploadPanel.add(c14FilenameLabel);
 		if (correspondingCaveEntry.getC14DocumentFilename() != null) {
-			c14FilenameLabel.setText(correspondingCaveEntry.getC14DocumentFilename());
+			c14UploadPanel.add(new HTMLPanel(documentLinkTemplate.documentLink(UriUtils.fromString("resource?document=" + correspondingCaveEntry.getC14DocumentFilename()))));
 		}
 		ToolButton uploadButton = new ToolButton(ToolButton.PLUS);
 		uploadButton.addSelectHandler(new SelectHandler() {
@@ -1336,7 +1341,7 @@ public class CaveEditor extends AbstractEditor {
 					@Override
 					public void uploadCompleted(String documentFilename) {
 						correspondingCaveEntry.setC14DocumentFilename(documentFilename);
-						c14FilenameLabel.setText(documentFilename);
+						c14UploadPanel.add(new HTMLPanel(documentLinkTemplate.documentLink(UriUtils.fromString("resource?document=" + documentFilename))));
 						c14DocUploadPanel.hide();
 					}
 					
