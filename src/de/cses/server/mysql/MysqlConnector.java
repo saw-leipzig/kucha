@@ -1912,6 +1912,25 @@ public class MysqlConnector {
 	}
 
 	/**
+	 * @param caveID
+	 */
+	public synchronized boolean updateC14DocumentFilename(int caveID, String c14DocumentFilename) {
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("UPDATE Caves SET C14DocumentFilename=? WHERE CaveID=?");
+			pstmt.setString(1, c14DocumentFilename);
+			pstmt.setInt(2, caveID);
+			pstmt.executeUpdate();
+			pstmt.close();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
+	/**
 	 * @return
 	 */
 	public ArrayList<CaveGroupEntry> getCaveGroups() {
@@ -2248,33 +2267,6 @@ public class MysqlConnector {
 		}
 		return (newID > 0);
 	}
-
-	// public synchronized int updateCaveArea(CaveAreaEntry entry) {
-	// int newID;
-	// Connection dbc = getConnection();
-	// PreparedStatement caveAreaStatement;
-	// try {
-	// caveAreaStatement = dbc
-	// .prepareStatement("UPDATE CaveAreas SET Height=?, Width=?, Depth=?, PreservationClassificationID=?, CeilingTypeID1=?,"
-	// + "CeilingTypeID2=?, CeilingPreservationClassificationID1=?, CeilingPreservationClassificationID2=? WHERE CaveID=? AND CaveAreaLabel=?");
-	// caveAreaStatement.setDouble(1, entry.getHeight());
-	// caveAreaStatement.setDouble(2, entry.getWidth());
-	// caveAreaStatement.setDouble(3, entry.getWidth());
-	// caveAreaStatement.setInt(4, entry.getPreservationClassificationID());
-	// caveAreaStatement.setInt(5, entry.getCeilingTypeID1());
-	// caveAreaStatement.setInt(6, entry.getCeilingTypeID2());
-	// caveAreaStatement.setInt(7, entry.getCeilingPreservationClassificationID1());
-	// caveAreaStatement.setInt(8, entry.getCeilingPreservationClassificationID2());
-	// caveAreaStatement.setInt(9, entry.getCaveID());
-	// caveAreaStatement.setString(10, entry.getCaveAreaLabel());
-	// newID = caveAreaStatement.executeUpdate();
-	// caveAreaStatement.close();
-	// } catch (SQLException ex) {
-	// ex.printStackTrace();
-	// return 0;
-	// }
-	// return newID;
-	// }
 
 	/**
 	 * @param caveID

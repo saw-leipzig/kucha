@@ -14,11 +14,8 @@
 package de.cses.client.caves;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.editor.client.Editor;
-import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -62,7 +59,6 @@ import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
-import com.sencha.gxt.widget.core.client.form.validator.AbstractValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MaxNumberValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
@@ -71,11 +67,10 @@ import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
-import de.cses.client.DocumentUploader;
 import de.cses.client.StaticTables;
 import de.cses.client.Util;
 import de.cses.client.caves.CaveSketchUploader.CaveSketchUploadListener;
-import de.cses.client.DocumentUploader.DocumentUploadListener;
+import de.cses.client.caves.C14DocumentUploader.C14DocumentUploadListener;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.shared.CaveAreaEntry;
 import de.cses.shared.CaveEntry;
@@ -327,11 +322,11 @@ public class CaveEditor extends AbstractEditor {
 
 	private void refreshCaveSketchFLC(String caveTypeSketchName, String optionalCaveSketchName) {
 		caveSketchFLC.clear();
-		if (optionalCaveSketchName != null) {
+		if ((optionalCaveSketchName != null) && !optionalCaveSketchName.isEmpty()) {
 			caveSketchFLC.add(new HTMLPanel(caveLayoutViewTemplates.image(UriUtils.fromString("resource?cavesketch=" + optionalCaveSketchName))),
 					new MarginData(5));
 		}
-		if (caveTypeSketchName != null) {
+		if ((caveTypeSketchName != null) && !caveTypeSketchName.isEmpty()) {
 			caveSketchFLC.add(new HTMLPanel(caveLayoutViewTemplates.image(UriUtils.fromString("resource?background=" + caveTypeSketchName))),
 					new MarginData(5));
 		}
@@ -1298,7 +1293,7 @@ public class CaveEditor extends AbstractEditor {
 		HorizontalLayoutContainer findingsNotesHLC = new HorizontalLayoutContainer();
 		findingsNotesHLC.add(findingsFP, new HorizontalLayoutData(.5, 1.0));
 		findingsNotesHLC.add(notesFP, new HorizontalLayoutData(.5, 1.0));
-		descriptionsVLC.add(findingsNotesHLC, new VerticalLayoutData(1.0, .8));
+		descriptionsVLC.add(findingsNotesHLC, new VerticalLayoutData(1.0, .76));
 
 		FramedPanel c14AnalysisLinkFP = new FramedPanel();
 		c14AnalysisLinkFP.setHeading("C14 Analysis (link)");
@@ -1316,7 +1311,7 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		c14AnalysisLinkFP.add(c14AnalysisUrlTextField);
-		descriptionsVLC.add(c14AnalysisLinkFP, new VerticalLayoutData(1.0, .1));
+		descriptionsVLC.add(c14AnalysisLinkFP, new VerticalLayoutData(1.0, .12));
 
 		FramedPanel c14UploadPanel = new FramedPanel();
 		c14UploadPanel.setHeading("C14 additional document");
@@ -1336,9 +1331,7 @@ public class CaveEditor extends AbstractEditor {
 					return;
 				}
 				PopupPanel c14DocUploadPanel = new PopupPanel();
-				ArrayList<String> typeList = new ArrayList<String>();
-				typeList.add("pdf");
-				DocumentUploader uploader = new DocumentUploader(correspondingCaveEntry.getUniqueID() + "-c14", typeList, new DocumentUploadListener() {
+				C14DocumentUploader uploader = new C14DocumentUploader(correspondingCaveEntry, new C14DocumentUploadListener() {
 					
 					@Override
 					public void uploadCompleted(String documentFilename) {
@@ -1359,7 +1352,7 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		c14UploadPanel.addTool(uploadButton);
-		descriptionsVLC.add(c14UploadPanel, new VerticalLayoutData(1.0, .10));
+		descriptionsVLC.add(c14UploadPanel, new VerticalLayoutData(1.0, .12));
 
 		descriptionHLC.add(descriptionsVLC, new HorizontalLayoutData(1.0, 1.0));
 

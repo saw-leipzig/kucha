@@ -30,6 +30,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import de.cses.server.ServerProperties;
+import de.cses.server.mysql.MysqlConnector;
 
 /**
  * This HttpServlet is used to upload images to the server's cave sketch directory. It also creates a new entry in the Images table of the database.
@@ -39,11 +40,11 @@ import de.cses.server.ServerProperties;
  */
 @SuppressWarnings("serial")
 @MultipartConfig
-public class DocumentServiceImpl extends HttpServlet {
+public class C14DocumentServiceImpl extends HttpServlet {
 
 	private ServerProperties serverProperties = ServerProperties.getInstance();
 
-	public DocumentServiceImpl() {
+	public C14DocumentServiceImpl() {
 		super();
 	}
 
@@ -55,6 +56,7 @@ public class DocumentServiceImpl extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String uploadFileName;
 		String fileType, filename = null;
+		int caveID;
 
 		response.setContentType("text/plain");
 		File imgHomeDir = new File(serverProperties.getProperty("home.documents"));
@@ -75,10 +77,12 @@ public class DocumentServiceImpl extends HttpServlet {
 					throw new ServletException("Unsupported non-file property [" + item.getFieldName() + "] with value: " + item.getString());
 				} else {
 					filename = request.getParameter("docFileName") + fileType;
+					caveID = Integer.parseInt(request.getParameter("caveID"));
 					System.err.println("writing filename " + filename);
 					target = new File(imgHomeDir, filename);
 					item.write(target);
 					item.delete();
+					MysqlConnector.getInstance().updateC14DocumentFilename(caveID, filename);
 					response.getWriter().write(String.valueOf(filename));
 					response.getWriter().close();
 				}

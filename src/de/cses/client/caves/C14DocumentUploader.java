@@ -11,7 +11,7 @@
  * You should have received a copy of the GPL v3 along with the software. 
  * If not, you can access it from here: <https://www.gnu.org/licenses/gpl-3.0.txt>.
  */
-package de.cses.client;
+package de.cses.client.caves;
 
 import java.util.ArrayList;
 
@@ -38,33 +38,31 @@ import com.sencha.gxt.widget.core.client.form.FormPanel.Encoding;
 import com.sencha.gxt.widget.core.client.form.FormPanel.Method;
 
 import de.cses.client.Util;
+import de.cses.shared.CaveEntry;
 
-public class DocumentUploader implements IsWidget {
+public class C14DocumentUploader implements IsWidget {
 	
-	public interface DocumentUploadListener {
+	public interface C14DocumentUploadListener {
 		public void uploadCompleted(String documentFilename);
 		public void uploadCanceled();
 	}
 
 	private FormPanel form;
-	private ArrayList<DocumentUploadListener> uploadListener;
+	private ArrayList<C14DocumentUploadListener> uploadListener;
 	protected Window uploadInfoWindow;
 	private FileUploadField file;
 	private FramedPanel mainPanel;
-	private String docFileName;
-	private ArrayList<String> docTypeList;
-
+	private CaveEntry entry;
 
 	/**
 	 * 
-	 * @param docFileName the filename without postfix as it should be used on server side (make sure it's unique!)
+	 * @param correspondingCaveEntry the filename without postfix as it should be used on server side (make sure it's unique!)
 	 * @param docTypeList all allowed docTypes listed by postfix (e.g. pdf, txt)
 	 * @param listener
 	 */
-	public DocumentUploader(String docFileName, ArrayList<String> docTypeList, DocumentUploadListener listener) {
-		this.docFileName = docFileName;
-		this.docTypeList = docTypeList;
-		uploadListener = new ArrayList<DocumentUploadListener>();
+	public C14DocumentUploader(CaveEntry entry, C14DocumentUploadListener listener) {
+		this.entry = entry;
+		uploadListener = new ArrayList<C14DocumentUploadListener>();
 		uploadListener.add(listener);
 	}
 
@@ -82,9 +80,13 @@ public class DocumentUploader implements IsWidget {
 		
 		mainPanel = new FramedPanel();
 		mainPanel.setHeading("Document Uploader");
+		
+		ArrayList<String> docTypeList = new ArrayList<String>();
+		docTypeList.add("pdf");
+		docTypeList.add("txt");
 
 		file = new FileUploadField();
-		file.setName("uploadedsketch");
+		file.setName("uploadedC14Document");
 		file.setAllowBlank(false);
 		file.setPixelSize(300, 30);
 		file.addChangeHandler(new ChangeHandler() {
@@ -93,17 +95,13 @@ public class DocumentUploader implements IsWidget {
 			public void onChange(ChangeEvent event) {
 				String selected = file.getValue().toLowerCase();
 				if ((selected.lastIndexOf(".") < 0) || !docTypeList.contains(selected.substring(selected.lastIndexOf(".")+1))) {
-					String supportedDocTypes = "";
-					for (String postfix : docTypeList) {
-						supportedDocTypes = supportedDocTypes.concat(postfix + " ");
-					}
-					Util.showWarning("Unsopported Document Type", "Supported document types: " + supportedDocTypes);
+					Util.showWarning("Unsopported Document Type", "Supported document types: PDF, TXT");
 					file.reset();
 				}
 			}
 		});
 		form = new FormPanel();
-		form.setAction("documentUpload?docFileName=" + docFileName);
+		form.setAction("c14DocumentUpload?docFileName=" + entry.getUniqueID() + "-c14" + "&caveID=" + entry.getCaveID());
 		form.setEncoding(Encoding.MULTIPART);
 		form.setMethod(Method.POST);
 
@@ -113,7 +111,7 @@ public class DocumentUploader implements IsWidget {
 				Document doc = XMLParser.parse(event.getResults());
 				NodeList nodelist = doc.getElementsByTagName("pre");
 				Node node = nodelist.item(0);
-				for (DocumentUploadListener listener : uploadListener) {
+				for (C14DocumentUploadListener listener : uploadListener) {
 					listener.uploadCompleted(node.getFirstChild().toString());
 				}
 			}
@@ -157,7 +155,7 @@ public class DocumentUploader implements IsWidget {
 
 			@Override
 			public void onSelect(SelectEvent event) {
-				for (DocumentUploadListener listener : uploadListener) {
+				for (C14DocumentUploadListener listener : uploadListener) {
 					listener.uploadCanceled();
 				}
 

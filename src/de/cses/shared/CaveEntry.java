@@ -38,7 +38,7 @@ public class CaveEntry extends AbstractEntry {
 	private ArrayList<WallEntry> wallList;
 
 	public CaveEntry() {
-		this(0, "", "", "", 0, 0, 0, 0, "", "", "", "", 0, 0, 0, "", "", null);
+		this(0, "", "", "", 0, 0, 0, 0, "", "", "", "", 0, 0, 0, null, null, null);
 	}
 
 	public CaveEntry(int caveID, String officialNumber, String historicName, String optionalHistoricName, int caveTypeID, int districtID,
