@@ -72,6 +72,7 @@ import de.cses.client.Util;
 import de.cses.client.caves.CaveSketchUploader.CaveSketchUploadListener;
 import de.cses.client.caves.C14DocumentUploader.C14DocumentUploadListener;
 import de.cses.client.ui.AbstractEditor;
+import de.cses.client.user.UserLogin;
 import de.cses.shared.CaveAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveGroupEntry;
@@ -82,6 +83,7 @@ import de.cses.shared.OrientationEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
+import de.cses.shared.UserEntry;
 
 public class CaveEditor extends AbstractEditor {
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
@@ -330,11 +332,11 @@ public class CaveEditor extends AbstractEditor {
 	private void refreshCaveSketchFLC(String caveTypeSketchName, String optionalCaveSketchName) {
 		caveSketchFLC.clear();
 		if ((optionalCaveSketchName != null) && !optionalCaveSketchName.isEmpty()) {
-			caveSketchFLC.add(new HTMLPanel(caveLayoutViewTemplates.image(UriUtils.fromString("resource?cavesketch=" + optionalCaveSketchName))),
+			caveSketchFLC.add(new HTMLPanel(caveLayoutViewTemplates.image(UriUtils.fromString("resource?cavesketch=" + optionalCaveSketchName + UserLogin.getInstance().getUsernameSessionIDParameterForUri()))),
 					new MarginData(5));
 		}
 		if ((caveTypeSketchName != null) && !caveTypeSketchName.isEmpty()) {
-			caveSketchFLC.add(new HTMLPanel(caveLayoutViewTemplates.image(UriUtils.fromString("resource?background=" + caveTypeSketchName))),
+			caveSketchFLC.add(new HTMLPanel(caveLayoutViewTemplates.image(UriUtils.fromString("resource?background=" + caveTypeSketchName + UserLogin.getInstance().getUsernameSessionIDParameterForUri()))),
 					new MarginData(5));
 		}
 	}
@@ -1323,7 +1325,9 @@ public class CaveEditor extends AbstractEditor {
 		c14UploadPanel = new FramedPanel();
 		c14UploadPanel.setHeading("C14 additional document");
 		if (correspondingCaveEntry.getC14DocumentFilename() != null) {
-			c14UploadPanel.add(new HTMLPanel(documentLinkTemplate.documentLink(UriUtils.fromString("resource?document=" + correspondingCaveEntry.getC14DocumentFilename()))));
+			c14UploadPanel.add(new HTMLPanel(documentLinkTemplate.documentLink(
+					UriUtils.fromString("resource?document=" + correspondingCaveEntry.getC14DocumentFilename() + UserLogin.getInstance().getUsernameSessionIDParameterForUri())))
+				);
 		}
 		ToolButton uploadButton = new ToolButton(ToolButton.PLUS);
 		uploadButton.addSelectHandler(new SelectHandler() {
@@ -1341,7 +1345,9 @@ public class CaveEditor extends AbstractEditor {
 					@Override
 					public void uploadCompleted(String documentFilename) {
 						correspondingCaveEntry.setC14DocumentFilename(documentFilename);
-						c14UploadPanel.add(new HTMLPanel(documentLinkTemplate.documentLink(UriUtils.fromString("resource?document=" + documentFilename))));
+						c14UploadPanel.add(new HTMLPanel(documentLinkTemplate.documentLink(
+								UriUtils.fromString("resource?document=" + documentFilename + UserLogin.getInstance().getUsernameSessionIDParameterForUri())))
+							);
 						c14DocUploadPanel.hide();
 					}
 					

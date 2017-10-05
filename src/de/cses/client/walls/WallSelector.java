@@ -35,6 +35,7 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.Verti
 import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
 
 import de.cses.client.StaticTables;
+import de.cses.client.user.UserLogin;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.WallEntry;
@@ -44,7 +45,7 @@ import de.cses.shared.WallEntry;
  *
  */
 public class WallSelector implements IsWidget {
-	
+
 	private FlowLayoutContainer caveSketchContainer;
 	private CaveLayoutViewTemplates caveLayoutViewTemplates;
 	private ContentPanel mainPanel = null;
@@ -52,14 +53,15 @@ public class WallSelector implements IsWidget {
 	private WallProperties wallProps;
 	private CaveEntry currentCave;
 	private String selectedWallLabel;
-	
+
 	interface CaveLayoutViewTemplates extends XTemplates {
 		@XTemplate("<img align=\"center\" margin=\"10\" src=\"{imageUri}\">")
 		SafeHtml image(SafeUri imageUri);
 	}
-	
+
 	interface WallProperties extends PropertyAccess<WallEntry> {
 		ModelKeyProvider<WallEntry> uniqueID();
+
 		LabelProvider<WallEntry> locationLabel();
 	}
 
@@ -71,7 +73,9 @@ public class WallSelector implements IsWidget {
 		wallProps = GWT.create(WallProperties.class);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.google.gwt.user.client.ui.IsWidget#asWidget()
 	 */
 	@Override
@@ -88,24 +92,24 @@ public class WallSelector implements IsWidget {
 	private void init() {
 		mainPanel = new ContentPanel();
 		mainPanel.setHeaderVisible(false);
-		
+
 		VerticalLayoutContainer vlc = new VerticalLayoutContainer();
 		caveSketchContainer = new FlowLayoutContainer();
 		vlc.add(caveSketchContainer, new VerticalLayoutData(1.0, 0.8));
-		
+
 		wallSelectorSCB = new SimpleComboBox<WallEntry>(wallProps.locationLabel());
 		wallSelectorSCB.setEditable(false);
 		wallSelectorSCB.setTypeAhead(false);
 		wallSelectorSCB.setTriggerAction(TriggerAction.ALL);
 		wallSelectorSCB.addSelectionHandler(new SelectionHandler<WallEntry>() {
-			
+
 			@Override
 			public void onSelection(SelectionEvent<WallEntry> event) {
 				selectedWallLabel = event.getSelectedItem().getLocationLabel();
 			}
 		});
 		vlc.add(wallSelectorSCB, new VerticalLayoutData(1.0, 0.2));
-		
+
 		mainPanel.add(vlc);
 		mainPanel.setSize("1.0", "1.0");
 	}
@@ -116,7 +120,7 @@ public class WallSelector implements IsWidget {
 	private void refreshWallSelector(int caveTypeID) {
 		ListStore<WallEntry> store = new ListStore<>(wallProps.uniqueID());
 		// Antechamber is not available at in cave types
-		
+
 		switch (caveTypeID) {
 			case 2: // square cave
 				store.add(currentCave.getWall(WallEntry.ANTECHAMBER_FRONT_WALL));
@@ -128,7 +132,7 @@ public class WallSelector implements IsWidget {
 				store.add(currentCave.getWall(WallEntry.MAIN_CHAMBER_RIGHT_WALL));
 				store.add(currentCave.getWall(WallEntry.MAIN_CHAMBER_REAR_WALL));
 				break;
-				
+
 			case 3: // residential cave
 				store.add(currentCave.getWall(WallEntry.ANTECHAMBER_FRONT_WALL));
 				store.add(currentCave.getWall(WallEntry.ANTECHAMBER_LEFT_WALL));
@@ -167,7 +171,7 @@ public class WallSelector implements IsWidget {
 
 			default:
 				break;
-				
+
 		}
 		wallSelectorSCB.setStore(store);
 	}
@@ -177,7 +181,8 @@ public class WallSelector implements IsWidget {
 	 */
 	private void setCaveType(CaveTypeEntry ctEntry) {
 		caveSketchContainer.clear();
-		caveSketchContainer.add(new HTMLPanel(caveLayoutViewTemplates.image(UriUtils.fromString("resource?background=" + ctEntry.getSketchName()))));
+		caveSketchContainer.add(new HTMLPanel(caveLayoutViewTemplates.image(UriUtils
+				.fromString("resource?background=" + ctEntry.getSketchName() + UserLogin.getInstance().getUsernameSessionIDParameterForUri()))));
 		refreshWallSelector(ctEntry.getCaveTypeID());
 	}
 
@@ -192,5 +197,5 @@ public class WallSelector implements IsWidget {
 	public String getSelectedWallLocationLabel() {
 		return selectedWallLabel;
 	}
-	
+
 }

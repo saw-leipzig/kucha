@@ -49,6 +49,10 @@ public class ResourceDownloadServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// if (request.getSession().getAttribute("userID") == null ||
 		// request.getParameter("resourceid") == null) {
+		if (!UserManager.getInstance().getSessionID(request.getParameter("user")).equals(request.getParameter("sessionID"))) {
+			response.setStatus(404);
+			return;
+		}
 		if (request.getParameter("imageID") != null) {
 			String imageID = request.getParameter("imageID");
 			String filename = connector.getImageEntry(Integer.parseInt(imageID)).getFilename();

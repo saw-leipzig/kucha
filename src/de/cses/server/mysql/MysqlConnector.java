@@ -21,8 +21,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.UUID;
 
 import de.cses.server.ServerProperties;
+import de.cses.server.UserManager;
 import de.cses.shared.AntechamberEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.CaveAreaEntry;
@@ -1967,6 +1969,8 @@ public class MysqlConnector {
 			if (rs.first()) {
 				result = new UserEntry(rs.getInt("UserID"), rs.getString("Username"), rs.getString("Firstname"), rs.getString("Lastname"),
 						rs.getString("Email"), rs.getString("Affiliation"), rs.getInt("Accessrights"));
+				result.setSessionID(UUID.randomUUID().toString());
+				UserManager.getInstance().addUser(username, result);
 			} else {
 				System.err.println("wrong password for user " + username + ": hash = " + password);
 			}

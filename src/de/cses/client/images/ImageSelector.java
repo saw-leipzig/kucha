@@ -56,6 +56,7 @@ import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.Selecti
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.user.UserLogin;
 import de.cses.shared.ImageEntry;
 
 public class ImageSelector implements IsWidget {
@@ -156,7 +157,7 @@ public class ImageSelector implements IsWidget {
 			final ImageViewTemplates imageViewTemplates = GWT.create(ImageViewTemplates.class);
 
 			public SafeHtml render(ImageEntry item) {
-				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=400");
+				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=400" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 				return imageViewTemplates.image(imageUri, item.getTitle(), item.getShortName());
 			}
 
@@ -167,7 +168,7 @@ public class ImageSelector implements IsWidget {
 			@Override
 			public void onSelectionChanged(SelectionChangedEvent<ImageEntry> event) {
 				ImageEntry item = event.getSelection().get(0);
-				zoomImageUri = UriUtils.fromString("resource?imageID=" + item.getImageID());
+				zoomImageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 			}
 		});
 

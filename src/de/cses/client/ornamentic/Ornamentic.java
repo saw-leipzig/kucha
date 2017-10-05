@@ -50,6 +50,7 @@ import de.cses.client.ornamentic.OrnamentCaveAttributes.MainTypologicalClassProp
 import de.cses.client.ornamentic.OrnamentCaveAttributes.MainTypologicalClassViewTemplates;
 import de.cses.client.ornamentic.OrnamentCaveAttributes.StructureOrganizationProperties;
 import de.cses.client.ornamentic.OrnamentCaveAttributes.StructureOrganizationViewTemplates;
+import de.cses.client.user.UserLogin;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.MainTypologicalClass;
@@ -428,7 +429,7 @@ public class Ornamentic implements IsWidget, ImageSelectorListener {
 			final ImageViewTemplates imageViewTemplates = GWT.create(ImageViewTemplates.class);
 
 			public SafeHtml render(ImageEntry item) {
-				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=150");
+				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=150" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 				return imageViewTemplates.image(imageUri, item.getTitle());
 			}
 		}));
