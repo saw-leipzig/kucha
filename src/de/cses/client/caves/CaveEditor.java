@@ -1305,7 +1305,7 @@ public class CaveEditor extends AbstractEditor {
 		c14AnalysisUrlTextField = new TextField();
 		c14AnalysisUrlTextField.setEmptyText("http/https/ftp");
 		c14AnalysisUrlTextField.setValue(correspondingCaveEntry.getC14url());
-		c14AnalysisUrlTextField.addValidator(new RegExValidator("^((((https?|ftps?)://)|(mailto:|news:))(%[0-9A-Fa-f]{2}|[-()_.!~*';/?:@&=+$,A-Za-z0-9])+)([).!';/?:,][[:blank:]])?$", "Please enter valid URL"));
+		c14AnalysisUrlTextField.addValidator(new RegExValidator("^(((https?|ftps?)://)(%[0-9A-Fa-f]{2}|[-()_.!~*';/?:@&=+$,A-Za-z0-9])+)([).!';/?:,][[:blank:]])?$", "Please enter valid URL"));
 		c14AnalysisUrlTextField.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
