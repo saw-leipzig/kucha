@@ -1299,7 +1299,7 @@ public class CaveEditor extends AbstractEditor {
 		FramedPanel c14AnalysisLinkFP = new FramedPanel();
 		c14AnalysisLinkFP.setHeading("C14 Analysis (link)");
 		c14AnalysisUrlTextField = new TextField();
-		c14AnalysisUrlTextField.setEmptyText("enter link URL to C14 analysis");
+		c14AnalysisUrlTextField.setEmptyText("http/https/ftp");
 		c14AnalysisUrlTextField.setValue(correspondingCaveEntry.getC14url());
 		c14AnalysisUrlTextField.addValidator(new RegExValidator("^((((https?|ftps?)://)|(mailto:|news:))(%[0-9A-Fa-f]{2}|[-()_.!~*';/?:@&=+$,A-Za-z0-9])+)([).!';/?:,][[:blank:]])?$", "Please enter valid URL"));
 		c14AnalysisUrlTextField.addValueChangeHandler(new ValueChangeHandler<String>() {
