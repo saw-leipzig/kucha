@@ -25,8 +25,8 @@ import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
@@ -40,6 +40,8 @@ import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.Store.StoreFilter;
 import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.Dialog;
+import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.PlainTabPanel;
 import com.sencha.gxt.widget.core.client.Slider;
@@ -69,8 +71,8 @@ import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
 import de.cses.client.Util;
-import de.cses.client.caves.CaveSketchUploader.CaveSketchUploadListener;
 import de.cses.client.caves.C14DocumentUploader.C14DocumentUploadListener;
+import de.cses.client.caves.CaveSketchUploader.CaveSketchUploadListener;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.CaveAreaEntry;
@@ -83,7 +85,6 @@ import de.cses.shared.OrientationEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
-import de.cses.shared.UserEntry;
 
 public class CaveEditor extends AbstractEditor {
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
@@ -286,8 +287,8 @@ public class CaveEditor extends AbstractEditor {
 	}
 	
 	interface DocumentLinkTemplate extends XTemplates {
-		@XTemplate("<a href=\"{documentUri}\">click here to open document</a>")
-		SafeHtml documentLink(SafeUri documentUri);
+		@XTemplate("<a target=\"_blank\" href=\"{documentUri}\" rel=\"noopener\">click here to open {documentDescription}</a>")
+		SafeHtml documentLink(SafeUri documentUri, String documentDescription);
 	}
 
 	public CaveEditor(CaveEntry caveEntry) {
@@ -1326,7 +1327,7 @@ public class CaveEditor extends AbstractEditor {
 		c14UploadPanel.setHeading("C14 additional document");
 		if (correspondingCaveEntry.getC14DocumentFilename() != null) {
 			c14UploadPanel.add(new HTMLPanel(documentLinkTemplate.documentLink(
-					UriUtils.fromString("resource?document=" + correspondingCaveEntry.getC14DocumentFilename() + UserLogin.getInstance().getUsernameSessionIDParameterForUri())))
+					UriUtils.fromString("resource?document=" + correspondingCaveEntry.getC14DocumentFilename() + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), "C14 document"))
 				);
 		}
 		ToolButton uploadButton = new ToolButton(ToolButton.PLUS);
@@ -1346,7 +1347,7 @@ public class CaveEditor extends AbstractEditor {
 					public void uploadCompleted(String documentFilename) {
 						correspondingCaveEntry.setC14DocumentFilename(documentFilename);
 						c14UploadPanel.add(new HTMLPanel(documentLinkTemplate.documentLink(
-								UriUtils.fromString("resource?document=" + documentFilename + UserLogin.getInstance().getUsernameSessionIDParameterForUri())))
+								UriUtils.fromString("resource?document=" + documentFilename + UserLogin.getInstance().getUsernameSessionIDParameterForUri()),  "C14 document"))
 							);
 						c14DocUploadPanel.hide();
 					}
@@ -1701,26 +1702,39 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 
-		ToolButton cancelToolButton = new ToolButton(ToolButton.RESTORE);
-		cancelToolButton.setToolTip("cancel");
-		cancelToolButton.addSelectHandler(new SelectHandler() {
-			@Override
-			public void onSelect(SelectEvent event) {
-				closeEditor();
-			}
-		});
-
 		ToolButton closeToolButton = new ToolButton(ToolButton.CLOSE);
-		closeToolButton.setToolTip("save & close");
+		closeToolButton.setToolTip("close");
 		closeToolButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-				saveEntries(true);
+				 Dialog d = new Dialog();
+				 d.setHeading("Exit Warning!");
+				 d.setWidget(new HTML("Do you wish to save before exiting?"));
+				 d.setBodyStyle("fontWeight:bold;padding:13px;");
+				 d.setPixelSize(300, 100);
+				 d.setHideOnButtonClick(true);
+				 d.setPredefinedButtons(PredefinedButton.YES, PredefinedButton.NO, PredefinedButton.CANCEL);
+				 d.setModal(true);
+				 d.center();
+				 d.show();
+				 d.getButton(PredefinedButton.YES).addSelectHandler(new SelectHandler() {
+					
+					@Override
+					public void onSelect(SelectEvent event) {
+						saveEntries(true);
+					}
+				});
+				 d.getButton(PredefinedButton.NO).addSelectHandler(new SelectHandler() {
+						
+					@Override
+					public void onSelect(SelectEvent event) {
+						 closeEditor();
+					}
+				});
 			}
 		});
 
 		mainPanel.addTool(saveToolButton);
-		mainPanel.addTool(cancelToolButton);
 		mainPanel.addTool(closeToolButton);
 	}
 
@@ -1873,6 +1887,7 @@ public class CaveEditor extends AbstractEditor {
 
 				@Override
 				public void onSuccess(Boolean result) {
+					correspondingCaveEntry.setModified(false);
 					if (close) {
 						closeEditor();
 					}
@@ -1890,6 +1905,7 @@ public class CaveEditor extends AbstractEditor {
 				@Override
 				public void onSuccess(Integer result) {
 					correspondingCaveEntry.setCaveID(result.intValue());
+					correspondingCaveEntry.setModified(false);
 					if (close) {
 						closeEditor();
 					}
