@@ -46,6 +46,7 @@ public class Util {
 	 * @param entry
 	 * @return The main (master) image representing the depiction as a preview
 	 */
+	@Deprecated
 	public static SafeUri getMasterImageUri(int depictionID, final int thumbnail) {
 		dbService.getMasterImageEntryForDepiction(depictionID, new AsyncCallback<ImageEntry>() {
 

@@ -28,6 +28,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import de.cses.server.mysql.MysqlConnector;
+import de.cses.shared.ImageEntry;
+import de.cses.shared.UserEntry;
 
 @SuppressWarnings("serial")
 public class ResourceDownloadServlet extends HttpServlet {
@@ -49,17 +51,26 @@ public class ResourceDownloadServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// if (request.getSession().getAttribute("userID") == null ||
 		// request.getParameter("resourceid") == null) {
-		if (!UserManager.getInstance().getSessionID(request.getParameter("user")).equals(request.getParameter("sessionID"))) {
+		String username = request.getParameter("user");
+		if (!UserManager.getInstance().getSessionID(username).equals(request.getParameter("sessionID"))) {
 			response.setStatus(404);
 			return;
 		}
 		if (request.getParameter("imageID") != null) {
 			String imageID = request.getParameter("imageID");
-			String filename = connector.getImageEntry(Integer.parseInt(imageID)).getFilename();
-			File inputFile = new File(
-					serverProperties.getProperty("home.images"), 
-					(request.getParameter("thumb") != null ? "tn" + filename.substring(0, filename.lastIndexOf(".")) + ".png" : filename) 
-				);
+			ImageEntry imgEntry = connector.getImageEntry(Integer.parseInt(imageID));
+			String filename;
+			File inputFile;
+			if (imgEntry.isPublicImage() || (UserManager.getInstance().getUserAccessRights(username) == UserEntry.FULL)) {
+				filename = imgEntry.getFilename();
+				inputFile = new File(
+						serverProperties.getProperty("home.images"), 
+						(request.getParameter("thumb") != null ? "tn" + filename.substring(0, filename.lastIndexOf(".")) + ".png" : filename) 
+					);
+			} else {
+				filename = "placeholder_buddha.png";
+				inputFile = new File(serverProperties.getProperty("home.backgrounds"), filename);
+			}
 //			File inputFile = new File(serverProperties.getProperty("home.images"), filename);
 			ServletOutputStream out = response.getOutputStream();
 			if (inputFile.exists()) {

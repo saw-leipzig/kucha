@@ -44,14 +44,28 @@ public class UserManager {
 	}
 
 	public String getSessionID(String username) {
+		if (userMap.containsKey(username) && checkUserValidity(username)) {
+			return userMap.get(username).getSessionID();
+		}
+		return null;
+	}
+	
+	public int getUserAccessRights(String username) {
+		if (userMap.containsKey(username) && checkUserValidity(username)) {
+			return userMap.get(username).getAccessrights();
+		}
+		return 0;
+	}
+	
+	private boolean checkUserValidity(String username) {
 		UserEntry user = userMap.get(username);
 		Date now = new Date();
 		long diffDays = (now.getTime() - user.getLoginDate()) / (24 * 60 * 60 * 1000);
 		if (diffDays > 1) {
 			userMap.remove(username);
-			return null;
+			return false;
 		}
-		return user.getSessionID();
+		return true;
 	}
 
 }
