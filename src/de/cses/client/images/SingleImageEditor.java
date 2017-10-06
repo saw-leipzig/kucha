@@ -64,6 +64,7 @@ import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
 import de.cses.client.ui.AbstractEditor;
+import de.cses.client.user.UserLogin;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageTypeEntry;
 import de.cses.shared.PhotographerEntry;
@@ -325,7 +326,7 @@ public class SingleImageEditor extends AbstractEditor {
 			}
 		});
 
-		SafeUri imageUri = UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=300");
+		SafeUri imageUri = UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=300" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 		Image img = new Image(imageUri);
 		imageContainer.add(img);
 		imageContainer.setPixelSize(310, 310);

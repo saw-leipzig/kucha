@@ -23,6 +23,7 @@ import com.sencha.gxt.dnd.core.client.DragSource;
 
 import de.cses.client.ui.AbstractEditor;
 import de.cses.client.ui.AbstractView;
+import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.ImageEntry;
 
@@ -52,7 +53,7 @@ public class ImageView extends AbstractView {
 		super();
 		ivTemplates = GWT.create(ImageViewTemplates.class);
 		this.imgEntry = imgEntry;
-		setHTML(ivTemplates.view(UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=80"), imgEntry.getShortName()));
+		setHTML(ivTemplates.view(UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), imgEntry.getShortName()));
 		setPixelSize(110, 110);
 
 		DragSource source = new DragSource(this) {
@@ -61,7 +62,7 @@ public class ImageView extends AbstractView {
 			protected void onDragStart(DndDragStartEvent event) {
 				super.onDragStart(event);
 				event.setData(imgEntry);
-				event.getStatusProxy().update(ivTemplates.view(UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=80")));
+				event.getStatusProxy().update(ivTemplates.view(UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri())));
 			}
 			
 		};
@@ -78,7 +79,7 @@ public class ImageView extends AbstractView {
 	@Override
 	public void closeRequest() {
 		super.closeRequest();
-		setHTML(ivTemplates.view(UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=80"), imgEntry.getShortName()));
+		setHTML(ivTemplates.view(UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), imgEntry.getShortName()));
 	}
 
 	/* (non-Javadoc)

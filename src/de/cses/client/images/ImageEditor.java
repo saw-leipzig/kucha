@@ -70,6 +70,7 @@ import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
 import de.cses.client.images.SingleImageEditor.ImageTypeProperties;
 import de.cses.client.images.SingleImageEditor.ImageTypeViewTemplates;
+import de.cses.client.user.UserLogin;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageTypeEntry;
 import de.cses.shared.PhotographerEntry;
@@ -228,7 +229,7 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 			final ImageViewTemplates imageViewTemplates = GWT.create(ImageViewTemplates.class);
 
 			public SafeHtml render(ImageEntry item) {
-				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=150");
+				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=150" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 				return imageViewTemplates.image(imageUri, item.getTitle());
 			}
 
@@ -380,7 +381,7 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 			}
 		});
 
-		// CaveSketchUploader imgUploader = new CaveSketchUploader(this);
+		// C14DocumentUploader imgUploader = new C14DocumentUploader(this);
 		// vlc.add(imgUploader);
 
 		imageListView.setSize("250", "350");
