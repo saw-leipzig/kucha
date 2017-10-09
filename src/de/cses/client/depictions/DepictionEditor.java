@@ -611,7 +611,7 @@ public class DepictionEditor extends AbstractEditor {
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Wall");
-		TextButton wallEditorButton = new TextButton("Position");
+		TextButton wallEditorButton = new TextButton("set position on wall");
 		wallEditor = new Walls(1, false);
 		wallEditorButton.addSelectHandler(new SelectHandler() {
 
