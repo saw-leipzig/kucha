@@ -26,7 +26,6 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
-import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
@@ -34,7 +33,6 @@ import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.data.shared.SortDir;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
-import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
@@ -55,13 +53,14 @@ public class WallSelector implements IsWidget {
 
 	private FlowLayoutContainer caveSketchContainer;
 	private CaveLayoutViewTemplates caveLayoutViewTemplates;
-	private ContentPanel mainPanel = null;
+//	private ContentPanel mainPanel = null;
 	private ComboBox<WallEntry> wallSelectorCB;
 	private WallProperties wallProps;
 	private CaveEntry currentCave;
 	private WallEntry selectedWallEntry;
 	private WallViewTemplate wallVT;
 	private ListStore<WallEntry> wallEntryLS;
+	private VerticalLayoutContainer mainVLC = null;
 
 	interface CaveLayoutViewTemplates extends XTemplates {
 		@XTemplate("<img align=\"center\" margin=\"10\" src=\"{imageUri}\">")
@@ -102,22 +101,21 @@ public class WallSelector implements IsWidget {
 	 */
 	@Override
 	public Widget asWidget() {
-		if (mainPanel == null) {
+		if (mainVLC == null) {
 			init();
 		}
-		return mainPanel;
+		return mainVLC;
 	}
 
 	/**
 	 * 
 	 */
 	private void init() {
-		mainPanel = new ContentPanel();
-		mainPanel.setHeaderVisible(false);
+//		mainPanel = new ContentPanel();
+//		mainPanel.setHeaderVisible(false);
 
-		VerticalLayoutContainer vlc = new VerticalLayoutContainer();
+		mainVLC  = new VerticalLayoutContainer();
 		caveSketchContainer = new FlowLayoutContainer();
-		vlc.add(caveSketchContainer, new VerticalLayoutData(1.0, 0.9));
 
 		wallSelectorCB = new ComboBox<WallEntry>(wallEntryLS, new LabelProvider<WallEntry>() {
 
@@ -142,10 +140,12 @@ public class WallSelector implements IsWidget {
 				selectedWallEntry = event.getSelectedItem();
 			}
 		});
-		vlc.add(wallSelectorCB, new VerticalLayoutData(1.0, 0.1));
 
-		mainPanel.add(vlc);
-		mainPanel.setSize("1.0", "1.0");
+		mainVLC.add(caveSketchContainer, new VerticalLayoutData(1.0, 0.9));
+		mainVLC.add(wallSelectorCB, new VerticalLayoutData(1.0, 0.1));
+
+//		mainPanel.add(mainVLC);
+//		mainPanel.setSize("1.0", "1.0");
 	}
 
 	// /**
