@@ -247,19 +247,19 @@ public class CaveEntry extends AbstractEntry {
 		modified = true;
 	}
 	
-	public WallEntry getWall(String label) {
+	public WallEntry getWall(int wallLocationID) {
 		for (WallEntry we : wallList) {
-			if (label == we.getLocationLabel()) {
+			if (wallLocationID == we.getWallLocationID()) {
 				return we;
 			}
 		}
-		WallEntry newEntry = new WallEntry(caveID, label);
+		WallEntry newEntry = new WallEntry(caveID, wallLocationID);
 		wallList.add(newEntry);
 		return newEntry;
 	}
 	
 	public void addWall(WallEntry entry) {
-		wallList.remove(getWall(entry.getLocationLabel()));
+		wallList.remove(getWall(entry.getWallLocationID()));
 		wallList.add(entry);
 		modified = true;
 	}

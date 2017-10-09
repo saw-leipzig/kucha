@@ -19,23 +19,32 @@ package de.cses.shared;
  */
 public class WallLocationEntry extends AbstractEntry {
 	
+	public static final String ANTECHAMBER_LABEL = "antechamber";
+	public static final String MAIN_CHAMBER_LABEL = "main chamber";
+	public static final String MAIN_CHAMBER_CORRIDOR_LABEL = "main chamber corridor";
+	public static final String REAR_AREA_LABEL = "rear area";
+	public static final String REAR_AREA_LEFT_CORRIDOR_LABEL = "rear area left corridor";
+	public static final String REAR_AREA_RIGHT_CORRIDOR_LABEL = "rear area right corridor";
+	
 	private int wallLocationID;
 	private String label;
+	private String caveAreaLabel; // see CaveAreaEntry
 
 	/**
 	 * @param wallLocationID
 	 * @param label
 	 */
-	public WallLocationEntry(int wallLocationID, String label) {
-		setWallLocationID(wallLocationID);
-		setLabel(label);
+	public WallLocationEntry(int wallLocationID, String label, String caveAreaLabel) {
+		this.wallLocationID = wallLocationID;
+		this.label = label;
+		this.caveAreaLabel = caveAreaLabel;
 	}
 
 	/**
 	 * 
 	 */
 	public WallLocationEntry() {
-		this(0, "");
+		wallLocationID=0;
 	}
 
 	/* (non-Javadoc)
@@ -61,6 +70,20 @@ public class WallLocationEntry extends AbstractEntry {
 
 	public void setLabel(String label) {
 		this.label = label;
+	}
+
+	/**
+	 * @return the caveAreaLabel
+	 */
+	public String getCaveAreaLabel() {
+		return caveAreaLabel;
+	}
+
+	/**
+	 * @param caveAreaLabel the caveAreaLabel to set
+	 */
+	public void setCaveAreaLabel(String caveAreaLabel) {
+		this.caveAreaLabel = caveAreaLabel;
 	}
 
 }

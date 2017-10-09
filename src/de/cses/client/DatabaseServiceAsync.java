@@ -211,6 +211,8 @@ public interface DatabaseServiceAsync {
 
 	void getModesOfRepresentation(AsyncCallback<ArrayList<ModeOfRepresentationEntry>> asyncCallback) throws IllegalArgumentException;
 
-	void getWalls(int caveID, AsyncCallback<ArrayList<WallEntry>> callback);
+	void getWalls(int caveID, AsyncCallback<ArrayList<WallEntry>> callback) throws IllegalArgumentException;
+
+	void getWallLocations(AsyncCallback<ArrayList<WallLocationEntry>> asyncCallback) throws IllegalArgumentException;
 
 	}

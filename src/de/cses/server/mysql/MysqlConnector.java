@@ -57,6 +57,7 @@ import de.cses.shared.StyleEntry;
 import de.cses.shared.UserEntry;
 import de.cses.shared.VendorEntry;
 import de.cses.shared.WallEntry;
+import de.cses.shared.WallLocationEntry;
 
 /**
  * This is the central Database connector. Here are all methods that we need for standard database operations, including user login and access management.
@@ -1189,7 +1190,7 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Walls");
 			while (rs.next()) {
-				result = new WallEntry(rs.getInt("CaveID"), rs.getString("LocationLabel"), rs.getInt("PreservationClassificationID"),
+				result = new WallEntry(rs.getInt("CaveID"), rs.getInt("WallLocationID"), rs.getInt("PreservationClassificationID"),
 						rs.getDouble("Width"), rs.getDouble("Height"));
 				walls.add(result);
 			}
@@ -1210,7 +1211,7 @@ public class MysqlConnector {
 			pstmt.setInt(1, wallID);
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.first()) {
-				result = new WallEntry(rs.getInt("CaveID"), rs.getString("LocationLabel"), rs.getInt("PreservationClassificationID"),
+				result = new WallEntry(rs.getInt("CaveID"), rs.getInt("WallLocationID"), rs.getInt("PreservationClassificationID"),
 						rs.getDouble("Width"), rs.getDouble("Height"));
 			}
 			pstmt.close();
@@ -1231,7 +1232,7 @@ public class MysqlConnector {
 			pstmt.setString(2, locationLabel);
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.first()) {
-				result = new WallEntry(rs.getInt("CaveID"), rs.getString("LocationLabel"), rs.getInt("PreservationClassificationID"),
+				result = new WallEntry(rs.getInt("CaveID"), rs.getInt("WallLocationID"), rs.getInt("PreservationClassificationID"),
 						rs.getDouble("Width"), rs.getDouble("Height"));
 			}
 			pstmt.close();
@@ -1859,10 +1860,10 @@ public class MysqlConnector {
 		Connection dbc = getConnection();
 		PreparedStatement wallStatement;
 		try {
-			wallStatement = dbc.prepareStatement("INSERT INTO Walls (CaveID, LocationLabel, PreservationClassificationID, Width, Height) "
+			wallStatement = dbc.prepareStatement("INSERT INTO Walls (CaveID, WallLocationID, PreservationClassificationID, Width, Height) "
 					+ "VALUES (?, ?, ?, ?, ?) " + "ON DUPLICATE KEY UPDATE " + "PreservationClassificationID=?, Width=?, Height=?");
 			wallStatement.setInt(1, entry.getCaveID());
-			wallStatement.setString(2, entry.getLocationLabel());
+			wallStatement.setInt(2, entry.getWallLocationID());
 			wallStatement.setInt(3, entry.getPreservationClassificationID());
 			wallStatement.setDouble(4, entry.getWidth());
 			wallStatement.setDouble(5, entry.getHeight());
@@ -1893,11 +1894,35 @@ public class MysqlConnector {
 			wallStatement.setInt(1, caveID);
 			wallRS = wallStatement.executeQuery();
 			while (wallRS.next()) {
-				entry = new WallEntry(wallRS.getInt("CaveID"), wallRS.getString("LocationLabel"), wallRS.getInt("PreservationClassificationID"),
+				entry = new WallEntry(wallRS.getInt("CaveID"), wallRS.getInt("WallLocationID"), wallRS.getInt("PreservationClassificationID"),
 						wallRS.getDouble("Width"), wallRS.getDouble("Height"));
 				result.add(entry);
 			}
 			wallStatement.close();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			return null;
+		}
+		return result;
+	}
+
+	/**
+	 * @return
+	 */
+	public ArrayList<WallLocationEntry> getWallLocations() {
+		WallLocationEntry entry;
+		Connection dbc = getConnection();
+		PreparedStatement wallLocationStatement;
+		ArrayList<WallLocationEntry> result = new ArrayList<WallLocationEntry>();
+		ResultSet wallLocationRS;
+		try {
+			wallLocationStatement = dbc.prepareStatement("SELECT * FROM WallLocations");
+			wallLocationRS = wallLocationStatement.executeQuery();
+			while (wallLocationRS.next()) {
+				entry = new WallLocationEntry(wallLocationRS.getInt("WallLocationID"), wallLocationRS.getString("Label"), wallLocationRS.getString("CaveAreaLabel"));
+				result.add(entry);
+			}
+			wallLocationStatement.close();
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 			return null;
