@@ -20,6 +20,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  *
  */
 public abstract class AbstractEntry implements IsSerializable {
+	
+	protected boolean modified;
 
 	/**
 	 * 
@@ -34,6 +36,19 @@ public abstract class AbstractEntry implements IsSerializable {
 	 * @return a unique ID for the specific entry data
 	 */
 	abstract public String getUniqueID();
-	
+
+	/**
+	 * @return the modified
+	 */
+	public boolean isModified() {
+		return modified;
+	}
+
+	/**
+	 * @param modified the modified to set
+	 */
+	public void setModified(boolean modified) {
+		this.modified = modified;
+	}
 	
 }

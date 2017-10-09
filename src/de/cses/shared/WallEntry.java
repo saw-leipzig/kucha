@@ -35,16 +35,16 @@ public class WallEntry extends AbstractEntry {
 	public static String REAR_AREA_RIGHT_WALL = "rear area right wall";
 
 	private int caveID = 0;
-	private String locationLabel;
+	private int wallLocationID;
 	private int preservationClassificationID = 0;
 	double width = 0, height = 0;
 	
 	public WallEntry(){
 	}
 	
-	public WallEntry(int caveID, String locationLabel) {
+	public WallEntry(int caveID, int wallLocationID) {
 		this.caveID = caveID;
-		this.locationLabel = locationLabel;
+		this.wallLocationID = wallLocationID;
 	}
 	
 	
@@ -56,9 +56,9 @@ public class WallEntry extends AbstractEntry {
 	 * @param width
 	 * @param height
 	 */
-	public WallEntry(int caveID, String locationLabel, int preservationClassificationID, double width, double height) {
+	public WallEntry(int caveID, int wallLocationID, int preservationClassificationID, double width, double height) {
 		this.caveID = caveID;
-		this.locationLabel = locationLabel;
+		this.wallLocationID = wallLocationID;
 		this.preservationClassificationID = preservationClassificationID;
 		this.width = width;
 		this.height = height;
@@ -69,7 +69,7 @@ public class WallEntry extends AbstractEntry {
 	 */
 	@Override
 	public String getUniqueID() {
-		return "Wall_" + caveID + "_" + locationLabel;
+		return "Wall_" + caveID + "_" + wallLocationID;
 	}
 
 	public int getCaveID() {
@@ -110,19 +110,13 @@ public class WallEntry extends AbstractEntry {
 		this.preservationClassificationID = preservationClassificationID;
 	}
 
-	/**
-	 * @return the locationLabel
-	 */
-	public String getLocationLabel() {
-		return locationLabel;
+	public int getWallLocationID() {
+		return wallLocationID;
 	}
 
-	/**
-	 * @param locationLabel the locationLabel to set
-	 */
-	public void setLocationLabel(String locationLabel) {
-		this.locationLabel = locationLabel;
+	public void setWallLocationID(int wallLocationID) {
+		this.wallLocationID = wallLocationID;
 	}
-	
+
 
 }

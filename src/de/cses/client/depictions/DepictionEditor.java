@@ -127,7 +127,7 @@ public class DepictionEditor extends AbstractEditor {
 	private Walls wallEditor;
 	private Label iconographyLabel;
 	protected PopupPanel iconographySelectionDialog;
-	private WallSelector caveSketchContainer;
+	private WallSelector wallSelectorPanel;
 	private TextArea separateAksarasTextArea;
 	private ModesOfRepresentationProperties morProps;
 	private ListStore<ModeOfRepresentationEntry> morEntryList;
@@ -336,7 +336,7 @@ public class DepictionEditor extends AbstractEditor {
 				if (correspondingDepictionEntry.getCaveID() > 0) {
 					CaveEntry ce = caveEntryList.findModelWithKey(Integer.toString(correspondingDepictionEntry.getCaveID()));
 					caveSelection.setValue(ce);
-					caveSketchContainer.setCave(ce);
+					wallSelectorPanel.setCave(ce);
 				}
 			}
 		});
@@ -447,7 +447,7 @@ public class DepictionEditor extends AbstractEditor {
 			@Override
 			public void onSelection(SelectionEvent<CaveEntry> event) {
 				correspondingDepictionEntry.setCaveID(event.getSelectedItem().getCaveID());
-				caveSketchContainer.setCave(event.getSelectedItem());
+				wallSelectorPanel.setCave(event.getSelectedItem());
 			}
 		});
 		caveSelection.setToolTip("This field can only be changed until a depiction is allocated to a wall");
@@ -611,7 +611,7 @@ public class DepictionEditor extends AbstractEditor {
 
 		attributePanel = new FramedPanel();
 		attributePanel.setHeading("Wall");
-		TextButton wallEditorButton = new TextButton("Position");
+		TextButton wallEditorButton = new TextButton("set position on wall");
 		wallEditor = new Walls(1, false);
 		wallEditorButton.addSelectHandler(new SelectHandler() {
 
@@ -623,18 +623,12 @@ public class DepictionEditor extends AbstractEditor {
 				wallEditor.setPanel(wallEditorDialog);
 				wallEditorDialog.setModal(true);
 				wallEditorDialog.center();
-				// TODO integrate WallEditor
-				// wallEditorDialog.show();
 			}
 		});
 		attributePanel.addButton(wallEditorButton);
 
-		caveSketchContainer = new WallSelector();
-		// TODO implementation of cave representation for wall selection
-		// SafeUri imageUri = UriUtils.fromString("resource?background=centralPillarCave.png");
-		// caveSketchContainer.add(new HTMLPanel(caveLayoutViewTemplates.image(imageUri)));
-		// caveSketchContainer.setSize("100%", "100%");
-		attributePanel.add(caveSketchContainer);
+		wallSelectorPanel = new WallSelector();
+		attributePanel.add(wallSelectorPanel);
 		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0));
 		hlContainer.add(vlContainer, new HorizontalLayoutData(.6, 1.0));
 		tabPanel.add(hlContainer, "Basics");
