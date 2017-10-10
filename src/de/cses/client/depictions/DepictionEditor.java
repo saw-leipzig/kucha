@@ -222,13 +222,8 @@ public class DepictionEditor extends AbstractEditor {
 	 *
 	 */
 	interface ImageViewTemplates extends XTemplates {
-		// style=\"width: 280px; height: auto; align-content: center; margin: 5px;\"
-		// @XTemplate("<img align=\"center\" margin=\"20\" src=\"{imageUri}\"><br> {title}")
-		@XTemplate("<img src=\"{imageUri}\" style=\"width: 200px; height: auto; align-content: center; margin: 5px;\"><br> {title}")
+		@XTemplate("<img src=\"{imageUri}\" style=\"width: 230px; height: auto; align-content: center; margin: 5px;\"><br> {title}")
 		SafeHtml image(SafeUri imageUri, String title);
-
-		// @XTemplate("<div qtip=\"{slogan}\" qtitle=\"State Slogan\">{name}</div>")
-		// SafeHtml state(String slogan, String name);
 	}
 
 	public DepictionEditor(DepictionEntry entry) {
@@ -409,13 +404,13 @@ public class DepictionEditor extends AbstractEditor {
 
 			public SafeHtml render(ImageEntry item) {
 				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=300" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
-				return imageViewTemplates.image(imageUri, item.getTitle());
+				return imageViewTemplates.image(imageUri, item.getShortName());
 			}
 		}));
 
-		imageListView.setSize("340", "290");
+//		imageListView.setSize("340", "290");
 		ListField<ImageEntry, ImageEntry> lf = new ListField<ImageEntry, ImageEntry>(imageListView);
-		lf.setSize("350", "300");
+		lf.setSize("100%", "100%");
 
 		/**
 		 * --------------------- content of first tab (BASICS) starts here --------------------------------
@@ -913,8 +908,8 @@ public class DepictionEditor extends AbstractEditor {
 //		BorderLayoutContainer view = new BorderLayoutContainer();
 		HorizontalLayoutContainer mainHLC = new HorizontalLayoutContainer();
 //		view.setBorders(true);
-		mainHLC.add(tabPanel, new HorizontalLayoutData(.75, 1.0));
-		mainHLC.add(depictionImagesPanel, new HorizontalLayoutData(.25, 1.0));
+		mainHLC.add(tabPanel, new HorizontalLayoutData(.7, 1.0));
+		mainHLC.add(depictionImagesPanel, new HorizontalLayoutData(.3, 1.0));
 //		view.setCenterWidget(tabPanel, centerData);
 //		view.setEastWidget(depictionImagesPanel, eastData);
 
