@@ -111,9 +111,6 @@ public class WallSelector implements IsWidget {
 	 * 
 	 */
 	private void init() {
-//		mainPanel = new ContentPanel();
-//		mainPanel.setHeaderVisible(false);
-
 		mainVLC  = new VerticalLayoutContainer();
 		caveSketchContainer = new FlowLayoutContainer();
 
@@ -143,50 +140,8 @@ public class WallSelector implements IsWidget {
 
 		mainVLC.add(caveSketchContainer, new VerticalLayoutData(1.0, 0.9));
 		mainVLC.add(wallSelectorCB, new VerticalLayoutData(1.0, 0.1));
-
-//		mainPanel.add(mainVLC);
-//		mainPanel.setSize("1.0", "1.0");
 	}
 
-	// /**
-	// *
-	// */
-	// private void activateWallLocationFilter(int caveTypeID) {
-	// wallEntryLS.setEnableFilters(false);
-	// wallEntryLS.removeFilters();
-	// wallFilter = new StoreFilter<WallEntry>() {
-	//
-	// @Override
-	// public boolean select(Store<WallEntry> store, WallEntry parent, WallEntry item) {
-	// String caveAreaLabel = StaticTables.getInstance().getWallLocationEntries().get(item.getWallLocationID()).getCaveAreaLabel();
-	// switch (caveTypeID) {
-	// // 'antechamber','main chamber','main chamber corridor','rear area left corridor','rear area right corridor','rear area'
-	// case 2: // square cave
-	// return ((caveAreaLabel == WallLocationEntry.ANTECHAMBER_LABEL) || (caveAreaLabel == WallLocationEntry.MAIN_CHAMBER_LABEL));
-	//
-	// case 3: // resitential cave
-	// return ((caveAreaLabel == WallLocationEntry.ANTECHAMBER_LABEL) || (caveAreaLabel == WallLocationEntry.MAIN_CHAMBER_LABEL)
-	// || (caveAreaLabel == WallLocationEntry.MAIN_CHAMBER_CORRIDOR_LABEL) || (caveAreaLabel == WallLocationEntry.REAR_AREA_LABEL));
-	//
-	// case 4: // central-pillar cave
-	// return ((caveAreaLabel == WallLocationEntry.ANTECHAMBER_LABEL) || (caveAreaLabel == WallLocationEntry.MAIN_CHAMBER_LABEL)
-	// || (caveAreaLabel == WallLocationEntry.REAR_AREA_LABEL) || (caveAreaLabel == WallLocationEntry.REAR_AREA_LEFT_CORRIDOR_LABEL)
-	// || (caveAreaLabel == WallLocationEntry.REAR_AREA_RIGHT_CORRIDOR_LABEL));
-	//
-	// case 6: // monumental image cave
-	// return ((caveAreaLabel == WallLocationEntry.ANTECHAMBER_LABEL) || (caveAreaLabel == WallLocationEntry.MAIN_CHAMBER_LABEL)
-	// || (caveAreaLabel == WallLocationEntry.REAR_AREA_LABEL) || (caveAreaLabel == WallLocationEntry.REAR_AREA_LEFT_CORRIDOR_LABEL)
-	// || (caveAreaLabel == WallLocationEntry.REAR_AREA_RIGHT_CORRIDOR_LABEL));
-	//
-	// default:
-	// return false;
-	// }
-	// }
-	// };
-	// wallEntryLS.addFilter(wallFilter);
-	// wallEntryLS.setEnableFilters(true);
-	// }
-	//
 	/**
 	 * @param selectedCave
 	 */
