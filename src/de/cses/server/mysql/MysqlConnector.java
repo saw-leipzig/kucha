@@ -444,6 +444,7 @@ public class MysqlConnector {
 						rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedInYear"), rs.getInt("PreservationClassificationID"),
 						rs.getInt("CaveGroupID"), rs.getString("OptionalCaveSketch"), rs.getString("C14url"), rs.getString("C14DocumentFilename"));
 				ce.setCaveAreaList(getCaveAreas(ce.getCaveID()));
+				ce.setWallList(getWalls(ce.getCaveID()));
 				results.add(ce);
 			}
 			rs.close();
@@ -469,6 +470,7 @@ public class MysqlConnector {
 						rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedInYear"), rs.getInt("PreservationClassificationID"),
 						rs.getInt("CaveGroupID"), rs.getString("OptionalCaveSketch"), rs.getString("C14url"), rs.getString("C14DocumentFilename"));
 				result.setCaveAreaList(getCaveAreas(result.getCaveID()));
+				result.setWallList(getWalls(result.getCaveID()));
 			}
 			rs.close();
 			stmt.close();
@@ -494,6 +496,7 @@ public class MysqlConnector {
 						rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedInYear"), rs.getInt("PreservationClassificationID"),
 						rs.getInt("CaveGroupID"), rs.getString("OptionalCaveSketch"), rs.getString("C14url"), rs.getString("C14DocumentFilename"));
 				ce.setCaveAreaList(getCaveAreas(ce.getCaveID()));
+				ce.setWallList(getWalls(ce.getCaveID()));
 				results.add(ce);
 			}
 			rs.close();

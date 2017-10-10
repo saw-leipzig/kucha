@@ -26,6 +26,7 @@ import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -40,10 +41,13 @@ import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
+import com.sencha.gxt.widget.core.client.Dialog;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.TabPanel;
+import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
@@ -218,7 +222,9 @@ public class DepictionEditor extends AbstractEditor {
 	 *
 	 */
 	interface ImageViewTemplates extends XTemplates {
-		@XTemplate("<img align=\"center\" margin=\"20\" src=\"{imageUri}\"><br> {title}")
+		// style=\"width: 280px; height: auto; align-content: center; margin: 5px;\"
+		// @XTemplate("<img align=\"center\" margin=\"20\" src=\"{imageUri}\"><br> {title}")
+		@XTemplate("<img src=\"{imageUri}\" style=\"width: 200px; height: auto; align-content: center; margin: 5px;\"><br> {title}")
 		SafeHtml image(SafeUri imageUri, String title);
 
 		// @XTemplate("<div qtip=\"{slogan}\" qtitle=\"State Slogan\">{name}</div>")
@@ -402,7 +408,7 @@ public class DepictionEditor extends AbstractEditor {
 			final ImageViewTemplates imageViewTemplates = GWT.create(ImageViewTemplates.class);
 
 			public SafeHtml render(ImageEntry item) {
-				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=150" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
+				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=300" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 				return imageViewTemplates.image(imageUri, item.getTitle());
 			}
 		}));
@@ -896,47 +902,68 @@ public class DepictionEditor extends AbstractEditor {
 		 */
 
 		// the layout of the right side panel with the images
-		BorderLayoutData eastData = new BorderLayoutData(.25);
-		eastData.setMargins(new Margins(0, 5, 5, 5));
-		eastData.setCollapsible(true);
-		eastData.setCollapseHeaderVisible(true);
-		eastData.setSplit(true);
+//		BorderLayoutData eastData = new BorderLayoutData(.25);
+//		eastData.setMargins(new Margins(0, 5, 5, 5));
+//		eastData.setCollapsible(true);
+//		eastData.setCollapseHeaderVisible(true);
+//		eastData.setSplit(true);
 
-		MarginData centerData = new MarginData(0, 5, 5, 0);
+//		MarginData centerData = new MarginData(0, 5, 5, 0);
 
-		BorderLayoutContainer view = new BorderLayoutContainer();
-		view.setBorders(true);
-		view.setCenterWidget(tabPanel, centerData);
-		view.setEastWidget(depictionImagesPanel, eastData);
+//		BorderLayoutContainer view = new BorderLayoutContainer();
+		HorizontalLayoutContainer mainHLC = new HorizontalLayoutContainer();
+//		view.setBorders(true);
+		mainHLC.add(tabPanel, new HorizontalLayoutData(.75, 1.0));
+		mainHLC.add(depictionImagesPanel, new HorizontalLayoutData(.25, 1.0));
+//		view.setCenterWidget(tabPanel, centerData);
+//		view.setEastWidget(depictionImagesPanel, eastData);
 
-		mainPanel.add(view);
+		mainPanel.add(mainHLC);
 		mainPanel.setSize("900px", "650px");
+		
 
-		TextButton saveButton = new TextButton("Save");
-		saveButton.addSelectHandler(new SelectHandler() {
+		ToolButton saveToolButton = new ToolButton(ToolButton.SAVE);
+		saveToolButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-				saveDepictionEntry();
+				saveDepictionEntry(false);
 			}
 		});
-		TextButton closeButton = new TextButton("Close");
-		closeButton.addSelectHandler(new SelectHandler() {
+		
+		ToolButton closeToolButton = new ToolButton(ToolButton.CLOSE);
+		closeToolButton.setToolTip("close");
+		closeToolButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-				saveDepictionEntry();
-				closeEditor();
+				 Dialog d = new Dialog();
+				 d.setHeading("Exit Warning!");
+				 d.setWidget(new HTML("Do you wish to save before exiting?"));
+				 d.setBodyStyle("fontWeight:bold;padding:13px;");
+				 d.setPixelSize(300, 100);
+				 d.setHideOnButtonClick(true);
+				 d.setPredefinedButtons(PredefinedButton.YES, PredefinedButton.NO, PredefinedButton.CANCEL);
+				 d.setModal(true);
+				 d.center();
+				 d.show();
+				 d.getButton(PredefinedButton.YES).addSelectHandler(new SelectHandler() {
+					
+					@Override
+					public void onSelect(SelectEvent event) {
+						saveDepictionEntry(true);
+					}
+				});
+				 d.getButton(PredefinedButton.NO).addSelectHandler(new SelectHandler() {
+						
+					@Override
+					public void onSelect(SelectEvent event) {
+						 closeEditor();
+					}
+				});
 			}
-		});
-		TextButton cancelButton = new TextButton("Cancel");
-		cancelButton.addSelectHandler(new SelectHandler() {
-			@Override
-			public void onSelect(SelectEvent event) {
-				closeEditor();
-			}
-		});
-		mainPanel.addButton(saveButton);
-		mainPanel.addButton(closeButton);
-		mainPanel.addButton(cancelButton);
+		});		
+		
+		mainPanel.addTool(saveToolButton);
+		mainPanel.addTool(closeToolButton);
 	}
 
 	// /**
@@ -951,8 +978,9 @@ public class DepictionEditor extends AbstractEditor {
 
 	/**
 	 * Called when the save button is pressed. Calls <code>DepictionEditorListener.depictionSaved(correspondingDepictionEntry)<code>
+	 * @param close 
 	 */
-	protected void saveDepictionEntry() {
+	protected void saveDepictionEntry(boolean close) {
 		ArrayList<ImageEntry> associatedImageEntryList = new ArrayList<ImageEntry>();
 		for (int i = 0; i < imageEntryList.size(); ++i) {
 			associatedImageEntryList.add(imageEntryList.get(i));
@@ -967,6 +995,9 @@ public class DepictionEditor extends AbstractEditor {
 				@Override
 				public void onSuccess(Integer newDepictionID) {
 					correspondingDepictionEntry.setDepictionID(newDepictionID.intValue());
+					if (close) {
+						closeEditor();
+					}
 				}
 
 				@Override
@@ -984,6 +1015,9 @@ public class DepictionEditor extends AbstractEditor {
 
 				@Override
 				public void onSuccess(Boolean updateSucessful) {
+					if (close) {
+						closeEditor();
+					}
 				}
 			});
 		}

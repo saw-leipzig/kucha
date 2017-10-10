@@ -283,7 +283,6 @@ public class CaveEditor extends AbstractEditor {
 
 	interface CaveGroupProperties extends PropertyAccess<CaveGroupEntry> {
 		ModelKeyProvider<CaveGroupEntry> caveGroupID();
-
 		LabelProvider<CaveGroupEntry> name();
 	}
 
@@ -294,7 +293,7 @@ public class CaveEditor extends AbstractEditor {
 
 	interface CaveLayoutViewTemplates extends XTemplates {
 		// @XTemplate("<img align=\"center\" width=\"242\" height=\"440\" margin=\"20\" src=\"{imageUri}\">")
-		@XTemplate("<img align=\"center\" margin=\"10\" src=\"{imageUri}\">")
+		@XTemplate("<img src=\"{imageUri}\" style=\"width: 280px; height: auto; align-content: center; margin: 5px;\">")
 		SafeHtml image(SafeUri imageUri);
 	}
 	
@@ -1723,12 +1722,15 @@ public class CaveEditor extends AbstractEditor {
 		});
 		wallSelectorCB.setEditable(false);
 		wallSelectorCB.setTypeAhead(false);
+		wallSelectorCB.setEmptyText("select a wall");
 		wallSelectorCB.setTriggerAction(TriggerAction.ALL);
 		wallSelectorCB.addSelectionHandler(new SelectionHandler<WallEntry>() {
 
 			@Override
 			public void onSelection(SelectionEvent<WallEntry> event) {
 				selectedWallEntry = event.getSelectedItem();
+				selectedWallStateOfPreservationCB.setValue(preservationClassificationEntryList.findModelWithKey(
+						Integer.toString(selectedWallEntry.getPreservationClassificationID())));
 			}
 		});
 		selectedWallStateOfPreservationCB = createStateOfPreservationSelector("select wall preservation");
@@ -1964,8 +1966,7 @@ public class CaveEditor extends AbstractEditor {
 			// 'antechamber','main chamber','main chamber corridor','rear area left corridor','rear area right corridor','rear area'
 			case 2: // square cave
 				for (WallLocationEntry wle : StaticTables.getInstance().getWallLocationEntries().values()) {
-					if ((wle.getCaveAreaLabel() == WallLocationEntry.ANTECHAMBER_LABEL)
-							|| (wle.getCaveAreaLabel() == WallLocationEntry.MAIN_CHAMBER_LABEL)) {
+					if (((wle.getCaveAreaLabel() == WallLocationEntry.ANTECHAMBER_LABEL)	|| (wle.getCaveAreaLabel() == WallLocationEntry.MAIN_CHAMBER_LABEL)) && wle.getLabel().contains("wall")) {
 						wallEntryLS.add(correspondingCaveEntry.getWall(wle.getWallLocationID()));
 					}
 				}
@@ -1973,10 +1974,10 @@ public class CaveEditor extends AbstractEditor {
 
 			case 3: // resitential cave
 				for (WallLocationEntry wle : StaticTables.getInstance().getWallLocationEntries().values()) {
-					if ((wle.getCaveAreaLabel() == WallLocationEntry.ANTECHAMBER_LABEL)
+					if (((wle.getCaveAreaLabel() == WallLocationEntry.ANTECHAMBER_LABEL)
 							|| (wle.getCaveAreaLabel() == WallLocationEntry.MAIN_CHAMBER_LABEL)
 							|| (wle.getCaveAreaLabel() == WallLocationEntry.MAIN_CHAMBER_CORRIDOR_LABEL)
-							|| (wle.getCaveAreaLabel() == WallLocationEntry.REAR_AREA_LABEL)) {
+							|| (wle.getCaveAreaLabel() == WallLocationEntry.REAR_AREA_LABEL)) && wle.getLabel().contains("wall")) {
 						wallEntryLS.add(correspondingCaveEntry.getWall(wle.getWallLocationID()));
 					}
 				}
@@ -1985,11 +1986,11 @@ public class CaveEditor extends AbstractEditor {
 			case 4: // central-pillar cave
 			case 6: // monumental image cave
 				for (WallLocationEntry wle : StaticTables.getInstance().getWallLocationEntries().values()) {
-					if ((wle.getCaveAreaLabel() == WallLocationEntry.ANTECHAMBER_LABEL)
+					if (((wle.getCaveAreaLabel() == WallLocationEntry.ANTECHAMBER_LABEL)
 							|| (wle.getCaveAreaLabel() == WallLocationEntry.MAIN_CHAMBER_LABEL)
 							|| (wle.getCaveAreaLabel() == WallLocationEntry.REAR_AREA_LABEL)
 							|| (wle.getCaveAreaLabel() == WallLocationEntry.REAR_AREA_LEFT_CORRIDOR_LABEL)
-							|| (wle.getCaveAreaLabel() == WallLocationEntry.REAR_AREA_RIGHT_CORRIDOR_LABEL)) {
+							|| (wle.getCaveAreaLabel() == WallLocationEntry.REAR_AREA_RIGHT_CORRIDOR_LABEL)) && wle.getLabel().contains("wall")) {
 						wallEntryLS.add(correspondingCaveEntry.getWall(wle.getWallLocationID()));
 					}
 				}
