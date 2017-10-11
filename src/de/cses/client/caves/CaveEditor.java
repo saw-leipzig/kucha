@@ -1864,11 +1864,12 @@ public class CaveEditor extends AbstractEditor {
 	 * @return
 	 */
 	private ContentPanel createCaveAreaExpeditionMeasurePanel(CaveAreaEntry caEntry) {
-		ContentPanel expeditionMeasureCP = new FramedPanel();
-		expeditionMeasureCP.setHeading(caEntry.getCaveAreaLabel() + " (W/L/H)");
+		ContentPanel expeditionMeasureCP = new ContentPanel();
+		expeditionMeasureCP.setHeading(caEntry.getCaveAreaLabel() + " W/L/H in meter");
 		NumberField<Double> expeditionWidthNumberField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
 		expeditionWidthNumberField.addValidator(new MinNumberValidator<Double>(0.0));
 		expeditionWidthNumberField.addValidator(new MaxNumberValidator<Double>(200.0));
+		expeditionWidthNumberField.setEmptyText("width in meter");
 		expeditionWidthNumberField.setValue(caEntry.getExpeditionWidth());
 		expeditionWidthNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
@@ -1880,6 +1881,7 @@ public class CaveEditor extends AbstractEditor {
 		NumberField<Double> expeditionLengthNumberField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
 		expeditionLengthNumberField.addValidator(new MinNumberValidator<Double>(0.0));
 		expeditionLengthNumberField.addValidator(new MaxNumberValidator<Double>(200.0));
+		expeditionWidthNumberField.setEmptyText("length in meter");
 		expeditionLengthNumberField.setValue(caEntry.getExpeditionLength());
 		expeditionLengthNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
@@ -1891,6 +1893,7 @@ public class CaveEditor extends AbstractEditor {
 		NumberField<Double> expeditionHeightNumberField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
 		expeditionHeightNumberField.addValidator(new MinNumberValidator<Double>(0.0));
 		expeditionHeightNumberField.addValidator(new MaxNumberValidator<Double>(200.0));
+		expeditionWidthNumberField.setEmptyText("height in meter");
 		expeditionHeightNumberField.setValue(caEntry.getExpeditionHeight());
 		expeditionHeightNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
@@ -1901,9 +1904,9 @@ public class CaveEditor extends AbstractEditor {
 		});
 		HorizontalLayoutContainer expeditionMeasuresHLC = new HorizontalLayoutContainer();
 		expeditionMeasuresHLC.add(expeditionWidthNumberField, new HorizontalLayoutData(.3, 1.0));
-		expeditionMeasuresHLC.add(new Label(" / "), new HorizontalLayoutData(.05, 1.0));
+		expeditionMeasuresHLC.add(new Label("/"), new HorizontalLayoutData(.05, 1.0, new Margins(0, 2, 0, 2)));
 		expeditionMeasuresHLC.add(expeditionLengthNumberField, new HorizontalLayoutData(.3, 1.0));
-		expeditionMeasuresHLC.add(new Label(" / "), new HorizontalLayoutData(.05, 1.0));
+		expeditionMeasuresHLC.add(new Label("/"), new HorizontalLayoutData(.05, 1.0, new Margins(0, 2, 0, 2)));
 		expeditionMeasuresHLC.add(expeditionHeightNumberField, new HorizontalLayoutData(.3, 1.0));
 		expeditionMeasureCP.add(expeditionMeasuresHLC);
 		
@@ -1916,12 +1919,13 @@ public class CaveEditor extends AbstractEditor {
 	 * @return
 	 */
 	private ContentPanel createCaveAreaModernMeasurePanel(CaveAreaEntry caEntry) {
-		ContentPanel modernMeasurementCP = new FramedPanel();
+		ContentPanel modernMeasurementCP = new ContentPanel();
 		modernMeasurementCP.setHeaderVisible(true);
-		modernMeasurementCP.setHeading(caEntry.getCaveAreaLabel() + " (W/L/H)");
+		modernMeasurementCP.setHeading(caEntry.getCaveAreaLabel() + " W/L/H in meter");
 		NumberField<Double> modernWidthNumberField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
 		modernWidthNumberField.addValidator(new MinNumberValidator<Double>(0.0));
 		modernWidthNumberField.addValidator(new MaxNumberValidator<Double>(200.0));
+		modernWidthNumberField.setEmptyText("width in meter");
 		modernWidthNumberField.setValue(caEntry.getModernWidth());
 		modernWidthNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
@@ -1933,6 +1937,7 @@ public class CaveEditor extends AbstractEditor {
 		NumberField<Double> modernLengthNumberField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
 		modernLengthNumberField.addValidator(new MinNumberValidator<Double>(0.0));
 		modernLengthNumberField.addValidator(new MaxNumberValidator<Double>(200.0));
+		modernWidthNumberField.setEmptyText("length in meter");
 		modernLengthNumberField.setValue(caEntry.getExpeditionLength());
 		modernLengthNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
@@ -1944,6 +1949,7 @@ public class CaveEditor extends AbstractEditor {
 		NumberField<Double> modernHeightNumberField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
 		modernHeightNumberField.addValidator(new MinNumberValidator<Double>(0.0));
 		modernHeightNumberField.addValidator(new MaxNumberValidator<Double>(200.0));
+		modernWidthNumberField.setEmptyText("height in meter");
 		modernHeightNumberField.setValue(caEntry.getModernHeight());
 		modernHeightNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
@@ -1954,9 +1960,9 @@ public class CaveEditor extends AbstractEditor {
 		});
 		HorizontalLayoutContainer modernMeasuresHLC = new HorizontalLayoutContainer();
 		modernMeasuresHLC.add(modernWidthNumberField, new HorizontalLayoutData(.3, 1.0));
-		modernMeasuresHLC.add(new Label(" / "), new HorizontalLayoutData(.05, 1.0));
+		modernMeasuresHLC.add(new Label("/"), new HorizontalLayoutData(.05, 1.0, new Margins(0, 2, 0, 2)));
 		modernMeasuresHLC.add(modernLengthNumberField, new HorizontalLayoutData(.3, 1.0));
-		modernMeasuresHLC.add(new Label(" / "), new HorizontalLayoutData(.05, 1.0));
+		modernMeasuresHLC.add(new Label("/"), new HorizontalLayoutData(.05, 1.0, new Margins(0, 2, 0, 2)));
 		modernMeasuresHLC.add(modernHeightNumberField, new HorizontalLayoutData(.3, 1.0));
 		modernMeasurementCP.add(modernMeasuresHLC);
 		
