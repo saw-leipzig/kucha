@@ -86,7 +86,7 @@ public class WallSelector implements IsWidget {
 	 * 
 	 * @param defaultCaveSketchWidth string representing the default sketch width in pixel (px)
 	 */
-	public WallSelector(int defaultCaveSketchWidth) { // TODO parameter für image breite und XTemplate anpassen!
+	public WallSelector(int defaultCaveSketchWidth) {
 		this.defaultCaveSketchWidth = defaultCaveSketchWidth;
 		caveLayoutViewTemplates = GWT.create(CaveLayoutViewTemplates.class);
 		wallProps = GWT.create(WallProperties.class);
@@ -158,13 +158,13 @@ public class WallSelector implements IsWidget {
 		currentCave = selectedCave;
 		CaveTypeEntry ctEntry = StaticTables.getInstance().getCaveTypeEntries().get(selectedCave.getCaveTypeID());
 		caveSketchContainer.clear();
-		if ((ctEntry.getSketchName()!=null) && !ctEntry.getSketchName().isEmpty()) {
-			caveSketchContainer.add(new HTMLPanel(caveLayoutViewTemplates.image(UriUtils
-					.fromString("resource?background=" + ctEntry.getSketchName() + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), SafeStylesUtils.forWidth(defaultCaveSketchWidth, Unit.PX))));
-		}
 		if ((selectedCave.getOptionalCaveSketch()!=null) && !selectedCave.getOptionalCaveSketch().isEmpty()) {
 			caveSketchContainer.add(new HTMLPanel(caveLayoutViewTemplates.image(UriUtils
 					.fromString("resource?cavesketch=" + selectedCave.getOptionalCaveSketch() + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), SafeStylesUtils.forWidth(defaultCaveSketchWidth, Unit.PX))));
+		}
+		if ((ctEntry.getSketchName()!=null) && !ctEntry.getSketchName().isEmpty()) {
+			caveSketchContainer.add(new HTMLPanel(caveLayoutViewTemplates.image(UriUtils
+					.fromString("resource?background=" + ctEntry.getSketchName() + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), SafeStylesUtils.forWidth(defaultCaveSketchWidth, Unit.PX))));
 		}
 		wallEntryLS.clear();
 		switch (ctEntry.getCaveTypeID()) {
@@ -178,7 +178,7 @@ public class WallSelector implements IsWidget {
 				}
 				break;
 
-			case 3: // resitential cave
+			case 3: // residential cave
 				for (WallLocationEntry wle : StaticTables.getInstance().getWallLocationEntries().values()) {
 					if ((wle.getCaveAreaLabel() == WallLocationEntry.ANTECHAMBER_LABEL)
 							|| (wle.getCaveAreaLabel() == WallLocationEntry.MAIN_CHAMBER_LABEL)
