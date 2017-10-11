@@ -1863,8 +1863,8 @@ public class CaveEditor extends AbstractEditor {
 	 * @param caEntry
 	 * @return
 	 */
-	private ContentPanel createCaveAreaExpeditionMeasurePanel(CaveAreaEntry caEntry) {
-		ContentPanel expeditionMeasureCP = new ContentPanel();
+	private FramedPanel createCaveAreaExpeditionMeasurePanel(CaveAreaEntry caEntry) {
+		FramedPanel expeditionMeasureCP = new FramedPanel();
 		expeditionMeasureCP.setHeading(caEntry.getCaveAreaLabel() + " W/L/H in meter");
 		NumberField<Double> expeditionWidthNumberField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
 		expeditionWidthNumberField.addValidator(new MinNumberValidator<Double>(0.0));
@@ -1918,9 +1918,8 @@ public class CaveEditor extends AbstractEditor {
 	 * @param caEntry
 	 * @return
 	 */
-	private ContentPanel createCaveAreaModernMeasurePanel(CaveAreaEntry caEntry) {
-		ContentPanel modernMeasurementCP = new ContentPanel();
-		modernMeasurementCP.setHeaderVisible(true);
+	private FramedPanel createCaveAreaModernMeasurePanel(CaveAreaEntry caEntry) {
+		FramedPanel modernMeasurementCP = new FramedPanel();
 		modernMeasurementCP.setHeading(caEntry.getCaveAreaLabel() + " W/L/H in meter");
 		NumberField<Double> modernWidthNumberField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
 		modernWidthNumberField.addValidator(new MinNumberValidator<Double>(0.0));
