@@ -28,6 +28,7 @@ import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
@@ -60,6 +61,7 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.Verti
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
+import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.TextArea;
@@ -195,6 +197,12 @@ public class CaveEditor extends AbstractEditor {
 	protected WallEntry selectedWallEntry;
 	private ComboBox<PreservationClassificationEntry> selectedWallStateOfPreservationCB;
 	private FramedPanel wallManagementFP;
+	private HorizontalLayoutContainer antechamberMeasurement;
+	private HorizontalLayoutContainer mainChamberMeasurement;
+	private HorizontalLayoutContainer mainChamberCorridorMeasurement;
+	private HorizontalLayoutContainer rearAreaMeasurement;
+	private HorizontalLayoutContainer rearAreaLeftCorridorMeasurement;
+	private HorizontalLayoutContainer rearAreaRightCorridorMeasurement;
 
 	interface CaveTypeProperties extends PropertyAccess<CaveTypeEntry> {
 		ModelKeyProvider<CaveTypeEntry> caveTypeID();
@@ -582,10 +590,6 @@ public class CaveEditor extends AbstractEditor {
 
 	private void initPanel() {
 		// all fields added are encapsulated by a FramedPanel
-
-		mainPanel = new FramedPanel();
-		mainPanel.setHeading("Cave Editor");
-		mainPanel.setSize("900px", "600px"); // here we set the size of the panel
 
 		// the tab will use the right 70% of the main HorizontalLayoutPanel
 		HorizontalLayoutContainer mainHlContainer = new HorizontalLayoutContainer();
@@ -1467,8 +1471,8 @@ public class CaveEditor extends AbstractEditor {
 		/**
 		 * ======== expeditionMeasurementPanel
 		 */
-		FramedPanel expeditionMeasurementFP = new FramedPanel();
-		expeditionMeasurementFP.setHeading("Expedition measurement");
+//		FramedPanel expeditionMeasurementFP = new FramedPanel();
+//		expeditionMeasurementFP.setHeading("Expedition measurement");
 
 		// here we prepare all elements and later call updateCeilingTypePanel()
 		// ceilingTypeVLC = new VerticalLayoutContainer();
@@ -1765,23 +1769,43 @@ public class CaveEditor extends AbstractEditor {
 		caveLayoutRightVLC.add(wallManagementFP, new VerticalLayoutData(1.0, .2));
 		
 		caveTypeHLC.add(caveLayoutRightVLC, new HorizontalLayoutData(.5, 1.0));
+		
+		/**
+		 * ------------------------------ measurement and interior tab
+		 */
+		
+		VerticalLayoutContainer expeditionMeasurementVLC = new VerticalLayoutContainer();
+		
+		antechamberMeasurement = createCaveAreaMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER));
+		expeditionMeasurementVLC.add(antechamberMeasurement, new VerticalLayoutData(1.0, .12));
+		mainChamberMeasurement = createCaveAreaMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER));
+		expeditionMeasurementVLC.add(mainChamberMeasurement, new VerticalLayoutData(1.0, .12));
+		mainChamberCorridorMeasurement = createCaveAreaMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR));
+		expeditionMeasurementVLC.add(mainChamberCorridorMeasurement, new VerticalLayoutData(1.0, .12));
+		rearAreaMeasurement = createCaveAreaMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA));
+		expeditionMeasurementVLC.add(rearAreaMeasurement, new VerticalLayoutData(1.0, .12));
+		rearAreaLeftCorridorMeasurement = createCaveAreaMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR));
+		expeditionMeasurementVLC.add(rearAreaLeftCorridorMeasurement, new VerticalLayoutData(1.0, .12));
+		rearAreaRightCorridorMeasurement = createCaveAreaMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR));
+		expeditionMeasurementVLC.add(rearAreaRightCorridorMeasurement, new VerticalLayoutData(1.0, .12));
+		
+		
+		
+		HorizontalLayoutContainer measurementHLC = new HorizontalLayoutContainer();
+		measurementHLC.add(expeditionMeasurementVLC, new HorizontalLayoutData(.6, 1.0));
 
 		/**
-		 * now we are assembling the tabs and add them to the main hlc
+		 * ------------------------------ now we are assembling the tabs and add them to the main hlc ----------------------------------
 		 */
 		PlainTabPanel tabPanel = new PlainTabPanel();
 		tabPanel.setTabScroll(false);
 		tabPanel.setAnimScroll(false);
 		tabPanel.add(caveTypeHLC, new TabItemConfig("Cave Layout", false));
+		tabPanel.add(measurementHLC, new TabItemConfig("Measurements & Interiors", false));
 		tabPanel.add(stateOfPreservationHLC, new TabItemConfig("State of Preservation", false));
 		tabPanel.add(descriptionHLC, new TabItemConfig("Descriptions", false));
 
 		mainHlContainer.add(tabPanel, new HorizontalLayoutData(.7, 1.0));
-
-		/**
-		 * adding the mainHlContainer to the FramedPanel and adding the buttons
-		 */
-		mainPanel.add(mainHlContainer);
 
 		ToolButton saveToolButton = new ToolButton(ToolButton.SAVE);
 		saveToolButton.setToolTip("save");
@@ -1823,11 +1847,113 @@ public class CaveEditor extends AbstractEditor {
 				});
 			}
 		});
-
+		
+		mainPanel = new FramedPanel();
+		mainPanel.setHeading("Cave Editor");
+		mainPanel.setSize("900px", "600px"); // here we set the size of the panel
+		mainPanel.add(mainHlContainer);
 		mainPanel.addTool(saveToolButton);
 		mainPanel.addTool(closeToolButton);
 	}
 
+	/**
+	 * @return
+	 */
+	private HorizontalLayoutContainer createCaveAreaMeasurePanel(CaveAreaEntry caEntry) {
+		HorizontalLayoutContainer caveAreaMeasurementHLC = new HorizontalLayoutContainer();
+		FramedPanel expeditionMeasureFP = new FramedPanel();
+		expeditionMeasureFP.setHeading(caEntry.getCaveAreaLabel() + " (Expedition)");
+		NumberField<Double> expeditionWidthNumberField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
+		expeditionWidthNumberField.addValidator(new MinNumberValidator<Double>(0.0));
+		expeditionWidthNumberField.addValidator(new MaxNumberValidator<Double>(200.0));
+		expeditionWidthNumberField.setValue(caEntry.getExpeditionWidth());
+		expeditionWidthNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Double> event) {
+				caEntry.setExpeditionWidth(event.getValue());
+			}
+		});
+		NumberField<Double> expeditionLengthNumberField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
+		expeditionLengthNumberField.addValidator(new MinNumberValidator<Double>(0.0));
+		expeditionLengthNumberField.addValidator(new MaxNumberValidator<Double>(200.0));
+		expeditionLengthNumberField.setValue(caEntry.getExpeditionLength());
+		expeditionLengthNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Double> event) {
+				caEntry.setExpeditionLength(event.getValue());
+			}
+		});
+		NumberField<Double> expeditionHeightNumberField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
+		expeditionHeightNumberField.addValidator(new MinNumberValidator<Double>(0.0));
+		expeditionHeightNumberField.addValidator(new MaxNumberValidator<Double>(200.0));
+		expeditionHeightNumberField.setValue(caEntry.getExpeditionHeight());
+		expeditionHeightNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Double> event) {
+				caEntry.setExpeditionHeight(event.getValue());
+			}
+		});
+		HorizontalLayoutContainer expeditionMeasuresHLC = new HorizontalLayoutContainer();
+		expeditionMeasuresHLC.add(new Label("W: "), new HorizontalLayoutData(.13, 1.0));
+		expeditionMeasuresHLC.add(expeditionWidthNumberField, new HorizontalLayoutData(.2, 1.0));
+		expeditionMeasuresHLC.add(new Label("L: "), new HorizontalLayoutData(.13, 1.0));
+		expeditionMeasuresHLC.add(expeditionLengthNumberField, new HorizontalLayoutData(.2, 1.0));
+		expeditionMeasuresHLC.add(new Label("H: "), new HorizontalLayoutData(.13, 1.0));
+		expeditionMeasuresHLC.add(expeditionHeightNumberField, new HorizontalLayoutData(.2, 1.0));
+		expeditionMeasureFP.add(expeditionMeasuresHLC);
+		
+		FramedPanel modernMeasurementFP = new FramedPanel();
+		modernMeasurementFP.setHeading(caEntry.getCaveAreaLabel() + " (Expedition)");
+		NumberField<Double> modernWidthNumberField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
+		modernWidthNumberField.addValidator(new MinNumberValidator<Double>(0.0));
+		modernWidthNumberField.addValidator(new MaxNumberValidator<Double>(200.0));
+		modernWidthNumberField.setValue(caEntry.getModernWidth());
+		modernWidthNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Double> event) {
+				caEntry.setModernWidth(event.getValue());
+			}
+		});
+		NumberField<Double> modernLengthNumberField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
+		modernLengthNumberField.addValidator(new MinNumberValidator<Double>(0.0));
+		modernLengthNumberField.addValidator(new MaxNumberValidator<Double>(200.0));
+		modernLengthNumberField.setValue(caEntry.getExpeditionLength());
+		modernLengthNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Double> event) {
+				caEntry.setModernLength(event.getValue());
+			}
+		});
+		NumberField<Double> modernHeightNumberField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
+		modernHeightNumberField.addValidator(new MinNumberValidator<Double>(0.0));
+		modernHeightNumberField.addValidator(new MaxNumberValidator<Double>(200.0));
+		modernHeightNumberField.setValue(caEntry.getModernHeight());
+		modernHeightNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Double> event) {
+				caEntry.setModernHeight(event.getValue());
+			}
+		});
+		HorizontalLayoutContainer modernMeasuresHLC = new HorizontalLayoutContainer();
+		modernMeasuresHLC.add(new Label("W: "), new HorizontalLayoutData(.13, 1.0));
+		modernMeasuresHLC.add(modernWidthNumberField, new HorizontalLayoutData(.2, 1.0));
+		modernMeasuresHLC.add(new Label("L: "), new HorizontalLayoutData(.13, 1.0));
+		modernMeasuresHLC.add(modernLengthNumberField, new HorizontalLayoutData(.2, 1.0));
+		modernMeasuresHLC.add(new Label("H: "), new HorizontalLayoutData(.13, 1.0));
+		modernMeasuresHLC.add(modernHeightNumberField, new HorizontalLayoutData(.2, 1.0));
+		modernMeasurementFP.add(expeditionMeasuresHLC);
+		
+		caveAreaMeasurementHLC.add(expeditionMeasureFP, new HorizontalLayoutData(.5, 1.0));
+		caveAreaMeasurementHLC.add(modernMeasurementFP, new HorizontalLayoutData(.5, 1.0));
+		return caveAreaMeasurementHLC;
+	}
+	
 	private void updateCeilingTypePanel(int caveTypeID) {
 
 		switch (caveTypeID) {

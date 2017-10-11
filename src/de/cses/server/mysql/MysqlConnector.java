@@ -1806,9 +1806,11 @@ public class MysqlConnector {
 			caveAreaStatement.setInt(1, caveID);
 			caveAreaRS = caveAreaStatement.executeQuery();
 			while (caveAreaRS.next()) {
-				caEntry = new CaveAreaEntry(caveAreaRS.getInt("CaveID"), caveAreaRS.getString("CaveAreaLabel"), caveAreaRS.getDouble("Height"),
-						caveAreaRS.getDouble("Width"), caveAreaRS.getDouble("Depth"), caveAreaRS.getInt("PreservationClassificationID"),
-						caveAreaRS.getInt("CeilingTypeID1"), caveAreaRS.getInt("CeilingTypeID2"),
+				caEntry = new CaveAreaEntry(caveAreaRS.getInt("CaveID"), caveAreaRS.getString("CaveAreaLabel"),
+						caveAreaRS.getDouble("ExpeditionMeasuredWidth"), caveAreaRS.getDouble("ExpeditionMeasuredHeight"),
+						caveAreaRS.getDouble("ExpeditionMeasuredLength"), caveAreaRS.getDouble("ModernMeasuredWidth"),
+						caveAreaRS.getDouble("ModernMeasuredHeight"), caveAreaRS.getDouble("ModernMeasuredLength"),
+						caveAreaRS.getInt("PreservationClassificationID"), caveAreaRS.getInt("CeilingTypeID1"), caveAreaRS.getInt("CeilingTypeID2"),
 						caveAreaRS.getInt("CeilingPreservationClassificationID1"), caveAreaRS.getInt("CeilingPreservationClassificationID2"));
 				result.add(caEntry);
 			}
@@ -1826,29 +1828,35 @@ public class MysqlConnector {
 		PreparedStatement caveAreaStatement;
 		try {
 			caveAreaStatement = dbc.prepareStatement(
-					"INSERT INTO CaveAreas (CaveID, CaveAreaLabel, Height, Width, Depth, PreservationClassificationID, CeilingTypeID1,"
-							+ "CeilingTypeID2, CeilingPreservationClassificationID1, CeilingPreservationClassificationID2) "
-							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " + "ON DUPLICATE KEY UPDATE "
-							+ "Height=?, Width=?, Depth=?, PreservationClassificationID=?, CeilingTypeID1=?,"
-							+ "CeilingTypeID2=?, CeilingPreservationClassificationID1=?, CeilingPreservationClassificationID2=?");
+					"INSERT INTO CaveAreas (CaveID, CaveAreaLabel, ExpeditionMeasuredWidth, ExpeditionMeasuredLength, ExpeditionMeasuredHeight, ModernMeasuredWidth, ModernMeasuredLength, ModernMeasuredHeight, "
+							+ "PreservationClassificationID, CeilingTypeID1, CeilingTypeID2, CeilingPreservationClassificationID1, CeilingPreservationClassificationID2) "
+							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " + "ON DUPLICATE KEY UPDATE "
+							+ "ExpeditionMeasuredWidth=?, ExpeditionMeasuredLength=?, ExpeditionMeasuredHeight=?, ModernMeasuredWidth=?, ModernMeasuredLength=?, ModernMeasuredHeight=?, "
+							+ "PreservationClassificationID=?, CeilingTypeID1=?, CeilingTypeID2=?, CeilingPreservationClassificationID1=?, CeilingPreservationClassificationID2=?");
 			caveAreaStatement.setInt(1, entry.getCaveID());
 			caveAreaStatement.setString(2, entry.getCaveAreaLabel());
-			caveAreaStatement.setDouble(3, entry.getHeight());
-			caveAreaStatement.setDouble(4, entry.getWidth());
-			caveAreaStatement.setDouble(5, entry.getDepth());
-			caveAreaStatement.setInt(6, entry.getPreservationClassificationID());
-			caveAreaStatement.setInt(7, entry.getCeilingTypeID1());
-			caveAreaStatement.setInt(8, entry.getCeilingTypeID2());
-			caveAreaStatement.setInt(9, entry.getCeilingPreservationClassificationID1());
-			caveAreaStatement.setInt(10, entry.getCeilingPreservationClassificationID2());
-			caveAreaStatement.setDouble(11, entry.getHeight());
-			caveAreaStatement.setDouble(12, entry.getWidth());
-			caveAreaStatement.setDouble(13, entry.getDepth());
-			caveAreaStatement.setInt(14, entry.getPreservationClassificationID());
-			caveAreaStatement.setInt(15, entry.getCeilingTypeID1());
-			caveAreaStatement.setInt(16, entry.getCeilingTypeID2());
-			caveAreaStatement.setInt(17, entry.getCeilingPreservationClassificationID1());
-			caveAreaStatement.setInt(18, entry.getCeilingPreservationClassificationID2());
+			caveAreaStatement.setDouble(3, entry.getExpeditionWidth());
+			caveAreaStatement.setDouble(4, entry.getExpeditionLength());
+			caveAreaStatement.setDouble(5, entry.getExpeditionHeight());
+			caveAreaStatement.setDouble(6, entry.getModernWidth());
+			caveAreaStatement.setDouble(7, entry.getModernLength());
+			caveAreaStatement.setDouble(8, entry.getModernHeight());
+			caveAreaStatement.setInt(9, entry.getPreservationClassificationID());
+			caveAreaStatement.setInt(10, entry.getCeilingTypeID1());
+			caveAreaStatement.setInt(11, entry.getCeilingTypeID2());
+			caveAreaStatement.setInt(12, entry.getCeilingPreservationClassificationID1());
+			caveAreaStatement.setInt(13, entry.getCeilingPreservationClassificationID2());
+			caveAreaStatement.setDouble(14, entry.getExpeditionWidth());
+			caveAreaStatement.setDouble(15, entry.getExpeditionLength());
+			caveAreaStatement.setDouble(16, entry.getExpeditionHeight());
+			caveAreaStatement.setDouble(17, entry.getModernWidth());
+			caveAreaStatement.setDouble(18, entry.getModernLength());
+			caveAreaStatement.setDouble(19, entry.getModernHeight());
+			caveAreaStatement.setInt(20, entry.getPreservationClassificationID());
+			caveAreaStatement.setInt(21, entry.getCeilingTypeID1());
+			caveAreaStatement.setInt(22, entry.getCeilingTypeID2());
+			caveAreaStatement.setInt(23, entry.getCeilingPreservationClassificationID1());
+			caveAreaStatement.setInt(24, entry.getCeilingPreservationClassificationID2());
 			newID = caveAreaStatement.executeUpdate();
 			caveAreaStatement.close();
 		} catch (SQLException ex) {
@@ -1922,7 +1930,8 @@ public class MysqlConnector {
 			wallLocationStatement = dbc.prepareStatement("SELECT * FROM WallLocations");
 			wallLocationRS = wallLocationStatement.executeQuery();
 			while (wallLocationRS.next()) {
-				entry = new WallLocationEntry(wallLocationRS.getInt("WallLocationID"), wallLocationRS.getString("Label"), wallLocationRS.getString("CaveAreaLabel"));
+				entry = new WallLocationEntry(wallLocationRS.getInt("WallLocationID"), wallLocationRS.getString("Label"),
+						wallLocationRS.getString("CaveAreaLabel"));
 				result.add(entry);
 			}
 			wallLocationStatement.close();
