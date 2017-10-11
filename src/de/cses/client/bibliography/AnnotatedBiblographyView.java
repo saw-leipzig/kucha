@@ -51,7 +51,7 @@ public class AnnotatedBiblographyView  extends AbstractView {
 		@XTemplate("<div><center><img src='{imgUri}'></img></center></div>")
 		SafeHtml view(SafeUri imgUri);
 		
-		@XTemplate("<div><center><img src='{imgUri}'></img></center><label style='font-size:9px' > AnnotatedBibkographyID {id} </label></br></div>")
+		@XTemplate("<div><center><img src='{imgUri}'></img></center><label style='font-size:9px' > AnnotatedBiblographyID {id} </label></br></div>")
 		SafeHtml view(SafeUri imgUri, int id);
 	}
 
@@ -68,18 +68,9 @@ public class AnnotatedBiblographyView  extends AbstractView {
 		annotatedBiblographyEntry = entry;
 		resources = GWT.create(Resources.class);
 		dvTemplates = GWT.create(AnnotatedBiblographyViewTemplates.class);
-		dbService.getAnnotatedBiblographyImage(entry.getAnnotatedBiblographyID(), new AsyncCallback<ImageEntry>() {
 
-			@Override
-			public void onFailure(Throwable caught) {
-				setHTML(dvTemplates.view(resources.logo().getSafeUri()));
-			}
+		setHTML(dvTemplates.view(resources.logo().getSafeUri()));
 
-			@Override
-			public void onSuccess(ImageEntry result) {
-				setHTML(dvTemplates.view(UriUtils.fromString("resource?imageID=" + result.getImageID() + "&thumb=80"), annotatedBiblographyEntry.getAnnotatedBiblographyID()));
-			}
-		});
 		setPixelSize(110, 110);
 
 		DragSource source = new DragSource(this) {
@@ -110,17 +101,7 @@ public class AnnotatedBiblographyView  extends AbstractView {
 
 	public void closeRequest() {
 		super.closeRequest();
-		// try to refresh the master image
-		dbService.getMasterImageEntryForDepiction(annotatedBiblographyEntry.getAnnotatedBiblographyID(), new AsyncCallback<ImageEntry>() {
 
-			@Override
-			public void onFailure(Throwable caught) { } // nothing happens, just leave the old master image
-
-			@Override
-			public void onSuccess(ImageEntry result) {
-				setHTML(dvTemplates.view(UriUtils.fromString("resource?imageID=" + result.getImageID() + "&thumb=80"), annotatedBiblographyEntry.getAnnotatedBiblographyID()));
-			}
-		});
 	}
 
 }
