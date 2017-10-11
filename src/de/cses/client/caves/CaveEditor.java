@@ -197,12 +197,6 @@ public class CaveEditor extends AbstractEditor {
 	protected WallEntry selectedWallEntry;
 	private ComboBox<PreservationClassificationEntry> selectedWallStateOfPreservationCB;
 	private FramedPanel wallManagementFP;
-	private HorizontalLayoutContainer antechamberMeasurement;
-	private HorizontalLayoutContainer mainChamberMeasurement;
-	private HorizontalLayoutContainer mainChamberCorridorMeasurement;
-	private HorizontalLayoutContainer rearAreaMeasurement;
-	private HorizontalLayoutContainer rearAreaLeftCorridorMeasurement;
-	private HorizontalLayoutContainer rearAreaRightCorridorMeasurement;
 
 	interface CaveTypeProperties extends PropertyAccess<CaveTypeEntry> {
 		ModelKeyProvider<CaveTypeEntry> caveTypeID();
@@ -1771,28 +1765,36 @@ public class CaveEditor extends AbstractEditor {
 		caveTypeHLC.add(caveLayoutRightVLC, new HorizontalLayoutData(.5, 1.0));
 		
 		/**
-		 * ------------------------------ measurement and interior tab
+		 * --------------------------------- measurement and interior tab ------------------------------------------
 		 */
 		
 		VerticalLayoutContainer expeditionMeasurementVLC = new VerticalLayoutContainer();
+		expeditionMeasurementVLC.add(createCaveAreaExpeditionMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER)), new VerticalLayoutData(1.0, .12));
+		expeditionMeasurementVLC.add(createCaveAreaExpeditionMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER)), new VerticalLayoutData(1.0, .12));
+		expeditionMeasurementVLC.add(createCaveAreaExpeditionMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR)), new VerticalLayoutData(1.0, .12));
+		expeditionMeasurementVLC.add(createCaveAreaExpeditionMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA)), new VerticalLayoutData(1.0, .12));
+		expeditionMeasurementVLC.add(createCaveAreaExpeditionMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR)), new VerticalLayoutData(1.0, .12));
+		expeditionMeasurementVLC.add(createCaveAreaExpeditionMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR)), new VerticalLayoutData(1.0, .12));
+
+		VerticalLayoutContainer modernMeasurementVLC = new VerticalLayoutContainer();
+		modernMeasurementVLC.add(createCaveAreaModernMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER)), new VerticalLayoutData(1.0, .12));
+		modernMeasurementVLC.add(createCaveAreaModernMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER)), new VerticalLayoutData(1.0, .12));
+		modernMeasurementVLC.add(createCaveAreaModernMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR)), new VerticalLayoutData(1.0, .12));
+		modernMeasurementVLC.add(createCaveAreaModernMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA)), new VerticalLayoutData(1.0, .12));
+		modernMeasurementVLC.add(createCaveAreaModernMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR)), new VerticalLayoutData(1.0, .12));
+		modernMeasurementVLC.add(createCaveAreaModernMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR)), new VerticalLayoutData(1.0, .12));
 		
-		antechamberMeasurement = createCaveAreaMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER));
-		expeditionMeasurementVLC.add(antechamberMeasurement, new VerticalLayoutData(1.0, .12));
-		mainChamberMeasurement = createCaveAreaMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER));
-		expeditionMeasurementVLC.add(mainChamberMeasurement, new VerticalLayoutData(1.0, .12));
-		mainChamberCorridorMeasurement = createCaveAreaMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR));
-		expeditionMeasurementVLC.add(mainChamberCorridorMeasurement, new VerticalLayoutData(1.0, .12));
-		rearAreaMeasurement = createCaveAreaMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA));
-		expeditionMeasurementVLC.add(rearAreaMeasurement, new VerticalLayoutData(1.0, .12));
-		rearAreaLeftCorridorMeasurement = createCaveAreaMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR));
-		expeditionMeasurementVLC.add(rearAreaLeftCorridorMeasurement, new VerticalLayoutData(1.0, .12));
-		rearAreaRightCorridorMeasurement = createCaveAreaMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR));
-		expeditionMeasurementVLC.add(rearAreaRightCorridorMeasurement, new VerticalLayoutData(1.0, .12));
+		FramedPanel expeditionMeasurementFP = new FramedPanel();
+		expeditionMeasurementFP.setHeading("Expedition Measurement");
+		expeditionMeasurementFP.add(expeditionMeasurementVLC);
 		
-		
-		
+		FramedPanel modernMeasurementFP = new FramedPanel();
+		modernMeasurementFP.setHeading("Modern Measurement");
+		modernMeasurementFP.add(modernMeasurementVLC);
+
 		HorizontalLayoutContainer measurementHLC = new HorizontalLayoutContainer();
-		measurementHLC.add(expeditionMeasurementVLC, new HorizontalLayoutData(.6, 1.0));
+		measurementHLC.add(expeditionMeasurementFP, new HorizontalLayoutData(.5, 1.0));
+		measurementHLC.add(modernMeasurementFP, new HorizontalLayoutData(.5, 1.0));
 
 		/**
 		 * ------------------------------ now we are assembling the tabs and add them to the main hlc ----------------------------------
@@ -1857,12 +1859,13 @@ public class CaveEditor extends AbstractEditor {
 	}
 
 	/**
+	 * 
+	 * @param caEntry
 	 * @return
 	 */
-	private HorizontalLayoutContainer createCaveAreaMeasurePanel(CaveAreaEntry caEntry) {
-		HorizontalLayoutContainer caveAreaMeasurementHLC = new HorizontalLayoutContainer();
-		FramedPanel expeditionMeasureFP = new FramedPanel();
-		expeditionMeasureFP.setHeading(caEntry.getCaveAreaLabel() + " (Expedition)");
+	private ContentPanel createCaveAreaExpeditionMeasurePanel(CaveAreaEntry caEntry) {
+		ContentPanel expeditionMeasureCP = new FramedPanel();
+		expeditionMeasureCP.setHeading(caEntry.getCaveAreaLabel() + " (W/L/H)");
 		NumberField<Double> expeditionWidthNumberField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
 		expeditionWidthNumberField.addValidator(new MinNumberValidator<Double>(0.0));
 		expeditionWidthNumberField.addValidator(new MaxNumberValidator<Double>(200.0));
@@ -1897,16 +1900,25 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		HorizontalLayoutContainer expeditionMeasuresHLC = new HorizontalLayoutContainer();
-		expeditionMeasuresHLC.add(new Label("W: "), new HorizontalLayoutData(.13, 1.0));
-		expeditionMeasuresHLC.add(expeditionWidthNumberField, new HorizontalLayoutData(.2, 1.0));
-		expeditionMeasuresHLC.add(new Label("L: "), new HorizontalLayoutData(.13, 1.0));
-		expeditionMeasuresHLC.add(expeditionLengthNumberField, new HorizontalLayoutData(.2, 1.0));
-		expeditionMeasuresHLC.add(new Label("H: "), new HorizontalLayoutData(.13, 1.0));
-		expeditionMeasuresHLC.add(expeditionHeightNumberField, new HorizontalLayoutData(.2, 1.0));
-		expeditionMeasureFP.add(expeditionMeasuresHLC);
+		expeditionMeasuresHLC.add(expeditionWidthNumberField, new HorizontalLayoutData(.3, 1.0));
+		expeditionMeasuresHLC.add(new Label(" / "), new HorizontalLayoutData(.05, 1.0));
+		expeditionMeasuresHLC.add(expeditionLengthNumberField, new HorizontalLayoutData(.3, 1.0));
+		expeditionMeasuresHLC.add(new Label(" / "), new HorizontalLayoutData(.05, 1.0));
+		expeditionMeasuresHLC.add(expeditionHeightNumberField, new HorizontalLayoutData(.3, 1.0));
+		expeditionMeasureCP.add(expeditionMeasuresHLC);
 		
-		FramedPanel modernMeasurementFP = new FramedPanel();
-		modernMeasurementFP.setHeading(caEntry.getCaveAreaLabel() + " (Expedition)");
+		return expeditionMeasureCP;
+	}
+
+	/**
+	 * 
+	 * @param caEntry
+	 * @return
+	 */
+	private ContentPanel createCaveAreaModernMeasurePanel(CaveAreaEntry caEntry) {
+		ContentPanel modernMeasurementCP = new FramedPanel();
+		modernMeasurementCP.setHeaderVisible(true);
+		modernMeasurementCP.setHeading(caEntry.getCaveAreaLabel() + " (W/L/H)");
 		NumberField<Double> modernWidthNumberField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
 		modernWidthNumberField.addValidator(new MinNumberValidator<Double>(0.0));
 		modernWidthNumberField.addValidator(new MaxNumberValidator<Double>(200.0));
@@ -1941,17 +1953,14 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		HorizontalLayoutContainer modernMeasuresHLC = new HorizontalLayoutContainer();
-		modernMeasuresHLC.add(new Label("W: "), new HorizontalLayoutData(.13, 1.0));
-		modernMeasuresHLC.add(modernWidthNumberField, new HorizontalLayoutData(.2, 1.0));
-		modernMeasuresHLC.add(new Label("L: "), new HorizontalLayoutData(.13, 1.0));
-		modernMeasuresHLC.add(modernLengthNumberField, new HorizontalLayoutData(.2, 1.0));
-		modernMeasuresHLC.add(new Label("H: "), new HorizontalLayoutData(.13, 1.0));
-		modernMeasuresHLC.add(modernHeightNumberField, new HorizontalLayoutData(.2, 1.0));
-		modernMeasurementFP.add(expeditionMeasuresHLC);
+		modernMeasuresHLC.add(modernWidthNumberField, new HorizontalLayoutData(.3, 1.0));
+		modernMeasuresHLC.add(new Label(" / "), new HorizontalLayoutData(.05, 1.0));
+		modernMeasuresHLC.add(modernLengthNumberField, new HorizontalLayoutData(.3, 1.0));
+		modernMeasuresHLC.add(new Label(" / "), new HorizontalLayoutData(.05, 1.0));
+		modernMeasuresHLC.add(modernHeightNumberField, new HorizontalLayoutData(.3, 1.0));
+		modernMeasurementCP.add(modernMeasuresHLC);
 		
-		caveAreaMeasurementHLC.add(expeditionMeasureFP, new HorizontalLayoutData(.5, 1.0));
-		caveAreaMeasurementHLC.add(modernMeasurementFP, new HorizontalLayoutData(.5, 1.0));
-		return caveAreaMeasurementHLC;
+		return modernMeasurementCP;
 	}
 	
 	private void updateCeilingTypePanel(int caveTypeID) {
