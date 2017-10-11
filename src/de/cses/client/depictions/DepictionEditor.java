@@ -628,7 +628,7 @@ public class DepictionEditor extends AbstractEditor {
 		});
 		attributePanel.addButton(wallEditorButton);
 
-		wallSelectorPanel = new WallSelector();
+		wallSelectorPanel = new WallSelector(350);
 		attributePanel.add(wallSelectorPanel);
 		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0));
 		hlContainer.add(vlContainer, new HorizontalLayoutData(.6, 1.0));

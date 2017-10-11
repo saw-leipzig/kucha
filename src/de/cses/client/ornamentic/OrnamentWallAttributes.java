@@ -147,7 +147,7 @@ public class OrnamentWallAttributes extends PopupPanel {
 		wallrelationFramedPanel.setHeading("Select Walls");
 		wallrelationFramedPanel.add(wallrelationMainVerticalPanel);
 		
-		WallSelector wallselector = new WallSelector();
+		WallSelector wallselector = new WallSelector(280);
 		
 		header = new FramedPanel();
 		header.setHeading("Select Wall");
@@ -244,7 +244,7 @@ ClickHandler saveHandler = new ClickHandler(){
 		
 		relation.setNotes(notes.getText());
 		// TODO wallsConboBox needs to be build and added
-//		relation.setWallID(wallsComboBox.getValue().getLocationLabel());
+		relation.setWallID(wallsComboBox.getValue().getWallLocationID());
 		ornamentCaveRelation.getWallsListStore().add(relation);
 		popup.hide();
 	}

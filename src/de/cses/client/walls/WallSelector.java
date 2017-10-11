@@ -16,8 +16,11 @@ package de.cses.client.walls;
 import java.util.Comparator;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.safecss.shared.SafeStyles;
+import com.google.gwt.safecss.shared.SafeStylesUtils;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
@@ -27,6 +30,8 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.XTemplates;
+import com.sencha.gxt.core.client.XTemplates.XTemplate;
+import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
@@ -61,10 +66,11 @@ public class WallSelector implements IsWidget {
 	private WallViewTemplate wallVT;
 	private ListStore<WallEntry> wallEntryLS;
 	private VerticalLayoutContainer mainVLC = null;
+	private int defaultCaveSketchWidth;
 
 	interface CaveLayoutViewTemplates extends XTemplates {
-		@XTemplate("<img align=\"center\" margin=\"10\" src=\"{imageUri}\">")
-		SafeHtml image(SafeUri imageUri);
+		@XTemplate("<img src=\"{imageUri}\" style=\"{defaultSketchWidth}; height: auto; align-content: center; margin: 5px;\">")
+		SafeHtml image(SafeUri imageUri, SafeStyles defaultSketchWidth);
 	}
 
 	interface WallProperties extends PropertyAccess<WallEntry> {
@@ -78,8 +84,10 @@ public class WallSelector implements IsWidget {
 
 	/**
 	 * 
+	 * @param defaultCaveSketchWidth string representing the default sketch width in pixel (px)
 	 */
-	public WallSelector() {
+	public WallSelector(int defaultCaveSketchWidth) { // TODO parameter für image breite und XTemplate anpassen!
+		this.defaultCaveSketchWidth = defaultCaveSketchWidth;
 		caveLayoutViewTemplates = GWT.create(CaveLayoutViewTemplates.class);
 		wallProps = GWT.create(WallProperties.class);
 		wallVT = GWT.create(WallViewTemplate.class);
@@ -113,6 +121,7 @@ public class WallSelector implements IsWidget {
 	private void init() {
 		mainVLC  = new VerticalLayoutContainer();
 		caveSketchContainer = new FlowLayoutContainer();
+		caveSketchContainer.setScrollMode(ScrollMode.AUTOY);
 
 		wallSelectorCB = new ComboBox<WallEntry>(wallEntryLS, new LabelProvider<WallEntry>() {
 
@@ -149,11 +158,17 @@ public class WallSelector implements IsWidget {
 		currentCave = selectedCave;
 		CaveTypeEntry ctEntry = StaticTables.getInstance().getCaveTypeEntries().get(selectedCave.getCaveTypeID());
 		caveSketchContainer.clear();
-		caveSketchContainer.add(new HTMLPanel(caveLayoutViewTemplates.image(UriUtils
-				.fromString("resource?background=" + ctEntry.getSketchName() + UserLogin.getInstance().getUsernameSessionIDParameterForUri()))));
+		if ((ctEntry.getSketchName()!=null) && !ctEntry.getSketchName().isEmpty()) {
+			caveSketchContainer.add(new HTMLPanel(caveLayoutViewTemplates.image(UriUtils
+					.fromString("resource?background=" + ctEntry.getSketchName() + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), SafeStylesUtils.forWidth(defaultCaveSketchWidth, Unit.PX))));
+		}
+		if ((selectedCave.getOptionalCaveSketch()!=null) && !selectedCave.getOptionalCaveSketch().isEmpty()) {
+			caveSketchContainer.add(new HTMLPanel(caveLayoutViewTemplates.image(UriUtils
+					.fromString("resource?cavesketch=" + selectedCave.getOptionalCaveSketch() + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), SafeStylesUtils.forWidth(defaultCaveSketchWidth, Unit.PX))));
+		}
 		wallEntryLS.clear();
 		switch (ctEntry.getCaveTypeID()) {
-			// 'antechamber','main chamber','main chamber corridor','rear area left corridor','rear area right corridor','rear area'
+
 			case 2: // square cave
 				for (WallLocationEntry wle : StaticTables.getInstance().getWallLocationEntries().values()) {
 					if ((wle.getCaveAreaLabel() == WallLocationEntry.ANTECHAMBER_LABEL)
