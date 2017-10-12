@@ -1392,16 +1392,16 @@ public class CaveEditor extends AbstractEditor {
 		furtherCommentsPanel.add(stateOfPreservationTextArea);
 		
 		VerticalLayoutContainer floorStateOfPreservationVLC = new VerticalLayoutContainer();
-		floorStateOfPreservationVLC.add(rearAnteFloorHLC, new VerticalLayoutData(1.0, 1.0 / 8));
-		floorStateOfPreservationVLC.add(leftRightCorridorFloorHLC, new VerticalLayoutData(1.0, 1.0 / 8));
-		floorStateOfPreservationVLC.add(corridorMainChamberFloorHLC, new VerticalLayoutData(1.0, 1.0 / 8));
+		floorStateOfPreservationVLC.add(rearAnteFloorHLC, new VerticalLayoutData(1.0, 1.0 / 3));
+		floorStateOfPreservationVLC.add(leftRightCorridorFloorHLC, new VerticalLayoutData(1.0, 1.0 / 3));
+		floorStateOfPreservationVLC.add(corridorMainChamberFloorHLC, new VerticalLayoutData(1.0, 1.0 / 3));
 		
 		FramedPanel floorStateOfPreservationFP = new FramedPanel();
 		floorStateOfPreservationFP.setHeading("Floor");
 		floorStateOfPreservationFP.add(floorStateOfPreservationVLC);
 
 		VerticalLayoutContainer stateOfPreservationRightVLC = new VerticalLayoutContainer();
-		stateOfPreservationRightVLC.add(floorStateOfPreservationFP);
+		stateOfPreservationRightVLC.add(floorStateOfPreservationFP, new VerticalLayoutData(1.0, 3.0 / 8));
 		stateOfPreservationRightVLC.add(furtherCommentsPanel, new VerticalLayoutData(1.0, 5.0 / 8));
 		
 		updateStateOfPreservationPanel(0);
