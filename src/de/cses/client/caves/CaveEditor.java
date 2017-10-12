@@ -207,6 +207,8 @@ public class CaveEditor extends AbstractEditor {
 	private ComboBox<PreservationClassificationEntry> leftCorridorFloorPreservationSelectorCB;
 	private FramedPanel rearAreaRightFloorStateOfPreservationFP;
 	private ComboBox<PreservationClassificationEntry> rightCorridorFloorPreservationSelectorCB;
+	private FramedPanel leftCorridorFloorStateOfPreservationFP;
+	private FramedPanel rightCorridorFloorStateOfPreservationFP;
 
 	interface CaveTypeProperties extends PropertyAccess<CaveTypeEntry> {
 		ModelKeyProvider<CaveTypeEntry> caveTypeID();
@@ -1316,8 +1318,8 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		
-		rearAreaLeftFloorStateOfPreservationFP = new FramedPanel();
-		rearAreaLeftFloorStateOfPreservationFP.setHeading("Rear Area Left Corridor Floor");
+		leftCorridorFloorStateOfPreservationFP = new FramedPanel();
+		leftCorridorFloorStateOfPreservationFP.setHeading("Rear Area Left Corridor Floor");
 		leftCorridorFloorPreservationSelectorCB = createStateOfPreservationSelector("state of preservation");
 		leftCorridorFloorPreservationSelectorCB.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
@@ -1327,8 +1329,8 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		
-		rearAreaRightFloorStateOfPreservationFP = new FramedPanel();
-		rearAreaRightFloorStateOfPreservationFP.setHeading("Rear Area Right Corridor Floor");
+		rightCorridorFloorStateOfPreservationFP = new FramedPanel();
+		rightCorridorFloorStateOfPreservationFP.setHeading("Rear Area Right Corridor Floor");
 		rightCorridorFloorPreservationSelectorCB = createStateOfPreservationSelector("state of preservation");
 		rightCorridorFloorPreservationSelectorCB.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
@@ -1360,14 +1362,14 @@ public class CaveEditor extends AbstractEditor {
 		stateOfPreservationLeftVLC.add(antechamberCeilingStateOfPreservationFP, new VerticalLayoutData(1.0, 1.0 / 9));
 		
 		HorizontalLayoutContainer rearAnteFloorHLC = new HorizontalLayoutContainer();
-		rearAnteFloorHLC.add(rearAreaStateOfPreservationFP, new HorizontalLayoutData(.5, 1.0));
-		rearAnteFloorHLC.add(antechamberStateOfPreservationFP, new HorizontalLayoutData(.5, 1.0));
+		rearAnteFloorHLC.add(rearAreaFloorStateOfPreservationFP, new HorizontalLayoutData(.5, 1.0));
+		rearAnteFloorHLC.add(antechamberFloorStateOfPreservationFP, new HorizontalLayoutData(.5, 1.0));
 		HorizontalLayoutContainer leftRightCorridorFloorHLC = new HorizontalLayoutContainer();
-		leftRightCorridorFloorHLC.add(leftCorridorStateOfPreservationFP, new HorizontalLayoutData(.5, 1.0));
-		leftRightCorridorFloorHLC.add(rightCorridorStateOfPreservationFP, new HorizontalLayoutData(.5, 1.0));
+		leftRightCorridorFloorHLC.add(leftCorridorFloorStateOfPreservationFP, new HorizontalLayoutData(.5, 1.0));
+		leftRightCorridorFloorHLC.add(rightCorridorFloorStateOfPreservationFP, new HorizontalLayoutData(.5, 1.0));
 		HorizontalLayoutContainer corridorMainChamberFloorHLC = new HorizontalLayoutContainer();
-		corridorMainChamberFloorHLC.add(corridorStateOfPreservationFP, new HorizontalLayoutData(.5, 1.0));
-		corridorMainChamberFloorHLC.add(mainChamberStateOfPreservationFP, new HorizontalLayoutData(.5, 1.0));
+		corridorMainChamberFloorHLC.add(corridorFloorStateOfPreservationFP, new HorizontalLayoutData(.5, 1.0));
+		corridorMainChamberFloorHLC.add(mainChamberFloorStateOfPreservationFP, new HorizontalLayoutData(.5, 1.0));
 
 		FramedPanel furtherCommentsPanel = new FramedPanel();
 		furtherCommentsPanel.setHeading("Further Comments");
