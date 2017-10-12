@@ -1284,6 +1284,7 @@ public class CaveEditor extends AbstractEditor {
 				correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).setFloorPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
 			}
 		});
+		antechamberFloorStateOfPreservationFP.add(antechamberFloorPreservationSelectorCB);
 		
 		mainChamberFloorStateOfPreservationFP = new FramedPanel();
 		mainChamberFloorStateOfPreservationFP.setHeading("Main Chamber");
@@ -1389,16 +1390,20 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		furtherCommentsPanel.add(stateOfPreservationTextArea);
-
-		VerticalLayoutContainer stateOfPreservationRightVLC = new VerticalLayoutContainer();
-		stateOfPreservationRightVLC.add(rearAnteFloorHLC, new VerticalLayoutData(1.0, 1.0 / 8));
-		stateOfPreservationRightVLC.add(leftRightCorridorFloorHLC, new VerticalLayoutData(1.0, 1.0 / 8));
-		stateOfPreservationRightVLC.add(corridorMainChamberFloorHLC, new VerticalLayoutData(1.0, 1.0 / 8));
-		stateOfPreservationRightVLC.add(furtherCommentsPanel, new VerticalLayoutData(1.0, 5.0 / 8));
+		
+		VerticalLayoutContainer floorStateOfPreservationVLC = new VerticalLayoutContainer();
+		floorStateOfPreservationVLC.add(rearAnteFloorHLC, new VerticalLayoutData(1.0, 1.0 / 8));
+		floorStateOfPreservationVLC.add(leftRightCorridorFloorHLC, new VerticalLayoutData(1.0, 1.0 / 8));
+		floorStateOfPreservationVLC.add(corridorMainChamberFloorHLC, new VerticalLayoutData(1.0, 1.0 / 8));
+		
 		FramedPanel floorStateOfPreservationFP = new FramedPanel();
 		floorStateOfPreservationFP.setHeading("Floor");
-		floorStateOfPreservationFP.add(stateOfPreservationRightVLC);
+		floorStateOfPreservationFP.add(floorStateOfPreservationVLC);
 
+		VerticalLayoutContainer stateOfPreservationRightVLC = new VerticalLayoutContainer();
+		stateOfPreservationRightVLC.add(floorStateOfPreservationFP);
+		stateOfPreservationRightVLC.add(furtherCommentsPanel, new VerticalLayoutData(1.0, 5.0 / 8));
+		
 		updateStateOfPreservationPanel(0);
 
 		// we will use this HLC for the tabs
