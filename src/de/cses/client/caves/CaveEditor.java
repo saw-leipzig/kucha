@@ -1795,6 +1795,14 @@ public class CaveEditor extends AbstractEditor {
 		HorizontalLayoutContainer measurementHLC = new HorizontalLayoutContainer();
 		measurementHLC.add(expeditionMeasurementFP, new HorizontalLayoutData(.5, 1.0));
 		measurementHLC.add(modernMeasurementFP, new HorizontalLayoutData(.5, 1.0));
+		
+		FramedPanel plasticalItemsFP = new FramedPanel();
+		plasticalItemsFP.setHeading("Plastical Items");
+		
+		
+		VerticalLayoutContainer measurementInteriorMainVLC = new VerticalLayoutContainer();
+		measurementInteriorMainVLC.add(measurementHLC, new VerticalLayoutData(1.0, .75));
+		measurementInteriorMainVLC.add(plasticalItemsFP, new VerticalLayoutData(1.0, .25));
 
 		/**
 		 * ------------------------------ now we are assembling the tabs and add them to the main hlc ----------------------------------
@@ -1803,7 +1811,7 @@ public class CaveEditor extends AbstractEditor {
 		tabPanel.setTabScroll(false);
 		tabPanel.setAnimScroll(false);
 		tabPanel.add(caveTypeHLC, new TabItemConfig("Cave Layout", false));
-		tabPanel.add(measurementHLC, new TabItemConfig("Measurements & Interiors", false));
+		tabPanel.add(measurementInteriorMainVLC, new TabItemConfig("Measurements & Interiors", false));
 		tabPanel.add(stateOfPreservationHLC, new TabItemConfig("State of Preservation", false));
 		tabPanel.add(descriptionHLC, new TabItemConfig("Descriptions", false));
 
