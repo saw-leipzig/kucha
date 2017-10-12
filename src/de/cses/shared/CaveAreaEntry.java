@@ -37,6 +37,7 @@ public class CaveAreaEntry extends AbstractEntry {
 	protected int preservationClassificationID = 0;
 	protected int ceilingTypeID1 = 0, ceilingTypeID2 = 0;
 	protected int ceilingPreservationClassificationID1 = 0, ceilingPreservationClassificationID2 = 0;
+	protected int floorPreservationClassificationID = 0;
 	
 	/**
 	 * 
@@ -53,7 +54,7 @@ public class CaveAreaEntry extends AbstractEntry {
 	 * @param expeditionHeight
 	 */
 	public CaveAreaEntry(int caveID, String caveAreaLabel, double expeditionWidth, double expeditionLength, double expeditionHeight, double modernWidth, double modernLength, double modernHeight, int preservationClassificationID,
-			int ceilingTypeID1, int ceilingTypeID2, int ceilingPreservationClassificationID1, int ceilingPreservationClassificationID2) {
+			int ceilingTypeID1, int ceilingTypeID2, int ceilingPreservationClassificationID1, int ceilingPreservationClassificationID2, int floorPreservationClassificationID) {
 		this.caveID = caveID;
 		this.caveAreaLabel = caveAreaLabel;
 		this.expeditionWidth = expeditionWidth;
@@ -67,6 +68,7 @@ public class CaveAreaEntry extends AbstractEntry {
 		this.ceilingTypeID2 = ceilingTypeID2;
 		this.ceilingPreservationClassificationID1 = ceilingPreservationClassificationID1;
 		this.ceilingPreservationClassificationID2 = ceilingPreservationClassificationID2;
+		this.floorPreservationClassificationID = floorPreservationClassificationID;
 	}
 
 	/**
@@ -191,6 +193,14 @@ public class CaveAreaEntry extends AbstractEntry {
 
 	public void setModernHeight(double modernHeight) {
 		this.modernHeight = modernHeight;
+	}
+
+	public int getFloorPreservationClassificationID() {
+		return floorPreservationClassificationID;
+	}
+
+	public void setFloorPreservationClassificationID(int floorPreservationClassificationID) {
+		this.floorPreservationClassificationID = floorPreservationClassificationID;
 	}
 	
 }
