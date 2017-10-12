@@ -1133,7 +1133,7 @@ public class CaveEditor extends AbstractEditor {
 		rightCorridorStateOfPreservationFP.add(rightCorridorPreservationSelectorCB);
 
 		rightCorridorCeilingStateOfPreservationFP = new FramedPanel();
-		rightCorridorCeilingStateOfPreservationFP.setHeading("Right Corridor");
+		rightCorridorCeilingStateOfPreservationFP.setHeading("Right Corridor Ceiling");
 		rightCorridorCeilingPreservationSelectorCB1 = createStateOfPreservationSelector("state of preservation");
 		rightCorridorCeilingPreservationSelectorCB1.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
@@ -1286,7 +1286,7 @@ public class CaveEditor extends AbstractEditor {
 		});
 		
 		mainChamberFloorStateOfPreservationFP = new FramedPanel();
-		mainChamberFloorStateOfPreservationFP.setHeading("Main Chamber Floor");
+		mainChamberFloorStateOfPreservationFP.setHeading("Main Chamber");
 		mainChamberFloorPreservationSelectorCB = createStateOfPreservationSelector("state of preservation");
 		mainChamberFloorPreservationSelectorCB.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
@@ -1295,9 +1295,10 @@ public class CaveEditor extends AbstractEditor {
 				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).setFloorPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
 			}
 		});
+		mainChamberFloorStateOfPreservationFP.add(mainChamberFloorPreservationSelectorCB);
 		
 		corridorFloorStateOfPreservationFP = new FramedPanel();
-		corridorFloorStateOfPreservationFP.setHeading("Main Chamber Corridor Floor");
+		corridorFloorStateOfPreservationFP.setHeading("Main Chamber Corridor");
 		corridorFloorPreservationSelectorCB = createStateOfPreservationSelector("state of preservation");
 		corridorFloorPreservationSelectorCB.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
@@ -1306,9 +1307,10 @@ public class CaveEditor extends AbstractEditor {
 				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).setFloorPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
 			}
 		});
+		corridorFloorStateOfPreservationFP.add(corridorFloorPreservationSelectorCB);
 		
 		rearAreaFloorStateOfPreservationFP = new FramedPanel();
-		rearAreaFloorStateOfPreservationFP.setHeading("Rear Area Floor");
+		rearAreaFloorStateOfPreservationFP.setHeading("Rear Area");
 		rearAreaFloorPreservationSelectorCB = createStateOfPreservationSelector("state of preservation");
 		rearAreaFloorPreservationSelectorCB.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
@@ -1317,9 +1319,10 @@ public class CaveEditor extends AbstractEditor {
 				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).setFloorPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
 			}
 		});
+		rearAreaFloorStateOfPreservationFP.add(rearAreaFloorPreservationSelectorCB);
 		
 		leftCorridorFloorStateOfPreservationFP = new FramedPanel();
-		leftCorridorFloorStateOfPreservationFP.setHeading("Rear Area Left Corridor Floor");
+		leftCorridorFloorStateOfPreservationFP.setHeading("Left Corridor");
 		leftCorridorFloorPreservationSelectorCB = createStateOfPreservationSelector("state of preservation");
 		leftCorridorFloorPreservationSelectorCB.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
@@ -1328,9 +1331,10 @@ public class CaveEditor extends AbstractEditor {
 				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).setFloorPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
 			}
 		});
+		leftCorridorFloorStateOfPreservationFP.add(leftCorridorFloorPreservationSelectorCB);
 		
 		rightCorridorFloorStateOfPreservationFP = new FramedPanel();
-		rightCorridorFloorStateOfPreservationFP.setHeading("Rear Area Right Corridor Floor");
+		rightCorridorFloorStateOfPreservationFP.setHeading("Right Corridor");
 		rightCorridorFloorPreservationSelectorCB = createStateOfPreservationSelector("state of preservation");
 		rightCorridorFloorPreservationSelectorCB.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
@@ -1339,6 +1343,7 @@ public class CaveEditor extends AbstractEditor {
 				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).setFloorPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
 			}
 		});
+		rightCorridorFloorStateOfPreservationFP.add(rightCorridorFloorPreservationSelectorCB);
 		
 		HorizontalLayoutContainer rearAnteHLC = new HorizontalLayoutContainer();
 		rearAnteHLC.add(rearAreaStateOfPreservationFP, new HorizontalLayoutData(.5, 1.0));
@@ -1386,17 +1391,20 @@ public class CaveEditor extends AbstractEditor {
 		furtherCommentsPanel.add(stateOfPreservationTextArea);
 
 		VerticalLayoutContainer stateOfPreservationRightVLC = new VerticalLayoutContainer();
-		stateOfPreservationRightVLC.add(rearAnteFloorHLC, new VerticalLayoutData(1.0, 1.0 / 9));
-		stateOfPreservationRightVLC.add(leftRightCorridorFloorHLC, new VerticalLayoutData(1.0, 1.0 / 9));
-		stateOfPreservationRightVLC.add(corridorMainChamberFloorHLC, new VerticalLayoutData(1.0, 1.0 / 9));
-		stateOfPreservationRightVLC.add(furtherCommentsPanel, new VerticalLayoutData(1.0, 6.0 / 9));
+		stateOfPreservationRightVLC.add(rearAnteFloorHLC, new VerticalLayoutData(1.0, 1.0 / 8));
+		stateOfPreservationRightVLC.add(leftRightCorridorFloorHLC, new VerticalLayoutData(1.0, 1.0 / 8));
+		stateOfPreservationRightVLC.add(corridorMainChamberFloorHLC, new VerticalLayoutData(1.0, 1.0 / 8));
+		stateOfPreservationRightVLC.add(furtherCommentsPanel, new VerticalLayoutData(1.0, 5.0 / 8));
+		FramedPanel floorStateOfPreservationFP = new FramedPanel();
+		floorStateOfPreservationFP.setHeading("Floor");
+		floorStateOfPreservationFP.add(stateOfPreservationRightVLC);
 
 		updateStateOfPreservationPanel(0);
 
 		// we will use this HLC for the tabs
 		HorizontalLayoutContainer stateOfPreservationHLC = new HorizontalLayoutContainer();
 		stateOfPreservationHLC.add(stateOfPreservationLeftVLC, new HorizontalLayoutData(.5, 1.0));
-		stateOfPreservationHLC.add(stateOfPreservationRightVLC, new HorizontalLayoutData(.5, 1.0));
+		stateOfPreservationHLC.add(floorStateOfPreservationFP, new HorizontalLayoutData(.5, 1.0));
 
 		/**
 		 * ------------------------------ the column with the text fields (description tab) ----------------------------
