@@ -1769,20 +1769,20 @@ public class CaveEditor extends AbstractEditor {
 		 */
 		
 		VerticalLayoutContainer expeditionMeasurementVLC = new VerticalLayoutContainer();
-		expeditionMeasurementVLC.add(createCaveAreaExpeditionMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER)), new VerticalLayoutData(1.0, .12));
-		expeditionMeasurementVLC.add(createCaveAreaExpeditionMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER)), new VerticalLayoutData(1.0, .12));
-		expeditionMeasurementVLC.add(createCaveAreaExpeditionMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR)), new VerticalLayoutData(1.0, .12));
-		expeditionMeasurementVLC.add(createCaveAreaExpeditionMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA)), new VerticalLayoutData(1.0, .12));
-		expeditionMeasurementVLC.add(createCaveAreaExpeditionMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR)), new VerticalLayoutData(1.0, .12));
-		expeditionMeasurementVLC.add(createCaveAreaExpeditionMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR)), new VerticalLayoutData(1.0, .12));
+		expeditionMeasurementVLC.add(createCaveAreaExpeditionMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER)), new VerticalLayoutData(1.0, 1.0 / 6));
+		expeditionMeasurementVLC.add(createCaveAreaExpeditionMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER)), new VerticalLayoutData(1.0, 1.0 / 6));
+		expeditionMeasurementVLC.add(createCaveAreaExpeditionMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR)), new VerticalLayoutData(1.0, 1.0 / 6));
+		expeditionMeasurementVLC.add(createCaveAreaExpeditionMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA)), new VerticalLayoutData(1.0, 1.0 / 6));
+		expeditionMeasurementVLC.add(createCaveAreaExpeditionMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR)), new VerticalLayoutData(1.0, 1.0 / 6));
+		expeditionMeasurementVLC.add(createCaveAreaExpeditionMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR)), new VerticalLayoutData(1.0, 1.0 / 6));
 
 		VerticalLayoutContainer modernMeasurementVLC = new VerticalLayoutContainer();
-		modernMeasurementVLC.add(createCaveAreaModernMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER)), new VerticalLayoutData(1.0, .12));
-		modernMeasurementVLC.add(createCaveAreaModernMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER)), new VerticalLayoutData(1.0, .12));
-		modernMeasurementVLC.add(createCaveAreaModernMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR)), new VerticalLayoutData(1.0, .12));
-		modernMeasurementVLC.add(createCaveAreaModernMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA)), new VerticalLayoutData(1.0, .12));
-		modernMeasurementVLC.add(createCaveAreaModernMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR)), new VerticalLayoutData(1.0, .12));
-		modernMeasurementVLC.add(createCaveAreaModernMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR)), new VerticalLayoutData(1.0, .12));
+		modernMeasurementVLC.add(createCaveAreaModernMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER)), new VerticalLayoutData(1.0, 1.0 / 6));
+		modernMeasurementVLC.add(createCaveAreaModernMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER)), new VerticalLayoutData(1.0, 1.0 / 6));
+		modernMeasurementVLC.add(createCaveAreaModernMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR)), new VerticalLayoutData(1.0, 1.0 / 6));
+		modernMeasurementVLC.add(createCaveAreaModernMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA)), new VerticalLayoutData(1.0, 1.0 / 6));
+		modernMeasurementVLC.add(createCaveAreaModernMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR)), new VerticalLayoutData(1.0, 1.0 / 6));
+		modernMeasurementVLC.add(createCaveAreaModernMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR)), new VerticalLayoutData(1.0, 1.0 / 6));
 		
 		FramedPanel expeditionMeasurementFP = new FramedPanel();
 		expeditionMeasurementFP.setHeading("Expedition Measurement");
@@ -1798,7 +1798,6 @@ public class CaveEditor extends AbstractEditor {
 		
 		FramedPanel plasticalItemsFP = new FramedPanel();
 		plasticalItemsFP.setHeading("Plastical Items");
-		
 		
 		VerticalLayoutContainer measurementInteriorMainVLC = new VerticalLayoutContainer();
 		measurementInteriorMainVLC.add(measurementHLC, new VerticalLayoutData(1.0, .75));
