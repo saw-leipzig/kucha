@@ -1198,7 +1198,7 @@ public class CaveEditor extends AbstractEditor {
 		mainChamberCeilingStateOfPreservationFP.add(mainChamberCeilingPreservationHLC);
 
 		corridorStateOfPreservationFP = new FramedPanel();
-		corridorStateOfPreservationFP.setHeading("Corridor");
+		corridorStateOfPreservationFP.setHeading("Main Corridor");
 		corridorPreservationSelectorCB = createStateOfPreservationSelector("state of preservation");
 		corridorPreservationSelectorCB.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
@@ -1211,7 +1211,7 @@ public class CaveEditor extends AbstractEditor {
 		corridorStateOfPreservationFP.add(corridorPreservationSelectorCB);
 
 		corridorCeilingStateOfPreservationFP = new FramedPanel();
-		corridorCeilingStateOfPreservationFP.setHeading("Corridor");
+		corridorCeilingStateOfPreservationFP.setHeading("Main Corridor");
 		corridorCeilingPreservationSelectorCB1 = createStateOfPreservationSelector("state of preservation");
 		corridorCeilingPreservationSelectorCB1.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
@@ -1299,7 +1299,7 @@ public class CaveEditor extends AbstractEditor {
 		mainChamberFloorStateOfPreservationFP.add(mainChamberFloorPreservationSelectorCB);
 		
 		corridorFloorStateOfPreservationFP = new FramedPanel();
-		corridorFloorStateOfPreservationFP.setHeading("Main Chamber Corridor");
+		corridorFloorStateOfPreservationFP.setHeading("Main Corridor");
 		corridorFloorPreservationSelectorCB = createStateOfPreservationSelector("state of preservation");
 		corridorFloorPreservationSelectorCB.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
