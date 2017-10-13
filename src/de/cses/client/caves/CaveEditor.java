@@ -1409,7 +1409,7 @@ public class CaveEditor extends AbstractEditor {
 		// we will use this HLC for the tabs
 		HorizontalLayoutContainer stateOfPreservationHLC = new HorizontalLayoutContainer();
 		stateOfPreservationHLC.add(stateOfPreservationLeftVLC, new HorizontalLayoutData(.5, 1.0));
-		stateOfPreservationHLC.add(floorStateOfPreservationFP, new HorizontalLayoutData(.5, 1.0));
+		stateOfPreservationHLC.add(stateOfPreservationRightVLC, new HorizontalLayoutData(.5, 1.0));
 
 		/**
 		 * ------------------------------ the column with the text fields (description tab) ----------------------------
