@@ -34,16 +34,17 @@ public class CaveEntry extends AbstractEntry {
 	private String optionalCaveSketch;
 	private String c14url;
 	private String c14DocumentFilename;
+	private String caveLayoutComments;
 	private ArrayList<CaveAreaEntry> caveAreaList;
 	private ArrayList<WallEntry> wallList;
 
 	public CaveEntry() {
-		this(0, "", "", "", 0, 0, 0, 0, "", "", "", "", 0, 0, 0, null, null, null);
+		this(0, "", "", "", 0, 0, 0, 0, "", "", "", "", 0, 0, 0, null, null, null, null);
 	}
 
 	public CaveEntry(int caveID, String officialNumber, String historicName, String optionalHistoricName, int caveTypeID, int districtID,
 			int regionID, int orientationID, String stateOfPerservation, String findings, String notes, String firstDocumentedBy, int firstDocumentedInYear, int preservationClassificationID,
-			int caveGroupID, String optionalCaveSketch, String c14url, String c14DocumentFilename) {
+			int caveGroupID, String optionalCaveSketch, String c14url, String c14DocumentFilename, String caveLayoutComments) {
 		this.caveID = caveID;
 		this.officialNumber = officialNumber;
 		this.historicName = historicName;
@@ -62,6 +63,7 @@ public class CaveEntry extends AbstractEntry {
 		this.optionalCaveSketch = optionalCaveSketch;
 		this.c14url = c14url;
 		this.c14DocumentFilename = c14DocumentFilename;
+		this.setCaveLayoutComments(caveLayoutComments);
 		caveAreaList = new ArrayList<CaveAreaEntry>();
 		wallList = new ArrayList<WallEntry>();
 	}
@@ -331,6 +333,20 @@ public class CaveEntry extends AbstractEntry {
 	public void setC14DocumentFilename(String c14DocumentFilename) {
 		this.c14DocumentFilename = c14DocumentFilename;
 		modified = true;
+	}
+
+	/**
+	 * @return the caveLayoutComments
+	 */
+	public String getCaveLayoutComments() {
+		return caveLayoutComments;
+	}
+
+	/**
+	 * @param caveLayoutComments the caveLayoutComments to set
+	 */
+	public void setCaveLayoutComments(String caveLayoutComments) {
+		this.caveLayoutComments = caveLayoutComments;
 	}
 	
 }
