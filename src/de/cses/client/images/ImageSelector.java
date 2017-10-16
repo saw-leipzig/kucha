@@ -27,7 +27,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
 import com.sencha.gxt.core.client.IdentityValueProvider;
@@ -49,7 +48,6 @@ import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.Hor
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ListField;
-import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.info.Info;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
@@ -100,7 +98,9 @@ public class ImageSelector implements IsWidget {
 	 *
 	 */
 	interface ImageViewTemplates extends XTemplates {
-		@XTemplate("<img align=\"center\" margin=\"20\" src=\"{imageUri}\"><br> {title}<br> {shortName}")
+		// style=\"width: 280px; height: auto; align-content: center; margin: 5px;\"
+		// @XTemplate("<img align=\"center\" margin=\"20\" src=\"{imageUri}\"><br> {title}<br> {shortName}")
+		@XTemplate("<img src=\"{imageUri}\" style=\"width: 400px; height: auto; align-content: center; margin: 10px;\"><br> {title}<br> {shortName}")
 		SafeHtml image(SafeUri imageUri, String title, String shortName);
 	}
 
@@ -157,7 +157,7 @@ public class ImageSelector implements IsWidget {
 			final ImageViewTemplates imageViewTemplates = GWT.create(ImageViewTemplates.class);
 
 			public SafeHtml render(ImageEntry item) {
-				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=400" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
+				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=600" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 				return imageViewTemplates.image(imageUri, item.getTitle(), item.getShortName());
 			}
 
