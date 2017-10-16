@@ -20,6 +20,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 import de.cses.client.DatabaseService;
 import de.cses.server.mysql.MysqlConnector;
+import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.AntechamberEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.CaveEntry;
@@ -64,8 +65,18 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public ArrayList<DistrictEntry> getDistricts() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		ArrayList<DistrictEntry> districts = connector.getDistricts();
-		;
 		return districts;
+	}
+	public ArrayList<AnnotatedBiblographyEntry> getAnnotatedBiblography() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		ArrayList<AnnotatedBiblographyEntry> biblography = connector.getAnnotatedBiblography();
+		return biblography;
+	}
+	
+	public AnnotatedBiblographyEntry getAnnotatedBiblographybyID(int id) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		AnnotatedBiblographyEntry biblographyEntry = connector.getAnnotatedBiblographybyID(id);
+		return biblographyEntry;
 	}
 
 	public ImageEntry getImage(int imageID) throws IllegalArgumentException {

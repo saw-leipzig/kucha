@@ -46,17 +46,17 @@ public class AnnotatedBiblographyResultView extends AbstractResultView{
 			@Override
 			protected void onDragDrop(DndDropEvent event) {
 				super.onDragDrop(event);
-				if (event.getData() instanceof CaveEntry) {
-					int caveID = ((CaveEntry) event.getData()).getCaveID();
-					dbService.getAnnotatedBiblography("CaveID="+caveID, new AsyncCallback<ArrayList<AnnotatedBiblographyEntry>>() {
+				if (event.getData() instanceof AnnotatedBiblographyEntry) {
+					int bibID = ((AnnotatedBiblographyEntry) event.getData()).getAnnotatedBiblographyID();
+					dbService.getAnnotatedBiblographybyID( bibID, new AsyncCallback<AnnotatedBiblographyEntry>() {
 
 						@Override
 						public void onFailure(Throwable caught) { }
 
-						public void onSuccess(ArrayList<AnnotatedBiblographyEntry> result) {
-							for (AnnotatedBiblographyEntry de : result) {
-								addResult(new AnnotatedBiblographyView(de));
-							}
+						public void onSuccess(AnnotatedBiblographyEntry result) {
+							
+								addResult(new AnnotatedBiblographyView(result));
+							
 						}
 					});
 				}

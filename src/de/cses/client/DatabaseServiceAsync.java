@@ -18,6 +18,7 @@ import java.util.List;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.AntechamberEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.RearAreaEntry;
@@ -73,6 +74,8 @@ public interface DatabaseServiceAsync {
 	void getCavesbyDistrictID(int DistrictID, AsyncCallback<ArrayList<CaveEntry>> callback) throws IllegalArgumentException;
 
 	void getOrnaments(AsyncCallback<ArrayList<OrnamentEntry>> callback) throws IllegalArgumentException;
+	void getAnnotatedBiblography(AsyncCallback<ArrayList<AnnotatedBiblographyEntry>> callback) throws IllegalArgumentException;
+	void getAnnotatedBiblographybyID(int bibid,AsyncCallback<AnnotatedBiblographyEntry> callback) throws IllegalArgumentException;
 
 	void getOrnamentsOfOtherCultures(AsyncCallback<ArrayList<OrnamentOfOtherCulturesEntry>> callback)
 			throws IllegalArgumentException;

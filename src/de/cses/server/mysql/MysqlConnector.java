@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import de.cses.server.ServerProperties;
+import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.AntechamberEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.CaveEntry;
@@ -1580,6 +1581,46 @@ public class MysqlConnector {
 		return walls;
 	}
 
+	
+	public ArrayList<AnnotatedBiblographyEntry> getAnnotatedBiblography() {
+		AnnotatedBiblographyEntry result = null;
+		ArrayList<AnnotatedBiblographyEntry> biblography = new ArrayList<AnnotatedBiblographyEntry>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM AnnotatedBiblography");
+			while (rs.next()) {
+				result = new AnnotatedBiblographyEntry();
+				biblography.add(result);
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return biblography;
+	}
+	
+	public AnnotatedBiblographyEntry getAnnotatedBiblographybyID(int bibID) {
+		AnnotatedBiblographyEntry result = null;
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM AnnotatedBiblography WHERE BibID = ");
+			while (rs.next()) {
+				result = new AnnotatedBiblographyEntry();
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	
 	public ArrayList<StructureOrganization> getStructureOrganizations() {
 		StructureOrganization result = null;
 		ArrayList<StructureOrganization> structureOrganizations = new ArrayList<StructureOrganization>();

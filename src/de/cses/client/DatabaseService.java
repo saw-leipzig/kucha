@@ -19,6 +19,7 @@ import java.util.List;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
+import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.AntechamberEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.CaveEntry;
@@ -65,6 +66,8 @@ public interface DatabaseService extends RemoteService {
 	ArrayList<DistrictEntry> getDistricts() throws IllegalArgumentException;
 
 	ArrayList<ImageEntry> getImages() throws IllegalArgumentException;
+	ArrayList<AnnotatedBiblographyEntry> getAnnotatedBiblography() throws IllegalArgumentException;
+	AnnotatedBiblographyEntry getAnnotatedBiblographybyID(int bibid) throws IllegalArgumentException;
 
 	ArrayList<ImageEntry> getImages(String where) throws IllegalArgumentException;
 

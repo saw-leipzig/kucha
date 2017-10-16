@@ -13,10 +13,16 @@
  */
 package de.cses.client.bibliography;
 
+import java.util.ArrayList;
+
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
@@ -43,6 +49,8 @@ import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.AuthorEntry;
+import de.cses.shared.CaveEntry;
+import de.cses.shared.DistrictEntry;
 import de.cses.shared.PublicationTypeEntry;
 import de.cses.shared.PublisherEntry;
 
@@ -56,6 +64,8 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 	AnnotatedBiblographyEntry entry;
 	
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
+	
+	int publicationtype= 0;
 	
 	private DualListField<AuthorEntry, String> authorSelection;
 	private DualListField<AuthorEntry, String> editorSelection;
@@ -76,6 +86,11 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 	private PublicationTypeProperties publicationTypeProps;
 	private AuthorProperties authorProps;
 	
+	FramedPanel overview = new FramedPanel();
+	FramedPanel frame = new FramedPanel();
+	VerticalLayoutContainer background = new VerticalLayoutContainer();
+	VerticalLayoutContainer overviewVerticalLayout = new VerticalLayoutContainer();
+	
 	
 	public AnnotatedBiblographyEditor(AnnotatedBiblographyEntry entry){
 		this.entry = entry;
@@ -87,6 +102,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			BoxLayoutData flex = new BoxLayoutData();
 			flex.setFlex(1);
 			widget = new VBoxLayoutContainer();
+			init();
 			widget.add(createForm(), flex);
 		}
 
@@ -103,14 +119,12 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 	}
 	public Widget createForm(){
 		
-		FramedPanel frame = new FramedPanel();
+		
 		frame.setHeading("Annotated Biblography");
-		VerticalLayoutContainer background = new VerticalLayoutContainer();
 		frame.add(background);
 		
 		//Overview FramedPanel
-		FramedPanel overview = new FramedPanel();
-		VerticalLayoutContainer overviewVerticalLayout = new VerticalLayoutContainer();
+
 		overview.setHeading("Literature");
 		background.add(overview);
 		
@@ -125,6 +139,19 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				});
 		overviewVerticalLayout.add(publicationTypeComboBox);
 		
+		
+		ValueChangeHandler<PublicationTypeEntry> publicationTypeSelectionHandler = new ValueChangeHandler<PublicationTypeEntry>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<PublicationTypeEntry> event) {
+				publicationtype = event.getValue().getId();
+			}
+		};
+		publicationTypeComboBox.addValueChangeHandler(publicationTypeSelectionHandler);
+		return build(publicationtype);
+	}
+	
+	public Widget build(int publicationtype){
 		
 		overview.add(overviewVerticalLayout);
 		overviewVerticalLayout.add(horizontBackground);
@@ -273,8 +300,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		
 		
 		
+			return frame;
 		
-		return frame;
+}
+	
 		
 	}
 	interface PublisherViewTemplates extends XTemplates {
@@ -306,4 +335,4 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		ValueProvider<AuthorEntry,String> name();
 	}
 
-}
+

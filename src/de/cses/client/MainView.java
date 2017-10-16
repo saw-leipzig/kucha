@@ -38,6 +38,8 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.TextField;
 
+import de.cses.client.bibliography.AnnotatedBiblographyResultView;
+import de.cses.client.bibliography.AnnotatedBiblographySearchController;
 import de.cses.client.caves.CaveFilter;
 import de.cses.client.caves.CaveResultView;
 import de.cses.client.caves.CaveSearchController;
@@ -77,6 +79,7 @@ public class MainView implements IsWidget {
 	private ImageSearchController imageSearchController;
 	private OrnamenticSearchController ornamenticSearchController;
 	private ResultCollectorController resultCollectorController;
+	private AnnotatedBiblographySearchController annotatedBiblographySearchController;
 
 	/**
 	 * 
@@ -211,6 +214,34 @@ public class MainView implements IsWidget {
 			}
 		});
 		selectorLayoutContainer.add(ornamenticSearchController, hLayoutData);
+		
+		// annotated biblography
+		
+		annotatedBiblographySearchController = new AnnotatedBiblographySearchController("Annotated Biblography", new AnnotatedBiblographyResultView("Annotated Biblography"));
+		annotatedBiblographySearchController.addRelatedFilter(new OrnamenticFilter("Annotated Biblography Filter"));
+		annotatedBiblographySearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				if (event.getValue()) {
+					for (AbstractFilter filter : annotatedBiblographySearchController.getRelatedFilter()) {
+						filterView.add(filter, 0);
+					}
+					resultView.add(annotatedBiblographySearchController.getResultView(), 0);
+				} else {
+					ArrayList<AbstractFilter> usedFilter = getUsedFilter();
+					for (AbstractFilter filter : annotatedBiblographySearchController.getRelatedFilter()) {
+						if (!usedFilter.contains(filter)){
+							filterView.remove(filter, 0);
+						}
+					}
+					annotatedBiblographySearchController.getResultView().removeFromParent();
+				}
+			}
+		});
+		selectorLayoutContainer.add(annotatedBiblographySearchController, hLayoutData);
+		
+		//
 		
 		resultCollectorController = new ResultCollectorController("Result Collector", new ResultCollectorView("Result Collector"));
 		resultCollectorController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
