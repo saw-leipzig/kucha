@@ -106,7 +106,6 @@ public class MainView implements IsWidget {
     
     northPanel.add(UserLogin.getInstance(), new VerticalLayoutData(1.0, .4));
     
-    selectorLayoutContainer = new HorizontalLayoutContainer();
     HorizontalLayoutData hLayoutData = new HorizontalLayoutData(140, 1.0, new Margins(5, 0, 5, 5));
     
     LocationFilter lFilter = new LocationFilter("Location Filter");
@@ -135,7 +134,6 @@ public class MainView implements IsWidget {
 				}
 			}
 		});
-		selectorLayoutContainer.add(caveSearchController, hLayoutData);
 		
 		depictionSearchController = new DepictionSearchController("Painted Representations", new DepictionResultView("Painted Representations"));
 		depictionSearchController.addRelatedFilter(new DepictionFilter("Painted Representation Filter"));
@@ -159,7 +157,6 @@ public class MainView implements IsWidget {
 				}
 			}
 		});
-		selectorLayoutContainer.add(depictionSearchController, hLayoutData);
 		
 		imageSearchController = new ImageSearchController("Images", new ImageResultView("Images"));
 		imageSearchController.addRelatedFilter(new ImageFilter("Image Filter"));
@@ -184,8 +181,6 @@ public class MainView implements IsWidget {
 			}
 			
 		});
-		selectorLayoutContainer.add(imageSearchController, hLayoutData);
-		
 		
 		ornamenticSearchController = new OrnamenticSearchController("Ornamentic", new OrnamenticResultView("Ornamentic"));
 		ornamenticSearchController.addRelatedFilter(new OrnamenticFilter("Ornamentic Filter"));
@@ -209,9 +204,8 @@ public class MainView implements IsWidget {
 				}
 			}
 		});
-		selectorLayoutContainer.add(ornamenticSearchController, hLayoutData);
 		
-		// annotated biblography
+		// annotated bibliography
 		
 		annotatedBiblographySearchController = new AnnotatedBiblographySearchController("Annotated Biblography", new AnnotatedBiblographyResultView("Annotated Biblography"));
 		annotatedBiblographySearchController.addRelatedFilter(new OrnamenticFilter("Annotated Biblography Filter"));
@@ -235,9 +229,8 @@ public class MainView implements IsWidget {
 				}
 			}
 		});
-		selectorLayoutContainer.add(annotatedBiblographySearchController, hLayoutData);
 		
-		//
+		// result collector
 		
 		resultCollectorController = new ResultCollectorController("Result Collector", new ResultCollectorView("Result Collector"));
 		resultCollectorController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
@@ -251,6 +244,16 @@ public class MainView implements IsWidget {
 				}
 			}
 		});
+
+		
+		// ----------------------------------- assembling the menu bar ---------------------------------------------
+		
+		selectorLayoutContainer = new HorizontalLayoutContainer();
+		selectorLayoutContainer.add(caveSearchController, hLayoutData);
+		selectorLayoutContainer.add(depictionSearchController, hLayoutData);
+		selectorLayoutContainer.add(imageSearchController, hLayoutData);
+		selectorLayoutContainer.add(ornamenticSearchController, hLayoutData);
+		selectorLayoutContainer.add(annotatedBiblographySearchController, hLayoutData);
 		selectorLayoutContainer.add(resultCollectorController, hLayoutData);
 		
     ContentPanel centerPanel = new ContentPanel();
@@ -279,25 +282,11 @@ public class MainView implements IsWidget {
 		searchTextPanel = new Portlet();
 		searchTextPanel.add(searchText);
 		searchTextPanel.setHeading("search for");
-//		filterView.add(searchTextPanel, 0);		
-
-//		searchButton = new TextButton("search");
-//		searchButton.addSelectHandler(new SelectHandler() {
-//			
-//			@Override
-//			public void onSelect(SelectEvent event) {
-//				for (AbstractSearchController s : getActiveFilters()) {
-//					s.invokeSearch();
-//				}
-//			}
-//		});
 		
     filterPanel = new ContentPanel();
     filterPanel.setResize(true);
     filterPanel.setHeading("Filter");
     filterPanel.add(filterView);
-//    filterPanel.addButton(searchButton);
-//    filterPanel.setButtonAlign(BoxLayoutPack.CENTER);
     
     BorderLayoutData northData = new BorderLayoutData(150);
     northData.setMargins(new Margins(5));
