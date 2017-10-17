@@ -196,6 +196,7 @@ public class OrnamentWallAttributes extends PopupPanel {
 
 		TextButton save = new TextButton("save");
 
+
 		TextButton cancel = new TextButton("cancel");
 
 		wallrelationFramedPanel.addButton(save);

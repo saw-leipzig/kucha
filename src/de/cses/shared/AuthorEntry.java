@@ -105,14 +105,8 @@ public class AuthorEntry implements IsSerializable {
 		this.homepage = homepage;
 	}
 
-	public String getInsertSql() {
-		return "INSERT INTO Authors (LastName,FirstName,KuchaVisitDate,Affiliation,Email,Homepage) VALUES ('" + lastname
-				+ "','" + firstname + "'," + kuchaVisitDate + ",'" + affiliation + "','" + email + "','" + homepage + "')";
-	}
-
-	public String getUpdateSql() {
-		return "UPDATE Authors SET LastName='" + lastname + "', FirstName='" + firstname + "', KuchaVisitDate=" + kuchaVisitDate
-				+ ", Affiliation='" + affiliation + "', Email='" + email + "', Homepage='" + homepage + "' WHERE AuthorID=" + authorID;
+	public String getName() {
+		return lastname + ", " + firstname; 
 	}
 
 }

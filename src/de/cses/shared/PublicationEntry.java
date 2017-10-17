@@ -15,13 +15,11 @@ package de.cses.shared;
 
 import java.sql.Date;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
 /**
  * @author alingnau
  *
  */
-public class PublicationEntry implements IsSerializable {
+public class PublicationEntry extends AbstractEntry {
 
 	/**
 	 * SELECT `PublicationID`, `Editors`, `Type`, `DOI`, `Pages`, `Year`,
@@ -152,6 +150,15 @@ public class PublicationEntry implements IsSerializable {
 
 	public void setPaperAbstract(String paperAbstract) {
 		this.paperAbstract = paperAbstract;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.shared.AbstractEntry#getUniqueID()
+	 */
+	@Override
+	public String getUniqueID() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 

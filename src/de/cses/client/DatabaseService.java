@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
+import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveGroupEntry;
@@ -62,6 +63,8 @@ public interface DatabaseService extends RemoteService {
 	ArrayList<DistrictEntry> getDistricts() throws IllegalArgumentException;
 
 	ArrayList<ImageEntry> getImages() throws IllegalArgumentException;
+	ArrayList<AnnotatedBiblographyEntry> getAnnotatedBiblography() throws IllegalArgumentException;
+	AnnotatedBiblographyEntry getAnnotatedBiblographybyID(int bibid) throws IllegalArgumentException;
 
 	ArrayList<ImageEntry> getImages(String where) throws IllegalArgumentException;
 
@@ -111,11 +114,11 @@ public interface DatabaseService extends RemoteService {
 
 	CaveEntry getCaveEntry(int id) throws IllegalArgumentException;
 
-//	AntechamberEntry getAntechamberEntry(int id) throws IllegalArgumentException;
+//	AntechamberEntry getAntechamberEntry(int publicationTypeID) throws IllegalArgumentException;
 //
-//	MainChamberEntry getMainChamberEntry(int id) throws IllegalArgumentException;
+//	MainChamberEntry getMainChamberEntry(int publicationTypeID) throws IllegalArgumentException;
 //
-//	RearAreaEntry getRearAreaEntry(int id) throws IllegalArgumentException;
+//	RearAreaEntry getRearAreaEntry(int publicationTypeID) throws IllegalArgumentException;
 
 	ArrayList<RegionEntry> getRegions() throws IllegalArgumentException;
 
@@ -186,6 +189,8 @@ public interface DatabaseService extends RemoteService {
 
 	ArrayList<ModeOfRepresentationEntry> getModesOfRepresentation() throws IllegalArgumentException;
 
-	ArrayList<WallLocationEntry> getWallLocations() throws IllegalArgumentException;;
+	ArrayList<WallLocationEntry> getWallLocations() throws IllegalArgumentException;
+
+	boolean updateAuthorEntry(AuthorEntry currentAuthorEntry);;
 
 }

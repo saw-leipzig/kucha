@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.UUID;
 
 import de.cses.server.ServerProperties;
+import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.server.UserManager;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.CaveAreaEntry;
@@ -144,7 +145,7 @@ public class MysqlConnector {
 
 	/**
 	 * 
-	 * @param id
+	 * @param publicationTypeID
 	 *          DistrictID
 	 * @return The corresponding DistrictEntry from the table Districts
 	 */
@@ -870,7 +871,7 @@ public class MysqlConnector {
 	}
 
 	/**
-	 * @param id
+	 * @param publicationTypeID
 	 * @return
 	 */
 	public AuthorEntry getAuthorEntry(int id) {
@@ -1059,7 +1060,7 @@ public class MysqlConnector {
 	}
 
 	/**
-	 * @param id
+	 * @param publicationTypeID
 	 * @return
 	 */
 	public SiteEntry getSite(int id) {
@@ -1246,6 +1247,46 @@ public class MysqlConnector {
 		return result;
 	}
 
+	
+	public ArrayList<AnnotatedBiblographyEntry> getAnnotatedBiblography() {
+		AnnotatedBiblographyEntry result = null;
+		ArrayList<AnnotatedBiblographyEntry> biblography = new ArrayList<AnnotatedBiblographyEntry>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM AnnotatedBiblography");
+			while (rs.next()) {
+				result = new AnnotatedBiblographyEntry();
+				biblography.add(result);
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return biblography;
+	}
+	
+	public AnnotatedBiblographyEntry getAnnotatedBiblographybyID(int bibID) {
+		AnnotatedBiblographyEntry result = null;
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM AnnotatedBiblography WHERE BibID = ");
+			while (rs.next()) {
+				result = new AnnotatedBiblographyEntry();
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	
 	public ArrayList<StructureOrganization> getStructureOrganizations() {
 		StructureOrganization result = null;
 		ArrayList<StructureOrganization> structureOrganizations = new ArrayList<StructureOrganization>();
@@ -1946,6 +1987,15 @@ public class MysqlConnector {
 			return null;
 		}
 		return result;
+	}
+
+	/**
+	 * @param currentAuthorEntry
+	 * @return
+	 */
+	public boolean updateAuthorEntry(AuthorEntry currentAuthorEntry) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

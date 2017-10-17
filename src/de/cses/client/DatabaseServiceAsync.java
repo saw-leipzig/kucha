@@ -18,6 +18,7 @@ import java.util.List;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.AntechamberEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.RearAreaEntry;
@@ -75,6 +76,8 @@ public interface DatabaseServiceAsync {
 	void getCavesbyDistrictID(int DistrictID, AsyncCallback<ArrayList<CaveEntry>> callback) throws IllegalArgumentException;
 
 	void getOrnaments(AsyncCallback<ArrayList<OrnamentEntry>> callback) throws IllegalArgumentException;
+	void getAnnotatedBiblography(AsyncCallback<ArrayList<AnnotatedBiblographyEntry>> callback) throws IllegalArgumentException;
+	void getAnnotatedBiblographybyID(int bibid,AsyncCallback<AnnotatedBiblographyEntry> callback) throws IllegalArgumentException;
 
 	void getOrnamentsOfOtherCultures(AsyncCallback<ArrayList<OrnamentOfOtherCulturesEntry>> callback)
 			throws IllegalArgumentException;
@@ -135,11 +138,11 @@ public interface DatabaseServiceAsync {
 
 	void getCaveEntry(int id, AsyncCallback<CaveEntry> asyncCallback) throws IllegalArgumentException;
 
-//	void getAntechamberEntry(int id, AsyncCallback<AntechamberEntry> asyncCallback) throws IllegalArgumentException;
+//	void getAntechamberEntry(int publicationTypeID, AsyncCallback<AntechamberEntry> asyncCallback) throws IllegalArgumentException;
 //
-//	void getMainChamberEntry(int id, AsyncCallback<MainChamberEntry> asyncCallback) throws IllegalArgumentException;
+//	void getMainChamberEntry(int publicationTypeID, AsyncCallback<MainChamberEntry> asyncCallback) throws IllegalArgumentException;
 //
-//	void getRearAreaEntry(int id, AsyncCallback<RearAreaEntry> asyncCallback) throws IllegalArgumentException;
+//	void getRearAreaEntry(int publicationTypeID, AsyncCallback<RearAreaEntry> asyncCallback) throws IllegalArgumentException;
 
 	void getRegions(AsyncCallback<ArrayList<RegionEntry>> asyncCallback) throws IllegalArgumentException;
 
@@ -214,5 +217,11 @@ public interface DatabaseServiceAsync {
 	void getWalls(int caveID, AsyncCallback<ArrayList<WallEntry>> callback) throws IllegalArgumentException;
 
 	void getWallLocations(AsyncCallback<ArrayList<WallLocationEntry>> asyncCallback) throws IllegalArgumentException;
+
+	/**
+	 * @param currentAuthorEntry
+	 * @param asyncCallback
+	 */
+	void updateAuthorEntry(AuthorEntry currentAuthorEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
 	}

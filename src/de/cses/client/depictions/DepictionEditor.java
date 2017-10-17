@@ -452,7 +452,7 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		caveSelection.setToolTip("This field can only be changed until a depiction is allocated to a wall");
-		// TODO check if wall id is set, then set caveSelection.editable(false)
+		// TODO check if wall publicationTypeID is set, then set caveSelection.editable(false)
 		attributePanel.add(caveSelection);
 		// attributePanel.setWidth("40%");
 		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0 / 8));

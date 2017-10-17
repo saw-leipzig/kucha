@@ -19,6 +19,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 import de.cses.client.DatabaseService;
 import de.cses.server.mysql.MysqlConnector;
+import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveGroupEntry;
@@ -61,8 +62,18 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public ArrayList<DistrictEntry> getDistricts() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		ArrayList<DistrictEntry> districts = connector.getDistricts();
-		;
 		return districts;
+	}
+	public ArrayList<AnnotatedBiblographyEntry> getAnnotatedBiblography() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		ArrayList<AnnotatedBiblographyEntry> biblography = connector.getAnnotatedBiblography();
+		return biblography;
+	}
+	
+	public AnnotatedBiblographyEntry getAnnotatedBiblographybyID(int id) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		AnnotatedBiblographyEntry biblographyEntry = connector.getAnnotatedBiblographybyID(id);
+		return biblographyEntry;
 	}
 
 	public ImageEntry getImage(int imageID) throws IllegalArgumentException {
@@ -255,27 +266,27 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 //	 * @see de.cses.client.DatabaseService#getAntechamberEntry(int)
 //	 */
 //	@Override
-//	public AntechamberEntry getAntechamberEntry(int id) throws IllegalArgumentException {
+//	public AntechamberEntry getAntechamberEntry(int publicationTypeID) throws IllegalArgumentException {
 //		MysqlConnector connector = MysqlConnector.getInstance();
-//		return connector.getAntechamberEntry(id);
+//		return connector.getAntechamberEntry(publicationTypeID);
 //	}
 //
 //	/* (non-Javadoc)
 //	 * @see de.cses.client.DatabaseService#getMainChamberEntry(int)
 //	 */
 //	@Override
-//	public MainChamberEntry getMainChamberEntry(int id) throws IllegalArgumentException {
+//	public MainChamberEntry getMainChamberEntry(int publicationTypeID) throws IllegalArgumentException {
 //		MysqlConnector connector = MysqlConnector.getInstance();
-//		return connector.getMainChamber(id);
+//		return connector.getMainChamber(publicationTypeID);
 //	}
 //
 //	/* (non-Javadoc)
 //	 * @see de.cses.client.DatabaseService#getRearAreaEntry(int)
 //	 */
 //	@Override
-//	public RearAreaEntry getRearAreaEntry(int id) throws IllegalArgumentException {
+//	public RearAreaEntry getRearAreaEntry(int publicationTypeID) throws IllegalArgumentException {
 //		MysqlConnector connector = MysqlConnector.getInstance();
-//		return connector.getRearArea(id);
+//		return connector.getRearArea(publicationTypeID);
 //	}
 
 	/* (non-Javadoc)
@@ -549,6 +560,15 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public ArrayList<WallLocationEntry> getWallLocations() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getWallLocations();
+	}
+	
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#updateAuthorEntry(de.cses.shared.AuthorEntry)
+	 */
+	@Override
+	public boolean updateAuthorEntry(AuthorEntry currentAuthorEntry) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.updateAuthorEntry(currentAuthorEntry);
 	}
 
 }
