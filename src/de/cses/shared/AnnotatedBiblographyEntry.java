@@ -17,7 +17,7 @@ package de.cses.shared;
  * @author Nina
  *
  */
-public class AnnotatedBiblographyEntry extends AbstractEntry{
+public class AnnotatedBiblographyEntry extends AbstractEntry {
 
 	private int annotatedBiblographyID;
 	

@@ -14,8 +14,6 @@
 package de.cses.client.depictions;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style.BorderStyle;
-import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeHtml;
@@ -50,7 +48,7 @@ public class DepictionView extends AbstractView {
 		@XTemplate("<div><center><img src='{imgUri}'></img></center></div>")
 		SafeHtml view(SafeUri imgUri);
 		
-		@XTemplate("<div><center><img src='{imgUri}'></img></center><label style='font-size:9px' > DepictionID {publicationTypeID} </label></br></div>")
+		@XTemplate("<div><center><img src='{imgUri}'></img></center><label style='font-size:9px' > DepictionID {id} </label></br></div>")
 		SafeHtml view(SafeUri imgUri, int id);
 	}
 

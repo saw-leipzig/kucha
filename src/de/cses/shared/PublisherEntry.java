@@ -17,7 +17,7 @@ package de.cses.shared;
  * @author Nina
  *
  */
-public class PublisherEntry {
+public class PublisherEntry extends AbstractEntry {
 	
 	private int publisherID;
 	private String name;
@@ -70,6 +70,14 @@ public class PublisherEntry {
 	 */
 	public void setPublisherID(int publisherID) {
 		this.publisherID = publisherID;
+	}
+	/* (non-Javadoc)
+	 * @see de.cses.shared.AbstractEntry#getUniqueID()
+	 */
+	@Override
+	public String getUniqueID() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	
