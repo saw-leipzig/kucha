@@ -1875,7 +1875,7 @@ public class MysqlConnector {
 			caveAreaStatement = dbc.prepareStatement(
 					"INSERT INTO CaveAreas (CaveID, CaveAreaLabel, ExpeditionMeasuredWidth, ExpeditionMeasuredLength, ExpeditionMeasuredHeight, ModernMeasuredWidth, ModernMeasuredLength, ModernMeasuredHeight, "
 							+ "PreservationClassificationID, CeilingTypeID1, CeilingTypeID2, CeilingPreservationClassificationID1, CeilingPreservationClassificationID2, FloorPreservationClassificationID=?) "
-							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " + "ON DUPLICATE KEY UPDATE "
+							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " + "ON DUPLICATE KEY UPDATE "
 							+ "ExpeditionMeasuredWidth=?, ExpeditionMeasuredLength=?, ExpeditionMeasuredHeight=?, ModernMeasuredWidth=?, ModernMeasuredLength=?, ModernMeasuredHeight=?, "
 							+ "PreservationClassificationID=?, CeilingTypeID1=?, CeilingTypeID2=?, CeilingPreservationClassificationID1=?, CeilingPreservationClassificationID2=?, FloorPreservationClassificationID=?");
 			caveAreaStatement.setInt(1, entry.getCaveID());
