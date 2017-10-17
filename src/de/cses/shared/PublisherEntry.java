@@ -19,8 +19,22 @@ package de.cses.shared;
  */
 public class PublisherEntry {
 	
+	private int publisherID;
 	private String name;
 	private String adress;
+	
+	
+	/**
+	 * @param publisherID
+	 * @param name
+	 * @param adress
+	 */
+	public PublisherEntry(int publisherID, String name, String adress) {
+		super();
+		this.setPublisherID(publisherID);
+		this.name = name;
+		this.adress = adress;
+	}
 	/**
 	 * @return the name
 	 */
@@ -44,6 +58,18 @@ public class PublisherEntry {
 	 */
 	public void setAdress(String adress) {
 		this.adress = adress;
+	}
+	/**
+	 * @return the publisherID
+	 */
+	public int getPublisherID() {
+		return publisherID;
+	}
+	/**
+	 * @param publisherID the publisherID to set
+	 */
+	public void setPublisherID(int publisherID) {
+		this.publisherID = publisherID;
 	}
 
 	

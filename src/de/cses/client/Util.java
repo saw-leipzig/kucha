@@ -24,6 +24,7 @@ import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
+import de.cses.client.user.UserLogin;
 import de.cses.shared.ImageEntry;
 
 /**
@@ -45,6 +46,7 @@ public class Util {
 	 * @param entry
 	 * @return The main (master) image representing the depiction as a preview
 	 */
+	@Deprecated
 	public static SafeUri getMasterImageUri(int depictionID, final int thumbnail) {
 		dbService.getMasterImageEntryForDepiction(depictionID, new AsyncCallback<ImageEntry>() {
 
@@ -55,7 +57,7 @@ public class Util {
 
 			@Override
 			public void onSuccess(ImageEntry result) {
-				imageUri  = UriUtils.fromString("resource?imageID=" + result.getImageID() + (thumbnail>0 ? "&thumb=" + thumbnail : "") );
+				imageUri  = UriUtils.fromString("resource?imageID=" + result.getImageID() + (thumbnail>0 ? "&thumb=" + thumbnail : "") + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 			}
 		});
 		return imageUri;

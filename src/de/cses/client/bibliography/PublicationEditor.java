@@ -55,7 +55,7 @@ public class PublicationEditor implements IsWidget {
 
 	/**
 	 * 
-	 * @param id
+	 * @param publicationTypeID
 	 */
 	private void loadPublicationEntry(int id) {
 		dbService.getPublicationEntry(id, new AsyncCallback<PublicationEntry>() {

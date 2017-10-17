@@ -163,4 +163,8 @@ public class UserLogin extends SimpleContainer {
 
 	}
 
+	public String getUsernameSessionIDParameterForUri() {
+		return "&user=" + user.getUsername() + "&sessionID=" + user.getSessionID();
+	}
+
 }

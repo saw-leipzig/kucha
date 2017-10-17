@@ -102,6 +102,7 @@ public class ImageEntry extends AbstractEntry {
 	 * @param imageID
 	 * @return String with the SQL UPDATE command for this ImageEntry
 	 */
+	@Deprecated
 	public String getSingleFieldUpdateSql(int id) {
 		switch (id) {
 		case FILENAME:

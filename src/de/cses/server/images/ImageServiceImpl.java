@@ -93,7 +93,7 @@ public class ImageServiceImpl extends HttpServlet {
 							filename = newImageID + fileType;
 							ie = connector.getImageEntry(newImageID);
 							ie.setFilename(filename);
-							connector.updateEntry(ie.getSingleFieldUpdateSql(ImageEntry.FILENAME));
+							connector.updateImageEntry(ie);
 							target = new File(imgHomeDir, filename);
 							item.write(target);
 							item.delete();

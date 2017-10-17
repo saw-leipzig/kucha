@@ -14,7 +14,7 @@
 package de.cses.client.images;
 
 /**
- * Listener for image uploads e.g. in ImageUploader
+ * Listener for image uploads e.g. in C14DocumentUploader
  * @author alingnau
  *
  */

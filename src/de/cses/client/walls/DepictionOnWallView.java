@@ -26,6 +26,7 @@ import com.sencha.gxt.widget.core.client.container.SimpleContainer;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.user.UserLogin;
 import de.cses.shared.ImageEntry;
 
 /**
@@ -58,7 +59,7 @@ public class DepictionOnWallView extends SimpleContainer {
 			@Override
 			public void onSuccess(ImageEntry imageresult) {
 
-				SafeUri uri = UriUtils.fromString("resource?imageID=" + imageresult.getImageID());
+				SafeUri uri = UriUtils.fromString("resource?imageID=" + imageresult.getImageID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 				final Image image = new Image(uri);
 				depictionview.add(image);
 				if (editable) {

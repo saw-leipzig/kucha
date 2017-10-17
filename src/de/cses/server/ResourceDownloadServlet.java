@@ -28,6 +28,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import de.cses.server.mysql.MysqlConnector;
+import de.cses.shared.ImageEntry;
+import de.cses.shared.UserEntry;
 
 @SuppressWarnings("serial")
 public class ResourceDownloadServlet extends HttpServlet {
@@ -49,13 +51,26 @@ public class ResourceDownloadServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// if (request.getSession().getAttribute("userID") == null ||
 		// request.getParameter("resourceid") == null) {
+		String username = request.getParameter("user");
+		if (!UserManager.getInstance().getSessionID(username).equals(request.getParameter("sessionID"))) {
+			response.setStatus(404);
+			return;
+		}
 		if (request.getParameter("imageID") != null) {
 			String imageID = request.getParameter("imageID");
-			String filename = connector.getImageEntry(Integer.parseInt(imageID)).getFilename();
-			File inputFile = new File(
-					serverProperties.getProperty("home.images"), 
-					(request.getParameter("thumb") != null ? "tn" + filename.substring(0, filename.lastIndexOf(".")) + ".png" : filename) 
-				);
+			ImageEntry imgEntry = connector.getImageEntry(Integer.parseInt(imageID));
+			String filename;
+			File inputFile;
+			if (imgEntry.isPublicImage() || (UserManager.getInstance().getUserAccessRights(username) == UserEntry.FULL)) {
+				filename = imgEntry.getFilename();
+				inputFile = new File(
+						serverProperties.getProperty("home.images"), 
+						(request.getParameter("thumb") != null ? "tn" + filename.substring(0, filename.lastIndexOf(".")) + ".png" : filename) 
+					);
+			} else {
+				filename = "placeholder_buddha.png";
+				inputFile = new File(serverProperties.getProperty("home.backgrounds"), filename);
+			}
 //			File inputFile = new File(serverProperties.getProperty("home.images"), filename);
 			ServletOutputStream out = response.getOutputStream();
 			if (inputFile.exists()) {
@@ -93,6 +108,52 @@ public class ResourceDownloadServlet extends HttpServlet {
 				if (inputFile.exists()) {
 					FileInputStream fis = new FileInputStream(inputFile);
 					response.setContentType(filename.toLowerCase().endsWith("png") ? "image/png" : "image/jpeg");
+					ServletOutputStream out = response.getOutputStream();
+					byte buffer[] = new byte[4096];
+					int bytesRead = 0;
+					while ((bytesRead = fis.read(buffer)) > 0) {
+						out.write(buffer, 0, bytesRead);
+					}
+					out.close();
+					fis.close();
+				} else {
+					response.setStatus(404);
+					return;
+				}
+			}
+		} else if (request.getParameter("cavesketch") != null) {
+			String filename = request.getParameter("cavesketch");
+			if (filename.startsWith(".")) {
+				response.setStatus(400);
+				return;
+			} else {
+				File inputFile = new File(serverProperties.getProperty("home.cavesketches"), filename);
+				if (inputFile.exists()) {
+					FileInputStream fis = new FileInputStream(inputFile);
+					response.setContentType(filename.toLowerCase().endsWith("png") ? "image/png" : "image/jpeg");
+					ServletOutputStream out = response.getOutputStream();
+					byte buffer[] = new byte[4096];
+					int bytesRead = 0;
+					while ((bytesRead = fis.read(buffer)) > 0) {
+						out.write(buffer, 0, bytesRead);
+					}
+					out.close();
+					fis.close();
+				} else {
+					response.setStatus(404);
+					return;
+				}
+			}
+		} else if (request.getParameter("document") != null) {
+			String filename = request.getParameter("document");
+			if (filename.startsWith(".")) {
+				response.setStatus(400);
+				return;
+			} else {
+				File inputFile = new File(serverProperties.getProperty("home.documents"), filename);
+				if (inputFile.exists()) {
+					FileInputStream fis = new FileInputStream(inputFile);
+					response.setContentType(filename.toLowerCase().endsWith("pdf") ? "application/pdf" : "text/html");
 					ServletOutputStream out = response.getOutputStream();
 					byte buffer[] = new byte[4096];
 					int bytesRead = 0;

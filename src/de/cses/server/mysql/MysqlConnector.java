@@ -21,25 +21,24 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
+import java.util.UUID;
 
 import de.cses.server.ServerProperties;
 import de.cses.shared.AnnotatedBiblographyEntry;
-import de.cses.shared.AntechamberEntry;
+import de.cses.server.UserManager;
 import de.cses.shared.AuthorEntry;
+import de.cses.shared.CaveAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveGroupEntry;
 import de.cses.shared.CavePart;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
-import de.cses.shared.CorridorEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageTypeEntry;
-import de.cses.shared.MainChamberEntry;
 import de.cses.shared.MainTypologicalClass;
 import de.cses.shared.ModeOfRepresentationEntry;
 import de.cses.shared.OrientationEntry;
@@ -52,7 +51,6 @@ import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PictorialElementEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.PublicationEntry;
-import de.cses.shared.RearAreaEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 import de.cses.shared.StructureOrganization;
@@ -60,10 +58,10 @@ import de.cses.shared.StyleEntry;
 import de.cses.shared.UserEntry;
 import de.cses.shared.VendorEntry;
 import de.cses.shared.WallEntry;
+import de.cses.shared.WallLocationEntry;
 
 /**
- * This is the central Database connector. Here are all methods that we need for standard database operations, including user login and
- * access management.
+ * This is the central Database connector. Here are all methods that we need for standard database operations, including user login and access management.
  * 
  * @author alingnau
  *
@@ -80,8 +78,8 @@ public class MysqlConnector {
 	private ServerProperties serverProperties = ServerProperties.getInstance();
 
 	/**
-	 * By calling this method, we avoid that a new instance will be created if there is already one existing. If this method is called without
-	 * an instance existing, one will be created.
+	 * By calling this method, we avoid that a new instance will be created if there is already one existing. If this method is called without an instance
+	 * existing, one will be created.
 	 * 
 	 * @return
 	 */
@@ -95,7 +93,7 @@ public class MysqlConnector {
 	private Connection connection;
 
 	private MysqlConnector() {
-		
+
 		user = serverProperties.getProperty("MysqlConnector.db.user");
 		password = serverProperties.getProperty("MysqlConnector.db.password");
 		url = serverProperties.getProperty("MysqlConnector.db.url");
@@ -147,7 +145,7 @@ public class MysqlConnector {
 
 	/**
 	 * 
-	 * @param id
+	 * @param publicationTypeID
 	 *          DistrictID
 	 * @return The corresponding DistrictEntry from the table Districts
 	 */
@@ -294,11 +292,12 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery((sqlWhere == null) ? "SELECT * FROM Depictions" : "SELECT * FROM Depictions WHERE " + sqlWhere);
 			while (rs.next()) {
-				results.add(new DepictionEntry(rs.getInt("DepictionID"), rs.getInt("StyleID"), rs.getString("Inscriptions"), rs.getString("SeparateAksaras"), rs.getString("Dating"),
-						rs.getString("Description"), rs.getString("BackgroundColour"), rs.getString("GeneralRemarks"),
-						rs.getString("OtherSuggestedIdentifications"), rs.getDouble("Width"), rs.getDouble("Height"), rs.getInt("ExpeditionID"),
-						rs.getDate("PurchaseDate"), rs.getInt("CurrentLocationID"), rs.getInt("VendorID"), rs.getInt("StoryID"), rs.getInt("CaveID"),
-						rs.getInt("WallID"), rs.getInt("IconographyID"), rs.getInt("ModeOfRepresentationID")));
+				results.add(new DepictionEntry(rs.getInt("DepictionID"), rs.getInt("StyleID"), rs.getString("Inscriptions"),
+						rs.getString("SeparateAksaras"), rs.getString("Dating"), rs.getString("Description"), rs.getString("BackgroundColour"),
+						rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"), rs.getDouble("Width"), rs.getDouble("Height"),
+						rs.getInt("ExpeditionID"), rs.getDate("PurchaseDate"), rs.getInt("CurrentLocationID"), rs.getInt("VendorID"),
+						rs.getInt("StoryID"), rs.getInt("CaveID"), rs.getInt("WallID"), rs.getInt("IconographyID"),
+						rs.getInt("ModeOfRepresentationID")));
 			}
 			rs.close();
 			stmt.close();
@@ -318,11 +317,12 @@ public class MysqlConnector {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Depictions WHERE DepictionID=" + depictionID);
 			if (rs.next()) { // we only need to call this once, since we do not expect
 												// more than 1 result!
-				result = new DepictionEntry(rs.getInt("DepictionID"), rs.getInt("StyleID"), rs.getString("Inscriptions"), rs.getString("SeparateAksaras"), rs.getString("Dating"),
-						rs.getString("Description"), rs.getString("BackgroundColour"), rs.getString("GeneralRemarks"),
-						rs.getString("OtherSuggestedIdentifications"), rs.getInt("Dimension.width"), rs.getInt("Dimension.height"),
-						rs.getInt("ExpeditionID"), rs.getDate("PurchaseDate"), rs.getInt("CurrentLocationID"), rs.getInt("VendorID"),
-						rs.getInt("StoryID"), rs.getInt("CaveID"), rs.getInt("WallID"), rs.getInt("IconographyID"), rs.getInt("ModeOfRepresentationID"));
+				result = new DepictionEntry(rs.getInt("DepictionID"), rs.getInt("StyleID"), rs.getString("Inscriptions"),
+						rs.getString("SeparateAksaras"), rs.getString("Dating"), rs.getString("Description"), rs.getString("BackgroundColour"),
+						rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"), rs.getInt("Dimension.width"),
+						rs.getInt("Dimension.height"), rs.getInt("ExpeditionID"), rs.getDate("PurchaseDate"), rs.getInt("CurrentLocationID"),
+						rs.getInt("VendorID"), rs.getInt("StoryID"), rs.getInt("CaveID"), rs.getInt("WallID"), rs.getInt("IconographyID"),
+						rs.getInt("ModeOfRepresentationID"));
 			}
 			rs.close();
 			stmt.close();
@@ -345,7 +345,8 @@ public class MysqlConnector {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Images");
 			while (rs.next()) {
 				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
-						rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"), rs.getBoolean("ImageMode")));
+						rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
+						rs.getBoolean("ImageMode")));
 			}
 			rs.close();
 			stmt.close();
@@ -365,7 +366,8 @@ public class MysqlConnector {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Images WHERE " + sqlWhere);
 			while (rs.next()) {
 				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
-						rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"), rs.getBoolean("ImageMode")));
+						rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
+						rs.getBoolean("ImageMode")));
 			}
 			rs.close();
 			stmt.close();
@@ -390,7 +392,8 @@ public class MysqlConnector {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Images WHERE ImageID=" + imageID);
 			if (rs.first()) {
 				result = new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
-						rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"), rs.getBoolean("ImageMode"));
+						rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
+						rs.getBoolean("ImageMode"));
 			}
 			rs.close();
 			stmt.close();
@@ -438,11 +441,11 @@ public class MysqlConnector {
 			while (rs.next()) {
 				CaveEntry ce = new CaveEntry(rs.getInt("CaveID"), rs.getString("OfficialNumber"), rs.getString("HistoricName"),
 						rs.getString("OptionalHistoricName"), rs.getInt("CaveTypeID"), rs.getInt("DistrictID"), rs.getInt("RegionID"),
-						rs.getInt("OrientationID"), rs.getString("StateOfPreservation"), rs.getString("Findings"), rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedInYear"),
-						rs.getInt("PreservationClassificationID"), rs.getInt("CaveGroupID"));
-				ce.setAntechamberEntry(getAntechamberEntry(ce.getCaveID()));
-				ce.setMainChamberEntry(getMainChamber(ce.getCaveID()));
-				ce.setRearAreaEntry(getRearArea(ce.getCaveID()));
+						rs.getInt("OrientationID"), rs.getString("StateOfPreservation"), rs.getString("Findings"), rs.getString("Notes"),
+						rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedInYear"), rs.getInt("PreservationClassificationID"),
+						rs.getInt("CaveGroupID"), rs.getString("OptionalCaveSketch"), rs.getString("C14url"), rs.getString("C14DocumentFilename"), rs.getString("CaveLayoutComments"));
+				ce.setCaveAreaList(getCaveAreas(ce.getCaveID()));
+				ce.setWallList(getWalls(ce.getCaveID()));
 				results.add(ce);
 			}
 			rs.close();
@@ -464,11 +467,11 @@ public class MysqlConnector {
 			if (rs.first()) {
 				result = new CaveEntry(rs.getInt("CaveID"), rs.getString("OfficialNumber"), rs.getString("HistoricName"),
 						rs.getString("OptionalHistoricName"), rs.getInt("CaveTypeID"), rs.getInt("DistrictID"), rs.getInt("RegionID"),
-						rs.getInt("OrientationID"), rs.getString("StateOfPreservation"), rs.getString("Findings"), rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedInYear"),
-						rs.getInt("PreservationClassificationID"), rs.getInt("CaveGroupID"));
-				result.setAntechamberEntry(getAntechamberEntry(id));
-				result.setMainChamberEntry(getMainChamber(id));
-				result.setRearAreaEntry(getRearArea(id));
+						rs.getInt("OrientationID"), rs.getString("StateOfPreservation"), rs.getString("Findings"), rs.getString("Notes"),
+						rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedInYear"), rs.getInt("PreservationClassificationID"),
+						rs.getInt("CaveGroupID"), rs.getString("OptionalCaveSketch"), rs.getString("C14url"), rs.getString("C14DocumentFilename"), rs.getString("CaveLayoutComments"));
+				result.setCaveAreaList(getCaveAreas(result.getCaveID()));
+				result.setWallList(getWalls(result.getCaveID()));
 			}
 			rs.close();
 			stmt.close();
@@ -479,28 +482,27 @@ public class MysqlConnector {
 		return result;
 	}
 
-	public ArrayList<CaveEntry> getCavesbyDistrictID(int DistrictID) {
+	public ArrayList<CaveEntry> getCavesbyDistrictID(int districtID) {
 		ArrayList<CaveEntry> results = new ArrayList<CaveEntry>();
 		Connection dbc = getConnection();
-		Statement stmt;
-		CaveEntry result = null;
+		PreparedStatement pstmt;
 		try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Caves WHERE DistrictID =" + DistrictID);
+			pstmt = dbc.prepareStatement("SELECT * FROM Caves WHERE DistrictID=?");
+			pstmt.setInt(1, districtID);
+			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
-				result = new CaveEntry(rs.getInt("CaveID"), rs.getString("OfficialNumber"), rs.getString("HistoricName"),
+				CaveEntry ce = new CaveEntry(rs.getInt("CaveID"), rs.getString("OfficialNumber"), rs.getString("HistoricName"),
 						rs.getString("OptionalHistoricName"), rs.getInt("CaveTypeID"), rs.getInt("DistrictID"), rs.getInt("RegionID"),
-						rs.getInt("OrientationID"), rs.getString("StateOfPreservation"), rs.getString("Findings"), rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedInYear"),
-						rs.getInt("PreservationClassificationID"), rs.getInt("CaveGroupID"));
-				result.setAntechamberEntry(getAntechamberEntry(result.getCaveID()));
-				result.setMainChamberEntry(getMainChamber(result.getCaveID()));
-				result.setRearAreaEntry(getRearArea(result.getCaveID()));
-				results.add(result);
+						rs.getInt("OrientationID"), rs.getString("StateOfPreservation"), rs.getString("Findings"), rs.getString("Notes"),
+						rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedInYear"), rs.getInt("PreservationClassificationID"),
+						rs.getInt("CaveGroupID"), rs.getString("OptionalCaveSketch"), rs.getString("C14url"), rs.getString("C14DocumentFilename"), rs.getString("CaveLayoutComments"));
+				ce.setCaveAreaList(getCaveAreas(ce.getCaveID()));
+				ce.setWallList(getWalls(ce.getCaveID()));
+				results.add(ce);
 			}
 			rs.close();
-			stmt.close();
+			pstmt.close();
 		} catch (SQLException e) {
-			System.err.println("Error while creating CaveEntries");
 			e.printStackTrace();
 			return null;
 		}
@@ -869,7 +871,7 @@ public class MysqlConnector {
 	}
 
 	/**
-	 * @param id
+	 * @param publicationTypeID
 	 * @return
 	 */
 	public AuthorEntry getAuthorEntry(int id) {
@@ -933,7 +935,8 @@ public class MysqlConnector {
 					"SELECT * FROM Images WHERE ImageID IN (SELECT ImageID FROM DepictionImageRelation WHERE DepictionID=" + depictionID + ")");
 			while (rs.next()) {
 				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
-						rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"), rs.getBoolean("ImageMode")));
+						rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
+						rs.getBoolean("ImageMode")));
 			}
 			rs.close();
 			stmt.close();
@@ -992,402 +995,23 @@ public class MysqlConnector {
 		PreparedStatement pstmt;
 		try {
 			pstmt = dbc.prepareStatement(
-					"UPDATE Images SET Title = ?, ShortName = ?, Copyright = ?, PhotographerID = ?, Comment = ?, Date = ?, ImageTypeID = ?, ImageMode = ? WHERE ImageID = ?");
-			pstmt.setString(1, entry.getTitle());
-			pstmt.setString(2, entry.getShortName());
-			pstmt.setString(3, entry.getCopyright());
-			pstmt.setInt(4, entry.getPhotographerID());
-			pstmt.setString(5, entry.getComment());
-			pstmt.setString(6, entry.getDate());
-			pstmt.setInt(7, entry.getImageTypeID());
-			pstmt.setBoolean(8, entry.isPublicImage());
-			pstmt.setInt(9, entry.getImageID());
+					"UPDATE Images SET Filename=?, Title=?, ShortName=?, Copyright=?, PhotographerID=?, Comment=?, Date=?, ImageTypeID=?, ImageMode=? WHERE ImageID=?");
+			pstmt.setString(1, entry.getFilename());
+			pstmt.setString(2, entry.getTitle());
+			pstmt.setString(3, entry.getShortName());
+			pstmt.setString(4, entry.getCopyright());
+			pstmt.setInt(5, entry.getPhotographerID());
+			pstmt.setString(6, entry.getComment());
+			pstmt.setString(7, entry.getDate());
+			pstmt.setInt(8, entry.getImageTypeID());
+			pstmt.setBoolean(9, entry.isPublicImage());
+			pstmt.setInt(10, entry.getImageID());
 			pstmt.execute();
 			pstmt.close();
 		} catch (SQLException e) {
 			return false;
 		}
 		return true;
-	}
-
-	/**
-	 * In case the AntechamberEntry hasn't been created before, it will be created and saved.
-	 * 
-	 * @param id
-	 *          the AntechamberID from the table that equals the CaveID where the antechamber is located
-	 * @return The AntechamberEntry for the corresponding id
-	 */
-	public AntechamberEntry getAntechamberEntry(int id) {
-		AntechamberEntry result = null;
-		Connection dbc = getConnection();
-		Statement stmt;
-		try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Antechamber WHERE AntechamberID=" + id);
-			if (rs.first()) {
-				result = new AntechamberEntry(rs.getInt("AntechamberID"), rs.getInt("CeilingTypeID"), rs.getInt("FrontWallID"),
-						rs.getInt("LeftWallID"), rs.getInt("RightWallID"), rs.getInt("RearWallID"), rs.getDouble("Height"), rs.getDouble("Width"),
-						rs.getDouble("Depth"), rs.getInt("PreservationClassificationID"), rs.getInt("CeilingPreservationClassificationID"));
-			} else { // in case there is no entry we send back a new one
-				result = new AntechamberEntry();
-				result.setAntechamberID(id);
-				insertAntechamber(result);
-			}
-			rs.close();
-			stmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return result;
-	}
-	
-	private synchronized boolean insertAntechamber(AntechamberEntry entry) {
-		Connection dbc = getConnection();
-		PreparedStatement pstmt;
-		try {
-			pstmt = dbc.prepareStatement(
-					"INSERT INTO Antechamber (AntechamberID, CeilingTypeID, FrontWallID, LeftWallID, RightWallID, RearWallID, Height, Width, Depth, PreservationClassificationID, CeilingPreservationClassificationID) "
-					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-			pstmt.setInt(1, entry.getAntechamberID());
-			pstmt.setInt(2,  entry.getCeilingTypeID());
-			pstmt.setInt(3, entry.getFrontWallID());
-			pstmt.setInt(4, entry.getLeftWallID());
-			pstmt.setInt(5, entry.getRightWallID());
-			pstmt.setInt(6, entry.getRearWallID());
-			pstmt.setDouble(7, entry.getHeight());
-			pstmt.setDouble(8, entry.getWidth());
-			pstmt.setDouble(9, entry.getDepth());
-			pstmt.setInt(10, entry.getPreservationClassificationID());
-			pstmt.setInt(11, entry.getCeilingPreservationClassificationID());
-			pstmt.executeUpdate();
-			pstmt.close();
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-			return false;
-		}
-		return true;	
-	}
-
-	private synchronized boolean updateAntechamber(AntechamberEntry entry) {
-		Connection dbc = getConnection();
-		PreparedStatement pstmt;
-		try {
-			pstmt = dbc.prepareStatement("UPDATE Antechamber SET CeilingTypeID=?, FrontWallID=?, LeftWallID=?, RightWallID=?, RearWallID=?, Height=?, Width=?, "
-					+ "Depth=?, PreservationClassificationID=?, CeilingPreservationClassificationID=? WHERE AntechamberID=?");
-			pstmt.setInt(1,  entry.getCeilingTypeID());
-			pstmt.setInt(2, entry.getFrontWallID());
-			pstmt.setInt(3, entry.getLeftWallID());
-			pstmt.setInt(4, entry.getRightWallID());
-			pstmt.setInt(5, entry.getRearWallID());
-			pstmt.setDouble(6, entry.getHeight());
-			pstmt.setDouble(7, entry.getWidth());
-			pstmt.setDouble(8, entry.getDepth());
-			pstmt.setInt(9, entry.getPreservationClassificationID());
-			pstmt.setInt(10, entry.getCeilingPreservationClassificationID());
-			pstmt.setInt(11, entry.getAntechamberID());
-			pstmt.executeUpdate();
-			pstmt.close();
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-			return false;
-		}
-		return true;	
-	}
-
-	/**
-	 * In case the RearAreaEntry hasn't been created before, it will be created and saved.
-	 * 
-	 * @param id
-	 *          the RearAreaID from the table that equals the CaveID where the RearArea is located
-	 * @return The RearAreaEntry for the corresponding id
-	 */
-	public RearAreaEntry getRearArea(int id) {
-		RearAreaEntry result = null;
-		Connection dbc = getConnection();
-
-		Statement stmt;
-		try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM RearArea WHERE RearAreaID=" + id);
-			if (rs.first()) {
-				result = new RearAreaEntry(rs.getInt("RearAreaID"), rs.getInt("CeilingTypeID"), 
-						rs.getInt("InnerWallID"), rs.getInt("LeftWallID"), rs.getInt("RightWallID"), rs.getInt("OuterWallID"),
-						rs.getBoolean("IsBackChamber"), rs.getDouble("Height"), rs.getDouble("Width"), rs.getDouble("Depth"),
-						rs.getInt("PreservationClassificationID"), rs.getInt("CeilingPreservationClassificationID"));
-				result.setLeftCorridorEntry(getCorridor(rs.getInt("LeftCorridorID")));
-				result.setRightCorridorEntry(getCorridor(rs.getInt("RightCorridorID")));
-			} else { // in case there is no entry we send back a new one
-				result = new RearAreaEntry();
-				result.setRearAreaID(id);
-				insertRearArea(result);
-			}
-			rs.close();
-			stmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return result;
-	}
-
-	/**
-	 * 
-	 * @param entry
-	 * @return
-	 */
-	private synchronized boolean updateRearArea(RearAreaEntry entry) {
-		Connection dbc = getConnection();
-		PreparedStatement pstmt;
-		if (entry.getLeftCorridorEntry().getCorridorID() == 0) {
-			entry.getLeftCorridorEntry().setCorridorID(insertCorridor(entry.getLeftCorridorEntry()));
-		} else {
-			updateCorridor(entry.getLeftCorridorEntry());
-		}
-		if (entry.getRightCorridorEntry().getCorridorID() == 0) {
-			entry.getRightCorridorEntry().setCorridorID(insertCorridor(entry.getRightCorridorEntry()));
-		} else {
-			updateCorridor(entry.getRightCorridorEntry());
-		}
-		try {
-			pstmt = dbc.prepareStatement("UPDATE RearArea SET CeilingTypeID=?, InnerWallID=?, LeftWallID=?, RightWallID=?, OuterWallID=?, LeftCorridorID=?, "
-					+ "RightCorridorID=?, IsBackChamber=?, Height=?, Width=?, Depth=?, PreservationClassificationID=?, CeilingPreservationClassificationID=? WHERE RearAreaID=?");
-			pstmt.setInt(1,  entry.getCeilingTypeID());
-			pstmt.setInt(2, entry.getInnerWallID());
-			pstmt.setInt(3, entry.getLeftWallID());
-			pstmt.setInt(4, entry.getRightWallID());
-			pstmt.setInt(5, entry.getOuterWallID());
-			pstmt.setInt(6, entry.getLeftCorridorEntry().getCorridorID());
-			pstmt.setInt(7, entry.getRightCorridorEntry().getCorridorID());
-			pstmt.setBoolean(8, entry.isBackChamber());
-			pstmt.setDouble(9, entry.getHeight());
-			pstmt.setDouble(10, entry.getWidth());
-			pstmt.setDouble(11, entry.getDepth());
-			pstmt.setInt(12, entry.getPreservationClassificationID());
-			pstmt.setInt(13, entry.getCeilingPreservationClassificationID());
-			pstmt.setInt(14, entry.getRearAreaID());
-			pstmt.executeUpdate();
-			pstmt.close();
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-			return false;
-		}
-		return true;
-	}
-	
-	/**
-	 * 
-	 * @param entry
-	 * @return
-	 */
-	private synchronized boolean insertRearArea(RearAreaEntry entry) {
-		Connection dbc = getConnection();
-		PreparedStatement pstmt;
-		if (entry.getLeftCorridorEntry().getCorridorID() == 0) {
-			entry.getLeftCorridorEntry().setCorridorID(insertCorridor(entry.getLeftCorridorEntry()));
-		} else {
-			updateCorridor(entry.getLeftCorridorEntry());
-		}
-		if (entry.getRightCorridorEntry().getCorridorID() == 0) {
-			entry.getRightCorridorEntry().setCorridorID(insertCorridor(entry.getRightCorridorEntry()));
-		} else {
-			updateCorridor(entry.getRightCorridorEntry());
-		}
-		try {
-			pstmt = dbc.prepareStatement(
-					"INSERT INTO RearArea (RearAreaID, CeilingTypeID, InnerWallID, LeftWallID, RightWallID, OuterWallID, LeftCorridorID, RightCorridorID, IsBackChamber, "
-					+ "Height, Width, Depth, PreservationClassificationID, CeilingPreservationClassificationID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-			pstmt.setInt(1, entry.getRearAreaID());
-			pstmt.setInt(2,  entry.getCeilingTypeID());
-			pstmt.setInt(3, entry.getInnerWallID());
-			pstmt.setInt(4, entry.getLeftWallID());
-			pstmt.setInt(5, entry.getRightWallID());
-			pstmt.setInt(6, entry.getOuterWallID());
-			pstmt.setInt(7, entry.getLeftCorridorEntry().getCorridorID());
-			pstmt.setInt(8, entry.getRightCorridorEntry().getCorridorID());
-			pstmt.setBoolean(9, entry.isBackChamber());
-			pstmt.setDouble(10, entry.getHeight());
-			pstmt.setDouble(11, entry.getWidth());
-			pstmt.setDouble(12, entry.getDepth());
-			pstmt.setInt(13, entry.getPreservationClassificationID());
-			pstmt.setInt(14, entry.getCeilingPreservationClassificationID());
-			pstmt.executeUpdate();
-			pstmt.close();
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-			return false;
-		}
-		return true;
-	}
-
-	/**
-	 * In case the MainChamberEntry hasn't been created before, it will be created and saved.
-	 * 
-	 * @param id
-	 *          MainChamberID from the table that equals the CaveID where the MainChamber is located
-	 * @return The MainChamberEntry for the corresponding id
-	 */
-	public MainChamberEntry getMainChamber(int id) {
-		MainChamberEntry result = null;
-		Connection dbc = getConnection();
-
-		Statement stmt;
-		try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM MainChamber WHERE MainChamberID=" + id);
-			if (rs.first()) {
-				result = new MainChamberEntry(rs.getInt("MainChamberID"), rs.getInt("CeilingTypeID"), rs.getInt("FrontWallID"),
-						rs.getInt("LeftWallID"), rs.getInt("RightWallID"), rs.getInt("RearWallID"), rs.getDouble("Height"), rs.getDouble("Width"),
-						rs.getDouble("Depth"), rs.getInt("PreservationClassificationID"), rs.getInt("CeilingPreservationClassificationID"));
-				result.setCorridorEntry(getCorridor(rs.getInt("CorridorID")));
-			} else { // in case there is no entry we send back a new one
-				result = new MainChamberEntry();
-				result.setMainChamberID(id);
-				insertMainChamber(result);
-			}
-			rs.close();
-			stmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return result;
-	}
-	
-	private synchronized boolean updateMainChamber(MainChamberEntry entry) {
-		Connection dbc = getConnection();
-		PreparedStatement pstmt;
-		if (entry.getCorridorEntry().getCorridorID() == 0) {
-			entry.getCorridorEntry().setCorridorID(insertCorridor(entry.getCorridorEntry()));
-		} else {
-			updateCorridor(entry.getCorridorEntry());
-		}
-		try {
-			pstmt = dbc.prepareStatement("UPDATE MainChamber SET CeilingTypeID=?, FrontWallID=?, LeftWallID=?, RightWallID=?, RearWallID=?, CorridorID=?, Height=?, Width=?, "
-					+ "Depth=?, PreservationClassificationID=?, CeilingPreservationClassificationID=? WHERE MainChamberID=?");
-			pstmt.setInt(1,  entry.getCeilingTypeID());
-			pstmt.setInt(2, entry.getFrontWallID());
-			pstmt.setInt(3, entry.getLeftWallID());
-			pstmt.setInt(4, entry.getRightWallID());
-			pstmt.setInt(5, entry.getRearWallID());
-			pstmt.setInt(6, entry.getCorridorEntry().getCorridorID());
-			pstmt.setDouble(7, entry.getHeight());
-			pstmt.setDouble(8, entry.getWidth());
-			pstmt.setDouble(9, entry.getDepth());
-			pstmt.setInt(10, entry.getPreservationClassificationID());
-			pstmt.setInt(11, entry.getCeilingPreservationClassificationID());
-			pstmt.setInt(12, entry.getMainChamberID());
-			pstmt.executeUpdate();
-			pstmt.close();
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-			return false;
-		}
-		return true;
-	}
-
-	private synchronized boolean insertMainChamber(MainChamberEntry entry) {
-		Connection dbc = getConnection();
-		PreparedStatement pstmt;
-		if (entry.getCorridorEntry().getCorridorID() == 0) {
-			entry.getCorridorEntry().setCorridorID(insertCorridor(entry.getCorridorEntry()));
-		} else {
-			updateCorridor(entry.getCorridorEntry());
-		}
-		try {
-			pstmt = dbc.prepareStatement("INSERT INTO MainChamber (MainChamberID, CeilingTypeID, FrontWallID, LeftWallID, RightWallID, RearWallID, CorridorID, "
-					+ "Height, Width, Depth, PreservationClassificationID, CeilingPreservationClassificationID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-			pstmt.setInt(1, entry.getMainChamberID());
-			pstmt.setInt(2,  entry.getCeilingTypeID());
-			pstmt.setInt(3, entry.getFrontWallID());
-			pstmt.setInt(4, entry.getLeftWallID());
-			pstmt.setInt(5, entry.getRightWallID());
-			pstmt.setInt(6, entry.getRearWallID());
-			pstmt.setInt(7, entry.getCorridorEntry().getCorridorID());
-			pstmt.setDouble(8, entry.getHeight());
-			pstmt.setDouble(9, entry.getWidth());
-			pstmt.setDouble(10, entry.getDepth());
-			pstmt.setInt(11, entry.getPreservationClassificationID());
-			pstmt.setInt(12, entry.getCeilingPreservationClassificationID());
-			pstmt.executeUpdate();
-			pstmt.close();
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-			return false;
-		}
-		return true;
-	}
-
-	/**
-	 * 
-	 * @param id
-	 * @return
-	 */
-	private CorridorEntry getCorridor(int id) {
-		CorridorEntry result = null;
-		Connection dbc = getConnection();
-
-		Statement stmt;
-		try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Corridor WHERE CorridorID=" + id);
-			if (rs.first()) {
-				result = new CorridorEntry(rs.getInt("CorridorID"), rs.getInt("OuterWallID"), rs.getInt("InnerWallID"), rs.getInt("CeilingTypeID"), 
-						rs.getInt("PreservationClassificationID"), rs.getInt("CeilingPreservationClassificationID"));
-			} else { // in case there is no entry we send back a new one
-				result = new CorridorEntry();
-			}
-			rs.close();
-			stmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return result;
-	}
-
-	/**
-	 * @param leftCorridorEntry
-	 * @return
-	 */
-	private synchronized boolean updateCorridor(CorridorEntry entry) {
-		Connection dbc = getConnection();
-		PreparedStatement pstmt;
-		try {
-			pstmt = dbc.prepareStatement("UPDATE Corridor SET OuterWallID=?, InnerWallID=?, CeilingTypeID=?, PreservationClassificationID=?, CeilingPreservationClassificationID=? WHERE CorridorID=?");
-			pstmt.setInt(1, entry.getOuterWallID());
-			pstmt.setInt(2, entry.getInnerWallID());
-			pstmt.setInt(3, entry.getCeilingTypeID());
-			pstmt.setInt(4, entry.getPreservationClassificationID());
-			pstmt.setInt(5, entry.getCeilingPreservationClassificationID());
-			pstmt.setInt(6, entry.getCorridorID());
-			pstmt.executeUpdate();
-			pstmt.close();
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-			return false;
-		}
-		return true;
-	}
-
-	/**
-	 * @param rightCorridorEntry
-	 * @return
-	 */
-	private synchronized int insertCorridor(CorridorEntry entry) {
-		int newID;
-		Connection dbc = getConnection();
-		PreparedStatement pstmt;
-		try {
-			pstmt = dbc.prepareStatement("INSERT INTO Corridor (OuterWallID, InnerWallID, CeilingTypeID, PreservationClassificationID, CeilingPreservationClassificationID) VALUES (?, ?, ?, ?, ?)");
-			pstmt.setInt(1, entry.getOuterWallID());
-			pstmt.setInt(2, entry.getInnerWallID());
-			pstmt.setInt(3, entry.getCeilingTypeID());
-			pstmt.setInt(4, entry.getPreservationClassificationID());
-			pstmt.setInt(5, entry.getCeilingPreservationClassificationID());
-			newID = pstmt.executeUpdate();
-			pstmt.close();
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-			return 0;
-		}
-		return newID;
 	}
 
 	/**
@@ -1436,7 +1060,7 @@ public class MysqlConnector {
 	}
 
 	/**
-	 * @param id
+	 * @param publicationTypeID
 	 * @return
 	 */
 	public SiteEntry getSite(int id) {
@@ -1570,7 +1194,8 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Walls");
 			while (rs.next()) {
-				result = new WallEntry(rs.getInt("WallID"));
+				result = new WallEntry(rs.getInt("CaveID"), rs.getInt("WallLocationID"), rs.getInt("PreservationClassificationID"),
+						rs.getDouble("Width"), rs.getDouble("Height"));
 				walls.add(result);
 			}
 			rs.close();
@@ -1579,6 +1204,47 @@ public class MysqlConnector {
 			e.printStackTrace();
 		}
 		return walls;
+	}
+
+	public WallEntry getWall(int wallID) {
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		WallEntry result = null;
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM Walls WHERE WallID=?");
+			pstmt.setInt(1, wallID);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.first()) {
+				result = new WallEntry(rs.getInt("CaveID"), rs.getInt("WallLocationID"), rs.getInt("PreservationClassificationID"),
+						rs.getDouble("Width"), rs.getDouble("Height"));
+			}
+			pstmt.close();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			return null;
+		}
+		return result;
+	}
+
+	public WallEntry getWall(int caveID, String locationLabel) {
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		WallEntry result = null;
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM Walls WHERE CaveID=? AND LocationLabel=?");
+			pstmt.setInt(1, caveID);
+			pstmt.setString(2, locationLabel);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.first()) {
+				result = new WallEntry(rs.getInt("CaveID"), rs.getInt("WallLocationID"), rs.getInt("PreservationClassificationID"),
+						rs.getDouble("Width"), rs.getDouble("Height"));
+			}
+			pstmt.close();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			return null;
+		}
+		return result;
 	}
 
 	
@@ -1807,7 +1473,7 @@ public class MysqlConnector {
 	}
 
 	/**
-	 * TODO: only save existing areas depeding on cave type!
+	 * TODO: only save existing areas depending on cave type!
 	 * 
 	 * @param caveEntry
 	 * @return
@@ -1817,8 +1483,8 @@ public class MysqlConnector {
 		PreparedStatement pstmt;
 		try {
 			pstmt = dbc.prepareStatement("UPDATE Caves SET OfficialNumber=?, HistoricName=?, OptionalHistoricName=?, CaveTypeID=?, DistrictID=?, "
-					+ "RegionID=?, OrientationID=?, StateOfPreservation=?, Findings=?, FirstDocumentedBy=?, FirstDocumentedInYear=?, PreservationClassificationID=?, " 
-					+ "CaveGroupID=? WHERE CaveID=?");
+					+ "RegionID=?, OrientationID=?, StateOfPreservation=?, Findings=?, Notes=?, FirstDocumentedBy=?, FirstDocumentedInYear=?, PreservationClassificationID=?, "
+					+ "CaveGroupID=?, OptionalCaveSketch=?, C14url=?, C14DocumentFilename=?, CaveLayoutComments=? WHERE CaveID=?");
 			pstmt.setString(1, caveEntry.getOfficialNumber());
 			pstmt.setString(2, caveEntry.getHistoricName());
 			pstmt.setString(3, caveEntry.getOptionalHistoricName());
@@ -1828,20 +1494,28 @@ public class MysqlConnector {
 			pstmt.setInt(7, caveEntry.getOrientationID());
 			pstmt.setString(8, caveEntry.getStateOfPerservation());
 			pstmt.setString(9, caveEntry.getFindings());
-			pstmt.setString(10, caveEntry.getFirstDocumentedBy());
-			pstmt.setInt(11, caveEntry.getFirstDocumentedInYear());
-			pstmt.setInt(12, caveEntry.getPreservationClassificationID());
-			pstmt.setInt(13, caveEntry.getCaveGroupID());
-			pstmt.setInt(14, caveEntry.getCaveID());
+			pstmt.setString(10, caveEntry.getNotes());
+			pstmt.setString(11, caveEntry.getFirstDocumentedBy());
+			pstmt.setInt(12, caveEntry.getFirstDocumentedInYear());
+			pstmt.setInt(13, caveEntry.getPreservationClassificationID());
+			pstmt.setInt(14, caveEntry.getCaveGroupID());
+			pstmt.setString(15, caveEntry.getOptionalCaveSketch());
+			pstmt.setString(16, caveEntry.getC14url());
+			pstmt.setString(17, caveEntry.getC14DocumentFilename());
+			pstmt.setString(18, caveEntry.getCaveLayoutComments());
+			pstmt.setInt(19, caveEntry.getCaveID());
 			pstmt.executeUpdate();
 			pstmt.close();
+			for (CaveAreaEntry caEntry : caveEntry.getCaveAreaList()) {
+				writeCaveArea(caEntry);
+			}
+			for (WallEntry wEntry : caveEntry.getWallList()) {
+				writeWall(wEntry);
+			}
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 			return false;
 		}
-		updateAntechamber(caveEntry.getAntechamberEntry());
-		updateMainChamber(caveEntry.getMainChamberEntry());
-		updateRearArea(caveEntry.getRearAreaEntry());
 		return true;
 	}
 
@@ -1854,8 +1528,10 @@ public class MysqlConnector {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
-			pstmt = dbc.prepareStatement("INSERT INTO Caves (OfficialNumber, HistoricName, OptionalHistoricName, CaveTypeID, DistrictID, RegionID, OrientationID, StateOfPreservation, "
-				+ "Findings, FirstDocumentedBy, FirstDocumentedInYear, PreservationClassificationID, CaveGroupID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			pstmt = dbc.prepareStatement(
+					"INSERT INTO Caves (OfficialNumber, HistoricName, OptionalHistoricName, CaveTypeID, DistrictID, RegionID, OrientationID, StateOfPreservation, "
+							+ "Findings, Notes, FirstDocumentedBy, FirstDocumentedInYear, PreservationClassificationID, CaveGroupID, OptionalCaveSketch, C14url, C14DocumentFilename, CaveLayoutComments) "
+							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			pstmt.setString(1, caveEntry.getOfficialNumber());
 			pstmt.setString(2, caveEntry.getHistoricName());
 			pstmt.setString(3, caveEntry.getOptionalHistoricName());
@@ -1865,26 +1541,49 @@ public class MysqlConnector {
 			pstmt.setInt(7, caveEntry.getOrientationID());
 			pstmt.setString(8, caveEntry.getStateOfPerservation());
 			pstmt.setString(9, caveEntry.getFindings());
-			pstmt.setString(10, caveEntry.getFirstDocumentedBy());
-			pstmt.setInt(11, caveEntry.getFirstDocumentedInYear());
-			pstmt.setInt(12, caveEntry.getPreservationClassificationID());
-			pstmt.setInt(13, caveEntry.getCaveGroupID());
+			pstmt.setString(10, caveEntry.getNotes());
+			pstmt.setString(11, caveEntry.getFirstDocumentedBy());
+			pstmt.setInt(12, caveEntry.getFirstDocumentedInYear());
+			pstmt.setInt(13, caveEntry.getPreservationClassificationID());
+			pstmt.setInt(14, caveEntry.getCaveGroupID());
+			pstmt.setString(15, caveEntry.getOptionalCaveSketch());
+			pstmt.setString(16, caveEntry.getC14url());
+			pstmt.setString(17, caveEntry.getC14DocumentFilename());
+			pstmt.setString(18, caveEntry.getCaveLayoutComments());
 			newCaveID = pstmt.executeUpdate();
 			pstmt.close();
+			if (newCaveID > 0) {
+				for (CaveAreaEntry caEntry : caveEntry.getCaveAreaList()) {
+					writeCaveArea(caEntry);
+				}
+				for (WallEntry wEntry : caveEntry.getWallList()) {
+					writeWall(wEntry);
+				}
+			}
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 			return 0;
 		}
-
-		if (newCaveID > 0) {
-			caveEntry.getAntechamberEntry().setAntechamberID(newCaveID);
-			caveEntry.getMainChamberEntry().setMainChamberID(newCaveID);
-			caveEntry.getRearAreaEntry().setRearAreaID(newCaveID);
-			insertAntechamber(caveEntry.getAntechamberEntry());
-			insertMainChamber(caveEntry.getMainChamberEntry());
-			insertRearArea(caveEntry.getRearAreaEntry());
-		}
 		return newCaveID;
+	}
+
+	/**
+	 * @param caveID
+	 */
+	public synchronized boolean updateC14DocumentFilename(int caveID, String c14DocumentFilename) {
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("UPDATE Caves SET C14DocumentFilename=? WHERE CaveID=?");
+			pstmt.setString(1, c14DocumentFilename);
+			pstmt.setInt(2, caveID);
+			pstmt.executeUpdate();
+			pstmt.close();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -1924,6 +1623,8 @@ public class MysqlConnector {
 			if (rs.first()) {
 				result = new UserEntry(rs.getInt("UserID"), rs.getString("Username"), rs.getString("Firstname"), rs.getString("Lastname"),
 						rs.getString("Email"), rs.getString("Affiliation"), rs.getInt("Accessrights"));
+				result.setSessionID(UUID.randomUUID().toString());
+				UserManager.getInstance().addUser(username, result);
 			} else {
 				System.err.println("wrong password for user " + username + ": hash = " + password);
 			}
@@ -1959,20 +1660,21 @@ public class MysqlConnector {
 	}
 
 	/**
-	 * @param list 
+	 * @param list
 	 * @param depictionEntry
 	 * @return
 	 */
-	public synchronized int insertDepictionEntry(DepictionEntry de, ArrayList<ImageEntry> imgEntryList, ArrayList<PictorialElementEntry> peEntryList) {
+	public synchronized int insertDepictionEntry(DepictionEntry de, ArrayList<ImageEntry> imgEntryList,
+			ArrayList<PictorialElementEntry> peEntryList) {
 		int newDepictionID;
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
 			pstmt = dbc.prepareStatement(
 					"INSERT INTO Depictions (StyleID, Inscriptions, SeparateAksaras, Dating, Height, Width, PurchaseDate, VendorID, ExpeditionID, "
-					+ "CurrentLocationID, Description, BackgroundColour, GeneralRemarks, OtherSuggestedIdentifications, "
-					+ "StoryID, CaveID, WallID, AbsoluteLeft, AbsoluteTop, IconographyID, ModeOfRepresentationID) "
-					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+							+ "CurrentLocationID, Description, BackgroundColour, GeneralRemarks, OtherSuggestedIdentifications, "
+							+ "StoryID, CaveID, WallID, AbsoluteLeft, AbsoluteTop, IconographyID, ModeOfRepresentationID) "
+							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			pstmt.setInt(1, de.getStyleID());
 			pstmt.setString(2, de.getInscriptions());
 			pstmt.setString(3, de.getSeparateAksaras());
@@ -2017,15 +1719,16 @@ public class MysqlConnector {
 	 * @param selectedPEList
 	 * @return <code>true</code> when operation is successful
 	 */
-	public synchronized boolean updateDepictionEntry(DepictionEntry de, ArrayList<ImageEntry> imgEntryList, ArrayList<PictorialElementEntry> selectedPEList) {
-//		System.err.println("==> updateDepictionEntry called");
+	public synchronized boolean updateDepictionEntry(DepictionEntry de, ArrayList<ImageEntry> imgEntryList,
+			ArrayList<PictorialElementEntry> selectedPEList) {
+		// System.err.println("==> updateDepictionEntry called");
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
 			pstmt = dbc.prepareStatement(
 					"UPDATE Depictions SET StyleID=?, Inscriptions=?, SeparateAksaras=?, Dating=?, Height=?, Width=?, PurchaseDate=?, VendorID=?, ExpeditionID=?, "
 							+ "CurrentLocationID=?, Description=?, BackgroundColour=?, GeneralRemarks=?, OtherSuggestedIdentifications=?, "
-							+ "StoryID=?, CaveID=?, WallID=?, AbsoluteLeft=?, AbsoluteTop=?, IconographyID=?, ModeOfRepresentationID=? WHERE DepictionID=?"); 
+							+ "StoryID=?, CaveID=?, WallID=?, AbsoluteLeft=?, AbsoluteTop=?, IconographyID=?, ModeOfRepresentationID=? WHERE DepictionID=?");
 			pstmt.setInt(1, de.getStyleID());
 			pstmt.setString(2, de.getInscriptions());
 			pstmt.setString(3, de.getSeparateAksaras());
@@ -2062,15 +1765,15 @@ public class MysqlConnector {
 		}
 		return true;
 	}
-	
+
 	private synchronized void updateDepictionImageRelation(int depictionID, ArrayList<ImageEntry> imgEntryList) {
 		deleteEntry("DELETE FROM DepictionImageRelation WHERE DepictionID=" + depictionID);
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
-//		System.err.println("==> updateDepictionImageRelation called");
+		// System.err.println("==> updateDepictionImageRelation called");
 		try {
 			String insertSqlString = "INSERT INTO DepictionImageRelation VALUES ";
-			for (int i=0; i < imgEntryList.size(); ++i) {
+			for (int i = 0; i < imgEntryList.size(); ++i) {
 				if (i == 0) {
 					insertSqlString = insertSqlString.concat("(?, ?, ?)");
 				} else {
@@ -2085,9 +1788,9 @@ public class MysqlConnector {
 					pstmt.setInt(3, 1);
 				} else {
 					int idx = imgEntryList.indexOf(entry);
-					pstmt.setInt(idx*3 + 1, depictionID);
-					pstmt.setInt(idx*3 + 2, entry.getImageID());
-					pstmt.setInt(idx*3 + 3, 0);
+					pstmt.setInt(idx * 3 + 1, depictionID);
+					pstmt.setInt(idx * 3 + 2, entry.getImageID());
+					pstmt.setInt(idx * 3 + 3, 0);
 				}
 			}
 			pstmt.executeUpdate();
@@ -2097,7 +1800,7 @@ public class MysqlConnector {
 			return;
 		}
 	}
-	
+
 	private synchronized void updateDepictionPERelation(int depictionID, ArrayList<PictorialElementEntry> peEntryList) {
 		deleteEntry("DELETE FROM DepictionPERelation WHERE DepictionID=" + depictionID);
 		String insertSqlString = "INSERT INTO DepictionPERelation VALUES ";
@@ -2134,6 +1837,165 @@ public class MysqlConnector {
 			e.printStackTrace();
 		}
 		return result;
+	}
+
+	public ArrayList<CaveAreaEntry> getCaveAreas(int caveID) {
+		CaveAreaEntry caEntry;
+		Connection dbc = getConnection();
+		PreparedStatement caveAreaStatement;
+		ArrayList<CaveAreaEntry> result = new ArrayList<CaveAreaEntry>();
+		ResultSet caveAreaRS;
+		try {
+			caveAreaStatement = dbc.prepareStatement("SELECT * FROM CaveAreas WHERE CaveID=?");
+			caveAreaStatement.setInt(1, caveID);
+			caveAreaRS = caveAreaStatement.executeQuery();
+			while (caveAreaRS.next()) {
+				caEntry = new CaveAreaEntry(caveAreaRS.getInt("CaveID"), caveAreaRS.getString("CaveAreaLabel"),
+						caveAreaRS.getDouble("ExpeditionMeasuredWidth"), caveAreaRS.getDouble("ExpeditionMeasuredHeight"),
+						caveAreaRS.getDouble("ExpeditionMeasuredLength"), caveAreaRS.getDouble("ModernMeasuredWidth"),
+						caveAreaRS.getDouble("ModernMeasuredHeight"), caveAreaRS.getDouble("ModernMeasuredLength"),
+						caveAreaRS.getInt("PreservationClassificationID"), caveAreaRS.getInt("CeilingTypeID1"), caveAreaRS.getInt("CeilingTypeID2"),
+						caveAreaRS.getInt("CeilingPreservationClassificationID1"), caveAreaRS.getInt("CeilingPreservationClassificationID2"),
+						caveAreaRS.getInt("FloorPreservationClassificationID"));
+				result.add(caEntry);
+			}
+			caveAreaStatement.close();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			return null;
+		}
+		return result;
+	}
+
+	protected synchronized boolean writeCaveArea(CaveAreaEntry entry) {
+		int newID;
+		Connection dbc = getConnection();
+		PreparedStatement caveAreaStatement;
+		try {
+			caveAreaStatement = dbc.prepareStatement(
+					"INSERT INTO CaveAreas (CaveID, CaveAreaLabel, ExpeditionMeasuredWidth, ExpeditionMeasuredLength, ExpeditionMeasuredHeight, ModernMeasuredWidth, ModernMeasuredLength, ModernMeasuredHeight, "
+							+ "PreservationClassificationID, CeilingTypeID1, CeilingTypeID2, CeilingPreservationClassificationID1, CeilingPreservationClassificationID2, FloorPreservationClassificationID=?) "
+							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " + "ON DUPLICATE KEY UPDATE "
+							+ "ExpeditionMeasuredWidth=?, ExpeditionMeasuredLength=?, ExpeditionMeasuredHeight=?, ModernMeasuredWidth=?, ModernMeasuredLength=?, ModernMeasuredHeight=?, "
+							+ "PreservationClassificationID=?, CeilingTypeID1=?, CeilingTypeID2=?, CeilingPreservationClassificationID1=?, CeilingPreservationClassificationID2=?, FloorPreservationClassificationID=?");
+			caveAreaStatement.setInt(1, entry.getCaveID());
+			caveAreaStatement.setString(2, entry.getCaveAreaLabel());
+			caveAreaStatement.setDouble(3, entry.getExpeditionWidth());
+			caveAreaStatement.setDouble(4, entry.getExpeditionLength());
+			caveAreaStatement.setDouble(5, entry.getExpeditionHeight());
+			caveAreaStatement.setDouble(6, entry.getModernWidth());
+			caveAreaStatement.setDouble(7, entry.getModernLength());
+			caveAreaStatement.setDouble(8, entry.getModernHeight());
+			caveAreaStatement.setInt(9, entry.getPreservationClassificationID());
+			caveAreaStatement.setInt(10, entry.getCeilingTypeID1());
+			caveAreaStatement.setInt(11, entry.getCeilingTypeID2());
+			caveAreaStatement.setInt(12, entry.getCeilingPreservationClassificationID1());
+			caveAreaStatement.setInt(13, entry.getCeilingPreservationClassificationID2());
+			caveAreaStatement.setInt(14, entry.getFloorPreservationClassificationID());
+			caveAreaStatement.setDouble(15, entry.getExpeditionWidth());
+			caveAreaStatement.setDouble(16, entry.getExpeditionLength());
+			caveAreaStatement.setDouble(17, entry.getExpeditionHeight());
+			caveAreaStatement.setDouble(18, entry.getModernWidth());
+			caveAreaStatement.setDouble(19, entry.getModernLength());
+			caveAreaStatement.setDouble(20, entry.getModernHeight());
+			caveAreaStatement.setInt(21, entry.getPreservationClassificationID());
+			caveAreaStatement.setInt(22, entry.getCeilingTypeID1());
+			caveAreaStatement.setInt(23, entry.getCeilingTypeID2());
+			caveAreaStatement.setInt(24, entry.getCeilingPreservationClassificationID1());
+			caveAreaStatement.setInt(25, entry.getCeilingPreservationClassificationID2());
+			caveAreaStatement.setInt(26, entry.getFloorPreservationClassificationID());
+			newID = caveAreaStatement.executeUpdate();
+			caveAreaStatement.close();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			return false;
+		}
+		return (newID > 0);
+	}
+
+	protected synchronized boolean writeWall(WallEntry entry) {
+		int newID;
+		Connection dbc = getConnection();
+		PreparedStatement wallStatement;
+		try {
+			wallStatement = dbc.prepareStatement("INSERT INTO Walls (CaveID, WallLocationID, PreservationClassificationID, Width, Height) "
+					+ "VALUES (?, ?, ?, ?, ?) " + "ON DUPLICATE KEY UPDATE " + "PreservationClassificationID=?, Width=?, Height=?");
+			wallStatement.setInt(1, entry.getCaveID());
+			wallStatement.setInt(2, entry.getWallLocationID());
+			wallStatement.setInt(3, entry.getPreservationClassificationID());
+			wallStatement.setDouble(4, entry.getWidth());
+			wallStatement.setDouble(5, entry.getHeight());
+			wallStatement.setInt(6, entry.getPreservationClassificationID());
+			wallStatement.setDouble(7, entry.getWidth());
+			wallStatement.setDouble(8, entry.getHeight());
+			newID = wallStatement.executeUpdate();
+			wallStatement.close();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			return false;
+		}
+		return (newID > 0);
+	}
+
+	/**
+	 * @param caveID
+	 * @return
+	 */
+	public ArrayList<WallEntry> getWalls(int caveID) {
+		WallEntry entry;
+		Connection dbc = getConnection();
+		PreparedStatement wallStatement;
+		ArrayList<WallEntry> result = new ArrayList<WallEntry>();
+		ResultSet wallRS;
+		try {
+			wallStatement = dbc.prepareStatement("SELECT * FROM Walls WHERE CaveID=?");
+			wallStatement.setInt(1, caveID);
+			wallRS = wallStatement.executeQuery();
+			while (wallRS.next()) {
+				entry = new WallEntry(wallRS.getInt("CaveID"), wallRS.getInt("WallLocationID"), wallRS.getInt("PreservationClassificationID"),
+						wallRS.getDouble("Width"), wallRS.getDouble("Height"));
+				result.add(entry);
+			}
+			wallStatement.close();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			return null;
+		}
+		return result;
+	}
+
+	/**
+	 * @return
+	 */
+	public ArrayList<WallLocationEntry> getWallLocations() {
+		WallLocationEntry entry;
+		Connection dbc = getConnection();
+		PreparedStatement wallLocationStatement;
+		ArrayList<WallLocationEntry> result = new ArrayList<WallLocationEntry>();
+		ResultSet wallLocationRS;
+		try {
+			wallLocationStatement = dbc.prepareStatement("SELECT * FROM WallLocations");
+			wallLocationRS = wallLocationStatement.executeQuery();
+			while (wallLocationRS.next()) {
+				entry = new WallLocationEntry(wallLocationRS.getInt("WallLocationID"), wallLocationRS.getString("Label"),
+						wallLocationRS.getString("CaveAreaLabel"));
+				result.add(entry);
+			}
+			wallLocationStatement.close();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			return null;
+		}
+		return result;
+	}
+
+	/**
+	 * @param currentAuthorEntry
+	 * @return
+	 */
+	public boolean updateAuthorEntry(AuthorEntry currentAuthorEntry) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

@@ -67,8 +67,10 @@ import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.Selecti
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.StaticTables;
 import de.cses.client.images.SingleImageEditor.ImageTypeProperties;
 import de.cses.client.images.SingleImageEditor.ImageTypeViewTemplates;
+import de.cses.client.user.UserLogin;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageTypeEntry;
 import de.cses.shared.PhotographerEntry;
@@ -180,22 +182,22 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 			}
 		});
 		
-		dbService.getImageTypes(new AsyncCallback<ArrayList<ImageTypeEntry>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void onSuccess(ArrayList<ImageTypeEntry> result) {
-				for (ImageTypeEntry ite : result) {
+//		dbService.getImageTypes(new AsyncCallback<ArrayList<ImageTypeEntry>>() {
+//
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//
+//			@Override
+//			public void onSuccess(ArrayList<ImageTypeEntry> result) {
+				for (ImageTypeEntry ite : StaticTables.getInstance().getImageTypeEntries().values()) {
 					imageTypeEntryList.add(ite);
 				}
 //				imageTypeSelection.setValue(imageTypeEntryList.findModelWithKey(Integer.toString(imgEntry.getImageTypeID())));
-			}
-		});
+//			}
+//		});
 
 	}
 
@@ -227,7 +229,7 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 			final ImageViewTemplates imageViewTemplates = GWT.create(ImageViewTemplates.class);
 
 			public SafeHtml render(ImageEntry item) {
-				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=150");
+				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=150" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 				return imageViewTemplates.image(imageUri, item.getTitle());
 			}
 
@@ -379,7 +381,7 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 			}
 		});
 
-		// ImageUploader imgUploader = new ImageUploader(this);
+		// C14DocumentUploader imgUploader = new C14DocumentUploader(this);
 		// vlc.add(imgUploader);
 
 		imageListView.setSize("250", "350");

@@ -51,7 +51,7 @@ public class AnnotatedBiblographyView  extends AbstractView {
 		@XTemplate("<div><center><img src='{imgUri}'></img></center></div>")
 		SafeHtml view(SafeUri imgUri);
 		
-		@XTemplate("<div><center><img src='{imgUri}'></img></center><label style='font-size:9px' > AnnotatedBiblographyID {id} </label></br></div>")
+		@XTemplate("<div><center><img src='{imgUri}'></img></center><label style='font-size:9px' > AnnotatedBiblographyID {publicationTypeID} </label></br></div>")
 		SafeHtml view(SafeUri imgUri, int id);
 	}
 

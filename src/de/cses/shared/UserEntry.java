@@ -13,6 +13,8 @@
  */
 package de.cses.shared;
 
+import java.util.Date;
+
 /**
  * @author alingnau
  *
@@ -29,6 +31,8 @@ public class UserEntry extends AbstractEntry {
 	private String email;
 	private String affiliation;
 	private int accessrights;
+	private String sessionID;
+	private long loginDate;
 
 	/**
 	 * 
@@ -55,22 +59,8 @@ public class UserEntry extends AbstractEntry {
 		this.email = email;
 		this.affiliation = affiliation;
 		this.accessrights = accessrights;
-	}
-
-	/* (non-Javadoc)
-	 * @see de.cses.shared.AbstractEntry#getInsertSql()
-	 */
-	public String getInsertSql() {
-		return "INSERT INTO Users (Username, Firstname, Lastname, Email, Affiliation, Accessrights) VALUES ('" + username + "', '" + firstname + "', '" + lastname
-				+ "', '" + email + "', '" + affiliation + "', " + accessrights + ")";
-	}
-
-	/* (non-Javadoc)
-	 * @see de.cses.shared.AbstractEntry#getUpdateSql()
-	 */
-	public String getUpdateSql() {
-		return "UPDATE Users SET Username='" + username + "', Firstname='" + firstname + "', Lastname='" + lastname + "', Email='" + email + "', Affiliation='" + affiliation
-				+ "', Accessrights=" + accessrights + " WHERE UserID=" + userID;
+		Date now = new Date();
+		setLoginDate(now.getTime());
 	}
 
 	public int getUserID() {
@@ -135,6 +125,34 @@ public class UserEntry extends AbstractEntry {
 	@Override
 	public String getUniqueID() {
 		return "User-" + userID;
+	}
+
+	/**
+	 * @return the sessionID
+	 */
+	public String getSessionID() {
+		return sessionID;
+	}
+
+	/**
+	 * @param sessionID the sessionID to set
+	 */
+	public void setSessionID(String sessionID) {
+		this.sessionID = sessionID;
+	}
+
+	/**
+	 * @return the loginDate
+	 */
+	public long getLoginDate() {
+		return loginDate;
+	}
+
+	/**
+	 * @param loginDate the loginDate to set
+	 */
+	public void setLoginDate(long loginDate) {
+		this.loginDate = loginDate;
 	}
 	
 	

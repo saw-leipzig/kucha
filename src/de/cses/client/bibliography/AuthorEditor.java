@@ -270,7 +270,7 @@ public class AuthorEditor implements IsWidget {
 					});
 
 				} else {
-					dbService.updateEntry(currentAuthorEntry.getUpdateSql(), new AsyncCallback<Boolean>() {
+					dbService.updateAuthorEntry(currentAuthorEntry, new AsyncCallback<Boolean>() {
 
 						@Override
 						public void onFailure(Throwable caught) {

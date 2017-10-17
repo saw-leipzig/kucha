@@ -13,42 +13,53 @@
  */
 package de.cses.shared;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
 /**
  * @author alingnau
  *
  */
-public abstract class AbstractEntry implements IsSerializable {
+public class ChamberTypeEntry extends AbstractEntry {
 	
-	protected boolean modified;
+	private int chamberTypeID;
+	private String label;
 
 	/**
 	 * 
 	 */
-	public AbstractEntry() {
-		// TODO Auto-generated constructor stub
+	public ChamberTypeEntry() {
 	}
 
 	/**
-	 * This method will deliver a unique identifier to make the entry information 
-	 * comparable throughout the graphic UI
-	 * @return a unique ID for the specific entry data
+	 * @param chamberTypeID
+	 * @param label
 	 */
-	abstract public String getUniqueID();
-
-	/**
-	 * @return the modified
-	 */
-	public boolean isModified() {
-		return modified;
+	public ChamberTypeEntry(int chamberTypeID, String label) {
+		setChamberTypeID(chamberTypeID);
+		setLabel(label);
 	}
 
-	/**
-	 * @param modified the modified to set
+	/* (non-Javadoc)
+	 * @see de.cses.shared.AbstractEntry#getUniqueID()
 	 */
-	public void setModified(boolean modified) {
-		this.modified = modified;
+	@Override
+	public String getUniqueID() {
+		// TODO Auto-generated method stub
+		return null;
 	}
-	
+
+	public int getChamberTypeID() {
+		return chamberTypeID;
+	}
+
+	public void setChamberTypeID(int chamberTypeID) {
+		this.chamberTypeID = chamberTypeID;
+	}
+
+	public String getLabel() {
+		return label;
+	}
+
+	public void setLabel(String label) {
+		this.label = label;
+	}
+
 }

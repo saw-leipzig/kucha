@@ -25,6 +25,7 @@ import com.sencha.gxt.data.shared.PropertyAccess;
 
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
+import de.cses.shared.ChamberTypeEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
@@ -35,6 +36,8 @@ import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 import de.cses.shared.StyleEntry;
+import de.cses.shared.WallLocationEntry;
+import de.cses.shared.WallOrnamentCaveRelation;
 
 /**
  * @author alingnau
@@ -58,6 +61,7 @@ public class StaticTables {
 	protected HashMap<Integer, IconographyEntry> iconographyEntryMap;
 	protected HashMap<Integer, PictorialElementEntry> pictorialElementEntryMap;
 	protected HashMap<Integer, ModeOfRepresentationEntry> modesOfRepresentationEntryMap;
+	protected HashMap<Integer, WallLocationEntry> wallLocationEntryMap;
 
 	private int loadCounter;
 
@@ -82,7 +86,7 @@ public class StaticTables {
 	 */
 	public StaticTables(ListsLoadedListener l) {
 		listener = l;
-		loadCounter = 12;
+		loadCounter = 13;
 		loadDistricts();
 		loadSites();
 		loadRegions();
@@ -95,11 +99,12 @@ public class StaticTables {
 		loadIconography();
 		loadPictorialElements();
 		loadModesOfRepresentation();
+		loadWallLocations();
 	}
 
 	private void listLoaded() {
 		--loadCounter;
-		listener.listsLoaded((12.0 - loadCounter) / 12.0);
+		listener.listsLoaded((13.0 - loadCounter) / 13.0);
 	}
 
 	/**
@@ -355,7 +360,26 @@ public class StaticTables {
 			}
 		});
 	}
+	
+	private void loadWallLocations() {
+		wallLocationEntryMap = new HashMap<Integer, WallLocationEntry>();
+		dbService.getWallLocations(new AsyncCallback<ArrayList<WallLocationEntry>>() {
 
+			@Override
+			public void onFailure(Throwable caught) {
+				listLoaded();
+			}
+
+			@Override
+			public void onSuccess(ArrayList<WallLocationEntry> result) {
+				for (WallLocationEntry wle : result) {
+					wallLocationEntryMap.put(wle.getWallLocationID(), wle);
+				}
+				listLoaded();
+			}
+		});
+	}
+	
 	public Map<Integer, DistrictEntry> getDistrictEntries() {
 		return districtEntryMap;
 	}
@@ -403,4 +427,9 @@ public class StaticTables {
 	public Map<Integer, ModeOfRepresentationEntry> getModesOfRepresentationEntries() {
 		return modesOfRepresentationEntryMap;
 	}
+	
+	public Map<Integer, WallLocationEntry> getWallLocationEntries() {
+		return wallLocationEntryMap;
+	}
+	
 }

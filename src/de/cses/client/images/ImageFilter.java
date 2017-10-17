@@ -36,6 +36,7 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.StaticTables;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.shared.ImageTypeEntry;
 
@@ -78,20 +79,20 @@ public class ImageFilter extends AbstractFilter {
 		imageTypeProps = GWT.create(ImageTypeProperties.class);
 		imageTypeEntryList = new ListStore<ImageTypeEntry>(imageTypeProps.imageTypeID());
 		selectedImagesTypesList = new ListStore<ImageTypeEntry>(imageTypeProps.imageTypeID());
-		dbService.getImageTypes(new AsyncCallback<ArrayList<ImageTypeEntry>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				// TODO Auto-generated method stub
-			}
-
-			@Override
-			public void onSuccess(ArrayList<ImageTypeEntry> result) {
-				for (ImageTypeEntry ite : result) {
+//		dbService.getImageTypes(new AsyncCallback<ArrayList<ImageTypeEntry>>() {
+//
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				// TODO Auto-generated method stub
+//			}
+//
+//			@Override
+//			public void onSuccess(ArrayList<ImageTypeEntry> result) {
+				for (ImageTypeEntry ite : StaticTables.getInstance().getImageTypeEntries().values()) {
 					imageTypeEntryList.add(ite);
 				}
-			}
-		});
+//			}
+//		});
 	}		
 
 	/* (non-Javadoc)

@@ -14,13 +14,11 @@
 package de.cses.client;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 import de.cses.shared.AnnotatedBiblographyEntry;
-import de.cses.shared.AntechamberEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveGroupEntry;
@@ -33,7 +31,6 @@ import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageTypeEntry;
-import de.cses.shared.MainChamberEntry;
 import de.cses.shared.MainTypologicalClass;
 import de.cses.shared.ModeOfRepresentationEntry;
 import de.cses.shared.OrientationEntry;
@@ -46,7 +43,6 @@ import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PictorialElementEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.PublicationEntry;
-import de.cses.shared.RearAreaEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 import de.cses.shared.StructureOrganization;
@@ -54,6 +50,7 @@ import de.cses.shared.StyleEntry;
 import de.cses.shared.UserEntry;
 import de.cses.shared.VendorEntry;
 import de.cses.shared.WallEntry;
+import de.cses.shared.WallLocationEntry;
 
 /**
  * The client-side stub for the RPC service.
@@ -117,11 +114,11 @@ public interface DatabaseService extends RemoteService {
 
 	CaveEntry getCaveEntry(int id) throws IllegalArgumentException;
 
-	AntechamberEntry getAntechamberEntry(int id) throws IllegalArgumentException;
-
-	MainChamberEntry getMainChamberEntry(int id) throws IllegalArgumentException;
-
-	RearAreaEntry getRearAreaEntry(int id) throws IllegalArgumentException;
+//	AntechamberEntry getAntechamberEntry(int publicationTypeID) throws IllegalArgumentException;
+//
+//	MainChamberEntry getMainChamberEntry(int publicationTypeID) throws IllegalArgumentException;
+//
+//	RearAreaEntry getRearAreaEntry(int publicationTypeID) throws IllegalArgumentException;
 
 	ArrayList<RegionEntry> getRegions() throws IllegalArgumentException;
 
@@ -146,7 +143,11 @@ public interface DatabaseService extends RemoteService {
 	ArrayList<OrnamentCaveType> getOrnamentCaveTypes() throws IllegalArgumentException;
 	
 	ArrayList<WallEntry> getWalls() throws IllegalArgumentException;
-	
+
+	WallEntry getWall(int caveID, String locationLabel) throws IllegalArgumentException;
+
+	ArrayList<WallEntry> getWalls(int caveID) throws IllegalArgumentException;
+
 	ArrayList<OrnamentFunction> getOrnamentFunctions() throws IllegalArgumentException;
 	
 	ArrayList<OrnamentPosition> getOrnamentPositions() throws IllegalArgumentException;
@@ -187,5 +188,9 @@ public interface DatabaseService extends RemoteService {
 			ArrayList<PictorialElementEntry> selectedPE) throws IllegalArgumentException;
 
 	ArrayList<ModeOfRepresentationEntry> getModesOfRepresentation() throws IllegalArgumentException;
+
+	ArrayList<WallLocationEntry> getWallLocations() throws IllegalArgumentException;
+
+	boolean updateAuthorEntry(AuthorEntry currentAuthorEntry);;
 
 }

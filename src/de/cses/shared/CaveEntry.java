@@ -13,6 +13,8 @@
  */
 package de.cses.shared;
 
+import java.util.ArrayList;
+
 public class CaveEntry extends AbstractEntry {
 	private int caveID;
 	private String officialNumber; 
@@ -26,37 +28,44 @@ public class CaveEntry extends AbstractEntry {
 	private int caveGroupID;
 	private String stateOfPerservation;
 	private String findings;
+	private String notes;
 	private String firstDocumentedBy;
 	private int firstDocumentedInYear;
-	private AntechamberEntry antechamberEntry;
-	private MainChamberEntry mainChamberEntry;
-	private RearAreaEntry rearAreaEntry;
+	private String optionalCaveSketch;
+	private String c14url;
+	private String c14DocumentFilename;
+	private String caveLayoutComments;
+	private ArrayList<CaveAreaEntry> caveAreaList;
+	private ArrayList<WallEntry> wallList;
 
 	public CaveEntry() {
-		this(0, "", "", "", 0, 0, 0, 0, "", "", "", 0, 0, 0);
-		antechamberEntry = new AntechamberEntry();
-		mainChamberEntry = new MainChamberEntry();
-		rearAreaEntry = new RearAreaEntry();
+		this(0, "", "", "", 0, 0, 0, 0, "", "", "", "", 0, 0, 0, null, null, null, null);
 	}
 
 	public CaveEntry(int caveID, String officialNumber, String historicName, String optionalHistoricName, int caveTypeID, int districtID,
-			int regionID, int orientationID, String stateOfPerservation, String findings, String firstDocumentedBy, int firstDocumentedInYear, int preservationClassificationID,
-			int caveGroupID) {
-		super();
+			int regionID, int orientationID, String stateOfPerservation, String findings, String notes, String firstDocumentedBy, int firstDocumentedInYear, int preservationClassificationID,
+			int caveGroupID, String optionalCaveSketch, String c14url, String c14DocumentFilename, String caveLayoutComments) {
 		this.caveID = caveID;
-		setOfficialNumber(officialNumber);
-		setHistoricName(historicName);
-		setOptionalHistoricName(optionalHistoricName);
-		setCaveTypeID(caveTypeID);
-		setDistrictID(districtID);
-		setRegionID(regionID);
-		setOrientationID(orientationID);
-		setStateOfPerservation(stateOfPerservation);
-		setFindings(findings);
-		setFirstDocumentedBy(firstDocumentedBy);
-		setFirstDocumentedInYear(firstDocumentedInYear);
-		setPreservationClassificationID(preservationClassificationID);
-		setCaveGroupID(caveGroupID);
+		this.officialNumber = officialNumber;
+		this.historicName = historicName;
+		this.optionalHistoricName = optionalHistoricName;
+		this.caveTypeID = caveTypeID;
+		this.districtID = districtID;
+		this.regionID = regionID;
+		this.orientationID = orientationID;
+		this.stateOfPerservation = stateOfPerservation;
+		this.findings = findings;
+		this.setNotes(notes);
+		this.firstDocumentedBy = firstDocumentedBy;
+		this.firstDocumentedInYear = firstDocumentedInYear;
+		this.preservationClassificationID = preservationClassificationID;
+		this.caveGroupID = caveGroupID;
+		this.optionalCaveSketch = optionalCaveSketch;
+		this.c14url = c14url;
+		this.c14DocumentFilename = c14DocumentFilename;
+		this.setCaveLayoutComments(caveLayoutComments);
+		caveAreaList = new ArrayList<CaveAreaEntry>();
+		wallList = new ArrayList<WallEntry>();
 	}
 
 	public int getCaveID() {
@@ -65,9 +74,7 @@ public class CaveEntry extends AbstractEntry {
 
 	public void setCaveID(int caveID) {
 		this.caveID = caveID;
-		antechamberEntry.setAntechamberID(caveID);
-		mainChamberEntry.setMainChamberID(caveID);
-		rearAreaEntry.setRearAreaID(caveID);
+		modified = true;
 	}
 
 	public String getOfficialNumber() {
@@ -76,6 +83,7 @@ public class CaveEntry extends AbstractEntry {
 
 	public void setOfficialNumber(String officialNumber) {
 		this.officialNumber = officialNumber;
+		modified = true;
 	}
 
 	public String getHistoricName() {
@@ -84,6 +92,7 @@ public class CaveEntry extends AbstractEntry {
 
 	public void setHistoricName(String historicName) {
 		this.historicName = historicName;
+		modified = true;
 	}
 
 	public String getOptionalHistoricName() {
@@ -92,6 +101,7 @@ public class CaveEntry extends AbstractEntry {
 
 	public void setOptionalHistoricName(String optionalHistoricName) {
 		this.optionalHistoricName = optionalHistoricName;
+		modified = true;
 	}
 
 	public int getCaveTypeID() {
@@ -100,6 +110,7 @@ public class CaveEntry extends AbstractEntry {
 
 	public void setCaveTypeID(int caveTypeID) {
 		this.caveTypeID = caveTypeID;
+		modified = true;
 	}
 
 	public int getDistrictID() {
@@ -108,6 +119,7 @@ public class CaveEntry extends AbstractEntry {
 
 	public void setDistrictID(int districtID) {
 		this.districtID = districtID;
+		modified = true;
 	}
 
 	public int getRegionID() {
@@ -116,6 +128,7 @@ public class CaveEntry extends AbstractEntry {
 
 	public void setRegionID(int regionID) {
 		this.regionID = regionID;
+		modified = true;
 	}
 
 	public String getStateOfPerservation() {
@@ -124,6 +137,7 @@ public class CaveEntry extends AbstractEntry {
 
 	public void setStateOfPerservation(String stateOfPerservation) {
 		this.stateOfPerservation = stateOfPerservation;
+		modified = true;
 	}
 
 	public String getFindings() {
@@ -132,40 +146,9 @@ public class CaveEntry extends AbstractEntry {
 
 	public void setFindings(String findings) {
 		this.findings = findings;
+		modified = true;
 	}
 
-	public AntechamberEntry getAntechamberEntry() {
-		return antechamberEntry;
-	}
-
-	public void setAntechamberEntry(AntechamberEntry antechamberEntry) {
-		this.antechamberEntry = antechamberEntry;
-	}
-
-	public MainChamberEntry getMainChamberEntry() {
-		return mainChamberEntry;
-	}
-
-	public void setMainChamberEntry(MainChamberEntry mainChamberEntry) {
-		this.mainChamberEntry = mainChamberEntry;
-	}
-
-	public RearAreaEntry getRearAreaEntry() {
-		return rearAreaEntry;
-	}
-
-	public void setRearAreaEntry(RearAreaEntry rearAreaEntry) {
-		this.rearAreaEntry = rearAreaEntry;
-	}
-
-//	public String getUpdateSql() {
-//		return "UPDATE Caves SET OfficialNumber='" + officialNumber + "', HistoricName='" + historicName + "', OptionalHistoricName='"
-//				+ optionalHistoricName + "', CaveTypeID=" + caveTypeID + ", DistrictID=" + districtID + ", RegionID=" + regionID
-//				+ ", OrientationID=" + orientationID + ", StateOfPreservation='" + stateOfPerservation + "', Findings='" + findings
-//				+ "', AlterationDate='" + firstDocumentedBy + "', PreservationClassificationID=" + preservationClassificationID + ", CaveGroupID="
-//				+ caveGroupID + " WHERE CaveID=" + caveID;
-//	}
-//
 	/**
 	 * @return the orientationID
 	 */
@@ -179,6 +162,7 @@ public class CaveEntry extends AbstractEntry {
 	 */
 	public void setOrientationID(int orientationID) {
 		this.orientationID = orientationID;
+		modified = true;
 	}
 
 	/**
@@ -194,6 +178,7 @@ public class CaveEntry extends AbstractEntry {
 	 */
 	public void setPreservationClassificationID(int preservationClassificationID) {
 		this.preservationClassificationID = preservationClassificationID;
+		modified = true;
 	}
 
 	/**
@@ -209,6 +194,7 @@ public class CaveEntry extends AbstractEntry {
 	 */
 	public void setCaveGroupID(int caveGroupID) {
 		this.caveGroupID = caveGroupID;
+		modified = true;
 	}
 
 	/* (non-Javadoc)
@@ -225,6 +211,7 @@ public class CaveEntry extends AbstractEntry {
 
 	public void setFirstDocumentedInYear(int firstDocumentedInYear) {
 		this.firstDocumentedInYear = firstDocumentedInYear;
+		modified = true;
 	}
 
 	public String getFirstDocumentedBy() {
@@ -233,6 +220,133 @@ public class CaveEntry extends AbstractEntry {
 
 	public void setFirstDocumentedBy(String firstDocumentedBy) {
 		this.firstDocumentedBy = firstDocumentedBy;
+		modified = true;
 	}
 
+	public CaveAreaEntry getCaveArea(String label) {
+		for (CaveAreaEntry ca : caveAreaList) {
+			if (label == ca.getCaveAreaLabel()) {
+				return ca;
+			}
+		}
+		CaveAreaEntry newEntry = new CaveAreaEntry(caveID, label);
+		caveAreaList.add(newEntry);
+		return newEntry;
+	}
+	
+	public void addCaveArea(CaveAreaEntry entry) {
+		caveAreaList.remove(getCaveArea(entry.caveAreaLabel));
+		caveAreaList.add(entry);
+		modified = true;
+	}
+
+	public ArrayList<CaveAreaEntry> getCaveAreaList() {
+		return caveAreaList;
+	}
+
+	public void setCaveAreaList(ArrayList<CaveAreaEntry> caveAreaList) {
+		this.caveAreaList = caveAreaList;
+		modified = true;
+	}
+	
+	public WallEntry getWall(int wallLocationID) {
+		for (WallEntry we : wallList) {
+			if (wallLocationID == we.getWallLocationID()) {
+				return we;
+			}
+		}
+		WallEntry newEntry = new WallEntry(caveID, wallLocationID);
+		wallList.add(newEntry);
+		return newEntry;
+	}
+	
+	public void addWall(WallEntry entry) {
+		wallList.remove(getWall(entry.getWallLocationID()));
+		wallList.add(entry);
+		modified = true;
+	}
+
+	public ArrayList<WallEntry> getWallList() {
+		return wallList;
+	}
+
+	public void setWallList(ArrayList<WallEntry> wallList) {
+		this.wallList = wallList;
+		modified = true;
+	}
+
+	/**
+	 * @return the optionalCaveSketch
+	 */
+	public String getOptionalCaveSketch() {
+		return optionalCaveSketch;
+	}
+
+	/**
+	 * @param optionalCaveSketch the optionalCaveSketch to set
+	 */
+	public void setOptionalCaveSketch(String optionalCaveSketch) {
+		this.optionalCaveSketch = optionalCaveSketch;
+		modified = true;
+	}
+
+	/**
+	 * @return the notes
+	 */
+	public String getNotes() {
+		return notes;
+	}
+
+	/**
+	 * @param notes the notes to set
+	 */
+	public void setNotes(String notes) {
+		this.notes = notes;
+		modified = true;
+	}
+
+	/**
+	 * @return the c14url
+	 */
+	public String getC14url() {
+		return c14url;
+	}
+
+	/**
+	 * @param c14url the c14url to set
+	 */
+	public void setC14url(String c14url) {
+		this.c14url = c14url;
+		modified = true;
+	}
+
+	/**
+	 * @return the c14DocumentFileName
+	 */
+	public String getC14DocumentFilename() {
+		return c14DocumentFilename;
+	}
+
+	/**
+	 * @param c14DocumentFileName the c14DocumentFileName to set
+	 */
+	public void setC14DocumentFilename(String c14DocumentFilename) {
+		this.c14DocumentFilename = c14DocumentFilename;
+		modified = true;
+	}
+
+	/**
+	 * @return the caveLayoutComments
+	 */
+	public String getCaveLayoutComments() {
+		return caveLayoutComments;
+	}
+
+	/**
+	 * @param caveLayoutComments the caveLayoutComments to set
+	 */
+	public void setCaveLayoutComments(String caveLayoutComments) {
+		this.caveLayoutComments = caveLayoutComments;
+	}
+	
 }

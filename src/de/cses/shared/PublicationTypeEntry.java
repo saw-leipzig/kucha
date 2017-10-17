@@ -19,19 +19,19 @@ package de.cses.shared;
  */
 public class PublicationTypeEntry {
 	
-	int id;
+	int publicationTypeID;
 	String name;
 	/**
-	 * @return the id
+	 * @return the publicationTypeID
 	 */
-	public int getId() {
-		return id;
+	public int getPublicationTypeID() {
+		return publicationTypeID;
 	}
 	/**
-	 * @param id the id to set
+	 * @param publicationTypeID the publicationTypeID to set
 	 */
-	public void setId(int id) {
-		this.id = id;
+	public void setPublicationTypeID(int id) {
+		this.publicationTypeID = id;
 	}
 	/**
 	 * @return the name

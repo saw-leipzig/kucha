@@ -144,7 +144,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<PublicationTypeEntry> event) {
-				publicationtype = event.getValue().getId();
+				publicationtype = event.getValue().getPublicationTypeID();
 			}
 		};
 		publicationTypeComboBox.addValueChangeHandler(publicationTypeSelectionHandler);
