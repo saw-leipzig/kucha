@@ -48,6 +48,7 @@ import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PictorialElementEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.PublicationEntry;
+import de.cses.shared.PublicationTypeEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 import de.cses.shared.StructureOrganization;
@@ -62,6 +63,7 @@ public interface DatabaseServiceAsync {
 	void getDistricts(AsyncCallback<ArrayList<DistrictEntry>> callback) throws IllegalArgumentException;
 
 	void getImage(int imageID, AsyncCallback<ImageEntry> callback) throws IllegalArgumentException;
+	void getPublicationTypes(AsyncCallback<ArrayList<PublicationTypeEntry>> callback) throws IllegalArgumentException;
 
 	void getImages(AsyncCallback<ArrayList<ImageEntry>> callback) throws IllegalArgumentException;
 

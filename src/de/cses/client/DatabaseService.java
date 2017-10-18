@@ -43,6 +43,7 @@ import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PictorialElementEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.PublicationEntry;
+import de.cses.shared.PublicationTypeEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 import de.cses.shared.StructureOrganization;
@@ -65,6 +66,7 @@ public interface DatabaseService extends RemoteService {
 	ArrayList<ImageEntry> getImages() throws IllegalArgumentException;
 	ArrayList<AnnotatedBiblographyEntry> getAnnotatedBiblography() throws IllegalArgumentException;
 	AnnotatedBiblographyEntry getAnnotatedBiblographybyID(int bibid) throws IllegalArgumentException;
+	ArrayList<PublicationTypeEntry> getPublicationTypes() throws IllegalArgumentException;
 
 	ArrayList<ImageEntry> getImages(String where) throws IllegalArgumentException;
 

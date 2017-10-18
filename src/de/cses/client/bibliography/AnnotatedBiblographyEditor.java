@@ -22,6 +22,7 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -53,6 +54,7 @@ import de.cses.shared.CaveEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.PublicationTypeEntry;
 import de.cses.shared.PublisherEntry;
+import de.cses.shared.StructureOrganization;
 
 /**
  * @author Nina
@@ -62,7 +64,6 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 	private VBoxLayoutContainer widget;
 	HorizontalLayoutContainer horizontBackground;
 	AnnotatedBiblographyEntry entry;
-	
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	
 	int publicationtype= 0;
@@ -86,10 +87,12 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 	private PublicationTypeProperties publicationTypeProps;
 	private AuthorProperties authorProps;
 	
-	FramedPanel overview = new FramedPanel();
-	FramedPanel frame = new FramedPanel();
-	VerticalLayoutContainer background = new VerticalLayoutContainer();
-	VerticalLayoutContainer overviewVerticalLayout = new VerticalLayoutContainer();
+	FramedPanel overviewFramedPanel = new FramedPanel(); // Framed Panel welches alles vom overview beinhaltet
+	
+	FramedPanel frame = new FramedPanel(); // das oberste Framed Panel als Rahmen
+	VerticalLayoutContainer backgroundoverview = new VerticalLayoutContainer(); // verticaler background fuer die Lioteratur
+	VerticalLayoutContainer overviewvertical = new VerticalLayoutContainer(); // hintergrund welcher alle frames panels beinhaltet
+
 	
 	
 	public AnnotatedBiblographyEditor(AnnotatedBiblographyEntry entry){
@@ -98,35 +101,60 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 	
 	@Override
 	public Widget asWidget() {
+		Window.alert("as widget wird ausgefuehrt");
 		if (widget == null) {
 			BoxLayoutData flex = new BoxLayoutData();
 			flex.setFlex(1);
 			widget = new VBoxLayoutContainer();
 			init();
+			widget.setSize("1000px", "1000px");
 			widget.add(createForm(), flex);
 		}
 
 		return widget;
 	}
+	public AnnotatedBiblographyEditor() {
+
+	}
 	
 	public void init(){
+		Window.alert("init wird ausgefuehrt");
 		authorProps = GWT.create(AuthorProperties.class);
 		publisherProps = GWT.create(PublisherProperties.class);
 		publicationTypeProps = GWT.create(PublicationTypeProperties.class);
 		authorListStore = new ListStore<AuthorEntry>(authorProps.authorID());
-		authorListStore = new ListStore<AuthorEntry>(authorProps.authorID());
-		authorListStore = new ListStore<AuthorEntry>(authorProps.authorID());
+		selectedAuthorListStore = new ListStore<AuthorEntry>(authorProps.authorID());
+		publicationTypeListStore = new ListStore<PublicationTypeEntry>(publicationTypeProps.publicationTypeID());
+		selectedEditorListStore = new ListStore<AuthorEntry>(authorProps.authorID());
+		dbService.getPublicationTypes(new AsyncCallback<ArrayList<PublicationTypeEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(ArrayList<PublicationTypeEntry> result) {
+				publicationTypeListStore.clear();
+				for (PublicationTypeEntry pe : result) {
+					Window.alert("publication type geaddet mit id: " + pe.getPublicationTypeID());
+					publicationTypeListStore.add(pe);
+				}
+			}
+		});
 	}
 	public Widget createForm(){
 		
-		
+		Window.alert("createform wird ausgefuehrt");
 		frame.setHeading("Annotated Biblography");
-		frame.add(background);
+		frame.add(overviewvertical);
+		overviewvertical.add(overviewFramedPanel);
 		
 		//Overview FramedPanel
 
-		overview.setHeading("Literature");
-		background.add(overview);
+		overviewFramedPanel.setHeading("Literature");
+		overviewFramedPanel.add(backgroundoverview);
+		
 		
 		publicationTypeComboBox = new ComboBox<PublicationTypeEntry>(publicationTypeListStore, publicationTypeProps.name(),
 				new AbstractSafeHtmlRenderer<PublicationTypeEntry>() {
@@ -137,24 +165,27 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 						return pvTemplates.publicationType(item.getName());
 					}
 				});
-		overviewVerticalLayout.add(publicationTypeComboBox);
-		
+		backgroundoverview.add(publicationTypeComboBox);
+		Window.alert("combobox gebildet");
 		
 		ValueChangeHandler<PublicationTypeEntry> publicationTypeSelectionHandler = new ValueChangeHandler<PublicationTypeEntry>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<PublicationTypeEntry> event) {
+				Window.alert("on value change methode..");
 				publicationtype = event.getValue().getPublicationTypeID();
+				backgroundoverview.add(buildEingabe(publicationtype));
 			}
 		};
 		publicationTypeComboBox.addValueChangeHandler(publicationTypeSelectionHandler);
-		return build(publicationtype);
+		
+		return frame;
 	}
 	
-	public Widget build(int publicationtype){
-		
-		overview.add(overviewVerticalLayout);
-		overviewVerticalLayout.add(horizontBackground);
+	public Widget buildEingabe(int publicationtype){
+		Window.alert("build wird ausgefuehrt");
+
+		VerticalLayoutContainer verticalLayout = new VerticalLayoutContainer();
 		
 		horizontBackground = new HorizontalLayoutContainer();
 		TextField titelEN = new TextField();
@@ -166,7 +197,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		horizontBackground.add(titelEN);
 		horizontBackground.add(titelTR);
 		horizontBackground.add(titelORG);
-		overviewVerticalLayout.add(horizontBackground);
+		verticalLayout.add(horizontBackground);
 		
 		horizontBackground = new HorizontalLayoutContainer();
 		TextField booktitelEN = new TextField();
@@ -178,7 +209,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		horizontBackground.add(booktitelEN);
 		horizontBackground.add(booktitelTR);
 		horizontBackground.add(booktitelORG);
-		overviewVerticalLayout.add(horizontBackground);
+		verticalLayout.add(horizontBackground);
 		
 		horizontBackground = new HorizontalLayoutContainer();
 		TextField titeladdonEN = new TextField();
@@ -190,7 +221,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		horizontBackground.add(titeladdonEN);
 		horizontBackground.add(titeladdonTR);
 		horizontBackground.add(titeladdonORG);
-		overviewVerticalLayout.add(horizontBackground);
+		verticalLayout.add(horizontBackground);
 		
 		publisherComboBox = new ComboBox<PublisherEntry>(publisherListStore, publisherProps.name(),
 				new AbstractSafeHtmlRenderer<PublisherEntry>() {
@@ -201,14 +232,14 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 						return pvTemplates.publisher(item.getName());
 					}
 				});
-		overviewVerticalLayout.add(publisherComboBox);
+		verticalLayout.add(publisherComboBox);
 		
 		authorSelection = new DualListField<AuthorEntry, String>(authorListStore, selectedAuthorListStore, authorProps.name(), new TextCell());
 		
 		editorSelection = new DualListField<AuthorEntry, String>(authorListStore, selectedEditorListStore, authorProps.name(), new TextCell());
 		
-		overviewVerticalLayout.add(authorSelection);
-		overviewVerticalLayout.add(editorSelection);
+		verticalLayout.add(authorSelection);
+		verticalLayout.add(editorSelection);
 		
 		horizontBackground = new HorizontalLayoutContainer();
 		TextField seriesEN = new TextField();
@@ -220,7 +251,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		horizontBackground.add(seriesEN);
 		horizontBackground.add(seriesTR);
 		horizontBackground.add(seriesORG);
-		overviewVerticalLayout.add(horizontBackground);
+		verticalLayout.add(horizontBackground);
 		
 		horizontBackground = new HorizontalLayoutContainer();
 		TextField volumeEN = new TextField();
@@ -232,7 +263,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		horizontBackground.add(volumeEN);
 		horizontBackground.add(volumeTR);
 		horizontBackground.add(volumeORG);
-		overviewVerticalLayout.add(horizontBackground);
+		verticalLayout.add(horizontBackground);
 
 		horizontBackground = new HorizontalLayoutContainer();
 		TextField yearEN = new TextField();
@@ -244,7 +275,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		horizontBackground.add(yearEN);
 		horizontBackground.add(yearTR);
 		horizontBackground.add(yearORG);
-		overviewVerticalLayout.add(horizontBackground);
+		verticalLayout.add(horizontBackground);
 		
 		horizontBackground = new HorizontalLayoutContainer();
 		TextField monthEN = new TextField();
@@ -256,7 +287,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		horizontBackground.add(monthEN);
 		horizontBackground.add(monthTR);
 		horizontBackground.add(monthORG);
-		overviewVerticalLayout.add(horizontBackground);
+		verticalLayout.add(horizontBackground);
 
 		horizontBackground = new HorizontalLayoutContainer();
 		TextField pagesEN = new TextField();
@@ -268,39 +299,28 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		horizontBackground.add(pagesEN);
 		horizontBackground.add(pagesTR);
 		horizontBackground.add(pagesORG);
-		overviewVerticalLayout.add(horizontBackground);
+		verticalLayout.add(horizontBackground);
 		
 	TextArea comments = new TextArea();
-	overviewVerticalLayout.add(comments);
+	verticalLayout.add(comments);
 	
 	TextArea notes = new TextArea();
-	overviewVerticalLayout.add(notes);
+	verticalLayout.add(notes);
 	
 	TextField url = new TextField();
-	overviewVerticalLayout.add(url);
+	verticalLayout.add(url);
 	
 	TextField uri = new TextField();
-	overviewVerticalLayout.add(uri);
+	verticalLayout.add(uri);
 	
 	CheckBox unpublished = new CheckBox();
-	overviewVerticalLayout.add(unpublished);
+	verticalLayout.add(unpublished);
 	
 	CheckBox erstauflage = new CheckBox();
-	overviewVerticalLayout.add(erstauflage);
+	verticalLayout.add(erstauflage);
 		
 		
-		// Annotations FramedPanel
-		FramedPanel publication = new FramedPanel();
-		overview.setHeading("Annotations");
-		background.add(overview);
-
-		horizontBackground = new HorizontalLayoutContainer();
-		publication.add(horizontBackground);
-		
-		
-		
-		
-			return frame;
+return verticalLayout;
 		
 }
 	

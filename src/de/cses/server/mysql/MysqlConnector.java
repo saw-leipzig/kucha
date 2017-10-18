@@ -51,6 +51,7 @@ import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PictorialElementEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.PublicationEntry;
+import de.cses.shared.PublicationTypeEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 import de.cses.shared.StructureOrganization;
@@ -159,6 +160,27 @@ public class MysqlConnector {
 			while (rs.next()) {
 				result = new DistrictEntry(rs.getInt("DistrictID"), rs.getString("Name"), rs.getInt("SiteID"), rs.getString("Description"),
 						rs.getString("Map"), rs.getString("ArialMap"));
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	public ArrayList<PublicationTypeEntry> getPublicationTypes() {
+		ArrayList<PublicationTypeEntry> result = new ArrayList<PublicationTypeEntry>();
+		PublicationTypeEntry entry;
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM PublicationTypes");
+			while (rs.next()) {
+				entry = new PublicationTypeEntry(rs.getInt("PublicationTypeID"), rs.getString("Name"));
+				result.add(entry);
+				
 			}
 			rs.close();
 			stmt.close();
