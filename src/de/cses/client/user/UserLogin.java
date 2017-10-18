@@ -67,7 +67,7 @@ public class UserLogin extends SimpleContainer {
 	}
 
 	private void checkLogin() {
-		dbService.userLogin(usernameField.getValue(), cryptWithMD5(passwordField.getValue()), new AsyncCallback<UserEntry>() {
+		dbService.userLogin(usernameField.getValue().toLowerCase(), cryptWithMD5(passwordField.getValue()), new AsyncCallback<UserEntry>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
@@ -91,7 +91,7 @@ public class UserLogin extends SimpleContainer {
 	private void setUser(UserEntry entry) {
 		user = entry;
 		loginView.removeFromParent();
-    headline.setHTML("<h1>Hello " + user.getFirstname() + " " + user.getLastname() + "! Welcome to the Kucha Information System!</h1>");
+    headline.setHTML("<h1>Hello " + user.getFirstname() + "! Welcome to the Kucha Information System!</h1>");
 		add(userView);
 	}
 
