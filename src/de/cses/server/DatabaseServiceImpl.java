@@ -44,6 +44,7 @@ import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PictorialElementEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.PublicationEntry;
+import de.cses.shared.PublicationTypeEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 import de.cses.shared.StructureOrganization;
@@ -107,6 +108,10 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		return connector.updateEntry(sqlUpdate);
 	}
 
+	public ArrayList<PublicationTypeEntry> getPublicationTypes() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getPublicationTypes();
+	}
 	/**
 	 * A universal SQL DELETE call for the Kucha database The String needs to
 	 * contain the full sql command, including the DELETE statement at the

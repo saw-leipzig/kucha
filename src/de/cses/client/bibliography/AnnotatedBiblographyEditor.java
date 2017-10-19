@@ -17,27 +17,25 @@ import java.util.ArrayList;
 
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
-import com.sencha.gxt.core.client.XTemplates.XTemplate;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.widget.core.client.FramedPanel;
-import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
+
 import com.sencha.gxt.widget.core.client.container.VBoxLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutData;
+
 import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.DualListField;
@@ -49,10 +47,10 @@ import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.AuthorEntry;
-import de.cses.shared.CaveEntry;
-import de.cses.shared.DistrictEntry;
+
 import de.cses.shared.PublicationTypeEntry;
 import de.cses.shared.PublisherEntry;
+
 
 /**
  * @author Nina
@@ -60,9 +58,8 @@ import de.cses.shared.PublisherEntry;
  */
 public class AnnotatedBiblographyEditor extends AbstractEditor {
 	private VBoxLayoutContainer widget;
-	HorizontalLayoutContainer horizontBackground;
+	HorizontalPanel horizontBackground;
 	AnnotatedBiblographyEntry entry;
-	
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	
 	int publicationtype= 0;
@@ -86,10 +83,14 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 	private PublicationTypeProperties publicationTypeProps;
 	private AuthorProperties authorProps;
 	
-	FramedPanel overview = new FramedPanel();
-	FramedPanel frame = new FramedPanel();
-	VerticalLayoutContainer background = new VerticalLayoutContainer();
-	VerticalLayoutContainer overviewVerticalLayout = new VerticalLayoutContainer();
+	VerticalLayoutContainer vlc= new VerticalLayoutContainer();;
+	
+	FramedPanel overviewFramedPanel = new FramedPanel(); // Framed Panel welches alles vom overview beinhaltet
+	
+	FramedPanel frame = new FramedPanel(); // das oberste Framed Panel als Rahmen
+	VerticalLayoutContainer backgroundoverview = new VerticalLayoutContainer(); // verticaler background fuer die Lioteratur
+	VerticalLayoutContainer overviewvertical = new VerticalLayoutContainer(); // hintergrund welcher alle frames panels beinhaltet
+
 	
 	
 	public AnnotatedBiblographyEditor(AnnotatedBiblographyEntry entry){
@@ -99,34 +100,54 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 	@Override
 	public Widget asWidget() {
 		if (widget == null) {
-			BoxLayoutData flex = new BoxLayoutData();
-			flex.setFlex(1);
 			widget = new VBoxLayoutContainer();
 			init();
-			widget.add(createForm(), flex);
+			widget.setSize("1000px", "1000px");
+			widget.add(createForm());
 		}
 
 		return widget;
 	}
+	public AnnotatedBiblographyEditor() {
+
+	}
 	
 	public void init(){
+
 		authorProps = GWT.create(AuthorProperties.class);
 		publisherProps = GWT.create(PublisherProperties.class);
 		publicationTypeProps = GWT.create(PublicationTypeProperties.class);
 		authorListStore = new ListStore<AuthorEntry>(authorProps.authorID());
-		authorListStore = new ListStore<AuthorEntry>(authorProps.authorID());
-		authorListStore = new ListStore<AuthorEntry>(authorProps.authorID());
+		selectedAuthorListStore = new ListStore<AuthorEntry>(authorProps.authorID());
+		publicationTypeListStore = new ListStore<PublicationTypeEntry>(publicationTypeProps.publicationTypeID());
+		selectedEditorListStore = new ListStore<AuthorEntry>(authorProps.authorID());
+		dbService.getPublicationTypes(new AsyncCallback<ArrayList<PublicationTypeEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(ArrayList<PublicationTypeEntry> result) {
+				publicationTypeListStore.clear();
+				for (PublicationTypeEntry pe : result) {
+					publicationTypeListStore.add(pe);
+				}
+			}
+		});
 	}
 	public Widget createForm(){
-		
-		
+	
 		frame.setHeading("Annotated Biblography");
-		frame.add(background);
+		frame.add(overviewvertical);
+		overviewvertical.add(overviewFramedPanel);
 		
 		//Overview FramedPanel
 
-		overview.setHeading("Literature");
-		background.add(overview);
+		overviewFramedPanel.setHeading("Literature");
+		overviewFramedPanel.add(backgroundoverview);
+		
 		
 		publicationTypeComboBox = new ComboBox<PublicationTypeEntry>(publicationTypeListStore, publicationTypeProps.name(),
 				new AbstractSafeHtmlRenderer<PublicationTypeEntry>() {
@@ -137,26 +158,31 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 						return pvTemplates.publicationType(item.getName());
 					}
 				});
-		overviewVerticalLayout.add(publicationTypeComboBox);
+		backgroundoverview.add(publicationTypeComboBox);
 		
 		
-		ValueChangeHandler<PublicationTypeEntry> publicationTypeSelectionHandler = new ValueChangeHandler<PublicationTypeEntry>() {
+		SelectionHandler<PublicationTypeEntry> publicationTypeSelectionHandler = new SelectionHandler<PublicationTypeEntry>() {
 
 			@Override
-			public void onValueChange(ValueChangeEvent<PublicationTypeEntry> event) {
-				publicationtype = event.getValue().getPublicationTypeID();
+			public void onSelection(SelectionEvent<PublicationTypeEntry> event) {
+			
+				backgroundoverview.remove(vlc);
+				vlc.removeFromParent();
+				vlc.clear();
+				vlc.setEnabled(false);
+				publicationtype = event.getSelectedItem().getPublicationTypeID();
+				backgroundoverview.add(buildEingabe(publicationtype));
 			}
 		};
-		publicationTypeComboBox.addValueChangeHandler(publicationTypeSelectionHandler);
-		return build(publicationtype);
+		publicationTypeComboBox.addSelectionHandler(publicationTypeSelectionHandler);
+		
+		return frame;
 	}
 	
-	public Widget build(int publicationtype){
+	public Widget buildEingabe(int publicationtype){
+		vlc = new VerticalLayoutContainer();
 		
-		overview.add(overviewVerticalLayout);
-		overviewVerticalLayout.add(horizontBackground);
-		
-		horizontBackground = new HorizontalLayoutContainer();
+		horizontBackground = new HorizontalPanel();
 		TextField titelEN = new TextField();
 		TextField titelORG = new TextField();
 		TextField titelTR = new TextField();
@@ -166,9 +192,39 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		horizontBackground.add(titelEN);
 		horizontBackground.add(titelTR);
 		horizontBackground.add(titelORG);
-		overviewVerticalLayout.add(horizontBackground);
+		vlc.add(horizontBackground);
 		
-		horizontBackground = new HorizontalLayoutContainer();
+		if(publicationtype == 6){
+		horizontBackground = new HorizontalPanel();
+		TextField procEN = new TextField();
+		TextField procORG = new TextField();
+		TextField procTR = new TextField();
+		HTML procDES = new HTML("Proceedings Title: ");
+		
+		horizontBackground.add(procDES);
+		horizontBackground.add(procEN);
+		horizontBackground.add(procTR);
+		horizontBackground.add(procORG);
+		vlc.add(horizontBackground);
+		}
+		
+		if(publicationtype == 5){
+		horizontBackground = new HorizontalPanel();
+		TextField chaptitEN = new TextField();
+		TextField chaptitORG = new TextField();
+		TextField chaptitTR = new TextField();
+		HTML chaptitDES = new HTML("Chapter Title: ");
+		
+		horizontBackground.add(chaptitDES);
+		horizontBackground.add(chaptitEN);
+		horizontBackground.add(chaptitTR);
+		horizontBackground.add(chaptitORG);
+		vlc.add(horizontBackground);
+		}
+		
+		if(publicationtype == 1){
+		
+		horizontBackground = new HorizontalPanel();
 		TextField booktitelEN = new TextField();
 		TextField booktitelORG = new TextField();
 		TextField booktitelTR = new TextField();
@@ -178,9 +234,54 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		horizontBackground.add(booktitelEN);
 		horizontBackground.add(booktitelTR);
 		horizontBackground.add(booktitelORG);
-		overviewVerticalLayout.add(horizontBackground);
+		vlc.add(horizontBackground);
+		}
 		
-		horizontBackground = new HorizontalLayoutContainer();
+		if(publicationtype == 3){
+		horizontBackground = new HorizontalPanel();
+		TextField uniEN = new TextField();
+		TextField uniORG = new TextField();
+		TextField uniTR = new TextField();
+		HTML uniDES = new HTML("University: ");
+		
+		horizontBackground.add(uniDES);
+		horizontBackground.add(uniEN);
+		horizontBackground.add(uniTR);
+		horizontBackground.add(uniORG);
+		vlc.add(horizontBackground);
+		}
+		
+		if(publicationtype == 8){
+		
+		horizontBackground = new HorizontalPanel();
+		TextField numberEN = new TextField();
+		TextField numberORG = new TextField();
+		TextField numberTR = new TextField();
+		HTML numberDES = new HTML("Number: ");
+		
+		horizontBackground.add(numberDES);
+		horizontBackground.add(numberEN);
+		horizontBackground.add(numberTR);
+		horizontBackground.add(numberORG);
+		vlc.add(horizontBackground);
+		}
+		
+		
+		if(publicationtype == 7){
+		horizontBackground = new HorizontalPanel();
+		TextField accessEN = new TextField();
+		TextField accessORG = new TextField();
+		TextField accessTR = new TextField();
+		HTML accessDES = new HTML("Access Date: ");
+		
+		horizontBackground.add(accessDES);
+		horizontBackground.add(accessEN);
+		horizontBackground.add(accessTR);
+		horizontBackground.add(accessORG);
+		vlc.add(horizontBackground);
+		}
+		
+		horizontBackground = new HorizontalPanel();
 		TextField titeladdonEN = new TextField();
 		TextField titeladdonORG = new TextField();
 		TextField titeladdonTR = new TextField();
@@ -190,8 +291,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		horizontBackground.add(titeladdonEN);
 		horizontBackground.add(titeladdonTR);
 		horizontBackground.add(titeladdonORG);
-		overviewVerticalLayout.add(horizontBackground);
+		vlc.add(horizontBackground);
 		
+
 		publisherComboBox = new ComboBox<PublisherEntry>(publisherListStore, publisherProps.name(),
 				new AbstractSafeHtmlRenderer<PublisherEntry>() {
 
@@ -201,16 +303,33 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 						return pvTemplates.publisher(item.getName());
 					}
 				});
-		overviewVerticalLayout.add(publisherComboBox);
+		horizontBackground = new HorizontalPanel();
+		HTML publisher = new HTML("Publisher: ");
+		horizontBackground.add(publisher);
+		horizontBackground.add(publisherComboBox);
+		vlc.add(horizontBackground);
 		
 		authorSelection = new DualListField<AuthorEntry, String>(authorListStore, selectedAuthorListStore, authorProps.name(), new TextCell());
 		
 		editorSelection = new DualListField<AuthorEntry, String>(authorListStore, selectedEditorListStore, authorProps.name(), new TextCell());
 		
-		overviewVerticalLayout.add(authorSelection);
-		overviewVerticalLayout.add(editorSelection);
+		if(publicationtype != 6){
+		horizontBackground = new HorizontalPanel();
+		HTML author = new HTML("Author: ");
+		horizontBackground.add(author);
+		horizontBackground.add(authorSelection);
+		vlc.add(horizontBackground);
+		}
 		
-		horizontBackground = new HorizontalLayoutContainer();
+		horizontBackground = new HorizontalPanel();
+		HTML editor = new HTML("Editor: ");
+		horizontBackground.add(editor);
+		horizontBackground.add(editorSelection);
+		vlc.add(horizontBackground);
+		
+		
+		if(publicationtype == 8){
+		horizontBackground = new HorizontalPanel();
 		TextField seriesEN = new TextField();
 		TextField seriesORG = new TextField();
 		TextField seriesTR = new TextField();
@@ -220,9 +339,25 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		horizontBackground.add(seriesEN);
 		horizontBackground.add(seriesTR);
 		horizontBackground.add(seriesORG);
-		overviewVerticalLayout.add(horizontBackground);
+		vlc.add(horizontBackground);
+		}
 		
-		horizontBackground = new HorizontalLayoutContainer();
+		if(publicationtype == 1 ||publicationtype ==  5){
+		
+		horizontBackground = new HorizontalPanel();
+		TextField editionEN = new TextField();
+		TextField editionORG = new TextField();
+		TextField editionTR = new TextField();
+		HTML editionDES = new HTML("Edition: ");
+		
+		horizontBackground.add(editionDES);
+		horizontBackground.add(editionEN);
+		horizontBackground.add(editionTR);
+		horizontBackground.add(editionORG);
+		vlc.add(horizontBackground);
+		}
+		if(publicationtype == 8){
+		horizontBackground = new HorizontalPanel();
 		TextField volumeEN = new TextField();
 		TextField volumeORG = new TextField();
 		TextField volumeTR = new TextField();
@@ -232,9 +367,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		horizontBackground.add(volumeEN);
 		horizontBackground.add(volumeTR);
 		horizontBackground.add(volumeORG);
-		overviewVerticalLayout.add(horizontBackground);
-
-		horizontBackground = new HorizontalLayoutContainer();
+		vlc.add(horizontBackground);
+		}
+		horizontBackground = new HorizontalPanel();
 		TextField yearEN = new TextField();
 		TextField yearORG = new TextField();
 		TextField yearTR = new TextField();
@@ -244,9 +379,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		horizontBackground.add(yearEN);
 		horizontBackground.add(yearTR);
 		horizontBackground.add(yearORG);
-		overviewVerticalLayout.add(horizontBackground);
+		vlc.add(horizontBackground);
 		
-		horizontBackground = new HorizontalLayoutContainer();
+		if(publicationtype == 8){
+		horizontBackground = new HorizontalPanel();
 		TextField monthEN = new TextField();
 		TextField monthORG = new TextField();
 		TextField monthTR = new TextField();
@@ -256,9 +392,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		horizontBackground.add(monthEN);
 		horizontBackground.add(monthTR);
 		horizontBackground.add(monthORG);
-		overviewVerticalLayout.add(horizontBackground);
+		vlc.add(horizontBackground);
+		}
 
-		horizontBackground = new HorizontalLayoutContainer();
+		horizontBackground = new HorizontalPanel();
 		TextField pagesEN = new TextField();
 		TextField pagesORG = new TextField();
 		TextField pagesTR = new TextField();
@@ -268,39 +405,53 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		horizontBackground.add(pagesEN);
 		horizontBackground.add(pagesTR);
 		horizontBackground.add(pagesORG);
-		overviewVerticalLayout.add(horizontBackground);
+		vlc.add(horizontBackground);
 		
 	TextArea comments = new TextArea();
-	overviewVerticalLayout.add(comments);
+	horizontBackground = new HorizontalPanel();
+	HTML commentsdes = new HTML("Comments: ");
+	horizontBackground.add(commentsdes);
+	horizontBackground.add(comments);
+	vlc.add(horizontBackground);
 	
 	TextArea notes = new TextArea();
-	overviewVerticalLayout.add(notes);
+	horizontBackground = new HorizontalPanel();
+	HTML notesdes = new HTML("Notes: ");
+	horizontBackground.add(notesdes);
+	horizontBackground.add(notes);
+	vlc.add(horizontBackground);
+	
 	
 	TextField url = new TextField();
-	overviewVerticalLayout.add(url);
+	horizontBackground = new HorizontalPanel();
+	HTML urldes = new HTML("URL: ");
+	horizontBackground.add(urldes);
+	horizontBackground.add(url);
+	vlc.add(horizontBackground);
 	
 	TextField uri = new TextField();
-	overviewVerticalLayout.add(uri);
+	horizontBackground = new HorizontalPanel();
+	HTML urides = new HTML("URI: ");
+	horizontBackground.add(urides);
+	horizontBackground.add(uri);
+	vlc.add(horizontBackground);
 	
 	CheckBox unpublished = new CheckBox();
-	overviewVerticalLayout.add(unpublished);
+	horizontBackground = new HorizontalPanel();
+	HTML unpublisheddes = new HTML("Unpublished: ");
+	horizontBackground.add(unpublisheddes);
+	horizontBackground.add(unpublished);
+	vlc.add(horizontBackground);
 	
 	CheckBox erstauflage = new CheckBox();
-	overviewVerticalLayout.add(erstauflage);
-		
-		
-		// Annotations FramedPanel
-		FramedPanel publication = new FramedPanel();
-		overview.setHeading("Annotations");
-		background.add(overview);
-
-		horizontBackground = new HorizontalLayoutContainer();
-		publication.add(horizontBackground);
-		
-		
-		
-		
-			return frame;
+	horizontBackground = new HorizontalPanel();
+	HTML erstauflagedes = new HTML("First Edition: ");
+	horizontBackground.add(erstauflagedes);
+	horizontBackground.add(erstauflage);
+	erstauflage.setValue(true);
+	vlc.add(horizontBackground);
+		 
+	return vlc;
 		
 }
 	

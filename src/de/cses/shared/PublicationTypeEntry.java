@@ -19,20 +19,23 @@ package de.cses.shared;
  */
 public class PublicationTypeEntry extends AbstractEntry {
 	
+
 	int publicationTypeID;
 	String name;
+	
 	/**
 	 * @return the publicationTypeID
 	 */
-	public int getPublicationTypeID() {
-		return publicationTypeID;
+	
+	public PublicationTypeEntry(){
+		
 	}
-	/**
-	 * @param publicationTypeID the publicationTypeID to set
-	 */
-	public void setPublicationTypeID(int id) {
-		this.publicationTypeID = id;
+	public PublicationTypeEntry(int id, String name){
+		this.name= name;
+		this.publicationTypeID=id;
 	}
+	
+
 	/**
 	 * @return the name
 	 */
@@ -53,6 +56,19 @@ public class PublicationTypeEntry extends AbstractEntry {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	/**
+	 * @return the publicationTypeID
+	 */
+	public int getPublicationTypeID() {
+		return publicationTypeID;
+	}
+	/**
+	 * @param publicationTypeID the publicationTypeID to set
+	 */
+	public void setPublicationTypeID(int publicationTypeID) {
+		this.publicationTypeID = publicationTypeID;
+	}
+	
 	
 	
 
