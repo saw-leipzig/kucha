@@ -134,7 +134,7 @@ public class PhotographerEditor implements IsWidget {
 				
 		vlc.add(new FieldLabel(photographerSelection, "Photographer"));
 		
-//		vlc.add(new FieldLabel(newNameField, "New Name"));
+//		mainInputVLC.add(new FieldLabel(newNameField, "New Name"));
 		
 		BoxLayoutData bbLayout = new BoxLayoutData(new Margins(5, 15, 5, 0));
 		ButtonBar bb = new ButtonBar();
