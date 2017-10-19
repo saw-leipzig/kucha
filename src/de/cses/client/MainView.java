@@ -178,8 +178,8 @@ public class MainView implements IsWidget {
 			
 		});
 		
-		ornamenticSearchController = new OrnamenticSearchController("Ornamentic", new OrnamenticResultView("Ornamentic"));
-		ornamenticSearchController.addRelatedFilter(new OrnamenticFilter("Ornamentic Filter"));
+		ornamenticSearchController = new OrnamenticSearchController("Ornamentation", new OrnamenticResultView("Ornamentation"));
+		ornamenticSearchController.addRelatedFilter(new OrnamenticFilter("Ornamentation Filter"));
 		ornamenticSearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
 			@Override
