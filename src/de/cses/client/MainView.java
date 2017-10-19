@@ -100,10 +100,6 @@ public class MainView implements IsWidget {
     
     northPanel = new VerticalLayoutContainer();
 
-//    Header headline = new Header();
-//    headline.setHTML("<h1>Welcome to the Kucha Information System</h1>");
-//    northPanel.add(headline, new VerticalLayoutData(1.0, .2));
-    
     northPanel.add(UserLogin.getInstance(), new VerticalLayoutData(1.0, .4));
     
     HorizontalLayoutData hLayoutData = new HorizontalLayoutData(140, 1.0, new Margins(5, 0, 5, 5));
