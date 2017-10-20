@@ -112,9 +112,9 @@ public class OrnamentCaveAttributes extends PopupPanel {
 		selectedorientation = new ListStore<OrientationEntry>(orientationProps.orientationID());
 		orientation = new ListStore<OrientationEntry>(orientationProps.orientationID());
 
-		//if (ornamentCaveRelationEntry != null) {
-			//wallsListStore.addAll(ornamentCaveRelationEntry.getWalls());
-		//}
+		// if (ornamentCaveRelationEntry != null) {
+		// wallsListStore.addAll(ornamentCaveRelationEntry.getWalls());
+		// }
 		dbService.getOrnaments(new AsyncCallback<ArrayList<OrnamentEntry>>() {
 
 			@Override
@@ -129,46 +129,38 @@ public class OrnamentCaveAttributes extends PopupPanel {
 				selectedSimilarOrnaments.clear();
 				selectedRedlatedOrnaments.clear();
 				if (ornamentCaveRelationEntry != null) {
-				for (OrnamentEntry pe : result) {
-					
+					for (OrnamentEntry pe : result) {
+
 						int count = 0;
-					for(OrnamentEntry oe: ornamentCaveRelationEntry.getSimilarOrnamentsRelations()) {
-						if(pe.getOrnamentID() != oe.getOrnamentID()) {
-							count ++;
+						for (OrnamentEntry oe : ornamentCaveRelationEntry.getSimilarOrnamentsRelations()) {
+							if (pe.getOrnamentID() != oe.getOrnamentID()) {
+								count++;
+							}
+							if (count == ornamentCaveRelationEntry.getSimilarOrnamentsRelations().size()) {
+								ornamentEntryList2.add(pe);
+							}
 						}
-						if(count == ornamentCaveRelationEntry.getSimilarOrnamentsRelations().size()) {
-							ornamentEntryList2.add(pe);
+
+						int countrelated = 0;
+						for (OrnamentEntry oe : ornamentCaveRelationEntry.getRelatedOrnamentsRelations()) {
+							if (pe.getOrnamentID() != oe.getOrnamentID()) {
+								countrelated++;
+							}
+							if (countrelated == ornamentCaveRelationEntry.getRelatedOrnamentsRelations().size()) {
+								ornamentEntryList.add(pe);
+							}
 						}
+
 					}
-					
-					
-					
-					
-					int countrelated = 0;
-					for(OrnamentEntry oe: ornamentCaveRelationEntry.getRelatedOrnamentsRelations()) {
-						if(pe.getOrnamentID() != oe.getOrnamentID()) {
-							countrelated ++;
-						}
-						if(countrelated == ornamentCaveRelationEntry.getRelatedOrnamentsRelations().size()) {
-							ornamentEntryList.add(pe);
-						}
+					for (OrnamentEntry oe : ornamentCaveRelationEntry.getSimilarOrnamentsRelations()) {
+						selectedSimilarOrnaments.add(oe);
 					}
-					
-					
-					
-					} 
-				for(OrnamentEntry oe:  ornamentCaveRelationEntry.getSimilarOrnamentsRelations()) {
-					selectedSimilarOrnaments.add(oe);
-				}
-				for(OrnamentEntry oe:  ornamentCaveRelationEntry.getRelatedOrnamentsRelations()) {
-					selectedRedlatedOrnaments.add(oe);
-				}
-				
-				
-				
-				}
-				else {
-					for(OrnamentEntry pe: result) {
+					for (OrnamentEntry oe : ornamentCaveRelationEntry.getRelatedOrnamentsRelations()) {
+						selectedRedlatedOrnaments.add(oe);
+					}
+
+				} else {
+					for (OrnamentEntry pe : result) {
 						ornamentEntryList2.add(pe);
 						ornamentEntryList.add(pe);
 					}
@@ -177,27 +169,27 @@ public class OrnamentCaveAttributes extends PopupPanel {
 			}
 		});
 
-//		dbService.getDistricts(new AsyncCallback<ArrayList<DistrictEntry>>() {
-//
-//			@Override
-//			public void onFailure(Throwable caught) {
-//				caught.printStackTrace();
-//			}
-//
-//			@Override
-//			public void onSuccess(ArrayList<DistrictEntry> result) {
-//				districtEntryList.clear();
-				for (DistrictEntry pe : StaticTables.getInstance().getDistrictEntries().values()) {
-					districtEntryList.add(pe);
-				}
-				if (ornamentCaveRelationEntry != null) {
+		// dbService.getDistricts(new AsyncCallback<ArrayList<DistrictEntry>>() {
+		//
+		// @Override
+		// public void onFailure(Throwable caught) {
+		// caught.printStackTrace();
+		// }
+		//
+		// @Override
+		// public void onSuccess(ArrayList<DistrictEntry> result) {
+		// districtEntryList.clear();
+		for (DistrictEntry pe : StaticTables.getInstance().getDistrictEntries().values()) {
+			districtEntryList.add(pe);
+		}
+		if (ornamentCaveRelationEntry != null) {
 
-					districtComboBox.setValue(ornamentCaveRelationEntry.getDistrict());
-					ValueChangeEvent.fire(districtComboBox, ornamentCaveRelationEntry.getDistrict());
+			districtComboBox.setValue(ornamentCaveRelationEntry.getDistrict());
+			ValueChangeEvent.fire(districtComboBox, ornamentCaveRelationEntry.getDistrict());
 
-				}
-//			}
-//		});
+		}
+		// }
+		// });
 
 		dbService.getOrientations(new AsyncCallback<ArrayList<OrientationEntry>>() {
 
@@ -211,24 +203,23 @@ public class OrnamentCaveAttributes extends PopupPanel {
 				orientation.clear();
 				selectedorientation.clear();
 				if (ornamentCaveRelationEntry != null) {
-				for (OrientationEntry pe : result) {
-					
+					for (OrientationEntry pe : result) {
+
 						int count = 0;
-					for(OrientationEntry oe: ornamentCaveRelationEntry.getOrientations()) {
-						if(pe.getOrientationID() != oe.getOrientationID()) {
-							count ++;
-						}
-						if(count == ornamentCaveRelationEntry.getOrientations().size()) {
-							orientation.add(pe);
+						for (OrientationEntry oe : ornamentCaveRelationEntry.getOrientations()) {
+							if (pe.getOrientationID() != oe.getOrientationID()) {
+								count++;
+							}
+							if (count == ornamentCaveRelationEntry.getOrientations().size()) {
+								orientation.add(pe);
+							}
 						}
 					}
-					} 
-				for(OrientationEntry oe: ornamentCaveRelationEntry.getOrientations()) {
-					selectedorientation.add(oe);
-				}
-				}
-				else {
-					for(OrientationEntry pe: result) {
+					for (OrientationEntry oe : ornamentCaveRelationEntry.getOrientations()) {
+						selectedorientation.add(oe);
+					}
+				} else {
+					for (OrientationEntry pe : result) {
 						orientation.add(pe);
 					}
 				}
@@ -351,18 +342,18 @@ public class OrnamentCaveAttributes extends PopupPanel {
 				int p = event.getSelectedItem().getCaveTypeID();
 				wallsListStore.clear();
 				caveType.setText(StaticTables.getInstance().getCaveTypeEntries().get(p).getNameEN());
-//				dbService.getCaveTypebyID(p, new AsyncCallback<CaveTypeEntry>() {
-//
-//					@Override
-//					public void onFailure(Throwable caught) {
-//						caught.printStackTrace();
-//					}
-//
-//					@Override
-//					public void onSuccess(CaveTypeEntry result) {
-//						caveType.setText(result.getNameEN());
-//					}
-//				});
+				// dbService.getCaveTypebyID(p, new AsyncCallback<CaveTypeEntry>() {
+				//
+				// @Override
+				// public void onFailure(Throwable caught) {
+				// caught.printStackTrace();
+				// }
+				//
+				// @Override
+				// public void onSuccess(CaveTypeEntry result) {
+				// caveType.setText(result.getNameEN());
+				// }
+				// });
 				// style ueber hoehle raussuchen
 			}
 
@@ -381,20 +372,19 @@ public class OrnamentCaveAttributes extends PopupPanel {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				if (districtComboBox.getValue()== null) {
+				if (districtComboBox.getValue() == null) {
 					Window.alert("Please select the District first");
 					return;
 				}
 				if (caveEntryComboBox.getValue() == null) {
 					Window.alert("Please select the Cave first");
 					return;
-				} 
-					OrnamentWallAttributes attributespopup = new OrnamentWallAttributes(caveEntryComboBox.getValue());
-					attributespopup.setOrnamentCaveRelation(ornamentCaveAttributes);
-					attributespopup.setModal(true);
-					attributespopup.setGlassEnabled(true);
-					attributespopup.center();
-				
+				}
+				OrnamentWallAttributes attributespopup = new OrnamentWallAttributes(caveEntryComboBox.getValue());
+				attributespopup.setOrnamentCaveRelation(ornamentCaveAttributes);
+				attributespopup.setModal(true);
+				attributespopup.setGlassEnabled(true);
+				attributespopup.center();
 
 			}
 
@@ -409,8 +399,6 @@ public class OrnamentCaveAttributes extends PopupPanel {
 		header.setHeading("Walls");
 		header.add(selectedWallsHorizontalPanel);
 		vlcCave.add(header, new VerticalLayoutData(0.5, .125));
-
-		
 
 		wallList = new ListView<WallOrnamentCaveRelation, String>(wallsListStore, wallRelationProps.name());
 		wallList.setAllowTextSelection(true);
@@ -628,17 +616,16 @@ public class OrnamentCaveAttributes extends PopupPanel {
 			@Override
 			public void onClick(ClickEvent event) {
 				OrnamentCaveRelation ornamentCaveRelation;
-				if(ornamentCaveRelationEntry== null) {
-				ornamentCaveRelation = new OrnamentCaveRelation();
-				}
-				else {
+				if (ornamentCaveRelationEntry == null) {
+					ornamentCaveRelation = new OrnamentCaveRelation();
+				} else {
 					ornamentCaveRelation = ornamentCaveRelationEntry;
 				}
-				if(districtComboBox.getValue() == null) {
+				if (districtComboBox.getValue() == null) {
 					Window.alert("Please select a District");
 					return;
 				}
-				if(caveEntryComboBox.getValue() == null) {
+				if (caveEntryComboBox.getValue() == null) {
 					Window.alert("Please select a Cave");
 					return;
 				}
@@ -647,7 +634,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 				ornamentCaveRelation.setDistrict(districtComboBox.getValue());
 				ornamentCaveRelation.setColours(colours.getText());
 				ornamentCaveRelation.setGroup(groupOfOrnaments.getText());
-				
+
 				ornamentCaveRelation.getOrientations().clear();
 				for (int i = 0; i < selectedorientation.size(); i++) {
 					ornamentCaveRelation.getOrientations().add(selectedorientation.get(i));
@@ -668,7 +655,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 				for (int i = 0; i < selector.getSelectedPE().size(); i++) {
 					ornamentCaveRelation.getPictorialElements().add(selector.getSelectedPE().get(i));
 				}
-				
+
 				ornamentCaveRelation.getWalls().clear();
 				for (int i = 0; i < wallsListStore.size(); i++) {
 					ornamentCaveRelation.getWalls().add(wallsListStore.get(i));
@@ -676,8 +663,8 @@ public class OrnamentCaveAttributes extends PopupPanel {
 				ornamentCaveRelation.setRelatedelementeofOtherCultures(relatedElementsofOtherCultures.getText());
 				ornamentCaveRelation.setSimilarelementsOfOtherCultures(similarElementsofOtherCultures.getText());
 				// set walls
-				if(ornamentCaveRelationEntry== null) {
-				ornamentic.getCaveOrnamentRelationList().add(ornamentCaveRelation);
+				if (ornamentCaveRelationEntry == null) {
+					ornamentic.getCaveOrnamentRelationList().add(ornamentCaveRelation);
 				}
 
 				popup.hide();
@@ -805,6 +792,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 
 	interface WallRelationProperties extends PropertyAccess<CaveEntry> {
 		ModelKeyProvider<WallOrnamentCaveRelation> wallLocationID();
+
 		ValueProvider<WallOrnamentCaveRelation, String> name();
 	}
 

@@ -16,72 +16,84 @@ package de.cses.client.ornamentic;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.sencha.gxt.cell.core.client.ButtonCell.ButtonScale;
 import com.sencha.gxt.cell.core.client.ButtonCell.IconAlign;
-import com.sencha.gxt.fx.client.Draggable;
+import com.sencha.gxt.core.client.XTemplates;
+import com.sencha.gxt.core.client.XTemplates.XTemplate;
+import com.sencha.gxt.dnd.core.client.DndDragStartEvent;
+import com.sencha.gxt.dnd.core.client.DragSource;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
+import de.cses.client.ui.AbstractEditor;
+import de.cses.client.ui.AbstractView;
+import de.cses.shared.AbstractEntry;
 import de.cses.shared.OrnamentEntry;
 
 /**
  * @author nina
  *
  */
-public class OrnamenticView extends TextButton {
+public class OrnamenticView extends AbstractView {
+	
 	interface Resources extends ClientBundle {
 		@Source("buddha.png")
 		ImageResource logo();
 	}
 
-	private OrnamentEntry entry;
+	interface OrnamentationViewTemplates extends XTemplates {
+//		@XTemplate("<div><center><img src='{imgUri}' height='16px' width='16px'> <b style='font-size: 20px'> {officialNumber} </b></center><label style='font-size:9px'> {officialName} <br> {historicName} </label></div>")
+//		SafeHtml view(SafeUri imgUri, String officialNumber, String officialName, String historicName);
 
-	/**
-	 * 
-	 */
-	public OrnamenticView() {
-		super("Add New Ornament");
-		entry = null;
-		init();
+		@XTemplate("<div><center><img src='{imgUri}' height='16px' width='16px' > <b style='font-size: 20px'> {name} </b></center></div>")
+		SafeHtml view(SafeUri imgUri, String name);
 	}
+
+	private OrnamentEntry entry;
+	private OrnamentationViewTemplates ovTemplate;
+	private Resources resources;
 
 	/**
 	 * @param text
 	 */
 	public OrnamenticView(OrnamentEntry entry) {
-		super("Ornament: " + entry.getCode());
+		super();
 		this.entry = entry;
-		init();
-	}
+		resources = GWT.create(Resources.class);
+		ovTemplate = GWT.create(OrnamentationViewTemplates.class);
+		setHTML(ovTemplate.view(resources.logo().getSafeUri(), "ID = " + entry.getOrnamentID()));
+		setPixelSize(110, 110);
 
-	/**
-	 * 
-	 */
-	private void init() {
-		this.setIconAlign(IconAlign.TOP);
-
-		Resources resources = GWT.create(Resources.class);
-		this.setIcon(resources.logo());
-		setScale(ButtonScale.LARGE);
-
-		addSelectHandler(new SelectHandler() {
-
-			private PopupPanel ornamentEditorPanel;
+		DragSource source = new DragSource(this) {
 
 			@Override
-			public void onSelect(SelectEvent event) {
-				ornamentEditorPanel = new PopupPanel(false);
-				
-				Ornamentic ornamentic = new Ornamentic();
-				ornamentic.setPopup(ornamentEditorPanel);
-				ornamentEditorPanel.add(ornamentic);
-//				new Draggable(ornamentEditorPanel);
-				ornamentEditorPanel.setGlassEnabled(true);
-				ornamentEditorPanel.center();
+			protected void onDragStart(DndDragStartEvent event) {
+				super.onDragStart(event);
+				event.setData(entry);
+				event.getStatusProxy().update(ovTemplate.view(resources.logo().getSafeUri(), "ID = " + entry.getOrnamentID()));
 			}
-		});
+			
+		};
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.ui.AbstractView#getEditor()
+	 */
+	@Override
+	protected AbstractEditor getEditor() {
+		return new Ornamentic(entry);
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.ui.AbstractView#getEntry()
+	 */
+	@Override
+	protected AbstractEntry getEntry() {
+		return entry;
 	}
 
 }

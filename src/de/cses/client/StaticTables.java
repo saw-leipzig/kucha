@@ -419,6 +419,7 @@ public class StaticTables {
 				for (OrnamentFunctionEntry ofe : result) {
 					ornamentFunctionMap.put(ofe.getOrnamentFunctionID(), ofe);
 				}
+				listLoaded();
 			}
 		});
 	}

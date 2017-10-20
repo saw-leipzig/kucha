@@ -16,7 +16,6 @@ package de.cses.client.ornamentic;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.XTemplates;
@@ -24,8 +23,6 @@ import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
-import com.sencha.gxt.widget.core.client.Dialog;
-import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
@@ -65,10 +62,6 @@ public class OrnamentWallAttributes extends PopupPanel {
 	private TextField notes;
 
 	private WallSelector wallselector;
-
-	public OrnamentWallAttributes(CaveEntry cave) {
-		this(cave, null);
-	}
 
 	public OrnamentWallAttributes(CaveEntry cave, WallOrnamentCaveRelation wallOrnamentCaveRelation) {
 		super(false);
@@ -161,43 +154,44 @@ public class OrnamentWallAttributes extends PopupPanel {
 			@Override
 			public void onSelect(SelectEvent event) {
 				save();
+				hide();
 			}
 		});
 		wallrelationFramedPanel.addTool(saveTB);
 
-		ToolButton closeTB = new ToolButton(ToolButton.CLOSE);
-		closeTB.addSelectHandler(new SelectHandler() {
-
-			@Override
-			public void onSelect(SelectEvent event) {
-				Dialog d = new Dialog();
-				d.setHeading("Exit Warning!");
-				d.setWidget(new HTML("Do you wish to save before exiting?"));
-				d.setBodyStyle("fontWeight:bold;padding:13px;");
-				d.setPixelSize(300, 100);
-				d.setHideOnButtonClick(true);
-				d.setPredefinedButtons(PredefinedButton.YES, PredefinedButton.NO, PredefinedButton.CANCEL);
-				d.setModal(true);
-				d.center();
-				d.show();
-				d.getButton(PredefinedButton.YES).addSelectHandler(new SelectHandler() {
-
-					@Override
-					public void onSelect(SelectEvent event) {
-						save();
-						hide();
-					}
-				});
-				d.getButton(PredefinedButton.NO).addSelectHandler(new SelectHandler() {
-
-					@Override
-					public void onSelect(SelectEvent event) {
-						hide();
-					}
-				});
-			}
-		});
-		wallrelationFramedPanel.addTool(closeTB);
+//		ToolButton closeTB = new ToolButton(ToolButton.CLOSE);
+//		closeTB.addSelectHandler(new SelectHandler() {
+//
+//			@Override
+//			public void onSelect(SelectEvent event) {
+//				Dialog d = new Dialog();
+//				d.setHeading("Exit Warning!");
+//				d.setWidget(new HTML("Do you wish to save before exiting?"));
+//				d.setBodyStyle("fontWeight:bold;padding:13px;");
+//				d.setPixelSize(300, 100);
+//				d.setHideOnButtonClick(true);
+//				d.setPredefinedButtons(PredefinedButton.YES, PredefinedButton.NO, PredefinedButton.CANCEL);
+//				d.setModal(true);
+//				d.center();
+//				d.show();
+//				d.getButton(PredefinedButton.YES).addSelectHandler(new SelectHandler() {
+//
+//					@Override
+//					public void onSelect(SelectEvent event) {
+//						save();
+//						hide();
+//					}
+//				});
+//				d.getButton(PredefinedButton.NO).addSelectHandler(new SelectHandler() {
+//
+//					@Override
+//					public void onSelect(SelectEvent event) {
+//						hide();
+//					}
+//				});
+//			}
+//		});
+//		wallrelationFramedPanel.addTool(closeTB);
 
 		return wallrelationFramedPanel;
 	}

@@ -12,7 +12,6 @@ import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -50,6 +49,7 @@ import de.cses.client.ornamentic.OrnamentCaveAttributes.MainTypologicalClassProp
 import de.cses.client.ornamentic.OrnamentCaveAttributes.MainTypologicalClassViewTemplates;
 import de.cses.client.ornamentic.OrnamentCaveAttributes.StructureOrganizationProperties;
 import de.cses.client.ornamentic.OrnamentCaveAttributes.StructureOrganizationViewTemplates;
+import de.cses.client.ui.AbstractEditor;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.ImageEntry;
@@ -58,9 +58,8 @@ import de.cses.shared.OrnamentCaveRelation;
 import de.cses.shared.OrnamentEntry;
 import de.cses.shared.StructureOrganization;
 
-public class Ornamentic implements IsWidget, ImageSelectorListener {
+public class Ornamentic extends AbstractEditor implements ImageSelectorListener {
 	FramedPanel header;
-	PopupPanel popup;
 	private VBoxLayoutContainer widget;
 	FramedPanel cavesContentPanel;
 	private OrnamentCaveRelationProperties ornamentCaveRelationProps;
@@ -89,16 +88,11 @@ public class Ornamentic implements IsWidget, ImageSelectorListener {
 			widget = new VBoxLayoutContainer();
 			widget.add(createForm(), flex);
 		}
-
 		return widget;
 	}
 
 	public Ornamentic(OrnamentEntry ornamentEntry) {
 		this.ornamentEntry = ornamentEntry;
-	}
-
-	public Ornamentic() {
-
 	}
 
 	public Widget createForm() {
@@ -377,8 +371,7 @@ public class Ornamentic implements IsWidget, ImageSelectorListener {
 					@Override
 					public void onSuccess(Boolean result) {
 						Window.alert("saved");
-						popup.hide();
-
+						closeEditor();
 					}
 				});
 
@@ -393,8 +386,7 @@ public class Ornamentic implements IsWidget, ImageSelectorListener {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				popup.hide();
-
+				closeEditor();
 			}
 
 		};
@@ -491,14 +483,6 @@ public class Ornamentic implements IsWidget, ImageSelectorListener {
 			});
 		}
 		imageSelectionDialog.hide();
-	}
-
-	public PopupPanel getPopup() {
-		return popup;
-	}
-
-	public void setPopup(PopupPanel popup) {
-		this.popup = popup;
 	}
 
 	interface ImageProperties extends PropertyAccess<ImageEntry> {
