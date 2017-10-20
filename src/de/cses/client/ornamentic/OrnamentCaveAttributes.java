@@ -107,7 +107,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 		selectedRedlatedOrnaments = new ListStore<OrnamentEntry>(ornamentEntryProps.OrnamentID());
 
 		orientationProps = GWT.create(OrientationProperties.class);
-		wallsListStore = new ListStore<WallOrnamentCaveRelation>(wallRelationProps.wallID());
+		wallsListStore = new ListStore<WallOrnamentCaveRelation>(wallRelationProps.wallLocationID());
 
 		selectedorientation = new ListStore<OrientationEntry>(orientationProps.orientationID());
 		orientation = new ListStore<OrientationEntry>(orientationProps.orientationID());
@@ -391,6 +391,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 				} 
 					OrnamentWallAttributes attributespopup = new OrnamentWallAttributes(caveEntryComboBox.getValue());
 					attributespopup.setOrnamentCaveRelation(ornamentCaveAttributes);
+					attributespopup.setModal(true);
 					attributespopup.setGlassEnabled(true);
 					attributespopup.center();
 				
@@ -425,6 +426,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 					OrnamentWallAttributes attributespopup = new OrnamentWallAttributes(caveEntryComboBox.getValue(),
 							wallList.getSelectionModel().getSelectedItem());
 					attributespopup.setOrnamentCaveRelation(ornamentCaveAttributes);
+					attributespopup.setModal(true);
 					attributespopup.setGlassEnabled(true);
 					attributespopup.center();
 				} else {
@@ -802,8 +804,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 	}
 
 	interface WallRelationProperties extends PropertyAccess<CaveEntry> {
-		ModelKeyProvider<WallOrnamentCaveRelation> wallID();
-
+		ModelKeyProvider<WallOrnamentCaveRelation> wallLocationID();
 		ValueProvider<WallOrnamentCaveRelation, String> name();
 	}
 

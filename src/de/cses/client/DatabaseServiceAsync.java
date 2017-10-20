@@ -40,10 +40,10 @@ import de.cses.shared.MainTypologicalClass;
 import de.cses.shared.ModeOfRepresentationEntry;
 import de.cses.shared.OrnamentCaveType;
 import de.cses.shared.OrnamentEntry;
-import de.cses.shared.OrnamentFunction;
+import de.cses.shared.OrnamentFunctionEntry;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.OrientationEntry;
-import de.cses.shared.OrnamentPosition;
+import de.cses.shared.OrnamentPositionEntry;
 import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PictorialElementEntry;
 import de.cses.shared.PreservationClassificationEntry;
@@ -182,9 +182,9 @@ public interface DatabaseServiceAsync {
 	
 	void getWall(int caveID, String locationLabel, AsyncCallback<WallEntry> callback);
 
-	void getOrnamentPositions (AsyncCallback<ArrayList<OrnamentPosition>> asyncCallback) throws IllegalArgumentException;
+	void getOrnamentPositions (AsyncCallback<ArrayList<OrnamentPositionEntry>> asyncCallback) throws IllegalArgumentException;
 	
-	void getOrnamentFunctions (AsyncCallback<ArrayList<OrnamentFunction>> asyncCallback) throws IllegalArgumentException;
+	void getOrnamentFunctions (AsyncCallback<ArrayList<OrnamentFunctionEntry>> asyncCallback) throws IllegalArgumentException;
 
 	void getOrnamentsWHERE(String sqlWhere, AsyncCallback<ArrayList<OrnamentEntry>> asyncCallback) throws IllegalArgumentException;
 

@@ -31,6 +31,8 @@ import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageTypeEntry;
 import de.cses.shared.ModeOfRepresentationEntry;
+import de.cses.shared.OrnamentFunctionEntry;
+import de.cses.shared.OrnamentPositionEntry;
 import de.cses.shared.PictorialElementEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.RegionEntry;
@@ -62,6 +64,8 @@ public class StaticTables {
 	protected HashMap<Integer, PictorialElementEntry> pictorialElementEntryMap;
 	protected HashMap<Integer, ModeOfRepresentationEntry> modesOfRepresentationEntryMap;
 	protected HashMap<Integer, WallLocationEntry> wallLocationEntryMap;
+	protected HashMap<Integer, OrnamentPositionEntry> ornamentPositionMap;
+	protected HashMap<Integer, OrnamentFunctionEntry> ornamentFunctionMap;
 
 	private int loadCounter;
 
@@ -86,7 +90,7 @@ public class StaticTables {
 	 */
 	public StaticTables(ListsLoadedListener l) {
 		listener = l;
-		loadCounter = 13;
+		loadCounter = 15;
 		loadDistricts();
 		loadSites();
 		loadRegions();
@@ -100,11 +104,13 @@ public class StaticTables {
 		loadPictorialElements();
 		loadModesOfRepresentation();
 		loadWallLocations();
+		loadOrnamentPositionTable();
+		loadOrnamentFunctionTable();
 	}
 
 	private void listLoaded() {
 		--loadCounter;
-		listener.listsLoaded((13.0 - loadCounter) / 13.0);
+		listener.listsLoaded((15.0 - loadCounter) / 15.0);
 	}
 
 	/**
@@ -380,6 +386,43 @@ public class StaticTables {
 		});
 	}
 	
+	private void loadOrnamentPositionTable() {
+		ornamentPositionMap = new HashMap<Integer, OrnamentPositionEntry>();
+		dbService.getOrnamentPositions(new AsyncCallback<ArrayList<OrnamentPositionEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				listLoaded();
+			}
+
+			@Override
+			public void onSuccess(ArrayList<OrnamentPositionEntry> result) {
+				for (OrnamentPositionEntry ope : result) {
+					ornamentPositionMap.put(ope.getOrnamentPositionID(), ope);
+				}
+				listLoaded();
+			}
+		});
+	}
+	
+	private void loadOrnamentFunctionTable() {
+		ornamentFunctionMap = new HashMap<Integer, OrnamentFunctionEntry>();
+		dbService.getOrnamentFunctions(new AsyncCallback<ArrayList<OrnamentFunctionEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(ArrayList<OrnamentFunctionEntry> result) {
+				for (OrnamentFunctionEntry ofe : result) {
+					ornamentFunctionMap.put(ofe.getOrnamentFunctionID(), ofe);
+				}
+			}
+		});
+	}
+
 	public Map<Integer, DistrictEntry> getDistrictEntries() {
 		return districtEntryMap;
 	}
@@ -430,6 +473,14 @@ public class StaticTables {
 	
 	public Map<Integer, WallLocationEntry> getWallLocationEntries() {
 		return wallLocationEntryMap;
+	}
+	
+	public Map<Integer, OrnamentPositionEntry> getOrnamentPositionEntries() {
+		return ornamentPositionMap;
+	}
+	
+	public Map<Integer, OrnamentFunctionEntry> getOrmanemtFunctionEntries() {
+		return ornamentFunctionMap;
 	}
 	
 }

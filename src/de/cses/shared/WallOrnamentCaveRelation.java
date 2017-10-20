@@ -13,39 +13,42 @@
  */
 package de.cses.shared;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
 /**
  * @author nina
  *
  */
-public class WallOrnamentCaveRelation implements IsSerializable{
+public class WallOrnamentCaveRelation extends AbstractEntry {
 	int wallOrnamentCaveRelationID;
-	int wallID;
-	String name;
+	int wallLocationID;
 	int OrnamentCaveRelationID;
-	OrnamentPosition position;
-	OrnamentFunction function;
+	OrnamentPositionEntry position;
+	OrnamentFunctionEntry function;
 	String notes;
-	
-	public WallOrnamentCaveRelation(){
-		
+
+	public WallOrnamentCaveRelation() {
+
 	}
+
 	public int getWallOrnamentCaveRelationID() {
 		return wallOrnamentCaveRelationID;
 	}
+
 	public void setWallOrnamentCaveRelationID(int wallOrnamentCaveRelationID) {
 		this.wallOrnamentCaveRelationID = wallOrnamentCaveRelationID;
 	}
-	public int getWallID() {
-		return wallID;
+
+	public int getWallLocationID() {
+		return wallLocationID;
 	}
-	public void setWallID(int wallID) {
-		this.wallID = wallID;
+
+	public void setWallLocationID(int wallID) {
+		this.wallLocationID = wallID;
 	}
+
 	public int getOrnamentCaveRelationID() {
 		return OrnamentCaveRelationID;
 	}
+
 	public void setOrnamentCaveRelationID(int ornamentCaveRelationID) {
 		OrnamentCaveRelationID = ornamentCaveRelationID;
 	}
@@ -53,48 +56,50 @@ public class WallOrnamentCaveRelation implements IsSerializable{
 	/**
 	 * @return the position
 	 */
-	public OrnamentPosition getPosition() {
+	public OrnamentPositionEntry getPosition() {
 		return position;
 	}
+
 	/**
-	 * @param position the position to set
+	 * @param position
+	 *          the position to set
 	 */
-	public void setPosition(OrnamentPosition position) {
+	public void setPosition(OrnamentPositionEntry position) {
 		this.position = position;
 	}
+
 	/**
 	 * @return the function
 	 */
-	public OrnamentFunction getFunction() {
+	public OrnamentFunctionEntry getFunction() {
 		return function;
 	}
+
 	/**
-	 * @param function the function to set
+	 * @param function
+	 *          the function to set
 	 */
-	public void setFunction(OrnamentFunction function) {
+	public void setFunction(OrnamentFunctionEntry function) {
 		this.function = function;
 	}
+
 	public String getNotes() {
 		return notes;
 	}
+
 	public void setNotes(String notes) {
 		this.notes = notes;
 	}
-	/**
-	 * @return the name
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.cses.shared.AbstractEntry#getUniqueID()
 	 */
-	public String getName() {
-		String name = "Wallnumber: " + Integer.toString(wallID);
-		return name;
+	@Override
+	public String getUniqueID() {
+		// TODO Auto-generated method stub
+		return null;
 	}
-	/**
-	 * @param name the name to set
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	
-	
 
 }

@@ -1,17 +1,15 @@
 package de.cses.shared;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
-public class OrnamentFunction implements IsSerializable{
+public class OrnamentFunctionEntry extends AbstractEntry {
 	
 	private int ornamentFunctionID;
-	
 	private String name;
-	public OrnamentFunction(){
-		
+	
+	public OrnamentFunctionEntry(){
+		this(0, "");
 	}
 	
-	public OrnamentFunction(int ornamentFunctionID, String name){
+	public OrnamentFunctionEntry(int ornamentFunctionID, String name){
 		this.ornamentFunctionID = ornamentFunctionID;
 		this.name= name;
 	}
@@ -30,6 +28,14 @@ public class OrnamentFunction implements IsSerializable{
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.shared.AbstractEntry#getUniqueID()
+	 */
+	@Override
+	public String getUniqueID() {
+		return "OrnamenFunction" + ornamentFunctionID;
 	}
 	
 	

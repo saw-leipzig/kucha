@@ -36,9 +36,9 @@ import de.cses.shared.ModeOfRepresentationEntry;
 import de.cses.shared.OrientationEntry;
 import de.cses.shared.OrnamentCaveType;
 import de.cses.shared.OrnamentEntry;
-import de.cses.shared.OrnamentFunction;
+import de.cses.shared.OrnamentFunctionEntry;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
-import de.cses.shared.OrnamentPosition;
+import de.cses.shared.OrnamentPositionEntry;
 import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PictorialElementEntry;
 import de.cses.shared.PreservationClassificationEntry;
@@ -148,9 +148,9 @@ public interface DatabaseService extends RemoteService {
 
 	ArrayList<WallEntry> getWalls(int caveID) throws IllegalArgumentException;
 
-	ArrayList<OrnamentFunction> getOrnamentFunctions() throws IllegalArgumentException;
+	ArrayList<OrnamentFunctionEntry> getOrnamentFunctions() throws IllegalArgumentException;
 	
-	ArrayList<OrnamentPosition> getOrnamentPositions() throws IllegalArgumentException;
+	ArrayList<OrnamentPositionEntry> getOrnamentPositions() throws IllegalArgumentException;
 	
 	ArrayList<StructureOrganization> getStructureOrganizations() throws IllegalArgumentException;
 	

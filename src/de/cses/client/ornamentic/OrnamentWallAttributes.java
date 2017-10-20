@@ -13,37 +13,34 @@
  */
 package de.cses.client.ornamentic;
 
-import java.util.ArrayList;
-
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
-import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
+import com.sencha.gxt.widget.core.client.Dialog;
+import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.FramedPanel;
-import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.TextField;
 
-import de.cses.client.DatabaseService;
-import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.StaticTables;
 import de.cses.client.walls.WallSelector;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CavePart;
-import de.cses.shared.OrnamentFunction;
-import de.cses.shared.OrnamentPosition;
+import de.cses.shared.OrnamentFunctionEntry;
+import de.cses.shared.OrnamentPositionEntry;
 import de.cses.shared.WallEntry;
 import de.cses.shared.WallOrnamentCaveRelation;
 
@@ -53,196 +50,179 @@ import de.cses.shared.WallOrnamentCaveRelation;
  */
 public class OrnamentWallAttributes extends PopupPanel {
 
-	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
-
 	private CaveEntry cave;
-	private PopupPanel popup;
-	private FramedPanel header;
+	// private PopupPanel popup;
 	private OrnamentCaveAttributes ornamentCaveRelation;
 	private OrnamentPositionProperties ornamentPositionProps;
 	private OrnamentFunctionProperties ornamentFunctionProps;
-	private ListStore<OrnamentPosition> ornamentPosition;
-	private ComboBox<OrnamentPosition> ornamentPositionComboBox;
-	private ListStore<OrnamentFunction> ornamentfunction;
-	private ComboBox<OrnamentFunction> ornamentfunctionComboBox;
-	private ComboBox<WallEntry> wallsComboBox;
+	private ListStore<OrnamentPositionEntry> ornamentPositionEntryLS;
+	private ComboBox<OrnamentPositionEntry> ornamentPositionComboBox;
+	private ListStore<OrnamentFunctionEntry> ornamentFunctionEntryLS;
+	private ComboBox<OrnamentFunctionEntry> ornamentfunctionComboBox;
+	// private ComboBox<WallEntry> wallsComboBox;
 	private WallOrnamentCaveRelation wallOrnamentCaveRelation;
 
+	private TextField notes;
+
+	private WallSelector wallselector;
+
 	public OrnamentWallAttributes(CaveEntry cave) {
-		super(false);
-		initOrnamentWallAttributes(cave);
+		this(cave, null);
 	}
 
 	public OrnamentWallAttributes(CaveEntry cave, WallOrnamentCaveRelation wallOrnamentCaveRelation) {
 		super(false);
 		this.wallOrnamentCaveRelation = wallOrnamentCaveRelation;
-		initOrnamentWallAttributes(cave);
-	}
-
-	public void initOrnamentWallAttributes(CaveEntry cave) {
-
-		popup = this;
 		this.cave = cave;
 		ornamentPositionProps = GWT.create(OrnamentPositionProperties.class);
-
 		ornamentFunctionProps = GWT.create(OrnamentFunctionProperties.class);
-		ornamentPosition = new ListStore<OrnamentPosition>(ornamentPositionProps.ornamentPositionID());
-		ornamentfunction = new ListStore<OrnamentFunction>(ornamentFunctionProps.ornamentFunctionID());
+		ornamentPositionEntryLS = new ListStore<OrnamentPositionEntry>(ornamentPositionProps.ornamentPositionID());
+		ornamentFunctionEntryLS = new ListStore<OrnamentFunctionEntry>(ornamentFunctionProps.ornamentFunctionID());
 
-		dbService.getOrnamentPositions(new AsyncCallback<ArrayList<OrnamentPosition>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(ArrayList<OrnamentPosition> result) {
-				ornamentPosition.clear();
-				for (OrnamentPosition pe : result) {
-					ornamentPosition.add(pe);
-				}
-			}
-		});
-
-		dbService.getOrnamentFunctions(new AsyncCallback<ArrayList<OrnamentFunction>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(ArrayList<OrnamentFunction> result) {
-				ornamentfunction.clear();
-				for (OrnamentFunction pe : result) {
-					ornamentfunction.add(pe);
-				}
-			}
-		});
+		for (OrnamentPositionEntry ope : StaticTables.getInstance().getOrnamentPositionEntries().values()) {
+			ornamentPositionEntryLS.add(ope);
+		}
+		for (OrnamentFunctionEntry ofe : StaticTables.getInstance().getOrmanemtFunctionEntries().values()) {
+			ornamentFunctionEntryLS.add(ofe);
+		}
 
 		setWidget(createForm());
 	}
 
-	public Widget createForm() {
-		VerticalPanel wallrelationMainVerticalPanel = new VerticalPanel();
-		VerticalLayoutContainer vlcWalls = new VerticalLayoutContainer();
-		wallrelationMainVerticalPanel.add(vlcWalls);
-
-		FramedPanel wallrelationFramedPanel = new FramedPanel();
-		wallrelationFramedPanel.setHeading("Select Walls");
-		wallrelationFramedPanel.add(wallrelationMainVerticalPanel);
-
-		WallSelector wallselector = new WallSelector(280);
-
-		header = new FramedPanel();
-		header.setHeading("Select Wall");
-		header.add(wallselector);
-		vlcWalls.add(header, new VerticalLayoutData(1.0, 1.0));
-
+	private FramedPanel createForm() {
+		wallselector = new WallSelector(280);
 		wallselector.setCave(cave);
 
-		ornamentPositionComboBox = new ComboBox<OrnamentPosition>(ornamentPosition, ornamentPositionProps.name(),
-				new AbstractSafeHtmlRenderer<OrnamentPosition>() {
+		FramedPanel selectWallFP = new FramedPanel();
+		selectWallFP.setHeading("Select Wall");
+		selectWallFP.add(wallselector);
+
+		ornamentPositionComboBox = new ComboBox<OrnamentPositionEntry>(ornamentPositionEntryLS, ornamentPositionProps.name(),
+				new AbstractSafeHtmlRenderer<OrnamentPositionEntry>() {
 
 					@Override
-					public SafeHtml render(OrnamentPosition item) {
+					public SafeHtml render(OrnamentPositionEntry item) {
 						final OrnamentPositionViewTemplates pvTemplates = GWT.create(OrnamentPositionViewTemplates.class);
 						return pvTemplates.ornamentPosition(item.getName());
 					}
 				});
-
-		header = new FramedPanel();
-		header.setWidth(300);
+		ornamentPositionComboBox.setTypeAhead(false);
+		ornamentPositionComboBox.setEditable(false);
 		ornamentPositionComboBox.setTriggerAction(TriggerAction.ALL);
 		if (wallOrnamentCaveRelation != null) {
 			ornamentPositionComboBox.setValue(wallOrnamentCaveRelation.getPosition());
 		}
-		header.setHeading("Select ornament position");
-		header.add(ornamentPositionComboBox);
-		vlcWalls.add(header);
+		FramedPanel ornamentPositionFP = new FramedPanel();
+		ornamentPositionFP.setHeading("Select ornament position");
+		ornamentPositionFP.add(ornamentPositionComboBox);
 
-		ornamentfunctionComboBox = new ComboBox<OrnamentFunction>(ornamentfunction, ornamentFunctionProps.name(),
-				new AbstractSafeHtmlRenderer<OrnamentFunction>() {
+		ornamentfunctionComboBox = new ComboBox<OrnamentFunctionEntry>(ornamentFunctionEntryLS, ornamentFunctionProps.name(),
+				new AbstractSafeHtmlRenderer<OrnamentFunctionEntry>() {
 
 					@Override
-					public SafeHtml render(OrnamentFunction item) {
+					public SafeHtml render(OrnamentFunctionEntry item) {
 						final OrnamentFunctionViewTemplates pvTemplates = GWT.create(OrnamentFunctionViewTemplates.class);
 						return pvTemplates.ornamentFunction(item.getName());
 					}
 				});
-
-		header = new FramedPanel();
-		header.setWidth(300);
+		ornamentfunctionComboBox.setTypeAhead(false);
+		ornamentfunctionComboBox.setEditable(false);
+		ornamentfunctionComboBox.setTriggerAction(TriggerAction.ALL);
 		if (wallOrnamentCaveRelation != null) {
 			ornamentfunctionComboBox.setValue(wallOrnamentCaveRelation.getFunction());
 		}
-		header.setHeading("Select the ornament function");
-		ornamentfunctionComboBox.setTriggerAction(TriggerAction.ALL);
-		header.add(ornamentfunctionComboBox);
-		vlcWalls.add(header, new VerticalLayoutData(1.0, .125));
+		FramedPanel ornamentFunctionFP = new FramedPanel();
+		ornamentFunctionFP.setHeading("Select the ornament function");
+		ornamentFunctionFP.add(ornamentfunctionComboBox);
 
-		TextField notes = new TextField();
+		notes = new TextField();
 		notes.setAllowBlank(true);
-
-		header = new FramedPanel();
-		header.setWidth(300);
+		FramedPanel notesFP = new FramedPanel();
 		if (wallOrnamentCaveRelation != null) {
 			notes.setText(wallOrnamentCaveRelation.getNotes());
 		}
-		header.setHeading("Notes");
-		header.add(notes);
-		vlcWalls.add(header, new VerticalLayoutData(1.0, .125));
+		notesFP.setHeading("Notes");
+		notesFP.add(notes);
 
-		TextButton save = new TextButton("save");
+		VerticalLayoutContainer vlcWalls = new VerticalLayoutContainer();
+		vlcWalls.add(selectWallFP, new VerticalLayoutData(1.0, .5));
+		vlcWalls.add(ornamentPositionFP, new VerticalLayoutData(1.0, .125));
+		vlcWalls.add(ornamentFunctionFP, new VerticalLayoutData(1.0, .125));
+		vlcWalls.add(notesFP, new VerticalLayoutData(1.0, .5));
 
+		FramedPanel wallrelationFramedPanel = new FramedPanel();
+		wallrelationFramedPanel.setHeading("Select Walls");
+		wallrelationFramedPanel.setSize("300px", "450px");
+		wallrelationFramedPanel.add(vlcWalls);
 
-		TextButton cancel = new TextButton("cancel");
-
-		wallrelationFramedPanel.addButton(save);
-		wallrelationFramedPanel.addButton(cancel);
-
-		ClickHandler saveHandler = new ClickHandler() {
-
-			@Override
-			public void onClick(ClickEvent event) {
-
-				WallOrnamentCaveRelation relation = new WallOrnamentCaveRelation();
-				if (ornamentfunctionComboBox.getValue() == null) {
-					OrnamentFunction func = new OrnamentFunction(0, "unknown");
-					relation.setFunction(func);
-
-				} else {
-					relation.setFunction(ornamentfunctionComboBox.getValue());
-				}
-				if (ornamentPositionComboBox.getValue() == null) {
-					OrnamentPosition pos = new OrnamentPosition(0, "unknown");
-					relation.setPosition(pos);
-				} else {
-					relation.setPosition(ornamentPositionComboBox.getValue());
-				}
-
-				relation.setNotes(notes.getText());
-				// TODO wallsConboBox needs to be build and added
-				relation.setWallID(wallsComboBox.getValue().getWallLocationID());
-				ornamentCaveRelation.getWallsListStore().add(relation);
-				popup.hide();
-			}
-
-		};
-		save.addHandler(saveHandler, ClickEvent.getType());
-
-		ClickHandler cancelClickHandler = new ClickHandler() {
+		ToolButton saveTB = new ToolButton(ToolButton.SAVE);
+		saveTB.addSelectHandler(new SelectHandler() {
 
 			@Override
-			public void onClick(ClickEvent event) {
-				popup.hide();
+			public void onSelect(SelectEvent event) {
+				save();
 			}
-		};
-		cancel.addHandler(cancelClickHandler, ClickEvent.getType());
+		});
+		wallrelationFramedPanel.addTool(saveTB);
+
+		ToolButton closeTB = new ToolButton(ToolButton.CLOSE);
+		closeTB.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				Dialog d = new Dialog();
+				d.setHeading("Exit Warning!");
+				d.setWidget(new HTML("Do you wish to save before exiting?"));
+				d.setBodyStyle("fontWeight:bold;padding:13px;");
+				d.setPixelSize(300, 100);
+				d.setHideOnButtonClick(true);
+				d.setPredefinedButtons(PredefinedButton.YES, PredefinedButton.NO, PredefinedButton.CANCEL);
+				d.setModal(true);
+				d.center();
+				d.show();
+				d.getButton(PredefinedButton.YES).addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						save();
+						hide();
+					}
+				});
+				d.getButton(PredefinedButton.NO).addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						hide();
+					}
+				});
+			}
+		});
+		wallrelationFramedPanel.addTool(closeTB);
 
 		return wallrelationFramedPanel;
+	}
 
+	/**
+	 * 
+	 */
+	protected void save() {
+		WallOrnamentCaveRelation relation = new WallOrnamentCaveRelation();
+		if (ornamentfunctionComboBox.getValue() == null) {
+			OrnamentFunctionEntry func = new OrnamentFunctionEntry(0, "unknown");
+			relation.setFunction(func);
+		} else {
+			relation.setFunction(ornamentfunctionComboBox.getValue());
+		}
+		if (ornamentPositionComboBox.getValue() == null) {
+			OrnamentPositionEntry pos = new OrnamentPositionEntry(0, "unknown");
+			relation.setPosition(pos);
+		} else {
+			relation.setPosition(ornamentPositionComboBox.getValue());
+		}
+
+		relation.setNotes(notes.getText());
+		relation.setWallLocationID(wallselector.getSelectedWallEntry().getWallLocationID());
+		ornamentCaveRelation.getWallsListStore().add(relation);
 	}
 
 	public CaveEntry getCave() {
@@ -267,16 +247,16 @@ public class OrnamentWallAttributes extends PopupPanel {
 		LabelProvider<CavePart> name();
 	}
 
-	interface OrnamentPositionProperties extends PropertyAccess<OrnamentPosition> {
-		ModelKeyProvider<OrnamentPosition> ornamentPositionID();
+	interface OrnamentPositionProperties extends PropertyAccess<OrnamentPositionEntry> {
+		ModelKeyProvider<OrnamentPositionEntry> ornamentPositionID();
 
-		LabelProvider<OrnamentPosition> name();
+		LabelProvider<OrnamentPositionEntry> name();
 	}
 
-	interface OrnamentFunctionProperties extends PropertyAccess<OrnamentFunction> {
-		ModelKeyProvider<OrnamentFunction> ornamentFunctionID();
+	interface OrnamentFunctionProperties extends PropertyAccess<OrnamentFunctionEntry> {
+		ModelKeyProvider<OrnamentFunctionEntry> ornamentFunctionID();
 
-		LabelProvider<OrnamentFunction> name();
+		LabelProvider<OrnamentFunctionEntry> name();
 	}
 
 	interface WallProperties extends PropertyAccess<WallEntry> {

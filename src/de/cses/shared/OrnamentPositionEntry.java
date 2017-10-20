@@ -1,32 +1,43 @@
 package de.cses.shared;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
+public class OrnamentPositionEntry extends AbstractEntry {
 
-public class OrnamentPosition implements IsSerializable{
-	
 	private int ornamentPositionID;
-	String name;
-	
-	public OrnamentPosition(int positionID, String name){
+	private String name;
+
+	public OrnamentPositionEntry(int positionID, String name) {
 		this.ornamentPositionID = positionID;
 		this.name = name;
 	}
-	public OrnamentPosition(){
-		
+
+	public OrnamentPositionEntry() {
+		this(0, "");
 	}
+
 	public int getOrnamentPositionID() {
 		return ornamentPositionID;
 	}
+
 	public void setOrnamentPositionID(int ornamentPositionID) {
 		this.ornamentPositionID = ornamentPositionID;
 	}
+
 	public String getName() {
 		return name;
 	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
-	
-	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.cses.shared.AbstractEntry#getUniqueID()
+	 */
+	@Override
+	public String getUniqueID() {
+		return "OrnamentPositionEntry" + ornamentPositionID;
+	}
 
 }
