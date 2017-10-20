@@ -25,6 +25,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.data.shared.LabelProvider;
@@ -133,7 +134,6 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 	}
 
 	public void createForm() {
-//		overviewVLC.add(overviewFramedPanel);
 
 		// Overview FramedPanel
 
@@ -146,6 +146,20 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 						return pvTemplates.publicationType(item.getName());
 					}
 				});
+		publicationTypeComboBox.setTriggerAction(TriggerAction.ALL);
+		publicationTypeComboBox.setEditable(false);
+		publicationTypeComboBox.setTypeAhead(false);
+		SelectionHandler<PublicationTypeEntry> publicationTypeSelectionHandler = new SelectionHandler<PublicationTypeEntry>() {
+
+			@Override
+			public void onSelection(SelectionEvent<PublicationTypeEntry> event) {
+
+				publicationtype = event.getSelectedItem().getPublicationTypeID();
+				rebuildMainInput(publicationtype);
+			}
+		};
+		publicationTypeComboBox.addSelectionHandler(publicationTypeSelectionHandler);
+
 		FramedPanel puplicationTypeFP = new FramedPanel();
 		puplicationTypeFP.setHeading("Publication Type");
 		puplicationTypeFP.add(publicationTypeComboBox);
@@ -156,21 +170,6 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		
 		backgroundoverview.add(puplicationTypeFP, new VerticalLayoutData(1.0, .1));
 		backgroundoverview.add(mainInputFP, new VerticalLayoutData(1.0, .9));
-
-		SelectionHandler<PublicationTypeEntry> publicationTypeSelectionHandler = new SelectionHandler<PublicationTypeEntry>() {
-
-			@Override
-			public void onSelection(SelectionEvent<PublicationTypeEntry> event) {
-
-//				backgroundoverview.remove(mainInputVLC);
-//				mainInputVLC.removeFromParent();
-//				mainInputVLC.clear();
-//				mainInputVLC.setEnabled(false);
-				publicationtype = event.getSelectedItem().getPublicationTypeID();
-				rebuildMainInput(publicationtype);
-			}
-		};
-		publicationTypeComboBox.addSelectionHandler(publicationTypeSelectionHandler);
 
 		ToolButton closeToolButton = new ToolButton(ToolButton.CLOSE);
 		closeToolButton.setToolTip("close");
@@ -206,7 +205,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 	
 		mainFP = new FramedPanel();
 		mainFP.setHeading("Annotated Biblography");
-		mainFP.setSize("900px", "650px"); // here we set the size of the panel
+		mainFP.setSize("900px", "700px"); // here we set the size of the panel
 		mainFP.add(backgroundoverview);
 		mainFP.addTool(closeToolButton);
 
