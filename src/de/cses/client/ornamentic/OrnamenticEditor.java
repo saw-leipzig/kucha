@@ -58,13 +58,13 @@ import de.cses.shared.OrnamentCaveRelation;
 import de.cses.shared.OrnamentEntry;
 import de.cses.shared.StructureOrganization;
 
-public class Ornamentic extends AbstractEditor implements ImageSelectorListener {
+public class OrnamenticEditor extends AbstractEditor implements ImageSelectorListener {
 	FramedPanel header;
 	private VBoxLayoutContainer widget;
 	FramedPanel cavesContentPanel;
 	private OrnamentCaveRelationProperties ornamentCaveRelationProps;
 	private ListStore<OrnamentCaveRelation> caveOrnamentRelationList;
-	private Ornamentic ornamentic = this;
+	private OrnamenticEditor ornamenticEditor = this;
 	private ListView<OrnamentCaveRelation, String> cavesList;
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	protected PopupPanel imageSelectionDialog;
@@ -91,7 +91,7 @@ public class Ornamentic extends AbstractEditor implements ImageSelectorListener 
 		return widget;
 	}
 
-	public Ornamentic(OrnamentEntry ornamentEntry) {
+	public OrnamenticEditor(OrnamentEntry ornamentEntry) {
 		this.ornamentEntry = ornamentEntry;
 	}
 
@@ -263,7 +263,7 @@ public class Ornamentic extends AbstractEditor implements ImageSelectorListener 
 			public void onClick(ClickEvent event) {
 				OrnamentCaveAttributes attributespopup = new OrnamentCaveAttributes();
 
-				attributespopup.setOrnamentic(ornamentic);
+				attributespopup.setOrnamentic(ornamenticEditor);
 				attributespopup.setGlassEnabled(true);
 				attributespopup.center();
 
@@ -311,7 +311,7 @@ public class Ornamentic extends AbstractEditor implements ImageSelectorListener 
 			@Override
 			public void onClick(ClickEvent event) {
 				OrnamentCaveAttributes attributespopup = new OrnamentCaveAttributes(cavesList.getSelectionModel().getSelectedItem());
-				attributespopup.setOrnamentic(ornamentic);
+				attributespopup.setOrnamentic(ornamenticEditor);
 				attributespopup.setGlassEnabled(true);
 				attributespopup.center();
 
@@ -397,7 +397,7 @@ public class Ornamentic extends AbstractEditor implements ImageSelectorListener 
 
 		horizontBackground.add(panel, new HorizontalLayoutData(.5, 1.0));
 		horizontBackground.add(panel2, new HorizontalLayoutData(.5, 1.0));
-		framedpanelornamentic.setHeading("Create Ornamentic");
+		framedpanelornamentic.setHeading("Create OrnamenticEditor");
 		framedpanelornamentic.add(horizontBackground);
 
 		tabpanel.add(framedpanelornamentic, "General");

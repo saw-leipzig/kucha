@@ -85,7 +85,7 @@ public class OrnamenticView extends AbstractView {
 	 */
 	@Override
 	protected AbstractEditor getEditor() {
-		return new Ornamentic(entry);
+		return new OrnamenticEditor(entry);
 	}
 
 	/* (non-Javadoc)

@@ -76,7 +76,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 	private ListStore<OrnamentEntry> selectedRedlatedOrnaments;
 	private WallRelationProperties wallRelationProps;
 	private PictorialElementSelectorObjects selector;
-	private Ornamentic ornamentic;
+	private OrnamenticEditor ornamenticEditor;
 	private ListStore<OrientationEntry> orientation;
 	private ListStore<OrientationEntry> selectedorientation;
 	private TextField style = new TextField();
@@ -380,7 +380,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 					Window.alert("Please select the Cave first");
 					return;
 				}
-				OrnamentWallAttributes attributespopup = new OrnamentWallAttributes(caveEntryComboBox.getValue());
+				OrnamentWallAttributes attributespopup = new OrnamentWallAttributes(caveEntryComboBox.getValue(), null);
 				attributespopup.setOrnamentCaveRelation(ornamentCaveAttributes);
 				attributespopup.setModal(true);
 				attributespopup.setGlassEnabled(true);
@@ -664,7 +664,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 				ornamentCaveRelation.setSimilarelementsOfOtherCultures(similarElementsofOtherCultures.getText());
 				// set walls
 				if (ornamentCaveRelationEntry == null) {
-					ornamentic.getCaveOrnamentRelationList().add(ornamentCaveRelation);
+					ornamenticEditor.getCaveOrnamentRelationList().add(ornamentCaveRelation);
 				}
 
 				popup.hide();
@@ -771,12 +771,12 @@ public class OrnamentCaveAttributes extends PopupPanel {
 		LabelProvider<OrnamentCaveType> name();
 	}
 
-	public Ornamentic getOrnamentic() {
-		return ornamentic;
+	public OrnamenticEditor getOrnamentic() {
+		return ornamenticEditor;
 	}
 
-	public void setOrnamentic(Ornamentic ornamentic) {
-		this.ornamentic = ornamentic;
+	public void setOrnamentic(OrnamenticEditor ornamenticEditor) {
+		this.ornamenticEditor = ornamenticEditor;
 	}
 
 	/*

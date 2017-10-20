@@ -3,9 +3,7 @@ package de.cses.shared;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
-public class OrnamentCaveRelation implements IsSerializable{
+public class OrnamentCaveRelation extends AbstractEntry {
 	private int ornamentID;
 	private String name;
 	private CaveEntry cave;
@@ -217,6 +215,15 @@ public class OrnamentCaveRelation implements IsSerializable{
 	 */
 	public void setRelatedOrnamentsRelations(ArrayList<OrnamentEntry> relatedOrnamentsRelations) {
 		this.relatedOrnamentsRelations = relatedOrnamentsRelations;
+	}
+
+
+	/* (non-Javadoc)
+	 * @see de.cses.shared.AbstractEntry#getUniqueID()
+	 */
+	@Override
+	public String getUniqueID() {
+		return "OrnamentCaveRelation" + ornamentID;
 	}
 
 
