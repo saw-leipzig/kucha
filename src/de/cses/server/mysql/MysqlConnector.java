@@ -654,8 +654,8 @@ public class MysqlConnector {
 							"wallcaveornamentrelation wird hinzugefuegt, anzahl ist " + ornamentEntry.getCavesRelations().get(i).getWalls().size());
 					rs = stmt.executeQuery("INSERT INTO WallCaveOrnamentRelation (OrnamentCaveRelationID, WallID, Position, Function, Notes) VALUES ("
 							+ auto_increment_id + "," + ornamentEntry.getCavesRelations().get(i).getWalls().get(j).getWallLocationID() + ",'"
-							+ ornamentEntry.getCavesRelations().get(i).getWalls().get(j).getPosition().getOrnamentPositionID() + "','"
-							+ ornamentEntry.getCavesRelations().get(i).getWalls().get(j).getFunction().getOrnamentFunctionID() + "','"
+							+ ornamentEntry.getCavesRelations().get(i).getWalls().get(j).getOrnamenticPositionID() + "','"
+							+ ornamentEntry.getCavesRelations().get(i).getWalls().get(j).getOrnamenticFunctionID() + "','"
 							+ ornamentEntry.getCavesRelations().get(i).getWalls().get(j).getNotes() + "')");
 				}
 

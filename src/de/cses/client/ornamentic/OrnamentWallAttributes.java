@@ -47,7 +47,7 @@ import de.cses.shared.WallOrnamentCaveRelation;
  */
 public class OrnamentWallAttributes extends PopupPanel {
 
-	private CaveEntry cave;
+	private CaveEntry caveEntry;
 	// private PopupPanel popup;
 	private OrnamentCaveAttributes ornamentCaveRelation;
 	private OrnamentPositionProperties ornamentPositionProps;
@@ -66,7 +66,7 @@ public class OrnamentWallAttributes extends PopupPanel {
 	public OrnamentWallAttributes(CaveEntry cave, WallOrnamentCaveRelation wallOrnamentCaveRelation) {
 		super(false);
 		this.wallOrnamentCaveRelation = wallOrnamentCaveRelation;
-		this.cave = cave;
+		this.caveEntry = cave;
 		ornamentPositionProps = GWT.create(OrnamentPositionProperties.class);
 		ornamentFunctionProps = GWT.create(OrnamentFunctionProperties.class);
 		ornamentPositionEntryLS = new ListStore<OrnamentPositionEntry>(ornamentPositionProps.ornamentPositionID());
@@ -84,7 +84,7 @@ public class OrnamentWallAttributes extends PopupPanel {
 
 	private FramedPanel createForm() {
 		wallselector = new WallSelector(280);
-		wallselector.setCave(cave);
+		wallselector.setCave(caveEntry);
 
 		FramedPanel selectWallFP = new FramedPanel();
 		selectWallFP.setHeading("Select Wall");
@@ -103,7 +103,7 @@ public class OrnamentWallAttributes extends PopupPanel {
 		ornamentPositionComboBox.setEditable(false);
 		ornamentPositionComboBox.setTriggerAction(TriggerAction.ALL);
 		if (wallOrnamentCaveRelation != null) {
-			ornamentPositionComboBox.setValue(wallOrnamentCaveRelation.getPosition());
+			ornamentPositionComboBox.setValue(ornamentPositionEntryLS.findModelWithKey(Integer.toString(wallOrnamentCaveRelation.getOrnamenticPositionID())));
 		}
 		FramedPanel ornamentPositionFP = new FramedPanel();
 		ornamentPositionFP.setHeading("Select ornament position");
@@ -122,7 +122,7 @@ public class OrnamentWallAttributes extends PopupPanel {
 		ornamentfunctionComboBox.setEditable(false);
 		ornamentfunctionComboBox.setTriggerAction(TriggerAction.ALL);
 		if (wallOrnamentCaveRelation != null) {
-			ornamentfunctionComboBox.setValue(wallOrnamentCaveRelation.getFunction());
+			ornamentfunctionComboBox.setValue(ornamentFunctionEntryLS.findModelWithKey(Integer.toString(wallOrnamentCaveRelation.getOrnamenticFunctionID())));
 		}
 		FramedPanel ornamentFunctionFP = new FramedPanel();
 		ornamentFunctionFP.setHeading("Select the ornament function");
@@ -200,31 +200,29 @@ public class OrnamentWallAttributes extends PopupPanel {
 	 * 
 	 */
 	protected void save() {
-		WallOrnamentCaveRelation relation = new WallOrnamentCaveRelation();
+		WallOrnamentCaveRelation caveWallOrnamentRelation = new WallOrnamentCaveRelation(caveEntry.getCaveID(), wallselector.getSelectedWallEntry().getWallLocationID());
 		if (ornamentfunctionComboBox.getValue() == null) {
-			OrnamentFunctionEntry func = new OrnamentFunctionEntry(0, "unknown");
-			relation.setFunction(func);
+			caveWallOrnamentRelation.setOrnamenticFunctionID(18); // 18 = unknown
 		} else {
-			relation.setFunction(ornamentfunctionComboBox.getValue());
+			caveWallOrnamentRelation.setOrnamenticFunctionID(ornamentfunctionComboBox.getValue().getOrnamentFunctionID());
 		}
 		if (ornamentPositionComboBox.getValue() == null) {
-			OrnamentPositionEntry pos = new OrnamentPositionEntry(0, "unknown");
-			relation.setPosition(pos);
+			caveWallOrnamentRelation.setOrnamenticPositionID(19); // 19 = unknwon
 		} else {
-			relation.setPosition(ornamentPositionComboBox.getValue());
+			caveWallOrnamentRelation.setOrnamenticPositionID(ornamentPositionComboBox.getValue().getOrnamentPositionID());
 		}
 
-		relation.setNotes(notes.getText());
-		relation.setWallLocationID(wallselector.getSelectedWallEntry().getWallLocationID());
-		ornamentCaveRelation.getWallsListStore().add(relation);
+		caveWallOrnamentRelation.setNotes(notes.getText());
+		caveWallOrnamentRelation.setWallLocationID(wallselector.getSelectedWallEntry().getWallLocationID());
+		ornamentCaveRelation.getWallsListStore().add(caveWallOrnamentRelation);
 	}
 
 	public CaveEntry getCave() {
-		return cave;
+		return caveEntry;
 	}
 
 	public void setCave(CaveEntry cave) {
-		this.cave = cave;
+		this.caveEntry = cave;
 	}
 
 	public OrnamentCaveAttributes getOrnamentCaveRelation() {

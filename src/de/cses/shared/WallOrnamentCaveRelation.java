@@ -13,28 +13,42 @@
  */
 package de.cses.shared;
 
+import de.cses.client.StaticTables;
+
 /**
  * @author nina
  *
  */
 public class WallOrnamentCaveRelation extends AbstractEntry {
-	int wallOrnamentCaveRelationID;
+	int caveID;
 	int wallLocationID;
-	int OrnamentCaveRelationID;
-	OrnamentPositionEntry position;
-	OrnamentFunctionEntry function;
+	int ornamenticPositionID;
+	int ornamenticFunctionID;
 	String notes;
 
-	public WallOrnamentCaveRelation() {
-
+	/**
+	 * @param caveID
+	 * @param wallLocationID
+	 * @param ornamenticPositionID
+	 * @param ornamenticFunctionID
+	 * @param notes
+	 */
+	public WallOrnamentCaveRelation(int caveID, int wallLocationID, int ornamenticPositionID, int ornamenticFunctionID, String notes) {
+		super();
+		this.caveID = caveID;
+		this.wallLocationID = wallLocationID;
+		this.ornamenticPositionID = ornamenticPositionID;
+		this.ornamenticFunctionID = ornamenticFunctionID;
+		this.notes = notes;
 	}
 
-	public int getWallOrnamentCaveRelationID() {
-		return wallOrnamentCaveRelationID;
-	}
-
-	public void setWallOrnamentCaveRelationID(int wallOrnamentCaveRelationID) {
-		this.wallOrnamentCaveRelationID = wallOrnamentCaveRelationID;
+	/**
+	 * @param caveID
+	 * @param wallLocationID
+	 */
+	public WallOrnamentCaveRelation(int caveID, int wallLocationID) {
+		this.caveID = caveID;
+		this.wallLocationID = wallLocationID;
 	}
 
 	public int getWallLocationID() {
@@ -45,50 +59,42 @@ public class WallOrnamentCaveRelation extends AbstractEntry {
 		this.wallLocationID = wallID;
 	}
 
-	public int getOrnamentCaveRelationID() {
-		return OrnamentCaveRelationID;
-	}
-
-	public void setOrnamentCaveRelationID(int ornamentCaveRelationID) {
-		OrnamentCaveRelationID = ornamentCaveRelationID;
-	}
-
-	/**
-	 * @return the position
-	 */
-	public OrnamentPositionEntry getPosition() {
-		return position;
-	}
-
-	/**
-	 * @param position
-	 *          the position to set
-	 */
-	public void setPosition(OrnamentPositionEntry position) {
-		this.position = position;
-	}
-
-	/**
-	 * @return the function
-	 */
-	public OrnamentFunctionEntry getFunction() {
-		return function;
-	}
-
-	/**
-	 * @param function
-	 *          the function to set
-	 */
-	public void setFunction(OrnamentFunctionEntry function) {
-		this.function = function;
-	}
-
 	public String getNotes() {
 		return notes;
 	}
 
 	public void setNotes(String notes) {
 		this.notes = notes;
+	}
+
+	public int getCaveID() {
+		return caveID;
+	}
+
+	public void setCaveID(int caveID) {
+		this.caveID = caveID;
+	}
+
+	public int getOrnamenticPositionID() {
+		return ornamenticPositionID;
+	}
+
+	public void setOrnamenticPositionID(int ornamenticPositionID) {
+		this.ornamenticPositionID = ornamenticPositionID;
+	}
+
+	public int getOrnamenticFunctionID() {
+		return ornamenticFunctionID;
+	}
+
+	public void setOrnamenticFunctionID(int ornamenticFunctionID) {
+		this.ornamenticFunctionID = ornamenticFunctionID;
+	}
+	
+	public String getName() {
+		return StaticTables.getInstance().getWallLocationEntries().get(wallLocationID).getCaveAreaLabel() + ", "
+				+ StaticTables.getInstance().getOrnamentPositionEntries().get(ornamenticPositionID).getName() + ", "
+				+ StaticTables.getInstance().getOrmanemtFunctionEntries().get(ornamenticFunctionID).getName();
 	}
 
 	/*

@@ -11,7 +11,6 @@ import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.Window;
@@ -44,14 +43,13 @@ import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
 import de.cses.shared.CaveEntry;
-import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.MainTypologicalClass;
+import de.cses.shared.OrientationEntry;
 import de.cses.shared.OrnamentCaveRelation;
 import de.cses.shared.OrnamentCaveType;
 import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
-import de.cses.shared.OrientationEntry;
 import de.cses.shared.StructureOrganization;
 import de.cses.shared.WallOrnamentCaveRelation;
 
@@ -792,7 +790,6 @@ public class OrnamentCaveAttributes extends PopupPanel {
 
 	interface WallRelationProperties extends PropertyAccess<CaveEntry> {
 		ModelKeyProvider<WallOrnamentCaveRelation> wallLocationID();
-
 		ValueProvider<WallOrnamentCaveRelation, String> name();
 	}
 
