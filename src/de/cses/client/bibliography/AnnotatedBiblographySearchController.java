@@ -48,35 +48,35 @@ public class AnnotatedBiblographySearchController extends AbstractSearchControll
 	 */
 	@Override
 	public void invokeSearch() {
-		ArrayList<String> sqlWhereClauses = new ArrayList<String>();
-		for (AbstractFilter filter : getRelatedFilter()) {
-			if ((filter != null) && (filter.getSqlWhereClause() != null)) {
-				sqlWhereClauses.addAll(filter.getSqlWhereClause());
-			}
-		}
-		String sqlWhere = null;
-		for (int i=0; i<sqlWhereClauses.size(); ++i) {
-			if (i == 0) {
-				sqlWhere = sqlWhereClauses.get(i);
-			} else {
-				sqlWhere = sqlWhere + " AND " + sqlWhereClauses.get(i);
-			}
-		}
-		dbService.getDepictions(sqlWhere, new AsyncCallback<ArrayList<DepictionEntry>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(ArrayList<DepictionEntry> result) {
-				getResultView().reset();
-				for (DepictionEntry de : result) {
-					getResultView().addResult(new DepictionView(de));
-				}
-			}
-		});
+//		ArrayList<String> sqlWhereClauses = new ArrayList<String>();
+//		for (AbstractFilter filter : getRelatedFilter()) {
+//			if ((filter != null) && (filter.getSqlWhereClause() != null)) {
+//				sqlWhereClauses.addAll(filter.getSqlWhereClause());
+//			}
+//		}
+//		String sqlWhere = null;
+//		for (int i=0; i<sqlWhereClauses.size(); ++i) {
+//			if (i == 0) {
+//				sqlWhere = sqlWhereClauses.get(i);
+//			} else {
+//				sqlWhere = sqlWhere + " AND " + sqlWhereClauses.get(i);
+//			}
+//		}
+//		dbService.getDepictions(sqlWhere, new AsyncCallback<ArrayList<DepictionEntry>>() {
+//
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				caught.printStackTrace();
+//			}
+//
+//			@Override
+//			public void onSuccess(ArrayList<DepictionEntry> result) {
+//				getResultView().reset();
+//				for (DepictionEntry de : result) {
+//					getResultView().addResult(new DepictionView(de));
+//				}
+//			}
+//		});
 	}
 
 	/* (non-Javadoc)
@@ -84,7 +84,7 @@ public class AnnotatedBiblographySearchController extends AbstractSearchControll
 	 */
 	@Override
 	public void addNewElement() {
-		final PopupPanel depictionEditorPanel = new PopupPanel(false);
+		PopupPanel depictionEditorPanel = new PopupPanel(false);
 		AnnotatedBiblographyEditor de = new AnnotatedBiblographyEditor(null);
 		de.addEditorListener(new EditorListener() {
 			

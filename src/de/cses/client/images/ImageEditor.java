@@ -382,7 +382,7 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 		});
 
 		// C14DocumentUploader imgUploader = new C14DocumentUploader(this);
-		// vlc.add(imgUploader);
+		// mainInputVLC.add(imgUploader);
 
 		imageListView.setSize("250", "350");
 		ListField<ImageEntry, ImageEntry> lf = new ListField<ImageEntry, ImageEntry>(imageListView);
