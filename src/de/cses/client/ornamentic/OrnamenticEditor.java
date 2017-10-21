@@ -12,7 +12,6 @@ import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -50,6 +49,7 @@ import de.cses.client.ornamentic.OrnamentCaveAttributes.MainTypologicalClassProp
 import de.cses.client.ornamentic.OrnamentCaveAttributes.MainTypologicalClassViewTemplates;
 import de.cses.client.ornamentic.OrnamentCaveAttributes.StructureOrganizationProperties;
 import de.cses.client.ornamentic.OrnamentCaveAttributes.StructureOrganizationViewTemplates;
+import de.cses.client.ui.AbstractEditor;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.ImageEntry;
@@ -58,14 +58,13 @@ import de.cses.shared.OrnamentCaveRelation;
 import de.cses.shared.OrnamentEntry;
 import de.cses.shared.StructureOrganization;
 
-public class Ornamentic implements IsWidget, ImageSelectorListener {
+public class OrnamenticEditor extends AbstractEditor implements ImageSelectorListener {
 	FramedPanel header;
-	PopupPanel popup;
 	private VBoxLayoutContainer widget;
 	FramedPanel cavesContentPanel;
 	private OrnamentCaveRelationProperties ornamentCaveRelationProps;
 	private ListStore<OrnamentCaveRelation> caveOrnamentRelationList;
-	private Ornamentic ornamentic = this;
+	private OrnamenticEditor ornamenticEditor = this;
 	private ListView<OrnamentCaveRelation, String> cavesList;
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	protected PopupPanel imageSelectionDialog;
@@ -89,16 +88,11 @@ public class Ornamentic implements IsWidget, ImageSelectorListener {
 			widget = new VBoxLayoutContainer();
 			widget.add(createForm(), flex);
 		}
-
 		return widget;
 	}
 
-	public Ornamentic(OrnamentEntry ornamentEntry) {
+	public OrnamenticEditor(OrnamentEntry ornamentEntry) {
 		this.ornamentEntry = ornamentEntry;
-	}
-
-	public Ornamentic() {
-
 	}
 
 	public Widget createForm() {
@@ -269,7 +263,7 @@ public class Ornamentic implements IsWidget, ImageSelectorListener {
 			public void onClick(ClickEvent event) {
 				OrnamentCaveAttributes attributespopup = new OrnamentCaveAttributes();
 
-				attributespopup.setOrnamentic(ornamentic);
+				attributespopup.setOrnamentic(ornamenticEditor);
 				attributespopup.setGlassEnabled(true);
 				attributespopup.center();
 
@@ -317,7 +311,7 @@ public class Ornamentic implements IsWidget, ImageSelectorListener {
 			@Override
 			public void onClick(ClickEvent event) {
 				OrnamentCaveAttributes attributespopup = new OrnamentCaveAttributes(cavesList.getSelectionModel().getSelectedItem());
-				attributespopup.setOrnamentic(ornamentic);
+				attributespopup.setOrnamentic(ornamenticEditor);
 				attributespopup.setGlassEnabled(true);
 				attributespopup.center();
 
@@ -377,8 +371,7 @@ public class Ornamentic implements IsWidget, ImageSelectorListener {
 					@Override
 					public void onSuccess(Boolean result) {
 						Window.alert("saved");
-						popup.hide();
-
+						closeEditor();
 					}
 				});
 
@@ -393,8 +386,7 @@ public class Ornamentic implements IsWidget, ImageSelectorListener {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				popup.hide();
-
+				closeEditor();
 			}
 
 		};
@@ -405,7 +397,7 @@ public class Ornamentic implements IsWidget, ImageSelectorListener {
 
 		horizontBackground.add(panel, new HorizontalLayoutData(.5, 1.0));
 		horizontBackground.add(panel2, new HorizontalLayoutData(.5, 1.0));
-		framedpanelornamentic.setHeading("Create Ornamentic");
+		framedpanelornamentic.setHeading("Create OrnamenticEditor");
 		framedpanelornamentic.add(horizontBackground);
 
 		tabpanel.add(framedpanelornamentic, "General");
@@ -445,11 +437,9 @@ public class Ornamentic implements IsWidget, ImageSelectorListener {
 			@Override
 			public void onSelect(SelectEvent event) {
 				imageSelectionDialog = new PopupPanel();
-				new Draggable(imageSelectionDialog);
 				imageSelectionDialog.add(imageSelector);
 				imageSelectionDialog.setModal(true);
 				imageSelectionDialog.center();
-				imageSelectionDialog.show();
 			}
 		});
 		TextButton removeImageButton = new TextButton("Remove Image");
@@ -491,14 +481,6 @@ public class Ornamentic implements IsWidget, ImageSelectorListener {
 			});
 		}
 		imageSelectionDialog.hide();
-	}
-
-	public PopupPanel getPopup() {
-		return popup;
-	}
-
-	public void setPopup(PopupPanel popup) {
-		this.popup = popup;
 	}
 
 	interface ImageProperties extends PropertyAccess<ImageEntry> {

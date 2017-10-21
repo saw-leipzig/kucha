@@ -44,9 +44,9 @@ import de.cses.shared.ModeOfRepresentationEntry;
 import de.cses.shared.OrientationEntry;
 import de.cses.shared.OrnamentCaveType;
 import de.cses.shared.OrnamentEntry;
-import de.cses.shared.OrnamentFunction;
+import de.cses.shared.OrnamentFunctionEntry;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
-import de.cses.shared.OrnamentPosition;
+import de.cses.shared.OrnamentPositionEntry;
 import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PictorialElementEntry;
 import de.cses.shared.PreservationClassificationEntry;
@@ -675,9 +675,9 @@ public class MysqlConnector {
 					System.err.println(
 							"wallcaveornamentrelation wird hinzugefuegt, anzahl ist " + ornamentEntry.getCavesRelations().get(i).getWalls().size());
 					rs = stmt.executeQuery("INSERT INTO WallCaveOrnamentRelation (OrnamentCaveRelationID, WallID, Position, Function, Notes) VALUES ("
-							+ auto_increment_id + "," + ornamentEntry.getCavesRelations().get(i).getWalls().get(j).getWallID() + ",'"
-							+ ornamentEntry.getCavesRelations().get(i).getWalls().get(j).getPosition().getOrnamentPositionID() + "','"
-							+ ornamentEntry.getCavesRelations().get(i).getWalls().get(j).getFunction().getOrnamentFunctionID() + "','"
+							+ auto_increment_id + "," + ornamentEntry.getCavesRelations().get(i).getWalls().get(j).getWallLocationID() + ",'"
+							+ ornamentEntry.getCavesRelations().get(i).getWalls().get(j).getOrnamenticPositionID() + "','"
+							+ ornamentEntry.getCavesRelations().get(i).getWalls().get(j).getOrnamenticFunctionID() + "','"
 							+ ornamentEntry.getCavesRelations().get(i).getWalls().get(j).getNotes() + "')");
 				}
 
@@ -1349,16 +1349,16 @@ public class MysqlConnector {
 		return caveparts;
 	}
 
-	public ArrayList<OrnamentPosition> getOrnamentPosition() {
-		OrnamentPosition result = null;
-		ArrayList<OrnamentPosition> positions = new ArrayList<OrnamentPosition>();
+	public ArrayList<OrnamentPositionEntry> getOrnamentPosition() {
+		OrnamentPositionEntry result = null;
+		ArrayList<OrnamentPositionEntry> positions = new ArrayList<OrnamentPositionEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM OrnamenticPosition");
 			while (rs.next()) {
-				result = new OrnamentPosition(rs.getInt("OrnamenticPositionID"), rs.getString("Name"));
+				result = new OrnamentPositionEntry(rs.getInt("OrnamenticPositionID"), rs.getString("Name"));
 				positions.add(result);
 			}
 			rs.close();
@@ -1369,16 +1369,16 @@ public class MysqlConnector {
 		return positions;
 	}
 
-	public ArrayList<OrnamentFunction> getOrnamentFunction() {
-		OrnamentFunction result = null;
-		ArrayList<OrnamentFunction> functions = new ArrayList<OrnamentFunction>();
+	public ArrayList<OrnamentFunctionEntry> getOrnamentFunction() {
+		OrnamentFunctionEntry result = null;
+		ArrayList<OrnamentFunctionEntry> functions = new ArrayList<OrnamentFunctionEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM OrnamenticFunction");
 			while (rs.next()) {
-				result = new OrnamentFunction(rs.getInt("OrnamenticFunctionID"), rs.getString("Name"));
+				result = new OrnamentFunctionEntry(rs.getInt("OrnamenticFunctionID"), rs.getString("Name"));
 				functions.add(result);
 			}
 			rs.close();

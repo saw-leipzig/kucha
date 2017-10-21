@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 
+ * Copyright 2016-2017
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -16,9 +16,7 @@ package de.cses.shared;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
-public class OrnamentEntry implements IsSerializable{
+public class OrnamentEntry extends AbstractEntry {
 	private int ornamentID;
 	private String code;
 	private String description;
@@ -32,26 +30,29 @@ public class OrnamentEntry implements IsSerializable{
 	private ArrayList<ImageEntry> images = new ArrayList<ImageEntry>();
 	private ArrayList<OrnamentCaveRelation> cavesRelations = new ArrayList<OrnamentCaveRelation>();
 
-	
-	public OrnamentEntry(){
-		
+	public OrnamentEntry() {
+		ornamentID = 0;
 	}
-	
-	public OrnamentEntry(int ornamentID, String code){
+
+	public OrnamentEntry(int ornamentID, String code) {
 		super();
 		this.ornamentID = ornamentID;
 		this.code = code;
 		cavesRelations = new ArrayList<OrnamentCaveRelation>();
 	}
+
 	public int getOrnamentID() {
 		return ornamentID;
 	}
+
 	public void setOrnamentID(int ornamentID) {
 		this.ornamentID = ornamentID;
 	}
+
 	public String getCode() {
 		return code;
 	}
+
 	public void setCode(String code) {
 		this.code = code;
 	}
@@ -104,7 +105,6 @@ public class OrnamentEntry implements IsSerializable{
 		this.cavesRelations = list;
 	}
 
-
 	public String getAnnotations() {
 		return annotations;
 	}
@@ -112,8 +112,6 @@ public class OrnamentEntry implements IsSerializable{
 	public void setAnnotations(String annotations) {
 		this.annotations = annotations;
 	}
-
-
 
 	/**
 	 * @return the maintypologycalClass
@@ -123,7 +121,8 @@ public class OrnamentEntry implements IsSerializable{
 	}
 
 	/**
-	 * @param maintypologycalClass the maintypologycalClass to set
+	 * @param maintypologycalClass
+	 *          the maintypologycalClass to set
 	 */
 	public void setMaintypologycalClass(MainTypologicalClass maintypologycalClass) {
 		this.maintypologycalClass = maintypologycalClass;
@@ -137,7 +136,8 @@ public class OrnamentEntry implements IsSerializable{
 	}
 
 	/**
-	 * @param structureOrganization the structureOrganization to set
+	 * @param structureOrganization
+	 *          the structureOrganization to set
 	 */
 	public void setStructureOrganization(StructureOrganization structureOrganization) {
 		this.structureOrganization = structureOrganization;
@@ -151,21 +151,21 @@ public class OrnamentEntry implements IsSerializable{
 	}
 
 	/**
-	 * @param images the images to set
+	 * @param images
+	 *          the images to set
 	 */
 	public void setImages(ArrayList<ImageEntry> images) {
 		this.images = images;
 	}
 
-	
-	
-	
-	
-
-	
-	
-	
-	
-	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.cses.shared.AbstractEntry#getUniqueID()
+	 */
+	@Override
+	public String getUniqueID() {
+		return "OrnamentEntry" + ornamentID;
+	}
 
 }

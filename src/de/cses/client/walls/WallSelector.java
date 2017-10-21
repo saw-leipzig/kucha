@@ -57,7 +57,7 @@ public class WallSelector implements IsWidget {
 
 	private FlowLayoutContainer caveSketchContainer;
 	private CaveLayoutViewTemplates caveLayoutViewTemplates;
-//	private ContentPanel mainPanel = null;
+	// private ContentPanel mainPanel = null;
 	private ComboBox<WallEntry> wallSelectorCB;
 	private WallProperties wallProps;
 	private CaveEntry currentCave;
@@ -83,7 +83,8 @@ public class WallSelector implements IsWidget {
 
 	/**
 	 * 
-	 * @param defaultCaveSketchWidth string representing the default sketch width in pixel (px)
+	 * @param defaultCaveSketchWidth
+	 *          string representing the default sketch width in pixel (px)
 	 */
 	public WallSelector(int defaultCaveSketchWidth) {
 		this.defaultCaveSketchWidth = defaultCaveSketchWidth;
@@ -99,6 +100,7 @@ public class WallSelector implements IsWidget {
 			}
 		};
 		wallEntryLS.addSortInfo(new StoreSortInfo<WallEntry>(comparator, SortDir.ASC));
+		init();
 	}
 
 	/*
@@ -118,23 +120,25 @@ public class WallSelector implements IsWidget {
 	 * 
 	 */
 	private void init() {
-		mainVLC  = new VerticalLayoutContainer();
+		mainVLC = new VerticalLayoutContainer();
 		caveSketchContainer = new FlowLayoutContainer();
 		caveSketchContainer.setScrollMode(ScrollMode.AUTOY);
 
-		wallSelectorCB = new ComboBox<WallEntry>(wallEntryLS, new LabelProvider<WallEntry>() {
-
+		LabelProvider<WallEntry> wallSelectorLP = new LabelProvider<WallEntry>() {
 			@Override
 			public String getLabel(WallEntry entry) {
 				return StaticTables.getInstance().getWallLocationEntries().get(entry.getWallLocationID()).getLabel();
 			}
-		}, new AbstractSafeHtmlRenderer<WallEntry>() {
-
+		};
+		
+		AbstractSafeHtmlRenderer<WallEntry> wallSelectorRenderer = new AbstractSafeHtmlRenderer<WallEntry>() {
 			@Override
 			public SafeHtml render(WallEntry entry) {
 				return wallVT.wallLabel(StaticTables.getInstance().getWallLocationEntries().get(entry.getWallLocationID()).getLabel());
 			}
-		});
+		};
+		
+		wallSelectorCB = new ComboBox<WallEntry>(wallEntryLS, wallSelectorLP, wallSelectorRenderer);
 		wallSelectorCB.setEditable(false);
 		wallSelectorCB.setTypeAhead(false);
 		wallSelectorCB.setTriggerAction(TriggerAction.ALL);
@@ -157,13 +161,17 @@ public class WallSelector implements IsWidget {
 		currentCave = selectedCave;
 		CaveTypeEntry ctEntry = StaticTables.getInstance().getCaveTypeEntries().get(selectedCave.getCaveTypeID());
 		caveSketchContainer.clear();
-		if ((selectedCave.getOptionalCaveSketch()!=null) && !selectedCave.getOptionalCaveSketch().isEmpty()) {
-			caveSketchContainer.add(new HTMLPanel(caveLayoutViewTemplates.image(UriUtils
-					.fromString("resource?cavesketch=" + selectedCave.getOptionalCaveSketch() + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), SafeStylesUtils.forWidth(defaultCaveSketchWidth, Unit.PX))));
+		if ((selectedCave.getOptionalCaveSketch() != null) && !selectedCave.getOptionalCaveSketch().isEmpty()) {
+			caveSketchContainer.add(new HTMLPanel(caveLayoutViewTemplates.image(
+					UriUtils.fromString("resource?cavesketch=" + selectedCave.getOptionalCaveSketch()
+							+ UserLogin.getInstance().getUsernameSessionIDParameterForUri()),
+					SafeStylesUtils.forWidth(defaultCaveSketchWidth, Unit.PX))));
 		}
-		if ((ctEntry.getSketchName()!=null) && !ctEntry.getSketchName().isEmpty()) {
-			caveSketchContainer.add(new HTMLPanel(caveLayoutViewTemplates.image(UriUtils
-					.fromString("resource?background=" + ctEntry.getSketchName() + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), SafeStylesUtils.forWidth(defaultCaveSketchWidth, Unit.PX))));
+		if ((ctEntry.getSketchName() != null) && !ctEntry.getSketchName().isEmpty()) {
+			caveSketchContainer.add(new HTMLPanel(caveLayoutViewTemplates.image(
+					UriUtils
+							.fromString("resource?background=" + ctEntry.getSketchName() + UserLogin.getInstance().getUsernameSessionIDParameterForUri()),
+					SafeStylesUtils.forWidth(defaultCaveSketchWidth, Unit.PX))));
 		}
 		wallEntryLS.clear();
 		switch (ctEntry.getCaveTypeID()) {

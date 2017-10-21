@@ -13,88 +13,99 @@
  */
 package de.cses.shared;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
+import de.cses.client.StaticTables;
 
 /**
  * @author nina
  *
  */
-public class WallOrnamentCaveRelation implements IsSerializable{
-	int wallOrnamentCaveRelationID;
-	int wallID;
-	String name;
-	int OrnamentCaveRelationID;
-	OrnamentPosition position;
-	OrnamentFunction function;
+public class WallOrnamentCaveRelation extends AbstractEntry {
+	int caveID;
+	int wallLocationID;
+	int ornamenticPositionID;
+	int ornamenticFunctionID;
 	String notes;
-	
-	public WallOrnamentCaveRelation(){
-		
-	}
-	public int getWallOrnamentCaveRelationID() {
-		return wallOrnamentCaveRelationID;
-	}
-	public void setWallOrnamentCaveRelationID(int wallOrnamentCaveRelationID) {
-		this.wallOrnamentCaveRelationID = wallOrnamentCaveRelationID;
-	}
-	public int getWallID() {
-		return wallID;
-	}
-	public void setWallID(int wallID) {
-		this.wallID = wallID;
-	}
-	public int getOrnamentCaveRelationID() {
-		return OrnamentCaveRelationID;
-	}
-	public void setOrnamentCaveRelationID(int ornamentCaveRelationID) {
-		OrnamentCaveRelationID = ornamentCaveRelationID;
+
+	/**
+	 * @param caveID
+	 * @param wallLocationID
+	 * @param ornamenticPositionID
+	 * @param ornamenticFunctionID
+	 * @param notes
+	 */
+	public WallOrnamentCaveRelation(int caveID, int wallLocationID, int ornamenticPositionID, int ornamenticFunctionID, String notes) {
+		super();
+		this.caveID = caveID;
+		this.wallLocationID = wallLocationID;
+		this.ornamenticPositionID = ornamenticPositionID;
+		this.ornamenticFunctionID = ornamenticFunctionID;
+		this.notes = notes;
 	}
 
 	/**
-	 * @return the position
+	 * @param caveID
+	 * @param wallLocationID
 	 */
-	public OrnamentPosition getPosition() {
-		return position;
+	public WallOrnamentCaveRelation(int caveID, int wallLocationID) {
+		this.caveID = caveID;
+		this.wallLocationID = wallLocationID;
 	}
-	/**
-	 * @param position the position to set
-	 */
-	public void setPosition(OrnamentPosition position) {
-		this.position = position;
+
+	public int getWallLocationID() {
+		return wallLocationID;
 	}
-	/**
-	 * @return the function
-	 */
-	public OrnamentFunction getFunction() {
-		return function;
+
+	public void setWallLocationID(int wallID) {
+		this.wallLocationID = wallID;
 	}
-	/**
-	 * @param function the function to set
-	 */
-	public void setFunction(OrnamentFunction function) {
-		this.function = function;
-	}
+
 	public String getNotes() {
 		return notes;
 	}
+
 	public void setNotes(String notes) {
 		this.notes = notes;
 	}
-	/**
-	 * @return the name
-	 */
+
+	public int getCaveID() {
+		return caveID;
+	}
+
+	public void setCaveID(int caveID) {
+		this.caveID = caveID;
+	}
+
+	public int getOrnamenticPositionID() {
+		return ornamenticPositionID;
+	}
+
+	public void setOrnamenticPositionID(int ornamenticPositionID) {
+		this.ornamenticPositionID = ornamenticPositionID;
+	}
+
+	public int getOrnamenticFunctionID() {
+		return ornamenticFunctionID;
+	}
+
+	public void setOrnamenticFunctionID(int ornamenticFunctionID) {
+		this.ornamenticFunctionID = ornamenticFunctionID;
+	}
+	
 	public String getName() {
-		String name = "Wallnumber: " + Integer.toString(wallID);
-		return name;
+		return StaticTables.getInstance().getWallLocationEntries().get(wallLocationID).getCaveAreaLabel() + ", "
+				+ StaticTables.getInstance().getOrnamentPositionEntries().get(ornamenticPositionID).getName() + ", "
+				+ StaticTables.getInstance().getOrmanemtFunctionEntries().get(ornamenticFunctionID).getName();
 	}
-	/**
-	 * @param name the name to set
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.cses.shared.AbstractEntry#getUniqueID()
 	 */
-	public void setName(String name) {
-		this.name = name;
+	@Override
+	public String getUniqueID() {
+		// TODO Auto-generated method stub
+		return null;
 	}
-	
-	
-	
 
 }

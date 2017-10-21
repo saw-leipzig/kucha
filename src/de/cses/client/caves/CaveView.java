@@ -52,7 +52,6 @@ public class CaveView extends AbstractView {
 
 	interface CaveTypeProperties extends PropertyAccess<CaveTypeEntry> {
 		ModelKeyProvider<CaveTypeEntry> caveTypeID();
-
 		LabelProvider<CaveTypeEntry> nameEN();
 	}
 
