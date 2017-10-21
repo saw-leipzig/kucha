@@ -25,11 +25,14 @@ import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
+import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
 
 import de.cses.client.StaticTables;
@@ -59,7 +62,7 @@ public class OrnamentWallAttributes extends PopupPanel {
 	// private ComboBox<WallEntry> wallsComboBox;
 	private WallOrnamentCaveRelation wallOrnamentCaveRelation;
 
-	private TextField notes;
+	private TextArea notes;
 
 	private WallSelector wallselector;
 
@@ -128,7 +131,7 @@ public class OrnamentWallAttributes extends PopupPanel {
 		ornamentFunctionFP.setHeading("Select the ornament function");
 		ornamentFunctionFP.add(ornamentfunctionComboBox);
 
-		notes = new TextField();
+		notes = new TextArea();
 		notes.setAllowBlank(true);
 		FramedPanel notesFP = new FramedPanel();
 		if (wallOrnamentCaveRelation != null) {
@@ -138,15 +141,19 @@ public class OrnamentWallAttributes extends PopupPanel {
 		notesFP.add(notes);
 
 		VerticalLayoutContainer vlcWalls = new VerticalLayoutContainer();
-		vlcWalls.add(selectWallFP, new VerticalLayoutData(1.0, .5));
-		vlcWalls.add(ornamentPositionFP, new VerticalLayoutData(1.0, .125));
-		vlcWalls.add(ornamentFunctionFP, new VerticalLayoutData(1.0, .125));
-		vlcWalls.add(notesFP, new VerticalLayoutData(1.0, .5));
+//		vlcWalls.add(selectWallFP, new VerticalLayoutData(1.0, .5));
+		vlcWalls.add(ornamentPositionFP, new VerticalLayoutData(1.0, .15));
+		vlcWalls.add(ornamentFunctionFP, new VerticalLayoutData(1.0, .15));
+		vlcWalls.add(notesFP, new VerticalLayoutData(1.0, .7));
+		
+		HorizontalLayoutContainer wallRelationHLC = new HorizontalLayoutContainer();
+		wallRelationHLC.add(selectWallFP, new HorizontalLayoutData(.5, 1.0));
+		wallRelationHLC.add(vlcWalls, new HorizontalLayoutData(.5, 1.0));
 
 		FramedPanel wallrelationFramedPanel = new FramedPanel();
 		wallrelationFramedPanel.setHeading("Select Walls");
-		wallrelationFramedPanel.setSize("300px", "450px");
-		wallrelationFramedPanel.add(vlcWalls);
+		wallrelationFramedPanel.setSize("600px", "450px");
+		wallrelationFramedPanel.add(wallRelationHLC);
 
 		ToolButton saveTB = new ToolButton(ToolButton.SAVE);
 		saveTB.addSelectHandler(new SelectHandler() {

@@ -364,7 +364,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 		header.add(style);
 		vlcCave.add(header, new VerticalLayoutData(0.5, .125));
 
-		TextButton addWalls = new TextButton("Select Walls");
+		TextButton addWalls = new TextButton("Add Wall");
 
 		ClickHandler addWallsClickHandler = new ClickHandler() {
 

@@ -437,11 +437,9 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 			@Override
 			public void onSelect(SelectEvent event) {
 				imageSelectionDialog = new PopupPanel();
-				new Draggable(imageSelectionDialog);
 				imageSelectionDialog.add(imageSelector);
 				imageSelectionDialog.setModal(true);
 				imageSelectionDialog.center();
-				imageSelectionDialog.show();
 			}
 		});
 		TextButton removeImageButton = new TextButton("Remove Image");
