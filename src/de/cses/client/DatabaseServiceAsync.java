@@ -14,35 +14,29 @@
 package de.cses.client;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import de.cses.shared.AnnotatedBiblographyEntry;
-import de.cses.shared.AntechamberEntry;
 import de.cses.shared.AuthorEntry;
-import de.cses.shared.RearAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveGroupEntry;
 import de.cses.shared.CavePart;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
-import de.cses.shared.ChamberTypeEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageTypeEntry;
-import de.cses.shared.MainChamberEntry;
-import de.cses.shared.OrientationEntry;
 import de.cses.shared.MainTypologicalClass;
 import de.cses.shared.ModeOfRepresentationEntry;
+import de.cses.shared.OrientationEntry;
 import de.cses.shared.OrnamentCaveType;
 import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamentFunctionEntry;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
-import de.cses.shared.OrientationEntry;
 import de.cses.shared.OrnamentPositionEntry;
 import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PictorialElementEntry;
