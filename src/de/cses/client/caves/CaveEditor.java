@@ -2177,6 +2177,39 @@ public class CaveEditor extends AbstractEditor {
 				break;
 
 			case 4: // central-pillar cave
+				rearAreaCeilingTypeSelector1.setEnabled(true);
+				rearAreaCeilingTypeSelector2.setEnabled(true);
+				leftCorridorCeilingTypeSelector1.setEnabled(true);
+				leftCorridorCeilingTypeSelector2.setEnabled(true);
+				rightCorridorCeilingTypeSelector1.setEnabled(true);
+				rightCorridorCeilingTypeSelector2.setEnabled(true);
+				mainChamberCeilingTypeSelector1.setEnabled(true);
+				mainChamberCeilingTypeSelector2.setEnabled(true);
+				corridorCeilingTypeSelector1.setEnabled(true);
+				corridorCeilingTypeSelector2.setEnabled(true);
+				antechamberCeilingTypeSelector1.setEnabled(true);
+				antechamberCeilingTypeSelector2.setEnabled(true);
+				break;
+
+			case 1: // unknown
+			case 5: // storage cave
+			case 7: // other
+			case 8: // lecture hall
+			case 9: // niche
+				rearAreaCeilingTypeSelector1.setEnabled(false);
+				rearAreaCeilingTypeSelector2.setEnabled(false);
+				leftCorridorCeilingTypeSelector1.setEnabled(false);
+				leftCorridorCeilingTypeSelector2.setEnabled(false);
+				rightCorridorCeilingTypeSelector1.setEnabled(false);
+				rightCorridorCeilingTypeSelector2.setEnabled(false);
+				mainChamberCeilingTypeSelector1.setEnabled(true);
+				mainChamberCeilingTypeSelector2.setEnabled(true);
+				corridorCeilingTypeSelector1.setEnabled(false);
+				corridorCeilingTypeSelector2.setEnabled(false);
+				antechamberCeilingTypeSelector1.setEnabled(false);
+				antechamberCeilingTypeSelector2.setEnabled(false);
+				break;
+
 			case 6: // monumental image cave
 				rearAreaCeilingTypeSelector1.setEnabled(true);
 				rearAreaCeilingTypeSelector2.setEnabled(true);
@@ -2267,6 +2300,32 @@ public class CaveEditor extends AbstractEditor {
 				break;
 
 			case 4: // central-pillar cave
+				rearAreaPreservationSelectorCB.setEnabled(true);
+				rearAreaCeilingPreservationSelectorCB1.setEnabled(true);
+				rearAreaCeilingPreservationSelectorCB2.setEnabled(true);
+				rearAreaFloorPreservationSelectorCB.setEnabled(true);
+				leftCorridorPreservationSelectorCB.setEnabled(true);
+				leftCorridorCeilingPreservationSelectorCB1.setEnabled(true);
+				leftCorridorCeilingPreservationSelectorCB2.setEnabled(true);
+				leftCorridorFloorPreservationSelectorCB.setEnabled(true);
+				rightCorridorPreservationSelectorCB.setEnabled(true);
+				rightCorridorCeilingPreservationSelectorCB1.setEnabled(true);
+				rightCorridorCeilingPreservationSelectorCB2.setEnabled(true);
+				rightCorridorFloorPreservationSelectorCB.setEnabled(true);
+				mainChamberPreservationSelectorCB.setEnabled(true);
+				mainChamberCeilingPreservationSelectorCB1.setEnabled(true);
+				mainChamberCeilingPreservationSelectorCB2.setEnabled(true);
+				mainChamberFloorPreservationSelectorCB.setEnabled(true);
+				corridorPreservationSelectorCB.setEnabled(true);
+				corridorCeilingPreservationSelectorCB1.setEnabled(true);
+				corridorCeilingPreservationSelectorCB2.setEnabled(true);
+				corridorFloorPreservationSelectorCB.setEnabled(true);
+				antechamberPreservationSelectorCB.setEnabled(true);
+				antechamberCeilingPreservationSelectorCB1.setEnabled(true);
+				antechamberCeilingPreservationSelectorCB2.setEnabled(true);
+				antechamberFloorPreservationSelectorCB.setEnabled(true);
+				break;
+
 			case 6: // monumental image cave
 				rearAreaPreservationSelectorCB.setEnabled(true);
 				rearAreaCeilingPreservationSelectorCB1.setEnabled(true);
@@ -2292,6 +2351,37 @@ public class CaveEditor extends AbstractEditor {
 				antechamberCeilingPreservationSelectorCB1.setEnabled(true);
 				antechamberCeilingPreservationSelectorCB2.setEnabled(true);
 				antechamberFloorPreservationSelectorCB.setEnabled(true);
+				break;
+				
+			case 1: // unknown
+			case 5: // storage cave
+			case 7: // other
+			case 8: // lecture hall
+			case 9: // niche
+				rearAreaPreservationSelectorCB.setEnabled(false);
+				rearAreaCeilingPreservationSelectorCB1.setEnabled(false);
+				rearAreaCeilingPreservationSelectorCB2.setEnabled(false);
+				rearAreaFloorPreservationSelectorCB.setEnabled(false);
+				leftCorridorPreservationSelectorCB.setEnabled(false);
+				leftCorridorCeilingPreservationSelectorCB1.setEnabled(false);
+				leftCorridorCeilingPreservationSelectorCB2.setEnabled(false);
+				leftCorridorFloorPreservationSelectorCB.setEnabled(false);
+				rightCorridorPreservationSelectorCB.setEnabled(false);
+				rightCorridorCeilingPreservationSelectorCB1.setEnabled(false);
+				rightCorridorCeilingPreservationSelectorCB2.setEnabled(false);
+				rightCorridorFloorPreservationSelectorCB.setEnabled(false);
+				mainChamberPreservationSelectorCB.setEnabled(true);
+				mainChamberCeilingPreservationSelectorCB1.setEnabled(true);
+				mainChamberCeilingPreservationSelectorCB2.setEnabled(true);
+				mainChamberFloorPreservationSelectorCB.setEnabled(false);
+				corridorPreservationSelectorCB.setEnabled(false);
+				corridorCeilingPreservationSelectorCB1.setEnabled(false);
+				corridorCeilingPreservationSelectorCB2.setEnabled(false);
+				corridorFloorPreservationSelectorCB.setEnabled(false);
+				antechamberPreservationSelectorCB.setEnabled(false);
+				antechamberCeilingPreservationSelectorCB1.setEnabled(false);
+				antechamberCeilingPreservationSelectorCB2.setEnabled(false);
+				antechamberFloorPreservationSelectorCB.setEnabled(false);
 				break;
 
 			default:
