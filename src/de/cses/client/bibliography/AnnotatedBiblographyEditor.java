@@ -127,6 +127,46 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 	TextField numberORG;
 	TextField numberTR;
 	
+	TextField accessEN;
+	TextField accessORG;
+	TextField accessTR;
+	
+	TextField titeladdonEN;
+	TextField titeladdonORG;
+	TextField titeladdonTR;
+	
+	TextField seriesEN;
+	TextField seriesORG;
+	TextField seriesTR;
+	
+	
+	TextField editionEN;
+	TextField editionORG;
+	TextField editionTR;
+	
+	TextField volumeEN;
+	TextField volumeORG;
+	TextField volumeTR;
+	
+	TextField yearEN;
+	TextField yearORG;
+	TextField yearTR;
+	
+	TextField monthEN;
+	TextField monthORG;
+	TextField monthTR;
+	
+	TextField pagesEN;
+	TextField pagesORG;
+	TextField pagesTR;
+	
+	TextArea comments ;
+	TextArea notes;
+	TextField url;
+	TextField uri;
+	CheckBox unpublished;
+	CheckBox erstauflage;
+	
 	public AnnotatedBiblographyEditor(AnnotatedBiblographyEntry entry) {
 		this.entry = entry;
 	}
@@ -143,6 +183,43 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 	public AnnotatedBiblographyEditor() {
 
+	}
+	
+	public void save(){
+		AnnotatedBiblographyEntry bib= new AnnotatedBiblographyEntry();
+		bib.setTitleaddonEN(titeladdonEN.getText());
+		bib.setTitleaddonORG(titeladdonORG.getText());
+		bib.setTitleaddonTR(titeladdonTR.getText());
+		
+		bib.setTitleEN(titelEN.getText());
+		bib.setTitleORG(titelORG.getText());
+		bib.setTitleTR(titelORG.getText());
+		
+		bib.setAccessdateEN(accessEN.getText());
+		bib.setAccessdateORG(accessORG.getText());
+		bib.setAccessdateTR(accessTR.getText());
+		
+		bib.setBookTitleEN(booktitelEN.getText());
+		bib.setBookTitleORG(booktitelORG.getText());
+		bib.setBookTitleTR(booktitelTR.getText());
+		
+		bib.setChapTitleEN(chaptitEN.getText());
+		bib.setBookTitleORG(booktitelORG.getText());
+		bib.setBookTitleTR(booktitelTR.getText());
+		
+		bib.setComments(comments.getText());
+		
+		bib.setEditionEN(editionEN.getText());
+		bib.setEditionORG(editionORG.getText());
+		bib.setEditionTR(editionTR.getText());
+		
+		bib.setErstauflage(erstauflage.getValue());
+		
+		bib.setMonthEN(monthEN.getText());
+		bib.setMonthORG(monthORG.getText());
+		bib.setMonthTR(monthTR.getText());
+		
+		
 	}
 
 	public void init() {
@@ -345,9 +422,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		if (publicationtype == 8) {
 
 			horizontBackground = new HorizontalPanel();
-			TextField numberEN = new TextField();
-			TextField numberORG = new TextField();
-			TextField numberTR = new TextField();
+			numberEN = new TextField();
+			numberORG = new TextField();
+			numberTR = new TextField();
 
 			horizontBackground.add(numberEN);
 			horizontBackground.add(numberTR);
@@ -360,9 +437,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 		if (publicationtype == 7) {
 			horizontBackground = new HorizontalPanel();
-			TextField accessEN = new TextField();
-			TextField accessORG = new TextField();
-			TextField accessTR = new TextField();
+			accessEN = new TextField();
+			accessORG = new TextField();
+			accessTR = new TextField();
 
 			horizontBackground.add(accessEN);
 			horizontBackground.add(accessTR);
@@ -374,9 +451,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		}
 
 		horizontBackground = new HorizontalPanel();
-		TextField titeladdonEN = new TextField();
-		TextField titeladdonORG = new TextField();
-		TextField titeladdonTR = new TextField();
+		titeladdonEN = new TextField();
+		titeladdonORG = new TextField();
+		titeladdonTR = new TextField();
 
 		horizontBackground.add(titeladdonEN);
 		horizontBackground.add(titeladdonTR);
@@ -423,9 +500,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		
 		if (publicationtype == 8) {
 			horizontBackground = new HorizontalPanel();
-			TextField seriesEN = new TextField();
-			TextField seriesORG = new TextField();
-			TextField seriesTR = new TextField();
+			seriesEN = new TextField();
+			seriesORG = new TextField();
+			seriesTR = new TextField();
 
 			horizontBackground.add(seriesEN);
 			horizontBackground.add(seriesTR);
@@ -439,9 +516,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		if (publicationtype == 1 || publicationtype == 5) {
 
 			horizontBackground = new HorizontalPanel();
-			TextField editionEN = new TextField();
-			TextField editionORG = new TextField();
-			TextField editionTR = new TextField();
+			editionEN = new TextField();
+			editionORG = new TextField();
+			editionTR = new TextField();
 
 			horizontBackground.add(editionEN);
 			horizontBackground.add(editionTR);
@@ -454,9 +531,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			}
 		if (publicationtype == 8) {
 			horizontBackground = new HorizontalPanel();
-			TextField volumeEN = new TextField();
-			TextField volumeORG = new TextField();
-			TextField volumeTR = new TextField();
+			volumeEN = new TextField();
+			volumeORG = new TextField();
+			volumeTR = new TextField();
 
 			horizontBackground.add(volumeEN);
 			horizontBackground.add(volumeTR);
@@ -467,9 +544,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			firstTabVLC.add(frame);
 			}
 		horizontBackground = new HorizontalPanel();
-		TextField yearEN = new TextField();
-		TextField yearORG = new TextField();
-		TextField yearTR = new TextField();
+		yearEN = new TextField();
+		yearORG = new TextField();
+		yearTR = new TextField();
 
 		horizontBackground.add(yearEN);
 		horizontBackground.add(yearTR);
@@ -481,9 +558,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 		if (publicationtype == 8) {
 			horizontBackground = new HorizontalPanel();
-			TextField monthEN = new TextField();
-			TextField monthORG = new TextField();
-			TextField monthTR = new TextField();
+			monthEN = new TextField();
+			monthORG = new TextField();
+			monthTR = new TextField();
 
 			horizontBackground.add(monthEN);
 			horizontBackground.add(monthTR);
@@ -495,9 +572,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		}
 
 		horizontBackground = new HorizontalPanel();
-		TextField pagesEN = new TextField();
-		TextField pagesORG = new TextField();
-		TextField pagesTR = new TextField();
+	  pagesEN = new TextField();
+		pagesORG = new TextField();
+		pagesTR = new TextField();
 
 		horizontBackground.add(pagesEN);
 		horizontBackground.add(pagesTR);
@@ -507,7 +584,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		frame.add(horizontBackground);
 		firstTabVLC.add(frame);
 
-		TextArea comments = new TextArea();
+		comments = new TextArea();
 		horizontBackground = new HorizontalPanel();
 		horizontBackground.add(comments);
 		frame = new FramedPanel();
@@ -515,7 +592,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		frame.add(horizontBackground);
 		thirdTabVLC.add(frame);
 
-		TextArea notes = new TextArea();
+		notes = new TextArea();
 		horizontBackground = new HorizontalPanel();
 		horizontBackground.add(notes);
 		frame = new FramedPanel();
@@ -523,7 +600,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		frame.add(horizontBackground);
 		thirdTabVLC.add(frame);
 
-		TextField url = new TextField();
+		 url = new TextField();
 		horizontBackground = new HorizontalPanel();
 		horizontBackground.add(url);
 		frame = new FramedPanel();
@@ -531,7 +608,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		frame.add(horizontBackground);
 		thirdTabVLC.add(frame);
 
-		TextField uri = new TextField();
+		uri = new TextField();
 		horizontBackground = new HorizontalPanel();
 		horizontBackground.add(uri);
 		frame = new FramedPanel();
@@ -539,7 +616,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		frame.add(horizontBackground);
 		thirdTabVLC.add(frame);
 
-		CheckBox unpublished = new CheckBox();
+		unpublished = new CheckBox();
 		horizontBackground = new HorizontalPanel();
 		horizontBackground.add(unpublished);
 		frame = new FramedPanel();
@@ -547,7 +624,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		frame.add(horizontBackground);
 		thirdTabVLC.add(frame);
 
-		CheckBox erstauflage = new CheckBox();
+		erstauflage = new CheckBox();
 		horizontBackground = new HorizontalPanel();
 		horizontBackground.add(erstauflage);
 		erstauflage.setValue(true);
