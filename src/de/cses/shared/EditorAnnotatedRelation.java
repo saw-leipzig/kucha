@@ -17,6 +17,70 @@ package de.cses.shared;
  * @author Nina
  *
  */
-public class EditorAnnotatedRelation {
+public class EditorAnnotatedRelation extends AbstractEntry{
+	private AnnotatedBiblographyEntry bib;
+	private AuthorEntry editor;
+	private int EditorAnnotatedRelationID;
+	
+	/* (non-Javadoc)
+	 * @see de.cses.shared.AbstractEntry#getUniqueID()
+	 */
+	@Override
+	public String getUniqueID() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	private EditorAnnotatedRelation(){
+		
+	}
+	
+	private EditorAnnotatedRelation(AnnotatedBiblographyEntry bib, AuthorEntry editor){
+		this.bib = bib;
+		this.editor = editor;
+	}
+
+	/**
+	 * @return the bib
+	 */
+	public AnnotatedBiblographyEntry getBib() {
+		return bib;
+	}
+
+	/**
+	 * @param bib the bib to set
+	 */
+	public void setBib(AnnotatedBiblographyEntry bib) {
+		this.bib = bib;
+	}
+
+	/**
+	 * @return the editor
+	 */
+	public AuthorEntry getEditor() {
+		return editor;
+	}
+
+	/**
+	 * @param editor the editor to set
+	 */
+	public void setEditor(AuthorEntry editor) {
+		this.editor = editor;
+	}
+
+	/**
+	 * @return the editorAnnotatedRelationID
+	 */
+	public int getEditorAnnotatedRelationID() {
+		return EditorAnnotatedRelationID;
+	}
+
+	/**
+	 * @param editorAnnotatedRelationID the editorAnnotatedRelationID to set
+	 */
+	public void setEditorAnnotatedRelationID(int editorAnnotatedRelationID) {
+		EditorAnnotatedRelationID = editorAnnotatedRelationID;
+	}
+	
+	
 
 }
