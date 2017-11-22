@@ -430,6 +430,11 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		tabpanel.add(thirdTabVLC, "Others");
 	
 		 horizontBackground = new HorizontalLayoutContainer();
+		 
+			frame = new FramedPanel();
+			frame.setHeading("Titel");
+			frame.add(horizontBackground);
+			firstTabVLC.add(frame, new VerticalLayoutData(1.0, .5));
 			
 		titelEN = new TextField();
 		titelORG = new TextField();
@@ -446,14 +451,11 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		trans.add(titelTR);
 		eng.add(titelEN);
 
-		horizontBackground.add(eng, new HorizontalLayoutData(0.3, 1.0));
-		horizontBackground.add(original, new HorizontalLayoutData(0.3, 1.0));
-		horizontBackground.add(trans, new HorizontalLayoutData(0.3, 1.0));
+		horizontBackground.add(eng, new HorizontalLayoutData(.3, .1));
+		horizontBackground.add(original, new HorizontalLayoutData(.3, .1));
+		horizontBackground.add(trans, new HorizontalLayoutData(.3, .1));
 		
-		frame = new FramedPanel();
-		frame.setHeading("Titel");
-		frame.add(horizontBackground);
-		firstTabVLC.add(frame);
+
 
 		if (publicationtype == 6) {
 			horizontBackground = new HorizontalLayoutContainer();
@@ -472,9 +474,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			trans.add(procTR);
 			eng.add(procEN);
 
-			horizontBackground.add(eng, new HorizontalLayoutData(0.3, 1.0));
-			horizontBackground.add(original, new HorizontalLayoutData(0.3, 1.0));
-			horizontBackground.add(trans, new HorizontalLayoutData(0.3, 1.0));
+			horizontBackground.add(eng, new HorizontalLayoutData(0.3, 0.1));
+			horizontBackground.add(original, new HorizontalLayoutData(0.3, 0.1));
+			horizontBackground.add(trans, new HorizontalLayoutData(0.3, 0.1));
 			
 			frame = new FramedPanel();
 			frame.setHeading("Proceedings Title");
@@ -499,9 +501,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			trans.add(chaptitTR);
 			eng.add(chaptitEN);
 
-			horizontBackground.add(eng, new HorizontalLayoutData(0.3, 1.0));
-			horizontBackground.add(original, new HorizontalLayoutData(0.3, 1.0));
-			horizontBackground.add(trans, new HorizontalLayoutData(0.3, 1.0));
+			horizontBackground.add(eng, new HorizontalLayoutData(0.3, 0.1));
+			horizontBackground.add(original, new HorizontalLayoutData(0.3, 0.1));
+			horizontBackground.add(trans, new HorizontalLayoutData(0.3, 0.1));
 			
 			frame = new FramedPanel();
 			frame.setHeading("Chapter Title");
@@ -527,9 +529,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			trans.add(booktitelTR);
 			eng.add(booktitelEN);
 
-			horizontBackground.add(eng, new HorizontalLayoutData(0.3, 1.0));
-			horizontBackground.add(original, new HorizontalLayoutData(0.3, 1.0));
-			horizontBackground.add(trans, new HorizontalLayoutData(0.3, 1.0));
+			horizontBackground.add(eng, new HorizontalLayoutData(0.3, 0.1));
+			horizontBackground.add(original, new HorizontalLayoutData(0.3, 0.1));
+			horizontBackground.add(trans, new HorizontalLayoutData(0.3, 0.1));
 			
 			frame = new FramedPanel();
 			frame.setHeading("Booktitle");
@@ -554,9 +556,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			trans.add(uniTR);
 			eng.add(uniEN);
 
-			horizontBackground.add(eng, new HorizontalLayoutData(0.3, 1.0));
-			horizontBackground.add(original, new HorizontalLayoutData(0.3, 1.0));
-			horizontBackground.add(trans, new HorizontalLayoutData(0.3, 1.0));
+			horizontBackground.add(eng, new HorizontalLayoutData(0.3, 0.1));
+			horizontBackground.add(original, new HorizontalLayoutData(0.3, 0.1));
+			horizontBackground.add(trans, new HorizontalLayoutData(0.3, 0.1));
 			
 			frame = new FramedPanel();
 			frame.setHeading("University");
@@ -582,9 +584,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			trans.add(numberTR);
 			eng.add(numberEN);
 
-			horizontBackground.add(eng, new HorizontalLayoutData(0.3, 1.0));
-			horizontBackground.add(original, new HorizontalLayoutData(0.3, 1.0));
-			horizontBackground.add(trans, new HorizontalLayoutData(0.3, 1.0));
+			horizontBackground.add(eng, new HorizontalLayoutData(0.3, 0.1));
+			horizontBackground.add(original, new HorizontalLayoutData(0.3, 0.1));
+			horizontBackground.add(trans, new HorizontalLayoutData(0.3, 0.1));
 			
 			frame = new FramedPanel();
 			frame.setHeading("Number");
@@ -609,9 +611,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			trans.add(accessTR);
 			eng.add(accessEN);
 
-			horizontBackground.add(eng, new HorizontalLayoutData(0.3, 1.0));
-			horizontBackground.add(original, new HorizontalLayoutData(0.3, 1.0));
-			horizontBackground.add(trans, new HorizontalLayoutData(0.3, 1.0));
+			horizontBackground.add(eng, new HorizontalLayoutData(0.3, 0.1));
+			horizontBackground.add(original, new HorizontalLayoutData(0.3, 0.1));
+			horizontBackground.add(trans, new HorizontalLayoutData(0.3, 0.1));
 			
 			frame = new FramedPanel();
 			frame.setHeading("Access Date");
@@ -631,9 +633,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		eng = new FramedPanel();
 		eng.setHeading("English");
 		
-		horizontBackground.add(eng, new HorizontalLayoutData(0.3, 1.0));
-		horizontBackground.add(original, new HorizontalLayoutData(0.3, 1.0));
-		horizontBackground.add(trans, new HorizontalLayoutData(0.3, 1.0));
+		horizontBackground.add(eng, new HorizontalLayoutData(0.3, 0.1));
+		horizontBackground.add(original, new HorizontalLayoutData(0.3, 0.1));
+		horizontBackground.add(trans, new HorizontalLayoutData(0.3, 0.1));
 
 		horizontBackground.add(eng);
 		horizontBackground.add(original);
@@ -665,7 +667,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 		if (publicationtype != 6) {
 			horizontBackground = new HorizontalLayoutContainer();
-			horizontBackground.add(authorSelection, new HorizontalLayoutData(1.0, 1.0));
+			horizontBackground.add(authorSelection, new HorizontalLayoutData(0.1, 0.1));
 			frame = new FramedPanel();
 			frame.setHeading("Author");
 			frame.add(horizontBackground);
@@ -673,7 +675,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		}
 
 		horizontBackground = new HorizontalLayoutContainer();
-		horizontBackground.add(editorSelection, new HorizontalLayoutData(1.0, 1.0));
+		horizontBackground.add(editorSelection, new HorizontalLayoutData(0.1, 0.1));
 		frame = new FramedPanel();
 		frame.setHeading("Editor");
 		frame.add(horizontBackground);
@@ -696,9 +698,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			trans.add(seriesTR);
 			eng.add(seriesEN);
 
-			horizontBackground.add(eng, new HorizontalLayoutData(0.3, 1.0));
-			horizontBackground.add(original, new HorizontalLayoutData(0.3, 1.0));
-			horizontBackground.add(trans, new HorizontalLayoutData(0.3, 1.0));
+			horizontBackground.add(eng, new HorizontalLayoutData(0.3, 0.1));
+			horizontBackground.add(original, new HorizontalLayoutData(0.3, 0.1));
+			horizontBackground.add(trans, new HorizontalLayoutData(0.3, 0.1));
 			
 			frame = new FramedPanel();
 			frame.setHeading("Serie");
@@ -720,9 +722,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			eng = new FramedPanel();
 			eng.setHeading("English");
 			
-			horizontBackground.add(eng, new HorizontalLayoutData(0.3, 1.0));
-			horizontBackground.add(original, new HorizontalLayoutData(0.3, 1.0));
-			horizontBackground.add(trans, new HorizontalLayoutData(0.3, 1.0));
+			horizontBackground.add(eng, new HorizontalLayoutData(0.3, 0.1));
+			horizontBackground.add(original, new HorizontalLayoutData(0.3, 0.1));
+			horizontBackground.add(trans, new HorizontalLayoutData(0.3, 0.1));
 
 			horizontBackground.add(eng);
 			horizontBackground.add(original);
@@ -751,9 +753,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			trans.add(volumeTR);
 			eng.add(volumeEN);
 
-			horizontBackground.add(eng, new HorizontalLayoutData(0.3, 1.0));
-			horizontBackground.add(original, new HorizontalLayoutData(0.3, 1.0));
-			horizontBackground.add(trans, new HorizontalLayoutData(0.3, 1.0));
+			horizontBackground.add(eng, new HorizontalLayoutData(0.3, 0.1));
+			horizontBackground.add(original, new HorizontalLayoutData(0.3, 0.1));
+			horizontBackground.add(trans, new HorizontalLayoutData(0.3, 0.1));
 			
 			frame = new FramedPanel();
 			frame.setHeading("Volume");
@@ -776,9 +778,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		trans.add(yearTR);
 		eng.add(yearEN);
 
-		horizontBackground.add(eng, new HorizontalLayoutData(0.3, 1.0));
-		horizontBackground.add(original, new HorizontalLayoutData(0.3, 1.0));
-		horizontBackground.add(trans, new HorizontalLayoutData(0.3, 1.0));
+		horizontBackground.add(eng, new HorizontalLayoutData(0.3, 0.1));
+		horizontBackground.add(original, new HorizontalLayoutData(0.3, 0.1));
+		horizontBackground.add(trans, new HorizontalLayoutData(0.3, 0.1));
 		
 		frame = new FramedPanel();
 		frame.setHeading("Year");
@@ -802,9 +804,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			trans.add(monthTR);
 			eng.add(monthEN);
 
-			horizontBackground.add(eng, new HorizontalLayoutData(0.3, 1.0));
-			horizontBackground.add(original, new HorizontalLayoutData(0.3, 1.0));
-			horizontBackground.add(trans, new HorizontalLayoutData(0.3, 1.0));
+			horizontBackground.add(eng, new HorizontalLayoutData(0.3, 0.1));
+			horizontBackground.add(original, new HorizontalLayoutData(0.3, 0.1));
+			horizontBackground.add(trans, new HorizontalLayoutData(0.3, 0.1));
 			
 			frame = new FramedPanel();
 			frame.setHeading("Month");
@@ -828,9 +830,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		trans.add(pagesTR);
 		eng.add(pagesEN);
 
-		horizontBackground.add(eng, new HorizontalLayoutData(0.3, 1.0));
-		horizontBackground.add(original, new HorizontalLayoutData(0.3, 1.0));
-		horizontBackground.add(trans, new HorizontalLayoutData(0.3, 1.0));
+		horizontBackground.add(eng, new HorizontalLayoutData(0.3, 0.1));
+		horizontBackground.add(original, new HorizontalLayoutData(0.3, 0.1));
+		horizontBackground.add(trans, new HorizontalLayoutData(0.3, 0.1));
 		frame = new FramedPanel();
 		frame.setHeading("Pages");
 		frame.add(horizontBackground);
@@ -838,7 +840,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 		comments = new TextArea();
 		horizontBackground = new HorizontalLayoutContainer();
-		horizontBackground.add(comments, new HorizontalLayoutData(1.0, 1.0) );
+		horizontBackground.add(comments, new HorizontalLayoutData(1.0, 0.1) );
 		frame = new FramedPanel();
 		frame.setHeading("Comments");
 		frame.add(horizontBackground);
@@ -846,7 +848,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 		notes = new TextArea();
 		horizontBackground = new HorizontalLayoutContainer();
-		horizontBackground.add(notes, new HorizontalLayoutData(1.0, 1.0));
+		horizontBackground.add(notes, new HorizontalLayoutData(1.0, 0.1));
 		frame = new FramedPanel();
 		frame.setHeading("Notes");
 		frame.add(horizontBackground);
@@ -854,7 +856,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 		 url = new TextField();
 		horizontBackground = new HorizontalLayoutContainer();
-		horizontBackground.add(url, new HorizontalLayoutData(1.0, 1.0));
+		horizontBackground.add(url, new HorizontalLayoutData(1.0, 0.1));
 		frame = new FramedPanel();
 		frame.setHeading("URL");
 		frame.add(horizontBackground);
@@ -862,7 +864,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 		uri = new TextField();
 		horizontBackground = new HorizontalLayoutContainer();
-		horizontBackground.add(uri, new HorizontalLayoutData(1.0, 1.0));
+		horizontBackground.add(uri, new HorizontalLayoutData(1.0, 0.1));
 		frame = new FramedPanel();
 		frame.setHeading("URI");
 		frame.add(horizontBackground);
@@ -900,7 +902,7 @@ if(event.getValue()  == false){
 							}
 						});
 				horizontBackground = new HorizontalLayoutContainer();
-				horizontBackground.add(erstauflageComboBox, new HorizontalLayoutData(1.0, 1.0));
+				horizontBackground.add(erstauflageComboBox, new HorizontalLayoutData(1.0, 0.1));
 				frame = new FramedPanel();
 				frame.setHeading("Erstauflage");
 				frame.add(horizontBackground);

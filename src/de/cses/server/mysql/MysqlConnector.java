@@ -2031,7 +2031,7 @@ public class MysqlConnector {
 
 		try {
 			pstmt = dbc.prepareStatement(
-					"INSERT INTO AnnotatedBiblography (, Title, ShortName, Copyright, PhotographerID, Comment, Date, ImageTypeID, ImageMode) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+					"INSERT INTO AnnotatedBiblography (Title, ShortName, Copyright, PhotographerID, Comment, Date, ImageTypeID, ImageMode) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 			//pstmt.setString(1, entry.getTitle());
 			//pstmt.setString(2, entry.getShortName());
 		
