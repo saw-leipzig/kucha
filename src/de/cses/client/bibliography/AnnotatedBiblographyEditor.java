@@ -197,17 +197,23 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		bib.setTitleORG(titelORG.getText());
 		bib.setTitleTR(titelORG.getText());
 		
+		if (publicationtype == 7) {
 		bib.setAccessdateEN(accessEN.getText());
 		bib.setAccessdateORG(accessORG.getText());
 		bib.setAccessdateTR(accessTR.getText());
+		}
 		
+		if (publicationtype == 1) {
 		bib.setBookTitleEN(booktitelEN.getText());
 		bib.setBookTitleORG(booktitelORG.getText());
 		bib.setBookTitleTR(booktitelTR.getText());
+		}
 		
+		if (publicationtype == 5) {
 		bib.setChapTitleEN(chaptitEN.getText());
-		bib.setBookTitleORG(booktitelORG.getText());
-		bib.setBookTitleTR(booktitelTR.getText());
+		bib.setChapTitleORG(booktitelORG.getText());
+		bib.setChapTitleTR(booktitelTR.getText());
+		}
 		
 		bib.setComments(comments.getText());
 		
@@ -225,17 +231,21 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		
 		bib.setNotes(notes.getText());
 		
+		if (publicationtype == 8) {
 		bib.setNumberEN(numberEN.getText());
 		bib.setNumberORG(numberORG.getText());
 		bib.setNumberTR(numberTR.getText());
+		}
 		
 		bib.setPagesEN(pagesEN.getText());
 		bib.setPagesORG(pagesORG.getText());
 		bib.setPagesTR(pagesTR.getText());
 		
+		if (publicationtype == 6) {
 		bib.setProcTitleEN(procEN.getText());
 		bib.setProcTitleORG(procORG.getText());
 		bib.setProcTitleTR(procTR.getText());
+		}
 		
 		bib.setPublisherID(publisherComboBox.getValue().getPublisherID());
 		
@@ -243,9 +253,11 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		bib.setSerieORG(seriesORG.getText());
 		bib.setSerieTR(seriesTR.getText());
 		
+		if (publicationtype == 3) {
 		bib.setUniversityEN(uniEN.getText());
 		bib.setUniversityORG(uniORG.getText());
 		bib.setUniversityTR(uniTR.getText());
+		}
 		
 		bib.setUnpublished(unpublished.getValue());
 		
@@ -258,6 +270,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		bib.setYearEN(yearEN.getText());
 		bib.setYearORG(yearORG.getText());
 		bib.setYearTR(yearTR.getText());
+		
+		if (publicationtype != 6) {
+			bib.seta
+		}
 		
 		
 	}

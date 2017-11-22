@@ -13,6 +13,8 @@
  */
 package de.cses.shared;
 
+import java.util.ArrayList;
+
 /**
  * @author Nina
  *
@@ -92,7 +94,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	
 	private int erstauflageID;
 	
-	
+	private ArrayList<AuthorAnnotatedRelation> authorAnnotatedList = new ArrayList<AuthorAnnotatedRelatio>();
 	
 	
 	/**
