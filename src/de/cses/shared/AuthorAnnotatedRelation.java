@@ -33,7 +33,10 @@ public class AuthorAnnotatedRelation extends AbstractEntry{
 	public AuthorAnnotatedRelation(){
 		
 	}
-
+public AuthorAnnotatedRelation(AuthorEntry author, AnnotatedBiblographyEntry bib){
+		this.bib = bib;
+		this.author = author;
+	}
 	/**
 	 * @return the author
 	 */

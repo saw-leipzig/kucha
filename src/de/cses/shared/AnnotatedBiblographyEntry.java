@@ -94,7 +94,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	
 	private int erstauflageID;
 	
-	private ArrayList<AuthorAnnotatedRelation> authorAnnotatedList = new ArrayList<AuthorAnnotatedRelatio>();
+	private ArrayList<AuthorAnnotatedRelation> authorAnnotatedList = new ArrayList<AuthorAnnotatedRelation>();
 	
 	
 	/**
@@ -815,6 +815,20 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	 */
 	public void setAnnotatedBiblographyID(int annotatedBiblographyID) {
 		this.annotatedBiblographyID = annotatedBiblographyID;
+	}
+
+	/**
+	 * @return the authorAnnotatedList
+	 */
+	public ArrayList<AuthorAnnotatedRelation> getAuthorAnnotatedList() {
+		return authorAnnotatedList;
+	}
+
+	/**
+	 * @param authorAnnotatedList the authorAnnotatedList to set
+	 */
+	public void setAuthorAnnotatedList(ArrayList<AuthorAnnotatedRelation> authorAnnotatedList) {
+		this.authorAnnotatedList = authorAnnotatedList;
 	}
 	
 	

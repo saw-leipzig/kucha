@@ -55,6 +55,7 @@ import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.shared.AnnotatedBiblographyEntry;
+import de.cses.shared.AuthorAnnotatedRelation;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.PublicationTypeEntry;
 import de.cses.shared.PublisherEntry;
@@ -217,15 +218,19 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		
 		bib.setComments(comments.getText());
 		
+		if (publicationtype == 1 || publicationtype == 5) {
 		bib.setEditionEN(editionEN.getText());
 		bib.setEditionORG(editionORG.getText());
 		bib.setEditionTR(editionTR.getText());
+		}
 		
 		bib.setErstauflage(erstauflage.getValue());
 		
+		if (publicationtype == 8) {
 		bib.setMonthEN(monthEN.getText());
 		bib.setMonthORG(monthORG.getText());
 		bib.setMonthTR(monthTR.getText());
+		}
 		
 		bib.setErstauflageID(erstauflageComboBox.getValue().getAnnotatedBiblographyID());
 		
@@ -249,9 +254,11 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		
 		bib.setPublisherID(publisherComboBox.getValue().getPublisherID());
 		
+		if (publicationtype == 8) {
 		bib.setSerieEN(seriesEN.getText());
 		bib.setSerieORG(seriesORG.getText());
 		bib.setSerieTR(seriesTR.getText());
+		}
 		
 		if (publicationtype == 3) {
 		bib.setUniversityEN(uniEN.getText());
@@ -263,16 +270,24 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		
 		bib.setUri(uri.getText());
 		bib.setUrl(url.getText());
+		
+		if (publicationtype == 8) {
 		bib.setVolumeEN(volumeEN.getText());
 		bib.setVolumeORG(volumeORG.getText());
 		bib.setVolumeTR(volumeTR.getText());
+		}
 		
 		bib.setYearEN(yearEN.getText());
 		bib.setYearORG(yearORG.getText());
 		bib.setYearTR(yearTR.getText());
 		
 		if (publicationtype != 6) {
-			bib.seta
+			for(int i = 0; i< selectedAuthorListStore.size(); i++){
+				AuthorEntry author = selectedAuthorListStore.get(i);
+				AuthorAnnotatedRelation relation = new AuthorAnnotatedRelation(author, bib);
+				bib.getAuthorAnnotatedList().add(relation);
+			}
+			
 		}
 		
 		
