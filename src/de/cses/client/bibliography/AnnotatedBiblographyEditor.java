@@ -57,6 +57,7 @@ import de.cses.client.ui.AbstractEditor;
 import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.AuthorAnnotatedRelation;
 import de.cses.shared.AuthorEntry;
+import de.cses.shared.EditorAnnotatedRelation;
 import de.cses.shared.PublicationTypeEntry;
 import de.cses.shared.PublisherEntry;
 
@@ -289,7 +290,13 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			}
 			
 		}
+		for(int i = 0; i< selectedEditorListStore.size(); i++){
+			AuthorEntry editor = selectedEditorListStore.get(i);
+			EditorAnnotatedRelation relation = new EditorAnnotatedRelation(bib, editor);
+			bib.getEditorAnnotatedList().add(relation);
+		}
 		
+		dbService.saveAnnotatedBiblography(
 		
 	}
 

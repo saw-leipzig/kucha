@@ -194,5 +194,7 @@ public interface DatabaseService extends RemoteService {
 	ArrayList<WallLocationEntry> getWallLocations() throws IllegalArgumentException;
 
 	boolean updateAuthorEntry(AuthorEntry currentAuthorEntry);;
+	
+	boolean saveAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry) throws IllegalArgumentException;
 
 }

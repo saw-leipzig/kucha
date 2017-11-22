@@ -34,7 +34,7 @@ public class EditorAnnotatedRelation extends AbstractEntry{
 		
 	}
 	
-	private EditorAnnotatedRelation(AnnotatedBiblographyEntry bib, AuthorEntry editor){
+	public EditorAnnotatedRelation(AnnotatedBiblographyEntry bib, AuthorEntry editor){
 		this.bib = bib;
 		this.editor = editor;
 	}

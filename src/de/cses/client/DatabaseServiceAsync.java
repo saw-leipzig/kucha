@@ -225,5 +225,7 @@ public interface DatabaseServiceAsync {
 	 * @param asyncCallback
 	 */
 	void updateAuthorEntry(AuthorEntry currentAuthorEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
+	
+	void saveAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry, AsyncCallback<Boolean> callback) throws IllegalArgumentException;
 
 	}
