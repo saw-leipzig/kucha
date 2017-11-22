@@ -187,6 +187,8 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 	
 	public void save(){
 		AnnotatedBiblographyEntry bib= new AnnotatedBiblographyEntry();
+		
+	
 		bib.setTitleaddonEN(titeladdonEN.getText());
 		bib.setTitleaddonORG(titeladdonORG.getText());
 		bib.setTitleaddonTR(titeladdonTR.getText());
@@ -218,6 +220,44 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		bib.setMonthEN(monthEN.getText());
 		bib.setMonthORG(monthORG.getText());
 		bib.setMonthTR(monthTR.getText());
+		
+		bib.setErstauflageID(erstauflageComboBox.getValue().getAnnotatedBiblographyID());
+		
+		bib.setNotes(notes.getText());
+		
+		bib.setNumberEN(numberEN.getText());
+		bib.setNumberORG(numberORG.getText());
+		bib.setNumberTR(numberTR.getText());
+		
+		bib.setPagesEN(pagesEN.getText());
+		bib.setPagesORG(pagesORG.getText());
+		bib.setPagesTR(pagesTR.getText());
+		
+		bib.setProcTitleEN(procEN.getText());
+		bib.setProcTitleORG(procORG.getText());
+		bib.setProcTitleTR(procTR.getText());
+		
+		bib.setPublisherID(publisherComboBox.getValue().getPublisherID());
+		
+		bib.setSerieEN(seriesEN.getText());
+		bib.setSerieORG(seriesORG.getText());
+		bib.setSerieTR(seriesTR.getText());
+		
+		bib.setUniversityEN(uniEN.getText());
+		bib.setUniversityORG(uniORG.getText());
+		bib.setUniversityTR(uniTR.getText());
+		
+		bib.setUnpublished(unpublished.getValue());
+		
+		bib.setUri(uri.getText());
+		bib.setUrl(url.getText());
+		bib.setVolumeEN(volumeEN.getText());
+		bib.setVolumeORG(volumeORG.getText());
+		bib.setVolumeTR(volumeTR.getText());
+		
+		bib.setYearEN(yearEN.getText());
+		bib.setYearORG(yearORG.getText());
+		bib.setYearTR(yearTR.getText());
 		
 		
 	}
@@ -647,17 +687,17 @@ if(event.getValue()  == false){
 								return pvTemplates.AnnotatedBiblographyEntry(item.getTitleEN());
 							}
 						});
-}
-else{
-	erstauflageComboBox.removeFromParent();
-}
 				horizontBackground = new HorizontalPanel();
 				horizontBackground.add(erstauflageComboBox);
 				frame = new FramedPanel();
 				frame.setHeading("Erstauflage");
 				frame.add(horizontBackground);
 				thirdTabVLC.add(frame);
-				
+}
+else{
+	erstauflageComboBox.removeFromParent();
+}
+		
 			}
 		};
 		
