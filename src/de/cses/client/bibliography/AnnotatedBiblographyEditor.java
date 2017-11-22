@@ -451,9 +451,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		trans.add(titelTR);
 		eng.add(titelEN);
 
-		horizontBackground.add(eng, new HorizontalLayoutData(.3, .1));
-		horizontBackground.add(original, new HorizontalLayoutData(.3, .1));
-		horizontBackground.add(trans, new HorizontalLayoutData(.3, .1));
+		horizontBackground.add(eng, new HorizontalLayoutData(1.0/3, 1.0));
+		horizontBackground.add(original, new HorizontalLayoutData(1.0/3, 1.0));
+		horizontBackground.add(trans, new HorizontalLayoutData(1.0/3,1.0));
 		
 
 
