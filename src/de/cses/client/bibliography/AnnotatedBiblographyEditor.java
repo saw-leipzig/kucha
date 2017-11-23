@@ -19,6 +19,8 @@ import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -36,8 +38,11 @@ import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.Dialog;
 import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.FramedPanel;
+import com.sencha.gxt.widget.core.client.TabPanel;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
@@ -51,7 +56,9 @@ import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.shared.AnnotatedBiblographyEntry;
+import de.cses.shared.AuthorAnnotatedRelation;
 import de.cses.shared.AuthorEntry;
+import de.cses.shared.EditorAnnotatedRelation;
 import de.cses.shared.PublicationTypeEntry;
 import de.cses.shared.PublisherEntry;
 
@@ -60,35 +67,114 @@ import de.cses.shared.PublisherEntry;
  *
  */
 public class AnnotatedBiblographyEditor extends AbstractEditor {
-	HorizontalPanel horizontBackground;
+	HorizontalLayoutContainer horizontBackground;
 	AnnotatedBiblographyEntry entry;
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 
 	int publicationtype = 0;
+	
+	private FramedPanel frame;
 
 	private DualListField<AuthorEntry, String> authorSelection;
 	private DualListField<AuthorEntry, String> editorSelection;
 
 	private ComboBox<PublisherEntry> publisherComboBox;
 	private ComboBox<PublicationTypeEntry> publicationTypeComboBox;
+	private ComboBox<AnnotatedBiblographyEntry> 	erstauflageComboBox;
 
 	private ListStore<PublicationTypeEntry> publicationTypeListStore;
 	private ListStore<PublisherEntry> publisherListStore;
+	private ListStore<AnnotatedBiblographyEntry>	AnnotatedBiblographyEntryListStore;
 
 	private ListStore<AuthorEntry> authorListStore;
 	private ListStore<AuthorEntry> selectedAuthorListStore;
 	private ListStore<AuthorEntry> selectedEditorListStore;
 
 	private PublisherProperties publisherProps;
+	private AnnotatedBiblographyEntryProperties annotatedBiblographyEntryProps;
 	private PublicationTypeProperties publicationTypeProps;
 	private AuthorProperties authorProps;
 
-	VerticalLayoutContainer mainInputVLC = new VerticalLayoutContainer();;
+	private TabPanel tabpanel = new TabPanel();
+	VerticalLayoutContainer firstTabVLC = new VerticalLayoutContainer();
+	VerticalLayoutContainer secoundTabVLC = new VerticalLayoutContainer();
+	VerticalLayoutContainer thirdTabVLC = new VerticalLayoutContainer();
+	
+//	VerticalLayoutContainer mainInputVLC = new VerticalLayoutContainer();
+	FramedPanel framefirstedition;
+	
+	FramedPanel original;
+	FramedPanel eng;
+	FramedPanel trans;
 
 	FramedPanel mainFP = null; // das oberste Framed Panel als Rahmen
 	VerticalLayoutContainer backgroundoverview = new VerticalLayoutContainer(); // verticaler background fuer die Lioteratur
-//	VerticalLayoutContainer overviewVLC = new VerticalLayoutContainer(); // hintergrund welcher alle frames panels beinhaltet
 
+
+	TextField titelEN;
+	TextField titelORG;
+	TextField titelTR;
+	
+	TextField procEN;
+	TextField procORG;
+	TextField procTR; 
+	
+	TextField chaptitEN;
+	TextField chaptitORG;
+	TextField chaptitTR;
+	
+	TextField booktitelEN ;
+	TextField booktitelORG;
+	TextField booktitelTR;
+	
+	TextField uniEN;
+	TextField uniORG;
+	TextField uniTR;
+	
+	TextField numberEN;
+	TextField numberORG;
+	TextField numberTR;
+	
+	TextField accessEN;
+	TextField accessORG;
+	TextField accessTR;
+	
+	TextField titeladdonEN;
+	TextField titeladdonORG;
+	TextField titeladdonTR;
+	
+	TextField seriesEN;
+	TextField seriesORG;
+	TextField seriesTR;
+	
+	
+	TextField editionEN;
+	TextField editionORG;
+	TextField editionTR;
+	
+	TextField volumeEN;
+	TextField volumeORG;
+	TextField volumeTR;
+	
+	TextField yearEN;
+	TextField yearORG;
+	TextField yearTR;
+	
+	TextField monthEN;
+	TextField monthORG;
+	TextField monthTR;
+	
+	TextField pagesEN;
+	TextField pagesORG;
+	TextField pagesTR;
+	
+	TextArea comments ;
+	TextArea notes;
+	TextField url;
+	TextField uri;
+	CheckBox unpublished;
+	CheckBox erstauflage;
+	
 	public AnnotatedBiblographyEditor(AnnotatedBiblographyEntry entry) {
 		this.entry = entry;
 	}
@@ -106,13 +192,128 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 	public AnnotatedBiblographyEditor() {
 
 	}
+	
+	public void save(){
+		AnnotatedBiblographyEntry bib= new AnnotatedBiblographyEntry();
+		
+	
+		bib.setTitleaddonEN(titeladdonEN.getText());
+		bib.setTitleaddonORG(titeladdonORG.getText());
+		bib.setTitleaddonTR(titeladdonTR.getText());
+		
+		bib.setTitleEN(titelEN.getText());
+		bib.setTitleORG(titelORG.getText());
+		bib.setTitleTR(titelORG.getText());
+		
+		if (publicationtype == 7) {
+		bib.setAccessdateEN(accessEN.getText());
+		bib.setAccessdateORG(accessORG.getText());
+		bib.setAccessdateTR(accessTR.getText());
+		}
+		
+		if (publicationtype == 1) {
+		bib.setBookTitleEN(booktitelEN.getText());
+		bib.setBookTitleORG(booktitelORG.getText());
+		bib.setBookTitleTR(booktitelTR.getText());
+		}
+		
+		if (publicationtype == 5) {
+		bib.setChapTitleEN(chaptitEN.getText());
+		bib.setChapTitleORG(booktitelORG.getText());
+		bib.setChapTitleTR(booktitelTR.getText());
+		}
+		
+		bib.setComments(comments.getText());
+		
+		if (publicationtype == 1 || publicationtype == 5) {
+		bib.setEditionEN(editionEN.getText());
+		bib.setEditionORG(editionORG.getText());
+		bib.setEditionTR(editionTR.getText());
+		}
+		
+		bib.setErstauflage(erstauflage.getValue());
+		
+		if (publicationtype == 8) {
+		bib.setMonthEN(monthEN.getText());
+		bib.setMonthORG(monthORG.getText());
+		bib.setMonthTR(monthTR.getText());
+		}
+		
+		bib.setErstauflageID(erstauflageComboBox.getValue().getAnnotatedBiblographyID());
+		
+		bib.setNotes(notes.getText());
+		
+		if (publicationtype == 8) {
+		bib.setNumberEN(numberEN.getText());
+		bib.setNumberORG(numberORG.getText());
+		bib.setNumberTR(numberTR.getText());
+		}
+		
+		bib.setPagesEN(pagesEN.getText());
+		bib.setPagesORG(pagesORG.getText());
+		bib.setPagesTR(pagesTR.getText());
+		
+		if (publicationtype == 6) {
+		bib.setProcTitleEN(procEN.getText());
+		bib.setProcTitleORG(procORG.getText());
+		bib.setProcTitleTR(procTR.getText());
+		}
+		
+		bib.setPublisherID(publisherComboBox.getValue().getPublisherID());
+		
+		if (publicationtype == 8) {
+		bib.setSerieEN(seriesEN.getText());
+		bib.setSerieORG(seriesORG.getText());
+		bib.setSerieTR(seriesTR.getText());
+		}
+		
+		if (publicationtype == 3) {
+		bib.setUniversityEN(uniEN.getText());
+		bib.setUniversityORG(uniORG.getText());
+		bib.setUniversityTR(uniTR.getText());
+		}
+		
+		bib.setUnpublished(unpublished.getValue());
+		
+		bib.setUri(uri.getText());
+		bib.setUrl(url.getText());
+		
+		if (publicationtype == 8) {
+		bib.setVolumeEN(volumeEN.getText());
+		bib.setVolumeORG(volumeORG.getText());
+		bib.setVolumeTR(volumeTR.getText());
+		}
+		
+		bib.setYearEN(yearEN.getText());
+		bib.setYearORG(yearORG.getText());
+		bib.setYearTR(yearTR.getText());
+		
+		if (publicationtype != 6) {
+			for(int i = 0; i< selectedAuthorListStore.size(); i++){
+				AuthorEntry author = selectedAuthorListStore.get(i);
+				AuthorAnnotatedRelation relation = new AuthorAnnotatedRelation(author, bib);
+				bib.getAuthorAnnotatedList().add(relation);
+			}
+			
+		}
+		for(int i = 0; i< selectedEditorListStore.size(); i++){
+			AuthorEntry editor = selectedEditorListStore.get(i);
+			EditorAnnotatedRelation relation = new EditorAnnotatedRelation(bib, editor);
+			bib.getEditorAnnotatedList().add(relation);
+		}
+		
+		//dbService.saveAnnotatedBiblography(
+		
+	}
 
 	public void init() {
 
 		authorProps = GWT.create(AuthorProperties.class);
+		annotatedBiblographyEntryProps = GWT.create(AnnotatedBiblographyEntryProperties.class);
 		publisherProps = GWT.create(PublisherProperties.class);
 		publicationTypeProps = GWT.create(PublicationTypeProperties.class);
 		authorListStore = new ListStore<AuthorEntry>(authorProps.authorID());
+		AnnotatedBiblographyEntryListStore = new ListStore<AnnotatedBiblographyEntry>(annotatedBiblographyEntryProps.annotatedBiblographyID());
 		selectedAuthorListStore = new ListStore<AuthorEntry>(authorProps.authorID());
 		publicationTypeListStore = new ListStore<PublicationTypeEntry>(publicationTypeProps.publicationTypeID());
 		selectedEditorListStore = new ListStore<AuthorEntry>(authorProps.authorID());
@@ -153,7 +354,6 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<PublicationTypeEntry> event) {
-
 				publicationtype = event.getSelectedItem().getPublicationTypeID();
 				rebuildMainInput(publicationtype);
 			}
@@ -164,12 +364,12 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		puplicationTypeFP.setHeading("Publication Type");
 		puplicationTypeFP.add(publicationTypeComboBox);
 		
-		FramedPanel mainInputFP = new FramedPanel();
-		mainInputFP.setHeading("Literatur");
-		mainInputFP.add(mainInputVLC);
+//		FramedPanel mainInputFP = new FramedPanel();
+//		mainInputFP.setHeading("Literatur");
+//		mainInputFP.add(mainInputVLC);
 		
 		backgroundoverview.add(puplicationTypeFP, new VerticalLayoutData(1.0, .1));
-		backgroundoverview.add(mainInputFP, new VerticalLayoutData(1.0, .9));
+
 
 		ToolButton closeToolButton = new ToolButton(ToolButton.CLOSE);
 		closeToolButton.setToolTip("close");
@@ -205,125 +405,254 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 	
 		mainFP = new FramedPanel();
 		mainFP.setHeading("Annotated Biblography");
-		mainFP.setSize("900px", "700px"); // here we set the size of the panel
-		mainFP.add(backgroundoverview);
+		mainFP.setSize("900px", "830px"); // here we set the size of the panel
+		mainFP.add(backgroundoverview, new VerticalLayoutData(1.0, 1.0));
 		mainFP.addTool(closeToolButton);
 
 	}
 
 	public void rebuildMainInput(int publicationtype) {
-		mainInputVLC.clear();;
+//		mainInputVLC.clear();
+		backgroundoverview.remove(tabpanel);
+		tabpanel = new TabPanel();
+		backgroundoverview.add(tabpanel, new VerticalLayoutData(1.0, 0.9));
+		
+		firstTabVLC = new VerticalLayoutContainer();
+		secoundTabVLC = new VerticalLayoutContainer();
+		thirdTabVLC = new VerticalLayoutContainer();
+//		mainInputVLC.add(tabpanel, new VerticalLayoutData(1.0, 1.0));
+		
+		tabpanel.add(firstTabVLC, "Basics");
+		tabpanel.add(secoundTabVLC, "Authors and Editors");
+		tabpanel.add(thirdTabVLC, "Others");
+		
+		tabpanel.setTabScroll(true);
+		
+		firstTabVLC.setWidth("880px");
+		firstTabVLC.setHeight("695px");
+		secoundTabVLC.setWidth("880px");
+		secoundTabVLC.setHeight("695px");
+		thirdTabVLC.setWidth("880px");
+		thirdTabVLC.setHeight("695px");
+	
+		 horizontBackground = new HorizontalLayoutContainer();
+		 
+			frame = new FramedPanel();
+			frame.setHeading("Titel");
+			frame.add(horizontBackground);
+			firstTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/8));
+			
+		titelEN = new TextField();
+		titelORG = new TextField();
+		titelTR = new TextField();
+		
+		original = new FramedPanel();
+		original.setHeading("Original");
+		trans = new FramedPanel();
+		trans.setHeading("Transkription");
+		eng = new FramedPanel();
+		eng.setHeading("English");
+		
+		original.add(titelORG);
+		trans.add(titelTR);
+		eng.add(titelEN);
 
-		horizontBackground = new HorizontalPanel();
-		TextField titelEN = new TextField();
-		TextField titelORG = new TextField();
-		TextField titelTR = new TextField();
-		HTML titelDES = new HTML("Titel: ");
+		horizontBackground.add(eng, new HorizontalLayoutData(1.0/3, 1.0));
+		horizontBackground.add(original, new HorizontalLayoutData(1.0/3, 1.0));
+		horizontBackground.add(trans, new HorizontalLayoutData(1.0/3, 1.0));
+		
 
-		horizontBackground.add(titelDES);
-		horizontBackground.add(titelEN);
-		horizontBackground.add(titelTR);
-		horizontBackground.add(titelORG);
-		mainInputVLC.add(horizontBackground);
 
 		if (publicationtype == 6) {
-			horizontBackground = new HorizontalPanel();
-			TextField procEN = new TextField();
-			TextField procORG = new TextField();
-			TextField procTR = new TextField();
-			HTML procDES = new HTML("Proceedings Title: ");
+			horizontBackground = new HorizontalLayoutContainer();
+			procEN = new TextField();
+			procORG = new TextField();
+			procTR = new TextField();
 
-			horizontBackground.add(procDES);
-			horizontBackground.add(procEN);
-			horizontBackground.add(procTR);
-			horizontBackground.add(procORG);
-			mainInputVLC.add(horizontBackground);
+			original = new FramedPanel();
+			original.setHeading("Original");
+			trans = new FramedPanel();
+			trans.setHeading("Transkription");
+			eng = new FramedPanel();
+			eng.setHeading("English");
+			
+			original.add(procORG);
+			trans.add(procTR);
+			eng.add(procEN);
+
+			horizontBackground.add(eng, new HorizontalLayoutData(1.0/3, 1.0));
+			horizontBackground.add(original, new HorizontalLayoutData(1.0/3, 1.0));
+			horizontBackground.add(trans, new HorizontalLayoutData(1.0/3, 1.0));
+			
+			frame = new FramedPanel();
+			frame.setHeading("Proceedings Title");
+			frame.add(horizontBackground);
+			firstTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/8));
 		}
 
 		if (publicationtype == 5) {
-			horizontBackground = new HorizontalPanel();
-			TextField chaptitEN = new TextField();
-			TextField chaptitORG = new TextField();
-			TextField chaptitTR = new TextField();
-			HTML chaptitDES = new HTML("Chapter Title: ");
+			horizontBackground = new HorizontalLayoutContainer();
+			chaptitEN = new TextField();
+			chaptitORG = new TextField();
+			chaptitTR = new TextField();
 
-			horizontBackground.add(chaptitDES);
-			horizontBackground.add(chaptitEN);
-			horizontBackground.add(chaptitTR);
-			horizontBackground.add(chaptitORG);
-			mainInputVLC.add(horizontBackground);
+			original = new FramedPanel();
+			original.setHeading("Original");
+			trans = new FramedPanel();
+			trans.setHeading("Transkription");
+			eng = new FramedPanel();
+			eng.setHeading("English");
+			
+			original.add(chaptitORG);
+			trans.add(chaptitTR);
+			eng.add(chaptitEN);
+
+			horizontBackground.add(eng, new HorizontalLayoutData(1.0/3, 1.0));
+			horizontBackground.add(original, new HorizontalLayoutData(1.0/3, 1.0));
+			horizontBackground.add(trans, new HorizontalLayoutData(1.0/3, 1.0));
+			
+			frame = new FramedPanel();
+			frame.setHeading("Chapter Title");
+			frame.add(horizontBackground);
+			firstTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/8));
 		}
 
 		if (publicationtype == 1) {
 
-			horizontBackground = new HorizontalPanel();
-			TextField booktitelEN = new TextField();
-			TextField booktitelORG = new TextField();
-			TextField booktitelTR = new TextField();
-			HTML booktitelDES = new HTML("Booktitel: ");
+			horizontBackground = new HorizontalLayoutContainer();
+			booktitelEN = new TextField();
+			booktitelORG = new TextField();
+			booktitelTR = new TextField();
 
-			horizontBackground.add(booktitelDES);
-			horizontBackground.add(booktitelEN);
-			horizontBackground.add(booktitelTR);
-			horizontBackground.add(booktitelORG);
-			mainInputVLC.add(horizontBackground);
+			original = new FramedPanel();
+			original.setHeading("Original");
+			trans = new FramedPanel();
+			trans.setHeading("Transkription");
+			eng = new FramedPanel();
+			eng.setHeading("English");
+			
+			original.add(booktitelORG);
+			trans.add(booktitelTR);
+			eng.add(booktitelEN);
+
+			horizontBackground.add(eng, new HorizontalLayoutData(1.0/3, 1.0));
+			horizontBackground.add(original, new HorizontalLayoutData(1.0/3, 1.0));
+			horizontBackground.add(trans, new HorizontalLayoutData(1.0/3, 1.0));
+			
+			frame = new FramedPanel();
+			frame.setHeading("Booktitle");
+			frame.add(horizontBackground);
+			firstTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/8));
 		}
 
 		if (publicationtype == 3) {
-			horizontBackground = new HorizontalPanel();
-			TextField uniEN = new TextField();
-			TextField uniORG = new TextField();
-			TextField uniTR = new TextField();
-			HTML uniDES = new HTML("University: ");
+			horizontBackground = new HorizontalLayoutContainer();
+			uniEN = new TextField();
+			uniORG = new TextField();
+			uniTR = new TextField();
 
-			horizontBackground.add(uniDES);
-			horizontBackground.add(uniEN);
-			horizontBackground.add(uniTR);
-			horizontBackground.add(uniORG);
-			mainInputVLC.add(horizontBackground);
+			original = new FramedPanel();
+			original.setHeading("Original");
+			trans = new FramedPanel();
+			trans.setHeading("Transkription");
+			eng = new FramedPanel();
+			eng.setHeading("English");
+			
+			original.add(uniORG);
+			trans.add(uniTR);
+			eng.add(uniEN);
+
+			horizontBackground.add(eng, new HorizontalLayoutData(1.0/3, 1.0));
+			horizontBackground.add(original,new HorizontalLayoutData(1.0/3, 1.0));
+			horizontBackground.add(trans, new HorizontalLayoutData(1.0/3, 1.0));
+			
+			frame = new FramedPanel();
+			frame.setHeading("University");
+			frame.add(horizontBackground);
+			firstTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/8));
 		}
 
 		if (publicationtype == 8) {
 
-			horizontBackground = new HorizontalPanel();
-			TextField numberEN = new TextField();
-			TextField numberORG = new TextField();
-			TextField numberTR = new TextField();
-			HTML numberDES = new HTML("Number: ");
+			horizontBackground = new HorizontalLayoutContainer();
+			numberEN = new TextField();
+			numberORG = new TextField();
+			numberTR = new TextField();
 
-			horizontBackground.add(numberDES);
-			horizontBackground.add(numberEN);
-			horizontBackground.add(numberTR);
-			horizontBackground.add(numberORG);
-			mainInputVLC.add(horizontBackground);
+			original = new FramedPanel();
+			original.setHeading("Original");
+			trans = new FramedPanel();
+			trans.setHeading("Transkription");
+			eng = new FramedPanel();
+			eng.setHeading("English");
+			
+			original.add(numberORG);
+			trans.add(numberTR);
+			eng.add(numberEN);
+
+			horizontBackground.add(eng, new HorizontalLayoutData(1.0/3, 1.0));
+			horizontBackground.add(original, new HorizontalLayoutData(1.0/3, 1.0));
+			horizontBackground.add(trans, new HorizontalLayoutData(1.0/3, 1.0));
+			
+			frame = new FramedPanel();
+			frame.setHeading("Number");
+			frame.add(horizontBackground);
+			firstTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/8));
 		}
 
 		if (publicationtype == 7) {
-			horizontBackground = new HorizontalPanel();
-			TextField accessEN = new TextField();
-			TextField accessORG = new TextField();
-			TextField accessTR = new TextField();
-			HTML accessDES = new HTML("Access Date: ");
+			horizontBackground = new HorizontalLayoutContainer();
+			accessEN = new TextField();
+			accessORG = new TextField();
+			accessTR = new TextField();
 
-			horizontBackground.add(accessDES);
-			horizontBackground.add(accessEN);
-			horizontBackground.add(accessTR);
-			horizontBackground.add(accessORG);
-			mainInputVLC.add(horizontBackground);
+			original = new FramedPanel();
+			original.setHeading("Original");
+			trans = new FramedPanel();
+			trans.setHeading("Transkription");
+			eng = new FramedPanel();
+			eng.setHeading("English");
+			
+			original.add(accessORG);
+			trans.add(accessTR);
+			eng.add(accessEN);
+
+			horizontBackground.add(eng, new HorizontalLayoutData(1.0/3, 1.0));
+			horizontBackground.add(original, new HorizontalLayoutData(1.0/3, 1.0));
+			horizontBackground.add(trans, new HorizontalLayoutData(1.0/3, 1.0));
+			
+			frame = new FramedPanel();
+			frame.setHeading("Access Date");
+			frame.add(horizontBackground,  new HorizontalLayoutData(1.0, 1.0));
+			thirdTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/8));
 		}
 
-		horizontBackground = new HorizontalPanel();
-		TextField titeladdonEN = new TextField();
-		TextField titeladdonORG = new TextField();
-		TextField titeladdonTR = new TextField();
-		HTML titeladdonDES = new HTML("Titeladdon: ");
+		horizontBackground = new HorizontalLayoutContainer();
+		titeladdonEN = new TextField();
+		titeladdonORG = new TextField();
+		titeladdonTR = new TextField();
 
-		horizontBackground.add(titeladdonDES);
-		horizontBackground.add(titeladdonEN);
-		horizontBackground.add(titeladdonTR);
-		horizontBackground.add(titeladdonORG);
-		mainInputVLC.add(horizontBackground);
+		original = new FramedPanel();
+		original.setHeading("Original");
+		trans = new FramedPanel();
+		trans.setHeading("Transkription");
+		eng = new FramedPanel();
+		eng.setHeading("English");
+		
+		original.add(titeladdonORG);
+		trans.add(titeladdonTR);
+		eng.add(titeladdonEN);
 
+		horizontBackground.add(eng, new HorizontalLayoutData(1.0/3, 1.0));
+		horizontBackground.add(original, new HorizontalLayoutData(1.0/3, 1.0));
+		horizontBackground.add(trans, new HorizontalLayoutData(1.0/3, 1.0));
+
+		
+		frame = new FramedPanel();
+		frame.setHeading("Titleaddon");
+		frame.add(horizontBackground);
+		firstTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/8));
+		
 		publisherComboBox = new ComboBox<PublisherEntry>(publisherListStore, publisherProps.name(),
 				new AbstractSafeHtmlRenderer<PublisherEntry>() {
 
@@ -333,151 +662,269 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 						return pvTemplates.publisher(item.getName());
 					}
 				});
-		horizontBackground = new HorizontalPanel();
-		HTML publisher = new HTML("Publisher: ");
-		horizontBackground.add(publisher);
-		horizontBackground.add(publisherComboBox);
-		mainInputVLC.add(horizontBackground);
-
+		horizontBackground = new HorizontalLayoutContainer();
+		horizontBackground.add(publisherComboBox, new HorizontalLayoutData(1.0, 1.0));
+		frame = new FramedPanel();
+		frame.setHeading("Publisher");
+		frame.add(horizontBackground, new VerticalLayoutData(1.0, 1.0));
+		secoundTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/8));
 		authorSelection = new DualListField<AuthorEntry, String>(authorListStore, selectedAuthorListStore, authorProps.name(), new TextCell());
 
 		editorSelection = new DualListField<AuthorEntry, String>(authorListStore, selectedEditorListStore, authorProps.name(), new TextCell());
 
 		if (publicationtype != 6) {
-			horizontBackground = new HorizontalPanel();
-			HTML author = new HTML("Author: ");
-			horizontBackground.add(author);
-			horizontBackground.add(authorSelection);
-			mainInputVLC.add(horizontBackground);
+			horizontBackground = new HorizontalLayoutContainer();
+			horizontBackground.add(authorSelection, new HorizontalLayoutData(1.0, 1.0));
+			frame = new FramedPanel();
+			frame.setHeading("Author");
+			frame.add(horizontBackground, new VerticalLayoutData(1.0, 1.0));
+			secoundTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/3));
 		}
 
-		horizontBackground = new HorizontalPanel();
-		HTML editor = new HTML("Editor: ");
-		horizontBackground.add(editor);
-		horizontBackground.add(editorSelection);
-		mainInputVLC.add(horizontBackground);
-
+		horizontBackground = new HorizontalLayoutContainer();
+		horizontBackground.add(editorSelection, new HorizontalLayoutData(1.0, 1.0));
+		frame = new FramedPanel();
+		frame.setHeading("Editor");
+		frame.add(horizontBackground, new VerticalLayoutData(1.0, 1.0));
+		secoundTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/3));
+		
 		if (publicationtype == 8) {
-			horizontBackground = new HorizontalPanel();
-			TextField seriesEN = new TextField();
-			TextField seriesORG = new TextField();
-			TextField seriesTR = new TextField();
-			HTML seriesDES = new HTML("Serie: ");
+			horizontBackground = new HorizontalLayoutContainer();
+			seriesEN = new TextField();
+			seriesORG = new TextField();
+			seriesTR = new TextField();
 
-			horizontBackground.add(seriesDES);
-			horizontBackground.add(seriesEN);
-			horizontBackground.add(seriesTR);
-			horizontBackground.add(seriesORG);
-			mainInputVLC.add(horizontBackground);
+			original = new FramedPanel();
+			original.setHeading("Original");
+			trans = new FramedPanel();
+			trans.setHeading("Transkription");
+			eng = new FramedPanel();
+			eng.setHeading("English");
+			
+			original.add(seriesORG);
+			trans.add(seriesTR);
+			eng.add(seriesEN);
+
+			horizontBackground.add(eng, new HorizontalLayoutData(1.0/3, 1.0));
+			horizontBackground.add(original, new HorizontalLayoutData(1.0/3, 1.0));
+			horizontBackground.add(trans, new HorizontalLayoutData(1.0/3, 1.0));
+			
+			frame = new FramedPanel();
+			frame.setHeading("Serie");
+			frame.add(horizontBackground);
+			firstTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/8));
 		}
 
 		if (publicationtype == 1 || publicationtype == 5) {
 
-			horizontBackground = new HorizontalPanel();
-			TextField editionEN = new TextField();
-			TextField editionORG = new TextField();
-			TextField editionTR = new TextField();
-			HTML editionDES = new HTML("Edition: ");
+			horizontBackground = new HorizontalLayoutContainer();
+			editionEN = new TextField();
+			editionORG = new TextField();
+			editionTR = new TextField();
 
-			horizontBackground.add(editionDES);
-			horizontBackground.add(editionEN);
-			horizontBackground.add(editionTR);
-			horizontBackground.add(editionORG);
-			mainInputVLC.add(horizontBackground);
-		}
+			original = new FramedPanel();
+			original.setHeading("Original");
+			trans = new FramedPanel();
+			trans.setHeading("Transkription");
+			eng = new FramedPanel();
+			eng.setHeading("English");
+			
+			original.add(editionORG);
+			trans.add(editionTR);
+			eng.add(editionEN);
+
+			
+			horizontBackground.add(eng, new HorizontalLayoutData(1.0/3, 1.0));
+			horizontBackground.add(original, new HorizontalLayoutData(1.0/3, 1.0));
+			horizontBackground.add(trans, new HorizontalLayoutData(1.0/3, 1.0));
+
+			
+			frame = new FramedPanel();
+			frame.setHeading("Edition");
+			frame.add(horizontBackground);
+			firstTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/8));
+			
+			}
 		if (publicationtype == 8) {
-			horizontBackground = new HorizontalPanel();
-			TextField volumeEN = new TextField();
-			TextField volumeORG = new TextField();
-			TextField volumeTR = new TextField();
-			HTML volumeDES = new HTML("Volume: ");
+			horizontBackground = new HorizontalLayoutContainer();
+			volumeEN = new TextField();
+			volumeORG = new TextField();
+			volumeTR = new TextField();
 
-			horizontBackground.add(volumeDES);
-			horizontBackground.add(volumeEN);
-			horizontBackground.add(volumeTR);
-			horizontBackground.add(volumeORG);
-			mainInputVLC.add(horizontBackground);
-		}
-		horizontBackground = new HorizontalPanel();
-		TextField yearEN = new TextField();
-		TextField yearORG = new TextField();
-		TextField yearTR = new TextField();
-		HTML yearDES = new HTML("Year: ");
+			original = new FramedPanel();
+			original.setHeading("Original");
+			trans = new FramedPanel();
+			trans.setHeading("Transkription");
+			eng = new FramedPanel();
+			eng.setHeading("English");
+			
+			original.add(volumeORG);
+			trans.add(volumeTR);
+			eng.add(volumeEN);
 
-		horizontBackground.add(yearDES);
-		horizontBackground.add(yearEN);
-		horizontBackground.add(yearTR);
-		horizontBackground.add(yearORG);
-		mainInputVLC.add(horizontBackground);
+			horizontBackground.add(eng, new HorizontalLayoutData(1.0/3, 1.0));
+			horizontBackground.add(original, new HorizontalLayoutData(1.0/3, 1.0));
+			horizontBackground.add(trans, new HorizontalLayoutData(1.0/3, 1.0));
+			
+			frame = new FramedPanel();
+			frame.setHeading("Volume");
+			frame.add(horizontBackground);
+			firstTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/8));
+			}
+		horizontBackground = new HorizontalLayoutContainer();
+		yearEN = new TextField();
+		yearORG = new TextField();
+		yearTR = new TextField();
+
+		original = new FramedPanel();
+		original.setHeading("Original");
+		trans = new FramedPanel();
+		trans.setHeading("Transkription");
+		eng = new FramedPanel();
+		eng.setHeading("English");
+		
+		original.add(yearORG);
+		trans.add(yearTR);
+		eng.add(yearEN);
+
+		horizontBackground.add(eng, new HorizontalLayoutData(1.0/3, 1.0));
+		horizontBackground.add(original, new HorizontalLayoutData(1.0/3, 1.0));
+		horizontBackground.add(trans, new HorizontalLayoutData(1.0/3, 1.0));
+		
+		frame = new FramedPanel();
+		frame.setHeading("Year");
+		frame.add(horizontBackground);
+		firstTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/8));
 
 		if (publicationtype == 8) {
-			horizontBackground = new HorizontalPanel();
-			TextField monthEN = new TextField();
-			TextField monthORG = new TextField();
-			TextField monthTR = new TextField();
-			HTML monthDES = new HTML("Month: ");
+			horizontBackground = new HorizontalLayoutContainer();
+			monthEN = new TextField();
+			monthORG = new TextField();
+			monthTR = new TextField();
 
-			horizontBackground.add(monthDES);
-			horizontBackground.add(monthEN);
-			horizontBackground.add(monthTR);
-			horizontBackground.add(monthORG);
-			mainInputVLC.add(horizontBackground);
+			original = new FramedPanel();
+			original.setHeading("Original");
+			trans = new FramedPanel();
+			trans.setHeading("Transkription");
+			eng = new FramedPanel();
+			eng.setHeading("English");
+			
+			original.add(monthORG);
+			trans.add(monthTR);
+			eng.add(monthEN);
+
+			horizontBackground.add(eng, new HorizontalLayoutData(1.0/3, 1.0));
+			horizontBackground.add(original, new HorizontalLayoutData(1.0/3, 1.0));
+			horizontBackground.add(trans, new HorizontalLayoutData(1.0/3, 1.0));
+			
+			frame = new FramedPanel();
+			frame.setHeading("Month");
+			frame.add(horizontBackground);
+			firstTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/8));
 		}
 
-		horizontBackground = new HorizontalPanel();
-		TextField pagesEN = new TextField();
-		TextField pagesORG = new TextField();
-		TextField pagesTR = new TextField();
-		HTML pagesDES = new HTML("Pages: ");
+		horizontBackground = new HorizontalLayoutContainer();
+	  pagesEN = new TextField();
+		pagesORG = new TextField();
+		pagesTR = new TextField();
 
-		horizontBackground.add(pagesDES);
-		horizontBackground.add(pagesEN);
-		horizontBackground.add(pagesTR);
-		horizontBackground.add(pagesORG);
-		mainInputVLC.add(horizontBackground);
+		original = new FramedPanel();
+		original.setHeading("Original");
+		trans = new FramedPanel();
+		trans.setHeading("Transkription");
+		eng = new FramedPanel();
+		eng.setHeading("English");
+		
+		original.add(pagesORG);
+		trans.add(pagesTR);
+		eng.add(pagesEN);
 
-		TextArea comments = new TextArea();
-		horizontBackground = new HorizontalPanel();
-		HTML commentsdes = new HTML("Comments: ");
-		horizontBackground.add(commentsdes);
-		horizontBackground.add(comments);
-		mainInputVLC.add(horizontBackground);
+		horizontBackground.add(eng, new HorizontalLayoutData(1.0/3, 1.0));
+		horizontBackground.add(original, new HorizontalLayoutData(1.0/3, 1.0));
+		horizontBackground.add(trans, new HorizontalLayoutData(1.0/3, 1.0));
+		frame = new FramedPanel();
+		frame.setHeading("Pages");
+		frame.add(horizontBackground);
+		firstTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/8));
 
-		TextArea notes = new TextArea();
-		horizontBackground = new HorizontalPanel();
-		HTML notesdes = new HTML("Notes: ");
-		horizontBackground.add(notesdes);
-		horizontBackground.add(notes);
-		mainInputVLC.add(horizontBackground);
+		comments = new TextArea();
+		horizontBackground = new HorizontalLayoutContainer();
+		horizontBackground.add(comments, new HorizontalLayoutData(1.0, 1.0) );
+		frame = new FramedPanel();
+		frame.setHeading("Comments");
+		frame.add(horizontBackground,  new HorizontalLayoutData(1.0, 1.0));
+		thirdTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/7));
 
-		TextField url = new TextField();
-		horizontBackground = new HorizontalPanel();
-		HTML urldes = new HTML("URL: ");
-		horizontBackground.add(urldes);
-		horizontBackground.add(url);
-		mainInputVLC.add(horizontBackground);
+		notes = new TextArea();
+		horizontBackground = new HorizontalLayoutContainer();
+		horizontBackground.add(notes, new HorizontalLayoutData(1.0, 1.0));
+		frame = new FramedPanel();
+		frame.setHeading("Notes");
+		frame.add(horizontBackground,  new HorizontalLayoutData(1.0, 1.0));
+		thirdTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/7));
 
-		TextField uri = new TextField();
-		horizontBackground = new HorizontalPanel();
-		HTML urides = new HTML("URI: ");
-		horizontBackground.add(urides);
-		horizontBackground.add(uri);
-		mainInputVLC.add(horizontBackground);
+		 url = new TextField();
+		horizontBackground = new HorizontalLayoutContainer();
+		horizontBackground.add(url, new HorizontalLayoutData(1.0, 1.0));
+		frame = new FramedPanel();
+		frame.setHeading("URL");
+		frame.add(horizontBackground,  new HorizontalLayoutData(1.0, 1.0));
+		thirdTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/16));
 
-		CheckBox unpublished = new CheckBox();
-		horizontBackground = new HorizontalPanel();
-		HTML unpublisheddes = new HTML("Unpublished: ");
-		horizontBackground.add(unpublisheddes);
-		horizontBackground.add(unpublished);
-		mainInputVLC.add(horizontBackground);
+		uri = new TextField();
+		horizontBackground = new HorizontalLayoutContainer();
+		horizontBackground.add(uri, new HorizontalLayoutData(1.0, 1.0));
+		frame = new FramedPanel();
+		frame.setHeading("URI");
+		frame.add(horizontBackground,  new HorizontalLayoutData(1.0, 1.0));
+		thirdTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/16));
 
-		CheckBox erstauflage = new CheckBox();
-		horizontBackground = new HorizontalPanel();
-		HTML erstauflagedes = new HTML("First Edition: ");
-		horizontBackground.add(erstauflagedes);
-		horizontBackground.add(erstauflage);
+		unpublished = new CheckBox();
+		horizontBackground = new HorizontalLayoutContainer();
+		horizontBackground.add(unpublished,  new HorizontalLayoutData(1.0, 1.0));
+		frame = new FramedPanel();
+		frame.setHeading("Unpublished");
+		frame.add(horizontBackground,  new HorizontalLayoutData(1.0, 1.0));
+		thirdTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/16));
+
+		erstauflage = new CheckBox();
+		horizontBackground = new HorizontalLayoutContainer();
+		horizontBackground.add(erstauflage,  new HorizontalLayoutData(1.0, 1.0));
 		erstauflage.setValue(true);
-		mainInputVLC.add(horizontBackground);
+		frame = new FramedPanel();
+		frame.setHeading("FirstEdition");
+		frame.add(horizontBackground,  new HorizontalLayoutData(1.0, 1.0));
+		thirdTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/16));
+		
+		ValueChangeHandler<Boolean> checkBoxHandler = new ValueChangeHandler<Boolean>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+if(event.getValue()  == false){
+				erstauflageComboBox = new ComboBox<AnnotatedBiblographyEntry>(AnnotatedBiblographyEntryListStore, annotatedBiblographyEntryProps.titleEN(),
+						new AbstractSafeHtmlRenderer<AnnotatedBiblographyEntry>() {
+
+							@Override
+							public SafeHtml render(AnnotatedBiblographyEntry item) {
+								final AnnotatedBiblographyEntryViewTemplates pvTemplates = GWT.create(AnnotatedBiblographyEntryViewTemplates.class);
+								return pvTemplates.AnnotatedBiblographyEntry(item.getTitleEN());
+							}
+						});
+				horizontBackground = new HorizontalLayoutContainer();
+				horizontBackground.add(erstauflageComboBox, new HorizontalLayoutData(1.0, 1.0));
+				framefirstedition = new FramedPanel();
+				framefirstedition.setHeading("First Edition");
+				framefirstedition.add(horizontBackground, new HorizontalLayoutData(1.0, 1.0));
+				thirdTabVLC.add(framefirstedition, new VerticalLayoutData(1.0, 1.0/4));
+}
+else{
+	thirdTabVLC.remove(framefirstedition);
+}
+		
+			}
+		};
+		
+		erstauflage.addValueChangeHandler(checkBoxHandler);
 	}
 
 }
@@ -485,6 +932,11 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 interface PublisherViewTemplates extends XTemplates {
 	@XTemplate("<div>{name}</div>")
 	SafeHtml publisher(String name);
+}
+
+interface AnnotatedBiblographyEntryViewTemplates extends XTemplates {
+	@XTemplate("<div>{name}</div>")
+	SafeHtml AnnotatedBiblographyEntry(String name);
 }
 
 interface PublicationTypeViewTemplates extends XTemplates {
@@ -496,6 +948,12 @@ interface PublisherProperties extends PropertyAccess<PublisherEntry> {
 	ModelKeyProvider<PublisherEntry> publisherID();
 
 	LabelProvider<PublisherEntry> name();
+}
+
+interface AnnotatedBiblographyEntryProperties extends PropertyAccess<AnnotatedBiblographyEntry> {
+	ModelKeyProvider<AnnotatedBiblographyEntry> annotatedBiblographyID();
+
+	LabelProvider<AnnotatedBiblographyEntry> titleEN();
 }
 
 interface PublicationTypeProperties extends PropertyAccess<PublicationTypeEntry> {

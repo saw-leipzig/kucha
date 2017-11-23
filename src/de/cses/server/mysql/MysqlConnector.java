@@ -2055,4 +2055,27 @@ public class MysqlConnector {
 		return false;
 	}
 
+	/**
+	 * @param bibEntry
+	 * @return
+	 */
+	public boolean saveAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry) {
+		Connection dbc = getConnection();
+		Statement stmt;
+		PreparedStatement pstmt;
+
+		try {
+			pstmt = dbc.prepareStatement(
+					"INSERT INTO AnnotatedBiblography (Title, ShortName, Copyright, PhotographerID, Comment, Date, ImageTypeID, ImageMode) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+			//pstmt.setString(1, entry.getTitle());
+			//pstmt.setString(2, entry.getShortName());
+		
+		return false;
+	}
+		catch(SQLException ex){
+			
+		}
+		return false;
+
+}
 }
