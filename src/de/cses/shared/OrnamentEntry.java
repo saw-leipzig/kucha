@@ -25,8 +25,8 @@ public class OrnamentEntry extends AbstractEntry {
 	private String interpretation;
 	private String references;
 	private String sketch;
-	private MainTypologicalClass maintypologycalClass;
-	private StructureOrganization structureOrganization;
+	private int mainTypologicalClassID;
+	private int structureOrganizationID;
 	private ArrayList<ImageEntry> images = new ArrayList<ImageEntry>();
 	private ArrayList<OrnamentCaveRelation> cavesRelations = new ArrayList<OrnamentCaveRelation>();
 
@@ -114,36 +114,6 @@ public class OrnamentEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @return the maintypologycalClass
-	 */
-	public MainTypologicalClass getMaintypologycalClass() {
-		return maintypologycalClass;
-	}
-
-	/**
-	 * @param maintypologycalClass
-	 *          the maintypologycalClass to set
-	 */
-	public void setMaintypologycalClass(MainTypologicalClass maintypologycalClass) {
-		this.maintypologycalClass = maintypologycalClass;
-	}
-
-	/**
-	 * @return the structureOrganization
-	 */
-	public StructureOrganization getStructureOrganization() {
-		return structureOrganization;
-	}
-
-	/**
-	 * @param structureOrganization
-	 *          the structureOrganization to set
-	 */
-	public void setStructureOrganization(StructureOrganization structureOrganization) {
-		this.structureOrganization = structureOrganization;
-	}
-
-	/**
 	 * @return the images
 	 */
 	public ArrayList<ImageEntry> getImages() {
@@ -166,6 +136,34 @@ public class OrnamentEntry extends AbstractEntry {
 	@Override
 	public String getUniqueID() {
 		return "OrnamentEntry" + ornamentID;
+	}
+
+	/**
+	 * @return the mainTypologicalClassID
+	 */
+	public int getMainTypologicalClassID() {
+		return mainTypologicalClassID;
+	}
+
+	/**
+	 * @param mainTypologicalClassID the mainTypologicalClassID to set
+	 */
+	public void setMainTypologicalClassID(int mainTypologicalClassID) {
+		this.mainTypologicalClassID = mainTypologicalClassID;
+	}
+
+	/**
+	 * @return the structureOrganizationID
+	 */
+	public int getStructureOrganizationID() {
+		return structureOrganizationID;
+	}
+
+	/**
+	 * @param structureOrganizationID the structureOrganizationID to set
+	 */
+	public void setStructureOrganizationID(int structureOrganizationID) {
+		this.structureOrganizationID = structureOrganizationID;
 	}
 
 }

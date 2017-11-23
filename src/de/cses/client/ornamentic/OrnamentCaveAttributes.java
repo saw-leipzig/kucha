@@ -398,7 +398,28 @@ public class OrnamentCaveAttributes extends PopupPanel {
 		header.add(selectedWallsHorizontalPanel);
 		vlcCave.add(header, new VerticalLayoutData(0.5, .125));
 
-		wallList = new ListView<WallOrnamentCaveRelation, String>(wallsListStore, wallRelationProps.name());
+		// wallList = new ListView<WallOrnamentCaveRelation, String>(wallsListStore, wallRelationProps.name());
+		wallList = new ListView<WallOrnamentCaveRelation, String>(wallsListStore, new ValueProvider<WallOrnamentCaveRelation, String>() {
+
+			@Override
+			public String getValue(WallOrnamentCaveRelation wocr) {
+				return StaticTables.getInstance().getWallLocationEntries().get(wocr.getWallLocationID()).getCaveAreaLabel() + ", "
+						+ StaticTables.getInstance().getOrnamentPositionEntries().get(wocr.getOrnamenticFunctionID()).getName() + ", "
+						+ StaticTables.getInstance().getOrmanemtFunctionEntries().get(wocr.getOrnamenticFunctionID()).getName();
+			}
+
+			@Override
+			public void setValue(WallOrnamentCaveRelation object, String value) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public String getPath() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+		});
 		wallList.setAllowTextSelection(true);
 
 		selectedWallsHorizontalPanel.add(wallList);
@@ -784,13 +805,11 @@ public class OrnamentCaveAttributes extends PopupPanel {
 	 */
 	@Override
 	public Widget asWidget() {
-
 		return createForm();
 	}
 
 	interface WallRelationProperties extends PropertyAccess<CaveEntry> {
 		ModelKeyProvider<WallOrnamentCaveRelation> wallLocationID();
-		ValueProvider<WallOrnamentCaveRelation, String> name();
 	}
 
 	/**

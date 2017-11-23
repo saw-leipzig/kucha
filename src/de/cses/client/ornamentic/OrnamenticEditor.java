@@ -214,7 +214,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		header.add(mainTypologicalClassComboBox);
 		panel.add(header, new VerticalLayoutData(1.0, .125));
 		if (ornamentEntry != null) {
-			mainTypologicalClassComboBox.select(ornamentEntry.getMaintypologycalClass());
+			mainTypologicalClassComboBox.select(mainTypologicalClass.findModelWithKey(Integer.toString(ornamentEntry.getMainTypologicalClassID())));
 		}
 
 		structureorganizationComboBox = new ComboBox<StructureOrganization>(structureOrganization, structureOrganizationProps.name(),
@@ -233,7 +233,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		structureorganizationComboBox.setTriggerAction(TriggerAction.ALL);
 		panel.add(header, new VerticalLayoutData(1.0, .125));
 		if (ornamentEntry != null) {
-			structureorganizationComboBox.select(ornamentEntry.getStructureOrganization());
+			structureorganizationComboBox.select(structureOrganization.findModelWithKey(Integer.toString(ornamentEntry.getStructureOrganizationID())));
 		}
 
 		final TextField references = new TextField();
@@ -326,40 +326,37 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 			@Override
 			public void onClick(ClickEvent event) {
-				OrnamentEntry ornament = new OrnamentEntry();
+				OrnamentEntry oEntry = new OrnamentEntry();
 				for (int i = 0; i < caveOrnamentRelationList.size(); i++) {
-					ornament.getCavesRelations().add(caveOrnamentRelationList.get(i));
+					oEntry.getCavesRelations().add(caveOrnamentRelationList.get(i));
 				}
 				for (int i = 0; i < imageEntryList.size(); i++) {
-					ornament.getImages().add(imageEntryList.get(i));
+					oEntry.getImages().add(imageEntryList.get(i));
 				}
 				if(ornamentCode.getText() == "") {
 					Window.alert("Please insert Ornamentation Code");
 					return;
 				}
-				ornament.setCode(ornamentCode.getText());
-				ornament.setDescription(discription.getText());
-				ornament.setRemarks(remarks.getText());
-				ornament.setAnnotations(annotations.getText());
-				ornament.setInterpretation(interpretation.getText());
-				ornament.setReferences(references.getText());
+				oEntry.setCode(ornamentCode.getText());
+				oEntry.setDescription(discription.getText());
+				oEntry.setRemarks(remarks.getText());
+				oEntry.setAnnotations(annotations.getText());
+				oEntry.setInterpretation(interpretation.getText());
+				oEntry.setReferences(references.getText());
 				if(mainTypologicalClassComboBox.getCurrentValue() == null) {
-					MainTypologicalClass main = new MainTypologicalClass(0, "unknown");
-					ornament.setMaintypologycalClass(main);
-				}
-				else {
-				ornament.setMaintypologycalClass(mainTypologicalClassComboBox.getCurrentValue());
+					oEntry.setMainTypologicalClassID(0); // unknown
+				} else {
+				oEntry.setMainTypologicalClassID(mainTypologicalClassComboBox.getCurrentValue().getMainTypologicalClassID());
 				}
 				if(structureorganizationComboBox.getCurrentValue() == null) {
-					StructureOrganization struct = new StructureOrganization(0, "unknown");
-					ornament.setStructureOrganization(struct);
+					oEntry.setStructureOrganizationID(0); // unknown
 				}
 				else {
-					ornament.setStructureOrganization(structureorganizationComboBox.getCurrentValue());
+					oEntry.setStructureOrganizationID(structureorganizationComboBox.getCurrentValue().getStructureOrganizationID());
 				}
 				
 				// send ornament to server
-				dbService.saveOrnamentEntry(ornament, new AsyncCallback<Boolean>() {
+				dbService.saveOrnamentEntry(oEntry, new AsyncCallback<Boolean>() {
 
 					@Override
 					public void onFailure(Throwable caught) {

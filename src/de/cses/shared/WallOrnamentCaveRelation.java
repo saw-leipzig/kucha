@@ -91,12 +91,6 @@ public class WallOrnamentCaveRelation extends AbstractEntry {
 		this.ornamenticFunctionID = ornamenticFunctionID;
 	}
 	
-	public String getName() {
-		return StaticTables.getInstance().getWallLocationEntries().get(wallLocationID).getCaveAreaLabel() + ", "
-				+ StaticTables.getInstance().getOrnamentPositionEntries().get(ornamenticPositionID).getName() + ", "
-				+ StaticTables.getInstance().getOrmanemtFunctionEntries().get(ornamenticFunctionID).getName();
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
