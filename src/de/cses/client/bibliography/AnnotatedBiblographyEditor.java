@@ -368,7 +368,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 //		mainInputFP.setHeading("Literatur");
 //		mainInputFP.add(mainInputVLC);
 		
-		backgroundoverview.add(puplicationTypeFP, new VerticalLayoutData(1.0, .1));
+		backgroundoverview.add(puplicationTypeFP, new VerticalLayoutData(1.0, .07));
 
 
 		ToolButton closeToolButton = new ToolButton(ToolButton.CLOSE);
@@ -415,7 +415,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 //		mainInputVLC.clear();
 		backgroundoverview.remove(tabpanel);
 		tabpanel = new TabPanel();
-		backgroundoverview.add(tabpanel, new VerticalLayoutData(1.0, 0.9));
+		backgroundoverview.add(tabpanel, new VerticalLayoutData(1.0, 0.93));
 		
 		firstTabVLC = new VerticalLayoutContainer();
 		secoundTabVLC = new VerticalLayoutContainer();
