@@ -34,6 +34,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
+import com.sencha.gxt.core.client.util.DateWrapper;
 import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
@@ -48,7 +49,6 @@ import com.sencha.gxt.widget.core.client.Dialog;
 import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.PlainTabPanel;
-import com.sencha.gxt.widget.core.client.Slider;
 import com.sencha.gxt.widget.core.client.TabItemConfig;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
@@ -170,7 +170,6 @@ public class CaveEditor extends AbstractEditor {
 	private FramedPanel rightCorridorCeilingStateOfPreservationFP;
 	private FramedPanel corridorStateOfPreservationFP;
 	private FramedPanel corridorCeilingStateOfPreservationFP;
-	private Slider firstDocumentedInYearSlider;
 	private ComboBox<CeilingTypeEntry> rearAreaCeilingTypeSelector2;
 	private ComboBox<CeilingTypeEntry> mainChamberCeilingTypeSelector2;
 	private ComboBox<CeilingTypeEntry> antechamberCeilingTypeSelector2;
@@ -635,11 +634,12 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<String> event) {
-				correspondingCaveEntry.setOfficialNumber(event.getValue());
+				if (officialNumberField.validate()) {
+					correspondingCaveEntry.setOfficialNumber(event.getValue());
+				}
 			}
 		});
 		officialNumberPanel.add(officialNumberField);
-		mainInformationVLC.add(officialNumberPanel, new VerticalLayoutData(1.0, .12));
 
 		FramedPanel historicalNamePanel = new FramedPanel();
 		historicalNamePanel.setHeading("Historical Name");
@@ -651,11 +651,12 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<String> event) {
-				correspondingCaveEntry.setHistoricName(event.getValue());
+				if (historicalNameField.validate()) {
+					correspondingCaveEntry.setHistoricName(event.getValue());
+				}
 			}
 		});
 		historicalNamePanel.add(historicalNameField);
-		mainInformationVLC.add(historicalNamePanel, new VerticalLayoutData(1.0, .12));
 
 		FramedPanel optionalHistoricalNamePanel = new FramedPanel();
 		optionalHistoricalNamePanel.setHeading("Optional Historical Name");
@@ -667,14 +668,15 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<String> event) {
-				correspondingCaveEntry.setOptionalHistoricName(event.getValue());
+				if (optionalHistoricNameField.validate()) {
+					correspondingCaveEntry.setOptionalHistoricName(event.getValue());
+				}
 			}
 		});
 		optionalHistoricalNamePanel.add(optionalHistoricNameField);
-		mainInformationVLC.add(optionalHistoricalNamePanel, new VerticalLayoutData(1.0, .12));
 
-		FramedPanel firstDocumentedPanel = new FramedPanel();
-		firstDocumentedPanel.setHeading("First documented");
+		FramedPanel firstDocumentedByPanel = new FramedPanel();
+		firstDocumentedByPanel.setHeading("First documented by");
 		firstDocumentedByField = new TextField();
 		firstDocumentedByField.setEmptyText("name");
 		firstDocumentedByField.setValue(correspondingCaveEntry.getFirstDocumentedBy());
@@ -685,42 +687,34 @@ public class CaveEditor extends AbstractEditor {
 				correspondingCaveEntry.setFirstDocumentedBy(event.getValue());
 			}
 		});
+		firstDocumentedByPanel.add(firstDocumentedByField);
 
-		firstDocumentedInYearSlider = new Slider();
-		firstDocumentedInYearSlider.setIncrement(1);
-		firstDocumentedInYearSlider.setMinValue(1850);
-		firstDocumentedInYearSlider.setMaxValue(2017);
-		firstDocumentedInYearSlider.setValue(correspondingCaveEntry.getFirstDocumentedInYear());
-		firstDocumentedInYearSlider.setOriginalValue(1850);
-		firstDocumentedInYearSlider.addValueChangeHandler(new ValueChangeHandler<Integer>() {
-
-			@Override
-			public void onValueChange(ValueChangeEvent<Integer> event) {
-				correspondingCaveEntry.setFirstDocumentedInYear(event.getValue());
-				firstDocumentedInYearField.setValue(event.getValue());
-			}
-		});
-
+		FramedPanel firstDocumentedInYearFP = new FramedPanel();
+		firstDocumentedInYearFP.setHeading("First documented in");
 		firstDocumentedInYearField = new NumberField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
-		firstDocumentedInYearField.addValidator(new MinNumberValidator<Integer>(1850));
-		firstDocumentedInYearField.addValidator(new MaxNumberValidator<Integer>(2017));
+//		firstDocumentedInYearField.addValidator(new MinNumberValidator<Integer>(1850));
+		DateWrapper dw = new DateWrapper(); // we always want to use the current year!
+		firstDocumentedInYearField.addValidator(new MaxNumberValidator<Integer>(dw.getFullYear()));
+		firstDocumentedInYearField.setAllowNegative(false);
 		firstDocumentedInYearField.setValue(correspondingCaveEntry.getFirstDocumentedInYear());
 		firstDocumentedInYearField.addValueChangeHandler(new ValueChangeHandler<Integer>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Integer> event) {
-				correspondingCaveEntry.setFirstDocumentedInYear(event.getValue());
-				firstDocumentedInYearSlider.setValue(event.getValue());
+				if (firstDocumentedInYearField.validate()) {
+					correspondingCaveEntry.setFirstDocumentedInYear(event.getValue());
+				}
 			}
 		});
-		VerticalLayoutContainer firstDocVLC = new VerticalLayoutContainer();
-		HorizontalLayoutContainer firstDocInYearHLC = new HorizontalLayoutContainer();
-		firstDocInYearHLC.add(firstDocumentedInYearSlider, new HorizontalLayoutData(.7, 1.0));
-		firstDocInYearHLC.add(firstDocumentedInYearField, new HorizontalLayoutData(.3, 1.0));
-		firstDocVLC.add(firstDocumentedByField, new VerticalLayoutData(1.0, .5));
-		firstDocVLC.add(firstDocInYearHLC, new VerticalLayoutData(1.0, .5));
-		firstDocumentedPanel.add(firstDocVLC);
-		mainInformationVLC.add(firstDocumentedPanel, new VerticalLayoutData(1.0, .16));
+		firstDocumentedInYearFP.add(firstDocumentedInYearField);
+		
+//		VerticalLayoutContainer firstDocVLC = new VerticalLayoutContainer();
+//		HorizontalLayoutContainer firstDocInYearHLC = new HorizontalLayoutContainer();
+//		firstDocInYearHLC.add(firstDocumentedInYearSlider, new HorizontalLayoutData(.7, 1.0));
+//		firstDocInYearHLC.add(firstDocumentedInYearField, new HorizontalLayoutData(.3, 1.0));
+//		firstDocVLC.add(firstDocumentedByField, new VerticalLayoutData(1.0, .5));
+//		firstDocVLC.add(firstDocInYearHLC, new VerticalLayoutData(1.0, .5));
+//		firstDocumentedPanel.add(firstDocVLC);
 
 		FramedPanel caveGroupPanel = new FramedPanel();
 		caveGroupPanel.setHeading("Cave Group");
@@ -799,7 +793,6 @@ public class CaveEditor extends AbstractEditor {
 				addNewCaveGroupDialog.center();
 			}
 		});
-		mainInformationVLC.add(caveGroupPanel, new VerticalLayoutData(1.0, .12));
 
 		FramedPanel sitePanel = new FramedPanel();
 		sitePanel.setHeading("Site");
@@ -826,7 +819,6 @@ public class CaveEditor extends AbstractEditor {
 		});
 		siteSelection.setWidth(250);
 		sitePanel.add(siteSelection);
-		mainInformationVLC.add(sitePanel, new VerticalLayoutData(1.0, .12));
 
 		FramedPanel districtPanel = new FramedPanel();
 		districtPanel.setHeading("District");
@@ -926,7 +918,6 @@ public class CaveEditor extends AbstractEditor {
 				addNewDistrictDialog.center();
 			}
 		});
-		mainInformationVLC.add(districtPanel, new VerticalLayoutData(1.0, .12));
 
 		FramedPanel regionPanel = new FramedPanel();
 		regionPanel.setHeading("Region");
@@ -1039,8 +1030,19 @@ public class CaveEditor extends AbstractEditor {
 				addNewRegionDialog.center();
 			}
 		});
-		mainInformationVLC.add(regionPanel, new VerticalLayoutData(1.0, .12));
 
+		// assembling the left side 
+		mainInformationVLC.add(officialNumberPanel, new VerticalLayoutData(1.0, 1.0 / 9));
+		mainInformationVLC.add(historicalNamePanel, new VerticalLayoutData(1.0, 1.0 / 9));
+		mainInformationVLC.add(optionalHistoricalNamePanel, new VerticalLayoutData(1.0, 1.0 / 9));
+		mainInformationVLC.add(firstDocumentedByPanel, new VerticalLayoutData(1.0, 1.0 / 9));
+		mainInformationVLC.add(firstDocumentedInYearFP, new VerticalLayoutData(1.0, 1.0 / 9));
+		mainInformationVLC.add(caveGroupPanel, new VerticalLayoutData(1.0, 1.0 / 9));
+		mainInformationVLC.add(sitePanel, new VerticalLayoutData(1.0, 1.0 / 9));
+		mainInformationVLC.add(districtPanel, new VerticalLayoutData(1.0, 1.0 / 9));
+		mainInformationVLC.add(regionPanel, new VerticalLayoutData(1.0, 1.0 / 9));
+
+		// and adding it to the main VLC
 		mainHlContainer.add(mainInformationVLC, new HorizontalLayoutData(.3, 1.0));
 
 		/**
@@ -2465,9 +2467,9 @@ public class CaveEditor extends AbstractEditor {
 	 * Will be called when the save button is selected. After saving <code>CaveEditorListener.closeRequest()</code> is called to inform all listener.
 	 */
 	protected void saveEntries(boolean close) {
-		if (!validateFields()) {
-			return;
-		}
+//		if (!validateFields()) {
+//			return;
+//		}
 		if (correspondingCaveEntry.getCaveID() > 0) {
 			dbService.updateCaveEntry(correspondingCaveEntry, new AsyncCallback<Boolean>() {
 
@@ -2505,13 +2507,13 @@ public class CaveEditor extends AbstractEditor {
 		}
 	}
 
-	/**
-	 * @return
-	 */
-	private boolean validateFields() {
-		return officialNumberField.validate() && historicalNameField.validate() && optionalHistoricNameField.validate()
-				&& c14AnalysisUrlTextField.validate();
-	}
+//	/**
+//	 * @return
+//	 */
+//	private boolean validateFields() {
+//		return officialNumberField.validate() && historicalNameField.validate() && optionalHistoricNameField.validate()
+//				&& c14AnalysisUrlTextField.validate();
+//	}
 
 	/**
 	 * 
