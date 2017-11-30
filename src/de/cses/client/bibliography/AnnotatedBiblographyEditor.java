@@ -498,6 +498,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			frame.setHeading("Proceedings Title");
 			frame.add(horizontBackground);
 			firstTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/8));
+			
+			if(entry != null){
+				procEN.setText(entry.getProcTitleEN());
+			}
 		}
 
 		if (publicationtype == 5) {
