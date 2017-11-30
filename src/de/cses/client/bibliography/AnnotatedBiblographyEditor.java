@@ -388,7 +388,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 					@Override
 					public void onSelect(SelectEvent event) {
-						// saveEntries(true);
+						save();
 					}
 				});
 				d.getButton(PredefinedButton.NO).addSelectHandler(new SelectHandler() {
@@ -399,6 +399,18 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					}
 				});
 			}
+		});
+		
+		ToolButton saveToolButton = new ToolButton(ToolButton.SAVE);
+		saveToolButton.setToolTip("save");
+		closeToolButton.addSelectHandler(new SelectHandler(){
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				save();
+				
+			}
+			
 		});
 	
 		mainFP = new FramedPanel();

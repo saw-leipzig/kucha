@@ -2061,7 +2061,6 @@ public class MysqlConnector {
 	 */
 	public boolean saveAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry) {
 		Connection dbc = getConnection();
-		Statement stmt;
 		PreparedStatement pstmt;
 
 		try {
@@ -2124,6 +2123,8 @@ public class MysqlConnector {
 						"INSERT INTO AuthorAnnotatedRelation (AuthorID, AnnotatedBiblographyID   ) VALUES (?, ?)");
 				pstmt.setInt(1, bibEntry.getAuthorAnnotatedList().get(i).getAuthor().getAuthorID());
 				pstmt.setInt(2, newID);
+				pstmt.executeUpdate();
+				pstmt.close();
 			}
 			
 			for(int i = 0; bibEntry.getEditorAnnotatedList().size()> i; i++){
@@ -2131,11 +2132,11 @@ public class MysqlConnector {
 						"INSERT INTO EditorAnnotatedRelation (EditorID, AnnotatedBiblographyID   ) VALUES (?, ?)");
 				pstmt.setInt(1, bibEntry.getEditorAnnotatedList().get(i).getEditor().getAuthorID());
 				pstmt.setInt(2, newID);
+				pstmt.executeUpdate();
+				pstmt.close();
 			}
-			
-			
 		
-		return false;
+		return true;
 	}
 		catch(SQLException ex){
 			
