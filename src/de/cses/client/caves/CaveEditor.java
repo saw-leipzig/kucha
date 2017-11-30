@@ -2042,39 +2042,42 @@ public class CaveEditor extends AbstractEditor {
 		FramedPanel expeditionMeasureCP = new FramedPanel();
 		expeditionMeasureCP.setHeading(caEntry.getCaveAreaLabel() + " W/L/H in meter");
 		NumberField<Double> expeditionWidthNumberField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
-		expeditionWidthNumberField.addValidator(new MinNumberValidator<Double>(0.0));
-		expeditionWidthNumberField.addValidator(new MaxNumberValidator<Double>(200.0));
+		expeditionWidthNumberField.setAllowNegative(false);
 		expeditionWidthNumberField.setEmptyText("width in meter");
 		expeditionWidthNumberField.setValue(caEntry.getExpeditionWidth());
 		expeditionWidthNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Double> event) {
-				caEntry.setExpeditionWidth(event.getValue());
+				if (expeditionWidthNumberField.validate()) {
+					caEntry.setExpeditionWidth(event.getValue());
+				}
 			}
 		});
 		NumberField<Double> expeditionLengthNumberField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
-		expeditionLengthNumberField.addValidator(new MinNumberValidator<Double>(0.0));
-		expeditionLengthNumberField.addValidator(new MaxNumberValidator<Double>(200.0));
-		expeditionWidthNumberField.setEmptyText("length in meter");
+		expeditionLengthNumberField.setAllowNegative(false);
+		expeditionLengthNumberField.setEmptyText("length in meter");
 		expeditionLengthNumberField.setValue(caEntry.getExpeditionLength());
 		expeditionLengthNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Double> event) {
-				caEntry.setExpeditionLength(event.getValue());
+				if (expeditionLengthNumberField.validate()) {
+					caEntry.setExpeditionLength(event.getValue());
+				}
 			}
 		});
 		NumberField<Double> expeditionHeightNumberField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
-		expeditionHeightNumberField.addValidator(new MinNumberValidator<Double>(0.0));
-		expeditionHeightNumberField.addValidator(new MaxNumberValidator<Double>(200.0));
-		expeditionWidthNumberField.setEmptyText("height in meter");
+		expeditionHeightNumberField.setAllowNegative(false);
+		expeditionHeightNumberField.setEmptyText("height in meter");
 		expeditionHeightNumberField.setValue(caEntry.getExpeditionHeight());
 		expeditionHeightNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Double> event) {
-				caEntry.setExpeditionHeight(event.getValue());
+				if (expeditionHeightNumberField.validate()) {
+					caEntry.setExpeditionHeight(event.getValue());
+				}
 			}
 		});
 		HorizontalLayoutContainer expeditionMeasuresHLC = new HorizontalLayoutContainer();
@@ -2097,39 +2100,42 @@ public class CaveEditor extends AbstractEditor {
 		FramedPanel modernMeasurementCP = new FramedPanel();
 		modernMeasurementCP.setHeading(caEntry.getCaveAreaLabel() + " W/L/H in meter");
 		NumberField<Double> modernWidthNumberField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
-		modernWidthNumberField.addValidator(new MinNumberValidator<Double>(0.0));
-		modernWidthNumberField.addValidator(new MaxNumberValidator<Double>(200.0));
+		modernWidthNumberField.setAllowNegative(false);
 		modernWidthNumberField.setEmptyText("width in meter");
 		modernWidthNumberField.setValue(caEntry.getModernWidth());
 		modernWidthNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Double> event) {
-				caEntry.setModernWidth(event.getValue());
+				if (modernWidthNumberField.validate()) {
+					caEntry.setModernWidth(event.getValue());
+				}
 			}
 		});
 		NumberField<Double> modernLengthNumberField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
-		modernLengthNumberField.addValidator(new MinNumberValidator<Double>(0.0));
-		modernLengthNumberField.addValidator(new MaxNumberValidator<Double>(200.0));
-		modernWidthNumberField.setEmptyText("length in meter");
-		modernLengthNumberField.setValue(caEntry.getExpeditionLength());
+		modernLengthNumberField.setAllowNegative(false);
+		modernLengthNumberField.setEmptyText("length in meter");
+		modernLengthNumberField.setValue(caEntry.getModernLength());
 		modernLengthNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Double> event) {
-				caEntry.setModernLength(event.getValue());
+				if (modernLengthNumberField.validate()) {
+					caEntry.setModernLength(event.getValue());
+				}
 			}
 		});
 		NumberField<Double> modernHeightNumberField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
-		modernHeightNumberField.addValidator(new MinNumberValidator<Double>(0.0));
-		modernHeightNumberField.addValidator(new MaxNumberValidator<Double>(200.0));
-		modernWidthNumberField.setEmptyText("height in meter");
+		modernHeightNumberField.setAllowNegative(false);
+		modernHeightNumberField.setEmptyText("height in meter");
 		modernHeightNumberField.setValue(caEntry.getModernHeight());
 		modernHeightNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Double> event) {
-				caEntry.setModernHeight(event.getValue());
+				if (modernHeightNumberField.validate()) {
+					caEntry.setModernHeight(event.getValue());
+				}
 			}
 		});
 		HorizontalLayoutContainer modernMeasuresHLC = new HorizontalLayoutContainer();

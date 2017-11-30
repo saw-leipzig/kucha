@@ -1908,9 +1908,8 @@ public class MysqlConnector {
 			caveAreaRS = caveAreaStatement.executeQuery();
 			while (caveAreaRS.next()) {
 				caEntry = new CaveAreaEntry(caveAreaRS.getInt("CaveID"), caveAreaRS.getString("CaveAreaLabel"),
-						caveAreaRS.getDouble("ExpeditionMeasuredWidth"), caveAreaRS.getDouble("ExpeditionMeasuredHeight"),
-						caveAreaRS.getDouble("ExpeditionMeasuredLength"), caveAreaRS.getDouble("ModernMeasuredWidth"),
-						caveAreaRS.getDouble("ModernMeasuredHeight"), caveAreaRS.getDouble("ModernMeasuredLength"),
+						caveAreaRS.getDouble("ExpeditionMeasuredWidth"), caveAreaRS.getDouble("ExpeditionMeasuredLength"), caveAreaRS.getDouble("ExpeditionMeasuredHeight"),
+						caveAreaRS.getDouble("ModernMeasuredWidth"), caveAreaRS.getDouble("ModernMeasuredLength"), caveAreaRS.getDouble("ModernMeasuredHeight"),
 						caveAreaRS.getInt("PreservationClassificationID"), caveAreaRS.getInt("CeilingTypeID1"), caveAreaRS.getInt("CeilingTypeID2"),
 						caveAreaRS.getInt("CeilingPreservationClassificationID1"), caveAreaRS.getInt("CeilingPreservationClassificationID2"),
 						caveAreaRS.getInt("FloorPreservationClassificationID"));
