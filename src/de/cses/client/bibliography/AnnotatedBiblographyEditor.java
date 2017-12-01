@@ -25,7 +25,6 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.ValueProvider;
@@ -34,7 +33,6 @@ import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
-import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.Dialog;
 import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.FramedPanel;
@@ -390,7 +388,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 					@Override
 					public void onSelect(SelectEvent event) {
-						// saveEntries(true);
+						save();
 					}
 				});
 				d.getButton(PredefinedButton.NO).addSelectHandler(new SelectHandler() {
@@ -402,12 +400,25 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				});
 			}
 		});
+		
+		ToolButton saveToolButton = new ToolButton(ToolButton.SAVE);
+		saveToolButton.setToolTip("save");
+		closeToolButton.addSelectHandler(new SelectHandler(){
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				save();
+				
+			}
+			
+		});
 	
 		mainFP = new FramedPanel();
 		mainFP.setHeading("Annotated Biblography");
 		mainFP.setSize("900px", "830px"); // here we set the size of the panel
 		mainFP.add(backgroundoverview, new VerticalLayoutData(1.0, 1.0));
 		mainFP.addTool(closeToolButton);
+		mainFP.addTool(saveToolButton);
 
 	}
 
@@ -428,11 +439,11 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		
 		tabpanel.setTabScroll(true);
 		
-		firstTabVLC.setWidth("880px");
+		firstTabVLC.setWidth("890px");
 		firstTabVLC.setHeight("695px");
-		secoundTabVLC.setWidth("880px");
+		secoundTabVLC.setWidth("890px");
 		secoundTabVLC.setHeight("695px");
-		thirdTabVLC.setWidth("880px");
+		thirdTabVLC.setWidth("890px");
 		thirdTabVLC.setHeight("695px");
 	
 		 horizontBackground = new HorizontalLayoutContainer();
@@ -488,6 +499,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			frame.setHeading("Proceedings Title");
 			frame.add(horizontBackground);
 			firstTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/8));
+			
+			if(entry != null){
+				procEN.setText(entry.getProcTitleEN());
+			}
 		}
 
 		if (publicationtype == 5) {
@@ -896,26 +911,25 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		frame.add(horizontBackground,  new HorizontalLayoutData(1.0, 1.0));
 		thirdTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/16));
 		
+		erstauflageComboBox = new ComboBox<AnnotatedBiblographyEntry>(AnnotatedBiblographyEntryListStore, annotatedBiblographyEntryProps.titleEN(),
+				new AbstractSafeHtmlRenderer<AnnotatedBiblographyEntry>() {
+
+					@Override
+					public SafeHtml render(AnnotatedBiblographyEntry item) {
+						final AnnotatedBiblographyEntryViewTemplates pvTemplates = GWT.create(AnnotatedBiblographyEntryViewTemplates.class);
+						return pvTemplates.AnnotatedBiblographyEntry(item.getTitleEN());
+					}
+				});
+		
 		ValueChangeHandler<Boolean> checkBoxHandler = new ValueChangeHandler<Boolean>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
-if(event.getValue()  == false){
-				erstauflageComboBox = new ComboBox<AnnotatedBiblographyEntry>(AnnotatedBiblographyEntryListStore, annotatedBiblographyEntryProps.titleEN(),
-						new AbstractSafeHtmlRenderer<AnnotatedBiblographyEntry>() {
-
-							@Override
-							public SafeHtml render(AnnotatedBiblographyEntry item) {
-								final AnnotatedBiblographyEntryViewTemplates pvTemplates = GWT.create(AnnotatedBiblographyEntryViewTemplates.class);
-								return pvTemplates.AnnotatedBiblographyEntry(item.getTitleEN());
-							}
-						});
-				horizontBackground = new HorizontalLayoutContainer();
-				horizontBackground.add(erstauflageComboBox, new HorizontalLayoutData(1.0, 1.0));
+if(event.getValue()  == false){			
 				framefirstedition = new FramedPanel();
-				framefirstedition.setHeading("First Edition");
-				framefirstedition.add(horizontBackground, new HorizontalLayoutData(1.0, 1.0));
-				thirdTabVLC.add(framefirstedition, new VerticalLayoutData(1.0, 1.0/4));
+				framefirstedition.setHeading("Choose First Edition");
+				framefirstedition.add(erstauflageComboBox);
+				thirdTabVLC.add(framefirstedition);
 }
 else{
 	thirdTabVLC.remove(framefirstedition);
