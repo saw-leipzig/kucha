@@ -418,6 +418,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		mainFP.setSize("900px", "830px"); // here we set the size of the panel
 		mainFP.add(backgroundoverview, new VerticalLayoutData(1.0, 1.0));
 		mainFP.addTool(closeToolButton);
+		mainFP.addTool(saveToolButton);
 
 	}
 
