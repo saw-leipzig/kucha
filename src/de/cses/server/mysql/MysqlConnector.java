@@ -2061,10 +2061,15 @@ public class MysqlConnector {
 	public boolean saveAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry) {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
+		int newBibID=0;
 
 		try {
 			pstmt = dbc.prepareStatement(
-					"INSERT INTO AnnotatedBiblography (AccessdateEN, AccessdateORG, AccessdateTR, BookTitleEN, BookTitleORG, BookTitleTR, ChapTitleEN, ChapTitleORG, ChapTitleTR, Comments,EditionEN, EditionORG, EditionTR, ErstauflageID, MonthEN, MonthORG, MonthTR,  Notes, NumberEN, NumberORG, NumberTR, PagesEN, PagesORG, PagesTR, ProcTitleEN, ProcTitleORG, ProcTitleTR,  PublisherID, SerieEN, SerieORG, SerieTR, TitleaddonEN, TitleaddonORG, TitleaddonTR, TitleEN, TitleORG, TitleTR, UniversityEN, UniversityORG, UniversityTR, URI, URL, VolumeEN, VolumeORG, VolumeTR, YearEN, YearORG, YearTR   ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+					"INSERT INTO AnnotatedBibliography (AccessdateEN, AccessdateORG, AccessdateTR, BookTitleEN, BookTitleORG, BookTitleTR, ChapTitleEN, ChapTitleORG, ChapTitleTR, Comments, EditionEN, "
+					+ "EditionORG, EditionTR, FirstEditionID, MonthEN, MonthORG, MonthTR,  Notes, NumberEN, NumberORG, NumberTR, PagesEN, PagesORG, PagesTR, ProcTitleEN, ProcTitleORG, ProcTitleTR,  PublisherID, "
+					+ "SerieEN, SerieORG, SerieTR, TitleaddonEN, TitleaddonORG, TitleaddonTR, TitleEN, TitleORG, TitleTR, UniversityEN, UniversityORG, UniversityTR, URI, URL, VolumeEN, VolumeORG, VolumeTR, "
+					+ "YearEN, YearORG, YearTR) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			pstmt.setString(1, bibEntry.getAccessdateEN());
 			pstmt.setString(2, bibEntry.getAccessdateORG());
 			pstmt.setString(3, bibEntry.getAccessdateTR());
@@ -2107,21 +2112,27 @@ public class MysqlConnector {
 			pstmt.setString(40, bibEntry.getUniversityTR());
 			pstmt.setString(41, bibEntry.getUri());
 			pstmt.setString(42, bibEntry.getUrl());
-			pstmt.setString(35, bibEntry.getVolumeEN());
-			pstmt.setString(36, bibEntry.getVolumeORG());
-			pstmt.setString(37, bibEntry.getVolumeTR());
-			pstmt.setString(38, bibEntry.getYearEN());
-			pstmt.setString(39, bibEntry.getYearORG());
-			pstmt.setString(40, bibEntry.getYearTR());
+			pstmt.setString(43, bibEntry.getVolumeEN());
+			pstmt.setString(44, bibEntry.getVolumeORG());
+			pstmt.setString(45, bibEntry.getVolumeTR());
+			pstmt.setString(46, bibEntry.getYearEN());
+			pstmt.setString(47, bibEntry.getYearORG());
+			pstmt.setString(48, bibEntry.getYearTR());
 			
-			int newID = pstmt.executeUpdate();
-			pstmt.close();
+			pstmt.executeUpdate();
+			
+			ResultSet keys = pstmt.getGeneratedKeys();
+			if (keys.first()) {
+				newBibID = keys.getInt(1);
+			}
+			keys.close();
+
 			
 			for(int i = 0; bibEntry.getAuthorAnnotatedList().size()> i; i++){
 				pstmt = dbc.prepareStatement(
-						"INSERT INTO AuthorAnnotatedRelation (AuthorID, AnnotatedBiblographyID   ) VALUES (?, ?)");
+						"INSERT INTO AuthorAnnotatedRelation (AuthorID, AnnotatedBiblographyID) VALUES (?, ?)");
 				pstmt.setInt(1, bibEntry.getAuthorAnnotatedList().get(i).getAuthor().getAuthorID());
-				pstmt.setInt(2, newID);
+				pstmt.setInt(2, newBibID);
 				pstmt.executeUpdate();
 				pstmt.close();
 			}
@@ -2130,7 +2141,7 @@ public class MysqlConnector {
 				pstmt = dbc.prepareStatement(
 						"INSERT INTO EditorAnnotatedRelation (EditorID, AnnotatedBiblographyID   ) VALUES (?, ?)");
 				pstmt.setInt(1, bibEntry.getEditorAnnotatedList().get(i).getEditor().getAuthorID());
-				pstmt.setInt(2, newID);
+				pstmt.setInt(2, newBibID);
 				pstmt.executeUpdate();
 				pstmt.close();
 			}
@@ -2138,9 +2149,10 @@ public class MysqlConnector {
 		return true;
 	}
 		catch(SQLException ex){
-			
+			return false;
+
 		}
-		return false;
+		
 
 }
 }

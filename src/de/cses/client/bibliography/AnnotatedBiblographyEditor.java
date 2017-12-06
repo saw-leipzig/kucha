@@ -23,6 +23,7 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
@@ -97,6 +98,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 	VerticalLayoutContainer firstTabVLC = new VerticalLayoutContainer();
 	VerticalLayoutContainer secoundTabVLC = new VerticalLayoutContainer();
 	VerticalLayoutContainer thirdTabVLC = new VerticalLayoutContainer();
+	VerticalLayoutContainer firstsecoundTabVLC = new VerticalLayoutContainer();
 	
 //	VerticalLayoutContainer mainInputVLC = new VerticalLayoutContainer();
 	FramedPanel framefirstedition;
@@ -192,6 +194,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 	}
 	
 	public void save(){
+		Window.alert("save begins");
 		AnnotatedBiblographyEntry bib= new AnnotatedBiblographyEntry();
 		
 	
@@ -217,8 +220,8 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		
 		if (publicationtype == 5) {
 		bib.setChapTitleEN(chaptitEN.getText());
-		bib.setChapTitleORG(booktitelORG.getText());
-		bib.setChapTitleTR(booktitelTR.getText());
+		bib.setChapTitleORG(chaptitORG.getText());
+		bib.setChapTitleTR(chaptitTR.getText());
 		}
 		
 		bib.setComments(comments.getText());
@@ -231,13 +234,15 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		
 		bib.setErstauflage(erstauflage.getValue());
 		
-		if (publicationtype == 8) {
+		if (publicationtype == 8) { // bleiben
 		bib.setMonthEN(monthEN.getText());
 		bib.setMonthORG(monthORG.getText());
 		bib.setMonthTR(monthTR.getText());
 		}
 		
+		if(erstauflageComboBox.getValue() != null){
 		bib.setErstauflageID(erstauflageComboBox.getValue().getAnnotatedBiblographyID());
+		}
 		
 		bib.setNotes(notes.getText());
 		
@@ -257,7 +262,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		bib.setProcTitleTR(procTR.getText());
 		}
 		
+		if(publisherComboBox.getValue() != null){
 		bib.setPublisherID(publisherComboBox.getValue().getPublisherID());
+		}
 		
 		if (publicationtype == 8) {
 		bib.setSerieEN(seriesEN.getText());
@@ -300,7 +307,21 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			bib.getEditorAnnotatedList().add(relation);
 		}
 		
-		//dbService.saveAnnotatedBiblography(
+		dbService.saveAnnotatedBiblographyEntry(bib,new AsyncCallback<Boolean>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				Window.alert("fail");
+				caught.printStackTrace();
+			}
+
+
+			@Override
+			public void onSuccess(Boolean result) {
+				// TODO Auto-generated method stub
+				Window.alert("Entry saved!");
+			}
+		});
 		
 	}
 
@@ -366,7 +387,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 //		mainInputFP.setHeading("Literatur");
 //		mainInputFP.add(mainInputVLC);
 		
-		backgroundoverview.add(puplicationTypeFP, new VerticalLayoutData(1.0, .07));
+		backgroundoverview.add(puplicationTypeFP, new VerticalLayoutData(1.0, .1));
 
 
 		ToolButton closeToolButton = new ToolButton(ToolButton.CLOSE);
@@ -403,7 +424,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		
 		ToolButton saveToolButton = new ToolButton(ToolButton.SAVE);
 		saveToolButton.setToolTip("save");
-		closeToolButton.addSelectHandler(new SelectHandler(){
+		saveToolButton.addSelectHandler(new SelectHandler(){
 
 			@Override
 			public void onSelect(SelectEvent event) {
@@ -415,7 +436,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 	
 		mainFP = new FramedPanel();
 		mainFP.setHeading("Annotated Biblography");
-		mainFP.setSize("900px", "830px"); // here we set the size of the panel
+		mainFP.setSize("900px", "730px"); // here we set the size of the panel
 		mainFP.add(backgroundoverview, new VerticalLayoutData(1.0, 1.0));
 		mainFP.addTool(closeToolButton);
 		mainFP.addTool(saveToolButton);
@@ -426,32 +447,36 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 //		mainInputVLC.clear();
 		backgroundoverview.remove(tabpanel);
 		tabpanel = new TabPanel();
-		backgroundoverview.add(tabpanel, new VerticalLayoutData(1.0, 0.93));
+		backgroundoverview.add(tabpanel, new VerticalLayoutData(1.0, 0.9));
 		
 		firstTabVLC = new VerticalLayoutContainer();
+		firstsecoundTabVLC = new VerticalLayoutContainer();
 		secoundTabVLC = new VerticalLayoutContainer();
 		thirdTabVLC = new VerticalLayoutContainer();
 //		mainInputVLC.add(tabpanel, new VerticalLayoutData(1.0, 1.0));
 		
-		tabpanel.add(firstTabVLC, "Basics");
+		tabpanel.add(firstTabVLC, "1. Basics");
+		tabpanel.add(firstsecoundTabVLC, "2. Basics");
 		tabpanel.add(secoundTabVLC, "Authors and Editors");
 		tabpanel.add(thirdTabVLC, "Others");
 		
 		tabpanel.setTabScroll(true);
 		
 		firstTabVLC.setWidth("890px");
-		firstTabVLC.setHeight("695px");
+		firstTabVLC.setHeight("595px");
+		firstsecoundTabVLC.setWidth("890px");
+		firstsecoundTabVLC.setHeight("595px");
 		secoundTabVLC.setWidth("890px");
-		secoundTabVLC.setHeight("695px");
+		secoundTabVLC.setHeight("595px");
 		thirdTabVLC.setWidth("890px");
-		thirdTabVLC.setHeight("695px");
+		thirdTabVLC.setHeight("595px");
 	
 		 horizontBackground = new HorizontalLayoutContainer();
 		 
 			frame = new FramedPanel();
 			frame.setHeading("Titel");
 			frame.add(horizontBackground);
-			firstTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/8));
+			firstTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/6));
 			
 		titelEN = new TextField();
 		titelORG = new TextField();
@@ -498,7 +523,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			frame = new FramedPanel();
 			frame.setHeading("Proceedings Title");
 			frame.add(horizontBackground);
-			firstTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/8));
+			firstTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/6));
 			
 			if(entry != null){
 				procEN.setText(entry.getProcTitleEN());
@@ -529,7 +554,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			frame = new FramedPanel();
 			frame.setHeading("Chapter Title");
 			frame.add(horizontBackground);
-			firstTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/8));
+			firstTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/6));
 		}
 
 		if (publicationtype == 1) {
@@ -557,7 +582,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			frame = new FramedPanel();
 			frame.setHeading("Booktitle");
 			frame.add(horizontBackground);
-			firstTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/8));
+			firstTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/6));
 		}
 
 		if (publicationtype == 3) {
@@ -584,10 +609,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			frame = new FramedPanel();
 			frame.setHeading("University");
 			frame.add(horizontBackground);
-			firstTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/8));
+			firstTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/6));
 		}
 
-		if (publicationtype == 8) {
+		if (publicationtype == 8) { // achtung hier muss sie bleiben
 
 			horizontBackground = new HorizontalLayoutContainer();
 			numberEN = new TextField();
@@ -612,7 +637,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			frame = new FramedPanel();
 			frame.setHeading("Number");
 			frame.add(horizontBackground);
-			firstTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/8));
+			firstTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/6));
 		}
 
 		if (publicationtype == 7) {
@@ -639,7 +664,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			frame = new FramedPanel();
 			frame.setHeading("Access Date");
 			frame.add(horizontBackground,  new HorizontalLayoutData(1.0, 1.0));
-			thirdTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/8));
+			thirdTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/6));
 		}
 
 		horizontBackground = new HorizontalLayoutContainer();
@@ -666,7 +691,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		frame = new FramedPanel();
 		frame.setHeading("Titleaddon");
 		frame.add(horizontBackground);
-		firstTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/8));
+		firstTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/6));
 		
 		publisherComboBox = new ComboBox<PublisherEntry>(publisherListStore, publisherProps.name(),
 				new AbstractSafeHtmlRenderer<PublisherEntry>() {
@@ -682,7 +707,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		frame = new FramedPanel();
 		frame.setHeading("Publisher");
 		frame.add(horizontBackground, new VerticalLayoutData(1.0, 1.0));
-		secoundTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/8));
+		secoundTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/6));
 		authorSelection = new DualListField<AuthorEntry, String>(authorListStore, selectedAuthorListStore, authorProps.name(), new TextCell());
 
 		editorSelection = new DualListField<AuthorEntry, String>(authorListStore, selectedEditorListStore, authorProps.name(), new TextCell());
@@ -703,7 +728,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		frame.add(horizontBackground, new VerticalLayoutData(1.0, 1.0));
 		secoundTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/3));
 		
-		if (publicationtype == 8) {
+		if (publicationtype == 8) { // hier muss sie bleiben
 			horizontBackground = new HorizontalLayoutContainer();
 			seriesEN = new TextField();
 			seriesORG = new TextField();
@@ -727,7 +752,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			frame = new FramedPanel();
 			frame.setHeading("Serie");
 			frame.add(horizontBackground);
-			firstTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/8));
+			firstTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/6));
 		}
 
 		if (publicationtype == 1 || publicationtype == 5) {
@@ -757,7 +782,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			frame = new FramedPanel();
 			frame.setHeading("Edition");
 			frame.add(horizontBackground);
-			firstTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/8));
+			firstTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/6));
 			
 			}
 		if (publicationtype == 8) {
@@ -784,7 +809,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			frame = new FramedPanel();
 			frame.setHeading("Volume");
 			frame.add(horizontBackground);
-			firstTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/8));
+			firstTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/6));
 			}
 		horizontBackground = new HorizontalLayoutContainer();
 		yearEN = new TextField();
@@ -809,9 +834,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		frame = new FramedPanel();
 		frame.setHeading("Year");
 		frame.add(horizontBackground);
-		firstTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/8));
+		firstsecoundTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/8));
 
-		if (publicationtype == 8) {
+		if (publicationtype == 8) { // bleiben
 			horizontBackground = new HorizontalLayoutContainer();
 			monthEN = new TextField();
 			monthORG = new TextField();
@@ -835,7 +860,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			frame = new FramedPanel();
 			frame.setHeading("Month");
 			frame.add(horizontBackground);
-			firstTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/8));
+			firstsecoundTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/8));
 		}
 
 		horizontBackground = new HorizontalLayoutContainer();
@@ -860,7 +885,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		frame = new FramedPanel();
 		frame.setHeading("Pages");
 		frame.add(horizontBackground);
-		firstTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/8));
+		firstTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/6));
 
 		comments = new TextArea();
 		horizontBackground = new HorizontalLayoutContainer();
