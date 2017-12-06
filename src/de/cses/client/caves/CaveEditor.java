@@ -1962,8 +1962,8 @@ public class CaveEditor extends AbstractEditor {
 		modernMeasurementFP.add(modernMeasurementVLC);
 
 		HorizontalLayoutContainer measurementHLC = new HorizontalLayoutContainer();
-		measurementHLC.add(expeditionMeasurementFP, new HorizontalLayoutData(.375, 1.0));
-		measurementHLC.add(modernMeasurementFP, new HorizontalLayoutData(.625, 1.0));
+		measurementHLC.add(expeditionMeasurementFP, new HorizontalLayoutData(.4, 1.0));
+		measurementHLC.add(modernMeasurementFP, new HorizontalLayoutData(.6, 1.0));
 
 		FramedPanel plasticalItemsFP = new FramedPanel();
 		plasticalItemsFP.setHeading("Plastical Items");

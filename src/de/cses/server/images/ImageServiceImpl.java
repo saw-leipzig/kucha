@@ -86,16 +86,16 @@ public class ImageServiceImpl extends HttpServlet {
 					// purpose of the upload (e.g. depictions, backgrounds, ...)
 					System.err.println("uploadFileName = " + uploadFileName);
 					fileType = uploadFileName.substring(uploadFileName.lastIndexOf(".")).toLowerCase();
-					System.err.println("fileType = " + fileType);
+//					System.err.println("fileType = " + fileType);
 					if (item.isFormField()) {
 						throw new ServletException("Unsupported non-file property [" + item.getFieldName() + "] with value: " + item.getString());
 					} else {
-						System.err.println("requesting new imageID");
+//						System.err.println("requesting new imageID");
 						newImageID = connector.createNewImageEntry().getImageID();
-						System.err.println("newImageID = " + newImageID);
+//						System.err.println("newImageID = " + newImageID);
 						if (newImageID > 0) {
 							filename = newImageID + fileType;
-							System.err.println("filename = " + filename);
+//							System.err.println("filename = " + filename);
 							ie = connector.getImageEntry(newImageID);
 							ie.setFilename(filename);
 							connector.updateImageEntry(ie);
@@ -113,7 +113,7 @@ public class ImageServiceImpl extends HttpServlet {
 			}
 		} finally {
 			if (target != null && target.exists()) {
-				System.err.println("Uploaded file: " + target.getAbsolutePath());
+				System.err.println("Uploaded file stored as: " + target.getAbsolutePath());
 			  createThumbnail(target, new File(imgHomeDir, "tn" + newImageID + ".png"));
 				response.getWriter().write(String.valueOf(newImageID));
 				response.getWriter().close();
