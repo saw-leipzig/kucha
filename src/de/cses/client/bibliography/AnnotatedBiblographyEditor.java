@@ -30,6 +30,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
+import com.sencha.gxt.core.client.util.DateWrapper;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
@@ -48,8 +49,11 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.DualListField;
+import com.sencha.gxt.widget.core.client.form.NumberField;
+import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.form.validator.MaxNumberValidator;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -156,7 +160,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 	TextField volumeORG;
 	TextField volumeTR;
 	
-	TextField yearEN;
+	NumberField<Integer> yearEN;
 	TextField yearORG;
 	TextField yearTR;
 	
@@ -289,7 +293,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		bib.setVolumeTR(volumeTR.getText());
 		}
 		
-		bib.setYearEN(yearEN.getText());
+		bib.setYearEN(yearEN.getValue());
 		bib.setYearORG(yearORG.getText());
 		bib.setYearTR(yearTR.getText());
 		
@@ -307,7 +311,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			bib.getEditorAnnotatedList().add(relation);
 		}
 		
-		dbService.saveAnnotatedBiblographyEntry(bib,new AsyncCallback<Boolean>() {
+		dbService.saveAnnotatedBiblographyEntry(bib, new AsyncCallback<Boolean>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
@@ -812,7 +816,11 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			firstTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/6));
 			}
 		horizontBackground = new HorizontalLayoutContainer();
-		yearEN = new TextField();
+		yearEN = new NumberField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
+		DateWrapper dw = new DateWrapper(); // we always want to use the current year as max year
+		yearEN.addValidator(new MaxNumberValidator<Integer>(dw.getFullYear()));
+		yearEN.setAllowNegative(false);
+
 		yearORG = new TextField();
 		yearTR = new TextField();
 

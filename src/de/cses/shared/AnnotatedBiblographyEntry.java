@@ -68,7 +68,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	private String volumeTR;
 	private String volumeORG;
 	
-	private String yearEN;
+	private int yearEN;
 	private String yearORG;
 	private String yearTR;
 	
@@ -577,14 +577,14 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	/**
 	 * @return the yearEN
 	 */
-	public String getYearEN() {
+	public int getYearEN() {
 		return yearEN;
 	}
 
 	/**
 	 * @param yearEN the yearEN to set
 	 */
-	public void setYearEN(String yearEN) {
+	public void setYearEN(int yearEN) {
 		this.yearEN = yearEN;
 	}
 

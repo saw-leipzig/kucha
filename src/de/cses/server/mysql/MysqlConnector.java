@@ -2115,14 +2115,14 @@ public class MysqlConnector {
 			pstmt.setString(43, bibEntry.getVolumeEN());
 			pstmt.setString(44, bibEntry.getVolumeORG());
 			pstmt.setString(45, bibEntry.getVolumeTR());
-			pstmt.setString(46, bibEntry.getYearEN());
+			pstmt.setInt(46, bibEntry.getYearEN());
 			pstmt.setString(47, bibEntry.getYearORG());
 			pstmt.setString(48, bibEntry.getYearTR());
 			
 			pstmt.executeUpdate();
 			
 			ResultSet keys = pstmt.getGeneratedKeys();
-			if (keys.first()) {
+			if (keys.next()) {
 				newBibID = keys.getInt(1);
 			}
 			keys.close();
