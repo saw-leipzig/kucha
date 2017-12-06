@@ -220,8 +220,8 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		
 		if (publicationtype == 5) {
 		bib.setChapTitleEN(chaptitEN.getText());
-		bib.setChapTitleORG(booktitelORG.getText());
-		bib.setChapTitleTR(booktitelTR.getText());
+		bib.setChapTitleORG(chaptitORG.getText());
+		bib.setChapTitleTR(chaptitTR.getText());
 		}
 		
 		bib.setComments(comments.getText());
@@ -240,7 +240,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		bib.setMonthTR(monthTR.getText());
 		}
 		
+		if(erstauflageComboBox.getValue() != null){
 		bib.setErstauflageID(erstauflageComboBox.getValue().getAnnotatedBiblographyID());
+		}
 		
 		bib.setNotes(notes.getText());
 		
@@ -260,7 +262,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		bib.setProcTitleTR(procTR.getText());
 		}
 		
+		if(publisherComboBox.getValue() != null){
 		bib.setPublisherID(publisherComboBox.getValue().getPublisherID());
+		}
 		
 		if (publicationtype == 8) {
 		bib.setSerieEN(seriesEN.getText());
@@ -420,7 +424,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		
 		ToolButton saveToolButton = new ToolButton(ToolButton.SAVE);
 		saveToolButton.setToolTip("save");
-		closeToolButton.addSelectHandler(new SelectHandler(){
+		saveToolButton.addSelectHandler(new SelectHandler(){
 
 			@Override
 			public void onSelect(SelectEvent event) {
@@ -830,7 +834,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		frame = new FramedPanel();
 		frame.setHeading("Year");
 		frame.add(horizontBackground);
-		firstsecoundTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/6));
+		firstsecoundTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/8));
 
 		if (publicationtype == 8) { // bleiben
 			horizontBackground = new HorizontalLayoutContainer();
@@ -856,7 +860,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			frame = new FramedPanel();
 			frame.setHeading("Month");
 			frame.add(horizontBackground);
-			firstsecoundTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/6));
+			firstsecoundTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0/8));
 		}
 
 		horizontBackground = new HorizontalLayoutContainer();
