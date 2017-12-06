@@ -68,7 +68,6 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MaxNumberValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
-import com.sencha.gxt.widget.core.client.form.validator.MinNumberValidator;
 import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 
 import de.cses.client.DatabaseService;
@@ -1963,8 +1962,8 @@ public class CaveEditor extends AbstractEditor {
 		modernMeasurementFP.add(modernMeasurementVLC);
 
 		HorizontalLayoutContainer measurementHLC = new HorizontalLayoutContainer();
-		measurementHLC.add(expeditionMeasurementFP, new HorizontalLayoutData(.5, 1.0));
-		measurementHLC.add(modernMeasurementFP, new HorizontalLayoutData(.5, 1.0));
+		measurementHLC.add(expeditionMeasurementFP, new HorizontalLayoutData(.375, 1.0));
+		measurementHLC.add(modernMeasurementFP, new HorizontalLayoutData(.625, 1.0));
 
 		FramedPanel plasticalItemsFP = new FramedPanel();
 		plasticalItemsFP.setHeading("Plastical Items");
