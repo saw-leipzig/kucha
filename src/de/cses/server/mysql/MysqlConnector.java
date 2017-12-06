@@ -2062,12 +2062,16 @@ public class MysqlConnector {
 	public boolean saveAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry) {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
+		int newBibID=0;
 
 		try {
 			pstmt = dbc.prepareStatement(
-					"INSERT INTO AnnotatedBibliography (AccessdateEN, AccessdateORG, AccessdateTR, BookTitleEN, BookTitleORG, BookTitleTR, ChapTitleEN, ChapTitleORG, ChapTitleTR, Comments,EditionEN, EditionORG, EditionTR, ErstauflageID, MonthEN, MonthORG, MonthTR,  Notes, NumberEN, NumberORG, NumberTR, PagesEN, PagesORG, PagesTR, ProcTitleEN, ProcTitleORG, ProcTitleTR,  PublisherID, SerieEN, SerieORG, SerieTR, TitleaddonEN, TitleaddonORG, TitleaddonTR, TitleEN, TitleORG, TitleTR, UniversityEN, UniversityORG, UniversityTR, URI, URL, VolumeEN, VolumeORG, VolumeTR, YearEN, YearORG, YearTR   ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+					"INSERT INTO AnnotatedBibliography (AccessdateEN, AccessdateORG, AccessdateTR, BookTitleEN, BookTitleORG, BookTitleTR, ChapTitleEN, ChapTitleORG, ChapTitleTR, Comments, EditionEN, "
+					+ "EditionORG, EditionTR, FirstEditionID, MonthEN, MonthORG, MonthTR,  Notes, NumberEN, NumberORG, NumberTR, PagesEN, PagesORG, PagesTR, ProcTitleEN, ProcTitleORG, ProcTitleTR,  PublisherID, "
+					+ "SerieEN, SerieORG, SerieTR, TitleaddonEN, TitleaddonORG, TitleaddonTR, TitleEN, TitleORG, TitleTR, UniversityEN, UniversityORG, UniversityTR, URI, URL, VolumeEN, VolumeORG, VolumeTR, "
+					+ "YearEN, YearORG, YearTR) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			pstmt.setString(1, bibEntry.getAccessdateEN());
-			System.err.println("speicherung begonnen");
 			pstmt.setString(2, bibEntry.getAccessdateORG());
 			pstmt.setString(3, bibEntry.getAccessdateTR());
 			pstmt.setString(4, bibEntry.getBookTitleEN());
@@ -2088,7 +2092,6 @@ public class MysqlConnector {
 			pstmt.setString(19, bibEntry.getNumberEN());
 			pstmt.setString(20, bibEntry.getNumberORG());
 			pstmt.setString(21, bibEntry.getNumberTR());
-			System.err.println("speicherung  2 begonnen");
 			pstmt.setString(22, bibEntry.getPagesEN());
 			pstmt.setString(23, bibEntry.getPagesORG());
 			pstmt.setString(24, bibEntry.getPagesTR());
@@ -2103,41 +2106,34 @@ public class MysqlConnector {
 			pstmt.setString(33, bibEntry.getTitleaddonORG());
 			pstmt.setString(34, bibEntry.getTitleaddonTR());
 			pstmt.setString(35, bibEntry.getTitleEN());
-			System.err.println("speicherung  3 begonnen");
 			pstmt.setString(36, bibEntry.getTitleORG());
 			pstmt.setString(37, bibEntry.getTitleTR());
-			System.err.println("speicherung  4 begonnen");
 			pstmt.setString(38, bibEntry.getUniversityEN());
 			pstmt.setString(39, bibEntry.getUniversityORG());
-			System.err.println("speicherung  5 begonnen");
 			pstmt.setString(40, bibEntry.getUniversityTR());
 			pstmt.setString(41, bibEntry.getUri());
-			System.err.println("speicherung  6 begonnen");
 			pstmt.setString(42, bibEntry.getUrl());
 			pstmt.setString(43, bibEntry.getVolumeEN());
-			System.err.println("speicherung  7 begonnen");
 			pstmt.setString(44, bibEntry.getVolumeORG());
-			System.err.println("speicherung  8 begonnen");
 			pstmt.setString(45, bibEntry.getVolumeTR());
-			System.err.println("speicherung  9 begonnen");
 			pstmt.setString(46, bibEntry.getYearEN());
-			System.err.println("speicherung  10 begonnen");
 			pstmt.setString(47, bibEntry.getYearORG());
-			System.err.println("speicherung  11 begonnen");
 			pstmt.setString(48, bibEntry.getYearTR());
-			System.err.println("speicherung  12 begonnen");
 			
-			System.err.println(pstmt);
-			pstmt.executeQuery();
-			System.err.println("ausgefuehrt");
-			System.err.println(1);
-		
+			pstmt.executeUpdate();
+			
+			ResultSet keys = pstmt.getGeneratedKeys();
+			if (keys.first()) {
+				newBibID = keys.getInt(1);
+			}
+			keys.close();
+
 			
 			for(int i = 0; bibEntry.getAuthorAnnotatedList().size()> i; i++){
 				pstmt = dbc.prepareStatement(
-						"INSERT INTO AuthorAnnotatedRelation (AuthorID, AnnotatedBiblographyID   ) VALUES (?, ?)");
+						"INSERT INTO AuthorAnnotatedRelation (AuthorID, AnnotatedBiblographyID) VALUES (?, ?)");
 				pstmt.setInt(1, bibEntry.getAuthorAnnotatedList().get(i).getAuthor().getAuthorID());
-				pstmt.setInt(2, 1);
+				pstmt.setInt(2, newBibID);
 				pstmt.executeUpdate();
 				pstmt.close();
 			}
@@ -2146,7 +2142,7 @@ public class MysqlConnector {
 				pstmt = dbc.prepareStatement(
 						"INSERT INTO EditorAnnotatedRelation (EditorID, AnnotatedBiblographyID   ) VALUES (?, ?)");
 				pstmt.setInt(1, bibEntry.getEditorAnnotatedList().get(i).getEditor().getAuthorID());
-				pstmt.setInt(2, 1);
+				pstmt.setInt(2, newBibID);
 				pstmt.executeUpdate();
 				pstmt.close();
 			}
