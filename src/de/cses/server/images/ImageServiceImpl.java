@@ -84,13 +84,18 @@ public class ImageServiceImpl extends HttpServlet {
 					uploadFileName = item.getName();
 					// we take the sub dir from the field name which corresponds with the
 					// purpose of the upload (e.g. depictions, backgrounds, ...)
+					System.err.println("uploadFileName = " + uploadFileName);
 					fileType = uploadFileName.substring(uploadFileName.lastIndexOf(".")).toLowerCase();
+//					System.err.println("fileType = " + fileType);
 					if (item.isFormField()) {
 						throw new ServletException("Unsupported non-file property [" + item.getFieldName() + "] with value: " + item.getString());
 					} else {
+//						System.err.println("requesting new imageID");
 						newImageID = connector.createNewImageEntry().getImageID();
+//						System.err.println("newImageID = " + newImageID);
 						if (newImageID > 0) {
 							filename = newImageID + fileType;
+//							System.err.println("filename = " + filename);
 							ie = connector.getImageEntry(newImageID);
 							ie.setFilename(filename);
 							connector.updateImageEntry(ie);
@@ -108,8 +113,10 @@ public class ImageServiceImpl extends HttpServlet {
 			}
 		} finally {
 			if (target != null && target.exists()) {
-				System.err.println("Uploaded file: " + target.getAbsolutePath());
-			  createThumbnail(target, new File(imgHomeDir, "tn" + newImageID + ".png"));
+				System.err.println("Uploaded file stored as: " + target.getAbsolutePath());
+				if (!target.getAbsolutePath().endsWith("tif")) {
+				  createThumbnail(target, new File(imgHomeDir, "tn" + newImageID + ".png"));
+				}
 				response.getWriter().write(String.valueOf(newImageID));
 				response.getWriter().close();
 			}
@@ -129,6 +136,7 @@ public class ImageServiceImpl extends HttpServlet {
 		BufferedImage tnImg;
 
 		try {
+			System.err.println("trying to create thumbnail ...");
 			// we need to call the scanner in order to detect the additional libraries
 			// the libraries used are from https://haraldk.github.io/TwelveMonkeys/
 			ImageIO.scanForPlugins();
@@ -151,6 +159,7 @@ public class ImageServiceImpl extends HttpServlet {
 				tnImg = new BufferedImage(Math.round(tnWidth), THUMBNAIL_SIZE, BufferedImage.TYPE_INT_RGB);
 				tnImg.createGraphics().drawImage(buf.getScaledInstance(Math.round(tnWidth), THUMBNAIL_SIZE, Image.SCALE_SMOOTH), 0, 0, null);
 			}
+			System.err.println("creating thumbnail = " + tnFile.getAbsolutePath());
 			ImageIO.write(tnImg, type, tnFile);
 		} catch (IOException e) {
 			System.err.println("I/O Exception - thumbnail could not be created!");

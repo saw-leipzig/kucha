@@ -204,24 +204,24 @@ public class MysqlConnector {
 
 		try {
 			pstmt = dbc.prepareStatement(
-					"INSERT INTO Images (Filename, Title, ShortName, Copyright, PhotographerID, Comment, Date, ImageTypeID, ImageMode) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-			pstmt.setString(1, entry.getTitle());
-			pstmt.setString(2, entry.getShortName());
-			pstmt.setString(3, entry.getCopyright());
-			pstmt.setInt(4, entry.getPhotographerID());
-			pstmt.setString(5, entry.getComment());
-			pstmt.setString(6, entry.getDate());
-			pstmt.setInt(7, entry.getImageTypeID());
-			pstmt.setBoolean(8, entry.isPublicImage());
-			pstmt.execute();
+					"INSERT INTO Images (Filename, Title, ShortName, Copyright, PhotographerID, Comment, Date, ImageTypeID, ImageMode) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+			pstmt.setString(1, "");
+			pstmt.setString(2, entry.getTitle());
+			pstmt.setString(3, entry.getShortName());
+			pstmt.setString(4, entry.getCopyright());
+			pstmt.setInt(5, entry.getPhotographerID());
+			pstmt.setString(6, entry.getComment());
+			pstmt.setString(7, entry.getDate());
+			pstmt.setInt(8, entry.getImageTypeID());
+			pstmt.setBoolean(9, entry.isPublicImage());
+			pstmt.executeUpdate();
 			ResultSet keys = pstmt.getGeneratedKeys();
-			if (keys.first()) {
+			if (keys.next()) {
 				// there should only be 1 key returned here but we need to modify this
 				// in case
 				// we have requested multiple new entries. works for the moment
 				entry.setImageID(keys.getInt(1));
 			}
-			keys.close();
 			pstmt.close();
 		} catch (SQLException e) {
 			return null;
@@ -1908,9 +1908,8 @@ public class MysqlConnector {
 			caveAreaRS = caveAreaStatement.executeQuery();
 			while (caveAreaRS.next()) {
 				caEntry = new CaveAreaEntry(caveAreaRS.getInt("CaveID"), caveAreaRS.getString("CaveAreaLabel"),
-						caveAreaRS.getDouble("ExpeditionMeasuredWidth"), caveAreaRS.getDouble("ExpeditionMeasuredHeight"),
-						caveAreaRS.getDouble("ExpeditionMeasuredLength"), caveAreaRS.getDouble("ModernMeasuredWidth"),
-						caveAreaRS.getDouble("ModernMeasuredHeight"), caveAreaRS.getDouble("ModernMeasuredLength"),
+						caveAreaRS.getDouble("ExpeditionMeasuredWidth"), caveAreaRS.getDouble("ExpeditionMeasuredLength"), caveAreaRS.getDouble("ExpeditionMeasuredHeight"),
+						caveAreaRS.getDouble("ModernMeasuredWidth"), caveAreaRS.getDouble("ModernMeasuredLength"), caveAreaRS.getDouble("ModernMeasuredHeight"),
 						caveAreaRS.getInt("PreservationClassificationID"), caveAreaRS.getInt("CeilingTypeID1"), caveAreaRS.getInt("CeilingTypeID2"),
 						caveAreaRS.getInt("CeilingPreservationClassificationID1"), caveAreaRS.getInt("CeilingPreservationClassificationID2"),
 						caveAreaRS.getInt("FloorPreservationClassificationID"));
