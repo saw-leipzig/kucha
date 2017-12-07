@@ -2036,10 +2036,7 @@ public class CaveEditor extends AbstractEditor {
 	private FramedPanel createCaveAreaExpeditionMeasurePanel(CaveAreaEntry caEntry) {
 		FramedPanel expeditionMeasureCP = new FramedPanel();
 		expeditionMeasureCP.setHeading(caEntry.getCaveAreaLabel() + " (W/L/H)");
-		NumberField<Double> expeditionWidthNumberField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
-		expeditionWidthNumberField.setAllowNegative(false);
-		expeditionWidthNumberField.setEmptyText("width");
-		expeditionWidthNumberField.setValue(caEntry.getExpeditionWidth());
+		NumberField<Double> expeditionWidthNumberField = createMeasurementNumberField(caEntry.getExpeditionWidth());
 		expeditionWidthNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
 			@Override
@@ -2049,10 +2046,8 @@ public class CaveEditor extends AbstractEditor {
 				}
 			}
 		});
-		NumberField<Double> expeditionLengthNumberField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
-		expeditionLengthNumberField.setAllowNegative(false);
-		expeditionLengthNumberField.setEmptyText("length");
-		expeditionLengthNumberField.setValue(caEntry.getExpeditionLength());
+		
+		NumberField<Double> expeditionLengthNumberField = createMeasurementNumberField(caEntry.getExpeditionLength());
 		expeditionLengthNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
 			@Override
@@ -2062,10 +2057,8 @@ public class CaveEditor extends AbstractEditor {
 				}
 			}
 		});
-		NumberField<Double> expeditionHeightNumberField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
-		expeditionHeightNumberField.setAllowNegative(false);
-		expeditionHeightNumberField.setEmptyText("height");
-		expeditionHeightNumberField.setValue(caEntry.getExpeditionHeight());
+		
+		NumberField<Double> expeditionHeightNumberField = createMeasurementNumberField(caEntry.getExpeditionHeight());
 		expeditionHeightNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
 			@Override
@@ -2101,7 +2094,7 @@ public class CaveEditor extends AbstractEditor {
 		FramedPanel modernMeasurementCP = new FramedPanel();
 		modernMeasurementCP.setHeading(caEntry.getCaveAreaLabel() + " (W/L/H) min-max");
 
-		NumberField<Double> modernMinWidthNumberField = createModernMeasurementNumberField(caEntry.getModernMinWidth());
+		NumberField<Double> modernMinWidthNumberField = createMeasurementNumberField(caEntry.getModernMinWidth());
 		modernMinWidthNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
 			@Override
@@ -2112,7 +2105,7 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 
-		NumberField<Double> modernMaxWidthNumberField = createModernMeasurementNumberField(caEntry.getModernMaxWidth());
+		NumberField<Double> modernMaxWidthNumberField = createMeasurementNumberField(caEntry.getModernMaxWidth());
 		modernMaxWidthNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
 			@Override
@@ -2123,7 +2116,7 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 
-		NumberField<Double> modernMinLengthNumberField = createModernMeasurementNumberField(caEntry.getModernMinLength());
+		NumberField<Double> modernMinLengthNumberField = createMeasurementNumberField(caEntry.getModernMinLength());
 		modernMinLengthNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
 			@Override
@@ -2134,7 +2127,7 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		
-		NumberField<Double> modernMaxLengthNumberField = createModernMeasurementNumberField(caEntry.getModernMaxLength());
+		NumberField<Double> modernMaxLengthNumberField = createMeasurementNumberField(caEntry.getModernMaxLength());
 		modernMinLengthNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
 			@Override
@@ -2145,7 +2138,7 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		
-		NumberField<Double> modernMinHeightNumberField = createModernMeasurementNumberField(caEntry.getModernMinHeight());
+		NumberField<Double> modernMinHeightNumberField = createMeasurementNumberField(caEntry.getModernMinHeight());
 		modernMinHeightNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
 			@Override
@@ -2156,7 +2149,7 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		
-		NumberField<Double> modernMaxHeightNumberField = createModernMeasurementNumberField(caEntry.getModernMaxHeight());
+		NumberField<Double> modernMaxHeightNumberField = createMeasurementNumberField(caEntry.getModernMaxHeight());
 		modernMinHeightNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
 			@Override
@@ -2195,7 +2188,7 @@ public class CaveEditor extends AbstractEditor {
 		return modernMeasurementCP;
 	}
 	
-	private NumberField<Double> createModernMeasurementNumberField(double value) {
+	private NumberField<Double> createMeasurementNumberField(double value) {
 		NumberField<Double> measurementNF = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
 		measurementNF.setDirection(Direction.RTL);
 		measurementNF.setAllowNegative(false);
@@ -2205,7 +2198,7 @@ public class CaveEditor extends AbstractEditor {
 		}
 		return measurementNF;
 	}
-
+	
 	private void updateCeilingTypePanel(int caveTypeID) {
 
 		switch (caveTypeID) {
