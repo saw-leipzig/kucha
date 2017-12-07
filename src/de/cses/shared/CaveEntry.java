@@ -67,6 +67,23 @@ public class CaveEntry extends AbstractEntry {
 		caveAreaList = new ArrayList<CaveAreaEntry>();
 		wallList = new ArrayList<WallEntry>();
 	}
+	
+	public CaveEntry clone() {
+		CaveEntry clonedCE = new CaveEntry(caveID, officialNumber, historicName, optionalHistoricName, caveTypeID, districtID,
+				regionID, orientationID, stateOfPerservation, findings, notes, firstDocumentedBy, firstDocumentedInYear, preservationClassificationID,
+				caveGroupID, optionalCaveSketch, c14url, c14DocumentFilename, caveLayoutComments);
+		ArrayList<CaveAreaEntry> clonedCaveAreaList = new ArrayList<CaveAreaEntry>();
+		for (CaveAreaEntry cae : caveAreaList) {
+			clonedCaveAreaList.add(cae.clone());
+		}
+		clonedCE.setCaveAreaList(clonedCaveAreaList);
+		ArrayList<WallEntry> clonedWallList = new ArrayList<WallEntry>();
+		for (WallEntry wa : wallList) {
+			clonedWallList.add(wa.clone());
+		}
+		clonedCE.setWallList(clonedWallList);
+		return clonedCE;
+	}
 
 	public int getCaveID() {
 		return caveID;

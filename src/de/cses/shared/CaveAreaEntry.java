@@ -47,7 +47,7 @@ public class CaveAreaEntry extends AbstractEntry {
 	 */
 	public CaveAreaEntry() {
 	}
-
+	
 	/**
 	 * 
 	 * @param caveID
@@ -86,6 +86,13 @@ public class CaveAreaEntry extends AbstractEntry {
 	public CaveAreaEntry(int caveID, String caveAreaLabel) {
 		this.caveID = caveID;
 		this.caveAreaLabel = caveAreaLabel;
+	}
+	
+	public CaveAreaEntry clone() {
+		return new CaveAreaEntry(caveID, caveAreaLabel, expeditionWidth, expeditionLength, expeditionHeight, 
+				modernMinWidth, modernMaxWidth, modernMinLength, modernMaxLength, modernMinHeight, modernMaxHeight, 
+				preservationClassificationID, ceilingTypeID1, ceilingTypeID2, ceilingPreservationClassificationID1, ceilingPreservationClassificationID2, 
+				floorPreservationClassificationID);
 	}
 
 	/*

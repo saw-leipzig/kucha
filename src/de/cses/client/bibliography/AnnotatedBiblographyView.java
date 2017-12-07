@@ -104,4 +104,14 @@ public class AnnotatedBiblographyView  extends AbstractView {
 
 	}
 
+	/* (non-Javadoc)
+	 * @see de.cses.client.ui.EditorListener#updateEntryRequest(de.cses.shared.AbstractEntry)
+	 */
+	@Override
+	public void updateEntryRequest(AbstractEntry updatedEntry) {
+		if (updatedEntry instanceof AnnotatedBiblographyEntry) {
+			annotatedBiblographyEntry = (AnnotatedBiblographyEntry) updatedEntry;
+		}
+	}
+
 }

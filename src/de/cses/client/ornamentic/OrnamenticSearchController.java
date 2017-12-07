@@ -26,6 +26,7 @@ import de.cses.client.ui.AbstractFilter;
 import de.cses.client.ui.AbstractResultView;
 import de.cses.client.ui.AbstractSearchController;
 import de.cses.client.ui.EditorListener;
+import de.cses.shared.AbstractEntry;
 import de.cses.shared.OrnamentEntry;
 
 /**
@@ -92,6 +93,11 @@ public class OrnamenticSearchController extends AbstractSearchController {
 			@Override
 			public void closeRequest() {
 				ornamenticEditorPanel.hide();
+			}
+
+			@Override
+			public void updateEntryRequest(AbstractEntry updatedEntry) {
+				// nothing needs to be done here
 			}
 		});
 		ornamenticEditorPanel.add(ornamenticEditor);

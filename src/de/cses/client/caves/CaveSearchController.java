@@ -24,6 +24,7 @@ import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.client.ui.AbstractSearchController;
 import de.cses.client.ui.EditorListener;
+import de.cses.shared.AbstractEntry;
 import de.cses.shared.CaveEntry;
 
 /**
@@ -90,6 +91,10 @@ public class CaveSearchController extends AbstractSearchController {
 			@Override
 			public void closeRequest() {
 				caveEditorPanel.hide();
+			}
+
+			@Override
+			public void updateEntryRequest(AbstractEntry updatedEntry) {
 			}
 		});
 		caveEditorPanel.add(ced);

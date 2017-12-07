@@ -21,6 +21,7 @@ import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.i18n.client.HasDirection.Direction;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
@@ -28,11 +29,14 @@ import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment.HorizontalAlignmentConstant;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.XTemplates;
+import com.sencha.gxt.core.client.Style.HorizontalAlignment;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.core.client.util.DateWrapper;
 import com.sencha.gxt.core.client.util.Margins;
@@ -328,7 +332,7 @@ public class CaveEditor extends AbstractEditor {
 		if (caveEntry == null) {
 			createNewCaveEntry();
 		} else {
-			correspondingCaveEntry = caveEntry;
+			correspondingCaveEntry = caveEntry.clone();
 		}
 		caveTypeProps = GWT.create(CaveTypeProperties.class);
 		caveTypeEntryListStore = new ListStore<CaveTypeEntry>(caveTypeProps.caveTypeID());
@@ -1954,8 +1958,8 @@ public class CaveEditor extends AbstractEditor {
 		modernMeasurementFP.add(modernMeasurementVLC);
 
 		HorizontalLayoutContainer measurementHLC = new HorizontalLayoutContainer();
-		measurementHLC.add(expeditionMeasurementFP, new HorizontalLayoutData(.4, 1.0));
-		measurementHLC.add(modernMeasurementFP, new HorizontalLayoutData(.6, 1.0));
+		measurementHLC.add(expeditionMeasurementFP, new HorizontalLayoutData(.35, 1.0));
+		measurementHLC.add(modernMeasurementFP, new HorizontalLayoutData(.65, 1.0));
 
 		FramedPanel plasticalItemsFP = new FramedPanel();
 		plasticalItemsFP.setHeading("Plastical Items");
@@ -2033,7 +2037,7 @@ public class CaveEditor extends AbstractEditor {
 	 */
 	private FramedPanel createCaveAreaExpeditionMeasurePanel(CaveAreaEntry caEntry) {
 		FramedPanel expeditionMeasureCP = new FramedPanel();
-		expeditionMeasureCP.setHeading(caEntry.getCaveAreaLabel() + " W/L/H (meter)");
+		expeditionMeasureCP.setHeading(caEntry.getCaveAreaLabel() + " (W/L/H)");
 		NumberField<Double> expeditionWidthNumberField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
 		expeditionWidthNumberField.setAllowNegative(false);
 		expeditionWidthNumberField.setEmptyText("width");
@@ -2075,9 +2079,9 @@ public class CaveEditor extends AbstractEditor {
 		});
 		HorizontalLayoutContainer expeditionMeasuresHLC = new HorizontalLayoutContainer();
 		expeditionMeasuresHLC.add(expeditionWidthNumberField, new HorizontalLayoutData(.3, 1.0));
-		expeditionMeasuresHLC.add(new Label("/"), new HorizontalLayoutData(.05, 1.0, new Margins(0, 2, 0, 2)));
+		expeditionMeasuresHLC.add(new Label(" / "), new HorizontalLayoutData(.05, 1.0));
 		expeditionMeasuresHLC.add(expeditionLengthNumberField, new HorizontalLayoutData(.3, 1.0));
-		expeditionMeasuresHLC.add(new Label("/"), new HorizontalLayoutData(.05, 1.0, new Margins(0, 2, 0, 2)));
+		expeditionMeasuresHLC.add(new Label(" / "), new HorizontalLayoutData(.05, 1.0));
 		expeditionMeasuresHLC.add(expeditionHeightNumberField, new HorizontalLayoutData(.3, 1.0));
 		expeditionMeasureCP.add(expeditionMeasuresHLC);
 
@@ -2091,12 +2095,9 @@ public class CaveEditor extends AbstractEditor {
 	 */
 	private FramedPanel createCaveAreaModernMeasurePanel(CaveAreaEntry caEntry) {
 		FramedPanel modernMeasurementCP = new FramedPanel();
-		modernMeasurementCP.setHeading(caEntry.getCaveAreaLabel() + " W/L/H min-max (meter)");
+		modernMeasurementCP.setHeading(caEntry.getCaveAreaLabel() + " (W/L/H) min-max");
 
-		NumberField<Double> modernMinWidthNumberField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
-		modernMinWidthNumberField.setAllowNegative(false);
-		modernMinWidthNumberField.setEmptyText("min width");
-		modernMinWidthNumberField.setValue(caEntry.getModernMinWidth());
+		NumberField<Double> modernMinWidthNumberField = createModernMeasurementNumberField(caEntry.getModernMinWidth());
 		modernMinWidthNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
 			@Override
@@ -2177,21 +2178,35 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		
+		Label l = new Label("/");
+		l.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		
 		HorizontalLayoutContainer modernMeasuresHLC = new HorizontalLayoutContainer();
 		modernMeasuresHLC.add(modernMinWidthNumberField, new HorizontalLayoutData(.8/6, 1.0));
-		modernMeasuresHLC.add(new Label("-"), new HorizontalLayoutData(.2/5, 1.0));
+		modernMeasuresHLC.add(new Label(" - "), new HorizontalLayoutData(.2/5, 1.0));
 		modernMeasuresHLC.add(modernMaxWidthNumberField, new HorizontalLayoutData(.8/6, 1.0));
-		modernMeasuresHLC.add(new Label("/"), new HorizontalLayoutData(.2/5, 1.0));
+		modernMeasuresHLC.add(l, new HorizontalLayoutData(.2/5, 1.0));
 		modernMeasuresHLC.add(modernMinLengthNumberField, new HorizontalLayoutData(.8/6, 1.0));
-		modernMeasuresHLC.add(new Label("-"), new HorizontalLayoutData(.2/5, 1.0));
+		modernMeasuresHLC.add(new Label(" - "), new HorizontalLayoutData(.2/5, 1.0));
 		modernMeasuresHLC.add(modernMaxLengthNumberField, new HorizontalLayoutData(.8/6, 1.0));
-		modernMeasuresHLC.add(new Label("/"), new HorizontalLayoutData(.2/5, 1.0));
+		modernMeasuresHLC.add(new Label(" / "), new HorizontalLayoutData(.2/5, 1.0));
 		modernMeasuresHLC.add(modernMinHeightNumberField, new HorizontalLayoutData(.8/6, 1.0));
-		modernMeasuresHLC.add(new Label("-"), new HorizontalLayoutData(.2/5, 1.0));
+		modernMeasuresHLC.add(new Label(" - "), new HorizontalLayoutData(.2/5, 1.0));
 		modernMeasuresHLC.add(modernMaxHeightNumberField, new HorizontalLayoutData(.8/6, 1.0));
 		modernMeasurementCP.add(modernMeasuresHLC);
 
 		return modernMeasurementCP;
+	}
+	
+	private NumberField<Double> createModernMeasurementNumberField(double value) {
+		NumberField<Double> measurementNF = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
+		measurementNF.setDirection(Direction.RTL);
+		measurementNF.setAllowNegative(false);
+		measurementNF.setEmptyText("meter");
+		if (value > 0) {
+			measurementNF.setValue(value);
+		}
+		return measurementNF;
 	}
 
 	private void updateCeilingTypePanel(int caveTypeID) {
@@ -2510,9 +2525,6 @@ public class CaveEditor extends AbstractEditor {
 	 * Will be called when the save button is selected. After saving <code>CaveEditorListener.closeRequest()</code> is called to inform all listener.
 	 */
 	protected void saveEntries(boolean close) {
-//		if (!validateFields()) {
-//			return;
-//		}
 		if (correspondingCaveEntry.getCaveID() > 0) {
 			dbService.updateCaveEntry(correspondingCaveEntry, new AsyncCallback<Boolean>() {
 
