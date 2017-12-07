@@ -1930,9 +1930,9 @@ public class MysqlConnector {
 			while (caveAreaRS.next()) {
 				caEntry = new CaveAreaEntry(caveAreaRS.getInt("CaveID"), caveAreaRS.getString("CaveAreaLabel"),
 						caveAreaRS.getDouble("ExpeditionMeasuredWidth"), caveAreaRS.getDouble("ExpeditionMeasuredLength"), caveAreaRS.getDouble("ExpeditionMeasuredHeight"),
-						caveAreaRS.getDouble("ModernMeasuredWidth"), caveAreaRS.getDouble("ModernMeasuredLength"), caveAreaRS.getDouble("ModernMeasuredHeight"),
-						caveAreaRS.getInt("PreservationClassificationID"), caveAreaRS.getInt("CeilingTypeID1"), caveAreaRS.getInt("CeilingTypeID2"),
-						caveAreaRS.getInt("CeilingPreservationClassificationID1"), caveAreaRS.getInt("CeilingPreservationClassificationID2"),
+						caveAreaRS.getDouble("ModernMeasuredMinWidth"), caveAreaRS.getDouble("ModernMeasureMaxdWidth"), caveAreaRS.getDouble("ModernMeasuredMinLength"), caveAreaRS.getDouble("ModernMeasuredMaxLength"), 
+						caveAreaRS.getDouble("ModernMeasuredMinHeight"), caveAreaRS.getDouble("ModernMeasuredMaxHeight"), caveAreaRS.getInt("PreservationClassificationID"), 
+						caveAreaRS.getInt("CeilingTypeID1"), caveAreaRS.getInt("CeilingTypeID2"), caveAreaRS.getInt("CeilingPreservationClassificationID1"), caveAreaRS.getInt("CeilingPreservationClassificationID2"),
 						caveAreaRS.getInt("FloorPreservationClassificationID"));
 				result.add(caEntry);
 			}
@@ -1945,58 +1945,61 @@ public class MysqlConnector {
 	}
 
 	protected synchronized boolean writeCaveArea(CaveAreaEntry entry) {
-		int newID = 0;
+		int rowCount = 0;
 		Connection dbc = getConnection();
 		PreparedStatement caveAreaStatement;
 		try {
 			caveAreaStatement = dbc.prepareStatement(
-					"INSERT INTO CaveAreas (CaveID, CaveAreaLabel, ExpeditionMeasuredWidth, ExpeditionMeasuredLength, ExpeditionMeasuredHeight, ModernMeasuredWidth, ModernMeasuredLength, ModernMeasuredHeight, "
+					"INSERT INTO CaveAreas (CaveID, CaveAreaLabel, ExpeditionMeasuredWidth, ExpeditionMeasuredLength, ExpeditionMeasuredHeight, ModernMeasuredMinWidth, ModernMeasuredMaxWidth, "
+							+ "ModernMeasuredMinLength, ModernMeasuredMaxLength, ModernMeasuredMinHeight, ModernMeasuredMaxHeight, "
 							+ "PreservationClassificationID, CeilingTypeID1, CeilingTypeID2, CeilingPreservationClassificationID1, CeilingPreservationClassificationID2, FloorPreservationClassificationID) "
-							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " + "ON DUPLICATE KEY UPDATE "
-							+ "ExpeditionMeasuredWidth=?, ExpeditionMeasuredLength=?, ExpeditionMeasuredHeight=?, ModernMeasuredWidth=?, ModernMeasuredLength=?, ModernMeasuredHeight=?, "
-							+ "PreservationClassificationID=?, CeilingTypeID1=?, CeilingTypeID2=?, CeilingPreservationClassificationID1=?, CeilingPreservationClassificationID2=?, FloorPreservationClassificationID=?");
+							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " + "ON DUPLICATE KEY UPDATE "
+							+ "ExpeditionMeasuredWidth=?, ExpeditionMeasuredLength=?, ExpeditionMeasuredHeight=?, ModernMeasuredMinWidth=?, ModernMeasuredMaxWidth=?, ModernMeasuredMinLength=?, ModernMeasuredMaxLength=?, "
+							+ "ModernMeasuredMinHeight=?, ModernMeasuredMaxHeight=?, PreservationClassificationID=?, CeilingTypeID1=?, CeilingTypeID2=?, "
+							+ "CeilingPreservationClassificationID1=?, CeilingPreservationClassificationID2=?, FloorPreservationClassificationID=?");
 			caveAreaStatement.setInt(1, entry.getCaveID());
 			caveAreaStatement.setString(2, entry.getCaveAreaLabel());
 			caveAreaStatement.setDouble(3, entry.getExpeditionWidth());
 			caveAreaStatement.setDouble(4, entry.getExpeditionLength());
 			caveAreaStatement.setDouble(5, entry.getExpeditionHeight());
-			caveAreaStatement.setDouble(6, entry.getModernWidth());
-			caveAreaStatement.setDouble(7, entry.getModernLength());
-			caveAreaStatement.setDouble(8, entry.getModernHeight());
-			caveAreaStatement.setInt(9, entry.getPreservationClassificationID());
-			caveAreaStatement.setInt(10, entry.getCeilingTypeID1());
-			caveAreaStatement.setInt(11, entry.getCeilingTypeID2());
-			caveAreaStatement.setInt(12, entry.getCeilingPreservationClassificationID1());
-			caveAreaStatement.setInt(13, entry.getCeilingPreservationClassificationID2());
-			caveAreaStatement.setInt(14, entry.getFloorPreservationClassificationID());
-			caveAreaStatement.setDouble(15, entry.getExpeditionWidth());
-			caveAreaStatement.setDouble(16, entry.getExpeditionLength());
-			caveAreaStatement.setDouble(17, entry.getExpeditionHeight());
-			caveAreaStatement.setDouble(18, entry.getModernWidth());
-			caveAreaStatement.setDouble(19, entry.getModernLength());
-			caveAreaStatement.setDouble(20, entry.getModernHeight());
-			caveAreaStatement.setInt(21, entry.getPreservationClassificationID());
-			caveAreaStatement.setInt(22, entry.getCeilingTypeID1());
-			caveAreaStatement.setInt(23, entry.getCeilingTypeID2());
-			caveAreaStatement.setInt(24, entry.getCeilingPreservationClassificationID1());
-			caveAreaStatement.setInt(25, entry.getCeilingPreservationClassificationID2());
-			caveAreaStatement.setInt(26, entry.getFloorPreservationClassificationID());
-			caveAreaStatement.executeUpdate();
-			ResultSet keys = caveAreaStatement.getGeneratedKeys();
-			if (keys.next()) { // there should only be 1 key returned here 
-				newID  = keys.getInt(1);
-			}
-			keys.close();
+			caveAreaStatement.setDouble(6, entry.getModernMinWidth());
+			caveAreaStatement.setDouble(7, entry.getModernMaxWidth());
+			caveAreaStatement.setDouble(8, entry.getModernMinLength());
+			caveAreaStatement.setDouble(9, entry.getModernMaxLength());
+			caveAreaStatement.setDouble(10, entry.getModernMinHeight());
+			caveAreaStatement.setDouble(11, entry.getModernMaxHeight());
+			caveAreaStatement.setInt(12, entry.getPreservationClassificationID());
+			caveAreaStatement.setInt(13, entry.getCeilingTypeID1());
+			caveAreaStatement.setInt(14, entry.getCeilingTypeID2());
+			caveAreaStatement.setInt(15, entry.getCeilingPreservationClassificationID1());
+			caveAreaStatement.setInt(16, entry.getCeilingPreservationClassificationID2());
+			caveAreaStatement.setInt(17, entry.getFloorPreservationClassificationID());
+			caveAreaStatement.setDouble(18, entry.getExpeditionWidth());
+			caveAreaStatement.setDouble(19, entry.getExpeditionLength());
+			caveAreaStatement.setDouble(20, entry.getExpeditionHeight());
+			caveAreaStatement.setDouble(21, entry.getModernMinWidth());
+			caveAreaStatement.setDouble(22, entry.getModernMaxWidth());
+			caveAreaStatement.setDouble(23, entry.getModernMinLength());
+			caveAreaStatement.setDouble(24, entry.getModernMaxLength());
+			caveAreaStatement.setDouble(25, entry.getModernMinHeight());
+			caveAreaStatement.setDouble(26, entry.getModernMaxHeight());
+			caveAreaStatement.setInt(27, entry.getPreservationClassificationID());
+			caveAreaStatement.setInt(28, entry.getCeilingTypeID1());
+			caveAreaStatement.setInt(29, entry.getCeilingTypeID2());
+			caveAreaStatement.setInt(30, entry.getCeilingPreservationClassificationID1());
+			caveAreaStatement.setInt(31, entry.getCeilingPreservationClassificationID2());
+			caveAreaStatement.setInt(32, entry.getFloorPreservationClassificationID());
+			rowCount = caveAreaStatement.executeUpdate();
 			caveAreaStatement.close();
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 			return false;
 		}
-		return (newID > 0);
+		return (rowCount > 0);
 	}
 
 	protected synchronized boolean writeWall(WallEntry entry) {
-		int newID = 0;
+		int rowCount = 0;
 		Connection dbc = getConnection();
 		PreparedStatement wallStatement;
 		try {
@@ -2010,19 +2013,14 @@ public class MysqlConnector {
 			wallStatement.setInt(6, entry.getPreservationClassificationID());
 			wallStatement.setDouble(7, entry.getWidth());
 			wallStatement.setDouble(8, entry.getHeight());
-			wallStatement.executeUpdate();
-			ResultSet keys = wallStatement.getGeneratedKeys();
-			if (keys.next()) { // there should only be 1 key returned here 
-				newID  = keys.getInt(1);
-			}
-			keys.close();
+			rowCount = wallStatement.executeUpdate();
 			
 			wallStatement.close();
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 			return false;
 		}
-		return (newID > 0);
+		return (rowCount > 0);
 	}
 
 	/**

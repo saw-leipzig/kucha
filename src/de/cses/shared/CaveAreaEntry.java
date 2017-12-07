@@ -31,9 +31,12 @@ public class CaveAreaEntry extends AbstractEntry {
 	protected double expeditionWidth= 0;
 	protected double expeditionLength = 0;
 	protected double expeditionHeight = 0;
-	protected double modernWidth= 0;
-	protected double modernLength = 0;
-	protected double modernHeight = 0;
+	protected double modernMinWidth = 0;
+	protected double modernMaxWidth = 0;
+	protected double modernMinLength = 0;
+	protected double modernMaxLength = 0;
+	protected double modernMinHeight = 0;
+	protected double modernMaxHeight = 0;
 	protected int preservationClassificationID = 0;
 	protected int ceilingTypeID1 = 0, ceilingTypeID2 = 0;
 	protected int ceilingPreservationClassificationID1 = 0, ceilingPreservationClassificationID2 = 0;
@@ -53,16 +56,21 @@ public class CaveAreaEntry extends AbstractEntry {
 	 * @param expeditionLength
 	 * @param expeditionHeight
 	 */
-	public CaveAreaEntry(int caveID, String caveAreaLabel, double expeditionWidth, double expeditionLength, double expeditionHeight, double modernWidth, double modernLength, double modernHeight, int preservationClassificationID,
-			int ceilingTypeID1, int ceilingTypeID2, int ceilingPreservationClassificationID1, int ceilingPreservationClassificationID2, int floorPreservationClassificationID) {
+	public CaveAreaEntry(int caveID, String caveAreaLabel, double expeditionWidth, double expeditionLength, double expeditionHeight, 
+			double modernMinWidth, double modernMaxWidth, double modernMinLength, double modernMaxLength, double modernMinHeight, double modernMaxHeight, 
+			int preservationClassificationID, int ceilingTypeID1, int ceilingTypeID2, int ceilingPreservationClassificationID1, int ceilingPreservationClassificationID2, 
+			int floorPreservationClassificationID) {
 		this.caveID = caveID;
 		this.caveAreaLabel = caveAreaLabel;
 		this.expeditionWidth = expeditionWidth;
 		this.expeditionLength = expeditionLength;
 		this.expeditionHeight = expeditionHeight;
-		this.modernWidth = modernWidth;
-		this.modernLength = modernLength;
-		this.modernHeight = modernHeight;
+		this.modernMinWidth = modernMinWidth;
+		this.modernMaxWidth = modernMaxWidth;
+		this.modernMinLength = modernMinLength;
+		this.modernMaxLength = modernMaxLength;
+		this.modernMinHeight = modernMinHeight;
+		this.modernMaxHeight = modernMaxHeight;
 		this.preservationClassificationID = preservationClassificationID;
 		this.ceilingTypeID1 = ceilingTypeID1;
 		this.ceilingTypeID2 = ceilingTypeID2;
@@ -87,7 +95,6 @@ public class CaveAreaEntry extends AbstractEntry {
 	 */
 	@Override
 	public String getUniqueID() {
-		// TODO Auto-generated method stub
 		return "CaveArea-" + caveID + caveAreaLabel;
 	}
 
@@ -171,28 +178,52 @@ public class CaveAreaEntry extends AbstractEntry {
 		this.expeditionHeight = expeditionHeight;
 	}
 
-	public double getModernWidth() {
-		return modernWidth;
+	public double getModernMinWidth() {
+		return modernMinWidth;
 	}
 
-	public void setModernWidth(double modernWidth) {
-		this.modernWidth = modernWidth;
+	public void setModernMinWidth(double modernMinWidth) {
+		this.modernMinWidth = modernMinWidth;
 	}
 
-	public double getModernLength() {
-		return modernLength;
+	public double getModernMinLength() {
+		return modernMinLength;
 	}
 
-	public void setModernLength(double modernLength) {
-		this.modernLength = modernLength;
+	public void setModernMinLength(double modernMinLength) {
+		this.modernMinLength = modernMinLength;
 	}
 
-	public double getModernHeight() {
-		return modernHeight;
+	public double getModernMinHeight() {
+		return modernMinHeight;
 	}
 
-	public void setModernHeight(double modernHeight) {
-		this.modernHeight = modernHeight;
+	public void setModernMinHeight(double modernMinHeight) {
+		this.modernMinHeight = modernMinHeight;
+	}
+
+	public double getModernMaxWidth() {
+		return modernMaxWidth;
+	}
+
+	public void setModernMaxWidth(double modernMaxWidth) {
+		this.modernMaxWidth = modernMaxWidth;
+	}
+
+	public double getModernMaxLength() {
+		return modernMaxLength;
+	}
+
+	public void setModernMaxLength(double modernMaxLength) {
+		this.modernMaxLength = modernMaxLength;
+	}
+
+	public double getModernMaxHeight() {
+		return modernMaxHeight;
+	}
+
+	public void setModernMaxHeight(double modernMaxHeight) {
+		this.modernMaxHeight = modernMaxHeight;
 	}
 
 	public int getFloorPreservationClassificationID() {
