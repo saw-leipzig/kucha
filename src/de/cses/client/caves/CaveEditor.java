@@ -30,13 +30,11 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment.HorizontalAlignmentConstant;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.XTemplates;
-import com.sencha.gxt.core.client.Style.HorizontalAlignment;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.core.client.util.DateWrapper;
 import com.sencha.gxt.core.client.util.Margins;
@@ -332,7 +330,7 @@ public class CaveEditor extends AbstractEditor {
 		if (caveEntry == null) {
 			createNewCaveEntry();
 		} else {
-			correspondingCaveEntry = caveEntry.clone();
+			correspondingCaveEntry = caveEntry.clone(); // we are cloning the entry, so the original stays unchanged until it is saved
 		}
 		caveTypeProps = GWT.create(CaveTypeProperties.class);
 		caveTypeEntryListStore = new ListStore<CaveTypeEntry>(caveTypeProps.caveTypeID());
@@ -2535,7 +2533,7 @@ public class CaveEditor extends AbstractEditor {
 
 				@Override
 				public void onSuccess(Boolean result) {
-					correspondingCaveEntry.setModified(false);
+					updateEntry(correspondingCaveEntry);
 					if (close) {
 						closeEditor();
 					}
@@ -2553,7 +2551,7 @@ public class CaveEditor extends AbstractEditor {
 				@Override
 				public void onSuccess(Integer result) {
 					correspondingCaveEntry.setCaveID(result.intValue());
-					correspondingCaveEntry.setModified(false);
+					updateEntry(correspondingCaveEntry);
 					if (close) {
 						closeEditor();
 					}
