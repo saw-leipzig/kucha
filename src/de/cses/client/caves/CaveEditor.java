@@ -330,7 +330,7 @@ public class CaveEditor extends AbstractEditor {
 		if (caveEntry == null) {
 			createNewCaveEntry();
 		} else {
-			correspondingCaveEntry = caveEntry.clone(); // we are cloning the entry, so the original stays unchanged until it is saved
+			correspondingCaveEntry = caveEntry;
 		}
 		caveTypeProps = GWT.create(CaveTypeProperties.class);
 		caveTypeEntryListStore = new ListStore<CaveTypeEntry>(caveTypeProps.caveTypeID());
@@ -2075,11 +2075,17 @@ public class CaveEditor extends AbstractEditor {
 				}
 			}
 		});
+		
+		Label sl1 = new Label("/");
+		sl1.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		Label sl2 = new Label("/");
+		sl2.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		
 		HorizontalLayoutContainer expeditionMeasuresHLC = new HorizontalLayoutContainer();
 		expeditionMeasuresHLC.add(expeditionWidthNumberField, new HorizontalLayoutData(.3, 1.0));
-		expeditionMeasuresHLC.add(new Label(" / "), new HorizontalLayoutData(.05, 1.0));
+		expeditionMeasuresHLC.add(sl1, new HorizontalLayoutData(.05, 1.0));
 		expeditionMeasuresHLC.add(expeditionLengthNumberField, new HorizontalLayoutData(.3, 1.0));
-		expeditionMeasuresHLC.add(new Label(" / "), new HorizontalLayoutData(.05, 1.0));
+		expeditionMeasuresHLC.add(sl2, new HorizontalLayoutData(.05, 1.0));
 		expeditionMeasuresHLC.add(expeditionHeightNumberField, new HorizontalLayoutData(.3, 1.0));
 		expeditionMeasureCP.add(expeditionMeasuresHLC);
 
@@ -2106,10 +2112,7 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 
-		NumberField<Double> modernMaxWidthNumberField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
-		modernMaxWidthNumberField.setAllowNegative(false);
-		modernMaxWidthNumberField.setEmptyText("max width");
-		modernMaxWidthNumberField.setValue(caEntry.getModernMaxWidth());
+		NumberField<Double> modernMaxWidthNumberField = createModernMeasurementNumberField(caEntry.getModernMaxWidth());
 		modernMaxWidthNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
 			@Override
@@ -2120,10 +2123,7 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 
-		NumberField<Double> modernMinLengthNumberField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
-		modernMinLengthNumberField.setAllowNegative(false);
-		modernMinLengthNumberField.setEmptyText("min length");
-		modernMinLengthNumberField.setValue(caEntry.getModernMinLength());
+		NumberField<Double> modernMinLengthNumberField = createModernMeasurementNumberField(caEntry.getModernMinLength());
 		modernMinLengthNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
 			@Override
@@ -2134,10 +2134,7 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		
-		NumberField<Double> modernMaxLengthNumberField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
-		modernMinLengthNumberField.setAllowNegative(false);
-		modernMinLengthNumberField.setEmptyText("max length");
-		modernMinLengthNumberField.setValue(caEntry.getModernMaxLength());
+		NumberField<Double> modernMaxLengthNumberField = createModernMeasurementNumberField(caEntry.getModernMaxLength());
 		modernMinLengthNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
 			@Override
@@ -2148,10 +2145,7 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		
-		NumberField<Double> modernMinHeightNumberField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
-		modernMinHeightNumberField.setAllowNegative(false);
-		modernMinHeightNumberField.setEmptyText("min height");
-		modernMinHeightNumberField.setValue(caEntry.getModernMinHeight());
+		NumberField<Double> modernMinHeightNumberField = createModernMeasurementNumberField(caEntry.getModernMinHeight());
 		modernMinHeightNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
 			@Override
@@ -2162,10 +2156,7 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		
-		NumberField<Double> modernMaxHeightNumberField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
-		modernMinHeightNumberField.setAllowNegative(false);
-		modernMinHeightNumberField.setEmptyText("max height");
-		modernMinHeightNumberField.setValue(caEntry.getModernMaxHeight());
+		NumberField<Double> modernMaxHeightNumberField = createModernMeasurementNumberField(caEntry.getModernMaxHeight());
 		modernMinHeightNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
 			@Override
@@ -2176,20 +2167,28 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		
-		Label l = new Label("/");
-		l.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		Label sl1 = new Label("/");
+		sl1.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		Label sl2 = new Label("/");
+		sl2.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		Label dl1 = new Label("–");
+		dl1.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		Label dl2 = new Label("–");
+		dl2.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		Label dl3 = new Label("–");
+		dl3.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 		
 		HorizontalLayoutContainer modernMeasuresHLC = new HorizontalLayoutContainer();
 		modernMeasuresHLC.add(modernMinWidthNumberField, new HorizontalLayoutData(.8/6, 1.0));
-		modernMeasuresHLC.add(new Label(" - "), new HorizontalLayoutData(.2/5, 1.0));
+		modernMeasuresHLC.add(dl1, new HorizontalLayoutData(.2/5, 1.0));
 		modernMeasuresHLC.add(modernMaxWidthNumberField, new HorizontalLayoutData(.8/6, 1.0));
-		modernMeasuresHLC.add(l, new HorizontalLayoutData(.2/5, 1.0));
+		modernMeasuresHLC.add(sl1, new HorizontalLayoutData(.2/5, 1.0));
 		modernMeasuresHLC.add(modernMinLengthNumberField, new HorizontalLayoutData(.8/6, 1.0));
-		modernMeasuresHLC.add(new Label(" - "), new HorizontalLayoutData(.2/5, 1.0));
+		modernMeasuresHLC.add(dl2, new HorizontalLayoutData(.2/5, 1.0));
 		modernMeasuresHLC.add(modernMaxLengthNumberField, new HorizontalLayoutData(.8/6, 1.0));
-		modernMeasuresHLC.add(new Label(" / "), new HorizontalLayoutData(.2/5, 1.0));
+		modernMeasuresHLC.add(sl2, new HorizontalLayoutData(.2/5, 1.0));
 		modernMeasuresHLC.add(modernMinHeightNumberField, new HorizontalLayoutData(.8/6, 1.0));
-		modernMeasuresHLC.add(new Label(" - "), new HorizontalLayoutData(.2/5, 1.0));
+		modernMeasuresHLC.add(dl3, new HorizontalLayoutData(.2/5, 1.0));
 		modernMeasuresHLC.add(modernMaxHeightNumberField, new HorizontalLayoutData(.8/6, 1.0));
 		modernMeasurementCP.add(modernMeasuresHLC);
 
