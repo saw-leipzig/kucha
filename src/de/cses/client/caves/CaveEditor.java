@@ -13,15 +13,20 @@
  */
 package de.cses.client.caves;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.editor.client.Editor;
+import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.HasDirection.Direction;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
@@ -67,6 +72,9 @@ import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.form.Validator;
+import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
+import com.sencha.gxt.widget.core.client.form.validator.EmptyValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MaxNumberValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
@@ -2106,6 +2114,20 @@ public class CaveEditor extends AbstractEditor {
 		});
 
 		NumberField<Double> modernMaxWidthNumberField = createMeasurementNumberField(caEntry.getModernMaxWidth());
+		modernMaxWidthNumberField.addValidator(new Validator<Double>() {
+			
+			@Override
+			public List<EditorError> validate(Editor<Double> editor, Double value) {
+				
+				List<EditorError> l = new ArrayList<EditorError>();
+				if ((modernMinWidthNumberField.getCurrentValue() == null) || ("".equals(modernMinWidthNumberField.getValue()))) {
+					l.add(new DefaultEditorError(editor, "put in min value first", value));
+				} else if (value <= modernMinWidthNumberField.getValue()) {
+					l.add(new DefaultEditorError(editor, "only values > min", value));
+				}
+				return l;
+			}
+		});
 		modernMaxWidthNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
 			@Override
@@ -2128,11 +2150,25 @@ public class CaveEditor extends AbstractEditor {
 		});
 		
 		NumberField<Double> modernMaxLengthNumberField = createMeasurementNumberField(caEntry.getModernMaxLength());
-		modernMinLengthNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
+		modernMaxLengthNumberField.addValidator(new Validator<Double>() {
+			
+			@Override
+			public List<EditorError> validate(Editor<Double> editor, Double value) {
+				
+				List<EditorError> l = new ArrayList<EditorError>();
+				if ((modernMinLengthNumberField.getCurrentValue() == null) || ("".equals(modernMinLengthNumberField.getValue()))) {
+					l.add(new DefaultEditorError(editor, "put in min value first", value));
+				} else if (value <= modernMinLengthNumberField.getValue()) {
+					l.add(new DefaultEditorError(editor, "only values > min", value));
+				}
+				return l;
+			}
+		});
+		modernMaxLengthNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Double> event) {
-				if (modernMinLengthNumberField.validate()) {
+				if (modernMaxLengthNumberField.validate()) {
 					caEntry.setModernMaxLength(event.getValue());
 				}
 			}
@@ -2150,11 +2186,25 @@ public class CaveEditor extends AbstractEditor {
 		});
 		
 		NumberField<Double> modernMaxHeightNumberField = createMeasurementNumberField(caEntry.getModernMaxHeight());
-		modernMinHeightNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
+		modernMaxHeightNumberField.addValidator(new Validator<Double>() {
+			
+			@Override
+			public List<EditorError> validate(Editor<Double> editor, Double value) {
+				
+				List<EditorError> l = new ArrayList<EditorError>();
+				if ((modernMinHeightNumberField.getCurrentValue() == null) || ("".equals(modernMinHeightNumberField.getValue()))) {
+					l.add(new DefaultEditorError(editor, "put in min value first", value));
+				} else if (value <= modernMinHeightNumberField.getValue()) {
+					l.add(new DefaultEditorError(editor, "only values > min", value));
+				}
+				return l;
+			}
+		});
+		modernMaxHeightNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Double> event) {
-				if (modernMinHeightNumberField.validate()) {
+				if (modernMaxHeightNumberField.validate()) {
 					caEntry.setModernMaxHeight(event.getValue());
 				}
 			}
@@ -2193,6 +2243,7 @@ public class CaveEditor extends AbstractEditor {
 		measurementNF.setDirection(Direction.RTL);
 		measurementNF.setAllowNegative(false);
 		measurementNF.setEmptyText("meter");
+		measurementNF.setFormat(NumberFormat.getFormat("#0.0"));
 		if (value > 0) {
 			measurementNF.setValue(value);
 		}
