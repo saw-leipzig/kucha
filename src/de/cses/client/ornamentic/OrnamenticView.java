@@ -96,4 +96,14 @@ public class OrnamenticView extends AbstractView {
 		return entry;
 	}
 
+	/* (non-Javadoc)
+	 * @see de.cses.client.ui.EditorListener#updateEntryRequest(de.cses.shared.AbstractEntry)
+	 */
+	@Override
+	public void updateEntryRequest(AbstractEntry updatedEntry) {
+		if (updatedEntry instanceof OrnamentEntry) {
+			entry = (OrnamentEntry) updatedEntry;
+		}
+	}
+
 }

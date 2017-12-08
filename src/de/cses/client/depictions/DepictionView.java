@@ -30,6 +30,7 @@ import de.cses.client.ui.AbstractEditor;
 import de.cses.client.ui.AbstractView;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
+import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.ImageEntry;
 
@@ -121,6 +122,16 @@ public class DepictionView extends AbstractView {
 				setHTML(dvTemplates.view(UriUtils.fromString("resource?imageID=" + result.getImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), depictionEntry.getDepictionID()));
 			}
 		});
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.ui.EditorListener#updateEntryRequest(de.cses.shared.AbstractEntry)
+	 */
+	@Override
+	public void updateEntryRequest(AbstractEntry updatedEntry) {
+		if (updatedEntry instanceof DepictionEntry) {
+			depictionEntry = (DepictionEntry) updatedEntry;
+		}
 	}
 
 }

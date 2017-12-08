@@ -13,6 +13,8 @@
  */
 package de.cses.client.ui;
 
+import de.cses.shared.AbstractEntry;
+
 /**
  * @author alingnau
  *
@@ -20,5 +22,6 @@ package de.cses.client.ui;
 public interface EditorListener {
 
 	public void closeRequest();
+	public void updateEntryRequest(AbstractEntry updatedEntry);
 
 }

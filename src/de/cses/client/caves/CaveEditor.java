@@ -13,14 +13,20 @@
  */
 package de.cses.client.caves;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.editor.client.Editor;
+import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.i18n.client.HasDirection.Direction;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
@@ -28,6 +34,7 @@ import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -65,6 +72,9 @@ import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.form.Validator;
+import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
+import com.sencha.gxt.widget.core.client.form.validator.EmptyValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MaxNumberValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
@@ -707,14 +717,6 @@ public class CaveEditor extends AbstractEditor {
 		});
 		firstDocumentedInYearFP.add(firstDocumentedInYearField);
 		
-//		VerticalLayoutContainer firstDocVLC = new VerticalLayoutContainer();
-//		HorizontalLayoutContainer firstDocInYearHLC = new HorizontalLayoutContainer();
-//		firstDocInYearHLC.add(firstDocumentedInYearSlider, new HorizontalLayoutData(.7, 1.0));
-//		firstDocInYearHLC.add(firstDocumentedInYearField, new HorizontalLayoutData(.3, 1.0));
-//		firstDocVLC.add(firstDocumentedByField, new VerticalLayoutData(1.0, .5));
-//		firstDocVLC.add(firstDocInYearHLC, new VerticalLayoutData(1.0, .5));
-//		firstDocumentedPanel.add(firstDocVLC);
-
 		FramedPanel caveGroupPanel = new FramedPanel();
 		caveGroupPanel.setHeading("Cave Group");
 		caveGroupSelector = new ComboBox<CaveGroupEntry>(caveGroupEntryList, caveGroupProps.name(),
@@ -1962,8 +1964,8 @@ public class CaveEditor extends AbstractEditor {
 		modernMeasurementFP.add(modernMeasurementVLC);
 
 		HorizontalLayoutContainer measurementHLC = new HorizontalLayoutContainer();
-		measurementHLC.add(expeditionMeasurementFP, new HorizontalLayoutData(.4, 1.0));
-		measurementHLC.add(modernMeasurementFP, new HorizontalLayoutData(.6, 1.0));
+		measurementHLC.add(expeditionMeasurementFP, new HorizontalLayoutData(.35, 1.0));
+		measurementHLC.add(modernMeasurementFP, new HorizontalLayoutData(.65, 1.0));
 
 		FramedPanel plasticalItemsFP = new FramedPanel();
 		plasticalItemsFP.setHeading("Plastical Items");
@@ -2041,11 +2043,8 @@ public class CaveEditor extends AbstractEditor {
 	 */
 	private FramedPanel createCaveAreaExpeditionMeasurePanel(CaveAreaEntry caEntry) {
 		FramedPanel expeditionMeasureCP = new FramedPanel();
-		expeditionMeasureCP.setHeading(caEntry.getCaveAreaLabel() + " W/L/H in meter");
-		NumberField<Double> expeditionWidthNumberField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
-		expeditionWidthNumberField.setAllowNegative(false);
-		expeditionWidthNumberField.setEmptyText("width in meter");
-		expeditionWidthNumberField.setValue(caEntry.getExpeditionWidth());
+		expeditionMeasureCP.setHeading(caEntry.getCaveAreaLabel() + " (W/L/H)");
+		NumberField<Double> expeditionWidthNumberField = createMeasurementNumberField(caEntry.getExpeditionWidth());
 		expeditionWidthNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
 			@Override
@@ -2055,10 +2054,8 @@ public class CaveEditor extends AbstractEditor {
 				}
 			}
 		});
-		NumberField<Double> expeditionLengthNumberField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
-		expeditionLengthNumberField.setAllowNegative(false);
-		expeditionLengthNumberField.setEmptyText("length in meter");
-		expeditionLengthNumberField.setValue(caEntry.getExpeditionLength());
+		
+		NumberField<Double> expeditionLengthNumberField = createMeasurementNumberField(caEntry.getExpeditionLength());
 		expeditionLengthNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
 			@Override
@@ -2068,10 +2065,8 @@ public class CaveEditor extends AbstractEditor {
 				}
 			}
 		});
-		NumberField<Double> expeditionHeightNumberField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
-		expeditionHeightNumberField.setAllowNegative(false);
-		expeditionHeightNumberField.setEmptyText("height in meter");
-		expeditionHeightNumberField.setValue(caEntry.getExpeditionHeight());
+		
+		NumberField<Double> expeditionHeightNumberField = createMeasurementNumberField(caEntry.getExpeditionHeight());
 		expeditionHeightNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
 			@Override
@@ -2081,11 +2076,17 @@ public class CaveEditor extends AbstractEditor {
 				}
 			}
 		});
+		
+		Label sl1 = new Label("/");
+		sl1.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		Label sl2 = new Label("/");
+		sl2.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		
 		HorizontalLayoutContainer expeditionMeasuresHLC = new HorizontalLayoutContainer();
 		expeditionMeasuresHLC.add(expeditionWidthNumberField, new HorizontalLayoutData(.3, 1.0));
-		expeditionMeasuresHLC.add(new Label("/"), new HorizontalLayoutData(.05, 1.0, new Margins(0, 2, 0, 2)));
+		expeditionMeasuresHLC.add(sl1, new HorizontalLayoutData(.05, 1.0));
 		expeditionMeasuresHLC.add(expeditionLengthNumberField, new HorizontalLayoutData(.3, 1.0));
-		expeditionMeasuresHLC.add(new Label("/"), new HorizontalLayoutData(.05, 1.0, new Margins(0, 2, 0, 2)));
+		expeditionMeasuresHLC.add(sl2, new HorizontalLayoutData(.05, 1.0));
 		expeditionMeasuresHLC.add(expeditionHeightNumberField, new HorizontalLayoutData(.3, 1.0));
 		expeditionMeasureCP.add(expeditionMeasuresHLC);
 
@@ -2099,57 +2100,156 @@ public class CaveEditor extends AbstractEditor {
 	 */
 	private FramedPanel createCaveAreaModernMeasurePanel(CaveAreaEntry caEntry) {
 		FramedPanel modernMeasurementCP = new FramedPanel();
-		modernMeasurementCP.setHeading(caEntry.getCaveAreaLabel() + " W/L/H in meter");
-		NumberField<Double> modernWidthNumberField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
-		modernWidthNumberField.setAllowNegative(false);
-		modernWidthNumberField.setEmptyText("width in meter");
-		modernWidthNumberField.setValue(caEntry.getModernWidth());
-		modernWidthNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
+		modernMeasurementCP.setHeading(caEntry.getCaveAreaLabel() + " (W/L/H) min-max");
+
+		NumberField<Double> modernMinWidthNumberField = createMeasurementNumberField(caEntry.getModernMinWidth());
+		modernMinWidthNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Double> event) {
-				if (modernWidthNumberField.validate()) {
-					caEntry.setModernWidth(event.getValue());
+				if (modernMinWidthNumberField.validate()) {
+					caEntry.setModernMinWidth(event.getValue());
 				}
 			}
 		});
-		NumberField<Double> modernLengthNumberField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
-		modernLengthNumberField.setAllowNegative(false);
-		modernLengthNumberField.setEmptyText("length in meter");
-		modernLengthNumberField.setValue(caEntry.getModernLength());
-		modernLengthNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
+
+		NumberField<Double> modernMaxWidthNumberField = createMeasurementNumberField(caEntry.getModernMaxWidth());
+		modernMaxWidthNumberField.addValidator(new Validator<Double>() {
+			
+			@Override
+			public List<EditorError> validate(Editor<Double> editor, Double value) {
+				
+				List<EditorError> l = new ArrayList<EditorError>();
+				if ((modernMinWidthNumberField.getCurrentValue() == null) || ("".equals(modernMinWidthNumberField.getValue()))) {
+					l.add(new DefaultEditorError(editor, "put in min value first", value));
+				} else if (value <= modernMinWidthNumberField.getValue()) {
+					l.add(new DefaultEditorError(editor, "only values > min", value));
+				}
+				return l;
+			}
+		});
+		modernMaxWidthNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Double> event) {
-				if (modernLengthNumberField.validate()) {
-					caEntry.setModernLength(event.getValue());
+				if (modernMaxWidthNumberField.validate()) {
+					caEntry.setModernMaxWidth(event.getValue());
 				}
 			}
 		});
-		NumberField<Double> modernHeightNumberField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
-		modernHeightNumberField.setAllowNegative(false);
-		modernHeightNumberField.setEmptyText("height in meter");
-		modernHeightNumberField.setValue(caEntry.getModernHeight());
-		modernHeightNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
+
+		NumberField<Double> modernMinLengthNumberField = createMeasurementNumberField(caEntry.getModernMinLength());
+		modernMinLengthNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Double> event) {
-				if (modernHeightNumberField.validate()) {
-					caEntry.setModernHeight(event.getValue());
+				if (modernMinLengthNumberField.validate()) {
+					caEntry.setModernMinLength(event.getValue());
 				}
 			}
 		});
+		
+		NumberField<Double> modernMaxLengthNumberField = createMeasurementNumberField(caEntry.getModernMaxLength());
+		modernMaxLengthNumberField.addValidator(new Validator<Double>() {
+			
+			@Override
+			public List<EditorError> validate(Editor<Double> editor, Double value) {
+				
+				List<EditorError> l = new ArrayList<EditorError>();
+				if ((modernMinLengthNumberField.getCurrentValue() == null) || ("".equals(modernMinLengthNumberField.getValue()))) {
+					l.add(new DefaultEditorError(editor, "put in min value first", value));
+				} else if (value <= modernMinLengthNumberField.getValue()) {
+					l.add(new DefaultEditorError(editor, "only values > min", value));
+				}
+				return l;
+			}
+		});
+		modernMaxLengthNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Double> event) {
+				if (modernMaxLengthNumberField.validate()) {
+					caEntry.setModernMaxLength(event.getValue());
+				}
+			}
+		});
+		
+		NumberField<Double> modernMinHeightNumberField = createMeasurementNumberField(caEntry.getModernMinHeight());
+		modernMinHeightNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Double> event) {
+				if (modernMinHeightNumberField.validate()) {
+					caEntry.setModernMinHeight(event.getValue());
+				}
+			}
+		});
+		
+		NumberField<Double> modernMaxHeightNumberField = createMeasurementNumberField(caEntry.getModernMaxHeight());
+		modernMaxHeightNumberField.addValidator(new Validator<Double>() {
+			
+			@Override
+			public List<EditorError> validate(Editor<Double> editor, Double value) {
+				
+				List<EditorError> l = new ArrayList<EditorError>();
+				if ((modernMinHeightNumberField.getCurrentValue() == null) || ("".equals(modernMinHeightNumberField.getValue()))) {
+					l.add(new DefaultEditorError(editor, "put in min value first", value));
+				} else if (value <= modernMinHeightNumberField.getValue()) {
+					l.add(new DefaultEditorError(editor, "only values > min", value));
+				}
+				return l;
+			}
+		});
+		modernMaxHeightNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Double> event) {
+				if (modernMaxHeightNumberField.validate()) {
+					caEntry.setModernMaxHeight(event.getValue());
+				}
+			}
+		});
+		
+		Label sl1 = new Label("/");
+		sl1.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		Label sl2 = new Label("/");
+		sl2.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		Label dl1 = new Label("–");
+		dl1.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		Label dl2 = new Label("–");
+		dl2.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		Label dl3 = new Label("–");
+		dl3.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		
 		HorizontalLayoutContainer modernMeasuresHLC = new HorizontalLayoutContainer();
-		modernMeasuresHLC.add(modernWidthNumberField, new HorizontalLayoutData(.3, 1.0));
-		modernMeasuresHLC.add(new Label("/"), new HorizontalLayoutData(.05, 1.0, new Margins(0, 2, 0, 2)));
-		modernMeasuresHLC.add(modernLengthNumberField, new HorizontalLayoutData(.3, 1.0));
-		modernMeasuresHLC.add(new Label("/"), new HorizontalLayoutData(.05, 1.0, new Margins(0, 2, 0, 2)));
-		modernMeasuresHLC.add(modernHeightNumberField, new HorizontalLayoutData(.3, 1.0));
+		modernMeasuresHLC.add(modernMinWidthNumberField, new HorizontalLayoutData(.8/6, 1.0));
+		modernMeasuresHLC.add(dl1, new HorizontalLayoutData(.2/5, 1.0));
+		modernMeasuresHLC.add(modernMaxWidthNumberField, new HorizontalLayoutData(.8/6, 1.0));
+		modernMeasuresHLC.add(sl1, new HorizontalLayoutData(.2/5, 1.0));
+		modernMeasuresHLC.add(modernMinLengthNumberField, new HorizontalLayoutData(.8/6, 1.0));
+		modernMeasuresHLC.add(dl2, new HorizontalLayoutData(.2/5, 1.0));
+		modernMeasuresHLC.add(modernMaxLengthNumberField, new HorizontalLayoutData(.8/6, 1.0));
+		modernMeasuresHLC.add(sl2, new HorizontalLayoutData(.2/5, 1.0));
+		modernMeasuresHLC.add(modernMinHeightNumberField, new HorizontalLayoutData(.8/6, 1.0));
+		modernMeasuresHLC.add(dl3, new HorizontalLayoutData(.2/5, 1.0));
+		modernMeasuresHLC.add(modernMaxHeightNumberField, new HorizontalLayoutData(.8/6, 1.0));
 		modernMeasurementCP.add(modernMeasuresHLC);
 
 		return modernMeasurementCP;
 	}
-
+	
+	private NumberField<Double> createMeasurementNumberField(double value) {
+		NumberField<Double> measurementNF = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
+		measurementNF.setDirection(Direction.RTL);
+		measurementNF.setAllowNegative(false);
+		measurementNF.setEmptyText("meter");
+		measurementNF.setFormat(NumberFormat.getFormat("#0.0"));
+		if (value > 0) {
+			measurementNF.setValue(value);
+		}
+		return measurementNF;
+	}
+	
 	private void updateCeilingTypePanel(int caveTypeID) {
 
 		switch (caveTypeID) {
@@ -2466,9 +2566,6 @@ public class CaveEditor extends AbstractEditor {
 	 * Will be called when the save button is selected. After saving <code>CaveEditorListener.closeRequest()</code> is called to inform all listener.
 	 */
 	protected void saveEntries(boolean close) {
-//		if (!validateFields()) {
-//			return;
-//		}
 		if (correspondingCaveEntry.getCaveID() > 0) {
 			dbService.updateCaveEntry(correspondingCaveEntry, new AsyncCallback<Boolean>() {
 
@@ -2479,7 +2576,7 @@ public class CaveEditor extends AbstractEditor {
 
 				@Override
 				public void onSuccess(Boolean result) {
-					correspondingCaveEntry.setModified(false);
+					updateEntry(correspondingCaveEntry);
 					if (close) {
 						closeEditor();
 					}
@@ -2497,7 +2594,7 @@ public class CaveEditor extends AbstractEditor {
 				@Override
 				public void onSuccess(Integer result) {
 					correspondingCaveEntry.setCaveID(result.intValue());
-					correspondingCaveEntry.setModified(false);
+					updateEntry(correspondingCaveEntry);
 					if (close) {
 						closeEditor();
 					}

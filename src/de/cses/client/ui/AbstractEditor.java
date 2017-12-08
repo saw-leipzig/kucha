@@ -17,6 +17,8 @@ import java.util.ArrayList;
 
 import com.google.gwt.user.client.ui.IsWidget;
 
+import de.cses.shared.AbstractEntry;
+
 /**
  * @author alingnau
  *
@@ -32,6 +34,12 @@ public abstract class AbstractEditor implements IsWidget {
 	protected void closeEditor() {
 		for (EditorListener el : listenerList) {
 			el.closeRequest();
+		}
+	}
+	
+	protected void updateEntry(AbstractEntry entry) {
+		for (EditorListener el : listenerList) {
+			el.updateEntryRequest(entry);
 		}
 	}
 

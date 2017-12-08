@@ -26,6 +26,7 @@ import de.cses.client.ui.AbstractFilter;
 import de.cses.client.ui.AbstractResultView;
 import de.cses.client.ui.AbstractSearchController;
 import de.cses.client.ui.EditorListener;
+import de.cses.shared.AbstractEntry;
 import de.cses.shared.DepictionEntry;
 
 /**
@@ -91,6 +92,11 @@ public class AnnotatedBiblographySearchController extends AbstractSearchControll
 			@Override
 			public void closeRequest() {
 				depictionEditorPanel.hide();
+			}
+
+			@Override
+			public void updateEntryRequest(AbstractEntry updatedEntry) {
+				// nothing is happening here
 			}
 		});
 		depictionEditorPanel.add(de);

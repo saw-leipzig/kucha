@@ -25,6 +25,7 @@ import de.cses.client.ui.AbstractFilter;
 import de.cses.client.ui.AbstractResultView;
 import de.cses.client.ui.AbstractSearchController;
 import de.cses.client.ui.EditorListener;
+import de.cses.shared.AbstractEntry;
 import de.cses.shared.ImageEntry;
 
 /**
@@ -110,6 +111,11 @@ public class ImageSearchController extends AbstractSearchController {
 							public void closeRequest() {
 								imageEditorPanel.hide();
 								getResultView().addResult(new ImageView(imgEntry));
+							}
+
+							@Override
+							public void updateEntryRequest(AbstractEntry updatedEntry) {
+								// nothing needs to be done here
 							}
 						});
 						imageEditorPanel.add(singleIE);

@@ -90,4 +90,14 @@ public class ImageView extends AbstractView {
 		return imgEntry;
 	}
 
+	/* (non-Javadoc)
+	 * @see de.cses.client.ui.EditorListener#updateEntryRequest(de.cses.shared.AbstractEntry)
+	 */
+	@Override
+	public void updateEntryRequest(AbstractEntry updatedEntry) {
+		if (updatedEntry instanceof ImageEntry) {
+			imgEntry = (ImageEntry) updatedEntry;
+		}
+	}
+
 }

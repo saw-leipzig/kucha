@@ -63,6 +63,10 @@ public class WallEntry extends AbstractEntry {
 		this.width = width;
 		this.height = height;
 	}
+	
+	public WallEntry clone() {
+		return new WallEntry(caveID, wallLocationID, preservationClassificationID, width, height);
+	}
 
 	/* (non-Javadoc)
 	 * @see de.cses.shared.AbstractEntry#getUniqueID()
