@@ -19,6 +19,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dev.jdt.SafeASTVisitor;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -193,7 +194,7 @@ public class CaveEditor extends AbstractEditor {
 	private ComboBox<PreservationClassificationEntry> corridorCeilingPreservationSelectorCB2;
 	private ComboBox<PreservationClassificationEntry> antechamberCeilingPreservationSelectorCB2;
 	private TextArea notesTextArea;
-	private TextField c14AnalysisUrlTextField;
+//	private TextField c14AnalysisUrlTextField;
 	private FramedPanel c14UploadPanel;
 	private DocumentLinkTemplate documentLinkTemplate;
 	private ListStore<WallEntry> wallEntryLS;
@@ -1445,7 +1446,6 @@ public class CaveEditor extends AbstractEditor {
 		 */
 
 		HorizontalLayoutContainer descriptionHLC = new HorizontalLayoutContainer();
-		VerticalLayoutContainer descriptionsVLC = new VerticalLayoutContainer();
 
 		FramedPanel findingsFP = new FramedPanel();
 		findingsFP.setHeading("Findings");
@@ -1478,26 +1478,53 @@ public class CaveEditor extends AbstractEditor {
 		HorizontalLayoutContainer findingsNotesHLC = new HorizontalLayoutContainer();
 		findingsNotesHLC.add(findingsFP, new HorizontalLayoutData(.5, 1.0));
 		findingsNotesHLC.add(notesFP, new HorizontalLayoutData(.5, 1.0));
-		descriptionsVLC.add(findingsNotesHLC, new VerticalLayoutData(1.0, .76));
 
 		FramedPanel c14AnalysisLinkFP = new FramedPanel();
-		c14AnalysisLinkFP.setHeading("C14 Analysis (link)");
-		c14AnalysisUrlTextField = new TextField();
-		c14AnalysisUrlTextField.setEmptyText("http/https/ftp");
-		c14AnalysisUrlTextField.setValue(correspondingCaveEntry.getC14url());
-		c14AnalysisUrlTextField.addValidator(new RegExValidator(
-				"^(((https?|ftps?)://)(%[0-9A-Fa-f]{2}|[-()_.!~*';/?:@&=+$,A-Za-z0-9])+)([).!';/?:,][[:blank:]])?$", "Please enter valid URL"));
-		c14AnalysisUrlTextField.addValueChangeHandler(new ValueChangeHandler<String>() {
-
+		c14AnalysisLinkFP.setHeading("C14 Analysis (links)");
+		ToolButton addC14LinkTB = new ToolButton(ToolButton.PLUS);
+		addC14LinkTB.setTitle("add new C14 link");
+		c14AnalysisLinkFP.addTool(addC14LinkTB);
+		addC14LinkTB.addSelectHandler(new SelectHandler() {
+			
 			@Override
-			public void onValueChange(ValueChangeEvent<String> event) {
-				if (c14AnalysisUrlTextField.validate()) {
-					correspondingCaveEntry.setC14url(event.getValue());
-				}
+			public void onSelect(SelectEvent event) {
+				PopupPanel addNewC14LinkDialog = new PopupPanel();
+				FramedPanel newC14LinkFP = new FramedPanel();
+				newC14LinkFP.setHeading("Add C14 Link");
+				TextField	c14AnalysisUrlTextField = new TextField();
+				c14AnalysisUrlTextField.setEmptyText("http/https/ftp");
+				c14AnalysisUrlTextField.setValue(correspondingCaveEntry.getC14url());
+				c14AnalysisUrlTextField.addValidator(new RegExValidator(
+						"^(((https?|ftps?)://)(%[0-9A-Fa-f]{2}|[-()_.!~*';/?:@&=+$,A-Za-z0-9])+)([).!';/?:,][[:blank:]])?$", "Please enter valid URL"));
+
+				newC14LinkFP.add(c14AnalysisUrlTextField);
+				ToolButton saveTB = new ToolButton(ToolButton.SAVE);
+				saveTB.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						if (c14AnalysisUrlTextField.validate()) {
+							correspondingCaveEntry.setC14url(c14AnalysisUrlTextField.getValue());
+							c14AnalysisLinkFP.add(new HTMLPanel(documentLinkTemplate.documentLink(UriUtils.fromString(c14AnalysisUrlTextField.getValue()),"c14AnalysisUrlTextField.getValue()")));
+						}
+						addNewC14LinkDialog.hide();
+					}
+				});
+				ToolButton cancelTB = new ToolButton(ToolButton.CLOSE);
+				cancelTB.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						addNewC14LinkDialog.hide();
+					}
+				});
+				newC14LinkFP.addTool(saveTB);
+				newC14LinkFP.addTool(cancelTB);
+				addNewC14LinkDialog.add(newC14LinkFP);
+				addNewC14LinkDialog.setModal(true);
+				addNewC14LinkDialog.center();
 			}
 		});
-		c14AnalysisLinkFP.add(c14AnalysisUrlTextField);
-		descriptionsVLC.add(c14AnalysisLinkFP, new VerticalLayoutData(1.0, .12));
 
 		c14UploadPanel = new FramedPanel();
 		c14UploadPanel.setHeading("C14 additional document");
@@ -1541,7 +1568,11 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		c14UploadPanel.addTool(uploadButton);
-		descriptionsVLC.add(c14UploadPanel, new VerticalLayoutData(1.0, .12));
+
+		VerticalLayoutContainer descriptionsVLC = new VerticalLayoutContainer();
+		descriptionsVLC.add(findingsNotesHLC, new VerticalLayoutData(1.0, .6));
+		descriptionsVLC.add(c14AnalysisLinkFP, new VerticalLayoutData(1.0, .2));
+		descriptionsVLC.add(c14UploadPanel, new VerticalLayoutData(1.0, .2));
 
 		descriptionHLC.add(descriptionsVLC, new HorizontalLayoutData(1.0, 1.0));
 
@@ -2122,7 +2153,7 @@ public class CaveEditor extends AbstractEditor {
 				List<EditorError> l = new ArrayList<EditorError>();
 				if ((modernMinWidthNumberField.getCurrentValue() == null) || ("".equals(modernMinWidthNumberField.getValue()))) {
 					l.add(new DefaultEditorError(editor, "put in min value first", value));
-				} else if (value <= modernMinWidthNumberField.getValue()) {
+				} else if ((value!=null) && (!"".equals(value)) && (value <= modernMinWidthNumberField.getValue())) {
 					l.add(new DefaultEditorError(editor, "only values > min", value));
 				}
 				return l;
