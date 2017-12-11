@@ -28,6 +28,7 @@ import de.cses.server.ServerProperties;
 import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.server.UserManager;
 import de.cses.shared.AuthorEntry;
+import de.cses.shared.C14AnalysisUrlEntry;
 import de.cses.shared.CaveAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveGroupEntry;
@@ -465,7 +466,7 @@ public class MysqlConnector {
 						rs.getString("OptionalHistoricName"), rs.getInt("CaveTypeID"), rs.getInt("DistrictID"), rs.getInt("RegionID"),
 						rs.getInt("OrientationID"), rs.getString("StateOfPreservation"), rs.getString("Findings"), rs.getString("Notes"),
 						rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedInYear"), rs.getInt("PreservationClassificationID"),
-						rs.getInt("CaveGroupID"), rs.getString("OptionalCaveSketch"), rs.getString("C14url"), rs.getString("C14DocumentFilename"), rs.getString("CaveLayoutComments"));
+						rs.getInt("CaveGroupID"), rs.getString("OptionalCaveSketch"), rs.getString("C14DocumentFilename"), rs.getString("CaveLayoutComments"));
 				ce.setCaveAreaList(getCaveAreas(ce.getCaveID()));
 				ce.setWallList(getWalls(ce.getCaveID()));
 				results.add(ce);
@@ -491,7 +492,7 @@ public class MysqlConnector {
 						rs.getString("OptionalHistoricName"), rs.getInt("CaveTypeID"), rs.getInt("DistrictID"), rs.getInt("RegionID"),
 						rs.getInt("OrientationID"), rs.getString("StateOfPreservation"), rs.getString("Findings"), rs.getString("Notes"),
 						rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedInYear"), rs.getInt("PreservationClassificationID"),
-						rs.getInt("CaveGroupID"), rs.getString("OptionalCaveSketch"), rs.getString("C14url"), rs.getString("C14DocumentFilename"), rs.getString("CaveLayoutComments"));
+						rs.getInt("CaveGroupID"), rs.getString("OptionalCaveSketch"), rs.getString("C14DocumentFilename"), rs.getString("CaveLayoutComments"));
 				result.setCaveAreaList(getCaveAreas(result.getCaveID()));
 				result.setWallList(getWalls(result.getCaveID()));
 			}
@@ -517,7 +518,7 @@ public class MysqlConnector {
 						rs.getString("OptionalHistoricName"), rs.getInt("CaveTypeID"), rs.getInt("DistrictID"), rs.getInt("RegionID"),
 						rs.getInt("OrientationID"), rs.getString("StateOfPreservation"), rs.getString("Findings"), rs.getString("Notes"),
 						rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedInYear"), rs.getInt("PreservationClassificationID"),
-						rs.getInt("CaveGroupID"), rs.getString("OptionalCaveSketch"), rs.getString("C14url"), rs.getString("C14DocumentFilename"), rs.getString("CaveLayoutComments"));
+						rs.getInt("CaveGroupID"), rs.getString("OptionalCaveSketch"), rs.getString("C14DocumentFilename"), rs.getString("CaveLayoutComments"));
 				ce.setCaveAreaList(getCaveAreas(ce.getCaveID()));
 				ce.setWallList(getWalls(ce.getCaveID()));
 				results.add(ce);
@@ -1550,7 +1551,7 @@ public class MysqlConnector {
 		try {
 			pstmt = dbc.prepareStatement("UPDATE Caves SET OfficialNumber=?, HistoricName=?, OptionalHistoricName=?, CaveTypeID=?, DistrictID=?, "
 					+ "RegionID=?, OrientationID=?, StateOfPreservation=?, Findings=?, Notes=?, FirstDocumentedBy=?, FirstDocumentedInYear=?, PreservationClassificationID=?, "
-					+ "CaveGroupID=?, OptionalCaveSketch=?, C14url=?, C14DocumentFilename=?, CaveLayoutComments=? WHERE CaveID=?");
+					+ "CaveGroupID=?, OptionalCaveSketch=?, C14DocumentFilename=?, CaveLayoutComments=? WHERE CaveID=?");
 			pstmt.setString(1, caveEntry.getOfficialNumber());
 			pstmt.setString(2, caveEntry.getHistoricName());
 			pstmt.setString(3, caveEntry.getOptionalHistoricName());
@@ -1566,10 +1567,9 @@ public class MysqlConnector {
 			pstmt.setInt(13, caveEntry.getPreservationClassificationID());
 			pstmt.setInt(14, caveEntry.getCaveGroupID());
 			pstmt.setString(15, caveEntry.getOptionalCaveSketch());
-			pstmt.setString(16, caveEntry.getC14url());
-			pstmt.setString(17, caveEntry.getC14DocumentFilename());
-			pstmt.setString(18, caveEntry.getCaveLayoutComments());
-			pstmt.setInt(19, caveEntry.getCaveID());
+			pstmt.setString(16, caveEntry.getC14DocumentFilename());
+			pstmt.setString(17, caveEntry.getCaveLayoutComments());
+			pstmt.setInt(18, caveEntry.getCaveID());
 			pstmt.executeUpdate();
 			pstmt.close();
 			for (CaveAreaEntry caEntry : caveEntry.getCaveAreaList()) {
@@ -1578,6 +1578,7 @@ public class MysqlConnector {
 			for (WallEntry wEntry : caveEntry.getWallList()) {
 				writeWall(wEntry);
 			}
+			writeC14AnalysisUrlEntry(caveEntry.getCaveID(), caveEntry.getC14AnalysisUrlList());
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 			return false;
@@ -1596,8 +1597,8 @@ public class MysqlConnector {
 		try {
 			pstmt = dbc.prepareStatement(
 					"INSERT INTO Caves (OfficialNumber, HistoricName, OptionalHistoricName, CaveTypeID, DistrictID, RegionID, OrientationID, StateOfPreservation, "
-							+ "Findings, Notes, FirstDocumentedBy, FirstDocumentedInYear, PreservationClassificationID, CaveGroupID, OptionalCaveSketch, C14url, C14DocumentFilename, CaveLayoutComments) "
-							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+							+ "Findings, Notes, FirstDocumentedBy, FirstDocumentedInYear, PreservationClassificationID, CaveGroupID, OptionalCaveSketch, C14DocumentFilename, CaveLayoutComments) "
+							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			pstmt.setString(1, caveEntry.getOfficialNumber());
 			pstmt.setString(2, caveEntry.getHistoricName());
 			pstmt.setString(3, caveEntry.getOptionalHistoricName());
@@ -1613,9 +1614,8 @@ public class MysqlConnector {
 			pstmt.setInt(13, caveEntry.getPreservationClassificationID());
 			pstmt.setInt(14, caveEntry.getCaveGroupID());
 			pstmt.setString(15, caveEntry.getOptionalCaveSketch());
-			pstmt.setString(16, caveEntry.getC14url());
-			pstmt.setString(17, caveEntry.getC14DocumentFilename());
-			pstmt.setString(18, caveEntry.getCaveLayoutComments());
+			pstmt.setString(16, caveEntry.getC14DocumentFilename());
+			pstmt.setString(17, caveEntry.getCaveLayoutComments());
 			pstmt.executeUpdate();
 			ResultSet keys = pstmt.getGeneratedKeys();
 			if (keys.next()) { // there should only be 1 key returned here 
@@ -1626,11 +1626,14 @@ public class MysqlConnector {
 			pstmt.close();
 			if (newCaveID > 0) {
 				for (CaveAreaEntry caEntry : caveEntry.getCaveAreaList()) {
+					caEntry.setCaveID(newCaveID);
 					writeCaveArea(caEntry);
 				}
 				for (WallEntry wEntry : caveEntry.getWallList()) {
+					wEntry.setCaveID(newCaveID);
 					writeWall(wEntry);
 				}
+				writeC14AnalysisUrlEntry(newCaveID, caveEntry.getC14AnalysisUrlList());
 			}
 		} catch (SQLException ex) {
 			ex.printStackTrace();
@@ -2021,6 +2024,26 @@ public class MysqlConnector {
 			return false;
 		}
 		return (rowCount > 0);
+	}
+	
+	protected synchronized boolean writeC14AnalysisUrlEntry(int caveID, ArrayList<C14AnalysisUrlEntry> entryList) {
+		Connection dbc = getConnection();
+		PreparedStatement c14UrlStatement;
+		deleteEntry("DELETE FROM C14AnalysisUrls WHERE CaveID=" + caveID);
+		try {
+			c14UrlStatement = dbc.prepareStatement("INSERT INTO C14AnalysisUrls (C14Url, C14ShortName, CaveID) VALUES (?, ?, ?)");
+			for (C14AnalysisUrlEntry entry : entryList) {
+				c14UrlStatement.setString(1, entry.getC14Url());
+				c14UrlStatement.setString(2, entry.getC14ShortName());
+				c14UrlStatement.setInt(3, caveID);
+				c14UrlStatement.executeUpdate();
+			}
+			c14UrlStatement.close();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 
 	/**

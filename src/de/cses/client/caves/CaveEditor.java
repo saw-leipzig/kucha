@@ -89,6 +89,7 @@ import de.cses.client.caves.C14DocumentUploader.C14DocumentUploadListener;
 import de.cses.client.caves.CaveSketchUploader.CaveSketchUploadListener;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.client.user.UserLogin;
+import de.cses.shared.C14AnalysisUrlEntry;
 import de.cses.shared.CaveAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveGroupEntry;
@@ -218,6 +219,7 @@ public class CaveEditor extends AbstractEditor {
 	private ComboBox<PreservationClassificationEntry> rightCorridorFloorPreservationSelectorCB;
 	private FramedPanel leftCorridorFloorStateOfPreservationFP;
 	private FramedPanel rightCorridorFloorStateOfPreservationFP;
+	private FlowLayoutContainer c14AnalysisLinksFLC;
 
 	interface CaveTypeProperties extends PropertyAccess<CaveTypeEntry> {
 		ModelKeyProvider<CaveTypeEntry> caveTypeID();
@@ -398,6 +400,14 @@ public class CaveEditor extends AbstractEditor {
 							.fromString("resource?background=" + caveTypeSketchName + UserLogin.getInstance().getUsernameSessionIDParameterForUri()))),
 					new MarginData(5));
 		}
+	}
+
+	private void refreshC14AnalysisLinksFLC(ArrayList<C14AnalysisUrlEntry> c14AnalysisUrlList) {
+		c14AnalysisLinksFLC.clear();
+		for (C14AnalysisUrlEntry c14aue : c14AnalysisUrlList) {
+			c14AnalysisLinksFLC.add(new HTMLPanel(documentLinkTemplate.documentLink(UriUtils.fromString(c14aue.getC14Url()),c14aue.getC14ShortName())));
+		}
+		
 	}
 
 	/**
@@ -1481,6 +1491,10 @@ public class CaveEditor extends AbstractEditor {
 
 		FramedPanel c14AnalysisLinkFP = new FramedPanel();
 		c14AnalysisLinkFP.setHeading("C14 Analysis (links)");
+		c14AnalysisLinksFLC = new FlowLayoutContainer();
+		c14AnalysisLinksFLC.setScrollMode(ScrollMode.AUTOY);
+		c14AnalysisLinkFP.add(c14AnalysisLinksFLC);
+		
 		ToolButton addC14LinkTB = new ToolButton(ToolButton.PLUS);
 		addC14LinkTB.setTitle("add new C14 link");
 		c14AnalysisLinkFP.addTool(addC14LinkTB);
@@ -1491,21 +1505,26 @@ public class CaveEditor extends AbstractEditor {
 				PopupPanel addNewC14LinkDialog = new PopupPanel();
 				FramedPanel newC14LinkFP = new FramedPanel();
 				newC14LinkFP.setHeading("Add C14 Link");
+				TextField c14AnalysisShortName = new TextField();
+				c14AnalysisShortName.setEmptyText("shortname");
+				c14AnalysisShortName.addValidator(new MaxLengthValidator(64));
 				TextField	c14AnalysisUrlTextField = new TextField();
 				c14AnalysisUrlTextField.setEmptyText("http/https/ftp");
-				c14AnalysisUrlTextField.setValue(correspondingCaveEntry.getC14url());
 				c14AnalysisUrlTextField.addValidator(new RegExValidator(
 						"^(((https?|ftps?)://)(%[0-9A-Fa-f]{2}|[-()_.!~*';/?:@&=+$,A-Za-z0-9])+)([).!';/?:,][[:blank:]])?$", "Please enter valid URL"));
-
-				newC14LinkFP.add(c14AnalysisUrlTextField);
+				VerticalLayoutContainer c14AnalysisVLC = new VerticalLayoutContainer();
+				c14AnalysisVLC.add(c14AnalysisShortName, new VerticalLayoutData(1.0, .5));
+				c14AnalysisVLC.add(c14AnalysisUrlTextField, new VerticalLayoutData(1.0, .5));
+				newC14LinkFP.add(c14AnalysisVLC);
 				ToolButton saveTB = new ToolButton(ToolButton.SAVE);
 				saveTB.addSelectHandler(new SelectHandler() {
 
 					@Override
 					public void onSelect(SelectEvent event) {
-						if (c14AnalysisUrlTextField.validate()) {
-							correspondingCaveEntry.setC14url(c14AnalysisUrlTextField.getValue());
-							c14AnalysisLinkFP.add(new HTMLPanel(documentLinkTemplate.documentLink(UriUtils.fromString(c14AnalysisUrlTextField.getValue()),"c14AnalysisUrlTextField.getValue()")));
+						if (c14AnalysisUrlTextField.validate() && c14AnalysisShortName.validate()) {
+							C14AnalysisUrlEntry c14aue = new C14AnalysisUrlEntry(c14AnalysisUrlTextField.getValue(), c14AnalysisShortName.getValue());
+							correspondingCaveEntry.getC14AnalysisUrlList().add(c14aue);
+							refreshC14AnalysisLinksFLC(correspondingCaveEntry.getC14AnalysisUrlList());
 						}
 						addNewC14LinkDialog.hide();
 					}
@@ -1521,6 +1540,7 @@ public class CaveEditor extends AbstractEditor {
 				newC14LinkFP.addTool(saveTB);
 				newC14LinkFP.addTool(cancelTB);
 				addNewC14LinkDialog.add(newC14LinkFP);
+				addNewC14LinkDialog.setSize("500px", "100px");
 				addNewC14LinkDialog.setModal(true);
 				addNewC14LinkDialog.center();
 			}
