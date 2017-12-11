@@ -13,13 +13,11 @@
  */
 package de.cses.client.caves;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dev.jdt.SafeASTVisitor;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -75,7 +73,6 @@ import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.Validator;
 import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
-import com.sencha.gxt.widget.core.client.form.validator.EmptyValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MaxNumberValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
@@ -1494,6 +1491,7 @@ public class CaveEditor extends AbstractEditor {
 		c14AnalysisLinksFLC = new FlowLayoutContainer();
 		c14AnalysisLinksFLC.setScrollMode(ScrollMode.AUTOY);
 		c14AnalysisLinkFP.add(c14AnalysisLinksFLC);
+		refreshC14AnalysisLinksFLC(correspondingCaveEntry.getC14AnalysisUrlList());
 		
 		ToolButton addC14LinkTB = new ToolButton(ToolButton.PLUS);
 		addC14LinkTB.setTitle("add new C14 link");
@@ -1525,8 +1523,8 @@ public class CaveEditor extends AbstractEditor {
 							C14AnalysisUrlEntry c14aue = new C14AnalysisUrlEntry(c14AnalysisUrlTextField.getValue(), c14AnalysisShortName.getValue());
 							correspondingCaveEntry.getC14AnalysisUrlList().add(c14aue);
 							refreshC14AnalysisLinksFLC(correspondingCaveEntry.getC14AnalysisUrlList());
+							addNewC14LinkDialog.hide();
 						}
-						addNewC14LinkDialog.hide();
 					}
 				});
 				ToolButton cancelTB = new ToolButton(ToolButton.CLOSE);

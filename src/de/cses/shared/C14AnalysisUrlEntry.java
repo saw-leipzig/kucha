@@ -29,11 +29,15 @@ public class C14AnalysisUrlEntry extends AbstractEntry {
 	 * @param c14ShortName
 	 */
 	public C14AnalysisUrlEntry(int c14AnalysisUrlID, String c14Url, String c14ShortName) {
-		super();
 		this.c14AnalysisUrlID = c14AnalysisUrlID;
 		this.c14Url = c14Url;
 		this.c14ShortName = c14ShortName;
 	}
+
+	/**
+	 * 
+	 */
+	public C14AnalysisUrlEntry() { }
 
 	/**
 	 * 

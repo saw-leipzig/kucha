@@ -293,7 +293,7 @@ public class MysqlConnector {
 			stmt.execute(sqlDelete);
 			stmt.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			e.printStackTrace(System.err);
 			return false;
 		}
 		return true;
@@ -1548,6 +1548,7 @@ public class MysqlConnector {
 	public synchronized boolean updateCaveEntry(CaveEntry caveEntry) {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
+		System.err.println("updateCaveEntry - 1");
 		try {
 			pstmt = dbc.prepareStatement("UPDATE Caves SET OfficialNumber=?, HistoricName=?, OptionalHistoricName=?, CaveTypeID=?, DistrictID=?, "
 					+ "RegionID=?, OrientationID=?, StateOfPreservation=?, Findings=?, Notes=?, FirstDocumentedBy=?, FirstDocumentedInYear=?, PreservationClassificationID=?, "
@@ -1570,19 +1571,25 @@ public class MysqlConnector {
 			pstmt.setString(16, caveEntry.getC14DocumentFilename());
 			pstmt.setString(17, caveEntry.getCaveLayoutComments());
 			pstmt.setInt(18, caveEntry.getCaveID());
+			System.err.println("updateCaveEntry - 2");
 			pstmt.executeUpdate();
+			System.err.println("updateCaveEntry - 3");
 			pstmt.close();
 			for (CaveAreaEntry caEntry : caveEntry.getCaveAreaList()) {
 				writeCaveArea(caEntry);
 			}
+			System.err.println("updateCaveEntry - 4");
 			for (WallEntry wEntry : caveEntry.getWallList()) {
 				writeWall(wEntry);
 			}
+			System.err.println("updateCaveEntry - 5");
 			writeC14AnalysisUrlEntry(caveEntry.getCaveID(), caveEntry.getC14AnalysisUrlList());
+			System.err.println("updateCaveEntry - 6");
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 			return false;
 		}
+		System.err.println("updateCaveEntry - 7");
 		return true;
 	}
 
@@ -1594,6 +1601,7 @@ public class MysqlConnector {
 		int newCaveID = 0;
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
+		System.err.println("insertCaveEntry - 1");
 		try {
 			pstmt = dbc.prepareStatement(
 					"INSERT INTO Caves (OfficialNumber, HistoricName, OptionalHistoricName, CaveTypeID, DistrictID, RegionID, OrientationID, StateOfPreservation, "
@@ -1616,14 +1624,18 @@ public class MysqlConnector {
 			pstmt.setString(15, caveEntry.getOptionalCaveSketch());
 			pstmt.setString(16, caveEntry.getC14DocumentFilename());
 			pstmt.setString(17, caveEntry.getCaveLayoutComments());
+			System.err.println("insertCaveEntry - 2");
 			pstmt.executeUpdate();
+			System.err.println("insertCaveEntry - 3");
 			ResultSet keys = pstmt.getGeneratedKeys();
 			if (keys.next()) { // there should only be 1 key returned here 
 				newCaveID  = keys.getInt(1);
 			}
+
 			keys.close();
-			
 			pstmt.close();
+			
+			System.err.println("insertCaveEntry - 4");
 			if (newCaveID > 0) {
 				for (CaveAreaEntry caEntry : caveEntry.getCaveAreaList()) {
 					caEntry.setCaveID(newCaveID);
@@ -1633,7 +1645,9 @@ public class MysqlConnector {
 					wEntry.setCaveID(newCaveID);
 					writeWall(wEntry);
 				}
+				System.err.println("insertCaveEntry - 5");
 				writeC14AnalysisUrlEntry(newCaveID, caveEntry.getC14AnalysisUrlList());
+				System.err.println("insertCaveEntry - 6");
 			}
 		} catch (SQLException ex) {
 			ex.printStackTrace();
@@ -2026,10 +2040,11 @@ public class MysqlConnector {
 		return (rowCount > 0);
 	}
 	
-	protected synchronized boolean writeC14AnalysisUrlEntry(int caveID, ArrayList<C14AnalysisUrlEntry> entryList) {
+	private synchronized boolean writeC14AnalysisUrlEntry(int caveID, ArrayList<C14AnalysisUrlEntry> entryList) {
 		Connection dbc = getConnection();
 		PreparedStatement c14UrlStatement;
 		deleteEntry("DELETE FROM C14AnalysisUrls WHERE CaveID=" + caveID);
+		System.err.println("writeC14AnalysisUrlEntry - 1");
 		try {
 			c14UrlStatement = dbc.prepareStatement("INSERT INTO C14AnalysisUrls (C14Url, C14ShortName, CaveID) VALUES (?, ?, ?)");
 			for (C14AnalysisUrlEntry entry : entryList) {
@@ -2038,11 +2053,13 @@ public class MysqlConnector {
 				c14UrlStatement.setInt(3, caveID);
 				c14UrlStatement.executeUpdate();
 			}
+			System.err.println("writeC14AnalysisUrlEntry - 2");
 			c14UrlStatement.close();
 		} catch (SQLException ex) {
-			ex.printStackTrace();
+			ex.printStackTrace(System.err);
 			return false;
 		}
+		System.err.println("writeC14AnalysisUrlEntry - 3");
 		return true;
 	}
 
