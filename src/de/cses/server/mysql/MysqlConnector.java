@@ -14,6 +14,7 @@
 package de.cses.server.mysql;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -54,6 +55,7 @@ import de.cses.shared.PictorialElementEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.PublicationEntry;
 import de.cses.shared.PublicationTypeEntry;
+import de.cses.shared.PublisherEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 import de.cses.shared.StructureOrganization;
@@ -1323,7 +1325,7 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM AnnotatedBiblography");
 			while (rs.next()) {
-				result = new AnnotatedBiblographyEntry();
+				result = new AnnotatedBiblographyEntry(rs.getInt("AnnotatedBiblographyID"), rs.getString("TitleEN"));
 				biblography.add(result);
 			}
 			rs.close();
@@ -2113,7 +2115,7 @@ public class MysqlConnector {
 			pstmt.setString(11, bibEntry.getEditionEN());
 			pstmt.setString(12, bibEntry.getEditionORG());
 			pstmt.setString(13, bibEntry.getEditionTR());
-			pstmt.setInt(14, bibEntry.getErstauflageID());
+			pstmt.setInt(14, bibEntry.getErstauflageEntry().getAnnotatedBiblographyID());
 			pstmt.setString(15, bibEntry.getMonthEN());
 			pstmt.setString(16, bibEntry.getMonthORG());
 			pstmt.setString(17, bibEntry.getMonthTR()); 
@@ -2127,7 +2129,7 @@ public class MysqlConnector {
 			pstmt.setString(25, bibEntry.getProcTitleEN());
 			pstmt.setString(26, bibEntry.getProcTitleORG());
 			pstmt.setString(27, bibEntry.getProcTitleTR());
-			pstmt.setInt(28, bibEntry.getPublisherID());
+			pstmt.setInt(28, bibEntry.getPublisher().getPublisherID());
 			pstmt.setString(29, bibEntry.getSerieEN());
 			pstmt.setString(30, bibEntry.getSerieORG());
 			pstmt.setString(31, bibEntry.getSerieTR());
@@ -2185,4 +2187,49 @@ public class MysqlConnector {
 		
 
 }
+
+	/**
+	 * @return
+	 */
+	public ArrayList<PublisherEntry> getPublisher() {
+		ArrayList<PublisherEntry> result = new ArrayList<PublisherEntry>();
+		Connection dbc = getConnection();
+
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Publisher");
+			while (rs.next()) {
+				result.add(new PublisherEntry(rs.getInt("PublisherID"), rs.getString("Name"), rs.getString("Address")));
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	/**
+	 * @return
+	 */
+	public ArrayList<AuthorEntry> getAuthors() {
+		ArrayList<AuthorEntry> result = new ArrayList<AuthorEntry>();
+		Connection dbc = getConnection();
+
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Author");
+			while (rs.next()) {
+				result.add(new AuthorEntry(rs.getInt("AuthorID"), rs.getString("Lastname"),  rs.getString("Firstname") , rs.getDate("KuchaVisitDate"), rs.getString("Affiliation") , rs.getString("Email"),
+						rs.getString("Homepage")));
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
 }
