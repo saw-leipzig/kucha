@@ -270,7 +270,7 @@ public class MysqlConnector {
 		PreparedStatement prestat;
 		deleteEntry("DELETE FROM C14Documents WHERE CaveID=" + caveID);
 		try {
-			prestat = dbc.prepareStatement("INSERT INTO C14Document (C14DocumentName, C14OriginalDocumentName, CaveID) VALUES (?, ?, ?)");
+			prestat = dbc.prepareStatement("INSERT INTO C14Documents (C14DocumentName, C14OriginalDocumentName, CaveID) VALUES (?, ?, ?)");
 			for (C14DocumentEntry entry : entryList) {
 				prestat.setString(1, entry.getC14DocumentName());
 				prestat.setString(2, entry.getC14OriginalDocumentName());
@@ -279,7 +279,7 @@ public class MysqlConnector {
 			}
 			prestat.close();
 		} catch (SQLException ex) {
-			ex.printStackTrace(System.err);
+			ex.printStackTrace();
 			return false;
 		}
 		return true;
@@ -350,7 +350,7 @@ public class MysqlConnector {
 			stmt.execute(sqlDelete);
 			stmt.close();
 		} catch (SQLException e) {
-			e.printStackTrace(System.err);
+			e.printStackTrace();
 			return false;
 		}
 		return true;
@@ -1948,7 +1948,7 @@ public class MysqlConnector {
 		deleteEntry("DELETE FROM DepictionPERelation WHERE DepictionID=" + depictionID);
 		String insertSqlString = "INSERT INTO DepictionPERelation VALUES ";
 		Iterator<PictorialElementEntry> it = peEntryList.iterator();
-		System.err.println("==> updateDepictionPERelation called");
+//		System.err.println("==> updateDepictionPERelation called");
 		while (it.hasNext()) {
 			PictorialElementEntry entry = it.next();
 			if (peEntryList.indexOf(entry) == 0) {
@@ -2092,7 +2092,7 @@ public class MysqlConnector {
 		Connection dbc = getConnection();
 		PreparedStatement c14UrlStatement;
 		deleteEntry("DELETE FROM C14AnalysisUrls WHERE CaveID=" + caveID);
-		System.err.println("writeC14AnalysisUrlEntry - 1");
+//		System.err.println("writeC14AnalysisUrlEntry - 1");
 		try {
 			c14UrlStatement = dbc.prepareStatement("INSERT INTO C14AnalysisUrls (C14Url, C14ShortName, CaveID) VALUES (?, ?, ?)");
 			for (C14AnalysisUrlEntry entry : entryList) {
@@ -2101,13 +2101,13 @@ public class MysqlConnector {
 				c14UrlStatement.setInt(3, caveID);
 				c14UrlStatement.executeUpdate();
 			}
-			System.err.println("writeC14AnalysisUrlEntry - 2");
+//			System.err.println("writeC14AnalysisUrlEntry - 2");
 			c14UrlStatement.close();
 		} catch (SQLException ex) {
 			ex.printStackTrace(System.err);
 			return false;
 		}
-		System.err.println("writeC14AnalysisUrlEntry - 3");
+//		System.err.println("writeC14AnalysisUrlEntry - 3");
 		return true;
 	}
 	
