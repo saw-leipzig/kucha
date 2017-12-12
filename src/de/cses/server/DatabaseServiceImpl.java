@@ -45,6 +45,7 @@ import de.cses.shared.PictorialElementEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.PublicationEntry;
 import de.cses.shared.PublicationTypeEntry;
+import de.cses.shared.PublisherEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 import de.cses.shared.StructureOrganization;
@@ -580,6 +581,18 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public boolean saveAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.saveAnnotatedBiblographyEntry(bibEntry);
+	}
+	public ArrayList<PublisherEntry> getPublisher() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getPublisher();
+	}
+	public ArrayList<AuthorEntry> getAuthors() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getAuthors();
+	}
+	public ArrayList<AnnotatedBiblographyEntry> getAnnotatedBibliography() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getAnnotatedBiblography();
 	}
 
 }

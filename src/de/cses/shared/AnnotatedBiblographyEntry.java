@@ -104,6 +104,14 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	 * @return the titleEN
 	 */
 	
+	public AnnotatedBiblographyEntry(){
+		
+	}
+	
+	public AnnotatedBiblographyEntry(int id, String title){
+		this.annotatedBiblographyID = id;
+		this.titleEN = title;
+	}
 	
 	public String getTitleEN() {
 		return titleEN;

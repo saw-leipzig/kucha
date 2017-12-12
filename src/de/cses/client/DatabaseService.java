@@ -44,6 +44,7 @@ import de.cses.shared.PictorialElementEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.PublicationEntry;
 import de.cses.shared.PublicationTypeEntry;
+import de.cses.shared.PublisherEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 import de.cses.shared.StructureOrganization;
@@ -196,5 +197,8 @@ public interface DatabaseService extends RemoteService {
 	boolean updateAuthorEntry(AuthorEntry currentAuthorEntry);;
 	
 	boolean saveAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry) throws IllegalArgumentException;
+	ArrayList<AnnotatedBiblographyEntry> getAnnotatedBibliography() throws IllegalArgumentException;
+	ArrayList<PublisherEntry> getPublisher() throws IllegalArgumentException;
+	ArrayList<AuthorEntry> getAuthors() throws IllegalArgumentException;
 
 }

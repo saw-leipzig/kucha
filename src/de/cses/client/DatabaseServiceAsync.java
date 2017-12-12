@@ -43,6 +43,7 @@ import de.cses.shared.PictorialElementEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.PublicationEntry;
 import de.cses.shared.PublicationTypeEntry;
+import de.cses.shared.PublisherEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 import de.cses.shared.StructureOrganization;
@@ -221,5 +222,8 @@ public interface DatabaseServiceAsync {
 	void updateAuthorEntry(AuthorEntry currentAuthorEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 	
 	void saveAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry, AsyncCallback<Boolean> callback) throws IllegalArgumentException;
+	void getAuthors( AsyncCallback<ArrayList<AuthorEntry>> callback) throws IllegalArgumentException;
+	void getPublisher( AsyncCallback<ArrayList<PublisherEntry>> callback) throws IllegalArgumentException;
+	void getAnnotatedBibliography( AsyncCallback<ArrayList<AnnotatedBiblographyEntry>> callback) throws IllegalArgumentException;
 
 	}
