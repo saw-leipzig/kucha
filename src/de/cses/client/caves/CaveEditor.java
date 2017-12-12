@@ -87,6 +87,7 @@ import de.cses.client.caves.CaveSketchUploader.CaveSketchUploadListener;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.C14AnalysisUrlEntry;
+import de.cses.shared.C14DocumentEntry;
 import de.cses.shared.CaveAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveGroupEntry;
@@ -217,6 +218,8 @@ public class CaveEditor extends AbstractEditor {
 	private FramedPanel leftCorridorFloorStateOfPreservationFP;
 	private FramedPanel rightCorridorFloorStateOfPreservationFP;
 	private FlowLayoutContainer c14AnalysisLinksFLC;
+	private FlowLayoutContainer c14DocumentsFLC;
+	protected C14DocumentUploader uploader;
 
 	interface CaveTypeProperties extends PropertyAccess<CaveTypeEntry> {
 		ModelKeyProvider<CaveTypeEntry> caveTypeID();
@@ -399,13 +402,30 @@ public class CaveEditor extends AbstractEditor {
 		}
 	}
 
+	/**
+	 * 
+	 * @param c14AnalysisUrlList
+	 */
 	private void refreshC14AnalysisLinksFLC(ArrayList<C14AnalysisUrlEntry> c14AnalysisUrlList) {
 		c14AnalysisLinksFLC.clear();
 		for (C14AnalysisUrlEntry c14aue : c14AnalysisUrlList) {
 			c14AnalysisLinksFLC.add(new HTMLPanel(documentLinkTemplate.documentLink(UriUtils.fromString(c14aue.getC14Url()),c14aue.getC14ShortName())));
 		}
-		
 	}
+	
+	/**
+	 * @param c14DocumentList
+	 */
+	private void refreshC14DocumentsFLC(ArrayList<C14DocumentEntry> c14DocumentList) {
+		c14DocumentsFLC.clear();
+		for (C14DocumentEntry entry : c14DocumentList) {
+			c14DocumentsFLC.add(new HTMLPanel(
+					documentLinkTemplate.documentLink(UriUtils.fromString("resource?document=" + entry.getC14DocumentName()
+					+ UserLogin.getInstance().getUsernameSessionIDParameterForUri()), "C14 document")));
+		}
+	}
+
+
 
 	/**
 	 * 
@@ -1546,11 +1566,11 @@ public class CaveEditor extends AbstractEditor {
 
 		c14UploadPanel = new FramedPanel();
 		c14UploadPanel.setHeading("C14 additional document");
-		if (correspondingCaveEntry.getC14DocumentFilename() != null) {
-			c14UploadPanel.add(new HTMLPanel(
-					documentLinkTemplate.documentLink(UriUtils.fromString("resource?document=" + correspondingCaveEntry.getC14DocumentFilename()
-							+ UserLogin.getInstance().getUsernameSessionIDParameterForUri()), "C14 document")));
-		}
+		c14DocumentsFLC = new FlowLayoutContainer();
+		c14DocumentsFLC.setScrollMode(ScrollMode.AUTOY);
+		c14UploadPanel.add(c14DocumentsFLC);
+		refreshC14DocumentsFLC(correspondingCaveEntry.getC14DocumentList());
+		
 		ToolButton uploadButton = new ToolButton(ToolButton.PLUS);
 		uploadButton.addSelectHandler(new SelectHandler() {
 
@@ -1562,23 +1582,25 @@ public class CaveEditor extends AbstractEditor {
 					return;
 				}
 				PopupPanel c14DocUploadPanel = new PopupPanel();
-				C14DocumentUploader uploader = new C14DocumentUploader(correspondingCaveEntry, new C14DocumentUploadListener() {
+				C14DocumentUploadListener c14dul = new C14DocumentUploadListener() {
 
 					@Override
 					public void uploadCompleted(String documentFilename) {
-						correspondingCaveEntry.setC14DocumentFilename(documentFilename);
-						c14UploadPanel.add(new HTMLPanel(documentLinkTemplate.documentLink(
-								UriUtils
-										.fromString("resource?document=" + documentFilename + UserLogin.getInstance().getUsernameSessionIDParameterForUri()),
-								"C14 document")));
+						correspondingCaveEntry.getC14DocumentList().add(new C14DocumentEntry(documentFilename, uploader.getUploadedFilename()));
+						refreshC14DocumentsFLC(correspondingCaveEntry.getC14DocumentList());
+//						c14UploadPanel.add(new HTMLPanel(documentLinkTemplate.documentLink(
+//								UriUtils
+//										.fromString("resource?document=" + documentFilename + UserLogin.getInstance().getUsernameSessionIDParameterForUri()),
+//								"C14 document")));
 						c14DocUploadPanel.hide();
 					}
 
 					@Override
 					public void uploadCanceled() {
-						// TODO Auto-generated method stub
+						c14DocUploadPanel.hide();
 					}
-				});
+				};
+				uploader = new C14DocumentUploader(correspondingCaveEntry, c14dul);
 				c14DocUploadPanel.add(uploader);
 				c14DocUploadPanel.setGlassEnabled(true);
 				c14DocUploadPanel.center();

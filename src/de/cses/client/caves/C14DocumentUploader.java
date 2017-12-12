@@ -53,6 +53,7 @@ public class C14DocumentUploader implements IsWidget {
 	private FileUploadField file;
 	private FramedPanel mainPanel;
 	private CaveEntry entry;
+	protected String uploadedFilename;
 
 	/**
 	 * 
@@ -122,10 +123,12 @@ public class C14DocumentUploader implements IsWidget {
 
 		TextButton submitButton = new TextButton("Upload");
 		submitButton.addSelectHandler(new SelectHandler() {
+
 			@Override
 			public void onSelect(SelectEvent event) {
 				if (form.isValid()) {
-					
+
+					uploadedFilename = file.getValue();
 					form.submit();
 					uploadInfoWindow = new Window();
 					uploadInfoWindow.setHeading("Please wait!");
@@ -165,6 +168,10 @@ public class C14DocumentUploader implements IsWidget {
 		mainPanel.addButton(cancelButton);
 		mainPanel.addButton(resetButton);
 		mainPanel.addButton(submitButton);
+	}
+
+	public String getUploadedFilename() {
+		return uploadedFilename;
 	}
 
 }

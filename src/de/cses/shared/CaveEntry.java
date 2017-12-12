@@ -32,19 +32,19 @@ public class CaveEntry extends AbstractEntry {
 	private String firstDocumentedBy;
 	private int firstDocumentedInYear;
 	private String optionalCaveSketch;
-	private String c14DocumentFilename;
 	private String caveLayoutComments;
 	private ArrayList<CaveAreaEntry> caveAreaList;
 	private ArrayList<WallEntry> wallList;
 	private ArrayList<C14AnalysisUrlEntry> c14AnalysisUrlList;
+	private ArrayList<C14DocumentEntry> c14DocumentList;
 
 	public CaveEntry() {
-		this(0, "", "", "", 0, 0, 0, 0, "", "", "", "", 0, 0, 0, null, null, null);
+		this(0, "", "", "", 0, 0, 0, 0, "", "", "", "", 0, 0, 0, null, null);
 	}
 
 	public CaveEntry(int caveID, String officialNumber, String historicName, String optionalHistoricName, int caveTypeID, int districtID,
 			int regionID, int orientationID, String stateOfPerservation, String findings, String notes, String firstDocumentedBy, int firstDocumentedInYear, int preservationClassificationID,
-			int caveGroupID, String optionalCaveSketch, String c14DocumentFilename, String caveLayoutComments) {
+			int caveGroupID, String optionalCaveSketch, String caveLayoutComments) {
 		this.caveID = caveID;
 		this.officialNumber = officialNumber;
 		this.historicName = historicName;
@@ -61,17 +61,17 @@ public class CaveEntry extends AbstractEntry {
 		this.preservationClassificationID = preservationClassificationID;
 		this.caveGroupID = caveGroupID;
 		this.optionalCaveSketch = optionalCaveSketch;
-		this.c14DocumentFilename = c14DocumentFilename;
 		this.setCaveLayoutComments(caveLayoutComments);
 		caveAreaList = new ArrayList<CaveAreaEntry>();
 		wallList = new ArrayList<WallEntry>();
 		c14AnalysisUrlList = new ArrayList<C14AnalysisUrlEntry>();
+		c14DocumentList = new ArrayList<C14DocumentEntry>();
 	}
 	
 	public CaveEntry clone() {
 		CaveEntry clonedCE = new CaveEntry(caveID, officialNumber, historicName, optionalHistoricName, caveTypeID, districtID,
 				regionID, orientationID, stateOfPerservation, findings, notes, firstDocumentedBy, firstDocumentedInYear, preservationClassificationID,
-				caveGroupID, optionalCaveSketch, c14DocumentFilename, caveLayoutComments);
+				caveGroupID, optionalCaveSketch, caveLayoutComments);
 		ArrayList<CaveAreaEntry> clonedCaveAreaList = new ArrayList<CaveAreaEntry>();
 		for (CaveAreaEntry cae : caveAreaList) {
 			clonedCaveAreaList.add(cae.clone());
@@ -87,6 +87,10 @@ public class CaveEntry extends AbstractEntry {
 			clonedC14AnalysisUrlList.add(c14aue);
 		}
 		clonedCE.setC14AnalysisUrlList(clonedC14AnalysisUrlList);
+		ArrayList<C14DocumentEntry> clonedC14DocumentList = new ArrayList<C14DocumentEntry>();
+		for (C14DocumentEntry c14DocEntry : c14DocumentList) {
+			clonedC14DocumentList.add(c14DocEntry);
+		}
 		return clonedCE;
 	}
 
@@ -308,20 +312,6 @@ public class CaveEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @return the c14DocumentFileName
-	 */
-	public String getC14DocumentFilename() {
-		return c14DocumentFilename;
-	}
-
-	/**
-	 * @param c14DocumentFileName the c14DocumentFileName to set
-	 */
-	public void setC14DocumentFilename(String c14DocumentFilename) {
-		this.c14DocumentFilename = c14DocumentFilename;
-	}
-
-	/**
 	 * @return the caveLayoutComments
 	 */
 	public String getCaveLayoutComments() {
@@ -341,6 +331,14 @@ public class CaveEntry extends AbstractEntry {
 
 	public void setC14AnalysisUrlList(ArrayList<C14AnalysisUrlEntry> c14AnalysisUrlList) {
 		this.c14AnalysisUrlList = c14AnalysisUrlList;
+	}
+
+	public ArrayList<C14DocumentEntry> getC14DocumentList() {
+		return c14DocumentList;
+	}
+
+	public void setC14DocumentList(ArrayList<C14DocumentEntry> c14DocumentList) {
+		this.c14DocumentList = c14DocumentList;
 	}
 	
 }
