@@ -20,6 +20,8 @@ import java.util.ArrayList;
  *
  */
 public class AnnotatedBiblographyEntry extends AbstractEntry {
+	
+	private PublicationTypeEntry publicationType;
 
 	private int annotatedBiblographyID;
 	private String titleEN;
@@ -54,7 +56,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	private String titleaddonORG;
 	private String titleaddonTR;
 	
-	private int publisherID;
+	private PublisherEntry publisher;
 	
 	private String serieEN;
 	private String serieTR;
@@ -92,7 +94,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	
 	private boolean erstauflage;
 	
-	private int erstauflageID;
+	private AnnotatedBiblographyEntry erstauflageEntry;
 	
 	private ArrayList<AuthorAnnotatedRelation> authorAnnotatedList = new ArrayList<AuthorAnnotatedRelation>();
 
@@ -101,15 +103,36 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	/**
 	 * @return the titleEN
 	 */
+	
+	
 	public String getTitleEN() {
 		return titleEN;
 	}
+
+	/**
+	 * @return the publicationTypeID
+	 */
+	
 
 	/**
 	 * @param titleEN the titleEN to set
 	 */
 	public void setTitleEN(String titleEN) {
 		this.titleEN = titleEN;
+	}
+
+	/**
+	 * @return the publicationType
+	 */
+	public PublicationTypeEntry getPublicationType() {
+		return publicationType;
+	}
+
+	/**
+	 * @param publicationType the publicationType to set
+	 */
+	public void setPublicationType(PublicationTypeEntry publicationType) {
+		this.publicationType = publicationType;
 	}
 
 	/**
@@ -437,22 +460,27 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	/**
 	 * @return the publisherID
 	 */
-	public int getPublisherID() {
-		return publisherID;
-	}
 
-	/**
-	 * @param publisherID the publisherID to set
-	 */
-	public void setPublisherID(int publisherID) {
-		this.publisherID = publisherID;
-	}
 
 	/**
 	 * @return the serieEN
 	 */
 	public String getSerieEN() {
 		return serieEN;
+	}
+
+	/**
+	 * @return the publisher
+	 */
+	public PublisherEntry getPublisher() {
+		return publisher;
+	}
+
+	/**
+	 * @param publisher the publisher to set
+	 */
+	public void setPublisher(PublisherEntry publisher) {
+		this.publisher = publisher;
 	}
 
 	/**
@@ -787,21 +815,26 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	/**
 	 * @return the erstauflageID
 	 */
-	public int getErstauflageID() {
-		return erstauflageID;
-	}
 
-	/**
-	 * @param erstauflageID the erstauflageID to set
-	 */
-	public void setErstauflageID(int erstauflageID) {
-		this.erstauflageID = erstauflageID;
-	}
 
 	@Override
 	public String getUniqueID() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	/**
+	 * @return the erstauflageEntry
+	 */
+	public AnnotatedBiblographyEntry getErstauflageEntry() {
+		return erstauflageEntry;
+	}
+
+	/**
+	 * @param erstauflageEntry the erstauflageEntry to set
+	 */
+	public void setErstauflageEntry(AnnotatedBiblographyEntry erstauflageEntry) {
+		this.erstauflageEntry = erstauflageEntry;
 	}
 
 	/**
