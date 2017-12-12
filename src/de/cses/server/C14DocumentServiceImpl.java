@@ -77,10 +77,12 @@ public class C14DocumentServiceImpl extends HttpServlet {
 				if (item.isFormField()) {
 					throw new ServletException("Unsupported non-file property [" + item.getFieldName() + "] with value: " + item.getString());
 				} else {
-					filename = request.getParameter("docFileName") + fileType;
-//					caveID = Integer.parseInt(request.getParameter("caveID"));
-					System.err.println("writing filename " + filename);
-					target = new File(imgHomeDir, filename);
+					int num = 0;
+					do {
+						++num;
+						filename = request.getParameter("docFileName") + "-" + num + fileType;
+						target = new File(imgHomeDir, filename);
+					} while (target.exists());
 					item.write(target);
 					item.delete();
 //					MysqlConnector.getInstance().updateC14DocumentFilename(caveID, filename);

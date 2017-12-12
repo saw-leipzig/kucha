@@ -13,6 +13,7 @@
  */
 package de.cses.client.caves;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -421,7 +422,7 @@ public class CaveEditor extends AbstractEditor {
 		for (C14DocumentEntry entry : c14DocumentList) {
 			c14DocumentsFLC.add(new HTMLPanel(
 					documentLinkTemplate.documentLink(UriUtils.fromString("resource?document=" + entry.getC14DocumentName()
-					+ UserLogin.getInstance().getUsernameSessionIDParameterForUri()), "C14 document")));
+					+ UserLogin.getInstance().getUsernameSessionIDParameterForUri()), entry.getC14OriginalDocumentName())));
 		}
 	}
 
@@ -1586,7 +1587,8 @@ public class CaveEditor extends AbstractEditor {
 
 					@Override
 					public void uploadCompleted(String documentFilename) {
-						correspondingCaveEntry.getC14DocumentList().add(new C14DocumentEntry(documentFilename, uploader.getUploadedFilename()));
+						String origFilename = uploader.getUploadedFilename().substring(12);
+						correspondingCaveEntry.getC14DocumentList().add(new C14DocumentEntry(documentFilename, origFilename));
 						refreshC14DocumentsFLC(correspondingCaveEntry.getC14DocumentList());
 //						c14UploadPanel.add(new HTMLPanel(documentLinkTemplate.documentLink(
 //								UriUtils
