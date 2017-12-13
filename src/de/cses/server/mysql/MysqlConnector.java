@@ -2092,7 +2092,6 @@ public class MysqlConnector {
 		Connection dbc = getConnection();
 		PreparedStatement c14UrlStatement;
 		deleteEntry("DELETE FROM C14AnalysisUrls WHERE CaveID=" + caveID);
-//		System.err.println("writeC14AnalysisUrlEntry - 1");
 		try {
 			c14UrlStatement = dbc.prepareStatement("INSERT INTO C14AnalysisUrls (C14Url, C14ShortName, CaveID) VALUES (?, ?, ?)");
 			for (C14AnalysisUrlEntry entry : entryList) {
@@ -2101,13 +2100,11 @@ public class MysqlConnector {
 				c14UrlStatement.setInt(3, caveID);
 				c14UrlStatement.executeUpdate();
 			}
-//			System.err.println("writeC14AnalysisUrlEntry - 2");
 			c14UrlStatement.close();
 		} catch (SQLException ex) {
 			ex.printStackTrace(System.err);
 			return false;
 		}
-//		System.err.println("writeC14AnalysisUrlEntry - 3");
 		return true;
 	}
 	
