@@ -13,7 +13,6 @@
  */
 package de.cses.client.caves;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -194,7 +193,6 @@ public class CaveEditor extends AbstractEditor {
 	private ComboBox<PreservationClassificationEntry> corridorCeilingPreservationSelectorCB2;
 	private ComboBox<PreservationClassificationEntry> antechamberCeilingPreservationSelectorCB2;
 	private TextArea notesTextArea;
-//	private TextField c14AnalysisUrlTextField;
 	private FramedPanel c14UploadPanel;
 	private DocumentLinkTemplate documentLinkTemplate;
 	private ListStore<WallEntry> wallEntryLS;
@@ -410,23 +408,23 @@ public class CaveEditor extends AbstractEditor {
 	private void refreshC14AnalysisLinksFLC(ArrayList<C14AnalysisUrlEntry> c14AnalysisUrlList) {
 		c14AnalysisLinksFLC.clear();
 		for (C14AnalysisUrlEntry c14aue : c14AnalysisUrlList) {
-			c14AnalysisLinksFLC.add(new HTMLPanel(documentLinkTemplate.documentLink(UriUtils.fromString(c14aue.getC14Url()),c14aue.getC14ShortName())));
+			c14AnalysisLinksFLC
+					.add(new HTMLPanel(documentLinkTemplate.documentLink(UriUtils.fromString(c14aue.getC14Url()), c14aue.getC14ShortName())));
 		}
 	}
-	
+
 	/**
 	 * @param c14DocumentList
 	 */
 	private void refreshC14DocumentsFLC(ArrayList<C14DocumentEntry> c14DocumentList) {
 		c14DocumentsFLC.clear();
 		for (C14DocumentEntry entry : c14DocumentList) {
-			c14DocumentsFLC.add(new HTMLPanel(
-					documentLinkTemplate.documentLink(UriUtils.fromString("resource?document=" + entry.getC14DocumentName()
-					+ UserLogin.getInstance().getUsernameSessionIDParameterForUri()), entry.getC14OriginalDocumentName())));
+			c14DocumentsFLC.add(new HTMLPanel(documentLinkTemplate.documentLink(
+					UriUtils.fromString(
+							"resource?document=" + entry.getC14DocumentName() + UserLogin.getInstance().getUsernameSessionIDParameterForUri()),
+					entry.getC14OriginalDocumentName())));
 		}
 	}
-
-
 
 	/**
 	 * 
@@ -730,7 +728,7 @@ public class CaveEditor extends AbstractEditor {
 		FramedPanel firstDocumentedInYearFP = new FramedPanel();
 		firstDocumentedInYearFP.setHeading("First documented in");
 		firstDocumentedInYearField = new NumberField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
-//		firstDocumentedInYearField.addValidator(new MinNumberValidator<Integer>(1850));
+		// firstDocumentedInYearField.addValidator(new MinNumberValidator<Integer>(1850));
 		DateWrapper dw = new DateWrapper(); // we always want to use the current year!
 		firstDocumentedInYearField.addValidator(new MaxNumberValidator<Integer>(dw.getFullYear()));
 		firstDocumentedInYearField.setAllowNegative(false);
@@ -745,7 +743,7 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		firstDocumentedInYearFP.add(firstDocumentedInYearField);
-		
+
 		FramedPanel caveGroupPanel = new FramedPanel();
 		caveGroupPanel.setHeading("Cave Group");
 		caveGroupSelector = new ComboBox<CaveGroupEntry>(caveGroupEntryList, caveGroupProps.name(),
@@ -1061,7 +1059,7 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 
-		// assembling the left side 
+		// assembling the left side
 		mainInformationVLC.add(officialNumberPanel, new VerticalLayoutData(1.0, 1.0 / 9));
 		mainInformationVLC.add(historicalNamePanel, new VerticalLayoutData(1.0, 1.0 / 9));
 		mainInformationVLC.add(optionalHistoricalNamePanel, new VerticalLayoutData(1.0, 1.0 / 9));
@@ -1513,12 +1511,12 @@ public class CaveEditor extends AbstractEditor {
 		c14AnalysisLinksFLC.setScrollMode(ScrollMode.AUTOY);
 		c14AnalysisLinkFP.add(c14AnalysisLinksFLC);
 		refreshC14AnalysisLinksFLC(correspondingCaveEntry.getC14AnalysisUrlList());
-		
+
 		ToolButton addC14LinkTB = new ToolButton(ToolButton.PLUS);
 		addC14LinkTB.setTitle("add new C14 link");
 		c14AnalysisLinkFP.addTool(addC14LinkTB);
 		addC14LinkTB.addSelectHandler(new SelectHandler() {
-			
+
 			@Override
 			public void onSelect(SelectEvent event) {
 				PopupPanel addNewC14LinkDialog = new PopupPanel();
@@ -1527,7 +1525,7 @@ public class CaveEditor extends AbstractEditor {
 				TextField c14AnalysisShortName = new TextField();
 				c14AnalysisShortName.setEmptyText("shortname");
 				c14AnalysisShortName.addValidator(new MaxLengthValidator(64));
-				TextField	c14AnalysisUrlTextField = new TextField();
+				TextField c14AnalysisUrlTextField = new TextField();
 				c14AnalysisUrlTextField.setEmptyText("http/https/ftp");
 				c14AnalysisUrlTextField.addValidator(new RegExValidator(
 						"^(((https?|ftps?)://)(%[0-9A-Fa-f]{2}|[-()_.!~*';/?:@&=+$,A-Za-z0-9])+)([).!';/?:,][[:blank:]])?$", "Please enter valid URL"));
@@ -1571,7 +1569,7 @@ public class CaveEditor extends AbstractEditor {
 		c14DocumentsFLC.setScrollMode(ScrollMode.AUTOY);
 		c14UploadPanel.add(c14DocumentsFLC);
 		refreshC14DocumentsFLC(correspondingCaveEntry.getC14DocumentList());
-		
+
 		ToolButton uploadButton = new ToolButton(ToolButton.PLUS);
 		uploadButton.addSelectHandler(new SelectHandler() {
 
@@ -1602,7 +1600,7 @@ public class CaveEditor extends AbstractEditor {
 				c14DocUploadPanel.add(uploader);
 				c14DocUploadPanel.setGlassEnabled(true);
 				c14DocUploadPanel.center();
-				c14DocUploadPanel.show();
+				// c14DocUploadPanel.show();
 			}
 		});
 		c14UploadPanel.addTool(uploadButton);
@@ -2123,7 +2121,7 @@ public class CaveEditor extends AbstractEditor {
 				}
 			}
 		});
-		
+
 		NumberField<Double> expeditionLengthNumberField = createMeasurementNumberField(caEntry.getExpeditionLength());
 		expeditionLengthNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
@@ -2134,7 +2132,7 @@ public class CaveEditor extends AbstractEditor {
 				}
 			}
 		});
-		
+
 		NumberField<Double> expeditionHeightNumberField = createMeasurementNumberField(caEntry.getExpeditionHeight());
 		expeditionHeightNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
@@ -2145,12 +2143,12 @@ public class CaveEditor extends AbstractEditor {
 				}
 			}
 		});
-		
+
 		Label sl1 = new Label("/");
 		sl1.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 		Label sl2 = new Label("/");
 		sl2.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-		
+
 		HorizontalLayoutContainer expeditionMeasuresHLC = new HorizontalLayoutContainer();
 		expeditionMeasuresHLC.add(expeditionWidthNumberField, new HorizontalLayoutData(.3, 1.0));
 		expeditionMeasuresHLC.add(sl1, new HorizontalLayoutData(.05, 1.0));
@@ -2184,14 +2182,14 @@ public class CaveEditor extends AbstractEditor {
 
 		NumberField<Double> modernMaxWidthNumberField = createMeasurementNumberField(caEntry.getModernMaxWidth());
 		modernMaxWidthNumberField.addValidator(new Validator<Double>() {
-			
+
 			@Override
 			public List<EditorError> validate(Editor<Double> editor, Double value) {
-				
+
 				List<EditorError> l = new ArrayList<EditorError>();
 				if ((modernMinWidthNumberField.getCurrentValue() == null) || ("".equals(modernMinWidthNumberField.getValue()))) {
 					l.add(new DefaultEditorError(editor, "put in min value first", value));
-				} else if ((value!=null) && (!"".equals(value)) && (value <= modernMinWidthNumberField.getValue())) {
+				} else if ((value != null) && (!"".equals(value)) && (value <= modernMinWidthNumberField.getValue())) {
 					l.add(new DefaultEditorError(editor, "only values > min", value));
 				}
 				return l;
@@ -2217,13 +2215,13 @@ public class CaveEditor extends AbstractEditor {
 				}
 			}
 		});
-		
+
 		NumberField<Double> modernMaxLengthNumberField = createMeasurementNumberField(caEntry.getModernMaxLength());
 		modernMaxLengthNumberField.addValidator(new Validator<Double>() {
-			
+
 			@Override
 			public List<EditorError> validate(Editor<Double> editor, Double value) {
-				
+
 				List<EditorError> l = new ArrayList<EditorError>();
 				if ((modernMinLengthNumberField.getCurrentValue() == null) || ("".equals(modernMinLengthNumberField.getValue()))) {
 					l.add(new DefaultEditorError(editor, "put in min value first", value));
@@ -2242,7 +2240,7 @@ public class CaveEditor extends AbstractEditor {
 				}
 			}
 		});
-		
+
 		NumberField<Double> modernMinHeightNumberField = createMeasurementNumberField(caEntry.getModernMinHeight());
 		modernMinHeightNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
@@ -2253,13 +2251,13 @@ public class CaveEditor extends AbstractEditor {
 				}
 			}
 		});
-		
+
 		NumberField<Double> modernMaxHeightNumberField = createMeasurementNumberField(caEntry.getModernMaxHeight());
 		modernMaxHeightNumberField.addValidator(new Validator<Double>() {
-			
+
 			@Override
 			public List<EditorError> validate(Editor<Double> editor, Double value) {
-				
+
 				List<EditorError> l = new ArrayList<EditorError>();
 				if ((modernMinHeightNumberField.getCurrentValue() == null) || ("".equals(modernMinHeightNumberField.getValue()))) {
 					l.add(new DefaultEditorError(editor, "put in min value first", value));
@@ -2278,7 +2276,7 @@ public class CaveEditor extends AbstractEditor {
 				}
 			}
 		});
-		
+
 		Label sl1 = new Label("/");
 		sl1.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 		Label sl2 = new Label("/");
@@ -2289,24 +2287,24 @@ public class CaveEditor extends AbstractEditor {
 		dl2.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 		Label dl3 = new Label("–");
 		dl3.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-		
+
 		HorizontalLayoutContainer modernMeasuresHLC = new HorizontalLayoutContainer();
-		modernMeasuresHLC.add(modernMinWidthNumberField, new HorizontalLayoutData(.8/6, 1.0));
-		modernMeasuresHLC.add(dl1, new HorizontalLayoutData(.2/5, 1.0));
-		modernMeasuresHLC.add(modernMaxWidthNumberField, new HorizontalLayoutData(.8/6, 1.0));
-		modernMeasuresHLC.add(sl1, new HorizontalLayoutData(.2/5, 1.0));
-		modernMeasuresHLC.add(modernMinLengthNumberField, new HorizontalLayoutData(.8/6, 1.0));
-		modernMeasuresHLC.add(dl2, new HorizontalLayoutData(.2/5, 1.0));
-		modernMeasuresHLC.add(modernMaxLengthNumberField, new HorizontalLayoutData(.8/6, 1.0));
-		modernMeasuresHLC.add(sl2, new HorizontalLayoutData(.2/5, 1.0));
-		modernMeasuresHLC.add(modernMinHeightNumberField, new HorizontalLayoutData(.8/6, 1.0));
-		modernMeasuresHLC.add(dl3, new HorizontalLayoutData(.2/5, 1.0));
-		modernMeasuresHLC.add(modernMaxHeightNumberField, new HorizontalLayoutData(.8/6, 1.0));
+		modernMeasuresHLC.add(modernMinWidthNumberField, new HorizontalLayoutData(.8 / 6, 1.0));
+		modernMeasuresHLC.add(dl1, new HorizontalLayoutData(.2 / 5, 1.0));
+		modernMeasuresHLC.add(modernMaxWidthNumberField, new HorizontalLayoutData(.8 / 6, 1.0));
+		modernMeasuresHLC.add(sl1, new HorizontalLayoutData(.2 / 5, 1.0));
+		modernMeasuresHLC.add(modernMinLengthNumberField, new HorizontalLayoutData(.8 / 6, 1.0));
+		modernMeasuresHLC.add(dl2, new HorizontalLayoutData(.2 / 5, 1.0));
+		modernMeasuresHLC.add(modernMaxLengthNumberField, new HorizontalLayoutData(.8 / 6, 1.0));
+		modernMeasuresHLC.add(sl2, new HorizontalLayoutData(.2 / 5, 1.0));
+		modernMeasuresHLC.add(modernMinHeightNumberField, new HorizontalLayoutData(.8 / 6, 1.0));
+		modernMeasuresHLC.add(dl3, new HorizontalLayoutData(.2 / 5, 1.0));
+		modernMeasuresHLC.add(modernMaxHeightNumberField, new HorizontalLayoutData(.8 / 6, 1.0));
 		modernMeasurementCP.add(modernMeasuresHLC);
 
 		return modernMeasurementCP;
 	}
-	
+
 	private NumberField<Double> createMeasurementNumberField(double value) {
 		NumberField<Double> measurementNF = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
 		measurementNF.setDirection(Direction.RTL);
@@ -2318,7 +2316,7 @@ public class CaveEditor extends AbstractEditor {
 		}
 		return measurementNF;
 	}
-	
+
 	private void updateCeilingTypePanel(int caveTypeID) {
 
 		switch (caveTypeID) {
@@ -2528,7 +2526,7 @@ public class CaveEditor extends AbstractEditor {
 				antechamberCeilingPreservationSelectorCB2.setEnabled(true);
 				antechamberFloorPreservationSelectorCB.setEnabled(true);
 				break;
-				
+
 			case 1: // unknown
 			case 5: // storage cave
 			case 7: // other
@@ -2672,13 +2670,13 @@ public class CaveEditor extends AbstractEditor {
 		}
 	}
 
-//	/**
-//	 * @return
-//	 */
-//	private boolean validateFields() {
-//		return officialNumberField.validate() && historicalNameField.validate() && optionalHistoricNameField.validate()
-//				&& c14AnalysisUrlTextField.validate();
-//	}
+	// /**
+	// * @return
+	// */
+	// private boolean validateFields() {
+	// return officialNumberField.validate() && historicalNameField.validate() && optionalHistoricNameField.validate()
+	// && c14AnalysisUrlTextField.validate();
+	// }
 
 	/**
 	 * 
