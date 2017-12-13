@@ -243,8 +243,7 @@ public class MysqlConnector {
 		PreparedStatement pstmt;
 
 		try {
-			pstmt = dbc.prepareStatement(
-					"SELECT * FROM C14Documents WHERE CaveID=?");
+			pstmt = dbc.prepareStatement("SELECT * FROM C14Documents WHERE CaveID=?");
 			pstmt.setInt(1, caveID);
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
@@ -527,6 +526,7 @@ public class MysqlConnector {
 				ce.setCaveAreaList(getCaveAreas(ce.getCaveID()));
 				ce.setWallList(getWalls(ce.getCaveID()));
 				ce.setC14AnalysisUrlList(getC14AnalysisEntries(ce.getCaveID()));
+				ce.setC14DocumentList(getC14Documents(ce.getCaveID()));
 				results.add(ce);
 			}
 			rs.close();
@@ -554,6 +554,7 @@ public class MysqlConnector {
 				result.setCaveAreaList(getCaveAreas(result.getCaveID()));
 				result.setWallList(getWalls(result.getCaveID()));
 				result.setC14AnalysisUrlList(getC14AnalysisEntries(result.getCaveID()));
+				result.setC14DocumentList(getC14Documents(result.getCaveID()));
 			}
 			rs.close();
 			stmt.close();
@@ -580,6 +581,8 @@ public class MysqlConnector {
 						rs.getInt("CaveGroupID"), rs.getString("OptionalCaveSketch"), rs.getString("CaveLayoutComments"));
 				ce.setCaveAreaList(getCaveAreas(ce.getCaveID()));
 				ce.setWallList(getWalls(ce.getCaveID()));
+				ce.setC14AnalysisUrlList(getC14AnalysisEntries(ce.getCaveID()));
+				ce.setC14DocumentList(getC14Documents(ce.getCaveID()));
 				results.add(ce);
 			}
 			rs.close();
@@ -1702,24 +1705,24 @@ public class MysqlConnector {
 		return newCaveID;
 	}
 
-	/**
-	 * @param caveID
-	 */
-	public synchronized boolean updateC14DocumentFilename(int caveID, String c14DocumentFilename) {
-		Connection dbc = getConnection();
-		PreparedStatement pstmt;
-		try {
-			pstmt = dbc.prepareStatement("UPDATE Caves SET C14DocumentFilename=? WHERE CaveID=?");
-			pstmt.setString(1, c14DocumentFilename);
-			pstmt.setInt(2, caveID);
-			pstmt.executeUpdate();
-			pstmt.close();
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-			return false;
-		}
-		return true;
-	}
+//	/**
+//	 * @param caveID
+//	 */
+//	public synchronized boolean updateC14DocumentFilename(int caveID, String c14DocumentFilename) {
+//		Connection dbc = getConnection();
+//		PreparedStatement pstmt;
+//		try {
+//			pstmt = dbc.prepareStatement("UPDATE Caves SET C14DocumentFilename=? WHERE CaveID=?");
+//			pstmt.setString(1, c14DocumentFilename);
+//			pstmt.setInt(2, caveID);
+//			pstmt.executeUpdate();
+//			pstmt.close();
+//		} catch (SQLException ex) {
+//			ex.printStackTrace();
+//			return false;
+//		}
+//		return true;
+//	}
 	
 	
 
@@ -2352,7 +2355,7 @@ public class MysqlConnector {
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Publisher");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Publishers");
 			while (rs.next()) {
 				result.add(new PublisherEntry(rs.getInt("PublisherID"), rs.getString("Name"), rs.getString("Address")));
 			}
@@ -2374,7 +2377,7 @@ public class MysqlConnector {
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Author");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Authors");
 			while (rs.next()) {
 				result.add(new AuthorEntry(rs.getInt("AuthorID"), rs.getString("Lastname"),  rs.getString("Firstname") , rs.getDate("KuchaVisitDate"), rs.getString("Affiliation") , rs.getString("Email"),
 						rs.getString("Homepage")));

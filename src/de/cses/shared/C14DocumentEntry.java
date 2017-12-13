@@ -35,8 +35,8 @@ public class C14DocumentEntry extends AbstractEntry {
 	/**
 	 * 
 	 */
-	public C14DocumentEntry() { 
-		this("","");
+	public C14DocumentEntry() {
+		super();
 	}
 
 	/* (non-Javadoc)

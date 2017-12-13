@@ -91,6 +91,7 @@ public class CaveEntry extends AbstractEntry {
 		for (C14DocumentEntry c14DocEntry : c14DocumentList) {
 			clonedC14DocumentList.add(c14DocEntry);
 		}
+		clonedCE.setC14DocumentList(clonedC14DocumentList);
 		return clonedCE;
 	}
 

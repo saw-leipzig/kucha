@@ -1590,10 +1590,6 @@ public class CaveEditor extends AbstractEditor {
 						String origFilename = uploader.getUploadedFilename().substring(12);
 						correspondingCaveEntry.getC14DocumentList().add(new C14DocumentEntry(documentFilename, origFilename));
 						refreshC14DocumentsFLC(correspondingCaveEntry.getC14DocumentList());
-//						c14UploadPanel.add(new HTMLPanel(documentLinkTemplate.documentLink(
-//								UriUtils
-//										.fromString("resource?document=" + documentFilename + UserLogin.getInstance().getUsernameSessionIDParameterForUri()),
-//								"C14 document")));
 						c14DocUploadPanel.hide();
 					}
 
