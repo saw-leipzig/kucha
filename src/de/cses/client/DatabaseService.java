@@ -209,4 +209,6 @@ public interface DatabaseService extends RemoteService {
 
 	int insertRegionEntry(RegionEntry re) throws IllegalArgumentException;
 
+	int insertAuthorEntry(AuthorEntry currentAuthorEntry) throws IllegalArgumentException;
+
 }

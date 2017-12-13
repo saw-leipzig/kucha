@@ -2192,9 +2192,52 @@ public class MysqlConnector {
 	 * @param currentAuthorEntry
 	 * @return
 	 */
-	public boolean updateAuthorEntry(AuthorEntry currentAuthorEntry) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean updateAuthorEntry(AuthorEntry authorEntry) {
+		Connection dbc = getConnection();
+		PreparedStatement authorStatement;
+		int rowCount=0;
+		try {
+			authorStatement = dbc.prepareStatement("UPDATE Authors SET LastName=?, FirstName=?, KuchaVisitDate=?, Affiliation=?, Email=?, Homepage=? WHERE AuthorID=?");
+			authorStatement.setString(1, authorEntry.getLastname());
+			authorStatement.setString(2, authorEntry.getFirstname());
+			authorStatement.setDate(3, authorEntry.getKuchaVisitDate());
+			authorStatement.setString(4, authorEntry.getAffiliation());
+			authorStatement.setString(5, authorEntry.getEmail());
+			authorStatement.setString(6, authorEntry.getHomepage());
+			authorStatement.setInt(7, authorEntry.getAuthorID());
+			rowCount = authorStatement.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return rowCount > 0;
+	}
+	
+	/**
+	 * @param currentAuthorEntry
+	 * @return
+	 */
+	public int insertAuthorEntry(AuthorEntry authorEntry) {
+		Connection dbc = getConnection();
+		PreparedStatement authorStatement;
+		int authorID=0;
+		try {
+			authorStatement = dbc.prepareStatement("INSERT INTO Authors (LastName, FirstName, KuchaVisitDate, Affiliation, Email, Homepage) VALUES (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+			authorStatement.setString(1, authorEntry.getLastname());
+			authorStatement.setString(2, authorEntry.getFirstname());
+			authorStatement.setDate(3, authorEntry.getKuchaVisitDate());
+			authorStatement.setString(4, authorEntry.getAffiliation());
+			authorStatement.setString(5, authorEntry.getEmail());
+			authorStatement.setString(6, authorEntry.getHomepage());
+			authorStatement.executeUpdate();
+			ResultSet keys = authorStatement.getGeneratedKeys();
+			if (keys.next()) {
+				authorID = keys.getInt(1);
+			}
+			keys.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return authorID;
 	}
 
 	/**
@@ -2442,4 +2485,5 @@ public class MysqlConnector {
 		}
 		return regionID;
 	}
+
 }

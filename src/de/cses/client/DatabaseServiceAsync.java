@@ -234,4 +234,6 @@ public interface DatabaseServiceAsync {
 
 	void insertRegionEntry(RegionEntry re, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 
+	void insertAuthorEntry(AuthorEntry currentAuthorEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
+
 	}

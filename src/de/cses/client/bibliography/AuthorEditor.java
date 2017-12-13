@@ -230,32 +230,7 @@ public class AuthorEditor implements IsWidget {
 					return; // do nothing because we need at least a lastname of an author!
 				}
 				if (currentAuthorEntry.getAuthorID() == 0) {
-					String sql = "INSERT INTO Authors (LastName";
-					//"LastName,FirstName,KuchaVisitDate,Affiliation,Email,Homepage)";
-					String values = " VALUES ('"+currentAuthorEntry.getLastname()+"'";
-					if (currentAuthorEntry.getFirstname() != null) {
-						sql = sql.concat(",FirstName");
-						values = values.concat(",'" + currentAuthorEntry.getFirstname() + "'");
-					}
-					if (currentAuthorEntry.getKuchaVisitDate() != null) {
-						sql = sql.concat(",KuchaVisitDate");
-						values = values.concat(",'" + dtf.format(currentAuthorEntry.getKuchaVisitDate()) + "'");
-					}
-					if (currentAuthorEntry.getAffiliation() != null) {
-						sql = sql.concat(",Affiliation");
-						values = values.concat(",'" + currentAuthorEntry.getAffiliation() + "'");
-					}
-					if (currentAuthorEntry.getEmail() != null) {
-						sql = sql.concat(",Email");
-						values = values.concat(",'" + currentAuthorEntry.getEmail() + "'");
-					}
-					if (currentAuthorEntry.getHomepage() != null) {
-						sql = sql.concat(",Homepage");
-						values = values.concat(",'" + currentAuthorEntry.getHomepage() + "'");
-					}
-					sql = sql.concat(")");
-					values = values.concat(")");
-					dbService.insertEntry(sql + values, new AsyncCallback<Integer>() {
+					dbService.insertAuthorEntry(currentAuthorEntry, new AsyncCallback<Integer>() {
 
 						@Override
 						public void onFailure(Throwable caught) {
