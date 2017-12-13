@@ -107,7 +107,7 @@ public interface DatabaseServiceAsync {
 	 * @param callback
 	 * @throws IllegalArgumentException
 	 */
-	void insertEntry(String sqlInsert, AsyncCallback<Integer> callback) throws IllegalArgumentException;
+//	void insertEntry(String sqlInsert, AsyncCallback<Integer> callback) throws IllegalArgumentException;
 
 	void getDepictions(AsyncCallback<ArrayList<DepictionEntry>> callback) throws IllegalArgumentException;
 
@@ -225,5 +225,13 @@ public interface DatabaseServiceAsync {
 	void getAuthors( AsyncCallback<ArrayList<AuthorEntry>> callback) throws IllegalArgumentException;//?
 	void getPublisher( AsyncCallback<ArrayList<PublisherEntry>> callback) throws IllegalArgumentException;
 	void getAnnotatedBibliography( AsyncCallback<ArrayList<AnnotatedBiblographyEntry>> callback) throws IllegalArgumentException;
+
+	void insertPhotographerEntry(PhotographerEntry photographerEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
+
+	void insertCaveGroupEntry(CaveGroupEntry cgEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
+
+	void insertDistrictEntry(DistrictEntry de, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
+
+	void insertRegionEntry(RegionEntry re, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 
 	}

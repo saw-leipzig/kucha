@@ -203,7 +203,7 @@ public class PhotographerEditor implements IsWidget {
 				newName = newNameField.getText();
 				PhotographerEntry newPE = new PhotographerEntry();
 				newPE.setName(newName);
-				dbService.insertEntry(newPE.getInsertSql(), new AsyncCallback<Integer>() {
+				dbService.insertPhotographerEntry(newPE, new AsyncCallback<Integer>() {
 
 					@Override
 					public void onFailure(Throwable caught) {
@@ -212,7 +212,6 @@ public class PhotographerEditor implements IsWidget {
 
 					@Override
 					public void onSuccess(Integer result) {
-						Info.display("New entry created", "No. = " + result.intValue());
 						refreshPhotographerList();
 					}});
 			}

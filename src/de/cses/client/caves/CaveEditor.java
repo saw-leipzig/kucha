@@ -792,7 +792,7 @@ public class CaveEditor extends AbstractEditor {
 						if (caveGroupNameField.isValid()) {
 							CaveGroupEntry cgEntry = new CaveGroupEntry();
 							cgEntry.setName(caveGroupNameField.getCurrentValue());
-							dbService.insertEntry(cgEntry.getInsertSql(), new AsyncCallback<Integer>() {
+							dbService.insertCaveGroupEntry(cgEntry, new AsyncCallback<Integer>() {
 
 								@Override
 								public void onFailure(Throwable caught) {
@@ -916,7 +916,7 @@ public class CaveEditor extends AbstractEditor {
 						if (districtNameField.isValid()) {
 							de.setName(districtNameField.getValue());
 							de.setDescription(descriptionField.getValue().isEmpty() ? "" : descriptionField.getValue());
-							dbService.insertEntry(de.getInsertSql(), new AsyncCallback<Integer>() {
+							dbService.insertDistrictEntry(de, new AsyncCallback<Integer>() {
 
 								@Override
 								public void onFailure(Throwable caught) {
@@ -1028,7 +1028,7 @@ public class CaveEditor extends AbstractEditor {
 							re.setPhoneticName(phoneticNameField.getValue().isEmpty() ? "" : phoneticNameField.getValue());
 							re.setOriginalName(originalNameField.getValue().isEmpty() ? "" : originalNameField.getValue());
 							re.setEnglishName(englishNameField.getValue());
-							dbService.insertEntry(re.getInsertSql(), new AsyncCallback<Integer>() {
+							dbService.insertRegionEntry(re, new AsyncCallback<Integer>() {
 
 								@Override
 								public void onFailure(Throwable caught) {

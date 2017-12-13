@@ -290,28 +290,28 @@ public class MysqlConnector {
 	 * 
 	 * @return auto incremented primary key
 	 */
-	public synchronized int insertEntry(String sqlInsert) {
-		Connection dbc = getConnection();
-		Statement stmt;
-		int generatedKey = -1;
-		try {
-			stmt = dbc.createStatement();
-			stmt.execute(sqlInsert, Statement.RETURN_GENERATED_KEYS);
-			ResultSet keys = stmt.getGeneratedKeys();
-			while (keys.next()) {
-				// there should only be 1 key returned here but we need to modify this
-				// in case
-				// we have requested multiple new entries. works for the moment
-				generatedKey = keys.getInt(1);
-			}
-			keys.close();
-			stmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-		return generatedKey;
-	}
+//	public synchronized int insertEntry(String sqlInsert) {
+//		Connection dbc = getConnection();
+//		Statement stmt;
+//		int generatedKey = -1;
+//		try {
+//			stmt = dbc.createStatement();
+//			stmt.execute(sqlInsert, Statement.RETURN_GENERATED_KEYS);
+//			ResultSet keys = stmt.getGeneratedKeys();
+//			while (keys.next()) {
+//				// there should only be 1 key returned here but we need to modify this
+//				// in case
+//				// we have requested multiple new entries. works for the moment
+//				generatedKey = keys.getInt(1);
+//			}
+//			keys.close();
+//			stmt.close();
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
+//
+//		return generatedKey;
+//	}
 
 	/**
 	 * Executes an SQL update using a pre-defined SQL UPDATE string
@@ -1945,19 +1945,21 @@ public class MysqlConnector {
 	}
 
 	private synchronized void updateDepictionPERelation(int depictionID, ArrayList<PictorialElementEntry> peEntryList) {
+		Connection dbc = getConnection();
+		PreparedStatement relationStatement;
+
 		deleteEntry("DELETE FROM DepictionPERelation WHERE DepictionID=" + depictionID);
-		String insertSqlString = "INSERT INTO DepictionPERelation VALUES ";
-		Iterator<PictorialElementEntry> it = peEntryList.iterator();
-//		System.err.println("==> updateDepictionPERelation called");
-		while (it.hasNext()) {
-			PictorialElementEntry entry = it.next();
-			if (peEntryList.indexOf(entry) == 0) {
-				insertSqlString = insertSqlString.concat("(" + depictionID + ", " + entry.getPictorialElementID() + ")");
-			} else {
-				insertSqlString = insertSqlString.concat(", (" + depictionID + ", " + entry.getPictorialElementID() + ")");
+		try {
+			relationStatement = dbc.prepareStatement("INSERT INTO DepictionPERelation VALUES (?, ?)");
+			for (PictorialElementEntry entry : peEntryList) {
+				relationStatement.setInt(1, depictionID);
+				relationStatement.setInt(2, entry.getPictorialElementID());
+				relationStatement.executeUpdate();
 			}
+			relationStatement.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
-		insertEntry(insertSqlString);
 	}
 
 	/**
@@ -2340,5 +2342,104 @@ public class MysqlConnector {
 			e.printStackTrace();
 		}
 		return result;
+	}
+
+	/**
+	 * @param photographerEntry
+	 * @return
+	 */
+	public int insertPhotographerEntry(PhotographerEntry photographerEntry) {
+		Connection dbc = getConnection();
+		PreparedStatement peStatement;
+		int photographerID=0;
+		try {
+			peStatement = dbc.prepareStatement("INSERT INTO Photographers (Name) VALUES (?)", Statement.RETURN_GENERATED_KEYS);
+			peStatement.setString(1, photographerEntry.getName());
+			peStatement.executeUpdate();
+			ResultSet keys = peStatement.getGeneratedKeys();
+			if (keys.next()) {
+				photographerID = keys.getInt(1);
+			}
+			keys.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return photographerID;
+	}
+
+	/**
+	 * @param cgEntry
+	 * @return
+	 */
+	public int insertCaveGroupEntry(CaveGroupEntry cgEntry) {
+		Connection dbc = getConnection();
+		PreparedStatement cgStatement;
+		int caveGroupID=0;
+		try {
+			cgStatement = dbc.prepareStatement("INSERT INTO CaveGroups (Name) VALUES (?)", Statement.RETURN_GENERATED_KEYS);
+			cgStatement.setString(1, cgEntry.getName());
+			cgStatement.executeUpdate();
+			ResultSet keys = cgStatement.getGeneratedKeys();
+			if (keys.next()) {
+				caveGroupID = keys.getInt(1);
+			}
+			keys.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return caveGroupID;
+	}
+
+	/**
+	 * @param de
+	 * @return
+	 */
+	public int insertDistrictEntry(DistrictEntry de) {
+		Connection dbc = getConnection();
+		PreparedStatement deStatement;
+		int districtID=0;
+		try {
+			deStatement = dbc.prepareStatement("INSERT INTO Districts (Name, SiteID, Description, Map, ArialMap) VALUES (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+			deStatement.setString(1, de.getName());
+			deStatement.setInt(2, de.getSiteID());
+			deStatement.setString(3, de.getDescription());
+			deStatement.setString(4, de.getMap());
+			deStatement.setString(5, de.getArialMap());
+			deStatement.executeUpdate();
+			ResultSet keys = deStatement.getGeneratedKeys();
+			if (keys.next()) {
+				districtID = keys.getInt(1);
+			}
+			keys.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return districtID;
+	}
+
+	/**
+	 * @param re
+	 * @return
+	 */
+	public int insertRegionEntry(RegionEntry re) {
+		Connection dbc = getConnection();
+		PreparedStatement regionStatement;
+		int regionID=0;
+		try {
+			regionStatement = dbc.prepareStatement("INSERT INTO Regions (PhoneticName, OriginalName, EnglishName, SiteID) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+			regionStatement.setString(1, re.getPhoneticName());
+			regionStatement.setString(2, re.getOriginalName());
+			regionStatement.setString(3, re.getEnglishName());
+			regionStatement.setInt(4, re.getSiteID());
+			regionStatement.executeUpdate();
+			ResultSet keys = regionStatement.getGeneratedKeys();
+			if (keys.next()) {
+				regionID = keys.getInt(1);
+			}
+			keys.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return regionID;
 	}
 }
