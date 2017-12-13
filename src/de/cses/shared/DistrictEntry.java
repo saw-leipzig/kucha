@@ -82,20 +82,6 @@ public class DistrictEntry extends AbstractEntry {
 	}
 
 	/* (non-Javadoc)
-	 * @see de.cses.shared.AbstractEntry#getInsertSql()
-	 */
-	public String getInsertSql() {
-		return "INSERT INTO Districts (Name, SiteID, Description, Map, ArialMap) VALUES ('" + name + "', " + siteID + ", '" + description + "', '" + map + "', '" + arialMap + "')";
-	}
-
-	/* (non-Javadoc)
-	 * @see de.cses.shared.AbstractEntry#getUpdateSql()
-	 */
-	public String getUpdateSql() {
-		return "UPDATE Districts SET Name='" + name + "', SiteID=" + siteID + ", Description='" + description + "', Map='" + map + "', ArialMap='" + arialMap + "' WHERE DistrictID=" + districtID;
-	}
-
-	/* (non-Javadoc)
 	 * @see de.cses.shared.AbstractEntry#uniqueID()
 	 */
 	@Override

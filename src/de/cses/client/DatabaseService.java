@@ -91,7 +91,7 @@ public interface DatabaseService extends RemoteService {
 
 	boolean deleteEntry(String sqlDelete);
 
-	int insertEntry(String sqlInsert);
+//	int insertEntry(String sqlInsert);
 
 	ArrayList<IconographyEntry> getIconography() throws IllegalArgumentException;
 
@@ -194,11 +194,21 @@ public interface DatabaseService extends RemoteService {
 
 	ArrayList<WallLocationEntry> getWallLocations() throws IllegalArgumentException;
 
-	boolean updateAuthorEntry(AuthorEntry currentAuthorEntry);;
+	boolean updateAuthorEntry(AuthorEntry currentAuthorEntry) throws IllegalArgumentException;
 	
 	boolean saveAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry) throws IllegalArgumentException;
 	ArrayList<AnnotatedBiblographyEntry> getAnnotatedBibliography() throws IllegalArgumentException;
 	ArrayList<PublisherEntry> getPublisher() throws IllegalArgumentException;
 	ArrayList<AuthorEntry> getAuthors() throws IllegalArgumentException;
+
+	int insertPhotographerEntry(PhotographerEntry photographerEntry) throws IllegalArgumentException;
+
+	int insertCaveGroupEntry(CaveGroupEntry cgEntry) throws IllegalArgumentException;
+
+	int insertDistrictEntry(DistrictEntry de) throws IllegalArgumentException;
+
+	int insertRegionEntry(RegionEntry re) throws IllegalArgumentException;
+
+	int insertAuthorEntry(AuthorEntry currentAuthorEntry) throws IllegalArgumentException;
 
 }

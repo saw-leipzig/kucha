@@ -31,6 +31,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import de.cses.server.ServerProperties;
 import de.cses.server.mysql.MysqlConnector;
+import de.cses.shared.C14DocumentEntry;
 
 /**
  * This HttpServlet is used to upload images to the server's cave sketch directory. It also creates a new entry in the Images table of the database.
@@ -76,13 +77,15 @@ public class C14DocumentServiceImpl extends HttpServlet {
 				if (item.isFormField()) {
 					throw new ServletException("Unsupported non-file property [" + item.getFieldName() + "] with value: " + item.getString());
 				} else {
-					filename = request.getParameter("docFileName") + fileType;
-					caveID = Integer.parseInt(request.getParameter("caveID"));
-					System.err.println("writing filename " + filename);
-					target = new File(imgHomeDir, filename);
+					int num = 0;
+					do {
+						++num;
+						filename = request.getParameter("docFileName") + "-" + num + fileType;
+						target = new File(imgHomeDir, filename);
+					} while (target.exists());
 					item.write(target);
 					item.delete();
-					MysqlConnector.getInstance().updateC14DocumentFilename(caveID, filename);
+//					MysqlConnector.getInstance().updateC14DocumentFilename(caveID, filename);
 					response.getWriter().write(String.valueOf(filename));
 					response.getWriter().close();
 				}

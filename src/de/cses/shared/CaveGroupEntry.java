@@ -39,20 +39,6 @@ public class CaveGroupEntry extends AbstractEntry {
 		this.name = name;
 	}
 
-	/* (non-Javadoc)
-	 * @see de.cses.shared.AbstractEntry#getInsertSql()
-	 */
-	public String getInsertSql() {
-		return "INSERT INTO CaveGroups (Name) VALUES ('" + name + "')";
-	}
-
-	/* (non-Javadoc)
-	 * @see de.cses.shared.AbstractEntry#getUpdateSql()
-	 */
-	public String getUpdateSql() {
-		return "UPDATE CaveGroups SET Name='" + name + "' WHERE CaveGroupID=" + caveGroupID;
-	}
-
 	public int getCaveGroupID() {
 		return caveGroupID;
 	}

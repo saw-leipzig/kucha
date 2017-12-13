@@ -123,18 +123,18 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		return connector.deleteEntry(sqlDelete);
 	}
 
-	/**
-	 * A universal SQL INSERT call for the Kucha database The String needs to
-	 * contain the full sql command, including the INSERT statement at the
-	 * beginning!
-	 * 
-	 * @param sqlInsert
-	 * @return
-	 */
-	public int insertEntry(String sqlInsert) {
-		MysqlConnector connector = MysqlConnector.getInstance();
-		return connector.insertEntry(sqlInsert);
-	}
+//	/**
+//	 * A universal SQL INSERT call for the Kucha database The String needs to
+//	 * contain the full sql command, including the INSERT statement at the
+//	 * beginning!
+//	 * 
+//	 * @param sqlInsert
+//	 * @return
+//	 */
+//	public int insertEntry(String sqlInsert) {
+//		MysqlConnector connector = MysqlConnector.getInstance();
+//		return connector.insertEntry(sqlInsert);
+//	}
 
 	@Override
 	public ArrayList<CaveEntry> getCaves() throws IllegalArgumentException {
@@ -578,6 +578,12 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	}
 	
 	@Override
+	public int insertAuthorEntry(AuthorEntry currentAuthorEntry) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.insertAuthorEntry(currentAuthorEntry);
+	}
+
+	@Override
 	public boolean saveAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.saveAnnotatedBiblographyEntry(bibEntry);
@@ -593,6 +599,40 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public ArrayList<AnnotatedBiblographyEntry> getAnnotatedBibliography() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getAnnotatedBiblography();
+	}
+	
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#writePhotographerEntry(de.cses.shared.PhotographerEntry)
+	 */
+	@Override
+	public int insertPhotographerEntry(PhotographerEntry photographerEntry) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.insertPhotographerEntry(photographerEntry);
+	}
+	
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#insertCaveGroupEntry(de.cses.shared.CaveGroupEntry)
+	 */
+	@Override
+	public int insertCaveGroupEntry(CaveGroupEntry cgEntry) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.insertCaveGroupEntry(cgEntry);
+	}
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#insertDistrictEntry(de.cses.shared.DistrictEntry)
+	 */
+	@Override
+	public int insertDistrictEntry(DistrictEntry de) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.insertDistrictEntry(de);
+	}
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#insertRegionEntry(de.cses.shared.RegionEntry)
+	 */
+	@Override
+	public int insertRegionEntry(RegionEntry re) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.insertRegionEntry(re);
 	}
 
 }

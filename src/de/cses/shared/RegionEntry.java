@@ -80,20 +80,6 @@ public class RegionEntry extends AbstractEntry {
 	}
 
 	/* (non-Javadoc)
-	 * @see de.cses.shared.AbstractEntry#getInsertSql()
-	 */
-	public String getInsertSql() {
-		return "INSERT INTO Regions (PhoneticName, OriginalName, EnglishName, SiteID) VALUES ('" + phoneticName + "', '" + originalName + "', '" + englishName + "', " + siteID + ")";
-	}
-
-	/* (non-Javadoc)
-	 * @see de.cses.shared.AbstractEntry#getUpdateSql()
-	 */
-	public String getUpdateSql() {
-		return "UPDATE Regions SET PhoneticName='" + phoneticName + "', OriginalName='" + originalName + "', EnglishName='" + englishName + "', SiteID=" + siteID + "WHERE RegionID=" + regionID;
-	}
-
-	/* (non-Javadoc)
 	 * @see de.cses.shared.AbstractEntry#uniqueID()
 	 */
 	@Override
