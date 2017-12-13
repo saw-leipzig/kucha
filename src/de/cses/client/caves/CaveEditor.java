@@ -980,9 +980,9 @@ public class CaveEditor extends AbstractEditor {
 		regionPanel.add(regionSelection);
 
 		ToolButton addRegionPlusTool = new ToolButton(ToolButton.PLUS);
-		newDistrictPlusTool.setToolTip("Add Region");
+		addRegionPlusTool.setToolTip("Add Region");
 		regionPanel.addTool(addRegionPlusTool);
-		newDistrictPlusTool.addSelectHandler(new SelectHandler() {
+		addRegionPlusTool.addSelectHandler(new SelectHandler() {
 
 			@Override
 			public void onSelect(SelectEvent event) {
