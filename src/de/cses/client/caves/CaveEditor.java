@@ -2181,7 +2181,9 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Double> event) {
-				if (modernMinWidthNumberField.validate()) {
+				if (event.getValue() == null) {
+					caEntry.setModernMinWidth(0);
+				} else if (modernMinWidthNumberField.validate()) {
 					caEntry.setModernMinWidth(event.getValue());
 				}
 			}
@@ -2206,7 +2208,9 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Double> event) {
-				if (modernMaxWidthNumberField.validate()) {
+				if (event.getValue() == null) {
+					caEntry.setModernMaxWidth(0);
+				} else if (modernMaxWidthNumberField.validate()) {
 					caEntry.setModernMaxWidth(event.getValue());
 				}
 			}
@@ -2217,7 +2221,9 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Double> event) {
-				if (modernMinLengthNumberField.validate()) {
+				if (event.getValue() == null) {
+					caEntry.setModernMinLength(0);
+				} else if (modernMinLengthNumberField.validate()) {
 					caEntry.setModernMinLength(event.getValue());
 				}
 			}
@@ -2242,7 +2248,9 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Double> event) {
-				if (modernMaxLengthNumberField.validate()) {
+				if (event.getValue() == null) {
+					caEntry.setModernMaxLength(0);
+				} else if (modernMaxLengthNumberField.validate()) {
 					caEntry.setModernMaxLength(event.getValue());
 				}
 			}
@@ -2253,7 +2261,9 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Double> event) {
-				if (modernMinHeightNumberField.validate()) {
+				if (event.getValue() == null) {
+					caEntry.setModernMinHeight(0);
+				} else if (modernMinHeightNumberField.validate()) {
 					caEntry.setModernMinHeight(event.getValue());
 				}
 			}
@@ -2278,7 +2288,9 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Double> event) {
-				if (modernMaxHeightNumberField.validate()) {
+				if (event.getValue() == null) {
+					caEntry.setModernMaxHeight(0);
+				} else if (modernMaxHeightNumberField.validate()) {
 					caEntry.setModernMaxHeight(event.getValue());
 				}
 			}
