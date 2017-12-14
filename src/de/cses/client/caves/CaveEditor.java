@@ -2111,14 +2111,17 @@ public class CaveEditor extends AbstractEditor {
 	private FramedPanel createCaveAreaExpeditionMeasurePanel(CaveAreaEntry caEntry) {
 		FramedPanel expeditionMeasureCP = new FramedPanel();
 		expeditionMeasureCP.setHeading(caEntry.getCaveAreaLabel() + " (W/L/H)");
+		
 		NumberField<Double> expeditionWidthNumberField = createMeasurementNumberField(caEntry.getExpeditionWidth());
 		expeditionWidthNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Double> event) {
-				if (expeditionWidthNumberField.validate()) {
+				if (event.getValue() == null) {
+					caEntry.setExpeditionWidth(0);
+				} else if (expeditionWidthNumberField.validate()) {
 					caEntry.setExpeditionWidth(event.getValue());
-				}
+				} 
 			}
 		});
 
@@ -2127,7 +2130,9 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Double> event) {
-				if (expeditionLengthNumberField.validate()) {
+				if (event.getValue() == null) {
+					caEntry.setExpeditionLength(0);
+				} else if (expeditionLengthNumberField.validate()) {
 					caEntry.setExpeditionLength(event.getValue());
 				}
 			}
@@ -2138,7 +2143,9 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Double> event) {
-				if (expeditionHeightNumberField.validate()) {
+				if (event.getValue() == null) {
+					caEntry.setExpeditionHeight(0);
+				} else if (expeditionHeightNumberField.validate()) {
 					caEntry.setExpeditionHeight(event.getValue());
 				}
 			}
@@ -2310,7 +2317,7 @@ public class CaveEditor extends AbstractEditor {
 		measurementNF.setDirection(Direction.RTL);
 		measurementNF.setAllowNegative(false);
 		measurementNF.setEmptyText("meter");
-		measurementNF.setFormat(NumberFormat.getFormat("#0.0"));
+		measurementNF.setFormat(NumberFormat.getFormat("#0.00"));
 		if (value > 0) {
 			measurementNF.setValue(value);
 		}

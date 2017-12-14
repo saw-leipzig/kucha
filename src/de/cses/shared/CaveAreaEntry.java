@@ -28,7 +28,7 @@ public class CaveAreaEntry extends AbstractEntry {
 
 	protected int caveID;
 	protected String caveAreaLabel;
-	protected double expeditionWidth= 0;
+	protected double expeditionWidth = 0;
 	protected double expeditionLength = 0;
 	protected double expeditionHeight = 0;
 	protected double modernMinWidth = 0;
