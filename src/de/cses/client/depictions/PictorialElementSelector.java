@@ -46,6 +46,15 @@ import de.cses.shared.PictorialElementEntry;
 
 public class PictorialElementSelector implements IsWidget {
 
+	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
+	private TreeStore<PictorialElementEntry> peStore;
+	private Tree<PictorialElementEntry, String> tree;
+	private int depictionID;
+	private ContentPanel treePanel;
+	private VerticalLayoutContainer mainVLC = null;
+	private Map<String, PictorialElementEntry> selectedPictorialElementsMap;
+	private StoreFilterField<PictorialElementEntry> filterField;
+
 	class PictorialElementKeyProvider implements ModelKeyProvider<PictorialElementEntry> {
 		@Override
 		public String getKey(PictorialElementEntry item) {
@@ -70,14 +79,6 @@ public class PictorialElementSelector implements IsWidget {
 			return "name";
 		}
 	}
-
-	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
-	private TreeStore<PictorialElementEntry> peStore;
-	private Tree<PictorialElementEntry, String> tree;
-	private int depictionID;
-	private ContentPanel treePanel;
-	private VerticalLayoutContainer mainVLC = null;
-	private Map<String, PictorialElementEntry> selectedPictorialElementsMap;
 
 	public PictorialElementSelector(int depictionID) {
 		this.depictionID = depictionID;
@@ -172,7 +173,7 @@ public class PictorialElementSelector implements IsWidget {
 		treePanel.setHeaderVisible(false);
 		treePanel.add(vlc);
 
-		StoreFilterField<PictorialElementEntry> filterField = new StoreFilterField<PictorialElementEntry>() {
+		filterField = new StoreFilterField<PictorialElementEntry>() {
 
 			@Override
 			protected boolean doSelect(Store<PictorialElementEntry> store, PictorialElementEntry parent, PictorialElementEntry item,
@@ -197,25 +198,13 @@ public class PictorialElementSelector implements IsWidget {
 	}
 
 	public List<PictorialElementEntry> getSelectedPE() {
+		filterField.clear();
+		filterField.validate();
 		return tree.getCheckedSelection();
 	}
 
 	public void expandAll() {
 		tree.expandAll();
-		// dbService.getRelatedPE(depictionID, new AsyncCallback<ArrayList<PictorialElementEntry>>() {
-		//
-		// @Override
-		// public void onFailure(Throwable caught) {
-		// caught.printStackTrace();
-		// }
-		//
-		// @Override
-		// public void onSuccess(ArrayList<PictorialElementEntry> peRelationList) {
-		// tree.setCheckedSelection(peRelationList);
-		// }
-		// });
-		//
-		//
 	}
 
 	public void collapseAll() {
