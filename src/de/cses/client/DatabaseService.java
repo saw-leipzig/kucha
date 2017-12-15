@@ -211,4 +211,6 @@ public interface DatabaseService extends RemoteService {
 
 	int insertAuthorEntry(AuthorEntry currentAuthorEntry) throws IllegalArgumentException;
 
+	int insertCeilingTypeEntry(CeilingTypeEntry ctEntry) throws IllegalArgumentException;
+
 }

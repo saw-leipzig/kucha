@@ -236,4 +236,6 @@ public interface DatabaseServiceAsync {
 
 	void insertAuthorEntry(AuthorEntry currentAuthorEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 
+	void insertCeilingTypeEntry(CeilingTypeEntry ctEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
+
 	}

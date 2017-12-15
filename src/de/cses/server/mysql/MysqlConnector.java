@@ -2489,4 +2489,27 @@ public class MysqlConnector {
 		return regionID;
 	}
 
+	/**
+	 * @param ctEntry
+	 * @return
+	 */
+	public int insertCeilingTypeEntry(CeilingTypeEntry ctEntry) {
+		Connection dbc = getConnection();
+		PreparedStatement ceilingTypeStatement;
+		int ceilingTypeID=0;
+		try {
+			ceilingTypeStatement = dbc.prepareStatement("INSERT INTO CeilingTypes (Name) VALUES (?)", Statement.RETURN_GENERATED_KEYS);
+			ceilingTypeStatement.setString(1, ctEntry.getName());
+			ceilingTypeStatement.executeUpdate();
+			ResultSet keys = ceilingTypeStatement.getGeneratedKeys();
+			if (keys.next()) {
+				ceilingTypeID = keys.getInt(1);
+			}
+			keys.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return ceilingTypeID;
+	}
+
 }

@@ -346,6 +346,13 @@ public class CaveEditor extends AbstractEditor {
 		caveTypeEntryListStore = new ListStore<CaveTypeEntry>(caveTypeProps.caveTypeID());
 		ceilingTypeProps = GWT.create(CeilingTypeProperties.class);
 		ceilingTypeEntryList = new ListStore<CeilingTypeEntry>(ceilingTypeProps.ceilingTypeID());
+		Comparator<CeilingTypeEntry> ceilingTypeEntryComparator = new Comparator<CeilingTypeEntry>() {
+			@Override
+			public int compare(CeilingTypeEntry ct1, CeilingTypeEntry ct2) {
+				return ct1.getName().toLowerCase().compareTo(ct2.getName().toLowerCase());
+			}
+		};
+		ceilingTypeEntryList.addSortInfo(new StoreSortInfo<CeilingTypeEntry>(ceilingTypeEntryComparator, SortDir.ASC));
 		preservationClassificationProps = GWT.create(PreservationClassificationProperties.class);
 		preservationClassificationEntryList = new ListStore<PreservationClassificationEntry>(
 				preservationClassificationProps.preservationClassificationID());
@@ -367,14 +374,14 @@ public class CaveEditor extends AbstractEditor {
 		wallProps = GWT.create(WallProperties.class);
 		wallVT = GWT.create(WallViewTemplate.class);
 		wallEntryLS = new ListStore<WallEntry>(wallProps.wallLocationID());
-		Comparator<WallEntry> comparator = new Comparator<WallEntry>() {
+		Comparator<WallEntry> wallEntryComparator = new Comparator<WallEntry>() {
 			@Override
 			public int compare(WallEntry we1, WallEntry we2) {
 				return StaticTables.getInstance().getWallLocationEntries().get(we1.getWallLocationID()).getLabel()
 						.compareTo(StaticTables.getInstance().getWallLocationEntries().get(we2.getWallLocationID()).getLabel());
 			}
 		};
-		wallEntryLS.addSortInfo(new StoreSortInfo<WallEntry>(comparator, SortDir.ASC));
+		wallEntryLS.addSortInfo(new StoreSortInfo<WallEntry>(wallEntryComparator, SortDir.ASC));
 
 		initPanel();
 		loadCaveAndCeilingTypes();
@@ -1873,10 +1880,67 @@ public class CaveEditor extends AbstractEditor {
 		ceilingTyleSelectionsVLC.add(mainChamberCeilingTypeFP, new VerticalLayoutData(1.0, 1.0 / 6));
 		ceilingTyleSelectionsVLC.add(corridorCeilingTypeFP, new VerticalLayoutData(1.0, 1.0 / 6));
 		ceilingTyleSelectionsVLC.add(antechamberCeilingTypeFP, new VerticalLayoutData(1.0, 1.0 / 6));
+		
+		ToolButton addCeilingTypeTB = new ToolButton(ToolButton.PLUS);
+		addCeilingTypeTB.setToolTip("add new ceiling type");
+		addCeilingTypeTB.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				PopupPanel addNewCeilingTypeDialog = new PopupPanel();
+				FramedPanel newCeilingTypeFP = new FramedPanel();
+				newCeilingTypeFP.setHeading("Add Ceiling Type");
+				TextField ceilingTypeNameField = new TextField();
+				ceilingTypeNameField.addValidator(new MinLengthValidator(2));
+				ceilingTypeNameField.addValidator(new MaxLengthValidator(64));
+				ceilingTypeNameField.setEmptyText("enter new ceiling type");
+				ceilingTypeNameField.setWidth(200);
+				newCeilingTypeFP.add(ceilingTypeNameField);
+				TextButton saveButton = new TextButton("save");
+				saveButton.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						if (ceilingTypeNameField.isValid()) {
+							CeilingTypeEntry ctEntry = new CeilingTypeEntry();
+							ctEntry.setName(ceilingTypeNameField.getCurrentValue());
+							dbService.insertCeilingTypeEntry(ctEntry, new AsyncCallback<Integer>() {
+
+								@Override
+								public void onFailure(Throwable caught) {
+									caught.printStackTrace();
+								}
+
+								@Override
+								public void onSuccess(Integer result) {
+									ctEntry.setCeilingTypeID(result);
+									ceilingTypeEntryList.add(ctEntry);
+								}
+							});
+							addNewCeilingTypeDialog.hide();
+						}
+					}
+				});
+				newCeilingTypeFP.addButton(saveButton);
+				TextButton cancelButton = new TextButton("cancel");
+				cancelButton.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						addNewCeilingTypeDialog.hide();
+					}
+				});
+				newCeilingTypeFP.addButton(cancelButton);
+				addNewCeilingTypeDialog.add(newCeilingTypeFP);
+				addNewCeilingTypeDialog.setModal(true);
+				addNewCeilingTypeDialog.center();
+			}
+		});
 
 		FramedPanel ceilingTypeSelectionsFP = new FramedPanel();
 		ceilingTypeSelectionsFP.setHeading("Ceiling Types");
 		ceilingTypeSelectionsFP.add(ceilingTyleSelectionsVLC);
+		ceilingTypeSelectionsFP.addTool(addCeilingTypeTB);
 
 		VerticalLayoutContainer caveLayoutLeftVLC = new VerticalLayoutContainer();
 		caveLayoutLeftVLC.add(typeOrientationHLC, new VerticalLayoutData(1.0, .11));
