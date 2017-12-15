@@ -2089,19 +2089,19 @@ public class CaveEditor extends AbstractEditor {
 		modernMeasurementVLC.add(createCaveAreaModernMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR)),
 				new VerticalLayoutData(1.0, 1.0 / 6));
 
-		FramedPanel expeditionMeasurementFP = new FramedPanel();
-		expeditionMeasurementFP.setHeading("Expedition Measurement");
-		expeditionMeasurementFP.add(expeditionMeasurementVLC);
-
-		FramedPanel modernMeasurementFP = new FramedPanel();
-		modernMeasurementFP.setHeading("Modern Measurement");
-		modernMeasurementFP.add(modernMeasurementVLC);
+//		FramedPanel expeditionMeasurementFP = new FramedPanel();
+//		expeditionMeasurementFP.setHeading("Expedition Measurement");
+//		expeditionMeasurementFP.add(expeditionMeasurementVLC);
+//
+//		FramedPanel modernMeasurementFP = new FramedPanel();
+//		modernMeasurementFP.setHeading("Modern Measurement");
+//		modernMeasurementFP.add(modernMeasurementVLC);
 		
 		PlainTabPanel measurementPTP = new PlainTabPanel();
 		measurementPTP.setTabScroll(false);
 		measurementPTP.setAnimScroll(false);
-		measurementPTP.add(expeditionMeasurementFP, new TabItemConfig("Expedition Measurement", false));
-		measurementPTP.add(modernMeasurementFP, new TabItemConfig("Modern Measurement", false));
+		measurementPTP.add(expeditionMeasurementVLC, new TabItemConfig("Expedition Measurement", false));
+		measurementPTP.add(modernMeasurementVLC, new TabItemConfig("Modern Measurement", false));
 
 
 		/**
@@ -2236,8 +2236,8 @@ public class CaveEditor extends AbstractEditor {
 	 * @return
 	 */
 	private FramedPanel createCaveAreaModernMeasurePanel(CaveAreaEntry caEntry) {
-		FramedPanel modernMeasurementCP = new FramedPanel();
-		modernMeasurementCP.setHeading(caEntry.getCaveAreaLabel() + " (W/L/H) min-max");
+		FramedPanel modernMeasurementFP = new FramedPanel();
+		modernMeasurementFP.setHeading(caEntry.getCaveAreaLabel() + " (W/L/H) min-max");
 
 		NumberField<Double> modernMinWidthNumberField = createMeasurementNumberField(caEntry.getModernMinWidth());
 		modernMinWidthNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
@@ -2377,18 +2377,30 @@ public class CaveEditor extends AbstractEditor {
 		modernMeasuresLengthHLC.add(modernMaxLengthNumberField, new HorizontalLayoutData(.4, 1.0));
 		
 		HorizontalLayoutContainer modernMeasuredHeightHLC = new HorizontalLayoutContainer();
-		modernMeasuredHeightHLC.add(modernMinHeightNumberField, new HorizontalLayoutData(.8 / 6, 1.0));
-		modernMeasuredHeightHLC.add(dl3, new HorizontalLayoutData(.2 / 5, 1.0));
-		modernMeasuredHeightHLC.add(modernMaxHeightNumberField, new HorizontalLayoutData(.8 / 6, 1.0));
+		modernMeasuredHeightHLC.add(modernMinHeightNumberField, new HorizontalLayoutData(.4, 1.0));
+		modernMeasuredHeightHLC.add(dl3, new HorizontalLayoutData(.2, 1.0));
+		modernMeasuredHeightHLC.add(modernMaxHeightNumberField, new HorizontalLayoutData(.4, 1.0));
+		
+		FramedPanel modernMeasuresWidthFP = new FramedPanel();
+		modernMeasuresWidthFP.setHeading("Width");
+		modernMeasuresWidthFP.add(modernMeasuresWidthHLC);
+
+		FramedPanel modernMeasuresLengthFP = new FramedPanel();
+		modernMeasuresLengthFP.setHeading("Length");
+		modernMeasuresLengthFP.add(modernMeasuresLengthHLC);
+
+		FramedPanel modernMeasuresHeightFP = new FramedPanel();
+		modernMeasuresHeightFP.setHeading("Height");
+		modernMeasuresHeightFP.add(modernMeasuredHeightHLC);
 
 		HorizontalLayoutContainer modernMeasuresHLC = new HorizontalLayoutContainer();
-		modernMeasuresHLC.add(modernMeasuresWidthHLC, new HorizontalLayoutData(1.0 / 3,  1.0));
-		modernMeasuresHLC.add(modernMeasuresLengthHLC, new HorizontalLayoutData(1.0 / 3,  1.0));
-		modernMeasuresHLC.add(modernMeasuredHeightHLC, new HorizontalLayoutData(1.0 / 3,  1.0));
+		modernMeasuresHLC.add(modernMeasuresWidthFP, new HorizontalLayoutData(1.0 / 3,  1.0));
+		modernMeasuresHLC.add(modernMeasuresLengthFP, new HorizontalLayoutData(1.0 / 3,  1.0));
+		modernMeasuresHLC.add(modernMeasuresHeightFP, new HorizontalLayoutData(1.0 / 3,  1.0));
 		
-		modernMeasurementCP.add(modernMeasuresHLC);
+		modernMeasurementFP.add(modernMeasuresHLC);
 
-		return modernMeasurementCP;
+		return modernMeasurementFP;
 	}
 
 	private NumberField<Double> createMeasurementNumberField(double value) {
