@@ -2196,7 +2196,7 @@ public class CaveEditor extends AbstractEditor {
 			public List<EditorError> validate(Editor<Double> editor, Double value) {
 
 				List<EditorError> l = new ArrayList<EditorError>();
-				if ((modernMinWidthNumberField.getCurrentValue() == null) || ("".equals(modernMinWidthNumberField.getValue()))) {
+				if ((modernMinWidthNumberField.getCurrentValue() == null) && (value != null)) {
 					l.add(new DefaultEditorError(editor, "put in min value first", value));
 				} else if ((value != null) && (!"".equals(value)) && (value <= modernMinWidthNumberField.getValue())) {
 					l.add(new DefaultEditorError(editor, "only values > min", value));
@@ -2236,7 +2236,7 @@ public class CaveEditor extends AbstractEditor {
 			public List<EditorError> validate(Editor<Double> editor, Double value) {
 
 				List<EditorError> l = new ArrayList<EditorError>();
-				if ((modernMinLengthNumberField.getCurrentValue() == null) || ("".equals(modernMinLengthNumberField.getValue()))) {
+				if ((modernMinLengthNumberField.getValue() == null) && (value != null)) {
 					l.add(new DefaultEditorError(editor, "put in min value first", value));
 				} else if (value <= modernMinLengthNumberField.getValue()) {
 					l.add(new DefaultEditorError(editor, "only values > min", value));
@@ -2276,7 +2276,7 @@ public class CaveEditor extends AbstractEditor {
 			public List<EditorError> validate(Editor<Double> editor, Double value) {
 
 				List<EditorError> l = new ArrayList<EditorError>();
-				if ((modernMinHeightNumberField.getCurrentValue() == null) || ("".equals(modernMinHeightNumberField.getValue()))) {
+				if ((modernMinHeightNumberField.getCurrentValue() == null) && (value != null)) {
 					l.add(new DefaultEditorError(editor, "put in min value first", value));
 				} else if (value <= modernMinHeightNumberField.getValue()) {
 					l.add(new DefaultEditorError(editor, "only values > min", value));
@@ -2325,11 +2325,10 @@ public class CaveEditor extends AbstractEditor {
 	}
 
 	private NumberField<Double> createMeasurementNumberField(double value) {
-		NumberField<Double> measurementNF = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
-		measurementNF.setDirection(Direction.RTL);
+		NumberField<Double> measurementNF = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor(NumberFormat.getFormat("#0.00")));
+//		measurementNF.setDirection(Direction.RTL);
 		measurementNF.setAllowNegative(false);
 		measurementNF.setEmptyText("meter");
-		measurementNF.setFormat(NumberFormat.getFormat("#0.00"));
 		if (value > 0) {
 			measurementNF.setValue(value);
 		}
