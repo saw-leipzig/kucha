@@ -2111,14 +2111,17 @@ public class CaveEditor extends AbstractEditor {
 	private FramedPanel createCaveAreaExpeditionMeasurePanel(CaveAreaEntry caEntry) {
 		FramedPanel expeditionMeasureCP = new FramedPanel();
 		expeditionMeasureCP.setHeading(caEntry.getCaveAreaLabel() + " (W/L/H)");
+		
 		NumberField<Double> expeditionWidthNumberField = createMeasurementNumberField(caEntry.getExpeditionWidth());
 		expeditionWidthNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Double> event) {
-				if (expeditionWidthNumberField.validate()) {
+				if (event.getValue() == null) {
+					caEntry.setExpeditionWidth(0);
+				} else if (expeditionWidthNumberField.validate()) {
 					caEntry.setExpeditionWidth(event.getValue());
-				}
+				} 
 			}
 		});
 
@@ -2127,7 +2130,9 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Double> event) {
-				if (expeditionLengthNumberField.validate()) {
+				if (event.getValue() == null) {
+					caEntry.setExpeditionLength(0);
+				} else if (expeditionLengthNumberField.validate()) {
 					caEntry.setExpeditionLength(event.getValue());
 				}
 			}
@@ -2138,7 +2143,9 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Double> event) {
-				if (expeditionHeightNumberField.validate()) {
+				if (event.getValue() == null) {
+					caEntry.setExpeditionHeight(0);
+				} else if (expeditionHeightNumberField.validate()) {
 					caEntry.setExpeditionHeight(event.getValue());
 				}
 			}
@@ -2174,7 +2181,9 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Double> event) {
-				if (modernMinWidthNumberField.validate()) {
+				if (event.getValue() == null) {
+					caEntry.setModernMinWidth(0);
+				} else if (modernMinWidthNumberField.validate()) {
 					caEntry.setModernMinWidth(event.getValue());
 				}
 			}
@@ -2187,7 +2196,7 @@ public class CaveEditor extends AbstractEditor {
 			public List<EditorError> validate(Editor<Double> editor, Double value) {
 
 				List<EditorError> l = new ArrayList<EditorError>();
-				if ((modernMinWidthNumberField.getCurrentValue() == null) || ("".equals(modernMinWidthNumberField.getValue()))) {
+				if ((modernMinWidthNumberField.getCurrentValue() == null) && (value != null)) {
 					l.add(new DefaultEditorError(editor, "put in min value first", value));
 				} else if ((value != null) && (!"".equals(value)) && (value <= modernMinWidthNumberField.getValue())) {
 					l.add(new DefaultEditorError(editor, "only values > min", value));
@@ -2199,7 +2208,9 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Double> event) {
-				if (modernMaxWidthNumberField.validate()) {
+				if (event.getValue() == null) {
+					caEntry.setModernMaxWidth(0);
+				} else if (modernMaxWidthNumberField.validate()) {
 					caEntry.setModernMaxWidth(event.getValue());
 				}
 			}
@@ -2210,7 +2221,9 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Double> event) {
-				if (modernMinLengthNumberField.validate()) {
+				if (event.getValue() == null) {
+					caEntry.setModernMinLength(0);
+				} else if (modernMinLengthNumberField.validate()) {
 					caEntry.setModernMinLength(event.getValue());
 				}
 			}
@@ -2223,7 +2236,7 @@ public class CaveEditor extends AbstractEditor {
 			public List<EditorError> validate(Editor<Double> editor, Double value) {
 
 				List<EditorError> l = new ArrayList<EditorError>();
-				if ((modernMinLengthNumberField.getCurrentValue() == null) || ("".equals(modernMinLengthNumberField.getValue()))) {
+				if ((modernMinLengthNumberField.getValue() == null) && (value != null)) {
 					l.add(new DefaultEditorError(editor, "put in min value first", value));
 				} else if (value <= modernMinLengthNumberField.getValue()) {
 					l.add(new DefaultEditorError(editor, "only values > min", value));
@@ -2235,7 +2248,9 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Double> event) {
-				if (modernMaxLengthNumberField.validate()) {
+				if (event.getValue() == null) {
+					caEntry.setModernMaxLength(0);
+				} else if (modernMaxLengthNumberField.validate()) {
 					caEntry.setModernMaxLength(event.getValue());
 				}
 			}
@@ -2246,7 +2261,9 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Double> event) {
-				if (modernMinHeightNumberField.validate()) {
+				if (event.getValue() == null) {
+					caEntry.setModernMinHeight(0);
+				} else if (modernMinHeightNumberField.validate()) {
 					caEntry.setModernMinHeight(event.getValue());
 				}
 			}
@@ -2259,7 +2276,7 @@ public class CaveEditor extends AbstractEditor {
 			public List<EditorError> validate(Editor<Double> editor, Double value) {
 
 				List<EditorError> l = new ArrayList<EditorError>();
-				if ((modernMinHeightNumberField.getCurrentValue() == null) || ("".equals(modernMinHeightNumberField.getValue()))) {
+				if ((modernMinHeightNumberField.getCurrentValue() == null) && (value != null)) {
 					l.add(new DefaultEditorError(editor, "put in min value first", value));
 				} else if (value <= modernMinHeightNumberField.getValue()) {
 					l.add(new DefaultEditorError(editor, "only values > min", value));
@@ -2271,7 +2288,9 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Double> event) {
-				if (modernMaxHeightNumberField.validate()) {
+				if (event.getValue() == null) {
+					caEntry.setModernMaxHeight(0);
+				} else if (modernMaxHeightNumberField.validate()) {
 					caEntry.setModernMaxHeight(event.getValue());
 				}
 			}
@@ -2306,11 +2325,10 @@ public class CaveEditor extends AbstractEditor {
 	}
 
 	private NumberField<Double> createMeasurementNumberField(double value) {
-		NumberField<Double> measurementNF = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
-		measurementNF.setDirection(Direction.RTL);
+		NumberField<Double> measurementNF = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor(NumberFormat.getFormat("#0.00")));
+//		measurementNF.setDirection(Direction.RTL);
 		measurementNF.setAllowNegative(false);
 		measurementNF.setEmptyText("meter");
-		measurementNF.setFormat(NumberFormat.getFormat("#0.0"));
 		if (value > 0) {
 			measurementNF.setValue(value);
 		}
