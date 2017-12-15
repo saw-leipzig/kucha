@@ -24,7 +24,6 @@ import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.i18n.client.HasDirection.Direction;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
@@ -50,12 +49,16 @@ import com.sencha.gxt.data.shared.SortDir;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.Store.StoreFilter;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
+import com.sencha.gxt.theme.blue.client.tabs.BluePlainTabPanelBottomAppearance;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.Dialog;
 import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.PlainTabPanel;
+import com.sencha.gxt.widget.core.client.PlainTabPanel.PlainTabPanelAppearance;
 import com.sencha.gxt.widget.core.client.TabItemConfig;
+import com.sencha.gxt.widget.core.client.TabPanel;
+import com.sencha.gxt.widget.core.client.TabPanel.TabPanelAppearance;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
@@ -2052,7 +2055,7 @@ public class CaveEditor extends AbstractEditor {
 		caveTypeHLC.add(caveLayoutRightVLC, new HorizontalLayoutData(.5, 1.0));
 
 		/**
-		 * --------------------------------- measurement and interior tab ------------------------------------------
+		 * --------------------------------- measurement tab ------------------------------------------
 		 */
 
 		VerticalLayoutContainer expeditionMeasurementVLC = new VerticalLayoutContainer();
@@ -2093,17 +2096,13 @@ public class CaveEditor extends AbstractEditor {
 		FramedPanel modernMeasurementFP = new FramedPanel();
 		modernMeasurementFP.setHeading("Modern Measurement");
 		modernMeasurementFP.add(modernMeasurementVLC);
+		
+		PlainTabPanel measurementPTP = new PlainTabPanel();
+		measurementPTP.setTabScroll(false);
+		measurementPTP.setAnimScroll(false);
+		measurementPTP.add(expeditionMeasurementFP, new TabItemConfig("Expedition Measurement", false));
+		measurementPTP.add(modernMeasurementFP, new TabItemConfig("Modern Measurement", false));
 
-		HorizontalLayoutContainer measurementHLC = new HorizontalLayoutContainer();
-		measurementHLC.add(expeditionMeasurementFP, new HorizontalLayoutData(.35, 1.0));
-		measurementHLC.add(modernMeasurementFP, new HorizontalLayoutData(.65, 1.0));
-
-		FramedPanel plasticalItemsFP = new FramedPanel();
-		plasticalItemsFP.setHeading("Plastical Items");
-
-		VerticalLayoutContainer measurementInteriorMainVLC = new VerticalLayoutContainer();
-		measurementInteriorMainVLC.add(measurementHLC, new VerticalLayoutData(1.0, .75));
-		measurementInteriorMainVLC.add(plasticalItemsFP, new VerticalLayoutData(1.0, .25));
 
 		/**
 		 * ------------------------------ now we are assembling the tabs and add them to the main hlc ----------------------------------
@@ -2112,7 +2111,7 @@ public class CaveEditor extends AbstractEditor {
 		tabPanel.setTabScroll(false);
 		tabPanel.setAnimScroll(false);
 		tabPanel.add(caveTypeHLC, new TabItemConfig("Cave Layout", false));
-		tabPanel.add(measurementInteriorMainVLC, new TabItemConfig("Measurements & Interiors", false));
+		tabPanel.add(measurementPTP, new TabItemConfig("Measurements", false));
 		tabPanel.add(finalStateOfPreservationVLC, new TabItemConfig("State of Preservation", false));
 		tabPanel.add(descriptionHLC, new TabItemConfig("Descriptions", false));
 
@@ -2360,29 +2359,33 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 
-		Label sl1 = new Label("/");
-		sl1.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-		Label sl2 = new Label("/");
-		sl2.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 		Label dl1 = new Label("–");
 		dl1.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 		Label dl2 = new Label("–");
 		dl2.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 		Label dl3 = new Label("–");
 		dl3.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		
+		HorizontalLayoutContainer modernMeasuresWidthHLC = new HorizontalLayoutContainer();
+		modernMeasuresWidthHLC.add(modernMinWidthNumberField, new HorizontalLayoutData(.4, 1.0));
+		modernMeasuresWidthHLC.add(dl1, new HorizontalLayoutData(.2, 1.0));
+		modernMeasuresWidthHLC.add(modernMaxWidthNumberField, new HorizontalLayoutData(.4, 1.0));
+
+		HorizontalLayoutContainer modernMeasuresLengthHLC = new HorizontalLayoutContainer();
+		modernMeasuresLengthHLC.add(modernMinLengthNumberField, new HorizontalLayoutData(.4, 1.0));
+		modernMeasuresLengthHLC.add(dl2, new HorizontalLayoutData(.2, 1.0));
+		modernMeasuresLengthHLC.add(modernMaxLengthNumberField, new HorizontalLayoutData(.4, 1.0));
+		
+		HorizontalLayoutContainer modernMeasuredHeightHLC = new HorizontalLayoutContainer();
+		modernMeasuredHeightHLC.add(modernMinHeightNumberField, new HorizontalLayoutData(.8 / 6, 1.0));
+		modernMeasuredHeightHLC.add(dl3, new HorizontalLayoutData(.2 / 5, 1.0));
+		modernMeasuredHeightHLC.add(modernMaxHeightNumberField, new HorizontalLayoutData(.8 / 6, 1.0));
 
 		HorizontalLayoutContainer modernMeasuresHLC = new HorizontalLayoutContainer();
-		modernMeasuresHLC.add(modernMinWidthNumberField, new HorizontalLayoutData(.8 / 6, 1.0));
-		modernMeasuresHLC.add(dl1, new HorizontalLayoutData(.2 / 5, 1.0));
-		modernMeasuresHLC.add(modernMaxWidthNumberField, new HorizontalLayoutData(.8 / 6, 1.0));
-		modernMeasuresHLC.add(sl1, new HorizontalLayoutData(.2 / 5, 1.0));
-		modernMeasuresHLC.add(modernMinLengthNumberField, new HorizontalLayoutData(.8 / 6, 1.0));
-		modernMeasuresHLC.add(dl2, new HorizontalLayoutData(.2 / 5, 1.0));
-		modernMeasuresHLC.add(modernMaxLengthNumberField, new HorizontalLayoutData(.8 / 6, 1.0));
-		modernMeasuresHLC.add(sl2, new HorizontalLayoutData(.2 / 5, 1.0));
-		modernMeasuresHLC.add(modernMinHeightNumberField, new HorizontalLayoutData(.8 / 6, 1.0));
-		modernMeasuresHLC.add(dl3, new HorizontalLayoutData(.2 / 5, 1.0));
-		modernMeasuresHLC.add(modernMaxHeightNumberField, new HorizontalLayoutData(.8 / 6, 1.0));
+		modernMeasuresHLC.add(modernMeasuresWidthHLC, new HorizontalLayoutData(1.0 / 3,  1.0));
+		modernMeasuresHLC.add(modernMeasuresLengthHLC, new HorizontalLayoutData(1.0 / 3,  1.0));
+		modernMeasuresHLC.add(modernMeasuredHeightHLC, new HorizontalLayoutData(1.0 / 3,  1.0));
+		
 		modernMeasurementCP.add(modernMeasuresHLC);
 
 		return modernMeasurementCP;
