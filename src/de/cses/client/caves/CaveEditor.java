@@ -36,6 +36,8 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.cell.core.client.LabelProviderSafeHtmlCell;
+import com.sencha.gxt.cell.core.client.form.CheckBoxCell;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
@@ -49,16 +51,12 @@ import com.sencha.gxt.data.shared.SortDir;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.Store.StoreFilter;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
-import com.sencha.gxt.theme.blue.client.tabs.BluePlainTabPanelBottomAppearance;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.Dialog;
 import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.PlainTabPanel;
-import com.sencha.gxt.widget.core.client.PlainTabPanel.PlainTabPanelAppearance;
 import com.sencha.gxt.widget.core.client.TabItemConfig;
-import com.sencha.gxt.widget.core.client.TabPanel;
-import com.sencha.gxt.widget.core.client.TabPanel.TabPanelAppearance;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
@@ -69,6 +67,7 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
+import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
@@ -1860,6 +1859,18 @@ public class CaveEditor extends AbstractEditor {
 		 */
 		FramedPanel caveLayoutCommentsFP = new FramedPanel();
 		caveLayoutCommentsFP.setHeading("Comments on Cave Layout");
+		
+		CheckBox volutedHorseshoeArchCB = new CheckBox();
+		volutedHorseshoeArchCB.setBoxLabel("has Voluted Horseshow Arch");
+		volutedHorseshoeArchCB.setValue(correspondingCaveEntry.isHasVolutedHorseShoeArch());
+		volutedHorseshoeArchCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				correspondingCaveEntry.setHasVolutedHorseShoeArch(event.getValue());
+			}
+		});
+
 		caveLayoutCommentsTextArea = new TextArea();
 		caveLayoutCommentsTextArea.addValueChangeHandler(new ValueChangeHandler<String>() {
 
@@ -1869,7 +1880,12 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		caveLayoutCommentsTextArea.setValue(correspondingCaveEntry.getCaveLayoutComments());
-		caveLayoutCommentsFP.add(caveLayoutCommentsTextArea);
+		
+		VerticalLayoutContainer caveLayoutCommentsVLC = new VerticalLayoutContainer();
+		caveLayoutCommentsVLC.add(volutedHorseshoeArchCB, new VerticalLayoutData(1.0, .2));
+		caveLayoutCommentsVLC.add(caveLayoutCommentsTextArea, new VerticalLayoutData(1.0, .8));
+		
+		caveLayoutCommentsFP.add(caveLayoutCommentsVLC);
 
 		/**
 		 * here we assemble the whole left column of the Cave Layout tab
@@ -1996,7 +2012,7 @@ public class CaveEditor extends AbstractEditor {
 		caveSketchFLC = new FlowLayoutContainer();
 		caveSketchFLC.setScrollMode(ScrollMode.AUTOY);
 		caveSketchFP.add(caveSketchFLC);
-
+		
 		wallSelectorCB = new ComboBox<WallEntry>(wallEntryLS, new LabelProvider<WallEntry>() {
 
 			@Override

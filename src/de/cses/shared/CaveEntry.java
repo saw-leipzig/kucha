@@ -16,35 +16,34 @@ package de.cses.shared;
 import java.util.ArrayList;
 
 public class CaveEntry extends AbstractEntry {
-	private int caveID;
+	private int caveID = 0;
 	private String officialNumber; 
 	private String historicName;
 	private String optionalHistoricName;
-	private int caveTypeID;
-	private int districtID;
-	private int regionID;
-	private int orientationID;
-	private int preservationClassificationID;
-	private int caveGroupID;
+	private int caveTypeID = 0;
+	private int districtID = 0;
+	private int regionID = 0;
+	private int orientationID = 0;
+	private int preservationClassificationID = 0;
+	private int caveGroupID = 0;
 	private String stateOfPerservation;
 	private String findings;
 	private String notes;
 	private String firstDocumentedBy;
-	private int firstDocumentedInYear;
+	private int firstDocumentedInYear = 0;
 	private String optionalCaveSketch;
 	private String caveLayoutComments;
+	private boolean hasVolutedHorseShoeArch = false;
 	private ArrayList<CaveAreaEntry> caveAreaList;
 	private ArrayList<WallEntry> wallList;
 	private ArrayList<C14AnalysisUrlEntry> c14AnalysisUrlList;
 	private ArrayList<C14DocumentEntry> c14DocumentList;
 
-	public CaveEntry() {
-		this(0, "", "", "", 0, 0, 0, 0, "", "", "", "", 0, 0, 0, null, null);
-	}
+	public CaveEntry() { }
 
 	public CaveEntry(int caveID, String officialNumber, String historicName, String optionalHistoricName, int caveTypeID, int districtID,
 			int regionID, int orientationID, String stateOfPerservation, String findings, String notes, String firstDocumentedBy, int firstDocumentedInYear, int preservationClassificationID,
-			int caveGroupID, String optionalCaveSketch, String caveLayoutComments) {
+			int caveGroupID, String optionalCaveSketch, String caveLayoutComments, boolean hasVolutedHorseShoeArch) {
 		this.caveID = caveID;
 		this.officialNumber = officialNumber;
 		this.historicName = historicName;
@@ -62,6 +61,7 @@ public class CaveEntry extends AbstractEntry {
 		this.caveGroupID = caveGroupID;
 		this.optionalCaveSketch = optionalCaveSketch;
 		this.setCaveLayoutComments(caveLayoutComments);
+		this.hasVolutedHorseShoeArch = hasVolutedHorseShoeArch;
 		caveAreaList = new ArrayList<CaveAreaEntry>();
 		wallList = new ArrayList<WallEntry>();
 		c14AnalysisUrlList = new ArrayList<C14AnalysisUrlEntry>();
@@ -71,7 +71,7 @@ public class CaveEntry extends AbstractEntry {
 	public CaveEntry clone() {
 		CaveEntry clonedCE = new CaveEntry(caveID, officialNumber, historicName, optionalHistoricName, caveTypeID, districtID,
 				regionID, orientationID, stateOfPerservation, findings, notes, firstDocumentedBy, firstDocumentedInYear, preservationClassificationID,
-				caveGroupID, optionalCaveSketch, caveLayoutComments);
+				caveGroupID, optionalCaveSketch, caveLayoutComments, hasVolutedHorseShoeArch);
 		ArrayList<CaveAreaEntry> clonedCaveAreaList = new ArrayList<CaveAreaEntry>();
 		for (CaveAreaEntry cae : caveAreaList) {
 			clonedCaveAreaList.add(cae.clone());
@@ -340,6 +340,14 @@ public class CaveEntry extends AbstractEntry {
 
 	public void setC14DocumentList(ArrayList<C14DocumentEntry> c14DocumentList) {
 		this.c14DocumentList = c14DocumentList;
+	}
+
+	public boolean isHasVolutedHorseShoeArch() {
+		return hasVolutedHorseShoeArch;
+	}
+
+	public void setHasVolutedHorseShoeArch(boolean hasVolutedHorseShoeArch) {
+		this.hasVolutedHorseShoeArch = hasVolutedHorseShoeArch;
 	}
 	
 }
