@@ -2172,8 +2172,8 @@ public class CaveEditor extends AbstractEditor {
 	 * @return
 	 */
 	private FramedPanel createCaveAreaExpeditionMeasurePanel(CaveAreaEntry caEntry) {
-		FramedPanel expeditionMeasureCP = new FramedPanel();
-		expeditionMeasureCP.setHeading(caEntry.getCaveAreaLabel() + " (W/L/H)");
+		FramedPanel expeditionMeasureFP = new FramedPanel();
+		expeditionMeasureFP.setHeading(caEntry.getCaveAreaLabel() + " ");
 		
 		NumberField<Double> expeditionWidthNumberField = createMeasurementNumberField(caEntry.getExpeditionWidth());
 		expeditionWidthNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
@@ -2201,33 +2201,57 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 
-		NumberField<Double> expeditionHeightNumberField = createMeasurementNumberField(caEntry.getExpeditionHeight());
-		expeditionHeightNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
+		NumberField<Double> expeditionHeightWallNumberField = createMeasurementNumberField(caEntry.getExpeditionWallHeight());
+		expeditionHeightWallNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Double> event) {
 				if (event.getValue() == null) {
-					caEntry.setExpeditionHeight(0);
-				} else if (expeditionHeightNumberField.validate()) {
-					caEntry.setExpeditionHeight(event.getValue());
+					caEntry.setExpeditionWallHeight(0);
+				} else if (expeditionHeightWallNumberField.validate()) {
+					caEntry.setExpeditionWallHeight(event.getValue());
 				}
 			}
 		});
 
-		Label sl1 = new Label("/");
-		sl1.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-		Label sl2 = new Label("/");
-		sl2.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		NumberField<Double> expeditionHeightTotalNumberField = createMeasurementNumberField(caEntry.getExpeditionTotalHeight());
+		expeditionHeightTotalNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Double> event) {
+				if (event.getValue() == null) {
+					caEntry.setExpeditionTotalHeight(0);
+				} else if (expeditionHeightTotalNumberField.validate()) {
+					caEntry.setExpeditionTotalHeight(event.getValue());
+				}
+			}
+		});
+
+		FramedPanel expeditionMeasuresWidthFP = new FramedPanel();
+		expeditionMeasuresWidthFP.setHeading("Width");
+		expeditionMeasuresWidthFP.add(expeditionWidthNumberField);
+
+		FramedPanel expeditionMeasuresLengthFP = new FramedPanel();
+		expeditionMeasuresLengthFP.setHeading("Length");
+		expeditionMeasuresLengthFP.add(expeditionLengthNumberField);
+
+		FramedPanel expeditionMeasuresHeightWallFP = new FramedPanel();
+		expeditionMeasuresHeightWallFP.setHeading("Wall Height");
+		expeditionMeasuresHeightWallFP.add(expeditionHeightWallNumberField);
+
+		FramedPanel expeditionMeasuresHeightTotalFP = new FramedPanel();
+		expeditionMeasuresHeightTotalFP.setHeading("Total Height");
+		expeditionMeasuresHeightTotalFP.add(expeditionHeightTotalNumberField);
 
 		HorizontalLayoutContainer expeditionMeasuresHLC = new HorizontalLayoutContainer();
-		expeditionMeasuresHLC.add(expeditionWidthNumberField, new HorizontalLayoutData(.3, 1.0));
-		expeditionMeasuresHLC.add(sl1, new HorizontalLayoutData(.05, 1.0));
-		expeditionMeasuresHLC.add(expeditionLengthNumberField, new HorizontalLayoutData(.3, 1.0));
-		expeditionMeasuresHLC.add(sl2, new HorizontalLayoutData(.05, 1.0));
-		expeditionMeasuresHLC.add(expeditionHeightNumberField, new HorizontalLayoutData(.3, 1.0));
-		expeditionMeasureCP.add(expeditionMeasuresHLC);
-
-		return expeditionMeasureCP;
+		expeditionMeasuresHLC.add(expeditionMeasuresWidthFP, new HorizontalLayoutData(.25,  1.0));
+		expeditionMeasuresHLC.add(expeditionMeasuresLengthFP, new HorizontalLayoutData(.25,  1.0));
+		expeditionMeasuresHLC.add(expeditionMeasuresHeightWallFP, new HorizontalLayoutData(.25,  1.0));
+		expeditionMeasuresHLC.add(expeditionMeasuresHeightTotalFP, new HorizontalLayoutData(.25,  1.0));
+		
+		expeditionMeasureFP.add(expeditionMeasuresHLC);
+		
+		return expeditionMeasureFP;
 	}
 
 	/**
@@ -2237,7 +2261,7 @@ public class CaveEditor extends AbstractEditor {
 	 */
 	private FramedPanel createCaveAreaModernMeasurePanel(CaveAreaEntry caEntry) {
 		FramedPanel modernMeasurementFP = new FramedPanel();
-		modernMeasurementFP.setHeading(caEntry.getCaveAreaLabel() + " (W/L/H) min-max");
+		modernMeasurementFP.setHeading(caEntry.getCaveAreaLabel() + " (min-max)");
 
 		NumberField<Double> modernMinWidthNumberField = createMeasurementNumberField(caEntry.getModernMinWidth());
 		modernMinWidthNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {

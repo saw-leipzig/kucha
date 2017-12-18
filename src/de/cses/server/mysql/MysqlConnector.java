@@ -1999,7 +1999,7 @@ public class MysqlConnector {
 			caveAreaRS = caveAreaStatement.executeQuery();
 			while (caveAreaRS.next()) {
 				caEntry = new CaveAreaEntry(caveAreaRS.getInt("CaveID"), caveAreaRS.getString("CaveAreaLabel"),
-						caveAreaRS.getDouble("ExpeditionMeasuredWidth"), caveAreaRS.getDouble("ExpeditionMeasuredLength"), caveAreaRS.getDouble("ExpeditionMeasuredHeight"),
+						caveAreaRS.getDouble("ExpeditionMeasuredWidth"), caveAreaRS.getDouble("ExpeditionMeasuredLength"), caveAreaRS.getDouble("ExpeditionMeasuredWallHeight"), caveAreaRS.getDouble("ExpeditionMeasuredTotalHeight"),
 						caveAreaRS.getDouble("ModernMeasuredMinWidth"), caveAreaRS.getDouble("ModernMeasuredMaxWidth"), caveAreaRS.getDouble("ModernMeasuredMinLength"), caveAreaRS.getDouble("ModernMeasuredMaxLength"), 
 						caveAreaRS.getDouble("ModernMeasuredMinHeight"), caveAreaRS.getDouble("ModernMeasuredMaxHeight"), caveAreaRS.getInt("PreservationClassificationID"), 
 						caveAreaRS.getInt("CeilingTypeID1"), caveAreaRS.getInt("CeilingTypeID2"), caveAreaRS.getInt("CeilingPreservationClassificationID1"), caveAreaRS.getInt("CeilingPreservationClassificationID2"),
@@ -2020,45 +2020,47 @@ public class MysqlConnector {
 		PreparedStatement caveAreaStatement;
 		try {
 			caveAreaStatement = dbc.prepareStatement(
-					"INSERT INTO CaveAreas (CaveID, CaveAreaLabel, ExpeditionMeasuredWidth, ExpeditionMeasuredLength, ExpeditionMeasuredHeight, ModernMeasuredMinWidth, ModernMeasuredMaxWidth, "
+					"INSERT INTO CaveAreas (CaveID, CaveAreaLabel, ExpeditionMeasuredWidth, ExpeditionMeasuredLength, ExpeditionMeasuredWallHeight, ExpeditionMeasuredTotalHeight, ModernMeasuredMinWidth, ModernMeasuredMaxWidth, "
 							+ "ModernMeasuredMinLength, ModernMeasuredMaxLength, ModernMeasuredMinHeight, ModernMeasuredMaxHeight, "
 							+ "PreservationClassificationID, CeilingTypeID1, CeilingTypeID2, CeilingPreservationClassificationID1, CeilingPreservationClassificationID2, FloorPreservationClassificationID) "
-							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " + "ON DUPLICATE KEY UPDATE "
-							+ "ExpeditionMeasuredWidth=?, ExpeditionMeasuredLength=?, ExpeditionMeasuredHeight=?, ModernMeasuredMinWidth=?, ModernMeasuredMaxWidth=?, ModernMeasuredMinLength=?, ModernMeasuredMaxLength=?, "
+							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " + "ON DUPLICATE KEY UPDATE "
+							+ "ExpeditionMeasuredWidth=?, ExpeditionMeasuredLength=?, ExpeditionMeasuredWallHeight=?, ExpeditionMeasuredTotalHeight=?, ModernMeasuredMinWidth=?, ModernMeasuredMaxWidth=?, ModernMeasuredMinLength=?, ModernMeasuredMaxLength=?, "
 							+ "ModernMeasuredMinHeight=?, ModernMeasuredMaxHeight=?, PreservationClassificationID=?, CeilingTypeID1=?, CeilingTypeID2=?, "
 							+ "CeilingPreservationClassificationID1=?, CeilingPreservationClassificationID2=?, FloorPreservationClassificationID=?");
 			caveAreaStatement.setInt(1, entry.getCaveID());
 			caveAreaStatement.setString(2, entry.getCaveAreaLabel());
 			caveAreaStatement.setDouble(3, entry.getExpeditionWidth());
 			caveAreaStatement.setDouble(4, entry.getExpeditionLength());
-			caveAreaStatement.setDouble(5, entry.getExpeditionHeight());
-			caveAreaStatement.setDouble(6, entry.getModernMinWidth());
-			caveAreaStatement.setDouble(7, entry.getModernMaxWidth());
-			caveAreaStatement.setDouble(8, entry.getModernMinLength());
-			caveAreaStatement.setDouble(9, entry.getModernMaxLength());
-			caveAreaStatement.setDouble(10, entry.getModernMinHeight());
-			caveAreaStatement.setDouble(11, entry.getModernMaxHeight());
-			caveAreaStatement.setInt(12, entry.getPreservationClassificationID());
-			caveAreaStatement.setInt(13, entry.getCeilingTypeID1());
-			caveAreaStatement.setInt(14, entry.getCeilingTypeID2());
-			caveAreaStatement.setInt(15, entry.getCeilingPreservationClassificationID1());
-			caveAreaStatement.setInt(16, entry.getCeilingPreservationClassificationID2());
-			caveAreaStatement.setInt(17, entry.getFloorPreservationClassificationID());
-			caveAreaStatement.setDouble(18, entry.getExpeditionWidth());
-			caveAreaStatement.setDouble(19, entry.getExpeditionLength());
-			caveAreaStatement.setDouble(20, entry.getExpeditionHeight());
-			caveAreaStatement.setDouble(21, entry.getModernMinWidth());
-			caveAreaStatement.setDouble(22, entry.getModernMaxWidth());
-			caveAreaStatement.setDouble(23, entry.getModernMinLength());
-			caveAreaStatement.setDouble(24, entry.getModernMaxLength());
-			caveAreaStatement.setDouble(25, entry.getModernMinHeight());
-			caveAreaStatement.setDouble(26, entry.getModernMaxHeight());
-			caveAreaStatement.setInt(27, entry.getPreservationClassificationID());
-			caveAreaStatement.setInt(28, entry.getCeilingTypeID1());
-			caveAreaStatement.setInt(29, entry.getCeilingTypeID2());
-			caveAreaStatement.setInt(30, entry.getCeilingPreservationClassificationID1());
-			caveAreaStatement.setInt(31, entry.getCeilingPreservationClassificationID2());
-			caveAreaStatement.setInt(32, entry.getFloorPreservationClassificationID());
+			caveAreaStatement.setDouble(5, entry.getExpeditionWallHeight());
+			caveAreaStatement.setDouble(6, entry.getExpeditionTotalHeight());
+			caveAreaStatement.setDouble(7, entry.getModernMinWidth());
+			caveAreaStatement.setDouble(8, entry.getModernMaxWidth());
+			caveAreaStatement.setDouble(9, entry.getModernMinLength());
+			caveAreaStatement.setDouble(10, entry.getModernMaxLength());
+			caveAreaStatement.setDouble(11, entry.getModernMinHeight());
+			caveAreaStatement.setDouble(12, entry.getModernMaxHeight());
+			caveAreaStatement.setInt(13, entry.getPreservationClassificationID());
+			caveAreaStatement.setInt(14, entry.getCeilingTypeID1());
+			caveAreaStatement.setInt(15, entry.getCeilingTypeID2());
+			caveAreaStatement.setInt(16, entry.getCeilingPreservationClassificationID1());
+			caveAreaStatement.setInt(17, entry.getCeilingPreservationClassificationID2());
+			caveAreaStatement.setInt(18, entry.getFloorPreservationClassificationID());
+			caveAreaStatement.setDouble(19, entry.getExpeditionWidth());
+			caveAreaStatement.setDouble(20, entry.getExpeditionLength());
+			caveAreaStatement.setDouble(21, entry.getExpeditionWallHeight());
+			caveAreaStatement.setDouble(22, entry.getExpeditionTotalHeight());
+			caveAreaStatement.setDouble(23, entry.getModernMinWidth());
+			caveAreaStatement.setDouble(24, entry.getModernMaxWidth());
+			caveAreaStatement.setDouble(25, entry.getModernMinLength());
+			caveAreaStatement.setDouble(26, entry.getModernMaxLength());
+			caveAreaStatement.setDouble(27, entry.getModernMinHeight());
+			caveAreaStatement.setDouble(28, entry.getModernMaxHeight());
+			caveAreaStatement.setInt(29, entry.getPreservationClassificationID());
+			caveAreaStatement.setInt(30, entry.getCeilingTypeID1());
+			caveAreaStatement.setInt(31, entry.getCeilingTypeID2());
+			caveAreaStatement.setInt(32, entry.getCeilingPreservationClassificationID1());
+			caveAreaStatement.setInt(33, entry.getCeilingPreservationClassificationID2());
+			caveAreaStatement.setInt(34, entry.getFloorPreservationClassificationID());
 			rowCount = caveAreaStatement.executeUpdate();
 			caveAreaStatement.close();
 		} catch (SQLException ex) {
