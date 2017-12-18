@@ -738,11 +738,13 @@ public class CaveEditor extends AbstractEditor {
 		FramedPanel firstDocumentedInYearFP = new FramedPanel();
 		firstDocumentedInYearFP.setHeading("First documented in");
 		firstDocumentedInYearField = new NumberField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
-		// firstDocumentedInYearField.addValidator(new MinNumberValidator<Integer>(1850));
+		firstDocumentedByField.setEmptyText("year");
 		DateWrapper dw = new DateWrapper(); // we always want to use the current year!
 		firstDocumentedInYearField.addValidator(new MaxNumberValidator<Integer>(dw.getFullYear()));
 		firstDocumentedInYearField.setAllowNegative(false);
-		firstDocumentedInYearField.setValue(correspondingCaveEntry.getFirstDocumentedInYear());
+		if (correspondingCaveEntry.getFirstDocumentedInYear() > 0) {
+			firstDocumentedInYearField.setValue(correspondingCaveEntry.getFirstDocumentedInYear());
+		}
 		firstDocumentedInYearField.addValueChangeHandler(new ValueChangeHandler<Integer>() {
 
 			@Override
@@ -2173,7 +2175,7 @@ public class CaveEditor extends AbstractEditor {
 	 */
 	private FramedPanel createCaveAreaExpeditionMeasurePanel(CaveAreaEntry caEntry) {
 		FramedPanel expeditionMeasureFP = new FramedPanel();
-		expeditionMeasureFP.setHeading(caEntry.getCaveAreaLabel() + " ");
+		expeditionMeasureFP.setHeading(caEntry.getCaveAreaLabel());
 		
 		NumberField<Double> expeditionWidthNumberField = createMeasurementNumberField(caEntry.getExpeditionWidth());
 		expeditionWidthNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
