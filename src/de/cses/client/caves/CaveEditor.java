@@ -738,7 +738,7 @@ public class CaveEditor extends AbstractEditor {
 		FramedPanel firstDocumentedInYearFP = new FramedPanel();
 		firstDocumentedInYearFP.setHeading("First documented in");
 		firstDocumentedInYearField = new NumberField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
-		firstDocumentedByField.setEmptyText("year");
+		firstDocumentedInYearField.setEmptyText("year");
 		DateWrapper dw = new DateWrapper(); // we always want to use the current year!
 		firstDocumentedInYearField.addValidator(new MaxNumberValidator<Integer>(dw.getFullYear()));
 		firstDocumentedInYearField.setAllowNegative(false);
