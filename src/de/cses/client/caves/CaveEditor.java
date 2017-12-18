@@ -24,7 +24,6 @@ import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.i18n.client.HasDirection.Direction;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
@@ -50,12 +49,16 @@ import com.sencha.gxt.data.shared.SortDir;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.Store.StoreFilter;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
+import com.sencha.gxt.theme.blue.client.tabs.BluePlainTabPanelBottomAppearance;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.Dialog;
 import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.PlainTabPanel;
+import com.sencha.gxt.widget.core.client.PlainTabPanel.PlainTabPanelAppearance;
 import com.sencha.gxt.widget.core.client.TabItemConfig;
+import com.sencha.gxt.widget.core.client.TabPanel;
+import com.sencha.gxt.widget.core.client.TabPanel.TabPanelAppearance;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
@@ -735,11 +738,13 @@ public class CaveEditor extends AbstractEditor {
 		FramedPanel firstDocumentedInYearFP = new FramedPanel();
 		firstDocumentedInYearFP.setHeading("First documented in");
 		firstDocumentedInYearField = new NumberField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
-		// firstDocumentedInYearField.addValidator(new MinNumberValidator<Integer>(1850));
+		firstDocumentedInYearField.setEmptyText("year");
 		DateWrapper dw = new DateWrapper(); // we always want to use the current year!
 		firstDocumentedInYearField.addValidator(new MaxNumberValidator<Integer>(dw.getFullYear()));
 		firstDocumentedInYearField.setAllowNegative(false);
-		firstDocumentedInYearField.setValue(correspondingCaveEntry.getFirstDocumentedInYear());
+		if (correspondingCaveEntry.getFirstDocumentedInYear() > 0) {
+			firstDocumentedInYearField.setValue(correspondingCaveEntry.getFirstDocumentedInYear());
+		}
 		firstDocumentedInYearField.addValueChangeHandler(new ValueChangeHandler<Integer>() {
 
 			@Override
@@ -2052,7 +2057,7 @@ public class CaveEditor extends AbstractEditor {
 		caveTypeHLC.add(caveLayoutRightVLC, new HorizontalLayoutData(.5, 1.0));
 
 		/**
-		 * --------------------------------- measurement and interior tab ------------------------------------------
+		 * --------------------------------- measurement tab ------------------------------------------
 		 */
 
 		VerticalLayoutContainer expeditionMeasurementVLC = new VerticalLayoutContainer();
@@ -2086,24 +2091,20 @@ public class CaveEditor extends AbstractEditor {
 		modernMeasurementVLC.add(createCaveAreaModernMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR)),
 				new VerticalLayoutData(1.0, 1.0 / 6));
 
-		FramedPanel expeditionMeasurementFP = new FramedPanel();
-		expeditionMeasurementFP.setHeading("Expedition Measurement");
-		expeditionMeasurementFP.add(expeditionMeasurementVLC);
+//		FramedPanel expeditionMeasurementFP = new FramedPanel();
+//		expeditionMeasurementFP.setHeading("Expedition Measurement");
+//		expeditionMeasurementFP.add(expeditionMeasurementVLC);
+//
+//		FramedPanel modernMeasurementFP = new FramedPanel();
+//		modernMeasurementFP.setHeading("Modern Measurement");
+//		modernMeasurementFP.add(modernMeasurementVLC);
+		
+		PlainTabPanel measurementPTP = new PlainTabPanel();
+		measurementPTP.setTabScroll(false);
+		measurementPTP.setAnimScroll(false);
+		measurementPTP.add(expeditionMeasurementVLC, new TabItemConfig("Expedition Measurement", false));
+		measurementPTP.add(modernMeasurementVLC, new TabItemConfig("Modern Measurement", false));
 
-		FramedPanel modernMeasurementFP = new FramedPanel();
-		modernMeasurementFP.setHeading("Modern Measurement");
-		modernMeasurementFP.add(modernMeasurementVLC);
-
-		HorizontalLayoutContainer measurementHLC = new HorizontalLayoutContainer();
-		measurementHLC.add(expeditionMeasurementFP, new HorizontalLayoutData(.35, 1.0));
-		measurementHLC.add(modernMeasurementFP, new HorizontalLayoutData(.65, 1.0));
-
-		FramedPanel plasticalItemsFP = new FramedPanel();
-		plasticalItemsFP.setHeading("Plastical Items");
-
-		VerticalLayoutContainer measurementInteriorMainVLC = new VerticalLayoutContainer();
-		measurementInteriorMainVLC.add(measurementHLC, new VerticalLayoutData(1.0, .75));
-		measurementInteriorMainVLC.add(plasticalItemsFP, new VerticalLayoutData(1.0, .25));
 
 		/**
 		 * ------------------------------ now we are assembling the tabs and add them to the main hlc ----------------------------------
@@ -2112,7 +2113,7 @@ public class CaveEditor extends AbstractEditor {
 		tabPanel.setTabScroll(false);
 		tabPanel.setAnimScroll(false);
 		tabPanel.add(caveTypeHLC, new TabItemConfig("Cave Layout", false));
-		tabPanel.add(measurementInteriorMainVLC, new TabItemConfig("Measurements & Interiors", false));
+		tabPanel.add(measurementPTP, new TabItemConfig("Measurements", false));
 		tabPanel.add(finalStateOfPreservationVLC, new TabItemConfig("State of Preservation", false));
 		tabPanel.add(descriptionHLC, new TabItemConfig("Descriptions", false));
 
@@ -2173,8 +2174,8 @@ public class CaveEditor extends AbstractEditor {
 	 * @return
 	 */
 	private FramedPanel createCaveAreaExpeditionMeasurePanel(CaveAreaEntry caEntry) {
-		FramedPanel expeditionMeasureCP = new FramedPanel();
-		expeditionMeasureCP.setHeading(caEntry.getCaveAreaLabel() + " (W/L/H)");
+		FramedPanel expeditionMeasureFP = new FramedPanel();
+		expeditionMeasureFP.setHeading(caEntry.getCaveAreaLabel());
 		
 		NumberField<Double> expeditionWidthNumberField = createMeasurementNumberField(caEntry.getExpeditionWidth());
 		expeditionWidthNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
@@ -2202,33 +2203,57 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 
-		NumberField<Double> expeditionHeightNumberField = createMeasurementNumberField(caEntry.getExpeditionHeight());
-		expeditionHeightNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
+		NumberField<Double> expeditionHeightWallNumberField = createMeasurementNumberField(caEntry.getExpeditionWallHeight());
+		expeditionHeightWallNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Double> event) {
 				if (event.getValue() == null) {
-					caEntry.setExpeditionHeight(0);
-				} else if (expeditionHeightNumberField.validate()) {
-					caEntry.setExpeditionHeight(event.getValue());
+					caEntry.setExpeditionWallHeight(0);
+				} else if (expeditionHeightWallNumberField.validate()) {
+					caEntry.setExpeditionWallHeight(event.getValue());
 				}
 			}
 		});
 
-		Label sl1 = new Label("/");
-		sl1.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-		Label sl2 = new Label("/");
-		sl2.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		NumberField<Double> expeditionHeightTotalNumberField = createMeasurementNumberField(caEntry.getExpeditionTotalHeight());
+		expeditionHeightTotalNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Double> event) {
+				if (event.getValue() == null) {
+					caEntry.setExpeditionTotalHeight(0);
+				} else if (expeditionHeightTotalNumberField.validate()) {
+					caEntry.setExpeditionTotalHeight(event.getValue());
+				}
+			}
+		});
+
+		FramedPanel expeditionMeasuresWidthFP = new FramedPanel();
+		expeditionMeasuresWidthFP.setHeading("Width");
+		expeditionMeasuresWidthFP.add(expeditionWidthNumberField);
+
+		FramedPanel expeditionMeasuresLengthFP = new FramedPanel();
+		expeditionMeasuresLengthFP.setHeading("Length");
+		expeditionMeasuresLengthFP.add(expeditionLengthNumberField);
+
+		FramedPanel expeditionMeasuresHeightWallFP = new FramedPanel();
+		expeditionMeasuresHeightWallFP.setHeading("Wall Height");
+		expeditionMeasuresHeightWallFP.add(expeditionHeightWallNumberField);
+
+		FramedPanel expeditionMeasuresHeightTotalFP = new FramedPanel();
+		expeditionMeasuresHeightTotalFP.setHeading("Total Height");
+		expeditionMeasuresHeightTotalFP.add(expeditionHeightTotalNumberField);
 
 		HorizontalLayoutContainer expeditionMeasuresHLC = new HorizontalLayoutContainer();
-		expeditionMeasuresHLC.add(expeditionWidthNumberField, new HorizontalLayoutData(.3, 1.0));
-		expeditionMeasuresHLC.add(sl1, new HorizontalLayoutData(.05, 1.0));
-		expeditionMeasuresHLC.add(expeditionLengthNumberField, new HorizontalLayoutData(.3, 1.0));
-		expeditionMeasuresHLC.add(sl2, new HorizontalLayoutData(.05, 1.0));
-		expeditionMeasuresHLC.add(expeditionHeightNumberField, new HorizontalLayoutData(.3, 1.0));
-		expeditionMeasureCP.add(expeditionMeasuresHLC);
-
-		return expeditionMeasureCP;
+		expeditionMeasuresHLC.add(expeditionMeasuresWidthFP, new HorizontalLayoutData(.25,  1.0));
+		expeditionMeasuresHLC.add(expeditionMeasuresLengthFP, new HorizontalLayoutData(.25,  1.0));
+		expeditionMeasuresHLC.add(expeditionMeasuresHeightWallFP, new HorizontalLayoutData(.25,  1.0));
+		expeditionMeasuresHLC.add(expeditionMeasuresHeightTotalFP, new HorizontalLayoutData(.25,  1.0));
+		
+		expeditionMeasureFP.add(expeditionMeasuresHLC);
+		
+		return expeditionMeasureFP;
 	}
 
 	/**
@@ -2237,8 +2262,8 @@ public class CaveEditor extends AbstractEditor {
 	 * @return
 	 */
 	private FramedPanel createCaveAreaModernMeasurePanel(CaveAreaEntry caEntry) {
-		FramedPanel modernMeasurementCP = new FramedPanel();
-		modernMeasurementCP.setHeading(caEntry.getCaveAreaLabel() + " (W/L/H) min-max");
+		FramedPanel modernMeasurementFP = new FramedPanel();
+		modernMeasurementFP.setHeading(caEntry.getCaveAreaLabel() + " (min-max)");
 
 		NumberField<Double> modernMinWidthNumberField = createMeasurementNumberField(caEntry.getModernMinWidth());
 		modernMinWidthNumberField.addValueChangeHandler(new ValueChangeHandler<Double>() {
@@ -2360,32 +2385,48 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 
-		Label sl1 = new Label("/");
-		sl1.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-		Label sl2 = new Label("/");
-		sl2.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 		Label dl1 = new Label("–");
 		dl1.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 		Label dl2 = new Label("–");
 		dl2.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 		Label dl3 = new Label("–");
 		dl3.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		
+		HorizontalLayoutContainer modernMeasuresWidthHLC = new HorizontalLayoutContainer();
+		modernMeasuresWidthHLC.add(modernMinWidthNumberField, new HorizontalLayoutData(.4, 1.0));
+		modernMeasuresWidthHLC.add(dl1, new HorizontalLayoutData(.2, 1.0));
+		modernMeasuresWidthHLC.add(modernMaxWidthNumberField, new HorizontalLayoutData(.4, 1.0));
+
+		HorizontalLayoutContainer modernMeasuresLengthHLC = new HorizontalLayoutContainer();
+		modernMeasuresLengthHLC.add(modernMinLengthNumberField, new HorizontalLayoutData(.4, 1.0));
+		modernMeasuresLengthHLC.add(dl2, new HorizontalLayoutData(.2, 1.0));
+		modernMeasuresLengthHLC.add(modernMaxLengthNumberField, new HorizontalLayoutData(.4, 1.0));
+		
+		HorizontalLayoutContainer modernMeasuredHeightHLC = new HorizontalLayoutContainer();
+		modernMeasuredHeightHLC.add(modernMinHeightNumberField, new HorizontalLayoutData(.4, 1.0));
+		modernMeasuredHeightHLC.add(dl3, new HorizontalLayoutData(.2, 1.0));
+		modernMeasuredHeightHLC.add(modernMaxHeightNumberField, new HorizontalLayoutData(.4, 1.0));
+		
+		FramedPanel modernMeasuresWidthFP = new FramedPanel();
+		modernMeasuresWidthFP.setHeading("Width");
+		modernMeasuresWidthFP.add(modernMeasuresWidthHLC);
+
+		FramedPanel modernMeasuresLengthFP = new FramedPanel();
+		modernMeasuresLengthFP.setHeading("Length");
+		modernMeasuresLengthFP.add(modernMeasuresLengthHLC);
+
+		FramedPanel modernMeasuresHeightFP = new FramedPanel();
+		modernMeasuresHeightFP.setHeading("Height");
+		modernMeasuresHeightFP.add(modernMeasuredHeightHLC);
 
 		HorizontalLayoutContainer modernMeasuresHLC = new HorizontalLayoutContainer();
-		modernMeasuresHLC.add(modernMinWidthNumberField, new HorizontalLayoutData(.8 / 6, 1.0));
-		modernMeasuresHLC.add(dl1, new HorizontalLayoutData(.2 / 5, 1.0));
-		modernMeasuresHLC.add(modernMaxWidthNumberField, new HorizontalLayoutData(.8 / 6, 1.0));
-		modernMeasuresHLC.add(sl1, new HorizontalLayoutData(.2 / 5, 1.0));
-		modernMeasuresHLC.add(modernMinLengthNumberField, new HorizontalLayoutData(.8 / 6, 1.0));
-		modernMeasuresHLC.add(dl2, new HorizontalLayoutData(.2 / 5, 1.0));
-		modernMeasuresHLC.add(modernMaxLengthNumberField, new HorizontalLayoutData(.8 / 6, 1.0));
-		modernMeasuresHLC.add(sl2, new HorizontalLayoutData(.2 / 5, 1.0));
-		modernMeasuresHLC.add(modernMinHeightNumberField, new HorizontalLayoutData(.8 / 6, 1.0));
-		modernMeasuresHLC.add(dl3, new HorizontalLayoutData(.2 / 5, 1.0));
-		modernMeasuresHLC.add(modernMaxHeightNumberField, new HorizontalLayoutData(.8 / 6, 1.0));
-		modernMeasurementCP.add(modernMeasuresHLC);
+		modernMeasuresHLC.add(modernMeasuresWidthFP, new HorizontalLayoutData(1.0 / 3,  1.0));
+		modernMeasuresHLC.add(modernMeasuresLengthFP, new HorizontalLayoutData(1.0 / 3,  1.0));
+		modernMeasuresHLC.add(modernMeasuresHeightFP, new HorizontalLayoutData(1.0 / 3,  1.0));
+		
+		modernMeasurementFP.add(modernMeasuresHLC);
 
-		return modernMeasurementCP;
+		return modernMeasurementFP;
 	}
 
 	private NumberField<Double> createMeasurementNumberField(double value) {

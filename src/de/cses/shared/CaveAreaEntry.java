@@ -30,7 +30,8 @@ public class CaveAreaEntry extends AbstractEntry {
 	protected String caveAreaLabel;
 	protected double expeditionWidth = 0;
 	protected double expeditionLength = 0;
-	protected double expeditionHeight = 0;
+	protected double expeditionWallHeight = 0;
+	protected double expeditionTotalHeight = 0;
 	protected double modernMinWidth = 0;
 	protected double modernMaxWidth = 0;
 	protected double modernMinLength = 0;
@@ -56,7 +57,7 @@ public class CaveAreaEntry extends AbstractEntry {
 	 * @param expeditionLength
 	 * @param expeditionHeight
 	 */
-	public CaveAreaEntry(int caveID, String caveAreaLabel, double expeditionWidth, double expeditionLength, double expeditionHeight, 
+	public CaveAreaEntry(int caveID, String caveAreaLabel, double expeditionWidth, double expeditionLength, double expeditionWallHeight, double expeditionTotalHeight,
 			double modernMinWidth, double modernMaxWidth, double modernMinLength, double modernMaxLength, double modernMinHeight, double modernMaxHeight, 
 			int preservationClassificationID, int ceilingTypeID1, int ceilingTypeID2, int ceilingPreservationClassificationID1, int ceilingPreservationClassificationID2, 
 			int floorPreservationClassificationID) {
@@ -64,7 +65,8 @@ public class CaveAreaEntry extends AbstractEntry {
 		this.caveAreaLabel = caveAreaLabel;
 		this.expeditionWidth = expeditionWidth;
 		this.expeditionLength = expeditionLength;
-		this.expeditionHeight = expeditionHeight;
+		this.expeditionWallHeight = expeditionWallHeight;
+		this.expeditionTotalHeight = expeditionTotalHeight;
 		this.modernMinWidth = modernMinWidth;
 		this.modernMaxWidth = modernMaxWidth;
 		this.modernMinLength = modernMinLength;
@@ -89,7 +91,7 @@ public class CaveAreaEntry extends AbstractEntry {
 	}
 	
 	public CaveAreaEntry clone() {
-		return new CaveAreaEntry(caveID, caveAreaLabel, expeditionWidth, expeditionLength, expeditionHeight, 
+		return new CaveAreaEntry(caveID, caveAreaLabel, expeditionWidth, expeditionLength, expeditionWallHeight, expeditionTotalHeight, 
 				modernMinWidth, modernMaxWidth, modernMinLength, modernMaxLength, modernMinHeight, modernMaxHeight, 
 				preservationClassificationID, ceilingTypeID1, ceilingTypeID2, ceilingPreservationClassificationID1, ceilingPreservationClassificationID2, 
 				floorPreservationClassificationID);
@@ -177,12 +179,20 @@ public class CaveAreaEntry extends AbstractEntry {
 		this.expeditionLength = expeditionLength;
 	}
 
-	public double getExpeditionHeight() {
-		return expeditionHeight;
+	public double getExpeditionWallHeight() {
+		return expeditionWallHeight;
 	}
 
-	public void setExpeditionHeight(double expeditionHeight) {
-		this.expeditionHeight = expeditionHeight;
+	public void setExpeditionWallHeight(double expeditionWallHeight) {
+		this.expeditionWallHeight = expeditionWallHeight;
+	}
+
+	public double getExpeditionTotalHeight() {
+		return expeditionTotalHeight;
+	}
+
+	public void setExpeditionTotalHeight(double expeditionTotalHeight) {
+		this.expeditionTotalHeight = expeditionTotalHeight;
 	}
 
 	public double getModernMinWidth() {
