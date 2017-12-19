@@ -36,8 +36,6 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.sencha.gxt.cell.core.client.LabelProviderSafeHtmlCell;
-import com.sencha.gxt.cell.core.client.form.CheckBoxCell;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
@@ -1515,7 +1513,80 @@ public class CaveEditor extends AbstractEditor {
 		HorizontalLayoutContainer findingsNotesHLC = new HorizontalLayoutContainer();
 		findingsNotesHLC.add(findingsFP, new HorizontalLayoutData(.5, 1.0));
 		findingsNotesHLC.add(notesFP, new HorizontalLayoutData(.5, 1.0));
+		
 
+		CheckBox sculpturesCB = new CheckBox();
+		sculpturesCB.setBoxLabel("contains sculptures");
+		sculpturesCB.setValue(correspondingCaveEntry.isHasSculptures());
+		sculpturesCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				correspondingCaveEntry.setHasSculptures(event.getValue());
+			}
+		});
+		
+		CheckBox clayFiguresCB = new CheckBox();
+		clayFiguresCB.setBoxLabel("contains clay figures");
+		clayFiguresCB.setValue(correspondingCaveEntry.isHasClayFigures());
+		clayFiguresCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				correspondingCaveEntry.setHasClayFigures(event.getValue());
+			}
+		});
+
+		CheckBox immitationOfMountainsCB = new CheckBox();
+		immitationOfMountainsCB.setBoxLabel("contains immitations of mountains");
+		immitationOfMountainsCB.setValue(correspondingCaveEntry.isHasImmitationOfMountains());
+		immitationOfMountainsCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				correspondingCaveEntry.setHasImmitationOfMountains(event.getValue());
+			}
+		});
+
+		CheckBox holesForFixationCB = new CheckBox();
+		holesForFixationCB.setBoxLabel("has holes for fixation of plastical items");
+		holesForFixationCB.setValue(correspondingCaveEntry.isHasHolesForFixationOfPlasticalItems());
+		holesForFixationCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				correspondingCaveEntry.setHasHolesForFixationOfPlasticalItems(event.getValue());
+			}
+		});
+
+		CheckBox woodenConstructionCB = new CheckBox();
+		woodenConstructionCB.setBoxLabel("has wooden contructions");
+		woodenConstructionCB.setValue(correspondingCaveEntry.isHasWoodenConstruction());
+		woodenConstructionCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				correspondingCaveEntry.setHasWoodenConstruction(event.getValue());
+			}
+		});
+		
+		VerticalLayoutContainer sculpturesVLC = new VerticalLayoutContainer();
+		sculpturesVLC.add(sculpturesCB, new VerticalLayoutData(1.0, 1.0 / 3));
+		sculpturesVLC.add(clayFiguresCB, new VerticalLayoutData(1.0, 1.0 / 3, new Margins(0, 0, 0, 20)));
+		sculpturesVLC.add(immitationOfMountainsCB, new VerticalLayoutData(1.0, 1.0 / 3, new Margins(0, 0, 0, 20)));
+		
+		VerticalLayoutContainer holesConstructionsVLC = new VerticalLayoutContainer();
+		holesConstructionsVLC.add(holesForFixationCB, new VerticalLayoutData(1.0, .5));
+		holesConstructionsVLC.add(woodenConstructionCB, new VerticalLayoutData(1.0, .5));
+		
+		HorizontalLayoutContainer plasticalItemsHLC = new HorizontalLayoutContainer();
+		plasticalItemsHLC.add(sculpturesVLC, new HorizontalLayoutData(.5, 1.0));
+		plasticalItemsHLC.add(holesConstructionsVLC, new HorizontalLayoutData(.5, 1.0));
+
+		FramedPanel plasticalItemsFP = new FramedPanel();
+		plasticalItemsFP.setHeading("Plastical Items");
+		plasticalItemsFP.add(plasticalItemsHLC);
+		
 		FramedPanel c14AnalysisLinkFP = new FramedPanel();
 		c14AnalysisLinkFP.setHeading("C14 Analysis (links)");
 		c14AnalysisLinksFLC = new FlowLayoutContainer();
@@ -1617,9 +1688,10 @@ public class CaveEditor extends AbstractEditor {
 		c14UploadPanel.addTool(uploadButton);
 
 		VerticalLayoutContainer descriptionsVLC = new VerticalLayoutContainer();
-		descriptionsVLC.add(findingsNotesHLC, new VerticalLayoutData(1.0, .6));
-		descriptionsVLC.add(c14AnalysisLinkFP, new VerticalLayoutData(1.0, .2));
-		descriptionsVLC.add(c14UploadPanel, new VerticalLayoutData(1.0, .2));
+		descriptionsVLC.add(findingsNotesHLC, new VerticalLayoutData(1.0, .5));
+		descriptionsVLC.add(plasticalItemsFP, new VerticalLayoutData(1.0, .2));
+		descriptionsVLC.add(c14AnalysisLinkFP, new VerticalLayoutData(1.0, .15));
+		descriptionsVLC.add(c14UploadPanel, new VerticalLayoutData(1.0, .15));
 
 		descriptionHLC.add(descriptionsVLC, new HorizontalLayoutData(1.0, 1.0));
 
