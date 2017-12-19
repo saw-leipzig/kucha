@@ -34,6 +34,11 @@ public class CaveEntry extends AbstractEntry {
 	private String optionalCaveSketch;
 	private String caveLayoutComments;
 	private boolean hasVolutedHorseShoeArch = false;
+	private boolean hasSculptures = false;
+	private boolean hasClayFigures = false;
+	private boolean hasImmitationOfMountains = false;
+	private boolean hasHolesForFixationOfPlasticalItems = false;
+	private boolean hasWoodenConstruction = false;
 	private ArrayList<CaveAreaEntry> caveAreaList;
 	private ArrayList<WallEntry> wallList;
 	private ArrayList<C14AnalysisUrlEntry> c14AnalysisUrlList;
@@ -43,7 +48,8 @@ public class CaveEntry extends AbstractEntry {
 
 	public CaveEntry(int caveID, String officialNumber, String historicName, String optionalHistoricName, int caveTypeID, int districtID,
 			int regionID, int orientationID, String stateOfPerservation, String findings, String notes, String firstDocumentedBy, int firstDocumentedInYear, int preservationClassificationID,
-			int caveGroupID, String optionalCaveSketch, String caveLayoutComments, boolean hasVolutedHorseShoeArch) {
+			int caveGroupID, String optionalCaveSketch, String caveLayoutComments, boolean hasVolutedHorseShoeArch, boolean hasSculptures, boolean hasClayFigures, boolean hasImmitationOfMountains,
+			boolean hasHolesForFixationOfPlasticalItems, boolean hasWoodenConstruction) {
 		this.caveID = caveID;
 		this.officialNumber = officialNumber;
 		this.historicName = historicName;
@@ -62,6 +68,11 @@ public class CaveEntry extends AbstractEntry {
 		this.optionalCaveSketch = optionalCaveSketch;
 		this.setCaveLayoutComments(caveLayoutComments);
 		this.hasVolutedHorseShoeArch = hasVolutedHorseShoeArch;
+		this.hasSculptures = hasSculptures;
+		this.hasClayFigures = hasClayFigures;
+		this.hasImmitationOfMountains = hasImmitationOfMountains;
+		this.hasHolesForFixationOfPlasticalItems = hasHolesForFixationOfPlasticalItems;
+		this.hasWoodenConstruction = hasWoodenConstruction;
 		caveAreaList = new ArrayList<CaveAreaEntry>();
 		wallList = new ArrayList<WallEntry>();
 		c14AnalysisUrlList = new ArrayList<C14AnalysisUrlEntry>();
@@ -71,7 +82,7 @@ public class CaveEntry extends AbstractEntry {
 	public CaveEntry clone() {
 		CaveEntry clonedCE = new CaveEntry(caveID, officialNumber, historicName, optionalHistoricName, caveTypeID, districtID,
 				regionID, orientationID, stateOfPerservation, findings, notes, firstDocumentedBy, firstDocumentedInYear, preservationClassificationID,
-				caveGroupID, optionalCaveSketch, caveLayoutComments, hasVolutedHorseShoeArch);
+				caveGroupID, optionalCaveSketch, caveLayoutComments, hasVolutedHorseShoeArch, hasSculptures, hasClayFigures, hasImmitationOfMountains, hasHolesForFixationOfPlasticalItems, hasWoodenConstruction);
 		ArrayList<CaveAreaEntry> clonedCaveAreaList = new ArrayList<CaveAreaEntry>();
 		for (CaveAreaEntry cae : caveAreaList) {
 			clonedCaveAreaList.add(cae.clone());
@@ -348,6 +359,46 @@ public class CaveEntry extends AbstractEntry {
 
 	public void setHasVolutedHorseShoeArch(boolean hasVolutedHorseShoeArch) {
 		this.hasVolutedHorseShoeArch = hasVolutedHorseShoeArch;
+	}
+
+	public boolean isHasSculptures() {
+		return hasSculptures;
+	}
+
+	public void setHasSculptures(boolean hasSculptures) {
+		this.hasSculptures = hasSculptures;
+	}
+
+	public boolean isHasClayFigures() {
+		return hasClayFigures;
+	}
+
+	public void setHasClayFigures(boolean hasClayFigures) {
+		this.hasClayFigures = hasClayFigures;
+	}
+
+	public boolean isHasImmitationOfMountains() {
+		return hasImmitationOfMountains;
+	}
+
+	public void setHasImmitationOfMountains(boolean hasImmitationOfMountains) {
+		this.hasImmitationOfMountains = hasImmitationOfMountains;
+	}
+
+	public boolean isHasHolesForFixationOfPlasticalItems() {
+		return hasHolesForFixationOfPlasticalItems;
+	}
+
+	public void setHasHolesForFixationOfPlasticalItems(boolean hasHolesForFixationOfPlasticalItems) {
+		this.hasHolesForFixationOfPlasticalItems = hasHolesForFixationOfPlasticalItems;
+	}
+
+	public boolean isHasWoodenConstruction() {
+		return hasWoodenConstruction;
+	}
+
+	public void setHasWoodenConstruction(boolean hasWoodenConstruction) {
+		this.hasWoodenConstruction = hasWoodenConstruction;
 	}
 	
 }
