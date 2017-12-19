@@ -1725,27 +1725,6 @@ public class MysqlConnector {
 		return newCaveID;
 	}
 
-//	/**
-//	 * @param caveID
-//	 */
-//	public synchronized boolean updateC14DocumentFilename(int caveID, String c14DocumentFilename) {
-//		Connection dbc = getConnection();
-//		PreparedStatement pstmt;
-//		try {
-//			pstmt = dbc.prepareStatement("UPDATE Caves SET C14DocumentFilename=? WHERE CaveID=?");
-//			pstmt.setString(1, c14DocumentFilename);
-//			pstmt.setInt(2, caveID);
-//			pstmt.executeUpdate();
-//			pstmt.close();
-//		} catch (SQLException ex) {
-//			ex.printStackTrace();
-//			return false;
-//		}
-//		return true;
-//	}
-	
-	
-
 	/**
 	 * @return
 	 */
