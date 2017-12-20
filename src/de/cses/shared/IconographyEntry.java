@@ -71,7 +71,7 @@ public class IconographyEntry extends AbstractEntry {
 	 */
 	@Override
 	public String getUniqueID() {
-		return "IconographyEntry" + iconographyID;
+		return "IconographyEntry-" + iconographyID;
 	}
 
 }

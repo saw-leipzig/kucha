@@ -974,7 +974,7 @@ public class DepictionEditor extends AbstractEditor {
 		
 		mainPanel = new FramedPanel();
 		mainPanel.setHeading("Painted Representation Editor ("
-				+ (correspondingDepictionEntry.getDepictionID() > 0 ? "ID = " + correspondingDepictionEntry.getShortName() : "NEW") + ")");
+				+ (correspondingDepictionEntry.getDepictionID() > 0 ? correspondingDepictionEntry.getShortName() : "NEW") + ")");
 
 		mainPanel.add(mainHLC);
 		mainPanel.setSize("900px", "650px");

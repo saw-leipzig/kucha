@@ -29,6 +29,7 @@ import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.TreeStore;
+import com.sencha.gxt.data.shared.event.StoreFilterEvent;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
@@ -45,6 +46,7 @@ import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
+import de.cses.client.depictions.PictorialElementSelector.PictorialElementValueProvider;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.PictorialElementEntry;
 
@@ -141,7 +143,18 @@ public class IconographySelector implements IsWidget {
 
 		vlc = new VerticalLayoutContainer();
 
-		tree = new Tree<IconographyEntry, String>(store, new IconographyValueProvider());
+		tree = new Tree<IconographyEntry, String>(store, new IconographyValueProvider()) {
+
+			@Override
+			protected void onFilter(StoreFilterEvent<IconographyEntry> ie) {
+				super.onFilter(ie);
+				for (IconographyEntry entry : selectedIconographyMap.values()) {
+					tree.setChecked(entry, CheckState.CHECKED);
+				}
+			}
+
+		};
+		
 		tree.getSelectionModel().setSelectionMode(SelectionMode.MULTI);
 		tree.setCheckable(true);
 		tree.setCheckStyle(CheckCascade.NONE);
@@ -200,7 +213,11 @@ public class IconographySelector implements IsWidget {
 	public ArrayList<IconographyEntry> getSelectedIconography() {
 		filterField.clear();
 		filterField.validate();
-		return new ArrayList<IconographyEntry>(tree.getCheckedSelection());	
+		ArrayList<IconographyEntry> result = new ArrayList<IconographyEntry>();
+		for (IconographyEntry entry : tree.getCheckedSelection()) {
+			result.add(entry);
+		}
+		return result;	
 	}
 
 
