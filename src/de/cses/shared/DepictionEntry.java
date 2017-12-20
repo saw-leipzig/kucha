@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 
+ * Copyright 2016 -2017
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -17,8 +17,8 @@ import java.sql.Date;
 
 public class DepictionEntry extends AbstractEntry {
 
-	private int depictionID;
-	private int styleID;
+	private int depictionID = 0;
+	private int styleID = 0;
 	private String inscriptions;
 	private String separateAksaras;
 	private String dating;
@@ -26,47 +26,78 @@ public class DepictionEntry extends AbstractEntry {
 	private String backgroundColour;
 	private String generalRemarks;
 	private String otherSuggestedIdentifications;
-	private double width, height;
-	private int expeditionID;
+	private double width = 0, height = 0;
+	private int expeditionID = 0;
 	private Date purchaseDate;
-	private int currentLocationID;
-	private int vendorID;
-	private int storyID;
-	private int caveID;
-	private int wallID;
-	private int iconographyID;
-	private int absoluteLeft;
-	private int absoluteTop;
-	private int modeOfRepresentationID;
+	private int currentLocationID = 0;
+	private String inventoryNumber;
+	private int vendorID = 0;
+	private int storyID = 0;
+	private int caveID = 0;
+	private int wallID = 0;
+	private int iconographyID = 0;
+	private int absoluteLeft = 0;
+	private int absoluteTop = 0;
+	private int modeOfRepresentationID = 0;
+	private String paintedRepresentationShortName;
 
-	public DepictionEntry() {
-		this(0, 0, "", "", "", "", "", "", "", 0, 0, 0, null, 0, 0, 0, 0, 0, 0, 0);
-	}
+	public DepictionEntry() {	}
 
-	public DepictionEntry(int depictionID, int styleID, String inscriptions, String separateAksaras, String dating, String description, String backgroundColour,
-			String generalRemarks, String otherSuggestedIdentifications, double width, double height, int expeditionID,
-			Date purchaseDate, int currentLocationID, int vendorID, int storyID, int caveID, int wallID, int iconographyID, int modeOfRepresentationID) {
+	/**
+	 * @param depictionID
+	 * @param styleID
+	 * @param inscriptions
+	 * @param separateAksaras
+	 * @param dating
+	 * @param description
+	 * @param backgroundColour
+	 * @param generalRemarks
+	 * @param otherSuggestedIdentifications
+	 * @param width
+	 * @param height
+	 * @param expeditionID
+	 * @param purchaseDate
+	 * @param currentLocationID
+	 * @param inventoryNumber
+	 * @param vendorID
+	 * @param storyID
+	 * @param caveID
+	 * @param wallID
+	 * @param iconographyID
+	 * @param absoluteLeft
+	 * @param absoluteTop
+	 * @param modeOfRepresentationID
+	 * @param paintedRepresentationShortName
+	 */
+	public DepictionEntry(int depictionID, int styleID, String inscriptions, String separateAksaras, String dating, String description,
+			String backgroundColour, String generalRemarks, String otherSuggestedIdentifications, double width, double height, int expeditionID,
+			Date purchaseDate, int currentLocationID, String inventoryNumber, int vendorID, int storyID, int caveID, int wallID,
+			int iconographyID, int absoluteLeft, int absoluteTop, int modeOfRepresentationID, String paintedRepresentationShortName) {
 		super();
-		setDepictionID(depictionID);
-		setStyleID(styleID);
-		setInscriptions(inscriptions);
-		setSeparateAksaras(separateAksaras);
-		setDating(dating);
-		setDescription(description);
-		setBackgroundColour(backgroundColour);
-		setGeneralRemarks(generalRemarks);
-		setOtherSuggestedIdentifications(otherSuggestedIdentifications);
-		setWidth(width);
-		setHeight(height);
-		setExpeditionID(expeditionID);
-		setPurchaseDate(purchaseDate);
-		setCurrentLocationID(currentLocationID);
-		setVendorID(vendorID);
-		setStoryID(storyID);
-		setCaveID(caveID);
-		setWallID(wallID);
-		setIconographyID(iconographyID);
-		setModeOfRepresentationID(modeOfRepresentationID);
+		this.depictionID = depictionID;
+		this.styleID = styleID;
+		this.inscriptions = inscriptions;
+		this.separateAksaras = separateAksaras;
+		this.dating = dating;
+		this.description = description;
+		this.backgroundColour = backgroundColour;
+		this.generalRemarks = generalRemarks;
+		this.otherSuggestedIdentifications = otherSuggestedIdentifications;
+		this.width = width;
+		this.height = height;
+		this.expeditionID = expeditionID;
+		this.purchaseDate = purchaseDate;
+		this.currentLocationID = currentLocationID;
+		this.inventoryNumber = inventoryNumber;
+		this.vendorID = vendorID;
+		this.storyID = storyID;
+		this.caveID = caveID;
+		this.wallID = wallID;
+		this.iconographyID = iconographyID;
+		this.absoluteLeft = absoluteLeft;
+		this.absoluteTop = absoluteTop;
+		this.modeOfRepresentationID = modeOfRepresentationID;
+		this.paintedRepresentationShortName = paintedRepresentationShortName;
 	}
 
 	public int getDepictionID() {
@@ -267,6 +298,22 @@ public class DepictionEntry extends AbstractEntry {
 
 	public void setModeOfRepresentationID(int modeOfRepresentationID) {
 		this.modeOfRepresentationID = modeOfRepresentationID;
+	}
+
+	public String getInventoryNumber() {
+		return inventoryNumber;
+	}
+
+	public void setInventoryNumber(String inventoryNumber) {
+		this.inventoryNumber = inventoryNumber;
+	}
+
+	public String getPaintedRepresentationShortName() {
+		return paintedRepresentationShortName;
+	}
+
+	public void setPaintedRepresentationShortName(String paintedRepresentationShortName) {
+		this.paintedRepresentationShortName = paintedRepresentationShortName;
 	}
 
 }

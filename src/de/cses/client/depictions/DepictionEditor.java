@@ -913,10 +913,6 @@ public class DepictionEditor extends AbstractEditor {
 //		view.setCenterWidget(tabPanel, centerData);
 //		view.setEastWidget(depictionImagesPanel, eastData);
 
-		mainPanel.add(mainHLC);
-		mainPanel.setSize("900px", "650px");
-		
-
 		ToolButton saveToolButton = new ToolButton(ToolButton.SAVE);
 		saveToolButton.addSelectHandler(new SelectHandler() {
 			@Override
@@ -957,6 +953,8 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});		
 		
+		mainPanel.add(mainHLC);
+		mainPanel.setSize("900px", "650px");
 		mainPanel.addTool(saveToolButton);
 		mainPanel.addTool(closeToolButton);
 	}
