@@ -36,10 +36,10 @@ public class DepictionEntry extends AbstractEntry {
 	private int caveID = 0;
 	private int wallID = 0;
 	private int iconographyID = 0;
-	private int absoluteLeft = 0;
-	private int absoluteTop = 0;
+	private int absoluteLeft = -1;
+	private int absoluteTop = -1;
 	private int modeOfRepresentationID = 0;
-	private String paintedRepresentationShortName;
+	private String shortName;
 
 	public DepictionEntry() {	}
 
@@ -72,7 +72,7 @@ public class DepictionEntry extends AbstractEntry {
 	public DepictionEntry(int depictionID, int styleID, String inscriptions, String separateAksaras, String dating, String description,
 			String backgroundColour, String generalRemarks, String otherSuggestedIdentifications, double width, double height, int expeditionID,
 			Date purchaseDate, int currentLocationID, String inventoryNumber, int vendorID, int storyID, int caveID, int wallID,
-			int iconographyID, int absoluteLeft, int absoluteTop, int modeOfRepresentationID, String paintedRepresentationShortName) {
+			int iconographyID, int absoluteLeft, int absoluteTop, int modeOfRepresentationID, String shortName) {
 		super();
 		this.depictionID = depictionID;
 		this.styleID = styleID;
@@ -97,7 +97,7 @@ public class DepictionEntry extends AbstractEntry {
 		this.absoluteLeft = absoluteLeft;
 		this.absoluteTop = absoluteTop;
 		this.modeOfRepresentationID = modeOfRepresentationID;
-		this.paintedRepresentationShortName = paintedRepresentationShortName;
+		this.shortName = shortName;
 	}
 
 	public int getDepictionID() {
@@ -308,12 +308,12 @@ public class DepictionEntry extends AbstractEntry {
 		this.inventoryNumber = inventoryNumber;
 	}
 
-	public String getPaintedRepresentationShortName() {
-		return paintedRepresentationShortName;
+	public String getShortName() {
+		return shortName;
 	}
 
-	public void setPaintedRepresentationShortName(String paintedRepresentationShortName) {
-		this.paintedRepresentationShortName = paintedRepresentationShortName;
+	public void setShortName(String shortName) {
+		this.shortName = shortName;
 	}
 
 }

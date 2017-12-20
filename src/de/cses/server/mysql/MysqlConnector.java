@@ -79,7 +79,7 @@ public class MysqlConnector {
 	private String user; // MysqlConnector.db.user
 	private String password; // MysqlConnector.db.password
 
-	private int auto_increment_id;
+//	private int auto_increment_id;
 
 	private static MysqlConnector instance = null;
 	private ServerProperties serverProperties = ServerProperties.getInstance();
@@ -374,9 +374,9 @@ public class MysqlConnector {
 				results.add(new DepictionEntry(rs.getInt("DepictionID"), rs.getInt("StyleID"), rs.getString("Inscriptions"),
 						rs.getString("SeparateAksaras"), rs.getString("Dating"), rs.getString("Description"), rs.getString("BackgroundColour"),
 						rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"), rs.getDouble("Width"), rs.getDouble("Height"),
-						rs.getInt("ExpeditionID"), rs.getDate("PurchaseDate"), rs.getInt("CurrentLocationID"), rs.getInt("VendorID"),
+						rs.getInt("ExpeditionID"), rs.getDate("PurchaseDate"), rs.getInt("CurrentLocationID"), rs.getString("InventoryNumber"), rs.getInt("VendorID"),
 						rs.getInt("StoryID"), rs.getInt("CaveID"), rs.getInt("WallID"), rs.getInt("IconographyID"),
-						rs.getInt("ModeOfRepresentationID")));
+						rs.getInt("AbsolutLeft"), rs.getInt("AbsolutTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName")));
 			}
 			rs.close();
 			stmt.close();
@@ -398,10 +398,10 @@ public class MysqlConnector {
 												// more than 1 result!
 				result = new DepictionEntry(rs.getInt("DepictionID"), rs.getInt("StyleID"), rs.getString("Inscriptions"),
 						rs.getString("SeparateAksaras"), rs.getString("Dating"), rs.getString("Description"), rs.getString("BackgroundColour"),
-						rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"), rs.getInt("Dimension.width"),
-						rs.getInt("Dimension.height"), rs.getInt("ExpeditionID"), rs.getDate("PurchaseDate"), rs.getInt("CurrentLocationID"),
-						rs.getInt("VendorID"), rs.getInt("StoryID"), rs.getInt("CaveID"), rs.getInt("WallID"), rs.getInt("IconographyID"),
-						rs.getInt("ModeOfRepresentationID"));
+						rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"), rs.getDouble("Width"), rs.getDouble("Height"),
+						rs.getInt("ExpeditionID"), rs.getDate("PurchaseDate"), rs.getInt("CurrentLocationID"), rs.getString("InventoryNumber"), rs.getInt("VendorID"),
+						rs.getInt("StoryID"), rs.getInt("CaveID"), rs.getInt("WallID"), rs.getInt("IconographyID"),
+						rs.getInt("AbsolutLeft"), rs.getInt("AbsolutTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"));
 			}
 			rs.close();
 			stmt.close();
@@ -1805,37 +1805,38 @@ public class MysqlConnector {
 	 */
 	public synchronized int insertDepictionEntry(DepictionEntry de, ArrayList<ImageEntry> imgEntryList,
 			ArrayList<PictorialElementEntry> peEntryList) {
-		int newDepictionID;
+		int newDepictionID = 0;
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
 			pstmt = dbc.prepareStatement(
-					"INSERT INTO Depictions (StyleID, Inscriptions, SeparateAksaras, Dating, Height, Width, PurchaseDate, VendorID, ExpeditionID, "
-							+ "CurrentLocationID, Description, BackgroundColour, GeneralRemarks, OtherSuggestedIdentifications, "
-							+ "StoryID, CaveID, WallID, AbsoluteLeft, AbsoluteTop, IconographyID, ModeOfRepresentationID) "
-							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+					"INSERT INTO Depictions (StyleID, Inscriptions, SeparateAksaras, Dating, Description, BackgroundColour, GeneralRemarks, "
+					+ "OtherSuggestedIdentifications, Width, Height, ExpeditionID, PurchaseDate, CurrentLocationID, InventoryNumber, VendorID, "
+					+ "StoryID, CaveID, WallID, AbsolutLeft, AbsolutTop, ModeOfRepresentationID, ShortName) "
+							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			pstmt.setInt(1, de.getStyleID());
 			pstmt.setString(2, de.getInscriptions());
 			pstmt.setString(3, de.getSeparateAksaras());
 			pstmt.setString(4, de.getDating());
-			pstmt.setDouble(5, de.getHeight());
-			pstmt.setDouble(6, de.getWidth());
-			pstmt.setDate(7, de.getPurchaseDate());
-			pstmt.setInt(8, de.getVendorID());
-			pstmt.setInt(9, de.getExpeditionID());
-			pstmt.setInt(10, de.getCurrentLocationID());
-			pstmt.setString(11, de.getDescription());
-			pstmt.setString(12, de.getBackgroundColour());
-			pstmt.setString(13, de.getGeneralRemarks());
-			pstmt.setString(14, de.getOtherSuggestedIdentifications());
-			pstmt.setInt(15, de.getStoryID());
-			pstmt.setInt(16, de.getCaveID());
-			pstmt.setInt(17, de.getWallID());
-			pstmt.setInt(18, de.getAbsoluteLeft());
-			pstmt.setInt(19, de.getAbsoluteTop());
-			pstmt.setInt(20, de.getIconographyID());
+			pstmt.setString(5, de.getDescription());
+			pstmt.setString(6, de.getBackgroundColour());
+			pstmt.setString(7, de.getGeneralRemarks());
+			pstmt.setString(8, de.getOtherSuggestedIdentifications());
+			pstmt.setDouble(9, de.getHeight());
+			pstmt.setDouble(10, de.getWidth());
+			pstmt.setInt(11, de.getExpeditionID());
+			pstmt.setDate(12, de.getPurchaseDate());
+			pstmt.setInt(13, de.getCurrentLocationID());
+			pstmt.setString(14, de.getInventoryNumber());
+			pstmt.setInt(15, de.getVendorID());
+			pstmt.setInt(16, de.getStoryID());
+			pstmt.setInt(17, de.getCaveID());
+			pstmt.setInt(18, de.getWallID());
+			pstmt.setInt(19, de.getAbsoluteLeft());
+			pstmt.setInt(20, de.getAbsoluteTop());
 			pstmt.setInt(21, de.getModeOfRepresentationID());
-			newDepictionID = pstmt.executeUpdate();
+			pstmt.setString(22, de.getShortName());
+			pstmt.executeUpdate();
 			ResultSet keys = pstmt.getGeneratedKeys();
 			if (keys.next()) { // there should only be 1 key returned here 
 				newDepictionID  = keys.getInt(1);
