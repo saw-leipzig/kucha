@@ -26,6 +26,7 @@ import de.cses.shared.CaveGroupEntry;
 import de.cses.shared.CavePart;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
+import de.cses.shared.CurrentLocationEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
@@ -641,6 +642,14 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public int insertCeilingTypeEntry(CeilingTypeEntry ctEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.insertCeilingTypeEntry(ctEntry);
+	}
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#getCurrentLocations()
+	 */
+	@Override
+	public ArrayList<CurrentLocationEntry> getCurrentLocations() {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getCurrentLocations();
 	}
 
 }

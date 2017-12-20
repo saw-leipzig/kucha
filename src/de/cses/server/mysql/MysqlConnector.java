@@ -37,6 +37,7 @@ import de.cses.shared.CaveGroupEntry;
 import de.cses.shared.CavePart;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
+import de.cses.shared.CurrentLocationEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
@@ -861,7 +862,65 @@ public class MysqlConnector {
 		}
 		return results;
 	}
+	
+	public CurrentLocationEntry getCurrentLocationEntryEntry(int id) {
+		CurrentLocationEntry result = null;
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM CurrentLocations WHERE CurrentLocationID=" + id);
+			if (rs.first()) {
+				result = new CurrentLocationEntry(rs.getInt("CurrentLocationID"), rs.getInt("ParentID"), rs.getString("LocationName"));
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
 
+	public ArrayList<CurrentLocationEntry> getCurrentLocations() {
+		ArrayList<CurrentLocationEntry> root = getCurrentLocationEntries(0);
+
+		for (CurrentLocationEntry item : root) {
+			processCurrentLocationTree(item);
+		}
+		return root;
+	}
+
+	protected void processCurrentLocationTree(CurrentLocationEntry parent) {
+		ArrayList<CurrentLocationEntry> children = getCurrentLocationEntries(parent.getCurrentLocationID());
+		if (children != null) {
+			parent.setChildren(children);
+			for (CurrentLocationEntry child : children) {
+				processCurrentLocationTree(child);
+			}
+		}
+	}
+
+	protected ArrayList<CurrentLocationEntry> getCurrentLocationEntries(int parentID) {
+		ArrayList<CurrentLocationEntry> results = new ArrayList<CurrentLocationEntry>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		String where = (parentID == 0) ? "IS NULL" : "= " + parentID;
+
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM CurrentLocations WHERE ParentID " + where);
+			while (rs.next()) {
+				results.add(new CurrentLocationEntry(rs.getInt("CurrentLocationID"), rs.getInt("ParentID"), rs.getString("LocationName")));
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return results;
+	}
+	
 	public ArrayList<PictorialElementEntry> getPictorialElements(int rootID) {
 		ArrayList<PictorialElementEntry> root = getPictorialElementEntries(rootID);
 

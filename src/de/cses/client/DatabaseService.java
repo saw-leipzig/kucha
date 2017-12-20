@@ -25,6 +25,7 @@ import de.cses.shared.CaveGroupEntry;
 import de.cses.shared.CavePart;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
+import de.cses.shared.CurrentLocationEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
@@ -212,5 +213,7 @@ public interface DatabaseService extends RemoteService {
 	int insertAuthorEntry(AuthorEntry currentAuthorEntry) throws IllegalArgumentException;
 
 	int insertCeilingTypeEntry(CeilingTypeEntry ctEntry) throws IllegalArgumentException;
+
+	ArrayList<CurrentLocationEntry> getCurrentLocations();
 
 }

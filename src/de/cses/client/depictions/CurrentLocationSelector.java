@@ -44,26 +44,33 @@ import com.sencha.gxt.widget.core.client.tree.Tree;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
-import de.cses.shared.IconographyEntry;
+import de.cses.shared.CurrentLocationEntry;
 
-public class IconographySelector implements IsWidget {
+public class CurrentLocationSelector implements IsWidget {
+	
+	interface CurrentLocationSelectorListener {
+		
+		public void currentLocationSelected(CurrentLocationEntry entry);
+		public void cancel();
 
-	class IconographyKeyProvider implements ModelKeyProvider<IconographyEntry> {
+	}
+
+	class CurrentLocationKeyProvider implements ModelKeyProvider<CurrentLocationEntry> {
 		@Override
-		public String getKey(IconographyEntry item) {
-			return Integer.toString(item.getIconographyID());
+		public String getKey(CurrentLocationEntry item) {
+			return Integer.toString(item.getCurrentLocationID());
 		}
 	}
 
-	class IconographyValueProvider implements ValueProvider<IconographyEntry, String> {
+	class CurrentLocationValueProvider implements ValueProvider<CurrentLocationEntry, String> {
 
 		@Override
-		public String getValue(IconographyEntry object) {
-			return object.getText();
+		public String getValue(CurrentLocationEntry object) {
+			return object.getLocationName();
 		}
 
 		@Override
-		public void setValue(IconographyEntry object, String value) {
+		public void setValue(CurrentLocationEntry object, String value) {
 			// TODO Auto-generated method stub
 
 		}
@@ -75,33 +82,33 @@ public class IconographySelector implements IsWidget {
 	}
 
 //	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
-	private TreeStore<IconographyEntry> store;
-	private Tree<IconographyEntry, String> tree;
+	private TreeStore<CurrentLocationEntry> store;
+	private Tree<CurrentLocationEntry, String> tree;
 	private FramedPanel mainPanel;
 	private VerticalLayoutContainer vlc;
-	private ArrayList<IconographySelectorListener> listenerList;
-	private int selectedIconographyID;
-	private StoreFilter<IconographyEntry> iconographyFilter;
+	private ArrayList<CurrentLocationSelectorListener> listenerList;
+	private int selectedCurrentLocationID;
+	private StoreFilter<CurrentLocationEntry> currentLocationFilter;
 	private TextField filterTextField;
 
-	public IconographySelector(int selectedIconographyID, IconographySelectorListener listener) {
-		this.selectedIconographyID = selectedIconographyID;
-		store = new TreeStore<IconographyEntry>(new IconographyKeyProvider());
-		listenerList = new ArrayList<IconographySelectorListener>();
+	public CurrentLocationSelector(int selectedCurrentLocationID, CurrentLocationSelectorListener listener) {
+		this.selectedCurrentLocationID = selectedCurrentLocationID;
+		store = new TreeStore<CurrentLocationEntry>(new CurrentLocationKeyProvider());
+		listenerList = new ArrayList<CurrentLocationSelectorListener>();
 		listenerList.add(listener);
-		iconographyFilter = new StoreFilter<IconographyEntry>() {
+		currentLocationFilter = new StoreFilter<CurrentLocationEntry>() {
 
 			@Override
-			public boolean select(Store<IconographyEntry> store, IconographyEntry parent, IconographyEntry item) {
-				return (item.getText().contains(filterTextField.getCurrentValue()));
+			public boolean select(Store<CurrentLocationEntry> store, CurrentLocationEntry parent, CurrentLocationEntry item) {
+				return (item.getLocationName().contains(filterTextField.getCurrentValue()));
 			}
 		};
 		initPanel();
-		loadIconographyStore();
+		loadCurrentLocationStore();
 	}
 
-	private void processParent(TreeStore<IconographyEntry> store, IconographyEntry item) {
-		for (IconographyEntry child : item.getChildren()) {
+	private void processParent(TreeStore<CurrentLocationEntry> store, CurrentLocationEntry item) {
+		for (CurrentLocationEntry child : item.getChildren()) {
 			store.add(item, child);
 			if (child.getChildren() != null) {
 				processParent(store, child);
@@ -109,11 +116,11 @@ public class IconographySelector implements IsWidget {
 		}
 	}
 
-	private void loadIconographyStore() {
-		IconographyEntry selectedEntry = null;
-		for (IconographyEntry item : StaticTables.getInstance().getIconographyEntries().values()) {
+	private void loadCurrentLocationStore() {
+		CurrentLocationEntry selectedEntry = null;
+		for (CurrentLocationEntry item : StaticTables.getInstance().getCurrentLocationEntries().values()) {
 			store.add(item);
-			if (item.getIconographyID() == selectedIconographyID) {
+			if (item.getCurrentLocationID() == selectedCurrentLocationID) {
 				selectedEntry = item;
 			}
 			if (item.getChildren() != null) {
@@ -141,7 +148,7 @@ public class IconographySelector implements IsWidget {
 
 		vlc = new VerticalLayoutContainer();
 
-		tree = new Tree<IconographyEntry, String>(store, new IconographyValueProvider());
+		tree = new Tree<CurrentLocationEntry, String>(store, new CurrentLocationValueProvider());
 		tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		tree.setWidth(350);
 		vlc.add(tree, new VerticalLayoutData(1.0, 1.0));
@@ -151,13 +158,13 @@ public class IconographySelector implements IsWidget {
 		treePanel.setHeaderVisible(false);
 		treePanel.add(vlc);
 
-		StoreFilterField<IconographyEntry> filterField = new StoreFilterField<IconographyEntry>() {
+		StoreFilterField<CurrentLocationEntry> filterField = new StoreFilterField<CurrentLocationEntry>() {
 
 			@Override
-			protected boolean doSelect(Store<IconographyEntry> store, IconographyEntry parent, IconographyEntry item, String filter) {
-				TreeStore<IconographyEntry> treeStore = (TreeStore<IconographyEntry>) store;
+			protected boolean doSelect(Store<CurrentLocationEntry> store, CurrentLocationEntry parent, CurrentLocationEntry item, String filter) {
+				TreeStore<CurrentLocationEntry> treeStore = (TreeStore<CurrentLocationEntry>) store;
 				do {
-					String name = item.getText().toLowerCase();
+					String name = item.getLocationName().toLowerCase();
 					if (name.contains(filter.toLowerCase())) {
 						return true;
 					}
@@ -196,26 +203,26 @@ public class IconographySelector implements IsWidget {
 		cancelButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-				for (IconographySelectorListener l : listenerList) {
+				for (CurrentLocationSelectorListener l : listenerList) {
 					l.cancel();
 				}
 			}
 		});
 		mainPanel.addButton(cancelButton);
-
+		
 		TextButton selectButton = new TextButton("select");
 		selectButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-				for (IconographySelectorListener l : listenerList) {
-					l.iconographySelected(getSelectedIconography());
+				for (CurrentLocationSelectorListener l : listenerList) {
+					l.currentLocationSelected(getSelectedIconography());
 				}
 			}
 		});
 		mainPanel.addButton(selectButton);
 	}
 
-	private IconographyEntry getSelectedIconography() {
+	private CurrentLocationEntry getSelectedIconography() {
 		return tree.getSelectionModel().getSelectedItem();
 	}
 

@@ -24,6 +24,7 @@ import de.cses.shared.CaveGroupEntry;
 import de.cses.shared.CavePart;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
+import de.cses.shared.CurrentLocationEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
@@ -237,5 +238,7 @@ public interface DatabaseServiceAsync {
 	void insertAuthorEntry(AuthorEntry currentAuthorEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 
 	void insertCeilingTypeEntry(CeilingTypeEntry ctEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
+
+	void getCurrentLocations(AsyncCallback<ArrayList<CurrentLocationEntry>> asyncCallback) throws IllegalArgumentException;
 
 	}
