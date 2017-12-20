@@ -31,6 +31,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.ibm.icu.impl.CalendarAstronomer.Horizon;
 import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.IdentityValueProvider;
@@ -65,6 +66,7 @@ import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinNumberValidator;
 
 import de.cses.client.DatabaseService;
@@ -122,10 +124,10 @@ public class DepictionEditor extends AbstractEditor {
 	private ListStore<StyleEntry> styleEntryList;
 	private CaveProperties caveProps;
 	private ListStore<CaveEntry> caveEntryList;
-	private ComboBox<CaveEntry> caveSelection;
+	private ComboBox<CaveEntry> caveSelectionCB;
 	private ExpeditionProperties expedProps;
 	private ListStore<ExpeditionEntry> expedEntryList;
-	private ComboBox<ExpeditionEntry> expedSelection;
+	private ComboBox<ExpeditionEntry> expedSelectionCB;
 	private ComboBox<ModeOfRepresentationEntry> modeOfRepresentationSelection;
 	protected PopupPanel wallEditorDialog;
 	private Walls wallEditor;
@@ -267,7 +269,7 @@ public class DepictionEditor extends AbstractEditor {
 			expedEntryList.add(exped);
 		}
 		if (correspondingDepictionEntry.getExpeditionID() > 0) {
-			expedSelection.setValue(expedEntryList.findModelWithKey(Integer.toString(correspondingDepictionEntry.getExpeditionID())));
+			expedSelectionCB.setValue(expedEntryList.findModelWithKey(Integer.toString(correspondingDepictionEntry.getExpeditionID())));
 		}
 	}
 
@@ -336,7 +338,7 @@ public class DepictionEditor extends AbstractEditor {
 				}
 				if (correspondingDepictionEntry.getCaveID() > 0) {
 					CaveEntry ce = caveEntryList.findModelWithKey(Integer.toString(correspondingDepictionEntry.getCaveID()));
-					caveSelection.setValue(ce);
+					caveSelectionCB.setValue(ce);
 					wallSelectorPanel.setCave(ce);
 				}
 			}
@@ -375,22 +377,6 @@ public class DepictionEditor extends AbstractEditor {
 	 * Here the view is created. This is only done once at the beginning!
 	 */
 	private void initPanel() {
-		mainPanel = new FramedPanel();
-		// the name is set depending on wheter we have a new or an existing entry
-		mainPanel.setHeading("Painted Representation Editor ("
-				+ (correspondingDepictionEntry.getDepictionID() > 0 ? "ID = " + correspondingDepictionEntry.getDepictionID() : "NEW") + ")");
-
-		// this panel is used for the different fields in the editor
-		FramedPanel attributePanel;
-
-		TabPanel tabPanel = new TabPanel();
-		tabPanel.setTabScroll(false);
-		// the tab only gets 75% of the width and the added images get the 25% on the right to be shown all the time
-		tabPanel.setSize("75%", "100%");
-
-		HorizontalLayoutContainer hlContainer = new HorizontalLayoutContainer();
-		hlContainer.setSize("100%", "100%");
-		VerticalLayoutContainer vlContainer = new VerticalLayoutContainer();
 
 		// the images related with the depiction entry that will be shown on the right
 		imageListView = new ListView<ImageEntry, ImageEntry>(imageEntryList, new IdentityValueProvider<ImageEntry>() {
@@ -415,9 +401,24 @@ public class DepictionEditor extends AbstractEditor {
 		/**
 		 * --------------------- content of first tab (BASICS) starts here --------------------------------
 		 */
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Located in Cave");
-		caveSelection = new ComboBox<CaveEntry>(caveEntryList, caveProps.officialNumber(), new AbstractSafeHtmlRenderer<CaveEntry>() {
+		
+		FramedPanel shortNameFP = new FramedPanel();
+		shortNameFP.setHeading("Short Name");
+		TextField shortNameTF = new TextField();
+		shortNameTF.setEmptyText("please enter short name");
+		shortNameTF.setValue(correspondingDepictionEntry.getShortName());
+		shortNameTF.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				correspondingDepictionEntry.setShortName(event.getValue());
+			}
+		});
+		shortNameFP.add(shortNameTF);
+		
+		FramedPanel caveSelectionFP = new FramedPanel();
+		caveSelectionFP.setHeading("Located in Cave");
+		caveSelectionCB = new ComboBox<CaveEntry>(caveEntryList, caveProps.officialNumber(), new AbstractSafeHtmlRenderer<CaveEntry>() {
 
 			@Override
 			public SafeHtml render(CaveEntry item) {
@@ -439,11 +440,11 @@ public class DepictionEditor extends AbstractEditor {
 				}
 			}
 		});
-		caveSelection.setEmptyText("nothing selected");
-		caveSelection.setTypeAhead(true);
-		caveSelection.setEditable(false);
-		caveSelection.setTriggerAction(TriggerAction.ALL);
-		caveSelection.addSelectionHandler(new SelectionHandler<CaveEntry>() {
+		caveSelectionCB.setEmptyText("nothing selected");
+		caveSelectionCB.setTypeAhead(true);
+		caveSelectionCB.setEditable(false);
+		caveSelectionCB.setTriggerAction(TriggerAction.ALL);
+		caveSelectionCB.addSelectionHandler(new SelectionHandler<CaveEntry>() {
 
 			@Override
 			public void onSelection(SelectionEvent<CaveEntry> event) {
@@ -451,22 +452,14 @@ public class DepictionEditor extends AbstractEditor {
 				wallSelectorPanel.setCave(event.getSelectedItem());
 			}
 		});
-		caveSelection.setToolTip("This field can only be changed until a depiction is allocated to a wall");
-		// TODO check if wall publicationTypeID is set, then set caveSelection.editable(false)
-		attributePanel.add(caveSelection);
-		// attributePanel.setWidth("40%");
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0 / 8));
+		caveSelectionCB.setToolTip("This field can only be changed until a depiction is allocated to a wall");
+		// TODO check if wall publicationTypeID is set, then set caveSelectionCB.editable(false)
+		caveSelectionFP.add(caveSelectionCB);
 
-		// attributePanel = new FramedPanel();
-		// attributePanel.setHeading("Belongs to wall");
-		// attributePanel.add(new Label("Wall selection"));
-		// vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .1));
-
-		HorizontalPanel dimPanel = new HorizontalPanel();
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Width");
+		HorizontalLayoutContainer dimensionHLC = new HorizontalLayoutContainer();
+		FramedPanel widthFP = new FramedPanel();
+		widthFP.setHeading("Width");
 		widthField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
-		widthField.setWidth("60%");
 		widthField.addValidator(new MinNumberValidator<Double>((double) 0));
 		widthField.setValue(correspondingDepictionEntry.getWidth());
 		widthField.addValueChangeHandler(new ValueChangeHandler<Double>() {
@@ -476,12 +469,12 @@ public class DepictionEditor extends AbstractEditor {
 				correspondingDepictionEntry.setWidth(event.getValue());
 			}
 		});
-		attributePanel.add(widthField);
-		dimPanel.add(attributePanel);
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Height");
+		widthFP.add(widthField);
+		dimensionHLC.add(widthFP, new HorizontalLayoutData(.5	, 1.0));
+		
+		FramedPanel heightFP = new FramedPanel();
+		heightFP.setHeading("Height");
 		heightField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
-		heightField.setWidth("60%");
 		heightField.addValidator(new MinNumberValidator<Double>((double) 0));
 		heightField.setValue(correspondingDepictionEntry.getHeight());
 		heightField.addValueChangeHandler(new ValueChangeHandler<Double>() {
@@ -491,13 +484,12 @@ public class DepictionEditor extends AbstractEditor {
 				correspondingDepictionEntry.setHeight(event.getValue());
 			}
 		});
-		attributePanel.add(heightField);
-		dimPanel.add(attributePanel);
-		vlContainer.add(dimPanel, new VerticalLayoutData(1.0, 1.0 / 8));
+		heightFP.add(heightField);
+		dimensionHLC.add(heightFP, new HorizontalLayoutData(.5, 1.0));
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Acquired by expedition");
-		expedSelection = new ComboBox<ExpeditionEntry>(expedEntryList, expedProps.name(), new AbstractSafeHtmlRenderer<ExpeditionEntry>() {
+		FramedPanel acquiredByExpeditionFP = new FramedPanel();
+		acquiredByExpeditionFP.setHeading("Acquired by expedition");
+		expedSelectionCB = new ComboBox<ExpeditionEntry>(expedEntryList, expedProps.name(), new AbstractSafeHtmlRenderer<ExpeditionEntry>() {
 
 			@Override
 			public SafeHtml render(ExpeditionEntry item) {
@@ -506,30 +498,28 @@ public class DepictionEditor extends AbstractEditor {
 				return expedTemplates.expedLabel(item.getName(), item.getLeader(), dtf.format(item.getStartDate()), dtf.format(item.getEndDate()));
 			}
 		});
-		expedSelection.setEmptyText("nothing selected");
-		expedSelection.addSelectionHandler(new SelectionHandler<ExpeditionEntry>() {
+		expedSelectionCB.setEmptyText("nothing selected");
+		expedSelectionCB.addSelectionHandler(new SelectionHandler<ExpeditionEntry>() {
 
 			@Override
 			public void onSelection(SelectionEvent<ExpeditionEntry> event) {
 				correspondingDepictionEntry.setExpeditionID(event.getSelectedItem().getExpeditionID());
 			}
 		});
-		expedSelection.setHeight("1.0");
-		expedSelection.setTypeAhead(false);
-		expedSelection.setEditable(false);
-		expedSelection.setTriggerAction(TriggerAction.ALL);
-		expedSelection.addSelectionHandler(new SelectionHandler<ExpeditionEntry>() {
+		expedSelectionCB.setTypeAhead(false);
+		expedSelectionCB.setEditable(false);
+		expedSelectionCB.setTriggerAction(TriggerAction.ALL);
+		expedSelectionCB.addSelectionHandler(new SelectionHandler<ExpeditionEntry>() {
 
 			@Override
 			public void onSelection(SelectionEvent<ExpeditionEntry> event) {
 				correspondingDepictionEntry.setExpeditionID(event.getSelectedItem().getExpeditionID());
 			}
 		});
-		attributePanel.add(expedSelection);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0 / 8));
-
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Vendor");
+		acquiredByExpeditionFP.add(expedSelectionCB);
+		
+		FramedPanel vendorFP = new FramedPanel();
+		vendorFP.setHeading("Vendor");
 		vendorSelection = new ComboBox<VendorEntry>(vendorEntryList, vendorProps.vendorName(), new AbstractSafeHtmlRenderer<VendorEntry>() {
 
 			@Override
@@ -550,25 +540,36 @@ public class DepictionEditor extends AbstractEditor {
 				correspondingDepictionEntry.setVendorID(event.getSelectedItem().getVendorID());
 			}
 		});
-		attributePanel.add(vendorSelection);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0 / 8));
+		vendorFP.add(vendorSelection);
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Date purchased");
+		FramedPanel datePurchasedFP = new FramedPanel();
+		datePurchasedFP.setHeading("Date purchased");
 		purchaseDateField = new DateField(new DateTimePropertyEditor("yyyy"));
 		purchaseDateField.setValue(correspondingDepictionEntry.getPurchaseDate());
 		purchaseDateField.setEmptyText("nothing selected");
 		// TODO add change handler
-		attributePanel.add(purchaseDateField);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0 / 8));
+		datePurchasedFP.add(purchaseDateField);
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Current location");
+		FramedPanel currentLocationFP = new FramedPanel();
+		currentLocationFP.setHeading("Current location");
 		// TODO add currentLocationID selector
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0 / 8));
+		
+		FramedPanel inventoryNumberFP = new FramedPanel();
+		inventoryNumberFP.setHeading("Inventory Number");
+		TextField inventoryNumberTF = new TextField();
+		inventoryNumberTF.addValidator(new MaxLengthValidator(128));
+		inventoryNumberTF.setValue(correspondingDepictionEntry.getInventoryNumber());
+		inventoryNumberTF.addValueChangeHandler(new ValueChangeHandler<String>() {
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Background colour");
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				correspondingDepictionEntry.setInventoryNumber(event.getValue());
+			}
+		});
+		inventoryNumberFP.add(inventoryNumberTF);
+
+		FramedPanel backgroundColourFP = new FramedPanel();
+		backgroundColourFP.setHeading("Background colour");
 		backgroundColourField = new TextField();
 		backgroundColourField.setValue(correspondingDepictionEntry.getBackgroundColour());
 		backgroundColourField.addValueChangeHandler(new ValueChangeHandler<String>() {
@@ -578,11 +579,10 @@ public class DepictionEditor extends AbstractEditor {
 				correspondingDepictionEntry.setBackgroundColour(event.getValue());
 			}
 		});
-		attributePanel.add(backgroundColourField);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0 / 8));
+		backgroundColourFP.add(backgroundColourField);
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Modes of Representation");
+		FramedPanel modesOfRepresentationFP = new FramedPanel();
+		modesOfRepresentationFP.setHeading("Modes of Representation");
 		modeOfRepresentationSelection = new ComboBox<ModeOfRepresentationEntry>(morEntryList, morProps.name(), new AbstractSafeHtmlRenderer<ModeOfRepresentationEntry>() {
 
 			@Override
@@ -603,15 +603,24 @@ public class DepictionEditor extends AbstractEditor {
 				correspondingDepictionEntry.setModeOfRepresentationID(event.getSelectedItem().getModeOfRepresentationID());
 			}
 		});
-		attributePanel.add(modeOfRepresentationSelection);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0 / 8));
+		modesOfRepresentationFP.add(modeOfRepresentationSelection);
 
-		hlContainer.add(vlContainer, new HorizontalLayoutData(.4, 1.0));
+		VerticalLayoutContainer basicsLeftVLC = new VerticalLayoutContainer();
+		basicsLeftVLC.add(shortNameFP, new VerticalLayoutData(1.0, .1));
+		basicsLeftVLC.add(caveSelectionFP, new VerticalLayoutData(1.0, .1));
+		basicsLeftVLC.add(acquiredByExpeditionFP, new VerticalLayoutData(1.0, .1));
+		basicsLeftVLC.add(dimensionHLC, new VerticalLayoutData(1.0, .1));
+		basicsLeftVLC.add(vendorFP, new VerticalLayoutData(1.0, .1));
+		basicsLeftVLC.add(datePurchasedFP, new VerticalLayoutData(1.0, .1));
+		basicsLeftVLC.add(currentLocationFP, new VerticalLayoutData(1.0, .1));
+		basicsLeftVLC.add(inventoryNumberFP, new VerticalLayoutData(1.0, .1));
+		basicsLeftVLC.add(backgroundColourFP, new VerticalLayoutData(1.0, .1));
+		basicsLeftVLC.add(modesOfRepresentationFP, new VerticalLayoutData(1.0, .1));
 
-		vlContainer = new VerticalLayoutContainer();
+		VerticalLayoutContainer basicsRightVLC = new VerticalLayoutContainer();
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Wall");
+		FramedPanel wallSelectorFP = new FramedPanel();
+		wallSelectorFP.setHeading("Wall");
 		TextButton wallEditorButton = new TextButton("set position on wall");
 		wallEditor = new Walls(1, false);
 		wallEditorButton.addSelectHandler(new SelectHandler() {
@@ -626,24 +635,22 @@ public class DepictionEditor extends AbstractEditor {
 				wallEditorDialog.center();
 			}
 		});
-		attributePanel.addButton(wallEditorButton);
+		wallSelectorFP.addButton(wallEditorButton);
 
 		wallSelectorPanel = new WallSelector(350);
-		attributePanel.add(wallSelectorPanel);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0));
-		hlContainer.add(vlContainer, new HorizontalLayoutData(.6, 1.0));
-		tabPanel.add(hlContainer, "Basics");
+		wallSelectorFP.add(wallSelectorPanel);
+		basicsRightVLC.add(wallSelectorPanel, new VerticalLayoutData(1.0, 1.0));
+
+		HorizontalLayoutContainer basicsTabHLC = new HorizontalLayoutContainer();
+		basicsTabHLC.add(basicsLeftVLC, new HorizontalLayoutData(.4, 1.0));
+		basicsTabHLC.add(basicsRightVLC, new HorizontalLayoutData(.6, 1.0));
 
 		/**
 		 * --------------------- content of second tab (Descriptions) starts here --------------------------------
 		 */
-		hlContainer = new HorizontalLayoutContainer();
-		hlContainer.setSize("100%", "100%");
 
-		vlContainer = new VerticalLayoutContainer();
-
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Style");
+		FramedPanel styleFP = new FramedPanel();
+		styleFP.setHeading("Style");
 		styleSelection = new ComboBox<StyleEntry>(styleEntryList, styleProps.styleName(), new AbstractSafeHtmlRenderer<StyleEntry>() {
 
 			@Override
@@ -663,11 +670,10 @@ public class DepictionEditor extends AbstractEditor {
 				correspondingDepictionEntry.setStyleID(event.getSelectedItem().getStyleID());
 			}
 		});
-		attributePanel.add(styleSelection);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
+		styleFP.add(styleSelection);
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Iconography");
+		FramedPanel iconographyFP = new FramedPanel();
+		iconographyFP.setHeading("Iconography");
 		iconographyLabel = new Label();
 		if (correspondingDepictionEntry.getIconographyID() > 0) {
 			dbService.getIconographyEntry(correspondingDepictionEntry.getIconographyID(), new AsyncCallback<IconographyEntry>() {
@@ -685,7 +691,7 @@ public class DepictionEditor extends AbstractEditor {
 				}
 			});
 		}
-		attributePanel.add(iconographyLabel);
+		iconographyFP.add(iconographyLabel);
 		iconographySelector = new IconographySelector(correspondingDepictionEntry.getIconographyID(), new IconographySelectorListener() {
 
 			@Override
@@ -711,11 +717,10 @@ public class DepictionEditor extends AbstractEditor {
 				iconographySelectionDialog.center();
 			}
 		});
-		attributePanel.addButton(selectIconographyButton);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .25));
+		iconographyFP.addButton(selectIconographyButton);
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Inscriptions");
+		FramedPanel inscriptionsFP = new FramedPanel();
+		inscriptionsFP.setHeading("Inscriptions");
 		inscriptionsTestArea = new TextArea();
 		inscriptionsTestArea.setText(correspondingDepictionEntry.getInscriptions());
 		inscriptionsTestArea.addValueChangeHandler(new ValueChangeHandler<String>() {
@@ -725,11 +730,10 @@ public class DepictionEditor extends AbstractEditor {
 				correspondingDepictionEntry.setInscriptions(event.getValue());
 			}
 		});
-		attributePanel.add(inscriptionsTestArea);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
+		inscriptionsFP.add(inscriptionsTestArea);
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Separate Akṣaras");
+		FramedPanel separateAksarasFP = new FramedPanel();
+		separateAksarasFP.setHeading("Separate Akṣaras");
 		separateAksarasTextArea = new TextArea();
 		separateAksarasTextArea.setText(correspondingDepictionEntry.getSeparateAksaras());
 		separateAksarasTextArea.addValueChangeHandler(new ValueChangeHandler<String>() {
@@ -739,11 +743,10 @@ public class DepictionEditor extends AbstractEditor {
 				correspondingDepictionEntry.setSeparateAksaras(event.getValue());
 			}
 		});
-		attributePanel.add(separateAksarasTextArea);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
+		separateAksarasFP.add(separateAksarasTextArea);
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Dating");
+		FramedPanel datingFP  = new FramedPanel();
+		datingFP.setHeading("Dating");
 		datingField = new TextField();
 		// datingField.setWidth(130);
 		datingField.setText(correspondingDepictionEntry.getDating());
@@ -754,15 +757,17 @@ public class DepictionEditor extends AbstractEditor {
 				correspondingDepictionEntry.setDating(event.getValue());
 			}
 		});
-		attributePanel.add(datingField);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
+		datingFP.add(datingField);
 
-		hlContainer.add(vlContainer, new HorizontalLayoutData(.35, 1.0));
+		VerticalLayoutContainer descriptionLeftVLC = new VerticalLayoutContainer();
+		descriptionLeftVLC.add(styleFP, new VerticalLayoutData(1.0, .15));
+//		descriptionLeftVLC.add(iconographyFP, new VerticalLayoutData(1.0, .25));
+		descriptionLeftVLC.add(inscriptionsFP, new VerticalLayoutData(1.0, .25));
+		descriptionLeftVLC.add(separateAksarasFP, new VerticalLayoutData(1.0, .25));
+		descriptionLeftVLC.add(datingFP, new VerticalLayoutData(1.0, .15));
 
-		vlContainer = new VerticalLayoutContainer();
-
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Description");
+		FramedPanel descriptionFP = new FramedPanel();
+		descriptionFP.setHeading("Description");
 		descriptionArea = new TextArea();
 		descriptionArea.setValue(correspondingDepictionEntry.getDescription());
 		descriptionArea.addValueChangeHandler(new ValueChangeHandler<String>() {
@@ -772,12 +777,10 @@ public class DepictionEditor extends AbstractEditor {
 				correspondingDepictionEntry.setDescription(event.getValue());
 			}
 		});
-		attributePanel.add(descriptionArea);
+		descriptionFP.add(descriptionArea);
 
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .33));
-
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("General remarks");
+		FramedPanel generalRemarksFP = new FramedPanel();
+		generalRemarksFP.setHeading("General remarks");
 		generalRemarksArea = new TextArea();
 		generalRemarksArea.setValue(correspondingDepictionEntry.getGeneralRemarks());
 		generalRemarksArea.addValueChangeHandler(new ValueChangeHandler<String>() {
@@ -787,18 +790,21 @@ public class DepictionEditor extends AbstractEditor {
 				correspondingDepictionEntry.setGeneralRemarks(event.getValue());
 			}
 		});
-		attributePanel.add(generalRemarksArea);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .33));
+		generalRemarksFP.add(generalRemarksArea);
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Other suggested identifications");
+		FramedPanel otherSuggestedIdentificationsFP = new FramedPanel();
+		otherSuggestedIdentificationsFP.setHeading("Other suggested identifications");
 		othersSuggestedIdentificationsArea = new TextArea();
-		othersSuggestedIdentificationsArea.setSize("100%", "33%");
-		attributePanel.add(othersSuggestedIdentificationsArea);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .33));
+		otherSuggestedIdentificationsFP.add(othersSuggestedIdentificationsArea);
 
-		hlContainer.add(vlContainer, new HorizontalLayoutData(.65, 1.0));
-		tabPanel.add(hlContainer, "Description");
+		VerticalLayoutContainer descriptionRightVLC = new VerticalLayoutContainer();
+		descriptionRightVLC.add(descriptionFP, new VerticalLayoutData(1.0, 1.0 / 3));
+		descriptionRightVLC.add(generalRemarksFP, new VerticalLayoutData(1.0, 1.0 / 3));
+		descriptionRightVLC.add(otherSuggestedIdentificationsFP, new VerticalLayoutData(1.0, 1.0 / 3));
+
+		HorizontalLayoutContainer descriptionTabHLC = new HorizontalLayoutContainer();
+		descriptionTabHLC.add(descriptionLeftVLC, new HorizontalLayoutData(.35, 1.0));
+		descriptionTabHLC.add(descriptionRightVLC, new HorizontalLayoutData(.65, 1.0));
 
 		/**
 		 * --------------------- definition of image panel on right side starts here --------------------------------
@@ -824,6 +830,7 @@ public class DepictionEditor extends AbstractEditor {
 				imageSelectionDialog.hide();
 			}
 		});
+		
 		TextButton addImageButton = new TextButton("Select Image");
 		addImageButton.addSelectHandler(new SelectHandler() {
 
@@ -835,6 +842,7 @@ public class DepictionEditor extends AbstractEditor {
 				imageSelectionDialog.center();
 			}
 		});
+		
 		TextButton removeImageButton = new TextButton("Remove Image");
 		removeImageButton.addSelectHandler(new SelectHandler() {
 
@@ -843,6 +851,7 @@ public class DepictionEditor extends AbstractEditor {
 				imageEntryList.remove(imageListView.getSelectionModel().getSelectedItem());
 			}
 		});
+		
 		TextButton setMasterButton = new TextButton("Set Master");
 		setMasterButton.addSelectHandler(new SelectHandler() {
 
@@ -867,8 +876,7 @@ public class DepictionEditor extends AbstractEditor {
 		/**
 		 * --------------------- content of third tab (Pictorial Elements) starts here --------------------------------
 		 */
-		hlContainer = new HorizontalLayoutContainer();
-		VerticalLayoutContainer peVLC = new VerticalLayoutContainer();
+		HorizontalLayoutContainer pictorialElementsTabHLC = new HorizontalLayoutContainer();
 
 		TextButton peExpandButton = new TextButton("expand tree");
 		peExpandButton.addSelectHandler(new SelectHandler() {
@@ -884,35 +892,28 @@ public class DepictionEditor extends AbstractEditor {
 				peSelector.collapseAll();
 			}
 		});
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Pictorial Elements");
-		attributePanel.add(peSelector);
-		attributePanel.addButton(peExpandButton);
-		attributePanel.addButton(peCollapseButton);
-		hlContainer.add(attributePanel, new HorizontalLayoutData(1.0, 1.0));
-		tabPanel.add(hlContainer, "Pictorial Elements");
+
+		FramedPanel pictorialElementsFP = new FramedPanel();
+		pictorialElementsFP.setHeading("Pictorial Elements");
+		pictorialElementsFP.add(peSelector);
+		pictorialElementsFP.addButton(peExpandButton);
+		pictorialElementsFP.addButton(peCollapseButton);
+		pictorialElementsTabHLC.add(pictorialElementsFP, new HorizontalLayoutData(1.0, 1.0));
 
 		/**
 		 * --------------------------- next the editor as a whole will be assembled -------------------
 		 */
 
-		// the layout of the right side panel with the images
-//		BorderLayoutData eastData = new BorderLayoutData(.25);
-//		eastData.setMargins(new Margins(0, 5, 5, 5));
-//		eastData.setCollapsible(true);
-//		eastData.setCollapseHeaderVisible(true);
-//		eastData.setSplit(true);
-
-//		MarginData centerData = new MarginData(0, 5, 5, 0);
-
-//		BorderLayoutContainer view = new BorderLayoutContainer();
+		TabPanel tabPanel = new TabPanel();
+		tabPanel.setTabScroll(false);
+		tabPanel.add(basicsTabHLC, "Basics");
+		tabPanel.add(descriptionTabHLC, "Description");
+		tabPanel.add(pictorialElementsTabHLC, "Pictorial Elements");
+		
 		HorizontalLayoutContainer mainHLC = new HorizontalLayoutContainer();
-//		view.setBorders(true);
 		mainHLC.add(tabPanel, new HorizontalLayoutData(.7, 1.0));
 		mainHLC.add(depictionImagesPanel, new HorizontalLayoutData(.3, 1.0));
-//		view.setCenterWidget(tabPanel, centerData);
-//		view.setEastWidget(depictionImagesPanel, eastData);
-
+		
 		ToolButton saveToolButton = new ToolButton(ToolButton.SAVE);
 		saveToolButton.addSelectHandler(new SelectHandler() {
 			@Override
@@ -951,8 +952,12 @@ public class DepictionEditor extends AbstractEditor {
 					}
 				});
 			}
-		});		
+		});
 		
+		mainPanel = new FramedPanel();
+		mainPanel.setHeading("Painted Representation Editor ("
+				+ (correspondingDepictionEntry.getDepictionID() > 0 ? "ID = " + correspondingDepictionEntry.getShortName() : "NEW") + ")");
+
 		mainPanel.add(mainHLC);
 		mainPanel.setSize("900px", "650px");
 		mainPanel.addTool(saveToolButton);
