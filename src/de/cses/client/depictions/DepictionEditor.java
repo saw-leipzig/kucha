@@ -98,8 +98,8 @@ public class DepictionEditor extends AbstractEditor {
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	private TextArea inscriptionsTestArea;
 	private TextField datingField;
-	private NumberField<Double> widthField;
-	private NumberField<Double> heightField;
+	private NumberField<Double> widthNF;
+	private NumberField<Double> heightNF;
 	private DateField purchaseDateField;
 	private DateField dateOfAcquisitionField;
 	private TextArea descriptionArea;
@@ -456,37 +456,6 @@ public class DepictionEditor extends AbstractEditor {
 		// TODO check if wall publicationTypeID is set, then set caveSelectionCB.editable(false)
 		caveSelectionFP.add(caveSelectionCB);
 
-		HorizontalLayoutContainer dimensionHLC = new HorizontalLayoutContainer();
-		FramedPanel widthFP = new FramedPanel();
-		widthFP.setHeading("Width");
-		widthField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
-		widthField.addValidator(new MinNumberValidator<Double>((double) 0));
-		widthField.setValue(correspondingDepictionEntry.getWidth());
-		widthField.addValueChangeHandler(new ValueChangeHandler<Double>() {
-
-			@Override
-			public void onValueChange(ValueChangeEvent<Double> event) {
-				correspondingDepictionEntry.setWidth(event.getValue());
-			}
-		});
-		widthFP.add(widthField);
-		dimensionHLC.add(widthFP, new HorizontalLayoutData(.5	, 1.0));
-		
-		FramedPanel heightFP = new FramedPanel();
-		heightFP.setHeading("Height");
-		heightField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
-		heightField.addValidator(new MinNumberValidator<Double>((double) 0));
-		heightField.setValue(correspondingDepictionEntry.getHeight());
-		heightField.addValueChangeHandler(new ValueChangeHandler<Double>() {
-
-			@Override
-			public void onValueChange(ValueChangeEvent<Double> event) {
-				correspondingDepictionEntry.setHeight(event.getValue());
-			}
-		});
-		heightFP.add(heightField);
-		dimensionHLC.add(heightFP, new HorizontalLayoutData(.5, 1.0));
-
 		FramedPanel acquiredByExpeditionFP = new FramedPanel();
 		acquiredByExpeditionFP.setHeading("Acquired by expedition");
 		expedSelectionCB = new ComboBox<ExpeditionEntry>(expedEntryList, expedProps.name(), new AbstractSafeHtmlRenderer<ExpeditionEntry>() {
@@ -568,18 +537,100 @@ public class DepictionEditor extends AbstractEditor {
 		});
 		inventoryNumberFP.add(inventoryNumberTF);
 
-		FramedPanel backgroundColourFP = new FramedPanel();
-		backgroundColourFP.setHeading("Background colour");
-		backgroundColourField = new TextField();
-		backgroundColourField.setValue(correspondingDepictionEntry.getBackgroundColour());
-		backgroundColourField.addValueChangeHandler(new ValueChangeHandler<String>() {
+		VerticalLayoutContainer basicsLeftVLC = new VerticalLayoutContainer();
+		basicsLeftVLC.add(shortNameFP, new VerticalLayoutData(1.0, .1));
+		basicsLeftVLC.add(caveSelectionFP, new VerticalLayoutData(1.0, .1));
+		basicsLeftVLC.add(acquiredByExpeditionFP, new VerticalLayoutData(1.0, .1));
+		basicsLeftVLC.add(vendorFP, new VerticalLayoutData(1.0, .1));
+		basicsLeftVLC.add(datePurchasedFP, new VerticalLayoutData(1.0, .1));
+		basicsLeftVLC.add(currentLocationFP, new VerticalLayoutData(1.0, .4));
+		basicsLeftVLC.add(inventoryNumberFP, new VerticalLayoutData(1.0, .1));
+
+		VerticalLayoutContainer basicsRightVLC = new VerticalLayoutContainer();
+
+		FramedPanel wallSelectorFP = new FramedPanel();
+		wallSelectorFP.setHeading("Wall");
+		TextButton wallEditorButton = new TextButton("set position on wall");
+		wallEditor = new Walls(1, false);
+		wallEditorButton.addSelectHandler(new SelectHandler() {
 
 			@Override
-			public void onValueChange(ValueChangeEvent<String> event) {
-				correspondingDepictionEntry.setBackgroundColour(event.getValue());
+			public void onSelect(SelectEvent event) {
+				wallEditorDialog = new PopupPanel();
+				wallEditorDialog.add(wallEditor);
+				wallEditor.createNewDepictionOnWall(correspondingDepictionEntry, true, true);
+				wallEditor.setPanel(wallEditorDialog);
+				wallEditorDialog.setModal(true);
+				wallEditorDialog.center();
 			}
 		});
-		backgroundColourFP.add(backgroundColourField);
+		wallSelectorFP.addButton(wallEditorButton);
+
+		wallSelectorPanel = new WallSelector(350);
+		wallSelectorFP.add(wallSelectorPanel);
+		basicsRightVLC.add(wallSelectorFP, new VerticalLayoutData(1.0, 1.0));
+
+		HorizontalLayoutContainer basicsTabHLC = new HorizontalLayoutContainer();
+		basicsTabHLC.add(basicsLeftVLC, new HorizontalLayoutData(.4, 1.0));
+		basicsTabHLC.add(basicsRightVLC, new HorizontalLayoutData(.6, 1.0));
+
+		/**
+		 * --------------------- content of second tab (Descriptions) starts here --------------------------------
+		 */
+
+		HorizontalLayoutContainer dimensionHLC = new HorizontalLayoutContainer();
+		FramedPanel widthFP = new FramedPanel();
+		widthFP.setHeading("Width");
+		widthNF = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
+		widthNF.addValidator(new MinNumberValidator<Double>((double) 0));
+		widthNF.setValue(correspondingDepictionEntry.getWidth());
+		widthNF.addValueChangeHandler(new ValueChangeHandler<Double>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Double> event) {
+				correspondingDepictionEntry.setWidth(event.getValue());
+			}
+		});
+		widthFP.add(widthNF);
+		dimensionHLC.add(widthFP, new HorizontalLayoutData(.5	, 1.0));
+		
+		FramedPanel heightFP = new FramedPanel();
+		heightFP.setHeading("Height");
+		heightNF = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
+		heightNF.addValidator(new MinNumberValidator<Double>((double) 0));
+		heightNF.setValue(correspondingDepictionEntry.getHeight());
+		heightNF.addValueChangeHandler(new ValueChangeHandler<Double>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Double> event) {
+				correspondingDepictionEntry.setHeight(event.getValue());
+			}
+		});
+		heightFP.add(heightNF);
+		dimensionHLC.add(heightFP, new HorizontalLayoutData(.5, 1.0));
+
+		FramedPanel styleFP = new FramedPanel();
+		styleFP.setHeading("Style");
+		styleSelection = new ComboBox<StyleEntry>(styleEntryList, styleProps.styleName(), new AbstractSafeHtmlRenderer<StyleEntry>() {
+
+			@Override
+			public SafeHtml render(StyleEntry item) {
+				final StyleViewTemplates svTemplates = GWT.create(StyleViewTemplates.class);
+				return svTemplates.styleName(item.getStyleName());
+			}
+		});
+		styleSelection.setEmptyText("nothing selected");
+		styleSelection.setTypeAhead(false);
+		styleSelection.setEditable(false);
+		styleSelection.setTriggerAction(TriggerAction.ALL);
+		styleSelection.addSelectionHandler(new SelectionHandler<StyleEntry>() {
+
+			@Override
+			public void onSelection(SelectionEvent<StyleEntry> event) {
+				correspondingDepictionEntry.setStyleID(event.getSelectedItem().getStyleID());
+			}
+		});
+		styleFP.add(styleSelection);
 
 		FramedPanel modesOfRepresentationFP = new FramedPanel();
 		modesOfRepresentationFP.setHeading("Modes of Representation");
@@ -605,72 +656,18 @@ public class DepictionEditor extends AbstractEditor {
 		});
 		modesOfRepresentationFP.add(modeOfRepresentationSelection);
 
-		VerticalLayoutContainer basicsLeftVLC = new VerticalLayoutContainer();
-		basicsLeftVLC.add(shortNameFP, new VerticalLayoutData(1.0, .1));
-		basicsLeftVLC.add(caveSelectionFP, new VerticalLayoutData(1.0, .1));
-		basicsLeftVLC.add(acquiredByExpeditionFP, new VerticalLayoutData(1.0, .1));
-		basicsLeftVLC.add(dimensionHLC, new VerticalLayoutData(1.0, .1));
-		basicsLeftVLC.add(vendorFP, new VerticalLayoutData(1.0, .1));
-		basicsLeftVLC.add(datePurchasedFP, new VerticalLayoutData(1.0, .1));
-		basicsLeftVLC.add(currentLocationFP, new VerticalLayoutData(1.0, .1));
-		basicsLeftVLC.add(inventoryNumberFP, new VerticalLayoutData(1.0, .1));
-		basicsLeftVLC.add(backgroundColourFP, new VerticalLayoutData(1.0, .1));
-		basicsLeftVLC.add(modesOfRepresentationFP, new VerticalLayoutData(1.0, .1));
-
-		VerticalLayoutContainer basicsRightVLC = new VerticalLayoutContainer();
-
-		FramedPanel wallSelectorFP = new FramedPanel();
-		wallSelectorFP.setHeading("Wall");
-		TextButton wallEditorButton = new TextButton("set position on wall");
-		wallEditor = new Walls(1, false);
-		wallEditorButton.addSelectHandler(new SelectHandler() {
+		FramedPanel backgroundColourFP = new FramedPanel();
+		backgroundColourFP.setHeading("Background colour");
+		backgroundColourField = new TextField();
+		backgroundColourField.setValue(correspondingDepictionEntry.getBackgroundColour());
+		backgroundColourField.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
-			public void onSelect(SelectEvent event) {
-				wallEditorDialog = new PopupPanel();
-				wallEditorDialog.add(wallEditor);
-				wallEditor.createNewDepictionOnWall(correspondingDepictionEntry, true, true);
-				wallEditor.setPanel(wallEditorDialog);
-				wallEditorDialog.setModal(true);
-				wallEditorDialog.center();
+			public void onValueChange(ValueChangeEvent<String> event) {
+				correspondingDepictionEntry.setBackgroundColour(event.getValue());
 			}
 		});
-		wallSelectorFP.addButton(wallEditorButton);
-
-		wallSelectorPanel = new WallSelector(350);
-		wallSelectorFP.add(wallSelectorPanel);
-		basicsRightVLC.add(wallSelectorPanel, new VerticalLayoutData(1.0, 1.0));
-
-		HorizontalLayoutContainer basicsTabHLC = new HorizontalLayoutContainer();
-		basicsTabHLC.add(basicsLeftVLC, new HorizontalLayoutData(.4, 1.0));
-		basicsTabHLC.add(basicsRightVLC, new HorizontalLayoutData(.6, 1.0));
-
-		/**
-		 * --------------------- content of second tab (Descriptions) starts here --------------------------------
-		 */
-
-		FramedPanel styleFP = new FramedPanel();
-		styleFP.setHeading("Style");
-		styleSelection = new ComboBox<StyleEntry>(styleEntryList, styleProps.styleName(), new AbstractSafeHtmlRenderer<StyleEntry>() {
-
-			@Override
-			public SafeHtml render(StyleEntry item) {
-				final StyleViewTemplates svTemplates = GWT.create(StyleViewTemplates.class);
-				return svTemplates.styleName(item.getStyleName());
-			}
-		});
-		styleSelection.setEmptyText("nothing selected");
-		styleSelection.setTypeAhead(false);
-		styleSelection.setEditable(false);
-		styleSelection.setTriggerAction(TriggerAction.ALL);
-		styleSelection.addSelectionHandler(new SelectionHandler<StyleEntry>() {
-
-			@Override
-			public void onSelection(SelectionEvent<StyleEntry> event) {
-				correspondingDepictionEntry.setStyleID(event.getSelectedItem().getStyleID());
-			}
-		});
-		styleFP.add(styleSelection);
+		backgroundColourFP.add(backgroundColourField);
 
 		FramedPanel iconographyFP = new FramedPanel();
 		iconographyFP.setHeading("Iconography");
@@ -760,11 +757,13 @@ public class DepictionEditor extends AbstractEditor {
 		datingFP.add(datingField);
 
 		VerticalLayoutContainer descriptionLeftVLC = new VerticalLayoutContainer();
-		descriptionLeftVLC.add(styleFP, new VerticalLayoutData(1.0, .15));
-//		descriptionLeftVLC.add(iconographyFP, new VerticalLayoutData(1.0, .25));
+		descriptionLeftVLC.add(dimensionHLC, new VerticalLayoutData(1.0, .1));
+		descriptionLeftVLC.add(styleFP, new VerticalLayoutData(1.0, .1));
+		descriptionLeftVLC.add(modesOfRepresentationFP, new VerticalLayoutData(1.0, .1));
+		descriptionLeftVLC.add(backgroundColourFP, new VerticalLayoutData(1.0, .1));
 		descriptionLeftVLC.add(inscriptionsFP, new VerticalLayoutData(1.0, .25));
 		descriptionLeftVLC.add(separateAksarasFP, new VerticalLayoutData(1.0, .25));
-		descriptionLeftVLC.add(datingFP, new VerticalLayoutData(1.0, .15));
+		descriptionLeftVLC.add(datingFP, new VerticalLayoutData(1.0, .1));
 
 		FramedPanel descriptionFP = new FramedPanel();
 		descriptionFP.setHeading("Description");

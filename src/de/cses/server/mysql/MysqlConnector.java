@@ -376,7 +376,7 @@ public class MysqlConnector {
 						rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"), rs.getDouble("Width"), rs.getDouble("Height"),
 						rs.getInt("ExpeditionID"), rs.getDate("PurchaseDate"), rs.getInt("CurrentLocationID"), rs.getString("InventoryNumber"), rs.getInt("VendorID"),
 						rs.getInt("StoryID"), rs.getInt("CaveID"), rs.getInt("WallID"), rs.getInt("IconographyID"),
-						rs.getInt("AbsolutLeft"), rs.getInt("AbsolutTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName")));
+						rs.getInt("AbsoluteLeft"), rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName")));
 			}
 			rs.close();
 			stmt.close();
@@ -401,7 +401,7 @@ public class MysqlConnector {
 						rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"), rs.getDouble("Width"), rs.getDouble("Height"),
 						rs.getInt("ExpeditionID"), rs.getDate("PurchaseDate"), rs.getInt("CurrentLocationID"), rs.getString("InventoryNumber"), rs.getInt("VendorID"),
 						rs.getInt("StoryID"), rs.getInt("CaveID"), rs.getInt("WallID"), rs.getInt("IconographyID"),
-						rs.getInt("AbsolutLeft"), rs.getInt("AbsolutTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"));
+						rs.getInt("AbsoluteLeft"), rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"));
 			}
 			rs.close();
 			stmt.close();
@@ -1812,7 +1812,7 @@ public class MysqlConnector {
 			pstmt = dbc.prepareStatement(
 					"INSERT INTO Depictions (StyleID, Inscriptions, SeparateAksaras, Dating, Description, BackgroundColour, GeneralRemarks, "
 					+ "OtherSuggestedIdentifications, Width, Height, ExpeditionID, PurchaseDate, CurrentLocationID, InventoryNumber, VendorID, "
-					+ "StoryID, CaveID, WallID, AbsolutLeft, AbsolutTop, ModeOfRepresentationID, ShortName) "
+					+ "StoryID, CaveID, WallID, AbsoluetLeft, AbsoluteTop, ModeOfRepresentationID, ShortName) "
 							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			pstmt.setInt(1, de.getStyleID());
 			pstmt.setString(2, de.getInscriptions());
