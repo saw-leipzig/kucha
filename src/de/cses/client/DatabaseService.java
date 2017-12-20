@@ -215,6 +215,8 @@ public interface DatabaseService extends RemoteService {
 
 	int insertCeilingTypeEntry(CeilingTypeEntry ctEntry) throws IllegalArgumentException;
 
-	ArrayList<CurrentLocationEntry> getCurrentLocations();
+	ArrayList<CurrentLocationEntry> getCurrentLocations() throws IllegalArgumentException;
+
+	ArrayList<IconographyEntry> getRelatedIconography(int depictionID) throws IllegalArgumentException;
 
 }

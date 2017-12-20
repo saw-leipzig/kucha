@@ -619,6 +619,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.insertCaveGroupEntry(cgEntry);
 	}
+	
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#insertDistrictEntry(de.cses.shared.DistrictEntry)
 	 */
@@ -627,6 +628,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.insertDistrictEntry(de);
 	}
+	
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#insertRegionEntry(de.cses.shared.RegionEntry)
 	 */
@@ -635,6 +637,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.insertRegionEntry(re);
 	}
+	
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#insertCeilingTypeEntry(de.cses.shared.CeilingTypeEntry)
 	 */
@@ -643,6 +646,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.insertCeilingTypeEntry(ctEntry);
 	}
+	
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getCurrentLocations()
 	 */
@@ -650,6 +654,15 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public ArrayList<CurrentLocationEntry> getCurrentLocations() {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getCurrentLocations();
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#getRelatedIconography(int)
+	 */
+	@Override
+	public ArrayList<IconographyEntry> getRelatedIconography(int depictionID) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getRelatedIconography(depictionID);
 	}
 
 }

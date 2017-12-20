@@ -14,8 +14,12 @@
 package de.cses.client.depictions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.Style.SelectionMode;
@@ -36,7 +40,10 @@ import com.sencha.gxt.widget.core.client.form.StoreFilterField;
 import com.sencha.gxt.widget.core.client.tree.Tree;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckCascade;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckNodes;
+import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
 
+import de.cses.client.DatabaseService;
+import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.PictorialElementEntry;
@@ -69,21 +76,20 @@ public class IconographySelector implements IsWidget {
 		}
 	}
 
-//	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
+	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	private TreeStore<IconographyEntry> store;
 	private Tree<IconographyEntry, String> tree;
 	private FramedPanel mainPanel;
 	private VerticalLayoutContainer vlc;
-	private ArrayList<IconographySelectorListener> listenerList;
-	private int selectedIconographyID;
 	private StoreFilterField<PictorialElementEntry> filterField;
+	private int depictionID;
+	protected Map<String, IconographyEntry> selectedIconographyMap;
 
-	public IconographySelector(int selectedIconographyID, IconographySelectorListener listener) {
-		this.selectedIconographyID = selectedIconographyID;
+	public IconographySelector(int depictionID) {
+		this.depictionID = depictionID;
 		store = new TreeStore<IconographyEntry>(new IconographyKeyProvider());
-		listenerList = new ArrayList<IconographySelectorListener>();
-		listenerList.add(listener);
-		initPanel();
+		selectedIconographyMap = new HashMap<String, IconographyEntry>();
+//		initPanel();
 		loadIconographyStore();
 	}
 
@@ -100,18 +106,25 @@ public class IconographySelector implements IsWidget {
 		IconographyEntry selectedEntry = null;
 		for (IconographyEntry item : StaticTables.getInstance().getIconographyEntries().values()) {
 			store.add(item);
-			if (item.getIconographyID() == selectedIconographyID) {
-				selectedEntry = item;
-			}
 			if (item.getChildren() != null) {
 				processParent(store, item);
 			}
 		}
-		if (selectedEntry != null) {
-			tree.getSelectionModel().select(selectedEntry, false);
-			tree.expandAll();
-			tree.scrollIntoView(selectedEntry);
-		}
+		dbService.getRelatedIconography(depictionID, new AsyncCallback<ArrayList<IconographyEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(ArrayList<IconographyEntry> iconographyRelationList) {
+				for (IconographyEntry entry : iconographyRelationList) {
+					tree.setChecked(entry, CheckState.CHECKED);
+					selectedIconographyMap.put(entry.getUniqueID(), entry);
+				}
+			}
+		});
 	}
 
 	@Override

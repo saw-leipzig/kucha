@@ -241,4 +241,7 @@ public interface DatabaseServiceAsync {
 
 	void getCurrentLocations(AsyncCallback<ArrayList<CurrentLocationEntry>> asyncCallback) throws IllegalArgumentException;
 
+	void getRelatedIconography(int depictionID, AsyncCallback<ArrayList<IconographyEntry>> asyncCallback) throws IllegalArgumentException;
+
+
 	}

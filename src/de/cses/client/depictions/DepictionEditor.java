@@ -914,21 +914,7 @@ public class DepictionEditor extends AbstractEditor {
 		
 		HorizontalLayoutContainer iconographyTabHLC = new HorizontalLayoutContainer();
 
-		iconographySelector = new IconographySelector(correspondingDepictionEntry.getIconographyID(), new IconographySelectorListener() {
-
-			@Override
-			public void iconographySelected(IconographyEntry entry) {
-				correspondingDepictionEntry.setIconographyID(entry.getIconographyID());
-				iconographyLabel.setText(entry.getText());
-				iconographySelectionDialog.hide();
-			}
-
-			@Override
-			public void cancel() {
-				iconographySelectionDialog.hide();
-			}
-		});
-
+		iconographySelector = new IconographySelector(correspondingDepictionEntry.getDepictionID());
 		iconographyTabHLC.add(iconographySelector, new HorizontalLayoutData(1.0, 1.0));
 
 		/**

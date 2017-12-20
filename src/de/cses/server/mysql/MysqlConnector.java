@@ -2585,4 +2585,27 @@ public class MysqlConnector {
 		return ceilingTypeID;
 	}
 
+	/**
+	 * @param depictionID
+	 * @return
+	 */
+	public ArrayList<IconographyEntry> getRelatedIconography(int depictionID) {
+		ArrayList<IconographyEntry> result = new ArrayList<IconographyEntry>();
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM Iconography WHERE IconographyID IN (SELECT IconographyID FROM DepictionIconographyRelation WHERE DepictionID=?");
+			pstmt.setInt(1, depictionID);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				result.add(new IconographyEntry(rs.getInt("IconographyID"), rs.getInt("ParentID"), rs.getString("Text")));
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
 }
