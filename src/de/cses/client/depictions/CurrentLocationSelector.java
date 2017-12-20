@@ -25,13 +25,16 @@ import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
-import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 import com.sencha.gxt.widget.core.client.tree.Tree;
+import com.sencha.gxt.widget.core.client.tree.Tree.CheckCascade;
+import com.sencha.gxt.widget.core.client.tree.Tree.CheckNodes;
+import com.sencha.gxt.widget.core.client.tree.Tree.TreeAppearance;
 
 import de.cses.client.StaticTables;
 import de.cses.shared.CurrentLocationEntry;
@@ -80,6 +83,7 @@ public class CurrentLocationSelector implements IsWidget {
 	private int selectedCurrentLocationID;
 //	private StoreFilter<CurrentLocationEntry> currentLocationFilter;
 //	private TextField filterTextField;
+	private CurrentLocationEntry selectedEntry;
 
 	public CurrentLocationSelector(int selectedCurrentLocationID, CurrentLocationSelectorListener listener) {
 		this.selectedCurrentLocationID = selectedCurrentLocationID;
@@ -100,6 +104,9 @@ public class CurrentLocationSelector implements IsWidget {
 	private void processParent(TreeStore<CurrentLocationEntry> store, CurrentLocationEntry item) {
 		for (CurrentLocationEntry child : item.getChildren()) {
 			store.add(item, child);
+			if (item.getCurrentLocationID() == selectedCurrentLocationID) {
+				selectedEntry = item;
+			}
 			if (child.getChildren() != null) {
 				processParent(store, child);
 			}
@@ -107,7 +114,7 @@ public class CurrentLocationSelector implements IsWidget {
 	}
 
 	private void loadCurrentLocationStore() {
-		CurrentLocationEntry selectedEntry = null;
+		selectedEntry = null;
 		for (CurrentLocationEntry item : StaticTables.getInstance().getCurrentLocationEntries().values()) {
 			store.add(item);
 			if (item.getCurrentLocationID() == selectedCurrentLocationID) {
@@ -118,7 +125,7 @@ public class CurrentLocationSelector implements IsWidget {
 			}
 		}
 		if (selectedEntry != null) {
-			tree.getSelectionModel().select(selectedEntry, false);
+			tree.getSelectionModel().select(selectedEntry, true);
 			tree.expandAll();
 			tree.scrollIntoView(selectedEntry);
 		}
@@ -140,6 +147,9 @@ public class CurrentLocationSelector implements IsWidget {
 
 		tree = new Tree<CurrentLocationEntry, String>(store, new CurrentLocationValueProvider());
 		tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+		tree.setCheckable(true);
+		tree.setCheckStyle(CheckCascade.NONE);
+		tree.setCheckNodes(CheckNodes.LEAF);
 		tree.setWidth(350);
 		vlc.add(tree, new VerticalLayoutData(1.0, 1.0));
 		vlc.setScrollMode(ScrollMode.AUTOY);
@@ -148,69 +158,30 @@ public class CurrentLocationSelector implements IsWidget {
 		treePanel.setHeaderVisible(false);
 		treePanel.add(vlc);
 
-//		StoreFilterField<CurrentLocationEntry> filterField = new StoreFilterField<CurrentLocationEntry>() {
-//
-//			@Override
-//			protected boolean doSelect(Store<CurrentLocationEntry> store, CurrentLocationEntry parent, CurrentLocationEntry item, String filter) {
-//				TreeStore<CurrentLocationEntry> treeStore = (TreeStore<CurrentLocationEntry>) store;
-//				do {
-//					String name = item.getLocationName().toLowerCase();
-//					if (name.contains(filter.toLowerCase())) {
-//						return true;
-//					}
-//					item = treeStore.getParent(item);
-//				} while (item != null);
-//				return false;
-//			}
-//		};
-//		filterField.bind(store);
-
 		VerticalLayoutContainer mainVLC = new VerticalLayoutContainer();
 		mainVLC.add(treePanel, new VerticalLayoutData(1.0, 1.0));
-//		mainVLC.add(filterField, new VerticalLayoutData(.5, .15, new Margins(10, 0, 0, 0)));
 
-		mainPanel.add(mainVLC);
-
-		TextButton expandButton = new TextButton("expand tree");
-		expandButton.addSelectHandler(new SelectHandler() {
+		
+		ToolButton expandTB = new ToolButton(ToolButton.EXPAND);
+		expandTB.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
 				tree.expandAll();
 			}
 		});
-		mainPanel.addButton(expandButton);
 
-		TextButton collapseButton = new TextButton("collapse tree");
-		collapseButton.addSelectHandler(new SelectHandler() {
+		ToolButton collapseTB = new ToolButton(ToolButton.COLLAPSE);
+		collapseTB.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
 				tree.collapseAll();
 			}
 		});
 
-		mainPanel.addButton(collapseButton);
+		mainPanel.add(mainVLC);
+		mainPanel.addTool(expandTB);
+		mainPanel.addTool(collapseTB);
 
-//		TextButton cancelButton = new TextButton("cancel");
-//		cancelButton.addSelectHandler(new SelectHandler() {
-//			@Override
-//			public void onSelect(SelectEvent event) {
-//				for (CurrentLocationSelectorListener l : listenerList) {
-//					l.cancel();
-//				}
-//			}
-//		});
-//		mainPanel.addButton(cancelButton);
-		
-//		TextButton selectButton = new TextButton("select");
-//		selectButton.addSelectHandler(new SelectHandler() {
-//			@Override
-//			public void onSelect(SelectEvent event) {
-//				for (CurrentLocationSelectorListener l : listenerList) {
-//					l.currentLocationSelected(getSelectedIconography());
-//				}
-//			}
-//		});
-//		mainPanel.addButton(selectButton);
 	}
 	
 	public void addSelectionChangedHandler(SelectionChangedHandler<CurrentLocationEntry> handler) {
