@@ -1019,8 +1019,9 @@ public class DepictionEditor extends AbstractEditor {
 		for (PictorialElementEntry pe : peSelector.getSelectedPE()) {
 			selectedPEList.add(pe);
 		}
+		
 		if (correspondingDepictionEntry.getDepictionID() == 0) {
-			dbService.insertDepictionEntry(correspondingDepictionEntry, associatedImageEntryList, selectedPEList, new AsyncCallback<Integer>() {
+			dbService.insertDepictionEntry(correspondingDepictionEntry, associatedImageEntryList, selectedPEList, iconographySelector.getSelectedIconography(), new AsyncCallback<Integer>() {
 
 				@Override
 				public void onSuccess(Integer newDepictionID) {
@@ -1036,7 +1037,7 @@ public class DepictionEditor extends AbstractEditor {
 				}
 			});
 		} else {
-			dbService.updateDepictionEntry(correspondingDepictionEntry, associatedImageEntryList, selectedPEList, new AsyncCallback<Boolean>() {
+			dbService.updateDepictionEntry(correspondingDepictionEntry, associatedImageEntryList, selectedPEList, iconographySelector.getSelectedIconography(), new AsyncCallback<Boolean>() {
 
 				@Override
 				public void onFailure(Throwable caught) {

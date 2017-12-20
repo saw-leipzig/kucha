@@ -16,12 +16,7 @@ package de.cses.client.depictions;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.core.client.ValueProvider;
@@ -29,24 +24,19 @@ import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.Store;
-import com.sencha.gxt.data.shared.Store.StoreFilter;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
-import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.StoreFilterField;
-import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.tree.Tree;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckCascade;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckNodes;
 
-import de.cses.client.DatabaseService;
-import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.PictorialElementEntry;
@@ -143,10 +133,10 @@ public class IconographySelector implements IsWidget {
 		tree.setCheckable(true);
 		tree.setCheckStyle(CheckCascade.NONE);
 		tree.setCheckNodes(CheckNodes.LEAF);
-		tree.setWidth(350);
+//		tree.setWidth(350);
 		vlc.add(tree, new VerticalLayoutData(1.0, 1.0));
 		vlc.setScrollMode(ScrollMode.AUTOY);
-		vlc.setPixelSize(700, 475);
+//		vlc.setPixelSize(700, 475);
 		ContentPanel treePanel = new ContentPanel();
 		treePanel.setHeaderVisible(false);
 		treePanel.add(vlc);
@@ -194,10 +184,10 @@ public class IconographySelector implements IsWidget {
 
 	}
 
-	public List<IconographyEntry> getSelectedIconography() {
+	public ArrayList<IconographyEntry> getSelectedIconography() {
 		filterField.clear();
 		filterField.validate();
-		return tree.getCheckedSelection();
+		return new ArrayList<IconographyEntry>(tree.getCheckedSelection());	
 	}
 
 

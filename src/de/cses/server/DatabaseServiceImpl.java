@@ -518,9 +518,9 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	 * @see de.cses.client.DatabaseService#insertDepictionEntry(de.cses.shared.DepictionEntry, java.util.List)
 	 */
 	@Override
-	public int insertDepictionEntry(DepictionEntry depictionEntry, ArrayList<ImageEntry> imgEntryList, ArrayList<PictorialElementEntry> peEntryList) {
+	public int insertDepictionEntry(DepictionEntry depictionEntry, ArrayList<ImageEntry> imgEntryList, ArrayList<PictorialElementEntry> peEntryList, ArrayList<IconographyEntry> iconographyLists) {
 		MysqlConnector connector = MysqlConnector.getInstance();
-		return connector.insertDepictionEntry(depictionEntry, imgEntryList, peEntryList);
+		return connector.insertDepictionEntry(depictionEntry, imgEntryList, peEntryList, iconographyLists);
 	}
 
 	/* (non-Javadoc)
@@ -528,9 +528,9 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	 */
 	@Override
 	public boolean updateDepictionEntry(DepictionEntry correspondingDepictionEntry, ArrayList<ImageEntry> all,
-			ArrayList<PictorialElementEntry> selectedPE) {
+			ArrayList<PictorialElementEntry> selectedPE, ArrayList<IconographyEntry> iconographyList) {
 		MysqlConnector connector = MysqlConnector.getInstance();
-		return connector.updateDepictionEntry(correspondingDepictionEntry, all, selectedPE);
+		return connector.updateDepictionEntry(correspondingDepictionEntry, all, selectedPE, iconographyList);
 	}
 
 	/* (non-Javadoc)
