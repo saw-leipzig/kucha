@@ -68,6 +68,8 @@ import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinNumberValidator;
+import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
+import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -79,6 +81,7 @@ import de.cses.client.user.UserLogin;
 import de.cses.client.walls.WallSelector;
 import de.cses.client.walls.Walls;
 import de.cses.shared.CaveEntry;
+import de.cses.shared.CurrentLocationEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
@@ -519,9 +522,14 @@ public class DepictionEditor extends AbstractEditor {
 		// TODO add change handler
 		datePurchasedFP.add(purchaseDateField);
 
-		FramedPanel currentLocationFP = new FramedPanel();
-		currentLocationFP.setHeading("Current location");
-		// TODO add currentLocationID selector
+		CurrentLocationSelector locationSelector = new CurrentLocationSelector(correspondingDepictionEntry.getCurrentLocationID(), null);
+		locationSelector.addSelectionChangedHandler(new SelectionChangedHandler<CurrentLocationEntry>() {
+			
+			@Override
+			public void onSelectionChanged(SelectionChangedEvent<CurrentLocationEntry> event) {
+				correspondingDepictionEntry.setCurrentLocationID(event.getSelection().get(0).getCurrentLocationID());
+			}
+		});
 		
 		FramedPanel inventoryNumberFP = new FramedPanel();
 		inventoryNumberFP.setHeading("Inventory Number");
@@ -543,7 +551,7 @@ public class DepictionEditor extends AbstractEditor {
 		basicsLeftVLC.add(acquiredByExpeditionFP, new VerticalLayoutData(1.0, .1));
 		basicsLeftVLC.add(vendorFP, new VerticalLayoutData(1.0, .1));
 		basicsLeftVLC.add(datePurchasedFP, new VerticalLayoutData(1.0, .1));
-		basicsLeftVLC.add(currentLocationFP, new VerticalLayoutData(1.0, .4));
+		basicsLeftVLC.add(locationSelector, new VerticalLayoutData(1.0, .4));
 		basicsLeftVLC.add(inventoryNumberFP, new VerticalLayoutData(1.0, .1));
 
 		VerticalLayoutContainer basicsRightVLC = new VerticalLayoutContainer();

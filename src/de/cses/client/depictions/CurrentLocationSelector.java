@@ -15,20 +15,12 @@ package de.cses.client.depictions;
 
 import java.util.ArrayList;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
-import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
-import com.sencha.gxt.data.shared.Store;
-import com.sencha.gxt.data.shared.Store.StoreFilter;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
@@ -37,12 +29,10 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
-import com.sencha.gxt.widget.core.client.form.StoreFilterField;
-import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
+import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 import com.sencha.gxt.widget.core.client.tree.Tree;
 
-import de.cses.client.DatabaseService;
-import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
 import de.cses.shared.CurrentLocationEntry;
 
@@ -88,21 +78,21 @@ public class CurrentLocationSelector implements IsWidget {
 	private VerticalLayoutContainer vlc;
 	private ArrayList<CurrentLocationSelectorListener> listenerList;
 	private int selectedCurrentLocationID;
-	private StoreFilter<CurrentLocationEntry> currentLocationFilter;
-	private TextField filterTextField;
+//	private StoreFilter<CurrentLocationEntry> currentLocationFilter;
+//	private TextField filterTextField;
 
 	public CurrentLocationSelector(int selectedCurrentLocationID, CurrentLocationSelectorListener listener) {
 		this.selectedCurrentLocationID = selectedCurrentLocationID;
 		store = new TreeStore<CurrentLocationEntry>(new CurrentLocationKeyProvider());
 		listenerList = new ArrayList<CurrentLocationSelectorListener>();
 		listenerList.add(listener);
-		currentLocationFilter = new StoreFilter<CurrentLocationEntry>() {
-
-			@Override
-			public boolean select(Store<CurrentLocationEntry> store, CurrentLocationEntry parent, CurrentLocationEntry item) {
-				return (item.getLocationName().contains(filterTextField.getCurrentValue()));
-			}
-		};
+//		currentLocationFilter = new StoreFilter<CurrentLocationEntry>() {
+//
+//			@Override
+//			public boolean select(Store<CurrentLocationEntry> store, CurrentLocationEntry parent, CurrentLocationEntry item) {
+//				return (item.getLocationName().contains(filterTextField.getCurrentValue()));
+//			}
+//		};
 		initPanel();
 		loadCurrentLocationStore();
 	}
@@ -144,7 +134,7 @@ public class CurrentLocationSelector implements IsWidget {
 
 	private void initPanel() {
 		mainPanel = new FramedPanel();
-		mainPanel.setHeading("Iconography Selector");
+		mainPanel.setHeading("Current Location");
 
 		vlc = new VerticalLayoutContainer();
 
@@ -158,72 +148,77 @@ public class CurrentLocationSelector implements IsWidget {
 		treePanel.setHeaderVisible(false);
 		treePanel.add(vlc);
 
-		StoreFilterField<CurrentLocationEntry> filterField = new StoreFilterField<CurrentLocationEntry>() {
-
-			@Override
-			protected boolean doSelect(Store<CurrentLocationEntry> store, CurrentLocationEntry parent, CurrentLocationEntry item, String filter) {
-				TreeStore<CurrentLocationEntry> treeStore = (TreeStore<CurrentLocationEntry>) store;
-				do {
-					String name = item.getLocationName().toLowerCase();
-					if (name.contains(filter.toLowerCase())) {
-						return true;
-					}
-					item = treeStore.getParent(item);
-				} while (item != null);
-				return false;
-			}
-		};
-		filterField.bind(store);
+//		StoreFilterField<CurrentLocationEntry> filterField = new StoreFilterField<CurrentLocationEntry>() {
+//
+//			@Override
+//			protected boolean doSelect(Store<CurrentLocationEntry> store, CurrentLocationEntry parent, CurrentLocationEntry item, String filter) {
+//				TreeStore<CurrentLocationEntry> treeStore = (TreeStore<CurrentLocationEntry>) store;
+//				do {
+//					String name = item.getLocationName().toLowerCase();
+//					if (name.contains(filter.toLowerCase())) {
+//						return true;
+//					}
+//					item = treeStore.getParent(item);
+//				} while (item != null);
+//				return false;
+//			}
+//		};
+//		filterField.bind(store);
 
 		VerticalLayoutContainer mainVLC = new VerticalLayoutContainer();
-		mainVLC.add(treePanel, new VerticalLayoutData(1.0, .85));
-		mainVLC.add(filterField, new VerticalLayoutData(.5, .15, new Margins(10, 0, 0, 0)));
+		mainVLC.add(treePanel, new VerticalLayoutData(1.0, 1.0));
+//		mainVLC.add(filterField, new VerticalLayoutData(.5, .15, new Margins(10, 0, 0, 0)));
 
 		mainPanel.add(mainVLC);
 
-		TextButton iconographyExpandButton = new TextButton("expand tree");
-		iconographyExpandButton.addSelectHandler(new SelectHandler() {
+		TextButton expandButton = new TextButton("expand tree");
+		expandButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
 				tree.expandAll();
 			}
 		});
-		mainPanel.addButton(iconographyExpandButton);
+		mainPanel.addButton(expandButton);
 
-		TextButton iconographyCollapseButton = new TextButton("collapse tree");
-		iconographyCollapseButton.addSelectHandler(new SelectHandler() {
+		TextButton collapseButton = new TextButton("collapse tree");
+		collapseButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
 				tree.collapseAll();
 			}
 		});
-		mainPanel.addButton(iconographyCollapseButton);
 
-		TextButton cancelButton = new TextButton("cancel");
-		cancelButton.addSelectHandler(new SelectHandler() {
-			@Override
-			public void onSelect(SelectEvent event) {
-				for (CurrentLocationSelectorListener l : listenerList) {
-					l.cancel();
-				}
-			}
-		});
-		mainPanel.addButton(cancelButton);
+		mainPanel.addButton(collapseButton);
+
+//		TextButton cancelButton = new TextButton("cancel");
+//		cancelButton.addSelectHandler(new SelectHandler() {
+//			@Override
+//			public void onSelect(SelectEvent event) {
+//				for (CurrentLocationSelectorListener l : listenerList) {
+//					l.cancel();
+//				}
+//			}
+//		});
+//		mainPanel.addButton(cancelButton);
 		
-		TextButton selectButton = new TextButton("select");
-		selectButton.addSelectHandler(new SelectHandler() {
-			@Override
-			public void onSelect(SelectEvent event) {
-				for (CurrentLocationSelectorListener l : listenerList) {
-					l.currentLocationSelected(getSelectedIconography());
-				}
-			}
-		});
-		mainPanel.addButton(selectButton);
+//		TextButton selectButton = new TextButton("select");
+//		selectButton.addSelectHandler(new SelectHandler() {
+//			@Override
+//			public void onSelect(SelectEvent event) {
+//				for (CurrentLocationSelectorListener l : listenerList) {
+//					l.currentLocationSelected(getSelectedIconography());
+//				}
+//			}
+//		});
+//		mainPanel.addButton(selectButton);
+	}
+	
+	public void addSelectionChangedHandler(SelectionChangedHandler<CurrentLocationEntry> handler) {
+		tree.getSelectionModel().addSelectionChangedHandler(handler);
 	}
 
-	private CurrentLocationEntry getSelectedIconography() {
-		return tree.getSelectionModel().getSelectedItem();
-	}
+//	private CurrentLocationEntry getSelectedIconography() {
+//		return tree.getSelectionModel().getSelectedItem();
+//	}
 
 }
