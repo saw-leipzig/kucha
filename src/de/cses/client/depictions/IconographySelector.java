@@ -15,7 +15,6 @@ package de.cses.client.depictions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
@@ -35,6 +34,10 @@ import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
+import com.sencha.gxt.widget.core.client.event.CheckChangeEvent;
+import com.sencha.gxt.widget.core.client.event.CheckChangeEvent.CheckChangeHandler;
+import com.sencha.gxt.widget.core.client.event.CheckChangedEvent;
+import com.sencha.gxt.widget.core.client.event.CheckChangedEvent.CheckChangedHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.StoreFilterField;
@@ -46,7 +49,6 @@ import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
-import de.cses.client.depictions.PictorialElementSelector.PictorialElementValueProvider;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.PictorialElementEntry;
 
@@ -83,7 +85,7 @@ public class IconographySelector implements IsWidget {
 	private Tree<IconographyEntry, String> tree;
 	private FramedPanel mainPanel;
 	private VerticalLayoutContainer vlc;
-	private StoreFilterField<PictorialElementEntry> filterField;
+	private StoreFilterField<IconographyEntry> filterField;
 	private int depictionID;
 	protected Map<String, IconographyEntry> selectedIconographyMap;
 
@@ -157,8 +159,25 @@ public class IconographySelector implements IsWidget {
 		
 		tree.getSelectionModel().setSelectionMode(SelectionMode.MULTI);
 		tree.setCheckable(true);
+		tree.setAutoLoad(true);
 		tree.setCheckStyle(CheckCascade.NONE);
 		tree.setCheckNodes(CheckNodes.LEAF);
+		
+		tree.addCheckChangeHandler(new CheckChangeHandler<IconographyEntry>() {
+			
+			@Override
+			public void onCheckChange(CheckChangeEvent<IconographyEntry> event) {
+				IconographyEntry ie = event.getItem();
+				if (event.getChecked() == CheckState.CHECKED) {
+					if (!selectedIconographyMap.containsKey(ie.getUniqueID())) {
+						selectedIconographyMap.put(ie.getUniqueID(), ie);
+					}
+				} else {
+					selectedIconographyMap.remove(ie.getUniqueID());
+				}
+			}
+		});
+				
 //		tree.setWidth(350);
 		vlc.add(tree, new VerticalLayoutData(1.0, 1.0));
 		vlc.setScrollMode(ScrollMode.AUTOY);
@@ -167,7 +186,7 @@ public class IconographySelector implements IsWidget {
 		treePanel.setHeaderVisible(false);
 		treePanel.add(vlc);
 
-		StoreFilterField<IconographyEntry> filterField = new StoreFilterField<IconographyEntry>() {
+		filterField = new StoreFilterField<IconographyEntry>() {
 
 			@Override
 			protected boolean doSelect(Store<IconographyEntry> store, IconographyEntry parent, IconographyEntry item, String filter) {

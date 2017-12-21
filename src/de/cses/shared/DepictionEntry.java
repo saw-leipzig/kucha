@@ -40,7 +40,7 @@ public class DepictionEntry extends AbstractEntry {
 	private int modeOfRepresentationID = 0;
 	private String shortName;
 
-	public DepictionEntry() {	}
+	public DepictionEntry() { }
 
 	/**
 	 * @param depictionID
@@ -69,8 +69,8 @@ public class DepictionEntry extends AbstractEntry {
 	 */
 	public DepictionEntry(int depictionID, int styleID, String inscriptions, String separateAksaras, String dating, String description,
 			String backgroundColour, String generalRemarks, String otherSuggestedIdentifications, double width, double height, int expeditionID,
-			Date purchaseDate, int currentLocationID, String inventoryNumber, int vendorID, int storyID, int caveID, int wallID,
-			int absoluteLeft, int absoluteTop, int modeOfRepresentationID, String shortName) {
+			Date purchaseDate, int currentLocationID, String inventoryNumber, int vendorID, int storyID, int caveID, int wallID, int absoluteLeft,
+			int absoluteTop, int modeOfRepresentationID, String shortName) {
 		super();
 		this.depictionID = depictionID;
 		this.styleID = styleID;
@@ -95,6 +95,12 @@ public class DepictionEntry extends AbstractEntry {
 		this.absoluteTop = absoluteTop;
 		this.modeOfRepresentationID = modeOfRepresentationID;
 		this.shortName = shortName;
+	}
+
+	public DepictionEntry clone() {
+		return new DepictionEntry(depictionID, styleID, inscriptions, separateAksaras, dating, description, backgroundColour, generalRemarks,
+				otherSuggestedIdentifications, width, height, expeditionID, purchaseDate, currentLocationID, inventoryNumber, vendorID, storyID,
+				caveID, wallID, absoluteLeft, absoluteTop, modeOfRepresentationID, shortName);
 	}
 
 	public int getDepictionID() {
@@ -259,7 +265,9 @@ public class DepictionEntry extends AbstractEntry {
 		this.wallID = wallID;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.cses.shared.AbstractEntry#uniqueID()
 	 */
 	@Override
@@ -275,7 +283,8 @@ public class DepictionEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param separateAksaras the separateAksaras to set
+	 * @param separateAksaras
+	 *          the separateAksaras to set
 	 */
 	public void setSeparateAksaras(String separateAksaras) {
 		this.separateAksaras = separateAksaras;

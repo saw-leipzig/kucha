@@ -74,6 +74,7 @@ import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.Selecti
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
+import de.cses.client.Util;
 import de.cses.client.images.ImageSelector;
 import de.cses.client.images.ImageSelectorListener;
 import de.cses.client.ui.AbstractEditor;
@@ -140,6 +141,7 @@ public class DepictionEditor extends AbstractEditor {
 	private TextArea separateAksarasTextArea;
 	private ModesOfRepresentationProperties morProps;
 	private ListStore<ModeOfRepresentationEntry> morEntryList;
+	private CurrentLocationSelector locationSelector;
 
 	interface DepictionProperties extends PropertyAccess<DepictionEntry> {
 		ModelKeyProvider<DepictionEntry> depictionID();
@@ -522,14 +524,7 @@ public class DepictionEditor extends AbstractEditor {
 		// TODO add change handler
 		datePurchasedFP.add(purchaseDateField);
 
-		CurrentLocationSelector locationSelector = new CurrentLocationSelector(correspondingDepictionEntry.getCurrentLocationID(), null);
-		locationSelector.addSelectionChangedHandler(new SelectionChangedHandler<CurrentLocationEntry>() {
-			
-			@Override
-			public void onSelectionChanged(SelectionChangedEvent<CurrentLocationEntry> event) {
-				correspondingDepictionEntry.setCurrentLocationID(event.getSelection().get(0).getCurrentLocationID());
-			}
-		});
+		locationSelector = new CurrentLocationSelector(correspondingDepictionEntry.getCurrentLocationID(), null);
 		
 		FramedPanel inventoryNumberFP = new FramedPanel();
 		inventoryNumberFP.setHeading("Inventory Number");
@@ -1005,12 +1000,16 @@ public class DepictionEditor extends AbstractEditor {
 		for (PictorialElementEntry pe : peSelector.getSelectedPE()) {
 			selectedPEList.add(pe);
 		}
+		correspondingDepictionEntry.setCurrentLocationID(locationSelector.getSelectedIconography().getCurrentLocationID());
 		
+		Util.showWarning("saveDepictionEntry", "method called");
 		if (correspondingDepictionEntry.getDepictionID() == 0) {
+			Util.showWarning("saveDepictionEntry", "calling insert");
 			dbService.insertDepictionEntry(correspondingDepictionEntry, associatedImageEntryList, selectedPEList, iconographySelector.getSelectedIconography(), new AsyncCallback<Integer>() {
 
 				@Override
 				public void onSuccess(Integer newDepictionID) {
+					Util.showWarning("saveDepictionEntry", "insert sucessful");
 					correspondingDepictionEntry.setDepictionID(newDepictionID.intValue());
 					if (close) {
 						closeEditor();
@@ -1019,19 +1018,23 @@ public class DepictionEditor extends AbstractEditor {
 
 				@Override
 				public void onFailure(Throwable caught) {
+					Util.showWarning("saveDepictionEntry", caught.getMessage());
 					caught.printStackTrace();
 				}
 			});
 		} else {
+			Util.showWarning("saveDepictionEntry", "calling update");
 			dbService.updateDepictionEntry(correspondingDepictionEntry, associatedImageEntryList, selectedPEList, iconographySelector.getSelectedIconography(), new AsyncCallback<Boolean>() {
 
 				@Override
 				public void onFailure(Throwable caught) {
+					Util.showWarning("saveDepictionEntry", caught.getMessage());
 					caught.printStackTrace();
 				}
 
 				@Override
 				public void onSuccess(Boolean updateSucessful) {
+					Util.showWarning("saveDepictionEntry", "update sucessful");
 					if (close) {
 						closeEditor();
 					}

@@ -148,6 +148,7 @@ public class CurrentLocationSelector implements IsWidget {
 		tree = new Tree<CurrentLocationEntry, String>(store, new CurrentLocationValueProvider());
 		tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		tree.setCheckable(true);
+		tree.setAutoLoad(true);
 		tree.setCheckStyle(CheckCascade.NONE);
 		tree.setCheckNodes(CheckNodes.LEAF);
 		tree.setWidth(350);
@@ -184,12 +185,8 @@ public class CurrentLocationSelector implements IsWidget {
 
 	}
 	
-	public void addSelectionChangedHandler(SelectionChangedHandler<CurrentLocationEntry> handler) {
-		tree.getSelectionModel().addSelectionChangedHandler(handler);
+	public CurrentLocationEntry getSelectedIconography() {
+		return tree.getSelectionModel().getSelectedItem();
 	}
-
-//	private CurrentLocationEntry getSelectedIconography() {
-//		return tree.getSelectionModel().getSelectedItem();
-//	}
 
 }

@@ -15,17 +15,13 @@ package de.cses.shared;
 
 import java.util.ArrayList;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
 public class PictorialElementEntry extends AbstractEntry {
 	
 	private int pictorialElementID, parentID;
 	String text;
 	ArrayList<PictorialElementEntry> children;
 	
-	public PictorialElementEntry() {
-		super();
-	}
+	public PictorialElementEntry() { }
 
 	public PictorialElementEntry(int pictorialElementID, int parentID, String text) {
 		super();

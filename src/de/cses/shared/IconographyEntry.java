@@ -15,17 +15,13 @@ package de.cses.shared;
 
 import java.util.ArrayList;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
 public class IconographyEntry extends AbstractEntry {
 	
 	private int iconographyID, parentID;
 	private String text;
 	private ArrayList<IconographyEntry> children;
 	
-	public IconographyEntry() {
-		super();
-	}
+	public IconographyEntry() { }
 
 	public IconographyEntry(int iconographyID, int parentID, String text) {
 		super();

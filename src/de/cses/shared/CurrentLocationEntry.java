@@ -21,9 +21,7 @@ public class CurrentLocationEntry extends AbstractEntry {
 	private String locationName;
 	private ArrayList<CurrentLocationEntry> children;
 	
-	public CurrentLocationEntry() {
-		super();
-	}
+	public CurrentLocationEntry() {	}
 
 	/**
 	 * @param currentLocationID
@@ -32,7 +30,6 @@ public class CurrentLocationEntry extends AbstractEntry {
 	 * @param children
 	 */
 	public CurrentLocationEntry(int currentLocationID, int parentID, String locationName) {
-		super();
 		this.currentLocationID = currentLocationID;
 		this.parentID = parentID;
 		this.locationName = locationName;
