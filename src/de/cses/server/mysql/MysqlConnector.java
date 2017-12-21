@@ -376,8 +376,8 @@ public class MysqlConnector {
 						rs.getString("SeparateAksaras"), rs.getString("Dating"), rs.getString("Description"), rs.getString("BackgroundColour"),
 						rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"), rs.getDouble("Width"), rs.getDouble("Height"),
 						rs.getInt("ExpeditionID"), rs.getDate("PurchaseDate"), rs.getInt("CurrentLocationID"), rs.getString("InventoryNumber"), rs.getInt("VendorID"),
-						rs.getInt("StoryID"), rs.getInt("CaveID"), rs.getInt("WallID"), rs.getInt("IconographyID"),
-						rs.getInt("AbsoluteLeft"), rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName")));
+						rs.getInt("StoryID"), rs.getInt("CaveID"), rs.getInt("WallID"), rs.getInt("AbsoluteLeft"), rs.getInt("AbsoluteTop"), 
+						rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName")));
 			}
 			rs.close();
 			stmt.close();
@@ -401,8 +401,8 @@ public class MysqlConnector {
 						rs.getString("SeparateAksaras"), rs.getString("Dating"), rs.getString("Description"), rs.getString("BackgroundColour"),
 						rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"), rs.getDouble("Width"), rs.getDouble("Height"),
 						rs.getInt("ExpeditionID"), rs.getDate("PurchaseDate"), rs.getInt("CurrentLocationID"), rs.getString("InventoryNumber"), rs.getInt("VendorID"),
-						rs.getInt("StoryID"), rs.getInt("CaveID"), rs.getInt("WallID"), rs.getInt("IconographyID"),
-						rs.getInt("AbsoluteLeft"), rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"));
+						rs.getInt("StoryID"), rs.getInt("CaveID"), rs.getInt("WallID"), rs.getInt("AbsoluteLeft"), 
+						rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"));
 			}
 			rs.close();
 			stmt.close();
@@ -1147,11 +1147,13 @@ public class MysqlConnector {
 
 	public String saveDepiction(int depictionID, int AbsoluteLeft, int AbsoluteTop) {
 		Connection dbc = getConnection();
-		Statement stmt;
+		PreparedStatement pstmt;
 		try {
-			stmt = dbc.createStatement();
-			stmt.executeQuery(
-					"UPDATE Depictions SET AbsoluteLeft =" + AbsoluteLeft + ", AbsoluteTop =" + AbsoluteTop + " WHERE DepictionID =" + depictionID);
+			pstmt = dbc.prepareStatement("UPDATE Depictions SET AbsoluteLeft=?, AbsoluteTop=? WHERE DepictionID =?");
+			pstmt.setInt(1, AbsoluteLeft);
+			pstmt.setInt(2, AbsoluteTop);
+			pstmt.setInt(3, depictionID);
+			pstmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return "failed to save depiction";
@@ -1854,7 +1856,7 @@ public class MysqlConnector {
 			pstmt = dbc.prepareStatement(
 					"INSERT INTO Depictions (StyleID, Inscriptions, SeparateAksaras, Dating, Description, BackgroundColour, GeneralRemarks, "
 					+ "OtherSuggestedIdentifications, Width, Height, ExpeditionID, PurchaseDate, CurrentLocationID, InventoryNumber, VendorID, "
-					+ "StoryID, CaveID, WallID, AbsoluetLeft, AbsoluteTop, ModeOfRepresentationID, ShortName) "
+					+ "StoryID, CaveID, WallID, AbsoluteLeft, AbsoluteTop, ModeOfRepresentationID, ShortName) "
 							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			pstmt.setInt(1, de.getStyleID());
 			pstmt.setString(2, de.getInscriptions());
@@ -1920,10 +1922,11 @@ public class MysqlConnector {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
+			System.err.println("===> updateDepictionEntry");
 			pstmt = dbc.prepareStatement(
 					"UPDATE Depictions SET StyleID=?, Inscriptions=?, SeparateAksaras=?, Dating=?, Description=?, BackgroundColour=?, GeneralRemarks=?, "
 					+ "OtherSuggestedIdentifications=?, Width=?, Height=?, ExpeditionID=?, PurchaseDate=?, CurrentLocationID=?, InventoryNumber=?, VendorID=?, "
-					+ "StoryID=?, CaveID=?, WallID=?, AbsoluetLeft=?, AbsoluteTop=?, ModeOfRepresentationID=?, ShortName=? WHERE DepictionID=?");
+					+ "StoryID=?, CaveID=?, WallID=?, AbsoluteLeft=?, AbsoluteTop=?, ModeOfRepresentationID=?, ShortName=? WHERE DepictionID=?");
 			pstmt.setInt(1, de.getStyleID());
 			pstmt.setString(2, de.getInscriptions());
 			pstmt.setString(3, de.getSeparateAksaras());
@@ -1949,6 +1952,7 @@ public class MysqlConnector {
 			pstmt.setInt(23, de.getDepictionID());
 			pstmt.executeUpdate();
 			pstmt.close();
+			System.err.println("===> updateDepictionEntry - sucessful");
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 			return false;
@@ -2594,7 +2598,7 @@ public class MysqlConnector {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
-			pstmt = dbc.prepareStatement("SELECT * FROM Iconography WHERE IconographyID IN (SELECT IconographyID FROM DepictionIconographyRelation WHERE DepictionID=?");
+			pstmt = dbc.prepareStatement("SELECT * FROM Iconography WHERE IconographyID IN (SELECT IconographyID FROM DepictionIconographyRelation WHERE DepictionID=?)");
 			pstmt.setInt(1, depictionID);
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {

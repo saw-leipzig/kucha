@@ -35,7 +35,6 @@ public class DepictionEntry extends AbstractEntry {
 	private int storyID = 0;
 	private int caveID = 0;
 	private int wallID = 0;
-	private int iconographyID = 0;
 	private int absoluteLeft = -1;
 	private int absoluteTop = -1;
 	private int modeOfRepresentationID = 0;
@@ -63,7 +62,6 @@ public class DepictionEntry extends AbstractEntry {
 	 * @param storyID
 	 * @param caveID
 	 * @param wallID
-	 * @param iconographyID
 	 * @param absoluteLeft
 	 * @param absoluteTop
 	 * @param modeOfRepresentationID
@@ -72,7 +70,7 @@ public class DepictionEntry extends AbstractEntry {
 	public DepictionEntry(int depictionID, int styleID, String inscriptions, String separateAksaras, String dating, String description,
 			String backgroundColour, String generalRemarks, String otherSuggestedIdentifications, double width, double height, int expeditionID,
 			Date purchaseDate, int currentLocationID, String inventoryNumber, int vendorID, int storyID, int caveID, int wallID,
-			int iconographyID, int absoluteLeft, int absoluteTop, int modeOfRepresentationID, String shortName) {
+			int absoluteLeft, int absoluteTop, int modeOfRepresentationID, String shortName) {
 		super();
 		this.depictionID = depictionID;
 		this.styleID = styleID;
@@ -93,7 +91,6 @@ public class DepictionEntry extends AbstractEntry {
 		this.storyID = storyID;
 		this.caveID = caveID;
 		this.wallID = wallID;
-		this.iconographyID = iconographyID;
 		this.absoluteLeft = absoluteLeft;
 		this.absoluteTop = absoluteTop;
 		this.modeOfRepresentationID = modeOfRepresentationID;
@@ -252,14 +249,6 @@ public class DepictionEntry extends AbstractEntry {
 
 	public void setAbsoluteTop(int absoluteTop) {
 		this.absoluteTop = absoluteTop;
-	}
-
-	public int getIconographyID() {
-		return iconographyID;
-	}
-
-	public void setIconographyID(int iconographyID) {
-		this.iconographyID = iconographyID;
 	}
 
 	public int getWallID() {
