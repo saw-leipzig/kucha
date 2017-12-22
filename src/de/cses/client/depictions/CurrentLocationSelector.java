@@ -147,14 +147,13 @@ public class CurrentLocationSelector implements IsWidget {
 
 		tree = new Tree<CurrentLocationEntry, String>(store, new CurrentLocationValueProvider());
 		tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-		tree.setCheckable(true);
+		tree.setCheckable(false);
 		tree.setAutoLoad(true);
 		tree.setCheckStyle(CheckCascade.NONE);
 		tree.setCheckNodes(CheckNodes.LEAF);
-		tree.setWidth(350);
 		vlc.add(tree, new VerticalLayoutData(1.0, 1.0));
 		vlc.setScrollMode(ScrollMode.AUTOY);
-		vlc.setPixelSize(700, 475);
+
 		ContentPanel treePanel = new ContentPanel();
 		treePanel.setHeaderVisible(false);
 		treePanel.add(vlc);
@@ -185,8 +184,8 @@ public class CurrentLocationSelector implements IsWidget {
 
 	}
 	
-	public CurrentLocationEntry getSelectedIconography() {
-		return tree.getSelectionModel().getSelectedItem();
+	public CurrentLocationEntry getSelectedLocation() {
+		return tree.getCheckedSelection().get(0);
 	}
 
 }

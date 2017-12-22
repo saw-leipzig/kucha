@@ -1000,7 +1000,7 @@ public class DepictionEditor extends AbstractEditor {
 		for (PictorialElementEntry pe : peSelector.getSelectedPE()) {
 			selectedPEList.add(pe);
 		}
-		correspondingDepictionEntry.setCurrentLocationID(locationSelector.getSelectedIconography().getCurrentLocationID());
+		correspondingDepictionEntry.setCurrentLocationID(locationSelector.getSelectedLocation().getCurrentLocationID());
 		
 		Util.showWarning("saveDepictionEntry", "method called");
 		if (correspondingDepictionEntry.getDepictionID() == 0) {
