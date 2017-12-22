@@ -22,9 +22,11 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
+import com.google.gwt.text.shared.SafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -142,7 +144,9 @@ public class DepictionEditor extends AbstractEditor {
 	private TextArea separateAksarasTextArea;
 	private ModesOfRepresentationProperties morProps;
 	private ListStore<ModeOfRepresentationEntry> morEntryList;
-	private CurrentLocationSelector locationSelector;
+	private ComboBox<LocationEntry> locationSelectionCB;
+	private LocationProperties locationProps;
+	private ListStore<LocationEntry> locationEntryList;
 
 	interface DepictionProperties extends PropertyAccess<DepictionEntry> {
 		ModelKeyProvider<DepictionEntry> depictionID();
@@ -270,6 +274,8 @@ public class DepictionEditor extends AbstractEditor {
 		styleEntryList = new ListStore<StyleEntry>(styleProps.styleID());
 		caveProps = GWT.create(CaveProperties.class);
 		caveEntryList = new ListStore<CaveEntry>(caveProps.caveID());
+		locationProps = GWT.create(LocationProperties.class);
+		locationEntryList = new ListStore<LocationEntry>(locationProps.locationID());
 		expedProps = GWT.create(ExpeditionProperties.class);
 		expedEntryList = new ListStore<ExpeditionEntry>(expedProps.expeditionID());
 		morProps = GWT.create(ModesOfRepresentationProperties.class);
@@ -277,6 +283,7 @@ public class DepictionEditor extends AbstractEditor {
 
 		initPanel();
 		loadCaves();
+		loadLocations();
 		loadStyles();
 		loadVendors();
 		loadExpeditions();
@@ -366,6 +373,15 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 	}
+	
+	 private void loadLocations() {
+			for (LocationEntry locEntry : StaticTables.getInstance().getLocationEntries().values()) {
+				locationEntryList.add(locEntry);
+			}
+			if (correspondingDepictionEntry.getLocationID() > 0) {
+				locationSelectionCB.setValue(locationEntryList.findModelWithKey(Integer.toString(correspondingDepictionEntry.getLocationID())));
+			}
+	 }
 
 	/**
 	 * 
@@ -541,7 +557,31 @@ public class DepictionEditor extends AbstractEditor {
 		// TODO add change handler
 		datePurchasedFP.add(purchaseDateField);
 		
-		
+		locationSelectionCB = new ComboBox<LocationEntry>(locationEntryList, locationProps.name(), new AbstractSafeHtmlRenderer<LocationEntry>() {
+
+			@Override
+			public SafeHtml render(LocationEntry item) {
+				final LocationViewTemplates lvTemplates = GWT.create(LocationViewTemplates.class);
+				if ((item.getCounty() != null) && (!item.getCounty().isEmpty())) {
+					if ((item.getTown() != null) && (!item.getTown().isEmpty())) {
+						return lvTemplates.caveLabel(item.getName(), item.getRegion()!=null && !item.getRegion().isEmpty() ? item.getTown()+" ("+item.getRegion()+")" : item.getTown(), item.getCounty());
+					} else if ((item.getRegion() != null) && (!item.getRegion().isEmpty())) {
+						return lvTemplates.caveLabel(item.getName(), item.getTown()!=null && !item.getTown().isEmpty() ? item.getTown()+" ("+item.getRegion()+")" : item.getRegion(), item.getCounty());
+					} else {
+						return lvTemplates.caveLabel(item.getName(), item.getCounty());
+					}
+				} else {
+					return lvTemplates.caveLabel(item.getName());
+				}
+			}
+		});
+		locationSelectionCB.addValueChangeHandler(new ValueChangeHandler<LocationEntry>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<LocationEntry> event) {
+				correspondingDepictionEntry.setLocationID(event.getValue().getLocationID());
+			}
+		});
 
 //		locationSelector = new CurrentLocationSelector();
 //		locationSelector.setSelectedLocation(correspondingDepictionEntry.getCurrentLocationID());
@@ -566,7 +606,7 @@ public class DepictionEditor extends AbstractEditor {
 		basicsLeftVLC.add(acquiredByExpeditionFP, new VerticalLayoutData(1.0, .1));
 		basicsLeftVLC.add(vendorFP, new VerticalLayoutData(1.0, .1));
 		basicsLeftVLC.add(datePurchasedFP, new VerticalLayoutData(1.0, .1));
-		basicsLeftVLC.add(locationSelector, new VerticalLayoutData(1.0, .4));
+		basicsLeftVLC.add(locationSelectionCB, new VerticalLayoutData(1.0, .1));
 		basicsLeftVLC.add(inventoryNumberFP, new VerticalLayoutData(1.0, .1));
 
 		VerticalLayoutContainer basicsRightVLC = new VerticalLayoutContainer();
@@ -1022,9 +1062,9 @@ public class DepictionEditor extends AbstractEditor {
 		for (PictorialElementEntry pe : peSelector.getSelectedPE()) {
 			selectedPEList.add(pe);
 		}
-		if (locationSelector.getSelectedLocation() != null) {
-			correspondingDepictionEntry.setCurrentLocationID(locationSelector.getSelectedLocation().getCurrentLocationID());
-		}
+//		if (locationSelector.getSelectedLocation() != null) {
+//			correspondingDepictionEntry.setCurrentLocationID(locationSelector.getSelectedLocation().getCurrentLocationID());
+//		}
 		
 		if (correspondingDepictionEntry.getDepictionID() == 0) {
 			Util.showWarning("saveDepictionEntry", "calling insert");

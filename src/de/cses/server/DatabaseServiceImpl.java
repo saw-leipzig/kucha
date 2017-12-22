@@ -33,6 +33,7 @@ import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageTypeEntry;
+import de.cses.shared.LocationEntry;
 import de.cses.shared.MainTypologicalClass;
 import de.cses.shared.ModeOfRepresentationEntry;
 import de.cses.shared.OrientationEntry;
@@ -663,6 +664,14 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public ArrayList<IconographyEntry> getRelatedIconography(int depictionID) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getRelatedIconography(depictionID);
+	}
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#getLocations()
+	 */
+	@Override
+	public ArrayList<LocationEntry> getLocations() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getLocations();
 	}
 
 }

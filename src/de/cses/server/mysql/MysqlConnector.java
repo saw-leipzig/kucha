@@ -44,6 +44,7 @@ import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageTypeEntry;
+import de.cses.shared.LocationEntry;
 import de.cses.shared.MainTypologicalClass;
 import de.cses.shared.ModeOfRepresentationEntry;
 import de.cses.shared.OrientationEntry;
@@ -1870,7 +1871,7 @@ public class MysqlConnector {
 			pstmt.setDouble(10, de.getWidth());
 			pstmt.setInt(11, de.getExpeditionID());
 			pstmt.setDate(12, de.getPurchaseDate());
-			pstmt.setInt(13, de.getCurrentLocationID());
+			pstmt.setInt(13, de.getLocationID());
 			pstmt.setString(14, de.getInventoryNumber());
 			pstmt.setInt(15, de.getVendorID());
 			pstmt.setInt(16, de.getStoryID());
@@ -1939,7 +1940,7 @@ public class MysqlConnector {
 			pstmt.setDouble(10, de.getWidth());
 			pstmt.setInt(11, de.getExpeditionID());
 			pstmt.setDate(12, de.getPurchaseDate());
-			pstmt.setInt(13, de.getCurrentLocationID());
+			pstmt.setInt(13, de.getLocationID());
 			pstmt.setString(14, de.getInventoryNumber());
 			pstmt.setInt(15, de.getVendorID());
 			pstmt.setInt(16, de.getStoryID());
@@ -2611,5 +2612,26 @@ public class MysqlConnector {
 		}
 		return result;
 	}
+
+	/**
+	 * @return
+	 */
+	public ArrayList<LocationEntry> getLocations() {
+		ArrayList<LocationEntry> results = new ArrayList<LocationEntry>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Locations");
+			while (rs.next()) {
+				results.add(new LocationEntry(rs.getInt("LocationID"), rs.getString("Name"), rs.getString("Town"), rs.getString("Region"), rs.getString("Country"), rs.getString("URL")));
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return results;	}
 
 }

@@ -32,6 +32,7 @@ import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageTypeEntry;
+import de.cses.shared.LocationEntry;
 import de.cses.shared.MainTypologicalClass;
 import de.cses.shared.ModeOfRepresentationEntry;
 import de.cses.shared.OrientationEntry;
@@ -218,5 +219,7 @@ public interface DatabaseService extends RemoteService {
 	ArrayList<CurrentLocationEntry> getCurrentLocations() throws IllegalArgumentException;
 
 	ArrayList<IconographyEntry> getRelatedIconography(int depictionID) throws IllegalArgumentException;
+
+	ArrayList<LocationEntry> getLocations() throws IllegalArgumentException;
 
 }

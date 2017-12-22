@@ -29,7 +29,7 @@ public class DepictionEntry extends AbstractEntry {
 	private double width = 0, height = 0;
 	private int expeditionID = 0;
 	private Date purchaseDate;
-	private int currentLocationID = 0;
+	private int locationID = 0;
 	private String inventoryNumber;
 	private int vendorID = 0;
 	private int storyID = 0;
@@ -69,7 +69,7 @@ public class DepictionEntry extends AbstractEntry {
 	 */
 	public DepictionEntry(int depictionID, int styleID, String inscriptions, String separateAksaras, String dating, String description,
 			String backgroundColour, String generalRemarks, String otherSuggestedIdentifications, double width, double height, int expeditionID,
-			Date purchaseDate, int currentLocationID, String inventoryNumber, int vendorID, int storyID, int caveID, int wallID, int absoluteLeft,
+			Date purchaseDate, int locationID, String inventoryNumber, int vendorID, int storyID, int caveID, int wallID, int absoluteLeft,
 			int absoluteTop, int modeOfRepresentationID, String shortName) {
 		super();
 		this.depictionID = depictionID;
@@ -85,7 +85,7 @@ public class DepictionEntry extends AbstractEntry {
 		this.height = height;
 		this.expeditionID = expeditionID;
 		this.purchaseDate = purchaseDate;
-		this.currentLocationID = currentLocationID;
+		this.locationID = locationID;
 		this.inventoryNumber = inventoryNumber;
 		this.vendorID = vendorID;
 		this.storyID = storyID;
@@ -99,7 +99,7 @@ public class DepictionEntry extends AbstractEntry {
 
 	public DepictionEntry clone() {
 		return new DepictionEntry(depictionID, styleID, inscriptions, separateAksaras, dating, description, backgroundColour, generalRemarks,
-				otherSuggestedIdentifications, width, height, expeditionID, purchaseDate, currentLocationID, inventoryNumber, vendorID, storyID,
+				otherSuggestedIdentifications, width, height, expeditionID, purchaseDate, locationID, inventoryNumber, vendorID, storyID,
 				caveID, wallID, absoluteLeft, absoluteTop, modeOfRepresentationID, shortName);
 	}
 
@@ -199,12 +199,12 @@ public class DepictionEntry extends AbstractEntry {
 		this.purchaseDate = purchaseDate;
 	}
 
-	public int getCurrentLocationID() {
-		return currentLocationID;
+	public int getLocationID() {
+		return locationID;
 	}
 
-	public void setCurrentLocationID(int currentLocationID) {
-		this.currentLocationID = currentLocationID;
+	public void setLocationID(int locationID) {
+		this.locationID = locationID;
 	}
 
 	public int getVendorID() {

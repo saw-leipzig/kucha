@@ -19,6 +19,7 @@ import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
@@ -32,6 +33,7 @@ import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageTypeEntry;
+import de.cses.shared.LocationEntry;
 import de.cses.shared.ModeOfRepresentationEntry;
 import de.cses.shared.OrnamentFunctionEntry;
 import de.cses.shared.OrnamentPositionEntry;
@@ -69,10 +71,12 @@ public class StaticTables {
 	protected HashMap<Integer, OrnamentPositionEntry> ornamentPositionMap;
 	protected HashMap<Integer, OrnamentFunctionEntry> ornamentFunctionMap;
 	protected HashMap<Integer, CurrentLocationEntry> currentLocationMap;
+	protected HashMap<Integer, LocationEntry> locationMap;
 
 	private int loadCounter;
 
 	private ListsLoadedListener listener;
+
 
 	public interface ListsLoadedListener {
 		void listsLoaded(double progressCounter);
@@ -109,7 +113,7 @@ public class StaticTables {
 		loadWallLocations();
 		loadOrnamentPositionTable();
 		loadOrnamentFunctionTable();
-		loadCurrentLocationMap();
+		loadLocationMap();
 	}
 
 	private void listLoaded() {
@@ -428,9 +432,9 @@ public class StaticTables {
 		});
 	}
 	
-	private void loadCurrentLocationMap() {
-		currentLocationMap = new HashMap<Integer, CurrentLocationEntry>();
-		dbService.getCurrentLocations(new AsyncCallback<ArrayList<CurrentLocationEntry>>() {
+	private void loadLocationMap() {
+		locationMap = new HashMap<Integer, LocationEntry>();
+		dbService.getLocations(new AsyncCallback<ArrayList<LocationEntry>>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
@@ -438,9 +442,9 @@ public class StaticTables {
 			}
 
 			@Override
-			public void onSuccess(ArrayList<CurrentLocationEntry> result) {
-				for (CurrentLocationEntry cle : result) {
-					currentLocationMap.put(cle.getCurrentLocationID(), cle);
+			public void onSuccess(ArrayList<LocationEntry> result) {
+				for (LocationEntry entry : result) {
+					locationMap.put(entry.getLocationID(), entry);
 				}
 				listLoaded();
 			}
@@ -509,6 +513,10 @@ public class StaticTables {
 
 	public Map<Integer, CurrentLocationEntry> getCurrentLocationEntries() {
 		return currentLocationMap;
+	}
+
+	public Map<Integer, LocationEntry> getLocationEntries() {
+		return locationMap;
 	}
 	
 }
