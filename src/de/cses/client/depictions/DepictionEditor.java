@@ -385,7 +385,11 @@ public class DepictionEditor extends AbstractEditor {
 			Comparator<LocationEntry> locationEntryComparator = new Comparator<LocationEntry>() {
 				@Override
 				public int compare(LocationEntry loc1, LocationEntry loc2) {
-					return loc1.getName().toLowerCase().compareTo(loc2.getName().toLowerCase());
+					if (("unknwon" == loc1.getName().toLowerCase()) || ("lost" == loc1.getName().toLowerCase())) {
+						return -1;
+					} else {
+						return loc1.getName().toLowerCase().compareTo(loc2.getName().toLowerCase());
+					}
 				}
 			};
 			locationEntryLS.addSortInfo(new StoreSortInfo<LocationEntry>(locationEntryComparator, SortDir.ASC));
@@ -568,6 +572,8 @@ public class DepictionEditor extends AbstractEditor {
 		// TODO add change handler
 		datePurchasedFP.add(purchaseDateField);
 		
+		FramedPanel currentLocationFP = new FramedPanel();
+		currentLocationFP.setHeading("Current Location");
 		locationSelectionCB = new ComboBox<LocationEntry>(locationEntryLS, locationProps.name(), new AbstractSafeHtmlRenderer<LocationEntry>() {
 
 			@Override
@@ -586,6 +592,7 @@ public class DepictionEditor extends AbstractEditor {
 				}
 			}
 		});
+		locationSelectionCB.setEmptyText("select current location");
 		locationSelectionCB.setTypeAhead(false);
 		locationSelectionCB.setEditable(false);
 		locationSelectionCB.setTriggerAction(TriggerAction.ALL);
@@ -596,6 +603,7 @@ public class DepictionEditor extends AbstractEditor {
 				correspondingDepictionEntry.setLocationID(event.getValue().getLocationID());
 			}
 		});
+		currentLocationFP.add(locationSelectionCB);
 
 //		locationSelector = new CurrentLocationSelector();
 //		locationSelector.setSelectedLocation(correspondingDepictionEntry.getCurrentLocationID());
@@ -620,7 +628,7 @@ public class DepictionEditor extends AbstractEditor {
 		basicsLeftVLC.add(acquiredByExpeditionFP, new VerticalLayoutData(1.0, .1));
 		basicsLeftVLC.add(vendorFP, new VerticalLayoutData(1.0, .1));
 		basicsLeftVLC.add(datePurchasedFP, new VerticalLayoutData(1.0, .1));
-		basicsLeftVLC.add(locationSelectionCB, new VerticalLayoutData(1.0, .1));
+		basicsLeftVLC.add(currentLocationFP, new VerticalLayoutData(1.0, .1));
 		basicsLeftVLC.add(inventoryNumberFP, new VerticalLayoutData(1.0, .1));
 
 		VerticalLayoutContainer basicsRightVLC = new VerticalLayoutContainer();
@@ -1051,23 +1059,11 @@ public class DepictionEditor extends AbstractEditor {
 		mainPanel.addTool(closeToolButton);
 	}
 
-	// /**
-	// * Called when the save button is pressed. Calls <code>DepictionEditorListener.depictionSaved(null)<code>
-	// */
-	// protected void cancelDepictionEditor() {
-	// Iterator<DepictionEditorListener> deIterator = listener.iterator();
-	// while (deIterator.hasNext()) {
-	// deIterator.next().depictionSaved(null);
-	// }
-	// }
-
 	/**
 	 * Called when the save button is pressed. Calls <code>DepictionEditorListener.depictionSaved(correspondingDepictionEntry)<code>
 	 * @param close 
 	 */
 	protected void saveDepictionEntry(boolean close) {
-		Util.showWarning("saveDepictionEntry", "method called");
-
 		ArrayList<ImageEntry> associatedImageEntryList = new ArrayList<ImageEntry>();
 		for (int i = 0; i < imageEntryLS.size(); ++i) {
 			associatedImageEntryList.add(imageEntryLS.get(i));
@@ -1076,17 +1072,12 @@ public class DepictionEditor extends AbstractEditor {
 		for (PictorialElementEntry pe : peSelector.getSelectedPE()) {
 			selectedPEList.add(pe);
 		}
-//		if (locationSelector.getSelectedLocation() != null) {
-//			correspondingDepictionEntry.setCurrentLocationID(locationSelector.getSelectedLocation().getCurrentLocationID());
-//		}
 		
 		if (correspondingDepictionEntry.getDepictionID() == 0) {
-			Util.showWarning("saveDepictionEntry", "calling insert");
 			dbService.insertDepictionEntry(correspondingDepictionEntry, associatedImageEntryList, selectedPEList, iconographySelector.getSelectedIconography(), new AsyncCallback<Integer>() {
 
 				@Override
 				public void onSuccess(Integer newDepictionID) {
-					Util.showWarning("saveDepictionEntry", "insert sucessful");
 					correspondingDepictionEntry.setDepictionID(newDepictionID.intValue());
 					if (close) {
 						closeEditor();
@@ -1095,23 +1086,19 @@ public class DepictionEditor extends AbstractEditor {
 
 				@Override
 				public void onFailure(Throwable caught) {
-					Util.showWarning("saveDepictionEntry", caught.getMessage());
 					caught.printStackTrace();
 				}
 			});
 		} else {
-			Util.showWarning("saveDepictionEntry", "calling update");
 			dbService.updateDepictionEntry(correspondingDepictionEntry, associatedImageEntryList, selectedPEList, iconographySelector.getSelectedIconography(), new AsyncCallback<Boolean>() {
 
 				@Override
 				public void onFailure(Throwable caught) {
-					Util.showWarning("saveDepictionEntry", caught.getMessage());
 					caught.printStackTrace();
 				}
 
 				@Override
 				public void onSuccess(Boolean updateSucessful) {
-					Util.showWarning("saveDepictionEntry", "update sucessful");
 					if (close) {
 						closeEditor();
 					}
