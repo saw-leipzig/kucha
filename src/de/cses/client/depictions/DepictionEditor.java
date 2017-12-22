@@ -14,6 +14,7 @@
 package de.cses.client.depictions;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -44,6 +45,8 @@ import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
+import com.sencha.gxt.data.shared.SortDir;
+import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.widget.core.client.Dialog;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
@@ -84,6 +87,7 @@ import de.cses.client.user.UserLogin;
 import de.cses.client.walls.WallSelector;
 import de.cses.client.walls.Walls;
 import de.cses.shared.CaveEntry;
+import de.cses.shared.CeilingTypeEntry;
 import de.cses.shared.CurrentLocationEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
@@ -120,33 +124,33 @@ public class DepictionEditor extends AbstractEditor {
 	protected PopupPanel imageSelectionDialog;
 	// private ArrayList<DepictionEditorListener> listener;
 	private ListView<ImageEntry, ImageEntry> imageListView;
-	private ListStore<ImageEntry> imageEntryList;
+	private ListStore<ImageEntry> imageEntryLS;
 	private ImageProperties imgProperties;
 	private DepictionEntry correspondingDepictionEntry;
 	private VendorProperties vendorProps;
-	private ListStore<VendorEntry> vendorEntryList;
+	private ListStore<VendorEntry> vendorEntryLS;
 	private ComboBox<VendorEntry> vendorSelection;
 	private ComboBox<StyleEntry> styleSelection;
 	private StyleProperties styleProps;
-	private ListStore<StyleEntry> styleEntryList;
+	private ListStore<StyleEntry> styleEntryLS;
 	private CaveProperties caveProps;
-	private ListStore<CaveEntry> caveEntryList;
+	private ListStore<CaveEntry> caveEntryLS;
 	private ComboBox<CaveEntry> caveSelectionCB;
 	private ExpeditionProperties expedProps;
-	private ListStore<ExpeditionEntry> expedEntryList;
+	private ListStore<ExpeditionEntry> expedEntryLS;
 	private ComboBox<ExpeditionEntry> expedSelectionCB;
-	private ComboBox<ModeOfRepresentationEntry> modeOfRepresentationSelection;
+	private ComboBox<ModeOfRepresentationEntry> modeOfRepresentationSelectionCB;
 	protected PopupPanel wallEditorDialog;
 	private Walls wallEditor;
-	private Label iconographyLabel;
+//	private Label iconographyLabel;
 	protected PopupPanel iconographySelectionDialog;
 	private WallSelector wallSelectorPanel;
 	private TextArea separateAksarasTextArea;
 	private ModesOfRepresentationProperties morProps;
-	private ListStore<ModeOfRepresentationEntry> morEntryList;
+	private ListStore<ModeOfRepresentationEntry> modeOfRepresentationLS;
 	private ComboBox<LocationEntry> locationSelectionCB;
 	private LocationProperties locationProps;
-	private ListStore<LocationEntry> locationEntryList;
+	private ListStore<LocationEntry> locationEntryLS;
 
 	interface DepictionProperties extends PropertyAccess<DepictionEntry> {
 		ModelKeyProvider<DepictionEntry> depictionID();
@@ -264,22 +268,22 @@ public class DepictionEditor extends AbstractEditor {
 		// listener.add(deListener);
 		peSelector = new PictorialElementSelector(correspondingDepictionEntry.getDepictionID());
 		imgProperties = GWT.create(ImageProperties.class);
-		imageEntryList = new ListStore<ImageEntry>(imgProperties.imageID());
+		imageEntryLS = new ListStore<ImageEntry>(imgProperties.imageID());
 		if (correspondingDepictionEntry.getDepictionID() > 0) {
 			loadImages();
 		}
 		vendorProps = GWT.create(VendorProperties.class);
-		vendorEntryList = new ListStore<VendorEntry>(vendorProps.vendorID());
+		vendorEntryLS = new ListStore<VendorEntry>(vendorProps.vendorID());
 		styleProps = GWT.create(StyleProperties.class);
-		styleEntryList = new ListStore<StyleEntry>(styleProps.styleID());
+		styleEntryLS = new ListStore<StyleEntry>(styleProps.styleID());
 		caveProps = GWT.create(CaveProperties.class);
-		caveEntryList = new ListStore<CaveEntry>(caveProps.caveID());
+		caveEntryLS = new ListStore<CaveEntry>(caveProps.caveID());
 		locationProps = GWT.create(LocationProperties.class);
-		locationEntryList = new ListStore<LocationEntry>(locationProps.locationID());
+		locationEntryLS = new ListStore<LocationEntry>(locationProps.locationID());
 		expedProps = GWT.create(ExpeditionProperties.class);
-		expedEntryList = new ListStore<ExpeditionEntry>(expedProps.expeditionID());
+		expedEntryLS = new ListStore<ExpeditionEntry>(expedProps.expeditionID());
 		morProps = GWT.create(ModesOfRepresentationProperties.class);
-		morEntryList = new ListStore<ModeOfRepresentationEntry>(morProps.modeOfRepresentationID());
+		modeOfRepresentationLS = new ListStore<ModeOfRepresentationEntry>(morProps.modeOfRepresentationID());
 
 		initPanel();
 		loadCaves();
@@ -295,10 +299,10 @@ public class DepictionEditor extends AbstractEditor {
 	 */
 	private void loadExpeditions() {
 		for (ExpeditionEntry exped : StaticTables.getInstance().getExpeditionEntries().values()) {
-			expedEntryList.add(exped);
+			expedEntryLS.add(exped);
 		}
 		if (correspondingDepictionEntry.getExpeditionID() > 0) {
-			expedSelectionCB.setValue(expedEntryList.findModelWithKey(Integer.toString(correspondingDepictionEntry.getExpeditionID())));
+			expedSelectionCB.setValue(expedEntryLS.findModelWithKey(Integer.toString(correspondingDepictionEntry.getExpeditionID())));
 		}
 	}
 
@@ -316,10 +320,10 @@ public class DepictionEditor extends AbstractEditor {
 			@Override
 			public void onSuccess(ArrayList<VendorEntry> vendorResults) {
 				for (VendorEntry ve : vendorResults) {
-					vendorEntryList.add(ve);
+					vendorEntryLS.add(ve);
 				}
 				if (correspondingDepictionEntry.getVendorID() > 0) {
-					vendorSelection.setValue(vendorEntryList.findModelWithKey(Integer.toString(correspondingDepictionEntry.getVendorID())));
+					vendorSelection.setValue(vendorEntryLS.findModelWithKey(Integer.toString(correspondingDepictionEntry.getVendorID())));
 				}
 			}
 		});
@@ -330,10 +334,10 @@ public class DepictionEditor extends AbstractEditor {
 	 */
 	private void loadModesOfRepresentation() {
 		for (ModeOfRepresentationEntry morEntry : StaticTables.getInstance().getModesOfRepresentationEntries().values()) {
-			morEntryList.add(morEntry);
+			modeOfRepresentationLS.add(morEntry);
 		}
 		if (correspondingDepictionEntry.getModeOfRepresentationID() > 0) {
-			modeOfRepresentationSelection.setValue(morEntryList.findModelWithKey(Integer.toString(correspondingDepictionEntry.getModeOfRepresentationID())));
+			modeOfRepresentationSelectionCB.setValue(modeOfRepresentationLS.findModelWithKey(Integer.toString(correspondingDepictionEntry.getModeOfRepresentationID())));
 		}
 	}
 
@@ -342,10 +346,10 @@ public class DepictionEditor extends AbstractEditor {
 	 */
 	private void loadStyles() {
 		for (StyleEntry se : StaticTables.getInstance().getStyleEntries().values()) {
-			styleEntryList.add(se);
+			styleEntryLS.add(se);
 		}
 		if (correspondingDepictionEntry.getStyleID() > 0) {
-			styleSelection.setValue(styleEntryList.findModelWithKey(Integer.toString(correspondingDepictionEntry.getStyleID())));
+			styleSelection.setValue(styleEntryLS.findModelWithKey(Integer.toString(correspondingDepictionEntry.getStyleID())));
 		}
 	}
 
@@ -363,10 +367,10 @@ public class DepictionEditor extends AbstractEditor {
 			@Override
 			public void onSuccess(ArrayList<CaveEntry> caveResults) {
 				for (CaveEntry ce : caveResults) {
-					caveEntryList.add(ce);
+					caveEntryLS.add(ce);
 				}
 				if (correspondingDepictionEntry.getCaveID() > 0) {
-					CaveEntry ce = caveEntryList.findModelWithKey(Integer.toString(correspondingDepictionEntry.getCaveID()));
+					CaveEntry ce = caveEntryLS.findModelWithKey(Integer.toString(correspondingDepictionEntry.getCaveID()));
 					caveSelectionCB.setValue(ce);
 					wallSelectorPanel.setCave(ce);
 				}
@@ -376,10 +380,17 @@ public class DepictionEditor extends AbstractEditor {
 	
 	 private void loadLocations() {
 			for (LocationEntry locEntry : StaticTables.getInstance().getLocationEntries().values()) {
-				locationEntryList.add(locEntry);
+				locationEntryLS.add(locEntry);
 			}
+			Comparator<LocationEntry> locationEntryComparator = new Comparator<LocationEntry>() {
+				@Override
+				public int compare(LocationEntry loc1, LocationEntry loc2) {
+					return loc1.getName().toLowerCase().compareTo(loc2.getName().toLowerCase());
+				}
+			};
+			locationEntryLS.addSortInfo(new StoreSortInfo<LocationEntry>(locationEntryComparator, SortDir.ASC));
 			if (correspondingDepictionEntry.getLocationID() > 0) {
-				locationSelectionCB.setValue(locationEntryList.findModelWithKey(Integer.toString(correspondingDepictionEntry.getLocationID())));
+				locationSelectionCB.setValue(locationEntryLS.findModelWithKey(Integer.toString(correspondingDepictionEntry.getLocationID())));
 			}
 	 }
 
@@ -397,7 +408,7 @@ public class DepictionEditor extends AbstractEditor {
 			@Override
 			public void onSuccess(ArrayList<ImageEntry> imgResults) {
 				for (ImageEntry ie : imgResults) {
-					imageEntryList.add(ie);
+					imageEntryLS.add(ie);
 				}
 			}
 		});
@@ -417,7 +428,7 @@ public class DepictionEditor extends AbstractEditor {
 	private void initPanel() {
 
 		// the images related with the depiction entry that will be shown on the right
-		imageListView = new ListView<ImageEntry, ImageEntry>(imageEntryList, new IdentityValueProvider<ImageEntry>() {
+		imageListView = new ListView<ImageEntry, ImageEntry>(imageEntryLS, new IdentityValueProvider<ImageEntry>() {
 			@Override
 			public void setValue(ImageEntry object, ImageEntry value) {
 			}
@@ -456,7 +467,7 @@ public class DepictionEditor extends AbstractEditor {
 		
 		FramedPanel caveSelectionFP = new FramedPanel();
 		caveSelectionFP.setHeading("Located in Cave");
-		caveSelectionCB = new ComboBox<CaveEntry>(caveEntryList, caveProps.officialNumber(), new AbstractSafeHtmlRenderer<CaveEntry>() {
+		caveSelectionCB = new ComboBox<CaveEntry>(caveEntryLS, caveProps.officialNumber(), new AbstractSafeHtmlRenderer<CaveEntry>() {
 
 			@Override
 			public SafeHtml render(CaveEntry item) {
@@ -496,7 +507,7 @@ public class DepictionEditor extends AbstractEditor {
 
 		FramedPanel acquiredByExpeditionFP = new FramedPanel();
 		acquiredByExpeditionFP.setHeading("Acquired by expedition");
-		expedSelectionCB = new ComboBox<ExpeditionEntry>(expedEntryList, expedProps.name(), new AbstractSafeHtmlRenderer<ExpeditionEntry>() {
+		expedSelectionCB = new ComboBox<ExpeditionEntry>(expedEntryLS, expedProps.name(), new AbstractSafeHtmlRenderer<ExpeditionEntry>() {
 
 			@Override
 			public SafeHtml render(ExpeditionEntry item) {
@@ -527,7 +538,7 @@ public class DepictionEditor extends AbstractEditor {
 		
 		FramedPanel vendorFP = new FramedPanel();
 		vendorFP.setHeading("Vendor");
-		vendorSelection = new ComboBox<VendorEntry>(vendorEntryList, vendorProps.vendorName(), new AbstractSafeHtmlRenderer<VendorEntry>() {
+		vendorSelection = new ComboBox<VendorEntry>(vendorEntryLS, vendorProps.vendorName(), new AbstractSafeHtmlRenderer<VendorEntry>() {
 
 			@Override
 			public SafeHtml render(VendorEntry item) {
@@ -557,7 +568,7 @@ public class DepictionEditor extends AbstractEditor {
 		// TODO add change handler
 		datePurchasedFP.add(purchaseDateField);
 		
-		locationSelectionCB = new ComboBox<LocationEntry>(locationEntryList, locationProps.name(), new AbstractSafeHtmlRenderer<LocationEntry>() {
+		locationSelectionCB = new ComboBox<LocationEntry>(locationEntryLS, locationProps.name(), new AbstractSafeHtmlRenderer<LocationEntry>() {
 
 			@Override
 			public SafeHtml render(LocationEntry item) {
@@ -575,6 +586,9 @@ public class DepictionEditor extends AbstractEditor {
 				}
 			}
 		});
+		locationSelectionCB.setTypeAhead(false);
+		locationSelectionCB.setEditable(false);
+		locationSelectionCB.setTriggerAction(TriggerAction.ALL);
 		locationSelectionCB.addValueChangeHandler(new ValueChangeHandler<LocationEntry>() {
 
 			@Override
@@ -674,7 +688,7 @@ public class DepictionEditor extends AbstractEditor {
 
 		FramedPanel styleFP = new FramedPanel();
 		styleFP.setHeading("Style");
-		styleSelection = new ComboBox<StyleEntry>(styleEntryList, styleProps.styleName(), new AbstractSafeHtmlRenderer<StyleEntry>() {
+		styleSelection = new ComboBox<StyleEntry>(styleEntryLS, styleProps.styleName(), new AbstractSafeHtmlRenderer<StyleEntry>() {
 
 			@Override
 			public SafeHtml render(StyleEntry item) {
@@ -697,7 +711,7 @@ public class DepictionEditor extends AbstractEditor {
 
 		FramedPanel modesOfRepresentationFP = new FramedPanel();
 		modesOfRepresentationFP.setHeading("Modes of Representation");
-		modeOfRepresentationSelection = new ComboBox<ModeOfRepresentationEntry>(morEntryList, morProps.name(), new AbstractSafeHtmlRenderer<ModeOfRepresentationEntry>() {
+		modeOfRepresentationSelectionCB = new ComboBox<ModeOfRepresentationEntry>(modeOfRepresentationLS, morProps.name(), new AbstractSafeHtmlRenderer<ModeOfRepresentationEntry>() {
 
 			@Override
 			public SafeHtml render(ModeOfRepresentationEntry morEntry) {
@@ -706,18 +720,18 @@ public class DepictionEditor extends AbstractEditor {
 			}
 			
 		});
-		modeOfRepresentationSelection.setEmptyText("nothing selected");
-		modeOfRepresentationSelection.setTypeAhead(false);
-		modeOfRepresentationSelection.setEditable(false);
-		modeOfRepresentationSelection.setTriggerAction(TriggerAction.ALL);
-		modeOfRepresentationSelection.addSelectionHandler(new SelectionHandler<ModeOfRepresentationEntry>() {
+		modeOfRepresentationSelectionCB.setEmptyText("nothing selected");
+		modeOfRepresentationSelectionCB.setTypeAhead(false);
+		modeOfRepresentationSelectionCB.setEditable(false);
+		modeOfRepresentationSelectionCB.setTriggerAction(TriggerAction.ALL);
+		modeOfRepresentationSelectionCB.addSelectionHandler(new SelectionHandler<ModeOfRepresentationEntry>() {
 
 			@Override
 			public void onSelection(SelectionEvent<ModeOfRepresentationEntry> event) {
 				correspondingDepictionEntry.setModeOfRepresentationID(event.getSelectedItem().getModeOfRepresentationID());
 			}
 		});
-		modesOfRepresentationFP.add(modeOfRepresentationSelection);
+		modesOfRepresentationFP.add(modeOfRepresentationSelectionCB);
 
 		FramedPanel backgroundColourFP = new FramedPanel();
 		backgroundColourFP.setHeading("Background colour");
@@ -880,7 +894,7 @@ public class DepictionEditor extends AbstractEditor {
 
 						@Override
 						public void onSuccess(ImageEntry ieResults) {
-							imageEntryList.add(ieResults);
+							imageEntryLS.add(ieResults);
 						}
 
 						@Override
@@ -910,7 +924,7 @@ public class DepictionEditor extends AbstractEditor {
 
 			@Override
 			public void onSelect(SelectEvent event) {
-				imageEntryList.remove(imageListView.getSelectionModel().getSelectedItem());
+				imageEntryLS.remove(imageListView.getSelectionModel().getSelectedItem());
 			}
 		});
 		
@@ -920,9 +934,9 @@ public class DepictionEditor extends AbstractEditor {
 			@Override
 			public void onSelect(SelectEvent event) {
 				ImageEntry entry = imageListView.getSelectionModel().getSelectedItem();
-				if (imageEntryList.indexOf(entry) > 0) {
-					imageEntryList.remove(entry);
-					imageEntryList.add(0, entry);
+				if (imageEntryLS.indexOf(entry) > 0) {
+					imageEntryLS.remove(entry);
+					imageEntryLS.add(0, entry);
 				}
 			}
 		});
@@ -1055,8 +1069,8 @@ public class DepictionEditor extends AbstractEditor {
 		Util.showWarning("saveDepictionEntry", "method called");
 
 		ArrayList<ImageEntry> associatedImageEntryList = new ArrayList<ImageEntry>();
-		for (int i = 0; i < imageEntryList.size(); ++i) {
-			associatedImageEntryList.add(imageEntryList.get(i));
+		for (int i = 0; i < imageEntryLS.size(); ++i) {
+			associatedImageEntryList.add(imageEntryLS.get(i));
 		}
 		ArrayList<PictorialElementEntry> selectedPEList = new ArrayList<PictorialElementEntry>();
 		for (PictorialElementEntry pe : peSelector.getSelectedPE()) {
