@@ -13,41 +13,37 @@
  */
 package de.cses.client.depictions;
 
-import java.util.ArrayList;
-
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
+import com.sencha.gxt.core.client.util.ToggleGroup;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
-import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
+import com.sencha.gxt.widget.core.client.event.BeforeCheckChangeEvent;
+import com.sencha.gxt.widget.core.client.event.CheckChangeEvent;
+import com.sencha.gxt.widget.core.client.event.CheckChangedEvent;
+import com.sencha.gxt.widget.core.client.event.CheckChangedEvent.CheckChangedHandler;
+import com.sencha.gxt.widget.core.client.event.CheckChangeEvent.CheckChangeHandler;
+import com.sencha.gxt.widget.core.client.event.BeforeCheckChangeEvent.BeforeCheckChangeHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
-import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 import com.sencha.gxt.widget.core.client.tree.Tree;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckCascade;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckNodes;
-import com.sencha.gxt.widget.core.client.tree.Tree.TreeAppearance;
+import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
 
 import de.cses.client.StaticTables;
 import de.cses.shared.CurrentLocationEntry;
 
 public class CurrentLocationSelector implements IsWidget {
 	
-	interface CurrentLocationSelectorListener {
-		
-		public void currentLocationSelected(CurrentLocationEntry entry);
-		public void cancel();
-
-	}
-
 	class CurrentLocationKeyProvider implements ModelKeyProvider<CurrentLocationEntry> {
 		@Override
 		public String getKey(CurrentLocationEntry item) {
@@ -74,29 +70,13 @@ public class CurrentLocationSelector implements IsWidget {
 		}
 	}
 
-//	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	private TreeStore<CurrentLocationEntry> store;
 	private Tree<CurrentLocationEntry, String> tree;
 	private FramedPanel mainPanel;
 	private VerticalLayoutContainer vlc;
-	private ArrayList<CurrentLocationSelectorListener> listenerList;
-	private int selectedCurrentLocationID;
-//	private StoreFilter<CurrentLocationEntry> currentLocationFilter;
-//	private TextField filterTextField;
-	private CurrentLocationEntry selectedEntry;
 
-	public CurrentLocationSelector(int selectedCurrentLocationID, CurrentLocationSelectorListener listener) {
-		this.selectedCurrentLocationID = selectedCurrentLocationID;
+	public CurrentLocationSelector() {
 		store = new TreeStore<CurrentLocationEntry>(new CurrentLocationKeyProvider());
-		listenerList = new ArrayList<CurrentLocationSelectorListener>();
-		listenerList.add(listener);
-//		currentLocationFilter = new StoreFilter<CurrentLocationEntry>() {
-//
-//			@Override
-//			public boolean select(Store<CurrentLocationEntry> store, CurrentLocationEntry parent, CurrentLocationEntry item) {
-//				return (item.getLocationName().contains(filterTextField.getCurrentValue()));
-//			}
-//		};
 		initPanel();
 		loadCurrentLocationStore();
 	}
@@ -104,9 +84,6 @@ public class CurrentLocationSelector implements IsWidget {
 	private void processParent(TreeStore<CurrentLocationEntry> store, CurrentLocationEntry item) {
 		for (CurrentLocationEntry child : item.getChildren()) {
 			store.add(item, child);
-			if (item.getCurrentLocationID() == selectedCurrentLocationID) {
-				selectedEntry = item;
-			}
 			if (child.getChildren() != null) {
 				processParent(store, child);
 			}
@@ -114,20 +91,11 @@ public class CurrentLocationSelector implements IsWidget {
 	}
 
 	private void loadCurrentLocationStore() {
-		selectedEntry = null;
 		for (CurrentLocationEntry item : StaticTables.getInstance().getCurrentLocationEntries().values()) {
 			store.add(item);
-			if (item.getCurrentLocationID() == selectedCurrentLocationID) {
-				selectedEntry = item;
-			}
 			if (item.getChildren() != null) {
 				processParent(store, item);
 			}
-		}
-		if (selectedEntry != null) {
-			tree.getSelectionModel().select(selectedEntry, true);
-			tree.expandAll();
-			tree.scrollIntoView(selectedEntry);
 		}
 	}
 
@@ -151,6 +119,7 @@ public class CurrentLocationSelector implements IsWidget {
 		tree.setAutoLoad(true);
 		tree.setCheckStyle(CheckCascade.NONE);
 		tree.setCheckNodes(CheckNodes.LEAF);
+		tree.setCheckable(true);
 		vlc.add(tree, new VerticalLayoutData(1.0, 1.0));
 		vlc.setScrollMode(ScrollMode.AUTOY);
 
@@ -185,7 +154,11 @@ public class CurrentLocationSelector implements IsWidget {
 	}
 	
 	public CurrentLocationEntry getSelectedLocation() {
-		return tree.getCheckedSelection().get(0);
+		return tree.getSelectionModel().getSelectedItem();
+	}
+	
+	public void setSelectedLocation(int selectedLocationID) {
+		tree.setChecked(store.findModelWithKey(Integer.toString(selectedLocationID)), CheckState.CHECKED);
 	}
 
 }

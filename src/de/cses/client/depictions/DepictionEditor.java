@@ -88,6 +88,7 @@ import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
+import de.cses.shared.LocationEntry;
 import de.cses.shared.ModeOfRepresentationEntry;
 import de.cses.shared.PictorialElementEntry;
 import de.cses.shared.SiteEntry;
@@ -169,6 +170,22 @@ public class DepictionEditor extends AbstractEditor {
 
 		@XTemplate("<div>{officialNumber}</div>")
 		SafeHtml caveLabel(String officialNumber);
+	}
+
+	interface LocationProperties extends PropertyAccess<LocationEntry> {
+		ModelKeyProvider<LocationEntry> locationID();
+		LabelProvider<LocationEntry> name();
+	}
+
+	interface LocationViewTemplates extends XTemplates {
+		@XTemplate("<div>{name}<br>{town}, {country}</div>")
+		SafeHtml caveLabel(String name, String town, String country);
+
+		@XTemplate("<div>{name}<br>{country}</div>")
+		SafeHtml caveLabel(String name, String country);
+
+		@XTemplate("<div>{name}</div>")
+		SafeHtml caveLabel(String name);
 	}
 
 	interface ExpeditionProperties extends PropertyAccess<ExpeditionEntry> {
@@ -523,8 +540,11 @@ public class DepictionEditor extends AbstractEditor {
 		purchaseDateField.setEmptyText("nothing selected");
 		// TODO add change handler
 		datePurchasedFP.add(purchaseDateField);
+		
+		
 
-		locationSelector = new CurrentLocationSelector(correspondingDepictionEntry.getCurrentLocationID(), null);
+//		locationSelector = new CurrentLocationSelector();
+//		locationSelector.setSelectedLocation(correspondingDepictionEntry.getCurrentLocationID());
 		
 		FramedPanel inventoryNumberFP = new FramedPanel();
 		inventoryNumberFP.setHeading("Inventory Number");
@@ -992,6 +1012,8 @@ public class DepictionEditor extends AbstractEditor {
 	 * @param close 
 	 */
 	protected void saveDepictionEntry(boolean close) {
+		Util.showWarning("saveDepictionEntry", "method called");
+
 		ArrayList<ImageEntry> associatedImageEntryList = new ArrayList<ImageEntry>();
 		for (int i = 0; i < imageEntryList.size(); ++i) {
 			associatedImageEntryList.add(imageEntryList.get(i));
@@ -1000,9 +1022,10 @@ public class DepictionEditor extends AbstractEditor {
 		for (PictorialElementEntry pe : peSelector.getSelectedPE()) {
 			selectedPEList.add(pe);
 		}
-		correspondingDepictionEntry.setCurrentLocationID(locationSelector.getSelectedLocation().getCurrentLocationID());
+		if (locationSelector.getSelectedLocation() != null) {
+			correspondingDepictionEntry.setCurrentLocationID(locationSelector.getSelectedLocation().getCurrentLocationID());
+		}
 		
-		Util.showWarning("saveDepictionEntry", "method called");
 		if (correspondingDepictionEntry.getDepictionID() == 0) {
 			Util.showWarning("saveDepictionEntry", "calling insert");
 			dbService.insertDepictionEntry(correspondingDepictionEntry, associatedImageEntryList, selectedPEList, iconographySelector.getSelectedIconography(), new AsyncCallback<Integer>() {
