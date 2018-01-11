@@ -360,7 +360,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 		style.setEnabled(false);
 		header = new FramedPanel();
 
-		header.setHeading("Style in which it is used");
+		header.setHeading("Style");
 		header.add(style);
 		vlcCave.add(header, new VerticalLayoutData(0.5, .125));
 
@@ -463,6 +463,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 
 		VerticalLayoutContainer vlcAttributes = new VerticalLayoutContainer();
 
+		/* wird spaeter geloescht oder privat 
 		HorizontalLayoutContainer orientationHorizontalPanel = new HorizontalLayoutContainer();
 
 		ListView<OrientationEntry, String> orientationView = new ListView<OrientationEntry, String>(orientation, orientationProps.nameEN());
@@ -486,6 +487,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 			}
 		}
 		header.add(orientationHorizontalPanel);
+		*/
 
 		vlcAttributes.add(header, new VerticalLayoutData(0.5, .4));
 
@@ -517,7 +519,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 		tabPanel.add(attributes, "Attributes");
 
 		FramedPanel relationToOtherOrnaments = new FramedPanel();
-		relationToOtherOrnaments.setHeading("Similar or related elements or ornaments");
+		relationToOtherOrnaments.setHeading("Relations");
 		VerticalLayoutContainer vlcRelationToTherornaments1 = new VerticalLayoutContainer();
 		VerticalLayoutContainer vlcRelationToTherornaments2 = new VerticalLayoutContainer();
 		HorizontalLayoutContainer backgroundHorizontalPanel = new HorizontalLayoutContainer();
@@ -565,14 +567,15 @@ public class OrnamentCaveAttributes extends PopupPanel {
 		new ListViewDropTarget<OrnamentEntry>(selectedSimilarOrnamentsListView).setGroup("similarOrnament");
 		new ListViewDropTarget<OrnamentEntry>(ornamentListViewSimilar).setGroup("similarOrnament");
 
-		header = new FramedPanel();
+		/* header = new FramedPanel();
 		header.setHeading("Select similar ornaments");
 		header.add(similarOrnamentsHorizontalPanel);
 		vlcRelationToTherornaments2.add(header, new VerticalLayoutData(1.0, .4));
+		*/
 
 		selector = new PictorialElementSelectorObjects();
 		header = new FramedPanel();
-		header.setHeading("Select similar elements");
+		header.setHeading("Select elements showing similar pattern");
 		if (ornamentCaveRelationEntry != null) {
 			selector.setOrnamentCaveRelationEntry(ornamentCaveRelationEntry);
 		}
@@ -582,14 +585,14 @@ public class OrnamentCaveAttributes extends PopupPanel {
 		final TextField groupOfOrnaments = new TextField();
 		groupOfOrnaments.setAllowBlank(true);
 		header = new FramedPanel();
-		header.setHeading("Group of Ornaments");
+		header.setHeading("Ornamental Group");
 		if (ornamentCaveRelationEntry != null) {
 			groupOfOrnaments.setText(ornamentCaveRelationEntry.getGroup());
 		}
 		header.add(groupOfOrnaments);
 		vlcRelationToTherornaments1.add(header, new VerticalLayoutData(1, .125));
 
-		final TextField relatedElementsofOtherCultures = new TextField();
+		/* final TextField relatedElementsofOtherCultures = new TextField();
 
 		header = new FramedPanel();
 		header.setHeading("Describe related elements of other cultures");
@@ -598,14 +601,15 @@ public class OrnamentCaveAttributes extends PopupPanel {
 		}
 		header.add(relatedElementsofOtherCultures);
 		vlcRelationToTherornaments1.add(header, new VerticalLayoutData(1, .125));
-
+*/
+		
 		final TextField similarElementsofOtherCultures = new TextField();
 
 		header = new FramedPanel();
 		if (ornamentCaveRelationEntry != null) {
 			similarElementsofOtherCultures.setText(ornamentCaveRelationEntry.getSimilarelementsOfOtherCultures());
 		}
-		header.setHeading("Describe similar elements of other cultures");
+		header.setHeading("Describe similarities with elements of other cultural areas");
 		header.add(similarElementsofOtherCultures);
 		vlcRelationToTherornaments1.add(header, new VerticalLayoutData(1, .125));
 
@@ -679,7 +683,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 				for (int i = 0; i < wallsListStore.size(); i++) {
 					ornamentCaveRelation.getWalls().add(wallsListStore.get(i));
 				}
-				ornamentCaveRelation.setRelatedelementeofOtherCultures(relatedElementsofOtherCultures.getText());
+				//ornamentCaveRelation.setRelatedelementeofOtherCultures(relatedElementsofOtherCultures.getText());
 				ornamentCaveRelation.setSimilarelementsOfOtherCultures(similarElementsofOtherCultures.getText());
 				// set walls
 				if (ornamentCaveRelationEntry == null) {
