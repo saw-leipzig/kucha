@@ -14,13 +14,12 @@
 package de.cses.client.depictions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.core.client.ValueProvider;
@@ -28,23 +27,30 @@ import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.Store;
-import com.sencha.gxt.data.shared.Store.StoreFilter;
 import com.sencha.gxt.data.shared.TreeStore;
+import com.sencha.gxt.data.shared.event.StoreFilterEvent;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
-import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
+import com.sencha.gxt.widget.core.client.event.CheckChangeEvent;
+import com.sencha.gxt.widget.core.client.event.CheckChangeEvent.CheckChangeHandler;
+import com.sencha.gxt.widget.core.client.event.CheckChangedEvent;
+import com.sencha.gxt.widget.core.client.event.CheckChangedEvent.CheckChangedHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.StoreFilterField;
-import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.tree.Tree;
+import com.sencha.gxt.widget.core.client.tree.Tree.CheckCascade;
+import com.sencha.gxt.widget.core.client.tree.Tree.CheckNodes;
+import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
 import de.cses.shared.IconographyEntry;
+import de.cses.shared.PictorialElementEntry;
 
 public class IconographySelector implements IsWidget {
 
@@ -79,24 +85,15 @@ public class IconographySelector implements IsWidget {
 	private Tree<IconographyEntry, String> tree;
 	private FramedPanel mainPanel;
 	private VerticalLayoutContainer vlc;
-	private ArrayList<IconographySelectorListener> listenerList;
-	private int selectedIconographyID;
-	private StoreFilter<IconographyEntry> iconographyFilter;
-	private TextField filterTextField;
+	private StoreFilterField<IconographyEntry> filterField;
+	private int depictionID;
+	protected Map<String, IconographyEntry> selectedIconographyMap;
 
-	public IconographySelector(int selectedIconographyID, IconographySelectorListener listener) {
-		this.selectedIconographyID = selectedIconographyID;
+	public IconographySelector(int depictionID) {
+		this.depictionID = depictionID;
 		store = new TreeStore<IconographyEntry>(new IconographyKeyProvider());
-		listenerList = new ArrayList<IconographySelectorListener>();
-		listenerList.add(listener);
-		iconographyFilter = new StoreFilter<IconographyEntry>() {
-
-			@Override
-			public boolean select(Store<IconographyEntry> store, IconographyEntry parent, IconographyEntry item) {
-				return (item.getText().contains(filterTextField.getCurrentValue()));
-			}
-		};
-		initPanel();
+		selectedIconographyMap = new HashMap<String, IconographyEntry>();
+//		initPanel();
 		loadIconographyStore();
 	}
 
@@ -113,18 +110,25 @@ public class IconographySelector implements IsWidget {
 		IconographyEntry selectedEntry = null;
 		for (IconographyEntry item : StaticTables.getInstance().getIconographyEntries().values()) {
 			store.add(item);
-			if (item.getIconographyID() == selectedIconographyID) {
-				selectedEntry = item;
-			}
 			if (item.getChildren() != null) {
 				processParent(store, item);
 			}
 		}
-		if (selectedEntry != null) {
-			tree.getSelectionModel().select(selectedEntry, false);
-			tree.expandAll();
-			tree.scrollIntoView(selectedEntry);
-		}
+		dbService.getRelatedIconography(depictionID, new AsyncCallback<ArrayList<IconographyEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(ArrayList<IconographyEntry> iconographyRelationList) {
+				for (IconographyEntry entry : iconographyRelationList) {
+					tree.setChecked(entry, CheckState.CHECKED);
+					selectedIconographyMap.put(entry.getUniqueID(), entry);
+				}
+			}
+		});
 	}
 
 	@Override
@@ -141,17 +145,48 @@ public class IconographySelector implements IsWidget {
 
 		vlc = new VerticalLayoutContainer();
 
-		tree = new Tree<IconographyEntry, String>(store, new IconographyValueProvider());
-		tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-		tree.setWidth(350);
+		tree = new Tree<IconographyEntry, String>(store, new IconographyValueProvider()) {
+
+			@Override
+			protected void onFilter(StoreFilterEvent<IconographyEntry> ie) {
+				super.onFilter(ie);
+				for (IconographyEntry entry : selectedIconographyMap.values()) {
+					tree.setChecked(entry, CheckState.CHECKED);
+				}
+			}
+
+		};
+		
+		tree.getSelectionModel().setSelectionMode(SelectionMode.MULTI);
+		tree.setCheckable(true);
+		tree.setAutoLoad(true);
+		tree.setCheckStyle(CheckCascade.NONE);
+		tree.setCheckNodes(CheckNodes.LEAF);
+		
+		tree.addCheckChangeHandler(new CheckChangeHandler<IconographyEntry>() {
+			
+			@Override
+			public void onCheckChange(CheckChangeEvent<IconographyEntry> event) {
+				IconographyEntry ie = event.getItem();
+				if (event.getChecked() == CheckState.CHECKED) {
+					if (!selectedIconographyMap.containsKey(ie.getUniqueID())) {
+						selectedIconographyMap.put(ie.getUniqueID(), ie);
+					}
+				} else {
+					selectedIconographyMap.remove(ie.getUniqueID());
+				}
+			}
+		});
+				
+//		tree.setWidth(350);
 		vlc.add(tree, new VerticalLayoutData(1.0, 1.0));
 		vlc.setScrollMode(ScrollMode.AUTOY);
-		vlc.setPixelSize(700, 475);
+//		vlc.setPixelSize(700, 475);
 		ContentPanel treePanel = new ContentPanel();
 		treePanel.setHeaderVisible(false);
 		treePanel.add(vlc);
 
-		StoreFilterField<IconographyEntry> filterField = new StoreFilterField<IconographyEntry>() {
+		filterField = new StoreFilterField<IconographyEntry>() {
 
 			@Override
 			protected boolean doSelect(Store<IconographyEntry> store, IconographyEntry parent, IconographyEntry item, String filter) {
@@ -174,49 +209,35 @@ public class IconographySelector implements IsWidget {
 
 		mainPanel.add(mainVLC);
 
-		TextButton iconographyExpandButton = new TextButton("expand tree");
-		iconographyExpandButton.addSelectHandler(new SelectHandler() {
+		ToolButton iconographyExpandTB = new ToolButton(ToolButton.EXPAND);
+		iconographyExpandTB.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
 				tree.expandAll();
 			}
 		});
-		mainPanel.addButton(iconographyExpandButton);
+		mainPanel.addTool(iconographyExpandTB);
 
-		TextButton iconographyCollapseButton = new TextButton("collapse tree");
-		iconographyCollapseButton.addSelectHandler(new SelectHandler() {
+		ToolButton iconographyCollapseTB = new ToolButton(ToolButton.COLLAPSE);
+		iconographyCollapseTB.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
 				tree.collapseAll();
 			}
 		});
-		mainPanel.addButton(iconographyCollapseButton);
+		mainPanel.addTool(iconographyCollapseTB);
 
-		TextButton cancelButton = new TextButton("cancel");
-		cancelButton.addSelectHandler(new SelectHandler() {
-			@Override
-			public void onSelect(SelectEvent event) {
-				for (IconographySelectorListener l : listenerList) {
-					l.cancel();
-				}
-			}
-		});
-		mainPanel.addButton(cancelButton);
-
-		TextButton selectButton = new TextButton("select");
-		selectButton.addSelectHandler(new SelectHandler() {
-			@Override
-			public void onSelect(SelectEvent event) {
-				for (IconographySelectorListener l : listenerList) {
-					l.iconographySelected(getSelectedIconography());
-				}
-			}
-		});
-		mainPanel.addButton(selectButton);
 	}
 
-	private IconographyEntry getSelectedIconography() {
-		return tree.getSelectionModel().getSelectedItem();
+	public ArrayList<IconographyEntry> getSelectedIconography() {
+		filterField.clear();
+		filterField.validate();
+		ArrayList<IconographyEntry> result = new ArrayList<IconographyEntry>();
+		for (IconographyEntry entry : tree.getCheckedSelection()) {
+			result.add(entry);
+		}
+		return result;	
 	}
+
 
 }

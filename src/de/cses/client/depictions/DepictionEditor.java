@@ -27,8 +27,6 @@ import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
@@ -36,23 +34,21 @@ import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
-import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
+import com.sencha.gxt.data.shared.SortDir;
+import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.widget.core.client.Dialog;
+import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.TabPanel;
-import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
-import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
-import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
@@ -65,6 +61,7 @@ import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinNumberValidator;
 
 import de.cses.client.DatabaseService;
@@ -80,8 +77,8 @@ import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
-import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
+import de.cses.shared.LocationEntry;
 import de.cses.shared.ModeOfRepresentationEntry;
 import de.cses.shared.PictorialElementEntry;
 import de.cses.shared.SiteEntry;
@@ -96,8 +93,8 @@ public class DepictionEditor extends AbstractEditor {
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	private TextArea inscriptionsTestArea;
 	private TextField datingField;
-	private NumberField<Double> widthField;
-	private NumberField<Double> heightField;
+	private NumberField<Double> widthNF;
+	private NumberField<Double> heightNF;
 	private DateField purchaseDateField;
 	private DateField dateOfAcquisitionField;
 	private TextArea descriptionArea;
@@ -111,30 +108,33 @@ public class DepictionEditor extends AbstractEditor {
 	protected PopupPanel imageSelectionDialog;
 	// private ArrayList<DepictionEditorListener> listener;
 	private ListView<ImageEntry, ImageEntry> imageListView;
-	private ListStore<ImageEntry> imageEntryList;
+	private ListStore<ImageEntry> imageEntryLS;
 	private ImageProperties imgProperties;
 	private DepictionEntry correspondingDepictionEntry;
 	private VendorProperties vendorProps;
-	private ListStore<VendorEntry> vendorEntryList;
+	private ListStore<VendorEntry> vendorEntryLS;
 	private ComboBox<VendorEntry> vendorSelection;
 	private ComboBox<StyleEntry> styleSelection;
 	private StyleProperties styleProps;
-	private ListStore<StyleEntry> styleEntryList;
+	private ListStore<StyleEntry> styleEntryLS;
 	private CaveProperties caveProps;
-	private ListStore<CaveEntry> caveEntryList;
-	private ComboBox<CaveEntry> caveSelection;
+	private ListStore<CaveEntry> caveEntryLS;
+	private ComboBox<CaveEntry> caveSelectionCB;
 	private ExpeditionProperties expedProps;
-	private ListStore<ExpeditionEntry> expedEntryList;
-	private ComboBox<ExpeditionEntry> expedSelection;
-	private ComboBox<ModeOfRepresentationEntry> modeOfRepresentationSelection;
+	private ListStore<ExpeditionEntry> expedEntryLS;
+	private ComboBox<ExpeditionEntry> expedSelectionCB;
+	private ComboBox<ModeOfRepresentationEntry> modeOfRepresentationSelectionCB;
 	protected PopupPanel wallEditorDialog;
 	private Walls wallEditor;
-	private Label iconographyLabel;
+//	private Label iconographyLabel;
 	protected PopupPanel iconographySelectionDialog;
 	private WallSelector wallSelectorPanel;
 	private TextArea separateAksarasTextArea;
 	private ModesOfRepresentationProperties morProps;
-	private ListStore<ModeOfRepresentationEntry> morEntryList;
+	private ListStore<ModeOfRepresentationEntry> modeOfRepresentationLS;
+	private ComboBox<LocationEntry> locationSelectionCB;
+	private LocationProperties locationProps;
+	private ListStore<LocationEntry> locationEntryLS;
 
 	interface DepictionProperties extends PropertyAccess<DepictionEntry> {
 		ModelKeyProvider<DepictionEntry> depictionID();
@@ -162,6 +162,22 @@ public class DepictionEditor extends AbstractEditor {
 
 		@XTemplate("<div>{officialNumber}</div>")
 		SafeHtml caveLabel(String officialNumber);
+	}
+
+	interface LocationProperties extends PropertyAccess<LocationEntry> {
+		ModelKeyProvider<LocationEntry> locationID();
+		LabelProvider<LocationEntry> name();
+	}
+
+	interface LocationViewTemplates extends XTemplates {
+		@XTemplate("<div>{name}<br>{town}, {country}</div>")
+		SafeHtml caveLabel(String name, String town, String country);
+
+		@XTemplate("<div>{name}<br>{country}</div>")
+		SafeHtml caveLabel(String name, String country);
+
+		@XTemplate("<div>{name}</div>")
+		SafeHtml caveLabel(String name);
 	}
 
 	interface ExpeditionProperties extends PropertyAccess<ExpeditionEntry> {
@@ -236,23 +252,26 @@ public class DepictionEditor extends AbstractEditor {
 		// listener.add(deListener);
 		peSelector = new PictorialElementSelector(correspondingDepictionEntry.getDepictionID());
 		imgProperties = GWT.create(ImageProperties.class);
-		imageEntryList = new ListStore<ImageEntry>(imgProperties.imageID());
+		imageEntryLS = new ListStore<ImageEntry>(imgProperties.imageID());
 		if (correspondingDepictionEntry.getDepictionID() > 0) {
 			loadImages();
 		}
 		vendorProps = GWT.create(VendorProperties.class);
-		vendorEntryList = new ListStore<VendorEntry>(vendorProps.vendorID());
+		vendorEntryLS = new ListStore<VendorEntry>(vendorProps.vendorID());
 		styleProps = GWT.create(StyleProperties.class);
-		styleEntryList = new ListStore<StyleEntry>(styleProps.styleID());
+		styleEntryLS = new ListStore<StyleEntry>(styleProps.styleID());
 		caveProps = GWT.create(CaveProperties.class);
-		caveEntryList = new ListStore<CaveEntry>(caveProps.caveID());
+		caveEntryLS = new ListStore<CaveEntry>(caveProps.caveID());
+		locationProps = GWT.create(LocationProperties.class);
+		locationEntryLS = new ListStore<LocationEntry>(locationProps.locationID());
 		expedProps = GWT.create(ExpeditionProperties.class);
-		expedEntryList = new ListStore<ExpeditionEntry>(expedProps.expeditionID());
+		expedEntryLS = new ListStore<ExpeditionEntry>(expedProps.expeditionID());
 		morProps = GWT.create(ModesOfRepresentationProperties.class);
-		morEntryList = new ListStore<ModeOfRepresentationEntry>(morProps.modeOfRepresentationID());
+		modeOfRepresentationLS = new ListStore<ModeOfRepresentationEntry>(morProps.modeOfRepresentationID());
 
 		initPanel();
 		loadCaves();
+		loadLocations();
 		loadStyles();
 		loadVendors();
 		loadExpeditions();
@@ -264,10 +283,10 @@ public class DepictionEditor extends AbstractEditor {
 	 */
 	private void loadExpeditions() {
 		for (ExpeditionEntry exped : StaticTables.getInstance().getExpeditionEntries().values()) {
-			expedEntryList.add(exped);
+			expedEntryLS.add(exped);
 		}
 		if (correspondingDepictionEntry.getExpeditionID() > 0) {
-			expedSelection.setValue(expedEntryList.findModelWithKey(Integer.toString(correspondingDepictionEntry.getExpeditionID())));
+			expedSelectionCB.setValue(expedEntryLS.findModelWithKey(Integer.toString(correspondingDepictionEntry.getExpeditionID())));
 		}
 	}
 
@@ -285,10 +304,10 @@ public class DepictionEditor extends AbstractEditor {
 			@Override
 			public void onSuccess(ArrayList<VendorEntry> vendorResults) {
 				for (VendorEntry ve : vendorResults) {
-					vendorEntryList.add(ve);
+					vendorEntryLS.add(ve);
 				}
 				if (correspondingDepictionEntry.getVendorID() > 0) {
-					vendorSelection.setValue(vendorEntryList.findModelWithKey(Integer.toString(correspondingDepictionEntry.getVendorID())));
+					vendorSelection.setValue(vendorEntryLS.findModelWithKey(Integer.toString(correspondingDepictionEntry.getVendorID())));
 				}
 			}
 		});
@@ -299,10 +318,10 @@ public class DepictionEditor extends AbstractEditor {
 	 */
 	private void loadModesOfRepresentation() {
 		for (ModeOfRepresentationEntry morEntry : StaticTables.getInstance().getModesOfRepresentationEntries().values()) {
-			morEntryList.add(morEntry);
+			modeOfRepresentationLS.add(morEntry);
 		}
 		if (correspondingDepictionEntry.getModeOfRepresentationID() > 0) {
-			modeOfRepresentationSelection.setValue(morEntryList.findModelWithKey(Integer.toString(correspondingDepictionEntry.getModeOfRepresentationID())));
+			modeOfRepresentationSelectionCB.setValue(modeOfRepresentationLS.findModelWithKey(Integer.toString(correspondingDepictionEntry.getModeOfRepresentationID())));
 		}
 	}
 
@@ -311,10 +330,10 @@ public class DepictionEditor extends AbstractEditor {
 	 */
 	private void loadStyles() {
 		for (StyleEntry se : StaticTables.getInstance().getStyleEntries().values()) {
-			styleEntryList.add(se);
+			styleEntryLS.add(se);
 		}
 		if (correspondingDepictionEntry.getStyleID() > 0) {
-			styleSelection.setValue(styleEntryList.findModelWithKey(Integer.toString(correspondingDepictionEntry.getStyleID())));
+			styleSelection.setValue(styleEntryLS.findModelWithKey(Integer.toString(correspondingDepictionEntry.getStyleID())));
 		}
 	}
 
@@ -332,16 +351,39 @@ public class DepictionEditor extends AbstractEditor {
 			@Override
 			public void onSuccess(ArrayList<CaveEntry> caveResults) {
 				for (CaveEntry ce : caveResults) {
-					caveEntryList.add(ce);
+					caveEntryLS.add(ce);
 				}
 				if (correspondingDepictionEntry.getCaveID() > 0) {
-					CaveEntry ce = caveEntryList.findModelWithKey(Integer.toString(correspondingDepictionEntry.getCaveID()));
-					caveSelection.setValue(ce);
+					CaveEntry ce = caveEntryLS.findModelWithKey(Integer.toString(correspondingDepictionEntry.getCaveID()));
+					caveSelectionCB.setValue(ce);
 					wallSelectorPanel.setCave(ce);
 				}
 			}
 		});
 	}
+	
+	 private void loadLocations() {
+			for (LocationEntry locEntry : StaticTables.getInstance().getLocationEntries().values()) {
+				locationEntryLS.add(locEntry);
+			}
+			locationEntryLS.addSortInfo(new StoreSortInfo<LocationEntry>(new ValueProvider<LocationEntry, String>(){
+
+				@Override
+				public String getValue(LocationEntry object) {
+					return object.getName();
+				}
+
+				@Override
+				public void setValue(LocationEntry object, String value) {}
+
+				@Override
+				public String getPath() {
+					return "name";
+				}}, SortDir.ASC));
+			if (correspondingDepictionEntry.getLocationID() > 0) {
+				locationSelectionCB.setValue(locationEntryLS.findModelWithKey(Integer.toString(correspondingDepictionEntry.getLocationID())));
+			}
+	 }
 
 	/**
 	 * 
@@ -357,7 +399,7 @@ public class DepictionEditor extends AbstractEditor {
 			@Override
 			public void onSuccess(ArrayList<ImageEntry> imgResults) {
 				for (ImageEntry ie : imgResults) {
-					imageEntryList.add(ie);
+					imageEntryLS.add(ie);
 				}
 			}
 		});
@@ -375,25 +417,9 @@ public class DepictionEditor extends AbstractEditor {
 	 * Here the view is created. This is only done once at the beginning!
 	 */
 	private void initPanel() {
-		mainPanel = new FramedPanel();
-		// the name is set depending on wheter we have a new or an existing entry
-		mainPanel.setHeading("Painted Representation Editor ("
-				+ (correspondingDepictionEntry.getDepictionID() > 0 ? "ID = " + correspondingDepictionEntry.getDepictionID() : "NEW") + ")");
-
-		// this panel is used for the different fields in the editor
-		FramedPanel attributePanel;
-
-		TabPanel tabPanel = new TabPanel();
-		tabPanel.setTabScroll(false);
-		// the tab only gets 75% of the width and the added images get the 25% on the right to be shown all the time
-		tabPanel.setSize("75%", "100%");
-
-		HorizontalLayoutContainer hlContainer = new HorizontalLayoutContainer();
-		hlContainer.setSize("100%", "100%");
-		VerticalLayoutContainer vlContainer = new VerticalLayoutContainer();
 
 		// the images related with the depiction entry that will be shown on the right
-		imageListView = new ListView<ImageEntry, ImageEntry>(imageEntryList, new IdentityValueProvider<ImageEntry>() {
+		imageListView = new ListView<ImageEntry, ImageEntry>(imageEntryLS, new IdentityValueProvider<ImageEntry>() {
 			@Override
 			public void setValue(ImageEntry object, ImageEntry value) {
 			}
@@ -415,9 +441,24 @@ public class DepictionEditor extends AbstractEditor {
 		/**
 		 * --------------------- content of first tab (BASICS) starts here --------------------------------
 		 */
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Located in Cave");
-		caveSelection = new ComboBox<CaveEntry>(caveEntryList, caveProps.officialNumber(), new AbstractSafeHtmlRenderer<CaveEntry>() {
+		
+		FramedPanel shortNameFP = new FramedPanel();
+		shortNameFP.setHeading("Short Name");
+		TextField shortNameTF = new TextField();
+		shortNameTF.setEmptyText("please enter short name");
+		shortNameTF.setValue(correspondingDepictionEntry.getShortName());
+		shortNameTF.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				correspondingDepictionEntry.setShortName(event.getValue());
+			}
+		});
+		shortNameFP.add(shortNameTF);
+		
+		FramedPanel caveSelectionFP = new FramedPanel();
+		caveSelectionFP.setHeading("Located in Cave");
+		caveSelectionCB = new ComboBox<CaveEntry>(caveEntryLS, caveProps.officialNumber(), new AbstractSafeHtmlRenderer<CaveEntry>() {
 
 			@Override
 			public SafeHtml render(CaveEntry item) {
@@ -439,11 +480,11 @@ public class DepictionEditor extends AbstractEditor {
 				}
 			}
 		});
-		caveSelection.setEmptyText("nothing selected");
-		caveSelection.setTypeAhead(true);
-		caveSelection.setEditable(false);
-		caveSelection.setTriggerAction(TriggerAction.ALL);
-		caveSelection.addSelectionHandler(new SelectionHandler<CaveEntry>() {
+		caveSelectionCB.setEmptyText("nothing selected");
+		caveSelectionCB.setTypeAhead(true);
+		caveSelectionCB.setEditable(false);
+		caveSelectionCB.setTriggerAction(TriggerAction.ALL);
+		caveSelectionCB.addSelectionHandler(new SelectionHandler<CaveEntry>() {
 
 			@Override
 			public void onSelection(SelectionEvent<CaveEntry> event) {
@@ -451,53 +492,13 @@ public class DepictionEditor extends AbstractEditor {
 				wallSelectorPanel.setCave(event.getSelectedItem());
 			}
 		});
-		caveSelection.setToolTip("This field can only be changed until a depiction is allocated to a wall");
-		// TODO check if wall publicationTypeID is set, then set caveSelection.editable(false)
-		attributePanel.add(caveSelection);
-		// attributePanel.setWidth("40%");
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0 / 8));
+		caveSelectionCB.setToolTip("This field can only be changed until a depiction is allocated to a wall");
+		// TODO check if wall publicationTypeID is set, then set caveSelectionCB.editable(false)
+		caveSelectionFP.add(caveSelectionCB);
 
-		// attributePanel = new FramedPanel();
-		// attributePanel.setHeading("Belongs to wall");
-		// attributePanel.add(new Label("Wall selection"));
-		// vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .1));
-
-		HorizontalPanel dimPanel = new HorizontalPanel();
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Width");
-		widthField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
-		widthField.setWidth("60%");
-		widthField.addValidator(new MinNumberValidator<Double>((double) 0));
-		widthField.setValue(correspondingDepictionEntry.getWidth());
-		widthField.addValueChangeHandler(new ValueChangeHandler<Double>() {
-
-			@Override
-			public void onValueChange(ValueChangeEvent<Double> event) {
-				correspondingDepictionEntry.setWidth(event.getValue());
-			}
-		});
-		attributePanel.add(widthField);
-		dimPanel.add(attributePanel);
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Height");
-		heightField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
-		heightField.setWidth("60%");
-		heightField.addValidator(new MinNumberValidator<Double>((double) 0));
-		heightField.setValue(correspondingDepictionEntry.getHeight());
-		heightField.addValueChangeHandler(new ValueChangeHandler<Double>() {
-
-			@Override
-			public void onValueChange(ValueChangeEvent<Double> event) {
-				correspondingDepictionEntry.setHeight(event.getValue());
-			}
-		});
-		attributePanel.add(heightField);
-		dimPanel.add(attributePanel);
-		vlContainer.add(dimPanel, new VerticalLayoutData(1.0, 1.0 / 8));
-
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Acquired by expedition");
-		expedSelection = new ComboBox<ExpeditionEntry>(expedEntryList, expedProps.name(), new AbstractSafeHtmlRenderer<ExpeditionEntry>() {
+		FramedPanel acquiredByExpeditionFP = new FramedPanel();
+		acquiredByExpeditionFP.setHeading("Acquired by expedition");
+		expedSelectionCB = new ComboBox<ExpeditionEntry>(expedEntryLS, expedProps.name(), new AbstractSafeHtmlRenderer<ExpeditionEntry>() {
 
 			@Override
 			public SafeHtml render(ExpeditionEntry item) {
@@ -506,31 +507,29 @@ public class DepictionEditor extends AbstractEditor {
 				return expedTemplates.expedLabel(item.getName(), item.getLeader(), dtf.format(item.getStartDate()), dtf.format(item.getEndDate()));
 			}
 		});
-		expedSelection.setEmptyText("nothing selected");
-		expedSelection.addSelectionHandler(new SelectionHandler<ExpeditionEntry>() {
+		expedSelectionCB.setEmptyText("nothing selected");
+		expedSelectionCB.addSelectionHandler(new SelectionHandler<ExpeditionEntry>() {
 
 			@Override
 			public void onSelection(SelectionEvent<ExpeditionEntry> event) {
 				correspondingDepictionEntry.setExpeditionID(event.getSelectedItem().getExpeditionID());
 			}
 		});
-		expedSelection.setHeight("1.0");
-		expedSelection.setTypeAhead(false);
-		expedSelection.setEditable(false);
-		expedSelection.setTriggerAction(TriggerAction.ALL);
-		expedSelection.addSelectionHandler(new SelectionHandler<ExpeditionEntry>() {
+		expedSelectionCB.setTypeAhead(false);
+		expedSelectionCB.setEditable(false);
+		expedSelectionCB.setTriggerAction(TriggerAction.ALL);
+		expedSelectionCB.addSelectionHandler(new SelectionHandler<ExpeditionEntry>() {
 
 			@Override
 			public void onSelection(SelectionEvent<ExpeditionEntry> event) {
 				correspondingDepictionEntry.setExpeditionID(event.getSelectedItem().getExpeditionID());
 			}
 		});
-		attributePanel.add(expedSelection);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0 / 8));
-
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Vendor");
-		vendorSelection = new ComboBox<VendorEntry>(vendorEntryList, vendorProps.vendorName(), new AbstractSafeHtmlRenderer<VendorEntry>() {
+		acquiredByExpeditionFP.add(expedSelectionCB);
+		
+		FramedPanel vendorFP = new FramedPanel();
+		vendorFP.setHeading("Vendor");
+		vendorSelection = new ComboBox<VendorEntry>(vendorEntryLS, vendorProps.vendorName(), new AbstractSafeHtmlRenderer<VendorEntry>() {
 
 			@Override
 			public SafeHtml render(VendorEntry item) {
@@ -550,68 +549,79 @@ public class DepictionEditor extends AbstractEditor {
 				correspondingDepictionEntry.setVendorID(event.getSelectedItem().getVendorID());
 			}
 		});
-		attributePanel.add(vendorSelection);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0 / 8));
+		vendorFP.add(vendorSelection);
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Date purchased");
+		FramedPanel datePurchasedFP = new FramedPanel();
+		datePurchasedFP.setHeading("Date purchased");
 		purchaseDateField = new DateField(new DateTimePropertyEditor("yyyy"));
 		purchaseDateField.setValue(correspondingDepictionEntry.getPurchaseDate());
 		purchaseDateField.setEmptyText("nothing selected");
 		// TODO add change handler
-		attributePanel.add(purchaseDateField);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0 / 8));
+		datePurchasedFP.add(purchaseDateField);
+		
+		FramedPanel currentLocationFP = new FramedPanel();
+		currentLocationFP.setHeading("Current Location");
+		locationSelectionCB = new ComboBox<LocationEntry>(locationEntryLS, locationProps.name(), new AbstractSafeHtmlRenderer<LocationEntry>() {
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Current location");
-		// TODO add currentLocationID selector
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0 / 8));
+			@Override
+			public SafeHtml render(LocationEntry item) {
+				final LocationViewTemplates lvTemplates = GWT.create(LocationViewTemplates.class);
+				if ((item.getCounty() != null) && (!item.getCounty().isEmpty())) {
+					if ((item.getTown() != null) && (!item.getTown().isEmpty())) {
+						return lvTemplates.caveLabel(item.getName(), item.getRegion()!=null && !item.getRegion().isEmpty() ? item.getTown()+" ("+item.getRegion()+")" : item.getTown(), item.getCounty());
+					} else if ((item.getRegion() != null) && (!item.getRegion().isEmpty())) {
+						return lvTemplates.caveLabel(item.getName(), item.getTown()!=null && !item.getTown().isEmpty() ? item.getTown()+" ("+item.getRegion()+")" : item.getRegion(), item.getCounty());
+					} else {
+						return lvTemplates.caveLabel(item.getName(), item.getCounty());
+					}
+				} else {
+					return lvTemplates.caveLabel(item.getName());
+				}
+			}
+		});
+		locationSelectionCB.setEmptyText("select current location");
+		locationSelectionCB.setTypeAhead(false);
+		locationSelectionCB.setEditable(false);
+		locationSelectionCB.setTriggerAction(TriggerAction.ALL);
+		locationSelectionCB.addValueChangeHandler(new ValueChangeHandler<LocationEntry>() {
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Background colour");
-		backgroundColourField = new TextField();
-		backgroundColourField.setValue(correspondingDepictionEntry.getBackgroundColour());
-		backgroundColourField.addValueChangeHandler(new ValueChangeHandler<String>() {
+			@Override
+			public void onValueChange(ValueChangeEvent<LocationEntry> event) {
+				correspondingDepictionEntry.setLocationID(event.getValue().getLocationID());
+			}
+		});
+		currentLocationFP.add(locationSelectionCB);
+
+//		locationSelector = new CurrentLocationSelector();
+//		locationSelector.setSelectedLocation(correspondingDepictionEntry.getCurrentLocationID());
+		
+		FramedPanel inventoryNumberFP = new FramedPanel();
+		inventoryNumberFP.setHeading("Inventory Number");
+		TextField inventoryNumberTF = new TextField();
+		inventoryNumberTF.addValidator(new MaxLengthValidator(128));
+		inventoryNumberTF.setValue(correspondingDepictionEntry.getInventoryNumber());
+		inventoryNumberTF.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<String> event) {
-				correspondingDepictionEntry.setBackgroundColour(event.getValue());
+				correspondingDepictionEntry.setInventoryNumber(event.getValue());
 			}
 		});
-		attributePanel.add(backgroundColourField);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0 / 8));
+		inventoryNumberFP.add(inventoryNumberTF);
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Modes of Representation");
-		modeOfRepresentationSelection = new ComboBox<ModeOfRepresentationEntry>(morEntryList, morProps.name(), new AbstractSafeHtmlRenderer<ModeOfRepresentationEntry>() {
+		VerticalLayoutContainer basicsLeftVLC = new VerticalLayoutContainer();
+		basicsLeftVLC.add(shortNameFP, new VerticalLayoutData(1.0, .1));
+		basicsLeftVLC.add(caveSelectionFP, new VerticalLayoutData(1.0, .1));
+		basicsLeftVLC.add(acquiredByExpeditionFP, new VerticalLayoutData(1.0, .1));
+		basicsLeftVLC.add(vendorFP, new VerticalLayoutData(1.0, .1));
+		basicsLeftVLC.add(datePurchasedFP, new VerticalLayoutData(1.0, .1));
+		basicsLeftVLC.add(currentLocationFP, new VerticalLayoutData(1.0, .1));
+		basicsLeftVLC.add(inventoryNumberFP, new VerticalLayoutData(1.0, .1));
 
-			@Override
-			public SafeHtml render(ModeOfRepresentationEntry morEntry) {
-				ModesOfRepresentationViewTemplates morTemplates = GWT.create(ModesOfRepresentationViewTemplates.class);
-				return morTemplates.morLabel(morEntry.getName());
-			}
-			
-		});
-		modeOfRepresentationSelection.setEmptyText("nothing selected");
-		modeOfRepresentationSelection.setTypeAhead(false);
-		modeOfRepresentationSelection.setEditable(false);
-		modeOfRepresentationSelection.setTriggerAction(TriggerAction.ALL);
-		modeOfRepresentationSelection.addSelectionHandler(new SelectionHandler<ModeOfRepresentationEntry>() {
+		VerticalLayoutContainer basicsRightVLC = new VerticalLayoutContainer();
 
-			@Override
-			public void onSelection(SelectionEvent<ModeOfRepresentationEntry> event) {
-				correspondingDepictionEntry.setModeOfRepresentationID(event.getSelectedItem().getModeOfRepresentationID());
-			}
-		});
-		attributePanel.add(modeOfRepresentationSelection);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0 / 8));
-
-		hlContainer.add(vlContainer, new HorizontalLayoutData(.4, 1.0));
-
-		vlContainer = new VerticalLayoutContainer();
-
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Wall");
+		FramedPanel wallSelectorFP = new FramedPanel();
+		wallSelectorFP.setHeading("Wall");
 		TextButton wallEditorButton = new TextButton("set position on wall");
 		wallEditor = new Walls(1, false);
 		wallEditorButton.addSelectHandler(new SelectHandler() {
@@ -626,25 +636,54 @@ public class DepictionEditor extends AbstractEditor {
 				wallEditorDialog.center();
 			}
 		});
-		attributePanel.addButton(wallEditorButton);
+		wallSelectorFP.addButton(wallEditorButton);
 
 		wallSelectorPanel = new WallSelector(350);
-		attributePanel.add(wallSelectorPanel);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, 1.0));
-		hlContainer.add(vlContainer, new HorizontalLayoutData(.6, 1.0));
-		tabPanel.add(hlContainer, "Basics");
+		wallSelectorFP.add(wallSelectorPanel);
+		basicsRightVLC.add(wallSelectorFP, new VerticalLayoutData(1.0, 1.0));
+
+		HorizontalLayoutContainer basicsTabHLC = new HorizontalLayoutContainer();
+		basicsTabHLC.add(basicsLeftVLC, new HorizontalLayoutData(.4, 1.0));
+		basicsTabHLC.add(basicsRightVLC, new HorizontalLayoutData(.6, 1.0));
 
 		/**
 		 * --------------------- content of second tab (Descriptions) starts here --------------------------------
 		 */
-		hlContainer = new HorizontalLayoutContainer();
-		hlContainer.setSize("100%", "100%");
 
-		vlContainer = new VerticalLayoutContainer();
+		HorizontalLayoutContainer dimensionHLC = new HorizontalLayoutContainer();
+		FramedPanel widthFP = new FramedPanel();
+		widthFP.setHeading("Width");
+		widthNF = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
+		widthNF.addValidator(new MinNumberValidator<Double>((double) 0));
+		widthNF.setValue(correspondingDepictionEntry.getWidth());
+		widthNF.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Style");
-		styleSelection = new ComboBox<StyleEntry>(styleEntryList, styleProps.styleName(), new AbstractSafeHtmlRenderer<StyleEntry>() {
+			@Override
+			public void onValueChange(ValueChangeEvent<Double> event) {
+				correspondingDepictionEntry.setWidth(event.getValue());
+			}
+		});
+		widthFP.add(widthNF);
+		dimensionHLC.add(widthFP, new HorizontalLayoutData(.5	, 1.0));
+		
+		FramedPanel heightFP = new FramedPanel();
+		heightFP.setHeading("Height");
+		heightNF = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
+		heightNF.addValidator(new MinNumberValidator<Double>((double) 0));
+		heightNF.setValue(correspondingDepictionEntry.getHeight());
+		heightNF.addValueChangeHandler(new ValueChangeHandler<Double>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Double> event) {
+				correspondingDepictionEntry.setHeight(event.getValue());
+			}
+		});
+		heightFP.add(heightNF);
+		dimensionHLC.add(heightFP, new HorizontalLayoutData(.5, 1.0));
+
+		FramedPanel styleFP = new FramedPanel();
+		styleFP.setHeading("Style");
+		styleSelection = new ComboBox<StyleEntry>(styleEntryLS, styleProps.styleName(), new AbstractSafeHtmlRenderer<StyleEntry>() {
 
 			@Override
 			public SafeHtml render(StyleEntry item) {
@@ -663,59 +702,94 @@ public class DepictionEditor extends AbstractEditor {
 				correspondingDepictionEntry.setStyleID(event.getSelectedItem().getStyleID());
 			}
 		});
-		attributePanel.add(styleSelection);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
+		styleFP.add(styleSelection);
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Iconography");
-		iconographyLabel = new Label();
-		if (correspondingDepictionEntry.getIconographyID() > 0) {
-			dbService.getIconographyEntry(correspondingDepictionEntry.getIconographyID(), new AsyncCallback<IconographyEntry>() {
-
-				@Override
-				public void onFailure(Throwable caught) {
-					caught.printStackTrace();
-				}
-
-				@Override
-				public void onSuccess(IconographyEntry iconResults) {
-					if (iconResults != null) {
-						iconographyLabel.setText(iconResults.getText());
-					}
-				}
-			});
-		}
-		attributePanel.add(iconographyLabel);
-		iconographySelector = new IconographySelector(correspondingDepictionEntry.getIconographyID(), new IconographySelectorListener() {
+		FramedPanel modesOfRepresentationFP = new FramedPanel();
+		modesOfRepresentationFP.setHeading("Modes of Representation");
+		modeOfRepresentationSelectionCB = new ComboBox<ModeOfRepresentationEntry>(modeOfRepresentationLS, morProps.name(), new AbstractSafeHtmlRenderer<ModeOfRepresentationEntry>() {
 
 			@Override
-			public void iconographySelected(IconographyEntry entry) {
-				correspondingDepictionEntry.setIconographyID(entry.getIconographyID());
-				iconographyLabel.setText(entry.getText());
-				iconographySelectionDialog.hide();
+			public SafeHtml render(ModeOfRepresentationEntry morEntry) {
+				ModesOfRepresentationViewTemplates morTemplates = GWT.create(ModesOfRepresentationViewTemplates.class);
+				return morTemplates.morLabel(morEntry.getName());
 			}
+			
+		});
+		modeOfRepresentationSelectionCB.setEmptyText("nothing selected");
+		modeOfRepresentationSelectionCB.setTypeAhead(false);
+		modeOfRepresentationSelectionCB.setEditable(false);
+		modeOfRepresentationSelectionCB.setTriggerAction(TriggerAction.ALL);
+		modeOfRepresentationSelectionCB.addSelectionHandler(new SelectionHandler<ModeOfRepresentationEntry>() {
 
 			@Override
-			public void cancel() {
-				iconographySelectionDialog.hide();
+			public void onSelection(SelectionEvent<ModeOfRepresentationEntry> event) {
+				correspondingDepictionEntry.setModeOfRepresentationID(event.getSelectedItem().getModeOfRepresentationID());
 			}
 		});
-		TextButton selectIconographyButton = new TextButton("select Iconography");
-		selectIconographyButton.addSelectHandler(new SelectHandler() {
+		modesOfRepresentationFP.add(modeOfRepresentationSelectionCB);
+
+		FramedPanel backgroundColourFP = new FramedPanel();
+		backgroundColourFP.setHeading("Background colour");
+		backgroundColourField = new TextField();
+		backgroundColourField.setValue(correspondingDepictionEntry.getBackgroundColour());
+		backgroundColourField.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
-			public void onSelect(SelectEvent event) {
-				iconographySelectionDialog = new PopupPanel();
-				iconographySelectionDialog.add(iconographySelector);
-				iconographySelectionDialog.setModal(true);
-				iconographySelectionDialog.center();
+			public void onValueChange(ValueChangeEvent<String> event) {
+				correspondingDepictionEntry.setBackgroundColour(event.getValue());
 			}
 		});
-		attributePanel.addButton(selectIconographyButton);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .25));
+		backgroundColourFP.add(backgroundColourField);
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Inscriptions");
+//		FramedPanel iconographyFP = new FramedPanel();
+//		iconographyFP.setHeading("Iconography");
+//		iconographyLabel = new Label();
+//		if (correspondingDepictionEntry.getIconographyID() > 0) {
+//			dbService.getIconographyEntry(correspondingDepictionEntry.getIconographyID(), new AsyncCallback<IconographyEntry>() {
+//
+//				@Override
+//				public void onFailure(Throwable caught) {
+//					caught.printStackTrace();
+//				}
+//
+//				@Override
+//				public void onSuccess(IconographyEntry iconResults) {
+//					if (iconResults != null) {
+//						iconographyLabel.setText(iconResults.getText());
+//					}
+//				}
+//			});
+//		}
+//		iconographyFP.add(iconographyLabel);
+//		iconographySelector = new IconographySelector(correspondingDepictionEntry.getIconographyID(), new IconographySelectorListener() {
+//
+//			@Override
+//			public void iconographySelected(IconographyEntry entry) {
+//				correspondingDepictionEntry.setIconographyID(entry.getIconographyID());
+//				iconographyLabel.setText(entry.getText());
+//				iconographySelectionDialog.hide();
+//			}
+//
+//			@Override
+//			public void cancel() {
+//				iconographySelectionDialog.hide();
+//			}
+//		});
+//		TextButton selectIconographyButton = new TextButton("select Iconography");
+//		selectIconographyButton.addSelectHandler(new SelectHandler() {
+//
+//			@Override
+//			public void onSelect(SelectEvent event) {
+//				iconographySelectionDialog = new PopupPanel();
+//				iconographySelectionDialog.add(iconographySelector);
+//				iconographySelectionDialog.setModal(true);
+//				iconographySelectionDialog.center();
+//			}
+//		});
+//		iconographyFP.addButton(selectIconographyButton);
+
+		FramedPanel inscriptionsFP = new FramedPanel();
+		inscriptionsFP.setHeading("Inscriptions");
 		inscriptionsTestArea = new TextArea();
 		inscriptionsTestArea.setText(correspondingDepictionEntry.getInscriptions());
 		inscriptionsTestArea.addValueChangeHandler(new ValueChangeHandler<String>() {
@@ -725,11 +799,10 @@ public class DepictionEditor extends AbstractEditor {
 				correspondingDepictionEntry.setInscriptions(event.getValue());
 			}
 		});
-		attributePanel.add(inscriptionsTestArea);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
+		inscriptionsFP.add(inscriptionsTestArea);
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Separate Akṣaras");
+		FramedPanel separateAksarasFP = new FramedPanel();
+		separateAksarasFP.setHeading("Separate Akṣaras");
 		separateAksarasTextArea = new TextArea();
 		separateAksarasTextArea.setText(correspondingDepictionEntry.getSeparateAksaras());
 		separateAksarasTextArea.addValueChangeHandler(new ValueChangeHandler<String>() {
@@ -739,11 +812,10 @@ public class DepictionEditor extends AbstractEditor {
 				correspondingDepictionEntry.setSeparateAksaras(event.getValue());
 			}
 		});
-		attributePanel.add(separateAksarasTextArea);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
+		separateAksarasFP.add(separateAksarasTextArea);
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Dating");
+		FramedPanel datingFP  = new FramedPanel();
+		datingFP.setHeading("Dating");
 		datingField = new TextField();
 		// datingField.setWidth(130);
 		datingField.setText(correspondingDepictionEntry.getDating());
@@ -754,15 +826,19 @@ public class DepictionEditor extends AbstractEditor {
 				correspondingDepictionEntry.setDating(event.getValue());
 			}
 		});
-		attributePanel.add(datingField);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .15));
+		datingFP.add(datingField);
 
-		hlContainer.add(vlContainer, new HorizontalLayoutData(.35, 1.0));
+		VerticalLayoutContainer descriptionLeftVLC = new VerticalLayoutContainer();
+		descriptionLeftVLC.add(dimensionHLC, new VerticalLayoutData(1.0, .1));
+		descriptionLeftVLC.add(styleFP, new VerticalLayoutData(1.0, .1));
+		descriptionLeftVLC.add(modesOfRepresentationFP, new VerticalLayoutData(1.0, .1));
+		descriptionLeftVLC.add(backgroundColourFP, new VerticalLayoutData(1.0, .1));
+		descriptionLeftVLC.add(inscriptionsFP, new VerticalLayoutData(1.0, .25));
+		descriptionLeftVLC.add(separateAksarasFP, new VerticalLayoutData(1.0, .25));
+		descriptionLeftVLC.add(datingFP, new VerticalLayoutData(1.0, .1));
 
-		vlContainer = new VerticalLayoutContainer();
-
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Description");
+		FramedPanel descriptionFP = new FramedPanel();
+		descriptionFP.setHeading("Description");
 		descriptionArea = new TextArea();
 		descriptionArea.setValue(correspondingDepictionEntry.getDescription());
 		descriptionArea.addValueChangeHandler(new ValueChangeHandler<String>() {
@@ -772,12 +848,10 @@ public class DepictionEditor extends AbstractEditor {
 				correspondingDepictionEntry.setDescription(event.getValue());
 			}
 		});
-		attributePanel.add(descriptionArea);
+		descriptionFP.add(descriptionArea);
 
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .33));
-
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("General remarks");
+		FramedPanel generalRemarksFP = new FramedPanel();
+		generalRemarksFP.setHeading("General remarks");
 		generalRemarksArea = new TextArea();
 		generalRemarksArea.setValue(correspondingDepictionEntry.getGeneralRemarks());
 		generalRemarksArea.addValueChangeHandler(new ValueChangeHandler<String>() {
@@ -787,18 +861,21 @@ public class DepictionEditor extends AbstractEditor {
 				correspondingDepictionEntry.setGeneralRemarks(event.getValue());
 			}
 		});
-		attributePanel.add(generalRemarksArea);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .33));
+		generalRemarksFP.add(generalRemarksArea);
 
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Other suggested identifications");
+		FramedPanel otherSuggestedIdentificationsFP = new FramedPanel();
+		otherSuggestedIdentificationsFP.setHeading("Other suggested identifications");
 		othersSuggestedIdentificationsArea = new TextArea();
-		othersSuggestedIdentificationsArea.setSize("100%", "33%");
-		attributePanel.add(othersSuggestedIdentificationsArea);
-		vlContainer.add(attributePanel, new VerticalLayoutData(1.0, .33));
+		otherSuggestedIdentificationsFP.add(othersSuggestedIdentificationsArea);
 
-		hlContainer.add(vlContainer, new HorizontalLayoutData(.65, 1.0));
-		tabPanel.add(hlContainer, "Description");
+		VerticalLayoutContainer descriptionRightVLC = new VerticalLayoutContainer();
+		descriptionRightVLC.add(descriptionFP, new VerticalLayoutData(1.0, 1.0 / 3));
+		descriptionRightVLC.add(generalRemarksFP, new VerticalLayoutData(1.0, 1.0 / 3));
+		descriptionRightVLC.add(otherSuggestedIdentificationsFP, new VerticalLayoutData(1.0, 1.0 / 3));
+
+		HorizontalLayoutContainer descriptionTabHLC = new HorizontalLayoutContainer();
+		descriptionTabHLC.add(descriptionLeftVLC, new HorizontalLayoutData(.35, 1.0));
+		descriptionTabHLC.add(descriptionRightVLC, new HorizontalLayoutData(.65, 1.0));
 
 		/**
 		 * --------------------- definition of image panel on right side starts here --------------------------------
@@ -812,7 +889,7 @@ public class DepictionEditor extends AbstractEditor {
 
 						@Override
 						public void onSuccess(ImageEntry ieResults) {
-							imageEntryList.add(ieResults);
+							imageEntryLS.add(ieResults);
 						}
 
 						@Override
@@ -824,6 +901,7 @@ public class DepictionEditor extends AbstractEditor {
 				imageSelectionDialog.hide();
 			}
 		});
+		
 		TextButton addImageButton = new TextButton("Select Image");
 		addImageButton.addSelectHandler(new SelectHandler() {
 
@@ -835,23 +913,25 @@ public class DepictionEditor extends AbstractEditor {
 				imageSelectionDialog.center();
 			}
 		});
+		
 		TextButton removeImageButton = new TextButton("Remove Image");
 		removeImageButton.addSelectHandler(new SelectHandler() {
 
 			@Override
 			public void onSelect(SelectEvent event) {
-				imageEntryList.remove(imageListView.getSelectionModel().getSelectedItem());
+				imageEntryLS.remove(imageListView.getSelectionModel().getSelectedItem());
 			}
 		});
+		
 		TextButton setMasterButton = new TextButton("Set Master");
 		setMasterButton.addSelectHandler(new SelectHandler() {
 
 			@Override
 			public void onSelect(SelectEvent event) {
 				ImageEntry entry = imageListView.getSelectionModel().getSelectedItem();
-				if (imageEntryList.indexOf(entry) > 0) {
-					imageEntryList.remove(entry);
-					imageEntryList.add(0, entry);
+				if (imageEntryLS.indexOf(entry) > 0) {
+					imageEntryLS.remove(entry);
+					imageEntryLS.add(0, entry);
 				}
 			}
 		});
@@ -867,56 +947,55 @@ public class DepictionEditor extends AbstractEditor {
 		/**
 		 * --------------------- content of third tab (Pictorial Elements) starts here --------------------------------
 		 */
-		hlContainer = new HorizontalLayoutContainer();
-		VerticalLayoutContainer peVLC = new VerticalLayoutContainer();
+		HorizontalLayoutContainer pictorialElementsTabHLC = new HorizontalLayoutContainer();
 
-		TextButton peExpandButton = new TextButton("expand tree");
-		peExpandButton.addSelectHandler(new SelectHandler() {
+		ToolButton peExpandTB = new ToolButton(ToolButton.EXPAND);
+		peExpandTB.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
 				peSelector.expandAll();
 			}
 		});
-		TextButton peCollapseButton = new TextButton("collapse tree");
-		peCollapseButton.addSelectHandler(new SelectHandler() {
+		
+		ToolButton peCoolapseTB = new ToolButton(ToolButton.COLLAPSE);
+		peCoolapseTB.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
 				peSelector.collapseAll();
 			}
 		});
-		attributePanel = new FramedPanel();
-		attributePanel.setHeading("Pictorial Elements");
-		attributePanel.add(peSelector);
-		attributePanel.addButton(peExpandButton);
-		attributePanel.addButton(peCollapseButton);
-		hlContainer.add(attributePanel, new HorizontalLayoutData(1.0, 1.0));
-		tabPanel.add(hlContainer, "Pictorial Elements");
+
+		FramedPanel pictorialElementsFP = new FramedPanel();
+		pictorialElementsFP.setHeading("Pictorial Elements");
+		pictorialElementsFP.add(peSelector);
+		pictorialElementsFP.addTool(peExpandTB);
+		pictorialElementsFP.addTool(peCoolapseTB);
+		pictorialElementsTabHLC.add(pictorialElementsFP, new HorizontalLayoutData(1.0, 1.0));
+		
+		/**
+		 * --------------------- content of fourth tab (Iconography) starts here --------------------------------
+		 */
+		
+		HorizontalLayoutContainer iconographyTabHLC = new HorizontalLayoutContainer();
+
+		iconographySelector = new IconographySelector(correspondingDepictionEntry.getDepictionID());
+		iconographyTabHLC.add(iconographySelector, new HorizontalLayoutData(1.0, 1.0));
 
 		/**
 		 * --------------------------- next the editor as a whole will be assembled -------------------
 		 */
 
-		// the layout of the right side panel with the images
-//		BorderLayoutData eastData = new BorderLayoutData(.25);
-//		eastData.setMargins(new Margins(0, 5, 5, 5));
-//		eastData.setCollapsible(true);
-//		eastData.setCollapseHeaderVisible(true);
-//		eastData.setSplit(true);
-
-//		MarginData centerData = new MarginData(0, 5, 5, 0);
-
-//		BorderLayoutContainer view = new BorderLayoutContainer();
+		TabPanel tabPanel = new TabPanel();
+		tabPanel.setTabScroll(false);
+		tabPanel.add(basicsTabHLC, "Basics");
+		tabPanel.add(descriptionTabHLC, "Description");
+		tabPanel.add(pictorialElementsTabHLC, "Pictorial Elements");
+		tabPanel.add(iconographyTabHLC, "Iconography");
+		
 		HorizontalLayoutContainer mainHLC = new HorizontalLayoutContainer();
-//		view.setBorders(true);
 		mainHLC.add(tabPanel, new HorizontalLayoutData(.7, 1.0));
 		mainHLC.add(depictionImagesPanel, new HorizontalLayoutData(.3, 1.0));
-//		view.setCenterWidget(tabPanel, centerData);
-//		view.setEastWidget(depictionImagesPanel, eastData);
-
-		mainPanel.add(mainHLC);
-		mainPanel.setSize("900px", "650px");
 		
-
 		ToolButton saveToolButton = new ToolButton(ToolButton.SAVE);
 		saveToolButton.addSelectHandler(new SelectHandler() {
 			@Override
@@ -955,21 +1034,17 @@ public class DepictionEditor extends AbstractEditor {
 					}
 				});
 			}
-		});		
+		});
 		
+		mainPanel = new FramedPanel();
+		mainPanel.setHeading("Painted Representation Editor ("
+				+ (correspondingDepictionEntry.getDepictionID() > 0 ? correspondingDepictionEntry.getShortName() : "NEW") + ")");
+
+		mainPanel.add(mainHLC);
+		mainPanel.setSize("900px", "650px");
 		mainPanel.addTool(saveToolButton);
 		mainPanel.addTool(closeToolButton);
 	}
-
-	// /**
-	// * Called when the save button is pressed. Calls <code>DepictionEditorListener.depictionSaved(null)<code>
-	// */
-	// protected void cancelDepictionEditor() {
-	// Iterator<DepictionEditorListener> deIterator = listener.iterator();
-	// while (deIterator.hasNext()) {
-	// deIterator.next().depictionSaved(null);
-	// }
-	// }
 
 	/**
 	 * Called when the save button is pressed. Calls <code>DepictionEditorListener.depictionSaved(correspondingDepictionEntry)<code>
@@ -977,15 +1052,16 @@ public class DepictionEditor extends AbstractEditor {
 	 */
 	protected void saveDepictionEntry(boolean close) {
 		ArrayList<ImageEntry> associatedImageEntryList = new ArrayList<ImageEntry>();
-		for (int i = 0; i < imageEntryList.size(); ++i) {
-			associatedImageEntryList.add(imageEntryList.get(i));
+		for (int i = 0; i < imageEntryLS.size(); ++i) {
+			associatedImageEntryList.add(imageEntryLS.get(i));
 		}
 		ArrayList<PictorialElementEntry> selectedPEList = new ArrayList<PictorialElementEntry>();
 		for (PictorialElementEntry pe : peSelector.getSelectedPE()) {
 			selectedPEList.add(pe);
 		}
+		
 		if (correspondingDepictionEntry.getDepictionID() == 0) {
-			dbService.insertDepictionEntry(correspondingDepictionEntry, associatedImageEntryList, selectedPEList, new AsyncCallback<Integer>() {
+			dbService.insertDepictionEntry(correspondingDepictionEntry, associatedImageEntryList, selectedPEList, iconographySelector.getSelectedIconography(), new AsyncCallback<Integer>() {
 
 				@Override
 				public void onSuccess(Integer newDepictionID) {
@@ -1001,7 +1077,7 @@ public class DepictionEditor extends AbstractEditor {
 				}
 			});
 		} else {
-			dbService.updateDepictionEntry(correspondingDepictionEntry, associatedImageEntryList, selectedPEList, new AsyncCallback<Boolean>() {
+			dbService.updateDepictionEntry(correspondingDepictionEntry, associatedImageEntryList, selectedPEList, iconographySelector.getSelectedIconography(), new AsyncCallback<Boolean>() {
 
 				@Override
 				public void onFailure(Throwable caught) {

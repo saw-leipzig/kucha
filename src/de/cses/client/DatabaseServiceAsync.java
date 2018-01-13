@@ -24,12 +24,14 @@ import de.cses.shared.CaveGroupEntry;
 import de.cses.shared.CavePart;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
+import de.cses.shared.CurrentLocationEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageTypeEntry;
+import de.cses.shared.LocationEntry;
 import de.cses.shared.MainTypologicalClass;
 import de.cses.shared.ModeOfRepresentationEntry;
 import de.cses.shared.OrientationEntry;
@@ -204,10 +206,10 @@ public interface DatabaseServiceAsync {
 	void getImageTypes(AsyncCallback<ArrayList<ImageTypeEntry>> asyncCallback) throws IllegalArgumentException;
 
 	void insertDepictionEntry(DepictionEntry depictionEntry, ArrayList<ImageEntry> imgEntryList, ArrayList<PictorialElementEntry> peEntryList,
-			AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
+			ArrayList<IconographyEntry> iconographyList, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 
 	void updateDepictionEntry(DepictionEntry correspondingDepictionEntry, ArrayList<ImageEntry> all, ArrayList<PictorialElementEntry> selectedPE,
-			AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
+			ArrayList<IconographyEntry> iconographyList, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
 	void getModesOfRepresentation(AsyncCallback<ArrayList<ModeOfRepresentationEntry>> asyncCallback) throws IllegalArgumentException;
 
@@ -237,5 +239,11 @@ public interface DatabaseServiceAsync {
 	void insertAuthorEntry(AuthorEntry currentAuthorEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 
 	void insertCeilingTypeEntry(CeilingTypeEntry ctEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
+
+	void getCurrentLocations(AsyncCallback<ArrayList<CurrentLocationEntry>> asyncCallback) throws IllegalArgumentException;
+
+	void getRelatedIconography(int depictionID, AsyncCallback<ArrayList<IconographyEntry>> asyncCallback) throws IllegalArgumentException;
+
+	void getLocations(AsyncCallback<ArrayList<LocationEntry>> asyncCallback) throws IllegalArgumentException;
 
 	}

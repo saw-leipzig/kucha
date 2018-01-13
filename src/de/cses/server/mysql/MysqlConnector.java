@@ -37,12 +37,14 @@ import de.cses.shared.CaveGroupEntry;
 import de.cses.shared.CavePart;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
+import de.cses.shared.CurrentLocationEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageTypeEntry;
+import de.cses.shared.LocationEntry;
 import de.cses.shared.MainTypologicalClass;
 import de.cses.shared.ModeOfRepresentationEntry;
 import de.cses.shared.OrientationEntry;
@@ -79,7 +81,7 @@ public class MysqlConnector {
 	private String user; // MysqlConnector.db.user
 	private String password; // MysqlConnector.db.password
 
-	private int auto_increment_id;
+//	private int auto_increment_id;
 
 	private static MysqlConnector instance = null;
 	private ServerProperties serverProperties = ServerProperties.getInstance();
@@ -374,9 +376,9 @@ public class MysqlConnector {
 				results.add(new DepictionEntry(rs.getInt("DepictionID"), rs.getInt("StyleID"), rs.getString("Inscriptions"),
 						rs.getString("SeparateAksaras"), rs.getString("Dating"), rs.getString("Description"), rs.getString("BackgroundColour"),
 						rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"), rs.getDouble("Width"), rs.getDouble("Height"),
-						rs.getInt("ExpeditionID"), rs.getDate("PurchaseDate"), rs.getInt("CurrentLocationID"), rs.getInt("VendorID"),
-						rs.getInt("StoryID"), rs.getInt("CaveID"), rs.getInt("WallID"), rs.getInt("IconographyID"),
-						rs.getInt("ModeOfRepresentationID")));
+						rs.getInt("ExpeditionID"), rs.getDate("PurchaseDate"), rs.getInt("CurrentLocationID"), rs.getString("InventoryNumber"), rs.getInt("VendorID"),
+						rs.getInt("StoryID"), rs.getInt("CaveID"), rs.getInt("WallID"), rs.getInt("AbsoluteLeft"), rs.getInt("AbsoluteTop"), 
+						rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName")));
 			}
 			rs.close();
 			stmt.close();
@@ -398,10 +400,10 @@ public class MysqlConnector {
 												// more than 1 result!
 				result = new DepictionEntry(rs.getInt("DepictionID"), rs.getInt("StyleID"), rs.getString("Inscriptions"),
 						rs.getString("SeparateAksaras"), rs.getString("Dating"), rs.getString("Description"), rs.getString("BackgroundColour"),
-						rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"), rs.getInt("Dimension.width"),
-						rs.getInt("Dimension.height"), rs.getInt("ExpeditionID"), rs.getDate("PurchaseDate"), rs.getInt("CurrentLocationID"),
-						rs.getInt("VendorID"), rs.getInt("StoryID"), rs.getInt("CaveID"), rs.getInt("WallID"), rs.getInt("IconographyID"),
-						rs.getInt("ModeOfRepresentationID"));
+						rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"), rs.getDouble("Width"), rs.getDouble("Height"),
+						rs.getInt("ExpeditionID"), rs.getDate("PurchaseDate"), rs.getInt("CurrentLocationID"), rs.getString("InventoryNumber"), rs.getInt("VendorID"),
+						rs.getInt("StoryID"), rs.getInt("CaveID"), rs.getInt("WallID"), rs.getInt("AbsoluteLeft"), 
+						rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"));
 			}
 			rs.close();
 			stmt.close();
@@ -861,7 +863,47 @@ public class MysqlConnector {
 		}
 		return results;
 	}
+	
+	public ArrayList<CurrentLocationEntry> getCurrentLocations() {
+		ArrayList<CurrentLocationEntry> root = getCurrentLocationEntries(0);
 
+		for (CurrentLocationEntry item : root) {
+			processCurrentLocationTree(item);
+		}
+		return root;
+	}
+
+	protected void processCurrentLocationTree(CurrentLocationEntry parent) {
+		ArrayList<CurrentLocationEntry> children = getCurrentLocationEntries(parent.getCurrentLocationID());
+		if (children != null) {
+			parent.setChildren(children);
+			for (CurrentLocationEntry child : children) {
+				processCurrentLocationTree(child);
+			}
+		}
+	}
+
+	protected ArrayList<CurrentLocationEntry> getCurrentLocationEntries(int parentID) {
+		ArrayList<CurrentLocationEntry> results = new ArrayList<CurrentLocationEntry>();
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM CurrentLocations WHERE ParentID = ?");
+			pstmt.setInt(1, parentID);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				results.add(new CurrentLocationEntry(rs.getInt("CurrentLocationID"), rs.getInt("ParentID"), rs.getString("LocationName")));
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return results;
+	}
+	
 	public ArrayList<PictorialElementEntry> getPictorialElements(int rootID) {
 		ArrayList<PictorialElementEntry> root = getPictorialElementEntries(rootID);
 
@@ -1106,11 +1148,13 @@ public class MysqlConnector {
 
 	public String saveDepiction(int depictionID, int AbsoluteLeft, int AbsoluteTop) {
 		Connection dbc = getConnection();
-		Statement stmt;
+		PreparedStatement pstmt;
 		try {
-			stmt = dbc.createStatement();
-			stmt.executeQuery(
-					"UPDATE Depictions SET AbsoluteLeft =" + AbsoluteLeft + ", AbsoluteTop =" + AbsoluteTop + " WHERE DepictionID =" + depictionID);
+			pstmt = dbc.prepareStatement("UPDATE Depictions SET AbsoluteLeft=?, AbsoluteTop=? WHERE DepictionID =?");
+			pstmt.setInt(1, AbsoluteLeft);
+			pstmt.setInt(2, AbsoluteTop);
+			pstmt.setInt(3, depictionID);
+			pstmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return "failed to save depiction";
@@ -1799,43 +1843,45 @@ public class MysqlConnector {
 	}
 
 	/**
+	 * @param iconographyLists 
 	 * @param list
 	 * @param depictionEntry
 	 * @return
 	 */
 	public synchronized int insertDepictionEntry(DepictionEntry de, ArrayList<ImageEntry> imgEntryList,
-			ArrayList<PictorialElementEntry> peEntryList) {
-		int newDepictionID;
+			ArrayList<PictorialElementEntry> peEntryList, ArrayList<IconographyEntry> iconographyLists) {
+		int newDepictionID = 0;
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
 			pstmt = dbc.prepareStatement(
-					"INSERT INTO Depictions (StyleID, Inscriptions, SeparateAksaras, Dating, Height, Width, PurchaseDate, VendorID, ExpeditionID, "
-							+ "CurrentLocationID, Description, BackgroundColour, GeneralRemarks, OtherSuggestedIdentifications, "
-							+ "StoryID, CaveID, WallID, AbsoluteLeft, AbsoluteTop, IconographyID, ModeOfRepresentationID) "
-							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+					"INSERT INTO Depictions (StyleID, Inscriptions, SeparateAksaras, Dating, Description, BackgroundColour, GeneralRemarks, "
+					+ "OtherSuggestedIdentifications, Width, Height, ExpeditionID, PurchaseDate, CurrentLocationID, InventoryNumber, VendorID, "
+					+ "StoryID, CaveID, WallID, AbsoluteLeft, AbsoluteTop, ModeOfRepresentationID, ShortName) "
+							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			pstmt.setInt(1, de.getStyleID());
 			pstmt.setString(2, de.getInscriptions());
 			pstmt.setString(3, de.getSeparateAksaras());
 			pstmt.setString(4, de.getDating());
-			pstmt.setDouble(5, de.getHeight());
-			pstmt.setDouble(6, de.getWidth());
-			pstmt.setDate(7, de.getPurchaseDate());
-			pstmt.setInt(8, de.getVendorID());
-			pstmt.setInt(9, de.getExpeditionID());
-			pstmt.setInt(10, de.getCurrentLocationID());
-			pstmt.setString(11, de.getDescription());
-			pstmt.setString(12, de.getBackgroundColour());
-			pstmt.setString(13, de.getGeneralRemarks());
-			pstmt.setString(14, de.getOtherSuggestedIdentifications());
-			pstmt.setInt(15, de.getStoryID());
-			pstmt.setInt(16, de.getCaveID());
-			pstmt.setInt(17, de.getWallID());
-			pstmt.setInt(18, de.getAbsoluteLeft());
-			pstmt.setInt(19, de.getAbsoluteTop());
-			pstmt.setInt(20, de.getIconographyID());
+			pstmt.setString(5, de.getDescription());
+			pstmt.setString(6, de.getBackgroundColour());
+			pstmt.setString(7, de.getGeneralRemarks());
+			pstmt.setString(8, de.getOtherSuggestedIdentifications());
+			pstmt.setDouble(9, de.getHeight());
+			pstmt.setDouble(10, de.getWidth());
+			pstmt.setInt(11, de.getExpeditionID());
+			pstmt.setDate(12, de.getPurchaseDate());
+			pstmt.setInt(13, de.getLocationID());
+			pstmt.setString(14, de.getInventoryNumber());
+			pstmt.setInt(15, de.getVendorID());
+			pstmt.setInt(16, de.getStoryID());
+			pstmt.setInt(17, de.getCaveID());
+			pstmt.setInt(18, de.getWallID());
+			pstmt.setInt(19, de.getAbsoluteLeft());
+			pstmt.setInt(20, de.getAbsoluteTop());
 			pstmt.setInt(21, de.getModeOfRepresentationID());
-			newDepictionID = pstmt.executeUpdate();
+			pstmt.setString(22, de.getShortName());
+			pstmt.executeUpdate();
 			ResultSet keys = pstmt.getGeneratedKeys();
 			if (keys.next()) { // there should only be 1 key returned here 
 				newDepictionID  = keys.getInt(1);
@@ -1848,11 +1894,17 @@ public class MysqlConnector {
 			return 0;
 		}
 		if (newDepictionID > 0) {
+			deleteEntry("DELETE FROM DepictionImageRelation WHERE DepictionID=" + de.getDepictionID());
 			if (imgEntryList.size() > 0) {
-				updateDepictionImageRelation(de.getDepictionID(), imgEntryList);
+				insertDepictionImageRelation(de.getDepictionID(), imgEntryList);
 			}
+			deleteEntry("DELETE FROM DepictionPERelation WHERE DepictionID=" + de.getDepictionID());
 			if (peEntryList.size() > 0) {
-				updateDepictionPERelation(de.getDepictionID(), peEntryList);
+				insertDepictionPERelation(de.getDepictionID(), peEntryList);
+			}
+			deleteEntry("DELETE FROM DepictionIconographyRelation WHERE DepictionID=" + de.getDepictionID());
+			if (iconographyLists.size() > 0) {
+				insertDepictionIconographyRelation(de.getDepictionID(), iconographyLists);
 			}
 		}
 		return newDepictionID;
@@ -1862,57 +1914,66 @@ public class MysqlConnector {
 	 * @param correspondingDepictionEntry
 	 * @param imgEntryList
 	 * @param selectedPEList
+	 * @param iconographyList 
 	 * @return <code>true</code> when operation is successful
 	 */
 	public synchronized boolean updateDepictionEntry(DepictionEntry de, ArrayList<ImageEntry> imgEntryList,
-			ArrayList<PictorialElementEntry> selectedPEList) {
+			ArrayList<PictorialElementEntry> selectedPEList, ArrayList<IconographyEntry> iconographyList) {
 		// System.err.println("==> updateDepictionEntry called");
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
+			System.err.println("===> updateDepictionEntry");
 			pstmt = dbc.prepareStatement(
-					"UPDATE Depictions SET StyleID=?, Inscriptions=?, SeparateAksaras=?, Dating=?, Height=?, Width=?, PurchaseDate=?, VendorID=?, ExpeditionID=?, "
-							+ "CurrentLocationID=?, Description=?, BackgroundColour=?, GeneralRemarks=?, OtherSuggestedIdentifications=?, "
-							+ "StoryID=?, CaveID=?, WallID=?, AbsoluteLeft=?, AbsoluteTop=?, IconographyID=?, ModeOfRepresentationID=? WHERE DepictionID=?");
+					"UPDATE Depictions SET StyleID=?, Inscriptions=?, SeparateAksaras=?, Dating=?, Description=?, BackgroundColour=?, GeneralRemarks=?, "
+					+ "OtherSuggestedIdentifications=?, Width=?, Height=?, ExpeditionID=?, PurchaseDate=?, CurrentLocationID=?, InventoryNumber=?, VendorID=?, "
+					+ "StoryID=?, CaveID=?, WallID=?, AbsoluteLeft=?, AbsoluteTop=?, ModeOfRepresentationID=?, ShortName=? WHERE DepictionID=?");
 			pstmt.setInt(1, de.getStyleID());
 			pstmt.setString(2, de.getInscriptions());
 			pstmt.setString(3, de.getSeparateAksaras());
 			pstmt.setString(4, de.getDating());
-			pstmt.setDouble(5, de.getHeight());
-			pstmt.setDouble(6, de.getWidth());
-			pstmt.setDate(7, de.getPurchaseDate());
-			pstmt.setInt(8, de.getVendorID());
-			pstmt.setInt(9, de.getExpeditionID());
-			pstmt.setInt(10, de.getCurrentLocationID());
-			pstmt.setString(11, de.getDescription());
-			pstmt.setString(12, de.getBackgroundColour());
-			pstmt.setString(13, de.getGeneralRemarks());
-			pstmt.setString(14, de.getOtherSuggestedIdentifications());
-			pstmt.setInt(15, de.getStoryID());
-			pstmt.setInt(16, de.getCaveID());
-			pstmt.setInt(17, de.getWallID());
-			pstmt.setInt(18, de.getAbsoluteLeft());
-			pstmt.setInt(19, de.getAbsoluteTop());
-			pstmt.setInt(20, de.getIconographyID());
+			pstmt.setString(5, de.getDescription());
+			pstmt.setString(6, de.getBackgroundColour());
+			pstmt.setString(7, de.getGeneralRemarks());
+			pstmt.setString(8, de.getOtherSuggestedIdentifications());
+			pstmt.setDouble(9, de.getHeight());
+			pstmt.setDouble(10, de.getWidth());
+			pstmt.setInt(11, de.getExpeditionID());
+			pstmt.setDate(12, de.getPurchaseDate());
+			pstmt.setInt(13, de.getLocationID());
+			pstmt.setString(14, de.getInventoryNumber());
+			pstmt.setInt(15, de.getVendorID());
+			pstmt.setInt(16, de.getStoryID());
+			pstmt.setInt(17, de.getCaveID());
+			pstmt.setInt(18, de.getWallID());
+			pstmt.setInt(19, de.getAbsoluteLeft());
+			pstmt.setInt(20, de.getAbsoluteTop());
 			pstmt.setInt(21, de.getModeOfRepresentationID());
-			pstmt.setInt(22, de.getDepictionID());
+			pstmt.setString(22, de.getShortName());
+			pstmt.setInt(23, de.getDepictionID());
 			pstmt.executeUpdate();
 			pstmt.close();
+			System.err.println("===> updateDepictionEntry - sucessful");
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 			return false;
 		}
+		deleteEntry("DELETE FROM DepictionImageRelation WHERE DepictionID=" + de.getDepictionID());
 		if (imgEntryList.size() > 0) {
-			updateDepictionImageRelation(de.getDepictionID(), imgEntryList);
+			insertDepictionImageRelation(de.getDepictionID(), imgEntryList);
 		}
+		deleteEntry("DELETE FROM DepictionPERelation WHERE DepictionID=" + de.getDepictionID());
 		if (selectedPEList.size() > 0) {
-			updateDepictionPERelation(de.getDepictionID(), selectedPEList);
+			insertDepictionPERelation(de.getDepictionID(), selectedPEList);
+		}
+		deleteEntry("DELETE FROM DepictionIconographyRelation WHERE DepictionID=" + de.getDepictionID());
+		if (iconographyList.size() > 0) {
+			insertDepictionIconographyRelation(de.getDepictionID(), iconographyList);
 		}
 		return true;
 	}
 
-	private synchronized void updateDepictionImageRelation(int depictionID, ArrayList<ImageEntry> imgEntryList) {
-		deleteEntry("DELETE FROM DepictionImageRelation WHERE DepictionID=" + depictionID);
+	private synchronized void insertDepictionImageRelation(int depictionID, ArrayList<ImageEntry> imgEntryList) {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		// System.err.println("==> updateDepictionImageRelation called");
@@ -1946,16 +2007,32 @@ public class MysqlConnector {
 		}
 	}
 
-	private synchronized void updateDepictionPERelation(int depictionID, ArrayList<PictorialElementEntry> peEntryList) {
+	private synchronized void insertDepictionPERelation(int depictionID, ArrayList<PictorialElementEntry> peEntryList) {
 		Connection dbc = getConnection();
 		PreparedStatement relationStatement;
 
-		deleteEntry("DELETE FROM DepictionPERelation WHERE DepictionID=" + depictionID);
 		try {
 			relationStatement = dbc.prepareStatement("INSERT INTO DepictionPERelation VALUES (?, ?)");
 			for (PictorialElementEntry entry : peEntryList) {
 				relationStatement.setInt(1, depictionID);
 				relationStatement.setInt(2, entry.getPictorialElementID());
+				relationStatement.executeUpdate();
+			}
+			relationStatement.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private synchronized void insertDepictionIconographyRelation(int depictionID, ArrayList<IconographyEntry> iconographyList) {
+		Connection dbc = getConnection();
+		PreparedStatement relationStatement;
+
+		try {
+			relationStatement = dbc.prepareStatement("INSERT INTO DepictionIconographyRelation VALUES (?, ?)");
+			for (IconographyEntry entry : iconographyList) {
+				relationStatement.setInt(1, depictionID);
+				relationStatement.setInt(2, entry.getIconographyID());
 				relationStatement.executeUpdate();
 			}
 			relationStatement.close();
@@ -2512,5 +2589,49 @@ public class MysqlConnector {
 		}
 		return ceilingTypeID;
 	}
+
+	/**
+	 * @param depictionID
+	 * @return
+	 */
+	public ArrayList<IconographyEntry> getRelatedIconography(int depictionID) {
+		ArrayList<IconographyEntry> result = new ArrayList<IconographyEntry>();
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM Iconography WHERE IconographyID IN (SELECT IconographyID FROM DepictionIconographyRelation WHERE DepictionID=?)");
+			pstmt.setInt(1, depictionID);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				result.add(new IconographyEntry(rs.getInt("IconographyID"), rs.getInt("ParentID"), rs.getString("Text")));
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	/**
+	 * @return
+	 */
+	public ArrayList<LocationEntry> getLocations() {
+		ArrayList<LocationEntry> results = new ArrayList<LocationEntry>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Locations");
+			while (rs.next()) {
+				results.add(new LocationEntry(rs.getInt("LocationID"), rs.getString("Name"), rs.getString("Town"), rs.getString("Region"), rs.getString("Country"), rs.getString("URL")));
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return results;	}
 
 }

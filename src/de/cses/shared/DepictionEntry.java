@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 
+ * Copyright 2016 -2017
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -17,8 +17,8 @@ import java.sql.Date;
 
 public class DepictionEntry extends AbstractEntry {
 
-	private int depictionID;
-	private int styleID;
+	private int depictionID = 0;
+	private int styleID = 0;
 	private String inscriptions;
 	private String separateAksaras;
 	private String dating;
@@ -26,47 +26,81 @@ public class DepictionEntry extends AbstractEntry {
 	private String backgroundColour;
 	private String generalRemarks;
 	private String otherSuggestedIdentifications;
-	private double width, height;
-	private int expeditionID;
+	private double width = 0, height = 0;
+	private int expeditionID = 0;
 	private Date purchaseDate;
-	private int currentLocationID;
-	private int vendorID;
-	private int storyID;
-	private int caveID;
-	private int wallID;
-	private int iconographyID;
-	private int absoluteLeft;
-	private int absoluteTop;
-	private int modeOfRepresentationID;
+	private int locationID = 0;
+	private String inventoryNumber;
+	private int vendorID = 0;
+	private int storyID = 0;
+	private int caveID = 0;
+	private int wallID = 0;
+	private int absoluteLeft = -1;
+	private int absoluteTop = -1;
+	private int modeOfRepresentationID = 0;
+	private String shortName;
 
-	public DepictionEntry() {
-		this(0, 0, "", "", "", "", "", "", "", 0, 0, 0, null, 0, 0, 0, 0, 0, 0, 0);
+	public DepictionEntry() { }
+
+	/**
+	 * @param depictionID
+	 * @param styleID
+	 * @param inscriptions
+	 * @param separateAksaras
+	 * @param dating
+	 * @param description
+	 * @param backgroundColour
+	 * @param generalRemarks
+	 * @param otherSuggestedIdentifications
+	 * @param width
+	 * @param height
+	 * @param expeditionID
+	 * @param purchaseDate
+	 * @param currentLocationID
+	 * @param inventoryNumber
+	 * @param vendorID
+	 * @param storyID
+	 * @param caveID
+	 * @param wallID
+	 * @param absoluteLeft
+	 * @param absoluteTop
+	 * @param modeOfRepresentationID
+	 * @param paintedRepresentationShortName
+	 */
+	public DepictionEntry(int depictionID, int styleID, String inscriptions, String separateAksaras, String dating, String description,
+			String backgroundColour, String generalRemarks, String otherSuggestedIdentifications, double width, double height, int expeditionID,
+			Date purchaseDate, int locationID, String inventoryNumber, int vendorID, int storyID, int caveID, int wallID, int absoluteLeft,
+			int absoluteTop, int modeOfRepresentationID, String shortName) {
+		super();
+		this.depictionID = depictionID;
+		this.styleID = styleID;
+		this.inscriptions = inscriptions;
+		this.separateAksaras = separateAksaras;
+		this.dating = dating;
+		this.description = description;
+		this.backgroundColour = backgroundColour;
+		this.generalRemarks = generalRemarks;
+		this.otherSuggestedIdentifications = otherSuggestedIdentifications;
+		this.width = width;
+		this.height = height;
+		this.expeditionID = expeditionID;
+		this.purchaseDate = purchaseDate;
+		this.locationID = locationID;
+		this.inventoryNumber = inventoryNumber;
+		this.vendorID = vendorID;
+		this.storyID = storyID;
+		this.caveID = caveID;
+		this.wallID = wallID;
+		this.absoluteLeft = absoluteLeft;
+		this.absoluteTop = absoluteTop;
+		this.modeOfRepresentationID = modeOfRepresentationID;
+		this.shortName = shortName;
 	}
 
-	public DepictionEntry(int depictionID, int styleID, String inscriptions, String separateAksaras, String dating, String description, String backgroundColour,
-			String generalRemarks, String otherSuggestedIdentifications, double width, double height, int expeditionID,
-			Date purchaseDate, int currentLocationID, int vendorID, int storyID, int caveID, int wallID, int iconographyID, int modeOfRepresentationID) {
-		super();
-		setDepictionID(depictionID);
-		setStyleID(styleID);
-		setInscriptions(inscriptions);
-		setSeparateAksaras(separateAksaras);
-		setDating(dating);
-		setDescription(description);
-		setBackgroundColour(backgroundColour);
-		setGeneralRemarks(generalRemarks);
-		setOtherSuggestedIdentifications(otherSuggestedIdentifications);
-		setWidth(width);
-		setHeight(height);
-		setExpeditionID(expeditionID);
-		setPurchaseDate(purchaseDate);
-		setCurrentLocationID(currentLocationID);
-		setVendorID(vendorID);
-		setStoryID(storyID);
-		setCaveID(caveID);
-		setWallID(wallID);
-		setIconographyID(iconographyID);
-		setModeOfRepresentationID(modeOfRepresentationID);
+	public DepictionEntry clone() {
+		return new DepictionEntry(depictionID, styleID, inscriptions, separateAksaras, dating, description, backgroundColour, generalRemarks,
+				otherSuggestedIdentifications, width, height, expeditionID, purchaseDate, locationID, inventoryNumber, vendorID, storyID,
+				caveID, wallID, absoluteLeft, absoluteTop, modeOfRepresentationID, shortName);
 	}
 
 	public int getDepictionID() {
@@ -165,12 +199,12 @@ public class DepictionEntry extends AbstractEntry {
 		this.purchaseDate = purchaseDate;
 	}
 
-	public int getCurrentLocationID() {
-		return currentLocationID;
+	public int getLocationID() {
+		return locationID;
 	}
 
-	public void setCurrentLocationID(int currentLocationID) {
-		this.currentLocationID = currentLocationID;
+	public void setLocationID(int locationID) {
+		this.locationID = locationID;
 	}
 
 	public int getVendorID() {
@@ -223,14 +257,6 @@ public class DepictionEntry extends AbstractEntry {
 		this.absoluteTop = absoluteTop;
 	}
 
-	public int getIconographyID() {
-		return iconographyID;
-	}
-
-	public void setIconographyID(int iconographyID) {
-		this.iconographyID = iconographyID;
-	}
-
 	public int getWallID() {
 		return wallID;
 	}
@@ -239,7 +265,9 @@ public class DepictionEntry extends AbstractEntry {
 		this.wallID = wallID;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.cses.shared.AbstractEntry#uniqueID()
 	 */
 	@Override
@@ -255,7 +283,8 @@ public class DepictionEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param separateAksaras the separateAksaras to set
+	 * @param separateAksaras
+	 *          the separateAksaras to set
 	 */
 	public void setSeparateAksaras(String separateAksaras) {
 		this.separateAksaras = separateAksaras;
@@ -267,6 +296,22 @@ public class DepictionEntry extends AbstractEntry {
 
 	public void setModeOfRepresentationID(int modeOfRepresentationID) {
 		this.modeOfRepresentationID = modeOfRepresentationID;
+	}
+
+	public String getInventoryNumber() {
+		return inventoryNumber;
+	}
+
+	public void setInventoryNumber(String inventoryNumber) {
+		this.inventoryNumber = inventoryNumber;
+	}
+
+	public String getShortName() {
+		return shortName;
+	}
+
+	public void setShortName(String shortName) {
+		this.shortName = shortName;
 	}
 
 }

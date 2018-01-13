@@ -25,12 +25,14 @@ import de.cses.shared.CaveGroupEntry;
 import de.cses.shared.CavePart;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
+import de.cses.shared.CurrentLocationEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageTypeEntry;
+import de.cses.shared.LocationEntry;
 import de.cses.shared.MainTypologicalClass;
 import de.cses.shared.ModeOfRepresentationEntry;
 import de.cses.shared.OrientationEntry;
@@ -185,10 +187,11 @@ public interface DatabaseService extends RemoteService {
 
 	ArrayList<ImageTypeEntry> getImageTypes() throws IllegalArgumentException;
 
-	int insertDepictionEntry(DepictionEntry depictionEntry, ArrayList<ImageEntry> imgEntryList, ArrayList<PictorialElementEntry> peEntryList) throws IllegalArgumentException;
+	int insertDepictionEntry(DepictionEntry depictionEntry, ArrayList<ImageEntry> imgEntryList, ArrayList<PictorialElementEntry> peEntryList,
+			ArrayList<IconographyEntry> iconographyList);
 
 	boolean updateDepictionEntry(DepictionEntry correspondingDepictionEntry, ArrayList<ImageEntry> all,
-			ArrayList<PictorialElementEntry> selectedPE) throws IllegalArgumentException;
+			ArrayList<PictorialElementEntry> selectedPE, ArrayList<IconographyEntry> iconographyList);
 
 	ArrayList<ModeOfRepresentationEntry> getModesOfRepresentation() throws IllegalArgumentException;
 
@@ -212,5 +215,11 @@ public interface DatabaseService extends RemoteService {
 	int insertAuthorEntry(AuthorEntry currentAuthorEntry) throws IllegalArgumentException;
 
 	int insertCeilingTypeEntry(CeilingTypeEntry ctEntry) throws IllegalArgumentException;
+
+	ArrayList<CurrentLocationEntry> getCurrentLocations() throws IllegalArgumentException;
+
+	ArrayList<IconographyEntry> getRelatedIconography(int depictionID) throws IllegalArgumentException;
+
+	ArrayList<LocationEntry> getLocations() throws IllegalArgumentException;
 
 }

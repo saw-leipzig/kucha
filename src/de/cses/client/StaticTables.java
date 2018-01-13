@@ -19,6 +19,8 @@ import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
+import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
@@ -26,10 +28,12 @@ import com.sencha.gxt.data.shared.PropertyAccess;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
 import de.cses.shared.ChamberTypeEntry;
+import de.cses.shared.CurrentLocationEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageTypeEntry;
+import de.cses.shared.LocationEntry;
 import de.cses.shared.ModeOfRepresentationEntry;
 import de.cses.shared.OrnamentFunctionEntry;
 import de.cses.shared.OrnamentPositionEntry;
@@ -66,10 +70,13 @@ public class StaticTables {
 	protected HashMap<Integer, WallLocationEntry> wallLocationEntryMap;
 	protected HashMap<Integer, OrnamentPositionEntry> ornamentPositionMap;
 	protected HashMap<Integer, OrnamentFunctionEntry> ornamentFunctionMap;
+	protected HashMap<Integer, CurrentLocationEntry> currentLocationMap;
+	protected HashMap<Integer, LocationEntry> locationMap;
 
 	private int loadCounter;
 
 	private ListsLoadedListener listener;
+
 
 	public interface ListsLoadedListener {
 		void listsLoaded(double progressCounter);
@@ -90,7 +97,7 @@ public class StaticTables {
 	 */
 	public StaticTables(ListsLoadedListener l) {
 		listener = l;
-		loadCounter = 15;
+		loadCounter = 16;
 		loadDistricts();
 		loadSites();
 		loadRegions();
@@ -106,11 +113,12 @@ public class StaticTables {
 		loadWallLocations();
 		loadOrnamentPositionTable();
 		loadOrnamentFunctionTable();
+		loadLocationMap();
 	}
 
 	private void listLoaded() {
 		--loadCounter;
-		listener.listsLoaded((15.0 - loadCounter) / 15.0);
+		listener.listsLoaded((16.0 - loadCounter) / 16.0);
 	}
 
 	/**
@@ -423,6 +431,25 @@ public class StaticTables {
 			}
 		});
 	}
+	
+	private void loadLocationMap() {
+		locationMap = new HashMap<Integer, LocationEntry>();
+		dbService.getLocations(new AsyncCallback<ArrayList<LocationEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(ArrayList<LocationEntry> result) {
+				for (LocationEntry entry : result) {
+					locationMap.put(entry.getLocationID(), entry);
+				}
+				listLoaded();
+			}
+		});
+	}
 
 	public Map<Integer, DistrictEntry> getDistrictEntries() {
 		return districtEntryMap;
@@ -482,6 +509,14 @@ public class StaticTables {
 	
 	public Map<Integer, OrnamentFunctionEntry> getOrmanemtFunctionEntries() {
 		return ornamentFunctionMap;
+	}
+
+	public Map<Integer, CurrentLocationEntry> getCurrentLocationEntries() {
+		return currentLocationMap;
+	}
+
+	public Map<Integer, LocationEntry> getLocationEntries() {
+		return locationMap;
 	}
 	
 }

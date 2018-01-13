@@ -15,17 +15,13 @@ package de.cses.shared;
 
 import java.util.ArrayList;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
-public class IconographyEntry implements IsSerializable {
+public class IconographyEntry extends AbstractEntry {
 	
 	private int iconographyID, parentID;
 	private String text;
 	private ArrayList<IconographyEntry> children;
 	
-	public IconographyEntry() {
-		super();
-	}
+	public IconographyEntry() { }
 
 	public IconographyEntry(int iconographyID, int parentID, String text) {
 		super();
@@ -64,6 +60,14 @@ public class IconographyEntry implements IsSerializable {
 
 	public void setChildren(ArrayList<IconographyEntry> children) {
 		this.children = children;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.shared.AbstractEntry#getUniqueID()
+	 */
+	@Override
+	public String getUniqueID() {
+		return "IconographyEntry-" + iconographyID;
 	}
 
 }

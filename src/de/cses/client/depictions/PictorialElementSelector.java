@@ -137,9 +137,7 @@ public class PictorialElementSelector implements IsWidget {
 			protected void onFilter(StoreFilterEvent<PictorialElementEntry> se) {
 				super.onFilter(se);
 				for (PictorialElementEntry peEntry : selectedPictorialElementsMap.values()) {
-					// if (tree.getStore().findModel(peEntry) != null) {
 					tree.setChecked(peEntry, CheckState.CHECKED);
-					// }
 				}
 			}
 

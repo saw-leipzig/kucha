@@ -26,12 +26,14 @@ import de.cses.shared.CaveGroupEntry;
 import de.cses.shared.CavePart;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
+import de.cses.shared.CurrentLocationEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageTypeEntry;
+import de.cses.shared.LocationEntry;
 import de.cses.shared.MainTypologicalClass;
 import de.cses.shared.ModeOfRepresentationEntry;
 import de.cses.shared.OrientationEntry;
@@ -517,9 +519,9 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	 * @see de.cses.client.DatabaseService#insertDepictionEntry(de.cses.shared.DepictionEntry, java.util.List)
 	 */
 	@Override
-	public int insertDepictionEntry(DepictionEntry depictionEntry, ArrayList<ImageEntry> imgEntryList, ArrayList<PictorialElementEntry> peEntryList) {
+	public int insertDepictionEntry(DepictionEntry depictionEntry, ArrayList<ImageEntry> imgEntryList, ArrayList<PictorialElementEntry> peEntryList, ArrayList<IconographyEntry> iconographyLists) {
 		MysqlConnector connector = MysqlConnector.getInstance();
-		return connector.insertDepictionEntry(depictionEntry, imgEntryList, peEntryList);
+		return connector.insertDepictionEntry(depictionEntry, imgEntryList, peEntryList, iconographyLists);
 	}
 
 	/* (non-Javadoc)
@@ -527,9 +529,9 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	 */
 	@Override
 	public boolean updateDepictionEntry(DepictionEntry correspondingDepictionEntry, ArrayList<ImageEntry> all,
-			ArrayList<PictorialElementEntry> selectedPE) {
+			ArrayList<PictorialElementEntry> selectedPE, ArrayList<IconographyEntry> iconographyList) {
 		MysqlConnector connector = MysqlConnector.getInstance();
-		return connector.updateDepictionEntry(correspondingDepictionEntry, all, selectedPE);
+		return connector.updateDepictionEntry(correspondingDepictionEntry, all, selectedPE, iconographyList);
 	}
 
 	/* (non-Javadoc)
@@ -618,6 +620,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.insertCaveGroupEntry(cgEntry);
 	}
+	
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#insertDistrictEntry(de.cses.shared.DistrictEntry)
 	 */
@@ -626,6 +629,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.insertDistrictEntry(de);
 	}
+	
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#insertRegionEntry(de.cses.shared.RegionEntry)
 	 */
@@ -634,6 +638,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.insertRegionEntry(re);
 	}
+	
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#insertCeilingTypeEntry(de.cses.shared.CeilingTypeEntry)
 	 */
@@ -641,6 +646,32 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public int insertCeilingTypeEntry(CeilingTypeEntry ctEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.insertCeilingTypeEntry(ctEntry);
+	}
+	
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#getCurrentLocations()
+	 */
+	@Override
+	public ArrayList<CurrentLocationEntry> getCurrentLocations() {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getCurrentLocations();
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#getRelatedIconography(int)
+	 */
+	@Override
+	public ArrayList<IconographyEntry> getRelatedIconography(int depictionID) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getRelatedIconography(depictionID);
+	}
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#getLocations()
+	 */
+	@Override
+	public ArrayList<LocationEntry> getLocations() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getLocations();
 	}
 
 }
