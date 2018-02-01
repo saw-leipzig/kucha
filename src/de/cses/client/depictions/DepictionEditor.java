@@ -100,7 +100,7 @@ public class DepictionEditor extends AbstractEditor {
 	private TextArea descriptionArea;
 	private TextField backgroundColourField;
 	private TextArea generalRemarksArea;
-	private TextArea othersSuggestedIdentificationsArea;
+//	private TextArea otherSuggestedIdentificationsArea;
 	protected IconographySelector iconographySelector;
 	protected PictorialElementSelector peSelector;
 	protected ImageSelector imageSelector;
@@ -865,8 +865,16 @@ public class DepictionEditor extends AbstractEditor {
 
 		FramedPanel otherSuggestedIdentificationsFP = new FramedPanel();
 		otherSuggestedIdentificationsFP.setHeading("Other suggested identifications");
-		othersSuggestedIdentificationsArea = new TextArea();
-		otherSuggestedIdentificationsFP.add(othersSuggestedIdentificationsArea);
+		TextArea otherSuggestedIdentificationsTA = new TextArea();
+		otherSuggestedIdentificationsTA.setValue(correspondingDepictionEntry.getOtherSuggestedIdentifications());
+		otherSuggestedIdentificationsTA.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				correspondingDepictionEntry.setOtherSuggestedIdentifications(event.getValue());
+			}
+		});
+		otherSuggestedIdentificationsFP.add(otherSuggestedIdentificationsTA);
 
 		VerticalLayoutContainer descriptionRightVLC = new VerticalLayoutContainer();
 		descriptionRightVLC.add(descriptionFP, new VerticalLayoutData(1.0, 1.0 / 3));

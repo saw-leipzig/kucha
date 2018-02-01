@@ -1885,6 +1885,7 @@ public class MysqlConnector {
 			ResultSet keys = pstmt.getGeneratedKeys();
 			if (keys.next()) { // there should only be 1 key returned here 
 				newDepictionID  = keys.getInt(1);
+				de.setDepictionID(newDepictionID);
 			}
 			keys.close();
 			
@@ -1953,6 +1954,7 @@ public class MysqlConnector {
 			pstmt.setInt(23, de.getDepictionID());
 			pstmt.executeUpdate();
 			pstmt.close();
+			System.err.println("===> updateDepictionEntry - otherSuggestedIdentificaitons = " + de.getOtherSuggestedIdentifications());
 			System.err.println("===> updateDepictionEntry - sucessful");
 		} catch (SQLException ex) {
 			ex.printStackTrace();
