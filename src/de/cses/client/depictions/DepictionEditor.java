@@ -458,7 +458,21 @@ public class DepictionEditor extends AbstractEditor {
 		
 		FramedPanel caveSelectionFP = new FramedPanel();
 		caveSelectionFP.setHeading("Located in Cave");
-		caveSelectionCB = new ComboBox<CaveEntry>(caveEntryLS, caveProps.officialNumber(), new AbstractSafeHtmlRenderer<CaveEntry>() {
+		caveSelectionCB = new ComboBox<CaveEntry>(caveEntryLS, new LabelProvider<CaveEntry>() {
+
+			@Override
+			public String getLabel(CaveEntry item) {
+				StaticTables st = StaticTables.getInstance();
+				DistrictEntry de = null;
+				SiteEntry se = null;
+				de = st.getDistrictEntries().get(item.getDistrictID());
+				if (de != null) {
+					se = st.getSiteEntries().get(de.getSiteID());
+				}
+				return (se != null ? se.getName()+": " : (de != null ? de.getName()+":" : "")) + item.getOfficialNumber() 
+					+ (item.getHistoricName() != null ? item.getHistoricName() : "");
+			}
+		}, new AbstractSafeHtmlRenderer<CaveEntry>() {
 
 			@Override
 			public SafeHtml render(CaveEntry item) {
