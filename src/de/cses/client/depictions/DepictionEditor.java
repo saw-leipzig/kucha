@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017
+ * Copyright 2016-2018
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -154,14 +154,14 @@ public class DepictionEditor extends AbstractEditor {
 	}
 
 	interface CaveViewTemplates extends XTemplates {
-		@XTemplate("<div>{siteName} {officialNumber}: {officialName}</div>")
-		SafeHtml caveLabel(String siteName, String officialNumber, String officialName);
+		@XTemplate("<div>{officialNumber}: {officialName}<br>{siteDistrictInformation}</div>")
+		SafeHtml caveLabel(String siteDistrictInformation, String officialNumber, String officialName);
 
-		@XTemplate("<div>{siteName} {officialNumber}</div>")
-		SafeHtml caveLabel(String siteName, String officialNumber);
+		@XTemplate("<div>{officialNumber}<br>{siteDistrictInformation}</div>")
+		SafeHtml caveLabel(String siteDistrictInformation, String officialNumber);
 
-		@XTemplate("<div>{officialNumber}</div>")
-		SafeHtml caveLabel(String officialNumber);
+//		@XTemplate("<div>{officialNumber}</div>")
+//		SafeHtml caveLabel(String officialNumber);
 	}
 
 	interface LocationProperties extends PropertyAccess<LocationEntry> {
@@ -470,13 +470,11 @@ public class DepictionEditor extends AbstractEditor {
 				if (de != null) {
 					se = st.getSiteEntries().get(de.getSiteID());
 				}
-				// String site = "test";
-				if ((se != null) && (item.getHistoricName() != null) && (item.getHistoricName().length() > 0)) {
-					return cvTemplates.caveLabel(se.getName(), item.getOfficialNumber(), item.getHistoricName());
-				} else if (se != null) {
-					return cvTemplates.caveLabel(se.getName(), item.getOfficialNumber());
+				String siteDistrictInformation = (se != null ? se.getName() : "") + (de != null ? (se != null ? " / " : "") + de.getName() : "");
+				if ((item.getHistoricName() != null) && (item.getHistoricName().length() > 0)) {
+					return cvTemplates.caveLabel(siteDistrictInformation, item.getOfficialNumber(), item.getHistoricName());
 				} else {
-					return cvTemplates.caveLabel(item.getOfficialNumber());
+					return cvTemplates.caveLabel(siteDistrictInformation, item.getOfficialNumber());
 				}
 			}
 		});
