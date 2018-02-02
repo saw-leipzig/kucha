@@ -42,6 +42,7 @@ import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 import de.cses.shared.StyleEntry;
+import de.cses.shared.VendorEntry;
 import de.cses.shared.WallLocationEntry;
 import de.cses.shared.WallOrnamentCaveRelation;
 
@@ -72,6 +73,7 @@ public class StaticTables {
 	protected HashMap<Integer, OrnamentFunctionEntry> ornamentFunctionMap;
 	protected HashMap<Integer, CurrentLocationEntry> currentLocationMap;
 	protected HashMap<Integer, LocationEntry> locationMap;
+	protected HashMap<Integer, VendorEntry> vendorMap;
 
 	private int loadCounter;
 
@@ -97,7 +99,7 @@ public class StaticTables {
 	 */
 	public StaticTables(ListsLoadedListener l) {
 		listener = l;
-		loadCounter = 16;
+		loadCounter = 17;
 		loadDistricts();
 		loadSites();
 		loadRegions();
@@ -114,11 +116,12 @@ public class StaticTables {
 		loadOrnamentPositionTable();
 		loadOrnamentFunctionTable();
 		loadLocationMap();
+		loadVendor();
 	}
 
 	private void listLoaded() {
 		--loadCounter;
-		listener.listsLoaded((16.0 - loadCounter) / 16.0);
+		listener.listsLoaded((17.0 - loadCounter) / 17.0);
 	}
 
 	/**
@@ -450,6 +453,26 @@ public class StaticTables {
 			}
 		});
 	}
+	
+	private void loadVendor() {
+		vendorMap = new HashMap<Integer, VendorEntry>();
+		dbService.getVendors(new AsyncCallback<ArrayList<VendorEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(ArrayList<VendorEntry> results) {
+				for (VendorEntry entry : results) {
+					vendorMap.put(entry.getVendorID(), entry);
+				}
+				listLoaded();
+			}
+		});
+		
+	}
 
 	public Map<Integer, DistrictEntry> getDistrictEntries() {
 		return districtEntryMap;
@@ -517,6 +540,10 @@ public class StaticTables {
 
 	public Map<Integer, LocationEntry> getLocationEntries() {
 		return locationMap;
+	}
+	
+	public Map<Integer, VendorEntry> getVendorEntries() {
+		return vendorMap;
 	}
 	
 }

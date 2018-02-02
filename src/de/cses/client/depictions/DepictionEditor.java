@@ -296,23 +296,28 @@ public class DepictionEditor extends AbstractEditor {
 	 * 
 	 */
 	private void loadVendors() {
-		dbService.getVendors(new AsyncCallback<ArrayList<VendorEntry>>() {
+		for (VendorEntry ve : StaticTables.getInstance().getVendorEntries().values()) {
+			vendorEntryLS.add(ve);
+		}
+		if (correspondingDepictionEntry.getVendorID() > 0) {
+			vendorSelection.setValue(vendorEntryLS.findModelWithKey(Integer.toString(correspondingDepictionEntry.getVendorID())));
+		}
+		vendorEntryLS.addSortInfo(new StoreSortInfo<VendorEntry>(new ValueProvider<VendorEntry, String>() {
 
 			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
+			public String getValue(VendorEntry object) {
+				return object.getVendorName();
 			}
 
 			@Override
-			public void onSuccess(ArrayList<VendorEntry> vendorResults) {
-				for (VendorEntry ve : vendorResults) {
-					vendorEntryLS.add(ve);
-				}
-				if (correspondingDepictionEntry.getVendorID() > 0) {
-					vendorSelection.setValue(vendorEntryLS.findModelWithKey(Integer.toString(correspondingDepictionEntry.getVendorID())));
-				}
+			public void setValue(VendorEntry object, String value) {
 			}
-		});
+
+			@Override
+			public String getPath() {
+				return "vendorName";
+			}
+		}, SortDir.ASC));
 	}
 	
 	/**
@@ -472,7 +477,7 @@ public class DepictionEditor extends AbstractEditor {
 					se = st.getSiteEntries().get(de.getSiteID());
 				}
 				return (se != null ? se.getName()+": " : (de != null ? de.getName()+": " : "")) + item.getOfficialNumber() 
-					+ (item.getHistoricName() != null ? item.getHistoricName() : "");
+					+ (item.getHistoricName() != null ? " "+item.getHistoricName() : "");
 			}
 		}, new AbstractSafeHtmlRenderer<CaveEntry>() {
 
@@ -599,7 +604,7 @@ public class DepictionEditor extends AbstractEditor {
 
 								@Override
 								public void onSuccess(Integer result) {
-									loadVendors();
+									vendorEntryLS.add(vEntry);
 								}
 							});
 							addVendorDialog.hide();
