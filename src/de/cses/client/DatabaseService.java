@@ -222,4 +222,6 @@ public interface DatabaseService extends RemoteService {
 
 	ArrayList<LocationEntry> getLocations() throws IllegalArgumentException;
 
+	int insertVendorEntry(VendorEntry vEntry) throws IllegalArgumentException;
+
 }

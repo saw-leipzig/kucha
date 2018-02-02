@@ -62,6 +62,7 @@ import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
+import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinNumberValidator;
 
 import de.cses.client.DatabaseService;
@@ -74,6 +75,7 @@ import de.cses.client.user.UserLogin;
 import de.cses.client.walls.WallSelector;
 import de.cses.client.walls.Walls;
 import de.cses.shared.CaveEntry;
+import de.cses.shared.CaveGroupEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
@@ -469,7 +471,7 @@ public class DepictionEditor extends AbstractEditor {
 				if (de != null) {
 					se = st.getSiteEntries().get(de.getSiteID());
 				}
-				return (se != null ? se.getName()+": " : (de != null ? de.getName()+":" : "")) + item.getOfficialNumber() 
+				return (se != null ? se.getName()+": " : (de != null ? de.getName()+": " : "")) + item.getOfficialNumber() 
 					+ (item.getHistoricName() != null ? item.getHistoricName() : "");
 			}
 		}, new AbstractSafeHtmlRenderer<CaveEntry>() {
@@ -562,6 +564,63 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		vendorFP.add(vendorSelection);
+
+		// adding new vendors is necessary
+		ToolButton newVendorPlusTool = new ToolButton(ToolButton.PLUS);
+		newVendorPlusTool.setToolTip("New Vendor");
+		vendorFP.addTool(newVendorPlusTool);
+		newVendorPlusTool.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				PopupPanel addVendorDialog = new PopupPanel();
+				FramedPanel newVendorFP = new FramedPanel();
+				newVendorFP.setHeading("Add Vendor");
+				TextField vendorNameField = new TextField();
+				vendorNameField.addValidator(new MinLengthValidator(2));
+				vendorNameField.addValidator(new MaxLengthValidator(32));
+				vendorNameField.setValue("");
+				vendorNameField.setWidth(200);
+				newVendorFP.add(vendorNameField);
+				TextButton saveButton = new TextButton("save");
+				saveButton.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						if (vendorNameField.isValid()) {
+							VendorEntry vEntry = new VendorEntry();
+							vEntry.setVendorName(vendorNameField.getCurrentValue());
+							dbService.insertVendorEntry(vEntry, new AsyncCallback<Integer>() {
+
+								@Override
+								public void onFailure(Throwable caught) {
+									caught.printStackTrace();
+								}
+
+								@Override
+								public void onSuccess(Integer result) {
+									loadVendors();
+								}
+							});
+							addVendorDialog.hide();
+						}
+					}
+				});
+				newVendorFP.addButton(saveButton);
+				TextButton cancelButton = new TextButton("cancel");
+				cancelButton.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						addVendorDialog.hide();
+					}
+				});
+				newVendorFP.addButton(cancelButton);
+				addVendorDialog.add(newVendorFP);
+				addVendorDialog.setModal(true);
+				addVendorDialog.center();
+			}
+		});		
 
 		FramedPanel datePurchasedFP = new FramedPanel();
 		datePurchasedFP.setHeading("Date purchased");

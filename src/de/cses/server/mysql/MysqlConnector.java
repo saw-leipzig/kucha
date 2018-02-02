@@ -2636,4 +2636,27 @@ public class MysqlConnector {
 		}
 		return results;	}
 
+	/**
+	 * @param vEntry
+	 * @return
+	 */
+	public int inserVendorEntry(VendorEntry vEntry) {
+		Connection dbc = getConnection();
+		PreparedStatement cgStatement;
+		int vendorID=0;
+		try {
+			cgStatement = dbc.prepareStatement("INSERT INTO Vendors (VendorName) VALUES (?)", Statement.RETURN_GENERATED_KEYS);
+			cgStatement.setString(1, vEntry.getVendorName());
+			cgStatement.executeUpdate();
+			ResultSet keys = cgStatement.getGeneratedKeys();
+			if (keys.next()) {
+				vendorID = keys.getInt(1);
+			}
+			keys.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return vendorID;
+	}
+
 }

@@ -665,6 +665,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getRelatedIconography(depictionID);
 	}
+	
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getLocations()
 	 */
@@ -672,6 +673,15 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public ArrayList<LocationEntry> getLocations() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getLocations();
+	}
+	
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#insertVendorEntry(de.cses.shared.VendorEntry)
+	 */
+	@Override
+	public int insertVendorEntry(VendorEntry vEntry) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.inserVendorEntry(vEntry);
 	}
 
 }

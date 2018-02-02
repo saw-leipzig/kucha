@@ -246,4 +246,6 @@ public interface DatabaseServiceAsync {
 
 	void getLocations(AsyncCallback<ArrayList<LocationEntry>> asyncCallback) throws IllegalArgumentException;
 
+	void insertVendorEntry(VendorEntry vEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
+
 	}
