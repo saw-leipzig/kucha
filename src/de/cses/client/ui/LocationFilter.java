@@ -33,6 +33,8 @@ import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.ListView;
+import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer.ExpandMode;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.form.DualListField;
@@ -57,13 +59,9 @@ public class LocationFilter extends AbstractFilter {
 	private ListStore<RegionEntry> regionEntryList;
 	private DistrictProperties districtProps;
 	private ListStore<DistrictEntry> districtEntryList;
-	private DualListField<SiteEntry, String> siteSelection;
-	private DualListField<RegionEntry, String> regionSelection;
-	private ListStore<SiteEntry> selectedSitesList;
-	private ListStore<DistrictEntry> selectedDistrictsList;
-	private ListStore<RegionEntry> selectedRegionsList;
 	private ListView<DistrictEntry, DistrictEntry> districtSelectionLV;
 	private ListView<RegionEntry, RegionEntry> regionSelectionLV;
+	private ListView<SiteEntry, SiteEntry> siteSelectionLV;
 
 	interface DistrictProperties extends PropertyAccess<DistrictEntry> {
 		ModelKeyProvider<DistrictEntry> districtID();
@@ -72,7 +70,7 @@ public class LocationFilter extends AbstractFilter {
 	}
 	
 	interface DistrictViewTemplates extends XTemplates {
-		@XTemplate("<div>{districtName}<br>{siteName}</div><hr>")
+		@XTemplate("<div style=\"border: 1px solid grey;\">{districtName}<br>{siteName}</div>")
 		SafeHtml districtLabel(String districtName, String siteName);
 	}
 	
@@ -83,13 +81,13 @@ public class LocationFilter extends AbstractFilter {
 	}
 	
 	interface RegionViewTemplates extends XTemplates {
-		@XTemplate("<div>{englishName}<br>{phoneticName} - {originalName}<br>{siteName}</div><hr>")
+		@XTemplate("<div style=\"border: 1px solid grey;\">{englishName}<br>{phoneticName} - {originalName}<br>{siteName}</div>")
 		SafeHtml regionLabel(String englishName, String phoneticName, String originalName, String siteName);
 		
-		@XTemplate("<div>{englishName}<br>{phoneticName}<br>{siteName}</div><hr>")
+		@XTemplate("<div style=\"border: 1px solid grey;\">{englishName}<br>{phoneticName}<br>{siteName}</div>")
 		SafeHtml regionLabel(String englishName, String phoneticName, String siteName);
 		
-		@XTemplate("<div>{englishName}<br>{siteName}</div><hr>")
+		@XTemplate("<div style=\"border: 1px solid grey;\">{englishName}<br>{siteName}</div>")
 		SafeHtml regionLabel(String englishName, String siteName);
 	}
 	
@@ -109,13 +107,15 @@ public class LocationFilter extends AbstractFilter {
 	 */
 	public LocationFilter(String filterName) {
 		super(filterName);
+		
+		siteProps = GWT.create(SiteProperties.class);
+		siteEntryList = new ListStore<SiteEntry>(siteProps.siteID());
+
 		regionProps = GWT.create(RegionProperties.class);
 		regionEntryList = new ListStore<RegionEntry>(regionProps.regionID());
-		selectedRegionsList = new ListStore<RegionEntry>(regionProps.regionID());
 
 		districtProps = GWT.create(DistrictProperties.class);
 		districtEntryList = new ListStore<DistrictEntry>(districtProps.districtID());
-		selectedDistrictsList  = new ListStore<DistrictEntry>(districtProps.districtID());
 		
 		loadSites();		
 		loadDistricts();
@@ -127,18 +127,21 @@ public class LocationFilter extends AbstractFilter {
 	 */
 	@Override
 	protected Widget getFilterUI() {
-		VerticalLayoutContainer vlc = new VerticalLayoutContainer();
 
-		siteSelection = new DualListField<SiteEntry, String>(siteEntryList, selectedSitesList, siteProps.name(), new TextCell());
-		siteSelection.setEnableDnd(true);
-		siteSelection.getDownButton().removeFromParent();
-		siteSelection.getUpButton().removeFromParent();
-		siteSelection.setMode(DualListField.Mode.INSERT);
+		siteSelectionLV = new ListView<SiteEntry, SiteEntry>(siteEntryList, new IdentityValueProvider<SiteEntry>(), new SimpleSafeHtmlCell<SiteEntry>(new AbstractSafeHtmlRenderer<SiteEntry>() {
+			final SiteViewTemplates svTemplates = GWT.create(SiteViewTemplates.class);
+			
+			@Override
+			public SafeHtml render(SiteEntry entry) {
+				return svTemplates.siteLabel(entry.getName());
+			}
+		}));
+		siteSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
 		
 		ContentPanel sitePanel = new ContentPanel();
 		sitePanel.setHeaderVisible(true);
 		sitePanel.setHeading("Sites");
-		sitePanel.add(siteSelection);
+		sitePanel.add(siteSelectionLV);
 		
 		districtSelectionLV = new ListView<DistrictEntry, DistrictEntry>(districtEntryList, new IdentityValueProvider<DistrictEntry>(), new SimpleSafeHtmlCell<DistrictEntry>(new AbstractSafeHtmlRenderer<DistrictEntry>() {
 			final DistrictViewTemplates dvTemplates = GWT.create(DistrictViewTemplates.class);
@@ -149,12 +152,6 @@ public class LocationFilter extends AbstractFilter {
 				return dvTemplates.districtLabel(entry.getName(), se.getName());
 			}}));
 		districtSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
-		
-//		DualListField<DistrictEntry, String> districtSelection = new DualListField<DistrictEntry, String>(districtEntryList, selectedDistrictsList, districtProps.name(), new TextCell());
-//		districtSelection.setEnableDnd(true);
-//		districtSelection.getDownButton().removeFromParent();
-//		districtSelection.getUpButton().removeFromParent();
-//		districtSelection.setMode(DualListField.Mode.INSERT);
 		
 		ContentPanel districtPanel = new ContentPanel();
 		districtPanel.setHeaderVisible(true);
@@ -180,32 +177,30 @@ public class LocationFilter extends AbstractFilter {
 		}));
 		regionSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
 		
-//		regionSelection = new DualListField<RegionEntry, String>(regionEntryList, selectedRegionsList, regionProps.englishName(), new TextCell());
-//		regionSelection.setEnableDnd(true);
-//		regionSelection.getDownButton().removeFromParent();
-//		regionSelection.getUpButton().removeFromParent();
-//		regionSelection.setMode(DualListField.Mode.INSERT);
 		ContentPanel regionPanel = new ContentPanel();
 		regionPanel.setHeaderVisible(true);
 		regionPanel.setHeading("Regions");
 		regionPanel.add(regionSelectionLV);
 		
-    vlc.add(sitePanel, new VerticalLayoutData(1.0, .33, new Margins(0, 0, 5, 0)));
-    vlc.add(districtPanel, new VerticalLayoutData(1.0, .33, new Margins(0, 0, 5, 0)));
-    vlc.add(regionPanel, new VerticalLayoutData(1.0, .33, new Margins(0, 0, 0, 0)));
+		AccordionLayoutContainer alc = new AccordionLayoutContainer();
+    alc.setExpandMode(ExpandMode.SINGLE_FILL);
+    alc.add(sitePanel);
+    alc.add(districtPanel);
+    alc.add(regionPanel);
+    alc.setActiveWidget(sitePanel);
+		
+//    vlc.add(sitePanel, new VerticalLayoutData(1.0, .33, new Margins(0, 0, 5, 0)));
+//    vlc.add(districtPanel, new VerticalLayoutData(1.0, .33, new Margins(0, 0, 5, 0)));
+//    vlc.add(regionPanel, new VerticalLayoutData(1.0, .33, new Margins(0, 0, 0, 0)));
 
-    vlc.setHeight("450px");
-		return vlc;
+    alc.setHeight("450px");
+		return alc;
 	}
 	
 	/**
 	 * 
 	 */
 	private void loadSites() {
-		siteProps = GWT.create(SiteProperties.class);
-		siteEntryList = new ListStore<SiteEntry>(siteProps.siteID());
-		selectedSitesList = new ListStore<SiteEntry>(siteProps.siteID());
-
 		for (SiteEntry se : StaticTables.getInstance().getSiteEntries().values()) {
 			siteEntryList.add(se);
 		}
@@ -248,51 +243,36 @@ public class LocationFilter extends AbstractFilter {
 			}
 		}
 		
-//		if (selectedDistrictsList.size() > 0) {
-//			for (DistrictEntry de : selectedDistrictsList.getAll()) {
-//				if (districtQuery.isEmpty()) {
-//					districtQuery = "" + de.getDistrictID();
-//				} else {
-//					districtQuery = districtQuery.concat(", " + de.getDistrictID());
-//				}
-//			}
-//		}
-
-		if (selectedRegionsList.size() > 0) {
-			for (RegionEntry re : selectedRegionsList.getAll()) {
-				if (regionQuery.isEmpty()) {
-					regionQuery = "" + re.getRegionID();
-				} else {
-					regionQuery = regionQuery.concat(", " + re.getRegionID());
-				}
+		for (RegionEntry re : regionSelectionLV.getSelectionModel().getSelectedItems()) {
+			if (regionQuery.isEmpty()) {
+				regionQuery = "" + re.getRegionID();
+			} else {
+				regionQuery = regionQuery.concat(", " + re.getRegionID());
 			}
 		}
 		
-		if (selectedSitesList.size() > 0) {
-			for (SiteEntry se : selectedSitesList.getAll()) {
+		for (SiteEntry se : siteSelectionLV.getSelectionModel().getSelectedItems()) {
 
-				for (DistrictEntry nsde : nonSelectedDistricts) {
-					if (se.getSiteID() == nsde.getSiteID()) {
-						if (districtQuery.isEmpty()) {
-							districtQuery = "" + nsde.getDistrictID();
-						} else {
-							districtQuery = districtQuery.concat(", " + nsde.getDistrictID());
-						}
+			for (DistrictEntry nsde : nonSelectedDistricts) {
+				if (se.getSiteID() == nsde.getSiteID()) {
+					if (districtQuery.isEmpty()) {
+						districtQuery = "" + nsde.getDistrictID();
+					} else {
+						districtQuery = districtQuery.concat(", " + nsde.getDistrictID());
 					}
 				}
-				
-				for (RegionEntry nsre : nonSelectedRegions) {
-					if (se.getSiteID() == nsre.getSiteID()) {
-						if (regionQuery.isEmpty()) {
-							regionQuery = "" + nsre.getRegionID();
-						} else {
-							regionQuery = regionQuery.concat(", " + nsre.getRegionID());
-						}
+			}
+			
+			for (RegionEntry nsre : nonSelectedRegions) {
+				if (se.getSiteID() == nsre.getSiteID()) {
+					if (regionQuery.isEmpty()) {
+						regionQuery = "" + nsre.getRegionID();
+					} else {
+						regionQuery = regionQuery.concat(", " + nsre.getRegionID());
 					}
 				}
 			}
 		}
-
 		
 		if (!districtQuery.isEmpty() && !regionQuery.isEmpty()) {
 			result.add("(DistrictID IN (" + districtQuery + ") OR RegionID IN (" + regionQuery + "))");
