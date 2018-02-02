@@ -63,6 +63,7 @@ public class LocationFilter extends AbstractFilter {
 	private ListStore<DistrictEntry> selectedDistrictsList;
 	private ListStore<RegionEntry> selectedRegionsList;
 	private ListView<DistrictEntry, DistrictEntry> districtSelectionLV;
+	private ListView<RegionEntry, RegionEntry> regionSelectionLV;
 
 	interface DistrictProperties extends PropertyAccess<DistrictEntry> {
 		ModelKeyProvider<DistrictEntry> districtID();
@@ -139,7 +140,7 @@ public class LocationFilter extends AbstractFilter {
 		sitePanel.setHeading("Sites");
 		sitePanel.add(siteSelection);
 		
-		districtSelectionLV = new ListView<DistrictEntry, DistrictEntry>(districtEntryList, new IdentityValueProvider<DistrictEntry>(){}, new SimpleSafeHtmlCell<DistrictEntry>(new AbstractSafeHtmlRenderer<DistrictEntry>() {
+		districtSelectionLV = new ListView<DistrictEntry, DistrictEntry>(districtEntryList, new IdentityValueProvider<DistrictEntry>(), new SimpleSafeHtmlCell<DistrictEntry>(new AbstractSafeHtmlRenderer<DistrictEntry>() {
 			final DistrictViewTemplates dvTemplates = GWT.create(DistrictViewTemplates.class);
 
 			@Override
@@ -160,21 +161,40 @@ public class LocationFilter extends AbstractFilter {
 		districtPanel.setHeading("Districts");
 		districtPanel.add(districtSelectionLV);
 		
-		regionSelection = new DualListField<RegionEntry, String>(regionEntryList, selectedRegionsList, regionProps.englishName(), new TextCell());
-		regionSelection.setEnableDnd(true);
-		regionSelection.getDownButton().removeFromParent();
-		regionSelection.getUpButton().removeFromParent();
-		regionSelection.setMode(DualListField.Mode.INSERT);
+		regionSelectionLV = new ListView<RegionEntry, RegionEntry>(regionEntryList, new IdentityValueProvider<RegionEntry>(), new SimpleSafeHtmlCell<RegionEntry>(new AbstractSafeHtmlRenderer<RegionEntry>() {
+			final RegionViewTemplates rvTemplates = GWT.create(RegionViewTemplates.class);
+
+			@Override
+			public SafeHtml render(RegionEntry entry) {
+				SiteEntry se = siteEntryList.findModelWithKey(Integer.toString(entry.getSiteID()));
+				if ((entry.getPhoneticName() != null) && (entry.getPhoneticName().length() > 0)) {
+					if ((entry.getOriginalName() != null) && (entry.getOriginalName().length() > 0)) {
+						return rvTemplates.regionLabel(entry.getEnglishName(), entry.getPhoneticName(), entry.getOriginalName(), se.getName());
+					} else {
+						return rvTemplates.regionLabel(entry.getEnglishName(), entry.getPhoneticName(), se.getName());
+					}
+				} else {
+					return rvTemplates.regionLabel(entry.getEnglishName(), se.getName());
+				}
+			}
+		}));
+		regionSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+		
+//		regionSelection = new DualListField<RegionEntry, String>(regionEntryList, selectedRegionsList, regionProps.englishName(), new TextCell());
+//		regionSelection.setEnableDnd(true);
+//		regionSelection.getDownButton().removeFromParent();
+//		regionSelection.getUpButton().removeFromParent();
+//		regionSelection.setMode(DualListField.Mode.INSERT);
 		ContentPanel regionPanel = new ContentPanel();
 		regionPanel.setHeaderVisible(true);
 		regionPanel.setHeading("Regions");
-		regionPanel.add(regionSelection);
+		regionPanel.add(regionSelectionLV);
 		
     vlc.add(sitePanel, new VerticalLayoutData(1.0, .33, new Margins(0, 0, 5, 0)));
     vlc.add(districtPanel, new VerticalLayoutData(1.0, .33, new Margins(0, 0, 5, 0)));
     vlc.add(regionPanel, new VerticalLayoutData(1.0, .33, new Margins(0, 0, 0, 0)));
 
-    vlc.setHeight("360px");
+    vlc.setHeight("450px");
 		return vlc;
 	}
 	
