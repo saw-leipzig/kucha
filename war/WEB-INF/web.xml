@@ -64,14 +64,25 @@
   </servlet-mapping>
   
   <servlet>
-  	<servlet-name>resourceServlet</servlet-name>
-  	<servlet-class>de.cses.server.ResourceDownloadServlet</servlet-class>
+	  	<servlet-name>resourceServlet</servlet-name>
+  		<servlet-class>de.cses.server.ResourceDownloadServlet</servlet-class>
   </servlet>
   
   <servlet-mapping>
-  	<servlet-name>resourceServlet</servlet-name>
-  	<url-pattern>/resource</url-pattern>
+  		<servlet-name>resourceServlet</servlet-name>
+  		<url-pattern>/resource</url-pattern>
   </servlet-mapping>
+  
+  <servlet>
+	  	<servlet-name>jsonServlet</servlet-name>
+  		<servlet-class>de.cses.server.JsonServlet</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+  		<servlet-name>jsonServlet</servlet-name>
+  		<url-pattern>/json</url-pattern>
+  </servlet-mapping>
+  
   
   <!-- Default page to serve -->
   <welcome-file-list>

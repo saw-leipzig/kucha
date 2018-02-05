@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017 
+ * Copyright 2016-2018 
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -14,20 +14,18 @@
 package de.cses.server.mysql;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
 import de.cses.server.ServerProperties;
-import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.server.UserManager;
+import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.C14AnalysisUrlEntry;
 import de.cses.shared.C14DocumentEntry;
