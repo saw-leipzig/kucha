@@ -40,6 +40,8 @@ import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.data.shared.SortDir;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
+import com.sencha.gxt.theme.base.client.field.FieldLabelDefaultAppearance;
+import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.Dialog;
 import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.FramedPanel;
@@ -56,6 +58,8 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.DateField;
 import com.sencha.gxt.widget.core.client.form.DateTimePropertyEditor;
+import com.sencha.gxt.widget.core.client.form.FieldLabel;
+import com.sencha.gxt.widget.core.client.form.FieldLabel.FieldLabelOptions;
 import com.sencha.gxt.widget.core.client.form.ListField;
 import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
@@ -75,7 +79,6 @@ import de.cses.client.user.UserLogin;
 import de.cses.client.walls.WallSelector;
 import de.cses.client.walls.Walls;
 import de.cses.shared.CaveEntry;
-import de.cses.shared.CaveGroupEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
@@ -604,6 +607,7 @@ public class DepictionEditor extends AbstractEditor {
 
 								@Override
 								public void onSuccess(Integer result) {
+									vEntry.setVendorID(result);
 									vendorEntryLS.add(vEntry);
 								}
 							});
@@ -667,10 +671,86 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		currentLocationFP.add(locationSelectionCB);
-
-//		locationSelector = new CurrentLocationSelector();
-//		locationSelector.setSelectedLocation(correspondingDepictionEntry.getCurrentLocationID());
 		
+		// adding new locations
+		ToolButton newLocationPlusTool = new ToolButton(ToolButton.PLUS);
+		newLocationPlusTool.setToolTip("New Location");
+		currentLocationFP.addTool(newLocationPlusTool);
+		newLocationPlusTool.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				PopupPanel addLocationDialog = new PopupPanel();
+				FramedPanel newLocationFP = new FramedPanel();
+				newLocationFP.setHeading("Add Location");
+				VerticalLayoutContainer locationVLC = new VerticalLayoutContainer();
+				TextField locationNameField = new TextField();
+				locationNameField.addValidator(new MinLengthValidator(2));
+				locationNameField.addValidator(new MaxLengthValidator(64));
+				locationVLC.add(new FieldLabel(locationNameField, "Name: "));
+				TextField locationTownField = new TextField();
+				locationTownField.addValidator(new MinLengthValidator(2));
+				locationTownField.addValidator(new MaxLengthValidator(64));
+				locationVLC.add(new FieldLabel(locationTownField, "Town: "));
+				TextField locationRegionField = new TextField();
+				locationRegionField.addValidator(new MinLengthValidator(2));
+				locationRegionField.addValidator(new MaxLengthValidator(64));
+				locationVLC.add(new FieldLabel(locationRegionField, "Region: "));
+				TextField locationCountryField = new TextField();
+				locationCountryField.addValidator(new MinLengthValidator(2));
+				locationCountryField.addValidator(new MaxLengthValidator(64));
+				locationVLC.add(new FieldLabel(locationCountryField, "Country: "));
+				TextField locationUrlField = new TextField();
+				locationUrlField.addValidator(new MinLengthValidator(2));
+				locationUrlField.addValidator(new MaxLengthValidator(256));
+				locationVLC.add(new FieldLabel(locationUrlField, "URL: "));
+				
+				newLocationFP.add(locationNameField);
+				TextButton saveButton = new TextButton("save");
+				saveButton.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						if (locationNameField.isValid()) {
+							LocationEntry lEntry = new LocationEntry();
+							lEntry.setName(locationNameField.getCurrentValue());
+							lEntry.setTown(locationTownField.getCurrentValue());
+							lEntry.setRegion(locationRegionField.getCurrentValue());
+							lEntry.setCounty(locationCountryField.getCurrentValue());
+							lEntry.setUrl(locationUrlField.getCurrentValue());
+							dbService.insertLocationEntry(lEntry, new AsyncCallback<Integer>() {
+
+								@Override
+								public void onFailure(Throwable caught) {
+									caught.printStackTrace();
+								}
+
+								@Override
+								public void onSuccess(Integer result) {
+									lEntry.setLocationID(result);
+									locationEntryLS.add(lEntry);
+								}
+							});
+							addLocationDialog.hide();
+						}
+					}
+				});
+				newLocationFP.addButton(saveButton);
+				TextButton cancelButton = new TextButton("cancel");
+				cancelButton.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						addLocationDialog.hide();
+					}
+				});
+				newLocationFP.addButton(cancelButton);
+				addLocationDialog.add(newLocationFP);
+				addLocationDialog.setModal(true);
+				addLocationDialog.center();
+			}
+		});				
+
 		FramedPanel inventoryNumberFP = new FramedPanel();
 		inventoryNumberFP.setHeading("Inventory Number");
 		TextField inventoryNumberTF = new TextField();

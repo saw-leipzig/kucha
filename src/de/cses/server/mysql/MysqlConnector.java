@@ -862,6 +862,7 @@ public class MysqlConnector {
 		return results;
 	}
 	
+	@Deprecated
 	public ArrayList<CurrentLocationEntry> getCurrentLocations() {
 		ArrayList<CurrentLocationEntry> root = getCurrentLocationEntries(0);
 
@@ -871,6 +872,7 @@ public class MysqlConnector {
 		return root;
 	}
 
+	@Deprecated
 	protected void processCurrentLocationTree(CurrentLocationEntry parent) {
 		ArrayList<CurrentLocationEntry> children = getCurrentLocationEntries(parent.getCurrentLocationID());
 		if (children != null) {
@@ -881,6 +883,7 @@ public class MysqlConnector {
 		}
 	}
 
+	@Deprecated
 	protected ArrayList<CurrentLocationEntry> getCurrentLocationEntries(int parentID) {
 		ArrayList<CurrentLocationEntry> results = new ArrayList<CurrentLocationEntry>();
 		Connection dbc = getConnection();
@@ -2655,6 +2658,33 @@ public class MysqlConnector {
 			e.printStackTrace();
 		}
 		return vendorID;
+	}
+
+	/**
+	 * @param lEntry
+	 * @return
+	 */
+	public int insertLocationEntry(LocationEntry lEntry) {
+		Connection dbc = getConnection();
+		PreparedStatement pStatement;
+		int locationID=0;
+		try {
+			pStatement = dbc.prepareStatement("INSERT INTO Locations (Name, Town, Region, Country, URL) VALUES (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+			pStatement.setString(1, lEntry.getName());
+			pStatement.setString(2, lEntry.getTown());
+			pStatement.setString(3, lEntry.getRegion());
+			pStatement.setString(4, lEntry.getCounty());
+			pStatement.setString(5, lEntry.getUrl());
+			pStatement.executeUpdate();
+			ResultSet keys = pStatement.getGeneratedKeys();
+			if (keys.next()) {
+				locationID = keys.getInt(1);
+			}
+			keys.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return locationID;
 	}
 
 }
