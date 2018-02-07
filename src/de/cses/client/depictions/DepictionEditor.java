@@ -687,25 +687,24 @@ public class DepictionEditor extends AbstractEditor {
 				TextField locationNameField = new TextField();
 				locationNameField.addValidator(new MinLengthValidator(2));
 				locationNameField.addValidator(new MaxLengthValidator(64));
-				locationVLC.add(new FieldLabel(locationNameField, "Name: "));
+				locationVLC.add(new FieldLabel(locationNameField, "Name"));
 				TextField locationTownField = new TextField();
 				locationTownField.addValidator(new MinLengthValidator(2));
 				locationTownField.addValidator(new MaxLengthValidator(64));
-				locationVLC.add(new FieldLabel(locationTownField, "Town: "));
+				locationVLC.add(new FieldLabel(locationTownField, "Town"));
 				TextField locationRegionField = new TextField();
 				locationRegionField.addValidator(new MinLengthValidator(2));
 				locationRegionField.addValidator(new MaxLengthValidator(64));
-				locationVLC.add(new FieldLabel(locationRegionField, "Region: "));
+				locationVLC.add(new FieldLabel(locationRegionField, "Region"));
 				TextField locationCountryField = new TextField();
 				locationCountryField.addValidator(new MinLengthValidator(2));
 				locationCountryField.addValidator(new MaxLengthValidator(64));
-				locationVLC.add(new FieldLabel(locationCountryField, "Country: "));
+				locationVLC.add(new FieldLabel(locationCountryField, "Country"));
 				TextField locationUrlField = new TextField();
 				locationUrlField.addValidator(new MinLengthValidator(2));
 				locationUrlField.addValidator(new MaxLengthValidator(256));
-				locationVLC.add(new FieldLabel(locationUrlField, "URL: "));
-				
-				newLocationFP.add(locationNameField);
+				locationVLC.add(new FieldLabel(locationUrlField, "URL"));
+				newLocationFP.add(locationVLC);
 				TextButton saveButton = new TextButton("save");
 				saveButton.addSelectHandler(new SelectHandler() {
 
@@ -764,6 +763,19 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		inventoryNumberFP.add(inventoryNumberTF);
+		
+		FramedPanel positionNoteFP = new FramedPanel();
+		positionNoteFP.setHeading("Notes on position");
+		TextArea positionNotesTA = new TextArea();
+		positionNotesTA.setValue(correspondingDepictionEntry.getPositionNotes());
+		positionNotesTA.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				correspondingDepictionEntry.setPositionNotes(event.getValue());
+			}
+		});
+		positionNoteFP.add(positionNotesTA);
 
 		VerticalLayoutContainer basicsLeftVLC = new VerticalLayoutContainer();
 		basicsLeftVLC.add(shortNameFP, new VerticalLayoutData(1.0, .1));
@@ -773,8 +785,7 @@ public class DepictionEditor extends AbstractEditor {
 		basicsLeftVLC.add(datePurchasedFP, new VerticalLayoutData(1.0, .1));
 		basicsLeftVLC.add(currentLocationFP, new VerticalLayoutData(1.0, .1));
 		basicsLeftVLC.add(inventoryNumberFP, new VerticalLayoutData(1.0, .1));
-
-		VerticalLayoutContainer basicsRightVLC = new VerticalLayoutContainer();
+		basicsLeftVLC.add(positionNoteFP, new VerticalLayoutData(1.0, .2));
 
 		FramedPanel wallSelectorFP = new FramedPanel();
 		wallSelectorFP.setHeading("Wall");
@@ -796,6 +807,8 @@ public class DepictionEditor extends AbstractEditor {
 
 		wallSelectorPanel = new WallSelector(350);
 		wallSelectorFP.add(wallSelectorPanel);
+
+		VerticalLayoutContainer basicsRightVLC = new VerticalLayoutContainer();
 		basicsRightVLC.add(wallSelectorFP, new VerticalLayoutData(1.0, 1.0));
 
 		HorizontalLayoutContainer basicsTabHLC = new HorizontalLayoutContainer();
@@ -1153,8 +1166,8 @@ public class DepictionEditor extends AbstractEditor {
 		tabPanel.setTabScroll(false);
 		tabPanel.add(basicsTabHLC, "Basics");
 		tabPanel.add(descriptionTabHLC, "Description");
-		tabPanel.add(pictorialElementsTabHLC, "Pictorial Elements");
 		tabPanel.add(iconographyTabHLC, "Iconography");
+		tabPanel.add(pictorialElementsTabHLC, "Pictorial Elements");
 		
 		HorizontalLayoutContainer mainHLC = new HorizontalLayoutContainer();
 		mainHLC.add(tabPanel, new HorizontalLayoutData(.7, 1.0));

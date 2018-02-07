@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 
+ * Copyright 2017-2018 
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -18,9 +18,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.PopupPanel;
-import com.sencha.gxt.dnd.core.client.DndDragStartEvent;
-import com.sencha.gxt.dnd.core.client.DragSource;
-import com.sencha.gxt.fx.client.Draggable;
 
 import de.cses.client.Util;
 import de.cses.client.user.UserLogin;
@@ -34,6 +31,7 @@ import de.cses.shared.UserEntry;
 public abstract class AbstractView extends Button implements EditorListener {
 
 	private PopupPanel editorPanel;
+//	private DialogBox editorDB;
 	
 	/**
 	 * This is the general constructor that amongst other tasks initializes the PopupPanel for the editor
@@ -55,12 +53,21 @@ public abstract class AbstractView extends Button implements EditorListener {
 	private void showEditor() {
 		AbstractEditor editor = getEditor();
 		editor.addEditorListener(this);
+//		editorDB = new DialogBox(false);
+//		editorDB.getCaption().setHTML(SafeHtmlUtils.fromSafeConstant("<div style=\"border: 1px solid; background-color:#ffb3b3\">Editor</div>"));
+//		editorDB.add(editor);
+//		editorDB.setModal(true);
+//		editorDB.setGlassEnabled(true);
+//		editorDB.setAnimationType(AnimationType.ONE_WAY_CORNER);
+//		editorDB.setAnimationEnabled(false);
+//		editorDB.center();
+//		editorDB.show();
 		editorPanel = new PopupPanel(false);
 		editorPanel.add(editor);
 		editorPanel.setGlassEnabled(true);
 		editorPanel.center();
 	}
-
+	
 	abstract protected AbstractEditor getEditor();
 	
 	abstract protected AbstractEntry getEntry();
@@ -68,6 +75,7 @@ public abstract class AbstractView extends Button implements EditorListener {
 	@Override
 	public void closeRequest() {
 		editorPanel.hide();
+//		editorDB.hide();
 		getElement().getStyle().setBorderColor("#FFA500");
 		getElement().getStyle().setBorderWidth(3.0, Unit.PX);
 	}
