@@ -37,6 +37,7 @@ import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.Hor
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
+import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
 
 import de.cses.client.DatabaseService;
@@ -395,7 +396,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 
 		HorizontalPanel selectedWallsHorizontalPanel = new HorizontalPanel();
 		header.setHeading("Walls");
-		header.add(selectedWallsHorizontalPanel);
+		header.add(selectedWallsHorizontalPanel, new VerticalLayoutData(1.0, 1.0));
 		vlcCave.add(header, new VerticalLayoutData(0.5, .125));
 
 		// wallList = new ListView<WallOrnamentCaveRelation, String>(wallsListStore, wallRelationProps.name());
@@ -489,9 +490,9 @@ public class OrnamentCaveAttributes extends PopupPanel {
 		header.add(orientationHorizontalPanel);
 		*/
 
-		vlcAttributes.add(header, new VerticalLayoutData(0.5, .4));
+		//vlcAttributes.add(header, new VerticalLayoutData(1.0, .3));
 
-		final TextField colours = new TextField();
+		final TextArea colours = new TextArea();
 		colours.setAllowBlank(true);
 		header = new FramedPanel();
 
@@ -500,9 +501,9 @@ public class OrnamentCaveAttributes extends PopupPanel {
 			colours.setText(ornamentCaveRelationEntry.getColours());
 		}
 		header.add(colours);
-		vlcAttributes.add(header, new VerticalLayoutData(0.5, .125));
+		vlcAttributes.add(header, new VerticalLayoutData(0.5, .3));
 
-		final TextField notes = new TextField();
+		final TextArea notes = new TextArea();
 		colours.setAllowBlank(true);
 		header = new FramedPanel();
 
@@ -511,7 +512,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 		}
 		header.setHeading("Notes");
 		header.add(notes);
-		vlcAttributes.add(header, new VerticalLayoutData(0.5, .125));
+		vlcAttributes.add(header, new VerticalLayoutData(0.5, .3));
 
 		FramedPanel attributes = new FramedPanel();
 		attributes.setHeading("Attributes");
@@ -603,7 +604,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 		vlcRelationToTherornaments1.add(header, new VerticalLayoutData(1, .125));
 */
 		
-		final TextField similarElementsofOtherCultures = new TextField();
+		final TextArea similarElementsofOtherCultures = new TextArea();
 
 		header = new FramedPanel();
 		if (ornamentCaveRelationEntry != null) {
@@ -611,7 +612,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 		}
 		header.setHeading("Describe similarities with elements of other cultural areas");
 		header.add(similarElementsofOtherCultures);
-		vlcRelationToTherornaments1.add(header, new VerticalLayoutData(1, .125));
+		vlcRelationToTherornaments1.add(header, new VerticalLayoutData(1, .3));
 
 		tabPanel.add(relationToOtherOrnaments, "Relations");
 

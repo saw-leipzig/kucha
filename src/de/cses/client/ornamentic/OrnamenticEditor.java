@@ -160,7 +160,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		header = new FramedPanel();
 		header.setHeading("Description");
 		final TextArea discription = new TextArea ();
-		panel.add(header, new VerticalLayoutData(1.0, .125));
+		panel.add(header, new VerticalLayoutData(1.0, .3));
 		header.add(discription);
 		discription.setAllowBlank(true);
 		if (ornamentEntry != null) {
@@ -172,7 +172,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		header = new FramedPanel();
 		header.setHeading("Remarks");
 		header.add(remarks);
-		panel.add(header, new VerticalLayoutData(1.0, .125));
+		panel.add(header, new VerticalLayoutData(1.0, .3));
 		if (ornamentEntry != null) {
 			remarks.setText(ornamentEntry.getRemarks());
 		}
@@ -183,7 +183,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 		header.setHeading("Annotations");
 		header.add(annotations);
-		verticalgeneral2Background.add(header, new VerticalLayoutData(1.0, .125));
+		verticalgeneral2Background.add(header, new VerticalLayoutData(1.0, .3));
 		if (ornamentEntry != null) {
 			annotations.setText(ornamentEntry.getAnnotations());
 		}
@@ -194,7 +194,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		header.setWidth(300);
 		header.setHeading("Interpretation");
 		header.add(interpretation);
-		verticalgeneral2Background.add(header, new VerticalLayoutData(1.0, .125));
+		verticalgeneral2Background.add(header, new VerticalLayoutData(1.0, .3));
 		if (ornamentEntry != null) {
 			interpretation.setText(ornamentEntry.getInterpretation());
 		}
@@ -254,7 +254,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		header = new FramedPanel();
 		header.setHeading("References");
 		header.add(references);
-		verticalgeneral2Background.add(header, new VerticalLayoutData(1.0, .125));
+		verticalgeneral2Background.add(header, new VerticalLayoutData(1.0, .3));
 		if (ornamentEntry != null) {
 			references.setText(ornamentEntry.getReferences());
 		}
