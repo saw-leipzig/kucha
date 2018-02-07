@@ -24,7 +24,6 @@ import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
-import com.sencha.gxt.fx.client.Draggable;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.TabPanel;
@@ -39,6 +38,7 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.ListField;
+import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
 
 import de.cses.client.DatabaseService;
@@ -97,6 +97,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 	public Widget createForm() {
 		HorizontalLayoutContainer horizontBackground = new HorizontalLayoutContainer();
+		VerticalLayoutContainer verticalgeneral2Background = new VerticalLayoutContainer();
 
 		imgProperties = GWT.create(ImageProperties.class);
 		imageEntryList = new ListStore<ImageEntry>(imgProperties.imageID());
@@ -158,42 +159,42 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 		header = new FramedPanel();
 		header.setHeading("Description");
-		final TextField discription = new TextField();
-		panel.add(header, new VerticalLayoutData(1.0, .125));
+		final TextArea discription = new TextArea ();
+		panel.add(header, new VerticalLayoutData(1.0, .3));
 		header.add(discription);
 		discription.setAllowBlank(true);
 		if (ornamentEntry != null) {
 			discription.setText(ornamentEntry.getDescription());
 		}
 
-		final TextField remarks = new TextField();
+		final TextArea  remarks = new TextArea ();
 		remarks.setAllowBlank(true);
 		header = new FramedPanel();
 		header.setHeading("Remarks");
 		header.add(remarks);
-		panel.add(header, new VerticalLayoutData(1.0, .125));
+		panel.add(header, new VerticalLayoutData(1.0, .3));
 		if (ornamentEntry != null) {
 			remarks.setText(ornamentEntry.getRemarks());
 		}
 
-		final TextField annotations = new TextField();
+		final TextArea  annotations = new TextArea ();
 		annotations.setAllowBlank(true);
 		header = new FramedPanel();
 
 		header.setHeading("Annotations");
 		header.add(annotations);
-		panel.add(header, new VerticalLayoutData(1.0, .125));
+		verticalgeneral2Background.add(header, new VerticalLayoutData(1.0, .3));
 		if (ornamentEntry != null) {
 			annotations.setText(ornamentEntry.getAnnotations());
 		}
 
-		final TextField interpretation = new TextField();
+		final TextArea  interpretation = new TextArea ();
 		interpretation.setAllowBlank(true);
 		header = new FramedPanel();
 		header.setWidth(300);
 		header.setHeading("Interpretation");
 		header.add(interpretation);
-		panel.add(header, new VerticalLayoutData(1.0, .125));
+		verticalgeneral2Background.add(header, new VerticalLayoutData(1.0, .3));
 		if (ornamentEntry != null) {
 			interpretation.setText(ornamentEntry.getInterpretation());
 		}
@@ -217,7 +218,18 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 			mainTypologicalClassComboBox.select(mainTypologicalClass.findModelWithKey(Integer.toString(ornamentEntry.getMainTypologicalClassID())));
 		}
 
-		structureorganizationComboBox = new ComboBox<StructureOrganization>(structureOrganization, structureOrganizationProps.name(),
+		final TextArea  mainTypoTextField = new TextArea ();
+		mainTypoTextField.setAllowBlank(true);
+		header = new FramedPanel();
+		header.setWidth(300);
+		header.setHeading("Interpretation");
+		header.add(mainTypoTextField);
+		panel.add(header, new VerticalLayoutData(1.0, .125));
+		if (ornamentEntry != null) {
+			mainTypoTextField.setText(ornamentEntry.getInterpretation());
+		}
+		//wird eventuell mal privat oder geloescht
+	/*	structureorganizationComboBox = new ComboBox<StructureOrganization>(structureOrganization, structureOrganizationProps.name(),
 				new AbstractSafeHtmlRenderer<StructureOrganization>() {
 
 					@Override
@@ -235,13 +247,14 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		if (ornamentEntry != null) {
 			structureorganizationComboBox.select(structureOrganization.findModelWithKey(Integer.toString(ornamentEntry.getStructureOrganizationID())));
 		}
+		*/
 
-		final TextField references = new TextField();
+		final TextArea  references = new TextArea ();
 		references.setAllowBlank(true);
 		header = new FramedPanel();
 		header.setHeading("References");
 		header.add(references);
-		panel.add(header, new VerticalLayoutData(1.0, .125));
+		verticalgeneral2Background.add(header, new VerticalLayoutData(1.0, .3));
 		if (ornamentEntry != null) {
 			references.setText(ornamentEntry.getReferences());
 		}
@@ -348,12 +361,12 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 				} else {
 				oEntry.setMainTypologicalClassID(mainTypologicalClassComboBox.getCurrentValue().getMainTypologicalClassID());
 				}
-				if(structureorganizationComboBox.getCurrentValue() == null) {
-					oEntry.setStructureOrganizationID(0); // unknown
-				}
-				else {
-					oEntry.setStructureOrganizationID(structureorganizationComboBox.getCurrentValue().getStructureOrganizationID());
-				}
+				//if(structureorganizationComboBox.getCurrentValue() == null) {
+				//	oEntry.setStructureOrganizationID(0); // unknown
+				//}
+			//	else {
+			//		oEntry.setStructureOrganizationID(structureorganizationComboBox.getCurrentValue().getStructureOrganizationID());
+			//	}
 				
 				// send ornament to server
 				dbService.saveOrnamentEntry(oEntry, new AsyncCallback<Boolean>() {
@@ -394,11 +407,16 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 		horizontBackground.add(panel, new HorizontalLayoutData(.5, 1.0));
 		horizontBackground.add(panel2, new HorizontalLayoutData(.5, 1.0));
-		framedpanelornamentic.setHeading("Create OrnamenticEditor");
+		framedpanelornamentic.setHeading("Ornamentation Editor");
 		framedpanelornamentic.add(horizontBackground);
 
-		tabpanel.add(framedpanelornamentic, "General");
-
+		tabpanel.add(framedpanelornamentic, "1. General");
+		
+		FramedPanel general2FramedPanel = new FramedPanel();
+		general2FramedPanel.setHeading("2. General");
+		
+		tabpanel.add(general2FramedPanel, "2. General");
+		general2FramedPanel.add(verticalgeneral2Background);
 		FramedPanel imagesFramedPanel = new FramedPanel();
 		imagesFramedPanel.setHeading("Images");
 
