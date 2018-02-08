@@ -188,7 +188,7 @@ public class UserLogin extends SimpleContainer {
 	}
 
 	public String getUsernameSessionIDParameterForUri() {
-		return "&user=" + username + "&sessionID=" + Cookies.getCookie(SESSION_ID);
+		return "&sessionID=" + Cookies.getCookie(SESSION_ID);
 	}
 
 	/**

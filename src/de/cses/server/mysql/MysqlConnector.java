@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.UUID;
 
 import de.cses.server.ServerProperties;
-import de.cses.server.UserManager;
 import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.C14AnalysisUrlEntry;
@@ -1797,7 +1796,7 @@ public class MysqlConnector {
 	 * @param password
 	 * @return
 	 */
-	public String userLogin(String username, String password) {
+	public synchronized String userLogin(String username, String password) {
 		String newSessionID = null;
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -1806,7 +1805,7 @@ public class MysqlConnector {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Users WHERE Username = '" + username + "' AND Password = '" + password + "'");
 			if (rs.first()) {
 				newSessionID = UUID.randomUUID().toString();
-				UserManager.getInstance().loginUser(username, newSessionID);
+				updateSessionIDforUser(username, newSessionID);
 			} else {
 				System.err.println("wrong password for user " + username + ": hash = " + password);
 			}
@@ -1919,7 +1918,7 @@ public class MysqlConnector {
 
 	/**
 	 * @param sessionID
-	 * @return
+	 * @return username
 	 */
 	public String checkSessionID(String sessionID) {
 		String username = null;
