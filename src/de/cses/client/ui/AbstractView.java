@@ -16,14 +16,12 @@ package de.cses.client.ui;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.PopupPanel;
 
 import de.cses.client.Util;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
-import de.cses.shared.UserEntry;
 
 /**
  * @author alingnau
@@ -44,6 +42,8 @@ public abstract class AbstractView extends Button implements EditorListener {
 			public void onClick(ClickEvent event) {
 				if (UserLogin.isLoggedIn()) {
 					showEditor();
+				} else if (getEntry().isOpenAccess()) {
+					showDataViewer();
 				} else {
 					Util.showWarning("You are not logged in", "Sorry, but in future versions a view only display will appear!");
 				}
@@ -60,9 +60,15 @@ public abstract class AbstractView extends Button implements EditorListener {
 		editorPanel.center();
 	}
 	
+	private void showDataViewer() {
+		// TODO create Html based viewer
+	}
+	
 	abstract protected AbstractEditor getEditor();
 	
 	abstract protected AbstractEntry getEntry();
+	
+//	abstract protected AbstractDataViewer getDataViewer();
 	
 	@Override
 	public void closeRequest() {

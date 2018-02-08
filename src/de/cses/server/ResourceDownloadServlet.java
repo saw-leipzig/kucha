@@ -50,10 +50,10 @@ public class ResourceDownloadServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String sessionID = request.getParameter("sessionID");
-		if (connector.checkSessionID(sessionID) == null) {
-			response.setStatus(404);
-			return;
-		}
+//		if (connector.checkSessionID(sessionID) == null) {
+//			response.setStatus(404);
+//			return;
+//		}
 		if (request.getParameter("imageID") != null) {
 			String imageID = request.getParameter("imageID");
 			ImageEntry imgEntry = connector.getImageEntry(Integer.parseInt(imageID));
@@ -66,8 +66,10 @@ public class ResourceDownloadServlet extends HttpServlet {
 						(request.getParameter("thumb") != null ? "tn" + filename.substring(0, filename.lastIndexOf(".")) + ".png" : filename) 
 					);
 			} else {
-				filename = "placeholder_buddha.png";
-				inputFile = new File(serverProperties.getProperty("home.backgrounds"), filename);
+				response.setStatus(403);
+				return;
+//				filename = "placeholder_buddha.png";
+//				inputFile = new File(serverProperties.getProperty("home.backgrounds"), filename);
 			}
 //			File inputFile = new File(serverProperties.getProperty("home.images"), filename);
 			ServletOutputStream out = response.getOutputStream();
@@ -143,30 +145,35 @@ public class ResourceDownloadServlet extends HttpServlet {
 				}
 			}
 		} else if (request.getParameter("document") != null) {
-			String filename = request.getParameter("document");
-			if (filename.startsWith(".")) {
-				response.setStatus(400);
-				return;
-			} else {
-				File inputFile = new File(serverProperties.getProperty("home.documents"), filename);
-				if (inputFile.exists()) {
-					FileInputStream fis = new FileInputStream(inputFile);
-					response.setContentType(filename.toLowerCase().endsWith("pdf") ? "application/pdf" : "text/html");
-					ServletOutputStream out = response.getOutputStream();
-					byte buffer[] = new byte[4096];
-					int bytesRead = 0;
-					while ((bytesRead = fis.read(buffer)) > 0) {
-						out.write(buffer, 0, bytesRead);
-					}
-					out.close();
-					fis.close();
-				} else {
-					response.setStatus(404);
+			if (connector.checkSessionID(sessionID) == null) {
+				String filename = request.getParameter("document");
+				if (filename.startsWith(".")) {
+					response.setStatus(400);
 					return;
+				} else {
+					File inputFile = new File(serverProperties.getProperty("home.documents"), filename);
+					if (inputFile.exists()) {
+						FileInputStream fis = new FileInputStream(inputFile);
+						response.setContentType(filename.toLowerCase().endsWith("pdf") ? "application/pdf" : "text/html");
+						ServletOutputStream out = response.getOutputStream();
+						byte buffer[] = new byte[4096];
+						int bytesRead = 0;
+						while ((bytesRead = fis.read(buffer)) > 0) {
+							out.write(buffer, 0, bytesRead);
+						}
+						out.close();
+						fis.close();
+					} else {
+						response.setStatus(404);
+						return;
+					}
 				}
+			} else {
+				response.setStatus(403);
+				return;
 			}
 		} else {
-			response.setStatus(403);
+			response.setStatus(400);
 		}
 	}
 
