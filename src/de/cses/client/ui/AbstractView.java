@@ -16,6 +16,7 @@ package de.cses.client.ui;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.PopupPanel;
 
@@ -41,7 +42,7 @@ public abstract class AbstractView extends Button implements EditorListener {
 			
 			@Override
 			public void onClick(ClickEvent event) {
-				if (UserLogin.getInstance().getAccessRights() == UserEntry.FULL) {
+				if (UserLogin.isLoggedIn()) {
 					showEditor();
 				} else {
 					Util.showWarning("You are not logged in", "Sorry, but in future versions a view only display will appear!");

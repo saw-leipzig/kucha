@@ -52,7 +52,8 @@ public class ResourceDownloadServlet extends HttpServlet {
 		// if (request.getSession().getAttribute("userID") == null ||
 		// request.getParameter("resourceid") == null) {
 		String username = request.getParameter("user");
-		if (!UserManager.getInstance().getSessionID(username).equals(request.getParameter("sessionID"))) {
+		String sessionID = request.getParameter("sessionID");
+		if (!UserManager.getInstance().getSessionID(username).equals(sessionID)) {
 			response.setStatus(404);
 			return;
 		}
@@ -61,7 +62,7 @@ public class ResourceDownloadServlet extends HttpServlet {
 			ImageEntry imgEntry = connector.getImageEntry(Integer.parseInt(imageID));
 			String filename;
 			File inputFile;
-			if (imgEntry.isPublicImage() || (UserManager.getInstance().getUserAccessRights(username) == UserEntry.FULL)) {
+			if (imgEntry.isPublicImage() || (UserManager.getInstance().getUserAccessRights(sessionID) == UserEntry.FULL)) {
 				filename = imgEntry.getFilename();
 				inputFile = new File(
 						serverProperties.getProperty("home.images"), 

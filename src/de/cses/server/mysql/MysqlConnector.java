@@ -1797,18 +1797,16 @@ public class MysqlConnector {
 	 * @param password
 	 * @return
 	 */
-	public UserEntry userLogin(String username, String password) {
-		UserEntry result = null;
+	public String userLogin(String username, String password) {
+		String newSessionID = null;
 		Connection dbc = getConnection();
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Users WHERE Username = '" + username + "' AND Password = '" + password + "'");
 			if (rs.first()) {
-				result = new UserEntry(rs.getInt("UserID"), rs.getString("Username"), rs.getString("Firstname"), rs.getString("Lastname"),
-						rs.getString("Email"), rs.getString("Affiliation"), rs.getInt("Accessrights"));
-				result.setSessionID(UUID.randomUUID().toString());
-				UserManager.getInstance().addUser(username, result);
+				newSessionID = UUID.randomUUID().toString();
+				UserManager.getInstance().loginUser(username, newSessionID);
 			} else {
 				System.err.println("wrong password for user " + username + ": hash = " + password);
 			}
@@ -1818,9 +1816,108 @@ public class MysqlConnector {
 			e.printStackTrace();
 			return null;
 		}
+		return newSessionID;
+	}
+	
+	/**
+	 * @param username
+	 * @param password
+	 * @return
+	 */
+	public UserEntry getUser(String username) {
+		UserEntry result = null;
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Users WHERE Username = '" + username + "'");
+			if (rs.first()) {
+				result = new UserEntry(rs.getInt("UserID"), rs.getString("Username"), rs.getString("Firstname"), rs.getString("Lastname"),
+						rs.getString("Email"), rs.getString("Affiliation"), rs.getInt("Accessrights"));
+			} else {
+				System.err.println("no user " + username + " existing");
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
 		return result;
 	}
+	
+	/**
+	 * 
+	 * @param username
+	 * @return
+	 */
+	public String getSessionIDfromUser(String username) {
+		String sessionID = null;
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("SELECT SessionID FROM Users WHERE Username=?");
+			pstmt.setString(1, username);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.first()) {
+				sessionID = rs.getString("SessionID");
+			} else {
+				System.err.println("no user " + username + " existing");
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return sessionID;
+	}
 
+	/**
+	 * 
+	 * @param username
+	 * @return
+	 */
+	public int getAccessRightsFromUsers(String sessionID) {
+		int accessRights = 0;
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("SELECT Accessrights FROM Users WHERE SessionID=?");
+			pstmt.setString(1, sessionID);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.first()) {
+				accessRights = rs.getInt("Accessrights");
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return 0;
+		}
+		return accessRights;
+	}
+
+	/**
+	 * 
+	 * @param username
+	 * @param sessionID
+	 */
+	public void updateSessionIDforUser(String username, String sessionID) {
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("UPDATE Users SET SessionID=? WHERE Username=?");
+			pstmt.setString(1, sessionID);
+			pstmt.setString(2, username);
+			pstmt.executeUpdate();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	
 	/**
 	 * @return
 	 */
@@ -1921,7 +2018,7 @@ public class MysqlConnector {
 	 * @return <code>true</code> when operation is successful
 	 */
 	public synchronized boolean updateDepictionEntry(DepictionEntry de, ArrayList<ImageEntry> imgEntryList,
-			ArrayList<PictorialElementEntry> selectedPEList, ArrayList<IconographyEntry> iconographyList) {
+		ArrayList<PictorialElementEntry> selectedPEList, ArrayList<IconographyEntry> iconographyList) {
 		// System.err.println("==> updateDepictionEntry called");
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;

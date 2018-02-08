@@ -181,7 +181,7 @@ public interface DatabaseService extends RemoteService {
 
 	ArrayList<CaveGroupEntry> getCaveGroups() throws IllegalArgumentException;
 
-	UserEntry userLogin(String username, String password) throws IllegalArgumentException;
+	String userLogin(String username, String password) throws IllegalArgumentException;
 
 	boolean updateImageEntry(ImageEntry imgEntry) throws IllegalArgumentException;
 

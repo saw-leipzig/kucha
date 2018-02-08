@@ -492,7 +492,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	 * @see de.cses.client.DatabaseService#userLogin(java.lang.String, java.lang.String)
 	 */
 	@Override
-	public UserEntry userLogin(String username, String password) throws IllegalArgumentException {
+	public String userLogin(String username, String password) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.userLogin(username, password);
 	}

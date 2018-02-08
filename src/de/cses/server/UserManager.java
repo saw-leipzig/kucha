@@ -13,10 +13,7 @@
  */
 package de.cses.server;
 
-import java.util.Date;
-import java.util.HashMap;
-
-import de.cses.shared.UserEntry;
+import de.cses.server.mysql.MysqlConnector;
 
 /**
  * @author alingnau
@@ -25,7 +22,8 @@ import de.cses.shared.UserEntry;
 public class UserManager {
 	
 	private static UserManager instance = null;
-	private HashMap<String, UserEntry> userMap = new HashMap<String, UserEntry>();
+	private MysqlConnector connector = MysqlConnector.getInstance();
+	
 
 	/**
 	 * 
@@ -39,33 +37,17 @@ public class UserManager {
 		return instance;
 	}
 	
-	public void addUser(String username, UserEntry user) {
-		userMap.put(username, user);
+	public void loginUser(String username, String sessionID) {
+		connector.updateSessionIDforUser(username, sessionID);
 	}
 
 	public String getSessionID(String username) {
-		if (userMap.containsKey(username) && checkUserValidity(username)) {
-			return userMap.get(username).getSessionID();
-		}
-		return null;
+		return connector.getSessionIDfromUser(username);
 	}
 	
-	public int getUserAccessRights(String username) {
-		if (userMap.containsKey(username) && checkUserValidity(username)) {
-			return userMap.get(username).getAccessrights();
-		}
-		return 0;
+	public int getUserAccessRights(String sessionID) {
+		System.err.println("calling getUserAccessRights("+ sessionID + ")");
+		return connector.getAccessRightsFromUsers(sessionID);
 	}
 	
-	private boolean checkUserValidity(String username) {
-		UserEntry user = userMap.get(username);
-		Date now = new Date();
-		long diffDays = (now.getTime() - user.getLoginDate()) / (24 * 60 * 60 * 1000);
-		if (diffDays > 1) {
-			userMap.remove(username);
-			return false;
-		}
-		return true;
-	}
-
 }
