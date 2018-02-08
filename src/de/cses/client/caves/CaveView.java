@@ -115,4 +115,13 @@ public class CaveView extends AbstractView {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see de.cses.client.ui.AbstractView#getPermalink()
+	 */
+	@Override
+	protected String getPermalink() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

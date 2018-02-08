@@ -100,4 +100,13 @@ public class ImageView extends AbstractView {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see de.cses.client.ui.AbstractView#getPermalink()
+	 */
+	@Override
+	protected String getPermalink() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
