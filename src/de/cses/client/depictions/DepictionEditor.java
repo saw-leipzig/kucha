@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017
+ * Copyright 2016-2018
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -40,6 +40,8 @@ import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.data.shared.SortDir;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
+import com.sencha.gxt.theme.base.client.field.FieldLabelDefaultAppearance;
+import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.Dialog;
 import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.FramedPanel;
@@ -56,12 +58,15 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.DateField;
 import com.sencha.gxt.widget.core.client.form.DateTimePropertyEditor;
+import com.sencha.gxt.widget.core.client.form.FieldLabel;
+import com.sencha.gxt.widget.core.client.form.FieldLabel.FieldLabelOptions;
 import com.sencha.gxt.widget.core.client.form.ListField;
 import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
+import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinNumberValidator;
 
 import de.cses.client.DatabaseService;
@@ -154,14 +159,14 @@ public class DepictionEditor extends AbstractEditor {
 	}
 
 	interface CaveViewTemplates extends XTemplates {
-		@XTemplate("<div>{siteName} {officialNumber}: {officialName}</div>")
-		SafeHtml caveLabel(String siteName, String officialNumber, String officialName);
+		@XTemplate("<div>{officialNumber}: {officialName}<br>{siteDistrictInformation}</div>")
+		SafeHtml caveLabel(String siteDistrictInformation, String officialNumber, String officialName);
 
-		@XTemplate("<div>{siteName} {officialNumber}</div>")
-		SafeHtml caveLabel(String siteName, String officialNumber);
+		@XTemplate("<div>{officialNumber}<br>{siteDistrictInformation}</div>")
+		SafeHtml caveLabel(String siteDistrictInformation, String officialNumber);
 
-		@XTemplate("<div>{officialNumber}</div>")
-		SafeHtml caveLabel(String officialNumber);
+//		@XTemplate("<div>{officialNumber}</div>")
+//		SafeHtml caveLabel(String officialNumber);
 	}
 
 	interface LocationProperties extends PropertyAccess<LocationEntry> {
@@ -294,23 +299,28 @@ public class DepictionEditor extends AbstractEditor {
 	 * 
 	 */
 	private void loadVendors() {
-		dbService.getVendors(new AsyncCallback<ArrayList<VendorEntry>>() {
+		for (VendorEntry ve : StaticTables.getInstance().getVendorEntries().values()) {
+			vendorEntryLS.add(ve);
+		}
+		if (correspondingDepictionEntry.getVendorID() > 0) {
+			vendorSelection.setValue(vendorEntryLS.findModelWithKey(Integer.toString(correspondingDepictionEntry.getVendorID())));
+		}
+		vendorEntryLS.addSortInfo(new StoreSortInfo<VendorEntry>(new ValueProvider<VendorEntry, String>() {
 
 			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
+			public String getValue(VendorEntry object) {
+				return object.getVendorName();
 			}
 
 			@Override
-			public void onSuccess(ArrayList<VendorEntry> vendorResults) {
-				for (VendorEntry ve : vendorResults) {
-					vendorEntryLS.add(ve);
-				}
-				if (correspondingDepictionEntry.getVendorID() > 0) {
-					vendorSelection.setValue(vendorEntryLS.findModelWithKey(Integer.toString(correspondingDepictionEntry.getVendorID())));
-				}
+			public void setValue(VendorEntry object, String value) {
 			}
-		});
+
+			@Override
+			public String getPath() {
+				return "vendorName";
+			}
+		}, SortDir.ASC));
 	}
 	
 	/**
@@ -458,7 +468,21 @@ public class DepictionEditor extends AbstractEditor {
 		
 		FramedPanel caveSelectionFP = new FramedPanel();
 		caveSelectionFP.setHeading("Located in Cave");
-		caveSelectionCB = new ComboBox<CaveEntry>(caveEntryLS, caveProps.officialNumber(), new AbstractSafeHtmlRenderer<CaveEntry>() {
+		caveSelectionCB = new ComboBox<CaveEntry>(caveEntryLS, new LabelProvider<CaveEntry>() {
+
+			@Override
+			public String getLabel(CaveEntry item) {
+				StaticTables st = StaticTables.getInstance();
+				DistrictEntry de = null;
+				SiteEntry se = null;
+				de = st.getDistrictEntries().get(item.getDistrictID());
+				if (de != null) {
+					se = st.getSiteEntries().get(de.getSiteID());
+				}
+				return (se != null ? se.getName()+": " : (de != null ? de.getName()+": " : "")) + item.getOfficialNumber() 
+					+ (item.getHistoricName() != null ? " "+item.getHistoricName() : "");
+			}
+		}, new AbstractSafeHtmlRenderer<CaveEntry>() {
 
 			@Override
 			public SafeHtml render(CaveEntry item) {
@@ -470,13 +494,11 @@ public class DepictionEditor extends AbstractEditor {
 				if (de != null) {
 					se = st.getSiteEntries().get(de.getSiteID());
 				}
-				// String site = "test";
-				if ((se != null) && (item.getHistoricName() != null) && (item.getHistoricName().length() > 0)) {
-					return cvTemplates.caveLabel(se.getName(), item.getOfficialNumber(), item.getHistoricName());
-				} else if (se != null) {
-					return cvTemplates.caveLabel(se.getName(), item.getOfficialNumber());
+				String siteDistrictInformation = (se != null ? se.getName() : "") + (de != null ? (se != null ? " / " : "") + de.getName() : "");
+				if ((item.getHistoricName() != null) && (item.getHistoricName().length() > 0)) {
+					return cvTemplates.caveLabel(siteDistrictInformation, item.getOfficialNumber(), item.getHistoricName());
 				} else {
-					return cvTemplates.caveLabel(item.getOfficialNumber());
+					return cvTemplates.caveLabel(siteDistrictInformation, item.getOfficialNumber());
 				}
 			}
 		});
@@ -551,6 +573,64 @@ public class DepictionEditor extends AbstractEditor {
 		});
 		vendorFP.add(vendorSelection);
 
+		// adding new vendors is necessary
+		ToolButton newVendorPlusTool = new ToolButton(ToolButton.PLUS);
+		newVendorPlusTool.setToolTip("New Vendor");
+		vendorFP.addTool(newVendorPlusTool);
+		newVendorPlusTool.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				PopupPanel addVendorDialog = new PopupPanel();
+				FramedPanel newVendorFP = new FramedPanel();
+				newVendorFP.setHeading("Add Vendor");
+				TextField vendorNameField = new TextField();
+				vendorNameField.addValidator(new MinLengthValidator(2));
+				vendorNameField.addValidator(new MaxLengthValidator(32));
+				vendorNameField.setValue("");
+				vendorNameField.setWidth(200);
+				newVendorFP.add(vendorNameField);
+				TextButton saveButton = new TextButton("save");
+				saveButton.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						if (vendorNameField.isValid()) {
+							VendorEntry vEntry = new VendorEntry();
+							vEntry.setVendorName(vendorNameField.getCurrentValue());
+							dbService.insertVendorEntry(vEntry, new AsyncCallback<Integer>() {
+
+								@Override
+								public void onFailure(Throwable caught) {
+									caught.printStackTrace();
+								}
+
+								@Override
+								public void onSuccess(Integer result) {
+									vEntry.setVendorID(result);
+									vendorEntryLS.add(vEntry);
+								}
+							});
+							addVendorDialog.hide();
+						}
+					}
+				});
+				newVendorFP.addButton(saveButton);
+				TextButton cancelButton = new TextButton("cancel");
+				cancelButton.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						addVendorDialog.hide();
+					}
+				});
+				newVendorFP.addButton(cancelButton);
+				addVendorDialog.add(newVendorFP);
+				addVendorDialog.setModal(true);
+				addVendorDialog.center();
+			}
+		});		
+
 		FramedPanel datePurchasedFP = new FramedPanel();
 		datePurchasedFP.setHeading("Date purchased");
 		purchaseDateField = new DateField(new DateTimePropertyEditor("yyyy"));
@@ -591,10 +671,85 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		currentLocationFP.add(locationSelectionCB);
-
-//		locationSelector = new CurrentLocationSelector();
-//		locationSelector.setSelectedLocation(correspondingDepictionEntry.getCurrentLocationID());
 		
+		// adding new locations
+		ToolButton newLocationPlusTool = new ToolButton(ToolButton.PLUS);
+		newLocationPlusTool.setToolTip("New Location");
+		currentLocationFP.addTool(newLocationPlusTool);
+		newLocationPlusTool.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				PopupPanel addLocationDialog = new PopupPanel();
+				FramedPanel newLocationFP = new FramedPanel();
+				newLocationFP.setHeading("Add Location");
+				VerticalLayoutContainer locationVLC = new VerticalLayoutContainer();
+				TextField locationNameField = new TextField();
+				locationNameField.addValidator(new MinLengthValidator(2));
+				locationNameField.addValidator(new MaxLengthValidator(64));
+				locationVLC.add(new FieldLabel(locationNameField, "Name"));
+				TextField locationTownField = new TextField();
+				locationTownField.addValidator(new MinLengthValidator(2));
+				locationTownField.addValidator(new MaxLengthValidator(64));
+				locationVLC.add(new FieldLabel(locationTownField, "Town"));
+				TextField locationRegionField = new TextField();
+				locationRegionField.addValidator(new MinLengthValidator(2));
+				locationRegionField.addValidator(new MaxLengthValidator(64));
+				locationVLC.add(new FieldLabel(locationRegionField, "Region"));
+				TextField locationCountryField = new TextField();
+				locationCountryField.addValidator(new MinLengthValidator(2));
+				locationCountryField.addValidator(new MaxLengthValidator(64));
+				locationVLC.add(new FieldLabel(locationCountryField, "Country"));
+				TextField locationUrlField = new TextField();
+				locationUrlField.addValidator(new MinLengthValidator(2));
+				locationUrlField.addValidator(new MaxLengthValidator(256));
+				locationVLC.add(new FieldLabel(locationUrlField, "URL"));
+				newLocationFP.add(locationVLC);
+				TextButton saveButton = new TextButton("save");
+				saveButton.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						if (locationNameField.isValid()) {
+							LocationEntry lEntry = new LocationEntry();
+							lEntry.setName(locationNameField.getCurrentValue());
+							lEntry.setTown(locationTownField.getCurrentValue());
+							lEntry.setRegion(locationRegionField.getCurrentValue());
+							lEntry.setCounty(locationCountryField.getCurrentValue());
+							lEntry.setUrl(locationUrlField.getCurrentValue());
+							dbService.insertLocationEntry(lEntry, new AsyncCallback<Integer>() {
+
+								@Override
+								public void onFailure(Throwable caught) {
+									caught.printStackTrace();
+								}
+
+								@Override
+								public void onSuccess(Integer result) {
+									lEntry.setLocationID(result);
+									locationEntryLS.add(lEntry);
+								}
+							});
+							addLocationDialog.hide();
+						}
+					}
+				});
+				newLocationFP.addButton(saveButton);
+				TextButton cancelButton = new TextButton("cancel");
+				cancelButton.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						addLocationDialog.hide();
+					}
+				});
+				newLocationFP.addButton(cancelButton);
+				addLocationDialog.add(newLocationFP);
+				addLocationDialog.setModal(true);
+				addLocationDialog.center();
+			}
+		});				
+
 		FramedPanel inventoryNumberFP = new FramedPanel();
 		inventoryNumberFP.setHeading("Inventory Number");
 		TextField inventoryNumberTF = new TextField();
@@ -608,6 +763,19 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		inventoryNumberFP.add(inventoryNumberTF);
+		
+		FramedPanel positionNoteFP = new FramedPanel();
+		positionNoteFP.setHeading("Position Notes");
+		TextArea positionNotesTA = new TextArea();
+		positionNotesTA.setValue(correspondingDepictionEntry.getPositionNotes());
+		positionNotesTA.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				correspondingDepictionEntry.setPositionNotes(event.getValue());
+			}
+		});
+		positionNoteFP.add(positionNotesTA);
 
 		VerticalLayoutContainer basicsLeftVLC = new VerticalLayoutContainer();
 		basicsLeftVLC.add(shortNameFP, new VerticalLayoutData(1.0, .1));
@@ -617,8 +785,7 @@ public class DepictionEditor extends AbstractEditor {
 		basicsLeftVLC.add(datePurchasedFP, new VerticalLayoutData(1.0, .1));
 		basicsLeftVLC.add(currentLocationFP, new VerticalLayoutData(1.0, .1));
 		basicsLeftVLC.add(inventoryNumberFP, new VerticalLayoutData(1.0, .1));
-
-		VerticalLayoutContainer basicsRightVLC = new VerticalLayoutContainer();
+		basicsLeftVLC.add(positionNoteFP, new VerticalLayoutData(1.0, .2));
 
 		FramedPanel wallSelectorFP = new FramedPanel();
 		wallSelectorFP.setHeading("Wall");
@@ -640,6 +807,8 @@ public class DepictionEditor extends AbstractEditor {
 
 		wallSelectorPanel = new WallSelector(350);
 		wallSelectorFP.add(wallSelectorPanel);
+
+		VerticalLayoutContainer basicsRightVLC = new VerticalLayoutContainer();
 		basicsRightVLC.add(wallSelectorFP, new VerticalLayoutData(1.0, 1.0));
 
 		HorizontalLayoutContainer basicsTabHLC = new HorizontalLayoutContainer();
@@ -997,8 +1166,8 @@ public class DepictionEditor extends AbstractEditor {
 		tabPanel.setTabScroll(false);
 		tabPanel.add(basicsTabHLC, "Basics");
 		tabPanel.add(descriptionTabHLC, "Description");
-		tabPanel.add(pictorialElementsTabHLC, "Pictorial Elements");
 		tabPanel.add(iconographyTabHLC, "Iconography");
+		tabPanel.add(pictorialElementsTabHLC, "Pictorial Elements");
 		
 		HorizontalLayoutContainer mainHLC = new HorizontalLayoutContainer();
 		mainHLC.add(tabPanel, new HorizontalLayoutData(.7, 1.0));

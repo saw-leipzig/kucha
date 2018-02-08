@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 
+ * Copyright 2016-2018 
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -18,7 +18,6 @@ import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
-import com.sencha.gxt.core.client.util.ToggleGroup;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.widget.core.client.ContentPanel;
@@ -26,12 +25,6 @@ import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
-import com.sencha.gxt.widget.core.client.event.BeforeCheckChangeEvent;
-import com.sencha.gxt.widget.core.client.event.CheckChangeEvent;
-import com.sencha.gxt.widget.core.client.event.CheckChangedEvent;
-import com.sencha.gxt.widget.core.client.event.CheckChangedEvent.CheckChangedHandler;
-import com.sencha.gxt.widget.core.client.event.CheckChangeEvent.CheckChangeHandler;
-import com.sencha.gxt.widget.core.client.event.BeforeCheckChangeEvent.BeforeCheckChangeHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.tree.Tree;

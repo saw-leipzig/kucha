@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017 
+ * Copyright 2016-2018 
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -14,20 +14,18 @@
 package de.cses.server.mysql;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
 import de.cses.server.ServerProperties;
-import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.server.UserManager;
+import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.C14AnalysisUrlEntry;
 import de.cses.shared.C14DocumentEntry;
@@ -378,7 +376,7 @@ public class MysqlConnector {
 						rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"), rs.getDouble("Width"), rs.getDouble("Height"),
 						rs.getInt("ExpeditionID"), rs.getDate("PurchaseDate"), rs.getInt("CurrentLocationID"), rs.getString("InventoryNumber"), rs.getInt("VendorID"),
 						rs.getInt("StoryID"), rs.getInt("CaveID"), rs.getInt("WallID"), rs.getInt("AbsoluteLeft"), rs.getInt("AbsoluteTop"), 
-						rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName")));
+						rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes")));
 			}
 			rs.close();
 			stmt.close();
@@ -403,7 +401,7 @@ public class MysqlConnector {
 						rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"), rs.getDouble("Width"), rs.getDouble("Height"),
 						rs.getInt("ExpeditionID"), rs.getDate("PurchaseDate"), rs.getInt("CurrentLocationID"), rs.getString("InventoryNumber"), rs.getInt("VendorID"),
 						rs.getInt("StoryID"), rs.getInt("CaveID"), rs.getInt("WallID"), rs.getInt("AbsoluteLeft"), 
-						rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"));
+						rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes"));
 			}
 			rs.close();
 			stmt.close();
@@ -864,6 +862,7 @@ public class MysqlConnector {
 		return results;
 	}
 	
+	@Deprecated
 	public ArrayList<CurrentLocationEntry> getCurrentLocations() {
 		ArrayList<CurrentLocationEntry> root = getCurrentLocationEntries(0);
 
@@ -873,6 +872,7 @@ public class MysqlConnector {
 		return root;
 	}
 
+	@Deprecated
 	protected void processCurrentLocationTree(CurrentLocationEntry parent) {
 		ArrayList<CurrentLocationEntry> children = getCurrentLocationEntries(parent.getCurrentLocationID());
 		if (children != null) {
@@ -883,6 +883,7 @@ public class MysqlConnector {
 		}
 	}
 
+	@Deprecated
 	protected ArrayList<CurrentLocationEntry> getCurrentLocationEntries(int parentID) {
 		ArrayList<CurrentLocationEntry> results = new ArrayList<CurrentLocationEntry>();
 		Connection dbc = getConnection();
@@ -1857,8 +1858,8 @@ public class MysqlConnector {
 			pstmt = dbc.prepareStatement(
 					"INSERT INTO Depictions (StyleID, Inscriptions, SeparateAksaras, Dating, Description, BackgroundColour, GeneralRemarks, "
 					+ "OtherSuggestedIdentifications, Width, Height, ExpeditionID, PurchaseDate, CurrentLocationID, InventoryNumber, VendorID, "
-					+ "StoryID, CaveID, WallID, AbsoluteLeft, AbsoluteTop, ModeOfRepresentationID, ShortName) "
-							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+					+ "StoryID, CaveID, WallID, AbsoluteLeft, AbsoluteTop, ModeOfRepresentationID, ShortName, PositionNotes) "
+							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			pstmt.setInt(1, de.getStyleID());
 			pstmt.setString(2, de.getInscriptions());
 			pstmt.setString(3, de.getSeparateAksaras());
@@ -1881,6 +1882,7 @@ public class MysqlConnector {
 			pstmt.setInt(20, de.getAbsoluteTop());
 			pstmt.setInt(21, de.getModeOfRepresentationID());
 			pstmt.setString(22, de.getShortName());
+			pstmt.setString(23, de.getPositionNotes());
 			pstmt.executeUpdate();
 			ResultSet keys = pstmt.getGeneratedKeys();
 			if (keys.next()) { // there should only be 1 key returned here 
@@ -1928,7 +1930,7 @@ public class MysqlConnector {
 			pstmt = dbc.prepareStatement(
 					"UPDATE Depictions SET StyleID=?, Inscriptions=?, SeparateAksaras=?, Dating=?, Description=?, BackgroundColour=?, GeneralRemarks=?, "
 					+ "OtherSuggestedIdentifications=?, Width=?, Height=?, ExpeditionID=?, PurchaseDate=?, CurrentLocationID=?, InventoryNumber=?, VendorID=?, "
-					+ "StoryID=?, CaveID=?, WallID=?, AbsoluteLeft=?, AbsoluteTop=?, ModeOfRepresentationID=?, ShortName=? WHERE DepictionID=?");
+					+ "StoryID=?, CaveID=?, WallID=?, AbsoluteLeft=?, AbsoluteTop=?, ModeOfRepresentationID=?, ShortName=?, PositionNotes=? WHERE DepictionID=?");
 			pstmt.setInt(1, de.getStyleID());
 			pstmt.setString(2, de.getInscriptions());
 			pstmt.setString(3, de.getSeparateAksaras());
@@ -1951,7 +1953,8 @@ public class MysqlConnector {
 			pstmt.setInt(20, de.getAbsoluteTop());
 			pstmt.setInt(21, de.getModeOfRepresentationID());
 			pstmt.setString(22, de.getShortName());
-			pstmt.setInt(23, de.getDepictionID());
+			pstmt.setString(23, de.getPositionNotes());
+			pstmt.setInt(24, de.getDepictionID());
 			pstmt.executeUpdate();
 			pstmt.close();
 			System.err.println("===> updateDepictionEntry - otherSuggestedIdentificaitons = " + de.getOtherSuggestedIdentifications());
@@ -2635,5 +2638,55 @@ public class MysqlConnector {
 			return null;
 		}
 		return results;	}
+
+	/**
+	 * @param vEntry
+	 * @return
+	 */
+	public int inserVendorEntry(VendorEntry vEntry) {
+		Connection dbc = getConnection();
+		PreparedStatement cgStatement;
+		int vendorID=0;
+		try {
+			cgStatement = dbc.prepareStatement("INSERT INTO Vendors (VendorName) VALUES (?)", Statement.RETURN_GENERATED_KEYS);
+			cgStatement.setString(1, vEntry.getVendorName());
+			cgStatement.executeUpdate();
+			ResultSet keys = cgStatement.getGeneratedKeys();
+			if (keys.next()) {
+				vendorID = keys.getInt(1);
+			}
+			keys.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return vendorID;
+	}
+
+	/**
+	 * @param lEntry
+	 * @return
+	 */
+	public int insertLocationEntry(LocationEntry lEntry) {
+		Connection dbc = getConnection();
+		PreparedStatement pStatement;
+		int locationID=0;
+		try {
+			pStatement = dbc.prepareStatement("INSERT INTO Locations (Name, Town, Region, Country, URL) VALUES (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+			pStatement.setString(1, lEntry.getName());
+			pStatement.setString(2, lEntry.getTown());
+			pStatement.setString(3, lEntry.getRegion());
+			pStatement.setString(4, lEntry.getCounty());
+			pStatement.setString(5, lEntry.getUrl());
+			pStatement.executeUpdate();
+			ResultSet keys = pStatement.getGeneratedKeys();
+			if (keys.next()) {
+				locationID = keys.getInt(1);
+			}
+			keys.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return locationID;
+	}
 
 }

@@ -291,6 +291,7 @@ public class MainView implements IsWidget {
     westData.setMargins(new Margins(5));
     westData.setCollapsible(true);
     westData.setCollapseHeaderVisible(true);
+    westData.setSplit(true);
 
     MarginData centerData = new MarginData(5);
 

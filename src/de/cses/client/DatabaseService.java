@@ -216,10 +216,15 @@ public interface DatabaseService extends RemoteService {
 
 	int insertCeilingTypeEntry(CeilingTypeEntry ctEntry) throws IllegalArgumentException;
 
+	@Deprecated
 	ArrayList<CurrentLocationEntry> getCurrentLocations() throws IllegalArgumentException;
 
 	ArrayList<IconographyEntry> getRelatedIconography(int depictionID) throws IllegalArgumentException;
 
 	ArrayList<LocationEntry> getLocations() throws IllegalArgumentException;
+
+	int insertVendorEntry(VendorEntry vEntry) throws IllegalArgumentException;
+
+	int insertLocationEntry(LocationEntry lEntry) throws IllegalArgumentException;
 
 }

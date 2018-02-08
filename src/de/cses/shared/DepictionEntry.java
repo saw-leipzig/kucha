@@ -39,6 +39,7 @@ public class DepictionEntry extends AbstractEntry {
 	private int absoluteTop = -1;
 	private int modeOfRepresentationID = 0;
 	private String shortName;
+	private String positionNotes;
 
 	public DepictionEntry() { }
 
@@ -70,7 +71,7 @@ public class DepictionEntry extends AbstractEntry {
 	public DepictionEntry(int depictionID, int styleID, String inscriptions, String separateAksaras, String dating, String description,
 			String backgroundColour, String generalRemarks, String otherSuggestedIdentifications, double width, double height, int expeditionID,
 			Date purchaseDate, int locationID, String inventoryNumber, int vendorID, int storyID, int caveID, int wallID, int absoluteLeft,
-			int absoluteTop, int modeOfRepresentationID, String shortName) {
+			int absoluteTop, int modeOfRepresentationID, String shortName, String positionNotes) {
 		super();
 		this.depictionID = depictionID;
 		this.styleID = styleID;
@@ -95,12 +96,13 @@ public class DepictionEntry extends AbstractEntry {
 		this.absoluteTop = absoluteTop;
 		this.modeOfRepresentationID = modeOfRepresentationID;
 		this.shortName = shortName;
+		this.positionNotes = positionNotes;
 	}
 
 	public DepictionEntry clone() {
 		return new DepictionEntry(depictionID, styleID, inscriptions, separateAksaras, dating, description, backgroundColour, generalRemarks,
 				otherSuggestedIdentifications, width, height, expeditionID, purchaseDate, locationID, inventoryNumber, vendorID, storyID,
-				caveID, wallID, absoluteLeft, absoluteTop, modeOfRepresentationID, shortName);
+				caveID, wallID, absoluteLeft, absoluteTop, modeOfRepresentationID, shortName, positionNotes);
 	}
 
 	public int getDepictionID() {
@@ -312,6 +314,14 @@ public class DepictionEntry extends AbstractEntry {
 
 	public void setShortName(String shortName) {
 		this.shortName = shortName;
+	}
+
+	public String getPositionNotes() {
+		return positionNotes;
+	}
+
+	public void setPositionNotes(String positionNotes) {
+		this.positionNotes = positionNotes;
 	}
 
 }

@@ -240,10 +240,15 @@ public interface DatabaseServiceAsync {
 
 	void insertCeilingTypeEntry(CeilingTypeEntry ctEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 
+	@Deprecated
 	void getCurrentLocations(AsyncCallback<ArrayList<CurrentLocationEntry>> asyncCallback) throws IllegalArgumentException;
 
 	void getRelatedIconography(int depictionID, AsyncCallback<ArrayList<IconographyEntry>> asyncCallback) throws IllegalArgumentException;
 
 	void getLocations(AsyncCallback<ArrayList<LocationEntry>> asyncCallback) throws IllegalArgumentException;
+
+	void insertVendorEntry(VendorEntry vEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
+
+	void insertLocationEntry(LocationEntry lEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 
 	}
