@@ -53,15 +53,6 @@ public abstract class AbstractView extends Button implements EditorListener {
 	private void showEditor() {
 		AbstractEditor editor = getEditor();
 		editor.addEditorListener(this);
-//		editorDB = new DialogBox(false);
-//		editorDB.getCaption().setHTML(SafeHtmlUtils.fromSafeConstant("<div style=\"border: 1px solid; background-color:#ffb3b3\">Editor</div>"));
-//		editorDB.add(editor);
-//		editorDB.setModal(true);
-//		editorDB.setGlassEnabled(true);
-//		editorDB.setAnimationType(AnimationType.ONE_WAY_CORNER);
-//		editorDB.setAnimationEnabled(false);
-//		editorDB.center();
-//		editorDB.show();
 		editorPanel = new PopupPanel(false);
 		editorPanel.add(editor);
 		editorPanel.setGlassEnabled(true);
@@ -75,7 +66,6 @@ public abstract class AbstractView extends Button implements EditorListener {
 	@Override
 	public void closeRequest() {
 		editorPanel.hide();
-//		editorDB.hide();
 		getElement().getStyle().setBorderColor("#FFA500");
 		getElement().getStyle().setBorderWidth(3.0, Unit.PX);
 	}

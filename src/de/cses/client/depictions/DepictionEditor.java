@@ -765,7 +765,7 @@ public class DepictionEditor extends AbstractEditor {
 		inventoryNumberFP.add(inventoryNumberTF);
 		
 		FramedPanel positionNoteFP = new FramedPanel();
-		positionNoteFP.setHeading("Notes on position");
+		positionNoteFP.setHeading("Position Notes");
 		TextArea positionNotesTA = new TextArea();
 		positionNotesTA.setValue(correspondingDepictionEntry.getPositionNotes());
 		positionNotesTA.addValueChangeHandler(new ValueChangeHandler<String>() {
