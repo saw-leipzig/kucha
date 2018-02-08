@@ -250,4 +250,6 @@ public interface DatabaseServiceAsync {
 
 	void insertLocationEntry(LocationEntry lEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 
+	void checkSessionID(String sessionID, AsyncCallback<String> asyncCallback) throws IllegalArgumentException;
+
 	}

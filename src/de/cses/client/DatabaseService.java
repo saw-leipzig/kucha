@@ -227,4 +227,6 @@ public interface DatabaseService extends RemoteService {
 
 	int insertLocationEntry(LocationEntry lEntry) throws IllegalArgumentException;
 
+	String checkSessionID(String sessionID) throws IllegalArgumentException;
+
 }

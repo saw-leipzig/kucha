@@ -692,5 +692,13 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.insertLocationEntry(lEntry);
 	}
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#checkSessionID(java.lang.String)
+	 */
+	@Override
+	public String checkSessionID(String sessionID) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.checkSessionID(sessionID);
+	}
 
 }

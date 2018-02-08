@@ -1917,6 +1917,29 @@ public class MysqlConnector {
 		}
 	}
 
+	/**
+	 * @param sessionID
+	 * @return
+	 */
+	public String checkSessionID(String sessionID) {
+		String username = null;
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("SELECT Username FROM Users WHERE SessionID=?");
+			pstmt.setString(1, sessionID);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.first()) {
+				username = rs.getString("Username");
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return username;
+	}
 	
 	/**
 	 * @return
