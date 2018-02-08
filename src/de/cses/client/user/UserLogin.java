@@ -110,7 +110,7 @@ public class UserLogin extends SimpleContainer {
 
 			@Override
 			public void onSuccess(String result) { // we get the username
-				if (username != null) {
+				if (result != null) {
 					username = result;
 					loginView.removeFromParent();
 					logoutButton.setText("logout " + username);
