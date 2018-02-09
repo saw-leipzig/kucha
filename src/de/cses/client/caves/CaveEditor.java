@@ -693,8 +693,8 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		VerticalLayoutContainer officialNumberVLC = new VerticalLayoutContainer();
-		officialNumberVLC.add(officialNumberField, new VerticalLayoutData(1.0, .8));
-		officialNumberVLC.add(openAccessCB, new VerticalLayoutData(1.0, .2));
+		officialNumberVLC.add(officialNumberField, new VerticalLayoutData(1.0, .5));
+		officialNumberVLC.add(openAccessCB, new VerticalLayoutData(1.0, .5));
 		officialNumberPanel.add(officialNumberVLC);
 
 		FramedPanel historicalNamePanel = new FramedPanel();

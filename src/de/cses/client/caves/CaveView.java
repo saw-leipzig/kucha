@@ -46,10 +46,10 @@ public class CaveView extends AbstractView {
 	}
 
 	interface CaveViewTemplates extends XTemplates {
-		@XTemplate("<div><label style='font-size:9px'> {sitename}</label><center><img src='{imgUri}' height='16px' width='16px'> <b style='font-size: 20px'> {officialNumber} </b></center><label style='font-size:9px'> {officialName} <br> {historicName} </label></div>")
+		@XTemplate("<div><label style='font-size:9px'> {sitename} </label><center><img src='{imgUri}' height='16px' width='16px'> <b style='font-size: 20px'> {officialNumber} </b></center><p style='font-size:9px'> {officialName} <br> {historicName} </p></div>")
 		SafeHtml view(SafeUri imgUri, String officialNumber, String officialName, String historicName, String sitename);
 
-		@XTemplate("<div><center><img src='{imgUri}' height='16px' width='16px'> <b style='font-size: 20px'> {officialNumber} </b></center><label style='font-size:9px'> {officialName} <br> {historicName} </label></div>")
+		@XTemplate("<div><center><img src='{imgUri}' height='16px' width='16px'> <b style='font-size: 20px'> {officialNumber} </b></center><p style='font-size:9px'> {officialName} <br> {historicName} </p></div>")
 		SafeHtml view(SafeUri imgUri, String officialNumber, String officialName, String historicName);
 
 		@XTemplate("<div><center><img src='{imgUri}' height='16px' width='16px' > <b style='font-size: 20px'> {officialNumber} </b></center></div>")
@@ -79,11 +79,11 @@ public class CaveView extends AbstractView {
 		if (de != null) {
 			SiteEntry se = StaticTables.getInstance().getSiteEntries().get(de.getSiteID());
 			setHTML(cvTemplate.view(
-					resources.logo().getSafeUri(), entry.getOfficialNumber().substring(0, 15), entry.getHistoricName().substring(0, 15), entry.getOptionalHistoricName().substring(0, 15), se.getName()
+					resources.logo().getSafeUri(), entry.getOfficialNumber(), entry.getHistoricName(), entry.getOptionalHistoricName(), se.getName()
 				));
 		} else {
 			setHTML(cvTemplate.view(
-					resources.logo().getSafeUri(), entry.getOfficialNumber().substring(0, 15), entry.getHistoricName().substring(0, 15), entry.getOptionalHistoricName().substring(0, 15)
+					resources.logo().getSafeUri(), entry.getOfficialNumber(), entry.getHistoricName(), entry.getOptionalHistoricName()
 				));
 		}
 		setPixelSize(150, 110);
