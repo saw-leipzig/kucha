@@ -50,10 +50,6 @@ public class ResourceDownloadServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String sessionID = request.getParameter("sessionID");
-//		if (connector.checkSessionID(sessionID) == null) {
-//			response.setStatus(404);
-//			return;
-//		}
 		if (request.getParameter("imageID") != null) {
 			String imageID = request.getParameter("imageID");
 			ImageEntry imgEntry = connector.getImageEntry(Integer.parseInt(imageID));

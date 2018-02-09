@@ -43,7 +43,7 @@ public abstract class AbstractView extends Button implements EditorListener {
 				if (UserLogin.isLoggedIn()) {
 					showEditor();
 				} else if (getEntry().isOpenAccess()) {
-					viewDataSet("");
+					viewDataSet(getPermalink());
 				} else {
 					Util.showWarning("You are not logged in", "Sorry, but in future versions a view only display will appear!");
 				}

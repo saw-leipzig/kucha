@@ -120,8 +120,7 @@ public class CaveView extends AbstractView {
 	 */
 	@Override
 	protected String getPermalink() {
-		// TODO Auto-generated method stub
-		return null;
+		return "/json?request=Caves&caveID=" + cEntry.getCaveID();
 	}
 
 }
