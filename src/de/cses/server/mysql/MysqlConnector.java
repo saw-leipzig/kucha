@@ -523,7 +523,7 @@ public class MysqlConnector {
 						rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedInYear"), rs.getInt("PreservationClassificationID"),
 						rs.getInt("CaveGroupID"), rs.getString("OptionalCaveSketch"), rs.getString("CaveLayoutComments"), rs.getBoolean("HasVolutedHorseShoeArch"),
 						rs.getBoolean("HasSculptures"), rs.getBoolean("HasClayFigures"), rs.getBoolean("HasImmitationOfMountains"), rs.getBoolean("HasHolesForFixationOfPlasticalItems"), 
-						rs.getBoolean("HasWoodenConstruction"));
+						rs.getBoolean("HasWoodenConstruction"), rs.getBoolean("OpenAccess"));
 				ce.setCaveAreaList(getCaveAreas(ce.getCaveID()));
 				ce.setWallList(getWalls(ce.getCaveID()));
 				ce.setC14AnalysisUrlList(getC14AnalysisEntries(ce.getCaveID()));
@@ -553,7 +553,7 @@ public class MysqlConnector {
 						rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedInYear"), rs.getInt("PreservationClassificationID"),
 						rs.getInt("CaveGroupID"), rs.getString("OptionalCaveSketch"), rs.getString("CaveLayoutComments"), rs.getBoolean("HasVolutedHorseShoeArch"),
 						rs.getBoolean("HasSculptures"), rs.getBoolean("HasClayFigures"), rs.getBoolean("HasImmitationOfMountains"), rs.getBoolean("HasHolesForFixationOfPlasticalItems"), 
-						rs.getBoolean("HasWoodenConstruction"));
+						rs.getBoolean("HasWoodenConstruction"), rs.getBoolean("OpenAccess"));
 				result.setCaveAreaList(getCaveAreas(result.getCaveID()));
 				result.setWallList(getWalls(result.getCaveID()));
 				result.setC14AnalysisUrlList(getC14AnalysisEntries(result.getCaveID()));
@@ -583,7 +583,7 @@ public class MysqlConnector {
 						rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedInYear"), rs.getInt("PreservationClassificationID"),
 						rs.getInt("CaveGroupID"), rs.getString("OptionalCaveSketch"), rs.getString("CaveLayoutComments"), rs.getBoolean("HasVolutedHorseShoeArch"),
 						rs.getBoolean("HasSculptures"), rs.getBoolean("HasClayFigures"), rs.getBoolean("HasImmitationOfMountains"), rs.getBoolean("HasHolesForFixationOfPlasticalItems"), 
-						rs.getBoolean("HasWoodenConstruction"));
+						rs.getBoolean("HasWoodenConstruction"), rs.getBoolean("OpenAccess"));
 				ce.setCaveAreaList(getCaveAreas(ce.getCaveID()));
 				ce.setWallList(getWalls(ce.getCaveID()));
 				ce.setC14AnalysisUrlList(getC14AnalysisEntries(ce.getCaveID()));
@@ -1664,7 +1664,7 @@ public class MysqlConnector {
 			pstmt = dbc.prepareStatement("UPDATE Caves SET OfficialNumber=?, HistoricName=?, OptionalHistoricName=?, CaveTypeID=?, DistrictID=?, "
 					+ "RegionID=?, OrientationID=?, StateOfPreservation=?, Findings=?, Notes=?, FirstDocumentedBy=?, FirstDocumentedInYear=?, PreservationClassificationID=?, "
 					+ "CaveGroupID=?, OptionalCaveSketch=?, CaveLayoutComments=?, HasVolutedHorseShoeArch=?, HasSculptures=?, HasClayFigures=?, HasImmitationOfMountains=?, "
-					+ "HasHolesForFixationOfPlasticalItems=?, HasWoodenConstruction=? WHERE CaveID=?");
+					+ "HasHolesForFixationOfPlasticalItems=?, HasWoodenConstruction=?, OpenAccess=? WHERE CaveID=?");
 			pstmt.setString(1, caveEntry.getOfficialNumber());
 			pstmt.setString(2, caveEntry.getHistoricName());
 			pstmt.setString(3, caveEntry.getOptionalHistoricName());
@@ -1687,7 +1687,8 @@ public class MysqlConnector {
 			pstmt.setBoolean(20, caveEntry.isHasImmitationOfMountains());
 			pstmt.setBoolean(21, caveEntry.isHasHolesForFixationOfPlasticalItems());
 			pstmt.setBoolean(22, caveEntry.isHasWoodenConstruction());
-			pstmt.setInt(23, caveEntry.getCaveID());
+			pstmt.setBoolean(23, caveEntry.isOpenAccess());
+			pstmt.setInt(24, caveEntry.getCaveID());
 			pstmt.executeUpdate();
 			pstmt.close();
 			for (CaveAreaEntry caEntry : caveEntry.getCaveAreaList()) {
@@ -1717,8 +1718,8 @@ public class MysqlConnector {
 			pstmt = dbc.prepareStatement(
 					"INSERT INTO Caves (OfficialNumber, HistoricName, OptionalHistoricName, CaveTypeID, DistrictID, RegionID, OrientationID, StateOfPreservation, "
 							+ "Findings, Notes, FirstDocumentedBy, FirstDocumentedInYear, PreservationClassificationID, CaveGroupID, OptionalCaveSketch, CaveLayoutComments, HasVolutedHorseShoeArch, "
-							+ "HasSculptures, HasClayFigures, HasImmitationOfMountains, HasHolesForFixationOfPlasticalItems, HasWoodenConstruction) "
-							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+							+ "HasSculptures, HasClayFigures, HasImmitationOfMountains, HasHolesForFixationOfPlasticalItems, HasWoodenConstruction, , OpenAccess) "
+							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			pstmt.setString(1, caveEntry.getOfficialNumber());
 			pstmt.setString(2, caveEntry.getHistoricName());
 			pstmt.setString(3, caveEntry.getOptionalHistoricName());
@@ -1741,6 +1742,7 @@ public class MysqlConnector {
 			pstmt.setBoolean(20, caveEntry.isHasImmitationOfMountains());
 			pstmt.setBoolean(21, caveEntry.isHasHolesForFixationOfPlasticalItems());
 			pstmt.setBoolean(22, caveEntry.isHasWoodenConstruction());
+			pstmt.setBoolean(23, caveEntry.isOpenAccess());
 			pstmt.executeUpdate();
 			ResultSet keys = pstmt.getGeneratedKeys();
 			if (keys.next()) { // there should only be 1 key returned here 
