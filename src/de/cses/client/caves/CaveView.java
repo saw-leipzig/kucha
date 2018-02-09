@@ -25,11 +25,14 @@ import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.dnd.core.client.DndDragStartEvent;
 import com.sencha.gxt.dnd.core.client.DragSource;
 
+import de.cses.client.StaticTables;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.client.ui.AbstractView;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveTypeEntry;
+import de.cses.shared.DistrictEntry;
+import de.cses.shared.SiteEntry;
 
 /**
  * @author alingnau
@@ -43,6 +46,9 @@ public class CaveView extends AbstractView {
 	}
 
 	interface CaveViewTemplates extends XTemplates {
+		@XTemplate("<div><label style='font-size:9px'> {sitename}</label><center><img src='{imgUri}' height='16px' width='16px'> <b style='font-size: 20px'> {officialNumber} </b></center><label style='font-size:9px'> {officialName} <br> {historicName} </label></div>")
+		SafeHtml view(SafeUri imgUri, String officialNumber, String officialName, String historicName, String sitename);
+
 		@XTemplate("<div><center><img src='{imgUri}' height='16px' width='16px'> <b style='font-size: 20px'> {officialNumber} </b></center><label style='font-size:9px'> {officialName} <br> {historicName} </label></div>")
 		SafeHtml view(SafeUri imgUri, String officialNumber, String officialName, String historicName);
 
@@ -69,10 +75,18 @@ public class CaveView extends AbstractView {
 		cEntry = entry;
 		resources = GWT.create(Resources.class);
 		cvTemplate = GWT.create(CaveViewTemplates.class);
-		setHTML(cvTemplate.view(
-				resources.logo().getSafeUri(), entry.getOfficialNumber().substring(0, 15), entry.getHistoricName().substring(0, 15), entry.getOptionalHistoricName().substring(0, 15)
-			));
-		setPixelSize(110, 110);
+		DistrictEntry de = StaticTables.getInstance().getDistrictEntries().get(cEntry.getDistrictID());
+		if (de != null) {
+			SiteEntry se = StaticTables.getInstance().getSiteEntries().get(de.getSiteID());
+			setHTML(cvTemplate.view(
+					resources.logo().getSafeUri(), entry.getOfficialNumber().substring(0, 15), entry.getHistoricName().substring(0, 15), entry.getOptionalHistoricName().substring(0, 15), se.getName()
+				));
+		} else {
+			setHTML(cvTemplate.view(
+					resources.logo().getSafeUri(), entry.getOfficialNumber().substring(0, 15), entry.getHistoricName().substring(0, 15), entry.getOptionalHistoricName().substring(0, 15)
+				));
+		}
+		setPixelSize(150, 110);
 		
 		DragSource source = new DragSource(this) {
 

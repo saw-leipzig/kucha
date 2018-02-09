@@ -683,7 +683,7 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		CheckBox openAccessCB = new CheckBox();
-		openAccessCB.setBoxLabel("is open accessible");
+		openAccessCB.setBoxLabel("open access");
 		openAccessCB.setValue(correspondingCaveEntry.isOpenAccess());
 		openAccessCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
@@ -1082,7 +1082,7 @@ public class CaveEditor extends AbstractEditor {
 		});
 
 		// assembling the left side
-		mainInformationVLC.add(officialNumberPanel, new VerticalLayoutData(1.0, .2));
+		mainInformationVLC.add(officialNumberPanel, new VerticalLayoutData(1.0, .15));
 		mainInformationVLC.add(historicalNamePanel, new VerticalLayoutData(1.0, .1));
 		mainInformationVLC.add(optionalHistoricalNamePanel, new VerticalLayoutData(1.0, .1));
 		mainInformationVLC.add(firstDocumentedByPanel, new VerticalLayoutData(1.0, .1));
