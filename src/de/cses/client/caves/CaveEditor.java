@@ -682,7 +682,20 @@ public class CaveEditor extends AbstractEditor {
 				}
 			}
 		});
-		officialNumberPanel.add(officialNumberField);
+		CheckBox openAccessCB = new CheckBox();
+		openAccessCB.setBoxLabel("is open accessible");
+		openAccessCB.setValue(correspondingCaveEntry.isOpenAccess());
+		openAccessCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				correspondingCaveEntry.setOpenAccess(event.getValue());
+			}
+		});
+		VerticalLayoutContainer officialNumberVLC = new VerticalLayoutContainer();
+		officialNumberVLC.add(officialNumberField, new VerticalLayoutData(1.0, .8));
+		officialNumberVLC.add(openAccessCB, new VerticalLayoutData(1.0, .2));
+		officialNumberPanel.add(officialNumberVLC);
 
 		FramedPanel historicalNamePanel = new FramedPanel();
 		historicalNamePanel.setHeading("Historical Name");
@@ -1069,15 +1082,15 @@ public class CaveEditor extends AbstractEditor {
 		});
 
 		// assembling the left side
-		mainInformationVLC.add(officialNumberPanel, new VerticalLayoutData(1.0, 1.0 / 9));
-		mainInformationVLC.add(historicalNamePanel, new VerticalLayoutData(1.0, 1.0 / 9));
-		mainInformationVLC.add(optionalHistoricalNamePanel, new VerticalLayoutData(1.0, 1.0 / 9));
-		mainInformationVLC.add(firstDocumentedByPanel, new VerticalLayoutData(1.0, 1.0 / 9));
-		mainInformationVLC.add(firstDocumentedInYearFP, new VerticalLayoutData(1.0, 1.0 / 9));
-		mainInformationVLC.add(caveGroupPanel, new VerticalLayoutData(1.0, 1.0 / 9));
-		mainInformationVLC.add(sitePanel, new VerticalLayoutData(1.0, 1.0 / 9));
-		mainInformationVLC.add(districtPanel, new VerticalLayoutData(1.0, 1.0 / 9));
-		mainInformationVLC.add(regionPanel, new VerticalLayoutData(1.0, 1.0 / 9));
+		mainInformationVLC.add(officialNumberPanel, new VerticalLayoutData(1.0, .2));
+		mainInformationVLC.add(historicalNamePanel, new VerticalLayoutData(1.0, .1));
+		mainInformationVLC.add(optionalHistoricalNamePanel, new VerticalLayoutData(1.0, .1));
+		mainInformationVLC.add(firstDocumentedByPanel, new VerticalLayoutData(1.0, .1));
+		mainInformationVLC.add(firstDocumentedInYearFP, new VerticalLayoutData(1.0, .1));
+		mainInformationVLC.add(caveGroupPanel, new VerticalLayoutData(1.0, .1));
+		mainInformationVLC.add(sitePanel, new VerticalLayoutData(1.0, .1));
+		mainInformationVLC.add(districtPanel, new VerticalLayoutData(1.0, .1));
+		mainInformationVLC.add(regionPanel, new VerticalLayoutData(1.0, .1));
 
 		// and adding it to the main VLC
 		mainHlContainer.add(mainInformationVLC, new HorizontalLayoutData(.3, 1.0));
