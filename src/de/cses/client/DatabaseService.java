@@ -43,6 +43,7 @@ import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.OrnamentPositionEntry;
 import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PictorialElementEntry;
+import de.cses.shared.PreservationAttributeEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.PublicationEntry;
 import de.cses.shared.PublicationTypeEntry;
@@ -228,5 +229,9 @@ public interface DatabaseService extends RemoteService {
 	int insertLocationEntry(LocationEntry lEntry) throws IllegalArgumentException;
 
 	String checkSessionID(String sessionID) throws IllegalArgumentException;
+
+	ArrayList<PreservationAttributeEntry> getPreservationAttributes() throws IllegalArgumentException;
+
+	int insertPreservationAttributeEntry(PreservationAttributeEntry paEntry) throws IllegalArgumentException;
 
 }

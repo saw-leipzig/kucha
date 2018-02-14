@@ -42,6 +42,7 @@ import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.OrnamentPositionEntry;
 import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PictorialElementEntry;
+import de.cses.shared.PreservationAttributeEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.PublicationEntry;
 import de.cses.shared.PublicationTypeEntry;
@@ -251,5 +252,9 @@ public interface DatabaseServiceAsync {
 	void insertLocationEntry(LocationEntry lEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 
 	void checkSessionID(String sessionID, AsyncCallback<String> asyncCallback) throws IllegalArgumentException;
+
+	void getPreservationAttributes(AsyncCallback<ArrayList<PreservationAttributeEntry>> asyncCallback) throws IllegalArgumentException;
+
+	void insertPreservationAttributeEntry(PreservationAttributeEntry paEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 
 	}

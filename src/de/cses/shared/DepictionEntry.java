@@ -14,6 +14,7 @@
 package de.cses.shared;
 
 import java.sql.Date;
+import java.util.ArrayList;
 
 public class DepictionEntry extends AbstractEntry {
 
@@ -40,6 +41,7 @@ public class DepictionEntry extends AbstractEntry {
 	private int modeOfRepresentationID = 0;
 	private String shortName;
 	private String positionNotes;
+	private ArrayList<PreservationAttributeEntry> preservationAttributesList = new ArrayList<PreservationAttributeEntry>();
 
 	public DepictionEntry() { }
 
@@ -322,6 +324,14 @@ public class DepictionEntry extends AbstractEntry {
 
 	public void setPositionNotes(String positionNotes) {
 		this.positionNotes = positionNotes;
+	}
+
+	public ArrayList<PreservationAttributeEntry> getPreservationAttributesList() {
+		return preservationAttributesList;
+	}
+
+	public void setPreservationAttributesList(ArrayList<PreservationAttributeEntry> preservationAttributesList) {
+		this.preservationAttributesList = preservationAttributesList;
 	}
 
 }
