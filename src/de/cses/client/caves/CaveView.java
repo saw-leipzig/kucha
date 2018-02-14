@@ -25,11 +25,15 @@ import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.dnd.core.client.DndDragStartEvent;
 import com.sencha.gxt.dnd.core.client.DragSource;
 
+import de.cses.client.StaticTables;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.client.ui.AbstractView;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveTypeEntry;
+import de.cses.shared.DistrictEntry;
+import de.cses.shared.RegionEntry;
+import de.cses.shared.SiteEntry;
 
 /**
  * @author alingnau
@@ -43,10 +47,13 @@ public class CaveView extends AbstractView {
 	}
 
 	interface CaveViewTemplates extends XTemplates {
-		@XTemplate("<div><center><img src='{imgUri}' height='16px' width='16px'> <b style='font-size: 20px'> {officialNumber} </b></center><label style='font-size:9px'> {officialName} <br> {historicName} </label></div>")
+		@XTemplate("<div><img src='{imgUri}' height='16px' width='16px'> <b style='font-size: 20px'> {sitename} {officialNumber} </b><p style='font-size:9px'> {officialName} <br> {historicName} </p></div>")
+		SafeHtml view(SafeUri imgUri, String officialNumber, String officialName, String historicName, String sitename);
+
+		@XTemplate("<div><img src='{imgUri}' height='16px' width='16px'> <b style='font-size: 20px'> {officialNumber} </b><p style='font-size:9px'> {officialName} <br> {historicName} </p></div>")
 		SafeHtml view(SafeUri imgUri, String officialNumber, String officialName, String historicName);
 
-		@XTemplate("<div><center><img src='{imgUri}' height='16px' width='16px' > <b style='font-size: 20px'> {officialNumber} </b></center></div>")
+		@XTemplate("<div><img src='{imgUri}' height='16px' width='16px' > <b style='font-size: 20px'> {officialNumber} </b></div>")
 		SafeHtml view(SafeUri imgUri, String officialNumber);
 	}
 
@@ -59,6 +66,7 @@ public class CaveView extends AbstractView {
 	private Resources resources;
 	protected String caveType;
 	private CaveViewTemplates cvTemplate;
+	private StaticTables stab = StaticTables.getInstance();
 
 	/**
 	 * @param text
@@ -69,10 +77,27 @@ public class CaveView extends AbstractView {
 		cEntry = entry;
 		resources = GWT.create(Resources.class);
 		cvTemplate = GWT.create(CaveViewTemplates.class);
-		setHTML(cvTemplate.view(
-				resources.logo().getSafeUri(), entry.getOfficialNumber().substring(0, 15), entry.getHistoricName().substring(0, 15), entry.getOptionalHistoricName().substring(0, 15)
-			));
-		setPixelSize(110, 110);
+		DistrictEntry de = stab.getDistrictEntries().get(cEntry.getDistrictID());
+		if (de != null) {
+			SiteEntry se = stab.getSiteEntries().get(de.getSiteID());
+			setHTML(cvTemplate.view(
+					resources.logo().getSafeUri(), entry.getOfficialNumber(), entry.getHistoricName(), entry.getOptionalHistoricName(), se.getShortName()
+				));
+		} else {
+			RegionEntry re = stab.getRegionEntries().get(cEntry.getRegionID());
+			if (re != null) {
+				SiteEntry se = stab.getSiteEntries().get(re.getSiteID());
+				setHTML(cvTemplate.view(
+						resources.logo().getSafeUri(), entry.getOfficialNumber(), entry.getHistoricName(), entry.getOptionalHistoricName(), se.getShortName()
+					));
+			} else {
+				setHTML(cvTemplate.view(
+						resources.logo().getSafeUri(), entry.getOfficialNumber(), entry.getHistoricName(), entry.getOptionalHistoricName()
+					));
+			
+			}
+		}
+		setSize("150px", "110px");
 		
 		DragSource source = new DragSource(this) {
 
@@ -113,6 +138,14 @@ public class CaveView extends AbstractView {
 		if (updatedEntry instanceof CaveEntry) {
 			cEntry = (CaveEntry) updatedEntry;
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.ui.AbstractView#getPermalink()
+	 */
+	@Override
+	protected String getPermalink() {
+		return "/json?request=Caves&caveID=" + cEntry.getCaveID();
 	}
 
 }

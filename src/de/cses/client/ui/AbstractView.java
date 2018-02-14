@@ -16,13 +16,13 @@ package de.cses.client.ui;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.PopupPanel;
 
 import de.cses.client.Util;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
-import de.cses.shared.UserEntry;
 
 /**
  * @author alingnau
@@ -31,7 +31,6 @@ import de.cses.shared.UserEntry;
 public abstract class AbstractView extends Button implements EditorListener {
 
 	private PopupPanel editorPanel;
-//	private DialogBox editorDB;
 	
 	/**
 	 * This is the general constructor that amongst other tasks initializes the PopupPanel for the editor
@@ -41,8 +40,10 @@ public abstract class AbstractView extends Button implements EditorListener {
 			
 			@Override
 			public void onClick(ClickEvent event) {
-				if (UserLogin.getInstance().getAccessRights() == UserEntry.FULL) {
+				if (UserLogin.isLoggedIn()) {
 					showEditor();
+				} else if (getEntry().isOpenAccess()) {
+					viewDataSet(getPermalink());
 				} else {
 					Util.showWarning("You are not logged in", "Sorry, but in future versions a view only display will appear!");
 				}
@@ -59,10 +60,16 @@ public abstract class AbstractView extends Button implements EditorListener {
 		editorPanel.center();
 	}
 	
+	private void viewDataSet(String url) { // 
+		Window.open(url,"_blank",null);
+	}
+	
 	abstract protected AbstractEditor getEditor();
 	
 	abstract protected AbstractEntry getEntry();
 	
+	abstract protected String getPermalink(); // this will be the URI for the server request...
+	 
 	@Override
 	public void closeRequest() {
 		editorPanel.hide();

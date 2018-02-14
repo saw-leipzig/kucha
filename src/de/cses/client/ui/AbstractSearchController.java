@@ -57,7 +57,7 @@ public abstract class AbstractSearchController extends ToggleButton {
 			
 			@Override
 			public void onSelect(SelectEvent event) {
-				if (UserLogin.getInstance().getAccessRights() > 1) {
+				if (UserLogin.isLoggedIn()) {
 					addNewElement();
 				} else {
 					Util.showWarning("You are not logged in", "You need to log in first\n to add new elements!");

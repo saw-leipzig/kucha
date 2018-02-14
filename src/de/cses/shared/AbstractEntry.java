@@ -21,6 +21,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public abstract class AbstractEntry implements IsSerializable {
 	
+	private boolean openAccess = false;
+	
 	/**
 	 * 
 	 */
@@ -34,5 +36,13 @@ public abstract class AbstractEntry implements IsSerializable {
 	 * @return a unique ID for the specific entry data
 	 */
 	abstract public String getUniqueID();
+	
+	public boolean isOpenAccess() {
+		return openAccess;
+	}
+	
+	public void setOpenAccess(boolean openAccess) {
+		this.openAccess = openAccess;
+	}
 
 }

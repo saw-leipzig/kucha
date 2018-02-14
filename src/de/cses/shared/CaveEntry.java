@@ -39,17 +39,17 @@ public class CaveEntry extends AbstractEntry {
 	private boolean hasImmitationOfMountains = false;
 	private boolean hasHolesForFixationOfPlasticalItems = false;
 	private boolean hasWoodenConstruction = false;
-	private ArrayList<CaveAreaEntry> caveAreaList;
-	private ArrayList<WallEntry> wallList;
-	private ArrayList<C14AnalysisUrlEntry> c14AnalysisUrlList;
-	private ArrayList<C14DocumentEntry> c14DocumentList;
+	private ArrayList<CaveAreaEntry> caveAreaList = new ArrayList<CaveAreaEntry>();
+	private ArrayList<WallEntry> wallList = new ArrayList<WallEntry>();
+	private ArrayList<C14AnalysisUrlEntry> c14AnalysisUrlList = new ArrayList<C14AnalysisUrlEntry>();
+	private ArrayList<C14DocumentEntry> c14DocumentList = new ArrayList<C14DocumentEntry>();
 
 	public CaveEntry() { }
 
 	public CaveEntry(int caveID, String officialNumber, String historicName, String optionalHistoricName, int caveTypeID, int districtID,
 			int regionID, int orientationID, String stateOfPerservation, String findings, String notes, String firstDocumentedBy, int firstDocumentedInYear, int preservationClassificationID,
 			int caveGroupID, String optionalCaveSketch, String caveLayoutComments, boolean hasVolutedHorseShoeArch, boolean hasSculptures, boolean hasClayFigures, boolean hasImmitationOfMountains,
-			boolean hasHolesForFixationOfPlasticalItems, boolean hasWoodenConstruction) {
+			boolean hasHolesForFixationOfPlasticalItems, boolean hasWoodenConstruction, boolean openAccess) {
 		this.caveID = caveID;
 		this.officialNumber = officialNumber;
 		this.historicName = historicName;
@@ -77,12 +77,13 @@ public class CaveEntry extends AbstractEntry {
 		wallList = new ArrayList<WallEntry>();
 		c14AnalysisUrlList = new ArrayList<C14AnalysisUrlEntry>();
 		c14DocumentList = new ArrayList<C14DocumentEntry>();
+		this.setOpenAccess(openAccess);
 	}
 	
 	public CaveEntry clone() {
 		CaveEntry clonedCE = new CaveEntry(caveID, officialNumber, historicName, optionalHistoricName, caveTypeID, districtID,
 				regionID, orientationID, stateOfPerservation, findings, notes, firstDocumentedBy, firstDocumentedInYear, preservationClassificationID,
-				caveGroupID, optionalCaveSketch, caveLayoutComments, hasVolutedHorseShoeArch, hasSculptures, hasClayFigures, hasImmitationOfMountains, hasHolesForFixationOfPlasticalItems, hasWoodenConstruction);
+				caveGroupID, optionalCaveSketch, caveLayoutComments, hasVolutedHorseShoeArch, hasSculptures, hasClayFigures, hasImmitationOfMountains, hasHolesForFixationOfPlasticalItems, hasWoodenConstruction, this.isOpenAccess());
 		ArrayList<CaveAreaEntry> clonedCaveAreaList = new ArrayList<CaveAreaEntry>();
 		for (CaveAreaEntry cae : caveAreaList) {
 			clonedCaveAreaList.add(cae.clone());

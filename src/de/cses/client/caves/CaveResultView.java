@@ -13,8 +13,6 @@
  */
 package de.cses.client.caves;
 
-import com.google.gwt.user.client.ui.Widget;
-
 import de.cses.client.ui.AbstractResultView;
 
 /**

@@ -492,7 +492,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	 * @see de.cses.client.DatabaseService#userLogin(java.lang.String, java.lang.String)
 	 */
 	@Override
-	public UserEntry userLogin(String username, String password) throws IllegalArgumentException {
+	public String userLogin(String username, String password) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.userLogin(username, password);
 	}
@@ -691,6 +691,14 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public int insertLocationEntry(LocationEntry lEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.insertLocationEntry(lEntry);
+	}
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#checkSessionID(java.lang.String)
+	 */
+	@Override
+	public String checkSessionID(String sessionID) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.checkSessionID(sessionID);
 	}
 
 }

@@ -17,6 +17,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.widget.core.client.Header;
@@ -32,7 +33,6 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.Util;
-import de.cses.shared.UserEntry;
 
 /**
  * @author alingnau
@@ -41,14 +41,15 @@ import de.cses.shared.UserEntry;
 public class UserLogin extends SimpleContainer {
 
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
+	private static final String SESSION_ID = "sessionID";
 
 	private static UserLogin instance = null;
-	private UserEntry user;
 	private TextButton loginButton, logoutButton;
 	private TextField usernameField;
 	private PasswordField passwordField;
 	private HorizontalLayoutContainer loginView, userView;
 	private Header loginHeadline, headline;
+	private String username;
 
 	/**
 	 * 
@@ -57,6 +58,10 @@ public class UserLogin extends SimpleContainer {
 		initLoginView();
 		initUserView();
 		add(loginView);
+		String localSessionID = Cookies.getCookie(SESSION_ID);
+		if (localSessionID != null) {
+			checkIfLoggedIn(localSessionID);
+		}
 	}
 
 	public static synchronized UserLogin getInstance() {
@@ -65,9 +70,10 @@ public class UserLogin extends SimpleContainer {
 		}
 		return instance;
 	}
-
-	private void checkLogin() {
-		dbService.userLogin(usernameField.getValue().toLowerCase(), cryptWithMD5(passwordField.getValue()), new AsyncCallback<UserEntry>() {
+	
+	private void login() {
+		username = usernameField.getValue().toLowerCase();
+		dbService.userLogin(username, cryptWithMD5(passwordField.getValue()), new AsyncCallback<String>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
@@ -76,9 +82,13 @@ public class UserLogin extends SimpleContainer {
 			}
 
 			@Override
-			public void onSuccess(UserEntry result) {
+			public void onSuccess(String result) { // we get the sessionID
 				if (result != null) {
-					setUser(result);
+					loginView.removeFromParent();
+					Cookies.setCookie(SESSION_ID, result);
+					logoutButton.setText("logout " + username);
+			    headline.setHTML("<h1>Welcome to the Kucha Information System! You are logged in!</h1>");
+					add(userView);
 				} else {
 					Util.showWarning("Login Message", "Login error! Please check username / password!");
 					usernameField.reset();
@@ -87,19 +97,35 @@ public class UserLogin extends SimpleContainer {
 			}
 		});
 	}
+	
+	/**
+	 * 
+	 */
+	private void checkIfLoggedIn(String sessionID) {
+		dbService.checkSessionID(sessionID, new AsyncCallback<String>() {
 
-	private void setUser(UserEntry entry) {
-		user = entry;
-		loginView.removeFromParent();
-    headline.setHTML("<h1>Hello " + user.getFirstname() + "! Welcome to the Kucha Information System!</h1>");
-		add(userView);
+			@Override
+			public void onFailure(Throwable caught) {
+			}
+
+			@Override
+			public void onSuccess(String result) { // we get the username
+				if (result != null) {
+					username = result;
+					loginView.removeFromParent();
+					logoutButton.setText("logout " + username);
+			    headline.setHTML("<h1>Welcome to the Kucha Information System! You are logged in!</h1>");
+					add(userView);
+				}
+			}
+		});
 	}
 
 	private void logout() {
-		usernameField.setValue(user.getUsername());
+		Cookies.removeCookie(SESSION_ID);
+		usernameField.setValue(username);
 		passwordField.reset();
 		userView.removeFromParent();
-		user = null;
 		add(loginView);
 	}
 
@@ -116,7 +142,7 @@ public class UserLogin extends SimpleContainer {
 
 			@Override
 			public void onSelect(SelectEvent event) {
-				checkLogin();
+				login();
 			}
 		});
 		loginView.add(loginHeadline, new HorizontalLayoutData(1.0, 1.0, new Margins(5)));
@@ -128,6 +154,7 @@ public class UserLogin extends SimpleContainer {
 	private void initUserView() {
 		headline = new Header();
 		userView = new HorizontalLayoutContainer();
+
 		logoutButton = new TextButton("logout");
 		logoutButton.addSelectHandler(new SelectHandler() {
 
@@ -136,15 +163,12 @@ public class UserLogin extends SimpleContainer {
 				logout();
 			}
 		});
+		
     headline.setHTML("<h1>Welcome to the Kucha Information System</h1>");
-		userView.add(headline, new HorizontalLayoutData(1.0, 1.0, new Margins(5)));
-		userView.add(logoutButton, new HorizontalLayoutData(50.0, 30.0, new Margins(5)));
+		userView.add(headline, new HorizontalLayoutData(.9, 1.0, new Margins(5)));
+		userView.add(logoutButton, new HorizontalLayoutData(.1, 1.0, new Margins(5)));
 	}
-
-	public int getAccessRights() {
-		return (user == null ? 0 : user.getAccessrights());
-	}
-
+	
 	private static String cryptWithMD5(String pass) {
 		try {
 			MessageDigest md = MessageDigest.getInstance("MD5");
@@ -164,7 +188,14 @@ public class UserLogin extends SimpleContainer {
 	}
 
 	public String getUsernameSessionIDParameterForUri() {
-		return "&user=" + user.getUsername() + "&sessionID=" + user.getSessionID();
+		return "&sessionID=" + Cookies.getCookie(SESSION_ID);
+	}
+
+	/**
+	 * @return
+	 */
+	public static boolean isLoggedIn() {
+		return (Cookies.getCookie(SESSION_ID) != null);
 	}
 
 }

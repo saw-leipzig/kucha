@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.UUID;
 
 import de.cses.server.ServerProperties;
-import de.cses.server.UserManager;
 import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.C14AnalysisUrlEntry;
@@ -524,7 +523,7 @@ public class MysqlConnector {
 						rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedInYear"), rs.getInt("PreservationClassificationID"),
 						rs.getInt("CaveGroupID"), rs.getString("OptionalCaveSketch"), rs.getString("CaveLayoutComments"), rs.getBoolean("HasVolutedHorseShoeArch"),
 						rs.getBoolean("HasSculptures"), rs.getBoolean("HasClayFigures"), rs.getBoolean("HasImmitationOfMountains"), rs.getBoolean("HasHolesForFixationOfPlasticalItems"), 
-						rs.getBoolean("HasWoodenConstruction"));
+						rs.getBoolean("HasWoodenConstruction"), rs.getBoolean("OpenAccess"));
 				ce.setCaveAreaList(getCaveAreas(ce.getCaveID()));
 				ce.setWallList(getWalls(ce.getCaveID()));
 				ce.setC14AnalysisUrlList(getC14AnalysisEntries(ce.getCaveID()));
@@ -554,7 +553,7 @@ public class MysqlConnector {
 						rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedInYear"), rs.getInt("PreservationClassificationID"),
 						rs.getInt("CaveGroupID"), rs.getString("OptionalCaveSketch"), rs.getString("CaveLayoutComments"), rs.getBoolean("HasVolutedHorseShoeArch"),
 						rs.getBoolean("HasSculptures"), rs.getBoolean("HasClayFigures"), rs.getBoolean("HasImmitationOfMountains"), rs.getBoolean("HasHolesForFixationOfPlasticalItems"), 
-						rs.getBoolean("HasWoodenConstruction"));
+						rs.getBoolean("HasWoodenConstruction"), rs.getBoolean("OpenAccess"));
 				result.setCaveAreaList(getCaveAreas(result.getCaveID()));
 				result.setWallList(getWalls(result.getCaveID()));
 				result.setC14AnalysisUrlList(getC14AnalysisEntries(result.getCaveID()));
@@ -584,7 +583,7 @@ public class MysqlConnector {
 						rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedInYear"), rs.getInt("PreservationClassificationID"),
 						rs.getInt("CaveGroupID"), rs.getString("OptionalCaveSketch"), rs.getString("CaveLayoutComments"), rs.getBoolean("HasVolutedHorseShoeArch"),
 						rs.getBoolean("HasSculptures"), rs.getBoolean("HasClayFigures"), rs.getBoolean("HasImmitationOfMountains"), rs.getBoolean("HasHolesForFixationOfPlasticalItems"), 
-						rs.getBoolean("HasWoodenConstruction"));
+						rs.getBoolean("HasWoodenConstruction"), rs.getBoolean("OpenAccess"));
 				ce.setCaveAreaList(getCaveAreas(ce.getCaveID()));
 				ce.setWallList(getWalls(ce.getCaveID()));
 				ce.setC14AnalysisUrlList(getC14AnalysisEntries(ce.getCaveID()));
@@ -1229,7 +1228,7 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Sites");
 			while (rs.next()) {
-				result.add(new SiteEntry(rs.getInt("SiteID"), rs.getString("Name"), rs.getString("AlternativeName")));
+				result.add(new SiteEntry(rs.getInt("SiteID"), rs.getString("Name"), rs.getString("AlternativeName"), rs.getString("ShortName")));
 			}
 			rs.close();
 			stmt.close();
@@ -1251,7 +1250,7 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Sites WHERE SiteID=" + id);
 			if (rs.first()) {
-				result = new SiteEntry(rs.getInt("SiteID"), rs.getString("Name"), rs.getString("AlternativeName"));
+				result = new SiteEntry(rs.getInt("SiteID"), rs.getString("Name"), rs.getString("AlternativeName"), rs.getString("ShortName"));
 			}
 			rs.close();
 			stmt.close();
@@ -1665,7 +1664,7 @@ public class MysqlConnector {
 			pstmt = dbc.prepareStatement("UPDATE Caves SET OfficialNumber=?, HistoricName=?, OptionalHistoricName=?, CaveTypeID=?, DistrictID=?, "
 					+ "RegionID=?, OrientationID=?, StateOfPreservation=?, Findings=?, Notes=?, FirstDocumentedBy=?, FirstDocumentedInYear=?, PreservationClassificationID=?, "
 					+ "CaveGroupID=?, OptionalCaveSketch=?, CaveLayoutComments=?, HasVolutedHorseShoeArch=?, HasSculptures=?, HasClayFigures=?, HasImmitationOfMountains=?, "
-					+ "HasHolesForFixationOfPlasticalItems=?, HasWoodenConstruction=? WHERE CaveID=?");
+					+ "HasHolesForFixationOfPlasticalItems=?, HasWoodenConstruction=?, OpenAccess=? WHERE CaveID=?");
 			pstmt.setString(1, caveEntry.getOfficialNumber());
 			pstmt.setString(2, caveEntry.getHistoricName());
 			pstmt.setString(3, caveEntry.getOptionalHistoricName());
@@ -1688,7 +1687,8 @@ public class MysqlConnector {
 			pstmt.setBoolean(20, caveEntry.isHasImmitationOfMountains());
 			pstmt.setBoolean(21, caveEntry.isHasHolesForFixationOfPlasticalItems());
 			pstmt.setBoolean(22, caveEntry.isHasWoodenConstruction());
-			pstmt.setInt(23, caveEntry.getCaveID());
+			pstmt.setBoolean(23, caveEntry.isOpenAccess());
+			pstmt.setInt(24, caveEntry.getCaveID());
 			pstmt.executeUpdate();
 			pstmt.close();
 			for (CaveAreaEntry caEntry : caveEntry.getCaveAreaList()) {
@@ -1718,8 +1718,8 @@ public class MysqlConnector {
 			pstmt = dbc.prepareStatement(
 					"INSERT INTO Caves (OfficialNumber, HistoricName, OptionalHistoricName, CaveTypeID, DistrictID, RegionID, OrientationID, StateOfPreservation, "
 							+ "Findings, Notes, FirstDocumentedBy, FirstDocumentedInYear, PreservationClassificationID, CaveGroupID, OptionalCaveSketch, CaveLayoutComments, HasVolutedHorseShoeArch, "
-							+ "HasSculptures, HasClayFigures, HasImmitationOfMountains, HasHolesForFixationOfPlasticalItems, HasWoodenConstruction) "
-							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+							+ "HasSculptures, HasClayFigures, HasImmitationOfMountains, HasHolesForFixationOfPlasticalItems, HasWoodenConstruction, OpenAccess) "
+							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			pstmt.setString(1, caveEntry.getOfficialNumber());
 			pstmt.setString(2, caveEntry.getHistoricName());
 			pstmt.setString(3, caveEntry.getOptionalHistoricName());
@@ -1742,6 +1742,7 @@ public class MysqlConnector {
 			pstmt.setBoolean(20, caveEntry.isHasImmitationOfMountains());
 			pstmt.setBoolean(21, caveEntry.isHasHolesForFixationOfPlasticalItems());
 			pstmt.setBoolean(22, caveEntry.isHasWoodenConstruction());
+			pstmt.setBoolean(23, caveEntry.isOpenAccess());
 			pstmt.executeUpdate();
 			ResultSet keys = pstmt.getGeneratedKeys();
 			if (keys.next()) { // there should only be 1 key returned here 
@@ -1797,18 +1798,16 @@ public class MysqlConnector {
 	 * @param password
 	 * @return
 	 */
-	public UserEntry userLogin(String username, String password) {
-		UserEntry result = null;
+	public synchronized String userLogin(String username, String password) {
+		String newSessionID = null;
 		Connection dbc = getConnection();
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Users WHERE Username = '" + username + "' AND Password = '" + password + "'");
 			if (rs.first()) {
-				result = new UserEntry(rs.getInt("UserID"), rs.getString("Username"), rs.getString("Firstname"), rs.getString("Lastname"),
-						rs.getString("Email"), rs.getString("Affiliation"), rs.getInt("Accessrights"));
-				result.setSessionID(UUID.randomUUID().toString());
-				UserManager.getInstance().addUser(username, result);
+				newSessionID = UUID.randomUUID().toString();
+				updateSessionIDforUser(username, newSessionID);
 			} else {
 				System.err.println("wrong password for user " + username + ": hash = " + password);
 			}
@@ -1818,9 +1817,131 @@ public class MysqlConnector {
 			e.printStackTrace();
 			return null;
 		}
+		return newSessionID;
+	}
+	
+	/**
+	 * @param username
+	 * @param password
+	 * @return
+	 */
+	public UserEntry getUser(String username) {
+		UserEntry result = null;
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Users WHERE Username = '" + username + "'");
+			if (rs.first()) {
+				result = new UserEntry(rs.getInt("UserID"), rs.getString("Username"), rs.getString("Firstname"), rs.getString("Lastname"),
+						rs.getString("Email"), rs.getString("Affiliation"), rs.getInt("Accessrights"));
+			} else {
+				System.err.println("no user " + username + " existing");
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
 		return result;
 	}
+	
+	/**
+	 * 
+	 * @param username
+	 * @return
+	 */
+	public String getSessionIDfromUser(String username) {
+		String sessionID = null;
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("SELECT SessionID FROM Users WHERE Username=?");
+			pstmt.setString(1, username);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.first()) {
+				sessionID = rs.getString("SessionID");
+			} else {
+				System.err.println("no user " + username + " existing");
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return sessionID;
+	}
 
+	/**
+	 * 
+	 * @param username
+	 * @return
+	 */
+	public int getAccessRightsFromUsers(String sessionID) {
+		int accessRights = 0;
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("SELECT Accessrights FROM Users WHERE SessionID=?");
+			pstmt.setString(1, sessionID);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.first()) {
+				accessRights = rs.getInt("Accessrights");
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return 0;
+		}
+		return accessRights;
+	}
+
+	/**
+	 * 
+	 * @param username
+	 * @param sessionID
+	 */
+	public void updateSessionIDforUser(String username, String sessionID) {
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("UPDATE Users SET SessionID=? WHERE Username=?");
+			pstmt.setString(1, sessionID);
+			pstmt.setString(2, username);
+			pstmt.executeUpdate();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * @param sessionID
+	 * @return username
+	 */
+	public String checkSessionID(String sessionID) {
+		String username = null;
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("SELECT Username FROM Users WHERE SessionID=?");
+			pstmt.setString(1, sessionID);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.first()) {
+				username = rs.getString("Username");
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return username;
+	}
+	
 	/**
 	 * @return
 	 */
@@ -1921,7 +2042,7 @@ public class MysqlConnector {
 	 * @return <code>true</code> when operation is successful
 	 */
 	public synchronized boolean updateDepictionEntry(DepictionEntry de, ArrayList<ImageEntry> imgEntryList,
-			ArrayList<PictorialElementEntry> selectedPEList, ArrayList<IconographyEntry> iconographyList) {
+		ArrayList<PictorialElementEntry> selectedPEList, ArrayList<IconographyEntry> iconographyList) {
 		// System.err.println("==> updateDepictionEntry called");
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
