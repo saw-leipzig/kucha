@@ -32,6 +32,7 @@ import de.cses.shared.AbstractEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.DistrictEntry;
+import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 
 /**
@@ -46,13 +47,13 @@ public class CaveView extends AbstractView {
 	}
 
 	interface CaveViewTemplates extends XTemplates {
-		@XTemplate("<div><img src='{imgUri}' height='16px' width='16px'> <b style='font-size: 20px'> {sitename} {officialNumber} </b></center><p style='font-size:9px'> {officialName} <br> {historicName} </p></div>")
+		@XTemplate("<div><img src='{imgUri}' height='16px' width='16px'> <b style='font-size: 20px'> {sitename} {officialNumber} </b><p style='font-size:9px'> {officialName} <br> {historicName} </p></div>")
 		SafeHtml view(SafeUri imgUri, String officialNumber, String officialName, String historicName, String sitename);
 
-		@XTemplate("<div><center><img src='{imgUri}' height='16px' width='16px'> <b style='font-size: 20px'> {officialNumber} </b></center><p style='font-size:9px'> {officialName} <br> {historicName} </p></div>")
+		@XTemplate("<div><img src='{imgUri}' height='16px' width='16px'> <b style='font-size: 20px'> {officialNumber} </b><p style='font-size:9px'> {officialName} <br> {historicName} </p></div>")
 		SafeHtml view(SafeUri imgUri, String officialNumber, String officialName, String historicName);
 
-		@XTemplate("<div><center><img src='{imgUri}' height='16px' width='16px' > <b style='font-size: 20px'> {officialNumber} </b></center></div>")
+		@XTemplate("<div><img src='{imgUri}' height='16px' width='16px' > <b style='font-size: 20px'> {officialNumber} </b></div>")
 		SafeHtml view(SafeUri imgUri, String officialNumber);
 	}
 
@@ -65,6 +66,7 @@ public class CaveView extends AbstractView {
 	private Resources resources;
 	protected String caveType;
 	private CaveViewTemplates cvTemplate;
+	private StaticTables stab = StaticTables.getInstance();
 
 	/**
 	 * @param text
@@ -75,18 +77,27 @@ public class CaveView extends AbstractView {
 		cEntry = entry;
 		resources = GWT.create(Resources.class);
 		cvTemplate = GWT.create(CaveViewTemplates.class);
-		DistrictEntry de = StaticTables.getInstance().getDistrictEntries().get(cEntry.getDistrictID());
+		DistrictEntry de = stab.getDistrictEntries().get(cEntry.getDistrictID());
 		if (de != null) {
-			SiteEntry se = StaticTables.getInstance().getSiteEntries().get(de.getSiteID());
+			SiteEntry se = stab.getSiteEntries().get(de.getSiteID());
 			setHTML(cvTemplate.view(
 					resources.logo().getSafeUri(), entry.getOfficialNumber(), entry.getHistoricName(), entry.getOptionalHistoricName(), se.getShortName()
 				));
 		} else {
-			setHTML(cvTemplate.view(
-					resources.logo().getSafeUri(), entry.getOfficialNumber(), entry.getHistoricName(), entry.getOptionalHistoricName()
-				));
+			RegionEntry re = stab.getRegionEntries().get(cEntry.getRegionID());
+			if (re != null) {
+				SiteEntry se = stab.getSiteEntries().get(re.getSiteID());
+				setHTML(cvTemplate.view(
+						resources.logo().getSafeUri(), entry.getOfficialNumber(), entry.getHistoricName(), entry.getOptionalHistoricName(), se.getShortName()
+					));
+			} else {
+				setHTML(cvTemplate.view(
+						resources.logo().getSafeUri(), entry.getOfficialNumber(), entry.getHistoricName(), entry.getOptionalHistoricName()
+					));
+			
+			}
 		}
-		setPixelSize(150, 110);
+		setSize("150px", "110px");
 		
 		DragSource source = new DragSource(this) {
 

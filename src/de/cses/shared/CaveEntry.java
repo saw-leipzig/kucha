@@ -39,10 +39,10 @@ public class CaveEntry extends AbstractEntry {
 	private boolean hasImmitationOfMountains = false;
 	private boolean hasHolesForFixationOfPlasticalItems = false;
 	private boolean hasWoodenConstruction = false;
-	private ArrayList<CaveAreaEntry> caveAreaList;
-	private ArrayList<WallEntry> wallList;
-	private ArrayList<C14AnalysisUrlEntry> c14AnalysisUrlList;
-	private ArrayList<C14DocumentEntry> c14DocumentList;
+	private ArrayList<CaveAreaEntry> caveAreaList = new ArrayList<CaveAreaEntry>();
+	private ArrayList<WallEntry> wallList = new ArrayList<WallEntry>();
+	private ArrayList<C14AnalysisUrlEntry> c14AnalysisUrlList = new ArrayList<C14AnalysisUrlEntry>();
+	private ArrayList<C14DocumentEntry> c14DocumentList = new ArrayList<C14DocumentEntry>();
 
 	public CaveEntry() { }
 
