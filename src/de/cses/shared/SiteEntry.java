@@ -22,7 +22,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class SiteEntry extends AbstractEntry {
 	
 	private int siteID;
-	private String name, alternativeName;
+	private String name, alternativeName, shortName;
 	
 	/**
 	 * 
@@ -30,11 +30,12 @@ public class SiteEntry extends AbstractEntry {
 	public SiteEntry() {
 	}
 
-	public SiteEntry(int siteID, String name, String alternativeName) {
+	public SiteEntry(int siteID, String name, String alternativeName, String shortName) {
 		super();
 		this.siteID = siteID;
 		this.name = name;
 		this.alternativeName = alternativeName;
+		this.shortName = shortName;
 	}
 
 	public int getSiteID() {
@@ -67,6 +68,14 @@ public class SiteEntry extends AbstractEntry {
 	@Override
 	public String getUniqueID() {
 		return "Site-"+siteID;
+	}
+
+	public String getShortName() {
+		return shortName;
+	}
+
+	public void setShortName(String shortName) {
+		this.shortName = shortName;
 	}
 
 }

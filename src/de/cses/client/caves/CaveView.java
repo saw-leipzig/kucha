@@ -46,7 +46,7 @@ public class CaveView extends AbstractView {
 	}
 
 	interface CaveViewTemplates extends XTemplates {
-		@XTemplate("<div><label style='font-size:9px'> {sitename} </label><center><img src='{imgUri}' height='16px' width='16px'> <b style='font-size: 20px'> {officialNumber} </b></center><p style='font-size:9px'> {officialName} <br> {historicName} </p></div>")
+		@XTemplate("<div><img src='{imgUri}' height='16px' width='16px'> <b style='font-size: 20px'> {sitename} {officialNumber} </b></center><p style='font-size:9px'> {officialName} <br> {historicName} </p></div>")
 		SafeHtml view(SafeUri imgUri, String officialNumber, String officialName, String historicName, String sitename);
 
 		@XTemplate("<div><center><img src='{imgUri}' height='16px' width='16px'> <b style='font-size: 20px'> {officialNumber} </b></center><p style='font-size:9px'> {officialName} <br> {historicName} </p></div>")
@@ -79,7 +79,7 @@ public class CaveView extends AbstractView {
 		if (de != null) {
 			SiteEntry se = StaticTables.getInstance().getSiteEntries().get(de.getSiteID());
 			setHTML(cvTemplate.view(
-					resources.logo().getSafeUri(), entry.getOfficialNumber(), entry.getHistoricName(), entry.getOptionalHistoricName(), se.getName()
+					resources.logo().getSafeUri(), entry.getOfficialNumber(), entry.getHistoricName(), entry.getOptionalHistoricName(), se.getShortName()
 				));
 		} else {
 			setHTML(cvTemplate.view(
