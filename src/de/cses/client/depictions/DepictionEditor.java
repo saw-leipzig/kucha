@@ -52,6 +52,8 @@ import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.TabPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
@@ -800,19 +802,6 @@ public class DepictionEditor extends AbstractEditor {
 		});
 		inventoryNumberFP.add(inventoryNumberTF);
 		
-		FramedPanel positionNoteFP = new FramedPanel();
-		positionNoteFP.setHeading("Position Notes");
-		TextArea positionNotesTA = new TextArea();
-		positionNotesTA.setValue(correspondingDepictionEntry.getPositionNotes());
-		positionNotesTA.addValueChangeHandler(new ValueChangeHandler<String>() {
-
-			@Override
-			public void onValueChange(ValueChangeEvent<String> event) {
-				correspondingDepictionEntry.setPositionNotes(event.getValue());
-			}
-		});
-		positionNoteFP.add(positionNotesTA);
-		
 		FramedPanel stateOfPreservationFP = new FramedPanel();
 		stateOfPreservationFP.setHeading("State of Preservation");
 		ToolButton addPreservationAttributeTB = new ToolButton(ToolButton.PLUS);
@@ -874,14 +863,21 @@ public class DepictionEditor extends AbstractEditor {
 		preservationAttributesListView.setToolTip("to select attributes drag right");
 		ListView<PreservationAttributeEntry, String> selectedPreservationAttributesListView = new ListView<PreservationAttributeEntry, String>(selectedPreservationAttributesLS, presAttributeProps.name());
 		selectedPreservationAttributesListView.setToolTip("to deselect attributes drag left");
-		new ListViewDragSource<PreservationAttributeEntry>(preservationAttributesListView).setGroup("preservationAttributeAdding");
-		new ListViewDropTarget<PreservationAttributeEntry>(selectedPreservationAttributesListView).setGroup("preservationAttributeAdding");
-		new ListViewDragSource<PreservationAttributeEntry>(selectedPreservationAttributesListView).setGroup("preservationAttributeRemoval");
-		new ListViewDropTarget<PreservationAttributeEntry>(preservationAttributesListView).setGroup("preservationAttributeRemoval");
-		VerticalLayoutContainer preservationAttributesVLC = new VerticalLayoutContainer();
-		preservationAttributesVLC.add(preservationAttributesListView, new VerticalLayoutData(.5, 1.0, new Margins(1)));
-		preservationAttributesVLC.add(selectedPreservationAttributesListView, new VerticalLayoutData(.5, 1.0, new Margins(1)));
-    stateOfPreservationFP.add(preservationAttributesVLC);
+		
+		new ListViewDragSource<PreservationAttributeEntry>(preservationAttributesListView).setGroup("paGroup");
+		new ListViewDragSource<PreservationAttributeEntry>(selectedPreservationAttributesListView).setGroup("paGroup");
+		
+		new ListViewDropTarget<PreservationAttributeEntry>(preservationAttributesListView).setGroup("paGroup");
+		new ListViewDropTarget<PreservationAttributeEntry>(selectedPreservationAttributesListView).setGroup("paGroup");
+
+		BorderLayoutContainer borderLayoutContainer = new BorderLayoutContainer();
+    borderLayoutContainer.setWestWidget(preservationAttributesListView, new BorderLayoutData(0.5));
+    borderLayoutContainer.setCenterWidget(selectedPreservationAttributesListView, new BorderLayoutData(0.5));
+//    
+//    VerticalLayoutContainer preservationAttributesVLC = new VerticalLayoutContainer();
+//		preservationAttributesVLC.add(preservationAttributesListView, new VerticalLayoutData(.45, 1.0, new Margins(1)));
+//		preservationAttributesVLC.add(selectedPreservationAttributesListView, new VerticalLayoutData(.45, 1.0, new Margins(1)));
+    stateOfPreservationFP.add(borderLayoutContainer);
     
 		VerticalLayoutContainer basicsLeftVLC = new VerticalLayoutContainer();
 		basicsLeftVLC.add(shortNameFP, new VerticalLayoutData(1.0, .1));
@@ -891,14 +887,17 @@ public class DepictionEditor extends AbstractEditor {
 		basicsLeftVLC.add(datePurchasedFP, new VerticalLayoutData(1.0, .1));
 		basicsLeftVLC.add(currentLocationFP, new VerticalLayoutData(1.0, .1));
 		basicsLeftVLC.add(inventoryNumberFP, new VerticalLayoutData(1.0, .1));
-		basicsLeftVLC.add(positionNoteFP, new VerticalLayoutData(1.0, .15));
-		basicsLeftVLC.add(stateOfPreservationFP, new VerticalLayoutData(1.0, .15));
+//		basicsLeftVLC.add(positionNoteFP, new VerticalLayoutData(1.0, .15));
+		basicsLeftVLC.add(stateOfPreservationFP, new VerticalLayoutData(1.0, .3));
 
 		FramedPanel wallSelectorFP = new FramedPanel();
 		wallSelectorFP.setHeading("Wall");
-		TextButton wallEditorButton = new TextButton("set position on wall");
+		ToolButton wallEditorTB = new ToolButton(ToolButton.PIN);
+		wallEditorTB.setToolTip("set position on wall");
+		
+//		TextButton wallEditorButton = new TextButton("set position on wall");
 		wallEditor = new Walls(1, false);
-		wallEditorButton.addSelectHandler(new SelectHandler() {
+		wallEditorTB.addSelectHandler(new SelectHandler() {
 
 			@Override
 			public void onSelect(SelectEvent event) {
@@ -910,13 +909,26 @@ public class DepictionEditor extends AbstractEditor {
 				wallEditorDialog.center();
 			}
 		});
-		wallSelectorFP.addButton(wallEditorButton);
-
+		wallSelectorFP.addTool(wallEditorTB);
 		wallSelectorPanel = new WallSelector(350);
 		wallSelectorFP.add(wallSelectorPanel);
 
+		FramedPanel positionNoteFP = new FramedPanel();
+		positionNoteFP.setHeading("Position Notes");
+		TextArea positionNotesTA = new TextArea();
+		positionNotesTA.setValue(correspondingDepictionEntry.getPositionNotes());
+		positionNotesTA.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				correspondingDepictionEntry.setPositionNotes(event.getValue());
+			}
+		});
+		positionNoteFP.add(positionNotesTA);
+		
 		VerticalLayoutContainer basicsRightVLC = new VerticalLayoutContainer();
-		basicsRightVLC.add(wallSelectorFP, new VerticalLayoutData(1.0, 1.0));
+		basicsRightVLC.add(wallSelectorFP, new VerticalLayoutData(1.0, .85));
+		basicsRightVLC.add(positionNoteFP, new VerticalLayoutData(1.0, .15));
 
 		HorizontalLayoutContainer basicsTabHLC = new HorizontalLayoutContainer();
 		basicsTabHLC.add(basicsLeftVLC, new HorizontalLayoutData(.4, 1.0));
