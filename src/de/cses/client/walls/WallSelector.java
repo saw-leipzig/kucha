@@ -217,5 +217,8 @@ public class WallSelector implements IsWidget {
 	public WallEntry getSelectedWallEntry() {
 		return selectedWallEntry;
 	}
+	public void setWallEntry(WallEntry wallEntry) {
+		wallSelectorCB.setValue(wallEntry);
+	}
 
 }

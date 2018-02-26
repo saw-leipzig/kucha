@@ -21,6 +21,7 @@ import de.cses.client.StaticTables;
  */
 public class WallOrnamentCaveRelation extends AbstractEntry {
 	int caveID;
+	WallEntry wall;
 	int wallLocationID;
 	int ornamenticPositionID;
 	int ornamenticFunctionID;
@@ -33,30 +34,36 @@ public class WallOrnamentCaveRelation extends AbstractEntry {
 	 * @param ornamenticFunctionID
 	 * @param notes
 	 */
-	public WallOrnamentCaveRelation(int caveID, int wallLocationID, int ornamenticPositionID, int ornamenticFunctionID, String notes) {
+	public WallOrnamentCaveRelation(int caveID, WallEntry wall, int ornamenticPositionID, int ornamenticFunctionID, String notes) {
 		super();
 		this.caveID = caveID;
-		this.wallLocationID = wallLocationID;
+		this.wall = wall;
 		this.ornamenticPositionID = ornamenticPositionID;
 		this.ornamenticFunctionID = ornamenticFunctionID;
 		this.notes = notes;
+		this.wallLocationID = this.wall.getWallLocationID();
 	}
 
 	/**
 	 * @param caveID
 	 * @param wallLocationID
 	 */
-	public WallOrnamentCaveRelation(int caveID, int wallLocationID) {
+	public WallOrnamentCaveRelation(int caveID, WallEntry wall) {
 		this.caveID = caveID;
-		this.wallLocationID = wallLocationID;
+		this.wall = wall;
+		this.wallLocationID = this.wall.getWallLocationID();
+	}
+	public WallOrnamentCaveRelation() {
+		
 	}
 
-	public int getWallLocationID() {
-		return wallLocationID;
+	public WallEntry getWall() {
+		return wall;
 	}
 
-	public void setWallLocationID(int wallID) {
-		this.wallLocationID = wallID;
+	public void setWall(WallEntry wall) {
+		this.wall = wall;
+		this.wallLocationID = this.wall.getWallLocationID();
 	}
 
 	public String getNotes() {
@@ -89,6 +96,10 @@ public class WallOrnamentCaveRelation extends AbstractEntry {
 
 	public void setOrnamenticFunctionID(int ornamenticFunctionID) {
 		this.ornamenticFunctionID = ornamenticFunctionID;
+	}
+	
+	public int getWallLocationID() {
+		return wallLocationID;
 	}
 	
 	/*
