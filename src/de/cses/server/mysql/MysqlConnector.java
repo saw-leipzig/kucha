@@ -65,6 +65,7 @@ import de.cses.shared.UserEntry;
 import de.cses.shared.VendorEntry;
 import de.cses.shared.WallEntry;
 import de.cses.shared.WallLocationEntry;
+import de.cses.shared.WallOrnamentCaveRelation;
 
 /**
  * This is the central Database connector. Here are all methods that we need for standard database operations, including user login and access management.
@@ -722,7 +723,7 @@ public class MysqlConnector {
 		PreparedStatement ornamentCaveRelationStatement;
 		try {
 			ornamentCaveRelationStatement = dbc.prepareStatement("INSERT INTO CaveOrnamentRelation "
-					+ "(CaveID, OrnamentID, WallLocationID, Colours, Notes, GroupOfOrnaments, RelatedElementsOfOtherCultures, SimilarElementsOfOtherCultures ) "
+					+ "(CaveID, OrnamentID, Colours, Notes, GroupOfOrnaments, RelatedElementsOfOtherCultures, SimilarElementsOfOtherCultures, WallLocationID) "
 					+ "VALUES (?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			ornamentCaveRelationStatement.setInt(2, ornamentID);
 			for (OrnamentCaveRelation ornamentCaveR : cavesRelations) {
@@ -760,23 +761,23 @@ public class MysqlConnector {
 					relatedOrnamentsRelationStatement.executeUpdate();
 				}
 				
-				PreparedStatement similarOrnamentsRelationStatement = dbc.prepareStatement("INSERT INTO SimilarOrnamentsRelation (OrnamentID, OrnamentCaveRelationID) VALUES (?, ?)");
-				similarOrnamentsRelationStatement.setInt(2, newCaveOrnamentRelationID);
-				for (OrnamentEntry oEntry : ornamentCaveR.getSimilarOrnamentsRelations()) {
-					similarOrnamentsRelationStatement.setInt(1, oEntry.getOrnamentID());
-					similarOrnamentsRelationStatement.executeUpdate();
-				}
+			//	PreparedStatement similarOrnamentsRelationStatement = dbc.prepareStatement("INSERT INTO SimilarOrnamentsRelation (OrnamentID, OrnamentCaveRelationID) VALUES (?, ?)");
+			//	similarOrnamentsRelationStatement.setInt(2, newCaveOrnamentRelationID);
+			//	for (OrnamentEntry oEntry : ornamentCaveR.getSimilarOrnamentsRelations()) {
+			//		similarOrnamentsRelationStatement.setInt(1, oEntry.getOrnamentID());
+			//		similarOrnamentsRelationStatement.executeUpdate();
+			//	}
 
-				// TODO save ornament / wall location ID
-//				PreparedStatement wallCaveOrnamentRelationStatement = dbc.prepareStatement("INSERT INTO OrnamentCaveWallRelation (OrnamentCaveRelationID, WallLocationID, Position, Function, Notes)"
-//						+ "VALUES (?, ?, ?, ?, ?");
-//				for (WallEntry we : ornamentCaveR.get .getWalls().size(); j++) {
-//					rs = stmt.executeQuery("INSERT INTO WallCaveOrnamentRelation (OrnamentCaveRelationID, WallID, Position, Function, Notes) VALUES ("
-//							+ auto_increment_id + "," + ornamentEntry.getCavesRelations().get(i).getWalls().get(j).getWallLocationID() + ",'"
-//							+ ornamentEntry.getCavesRelations().get(i).getWalls().get(j).getOrnamenticPositionID() + "','"
-//							+ ornamentEntry.getCavesRelations().get(i).getWalls().get(j).getOrnamenticFunctionID() + "','"
-//							+ ornamentEntry.getCavesRelations().get(i).getWalls().get(j).getNotes() + "')");
-//				}
+				
+				PreparedStatement wallCaveOrnamentRelationStatement = dbc.prepareStatement("INSERT INTO OrnamentCaveWallRelation (OrnamentCaveRelationID,WallLocationID, PositionID, FunctionID, Notes) VALUES (?,?,?,?,?)");	
+			for (WallOrnamentCaveRelation we :ornamentCaveR.getWalls()) {
+						wallCaveOrnamentRelationStatement.setInt(1,auto_increment_id);
+						wallCaveOrnamentRelationStatement.setInt(2,we.getWallLocationID());
+						wallCaveOrnamentRelationStatement.setInt(3,we.getOrnamenticPositionID());
+						wallCaveOrnamentRelationStatement.setInt(4, we.getOrnamenticFunctionID());
+						wallCaveOrnamentRelationStatement.setString(5,we.getNotes());
+						wallCaveOrnamentRelationStatement.executeUpdate();
+			}
 
 			}	
 		} catch (SQLException e) {

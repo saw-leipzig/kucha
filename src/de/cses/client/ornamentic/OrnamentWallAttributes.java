@@ -16,6 +16,7 @@ package de.cses.client.ornamentic;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.XTemplates;
@@ -33,7 +34,6 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.TextArea;
-import com.sencha.gxt.widget.core.client.form.TextField;
 
 import de.cses.client.StaticTables;
 import de.cses.client.walls.WallSelector;
@@ -92,6 +92,9 @@ public class OrnamentWallAttributes extends PopupPanel {
 		FramedPanel selectWallFP = new FramedPanel();
 		selectWallFP.setHeading("Select Wall");
 		selectWallFP.add(wallselector);
+		if (wallOrnamentCaveRelation != null) {
+			wallselector.setWallEntry(wallOrnamentCaveRelation.getWall());
+		}
 
 		ornamentPositionComboBox = new ComboBox<OrnamentPositionEntry>(ornamentPositionEntryLS, ornamentPositionProps.name(),
 				new AbstractSafeHtmlRenderer<OrnamentPositionEntry>() {
@@ -154,6 +157,15 @@ public class OrnamentWallAttributes extends PopupPanel {
 		wallrelationFramedPanel.setHeading("Select Walls");
 		wallrelationFramedPanel.setSize("600px", "450px");
 		wallrelationFramedPanel.add(wallRelationHLC);
+		
+		ToolButton cancelTB = new ToolButton(ToolButton.CLOSE);
+		cancelTB.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				hide();
+			}
+		});
 
 		ToolButton saveTB = new ToolButton(ToolButton.SAVE);
 		saveTB.addSelectHandler(new SelectHandler() {
@@ -165,6 +177,7 @@ public class OrnamentWallAttributes extends PopupPanel {
 			}
 		});
 		wallrelationFramedPanel.addTool(saveTB);
+		wallrelationFramedPanel.addTool(cancelTB);
 
 //		ToolButton closeTB = new ToolButton(ToolButton.CLOSE);
 //		closeTB.addSelectHandler(new SelectHandler() {
@@ -207,7 +220,8 @@ public class OrnamentWallAttributes extends PopupPanel {
 	 * 
 	 */
 	protected void save() {
-		WallOrnamentCaveRelation caveWallOrnamentRelation = new WallOrnamentCaveRelation(caveEntry.getCaveID(), wallselector.getSelectedWallEntry().getWallLocationID());
+		Window.alert("aufgerufen");
+		WallOrnamentCaveRelation caveWallOrnamentRelation = new WallOrnamentCaveRelation(caveEntry.getCaveID(), wallselector.getSelectedWallEntry());
 		if (ornamentfunctionComboBox.getValue() == null) {
 			caveWallOrnamentRelation.setOrnamenticFunctionID(18); // 18 = unknown
 		} else {
@@ -218,10 +232,16 @@ public class OrnamentWallAttributes extends PopupPanel {
 		} else {
 			caveWallOrnamentRelation.setOrnamenticPositionID(ornamentPositionComboBox.getValue().getOrnamentPositionID());
 		}
-
+		Window.alert("relation erstellt");
 		caveWallOrnamentRelation.setNotes(notes.getText());
-		caveWallOrnamentRelation.setWallLocationID(wallselector.getSelectedWallEntry().getWallLocationID());
+		
+		Window.alert("beginn der vergleiche");
+		if(wallOrnamentCaveRelation != null) {
+			ornamentCaveRelation.getWallsListStore().remove(wallOrnamentCaveRelation);
+		}
+		Window.alert("vergleiche stattgefunden");
 		ornamentCaveRelation.getWallsListStore().add(caveWallOrnamentRelation);
+		Window.alert("geadded");
 	}
 
 	public CaveEntry getCave() {
