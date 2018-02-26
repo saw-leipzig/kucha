@@ -16,7 +16,6 @@ package de.cses.client.ornamentic;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.XTemplates;
@@ -220,7 +219,6 @@ public class OrnamentWallAttributes extends PopupPanel {
 	 * 
 	 */
 	protected void save() {
-		Window.alert("aufgerufen");
 		WallOrnamentCaveRelation caveWallOrnamentRelation = new WallOrnamentCaveRelation(caveEntry.getCaveID(), wallselector.getSelectedWallEntry());
 		if (ornamentfunctionComboBox.getValue() == null) {
 			caveWallOrnamentRelation.setOrnamenticFunctionID(18); // 18 = unknown
@@ -232,16 +230,12 @@ public class OrnamentWallAttributes extends PopupPanel {
 		} else {
 			caveWallOrnamentRelation.setOrnamenticPositionID(ornamentPositionComboBox.getValue().getOrnamentPositionID());
 		}
-		Window.alert("relation erstellt");
 		caveWallOrnamentRelation.setNotes(notes.getText());
 		
-		Window.alert("beginn der vergleiche");
 		if(wallOrnamentCaveRelation != null) {
 			ornamentCaveRelation.getWallsListStore().remove(wallOrnamentCaveRelation);
 		}
-		Window.alert("vergleiche stattgefunden");
 		ornamentCaveRelation.getWallsListStore().add(caveWallOrnamentRelation);
-		Window.alert("geadded");
 	}
 
 	public CaveEntry getCave() {
