@@ -832,15 +832,16 @@ public class DepictionEditor extends AbstractEditor {
 								@Override
 								public void onFailure(Throwable caught) {
 									caught.printStackTrace();
+									newPreservationAttributeFP.hide();
 								}
 
 								@Override
 								public void onSuccess(Integer result) {
 									paEntry.setPreservationAttributeID(result);
 									preservationAttributesLS.add(paEntry);
+									addPreservationAttributeDialog.hide();
 								}
 							});
-							newPreservationAttributeFP.hide();
 						}
 					}
 				});
@@ -873,10 +874,7 @@ public class DepictionEditor extends AbstractEditor {
 		BorderLayoutContainer borderLayoutContainer = new BorderLayoutContainer();
     borderLayoutContainer.setWestWidget(preservationAttributesListView, new BorderLayoutData(0.5));
     borderLayoutContainer.setCenterWidget(selectedPreservationAttributesListView, new BorderLayoutData(0.5));
-//    
-//    VerticalLayoutContainer preservationAttributesVLC = new VerticalLayoutContainer();
-//		preservationAttributesVLC.add(preservationAttributesListView, new VerticalLayoutData(.45, 1.0, new Margins(1)));
-//		preservationAttributesVLC.add(selectedPreservationAttributesListView, new VerticalLayoutData(.45, 1.0, new Margins(1)));
+
     stateOfPreservationFP.add(borderLayoutContainer);
     
 		VerticalLayoutContainer basicsLeftVLC = new VerticalLayoutContainer();
@@ -910,7 +908,7 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		wallSelectorFP.addTool(wallEditorTB);
-		wallSelectorPanel = new WallSelector(350);
+		wallSelectorPanel = new WallSelector();
 		wallSelectorFP.add(wallSelectorPanel);
 
 		FramedPanel positionNoteFP = new FramedPanel();

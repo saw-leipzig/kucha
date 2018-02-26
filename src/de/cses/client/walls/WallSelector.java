@@ -37,6 +37,8 @@ import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.data.shared.SortDir;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
+import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
@@ -64,12 +66,15 @@ public class WallSelector implements IsWidget {
 	private WallEntry selectedWallEntry;
 	private WallViewTemplate wallVT;
 	private ListStore<WallEntry> wallEntryLS;
-	private VerticalLayoutContainer mainVLC = null;
-	private int defaultCaveSketchWidth;
+//	private VerticalLayoutContainer mainVLC = null;
+	private Widget mainWidget = null;
 
 	interface CaveLayoutViewTemplates extends XTemplates {
 		@XTemplate("<img src=\"{imageUri}\" style=\"{defaultSketchWidth}; height: auto; align-content: center; margin: 5px;\">")
 		SafeHtml image(SafeUri imageUri, SafeStyles defaultSketchWidth);
+		
+		@XTemplate("<img src=\"{imageUri}\" style=\"width: 100%; height: auto; align-content: center; margin: 5px;\">")
+		SafeHtml image(SafeUri imageUri);
 	}
 
 	interface WallProperties extends PropertyAccess<WallEntry> {
@@ -86,8 +91,7 @@ public class WallSelector implements IsWidget {
 	 * @param defaultCaveSketchWidth
 	 *          string representing the default sketch width in pixel (px)
 	 */
-	public WallSelector(int defaultCaveSketchWidth) {
-		this.defaultCaveSketchWidth = defaultCaveSketchWidth;
+	public WallSelector() {
 		caveLayoutViewTemplates = GWT.create(CaveLayoutViewTemplates.class);
 		wallProps = GWT.create(WallProperties.class);
 		wallVT = GWT.create(WallViewTemplate.class);
@@ -100,7 +104,7 @@ public class WallSelector implements IsWidget {
 			}
 		};
 		wallEntryLS.addSortInfo(new StoreSortInfo<WallEntry>(comparator, SortDir.ASC));
-		init();
+		getUI();
 	}
 
 	/*
@@ -110,17 +114,16 @@ public class WallSelector implements IsWidget {
 	 */
 	@Override
 	public Widget asWidget() {
-		if (mainVLC == null) {
-			init();
+		if (mainWidget == null) {
+			mainWidget = getUI();
 		}
-		return mainVLC;
+		return mainWidget;
 	}
 
 	/**
 	 * 
 	 */
-	private void init() {
-		mainVLC = new VerticalLayoutContainer();
+	private Widget getUI() {
 		caveSketchContainer = new FlowLayoutContainer();
 		caveSketchContainer.setScrollMode(ScrollMode.AUTOY);
 
@@ -149,9 +152,16 @@ public class WallSelector implements IsWidget {
 				selectedWallEntry = event.getSelectedItem();
 			}
 		});
+		
+		BorderLayoutContainer mainBLC = new BorderLayoutContainer();
+		mainBLC.setCenterWidget(caveSketchContainer, new BorderLayoutData());
+		mainBLC.setSouthWidget(wallSelectorCB, new BorderLayoutData(25));
 
-		mainVLC.add(caveSketchContainer, new VerticalLayoutData(1.0, 0.9));
-		mainVLC.add(wallSelectorCB, new VerticalLayoutData(1.0, 0.1));
+//		VerticalLayoutContainer mainVLC = new VerticalLayoutContainer();
+//		mainVLC.add(caveSketchContainer, new VerticalLayoutData(1.0, 0.95));
+//		mainVLC.add(wallSelectorCB, new VerticalLayoutData(1.0, 0.05));
+		
+		return mainBLC;
 	}
 
 	/**
@@ -164,14 +174,13 @@ public class WallSelector implements IsWidget {
 		if ((selectedCave.getOptionalCaveSketch() != null) && !selectedCave.getOptionalCaveSketch().isEmpty()) {
 			caveSketchContainer.add(new HTMLPanel(caveLayoutViewTemplates.image(
 					UriUtils.fromString("resource?cavesketch=" + selectedCave.getOptionalCaveSketch()
-							+ UserLogin.getInstance().getUsernameSessionIDParameterForUri()),
-					SafeStylesUtils.forWidth(defaultCaveSketchWidth, Unit.PX))));
+							+ UserLogin.getInstance().getUsernameSessionIDParameterForUri()))));
 		}
 		if ((ctEntry.getSketchName() != null) && !ctEntry.getSketchName().isEmpty()) {
 			caveSketchContainer.add(new HTMLPanel(caveLayoutViewTemplates.image(
 					UriUtils
-							.fromString("resource?background=" + ctEntry.getSketchName() + UserLogin.getInstance().getUsernameSessionIDParameterForUri()),
-					SafeStylesUtils.forWidth(defaultCaveSketchWidth, Unit.PX))));
+							.fromString("resource?background=" + ctEntry.getSketchName() + UserLogin.getInstance().getUsernameSessionIDParameterForUri()))));
+//					,SafeStylesUtils.forWidth(defaultCaveSketchWidth, Unit.PX))));
 		}
 		wallEntryLS.clear();
 		switch (ctEntry.getCaveTypeID()) {
