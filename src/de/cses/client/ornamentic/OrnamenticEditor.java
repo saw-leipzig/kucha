@@ -323,14 +323,10 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 			@Override
 			public void onClick(ClickEvent event) {
-				Window.alert("geklickt");
-				Window.alert("DistrictID: " + Integer.toString(cavesList.getSelectionModel().getSelectedItem().getDistrict().getDistrictID()));
 				OrnamentCaveAttributes attributespopup = new OrnamentCaveAttributes(cavesList.getSelectionModel().getSelectedItem());
-				Window.alert("sachen gesetzt");
 				attributespopup.setOrnamentic(ornamenticEditor);
 				attributespopup.setGlassEnabled(true);
 				attributespopup.center();
-				Window.alert("geöffnet");
 				
 			}
 		};

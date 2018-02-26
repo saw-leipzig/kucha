@@ -723,7 +723,7 @@ public class MysqlConnector {
 		PreparedStatement ornamentCaveRelationStatement;
 		try {
 			ornamentCaveRelationStatement = dbc.prepareStatement("INSERT INTO CaveOrnamentRelation "
-					+ "(CaveID, OrnamentID, Colours, Notes, GroupOfOrnaments, RelatedElementsOfOtherCultures, SimilarElementsOfOtherCultures, WallLocationID) "
+					+ "(CaveID, OrnamentID, Colours, Notes, GroupOfOrnaments, RelatedElementsOfOtherCultures, SimilarElementsOfOtherCultures) "
 					+ "VALUES (?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			ornamentCaveRelationStatement.setInt(2, ornamentID);
 			for (OrnamentCaveRelation ornamentCaveR : cavesRelations) {
@@ -769,13 +769,13 @@ public class MysqlConnector {
 			//	}
 
 				
-				PreparedStatement wallCaveOrnamentRelationStatement = dbc.prepareStatement("INSERT INTO OrnamentCaveWallRelation (OrnamentCaveRelationID,WallLocationID, PositionID, FunctionID, Notes) VALUES (?,?,?,?,?)");	
+				PreparedStatement wallCaveOrnamentRelationStatement = dbc.prepareStatement("INSERT INTO OrnamentCaveWallRelation (WallLocationID, PositionID, FunctionID, Notes) VALUES (?,?,?,?)");	
 			for (WallOrnamentCaveRelation we :ornamentCaveR.getWalls()) {
-						wallCaveOrnamentRelationStatement.setInt(1,auto_increment_id);
-						wallCaveOrnamentRelationStatement.setInt(2,we.getWallLocationID());
-						wallCaveOrnamentRelationStatement.setInt(3,we.getOrnamenticPositionID());
-						wallCaveOrnamentRelationStatement.setInt(4, we.getOrnamenticFunctionID());
-						wallCaveOrnamentRelationStatement.setString(5,we.getNotes());
+						//wallCaveOrnamentRelationStatement.setInt(1,auto_increment_id);
+						wallCaveOrnamentRelationStatement.setInt(1,we.getWallLocationID());
+						wallCaveOrnamentRelationStatement.setInt(2,we.getOrnamenticPositionID());
+						wallCaveOrnamentRelationStatement.setInt(3, we.getOrnamenticFunctionID());
+						wallCaveOrnamentRelationStatement.setString(4,we.getNotes());
 						wallCaveOrnamentRelationStatement.executeUpdate();
 			}
 
