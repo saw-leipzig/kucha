@@ -84,7 +84,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 	private ComboBox<PublisherEntry> publisherComboBox;
 	private ComboBox<PublicationTypeEntry> publicationTypeComboBox;
-	private ComboBox<AnnotatedBiblographyEntry> erstauflageComboBox;
+	private ComboBox<AnnotatedBiblographyEntry> firstEditionComboBox;
 
 	private ListStore<PublicationTypeEntry> publicationTypeListStore;
 	private ListStore<PublisherEntry> publisherListStore;
@@ -232,7 +232,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			bib.setEditionTR(editionTR.getText());
 		}
 
-		bib.setErstauflage(erstauflage.getValue());
+		bib.setFirstEdition(erstauflage.getValue());
 
 		if (publicationtype == 8) { // bleiben
 			bib.setMonthEN(monthEN.getText());
@@ -240,8 +240,8 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			bib.setMonthTR(monthTR.getText());
 		}
 
-		if (erstauflageComboBox.getValue() != null) {
-			bib.setErstauflageEntry(erstauflageComboBox.getValue());
+		if (firstEditionComboBox.getValue() != null) {
+			bib.setFirstEditionEntry(firstEditionComboBox.getValue());
 		}
 
 		bib.setNotes(notes.getText());
@@ -1063,10 +1063,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		thirdTabVLC.add(frame, new VerticalLayoutData(1.0, 1.0 / 16));
 
 		if (entry != null) {
-			erstauflage.setValue(entry.isErstauflage());
+			erstauflage.setValue(entry.isFirstEdition());
 		}
 
-		erstauflageComboBox = new ComboBox<AnnotatedBiblographyEntry>(AnnotatedBiblographyEntryListStore,
+		firstEditionComboBox = new ComboBox<AnnotatedBiblographyEntry>(AnnotatedBiblographyEntryListStore,
 				annotatedBiblographyEntryProps.titleEN(), new AbstractSafeHtmlRenderer<AnnotatedBiblographyEntry>() {
 
 					@Override
@@ -1077,7 +1077,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				});
 
 		if (entry != null) {
-			erstauflageComboBox.setValue(entry.getErstauflageEntry());
+			firstEditionComboBox.setValue(entry.getFirstEditionEntry());
 		}
 
 		ValueChangeHandler<Boolean> checkBoxHandler = new ValueChangeHandler<Boolean>() {
@@ -1087,7 +1087,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				if (event.getValue() == false) {
 					framefirstedition = new FramedPanel();
 					framefirstedition.setHeading("Choose First Edition");
-					framefirstedition.add(erstauflageComboBox);
+					framefirstedition.add(firstEditionComboBox);
 					thirdTabVLC.add(framefirstedition);
 				} else {
 					thirdTabVLC.remove(framefirstedition);

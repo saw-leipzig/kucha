@@ -90,23 +90,17 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	
 	private String uri;
 	
-	private boolean unpublished;
-	
-	private boolean erstauflage;
-	
-	private AnnotatedBiblographyEntry erstauflageEntry;
-	
+	private boolean unpublished = false;
+	private boolean firstEdition = true;
+	private AnnotatedBiblographyEntry firstEditionEntry = null;
 	private ArrayList<AuthorAnnotatedRelation> authorAnnotatedList = new ArrayList<AuthorAnnotatedRelation>();
-
 	private ArrayList<EditorAnnotatedRelation> editorAnnotatedList = new ArrayList<EditorAnnotatedRelation>();
 	
 	/**
 	 * @return the titleEN
 	 */
 	
-	public AnnotatedBiblographyEntry(){
-		
-	}
+	public AnnotatedBiblographyEntry() { }
 	
 	public AnnotatedBiblographyEntry(int id, String title){
 		this.annotatedBiblographyID = id;
@@ -116,11 +110,6 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	public String getTitleEN() {
 		return titleEN;
 	}
-
-	/**
-	 * @return the publicationTypeID
-	 */
-	
 
 	/**
 	 * @param titleEN the titleEN to set
@@ -806,43 +795,9 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 		this.unpublished = unpublished;
 	}
 
-	/**
-	 * @return the erstauflage
-	 */
-	public boolean isErstauflage() {
-		return erstauflage;
-	}
-
-	/**
-	 * @param erstauflage the erstauflage to set
-	 */
-	public void setErstauflage(boolean erstauflage) {
-		this.erstauflage = erstauflage;
-	}
-
-	/**
-	 * @return the erstauflageID
-	 */
-
-
 	@Override
 	public String getUniqueID() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/**
-	 * @return the erstauflageEntry
-	 */
-	public AnnotatedBiblographyEntry getErstauflageEntry() {
-		return erstauflageEntry;
-	}
-
-	/**
-	 * @param erstauflageEntry the erstauflageEntry to set
-	 */
-	public void setErstauflageEntry(AnnotatedBiblographyEntry erstauflageEntry) {
-		this.erstauflageEntry = erstauflageEntry;
+		return "AnnotatedBibliography" + annotatedBiblographyID;
 	}
 
 	/**
@@ -885,6 +840,22 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	 */
 	public void setEditorAnnotatedList(ArrayList<EditorAnnotatedRelation> editorAnnotatedList) {
 		this.editorAnnotatedList = editorAnnotatedList;
+	}
+
+	public boolean isFirstEdition() {
+		return firstEdition;
+	}
+
+	public void setFirstEdition(boolean firstEdition) {
+		this.firstEdition = firstEdition;
+	}
+
+	public AnnotatedBiblographyEntry getFirstEditionEntry() {
+		return firstEditionEntry;
+	}
+
+	public void setFirstEditionEntry(AnnotatedBiblographyEntry firstEditionEntry) {
+		this.firstEditionEntry = firstEditionEntry;
 	}
 	
 	

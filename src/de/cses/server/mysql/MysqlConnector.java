@@ -2478,7 +2478,7 @@ public class MysqlConnector {
 			pstmt.setString(11, bibEntry.getEditionEN());
 			pstmt.setString(12, bibEntry.getEditionORG());
 			pstmt.setString(13, bibEntry.getEditionTR());
-			pstmt.setInt(14, bibEntry.getErstauflageEntry().getAnnotatedBiblographyID());
+			pstmt.setInt(14, bibEntry.getFirstEditionEntry().getAnnotatedBiblographyID());
 			pstmt.setString(15, bibEntry.getMonthEN());
 			pstmt.setString(16, bibEntry.getMonthORG());
 			pstmt.setString(17, bibEntry.getMonthTR()); 
