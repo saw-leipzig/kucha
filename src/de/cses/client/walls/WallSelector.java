@@ -16,11 +16,9 @@ package de.cses.client.walls;
 import java.util.Comparator;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.safecss.shared.SafeStyles;
-import com.google.gwt.safecss.shared.SafeStylesUtils;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
@@ -40,8 +38,6 @@ import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 
 import de.cses.client.StaticTables;
@@ -157,10 +153,6 @@ public class WallSelector implements IsWidget {
 		mainBLC.setCenterWidget(caveSketchContainer, new BorderLayoutData());
 		mainBLC.setSouthWidget(wallSelectorCB, new BorderLayoutData(25));
 
-//		VerticalLayoutContainer mainVLC = new VerticalLayoutContainer();
-//		mainVLC.add(caveSketchContainer, new VerticalLayoutData(1.0, 0.95));
-//		mainVLC.add(wallSelectorCB, new VerticalLayoutData(1.0, 0.05));
-		
 		return mainBLC;
 	}
 
