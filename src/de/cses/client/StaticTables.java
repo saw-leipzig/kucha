@@ -39,6 +39,7 @@ import de.cses.shared.OrnamentFunctionEntry;
 import de.cses.shared.OrnamentPositionEntry;
 import de.cses.shared.PictorialElementEntry;
 import de.cses.shared.PreservationClassificationEntry;
+import de.cses.shared.PublicationTypeEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 import de.cses.shared.StyleEntry;
@@ -74,6 +75,7 @@ public class StaticTables {
 	protected HashMap<Integer, CurrentLocationEntry> currentLocationMap;
 	protected HashMap<Integer, LocationEntry> locationMap;
 	protected HashMap<Integer, VendorEntry> vendorMap;
+	protected HashMap<Integer, PublicationTypeEntry> publicationTypeMap;
 
 	private int loadCounter;
 
@@ -99,7 +101,7 @@ public class StaticTables {
 	 */
 	public StaticTables(ListsLoadedListener l) {
 		listener = l;
-		loadCounter = 17;
+		loadCounter = 18;
 		loadDistricts();
 		loadSites();
 		loadRegions();
@@ -117,6 +119,7 @@ public class StaticTables {
 		loadOrnamentFunctionTable();
 		loadLocationMap();
 		loadVendor();
+		loadPublicationTypes();
 	}
 
 	private void listLoaded() {
@@ -471,6 +474,25 @@ public class StaticTables {
 				listLoaded();
 			}
 		});
+	}
+	
+	private void loadPublicationTypes() {
+		publicationTypeMap = new HashMap<Integer, PublicationTypeEntry>();
+		dbService.getPublicationTypes(new AsyncCallback<ArrayList<PublicationTypeEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(ArrayList<PublicationTypeEntry> result) {
+				for (PublicationTypeEntry pte : result) {
+					publicationTypeMap.put(pte.getPublicationTypeID(), pte);
+				}
+				listLoaded();
+			}
+		});
 		
 	}
 
@@ -544,6 +566,10 @@ public class StaticTables {
 	
 	public Map<Integer, VendorEntry> getVendorEntries() {
 		return vendorMap;
+	}
+	
+	public Map<Integer, PublicationTypeEntry> getPublicationTypes() {
+		return publicationTypeMap;
 	}
 	
 }
