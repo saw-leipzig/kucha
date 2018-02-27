@@ -16,25 +16,16 @@ package de.cses.client.bibliography;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.resources.client.ClientBundle.Source;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
-import com.google.gwt.safehtml.shared.UriUtils;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.sencha.gxt.core.client.XTemplates;
-import com.sencha.gxt.core.client.XTemplates.XTemplate;
 import com.sencha.gxt.dnd.core.client.DndDragStartEvent;
 import com.sencha.gxt.dnd.core.client.DragSource;
 
-import de.cses.client.DatabaseService;
-import de.cses.client.DatabaseServiceAsync;
-import de.cses.client.depictions.DepictionEditor;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.client.ui.AbstractView;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBiblographyEntry;
-import de.cses.shared.DepictionEntry;
-import de.cses.shared.ImageEntry;
 
 /**
  * @author Nina
@@ -58,7 +49,6 @@ public class AnnotatedBiblographyView  extends AbstractView {
 	private AnnotatedBiblographyEntry annotatedBiblographyEntry;
 	private AnnotatedBiblographyViewTemplates dvTemplates;
 	private Resources resources;
-	private static final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 
 	/**
 	 * @param text
@@ -89,7 +79,7 @@ public class AnnotatedBiblographyView  extends AbstractView {
 	 * @see de.cses.client.ui.AbstractView#getEditor()
 	 */
 	protected AbstractEditor getEditor() {
-		return new AnnotatedBiblographyEditor(annotatedBiblographyEntry);
+		return new AnnotatedBiblographyEditor(annotatedBiblographyEntry.clone());
 	}
 
 	/* (non-Javadoc)
@@ -97,11 +87,6 @@ public class AnnotatedBiblographyView  extends AbstractView {
 	 */
 	protected AbstractEntry getEntry() {
 		return annotatedBiblographyEntry;
-	}
-
-	public void closeRequest() {
-		super.closeRequest();
-
 	}
 
 	/* (non-Javadoc)

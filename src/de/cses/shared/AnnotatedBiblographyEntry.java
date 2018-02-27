@@ -20,91 +20,137 @@ import java.util.ArrayList;
  *
  */
 public class AnnotatedBiblographyEntry extends AbstractEntry {
-	
-	private PublicationTypeEntry publicationType;
 
 	private int annotatedBiblographyID;
+	private int publicationTypeID;
 	private String titleEN;
 	private String titleTR;
 	private String titleORG;
-	
 	private String procTitleEN;
 	private String procTitleTR;
-	private String procTitleORG;
-	
+	private String procTitleORG;	
 	private String bookTitleEN;
 	private String bookTitleTR;
 	private String bookTitleORG;
-	
 	private String chapTitleEN;
 	private String chapTitleTR;
 	private String chapTitleORG;
-	
 	private String universityEN;
 	private String universityORG;
 	private String universityTR;
-	
 	private String numberEN;
 	private String numberTR;
 	private String numberORG;
-	
 	private String accessdateEN;
 	private String accessdateTR;
-	private String accessdateORG;
-	
+	private String accessdateORG;	
 	private String titleaddonEN;
 	private String titleaddonORG;
 	private String titleaddonTR;
-	
 	private PublisherEntry publisher;
-	
 	private String serieEN;
 	private String serieTR;
 	private String serieORG;
-	
 	private String editionEN;
 	private String editionORG;
 	private String editionTR;
-	
 	private String volumeEN;
 	private String volumeTR;
 	private String volumeORG;
-	
 	private int yearEN;
 	private String yearORG;
 	private String yearTR;
-	
 	private String monthEN;
 	private String monthTR;
 	private String monthORG;
-	
 	private String pagesEN;
 	private String pagesORG;
 	private String pagesTR;
-	
 	private String comments;
-	
 	private String notes;
-	
 	private String url;
-	
 	private String uri;
-	
 	private boolean unpublished = false;
 	private boolean firstEdition = true;
 	private AnnotatedBiblographyEntry firstEditionEntry = null;
 	private ArrayList<AuthorAnnotatedRelation> authorAnnotatedList = new ArrayList<AuthorAnnotatedRelation>();
 	private ArrayList<EditorAnnotatedRelation> editorAnnotatedList = new ArrayList<EditorAnnotatedRelation>();
 	
-	/**
-	 * @return the titleEN
-	 */
-	
+
+	public AnnotatedBiblographyEntry(int annotatedBiblographyID, int publicationTypeID, String titleEN, String titleTR,
+			String titleORG, String procTitleEN, String procTitleTR, String procTitleORG, String bookTitleEN, String bookTitleTR,
+			String bookTitleORG, String chapTitleEN, String chapTitleTR, String chapTitleORG, String universityEN, String universityORG,
+			String universityTR, String numberEN, String numberTR, String numberORG, String accessdateEN, String accessdateTR,
+			String accessdateORG, String titleaddonEN, String titleaddonORG, String titleaddonTR, PublisherEntry publisher, String serieEN,
+			String serieTR, String serieORG, String editionEN, String editionORG, String editionTR, String volumeEN, String volumeTR,
+			String volumeORG, int yearEN, String yearORG, String yearTR, String monthEN, String monthTR, String monthORG, String pagesEN,
+			String pagesORG, String pagesTR, String comments, String notes, String url, String uri, boolean unpublished, boolean firstEdition,
+			AnnotatedBiblographyEntry firstEditionEntry) {
+		super();
+		this.annotatedBiblographyID = annotatedBiblographyID;
+		this.publicationTypeID = publicationTypeID;
+		this.titleEN = titleEN;
+		this.titleTR = titleTR;
+		this.titleORG = titleORG;
+		this.procTitleEN = procTitleEN;
+		this.procTitleTR = procTitleTR;
+		this.procTitleORG = procTitleORG;
+		this.bookTitleEN = bookTitleEN;
+		this.bookTitleTR = bookTitleTR;
+		this.bookTitleORG = bookTitleORG;
+		this.chapTitleEN = chapTitleEN;
+		this.chapTitleTR = chapTitleTR;
+		this.chapTitleORG = chapTitleORG;
+		this.universityEN = universityEN;
+		this.universityORG = universityORG;
+		this.universityTR = universityTR;
+		this.numberEN = numberEN;
+		this.numberTR = numberTR;
+		this.numberORG = numberORG;
+		this.accessdateEN = accessdateEN;
+		this.accessdateTR = accessdateTR;
+		this.accessdateORG = accessdateORG;
+		this.titleaddonEN = titleaddonEN;
+		this.titleaddonORG = titleaddonORG;
+		this.titleaddonTR = titleaddonTR;
+		this.publisher = publisher;
+		this.serieEN = serieEN;
+		this.serieTR = serieTR;
+		this.serieORG = serieORG;
+		this.editionEN = editionEN;
+		this.editionORG = editionORG;
+		this.editionTR = editionTR;
+		this.volumeEN = volumeEN;
+		this.volumeTR = volumeTR;
+		this.volumeORG = volumeORG;
+		this.yearEN = yearEN;
+		this.yearORG = yearORG;
+		this.yearTR = yearTR;
+		this.monthEN = monthEN;
+		this.monthTR = monthTR;
+		this.monthORG = monthORG;
+		this.pagesEN = pagesEN;
+		this.pagesORG = pagesORG;
+		this.pagesTR = pagesTR;
+		this.comments = comments;
+		this.notes = notes;
+		this.url = url;
+		this.uri = uri;
+		this.unpublished = unpublished;
+		this.firstEdition = firstEdition;
+		this.firstEditionEntry = firstEditionEntry;
+	}
+
 	public AnnotatedBiblographyEntry() { }
 	
 	public AnnotatedBiblographyEntry(int id, String title){
 		this.annotatedBiblographyID = id;
 		this.titleEN = title;
+	}
+	
+	public AnnotatedBiblographyEntry clone() {
+		AnnotatedBiblographyEntry clonedEntry = new AnnotatedBiblographyEntry(annotatedBiblographyID, publicationTypeID, titleEN, titleTR, titleORG, procTitleEN, procTitleTR, procTitleORG, bookTitleEN, bookTitleTR, bookTitleORG, chapTitleEN, chapTitleTR, chapTitleORG, universityEN, universityORG, universityTR, numberEN, numberTR, numberORG, accessdateEN, accessdateTR, accessdateORG, titleaddonEN, titleaddonORG, titleaddonTR, publisher, serieEN, serieTR, serieORG, editionEN, editionORG, editionTR, volumeEN, volumeTR, volumeORG, yearEN, yearORG, yearTR, monthEN, monthTR, monthORG, pagesEN, pagesORG, pagesTR, comments, notes, url, uri, unpublished, firstEdition, firstEditionEntry);
+		return clonedEntry;
 	}
 	
 	public String getTitleEN() {
@@ -121,15 +167,15 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	/**
 	 * @return the publicationType
 	 */
-	public PublicationTypeEntry getPublicationType() {
-		return publicationType;
+	public int getPublicationTypeID() {
+		return publicationTypeID;
 	}
 
 	/**
 	 * @param publicationType the publicationType to set
 	 */
-	public void setPublicationType(PublicationTypeEntry publicationType) {
-		this.publicationType = publicationType;
+	public void setPublicationTypeID(int publicationTypeID) {
+		this.publicationTypeID = publicationTypeID;
 	}
 
 	/**
