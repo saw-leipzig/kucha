@@ -53,6 +53,7 @@ import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.OrnamentPositionEntry;
 import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PictorialElementEntry;
+import de.cses.shared.PreservationAttributeEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.PublicationEntry;
 import de.cses.shared.PublicationTypeEntry;
@@ -2809,6 +2810,50 @@ public class MysqlConnector {
 			e.printStackTrace();
 		}
 		return locationID;
+	}
+
+	/**
+	 * @return
+	 */
+	public ArrayList<PreservationAttributeEntry> getPreservationAttributes() {
+		ArrayList<PreservationAttributeEntry> result = new ArrayList<PreservationAttributeEntry>();
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM PreservationAttributes");
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				result.add(new PreservationAttributeEntry(rs.getInt("PreservationAttributeID"), rs.getString("Name")));
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	/**
+	 * @param paEntry
+	 * @return
+	 */
+	public int insertPreservationAttributeEntry(PreservationAttributeEntry paEntry) {
+		Connection dbc = getConnection();
+		PreparedStatement pStatement;
+		int preservationAttributeID = 0;
+		try {
+			pStatement = dbc.prepareStatement("INSERT INTO PreservationAttributes (Name) VALUES (?)", Statement.RETURN_GENERATED_KEYS);
+			pStatement.setString(1, paEntry.getName());
+			pStatement.executeUpdate();
+			ResultSet keys = pStatement.getGeneratedKeys();
+			if (keys.next()) {
+				preservationAttributeID = keys.getInt(1);
+			}
+			keys.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return preservationAttributeID;
 	}
 
 }

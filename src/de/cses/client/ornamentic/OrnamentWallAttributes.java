@@ -85,7 +85,7 @@ public class OrnamentWallAttributes extends PopupPanel {
 	}
 
 	private FramedPanel createForm() {
-		wallselector = new WallSelector(280);
+		wallselector = new WallSelector();
 		wallselector.setCave(caveEntry);
 
 		FramedPanel selectWallFP = new FramedPanel();

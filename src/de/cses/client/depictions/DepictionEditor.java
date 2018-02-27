@@ -14,7 +14,9 @@
 package de.cses.client.depictions;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
+import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
@@ -34,14 +36,15 @@ import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
+import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.data.shared.SortDir;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
-import com.sencha.gxt.theme.base.client.field.FieldLabelDefaultAppearance;
-import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.dnd.core.client.ListViewDragSource;
+import com.sencha.gxt.dnd.core.client.ListViewDropTarget;
 import com.sencha.gxt.widget.core.client.Dialog;
 import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.FramedPanel;
@@ -49,6 +52,8 @@ import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.TabPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
@@ -58,8 +63,8 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.DateField;
 import com.sencha.gxt.widget.core.client.form.DateTimePropertyEditor;
+import com.sencha.gxt.widget.core.client.form.DualListField;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
-import com.sencha.gxt.widget.core.client.form.FieldLabel.FieldLabelOptions;
 import com.sencha.gxt.widget.core.client.form.ListField;
 import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
@@ -68,6 +73,7 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinNumberValidator;
+import com.sencha.gxt.widget.core.client.tips.ToolTipConfig;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -83,9 +89,12 @@ import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.ImageEntry;
+import de.cses.shared.ImageTypeEntry;
 import de.cses.shared.LocationEntry;
 import de.cses.shared.ModeOfRepresentationEntry;
+import de.cses.shared.OrnamentEntry;
 import de.cses.shared.PictorialElementEntry;
+import de.cses.shared.PreservationAttributeEntry;
 import de.cses.shared.SiteEntry;
 import de.cses.shared.StyleEntry;
 import de.cses.shared.VendorEntry;
@@ -140,6 +149,8 @@ public class DepictionEditor extends AbstractEditor {
 	private ComboBox<LocationEntry> locationSelectionCB;
 	private LocationProperties locationProps;
 	private ListStore<LocationEntry> locationEntryLS;
+	private PreservationAttributeProperties presAttributeProps;
+	private ListStore<PreservationAttributeEntry> preservationAttributesLS, selectedPreservationAttributesLS;
 
 	interface DepictionProperties extends PropertyAccess<DepictionEntry> {
 		ModelKeyProvider<DepictionEntry> depictionID();
@@ -226,12 +237,16 @@ public class DepictionEditor extends AbstractEditor {
 		@XTemplate("<div>{name}</div>")
 		SafeHtml styleName(String name);
 	}
+	
+	interface PreservationAttributeProperties extends PropertyAccess<PreservationAttributeEntry> {
+		ModelKeyProvider<PreservationAttributeEntry> preservationAttributeID();
+		LabelProvider<PreservationAttributeEntry> uniqueID();
+		ValueProvider<PreservationAttributeEntry, String> name();
+	}
 
 	interface ImageProperties extends PropertyAccess<ImageEntry> {
 		ModelKeyProvider<ImageEntry> imageID();
-
 		LabelProvider<ImageEntry> title();
-
 		ValueProvider<ImageEntry, String> shortName();
 	}
 
@@ -273,6 +288,9 @@ public class DepictionEditor extends AbstractEditor {
 		expedEntryLS = new ListStore<ExpeditionEntry>(expedProps.expeditionID());
 		morProps = GWT.create(ModesOfRepresentationProperties.class);
 		modeOfRepresentationLS = new ListStore<ModeOfRepresentationEntry>(morProps.modeOfRepresentationID());
+		presAttributeProps = GWT.create(PreservationAttributeProperties.class);
+		preservationAttributesLS = new ListStore<PreservationAttributeEntry>(presAttributeProps.preservationAttributeID());
+		selectedPreservationAttributesLS = new ListStore<PreservationAttributeEntry>(presAttributeProps.preservationAttributeID());
 
 		initPanel();
 		loadCaves();
@@ -281,6 +299,7 @@ public class DepictionEditor extends AbstractEditor {
 		loadVendors();
 		loadExpeditions();
 		loadModesOfRepresentation();
+		loadPreservationAttributes();
 	}
 
 	/**
@@ -393,6 +412,25 @@ public class DepictionEditor extends AbstractEditor {
 			if (correspondingDepictionEntry.getLocationID() > 0) {
 				locationSelectionCB.setValue(locationEntryLS.findModelWithKey(Integer.toString(correspondingDepictionEntry.getLocationID())));
 			}
+	 }
+	 
+	 private void loadPreservationAttributes() {
+		 dbService.getPreservationAttributes(new AsyncCallback<ArrayList<PreservationAttributeEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(ArrayList<PreservationAttributeEntry> result) {
+				preservationAttributesLS.clear();
+				for (PreservationAttributeEntry pae : result) {
+					preservationAttributesLS.add(pae);
+				}
+				preservationAttributesLS.addSortInfo(new StoreSortInfo<PreservationAttributeEntry>(presAttributeProps.name(), SortDir.ASC));
+			}
+		});
 	 }
 
 	/**
@@ -764,6 +802,115 @@ public class DepictionEditor extends AbstractEditor {
 		});
 		inventoryNumberFP.add(inventoryNumberTF);
 		
+		FramedPanel stateOfPreservationFP = new FramedPanel();
+		stateOfPreservationFP.setHeading("State of Preservation");
+		ToolButton addPreservationAttributeTB = new ToolButton(ToolButton.PLUS);
+		stateOfPreservationFP.addTool(addPreservationAttributeTB);
+		addPreservationAttributeTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				PopupPanel addPreservationAttributeDialog = new PopupPanel();
+				FramedPanel newPreservationAttributeFP = new FramedPanel();
+				newPreservationAttributeFP.setHeading("Add Preservation Attribute");
+				TextField preservationAttributeNameField = new TextField();
+				preservationAttributeNameField.addValidator(new MinLengthValidator(2));
+				preservationAttributeNameField.addValidator(new MaxLengthValidator(32));
+				preservationAttributeNameField.setValue("");
+				preservationAttributeNameField.setWidth(200);
+				newPreservationAttributeFP.add(preservationAttributeNameField);
+				TextButton saveButton = new TextButton("save");
+				saveButton.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						if (preservationAttributeNameField.isValid()) {
+							PreservationAttributeEntry paEntry = new PreservationAttributeEntry();
+							paEntry.setName(preservationAttributeNameField.getCurrentValue());
+							dbService.insertPreservationAttributeEntry(paEntry, new AsyncCallback<Integer>() {
+
+								@Override
+								public void onFailure(Throwable caught) {
+									caught.printStackTrace();
+									newPreservationAttributeFP.hide();
+								}
+
+								@Override
+								public void onSuccess(Integer result) {
+									paEntry.setPreservationAttributeID(result);
+									preservationAttributesLS.add(paEntry);
+									addPreservationAttributeDialog.hide();
+								}
+							});
+						}
+					}
+				});
+				newPreservationAttributeFP.addButton(saveButton);
+				TextButton cancelButton = new TextButton("cancel");
+				cancelButton.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						addPreservationAttributeDialog.hide();
+					}
+				});
+				newPreservationAttributeFP.addButton(cancelButton);
+				addPreservationAttributeDialog.add(newPreservationAttributeFP);
+				addPreservationAttributeDialog.setModal(true);
+				addPreservationAttributeDialog.center();
+			}
+		});
+		ListView<PreservationAttributeEntry, String> preservationAttributesListView = new ListView<PreservationAttributeEntry, String>(preservationAttributesLS, presAttributeProps.name());
+		preservationAttributesListView.setToolTip("to select attributes drag right");
+		ListView<PreservationAttributeEntry, String> selectedPreservationAttributesListView = new ListView<PreservationAttributeEntry, String>(selectedPreservationAttributesLS, presAttributeProps.name());
+		selectedPreservationAttributesListView.setToolTip("to deselect attributes drag left");
+		
+		new ListViewDragSource<PreservationAttributeEntry>(preservationAttributesListView).setGroup("paGroup");
+		new ListViewDragSource<PreservationAttributeEntry>(selectedPreservationAttributesListView).setGroup("paGroup");
+		
+		new ListViewDropTarget<PreservationAttributeEntry>(preservationAttributesListView).setGroup("paGroup");
+		new ListViewDropTarget<PreservationAttributeEntry>(selectedPreservationAttributesListView).setGroup("paGroup");
+
+		BorderLayoutContainer borderLayoutContainer = new BorderLayoutContainer();
+    borderLayoutContainer.setWestWidget(preservationAttributesListView, new BorderLayoutData(0.5));
+    borderLayoutContainer.setCenterWidget(selectedPreservationAttributesListView, new BorderLayoutData(0.5));
+
+    stateOfPreservationFP.add(borderLayoutContainer);
+    
+		VerticalLayoutContainer basicsLeftVLC = new VerticalLayoutContainer();
+		basicsLeftVLC.add(shortNameFP, new VerticalLayoutData(1.0, .1));
+		basicsLeftVLC.add(caveSelectionFP, new VerticalLayoutData(1.0, .1));
+		basicsLeftVLC.add(acquiredByExpeditionFP, new VerticalLayoutData(1.0, .1));
+		basicsLeftVLC.add(vendorFP, new VerticalLayoutData(1.0, .1));
+		basicsLeftVLC.add(datePurchasedFP, new VerticalLayoutData(1.0, .1));
+		basicsLeftVLC.add(currentLocationFP, new VerticalLayoutData(1.0, .1));
+		basicsLeftVLC.add(inventoryNumberFP, new VerticalLayoutData(1.0, .1));
+//		basicsLeftVLC.add(positionNoteFP, new VerticalLayoutData(1.0, .15));
+		basicsLeftVLC.add(stateOfPreservationFP, new VerticalLayoutData(1.0, .3));
+
+		FramedPanel wallSelectorFP = new FramedPanel();
+		wallSelectorFP.setHeading("Wall");
+		ToolButton wallEditorTB = new ToolButton(ToolButton.PIN);
+		wallEditorTB.setToolTip("set position on wall");
+		
+//		TextButton wallEditorButton = new TextButton("set position on wall");
+		wallEditor = new Walls(1, false);
+		wallEditorTB.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				wallEditorDialog = new PopupPanel();
+				wallEditorDialog.add(wallEditor);
+				wallEditor.createNewDepictionOnWall(correspondingDepictionEntry, true, true);
+				wallEditor.setPanel(wallEditorDialog);
+				wallEditorDialog.setModal(true);
+				wallEditorDialog.center();
+			}
+		});
+		wallSelectorFP.addTool(wallEditorTB);
+		wallSelectorPanel = new WallSelector();
+		wallSelectorFP.add(wallSelectorPanel);
+
 		FramedPanel positionNoteFP = new FramedPanel();
 		positionNoteFP.setHeading("Position Notes");
 		TextArea positionNotesTA = new TextArea();
@@ -776,40 +923,10 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		positionNoteFP.add(positionNotesTA);
-
-		VerticalLayoutContainer basicsLeftVLC = new VerticalLayoutContainer();
-		basicsLeftVLC.add(shortNameFP, new VerticalLayoutData(1.0, .1));
-		basicsLeftVLC.add(caveSelectionFP, new VerticalLayoutData(1.0, .1));
-		basicsLeftVLC.add(acquiredByExpeditionFP, new VerticalLayoutData(1.0, .1));
-		basicsLeftVLC.add(vendorFP, new VerticalLayoutData(1.0, .1));
-		basicsLeftVLC.add(datePurchasedFP, new VerticalLayoutData(1.0, .1));
-		basicsLeftVLC.add(currentLocationFP, new VerticalLayoutData(1.0, .1));
-		basicsLeftVLC.add(inventoryNumberFP, new VerticalLayoutData(1.0, .1));
-		basicsLeftVLC.add(positionNoteFP, new VerticalLayoutData(1.0, .2));
-
-		FramedPanel wallSelectorFP = new FramedPanel();
-		wallSelectorFP.setHeading("Wall");
-		TextButton wallEditorButton = new TextButton("set position on wall");
-		wallEditor = new Walls(1, false);
-		wallEditorButton.addSelectHandler(new SelectHandler() {
-
-			@Override
-			public void onSelect(SelectEvent event) {
-				wallEditorDialog = new PopupPanel();
-				wallEditorDialog.add(wallEditor);
-				wallEditor.createNewDepictionOnWall(correspondingDepictionEntry, true, true);
-				wallEditor.setPanel(wallEditorDialog);
-				wallEditorDialog.setModal(true);
-				wallEditorDialog.center();
-			}
-		});
-		wallSelectorFP.addButton(wallEditorButton);
-
-		wallSelectorPanel = new WallSelector(350);
-		wallSelectorFP.add(wallSelectorPanel);
-
+		
 		VerticalLayoutContainer basicsRightVLC = new VerticalLayoutContainer();
-		basicsRightVLC.add(wallSelectorFP, new VerticalLayoutData(1.0, 1.0));
+		basicsRightVLC.add(wallSelectorFP, new VerticalLayoutData(1.0, .85));
+		basicsRightVLC.add(positionNoteFP, new VerticalLayoutData(1.0, .15));
 
 		HorizontalLayoutContainer basicsTabHLC = new HorizontalLayoutContainer();
 		basicsTabHLC.add(basicsLeftVLC, new HorizontalLayoutData(.4, 1.0));

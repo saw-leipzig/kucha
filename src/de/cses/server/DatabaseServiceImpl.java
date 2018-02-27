@@ -44,6 +44,7 @@ import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.OrnamentPositionEntry;
 import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PictorialElementEntry;
+import de.cses.shared.PreservationAttributeEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.PublicationEntry;
 import de.cses.shared.PublicationTypeEntry;
@@ -699,6 +700,22 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public String checkSessionID(String sessionID) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.checkSessionID(sessionID);
+	}
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#getPreservationAttributes()
+	 */
+	@Override
+	public ArrayList<PreservationAttributeEntry> getPreservationAttributes() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getPreservationAttributes();
+	}
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#insertPreservationAttributeEntry(de.cses.shared.PreservationAttributeEntry)
+	 */
+	@Override
+	public int insertPreservationAttributeEntry(PreservationAttributeEntry paEntry) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.insertPreservationAttributeEntry(paEntry);
 	}
 
 }

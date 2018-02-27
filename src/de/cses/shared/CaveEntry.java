@@ -44,7 +44,7 @@ public class CaveEntry extends AbstractEntry {
 	private ArrayList<C14AnalysisUrlEntry> c14AnalysisUrlList = new ArrayList<C14AnalysisUrlEntry>();
 	private ArrayList<C14DocumentEntry> c14DocumentList = new ArrayList<C14DocumentEntry>();
 
-	public CaveEntry() { }
+	public CaveEntry() { 	}
 
 	public CaveEntry(int caveID, String officialNumber, String historicName, String optionalHistoricName, int caveTypeID, int districtID,
 			int regionID, int orientationID, String stateOfPerservation, String findings, String notes, String firstDocumentedBy, int firstDocumentedInYear, int preservationClassificationID,
@@ -73,10 +73,6 @@ public class CaveEntry extends AbstractEntry {
 		this.hasImmitationOfMountains = hasImmitationOfMountains;
 		this.hasHolesForFixationOfPlasticalItems = hasHolesForFixationOfPlasticalItems;
 		this.hasWoodenConstruction = hasWoodenConstruction;
-		caveAreaList = new ArrayList<CaveAreaEntry>();
-		wallList = new ArrayList<WallEntry>();
-		c14AnalysisUrlList = new ArrayList<C14AnalysisUrlEntry>();
-		c14DocumentList = new ArrayList<C14DocumentEntry>();
 		this.setOpenAccess(openAccess);
 	}
 	
