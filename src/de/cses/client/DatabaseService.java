@@ -200,9 +200,12 @@ public interface DatabaseService extends RemoteService {
 
 	boolean updateAuthorEntry(AuthorEntry currentAuthorEntry) throws IllegalArgumentException;
 	
-	boolean saveAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry) throws IllegalArgumentException;
+	int insertAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry) throws IllegalArgumentException;
+	
 	ArrayList<AnnotatedBiblographyEntry> getAnnotatedBibliography() throws IllegalArgumentException;
+
 	ArrayList<PublisherEntry> getPublisher() throws IllegalArgumentException;
+
 	ArrayList<AuthorEntry> getAuthors() throws IllegalArgumentException;
 
 	int insertPhotographerEntry(PhotographerEntry photographerEntry) throws IllegalArgumentException;

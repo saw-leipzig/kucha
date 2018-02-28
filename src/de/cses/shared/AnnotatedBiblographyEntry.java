@@ -21,14 +21,14 @@ import java.util.ArrayList;
  */
 public class AnnotatedBiblographyEntry extends AbstractEntry {
 
-	private int annotatedBiblographyID;
-	private int publicationTypeID;
+	private int annotatedBiblographyID = 0;
+	private int publicationTypeID = 0;
 	private String titleEN;
 	private String titleTR;
 	private String titleORG;
 	private String procTitleEN;
 	private String procTitleTR;
-	private String procTitleORG;	
+	private String procTitleORG;
 	private String bookTitleEN;
 	private String bookTitleTR;
 	private String bookTitleORG;
@@ -43,21 +43,21 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	private String numberORG;
 	private String accessdateEN;
 	private String accessdateTR;
-	private String accessdateORG;	
+	private String accessdateORG;
 	private String titleaddonEN;
 	private String titleaddonORG;
 	private String titleaddonTR;
-	private PublisherEntry publisher;
-	private String serieEN;
-	private String serieTR;
-	private String serieORG;
+	private int publisherID;
+	private String seriesEN;
+	private String seriesTR;
+	private String seriesORG;
 	private String editionEN;
 	private String editionORG;
 	private String editionTR;
 	private String volumeEN;
 	private String volumeTR;
 	private String volumeORG;
-	private int yearEN;
+	private int yearEN = 0;
 	private String yearORG;
 	private String yearTR;
 	private String monthEN;
@@ -72,20 +72,18 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	private String uri;
 	private boolean unpublished = false;
 	private boolean firstEdition = true;
-	private AnnotatedBiblographyEntry firstEditionEntry = null;
+	private int firstEditionBibID = 0;
 	private ArrayList<AuthorAnnotatedRelation> authorAnnotatedList = new ArrayList<AuthorAnnotatedRelation>();
 	private ArrayList<EditorAnnotatedRelation> editorAnnotatedList = new ArrayList<EditorAnnotatedRelation>();
-	
 
-	public AnnotatedBiblographyEntry(int annotatedBiblographyID, int publicationTypeID, String titleEN, String titleTR,
-			String titleORG, String procTitleEN, String procTitleTR, String procTitleORG, String bookTitleEN, String bookTitleTR,
-			String bookTitleORG, String chapTitleEN, String chapTitleTR, String chapTitleORG, String universityEN, String universityORG,
-			String universityTR, String numberEN, String numberTR, String numberORG, String accessdateEN, String accessdateTR,
-			String accessdateORG, String titleaddonEN, String titleaddonORG, String titleaddonTR, PublisherEntry publisher, String serieEN,
-			String serieTR, String serieORG, String editionEN, String editionORG, String editionTR, String volumeEN, String volumeTR,
-			String volumeORG, int yearEN, String yearORG, String yearTR, String monthEN, String monthTR, String monthORG, String pagesEN,
-			String pagesORG, String pagesTR, String comments, String notes, String url, String uri, boolean unpublished, boolean firstEdition,
-			AnnotatedBiblographyEntry firstEditionEntry) {
+	public AnnotatedBiblographyEntry(int annotatedBiblographyID, int publicationTypeID, String titleEN, String titleTR, String titleORG,
+			String procTitleEN, String procTitleTR, String procTitleORG, String bookTitleEN, String bookTitleTR, String bookTitleORG,
+			String chapTitleEN, String chapTitleTR, String chapTitleORG, String universityEN, String universityORG, String universityTR,
+			String numberEN, String numberTR, String numberORG, String accessdateEN, String accessdateTR, String accessdateORG,
+			String titleaddonEN, String titleaddonORG, String titleaddonTR, int publisherID, String seriesEN, String seriesTR, String seriesORG,
+			String editionEN, String editionORG, String editionTR, String volumeEN, String volumeTR, String volumeORG, int yearEN, String yearORG,
+			String yearTR, String monthEN, String monthTR, String monthORG, String pagesEN, String pagesORG, String pagesTR, String comments,
+			String notes, String url, String uri, boolean unpublished, boolean firstEdition, int firstEditionBibID) {
 		super();
 		this.annotatedBiblographyID = annotatedBiblographyID;
 		this.publicationTypeID = publicationTypeID;
@@ -113,10 +111,10 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 		this.titleaddonEN = titleaddonEN;
 		this.titleaddonORG = titleaddonORG;
 		this.titleaddonTR = titleaddonTR;
-		this.publisher = publisher;
-		this.serieEN = serieEN;
-		this.serieTR = serieTR;
-		this.serieORG = serieORG;
+		this.publisherID = publisherID;
+		this.seriesEN = seriesEN;
+		this.seriesTR = seriesTR;
+		this.seriesORG = seriesORG;
 		this.editionEN = editionEN;
 		this.editionORG = editionORG;
 		this.editionTR = editionTR;
@@ -138,27 +136,33 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 		this.uri = uri;
 		this.unpublished = unpublished;
 		this.firstEdition = firstEdition;
-		this.firstEditionEntry = firstEditionEntry;
+		this.firstEditionBibID = firstEditionBibID;
 	}
 
-	public AnnotatedBiblographyEntry() { }
-	
-	public AnnotatedBiblographyEntry(int id, String title){
-		this.annotatedBiblographyID = id;
-		this.titleEN = title;
+	public AnnotatedBiblographyEntry() {
 	}
-	
+
+	public AnnotatedBiblographyEntry(int id) {
+		this.annotatedBiblographyID = id;
+	}
+
 	public AnnotatedBiblographyEntry clone() {
-		AnnotatedBiblographyEntry clonedEntry = new AnnotatedBiblographyEntry(annotatedBiblographyID, publicationTypeID, titleEN, titleTR, titleORG, procTitleEN, procTitleTR, procTitleORG, bookTitleEN, bookTitleTR, bookTitleORG, chapTitleEN, chapTitleTR, chapTitleORG, universityEN, universityORG, universityTR, numberEN, numberTR, numberORG, accessdateEN, accessdateTR, accessdateORG, titleaddonEN, titleaddonORG, titleaddonTR, publisher, serieEN, serieTR, serieORG, editionEN, editionORG, editionTR, volumeEN, volumeTR, volumeORG, yearEN, yearORG, yearTR, monthEN, monthTR, monthORG, pagesEN, pagesORG, pagesTR, comments, notes, url, uri, unpublished, firstEdition, firstEditionEntry);
+		AnnotatedBiblographyEntry clonedEntry = new AnnotatedBiblographyEntry(annotatedBiblographyID, publicationTypeID, titleEN, titleTR,
+				titleORG, procTitleEN, procTitleTR, procTitleORG, bookTitleEN, bookTitleTR, bookTitleORG, chapTitleEN, chapTitleTR, chapTitleORG,
+				universityEN, universityORG, universityTR, numberEN, numberTR, numberORG, accessdateEN, accessdateTR, accessdateORG, titleaddonEN,
+				titleaddonORG, titleaddonTR, publisherID, seriesEN, seriesTR, seriesORG, editionEN, editionORG, editionTR, volumeEN, volumeTR, volumeORG,
+				yearEN, yearORG, yearTR, monthEN, monthTR, monthORG, pagesEN, pagesORG, pagesTR, comments, notes, url, uri, unpublished,
+				firstEdition, firstEditionBibID);
 		return clonedEntry;
 	}
-	
+
 	public String getTitleEN() {
 		return titleEN;
 	}
 
 	/**
-	 * @param titleEN the titleEN to set
+	 * @param titleEN
+	 *          the titleEN to set
 	 */
 	public void setTitleEN(String titleEN) {
 		this.titleEN = titleEN;
@@ -172,7 +176,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param publicationType the publicationType to set
+	 * @param publicationType
+	 *          the publicationType to set
 	 */
 	public void setPublicationTypeID(int publicationTypeID) {
 		this.publicationTypeID = publicationTypeID;
@@ -186,7 +191,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param titleTR the titleTR to set
+	 * @param titleTR
+	 *          the titleTR to set
 	 */
 	public void setTitleTR(String titleTR) {
 		this.titleTR = titleTR;
@@ -200,7 +206,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param titleORG the titleORG to set
+	 * @param titleORG
+	 *          the titleORG to set
 	 */
 	public void setTitleORG(String titleORG) {
 		this.titleORG = titleORG;
@@ -214,7 +221,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param procTitleEN the procTitleEN to set
+	 * @param procTitleEN
+	 *          the procTitleEN to set
 	 */
 	public void setProcTitleEN(String procTitleEN) {
 		this.procTitleEN = procTitleEN;
@@ -228,7 +236,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param procTitleTR the procTitleTR to set
+	 * @param procTitleTR
+	 *          the procTitleTR to set
 	 */
 	public void setProcTitleTR(String procTitleTR) {
 		this.procTitleTR = procTitleTR;
@@ -242,7 +251,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param procTitleORG the procTitleORG to set
+	 * @param procTitleORG
+	 *          the procTitleORG to set
 	 */
 	public void setProcTitleORG(String procTitleORG) {
 		this.procTitleORG = procTitleORG;
@@ -256,7 +266,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param bookTitleEN the bookTitleEN to set
+	 * @param bookTitleEN
+	 *          the bookTitleEN to set
 	 */
 	public void setBookTitleEN(String bookTitleEN) {
 		this.bookTitleEN = bookTitleEN;
@@ -270,7 +281,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param bookTitleTR the bookTitleTR to set
+	 * @param bookTitleTR
+	 *          the bookTitleTR to set
 	 */
 	public void setBookTitleTR(String bookTitleTR) {
 		this.bookTitleTR = bookTitleTR;
@@ -284,7 +296,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param bookTitleORG the bookTitleORG to set
+	 * @param bookTitleORG
+	 *          the bookTitleORG to set
 	 */
 	public void setBookTitleORG(String bookTitleORG) {
 		this.bookTitleORG = bookTitleORG;
@@ -298,7 +311,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param chapTitleEN the chapTitleEN to set
+	 * @param chapTitleEN
+	 *          the chapTitleEN to set
 	 */
 	public void setChapTitleEN(String chapTitleEN) {
 		this.chapTitleEN = chapTitleEN;
@@ -312,7 +326,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param chapTitleTR the chapTitleTR to set
+	 * @param chapTitleTR
+	 *          the chapTitleTR to set
 	 */
 	public void setChapTitleTR(String chapTitleTR) {
 		this.chapTitleTR = chapTitleTR;
@@ -326,7 +341,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param chapTitleORG the chapTitleORG to set
+	 * @param chapTitleORG
+	 *          the chapTitleORG to set
 	 */
 	public void setChapTitleORG(String chapTitleORG) {
 		this.chapTitleORG = chapTitleORG;
@@ -340,7 +356,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param universityEN the universityEN to set
+	 * @param universityEN
+	 *          the universityEN to set
 	 */
 	public void setUniversityEN(String universityEN) {
 		this.universityEN = universityEN;
@@ -354,7 +371,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param universityORG the universityORG to set
+	 * @param universityORG
+	 *          the universityORG to set
 	 */
 	public void setUniversityORG(String universityORG) {
 		this.universityORG = universityORG;
@@ -368,7 +386,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param universityTR the universityTR to set
+	 * @param universityTR
+	 *          the universityTR to set
 	 */
 	public void setUniversityTR(String universityTR) {
 		this.universityTR = universityTR;
@@ -382,7 +401,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param numberEN the numberEN to set
+	 * @param numberEN
+	 *          the numberEN to set
 	 */
 	public void setNumberEN(String numberEN) {
 		this.numberEN = numberEN;
@@ -396,7 +416,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param numberTR the numberTR to set
+	 * @param numberTR
+	 *          the numberTR to set
 	 */
 	public void setNumberTR(String numberTR) {
 		this.numberTR = numberTR;
@@ -410,7 +431,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param numberORG the numberORG to set
+	 * @param numberORG
+	 *          the numberORG to set
 	 */
 	public void setNumberORG(String numberORG) {
 		this.numberORG = numberORG;
@@ -424,7 +446,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param accessdateEN the accessdateEN to set
+	 * @param accessdateEN
+	 *          the accessdateEN to set
 	 */
 	public void setAccessdateEN(String accessdateEN) {
 		this.accessdateEN = accessdateEN;
@@ -438,7 +461,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param accessdateTR the accessdateTR to set
+	 * @param accessdateTR
+	 *          the accessdateTR to set
 	 */
 	public void setAccessdateTR(String accessdateTR) {
 		this.accessdateTR = accessdateTR;
@@ -452,7 +476,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param accessdateORG the accessdateORG to set
+	 * @param accessdateORG
+	 *          the accessdateORG to set
 	 */
 	public void setAccessdateORG(String accessdateORG) {
 		this.accessdateORG = accessdateORG;
@@ -466,7 +491,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param titleaddonEN the titleaddonEN to set
+	 * @param titleaddonEN
+	 *          the titleaddonEN to set
 	 */
 	public void setTitleaddonEN(String titleaddonEN) {
 		this.titleaddonEN = titleaddonEN;
@@ -480,7 +506,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param titleaddonORG the titleaddonORG to set
+	 * @param titleaddonORG
+	 *          the titleaddonORG to set
 	 */
 	public void setTitleaddonORG(String titleaddonORG) {
 		this.titleaddonORG = titleaddonORG;
@@ -494,7 +521,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param titleaddonTR the titleaddonTR to set
+	 * @param titleaddonTR
+	 *          the titleaddonTR to set
 	 */
 	public void setTitleaddonTR(String titleaddonTR) {
 		this.titleaddonTR = titleaddonTR;
@@ -504,61 +532,64 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	 * @return the publisherID
 	 */
 
-
 	/**
 	 * @return the serieEN
 	 */
-	public String getSerieEN() {
-		return serieEN;
+	public String getSeriesEN() {
+		return seriesEN;
 	}
 
 	/**
 	 * @return the publisher
 	 */
-	public PublisherEntry getPublisher() {
-		return publisher;
+	public int getPublisherID() {
+		return publisherID;
 	}
 
 	/**
-	 * @param publisher the publisher to set
+	 * @param publisher
+	 *          the publisher to set
 	 */
-	public void setPublisher(PublisherEntry publisher) {
-		this.publisher = publisher;
+	public void setPublisherID(int publisherID) {
+		this.publisherID = publisherID;
 	}
 
 	/**
-	 * @param serieEN the serieEN to set
+	 * @param serieEN
+	 *          the serieEN to set
 	 */
-	public void setSerieEN(String serieEN) {
-		this.serieEN = serieEN;
+	public void setSeriesEN(String seriesEN) {
+		this.seriesEN = seriesEN;
 	}
 
 	/**
 	 * @return the serieTR
 	 */
-	public String getSerieTR() {
-		return serieTR;
+	public String getSeriesTR() {
+		return seriesTR;
 	}
 
 	/**
-	 * @param serieTR the serieTR to set
+	 * @param serieTR
+	 *          the serieTR to set
 	 */
-	public void setSerieTR(String serieTR) {
-		this.serieTR = serieTR;
+	public void setSeriesTR(String seriesTR) {
+		this.seriesTR = seriesTR;
 	}
 
 	/**
 	 * @return the serieORG
 	 */
-	public String getSerieORG() {
-		return serieORG;
+	public String getSeriesORG() {
+		return seriesORG;
 	}
 
 	/**
-	 * @param serieORG the serieORG to set
+	 * @param serieORG
+	 *          the serieORG to set
 	 */
-	public void setSerieORG(String serieORG) {
-		this.serieORG = serieORG;
+	public void setSeriesORG(String seriesORG) {
+		this.seriesORG = seriesORG;
 	}
 
 	/**
@@ -569,7 +600,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param editionEN the editionEN to set
+	 * @param editionEN
+	 *          the editionEN to set
 	 */
 	public void setEditionEN(String editionEN) {
 		this.editionEN = editionEN;
@@ -583,7 +615,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param editionORG the editionORG to set
+	 * @param editionORG
+	 *          the editionORG to set
 	 */
 	public void setEditionORG(String editionORG) {
 		this.editionORG = editionORG;
@@ -597,7 +630,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param editionTR the editionTR to set
+	 * @param editionTR
+	 *          the editionTR to set
 	 */
 	public void setEditionTR(String editionTR) {
 		this.editionTR = editionTR;
@@ -611,7 +645,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param volumeEN the volumeEN to set
+	 * @param volumeEN
+	 *          the volumeEN to set
 	 */
 	public void setVolumeEN(String volumeEN) {
 		this.volumeEN = volumeEN;
@@ -625,7 +660,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param volumeTR the volumeTR to set
+	 * @param volumeTR
+	 *          the volumeTR to set
 	 */
 	public void setVolumeTR(String volumeTR) {
 		this.volumeTR = volumeTR;
@@ -639,7 +675,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param volumeORG the volumeORG to set
+	 * @param volumeORG
+	 *          the volumeORG to set
 	 */
 	public void setVolumeORG(String volumeORG) {
 		this.volumeORG = volumeORG;
@@ -653,7 +690,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param yearEN the yearEN to set
+	 * @param yearEN
+	 *          the yearEN to set
 	 */
 	public void setYearEN(int yearEN) {
 		this.yearEN = yearEN;
@@ -667,7 +705,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param yearORG the yearORG to set
+	 * @param yearORG
+	 *          the yearORG to set
 	 */
 	public void setYearORG(String yearORG) {
 		this.yearORG = yearORG;
@@ -681,7 +720,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param yearTR the yearTR to set
+	 * @param yearTR
+	 *          the yearTR to set
 	 */
 	public void setYearTR(String yearTR) {
 		this.yearTR = yearTR;
@@ -695,7 +735,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param monthEN the monthEN to set
+	 * @param monthEN
+	 *          the monthEN to set
 	 */
 	public void setMonthEN(String monthEN) {
 		this.monthEN = monthEN;
@@ -709,7 +750,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param monthTR the monthTR to set
+	 * @param monthTR
+	 *          the monthTR to set
 	 */
 	public void setMonthTR(String monthTR) {
 		this.monthTR = monthTR;
@@ -723,7 +765,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param monthORG the monthORG to set
+	 * @param monthORG
+	 *          the monthORG to set
 	 */
 	public void setMonthORG(String monthORG) {
 		this.monthORG = monthORG;
@@ -737,7 +780,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param pagesEN the pagesEN to set
+	 * @param pagesEN
+	 *          the pagesEN to set
 	 */
 	public void setPagesEN(String pagesEN) {
 		this.pagesEN = pagesEN;
@@ -751,7 +795,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param pagesORG the pagesORG to set
+	 * @param pagesORG
+	 *          the pagesORG to set
 	 */
 	public void setPagesORG(String pagesORG) {
 		this.pagesORG = pagesORG;
@@ -765,7 +810,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param pagesTR the pagesTR to set
+	 * @param pagesTR
+	 *          the pagesTR to set
 	 */
 	public void setPagesTR(String pagesTR) {
 		this.pagesTR = pagesTR;
@@ -779,7 +825,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param comments the comments to set
+	 * @param comments
+	 *          the comments to set
 	 */
 	public void setComments(String comments) {
 		this.comments = comments;
@@ -793,7 +840,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param notes the notes to set
+	 * @param notes
+	 *          the notes to set
 	 */
 	public void setNotes(String notes) {
 		this.notes = notes;
@@ -807,7 +855,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param url the url to set
+	 * @param url
+	 *          the url to set
 	 */
 	public void setUrl(String url) {
 		this.url = url;
@@ -821,7 +870,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param uri the uri to set
+	 * @param uri
+	 *          the uri to set
 	 */
 	public void setUri(String uri) {
 		this.uri = uri;
@@ -835,7 +885,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param unpublished the unpublished to set
+	 * @param unpublished
+	 *          the unpublished to set
 	 */
 	public void setUnpublished(boolean unpublished) {
 		this.unpublished = unpublished;
@@ -854,7 +905,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param annotatedBiblographyID the annotatedBiblographyID to set
+	 * @param annotatedBiblographyID
+	 *          the annotatedBiblographyID to set
 	 */
 	public void setAnnotatedBiblographyID(int annotatedBiblographyID) {
 		this.annotatedBiblographyID = annotatedBiblographyID;
@@ -868,7 +920,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param authorAnnotatedList the authorAnnotatedList to set
+	 * @param authorAnnotatedList
+	 *          the authorAnnotatedList to set
 	 */
 	public void setAuthorAnnotatedList(ArrayList<AuthorAnnotatedRelation> authorAnnotatedList) {
 		this.authorAnnotatedList = authorAnnotatedList;
@@ -882,7 +935,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param editorAnnotatedList the editorAnnotatedList to set
+	 * @param editorAnnotatedList
+	 *          the editorAnnotatedList to set
 	 */
 	public void setEditorAnnotatedList(ArrayList<EditorAnnotatedRelation> editorAnnotatedList) {
 		this.editorAnnotatedList = editorAnnotatedList;
@@ -896,14 +950,12 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 		this.firstEdition = firstEdition;
 	}
 
-	public AnnotatedBiblographyEntry getFirstEditionEntry() {
-		return firstEditionEntry;
+	public int getFirstEditionBibID() {
+		return firstEditionBibID;
 	}
 
-	public void setFirstEditionEntry(AnnotatedBiblographyEntry firstEditionEntry) {
-		this.firstEditionEntry = firstEditionEntry;
+	public void setFirstEditionBibID(int firstEditionBibID) {
+		this.firstEditionBibID = firstEditionBibID;
 	}
-	
-	
 
 }
