@@ -395,12 +395,12 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 //		puplicationTypeFP.setHeading("Publication Type");
 //		puplicationTypeFP.add(publicationTypeComboBox);
 		
-		rebuildMainInput(entry.getPublicationTypeID());
-
 		tabpanel = new TabPanel();
 
-//		backgroundoverview.add(puplicationTypeFP, new VerticalLayoutData(1.0, .1));
+		//		backgroundoverview.add(puplicationTypeFP, new VerticalLayoutData(1.0, .1));
 		backgroundoverview.add(tabpanel, new VerticalLayoutData(1.0, 1.0));
+		
+		rebuildMainInput(entry.getPublicationTypeID());
 
 		ToolButton closeToolButton = new ToolButton(ToolButton.CLOSE);
 		closeToolButton.setToolTip("close");
@@ -461,9 +461,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 //		tabpanel = new TabPanel();
 //		backgroundoverview.add(tabpanel, new VerticalLayoutData(1.0, 0.9));
 
-		if (firstTabHLC != null) tabpanel.remove(firstTabHLC);
-		if (secondTabVLC != null) tabpanel.remove(secondTabVLC);
-		if (thirdTabVLC != null) tabpanel.remove(thirdTabVLC);
+//		if (firstTabHLC != null) tabpanel.remove(firstTabHLC);
+//		if (secondTabVLC != null) tabpanel.remove(secondTabVLC);
+//		if (thirdTabVLC != null) tabpanel.remove(thirdTabVLC);
 
 //		VerticalLayoutContainer firstTabVLC = new VerticalLayoutContainer();
 		firstTabHLC = new HorizontalLayoutContainer();
@@ -509,7 +509,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		firstTabHLC.add(firstTabInnerRightVLC, new HorizontalLayoutData(.35, 1.0));
 		
 		
-		firstTabInnerLeftVLC.add(firstTabHLC, new VerticalLayoutData(1.0, 1.0 / 5));
+		firstTabInnerLeftVLC.add(titleFP, new VerticalLayoutData(1.0, 1.0 / 5));
 		
 
 //		original = new FramedPanel();
@@ -562,7 +562,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			FramedPanel proceedingsFP = new FramedPanel();
 			proceedingsFP.setHeading("Proceedings Title");
 			proceedingsFP.add(proceedingsVLC);
-			firstTabInnerLeftVLC.add(proceedingsFP, new VerticalLayoutData(1.0, 1.0 / 4));
+			firstTabInnerLeftVLC.add(proceedingsFP, new VerticalLayoutData(1.0, 1.0 / 5));
 
 			if (entry != null) {
 				procEN.setText(entry.getProcTitleEN());

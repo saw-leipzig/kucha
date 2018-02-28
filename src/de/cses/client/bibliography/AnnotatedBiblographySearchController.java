@@ -179,10 +179,11 @@ public class AnnotatedBiblographySearchController extends AbstractSearchControll
 		});
 		
 		FramedPanel publicationTypeSelectorFP = new FramedPanel();
-		publicationTypeSelectorFP.setHeading("select type of publication ...");
+		publicationTypeSelectorFP.setHeading("Select type of publication for new entry!");
 		publicationTypeSelectorFP.add(publicationTypeComboBox);
 		publicationTypeSelectorFP.addButton(createButton);
 		publicationTypeSelectorFP.addButton(cancelButton);
+		
 		
 		publicationTypeDialog.add(publicationTypeSelectorFP);
 		publicationTypeDialog.setGlassEnabled(true);
