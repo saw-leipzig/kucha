@@ -149,7 +149,9 @@ public class AnnotatedBiblographySearchController extends AbstractSearchControll
 				if (publicationTypeID > 0) {
 					publicationTypeDialog.hide();
 					PopupPanel depictionEditorPanel = new PopupPanel(false);
-					AnnotatedBiblographyEditor abe = new AnnotatedBiblographyEditor(new AnnotatedBiblographyEntry(publicationTypeID));
+					AnnotatedBiblographyEntry newBibEntry = new AnnotatedBiblographyEntry();
+					newBibEntry.setPublicationTypeID(publicationTypeID);
+					AnnotatedBiblographyEditor abe = new AnnotatedBiblographyEditor(newBibEntry);
 					abe.addEditorListener(new EditorListener() {
 						
 						@Override

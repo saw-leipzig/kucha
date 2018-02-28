@@ -2557,7 +2557,7 @@ public class MysqlConnector {
 	/**
 	 * @return
 	 */
-	public ArrayList<PublisherEntry> getPublisher() {
+	public ArrayList<PublisherEntry> getPublishers() {
 		ArrayList<PublisherEntry> result = new ArrayList<PublisherEntry>();
 		Connection dbc = getConnection();
 
@@ -2566,7 +2566,7 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Publishers");
 			while (rs.next()) {
-				result.add(new PublisherEntry(rs.getInt("PublisherID"), rs.getString("Name"), rs.getString("Address")));
+				result.add(new PublisherEntry(rs.getInt("PublisherID"), rs.getString("Name"), rs.getString("Location")));
 			}
 			rs.close();
 			stmt.close();
@@ -2857,6 +2857,30 @@ public class MysqlConnector {
 			e.printStackTrace();
 		}
 		return preservationAttributeID;
+	}
+
+	/**
+	 * @param publisherEntry
+	 * @return
+	 */
+	public int insertPublisherEntry(PublisherEntry publisherEntry) {
+		Connection dbc = getConnection();
+		PreparedStatement pStatement;
+		int newPublisherID = 0;
+		try {
+			pStatement = dbc.prepareStatement("INSERT INTO Publishers (Name, Location) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
+			pStatement.setString(1, publisherEntry.getName());
+			pStatement.setString(2, publisherEntry.getLocation());
+			pStatement.executeUpdate();
+			ResultSet keys = pStatement.getGeneratedKeys();
+			if (keys.next()) {
+				newPublisherID = keys.getInt(1);
+			}
+			keys.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return newPublisherID;
 	}
 
 }

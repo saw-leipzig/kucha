@@ -204,7 +204,7 @@ public interface DatabaseService extends RemoteService {
 	
 	ArrayList<AnnotatedBiblographyEntry> getAnnotatedBibliography() throws IllegalArgumentException;
 
-	ArrayList<PublisherEntry> getPublisher() throws IllegalArgumentException;
+	ArrayList<PublisherEntry> getPublishers() throws IllegalArgumentException;
 
 	ArrayList<AuthorEntry> getAuthors() throws IllegalArgumentException;
 
@@ -236,5 +236,7 @@ public interface DatabaseService extends RemoteService {
 	ArrayList<PreservationAttributeEntry> getPreservationAttributes() throws IllegalArgumentException;
 
 	int insertPreservationAttributeEntry(PreservationAttributeEntry paEntry) throws IllegalArgumentException;
+
+	int insertPublisherEntry(PublisherEntry publisherEntry) throws IllegalArgumentException;
 
 }

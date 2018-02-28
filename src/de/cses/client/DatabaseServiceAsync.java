@@ -231,7 +231,7 @@ public interface DatabaseServiceAsync {
 
 	void getAuthors(AsyncCallback<ArrayList<AuthorEntry>> callback) throws IllegalArgumentException;// ?
 
-	void getPublisher(AsyncCallback<ArrayList<PublisherEntry>> callback) throws IllegalArgumentException;
+	void getPublishers(AsyncCallback<ArrayList<PublisherEntry>> callback) throws IllegalArgumentException;
 
 	void getAnnotatedBibliography(AsyncCallback<ArrayList<AnnotatedBiblographyEntry>> callback) throws IllegalArgumentException;
 
@@ -264,5 +264,7 @@ public interface DatabaseServiceAsync {
 
 	void insertPreservationAttributeEntry(PreservationAttributeEntry paEntry, AsyncCallback<Integer> asyncCallback)
 			throws IllegalArgumentException;
+
+	void insertPublisherEntry(PublisherEntry publisherEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 
 }

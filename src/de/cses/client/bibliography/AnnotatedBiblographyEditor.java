@@ -17,18 +17,14 @@ import java.util.ArrayList;
 
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.ibm.icu.impl.CalendarAstronomer.Horizon;
-import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.core.client.util.DateWrapper;
@@ -36,14 +32,17 @@ import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
+import com.sencha.gxt.data.shared.SortDir;
+import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.widget.core.client.Dialog;
 import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.TabPanel;
+import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
@@ -55,17 +54,16 @@ import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MaxNumberValidator;
+import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
-import de.cses.client.StaticTables;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.shared.AnnotatedBiblographyEntry;
-import de.cses.shared.AuthorAnnotatedRelation;
 import de.cses.shared.AuthorEntry;
-import de.cses.shared.EditorAnnotatedRelation;
-import de.cses.shared.PublicationTypeEntry;
+import de.cses.shared.PreservationAttributeEntry;
 import de.cses.shared.PublisherEntry;
 
 /**
@@ -318,6 +316,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 		publisherProps = GWT.create(PublisherProperties.class);
 		publisherListStore = new ListStore<PublisherEntry>(publisherProps.publisherID());
+		publisherListStore.addSortInfo(new StoreSortInfo<PublisherEntry>(publisherProps.name(), SortDir.ASC));
 
 		dbService.getAuthors(new AsyncCallback<ArrayList<AuthorEntry>>() {
 
@@ -335,7 +334,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			}
 		});
 
-		dbService.getPublisher(new AsyncCallback<ArrayList<PublisherEntry>>() {
+		dbService.getPublishers(new AsyncCallback<ArrayList<PublisherEntry>>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
@@ -601,7 +600,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			titeladdonTR.setText(entry.getTitleaddonTR());
 		}
 
-		publisherComboBox = new ComboBox<PublisherEntry>(publisherListStore, publisherProps.name(),
+		publisherComboBox = new ComboBox<PublisherEntry>(publisherListStore, publisherProps.uniqueID(),
 				new AbstractSafeHtmlRenderer<PublisherEntry>() {
 
 					@Override
@@ -615,6 +614,71 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		FramedPanel publisherFP = new FramedPanel();
 		publisherFP.setHeading("Publisher");
 		publisherFP.add(publisherHLC, new VerticalLayoutData(1.0, 1.0));
+		
+		ToolButton addPublisherTB = new ToolButton(ToolButton.PLUS);
+		publisherFP.addTool(addPublisherTB);
+		addPublisherTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				PopupPanel addPublisherDialog = new PopupPanel();
+				FramedPanel newPublisherFP = new FramedPanel();
+				newPublisherFP.setHeading("Add New Publisher");
+				TextField publisherNameField = new TextField();
+				publisherNameField.addValidator(new MinLengthValidator(2));
+				publisherNameField.addValidator(new MaxLengthValidator(128));
+				publisherNameField.setValue("");
+				TextField publisherLocationField = new TextField();
+				publisherLocationField.addValidator(new MinLengthValidator(2));
+				publisherLocationField.addValidator(new MaxLengthValidator(128));
+				publisherLocationField.setValue("");
+				VerticalLayoutContainer newPublisherVLC = new VerticalLayoutContainer();
+				newPublisherVLC.add(new FieldLabel(publisherNameField, "Name"), new VerticalLayoutData(1.0, .5));
+				newPublisherVLC.add(new FieldLabel(publisherLocationField, "Location"), new VerticalLayoutData(1.0, .5));
+				newPublisherFP.add(publisherNameField);
+				TextButton saveButton = new TextButton("save");
+				saveButton.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						if (publisherNameField.isValid() && publisherLocationField.isValid()) {
+							PublisherEntry publisherEntry = new PublisherEntry(0, publisherNameField.getCurrentValue(), publisherLocationField.getCurrentValue());
+							dbService.insertPublisherEntry(publisherEntry, new AsyncCallback<Integer>() {
+
+								@Override
+								public void onFailure(Throwable caught) {
+									caught.printStackTrace();
+									newPublisherFP.hide();
+								}
+
+								@Override
+								public void onSuccess(Integer result) {
+									publisherEntry.setPublisherID(result);
+									publisherListStore.add(publisherEntry);
+									newPublisherFP.hide();
+								}
+							});
+						}
+					}
+				});
+				publisherFP.addButton(saveButton);
+				TextButton cancelButton = new TextButton("cancel");
+				cancelButton.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						publisherFP.hide();
+					}
+				});
+				publisherFP.addButton(cancelButton);
+				addPublisherDialog.add(publisherFP);
+				addPublisherDialog.setModal(true);
+				addPublisherDialog.setSize("300px", "250px");
+				addPublisherDialog.center();
+			}
+		});
+				
+		
 		secondTabVLC.add(publisherFP, new VerticalLayoutData(1.0, 1.0 / 6));
 
 		if (entry != null) {
@@ -896,8 +960,8 @@ interface PublicationTypeViewTemplates extends XTemplates {
 
 interface PublisherProperties extends PropertyAccess<PublisherEntry> {
 	ModelKeyProvider<PublisherEntry> publisherID();
-
-	LabelProvider<PublisherEntry> name();
+	LabelProvider<PublisherEntry> uniqueID();
+	ValueProvider<PublisherEntry, String> name();
 }
 
 interface AnnotatedBiblographyEntryProperties extends PropertyAccess<AnnotatedBiblographyEntry> {

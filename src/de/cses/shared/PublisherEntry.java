@@ -21,19 +21,19 @@ public class PublisherEntry extends AbstractEntry {
 	
 	private int publisherID;
 	private String name;
-	private String adress;
+	private String location;
 	
 	
 	/**
 	 * @param publisherID
 	 * @param name
-	 * @param adress
+	 * @param location
 	 */
-	public PublisherEntry(int publisherID, String name, String adress) {
+	public PublisherEntry(int publisherID, String name, String location) {
 		super();
 		this.setPublisherID(publisherID);
 		this.name = name;
-		this.adress = adress;
+		this.location = location;
 	}
 	/**
 	 * @return the name
@@ -48,16 +48,16 @@ public class PublisherEntry extends AbstractEntry {
 		this.name = name;
 	}
 	/**
-	 * @return the adress
+	 * @return the location
 	 */
-	public String getAdress() {
-		return adress;
+	public String getLocation() {
+		return location;
 	}
 	/**
-	 * @param adress the adress to set
+	 * @param location the location to set
 	 */
-	public void setAdress(String adress) {
-		this.adress = adress;
+	public void setLocation(String location) {
+		this.location = location;
 	}
 	/**
 	 * @return the publisherID
@@ -76,8 +76,7 @@ public class PublisherEntry extends AbstractEntry {
 	 */
 	@Override
 	public String getUniqueID() {
-		// TODO Auto-generated method stub
-		return null;
+		return "Publisher-" + publisherID;
 	}
 
 	

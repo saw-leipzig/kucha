@@ -592,9 +592,9 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		return connector.insertAnnotatedBiblographyEntry(bibEntry);
 	}
 	
-	public ArrayList<PublisherEntry> getPublisher() throws IllegalArgumentException {
+	public ArrayList<PublisherEntry> getPublishers() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
-		return connector.getPublisher();
+		return connector.getPublishers();
 	}
 
 	public ArrayList<AuthorEntry> getAuthors() throws IllegalArgumentException {
@@ -719,6 +719,14 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public int insertPreservationAttributeEntry(PreservationAttributeEntry paEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.insertPreservationAttributeEntry(paEntry);
+	}
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#insertPublisherEntry(de.cses.shared.PublisherEntry)
+	 */
+	@Override
+	public int insertPublisherEntry(PublisherEntry publisherEntry) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.insertPublisherEntry(publisherEntry);
 	}
 
 }
