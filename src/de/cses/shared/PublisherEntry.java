@@ -83,4 +83,8 @@ public class PublisherEntry extends AbstractEntry {
 		return "Publisher-" + publisherID;
 	}
 	
+	public String getLabel() {
+		return name + " (" + location + ")";
+	}
+	
 }

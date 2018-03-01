@@ -336,17 +336,15 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 			@Override
 			public String getValue(PublisherEntry object) {
-				return object.getName();
+				return object.getLabel();
 			}
 
 			@Override
-			public void setValue(PublisherEntry object, String value) {
-				object.setName(value);
-			}
+			public void setValue(PublisherEntry object, String value) { }
 
 			@Override
 			public String getPath() {
-				return "name";
+				return "label";
 			}
 		}, SortDir.ASC));
 
@@ -632,7 +630,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			titeladdonTR.setText(entry.getTitleaddonTR());
 		}
 
-		publisherComboBox = new ComboBox<PublisherEntry>(publisherListStore, publisherProps.name(),
+		publisherComboBox = new ComboBox<PublisherEntry>(publisherListStore, publisherProps.label(),
 				new AbstractSafeHtmlRenderer<PublisherEntry>() {
 
 					@Override
@@ -991,7 +989,7 @@ interface PublicationTypeViewTemplates extends XTemplates {
 
 interface PublisherProperties extends PropertyAccess<PublisherEntry> {
 	ModelKeyProvider<PublisherEntry> publisherID();
-	LabelProvider<PublisherEntry> name();
+	LabelProvider<PublisherEntry> label();
 }
 
 interface AnnotatedBiblographyEntryProperties extends PropertyAccess<AnnotatedBiblographyEntry> {
