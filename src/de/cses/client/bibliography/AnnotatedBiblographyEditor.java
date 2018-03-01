@@ -1086,7 +1086,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			@Override
 			public void onValueChange(ValueChangeEvent<String> event) {
 				if (urlTF.validate()) {
-					entry.setNotes(event.getValue());
+					entry.setUrl(event.getValue());
 				}
 			}
 		});

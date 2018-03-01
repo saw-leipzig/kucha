@@ -2619,7 +2619,7 @@ public class MysqlConnector {
 		PreparedStatement pstmt;
 		deleteEntry("DELETE FROM EditorBibliographyRelation WHERE BibID=" + bibID); // in case there are already relations 
 		try {
-			pstmt = dbc.prepareStatement("INSERT INTO EditorBibliographyRelation (EditorID, BibID) VALUES (?, ?)");
+			pstmt = dbc.prepareStatement("INSERT INTO EditorBibliographyRelation (AuthorID, BibID) VALUES (?, ?)");
 			for (AuthorEntry entry : editorList) {
 				pstmt.setInt(1, entry.getAuthorID());
 				pstmt.setInt(2, bibID);
