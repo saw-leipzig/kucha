@@ -21,6 +21,7 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -316,7 +317,23 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 		publisherProps = GWT.create(PublisherProperties.class);
 		publisherListStore = new ListStore<PublisherEntry>(publisherProps.publisherID());
-		publisherListStore.addSortInfo(new StoreSortInfo<PublisherEntry>(publisherProps.name(), SortDir.ASC));
+		publisherListStore.addSortInfo(new StoreSortInfo<PublisherEntry>(new ValueProvider<PublisherEntry, String>() {
+
+			@Override
+			public String getValue(PublisherEntry object) {
+				return object.getName();
+			}
+
+			@Override
+			public void setValue(PublisherEntry object, String value) {
+				object.setName(value);
+			}
+
+			@Override
+			public String getPath() {
+				return "publisherName";
+			}
+		}, SortDir.ASC));
 
 		dbService.getAuthors(new AsyncCallback<ArrayList<AuthorEntry>>() {
 
@@ -600,7 +617,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			titeladdonTR.setText(entry.getTitleaddonTR());
 		}
 
-		publisherComboBox = new ComboBox<PublisherEntry>(publisherListStore, publisherProps.uniqueID(),
+		publisherComboBox = new ComboBox<PublisherEntry>(publisherListStore, publisherProps.name(),
 				new AbstractSafeHtmlRenderer<PublisherEntry>() {
 
 					@Override
@@ -635,7 +652,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				VerticalLayoutContainer newPublisherVLC = new VerticalLayoutContainer();
 				newPublisherVLC.add(new FieldLabel(publisherNameField, "Name"), new VerticalLayoutData(1.0, .5));
 				newPublisherVLC.add(new FieldLabel(publisherLocationField, "Location"), new VerticalLayoutData(1.0, .5));
-				addPublisherFP.add(publisherNameField);
+				addPublisherFP.add(newPublisherVLC);
 				TextButton saveButton = new TextButton("save");
 				saveButton.addSelectHandler(new SelectHandler() {
 
@@ -647,15 +664,15 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 								@Override
 								public void onFailure(Throwable caught) {
-									caught.printStackTrace();
-									addPublisherFP.hide();
+									addPublisherDialog.hide();
+									Window.alert("An error occurred during saving!");
 								}
 
 								@Override
 								public void onSuccess(Integer result) {
+									addPublisherDialog.hide();
 									publisherEntry.setPublisherID(result);
 									publisherListStore.add(publisherEntry);
-									addPublisherFP.hide();
 								}
 							});
 						}
@@ -667,13 +684,12 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 					@Override
 					public void onSelect(SelectEvent event) {
-						addPublisherFP.hide();
+						addPublisherDialog.hide();
 					}
 				});
 				addPublisherFP.addButton(cancelButton);
 				addPublisherDialog.add(addPublisherFP);
 				addPublisherDialog.setModal(true);
-				addPublisherDialog.setSize("300px", "250px");
 				addPublisherDialog.center();
 			}
 		});
@@ -960,8 +976,7 @@ interface PublicationTypeViewTemplates extends XTemplates {
 
 interface PublisherProperties extends PropertyAccess<PublisherEntry> {
 	ModelKeyProvider<PublisherEntry> publisherID();
-	LabelProvider<PublisherEntry> uniqueID();
-	ValueProvider<PublisherEntry, String> name();
+	LabelProvider<PublisherEntry> name();
 }
 
 interface AnnotatedBiblographyEntryProperties extends PropertyAccess<AnnotatedBiblographyEntry> {
