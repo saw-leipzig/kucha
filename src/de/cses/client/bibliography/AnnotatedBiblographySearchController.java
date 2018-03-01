@@ -23,6 +23,8 @@ import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
+import com.sencha.gxt.core.client.XTemplates;
+import com.sencha.gxt.core.client.XTemplates.XTemplate;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
@@ -57,7 +59,11 @@ public class AnnotatedBiblographySearchController extends AbstractSearchControll
 	private ListStore<PublicationTypeEntry> publicationTypeListStore;
 	protected int publicationTypeID = 0;
 
-	
+	interface PublicationTypeViewTemplates extends XTemplates {
+		@XTemplate("<div>{name}</div>")
+		SafeHtml publicationType(String name);
+	}
+
 	interface PublicationTypeProperties extends PropertyAccess<PublicationTypeEntry> {
 		ModelKeyProvider<PublicationTypeEntry> publicationTypeID();
 		LabelProvider<PublicationTypeEntry> name();
