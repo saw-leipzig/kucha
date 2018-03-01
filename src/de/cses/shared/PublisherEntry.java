@@ -82,6 +82,5 @@ public class PublisherEntry extends AbstractEntry {
 	public String getUniqueID() {
 		return "Publisher-" + publisherID;
 	}
-
 	
 }

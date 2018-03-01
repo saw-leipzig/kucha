@@ -308,9 +308,24 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 	public void init() {
 
 		authorProps = GWT.create(AuthorProperties.class);
-		selectedAuthorListStore = new ListStore<AuthorEntry>(authorProps.authorID());
-		selectedEditorListStore = new ListStore<AuthorEntry>(authorProps.authorID());
+		selectedAuthorListStore = new ListStore<AuthorEntry>(authorProps.authorID()); // the order of authors should be accorings to the order on the paper
+		selectedEditorListStore = new ListStore<AuthorEntry>(authorProps.authorID()); // the order of editors should be according to the order of the publication
 		authorListStore = new ListStore<AuthorEntry>(authorProps.authorID());
+		authorListStore.addSortInfo(new StoreSortInfo<AuthorEntry>(new ValueProvider<AuthorEntry, String>() {
+
+			@Override
+			public String getValue(AuthorEntry object) {
+				return object.getName();
+			}
+
+			@Override
+			public void setValue(AuthorEntry object, String value) { }
+
+			@Override
+			public String getPath() {
+				return "name";
+			}
+		}, SortDir.ASC));
 
 		annotatedBiblographyEntryProps = GWT.create(AnnotatedBiblographyEntryProperties.class);
 		annotatedBiblographyEntryLS = new ListStore<AnnotatedBiblographyEntry>(annotatedBiblographyEntryProps.annotatedBiblographyID());
@@ -331,7 +346,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 			@Override
 			public String getPath() {
-				return "publisherName";
+				return "name";
 			}
 		}, SortDir.ASC));
 

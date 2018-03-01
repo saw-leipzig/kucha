@@ -15,13 +15,11 @@ package de.cses.shared;
 
 import java.sql.Date;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
 /**
  * @author alingnau
  *
  */
-public class AuthorEntry implements IsSerializable {
+public class AuthorEntry extends AbstractEntry {
 
 	private int authorID;
 	private String lastname, firstname;
@@ -107,6 +105,14 @@ public class AuthorEntry implements IsSerializable {
 
 	public String getName() {
 		return lastname + ", " + firstname; 
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.shared.AbstractEntry#getUniqueID()
+	 */
+	@Override
+	public String getUniqueID() {
+		return "Author-" + authorID;
 	}
 
 }

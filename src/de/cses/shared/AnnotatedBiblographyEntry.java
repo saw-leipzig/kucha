@@ -73,8 +73,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	private boolean unpublished = false;
 	private boolean firstEdition = true;
 	private int firstEditionBibID = 0;
-	private ArrayList<AuthorAnnotatedRelation> authorAnnotatedList = new ArrayList<AuthorAnnotatedRelation>();
-	private ArrayList<EditorAnnotatedRelation> editorAnnotatedList = new ArrayList<EditorAnnotatedRelation>();
+	private ArrayList<AuthorEntry> authorList = new ArrayList<AuthorEntry>();
+	private ArrayList<AuthorEntry> editorList = new ArrayList<AuthorEntry>();
 
 	public AnnotatedBiblographyEntry(int annotatedBiblographyID, int publicationTypeID, String titleEN, String titleTR, String titleORG,
 			String procTitleEN, String procTitleTR, String procTitleORG, String bookTitleEN, String bookTitleTR, String bookTitleORG,
@@ -915,31 +915,31 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	/**
 	 * @return the authorAnnotatedList
 	 */
-	public ArrayList<AuthorAnnotatedRelation> getAuthorAnnotatedList() {
-		return authorAnnotatedList;
+	public ArrayList<AuthorEntry> getAuthorList() {
+		return authorList;
 	}
 
 	/**
 	 * @param authorAnnotatedList
 	 *          the authorAnnotatedList to set
 	 */
-	public void setAuthorAnnotatedList(ArrayList<AuthorAnnotatedRelation> authorAnnotatedList) {
-		this.authorAnnotatedList = authorAnnotatedList;
+	public void setAuthorList(ArrayList<AuthorEntry> authorList) {
+		this.authorList = authorList;
 	}
 
 	/**
 	 * @return the editorAnnotatedList
 	 */
-	public ArrayList<EditorAnnotatedRelation> getEditorAnnotatedList() {
-		return editorAnnotatedList;
+	public ArrayList<AuthorEntry> getEditorList() {
+		return editorList;
 	}
 
 	/**
 	 * @param editorAnnotatedList
 	 *          the editorAnnotatedList to set
 	 */
-	public void setEditorAnnotatedList(ArrayList<EditorAnnotatedRelation> editorAnnotatedList) {
-		this.editorAnnotatedList = editorAnnotatedList;
+	public void setEditorList(ArrayList<AuthorEntry> editorList) {
+		this.editorList = editorList;
 	}
 
 	public boolean isFirstEdition() {

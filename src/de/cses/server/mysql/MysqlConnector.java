@@ -1446,6 +1446,8 @@ public class MysqlConnector {
 						rs.getString("EditionORG"), rs.getString("EditionTR"), rs.getString("VolumeEN"), rs.getString("VolumeORG"), rs.getString("VolumeTR"), rs.getInt("YearEN"), rs.getString("YearORG"), 
 						rs.getString("YearTR"), rs.getString("MonthEN"), rs.getString("MonthORG"), rs.getString("MonthTR"), rs.getString("PagesEN"), rs.getString("PagesORG"), rs.getString("PagesTR"),
 						rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"), rs.getString("URI"), rs.getBoolean("Unpublished"), rs.getBoolean("FirstEdition"), rs.getInt("FirstEditionBibID"));
+				entry.setAuthorList(getAuthorBibRelation(entry.getAnnotatedBiblographyID()));
+				entry.setEditorList(getEditorBibRelation(entry.getAnnotatedBiblographyID()));
 				result.add(entry);
 			}
 			rs.close();
@@ -1456,15 +1458,70 @@ public class MysqlConnector {
 		return result;
 	}
 	
+	/**
+	 * @param annotatedBiblographyID
+	 * @return
+	 */
+	private ArrayList<AuthorEntry> getEditorBibRelation(int annotatedBiblographyID) {
+		AuthorEntry entry = null;
+		ArrayList<AuthorEntry> result = new ArrayList<AuthorEntry>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM AuthorBibliographyRelation WHERE BibID=" + annotatedBiblographyID);
+			while (rs.next()) {
+				entry = getAuthorEntry(rs.getInt("AuthorID"));
+				result.add(entry);
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	/**
+	 * @param annotatedBiblographyID
+	 * @return
+	 */
+	private ArrayList<AuthorEntry> getAuthorBibRelation(int annotatedBiblographyID) {
+		AuthorEntry entry = null;
+		ArrayList<AuthorEntry> result = new ArrayList<AuthorEntry>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM EditorBibliographyRelation WHERE BibID=" + annotatedBiblographyID);
+			while (rs.next()) {
+				entry = getAuthorEntry(rs.getInt("AuthorID"));
+				result.add(entry);
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
 	public AnnotatedBiblographyEntry getAnnotatedBiblographybyID(int bibID) {
 		AnnotatedBiblographyEntry result = null;
 		Connection dbc = getConnection();
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM AnnotatedBiblography WHERE BibID = ");
-			while (rs.next()) {
-				result = new AnnotatedBiblographyEntry();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM AnnotatedBiblography WHERE BibID=" + bibID);
+			if (rs.first()) {
+				result = new AnnotatedBiblographyEntry(rs.getInt("BibID"), rs.getInt("PublicationTypeID"), rs.getString("TitleEN"), rs.getString("TitleORG"), rs.getString("TitleTR"), rs.getString("ProcTitleEN"),
+						rs.getString("ProcTitleORG"), rs.getString("ProcTitleTR"), rs.getString("BookTitleEN"), rs.getString("BookTitleORG"), rs.getString("BookTitleTR"), rs.getString("ChapTitleEN"), 
+						rs.getString("ChapTitleORG"), rs.getString("ChapTitleTR"), rs.getString("UniversityEN"), rs.getString("UniversityORG"), rs.getString("UniversityTR"), rs.getString("NumberEN"), 
+						rs.getString("NumberORG"), rs.getString("NumberTR"), rs.getString("AccessDateEN"), rs.getString("AccessDateORG"), rs.getString("AccessDateTR"), rs.getString("TitleAddonEN"), 
+						rs.getString("TitleAddonORG"), rs.getString("TitleAddonTR"), rs.getInt("PublisherID"), rs.getString("SeriesEN"), rs.getString("SeriesORG"), rs.getString("SeriesTR"), rs.getString("EditionEN"),
+						rs.getString("EditionORG"), rs.getString("EditionTR"), rs.getString("VolumeEN"), rs.getString("VolumeORG"), rs.getString("VolumeTR"), rs.getInt("YearEN"), rs.getString("YearORG"), 
+						rs.getString("YearTR"), rs.getString("MonthEN"), rs.getString("MonthORG"), rs.getString("MonthTR"), rs.getString("PagesEN"), rs.getString("PagesORG"), rs.getString("PagesTR"),
+						rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"), rs.getString("URI"), rs.getBoolean("Unpublished"), rs.getBoolean("FirstEdition"), rs.getInt("FirstEditionBibID"));
 			}
 			rs.close();
 			stmt.close();
@@ -2531,27 +2588,46 @@ public class MysqlConnector {
 			}
 			keys.close();
 
-			for (int i = 0; bibEntry.getAuthorAnnotatedList().size() > i; i++) {
-				pstmt = dbc.prepareStatement("INSERT INTO AuthorAnnotatedRelation (AuthorID, AnnotatedBiblographyID) VALUES (?, ?)");
-				pstmt.setInt(1, bibEntry.getAuthorAnnotatedList().get(i).getAuthor().getAuthorID());
-				pstmt.setInt(2, newBibID);
-				pstmt.executeUpdate();
-				pstmt.close();
-			}
-
-			for (int i = 0; bibEntry.getEditorAnnotatedList().size() > i; i++) {
-				pstmt = dbc.prepareStatement("INSERT INTO EditorAnnotatedRelation (EditorID, AnnotatedBiblographyID   ) VALUES (?, ?)");
-				pstmt.setInt(1, bibEntry.getEditorAnnotatedList().get(i).getEditor().getAuthorID());
-				pstmt.setInt(2, newBibID);
-				pstmt.executeUpdate();
-				pstmt.close();
-			}
+			updateAuthorBibRelation(newBibID, bibEntry.getAuthorList());
+			updateEditorBibRelation(newBibID, bibEntry.getEditorList());
 		} catch (SQLException ex) {
 			return 0;
-
 		}
-
 		return newBibID;
+	}
+	
+	private void updateAuthorBibRelation(int bibID, ArrayList<AuthorEntry> authorList) {
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		deleteEntry("DELETE FROM AuthorBibliographyRelation WHERE BibID=" + bibID); // in case there are already relations 
+		try {
+			pstmt = dbc.prepareStatement("INSERT INTO AuthorBibliographyRelation (AuthorID, BibID) VALUES (?, ?)");
+			for (AuthorEntry entry : authorList) {
+				pstmt.setInt(1, entry.getAuthorID());
+				pstmt.setInt(2, bibID);
+				pstmt.executeUpdate();
+			}
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void updateEditorBibRelation(int bibID, ArrayList<AuthorEntry> editorList) {
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		deleteEntry("DELETE FROM EditorBibliographyRelation WHERE BibID=" + bibID); // in case there are already relations 
+		try {
+			pstmt = dbc.prepareStatement("INSERT INTO EditorBibliographyRelation (EditorID, BibID) VALUES (?, ?)");
+			for (AuthorEntry entry : editorList) {
+				pstmt.setInt(1, entry.getAuthorID());
+				pstmt.setInt(2, bibID);
+				pstmt.executeUpdate();
+			}
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
