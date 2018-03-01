@@ -82,6 +82,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 	private ListStore<AnnotatedBiblographyEntry> annotatedBiblographyEntryLS;
 
 	private ListStore<AuthorEntry> authorListStore;
+	private ListStore<AuthorEntry> editorListStore;
 	private ListStore<AuthorEntry> selectedAuthorListStore;
 	private ListStore<AuthorEntry> selectedEditorListStore;
 
@@ -196,6 +197,22 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				return "name";
 			}
 		}, SortDir.ASC));
+		editorListStore = new ListStore<AuthorEntry>(authorProps.authorID());
+		editorListStore.addSortInfo(new StoreSortInfo<AuthorEntry>(new ValueProvider<AuthorEntry, String>() {
+
+			@Override
+			public String getValue(AuthorEntry object) {
+				return object.getName();
+			}
+
+			@Override
+			public void setValue(AuthorEntry object, String value) { }
+
+			@Override
+			public String getPath() {
+				return "name";
+			}
+		}, SortDir.ASC));
 
 		annotatedBiblographyEntryProps = GWT.create(AnnotatedBiblographyEntryProperties.class);
 		annotatedBiblographyEntryLS = new ListStore<AnnotatedBiblographyEntry>(annotatedBiblographyEntryProps.annotatedBiblographyID());
@@ -227,9 +244,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 			@Override
 			public void onSuccess(ArrayList<AuthorEntry> result) {
-				authorListStore.clear();
 				for (AuthorEntry pe : result) {
 					authorListStore.add(pe);
+					editorListStore.add(pe);
 				}
 			}
 		});
@@ -731,6 +748,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		if (publicationtype != 6) {
 			DualListField<AuthorEntry, String> authorSelection = new DualListField<AuthorEntry, String>(authorListStore, selectedAuthorListStore, authorProps.name(), new TextCell());
 			authorSelection.setMode(Mode.INSERT);
+			authorSelection.setEnableDnd(true);
 			VerticalLayoutContainer authorVLC = new VerticalLayoutContainer();
 			authorVLC.add(authorSelection, new VerticalLayoutData(1.0, .8));
 			authorListFilterField = new StoreFilterField<AuthorEntry>() {
@@ -755,8 +773,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			secondTabVLC.add(authorFP, new VerticalLayoutData(1.0, .4));
 		}
 
-		DualListField<AuthorEntry, String> editorSelection = new DualListField<AuthorEntry, String>(authorListStore, selectedEditorListStore, authorProps.name(), new TextCell());
+		DualListField<AuthorEntry, String> editorSelection = new DualListField<AuthorEntry, String>(editorListStore, selectedEditorListStore, authorProps.name(), new TextCell());
 		editorSelection.setMode(Mode.INSERT);
+		editorSelection.setEnableDnd(true);
 		VerticalLayoutContainer editorVLC = new VerticalLayoutContainer();
 		editorVLC.add(editorSelection, new VerticalLayoutData(1.0, .8));
 		editorListFilterField = new StoreFilterField<AuthorEntry>() {
@@ -773,7 +792,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				return false;
 			}
 		};
-		editorListFilterField.bind(authorListStore);
+		editorListFilterField.bind(editorListStore);
 		editorVLC.add(editorListFilterField, new VerticalLayoutData(.5, .2));
 		FramedPanel editorFP = new FramedPanel();
 		editorFP.setHeading("Editor");
