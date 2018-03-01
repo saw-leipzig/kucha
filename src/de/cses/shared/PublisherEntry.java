@@ -23,6 +23,10 @@ public class PublisherEntry extends AbstractEntry {
 	private String name;
 	private String location;
 	
+	/**
+	 * 
+	 */
+	public PublisherEntry() {	}
 	
 	/**
 	 * @param publisherID

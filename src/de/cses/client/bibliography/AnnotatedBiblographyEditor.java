@@ -622,8 +622,8 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			@Override
 			public void onSelect(SelectEvent event) {
 				PopupPanel addPublisherDialog = new PopupPanel();
-				FramedPanel newPublisherFP = new FramedPanel();
-				newPublisherFP.setHeading("Add New Publisher");
+				FramedPanel addPublisherFP = new FramedPanel();
+				addPublisherFP.setHeading("Add New Publisher");
 				TextField publisherNameField = new TextField();
 				publisherNameField.addValidator(new MinLengthValidator(2));
 				publisherNameField.addValidator(new MaxLengthValidator(128));
@@ -635,7 +635,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				VerticalLayoutContainer newPublisherVLC = new VerticalLayoutContainer();
 				newPublisherVLC.add(new FieldLabel(publisherNameField, "Name"), new VerticalLayoutData(1.0, .5));
 				newPublisherVLC.add(new FieldLabel(publisherLocationField, "Location"), new VerticalLayoutData(1.0, .5));
-				newPublisherFP.add(publisherNameField);
+				addPublisherFP.add(publisherNameField);
 				TextButton saveButton = new TextButton("save");
 				saveButton.addSelectHandler(new SelectHandler() {
 
@@ -648,30 +648,30 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 								@Override
 								public void onFailure(Throwable caught) {
 									caught.printStackTrace();
-									newPublisherFP.hide();
+									addPublisherFP.hide();
 								}
 
 								@Override
 								public void onSuccess(Integer result) {
 									publisherEntry.setPublisherID(result);
 									publisherListStore.add(publisherEntry);
-									newPublisherFP.hide();
+									addPublisherFP.hide();
 								}
 							});
 						}
 					}
 				});
-				publisherFP.addButton(saveButton);
+				addPublisherFP.addButton(saveButton);
 				TextButton cancelButton = new TextButton("cancel");
 				cancelButton.addSelectHandler(new SelectHandler() {
 
 					@Override
 					public void onSelect(SelectEvent event) {
-						publisherFP.hide();
+						addPublisherFP.hide();
 					}
 				});
-				publisherFP.addButton(cancelButton);
-				addPublisherDialog.add(publisherFP);
+				addPublisherFP.addButton(cancelButton);
+				addPublisherDialog.add(addPublisherFP);
 				addPublisherDialog.setModal(true);
 				addPublisherDialog.setSize("300px", "250px");
 				addPublisherDialog.center();
