@@ -29,6 +29,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.core.client.util.DateWrapper;
+import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
@@ -96,7 +97,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 	private TabPanel tabpanel;
 	private StoreFilterField<AuthorEntry> authorListFilterField;
 	private StoreFilterField<AuthorEntry> editorListFilterField;
-	
+
 	interface PublisherViewTemplates extends XTemplates {
 		@XTemplate("<div>{name}</div>")
 		SafeHtml publisher(String name);
@@ -114,24 +115,28 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 	interface PublisherProperties extends PropertyAccess<PublisherEntry> {
 		ModelKeyProvider<PublisherEntry> publisherID();
+
 		LabelProvider<PublisherEntry> label();
 	}
 
 	interface AnnotatedBiblographyEntryProperties extends PropertyAccess<AnnotatedBiblographyEntry> {
 		ModelKeyProvider<AnnotatedBiblographyEntry> annotatedBiblographyID();
+
 		LabelProvider<AnnotatedBiblographyEntry> titleEN();
 	}
 
 	interface AuthorProperties extends PropertyAccess<AuthorEntry> {
 		ModelKeyProvider<AuthorEntry> authorID();
+
 		ValueProvider<AuthorEntry, String> name();
-	}	
+	}
 
 	public AnnotatedBiblographyEditor(AnnotatedBiblographyEntry entry) {
 		this.entry = entry;
 	}
 
-	public AnnotatedBiblographyEditor() {	}
+	public AnnotatedBiblographyEditor() {
+	}
 
 	@Override
 	public Widget asWidget() {
@@ -143,7 +148,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 	}
 
 	public void save() {
-		
+
 		authorListFilterField.clear();
 		authorListFilterField.validate();
 		editorListFilterField.clear();
@@ -190,7 +195,8 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			}
 
 			@Override
-			public void setValue(AuthorEntry object, String value) { }
+			public void setValue(AuthorEntry object, String value) {
+			}
 
 			@Override
 			public String getPath() {
@@ -206,7 +212,8 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			}
 
 			@Override
-			public void setValue(AuthorEntry object, String value) { }
+			public void setValue(AuthorEntry object, String value) {
+			}
 
 			@Override
 			public String getPath() {
@@ -227,7 +234,8 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			}
 
 			@Override
-			public void setValue(PublisherEntry object, String value) { }
+			public void setValue(PublisherEntry object, String value) {
+			}
 
 			@Override
 			public String getPath() {
@@ -268,10 +276,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		});
 	}
 
-	public void createForm() {	
-		
-//		backgroundoverview.add(tabpanel, new VerticalLayoutData(1.0, 1.0));
-		
+	public void createForm() {
+
+		// backgroundoverview.add(tabpanel, new VerticalLayoutData(1.0, 1.0));
+
 		rebuildMainInput(entry.getPublicationTypeID());
 
 		ToolButton closeToolButton = new ToolButton(ToolButton.CLOSE);
@@ -338,7 +346,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 		firstTabHLC.add(firstTabInnerLeftVLC, new HorizontalLayoutData(.65, 1.0));
 		firstTabHLC.add(firstTabInnerRightVLC, new HorizontalLayoutData(.35, 1.0));
-		
+
 		tabpanel.add(firstTabHLC, "Basics");
 		tabpanel.add(secondTabVLC, "Authors and Editors");
 		tabpanel.add(thirdTabVLC, "Others");
@@ -371,7 +379,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				entry.setTitleTR(event.getValue());
 			}
 		});
-		
+
 		VerticalLayoutContainer titelVLC = new VerticalLayoutContainer();
 		titelVLC.add(new FieldLabel(titleEN, "English"), new VerticalLayoutData(1.0, 1.0 / 3));
 		titelVLC.add(new FieldLabel(titleORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
@@ -381,7 +389,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		titleFP.setHeading("Titel");
 		titleFP.add(titelVLC);
 		firstTabInnerLeftVLC.add(titleFP, new VerticalLayoutData(1.0, 1.0 / 5));
-		
+
 		if (publicationtype == 6) {
 			TextField procEN = new TextField();
 			procEN.setText(entry.getProcTitleEN());
@@ -451,7 +459,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					entry.setChapTitleTR(event.getValue());
 				}
 			});
-			
+
 			VerticalLayoutContainer chapterTitleVLC = new VerticalLayoutContainer();
 			chapterTitleVLC.add(new FieldLabel(chapterTitleEN, "English"), new VerticalLayoutData(1.0, 1.0 / 3));
 			chapterTitleVLC.add(new FieldLabel(chapterTitleORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
@@ -667,19 +675,19 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					@Override
 					public SafeHtml render(PublisherEntry item) {
 						final PublisherViewTemplates pvTemplates = GWT.create(PublisherViewTemplates.class);
-						return pvTemplates.publisher(item.getName());
+						return pvTemplates.publisher(item.getLabel());
 					}
 				});
-		HorizontalLayoutContainer publisherHLC = new HorizontalLayoutContainer();
-		publisherHLC.add(publisherComboBox, new HorizontalLayoutData(1.0, 1.0));
+		publisherComboBox.setEditable(false);
+		publisherComboBox.setTypeAhead(true);
 		FramedPanel publisherFP = new FramedPanel();
 		publisherFP.setHeading("Publisher");
-		publisherFP.add(publisherHLC, new VerticalLayoutData(1.0, 1.0));
-		
+		publisherFP.add(publisherComboBox);
+
 		ToolButton addPublisherTB = new ToolButton(ToolButton.PLUS);
 		publisherFP.addTool(addPublisherTB);
 		addPublisherTB.addSelectHandler(new SelectHandler() {
-			
+
 			@Override
 			public void onSelect(SelectEvent event) {
 				PopupPanel addPublisherDialog = new PopupPanel();
@@ -703,7 +711,8 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					@Override
 					public void onSelect(SelectEvent event) {
 						if (publisherNameField.isValid() && publisherLocationField.isValid()) {
-							PublisherEntry publisherEntry = new PublisherEntry(0, publisherNameField.getCurrentValue(), publisherLocationField.getCurrentValue());
+							PublisherEntry publisherEntry = new PublisherEntry(0, publisherNameField.getCurrentValue(),
+									publisherLocationField.getCurrentValue());
 							dbService.insertPublisherEntry(publisherEntry, new AsyncCallback<Integer>() {
 
 								@Override
@@ -737,67 +746,61 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				addPublisherDialog.center();
 			}
 		});
-				
-		
-		secondTabVLC.add(publisherFP, new VerticalLayoutData(1.0, .2));
+		secondTabVLC.add(publisherFP, new VerticalLayoutData(1.0, .1));
 
 		if (entry != null) {
-//			publisherComboBox.setValue(entry.getPublisher());
+			// publisherComboBox.setValue(entry.getPublisher());
 		}
 
 		if (publicationtype != 6) {
-			DualListField<AuthorEntry, String> authorSelection = new DualListField<AuthorEntry, String>(authorListStore, selectedAuthorListStore, authorProps.name(), new TextCell());
+			DualListField<AuthorEntry, String> authorSelection = new DualListField<AuthorEntry, String>(authorListStore, selectedAuthorListStore,
+					authorProps.name(), new TextCell());
 			authorSelection.setMode(Mode.INSERT);
 			authorSelection.setEnableDnd(true);
 			VerticalLayoutContainer authorVLC = new VerticalLayoutContainer();
-			authorVLC.add(authorSelection, new VerticalLayoutData(1.0, .8));
+			authorVLC.add(authorSelection, new VerticalLayoutData(1.0, .85));
 			authorListFilterField = new StoreFilterField<AuthorEntry>() {
 
 				@Override
 				protected boolean doSelect(Store<AuthorEntry> store, AuthorEntry parent, AuthorEntry item, String filter) {
-//					ListStore<AuthorEntry> listStore = (ListStore<AuthorEntry>) store;
-					do {
-						String name = item.getName().toLowerCase();
-						if (name.contains(filter.toLowerCase())) {
-							return true;
-						}
-					} while (item != null);
-					return false;
+					if (item.getName().toLowerCase().contains(filter.toLowerCase())) {
+						return true;
+					} else {
+						return false;
+					}
 				}
 			};
 			authorListFilterField.bind(authorListStore);
-			authorVLC.add(authorListFilterField, new VerticalLayoutData(.5, .2));
+			authorVLC.add(new FieldLabel(authorListFilterField, "Filter"), new VerticalLayoutData(.5, .15, new Margins(10, 0, 0, 0)));
 			FramedPanel authorFP = new FramedPanel();
 			authorFP.setHeading("Author");
 			authorFP.add(authorVLC);
-			secondTabVLC.add(authorFP, new VerticalLayoutData(1.0, .4));
+			secondTabVLC.add(authorFP, new VerticalLayoutData(1.0, .45));
 		}
 
-		DualListField<AuthorEntry, String> editorSelection = new DualListField<AuthorEntry, String>(editorListStore, selectedEditorListStore, authorProps.name(), new TextCell());
+		DualListField<AuthorEntry, String> editorSelection = new DualListField<AuthorEntry, String>(editorListStore, selectedEditorListStore,
+				authorProps.name(), new TextCell());
 		editorSelection.setMode(Mode.INSERT);
 		editorSelection.setEnableDnd(true);
 		VerticalLayoutContainer editorVLC = new VerticalLayoutContainer();
-		editorVLC.add(editorSelection, new VerticalLayoutData(1.0, .8));
+		editorVLC.add(editorSelection, new VerticalLayoutData(1.0, .85));
 		editorListFilterField = new StoreFilterField<AuthorEntry>() {
 
 			@Override
 			protected boolean doSelect(Store<AuthorEntry> store, AuthorEntry parent, AuthorEntry item, String filter) {
-//				ListStore<AuthorEntry> listStore = (ListStore<AuthorEntry>) store;
-				do {
-					String name = item.getName().toLowerCase();
-					if (name.contains(filter.toLowerCase())) {
-						return true;
-					}
-				} while (item != null);
-				return false;
+				if (item.getName().toLowerCase().contains(filter.toLowerCase())) {
+					return true;
+				} else {
+					return false;
+				}
 			}
 		};
 		editorListFilterField.bind(editorListStore);
-		editorVLC.add(editorListFilterField, new VerticalLayoutData(.5, .2));
+		editorVLC.add(new FieldLabel(editorListFilterField, "Filter"), new VerticalLayoutData(.5, .15, new Margins(10, 0, 0, 0)));
 		FramedPanel editorFP = new FramedPanel();
 		editorFP.setHeading("Editor");
 		editorFP.add(editorVLC);
-		secondTabVLC.add(editorFP, new VerticalLayoutData(1.0, .4));
+		secondTabVLC.add(editorFP, new VerticalLayoutData(1.0, .45));
 
 		if (publicationtype == 8) { // hier muss sie bleiben
 			TextField seriesEN = new TextField();
@@ -878,7 +881,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			editionFP.add(editionVLC);
 			firstTabInnerRightVLC.add(editionFP, new VerticalLayoutData(1.0, 1.0 / 5));
 		}
-		
+
 		if (publicationtype == 8) {
 			TextField volumeEN = new TextField();
 			volumeEN.setText(entry.getVolumeEN());
@@ -918,7 +921,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			volumeFP.add(volumeVLC);
 			firstTabInnerRightVLC.add(volumeFP, new VerticalLayoutData(1.0, 1.0 / 5));
 		}
-		
+
 		NumberField<Integer> yearEN = new NumberField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
 		DateWrapper dw = new DateWrapper(); // we always want to use the current year as max year
 		yearEN.setValue(entry.getYearEN());
@@ -1065,7 +1068,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			}
 		});
 		thirdTabVLC.add(notesFP, new VerticalLayoutData(1.0, .25));
-		
+
 		TextField urlTF = new TextField();
 		HorizontalLayoutContainer urlHLC = new HorizontalLayoutContainer();
 		urlHLC.add(urlTF, new HorizontalLayoutData(1.0, 1.0));
@@ -1117,7 +1120,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			}
 		});
 		thirdTabVLC.add(unpublishedFP, new VerticalLayoutData(1.0, .1));
-		
+
 		ComboBox<AnnotatedBiblographyEntry> firstEditionComboBox = new ComboBox<AnnotatedBiblographyEntry>(annotatedBiblographyEntryLS,
 				annotatedBiblographyEntryProps.titleEN(), new AbstractSafeHtmlRenderer<AnnotatedBiblographyEntry>() {
 
