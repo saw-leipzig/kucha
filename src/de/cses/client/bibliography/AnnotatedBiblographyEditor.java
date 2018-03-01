@@ -147,7 +147,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		return mainFP;
 	}
 
-	public void save() {
+	public void save(boolean close) {
 
 		authorListFilterField.clear();
 		authorListFilterField.validate();
@@ -176,6 +176,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			@Override
 			public void onSuccess(Integer result) {
 				entry.setAnnotatedBiblographyID(result);
+				updateEntry(entry);
+				if (close) {
+					closeEditor();
+				}
 			}
 		});
 
@@ -301,7 +305,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 					@Override
 					public void onSelect(SelectEvent event) {
-						save();
+						save(true);
 					}
 				});
 				d.getButton(PredefinedButton.NO).addSelectHandler(new SelectHandler() {
@@ -320,8 +324,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 			@Override
 			public void onSelect(SelectEvent event) {
-				save();
-
+				save(false);
 			}
 
 		});
@@ -679,7 +682,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					}
 				});
 		publisherComboBox.setEditable(false);
-		publisherComboBox.setTypeAhead(true);
+		publisherComboBox.setTypeAhead(false);
 		FramedPanel publisherFP = new FramedPanel();
 		publisherFP.setHeading("Publisher");
 		publisherFP.add(publisherComboBox);
