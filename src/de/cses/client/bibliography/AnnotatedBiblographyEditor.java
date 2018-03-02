@@ -802,6 +802,15 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		editorVLC.add(new FieldLabel(editorListFilterField, "Filter"), new VerticalLayoutData(.5, .15, new Margins(10, 0, 0, 0)));
 		FramedPanel editorFP = new FramedPanel();
 		editorFP.setHeading("Editor");
+		ToolButton infoTB = new ToolButton(ToolButton.QUESTION);
+		infoTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				Window.alert("Since authors can also be editors\n, newly added authors will also\n appear in the editor list for selection.");
+			}
+		});
+		editorFP.addTool(infoTB);
 		editorFP.add(editorVLC);
 		secondTabVLC.add(editorFP, new VerticalLayoutData(1.0, .45));
 
