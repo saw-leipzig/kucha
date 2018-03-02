@@ -68,8 +68,9 @@ public interface DatabaseService extends RemoteService {
 	ArrayList<DistrictEntry> getDistricts() throws IllegalArgumentException;
 
 	ArrayList<ImageEntry> getImages() throws IllegalArgumentException;
-	ArrayList<AnnotatedBiblographyEntry> getAnnotatedBiblography() throws IllegalArgumentException;
+
 	AnnotatedBiblographyEntry getAnnotatedBiblographybyID(int bibid) throws IllegalArgumentException;
+	
 	ArrayList<PublicationTypeEntry> getPublicationTypes() throws IllegalArgumentException;
 
 	ArrayList<ImageEntry> getImages(String where) throws IllegalArgumentException;
@@ -238,5 +239,7 @@ public interface DatabaseService extends RemoteService {
 	int insertPreservationAttributeEntry(PreservationAttributeEntry paEntry) throws IllegalArgumentException;
 
 	int insertPublisherEntry(PublisherEntry publisherEntry) throws IllegalArgumentException;
+
+	ArrayList<AnnotatedBiblographyEntry> getAnnotatedBibliography(String sqlWhere) throws IllegalArgumentException;
 
 }

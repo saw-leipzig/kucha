@@ -13,11 +13,14 @@
  */
 package de.cses.client.bibliography;
 
+import java.util.ArrayList;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.XTemplates;
@@ -34,6 +37,7 @@ import com.sencha.gxt.widget.core.client.form.ComboBox;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
+import de.cses.client.ui.AbstractFilter;
 import de.cses.client.ui.AbstractResultView;
 import de.cses.client.ui.AbstractSearchController;
 import de.cses.client.ui.EditorListener;
@@ -81,35 +85,35 @@ public class AnnotatedBiblographySearchController extends AbstractSearchControll
 	 */
 	@Override
 	public void invokeSearch() {
-//		ArrayList<String> sqlWhereClauses = new ArrayList<String>();
-//		for (AbstractFilter filter : getRelatedFilter()) {
-//			if ((filter != null) && (filter.getSqlWhereClause() != null)) {
-//				sqlWhereClauses.addAll(filter.getSqlWhereClause());
-//			}
-//		}
-//		String sqlWhere = null;
-//		for (int i=0; i<sqlWhereClauses.size(); ++i) {
-//			if (i == 0) {
-//				sqlWhere = sqlWhereClauses.get(i);
-//			} else {
-//				sqlWhere = sqlWhere + " AND " + sqlWhereClauses.get(i);
-//			}
-//		}
-//		dbService.getDepictions(sqlWhere, new AsyncCallback<ArrayList<DepictionEntry>>() {
-//
-//			@Override
-//			public void onFailure(Throwable caught) {
-//				caught.printStackTrace();
-//			}
-//
-//			@Override
-//			public void onSuccess(ArrayList<DepictionEntry> result) {
-//				getResultView().reset();
-//				for (DepictionEntry de : result) {
-//					getResultView().addResult(new DepictionView(de));
-//				}
-//			}
-//		});
+		ArrayList<String> sqlWhereClauses = new ArrayList<String>();
+		for (AbstractFilter filter : getRelatedFilter()) {
+			if ((filter != null) && (filter.getSqlWhereClause() != null)) {
+				sqlWhereClauses.addAll(filter.getSqlWhereClause());
+			}
+		}
+		String sqlWhere = null;
+		for (int i=0; i<sqlWhereClauses.size(); ++i) {
+			if (i == 0) {
+				sqlWhere = sqlWhereClauses.get(i);
+			} else {
+				sqlWhere = sqlWhere + " AND " + sqlWhereClauses.get(i);
+			}
+		}
+		dbService.getAnnotatedBibliography(new AsyncCallback<ArrayList<AnnotatedBiblographyEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(ArrayList<AnnotatedBiblographyEntry> result) {
+				getResultView().reset();
+				for (AnnotatedBiblographyEntry abe : result) {
+					getResultView().addResult(new AnnotatedBiblographyView(abe));
+				}
+			}
+		});
 	}
 
 	/* (non-Javadoc)

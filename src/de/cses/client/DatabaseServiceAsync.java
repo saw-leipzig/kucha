@@ -77,8 +77,6 @@ public interface DatabaseServiceAsync {
 
 	void getOrnaments(AsyncCallback<ArrayList<OrnamentEntry>> callback) throws IllegalArgumentException;
 
-	void getAnnotatedBiblography(AsyncCallback<ArrayList<AnnotatedBiblographyEntry>> callback) throws IllegalArgumentException;
-
 	void getAnnotatedBiblographybyID(int bibid, AsyncCallback<AnnotatedBiblographyEntry> callback) throws IllegalArgumentException;
 
 	void getOrnamentsOfOtherCultures(AsyncCallback<ArrayList<OrnamentOfOtherCulturesEntry>> callback) throws IllegalArgumentException;
@@ -266,5 +264,7 @@ public interface DatabaseServiceAsync {
 			throws IllegalArgumentException;
 
 	void insertPublisherEntry(PublisherEntry publisherEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
+
+	void getAnnotatedBibliography(String sqlWhere, AsyncCallback<ArrayList<AnnotatedBiblographyEntry>> asyncCallback) throws IllegalArgumentException;
 
 }

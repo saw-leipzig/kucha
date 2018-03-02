@@ -1429,20 +1429,25 @@ public class MysqlConnector {
 	}
 
 	
-	public ArrayList<AnnotatedBiblographyEntry> getAnnotatedBiblography() {
+		/**
+		 * @param sqlWhere
+		 * @return
+		 */
+		public ArrayList<AnnotatedBiblographyEntry> getAnnotatedBibliography(String sqlWhere) {
+		
 		AnnotatedBiblographyEntry entry = null;
 		ArrayList<AnnotatedBiblographyEntry> result = new ArrayList<AnnotatedBiblographyEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM AnnotatedBiblography");
+			ResultSet rs = stmt.executeQuery((sqlWhere == null) ? "SELECT * FROM AnnotatedBibliography" : "SELECT * FROM AnnotatedBibliography WHERE " + sqlWhere);
 			while (rs.next()) {
 				entry = new AnnotatedBiblographyEntry(rs.getInt("BibID"), rs.getInt("PublicationTypeID"), rs.getString("TitleEN"), rs.getString("TitleORG"), rs.getString("TitleTR"), rs.getString("ProcTitleEN"),
 						rs.getString("ProcTitleORG"), rs.getString("ProcTitleTR"), rs.getString("BookTitleEN"), rs.getString("BookTitleORG"), rs.getString("BookTitleTR"), rs.getString("ChapTitleEN"), 
 						rs.getString("ChapTitleORG"), rs.getString("ChapTitleTR"), rs.getString("UniversityEN"), rs.getString("UniversityORG"), rs.getString("UniversityTR"), rs.getString("NumberEN"), 
 						rs.getString("NumberORG"), rs.getString("NumberTR"), rs.getString("AccessDateEN"), rs.getString("AccessDateORG"), rs.getString("AccessDateTR"), rs.getString("TitleAddonEN"), 
-						rs.getString("TitleAddonORG"), rs.getString("TitleAddonTR"), rs.getInt("PublisherID"), rs.getString("SeriesEN"), rs.getString("SeriesORG"), rs.getString("SeriesTR"), rs.getString("EditionEN"),
+						rs.getString("TitleAddonORG"), rs.getString("TitleAddonTR"), getPublisher(rs.getInt("PublisherID")), rs.getString("SeriesEN"), rs.getString("SeriesORG"), rs.getString("SeriesTR"), rs.getString("EditionEN"),
 						rs.getString("EditionORG"), rs.getString("EditionTR"), rs.getString("VolumeEN"), rs.getString("VolumeORG"), rs.getString("VolumeTR"), rs.getInt("YearEN"), rs.getString("YearORG"), 
 						rs.getString("YearTR"), rs.getString("MonthEN"), rs.getString("MonthORG"), rs.getString("MonthTR"), rs.getString("PagesEN"), rs.getString("PagesORG"), rs.getString("PagesTR"),
 						rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"), rs.getString("URI"), rs.getBoolean("Unpublished"), rs.getBoolean("FirstEdition"), rs.getInt("FirstEditionBibID"));
@@ -1458,6 +1463,13 @@ public class MysqlConnector {
 		return result;
 	}
 	
+	/**
+	 * @return
+	 */
+		public ArrayList<AnnotatedBiblographyEntry> getAnnotatedBiblography() {
+		return getAnnotatedBibliography(null);
+	}
+
 	/**
 	 * @param annotatedBiblographyID
 	 * @return
@@ -1512,16 +1524,18 @@ public class MysqlConnector {
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM AnnotatedBiblography WHERE BibID=" + bibID);
+			ResultSet rs = stmt.executeQuery("SELECT * FROM AnnotatedBibliography WHERE BibID=" + bibID);
 			if (rs.first()) {
 				result = new AnnotatedBiblographyEntry(rs.getInt("BibID"), rs.getInt("PublicationTypeID"), rs.getString("TitleEN"), rs.getString("TitleORG"), rs.getString("TitleTR"), rs.getString("ProcTitleEN"),
 						rs.getString("ProcTitleORG"), rs.getString("ProcTitleTR"), rs.getString("BookTitleEN"), rs.getString("BookTitleORG"), rs.getString("BookTitleTR"), rs.getString("ChapTitleEN"), 
 						rs.getString("ChapTitleORG"), rs.getString("ChapTitleTR"), rs.getString("UniversityEN"), rs.getString("UniversityORG"), rs.getString("UniversityTR"), rs.getString("NumberEN"), 
 						rs.getString("NumberORG"), rs.getString("NumberTR"), rs.getString("AccessDateEN"), rs.getString("AccessDateORG"), rs.getString("AccessDateTR"), rs.getString("TitleAddonEN"), 
-						rs.getString("TitleAddonORG"), rs.getString("TitleAddonTR"), rs.getInt("PublisherID"), rs.getString("SeriesEN"), rs.getString("SeriesORG"), rs.getString("SeriesTR"), rs.getString("EditionEN"),
+						rs.getString("TitleAddonORG"), rs.getString("TitleAddonTR"), getPublisher(rs.getInt("PublisherID")), rs.getString("SeriesEN"), rs.getString("SeriesORG"), rs.getString("SeriesTR"), rs.getString("EditionEN"),
 						rs.getString("EditionORG"), rs.getString("EditionTR"), rs.getString("VolumeEN"), rs.getString("VolumeORG"), rs.getString("VolumeTR"), rs.getInt("YearEN"), rs.getString("YearORG"), 
 						rs.getString("YearTR"), rs.getString("MonthEN"), rs.getString("MonthORG"), rs.getString("MonthTR"), rs.getString("PagesEN"), rs.getString("PagesORG"), rs.getString("PagesTR"),
 						rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"), rs.getString("URI"), rs.getBoolean("Unpublished"), rs.getBoolean("FirstEdition"), rs.getInt("FirstEditionBibID"));
+				result.setAuthorList(getAuthorBibRelation(result.getAnnotatedBiblographyID()));
+				result.setEditorList(getEditorBibRelation(result.getAnnotatedBiblographyID()));
 			}
 			rs.close();
 			stmt.close();
@@ -2558,7 +2572,7 @@ public class MysqlConnector {
 			pstmt.setString(26, bibEntry.getProcTitleEN());
 			pstmt.setString(27, bibEntry.getProcTitleORG());
 			pstmt.setString(28, bibEntry.getProcTitleTR());
-			pstmt.setInt(29, bibEntry.getPublisherID());
+			pstmt.setInt(29, bibEntry.getPublisher().getPublisherID());
 			pstmt.setString(30, bibEntry.getSeriesEN());
 			pstmt.setString(31, bibEntry.getSeriesORG());
 			pstmt.setString(32, bibEntry.getSeriesTR());
@@ -2644,6 +2658,28 @@ public class MysqlConnector {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Publishers");
 			while (rs.next()) {
 				result.add(new PublisherEntry(rs.getInt("PublisherID"), rs.getString("Name"), rs.getString("Location")));
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	/**
+	 * @return
+	 */
+	public PublisherEntry getPublisher(int id) {
+		PublisherEntry result = null;
+		Connection dbc = getConnection();
+
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Publishers WHERE PublisherID=" + id);
+			if (rs.first()) {
+				result = new PublisherEntry(rs.getInt("PublisherID"), rs.getString("Name"), rs.getString("Location"));
 			}
 			rs.close();
 			stmt.close();

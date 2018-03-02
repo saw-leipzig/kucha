@@ -728,5 +728,13 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.insertPublisherEntry(publisherEntry);
 	}
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#getAnnotatedBibliography(java.lang.String)
+	 */
+	@Override
+	public ArrayList<AnnotatedBiblographyEntry> getAnnotatedBibliography(String sqlWhere) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getAnnotatedBibliography(sqlWhere);
+	}
 
 }

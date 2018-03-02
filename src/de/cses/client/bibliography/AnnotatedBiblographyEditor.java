@@ -207,6 +207,11 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				return "name";
 			}
 		}, SortDir.ASC));
+		for (AuthorEntry aEntry : entry.getAuthorList()) { // we move the selected authors to the right side
+			authorListStore.remove(aEntry);
+			selectedAuthorListStore.add(aEntry);
+		}
+		
 		editorListStore = new ListStore<AuthorEntry>(authorProps.authorID());
 		editorListStore.addSortInfo(new StoreSortInfo<AuthorEntry>(new ValueProvider<AuthorEntry, String>() {
 
@@ -224,6 +229,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				return "name";
 			}
 		}, SortDir.ASC));
+		for (AuthorEntry aEntry : entry.getEditorList()) { // we move the selected editors to the right side
+			editorListStore.remove(aEntry);
+			selectedEditorListStore.add(aEntry);
+		}
 
 		annotatedBiblographyEntryProps = GWT.create(AnnotatedBiblographyEntryProperties.class);
 		annotatedBiblographyEntryLS = new ListStore<AnnotatedBiblographyEntry>(annotatedBiblographyEntryProps.annotatedBiblographyID());

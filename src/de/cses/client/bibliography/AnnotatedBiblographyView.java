@@ -14,10 +14,7 @@
 package de.cses.client.bibliography;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.resources.client.ClientBundle;
-import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.safehtml.shared.SafeUri;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.dnd.core.client.DndDragStartEvent;
 import com.sencha.gxt.dnd.core.client.DragSource;
@@ -26,6 +23,7 @@ import de.cses.client.ui.AbstractEditor;
 import de.cses.client.ui.AbstractView;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBiblographyEntry;
+import de.cses.shared.AuthorEntry;
 
 /**
  * @author Nina
@@ -33,35 +31,34 @@ import de.cses.shared.AnnotatedBiblographyEntry;
  */
 public class AnnotatedBiblographyView  extends AbstractView {
 	
-	interface Resources extends ClientBundle {
-		@Source("buddha.png")
-		ImageResource logo();
-	}
-
 	interface AnnotatedBiblographyViewTemplates extends XTemplates {
-		@XTemplate("<div><center><img src='{imgUri}'></img></center></div>")
-		SafeHtml view(SafeUri imgUri);
-		
-		@XTemplate("<div><center><img src='{imgUri}'></img></center><label style='font-size:9px' > AnnotatedBiblographyID {id} </label></br></div>")
-		SafeHtml view(SafeUri imgUri, int id);
+		@XTemplate("<div style='font-size:9px'>{title}</div>")
+		SafeHtml view(String title);
+
+		@XTemplate("<div style='font-size:9px'> {authors} ({year}). <i>{title}</i>. {publisher} </div>")
+		SafeHtml view(String authors, String year, String title, String publisher);
 	}
 
 	private AnnotatedBiblographyEntry annotatedBiblographyEntry;
 	private AnnotatedBiblographyViewTemplates dvTemplates;
-	private Resources resources;
 
 	/**
 	 * @param text
 	 */
-	public AnnotatedBiblographyView(AnnotatedBiblographyEntry entry) {
-		// super("DepictionID: " + depictionEntry.getDepictionID());
-		annotatedBiblographyEntry = entry;
-		resources = GWT.create(Resources.class);
+	public AnnotatedBiblographyView(AnnotatedBiblographyEntry annotatedBiblographyEntry) {
+		this.annotatedBiblographyEntry = annotatedBiblographyEntry;
 		dvTemplates = GWT.create(AnnotatedBiblographyViewTemplates.class);
+		String authors = null;
+		for (AuthorEntry ae : annotatedBiblographyEntry.getAuthorList()) {
+			if (authors == null) {
+				authors = ae.getName();
+			} else {
+				authors.concat("; " + ae.getName());
+			}
+		}
+		setHTML(dvTemplates.view(authors, Integer.toString(annotatedBiblographyEntry.getYearEN()), annotatedBiblographyEntry.getTitleEN(), annotatedBiblographyEntry.getPublisher().getName()));
 
-		setHTML(dvTemplates.view(resources.logo().getSafeUri()));
-
-		setPixelSize(110, 110);
+		setPixelSize(260, 110);
 
 		DragSource source = new DragSource(this) {
 
@@ -69,7 +66,7 @@ public class AnnotatedBiblographyView  extends AbstractView {
 			protected void onDragStart(DndDragStartEvent event) {
 				super.onDragStart(event);
 				event.setData(annotatedBiblographyEntry);
-				event.getStatusProxy().update(dvTemplates.view(resources.logo().getSafeUri()));
+				event.getStatusProxy().update(dvTemplates.view(annotatedBiblographyEntry.getTitleEN()));
 			}
 			
 		};

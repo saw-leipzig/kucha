@@ -47,7 +47,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	private String titleaddonEN;
 	private String titleaddonORG;
 	private String titleaddonTR;
-	private int publisherID;
+	private PublisherEntry publisher;
 	private String seriesEN;
 	private String seriesTR;
 	private String seriesORG;
@@ -80,7 +80,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 			String procTitleEN, String procTitleTR, String procTitleORG, String bookTitleEN, String bookTitleTR, String bookTitleORG,
 			String chapTitleEN, String chapTitleTR, String chapTitleORG, String universityEN, String universityORG, String universityTR,
 			String numberEN, String numberTR, String numberORG, String accessdateEN, String accessdateTR, String accessdateORG,
-			String titleaddonEN, String titleaddonORG, String titleaddonTR, int publisherID, String seriesEN, String seriesTR, String seriesORG,
+			String titleaddonEN, String titleaddonORG, String titleaddonTR, PublisherEntry publisher, String seriesEN, String seriesTR, String seriesORG,
 			String editionEN, String editionORG, String editionTR, String volumeEN, String volumeTR, String volumeORG, int yearEN, String yearORG,
 			String yearTR, String monthEN, String monthTR, String monthORG, String pagesEN, String pagesORG, String pagesTR, String comments,
 			String notes, String url, String uri, boolean unpublished, boolean firstEdition, int firstEditionBibID) {
@@ -111,7 +111,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 		this.titleaddonEN = titleaddonEN;
 		this.titleaddonORG = titleaddonORG;
 		this.titleaddonTR = titleaddonTR;
-		this.publisherID = publisherID;
+		this.publisher = publisher;
 		this.seriesEN = seriesEN;
 		this.seriesTR = seriesTR;
 		this.seriesORG = seriesORG;
@@ -150,7 +150,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 		AnnotatedBiblographyEntry clonedEntry = new AnnotatedBiblographyEntry(annotatedBiblographyID, publicationTypeID, titleEN, titleTR,
 				titleORG, procTitleEN, procTitleTR, procTitleORG, bookTitleEN, bookTitleTR, bookTitleORG, chapTitleEN, chapTitleTR, chapTitleORG,
 				universityEN, universityORG, universityTR, numberEN, numberTR, numberORG, accessdateEN, accessdateTR, accessdateORG, titleaddonEN,
-				titleaddonORG, titleaddonTR, publisherID, seriesEN, seriesTR, seriesORG, editionEN, editionORG, editionTR, volumeEN, volumeTR, volumeORG,
+				titleaddonORG, titleaddonTR, publisher, seriesEN, seriesTR, seriesORG, editionEN, editionORG, editionTR, volumeEN, volumeTR, volumeORG,
 				yearEN, yearORG, yearTR, monthEN, monthTR, monthORG, pagesEN, pagesORG, pagesTR, comments, notes, url, uri, unpublished,
 				firstEdition, firstEditionBibID);
 		return clonedEntry;
@@ -542,16 +542,16 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	/**
 	 * @return the publisher
 	 */
-	public int getPublisherID() {
-		return publisherID;
+	public PublisherEntry getPublisher() {
+		return publisher;
 	}
 
 	/**
 	 * @param publisher
 	 *          the publisher to set
 	 */
-	public void setPublisherID(int publisherID) {
-		this.publisherID = publisherID;
+	public void setPublisher(PublisherEntry publisher) {
+		this.publisher = publisher;
 	}
 
 	/**
