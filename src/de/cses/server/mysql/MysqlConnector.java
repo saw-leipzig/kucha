@@ -2539,7 +2539,7 @@ public class MysqlConnector {
 		try {
 			pstmt = dbc.prepareStatement(
 					"INSERT INTO AnnotatedBibliography (PublicationTypeID, AccessDateEN, AccessDateORG, AccessDateTR, BookTitleEN, BookTitleORG, BookTitleTR, ChapTitleEN, ChapTitleORG, ChapTitleTR, Comments, EditionEN, "
-							+ "EditionORG, EditionTR, FirstEditionID, MonthEN, MonthORG, MonthTR,  Notes, NumberEN, NumberORG, NumberTR, PagesEN, PagesORG, PagesTR, ProcTitleEN, ProcTitleORG, ProcTitleTR,  PublisherID, "
+							+ "EditionORG, EditionTR, FirstEditionBibID, MonthEN, MonthORG, MonthTR,  Notes, NumberEN, NumberORG, NumberTR, PagesEN, PagesORG, PagesTR, ProcTitleEN, ProcTitleORG, ProcTitleTR,  PublisherID, "
 							+ "SeriesEN, SeriesORG, SeriesTR, TitleAddonEN, TitleAddonORG, TitleAddonTR, TitleEN, TitleORG, TitleTR, UniversityEN, UniversityORG, UniversityTR, URI, URL, VolumeEN, VolumeORG, VolumeTR, "
 							+ "YearEN, YearORG, YearTR, Unpublished) "
 							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
