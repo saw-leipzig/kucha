@@ -71,7 +71,6 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	private String url;
 	private String uri;
 	private boolean unpublished = false;
-	private boolean firstEdition = true;
 	private int firstEditionBibID = 0;
 	private ArrayList<AuthorEntry> authorList = new ArrayList<AuthorEntry>();
 	private ArrayList<AuthorEntry> editorList = new ArrayList<AuthorEntry>();
@@ -83,7 +82,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 			String titleaddonEN, String titleaddonORG, String titleaddonTR, PublisherEntry publisher, String seriesEN, String seriesTR, String seriesORG,
 			String editionEN, String editionORG, String editionTR, String volumeEN, String volumeTR, String volumeORG, int yearEN, String yearORG,
 			String yearTR, String monthEN, String monthTR, String monthORG, String pagesEN, String pagesORG, String pagesTR, String comments,
-			String notes, String url, String uri, boolean unpublished, boolean firstEdition, int firstEditionBibID) {
+			String notes, String url, String uri, boolean unpublished, int firstEditionBibID) {
 		super();
 		this.annotatedBiblographyID = annotatedBiblographyID;
 		this.publicationTypeID = publicationTypeID;
@@ -135,7 +134,6 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 		this.url = url;
 		this.uri = uri;
 		this.unpublished = unpublished;
-		this.firstEdition = firstEdition;
 		this.firstEditionBibID = firstEditionBibID;
 	}
 
@@ -152,7 +150,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 				universityEN, universityORG, universityTR, numberEN, numberTR, numberORG, accessdateEN, accessdateTR, accessdateORG, titleaddonEN,
 				titleaddonORG, titleaddonTR, publisher, seriesEN, seriesTR, seriesORG, editionEN, editionORG, editionTR, volumeEN, volumeTR, volumeORG,
 				yearEN, yearORG, yearTR, monthEN, monthTR, monthORG, pagesEN, pagesORG, pagesTR, comments, notes, url, uri, unpublished,
-				firstEdition, firstEditionBibID);
+				firstEditionBibID);
 		return clonedEntry;
 	}
 
@@ -940,14 +938,6 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	 */
 	public void setEditorList(ArrayList<AuthorEntry> editorList) {
 		this.editorList = editorList;
-	}
-
-	public boolean isFirstEdition() {
-		return firstEdition;
-	}
-
-	public void setFirstEdition(boolean firstEdition) {
-		this.firstEdition = firstEdition;
 	}
 
 	public int getFirstEditionBibID() {

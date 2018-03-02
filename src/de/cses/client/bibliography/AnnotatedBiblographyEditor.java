@@ -91,7 +91,6 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 	private AnnotatedBiblographyEntryProperties annotatedBiblographyEntryProps;
 	private AuthorProperties authorProps;
 
-	private FramedPanel framefirstedition;
 	private FramedPanel mainFP = null; // das oberste Framed Panel als Rahmen
 
 	private TabPanel tabpanel;
@@ -1164,20 +1163,20 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		firstEditionCB.setValue(true);
 		FramedPanel firstEditionFP = new FramedPanel();
 		firstEditionFP.setHeading("FirstEdition");
-		firstEditionFP.add(firstEditionCB);
-		firstEditionCB.setValue(entry.isFirstEdition());
+		HorizontalLayoutContainer firstEditionHLC = new HorizontalLayoutContainer();
+		firstEditionHLC.add(firstEditionCB, new HorizontalLayoutData(.1, 1.0));
+		firstEditionHLC.add(firstEditionComboBox, new HorizontalLayoutData(.9, 1.0));
+		firstEditionFP.add(firstEditionHLC);
+		firstEditionFP.setToolTip("Choose First Edition");
+		if (entry.getFirstEditionBibID() > 0) {
+			firstEditionCB.setValue(true);
+			firstEditionComboBox.setEnabled(true);
+		}
 		firstEditionCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
-				if (event.getValue() == false) {
-					framefirstedition = new FramedPanel();
-					framefirstedition.setHeading("Choose First Edition");
-					framefirstedition.add(firstEditionComboBox);
-					thirdTabVLC.add(framefirstedition);
-				} else {
-					thirdTabVLC.remove(framefirstedition);
-				}
+				firstEditionComboBox.setEnabled(event.getValue());
 			}
 		});
 		thirdTabVLC.add(firstEditionFP, new VerticalLayoutData(1.0, .1));
