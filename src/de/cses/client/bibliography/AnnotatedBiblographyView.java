@@ -35,7 +35,7 @@ public class AnnotatedBiblographyView  extends AbstractView {
 		@XTemplate("<div style='font-size:9px'>{title}</div>")
 		SafeHtml view(String title);
 
-		@XTemplate("<div style='font-size:9px'> {authors} ({year}). <i>{title}</i>. {publisher} </div>")
+		@XTemplate("<div style='font-size:12px'> {authors} ({year}). <i>{title}</i>. {publisher} </div>")
 		SafeHtml view(String authors, String year, String title, String publisher);
 	}
 
@@ -53,12 +53,13 @@ public class AnnotatedBiblographyView  extends AbstractView {
 			if (authors == null) {
 				authors = ae.getName();
 			} else {
-				authors.concat("; " + ae.getName());
+				authors = authors.concat("; " + ae.getName());
 			}
 		}
-		setHTML(dvTemplates.view(authors, Integer.toString(annotatedBiblographyEntry.getYearEN()), annotatedBiblographyEntry.getTitleEN(), annotatedBiblographyEntry.getPublisher().getName()));
+		String publisherName = annotatedBiblographyEntry.getPublisher() != null ? annotatedBiblographyEntry.getPublisher().getName() : "unknown publisher";
+		setHTML(dvTemplates.view(authors, Integer.toString(annotatedBiblographyEntry.getYearEN()), annotatedBiblographyEntry.getTitleEN(), publisherName));
 
-		setPixelSize(260, 110);
+		setPixelSize(300, 80);
 
 		DragSource source = new DragSource(this) {
 

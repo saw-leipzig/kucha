@@ -1460,6 +1460,7 @@ public class MysqlConnector {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		System.err.println("number of elements found in AnnotatedBibliography: " + result.size());
 		return result;
 	}
 	

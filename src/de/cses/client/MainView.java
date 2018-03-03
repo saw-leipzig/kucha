@@ -34,6 +34,7 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.form.TextField;
 
+import de.cses.client.bibliography.AnnotatedBibliographyFilter;
 import de.cses.client.bibliography.AnnotatedBiblographyResultView;
 import de.cses.client.bibliography.AnnotatedBiblographySearchController;
 import de.cses.client.caves.CaveFilter;
@@ -204,7 +205,7 @@ public class MainView implements IsWidget {
 		// annotated bibliography
 		
 		annotatedBiblographySearchController = new AnnotatedBiblographySearchController("Annotated Biblography", new AnnotatedBiblographyResultView("Annotated Biblography"));
-		annotatedBiblographySearchController.addRelatedFilter(new OrnamenticFilter("Annotated Biblography Filter"));
+		annotatedBiblographySearchController.addRelatedFilter(new AnnotatedBibliographyFilter("Bibliography Filter"));
 		annotatedBiblographySearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
 			@Override

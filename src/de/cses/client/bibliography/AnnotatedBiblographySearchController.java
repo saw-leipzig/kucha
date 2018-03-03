@@ -92,11 +92,11 @@ public class AnnotatedBiblographySearchController extends AbstractSearchControll
 			}
 		}
 		String sqlWhere = null;
-		for (int i=0; i<sqlWhereClauses.size(); ++i) {
-			if (i == 0) {
-				sqlWhere = sqlWhereClauses.get(i);
+		for (String sql : sqlWhereClauses) {
+			if (sqlWhere == null) {
+				sqlWhere = sql;
 			} else {
-				sqlWhere = sqlWhere + " AND " + sqlWhereClauses.get(i);
+				sqlWhere = sqlWhere + " AND " + sql;
 			}
 		}
 		dbService.getAnnotatedBibliography(new AsyncCallback<ArrayList<AnnotatedBiblographyEntry>>() {
