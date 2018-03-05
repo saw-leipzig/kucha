@@ -1475,7 +1475,7 @@ public class MysqlConnector {
 	 * @param annotatedBiblographyID
 	 * @return
 	 */
-	private synchronized ArrayList<AuthorEntry> getEditorBibRelation(int annotatedBiblographyID) {
+	private ArrayList<AuthorEntry> getEditorBibRelation(int annotatedBiblographyID) {
 		AuthorEntry entry = null;
 		ArrayList<AuthorEntry> result = new ArrayList<AuthorEntry>();
 		Connection dbc = getConnection();
@@ -1499,7 +1499,7 @@ public class MysqlConnector {
 	 * @param annotatedBiblographyID
 	 * @return
 	 */
-	private synchronized ArrayList<AuthorEntry> getAuthorBibRelation(int annotatedBiblographyID) {
+	private ArrayList<AuthorEntry> getAuthorBibRelation(int annotatedBiblographyID) {
 		AuthorEntry entry = null;
 		ArrayList<AuthorEntry> result = new ArrayList<AuthorEntry>();
 		Connection dbc = getConnection();

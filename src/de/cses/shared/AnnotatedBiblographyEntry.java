@@ -953,4 +953,16 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 		this.firstEditionBibID = firstEditionBibID;
 	}
 
+	public String getLabel() {
+		String result = null;
+		for (AuthorEntry author : authorList) {
+			if (result == null) {
+				result = author.getName();
+			} else {
+				result = result.concat("; " + author.getName());
+			}
+		}
+		result = result.concat(" (" + yearEN + "). " +  titleEN);
+		return result;
+	}
 }
