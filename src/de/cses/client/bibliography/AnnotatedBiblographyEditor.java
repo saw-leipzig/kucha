@@ -1285,6 +1285,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 		FramedPanel bibDocPaperFP = new FramedPanel();
 		bibDocPaperFP.setHeading("paper");
+		bibDocPaperFP.add(new HTMLPanel(documentLinkTemplate.documentLink(UriUtils.fromString(
+				"resource?document=" + bibEntry.getUniqueID() + "-paper.pdf" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()),
+				"download paper")));
 		ToolButton paperUploadButton = new ToolButton(ToolButton.PLUS);
 		paperUploadButton.addSelectHandler(new SelectHandler() {
 
@@ -1299,10 +1302,6 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 					@Override
 					public void uploadCompleted(String documentFilename) {
-						bibDocPaperFP.clear();
-						bibDocPaperFP.add(new HTMLPanel(documentLinkTemplate.documentLink(UriUtils.fromString(
-								"resource?document=" + bibEntry.getUniqueID() + "-paper" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()),
-								"download paper")));
 						bibDocUploadPanel.hide();
 					}
 
@@ -1320,6 +1319,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 		FramedPanel bibDocSummaryFP = new FramedPanel();
 		bibDocSummaryFP.setHeading("summary");
+		bibDocSummaryFP.add(new HTMLPanel(documentLinkTemplate.documentLink(UriUtils.fromString(
+				"resource?document=" + bibEntry.getUniqueID() + "-summary.pdf" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()),
+				"download summary")));
 		ToolButton summaryUploadButton = new ToolButton(ToolButton.PLUS);
 		summaryUploadButton.addSelectHandler(new SelectHandler() {
 
@@ -1334,10 +1336,6 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 					@Override
 					public void uploadCompleted(String documentFilename) {
-						bibDocSummaryFP.clear();
-						bibDocSummaryFP.add(new HTMLPanel(documentLinkTemplate.documentLink(UriUtils.fromString(
-								"resource?document=" + bibEntry.getUniqueID() + "-summary" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()),
-								"download summary")));
 						bibDocUploadPanel.hide();
 					}
 
@@ -1355,6 +1353,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 		FramedPanel bibDocAnnotationFP = new FramedPanel();
 		bibDocAnnotationFP.setHeading("annotation");
+		bibDocAnnotationFP.add(new HTMLPanel(documentLinkTemplate.documentLink(UriUtils.fromString(
+				"resource?document=" + bibEntry.getUniqueID() + "-annotation.pdf" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()),
+				"download annotation")));
 		ToolButton annotationUploadButton = new ToolButton(ToolButton.PLUS);
 		annotationUploadButton.addSelectHandler(new SelectHandler() {
 
@@ -1369,10 +1370,6 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 					@Override
 					public void uploadCompleted(String documentFilename) {
-						bibDocAnnotationFP.clear();
-						bibDocAnnotationFP.add(new HTMLPanel(documentLinkTemplate.documentLink(UriUtils.fromString(
-								"resource?document=" + bibEntry.getUniqueID() + "-annotation" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()),
-								"download annotation")));
 						bibDocUploadPanel.hide();
 					}
 
