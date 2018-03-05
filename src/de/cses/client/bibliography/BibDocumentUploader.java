@@ -38,8 +38,6 @@ import com.sencha.gxt.widget.core.client.form.FormPanel.Encoding;
 import com.sencha.gxt.widget.core.client.form.FormPanel.Method;
 
 import de.cses.client.Util;
-import de.cses.shared.AnnotatedBiblographyEntry;
-import de.cses.shared.CaveEntry;
 
 public class BibDocumentUploader implements IsWidget {
 	
@@ -85,7 +83,6 @@ public class BibDocumentUploader implements IsWidget {
 		
 		ArrayList<String> docTypeList = new ArrayList<String>();
 		docTypeList.add("pdf");
-		docTypeList.add("txt");
 
 		file = new FileUploadField();
 		file.setName("uploadedBibDocument");
@@ -97,7 +94,7 @@ public class BibDocumentUploader implements IsWidget {
 			public void onChange(ChangeEvent event) {
 				String selected = file.getValue().toLowerCase();
 				if ((selected.lastIndexOf(".") < 0) || !docTypeList.contains(selected.substring(selected.lastIndexOf(".")+1))) {
-					Util.showWarning("Unsopported Document Type", "Supported document types: PDF, TXT");
+					com.google.gwt.user.client.Window.alert("Unsopported Document Type!\n Please upload PDF document.");
 					file.reset();
 				}
 			}
