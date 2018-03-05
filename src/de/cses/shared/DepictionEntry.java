@@ -102,9 +102,14 @@ public class DepictionEntry extends AbstractEntry {
 	}
 
 	public DepictionEntry clone() {
-		return new DepictionEntry(depictionID, styleID, inscriptions, separateAksaras, dating, description, backgroundColour, generalRemarks,
+		DepictionEntry clonedDepictionEntry = new DepictionEntry(depictionID, styleID, inscriptions, separateAksaras, dating, description, backgroundColour, generalRemarks,
 				otherSuggestedIdentifications, width, height, expeditionID, purchaseDate, locationID, inventoryNumber, vendorID, storyID,
 				caveID, wallID, absoluteLeft, absoluteTop, modeOfRepresentationID, shortName, positionNotes);
+		ArrayList<PreservationAttributeEntry> clonedPreservationAttributesList = new ArrayList<PreservationAttributeEntry>();
+		for (PreservationAttributeEntry pae : this.preservationAttributesList) {
+			clonedPreservationAttributesList.add(pae);
+		}
+		return clonedDepictionEntry;
 	}
 
 	public int getDepictionID() {

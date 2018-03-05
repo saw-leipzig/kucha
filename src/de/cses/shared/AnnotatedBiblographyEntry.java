@@ -137,12 +137,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 		this.firstEditionBibID = firstEditionBibID;
 	}
 
-	public AnnotatedBiblographyEntry() {
-	}
-
-	public AnnotatedBiblographyEntry(int id) {
-		this.annotatedBiblographyID = id;
-	}
+	public AnnotatedBiblographyEntry() { }
 
 	public AnnotatedBiblographyEntry clone() {
 		AnnotatedBiblographyEntry clonedEntry = new AnnotatedBiblographyEntry(annotatedBiblographyID, publicationTypeID, titleEN, titleTR,
@@ -151,6 +146,16 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 				titleaddonORG, titleaddonTR, publisher, seriesEN, seriesTR, seriesORG, editionEN, editionORG, editionTR, volumeEN, volumeTR, volumeORG,
 				yearEN, yearORG, yearTR, monthEN, monthTR, monthORG, pagesEN, pagesORG, pagesTR, comments, notes, url, uri, unpublished,
 				firstEditionBibID);
+		ArrayList<AuthorEntry> clonedAuthorList = new ArrayList<AuthorEntry>();
+		for (AuthorEntry ae : this.authorList) {
+			clonedAuthorList.add(ae);
+		}
+		clonedEntry.setAuthorList(clonedAuthorList);
+		ArrayList<AuthorEntry> clonedEditorList = new ArrayList<AuthorEntry>();
+		for (AuthorEntry ae : this.getEditorList()) {
+			clonedEditorList.add(ae);
+		}
+		clonedEntry.setEditorList(clonedEditorList);
 		return clonedEntry;
 	}
 

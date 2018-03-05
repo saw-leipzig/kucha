@@ -21,7 +21,7 @@ import java.sql.Date;
  */
 public class AuthorEntry extends AbstractEntry {
 
-	private int authorID;
+	private int authorID = 0;
 	private String lastname, firstname;
 	private Date kuchaVisitDate;
 	private String affiliation, email, homepage;
@@ -31,13 +31,10 @@ public class AuthorEntry extends AbstractEntry {
 	 * is set to 0 to indicate that this entry is not taken from a database and
 	 * therefore has to be inserted instead of updated.
 	 */
-	public AuthorEntry() {
-		this.authorID = 0;
-	}
+	public AuthorEntry() {	}
 
 	public AuthorEntry(int authorID, String lastname, String firstname, Date kuchaVisitDate, String affiliation, String email,
 			String homepage) {
-		super();
 		this.authorID = authorID;
 		this.lastname = lastname;
 		this.firstname = firstname;

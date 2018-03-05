@@ -293,20 +293,17 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					authorListStore.add(ae);
 					editorListStore.add(ae);
 				}
-				for (AuthorEntry ae : bibEntry.getAuthorList()) {
-					AuthorEntry moveEntry = authorListStore.findModelWithKey(Integer.toString(ae.getAuthorID()));
-					if (moveEntry != null) {
-						authorListStore.remove(moveEntry);
-						selectedAuthorListStore.add(moveEntry);
-					}
+				for (AuthorEntry ae : bibEntry.getAuthorList()) {					
+					selectedAuthorListStore.add(ae);
 				}
-				for (AuthorEntry ae : bibEntry.getEditorList()) {
-					AuthorEntry moveEntry = editorListStore.findModelWithKey(Integer.toString(ae.getAuthorID()));
-					if (moveEntry != null) {
-						editorListStore.remove(moveEntry);
-						selectedEditorListStore.add(moveEntry);
-					}
-				}
+				Window.alert("bibEntry.getAuthorList().size = " + bibEntry.getAuthorList().size()); 
+//				for (AuthorEntry ae : bibEntry.getEditorList()) {
+//					AuthorEntry moveEntry = editorListStore.findModelWithKey(Integer.toString(ae.getAuthorID()));
+//					if (moveEntry != null) {
+//						editorListStore.remove(moveEntry);
+//						selectedEditorListStore.add(moveEntry);
+//					}
+//				}
 			}
 		});
 

@@ -1061,7 +1061,7 @@ public class MysqlConnector {
 		try {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Authors WHERE AuthorID=" + id);
-			while (rs.next()) {
+			if (rs.first()) {
 				result = new AuthorEntry(rs.getInt("AuthorID"), rs.getString("Lastname"), rs.getString("Firstname"), rs.getDate("KuchaVisitDate"),
 						rs.getString("Affiliation"), rs.getString("Email"), rs.getString("Homepage"));
 			}
@@ -1475,14 +1475,14 @@ public class MysqlConnector {
 	 * @param annotatedBiblographyID
 	 * @return
 	 */
-	private ArrayList<AuthorEntry> getEditorBibRelation(int annotatedBiblographyID) {
+	private synchronized ArrayList<AuthorEntry> getEditorBibRelation(int annotatedBiblographyID) {
 		AuthorEntry entry = null;
 		ArrayList<AuthorEntry> result = new ArrayList<AuthorEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM AuthorBibliographyRelation WHERE BibID=" + annotatedBiblographyID);
+			ResultSet rs = stmt.executeQuery("SELECT * FROM EditorBibliographyRelation WHERE BibID=" + annotatedBiblographyID);
 			while (rs.next()) {
 				entry = getAuthorEntry(rs.getInt("AuthorID"));
 				result.add(entry);
@@ -1499,14 +1499,14 @@ public class MysqlConnector {
 	 * @param annotatedBiblographyID
 	 * @return
 	 */
-	private ArrayList<AuthorEntry> getAuthorBibRelation(int annotatedBiblographyID) {
+	private synchronized ArrayList<AuthorEntry> getAuthorBibRelation(int annotatedBiblographyID) {
 		AuthorEntry entry = null;
 		ArrayList<AuthorEntry> result = new ArrayList<AuthorEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM EditorBibliographyRelation WHERE BibID=" + annotatedBiblographyID);
+			ResultSet rs = stmt.executeQuery("SELECT * FROM AuthorBibliographyRelation WHERE BibID=" + annotatedBiblographyID);
 			while (rs.next()) {
 				entry = getAuthorEntry(rs.getInt("AuthorID"));
 				result.add(entry);
@@ -1535,6 +1535,7 @@ public class MysqlConnector {
 						rs.getString("EditionORG"), rs.getString("EditionTR"), rs.getString("VolumeEN"), rs.getString("VolumeORG"), rs.getString("VolumeTR"), rs.getInt("YearEN"), rs.getString("YearORG"), 
 						rs.getString("YearTR"), rs.getString("MonthEN"), rs.getString("MonthORG"), rs.getString("MonthTR"), rs.getString("PagesEN"), rs.getString("PagesORG"), rs.getString("PagesTR"),
 						rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"), rs.getString("URI"), rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"));
+				
 				result.setAuthorList(getAuthorBibRelation(result.getAnnotatedBiblographyID()));
 				result.setEditorList(getEditorBibRelation(result.getAnnotatedBiblographyID()));
 			}
