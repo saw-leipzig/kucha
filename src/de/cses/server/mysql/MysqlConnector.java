@@ -3013,7 +3013,7 @@ public class MysqlConnector {
 					"UPDATE AnnotatedBibliography SET PublicationTypeID=?, AccessDateEN=?, AccessDateORG=?, AccessDateTR=?, BookTitleEN=?, BookTitleORG=?, BookTitleTR=?, ChapTitleEN=?, ChapTitleORG=?, ChapTitleTR=?, Comments=?, EditionEN=?, "
 							+ "EditionORG=?, EditionTR=?, FirstEditionBibID=?, MonthEN=?, MonthORG=?, MonthTR=?,  Notes=?, NumberEN=?, NumberORG=?, NumberTR=?, PagesEN=?, PagesORG=?, PagesTR=?, ProcTitleEN=?, ProcTitleORG=?, ProcTitleTR=?,  PublisherID=?, "
 							+ "SeriesEN=?, SeriesORG=?, SeriesTR=?, TitleAddonEN=?, TitleAddonORG=?, TitleAddonTR=?, TitleEN=?, TitleORG=?, TitleTR=?, UniversityEN=?, UniversityORG=?, UniversityTR=?, URI=?, URL=?, VolumeEN=?, VolumeORG=?, VolumeTR=?, "
-							+ "YearEN=?, YearORG=?, YearTR=?, Unpublished=? WHERE AnnotatedBibliographyID=?");
+							+ "YearEN=?, YearORG=?, YearTR=?, Unpublished=? WHERE BibID=?");
 			pstmt.setInt(1, bibEntry.getPublicationTypeID());
 			pstmt.setString(2, bibEntry.getAccessdateEN());
 			pstmt.setString(3, bibEntry.getAccessdateORG());

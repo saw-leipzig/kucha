@@ -20,6 +20,8 @@ import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.EditorError;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
@@ -287,9 +289,23 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 			@Override
 			public void onSuccess(ArrayList<AuthorEntry> result) {
-				for (AuthorEntry pe : result) {
-					authorListStore.add(pe);
-					editorListStore.add(pe);
+				for (AuthorEntry ae : result) {
+					authorListStore.add(ae);
+					editorListStore.add(ae);
+				}
+				for (AuthorEntry ae : bibEntry.getAuthorList()) {
+					AuthorEntry moveEntry = authorListStore.findModelWithKey(Integer.toString(ae.getAuthorID()));
+					if (moveEntry != null) {
+						authorListStore.remove(moveEntry);
+						selectedAuthorListStore.add(moveEntry);
+					}
+				}
+				for (AuthorEntry ae : bibEntry.getEditorList()) {
+					AuthorEntry moveEntry = editorListStore.findModelWithKey(Integer.toString(ae.getAuthorID()));
+					if (moveEntry != null) {
+						editorListStore.remove(moveEntry);
+						selectedEditorListStore.add(moveEntry);
+					}
 				}
 			}
 		});
@@ -714,6 +730,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				});
 		publisherComboBox.setEditable(false);
 		publisherComboBox.setTypeAhead(false);
+		publisherComboBox.setValue(bibEntry.getPublisher());
 		publisherComboBox.addValidator(new Validator<PublisherEntry>() {
 
 			@Override
@@ -723,6 +740,13 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					l.add(new DefaultEditorError(editor, "please select publisher", value));
 				}
 				return l;
+			}
+		});
+		publisherComboBox.addSelectionHandler(new SelectionHandler<PublisherEntry>() {
+			
+			@Override
+			public void onSelection(SelectionEvent<PublisherEntry> event) {
+				bibEntry.setPublisher(event.getSelectedItem());
 			}
 		});
 		FramedPanel publisherFP = new FramedPanel();
@@ -792,11 +816,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			}
 		});
 		secondTabVLC.add(publisherFP, new VerticalLayoutData(1.0, .1));
-
-		if (bibEntry != null) {
-			// publisherComboBox.setValue(bibEntry.getPublisher());
-		}
-
+		
 		if (publicationtype != 6) {
 			DualListField<AuthorEntry, String> authorSelection = new DualListField<AuthorEntry, String>(authorListStore, selectedAuthorListStore,
 					authorProps.name(), new TextCell());
@@ -807,7 +827,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				@Override
 				public List<EditorError> validate(Editor<List<AuthorEntry>> editor, List<AuthorEntry> value) {
 					List<EditorError> l = new ArrayList<EditorError>();
-					if (value == null) {
+					if (selectedAuthorListStore.size() == 0) {
 						l.add(new DefaultEditorError(editor, "please select editor(s)", value));
 					}
 					return l;
@@ -843,15 +863,6 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			secondTabVLC.add(authorFP, new VerticalLayoutData(1.0, .45));
 		}
 		
-		for (AuthorEntry aEntry : bibEntry.getAuthorList()) { // we move the selected authors to the right side
-			authorListStore.remove(aEntry);
-			selectedAuthorListStore.add(aEntry);
-		}
-		for (AuthorEntry aEntry : bibEntry.getEditorList()) { // we move the selected editors to the right side
-			editorListStore.remove(aEntry);
-			selectedEditorListStore.add(aEntry);
-		}
-
 		DualListField<AuthorEntry, String> editorSelection = new DualListField<AuthorEntry, String>(editorListStore, selectedEditorListStore,
 				authorProps.name(), new TextCell());
 		editorSelection.setMode(Mode.INSERT);
