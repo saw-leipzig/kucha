@@ -1387,7 +1387,12 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			}
 		});
 		bibDocAnnotationFP.addTool(annotationUploadButton);
-
+		
+		HorizontalLayoutContainer documentsHLC = new HorizontalLayoutContainer();
+		documentsHLC.add(bibDocPaperFP, new HorizontalLayoutData(1.0 / 3, 1.0));
+		documentsHLC.add(bibDocAnnotationFP, new HorizontalLayoutData(1.0 / 3, 1.0));
+		documentsHLC.add(bibDocSummaryFP, new HorizontalLayoutData(1.0 / 3, 1.0));
+		thirdTabVLC.add(documentsHLC, new VerticalLayoutData(1.0, .1));
 	}
 
 }
