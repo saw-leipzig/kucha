@@ -76,7 +76,7 @@ import de.cses.shared.PublisherEntry;
  *
  */
 public class AnnotatedBiblographyEditor extends AbstractEditor {
-	private AnnotatedBiblographyEntry entry;
+	private AnnotatedBiblographyEntry bibEntry;
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 
 	private ListStore<PublisherEntry> publisherListStore;
@@ -131,7 +131,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 	}
 
 	public AnnotatedBiblographyEditor(AnnotatedBiblographyEntry entry) {
-		this.entry = entry;
+		this.bibEntry = entry;
 	}
 
 	public AnnotatedBiblographyEditor() {
@@ -157,15 +157,15 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		for (AuthorEntry ae : selectedAuthorListStore.getAll()) {
 			selectedAuthorsList.add(ae);
 		}
-		entry.setAuthorList(selectedAuthorsList);
+		bibEntry.setAuthorList(selectedAuthorsList);
 
 		ArrayList<AuthorEntry> selectedEditorsList = new ArrayList<AuthorEntry>();
 		for (AuthorEntry ae : selectedEditorListStore.getAll()) {
 			selectedEditorsList.add(ae);
 		}
-		entry.setEditorList(selectedEditorsList);
+		bibEntry.setEditorList(selectedEditorsList);
 
-		dbService.insertAnnotatedBiblographyEntry(entry, new AsyncCallback<Integer>() {
+		dbService.insertAnnotatedBiblographyEntry(bibEntry, new AsyncCallback<Integer>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
@@ -174,8 +174,8 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 			@Override
 			public void onSuccess(Integer result) {
-				entry.setAnnotatedBiblographyID(result);
-				updateEntry(entry);
+				bibEntry.setAnnotatedBiblographyID(result);
+				updateEntry(bibEntry);
 				if (close) {
 					closeEditor();
 				}
@@ -206,10 +206,6 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				return "name";
 			}
 		}, SortDir.ASC));
-		for (AuthorEntry aEntry : entry.getAuthorList()) { // we move the selected authors to the right side
-			authorListStore.remove(aEntry);
-			selectedAuthorListStore.add(aEntry);
-		}
 		
 		editorListStore = new ListStore<AuthorEntry>(authorProps.authorID());
 		editorListStore.addSortInfo(new StoreSortInfo<AuthorEntry>(new ValueProvider<AuthorEntry, String>() {
@@ -228,10 +224,6 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				return "name";
 			}
 		}, SortDir.ASC));
-		for (AuthorEntry aEntry : entry.getEditorList()) { // we move the selected editors to the right side
-			editorListStore.remove(aEntry);
-			selectedEditorListStore.add(aEntry);
-		}
 
 		annotatedBiblographyEntryProps = GWT.create(AnnotatedBiblographyEntryProperties.class);
 		annotatedBiblographyEntryLS = new ListStore<AnnotatedBiblographyEntry>(annotatedBiblographyEntryProps.annotatedBiblographyID());
@@ -292,7 +284,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 		// backgroundoverview.add(tabpanel, new VerticalLayoutData(1.0, 1.0));
 
-		rebuildMainInput(entry.getPublicationTypeID());
+		rebuildMainInput(bibEntry.getPublicationTypeID());
 
 		ToolButton closeToolButton = new ToolButton(ToolButton.CLOSE);
 		closeToolButton.setToolTip("close");
@@ -364,30 +356,30 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		tabpanel.setTabScroll(false);
 
 		TextField titleEN = new TextField();
-		titleEN.setText(entry.getTitleEN());
+		titleEN.setText(bibEntry.getTitleEN());
 		titleEN.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<String> event) {
-				entry.setTitleEN(event.getValue());
+				bibEntry.setTitleEN(event.getValue());
 			}
 		});
 		TextField titleORG = new TextField();
-		titleORG.setText(entry.getTitleORG());
+		titleORG.setText(bibEntry.getTitleORG());
 		titleORG.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<String> event) {
-				entry.setTitleORG(event.getValue());
+				bibEntry.setTitleORG(event.getValue());
 			}
 		});
 		TextField titleTR = new TextField();
-		titleTR.setText(entry.getTitleTR());
+		titleTR.setText(bibEntry.getTitleTR());
 		titleTR.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<String> event) {
-				entry.setTitleTR(event.getValue());
+				bibEntry.setTitleTR(event.getValue());
 			}
 		});
 
@@ -403,30 +395,30 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 		if (publicationtype == 6) {
 			TextField procEN = new TextField();
-			procEN.setText(entry.getProcTitleEN());
+			procEN.setText(bibEntry.getProcTitleEN());
 			procEN.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
 				public void onValueChange(ValueChangeEvent<String> event) {
-					entry.setProcTitleEN(event.getValue());
+					bibEntry.setProcTitleEN(event.getValue());
 				}
 			});
 			TextField procORG = new TextField();
-			procORG.setText(entry.getProcTitleORG());
+			procORG.setText(bibEntry.getProcTitleORG());
 			procORG.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
 				public void onValueChange(ValueChangeEvent<String> event) {
-					entry.setProcTitleORG(event.getValue());
+					bibEntry.setProcTitleORG(event.getValue());
 				}
 			});
 			TextField procTR = new TextField();
-			procTR.setText(entry.getProcTitleTR());
+			procTR.setText(bibEntry.getProcTitleTR());
 			procTR.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
 				public void onValueChange(ValueChangeEvent<String> event) {
-					entry.setProcTitleTR(event.getValue());
+					bibEntry.setProcTitleTR(event.getValue());
 				}
 			});
 
@@ -444,30 +436,30 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 		if (publicationtype == 5) {
 			TextField chapterTitleEN = new TextField();
-			chapterTitleEN.setText(entry.getChapTitleEN());
+			chapterTitleEN.setText(bibEntry.getChapTitleEN());
 			chapterTitleEN.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
 				public void onValueChange(ValueChangeEvent<String> event) {
-					entry.setChapTitleEN(event.getValue());
+					bibEntry.setChapTitleEN(event.getValue());
 				}
 			});
 			TextField chapterTitleORG = new TextField();
-			chapterTitleORG.setText(entry.getChapTitleORG());
+			chapterTitleORG.setText(bibEntry.getChapTitleORG());
 			chapterTitleORG.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
 				public void onValueChange(ValueChangeEvent<String> event) {
-					entry.setChapTitleORG(event.getValue());
+					bibEntry.setChapTitleORG(event.getValue());
 				}
 			});
 			TextField chapterTitleTR = new TextField();
-			chapterTitleTR.setText(entry.getChapTitleTR());
+			chapterTitleTR.setText(bibEntry.getChapTitleTR());
 			chapterTitleTR.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
 				public void onValueChange(ValueChangeEvent<String> event) {
-					entry.setChapTitleTR(event.getValue());
+					bibEntry.setChapTitleTR(event.getValue());
 				}
 			});
 
@@ -484,30 +476,30 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 		if (publicationtype == 1) {
 			TextField booktitelEN = new TextField();
-			booktitelEN.setText(entry.getBookTitleEN());
+			booktitelEN.setText(bibEntry.getBookTitleEN());
 			booktitelEN.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
 				public void onValueChange(ValueChangeEvent<String> event) {
-					entry.setBookTitleEN(event.getValue());
+					bibEntry.setBookTitleEN(event.getValue());
 				}
 			});
 			TextField booktitelORG = new TextField();
-			booktitelORG.setText(entry.getBookTitleORG());
+			booktitelORG.setText(bibEntry.getBookTitleORG());
 			booktitelORG.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
 				public void onValueChange(ValueChangeEvent<String> event) {
-					entry.setBookTitleORG(event.getValue());
+					bibEntry.setBookTitleORG(event.getValue());
 				}
 			});
 			TextField booktitelTR = new TextField();
-			booktitelTR.setText(entry.getBookTitleTR());
+			booktitelTR.setText(bibEntry.getBookTitleTR());
 			booktitelTR.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
 				public void onValueChange(ValueChangeEvent<String> event) {
-					entry.setBookTitleTR(event.getValue());
+					bibEntry.setBookTitleTR(event.getValue());
 				}
 			});
 
@@ -524,30 +516,30 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 		if (publicationtype == 3) {
 			TextField uniEN = new TextField();
-			uniEN.setText(entry.getUniversityEN());
+			uniEN.setText(bibEntry.getUniversityEN());
 			uniEN.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
 				public void onValueChange(ValueChangeEvent<String> event) {
-					entry.setUniversityEN(event.getValue());
+					bibEntry.setUniversityEN(event.getValue());
 				}
 			});
 			TextField uniORG = new TextField();
-			uniORG.setText(entry.getUniversityORG());
+			uniORG.setText(bibEntry.getUniversityORG());
 			uniORG.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
 				public void onValueChange(ValueChangeEvent<String> event) {
-					entry.setUniversityORG(event.getValue());
+					bibEntry.setUniversityORG(event.getValue());
 				}
 			});
 			TextField uniTR = new TextField();
-			uniTR.setText(entry.getUniversityTR());
+			uniTR.setText(bibEntry.getUniversityTR());
 			uniTR.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
 				public void onValueChange(ValueChangeEvent<String> event) {
-					entry.setUniversityTR(event.getValue());
+					bibEntry.setUniversityTR(event.getValue());
 				}
 			});
 
@@ -564,30 +556,30 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 		if (publicationtype == 8) { // achtung hier muss sie bleiben
 			TextField numberEN = new TextField();
-			numberEN.setText(entry.getNumberEN());
+			numberEN.setText(bibEntry.getNumberEN());
 			numberEN.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
 				public void onValueChange(ValueChangeEvent<String> event) {
-					entry.setNumberEN(event.getValue());
+					bibEntry.setNumberEN(event.getValue());
 				}
 			});
 			TextField numberORG = new TextField();
-			numberORG.setText(entry.getNumberORG());
+			numberORG.setText(bibEntry.getNumberORG());
 			numberORG.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
 				public void onValueChange(ValueChangeEvent<String> event) {
-					entry.setNumberORG(event.getValue());
+					bibEntry.setNumberORG(event.getValue());
 				}
 			});
 			TextField numberTR = new TextField();
-			numberTR.setText(entry.getNumberTR());
+			numberTR.setText(bibEntry.getNumberTR());
 			numberTR.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
 				public void onValueChange(ValueChangeEvent<String> event) {
-					entry.setNumberTR(event.getValue());
+					bibEntry.setNumberTR(event.getValue());
 				}
 			});
 
@@ -604,30 +596,30 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 		if (publicationtype == 7) {
 			TextField accessEN = new TextField();
-			accessEN.setText(entry.getAccessdateEN());
+			accessEN.setText(bibEntry.getAccessdateEN());
 			accessEN.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
 				public void onValueChange(ValueChangeEvent<String> event) {
-					entry.setAccessdateEN(event.getValue());
+					bibEntry.setAccessdateEN(event.getValue());
 				}
 			});
 			TextField accessORG = new TextField();
-			accessORG.setText(entry.getAccessdateORG());
+			accessORG.setText(bibEntry.getAccessdateORG());
 			accessORG.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
 				public void onValueChange(ValueChangeEvent<String> event) {
-					entry.setAccessdateORG(event.getValue());
+					bibEntry.setAccessdateORG(event.getValue());
 				}
 			});
 			TextField accessTR = new TextField();
-			accessTR.setText(entry.getAccessdateTR());
+			accessTR.setText(bibEntry.getAccessdateTR());
 			accessTR.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
 				public void onValueChange(ValueChangeEvent<String> event) {
-					entry.setAccessdateTR(event.getValue());
+					bibEntry.setAccessdateTR(event.getValue());
 				}
 			});
 
@@ -643,30 +635,30 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		}
 
 		TextField titleaddonEN = new TextField();
-		titleaddonEN.setText(entry.getTitleaddonEN());
+		titleaddonEN.setText(bibEntry.getTitleaddonEN());
 		titleaddonEN.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<String> event) {
-				entry.setTitleaddonEN(event.getValue());
+				bibEntry.setTitleaddonEN(event.getValue());
 			}
 		});
 		TextField titleaddonORG = new TextField();
-		titleaddonORG.setText(entry.getTitleaddonORG());
+		titleaddonORG.setText(bibEntry.getTitleaddonORG());
 		titleaddonORG.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<String> event) {
-				entry.setTitleaddonORG(event.getValue());
+				bibEntry.setTitleaddonORG(event.getValue());
 			}
 		});
 		TextField titleaddonTR = new TextField();
-		titleaddonTR.setText(entry.getTitleaddonTR());
+		titleaddonTR.setText(bibEntry.getTitleaddonTR());
 		titleaddonTR.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<String> event) {
-				entry.setTitleaddonTR(event.getValue());
+				bibEntry.setTitleaddonTR(event.getValue());
 			}
 		});
 
@@ -759,8 +751,8 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		});
 		secondTabVLC.add(publisherFP, new VerticalLayoutData(1.0, .1));
 
-		if (entry != null) {
-			// publisherComboBox.setValue(entry.getPublisher());
+		if (bibEntry != null) {
+			// publisherComboBox.setValue(bibEntry.getPublisher());
 		}
 
 		if (publicationtype != 6) {
@@ -786,7 +778,25 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			FramedPanel authorFP = new FramedPanel();
 			authorFP.setHeading("Author");
 			authorFP.add(authorVLC);
+			ToolButton infoTB = new ToolButton(ToolButton.QUESTION);
+			infoTB.addSelectHandler(new SelectHandler() {
+				
+				@Override
+				public void onSelect(SelectEvent event) {
+					Window.alert("Since authors can also be editors,\n newly added editors will automaticall\n also appear in the author list for selection.");
+				}
+			});
+			authorFP.addTool(infoTB);
 			secondTabVLC.add(authorFP, new VerticalLayoutData(1.0, .45));
+		}
+		
+		for (AuthorEntry aEntry : bibEntry.getAuthorList()) { // we move the selected authors to the right side
+			authorListStore.remove(aEntry);
+			selectedAuthorListStore.add(aEntry);
+		}
+		for (AuthorEntry aEntry : bibEntry.getEditorList()) { // we move the selected editors to the right side
+			editorListStore.remove(aEntry);
+			selectedEditorListStore.add(aEntry);
 		}
 
 		DualListField<AuthorEntry, String> editorSelection = new DualListField<AuthorEntry, String>(editorListStore, selectedEditorListStore,
@@ -810,44 +820,35 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		editorVLC.add(new FieldLabel(editorListFilterField, "Filter"), new VerticalLayoutData(.5, .15, new Margins(10, 0, 0, 0)));
 		FramedPanel editorFP = new FramedPanel();
 		editorFP.setHeading("Editor");
-		ToolButton infoTB = new ToolButton(ToolButton.QUESTION);
-		infoTB.addSelectHandler(new SelectHandler() {
-			
-			@Override
-			public void onSelect(SelectEvent event) {
-				Window.alert("Since authors can also be editors\n, newly added authors will also\n appear in the editor list for selection.");
-			}
-		});
-		editorFP.addTool(infoTB);
 		editorFP.add(editorVLC);
-		secondTabVLC.add(editorFP, new VerticalLayoutData(1.0, .45));
+		secondTabVLC.add(editorFP, new VerticalLayoutData(1.0, .45));		
 
 		if (publicationtype == 8) { // hier muss sie bleiben
 			TextField seriesEN = new TextField();
-			seriesEN.setText(entry.getSeriesEN());
+			seriesEN.setText(bibEntry.getSeriesEN());
 			seriesEN.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
 				public void onValueChange(ValueChangeEvent<String> event) {
-					entry.setSeriesEN(event.getValue());
+					bibEntry.setSeriesEN(event.getValue());
 				}
 			});
 			TextField seriesORG = new TextField();
-			seriesORG.setText(entry.getSeriesORG());
+			seriesORG.setText(bibEntry.getSeriesORG());
 			seriesORG.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
 				public void onValueChange(ValueChangeEvent<String> event) {
-					entry.setSeriesORG(event.getValue());
+					bibEntry.setSeriesORG(event.getValue());
 				}
 			});
 			TextField seriesTR = new TextField();
-			seriesTR.setText(entry.getSeriesTR());
+			seriesTR.setText(bibEntry.getSeriesTR());
 			seriesTR.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
 				public void onValueChange(ValueChangeEvent<String> event) {
-					entry.setSeriesTR(event.getValue());
+					bibEntry.setSeriesTR(event.getValue());
 				}
 			});
 
@@ -864,30 +865,30 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 		if (publicationtype == 1 || publicationtype == 5) {
 			TextField editionEN = new TextField();
-			editionEN.setText(entry.getEditionEN());
+			editionEN.setText(bibEntry.getEditionEN());
 			editionEN.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
 				public void onValueChange(ValueChangeEvent<String> event) {
-					entry.setEditionEN(event.getValue());
+					bibEntry.setEditionEN(event.getValue());
 				}
 			});
 			TextField editionORG = new TextField();
-			editionORG.setText(entry.getEditionORG());
+			editionORG.setText(bibEntry.getEditionORG());
 			editionORG.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
 				public void onValueChange(ValueChangeEvent<String> event) {
-					entry.setEditionORG(event.getValue());
+					bibEntry.setEditionORG(event.getValue());
 				}
 			});
 			TextField editionTR = new TextField();
-			editionTR.setText(entry.getEditionTR());
+			editionTR.setText(bibEntry.getEditionTR());
 			editionTR.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
 				public void onValueChange(ValueChangeEvent<String> event) {
-					entry.setEditionTR(event.getValue());
+					bibEntry.setEditionTR(event.getValue());
 				}
 			});
 
@@ -904,30 +905,30 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 		if (publicationtype == 8) {
 			TextField volumeEN = new TextField();
-			volumeEN.setText(entry.getVolumeEN());
+			volumeEN.setText(bibEntry.getVolumeEN());
 			volumeEN.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
 				public void onValueChange(ValueChangeEvent<String> event) {
-					entry.setVolumeEN(event.getValue());
+					bibEntry.setVolumeEN(event.getValue());
 				}
 			});
 			TextField volumeORG = new TextField();
-			volumeORG.setText(entry.getVolumeORG());
+			volumeORG.setText(bibEntry.getVolumeORG());
 			volumeORG.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
 				public void onValueChange(ValueChangeEvent<String> event) {
-					entry.setVolumeORG(event.getValue());
+					bibEntry.setVolumeORG(event.getValue());
 				}
 			});
 			TextField volumeTR = new TextField();
-			volumeTR.setText(entry.getVolumeTR());
+			volumeTR.setText(bibEntry.getVolumeTR());
 			volumeTR.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
 				public void onValueChange(ValueChangeEvent<String> event) {
-					entry.setVolumeTR(event.getValue());
+					bibEntry.setVolumeTR(event.getValue());
 				}
 			});
 
@@ -944,32 +945,32 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 		NumberField<Integer> yearEN = new NumberField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
 		DateWrapper dw = new DateWrapper(); // we always want to use the current year as max year
-		yearEN.setValue(entry.getYearEN());
+		yearEN.setValue(bibEntry.getYearEN());
 		yearEN.addValidator(new MaxNumberValidator<Integer>(dw.getFullYear()));
 		yearEN.setAllowNegative(false);
 		yearEN.addValueChangeHandler(new ValueChangeHandler<Integer>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Integer> event) {
-				entry.setYearEN(event.getValue());
+				bibEntry.setYearEN(event.getValue());
 			}
 		});
 		TextField yearORG = new TextField();
-		yearORG.setText(entry.getYearORG());
+		yearORG.setText(bibEntry.getYearORG());
 		yearORG.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<String> event) {
-				entry.setYearORG(event.getValue());
+				bibEntry.setYearORG(event.getValue());
 			}
 		});
 		TextField yearTR = new TextField();
-		yearTR.setText(entry.getYearTR());
+		yearTR.setText(bibEntry.getYearTR());
 		yearTR.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<String> event) {
-				entry.setYearTR(event.getValue());
+				bibEntry.setYearTR(event.getValue());
 			}
 		});
 
@@ -985,30 +986,30 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 		if (publicationtype == 8) { // bleiben
 			TextField monthEN = new TextField();
-			monthEN.setText(entry.getMonthEN());
+			monthEN.setText(bibEntry.getMonthEN());
 			monthEN.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
 				public void onValueChange(ValueChangeEvent<String> event) {
-					entry.setMonthEN(event.getValue());
+					bibEntry.setMonthEN(event.getValue());
 				}
 			});
 			TextField monthORG = new TextField();
-			monthORG.setText(entry.getMonthORG());
+			monthORG.setText(bibEntry.getMonthORG());
 			monthORG.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
 				public void onValueChange(ValueChangeEvent<String> event) {
-					entry.setMonthORG(event.getValue());
+					bibEntry.setMonthORG(event.getValue());
 				}
 			});
 			TextField monthTR = new TextField();
-			monthTR.setText(entry.getMonthTR());
+			monthTR.setText(bibEntry.getMonthTR());
 			monthTR.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
 				public void onValueChange(ValueChangeEvent<String> event) {
-					entry.setMonthTR(event.getValue());
+					bibEntry.setMonthTR(event.getValue());
 				}
 			});
 
@@ -1024,30 +1025,30 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		}
 
 		TextField pagesEN = new TextField();
-		pagesEN.setText(entry.getPagesEN());
+		pagesEN.setText(bibEntry.getPagesEN());
 		pagesEN.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<String> event) {
-				entry.setPagesEN(event.getValue());
+				bibEntry.setPagesEN(event.getValue());
 			}
 		});
 		TextField pagesORG = new TextField();
-		pagesORG.setText(entry.getPagesORG());
+		pagesORG.setText(bibEntry.getPagesORG());
 		pagesORG.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<String> event) {
-				entry.setPagesORG(event.getValue());
+				bibEntry.setPagesORG(event.getValue());
 			}
 		});
 		TextField pagesTR = new TextField();
-		pagesTR.setText(entry.getPagesTR());
+		pagesTR.setText(bibEntry.getPagesTR());
 		pagesTR.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<String> event) {
-				entry.setPagesTR(event.getValue());
+				bibEntry.setPagesTR(event.getValue());
 			}
 		});
 
@@ -1066,12 +1067,12 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		commentsFP.setHeading("Comments");
 		commentsFP.add(commentsTA);
 		thirdTabVLC.add(commentsFP, new VerticalLayoutData(1.0, .25));
-		commentsTA.setText(entry.getComments());
+		commentsTA.setText(bibEntry.getComments());
 		commentsTA.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<String> event) {
-				entry.setComments(event.getValue());
+				bibEntry.setComments(event.getValue());
 			}
 		});
 
@@ -1079,12 +1080,12 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		FramedPanel notesFP = new FramedPanel();
 		notesFP.setHeading("Notes");
 		notesFP.add(notesTA);
-		notesTA.setText(entry.getNotes());
+		notesTA.setText(bibEntry.getNotes());
 		notesTA.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<String> event) {
-				entry.setNotes(event.getValue());
+				bibEntry.setNotes(event.getValue());
 			}
 		});
 		thirdTabVLC.add(notesFP, new VerticalLayoutData(1.0, .25));
@@ -1095,7 +1096,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		FramedPanel urlFP = new FramedPanel();
 		urlFP.setHeading("URL");
 		urlFP.add(urlHLC, new HorizontalLayoutData(1.0, 1.0));
-		urlTF.setText(entry.getUrl());
+		urlTF.setText(bibEntry.getUrl());
 		urlTF.addValidator(new RegExValidator(
 				"^(((https?|ftps?)://)(%[0-9A-Fa-f]{2}|[-()_.!~*';/?:@&=+$,A-Za-z0-9])+)([).!';/?:,][[:blank:]])?$", "Please enter valid URL"));
 		urlTF.addValueChangeHandler(new ValueChangeHandler<String>() {
@@ -1103,7 +1104,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			@Override
 			public void onValueChange(ValueChangeEvent<String> event) {
 				if (urlTF.validate()) {
-					entry.setUrl(event.getValue());
+					bibEntry.setUrl(event.getValue());
 				}
 			}
 		});
@@ -1113,7 +1114,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		FramedPanel uriFP = new FramedPanel();
 		uriFP.setHeading("URI");
 		uriFP.add(uriTF);
-		uriTF.setText(entry.getUri());
+		uriTF.setText(bibEntry.getUri());
 		uriTF.addValidator(new RegExValidator(
 				"^(((https?|ftps?)://)(%[0-9A-Fa-f]{2}|[-()_.!~*';/?:@&=+$,A-Za-z0-9])+)([).!';/?:,][[:blank:]])?$", "Please enter valid URI"));
 		uriTF.addValueChangeHandler(new ValueChangeHandler<String>() {
@@ -1121,7 +1122,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			@Override
 			public void onValueChange(ValueChangeEvent<String> event) {
 				if (uriTF.validate()) {
-					entry.setUri(event.getValue());
+					bibEntry.setUri(event.getValue());
 				}
 			}
 		});
@@ -1131,12 +1132,12 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		FramedPanel unpublishedFP = new FramedPanel();
 		unpublishedFP.setHeading("Unpublished");
 		unpublishedFP.add(unpublishedCB);
-		unpublishedCB.setValue(entry.isUnpublished());
+		unpublishedCB.setValue(bibEntry.isUnpublished());
 		unpublishedCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
-				entry.setUnpublished(event.getValue());
+				bibEntry.setUnpublished(event.getValue());
 			}
 		});
 		thirdTabVLC.add(unpublishedFP, new VerticalLayoutData(1.0, .1));
@@ -1150,12 +1151,12 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 						return pvTemplates.AnnotatedBiblographyEntry(item.getTitleEN());
 					}
 				});
-		firstEditionComboBox.setValue(annotatedBiblographyEntryLS.findModelWithKey(Integer.toString(entry.getFirstEditionBibID())));
+		firstEditionComboBox.setValue(annotatedBiblographyEntryLS.findModelWithKey(Integer.toString(bibEntry.getFirstEditionBibID())));
 		firstEditionComboBox.addValueChangeHandler(new ValueChangeHandler<AnnotatedBiblographyEntry>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<AnnotatedBiblographyEntry> event) {
-				entry.setFirstEditionBibID(event.getValue().getAnnotatedBiblographyID());
+				bibEntry.setFirstEditionBibID(event.getValue().getAnnotatedBiblographyID());
 			}
 		});
 
@@ -1168,7 +1169,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		firstEditionHLC.add(firstEditionComboBox, new HorizontalLayoutData(.9, 1.0));
 		firstEditionFP.add(firstEditionHLC);
 		firstEditionFP.setToolTip("Choose First Edition");
-		if (entry.getFirstEditionBibID() > 0) {
+		if (bibEntry.getFirstEditionBibID() > 0) {
 			firstEditionCB.setValue(true);
 			firstEditionComboBox.setEnabled(true);
 		}

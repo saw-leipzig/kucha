@@ -59,7 +59,7 @@ public class AnnotatedBiblographyView  extends AbstractView {
 		String publisherName = annotatedBiblographyEntry.getPublisher() != null ? annotatedBiblographyEntry.getPublisher().getName() : "unknown publisher";
 		setHTML(dvTemplates.view(authors, Integer.toString(annotatedBiblographyEntry.getYearEN()), annotatedBiblographyEntry.getTitleEN(), publisherName));
 
-		setPixelSize(300, 80);
+		setPixelSize(600, 80);
 
 		DragSource source = new DragSource(this) {
 
