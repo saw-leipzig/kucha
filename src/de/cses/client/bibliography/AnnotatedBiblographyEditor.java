@@ -36,7 +36,6 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
-import com.sencha.gxt.core.client.XTemplates.XTemplate;
 import com.sencha.gxt.core.client.util.DateWrapper;
 import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.LabelProvider;
@@ -62,7 +61,6 @@ import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.DualListField;
 import com.sencha.gxt.widget.core.client.form.DualListField.Mode;
-import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
@@ -70,6 +68,7 @@ import com.sencha.gxt.widget.core.client.form.StoreFilterField;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.Validator;
+import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MaxNumberValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
@@ -77,15 +76,11 @@ import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
-import de.cses.client.Util;
 import de.cses.client.bibliography.BibDocumentUploader.BibDocumentUploadListener;
-import de.cses.client.caves.C14DocumentUploader;
-import de.cses.client.caves.C14DocumentUploader.C14DocumentUploadListener;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.AuthorEntry;
-import de.cses.shared.C14DocumentEntry;
 import de.cses.shared.PublisherEntry;
 
 /**
@@ -184,14 +179,12 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			selectedAuthorsList.add(ae);
 		}
 		bibEntry.setAuthorList(selectedAuthorsList);
-		Window.alert("No. of authors: " + selectedAuthorsList.size());
 
 		ArrayList<AuthorEntry> selectedEditorsList = new ArrayList<AuthorEntry>();
 		for (AuthorEntry ae : selectedEditorListStore.getAll()) {
 			selectedEditorsList.add(ae);
 		}
 		bibEntry.setEditorList(selectedEditorsList);
-		Window.alert("No. of editors: " + selectedEditorsList.size());
 
 		if (bibEntry.getAnnotatedBiblographyID() > 0) {
 			dbService.updateAnnotatedBiblographyEntry(bibEntry, new AsyncCallback<Boolean>() {
@@ -823,7 +816,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 								@Override
 								public void onFailure(Throwable caught) {
 									addPublisherDialog.hide();
-									Window.alert("An error occurred during saving!");
+									Window.alert("Error while saving!");
 								}
 
 								@Override
