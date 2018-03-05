@@ -962,7 +962,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 				result = result.concat("; " + author.getName());
 			}
 		}
-		result = result.concat(" (" + yearEN + "). " +  titleEN);
+		result = result.concat(" (" + yearEN + "). " +  titleEN + ". " + publisher.getLabel());
 		return result;
 	}
 }
