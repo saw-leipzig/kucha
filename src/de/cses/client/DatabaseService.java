@@ -242,4 +242,6 @@ public interface DatabaseService extends RemoteService {
 
 	ArrayList<AnnotatedBiblographyEntry> getAnnotatedBibliography(String sqlWhere) throws IllegalArgumentException;
 
+	boolean updateAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry) throws IllegalArgumentException;
+
 }

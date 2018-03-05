@@ -267,4 +267,6 @@ public interface DatabaseServiceAsync {
 
 	void getAnnotatedBibliography(String sqlWhere, AsyncCallback<ArrayList<AnnotatedBiblographyEntry>> asyncCallback) throws IllegalArgumentException;
 
+	void updateAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
+
 }

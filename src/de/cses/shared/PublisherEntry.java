@@ -19,7 +19,7 @@ package de.cses.shared;
  */
 public class PublisherEntry extends AbstractEntry {
 	
-	private int publisherID;
+	private int publisherID = 0;
 	private String name;
 	private String location;
 	

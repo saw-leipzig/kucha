@@ -47,7 +47,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	private String titleaddonEN;
 	private String titleaddonORG;
 	private String titleaddonTR;
-	private PublisherEntry publisher;
+	private PublisherEntry publisher = new PublisherEntry();
 	private String seriesEN;
 	private String seriesTR;
 	private String seriesORG;

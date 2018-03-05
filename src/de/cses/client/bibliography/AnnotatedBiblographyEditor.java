@@ -14,9 +14,12 @@
 package de.cses.client.bibliography;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.editor.client.Editor;
+import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
@@ -53,12 +56,14 @@ import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.DualListField;
 import com.sencha.gxt.widget.core.client.form.DualListField.Mode;
+import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.StoreFilterField;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.form.Validator;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MaxNumberValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
@@ -158,29 +163,55 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			selectedAuthorsList.add(ae);
 		}
 		bibEntry.setAuthorList(selectedAuthorsList);
+		Window.alert("No. of authors: " + selectedAuthorsList.size());
 
 		ArrayList<AuthorEntry> selectedEditorsList = new ArrayList<AuthorEntry>();
 		for (AuthorEntry ae : selectedEditorListStore.getAll()) {
 			selectedEditorsList.add(ae);
 		}
 		bibEntry.setEditorList(selectedEditorsList);
+		Window.alert("No. of editors: " + selectedEditorsList.size());
+		
+		if (bibEntry.getAnnotatedBiblographyID() > 0) { 
+			dbService.updateAnnotatedBiblographyEntry(bibEntry, new AsyncCallback<Boolean>() {
 
-		dbService.insertAnnotatedBiblographyEntry(bibEntry, new AsyncCallback<Integer>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(Integer result) {
-				bibEntry.setAnnotatedBiblographyID(result);
-				updateEntry(bibEntry);
-				if (close) {
-					closeEditor();
+				@Override
+				public void onFailure(Throwable caught) {
+					caught.printStackTrace();
+					Window.alert("Error while saving!");
 				}
-			}
-		});
+
+				@Override
+				public void onSuccess(Boolean result) {
+					if (result) {
+						updateEntry(bibEntry);
+						if (close) {
+							closeEditor();
+						}
+					}
+				}
+				
+			});
+		} else {
+			dbService.insertAnnotatedBiblographyEntry(bibEntry, new AsyncCallback<Integer>() {
+
+				@Override
+				public void onFailure(Throwable caught) {
+					caught.printStackTrace();
+					Window.alert("Error while saving!");
+				}
+
+				@Override
+				public void onSuccess(Integer result) {
+					bibEntry.setAnnotatedBiblographyID(result);
+					updateEntry(bibEntry);
+					if (close) {
+						closeEditor();
+					}
+				}
+			});
+		}
+
 
 	}
 
@@ -683,6 +714,17 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				});
 		publisherComboBox.setEditable(false);
 		publisherComboBox.setTypeAhead(false);
+		publisherComboBox.addValidator(new Validator<PublisherEntry>() {
+
+			@Override
+			public List<EditorError> validate(Editor<PublisherEntry> editor, PublisherEntry value) {
+				List<EditorError> l = new ArrayList<EditorError>();
+				if (value == null) {
+					l.add(new DefaultEditorError(editor, "please select publisher", value));
+				}
+				return l;
+			}
+		});
 		FramedPanel publisherFP = new FramedPanel();
 		publisherFP.setHeading("Publisher");
 		publisherFP.add(publisherComboBox);
@@ -760,6 +802,17 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					authorProps.name(), new TextCell());
 			authorSelection.setMode(Mode.INSERT);
 			authorSelection.setEnableDnd(true);
+			authorSelection.addValidator(new Validator<List<AuthorEntry>>() {
+
+				@Override
+				public List<EditorError> validate(Editor<List<AuthorEntry>> editor, List<AuthorEntry> value) {
+					List<EditorError> l = new ArrayList<EditorError>();
+					if (value == null) {
+						l.add(new DefaultEditorError(editor, "please select editor(s)", value));
+					}
+					return l;
+				}
+			});
 			VerticalLayoutContainer authorVLC = new VerticalLayoutContainer();
 			authorVLC.add(authorSelection, new VerticalLayoutData(1.0, .85));
 			authorListFilterField = new StoreFilterField<AuthorEntry>() {
