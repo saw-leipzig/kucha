@@ -47,14 +47,17 @@ import de.cses.client.images.ImageSelector;
 import de.cses.client.images.ImageSelectorListener;
 import de.cses.client.ornamentic.OrnamentCaveAttributes.MainTypologicalClassProperties;
 import de.cses.client.ornamentic.OrnamentCaveAttributes.MainTypologicalClassViewTemplates;
+import de.cses.client.ornamentic.OrnamentCaveAttributes.OrientationProperties;
 import de.cses.client.ornamentic.OrnamentCaveAttributes.StructureOrganizationProperties;
 import de.cses.client.ornamentic.OrnamentCaveAttributes.StructureOrganizationViewTemplates;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.ImageEntry;
+import de.cses.shared.InnerSecondaryPatterns;
 import de.cses.shared.MainTypologicalClass;
 import de.cses.shared.OrnamentCaveRelation;
+import de.cses.shared.OrnamentClass;
 import de.cses.shared.OrnamentEntry;
 import de.cses.shared.StructureOrganization;
 
@@ -71,14 +74,20 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 	protected ImageSelector imageSelector;
 	private ListView<ImageEntry, ImageEntry> imageListView;
 	private ListStore<ImageEntry> imageEntryList;
+	private ListStore<OrnamentClass> ornamentClassEntryList;
 	private ImageProperties imgProperties;
 	private OrnamentEntry ornamentEntry = null;;
 	private ListStore<StructureOrganization> structureOrganization;
 	private ComboBox<StructureOrganization> structureorganizationComboBox;
+	private ComboBox<StructureOrganization> ornamentClassComboBox;
+	private ComboBox<InnerSecondaryPatterns> innerSecondarypatternsComboBox;
 	private StructureOrganizationProperties structureOrganizationProps;
 	private ListStore<MainTypologicalClass> mainTypologicalClass;
 	private ComboBox<MainTypologicalClass> mainTypologicalClassComboBox;
 	private MainTypologicalClassProperties mainTypologicalClassProps;
+	private OrnamentClassProperties ornamentClassProps;
+	private InnerSecondaryPatternsProperties innerSecondaryPatternsProps;
+	private ListStore<InnerSecondaryPatterns> innerSecondaryPatternsEntryList;
 
 	@Override
 	public Widget asWidget() {
@@ -107,6 +116,8 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 		structureOrganizationProps = GWT.create(StructureOrganizationProperties.class);
 		structureOrganization = new ListStore<StructureOrganization>(structureOrganizationProps.structureOrganizationID());
+		ornamentClassEntryList = new ListStore<OrnamentClass>(ornamentClassProps.ornamentClassId());
+		innerSecondaryPatternsEntryList = new ListStore<InnerSecondaryPatterns>(innerSecondaryPatternsProps.innerSecondaryPatternsId());
 
 		dbService.getStructureOrganizations(new AsyncCallback<ArrayList<StructureOrganization>>() {
 
@@ -508,6 +519,18 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		@XTemplate("<img align=\"center\" margin=\"20\" src=\"{imageUri}\"><br> {title}")
 		SafeHtml image(SafeUri imageUri, String title);
 
+	}
+	
+	interface OrnamentClassProperties extends PropertyAccess<OrnamentClass> {
+		ModelKeyProvider<OrnamentClass> ornamentClassId();
+
+		LabelProvider<OrnamentClass> name();
+	}
+	
+	interface InnerSecondaryPatternsProperties extends PropertyAccess<InnerSecondaryPatterns> {
+		ModelKeyProvider<InnerSecondaryPatterns> innerSecondaryPatternsId();
+
+		LabelProvider<InnerSecondaryPatterns> name();
 	}
 
 	interface OrnamentCaveRelationProperties extends PropertyAccess<CaveEntry> {

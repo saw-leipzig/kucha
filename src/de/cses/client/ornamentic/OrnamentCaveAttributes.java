@@ -84,6 +84,8 @@ public class OrnamentCaveAttributes extends PopupPanel {
 
 	private OrientationProperties orientationProps;
 
+
+
 	public OrnamentCaveAttributes(OrnamentCaveRelation ornamentCaveRelationEntry) {
 		this.ornamentCaveRelationEntry = ornamentCaveRelationEntry;
 		init();
