@@ -25,14 +25,18 @@ import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeUri;
+import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
+import com.sencha.gxt.core.client.XTemplates.XTemplate;
 import com.sencha.gxt.core.client.util.DateWrapper;
 import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.LabelProvider;
@@ -73,9 +77,15 @@ import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.Util;
+import de.cses.client.bibliography.BibDocumentUploader.BibDocumentUploadListener;
+import de.cses.client.caves.C14DocumentUploader;
+import de.cses.client.caves.C14DocumentUploader.C14DocumentUploadListener;
 import de.cses.client.ui.AbstractEditor;
+import de.cses.client.user.UserLogin;
 import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.AuthorEntry;
+import de.cses.shared.C14DocumentEntry;
 import de.cses.shared.PublisherEntry;
 
 /**
@@ -103,6 +113,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 	private TabPanel tabpanel;
 	private StoreFilterField<AuthorEntry> authorListFilterField;
 	private StoreFilterField<AuthorEntry> editorListFilterField;
+	private DocumentLinkTemplate documentLinkTemplate;
 
 	interface PublisherViewTemplates extends XTemplates {
 		@XTemplate("<div>{name}</div>")
@@ -127,7 +138,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 	interface AnnotatedBiblographyEntryProperties extends PropertyAccess<AnnotatedBiblographyEntry> {
 		ModelKeyProvider<AnnotatedBiblographyEntry> annotatedBiblographyID();
+
 		ValueProvider<AnnotatedBiblographyEntry, String> titleEN();
+
 		LabelProvider<AnnotatedBiblographyEntry> label();
 	}
 
@@ -137,13 +150,19 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		ValueProvider<AuthorEntry, String> name();
 	}
 
+	interface DocumentLinkTemplate extends XTemplates {
+		@XTemplate("<a target=\"_blank\" href=\"{documentUri}\" rel=\"noopener\">click here to open {documentDescription}</a>")
+		SafeHtml documentLink(SafeUri documentUri, String documentDescription);
+	}
+
 	public AnnotatedBiblographyEditor(AnnotatedBiblographyEntry entry) {
 		this.bibEntry = entry;
+		documentLinkTemplate = GWT.create(DocumentLinkTemplate.class);
 	}
 
-	public AnnotatedBiblographyEditor() {
-	}
-
+	// public AnnotatedBiblographyEditor() {
+	// }
+	//
 	@Override
 	public Widget asWidget() {
 		if (mainFP == null) {
@@ -173,8 +192,8 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		}
 		bibEntry.setEditorList(selectedEditorsList);
 		Window.alert("No. of editors: " + selectedEditorsList.size());
-		
-		if (bibEntry.getAnnotatedBiblographyID() > 0) { 
+
+		if (bibEntry.getAnnotatedBiblographyID() > 0) {
 			dbService.updateAnnotatedBiblographyEntry(bibEntry, new AsyncCallback<Boolean>() {
 
 				@Override
@@ -192,7 +211,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 						}
 					}
 				}
-				
+
 			});
 		} else {
 			dbService.insertAnnotatedBiblographyEntry(bibEntry, new AsyncCallback<Integer>() {
@@ -213,7 +232,6 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				}
 			});
 		}
-
 
 	}
 
@@ -239,7 +257,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				return "name";
 			}
 		}, SortDir.ASC));
-		
+
 		editorListStore = new ListStore<AuthorEntry>(authorProps.authorID());
 		editorListStore.addSortInfo(new StoreSortInfo<AuthorEntry>(new ValueProvider<AuthorEntry, String>() {
 
@@ -326,22 +344,23 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				}
 			}
 		});
-		
-		dbService.getAnnotatedBibliography("PublicationTypeID="+bibEntry.getPublicationTypeID(), new AsyncCallback<ArrayList<AnnotatedBiblographyEntry>>() {
 
-			@Override
-			public void onFailure(Throwable caught) {
-				// TODO Auto-generated method stub
-				
-			}
+		dbService.getAnnotatedBibliography("PublicationTypeID=" + bibEntry.getPublicationTypeID(),
+				new AsyncCallback<ArrayList<AnnotatedBiblographyEntry>>() {
 
-			@Override
-			public void onSuccess(ArrayList<AnnotatedBiblographyEntry> result) {
-				for (AnnotatedBiblographyEntry ae : result) {
-					firstEditionBiblographyEntryLS.add(ae);
-				}
-			}
-		});
+					@Override
+					public void onFailure(Throwable caught) {
+						// TODO Auto-generated method stub
+
+					}
+
+					@Override
+					public void onSuccess(ArrayList<AnnotatedBiblographyEntry> result) {
+						for (AnnotatedBiblographyEntry ae : result) {
+							firstEditionBiblographyEntryLS.add(ae);
+						}
+					}
+				});
 	}
 
 	public void createForm() {
@@ -760,7 +779,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			}
 		});
 		publisherComboBox.addSelectionHandler(new SelectionHandler<PublisherEntry>() {
-			
+
 			@Override
 			public void onSelection(SelectionEvent<PublisherEntry> event) {
 				bibEntry.setPublisher(event.getSelectedItem());
@@ -833,7 +852,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			}
 		});
 		secondTabVLC.add(publisherFP, new VerticalLayoutData(1.0, .1));
-		
+
 		if (publicationtype != 6) {
 			DualListField<AuthorEntry, String> authorSelection = new DualListField<AuthorEntry, String>(authorListStore, selectedAuthorListStore,
 					authorProps.name(), new TextCell());
@@ -870,16 +889,17 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			authorFP.add(authorVLC);
 			ToolButton infoTB = new ToolButton(ToolButton.QUESTION);
 			infoTB.addSelectHandler(new SelectHandler() {
-				
+
 				@Override
 				public void onSelect(SelectEvent event) {
-					Window.alert("Since authors can also be editors,\n newly added editors will automaticall\n also appear in the author list for selection.");
+					Window.alert(
+							"Since authors can also be editors,\n newly added editors will automaticall\n also appear in the author list for selection.");
 				}
 			});
 			authorFP.addTool(infoTB);
 			secondTabVLC.add(authorFP, new VerticalLayoutData(1.0, .45));
 		}
-		
+
 		DualListField<AuthorEntry, String> editorSelection = new DualListField<AuthorEntry, String>(editorListStore, selectedEditorListStore,
 				authorProps.name(), new TextCell());
 		editorSelection.setMode(Mode.INSERT);
@@ -902,7 +922,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		FramedPanel editorFP = new FramedPanel();
 		editorFP.setHeading("Editor");
 		editorFP.add(editorVLC);
-		secondTabVLC.add(editorFP, new VerticalLayoutData(1.0, .45));		
+		secondTabVLC.add(editorFP, new VerticalLayoutData(1.0, .45));
 
 		if (publicationtype == 8) { // hier muss sie bleiben
 			TextField seriesEN = new TextField();
@@ -1233,11 +1253,11 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					}
 				});
 		firstEditionComboBox.setValue(firstEditionBiblographyEntryLS.findModelWithKey(Integer.toString(bibEntry.getFirstEditionBibID())));
-		firstEditionComboBox.addValueChangeHandler(new ValueChangeHandler<AnnotatedBiblographyEntry>() {
+		firstEditionComboBox.addSelectionHandler(new SelectionHandler<AnnotatedBiblographyEntry>() {
 
 			@Override
-			public void onValueChange(ValueChangeEvent<AnnotatedBiblographyEntry> event) {
-				bibEntry.setFirstEditionBibID(event.getValue().getAnnotatedBiblographyID());
+			public void onSelection(SelectionEvent<AnnotatedBiblographyEntry> event) {
+				bibEntry.setFirstEditionBibID(event.getSelectedItem().getAnnotatedBiblographyID());
 			}
 		});
 
@@ -1262,6 +1282,112 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			}
 		});
 		thirdTabVLC.add(firstEditionFP, new VerticalLayoutData(1.0, .1));
+
+		FramedPanel bibDocPaperFP = new FramedPanel();
+		bibDocPaperFP.setHeading("paper");
+		ToolButton paperUploadButton = new ToolButton(ToolButton.PLUS);
+		paperUploadButton.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				if (bibEntry.getAnnotatedBiblographyID() == 0) {
+					Window.alert("Documents cannot be uploaded\n before the new entry has been saved.");
+					return;
+				}
+				PopupPanel bibDocUploadPanel = new PopupPanel();
+				BibDocumentUploader paperUploader = new BibDocumentUploader(bibEntry.getUniqueID() + "-paper", new BibDocumentUploadListener() {
+
+					@Override
+					public void uploadCompleted(String documentFilename) {
+						bibDocPaperFP.clear();
+						bibDocPaperFP.add(new HTMLPanel(documentLinkTemplate.documentLink(UriUtils.fromString(
+								"resource?document=" + bibEntry.getUniqueID() + "-paper" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()),
+								"download paper")));
+						bibDocUploadPanel.hide();
+					}
+
+					@Override
+					public void uploadCanceled() {
+						bibDocUploadPanel.hide();
+					}
+				});
+				bibDocUploadPanel.add(paperUploader);
+				bibDocUploadPanel.setGlassEnabled(true);
+				bibDocUploadPanel.center();
+			}
+		});
+		bibDocPaperFP.addTool(paperUploadButton);
+
+		FramedPanel bibDocSummaryFP = new FramedPanel();
+		bibDocSummaryFP.setHeading("summary");
+		ToolButton summaryUploadButton = new ToolButton(ToolButton.PLUS);
+		summaryUploadButton.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				if (bibEntry.getAnnotatedBiblographyID() == 0) {
+					Window.alert("Documents cannot be uploaded\n before the new entry has been saved.");
+					return;
+				}
+				PopupPanel bibDocUploadPanel = new PopupPanel();
+				BibDocumentUploader summaryUploader = new BibDocumentUploader(bibEntry.getUniqueID() + "-summary", new BibDocumentUploadListener() {
+
+					@Override
+					public void uploadCompleted(String documentFilename) {
+						bibDocSummaryFP.clear();
+						bibDocSummaryFP.add(new HTMLPanel(documentLinkTemplate.documentLink(UriUtils.fromString(
+								"resource?document=" + bibEntry.getUniqueID() + "-summary" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()),
+								"download summary")));
+						bibDocUploadPanel.hide();
+					}
+
+					@Override
+					public void uploadCanceled() {
+						bibDocUploadPanel.hide();
+					}
+				});
+				bibDocUploadPanel.add(summaryUploader);
+				bibDocUploadPanel.setGlassEnabled(true);
+				bibDocUploadPanel.center();
+			}
+		});
+		bibDocSummaryFP.addTool(summaryUploadButton);
+
+		FramedPanel bibDocAnnotationFP = new FramedPanel();
+		bibDocAnnotationFP.setHeading("annotation");
+		ToolButton annotationUploadButton = new ToolButton(ToolButton.PLUS);
+		annotationUploadButton.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				if (bibEntry.getAnnotatedBiblographyID() == 0) {
+					Window.alert("Documents cannot be uploaded\n before the new entry has been saved.");
+					return;
+				}
+				PopupPanel bibDocUploadPanel = new PopupPanel();
+				BibDocumentUploader annotationUploader = new BibDocumentUploader(bibEntry.getUniqueID() + "-annotation", new BibDocumentUploadListener() {
+
+					@Override
+					public void uploadCompleted(String documentFilename) {
+						bibDocAnnotationFP.clear();
+						bibDocAnnotationFP.add(new HTMLPanel(documentLinkTemplate.documentLink(UriUtils.fromString(
+								"resource?document=" + bibEntry.getUniqueID() + "-annotation" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()),
+								"download annotation")));
+						bibDocUploadPanel.hide();
+					}
+
+					@Override
+					public void uploadCanceled() {
+						bibDocUploadPanel.hide();
+					}
+				});
+				bibDocUploadPanel.add(annotationUploader);
+				bibDocUploadPanel.setGlassEnabled(true);
+				bibDocUploadPanel.center();
+			}
+		});
+		bibDocAnnotationFP.addTool(annotationUploadButton);
+
 	}
 
 }
