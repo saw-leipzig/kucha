@@ -35,6 +35,7 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.core.client.util.DateWrapper;
@@ -333,7 +334,6 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 			@Override
 			public void onSuccess(ArrayList<PublisherEntry> result) {
-				publisherListStore.clear();
 				for (PublisherEntry pe : result) {
 					publisherListStore.add(pe);
 				}
@@ -433,7 +433,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		firstTabHLC.add(firstTabInnerLeftVLC, new HorizontalLayoutData(.65, 1.0));
 		firstTabHLC.add(firstTabInnerRightVLC, new HorizontalLayoutData(.35, 1.0));
 
-		tabpanel.add(firstTabHLC, "Basics");
+		tabpanel.add(firstTabHLC, "Basics (" + bibEntry.getPublicationType().getName() + ")");
 		tabpanel.add(secondTabVLC, "Authors and Editors");
 		tabpanel.add(thirdTabVLC, "Others");
 		tabpanel.setTabScroll(false);
@@ -793,7 +793,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				});
 		publisherComboBox.setEditable(false);
 		publisherComboBox.setTypeAhead(false);
-		publisherComboBox.setValue(bibEntry.getPublisher());
+		publisherComboBox.setTriggerAction(TriggerAction.ALL);
+		if (bibEntry.getPublisher() != null) {
+			publisherComboBox.setValue(bibEntry.getPublisher());
+		}
 		publisherComboBox.addValidator(new Validator<PublisherEntry>() {
 
 			@Override
@@ -1395,6 +1398,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 						return pvTemplates.AnnotatedBiblographyEntry(item.getLabel());
 					}
 				});
+		firstEditionComboBox.setTypeAhead(false);
+		firstEditionComboBox.setEditable(false);
+		firstEditionComboBox.setTriggerAction(TriggerAction.ALL);
 		firstEditionComboBox.addSelectionHandler(new SelectionHandler<AnnotatedBiblographyEntry>() {
 
 			@Override
