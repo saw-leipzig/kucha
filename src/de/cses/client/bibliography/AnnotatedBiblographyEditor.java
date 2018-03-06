@@ -343,8 +343,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		/**
 		 * We're assuming that only publications of the same type can be first editions to the current publication
 		 */
-		dbService.getAnnotatedBibliography("PublicationTypeID=" + bibEntry.getPublicationType().getPublicationTypeID(),
-				new AsyncCallback<ArrayList<AnnotatedBiblographyEntry>>() {
+		dbService.getAnnotatedBibliography(new AsyncCallback<ArrayList<AnnotatedBiblographyEntry>>() {
 
 					@Override
 					public void onFailure(Throwable caught) {
@@ -356,6 +355,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 						for (AnnotatedBiblographyEntry ae : result) {
 							firstEditionBiblographyEntryLS.add(ae);
 						}
+						Window.alert("firstEditionBiblographyEntryLS contains " + firstEditionBiblographyEntryLS.size() + " elements!");
 					}
 				});
 	}
@@ -792,9 +792,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					}
 				});
 		publisherComboBox.setEditable(false);
-		publisherComboBox.setTypeAhead(false);
+		publisherComboBox.setTypeAhead(true);
 		publisherComboBox.setTriggerAction(TriggerAction.ALL);
-		if (bibEntry.getPublisher() != null) {
+		PublisherEntry publisher = bibEntry.getPublisher();
+		if ((publisher != null) && (publisher.getPublisherID() > 0)) {
 			publisherComboBox.setValue(bibEntry.getPublisher());
 		}
 		publisherComboBox.addValidator(new Validator<PublisherEntry>() {
