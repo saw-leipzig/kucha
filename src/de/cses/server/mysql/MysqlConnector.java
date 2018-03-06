@@ -2643,12 +2643,14 @@ public class MysqlConnector {
 	private void updateAuthorBibRelation(int bibID, ArrayList<AuthorEntry> authorList) {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
+		int sequence = 1;
 		deleteEntry("DELETE FROM AuthorBibliographyRelation WHERE BibID=" + bibID); // in case there are already relations 
 		try {
-			pstmt = dbc.prepareStatement("INSERT INTO AuthorBibliographyRelation (AuthorID, BibID) VALUES (?, ?)");
+			pstmt = dbc.prepareStatement("INSERT INTO AuthorBibliographyRelation (AuthorID, BibID, AuthorSequence) VALUES (?, ?, ?)");
 			for (AuthorEntry entry : authorList) {
 				pstmt.setInt(1, entry.getAuthorID());
 				pstmt.setInt(2, bibID);
+				pstmt.setInt(3, sequence++);
 				pstmt.executeUpdate();
 			}
 			pstmt.close();
@@ -2661,12 +2663,14 @@ public class MysqlConnector {
 		if (editorList == null) return;
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
+		int sequence = 1;
 		deleteEntry("DELETE FROM EditorBibliographyRelation WHERE BibID=" + bibID); // in case there are already relations 
 		try {
-			pstmt = dbc.prepareStatement("INSERT INTO EditorBibliographyRelation (AuthorID, BibID) VALUES (?, ?)");
+			pstmt = dbc.prepareStatement("INSERT INTO EditorBibliographyRelation (AuthorID, BibID, EditorSequence) VALUES (?, ?, ?)");
 			for (AuthorEntry entry : editorList) {
 				pstmt.setInt(1, entry.getAuthorID());
 				pstmt.setInt(2, bibID);
+				pstmt.setInt(3, sequence++);
 				pstmt.executeUpdate();
 			}
 			pstmt.close();

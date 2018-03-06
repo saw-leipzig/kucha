@@ -1424,7 +1424,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			firstEditionComboBox.setValue(firstEditionBiblographyEntryLS.findModelWithKey(Integer.toString(bibEntry.getFirstEditionBibID())));
 		} else {
 			firstEditionCB.setValue(false);
-			firstEditionComboBox.setEnabled(false);
+//			firstEditionComboBox.setEnabled(false);
 		}
 		firstEditionCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
