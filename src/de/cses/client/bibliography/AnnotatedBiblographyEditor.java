@@ -355,7 +355,6 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 						for (AnnotatedBiblographyEntry ae : result) {
 							firstEditionBiblographyEntryLS.add(ae);
 						}
-						Window.alert("firstEditionBiblographyEntryLS contains " + firstEditionBiblographyEntryLS.size() + " elements!");
 					}
 				});
 	}
@@ -1412,7 +1411,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 		CheckBox firstEditionCB = new CheckBox();
 		FramedPanel firstEditionFP = new FramedPanel();
-		firstEditionFP.setHeading("FirstEdition");
+		firstEditionFP.setHeading("First Edition Link");
 		HorizontalLayoutContainer firstEditionHLC = new HorizontalLayoutContainer();
 		firstEditionHLC.add(firstEditionCB, new HorizontalLayoutData(.1, 1.0));
 		firstEditionHLC.add(firstEditionComboBox, new HorizontalLayoutData(.9, 1.0));
@@ -1424,7 +1423,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			firstEditionComboBox.setValue(firstEditionBiblographyEntryLS.findModelWithKey(Integer.toString(bibEntry.getFirstEditionBibID())));
 		} else {
 			firstEditionCB.setValue(false);
-//			firstEditionComboBox.setEnabled(false);
+			firstEditionComboBox.setEnabled(false);
 		}
 		firstEditionCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
