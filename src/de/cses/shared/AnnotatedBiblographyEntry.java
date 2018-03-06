@@ -955,16 +955,28 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 
 	public String getLabel() {
 		String result = null;
-		for (AuthorEntry author : authorList) {
-			if (result == null) {
-				result = author.getName();
-			} else {
-				result = result.concat("; " + author.getName());
+		if (publicationType.isAuthorEnabled()) {
+			for (AuthorEntry author : authorList) {
+				if (result == null) {
+					result = author.getName();
+				} else {
+					result = result.concat("; " + author.getName());
+				}
 			}
+			result = result.concat(". ");
+		} else {
+			for (AuthorEntry editor : editorList) {
+				if (result == null) {
+					result = editor.getName();
+				} else {
+					result = result.concat("; " + editor.getName());
+				}
+			}
+			result = result.concat(" (Eds.). ");
 		}
-		result = result.concat(" (" + yearEN + "). ");
 		result = result.concat(titleEN != null ? titleEN + ". " : titleORG != null ? titleORG + ". " : titleTR + ". ");
-		result = result.concat(publisher != null ? publisher.getLabel() : "publisher unknown");
+		result = result.concat(publisher != null ? publisher.getLabel() + ". " : "publisher unknown. ");
+		result = result.concat(yearEN + ". ");
 		return result;
 	}
 }
