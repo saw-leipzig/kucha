@@ -23,6 +23,7 @@ public class PublicationTypeEntry extends AbstractEntry {
 	int publicationTypeID = 0;
 	String name;
 	boolean accessDateEnabled = false;
+	boolean authorEnabled = false;
 	boolean bookTitleEnabled = false;
 	boolean chapterTitleEnabled = false;
 	boolean editionEnabled = false;
@@ -42,7 +43,7 @@ public class PublicationTypeEntry extends AbstractEntry {
 	
 	public PublicationTypeEntry() {	}
 
-	public PublicationTypeEntry(int publicationTypeID, String name, boolean accessDateEnabled, boolean bookTitleEnabled,
+	public PublicationTypeEntry(int publicationTypeID, String name, boolean accessDateEnabled, boolean authorEnabled, boolean bookTitleEnabled,
 			boolean chapterTitleEnabled, boolean editionEnabled, boolean monthEnabled, boolean numberEnabled, boolean pagesEnabled,
 			boolean proceedingsTitleEnabled, boolean seriesEnabled, boolean titleAddonEnabled, boolean universityEnabled, boolean volumeEnabled,
 			boolean yearEnabled) {
@@ -50,6 +51,7 @@ public class PublicationTypeEntry extends AbstractEntry {
 		this.publicationTypeID = publicationTypeID;
 		this.name = name;
 		this.accessDateEnabled = accessDateEnabled;
+		this.authorEnabled = authorEnabled;
 		this.bookTitleEnabled = bookTitleEnabled;
 		this.chapterTitleEnabled = chapterTitleEnabled;
 		this.editionEnabled = editionEnabled;
@@ -199,6 +201,14 @@ public class PublicationTypeEntry extends AbstractEntry {
 
 	public void setYearEnabled(boolean yearEnabled) {
 		this.yearEnabled = yearEnabled;
+	}
+
+	public boolean isAuthorEnabled() {
+		return authorEnabled;
+	}
+
+	public void setAuthorEnabled(boolean authorEnabled) {
+		this.authorEnabled = authorEnabled;
 	}
 	
 	

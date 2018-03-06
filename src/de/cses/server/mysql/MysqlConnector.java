@@ -176,6 +176,28 @@ public class MysqlConnector {
 		return result;
 	}
 	
+	private PublicationTypeEntry getPublicationType(int id) {
+		PublicationTypeEntry result=null;
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM PublicationTypes WHERE PublicationTypeID=?");
+			pstmt.setInt(1, id);
+			ResultSet rs = pstmt.executeQuery();
+			if(rs.first()) {
+				result = new PublicationTypeEntry(rs.getInt("PublicationTypeID"), rs.getString("Name"), rs.getBoolean("AccessDateEnabled"), rs.getBoolean("AuthorEnabled"),
+						rs.getBoolean("BookTitleEnabled"), rs.getBoolean("ChapterTitleEnabled"), rs.getBoolean("EditionEnabled"), rs.getBoolean("MonthEnabled"), 
+						rs.getBoolean("NumberEnabled"), rs.getBoolean("PagesEnabled"), rs.getBoolean("ProceedingsTitleEnabled"), rs.getBoolean("SeriesEnabled"), 
+						rs.getBoolean("TitleAddonEnabled"), rs.getBoolean("UniversityEnabled"), rs.getBoolean("VolumeEnabled"), rs.getBoolean("YearEnabled"));
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
 	public ArrayList<PublicationTypeEntry> getPublicationTypes() {
 		ArrayList<PublicationTypeEntry> result = new ArrayList<PublicationTypeEntry>();
 		PublicationTypeEntry entry;
@@ -185,7 +207,7 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM PublicationTypes");
 			while (rs.next()) {
-				entry = new PublicationTypeEntry(rs.getInt("PublicationTypeID"), rs.getString("Name"), rs.getBoolean("AccessDateEnabled"), 
+				entry = new PublicationTypeEntry(rs.getInt("PublicationTypeID"), rs.getString("Name"), rs.getBoolean("AccessDateEnabled"), rs.getBoolean("AuthorEnabled"),
 						rs.getBoolean("BookTitleEnabled"), rs.getBoolean("ChapterTitleEnabled"), rs.getBoolean("EditionEnabled"), rs.getBoolean("MonthEnabled"), 
 						rs.getBoolean("NumberEnabled"), rs.getBoolean("PagesEnabled"), rs.getBoolean("ProceedingsTitleEnabled"), rs.getBoolean("SeriesEnabled"), 
 						rs.getBoolean("TitleAddonEnabled"), rs.getBoolean("UniversityEnabled"), rs.getBoolean("VolumeEnabled"), rs.getBoolean("YearEnabled"));
@@ -1446,7 +1468,7 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery((sqlWhere == null) ? "SELECT * FROM AnnotatedBibliography" : "SELECT * FROM AnnotatedBibliography WHERE " + sqlWhere);
 			while (rs.next()) {
-				entry = new AnnotatedBiblographyEntry(rs.getInt("BibID"), rs.getInt("PublicationTypeID"), rs.getString("TitleEN"), rs.getString("TitleORG"), rs.getString("TitleTR"), rs.getString("ProcTitleEN"),
+				entry = new AnnotatedBiblographyEntry(rs.getInt("BibID"), getPublicationType(rs.getInt("PublicationTypeID")), rs.getString("TitleEN"), rs.getString("TitleORG"), rs.getString("TitleTR"), rs.getString("ProcTitleEN"),
 						rs.getString("ProcTitleORG"), rs.getString("ProcTitleTR"), rs.getString("BookTitleEN"), rs.getString("BookTitleORG"), rs.getString("BookTitleTR"), rs.getString("ChapTitleEN"), 
 						rs.getString("ChapTitleORG"), rs.getString("ChapTitleTR"), rs.getString("UniversityEN"), rs.getString("UniversityORG"), rs.getString("UniversityTR"), rs.getString("NumberEN"), 
 						rs.getString("NumberORG"), rs.getString("NumberTR"), rs.getString("AccessDateEN"), rs.getString("AccessDateORG"), rs.getString("AccessDateTR"), rs.getString("TitleAddonEN"), 
@@ -1530,7 +1552,7 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM AnnotatedBibliography WHERE BibID=" + bibID);
 			if (rs.first()) {
-				result = new AnnotatedBiblographyEntry(rs.getInt("BibID"), rs.getInt("PublicationTypeID"), rs.getString("TitleEN"), rs.getString("TitleORG"), rs.getString("TitleTR"), rs.getString("ProcTitleEN"),
+				result = new AnnotatedBiblographyEntry(rs.getInt("BibID"), getPublicationType(rs.getInt("PublicationTypeID")), rs.getString("TitleEN"), rs.getString("TitleORG"), rs.getString("TitleTR"), rs.getString("ProcTitleEN"),
 						rs.getString("ProcTitleORG"), rs.getString("ProcTitleTR"), rs.getString("BookTitleEN"), rs.getString("BookTitleORG"), rs.getString("BookTitleTR"), rs.getString("ChapTitleEN"), 
 						rs.getString("ChapTitleORG"), rs.getString("ChapTitleTR"), rs.getString("UniversityEN"), rs.getString("UniversityORG"), rs.getString("UniversityTR"), rs.getString("NumberEN"), 
 						rs.getString("NumberORG"), rs.getString("NumberTR"), rs.getString("AccessDateEN"), rs.getString("AccessDateORG"), rs.getString("AccessDateTR"), rs.getString("TitleAddonEN"), 
@@ -2549,7 +2571,7 @@ public class MysqlConnector {
 							+ "YearEN, YearORG, YearTR, Unpublished) "
 							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 					Statement.RETURN_GENERATED_KEYS);
-			pstmt.setInt(1, bibEntry.getPublicationTypeID());
+			pstmt.setInt(1, bibEntry.getPublicationType().getPublicationTypeID());
 			pstmt.setString(2, bibEntry.getAccessdateEN());
 			pstmt.setString(3, bibEntry.getAccessdateORG());
 			pstmt.setString(4, bibEntry.getAccessdateTR());
@@ -3018,7 +3040,7 @@ public class MysqlConnector {
 							+ "EditionORG=?, EditionTR=?, FirstEditionBibID=?, MonthEN=?, MonthORG=?, MonthTR=?,  Notes=?, NumberEN=?, NumberORG=?, NumberTR=?, PagesEN=?, PagesORG=?, PagesTR=?, ProcTitleEN=?, ProcTitleORG=?, ProcTitleTR=?,  PublisherID=?, "
 							+ "SeriesEN=?, SeriesORG=?, SeriesTR=?, TitleAddonEN=?, TitleAddonORG=?, TitleAddonTR=?, TitleEN=?, TitleORG=?, TitleTR=?, UniversityEN=?, UniversityORG=?, UniversityTR=?, URI=?, URL=?, VolumeEN=?, VolumeORG=?, VolumeTR=?, "
 							+ "YearEN=?, YearORG=?, YearTR=?, Unpublished=? WHERE BibID=?");
-			pstmt.setInt(1, bibEntry.getPublicationTypeID());
+			pstmt.setInt(1, bibEntry.getPublicationType().getPublicationTypeID());
 			pstmt.setString(2, bibEntry.getAccessdateEN());
 			pstmt.setString(3, bibEntry.getAccessdateORG());
 			pstmt.setString(4, bibEntry.getAccessdateTR());

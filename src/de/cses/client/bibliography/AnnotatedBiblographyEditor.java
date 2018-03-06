@@ -84,6 +84,7 @@ import de.cses.client.ui.AbstractEditor;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.AuthorEntry;
+import de.cses.shared.PublicationTypeEntry;
 import de.cses.shared.PublisherEntry;
 
 /**
@@ -342,7 +343,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		/**
 		 * We're assuming that only publications of the same type can be first editions to the current publication
 		 */
-		dbService.getAnnotatedBibliography("PublicationTypeID=" + bibEntry.getPublicationTypeID(),
+		dbService.getAnnotatedBibliography("PublicationTypeID=" + bibEntry.getPublicationType().getPublicationTypeID(),
 				new AsyncCallback<ArrayList<AnnotatedBiblographyEntry>>() {
 
 					@Override
@@ -361,7 +362,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 	public void createForm() {
 
-		rebuildMainInput(bibEntry.getPublicationTypeID());
+		rebuildMainInput();
 
 		ToolButton closeToolButton = new ToolButton(ToolButton.CLOSE);
 		closeToolButton.setToolTip("close");
@@ -415,7 +416,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 	}
 
-	public void rebuildMainInput(int publicationtype) {
+	public void rebuildMainInput() {
+		
+		PublicationTypeEntry pubType = bibEntry.getPublicationType();
 		/**
 		 * first we assemble the TabPanel
 		 */
@@ -479,7 +482,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		/**
 		 * the title of the proceedings
 		 */
-		if (publicationtype == 6) {
+		if (pubType.isProceedingsTitleEnabled()) {
 			TextField procEN = new TextField();
 			procEN.setText(bibEntry.getProcTitleEN());
 			procEN.addValueChangeHandler(new ValueChangeHandler<String>() {
@@ -523,7 +526,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		/**
 		 * the chapter tile
 		 */
-		if (publicationtype == 5) {
+		if (pubType.isChapterTitleEnabled()) {
 			TextField chapterTitleEN = new TextField();
 			chapterTitleEN.setText(bibEntry.getChapTitleEN());
 			chapterTitleEN.addValueChangeHandler(new ValueChangeHandler<String>() {
@@ -566,7 +569,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		/**
 		 * the book title
 		 */
-		if (publicationtype == 1) {
+		if (pubType.isBookTitleEnabled()) {
 			TextField booktitelEN = new TextField();
 			booktitelEN.setText(bibEntry.getBookTitleEN());
 			booktitelEN.addValueChangeHandler(new ValueChangeHandler<String>() {
@@ -609,7 +612,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		/**
 		 * university name
 		 */
-		if (publicationtype == 3) {
+		if (pubType.isUniversityEnabled()) {
 			TextField uniEN = new TextField();
 			uniEN.setText(bibEntry.getUniversityEN());
 			uniEN.addValueChangeHandler(new ValueChangeHandler<String>() {
@@ -652,7 +655,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		/**
 		 * number fields for issue 
 		 */
-		if (publicationtype == 8) { // achtung hier muss sie bleiben
+		if (pubType.isNumberEnabled()) { // achtung hier muss sie bleiben
 			TextField numberEN = new TextField();
 			numberEN.setText(bibEntry.getNumberEN());
 			numberEN.addValueChangeHandler(new ValueChangeHandler<String>() {
@@ -695,28 +698,28 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		/**
 		 * access
 		 */
-		if (publicationtype == 7) {
-			TextField accessEN = new TextField();
-			accessEN.setText(bibEntry.getAccessdateEN());
-			accessEN.addValueChangeHandler(new ValueChangeHandler<String>() {
+		if (pubType.isAccessDateEnabled()) {
+			TextField accessDateEN = new TextField();
+			accessDateEN.setText(bibEntry.getAccessdateEN());
+			accessDateEN.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
 				public void onValueChange(ValueChangeEvent<String> event) {
 					bibEntry.setAccessdateEN(event.getValue());
 				}
 			});
-			TextField accessORG = new TextField();
-			accessORG.setText(bibEntry.getAccessdateORG());
-			accessORG.addValueChangeHandler(new ValueChangeHandler<String>() {
+			TextField accessDateORG = new TextField();
+			accessDateORG.setText(bibEntry.getAccessdateORG());
+			accessDateORG.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
 				public void onValueChange(ValueChangeEvent<String> event) {
 					bibEntry.setAccessdateORG(event.getValue());
 				}
 			});
-			TextField accessTR = new TextField();
-			accessTR.setText(bibEntry.getAccessdateTR());
-			accessTR.addValueChangeHandler(new ValueChangeHandler<String>() {
+			TextField accessDateTR = new TextField();
+			accessDateTR.setText(bibEntry.getAccessdateTR());
+			accessDateTR.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
 				public void onValueChange(ValueChangeEvent<String> event) {
@@ -725,9 +728,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			});
 
 			VerticalLayoutContainer accessDateVLC = new VerticalLayoutContainer();
-			accessDateVLC.add(new FieldLabel(accessEN, "English"), new VerticalLayoutData(1.0, 1.0 / 3));
-			accessDateVLC.add(new FieldLabel(accessORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
-			accessDateVLC.add(new FieldLabel(accessTR, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
+			accessDateVLC.add(new FieldLabel(accessDateEN, "English"), new VerticalLayoutData(1.0, 1.0 / 3));
+			accessDateVLC.add(new FieldLabel(accessDateORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
+			accessDateVLC.add(new FieldLabel(accessDateTR, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
 
 			FramedPanel accessDateFP = new FramedPanel();
 			accessDateFP.setHeading("Access Date");
@@ -881,7 +884,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		/**
 		 * the author selection
 		 */
-		if (publicationtype != 6) {
+		if (pubType.isAuthorEnabled()) {
 			DualListField<AuthorEntry, String> authorSelection = new DualListField<AuthorEntry, String>(authorListStore, selectedAuthorListStore,
 					authorProps.name(), new TextCell());
 			authorSelection.setMode(Mode.INSERT);
@@ -1037,7 +1040,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		/**
 		 * series
 		 */
-		if (publicationtype == 8) { // hier muss sie bleiben
+		if (pubType.isSeriesEnabled()) { // hier muss sie bleiben
 			TextField seriesEN = new TextField();
 			seriesEN.setText(bibEntry.getSeriesEN());
 			seriesEN.addValueChangeHandler(new ValueChangeHandler<String>() {
@@ -1080,7 +1083,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		/**
 		 * edition
 		 */
-		if (publicationtype == 1 || publicationtype == 5) {
+		if (pubType.isEditionEnabled()) {
 			TextField editionEN = new TextField();
 			editionEN.setText(bibEntry.getEditionEN());
 			editionEN.addValueChangeHandler(new ValueChangeHandler<String>() {
@@ -1123,7 +1126,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		/**
 		 * volume 
 		 */
-		if (publicationtype == 8) {
+		if (pubType.isVolumeEnabled()) {
 			TextField volumeEN = new TextField();
 			volumeEN.setText(bibEntry.getVolumeEN());
 			volumeEN.addValueChangeHandler(new ValueChangeHandler<String>() {
@@ -1207,7 +1210,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		yearFP.add(yearVLC);
 		firstTabInnerRightVLC.add(yearFP, new VerticalLayoutData(1.0, 1.0 / 5));
 
-		if (publicationtype == 8) { // bleiben
+		if (pubType.isMonthEnabled()) { // bleiben
 			TextField monthEN = new TextField();
 			monthEN.setText(bibEntry.getMonthEN());
 			monthEN.addValueChangeHandler(new ValueChangeHandler<String>() {
@@ -1250,44 +1253,49 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		/**
 		 * pages
 		 */
-		TextField pagesEN = new TextField();
-		pagesEN.setText(bibEntry.getPagesEN());
-		pagesEN.addValueChangeHandler(new ValueChangeHandler<String>() {
+		if (pubType.isPagesEnabled()) {
+			TextField pagesEN = new TextField();
+			pagesEN.setText(bibEntry.getPagesEN());
+			pagesEN.addValueChangeHandler(new ValueChangeHandler<String>() {
 
-			@Override
-			public void onValueChange(ValueChangeEvent<String> event) {
-				bibEntry.setPagesEN(event.getValue());
-			}
-		});
-		TextField pagesORG = new TextField();
-		pagesORG.setText(bibEntry.getPagesORG());
-		pagesORG.addValueChangeHandler(new ValueChangeHandler<String>() {
+				@Override
+				public void onValueChange(ValueChangeEvent<String> event) {
+					bibEntry.setPagesEN(event.getValue());
+				}
+			});
+			TextField pagesORG = new TextField();
+			pagesORG.setText(bibEntry.getPagesORG());
+			pagesORG.addValueChangeHandler(new ValueChangeHandler<String>() {
 
-			@Override
-			public void onValueChange(ValueChangeEvent<String> event) {
-				bibEntry.setPagesORG(event.getValue());
-			}
-		});
-		TextField pagesTR = new TextField();
-		pagesTR.setText(bibEntry.getPagesTR());
-		pagesTR.addValueChangeHandler(new ValueChangeHandler<String>() {
+				@Override
+				public void onValueChange(ValueChangeEvent<String> event) {
+					bibEntry.setPagesORG(event.getValue());
+				}
+			});
+			TextField pagesTR = new TextField();
+			pagesTR.setText(bibEntry.getPagesTR());
+			pagesTR.addValueChangeHandler(new ValueChangeHandler<String>() {
 
-			@Override
-			public void onValueChange(ValueChangeEvent<String> event) {
-				bibEntry.setPagesTR(event.getValue());
-			}
-		});
+				@Override
+				public void onValueChange(ValueChangeEvent<String> event) {
+					bibEntry.setPagesTR(event.getValue());
+				}
+			});
 
-		VerticalLayoutContainer pagesVLC = new VerticalLayoutContainer();
-		pagesVLC.add(new FieldLabel(pagesEN, "English"), new VerticalLayoutData(1.0, 1.0 / 3));
-		pagesVLC.add(new FieldLabel(pagesORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
-		pagesVLC.add(new FieldLabel(pagesTR, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
+			VerticalLayoutContainer pagesVLC = new VerticalLayoutContainer();
+			pagesVLC.add(new FieldLabel(pagesEN, "English"), new VerticalLayoutData(1.0, 1.0 / 3));
+			pagesVLC.add(new FieldLabel(pagesORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
+			pagesVLC.add(new FieldLabel(pagesTR, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
 
-		FramedPanel pagesFP = new FramedPanel();
-		pagesFP.setHeading("Pages");
-		pagesFP.add(pagesVLC);
-		firstTabInnerRightVLC.add(pagesFP, new VerticalLayoutData(1.0, 1.0 / 5));
+			FramedPanel pagesFP = new FramedPanel();
+			pagesFP.setHeading("Pages");
+			pagesFP.add(pagesVLC);
+			firstTabInnerRightVLC.add(pagesFP, new VerticalLayoutData(1.0, 1.0 / 5));
+		}
 
+		/**
+		 * comments
+		 */
 		TextArea commentsTA = new TextArea();
 		FramedPanel commentsFP = new FramedPanel();
 		commentsFP.setHeading("Comments");

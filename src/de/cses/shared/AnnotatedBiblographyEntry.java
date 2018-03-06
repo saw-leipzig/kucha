@@ -22,7 +22,7 @@ import java.util.ArrayList;
 public class AnnotatedBiblographyEntry extends AbstractEntry {
 
 	private int annotatedBiblographyID = 0;
-	private int publicationTypeID = 0;
+	private PublicationTypeEntry publicationType = null;
 	private String titleEN;
 	private String titleTR;
 	private String titleORG;
@@ -75,7 +75,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	private ArrayList<AuthorEntry> authorList = new ArrayList<AuthorEntry>();
 	private ArrayList<AuthorEntry> editorList = new ArrayList<AuthorEntry>();
 
-	public AnnotatedBiblographyEntry(int annotatedBiblographyID, int publicationTypeID, String titleEN, String titleTR, String titleORG,
+	public AnnotatedBiblographyEntry(int annotatedBiblographyID, PublicationTypeEntry publicationType, String titleEN, String titleTR, String titleORG,
 			String procTitleEN, String procTitleTR, String procTitleORG, String bookTitleEN, String bookTitleTR, String bookTitleORG,
 			String chapTitleEN, String chapTitleTR, String chapTitleORG, String universityEN, String universityORG, String universityTR,
 			String numberEN, String numberTR, String numberORG, String accessdateEN, String accessdateTR, String accessdateORG,
@@ -85,7 +85,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 			String notes, String url, String uri, boolean unpublished, int firstEditionBibID) {
 		super();
 		this.annotatedBiblographyID = annotatedBiblographyID;
-		this.publicationTypeID = publicationTypeID;
+		this.publicationType = publicationType;
 		this.titleEN = titleEN;
 		this.titleTR = titleTR;
 		this.titleORG = titleORG;
@@ -140,7 +140,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	public AnnotatedBiblographyEntry() { }
 
 	public AnnotatedBiblographyEntry clone() {
-		AnnotatedBiblographyEntry clonedEntry = new AnnotatedBiblographyEntry(annotatedBiblographyID, publicationTypeID, titleEN, titleTR,
+		AnnotatedBiblographyEntry clonedEntry = new AnnotatedBiblographyEntry(annotatedBiblographyID, publicationType, titleEN, titleTR,
 				titleORG, procTitleEN, procTitleTR, procTitleORG, bookTitleEN, bookTitleTR, bookTitleORG, chapTitleEN, chapTitleTR, chapTitleORG,
 				universityEN, universityORG, universityTR, numberEN, numberTR, numberORG, accessdateEN, accessdateTR, accessdateORG, titleaddonEN,
 				titleaddonORG, titleaddonTR, publisher, seriesEN, seriesTR, seriesORG, editionEN, editionORG, editionTR, volumeEN, volumeTR, volumeORG,
@@ -174,16 +174,16 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	/**
 	 * @return the publicationType
 	 */
-	public int getPublicationTypeID() {
-		return publicationTypeID;
+	public PublicationTypeEntry getPublicationType() {
+		return publicationType;
 	}
 
 	/**
 	 * @param publicationType
 	 *          the publicationType to set
 	 */
-	public void setPublicationTypeID(int publicationTypeID) {
-		this.publicationTypeID = publicationTypeID;
+	public void setPublicationType(PublicationTypeEntry publicationType) {
+		this.publicationType = publicationType;
 	}
 
 	/**

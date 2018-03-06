@@ -53,7 +53,7 @@ public class AnnotatedBiblographySearchController extends AbstractSearchControll
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	private PublicationTypeProperties publicationTypeProps;
 	private ListStore<PublicationTypeEntry> publicationTypeListStore;
-	protected int publicationTypeID = 0;
+	protected PublicationTypeEntry publicationType = null;
 
 	interface PublicationTypeViewTemplates extends XTemplates {
 		@XTemplate("<div>{name}</div>")
@@ -137,7 +137,7 @@ public class AnnotatedBiblographySearchController extends AbstractSearchControll
 
 			@Override
 			public void onSelection(SelectionEvent<PublicationTypeEntry> event) {
-				publicationTypeID  = event.getSelectedItem().getPublicationTypeID();
+				publicationType = event.getSelectedItem();
 			}
 		});
 		
@@ -148,11 +148,11 @@ public class AnnotatedBiblographySearchController extends AbstractSearchControll
 
 			@Override
 			public void onSelect(SelectEvent event) {
-				if (publicationTypeID > 0) {
+				if (publicationType != null) {
 					publicationTypeDialog.hide();
 					PopupPanel depictionEditorPanel = new PopupPanel(false);
 					AnnotatedBiblographyEntry newBibEntry = new AnnotatedBiblographyEntry();
-					newBibEntry.setPublicationTypeID(publicationTypeID);
+					newBibEntry.setPublicationType(publicationType);
 					AnnotatedBiblographyEditor abe = new AnnotatedBiblographyEditor(newBibEntry);
 					abe.addEditorListener(new EditorListener() {
 						
