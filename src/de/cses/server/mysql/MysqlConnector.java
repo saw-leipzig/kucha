@@ -185,7 +185,10 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM PublicationTypes");
 			while (rs.next()) {
-				entry = new PublicationTypeEntry(rs.getInt("PublicationTypeID"), rs.getString("Name"));
+				entry = new PublicationTypeEntry(rs.getInt("PublicationTypeID"), rs.getString("Name"), rs.getBoolean("AccessDateEnabled"), 
+						rs.getBoolean("BookTitleEnabled"), rs.getBoolean("ChapterTitleEnabled"), rs.getBoolean("EditionEnabled"), rs.getBoolean("MonthEnabled"), 
+						rs.getBoolean("NumberEnabled"), rs.getBoolean("PagesEnabled"), rs.getBoolean("ProceedingsTitleEnabled"), rs.getBoolean("SeriesEnabled"), 
+						rs.getBoolean("TitleAddonEnabled"), rs.getBoolean("UniversityEnabled"), rs.getBoolean("VolumeEnabled"), rs.getBoolean("YearEnabled"));
 				result.add(entry);
 				
 			}

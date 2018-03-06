@@ -822,6 +822,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				PopupPanel addPublisherDialog = new PopupPanel();
 				FramedPanel addPublisherFP = new FramedPanel();
 				addPublisherFP.setHeading("Add New Publisher");
+//				addPublisherFP.setWidth("400px");
 				TextField publisherNameField = new TextField();
 				publisherNameField.addValidator(new MinLengthValidator(2));
 				publisherNameField.addValidator(new MaxLengthValidator(128));
@@ -954,48 +955,11 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		editorFP.add(editorVLC);
 		secondTabVLC.add(editorFP, new VerticalLayoutData(1.0, .45));
 
-		if (publicationtype == 8) { // hier muss sie bleiben
-			TextField seriesEN = new TextField();
-			seriesEN.setText(bibEntry.getSeriesEN());
-			seriesEN.addValueChangeHandler(new ValueChangeHandler<String>() {
-
-				@Override
-				public void onValueChange(ValueChangeEvent<String> event) {
-					bibEntry.setSeriesEN(event.getValue());
-				}
-			});
-			TextField seriesORG = new TextField();
-			seriesORG.setText(bibEntry.getSeriesORG());
-			seriesORG.addValueChangeHandler(new ValueChangeHandler<String>() {
-
-				@Override
-				public void onValueChange(ValueChangeEvent<String> event) {
-					bibEntry.setSeriesORG(event.getValue());
-				}
-			});
-			TextField seriesTR = new TextField();
-			seriesTR.setText(bibEntry.getSeriesTR());
-			seriesTR.addValueChangeHandler(new ValueChangeHandler<String>() {
-
-				@Override
-				public void onValueChange(ValueChangeEvent<String> event) {
-					bibEntry.setSeriesTR(event.getValue());
-				}
-			});
-
-			VerticalLayoutContainer seriesVLC = new VerticalLayoutContainer();
-			seriesVLC.add(new FieldLabel(seriesEN, "English"), new VerticalLayoutData(1.0, 1.0 / 3));
-			seriesVLC.add(new FieldLabel(seriesORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
-			seriesVLC.add(new FieldLabel(seriesTR, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
-
-			FramedPanel seriesFP = new FramedPanel();
-			seriesFP.setHeading("Series");
-			seriesFP.add(seriesVLC);
-			firstTabInnerRightVLC.add(seriesFP, new VerticalLayoutData(1.0, 1.0 / 5));
-		}
-		
+		/**
+		 * add new author
+		 */
 		ToolButton addAuthorTB = new ToolButton(ToolButton.PLUS);
-		editorFP.addTool(addPublisherTB);
+		editorFP.addTool(addAuthorTB);
 		addAuthorTB.addSelectHandler(new SelectHandler() {
 
 			@Override
@@ -1003,6 +967,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				PopupPanel addAuthorDialog = new PopupPanel();
 				FramedPanel addAuthorFP = new FramedPanel();
 				addAuthorFP.setHeading("Add New Author");
+//				addAuthorFP.setWidth("400px");
 				TextField authorLastNameTF = new TextField();
 				authorLastNameTF.addValidator(new MinLengthValidator(2));
 				authorLastNameTF.addValidator(new MaxLengthValidator(128));
@@ -1068,8 +1033,50 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				addAuthorDialog.center();
 			}
 		});
-		
 
+		/**
+		 * series
+		 */
+		if (publicationtype == 8) { // hier muss sie bleiben
+			TextField seriesEN = new TextField();
+			seriesEN.setText(bibEntry.getSeriesEN());
+			seriesEN.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+				@Override
+				public void onValueChange(ValueChangeEvent<String> event) {
+					bibEntry.setSeriesEN(event.getValue());
+				}
+			});
+			TextField seriesORG = new TextField();
+			seriesORG.setText(bibEntry.getSeriesORG());
+			seriesORG.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+				@Override
+				public void onValueChange(ValueChangeEvent<String> event) {
+					bibEntry.setSeriesORG(event.getValue());
+				}
+			});
+			TextField seriesTR = new TextField();
+			seriesTR.setText(bibEntry.getSeriesTR());
+			seriesTR.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+				@Override
+				public void onValueChange(ValueChangeEvent<String> event) {
+					bibEntry.setSeriesTR(event.getValue());
+				}
+			});
+
+			VerticalLayoutContainer seriesVLC = new VerticalLayoutContainer();
+			seriesVLC.add(new FieldLabel(seriesEN, "English"), new VerticalLayoutData(1.0, 1.0 / 3));
+			seriesVLC.add(new FieldLabel(seriesORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
+			seriesVLC.add(new FieldLabel(seriesTR, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
+
+			FramedPanel seriesFP = new FramedPanel();
+			seriesFP.setHeading("Series");
+			seriesFP.add(seriesVLC);
+			firstTabInnerRightVLC.add(seriesFP, new VerticalLayoutData(1.0, 1.0 / 5));
+		}
+		
 		/**
 		 * edition
 		 */
@@ -1380,7 +1387,6 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 						return pvTemplates.AnnotatedBiblographyEntry(item.getLabel());
 					}
 				});
-		firstEditionComboBox.setValue(firstEditionBiblographyEntryLS.findModelWithKey(Integer.toString(bibEntry.getFirstEditionBibID())));
 		firstEditionComboBox.addSelectionHandler(new SelectionHandler<AnnotatedBiblographyEntry>() {
 
 			@Override
@@ -1403,6 +1409,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			firstEditionComboBox.setValue(firstEditionBiblographyEntryLS.findModelWithKey(Integer.toString(bibEntry.getFirstEditionBibID())));
 		} else {
 			firstEditionCB.setValue(false);
+			firstEditionComboBox.setEnabled(false);
 		}
 		firstEditionCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
