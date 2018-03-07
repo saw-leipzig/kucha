@@ -86,5 +86,9 @@ public class RegionEntry extends AbstractEntry {
 	public String getUniqueID() {
 		return "Region-" + regionID;
 	}
+	
+	public String getLabel() {
+		return englishName;
+	}
 
 }

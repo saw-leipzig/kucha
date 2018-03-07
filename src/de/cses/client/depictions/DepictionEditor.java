@@ -147,7 +147,6 @@ public class DepictionEditor extends AbstractEditor {
 
 	interface DepictionProperties extends PropertyAccess<DepictionEntry> {
 		ModelKeyProvider<DepictionEntry> depictionID();
-
 		LabelProvider<DepictionEntry> name();
 	}
 

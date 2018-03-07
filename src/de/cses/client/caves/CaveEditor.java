@@ -37,6 +37,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
+import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.core.client.util.DateWrapper;
@@ -46,6 +47,7 @@ import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.data.shared.SortDir;
+import com.sencha.gxt.data.shared.SortInfo;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.Store.StoreFilter;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
@@ -78,6 +80,7 @@ import com.sencha.gxt.widget.core.client.form.validator.MaxNumberValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 
+import cern.colt.matrix.doublealgo.Sorting;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
@@ -93,6 +96,7 @@ import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveGroupEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
+import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.OrientationEntry;
 import de.cses.shared.PreservationClassificationEntry;
@@ -260,7 +264,7 @@ public class CaveEditor extends AbstractEditor {
 
 	interface DistrictProperties extends PropertyAccess<DistrictEntry> {
 		ModelKeyProvider<DistrictEntry> districtID();
-
+		ValueProvider<DistrictEntry, String> label();
 		LabelProvider<DistrictEntry> name();
 	}
 
@@ -271,7 +275,7 @@ public class CaveEditor extends AbstractEditor {
 
 	interface RegionProperties extends PropertyAccess<RegionEntry> {
 		ModelKeyProvider<RegionEntry> regionID();
-
+		ValueProvider<RegionEntry, String> lable();
 		LabelProvider<RegionEntry> englishName();
 	}
 
@@ -285,7 +289,7 @@ public class CaveEditor extends AbstractEditor {
 
 	interface SiteProperties extends PropertyAccess<SiteEntry> {
 		ModelKeyProvider<SiteEntry> siteID();
-
+		ValueProvider<SiteEntry, String> label();
 		LabelProvider<SiteEntry> name();
 	}
 
@@ -358,14 +362,17 @@ public class CaveEditor extends AbstractEditor {
 				preservationClassificationProps.preservationClassificationID());
 		siteProps = GWT.create(SiteProperties.class);
 		siteEntryListStore = new ListStore<SiteEntry>(siteProps.siteID());
+		siteEntryListStore.addSortInfo(new StoreSortInfo<SiteEntry>(siteProps.label(), SortDir.ASC));
 		orientationProps = GWT.create(OrientationProperties.class);
 		orientationEntryList = new ListStore<OrientationEntry>(orientationProps.orientationID());
 		caveGroupProps = GWT.create(CaveGroupProperties.class);
 		caveGroupEntryList = new ListStore<CaveGroupEntry>(caveGroupProps.caveGroupID());
 		regionProps = GWT.create(RegionProperties.class);
 		regionEntryListStore = new ListStore<RegionEntry>(regionProps.regionID());
+		regionEntryListStore.addSortInfo(new StoreSortInfo<RegionEntry>(regionProps.lable(), SortDir.ASC));
 		districtProps = GWT.create(DistrictProperties.class);
 		districtEntryList = new ListStore<DistrictEntry>(districtProps.districtID());
+		districtEntryList.addSortInfo(new StoreSortInfo<DistrictEntry>(districtProps.label(), SortDir.ASC));
 		caveLayoutViewTemplates = GWT.create(CaveLayoutViewTemplates.class);
 		documentLinkTemplate = GWT.create(DocumentLinkTemplate.class);
 		ctvTemplates = GWT.create(CaveTypeViewTemplates.class);
@@ -945,7 +952,8 @@ public class CaveEditor extends AbstractEditor {
 
 								@Override
 								public void onSuccess(Integer result) {
-									loadDistricts();
+									de.setDistrictID(result);
+									districtEntryList.add(de);
 								}
 							});
 							addNewDistrictDialog.hide();
@@ -1057,7 +1065,8 @@ public class CaveEditor extends AbstractEditor {
 
 								@Override
 								public void onSuccess(Integer result) {
-									loadRegions();
+									re.setRegionID(result);
+									regionEntryListStore.add(re);
 								}
 							});
 							addNewRegionDialog.hide();
