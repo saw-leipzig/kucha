@@ -47,7 +47,6 @@ import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.data.shared.SortDir;
-import com.sencha.gxt.data.shared.SortInfo;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.Store.StoreFilter;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
@@ -80,7 +79,6 @@ import com.sencha.gxt.widget.core.client.form.validator.MaxNumberValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 
-import cern.colt.matrix.doublealgo.Sorting;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
@@ -96,7 +94,6 @@ import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveGroupEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
-import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.OrientationEntry;
 import de.cses.shared.PreservationClassificationEntry;
@@ -275,7 +272,7 @@ public class CaveEditor extends AbstractEditor {
 
 	interface RegionProperties extends PropertyAccess<RegionEntry> {
 		ModelKeyProvider<RegionEntry> regionID();
-		ValueProvider<RegionEntry, String> lable();
+		ValueProvider<RegionEntry, String> label();
 		LabelProvider<RegionEntry> englishName();
 	}
 
@@ -369,7 +366,7 @@ public class CaveEditor extends AbstractEditor {
 		caveGroupEntryList = new ListStore<CaveGroupEntry>(caveGroupProps.caveGroupID());
 		regionProps = GWT.create(RegionProperties.class);
 		regionEntryListStore = new ListStore<RegionEntry>(regionProps.regionID());
-		regionEntryListStore.addSortInfo(new StoreSortInfo<RegionEntry>(regionProps.lable(), SortDir.ASC));
+		regionEntryListStore.addSortInfo(new StoreSortInfo<RegionEntry>(regionProps.label(), SortDir.ASC));
 		districtProps = GWT.create(DistrictProperties.class);
 		districtEntryList = new ListStore<DistrictEntry>(districtProps.districtID());
 		districtEntryList.addSortInfo(new StoreSortInfo<DistrictEntry>(districtProps.label(), SortDir.ASC));

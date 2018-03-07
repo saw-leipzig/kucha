@@ -35,6 +35,8 @@ import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer.ExpandMode;
+import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.form.TextField;
 
 import de.cses.client.DatabaseService;
@@ -202,15 +204,18 @@ public class DepictionFilter extends AbstractFilter {
 		currentLocationPanel.setHeading("Location search");
 		currentLocationPanel.add(locationSelectionLV);
 		
-		AccordionLayoutContainer alc = new AccordionLayoutContainer();
-    alc.setExpandMode(ExpandMode.SINGLE_FILL);
-    alc.add(cavePanel);
-    alc.add(shortNamePanel);
-    alc.add(currentLocationPanel);
-    alc.setActiveWidget(cavePanel);
-    alc.setHeight("450px");
+		AccordionLayoutContainer depictionFilterALC = new AccordionLayoutContainer();
+    depictionFilterALC.setExpandMode(ExpandMode.SINGLE_FILL);
+    depictionFilterALC.add(cavePanel);
+    depictionFilterALC.add(currentLocationPanel);
+    depictionFilterALC.setActiveWidget(cavePanel);
+    depictionFilterALC.setHeight("400px");
 
-    return alc;
+		HorizontalLayoutContainer depictionFilterHLC = new HorizontalLayoutContainer();
+		depictionFilterHLC.add(shortNamePanel, new HorizontalLayoutData(1.0, .2));
+		depictionFilterHLC.add(depictionFilterALC,  new HorizontalLayoutData(1.0, .8));
+
+    return depictionFilterHLC;
 	}
 
 	/* (non-Javadoc)
