@@ -106,10 +106,9 @@ public class MainView implements IsWidget {
     HorizontalLayoutData hLayoutData = new HorizontalLayoutData(140, 1.0, new Margins(5, 0, 5, 5));
     
     LocationFilter lFilter = new LocationFilter("Location Filter");
-    CaveFilter cFilter = new CaveFilter("Cave Filter");
 
 		caveSearchController = new CaveSearchController("Caves", new CaveResultView("Caves"));
-		caveSearchController.addRelatedFilter(cFilter);
+		caveSearchController.addRelatedFilter(new CaveFilter("Cave Filter"));
 		caveSearchController.addRelatedFilter(lFilter);
 		caveSearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 			

@@ -158,7 +158,6 @@ public class DepictionEditor extends AbstractEditor {
 
 	interface CaveProperties extends PropertyAccess<CaveEntry> {
 		ModelKeyProvider<CaveEntry> caveID();
-
 		LabelProvider<CaveEntry> officialNumber();
 	}
 
