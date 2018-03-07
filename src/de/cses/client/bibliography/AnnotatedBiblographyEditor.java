@@ -165,6 +165,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		if (mainFP == null) {
 			init();
 			createForm();
+			// TODO we need to wait until all database access is finished
 		}
 		return mainFP;
 	}
@@ -330,6 +331,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			@Override
 			public void onFailure(Throwable caught) {
 				caught.printStackTrace();
+				Window.alert("Error while loading publisher list!");
 			}
 
 			@Override
@@ -885,87 +887,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		secondTabVLC.add(publisherFP, new VerticalLayoutData(1.0, .1));
 
 		/**
-		 * the author selection
-		 */
-		if (pubType.isAuthorEnabled()) {
-			DualListField<AuthorEntry, String> authorSelection = new DualListField<AuthorEntry, String>(authorListStore, selectedAuthorListStore,
-					authorProps.name(), new TextCell());
-			authorSelection.setMode(Mode.INSERT);
-			authorSelection.setEnableDnd(true);
-			authorSelection.addValidator(new Validator<List<AuthorEntry>>() {
-
-				@Override
-				public List<EditorError> validate(Editor<List<AuthorEntry>> editor, List<AuthorEntry> value) {
-					List<EditorError> l = new ArrayList<EditorError>();
-					if (selectedAuthorListStore.size() == 0) {
-						l.add(new DefaultEditorError(editor, "please select editor(s)", value));
-					}
-					return l;
-				}
-			});
-			VerticalLayoutContainer authorVLC = new VerticalLayoutContainer();
-			authorVLC.add(authorSelection, new VerticalLayoutData(1.0, .85));
-			authorListFilterField = new StoreFilterField<AuthorEntry>() {
-
-				@Override
-				protected boolean doSelect(Store<AuthorEntry> store, AuthorEntry parent, AuthorEntry item, String filter) {
-					if (item.getName().toLowerCase().contains(filter.toLowerCase())) {
-						return true;
-					} else {
-						return false;
-					}
-				}
-			};
-			authorListFilterField.bind(authorListStore);
-			authorVLC.add(new FieldLabel(authorListFilterField, "Filter"), new VerticalLayoutData(.5, .15, new Margins(10, 0, 0, 0)));
-			FramedPanel authorFP = new FramedPanel();
-			authorFP.setHeading("Author");
-			authorFP.add(authorVLC);
-			ToolButton infoTB = new ToolButton(ToolButton.QUESTION);
-			infoTB.addSelectHandler(new SelectHandler() {
-
-				@Override
-				public void onSelect(SelectEvent event) {
-					Window.alert(
-							"Since authors can also be editors,\n newly added editors will automaticall\n also appear in the author list for selection.");
-				}
-			});
-			authorFP.addTool(infoTB);
-			secondTabVLC.add(authorFP, new VerticalLayoutData(1.0, .45));
-		}
-
-		/**
-		 * the editor selection
-		 */
-		DualListField<AuthorEntry, String> editorSelection = new DualListField<AuthorEntry, String>(editorListStore, selectedEditorListStore,
-				authorProps.name(), new TextCell());
-		editorSelection.setMode(Mode.INSERT);
-		editorSelection.setEnableDnd(true);
-		VerticalLayoutContainer editorVLC = new VerticalLayoutContainer();
-		editorVLC.add(editorSelection, new VerticalLayoutData(1.0, .85));
-		editorListFilterField = new StoreFilterField<AuthorEntry>() {
-
-			@Override
-			protected boolean doSelect(Store<AuthorEntry> store, AuthorEntry parent, AuthorEntry item, String filter) {
-				if (item.getName().toLowerCase().contains(filter.toLowerCase())) {
-					return true;
-				} else {
-					return false;
-				}
-			}
-		};
-		editorListFilterField.bind(editorListStore);
-		editorVLC.add(new FieldLabel(editorListFilterField, "Filter"), new VerticalLayoutData(.5, .15, new Margins(10, 0, 0, 0)));
-		FramedPanel editorFP = new FramedPanel();
-		editorFP.setHeading("Editor");
-		editorFP.add(editorVLC);
-		secondTabVLC.add(editorFP, new VerticalLayoutData(1.0, .45));
-
-		/**
 		 * add new author
 		 */
 		ToolButton addAuthorTB = new ToolButton(ToolButton.PLUS);
-		editorFP.addTool(addAuthorTB);
+		addAuthorTB.setToolTip("Since authors can also be editors,\n newly added authors will\n appear in both author and editor selection.");
 		addAuthorTB.addSelectHandler(new SelectHandler() {
 
 			@Override
@@ -1039,6 +964,92 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				addAuthorDialog.center();
 			}
 		});
+		
+		ToolButton infoTB = new ToolButton(ToolButton.QUESTION);
+		infoTB.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				Window.alert(
+						"Since authors can also be editors,\n newly added authors will\n appear in both author and editor selection.");
+			}
+		});
+
+		/**
+		 * the author selection
+		 */
+		if (pubType.isAuthorEnabled()) {
+			DualListField<AuthorEntry, String> authorSelection = new DualListField<AuthorEntry, String>(authorListStore, selectedAuthorListStore,
+					authorProps.name(), new TextCell());
+			authorSelection.setMode(Mode.INSERT);
+			authorSelection.setEnableDnd(true);
+			authorSelection.addValidator(new Validator<List<AuthorEntry>>() {
+
+				@Override
+				public List<EditorError> validate(Editor<List<AuthorEntry>> editor, List<AuthorEntry> value) {
+					List<EditorError> l = new ArrayList<EditorError>();
+					if (selectedAuthorListStore.size() == 0) {
+						l.add(new DefaultEditorError(editor, "please select editor(s)", value));
+					}
+					return l;
+				}
+			});
+			VerticalLayoutContainer authorVLC = new VerticalLayoutContainer();
+			authorVLC.add(authorSelection, new VerticalLayoutData(1.0, .85));
+			authorListFilterField = new StoreFilterField<AuthorEntry>() {
+
+				@Override
+				protected boolean doSelect(Store<AuthorEntry> store, AuthorEntry parent, AuthorEntry item, String filter) {
+					if (item.getName().toLowerCase().contains(filter.toLowerCase())) {
+						return true;
+					} else {
+						return false;
+					}
+				}
+			};
+			authorListFilterField.bind(authorListStore);
+			authorVLC.add(new FieldLabel(authorListFilterField, "Filter"), new VerticalLayoutData(.5, .15, new Margins(10, 0, 0, 0)));
+			FramedPanel authorFP = new FramedPanel();
+			authorFP.setHeading("Author");
+			authorFP.add(authorVLC);
+			authorFP.addTool(addAuthorTB);
+			secondTabVLC.add(authorFP, new VerticalLayoutData(1.0, .45));
+		}
+
+		/**
+		 * the editor selection
+		 */
+		if (pubType.isEditorEnabled()) {
+			DualListField<AuthorEntry, String> editorSelection = new DualListField<AuthorEntry, String>(editorListStore, selectedEditorListStore,
+					authorProps.name(), new TextCell());
+			editorSelection.setMode(Mode.INSERT);
+			editorSelection.setEnableDnd(true);
+			VerticalLayoutContainer editorVLC = new VerticalLayoutContainer();
+			editorVLC.add(editorSelection, new VerticalLayoutData(1.0, .85));
+			editorListFilterField = new StoreFilterField<AuthorEntry>() {
+
+				@Override
+				protected boolean doSelect(Store<AuthorEntry> store, AuthorEntry parent, AuthorEntry item, String filter) {
+					if (item.getName().toLowerCase().contains(filter.toLowerCase())) {
+						return true;
+					} else {
+						return false;
+					}
+				}
+			};
+			editorListFilterField.bind(editorListStore);
+			editorVLC.add(new FieldLabel(editorListFilterField, "Filter"), new VerticalLayoutData(.5, .15, new Margins(10, 0, 0, 0)));
+			FramedPanel editorFP = new FramedPanel();
+			editorFP.setHeading("Editor");
+			editorFP.add(editorVLC);
+			if (pubType.isAuthorEnabled()) {
+				editorFP.addTool(infoTB);
+			} else {
+				editorFP.addTool(addAuthorTB);
+			}
+			secondTabVLC.add(editorFP, new VerticalLayoutData(1.0, .45));
+
+		}
 
 		/**
 		 * series

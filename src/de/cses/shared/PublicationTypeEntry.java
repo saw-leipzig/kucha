@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 
+ * Copyright 2017 - 2018
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -27,6 +27,7 @@ public class PublicationTypeEntry extends AbstractEntry {
 	boolean bookTitleEnabled = false;
 	boolean chapterTitleEnabled = false;
 	boolean editionEnabled = false;
+	boolean editorEnabled = false;
 	boolean monthEnabled = false;
 	boolean numberEnabled = false;
 	boolean pagesEnabled = false;
@@ -44,7 +45,7 @@ public class PublicationTypeEntry extends AbstractEntry {
 	public PublicationTypeEntry() {	}
 
 	public PublicationTypeEntry(int publicationTypeID, String name, boolean accessDateEnabled, boolean authorEnabled, boolean bookTitleEnabled,
-			boolean chapterTitleEnabled, boolean editionEnabled, boolean monthEnabled, boolean numberEnabled, boolean pagesEnabled,
+			boolean chapterTitleEnabled, boolean editionEnabled, boolean editorEnabled, boolean monthEnabled, boolean numberEnabled, boolean pagesEnabled,
 			boolean proceedingsTitleEnabled, boolean seriesEnabled, boolean titleAddonEnabled, boolean universityEnabled, boolean volumeEnabled,
 			boolean yearEnabled) {
 		super();
@@ -55,6 +56,7 @@ public class PublicationTypeEntry extends AbstractEntry {
 		this.bookTitleEnabled = bookTitleEnabled;
 		this.chapterTitleEnabled = chapterTitleEnabled;
 		this.editionEnabled = editionEnabled;
+		this.editorEnabled = editorEnabled;
 		this.monthEnabled = monthEnabled;
 		this.numberEnabled = numberEnabled;
 		this.pagesEnabled = pagesEnabled;
@@ -209,6 +211,14 @@ public class PublicationTypeEntry extends AbstractEntry {
 
 	public void setAuthorEnabled(boolean authorEnabled) {
 		this.authorEnabled = authorEnabled;
+	}
+
+	public boolean isEditorEnabled() {
+		return editorEnabled;
+	}
+
+	public void setEditorEnabled(boolean editorEnabled) {
+		this.editorEnabled = editorEnabled;
 	}
 	
 	
