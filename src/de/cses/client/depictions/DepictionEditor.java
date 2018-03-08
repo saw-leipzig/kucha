@@ -34,6 +34,7 @@ import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
+import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
@@ -49,11 +50,13 @@ import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.TabPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer.ExpandMode;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
@@ -73,6 +76,7 @@ import com.sencha.gxt.widget.core.client.form.validator.MinNumberValidator;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
+import de.cses.client.depictions.IconographySelector.IconographyValueProvider;
 import de.cses.client.images.ImageSelector;
 import de.cses.client.images.ImageSelectorListener;
 import de.cses.client.ui.AbstractEditor;
@@ -261,7 +265,7 @@ public class DepictionEditor extends AbstractEditor {
 		}
 		// listener = new ArrayList<DepictionEditorListener>();
 		// listener.add(deListener);
-		peSelector = new PictorialElementSelector(correspondingDepictionEntry.getDepictionID());
+
 		imgProperties = GWT.create(ImageProperties.class);
 		imageEntryLS = new ListStore<ImageEntry>(imgProperties.imageID());
 		if (correspondingDepictionEntry.getDepictionID() > 0) {
@@ -1232,39 +1236,29 @@ public class DepictionEditor extends AbstractEditor {
 		/**
 		 * --------------------- content of third tab (Pictorial Elements) starts here --------------------------------
 		 */
-		HorizontalLayoutContainer pictorialElementsTabHLC = new HorizontalLayoutContainer();
-
-		ToolButton peExpandTB = new ToolButton(ToolButton.EXPAND);
-		peExpandTB.addSelectHandler(new SelectHandler() {
-			@Override
-			public void onSelect(SelectEvent event) {
-				peSelector.expandAll();
-			}
-		});
-		
-		ToolButton peCoolapseTB = new ToolButton(ToolButton.COLLAPSE);
-		peCoolapseTB.addSelectHandler(new SelectHandler() {
-			@Override
-			public void onSelect(SelectEvent event) {
-				peSelector.collapseAll();
-			}
-		});
-
-		FramedPanel pictorialElementsFP = new FramedPanel();
-		pictorialElementsFP.setHeading("Pictorial Elements");
-		pictorialElementsFP.add(peSelector);
-		pictorialElementsFP.addTool(peExpandTB);
-		pictorialElementsFP.addTool(peCoolapseTB);
-		pictorialElementsTabHLC.add(pictorialElementsFP, new HorizontalLayoutData(1.0, 1.0));
+//		HorizontalLayoutContainer pictorialElementsTabHLC = new HorizontalLayoutContainer();
+//		peSelector = new PictorialElementSelector(correspondingDepictionEntry.getDepictionID());
+//		pictorialElementsTabHLC.add(peSelector, new HorizontalLayoutData(1.0, 1.0));
 		
 		/**
 		 * --------------------- content of fourth tab (Iconography) starts here --------------------------------
 		 */
-		
-		HorizontalLayoutContainer iconographyTabHLC = new HorizontalLayoutContainer();
-
+//		HorizontalLayoutContainer iconographyTabHLC = new HorizontalLayoutContainer();
 		iconographySelector = new IconographySelector(correspondingDepictionEntry.getDepictionID());
-		iconographyTabHLC.add(iconographySelector, new HorizontalLayoutData(1.0, 1.0));
+//		iconographyTabHLC.add(iconographySelector, new HorizontalLayoutData(1.0, 1.0));
+		
+		/**
+		 * ---------------------- content of third tab (Iconography & Pictorial Elements starts here ---------------------
+		 */
+//		VerticalLayoutContainer iconographyPictorialVLC = new VerticalLayoutContainer();
+//		iconographyPictorialVLC.add(iconographySelector, new VerticalLayoutData(1.0, .5, new Margins(2)));
+//		iconographyPictorialVLC.add(peSelector, new VerticalLayoutData(1.0, .5, new Margins(2)));
+		
+//		AccordionLayoutContainer iconographyPictorialALC = new AccordionLayoutContainer();
+//		iconographyPictorialALC.setExpandMode(ExpandMode.MULTI);
+//		iconographyPictorialALC.add(peSelector);
+//		iconographyPictorialALC.add(iconographySelector);
+//		iconographyPictorialALC.setHeight(580);
 
 		/**
 		 * --------------------------- next the editor as a whole will be assembled -------------------
@@ -1274,8 +1268,8 @@ public class DepictionEditor extends AbstractEditor {
 		tabPanel.setTabScroll(false);
 		tabPanel.add(basicsTabHLC, "Basics");
 		tabPanel.add(descriptionTabHLC, "Description");
-		tabPanel.add(iconographyTabHLC, "Iconography");
-		tabPanel.add(pictorialElementsTabHLC, "Pictorial Elements");
+		tabPanel.add(iconographySelector, "Iconography & Pictorial Elements");
+//		tabPanel.add(pictorialElementsTabHLC, "Pictorial Elements");
 		
 		HorizontalLayoutContainer mainHLC = new HorizontalLayoutContainer();
 		mainHLC.add(tabPanel, new HorizontalLayoutData(.7, 1.0));

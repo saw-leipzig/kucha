@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.text.html.HTMLDocument.HTMLReader.IsindexAction;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -24,7 +26,6 @@ import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
-import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.TreeStore;
@@ -32,6 +33,9 @@ import com.sencha.gxt.data.shared.event.StoreFilterEvent;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
+import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.CheckChangeEvent;
@@ -47,6 +51,7 @@ import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
+import de.cses.shared.AbstractEntry;
 import de.cses.shared.IconographyEntry;
 
 public class IconographySelector implements IsWidget {
@@ -90,15 +95,14 @@ public class IconographySelector implements IsWidget {
 		this.depictionID = depictionID;
 		iconographyTreeStore = new TreeStore<IconographyEntry>(new IconographyKeyProvider());
 		selectedIconographyMap = new HashMap<String, IconographyEntry>();
-//		initPanel();
 		loadIconographyStore();
 	}
 
-	private void processParent(TreeStore<IconographyEntry> store, IconographyEntry item) {
+	private void processParentIconographyEntry(TreeStore<IconographyEntry> store, IconographyEntry item) {
 		for (IconographyEntry child : item.getChildren()) {
 			store.add(item, child);
 			if (child.getChildren() != null) {
-				processParent(store, child);
+				processParentIconographyEntry(store, child);
 			}
 		}
 	}
@@ -107,7 +111,7 @@ public class IconographySelector implements IsWidget {
 		for (IconographyEntry item : StaticTables.getInstance().getIconographyEntries().values()) {
 			iconographyTreeStore.add(item);
 			if (item.getChildren() != null) {
-				processParent(iconographyTreeStore, item);
+				processParentIconographyEntry(iconographyTreeStore, item);
 			}
 		}
 		dbService.getRelatedIconography(depictionID, new AsyncCallback<ArrayList<IconographyEntry>>() {
@@ -136,9 +140,6 @@ public class IconographySelector implements IsWidget {
 	}
 
 	private void initPanel() {
-		mainPanel = new FramedPanel();
-		mainPanel.setHeading("Iconography Selector");
-
 		vlc = new VerticalLayoutContainer();
 
 		iconographyTree = new Tree<IconographyEntry, String>(iconographyTreeStore, new IconographyValueProvider()) {
@@ -177,7 +178,7 @@ public class IconographySelector implements IsWidget {
 //		iconographyTree.setWidth(350);
 		vlc.add(iconographyTree, new VerticalLayoutData(1.0, 1.0));
 		vlc.setScrollMode(ScrollMode.AUTOY);
-//		vlc.setPixelSize(700, 475);
+
 		ContentPanel treePanel = new ContentPanel();
 		treePanel.setHeaderVisible(false);
 		treePanel.add(vlc);
@@ -197,13 +198,10 @@ public class IconographySelector implements IsWidget {
 				return false;
 			}
 		};
-		filterField.bind(iconographyTreeStore);
 
-		VerticalLayoutContainer mainVLC = new VerticalLayoutContainer();
-		mainVLC.add(treePanel, new VerticalLayoutData(1.0, .85));
-		mainVLC.add(filterField, new VerticalLayoutData(.5, .15, new Margins(10, 0, 0, 0)));
-
-		mainPanel.add(mainVLC);
+		BorderLayoutContainer iconographySelectorBLC = new BorderLayoutContainer();
+		iconographySelectorBLC.setCenterWidget(treePanel, new MarginData(0, 10, 5, 10));
+		iconographySelectorBLC.setSouthWidget(filterField, new BorderLayoutData(25.0));
 
 		ToolButton iconographyExpandTB = new ToolButton(ToolButton.EXPAND);
 		iconographyExpandTB.addSelectHandler(new SelectHandler() {
@@ -212,7 +210,6 @@ public class IconographySelector implements IsWidget {
 				iconographyTree.expandAll();
 			}
 		});
-		mainPanel.addTool(iconographyExpandTB);
 
 		ToolButton iconographyCollapseTB = new ToolButton(ToolButton.COLLAPSE);
 		iconographyCollapseTB.addSelectHandler(new SelectHandler() {
@@ -221,8 +218,12 @@ public class IconographySelector implements IsWidget {
 				iconographyTree.collapseAll();
 			}
 		});
-		mainPanel.addTool(iconographyCollapseTB);
 
+		mainPanel = new FramedPanel();
+		mainPanel.setHeading("Iconography Selector");
+		mainPanel.add(iconographySelectorBLC);
+		mainPanel.addTool(iconographyExpandTB);
+		mainPanel.addTool(iconographyCollapseTB);
 	}
 
 	public ArrayList<IconographyEntry> getSelectedIconography() {

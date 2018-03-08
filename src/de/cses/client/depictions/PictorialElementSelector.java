@@ -30,10 +30,16 @@ import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.data.shared.event.StoreFilterEvent;
 import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
+import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.CheckChangeEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.CheckChangeEvent.CheckChangeHandler;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.StoreFilterField;
 import com.sencha.gxt.widget.core.client.tree.Tree;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckCascade;
@@ -50,8 +56,8 @@ public class PictorialElementSelector implements IsWidget {
 	private TreeStore<PictorialElementEntry> peTreeStore;
 	private Tree<PictorialElementEntry, String> pictorialElementTree;
 	private int depictionID;
-	private ContentPanel peTreePanel;
-	private VerticalLayoutContainer mainVLC = null;
+	private ContentPanel mainPanel = null;
+	private BorderLayoutContainer mainBLC = null;
 	private Map<String, PictorialElementEntry> selectedPictorialElementsMap;
 	private StoreFilterField<PictorialElementEntry> filterField;
 
@@ -122,10 +128,10 @@ public class PictorialElementSelector implements IsWidget {
 
 	@Override
 	public Widget asWidget() {
-		if (mainVLC == null) {
+		if (mainPanel == null) {
 			initPanel();
 		}
-		return mainVLC;
+		return mainPanel;
 	}
 
 	private void initPanel() {
@@ -167,7 +173,7 @@ public class PictorialElementSelector implements IsWidget {
 		vlc.setPixelSize(700, 475);
 		vlc.setBorders(true);
 
-		peTreePanel = new ContentPanel();
+		ContentPanel peTreePanel = new ContentPanel();
 		peTreePanel.setHeaderVisible(false);
 		peTreePanel.add(vlc);
 
@@ -188,11 +194,33 @@ public class PictorialElementSelector implements IsWidget {
 			}
 		};
 		filterField.bind(peTreeStore);
+		
+		mainBLC = new BorderLayoutContainer();
+		mainBLC.setCenterWidget(peTreePanel, new MarginData(0, 0, 5, 0));
+		mainBLC.setSouthWidget(filterField, new BorderLayoutData(25.0));
 
-		mainVLC = new VerticalLayoutContainer();
-		mainVLC.add(peTreePanel, new VerticalLayoutData(1.0, .85));
-		mainVLC.add(filterField, new VerticalLayoutData(.5, .15, new Margins(10, 0, 0, 0)));
+		ToolButton pictorialElementExpandTB = new ToolButton(ToolButton.EXPAND);
+		pictorialElementExpandTB.addSelectHandler(new SelectHandler() {
+			@Override
+			public void onSelect(SelectEvent event) {
+				pictorialElementTree.expandAll();
+			}
+		});
 
+		ToolButton pictorialElementCollapseTB = new ToolButton(ToolButton.COLLAPSE);
+		pictorialElementCollapseTB.addSelectHandler(new SelectHandler() {
+			@Override
+			public void onSelect(SelectEvent event) {
+				pictorialElementTree.collapseAll();
+			}
+		});
+
+		mainPanel = new ContentPanel();
+		mainPanel.setHeaderVisible(true);
+		mainPanel.setHeading("Pictorial Element Selector");
+		mainPanel.add(mainBLC);
+		mainPanel.addTool(pictorialElementExpandTB);
+		mainPanel.addTool(pictorialElementCollapseTB);
 	}
 
 	public List<PictorialElementEntry> getSelectedPE() {
@@ -201,12 +229,12 @@ public class PictorialElementSelector implements IsWidget {
 		return pictorialElementTree.getCheckedSelection();
 	}
 
-	public void expandAll() {
-		pictorialElementTree.expandAll();
-	}
-
-	public void collapseAll() {
-		pictorialElementTree.collapseAll();
-	}
-
+//	public void expandAll() {
+//		pictorialElementTree.expandAll();
+//	}
+//
+//	public void collapseAll() {
+//		pictorialElementTree.collapseAll();
+//	}
+//
 }
