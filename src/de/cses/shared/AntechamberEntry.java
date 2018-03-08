@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 
+ * Copyright 2016 - 2018
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 

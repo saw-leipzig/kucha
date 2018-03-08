@@ -30,7 +30,6 @@ import de.cses.client.ui.AbstractEditor;
 import de.cses.client.ui.AbstractView;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
-import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.ImageEntry;
 
@@ -51,6 +50,9 @@ public class DepictionView extends AbstractView {
 		
 		@XTemplate("<div><center><img src='{imgUri}'></img></center><label style='font-size:9px' > DepictionID {id} </label></br></div>")
 		SafeHtml view(SafeUri imgUri, int id);
+
+		@XTemplate("<div><center><img src='{imgUri}'></img></center><label style='font-size:9px' > {label} </label></br></div>")
+		SafeHtml view(SafeUri imgUri, String label);
 	}
 
 	private DepictionEntry depictionEntry;
@@ -75,7 +77,7 @@ public class DepictionView extends AbstractView {
 
 			@Override
 			public void onSuccess(ImageEntry result) {
-				setHTML(dvTemplates.view(UriUtils.fromString("resource?imageID=" + result.getImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), depictionEntry.getDepictionID()));
+				setHTML(dvTemplates.view(UriUtils.fromString("resource?imageID=" + result.getImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), depictionEntry.getShortName()));
 			}
 		});
 		setPixelSize(110, 110);

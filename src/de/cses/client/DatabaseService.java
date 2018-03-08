@@ -68,8 +68,9 @@ public interface DatabaseService extends RemoteService {
 	ArrayList<DistrictEntry> getDistricts() throws IllegalArgumentException;
 
 	ArrayList<ImageEntry> getImages() throws IllegalArgumentException;
-	ArrayList<AnnotatedBiblographyEntry> getAnnotatedBiblography() throws IllegalArgumentException;
+
 	AnnotatedBiblographyEntry getAnnotatedBiblographybyID(int bibid) throws IllegalArgumentException;
+	
 	ArrayList<PublicationTypeEntry> getPublicationTypes() throws IllegalArgumentException;
 
 	ArrayList<ImageEntry> getImages(String where) throws IllegalArgumentException;
@@ -200,9 +201,12 @@ public interface DatabaseService extends RemoteService {
 
 	boolean updateAuthorEntry(AuthorEntry currentAuthorEntry) throws IllegalArgumentException;
 	
-	boolean saveAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry) throws IllegalArgumentException;
+	int insertAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry) throws IllegalArgumentException;
+	
 	ArrayList<AnnotatedBiblographyEntry> getAnnotatedBibliography() throws IllegalArgumentException;
-	ArrayList<PublisherEntry> getPublisher() throws IllegalArgumentException;
+
+	ArrayList<PublisherEntry> getPublishers() throws IllegalArgumentException;
+
 	ArrayList<AuthorEntry> getAuthors() throws IllegalArgumentException;
 
 	int insertPhotographerEntry(PhotographerEntry photographerEntry) throws IllegalArgumentException;
@@ -233,5 +237,11 @@ public interface DatabaseService extends RemoteService {
 	ArrayList<PreservationAttributeEntry> getPreservationAttributes() throws IllegalArgumentException;
 
 	int insertPreservationAttributeEntry(PreservationAttributeEntry paEntry) throws IllegalArgumentException;
+
+	int insertPublisherEntry(PublisherEntry publisherEntry) throws IllegalArgumentException;
+
+	ArrayList<AnnotatedBiblographyEntry> getAnnotatedBibliography(String sqlWhere) throws IllegalArgumentException;
+
+	boolean updateAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry) throws IllegalArgumentException;
 
 }

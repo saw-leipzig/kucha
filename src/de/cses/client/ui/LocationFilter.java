@@ -180,13 +180,9 @@ public class LocationFilter extends AbstractFilter {
     alc.add(districtPanel);
     alc.add(regionPanel);
     alc.setActiveWidget(sitePanel);
-		
-//    vlc.add(sitePanel, new VerticalLayoutData(1.0, .33, new Margins(0, 0, 5, 0)));
-//    vlc.add(districtPanel, new VerticalLayoutData(1.0, .33, new Margins(0, 0, 5, 0)));
-//    vlc.add(regionPanel, new VerticalLayoutData(1.0, .33, new Margins(0, 0, 0, 0)));
-
     alc.setHeight("450px");
-		return alc;
+
+    return alc;
 	}
 	
 	/**

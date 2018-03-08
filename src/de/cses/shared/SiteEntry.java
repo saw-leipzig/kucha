@@ -77,5 +77,9 @@ public class SiteEntry extends AbstractEntry {
 	public void setShortName(String shortName) {
 		this.shortName = shortName;
 	}
+	
+	public String getLabel() {
+		return name;
+	}
 
 }

@@ -32,6 +32,9 @@ import de.cses.shared.ImageEntry;
  *
  */
 public class Util {
+	
+	public static final String REGEX_EMAIL_PATTERN = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
+	public static final String REGEX_URL_PATTERN = "^(((https?|ftps?)://)(%[0-9A-Fa-f]{2}|[-()_.!~*';/?:@&=+$,A-Za-z0-9])+)([).!';/?:,][[:blank:]])?$";
 
 	private static final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	protected static SafeUri imageUri;

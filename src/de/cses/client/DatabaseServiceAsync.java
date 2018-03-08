@@ -60,6 +60,7 @@ public interface DatabaseServiceAsync {
 	void getDistricts(AsyncCallback<ArrayList<DistrictEntry>> callback) throws IllegalArgumentException;
 
 	void getImage(int imageID, AsyncCallback<ImageEntry> callback) throws IllegalArgumentException;
+
 	void getPublicationTypes(AsyncCallback<ArrayList<PublicationTypeEntry>> callback) throws IllegalArgumentException;
 
 	void getImages(AsyncCallback<ArrayList<ImageEntry>> callback) throws IllegalArgumentException;
@@ -75,11 +76,10 @@ public interface DatabaseServiceAsync {
 	void getCavesbyDistrictID(int DistrictID, AsyncCallback<ArrayList<CaveEntry>> callback) throws IllegalArgumentException;
 
 	void getOrnaments(AsyncCallback<ArrayList<OrnamentEntry>> callback) throws IllegalArgumentException;
-	void getAnnotatedBiblography(AsyncCallback<ArrayList<AnnotatedBiblographyEntry>> callback) throws IllegalArgumentException;
-	void getAnnotatedBiblographybyID(int bibid,AsyncCallback<AnnotatedBiblographyEntry> callback) throws IllegalArgumentException;
 
-	void getOrnamentsOfOtherCultures(AsyncCallback<ArrayList<OrnamentOfOtherCulturesEntry>> callback)
-			throws IllegalArgumentException;
+	void getAnnotatedBiblographybyID(int bibid, AsyncCallback<AnnotatedBiblographyEntry> callback) throws IllegalArgumentException;
+
+	void getOrnamentsOfOtherCultures(AsyncCallback<ArrayList<OrnamentOfOtherCulturesEntry>> callback) throws IllegalArgumentException;
 
 	/**
 	 * Executes an SQL update using a pre-defined SQL UPDATE string
@@ -102,14 +102,13 @@ public interface DatabaseServiceAsync {
 	void saveOrnamentEntry(OrnamentEntry ornamentEntry, AsyncCallback<Boolean> callback) throws IllegalArgumentException;
 
 	/**
-	 * Executes a pre-defined SQL INSERT statement and returns the generated
-	 * (auto-increment) unique key from the table.
+	 * Executes a pre-defined SQL INSERT statement and returns the generated (auto-increment) unique key from the table.
 	 * 
 	 * @param sqlInsert
 	 * @param callback
 	 * @throws IllegalArgumentException
 	 */
-//	void insertEntry(String sqlInsert, AsyncCallback<Integer> callback) throws IllegalArgumentException;
+	// void insertEntry(String sqlInsert, AsyncCallback<Integer> callback) throws IllegalArgumentException;
 
 	void getDepictions(AsyncCallback<ArrayList<DepictionEntry>> callback) throws IllegalArgumentException;
 
@@ -132,28 +131,29 @@ public interface DatabaseServiceAsync {
 	void getPublicationEntry(int id, AsyncCallback<PublicationEntry> asyncCallback) throws IllegalArgumentException;
 
 	void getAuthorEntry(int id, AsyncCallback<AuthorEntry> asyncCallback) throws IllegalArgumentException;
-	
+
 	void getMasterImageEntryForDepiction(int depictionID, AsyncCallback<ImageEntry> asyncCallback) throws IllegalArgumentException;
 
 	void getCaveEntry(int id, AsyncCallback<CaveEntry> asyncCallback) throws IllegalArgumentException;
 
-//	void getAntechamberEntry(int publicationTypeID, AsyncCallback<AntechamberEntry> asyncCallback) throws IllegalArgumentException;
-//
-//	void getMainChamberEntry(int publicationTypeID, AsyncCallback<MainChamberEntry> asyncCallback) throws IllegalArgumentException;
-//
-//	void getRearAreaEntry(int publicationTypeID, AsyncCallback<RearAreaEntry> asyncCallback) throws IllegalArgumentException;
+	// void getAntechamberEntry(int publicationTypeID, AsyncCallback<AntechamberEntry> asyncCallback) throws IllegalArgumentException;
+	//
+	// void getMainChamberEntry(int publicationTypeID, AsyncCallback<MainChamberEntry> asyncCallback) throws IllegalArgumentException;
+	//
+	// void getRearAreaEntry(int publicationTypeID, AsyncCallback<RearAreaEntry> asyncCallback) throws IllegalArgumentException;
 
 	void getRegions(AsyncCallback<ArrayList<RegionEntry>> asyncCallback) throws IllegalArgumentException;
 
 	void getSites(AsyncCallback<ArrayList<SiteEntry>> asyncCallback) throws IllegalArgumentException;
-	
+
 	void getSite(int id, AsyncCallback<SiteEntry> asyncCallback) throws IllegalArgumentException;
 
 	void getDepictions(String sqlWhere, AsyncCallback<ArrayList<DepictionEntry>> asyncCallback) throws IllegalArgumentException;
 
 	void getDepictionsbyWallID(int wallID, AsyncCallback<ArrayList<DepictionEntry>> asyncCallback) throws IllegalArgumentException;
-	
-	void saveDepiction(int depictionID, int absoluteLeft,int absoluteTop, AsyncCallback<String> asyncCallback) throws IllegalArgumentException;
+
+	void saveDepiction(int depictionID, int absoluteLeft, int absoluteTop, AsyncCallback<String> asyncCallback)
+			throws IllegalArgumentException;
 
 	void getRelatedImages(int depictionID, AsyncCallback<ArrayList<ImageEntry>> asyncCallback) throws IllegalArgumentException;
 
@@ -167,30 +167,31 @@ public interface DatabaseServiceAsync {
 	 */
 	void getRelatedPE(int depictionID, AsyncCallback<ArrayList<PictorialElementEntry>> asyncCallback) throws IllegalArgumentException;
 
-	void getOrientations( AsyncCallback<ArrayList<OrientationEntry>> asyncCallback) throws IllegalArgumentException;
-	
-	void getMainTypologicalClasses( AsyncCallback<ArrayList<MainTypologicalClass>> asyncCallback) throws IllegalArgumentException;
-	
-	void getStructureOrganizations ( AsyncCallback<ArrayList<StructureOrganization>> asyncCallback) throws IllegalArgumentException;
-	
-	void getOrnamentCaveTypes ( AsyncCallback<ArrayList<OrnamentCaveType>> asyncCallback) throws IllegalArgumentException;
-	
-	void getCaveParts (AsyncCallback<ArrayList<CavePart>> asyncCallback) throws IllegalArgumentException;
-	
-	void getWalls (AsyncCallback<ArrayList<WallEntry>> asyncCallback) throws IllegalArgumentException;
-	
+	void getOrientations(AsyncCallback<ArrayList<OrientationEntry>> asyncCallback) throws IllegalArgumentException;
+
+	void getMainTypologicalClasses(AsyncCallback<ArrayList<MainTypologicalClass>> asyncCallback) throws IllegalArgumentException;
+
+	void getStructureOrganizations(AsyncCallback<ArrayList<StructureOrganization>> asyncCallback) throws IllegalArgumentException;
+
+	void getOrnamentCaveTypes(AsyncCallback<ArrayList<OrnamentCaveType>> asyncCallback) throws IllegalArgumentException;
+
+	void getCaveParts(AsyncCallback<ArrayList<CavePart>> asyncCallback) throws IllegalArgumentException;
+
+	void getWalls(AsyncCallback<ArrayList<WallEntry>> asyncCallback) throws IllegalArgumentException;
+
 	void getWall(int caveID, String locationLabel, AsyncCallback<WallEntry> callback);
 
-	void getOrnamentPositions (AsyncCallback<ArrayList<OrnamentPositionEntry>> asyncCallback) throws IllegalArgumentException;
-	
-	void getOrnamentFunctions (AsyncCallback<ArrayList<OrnamentFunctionEntry>> asyncCallback) throws IllegalArgumentException;
+	void getOrnamentPositions(AsyncCallback<ArrayList<OrnamentPositionEntry>> asyncCallback) throws IllegalArgumentException;
+
+	void getOrnamentFunctions(AsyncCallback<ArrayList<OrnamentFunctionEntry>> asyncCallback) throws IllegalArgumentException;
 
 	void getOrnamentsWHERE(String sqlWhere, AsyncCallback<ArrayList<OrnamentEntry>> asyncCallback) throws IllegalArgumentException;
 
 	void getCeilingTypes(AsyncCallback<ArrayList<CeilingTypeEntry>> asyncCallback) throws IllegalArgumentException;
 
-	void getPreservationClassifications(AsyncCallback<ArrayList<PreservationClassificationEntry>> asyncCallback) throws IllegalArgumentException;
-	
+	void getPreservationClassifications(AsyncCallback<ArrayList<PreservationClassificationEntry>> asyncCallback)
+			throws IllegalArgumentException;
+
 	void getPictorialElementsObjects(AsyncCallback<ArrayList<PictorialElementEntry>> asyncCallback) throws IllegalArgumentException;
 
 	void updateCaveEntry(CaveEntry caveEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
@@ -208,8 +209,9 @@ public interface DatabaseServiceAsync {
 	void insertDepictionEntry(DepictionEntry depictionEntry, ArrayList<ImageEntry> imgEntryList, ArrayList<PictorialElementEntry> peEntryList,
 			ArrayList<IconographyEntry> iconographyList, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 
-	void updateDepictionEntry(DepictionEntry correspondingDepictionEntry, ArrayList<ImageEntry> all, ArrayList<PictorialElementEntry> selectedPE,
-			ArrayList<IconographyEntry> iconographyList, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
+	void updateDepictionEntry(DepictionEntry correspondingDepictionEntry, ArrayList<ImageEntry> all,
+			ArrayList<PictorialElementEntry> selectedPE, ArrayList<IconographyEntry> iconographyList, AsyncCallback<Boolean> asyncCallback)
+			throws IllegalArgumentException;
 
 	void getModesOfRepresentation(AsyncCallback<ArrayList<ModeOfRepresentationEntry>> asyncCallback) throws IllegalArgumentException;
 
@@ -222,11 +224,14 @@ public interface DatabaseServiceAsync {
 	 * @param asyncCallback
 	 */
 	void updateAuthorEntry(AuthorEntry currentAuthorEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
-	
-	void saveAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry, AsyncCallback<Boolean> callback) throws IllegalArgumentException;
-	void getAuthors( AsyncCallback<ArrayList<AuthorEntry>> callback) throws IllegalArgumentException;//?
-	void getPublisher( AsyncCallback<ArrayList<PublisherEntry>> callback) throws IllegalArgumentException;
-	void getAnnotatedBibliography( AsyncCallback<ArrayList<AnnotatedBiblographyEntry>> callback) throws IllegalArgumentException;
+
+	void insertAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry, AsyncCallback<Integer> callback);
+
+	void getAuthors(AsyncCallback<ArrayList<AuthorEntry>> callback) throws IllegalArgumentException;// ?
+
+	void getPublishers(AsyncCallback<ArrayList<PublisherEntry>> callback) throws IllegalArgumentException;
+
+	void getAnnotatedBibliography(AsyncCallback<ArrayList<AnnotatedBiblographyEntry>> callback) throws IllegalArgumentException;
 
 	void insertPhotographerEntry(PhotographerEntry photographerEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 
@@ -255,6 +260,13 @@ public interface DatabaseServiceAsync {
 
 	void getPreservationAttributes(AsyncCallback<ArrayList<PreservationAttributeEntry>> asyncCallback) throws IllegalArgumentException;
 
-	void insertPreservationAttributeEntry(PreservationAttributeEntry paEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
+	void insertPreservationAttributeEntry(PreservationAttributeEntry paEntry, AsyncCallback<Integer> asyncCallback)
+			throws IllegalArgumentException;
 
-	}
+	void insertPublisherEntry(PublisherEntry publisherEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
+
+	void getAnnotatedBibliography(String sqlWhere, AsyncCallback<ArrayList<AnnotatedBiblographyEntry>> asyncCallback) throws IllegalArgumentException;
+
+	void updateAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
+
+}

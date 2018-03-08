@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 
+ * Copyright 2016 - 2018
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -15,15 +15,13 @@ package de.cses.shared;
 
 import java.sql.Date;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
 /**
  * @author alingnau
  *
  */
-public class AuthorEntry implements IsSerializable {
+public class AuthorEntry extends AbstractEntry {
 
-	private int authorID;
+	private int authorID = 0;
 	private String lastname, firstname;
 	private Date kuchaVisitDate;
 	private String affiliation, email, homepage;
@@ -33,13 +31,10 @@ public class AuthorEntry implements IsSerializable {
 	 * is set to 0 to indicate that this entry is not taken from a database and
 	 * therefore has to be inserted instead of updated.
 	 */
-	public AuthorEntry() {
-		this.authorID = 0;
-	}
+	public AuthorEntry() {	}
 
 	public AuthorEntry(int authorID, String lastname, String firstname, Date kuchaVisitDate, String affiliation, String email,
 			String homepage) {
-		super();
 		this.authorID = authorID;
 		this.lastname = lastname;
 		this.firstname = firstname;
@@ -107,6 +102,14 @@ public class AuthorEntry implements IsSerializable {
 
 	public String getName() {
 		return lastname + ", " + firstname; 
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.shared.AbstractEntry#getUniqueID()
+	 */
+	@Override
+	public String getUniqueID() {
+		return "Author-" + authorID;
 	}
 
 }

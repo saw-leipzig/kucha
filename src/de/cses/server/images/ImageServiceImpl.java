@@ -58,7 +58,7 @@ public class ImageServiceImpl extends HttpServlet {
 	}
 
 	/**
-	 * This method is called when the submit button in the image uploader is pressed. Images are stored in the SERVER_IMAGES_PATHNAME
+	 * This method is called when the submit button in the image paperUploader is pressed. Images are stored in the SERVER_IMAGES_PATHNAME
 	 * 
 	 * @see de.cses.client.images.ImageUploader
 	 */
