@@ -13,6 +13,7 @@
  */
 package de.cses.client.depictions;
 
+import java.awt.BorderLayout;
 import java.util.ArrayList;
 
 import com.google.gwt.core.client.GWT;
@@ -25,6 +26,7 @@ import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
+import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
@@ -34,9 +36,14 @@ import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer.ExpandMode;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
+import com.sencha.gxt.widget.core.client.container.MarginData;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.form.TextField;
 
 import de.cses.client.DatabaseService;
@@ -124,6 +131,9 @@ public class DepictionFilter extends AbstractFilter {
 	@Override
 	protected Widget getFilterUI() {
 
+		/**
+		 * assemble caveSelection
+		 */
 		caveSelectionLV = new ListView<CaveEntry, CaveEntry>(caveEntryLS, new IdentityValueProvider<CaveEntry>(), new SimpleSafeHtmlCell<CaveEntry>(new AbstractSafeHtmlRenderer<CaveEntry>() {
 			
 			@Override
@@ -151,6 +161,10 @@ public class DepictionFilter extends AbstractFilter {
 		cavePanel.setHeading("Cave search");
 		cavePanel.add(caveSelectionLV);
 		
+		/**
+		 * assemble shortNameSearch
+		 */
+		
 		shortNameSearch = new TextField();
 		shortNameSearch.setEmptyText("search short name");
 
@@ -159,6 +173,9 @@ public class DepictionFilter extends AbstractFilter {
 		shortNamePanel.setHeading("Shortname search");
 		shortNamePanel.add(shortNameSearch);		
 
+		/**
+		 * assemble current location selection
+		 */
 		LocationProperties locationProps = GWT.create(LocationProperties.class);
 		ListStore<LocationEntry> 		locationEntryLS = new ListStore<LocationEntry>(locationProps.locationID());		locationProps = GWT.create(LocationProperties.class);
 		for (LocationEntry locEntry : StaticTables.getInstance().getLocationEntries().values()) {
@@ -204,18 +221,22 @@ public class DepictionFilter extends AbstractFilter {
 		currentLocationPanel.setHeading("Location search");
 		currentLocationPanel.add(locationSelectionLV);
 		
+		/**
+		 * create the view
+		 */
+		
 		AccordionLayoutContainer depictionFilterALC = new AccordionLayoutContainer();
     depictionFilterALC.setExpandMode(ExpandMode.SINGLE_FILL);
     depictionFilterALC.add(cavePanel);
     depictionFilterALC.add(currentLocationPanel);
     depictionFilterALC.setActiveWidget(cavePanel);
-    depictionFilterALC.setHeight("400px");
 
-		HorizontalLayoutContainer depictionFilterHLC = new HorizontalLayoutContainer();
-		depictionFilterHLC.add(shortNamePanel, new HorizontalLayoutData(1.0, .2));
-		depictionFilterHLC.add(depictionFilterALC,  new HorizontalLayoutData(1.0, .8));
+    BorderLayoutContainer depictionFilterBLC = new BorderLayoutContainer();
+    depictionFilterBLC.setNorthWidget(shortNamePanel, new BorderLayoutData(50));
+    depictionFilterBLC.setCenterWidget(depictionFilterALC, new MarginData(5));
+    depictionFilterBLC.setHeight(450);
 
-    return depictionFilterHLC;
+    return depictionFilterBLC;
 	}
 
 	/* (non-Javadoc)
