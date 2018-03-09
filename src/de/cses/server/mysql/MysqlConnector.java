@@ -137,7 +137,7 @@ public class MysqlConnector {
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Districts");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Districts ORDER BY Name Asc");
 			while (rs.next()) {
 				result.add(new DistrictEntry(rs.getInt("DistrictID"), rs.getString("Name"), rs.getInt("SiteID"), rs.getString("Description"),
 						rs.getString("Map"), rs.getString("ArialMap")));
@@ -163,7 +163,7 @@ public class MysqlConnector {
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Districts WHERE DistrictID=" + id);
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Districts WHERE DistrictID=" + id + " ORDER BY Name Asc");
 			while (rs.next()) {
 				result = new DistrictEntry(rs.getInt("DistrictID"), rs.getString("Name"), rs.getInt("SiteID"), rs.getString("Description"),
 						rs.getString("Map"), rs.getString("ArialMap"));
@@ -836,7 +836,7 @@ public class MysqlConnector {
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Iconography WHERE IconographyID=" + id);
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Iconography WHERE IconographyID=" + id + " ORDER BY Text Asc");
 			if (rs.first()) {
 				result = new IconographyEntry(rs.getInt("IconographyID"), rs.getInt("ParentID"), rs.getString("Text"));
 			}
@@ -1230,7 +1230,7 @@ public class MysqlConnector {
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Regions");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Regions ORDER BY EnglishName Asc, PhoneticName Asc, OriginalName Asc");
 			while (rs.next()) {
 				result.add(new RegionEntry(rs.getInt("RegionID"), rs.getString("PhoneticName"), rs.getString("OriginalName"),
 						rs.getString("EnglishName"), rs.getInt("SiteID")));
@@ -1253,7 +1253,7 @@ public class MysqlConnector {
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Sites");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Sites ORDER BY Name Asc, AlternativeName Asc");
 			while (rs.next()) {
 				result.add(new SiteEntry(rs.getInt("SiteID"), rs.getString("Name"), rs.getString("AlternativeName"), rs.getString("ShortName")));
 			}
@@ -2900,7 +2900,7 @@ public class MysqlConnector {
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Locations");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Locations ORDER BY Name Asc, Country Asc");
 			while (rs.next()) {
 				results.add(new LocationEntry(rs.getInt("LocationID"), rs.getString("Name"), rs.getString("Town"), rs.getString("Region"), rs.getString("Country"), rs.getString("URL")));
 			}

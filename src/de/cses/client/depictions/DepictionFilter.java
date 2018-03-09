@@ -181,20 +181,20 @@ public class DepictionFilter extends AbstractFilter {
 		for (LocationEntry locEntry : StaticTables.getInstance().getLocationEntries().values()) {
 			locationEntryLS.add(locEntry);
 		}
-		locationEntryLS.addSortInfo(new StoreSortInfo<LocationEntry>(new ValueProvider<LocationEntry, String>(){
-
-			@Override
-			public String getValue(LocationEntry object) {
-				return object.getName();
-			}
-
-			@Override
-			public void setValue(LocationEntry object, String value) {}
-
-			@Override
-			public String getPath() {
-				return "name";
-			}}, SortDir.ASC));
+//		locationEntryLS.addSortInfo(new StoreSortInfo<LocationEntry>(new ValueProvider<LocationEntry, String>(){
+//
+//			@Override
+//			public String getValue(LocationEntry object) {
+//				return object.getName();
+//			}
+//
+//			@Override
+//			public void setValue(LocationEntry object, String value) {}
+//
+//			@Override
+//			public String getPath() {
+//				return "name";
+//			}}, SortDir.ASC));
 		
 		locationSelectionLV = new ListView<LocationEntry, LocationEntry>(locationEntryLS, new IdentityValueProvider<LocationEntry>(), new SimpleSafeHtmlCell<LocationEntry>(new AbstractSafeHtmlRenderer<LocationEntry>() {
 			

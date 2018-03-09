@@ -59,6 +59,7 @@ public class CaveView extends AbstractView {
 
 	interface CaveTypeProperties extends PropertyAccess<CaveTypeEntry> {
 		ModelKeyProvider<CaveTypeEntry> caveTypeID();
+
 		LabelProvider<CaveTypeEntry> nameEN();
 	}
 
@@ -80,25 +81,25 @@ public class CaveView extends AbstractView {
 		DistrictEntry de = stab.getDistrictEntries().get(cEntry.getDistrictID());
 		if (de != null) {
 			SiteEntry se = stab.getSiteEntries().get(de.getSiteID());
-			setHTML(cvTemplate.view(
-					resources.logo().getSafeUri(), entry.getOfficialNumber(), entry.getHistoricName(), entry.getOptionalHistoricName(), se.getShortName()
-				));
+			setHTML(cvTemplate.view(resources.logo().getSafeUri(), entry.getOfficialNumber(),
+					entry.getHistoricName() != null ? entry.getHistoricName() : "",
+					entry.getOptionalHistoricName() != null ? entry.getOptionalHistoricName() : "", se.getShortName()));
 		} else {
 			RegionEntry re = stab.getRegionEntries().get(cEntry.getRegionID());
 			if (re != null) {
 				SiteEntry se = stab.getSiteEntries().get(re.getSiteID());
-				setHTML(cvTemplate.view(
-						resources.logo().getSafeUri(), entry.getOfficialNumber(), entry.getHistoricName(), entry.getOptionalHistoricName(), se.getShortName()
-					));
+				setHTML(cvTemplate.view(resources.logo().getSafeUri(), entry.getOfficialNumber(),
+						entry.getHistoricName() != null ? entry.getHistoricName() : "",
+						entry.getOptionalHistoricName() != null ? entry.getOptionalHistoricName() : "", se.getShortName()));
 			} else {
-				setHTML(cvTemplate.view(
-						resources.logo().getSafeUri(), entry.getOfficialNumber(), entry.getHistoricName(), entry.getOptionalHistoricName()
-					));
-			
+				setHTML(cvTemplate.view(resources.logo().getSafeUri(), entry.getOfficialNumber(),
+						entry.getHistoricName() != null ? entry.getHistoricName() : "",
+						entry.getOptionalHistoricName() != null ? entry.getOptionalHistoricName() : ""));
+
 			}
 		}
 		setSize("150px", "110px");
-		
+
 		DragSource source = new DragSource(this) {
 
 			@Override
@@ -107,7 +108,7 @@ public class CaveView extends AbstractView {
 				event.setData(cEntry);
 				event.getStatusProxy().update(cvTemplate.view(resources.logo().getSafeUri(), entry.getOfficialNumber()));
 			}
-			
+
 		};
 
 	}
@@ -122,7 +123,9 @@ public class CaveView extends AbstractView {
 		return new CaveEditor(cEntry.clone()); // we are cloning the entry and only update it if changes are saved
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.cses.client.ui.AbstractView#getEntry()
 	 */
 	@Override
@@ -130,7 +133,9 @@ public class CaveView extends AbstractView {
 		return cEntry;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.cses.client.ui.EditorListener#updateEntryRequest(de.cses.shared.AbstractEntry)
 	 */
 	@Override
@@ -140,7 +145,9 @@ public class CaveView extends AbstractView {
 		}
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.cses.client.ui.AbstractView#getPermalink()
 	 */
 	@Override

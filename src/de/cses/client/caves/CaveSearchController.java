@@ -30,6 +30,7 @@ import de.cses.client.ui.AbstractSearchController;
 import de.cses.client.ui.EditorListener;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.CaveEntry;
+import de.cses.shared.DistrictEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 
@@ -72,8 +73,8 @@ public class CaveSearchController extends AbstractSearchController {
 			
 			private String getComparisonLabel(CaveEntry ce) {
 				StaticTables stab = StaticTables.getInstance();
-				RegionEntry re = stab.getRegionEntries().get(ce.getRegionID());
-				SiteEntry se = stab.getSiteEntries().get(re.getSiteID());
+				DistrictEntry de = stab.getDistrictEntries().get(ce.getDistrictID());
+				SiteEntry se = stab.getSiteEntries().get(de.getSiteID());
 				switch (ce.getOfficialNumber().length()) {
 					case 1:
 						return se.getShortName() + "  " + ce.getOfficialNumber();

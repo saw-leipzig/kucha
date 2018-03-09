@@ -390,20 +390,21 @@ public class DepictionEditor extends AbstractEditor {
 			for (LocationEntry locEntry : StaticTables.getInstance().getLocationEntries().values()) {
 				locationEntryLS.add(locEntry);
 			}
-			locationEntryLS.addSortInfo(new StoreSortInfo<LocationEntry>(new ValueProvider<LocationEntry, String>(){
-
-				@Override
-				public String getValue(LocationEntry object) {
-					return object.getName();
-				}
-
-				@Override
-				public void setValue(LocationEntry object, String value) {}
-
-				@Override
-				public String getPath() {
-					return "name";
-				}}, SortDir.ASC));
+//			locationEntryLS.addSortInfo(new StoreSortInfo<LocationEntry>(new ValueProvider<LocationEntry, String>(){
+//
+//				@Override
+//				public String getValue(LocationEntry object) {
+//					return object.getName();
+//				}
+//
+//				@Override
+//				public void setValue(LocationEntry object, String value) {}
+//
+//				@Override
+//				public String getPath() {
+//					return "name";
+//				}}, SortDir.ASC));
+			
 			if (correspondingDepictionEntry.getLocationID() > 0) {
 				locationSelectionCB.setValue(locationEntryLS.findModelWithKey(Integer.toString(correspondingDepictionEntry.getLocationID())));
 			}
