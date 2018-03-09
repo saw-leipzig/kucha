@@ -552,6 +552,11 @@ public class CaveEditor extends AbstractEditor {
 		for (SiteEntry se : StaticTables.getInstance().getSiteEntries().values()) {
 			siteEntryListStore.add(se);
 		}
+		if (correspondingCaveEntry.getSiteID() > 0) {
+			siteSelection.setValue(siteEntryListStore.findModelWithKey(Integer.toString(correspondingCaveEntry.getSiteID())));
+			activateRegionFilter();
+			activateDistrictFilter();
+		}
 	}
 
 	/**
@@ -614,11 +619,11 @@ public class CaveEditor extends AbstractEditor {
 		if (correspondingCaveEntry.getRegionID() > 0) {
 			RegionEntry re = regionEntryListStore.findModelWithKey(Integer.toString(correspondingCaveEntry.getRegionID()));
 			regionSelection.setValue(re);
-			if (siteSelection.getCurrentValue() == null || siteSelection.getCurrentValue().getSiteID() != re.getSiteID()) {
-				siteSelection.setValue(StaticTables.getInstance().getSiteEntries().get(re.getSiteID()));
-				activateRegionFilter();
-				activateDistrictFilter();
-			}
+//			if (siteSelection.getCurrentValue() == null || siteSelection.getCurrentValue().getSiteID() != re.getSiteID()) {
+//				siteSelection.setValue(StaticTables.getInstance().getSiteEntries().get(re.getSiteID()));
+//				activateRegionFilter();
+//				activateDistrictFilter();
+//			}
 
 		}
 	}
@@ -633,12 +638,12 @@ public class CaveEditor extends AbstractEditor {
 		if (correspondingCaveEntry.getDistrictID() > 0) {
 			final DistrictEntry de = districtEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getDistrictID()));
 			districtSelection.setValue(de);
-			if (siteSelection.getCurrentValue() == null || siteSelection.getCurrentValue().getSiteID() != de.getSiteID()) {
-				SiteEntry se = siteEntryListStore.findModelWithKey(Integer.toString(de.getSiteID()));
-				siteSelection.setValue(se);
-				activateRegionFilter();
-				activateDistrictFilter();
-			}
+//			if (siteSelection.getCurrentValue() == null || siteSelection.getCurrentValue().getSiteID() != de.getSiteID()) {
+//				SiteEntry se = siteEntryListStore.findModelWithKey(Integer.toString(de.getSiteID()));
+//				siteSelection.setValue(se);
+//				activateRegionFilter();
+//				activateDistrictFilter();
+//			}
 		}
 	}
 

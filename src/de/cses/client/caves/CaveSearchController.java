@@ -73,15 +73,15 @@ public class CaveSearchController extends AbstractSearchController {
 			
 			private String getComparisonLabel(CaveEntry ce) {
 				StaticTables stab = StaticTables.getInstance();
-				DistrictEntry de = stab.getDistrictEntries().get(ce.getDistrictID());
-				SiteEntry se = stab.getSiteEntries().get(de.getSiteID());
+				String shortName = stab.getDistrictEntries().get(ce.getDistrictID()) != null ? stab.getSiteEntries().get(stab.getDistrictEntries().get(ce.getDistrictID()).getSiteID()).getShortName() :
+					ce.getRegionID() > 0 ? stab.getSiteEntries().get(stab.getRegionEntries().get(ce.getRegionID()).getSiteID()).getShortName() : "";
 				switch (ce.getOfficialNumber().length()) {
 					case 1:
-						return se.getShortName() + "  " + ce.getOfficialNumber();
+						return shortName + "  " + ce.getOfficialNumber();
 					case 2:
-						return se.getShortName() + " " + ce.getOfficialNumber();
+						return shortName + " " + ce.getOfficialNumber();
 					default:
-						return se.getShortName() + ce.getOfficialNumber();
+						return shortName + ce.getOfficialNumber();
 				}
 			}
 			
