@@ -14,6 +14,9 @@
 package de.cses.client.caves;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -21,11 +24,14 @@ import com.google.gwt.user.client.ui.PopupPanel;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.StaticTables;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.client.ui.AbstractSearchController;
 import de.cses.client.ui.EditorListener;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.CaveEntry;
+import de.cses.shared.RegionEntry;
+import de.cses.shared.SiteEntry;
 
 /**
  * @author alingnau
@@ -63,7 +69,21 @@ public class CaveSearchController extends AbstractSearchController {
 			}
 		}
 		dbService.getCaves(sqlWhere, new AsyncCallback<ArrayList<CaveEntry>>() {
-
+			
+			private String getComparisonLabel(CaveEntry ce) {
+				StaticTables stab = StaticTables.getInstance();
+				RegionEntry re = stab.getRegionEntries().get(ce.getRegionID());
+				SiteEntry se = stab.getSiteEntries().get(re.getSiteID());
+				switch (ce.getOfficialNumber().length()) {
+					case 1:
+						return se.getShortName() + "  " + ce.getOfficialNumber();
+					case 2:
+						return se.getShortName() + " " + ce.getOfficialNumber();
+					default:
+						return se.getShortName() + ce.getOfficialNumber();
+				}
+			}
+			
 			@Override
 			public void onFailure(Throwable caught) {
 				caught.printStackTrace();
@@ -71,6 +91,13 @@ public class CaveSearchController extends AbstractSearchController {
 
 			@Override
 			public void onSuccess(ArrayList<CaveEntry> result) {
+				result.sort(new Comparator<CaveEntry>() {
+
+					@Override
+					public int compare(CaveEntry ce1, CaveEntry ce2) {
+						return getComparisonLabel(ce1).compareTo(getComparisonLabel(ce2));
+					}
+				});
 				getResultView().reset();
 				for (CaveEntry ce : result) {
 					getResultView().addResult(new CaveView(ce));	
