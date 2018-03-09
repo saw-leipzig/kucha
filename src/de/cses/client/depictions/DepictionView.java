@@ -80,7 +80,7 @@ public class DepictionView extends AbstractView {
 				setHTML(dvTemplates.view(UriUtils.fromString("resource?imageID=" + result.getImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), depictionEntry.getShortName()));
 			}
 		});
-		setPixelSize(110, 110);
+		setPixelSize(150, 150);
 
 		DragSource source = new DragSource(this) {
 

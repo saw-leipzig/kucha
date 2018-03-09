@@ -78,25 +78,15 @@ public class CaveView extends AbstractView {
 		cEntry = entry;
 		resources = GWT.create(Resources.class);
 		cvTemplate = GWT.create(CaveViewTemplates.class);
-		DistrictEntry de = stab.getDistrictEntries().get(cEntry.getDistrictID());
-		if (de != null) {
-			SiteEntry se = stab.getSiteEntries().get(de.getSiteID());
+		SiteEntry se = stab.getSiteEntries().get(entry.getSiteID());
+		if ((se != null) && (se.getSiteID() > 0)) {
 			setHTML(cvTemplate.view(resources.logo().getSafeUri(), entry.getOfficialNumber(),
 					entry.getHistoricName() != null ? entry.getHistoricName() : "",
 					entry.getOptionalHistoricName() != null ? entry.getOptionalHistoricName() : "", se.getShortName()));
 		} else {
-			RegionEntry re = stab.getRegionEntries().get(cEntry.getRegionID());
-			if (re != null) {
-				SiteEntry se = stab.getSiteEntries().get(re.getSiteID());
-				setHTML(cvTemplate.view(resources.logo().getSafeUri(), entry.getOfficialNumber(),
-						entry.getHistoricName() != null ? entry.getHistoricName() : "",
-						entry.getOptionalHistoricName() != null ? entry.getOptionalHistoricName() : "", se.getShortName()));
-			} else {
-				setHTML(cvTemplate.view(resources.logo().getSafeUri(), entry.getOfficialNumber(),
-						entry.getHistoricName() != null ? entry.getHistoricName() : "",
-						entry.getOptionalHistoricName() != null ? entry.getOptionalHistoricName() : ""));
-
-			}
+			setHTML(cvTemplate.view(resources.logo().getSafeUri(), entry.getOfficialNumber(),
+					entry.getHistoricName() != null ? entry.getHistoricName() : "",
+					entry.getOptionalHistoricName() != null ? entry.getOptionalHistoricName() : ""));
 		}
 		setSize("150px", "110px");
 
