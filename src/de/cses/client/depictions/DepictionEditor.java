@@ -377,8 +377,9 @@ public class DepictionEditor extends AbstractEditor {
 				for (CaveEntry ce : caveResults) {
 					caveEntryLS.add(ce);
 				}
-				if (correspondingDepictionEntry.getCaveID() > 0) {
-					CaveEntry ce = caveEntryLS.findModelWithKey(Integer.toString(correspondingDepictionEntry.getCaveID()));
+				if (correspondingDepictionEntry.getCave() != null) {
+					CaveEntry ce = correspondingDepictionEntry.getCave();
+//					CaveEntry ce = caveEntryLS.findModelWithKey(Integer.toString(correspondingDepictionEntry.getCaveID()));
 					caveSelectionCB.setValue(ce);
 					wallSelectorPanel.setCave(ce);
 				}
@@ -544,7 +545,7 @@ public class DepictionEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<CaveEntry> event) {
-				correspondingDepictionEntry.setCaveID(event.getSelectedItem().getCaveID());
+				correspondingDepictionEntry.setCave(event.getSelectedItem());
 				wallSelectorPanel.setCave(event.getSelectedItem());
 			}
 		});

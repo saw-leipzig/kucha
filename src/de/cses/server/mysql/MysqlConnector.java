@@ -401,7 +401,7 @@ public class MysqlConnector {
 						rs.getString("SeparateAksaras"), rs.getString("Dating"), rs.getString("Description"), rs.getString("BackgroundColour"),
 						rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"), rs.getDouble("Width"), rs.getDouble("Height"),
 						rs.getInt("ExpeditionID"), rs.getDate("PurchaseDate"), rs.getInt("CurrentLocationID"), rs.getString("InventoryNumber"), rs.getInt("VendorID"),
-						rs.getInt("StoryID"), rs.getInt("CaveID"), rs.getInt("WallID"), rs.getInt("AbsoluteLeft"), rs.getInt("AbsoluteTop"), 
+						rs.getInt("StoryID"), getCave(rs.getInt("CaveID")), rs.getInt("WallID"), rs.getInt("AbsoluteLeft"), rs.getInt("AbsoluteTop"), 
 						rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes")));
 			}
 			rs.close();
@@ -426,7 +426,7 @@ public class MysqlConnector {
 						rs.getString("SeparateAksaras"), rs.getString("Dating"), rs.getString("Description"), rs.getString("BackgroundColour"),
 						rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"), rs.getDouble("Width"), rs.getDouble("Height"),
 						rs.getInt("ExpeditionID"), rs.getDate("PurchaseDate"), rs.getInt("CurrentLocationID"), rs.getString("InventoryNumber"), rs.getInt("VendorID"),
-						rs.getInt("StoryID"), rs.getInt("CaveID"), rs.getInt("WallID"), rs.getInt("AbsoluteLeft"), 
+						rs.getInt("StoryID"), getCave(rs.getInt("CaveID")), rs.getInt("WallID"), rs.getInt("AbsoluteLeft"), 
 						rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes"));
 			}
 			rs.close();
@@ -2106,7 +2106,7 @@ public class MysqlConnector {
 			pstmt.setString(14, de.getInventoryNumber());
 			pstmt.setInt(15, de.getVendorID());
 			pstmt.setInt(16, de.getStoryID());
-			pstmt.setInt(17, de.getCaveID());
+			pstmt.setInt(17, de.getCave().getCaveID());
 			pstmt.setInt(18, de.getWallID());
 			pstmt.setInt(19, de.getAbsoluteLeft());
 			pstmt.setInt(20, de.getAbsoluteTop());
@@ -2177,7 +2177,7 @@ public class MysqlConnector {
 			pstmt.setString(14, de.getInventoryNumber());
 			pstmt.setInt(15, de.getVendorID());
 			pstmt.setInt(16, de.getStoryID());
-			pstmt.setInt(17, de.getCaveID());
+			pstmt.setInt(17, de.getCave().getCaveID());
 			pstmt.setInt(18, de.getWallID());
 			pstmt.setInt(19, de.getAbsoluteLeft());
 			pstmt.setInt(20, de.getAbsoluteTop());
@@ -2187,8 +2187,6 @@ public class MysqlConnector {
 			pstmt.setInt(24, de.getDepictionID());
 			pstmt.executeUpdate();
 			pstmt.close();
-			System.err.println("===> updateDepictionEntry - otherSuggestedIdentificaitons = " + de.getOtherSuggestedIdentifications());
-			System.err.println("===> updateDepictionEntry - sucessful");
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 			return false;
