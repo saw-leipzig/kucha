@@ -26,6 +26,7 @@ import com.sencha.gxt.dnd.core.client.DragSource;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.StaticTables;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.client.ui.AbstractView;
 import de.cses.client.user.UserLogin;
@@ -53,6 +54,9 @@ public class DepictionView extends AbstractView {
 
 		@XTemplate("<div><center><img src='{imgUri}'></img></center><label style='font-size:9px' > {label} </label></br></div>")
 		SafeHtml view(SafeUri imgUri, String label);
+
+		@XTemplate("<div><center><img src='{imgUri}'></img></center><label style='font-size:9px'>{caveLabel}<br>{depictionLabel}</label></br></div>")
+		SafeHtml view(SafeUri imgUri, String caveLabel, String depictionLabel);
 	}
 
 	private DepictionEntry depictionEntry;
@@ -77,7 +81,8 @@ public class DepictionView extends AbstractView {
 
 			@Override
 			public void onSuccess(ImageEntry result) {
-				setHTML(dvTemplates.view(UriUtils.fromString("resource?imageID=" + result.getImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), depictionEntry.getShortName()));
+				setHTML(dvTemplates.view(UriUtils.fromString("resource?imageID=" + result.getImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), 
+						StaticTables.getInstance().getSiteEntries().get(entry.getCave().getSiteID()).getShortName() + " " + entry.getCave().getOfficialNumber(), depictionEntry.getShortName()));
 			}
 		});
 		setPixelSize(150, 150);
