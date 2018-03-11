@@ -31,6 +31,7 @@ import de.cses.client.ui.AbstractEditor;
 import de.cses.client.ui.AbstractView;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
+import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.ImageEntry;
 
@@ -57,6 +58,9 @@ public class DepictionView extends AbstractView {
 
 		@XTemplate("<div><center><img src='{imgUri}'></img></center><label style='font-size:9px'>{caveLabel}<br>{depictionLabel}</label></br></div>")
 		SafeHtml view(SafeUri imgUri, String caveLabel, String depictionLabel);
+
+		@XTemplate("<div><center><img src='{imgUri}'></img></center><label style='font-size:9px'>{caveLabel}<br>{caveName}<br>{depictionLabel}</label></br></div>")
+		SafeHtml view(SafeUri imgUri, String caveLabel, String caveName, String depictionLabel);
 	}
 
 	private DepictionEntry depictionEntry;
@@ -81,8 +85,10 @@ public class DepictionView extends AbstractView {
 
 			@Override
 			public void onSuccess(ImageEntry result) {
+				CaveEntry ce = entry.getCave();
 				setHTML(dvTemplates.view(UriUtils.fromString("resource?imageID=" + result.getImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), 
-						StaticTables.getInstance().getSiteEntries().get(entry.getCave().getSiteID()).getShortName() + " " + entry.getCave().getOfficialNumber(), depictionEntry.getShortName()));
+						StaticTables.getInstance().getSiteEntries().get(ce.getSiteID()).getShortName() + " " + ce.getOfficialNumber(), 
+						ce.getHistoricName() != null ? ce.getHistoricName() : "", depictionEntry.getShortName() != null ? depictionEntry.getShortName() : ""));
 			}
 		});
 		setPixelSize(150, 150);
