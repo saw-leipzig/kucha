@@ -218,57 +218,54 @@ public class LocationFilter extends AbstractFilter {
 	@Override
 	public ArrayList<String> getSqlWhereClause() {
 		ArrayList<String> result = new ArrayList<String>();
-		String districtQuery = "";
-		String regionQuery = "";
-		List<DistrictEntry> nonSelectedDistricts = districtEntryList.getAll();
-		List<RegionEntry> nonSelectedRegions = regionEntryList.getAll();
+		String districtQuery = null;
+		String regionQuery = null;
+		String siteQuery = null;
+		String sqlQuery = null;
+		
+		for (SiteEntry se : siteSelectionLV.getSelectionModel().getSelectedItems()) {
+			if (siteQuery == null) {
+				siteQuery = Integer.toString(se.getSiteID());
+			} else {
+				siteQuery = siteQuery.concat(", " + se.getSiteID());
+			}
+		}
+		if (siteQuery != null) {
+			sqlQuery = "SiteID IN (" + siteQuery + ")";
+		}
 		
 		for (DistrictEntry de : districtSelectionLV.getSelectionModel().getSelectedItems()) {
-			if (districtQuery.isEmpty()) {
-				districtQuery = "" + de.getDistrictID();
+			if (districtQuery == null) {
+				districtQuery = Integer.toString(de.getDistrictID());
 			} else {
 				districtQuery = districtQuery.concat(", " + de.getDistrictID());
 			}
 		}
+		if (districtQuery != null) {
+			if (sqlQuery == null) {
+				sqlQuery = "DistrictID IN (" + districtQuery + ")";
+			} else {
+				sqlQuery = sqlQuery.concat(" OR DistrictID IN (" + districtQuery + ")");
+			}
+		}
 		
 		for (RegionEntry re : regionSelectionLV.getSelectionModel().getSelectedItems()) {
-			if (regionQuery.isEmpty()) {
-				regionQuery = "" + re.getRegionID();
+			if (regionQuery == null) {
+				regionQuery = Integer.toString(re.getRegionID());
 			} else {
 				regionQuery = regionQuery.concat(", " + re.getRegionID());
 			}
 		}
-		
-		for (SiteEntry se : siteSelectionLV.getSelectionModel().getSelectedItems()) {
-
-			for (DistrictEntry nsde : nonSelectedDistricts) {
-				if (se.getSiteID() == nsde.getSiteID()) {
-					if (districtQuery.isEmpty()) {
-						districtQuery = "" + nsde.getDistrictID();
-					} else {
-						districtQuery = districtQuery.concat(", " + nsde.getDistrictID());
-					}
-				}
-			}
-			
-			for (RegionEntry nsre : nonSelectedRegions) {
-				if (se.getSiteID() == nsre.getSiteID()) {
-					if (regionQuery.isEmpty()) {
-						regionQuery = "" + nsre.getRegionID();
-					} else {
-						regionQuery = regionQuery.concat(", " + nsre.getRegionID());
-					}
-				}
+		if (districtQuery != null) {
+			if (sqlQuery == null) {
+				sqlQuery = "RegionID IN (" + regionQuery + ")";
+			} else {
+				sqlQuery = sqlQuery.concat(" OR RegionID IN (" + regionQuery + ")");
 			}
 		}
 		
-		if (!districtQuery.isEmpty() && !regionQuery.isEmpty()) {
-			result.add("(DistrictID IN (" + districtQuery + ") OR RegionID IN (" + regionQuery + "))");
-		} else if (!districtQuery.isEmpty()) {
-			result.add("(DistrictID IN (" + districtQuery + "))");
-		} else if (!regionQuery.isEmpty()) {
-			result.add("(RegionID IN (" + regionQuery + "))");
-		}
+		result.add("(" + sqlQuery + ")");
+		
 		return result;
 	}
 	

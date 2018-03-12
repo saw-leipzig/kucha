@@ -137,7 +137,7 @@ public class MysqlConnector {
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Districts");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Districts ORDER BY Name Asc");
 			while (rs.next()) {
 				result.add(new DistrictEntry(rs.getInt("DistrictID"), rs.getString("Name"), rs.getInt("SiteID"), rs.getString("Description"),
 						rs.getString("Map"), rs.getString("ArialMap")));
@@ -163,7 +163,7 @@ public class MysqlConnector {
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Districts WHERE DistrictID=" + id);
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Districts WHERE DistrictID=" + id + " ORDER BY Name Asc");
 			while (rs.next()) {
 				result = new DistrictEntry(rs.getInt("DistrictID"), rs.getString("Name"), rs.getInt("SiteID"), rs.getString("Description"),
 						rs.getString("Map"), rs.getString("ArialMap"));
@@ -401,7 +401,7 @@ public class MysqlConnector {
 						rs.getString("SeparateAksaras"), rs.getString("Dating"), rs.getString("Description"), rs.getString("BackgroundColour"),
 						rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"), rs.getDouble("Width"), rs.getDouble("Height"),
 						rs.getInt("ExpeditionID"), rs.getDate("PurchaseDate"), rs.getInt("CurrentLocationID"), rs.getString("InventoryNumber"), rs.getInt("VendorID"),
-						rs.getInt("StoryID"), rs.getInt("CaveID"), rs.getInt("WallID"), rs.getInt("AbsoluteLeft"), rs.getInt("AbsoluteTop"), 
+						rs.getInt("StoryID"), getCave(rs.getInt("CaveID")), rs.getInt("WallID"), rs.getInt("AbsoluteLeft"), rs.getInt("AbsoluteTop"), 
 						rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes")));
 			}
 			rs.close();
@@ -426,7 +426,7 @@ public class MysqlConnector {
 						rs.getString("SeparateAksaras"), rs.getString("Dating"), rs.getString("Description"), rs.getString("BackgroundColour"),
 						rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"), rs.getDouble("Width"), rs.getDouble("Height"),
 						rs.getInt("ExpeditionID"), rs.getDate("PurchaseDate"), rs.getInt("CurrentLocationID"), rs.getString("InventoryNumber"), rs.getInt("VendorID"),
-						rs.getInt("StoryID"), rs.getInt("CaveID"), rs.getInt("WallID"), rs.getInt("AbsoluteLeft"), 
+						rs.getInt("StoryID"), getCave(rs.getInt("CaveID")), rs.getInt("WallID"), rs.getInt("AbsoluteLeft"), 
 						rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes"));
 			}
 			rs.close();
@@ -545,7 +545,7 @@ public class MysqlConnector {
 			ResultSet rs = stmt.executeQuery((sqlWhere == null) ? "SELECT * FROM Caves" : "SELECT * FROM Caves WHERE " + sqlWhere);
 			while (rs.next()) {
 				CaveEntry ce = new CaveEntry(rs.getInt("CaveID"), rs.getString("OfficialNumber"), rs.getString("HistoricName"),
-						rs.getString("OptionalHistoricName"), rs.getInt("CaveTypeID"), rs.getInt("DistrictID"), rs.getInt("RegionID"),
+						rs.getString("OptionalHistoricName"), rs.getInt("CaveTypeID"), rs.getInt("SiteID"), rs.getInt("DistrictID"), rs.getInt("RegionID"),
 						rs.getInt("OrientationID"), rs.getString("StateOfPreservation"), rs.getString("Findings"), rs.getString("Notes"),
 						rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedInYear"), rs.getInt("PreservationClassificationID"),
 						rs.getInt("CaveGroupID"), rs.getString("OptionalCaveSketch"), rs.getString("CaveLayoutComments"), rs.getBoolean("HasVolutedHorseShoeArch"),
@@ -575,7 +575,7 @@ public class MysqlConnector {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Caves WHERE CaveID=" + id);
 			if (rs.first()) {
 				result = new CaveEntry(rs.getInt("CaveID"), rs.getString("OfficialNumber"), rs.getString("HistoricName"),
-						rs.getString("OptionalHistoricName"), rs.getInt("CaveTypeID"), rs.getInt("DistrictID"), rs.getInt("RegionID"),
+						rs.getString("OptionalHistoricName"), rs.getInt("CaveTypeID"), rs.getInt("SiteID"), rs.getInt("DistrictID"), rs.getInt("RegionID"),
 						rs.getInt("OrientationID"), rs.getString("StateOfPreservation"), rs.getString("Findings"), rs.getString("Notes"),
 						rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedInYear"), rs.getInt("PreservationClassificationID"),
 						rs.getInt("CaveGroupID"), rs.getString("OptionalCaveSketch"), rs.getString("CaveLayoutComments"), rs.getBoolean("HasVolutedHorseShoeArch"),
@@ -605,7 +605,7 @@ public class MysqlConnector {
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
 				CaveEntry ce = new CaveEntry(rs.getInt("CaveID"), rs.getString("OfficialNumber"), rs.getString("HistoricName"),
-						rs.getString("OptionalHistoricName"), rs.getInt("CaveTypeID"), rs.getInt("DistrictID"), rs.getInt("RegionID"),
+						rs.getString("OptionalHistoricName"), rs.getInt("CaveTypeID"), rs.getInt("SiteID"), rs.getInt("DistrictID"), rs.getInt("RegionID"),
 						rs.getInt("OrientationID"), rs.getString("StateOfPreservation"), rs.getString("Findings"), rs.getString("Notes"),
 						rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedInYear"), rs.getInt("PreservationClassificationID"),
 						rs.getInt("CaveGroupID"), rs.getString("OptionalCaveSketch"), rs.getString("CaveLayoutComments"), rs.getBoolean("HasVolutedHorseShoeArch"),
@@ -836,7 +836,7 @@ public class MysqlConnector {
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Iconography WHERE IconographyID=" + id);
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Iconography WHERE IconographyID=" + id + " ORDER BY Text Asc");
 			if (rs.first()) {
 				result = new IconographyEntry(rs.getInt("IconographyID"), rs.getInt("ParentID"), rs.getString("Text"));
 			}
@@ -875,7 +875,7 @@ public class MysqlConnector {
 
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Iconography WHERE ParentID " + where);
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Iconography WHERE ParentID " + where + " ORDER BY Text Asc");
 			while (rs.next()) {
 				results.add(new IconographyEntry(rs.getInt("IconographyID"), rs.getInt("ParentID"), rs.getString("Text")));
 			}
@@ -1230,7 +1230,7 @@ public class MysqlConnector {
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Regions");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Regions ORDER BY EnglishName Asc, PhoneticName Asc, OriginalName Asc");
 			while (rs.next()) {
 				result.add(new RegionEntry(rs.getInt("RegionID"), rs.getString("PhoneticName"), rs.getString("OriginalName"),
 						rs.getString("EnglishName"), rs.getInt("SiteID")));
@@ -1253,7 +1253,7 @@ public class MysqlConnector {
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Sites");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Sites ORDER BY Name Asc, AlternativeName Asc");
 			while (rs.next()) {
 				result.add(new SiteEntry(rs.getInt("SiteID"), rs.getString("Name"), rs.getString("AlternativeName"), rs.getString("ShortName")));
 			}
@@ -1504,16 +1504,17 @@ public class MysqlConnector {
 		AuthorEntry entry = null;
 		ArrayList<AuthorEntry> result = new ArrayList<AuthorEntry>();
 		Connection dbc = getConnection();
-		Statement stmt;
+		PreparedStatement pstmt;
 		try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM EditorBibliographyRelation WHERE BibID=" + annotatedBiblographyID);
+			pstmt = dbc.prepareStatement("SELECT * FROM EditorBibliographyRelation WHERE BibID=? ORDER BY EditorSequence Asc");
+			pstmt.setInt(1, annotatedBiblographyID);
+			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
 				entry = getAuthorEntry(rs.getInt("AuthorID"));
 				result.add(entry);
 			}
 			rs.close();
-			stmt.close();
+			pstmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -1528,16 +1529,17 @@ public class MysqlConnector {
 		AuthorEntry entry = null;
 		ArrayList<AuthorEntry> result = new ArrayList<AuthorEntry>();
 		Connection dbc = getConnection();
-		Statement stmt;
+		PreparedStatement pstmt;
 		try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM AuthorBibliographyRelation WHERE BibID=" + annotatedBiblographyID);
+			pstmt = dbc.prepareStatement("SELECT * FROM AuthorBibliographyRelation WHERE BibID=? ORDER BY AuthorSequence Asc");
+			pstmt.setInt(1, annotatedBiblographyID);
+			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
 				entry = getAuthorEntry(rs.getInt("AuthorID"));
 				result.add(entry);
 			}
 			rs.close();
-			stmt.close();
+			pstmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -1768,7 +1770,7 @@ public class MysqlConnector {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
-			pstmt = dbc.prepareStatement("UPDATE Caves SET OfficialNumber=?, HistoricName=?, OptionalHistoricName=?, CaveTypeID=?, DistrictID=?, "
+			pstmt = dbc.prepareStatement("UPDATE Caves SET OfficialNumber=?, HistoricName=?, OptionalHistoricName=?, CaveTypeID=?, SiteID=?, DistrictID=?, "
 					+ "RegionID=?, OrientationID=?, StateOfPreservation=?, Findings=?, Notes=?, FirstDocumentedBy=?, FirstDocumentedInYear=?, PreservationClassificationID=?, "
 					+ "CaveGroupID=?, OptionalCaveSketch=?, CaveLayoutComments=?, HasVolutedHorseShoeArch=?, HasSculptures=?, HasClayFigures=?, HasImmitationOfMountains=?, "
 					+ "HasHolesForFixationOfPlasticalItems=?, HasWoodenConstruction=?, OpenAccess=? WHERE CaveID=?");
@@ -1776,26 +1778,27 @@ public class MysqlConnector {
 			pstmt.setString(2, caveEntry.getHistoricName());
 			pstmt.setString(3, caveEntry.getOptionalHistoricName());
 			pstmt.setInt(4, caveEntry.getCaveTypeID());
-			pstmt.setInt(5, caveEntry.getDistrictID());
-			pstmt.setInt(6, caveEntry.getRegionID());
-			pstmt.setInt(7, caveEntry.getOrientationID());
-			pstmt.setString(8, caveEntry.getStateOfPerservation());
-			pstmt.setString(9, caveEntry.getFindings());
-			pstmt.setString(10, caveEntry.getNotes());
-			pstmt.setString(11, caveEntry.getFirstDocumentedBy());
-			pstmt.setInt(12, caveEntry.getFirstDocumentedInYear());
-			pstmt.setInt(13, caveEntry.getPreservationClassificationID());
-			pstmt.setInt(14, caveEntry.getCaveGroupID());
-			pstmt.setString(15, caveEntry.getOptionalCaveSketch());
-			pstmt.setString(16, caveEntry.getCaveLayoutComments());
-			pstmt.setBoolean(17, caveEntry.isHasVolutedHorseShoeArch());
-			pstmt.setBoolean(18, caveEntry.isHasSculptures());
-			pstmt.setBoolean(19, caveEntry.isHasClayFigures());
-			pstmt.setBoolean(20, caveEntry.isHasImmitationOfMountains());
-			pstmt.setBoolean(21, caveEntry.isHasHolesForFixationOfPlasticalItems());
-			pstmt.setBoolean(22, caveEntry.isHasWoodenConstruction());
-			pstmt.setBoolean(23, caveEntry.isOpenAccess());
-			pstmt.setInt(24, caveEntry.getCaveID());
+			pstmt.setInt(5, caveEntry.getSiteID());
+			pstmt.setInt(6, caveEntry.getDistrictID());
+			pstmt.setInt(7, caveEntry.getRegionID());
+			pstmt.setInt(8, caveEntry.getOrientationID());
+			pstmt.setString(9, caveEntry.getStateOfPerservation());
+			pstmt.setString(10, caveEntry.getFindings());
+			pstmt.setString(11, caveEntry.getNotes());
+			pstmt.setString(12, caveEntry.getFirstDocumentedBy());
+			pstmt.setInt(13, caveEntry.getFirstDocumentedInYear());
+			pstmt.setInt(14, caveEntry.getPreservationClassificationID());
+			pstmt.setInt(15, caveEntry.getCaveGroupID());
+			pstmt.setString(16, caveEntry.getOptionalCaveSketch());
+			pstmt.setString(17, caveEntry.getCaveLayoutComments());
+			pstmt.setBoolean(18, caveEntry.isHasVolutedHorseShoeArch());
+			pstmt.setBoolean(19, caveEntry.isHasSculptures());
+			pstmt.setBoolean(20, caveEntry.isHasClayFigures());
+			pstmt.setBoolean(21, caveEntry.isHasImmitationOfMountains());
+			pstmt.setBoolean(22, caveEntry.isHasHolesForFixationOfPlasticalItems());
+			pstmt.setBoolean(23, caveEntry.isHasWoodenConstruction());
+			pstmt.setBoolean(24, caveEntry.isOpenAccess());
+			pstmt.setInt(25, caveEntry.getCaveID());
 			pstmt.executeUpdate();
 			pstmt.close();
 			for (CaveAreaEntry caEntry : caveEntry.getCaveAreaList()) {
@@ -1823,33 +1826,34 @@ public class MysqlConnector {
 		PreparedStatement pstmt;
 		try {
 			pstmt = dbc.prepareStatement(
-					"INSERT INTO Caves (OfficialNumber, HistoricName, OptionalHistoricName, CaveTypeID, DistrictID, RegionID, OrientationID, StateOfPreservation, "
+					"INSERT INTO Caves (OfficialNumber, HistoricName, OptionalHistoricName, CaveTypeID, SiteID, DistrictID, RegionID, OrientationID, StateOfPreservation, "
 							+ "Findings, Notes, FirstDocumentedBy, FirstDocumentedInYear, PreservationClassificationID, CaveGroupID, OptionalCaveSketch, CaveLayoutComments, HasVolutedHorseShoeArch, "
 							+ "HasSculptures, HasClayFigures, HasImmitationOfMountains, HasHolesForFixationOfPlasticalItems, HasWoodenConstruction, OpenAccess) "
-							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			pstmt.setString(1, caveEntry.getOfficialNumber());
 			pstmt.setString(2, caveEntry.getHistoricName());
 			pstmt.setString(3, caveEntry.getOptionalHistoricName());
 			pstmt.setInt(4, caveEntry.getCaveTypeID());
-			pstmt.setInt(5, caveEntry.getDistrictID());
-			pstmt.setInt(6, caveEntry.getRegionID());
-			pstmt.setInt(7, caveEntry.getOrientationID());
-			pstmt.setString(8, caveEntry.getStateOfPerservation());
-			pstmt.setString(9, caveEntry.getFindings());
-			pstmt.setString(10, caveEntry.getNotes());
-			pstmt.setString(11, caveEntry.getFirstDocumentedBy());
-			pstmt.setInt(12, caveEntry.getFirstDocumentedInYear());
-			pstmt.setInt(13, caveEntry.getPreservationClassificationID());
-			pstmt.setInt(14, caveEntry.getCaveGroupID());
-			pstmt.setString(15, caveEntry.getOptionalCaveSketch());
-			pstmt.setString(16, caveEntry.getCaveLayoutComments());
-			pstmt.setBoolean(17, caveEntry.isHasVolutedHorseShoeArch());
-			pstmt.setBoolean(18, caveEntry.isHasSculptures());
-			pstmt.setBoolean(19, caveEntry.isHasClayFigures());
-			pstmt.setBoolean(20, caveEntry.isHasImmitationOfMountains());
-			pstmt.setBoolean(21, caveEntry.isHasHolesForFixationOfPlasticalItems());
-			pstmt.setBoolean(22, caveEntry.isHasWoodenConstruction());
-			pstmt.setBoolean(23, caveEntry.isOpenAccess());
+			pstmt.setInt(5, caveEntry.getSiteID());
+			pstmt.setInt(6, caveEntry.getDistrictID());
+			pstmt.setInt(7, caveEntry.getRegionID());
+			pstmt.setInt(8, caveEntry.getOrientationID());
+			pstmt.setString(9, caveEntry.getStateOfPerservation());
+			pstmt.setString(10, caveEntry.getFindings());
+			pstmt.setString(11, caveEntry.getNotes());
+			pstmt.setString(12, caveEntry.getFirstDocumentedBy());
+			pstmt.setInt(13, caveEntry.getFirstDocumentedInYear());
+			pstmt.setInt(14, caveEntry.getPreservationClassificationID());
+			pstmt.setInt(15, caveEntry.getCaveGroupID());
+			pstmt.setString(16, caveEntry.getOptionalCaveSketch());
+			pstmt.setString(17, caveEntry.getCaveLayoutComments());
+			pstmt.setBoolean(18, caveEntry.isHasVolutedHorseShoeArch());
+			pstmt.setBoolean(19, caveEntry.isHasSculptures());
+			pstmt.setBoolean(20, caveEntry.isHasClayFigures());
+			pstmt.setBoolean(21, caveEntry.isHasImmitationOfMountains());
+			pstmt.setBoolean(22, caveEntry.isHasHolesForFixationOfPlasticalItems());
+			pstmt.setBoolean(23, caveEntry.isHasWoodenConstruction());
+			pstmt.setBoolean(24, caveEntry.isOpenAccess());
 			pstmt.executeUpdate();
 			ResultSet keys = pstmt.getGeneratedKeys();
 			if (keys.next()) { // there should only be 1 key returned here 
@@ -2104,7 +2108,7 @@ public class MysqlConnector {
 			pstmt.setString(14, de.getInventoryNumber());
 			pstmt.setInt(15, de.getVendorID());
 			pstmt.setInt(16, de.getStoryID());
-			pstmt.setInt(17, de.getCaveID());
+			pstmt.setInt(17, de.getCave().getCaveID());
 			pstmt.setInt(18, de.getWallID());
 			pstmt.setInt(19, de.getAbsoluteLeft());
 			pstmt.setInt(20, de.getAbsoluteTop());
@@ -2175,7 +2179,7 @@ public class MysqlConnector {
 			pstmt.setString(14, de.getInventoryNumber());
 			pstmt.setInt(15, de.getVendorID());
 			pstmt.setInt(16, de.getStoryID());
-			pstmt.setInt(17, de.getCaveID());
+			pstmt.setInt(17, de.getCave().getCaveID());
 			pstmt.setInt(18, de.getWallID());
 			pstmt.setInt(19, de.getAbsoluteLeft());
 			pstmt.setInt(20, de.getAbsoluteTop());
@@ -2185,8 +2189,6 @@ public class MysqlConnector {
 			pstmt.setInt(24, de.getDepictionID());
 			pstmt.executeUpdate();
 			pstmt.close();
-			System.err.println("===> updateDepictionEntry - otherSuggestedIdentificaitons = " + de.getOtherSuggestedIdentifications());
-			System.err.println("===> updateDepictionEntry - sucessful");
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 			return false;
@@ -2900,7 +2902,7 @@ public class MysqlConnector {
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Locations");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Locations ORDER BY Name Asc, Country Asc");
 			while (rs.next()) {
 				results.add(new LocationEntry(rs.getInt("LocationID"), rs.getString("Name"), rs.getString("Town"), rs.getString("Region"), rs.getString("Country"), rs.getString("URL")));
 			}
