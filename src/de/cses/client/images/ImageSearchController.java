@@ -65,7 +65,6 @@ public class ImageSearchController extends AbstractSearchController {
 				sqlWhere = sqlWhere.concat(" AND " + sql);
 			}
 		}
-		com.google.gwt.user.client.Window.alert("search for images WHERE " + sqlWhere);
 		dbService.getImages(sqlWhere, new AsyncCallback<ArrayList<ImageEntry>>() {
 
 			@Override
