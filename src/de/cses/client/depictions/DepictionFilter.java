@@ -34,6 +34,7 @@ import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.data.shared.SortDir;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
@@ -168,8 +169,7 @@ public class DepictionFilter extends AbstractFilter {
 		shortNameSearch = new TextField();
 		shortNameSearch.setEmptyText("search short name");
 
-		ContentPanel shortNamePanel = new ContentPanel();
-		shortNamePanel.setHeaderVisible(true);
+		FramedPanel shortNamePanel = new FramedPanel();
 		shortNamePanel.setHeading("Shortname search");
 		shortNamePanel.add(shortNameSearch);		
 
@@ -181,20 +181,6 @@ public class DepictionFilter extends AbstractFilter {
 		for (LocationEntry locEntry : StaticTables.getInstance().getLocationEntries().values()) {
 			locationEntryLS.add(locEntry);
 		}
-//		locationEntryLS.addSortInfo(new StoreSortInfo<LocationEntry>(new ValueProvider<LocationEntry, String>(){
-//
-//			@Override
-//			public String getValue(LocationEntry object) {
-//				return object.getName();
-//			}
-//
-//			@Override
-//			public void setValue(LocationEntry object, String value) {}
-//
-//			@Override
-//			public String getPath() {
-//				return "name";
-//			}}, SortDir.ASC));
 		
 		locationSelectionLV = new ListView<LocationEntry, LocationEntry>(locationEntryLS, new IdentityValueProvider<LocationEntry>(), new SimpleSafeHtmlCell<LocationEntry>(new AbstractSafeHtmlRenderer<LocationEntry>() {
 			
@@ -232,8 +218,8 @@ public class DepictionFilter extends AbstractFilter {
     depictionFilterALC.setActiveWidget(cavePanel);
 
     BorderLayoutContainer depictionFilterBLC = new BorderLayoutContainer();
-    depictionFilterBLC.setNorthWidget(shortNamePanel, new BorderLayoutData(50));
-    depictionFilterBLC.setCenterWidget(depictionFilterALC, new MarginData(5));
+    depictionFilterBLC.setNorthWidget(shortNamePanel, new BorderLayoutData(60));
+    depictionFilterBLC.setCenterWidget(depictionFilterALC, new MarginData(5, 0, 0, 0));
     depictionFilterBLC.setHeight(450);
 
     return depictionFilterBLC;
