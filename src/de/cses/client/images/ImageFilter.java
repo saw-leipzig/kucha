@@ -117,7 +117,6 @@ public class ImageFilter extends AbstractFilter {
 		DualListField<ImageTypeEntry, String> dualListField = new DualListField<ImageTypeEntry, String>(imageTypeEntryList,
 				selectedImagesTypesList, imageTypeProps.name(), new TextCell());
 		dualListField.setEnableDnd(true);
-		// dualListField.getUpButton().getParent().removeFromParent();
 		dualListField.getDownButton().removeFromParent();
 		dualListField.getUpButton().removeFromParent();
 		dualListField.setMode(DualListField.Mode.INSERT);
@@ -136,8 +135,8 @@ public class ImageFilter extends AbstractFilter {
 	@Override
 	public ArrayList<String> getSqlWhereClause() {
 		ArrayList<String> result = new ArrayList<String>();
-
 		String textFieldQuery = "";
+		
 		if (!titleSearch.getValue().isEmpty()) {
 			textFieldQuery = "Title LIKE '%" + titleSearch.getValue() + "%'";
 		}
@@ -154,17 +153,15 @@ public class ImageFilter extends AbstractFilter {
 		}
 
 		String imageTypeQuery = "";
-		if (selectedImagesTypesList.size() > 0) {
-			for (ImageTypeEntry ite : selectedImagesTypesList.getAll()) {
-				if (imageTypeQuery.isEmpty()) {
-					imageTypeQuery = "" + ite.getImageTypeID();
-				} else {
-					imageTypeQuery = imageTypeQuery.concat(", " + ite.getImageTypeID());
-				}
+		for (ImageTypeEntry ite : selectedImagesTypesList.getAll()) {
+			if (imageTypeQuery.isEmpty()) {
+				imageTypeQuery = "" + ite.getImageTypeID();
+			} else {
+				imageTypeQuery = imageTypeQuery.concat(", " + ite.getImageTypeID());
 			}
-			if (!imageTypeQuery.isEmpty()) {
-				result.add("(ImageTypeID IN (" + imageTypeQuery + "))");
-			}
+		}
+		if (!imageTypeQuery.isEmpty()) {
+			result.add("(ImageTypeID IN (" + imageTypeQuery + "))");
 		}
 		return result;
 	}

@@ -442,40 +442,44 @@ public class MysqlConnector {
 	 * @return ArrayList<String> with result from 'SELECT * FROM Images'
 	 */
 	public ArrayList<ImageEntry> getImageEntries() {
-		ArrayList<ImageEntry> results = new ArrayList<ImageEntry>();
-		Connection dbc = getConnection();
-		Statement stmt;
-		try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Images");
-			while (rs.next()) {
-				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
-						rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
-						rs.getBoolean("ImageMode")));
-			}
-			rs.close();
-			stmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return null;
-		}
-		return results;
+		return getImageEntries(null);
+//		ArrayList<ImageEntry> results = new ArrayList<ImageEntry>();
+//		Connection dbc = getConnection();
+//		Statement stmt;
+//		try {
+//			stmt = dbc.createStatement();
+//			ResultSet rs = stmt.executeQuery("SELECT * FROM Images");
+//			while (rs.next()) {
+//				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
+//						rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
+//						rs.getBoolean("ImageMode")));
+//			}
+//			rs.close();
+//			stmt.close();
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//			return null;
+//		}
+//		return results;
 	}
 
 	public ArrayList<ImageEntry> getImageEntries(String sqlWhere) {
 		ArrayList<ImageEntry> results = new ArrayList<ImageEntry>();
 		Connection dbc = getConnection();
-		Statement stmt;
+		PreparedStatement pstmt;
 		try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Images WHERE " + sqlWhere);
+			pstmt = dbc.prepareStatement("SELECT * FROM Images " + sqlWhere != null ? "WHERE ? ORDER BY Title Asc" : "ORDER BY Title Asc");
+			if (sqlWhere != null) {
+				pstmt.setString(1, sqlWhere);
+			}
+			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
 				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
 						rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
 						rs.getBoolean("ImageMode")));
 			}
 			rs.close();
-			stmt.close();
+			pstmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
