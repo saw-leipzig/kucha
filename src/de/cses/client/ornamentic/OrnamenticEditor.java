@@ -445,7 +445,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		ListField<ImageEntry, ImageEntry> lf = new ListField<ImageEntry, ImageEntry>(imageListView);
 		lf.setSize("500", "300");
 
-		imageSelector = new ImageSelector(ImageSelector.PHOTO, this);
+		imageSelector = new ImageSelector(this);
 		TextButton addImageButton = new TextButton("Select Image");
 		addImageButton.addSelectHandler(new SelectHandler() {
 

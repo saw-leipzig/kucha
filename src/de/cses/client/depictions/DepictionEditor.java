@@ -1171,7 +1171,7 @@ public class DepictionEditor extends AbstractEditor {
 		/**
 		 * --------------------- definition of image panel on right side starts here --------------------------------
 		 */
-		imageSelector = new ImageSelector(ImageSelector.PHOTO, new ImageSelectorListener() {
+		imageSelector = new ImageSelector(new ImageSelectorListener() {
 
 			@Override
 			public void imageSelected(int imageID) {
@@ -1336,13 +1336,13 @@ public class DepictionEditor extends AbstractEditor {
 		for (int i = 0; i < imageEntryLS.size(); ++i) {
 			associatedImageEntryList.add(imageEntryLS.get(i));
 		}
-		ArrayList<PictorialElementEntry> selectedPEList = new ArrayList<PictorialElementEntry>();
-		for (PictorialElementEntry pe : peSelector.getSelectedPE()) {
-			selectedPEList.add(pe);
-		}
+//		ArrayList<PictorialElementEntry> selectedPEList = new ArrayList<PictorialElementEntry>();
+//		for (PictorialElementEntry pe : peSelector.getSelectedPE()) {
+//			selectedPEList.add(pe);
+//		}
 		
 		if (correspondingDepictionEntry.getDepictionID() == 0) {
-			dbService.insertDepictionEntry(correspondingDepictionEntry, associatedImageEntryList, selectedPEList, iconographySelector.getSelectedIconography(), new AsyncCallback<Integer>() {
+			dbService.insertDepictionEntry(correspondingDepictionEntry, associatedImageEntryList, iconographySelector.getSelectedIconography(), new AsyncCallback<Integer>() {
 
 				@Override
 				public void onSuccess(Integer newDepictionID) {
@@ -1358,7 +1358,7 @@ public class DepictionEditor extends AbstractEditor {
 				}
 			});
 		} else {
-			dbService.updateDepictionEntry(correspondingDepictionEntry, associatedImageEntryList, selectedPEList, iconographySelector.getSelectedIconography(), new AsyncCallback<Boolean>() {
+			dbService.updateDepictionEntry(correspondingDepictionEntry, associatedImageEntryList, iconographySelector.getSelectedIconography(), new AsyncCallback<Boolean>() {
 
 				@Override
 				public void onFailure(Throwable caught) {

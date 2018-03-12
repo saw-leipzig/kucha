@@ -198,6 +198,7 @@ public class IconographySelector implements IsWidget {
 				return false;
 			}
 		};
+		filterField.bind(iconographyTreeStore);
 
 		BorderLayoutContainer iconographySelectorBLC = new BorderLayoutContainer();
 		iconographySelectorBLC.setCenterWidget(treePanel, new MarginData(0, 10, 5, 10));

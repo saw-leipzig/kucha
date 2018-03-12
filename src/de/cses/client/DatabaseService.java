@@ -188,11 +188,10 @@ public interface DatabaseService extends RemoteService {
 
 	ArrayList<ImageTypeEntry> getImageTypes() throws IllegalArgumentException;
 
-	int insertDepictionEntry(DepictionEntry depictionEntry, ArrayList<ImageEntry> imgEntryList, ArrayList<PictorialElementEntry> peEntryList,
-			ArrayList<IconographyEntry> iconographyList);
+	int insertDepictionEntry(DepictionEntry depictionEntry, ArrayList<ImageEntry> imgEntryList, ArrayList<IconographyEntry> iconographyList);
 
 	boolean updateDepictionEntry(DepictionEntry correspondingDepictionEntry, ArrayList<ImageEntry> all,
-			ArrayList<PictorialElementEntry> selectedPE, ArrayList<IconographyEntry> iconographyList);
+			ArrayList<IconographyEntry> iconographyList);
 
 	ArrayList<ModeOfRepresentationEntry> getModesOfRepresentation() throws IllegalArgumentException;
 

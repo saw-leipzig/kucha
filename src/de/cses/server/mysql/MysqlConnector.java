@@ -2072,7 +2072,7 @@ public class MysqlConnector {
 	 * @return
 	 */
 	public synchronized int insertDepictionEntry(DepictionEntry de, ArrayList<ImageEntry> imgEntryList,
-			ArrayList<PictorialElementEntry> peEntryList, ArrayList<IconographyEntry> iconographyLists) {
+			ArrayList<IconographyEntry> iconographyLists) {
 		int newDepictionID = 0;
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -2123,10 +2123,6 @@ public class MysqlConnector {
 			if (imgEntryList.size() > 0) {
 				insertDepictionImageRelation(de.getDepictionID(), imgEntryList);
 			}
-			deleteEntry("DELETE FROM DepictionPERelation WHERE DepictionID=" + de.getDepictionID());
-			if (peEntryList.size() > 0) {
-				insertDepictionPERelation(de.getDepictionID(), peEntryList);
-			}
 			deleteEntry("DELETE FROM DepictionIconographyRelation WHERE DepictionID=" + de.getDepictionID());
 			if (iconographyLists.size() > 0) {
 				insertDepictionIconographyRelation(de.getDepictionID(), iconographyLists);
@@ -2138,12 +2134,11 @@ public class MysqlConnector {
 	/**
 	 * @param correspondingDepictionEntry
 	 * @param imgEntryList
-	 * @param selectedPEList
 	 * @param iconographyList 
 	 * @return <code>true</code> when operation is successful
 	 */
 	public synchronized boolean updateDepictionEntry(DepictionEntry de, ArrayList<ImageEntry> imgEntryList,
-		ArrayList<PictorialElementEntry> selectedPEList, ArrayList<IconographyEntry> iconographyList) {
+		ArrayList<IconographyEntry> iconographyList) {
 		// System.err.println("==> updateDepictionEntry called");
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -2186,10 +2181,6 @@ public class MysqlConnector {
 		deleteEntry("DELETE FROM DepictionImageRelation WHERE DepictionID=" + de.getDepictionID());
 		if (imgEntryList.size() > 0) {
 			insertDepictionImageRelation(de.getDepictionID(), imgEntryList);
-		}
-		deleteEntry("DELETE FROM DepictionPERelation WHERE DepictionID=" + de.getDepictionID());
-		if (selectedPEList.size() > 0) {
-			insertDepictionPERelation(de.getDepictionID(), selectedPEList);
 		}
 		deleteEntry("DELETE FROM DepictionIconographyRelation WHERE DepictionID=" + de.getDepictionID());
 		if (iconographyList.size() > 0) {
