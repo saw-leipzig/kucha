@@ -468,9 +468,13 @@ public class MysqlConnector {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
-			pstmt = dbc.prepareStatement("SELECT * FROM Images " + sqlWhere != null ? "WHERE ? ORDER BY Title Asc" : "ORDER BY Title Asc");
 			if (sqlWhere != null) {
+				System.err.println("SELECT * FROM Images WHERE " + sqlWhere + " ORDER BY Title Asc");
+				pstmt = dbc.prepareStatement("SELECT * FROM Images WHERE ? ORDER BY Title Asc");
 				pstmt.setString(1, sqlWhere);
+			} else {
+				System.err.println("SELECT * FROM Images ORDER BY Title Asc");
+				pstmt = dbc.prepareStatement("SELECT * FROM Images ORDER BY Title Asc");
 			}
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {

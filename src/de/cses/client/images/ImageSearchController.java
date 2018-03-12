@@ -58,11 +58,11 @@ public class ImageSearchController extends AbstractSearchController {
 			}
 		}
 		String sqlWhere = null;
-		for (int i = 0; i < sqlWhereClauses.size(); ++i) {
-			if (i == 0) {
-				sqlWhere = sqlWhereClauses.get(i);
+		for (String sql :  sqlWhereClauses) {
+			if (sqlWhere == null) {
+				sqlWhere = sql;
 			} else {
-				sqlWhere = sqlWhere + " AND " + sqlWhereClauses.get(i);
+				sqlWhere = sqlWhere.concat(" AND " + sql);
 			}
 		}
 		com.google.gwt.user.client.Window.alert("search for images WHERE " + sqlWhere);
