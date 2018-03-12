@@ -1504,16 +1504,17 @@ public class MysqlConnector {
 		AuthorEntry entry = null;
 		ArrayList<AuthorEntry> result = new ArrayList<AuthorEntry>();
 		Connection dbc = getConnection();
-		Statement stmt;
+		PreparedStatement pstmt;
 		try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM EditorBibliographyRelation WHERE BibID=" + annotatedBiblographyID);
+			pstmt = dbc.prepareStatement("SELECT * FROM EditorBibliographyRelation WHERE BibID=? ORDER BY EditorSequence Asc");
+			pstmt.setInt(1, annotatedBiblographyID);
+			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
 				entry = getAuthorEntry(rs.getInt("AuthorID"));
 				result.add(entry);
 			}
 			rs.close();
-			stmt.close();
+			pstmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -1528,16 +1529,17 @@ public class MysqlConnector {
 		AuthorEntry entry = null;
 		ArrayList<AuthorEntry> result = new ArrayList<AuthorEntry>();
 		Connection dbc = getConnection();
-		Statement stmt;
+		PreparedStatement pstmt;
 		try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM AuthorBibliographyRelation WHERE BibID=" + annotatedBiblographyID);
+			pstmt = dbc.prepareStatement("SELECT * FROM AuthorBibliographyRelation WHERE BibID=? ORDER BY AuthorSequence Asc");
+			pstmt.setInt(1, annotatedBiblographyID);
+			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
 				entry = getAuthorEntry(rs.getInt("AuthorID"));
 				result.add(entry);
 			}
 			rs.close();
-			stmt.close();
+			pstmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
