@@ -105,14 +105,16 @@ public class ImageUploader implements IsWidget {
 		form.addSubmitCompleteHandler(new SubmitCompleteHandler() {
 			public void onSubmitComplete(SubmitCompleteEvent event) {
 				uploadInfoWindow.hide();
-				com.google.gwt.user.client.Window.alert(event.getResults());
 				Document doc = XMLParser.parse(event.getResults());
 				NodeList nodelist = doc.getElementsByTagName("pre");
 				Node node = nodelist.item(0);
-				for (ImageUploadListener listener : uploadListener) {
-//					String filename = file.getValue();
-//					int startIdx = Math.max(filename.lastIndexOf("\\"), filename.lastIndexOf("/"));
-					listener.uploadCompleted(Integer.parseInt(node.getFirstChild().toString()), filename);
+				int newImageID = Integer.parseInt(node.getFirstChild().toString());
+				if (newImageID < 0) {
+					com.google.gwt.user.client.Window.alert("This image has already been uploaded!");
+				} else {
+					for (ImageUploadListener listener : uploadListener) {
+						listener.uploadCompleted(newImageID, filename);
+					}
 				}
 			}
 		});
