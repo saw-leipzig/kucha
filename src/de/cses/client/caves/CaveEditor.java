@@ -77,6 +77,7 @@ import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MaxNumberValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
+import com.sencha.gxt.widget.core.client.form.validator.MinNumberValidator;
 import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 
 import de.cses.client.DatabaseService;
@@ -863,6 +864,17 @@ public class CaveEditor extends AbstractEditor {
 				return svTemplates.siteLabel(item.getName());
 			}
 		});
+		siteSelection.addValidator(new Validator<SiteEntry>() {
+
+			@Override
+			public List<EditorError> validate(Editor<SiteEntry> editor, SiteEntry value) {
+				List<EditorError> l = new ArrayList<EditorError>();
+				if (value.getSiteID() == 0) {
+					l.add(new DefaultEditorError(editor, "selecting a site is mandatory", value));
+				}
+				return l;
+			}
+		});
 		siteSelection.setEmptyText("select site");
 		siteSelection.setTypeAhead(false);
 		siteSelection.setEditable(false);
@@ -872,6 +884,7 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<SiteEntry> event) {
+				correspondingCaveEntry.setSiteID(event.getSelectedItem().getSiteID());
 				activateRegionFilter();
 				activateDistrictFilter();
 			}
