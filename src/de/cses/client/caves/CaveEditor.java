@@ -683,6 +683,7 @@ public class CaveEditor extends AbstractEditor {
 		officialNumberField.setEmptyText("mandatory cave number");
 		officialNumberField.setAllowBlank(false);
 		officialNumberField.setValue(correspondingCaveEntry.getOfficialNumber());
+		officialNumberField.addValidator(new MinLengthValidator(1));
 		officialNumberField.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
@@ -869,7 +870,7 @@ public class CaveEditor extends AbstractEditor {
 			@Override
 			public List<EditorError> validate(Editor<SiteEntry> editor, SiteEntry value) {
 				List<EditorError> l = new ArrayList<EditorError>();
-				if (value.getSiteID() == 0) {
+				if (correspondingCaveEntry.getSiteID() == 0) {
 					l.add(new DefaultEditorError(editor, "selecting a site is mandatory", value));
 				}
 				return l;
@@ -2880,7 +2881,7 @@ public class CaveEditor extends AbstractEditor {
 	 * Will be called when the save button is selected. After saving <code>CaveEditorListener.closeRequest()</code> is called to inform all listener.
 	 */
 	protected void saveEntries(boolean close) {
-		if (siteSelection.validate()) {
+		if (siteSelection.validate() && officialNumberField.validate()) {
 			
 			if (correspondingCaveEntry.getCaveID() > 0) {
 				dbService.updateCaveEntry(correspondingCaveEntry, new AsyncCallback<Boolean>() {
