@@ -43,6 +43,7 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
+import de.cses.client.ornamentic.OrnamenticEditor.OrnamentComponentsProperties;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.MainTypologicalClass;
@@ -80,6 +81,9 @@ public class OrnamentCaveAttributes extends PopupPanel {
 	private TextField style = new TextField();
 	private TextField caveType = new TextField();
 	private OrnamentCaveRelation ornamentCaveRelationEntry;
+	private ListStore<OrientationEntry> orientationListStore;
+	private ListStore<OrientationEntry> selectedorientationListStore;
+	private OrientationProperties orientationProps;
 
 
 
@@ -100,18 +104,54 @@ public class OrnamentCaveAttributes extends PopupPanel {
 		ornamentEntryProps = GWT.create(OrnamentEntryProperties.class);
 		districtEntryProps = GWT.create(DistrictEntryProperties.class);
 		wallRelationProps = GWT.create(WallRelationProperties.class);
+		orientationProps = GWT.create(OrientationProperties.class);
 		caveEntryList = new ListStore<CaveEntry>(caveEntryProps.caveID());
 		districtEntryList = new ListStore<DistrictEntry>(districtEntryProps.districtID());
 		ornamentEntryList = new ListStore<OrnamentEntry>(ornamentEntryProps.OrnamentID());
 		ornamentEntryList2 = new ListStore<OrnamentEntry>(ornamentEntryProps.OrnamentID());
 		selectedSimilarOrnaments = new ListStore<OrnamentEntry>(ornamentEntryProps.OrnamentID());
 		selectedRedlatedOrnaments = new ListStore<OrnamentEntry>(ornamentEntryProps.OrnamentID());
+		orientationListStore = new ListStore<OrientationEntry>(orientationProps.orientationID());
+		selectedorientationListStore = new ListStore<OrientationEntry>(orientationProps.orientationID());
 
 	
 		wallsListStore = new ListStore<WallOrnamentCaveRelation>(wallRelationProps.wallLocationID());
 
 		
-		
+		dbService.getOrientations(new AsyncCallback<ArrayList<OrientationEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+			}
+
+			public void onSuccess(ArrayList<OrientationEntry> result) {
+				
+				orientationListStore.clear();
+				selectedorientationListStore.clear();
+				if (ornamentCaveRelationEntry != null) {
+					for (OrientationEntry pe : result) {
+						int count = 0;
+						for (OrientationEntry oe : ornamentCaveRelationEntry.getOrientations()) {
+							if (pe.getOrientationID() != oe.getOrientationID()) {
+								count++;
+							}
+							if (count == ornamentCaveRelationEntry.getOrientations().size()) {
+								orientationListStore.add(pe);
+							}
+						}
+					}
+					for (OrnamentComponentsEntry oe : ornamentEntry.getOrnamentComponents()) {
+						selectedorientationListStore.add(oe);
+					}
+				} else {
+					for (OrnamentComponentsEntry pe : result) {
+						ornamentComponents.add(pe);
+					}
+				}
+
+			}
+		});
 
 		
 		dbService.getOrnaments(new AsyncCallback<ArrayList<OrnamentEntry>>() {
@@ -446,7 +486,45 @@ Window.alert("Please select a entry!");
 
 		VerticalLayoutContainer vlcAttributes = new VerticalLayoutContainer();
 
+		
+		HorizontalLayoutContainer horizontalContainerLayout = new HorizontalLayoutContainer();
+		
+		HorizontalLayoutContainer orientationHorizontalPanel = new HorizontalLayoutContainer();
 
+		ListView<OrientationEntry, String> orientationView = new ListView<OrientationEntry, String>(orientationListStore, orientationProps.name());
+		ListView<OrientationEntry, String> selectedOrientationView = new ListView<OrientationEntry, String>(selectedorientationListStore,orientationProps.name());
+		orientationHorizontalPanel.add(orientationView, new HorizontalLayoutData(.5, 1.0, new Margins(1)));
+		orientationHorizontalPanel.add(selectedOrientationView, new HorizontalLayoutData(.5, 1.0, new Margins(1)));
+
+		new ListViewDragSource<OrientationEntry>(orientationView).setGroup("Orientation");
+		new ListViewDragSource<OrientationEntry>(selectedOrientationView).setGroup("Orientation");
+
+		new ListViewDropTarget<OrientationEntry>(selectedOrientationView).setGroup("Orientation");
+		new ListViewDropTarget<OrientationEntry>(orientationView).setGroup("Orientation");
+
+		header = new FramedPanel();
+		header.setHeading("Select Orientation");
+		if (ornamentCaveRelationEntry != null) {
+			for (int i = 0; i < ornamentCaveRelationEntry.getOrientations().size(); i++) {
+				selectedorientationListStore.add(ornamentCaveRelationEntry.getOrientations().get(i));
+
+			}
+		}
+		header.add(orientationHorizontalPanel);
+
+		horizontalContainerLayout.add(header, new HorizontalLayoutData(.5, 1.0));
+
+		final TextArea notes = new TextArea();
+	
+		header = new FramedPanel();
+
+		if (ornamentCaveRelationEntry != null) {
+			notes.setText(ornamentCaveRelationEntry.getNotes());
+		}
+		header.setHeading("Notes");
+		header.add(notes);
+		horizontalContainerLayout.add(header, new HorizontalLayoutData(.5, 1.0));
+		
 
 
 		final TextArea colours = new TextArea();
@@ -458,19 +536,12 @@ Window.alert("Please select a entry!");
 			colours.setText(ornamentCaveRelationEntry.getColours());
 		}
 		header.add(colours);
+		vlcAttributes.add(horizontalContainerLayout, new VerticalLayoutData(1.0, .3));
 		vlcAttributes.add(header, new VerticalLayoutData(0.5, .3));
-
-		final TextArea notes = new TextArea();
+	
 		colours.setAllowBlank(true);
-		header = new FramedPanel();
-
-		if (ornamentCaveRelationEntry != null) {
-			notes.setText(ornamentCaveRelationEntry.getNotes());
-		}
-		header.setHeading("Notes");
-		header.add(notes);
-		vlcAttributes.add(header, new VerticalLayoutData(0.5, .3));
-
+		
+		
 		FramedPanel attributes = new FramedPanel();
 		attributes.setHeading("Attributes");
 		attributes.add(vlcAttributes);
@@ -767,6 +838,12 @@ Window.alert("Please select a entry!");
 
 	interface WallRelationProperties extends PropertyAccess<CaveEntry> {
 		ModelKeyProvider<WallOrnamentCaveRelation> wallLocationID();
+	}
+	
+	interface OrientationProperties extends PropertyAccess<OrientationEntry> {
+		ModelKeyProvider<OrientationEntry> orientationID();
+
+		ValueProvider<OrientationEntry, String> name();
 	}
 
 	/**

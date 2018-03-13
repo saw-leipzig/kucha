@@ -27,6 +27,13 @@ public class OrnamentComponentsEntry {
 	public int getOrnamentComponentsID() {
 		return ornamentComponentsID;
 	}
+	public OrnamentComponentsEntry() {
+		
+	}
+	
+	public OrnamentComponentsEntry(int ornamentComponentsID, String name) {
+		
+	}
 	/**
 	 * @param ornamentComponentsId the ornamentComponentsId to set
 	 */

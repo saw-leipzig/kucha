@@ -41,12 +41,15 @@ import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageTypeEntry;
+import de.cses.shared.InnerSecondaryPatternsEntry;
 import de.cses.shared.LocationEntry;
 import de.cses.shared.MainTypologicalClass;
 import de.cses.shared.ModeOfRepresentationEntry;
 import de.cses.shared.OrientationEntry;
 import de.cses.shared.OrnamentCaveRelation;
 import de.cses.shared.OrnamentCaveType;
+import de.cses.shared.OrnamentClassEntry;
+import de.cses.shared.OrnamentComponentsEntry;
 import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamentFunctionEntry;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
@@ -2809,6 +2812,62 @@ public class MysqlConnector {
 			e.printStackTrace();
 		}
 		return locationID;
+	}
+	
+	public ArrayList<InnerSecondaryPatternsEntry> getInnerSecondaryPatterns() {
+		ArrayList<InnerSecondaryPatternsEntry> result = new ArrayList<InnerSecondaryPatternsEntry>();
+		Connection dbc = getConnection();
+
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM InnerSecondaryPatterns");
+			while (rs.next()) {
+				result.add(new InnerSecondaryPatternsEntry(rs.getInt("InnerSecondaryPatternsID"), rs.getString("Name")));
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	public ArrayList<OrnamentClassEntry> getOrnamentClass() {
+		ArrayList<OrnamentClassEntry> result = new ArrayList<OrnamentClassEntry>();
+		Connection dbc = getConnection();
+
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM OrnamentClass");
+			while (rs.next()) {
+				result.add(new OrnamentClassEntry(rs.getInt("OrnamentClassID"), rs.getString("Name")));
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	public ArrayList<OrnamentComponentsEntry> getOrnamentComponents() {
+		ArrayList<OrnamentComponentsEntry> result = new ArrayList<OrnamentComponentsEntry>();
+		Connection dbc = getConnection();
+
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM OrnamentComponents");
+			while (rs.next()) {
+				result.add(new OrnamentComponentsEntry(rs.getInt("OrnamentComponentsID"), rs.getString("Name")));
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 
 }

@@ -19,32 +19,42 @@ package de.cses.shared;
  */
 public class OrnamentClassEntry {
 	
-	int ornamentClassId;
-	int name;
+	int ornamentClassID;
+	String name;
 	/**
 	 * @return the ornamentClassId
 	 */
-	public int getOrnamentClassId() {
-		return ornamentClassId;
+	public int getOrnamentClassID() {
+		return ornamentClassID;
+	}
+	public OrnamentClassEntry() {
+		
+	}
+	public OrnamentClassEntry(int ornamentClassID, String name) {
+		
 	}
 	/**
 	 * @param ornamentClassId the ornamentClassId to set
 	 */
-	public void setOrnamentClassId(int ornamentClassId) {
-		this.ornamentClassId = ornamentClassId;
+	public void setOrnamentClassID(int ornamentClassId) {
+		this.ornamentClassID = ornamentClassId;
 	}
 	/**
 	 * @return the name
 	 */
-	public int getName() {
+	/**
+	 * @return the name
+	 */
+	public String getName() {
 		return name;
 	}
 	/**
 	 * @param name the name to set
 	 */
-	public void setName(int name) {
+	public void setName(String name) {
 		this.name = name;
 	}
+
 	
 	
 

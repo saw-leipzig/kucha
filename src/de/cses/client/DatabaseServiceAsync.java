@@ -31,11 +31,14 @@ import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageTypeEntry;
+import de.cses.shared.InnerSecondaryPatternsEntry;
 import de.cses.shared.LocationEntry;
 import de.cses.shared.MainTypologicalClass;
 import de.cses.shared.ModeOfRepresentationEntry;
 import de.cses.shared.OrientationEntry;
 import de.cses.shared.OrnamentCaveType;
+import de.cses.shared.OrnamentClassEntry;
+import de.cses.shared.OrnamentComponentsEntry;
 import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamentFunctionEntry;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
@@ -251,5 +254,12 @@ public interface DatabaseServiceAsync {
 	void insertLocationEntry(LocationEntry lEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 
 	void checkSessionID(String sessionID, AsyncCallback<String> asyncCallback) throws IllegalArgumentException;
+
+	void getInnerSecondaryPatterns( AsyncCallback<ArrayList<InnerSecondaryPatternsEntry>> callback) throws IllegalArgumentException;
+
+	void getOrnamentComponents( AsyncCallback<ArrayList<OrnamentComponentsEntry>> callback) throws IllegalArgumentException;
+	
+	void getOrnamentClass( AsyncCallback<ArrayList<OrnamentClassEntry>> callback) throws IllegalArgumentException;
+
 
 	}

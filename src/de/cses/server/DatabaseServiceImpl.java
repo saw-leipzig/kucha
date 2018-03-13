@@ -33,11 +33,14 @@ import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageTypeEntry;
+import de.cses.shared.InnerSecondaryPatternsEntry;
 import de.cses.shared.LocationEntry;
 import de.cses.shared.MainTypologicalClass;
 import de.cses.shared.ModeOfRepresentationEntry;
 import de.cses.shared.OrientationEntry;
 import de.cses.shared.OrnamentCaveType;
+import de.cses.shared.OrnamentClassEntry;
+import de.cses.shared.OrnamentComponentsEntry;
 import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamentFunctionEntry;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
@@ -699,6 +702,31 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public String checkSessionID(String sessionID) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.checkSessionID(sessionID);
+	}
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#getInnerSecondaryPatterns()
+	 */
+	@Override
+	public ArrayList<InnerSecondaryPatternsEntry> getInnerSecondaryPatterns() throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getInnerSecondaryPatterns();
+	}
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#getOrnamentComponents()
+	 */
+	@Override
+	public ArrayList<OrnamentComponentsEntry> getOrnamentComponents() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getOrnamentComponents();
+	}
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#getOrnamentClass()
+	 */
+	@Override
+	public ArrayList<OrnamentClassEntry> getOrnamentClass() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getOrnamentClass();
 	}
 
 }

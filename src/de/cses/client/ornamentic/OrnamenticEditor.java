@@ -118,6 +118,10 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		VerticalLayoutContainer verticalgeneral3Background = new VerticalLayoutContainer();
 
 		imgProperties = GWT.create(ImageProperties.class);
+		ornamentComponentsProps = GWT.create(OrnamentComponentsProperties.class);
+		ornamentClassProps = GWT.create(OrnamentClassProperties.class);
+		innerSecondaryPatternsProps= GWT.create(InnerSecondaryPatternsProperties.class);
+		ornamentComponentsProps = GWT.create(OrnamentComponentsProperties.class);
 		imageEntryList = new ListStore<ImageEntry>(imgProperties.imageID());
 		ornamentCaveRelationProps = GWT.create(OrnamentCaveRelationProperties.class);
 		mainTypologicalClassProps = GWT.create(MainTypologicalClassProperties.class);
@@ -125,13 +129,14 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 		structureOrganizationProps = GWT.create(StructureOrganizationProperties.class);
 		structureOrganization = new ListStore<StructureOrganization>(structureOrganizationProps.structureOrganizationID());
-		ornamentClassEntryList = new ListStore<OrnamentClassEntry>(ornamentClassProps.ornamentClassId());
+		ornamentClassEntryList = new ListStore<OrnamentClassEntry>(ornamentClassProps.ornamentClassID());
 		innerSecondaryPatternsEntryList = new ListStore<InnerSecondaryPatternsEntry>(innerSecondaryPatternsProps.innerSecondaryPatternsID());
-		
+		selectedinnerSecondaryPatternsEntryList = new ListStore<InnerSecondaryPatternsEntry>(innerSecondaryPatternsProps.innerSecondaryPatternsID());
+
 
 		selectedOrnamentComponents = new ListStore<OrnamentComponentsEntry>(ornamentComponentsProps.ornamentComponentsID());
 		ornamentComponents = new ListStore<OrnamentComponentsEntry>(ornamentComponentsProps.ornamentComponentsID());
-		ornamentComponentsProps = GWT.create(OrnamentComponentsProperties.class);
+		
 		
 
 		
@@ -148,7 +153,6 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 				selectedOrnamentComponents.clear();
 				if (ornamentEntry != null) {
 					for (OrnamentComponentsEntry pe : result) {
-
 						int count = 0;
 						for (OrnamentComponentsEntry oe : ornamentEntry.getOrnamentComponents()) {
 							if (pe.getOrnamentComponentsID() != oe.getOrnamentComponentsID()) {
@@ -535,9 +539,8 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		
 		HorizontalLayoutContainer ornamentComponentsHorizontalPanel = new HorizontalLayoutContainer();
 
-		ListView<OrnamentComponentsEntry, String> ornamentComponentView = new ListView<OrnamentComponentsEntry, String>(ornamentComponents, ornamentComponentsProps.nameEN());
-		ListView<OrnamentComponentsEntry, String> selectedOrnamentComponentView = new ListView<OrnamentComponentsEntry, String>(selectedOrnamentComponents,
-				ornamentComponentsProps.nameEN());
+		ListView<OrnamentComponentsEntry, String> ornamentComponentView = new ListView<OrnamentComponentsEntry, String>(ornamentComponents, ornamentComponentsProps.name());
+		ListView<OrnamentComponentsEntry, String> selectedOrnamentComponentView = new ListView<OrnamentComponentsEntry, String>(selectedOrnamentComponents,ornamentComponentsProps.name());
 		ornamentComponentsHorizontalPanel.add(ornamentComponentView, new HorizontalLayoutData(.5, 1.0, new Margins(1)));
 		ornamentComponentsHorizontalPanel.add(selectedOrnamentComponentView, new HorizontalLayoutData(.5, 1.0, new Margins(1)));
 
@@ -569,11 +572,11 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		 innerSecondaryPatternsHorizontalPanel.add(innerSecondaryPatternsView, new HorizontalLayoutData(.5, 1.0, new Margins(1)));
 		 innerSecondaryPatternsHorizontalPanel.add(selectedinnerSecondaryPatternsView, new HorizontalLayoutData(.5, 1.0, new Margins(1)));
 
-		new ListViewDragSource<InnerSecondaryPatternsEntry>(innerSecondaryPatternsView).setGroup("Components");
-		new ListViewDragSource<InnerSecondaryPatternsEntry>(selectedinnerSecondaryPatternsView).setGroup("Components");
+		new ListViewDragSource<InnerSecondaryPatternsEntry>(innerSecondaryPatternsView).setGroup("innersec");
+		new ListViewDragSource<InnerSecondaryPatternsEntry>(selectedinnerSecondaryPatternsView).setGroup("innersec");
 
-		new ListViewDropTarget<InnerSecondaryPatternsEntry>(selectedinnerSecondaryPatternsView).setGroup("Components");
-		new ListViewDropTarget<InnerSecondaryPatternsEntry>(innerSecondaryPatternsView).setGroup("Components");
+		new ListViewDropTarget<InnerSecondaryPatternsEntry>(selectedinnerSecondaryPatternsView).setGroup("innersec");
+		new ListViewDropTarget<InnerSecondaryPatternsEntry>(innerSecondaryPatternsView).setGroup("innersec");
 
 		header = new FramedPanel();
 		header.setHeading("Select inner Secondary Patterns");
@@ -583,7 +586,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 			}
 		}
-		header.add(ornamentComponentsHorizontalPanel);
+		header.add(innerSecondaryPatternsHorizontalPanel);
 		
 
 		verticalgeneral3Background.add(header, new VerticalLayoutData(1.0, .3));
@@ -685,8 +688,13 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 	}
 	
+	interface OrnamentClassViewTemplates extends XTemplates {
+		@XTemplate("<div>{name}</div>")
+		SafeHtml ornamentClass(String name);
+	}
+	
 	interface OrnamentClassProperties extends PropertyAccess<OrnamentClassEntry> {
-		ModelKeyProvider<OrnamentClassEntry> ornamentClassId();
+		ModelKeyProvider<OrnamentClassEntry> ornamentClassID();
 
 		LabelProvider<OrnamentClassEntry> name();
 	}
@@ -699,7 +707,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 	interface OrnamentComponentsProperties extends PropertyAccess<OrnamentComponentsEntry> {
 		ModelKeyProvider<OrnamentComponentsEntry> ornamentComponentsID();
 
-		ValueProvider<OrnamentComponentsEntry, String> nameEN();
+		ValueProvider<OrnamentComponentsEntry, String> name();
 	}
 	
 	

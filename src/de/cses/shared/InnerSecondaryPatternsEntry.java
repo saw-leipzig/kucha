@@ -26,6 +26,13 @@ public class InnerSecondaryPatternsEntry {
 	public int getInnerSecondaryPatternsID() {
 		return innerSecondaryPatternsId;
 	}
+	public InnerSecondaryPatternsEntry() {
+		
+	}
+	
+	public InnerSecondaryPatternsEntry(int innerSecondaryPatternsID, String name) {
+		
+	}
 	/**
 	 * @param innerSecondaryPatternsId the innerSecondaryPatternsId to set
 	 */
