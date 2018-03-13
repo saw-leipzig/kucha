@@ -16,6 +16,7 @@ package de.cses.client.images;
 import java.util.ArrayList;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.PopupPanel;
 
@@ -97,37 +98,41 @@ public class ImageSearchController extends AbstractSearchController {
 			@Override
 			public void uploadCompleted(int newImageID, final String filename) {
 				imageUploadPanel.hide();
-				dbService.getImage(newImageID, new AsyncCallback<ImageEntry>() {
+				if (newImageID == -1) {
+					Window.alert("The uploaded image already exists on the server!");
+				} else {
+					dbService.getImage(newImageID, new AsyncCallback<ImageEntry>() {
 
-					@Override
-					public void onSuccess(ImageEntry result) {
-						ImageEntry imgEntry = result;
-						imgEntry.setTitle(filename);
-						SingleImageEditor singleIE = new SingleImageEditor(imgEntry);
-						singleIE.addEditorListener(new EditorListener() {
-							
-							@Override
-							public void closeRequest() {
-								imageEditorPanel.hide();
-								getResultView().addResult(new ImageView(imgEntry));
-							}
+						@Override
+						public void onSuccess(ImageEntry result) {
+							ImageEntry imgEntry = result;
+							imgEntry.setTitle(filename);
+							SingleImageEditor singleIE = new SingleImageEditor(imgEntry);
+							singleIE.addEditorListener(new EditorListener() {
+								
+								@Override
+								public void closeRequest() {
+									imageEditorPanel.hide();
+									getResultView().addResult(new ImageView(imgEntry));
+								}
 
-							@Override
-							public void updateEntryRequest(AbstractEntry updatedEntry) {
-								// nothing needs to be done here
-							}
-						});
-						imageEditorPanel.add(singleIE);
-						imageEditorPanel.setGlassEnabled(true);
-						imageEditorPanel.center();
-						imageEditorPanel.show();
-					}
+								@Override
+								public void updateEntryRequest(AbstractEntry updatedEntry) {
+									// nothing needs to be done here
+								}
+							});
+							imageEditorPanel.add(singleIE);
+							imageEditorPanel.setGlassEnabled(true);
+							imageEditorPanel.center();
+							imageEditorPanel.show();
+						}
 
-					@Override
-					public void onFailure(Throwable caught) {
-						caught.printStackTrace();
-					}
-				});
+						@Override
+						public void onFailure(Throwable caught) {
+							caught.printStackTrace();
+						}
+					});
+				}
 			}
 
 			@Override

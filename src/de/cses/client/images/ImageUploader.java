@@ -47,6 +47,8 @@ public class ImageUploader implements IsWidget {
 	private FileUploadField file;
 	private FramedPanel mainPanel;
 	private ArrayList<String> typeList;
+	protected String selectedFile;
+	private String filename;
 
 
 	public ImageUploader(ImageUploadListener listener) {
@@ -84,30 +86,33 @@ public class ImageUploader implements IsWidget {
 			
 			@Override
 			public void onChange(ChangeEvent event) {
-				String selected = file.getValue().toLowerCase();
-				if ((selected.lastIndexOf(".") < 0) || !typeList.contains(selected.substring(selected.lastIndexOf(".")+1))) {
+				selectedFile = file.getValue();
+				if ((selectedFile.lastIndexOf(".") < 0) || !typeList.contains(selectedFile.toLowerCase().substring(selectedFile.lastIndexOf(".")+1))) {
 					Util.showWarning("Unsopported Image Type", "Please select JPG, PNG or TIFF!");
 					file.reset();
+				} else {
+					int startIdx = Math.max(selectedFile.lastIndexOf("\\"), selectedFile.lastIndexOf("/"));
+					filename = selectedFile.substring(startIdx>0 ? startIdx+1 : 0, selectedFile.lastIndexOf("."));
+					com.google.gwt.user.client.Window.alert("uploading file " + filename);
+					form.setAction("imgUpload?origImageFileName="+filename);
 				}
 			}
 		});
 		form = new FormPanel();
-		form.setAction("imgUpload");
 		form.setEncoding(Encoding.MULTIPART);
 		form.setMethod(Method.POST);
 
 		form.addSubmitCompleteHandler(new SubmitCompleteHandler() {
 			public void onSubmitComplete(SubmitCompleteEvent event) {
 				uploadInfoWindow.hide();
+				com.google.gwt.user.client.Window.alert(event.getResults());
 				Document doc = XMLParser.parse(event.getResults());
 				NodeList nodelist = doc.getElementsByTagName("pre");
 				Node node = nodelist.item(0);
 				for (ImageUploadListener listener : uploadListener) {
-					String filename = file.getValue();
-					int startIdx = Math.max(filename.lastIndexOf("\\"), filename.lastIndexOf("/"));
-					listener.uploadCompleted(Integer.parseInt(node.getFirstChild().toString()),
-							filename.substring( startIdx>0 ? startIdx+1 : 0, filename.lastIndexOf("."))
-						);
+//					String filename = file.getValue();
+//					int startIdx = Math.max(filename.lastIndexOf("\\"), filename.lastIndexOf("/"));
+					listener.uploadCompleted(Integer.parseInt(node.getFirstChild().toString()), filename);
 				}
 			}
 		});

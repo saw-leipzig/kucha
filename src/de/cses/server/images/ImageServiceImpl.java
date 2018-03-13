@@ -68,6 +68,15 @@ public class ImageServiceImpl extends HttpServlet {
 		String fileType, filename=null;
 
 		response.setContentType("text/plain");
+		
+		String origUploadFileName = request.getParameter("origImageFileName");
+		MysqlConnector connector = MysqlConnector.getInstance();
+		if (connector.getImageEntries("Title='" + origUploadFileName + "'").size() > 0) { // filename already exists
+			System.err.println(origUploadFileName + " already exists in database!");
+			response.getWriter().write(String.valueOf(-1));
+			response.getWriter().close();
+			return;
+		}
 		File imgHomeDir = new File(serverProperties.getProperty("home.images"));
 		if (!imgHomeDir.exists()) {
 			imgHomeDir.mkdirs();
