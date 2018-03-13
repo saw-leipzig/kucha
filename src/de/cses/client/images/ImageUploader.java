@@ -93,7 +93,6 @@ public class ImageUploader implements IsWidget {
 				} else {
 					int startIdx = Math.max(selectedFile.lastIndexOf("\\"), selectedFile.lastIndexOf("/"));
 					filename = selectedFile.substring(startIdx>0 ? startIdx+1 : 0, selectedFile.lastIndexOf("."));
-					com.google.gwt.user.client.Window.alert("uploading file " + filename);
 					form.setAction("imgUpload?origImageFileName="+filename);
 				}
 			}
