@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 
+ * Copyright 2016 - 2018
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -17,9 +17,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.text.html.HTMLDocument.HTMLReader.IsindexAction;
-
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
@@ -51,7 +50,6 @@ import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
-import de.cses.shared.AbstractEntry;
 import de.cses.shared.IconographyEntry;
 
 public class IconographySelector implements IsWidget {
@@ -198,6 +196,7 @@ public class IconographySelector implements IsWidget {
 				return false;
 			}
 		};
+		filterField.bind(iconographyTreeStore);
 
 		BorderLayoutContainer iconographySelectorBLC = new BorderLayoutContainer();
 		iconographySelectorBLC.setCenterWidget(treePanel, new MarginData(0, 10, 5, 10));
@@ -233,6 +232,7 @@ public class IconographySelector implements IsWidget {
 		for (IconographyEntry entry : iconographyTree.getCheckedSelection()) {
 			result.add(entry);
 		}
+		Window.alert("getSelectedIconography: selected = " + result.size());
 		return result;	
 	}
 

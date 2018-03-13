@@ -52,7 +52,7 @@ public class Districts implements IsWidget, ImageSelectorListener{
 
 			@Override
 			public void onClick(ClickEvent event) {
-				ImageSelector selector = new ImageSelector(ImageSelector.MAP, districts);
+				ImageSelector selector = new ImageSelector(districts);
 				imagePanel = new PopupPanel();
 				Draggable drag = new Draggable(imagePanel);
 				imagePanel.add(selector);

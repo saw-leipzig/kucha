@@ -206,11 +206,10 @@ public interface DatabaseServiceAsync {
 
 	void getImageTypes(AsyncCallback<ArrayList<ImageTypeEntry>> asyncCallback) throws IllegalArgumentException;
 
-	void insertDepictionEntry(DepictionEntry depictionEntry, ArrayList<ImageEntry> imgEntryList, ArrayList<PictorialElementEntry> peEntryList,
-			ArrayList<IconographyEntry> iconographyList, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
+	void insertDepictionEntry(DepictionEntry depictionEntry, ArrayList<ImageEntry> imgEntryList, ArrayList<IconographyEntry> iconographyList, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 
 	void updateDepictionEntry(DepictionEntry correspondingDepictionEntry, ArrayList<ImageEntry> all,
-			ArrayList<PictorialElementEntry> selectedPE, ArrayList<IconographyEntry> iconographyList, AsyncCallback<Boolean> asyncCallback)
+			ArrayList<IconographyEntry> iconographyList, AsyncCallback<Boolean> asyncCallback)
 			throws IllegalArgumentException;
 
 	void getModesOfRepresentation(AsyncCallback<ArrayList<ModeOfRepresentationEntry>> asyncCallback) throws IllegalArgumentException;

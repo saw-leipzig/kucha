@@ -442,40 +442,27 @@ public class MysqlConnector {
 	 * @return ArrayList<String> with result from 'SELECT * FROM Images'
 	 */
 	public ArrayList<ImageEntry> getImageEntries() {
-		ArrayList<ImageEntry> results = new ArrayList<ImageEntry>();
-		Connection dbc = getConnection();
-		Statement stmt;
-		try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Images");
-			while (rs.next()) {
-				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
-						rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
-						rs.getBoolean("ImageMode")));
-			}
-			rs.close();
-			stmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return null;
-		}
-		return results;
+		return getImageEntries(null);
 	}
 
 	public ArrayList<ImageEntry> getImageEntries(String sqlWhere) {
 		ArrayList<ImageEntry> results = new ArrayList<ImageEntry>();
 		Connection dbc = getConnection();
-		Statement stmt;
+		PreparedStatement pstmt;
 		try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Images WHERE " + sqlWhere);
+			if (sqlWhere != null) {
+				pstmt = dbc.prepareStatement("SELECT * FROM Images WHERE " + sqlWhere + " ORDER BY Title Asc");
+			} else {
+				pstmt = dbc.prepareStatement("SELECT * FROM Images ORDER BY Title Asc");
+			}
+			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
 				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
 						rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
 						rs.getBoolean("ImageMode")));
 			}
 			rs.close();
-			stmt.close();
+			pstmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -1703,7 +1690,7 @@ public class MysqlConnector {
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM CeilingTypes");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM CeilingTypes ORDER BY Name Asc");
 			while (rs.next()) {
 				result.add(new CeilingTypeEntry(rs.getInt("CeilingTypeID"), rs.getString("Name")));
 			}
@@ -2082,7 +2069,7 @@ public class MysqlConnector {
 	 * @return
 	 */
 	public synchronized int insertDepictionEntry(DepictionEntry de, ArrayList<ImageEntry> imgEntryList,
-			ArrayList<PictorialElementEntry> peEntryList, ArrayList<IconographyEntry> iconographyLists) {
+			ArrayList<IconographyEntry> iconographyLists) {
 		int newDepictionID = 0;
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -2133,10 +2120,6 @@ public class MysqlConnector {
 			if (imgEntryList.size() > 0) {
 				insertDepictionImageRelation(de.getDepictionID(), imgEntryList);
 			}
-			deleteEntry("DELETE FROM DepictionPERelation WHERE DepictionID=" + de.getDepictionID());
-			if (peEntryList.size() > 0) {
-				insertDepictionPERelation(de.getDepictionID(), peEntryList);
-			}
 			deleteEntry("DELETE FROM DepictionIconographyRelation WHERE DepictionID=" + de.getDepictionID());
 			if (iconographyLists.size() > 0) {
 				insertDepictionIconographyRelation(de.getDepictionID(), iconographyLists);
@@ -2148,12 +2131,11 @@ public class MysqlConnector {
 	/**
 	 * @param correspondingDepictionEntry
 	 * @param imgEntryList
-	 * @param selectedPEList
 	 * @param iconographyList 
 	 * @return <code>true</code> when operation is successful
 	 */
 	public synchronized boolean updateDepictionEntry(DepictionEntry de, ArrayList<ImageEntry> imgEntryList,
-		ArrayList<PictorialElementEntry> selectedPEList, ArrayList<IconographyEntry> iconographyList) {
+		ArrayList<IconographyEntry> iconographyList) {
 		// System.err.println("==> updateDepictionEntry called");
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -2196,10 +2178,6 @@ public class MysqlConnector {
 		deleteEntry("DELETE FROM DepictionImageRelation WHERE DepictionID=" + de.getDepictionID());
 		if (imgEntryList.size() > 0) {
 			insertDepictionImageRelation(de.getDepictionID(), imgEntryList);
-		}
-		deleteEntry("DELETE FROM DepictionPERelation WHERE DepictionID=" + de.getDepictionID());
-		if (selectedPEList.size() > 0) {
-			insertDepictionPERelation(de.getDepictionID(), selectedPEList);
 		}
 		deleteEntry("DELETE FROM DepictionIconographyRelation WHERE DepictionID=" + de.getDepictionID());
 		if (iconographyList.size() > 0) {

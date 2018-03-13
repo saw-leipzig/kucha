@@ -77,6 +77,7 @@ import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MaxNumberValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
+import com.sencha.gxt.widget.core.client.form.validator.MinNumberValidator;
 import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 
 import de.cses.client.DatabaseService;
@@ -682,6 +683,7 @@ public class CaveEditor extends AbstractEditor {
 		officialNumberField.setEmptyText("mandatory cave number");
 		officialNumberField.setAllowBlank(false);
 		officialNumberField.setValue(correspondingCaveEntry.getOfficialNumber());
+		officialNumberField.addValidator(new MinLengthValidator(1));
 		officialNumberField.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
@@ -863,6 +865,17 @@ public class CaveEditor extends AbstractEditor {
 				return svTemplates.siteLabel(item.getName());
 			}
 		});
+		siteSelection.addValidator(new Validator<SiteEntry>() {
+
+			@Override
+			public List<EditorError> validate(Editor<SiteEntry> editor, SiteEntry value) {
+				List<EditorError> l = new ArrayList<EditorError>();
+				if (correspondingCaveEntry.getSiteID() == 0) {
+					l.add(new DefaultEditorError(editor, "selecting a site is mandatory", value));
+				}
+				return l;
+			}
+		});
 		siteSelection.setEmptyText("select site");
 		siteSelection.setTypeAhead(false);
 		siteSelection.setEditable(false);
@@ -872,6 +885,7 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<SiteEntry> event) {
+				correspondingCaveEntry.setSiteID(event.getSelectedItem().getSiteID());
 				activateRegionFilter();
 				activateDistrictFilter();
 			}
@@ -2867,50 +2881,48 @@ public class CaveEditor extends AbstractEditor {
 	 * Will be called when the save button is selected. After saving <code>CaveEditorListener.closeRequest()</code> is called to inform all listener.
 	 */
 	protected void saveEntries(boolean close) {
-		if (correspondingCaveEntry.getCaveID() > 0) {
-			dbService.updateCaveEntry(correspondingCaveEntry, new AsyncCallback<Boolean>() {
+		if (siteSelection.validate() && officialNumberField.validate()) {
+			
+			if (correspondingCaveEntry.getCaveID() > 0) {
+				dbService.updateCaveEntry(correspondingCaveEntry, new AsyncCallback<Boolean>() {
 
-				@Override
-				public void onFailure(Throwable caught) {
-					Util.showWarning("A problem occurred", "The changes could not be saved!");
-				}
-
-				@Override
-				public void onSuccess(Boolean result) {
-					updateEntry(correspondingCaveEntry);
-					if (close) {
-						closeEditor();
+					@Override
+					public void onFailure(Throwable caught) {
+						Util.showWarning("A problem occurred", "The changes could not be saved!");
 					}
-				}
-			});
 
-		} else { // its 0 and we need to create a new entry
-			dbService.insertCaveEntry(correspondingCaveEntry, new AsyncCallback<Integer>() {
-
-				@Override
-				public void onFailure(Throwable caught) {
-					Util.showWarning("A problem occurred", "The new Cave could not be saved!");
-				}
-
-				@Override
-				public void onSuccess(Integer result) {
-					correspondingCaveEntry.setCaveID(result.intValue());
-					updateEntry(correspondingCaveEntry);
-					if (close) {
-						closeEditor();
+					@Override
+					public void onSuccess(Boolean result) {
+						updateEntry(correspondingCaveEntry);
+						if (close) {
+							closeEditor();
+						}
 					}
-				}
-			});
+				});
+
+			} else { // its 0 and we need to create a new entry
+				dbService.insertCaveEntry(correspondingCaveEntry, new AsyncCallback<Integer>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						Util.showWarning("A problem occurred", "The new Cave could not be saved!");
+					}
+
+					@Override
+					public void onSuccess(Integer result) {
+						correspondingCaveEntry.setCaveID(result.intValue());
+						updateEntry(correspondingCaveEntry);
+						if (close) {
+							closeEditor();
+						}
+					}
+				});
+				
+			}
+			
 		}
+		
 	}
-
-	// /**
-	// * @return
-	// */
-	// private boolean validateFields() {
-	// return officialNumberField.validate() && historicalNameField.validate() && optionalHistoricNameField.validate()
-	// && c14AnalysisUrlTextField.validate();
-	// }
 
 	/**
 	 * 
@@ -2925,7 +2937,7 @@ public class CaveEditor extends AbstractEditor {
 		};
 		regionEntryListStore.addFilter(regionFilter);
 		regionEntryListStore.setEnableFilters(true);
-		regionSelection.setEnabled(true);
+		regionSelection.setEnabled(true); // we enable the selector only after a site is selected 
 	}
 
 	/**

@@ -88,7 +88,7 @@ public class DepictionView extends AbstractView {
 				CaveEntry ce = entry.getCave();
 				setHTML(dvTemplates.view(UriUtils.fromString("resource?imageID=" + result.getImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), 
 						StaticTables.getInstance().getSiteEntries().get(ce.getSiteID()).getShortName() + " " + ce.getOfficialNumber(), 
-						ce.getHistoricName() != null ? ce.getHistoricName() : "", depictionEntry.getShortName() != null ? depictionEntry.getShortName() : ""));
+						ce.getHistoricName() != null ? ce.getHistoricName() : (depictionEntry.getShortName() != null ? depictionEntry.getShortName() : "")));
 			}
 		});
 		setPixelSize(150, 150);

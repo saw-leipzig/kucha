@@ -14,6 +14,8 @@
 package de.cses.client.images;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
@@ -33,12 +35,27 @@ import de.cses.shared.ImageEntry;
  */
 public class ImageView extends AbstractView {
 
+	interface ImageViewResources extends ClientBundle {
+		@Source("lock-protection.png")
+		ImageResource locked();
+
+		@Source("lock-semiprotection.png")
+		ImageResource semi();
+
+		@Source("photo.png")
+		ImageResource open();
+}
+
 	interface ImageViewTemplates extends XTemplates {
 		@XTemplate("<div><center><img src='{imgUri}'></img></center></div>")
 		SafeHtml view(SafeUri imgUri);
 		
-		@XTemplate("<div><center><img src='{imgUri}'></img></center><label style='font-size:9px' >{title}</label></div>")
-		SafeHtml view(SafeUri imgUri, String title);
+		@XTemplate("<div><center><img src='{imgUri}'></img></center><label style='font-size:9px' >{shortName}</label></div>")
+		SafeHtml view(SafeUri imgUri, String shortName);
+		
+		@XTemplate("<div style='display: flex; flex-direction: column;'><img style='align-self: flex-end;' src='{lockUri}' height='16px' width='16px'><img src='{imgUri}'></img>"
+				+ "<label style='font-size:9px' >{shortName}</label></div>")
+		SafeHtml view(SafeUri imgUri, String shortName, SafeUri lockUri);
 	}
 	
 	
@@ -52,9 +69,12 @@ public class ImageView extends AbstractView {
 	public ImageView(ImageEntry imgEntry) {
 		super();
 		ivTemplates = GWT.create(ImageViewTemplates.class);
+		ImageViewResources res = GWT.create(ImageViewResources.class);
 		this.imgEntry = imgEntry;
-		setHTML(ivTemplates.view(UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), imgEntry.getShortName()));
-		setPixelSize(110, 110);
+		
+		setHTML(ivTemplates.view(UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), 
+				imgEntry.getShortName(), imgEntry.isPublicImage() ? res.open().getSafeUri() : res.locked().getSafeUri()));
+		setPixelSize(150, 150);
 
 		DragSource source = new DragSource(this) {
 
