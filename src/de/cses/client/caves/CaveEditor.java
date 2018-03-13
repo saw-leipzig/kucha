@@ -2880,50 +2880,48 @@ public class CaveEditor extends AbstractEditor {
 	 * Will be called when the save button is selected. After saving <code>CaveEditorListener.closeRequest()</code> is called to inform all listener.
 	 */
 	protected void saveEntries(boolean close) {
-		if (correspondingCaveEntry.getCaveID() > 0) {
-			dbService.updateCaveEntry(correspondingCaveEntry, new AsyncCallback<Boolean>() {
+		if (siteSelection.validate()) {
+			
+			if (correspondingCaveEntry.getCaveID() > 0) {
+				dbService.updateCaveEntry(correspondingCaveEntry, new AsyncCallback<Boolean>() {
 
-				@Override
-				public void onFailure(Throwable caught) {
-					Util.showWarning("A problem occurred", "The changes could not be saved!");
-				}
-
-				@Override
-				public void onSuccess(Boolean result) {
-					updateEntry(correspondingCaveEntry);
-					if (close) {
-						closeEditor();
+					@Override
+					public void onFailure(Throwable caught) {
+						Util.showWarning("A problem occurred", "The changes could not be saved!");
 					}
-				}
-			});
 
-		} else { // its 0 and we need to create a new entry
-			dbService.insertCaveEntry(correspondingCaveEntry, new AsyncCallback<Integer>() {
-
-				@Override
-				public void onFailure(Throwable caught) {
-					Util.showWarning("A problem occurred", "The new Cave could not be saved!");
-				}
-
-				@Override
-				public void onSuccess(Integer result) {
-					correspondingCaveEntry.setCaveID(result.intValue());
-					updateEntry(correspondingCaveEntry);
-					if (close) {
-						closeEditor();
+					@Override
+					public void onSuccess(Boolean result) {
+						updateEntry(correspondingCaveEntry);
+						if (close) {
+							closeEditor();
+						}
 					}
-				}
-			});
+				});
+
+			} else { // its 0 and we need to create a new entry
+				dbService.insertCaveEntry(correspondingCaveEntry, new AsyncCallback<Integer>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						Util.showWarning("A problem occurred", "The new Cave could not be saved!");
+					}
+
+					@Override
+					public void onSuccess(Integer result) {
+						correspondingCaveEntry.setCaveID(result.intValue());
+						updateEntry(correspondingCaveEntry);
+						if (close) {
+							closeEditor();
+						}
+					}
+				});
+				
+			}
+			
 		}
+		
 	}
-
-	// /**
-	// * @return
-	// */
-	// private boolean validateFields() {
-	// return officialNumberField.validate() && historicalNameField.validate() && optionalHistoricNameField.validate()
-	// && c14AnalysisUrlTextField.validate();
-	// }
 
 	/**
 	 * 
@@ -2938,7 +2936,7 @@ public class CaveEditor extends AbstractEditor {
 		};
 		regionEntryListStore.addFilter(regionFilter);
 		regionEntryListStore.setEnableFilters(true);
-		regionSelection.setEnabled(true);
+		regionSelection.setEnabled(true); // we enable the selector only after a site is selected 
 	}
 
 	/**
