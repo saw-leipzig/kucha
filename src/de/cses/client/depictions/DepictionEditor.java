@@ -34,7 +34,7 @@ import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
-import com.sencha.gxt.core.client.util.Margins;
+import com.sencha.gxt.core.client.XTemplates.XTemplate;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
@@ -50,13 +50,11 @@ import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.TabPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
-import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer.ExpandMode;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
@@ -76,7 +74,6 @@ import com.sencha.gxt.widget.core.client.form.validator.MinNumberValidator;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
-import de.cses.client.depictions.IconographySelector.IconographyValueProvider;
 import de.cses.client.images.ImageSelector;
 import de.cses.client.images.ImageSelectorListener;
 import de.cses.client.ui.AbstractEditor;
@@ -90,7 +87,6 @@ import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.LocationEntry;
 import de.cses.shared.ModeOfRepresentationEntry;
-import de.cses.shared.PictorialElementEntry;
 import de.cses.shared.PreservationAttributeEntry;
 import de.cses.shared.SiteEntry;
 import de.cses.shared.StyleEntry;
@@ -253,8 +249,11 @@ public class DepictionEditor extends AbstractEditor {
 	 *
 	 */
 	interface ImageViewTemplates extends XTemplates {
-		@XTemplate("<img src=\"{imageUri}\" style=\"width: 230px; height: auto; align-content: center; margin: 5px;\"><br> {title}")
-		SafeHtml image(SafeUri imageUri, String title);
+		@XTemplate("<img src=\"{imageUri}\" style=\"width: 230px; height: auto; align-content: center; margin: 5px;\"><br> {shortName}")
+		SafeHtml image(SafeUri imageUri, String shortName);
+
+		@XTemplate("<div><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
+		SafeHtml image(SafeUri imageUri, String shortName, String title);
 	}
 
 	public DepictionEditor(DepictionEntry entry) {
@@ -475,7 +474,7 @@ public class DepictionEditor extends AbstractEditor {
 
 			public SafeHtml render(ImageEntry item) {
 				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=300" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
-				return imageViewTemplates.image(imageUri, item.getShortName());
+				return imageViewTemplates.image(imageUri, item.getShortName(), item.getTitle());
 			}
 		}));
 
