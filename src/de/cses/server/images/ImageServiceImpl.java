@@ -70,9 +70,9 @@ public class ImageServiceImpl extends HttpServlet {
 		response.setContentType("text/plain");
 		
 		String origUploadFileName = request.getParameter("origImageFileName");
-		if (!connector.getImageEntries("Title='" + origUploadFileName + "'").isEmpty()) { // filename already exists
+		if (!connector.getImageEntries("Title=\"" + origUploadFileName + "\"").isEmpty()) { // filename already exists
 			System.err.println(origUploadFileName + " already exists in database!");
-			response.getWriter().write(String.valueOf(-1));
+			response.getWriter().write(String.valueOf(0));
 			response.getWriter().close();
 			return;
 		}

@@ -451,11 +451,8 @@ public class MysqlConnector {
 		PreparedStatement pstmt;
 		try {
 			if (sqlWhere != null) {
-				System.err.println("SELECT * FROM Images WHERE " + sqlWhere + " ORDER BY Title Asc");
-				pstmt = dbc.prepareStatement("SELECT * FROM Images WHERE ? ORDER BY Title Asc");
-				pstmt.setString(1, sqlWhere);
+				pstmt = dbc.prepareStatement("SELECT * FROM Images WHERE " + sqlWhere + " ORDER BY Title Asc");
 			} else {
-				System.err.println("SELECT * FROM Images ORDER BY Title Asc");
 				pstmt = dbc.prepareStatement("SELECT * FROM Images ORDER BY Title Asc");
 			}
 			ResultSet rs = pstmt.executeQuery();
