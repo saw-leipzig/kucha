@@ -17,34 +17,35 @@ package de.cses.shared;
  * @author Nina
  *
  */
-public class OrnamentComponents {
+public class OrnamentClassEntry {
 	
-	int ornamentComponentsId;
-	String name;
+	int ornamentClassId;
+	int name;
 	/**
-	 * @return the ornamentComponentsId
+	 * @return the ornamentClassId
 	 */
-	public int getOrnamentComponentsId() {
-		return ornamentComponentsId;
+	public int getOrnamentClassId() {
+		return ornamentClassId;
 	}
 	/**
-	 * @param ornamentComponentsId the ornamentComponentsId to set
+	 * @param ornamentClassId the ornamentClassId to set
 	 */
-	public void setOrnamentComponentsId(int ornamentComponentsId) {
-		this.ornamentComponentsId = ornamentComponentsId;
+	public void setOrnamentClassId(int ornamentClassId) {
+		this.ornamentClassId = ornamentClassId;
 	}
 	/**
 	 * @return the name
 	 */
-	public String getName() {
+	public int getName() {
 		return name;
 	}
 	/**
 	 * @param name the name to set
 	 */
-	public void setName(String name) {
+	public void setName(int name) {
 		this.name = name;
 	}
+	
 	
 
 }

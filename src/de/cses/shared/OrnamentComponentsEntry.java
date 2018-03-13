@@ -17,20 +17,21 @@ package de.cses.shared;
  * @author Nina
  *
  */
-public class InnerSecondaryPatterns {
-	int innerSecondaryPatternsId;
+public class OrnamentComponentsEntry {
+	
+	int ornamentComponentsID;
 	String name;
 	/**
-	 * @return the innerSecondaryPatternsId
+	 * @return the ornamentComponentsId
 	 */
-	public int getInnerSecondaryPatternsId() {
-		return innerSecondaryPatternsId;
+	public int getOrnamentComponentsID() {
+		return ornamentComponentsID;
 	}
 	/**
-	 * @param innerSecondaryPatternsId the innerSecondaryPatternsId to set
+	 * @param ornamentComponentsId the ornamentComponentsId to set
 	 */
-	public void setInnerSecondaryPatternsId(int innerSecondaryPatternsId) {
-		this.innerSecondaryPatternsId = innerSecondaryPatternsId;
+	public void setOrnamentComponentsID(int ornamentComponentsID) {
+		this.ornamentComponentsID = ornamentComponentsID;
 	}
 	/**
 	 * @return the name
@@ -44,7 +45,6 @@ public class InnerSecondaryPatterns {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
 	
 
 }

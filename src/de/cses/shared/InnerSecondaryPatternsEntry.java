@@ -17,32 +17,31 @@ package de.cses.shared;
  * @author Nina
  *
  */
-public class OrnamentClass {
-	
-	int ornamentClassId;
-	int name;
+public class InnerSecondaryPatternsEntry {
+	int innerSecondaryPatternsId;
+	String name;
 	/**
-	 * @return the ornamentClassId
+	 * @return the innerSecondaryPatternsId
 	 */
-	public int getOrnamentClassId() {
-		return ornamentClassId;
+	public int getInnerSecondaryPatternsID() {
+		return innerSecondaryPatternsId;
 	}
 	/**
-	 * @param ornamentClassId the ornamentClassId to set
+	 * @param innerSecondaryPatternsId the innerSecondaryPatternsId to set
 	 */
-	public void setOrnamentClassId(int ornamentClassId) {
-		this.ornamentClassId = ornamentClassId;
+	public void setInnerSecondaryPatternsID(int innerSecondaryPatternsId) {
+		this.innerSecondaryPatternsId = innerSecondaryPatternsId;
 	}
 	/**
 	 * @return the name
 	 */
-	public int getName() {
+	public String getName() {
 		return name;
 	}
 	/**
 	 * @param name the name to set
 	 */
-	public void setName(int name) {
+	public void setName(String name) {
 		this.name = name;
 	}
 	

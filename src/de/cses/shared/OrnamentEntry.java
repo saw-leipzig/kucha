@@ -29,6 +29,8 @@ public class OrnamentEntry extends AbstractEntry {
 	private int structureOrganizationID;
 	private ArrayList<ImageEntry> images = new ArrayList<ImageEntry>();
 	private ArrayList<OrnamentCaveRelation> cavesRelations = new ArrayList<OrnamentCaveRelation>();
+	private ArrayList<OrnamentComponentsEntry> ornamentComponents = new ArrayList<OrnamentComponentsEntry>();
+	private ArrayList<InnerSecondaryPatternsEntry> innerSecondaryPatterns = new ArrayList<InnerSecondaryPatternsEntry>();
 
 	public OrnamentEntry() {
 		ornamentID = 0;
@@ -165,5 +167,35 @@ public class OrnamentEntry extends AbstractEntry {
 	public void setStructureOrganizationID(int structureOrganizationID) {
 		this.structureOrganizationID = structureOrganizationID;
 	}
+
+	/**
+	 * @return the ornamentComponents
+	 */
+	public ArrayList<OrnamentComponentsEntry> getOrnamentComponents() {
+		return ornamentComponents;
+	}
+
+	/**
+	 * @param ornamentComponents the ornamentComponents to set
+	 */
+	public void setOrnamentComponents(ArrayList<OrnamentComponentsEntry> ornamentComponents) {
+		this.ornamentComponents = ornamentComponents;
+	}
+
+	/**
+	 * @return the innerSecondaryPatterns
+	 */
+	public ArrayList<InnerSecondaryPatternsEntry> getInnerSecondaryPatterns() {
+		return innerSecondaryPatterns;
+	}
+
+	/**
+	 * @param innerSecondaryPatterns the innerSecondaryPatterns to set
+	 */
+	public void setInnerSecondaryPatterns(ArrayList<InnerSecondaryPatternsEntry> innerSecondaryPatterns) {
+		this.innerSecondaryPatterns = innerSecondaryPatterns;
+	}
+	
+	
 
 }
