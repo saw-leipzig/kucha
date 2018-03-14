@@ -59,10 +59,9 @@ public class ImageView extends AbstractView {
 		SafeHtml view(SafeUri imgUri, String shortName, SafeUri lockUri);
 	}
 	
-	
 	private ImageEntry imgEntry;
-//	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	private ImageViewTemplates ivTemplates;
+	private ImageViewResources res;
 
 	/**
 	 * @param text
@@ -70,7 +69,7 @@ public class ImageView extends AbstractView {
 	public ImageView(ImageEntry imgEntry) {
 		super();
 		ivTemplates = GWT.create(ImageViewTemplates.class);
-		ImageViewResources res = GWT.create(ImageViewResources.class);
+		res = GWT.create(ImageViewResources.class);
 		this.imgEntry = imgEntry;
 		
 		setHTML(ivTemplates.view(UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), 
@@ -100,7 +99,9 @@ public class ImageView extends AbstractView {
 	@Override
 	public void closeRequest() {
 		super.closeRequest();
-		setHTML(ivTemplates.view(UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), imgEntry.getShortName()));
+		setHTML(ivTemplates.view(UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), 
+				imgEntry.getShortName(), imgEntry.isPublicImage() ? res.open().getSafeUri() : res.locked().getSafeUri()));
+//		setHTML(ivTemplates.view(UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), imgEntry.getShortName()));
 	}
 
 	/* (non-Javadoc)

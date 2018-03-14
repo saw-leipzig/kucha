@@ -93,12 +93,6 @@ public class SingleImageEditor extends AbstractEditor {
 	private ImageEntry imgEntry;
 	private FlowLayoutContainer imageContainer;
 
-	// interface ImageProperties extends PropertyAccess<ImageEntry> {
-	// ModelKeyProvider<ImageEntry> imageID();
-	//
-	// LabelProvider<ImageEntry> title();
-	// }
-
 	interface PhotographerProperties extends PropertyAccess<PhotographerEntry> {
 		ModelKeyProvider<PhotographerEntry> photographerID();
 
@@ -354,23 +348,6 @@ public class SingleImageEditor extends AbstractEditor {
 			}
 		});		
 
-//		TextButton cancelButton = new TextButton("cancel");
-//		cancelButton.addSelectHandler(new SelectHandler() {
-//
-//			@Override
-//			public void onSelect(SelectEvent event) {
-//				cancelDialog();
-//			}
-//		});
-
-//		TextButton saveButton = new TextButton("save");
-//		saveButton.addSelectHandler(new SelectHandler() {
-//			@Override
-//			public void onSelect(SelectEvent event) {
-//				saveImageEntry();
-//			}
-//		});
-
 		SafeUri imageUri = UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=300" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 		Image img = new Image(imageUri);
 		imageContainer.add(img);
@@ -387,22 +364,8 @@ public class SingleImageEditor extends AbstractEditor {
 		panel.add(mainHLC);
 		panel.addTool(saveToolButton);
 		panel.addTool(closeToolButton);
-		panel.setSize("900px", "350px");
+		panel.setSize("900px", "400px");
 	}
-
-//	/**
-//	 * 
-//	 */
-//	protected void cancelDialog() {
-//		closeEditor();
-//	}
-
-	// /**
-	// *
-	// */
-	// protected void cancelEditing() {
-	// closeEditor();
-	// }
 
 	/**
 	 * This method will save the currently selected ImageEntry from the left list of previews. In future versions, the missing fields will be added. Also, the
