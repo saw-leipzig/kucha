@@ -25,7 +25,7 @@ public class OrnamentEntry extends AbstractEntry {
 	private String interpretation;
 	private String references;
 	private String sketch;
-	private int mainTypologicalClassID;
+	private int ornamentClass;
 	private int structureOrganizationID;
 	private ArrayList<ImageEntry> images = new ArrayList<ImageEntry>();
 	private ArrayList<OrnamentCaveRelation> cavesRelations = new ArrayList<OrnamentCaveRelation>();
@@ -140,18 +140,19 @@ public class OrnamentEntry extends AbstractEntry {
 		return "OrnamentEntry" + ornamentID;
 	}
 
+
 	/**
-	 * @return the mainTypologicalClassID
+	 * @return the ornamentClass
 	 */
-	public int getMainTypologicalClassID() {
-		return mainTypologicalClassID;
+	public int getOrnamentClass() {
+		return ornamentClass;
 	}
 
 	/**
-	 * @param mainTypologicalClassID the mainTypologicalClassID to set
+	 * @param ornamentClass the ornamentClass to set
 	 */
-	public void setMainTypologicalClassID(int mainTypologicalClassID) {
-		this.mainTypologicalClassID = mainTypologicalClassID;
+	public void setOrnamentClass(int ornamentClass) {
+		this.ornamentClass = ornamentClass;
 	}
 
 	/**

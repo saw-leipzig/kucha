@@ -688,7 +688,7 @@ public class MysqlConnector {
 		Connection dbc = getConnection();
 		PreparedStatement ornamentStatement;
 		try {
-			ornamentStatement = dbc.prepareStatement("INSERT INTO Ornaments (Code, Description, Remarks, Interpretation, OrnamentReferences, Annotation , MainTypologicalClassID, StructureOrganizationID) "
+			ornamentStatement = dbc.prepareStatement("INSERT INTO Ornaments (Code, Description, Remarks, Interpretation, OrnamentReferences, Annotation , OrnamentClassID, StructureOrganizationID) "
 					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			ornamentStatement.setString(1, ornamentEntry.getCode());
 			ornamentStatement.setString(2, ornamentEntry.getDescription());
@@ -696,7 +696,7 @@ public class MysqlConnector {
 			ornamentStatement.setString(4, ornamentEntry.getInterpretation());
 			ornamentStatement.setString(5, ornamentEntry.getReferences());
 			ornamentStatement.setString(6, ornamentEntry.getAnnotations());
-			ornamentStatement.setInt(7, ornamentEntry.getMainTypologicalClassID());
+			ornamentStatement.setInt(7, ornamentEntry.getOrnamentClass());
 			ornamentStatement.setInt(8, ornamentEntry.getStructureOrganizationID());
 			ornamentStatement.executeUpdate();
 			ResultSet keys = ornamentStatement.getGeneratedKeys();
@@ -705,6 +705,8 @@ public class MysqlConnector {
 			}
 			keys.close();
 
+			updateInnerSecondaryPatternsRelations(newOrnamentID,ornamentEntry.getInnerSecondaryPatterns());
+			updateOrnamentComponentsRelations(newOrnamentID, ornamentEntry.getOrnamentComponents());
 			updateOrnamentImageRelations(newOrnamentID, ornamentEntry.getImages());
 			updateCaveOrnamentRelation(newOrnamentID, ornamentEntry.getCavesRelations());
 			ornamentStatement.close();
@@ -713,6 +715,40 @@ public class MysqlConnector {
 			return false;
 		}
 		return true;
+	}
+	
+	private void updateOrnamentComponentsRelations(int ornamentID, List<OrnamentComponentsEntry> ornamentComponents) {
+		Connection dbc = getConnection();
+		deleteEntry("DELETE FROM OrnamentComponentRelation WHERE OrnamentID=" + ornamentID); 
+		PreparedStatement stmt;
+		try {
+			for(int i = 0; i < ornamentComponents.size(); i++) {
+			stmt = dbc.prepareStatement("INSERT INTO OrnamentComponentRelation (OrnamentID, OrnamentComponentID) VALUES (?,?)");
+			stmt.setInt(1, ornamentID);
+			stmt.setInt(2, ornamentComponents.get(i).getOrnamentComponentsID());
+			stmt.executeUpdate();
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private void updateInnerSecondaryPatternsRelations(int ornamentID, List<InnerSecondaryPatternsEntry> innerSecPatterns) {
+		Connection dbc = getConnection();
+		deleteEntry("DELETE FROM InnerSecondaryPatternRelation WHERE OrnamentID=" + ornamentID); 
+		PreparedStatement stmt;
+		try {
+			for(int i = 0; i < innerSecPatterns.size(); i++) {
+			stmt = dbc.prepareStatement("INSERT INTO InnerSecondaryPatternRelation (OrnamentID, InnerSecID) VALUES (?,?)");
+			stmt.setInt(1, ornamentID);
+			stmt.setInt(2, innerSecPatterns.get(i).getInnerSecondaryPatternsID());
+			stmt.executeUpdate();
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	/**

@@ -213,6 +213,21 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 			}
 		});
 		
+		dbService.getOrnamentClass(new AsyncCallback<ArrayList<OrnamentClassEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(ArrayList<OrnamentClassEntry> result) {
+				ornamentClassEntryList.clear();
+				for (OrnamentClassEntry pe : result) {
+					ornamentClassEntryList.add(pe);
+				}
+			}
+		});
 		
 		
 		dbService.getStructureOrganizations(new AsyncCallback<ArrayList<StructureOrganization>>() {
@@ -322,8 +337,69 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		header.add(ornamentClassComboBox);
 		panel.add(header, new VerticalLayoutData(1.0, .125));
 		if (ornamentEntry != null) {
-			ornamentClassComboBox.select(ornamentClassEntryList.findModelWithKey(Integer.toString(ornamentEntry.getMainTypologicalClassID())));
+			ornamentClassComboBox.select(ornamentClassEntryList.findModelWithKey(Integer.toString(ornamentEntry.getOrnamentClass())));
 		}
+		
+ToolButton addOrnamentClassButton = new ToolButton(ToolButton.PLUS);
+		
+		
+		FramedPanel ornamentClassFramedPanel = new FramedPanel();
+		ornamentClassFramedPanel.setHeading("New Ornament Class");
+		
+		ToolButton saveOrnamentClass = new ToolButton (ToolButton.SAVE);
+		ornamentClassFramedPanel.add(saveOrnamentClass);
+		
+		ToolButton cancelOrnamentClass = new ToolButton (ToolButton.CLOSE);
+		
+		ornamentClassFramedPanel.addTool(cancelOrnamentClass);
+		ornamentClassFramedPanel.addTool(saveOrnamentClass);
+		
+		HorizontalLayoutContainer newOrnamentClassLayoutPanel = new HorizontalLayoutContainer();
+		TextField newOrnamentClassTextField = new TextField();
+		newOrnamentClassLayoutPanel.add(newOrnamentClassTextField);
+		ornamentClassFramedPanel.add(newOrnamentClassLayoutPanel);
+		addOrnamentClassButton.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				PopupPanel newOrnamentClassPopup = new PopupPanel();
+				newOrnamentClassPopup.add(ornamentClassFramedPanel);
+				ornamentClassFramedPanel.setSize("150", "80");
+				newOrnamentClassPopup.center();
+				cancelOrnamentClass.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						newOrnamentClassPopup.hide();
+					}
+				});
+				saveOrnamentClass.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						OrnamentClassEntry entry = new OrnamentClassEntry();
+						entry.setName(newOrnamentClassTextField.getText());
+						dbService.addOrnamentClass(entry, new AsyncCallback<OrnamentClassEntry>() {
+
+							public void onFailure(Throwable caught) {
+								caught.printStackTrace();
+							}
+
+							@Override
+							public void onSuccess(OrnamentClassEntry result) {
+								Window.alert("saved");
+								ornamentClassEntryList.add(result);
+								newOrnamentClassPopup.hide();
+							}
+						});
+						newOrnamentClassPopup.hide();
+					}
+				});
+				
+				
+			}
+		});
+		header.addTool(addOrnamentClassButton);
 
 		//wird eventuell mal privat oder geloescht
 	/*	structureorganizationComboBox = new ComboBox<StructureOrganization>(structureOrganization, structureOrganizationProps.name(),
@@ -453,15 +529,12 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 				oEntry.setAnnotations(annotations.getText());
 				oEntry.setInterpretation(interpretation.getText());
 				oEntry.setReferences(references.getText());
-				if(mainTypologicalClassComboBox.getCurrentValue() == null) {
-					oEntry.setMainTypologicalClassID(0); // unknown
-				} else {
-				oEntry.setMainTypologicalClassID(mainTypologicalClassComboBox.getCurrentValue().getMainTypologicalClassID());
+				oEntry.setOrnamentClass(ornamentClassComboBox.getValue().getOrnamentClassID());
+				for(int i = 0; i < selectedinnerSecondaryPatternsEntryList.size(); i++) {
+					oEntry.getInnerSecondaryPatterns().add(selectedinnerSecondaryPatternsEntryList.get(i));
 				}
-				
-				ornamentEntry.getOrnamentComponents().clear();
-				for (int i = 0; i < selectedOrnamentComponents.size(); i++) {
-					ornamentEntry.getOrnamentComponents().add(selectedOrnamentComponents.get(i));
+				for(int i = 0; i < selectedOrnamentComponents.size(); i++) {
+					oEntry.getOrnamentComponents().add(selectedOrnamentComponents.get(i));
 				}
 				
 				//if(structureorganizationComboBox.getCurrentValue() == null) {
