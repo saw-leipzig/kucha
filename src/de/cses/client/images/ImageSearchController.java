@@ -16,6 +16,7 @@ package de.cses.client.images;
 import java.util.ArrayList;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.PopupPanel;
 
@@ -58,14 +59,13 @@ public class ImageSearchController extends AbstractSearchController {
 			}
 		}
 		String sqlWhere = null;
-		for (int i = 0; i < sqlWhereClauses.size(); ++i) {
-			if (i == 0) {
-				sqlWhere = sqlWhereClauses.get(i);
+		for (String sql :  sqlWhereClauses) {
+			if (sqlWhere == null) {
+				sqlWhere = sql;
 			} else {
-				sqlWhere = sqlWhere + " AND " + sqlWhereClauses.get(i);
+				sqlWhere = sqlWhere.concat(" AND " + sql);
 			}
 		}
-		System.err.println("search for images WHERE " + sqlWhere);
 		dbService.getImages(sqlWhere, new AsyncCallback<ArrayList<ImageEntry>>() {
 
 			@Override

@@ -26,11 +26,12 @@ import com.sencha.gxt.dnd.core.client.DragSource;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.StaticTables;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.client.ui.AbstractView;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
-import de.cses.shared.AnnotatedBiblographyEntry;
+import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.ImageEntry;
 
@@ -51,6 +52,15 @@ public class DepictionView extends AbstractView {
 		
 		@XTemplate("<div><center><img src='{imgUri}'></img></center><label style='font-size:9px' > DepictionID {id} </label></br></div>")
 		SafeHtml view(SafeUri imgUri, int id);
+
+		@XTemplate("<div><center><img src='{imgUri}'></img></center><label style='font-size:9px' > {label} </label></br></div>")
+		SafeHtml view(SafeUri imgUri, String label);
+
+		@XTemplate("<div><center><img src='{imgUri}'></img></center><label style='font-size:9px'>{caveLabel}<br>{depictionLabel}</label></br></div>")
+		SafeHtml view(SafeUri imgUri, String caveLabel, String depictionLabel);
+
+		@XTemplate("<div><center><img src='{imgUri}'></img></center><label style='font-size:9px'>{caveLabel}<br>{caveName}<br>{depictionLabel}</label></br></div>")
+		SafeHtml view(SafeUri imgUri, String caveLabel, String caveName, String depictionLabel);
 	}
 
 	private DepictionEntry depictionEntry;
@@ -75,10 +85,13 @@ public class DepictionView extends AbstractView {
 
 			@Override
 			public void onSuccess(ImageEntry result) {
-				setHTML(dvTemplates.view(UriUtils.fromString("resource?imageID=" + result.getImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), depictionEntry.getDepictionID()));
+				CaveEntry ce = entry.getCave();
+				setHTML(dvTemplates.view(UriUtils.fromString("resource?imageID=" + result.getImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), 
+						StaticTables.getInstance().getSiteEntries().get(ce.getSiteID()).getShortName() + " " + ce.getOfficialNumber(), 
+						ce.getHistoricName() != null ? ce.getHistoricName() : (depictionEntry.getShortName() != null ? depictionEntry.getShortName() : "")));
 			}
 		});
-		setPixelSize(110, 110);
+		setPixelSize(150, 150);
 
 		DragSource source = new DragSource(this) {
 

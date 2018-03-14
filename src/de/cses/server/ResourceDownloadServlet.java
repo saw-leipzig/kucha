@@ -141,7 +141,7 @@ public class ResourceDownloadServlet extends HttpServlet {
 				}
 			}
 		} else if (request.getParameter("document") != null) {
-			if (connector.checkSessionID(sessionID) == null) {
+			if (connector.getAccessRightsFromUsers(sessionID) == UserEntry.FULL) {
 				String filename = request.getParameter("document");
 				if (filename.startsWith(".")) {
 					response.setStatus(400);

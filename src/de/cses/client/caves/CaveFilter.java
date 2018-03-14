@@ -30,8 +30,6 @@ import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 
-import de.cses.client.DatabaseService;
-import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.shared.CaveTypeEntry;
@@ -42,14 +40,12 @@ import de.cses.shared.CaveTypeEntry;
  */
 public class CaveFilter extends AbstractFilter {
 
-	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	private CaveTypeProperties caveTypeProps;
 	private ListStore<CaveTypeEntry> caveTypeEntryList;
 	private ComboBox<CaveTypeEntry> caveTypeSelection;
 
 	interface CaveTypeProperties extends PropertyAccess<CaveTypeEntry> {
 		ModelKeyProvider<CaveTypeEntry> caveTypeID();
-
 		LabelProvider<CaveTypeEntry> nameEN();
 	}
 

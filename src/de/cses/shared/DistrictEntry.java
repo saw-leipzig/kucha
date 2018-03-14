@@ -88,5 +88,9 @@ public class DistrictEntry extends AbstractEntry {
 	public String getUniqueID() {
 		return "District-" + districtID;
 	}
+	
+	public String getLabel() {
+		return name;
+	}
 
 }

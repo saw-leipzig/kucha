@@ -11,7 +11,7 @@
  * You should have received a copy of the GPL v3 along with the software. 
  * If not, you can access it from here: <https://www.gnu.org/licenses/gpl-3.0.txt>.
  */
-package de.cses.client.images;
+package de.cses.client.bibliography;
 
 import java.util.ArrayList;
 
@@ -39,20 +39,30 @@ import com.sencha.gxt.widget.core.client.form.FormPanel.Method;
 
 import de.cses.client.Util;
 
-public class ImageUploader implements IsWidget {
+public class BibDocumentUploader implements IsWidget {
+	
+	public interface BibDocumentUploadListener {
+		public void uploadCompleted(String documentFilename);
+		public void uploadCanceled();
+	}
 
 	private FormPanel form;
-	private ArrayList<ImageUploadListener> uploadListener;
+	private ArrayList<BibDocumentUploadListener> uploadListener;
 	protected Window uploadInfoWindow;
 	private FileUploadField file;
 	private FramedPanel mainPanel;
-	private ArrayList<String> typeList;
-	protected String selectedFile;
-	private String filename;
+	protected String uploadedFilename;
+	private String docFileName;
 
-
-	public ImageUploader(ImageUploadListener listener) {
-		uploadListener = new ArrayList<ImageUploadListener>();
+	/**
+	 * 
+	 * @param correspondingCaveEntry the filename without postfix as it should be used on server side (make sure it's unique!)
+	 * @param docTypeList all allowed docTypes listed by postfix (e.g. pdf, txt)
+	 * @param listener
+	 */
+	public BibDocumentUploader(String docFileName, BibDocumentUploadListener listener) {
+		this.docFileName = docFileName;
+		uploadListener = new ArrayList<BibDocumentUploadListener>();
 		uploadListener.add(listener);
 	}
 
@@ -68,36 +78,29 @@ public class ImageUploader implements IsWidget {
 
 	private void initPanel() {
 		
-		typeList = new ArrayList<String>();
-		typeList.add("jpg");
-		typeList.add("jpeg");
-		typeList.add("png");
-		typeList.add("tif");
-		typeList.add("tiff");
-
 		mainPanel = new FramedPanel();
-		mainPanel.setHeading("Image Uploader");
+		mainPanel.setHeading("Document Uploader");
+		
+		ArrayList<String> docTypeList = new ArrayList<String>();
+		docTypeList.add("pdf");
 
 		file = new FileUploadField();
-		file.setName("uploadedfile");
+		file.setName("uploadedBibDocument");
 		file.setAllowBlank(false);
 		file.setPixelSize(300, 30);
 		file.addChangeHandler(new ChangeHandler() {
 			
 			@Override
 			public void onChange(ChangeEvent event) {
-				selectedFile = file.getValue();
-				if ((selectedFile.lastIndexOf(".") < 0) || !typeList.contains(selectedFile.toLowerCase().substring(selectedFile.lastIndexOf(".")+1))) {
-					Util.showWarning("Unsopported Image Type", "Please select JPG, PNG or TIFF!");
+				String selected = file.getValue().toLowerCase();
+				if ((selected.lastIndexOf(".") < 0) || !docTypeList.contains(selected.substring(selected.lastIndexOf(".")+1))) {
+					com.google.gwt.user.client.Window.alert("Unsopported Document Type!\n Please upload PDF document.");
 					file.reset();
-				} else {
-					int startIdx = Math.max(selectedFile.lastIndexOf("\\"), selectedFile.lastIndexOf("/"));
-					filename = selectedFile.substring(startIdx>0 ? startIdx+1 : 0, selectedFile.lastIndexOf("."));
-					form.setAction("imgUpload?origImageFileName="+filename);
 				}
 			}
 		});
 		form = new FormPanel();
+		form.setAction("bibDocumentUpload?docFileName=" + docFileName);
 		form.setEncoding(Encoding.MULTIPART);
 		form.setMethod(Method.POST);
 
@@ -107,13 +110,8 @@ public class ImageUploader implements IsWidget {
 				Document doc = XMLParser.parse(event.getResults());
 				NodeList nodelist = doc.getElementsByTagName("pre");
 				Node node = nodelist.item(0);
-				int newImageID = Integer.parseInt(node.getFirstChild().toString());
-				if (newImageID == 0) {
-					com.google.gwt.user.client.Window.alert("This image has already been uploaded!");
-				} else {
-					for (ImageUploadListener listener : uploadListener) {
-						listener.uploadCompleted(newImageID, filename);
-					}
+				for (BibDocumentUploadListener listener : uploadListener) {
+					listener.uploadCompleted(node.getFirstChild().toString());
 				}
 			}
 		});
@@ -123,9 +121,12 @@ public class ImageUploader implements IsWidget {
 
 		TextButton submitButton = new TextButton("Upload");
 		submitButton.addSelectHandler(new SelectHandler() {
+
 			@Override
 			public void onSelect(SelectEvent event) {
 				if (form.isValid()) {
+
+					uploadedFilename = file.getValue();
 					form.submit();
 					uploadInfoWindow = new Window();
 					uploadInfoWindow.setHeading("Please wait!");
@@ -134,7 +135,7 @@ public class ImageUploader implements IsWidget {
 					uploadInfoWindow.setMaximizable(false);
 					uploadInfoWindow.setClosable(false);
 					Status s = new Status();
-					s.setBusy("uploading image ...");
+					s.setBusy("uploading document ...");
 					uploadInfoWindow.setWidget(s);
 					uploadInfoWindow.show();
 				}
@@ -155,8 +156,7 @@ public class ImageUploader implements IsWidget {
 
 			@Override
 			public void onSelect(SelectEvent event) {
-				for (ImageUploadListener listener : uploadListener) {
-					// ToDo: send information after image upload for database
+				for (BibDocumentUploadListener listener : uploadListener) {
 					listener.uploadCanceled();
 				}
 
@@ -166,6 +166,10 @@ public class ImageUploader implements IsWidget {
 		mainPanel.addButton(cancelButton);
 		mainPanel.addButton(resetButton);
 		mainPanel.addButton(submitButton);
+	}
+
+	public String getUploadedFilename() {
+		return uploadedFilename;
 	}
 
 }

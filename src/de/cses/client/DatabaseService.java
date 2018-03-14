@@ -46,6 +46,7 @@ import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.OrnamentPositionEntry;
 import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PictorialElementEntry;
+import de.cses.shared.PreservationAttributeEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.PublicationEntry;
 import de.cses.shared.PublicationTypeEntry;
@@ -54,7 +55,6 @@ import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 import de.cses.shared.StructureOrganization;
 import de.cses.shared.StyleEntry;
-import de.cses.shared.UserEntry;
 import de.cses.shared.VendorEntry;
 import de.cses.shared.WallEntry;
 import de.cses.shared.WallLocationEntry;
@@ -70,8 +70,9 @@ public interface DatabaseService extends RemoteService {
 	ArrayList<DistrictEntry> getDistricts() throws IllegalArgumentException;
 
 	ArrayList<ImageEntry> getImages() throws IllegalArgumentException;
-	ArrayList<AnnotatedBiblographyEntry> getAnnotatedBiblography() throws IllegalArgumentException;
+
 	AnnotatedBiblographyEntry getAnnotatedBiblographybyID(int bibid) throws IllegalArgumentException;
+	
 	ArrayList<PublicationTypeEntry> getPublicationTypes() throws IllegalArgumentException;
 
 	ArrayList<ImageEntry> getImages(String where) throws IllegalArgumentException;
@@ -190,11 +191,10 @@ public interface DatabaseService extends RemoteService {
 
 	ArrayList<ImageTypeEntry> getImageTypes() throws IllegalArgumentException;
 
-	int insertDepictionEntry(DepictionEntry depictionEntry, ArrayList<ImageEntry> imgEntryList, ArrayList<PictorialElementEntry> peEntryList,
-			ArrayList<IconographyEntry> iconographyList);
+	int insertDepictionEntry(DepictionEntry depictionEntry, ArrayList<ImageEntry> imgEntryList, ArrayList<IconographyEntry> iconographyList);
 
 	boolean updateDepictionEntry(DepictionEntry correspondingDepictionEntry, ArrayList<ImageEntry> all,
-			ArrayList<PictorialElementEntry> selectedPE, ArrayList<IconographyEntry> iconographyList);
+			ArrayList<IconographyEntry> iconographyList);
 
 	ArrayList<ModeOfRepresentationEntry> getModesOfRepresentation() throws IllegalArgumentException;
 
@@ -202,9 +202,12 @@ public interface DatabaseService extends RemoteService {
 
 	boolean updateAuthorEntry(AuthorEntry currentAuthorEntry) throws IllegalArgumentException;
 	
-	boolean saveAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry) throws IllegalArgumentException;
+	int insertAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry) throws IllegalArgumentException;
+	
 	ArrayList<AnnotatedBiblographyEntry> getAnnotatedBibliography() throws IllegalArgumentException;
-	ArrayList<PublisherEntry> getPublisher() throws IllegalArgumentException;
+
+	ArrayList<PublisherEntry> getPublishers() throws IllegalArgumentException;
+
 	ArrayList<AuthorEntry> getAuthors() throws IllegalArgumentException;
 
 	int insertPhotographerEntry(PhotographerEntry photographerEntry) throws IllegalArgumentException;
@@ -244,5 +247,15 @@ public interface DatabaseService extends RemoteService {
 	
 	OrnamentComponentsEntry addOrnamentComponent(OrnamentComponentsEntry entry)  throws IllegalArgumentException;
 
+
+	ArrayList<PreservationAttributeEntry> getPreservationAttributes() throws IllegalArgumentException;
+
+	int insertPreservationAttributeEntry(PreservationAttributeEntry paEntry) throws IllegalArgumentException;
+
+	int insertPublisherEntry(PublisherEntry publisherEntry) throws IllegalArgumentException;
+
+	ArrayList<AnnotatedBiblographyEntry> getAnnotatedBibliography(String sqlWhere) throws IllegalArgumentException;
+
+	boolean updateAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry) throws IllegalArgumentException;
 
 }

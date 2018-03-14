@@ -64,16 +64,16 @@ public class ImageSelector implements IsWidget {
 	private ListView<ImageEntry, ImageEntry> imageListView;
 	private ArrayList<ImageSelectorListener> selectorListener;
 
-	public static final int PHOTO = 1;
-	public static final int SKETCH = 2;
-	public static final int MAP = 3;
+//	public static final int PHOTO = 1;
+//	public static final int SKETCH = 2;
+//	public static final int MAP = 3;
 
 	/**
 	 * Create a remote service proxy to talk to the server-side service.
 	 */
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	private FlowLayoutContainer imageContainer;
-	private int imageTypeID;
+//	private int imageTypeID;
 //	private TextField searchField;
 //	private StoreFilter<ImageEntry> searchFilter;
 	private ImageFilter imgFilter;
@@ -113,8 +113,7 @@ public class ImageSelector implements IsWidget {
 	 * @see ImageSelector.MAP
 	 * @param listener
 	 */
-	public ImageSelector(int imageTypeID, ImageSelectorListener listener) {
-		this.imageTypeID = imageTypeID;
+	public ImageSelector(ImageSelectorListener listener) {
 		selectorListener = new ArrayList<ImageSelectorListener>();
 		selectorListener.add(listener);
 		properties = GWT.create(ImageProperties.class);

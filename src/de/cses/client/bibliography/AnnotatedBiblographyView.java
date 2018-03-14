@@ -14,27 +14,16 @@
 package de.cses.client.bibliography;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.resources.client.ClientBundle;
-import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.resources.client.ClientBundle.Source;
 import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.safehtml.shared.SafeUri;
-import com.google.gwt.safehtml.shared.UriUtils;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.sencha.gxt.core.client.XTemplates;
-import com.sencha.gxt.core.client.XTemplates.XTemplate;
 import com.sencha.gxt.dnd.core.client.DndDragStartEvent;
 import com.sencha.gxt.dnd.core.client.DragSource;
 
-import de.cses.client.DatabaseService;
-import de.cses.client.DatabaseServiceAsync;
-import de.cses.client.depictions.DepictionEditor;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.client.ui.AbstractView;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBiblographyEntry;
-import de.cses.shared.DepictionEntry;
-import de.cses.shared.ImageEntry;
+import de.cses.shared.AuthorEntry;
 
 /**
  * @author Nina
@@ -42,36 +31,46 @@ import de.cses.shared.ImageEntry;
  */
 public class AnnotatedBiblographyView  extends AbstractView {
 	
-	interface Resources extends ClientBundle {
-		@Source("buddha.png")
-		ImageResource logo();
-	}
-
 	interface AnnotatedBiblographyViewTemplates extends XTemplates {
-		@XTemplate("<div><center><img src='{imgUri}'></img></center></div>")
-		SafeHtml view(SafeUri imgUri);
-		
-		@XTemplate("<div><center><img src='{imgUri}'></img></center><label style='font-size:9px' > AnnotatedBiblographyID {id} </label></br></div>")
-		SafeHtml view(SafeUri imgUri, int id);
+		@XTemplate("<div style='font-size:9px'>{title}</div>")
+		SafeHtml view(String title);
+
+		@XTemplate("<div style='font-size:12px'> {authors} ({year}). <i>{title}</i>. {publisher} </div>")
+		SafeHtml view(String authors, String year, String title, String publisher);
 	}
 
 	private AnnotatedBiblographyEntry annotatedBiblographyEntry;
 	private AnnotatedBiblographyViewTemplates dvTemplates;
-	private Resources resources;
-	private static final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 
 	/**
 	 * @param text
 	 */
-	public AnnotatedBiblographyView(AnnotatedBiblographyEntry entry) {
-		// super("DepictionID: " + depictionEntry.getDepictionID());
-		annotatedBiblographyEntry = entry;
-		resources = GWT.create(Resources.class);
+	public AnnotatedBiblographyView(AnnotatedBiblographyEntry annotatedBiblographyEntry) {
+		this.annotatedBiblographyEntry = annotatedBiblographyEntry;
 		dvTemplates = GWT.create(AnnotatedBiblographyViewTemplates.class);
+		String authors = null;
+		if (annotatedBiblographyEntry.getPublicationType().isAuthorEnabled()) {
+			for (AuthorEntry ae : annotatedBiblographyEntry.getAuthorList()) {
+				if (authors == null) {
+					authors = ae.getName();
+				} else {
+					authors = authors.concat("; " + ae.getName());
+				}
+			}
+		} else {
+			for (AuthorEntry ae : annotatedBiblographyEntry.getEditorList()) {
+				if (authors == null) {
+					authors = ae.getName();
+				} else {
+					authors = authors.concat("; " + ae.getName());
+				}
+			}
+			authors = authors.concat(" (Eds.)");
+		}
+		String publisherName = annotatedBiblographyEntry.getPublisher() != null ? annotatedBiblographyEntry.getPublisher().getName() : "unknown publisher";
+		setHTML(dvTemplates.view(authors, Integer.toString(annotatedBiblographyEntry.getYearEN()), annotatedBiblographyEntry.getTitleEN(), publisherName));
 
-		setHTML(dvTemplates.view(resources.logo().getSafeUri()));
-
-		setPixelSize(110, 110);
+		setPixelSize(600, 80);
 
 		DragSource source = new DragSource(this) {
 
@@ -79,7 +78,7 @@ public class AnnotatedBiblographyView  extends AbstractView {
 			protected void onDragStart(DndDragStartEvent event) {
 				super.onDragStart(event);
 				event.setData(annotatedBiblographyEntry);
-				event.getStatusProxy().update(dvTemplates.view(resources.logo().getSafeUri()));
+				event.getStatusProxy().update(dvTemplates.view(annotatedBiblographyEntry.getTitleEN()));
 			}
 			
 		};
@@ -89,7 +88,7 @@ public class AnnotatedBiblographyView  extends AbstractView {
 	 * @see de.cses.client.ui.AbstractView#getEditor()
 	 */
 	protected AbstractEditor getEditor() {
-		return new AnnotatedBiblographyEditor(annotatedBiblographyEntry);
+		return new AnnotatedBiblographyEditor(annotatedBiblographyEntry.clone());
 	}
 
 	/* (non-Javadoc)
@@ -97,11 +96,6 @@ public class AnnotatedBiblographyView  extends AbstractView {
 	 */
 	protected AbstractEntry getEntry() {
 		return annotatedBiblographyEntry;
-	}
-
-	public void closeRequest() {
-		super.closeRequest();
-
 	}
 
 	/* (non-Javadoc)

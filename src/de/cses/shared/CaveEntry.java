@@ -21,6 +21,7 @@ public class CaveEntry extends AbstractEntry {
 	private String historicName;
 	private String optionalHistoricName;
 	private int caveTypeID = 0;
+	private int siteID = 0;
 	private int districtID = 0;
 	private int regionID = 0;
 	private int orientationID = 0;
@@ -44,9 +45,9 @@ public class CaveEntry extends AbstractEntry {
 	private ArrayList<C14AnalysisUrlEntry> c14AnalysisUrlList = new ArrayList<C14AnalysisUrlEntry>();
 	private ArrayList<C14DocumentEntry> c14DocumentList = new ArrayList<C14DocumentEntry>();
 
-	public CaveEntry() { }
+	public CaveEntry() { 	}
 
-	public CaveEntry(int caveID, String officialNumber, String historicName, String optionalHistoricName, int caveTypeID, int districtID,
+	public CaveEntry(int caveID, String officialNumber, String historicName, String optionalHistoricName, int caveTypeID, int siteID, int districtID,
 			int regionID, int orientationID, String stateOfPerservation, String findings, String notes, String firstDocumentedBy, int firstDocumentedInYear, int preservationClassificationID,
 			int caveGroupID, String optionalCaveSketch, String caveLayoutComments, boolean hasVolutedHorseShoeArch, boolean hasSculptures, boolean hasClayFigures, boolean hasImmitationOfMountains,
 			boolean hasHolesForFixationOfPlasticalItems, boolean hasWoodenConstruction, boolean openAccess) {
@@ -55,6 +56,7 @@ public class CaveEntry extends AbstractEntry {
 		this.historicName = historicName;
 		this.optionalHistoricName = optionalHistoricName;
 		this.caveTypeID = caveTypeID;
+		this.siteID = siteID;
 		this.districtID = districtID;
 		this.regionID = regionID;
 		this.orientationID = orientationID;
@@ -73,15 +75,11 @@ public class CaveEntry extends AbstractEntry {
 		this.hasImmitationOfMountains = hasImmitationOfMountains;
 		this.hasHolesForFixationOfPlasticalItems = hasHolesForFixationOfPlasticalItems;
 		this.hasWoodenConstruction = hasWoodenConstruction;
-		caveAreaList = new ArrayList<CaveAreaEntry>();
-		wallList = new ArrayList<WallEntry>();
-		c14AnalysisUrlList = new ArrayList<C14AnalysisUrlEntry>();
-		c14DocumentList = new ArrayList<C14DocumentEntry>();
 		this.setOpenAccess(openAccess);
 	}
 	
 	public CaveEntry clone() {
-		CaveEntry clonedCE = new CaveEntry(caveID, officialNumber, historicName, optionalHistoricName, caveTypeID, districtID,
+		CaveEntry clonedCE = new CaveEntry(caveID, officialNumber, historicName, optionalHistoricName, caveTypeID, siteID, districtID,
 				regionID, orientationID, stateOfPerservation, findings, notes, firstDocumentedBy, firstDocumentedInYear, preservationClassificationID,
 				caveGroupID, optionalCaveSketch, caveLayoutComments, hasVolutedHorseShoeArch, hasSculptures, hasClayFigures, hasImmitationOfMountains, hasHolesForFixationOfPlasticalItems, hasWoodenConstruction, this.isOpenAccess());
 		ArrayList<CaveAreaEntry> clonedCaveAreaList = new ArrayList<CaveAreaEntry>();
@@ -400,6 +398,14 @@ public class CaveEntry extends AbstractEntry {
 
 	public void setHasWoodenConstruction(boolean hasWoodenConstruction) {
 		this.hasWoodenConstruction = hasWoodenConstruction;
+	}
+
+	public int getSiteID() {
+		return siteID;
+	}
+
+	public void setSiteID(int siteID) {
+		this.siteID = siteID;
 	}
 	
 }

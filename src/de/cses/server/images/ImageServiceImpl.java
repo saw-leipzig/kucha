@@ -58,7 +58,7 @@ public class ImageServiceImpl extends HttpServlet {
 	}
 
 	/**
-	 * This method is called when the submit button in the image uploader is pressed. Images are stored in the SERVER_IMAGES_PATHNAME
+	 * This method is called when the submit button in the image paperUploader is pressed. Images are stored in the SERVER_IMAGES_PATHNAME
 	 * 
 	 * @see de.cses.client.images.ImageUploader
 	 */
@@ -68,6 +68,14 @@ public class ImageServiceImpl extends HttpServlet {
 		String fileType, filename=null;
 
 		response.setContentType("text/plain");
+		
+		String origUploadFileName = request.getParameter("origImageFileName");
+		if (!connector.getImageEntries("Title=\"" + origUploadFileName + "\"").isEmpty()) { // filename already exists
+			System.err.println(origUploadFileName + " already exists in database!");
+			response.getWriter().write(String.valueOf(0));
+			response.getWriter().close();
+			return;
+		}
 		File imgHomeDir = new File(serverProperties.getProperty("home.images"));
 		if (!imgHomeDir.exists()) {
 			imgHomeDir.mkdirs();

@@ -37,6 +37,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
+import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.core.client.util.DateWrapper;
@@ -76,6 +77,7 @@ import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MaxNumberValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
+import com.sencha.gxt.widget.core.client.form.validator.MinNumberValidator;
 import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 
 import de.cses.client.DatabaseService;
@@ -260,7 +262,7 @@ public class CaveEditor extends AbstractEditor {
 
 	interface DistrictProperties extends PropertyAccess<DistrictEntry> {
 		ModelKeyProvider<DistrictEntry> districtID();
-
+		ValueProvider<DistrictEntry, String> label();
 		LabelProvider<DistrictEntry> name();
 	}
 
@@ -271,7 +273,7 @@ public class CaveEditor extends AbstractEditor {
 
 	interface RegionProperties extends PropertyAccess<RegionEntry> {
 		ModelKeyProvider<RegionEntry> regionID();
-
+		ValueProvider<RegionEntry, String> label();
 		LabelProvider<RegionEntry> englishName();
 	}
 
@@ -285,7 +287,7 @@ public class CaveEditor extends AbstractEditor {
 
 	interface SiteProperties extends PropertyAccess<SiteEntry> {
 		ModelKeyProvider<SiteEntry> siteID();
-
+		ValueProvider<SiteEntry, String> label();
 		LabelProvider<SiteEntry> name();
 	}
 
@@ -358,14 +360,17 @@ public class CaveEditor extends AbstractEditor {
 				preservationClassificationProps.preservationClassificationID());
 		siteProps = GWT.create(SiteProperties.class);
 		siteEntryListStore = new ListStore<SiteEntry>(siteProps.siteID());
+		siteEntryListStore.addSortInfo(new StoreSortInfo<SiteEntry>(siteProps.label(), SortDir.ASC));
 		orientationProps = GWT.create(OrientationProperties.class);
 		orientationEntryList = new ListStore<OrientationEntry>(orientationProps.orientationID());
 		caveGroupProps = GWT.create(CaveGroupProperties.class);
 		caveGroupEntryList = new ListStore<CaveGroupEntry>(caveGroupProps.caveGroupID());
 		regionProps = GWT.create(RegionProperties.class);
 		regionEntryListStore = new ListStore<RegionEntry>(regionProps.regionID());
+		regionEntryListStore.addSortInfo(new StoreSortInfo<RegionEntry>(regionProps.label(), SortDir.ASC));
 		districtProps = GWT.create(DistrictProperties.class);
 		districtEntryList = new ListStore<DistrictEntry>(districtProps.districtID());
+		districtEntryList.addSortInfo(new StoreSortInfo<DistrictEntry>(districtProps.label(), SortDir.ASC));
 		caveLayoutViewTemplates = GWT.create(CaveLayoutViewTemplates.class);
 		documentLinkTemplate = GWT.create(DocumentLinkTemplate.class);
 		ctvTemplates = GWT.create(CaveTypeViewTemplates.class);
@@ -548,6 +553,11 @@ public class CaveEditor extends AbstractEditor {
 		for (SiteEntry se : StaticTables.getInstance().getSiteEntries().values()) {
 			siteEntryListStore.add(se);
 		}
+		if (correspondingCaveEntry.getSiteID() > 0) {
+			siteSelection.setValue(siteEntryListStore.findModelWithKey(Integer.toString(correspondingCaveEntry.getSiteID())));
+			activateRegionFilter();
+			activateDistrictFilter();
+		}
 	}
 
 	/**
@@ -610,11 +620,11 @@ public class CaveEditor extends AbstractEditor {
 		if (correspondingCaveEntry.getRegionID() > 0) {
 			RegionEntry re = regionEntryListStore.findModelWithKey(Integer.toString(correspondingCaveEntry.getRegionID()));
 			regionSelection.setValue(re);
-			if (siteSelection.getCurrentValue() == null || siteSelection.getCurrentValue().getSiteID() != re.getSiteID()) {
-				siteSelection.setValue(StaticTables.getInstance().getSiteEntries().get(re.getSiteID()));
-				activateRegionFilter();
-				activateDistrictFilter();
-			}
+//			if (siteSelection.getCurrentValue() == null || siteSelection.getCurrentValue().getSiteID() != re.getSiteID()) {
+//				siteSelection.setValue(StaticTables.getInstance().getSiteEntries().get(re.getSiteID()));
+//				activateRegionFilter();
+//				activateDistrictFilter();
+//			}
 
 		}
 	}
@@ -629,12 +639,12 @@ public class CaveEditor extends AbstractEditor {
 		if (correspondingCaveEntry.getDistrictID() > 0) {
 			final DistrictEntry de = districtEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getDistrictID()));
 			districtSelection.setValue(de);
-			if (siteSelection.getCurrentValue() == null || siteSelection.getCurrentValue().getSiteID() != de.getSiteID()) {
-				SiteEntry se = siteEntryListStore.findModelWithKey(Integer.toString(de.getSiteID()));
-				siteSelection.setValue(se);
-				activateRegionFilter();
-				activateDistrictFilter();
-			}
+//			if (siteSelection.getCurrentValue() == null || siteSelection.getCurrentValue().getSiteID() != de.getSiteID()) {
+//				SiteEntry se = siteEntryListStore.findModelWithKey(Integer.toString(de.getSiteID()));
+//				siteSelection.setValue(se);
+//				activateRegionFilter();
+//				activateDistrictFilter();
+//			}
 		}
 	}
 
@@ -673,6 +683,7 @@ public class CaveEditor extends AbstractEditor {
 		officialNumberField.setEmptyText("mandatory cave number");
 		officialNumberField.setAllowBlank(false);
 		officialNumberField.setValue(correspondingCaveEntry.getOfficialNumber());
+		officialNumberField.addValidator(new MinLengthValidator(1));
 		officialNumberField.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
@@ -854,6 +865,17 @@ public class CaveEditor extends AbstractEditor {
 				return svTemplates.siteLabel(item.getName());
 			}
 		});
+		siteSelection.addValidator(new Validator<SiteEntry>() {
+
+			@Override
+			public List<EditorError> validate(Editor<SiteEntry> editor, SiteEntry value) {
+				List<EditorError> l = new ArrayList<EditorError>();
+				if (correspondingCaveEntry.getSiteID() == 0) {
+					l.add(new DefaultEditorError(editor, "selecting a site is mandatory", value));
+				}
+				return l;
+			}
+		});
 		siteSelection.setEmptyText("select site");
 		siteSelection.setTypeAhead(false);
 		siteSelection.setEditable(false);
@@ -863,6 +885,7 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<SiteEntry> event) {
+				correspondingCaveEntry.setSiteID(event.getSelectedItem().getSiteID());
 				activateRegionFilter();
 				activateDistrictFilter();
 			}
@@ -945,7 +968,8 @@ public class CaveEditor extends AbstractEditor {
 
 								@Override
 								public void onSuccess(Integer result) {
-									loadDistricts();
+									de.setDistrictID(result);
+									districtEntryList.add(de);
 								}
 							});
 							addNewDistrictDialog.hide();
@@ -1057,7 +1081,8 @@ public class CaveEditor extends AbstractEditor {
 
 								@Override
 								public void onSuccess(Integer result) {
-									loadRegions();
+									re.setRegionID(result);
+									regionEntryListStore.add(re);
 								}
 							});
 							addNewRegionDialog.hide();
@@ -1622,8 +1647,7 @@ public class CaveEditor extends AbstractEditor {
 				c14AnalysisShortName.addValidator(new MaxLengthValidator(64));
 				TextField c14AnalysisUrlTextField = new TextField();
 				c14AnalysisUrlTextField.setEmptyText("http/https/ftp");
-				c14AnalysisUrlTextField.addValidator(new RegExValidator(
-						"^(((https?|ftps?)://)(%[0-9A-Fa-f]{2}|[-()_.!~*';/?:@&=+$,A-Za-z0-9])+)([).!';/?:,][[:blank:]])?$", "Please enter valid URL"));
+				c14AnalysisUrlTextField.addValidator(new RegExValidator(Util.REGEX_URL_PATTERN, "Please enter valid URL"));
 				VerticalLayoutContainer c14AnalysisVLC = new VerticalLayoutContainer();
 				c14AnalysisVLC.add(c14AnalysisShortName, new VerticalLayoutData(1.0, .5));
 				c14AnalysisVLC.add(c14AnalysisUrlTextField, new VerticalLayoutData(1.0, .5));
@@ -2857,50 +2881,48 @@ public class CaveEditor extends AbstractEditor {
 	 * Will be called when the save button is selected. After saving <code>CaveEditorListener.closeRequest()</code> is called to inform all listener.
 	 */
 	protected void saveEntries(boolean close) {
-		if (correspondingCaveEntry.getCaveID() > 0) {
-			dbService.updateCaveEntry(correspondingCaveEntry, new AsyncCallback<Boolean>() {
+		if (siteSelection.validate() && officialNumberField.validate()) {
+			
+			if (correspondingCaveEntry.getCaveID() > 0) {
+				dbService.updateCaveEntry(correspondingCaveEntry, new AsyncCallback<Boolean>() {
 
-				@Override
-				public void onFailure(Throwable caught) {
-					Util.showWarning("A problem occurred", "The changes could not be saved!");
-				}
-
-				@Override
-				public void onSuccess(Boolean result) {
-					updateEntry(correspondingCaveEntry);
-					if (close) {
-						closeEditor();
+					@Override
+					public void onFailure(Throwable caught) {
+						Util.showWarning("A problem occurred", "The changes could not be saved!");
 					}
-				}
-			});
 
-		} else { // its 0 and we need to create a new entry
-			dbService.insertCaveEntry(correspondingCaveEntry, new AsyncCallback<Integer>() {
-
-				@Override
-				public void onFailure(Throwable caught) {
-					Util.showWarning("A problem occurred", "The new Cave could not be saved!");
-				}
-
-				@Override
-				public void onSuccess(Integer result) {
-					correspondingCaveEntry.setCaveID(result.intValue());
-					updateEntry(correspondingCaveEntry);
-					if (close) {
-						closeEditor();
+					@Override
+					public void onSuccess(Boolean result) {
+						updateEntry(correspondingCaveEntry);
+						if (close) {
+							closeEditor();
+						}
 					}
-				}
-			});
+				});
+
+			} else { // its 0 and we need to create a new entry
+				dbService.insertCaveEntry(correspondingCaveEntry, new AsyncCallback<Integer>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						Util.showWarning("A problem occurred", "The new Cave could not be saved!");
+					}
+
+					@Override
+					public void onSuccess(Integer result) {
+						correspondingCaveEntry.setCaveID(result.intValue());
+						updateEntry(correspondingCaveEntry);
+						if (close) {
+							closeEditor();
+						}
+					}
+				});
+				
+			}
+			
 		}
+		
 	}
-
-	// /**
-	// * @return
-	// */
-	// private boolean validateFields() {
-	// return officialNumberField.validate() && historicalNameField.validate() && optionalHistoricNameField.validate()
-	// && c14AnalysisUrlTextField.validate();
-	// }
 
 	/**
 	 * 
@@ -2915,7 +2937,7 @@ public class CaveEditor extends AbstractEditor {
 		};
 		regionEntryListStore.addFilter(regionFilter);
 		regionEntryListStore.setEnableFilters(true);
-		regionSelection.setEnabled(true);
+		regionSelection.setEnabled(true); // we enable the selector only after a site is selected 
 	}
 
 	/**

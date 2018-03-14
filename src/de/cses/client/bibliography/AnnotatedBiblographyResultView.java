@@ -13,8 +13,6 @@
  */
 package de.cses.client.bibliography;
 
-import java.util.ArrayList;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.sencha.gxt.dnd.core.client.DndDropEvent;
@@ -22,11 +20,8 @@ import com.sencha.gxt.dnd.core.client.DropTarget;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
-import de.cses.client.depictions.DepictionView;
 import de.cses.client.ui.AbstractResultView;
 import de.cses.shared.AnnotatedBiblographyEntry;
-import de.cses.shared.CaveEntry;
-import de.cses.shared.DepictionEntry;
 
 /**
  * @author Nina
@@ -41,27 +36,27 @@ public class AnnotatedBiblographyResultView extends AbstractResultView{
 	public AnnotatedBiblographyResultView(String title) {
 		super(title);
 		
-		DropTarget target = new DropTarget(this) {
-
-			@Override
-			protected void onDragDrop(DndDropEvent event) {
-				super.onDragDrop(event);
-				if (event.getData() instanceof AnnotatedBiblographyEntry) {
-					int bibID = ((AnnotatedBiblographyEntry) event.getData()).getAnnotatedBiblographyID();
-					dbService.getAnnotatedBiblographybyID( bibID, new AsyncCallback<AnnotatedBiblographyEntry>() {
-
-						@Override
-						public void onFailure(Throwable caught) { }
-
-						public void onSuccess(AnnotatedBiblographyEntry result) {
-							
-								addResult(new AnnotatedBiblographyView(result));
-							
-						}
-					});
-				}
-			}
-		};
+//		DropTarget target = new DropTarget(this) {
+//
+//			@Override
+//			protected void onDragDrop(DndDropEvent event) {
+//				super.onDragDrop(event);
+//				if (event.getData() instanceof AnnotatedBiblographyEntry) {
+//					int bibID = ((AnnotatedBiblographyEntry) event.getData()).getAnnotatedBiblographyID();
+//					dbService.getAnnotatedBiblographybyID( bibID, new AsyncCallback<AnnotatedBiblographyEntry>() {
+//
+//						@Override
+//						public void onFailure(Throwable caught) { }
+//
+//						public void onSuccess(AnnotatedBiblographyEntry result) {
+//							
+//								addResult(new AnnotatedBiblographyView(result));
+//							
+//						}
+//					});
+//				}
+//			}
+//		};
 	
 	}
 

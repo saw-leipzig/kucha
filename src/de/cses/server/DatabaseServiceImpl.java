@@ -47,6 +47,7 @@ import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.OrnamentPositionEntry;
 import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PictorialElementEntry;
+import de.cses.shared.PreservationAttributeEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.PublicationEntry;
 import de.cses.shared.PublicationTypeEntry;
@@ -55,7 +56,6 @@ import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 import de.cses.shared.StructureOrganization;
 import de.cses.shared.StyleEntry;
-import de.cses.shared.UserEntry;
 import de.cses.shared.VendorEntry;
 import de.cses.shared.WallEntry;
 import de.cses.shared.WallLocationEntry;
@@ -522,9 +522,9 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	 * @see de.cses.client.DatabaseService#insertDepictionEntry(de.cses.shared.DepictionEntry, java.util.List)
 	 */
 	@Override
-	public int insertDepictionEntry(DepictionEntry depictionEntry, ArrayList<ImageEntry> imgEntryList, ArrayList<PictorialElementEntry> peEntryList, ArrayList<IconographyEntry> iconographyLists) {
+	public int insertDepictionEntry(DepictionEntry depictionEntry, ArrayList<ImageEntry> imgEntryList, ArrayList<IconographyEntry> iconographyLists) {
 		MysqlConnector connector = MysqlConnector.getInstance();
-		return connector.insertDepictionEntry(depictionEntry, imgEntryList, peEntryList, iconographyLists);
+		return connector.insertDepictionEntry(depictionEntry, imgEntryList, iconographyLists);
 	}
 
 	/* (non-Javadoc)
@@ -532,9 +532,9 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	 */
 	@Override
 	public boolean updateDepictionEntry(DepictionEntry correspondingDepictionEntry, ArrayList<ImageEntry> all,
-			ArrayList<PictorialElementEntry> selectedPE, ArrayList<IconographyEntry> iconographyList) {
+			ArrayList<IconographyEntry> iconographyList) {
 		MysqlConnector connector = MysqlConnector.getInstance();
-		return connector.updateDepictionEntry(correspondingDepictionEntry, all, selectedPE, iconographyList);
+		return connector.updateDepictionEntry(correspondingDepictionEntry, all, iconographyList);
 	}
 
 	/* (non-Javadoc)
@@ -589,18 +589,21 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	}
 
 	@Override
-	public boolean saveAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry) throws IllegalArgumentException {
+	public int insertAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
-		return connector.saveAnnotatedBiblographyEntry(bibEntry);
+		return connector.insertAnnotatedBiblographyEntry(bibEntry);
 	}
-	public ArrayList<PublisherEntry> getPublisher() throws IllegalArgumentException {
+	
+	public ArrayList<PublisherEntry> getPublishers() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
-		return connector.getPublisher();
+		return connector.getPublishers();
 	}
+
 	public ArrayList<AuthorEntry> getAuthors() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getAuthors();
 	}
+	
 	public ArrayList<AnnotatedBiblographyEntry> getAnnotatedBibliography() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getAnnotatedBiblography();
@@ -704,6 +707,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		return connector.checkSessionID(sessionID);
 	}
 	/* (non-Javadoc)
+<<<<<<< HEAD
 	 * @see de.cses.client.DatabaseService#getInnerSecondaryPatterns()
 	 */
 	@Override
@@ -744,7 +748,49 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		return connector.addOrnamentComponents(entry);
 	}
 
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#getPreservationAttributes()
+	 */
+	@Override
+	public ArrayList<PreservationAttributeEntry> getPreservationAttributes() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getPreservationAttributes();
+	}
 
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#insertPreservationAttributeEntry(de.cses.shared.PreservationAttributeEntry)
+	 */
+	@Override
+	public int insertPreservationAttributeEntry(PreservationAttributeEntry paEntry) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.insertPreservationAttributeEntry(paEntry);
+	}
 
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#insertPublisherEntry(de.cses.shared.PublisherEntry)
+	 */
+	@Override
+	public int insertPublisherEntry(PublisherEntry publisherEntry) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.insertPublisherEntry(publisherEntry);
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#getAnnotatedBibliography(java.lang.String)
+	 */
+	@Override
+	public ArrayList<AnnotatedBiblographyEntry> getAnnotatedBibliography(String sqlWhere) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getAnnotatedBibliography(sqlWhere);
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#updateAnnotatedBiblographyEntry(de.cses.shared.AnnotatedBiblographyEntry)
+	 */
+	@Override
+	public boolean updateAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.updateAnnotatedBiblographyEntry(bibEntry);
+	}
 
 }

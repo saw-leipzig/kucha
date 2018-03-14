@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 
+ * Copyright 2018 
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -19,7 +19,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,31 +29,28 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 /**
- * This HttpServlet is used to upload images to the server's cave sketch directory. It also creates a new entry in the Images table of the database.
- * 
  * @author alingnau
  *
  */
 @SuppressWarnings("serial")
-@MultipartConfig
-public class C14DocumentServiceImpl extends HttpServlet {
-
+public class BibDocumentServiceImpl extends HttpServlet {
+	
 	private ServerProperties serverProperties = ServerProperties.getInstance();
 
-	public C14DocumentServiceImpl() {
-		super();
-	}
-
 	/**
-	 * This method is called when when a document should be uploaded
 	 * 
 	 */
+	public BibDocumentServiceImpl() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
 	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		String uploadFileName;
 		String fileType, filename = null;
 
-		response.setContentType("text/plain");
+		resp.setContentType("text/plain");
 		File imgHomeDir = new File(serverProperties.getProperty("home.documents"));
 		if (!imgHomeDir.exists()) {
 			imgHomeDir.mkdirs();
@@ -63,7 +59,7 @@ public class C14DocumentServiceImpl extends HttpServlet {
 		ServletFileUpload upload = new ServletFileUpload(factory);
 		File target = null;
 		try {
-			List<?> items = upload.parseRequest(request);
+			List<?> items = upload.parseRequest(req);
 			Iterator<?> it = items.iterator();
 			while (it.hasNext()) {
 				FileItem item = (FileItem) it.next();
@@ -72,17 +68,15 @@ public class C14DocumentServiceImpl extends HttpServlet {
 				if (item.isFormField()) {
 					throw new ServletException("Unsupported non-file property [" + item.getFieldName() + "] with value: " + item.getString());
 				} else {
-					int num = 0;
-					do {
-						++num;
-						filename = request.getParameter("docFileName") + "-" + num + fileType;
-						target = new File(imgHomeDir, filename);
-					} while (target.exists());
+					filename = req.getParameter("docFileName") + fileType;
+					target = new File(imgHomeDir, filename);
+					if (target.exists()) {
+						target.delete(); // replacement of the old file!
+					}
 					item.write(target);
 					item.delete();
-//					MysqlConnector.getInstance().updateC14DocumentFilename(caveID, filename);
-					response.getWriter().write(String.valueOf(filename));
-					response.getWriter().close();
+					resp.getWriter().write(String.valueOf(filename));
+					resp.getWriter().close();
 				}
 			}
 		} catch (ServletException e) {
@@ -90,7 +84,8 @@ public class C14DocumentServiceImpl extends HttpServlet {
 		} catch (Exception e) {
 			System.err.println("IllegalStateException");
 			throw new IllegalStateException(e);
-		}
-	}
+		}	}
+
+	
 
 }

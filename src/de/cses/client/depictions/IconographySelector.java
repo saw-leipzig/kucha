@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 
+ * Copyright 2016 - 2018
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -18,13 +18,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
-import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.TreeStore;
@@ -32,12 +32,13 @@ import com.sencha.gxt.data.shared.event.StoreFilterEvent;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
+import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.CheckChangeEvent;
 import com.sencha.gxt.widget.core.client.event.CheckChangeEvent.CheckChangeHandler;
-import com.sencha.gxt.widget.core.client.event.CheckChangedEvent;
-import com.sencha.gxt.widget.core.client.event.CheckChangedEvent.CheckChangedHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.StoreFilterField;
@@ -50,7 +51,6 @@ import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
 import de.cses.shared.IconographyEntry;
-import de.cses.shared.PictorialElementEntry;
 
 public class IconographySelector implements IsWidget {
 
@@ -81,8 +81,8 @@ public class IconographySelector implements IsWidget {
 	}
 
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
-	private TreeStore<IconographyEntry> store;
-	private Tree<IconographyEntry, String> tree;
+	private TreeStore<IconographyEntry> iconographyTreeStore;
+	private Tree<IconographyEntry, String> iconographyTree;
 	private FramedPanel mainPanel;
 	private VerticalLayoutContainer vlc;
 	private StoreFilterField<IconographyEntry> filterField;
@@ -91,27 +91,25 @@ public class IconographySelector implements IsWidget {
 
 	public IconographySelector(int depictionID) {
 		this.depictionID = depictionID;
-		store = new TreeStore<IconographyEntry>(new IconographyKeyProvider());
+		iconographyTreeStore = new TreeStore<IconographyEntry>(new IconographyKeyProvider());
 		selectedIconographyMap = new HashMap<String, IconographyEntry>();
-//		initPanel();
 		loadIconographyStore();
 	}
 
-	private void processParent(TreeStore<IconographyEntry> store, IconographyEntry item) {
+	private void processParentIconographyEntry(TreeStore<IconographyEntry> store, IconographyEntry item) {
 		for (IconographyEntry child : item.getChildren()) {
 			store.add(item, child);
 			if (child.getChildren() != null) {
-				processParent(store, child);
+				processParentIconographyEntry(store, child);
 			}
 		}
 	}
 
 	private void loadIconographyStore() {
-		IconographyEntry selectedEntry = null;
 		for (IconographyEntry item : StaticTables.getInstance().getIconographyEntries().values()) {
-			store.add(item);
+			iconographyTreeStore.add(item);
 			if (item.getChildren() != null) {
-				processParent(store, item);
+				processParentIconographyEntry(iconographyTreeStore, item);
 			}
 		}
 		dbService.getRelatedIconography(depictionID, new AsyncCallback<ArrayList<IconographyEntry>>() {
@@ -124,7 +122,7 @@ public class IconographySelector implements IsWidget {
 			@Override
 			public void onSuccess(ArrayList<IconographyEntry> iconographyRelationList) {
 				for (IconographyEntry entry : iconographyRelationList) {
-					tree.setChecked(entry, CheckState.CHECKED);
+					iconographyTree.setChecked(entry, CheckState.CHECKED);
 					selectedIconographyMap.put(entry.getUniqueID(), entry);
 				}
 			}
@@ -140,30 +138,27 @@ public class IconographySelector implements IsWidget {
 	}
 
 	private void initPanel() {
-		mainPanel = new FramedPanel();
-		mainPanel.setHeading("Iconography Selector");
-
 		vlc = new VerticalLayoutContainer();
 
-		tree = new Tree<IconographyEntry, String>(store, new IconographyValueProvider()) {
+		iconographyTree = new Tree<IconographyEntry, String>(iconographyTreeStore, new IconographyValueProvider()) {
 
 			@Override
 			protected void onFilter(StoreFilterEvent<IconographyEntry> ie) {
 				super.onFilter(ie);
 				for (IconographyEntry entry : selectedIconographyMap.values()) {
-					tree.setChecked(entry, CheckState.CHECKED);
+					iconographyTree.setChecked(entry, CheckState.CHECKED);
 				}
 			}
 
 		};
 		
-		tree.getSelectionModel().setSelectionMode(SelectionMode.MULTI);
-		tree.setCheckable(true);
-		tree.setAutoLoad(true);
-		tree.setCheckStyle(CheckCascade.NONE);
-		tree.setCheckNodes(CheckNodes.LEAF);
+		iconographyTree.getSelectionModel().setSelectionMode(SelectionMode.MULTI);
+		iconographyTree.setCheckable(true);
+		iconographyTree.setAutoLoad(true);
+		iconographyTree.setCheckStyle(CheckCascade.NONE);
+		iconographyTree.setCheckNodes(CheckNodes.LEAF);
 		
-		tree.addCheckChangeHandler(new CheckChangeHandler<IconographyEntry>() {
+		iconographyTree.addCheckChangeHandler(new CheckChangeHandler<IconographyEntry>() {
 			
 			@Override
 			public void onCheckChange(CheckChangeEvent<IconographyEntry> event) {
@@ -178,10 +173,10 @@ public class IconographySelector implements IsWidget {
 			}
 		});
 				
-//		tree.setWidth(350);
-		vlc.add(tree, new VerticalLayoutData(1.0, 1.0));
+//		iconographyTree.setWidth(350);
+		vlc.add(iconographyTree, new VerticalLayoutData(1.0, 1.0));
 		vlc.setScrollMode(ScrollMode.AUTOY);
-//		vlc.setPixelSize(700, 475);
+
 		ContentPanel treePanel = new ContentPanel();
 		treePanel.setHeaderVisible(false);
 		treePanel.add(vlc);
@@ -201,41 +196,43 @@ public class IconographySelector implements IsWidget {
 				return false;
 			}
 		};
-		filterField.bind(store);
+		filterField.bind(iconographyTreeStore);
 
-		VerticalLayoutContainer mainVLC = new VerticalLayoutContainer();
-		mainVLC.add(treePanel, new VerticalLayoutData(1.0, .85));
-		mainVLC.add(filterField, new VerticalLayoutData(.5, .15, new Margins(10, 0, 0, 0)));
-
-		mainPanel.add(mainVLC);
+		BorderLayoutContainer iconographySelectorBLC = new BorderLayoutContainer();
+		iconographySelectorBLC.setCenterWidget(treePanel, new MarginData(0, 10, 5, 10));
+		iconographySelectorBLC.setSouthWidget(filterField, new BorderLayoutData(25.0));
 
 		ToolButton iconographyExpandTB = new ToolButton(ToolButton.EXPAND);
 		iconographyExpandTB.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-				tree.expandAll();
+				iconographyTree.expandAll();
 			}
 		});
-		mainPanel.addTool(iconographyExpandTB);
 
 		ToolButton iconographyCollapseTB = new ToolButton(ToolButton.COLLAPSE);
 		iconographyCollapseTB.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-				tree.collapseAll();
+				iconographyTree.collapseAll();
 			}
 		});
-		mainPanel.addTool(iconographyCollapseTB);
 
+		mainPanel = new FramedPanel();
+		mainPanel.setHeading("Iconography Selector");
+		mainPanel.add(iconographySelectorBLC);
+		mainPanel.addTool(iconographyExpandTB);
+		mainPanel.addTool(iconographyCollapseTB);
 	}
 
 	public ArrayList<IconographyEntry> getSelectedIconography() {
 		filterField.clear();
 		filterField.validate();
 		ArrayList<IconographyEntry> result = new ArrayList<IconographyEntry>();
-		for (IconographyEntry entry : tree.getCheckedSelection()) {
+		for (IconographyEntry entry : iconographyTree.getCheckedSelection()) {
 			result.add(entry);
 		}
+		Window.alert("getSelectedIconography: selected = " + result.size());
 		return result;	
 	}
 

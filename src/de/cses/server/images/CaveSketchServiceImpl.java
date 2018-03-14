@@ -48,7 +48,7 @@ public class CaveSketchServiceImpl extends HttpServlet {
 	}
 
 	/**
-	 * This method is called when the submit button in the image uploader is pressed.
+	 * This method is called when the submit button in the image paperUploader is pressed.
 	 * 
 	 * @see de.cses.client.images.ImageUploader
 	 */

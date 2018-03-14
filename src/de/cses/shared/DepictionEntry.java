@@ -14,6 +14,7 @@
 package de.cses.shared;
 
 import java.sql.Date;
+import java.util.ArrayList;
 
 public class DepictionEntry extends AbstractEntry {
 
@@ -33,13 +34,14 @@ public class DepictionEntry extends AbstractEntry {
 	private String inventoryNumber;
 	private int vendorID = 0;
 	private int storyID = 0;
-	private int caveID = 0;
+	private CaveEntry cave;
 	private int wallID = 0;
 	private int absoluteLeft = -1;
 	private int absoluteTop = -1;
 	private int modeOfRepresentationID = 0;
 	private String shortName;
 	private String positionNotes;
+	private ArrayList<PreservationAttributeEntry> preservationAttributesList = new ArrayList<PreservationAttributeEntry>();
 
 	public DepictionEntry() { }
 
@@ -70,7 +72,7 @@ public class DepictionEntry extends AbstractEntry {
 	 */
 	public DepictionEntry(int depictionID, int styleID, String inscriptions, String separateAksaras, String dating, String description,
 			String backgroundColour, String generalRemarks, String otherSuggestedIdentifications, double width, double height, int expeditionID,
-			Date purchaseDate, int locationID, String inventoryNumber, int vendorID, int storyID, int caveID, int wallID, int absoluteLeft,
+			Date purchaseDate, int locationID, String inventoryNumber, int vendorID, int storyID, CaveEntry cave, int wallID, int absoluteLeft,
 			int absoluteTop, int modeOfRepresentationID, String shortName, String positionNotes) {
 		super();
 		this.depictionID = depictionID;
@@ -90,7 +92,7 @@ public class DepictionEntry extends AbstractEntry {
 		this.inventoryNumber = inventoryNumber;
 		this.vendorID = vendorID;
 		this.storyID = storyID;
-		this.caveID = caveID;
+		this.cave = cave;
 		this.wallID = wallID;
 		this.absoluteLeft = absoluteLeft;
 		this.absoluteTop = absoluteTop;
@@ -100,9 +102,14 @@ public class DepictionEntry extends AbstractEntry {
 	}
 
 	public DepictionEntry clone() {
-		return new DepictionEntry(depictionID, styleID, inscriptions, separateAksaras, dating, description, backgroundColour, generalRemarks,
+		DepictionEntry clonedDepictionEntry = new DepictionEntry(depictionID, styleID, inscriptions, separateAksaras, dating, description, backgroundColour, generalRemarks,
 				otherSuggestedIdentifications, width, height, expeditionID, purchaseDate, locationID, inventoryNumber, vendorID, storyID,
-				caveID, wallID, absoluteLeft, absoluteTop, modeOfRepresentationID, shortName, positionNotes);
+				cave, wallID, absoluteLeft, absoluteTop, modeOfRepresentationID, shortName, positionNotes);
+		ArrayList<PreservationAttributeEntry> clonedPreservationAttributesList = new ArrayList<PreservationAttributeEntry>();
+		for (PreservationAttributeEntry pae : this.preservationAttributesList) {
+			clonedPreservationAttributesList.add(pae);
+		}
+		return clonedDepictionEntry;
 	}
 
 	public int getDepictionID() {
@@ -225,12 +232,12 @@ public class DepictionEntry extends AbstractEntry {
 		this.storyID = storyID;
 	}
 
-	public int getCaveID() {
-		return caveID;
+	public CaveEntry getCave() {
+		return cave;
 	}
 
-	public void setCaveID(int caveID) {
-		this.caveID = caveID;
+	public void setCave(CaveEntry cave) {
+		this.cave = cave;
 	}
 
 	/**
@@ -239,8 +246,9 @@ public class DepictionEntry extends AbstractEntry {
 	 * @see de.cses.client.depictions.DepictionEditor
 	 * @return String containing caveID and depictionID
 	 */
+	@Deprecated
 	public String getName() {
-		return "Cave: " + caveID + " Depiction: " + depictionID;
+		return "Cave: " + cave.getOfficialNumber() + " Depiction: " + depictionID;
 	}
 
 	public int getAbsoluteLeft() {
@@ -322,6 +330,14 @@ public class DepictionEntry extends AbstractEntry {
 
 	public void setPositionNotes(String positionNotes) {
 		this.positionNotes = positionNotes;
+	}
+
+	public ArrayList<PreservationAttributeEntry> getPreservationAttributesList() {
+		return preservationAttributesList;
+	}
+
+	public void setPreservationAttributesList(ArrayList<PreservationAttributeEntry> preservationAttributesList) {
+		this.preservationAttributesList = preservationAttributesList;
 	}
 
 }
