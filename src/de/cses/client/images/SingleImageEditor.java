@@ -29,6 +29,7 @@ import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -45,6 +46,7 @@ import com.sencha.gxt.widget.core.client.Dialog;
 import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
@@ -181,12 +183,13 @@ public class SingleImageEditor extends AbstractEditor {
 	 */
 	private void initPanel() {
 		panel = new FramedPanel();
-		HorizontalLayoutContainer hPanel = new HorizontalLayoutContainer();
+		HorizontalLayoutContainer mainHLC = new HorizontalLayoutContainer();
 		imageContainer = new FlowLayoutContainer();
-		// VerticalPanel imgPanel = new VerticalPanel();
-		VerticalLayoutContainer editPanel = new VerticalLayoutContainer();
+		HorizontalLayoutContainer editHLC = new HorizontalLayoutContainer();
+		VerticalLayoutContainer editVLC = new VerticalLayoutContainer();
+		VerticalLayoutContainer leftEditVLC = new VerticalLayoutContainer();
+		VerticalLayoutContainer rightEditVLC = new VerticalLayoutContainer();
 
-		FramedPanel attributePanel = new FramedPanel();
 		titleField = new TextField();
 		titleField.addValidator(new MaxLengthValidator(128));
 		titleField.addValidator(new Validator<String>() {
@@ -207,46 +210,48 @@ public class SingleImageEditor extends AbstractEditor {
 			}
 		});
 		// titleField.setWidth(300);
-		attributePanel.setHeading("Title");
+		FramedPanel titlePanel = new FramedPanel();
+		titlePanel.setHeading("Title");
 		titleField.setValue(imgEntry.getTitle());
-		attributePanel.add(titleField);
-		editPanel.add(attributePanel, new VerticalLayoutData(1.0, .1));
+		titlePanel.add(titleField);
+		editVLC.add(titlePanel, new VerticalLayoutData(1.0, .2));
 
-		attributePanel = new FramedPanel();
+		FramedPanel shortNamePanel = new FramedPanel();
 		shortNameField = new TextField();
 		shortNameField.addValidator(new MaxLengthValidator(12));
 		// shortNameField.setWidth(300);
-		attributePanel.setHeading("Short Name");
+		shortNamePanel.setHeading("Short Name");
 		shortNameField.setValue(imgEntry.getShortName());
-		attributePanel.add(shortNameField);
-		editPanel.add(attributePanel, new VerticalLayoutData(1.0, .1));
+		shortNamePanel.add(shortNameField);
+		leftEditVLC.add(shortNamePanel, new VerticalLayoutData(1.0, .2));
 
-		attributePanel = new FramedPanel();
+		FramedPanel copyrightPanel = new FramedPanel();
 		copyrightArea = new TextArea();
-		// copyrightArea.setSize("300px", "50px");
 		copyrightArea.addValidator(new MaxLengthValidator(128));
 		copyrightArea.setValue(imgEntry.getCopyright());
-		attributePanel.setHeading("Copyright");
-		attributePanel.add(copyrightArea);
-		editPanel.add(attributePanel, new VerticalLayoutData(1.0, .2));
+		copyrightPanel.setHeading("Copyright");
+		copyrightPanel.add(copyrightArea);
+		rightEditVLC.add(copyrightPanel, new VerticalLayoutData(1.0, .35));
 
-		attributePanel = new FramedPanel();
+		FramedPanel commentPanel = new FramedPanel();
 		commentArea = new TextArea();
-		// commentArea.setSize("300px", "100px");
-		commentArea.setValue(imgEntry.getComment());
-		attributePanel.add(commentArea);
-		attributePanel.setHeading("Comment");
-		editPanel.add(attributePanel, new VerticalLayoutData(1.0, .3));
+		commentArea.setEmptyText("optional comments");
+		if (imgEntry.getComment() != null) {
+			commentArea.setValue(imgEntry.getComment());
+		}
+		commentPanel.add(commentArea);
+		commentPanel.setHeading("Comment");
+		rightEditVLC.add(commentPanel, new VerticalLayoutData(1.0, .65));
 
-		attributePanel = new FramedPanel();
+		FramedPanel datePanel = new FramedPanel();
 		dateField = new TextField();
 		dateField.addValidator(new MaxLengthValidator(32));
 		dateField.setValue(imgEntry.getDate());
-		attributePanel.add(dateField);
-		attributePanel.setHeading("Date");
-		editPanel.add(attributePanel, new VerticalLayoutData(1.0, .1));
+		datePanel.add(dateField);
+		datePanel.setHeading("Date");
+		leftEditVLC.add(datePanel, new VerticalLayoutData(1.0, .2));
 
-		attributePanel = new FramedPanel();
+		FramedPanel authorPanel = new FramedPanel();
 		authorSelection = new ComboBox<PhotographerEntry>(photographerEntryList, photographerProps.name(),
 				new AbstractSafeHtmlRenderer<PhotographerEntry>() {
 
@@ -261,9 +266,9 @@ public class SingleImageEditor extends AbstractEditor {
 		authorSelection.setEditable(false);
 		authorSelection.setTriggerAction(TriggerAction.ALL);
 		authorSelection.setValue(photographerEntryList.findModelWithKey(Integer.toString(imgEntry.getPhotographerID())), true);
-		attributePanel.add(authorSelection);
-		attributePanel.setHeading("Author");
-		editPanel.add(attributePanel, new VerticalLayoutData(1.0, .1));
+		authorPanel.add(authorSelection);
+		authorPanel.setHeading("Author");
+		leftEditVLC.add(authorPanel, new VerticalLayoutData(1.0, .2));
 
 		FramedPanel imageTypeSelectionPanel = new FramedPanel();
 		imageTypeSelection = new ComboBox<ImageTypeEntry>(imageTypeEntryList, imageTypeProps.name(),
@@ -307,47 +312,90 @@ public class SingleImageEditor extends AbstractEditor {
 		HorizontalLayoutContainer imageOptionsHLC = new HorizontalLayoutContainer();
 		imageOptionsHLC.add(imageTypeSelectionPanel, new HorizontalLayoutData(.5, 1.0));
 		imageOptionsHLC.add(publicImagePanel, new HorizontalLayoutData(.5, 1.0));
-		editPanel.add(imageOptionsHLC, new VerticalLayoutData(1.0, .1));
-
-		TextButton cancelButton = new TextButton("cancel");
-		cancelButton.addSelectHandler(new SelectHandler() {
-
+		leftEditVLC.add(imageOptionsHLC, new VerticalLayoutData(1.0, .2));
+		
+		ToolButton saveToolButton = new ToolButton(ToolButton.SAVE);
+		saveToolButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-				cancelDialog();
+				saveImageEntry(false);
 			}
 		});
-
-		TextButton saveButton = new TextButton("save");
-		saveButton.addSelectHandler(new SelectHandler() {
+		
+		ToolButton closeToolButton = new ToolButton(ToolButton.CLOSE);
+		closeToolButton.setToolTip("close");
+		closeToolButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-				saveImageEntry();
+				 Dialog d = new Dialog();
+				 d.setHeading("Exit Warning!");
+				 d.setWidget(new HTML("Do you wish to save before exiting?"));
+				 d.setBodyStyle("fontWeight:bold;padding:13px;");
+				 d.setPixelSize(300, 100);
+				 d.setHideOnButtonClick(true);
+				 d.setPredefinedButtons(PredefinedButton.YES, PredefinedButton.NO, PredefinedButton.CANCEL);
+				 d.setModal(true);
+				 d.center();
+				 d.show();
+				 d.getButton(PredefinedButton.YES).addSelectHandler(new SelectHandler() {
+					
+					@Override
+					public void onSelect(SelectEvent event) {
+						saveImageEntry(true);
+					}
+				});
+				 d.getButton(PredefinedButton.NO).addSelectHandler(new SelectHandler() {
+						
+					@Override
+					public void onSelect(SelectEvent event) {
+						 closeEditor();
+					}
+				});
 			}
-		});
+		});		
+
+//		TextButton cancelButton = new TextButton("cancel");
+//		cancelButton.addSelectHandler(new SelectHandler() {
+//
+//			@Override
+//			public void onSelect(SelectEvent event) {
+//				cancelDialog();
+//			}
+//		});
+
+//		TextButton saveButton = new TextButton("save");
+//		saveButton.addSelectHandler(new SelectHandler() {
+//			@Override
+//			public void onSelect(SelectEvent event) {
+//				saveImageEntry();
+//			}
+//		});
 
 		SafeUri imageUri = UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=300" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 		Image img = new Image(imageUri);
 		imageContainer.add(img);
 		imageContainer.setPixelSize(310, 310);
-		hPanel.add(imageContainer, new HorizontalLayoutData(.5, 1.0));
-		hPanel.add(editPanel, new HorizontalLayoutData(.5, 1.0));
+
+		editHLC.add(leftEditVLC, new HorizontalLayoutData(.5, 1.0));
+		editHLC.add(rightEditVLC, new HorizontalLayoutData(.5, 1.0));
+		editVLC.add(editHLC, new VerticalLayoutData(1.0, .8));
+		
+		mainHLC.add(imageContainer, new HorizontalLayoutData(.4, 1.0));
+		mainHLC.add(editVLC, new HorizontalLayoutData(.6, 1.0));
 
 		panel.setHeading("Image Editor");
-		panel.add(hPanel);
-		panel.addButton(cancelButton);
-		panel.addButton(saveButton);
-		panel.setSize("620px", "600px");
-		// panel.addButton(deleteButton);
-
+		panel.add(mainHLC);
+		panel.addTool(saveToolButton);
+		panel.addTool(closeToolButton);
+		panel.setSize("900px", "350px");
 	}
 
-	/**
-	 * 
-	 */
-	protected void cancelDialog() {
-		closeEditor();
-	}
+//	/**
+//	 * 
+//	 */
+//	protected void cancelDialog() {
+//		closeEditor();
+//	}
 
 	// /**
 	// *
@@ -360,8 +408,7 @@ public class SingleImageEditor extends AbstractEditor {
 	 * This method will save the currently selected ImageEntry from the left list of previews. In future versions, the missing fields will be added. Also, the
 	 * Photographer ID us currently not mapped to the text entry in this box. (shows a yes/no dialog first)
 	 */
-	private void saveImageEntry() {
-		// ImageEntry selectedItem = imageListView.getSelectionModel().getSelectedItem();
+	private void saveImageEntry(boolean closeEditorRequested) {
 		if (!verifyInputs()) {
 			return;
 		}
@@ -392,7 +439,9 @@ public class SingleImageEditor extends AbstractEditor {
 					@Override
 					public void onSuccess(Boolean result) {
 						if (result) {
-							cancelDialog();
+							if (closeEditorRequested) {
+								closeEditor();
+							}
 						} else {
 							Info.display("ERROR", "Image information has NOT been updated!");
 						}
