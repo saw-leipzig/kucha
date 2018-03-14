@@ -594,18 +594,16 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 						OrnamentComponentsEntry entry = new OrnamentComponentsEntry();
 						entry.setName(newComponentTextField.getText());
 						
-						dbService.addOrnamentComponent(entry, new AsyncCallback<Integer>() {
+						dbService.addOrnamentComponent(entry, new AsyncCallback<OrnamentComponentsEntry>() {
 
 							public void onFailure(Throwable caught) {
 								caught.printStackTrace();
 							}
 
 							@Override
-							public void onSuccess(Integer result) {
+							public void onSuccess(OrnamentComponentsEntry result) {
+								ornamentComponents.add(entry);
 								Window.alert("saved");
-								if(result == 0) {
-									Window.alert("fail!");
-								}
 								newComponentPopup.hide();
 							}
 						});
@@ -669,18 +667,16 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 					public void onSelect(SelectEvent event) {
 						InnerSecondaryPatternsEntry entry = new InnerSecondaryPatternsEntry();
 						entry.setName(newinnersecTextField.getText());
-						dbService.addInnerSecondaryPatterns(entry, new AsyncCallback<Integer>() {
+						dbService.addInnerSecondaryPatterns(entry, new AsyncCallback<InnerSecondaryPatternsEntry>() {
 
 							public void onFailure(Throwable caught) {
 								caught.printStackTrace();
 							}
 
 							@Override
-							public void onSuccess(Integer result) {
-								if(result == 0) {
-									Window.alert("fail!");
-								}
+							public void onSuccess(InnerSecondaryPatternsEntry result) {
 								Window.alert("saved");
+								innerSecondaryPatternsEntryList.add(result);
 								newInnerSecondaryPatternPopup.hide();
 							}
 						});

@@ -238,11 +238,11 @@ public interface DatabaseService extends RemoteService {
 
 	ArrayList<OrnamentClassEntry> getOrnamentClass() throws IllegalArgumentException;
 	
-	int addOrnamentClass(OrnamentClassEntry entry)  throws IllegalArgumentException;
+	OrnamentClassEntry addOrnamentClass(OrnamentClassEntry entry)  throws IllegalArgumentException;
 	
-	int addInnerSecondaryPatterns(InnerSecondaryPatternsEntry entry)  throws IllegalArgumentException;
+	InnerSecondaryPatternsEntry addInnerSecondaryPatterns(InnerSecondaryPatternsEntry entry)  throws IllegalArgumentException;
 	
-	int addOrnamentComponent(OrnamentComponentsEntry entry)  throws IllegalArgumentException;
+	OrnamentComponentsEntry addOrnamentComponent(OrnamentComponentsEntry entry)  throws IllegalArgumentException;
 
 
 }

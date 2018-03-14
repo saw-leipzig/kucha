@@ -729,17 +729,17 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		return connector.getOrnamentClass();
 	}
 	
-	public int addOrnamentClass(OrnamentClassEntry entry) throws IllegalArgumentException {
+	public OrnamentClassEntry addOrnamentClass(OrnamentClassEntry entry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.addOrnamentClass(entry);
 	}
 	
-	public int addInnerSecondaryPatterns (InnerSecondaryPatternsEntry entry) throws IllegalArgumentException {
+	public InnerSecondaryPatternsEntry addInnerSecondaryPatterns (InnerSecondaryPatternsEntry entry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.addInnerSecondaryPatterns(entry);
 	}
 	
-	public int addOrnamentComponent (OrnamentComponentsEntry entry) throws IllegalArgumentException {
+	public OrnamentComponentsEntry addOrnamentComponent (OrnamentComponentsEntry entry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.addOrnamentComponents(entry);
 	}

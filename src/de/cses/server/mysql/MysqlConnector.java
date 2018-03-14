@@ -2872,53 +2872,77 @@ public class MysqlConnector {
 		return result;
 	}
 	
-	public int addOrnamentComponents(OrnamentComponentsEntry ornamentComponent) {
+	public OrnamentComponentsEntry addOrnamentComponents(OrnamentComponentsEntry ornamentComponent) {
 		Connection dbc = getConnection();
-
+		OrnamentComponentsEntry entry = null;
 		PreparedStatement stmt;
 		try {
-			stmt = dbc.prepareStatement("INSERT INTO OrnamentComponent (Name) VALUES (?)");
+			stmt = dbc.prepareStatement("INSERT INTO OrnamentComponent (Name) VALUES (?)", Statement.RETURN_GENERATED_KEYS);
 			stmt.setString(1, ornamentComponent.getName());
 			stmt.executeUpdate();
+			
+			int ID = 0;
+			ResultSet keys = stmt.getGeneratedKeys();
+			if (keys.next()) {
+				ID = keys.getInt(1);
+			}
+			 entry = new OrnamentComponentsEntry(ID, ornamentComponent.getName());
+			keys.close();
 			stmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
-			return 0;
+			return entry;
 		}
-		return 1;
+		return entry;
 	}
 	
-	public int addOrnamentClass(OrnamentClassEntry ornamentClass) {
+	public OrnamentClassEntry addOrnamentClass(OrnamentClassEntry ornamentClass) {
 		Connection dbc = getConnection();
+		OrnamentClassEntry entry = null;
 
 		PreparedStatement stmt;
 		try {
-			stmt = dbc.prepareStatement("INSERT INTO OrnamentClass (Name) VALUES (?)");
+			stmt = dbc.prepareStatement("INSERT INTO OrnamentClass (Name) VALUES (?)", Statement.RETURN_GENERATED_KEYS);
 			stmt.setString(1, ornamentClass.getName());
 			stmt.executeUpdate();
+			int ID = 0;
+			ResultSet keys = stmt.getGeneratedKeys();
+			if (keys.next()) {
+				ID = keys.getInt(1);
+			}
+			entry = new OrnamentClassEntry(ID, ornamentClass.getName());
+			keys.close();
 			stmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
-			return 0;
+			return entry;
 		}
-		return 1;
+		return entry;
 	}
 	
-	public int addInnerSecondaryPatterns(InnerSecondaryPatternsEntry innerSecPattern) {
+	public InnerSecondaryPatternsEntry addInnerSecondaryPatterns(InnerSecondaryPatternsEntry innerSecPattern) {
 		Connection dbc = getConnection();
+		InnerSecondaryPatternsEntry entry;
 
 		PreparedStatement stmt;
 		try {
 			System.err.println(innerSecPattern.getName());
-			stmt = dbc.prepareStatement("INSERT INTO InnerSecondaryPattern (Name) VALUES (?)");
+			stmt = dbc.prepareStatement("INSERT INTO InnerSecondaryPattern (Name) VALUES (?)", Statement.RETURN_GENERATED_KEYS);
 			stmt.setString(1, innerSecPattern.getName());
 			stmt.executeUpdate();
+			int ID= 0;
+			ResultSet keys = stmt.getGeneratedKeys();
+			if (keys.next()) {
+				ID  = keys.getInt(1);
+			}
+			entry = new InnerSecondaryPatternsEntry(ID, innerSecPattern.getName());
+			keys.close();
 			stmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
-			return 0;
+			return null;
 		}
-		return 1;
+		return entry;
 	}
 
 }
