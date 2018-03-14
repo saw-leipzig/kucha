@@ -17,27 +17,29 @@ package de.cses.shared;
  * @author Nina
  *
  */
-public class InnerSecondaryPatternsEntry {
-	int innerSecondaryPatternsId;
+public class InnerSecondaryPatternsEntry extends AbstractEntry{
+	int innerSecondaryPatternsID;
 	String name;
 	/**
-	 * @return the innerSecondaryPatternsId
+	 * @return the innerSecondaryPatternsID
 	 */
 	public int getInnerSecondaryPatternsID() {
-		return innerSecondaryPatternsId;
+		return innerSecondaryPatternsID;
 	}
 	public InnerSecondaryPatternsEntry() {
 		
 	}
 	
 	public InnerSecondaryPatternsEntry(int innerSecondaryPatternsID, String name) {
+		this.innerSecondaryPatternsID = innerSecondaryPatternsID;
+		this.name = name;
 		
 	}
 	/**
 	 * @param innerSecondaryPatternsId the innerSecondaryPatternsId to set
 	 */
-	public void setInnerSecondaryPatternsID(int innerSecondaryPatternsId) {
-		this.innerSecondaryPatternsId = innerSecondaryPatternsId;
+	public void setInnerSecondaryPatternsID(int innerSecondaryPatternsID) {
+		this.innerSecondaryPatternsID = innerSecondaryPatternsID;
 	}
 	/**
 	 * @return the name
@@ -50,6 +52,14 @@ public class InnerSecondaryPatternsEntry {
 	 */
 	public void setName(String name) {
 		this.name = name;
+	}
+	/* (non-Javadoc)
+	 * @see de.cses.shared.AbstractEntry#getUniqueID()
+	 */
+	@Override
+	public String getUniqueID() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 	

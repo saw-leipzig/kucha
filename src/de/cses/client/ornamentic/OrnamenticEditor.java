@@ -32,6 +32,7 @@ import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.TabPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutData;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
@@ -205,7 +206,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 					}
 				} else {
 					for (InnerSecondaryPatternsEntry pe : result) {
-						selectedinnerSecondaryPatternsEntryList.add(pe);
+						innerSecondaryPatternsEntryList.add(pe);
 					}
 				}
 
@@ -324,16 +325,6 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 			ornamentClassComboBox.select(ornamentClassEntryList.findModelWithKey(Integer.toString(ornamentEntry.getMainTypologicalClassID())));
 		}
 
-		final TextArea  mainTypoTextField = new TextArea ();
-		mainTypoTextField.setAllowBlank(true);
-		header = new FramedPanel();
-		header.setWidth(300);
-		header.setHeading("Interpretation");
-		header.add(mainTypoTextField);
-		panel.add(header, new VerticalLayoutData(1.0, .125));
-		if (ornamentEntry != null) {
-			mainTypoTextField.setText(ornamentEntry.getInterpretation());
-		}
 		//wird eventuell mal privat oder geloescht
 	/*	structureorganizationComboBox = new ComboBox<StructureOrganization>(structureOrganization, structureOrganizationProps.name(),
 				new AbstractSafeHtmlRenderer<StructureOrganization>() {
@@ -562,7 +553,66 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 		verticalgeneral3Background.add(header, new VerticalLayoutData(1.0, .3));
 		
+		ToolButton addComponentButton = new ToolButton(ToolButton.PLUS);
+		header.addTool(addComponentButton);
+		
+		FramedPanel componentFramedPanel = new FramedPanel();
+		componentFramedPanel.setHeading("New Component");
+		
+		ToolButton saveComponent = new ToolButton (ToolButton.SAVE);
+		componentFramedPanel.addTool(saveComponent);
+		
+		ToolButton cancelComponent = new ToolButton (ToolButton.CLOSE);
+		
+		componentFramedPanel.addTool(cancelComponent);
 	
+		
+		HorizontalLayoutContainer newComponentLayoutPanel = new HorizontalLayoutContainer();
+		TextField newComponentTextField = new TextField();
+		newComponentLayoutPanel.add(newComponentTextField);
+		componentFramedPanel.add(newComponentLayoutPanel);
+		addComponentButton.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				PopupPanel newComponentPopup = new PopupPanel();
+				newComponentPopup.add(componentFramedPanel);
+				newComponentPopup.setSize("150px", "80px");
+				newComponentPopup.center();
+				
+				cancelComponent.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						newComponentPopup.hide();
+					}
+				});
+				saveComponent.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						OrnamentComponentsEntry entry = new OrnamentComponentsEntry();
+						entry.setName(newComponentTextField.getText());
+						
+						dbService.addOrnamentComponent(entry, new AsyncCallback<Integer>() {
+
+							public void onFailure(Throwable caught) {
+								caught.printStackTrace();
+							}
+
+							@Override
+							public void onSuccess(Integer result) {
+								Window.alert("saved");
+								if(result == 0) {
+									Window.alert("fail!");
+								}
+								newComponentPopup.hide();
+							}
+						});
+					}
+				});
+			}
+		});
 		
 		
 		HorizontalLayoutContainer innerSecondaryPatternsHorizontalPanel = new HorizontalLayoutContainer();
@@ -580,6 +630,68 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 		header = new FramedPanel();
 		header.setHeading("Select inner Secondary Patterns");
+		ToolButton addInnerSecondaryPatternsButton = new ToolButton(ToolButton.PLUS);
+		
+		
+		FramedPanel innersecFramedPanel = new FramedPanel();
+		innersecFramedPanel.setHeading("New Inner Secondary Pattern");
+		
+		ToolButton saveInnerSec = new ToolButton (ToolButton.SAVE);
+		innersecFramedPanel.add(saveInnerSec);
+		
+		ToolButton cancelInnerSec = new ToolButton (ToolButton.CLOSE);
+		
+		innersecFramedPanel.addTool(cancelInnerSec);
+		innersecFramedPanel.addTool(saveInnerSec);
+		
+		HorizontalLayoutContainer newinnersecLayoutPanel = new HorizontalLayoutContainer();
+		TextField newinnersecTextField = new TextField();
+		newinnersecLayoutPanel.add(newinnersecTextField);
+		innersecFramedPanel.add(newinnersecLayoutPanel);
+		addInnerSecondaryPatternsButton.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				PopupPanel newInnerSecondaryPatternPopup = new PopupPanel();
+				newInnerSecondaryPatternPopup.add(innersecFramedPanel);
+				innersecFramedPanel.setSize("150", "80");
+				newInnerSecondaryPatternPopup.center();
+				cancelInnerSec.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						newInnerSecondaryPatternPopup.hide();
+					}
+				});
+				saveInnerSec.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						InnerSecondaryPatternsEntry entry = new InnerSecondaryPatternsEntry();
+						entry.setName(newinnersecTextField.getText());
+						dbService.addInnerSecondaryPatterns(entry, new AsyncCallback<Integer>() {
+
+							public void onFailure(Throwable caught) {
+								caught.printStackTrace();
+							}
+
+							@Override
+							public void onSuccess(Integer result) {
+								if(result == 0) {
+									Window.alert("fail!");
+								}
+								Window.alert("saved");
+								newInnerSecondaryPatternPopup.hide();
+							}
+						});
+						newInnerSecondaryPatternPopup.hide();
+					}
+				});
+				
+				
+			}
+		});
+		
 		if (ornamentEntry != null) {
 			for (int i = 0; i < ornamentEntry.getInnerSecondaryPatterns().size(); i++) {
 				selectedinnerSecondaryPatternsEntryList.add(ornamentEntry.getInnerSecondaryPatterns().get(i));
@@ -587,7 +699,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 			}
 		}
 		header.add(innerSecondaryPatternsHorizontalPanel);
-		
+		header.addTool(addInnerSecondaryPatternsButton);
 
 		verticalgeneral3Background.add(header, new VerticalLayoutData(1.0, .3));
 		
@@ -699,10 +811,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		LabelProvider<OrnamentClassEntry> name();
 	}
 	
-	interface OrnamentComponentsViewTemplates extends XTemplates {
-		@XTemplate("<div>{nameEN}</div>")
-		SafeHtml components(String nameEN);
-	}
+
 	
 	interface OrnamentComponentsProperties extends PropertyAccess<OrnamentComponentsEntry> {
 		ModelKeyProvider<OrnamentComponentsEntry> ornamentComponentsID();

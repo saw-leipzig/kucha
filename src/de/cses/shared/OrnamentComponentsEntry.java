@@ -17,7 +17,7 @@ package de.cses.shared;
  * @author Nina
  *
  */
-public class OrnamentComponentsEntry {
+public class OrnamentComponentsEntry extends AbstractEntry{
 	
 	int ornamentComponentsID;
 	String name;
@@ -32,7 +32,8 @@ public class OrnamentComponentsEntry {
 	}
 	
 	public OrnamentComponentsEntry(int ornamentComponentsID, String name) {
-		
+		this.ornamentComponentsID = ornamentComponentsID;
+		this.name= name;
 	}
 	/**
 	 * @param ornamentComponentsId the ornamentComponentsId to set
@@ -51,6 +52,14 @@ public class OrnamentComponentsEntry {
 	 */
 	public void setName(String name) {
 		this.name = name;
+	}
+	/* (non-Javadoc)
+	 * @see de.cses.shared.AbstractEntry#getUniqueID()
+	 */
+	@Override
+	public String getUniqueID() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 

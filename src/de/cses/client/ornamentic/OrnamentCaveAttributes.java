@@ -141,12 +141,12 @@ public class OrnamentCaveAttributes extends PopupPanel {
 							}
 						}
 					}
-					for (OrnamentComponentsEntry oe : ornamentEntry.getOrnamentComponents()) {
+					for (OrientationEntry oe : ornamentCaveRelationEntry.getOrientations()) {
 						selectedorientationListStore.add(oe);
 					}
 				} else {
-					for (OrnamentComponentsEntry pe : result) {
-						ornamentComponents.add(pe);
+					for (OrientationEntry pe : result) {
+						orientationListStore.add(pe);
 					}
 				}
 

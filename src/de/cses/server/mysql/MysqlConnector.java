@@ -2821,9 +2821,10 @@ public class MysqlConnector {
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM InnerSecondaryPatterns");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM InnerSecondaryPattern");
 			while (rs.next()) {
-				result.add(new InnerSecondaryPatternsEntry(rs.getInt("InnerSecondaryPatternsID"), rs.getString("Name")));
+				result.add(new InnerSecondaryPatternsEntry(rs.getInt("InnerSecID"), rs.getString("Name")));
+				System.err.println("found innersecpattern entry : "+ rs.getInt("InnerSecID") + " , " +  rs.getString("Name") );
 			}
 			rs.close();
 			stmt.close();
@@ -2858,9 +2859,10 @@ public class MysqlConnector {
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM OrnamentComponents");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM OrnamentComponent");
 			while (rs.next()) {
-				result.add(new OrnamentComponentsEntry(rs.getInt("OrnamentComponentsID"), rs.getString("Name")));
+				result.add(new OrnamentComponentsEntry(rs.getInt("OrnamentComponentID"), rs.getString("Name")));
+				System.err.println("found Ornament Component entry : "+ rs.getInt("OrnamentComponentID") + " , " +  rs.getString("Name") );
 			}
 			rs.close();
 			stmt.close();
@@ -2868,6 +2870,55 @@ public class MysqlConnector {
 			e.printStackTrace();
 		}
 		return result;
+	}
+	
+	public int addOrnamentComponents(OrnamentComponentsEntry ornamentComponent) {
+		Connection dbc = getConnection();
+
+		PreparedStatement stmt;
+		try {
+			stmt = dbc.prepareStatement("INSERT INTO OrnamentComponent (Name) VALUES (?)");
+			stmt.setString(1, ornamentComponent.getName());
+			stmt.executeUpdate();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return 0;
+		}
+		return 1;
+	}
+	
+	public int addOrnamentClass(OrnamentClassEntry ornamentClass) {
+		Connection dbc = getConnection();
+
+		PreparedStatement stmt;
+		try {
+			stmt = dbc.prepareStatement("INSERT INTO OrnamentClass (Name) VALUES (?)");
+			stmt.setString(1, ornamentClass.getName());
+			stmt.executeUpdate();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return 0;
+		}
+		return 1;
+	}
+	
+	public int addInnerSecondaryPatterns(InnerSecondaryPatternsEntry innerSecPattern) {
+		Connection dbc = getConnection();
+
+		PreparedStatement stmt;
+		try {
+			System.err.println(innerSecPattern.getName());
+			stmt = dbc.prepareStatement("INSERT INTO InnerSecondaryPattern (Name) VALUES (?)");
+			stmt.setString(1, innerSecPattern.getName());
+			stmt.executeUpdate();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return 0;
+		}
+		return 1;
 	}
 
 }

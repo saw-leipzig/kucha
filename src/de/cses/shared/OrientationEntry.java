@@ -22,7 +22,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class OrientationEntry implements IsSerializable {
 	
 	private int orientationID;
-	private String nameEN;
+	private String name;
 
 	/**
 	 * 
@@ -30,10 +30,10 @@ public class OrientationEntry implements IsSerializable {
 	public OrientationEntry() {
 	}
 
-	public OrientationEntry(int orientatiationID, String nameEN) {
+	public OrientationEntry(int orientatiationID, String name) {
 		super();
 		this.orientationID = orientatiationID;
-		this.nameEN = nameEN;
+		this.name = name;
 	}
 
 	public int getOrientationID() {
@@ -44,12 +44,12 @@ public class OrientationEntry implements IsSerializable {
 		this.orientationID = orientatiationID;
 	}
 
-	public String getNameEN() {
-		return nameEN;
+	public String getName() {
+		return name;
 	}
 
-	public void setNameEN(String nameEN) {
-		this.nameEN = nameEN;
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 }

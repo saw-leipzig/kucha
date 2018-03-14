@@ -261,5 +261,11 @@ public interface DatabaseServiceAsync {
 	
 	void getOrnamentClass( AsyncCallback<ArrayList<OrnamentClassEntry>> callback) throws IllegalArgumentException;
 
+	void addOrnamentComponent (OrnamentComponentsEntry entry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
+	
+	void addOrnamentClass (OrnamentClassEntry entry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
+	
+	void addInnerSecondaryPatterns (InnerSecondaryPatternsEntry entry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
+
 
 	}
