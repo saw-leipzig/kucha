@@ -299,7 +299,7 @@ public class CaveEditor extends AbstractEditor {
 	interface OrientationProperties extends PropertyAccess<OrientationEntry> {
 		ModelKeyProvider<OrientationEntry> orientationID();
 
-		LabelProvider<OrientationEntry> nameEN();
+		LabelProvider<OrientationEntry> name();
 	}
 
 	interface OrientationViewTemplates extends XTemplates {
@@ -1776,13 +1776,13 @@ public class CaveEditor extends AbstractEditor {
 		 */
 		FramedPanel orientationFP = new FramedPanel();
 		orientationFP.setHeading("Orientation");
-		orientationSelection = new ComboBox<OrientationEntry>(orientationEntryList, orientationProps.nameEN(),
+		orientationSelection = new ComboBox<OrientationEntry>(orientationEntryList, orientationProps.name(),
 				new AbstractSafeHtmlRenderer<OrientationEntry>() {
 
 					@Override
 					public SafeHtml render(OrientationEntry item) {
 						final OrientationViewTemplates ovTemplates = GWT.create(OrientationViewTemplates.class);
-						return ovTemplates.orientationLabel(item.getNameEN());
+						return ovTemplates.orientationLabel(item.getName());
 					}
 				});
 		orientationSelection.setTriggerAction(TriggerAction.ALL);

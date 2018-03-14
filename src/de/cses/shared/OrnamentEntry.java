@@ -25,10 +25,12 @@ public class OrnamentEntry extends AbstractEntry {
 	private String interpretation;
 	private String references;
 	private String sketch;
-	private int mainTypologicalClassID;
+	private int ornamentClass;
 	private int structureOrganizationID;
 	private ArrayList<ImageEntry> images = new ArrayList<ImageEntry>();
 	private ArrayList<OrnamentCaveRelation> cavesRelations = new ArrayList<OrnamentCaveRelation>();
+	private ArrayList<OrnamentComponentsEntry> ornamentComponents = new ArrayList<OrnamentComponentsEntry>();
+	private ArrayList<InnerSecondaryPatternsEntry> innerSecondaryPatterns = new ArrayList<InnerSecondaryPatternsEntry>();
 
 	public OrnamentEntry() {
 		ornamentID = 0;
@@ -138,18 +140,19 @@ public class OrnamentEntry extends AbstractEntry {
 		return "OrnamentEntry" + ornamentID;
 	}
 
+
 	/**
-	 * @return the mainTypologicalClassID
+	 * @return the ornamentClass
 	 */
-	public int getMainTypologicalClassID() {
-		return mainTypologicalClassID;
+	public int getOrnamentClass() {
+		return ornamentClass;
 	}
 
 	/**
-	 * @param mainTypologicalClassID the mainTypologicalClassID to set
+	 * @param ornamentClass the ornamentClass to set
 	 */
-	public void setMainTypologicalClassID(int mainTypologicalClassID) {
-		this.mainTypologicalClassID = mainTypologicalClassID;
+	public void setOrnamentClass(int ornamentClass) {
+		this.ornamentClass = ornamentClass;
 	}
 
 	/**
@@ -165,5 +168,35 @@ public class OrnamentEntry extends AbstractEntry {
 	public void setStructureOrganizationID(int structureOrganizationID) {
 		this.structureOrganizationID = structureOrganizationID;
 	}
+
+	/**
+	 * @return the ornamentComponents
+	 */
+	public ArrayList<OrnamentComponentsEntry> getOrnamentComponents() {
+		return ornamentComponents;
+	}
+
+	/**
+	 * @param ornamentComponents the ornamentComponents to set
+	 */
+	public void setOrnamentComponents(ArrayList<OrnamentComponentsEntry> ornamentComponents) {
+		this.ornamentComponents = ornamentComponents;
+	}
+
+	/**
+	 * @return the innerSecondaryPatterns
+	 */
+	public ArrayList<InnerSecondaryPatternsEntry> getInnerSecondaryPatterns() {
+		return innerSecondaryPatterns;
+	}
+
+	/**
+	 * @param innerSecondaryPatterns the innerSecondaryPatterns to set
+	 */
+	public void setInnerSecondaryPatterns(ArrayList<InnerSecondaryPatternsEntry> innerSecondaryPatterns) {
+		this.innerSecondaryPatterns = innerSecondaryPatterns;
+	}
+	
+	
 
 }

@@ -41,12 +41,15 @@ import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageTypeEntry;
+import de.cses.shared.InnerSecondaryPatternsEntry;
 import de.cses.shared.LocationEntry;
 import de.cses.shared.MainTypologicalClass;
 import de.cses.shared.ModeOfRepresentationEntry;
 import de.cses.shared.OrientationEntry;
 import de.cses.shared.OrnamentCaveRelation;
 import de.cses.shared.OrnamentCaveType;
+import de.cses.shared.OrnamentClassEntry;
+import de.cses.shared.OrnamentComponentsEntry;
 import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamentFunctionEntry;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
@@ -698,7 +701,7 @@ public class MysqlConnector {
 		Connection dbc = getConnection();
 		PreparedStatement ornamentStatement;
 		try {
-			ornamentStatement = dbc.prepareStatement("INSERT INTO Ornaments (Code, Description, Remarks, Interpretation, OrnamentReferences, Annotation , MainTypologicalClassID, StructureOrganizationID) "
+			ornamentStatement = dbc.prepareStatement("INSERT INTO Ornaments (Code, Description, Remarks, Interpretation, OrnamentReferences, Annotation , OrnamentClassID, StructureOrganizationID) "
 					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			ornamentStatement.setString(1, ornamentEntry.getCode());
 			ornamentStatement.setString(2, ornamentEntry.getDescription());
@@ -706,7 +709,7 @@ public class MysqlConnector {
 			ornamentStatement.setString(4, ornamentEntry.getInterpretation());
 			ornamentStatement.setString(5, ornamentEntry.getReferences());
 			ornamentStatement.setString(6, ornamentEntry.getAnnotations());
-			ornamentStatement.setInt(7, ornamentEntry.getMainTypologicalClassID());
+			ornamentStatement.setInt(7, ornamentEntry.getOrnamentClass());
 			ornamentStatement.setInt(8, ornamentEntry.getStructureOrganizationID());
 			ornamentStatement.executeUpdate();
 			ResultSet keys = ornamentStatement.getGeneratedKeys();
@@ -715,6 +718,8 @@ public class MysqlConnector {
 			}
 			keys.close();
 
+			updateInnerSecondaryPatternsRelations(newOrnamentID,ornamentEntry.getInnerSecondaryPatterns());
+			updateOrnamentComponentsRelations(newOrnamentID, ornamentEntry.getOrnamentComponents());
 			updateOrnamentImageRelations(newOrnamentID, ornamentEntry.getImages());
 			updateCaveOrnamentRelation(newOrnamentID, ornamentEntry.getCavesRelations());
 			ornamentStatement.close();
@@ -723,6 +728,40 @@ public class MysqlConnector {
 			return false;
 		}
 		return true;
+	}
+	
+	private void updateOrnamentComponentsRelations(int ornamentID, List<OrnamentComponentsEntry> ornamentComponents) {
+		Connection dbc = getConnection();
+		deleteEntry("DELETE FROM OrnamentComponentRelation WHERE OrnamentID=" + ornamentID); 
+		PreparedStatement stmt;
+		try {
+			for(int i = 0; i < ornamentComponents.size(); i++) {
+			stmt = dbc.prepareStatement("INSERT INTO OrnamentComponentRelation (OrnamentID, OrnamentComponentID) VALUES (?,?)");
+			stmt.setInt(1, ornamentID);
+			stmt.setInt(2, ornamentComponents.get(i).getOrnamentComponentsID());
+			stmt.executeUpdate();
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private void updateInnerSecondaryPatternsRelations(int ornamentID, List<InnerSecondaryPatternsEntry> innerSecPatterns) {
+		Connection dbc = getConnection();
+		deleteEntry("DELETE FROM InnerSecondaryPatternRelation WHERE OrnamentID=" + ornamentID); 
+		PreparedStatement stmt;
+		try {
+			for(int i = 0; i < innerSecPatterns.size(); i++) {
+			stmt = dbc.prepareStatement("INSERT INTO InnerSecondaryPatternRelation (OrnamentID, InnerSecID) VALUES (?,?)");
+			stmt.setInt(1, ornamentID);
+			stmt.setInt(2, innerSecPatterns.get(i).getInnerSecondaryPatternsID());
+			stmt.executeUpdate();
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -2940,6 +2979,137 @@ public class MysqlConnector {
 			e.printStackTrace();
 		}
 		return locationID;
+	}
+	
+	public ArrayList<InnerSecondaryPatternsEntry> getInnerSecondaryPatterns() {
+		ArrayList<InnerSecondaryPatternsEntry> result = new ArrayList<InnerSecondaryPatternsEntry>();
+		Connection dbc = getConnection();
+
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM InnerSecondaryPattern");
+			while (rs.next()) {
+				result.add(new InnerSecondaryPatternsEntry(rs.getInt("InnerSecID"), rs.getString("Name")));
+				System.err.println("found innersecpattern entry : "+ rs.getInt("InnerSecID") + " , " +  rs.getString("Name") );
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	public ArrayList<OrnamentClassEntry> getOrnamentClass() {
+		ArrayList<OrnamentClassEntry> result = new ArrayList<OrnamentClassEntry>();
+		Connection dbc = getConnection();
+
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM OrnamentClass");
+			while (rs.next()) {
+				result.add(new OrnamentClassEntry(rs.getInt("OrnamentClassID"), rs.getString("Name")));
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	public ArrayList<OrnamentComponentsEntry> getOrnamentComponents() {
+		ArrayList<OrnamentComponentsEntry> result = new ArrayList<OrnamentComponentsEntry>();
+		Connection dbc = getConnection();
+
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM OrnamentComponent");
+			while (rs.next()) {
+				result.add(new OrnamentComponentsEntry(rs.getInt("OrnamentComponentID"), rs.getString("Name")));
+				System.err.println("found Ornament Component entry : "+ rs.getInt("OrnamentComponentID") + " , " +  rs.getString("Name") );
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	public OrnamentComponentsEntry addOrnamentComponents(OrnamentComponentsEntry ornamentComponent) {
+		Connection dbc = getConnection();
+		OrnamentComponentsEntry entry = null;
+		PreparedStatement stmt;
+		try {
+			stmt = dbc.prepareStatement("INSERT INTO OrnamentComponent (Name) VALUES (?)", Statement.RETURN_GENERATED_KEYS);
+			stmt.setString(1, ornamentComponent.getName());
+			stmt.executeUpdate();
+			
+			int ID = 0;
+			ResultSet keys = stmt.getGeneratedKeys();
+			if (keys.next()) {
+				ID = keys.getInt(1);
+			}
+			 entry = new OrnamentComponentsEntry(ID, ornamentComponent.getName());
+			keys.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return entry;
+		}
+		return entry;
+	}
+	
+	public OrnamentClassEntry addOrnamentClass(OrnamentClassEntry ornamentClass) {
+		Connection dbc = getConnection();
+		OrnamentClassEntry entry = null;
+
+		PreparedStatement stmt;
+		try {
+			stmt = dbc.prepareStatement("INSERT INTO OrnamentClass (Name) VALUES (?)", Statement.RETURN_GENERATED_KEYS);
+			stmt.setString(1, ornamentClass.getName());
+			stmt.executeUpdate();
+			int ID = 0;
+			ResultSet keys = stmt.getGeneratedKeys();
+			if (keys.next()) {
+				ID = keys.getInt(1);
+			}
+			entry = new OrnamentClassEntry(ID, ornamentClass.getName());
+			keys.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return entry;
+		}
+		return entry;
+	}
+	
+	public InnerSecondaryPatternsEntry addInnerSecondaryPatterns(InnerSecondaryPatternsEntry innerSecPattern) {
+		Connection dbc = getConnection();
+		InnerSecondaryPatternsEntry entry;
+
+		PreparedStatement stmt;
+		try {
+			System.err.println(innerSecPattern.getName());
+			stmt = dbc.prepareStatement("INSERT INTO InnerSecondaryPattern (Name) VALUES (?)", Statement.RETURN_GENERATED_KEYS);
+			stmt.setString(1, innerSecPattern.getName());
+			stmt.executeUpdate();
+			int ID= 0;
+			ResultSet keys = stmt.getGeneratedKeys();
+			if (keys.next()) {
+				ID  = keys.getInt(1);
+			}
+			entry = new InnerSecondaryPatternsEntry(ID, innerSecPattern.getName());
+			keys.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return entry;
 	}
 
 	/**

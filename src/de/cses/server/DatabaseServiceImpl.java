@@ -33,11 +33,14 @@ import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageTypeEntry;
+import de.cses.shared.InnerSecondaryPatternsEntry;
 import de.cses.shared.LocationEntry;
 import de.cses.shared.MainTypologicalClass;
 import de.cses.shared.ModeOfRepresentationEntry;
 import de.cses.shared.OrientationEntry;
 import de.cses.shared.OrnamentCaveType;
+import de.cses.shared.OrnamentClassEntry;
+import de.cses.shared.OrnamentComponentsEntry;
 import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamentFunctionEntry;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
@@ -53,7 +56,6 @@ import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 import de.cses.shared.StructureOrganization;
 import de.cses.shared.StyleEntry;
-import de.cses.shared.UserEntry;
 import de.cses.shared.VendorEntry;
 import de.cses.shared.WallEntry;
 import de.cses.shared.WallLocationEntry;
@@ -705,6 +707,48 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		return connector.checkSessionID(sessionID);
 	}
 	/* (non-Javadoc)
+<<<<<<< HEAD
+	 * @see de.cses.client.DatabaseService#getInnerSecondaryPatterns()
+	 */
+	@Override
+	public ArrayList<InnerSecondaryPatternsEntry> getInnerSecondaryPatterns() throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getInnerSecondaryPatterns();
+	}
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#getOrnamentComponents()
+	 */
+	@Override
+	public ArrayList<OrnamentComponentsEntry> getOrnamentComponents() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getOrnamentComponents();
+	}
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#getOrnamentClass()
+	 */
+	@Override
+	public ArrayList<OrnamentClassEntry> getOrnamentClass() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getOrnamentClass();
+	}
+	
+	public OrnamentClassEntry addOrnamentClass(OrnamentClassEntry entry) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.addOrnamentClass(entry);
+	}
+	
+	public InnerSecondaryPatternsEntry addInnerSecondaryPatterns (InnerSecondaryPatternsEntry entry) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.addInnerSecondaryPatterns(entry);
+	}
+	
+	public OrnamentComponentsEntry addOrnamentComponent (OrnamentComponentsEntry entry) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.addOrnamentComponents(entry);
+	}
+
+	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getPreservationAttributes()
 	 */
 	@Override
@@ -712,6 +756,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getPreservationAttributes();
 	}
+
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#insertPreservationAttributeEntry(de.cses.shared.PreservationAttributeEntry)
 	 */
@@ -720,6 +765,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.insertPreservationAttributeEntry(paEntry);
 	}
+
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#insertPublisherEntry(de.cses.shared.PublisherEntry)
 	 */
@@ -728,6 +774,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.insertPublisherEntry(publisherEntry);
 	}
+
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getAnnotatedBibliography(java.lang.String)
 	 */
@@ -736,6 +783,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getAnnotatedBibliography(sqlWhere);
 	}
+
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#updateAnnotatedBiblographyEntry(de.cses.shared.AnnotatedBiblographyEntry)
 	 */
