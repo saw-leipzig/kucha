@@ -87,7 +87,7 @@ public class SingleImageEditor extends AbstractEditor {
 	private TextArea copyrightArea;
 	private TextArea commentArea;
 	private TextField dateField;
-	private ComboBox<PhotographerEntry> authorSelection;
+	private ComboBox<PhotographerEntry> authorSelectionCB;
 	private FramedPanel panel;
 	private PhotographerProperties photographerProps;
 	private ListStore<PhotographerEntry> photographerEntryList;
@@ -277,8 +277,8 @@ public class SingleImageEditor extends AbstractEditor {
 		datePanel.setHeading("Date");
 		leftEditVLC.add(datePanel, new VerticalLayoutData(1.0, .2));
 
-		FramedPanel authorPanel = new FramedPanel();
-		authorSelection = new ComboBox<PhotographerEntry>(photographerEntryList, photographerProps.label(),
+		FramedPanel authorFP = new FramedPanel();
+		authorSelectionCB = new ComboBox<PhotographerEntry>(photographerEntryList, photographerProps.label(),
 				new AbstractSafeHtmlRenderer<PhotographerEntry>() {
 
 					@Override
@@ -287,11 +287,12 @@ public class SingleImageEditor extends AbstractEditor {
 						return pvTemplates.photographer(item.getName());
 					}
 				});
-		authorSelection.setEmptyText("select an author ...");
-		authorSelection.setTypeAhead(false);
-		authorSelection.setEditable(false);
-		authorSelection.setTriggerAction(TriggerAction.ALL);
-		authorSelection.setValue(photographerEntryList.findModelWithKey(Integer.toString(imgEntry.getPhotographerID())), true);
+		authorSelectionCB.setEmptyText("select an author ...");
+		authorSelectionCB.setTypeAhead(false);
+		authorSelectionCB.setEditable(false);
+		authorSelectionCB.setTriggerAction(TriggerAction.ALL);
+		authorSelectionCB.setValue(photographerEntryList.findModelWithKey(Integer.toString(imgEntry.getPhotographerID())), true);
+		
 		ToolButton addPhotoAuthorTB = new ToolButton(ToolButton.PLUS);
 		addPhotoAuthorTB.addSelectHandler(new SelectHandler() {
 
@@ -352,11 +353,21 @@ public class SingleImageEditor extends AbstractEditor {
 				addPhotoAuthorDialog.setModal(true);
 				addPhotoAuthorDialog.center();
 			}
-		});		
+		});
 		
-		authorPanel.add(authorSelection);
-		authorPanel.setHeading("Author");
-		leftEditVLC.add(authorPanel, new VerticalLayoutData(1.0, .2));
+		ToolButton resetSelectionTB = new ToolButton(ToolButton.RESTORE);
+		resetSelectionTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				authorSelectionCB.setValue(null);
+			}
+		});
+		authorFP.addTool(resetSelectionTB);
+		authorFP.addTool(addPhotoAuthorTB);
+		authorFP.add(authorSelectionCB);
+		authorFP.setHeading("Author");
+		leftEditVLC.add(authorFP, new VerticalLayoutData(1.0, .2));
 
 		FramedPanel imageTypeSelectionPanel = new FramedPanel();
 		imageTypeSelection = new ComboBox<ImageTypeEntry>(imageTypeEntryList, imageTypeProps.name(),
@@ -522,7 +533,7 @@ public class SingleImageEditor extends AbstractEditor {
 		imgEntry.setCopyright(copyrightArea.getCurrentValue());
 		imgEntry.setComment(commentArea.getCurrentValue());
 		imgEntry.setDate(dateField.getCurrentValue());
-		imgEntry.setPhotographerID(authorSelection.getCurrentValue() != null ? authorSelection.getCurrentValue().getPhotographerID() : 0);
+		imgEntry.setPhotographerID(authorSelectionCB.getCurrentValue() != null ? authorSelectionCB.getCurrentValue().getPhotographerID() : 0);
 		imgEntry.setImageTypeID(imageTypeSelection.getCurrentValue().getImageTypeID());
 	}
 
