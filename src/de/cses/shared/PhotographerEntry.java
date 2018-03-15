@@ -75,7 +75,7 @@ public class PhotographerEntry extends AbstractEntry {
 	}
 	
 	public String getLabel() {
-		return name!=null ? (name + institution!=null ? " ( " + institution + ")" : "") : institution;
+		return name!=null ? (institution!=null ? name + " ( " + institution + ")" : name) : institution;
 	}
 
 }

@@ -16,8 +16,6 @@ package de.cses.client.images;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.Icon;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.EditorError;
@@ -33,8 +31,8 @@ import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -54,8 +52,6 @@ import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
-import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
-import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
@@ -76,7 +72,6 @@ import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.client.user.UserLogin;
-import de.cses.shared.CaveGroupEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageTypeEntry;
 import de.cses.shared.PhotographerEntry;
@@ -101,23 +96,18 @@ public class SingleImageEditor extends AbstractEditor {
 	 */
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	private ImageEntry imgEntry;
-	private FlowLayoutContainer imageContainer;
+	private ImageViewTemplates imgViewTemplates;
 
 	interface PhotographerProperties extends PropertyAccess<PhotographerEntry> {
 		ModelKeyProvider<PhotographerEntry> photographerID();
 		LabelProvider<PhotographerEntry> label();
 	}
 
-	/**
-	 * Creates the view how a thumbnail of an image entry will be shown currently we are relying on the url of the image until we have user management implemented
-	 * and protect images from being viewed from the outside without permission
-	 * 
-	 * @author alingnau
-	 *
-	 */
 	interface ImageViewTemplates extends XTemplates {
-		@XTemplate("<img align=\"center\" width=\"150\" height=\"150\" margin=\"20\" src=\"{imageUri}\"><br> {title}")
-		SafeHtml image(SafeUri imageUri, String title);
+		@XTemplate("<div style='display: flex; flex-direction: column; align-items: center;'>"
+				+ "<div><img src='{imgUri}'></div></img>"
+				+ "</div>")
+		SafeHtml view(SafeUri imgUri);
 	}
 
 	interface PhotographerViewTemplates extends XTemplates {
@@ -141,6 +131,8 @@ public class SingleImageEditor extends AbstractEditor {
 	public SingleImageEditor(ImageEntry imgEntry) {
 		this.imgEntry = imgEntry;
 
+		imgViewTemplates = GWT.create(ImageViewTemplates.class);
+		
 		photographerProps = GWT.create(PhotographerProperties.class);
 		photographerEntryList = new ListStore<PhotographerEntry>(photographerProps.photographerID());
 		photographerEntryList.addSortInfo(new StoreSortInfo<PhotographerEntry>(new ValueProvider<PhotographerEntry, String>() {
@@ -200,7 +192,6 @@ public class SingleImageEditor extends AbstractEditor {
 	private void initPanel() {
 		panel = new FramedPanel();
 		HorizontalLayoutContainer mainHLC = new HorizontalLayoutContainer();
-		imageContainer = new FlowLayoutContainer();
 		HorizontalLayoutContainer editHLC = new HorizontalLayoutContainer();
 		VerticalLayoutContainer editVLC = new VerticalLayoutContainer();
 		VerticalLayoutContainer leftEditVLC = new VerticalLayoutContainer();
@@ -225,7 +216,7 @@ public class SingleImageEditor extends AbstractEditor {
 				return errors;
 			}
 		});
-		// titleField.setWidth(300);
+
 		FramedPanel titlePanel = new FramedPanel();
 		titlePanel.setHeading("Title");
 		titleField.setValue(imgEntry.getTitle());
@@ -455,15 +446,13 @@ public class SingleImageEditor extends AbstractEditor {
 		});		
 
 		SafeUri imageUri = UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=300" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
-		Image img = new Image(imageUri);
-		imageContainer.add(img);
-		imageContainer.setPixelSize(310, 310);
+		HTMLPanel imgHP = new HTMLPanel(imgViewTemplates.view(imageUri));
 
 		editHLC.add(leftEditVLC, new HorizontalLayoutData(.5, 1.0));
 		editHLC.add(rightEditVLC, new HorizontalLayoutData(.5, 1.0));
 		editVLC.add(editHLC, new VerticalLayoutData(1.0, .8));
 		
-		mainHLC.add(imageContainer, new HorizontalLayoutData(.4, 1.0));
+		mainHLC.add(imgHP, new HorizontalLayoutData(.4, 1.0));
 		mainHLC.add(editVLC, new HorizontalLayoutData(.6, 1.0));
 
 		panel.setHeading("Image Editor");
