@@ -549,7 +549,16 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		caveSelectionCB.setToolTip("This field can only be changed until a depiction is allocated to a wall");
-		// TODO check if wall publicationTypeID is set, then set caveSelectionCB.editable(false)
+		// TODO check if wallTypeID is set, then set caveSelectionCB.editable(false)
+		ToolButton resetCaveSelectionTB = new ToolButton(ToolButton.REFRESH);
+		resetCaveSelectionTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				caveSelectionCB.setValue(null, true);
+			}
+		});
+		caveSelectionFP.addTool(resetCaveSelectionTB);
 		caveSelectionFP.add(caveSelectionCB);
 
 		FramedPanel acquiredByExpeditionFP = new FramedPanel();
@@ -581,6 +590,15 @@ public class DepictionEditor extends AbstractEditor {
 				correspondingDepictionEntry.setExpeditionID(event.getSelectedItem().getExpeditionID());
 			}
 		});
+		ToolButton expedSelectionTB = new ToolButton(ToolButton.REFRESH);
+		expedSelectionTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				expedSelectionCB.setValue(null, true);
+			}
+		});
+		acquiredByExpeditionFP.addTool(expedSelectionTB);
 		acquiredByExpeditionFP.add(expedSelectionCB);
 		
 		FramedPanel vendorFP = new FramedPanel();
@@ -605,12 +623,17 @@ public class DepictionEditor extends AbstractEditor {
 				correspondingDepictionEntry.setVendorID(event.getSelectedItem().getVendorID());
 			}
 		});
-		vendorFP.add(vendorSelection);
-
+		ToolButton resetVendorSelectionTB = new ToolButton(ToolButton.REFRESH);
+		resetVendorSelectionTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				vendorSelection.setValue(null, true);
+			}
+		});
 		// adding new vendors is necessary
 		ToolButton newVendorPlusTool = new ToolButton(ToolButton.PLUS);
 		newVendorPlusTool.setToolTip("New Vendor");
-		vendorFP.addTool(newVendorPlusTool);
 		newVendorPlusTool.addSelectHandler(new SelectHandler() {
 
 			@Override
@@ -664,6 +687,9 @@ public class DepictionEditor extends AbstractEditor {
 				addVendorDialog.center();
 			}
 		});		
+		vendorFP.addTool(resetVendorSelectionTB);
+		vendorFP.addTool(newVendorPlusTool);
+		vendorFP.add(vendorSelection);
 
 		FramedPanel datePurchasedFP = new FramedPanel();
 		datePurchasedFP.setHeading("Date purchased");
@@ -704,12 +730,17 @@ public class DepictionEditor extends AbstractEditor {
 				correspondingDepictionEntry.setLocationID(event.getValue().getLocationID());
 			}
 		});
-		currentLocationFP.add(locationSelectionCB);
-		
+		ToolButton resetLocationSelectionTB = new ToolButton(ToolButton.REFRESH);
+		resetLocationSelectionTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				locationSelectionCB.setValue(null, true);
+			}
+		});
 		// adding new locations
 		ToolButton newLocationPlusTool = new ToolButton(ToolButton.PLUS);
 		newLocationPlusTool.setToolTip("New Location");
-		currentLocationFP.addTool(newLocationPlusTool);
 		newLocationPlusTool.addSelectHandler(new SelectHandler() {
 
 			@Override
@@ -783,6 +814,9 @@ public class DepictionEditor extends AbstractEditor {
 				addLocationDialog.center();
 			}
 		});				
+		currentLocationFP.addTool(resetLocationSelectionTB);
+		currentLocationFP.addTool(newLocationPlusTool);
+		currentLocationFP.add(locationSelectionCB);
 
 		FramedPanel inventoryNumberFP = new FramedPanel();
 		inventoryNumberFP.setHeading("Inventory Number");
@@ -984,6 +1018,15 @@ public class DepictionEditor extends AbstractEditor {
 				correspondingDepictionEntry.setStyleID(event.getSelectedItem().getStyleID());
 			}
 		});
+		ToolButton resetStyleSelectionTB = new ToolButton(ToolButton.REFRESH);
+		resetStyleSelectionTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				styleSelection.setValue(null, true);
+			}
+		});
+		styleFP.addTool(resetStyleSelectionTB);
 		styleFP.add(styleSelection);
 
 		FramedPanel modesOfRepresentationFP = new FramedPanel();
@@ -1008,6 +1051,15 @@ public class DepictionEditor extends AbstractEditor {
 				correspondingDepictionEntry.setModeOfRepresentationID(event.getSelectedItem().getModeOfRepresentationID());
 			}
 		});
+		ToolButton resetModeOfRepresentationSelectionTB = new ToolButton(ToolButton.REFRESH);
+		resetModeOfRepresentationSelectionTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				modeOfRepresentationSelectionCB.setValue(null, true);
+			}
+		});
+		modesOfRepresentationFP.addTool(resetModeOfRepresentationSelectionTB);
 		modesOfRepresentationFP.add(modeOfRepresentationSelectionCB);
 
 		FramedPanel backgroundColourFP = new FramedPanel();

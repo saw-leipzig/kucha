@@ -798,6 +798,17 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		caveGroupPanel.add(caveGroupSelector);
+		
+		ToolButton resetCaveGroupSelectionTB = new ToolButton(ToolButton.REFRESH);
+		caveGroupPanel.addTool(resetCaveGroupSelectionTB);
+		resetCaveGroupSelectionTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				caveGroupSelector.setValue(null, true);
+			}
+		});
+		
 		ToolButton newCaveGroupPlusTool = new ToolButton(ToolButton.PLUS);
 		newCaveGroupPlusTool.setToolTip("New Cave Group");
 		caveGroupPanel.addTool(newCaveGroupPlusTool);
@@ -919,6 +930,16 @@ public class CaveEditor extends AbstractEditor {
 		}
 		districtPanel.add(districtSelection);
 
+		ToolButton resetDistrictSelectionTB = new ToolButton(ToolButton.REFRESH);
+		districtPanel.addTool(resetDistrictSelectionTB);
+		resetDistrictSelectionTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				districtSelection.setValue(null, true);
+			}
+		});
+		
 		ToolButton newDistrictPlusTool = new ToolButton(ToolButton.PLUS);
 		newDistrictPlusTool.setToolTip("New District");
 		districtPanel.addTool(newDistrictPlusTool);
@@ -1023,6 +1044,16 @@ public class CaveEditor extends AbstractEditor {
 			regionSelection.setEnabled(false);
 		}
 		regionPanel.add(regionSelection);
+
+		ToolButton resetRegionSelectionTB = new ToolButton(ToolButton.REFRESH);
+		regionPanel.addTool(resetRegionSelectionTB);
+		resetRegionSelectionTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				regionSelection.setValue(null, true);
+			}
+		});
 
 		ToolButton addRegionPlusTool = new ToolButton(ToolButton.PLUS);
 		addRegionPlusTool.setToolTip("Add Region");
@@ -1134,6 +1165,15 @@ public class CaveEditor extends AbstractEditor {
 						.setPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
 			}
 		});
+		ToolButton rearAreaStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
+		rearAreaStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				rearAreaPreservationSelectorCB.setValue(null, true);
+			}
+		});
+		rearAreaStateOfPreservationFP.addTool(rearAreaStateOfPreservationResetSelectionTB);
 		rearAreaStateOfPreservationFP.add(rearAreaPreservationSelectorCB);
 
 		rearAreaCeilingStateOfPreservationFP = new FramedPanel();
@@ -1159,6 +1199,16 @@ public class CaveEditor extends AbstractEditor {
 		HorizontalLayoutContainer rearAreaCeilingPreservationHLC = new HorizontalLayoutContainer();
 		rearAreaCeilingPreservationHLC.add(rearAreaCeilingPreservationSelectorCB1, new HorizontalLayoutData(.5, 1.0, new Margins(0, 5, 0, 0)));
 		rearAreaCeilingPreservationHLC.add(rearAreaCeilingPreservationSelectorCB2, new HorizontalLayoutData(.5, 1.0, new Margins(0)));
+		ToolButton rearAreaCeilingStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
+		rearAreaCeilingStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				rearAreaCeilingPreservationSelectorCB1.setValue(null, true);
+				rearAreaCeilingPreservationSelectorCB2.setValue(null, true);
+			}
+		});
+		rearAreaCeilingStateOfPreservationFP.addTool(rearAreaCeilingStateOfPreservationResetSelectionTB);
 		rearAreaCeilingStateOfPreservationFP.add(rearAreaCeilingPreservationHLC);
 
 		leftCorridorStateOfPreservationFP = new FramedPanel();
@@ -1172,6 +1222,15 @@ public class CaveEditor extends AbstractEditor {
 						.setPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
 			}
 		});
+		ToolButton leftCorridorStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
+		leftCorridorStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				leftCorridorPreservationSelectorCB.setValue(null, true);
+			}
+		});
+		leftCorridorStateOfPreservationFP.addTool(leftCorridorStateOfPreservationResetSelectionTB);
 		leftCorridorStateOfPreservationFP.add(leftCorridorPreservationSelectorCB);
 
 		leftCorridorCeilingStateOfPreservationFP = new FramedPanel();
@@ -1198,6 +1257,16 @@ public class CaveEditor extends AbstractEditor {
 		leftCorridorCeilingPreservationHLC.add(leftCorridorCeilingPreservationSelectorCB1,
 				new HorizontalLayoutData(.5, 1.0, new Margins(0, 5, 0, 0)));
 		leftCorridorCeilingPreservationHLC.add(leftCorridorCeilingPreservationSelectorCB2, new HorizontalLayoutData(.5, 1.0, new Margins(0)));
+		ToolButton leftCorridorCeilingStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
+		leftCorridorCeilingStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				leftCorridorCeilingPreservationSelectorCB1.setValue(null, true);
+				leftCorridorCeilingPreservationSelectorCB2.setValue(null, true);
+			}
+		});
+		leftCorridorCeilingStateOfPreservationFP.addTool(leftCorridorCeilingStateOfPreservationResetSelectionTB);
 		leftCorridorCeilingStateOfPreservationFP.add(leftCorridorCeilingPreservationHLC);
 
 		rightCorridorStateOfPreservationFP = new FramedPanel();
@@ -1211,6 +1280,15 @@ public class CaveEditor extends AbstractEditor {
 						.setPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
 			}
 		});
+		ToolButton rightCorridorStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
+		rightCorridorStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				rightCorridorPreservationSelectorCB.setValue(null, true);
+			}
+		});
+		rightCorridorStateOfPreservationFP.addTool(rightCorridorStateOfPreservationResetSelectionTB);
 		rightCorridorStateOfPreservationFP.add(rightCorridorPreservationSelectorCB);
 
 		rightCorridorCeilingStateOfPreservationFP = new FramedPanel();
@@ -1237,6 +1315,16 @@ public class CaveEditor extends AbstractEditor {
 		rightCorridorCeilingPreservationHLC.add(rightCorridorCeilingPreservationSelectorCB1,
 				new HorizontalLayoutData(.5, 1.0, new Margins(0, 5, 0, 0)));
 		rightCorridorCeilingPreservationHLC.add(rightCorridorCeilingPreservationSelectorCB2, new HorizontalLayoutData(.5, 1.0, new Margins(0)));
+		ToolButton rightCorridorCeilingStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
+		rightCorridorCeilingStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				rightCorridorCeilingPreservationSelectorCB1.setValue(null, true);
+				rightCorridorCeilingPreservationSelectorCB2.setValue(null, true);
+			}
+		});
+		rightCorridorCeilingStateOfPreservationFP.addTool(rightCorridorCeilingStateOfPreservationResetSelectionTB);
 		rightCorridorCeilingStateOfPreservationFP.add(rightCorridorCeilingPreservationHLC);
 
 		mainChamberStateOfPreservationFP = new FramedPanel();
@@ -1250,6 +1338,15 @@ public class CaveEditor extends AbstractEditor {
 						.setPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
 			}
 		});
+		ToolButton mainChamberStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
+		mainChamberStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				mainChamberPreservationSelectorCB.setValue(null, true);
+			}
+		});
+		mainChamberStateOfPreservationFP.addTool(mainChamberStateOfPreservationResetSelectionTB);
 		mainChamberStateOfPreservationFP.add(mainChamberPreservationSelectorCB);
 
 		mainChamberCeilingStateOfPreservationFP = new FramedPanel();
@@ -1276,6 +1373,16 @@ public class CaveEditor extends AbstractEditor {
 		mainChamberCeilingPreservationHLC.add(mainChamberCeilingPreservationSelectorCB1,
 				new HorizontalLayoutData(0.5, 1.0, new Margins(0, 5, 0, 0)));
 		mainChamberCeilingPreservationHLC.add(mainChamberCeilingPreservationSelectorCB2, new HorizontalLayoutData(0.5, 1.0, new Margins(0)));
+		ToolButton mainChamberCeilingStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
+		mainChamberCeilingStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				mainChamberCeilingPreservationSelectorCB1.setValue(null, true);
+				mainChamberCeilingPreservationSelectorCB2.setValue(null, true);			
+			}
+		});
+		mainChamberCeilingStateOfPreservationFP.addTool(mainChamberCeilingStateOfPreservationResetSelectionTB);
 		mainChamberCeilingStateOfPreservationFP.add(mainChamberCeilingPreservationHLC);
 
 		corridorStateOfPreservationFP = new FramedPanel();
@@ -1289,6 +1396,15 @@ public class CaveEditor extends AbstractEditor {
 						.setPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
 			}
 		});
+		ToolButton corridorStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
+		corridorStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				corridorPreservationSelectorCB.setValue(null, true);
+			}
+		});
+		corridorStateOfPreservationFP.addTool(corridorStateOfPreservationResetSelectionTB);
 		corridorStateOfPreservationFP.add(corridorPreservationSelectorCB);
 
 		corridorCeilingStateOfPreservationFP = new FramedPanel();
@@ -1314,6 +1430,16 @@ public class CaveEditor extends AbstractEditor {
 		HorizontalLayoutContainer corridorCeilingPreservationHLC = new HorizontalLayoutContainer();
 		corridorCeilingPreservationHLC.add(corridorCeilingPreservationSelectorCB1, new HorizontalLayoutData(.5, 1.0, new Margins(0, 5, 0, 0)));
 		corridorCeilingPreservationHLC.add(corridorCeilingPreservationSelectorCB2, new HorizontalLayoutData(.5, 1.0, new Margins(0)));
+		ToolButton corridorCeilingStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
+		corridorCeilingStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				corridorCeilingPreservationSelectorCB1.setValue(null, true);
+				corridorCeilingPreservationSelectorCB2.setValue(null, true);
+			}
+		});
+		corridorCeilingStateOfPreservationFP.addTool(corridorCeilingStateOfPreservationResetSelectionTB);
 		corridorCeilingStateOfPreservationFP.add(corridorCeilingPreservationHLC);
 
 		antechamberStateOfPreservationFP = new FramedPanel();
@@ -1327,6 +1453,15 @@ public class CaveEditor extends AbstractEditor {
 						.setPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
 			}
 		});
+		ToolButton antechamberStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
+		antechamberStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				antechamberPreservationSelectorCB.setValue(null, true);
+			}
+		});
+		antechamberStateOfPreservationFP.addTool(antechamberStateOfPreservationResetSelectionTB);
 		antechamberStateOfPreservationFP.add(antechamberPreservationSelectorCB);
 
 		antechamberCeilingStateOfPreservationFP = new FramedPanel();
@@ -1353,6 +1488,16 @@ public class CaveEditor extends AbstractEditor {
 		antechamberCeilingPreservationHLC.add(antechamberCeilingPreservationSelectorCB1,
 				new HorizontalLayoutData(.5, 1.0, new Margins(0, 5, 0, 0)));
 		antechamberCeilingPreservationHLC.add(antechamberCeilingPreservationSelectorCB2, new HorizontalLayoutData(.5, 1.0, new Margins(0)));
+		ToolButton antechamberCeilingStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
+		antechamberCeilingStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				antechamberCeilingPreservationSelectorCB1.setValue(null, true);
+				antechamberCeilingPreservationSelectorCB2.setValue(null, true);
+			}
+		});
+		antechamberCeilingStateOfPreservationFP.addTool(antechamberCeilingStateOfPreservationResetSelectionTB);
 		antechamberCeilingStateOfPreservationFP.add(antechamberCeilingPreservationHLC);
 
 		antechamberFloorStateOfPreservationFP = new FramedPanel();
@@ -1366,6 +1511,15 @@ public class CaveEditor extends AbstractEditor {
 						.setFloorPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
 			}
 		});
+		ToolButton antechamberFloorStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
+		antechamberFloorStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				antechamberFloorPreservationSelectorCB.setValue(null, true);
+			}
+		});
+		antechamberFloorStateOfPreservationFP.addTool(antechamberFloorStateOfPreservationResetSelectionTB);
 		antechamberFloorStateOfPreservationFP.add(antechamberFloorPreservationSelectorCB);
 
 		mainChamberFloorStateOfPreservationFP = new FramedPanel();
@@ -1379,6 +1533,15 @@ public class CaveEditor extends AbstractEditor {
 						.setFloorPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
 			}
 		});
+		ToolButton mainChamberFloorStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
+		mainChamberFloorStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				mainChamberFloorPreservationSelectorCB.setValue(null, true);
+			}
+		});
+		mainChamberFloorStateOfPreservationFP.addTool(mainChamberFloorStateOfPreservationResetSelectionTB);
 		mainChamberFloorStateOfPreservationFP.add(mainChamberFloorPreservationSelectorCB);
 
 		corridorFloorStateOfPreservationFP = new FramedPanel();
@@ -1392,6 +1555,15 @@ public class CaveEditor extends AbstractEditor {
 						.setFloorPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
 			}
 		});
+		ToolButton corridorFloorStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
+		corridorFloorStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				corridorFloorPreservationSelectorCB.setValue(null, true);
+			}
+		});
+		corridorFloorStateOfPreservationFP.addTool(corridorFloorStateOfPreservationResetSelectionTB);
 		corridorFloorStateOfPreservationFP.add(corridorFloorPreservationSelectorCB);
 
 		rearAreaFloorStateOfPreservationFP = new FramedPanel();
@@ -1405,6 +1577,15 @@ public class CaveEditor extends AbstractEditor {
 						.setFloorPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
 			}
 		});
+		ToolButton rearAreaFloorStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
+		rearAreaFloorStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				rearAreaFloorPreservationSelectorCB.setValue(null, true);
+			}
+		});
+		rearAreaFloorStateOfPreservationFP.addTool(rearAreaFloorStateOfPreservationResetSelectionTB);
 		rearAreaFloorStateOfPreservationFP.add(rearAreaFloorPreservationSelectorCB);
 
 		leftCorridorFloorStateOfPreservationFP = new FramedPanel();
@@ -1418,6 +1599,15 @@ public class CaveEditor extends AbstractEditor {
 						.setFloorPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
 			}
 		});
+		ToolButton leftCorridorFloorStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
+		leftCorridorFloorStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				leftCorridorFloorPreservationSelectorCB.setValue(null, true);
+			}
+		});
+		leftCorridorFloorStateOfPreservationFP.addTool(leftCorridorFloorStateOfPreservationResetSelectionTB);
 		leftCorridorFloorStateOfPreservationFP.add(leftCorridorFloorPreservationSelectorCB);
 
 		rightCorridorFloorStateOfPreservationFP = new FramedPanel();
@@ -1431,6 +1621,15 @@ public class CaveEditor extends AbstractEditor {
 						.setFloorPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
 			}
 		});
+		ToolButton rightCorridorFloorStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
+		rightCorridorFloorStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				rightCorridorFloorPreservationSelectorCB.setValue(null, true);
+			}
+		});
+		rightCorridorFloorStateOfPreservationFP.addTool(rightCorridorFloorStateOfPreservationResetSelectionTB);
 		rightCorridorFloorStateOfPreservationFP.add(rightCorridorFloorPreservationSelectorCB);
 
 		HorizontalLayoutContainer rearAnteHLC = new HorizontalLayoutContainer();
@@ -1820,6 +2019,16 @@ public class CaveEditor extends AbstractEditor {
 				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).setCeilingTypeID2(event.getSelectedItem().getCeilingTypeID());
 			}
 		});
+		ToolButton resetRearAreaCeilingTypeSelectionTB = new ToolButton(ToolButton.REFRESH);
+		rearAreaCeilingTypeFP.addTool(resetRearAreaCeilingTypeSelectionTB);
+		resetRearAreaCeilingTypeSelectionTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				rearAreaCeilingTypeSelector1.setValue(null, true);
+				rearAreaCeilingTypeSelector2.setValue(null, true);
+			}
+		});
 		HorizontalLayoutContainer rearAreaCeilingTypeHLC = new HorizontalLayoutContainer();
 		rearAreaCeilingTypeHLC.add(rearAreaCeilingTypeSelector1, new HorizontalLayoutData(.5, 1.0, new Margins(0, 5, 0, 0)));
 		rearAreaCeilingTypeHLC.add(rearAreaCeilingTypeSelector2, new HorizontalLayoutData(.5, 1.0, new Margins(0)));
@@ -1846,6 +2055,16 @@ public class CaveEditor extends AbstractEditor {
 				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).setCeilingTypeID2(event.getSelectedItem().getCeilingTypeID());
 			}
 		});
+		ToolButton resetMainChamberCeilingTypeSelectionTB = new ToolButton(ToolButton.REFRESH);
+		mainChamberCeilingTypeFP.addTool(resetMainChamberCeilingTypeSelectionTB);
+		resetMainChamberCeilingTypeSelectionTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				mainChamberCeilingTypeSelector1.setValue(null, true);
+				mainChamberCeilingTypeSelector2.setValue(null, true);
+			}
+		});
 		HorizontalLayoutContainer mainChamberCeilingTypeHLC = new HorizontalLayoutContainer();
 		mainChamberCeilingTypeHLC.add(mainChamberCeilingTypeSelector1, new HorizontalLayoutData(.5, 1.0, new Margins(0, 5, 0, 0)));
 		mainChamberCeilingTypeHLC.add(mainChamberCeilingTypeSelector2, new HorizontalLayoutData(.5, 1.0, new Margins(0)));
@@ -1870,6 +2089,16 @@ public class CaveEditor extends AbstractEditor {
 			@Override
 			public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
 				correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).setCeilingTypeID1(event.getSelectedItem().getCeilingTypeID());
+			}
+		});
+		ToolButton resetAntechamberCeilingTypeSelectionTB = new ToolButton(ToolButton.REFRESH);
+		antechamberCeilingTypeFP.addTool(resetAntechamberCeilingTypeSelectionTB);
+		resetAntechamberCeilingTypeSelectionTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				antechamberCeilingTypeSelector1.setValue(null, true);
+				antechamberCeilingTypeSelector2.setValue(null, true);
 			}
 		});
 		HorizontalLayoutContainer antechamberCeilingTypeHLC = new HorizontalLayoutContainer();
@@ -1900,6 +2129,16 @@ public class CaveEditor extends AbstractEditor {
 						.setCeilingTypeID2(event.getSelectedItem().getCeilingTypeID());
 			}
 		});
+		ToolButton resetCorridorCeilingTypeSelectionTB = new ToolButton(ToolButton.REFRESH);
+		corridorCeilingTypeFP.addTool(resetCorridorCeilingTypeSelectionTB);
+		resetCorridorCeilingTypeSelectionTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				corridorCeilingTypeSelector1.setValue(null, true);
+				corridorCeilingTypeSelector2.setValue(null, true);
+			}
+		});
 		HorizontalLayoutContainer corridorCeilingTypeHLC = new HorizontalLayoutContainer();
 		corridorCeilingTypeHLC.add(corridorCeilingTypeSelector1, new HorizontalLayoutData(.5, 1.0, new Margins(0, 5, 0, 0)));
 		corridorCeilingTypeHLC.add(corridorCeilingTypeSelector2, new HorizontalLayoutData(.5, 1.0, new Margins(0)));
@@ -1926,6 +2165,16 @@ public class CaveEditor extends AbstractEditor {
 			public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
 				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR)
 						.setCeilingTypeID2(event.getSelectedItem().getCeilingTypeID());
+			}
+		});
+		ToolButton resetLeftCorridorCeilingTypeSelectionTB = new ToolButton(ToolButton.REFRESH);
+		leftCorridorCeilingTypeFP.addTool(resetLeftCorridorCeilingTypeSelectionTB);
+		resetLeftCorridorCeilingTypeSelectionTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				leftCorridorCeilingTypeSelector1.setValue(null, true);
+				leftCorridorCeilingTypeSelector2.setValue(null, true);
 			}
 		});
 		HorizontalLayoutContainer leftCorridorCeilingTypeHLC = new HorizontalLayoutContainer();
@@ -1956,6 +2205,16 @@ public class CaveEditor extends AbstractEditor {
 						.setCeilingTypeID2(event.getSelectedItem().getCeilingTypeID());
 			}
 
+		});
+		ToolButton resetRightCorridorCeilingTypeSelectionTB = new ToolButton(ToolButton.REFRESH);
+		rightCorridorCeilingTypeFP.addTool(resetRightCorridorCeilingTypeSelectionTB);
+		resetRightCorridorCeilingTypeSelectionTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				rightCorridorCeilingTypeSelector1.setValue(null, true);
+				rightCorridorCeilingTypeSelector2.setValue(null, true);
+			}
 		});
 		HorizontalLayoutContainer rightCorridorCeilingTypeHLC = new HorizontalLayoutContainer();
 		rightCorridorCeilingTypeHLC.add(rightCorridorCeilingTypeSelector1, new HorizontalLayoutData(.5, 1.0, new Margins(0, 5, 0, 0)));
