@@ -41,6 +41,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
+import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.core.client.util.Rectangle;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
@@ -305,22 +306,22 @@ public class SingleImageEditor extends AbstractEditor {
 				authorNameField.addValidator(new MinLengthValidator(2));
 				authorNameField.addValidator(new MaxLengthValidator(64));
 				authorNameField.setEmptyText("photo author name");
-				authorNameField.setWidth(200);
+				authorNameField.setWidth(300);
 				TextField institutionField = new TextField();
 				institutionField.addValidator(new MinLengthValidator(2));
 				institutionField.addValidator(new MaxLengthValidator(64));
 				institutionField.setEmptyText("institution");
-				institutionField.setWidth(200);
+				institutionField.setWidth(300);
 				VerticalLayoutContainer authorVLC = new VerticalLayoutContainer();
-				authorVLC.add(authorNameField, new VerticalLayoutData(1.0, .5));
-				authorVLC.add(institutionField, new VerticalLayoutData(1.0, .5));
+				authorVLC.add(authorNameField, new VerticalLayoutData(1.0, .5, new Margins(5)));
+				authorVLC.add(institutionField, new VerticalLayoutData(1.0, .5, new Margins(5)));
 				addPhotoAuthorFP.add(authorVLC);
 				TextButton saveButton = new TextButton("save");
 				saveButton.addSelectHandler(new SelectHandler() {
 
 					@Override
 					public void onSelect(SelectEvent event) {
-						if (authorNameField.isValid()) {
+						if (authorNameField.isValid() || institutionField.isValid()) {
 							PhotographerEntry pEntry = new PhotographerEntry(authorNameField.getCurrentValue(), institutionField.getCurrentValue());
 							dbService.insertPhotographerEntry(pEntry, new AsyncCallback<Integer>() {
 
@@ -355,7 +356,7 @@ public class SingleImageEditor extends AbstractEditor {
 			}
 		});
 		
-		ToolButton resetSelectionTB = new ToolButton(ToolButton.RESTORE);
+		ToolButton resetSelectionTB = new ToolButton(ToolButton.REFRESH);
 		resetSelectionTB.addSelectHandler(new SelectHandler() {
 			
 			@Override

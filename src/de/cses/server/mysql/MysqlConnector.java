@@ -2735,8 +2735,9 @@ public class MysqlConnector {
 		PreparedStatement peStatement;
 		int photographerID=0;
 		try {
-			peStatement = dbc.prepareStatement("INSERT INTO Photographers (Name) VALUES (?)", Statement.RETURN_GENERATED_KEYS);
+			peStatement = dbc.prepareStatement("INSERT INTO Photographers (Name, Institution) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
 			peStatement.setString(1, photographerEntry.getName());
+			peStatement.setString(2, photographerEntry.getInstitution());
 			peStatement.executeUpdate();
 			ResultSet keys = peStatement.getGeneratedKeys();
 			if (keys.next()) {
