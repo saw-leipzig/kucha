@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 
+ * Copyright 2016 -2018
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -28,28 +28,33 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
+import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.core.client.util.Rectangle;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
+import com.sencha.gxt.data.shared.SortDir;
+import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.widget.core.client.Dialog;
 import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
-import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
-import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.CheckBox;
@@ -58,6 +63,7 @@ import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.Validator;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
+import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
 import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
@@ -76,7 +82,7 @@ public class SingleImageEditor extends AbstractEditor {
 	private TextArea copyrightArea;
 	private TextArea commentArea;
 	private TextField dateField;
-	private ComboBox<PhotographerEntry> authorSelection;
+	private ComboBox<PhotographerEntry> authorSelectionCB;
 	private FramedPanel panel;
 	private PhotographerProperties photographerProps;
 	private ListStore<PhotographerEntry> photographerEntryList;
@@ -89,30 +95,18 @@ public class SingleImageEditor extends AbstractEditor {
 	 */
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	private ImageEntry imgEntry;
-	private FlowLayoutContainer imageContainer;
-
-	// interface ImageProperties extends PropertyAccess<ImageEntry> {
-	// ModelKeyProvider<ImageEntry> imageID();
-	//
-	// LabelProvider<ImageEntry> title();
-	// }
+	private ImageViewTemplates imgViewTemplates;
 
 	interface PhotographerProperties extends PropertyAccess<PhotographerEntry> {
 		ModelKeyProvider<PhotographerEntry> photographerID();
-
-		LabelProvider<PhotographerEntry> name();
+		LabelProvider<PhotographerEntry> label();
 	}
 
-	/**
-	 * Creates the view how a thumbnail of an image entry will be shown currently we are relying on the url of the image until we have user management implemented
-	 * and protect images from being viewed from the outside without permission
-	 * 
-	 * @author alingnau
-	 *
-	 */
 	interface ImageViewTemplates extends XTemplates {
-		@XTemplate("<img align=\"center\" width=\"150\" height=\"150\" margin=\"20\" src=\"{imageUri}\"><br> {title}")
-		SafeHtml image(SafeUri imageUri, String title);
+		@XTemplate("<div style='display: flex; flex-direction: column; align-items: center;'>"
+				+ "<div><img src='{imgUri}'></div></img>"
+				+ "</div>")
+		SafeHtml view(SafeUri imgUri);
 	}
 
 	interface PhotographerViewTemplates extends XTemplates {
@@ -122,7 +116,6 @@ public class SingleImageEditor extends AbstractEditor {
 
 	interface ImageTypeProperties extends PropertyAccess<ImageTypeEntry> {
 		ModelKeyProvider<ImageTypeEntry> imageTypeID();
-
 		LabelProvider<ImageTypeEntry> name();
 	}
 
@@ -137,8 +130,25 @@ public class SingleImageEditor extends AbstractEditor {
 	public SingleImageEditor(ImageEntry imgEntry) {
 		this.imgEntry = imgEntry;
 
+		imgViewTemplates = GWT.create(ImageViewTemplates.class);
+		
 		photographerProps = GWT.create(PhotographerProperties.class);
 		photographerEntryList = new ListStore<PhotographerEntry>(photographerProps.photographerID());
+		photographerEntryList.addSortInfo(new StoreSortInfo<PhotographerEntry>(new ValueProvider<PhotographerEntry, String>() {
+
+			@Override
+			public String getValue(PhotographerEntry entry) {
+				return entry.getLabel();
+			}
+
+			@Override
+			public void setValue(PhotographerEntry object, String value) { }
+
+			@Override
+			public String getPath() {
+				return "label";
+			}
+		}, SortDir.ASC));
 
 		imageTypeProps = GWT.create(ImageTypeProperties.class);
 		imageTypeEntryList = new ListStore<ImageTypeEntry>(imageTypeProps.imageTypeID());
@@ -154,7 +164,6 @@ public class SingleImageEditor extends AbstractEditor {
 
 			@Override
 			public void onSuccess(ArrayList<PhotographerEntry> result) {
-				photographerEntryList.clear();
 				for (PhotographerEntry pe : result) {
 					photographerEntryList.add(pe);
 				}
@@ -181,12 +190,7 @@ public class SingleImageEditor extends AbstractEditor {
 	 */
 	private void initPanel() {
 		panel = new FramedPanel();
-		HorizontalLayoutContainer hPanel = new HorizontalLayoutContainer();
-		imageContainer = new FlowLayoutContainer();
-		// VerticalPanel imgPanel = new VerticalPanel();
-		VerticalLayoutContainer editPanel = new VerticalLayoutContainer();
 
-		FramedPanel attributePanel = new FramedPanel();
 		titleField = new TextField();
 		titleField.addValidator(new MaxLengthValidator(128));
 		titleField.addValidator(new Validator<String>() {
@@ -206,65 +210,139 @@ public class SingleImageEditor extends AbstractEditor {
 				return errors;
 			}
 		});
-		// titleField.setWidth(300);
-		attributePanel.setHeading("Title");
-		titleField.setValue(imgEntry.getTitle());
-		attributePanel.add(titleField);
-		editPanel.add(attributePanel, new VerticalLayoutData(1.0, .1));
 
-		attributePanel = new FramedPanel();
+		FramedPanel titlePanel = new FramedPanel();
+		titlePanel.setHeading("Title");
+		titleField.setValue(imgEntry.getTitle());
+		titlePanel.add(titleField);
+
+		FramedPanel shortNamePanel = new FramedPanel();
 		shortNameField = new TextField();
 		shortNameField.addValidator(new MaxLengthValidator(12));
-		// shortNameField.setWidth(300);
-		attributePanel.setHeading("Short Name");
+		shortNamePanel.setHeading("Short Name");
 		shortNameField.setValue(imgEntry.getShortName());
-		attributePanel.add(shortNameField);
-		editPanel.add(attributePanel, new VerticalLayoutData(1.0, .1));
-
-		attributePanel = new FramedPanel();
+		shortNamePanel.add(shortNameField);
+		
+		FramedPanel copyrightPanel = new FramedPanel();
 		copyrightArea = new TextArea();
-		// copyrightArea.setSize("300px", "50px");
 		copyrightArea.addValidator(new MaxLengthValidator(128));
 		copyrightArea.setValue(imgEntry.getCopyright());
-		attributePanel.setHeading("Copyright");
-		attributePanel.add(copyrightArea);
-		editPanel.add(attributePanel, new VerticalLayoutData(1.0, .2));
+		copyrightPanel.setHeading("Copyright");
+		copyrightPanel.add(copyrightArea);
 
-		attributePanel = new FramedPanel();
+		FramedPanel commentPanel = new FramedPanel();
 		commentArea = new TextArea();
-		// commentArea.setSize("300px", "100px");
-		commentArea.setValue(imgEntry.getComment());
-		attributePanel.add(commentArea);
-		attributePanel.setHeading("Comment");
-		editPanel.add(attributePanel, new VerticalLayoutData(1.0, .3));
+		commentArea.setEmptyText("optional comments");
+		if (imgEntry.getComment() != null) {
+			commentArea.setValue(imgEntry.getComment());
+		}
+		commentPanel.add(commentArea);
+		commentPanel.setHeading("Comment");
 
-		attributePanel = new FramedPanel();
+		FramedPanel datePanel = new FramedPanel();
 		dateField = new TextField();
+		dateField.setEmptyText("optional date");
 		dateField.addValidator(new MaxLengthValidator(32));
 		dateField.setValue(imgEntry.getDate());
-		attributePanel.add(dateField);
-		attributePanel.setHeading("Date");
-		editPanel.add(attributePanel, new VerticalLayoutData(1.0, .1));
+		datePanel.add(dateField);
+		datePanel.setHeading("Date");
 
-		attributePanel = new FramedPanel();
-		authorSelection = new ComboBox<PhotographerEntry>(photographerEntryList, photographerProps.name(),
+		/**
+		 * The Author selection
+		 */
+		FramedPanel authorFP = new FramedPanel();
+		authorSelectionCB = new ComboBox<PhotographerEntry>(photographerEntryList, photographerProps.label(),
 				new AbstractSafeHtmlRenderer<PhotographerEntry>() {
 
 					@Override
 					public SafeHtml render(PhotographerEntry item) {
 						final PhotographerViewTemplates pvTemplates = GWT.create(PhotographerViewTemplates.class);
-						return pvTemplates.photographer(item.getName());
+						String name = item.getName();
+						String institution = item.getInstitution();
+						return pvTemplates.photographer(name!=null ? (institution!=null ? name + " ( " + institution + ")" : name) : institution);
 					}
 				});
-		authorSelection.setEmptyText("Select an author ...");
-		authorSelection.setTypeAhead(false);
-		authorSelection.setEditable(false);
-		authorSelection.setTriggerAction(TriggerAction.ALL);
-		authorSelection.setValue(photographerEntryList.findModelWithKey(Integer.toString(imgEntry.getPhotographerID())), true);
-		attributePanel.add(authorSelection);
-		attributePanel.setHeading("Author");
-		editPanel.add(attributePanel, new VerticalLayoutData(1.0, .1));
+		authorSelectionCB.setEmptyText("select an author ...");
+		authorSelectionCB.setTypeAhead(false);
+		authorSelectionCB.setEditable(false);
+		authorSelectionCB.setTriggerAction(TriggerAction.ALL);
+		authorSelectionCB.setValue(photographerEntryList.findModelWithKey(Integer.toString(imgEntry.getPhotographerID())), true);
+		
+		ToolButton addPhotoAuthorTB = new ToolButton(ToolButton.PLUS);
+		addPhotoAuthorTB.addSelectHandler(new SelectHandler() {
 
+			@Override
+			public void onSelect(SelectEvent event) {
+				PopupPanel addPhotoAuthorDialog = new PopupPanel();
+				FramedPanel addPhotoAuthorFP = new FramedPanel();
+				addPhotoAuthorFP.setHeading("Add Photo Author");
+				TextField authorNameField = new TextField();
+				authorNameField.addValidator(new MinLengthValidator(2));
+				authorNameField.addValidator(new MaxLengthValidator(64));
+				authorNameField.setEmptyText("photo author name");
+				authorNameField.setWidth(300);
+				TextField institutionField = new TextField();
+				institutionField.addValidator(new MinLengthValidator(2));
+				institutionField.addValidator(new MaxLengthValidator(64));
+				institutionField.setEmptyText("institution");
+				institutionField.setWidth(300);
+				VerticalPanel authorVP = new VerticalPanel();
+				authorVP.add(authorNameField);
+				authorVP.add(institutionField);
+				addPhotoAuthorFP.add(authorVP);
+				TextButton saveButton = new TextButton("save");
+				saveButton.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						if (authorNameField.isValid() || institutionField.isValid()) {
+							PhotographerEntry pEntry = new PhotographerEntry(authorNameField.getCurrentValue(), institutionField.getCurrentValue());
+							dbService.insertPhotographerEntry(pEntry, new AsyncCallback<Integer>() {
+
+								@Override
+								public void onFailure(Throwable caught) {
+									Window.alert("A problem occured while saving!");
+								}
+
+								@Override
+								public void onSuccess(Integer result) {
+									pEntry.setPhotographerID(result);
+									photographerEntryList.add(pEntry);
+								}
+							});
+							addPhotoAuthorDialog.hide();
+						}
+					}
+				});
+				addPhotoAuthorFP.addButton(saveButton);
+				TextButton cancelButton = new TextButton("cancel");
+				cancelButton.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						addPhotoAuthorDialog.hide();
+					}
+				});
+				addPhotoAuthorFP.addButton(cancelButton);
+				addPhotoAuthorDialog.add(addPhotoAuthorFP);
+				addPhotoAuthorDialog.setModal(true);
+				addPhotoAuthorDialog.center();
+			}
+		});
+		
+		ToolButton resetSelectionTB = new ToolButton(ToolButton.REFRESH);
+		resetSelectionTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				authorSelectionCB.setValue(null);
+			}
+		});
+		authorFP.addTool(resetSelectionTB);
+		authorFP.addTool(addPhotoAuthorTB);
+		authorFP.add(authorSelectionCB);
+		authorFP.setHeading("Author");
+		
 		FramedPanel imageTypeSelectionPanel = new FramedPanel();
 		imageTypeSelection = new ComboBox<ImageTypeEntry>(imageTypeEntryList, imageTypeProps.name(),
 				new AbstractSafeHtmlRenderer<ImageTypeEntry>() {
@@ -304,64 +382,90 @@ public class SingleImageEditor extends AbstractEditor {
 		publicImagePanel.add(publicImageCB);
 		publicImagePanel.setHeading("Image Mode");
 
-		HorizontalLayoutContainer imageOptionsHLC = new HorizontalLayoutContainer();
-		imageOptionsHLC.add(imageTypeSelectionPanel, new HorizontalLayoutData(.5, 1.0));
-		imageOptionsHLC.add(publicImagePanel, new HorizontalLayoutData(.5, 1.0));
-		editPanel.add(imageOptionsHLC, new VerticalLayoutData(1.0, .1));
-
-		TextButton cancelButton = new TextButton("cancel");
-		cancelButton.addSelectHandler(new SelectHandler() {
-
+		HorizontalLayoutContainer imageTypeModeHLC = new HorizontalLayoutContainer();
+		imageTypeModeHLC.add(imageTypeSelectionPanel, new HorizontalLayoutData(.5, 1.0));
+		imageTypeModeHLC.add(publicImagePanel, new HorizontalLayoutData(.5, 1.0));
+		
+		ToolButton saveToolButton = new ToolButton(ToolButton.SAVE);
+		saveToolButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-				cancelDialog();
+				saveImageEntry(false);
 			}
 		});
-
-		TextButton saveButton = new TextButton("save");
-		saveButton.addSelectHandler(new SelectHandler() {
+		
+		ToolButton closeToolButton = new ToolButton(ToolButton.CLOSE);
+		closeToolButton.setToolTip("close");
+		closeToolButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-				saveImageEntry();
+				 Dialog d = new Dialog();
+				 d.setHeading("Exit Warning!");
+				 d.setWidget(new HTML("Do you wish to save before exiting?"));
+				 d.setBodyStyle("fontWeight:bold;padding:13px;");
+				 d.setPixelSize(300, 100);
+				 d.setHideOnButtonClick(true);
+				 d.setPredefinedButtons(PredefinedButton.YES, PredefinedButton.NO, PredefinedButton.CANCEL);
+				 d.setModal(true);
+				 d.center();
+				 d.show();
+				 d.getButton(PredefinedButton.YES).addSelectHandler(new SelectHandler() {
+					
+					@Override
+					public void onSelect(SelectEvent event) {
+						saveImageEntry(true);
+					}
+				});
+				 d.getButton(PredefinedButton.NO).addSelectHandler(new SelectHandler() {
+						
+					@Override
+					public void onSelect(SelectEvent event) {
+						 closeEditor();
+					}
+				});
 			}
-		});
+		});		
 
 		SafeUri imageUri = UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=300" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
-		Image img = new Image(imageUri);
-		imageContainer.add(img);
-		imageContainer.setPixelSize(310, 310);
-		hPanel.add(imageContainer, new HorizontalLayoutData(.5, 1.0));
-		hPanel.add(editPanel, new HorizontalLayoutData(.5, 1.0));
+		HTMLPanel imgHP = new HTMLPanel(imgViewTemplates.view(imageUri));
+		FramedPanel imgFP = new FramedPanel();
+		imgFP.setHeading("Image format: " + imgEntry.getFilename().substring(imgEntry.getFilename().lastIndexOf(".")+1).toUpperCase());
+		imgFP.add(imgHP);
+		
+		VerticalLayoutContainer leftEditVLC = new VerticalLayoutContainer();
+		leftEditVLC.add(shortNamePanel, new VerticalLayoutData(1.0, .25));
+		leftEditVLC.add(copyrightPanel, new VerticalLayoutData(1.0, .5));
+		leftEditVLC.add(datePanel, new VerticalLayoutData(1.0, .25));
+
+		VerticalLayoutContainer rightEditVLC = new VerticalLayoutContainer();
+		rightEditVLC.add(imageTypeModeHLC, new VerticalLayoutData(1.0, .3));
+		rightEditVLC.add(commentPanel, new VerticalLayoutData(1.0, .7));
+
+		HorizontalLayoutContainer editHLC = new HorizontalLayoutContainer();
+		editHLC.add(leftEditVLC, new HorizontalLayoutData(.5, 1.0));
+		editHLC.add(commentPanel, new HorizontalLayoutData(.5, 1.0));
+		
+		VerticalLayoutContainer editVLC = new VerticalLayoutContainer();
+		editVLC.add(titlePanel, new VerticalLayoutData(1.0, .18));
+		editVLC.add(authorFP, new VerticalLayoutData(1.0, .18));
+		editVLC.add(editHLC, new VerticalLayoutData(1.0, .64));
+		
+		HorizontalLayoutContainer mainHLC = new HorizontalLayoutContainer();
+		mainHLC.add(imgFP, new HorizontalLayoutData(.4, 1.0));
+		mainHLC.add(editVLC, new HorizontalLayoutData(.6, 1.0));
 
 		panel.setHeading("Image Editor");
-		panel.add(hPanel);
-		panel.addButton(cancelButton);
-		panel.addButton(saveButton);
-		panel.setSize("620px", "600px");
-		// panel.addButton(deleteButton);
-
+		panel.add(mainHLC);
+		panel.addTool(saveToolButton);
+		panel.addTool(closeToolButton);
+		panel.setSize("900px", "400px");
 	}
-
-	/**
-	 * 
-	 */
-	protected void cancelDialog() {
-		closeEditor();
-	}
-
-	// /**
-	// *
-	// */
-	// protected void cancelEditing() {
-	// closeEditor();
-	// }
 
 	/**
 	 * This method will save the currently selected ImageEntry from the left list of previews. In future versions, the missing fields will be added. Also, the
 	 * Photographer ID us currently not mapped to the text entry in this box. (shows a yes/no dialog first)
 	 */
-	private void saveImageEntry() {
-		// ImageEntry selectedItem = imageListView.getSelectionModel().getSelectedItem();
+	private void saveImageEntry(boolean closeEditorRequested) {
 		if (!verifyInputs()) {
 			return;
 		}
@@ -392,7 +496,9 @@ public class SingleImageEditor extends AbstractEditor {
 					@Override
 					public void onSuccess(Boolean result) {
 						if (result) {
-							cancelDialog();
+							if (closeEditorRequested) {
+								closeEditor();
+							}
 						} else {
 							Info.display("ERROR", "Image information has NOT been updated!");
 						}
@@ -416,7 +522,7 @@ public class SingleImageEditor extends AbstractEditor {
 		imgEntry.setCopyright(copyrightArea.getCurrentValue());
 		imgEntry.setComment(commentArea.getCurrentValue());
 		imgEntry.setDate(dateField.getCurrentValue());
-		imgEntry.setPhotographerID(authorSelection.getCurrentValue() != null ? authorSelection.getCurrentValue().getPhotographerID() : 0);
+		imgEntry.setPhotographerID(authorSelectionCB.getCurrentValue() != null ? authorSelectionCB.getCurrentValue().getPhotographerID() : 0);
 		imgEntry.setImageTypeID(imageTypeSelection.getCurrentValue().getImageTypeID());
 	}
 

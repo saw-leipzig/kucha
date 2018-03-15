@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 
+ * Copyright 2016 - 2018
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -13,20 +13,33 @@
  */
 package de.cses.shared;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
-public class PhotographerEntry implements IsSerializable {
+public class PhotographerEntry extends AbstractEntry {
 	
 	private int photographerID;
 	private String name;
+	private String institution;
 
 	public PhotographerEntry() {
 	}
 
-	public PhotographerEntry(int photographerID, String name) {
-		super();
+	/**
+	 * @param name
+	 * @param insitution
+	 */
+	public PhotographerEntry(String name, String insitution) {
+		this.name = name;
+		this.institution = insitution;
+	}
+
+	/**
+	 * @param photographerID
+	 * @param name
+	 * @param institution
+	 */
+	public PhotographerEntry(int photographerID, String name, String institution) {
 		this.photographerID = photographerID;
 		this.name = name;
+		this.institution = institution;
 	}
 
 	public int getPhotographerID() {
@@ -37,6 +50,14 @@ public class PhotographerEntry implements IsSerializable {
 		this.photographerID = photographerID;
 	}
 
+	/* (non-Javadoc)
+	 * @see de.cses.shared.AbstractEntry#getUniqueID()
+	 */
+	@Override
+	public String getUniqueID() {
+		return "Photographer-" + photographerID;
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -45,12 +66,16 @@ public class PhotographerEntry implements IsSerializable {
 		this.name = name;
 	}
 
-	public String getInsertSql() {
-		return "INSERT INTO Photographers(Name) VALUES ('" + name + "')";
+	public String getInstitution() {
+		return institution;
 	}
 
-	public String getDeleteSql() {
-		return "DELETE FROM Photographers WHERE PhotographerID="+photographerID; 
+	public void setInstitution(String institution) {
+		this.institution = institution;
+	}
+	
+	public String getLabel() {
+		return name!=null ? (institution!=null ? name + " ( " + institution + ")" : name) : institution;
 	}
 
 }

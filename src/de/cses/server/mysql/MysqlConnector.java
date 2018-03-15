@@ -511,7 +511,7 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Photographers");
 			while (rs.next()) {
-				results.add(new PhotographerEntry(rs.getInt(1), rs.getString(2)));
+				results.add(new PhotographerEntry(rs.getInt("PhotographerID"), rs.getString("Name"), rs.getString("Institution")));
 			}
 			rs.close();
 			stmt.close();
@@ -2774,8 +2774,9 @@ public class MysqlConnector {
 		PreparedStatement peStatement;
 		int photographerID=0;
 		try {
-			peStatement = dbc.prepareStatement("INSERT INTO Photographers (Name) VALUES (?)", Statement.RETURN_GENERATED_KEYS);
+			peStatement = dbc.prepareStatement("INSERT INTO Photographers (Name, Institution) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
 			peStatement.setString(1, photographerEntry.getName());
+			peStatement.setString(2, photographerEntry.getInstitution());
 			peStatement.executeUpdate();
 			ResultSet keys = peStatement.getGeneratedKeys();
 			if (keys.next()) {

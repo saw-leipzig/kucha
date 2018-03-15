@@ -77,7 +77,6 @@ import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MaxNumberValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
-import com.sencha.gxt.widget.core.client.form.validator.MinNumberValidator;
 import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 
 import de.cses.client.DatabaseService;
@@ -2953,7 +2952,6 @@ public class CaveEditor extends AbstractEditor {
 
 		};
 		districtEntryList.addFilter(districtFilter);
-		districtEntryList.setEnableFilters(true);
 		districtEntryList.setEnableFilters(true);
 		districtSelection.setEnabled(true);
 	}
