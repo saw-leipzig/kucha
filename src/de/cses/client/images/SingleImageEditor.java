@@ -216,7 +216,8 @@ public class SingleImageEditor extends AbstractEditor {
 		shortNamePanel.add(shortNameField);
 		
 		FramedPanel imageFormatPanel = new FramedPanel();
-		imageFormatPanel.add(new Label(imgEntry.getFilename().substring(imgEntry.getFilename().lastIndexOf("."))));
+		imageFormatPanel.setHeading("Image format");
+		imageFormatPanel.add(new Label(imgEntry.getFilename().substring(imgEntry.getFilename().lastIndexOf(".")).toUpperCase()));
 		
 		HorizontalLayoutContainer helperHLC = new HorizontalLayoutContainer();
 		helperHLC.add(shortNamePanel, new HorizontalLayoutData(1.0, .5));
