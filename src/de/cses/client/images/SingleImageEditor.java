@@ -32,7 +32,6 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -230,17 +229,7 @@ public class SingleImageEditor extends AbstractEditor {
 		shortNameField.setValue(imgEntry.getShortName());
 		shortNamePanel.add(shortNameField);
 		
-		FramedPanel imageFormatPanel = new FramedPanel();
-		imageFormatPanel.setHeading("Image format");
-		Label imageFormatLabel = new Label(imgEntry.getFilename().substring(imgEntry.getFilename().lastIndexOf(".")+1).toUpperCase());
-		imageFormatLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-		imageFormatPanel.add(imageFormatLabel);
-		
-		HorizontalLayoutContainer helperHLC = new HorizontalLayoutContainer();
-		helperHLC.add(shortNamePanel, new HorizontalLayoutData(.5, 1.0));
-		helperHLC.add(imageFormatPanel, new HorizontalLayoutData(.5, 1.0));
-
-		leftEditVLC.add(helperHLC, new VerticalLayoutData(1.0, .2));
+		leftEditVLC.add(shortNamePanel, new VerticalLayoutData(1.0, .2));
 
 		FramedPanel copyrightPanel = new FramedPanel();
 		copyrightArea = new TextArea();
@@ -276,7 +265,9 @@ public class SingleImageEditor extends AbstractEditor {
 					@Override
 					public SafeHtml render(PhotographerEntry item) {
 						final PhotographerViewTemplates pvTemplates = GWT.create(PhotographerViewTemplates.class);
-						return pvTemplates.photographer(item.getName());
+						String name = item.getName();
+						String institution = item.getInstitution();
+						return pvTemplates.photographer(name!=null ? (institution!=null ? name + " ( " + institution + ")" : name) : institution);
 					}
 				});
 		authorSelectionCB.setEmptyText("select an author ...");
@@ -447,12 +438,15 @@ public class SingleImageEditor extends AbstractEditor {
 
 		SafeUri imageUri = UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=300" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 		HTMLPanel imgHP = new HTMLPanel(imgViewTemplates.view(imageUri));
+		FramedPanel imgFP = new FramedPanel();
+		imgFP.setHeading("Image format: " + imgEntry.getFilename().substring(imgEntry.getFilename().lastIndexOf(".")+1).toUpperCase());
+		imgFP.add(imgHP);
 
 		editHLC.add(leftEditVLC, new HorizontalLayoutData(.5, 1.0));
 		editHLC.add(rightEditVLC, new HorizontalLayoutData(.5, 1.0));
 		editVLC.add(editHLC, new VerticalLayoutData(1.0, .8));
 		
-		mainHLC.add(imgHP, new HorizontalLayoutData(.4, 1.0));
+		mainHLC.add(imgFP, new HorizontalLayoutData(.4, 1.0));
 		mainHLC.add(editVLC, new HorizontalLayoutData(.6, 1.0));
 
 		panel.setHeading("Image Editor");
