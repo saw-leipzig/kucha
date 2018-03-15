@@ -30,10 +30,8 @@ import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.XTemplates;
@@ -45,13 +43,12 @@ import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.widget.core.client.Dialog;
 import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.FramedPanel;
-import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
-import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.CheckBox;
@@ -217,7 +214,15 @@ public class SingleImageEditor extends AbstractEditor {
 		shortNamePanel.setHeading("Short Name");
 		shortNameField.setValue(imgEntry.getShortName());
 		shortNamePanel.add(shortNameField);
-		leftEditVLC.add(shortNamePanel, new VerticalLayoutData(1.0, .2));
+		
+		FramedPanel imageFormatPanel = new FramedPanel();
+		imageFormatPanel.add(new Label(imgEntry.getFilename().substring(imgEntry.getFilename().lastIndexOf("."))));
+		
+		HorizontalLayoutContainer helperHLC = new HorizontalLayoutContainer();
+		helperHLC.add(shortNamePanel, new HorizontalLayoutData(1.0, .5));
+		helperHLC.add(imageFormatPanel, new HorizontalLayoutData(1.0, .5));
+
+		leftEditVLC.add(helperHLC, new VerticalLayoutData(1.0, .2));
 
 		FramedPanel copyrightPanel = new FramedPanel();
 		copyrightArea = new TextArea();
