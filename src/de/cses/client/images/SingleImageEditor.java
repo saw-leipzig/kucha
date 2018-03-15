@@ -16,6 +16,8 @@ package de.cses.client.images;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.Icon;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.EditorError;
@@ -28,22 +30,30 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
+import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.core.client.util.Rectangle;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
+import com.sencha.gxt.data.shared.SortDir;
+import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.widget.core.client.Dialog;
 import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.FramedPanel;
+import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
@@ -57,6 +67,7 @@ import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.Validator;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
+import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
 import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
@@ -64,6 +75,7 @@ import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.client.user.UserLogin;
+import de.cses.shared.CaveGroupEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageTypeEntry;
 import de.cses.shared.PhotographerEntry;
@@ -92,8 +104,7 @@ public class SingleImageEditor extends AbstractEditor {
 
 	interface PhotographerProperties extends PropertyAccess<PhotographerEntry> {
 		ModelKeyProvider<PhotographerEntry> photographerID();
-
-		LabelProvider<PhotographerEntry> name();
+		LabelProvider<PhotographerEntry> label();
 	}
 
 	/**
@@ -115,7 +126,6 @@ public class SingleImageEditor extends AbstractEditor {
 
 	interface ImageTypeProperties extends PropertyAccess<ImageTypeEntry> {
 		ModelKeyProvider<ImageTypeEntry> imageTypeID();
-
 		LabelProvider<ImageTypeEntry> name();
 	}
 
@@ -132,6 +142,21 @@ public class SingleImageEditor extends AbstractEditor {
 
 		photographerProps = GWT.create(PhotographerProperties.class);
 		photographerEntryList = new ListStore<PhotographerEntry>(photographerProps.photographerID());
+		photographerEntryList.addSortInfo(new StoreSortInfo<PhotographerEntry>(new ValueProvider<PhotographerEntry, String>() {
+
+			@Override
+			public String getValue(PhotographerEntry entry) {
+				return entry.getLabel();
+			}
+
+			@Override
+			public void setValue(PhotographerEntry object, String value) { }
+
+			@Override
+			public String getPath() {
+				return "label";
+			}
+		}, SortDir.ASC));
 
 		imageTypeProps = GWT.create(ImageTypeProperties.class);
 		imageTypeEntryList = new ListStore<ImageTypeEntry>(imageTypeProps.imageTypeID());
@@ -147,7 +172,6 @@ public class SingleImageEditor extends AbstractEditor {
 
 			@Override
 			public void onSuccess(ArrayList<PhotographerEntry> result) {
-				photographerEntryList.clear();
 				for (PhotographerEntry pe : result) {
 					photographerEntryList.add(pe);
 				}
@@ -210,14 +234,15 @@ public class SingleImageEditor extends AbstractEditor {
 		FramedPanel shortNamePanel = new FramedPanel();
 		shortNameField = new TextField();
 		shortNameField.addValidator(new MaxLengthValidator(12));
-		// shortNameField.setWidth(300);
 		shortNamePanel.setHeading("Short Name");
 		shortNameField.setValue(imgEntry.getShortName());
 		shortNamePanel.add(shortNameField);
 		
 		FramedPanel imageFormatPanel = new FramedPanel();
 		imageFormatPanel.setHeading("Image format");
-		imageFormatPanel.add(new Label(imgEntry.getFilename().substring(imgEntry.getFilename().lastIndexOf(".")).toUpperCase()));
+		Label imageFormatLabel = new Label(imgEntry.getFilename().substring(imgEntry.getFilename().lastIndexOf(".")+1).toUpperCase());
+		imageFormatLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		imageFormatPanel.add(imageFormatLabel);
 		
 		HorizontalLayoutContainer helperHLC = new HorizontalLayoutContainer();
 		helperHLC.add(shortNamePanel, new HorizontalLayoutData(.5, 1.0));
@@ -245,6 +270,7 @@ public class SingleImageEditor extends AbstractEditor {
 
 		FramedPanel datePanel = new FramedPanel();
 		dateField = new TextField();
+		dateField.setEmptyText("optional date");
 		dateField.addValidator(new MaxLengthValidator(32));
 		dateField.setValue(imgEntry.getDate());
 		datePanel.add(dateField);
@@ -252,7 +278,7 @@ public class SingleImageEditor extends AbstractEditor {
 		leftEditVLC.add(datePanel, new VerticalLayoutData(1.0, .2));
 
 		FramedPanel authorPanel = new FramedPanel();
-		authorSelection = new ComboBox<PhotographerEntry>(photographerEntryList, photographerProps.name(),
+		authorSelection = new ComboBox<PhotographerEntry>(photographerEntryList, photographerProps.label(),
 				new AbstractSafeHtmlRenderer<PhotographerEntry>() {
 
 					@Override
@@ -261,11 +287,73 @@ public class SingleImageEditor extends AbstractEditor {
 						return pvTemplates.photographer(item.getName());
 					}
 				});
-		authorSelection.setEmptyText("Select an author ...");
+		authorSelection.setEmptyText("select an author ...");
 		authorSelection.setTypeAhead(false);
 		authorSelection.setEditable(false);
 		authorSelection.setTriggerAction(TriggerAction.ALL);
 		authorSelection.setValue(photographerEntryList.findModelWithKey(Integer.toString(imgEntry.getPhotographerID())), true);
+		ToolButton addPhotoAuthorTB = new ToolButton(ToolButton.PLUS);
+		addPhotoAuthorTB.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				PopupPanel addPhotoAuthorDialog = new PopupPanel();
+				FramedPanel addPhotoAuthorFP = new FramedPanel();
+				addPhotoAuthorFP.setHeading("Add Photo Author");
+				TextField authorNameField = new TextField();
+				authorNameField.addValidator(new MinLengthValidator(2));
+				authorNameField.addValidator(new MaxLengthValidator(64));
+				authorNameField.setEmptyText("photo author name");
+				authorNameField.setWidth(200);
+				TextField institutionField = new TextField();
+				institutionField.addValidator(new MinLengthValidator(2));
+				institutionField.addValidator(new MaxLengthValidator(64));
+				institutionField.setEmptyText("institution");
+				institutionField.setWidth(200);
+				VerticalLayoutContainer authorVLC = new VerticalLayoutContainer();
+				authorVLC.add(authorNameField, new VerticalLayoutData(1.0, .5));
+				authorVLC.add(institutionField, new VerticalLayoutData(1.0, .5));
+				addPhotoAuthorFP.add(authorVLC);
+				TextButton saveButton = new TextButton("save");
+				saveButton.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						if (authorNameField.isValid()) {
+							PhotographerEntry pEntry = new PhotographerEntry(authorNameField.getCurrentValue(), institutionField.getCurrentValue());
+							dbService.insertPhotographerEntry(pEntry, new AsyncCallback<Integer>() {
+
+								@Override
+								public void onFailure(Throwable caught) {
+									Window.alert("A problem occured while saving!");
+								}
+
+								@Override
+								public void onSuccess(Integer result) {
+									pEntry.setPhotographerID(result);
+									photographerEntryList.add(pEntry);
+								}
+							});
+							addPhotoAuthorDialog.hide();
+						}
+					}
+				});
+				addPhotoAuthorFP.addButton(saveButton);
+				TextButton cancelButton = new TextButton("cancel");
+				cancelButton.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						addPhotoAuthorDialog.hide();
+					}
+				});
+				addPhotoAuthorFP.addButton(cancelButton);
+				addPhotoAuthorDialog.add(addPhotoAuthorFP);
+				addPhotoAuthorDialog.setModal(true);
+				addPhotoAuthorDialog.center();
+			}
+		});		
+		
 		authorPanel.add(authorSelection);
 		authorPanel.setHeading("Author");
 		leftEditVLC.add(authorPanel, new VerticalLayoutData(1.0, .2));

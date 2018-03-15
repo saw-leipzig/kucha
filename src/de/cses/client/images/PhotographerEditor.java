@@ -164,18 +164,18 @@ public class PhotographerEditor implements IsWidget {
 			
 			@Override
 			public void onSelect(SelectEvent event) {
-				dbService.deleteEntry(photographerSelection.getCurrentValue().getDeleteSql(), new AsyncCallback<Boolean>() {
-
-					@Override
-					public void onFailure(Throwable caught) {
-					}
-
-					@Override
-					public void onSuccess(Boolean result) {
-						photographerSelection.clear();
-						refreshPhotographerList();
-					}
-				});
+//				dbService.deleteEntry(photographerSelection.getCurrentValue().getDeleteSql(), new AsyncCallback<Boolean>() {
+//
+//					@Override
+//					public void onFailure(Throwable caught) {
+//					}
+//
+//					@Override
+//					public void onSuccess(Boolean result) {
+//						photographerSelection.clear();
+//						refreshPhotographerList();
+//					}
+//				});
 			}
 		});
 		deleteDialog.setVisible(true);

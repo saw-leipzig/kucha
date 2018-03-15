@@ -508,7 +508,7 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Photographers");
 			while (rs.next()) {
-				results.add(new PhotographerEntry(rs.getInt(1), rs.getString(2)));
+				results.add(new PhotographerEntry(rs.getInt("PhotographerID"), rs.getString("Name"), rs.getString("Institution")));
 			}
 			rs.close();
 			stmt.close();
