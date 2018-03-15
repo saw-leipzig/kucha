@@ -220,8 +220,8 @@ public class SingleImageEditor extends AbstractEditor {
 		imageFormatPanel.add(new Label(imgEntry.getFilename().substring(imgEntry.getFilename().lastIndexOf(".")).toUpperCase()));
 		
 		HorizontalLayoutContainer helperHLC = new HorizontalLayoutContainer();
-		helperHLC.add(shortNamePanel, new HorizontalLayoutData(1.0, .5));
-		helperHLC.add(imageFormatPanel, new HorizontalLayoutData(1.0, .5));
+		helperHLC.add(shortNamePanel, new HorizontalLayoutData(.5, 1.0));
+		helperHLC.add(imageFormatPanel, new HorizontalLayoutData(.5, 1.0));
 
 		leftEditVLC.add(helperHLC, new VerticalLayoutData(1.0, .2));
 
