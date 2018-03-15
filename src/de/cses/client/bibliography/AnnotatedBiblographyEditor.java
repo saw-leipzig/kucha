@@ -820,6 +820,16 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		FramedPanel publisherFP = new FramedPanel();
 		publisherFP.setHeading("Publisher");
 		publisherFP.add(publisherComboBox);
+		
+		ToolButton resetPublisherSelectionTB = new ToolButton(ToolButton.REFRESH);
+		publisherFP.addTool(resetPublisherSelectionTB);
+		resetPublisherSelectionTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				publisherComboBox.setValue(null, true);
+			}
+		});
 
 		ToolButton addPublisherTB = new ToolButton(ToolButton.PLUS);
 		publisherFP.addTool(addPublisherTB);
@@ -1450,6 +1460,16 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				bibEntry.setFirstEditionBibID(event.getSelectedItem().getAnnotatedBiblographyID());
 			}
 		});
+		ToolButton resetFirstEditionSelectionTB = new ToolButton(ToolButton.REFRESH);
+		resetPublisherSelectionTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				firstEditionComboBox.setValue(null, true);
+			}
+		});
+		firstEditionFP.addTool(resetFirstEditionSelectionTB);
+		
 		thirdTabVLC.add(firstEditionFP, new VerticalLayoutData(1.0, .1));
 
 		FramedPanel bibDocPaperFP = new FramedPanel();
