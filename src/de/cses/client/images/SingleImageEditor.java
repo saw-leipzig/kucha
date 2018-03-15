@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 
+ * Copyright 2016 -2018
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -34,11 +34,11 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
-import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.core.client.util.Rectangle;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
@@ -190,11 +190,6 @@ public class SingleImageEditor extends AbstractEditor {
 	 */
 	private void initPanel() {
 		panel = new FramedPanel();
-		HorizontalLayoutContainer mainHLC = new HorizontalLayoutContainer();
-		HorizontalLayoutContainer editHLC = new HorizontalLayoutContainer();
-		VerticalLayoutContainer editVLC = new VerticalLayoutContainer();
-		VerticalLayoutContainer leftEditVLC = new VerticalLayoutContainer();
-		VerticalLayoutContainer rightEditVLC = new VerticalLayoutContainer();
 
 		titleField = new TextField();
 		titleField.addValidator(new MaxLengthValidator(128));
@@ -220,7 +215,6 @@ public class SingleImageEditor extends AbstractEditor {
 		titlePanel.setHeading("Title");
 		titleField.setValue(imgEntry.getTitle());
 		titlePanel.add(titleField);
-		editVLC.add(titlePanel, new VerticalLayoutData(1.0, .2));
 
 		FramedPanel shortNamePanel = new FramedPanel();
 		shortNameField = new TextField();
@@ -229,15 +223,12 @@ public class SingleImageEditor extends AbstractEditor {
 		shortNameField.setValue(imgEntry.getShortName());
 		shortNamePanel.add(shortNameField);
 		
-		leftEditVLC.add(shortNamePanel, new VerticalLayoutData(1.0, .2));
-
 		FramedPanel copyrightPanel = new FramedPanel();
 		copyrightArea = new TextArea();
 		copyrightArea.addValidator(new MaxLengthValidator(128));
 		copyrightArea.setValue(imgEntry.getCopyright());
 		copyrightPanel.setHeading("Copyright");
 		copyrightPanel.add(copyrightArea);
-		rightEditVLC.add(copyrightPanel, new VerticalLayoutData(1.0, .35));
 
 		FramedPanel commentPanel = new FramedPanel();
 		commentArea = new TextArea();
@@ -247,7 +238,6 @@ public class SingleImageEditor extends AbstractEditor {
 		}
 		commentPanel.add(commentArea);
 		commentPanel.setHeading("Comment");
-		rightEditVLC.add(commentPanel, new VerticalLayoutData(1.0, .65));
 
 		FramedPanel datePanel = new FramedPanel();
 		dateField = new TextField();
@@ -256,8 +246,10 @@ public class SingleImageEditor extends AbstractEditor {
 		dateField.setValue(imgEntry.getDate());
 		datePanel.add(dateField);
 		datePanel.setHeading("Date");
-		leftEditVLC.add(datePanel, new VerticalLayoutData(1.0, .2));
 
+		/**
+		 * The Author selection
+		 */
 		FramedPanel authorFP = new FramedPanel();
 		authorSelectionCB = new ComboBox<PhotographerEntry>(photographerEntryList, photographerProps.label(),
 				new AbstractSafeHtmlRenderer<PhotographerEntry>() {
@@ -294,10 +286,10 @@ public class SingleImageEditor extends AbstractEditor {
 				institutionField.addValidator(new MaxLengthValidator(64));
 				institutionField.setEmptyText("institution");
 				institutionField.setWidth(300);
-				VerticalLayoutContainer authorVLC = new VerticalLayoutContainer();
-				authorVLC.add(authorNameField, new VerticalLayoutData(1.0, .5, new Margins(5)));
-				authorVLC.add(institutionField, new VerticalLayoutData(1.0, .5, new Margins(5)));
-				addPhotoAuthorFP.add(authorVLC);
+				VerticalPanel authorVP = new VerticalPanel();
+				authorVP.add(authorNameField);
+				authorVP.add(institutionField);
+				addPhotoAuthorFP.add(authorVP);
 				TextButton saveButton = new TextButton("save");
 				saveButton.addSelectHandler(new SelectHandler() {
 
@@ -350,8 +342,7 @@ public class SingleImageEditor extends AbstractEditor {
 		authorFP.addTool(addPhotoAuthorTB);
 		authorFP.add(authorSelectionCB);
 		authorFP.setHeading("Author");
-		leftEditVLC.add(authorFP, new VerticalLayoutData(1.0, .2));
-
+		
 		FramedPanel imageTypeSelectionPanel = new FramedPanel();
 		imageTypeSelection = new ComboBox<ImageTypeEntry>(imageTypeEntryList, imageTypeProps.name(),
 				new AbstractSafeHtmlRenderer<ImageTypeEntry>() {
@@ -391,10 +382,9 @@ public class SingleImageEditor extends AbstractEditor {
 		publicImagePanel.add(publicImageCB);
 		publicImagePanel.setHeading("Image Mode");
 
-		HorizontalLayoutContainer imageOptionsHLC = new HorizontalLayoutContainer();
-		imageOptionsHLC.add(imageTypeSelectionPanel, new HorizontalLayoutData(.5, 1.0));
-		imageOptionsHLC.add(publicImagePanel, new HorizontalLayoutData(.5, 1.0));
-		leftEditVLC.add(imageOptionsHLC, new VerticalLayoutData(1.0, .2));
+		HorizontalLayoutContainer imageTypeModeHLC = new HorizontalLayoutContainer();
+		imageTypeModeHLC.add(imageTypeSelectionPanel, new HorizontalLayoutData(.5, 1.0));
+		imageTypeModeHLC.add(publicImagePanel, new HorizontalLayoutData(.5, 1.0));
 		
 		ToolButton saveToolButton = new ToolButton(ToolButton.SAVE);
 		saveToolButton.addSelectHandler(new SelectHandler() {
@@ -441,11 +431,26 @@ public class SingleImageEditor extends AbstractEditor {
 		FramedPanel imgFP = new FramedPanel();
 		imgFP.setHeading("Image format: " + imgEntry.getFilename().substring(imgEntry.getFilename().lastIndexOf(".")+1).toUpperCase());
 		imgFP.add(imgHP);
-
-		editHLC.add(leftEditVLC, new HorizontalLayoutData(.5, 1.0));
-		editHLC.add(rightEditVLC, new HorizontalLayoutData(.5, 1.0));
-		editVLC.add(editHLC, new VerticalLayoutData(1.0, .8));
 		
+		VerticalLayoutContainer leftEditVLC = new VerticalLayoutContainer();
+		leftEditVLC.add(shortNamePanel, new VerticalLayoutData(1.0, .25));
+		leftEditVLC.add(copyrightPanel, new VerticalLayoutData(1.0, .5));
+		leftEditVLC.add(datePanel, new VerticalLayoutData(1.0, .25));
+
+		VerticalLayoutContainer rightEditVLC = new VerticalLayoutContainer();
+		rightEditVLC.add(imageTypeModeHLC, new VerticalLayoutData(1.0, .3));
+		rightEditVLC.add(commentPanel, new VerticalLayoutData(1.0, .7));
+
+		HorizontalLayoutContainer editHLC = new HorizontalLayoutContainer();
+		editHLC.add(leftEditVLC, new HorizontalLayoutData(.5, 1.0));
+		editHLC.add(commentPanel, new HorizontalLayoutData(.5, 1.0));
+		
+		VerticalLayoutContainer editVLC = new VerticalLayoutContainer();
+		editVLC.add(titlePanel, new VerticalLayoutData(1.0, .18));
+		editVLC.add(authorFP, new VerticalLayoutData(1.0, .18));
+		editVLC.add(editHLC, new VerticalLayoutData(1.0, .64));
+		
+		HorizontalLayoutContainer mainHLC = new HorizontalLayoutContainer();
 		mainHLC.add(imgFP, new HorizontalLayoutData(.4, 1.0));
 		mainHLC.add(editVLC, new HorizontalLayoutData(.6, 1.0));
 
