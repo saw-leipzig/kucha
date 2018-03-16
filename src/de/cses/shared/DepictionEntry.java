@@ -356,7 +356,7 @@ public class DepictionEntry extends AbstractEntry {
 	}
 
 	public int getMasterImageID() {
-		return masterImageID;
+		return masterImageID != 0 ? masterImageID : (!relatedImages.isEmpty() ? relatedImages.get(0).getImageID() : 0);
 	}
 
 	public void setMasterImageID(int masterImageID) {

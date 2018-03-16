@@ -247,15 +247,19 @@ public class DepictionEditor extends AbstractEditor {
 	 * @author alingnau
 	 *
 	 */
+	private static final String OPEN_ACCESS_IMAGE_COLOUR= "#004d00";
+	private static final String NON_OPEN_ACCESS_IMAGE_COLOUR = "#990000";
+	private static final String MASTER_IMAGE_COLOUR = "#0073e6";
+	
 	interface ImageViewTemplates extends XTemplates {
 //		@XTemplate("<img src=\"{imageUri}\" style=\"width: 230px; height: auto; align-content: center; margin: 5px;\"><br> {shortName}")
 //		SafeHtml image(SafeUri imageUri, String shortName);
 
-		@XTemplate("<div><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
-		SafeHtml image(SafeUri imageUri, String shortName, String title);
+		@XTemplate("<div style='border-style: solid; border-color: {color}; border-width: 2px;'><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
+		SafeHtml image(SafeUri imageUri, String shortName, String title, String color);
 
-		@XTemplate("<div style='border-style: solid; border-color: red; border-width: 2px;'><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
-		SafeHtml masterimage(SafeUri imageUri, String shortName, String title);
+//		@XTemplate("<div style='border-style: solid; border-color: red; border-width: 2px;'><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
+//		SafeHtml masterimage(SafeUri imageUri, String shortName, String title);
 	}
 
 	public DepictionEditor(DepictionEntry entry) {
@@ -481,9 +485,9 @@ public class DepictionEditor extends AbstractEditor {
 			public SafeHtml render(ImageEntry item) {
 				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=300" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 				if (item.getImageID() == correspondingDepictionEntry.getMasterImageID()) {
-					return imageViewTemplates.masterimage(imageUri, item.getShortName(), item.getTitle());
+					return imageViewTemplates.image(imageUri, item.getShortName(), item.getTitle(), MASTER_IMAGE_COLOUR);
 				} else {
-					return imageViewTemplates.image(imageUri, item.getShortName(), item.getTitle());
+					return imageViewTemplates.image(imageUri, item.getShortName(), item.getTitle(), item.isOpenAccess() ? OPEN_ACCESS_IMAGE_COLOUR : NON_OPEN_ACCESS_IMAGE_COLOUR);
 				}
 			}
 		}));
