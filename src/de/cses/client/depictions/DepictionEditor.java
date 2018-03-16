@@ -243,14 +243,24 @@ public class DepictionEditor extends AbstractEditor {
 	 *
 	 */
 	interface ImageViewTemplates extends XTemplates {
-		@XTemplate("<div style='border-style: solid; border-color: #99ff66; border-width: 3px;'><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
-		SafeHtml openAccessImage(SafeUri imageUri, String shortName, String title);
+//		@XTemplate("<div style='border-style: solid; border-color: #99ff66; border-width: 3px;'><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
+		@XTemplate("<figure style='border-style: solid; border-color: #99ff66; border-width: 3px;'>"
+				+ "<img src='{imageUri}' style='position: relative; margin: 0; padding: 5px; width: 230px; background: white;'>"
+				+ "<figcaption style='font-size:12px; padding: 10px; text-align: center;'>{shortName} ({imageFormat})<br>{title}</figcaption></figure>")
+		SafeHtml openAccessImage(SafeUri imageUri, String shortName, String title, String imageFormat);
 
-		@XTemplate("<div style='border-style: solid; border-color: #ff1a1a; border-width: 3px;'><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
-		SafeHtml nonOpenAccessImage(SafeUri imageUri, String shortName, String title);
+//		@XTemplate("<div style='border-style: solid; border-color: #ff1a1a; border-width: 3px;'><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
+		@XTemplate("<figure style='border-style: solid; border-color: #ff1a1a; border-width: 3px;'>"
+				+ "<img src='{imageUri}' style='position: relative; margin: 0; padding: 5px; width: 230px; background: white;'>"
+				+ "<figcaption style='font-size:12px; padding: 10px; text-align: center;'>{shortName} ({imageFormat})<br>{title}</figcaption></figure>")
+		SafeHtml nonOpenAccessImage(SafeUri imageUri, String shortName, String title, String imageFormat);
 
-		@XTemplate("<div style='border-style: solid; border-color: #0073e6; border-width: 3px;'><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
-		SafeHtml masterImage(SafeUri imageUri, String shortName, String title);
+//		@XTemplate("<div style='border-style: solid; border-color: #0073e6; border-width: 3px;'><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
+//		SafeHtml masterImage(SafeUri imageUri, String shortName, String title, String imageFormat);
+		@XTemplate("<figure style='border-style: solid; border-color: #0073e6; border-width: 3px;'>"
+				+ "<img src='{imageUri}' style='position: relative; margin: 0; padding: 5px; width: 230px; background: white;'>"
+				+ "<figcaption style='font-size:12px; padding: 10px; text-align: center;'>{shortName} ({imageFormat})<br>{title}</figcaption></figure>")
+		SafeHtml masterImage(SafeUri imageUri, String shortName, String title, String imageFormat);
 	}
 
 	public DepictionEditor(DepictionEntry entry) {
@@ -474,11 +484,11 @@ public class DepictionEditor extends AbstractEditor {
 			public SafeHtml render(ImageEntry item) {
 				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=300" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 				if (item.getImageID() == correspondingDepictionEntry.getMasterImageID()) {
-					return imageViewTemplates.masterImage(imageUri, item.getShortName(), item.getTitle());
+					return imageViewTemplates.masterImage(imageUri, item.getShortName(), item.getTitle(), item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase());
 				} else if (item.isOpenAccess()) {
-					return imageViewTemplates.openAccessImage(imageUri, item.getShortName(), item.getTitle());
+					return imageViewTemplates.openAccessImage(imageUri, item.getShortName(), item.getTitle(), item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase());
 				} else {
-					return imageViewTemplates.nonOpenAccessImage(imageUri, item.getShortName(), item.getTitle());
+					return imageViewTemplates.nonOpenAccessImage(imageUri, item.getShortName(), item.getTitle(), item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase());
 				}
 			}
 		}));
