@@ -262,7 +262,7 @@ public class ImageSelector implements IsWidget {
 			}
 		});
 
-		ToolButton zoomTB = new ToolButton(ToolButton.EXPAND);
+		ToolButton zoomTB = new ToolButton(ToolButton.MAXIMIZE);
 		zoomTB.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
