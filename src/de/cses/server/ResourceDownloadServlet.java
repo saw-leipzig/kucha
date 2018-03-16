@@ -55,7 +55,7 @@ public class ResourceDownloadServlet extends HttpServlet {
 			ImageEntry imgEntry = connector.getImageEntry(Integer.parseInt(imageID));
 			String filename;
 			File inputFile;
-			if (imgEntry.isPublicImage() || (connector.getAccessRightsFromUsers(sessionID) == UserEntry.FULL)) {
+			if (imgEntry.isOpenAccess() || (connector.getAccessRightsFromUsers(sessionID) == UserEntry.FULL)) {
 				filename = imgEntry.getFilename();
 				inputFile = new File(
 						serverProperties.getProperty("home.images"), 
