@@ -119,6 +119,7 @@ public interface DatabaseService extends RemoteService {
 
 	AuthorEntry getAuthorEntry(int id) throws IllegalArgumentException;
 
+	@Deprecated
 	ImageEntry getMasterImageEntryForDepiction(int depictionID) throws IllegalArgumentException;
 
 	CaveEntry getCaveEntry(int id) throws IllegalArgumentException;

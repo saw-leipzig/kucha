@@ -95,7 +95,7 @@ public class Walls implements IsWidget{
 	
 	public void createNewDepictionOnWall(DepictionEntry depiction, boolean editable, boolean firstTime){
 		
-				DepictionOnWallView depictionview = new DepictionOnWallView(depiction.getDepictionID(), editable );
+				DepictionOnWallView depictionview = new DepictionOnWallView(depiction, editable );
 			
 				 background.add(depictionview);
 				 if(firstTime){

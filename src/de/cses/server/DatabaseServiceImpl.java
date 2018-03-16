@@ -254,6 +254,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	 * @see de.cses.client.DatabaseService#getMasterImageEntryForDepiction(int)
 	 */
 	@Override
+	@Deprecated
 	public ImageEntry getMasterImageEntryForDepiction(int depictionID) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		int relatedImageID = connector.getRelatedMasterImageID(depictionID);

@@ -135,6 +135,7 @@ public interface DatabaseServiceAsync {
 
 	void getAuthorEntry(int id, AsyncCallback<AuthorEntry> asyncCallback) throws IllegalArgumentException;
 
+	@Deprecated
 	void getMasterImageEntryForDepiction(int depictionID, AsyncCallback<ImageEntry> asyncCallback) throws IllegalArgumentException;
 
 	void getCaveEntry(int id, AsyncCallback<CaveEntry> asyncCallback) throws IllegalArgumentException;

@@ -1132,6 +1132,7 @@ public class MysqlConnector {
 	 * @param depictionID
 	 * @return
 	 */
+	@Deprecated
 	public int getRelatedMasterImageID(int depictionID) {
 		int result = 0;
 		Connection dbc = getConnection();
@@ -1140,7 +1141,7 @@ public class MysqlConnector {
 		try {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt
-					.executeQuery("SELECT * FROM DepictionImageRelation WHERE (DepictionID=" + depictionID + " AND IsMaster=" + true + ")");
+					.executeQuery("SELECT * FROM DepictionImageRelation WHERE DepictionID=" + depictionID + " ORDER BY ImageID");
 			if (rs.first()) {
 				result = rs.getInt("ImageID");
 			}

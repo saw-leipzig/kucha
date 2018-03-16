@@ -76,21 +76,26 @@ public class DepictionView extends AbstractView {
 		depictionEntry = entry;
 		resources = GWT.create(Resources.class);
 		dvTemplates = GWT.create(DepictionViewTemplates.class);
-		dbService.getMasterImageEntryForDepiction(entry.getDepictionID(), new AsyncCallback<ImageEntry>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				setHTML(dvTemplates.view(resources.logo().getSafeUri()));
-			}
-
-			@Override
-			public void onSuccess(ImageEntry result) {
-				CaveEntry ce = entry.getCave();
-				setHTML(dvTemplates.view(UriUtils.fromString("resource?imageID=" + result.getImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), 
-						StaticTables.getInstance().getSiteEntries().get(ce.getSiteID()).getShortName() + " " + ce.getOfficialNumber(), 
-						ce.getHistoricName() != null ? ce.getHistoricName() : (depictionEntry.getShortName() != null ? depictionEntry.getShortName() : "")));
-			}
-		});
+		CaveEntry ce = entry.getCave();
+		setHTML(dvTemplates.view(UriUtils.fromString("resource?imageID=" + entry.getMasterImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), 
+				StaticTables.getInstance().getSiteEntries().get(ce.getSiteID()).getShortName() + " " + ce.getOfficialNumber(), 
+				ce.getHistoricName() != null ? ce.getHistoricName() : (depictionEntry.getShortName() != null ? depictionEntry.getShortName() : "")));
+		
+//		dbService.getMasterImageEntryForDepiction(entry.getDepictionID(), new AsyncCallback<ImageEntry>() {
+//
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				setHTML(dvTemplates.view(resources.logo().getSafeUri()));
+//			}
+//
+//			@Override
+//			public void onSuccess(ImageEntry result) {
+//				CaveEntry ce = entry.getCave();
+//				setHTML(dvTemplates.view(UriUtils.fromString("resource?imageID=" + result.getImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), 
+//						StaticTables.getInstance().getSiteEntries().get(ce.getSiteID()).getShortName() + " " + ce.getOfficialNumber(), 
+//						ce.getHistoricName() != null ? ce.getHistoricName() : (depictionEntry.getShortName() != null ? depictionEntry.getShortName() : "")));
+//			}
+//		});
 		setPixelSize(150, 150);
 
 		DragSource source = new DragSource(this) {
@@ -124,17 +129,19 @@ public class DepictionView extends AbstractView {
 	@Override
 	public void closeRequest() {
 		super.closeRequest();
+		setHTML(dvTemplates.view(UriUtils.fromString("resource?imageID=" + depictionEntry.getMasterImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), depictionEntry.getDepictionID()));
+
 		// try to refresh the master image
-		dbService.getMasterImageEntryForDepiction(depictionEntry.getDepictionID(), new AsyncCallback<ImageEntry>() {
-
-			@Override
-			public void onFailure(Throwable caught) { } // nothing happens, just leave the old master image
-
-			@Override
-			public void onSuccess(ImageEntry result) {
-				setHTML(dvTemplates.view(UriUtils.fromString("resource?imageID=" + result.getImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), depictionEntry.getDepictionID()));
-			}
-		});
+//		dbService.getMasterImageEntryForDepiction(depictionEntry.getDepictionID(), new AsyncCallback<ImageEntry>() {
+//
+//			@Override
+//			public void onFailure(Throwable caught) { } // nothing happens, just leave the old master image
+//
+//			@Override
+//			public void onSuccess(ImageEntry result) {
+//				setHTML(dvTemplates.view(UriUtils.fromString("resource?imageID=" + result.getImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), depictionEntry.getDepictionID()));
+//			}
+//		});
 	}
 
 	/* (non-Javadoc)
