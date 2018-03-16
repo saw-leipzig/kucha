@@ -93,10 +93,10 @@ public class ImageSelector implements IsWidget {
 	 *
 	 */
 	interface ImageViewTemplates extends XTemplates {
-		@XTemplate("<div style='border-style: solid; border-color: #004d00; border-width: 2px;'><img src=\"{imageUri}\" style=\"width: 400px; height: auto; align-content: center; margin: 10px;\"><br>{title}<br> {shortName}")
+		@XTemplate("<div style='border-style: solid; border-color: #99ff66; border-width: 3px;'><img src=\"{imageUri}\" style=\"width: 400px; height: auto; align-content: center; margin: 10px;\"><br>{title}<br> {shortName}")
 		SafeHtml openAccessImage(SafeUri imageUri, String title, String shortName);
 
-		@XTemplate("<div style='border-style: solid; border-color: #ff1a1a; border-width: 2px;'><img src=\"{imageUri}\" style=\"width: 400px; height: auto; align-content: center; margin: 10px;\"><br>{title}<br> {shortName}")
+		@XTemplate("<div style='border-style: solid; border-color: #ff1a1a; border-width: 3px;'><img src=\"{imageUri}\" style=\"width: 400px; height: auto; align-content: center; margin: 10px;\"><br>{title}<br> {shortName}")
 		SafeHtml nonOpenAccessImage(SafeUri imageUri, String title, String shortName);
 	}
 

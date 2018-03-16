@@ -243,13 +243,13 @@ public class DepictionEditor extends AbstractEditor {
 	 *
 	 */
 	interface ImageViewTemplates extends XTemplates {
-		@XTemplate("<div style='border-style: solid; border-color: #004d00; border-width: 2px;'><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
+		@XTemplate("<div style='border-style: solid; border-color: #99ff66; border-width: 3px;'><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
 		SafeHtml openAccessImage(SafeUri imageUri, String shortName, String title);
 
-		@XTemplate("<div style='border-style: solid; border-color: #ff1a1a; border-width: 2px;'><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
+		@XTemplate("<div style='border-style: solid; border-color: #ff1a1a; border-width: 3px;'><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
 		SafeHtml nonOpenAccessImage(SafeUri imageUri, String shortName, String title);
 
-		@XTemplate("<div style='border-style: solid; border-color: #0073e6; border-width: 2px;'><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
+		@XTemplate("<div style='border-style: solid; border-color: #0073e6; border-width: 3px;'><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
 		SafeHtml masterImage(SafeUri imageUri, String shortName, String title);
 	}
 
@@ -1280,7 +1280,7 @@ public class DepictionEditor extends AbstractEditor {
 				infoDialogFP.setHeading("Colour schema");
 				VerticalPanel infoVP = new VerticalPanel();
 				infoVP.add(new HTML("<div><label style='font-size: 12px; color: #0073e6;'>Master Image</label></div>"));
-				infoVP.add(new HTML("<div><label style='font-size: 12px; color: #004d00;'>Open Access Image</label></div>"));
+				infoVP.add(new HTML("<div><label style='font-size: 12px; color: #99ff66;'>Open Access Image</label></div>"));
 				infoVP.add(new HTML("<div><label style='font-size: 12px; color: #ff1a1a;'>Non Open Access Image</label></div>"));
 				infoDialogFP.add(infoVP);
 				TextButton okButton = new TextButton("OK");
