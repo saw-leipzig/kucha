@@ -24,11 +24,14 @@ public abstract class AbstractEntry implements IsSerializable {
 	private boolean openAccess = false;
 	
 	/**
-	 * 
+	 * @param openAccess
 	 */
-	public AbstractEntry() {
-		// TODO Auto-generated constructor stub
+	public AbstractEntry(boolean openAccess) {
+		super();
+		this.openAccess = openAccess;
 	}
+
+	public AbstractEntry() { }
 
 	/**
 	 * This method will deliver a unique identifier to make the entry information 

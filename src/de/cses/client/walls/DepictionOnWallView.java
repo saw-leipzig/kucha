@@ -27,6 +27,7 @@ import com.sencha.gxt.widget.core.client.container.SimpleContainer;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.user.UserLogin;
+import de.cses.shared.DepictionEntry;
 import de.cses.shared.ImageEntry;
 
 /**
@@ -39,48 +40,68 @@ public class DepictionOnWallView extends SimpleContainer {
 	 * 
 	 */
 
-	int depictionID;
+	DepictionEntry depiction;
 	DepictionOnWallView depictionview = this;
 	private DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 
-	public DepictionOnWallView(int depictionID, final boolean editable) {
+	public DepictionOnWallView(DepictionEntry depiction, final boolean editable) {
 
 		super();
 
-		this.depictionID = depictionID;
+		this.depiction = depiction;
+		SafeUri uri = UriUtils.fromString("resource?imageID=" + depiction.getMasterImageID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
+		final Image image = new Image(uri);
+		depictionview.add(image);
+		if (editable) {
+			Draggable drag = new Draggable(depictionview);
+		}
+		depictionview.setPixelSize(50, 50);
+		Resizable resize = new Resizable(depictionview, Resizable.Dir.NE, Resizable.Dir.NW, Resizable.Dir.SE, Resizable.Dir.SW);
+		resize.setPreserveRatio(true);
 
-		dbService.getMasterImageEntryForDepiction(depictionID, new AsyncCallback<ImageEntry>() {
+		ResizeHandler resizeHandler = new ResizeHandler() {
 
 			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
+			public void onResize(ResizeEvent event) {
+
+				image.setPixelSize(depictionview.getOffsetWidth(), depictionview.getOffsetHeight());
 			}
 
-			@Override
-			public void onSuccess(ImageEntry imageresult) {
+		};
+		depictionview.addHandler(resizeHandler, ResizeEvent.getType());
 
-				SafeUri uri = UriUtils.fromString("resource?imageID=" + imageresult.getImageID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
-				final Image image = new Image(uri);
-				depictionview.add(image);
-				if (editable) {
-					Draggable drag = new Draggable(depictionview);
-				}
-				depictionview.setPixelSize(50, 50);
-				Resizable resize = new Resizable(depictionview, Resizable.Dir.NE, Resizable.Dir.NW, Resizable.Dir.SE, Resizable.Dir.SW);
-				resize.setPreserveRatio(true);
-
-				ResizeHandler resizeHandler = new ResizeHandler() {
-
-					@Override
-					public void onResize(ResizeEvent event) {
-
-						image.setPixelSize(depictionview.getOffsetWidth(), depictionview.getOffsetHeight());
-					}
-
-				};
-				depictionview.addHandler(resizeHandler, ResizeEvent.getType());
-			}
-		});
+//		dbService.getMasterImageEntryForDepiction(depiction, new AsyncCallback<ImageEntry>() {
+//
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				caught.printStackTrace();
+//			}
+//
+//			@Override
+//			public void onSuccess(ImageEntry imageresult) {
+//
+//				SafeUri uri = UriUtils.fromString("resource?imageID=" + imageresult.getImageID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
+//				final Image image = new Image(uri);
+//				depictionview.add(image);
+//				if (editable) {
+//					Draggable drag = new Draggable(depictionview);
+//				}
+//				depictionview.setPixelSize(50, 50);
+//				Resizable resize = new Resizable(depictionview, Resizable.Dir.NE, Resizable.Dir.NW, Resizable.Dir.SE, Resizable.Dir.SW);
+//				resize.setPreserveRatio(true);
+//
+//				ResizeHandler resizeHandler = new ResizeHandler() {
+//
+//					@Override
+//					public void onResize(ResizeEvent event) {
+//
+//						image.setPixelSize(depictionview.getOffsetWidth(), depictionview.getOffsetHeight());
+//					}
+//
+//				};
+//				depictionview.addHandler(resizeHandler, ResizeEvent.getType());
+//			}
+//		});
 	}
 
 	/**
@@ -92,11 +113,11 @@ public class DepictionOnWallView extends SimpleContainer {
 	}
 
 	public int getDepictionID() {
-		return depictionID;
+		return depiction.getDepictionID();
 	}
 
-	public void setDepictionID(int depictionID) {
-		this.depictionID = depictionID;
-	}
+//	public void setDepictionID(int depictionID) {
+//		this.depictionID = depictionID;
+//	}
 
 }

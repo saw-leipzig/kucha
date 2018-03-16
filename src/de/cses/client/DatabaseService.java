@@ -119,6 +119,7 @@ public interface DatabaseService extends RemoteService {
 
 	AuthorEntry getAuthorEntry(int id) throws IllegalArgumentException;
 
+	@Deprecated
 	ImageEntry getMasterImageEntryForDepiction(int depictionID) throws IllegalArgumentException;
 
 	CaveEntry getCaveEntry(int id) throws IllegalArgumentException;
@@ -191,10 +192,9 @@ public interface DatabaseService extends RemoteService {
 
 	ArrayList<ImageTypeEntry> getImageTypes() throws IllegalArgumentException;
 
-	int insertDepictionEntry(DepictionEntry depictionEntry, ArrayList<ImageEntry> imgEntryList, ArrayList<IconographyEntry> iconographyList);
+	int insertDepictionEntry(DepictionEntry depictionEntry, ArrayList<IconographyEntry> iconographyList);
 
-	boolean updateDepictionEntry(DepictionEntry correspondingDepictionEntry, ArrayList<ImageEntry> all,
-			ArrayList<IconographyEntry> iconographyList);
+	boolean updateDepictionEntry(DepictionEntry correspondingDepictionEntry, ArrayList<IconographyEntry> iconographyList);
 
 	ArrayList<ModeOfRepresentationEntry> getModesOfRepresentation() throws IllegalArgumentException;
 

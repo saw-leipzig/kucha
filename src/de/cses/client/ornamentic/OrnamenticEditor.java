@@ -839,24 +839,6 @@ ToolButton addOrnamentClassButton = new ToolButton(ToolButton.PLUS);
 
 	}
 
-	public void imageSelected(int imageID) {
-		if (imageID != 0) {
-			dbService.getImage(imageID, new AsyncCallback<ImageEntry>() {
-
-				@Override
-				public void onSuccess(ImageEntry result) {
-					imageEntryList.add(result);
-				}
-
-				@Override
-				public void onFailure(Throwable caught) {
-					// TODO Auto-generated method stub
-				}
-			});
-		}
-		imageSelectionDialog.hide();
-	}
-
 	interface ImageProperties extends PropertyAccess<ImageEntry> {
 		ModelKeyProvider<ImageEntry> imageID();
 
@@ -914,6 +896,17 @@ ToolButton addOrnamentClassButton = new ToolButton(ToolButton.PLUS);
 
 	public void setCavesList(ListView<OrnamentCaveRelation, String> cavesList) {
 		this.cavesList = cavesList;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.images.ImageSelectorListener#imageSelected(de.cses.shared.ImageEntry)
+	 */
+	@Override
+	public void imageSelected(ImageEntry entry) {
+		if (entry.getImageID() != 0) {
+			imageEntryList.add(entry);
+		}
+		imageSelectionDialog.hide();
 	}
 
 }

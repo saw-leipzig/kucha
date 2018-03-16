@@ -74,7 +74,7 @@ public class ImageView extends AbstractView {
 		this.imgEntry = imgEntry;
 		
 		setHTML(ivTemplates.view(UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), 
-				imgEntry.getShortName(), imgEntry.isPublicImage() ? res.open().getSafeUri() : res.locked().getSafeUri()));
+				imgEntry.getShortName(), imgEntry.isOpenAccess() ? res.open().getSafeUri() : res.locked().getSafeUri()));
 		setPixelSize(150, 150);
 
 		DragSource source = new DragSource(this) {
@@ -101,7 +101,7 @@ public class ImageView extends AbstractView {
 	public void closeRequest() {
 		super.closeRequest();
 		setHTML(ivTemplates.view(UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), 
-				imgEntry.getShortName(), imgEntry.isPublicImage() ? res.open().getSafeUri() : res.locked().getSafeUri()));
+				imgEntry.getShortName(), imgEntry.isOpenAccess() ? res.open().getSafeUri() : res.locked().getSafeUri()));
 //		setHTML(ivTemplates.view(UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), imgEntry.getShortName()));
 	}
 

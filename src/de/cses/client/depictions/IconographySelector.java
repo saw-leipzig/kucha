@@ -232,7 +232,6 @@ public class IconographySelector implements IsWidget {
 		for (IconographyEntry entry : iconographyTree.getCheckedSelection()) {
 			result.add(entry);
 		}
-		Window.alert("getSelectedIconography: selected = " + result.size());
 		return result;	
 	}
 

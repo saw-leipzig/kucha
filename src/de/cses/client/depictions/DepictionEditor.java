@@ -28,13 +28,13 @@ import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
-import com.sencha.gxt.core.client.XTemplates.XTemplate;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
@@ -107,13 +107,11 @@ public class DepictionEditor extends AbstractEditor {
 	private TextArea descriptionArea;
 	private TextField backgroundColourField;
 	private TextArea generalRemarksArea;
-//	private TextArea otherSuggestedIdentificationsArea;
 	protected IconographySelector iconographySelector;
 	protected PictorialElementSelector peSelector;
 	protected ImageSelector imageSelector;
 	private FramedPanel mainPanel;
 	protected PopupPanel imageSelectionDialog;
-	// private ArrayList<DepictionEditorListener> listener;
 	private ListView<ImageEntry, ImageEntry> imageListView;
 	private ListStore<ImageEntry> imageEntryLS;
 	private ImageProperties imgProperties;
@@ -133,7 +131,6 @@ public class DepictionEditor extends AbstractEditor {
 	private ComboBox<ModeOfRepresentationEntry> modeOfRepresentationSelectionCB;
 	protected PopupPanel wallEditorDialog;
 	private Walls wallEditor;
-//	private Label iconographyLabel;
 	protected PopupPanel iconographySelectionDialog;
 	private WallSelector wallSelectorPanel;
 	private TextArea separateAksarasTextArea;
@@ -166,9 +163,6 @@ public class DepictionEditor extends AbstractEditor {
 
 		@XTemplate("<div>{officialNumber}<br>{siteDistrictInformation}</div>")
 		SafeHtml caveLabel(String siteDistrictInformation, String officialNumber);
-
-//		@XTemplate("<div>{officialNumber}</div>")
-//		SafeHtml caveLabel(String officialNumber);
 	}
 
 	interface LocationProperties extends PropertyAccess<LocationEntry> {
@@ -249,11 +243,24 @@ public class DepictionEditor extends AbstractEditor {
 	 *
 	 */
 	interface ImageViewTemplates extends XTemplates {
-		@XTemplate("<img src=\"{imageUri}\" style=\"width: 230px; height: auto; align-content: center; margin: 5px;\"><br> {shortName}")
-		SafeHtml image(SafeUri imageUri, String shortName);
+//		@XTemplate("<div style='border-style: solid; border-color: #99ff66; border-width: 3px;'><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
+		@XTemplate("<figure style='border-style: solid; border-color: #99ff66; border-width: 3px; margin: 0;'>"
+				+ "<img src='{imageUri}' style='position: relative; padding: 5px; width: 230px; background: white;'>"
+				+ "<figcaption style='font-size:12px; padding: 10px; text-align: center;'>{shortName} ({imageFormat})<br><div style='font-size:9px;'>{title}</div></figcaption></figure>")
+		SafeHtml openAccessImage(SafeUri imageUri, String shortName, String title, String imageFormat);
 
-		@XTemplate("<div><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
-		SafeHtml image(SafeUri imageUri, String shortName, String title);
+//		@XTemplate("<div style='border-style: solid; border-color: #ff1a1a; border-width: 3px;'><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
+		@XTemplate("<figure style='border-style: solid; border-color: #ff1a1a; border-width: 3px; margin: 0;'>"
+				+ "<img src='{imageUri}' style='position: relative; padding: 5px; width: 230px; background: white;'>"
+				+ "<figcaption style='font-size:12px; padding: 10px; text-align: center;'>{shortName} ({imageFormat})<br><div style='font-size:9px;'>{title}</div></figcaption></figure>")
+		SafeHtml nonOpenAccessImage(SafeUri imageUri, String shortName, String title, String imageFormat);
+
+//		@XTemplate("<div style='border-style: solid; border-color: #0073e6; border-width: 3px;'><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
+//		SafeHtml masterImage(SafeUri imageUri, String shortName, String title, String imageFormat);
+		@XTemplate("<figure style='border-style: solid; border-color: #0073e6; border-width: 3px; margin: 0;'>"
+				+ "<img src='{imageUri}' style='position: relative; padding: 5px; width: 230px; background: white;'>"
+				+ "<figcaption style='font-size:12px; padding: 10px; text-align: center;'>{shortName} ({imageFormat})<br><div style='font-size:9px;'>{title}</div></figcaption></figure>")
+		SafeHtml masterImage(SafeUri imageUri, String shortName, String title, String imageFormat);
 	}
 
 	public DepictionEditor(DepictionEntry entry) {
@@ -262,8 +269,6 @@ public class DepictionEditor extends AbstractEditor {
 		} else {
 			correspondingDepictionEntry = new DepictionEntry();
 		}
-		// listener = new ArrayList<DepictionEditorListener>();
-		// listener.add(deListener);
 
 		imgProperties = GWT.create(ImageProperties.class);
 		imageEntryLS = new ListStore<ImageEntry>(imgProperties.imageID());
@@ -433,20 +438,24 @@ public class DepictionEditor extends AbstractEditor {
 	 * 
 	 */
 	private void loadImages() {
-		dbService.getRelatedImages(correspondingDepictionEntry.getDepictionID(), new AsyncCallback<ArrayList<ImageEntry>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(ArrayList<ImageEntry> imgResults) {
-				for (ImageEntry ie : imgResults) {
-					imageEntryLS.add(ie);
-				}
-			}
-		});
+		for (ImageEntry ie : correspondingDepictionEntry.getRelatedImages()) {
+			imageEntryLS.add(ie);
+		}
+		
+//		dbService.getRelatedImages(correspondingDepictionEntry.getDepictionID(), new AsyncCallback<ArrayList<ImageEntry>>() {
+//
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				caught.printStackTrace();
+//			}
+//
+//			@Override
+//			public void onSuccess(ArrayList<ImageEntry> imgResults) {
+//				for (ImageEntry ie : imgResults) {
+//					imageEntryLS.add(ie);
+//				}
+//			}
+//		});
 	}
 
 	@Override
@@ -474,13 +483,19 @@ public class DepictionEditor extends AbstractEditor {
 
 			public SafeHtml render(ImageEntry item) {
 				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=300" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
-				return imageViewTemplates.image(imageUri, item.getShortName(), item.getTitle());
+				if (item.getImageID() == correspondingDepictionEntry.getMasterImageID()) {
+					return imageViewTemplates.masterImage(imageUri, item.getShortName(), item.getTitle(), item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase());
+				} else if (item.isOpenAccess()) {
+					return imageViewTemplates.openAccessImage(imageUri, item.getShortName(), item.getTitle(), item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase());
+				} else {
+					return imageViewTemplates.nonOpenAccessImage(imageUri, item.getShortName(), item.getTitle(), item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase());
+				}
 			}
 		}));
 
 //		imageListView.setSize("340", "290");
-		ListField<ImageEntry, ImageEntry> lf = new ListField<ImageEntry, ImageEntry>(imageListView);
-		lf.setSize("100%", "100%");
+		ListField<ImageEntry, ImageEntry> imageViewLF = new ListField<ImageEntry, ImageEntry>(imageListView);
+		imageViewLF.setSize("100%", "100%");
 
 		/**
 		 * --------------------- content of first tab (BASICS) starts here --------------------------------
@@ -1225,28 +1240,17 @@ public class DepictionEditor extends AbstractEditor {
 		imageSelector = new ImageSelector(new ImageSelectorListener() {
 
 			@Override
-			public void imageSelected(int imageID) {
-				if (imageID != 0) {
-					dbService.getImage(imageID, new AsyncCallback<ImageEntry>() {
-
-						@Override
-						public void onSuccess(ImageEntry ieResults) {
-							imageEntryLS.add(ieResults);
-						}
-
-						@Override
-						public void onFailure(Throwable caught) {
-							caught.printStackTrace();
-						}
-					});
+			public void imageSelected(ImageEntry imgEntry) {
+				if ((imgEntry != null) && (imgEntry.getImageID() != 0)) {
+					imageEntryLS.add(imgEntry);
 				}
 				imageSelectionDialog.hide();
 			}
 		});
 		
-		TextButton addImageButton = new TextButton("Select Image");
-		addImageButton.addSelectHandler(new SelectHandler() {
-
+		ToolButton addImageTB = new ToolButton(ToolButton.PLUS);
+		addImageTB.addSelectHandler(new SelectHandler() {
+			
 			@Override
 			public void onSelect(SelectEvent event) {
 				imageSelectionDialog = new PopupPanel();
@@ -1255,64 +1259,85 @@ public class DepictionEditor extends AbstractEditor {
 				imageSelectionDialog.center();
 			}
 		});
-		
-		TextButton removeImageButton = new TextButton("Remove Image");
-		removeImageButton.addSelectHandler(new SelectHandler() {
+		addImageTB.setToolTip("add image");
 
+		ToolButton removeImageTB = new ToolButton(ToolButton.MINUS);
+		removeImageTB.addSelectHandler(new SelectHandler() {
+			
 			@Override
 			public void onSelect(SelectEvent event) {
 				imageEntryLS.remove(imageListView.getSelectionModel().getSelectedItem());
 			}
 		});
+		removeImageTB.setToolTip("remove image");
 		
-		TextButton setMasterButton = new TextButton("Set Master");
-		setMasterButton.addSelectHandler(new SelectHandler() {
-
+		ToolButton setMasterTB = new ToolButton(ToolButton.PIN);
+		setMasterTB.addSelectHandler(new SelectHandler() {
+			
 			@Override
 			public void onSelect(SelectEvent event) {
 				ImageEntry entry = imageListView.getSelectionModel().getSelectedItem();
-				if (imageEntryLS.indexOf(entry) > 0) {
-					imageEntryLS.remove(entry);
-					imageEntryLS.add(0, entry);
-				}
+				correspondingDepictionEntry.setMasterImageID(entry.getImageID());
+				imageListView.refresh();
+			}
+		});
+		setMasterTB.setToolTip("set master image");
+		
+		ToolButton infoTB = new ToolButton(ToolButton.QUESTION);
+		infoTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				PopupPanel dialog = new PopupPanel();
+				FramedPanel infoDialogFP = new FramedPanel();
+				infoDialogFP.setHeading("Colour schema");
+				VerticalPanel infoVP = new VerticalPanel();
+				infoVP.add(new HTML("<div><label style='font-size: 12px; color: #0073e6;'>Master Image</label></div>"));
+				infoVP.add(new HTML("<div><label style='font-size: 12px; color: #99ff66;'>Open Access Image</label></div>"));
+				infoVP.add(new HTML("<div><label style='font-size: 12px; color: #ff1a1a;'>Non Open Access Image</label></div>"));
+				infoDialogFP.add(infoVP);
+				TextButton okButton = new TextButton("OK");
+				okButton.addSelectHandler(new SelectHandler() {
+					
+					@Override
+					public void onSelect(SelectEvent event) {
+						dialog.hide();
+					}
+				});
+				infoDialogFP.addButton(okButton);
+				dialog.add(infoDialogFP);
+				dialog.setModal(true);
+				dialog.setGlassEnabled(true);
+				dialog.center();
 			}
 		});
 
+		ToolButton zoomTB = new ToolButton(ToolButton.MAXIMIZE);
+		zoomTB.addSelectHandler(new SelectHandler() {
+			@Override
+			public void onSelect(SelectEvent event) {
+				ImageEntry ie = imageListView.getSelectionModel().getSelectedItem();
+				if (ie != null) {
+					com.google.gwt.user.client.Window.open("/resource?imageID=" + ie.getImageID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri(),"_blank",null);
+				}
+			}
+		});
+		zoomTB.setToolTip("view selected image full size");
+
 		FramedPanel depictionImagesPanel = new FramedPanel();
 		depictionImagesPanel.setHeading("Images");
-		depictionImagesPanel.add(lf);
-		// depictionImagesPanel.setSize("25%", "100%");
-		depictionImagesPanel.addButton(addImageButton);
-		depictionImagesPanel.addButton(removeImageButton);
-		depictionImagesPanel.addButton(setMasterButton);
+		depictionImagesPanel.add(imageViewLF);
+		depictionImagesPanel.addTool(infoTB);
+		depictionImagesPanel.addTool(zoomTB);
+		depictionImagesPanel.addTool(addImageTB);
+		depictionImagesPanel.addTool(removeImageTB);
+		depictionImagesPanel.addTool(setMasterTB);
 
-		/**
-		 * --------------------- content of third tab (Pictorial Elements) starts here --------------------------------
-		 */
-//		HorizontalLayoutContainer pictorialElementsTabHLC = new HorizontalLayoutContainer();
-//		peSelector = new PictorialElementSelector(correspondingDepictionEntry.getDepictionID());
-//		pictorialElementsTabHLC.add(peSelector, new HorizontalLayoutData(1.0, 1.0));
-		
-		/**
-		 * --------------------- content of fourth tab (Iconography) starts here --------------------------------
-		 */
-//		HorizontalLayoutContainer iconographyTabHLC = new HorizontalLayoutContainer();
-		iconographySelector = new IconographySelector(correspondingDepictionEntry.getDepictionID());
-//		iconographyTabHLC.add(iconographySelector, new HorizontalLayoutData(1.0, 1.0));
-		
 		/**
 		 * ---------------------- content of third tab (Iconography & Pictorial Elements starts here ---------------------
 		 */
-//		VerticalLayoutContainer iconographyPictorialVLC = new VerticalLayoutContainer();
-//		iconographyPictorialVLC.add(iconographySelector, new VerticalLayoutData(1.0, .5, new Margins(2)));
-//		iconographyPictorialVLC.add(peSelector, new VerticalLayoutData(1.0, .5, new Margins(2)));
+		iconographySelector = new IconographySelector(correspondingDepictionEntry.getDepictionID());
 		
-//		AccordionLayoutContainer iconographyPictorialALC = new AccordionLayoutContainer();
-//		iconographyPictorialALC.setExpandMode(ExpandMode.MULTI);
-//		iconographyPictorialALC.add(peSelector);
-//		iconographyPictorialALC.add(iconographySelector);
-//		iconographyPictorialALC.setHeight(580);
-
 		/**
 		 * --------------------------- next the editor as a whole will be assembled -------------------
 		 */
@@ -1383,17 +1408,14 @@ public class DepictionEditor extends AbstractEditor {
 	 * @param close 
 	 */
 	protected void saveDepictionEntry(boolean close) {
-		ArrayList<ImageEntry> associatedImageEntryList = new ArrayList<ImageEntry>();
+		ArrayList<ImageEntry> relatedImageEntryList = new ArrayList<ImageEntry>();
 		for (int i = 0; i < imageEntryLS.size(); ++i) {
-			associatedImageEntryList.add(imageEntryLS.get(i));
+			relatedImageEntryList.add(imageEntryLS.get(i));
 		}
-//		ArrayList<PictorialElementEntry> selectedPEList = new ArrayList<PictorialElementEntry>();
-//		for (PictorialElementEntry pe : peSelector.getSelectedPE()) {
-//			selectedPEList.add(pe);
-//		}
+		correspondingDepictionEntry.setRelatedImages(relatedImageEntryList);
 		
 		if (correspondingDepictionEntry.getDepictionID() == 0) {
-			dbService.insertDepictionEntry(correspondingDepictionEntry, associatedImageEntryList, iconographySelector.getSelectedIconography(), new AsyncCallback<Integer>() {
+			dbService.insertDepictionEntry(correspondingDepictionEntry, iconographySelector.getSelectedIconography(), new AsyncCallback<Integer>() {
 
 				@Override
 				public void onSuccess(Integer newDepictionID) {
@@ -1409,7 +1431,7 @@ public class DepictionEditor extends AbstractEditor {
 				}
 			});
 		} else {
-			dbService.updateDepictionEntry(correspondingDepictionEntry, associatedImageEntryList, iconographySelector.getSelectedIconography(), new AsyncCallback<Boolean>() {
+			dbService.updateDepictionEntry(correspondingDepictionEntry, iconographySelector.getSelectedIconography(), new AsyncCallback<Boolean>() {
 
 				@Override
 				public void onFailure(Throwable caught) {

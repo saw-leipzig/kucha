@@ -368,23 +368,23 @@ public class SingleImageEditor extends AbstractEditor {
 		imageTypeSelectionPanel.add(imageTypeSelection);
 		imageTypeSelectionPanel.setHeading("Image Type");
 
-		FramedPanel publicImagePanel = new FramedPanel();
-		CheckBox publicImageCB = new CheckBox();
-		publicImageCB.setBoxLabel("is public");
-		publicImageCB.setValue(imgEntry.isPublicImage());
-		publicImageCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+		FramedPanel openAccessImagePanel = new FramedPanel();
+		openAccessImagePanel.setHeading("Open Access");
+		CheckBox openAccessImageCB = new CheckBox();
+		openAccessImageCB.setBoxLabel("allow");
+		openAccessImageCB.setValue(imgEntry.isOpenAccess());
+		openAccessImageCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
-				imgEntry.setPublicImage(event.getValue());
+				imgEntry.setOpenAccess(event.getValue());
 			}
 		});
-		publicImagePanel.add(publicImageCB);
-		publicImagePanel.setHeading("Image Mode");
+		openAccessImagePanel.add(openAccessImageCB);
 
 		HorizontalLayoutContainer imageTypeModeHLC = new HorizontalLayoutContainer();
 		imageTypeModeHLC.add(imageTypeSelectionPanel, new HorizontalLayoutData(.5, 1.0));
-		imageTypeModeHLC.add(publicImagePanel, new HorizontalLayoutData(.5, 1.0));
+		imageTypeModeHLC.add(openAccessImagePanel, new HorizontalLayoutData(.5, 1.0));
 		
 		ToolButton saveToolButton = new ToolButton(ToolButton.SAVE);
 		saveToolButton.addSelectHandler(new SelectHandler() {

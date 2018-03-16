@@ -19,7 +19,6 @@ import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.dnd.core.client.DndDragStartEvent;
 import com.sencha.gxt.dnd.core.client.DragSource;
@@ -33,7 +32,6 @@ import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
-import de.cses.shared.ImageEntry;
 
 /**
  * @author alingnau
@@ -50,8 +48,8 @@ public class DepictionView extends AbstractView {
 		@XTemplate("<div><center><img src='{imgUri}'></img></center></div>")
 		SafeHtml view(SafeUri imgUri);
 		
-		@XTemplate("<div><center><img src='{imgUri}'></img></center><label style='font-size:9px' > DepictionID {id} </label></br></div>")
-		SafeHtml view(SafeUri imgUri, int id);
+//		@XTemplate("<div><center><img src='{imgUri}'></img></center><label style='font-size:9px' > DepictionID {id} </label></br></div>")
+//		SafeHtml view(SafeUri imgUri, int id);
 
 		@XTemplate("<div><center><img src='{imgUri}'></img></center><label style='font-size:9px' > {label} </label></br></div>")
 		SafeHtml view(SafeUri imgUri, String label);
@@ -66,31 +64,18 @@ public class DepictionView extends AbstractView {
 	private DepictionEntry depictionEntry;
 	private DepictionViewTemplates dvTemplates;
 	private Resources resources;
-	private static final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 
 	/**
 	 * @param text
 	 */
 	public DepictionView(DepictionEntry entry) {
-		// super("DepictionID: " + depictionEntry.getDepictionID());
 		depictionEntry = entry;
 		resources = GWT.create(Resources.class);
 		dvTemplates = GWT.create(DepictionViewTemplates.class);
-		dbService.getMasterImageEntryForDepiction(entry.getDepictionID(), new AsyncCallback<ImageEntry>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				setHTML(dvTemplates.view(resources.logo().getSafeUri()));
-			}
-
-			@Override
-			public void onSuccess(ImageEntry result) {
-				CaveEntry ce = entry.getCave();
-				setHTML(dvTemplates.view(UriUtils.fromString("resource?imageID=" + result.getImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), 
-						StaticTables.getInstance().getSiteEntries().get(ce.getSiteID()).getShortName() + " " + ce.getOfficialNumber(), 
-						ce.getHistoricName() != null ? ce.getHistoricName() : (depictionEntry.getShortName() != null ? depictionEntry.getShortName() : "")));
-			}
-		});
+		CaveEntry ce = entry.getCave();
+		setHTML(dvTemplates.view(UriUtils.fromString("resource?imageID=" + entry.getMasterImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), 
+				StaticTables.getInstance().getSiteEntries().get(ce.getSiteID()).getShortName() + " " + ce.getOfficialNumber(), 
+				ce.getHistoricName() != null ? ce.getHistoricName() : (depictionEntry.getShortName() != null ? depictionEntry.getShortName() : "")));
 		setPixelSize(150, 150);
 
 		DragSource source = new DragSource(this) {
@@ -124,17 +109,12 @@ public class DepictionView extends AbstractView {
 	@Override
 	public void closeRequest() {
 		super.closeRequest();
-		// try to refresh the master image
-		dbService.getMasterImageEntryForDepiction(depictionEntry.getDepictionID(), new AsyncCallback<ImageEntry>() {
+//		setHTML(dvTemplates.view(UriUtils.fromString("resource?imageID=" + depictionEntry.getMasterImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), depictionEntry.getDepictionID()));
 
-			@Override
-			public void onFailure(Throwable caught) { } // nothing happens, just leave the old master image
-
-			@Override
-			public void onSuccess(ImageEntry result) {
-				setHTML(dvTemplates.view(UriUtils.fromString("resource?imageID=" + result.getImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), depictionEntry.getDepictionID()));
-			}
-		});
+		CaveEntry ce = depictionEntry.getCave();
+		setHTML(dvTemplates.view(UriUtils.fromString("resource?imageID=" + depictionEntry.getMasterImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), 
+				StaticTables.getInstance().getSiteEntries().get(ce.getSiteID()).getShortName() + " " + ce.getOfficialNumber(), 
+				ce.getHistoricName() != null ? ce.getHistoricName() : (depictionEntry.getShortName() != null ? depictionEntry.getShortName() : "")));
 	}
 
 	/* (non-Javadoc)
