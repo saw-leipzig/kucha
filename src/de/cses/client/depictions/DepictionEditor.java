@@ -246,20 +246,20 @@ public class DepictionEditor extends AbstractEditor {
 //		@XTemplate("<div style='border-style: solid; border-color: #99ff66; border-width: 3px;'><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
 		@XTemplate("<figure style='border-style: solid; border-color: #99ff66; border-width: 3px; margin: 0;'>"
 				+ "<img src='{imageUri}' style='position: relative; padding: 5px; width: 230px; background: white;'>"
-				+ "<figcaption style='font-size:12px; padding: 10px; text-align: center;'>{shortName} ({imageFormat})<br><div style='font-size:10px;' {title}</div></figcaption></figure>")
+				+ "<figcaption style='font-size:12px; padding: 10px; text-align: center;'>{shortName} ({imageFormat})<br><div style='font-size:9px;'>{title}</div></figcaption></figure>")
 		SafeHtml openAccessImage(SafeUri imageUri, String shortName, String title, String imageFormat);
 
 //		@XTemplate("<div style='border-style: solid; border-color: #ff1a1a; border-width: 3px;'><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
 		@XTemplate("<figure style='border-style: solid; border-color: #ff1a1a; border-width: 3px; margin: 0;'>"
 				+ "<img src='{imageUri}' style='position: relative; padding: 5px; width: 230px; background: white;'>"
-				+ "<figcaption style='font-size:12px; padding: 10px; text-align: center;'>{shortName} ({imageFormat})<br><div style='font-size:10px;' {title}</div></figcaption></figure>")
+				+ "<figcaption style='font-size:12px; padding: 10px; text-align: center;'>{shortName} ({imageFormat})<br><div style='font-size:9px;'>{title}</div></figcaption></figure>")
 		SafeHtml nonOpenAccessImage(SafeUri imageUri, String shortName, String title, String imageFormat);
 
 //		@XTemplate("<div style='border-style: solid; border-color: #0073e6; border-width: 3px;'><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
 //		SafeHtml masterImage(SafeUri imageUri, String shortName, String title, String imageFormat);
 		@XTemplate("<figure style='border-style: solid; border-color: #0073e6; border-width: 3px; margin: 0;'>"
 				+ "<img src='{imageUri}' style='position: relative; padding: 5px; width: 230px; background: white;'>"
-				+ "<figcaption style='font-size:12px; padding: 10px; text-align: center;'>{shortName} ({imageFormat})<br><div style='font-size:10px;' {title}</div></figcaption></figure>")
+				+ "<figcaption style='font-size:12px; padding: 10px; text-align: center;'>{shortName} ({imageFormat})<br><div style='font-size:9px;'>{title}</div></figcaption></figure>")
 		SafeHtml masterImage(SafeUri imageUri, String shortName, String title, String imageFormat);
 	}
 
@@ -1259,6 +1259,7 @@ public class DepictionEditor extends AbstractEditor {
 				imageSelectionDialog.center();
 			}
 		});
+		addImageTB.setToolTip("add image");
 
 		ToolButton removeImageTB = new ToolButton(ToolButton.MINUS);
 		removeImageTB.addSelectHandler(new SelectHandler() {
@@ -1268,6 +1269,7 @@ public class DepictionEditor extends AbstractEditor {
 				imageEntryLS.remove(imageListView.getSelectionModel().getSelectedItem());
 			}
 		});
+		removeImageTB.setToolTip("remove image");
 		
 		ToolButton setMasterTB = new ToolButton(ToolButton.PIN);
 		setMasterTB.addSelectHandler(new SelectHandler() {
@@ -1279,6 +1281,7 @@ public class DepictionEditor extends AbstractEditor {
 				imageListView.refresh();
 			}
 		});
+		setMasterTB.setToolTip("set master image");
 		
 		ToolButton infoTB = new ToolButton(ToolButton.QUESTION);
 		infoTB.addSelectHandler(new SelectHandler() {

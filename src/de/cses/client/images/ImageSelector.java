@@ -97,13 +97,13 @@ public class ImageSelector implements IsWidget {
 //		@XTemplate("<div style='border-style: solid; border-color: #99ff66; border-width: 3px;'><img src=\"{imageUri}\" style=\"width: 400px; height: auto; align-content: center; margin: 10px;\"><br>{title}<br> {shortName}")
 		@XTemplate("<figure style='border-style: solid; border-color: #99ff66; border-width: 3px; margin: 0;'>"
 				+ "<img src='{imageUri}' style='position: relative; padding: 5px; width: 400px; background: white;'>"
-				+ "<figcaption style='font-size:12px; padding: 10px; text-align: center;'>{shortName} ({imageFormat})<br><div style='font-size:10px;' {title}</div></figcaption></figure>")
+				+ "<figcaption style='font-size:12px; padding: 10px; text-align: center;'>{shortName} ({imageFormat})<br><div style='font-size:10px;'>{title}</div></figcaption></figure>")
 		SafeHtml openAccessImage(SafeUri imageUri, String title, String shortName, String imageFormat);
 
 //		@XTemplate("<div style='border-style: solid; border-color: #ff1a1a; border-width: 3px;'><img src=\"{imageUri}\" style=\"width: 400px; height: auto; align-content: center; margin: 10px;\"><br>{title}<br> {shortName}")
 		@XTemplate("<figure style='border-style: solid; border-color: #ff1a1a; border-width: 3px; margin: 0;'>"
 				+ "<img src='{imageUri}' style='position: relative; padding: 5px; width: 400px; background: white;'>"
-				+ "<figcaption style='font-size:12px; padding: 10px; text-align: center;'>{shortName} ({imageFormat})<br><div style='font-size:10px;' {title}</div></figcaption></figure>")
+				+ "<figcaption style='font-size:12px; padding: 10px; text-align: center;'>{shortName} ({imageFormat})<br><div style='font-size:10px;'>{title}</div></figcaption></figure>")
 		SafeHtml nonOpenAccessImage(SafeUri imageUri, String title, String shortName, String imageFormat);
 	}
 
