@@ -41,6 +41,8 @@ public class DepictionEntry extends AbstractEntry {
 	private int modeOfRepresentationID = 0;
 	private String shortName;
 	private String positionNotes;
+	private int masterImageID;
+	private ArrayList<ImageEntry> relatedImages = new ArrayList<ImageEntry>();
 	private ArrayList<PreservationAttributeEntry> preservationAttributesList = new ArrayList<PreservationAttributeEntry>();
 
 	public DepictionEntry() { }
@@ -73,7 +75,7 @@ public class DepictionEntry extends AbstractEntry {
 	public DepictionEntry(int depictionID, int styleID, String inscriptions, String separateAksaras, String dating, String description,
 			String backgroundColour, String generalRemarks, String otherSuggestedIdentifications, double width, double height, int expeditionID,
 			Date purchaseDate, int locationID, String inventoryNumber, int vendorID, int storyID, CaveEntry cave, int wallID, int absoluteLeft,
-			int absoluteTop, int modeOfRepresentationID, String shortName, String positionNotes) {
+			int absoluteTop, int modeOfRepresentationID, String shortName, String positionNotes, int masterImageID) {
 		super();
 		this.depictionID = depictionID;
 		this.styleID = styleID;
@@ -99,12 +101,17 @@ public class DepictionEntry extends AbstractEntry {
 		this.modeOfRepresentationID = modeOfRepresentationID;
 		this.shortName = shortName;
 		this.positionNotes = positionNotes;
+		this.masterImageID = masterImageID;
 	}
 
 	public DepictionEntry clone() {
 		DepictionEntry clonedDepictionEntry = new DepictionEntry(depictionID, styleID, inscriptions, separateAksaras, dating, description, backgroundColour, generalRemarks,
 				otherSuggestedIdentifications, width, height, expeditionID, purchaseDate, locationID, inventoryNumber, vendorID, storyID,
-				cave, wallID, absoluteLeft, absoluteTop, modeOfRepresentationID, shortName, positionNotes);
+				cave, wallID, absoluteLeft, absoluteTop, modeOfRepresentationID, shortName, positionNotes, masterImageID);
+		ArrayList<ImageEntry> clonedRelatedImages = new ArrayList<ImageEntry>();
+		for (ImageEntry ie : this.relatedImages) {
+			clonedRelatedImages.add(ie);
+		}
 		ArrayList<PreservationAttributeEntry> clonedPreservationAttributesList = new ArrayList<PreservationAttributeEntry>();
 		for (PreservationAttributeEntry pae : this.preservationAttributesList) {
 			clonedPreservationAttributesList.add(pae);
@@ -338,6 +345,22 @@ public class DepictionEntry extends AbstractEntry {
 
 	public void setPreservationAttributesList(ArrayList<PreservationAttributeEntry> preservationAttributesList) {
 		this.preservationAttributesList = preservationAttributesList;
+	}
+
+	public ArrayList<ImageEntry> getRelatedImages() {
+		return relatedImages;
+	}
+
+	public void setRelatedImages(ArrayList<ImageEntry> relatedImages) {
+		this.relatedImages = relatedImages;
+	}
+
+	public int getMasterImageID() {
+		return masterImageID;
+	}
+
+	public void setMasterImageID(int masterImageID) {
+		this.masterImageID = masterImageID;
 	}
 
 }

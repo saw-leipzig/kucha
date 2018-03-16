@@ -400,12 +400,14 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery((sqlWhere == null) ? "SELECT * FROM Depictions" : "SELECT * FROM Depictions WHERE " + sqlWhere);
 			while (rs.next()) {
-				results.add(new DepictionEntry(rs.getInt("DepictionID"), rs.getInt("StyleID"), rs.getString("Inscriptions"),
+				DepictionEntry de = new DepictionEntry(rs.getInt("DepictionID"), rs.getInt("StyleID"), rs.getString("Inscriptions"),
 						rs.getString("SeparateAksaras"), rs.getString("Dating"), rs.getString("Description"), rs.getString("BackgroundColour"),
 						rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"), rs.getDouble("Width"), rs.getDouble("Height"),
 						rs.getInt("ExpeditionID"), rs.getDate("PurchaseDate"), rs.getInt("CurrentLocationID"), rs.getString("InventoryNumber"), rs.getInt("VendorID"),
 						rs.getInt("StoryID"), getCave(rs.getInt("CaveID")), rs.getInt("WallID"), rs.getInt("AbsoluteLeft"), rs.getInt("AbsoluteTop"), 
-						rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes")));
+						rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes"), rs.getInt("MasterImageID"));
+				de.setRelatedImages(getRelatedImages(de.getDepictionID()));
+				results.add(de);
 			}
 			rs.close();
 			stmt.close();
@@ -430,7 +432,8 @@ public class MysqlConnector {
 						rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"), rs.getDouble("Width"), rs.getDouble("Height"),
 						rs.getInt("ExpeditionID"), rs.getDate("PurchaseDate"), rs.getInt("CurrentLocationID"), rs.getString("InventoryNumber"), rs.getInt("VendorID"),
 						rs.getInt("StoryID"), getCave(rs.getInt("CaveID")), rs.getInt("WallID"), rs.getInt("AbsoluteLeft"), 
-						rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes"));
+						rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes"), rs.getInt("MasterImageID"));
+				result.setRelatedImages(getRelatedImages(result.getDepictionID()));
 			}
 			rs.close();
 			stmt.close();
@@ -2107,8 +2110,7 @@ public class MysqlConnector {
 	 * @param depictionEntry
 	 * @return
 	 */
-	public synchronized int insertDepictionEntry(DepictionEntry de, ArrayList<ImageEntry> imgEntryList,
-			ArrayList<IconographyEntry> iconographyLists) {
+	public synchronized int insertDepictionEntry(DepictionEntry de, ArrayList<IconographyEntry> iconographyLists) {
 		int newDepictionID = 0;
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -2117,7 +2119,7 @@ public class MysqlConnector {
 					"INSERT INTO Depictions (StyleID, Inscriptions, SeparateAksaras, Dating, Description, BackgroundColour, GeneralRemarks, "
 					+ "OtherSuggestedIdentifications, Width, Height, ExpeditionID, PurchaseDate, CurrentLocationID, InventoryNumber, VendorID, "
 					+ "StoryID, CaveID, WallID, AbsoluteLeft, AbsoluteTop, ModeOfRepresentationID, ShortName, PositionNotes) "
-							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			pstmt.setInt(1, de.getStyleID());
 			pstmt.setString(2, de.getInscriptions());
 			pstmt.setString(3, de.getSeparateAksaras());
@@ -2141,6 +2143,7 @@ public class MysqlConnector {
 			pstmt.setInt(21, de.getModeOfRepresentationID());
 			pstmt.setString(22, de.getShortName());
 			pstmt.setString(23, de.getPositionNotes());
+			pstmt.setInt(24, de.getMasterImageID());
 			pstmt.executeUpdate();
 			ResultSet keys = pstmt.getGeneratedKeys();
 			if (keys.next()) { // there should only be 1 key returned here 
@@ -2156,8 +2159,8 @@ public class MysqlConnector {
 		}
 		if (newDepictionID > 0) {
 			deleteEntry("DELETE FROM DepictionImageRelation WHERE DepictionID=" + de.getDepictionID());
-			if (imgEntryList.size() > 0) {
-				insertDepictionImageRelation(de.getDepictionID(), imgEntryList);
+			if (de.getRelatedImages().size() > 0) {
+				insertDepictionImageRelation(de.getDepictionID(), de.getRelatedImages());
 			}
 			deleteEntry("DELETE FROM DepictionIconographyRelation WHERE DepictionID=" + de.getDepictionID());
 			if (iconographyLists.size() > 0) {
@@ -2173,8 +2176,7 @@ public class MysqlConnector {
 	 * @param iconographyList 
 	 * @return <code>true</code> when operation is successful
 	 */
-	public synchronized boolean updateDepictionEntry(DepictionEntry de, ArrayList<ImageEntry> imgEntryList,
-		ArrayList<IconographyEntry> iconographyList) {
+	public synchronized boolean updateDepictionEntry(DepictionEntry de, ArrayList<IconographyEntry> iconographyList) {
 		// System.err.println("==> updateDepictionEntry called");
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -2183,7 +2185,7 @@ public class MysqlConnector {
 			pstmt = dbc.prepareStatement(
 					"UPDATE Depictions SET StyleID=?, Inscriptions=?, SeparateAksaras=?, Dating=?, Description=?, BackgroundColour=?, GeneralRemarks=?, "
 					+ "OtherSuggestedIdentifications=?, Width=?, Height=?, ExpeditionID=?, PurchaseDate=?, CurrentLocationID=?, InventoryNumber=?, VendorID=?, "
-					+ "StoryID=?, CaveID=?, WallID=?, AbsoluteLeft=?, AbsoluteTop=?, ModeOfRepresentationID=?, ShortName=?, PositionNotes=? WHERE DepictionID=?");
+					+ "StoryID=?, CaveID=?, WallID=?, AbsoluteLeft=?, AbsoluteTop=?, ModeOfRepresentationID=?, ShortName=?, PositionNotes=?, MasterImageID=? WHERE DepictionID=?");
 			pstmt.setInt(1, de.getStyleID());
 			pstmt.setString(2, de.getInscriptions());
 			pstmt.setString(3, de.getSeparateAksaras());
@@ -2207,7 +2209,8 @@ public class MysqlConnector {
 			pstmt.setInt(21, de.getModeOfRepresentationID());
 			pstmt.setString(22, de.getShortName());
 			pstmt.setString(23, de.getPositionNotes());
-			pstmt.setInt(24, de.getDepictionID());
+			pstmt.setInt(24, de.getMasterImageID());
+			pstmt.setInt(25, de.getDepictionID());
 			pstmt.executeUpdate();
 			pstmt.close();
 		} catch (SQLException ex) {
@@ -2215,8 +2218,8 @@ public class MysqlConnector {
 			return false;
 		}
 		deleteEntry("DELETE FROM DepictionImageRelation WHERE DepictionID=" + de.getDepictionID());
-		if (imgEntryList.size() > 0) {
-			insertDepictionImageRelation(de.getDepictionID(), imgEntryList);
+		if (de.getRelatedImages().size() > 0) {
+			insertDepictionImageRelation(de.getDepictionID(), de.getRelatedImages());
 		}
 		deleteEntry("DELETE FROM DepictionIconographyRelation WHERE DepictionID=" + de.getDepictionID());
 		if (iconographyList.size() > 0) {
@@ -2230,28 +2233,12 @@ public class MysqlConnector {
 		PreparedStatement pstmt;
 		// System.err.println("==> updateDepictionImageRelation called");
 		try {
-			String insertSqlString = "INSERT INTO DepictionImageRelation VALUES ";
-			for (int i = 0; i < imgEntryList.size(); ++i) {
-				if (i == 0) {
-					insertSqlString = insertSqlString.concat("(?, ?, ?)");
-				} else {
-					insertSqlString = insertSqlString.concat(", (?, ?, ?)");
-				}
-			}
-			pstmt = dbc.prepareStatement(insertSqlString);
+			pstmt = dbc.prepareStatement("INSERT INTO DepictionImageRelation VALUES (?, ?)");
 			for (ImageEntry entry : imgEntryList) {
-				if (imgEntryList.indexOf(entry) == 0) {
-					pstmt.setInt(1, depictionID);
-					pstmt.setInt(2, entry.getImageID());
-					pstmt.setInt(3, 1);
-				} else {
-					int idx = imgEntryList.indexOf(entry);
-					pstmt.setInt(idx * 3 + 1, depictionID);
-					pstmt.setInt(idx * 3 + 2, entry.getImageID());
-					pstmt.setInt(idx * 3 + 3, 0);
-				}
+				pstmt.setInt(1, depictionID);
+				pstmt.setInt(2, entry.getImageID());
+				pstmt.executeUpdate();
 			}
-			pstmt.executeUpdate();
 			pstmt.close();
 		} catch (SQLException ex) {
 			ex.printStackTrace();

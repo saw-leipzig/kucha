@@ -15,6 +15,7 @@ package de.cses.client.depictions;
 
 import java.util.ArrayList;
 
+import com.apple.laf.AquaButtonBorder.Toolbar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
@@ -249,11 +250,14 @@ public class DepictionEditor extends AbstractEditor {
 	 *
 	 */
 	interface ImageViewTemplates extends XTemplates {
-		@XTemplate("<img src=\"{imageUri}\" style=\"width: 230px; height: auto; align-content: center; margin: 5px;\"><br> {shortName}")
-		SafeHtml image(SafeUri imageUri, String shortName);
+//		@XTemplate("<img src=\"{imageUri}\" style=\"width: 230px; height: auto; align-content: center; margin: 5px;\"><br> {shortName}")
+//		SafeHtml image(SafeUri imageUri, String shortName);
 
 		@XTemplate("<div><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
 		SafeHtml image(SafeUri imageUri, String shortName, String title);
+
+		@XTemplate("<div style='border-style: solid; border-color: red; border-width: 2px;'><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
+		SafeHtml masterimage(SafeUri imageUri, String shortName, String title);
 	}
 
 	public DepictionEditor(DepictionEntry entry) {
@@ -433,20 +437,24 @@ public class DepictionEditor extends AbstractEditor {
 	 * 
 	 */
 	private void loadImages() {
-		dbService.getRelatedImages(correspondingDepictionEntry.getDepictionID(), new AsyncCallback<ArrayList<ImageEntry>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(ArrayList<ImageEntry> imgResults) {
-				for (ImageEntry ie : imgResults) {
-					imageEntryLS.add(ie);
-				}
-			}
-		});
+		for (ImageEntry ie : correspondingDepictionEntry.getRelatedImages()) {
+			imageEntryLS.add(ie);
+		}
+		
+//		dbService.getRelatedImages(correspondingDepictionEntry.getDepictionID(), new AsyncCallback<ArrayList<ImageEntry>>() {
+//
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				caught.printStackTrace();
+//			}
+//
+//			@Override
+//			public void onSuccess(ArrayList<ImageEntry> imgResults) {
+//				for (ImageEntry ie : imgResults) {
+//					imageEntryLS.add(ie);
+//				}
+//			}
+//		});
 	}
 
 	@Override
@@ -474,13 +482,17 @@ public class DepictionEditor extends AbstractEditor {
 
 			public SafeHtml render(ImageEntry item) {
 				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=300" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
-				return imageViewTemplates.image(imageUri, item.getShortName(), item.getTitle());
+				if (item.getImageID() == correspondingDepictionEntry.getMasterImageID()) {
+					return imageViewTemplates.masterimage(imageUri, item.getShortName(), item.getTitle());
+				} else {
+					return imageViewTemplates.image(imageUri, item.getShortName(), item.getTitle());
+				}
 			}
 		}));
 
 //		imageListView.setSize("340", "290");
-		ListField<ImageEntry, ImageEntry> lf = new ListField<ImageEntry, ImageEntry>(imageListView);
-		lf.setSize("100%", "100%");
+		ListField<ImageEntry, ImageEntry> imageViewLF = new ListField<ImageEntry, ImageEntry>(imageListView);
+		imageViewLF.setSize("100%", "100%");
 
 		/**
 		 * --------------------- content of first tab (BASICS) starts here --------------------------------
@@ -1244,9 +1256,9 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		
-		TextButton addImageButton = new TextButton("Select Image");
-		addImageButton.addSelectHandler(new SelectHandler() {
-
+		ToolButton addImageTB = new ToolButton(ToolButton.PLUS);
+		addImageTB.addSelectHandler(new SelectHandler() {
+			
 			@Override
 			public void onSelect(SelectEvent event) {
 				imageSelectionDialog = new PopupPanel();
@@ -1255,36 +1267,64 @@ public class DepictionEditor extends AbstractEditor {
 				imageSelectionDialog.center();
 			}
 		});
-		
-		TextButton removeImageButton = new TextButton("Remove Image");
-		removeImageButton.addSelectHandler(new SelectHandler() {
+//		TextButton addImageButton = new TextButton("Select Image");
+//		addImageButton.addSelectHandler(new SelectHandler() {
+//
+//			@Override
+//			public void onSelect(SelectEvent event) {
+//				imageSelectionDialog = new PopupPanel();
+//				imageSelectionDialog.add(imageSelector);
+//				imageSelectionDialog.setModal(true);
+//				imageSelectionDialog.center();
+//			}
+//		});
 
+		ToolButton removeImageTB = new ToolButton(ToolButton.MINUS);
+		removeImageTB.addSelectHandler(new SelectHandler() {
+			
 			@Override
 			public void onSelect(SelectEvent event) {
 				imageEntryLS.remove(imageListView.getSelectionModel().getSelectedItem());
 			}
 		});
+//		TextButton removeImageButton = new TextButton("Remove Image");
+//		removeImageButton.addSelectHandler(new SelectHandler() {
+//
+//			@Override
+//			public void onSelect(SelectEvent event) {
+//				imageEntryLS.remove(imageListView.getSelectionModel().getSelectedItem());
+//			}
+//		});
 		
-		TextButton setMasterButton = new TextButton("Set Master");
-		setMasterButton.addSelectHandler(new SelectHandler() {
-
+		ToolButton setMasterTB = new ToolButton(ToolButton.PIN);
+		setMasterTB.addSelectHandler(new SelectHandler() {
+			
 			@Override
 			public void onSelect(SelectEvent event) {
 				ImageEntry entry = imageListView.getSelectionModel().getSelectedItem();
-				if (imageEntryLS.indexOf(entry) > 0) {
-					imageEntryLS.remove(entry);
-					imageEntryLS.add(0, entry);
-				}
+				correspondingDepictionEntry.setMasterImageID(entry.getImageID());
+				imageListView.refresh();
 			}
 		});
+//		TextButton setMasterButton = new TextButton("Set Master");
+//		setMasterButton.addSelectHandler(new SelectHandler() {
+//
+//			@Override
+//			public void onSelect(SelectEvent event) {
+//				ImageEntry entry = imageListView.getSelectionModel().getSelectedItem();
+//				if (imageEntryLS.indexOf(entry) > 0) {
+//					imageEntryLS.remove(entry);
+//					imageEntryLS.add(0, entry);
+//				}
+//			}
+//		});
 
 		FramedPanel depictionImagesPanel = new FramedPanel();
 		depictionImagesPanel.setHeading("Images");
-		depictionImagesPanel.add(lf);
-		// depictionImagesPanel.setSize("25%", "100%");
-		depictionImagesPanel.addButton(addImageButton);
-		depictionImagesPanel.addButton(removeImageButton);
-		depictionImagesPanel.addButton(setMasterButton);
+		depictionImagesPanel.add(imageViewLF);
+		depictionImagesPanel.addTool(addImageTB);
+		depictionImagesPanel.addTool(removeImageTB);
+		depictionImagesPanel.addTool(setMasterTB);
 
 		/**
 		 * --------------------- content of third tab (Pictorial Elements) starts here --------------------------------
@@ -1383,17 +1423,14 @@ public class DepictionEditor extends AbstractEditor {
 	 * @param close 
 	 */
 	protected void saveDepictionEntry(boolean close) {
-		ArrayList<ImageEntry> associatedImageEntryList = new ArrayList<ImageEntry>();
+		ArrayList<ImageEntry> relatedImageEntryList = new ArrayList<ImageEntry>();
 		for (int i = 0; i < imageEntryLS.size(); ++i) {
-			associatedImageEntryList.add(imageEntryLS.get(i));
+			relatedImageEntryList.add(imageEntryLS.get(i));
 		}
-//		ArrayList<PictorialElementEntry> selectedPEList = new ArrayList<PictorialElementEntry>();
-//		for (PictorialElementEntry pe : peSelector.getSelectedPE()) {
-//			selectedPEList.add(pe);
-//		}
+		correspondingDepictionEntry.setRelatedImages(relatedImageEntryList);
 		
 		if (correspondingDepictionEntry.getDepictionID() == 0) {
-			dbService.insertDepictionEntry(correspondingDepictionEntry, associatedImageEntryList, iconographySelector.getSelectedIconography(), new AsyncCallback<Integer>() {
+			dbService.insertDepictionEntry(correspondingDepictionEntry, iconographySelector.getSelectedIconography(), new AsyncCallback<Integer>() {
 
 				@Override
 				public void onSuccess(Integer newDepictionID) {
@@ -1409,7 +1446,7 @@ public class DepictionEditor extends AbstractEditor {
 				}
 			});
 		} else {
-			dbService.updateDepictionEntry(correspondingDepictionEntry, associatedImageEntryList, iconographySelector.getSelectedIconography(), new AsyncCallback<Boolean>() {
+			dbService.updateDepictionEntry(correspondingDepictionEntry, iconographySelector.getSelectedIconography(), new AsyncCallback<Boolean>() {
 
 				@Override
 				public void onFailure(Throwable caught) {
