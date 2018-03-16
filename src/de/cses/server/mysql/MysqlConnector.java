@@ -1170,7 +1170,7 @@ public class MysqlConnector {
 			while (rs.next()) {
 				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
 						rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
-						rs.getBoolean("ImageMode")));
+						rs.getBoolean("OpenAccess")));
 			}
 			rs.close();
 			stmt.close();

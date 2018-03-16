@@ -25,9 +25,12 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
@@ -1248,17 +1251,6 @@ public class DepictionEditor extends AbstractEditor {
 				imageSelectionDialog.center();
 			}
 		});
-//		TextButton addImageButton = new TextButton("Select Image");
-//		addImageButton.addSelectHandler(new SelectHandler() {
-//
-//			@Override
-//			public void onSelect(SelectEvent event) {
-//				imageSelectionDialog = new PopupPanel();
-//				imageSelectionDialog.add(imageSelector);
-//				imageSelectionDialog.setModal(true);
-//				imageSelectionDialog.center();
-//			}
-//		});
 
 		ToolButton removeImageTB = new ToolButton(ToolButton.MINUS);
 		removeImageTB.addSelectHandler(new SelectHandler() {
@@ -1268,14 +1260,6 @@ public class DepictionEditor extends AbstractEditor {
 				imageEntryLS.remove(imageListView.getSelectionModel().getSelectedItem());
 			}
 		});
-//		TextButton removeImageButton = new TextButton("Remove Image");
-//		removeImageButton.addSelectHandler(new SelectHandler() {
-//
-//			@Override
-//			public void onSelect(SelectEvent event) {
-//				imageEntryLS.remove(imageListView.getSelectionModel().getSelectedItem());
-//			}
-//		});
 		
 		ToolButton setMasterTB = new ToolButton(ToolButton.PIN);
 		setMasterTB.addSelectHandler(new SelectHandler() {
@@ -1287,22 +1271,40 @@ public class DepictionEditor extends AbstractEditor {
 				imageListView.refresh();
 			}
 		});
-//		TextButton setMasterButton = new TextButton("Set Master");
-//		setMasterButton.addSelectHandler(new SelectHandler() {
-//
-//			@Override
-//			public void onSelect(SelectEvent event) {
-//				ImageEntry entry = imageListView.getSelectionModel().getSelectedItem();
-//				if (imageEntryLS.indexOf(entry) > 0) {
-//					imageEntryLS.remove(entry);
-//					imageEntryLS.add(0, entry);
-//				}
-//			}
-//		});
+		
+		ToolButton infoTB = new ToolButton(ToolButton.QUESTION);
+		infoTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				PopupPanel dialog = new PopupPanel();
+				FramedPanel infoDialogFP = new FramedPanel();
+				infoDialogFP.setHeading("Colour schema");
+				VerticalPanel infoVP = new VerticalPanel();
+				infoVP.add(new HTML("<div><label style='font-size: 12px; color: #0073e6;'>Master Image</label></div>"));
+				infoVP.add(new HTML("<div><label style='font-size: 12px; color: #004d00;'>Open Access Image</label></div>"));
+				infoVP.add(new HTML("<div><label style='font-size: 12px; color: #990000;'>Non Open Access Image</label></div>"));
+				infoDialogFP.add(infoVP);
+				TextButton okButton = new TextButton("OK");
+				okButton.addSelectHandler(new SelectHandler() {
+					
+					@Override
+					public void onSelect(SelectEvent event) {
+						dialog.hide();
+					}
+				});
+				infoDialogFP.addButton(okButton);
+				dialog.add(infoDialogFP);
+				dialog.setModal(true);
+				dialog.setGlassEnabled(true);
+				dialog.center();
+			}
+		});
 
 		FramedPanel depictionImagesPanel = new FramedPanel();
 		depictionImagesPanel.setHeading("Images");
 		depictionImagesPanel.add(imageViewLF);
+		depictionImagesPanel.addTool(infoTB);
 		depictionImagesPanel.addTool(addImageTB);
 		depictionImagesPanel.addTool(removeImageTB);
 		depictionImagesPanel.addTool(setMasterTB);
