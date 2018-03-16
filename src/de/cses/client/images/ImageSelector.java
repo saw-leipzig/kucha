@@ -145,7 +145,7 @@ public class ImageSelector implements IsWidget {
 			final ImageViewTemplates imageViewTemplates = GWT.create(ImageViewTemplates.class);
 
 			public SafeHtml render(ImageEntry item) {
-				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=600" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
+				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=700" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 				if (item.isOpenAccess()) {
 					return imageViewTemplates.openAccessImage(imageUri, item.getTitle(), item.getShortName());
 				} else {
@@ -170,7 +170,6 @@ public class ImageSelector implements IsWidget {
 		
 		lf.setSize("1.0", "1.0");
 
-		TextButton zoomButton = new TextButton("View Full Size");
 		
 		zoomImage = Image.wrap( Document.get().createImageElement() );
 		zoomImage.addLoadHandler(new LoadHandler() {
@@ -181,12 +180,6 @@ public class ImageSelector implements IsWidget {
 			}
 		});
 		imageContainer.add(zoomImage);
-		zoomButton.addSelectHandler(new SelectHandler() {
-			@Override
-			public void onSelect(SelectEvent event) {
-				com.google.gwt.user.client.Window.open(zoomImageUri,"_blank",null);
-			}
-		});
 
 		TextButton selectButton = new TextButton("Select");
 
@@ -269,14 +262,22 @@ public class ImageSelector implements IsWidget {
 			}
 		});
 
-		FramedPanel fp = new FramedPanel();
-		fp.setHeading("Images");
-		fp.add(lf);
-		fp.addTool(infoTB);
-		hlc.add(fp, new HorizontalLayoutData(.6, 1.0));
+		ToolButton zoomTB = new ToolButton(ToolButton.EXPAND);
+		zoomTB.addSelectHandler(new SelectHandler() {
+			@Override
+			public void onSelect(SelectEvent event) {
+				com.google.gwt.user.client.Window.open(zoomImageUri,"_blank",null);
+			}
+		});
+
+		FramedPanel imageListViewFP = new FramedPanel();
+		imageListViewFP.setHeading("Images");
+		imageListViewFP.add(lf);
+		imageListViewFP.addTool(zoomTB);
+		imageListViewFP.addTool(infoTB);
+		hlc.add(imageListViewFP, new HorizontalLayoutData(.6, 1.0));
 
 		mainPanel.add(hlc);
-		mainPanel.addButton(zoomButton);
 		mainPanel.addButton(selectButton);
 		mainPanel.addButton(cancelButton);
 	}
