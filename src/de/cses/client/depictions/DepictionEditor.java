@@ -1299,41 +1299,32 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 
+		ToolButton zoomTB = new ToolButton(ToolButton.MAXIMIZE);
+		zoomTB.addSelectHandler(new SelectHandler() {
+			@Override
+			public void onSelect(SelectEvent event) {
+				ImageEntry ie = imageListView.getSelectionModel().getSelectedItem();
+				if (ie != null) {
+					com.google.gwt.user.client.Window.open("/resource?imageID=" + ie.getImageID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri(),"_blank",null);
+				}
+			}
+		});
+		zoomTB.setToolTip("view selected image full size");
+
 		FramedPanel depictionImagesPanel = new FramedPanel();
 		depictionImagesPanel.setHeading("Images");
 		depictionImagesPanel.add(imageViewLF);
 		depictionImagesPanel.addTool(infoTB);
+		depictionImagesPanel.addTool(zoomTB);
 		depictionImagesPanel.addTool(addImageTB);
 		depictionImagesPanel.addTool(removeImageTB);
 		depictionImagesPanel.addTool(setMasterTB);
 
 		/**
-		 * --------------------- content of third tab (Pictorial Elements) starts here --------------------------------
-		 */
-//		HorizontalLayoutContainer pictorialElementsTabHLC = new HorizontalLayoutContainer();
-//		peSelector = new PictorialElementSelector(correspondingDepictionEntry.getDepictionID());
-//		pictorialElementsTabHLC.add(peSelector, new HorizontalLayoutData(1.0, 1.0));
-		
-		/**
-		 * --------------------- content of fourth tab (Iconography) starts here --------------------------------
-		 */
-//		HorizontalLayoutContainer iconographyTabHLC = new HorizontalLayoutContainer();
-		iconographySelector = new IconographySelector(correspondingDepictionEntry.getDepictionID());
-//		iconographyTabHLC.add(iconographySelector, new HorizontalLayoutData(1.0, 1.0));
-		
-		/**
 		 * ---------------------- content of third tab (Iconography & Pictorial Elements starts here ---------------------
 		 */
-//		VerticalLayoutContainer iconographyPictorialVLC = new VerticalLayoutContainer();
-//		iconographyPictorialVLC.add(iconographySelector, new VerticalLayoutData(1.0, .5, new Margins(2)));
-//		iconographyPictorialVLC.add(peSelector, new VerticalLayoutData(1.0, .5, new Margins(2)));
+		iconographySelector = new IconographySelector(correspondingDepictionEntry.getDepictionID());
 		
-//		AccordionLayoutContainer iconographyPictorialALC = new AccordionLayoutContainer();
-//		iconographyPictorialALC.setExpandMode(ExpandMode.MULTI);
-//		iconographyPictorialALC.add(peSelector);
-//		iconographyPictorialALC.add(iconographySelector);
-//		iconographyPictorialALC.setHeight(580);
-
 		/**
 		 * --------------------------- next the editor as a whole will be assembled -------------------
 		 */
