@@ -33,6 +33,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
+import com.sencha.gxt.core.client.XTemplates.XTemplate;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
@@ -93,11 +94,17 @@ public class ImageSelector implements IsWidget {
 	 *
 	 */
 	interface ImageViewTemplates extends XTemplates {
-		@XTemplate("<div style='border-style: solid; border-color: #99ff66; border-width: 3px;'><img src=\"{imageUri}\" style=\"width: 400px; height: auto; align-content: center; margin: 10px;\"><br>{title}<br> {shortName}")
-		SafeHtml openAccessImage(SafeUri imageUri, String title, String shortName);
+//		@XTemplate("<div style='border-style: solid; border-color: #99ff66; border-width: 3px;'><img src=\"{imageUri}\" style=\"width: 400px; height: auto; align-content: center; margin: 10px;\"><br>{title}<br> {shortName}")
+		@XTemplate("<figure style='border-style: solid; border-color: #99ff66; border-width: 3px; margin: 0;'>"
+				+ "<img src='{imageUri}' style='position: relative; padding: 5px; width: 400px; background: white;'>"
+				+ "<figcaption style='font-size:11px; padding: 10px; text-align: center;'>{shortName} ({imageFormat})<br>{title}</figcaption></figure>")
+		SafeHtml openAccessImage(SafeUri imageUri, String title, String shortName, String imageFormat);
 
-		@XTemplate("<div style='border-style: solid; border-color: #ff1a1a; border-width: 3px;'><img src=\"{imageUri}\" style=\"width: 400px; height: auto; align-content: center; margin: 10px;\"><br>{title}<br> {shortName}")
-		SafeHtml nonOpenAccessImage(SafeUri imageUri, String title, String shortName);
+//		@XTemplate("<div style='border-style: solid; border-color: #ff1a1a; border-width: 3px;'><img src=\"{imageUri}\" style=\"width: 400px; height: auto; align-content: center; margin: 10px;\"><br>{title}<br> {shortName}")
+		@XTemplate("<figure style='border-style: solid; border-color: #ff1a1a; border-width: 3px; margin: 0;'>"
+				+ "<img src='{imageUri}' style='position: relative; padding: 5px; width: 400px; background: white;'>"
+				+ "<figcaption style='font-size:11px; padding: 10px; text-align: center;'>{shortName} ({imageFormat})<br>{title}</figcaption></figure>")
+		SafeHtml nonOpenAccessImage(SafeUri imageUri, String title, String shortName, String imageFormat);
 	}
 
 	/**
@@ -147,9 +154,9 @@ public class ImageSelector implements IsWidget {
 			public SafeHtml render(ImageEntry item) {
 				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=700" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 				if (item.isOpenAccess()) {
-					return imageViewTemplates.openAccessImage(imageUri, item.getTitle(), item.getShortName());
+					return imageViewTemplates.openAccessImage(imageUri, item.getTitle(), item.getShortName(), item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase());
 				} else {
-					return imageViewTemplates.nonOpenAccessImage(imageUri, item.getTitle(), item.getShortName());
+					return imageViewTemplates.nonOpenAccessImage(imageUri, item.getTitle(), item.getShortName(), item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase());
 				}
 			}
 

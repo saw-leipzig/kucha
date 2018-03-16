@@ -244,22 +244,22 @@ public class DepictionEditor extends AbstractEditor {
 	 */
 	interface ImageViewTemplates extends XTemplates {
 //		@XTemplate("<div style='border-style: solid; border-color: #99ff66; border-width: 3px;'><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
-		@XTemplate("<figure style='border-style: solid; border-color: #99ff66; border-width: 3px;'>"
-				+ "<img src='{imageUri}' style='position: relative; margin: 0; padding: 5px; width: 230px; background: white;'>"
-				+ "<figcaption style='font-size:12px; padding: 10px; text-align: center;'>{shortName} ({imageFormat})<br>{title}</figcaption></figure>")
+		@XTemplate("<figure style='border-style: solid; border-color: #99ff66; border-width: 3px; margin: 0;'>"
+				+ "<img src='{imageUri}' style='position: relative; padding: 5px; width: 230px; background: white;'>"
+				+ "<figcaption style='font-size:11px; padding: 10px; text-align: center;'>{shortName} ({imageFormat})<br>{title}</figcaption></figure>")
 		SafeHtml openAccessImage(SafeUri imageUri, String shortName, String title, String imageFormat);
 
 //		@XTemplate("<div style='border-style: solid; border-color: #ff1a1a; border-width: 3px;'><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
-		@XTemplate("<figure style='border-style: solid; border-color: #ff1a1a; border-width: 3px;'>"
-				+ "<img src='{imageUri}' style='position: relative; margin: 0; padding: 5px; width: 230px; background: white;'>"
-				+ "<figcaption style='font-size:12px; padding: 10px; text-align: center;'>{shortName} ({imageFormat})<br>{title}</figcaption></figure>")
+		@XTemplate("<figure style='border-style: solid; border-color: #ff1a1a; border-width: 3px; margin: 0;'>"
+				+ "<img src='{imageUri}' style='position: relative; padding: 5px; width: 230px; background: white;'>"
+				+ "<figcaption style='font-size:11px; padding: 10px; text-align: center;'>{shortName} ({imageFormat})<br>{title}</figcaption></figure>")
 		SafeHtml nonOpenAccessImage(SafeUri imageUri, String shortName, String title, String imageFormat);
 
 //		@XTemplate("<div style='border-style: solid; border-color: #0073e6; border-width: 3px;'><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
 //		SafeHtml masterImage(SafeUri imageUri, String shortName, String title, String imageFormat);
-		@XTemplate("<figure style='border-style: solid; border-color: #0073e6; border-width: 3px;'>"
-				+ "<img src='{imageUri}' style='position: relative; margin: 0; padding: 5px; width: 230px; background: white;'>"
-				+ "<figcaption style='font-size:12px; padding: 10px; text-align: center;'>{shortName} ({imageFormat})<br>{title}</figcaption></figure>")
+		@XTemplate("<figure style='border-style: solid; border-color: #0073e6; border-width: 3px; margin: 0;'>"
+				+ "<img src='{imageUri}' style='position: relative; padding: 5px; width: 230px; background: white;'>"
+				+ "<figcaption style='font-size:11px; padding: 10px; text-align: center;'>{shortName} ({imageFormat})<br>{title}</figcaption></figure>")
 		SafeHtml masterImage(SafeUri imageUri, String shortName, String title, String imageFormat);
 	}
 
