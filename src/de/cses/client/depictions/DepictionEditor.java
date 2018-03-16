@@ -25,10 +25,8 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -248,7 +246,7 @@ public class DepictionEditor extends AbstractEditor {
 		@XTemplate("<div style='border-style: solid; border-color: #004d00; border-width: 2px;'><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
 		SafeHtml openAccessImage(SafeUri imageUri, String shortName, String title);
 
-		@XTemplate("<div style='border-style: solid; border-color: #990000; border-width: 2px;'><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
+		@XTemplate("<div style='border-style: solid; border-color: #ff1a1a; border-width: 2px;'><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
 		SafeHtml nonOpenAccessImage(SafeUri imageUri, String shortName, String title);
 
 		@XTemplate("<div style='border-style: solid; border-color: #0073e6; border-width: 2px;'><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
@@ -1283,7 +1281,7 @@ public class DepictionEditor extends AbstractEditor {
 				VerticalPanel infoVP = new VerticalPanel();
 				infoVP.add(new HTML("<div><label style='font-size: 12px; color: #0073e6;'>Master Image</label></div>"));
 				infoVP.add(new HTML("<div><label style='font-size: 12px; color: #004d00;'>Open Access Image</label></div>"));
-				infoVP.add(new HTML("<div><label style='font-size: 12px; color: #990000;'>Non Open Access Image</label></div>"));
+				infoVP.add(new HTML("<div><label style='font-size: 12px; color: #ff1a1a;'>Non Open Access Image</label></div>"));
 				infoDialogFP.add(infoVP);
 				TextButton okButton = new TextButton("OK");
 				okButton.addSelectHandler(new SelectHandler() {
