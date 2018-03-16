@@ -211,11 +211,10 @@ public class ImageSelector implements IsWidget {
 			@Override
 			public void onSelect(SelectEvent event) {
 				ImageEntry ie = imageListView.getSelectionModel().getSelectedItem();
-				if (ie == null) {
-					return;
-				}
-				for (ImageSelectorListener listener : selectorListener) {
-					listener.imageSelected(imageListView.getSelectionModel().getSelectedItem().getImageID());
+				if (ie != null) {
+					for (ImageSelectorListener listener : selectorListener) {
+						listener.imageSelected(ie);
+					}
 				}
 			}
 		});
@@ -226,7 +225,7 @@ public class ImageSelector implements IsWidget {
 			@Override
 			public void onSelect(SelectEvent event) {
 				for (ImageSelectorListener listener : selectorListener) {
-					listener.imageSelected(0);
+					listener.imageSelected(null);
 				}
 			}
 		});

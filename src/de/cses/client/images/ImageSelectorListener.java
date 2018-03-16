@@ -13,8 +13,10 @@
  */
 package de.cses.client.images;
 
+import de.cses.shared.ImageEntry;
+
 public interface ImageSelectorListener {
 	
-	public void imageSelected(int imageID);
+	public void imageSelected(ImageEntry entry);
 
 }

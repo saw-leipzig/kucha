@@ -106,13 +106,11 @@ public class DepictionEditor extends AbstractEditor {
 	private TextArea descriptionArea;
 	private TextField backgroundColourField;
 	private TextArea generalRemarksArea;
-//	private TextArea otherSuggestedIdentificationsArea;
 	protected IconographySelector iconographySelector;
 	protected PictorialElementSelector peSelector;
 	protected ImageSelector imageSelector;
 	private FramedPanel mainPanel;
 	protected PopupPanel imageSelectionDialog;
-	// private ArrayList<DepictionEditorListener> listener;
 	private ListView<ImageEntry, ImageEntry> imageListView;
 	private ListStore<ImageEntry> imageEntryLS;
 	private ImageProperties imgProperties;
@@ -132,7 +130,6 @@ public class DepictionEditor extends AbstractEditor {
 	private ComboBox<ModeOfRepresentationEntry> modeOfRepresentationSelectionCB;
 	protected PopupPanel wallEditorDialog;
 	private Walls wallEditor;
-//	private Label iconographyLabel;
 	protected PopupPanel iconographySelectionDialog;
 	private WallSelector wallSelectorPanel;
 	private TextArea separateAksarasTextArea;
@@ -165,9 +162,6 @@ public class DepictionEditor extends AbstractEditor {
 
 		@XTemplate("<div>{officialNumber}<br>{siteDistrictInformation}</div>")
 		SafeHtml caveLabel(String siteDistrictInformation, String officialNumber);
-
-//		@XTemplate("<div>{officialNumber}</div>")
-//		SafeHtml caveLabel(String officialNumber);
 	}
 
 	interface LocationProperties extends PropertyAccess<LocationEntry> {
@@ -247,19 +241,15 @@ public class DepictionEditor extends AbstractEditor {
 	 * @author alingnau
 	 *
 	 */
-	private static final String OPEN_ACCESS_IMAGE_COLOUR= "#004d00";
-	private static final String NON_OPEN_ACCESS_IMAGE_COLOUR = "#990000";
-	private static final String MASTER_IMAGE_COLOUR = "#0073e6";
-	
 	interface ImageViewTemplates extends XTemplates {
-//		@XTemplate("<img src=\"{imageUri}\" style=\"width: 230px; height: auto; align-content: center; margin: 5px;\"><br> {shortName}")
-//		SafeHtml image(SafeUri imageUri, String shortName);
+		@XTemplate("<div style='border-style: solid; border-color: #004d00; border-width: 2px;'><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
+		SafeHtml openAccessImage(SafeUri imageUri, String shortName, String title);
 
-		@XTemplate("<div style='border-style: solid; border-color: {color}; border-width: 2px;'><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
-		SafeHtml image(SafeUri imageUri, String shortName, String title, String color);
+		@XTemplate("<div style='border-style: solid; border-color: #990000; border-width: 2px;'><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
+		SafeHtml nonOpenAccessImage(SafeUri imageUri, String shortName, String title);
 
-//		@XTemplate("<div style='border-style: solid; border-color: red; border-width: 2px;'><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
-//		SafeHtml masterimage(SafeUri imageUri, String shortName, String title);
+		@XTemplate("<div style='border-style: solid; border-color: #0073e6; border-width: 2px;'><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
+		SafeHtml masterImage(SafeUri imageUri, String shortName, String title);
 	}
 
 	public DepictionEditor(DepictionEntry entry) {
@@ -268,8 +258,6 @@ public class DepictionEditor extends AbstractEditor {
 		} else {
 			correspondingDepictionEntry = new DepictionEntry();
 		}
-		// listener = new ArrayList<DepictionEditorListener>();
-		// listener.add(deListener);
 
 		imgProperties = GWT.create(ImageProperties.class);
 		imageEntryLS = new ListStore<ImageEntry>(imgProperties.imageID());
@@ -485,9 +473,11 @@ public class DepictionEditor extends AbstractEditor {
 			public SafeHtml render(ImageEntry item) {
 				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=300" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 				if (item.getImageID() == correspondingDepictionEntry.getMasterImageID()) {
-					return imageViewTemplates.image(imageUri, item.getShortName(), item.getTitle(), MASTER_IMAGE_COLOUR);
+					return imageViewTemplates.masterImage(imageUri, item.getShortName(), item.getTitle());
+				} else if (item.isOpenAccess()) {
+					return imageViewTemplates.openAccessImage(imageUri, item.getShortName(), item.getTitle());
 				} else {
-					return imageViewTemplates.image(imageUri, item.getShortName(), item.getTitle(), item.isOpenAccess() ? OPEN_ACCESS_IMAGE_COLOUR : NON_OPEN_ACCESS_IMAGE_COLOUR);
+					return imageViewTemplates.nonOpenAccessImage(imageUri, item.getShortName(), item.getTitle());
 				}
 			}
 		}));
@@ -1239,20 +1229,9 @@ public class DepictionEditor extends AbstractEditor {
 		imageSelector = new ImageSelector(new ImageSelectorListener() {
 
 			@Override
-			public void imageSelected(int imageID) {
-				if (imageID != 0) {
-					dbService.getImage(imageID, new AsyncCallback<ImageEntry>() {
-
-						@Override
-						public void onSuccess(ImageEntry ieResults) {
-							imageEntryLS.add(ieResults);
-						}
-
-						@Override
-						public void onFailure(Throwable caught) {
-							caught.printStackTrace();
-						}
-					});
+			public void imageSelected(ImageEntry imgEntry) {
+				if ((imgEntry != null) && (imgEntry.getImageID() != 0)) {
+					imageEntryLS.add(imgEntry);
 				}
 				imageSelectionDialog.hide();
 			}

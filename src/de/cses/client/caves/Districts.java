@@ -18,6 +18,7 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 
 import de.cses.client.images.ImageSelector;
 import de.cses.client.images.ImageSelectorListener;
+import de.cses.shared.ImageEntry;
 
 public class Districts implements IsWidget, ImageSelectorListener{
 	ContentPanel panel;
@@ -80,7 +81,7 @@ public class Districts implements IsWidget, ImageSelectorListener{
 		return panel;
 	}
 	@Override
-	public void imageSelected(int imageID) {
+	public void imageSelected(ImageEntry entry) {
 		imagePanel.hide();
 		// imageID == 0  =>  Cancel Button pressed!
 	}
