@@ -103,9 +103,6 @@ public class SingleImageEditor extends AbstractEditor {
 	}
 
 	interface ImageViewTemplates extends XTemplates {
-//		@XTemplate("<div style='display: flex; flex-direction: column; align-items: center;'>"
-//				+ "<div><img src='{imgUri}'></div></img>"
-//				+ "</div>")
 		@XTemplate("<figure style='text-align: center; margin: 0;'>"
 				+ "<img src='{imgUri}' style='position: relative; padding: 5px; background: black;'>"
 				+ "</figure>")
