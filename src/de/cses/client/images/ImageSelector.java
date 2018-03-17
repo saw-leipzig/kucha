@@ -316,9 +316,11 @@ public class ImageSelector implements IsWidget {
 			@Override
 			public void onSuccess(ArrayList<ImageEntry> result) {
 				imageEntryList.clear();
-				// Info.display("Refresh Image List", "success");
 				for (ImageEntry ie : result) {
 					imageEntryList.add(ie);
+				}
+				if (!result.isEmpty()) {
+					imageListView.getSelectionModel().select(0, false);
 				}
 			}
 		});
