@@ -54,12 +54,9 @@ public class ImageView extends AbstractView {
 		@XTemplate("<div><center><img src='{imgUri}'></img></center><label style='font-size:9px' >{shortName}</label></div>")
 		SafeHtml view(SafeUri imgUri, String shortName);
 		
-//		@XTemplate("<div style='display: flex; flex-direction: column;'>"
-//				+ "<div style='align-self: flex-end;'><img style='width: 16px; height: 16px;' src='{lockUri}'></div>"
-//				+ "<div><img src='{imgUri}'></div></img>"
-//				+ "<label style='font-size:9px' >{shortName}</label></div>")
-		@XTemplate("<figure style='text-align: center; margin: 0;'>"
-				+ "<div style='text-align: right'><img src='{lockUri}' style='position: relative; width: 16px; height: 16px;'></div>"
+		@XTemplate("<figure style='text-align: right; margin: 0;'>"
+				+ "<img src='{lockUri}' style='position: relative; width: 16px; height: 16px;'>"
+				+ "</figure><figure style='text-align: center; margin: 0;'>"
 				+ "<img src='{imgUri}' style='position: relative;'>"
 				+ "<figcaption style='font-size:11px;'>{shortName}</figcaption></figure>")
 
