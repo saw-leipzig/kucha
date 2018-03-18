@@ -248,9 +248,9 @@ public class MainView implements IsWidget {
 		selectorLayoutContainer.add(caveSearchController, hLayoutData);
 		selectorLayoutContainer.add(depictionSearchController, hLayoutData);
 		selectorLayoutContainer.add(imageSearchController, hLayoutData);
-		selectorLayoutContainer.add(ornamenticSearchController, hLayoutData);
-		selectorLayoutContainer.add(annotatedBiblographySearchController, hLayoutData);
-		selectorLayoutContainer.add(resultCollectorController, hLayoutData);
+//		selectorLayoutContainer.add(ornamenticSearchController, hLayoutData);
+//		selectorLayoutContainer.add(annotatedBiblographySearchController, hLayoutData);
+//		selectorLayoutContainer.add(resultCollectorController, hLayoutData);
 		
     ContentPanel centerPanel = new ContentPanel();
     centerPanel.setHeading("Results");

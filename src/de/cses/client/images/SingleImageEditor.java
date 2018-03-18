@@ -103,9 +103,9 @@ public class SingleImageEditor extends AbstractEditor {
 	}
 
 	interface ImageViewTemplates extends XTemplates {
-		@XTemplate("<div style='display: flex; flex-direction: column; align-items: center;'>"
-				+ "<div><img src='{imgUri}'></div></img>"
-				+ "</div>")
+		@XTemplate("<figure style='text-align: center; margin: 0;'>"
+				+ "<img src='{imgUri}' style='position: relative; padding: 5px; background: black;'>"
+				+ "</figure>")
 		SafeHtml view(SafeUri imgUri);
 	}
 
@@ -382,9 +382,9 @@ public class SingleImageEditor extends AbstractEditor {
 		});
 		openAccessImagePanel.add(openAccessImageCB);
 
-		HorizontalLayoutContainer imageTypeModeHLC = new HorizontalLayoutContainer();
-		imageTypeModeHLC.add(imageTypeSelectionPanel, new HorizontalLayoutData(.5, 1.0));
-		imageTypeModeHLC.add(openAccessImagePanel, new HorizontalLayoutData(.5, 1.0));
+		HorizontalLayoutContainer imageOpenAccessHLC = new HorizontalLayoutContainer();
+		imageOpenAccessHLC.add(imageTypeSelectionPanel, new HorizontalLayoutData(.5, 1.0));
+		imageOpenAccessHLC.add(openAccessImagePanel, new HorizontalLayoutData(.5, 1.0));
 		
 		ToolButton saveToolButton = new ToolButton(ToolButton.SAVE);
 		saveToolButton.addSelectHandler(new SelectHandler() {
@@ -426,11 +426,21 @@ public class SingleImageEditor extends AbstractEditor {
 			}
 		});		
 
+		ToolButton viewFullSizeTB = new ToolButton(ToolButton.MAXIMIZE);
+		viewFullSizeTB.addSelectHandler(new SelectHandler() {
+			@Override
+			public void onSelect(SelectEvent event) {
+				com.google.gwt.user.client.Window.open("/resource?imageID=" + imgEntry.getImageID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri(),"_blank",null);
+			}
+		});
+		viewFullSizeTB.setToolTip("view image full size");
+		
 		SafeUri imageUri = UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=300" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 		HTMLPanel imgHP = new HTMLPanel(imgViewTemplates.view(imageUri));
 		FramedPanel imgFP = new FramedPanel();
 		imgFP.setHeading("Image format: " + imgEntry.getFilename().substring(imgEntry.getFilename().lastIndexOf(".")+1).toUpperCase());
 		imgFP.add(imgHP);
+		imgFP.addTool(viewFullSizeTB);
 		
 		VerticalLayoutContainer leftEditVLC = new VerticalLayoutContainer();
 		leftEditVLC.add(shortNamePanel, new VerticalLayoutData(1.0, .25));
@@ -438,13 +448,13 @@ public class SingleImageEditor extends AbstractEditor {
 		leftEditVLC.add(datePanel, new VerticalLayoutData(1.0, .25));
 
 		VerticalLayoutContainer rightEditVLC = new VerticalLayoutContainer();
-		rightEditVLC.add(imageTypeModeHLC, new VerticalLayoutData(1.0, .3));
-		rightEditVLC.add(commentPanel, new VerticalLayoutData(1.0, .7));
+		rightEditVLC.add(imageOpenAccessHLC, new VerticalLayoutData(1.0, .25));
+		rightEditVLC.add(commentPanel, new VerticalLayoutData(1.0, .75));
 
 		HorizontalLayoutContainer editHLC = new HorizontalLayoutContainer();
 		editHLC.add(leftEditVLC, new HorizontalLayoutData(.5, 1.0));
-		editHLC.add(commentPanel, new HorizontalLayoutData(.5, 1.0));
-		
+		editHLC.add(rightEditVLC, new HorizontalLayoutData(.5, 1.0));
+				
 		VerticalLayoutContainer editVLC = new VerticalLayoutContainer();
 		editVLC.add(titlePanel, new VerticalLayoutData(1.0, .18));
 		editVLC.add(authorFP, new VerticalLayoutData(1.0, .18));

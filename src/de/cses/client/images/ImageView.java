@@ -20,6 +20,7 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.sencha.gxt.core.client.XTemplates;
+import com.sencha.gxt.core.client.XTemplates.XTemplate;
 import com.sencha.gxt.dnd.core.client.DndDragStartEvent;
 import com.sencha.gxt.dnd.core.client.DragSource;
 
@@ -53,10 +54,12 @@ public class ImageView extends AbstractView {
 		@XTemplate("<div><center><img src='{imgUri}'></img></center><label style='font-size:9px' >{shortName}</label></div>")
 		SafeHtml view(SafeUri imgUri, String shortName);
 		
-		@XTemplate("<div style='display: flex; flex-direction: column;'>"
-				+ "<div style='align-self: flex-end;'><img style='width: 16px; height: 16px;' src='{lockUri}'></div>"
-				+ "<div><img src='{imgUri}'></div></img>"
-				+ "<label style='font-size:9px' >{shortName}</label></div>")
+		@XTemplate("<figure style='text-align: right; margin: 0;'>"
+				+ "<img src='{lockUri}' style='position: relative; width: 16px; height: 16px;'>"
+				+ "</figure><figure style='text-align: center; margin: 0;'>"
+				+ "<img src='{imgUri}' style='position: relative;'>"
+				+ "<figcaption style='font-size:11px;'>{shortName}</figcaption></figure>")
+
 		SafeHtml view(SafeUri imgUri, String shortName, SafeUri lockUri);
 	}
 	
