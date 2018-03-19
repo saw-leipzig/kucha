@@ -35,6 +35,7 @@ public class PublicationTypeEntry extends AbstractEntry {
 	boolean titleAddonEnabled = false;
 	boolean universityEnabled = false;
 	boolean volumeEnabled = false;
+	boolean issueEnabled = false;
 	boolean yearEnabled = false;
 	
 	/**
@@ -45,7 +46,7 @@ public class PublicationTypeEntry extends AbstractEntry {
 
 	public PublicationTypeEntry(int publicationTypeID, String name, boolean accessDateEnabled, boolean authorEnabled, boolean bookTitleEnabled,
 			boolean editionEnabled, boolean editorEnabled, boolean monthEnabled, boolean numberEnabled, boolean pagesEnabled,
-			boolean proceedingsTitleEnabled, boolean seriesEnabled, boolean titleAddonEnabled, boolean universityEnabled, boolean volumeEnabled,
+			boolean proceedingsTitleEnabled, boolean seriesEnabled, boolean titleAddonEnabled, boolean universityEnabled, boolean volumeEnabled, boolean issueEnabled,
 			boolean yearEnabled) {
 		super();
 		this.publicationTypeID = publicationTypeID;
@@ -63,6 +64,7 @@ public class PublicationTypeEntry extends AbstractEntry {
 		this.titleAddonEnabled = titleAddonEnabled;
 		this.universityEnabled = universityEnabled;
 		this.volumeEnabled = volumeEnabled;
+		this.issueEnabled = issueEnabled;
 		this.yearEnabled = yearEnabled;
 	}
 
@@ -209,6 +211,14 @@ public class PublicationTypeEntry extends AbstractEntry {
 
 	public void setEditorEnabled(boolean editorEnabled) {
 		this.editorEnabled = editorEnabled;
+	}
+
+	public boolean isIssueEnabled() {
+		return issueEnabled;
+	}
+
+	public void setIssueEnabled(boolean issueEnabled) {
+		this.issueEnabled = issueEnabled;
 	}
 	
 	

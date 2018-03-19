@@ -192,7 +192,7 @@ public class MysqlConnector {
 						rs.getBoolean("AuthorEnabled"), rs.getBoolean("BookTitleEnabled"), rs.getBoolean("EditionEnabled"),
 						rs.getBoolean("EditorEnabled"), rs.getBoolean("MonthEnabled"), rs.getBoolean("NumberEnabled"), rs.getBoolean("PagesEnabled"),
 						rs.getBoolean("ProceedingsTitleEnabled"), rs.getBoolean("SeriesEnabled"), rs.getBoolean("TitleAddonEnabled"),
-						rs.getBoolean("UniversityEnabled"), rs.getBoolean("VolumeEnabled"), rs.getBoolean("YearEnabled"));
+						rs.getBoolean("UniversityEnabled"), rs.getBoolean("VolumeEnabled"), rs.getBoolean("IssueEnabled"), rs.getBoolean("YearEnabled"));
 			}
 			rs.close();
 			pstmt.close();
@@ -215,7 +215,7 @@ public class MysqlConnector {
 						rs.getBoolean("AuthorEnabled"), rs.getBoolean("BookTitleEnabled"), rs.getBoolean("EditionEnabled"),
 						rs.getBoolean("EditorEnabled"), rs.getBoolean("MonthEnabled"), rs.getBoolean("NumberEnabled"), rs.getBoolean("PagesEnabled"),
 						rs.getBoolean("ProceedingsTitleEnabled"), rs.getBoolean("SeriesEnabled"), rs.getBoolean("TitleAddonEnabled"),
-						rs.getBoolean("UniversityEnabled"), rs.getBoolean("VolumeEnabled"), rs.getBoolean("YearEnabled"));
+						rs.getBoolean("UniversityEnabled"), rs.getBoolean("VolumeEnabled"), rs.getBoolean("IssueEnabled"), rs.getBoolean("YearEnabled"));
 				result.add(entry);
 
 			}
@@ -1557,7 +1557,9 @@ public class MysqlConnector {
 						rs.getString("AccessDateORG"), rs.getString("AccessDateTR"), rs.getString("TitleAddonEN"), rs.getString("TitleAddonORG"),
 						rs.getString("TitleAddonTR"), getPublisher(rs.getInt("PublisherID")), rs.getString("SeriesEN"), rs.getString("SeriesORG"),
 						rs.getString("SeriesTR"), rs.getString("EditionEN"), rs.getString("EditionORG"), rs.getString("EditionTR"),
-						rs.getString("VolumeEN"), rs.getString("VolumeORG"), rs.getString("VolumeTR"), rs.getInt("YearEN"), rs.getString("YearORG"),
+						rs.getString("VolumeEN"), rs.getString("VolumeORG"), rs.getString("VolumeTR"), rs.getString("IssueEN"), rs.getString("IssueTR"), rs.getString("IssueORG"),
+
+						rs.getInt("YearEN"), rs.getString("YearORG"),
 						rs.getString("YearTR"), rs.getString("MonthEN"), rs.getString("MonthORG"), rs.getString("MonthTR"), rs.getString("PagesEN"),
 						rs.getString("PagesORG"), rs.getString("PagesTR"), rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"),
 						rs.getString("URI"), rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"));

@@ -1191,6 +1191,49 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		}
 
 		/**
+		 * issue 
+		 */
+		if (pubType.isIssueEnabled()) {
+			TextField issueEN = new TextField();
+			issueEN.setText(bibEntry.getVolumeEN());
+			issueEN.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+				@Override
+				public void onValueChange(ValueChangeEvent<String> event) {
+					bibEntry.setIssueEN(event.getValue());
+				}
+			});
+			TextField issueORG = new TextField();
+			issueORG.setText(bibEntry.getVolumeORG());
+			issueORG.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+				@Override
+				public void onValueChange(ValueChangeEvent<String> event) {
+					bibEntry.setIssueORG(event.getValue());
+				}
+			});
+			TextField issueTR = new TextField();
+			issueTR.setText(bibEntry.getVolumeTR());
+			issueTR.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+				@Override
+				public void onValueChange(ValueChangeEvent<String> event) {
+					bibEntry.setIssueTR(event.getValue());
+				}
+			});
+
+			VerticalLayoutContainer volumeVLC = new VerticalLayoutContainer();
+			volumeVLC.add(new FieldLabel(issueEN, "English"), new VerticalLayoutData(1.0, 1.0 / 3));
+			volumeVLC.add(new FieldLabel(issueORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
+			volumeVLC.add(new FieldLabel(issueTR, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
+
+			FramedPanel volumeFP = new FramedPanel();
+			volumeFP.setHeading("Issue");
+			volumeFP.add(volumeVLC);
+			firstTabInnerRightVLC.add(volumeFP, new VerticalLayoutData(1.0, 1.0 / 5));
+		}
+
+		/**
 		 * year of publication
 		 */
 		NumberField<Integer> yearEN = new NumberField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
