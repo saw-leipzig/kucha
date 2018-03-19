@@ -1550,19 +1550,21 @@ public class MysqlConnector {
 					(sqlWhere == null) ? "SELECT * FROM AnnotatedBibliography" : "SELECT * FROM AnnotatedBibliography WHERE " + sqlWhere);
 			while (rs.next()) {
 				entry = new AnnotatedBiblographyEntry(rs.getInt("BibID"), getPublicationType(rs.getInt("PublicationTypeID")),
-						rs.getString("TitleEN"), rs.getString("TitleORG"), rs.getString("TitleTR"), rs.getString("ProcTitleEN"),
-						rs.getString("ProcTitleORG"), rs.getString("ProcTitleTR"), rs.getString("BookTitleEN"), rs.getString("BookTitleORG"),
-						rs.getString("BookTitleTR"), rs.getString("UniversityEN"), rs.getString("UniversityORG"), rs.getString("UniversityTR"),
-						rs.getString("NumberEN"), rs.getString("NumberORG"), rs.getString("NumberTR"), rs.getString("AccessDateEN"),
-						rs.getString("AccessDateORG"), rs.getString("AccessDateTR"), rs.getString("TitleAddonEN"), rs.getString("TitleAddonORG"),
-						rs.getString("TitleAddonTR"), getPublisher(rs.getInt("PublisherID")), rs.getString("SeriesEN"), rs.getString("SeriesORG"),
-						rs.getString("SeriesTR"), rs.getString("EditionEN"), rs.getString("EditionORG"), rs.getString("EditionTR"),
-						rs.getString("VolumeEN"), rs.getString("VolumeORG"), rs.getString("VolumeTR"), rs.getString("IssueEN"), rs.getString("IssueTR"), rs.getString("IssueORG"),
-
-						rs.getInt("YearEN"), rs.getString("YearORG"),
-						rs.getString("YearTR"), rs.getString("MonthEN"), rs.getString("MonthORG"), rs.getString("MonthTR"), rs.getString("PagesEN"),
-						rs.getString("PagesORG"), rs.getString("PagesTR"), rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"),
-						rs.getString("URI"), rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"));
+						rs.getString("TitleEN"), rs.getString("TitleORG"), rs.getString("TitleTR"), 
+						rs.getString("ProcTitleEN"), rs.getString("ProcTitleORG"), rs.getString("ProcTitleTR"), 
+						rs.getString("BookTitleEN"), rs.getString("BookTitleORG"), rs.getString("BookTitleTR"), 
+						rs.getString("UniversityEN"), rs.getString("UniversityORG"), rs.getString("UniversityTR"),
+						rs.getString("NumberEN"), rs.getString("NumberORG"), rs.getString("NumberTR"), 
+						rs.getString("AccessDateEN"), rs.getString("AccessDateORG"), rs.getString("AccessDateTR"), 
+						rs.getString("TitleAddonEN"), rs.getString("TitleAddonORG"), rs.getString("TitleAddonTR"), 
+						getPublisher(rs.getInt("PublisherID")), rs.getString("SeriesEN"), rs.getString("SeriesORG"), rs.getString("SeriesTR"), 
+						rs.getString("EditionEN"), rs.getString("EditionORG"), rs.getString("EditionTR"),
+						rs.getString("VolumeEN"), rs.getString("VolumeORG"), rs.getString("VolumeTR"), 
+						rs.getString("IssueEN"), rs.getString("IssueTR"), rs.getString("IssueORG"), 
+						rs.getInt("YearEN"), rs.getString("YearORG"), rs.getString("YearTR"), 
+						rs.getString("MonthEN"), rs.getString("MonthORG"), rs.getString("MonthTR"), 
+						rs.getString("PagesEN"), rs.getString("PagesORG"), rs.getString("PagesTR"), 
+						rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"), rs.getString("URI"), rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"));
 				entry.setAuthorList(getAuthorBibRelation(entry.getAnnotatedBiblographyID()));
 				entry.setEditorList(getEditorBibRelation(entry.getAnnotatedBiblographyID()));
 				result.add(entry);
@@ -1642,18 +1644,21 @@ public class MysqlConnector {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM AnnotatedBibliography WHERE BibID=" + bibID);
 			if (rs.first()) {
 				result = new AnnotatedBiblographyEntry(rs.getInt("BibID"), getPublicationType(rs.getInt("PublicationTypeID")),
-						rs.getString("TitleEN"), rs.getString("TitleORG"), rs.getString("TitleTR"), rs.getString("ProcTitleEN"),
-						rs.getString("ProcTitleORG"), rs.getString("ProcTitleTR"), rs.getString("BookTitleEN"), rs.getString("BookTitleORG"),
-						rs.getString("BookTitleTR"), rs.getString("UniversityEN"), rs.getString("UniversityORG"), rs.getString("UniversityTR"),
-						rs.getString("NumberEN"), rs.getString("NumberORG"), rs.getString("NumberTR"), rs.getString("AccessDateEN"),
-						rs.getString("AccessDateORG"), rs.getString("AccessDateTR"), rs.getString("TitleAddonEN"), rs.getString("TitleAddonORG"),
-						rs.getString("TitleAddonTR"), getPublisher(rs.getInt("PublisherID")), rs.getString("SeriesEN"), rs.getString("SeriesORG"),
-						rs.getString("SeriesTR"), rs.getString("EditionEN"), rs.getString("EditionORG"), rs.getString("EditionTR"),
-						rs.getString("VolumeEN"), rs.getString("VolumeORG"), rs.getString("VolumeTR"), rs.getInt("YearEN"), rs.getString("YearORG"),
-						rs.getString("YearTR"), rs.getString("MonthEN"), rs.getString("MonthORG"), rs.getString("MonthTR"), rs.getString("PagesEN"),
-						rs.getString("PagesORG"), rs.getString("PagesTR"), rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"),
-						rs.getString("URI"), rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"));
-
+						rs.getString("TitleEN"), rs.getString("TitleORG"), rs.getString("TitleTR"), 
+						rs.getString("ProcTitleEN"), rs.getString("ProcTitleORG"), rs.getString("ProcTitleTR"), 
+						rs.getString("BookTitleEN"), rs.getString("BookTitleORG"), rs.getString("BookTitleTR"), 
+						rs.getString("UniversityEN"), rs.getString("UniversityORG"), rs.getString("UniversityTR"),
+						rs.getString("NumberEN"), rs.getString("NumberORG"), rs.getString("NumberTR"), 
+						rs.getString("AccessDateEN"), rs.getString("AccessDateORG"), rs.getString("AccessDateTR"), 
+						rs.getString("TitleAddonEN"), rs.getString("TitleAddonORG"), rs.getString("TitleAddonTR"), 
+						getPublisher(rs.getInt("PublisherID")), rs.getString("SeriesEN"), rs.getString("SeriesORG"), rs.getString("SeriesTR"), 
+						rs.getString("EditionEN"), rs.getString("EditionORG"), rs.getString("EditionTR"),
+						rs.getString("VolumeEN"), rs.getString("VolumeORG"), rs.getString("VolumeTR"), 
+						rs.getString("IssueEN"), rs.getString("IssueTR"), rs.getString("IssueORG"), 
+						rs.getInt("YearEN"), rs.getString("YearORG"), rs.getString("YearTR"), 
+						rs.getString("MonthEN"), rs.getString("MonthORG"), rs.getString("MonthTR"), 
+						rs.getString("PagesEN"), rs.getString("PagesORG"), rs.getString("PagesTR"), 
+						rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"), rs.getString("URI"), rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"));
 				result.setAuthorList(getAuthorBibRelation(result.getAnnotatedBiblographyID()));
 				result.setEditorList(getEditorBibRelation(result.getAnnotatedBiblographyID()));
 			}
