@@ -140,9 +140,8 @@ public class JsonServlet extends HttpServlet {
 		response.setContentType("application/json");
 
 		if ("all".equals(caveIDStr)) {
-			int siteID = Integer.parseInt(request.getParameter("siteID"));
-			if (siteID > 0) {
-				sqlWhere = "(SiteID=" + siteID);
+			if (request.getParameter("siteID") != null) {
+				sqlWhere = "(SiteID=" + Integer.parseInt(request.getParameter("siteID"));
 			}
 			if (request.getParameter("districtID") != null) {
 				if (sqlWhere != null) {
