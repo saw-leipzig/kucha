@@ -1238,7 +1238,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		 */
 		NumberField<Integer> yearEN = new NumberField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
 		DateWrapper dw = new DateWrapper(); // we always want to use the current year as max year
-		yearEN.setValue(bibEntry.getYearEN());
+		if (bibEntry.getYearEN() > 0) {
+			yearEN.setValue(bibEntry.getYearEN());
+		}
 		yearEN.addValidator(new MaxNumberValidator<Integer>(dw.getFullYear()));
 		yearEN.setAllowNegative(false);
 		yearEN.addValueChangeHandler(new ValueChangeHandler<Integer>() {
