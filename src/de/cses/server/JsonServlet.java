@@ -15,6 +15,7 @@ package de.cses.server;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLWarning;
 import java.util.ArrayList;
 import java.util.Enumeration;
 
@@ -139,8 +140,9 @@ public class JsonServlet extends HttpServlet {
 		response.setContentType("application/json");
 
 		if ("all".equals(caveIDStr)) {
-			if (request.getParameter("siteID") != null) {
-				sqlWhere = "(SiteID=" + Integer.parseInt(request.getParameter("siteID"));
+			int siteID = Integer.parseInt(request.getParameter("siteID"));
+			if (siteID > 0) {
+				sqlWhere = "(SiteID=" + siteID);
 			}
 			if (request.getParameter("districtID") != null) {
 				if (sqlWhere != null) {
@@ -155,6 +157,9 @@ public class JsonServlet extends HttpServlet {
 				} else {
 					sqlWhere = "(RegionID=" + Integer.parseInt(request.getParameter("regionID"));
 				}
+			}
+			if (sqlWhere != null) {
+				sqlWhere = sqlWhere.concat(")");
 			}
 			if (request.getParameter("caveTypeID") != null) {
 				if (sqlWhere != null) {
