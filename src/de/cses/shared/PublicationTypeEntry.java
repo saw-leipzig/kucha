@@ -25,7 +25,6 @@ public class PublicationTypeEntry extends AbstractEntry {
 	boolean accessDateEnabled = false;
 	boolean authorEnabled = false;
 	boolean bookTitleEnabled = false;
-	boolean chapterTitleEnabled = false;
 	boolean editionEnabled = false;
 	boolean editorEnabled = false;
 	boolean monthEnabled = false;
@@ -45,7 +44,7 @@ public class PublicationTypeEntry extends AbstractEntry {
 	public PublicationTypeEntry() {	}
 
 	public PublicationTypeEntry(int publicationTypeID, String name, boolean accessDateEnabled, boolean authorEnabled, boolean bookTitleEnabled,
-			boolean chapterTitleEnabled, boolean editionEnabled, boolean editorEnabled, boolean monthEnabled, boolean numberEnabled, boolean pagesEnabled,
+			boolean editionEnabled, boolean editorEnabled, boolean monthEnabled, boolean numberEnabled, boolean pagesEnabled,
 			boolean proceedingsTitleEnabled, boolean seriesEnabled, boolean titleAddonEnabled, boolean universityEnabled, boolean volumeEnabled,
 			boolean yearEnabled) {
 		super();
@@ -54,7 +53,6 @@ public class PublicationTypeEntry extends AbstractEntry {
 		this.accessDateEnabled = accessDateEnabled;
 		this.authorEnabled = authorEnabled;
 		this.bookTitleEnabled = bookTitleEnabled;
-		this.chapterTitleEnabled = chapterTitleEnabled;
 		this.editionEnabled = editionEnabled;
 		this.editorEnabled = editorEnabled;
 		this.monthEnabled = monthEnabled;
@@ -115,14 +113,6 @@ public class PublicationTypeEntry extends AbstractEntry {
 
 	public void setBookTitleEnabled(boolean bookTitleEnabled) {
 		this.bookTitleEnabled = bookTitleEnabled;
-	}
-
-	public boolean isChapterTitleEnabled() {
-		return chapterTitleEnabled;
-	}
-
-	public void setChapterTitleEnabled(boolean chapterTitleEnabled) {
-		this.chapterTitleEnabled = chapterTitleEnabled;
 	}
 
 	public boolean isEditionEnabled() {

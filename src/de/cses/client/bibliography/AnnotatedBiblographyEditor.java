@@ -524,48 +524,48 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 		}
 
-		/**
-		 * the chapter tile
-		 */
-		if (pubType.isChapterTitleEnabled()) {
-			TextField chapterTitleEN = new TextField();
-			chapterTitleEN.setText(bibEntry.getChapTitleEN());
-			chapterTitleEN.addValueChangeHandler(new ValueChangeHandler<String>() {
-
-				@Override
-				public void onValueChange(ValueChangeEvent<String> event) {
-					bibEntry.setChapTitleEN(event.getValue());
-				}
-			});
-			TextField chapterTitleORG = new TextField();
-			chapterTitleORG.setText(bibEntry.getChapTitleORG());
-			chapterTitleORG.addValueChangeHandler(new ValueChangeHandler<String>() {
-
-				@Override
-				public void onValueChange(ValueChangeEvent<String> event) {
-					bibEntry.setChapTitleORG(event.getValue());
-				}
-			});
-			TextField chapterTitleTR = new TextField();
-			chapterTitleTR.setText(bibEntry.getChapTitleTR());
-			chapterTitleTR.addValueChangeHandler(new ValueChangeHandler<String>() {
-
-				@Override
-				public void onValueChange(ValueChangeEvent<String> event) {
-					bibEntry.setChapTitleTR(event.getValue());
-				}
-			});
-
-			VerticalLayoutContainer chapterTitleVLC = new VerticalLayoutContainer();
-			chapterTitleVLC.add(new FieldLabel(chapterTitleEN, "English"), new VerticalLayoutData(1.0, 1.0 / 3));
-			chapterTitleVLC.add(new FieldLabel(chapterTitleORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
-			chapterTitleVLC.add(new FieldLabel(chapterTitleTR, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
-
-			FramedPanel chapterFP = new FramedPanel();
-			chapterFP.setHeading("Chapter Title");
-			chapterFP.add(chapterTitleVLC);
-			firstTabInnerLeftVLC.add(chapterFP, new VerticalLayoutData(1.0, 1.0 / 5));
-		}
+//		/**
+//		 * the chapter tile
+//		 */
+//		if (pubType.isChapterTitleEnabled()) {
+//			TextField chapterTitleEN = new TextField();
+//			chapterTitleEN.setText(bibEntry.getChapTitleEN());
+//			chapterTitleEN.addValueChangeHandler(new ValueChangeHandler<String>() {
+//
+//				@Override
+//				public void onValueChange(ValueChangeEvent<String> event) {
+//					bibEntry.setChapTitleEN(event.getValue());
+//				}
+//			});
+//			TextField chapterTitleORG = new TextField();
+//			chapterTitleORG.setText(bibEntry.getChapTitleORG());
+//			chapterTitleORG.addValueChangeHandler(new ValueChangeHandler<String>() {
+//
+//				@Override
+//				public void onValueChange(ValueChangeEvent<String> event) {
+//					bibEntry.setChapTitleORG(event.getValue());
+//				}
+//			});
+//			TextField chapterTitleTR = new TextField();
+//			chapterTitleTR.setText(bibEntry.getChapTitleTR());
+//			chapterTitleTR.addValueChangeHandler(new ValueChangeHandler<String>() {
+//
+//				@Override
+//				public void onValueChange(ValueChangeEvent<String> event) {
+//					bibEntry.setChapTitleTR(event.getValue());
+//				}
+//			});
+//
+//			VerticalLayoutContainer chapterTitleVLC = new VerticalLayoutContainer();
+//			chapterTitleVLC.add(new FieldLabel(chapterTitleEN, "English"), new VerticalLayoutData(1.0, 1.0 / 3));
+//			chapterTitleVLC.add(new FieldLabel(chapterTitleORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
+//			chapterTitleVLC.add(new FieldLabel(chapterTitleTR, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
+//
+//			FramedPanel chapterFP = new FramedPanel();
+//			chapterFP.setHeading("Chapter Title");
+//			chapterFP.add(chapterTitleVLC);
+//			firstTabInnerLeftVLC.add(chapterFP, new VerticalLayoutData(1.0, 1.0 / 5));
+//		}
 
 		/**
 		 * the book title
