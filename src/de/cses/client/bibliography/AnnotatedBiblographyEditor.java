@@ -1442,13 +1442,29 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		CheckBox unpublishedCB = new CheckBox();
 		FramedPanel unpublishedFP = new FramedPanel();
 		unpublishedFP.setHeading("Unpublished");
-		unpublishedFP.add(unpublishedCB);
+		unpublishedFP.add(new FieldLabel(unpublishedCB, "is unpublished"));
 		unpublishedCB.setValue(bibEntry.isUnpublished());
 		unpublishedCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
 				bibEntry.setUnpublished(event.getValue());
+			}
+		});
+
+		/**
+		 * open access
+		 */
+		CheckBox openAccessCB = new CheckBox();
+		FramedPanel openAccessFP = new FramedPanel();
+		openAccessFP.setHeading("Open Access");
+		openAccessFP.add(new FieldLabel(openAccessCB, "is open"));
+		openAccessCB.setValue(bibEntry.isOpenAccess());
+		openAccessCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				bibEntry.setOpenAccess(event.getValue());
 			}
 		});
 
