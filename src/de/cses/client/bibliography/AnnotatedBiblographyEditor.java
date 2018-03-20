@@ -1648,7 +1648,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		thirdTabVLC.add(notesCommtentsAbstractHLC, new VerticalLayoutData(1.0, .5));
 		thirdTabVLC.add(urlFP, new VerticalLayoutData(1.0, .1));
 		thirdTabVLC.add(uriFP, new VerticalLayoutData(1.0, .1));
-		thirdTabVLC.add(unpublishedFP, new VerticalLayoutData(1.0, .1));
+		HorizontalLayoutContainer unpublishedOpenAccessHLC = new HorizontalLayoutContainer();
+		unpublishedOpenAccessHLC.add(unpublishedFP, new HorizontalLayoutData(.5, 1.0));
+		unpublishedOpenAccessHLC.add(openAccessFP, new HorizontalLayoutData(.5, 1.0));
+		thirdTabVLC.add(unpublishedOpenAccessHLC, new VerticalLayoutData(1.0, .1));
 		thirdTabVLC.add(firstEditionFP, new VerticalLayoutData(1.0, .1));
 		thirdTabVLC.add(documentsHLC, new VerticalLayoutData(1.0, .1));
 
