@@ -189,7 +189,7 @@ public class MysqlConnector {
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.first()) {
 				result = new PublicationTypeEntry(rs.getInt("PublicationTypeID"), rs.getString("Name"), rs.getBoolean("AccessDateEnabled"),
-						rs.getBoolean("AuthorEnabled"), rs.getBoolean("BookTitleEnabled"), rs.getBoolean("EditionEnabled"),
+						rs.getBoolean("AuthorEnabled"), rs.getBoolean("BookTitleEnabled"), rs.getBoolean("ConferenceNameEnabled"), rs.getBoolean("EditionEnabled"),
 						rs.getBoolean("EditorEnabled"), rs.getBoolean("MonthEnabled"), rs.getBoolean("NumberEnabled"), rs.getBoolean("PagesEnabled"),
 						rs.getBoolean("ProceedingsTitleEnabled"), rs.getBoolean("SeriesEnabled"), rs.getBoolean("TitleAddonEnabled"),
 						rs.getBoolean("UniversityEnabled"), rs.getBoolean("VolumeEnabled"), rs.getBoolean("IssueEnabled"), rs.getBoolean("YearEnabled"));
@@ -209,10 +209,10 @@ public class MysqlConnector {
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM PublicationTypes");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM PublicationTypes ORDER BY Name");
 			while (rs.next()) {
 				entry = new PublicationTypeEntry(rs.getInt("PublicationTypeID"), rs.getString("Name"), rs.getBoolean("AccessDateEnabled"),
-						rs.getBoolean("AuthorEnabled"), rs.getBoolean("BookTitleEnabled"), rs.getBoolean("EditionEnabled"),
+						rs.getBoolean("AuthorEnabled"), rs.getBoolean("BookTitleEnabled"), rs.getBoolean("ConferenceNameEnabled"), rs.getBoolean("EditionEnabled"),
 						rs.getBoolean("EditorEnabled"), rs.getBoolean("MonthEnabled"), rs.getBoolean("NumberEnabled"), rs.getBoolean("PagesEnabled"),
 						rs.getBoolean("ProceedingsTitleEnabled"), rs.getBoolean("SeriesEnabled"), rs.getBoolean("TitleAddonEnabled"),
 						rs.getBoolean("UniversityEnabled"), rs.getBoolean("VolumeEnabled"), rs.getBoolean("IssueEnabled"), rs.getBoolean("YearEnabled"));

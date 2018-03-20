@@ -25,6 +25,7 @@ public class PublicationTypeEntry extends AbstractEntry {
 	boolean accessDateEnabled = false;
 	boolean authorEnabled = false;
 	boolean bookTitleEnabled = false;
+	boolean conferenceNameEnabled = false;
 	boolean editionEnabled = false;
 	boolean editorEnabled = false;
 	boolean monthEnabled = false;
@@ -44,7 +45,7 @@ public class PublicationTypeEntry extends AbstractEntry {
 	
 	public PublicationTypeEntry() {	}
 
-	public PublicationTypeEntry(int publicationTypeID, String name, boolean accessDateEnabled, boolean authorEnabled, boolean bookTitleEnabled,
+	public PublicationTypeEntry(int publicationTypeID, String name, boolean accessDateEnabled, boolean authorEnabled, boolean bookTitleEnabled, boolean conferenceNameEnabled,
 			boolean editionEnabled, boolean editorEnabled, boolean monthEnabled, boolean numberEnabled, boolean pagesEnabled,
 			boolean proceedingsTitleEnabled, boolean seriesEnabled, boolean titleAddonEnabled, boolean universityEnabled, boolean volumeEnabled, boolean issueEnabled,
 			boolean yearEnabled) {
@@ -54,6 +55,7 @@ public class PublicationTypeEntry extends AbstractEntry {
 		this.accessDateEnabled = accessDateEnabled;
 		this.authorEnabled = authorEnabled;
 		this.bookTitleEnabled = bookTitleEnabled;
+		this.conferenceNameEnabled = conferenceNameEnabled;
 		this.editionEnabled = editionEnabled;
 		this.editorEnabled = editorEnabled;
 		this.monthEnabled = monthEnabled;
@@ -219,6 +221,14 @@ public class PublicationTypeEntry extends AbstractEntry {
 
 	public void setIssueEnabled(boolean issueEnabled) {
 		this.issueEnabled = issueEnabled;
+	}
+
+	public boolean isConferenceNameEnabled() {
+		return conferenceNameEnabled;
+	}
+
+	public void setConferenceNameEnabled(boolean conferenceNameEnabled) {
+		this.conferenceNameEnabled = conferenceNameEnabled;
 	}
 	
 	
