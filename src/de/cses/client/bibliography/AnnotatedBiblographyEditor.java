@@ -1643,8 +1643,8 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		notesCommentsVLC.add(commentsFP, new VerticalLayoutData(1.0, .5));
 		notesCommentsVLC.add(notesFP, new VerticalLayoutData(1.0, .5));
 		HorizontalLayoutContainer notesCommtentsAbstractHLC = new HorizontalLayoutContainer();
-		notesCommtentsAbstractHLC.add(notesCommentsVLC, new HorizontalLayoutData(.5, 1.0));
 		notesCommtentsAbstractHLC.add(abstractTextFP, new HorizontalLayoutData(.5, 1.0));
+		notesCommtentsAbstractHLC.add(notesCommentsVLC, new HorizontalLayoutData(.5, 1.0));
 		thirdTabVLC.add(notesCommtentsAbstractHLC, new VerticalLayoutData(1.0, .5));
 		thirdTabVLC.add(urlFP, new VerticalLayoutData(1.0, .1));
 		thirdTabVLC.add(uriFP, new VerticalLayoutData(1.0, .1));
