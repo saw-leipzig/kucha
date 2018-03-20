@@ -420,24 +420,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 	public void rebuildMainInput() {
 		
 		PublicationTypeEntry pubType = bibEntry.getPublicationType();
-		/**
-		 * first we assemble the TabPanel
-		 */
-		tabpanel = new TabPanel();
 
-		HorizontalLayoutContainer firstTabHLC = new HorizontalLayoutContainer();
 		VerticalLayoutContainer firstTabInnerLeftVLC = new VerticalLayoutContainer();
 		VerticalLayoutContainer firstTabInnerRightVLC = new VerticalLayoutContainer();
 		VerticalLayoutContainer secondTabVLC = new VerticalLayoutContainer();
-		VerticalLayoutContainer thirdTabVLC = new VerticalLayoutContainer();
-
-		firstTabHLC.add(firstTabInnerLeftVLC, new HorizontalLayoutData(.65, 1.0));
-		firstTabHLC.add(firstTabInnerRightVLC, new HorizontalLayoutData(.35, 1.0));
-
-		tabpanel.add(firstTabHLC, "Basics (" + bibEntry.getPublicationType().getName() + ")");
-		tabpanel.add(secondTabVLC, "Authors and Editors");
-		tabpanel.add(thirdTabVLC, "Others");
-		tabpanel.setTabScroll(false);
 
 		/**
 		 * The publicaton title
@@ -1369,7 +1355,6 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		FramedPanel commentsFP = new FramedPanel();
 		commentsFP.setHeading("Comments");
 		commentsFP.add(commentsTA);
-		thirdTabVLC.add(commentsFP, new VerticalLayoutData(1.0, .25));
 		commentsTA.setText(bibEntry.getComments());
 		commentsTA.addValueChangeHandler(new ValueChangeHandler<String>() {
 
@@ -1394,8 +1379,26 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				bibEntry.setNotes(event.getValue());
 			}
 		});
-		thirdTabVLC.add(notesFP, new VerticalLayoutData(1.0, .25));
 
+		/**
+		 * notes
+		 */
+		TextArea abstractTextTA = new TextArea();
+		FramedPanel abstractTextFP = new FramedPanel();
+		abstractTextFP.setHeading("Abstract");
+		abstractTextFP.add(abstractTextTA);
+		abstractTextTA.setText(bibEntry.getAbstractText());
+		abstractTextTA.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				bibEntry.setAbstractText(event.getValue());
+			}
+		});
+
+		/**
+		 * URL
+		 */
 		TextField urlTF = new TextField();
 		HorizontalLayoutContainer urlHLC = new HorizontalLayoutContainer();
 		urlHLC.add(urlTF, new HorizontalLayoutData(1.0, 1.0));
@@ -1413,7 +1416,6 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				}
 			}
 		});
-		thirdTabVLC.add(urlFP, new VerticalLayoutData(1.0, .1));
 
 		/**
 		 * URI
@@ -1433,7 +1435,6 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				}
 			}
 		});
-		thirdTabVLC.add(uriFP, new VerticalLayoutData(1.0, .1));
 
 		/**
 		 * unpublished
@@ -1450,7 +1451,6 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				bibEntry.setUnpublished(event.getValue());
 			}
 		});
-		thirdTabVLC.add(unpublishedFP, new VerticalLayoutData(1.0, .1));
 
 		/**
 		 * first edition
@@ -1515,8 +1515,6 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		});
 		firstEditionFP.addTool(resetFirstEditionSelectionTB);
 		
-		thirdTabVLC.add(firstEditionFP, new VerticalLayoutData(1.0, .1));
-
 		FramedPanel bibDocPaperFP = new FramedPanel();
 		bibDocPaperFP.setHeading("paper");
 		bibDocPaperFP.add(new HTMLPanel(documentLinkTemplate.documentLink(UriUtils.fromString(
@@ -1623,7 +1621,34 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		documentsHLC.add(bibDocPaperFP, new HorizontalLayoutData(1.0 / 3, 1.0));
 		documentsHLC.add(bibDocAnnotationFP, new HorizontalLayoutData(1.0 / 3, 1.0));
 		documentsHLC.add(bibDocSummaryFP, new HorizontalLayoutData(1.0 / 3, 1.0));
+		
+		VerticalLayoutContainer thirdTabVLC = new VerticalLayoutContainer();
+		VerticalLayoutContainer notesCommentsVLC = new VerticalLayoutContainer();
+		notesCommentsVLC.add(commentsFP, new VerticalLayoutData(1.0, .5));
+		notesCommentsVLC.add(notesFP, new VerticalLayoutData(1.0, .5));
+		HorizontalLayoutContainer notesCommtentsAbstractHLC = new HorizontalLayoutContainer();
+		notesCommtentsAbstractHLC.add(notesCommentsVLC, new HorizontalLayoutData(.5, 1.0));
+		notesCommtentsAbstractHLC.add(abstractTextFP, new HorizontalLayoutData(.5, 1.0));
+		thirdTabVLC.add(notesCommtentsAbstractHLC, new VerticalLayoutData(1.0, .5));
+		thirdTabVLC.add(urlFP, new VerticalLayoutData(1.0, .1));
+		thirdTabVLC.add(uriFP, new VerticalLayoutData(1.0, .1));
+		thirdTabVLC.add(unpublishedFP, new VerticalLayoutData(1.0, .1));
+		thirdTabVLC.add(firstEditionFP, new VerticalLayoutData(1.0, .1));
 		thirdTabVLC.add(documentsHLC, new VerticalLayoutData(1.0, .1));
+
+		/**
+		 * now we assemble the TabPanel
+		 */
+		tabpanel = new TabPanel();
+
+		HorizontalLayoutContainer firstTabHLC = new HorizontalLayoutContainer();
+		firstTabHLC.add(firstTabInnerLeftVLC, new HorizontalLayoutData(.65, 1.0));
+		firstTabHLC.add(firstTabInnerRightVLC, new HorizontalLayoutData(.35, 1.0));
+		
+		tabpanel.add(firstTabHLC, "Basics (" + bibEntry.getPublicationType().getName() + ")");
+		tabpanel.add(secondTabVLC, "Authors and Editors");
+		tabpanel.add(thirdTabVLC, "Others");
+		tabpanel.setTabScroll(false);
 	}
 
 }
