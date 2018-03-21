@@ -2171,7 +2171,7 @@ public class MysqlConnector {
 			pstmt.setString(14, de.getInventoryNumber());
 			pstmt.setInt(15, de.getVendorID());
 			pstmt.setInt(16, de.getStoryID());
-			pstmt.setInt(17, de.getCave().getCaveID());
+			pstmt.setInt(17, de.getCave() != null ? de.getCave().getCaveID() : 0);
 			pstmt.setInt(18, de.getWallID());
 			pstmt.setInt(19, de.getAbsoluteLeft());
 			pstmt.setInt(20, de.getAbsoluteTop());
@@ -2237,7 +2237,7 @@ public class MysqlConnector {
 			pstmt.setString(14, de.getInventoryNumber());
 			pstmt.setInt(15, de.getVendorID());
 			pstmt.setInt(16, de.getStoryID());
-			pstmt.setInt(17, de.getCave().getCaveID());
+			pstmt.setInt(17, de.getCave() != null ? de.getCave().getCaveID() : 0);
 			pstmt.setInt(18, de.getWallID());
 			pstmt.setInt(19, de.getAbsoluteLeft());
 			pstmt.setInt(20, de.getAbsoluteTop());

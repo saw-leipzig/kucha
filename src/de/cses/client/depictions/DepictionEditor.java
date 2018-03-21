@@ -512,6 +512,7 @@ public class DepictionEditor extends AbstractEditor {
 		shortNameTF = new TextField();
 		shortNameTF.setEmptyText("optional short name");
 		shortNameTF.setValue(correspondingDepictionEntry.getShortName());
+		shortNameTF.addValidator(new MaxLengthValidator(32));
 		shortNameTF.addValidator(new Validator<String>() {
 			
 			@Override
