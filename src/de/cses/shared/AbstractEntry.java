@@ -21,7 +21,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public abstract class AbstractEntry implements IsSerializable {
 	
-	private boolean openAccess = false;
+	protected boolean openAccess = false;
 	
 	/**
 	 * @param openAccess
