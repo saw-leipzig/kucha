@@ -14,8 +14,11 @@
 package de.cses.client.depictions;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.editor.client.Editor;
+import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -67,6 +70,8 @@ import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.form.Validator;
+import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinNumberValidator;
@@ -141,6 +146,7 @@ public class DepictionEditor extends AbstractEditor {
 	private ListStore<LocationEntry> locationEntryLS;
 	private PreservationAttributeProperties presAttributeProps;
 	private ListStore<PreservationAttributeEntry> preservationAttributesLS, selectedPreservationAttributesLS;
+	private TextField shortNameTF;
 
 	interface DepictionProperties extends PropertyAccess<DepictionEntry> {
 		ModelKeyProvider<DepictionEntry> depictionID();
@@ -503,9 +509,20 @@ public class DepictionEditor extends AbstractEditor {
 		
 		FramedPanel shortNameFP = new FramedPanel();
 		shortNameFP.setHeading("Short Name");
-		TextField shortNameTF = new TextField();
-		shortNameTF.setEmptyText("please enter short name");
+		shortNameTF = new TextField();
+		shortNameTF.setEmptyText("optional short name");
 		shortNameTF.setValue(correspondingDepictionEntry.getShortName());
+		shortNameTF.addValidator(new Validator<String>() {
+			
+			@Override
+			public List<EditorError> validate(Editor<String> editor, String value) {
+				List<EditorError> l = new ArrayList<EditorError>();
+				if ((caveSelectionCB.getCurrentValue() == null) && ((shortNameTF.getCurrentValue() == null) || (shortNameTF.getCurrentValue().isEmpty()))) {
+					l.add(new DefaultEditorError(editor, "please select either Cave or enter short name", value));
+				}
+				return l;
+			}
+		});
 		shortNameTF.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
@@ -561,6 +578,7 @@ public class DepictionEditor extends AbstractEditor {
 			public void onSelection(SelectionEvent<CaveEntry> event) {
 				correspondingDepictionEntry.setCave(event.getSelectedItem());
 				wallSelectorPanel.setCave(event.getSelectedItem());
+				shortNameTF.validate();
 			}
 		});
 		caveSelectionCB.setToolTip("This field can only be changed until a depiction is allocated to a wall");
@@ -1408,6 +1426,9 @@ public class DepictionEditor extends AbstractEditor {
 	 * @param close 
 	 */
 	protected void saveDepictionEntry(boolean close) {
+		if (!shortNameTF.validate()) {
+			return;
+		}
 		ArrayList<ImageEntry> relatedImageEntryList = new ArrayList<ImageEntry>();
 		for (int i = 0; i < imageEntryLS.size(); ++i) {
 			relatedImageEntryList.add(imageEntryLS.get(i));
