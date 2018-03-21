@@ -24,14 +24,13 @@ public class PublicationTypeEntry extends AbstractEntry {
 	String name;
 	boolean accessDateEnabled = false;
 	boolean authorEnabled = false;
-	boolean bookTitleEnabled = false;
-	boolean conferenceNameEnabled = false;
+	boolean parentTitleEnabled = false;
+	String parentTitleLabel;
 	boolean editionEnabled = false;
 	boolean editorEnabled = false;
 	boolean monthEnabled = false;
 	boolean numberEnabled = false;
 	boolean pagesEnabled = false;
-	boolean proceedingsTitleEnabled = false;
 	boolean seriesEnabled = false;
 	boolean titleAddonEnabled = false;
 	boolean universityEnabled = false;
@@ -45,23 +44,40 @@ public class PublicationTypeEntry extends AbstractEntry {
 	
 	public PublicationTypeEntry() {	}
 
-	public PublicationTypeEntry(int publicationTypeID, String name, boolean accessDateEnabled, boolean authorEnabled, boolean bookTitleEnabled, boolean conferenceNameEnabled,
-			boolean editionEnabled, boolean editorEnabled, boolean monthEnabled, boolean numberEnabled, boolean pagesEnabled,
-			boolean proceedingsTitleEnabled, boolean seriesEnabled, boolean titleAddonEnabled, boolean universityEnabled, boolean volumeEnabled, boolean issueEnabled,
-			boolean yearEnabled) {
-		super();
+	/**
+	 * @param publicationTypeID
+	 * @param name
+	 * @param accessDateEnabled
+	 * @param authorEnabled
+	 * @param parentTitleEnabled
+	 * @param parentTitleLabel
+	 * @param editionEnabled
+	 * @param editorEnabled
+	 * @param monthEnabled
+	 * @param numberEnabled
+	 * @param pagesEnabled
+	 * @param seriesEnabled
+	 * @param titleAddonEnabled
+	 * @param universityEnabled
+	 * @param volumeEnabled
+	 * @param issueEnabled
+	 * @param yearEnabled
+	 */
+	public PublicationTypeEntry(int publicationTypeID, String name, boolean accessDateEnabled, boolean authorEnabled,
+			boolean parentTitleEnabled, String parentTitleLabel, boolean editionEnabled, boolean editorEnabled, boolean monthEnabled,
+			boolean numberEnabled, boolean pagesEnabled, boolean seriesEnabled, boolean titleAddonEnabled, boolean universityEnabled,
+			boolean volumeEnabled, boolean issueEnabled, boolean yearEnabled) {
 		this.publicationTypeID = publicationTypeID;
 		this.name = name;
 		this.accessDateEnabled = accessDateEnabled;
 		this.authorEnabled = authorEnabled;
-		this.bookTitleEnabled = bookTitleEnabled;
-		this.conferenceNameEnabled = conferenceNameEnabled;
+		this.parentTitleEnabled = parentTitleEnabled;
+		this.parentTitleLabel = parentTitleLabel;
 		this.editionEnabled = editionEnabled;
 		this.editorEnabled = editorEnabled;
 		this.monthEnabled = monthEnabled;
 		this.numberEnabled = numberEnabled;
 		this.pagesEnabled = pagesEnabled;
-		this.proceedingsTitleEnabled = proceedingsTitleEnabled;
 		this.seriesEnabled = seriesEnabled;
 		this.titleAddonEnabled = titleAddonEnabled;
 		this.universityEnabled = universityEnabled;
@@ -111,14 +127,6 @@ public class PublicationTypeEntry extends AbstractEntry {
 		this.accessDateEnabled = accessDateEnabled;
 	}
 
-	public boolean isBookTitleEnabled() {
-		return bookTitleEnabled;
-	}
-
-	public void setBookTitleEnabled(boolean bookTitleEnabled) {
-		this.bookTitleEnabled = bookTitleEnabled;
-	}
-
 	public boolean isEditionEnabled() {
 		return editionEnabled;
 	}
@@ -149,14 +157,6 @@ public class PublicationTypeEntry extends AbstractEntry {
 
 	public void setPagesEnabled(boolean pagesEnabled) {
 		this.pagesEnabled = pagesEnabled;
-	}
-
-	public boolean isProceedingsTitleEnabled() {
-		return proceedingsTitleEnabled;
-	}
-
-	public void setProceedingsTitleEnabled(boolean proceedingsTitleEnabled) {
-		this.proceedingsTitleEnabled = proceedingsTitleEnabled;
 	}
 
 	public boolean isSeriesEnabled() {
@@ -223,12 +223,20 @@ public class PublicationTypeEntry extends AbstractEntry {
 		this.issueEnabled = issueEnabled;
 	}
 
-	public boolean isConferenceNameEnabled() {
-		return conferenceNameEnabled;
+	public boolean isParentTitleEnabled() {
+		return parentTitleEnabled;
 	}
 
-	public void setConferenceNameEnabled(boolean conferenceNameEnabled) {
-		this.conferenceNameEnabled = conferenceNameEnabled;
+	public void setParentTitleEnabled(boolean parentTitleEnabled) {
+		this.parentTitleEnabled = parentTitleEnabled;
+	}
+
+	public String getParentTitleLabel() {
+		return parentTitleLabel;
+	}
+
+	public void setParentTitleLabel(String parentTitleLabel) {
+		this.parentTitleLabel = parentTitleLabel;
 	}
 	
 	

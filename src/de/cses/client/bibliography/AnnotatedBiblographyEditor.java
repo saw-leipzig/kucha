@@ -466,122 +466,122 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		titleFP.add(titelVLC);
 		firstTabInnerLeftVLC.add(titleFP, new VerticalLayoutData(1.0, 1.0 / 5));
 
+//		/**
+//		 * the title of the proceedings
+//		 */
+//		if (pubType.isProceedingsTitleEnabled()) {
+//			TextField procEN = new TextField();
+//			procEN.setText(bibEntry.getProcTitleEN());
+//			procEN.addValueChangeHandler(new ValueChangeHandler<String>() {
+//
+//				@Override
+//				public void onValueChange(ValueChangeEvent<String> event) {
+//					bibEntry.setProcTitleEN(event.getValue());
+//				}
+//			});
+//			TextField procORG = new TextField();
+//			procORG.setText(bibEntry.getProcTitleORG());
+//			procORG.addValueChangeHandler(new ValueChangeHandler<String>() {
+//
+//				@Override
+//				public void onValueChange(ValueChangeEvent<String> event) {
+//					bibEntry.setProcTitleORG(event.getValue());
+//				}
+//			});
+//			TextField procTR = new TextField();
+//			procTR.setText(bibEntry.getProcTitleTR());
+//			procTR.addValueChangeHandler(new ValueChangeHandler<String>() {
+//
+//				@Override
+//				public void onValueChange(ValueChangeEvent<String> event) {
+//					bibEntry.setProcTitleTR(event.getValue());
+//				}
+//			});
+//
+//			VerticalLayoutContainer proceedingsVLC = new VerticalLayoutContainer();
+//			proceedingsVLC.add(new FieldLabel(procEN, "English"), new VerticalLayoutData(1.0, 1.0 / 3));
+//			proceedingsVLC.add(new FieldLabel(procORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
+//			proceedingsVLC.add(new FieldLabel(procTR, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
+//
+//			FramedPanel proceedingsFP = new FramedPanel();
+//			proceedingsFP.setHeading("Proceedings Title");
+//			proceedingsFP.add(proceedingsVLC);
+//			firstTabInnerLeftVLC.add(proceedingsFP, new VerticalLayoutData(1.0, 1.0 / 5));
+//
+//		}
+
+//		/**
+//		 * the chapter tile
+//		 */
+//		if (pubType.isConferenceNameEnabled()) {
+//			TextField conferenceNameENTextField = new TextField();
+//			conferenceNameENTextField.setText(bibEntry.getConferenceNameEN());
+//			conferenceNameENTextField.addValueChangeHandler(new ValueChangeHandler<String>() {
+//
+//				@Override
+//				public void onValueChange(ValueChangeEvent<String> event) {
+//					bibEntry.setConferenceNameEN(event.getValue());
+//				}
+//			});
+//			TextField conferenceNameORGTextField = new TextField();
+//			conferenceNameORGTextField.setText(bibEntry.getConferenceNameORG());
+//			conferenceNameORGTextField.addValueChangeHandler(new ValueChangeHandler<String>() {
+//
+//				@Override
+//				public void onValueChange(ValueChangeEvent<String> event) {
+//					bibEntry.setConferenceNameORG(event.getValue());
+//				}
+//			});
+//			TextField conferenceNameTRTextField = new TextField();
+//			conferenceNameTRTextField.setText(bibEntry.getConferenceNameTR());
+//			conferenceNameTRTextField.addValueChangeHandler(new ValueChangeHandler<String>() {
+//
+//				@Override
+//				public void onValueChange(ValueChangeEvent<String> event) {
+//					bibEntry.setConferenceNameTR(event.getValue());
+//				}
+//			});
+//
+//			VerticalLayoutContainer chapterTitleVLC = new VerticalLayoutContainer();
+//			chapterTitleVLC.add(new FieldLabel(conferenceNameENTextField, "English"), new VerticalLayoutData(1.0, 1.0 / 3));
+//			chapterTitleVLC.add(new FieldLabel(conferenceNameORGTextField, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
+//			chapterTitleVLC.add(new FieldLabel(conferenceNameTRTextField, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
+//
+//			FramedPanel chapterFP = new FramedPanel();
+//			chapterFP.setHeading("Chapter Title");
+//			chapterFP.add(chapterTitleVLC);
+//			firstTabInnerLeftVLC.add(chapterFP, new VerticalLayoutData(1.0, 1.0 / 5));
+//		}
+
 		/**
-		 * the title of the proceedings
+		 * the parent title (i.e. Book Title, Journal Name, Conference Name, Proceedings Title, etc
 		 */
-		if (pubType.isProceedingsTitleEnabled()) {
-			TextField procEN = new TextField();
-			procEN.setText(bibEntry.getProcTitleEN());
-			procEN.addValueChangeHandler(new ValueChangeHandler<String>() {
-
-				@Override
-				public void onValueChange(ValueChangeEvent<String> event) {
-					bibEntry.setProcTitleEN(event.getValue());
-				}
-			});
-			TextField procORG = new TextField();
-			procORG.setText(bibEntry.getProcTitleORG());
-			procORG.addValueChangeHandler(new ValueChangeHandler<String>() {
-
-				@Override
-				public void onValueChange(ValueChangeEvent<String> event) {
-					bibEntry.setProcTitleORG(event.getValue());
-				}
-			});
-			TextField procTR = new TextField();
-			procTR.setText(bibEntry.getProcTitleTR());
-			procTR.addValueChangeHandler(new ValueChangeHandler<String>() {
-
-				@Override
-				public void onValueChange(ValueChangeEvent<String> event) {
-					bibEntry.setProcTitleTR(event.getValue());
-				}
-			});
-
-			VerticalLayoutContainer proceedingsVLC = new VerticalLayoutContainer();
-			proceedingsVLC.add(new FieldLabel(procEN, "English"), new VerticalLayoutData(1.0, 1.0 / 3));
-			proceedingsVLC.add(new FieldLabel(procORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
-			proceedingsVLC.add(new FieldLabel(procTR, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
-
-			FramedPanel proceedingsFP = new FramedPanel();
-			proceedingsFP.setHeading("Proceedings Title");
-			proceedingsFP.add(proceedingsVLC);
-			firstTabInnerLeftVLC.add(proceedingsFP, new VerticalLayoutData(1.0, 1.0 / 5));
-
-		}
-
-		/**
-		 * the chapter tile
-		 */
-		if (pubType.isConferenceNameEnabled()) {
-			TextField conferenceNameENTextField = new TextField();
-			conferenceNameENTextField.setText(bibEntry.getConferenceNameEN());
-			conferenceNameENTextField.addValueChangeHandler(new ValueChangeHandler<String>() {
-
-				@Override
-				public void onValueChange(ValueChangeEvent<String> event) {
-					bibEntry.setConferenceNameEN(event.getValue());
-				}
-			});
-			TextField conferenceNameORGTextField = new TextField();
-			conferenceNameORGTextField.setText(bibEntry.getConferenceNameORG());
-			conferenceNameORGTextField.addValueChangeHandler(new ValueChangeHandler<String>() {
-
-				@Override
-				public void onValueChange(ValueChangeEvent<String> event) {
-					bibEntry.setConferenceNameORG(event.getValue());
-				}
-			});
-			TextField conferenceNameTRTextField = new TextField();
-			conferenceNameTRTextField.setText(bibEntry.getConferenceNameTR());
-			conferenceNameTRTextField.addValueChangeHandler(new ValueChangeHandler<String>() {
-
-				@Override
-				public void onValueChange(ValueChangeEvent<String> event) {
-					bibEntry.setConferenceNameTR(event.getValue());
-				}
-			});
-
-			VerticalLayoutContainer chapterTitleVLC = new VerticalLayoutContainer();
-			chapterTitleVLC.add(new FieldLabel(conferenceNameENTextField, "English"), new VerticalLayoutData(1.0, 1.0 / 3));
-			chapterTitleVLC.add(new FieldLabel(conferenceNameORGTextField, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
-			chapterTitleVLC.add(new FieldLabel(conferenceNameTRTextField, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
-
-			FramedPanel chapterFP = new FramedPanel();
-			chapterFP.setHeading("Chapter Title");
-			chapterFP.add(chapterTitleVLC);
-			firstTabInnerLeftVLC.add(chapterFP, new VerticalLayoutData(1.0, 1.0 / 5));
-		}
-
-		/**
-		 * the book title
-		 */
-		if (pubType.isBookTitleEnabled()) {
+		if (pubType.isParentTitleEnabled()) {
 			TextField booktitelEN = new TextField();
-			booktitelEN.setText(bibEntry.getBookTitleEN());
+			booktitelEN.setText(bibEntry.getParentTitleEN());
 			booktitelEN.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
 				public void onValueChange(ValueChangeEvent<String> event) {
-					bibEntry.setBookTitleEN(event.getValue());
+					bibEntry.setParentTitleEN(event.getValue());
 				}
 			});
 			TextField booktitelORG = new TextField();
-			booktitelORG.setText(bibEntry.getBookTitleORG());
+			booktitelORG.setText(bibEntry.getParentTitleORG());
 			booktitelORG.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
 				public void onValueChange(ValueChangeEvent<String> event) {
-					bibEntry.setBookTitleORG(event.getValue());
+					bibEntry.setParentTitleORG(event.getValue());
 				}
 			});
 			TextField booktitelTR = new TextField();
-			booktitelTR.setText(bibEntry.getBookTitleTR());
+			booktitelTR.setText(bibEntry.getParentTitleTR());
 			booktitelTR.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
 				public void onValueChange(ValueChangeEvent<String> event) {
-					bibEntry.setBookTitleTR(event.getValue());
+					bibEntry.setParentTitleTR(event.getValue());
 				}
 			});
 
@@ -591,7 +591,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			bookTitleVLC.add(new FieldLabel(booktitelTR, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
 
 			FramedPanel bookTitleFP = new FramedPanel();
-			bookTitleFP.setHeading("Booktitle");
+			bookTitleFP.setHeading(pubType.getParentTitleLabel());
 			bookTitleFP.add(bookTitleVLC);
 			firstTabInnerLeftVLC.add(bookTitleFP, new VerticalLayoutData(1.0, 1.0 / 5));
 		}

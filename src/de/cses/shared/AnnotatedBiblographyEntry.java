@@ -24,9 +24,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	private int annotatedBiblographyID = 0;
 	private PublicationTypeEntry publicationType = null;
 	private String titleEN, titleTR, titleORG;
-	private String procTitleEN, procTitleTR, procTitleORG;
-	private String bookTitleEN, bookTitleTR, bookTitleORG;
-	private String conferenceNameEN, conferenceNameORG, conferenceNameTR;
+	private String parentTitleEN, parentTitleTR, parentTitleORG;
 	private String universityEN, universityORG, universityTR;
 	private String numberEN, numberTR, numberORG;
 	private String accessdateEN, accessdateTR, accessdateORG;
@@ -52,13 +50,12 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 
 	public AnnotatedBiblographyEntry(int annotatedBiblographyID, PublicationTypeEntry publicationType, 
 			String titleEN, String titleTR, String titleORG,
-			String procTitleEN, String procTitleTR, String procTitleORG, 
-			String bookTitleEN, String bookTitleTR, String bookTitleORG,
-			String conferenceNameEN, String conferenceNameTR, String conferenceNameORG,
+			String parentTitleEN, String parentTitleTR, String parentTitleORG,
 			String universityEN, String universityORG, String universityTR,
 			String numberEN, String numberTR, String numberORG, 
 			String accessdateEN, String accessdateTR, String accessdateORG,
-			String titleaddonEN, String titleaddonORG, String titleaddonTR, PublisherEntry publisher, 
+			String titleaddonEN, String titleaddonORG, String titleaddonTR, 
+			PublisherEntry publisher, 
 			String seriesEN, String seriesTR, String seriesORG,
 			String editionEN, String editionORG, String editionTR, 
 			String volumeEN, String volumeTR, String volumeORG, 
@@ -73,15 +70,9 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 		this.titleEN = titleEN;
 		this.titleTR = titleTR;
 		this.titleORG = titleORG;
-		this.procTitleEN = procTitleEN;
-		this.procTitleTR = procTitleTR;
-		this.procTitleORG = procTitleORG;
-		this.bookTitleEN = bookTitleEN;
-		this.bookTitleTR = bookTitleTR;
-		this.bookTitleORG = bookTitleORG;
-		this.conferenceNameEN = conferenceNameEN;
-		this.conferenceNameTR = conferenceNameTR;
-		this.conferenceNameORG = conferenceNameORG;
+		this.parentTitleEN = parentTitleEN;
+		this.parentTitleTR = parentTitleTR;
+		this.parentTitleORG = parentTitleORG;
 		this.universityEN = universityEN;
 		this.universityORG = universityORG;
 		this.universityTR = universityTR;
@@ -129,12 +120,22 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	public AnnotatedBiblographyEntry() { }
 
 	public AnnotatedBiblographyEntry clone() {
-		AnnotatedBiblographyEntry clonedEntry = new AnnotatedBiblographyEntry(annotatedBiblographyID, publicationType, titleEN, titleTR,
-				titleORG, procTitleEN, procTitleTR, procTitleORG, bookTitleEN, bookTitleTR, bookTitleORG, conferenceNameEN, conferenceNameTR, conferenceNameORG,
-				universityEN, universityORG, universityTR, numberEN, numberTR, numberORG, accessdateEN, accessdateTR, accessdateORG, titleaddonEN,
-				titleaddonORG, titleaddonTR, publisher, seriesEN, seriesTR, seriesORG, editionEN, editionORG, editionTR, volumeEN, volumeTR, volumeORG,
-				issueEN, issueTR, issueORG, yearEN, yearORG, yearTR, monthEN, monthTR, monthORG, pagesEN, pagesORG, pagesTR, comments, notes, url, uri, unpublished,
-				firstEditionBibID, openAccess, abstractText);
+		AnnotatedBiblographyEntry clonedEntry = new AnnotatedBiblographyEntry(annotatedBiblographyID, publicationType, 
+				titleEN, titleTR, titleORG, 
+				parentTitleEN, parentTitleTR, parentTitleORG, 
+				universityEN, universityORG, universityTR, 
+				numberEN, numberTR, numberORG, 
+				accessdateEN, accessdateTR, accessdateORG, 
+				titleaddonEN, titleaddonORG, titleaddonTR, 
+				publisher, 
+				seriesEN, seriesTR, seriesORG, 
+				editionEN, editionORG, editionTR, 
+				volumeEN, volumeTR, volumeORG,
+				issueEN, issueTR, issueORG, 
+				yearEN, yearORG, yearTR, 
+				monthEN, monthTR, monthORG, 
+				pagesEN, pagesORG, pagesTR, 
+				comments, notes, url, uri, unpublished, firstEditionBibID, openAccess, abstractText);
 		ArrayList<AuthorEntry> clonedAuthorList = new ArrayList<AuthorEntry>();
 		for (AuthorEntry ae : this.authorList) {
 			clonedAuthorList.add(ae);
@@ -203,96 +204,6 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	 */
 	public void setTitleORG(String titleORG) {
 		this.titleORG = titleORG;
-	}
-
-	/**
-	 * @return the procTitleEN
-	 */
-	public String getProcTitleEN() {
-		return procTitleEN;
-	}
-
-	/**
-	 * @param procTitleEN
-	 *          the procTitleEN to set
-	 */
-	public void setProcTitleEN(String procTitleEN) {
-		this.procTitleEN = procTitleEN;
-	}
-
-	/**
-	 * @return the procTitleTR
-	 */
-	public String getProcTitleTR() {
-		return procTitleTR;
-	}
-
-	/**
-	 * @param procTitleTR
-	 *          the procTitleTR to set
-	 */
-	public void setProcTitleTR(String procTitleTR) {
-		this.procTitleTR = procTitleTR;
-	}
-
-	/**
-	 * @return the procTitleORG
-	 */
-	public String getProcTitleORG() {
-		return procTitleORG;
-	}
-
-	/**
-	 * @param procTitleORG
-	 *          the procTitleORG to set
-	 */
-	public void setProcTitleORG(String procTitleORG) {
-		this.procTitleORG = procTitleORG;
-	}
-
-	/**
-	 * @return the bookTitleEN
-	 */
-	public String getBookTitleEN() {
-		return bookTitleEN;
-	}
-
-	/**
-	 * @param bookTitleEN
-	 *          the bookTitleEN to set
-	 */
-	public void setBookTitleEN(String bookTitleEN) {
-		this.bookTitleEN = bookTitleEN;
-	}
-
-	/**
-	 * @return the bookTitleTR
-	 */
-	public String getBookTitleTR() {
-		return bookTitleTR;
-	}
-
-	/**
-	 * @param bookTitleTR
-	 *          the bookTitleTR to set
-	 */
-	public void setBookTitleTR(String bookTitleTR) {
-		this.bookTitleTR = bookTitleTR;
-	}
-
-	/**
-	 * @return the bookTitleORG
-	 */
-	public String getBookTitleORG() {
-		return bookTitleORG;
-	}
-
-	/**
-	 * @param bookTitleORG
-	 *          the bookTitleORG to set
-	 */
-	public void setBookTitleORG(String bookTitleORG) {
-		this.bookTitleORG = bookTitleORG;
 	}
 
 	/**
@@ -948,36 +859,36 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 		this.issueORG = issueORG;
 	}
 
-	public String getConferenceNameEN() {
-		return conferenceNameEN;
-	}
-
-	public void setConferenceNameEN(String conferenceNameEN) {
-		this.conferenceNameEN = conferenceNameEN;
-	}
-
-	public String getConferenceNameORG() {
-		return conferenceNameORG;
-	}
-
-	public void setConferenceNameORG(String conferenceNameORG) {
-		this.conferenceNameORG = conferenceNameORG;
-	}
-
-	public String getConferenceNameTR() {
-		return conferenceNameTR;
-	}
-
-	public void setConferenceNameTR(String conferenceNameTR) {
-		this.conferenceNameTR = conferenceNameTR;
-	}
-
 	public String getAbstractText() {
 		return abstractText;
 	}
 
 	public void setAbstractText(String abstractText) {
 		this.abstractText = abstractText;
+	}
+
+	public String getParentTitleEN() {
+		return parentTitleEN;
+	}
+
+	public void setParentTitleEN(String parentTitleEN) {
+		this.parentTitleEN = parentTitleEN;
+	}
+
+	public String getParentTitleTR() {
+		return parentTitleTR;
+	}
+
+	public void setParentTitleTR(String parentTitleTR) {
+		this.parentTitleTR = parentTitleTR;
+	}
+
+	public String getParentTitleORG() {
+		return parentTitleORG;
+	}
+
+	public void setParentTitleORG(String parentTitleORG) {
+		this.parentTitleORG = parentTitleORG;
 	}
 
 }

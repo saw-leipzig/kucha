@@ -188,11 +188,30 @@ public class MysqlConnector {
 			pstmt.setInt(1, id);
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.first()) {
+				/**
+				 * @param publicationTypeID
+				 * @param name
+				 * @param accessDateEnabled
+				 * @param authorEnabled
+				 * @param parentTitleEnabled
+				 * @param parentTitleLabel
+				 * @param editionEnabled
+				 * @param editorEnabled
+				 * @param monthEnabled
+				 * @param numberEnabled
+				 * @param pagesEnabled
+				 * @param seriesEnabled
+				 * @param titleAddonEnabled
+				 * @param universityEnabled
+				 * @param volumeEnabled
+				 * @param issueEnabled
+				 * @param yearEnabled
+				 */
 				result = new PublicationTypeEntry(rs.getInt("PublicationTypeID"), rs.getString("Name"), rs.getBoolean("AccessDateEnabled"),
-						rs.getBoolean("AuthorEnabled"), rs.getBoolean("BookTitleEnabled"), rs.getBoolean("ConferenceNameEnabled"), rs.getBoolean("EditionEnabled"),
-						rs.getBoolean("EditorEnabled"), rs.getBoolean("MonthEnabled"), rs.getBoolean("NumberEnabled"), rs.getBoolean("PagesEnabled"),
-						rs.getBoolean("ProceedingsTitleEnabled"), rs.getBoolean("SeriesEnabled"), rs.getBoolean("TitleAddonEnabled"),
-						rs.getBoolean("UniversityEnabled"), rs.getBoolean("VolumeEnabled"), rs.getBoolean("IssueEnabled"), rs.getBoolean("YearEnabled"));
+						rs.getBoolean("AuthorEnabled"), rs.getBoolean("ParentTitleEnabled"), rs.getString("ParentTitleLabel"), rs.getBoolean("TitleAddonEnabled"), rs.getBoolean("EditionEnabled"),
+						rs.getBoolean("EditorEnabled"), rs.getBoolean("NumberEnabled"), rs.getBoolean("SeriesEnabled"),
+						rs.getBoolean("VolumeEnabled"), rs.getBoolean("IssueEnabled"), 
+						rs.getBoolean("UniversityEnabled"), rs.getBoolean("PagesEnabled"), rs.getBoolean("MonthEnabled"), rs.getBoolean("YearEnabled"));
 			}
 			rs.close();
 			pstmt.close();
@@ -212,10 +231,10 @@ public class MysqlConnector {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM PublicationTypes ORDER BY Name");
 			while (rs.next()) {
 				entry = new PublicationTypeEntry(rs.getInt("PublicationTypeID"), rs.getString("Name"), rs.getBoolean("AccessDateEnabled"),
-						rs.getBoolean("AuthorEnabled"), rs.getBoolean("BookTitleEnabled"), rs.getBoolean("ConferenceNameEnabled"), rs.getBoolean("EditionEnabled"),
-						rs.getBoolean("EditorEnabled"), rs.getBoolean("MonthEnabled"), rs.getBoolean("NumberEnabled"), rs.getBoolean("PagesEnabled"),
-						rs.getBoolean("ProceedingsTitleEnabled"), rs.getBoolean("SeriesEnabled"), rs.getBoolean("TitleAddonEnabled"),
-						rs.getBoolean("UniversityEnabled"), rs.getBoolean("VolumeEnabled"), rs.getBoolean("IssueEnabled"), rs.getBoolean("YearEnabled"));
+						rs.getBoolean("AuthorEnabled"), rs.getBoolean("ParentTitleEnabled"), rs.getString("ParentTitleLabel"), rs.getBoolean("TitleAddonEnabled"), rs.getBoolean("EditionEnabled"),
+						rs.getBoolean("EditorEnabled"), rs.getBoolean("NumberEnabled"), rs.getBoolean("SeriesEnabled"),
+						rs.getBoolean("VolumeEnabled"), rs.getBoolean("IssueEnabled"), 
+						rs.getBoolean("UniversityEnabled"), rs.getBoolean("PagesEnabled"), rs.getBoolean("MonthEnabled"), rs.getBoolean("YearEnabled"));
 				result.add(entry);
 
 			}
@@ -1551,14 +1570,13 @@ public class MysqlConnector {
 			while (rs.next()) {
 				entry = new AnnotatedBiblographyEntry(rs.getInt("BibID"), getPublicationType(rs.getInt("PublicationTypeID")),
 						rs.getString("TitleEN"), rs.getString("TitleORG"), rs.getString("TitleTR"), 
-						rs.getString("ProcTitleEN"), rs.getString("ProcTitleORG"), rs.getString("ProcTitleTR"), 
-						rs.getString("BookTitleEN"), rs.getString("BookTitleORG"), rs.getString("BookTitleTR"), 
-						rs.getString("ConferenceNameEN"), rs.getString("ConferenceNameORG"), rs.getString("ConferenceNameTR"),
+						rs.getString("ParentTitleEN"), rs.getString("ParentTitleORG"), rs.getString("ParentTitleTR"), 
 						rs.getString("UniversityEN"), rs.getString("UniversityORG"), rs.getString("UniversityTR"),
 						rs.getString("NumberEN"), rs.getString("NumberORG"), rs.getString("NumberTR"), 
 						rs.getString("AccessDateEN"), rs.getString("AccessDateORG"), rs.getString("AccessDateTR"), 
 						rs.getString("TitleAddonEN"), rs.getString("TitleAddonORG"), rs.getString("TitleAddonTR"), 
-						getPublisher(rs.getInt("PublisherID")), rs.getString("SeriesEN"), rs.getString("SeriesORG"), rs.getString("SeriesTR"), 
+						getPublisher(rs.getInt("PublisherID")), 
+						rs.getString("SeriesEN"), rs.getString("SeriesORG"), rs.getString("SeriesTR"), 
 						rs.getString("EditionEN"), rs.getString("EditionORG"), rs.getString("EditionTR"),
 						rs.getString("VolumeEN"), rs.getString("VolumeORG"), rs.getString("VolumeTR"), 
 						rs.getString("IssueEN"), rs.getString("IssueTR"), rs.getString("IssueORG"), 
@@ -1647,14 +1665,13 @@ public class MysqlConnector {
 			if (rs.first()) {
 				result = new AnnotatedBiblographyEntry(rs.getInt("BibID"), getPublicationType(rs.getInt("PublicationTypeID")),
 						rs.getString("TitleEN"), rs.getString("TitleORG"), rs.getString("TitleTR"), 
-						rs.getString("ProcTitleEN"), rs.getString("ProcTitleORG"), rs.getString("ProcTitleTR"), 
-						rs.getString("BookTitleEN"), rs.getString("BookTitleORG"), rs.getString("BookTitleTR"), 
-						rs.getString("ConferenceNameEN"), rs.getString("ConferenceNameORG"), rs.getString("ConferenceNameTR"),
+						rs.getString("ParentTitleEN"), rs.getString("ParentTitleORG"), rs.getString("ParentTitleTR"), 
 						rs.getString("UniversityEN"), rs.getString("UniversityORG"), rs.getString("UniversityTR"),
 						rs.getString("NumberEN"), rs.getString("NumberORG"), rs.getString("NumberTR"), 
 						rs.getString("AccessDateEN"), rs.getString("AccessDateORG"), rs.getString("AccessDateTR"), 
 						rs.getString("TitleAddonEN"), rs.getString("TitleAddonORG"), rs.getString("TitleAddonTR"), 
-						getPublisher(rs.getInt("PublisherID")), rs.getString("SeriesEN"), rs.getString("SeriesORG"), rs.getString("SeriesTR"), 
+						getPublisher(rs.getInt("PublisherID")), 
+						rs.getString("SeriesEN"), rs.getString("SeriesORG"), rs.getString("SeriesTR"), 
 						rs.getString("EditionEN"), rs.getString("EditionORG"), rs.getString("EditionTR"),
 						rs.getString("VolumeEN"), rs.getString("VolumeORG"), rs.getString("VolumeTR"), 
 						rs.getString("IssueEN"), rs.getString("IssueTR"), rs.getString("IssueORG"), 
@@ -1663,6 +1680,7 @@ public class MysqlConnector {
 						rs.getString("PagesEN"), rs.getString("PagesORG"), rs.getString("PagesTR"), 
 						rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"), rs.getString("URI"), rs.getBoolean("Unpublished"), 
 						rs.getInt("FirstEditionBibID"), rs.getBoolean("OpenAccess"), rs.getString("AbstractText"));
+
 				result.setAuthorList(getAuthorBibRelation(result.getAnnotatedBiblographyID()));
 				result.setEditorList(getEditorBibRelation(result.getAnnotatedBiblographyID()));
 			}
@@ -2651,64 +2669,77 @@ public class MysqlConnector {
 		System.err.println("insertAnnotatedBiblographyEntry - saving");
 		try {
 			pstmt = dbc.prepareStatement(
-					"INSERT INTO AnnotatedBibliography (PublicationTypeID, AccessDateEN, AccessDateORG, AccessDateTR, BookTitleEN, BookTitleORG, BookTitleTR, ConferenceNameEN, ConferenceNameORG, ConferenceNameTR, "
-					+ "Comments, EditionEN, EditionORG, EditionTR, FirstEditionBibID, MonthEN, MonthORG, MonthTR,  Notes, NumberEN, NumberORG, NumberTR, PagesEN, PagesORG, PagesTR, ProcTitleEN, ProcTitleORG, ProcTitleTR, "
-					+ "PublisherID, SeriesEN, SeriesORG, SeriesTR, TitleAddonEN, TitleAddonORG, TitleAddonTR, TitleEN, TitleORG, TitleTR, UniversityEN, UniversityORG, UniversityTR, URI, URL, "
-					+ "VolumeEN, VolumeORG, VolumeTR, YearEN, YearORG, YearTR, Unpublished, OpenAccess, AbstractText) "
-					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+					"INSERT INTO AnnotatedBibliography (PublicationTypeID, "
+					+ "AccessDateEN, AccessDateORG, AccessDateTR, "
+					+ "ParentTitleEN, ParentTitleORG, ParentTitleTR, "
+					+ "Comments, "
+					+ "EditionEN, EditionORG, EditionTR, "
+					+ "FirstEditionBibID, "
+					+ "MonthEN, MonthORG, MonthTR, "
+					+ "Notes, "
+					+ "NumberEN, NumberORG, NumberTR, "
+					+ "PagesEN, PagesORG, PagesTR, "
+					+ "PublisherID, "
+					+ "SeriesEN, SeriesORG, SeriesTR, "
+					+ "TitleAddonEN, TitleAddonORG, TitleAddonTR, "
+					+ "TitleEN, TitleORG, TitleTR, "
+					+ "UniversityEN, UniversityORG, UniversityTR, "
+					+ "URI, URL, "
+					+ "VolumeEN, VolumeORG, VolumeTR, "
+					+ "IssueEN, IssueORG, IssueTR, "
+					+ "YearEN, YearORG, YearTR, "
+					+ "Unpublished, OpenAccess, AbstractText) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, )",
 					Statement.RETURN_GENERATED_KEYS);
 			pstmt.setInt(1, bibEntry.getPublicationType().getPublicationTypeID());
 			pstmt.setString(2, bibEntry.getAccessdateEN());
 			pstmt.setString(3, bibEntry.getAccessdateORG());
 			pstmt.setString(4, bibEntry.getAccessdateTR());
-			pstmt.setString(5, bibEntry.getBookTitleEN());
-			pstmt.setString(6, bibEntry.getBookTitleORG());
-			pstmt.setString(7, bibEntry.getBookTitleTR());
-			pstmt.setString(8, bibEntry.getConferenceNameEN());
-			pstmt.setString(9, bibEntry.getConferenceNameORG());
-			pstmt.setString(10, bibEntry.getConferenceNameTR());
-			pstmt.setString(11, bibEntry.getComments());
-			pstmt.setString(12, bibEntry.getEditionEN());
-			pstmt.setString(13, bibEntry.getEditionORG());
-			pstmt.setString(14, bibEntry.getEditionTR());
-			pstmt.setInt(15, bibEntry.getFirstEditionBibID());
-			pstmt.setString(16, bibEntry.getMonthEN());
-			pstmt.setString(17, bibEntry.getMonthORG());
-			pstmt.setString(18, bibEntry.getMonthTR());
-			pstmt.setString(19, bibEntry.getNotes());
-			pstmt.setString(20, bibEntry.getNumberEN());
-			pstmt.setString(21, bibEntry.getNumberORG());
-			pstmt.setString(22, bibEntry.getNumberTR());
-			pstmt.setString(23, bibEntry.getPagesEN());
-			pstmt.setString(24, bibEntry.getPagesORG());
-			pstmt.setString(25, bibEntry.getPagesTR());
-			pstmt.setString(26, bibEntry.getProcTitleEN());
-			pstmt.setString(27, bibEntry.getProcTitleORG());
-			pstmt.setString(28, bibEntry.getProcTitleTR());
-			pstmt.setInt(29, bibEntry.getPublisher() != null ? bibEntry.getPublisher().getPublisherID() : 0);
-			pstmt.setString(30, bibEntry.getSeriesEN());
-			pstmt.setString(31, bibEntry.getSeriesORG());
-			pstmt.setString(32, bibEntry.getSeriesTR());
-			pstmt.setString(33, bibEntry.getTitleaddonEN());
-			pstmt.setString(34, bibEntry.getTitleaddonORG());
-			pstmt.setString(35, bibEntry.getTitleaddonTR());
-			pstmt.setString(36, bibEntry.getTitleEN());
-			pstmt.setString(37, bibEntry.getTitleORG());
-			pstmt.setString(38, bibEntry.getTitleTR());
-			pstmt.setString(39, bibEntry.getUniversityEN());
-			pstmt.setString(40, bibEntry.getUniversityORG());
-			pstmt.setString(41, bibEntry.getUniversityTR());
-			pstmt.setString(42, bibEntry.getUri());
-			pstmt.setString(43, bibEntry.getUrl());
-			pstmt.setString(44, bibEntry.getVolumeEN());
-			pstmt.setString(45, bibEntry.getVolumeORG());
-			pstmt.setString(46, bibEntry.getVolumeTR());
-			pstmt.setInt(47, bibEntry.getYearEN());
-			pstmt.setString(48, bibEntry.getYearORG());
-			pstmt.setString(49, bibEntry.getYearTR());
-			pstmt.setBoolean(50, bibEntry.isUnpublished());
-			pstmt.setBoolean(51, bibEntry.isOpenAccess());
-			pstmt.setString(52, bibEntry.getAbstractText());
+			pstmt.setString(5, bibEntry.getParentTitleEN());
+			pstmt.setString(6, bibEntry.getParentTitleORG());
+			pstmt.setString(7, bibEntry.getParentTitleTR());
+			pstmt.setString(8, bibEntry.getComments());
+			pstmt.setString(9, bibEntry.getEditionEN());
+			pstmt.setString(10, bibEntry.getEditionORG());
+			pstmt.setString(11, bibEntry.getEditionTR());
+			pstmt.setInt(12, bibEntry.getFirstEditionBibID());
+			pstmt.setString(13, bibEntry.getMonthEN());
+			pstmt.setString(14, bibEntry.getMonthORG());
+			pstmt.setString(15, bibEntry.getMonthTR());
+			pstmt.setString(16, bibEntry.getNotes());
+			pstmt.setString(17, bibEntry.getNumberEN());
+			pstmt.setString(18, bibEntry.getNumberORG());
+			pstmt.setString(19, bibEntry.getNumberTR());
+			pstmt.setString(20, bibEntry.getPagesEN());
+			pstmt.setString(21, bibEntry.getPagesORG());
+			pstmt.setString(22, bibEntry.getPagesTR());
+			pstmt.setInt(23, bibEntry.getPublisher() != null ? bibEntry.getPublisher().getPublisherID() : 0);
+			pstmt.setString(24, bibEntry.getSeriesEN());
+			pstmt.setString(25, bibEntry.getSeriesORG());
+			pstmt.setString(26, bibEntry.getSeriesTR());
+			pstmt.setString(27, bibEntry.getTitleaddonEN());
+			pstmt.setString(28, bibEntry.getTitleaddonORG());
+			pstmt.setString(29, bibEntry.getTitleaddonTR());
+			pstmt.setString(30, bibEntry.getTitleEN());
+			pstmt.setString(31, bibEntry.getTitleORG());
+			pstmt.setString(32, bibEntry.getTitleTR());
+			pstmt.setString(33, bibEntry.getUniversityEN());
+			pstmt.setString(34, bibEntry.getUniversityORG());
+			pstmt.setString(35, bibEntry.getUniversityTR());
+			pstmt.setString(36, bibEntry.getUri());
+			pstmt.setString(37, bibEntry.getUrl());
+			pstmt.setString(38, bibEntry.getVolumeEN());
+			pstmt.setString(39, bibEntry.getVolumeORG());
+			pstmt.setString(40, bibEntry.getVolumeTR());
+			pstmt.setString(41, bibEntry.getIssueEN());
+			pstmt.setString(42, bibEntry.getIssueEN());
+			pstmt.setString(43, bibEntry.getIssueEN());
+			pstmt.setInt(44, bibEntry.getYearEN());
+			pstmt.setString(45, bibEntry.getYearORG());
+			pstmt.setString(46, bibEntry.getYearTR());
+			pstmt.setBoolean(47, bibEntry.isUnpublished());
+			pstmt.setBoolean(48, bibEntry.isOpenAccess());
+			pstmt.setString(49, bibEntry.getAbstractText());
 			pstmt.executeUpdate();
 
 			ResultSet keys = pstmt.getGeneratedKeys();
@@ -3268,64 +3299,76 @@ public class MysqlConnector {
 		System.err.println("insertAnnotatedBiblographyEntry - saving");
 		try {
 			pstmt = dbc.prepareStatement(
-					"UPDATE AnnotatedBibliography SET PublicationTypeID=?, AccessDateEN=?, AccessDateORG=?, AccessDateTR=?, BookTitleEN=?, BookTitleORG=?, BookTitleTR=?, "
-					+ "ConferenceNameEN=?, ConferenceNameORG=?, ConferenceNameTR=?, Comments=?, EditionEN=?, EditionORG=?, EditionTR=?, FirstEditionBibID=?, MonthEN=?, MonthORG=?, MonthTR=?, "
-					+ "Notes=?, NumberEN=?, NumberORG=?, NumberTR=?, PagesEN=?, PagesORG=?, PagesTR=?, ProcTitleEN=?, ProcTitleORG=?, ProcTitleTR=?,  PublisherID=?, "
-							+ "SeriesEN=?, SeriesORG=?, SeriesTR=?, TitleAddonEN=?, TitleAddonORG=?, TitleAddonTR=?, TitleEN=?, TitleORG=?, TitleTR=?, UniversityEN=?, UniversityORG=?, UniversityTR=?, "
-							+ "URI=?, URL=?, VolumeEN=?, VolumeORG=?, VolumeTR=?, YearEN=?, YearORG=?, YearTR=?, Unpublished=?, OpenAccess=?, AbstractText=? WHERE BibID=?");
+					"UPDATE AnnotatedBibliography SET PublicationTypeID=?, "
+					+ "AccessDateEN=?, AccessDateORG=?, AccessDateTR=?, "
+					+ "ParentTitleEN=?, ParentTitleORG=?, ParentTitleTR=?, "
+					+ "Comments=?, "
+					+ "EditionEN=?, EditionORG=?, EditionTR=?, "
+					+ "FirstEditionBibID=?, "
+					+ "MonthEN=?, MonthORG=?, MonthTR=?, "
+					+ "Notes=?, "
+					+ "NumberEN=?, NumberORG=?, NumberTR=?, "
+					+ "PagesEN=?, PagesORG=?, PagesTR=?, "
+					+ "PublisherID=?, "
+					+ "SeriesEN=?, SeriesORG=?, SeriesTR=?, "
+					+ "TitleAddonEN=?, TitleAddonORG=?, TitleAddonTR=?, "
+					+ "TitleEN=?, TitleORG=?, TitleTR=?, "
+					+ "UniversityEN=?, UniversityORG=?, UniversityTR=?, "
+					+ "URI=?, URL=?, "
+					+ "VolumeEN=?, VolumeORG=?, VolumeTR=?, "
+					+ "IssueEN=?, IssueORG=?, IssueTR=?, "
+					+ "YearEN=?, YearORG=?, YearTR=?, "
+					+ "Unpublished=?, OpenAccess=?, AbstractText=? WHERE BibID=?");
 			pstmt.setInt(1, bibEntry.getPublicationType().getPublicationTypeID());
 			pstmt.setString(2, bibEntry.getAccessdateEN());
 			pstmt.setString(3, bibEntry.getAccessdateORG());
 			pstmt.setString(4, bibEntry.getAccessdateTR());
-			pstmt.setString(5, bibEntry.getBookTitleEN());
-			pstmt.setString(6, bibEntry.getBookTitleORG());
-			pstmt.setString(7, bibEntry.getBookTitleTR());
-			pstmt.setString(8, bibEntry.getConferenceNameEN());
-			pstmt.setString(9, bibEntry.getConferenceNameORG());
-			pstmt.setString(10, bibEntry.getConferenceNameTR());
-			pstmt.setString(11, bibEntry.getComments());
-			pstmt.setString(12, bibEntry.getEditionEN());
-			pstmt.setString(13, bibEntry.getEditionORG());
-			pstmt.setString(14, bibEntry.getEditionTR());
-			pstmt.setInt(15, bibEntry.getFirstEditionBibID());
-			pstmt.setString(16, bibEntry.getMonthEN());
-			pstmt.setString(17, bibEntry.getMonthORG());
-			pstmt.setString(18, bibEntry.getMonthTR());
-			pstmt.setString(19, bibEntry.getNotes());
-			pstmt.setString(20, bibEntry.getNumberEN());
-			pstmt.setString(21, bibEntry.getNumberORG());
-			pstmt.setString(22, bibEntry.getNumberTR());
-			pstmt.setString(23, bibEntry.getPagesEN());
-			pstmt.setString(24, bibEntry.getPagesORG());
-			pstmt.setString(25, bibEntry.getPagesTR());
-			pstmt.setString(26, bibEntry.getProcTitleEN());
-			pstmt.setString(27, bibEntry.getProcTitleORG());
-			pstmt.setString(28, bibEntry.getProcTitleTR());
-			pstmt.setInt(29, bibEntry.getPublisher() != null ? bibEntry.getPublisher().getPublisherID() : 0);
-			pstmt.setString(30, bibEntry.getSeriesEN());
-			pstmt.setString(31, bibEntry.getSeriesORG());
-			pstmt.setString(32, bibEntry.getSeriesTR());
-			pstmt.setString(33, bibEntry.getTitleaddonEN());
-			pstmt.setString(34, bibEntry.getTitleaddonORG());
-			pstmt.setString(35, bibEntry.getTitleaddonTR());
-			pstmt.setString(36, bibEntry.getTitleEN());
-			pstmt.setString(37, bibEntry.getTitleORG());
-			pstmt.setString(38, bibEntry.getTitleTR());
-			pstmt.setString(39, bibEntry.getUniversityEN());
-			pstmt.setString(40, bibEntry.getUniversityORG());
-			pstmt.setString(41, bibEntry.getUniversityTR());
-			pstmt.setString(42, bibEntry.getUri());
-			pstmt.setString(43, bibEntry.getUrl());
-			pstmt.setString(44, bibEntry.getVolumeEN());
-			pstmt.setString(45, bibEntry.getVolumeORG());
-			pstmt.setString(46, bibEntry.getVolumeTR());
-			pstmt.setInt(47, bibEntry.getYearEN());
-			pstmt.setString(48, bibEntry.getYearORG());
-			pstmt.setString(49, bibEntry.getYearTR());
-			pstmt.setBoolean(50, bibEntry.isUnpublished());
-			pstmt.setBoolean(51, bibEntry.isOpenAccess());
-			pstmt.setString(52, bibEntry.getAbstractText());
-			pstmt.setInt(53, bibEntry.getAnnotatedBiblographyID());
+			pstmt.setString(5, bibEntry.getParentTitleEN());
+			pstmt.setString(6, bibEntry.getParentTitleORG());
+			pstmt.setString(7, bibEntry.getParentTitleTR());
+			pstmt.setString(8, bibEntry.getComments());
+			pstmt.setString(9, bibEntry.getEditionEN());
+			pstmt.setString(10, bibEntry.getEditionORG());
+			pstmt.setString(11, bibEntry.getEditionTR());
+			pstmt.setInt(12, bibEntry.getFirstEditionBibID());
+			pstmt.setString(13, bibEntry.getMonthEN());
+			pstmt.setString(14, bibEntry.getMonthORG());
+			pstmt.setString(15, bibEntry.getMonthTR());
+			pstmt.setString(16, bibEntry.getNotes());
+			pstmt.setString(17, bibEntry.getNumberEN());
+			pstmt.setString(18, bibEntry.getNumberORG());
+			pstmt.setString(19, bibEntry.getNumberTR());
+			pstmt.setString(20, bibEntry.getPagesEN());
+			pstmt.setString(21, bibEntry.getPagesORG());
+			pstmt.setString(22, bibEntry.getPagesTR());
+			pstmt.setInt(23, bibEntry.getPublisher() != null ? bibEntry.getPublisher().getPublisherID() : 0);
+			pstmt.setString(24, bibEntry.getSeriesEN());
+			pstmt.setString(25, bibEntry.getSeriesORG());
+			pstmt.setString(26, bibEntry.getSeriesTR());
+			pstmt.setString(27, bibEntry.getTitleaddonEN());
+			pstmt.setString(28, bibEntry.getTitleaddonORG());
+			pstmt.setString(29, bibEntry.getTitleaddonTR());
+			pstmt.setString(30, bibEntry.getTitleEN());
+			pstmt.setString(31, bibEntry.getTitleORG());
+			pstmt.setString(32, bibEntry.getTitleTR());
+			pstmt.setString(33, bibEntry.getUniversityEN());
+			pstmt.setString(34, bibEntry.getUniversityORG());
+			pstmt.setString(35, bibEntry.getUniversityTR());
+			pstmt.setString(36, bibEntry.getUri());
+			pstmt.setString(37, bibEntry.getUrl());
+			pstmt.setString(38, bibEntry.getVolumeEN());
+			pstmt.setString(39, bibEntry.getVolumeORG());
+			pstmt.setString(40, bibEntry.getVolumeTR());
+			pstmt.setString(41, bibEntry.getIssueEN());
+			pstmt.setString(42, bibEntry.getIssueEN());
+			pstmt.setString(43, bibEntry.getIssueEN());
+			pstmt.setInt(44, bibEntry.getYearEN());
+			pstmt.setString(45, bibEntry.getYearORG());
+			pstmt.setString(46, bibEntry.getYearTR());
+			pstmt.setBoolean(47, bibEntry.isUnpublished());
+			pstmt.setBoolean(48, bibEntry.isOpenAccess());
+			pstmt.setString(49, bibEntry.getAbstractText());
+			pstmt.setInt(50, bibEntry.getAnnotatedBiblographyID());
 			pstmt.executeUpdate();
 
 			updateAuthorBibRelation(bibEntry.getAnnotatedBiblographyID(), bibEntry.getAuthorList());
