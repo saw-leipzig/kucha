@@ -146,6 +146,7 @@ public class DepictionEditor extends AbstractEditor {
 	private ListStore<LocationEntry> locationEntryLS;
 	private PreservationAttributeProperties presAttributeProps;
 	private ListStore<PreservationAttributeEntry> preservationAttributesLS, selectedPreservationAttributesLS;
+	private TextField shortNameTF;
 
 	interface DepictionProperties extends PropertyAccess<DepictionEntry> {
 		ModelKeyProvider<DepictionEntry> depictionID();
@@ -508,7 +509,7 @@ public class DepictionEditor extends AbstractEditor {
 		
 		FramedPanel shortNameFP = new FramedPanel();
 		shortNameFP.setHeading("Short Name");
-		TextField shortNameTF = new TextField();
+		shortNameTF = new TextField();
 		shortNameTF.setEmptyText("optional short name");
 		shortNameTF.setValue(correspondingDepictionEntry.getShortName());
 		shortNameTF.addValidator(new Validator<String>() {
@@ -577,6 +578,7 @@ public class DepictionEditor extends AbstractEditor {
 			public void onSelection(SelectionEvent<CaveEntry> event) {
 				correspondingDepictionEntry.setCave(event.getSelectedItem());
 				wallSelectorPanel.setCave(event.getSelectedItem());
+				shortNameTF.validate();
 			}
 		});
 		caveSelectionCB.setToolTip("This field can only be changed until a depiction is allocated to a wall");
@@ -1424,6 +1426,9 @@ public class DepictionEditor extends AbstractEditor {
 	 * @param close 
 	 */
 	protected void saveDepictionEntry(boolean close) {
+		if (!shortNameTF.validate()) {
+			return;
+		}
 		ArrayList<ImageEntry> relatedImageEntryList = new ArrayList<ImageEntry>();
 		for (int i = 0; i < imageEntryLS.size(); ++i) {
 			relatedImageEntryList.add(imageEntryLS.get(i));
