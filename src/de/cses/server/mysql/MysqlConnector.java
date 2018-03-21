@@ -2188,10 +2188,9 @@ public class MysqlConnector {
 		try {
 			pstmt = dbc.prepareStatement(
 					"INSERT INTO Depictions (StyleID, Inscriptions, SeparateAksaras, Dating, Description, BackgroundColour, GeneralRemarks, "
-							+ "OtherSuggestedIdentifications, Width, Height, ExpeditionID, PurchaseDate, CurrentLocationID, InventoryNumber, VendorID, "
-							+ "StoryID, CaveID, WallID, AbsoluteLeft, AbsoluteTop, ModeOfRepresentationID, ShortName, PositionNotes) "
-							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-					Statement.RETURN_GENERATED_KEYS);
+					+ "OtherSuggestedIdentifications, Width, Height, ExpeditionID, PurchaseDate, CurrentLocationID, InventoryNumber, VendorID, "
+					+ "StoryID, CaveID, WallID, AbsoluteLeft, AbsoluteTop, ModeOfRepresentationID, ShortName, PositionNotes, MasterImageID) "
+							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			pstmt.setInt(1, de.getStyleID());
 			pstmt.setString(2, de.getInscriptions());
 			pstmt.setString(3, de.getSeparateAksaras());
@@ -2208,7 +2207,7 @@ public class MysqlConnector {
 			pstmt.setString(14, de.getInventoryNumber());
 			pstmt.setInt(15, de.getVendorID());
 			pstmt.setInt(16, de.getStoryID());
-			pstmt.setInt(17, de.getCave().getCaveID());
+			pstmt.setInt(17, de.getCave() != null ? de.getCave().getCaveID() : 0);
 			pstmt.setInt(18, de.getWallID());
 			pstmt.setInt(19, de.getAbsoluteLeft());
 			pstmt.setInt(20, de.getAbsoluteTop());
@@ -2274,7 +2273,7 @@ public class MysqlConnector {
 			pstmt.setString(14, de.getInventoryNumber());
 			pstmt.setInt(15, de.getVendorID());
 			pstmt.setInt(16, de.getStoryID());
-			pstmt.setInt(17, de.getCave().getCaveID());
+			pstmt.setInt(17, de.getCave() != null ? de.getCave().getCaveID() : 0);
 			pstmt.setInt(18, de.getWallID());
 			pstmt.setInt(19, de.getAbsoluteLeft());
 			pstmt.setInt(20, de.getAbsoluteTop());

@@ -55,8 +55,8 @@ public class DepictionView extends AbstractView {
 		@XTemplate("<div><center><img src='{imgUri}'></img></center><label style='font-size:9px'>{caveLabel}<br>{depictionLabel}</label></br></div>")
 		SafeHtml view(SafeUri imgUri, String caveLabel, String depictionLabel);
 
-		@XTemplate("<div><center><img src='{imgUri}'></img></center><label style='font-size:9px'>{caveLabel}<br>{caveName}<br>{depictionLabel}</label></br></div>")
-		SafeHtml view(SafeUri imgUri, String caveLabel, String caveName, String depictionLabel);
+//		@XTemplate("<div><center><img src='{imgUri}'></img></center><label style='font-size:9px'>{caveLabel}<br>{caveName}<br>{depictionLabel}</label></br></div>")
+//		SafeHtml view(SafeUri imgUri, String caveLabel, String caveName, String depictionLabel);
 	}
 
 	private DepictionEntry depictionEntry;
@@ -71,9 +71,14 @@ public class DepictionView extends AbstractView {
 		resources = GWT.create(Resources.class);
 		dvTemplates = GWT.create(DepictionViewTemplates.class);
 		CaveEntry ce = entry.getCave();
-		setHTML(dvTemplates.view(UriUtils.fromString("resource?imageID=" + entry.getMasterImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), 
-				StaticTables.getInstance().getSiteEntries().get(ce.getSiteID()).getShortName() + " " + ce.getOfficialNumber(), 
-				ce.getHistoricName() != null ? ce.getHistoricName() : (depictionEntry.getShortName() != null ? depictionEntry.getShortName() : "")));
+		if (ce != null) {
+			setHTML(dvTemplates.view(UriUtils.fromString("resource?imageID=" + entry.getMasterImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), 
+					StaticTables.getInstance().getSiteEntries().get(ce.getSiteID()).getShortName() + " " + ce.getOfficialNumber(), 
+					ce.getHistoricName() != null ? ce.getHistoricName() : (depictionEntry.getShortName() != null ? depictionEntry.getShortName() : "")));
+		} else {
+			setHTML(dvTemplates.view(UriUtils.fromString("resource?imageID=" + entry.getMasterImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), 
+					depictionEntry.getShortName() != null ? depictionEntry.getShortName() : ""));
+		}
 		setPixelSize(150, 150);
 
 		DragSource source = new DragSource(this) {

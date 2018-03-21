@@ -218,6 +218,7 @@ public class SingleImageEditor extends AbstractEditor {
 
 		FramedPanel shortNamePanel = new FramedPanel();
 		shortNameField = new TextField();
+		shortNameField.addValidator(new MinLengthValidator(2));
 		shortNameField.addValidator(new MaxLengthValidator(12));
 		shortNamePanel.setHeading("Short Name");
 		shortNameField.setValue(imgEntry.getShortName());
