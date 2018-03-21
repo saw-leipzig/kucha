@@ -188,30 +188,11 @@ public class MysqlConnector {
 			pstmt.setInt(1, id);
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.first()) {
-				/**
-				 * @param publicationTypeID
-				 * @param name
-				 * @param accessDateEnabled
-				 * @param authorEnabled
-				 * @param parentTitleEnabled
-				 * @param parentTitleLabel
-				 * @param editionEnabled
-				 * @param editorEnabled
-				 * @param monthEnabled
-				 * @param numberEnabled
-				 * @param pagesEnabled
-				 * @param seriesEnabled
-				 * @param titleAddonEnabled
-				 * @param universityEnabled
-				 * @param volumeEnabled
-				 * @param issueEnabled
-				 * @param yearEnabled
-				 */
 				result = new PublicationTypeEntry(rs.getInt("PublicationTypeID"), rs.getString("Name"), rs.getBoolean("AccessDateEnabled"),
-						rs.getBoolean("AuthorEnabled"), rs.getBoolean("ParentTitleEnabled"), rs.getString("ParentTitleLabel"), rs.getBoolean("TitleAddonEnabled"), rs.getBoolean("EditionEnabled"),
-						rs.getBoolean("EditorEnabled"), rs.getBoolean("NumberEnabled"), rs.getBoolean("SeriesEnabled"),
-						rs.getBoolean("VolumeEnabled"), rs.getBoolean("IssueEnabled"), 
-						rs.getBoolean("UniversityEnabled"), rs.getBoolean("PagesEnabled"), rs.getBoolean("MonthEnabled"), rs.getBoolean("YearEnabled"));
+						rs.getBoolean("AuthorEnabled"), rs.getBoolean("ParentTitleEnabled"), rs.getString("ParentTitleLabel"), rs.getBoolean("EditionEnabled"),
+						rs.getBoolean("EditorEnabled"), rs.getBoolean("MonthEnabled"), rs.getBoolean("NumberEnabled"), rs.getBoolean("PagesEnabled"), 
+						rs.getBoolean("SeriesEnabled"),rs.getBoolean("TitleAddonEnabled"), rs.getBoolean("UniversityEnabled"), 
+						rs.getBoolean("VolumeEnabled"), rs.getBoolean("IssueEnabled"), rs.getBoolean("YearEnabled"));
 			}
 			rs.close();
 			pstmt.close();
@@ -231,10 +212,10 @@ public class MysqlConnector {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM PublicationTypes ORDER BY Name");
 			while (rs.next()) {
 				entry = new PublicationTypeEntry(rs.getInt("PublicationTypeID"), rs.getString("Name"), rs.getBoolean("AccessDateEnabled"),
-						rs.getBoolean("AuthorEnabled"), rs.getBoolean("ParentTitleEnabled"), rs.getString("ParentTitleLabel"), rs.getBoolean("TitleAddonEnabled"), rs.getBoolean("EditionEnabled"),
-						rs.getBoolean("EditorEnabled"), rs.getBoolean("NumberEnabled"), rs.getBoolean("SeriesEnabled"),
-						rs.getBoolean("VolumeEnabled"), rs.getBoolean("IssueEnabled"), 
-						rs.getBoolean("UniversityEnabled"), rs.getBoolean("PagesEnabled"), rs.getBoolean("MonthEnabled"), rs.getBoolean("YearEnabled"));
+						rs.getBoolean("AuthorEnabled"), rs.getBoolean("ParentTitleEnabled"), rs.getString("ParentTitleLabel"), rs.getBoolean("EditionEnabled"),
+						rs.getBoolean("EditorEnabled"), rs.getBoolean("MonthEnabled"), rs.getBoolean("NumberEnabled"), rs.getBoolean("PagesEnabled"), 
+						rs.getBoolean("SeriesEnabled"),rs.getBoolean("TitleAddonEnabled"), rs.getBoolean("UniversityEnabled"), 
+						rs.getBoolean("VolumeEnabled"), rs.getBoolean("IssueEnabled"), rs.getBoolean("YearEnabled"));
 				result.add(entry);
 
 			}
