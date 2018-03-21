@@ -105,11 +105,11 @@ public class MainView implements IsWidget {
     
     HorizontalLayoutData hLayoutData = new HorizontalLayoutData(140, 1.0, new Margins(5, 0, 5, 5));
     
-    LocationFilter lFilter = new LocationFilter("Location Filter");
+//    LocationFilter lFilter = new LocationFilter("Location Filter");
 
 		caveSearchController = new CaveSearchController("Caves", new CaveResultView("Caves"));
-		caveSearchController.addRelatedFilter(new CaveFilter("Cave Filter"));
-		caveSearchController.addRelatedFilter(lFilter);
+		caveSearchController.addRelatedFilter(new CaveFilter("Caves"));
+//		caveSearchController.addRelatedFilter(lFilter);
 		caveSearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 			
 			@Override
@@ -132,7 +132,7 @@ public class MainView implements IsWidget {
 		});
 		
 		depictionSearchController = new DepictionSearchController("Painted Representations", new DepictionResultView("Painted Representations"));
-		depictionSearchController.addRelatedFilter(new DepictionFilter("Painted Representation Filter"));
+		depictionSearchController.addRelatedFilter(new DepictionFilter("Painted Representations"));
 		depictionSearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
 			@Override
@@ -179,7 +179,7 @@ public class MainView implements IsWidget {
 		});
 		
 		ornamenticSearchController = new OrnamenticSearchController("Ornamentation", new OrnamenticResultView("Ornamentation"));
-		ornamenticSearchController.addRelatedFilter(new OrnamenticFilter("Ornamentation Filter"));
+		ornamenticSearchController.addRelatedFilter(new OrnamenticFilter("Ornamentations"));
 		ornamenticSearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
 			@Override
@@ -204,7 +204,7 @@ public class MainView implements IsWidget {
 		// annotated bibliography
 		
 		annotatedBiblographySearchController = new AnnotatedBiblographySearchController("Annotated Biblography", new AnnotatedBiblographyResultView("Annotated Biblography"));
-		annotatedBiblographySearchController.addRelatedFilter(new AnnotatedBibliographyFilter("Bibliography Filter"));
+		annotatedBiblographySearchController.addRelatedFilter(new AnnotatedBibliographyFilter("Bibliography"));
 		annotatedBiblographySearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
 			@Override
@@ -248,9 +248,9 @@ public class MainView implements IsWidget {
 		selectorLayoutContainer.add(caveSearchController, hLayoutData);
 		selectorLayoutContainer.add(depictionSearchController, hLayoutData);
 		selectorLayoutContainer.add(imageSearchController, hLayoutData);
-//		selectorLayoutContainer.add(ornamenticSearchController, hLayoutData);
-//		selectorLayoutContainer.add(annotatedBiblographySearchController, hLayoutData);
-//		selectorLayoutContainer.add(resultCollectorController, hLayoutData);
+		selectorLayoutContainer.add(ornamenticSearchController, hLayoutData);
+		selectorLayoutContainer.add(annotatedBiblographySearchController, hLayoutData);
+		selectorLayoutContainer.add(resultCollectorController, hLayoutData);
 		
     ContentPanel centerPanel = new ContentPanel();
     centerPanel.setHeading("Results");

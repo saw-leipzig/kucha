@@ -691,7 +691,7 @@ public class MysqlConnector {
 
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM CaveType");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM CaveType ORDER BY NameEN");
 			while (rs.next()) {
 				CaveTypeEntry caveType = new CaveTypeEntry(rs.getInt("CaveTypeID"), rs.getString("NameEN"), rs.getString("DescriptionEN"),
 						rs.getString("SketchName"));
