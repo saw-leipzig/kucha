@@ -14,8 +14,11 @@
 package de.cses.client.depictions;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.editor.client.Editor;
+import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -67,6 +70,8 @@ import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.form.Validator;
+import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinNumberValidator;
@@ -504,8 +509,19 @@ public class DepictionEditor extends AbstractEditor {
 		FramedPanel shortNameFP = new FramedPanel();
 		shortNameFP.setHeading("Short Name");
 		TextField shortNameTF = new TextField();
-		shortNameTF.setEmptyText("please enter short name");
+		shortNameTF.setEmptyText("optional short name");
 		shortNameTF.setValue(correspondingDepictionEntry.getShortName());
+		shortNameTF.addValidator(new Validator<String>() {
+			
+			@Override
+			public List<EditorError> validate(Editor<String> editor, String value) {
+				List<EditorError> l = new ArrayList<EditorError>();
+				if ((caveSelectionCB.getCurrentValue() == null) && ((shortNameTF.getCurrentValue() == null) || (shortNameTF.getCurrentValue().isEmpty()))) {
+					l.add(new DefaultEditorError(editor, "please select either Cave or enter short name", value));
+				}
+				return l;
+			}
+		});
 		shortNameTF.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
