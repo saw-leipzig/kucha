@@ -13,9 +13,14 @@
  */
 package de.cses.client.ornamentic;
 
+import java.util.ArrayList;
+
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.XTemplates;
@@ -34,6 +39,8 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 
+import de.cses.client.DatabaseService;
+import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
 import de.cses.client.walls.WallSelector;
 import de.cses.shared.CaveEntry;
@@ -60,6 +67,7 @@ public class OrnamentWallAttributes extends PopupPanel {
 	private ComboBox<OrnamentFunctionEntry> ornamentfunctionComboBox;
 	// private ComboBox<WallEntry> wallsComboBox;
 	private WallOrnamentCaveRelation wallOrnamentCaveRelation;
+	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 
 	private TextArea notes;
 
@@ -80,6 +88,8 @@ public class OrnamentWallAttributes extends PopupPanel {
 		for (OrnamentFunctionEntry ofe : StaticTables.getInstance().getOrmanemtFunctionEntries().values()) {
 			ornamentFunctionEntryLS.add(ofe);
 		}
+		
+
 
 		setWidget(createForm());
 	}
@@ -94,6 +104,38 @@ public class OrnamentWallAttributes extends PopupPanel {
 		if (wallOrnamentCaveRelation != null) {
 			wallselector.setWallEntry(wallOrnamentCaveRelation.getWall());
 		}
+		ValueChangeHandler<WallEntry> wallSelectionHandler = new ValueChangeHandler<WallEntry>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<WallEntry> event) {
+				ornamentPositionComboBox.clear();
+				ornamentfunctionComboBox.clear();
+				ornamentPositionComboBox.disable();
+				ornamentfunctionComboBox.disable();
+				ornamentPositionEntryLS.clear();
+				
+				dbService.getPositionbyWall(event.getValue(), new AsyncCallback<ArrayList<OrnamentPositionEntry>>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+					}
+
+					@Override
+					public void onSuccess(ArrayList<OrnamentPositionEntry> result) {
+						for (OrnamentPositionEntry pe : result) {
+							ornamentPositionEntryLS.add(pe);
+						}
+						if (wallOrnamentCaveRelation != null) {
+							ornamentPositionComboBox.setValue(ornamentPositionEntryLS.findModelWithKey(Integer.toString(wallOrnamentCaveRelation.getOrnamenticPositionID())));
+						}
+					}
+				});
+				ornamentPositionComboBox.setEnabled(true);
+			}
+
+		};
+		wallselector.getWallSelectorCB().addValueChangeHandler(wallSelectionHandler);
 
 		ornamentPositionComboBox = new ComboBox<OrnamentPositionEntry>(ornamentPositionEntryLS, ornamentPositionProps.name(),
 				new AbstractSafeHtmlRenderer<OrnamentPositionEntry>() {
@@ -133,6 +175,38 @@ public class OrnamentWallAttributes extends PopupPanel {
 		ornamentFunctionFP.setHeading("Select the ornament function");
 		ornamentFunctionFP.add(ornamentfunctionComboBox);
 
+		
+		
+		ValueChangeHandler<OrnamentPositionEntry> positionSelectionHandler = new ValueChangeHandler<OrnamentPositionEntry>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<OrnamentPositionEntry> event) {
+				ornamentFunctionEntryLS.clear();
+				
+				dbService.getFunctionbyPosition(event.getValue(), new AsyncCallback<ArrayList<OrnamentFunctionEntry>>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+					}
+
+					@Override
+					public void onSuccess(ArrayList<OrnamentFunctionEntry> result) {
+						for (OrnamentFunctionEntry pe : result) {
+							ornamentFunctionEntryLS.add(pe);
+						}
+						if (wallOrnamentCaveRelation != null) {
+							ornamentfunctionComboBox.setValue(ornamentFunctionEntryLS.findModelWithKey(Integer.toString(wallOrnamentCaveRelation.getOrnamenticFunctionID())));
+						}
+					}
+				});
+				ornamentfunctionComboBox.setEnabled(true);
+			}
+
+		};
+		ornamentPositionComboBox.addValueChangeHandler(positionSelectionHandler);
+		
+		
 		notes = new TextArea();
 		notes.setAllowBlank(true);
 		FramedPanel notesFP = new FramedPanel();
@@ -297,5 +371,6 @@ public class OrnamentWallAttributes extends PopupPanel {
 		@XTemplate("<div>{wallID}</div>")
 		SafeHtml walls(int wallID);
 	}
+
 
 }

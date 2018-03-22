@@ -26,6 +26,8 @@ import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
+import com.sencha.gxt.data.shared.Store;
+import com.sencha.gxt.data.shared.Store.StoreFilter;
 import com.sencha.gxt.dnd.core.client.ListViewDragSource;
 import com.sencha.gxt.dnd.core.client.ListViewDropTarget;
 import com.sencha.gxt.widget.core.client.FramedPanel;
@@ -43,17 +45,15 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
-import de.cses.client.ornamentic.OrnamenticEditor.OrnamentComponentsProperties;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DistrictEntry;
-import de.cses.shared.MainTypologicalClass;
 import de.cses.shared.OrientationEntry;
 import de.cses.shared.OrnamentCaveRelation;
 import de.cses.shared.OrnamentCaveType;
-import de.cses.shared.OrnamentComponentsEntry;
 import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.StructureOrganization;
+import de.cses.shared.StyleEntry;
 import de.cses.shared.WallOrnamentCaveRelation;
 
 public class OrnamentCaveAttributes extends PopupPanel {
@@ -78,12 +78,15 @@ public class OrnamentCaveAttributes extends PopupPanel {
 	private WallRelationProperties wallRelationProps;
 	private PictorialElementSelectorObjects selector;
 	private OrnamenticEditor ornamenticEditor;
-	private TextField style = new TextField();
+	private ComboBox<StyleEntry> styleComboBox;
 	private TextField caveType = new TextField();
 	private OrnamentCaveRelation ornamentCaveRelationEntry;
 	private ListStore<OrientationEntry> orientationListStore;
 	private ListStore<OrientationEntry> selectedorientationListStore;
 	private OrientationProperties orientationProps;
+	private StoreFilter<CaveEntry> caveFilter ;
+	private ListStore<StyleEntry> styleEntryList;
+	private StyleProperties styleProps;
 
 
 
@@ -101,6 +104,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 
 	public void init() {
 		caveEntryProps = GWT.create(CaveEntryProperties.class);
+		styleProps = GWT.create(StyleProperties.class);
 		ornamentEntryProps = GWT.create(OrnamentEntryProperties.class);
 		districtEntryProps = GWT.create(DistrictEntryProperties.class);
 		wallRelationProps = GWT.create(WallRelationProperties.class);
@@ -113,8 +117,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 		selectedRedlatedOrnaments = new ListStore<OrnamentEntry>(ornamentEntryProps.OrnamentID());
 		orientationListStore = new ListStore<OrientationEntry>(orientationProps.orientationID());
 		selectedorientationListStore = new ListStore<OrientationEntry>(orientationProps.orientationID());
-
-	
+		styleEntryList = new ListStore<StyleEntry>(styleProps.styleID());
 		wallsListStore = new ListStore<WallOrnamentCaveRelation>(wallRelationProps.wallLocationID());
 
 		
@@ -153,6 +156,25 @@ public class OrnamentCaveAttributes extends PopupPanel {
 			}
 		});
 
+		dbService.getCaves( new AsyncCallback<ArrayList<CaveEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+				Window.alert("fehler beim laden von den Hoehlen");
+			}
+
+			@Override
+			public void onSuccess(ArrayList<CaveEntry> result) {
+				Window.alert("done! Caves added");
+				for (CaveEntry pe : result) {
+					caveEntryList.add(pe);
+				}
+				if (ornamentCaveRelationEntry != null) {
+					caveEntryComboBox.setValue(ornamentCaveRelationEntry.getCave());
+				}
+			}
+		});
 		
 		dbService.getOrnaments(new AsyncCallback<ArrayList<OrnamentEntry>>() {
 
@@ -240,6 +262,9 @@ public class OrnamentCaveAttributes extends PopupPanel {
 	}
 
 	public Widget createForm() {
+		for (StyleEntry pe : StaticTables.getInstance().getStyleEntries().values()) {
+			styleEntryList.add(pe);
+		}
 
 		TabPanel tabPanel = new TabPanel();
 		tabPanel.setWidth(650);
@@ -275,40 +300,24 @@ public class OrnamentCaveAttributes extends PopupPanel {
 		header.setHeading("Select District");
 		header.add(districtComboBox);
 		vlcCave.add(header, new VerticalLayoutData(0.5, .125));
+		
+
 
 		ValueChangeHandler<DistrictEntry> districtSelectionHandler = new ValueChangeHandler<DistrictEntry>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<DistrictEntry> event) {
-				int p = event.getValue().getDistrictID();
-				caveEntryList.clear();
 				caveType.clear();
-				caveEntryComboBox.reset();
 				wallsListStore.clear();
-				style.clear();
-
-				dbService.getCavesbyDistrictID(p, new AsyncCallback<ArrayList<CaveEntry>>() {
-
-					@Override
-					public void onFailure(Throwable caught) {
-						caught.printStackTrace();
-					}
-
-					@Override
-					public void onSuccess(ArrayList<CaveEntry> result) {
-						for (CaveEntry pe : result) {
-							caveEntryList.add(pe);
-						}
-						if (ornamentCaveRelationEntry != null) {
-							caveEntryComboBox.setValue(ornamentCaveRelationEntry.getCave());
-						}
-					}
-				});
-
+				activateCaveFilter();
+				caveEntryComboBox.setEnabled(true);
 			}
 
 		};
 
+		// hier aenderungen
+		
+		
 		districtComboBox.addValueChangeHandler(districtSelectionHandler);
 
 		caveEntryComboBox = new ComboBox<CaveEntry>(caveEntryList, caveEntryProps.officialNumber(), new AbstractSafeHtmlRenderer<CaveEntry>() {
@@ -323,6 +332,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 				}
 			}
 		});
+		caveEntryComboBox.setEnabled(false);
 
 		caveEntryComboBox.setTypeAhead(true);
 		caveEntryComboBox.setEditable(false);
@@ -375,11 +385,24 @@ public class OrnamentCaveAttributes extends PopupPanel {
 
 		};
 
-		style.setEnabled(false);
+		styleComboBox = new ComboBox<StyleEntry>(styleEntryList, styleProps.styleName(),
+				new AbstractSafeHtmlRenderer<StyleEntry>() {
+
+					@Override
+					public SafeHtml render(StyleEntry item) {
+						final StyleViewTemplates pvTemplates = GWT.create(StyleViewTemplates.class);
+						return pvTemplates.style(item.getStyleName());
+					}
+				});
+		
+		if (ornamentCaveRelationEntry != null) {
+			styleComboBox.setValue(ornamentCaveRelationEntry.getStyle());
+		}
+		
 		header = new FramedPanel();
 
 		header.setHeading("Style");
-		header.add(style);
+		header.add(styleComboBox);
 		vlcCave.add(header, new VerticalLayoutData(0.5, .125));
 
 		TextButton addWalls = new TextButton("Add Wall");
@@ -422,7 +445,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 			@Override
 			public String getValue(WallOrnamentCaveRelation wocr) {
 				return StaticTables.getInstance().getWallLocationEntries().get(wocr.getWall().getWallLocationID()).getCaveAreaLabel() + ", "
-						+ StaticTables.getInstance().getOrnamentPositionEntries().get(wocr.getOrnamenticFunctionID()).getName() + ", "
+						+ StaticTables.getInstance().getOrnamentPositionEntries().get(wocr.getOrnamenticPositionID()).getName() + ", "
 						+ StaticTables.getInstance().getOrmanemtFunctionEntries().get(wocr.getOrnamenticFunctionID()).getName();
 			}
 
@@ -692,7 +715,7 @@ Window.alert("Please select a entry!");
 				ornamentCaveRelation.setColours(colours.getText());
 				ornamentCaveRelation.setGroup(groupOfOrnaments.getText());
 
-
+				ornamentCaveRelation.setStyle(styleComboBox.getValue());
 				ornamentCaveRelation.setNotes(notes.getText());
 				List<OrnamentEntry> relatedOrnaments = selectedRedlatedOrnaments.getAll();
 				ornamentCaveRelation.getRelatedOrnamentsRelations().clear();
@@ -797,13 +820,18 @@ Window.alert("Please select a entry!");
 		@XTemplate("<div>{name}</div>")
 		SafeHtml ornamentCaveType(String name);
 	}
+	
+	interface StyleViewTemplates extends XTemplates {
+		@XTemplate("<div>{name}</div>")
+		SafeHtml style(String name);
+	}
 
 
 
-	interface MainTypologicalClassProperties extends PropertyAccess<MainTypologicalClass> {
-		ModelKeyProvider<MainTypologicalClass> mainTypologicalClassID();
+	interface StyleProperties extends PropertyAccess<StyleEntry> {
+		ModelKeyProvider<StyleEntry> styleID();
 
-		LabelProvider<MainTypologicalClass> name();
+		LabelProvider<StyleEntry> styleName();
 	}
 
 	interface StructureOrganizationProperties extends PropertyAccess<StructureOrganization> {
@@ -859,6 +887,21 @@ Window.alert("Please select a entry!");
 	 */
 	public void setWallsListStore(ListStore<WallOrnamentCaveRelation> wallsListStore) {
 		this.wallsListStore = wallsListStore;
+	}
+	
+	private void activateCaveFilter() {
+		Window.alert("vorher: "+ Integer.toString(caveEntryList.size()));
+		caveFilter = new StoreFilter<CaveEntry>() {
+
+			@Override
+			public boolean select(Store<CaveEntry> store, CaveEntry parent, CaveEntry item) {
+				return (item.getSiteID() == districtComboBox.getCurrentValue().getSiteID());
+			}
+		};
+		caveEntryList.addFilter(caveFilter);
+		caveEntryList.setEnableFilters(true);
+		caveEntryComboBox.setEnabled(true); 
+		Window.alert("nachher: " + Integer.toString(caveEntryList.size()));// we enable the selector only after a site is selected 
 	}
 
 }
