@@ -69,10 +69,7 @@ public class IconographySelector implements IsWidget {
 		}
 
 		@Override
-		public void setValue(IconographyEntry object, String value) {
-			// TODO Auto-generated method stub
-
-		}
+		public void setValue(IconographyEntry object, String value) { }
 
 		@Override
 		public String getPath() {
@@ -156,7 +153,7 @@ public class IconographySelector implements IsWidget {
 		iconographyTree.setCheckable(true);
 		iconographyTree.setAutoLoad(true);
 		iconographyTree.setCheckStyle(CheckCascade.NONE);
-		iconographyTree.setCheckNodes(CheckNodes.LEAF);
+		iconographyTree.setCheckNodes(CheckNodes.BOTH);
 		
 		iconographyTree.addCheckChangeHandler(new CheckChangeHandler<IconographyEntry>() {
 			

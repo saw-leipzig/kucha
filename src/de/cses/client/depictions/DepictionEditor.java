@@ -490,11 +490,11 @@ public class DepictionEditor extends AbstractEditor {
 			public SafeHtml render(ImageEntry item) {
 				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=300" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 				if (item.getImageID() == correspondingDepictionEntry.getMasterImageID()) {
-					return imageViewTemplates.masterImage(imageUri, item.getShortName(), item.getTitle(), item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase());
+					return imageViewTemplates.masterImage(imageUri, item.getShortName(), item.getTitle().replace("_", " "), item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase());
 				} else if (item.isOpenAccess()) {
-					return imageViewTemplates.openAccessImage(imageUri, item.getShortName(), item.getTitle(), item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase());
+					return imageViewTemplates.openAccessImage(imageUri, item.getShortName(), item.getTitle().replace("_", " "), item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase());
 				} else {
-					return imageViewTemplates.nonOpenAccessImage(imageUri, item.getShortName(), item.getTitle(), item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase());
+					return imageViewTemplates.nonOpenAccessImage(imageUri, item.getShortName(), item.getTitle().replace("_", " "), item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase());
 				}
 			}
 		}));
