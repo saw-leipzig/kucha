@@ -792,5 +792,14 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.updateAnnotatedBiblographyEntry(bibEntry);
 	}
+	public ArrayList<OrnamentPositionEntry> getPositionbyWall(WallEntry wall) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getPositionbyWall(wall);
+	}
+	
+	public ArrayList<OrnamentFunctionEntry> getFunctionbyPosition(OrnamentPositionEntry position) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getFunctionbyPosition(position);
+	}
 
 }
