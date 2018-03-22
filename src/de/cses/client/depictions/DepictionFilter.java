@@ -279,25 +279,10 @@ public class DepictionFilter extends AbstractFilter {
 			}
 		}
 		if (iconographySQL != null) {
-			dbService.getDepictionFromIconography("IconographyID IN (" + iconographySQL + ")", new AsyncCallback<ArrayList<Integer>>() {
-
-				@Override
-				public void onFailure(Throwable caught) {
-				}
-
-				@Override
-				public void onSuccess(ArrayList<Integer> result) {
-					for (Integer depictionID : result) {
-						if (sqlDepictionWhere == null) {
-							sqlDepictionWhere = Integer.toString(depictionID);
-						} else {
-							sqlDepictionWhere = sqlDepictionWhere.concat(", " + depictionID);
-						}
-					}
-				}
-			});
+			return "IconographyID IN (" + iconographySQL + ")";
+		} else {
+			return null;
 		}
-		return "IN (" + sqlDepictionWhere + ")";
 	}
 
 	/* (non-Javadoc)
