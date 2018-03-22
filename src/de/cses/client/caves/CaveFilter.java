@@ -337,7 +337,9 @@ public class CaveFilter extends AbstractFilter {
 			}
 		}
 		
-		result.add("(" + sqlQuery + ")");
+		if (sqlQuery != null) {
+			result.add("(" + sqlQuery + ")");
+		}
 		
 		return result;
 	}

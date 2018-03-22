@@ -240,6 +240,19 @@ public class DepictionEditor extends AbstractEditor {
 		LabelProvider<ImageEntry> title();
 		ValueProvider<ImageEntry, String> shortName();
 	}
+	
+	class TitleElement {
+		private String element;
+		
+		public TitleElement(String element) {
+			super();
+			this.element = element;
+		}
+
+		public String getElement() {
+			return element;
+		}
+	}
 
 	/**
 	 * creates the view how a thumbnail of an image entry will be shown currently we are relying on the url of the image until we have user management implemented
@@ -252,21 +265,21 @@ public class DepictionEditor extends AbstractEditor {
 //		@XTemplate("<div style='border-style: solid; border-color: #99ff66; border-width: 3px;'><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
 		@XTemplate("<figure style='border-style: solid; border-color: #99ff66; border-width: 3px; margin: 0;'>"
 				+ "<img src='{imageUri}' style='position: relative; padding: 5px; width: 230px; background: white;'>"
-				+ "<figcaption style='font-size:12px; padding: 10px; text-align: center;'>{shortName} ({imageFormat})<br><div style='font-size:9px;'>{title}</div></figcaption></figure>")
-		SafeHtml openAccessImage(SafeUri imageUri, String shortName, String title, String imageFormat);
+				+ "<figcaption style='font-size:12px; padding: 10px; text-align: center;'>{shortName} ({imageFormat})<p style='font-size:10px;'> <tpl for='titleList'> {element}<wbr> </tpl> </p></figcaption></figure>")
+		SafeHtml openAccessImage(SafeUri imageUri, String shortName, ArrayList<TitleElement> titleList, String imageFormat);
 
 //		@XTemplate("<div style='border-style: solid; border-color: #ff1a1a; border-width: 3px;'><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
 		@XTemplate("<figure style='border-style: solid; border-color: #ff1a1a; border-width: 3px; margin: 0;'>"
 				+ "<img src='{imageUri}' style='position: relative; padding: 5px; width: 230px; background: white;'>"
-				+ "<figcaption style='font-size:12px; padding: 10px; text-align: center;'>{shortName} ({imageFormat})<br><div style='font-size:9px;'>{title}</div></figcaption></figure>")
-		SafeHtml nonOpenAccessImage(SafeUri imageUri, String shortName, String title, String imageFormat);
+				+ "<figcaption style='font-size:12px; padding: 10px; text-align: center;'>{shortName} ({imageFormat})<p style='font-size:10px;'> <tpl for='titleList'> {element}<wbr> </tpl> </p></figcaption></figure>")
+		SafeHtml nonOpenAccessImage(SafeUri imageUri, String shortName, ArrayList<TitleElement> titleList, String imageFormat);
 
 //		@XTemplate("<div style='border-style: solid; border-color: #0073e6; border-width: 3px;'><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
 //		SafeHtml masterImage(SafeUri imageUri, String shortName, String title, String imageFormat);
 		@XTemplate("<figure style='border-style: solid; border-color: #0073e6; border-width: 3px; margin: 0;'>"
 				+ "<img src='{imageUri}' style='position: relative; padding: 5px; width: 230px; background: white;'>"
-				+ "<figcaption style='font-size:12px; padding: 10px; text-align: center;'>{shortName} ({imageFormat})<br><div style='font-size:9px;'>{title}</div></figcaption></figure>")
-		SafeHtml masterImage(SafeUri imageUri, String shortName, String title, String imageFormat);
+				+ "<figcaption style='font-size:12px; padding: 10px; text-align: center;'>{shortName} ({imageFormat})<p style='font-size:10px;'> <tpl for='titleList'> {element}<wbr> </tpl> </p></figcaption></figure>")
+		SafeHtml masterImage(SafeUri imageUri, String shortName, ArrayList<TitleElement> titleList, String imageFormat);
 	}
 
 	public DepictionEditor(DepictionEntry entry) {
@@ -489,19 +502,23 @@ public class DepictionEditor extends AbstractEditor {
 
 			public SafeHtml render(ImageEntry item) {
 				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=300" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
+				ArrayList<TitleElement> titleList = new ArrayList<TitleElement>();
+				for (String s : item.getTitle().split("_")) {
+					titleList.add(new TitleElement(s));
+				}
 				if (item.getImageID() == correspondingDepictionEntry.getMasterImageID()) {
-					return imageViewTemplates.masterImage(imageUri, item.getShortName(), item.getTitle().replace("_", " "), item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase());
+					return imageViewTemplates.masterImage(imageUri, item.getShortName(), titleList, item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase());
 				} else if (item.isOpenAccess()) {
-					return imageViewTemplates.openAccessImage(imageUri, item.getShortName(), item.getTitle().replace("_", " "), item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase());
+					return imageViewTemplates.openAccessImage(imageUri, item.getShortName(), titleList, item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase());
 				} else {
-					return imageViewTemplates.nonOpenAccessImage(imageUri, item.getShortName(), item.getTitle().replace("_", " "), item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase());
+					return imageViewTemplates.nonOpenAccessImage(imageUri, item.getShortName(), titleList, item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase());
 				}
 			}
 		}));
 
 //		imageListView.setSize("340", "290");
 		ListField<ImageEntry, ImageEntry> imageViewLF = new ListField<ImageEntry, ImageEntry>(imageListView);
-		imageViewLF.setSize("100%", "100%");
+//		imageViewLF.setSize("250px", "1.0");
 
 		/**
 		 * --------------------- content of first tab (BASICS) starts here --------------------------------
