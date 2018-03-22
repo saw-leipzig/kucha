@@ -1455,10 +1455,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		/**
 		 * open access
 		 */
-		CheckBox openAccessCB = new CheckBox();
 		FramedPanel openAccessFP = new FramedPanel();
+		CheckBox openAccessCB = new CheckBox();
+		openAccessCB.setBoxLabel("allow");
 		openAccessFP.setHeading("Open Access");
-		openAccessFP.add(new FieldLabel(openAccessCB, "is open"));
 		openAccessCB.setValue(bibEntry.isOpenAccess());
 		openAccessCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
