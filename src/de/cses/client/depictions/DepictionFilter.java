@@ -13,39 +13,37 @@
  */
 package de.cses.client.depictions;
 
-import java.awt.BorderLayout;
 import java.util.ArrayList;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.Style.SelectionMode;
-import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
-import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
-import com.sencha.gxt.data.shared.SortDir;
-import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
+import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer.ExpandMode;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
-import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer.ExpandMode;
-import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.container.MarginData;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
+import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -53,8 +51,10 @@ import de.cses.client.StaticTables;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DistrictEntry;
+import de.cses.shared.IconographyEntry;
 import de.cses.shared.LocationEntry;
 import de.cses.shared.SiteEntry;
+import de.cses.shared.VendorEntry;
 
 /**
  * @author alingnau
@@ -98,6 +98,11 @@ public class DepictionFilter extends AbstractFilter {
 	private ListStore<CaveEntry> caveEntryLS;
 	private ListView<CaveEntry, CaveEntry> caveSelectionLV;
 	private ListView<LocationEntry, LocationEntry> locationSelectionLV;
+	private IconographySelector icoPictSelector;
+
+	private String sqlDepictionWhere;
+
+	private ArrayList<String> sqlWhereClause;
 
 	/**
 	 * @param filterName
@@ -106,6 +111,7 @@ public class DepictionFilter extends AbstractFilter {
 		super(filterName);
 		caveProps = GWT.create(CaveProperties.class);
 		caveEntryLS = new ListStore<CaveEntry>(caveProps.caveID());
+		icoPictSelector = new IconographySelector(0);
 		loadCaves();
 	}
 
@@ -230,9 +236,9 @@ public class DepictionFilter extends AbstractFilter {
 	 */
 	@Override
 	public ArrayList<String> getSqlWhereClause() {
-		ArrayList<String> result = new ArrayList<String>();
+		sqlWhereClause = new ArrayList<String>();
 		if ((shortNameSearch.getValue() != null) && (shortNameSearch.getValue().length() > 0)) {
-			result.add("ShortName LIKE '%" + shortNameSearch.getValue() + "%'");
+			sqlWhereClause.add("ShortName LIKE '%" + shortNameSearch.getValue() + "%'");
 		}
 
 		String locationQuery = null;
@@ -244,7 +250,7 @@ public class DepictionFilter extends AbstractFilter {
 			}
 		}
 		if (locationQuery != null) {
-			result.add("CurrentLocationID IN (" + locationQuery + ")");
+			sqlWhereClause.add("CurrentLocationID IN (" + locationQuery + ")");
 		}		
 
 		String caveQuery = null;
@@ -256,9 +262,66 @@ public class DepictionFilter extends AbstractFilter {
 			}
 		}
 		if (caveQuery != null) {
-			result.add("CaveID IN (" + caveQuery + ")");
+			sqlWhereClause.add("CaveID IN (" + caveQuery + ")");
 		}
-		return result;
+		
+		return sqlWhereClause;
+	}
+	
+	public String getRelatedIconographyWhereSQL() {
+		String iconographySQL = null;
+		sqlDepictionWhere = null;
+		for (IconographyEntry ie : icoPictSelector.getSelectedIconography()) {
+			if (iconographySQL == null) {
+				iconographySQL = Integer.toString(ie.getIconographyID());
+			} else {
+				iconographySQL = iconographySQL.concat(", " + ie.getIconographyID());
+			}
+		}
+		if (iconographySQL != null) {
+			dbService.getDepictionFromIconography("IconographyID IN (" + iconographySQL + ")", new AsyncCallback<ArrayList<Integer>>() {
+
+				@Override
+				public void onFailure(Throwable caught) {
+				}
+
+				@Override
+				public void onSuccess(ArrayList<Integer> result) {
+					for (Integer depictionID : result) {
+						if (sqlDepictionWhere == null) {
+							sqlDepictionWhere = Integer.toString(depictionID);
+						} else {
+							sqlDepictionWhere = sqlDepictionWhere.concat(", " + depictionID);
+						}
+					}
+				}
+			});
+		}
+		return "IN (" + sqlDepictionWhere + ")";
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.ui.AbstractFilter#showExtendedFilterView()
+	 */
+	@Override
+	protected void showExtendedFilterView() {
+		PopupPanel extendedFilterDialog = new PopupPanel();
+		FramedPanel extendedFilterFP = new FramedPanel();
+		extendedFilterFP.setHeading("more filter options");
+		extendedFilterFP.add(icoPictSelector);
+		ToolButton closeTB = new ToolButton(ToolButton.CLOSE);
+		closeTB.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				extendedFilterDialog.hide();
+			}
+		});
+		extendedFilterFP.addTool(closeTB);
+		extendedFilterDialog.add(extendedFilterFP);
+		extendedFilterDialog.setSize("750", "500");
+		extendedFilterDialog.setModal(true);
+		extendedFilterDialog.center();
 	}
 
 }

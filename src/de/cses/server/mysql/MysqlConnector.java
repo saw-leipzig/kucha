@@ -3360,4 +3360,26 @@ public class MysqlConnector {
 		return true;
 	}
 
+	/**
+	 * @param sqlWhere
+	 * @return
+	 */
+	public ArrayList<Integer> getDepictionFromIconography(String sqlWhere) {
+		ArrayList<Integer> result = new ArrayList<Integer>();
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM DepictionIconographyRelation WHERE " + sqlWhere);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				result.add(new Integer(rs.getInt("DepictionID")));
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
 }

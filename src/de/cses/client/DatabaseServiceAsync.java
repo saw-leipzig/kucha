@@ -283,4 +283,6 @@ public interface DatabaseServiceAsync {
 
 	void updateAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
+	void getDepictionFromIconography(String sqlWhere, AsyncCallback<ArrayList<Integer>> asyncCallback) throws IllegalArgumentException;
+
 }

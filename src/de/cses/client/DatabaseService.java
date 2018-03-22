@@ -258,4 +258,6 @@ public interface DatabaseService extends RemoteService {
 
 	boolean updateAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry) throws IllegalArgumentException;
 
+	ArrayList<Integer> getDepictionFromIconography(String sqlWhere);
+
 }

@@ -54,15 +54,24 @@ public class DepictionSearchController extends AbstractSearchController {
 			if ((filter != null) && (filter.getSqlWhereClause() != null)) {
 				sqlWhereClauses.addAll(filter.getSqlWhereClause());
 			}
-		}
-		String sqlWhere = null;
-		for (int i=0; i<sqlWhereClauses.size(); ++i) {
-			if (i == 0) {
-				sqlWhere = sqlWhereClauses.get(i);
-			} else {
-				sqlWhere = sqlWhere + " AND " + sqlWhereClauses.get(i);
+			if (filter instanceof DepictionFilter) {
+				String sql = ((DepictionFilter)filter).getRelatedIconographyWhereSQL();
+				if (sql != null) {
+					sqlWhereClauses.add(sql);
+				}
 			}
 		}
+		String sqlWhere = null;
+		for (String sql : sqlWhereClauses) {
+			if (sqlWhere == null) {
+				sqlWhere = sql;
+			} else {
+				sqlWhere = sqlWhere.concat(" AND " + sql);
+			}
+		}
+		
+		
+		
 		dbService.getDepictions(sqlWhere, new AsyncCallback<ArrayList<DepictionEntry>>() {
 
 			@Override
