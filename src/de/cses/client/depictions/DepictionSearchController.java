@@ -35,7 +35,7 @@ import de.cses.shared.DepictionEntry;
 public class DepictionSearchController extends AbstractSearchController {
 
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
-	private String sqlWhere = null;
+	private String sqlWhere;
 
 	/**
 	 * @param searchControllerTitle
@@ -50,6 +50,7 @@ public class DepictionSearchController extends AbstractSearchController {
 	 */
 	@Override
 	public void invokeSearch() {
+		sqlWhere = null;
 		ArrayList<String> sqlWhereClauses = new ArrayList<String>();
 		String sqlDepictionWhereIconography = null;
 		for (AbstractFilter filter : getRelatedFilter()) {

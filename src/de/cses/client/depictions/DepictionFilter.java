@@ -99,9 +99,6 @@ public class DepictionFilter extends AbstractFilter {
 	private ListView<CaveEntry, CaveEntry> caveSelectionLV;
 	private ListView<LocationEntry, LocationEntry> locationSelectionLV;
 	private IconographySelector icoPictSelector;
-
-	private String sqlDepictionWhere;
-
 	private ArrayList<String> sqlWhereClause;
 
 	/**
@@ -270,7 +267,6 @@ public class DepictionFilter extends AbstractFilter {
 	
 	public String getRelatedIconographyWhereSQL() {
 		String iconographySQL = null;
-		sqlDepictionWhere = null;
 		for (IconographyEntry ie : icoPictSelector.getSelectedIconography()) {
 			if (iconographySQL == null) {
 				iconographySQL = Integer.toString(ie.getIconographyID());
