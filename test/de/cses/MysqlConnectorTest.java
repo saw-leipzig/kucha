@@ -1,6 +1,6 @@
 package de.cses;
 
-import org.junit.Test;
+
 
 import de.cses.server.mysql.MysqlConnector;
 
@@ -8,7 +8,7 @@ public class MysqlConnectorTest {
 	
 	MysqlConnector mc = MysqlConnector.getInstance();
 
-	@Test
+	
 	public void testCreateNewImageEntry() {
 		System.out.println("new entry added to 'images': " + mc.createNewImageEntry());
 	}

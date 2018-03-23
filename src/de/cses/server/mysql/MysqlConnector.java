@@ -789,8 +789,8 @@ public class MysqlConnector {
 		PreparedStatement ornamentCaveRelationStatement;
 		try {
 			ornamentCaveRelationStatement = dbc.prepareStatement("INSERT INTO CaveOrnamentRelation "
-					+ "(CaveID, OrnamentID, Colours, Notes, GroupOfOrnaments, RelatedElementsOfOtherCultures, SimilarElementsOfOtherCultures) "
-					+ "VALUES (?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+					+ "(CaveID, OrnamentID, Colours, Notes, GroupOfOrnaments, RelatedElementsOfOtherCultures, SimilarElementsOfOtherCultures, StyleID) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?,?)", Statement.RETURN_GENERATED_KEYS);
 			ornamentCaveRelationStatement.setInt(2, ornamentID);
 			for (OrnamentCaveRelation ornamentCaveR : cavesRelations) {
 				ornamentCaveRelationStatement.setInt(1, ornamentCaveR.getCave().getCaveID());
@@ -799,6 +799,7 @@ public class MysqlConnector {
 				ornamentCaveRelationStatement.setString(5, ornamentCaveR.getGroup());
 				ornamentCaveRelationStatement.setString(6, ornamentCaveR.getRelatedelementeofOtherCultures());
 				ornamentCaveRelationStatement.setString(7, ornamentCaveR.getSimilarelementsOfOtherCultures());
+				ornamentCaveRelationStatement.setInt(8, ornamentCaveR.getStyle().getStyleID());
 				ornamentCaveRelationStatement.executeUpdate();
 				ResultSet keys = ornamentCaveRelationStatement.getGeneratedKeys();
 				if (keys.next()) { // there should only be 1 key returned here
@@ -3270,6 +3271,43 @@ public class MysqlConnector {
 		return newPublisherID;
 	}
 
+	public ArrayList<OrnamentPositionEntry> getPositionbyWall(WallEntry wall) {
+		ArrayList<OrnamentPositionEntry> result = new ArrayList<OrnamentPositionEntry>();
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM OrnamenticPosition JOIN OrnamentPositionWallRelation ON OrnamenticPosition.OrnamenticPositionID = OrnamentPositionWallRelation.OrnamentPositionID WHERE WallLocationID = " + wall.getWallLocationID());
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				result.add(new OrnamentPositionEntry(rs.getInt("OrnamenticPositionID"), rs.getString("Name")));
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+
+	public ArrayList<OrnamentFunctionEntry> getFunctionbyPosition(OrnamentPositionEntry position) {
+		ArrayList<OrnamentFunctionEntry> result = new ArrayList<OrnamentFunctionEntry>();
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM OrnamenticFunction JOIN OrnamentPositionOrnamentFunctionRelation ON OrnamenticFunction.OrnamenticFunctionID = OrnamentPositionOrnamentFunctionRelation.OrnamentFunctionID WHERE OrnamentPositionID = " + position.getOrnamentPositionID());
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				result.add(new OrnamentFunctionEntry(rs.getInt("OrnamenticFunctionID"), rs.getString("Name")));
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
 	/**
 	 * @param bibEntry
 	 * @return

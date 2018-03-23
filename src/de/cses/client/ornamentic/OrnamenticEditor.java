@@ -20,7 +20,6 @@ import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
-import com.sencha.gxt.core.client.XTemplates.XTemplate;
 import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
@@ -50,10 +49,7 @@ import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.images.ImageSelector;
 import de.cses.client.images.ImageSelectorListener;
-import de.cses.client.ornamentic.OrnamentCaveAttributes.MainTypologicalClassProperties;
-import de.cses.client.ornamentic.OrnamentCaveAttributes.MainTypologicalClassViewTemplates;
 import de.cses.client.ornamentic.OrnamentCaveAttributes.StructureOrganizationProperties;
-import de.cses.client.ornamentic.OrnamentCaveAttributes.StructureOrganizationViewTemplates;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.CaveEntry;
@@ -87,8 +83,6 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 	private ComboBox<OrnamentClassEntry> ornamentClassComboBox;
 	private StructureOrganizationProperties structureOrganizationProps;
 	private ListStore<MainTypologicalClass> mainTypologicalClass;
-	private ComboBox<MainTypologicalClass> mainTypologicalClassComboBox;
-	private MainTypologicalClassProperties mainTypologicalClassProps;
 	private OrnamentClassProperties ornamentClassProps;
 	private InnerSecondaryPatternsProperties innerSecondaryPatternsProps;
 	private ListStore<InnerSecondaryPatternsEntry> innerSecondaryPatternsEntryList;
@@ -125,8 +119,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		ornamentComponentsProps = GWT.create(OrnamentComponentsProperties.class);
 		imageEntryList = new ListStore<ImageEntry>(imgProperties.imageID());
 		ornamentCaveRelationProps = GWT.create(OrnamentCaveRelationProperties.class);
-		mainTypologicalClassProps = GWT.create(MainTypologicalClassProperties.class);
-		mainTypologicalClass = new ListStore<MainTypologicalClass>(mainTypologicalClassProps.mainTypologicalClassID());
+
 
 		structureOrganizationProps = GWT.create(StructureOrganizationProperties.class);
 		structureOrganization = new ListStore<StructureOrganization>(structureOrganizationProps.structureOrganizationID());
@@ -230,7 +223,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		});
 		
 		
-		dbService.getStructureOrganizations(new AsyncCallback<ArrayList<StructureOrganization>>() {
+	/*	dbService.getStructureOrganizations(new AsyncCallback<ArrayList<StructureOrganization>>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
@@ -245,8 +238,9 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 				}
 			}
 		});
+		*/
 
-		dbService.getMainTypologicalClasses(new AsyncCallback<ArrayList<MainTypologicalClass>>() {
+	/*	dbService.getMainTypologicalClasses(new AsyncCallback<ArrayList<MainTypologicalClass>>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
@@ -261,6 +255,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 				}
 			}
 		});
+		*/
 
 		TabPanel tabpanel = new TabPanel();
 		tabpanel.setWidth(620);

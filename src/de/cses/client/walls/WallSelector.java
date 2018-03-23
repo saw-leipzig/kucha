@@ -222,4 +222,19 @@ public class WallSelector implements IsWidget {
 		wallSelectorCB.setValue(wallEntry);
 	}
 
+	/**
+	 * @return the wallSelectorCB
+	 */
+	public ComboBox<WallEntry> getWallSelectorCB() {
+		return wallSelectorCB;
+	}
+
+	/**
+	 * @param wallSelectorCB the wallSelectorCB to set
+	 */
+	public void setWallSelectorCB(ComboBox<WallEntry> wallSelectorCB) {
+		this.wallSelectorCB = wallSelectorCB;
+	}
+	
+
 }

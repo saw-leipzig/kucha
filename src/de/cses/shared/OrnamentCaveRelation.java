@@ -18,6 +18,7 @@ public class OrnamentCaveRelation extends AbstractEntry {
 	private ArrayList<PictorialElementEntry> PictorialElements = new ArrayList<PictorialElementEntry>();
 	private ArrayList<OrnamentEntry> relatedOrnamentsRelations = new ArrayList<OrnamentEntry>();
 	private ArrayList<WallOrnamentCaveRelation> walls = new ArrayList<WallOrnamentCaveRelation>();
+	private StyleEntry style;
 
 	
 	
@@ -224,6 +225,22 @@ public class OrnamentCaveRelation extends AbstractEntry {
 	@Override
 	public String getUniqueID() {
 		return "OrnamentCaveRelation" + ornamentID;
+	}
+
+
+	/**
+	 * @return the style
+	 */
+	public StyleEntry getStyle() {
+		return style;
+	}
+
+
+	/**
+	 * @param style the style to set
+	 */
+	public void setStyle(StyleEntry style) {
+		this.style = style;
 	}
 
 
