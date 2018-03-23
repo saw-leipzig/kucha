@@ -262,4 +262,6 @@ public interface DatabaseService extends RemoteService {
 	
 	ArrayList<OrnamentFunctionEntry> getFunctionbyPosition (OrnamentPositionEntry wall)  throws IllegalArgumentException;
 
+	ArrayList<Integer> getDepictionFromIconography(String sqlWhere);
+
 }

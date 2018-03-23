@@ -288,4 +288,6 @@ public interface DatabaseServiceAsync {
 	void getFunctionbyPosition(OrnamentPositionEntry position, AsyncCallback<ArrayList<OrnamentFunctionEntry>> asyncCallback) throws IllegalArgumentException;
 
 
+	void getDepictionFromIconography(String sqlWhere, AsyncCallback<ArrayList<Integer>> asyncCallback) throws IllegalArgumentException;
+
 }

@@ -1439,11 +1439,12 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		/**
 		 * unpublished
 		 */
-		CheckBox unpublishedCB = new CheckBox();
 		FramedPanel unpublishedFP = new FramedPanel();
 		unpublishedFP.setHeading("Unpublished");
-		unpublishedFP.add(new FieldLabel(unpublishedCB, "is unpublished"));
+		CheckBox unpublishedCB = new CheckBox();
+		unpublishedCB.setBoxLabel("yes");
 		unpublishedCB.setValue(bibEntry.isUnpublished());
+		unpublishedFP.add(unpublishedCB);
 		unpublishedCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
 			@Override
@@ -1455,11 +1456,12 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		/**
 		 * open access
 		 */
-		CheckBox openAccessCB = new CheckBox();
 		FramedPanel openAccessFP = new FramedPanel();
 		openAccessFP.setHeading("Open Access");
-		openAccessFP.add(new FieldLabel(openAccessCB, "is open"));
+		CheckBox openAccessCB = new CheckBox();
+		openAccessCB.setBoxLabel("allow");
 		openAccessCB.setValue(bibEntry.isOpenAccess());
+		openAccessFP.add(openAccessCB);
 		openAccessCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
 			@Override
@@ -1531,11 +1533,14 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		});
 		firstEditionFP.addTool(resetFirstEditionSelectionTB);
 		
+		/**
+		 * paper upload
+		 */
 		FramedPanel bibDocPaperFP = new FramedPanel();
 		bibDocPaperFP.setHeading("paper");
 		bibDocPaperFP.add(new HTMLPanel(documentLinkTemplate.documentLink(UriUtils.fromString(
 				"resource?document=" + bibEntry.getUniqueID() + "-paper.pdf" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()),
-				"download paper")));
+				"paper")));
 		ToolButton paperUploadButton = new ToolButton(ToolButton.PLUS);
 		paperUploadButton.addSelectHandler(new SelectHandler() {
 
@@ -1565,45 +1570,51 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		});
 		bibDocPaperFP.addTool(paperUploadButton);
 
-		FramedPanel bibDocSummaryFP = new FramedPanel();
-		bibDocSummaryFP.setHeading("summary");
-		bibDocSummaryFP.add(new HTMLPanel(documentLinkTemplate.documentLink(UriUtils.fromString(
-				"resource?document=" + bibEntry.getUniqueID() + "-summary.pdf" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()),
-				"download summary")));
-		ToolButton summaryUploadButton = new ToolButton(ToolButton.PLUS);
-		summaryUploadButton.addSelectHandler(new SelectHandler() {
+//		/**
+//		 * summary panel
+//		 */
+//		FramedPanel bibDocSummaryFP = new FramedPanel();
+//		bibDocSummaryFP.setHeading("summary");
+//		bibDocSummaryFP.add(new HTMLPanel(documentLinkTemplate.documentLink(UriUtils.fromString(
+//				"resource?document=" + bibEntry.getUniqueID() + "-summary.pdf" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()),
+//				"download summary")));
+//		ToolButton summaryUploadButton = new ToolButton(ToolButton.PLUS);
+//		summaryUploadButton.addSelectHandler(new SelectHandler() {
+//
+//			@Override
+//			public void onSelect(SelectEvent event) {
+//				if (bibEntry.getAnnotatedBiblographyID() == 0) {
+//					Window.alert("Documents cannot be uploaded\n before the new entry has been saved.");
+//					return;
+//				}
+//				PopupPanel bibDocUploadPanel = new PopupPanel();
+//				BibDocumentUploader summaryUploader = new BibDocumentUploader(bibEntry.getUniqueID() + "-summary", new BibDocumentUploadListener() {
+//
+//					@Override
+//					public void uploadCompleted(String documentFilename) {
+//						bibDocUploadPanel.hide();
+//					}
+//
+//					@Override
+//					public void uploadCanceled() {
+//						bibDocUploadPanel.hide();
+//					}
+//				});
+//				bibDocUploadPanel.add(summaryUploader);
+//				bibDocUploadPanel.setGlassEnabled(true);
+//				bibDocUploadPanel.center();
+//			}
+//		});
+//		bibDocSummaryFP.addTool(summaryUploadButton);
 
-			@Override
-			public void onSelect(SelectEvent event) {
-				if (bibEntry.getAnnotatedBiblographyID() == 0) {
-					Window.alert("Documents cannot be uploaded\n before the new entry has been saved.");
-					return;
-				}
-				PopupPanel bibDocUploadPanel = new PopupPanel();
-				BibDocumentUploader summaryUploader = new BibDocumentUploader(bibEntry.getUniqueID() + "-summary", new BibDocumentUploadListener() {
-
-					@Override
-					public void uploadCompleted(String documentFilename) {
-						bibDocUploadPanel.hide();
-					}
-
-					@Override
-					public void uploadCanceled() {
-						bibDocUploadPanel.hide();
-					}
-				});
-				bibDocUploadPanel.add(summaryUploader);
-				bibDocUploadPanel.setGlassEnabled(true);
-				bibDocUploadPanel.center();
-			}
-		});
-		bibDocSummaryFP.addTool(summaryUploadButton);
-
+		/**
+		 * annotations upload
+		 */
 		FramedPanel bibDocAnnotationFP = new FramedPanel();
 		bibDocAnnotationFP.setHeading("annotation");
 		bibDocAnnotationFP.add(new HTMLPanel(documentLinkTemplate.documentLink(UriUtils.fromString(
 				"resource?document=" + bibEntry.getUniqueID() + "-annotation.pdf" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()),
-				"download annotation")));
+				"annotation")));
 		ToolButton annotationUploadButton = new ToolButton(ToolButton.PLUS);
 		annotationUploadButton.addSelectHandler(new SelectHandler() {
 
@@ -1634,9 +1645,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		bibDocAnnotationFP.addTool(annotationUploadButton);
 		
 		HorizontalLayoutContainer documentsHLC = new HorizontalLayoutContainer();
-		documentsHLC.add(bibDocPaperFP, new HorizontalLayoutData(1.0 / 3, 1.0));
-		documentsHLC.add(bibDocAnnotationFP, new HorizontalLayoutData(1.0 / 3, 1.0));
-		documentsHLC.add(bibDocSummaryFP, new HorizontalLayoutData(1.0 / 3, 1.0));
+		documentsHLC.add(bibDocPaperFP, new HorizontalLayoutData(.5, 1.0));
+		documentsHLC.add(bibDocAnnotationFP, new HorizontalLayoutData(.5, 1.0));
+//		documentsHLC.add(bibDocSummaryFP, new HorizontalLayoutData(1.0 / 3, 1.0));
 		
 		VerticalLayoutContainer thirdTabVLC = new VerticalLayoutContainer();
 		VerticalLayoutContainer notesCommentsVLC = new VerticalLayoutContainer();

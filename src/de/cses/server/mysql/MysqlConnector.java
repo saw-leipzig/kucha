@@ -399,6 +399,7 @@ public class MysqlConnector {
 		ArrayList<DepictionEntry> results = new ArrayList<DepictionEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
+		System.err.println((sqlWhere == null) ? "SELECT * FROM Depictions" : "SELECT * FROM Depictions WHERE " + sqlWhere);
 		try {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery((sqlWhere == null) ? "SELECT * FROM Depictions" : "SELECT * FROM Depictions WHERE " + sqlWhere);
@@ -691,7 +692,7 @@ public class MysqlConnector {
 
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM CaveType");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM CaveType ORDER BY NameEN");
 			while (rs.next()) {
 				CaveTypeEntry caveType = new CaveTypeEntry(rs.getInt("CaveTypeID"), rs.getString("NameEN"), rs.getString("DescriptionEN"),
 						rs.getString("SketchName"));
@@ -2670,7 +2671,7 @@ public class MysqlConnector {
 					+ "IssueEN, IssueORG, IssueTR, "
 					+ "YearEN, YearORG, YearTR, "
 					+ "Unpublished, OpenAccess, AbstractText) "
-					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, )",
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 					Statement.RETURN_GENERATED_KEYS);
 			pstmt.setInt(1, bibEntry.getPublicationType().getPublicationTypeID());
 			pstmt.setString(2, bibEntry.getAccessdateEN());
@@ -3396,6 +3397,29 @@ public class MysqlConnector {
 			return false;
 		}
 		return true;
+	}
+
+	/**
+	 * @param sqlWhere
+	 * @return
+	 */
+	public ArrayList<Integer> getDepictionFromIconography(String sqlWhere) {
+		ArrayList<Integer> result = new ArrayList<Integer>();
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		System.err.println("SELECT * FROM DepictionIconographyRelation WHERE " + sqlWhere);
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM DepictionIconographyRelation WHERE " + sqlWhere);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				result.add(new Integer(rs.getInt("DepictionID")));
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 
 }

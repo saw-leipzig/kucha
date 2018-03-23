@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
@@ -69,10 +68,7 @@ public class IconographySelector implements IsWidget {
 		}
 
 		@Override
-		public void setValue(IconographyEntry object, String value) {
-			// TODO Auto-generated method stub
-
-		}
+		public void setValue(IconographyEntry object, String value) { }
 
 		@Override
 		public String getPath() {
@@ -92,6 +88,22 @@ public class IconographySelector implements IsWidget {
 	public IconographySelector(int depictionID) {
 		this.depictionID = depictionID;
 		iconographyTreeStore = new TreeStore<IconographyEntry>(new IconographyKeyProvider());
+		filterField = new StoreFilterField<IconographyEntry>() {
+
+			@Override
+			protected boolean doSelect(Store<IconographyEntry> store, IconographyEntry parent, IconographyEntry item, String filter) {
+				TreeStore<IconographyEntry> treeStore = (TreeStore<IconographyEntry>) store;
+				do {
+					String name = item.getText().toLowerCase();
+					if (name.contains(filter.toLowerCase())) {
+						return true;
+					}
+					item = treeStore.getParent(item);
+				} while (item != null);
+				return false;
+			}
+		};
+		filterField.bind(iconographyTreeStore);
 		selectedIconographyMap = new HashMap<String, IconographyEntry>();
 		loadIconographyStore();
 	}
@@ -156,7 +168,7 @@ public class IconographySelector implements IsWidget {
 		iconographyTree.setCheckable(true);
 		iconographyTree.setAutoLoad(true);
 		iconographyTree.setCheckStyle(CheckCascade.NONE);
-		iconographyTree.setCheckNodes(CheckNodes.LEAF);
+		iconographyTree.setCheckNodes(CheckNodes.BOTH);
 		
 		iconographyTree.addCheckChangeHandler(new CheckChangeHandler<IconographyEntry>() {
 			
@@ -180,23 +192,6 @@ public class IconographySelector implements IsWidget {
 		ContentPanel treePanel = new ContentPanel();
 		treePanel.setHeaderVisible(false);
 		treePanel.add(vlc);
-
-		filterField = new StoreFilterField<IconographyEntry>() {
-
-			@Override
-			protected boolean doSelect(Store<IconographyEntry> store, IconographyEntry parent, IconographyEntry item, String filter) {
-				TreeStore<IconographyEntry> treeStore = (TreeStore<IconographyEntry>) store;
-				do {
-					String name = item.getText().toLowerCase();
-					if (name.contains(filter.toLowerCase())) {
-						return true;
-					}
-					item = treeStore.getParent(item);
-				} while (item != null);
-				return false;
-			}
-		};
-		filterField.bind(iconographyTreeStore);
 
 		BorderLayoutContainer iconographySelectorBLC = new BorderLayoutContainer();
 		iconographySelectorBLC.setCenterWidget(treePanel, new MarginData(0, 10, 5, 10));
@@ -229,8 +224,10 @@ public class IconographySelector implements IsWidget {
 		filterField.clear();
 		filterField.validate();
 		ArrayList<IconographyEntry> result = new ArrayList<IconographyEntry>();
-		for (IconographyEntry entry : iconographyTree.getCheckedSelection()) {
-			result.add(entry);
+		if (iconographyTree != null) {
+			for (IconographyEntry entry : iconographyTree.getCheckedSelection()) {
+				result.add(entry);
+			}
 		}
 		return result;	
 	}

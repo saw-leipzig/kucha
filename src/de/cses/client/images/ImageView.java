@@ -20,7 +20,6 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.sencha.gxt.core.client.XTemplates;
-import com.sencha.gxt.core.client.XTemplates.XTemplate;
 import com.sencha.gxt.dnd.core.client.DndDragStartEvent;
 import com.sencha.gxt.dnd.core.client.DragSource;
 
@@ -59,7 +58,6 @@ public class ImageView extends AbstractView {
 				+ "</figure><figure style='text-align: center; margin: 0;'>"
 				+ "<img src='{imgUri}' style='position: relative;'>"
 				+ "<figcaption style='font-size:11px;'>{shortName}</figcaption></figure>")
-
 		SafeHtml view(SafeUri imgUri, String shortName, SafeUri lockUri);
 	}
 	
