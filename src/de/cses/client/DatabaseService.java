@@ -263,4 +263,5 @@ public interface DatabaseService extends RemoteService {
 	
 	ArrayList<OrnamentFunctionEntry> getFunctionbyPosition (OrnamentPositionEntry wall)  throws IllegalArgumentException;
 
+	ArrayList<OrnamentPositionEntry> getPositionbyCeiling (int ceiling1, int ceiling2)  throws IllegalArgumentException;
 }

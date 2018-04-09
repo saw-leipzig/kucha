@@ -803,4 +803,8 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		return connector.getFunctionbyPosition(position);
 	}
 
+	public ArrayList<OrnamentPositionEntry> getPositionbyCeiling(int ceiling1, int ceiling2) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getPositionbyCeilingTypes(ceiling1, ceiling2);
+	}
 }

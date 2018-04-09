@@ -288,5 +288,6 @@ public interface DatabaseServiceAsync {
 
 	void getFunctionbyPosition(OrnamentPositionEntry position, AsyncCallback<ArrayList<OrnamentFunctionEntry>> asyncCallback) throws IllegalArgumentException;
 
+	void getPositionbyCeiling(int ceiling1, int ceiling2, AsyncCallback<ArrayList<OrnamentPositionEntry>> asyncCallback) throws IllegalArgumentException;
 
 }

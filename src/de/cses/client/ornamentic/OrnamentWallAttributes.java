@@ -115,7 +115,7 @@ public class OrnamentWallAttributes extends PopupPanel {
 				ornamentPositionComboBox.disable();
 				ornamentfunctionComboBox.disable();
 				ornamentPositionEntryLS.clear();
-				
+				filterPositionbyCaveArea();
 
 				ornamentPositionComboBox.setEnabled(true);
 			}
@@ -379,7 +379,7 @@ public class OrnamentWallAttributes extends PopupPanel {
 				}
 			});
 		}
-		else {
+		if( wallOrCeiling.contains("ceiling"))  {
 			dbService.getCaveAreas(caveEntry.getCaveID(), new AsyncCallback<ArrayList<CaveAreaEntry>>() {
 
 				@Override
@@ -395,7 +395,7 @@ public class OrnamentWallAttributes extends PopupPanel {
 					int ceiling1 = cavearea.getCeilingTypeID1();
 					int ceiling2 = cavearea.getCeilingTypeID2();
 					
-					dbService.getPositionbyCeilingTypes(ceiling1, ceiling2, new AsyncCallback<ArrayList<OrnamentPositionEntry>>() {
+					dbService.getPositionbyCeiling(ceiling1, ceiling2, new AsyncCallback<ArrayList<OrnamentPositionEntry>>() {
 
 						@Override
 						public void onFailure(Throwable caught) {

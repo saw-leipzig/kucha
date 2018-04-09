@@ -3204,6 +3204,24 @@ public class MysqlConnector {
 		return result;
 	}
 	
+	public ArrayList<OrnamentPositionEntry> getPositionbyCeilingTypes(int ceilingID1, int ceilingID2) {
+		ArrayList<OrnamentPositionEntry> result = new ArrayList<OrnamentPositionEntry>();
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM OrnamenticPosition JOIN OrnamentPositionCeilingRelation ON OrnamenticPosition.OrnamenticPositionID = OrnamentPositionCeilingRelation.OrnamentPositionID WHERE CeilingTypeID = " + ceilingID1 +" or" + ceilingID2);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				result.add(new OrnamentPositionEntry(rs.getInt("OrnamenticPositionID"), rs.getString("Name")));
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
 
 	public ArrayList<OrnamentFunctionEntry> getFunctionbyPosition(OrnamentPositionEntry position) {
 		ArrayList<OrnamentFunctionEntry> result = new ArrayList<OrnamentFunctionEntry>();
