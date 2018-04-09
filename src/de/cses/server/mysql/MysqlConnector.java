@@ -1695,25 +1695,7 @@ public class MysqlConnector {
 		return structureOrganizations;
 	}
 
-	public ArrayList<CavePart> getCaveParts() {
-		CavePart result = null;
-		ArrayList<CavePart> caveparts = new ArrayList<CavePart>();
-		Connection dbc = getConnection();
-		Statement stmt;
-		try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM CavePart");
-			while (rs.next()) {
-				result = new CavePart(rs.getInt("CavePartID"), rs.getString("Name"));
-				caveparts.add(result);
-			}
-			rs.close();
-			stmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return caveparts;
-	}
+
 
 	public ArrayList<OrnamentPositionEntry> getOrnamentPosition() {
 		OrnamentPositionEntry result = null;
@@ -3277,6 +3259,24 @@ public class MysqlConnector {
 		PreparedStatement pstmt;
 		try {
 			pstmt = dbc.prepareStatement("SELECT * FROM OrnamenticPosition JOIN OrnamentPositionWallRelation ON OrnamenticPosition.OrnamenticPositionID = OrnamentPositionWallRelation.OrnamentPositionID WHERE WallLocationID = " + wall.getWallLocationID());
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				result.add(new OrnamentPositionEntry(rs.getInt("OrnamenticPositionID"), rs.getString("Name")));
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	public ArrayList<OrnamentPositionEntry> getPositionbyCeilingTypes(int ceilingID1, int ceilingID2) {
+		ArrayList<OrnamentPositionEntry> result = new ArrayList<OrnamentPositionEntry>();
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM OrnamenticPosition JOIN OrnamentPositionCeilingRelation ON OrnamenticPosition.OrnamenticPositionID = OrnamentPositionCeilingRelation.OrnamentPositionID WHERE CeilingTypeID = " + ceilingID1 +" or" + ceilingID2);
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
 				result.add(new OrnamentPositionEntry(rs.getInt("OrnamenticPositionID"), rs.getString("Name")));

@@ -43,8 +43,10 @@ import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
 import de.cses.client.walls.WallSelector;
+import de.cses.shared.CaveAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CavePart;
+import de.cses.shared.InnerSecondaryPatternsEntry;
 import de.cses.shared.OrnamentFunctionEntry;
 import de.cses.shared.OrnamentPositionEntry;
 import de.cses.shared.WallEntry;
@@ -113,24 +115,8 @@ public class OrnamentWallAttributes extends PopupPanel {
 				ornamentPositionComboBox.disable();
 				ornamentfunctionComboBox.disable();
 				ornamentPositionEntryLS.clear();
-				
-				dbService.getPositionbyWall(event.getValue(), new AsyncCallback<ArrayList<OrnamentPositionEntry>>() {
+				filterPositionbyCaveArea();
 
-					@Override
-					public void onFailure(Throwable caught) {
-						caught.printStackTrace();
-					}
-
-					@Override
-					public void onSuccess(ArrayList<OrnamentPositionEntry> result) {
-						for (OrnamentPositionEntry pe : result) {
-							ornamentPositionEntryLS.add(pe);
-						}
-						if (wallOrnamentCaveRelation != null) {
-							ornamentPositionComboBox.setValue(ornamentPositionEntryLS.findModelWithKey(Integer.toString(wallOrnamentCaveRelation.getOrnamenticPositionID())));
-						}
-					}
-				});
 				ornamentPositionComboBox.setEnabled(true);
 			}
 
@@ -371,6 +357,67 @@ public class OrnamentWallAttributes extends PopupPanel {
 		@XTemplate("<div>{wallID}</div>")
 		SafeHtml walls(int wallID);
 	}
+	
+	public void filterPositionbyCaveArea() {
+		String wallOrCeiling = StaticTables.getInstance().getWallLocationEntries().get(wallselector.getSelectedWallEntry().getWallLocationID()).getCaveAreaLabel();
+		if( wallOrCeiling.contains("wall")) {
+			dbService.getPositionbyWall(wallselector.getSelectedWallEntry(), new AsyncCallback<ArrayList<OrnamentPositionEntry>>() {
 
+				@Override
+				public void onFailure(Throwable caught) {
+					caught.printStackTrace();
+				}
 
+				@Override
+				public void onSuccess(ArrayList<OrnamentPositionEntry> result) {
+					for (OrnamentPositionEntry pe : result) {
+						ornamentPositionEntryLS.add(pe);
+					}
+					if (wallOrnamentCaveRelation != null) {
+						ornamentPositionComboBox.setValue(ornamentPositionEntryLS.findModelWithKey(Integer.toString(wallOrnamentCaveRelation.getOrnamenticPositionID())));
+					}
+				}
+			});
+		}
+		if( wallOrCeiling.contains("ceiling"))  {
+			dbService.getCaveAreas(caveEntry.getCaveID(), new AsyncCallback<ArrayList<CaveAreaEntry>>() {
+
+				@Override
+				public void onFailure(Throwable caught) {
+					caught.printStackTrace();
+				}
+
+				@Override
+				public void onSuccess(ArrayList<CaveAreaEntry> result) {
+			for(int i = 0; i < result.size(); i++){
+				if(result.get(i).getCaveAreaLabel().contains(wallOrCeiling)) {
+					CaveAreaEntry cavearea = result.get(i);
+					int ceiling1 = cavearea.getCeilingTypeID1();
+					int ceiling2 = cavearea.getCeilingTypeID2();
+					
+					dbService.getPositionbyCeiling(ceiling1, ceiling2, new AsyncCallback<ArrayList<OrnamentPositionEntry>>() {
+
+						@Override
+						public void onFailure(Throwable caught) {
+							caught.printStackTrace();
+						}
+
+						@Override
+						public void onSuccess(ArrayList<OrnamentPositionEntry> result) {
+							for (OrnamentPositionEntry pe : result) {
+								ornamentPositionEntryLS.add(pe);
+							}
+							if (wallOrnamentCaveRelation != null) {
+								ornamentPositionComboBox.setValue(ornamentPositionEntryLS.findModelWithKey(Integer.toString(wallOrnamentCaveRelation.getOrnamenticPositionID())));
+							}
+						}
+					});
+				}
+			}
+				
+				}
+	});
+
+			}
+		}
 }

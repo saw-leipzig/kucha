@@ -21,6 +21,7 @@ import de.cses.client.DatabaseService;
 import de.cses.server.mysql.MysqlConnector;
 import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.AuthorEntry;
+import de.cses.shared.CaveAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveGroupEntry;
 import de.cses.shared.CavePart;
@@ -384,9 +385,9 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		return connector.getStructureOrganizations();
 	}
 	
-	public ArrayList<CavePart> getCaveParts() throws IllegalArgumentException {
+	public ArrayList<CaveAreaEntry> getCaveAreas(int caveID) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
-		return connector.getCaveParts();
+		return connector.getCaveAreas(caveID);
 	}
 	
 	public ArrayList<OrnamentFunctionEntry> getOrnamentFunctions() throws IllegalArgumentException {
@@ -820,4 +821,8 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	return connector.getFunctionbyPosition(position);
 	}
 
+	public ArrayList<OrnamentPositionEntry> getPositionbyCeiling(int ceiling1, int ceiling2) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getPositionbyCeilingTypes(ceiling1, ceiling2);
+	}
 }

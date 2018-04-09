@@ -20,6 +20,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.AuthorEntry;
+import de.cses.shared.CaveAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveGroupEntry;
 import de.cses.shared.CavePart;
@@ -164,7 +165,7 @@ public interface DatabaseService extends RemoteService {
 	
 	ArrayList<StructureOrganization> getStructureOrganizations() throws IllegalArgumentException;
 	
-	ArrayList<CavePart> getCaveParts() throws IllegalArgumentException;
+	ArrayList<CaveAreaEntry> getCaveAreas(int caveID) throws IllegalArgumentException;
 	
 	ArrayList<OrnamentEntry> getOrnamentsWHERE(String sqlWhere) throws IllegalArgumentException;
 	
@@ -247,7 +248,6 @@ public interface DatabaseService extends RemoteService {
 	
 	OrnamentComponentsEntry addOrnamentComponent(OrnamentComponentsEntry entry)  throws IllegalArgumentException;
 
-
 	ArrayList<PreservationAttributeEntry> getPreservationAttributes() throws IllegalArgumentException;
 
 	int insertPreservationAttributeEntry(PreservationAttributeEntry paEntry) throws IllegalArgumentException;
@@ -262,6 +262,7 @@ public interface DatabaseService extends RemoteService {
 	
 	ArrayList<OrnamentFunctionEntry> getFunctionbyPosition (OrnamentPositionEntry wall)  throws IllegalArgumentException;
 
-	ArrayList<Integer> getDepictionFromIconography(String sqlWhere);
+	ArrayList<OrnamentPositionEntry> getPositionbyCeiling (int ceiling1, int ceiling2)  throws IllegalArgumentException;
 
+	ArrayList<Integer> getDepictionFromIconography(String sqlWhere);
 }
