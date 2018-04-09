@@ -267,7 +267,14 @@ public class SingleImageEditor extends AbstractEditor {
 		authorSelectionCB.setTypeAhead(false);
 		authorSelectionCB.setEditable(false);
 		authorSelectionCB.setTriggerAction(TriggerAction.ALL);
-		authorSelectionCB.setValue(photographerEntryList.findModelWithKey(Integer.toString(imgEntry.getPhotographerID())), true);
+		authorSelectionCB.addSelectionHandler(new SelectionHandler<PhotographerEntry>() {
+
+			@Override
+			public void onSelection(SelectionEvent<PhotographerEntry> event) {
+				imgEntry.setPhotographerID(event.getSelectedItem().getPhotographerID());
+			}
+		});
+		authorSelectionCB.setValue(photographerEntryList.findModelWithKey(Integer.toString(imgEntry.getPhotographerID())));
 		
 		ToolButton addPhotoAuthorTB = new ToolButton(ToolButton.PLUS);
 		addPhotoAuthorTB.addSelectHandler(new SelectHandler() {

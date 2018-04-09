@@ -77,7 +77,6 @@ public class AnnotatedBiblographySearchController extends AbstractSearchControll
 		for (PublicationTypeEntry pe : StaticTables.getInstance().getPublicationTypes().values()) {
 			publicationTypeListStore.add(pe);
 		}
-		
 	}
 
 	/* (non-Javadoc)

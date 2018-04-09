@@ -14,7 +14,6 @@
 package de.cses.client.ui;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.shared.SafeHtml;
@@ -97,6 +96,7 @@ public class LocationFilter extends AbstractFilter {
 	/**
 	 * 
 	 */
+	@Deprecated
 	public LocationFilter(String filterName) {
 		super(filterName);
 		
@@ -267,6 +267,15 @@ public class LocationFilter extends AbstractFilter {
 		result.add("(" + sqlQuery + ")");
 		
 		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.ui.AbstractFilter#showExtendedFilterView()
+	 */
+	@Override
+	protected void showExtendedFilterView() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 

@@ -35,6 +35,7 @@ import de.cses.shared.DepictionEntry;
 public class DepictionSearchController extends AbstractSearchController {
 
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
+	private String sqlWhere;
 
 	/**
 	 * @param searchControllerTitle
@@ -49,20 +50,59 @@ public class DepictionSearchController extends AbstractSearchController {
 	 */
 	@Override
 	public void invokeSearch() {
+		sqlWhere = null;
 		ArrayList<String> sqlWhereClauses = new ArrayList<String>();
+		String sqlDepictionWhereIconography = null;
 		for (AbstractFilter filter : getRelatedFilter()) {
 			if ((filter != null) && (filter.getSqlWhereClause() != null)) {
 				sqlWhereClauses.addAll(filter.getSqlWhereClause());
 			}
-		}
-		String sqlWhere = null;
-		for (int i=0; i<sqlWhereClauses.size(); ++i) {
-			if (i == 0) {
-				sqlWhere = sqlWhereClauses.get(i);
-			} else {
-				sqlWhere = sqlWhere + " AND " + sqlWhereClauses.get(i);
+			if (filter instanceof DepictionFilter) {
+				sqlDepictionWhereIconography = ((DepictionFilter)filter).getRelatedIconographyWhereSQL();
 			}
 		}
+
+		for (String sql : sqlWhereClauses) {
+			if (sqlWhere == null) {
+				sqlWhere = sql;
+			} else {
+				sqlWhere = sqlWhere.concat(" AND " + sql);
+			}
+		}
+		
+		if (sqlDepictionWhereIconography != null) {
+			dbService.getDepictionFromIconography(sqlDepictionWhereIconography, new AsyncCallback<ArrayList<Integer>>() {
+
+				@Override
+				public void onFailure(Throwable caught) {
+				}
+
+				@Override
+				public void onSuccess(ArrayList<Integer> result) {
+					String sqlDepictionWhere = null;
+					for (Integer depictionID : result) {
+						if (sqlDepictionWhere == null) {
+							sqlDepictionWhere = Integer.toString(depictionID);
+						} else {
+							sqlDepictionWhere = sqlDepictionWhere.concat(", " + depictionID);
+						}
+					}
+					if (sqlDepictionWhere != null) {
+						if (sqlWhere == null) {
+							sqlWhere = "DepictionID IN (" + sqlDepictionWhere + ")";
+						} else {
+							sqlWhere = sqlWhere.concat(" AND " + "DepictionID IN (" + sqlDepictionWhere + ")");
+						}
+					}
+					doSearch(sqlWhere);
+				}
+			});
+		} else {
+			doSearch(sqlWhere);
+		}
+	}
+	
+	private void doSearch(String sqlWhere) {
 		dbService.getDepictions(sqlWhere, new AsyncCallback<ArrayList<DepictionEntry>>() {
 
 			@Override

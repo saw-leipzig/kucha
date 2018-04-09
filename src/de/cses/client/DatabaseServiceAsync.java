@@ -290,4 +290,6 @@ public interface DatabaseServiceAsync {
 
 	void getPositionbyCeiling(int ceiling1, int ceiling2, AsyncCallback<ArrayList<OrnamentPositionEntry>> asyncCallback) throws IllegalArgumentException;
 
+	void getDepictionFromIconography(String sqlWhere, AsyncCallback<ArrayList<Integer>> asyncCallback) throws IllegalArgumentException;
+
 }

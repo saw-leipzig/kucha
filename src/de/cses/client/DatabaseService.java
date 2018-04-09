@@ -248,7 +248,6 @@ public interface DatabaseService extends RemoteService {
 	
 	OrnamentComponentsEntry addOrnamentComponent(OrnamentComponentsEntry entry)  throws IllegalArgumentException;
 
-
 	ArrayList<PreservationAttributeEntry> getPreservationAttributes() throws IllegalArgumentException;
 
 	int insertPreservationAttributeEntry(PreservationAttributeEntry paEntry) throws IllegalArgumentException;
@@ -264,4 +263,6 @@ public interface DatabaseService extends RemoteService {
 	ArrayList<OrnamentFunctionEntry> getFunctionbyPosition (OrnamentPositionEntry wall)  throws IllegalArgumentException;
 
 	ArrayList<OrnamentPositionEntry> getPositionbyCeiling (int ceiling1, int ceiling2)  throws IllegalArgumentException;
+
+	ArrayList<Integer> getDepictionFromIconography(String sqlWhere);
 }

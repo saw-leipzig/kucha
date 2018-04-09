@@ -68,6 +68,7 @@ public class PictorialElementSelector implements IsWidget {
 		}
 	}
 
+	@Deprecated
 	class PictorialElementValueProvider implements ValueProvider<PictorialElementEntry, String> {
 
 		@Override
