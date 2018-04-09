@@ -19,6 +19,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.AuthorEntry;
+import de.cses.shared.CaveAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveGroupEntry;
 import de.cses.shared.CavePart;
@@ -179,7 +180,7 @@ public interface DatabaseServiceAsync {
 
 	void getOrnamentCaveTypes(AsyncCallback<ArrayList<OrnamentCaveType>> asyncCallback) throws IllegalArgumentException;
 
-	void getCaveParts(AsyncCallback<ArrayList<CavePart>> asyncCallback) throws IllegalArgumentException;
+	void getCaveAreas(int caveID, AsyncCallback<ArrayList<CaveAreaEntry>> asyncCallback) throws IllegalArgumentException;
 
 	void getWalls(AsyncCallback<ArrayList<WallEntry>> asyncCallback) throws IllegalArgumentException;
 

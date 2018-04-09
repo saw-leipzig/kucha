@@ -1660,25 +1660,7 @@ public class MysqlConnector {
 		return structureOrganizations;
 	}
 
-	public ArrayList<CavePart> getCaveParts() {
-		CavePart result = null;
-		ArrayList<CavePart> caveparts = new ArrayList<CavePart>();
-		Connection dbc = getConnection();
-		Statement stmt;
-		try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM CavePart");
-			while (rs.next()) {
-				result = new CavePart(rs.getInt("CavePartID"), rs.getString("Name"));
-				caveparts.add(result);
-			}
-			rs.close();
-			stmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return caveparts;
-	}
+
 
 	public ArrayList<OrnamentPositionEntry> getOrnamentPosition() {
 		OrnamentPositionEntry result = null;
