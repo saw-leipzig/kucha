@@ -67,33 +67,50 @@ public class JsonServlet extends HttpServlet {
 				case "caveID":
 					if (connector.checkSessionID(request.getParameter("sessionID")) != null) {
 						getCaves();
+					} else {
+						response.setStatus(403);
 					}
 					break;
 					
 				case "siteID":
 					if (connector.checkSessionID(request.getParameter("sessionID")) != null) {
 						getSites();
+					} else {
+						response.setStatus(403);
 					}
+					break;
 					
 				case "regionID":
 					if (connector.checkSessionID(request.getParameter("sessionID")) != null) {
 						getRegions();
+					} else {
+						response.setStatus(403);
 					}
+					break;
 					
 				case "districtID":
 					if (connector.checkSessionID(request.getParameter("sessionID")) != null) {
 						getDistricts();
+					} else {
+						response.setStatus(403);
 					}
+					break;
 					
 				case "iconographyID":
 					if (connector.checkSessionID(request.getParameter("sessionID")) != null) {
 						getIconography();
+					} else {
+						response.setStatus(403);
 					}
+					break;
 					
 				case "paintedRepID":
 					if (connector.checkSessionID(request.getParameter("sessionID")) != null) {
 						getDepiction();
+					} else {
+						response.setStatus(403);
 					}
+					break;
 					
 				case "caveTypeID":
 					getCaveTypes();
@@ -116,7 +133,6 @@ public class JsonServlet extends HttpServlet {
 			}
 		} else {
 			response.setStatus(404);
-			response.getWriter().close();
 		}
 		response.getWriter().close();
 	}
