@@ -893,6 +893,24 @@ public class MysqlConnector {
 		return result;
 	}
 
+	public ArrayList<IconographyEntry> getIconographyEntries(String sqlWhere) {
+		ArrayList<IconographyEntry> result = new ArrayList<IconographyEntry>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Iconography WHERE " + sqlWhere + " ORDER BY Text Asc");
+			while (rs.next()) {
+				result.add(new IconographyEntry(rs.getInt("IconographyID"), rs.getInt("ParentID"), rs.getString("Text")));
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
 	public ArrayList<IconographyEntry> getIconography() {
 		ArrayList<IconographyEntry> root = getIconographyEntries(0);
 
@@ -1302,18 +1320,28 @@ public class MysqlConnector {
 		}
 		return true;
 	}
-
+	
 	/**
+	 * 
 	 * @return A list of all Regions as RegionEntry objects
 	 */
 	public ArrayList<RegionEntry> getRegions() {
+		return getRegions(null);
+	}
+	
+	/**
+	 * 
+	 * @param sqlWhere
+	 * @return A list of all Regions mathing the where clause as RegionEntry objects
+	 */
+	public ArrayList<RegionEntry> getRegions(String sqlWhere) {
 		ArrayList<RegionEntry> result = new ArrayList<RegionEntry>();
 		Connection dbc = getConnection();
 
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Regions ORDER BY EnglishName Asc, PhoneticName Asc, OriginalName Asc");
+			ResultSet rs = stmt.executeQuery(sqlWhere!=null ? "SELECT * FROM Regions WHERE " + sqlWhere + "ORDER BY EnglishName Asc, PhoneticName Asc, OriginalName Asc" : "SELECT * FROM Regions ORDER BY EnglishName Asc, PhoneticName Asc, OriginalName Asc");
 			while (rs.next()) {
 				result.add(new RegionEntry(rs.getInt("RegionID"), rs.getString("PhoneticName"), rs.getString("OriginalName"),
 						rs.getString("EnglishName"), rs.getInt("SiteID")));
@@ -1325,18 +1353,25 @@ public class MysqlConnector {
 		}
 		return result;
 	}
+	
+	
+	public ArrayList<SiteEntry> getSites() {
+		return getSites(null);
+	}
 
 	/**
+	 * 
+	 * @param sqlWhere
 	 * @return
 	 */
-	public ArrayList<SiteEntry> getSites() {
+	public ArrayList<SiteEntry> getSites(String sqlWhere) {
 		ArrayList<SiteEntry> result = new ArrayList<SiteEntry>();
 		Connection dbc = getConnection();
 
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Sites ORDER BY Name Asc, AlternativeName Asc");
+			ResultSet rs = stmt.executeQuery(sqlWhere != null ? "SELECT * FROM Sites WHERE " + sqlWhere + " ORDER BY Name Asc, AlternativeName Asc" : "SELECT * FROM Sites ORDER BY Name Asc, AlternativeName Asc");
 			while (rs.next()) {
 				result.add(new SiteEntry(rs.getInt("SiteID"), rs.getString("Name"), rs.getString("AlternativeName"), rs.getString("ShortName")));
 			}
