@@ -128,6 +128,10 @@ public class JsonServlet extends HttpServlet {
 					getRelatedDepictionsFromIconography();
 					break;
 					
+				case "exclusivePaintedRepFromIconographyID":
+					getExclusiveRelatedDepictionsFromIconography();
+					break;
+					
 				default:
 					break;
 			}
@@ -261,28 +265,40 @@ public class JsonServlet extends HttpServlet {
 		String sqlWhere = null;
 		PrintWriter out = response.getWriter();
 		response.setContentType("application/json");
+		ArrayList<DepictionEntry> depictionEntries ;
 
 		if ("all".equals(depictionIDStr)) {
 			if (request.getParameter("caveID") != null) {
 				sqlWhere = "(CaveID=" + Integer.parseInt(request.getParameter("caveID"));
 			}
-			ArrayList<DepictionEntry> districtEntries = connector.getDepictions(sqlWhere);
-			out.println(gs.toJson(districtEntries));
+			depictionEntries = connector.getDepictions(sqlWhere);
 		} else {
-			DepictionEntry entry = connector.getDepictionEntry(Integer.parseInt(depictionIDStr));			
-			out.println(gs.toJson(entry));
+			depictionEntries = connector.getDepictions("DepictionID IN (" + depictionIDStr + ")");			
 		}
+		out.println(gs.toJson(depictionEntries));
 		out.close();
 	}
 	
 	private void getRelatedDepictionsFromIconography() throws IOException {
-		int iconographyID = Integer.parseInt(request.getParameter("paintedRepID"));
+		String iconographyIDs = request.getParameter("paintedRepFromIconographyID");
 		Gson gs = new Gson();
 		PrintWriter out = response.getWriter();
 		response.setContentType("application/json");
 
-		if (iconographyID > 0) {
-		 ArrayList<DepictionEntry> depictionEntries = connector.getRelatedDepictions(iconographyID);
+		if (iconographyIDs != null) {
+		 ArrayList<DepictionEntry> depictionEntries = connector.getRelatedDepictions(iconographyIDs);
+		 out.println(gs.toJson(depictionEntries));
+		}
+	}
+	
+	private void getExclusiveRelatedDepictionsFromIconography() throws IOException {
+		String iconographyIDs = request.getParameter("exclusivePaintedRepFromIconographyID");
+		Gson gs = new Gson();
+		PrintWriter out = response.getWriter();
+		response.setContentType("application/json");
+
+		if (iconographyIDs != null) {
+		 ArrayList<DepictionEntry> depictionEntries = connector.getRelatedDepictions(iconographyIDs);
 		 out.println(gs.toJson(depictionEntries));
 		}
 	}

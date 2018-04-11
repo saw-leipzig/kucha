@@ -1215,14 +1215,14 @@ public class MysqlConnector {
 		}
 		return results;
 	}
-
+	
 	/**
-	 * Gets the images related to the depictionID
+	 * Gets the depictions related to the depictionID
 	 * 
 	 * @param depictionID
 	 * @return
 	 */
-	public ArrayList<DepictionEntry> getRelatedDepictions(int iconographyID) {
+	public ArrayList<DepictionEntry> getExclusiveRelatedDepictions(String iconographyIDs) {
 		ArrayList<DepictionEntry> results = new ArrayList<DepictionEntry>();
 		Connection dbc = getConnection();
 
@@ -1230,8 +1230,45 @@ public class MysqlConnector {
 		try {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery(
-					"SELECT * FROM Depictions WHERE DepictionID IN (SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID="
-							+ iconographyID + ")");
+					"SELECT * FROM Depictions WHERE DepictionID IN (SELECT DISTINCT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (" 
+							+ iconographyIDs + ") AND DepictionID NOT IN (SELECT DISTINCT DepictionID FROM DepictionIconographyRelation WHERE IconographyID NOT IN (" 
+							+ iconographyIDs + ")))");
+			while (rs.next()) {
+				DepictionEntry de = new DepictionEntry(rs.getInt("DepictionID"), rs.getInt("StyleID"), rs.getString("Inscriptions"),
+						rs.getString("SeparateAksaras"), rs.getString("Dating"), rs.getString("Description"), rs.getString("BackgroundColour"),
+						rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"), rs.getDouble("Width"), rs.getDouble("Height"),
+						rs.getInt("ExpeditionID"), rs.getDate("PurchaseDate"), rs.getInt("CurrentLocationID"), rs.getString("InventoryNumber"),
+						rs.getInt("VendorID"), rs.getInt("StoryID"), getCave(rs.getInt("CaveID")), rs.getInt("WallID"), rs.getInt("AbsoluteLeft"),
+						rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes"),
+						rs.getInt("MasterImageID"));
+				de.setRelatedImages(getRelatedImages(de.getDepictionID()));
+				results.add(de);
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return results;
+	}
+
+	/**
+	 * Gets the depictions related to the depictionID
+	 * 
+	 * @param depictionID
+	 * @return
+	 */
+	public ArrayList<DepictionEntry> getRelatedDepictions(String iconographyIDs) {
+		ArrayList<DepictionEntry> results = new ArrayList<DepictionEntry>();
+		Connection dbc = getConnection();
+
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery(
+					"SELECT * FROM Depictions WHERE DepictionID IN (SELECT DISTINCT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN ("
+							+ iconographyIDs + "))");
 			while (rs.next()) {
 				DepictionEntry de = new DepictionEntry(rs.getInt("DepictionID"), rs.getInt("StyleID"), rs.getString("Inscriptions"),
 						rs.getString("SeparateAksaras"), rs.getString("Dating"), rs.getString("Description"), rs.getString("BackgroundColour"),
