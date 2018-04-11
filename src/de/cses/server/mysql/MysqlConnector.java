@@ -684,15 +684,19 @@ public class MysqlConnector {
 		}
 		return result;
 	}
-
+	
 	public ArrayList<CaveTypeEntry> getCaveTypes() {
+		return getCaveTypes(null);
+	}
+
+	public ArrayList<CaveTypeEntry> getCaveTypes(String sqlWhere) {
 		Connection dbc = getConnection();
 		ArrayList<CaveTypeEntry> results = new ArrayList<CaveTypeEntry>();
 		Statement stmt;
 
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM CaveType ORDER BY NameEN");
+			ResultSet rs = stmt.executeQuery(sqlWhere != null ? "SELECT * FROM CaveType WHERE " + sqlWhere + " ORDER BY NameEN" : "SELECT * FROM CaveType ORDER BY NameEN");
 			while (rs.next()) {
 				CaveTypeEntry caveType = new CaveTypeEntry(rs.getInt("CaveTypeID"), rs.getString("NameEN"), rs.getString("DescriptionEN"),
 						rs.getString("SketchName"));
@@ -1052,14 +1056,19 @@ public class MysqlConnector {
 		}
 		return results;
 	}
-
+	
 	public ArrayList<StyleEntry> getStyles() {
+		return getStyles(null);
+	}
+
+
+	public ArrayList<StyleEntry> getStyles(String sqlWhere) {
 		ArrayList<StyleEntry> results = new ArrayList<StyleEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Styles");
+			ResultSet rs = stmt.executeQuery(sqlWhere != null ? "SELECT * FROM Styles WHERE " + sqlWhere + " ORDER BY StyleName Asc": "SELECT * FROM Styles ORDER BY StyleName Asc");
 			while (rs.next()) {
 				results.add(new StyleEntry(rs.getInt("StyleID"), rs.getString("StyleName")));
 			}
@@ -1071,15 +1080,19 @@ public class MysqlConnector {
 		}
 		return results;
 	}
-
+	
 	public ArrayList<ExpeditionEntry> getExpeditions() {
+		return getExpeditions(null);
+	}
+
+	public ArrayList<ExpeditionEntry> getExpeditions(String sqlWhere) {
 		ArrayList<ExpeditionEntry> results = new ArrayList<ExpeditionEntry>();
 		Connection dbc = getConnection();
 
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Expeditions");
+			ResultSet rs = stmt.executeQuery(sqlWhere != null ? "SELECT * FROM Expeditions WHERE " + sqlWhere + " ORDER BY Name Asc" : "SELECT * FROM Expeditions ORDER BY Name Asc");
 			while (rs.next()) {
 				results.add(new ExpeditionEntry(rs.getInt("ExpeditionID"), rs.getString("Name"), rs.getString("Leader"), rs.getDate("StartDate"),
 						rs.getDate("EndDate")));

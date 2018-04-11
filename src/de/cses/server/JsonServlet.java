@@ -308,14 +308,14 @@ public class JsonServlet extends HttpServlet {
 		Gson gs = new Gson();
 		PrintWriter out = response.getWriter();
 		response.setContentType("application/json");
+		ArrayList<CaveTypeEntry> caveTypeEntries;
 
 		if ("all".equals(caveTypeIDStr)) {
-			ArrayList<CaveTypeEntry> caveTypeEntries = connector.getCaveTypes();
-			out.println(gs.toJson(caveTypeEntries));
+			caveTypeEntries = connector.getCaveTypes();
 		} else {
-			CaveTypeEntry entry = connector.getCaveTypebyID(Integer.parseInt(caveTypeIDStr));
-			out.println(gs.toJson(entry));
+			caveTypeEntries = connector.getCaveTypes("CaveTypeID IN (" + caveTypeIDStr + ")");
 		}
+		out.println(gs.toJson(caveTypeEntries));
 		out.close();
 	}
 	
@@ -324,11 +324,14 @@ public class JsonServlet extends HttpServlet {
 		Gson gs = new Gson();
 		PrintWriter out = response.getWriter();
 		response.setContentType("application/json");
+		ArrayList<StyleEntry> caveTypeEntries;
 
 		if ("all".equals(styleIDStr)) {
-			ArrayList<StyleEntry> caveTypeEntries = connector.getStyles();
-			out.println(gs.toJson(caveTypeEntries));
+			caveTypeEntries = connector.getStyles();
+		} else {
+			caveTypeEntries = connector.getStyles("StyleID IN (" + styleIDStr + ")");
 		}
+		out.println(gs.toJson(caveTypeEntries));
 		out.close();
 	}
 	
@@ -337,11 +340,14 @@ public class JsonServlet extends HttpServlet {
 		Gson gs = new Gson();
 		PrintWriter out = response.getWriter();
 		response.setContentType("application/json");
+		ArrayList<ExpeditionEntry> expeditionEntries;
 
 		if ("all".equals(expeditionIDStr)) {
-			ArrayList<ExpeditionEntry> caveTypeEntries = connector.getExpeditions();
-			out.println(gs.toJson(caveTypeEntries));
+			expeditionEntries = connector.getExpeditions();
+		} else {
+			expeditionEntries = connector.getExpeditions("ExpeditionID IN (" + expeditionIDStr + ")");
 		}
+		out.println(gs.toJson(expeditionEntries));
 		out.close();
 	}
 	
