@@ -3351,7 +3351,7 @@ public class MysqlConnector {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
-			pstmt = dbc.prepareStatement("SELECT * FROM OrnamenticPosition JOIN OrnamentPositionWallRelation ON OrnamenticPosition.OrnamenticPositionID = OrnamentPositionWallRelation.OrnamentPositionID WHERE WallLocationID = " + wall.getWallLocationID());
+			pstmt = dbc.prepareStatement("SELECT * FROM OrnamenticPosition JOIN OrnamentPositionWallRelation ON OrnamenticPosition.OrnamenticPositionID = OrnamentPositionWallRelation.OrnamentPositionID WHERE WallPositionID = 1");
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
 				result.add(new OrnamentPositionEntry(rs.getInt("OrnamenticPositionID"), rs.getString("Name")));
@@ -3365,11 +3365,12 @@ public class MysqlConnector {
 	}
 	
 	public ArrayList<OrnamentPositionEntry> getPositionbyCeilingTypes(int ceilingID1, int ceilingID2) {
+		System.err.println("ceiling mysql wird audgefuehrt");
 		ArrayList<OrnamentPositionEntry> result = new ArrayList<OrnamentPositionEntry>();
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
-			pstmt = dbc.prepareStatement("SELECT * FROM OrnamenticPosition JOIN OrnamentPositionCeilingRelation ON OrnamenticPosition.OrnamenticPositionID = OrnamentPositionCeilingRelation.OrnamentPositionID WHERE CeilingTypeID = " + ceilingID1 +" or" + ceilingID2);
+			pstmt = dbc.prepareStatement("SELECT * FROM OrnamenticPosition JOIN OrnamentPositionCeilingRelation ON OrnamenticPosition.OrnamenticPositionID = OrnamentPositionCeilingRelation.OrnamentPositionID WHERE CeilingID = " + ceilingID1 +" OR CeilingID =" + ceilingID2);
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
 				result.add(new OrnamentPositionEntry(rs.getInt("OrnamenticPositionID"), rs.getString("Name")));

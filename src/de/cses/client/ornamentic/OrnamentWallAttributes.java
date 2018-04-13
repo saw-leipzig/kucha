@@ -20,6 +20,7 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
@@ -116,6 +117,7 @@ public class OrnamentWallAttributes extends PopupPanel {
 				ornamentfunctionComboBox.disable();
 				ornamentPositionEntryLS.clear();
 				filterPositionbyCaveArea();
+				Window.alert("selection wurde ausgefuert");
 
 				ornamentPositionComboBox.setEnabled(true);
 			}
@@ -359,8 +361,10 @@ public class OrnamentWallAttributes extends PopupPanel {
 	}
 	
 	public void filterPositionbyCaveArea() {
-		String wallOrCeiling = StaticTables.getInstance().getWallLocationEntries().get(wallselector.getSelectedWallEntry().getWallLocationID()).getCaveAreaLabel();
+		String wallOrCeiling = StaticTables.getInstance().getWallLocationEntries().get(wallselector.getSelectedWallEntry().getWallLocationID()).getLabel();
+		Window.alert("der string in der combobox ist: " + wallOrCeiling);
 		if( wallOrCeiling.contains("wall")) {
+			Window.alert("methode aufgerufen fall wall");
 			dbService.getPositionbyWall(wallselector.getSelectedWallEntry(), new AsyncCallback<ArrayList<OrnamentPositionEntry>>() {
 
 				@Override
@@ -370,6 +374,7 @@ public class OrnamentWallAttributes extends PopupPanel {
 
 				@Override
 				public void onSuccess(ArrayList<OrnamentPositionEntry> result) {
+					Window.alert("success der positions im wall fall");
 					for (OrnamentPositionEntry pe : result) {
 						ornamentPositionEntryLS.add(pe);
 					}
@@ -379,22 +384,19 @@ public class OrnamentWallAttributes extends PopupPanel {
 				}
 			});
 		}
-		if( wallOrCeiling.contains("ceiling"))  {
-			dbService.getCaveAreas(caveEntry.getCaveID(), new AsyncCallback<ArrayList<CaveAreaEntry>>() {
-
-				@Override
-				public void onFailure(Throwable caught) {
-					caught.printStackTrace();
-				}
-
-				@Override
-				public void onSuccess(ArrayList<CaveAreaEntry> result) {
+		else if( wallOrCeiling.contains("ceiling"))  {
+			Window.alert("im ceiling fall");
+			ArrayList<CaveAreaEntry> result = caveEntry.getCaveAreaList();
+			String cavearealabel = StaticTables.getInstance().getWallLocationEntries().get(wallselector.getSelectedWallEntry().getWallLocationID()).getCaveAreaLabel();
+			Window.alert("success der positions im ceiling fall");
+			Window.alert("anzahl der caveareas zu der hoehle: "+ Integer.toString(result.size()));
+			Window.alert("cavearealabel: "+ cavearealabel);
 			for(int i = 0; i < result.size(); i++){
-				if(result.get(i).getCaveAreaLabel().contains(wallOrCeiling)) {
+				if(result.get(i).getCaveAreaLabel().contains(cavearealabel)) {
 					CaveAreaEntry cavearea = result.get(i);
 					int ceiling1 = cavearea.getCeilingTypeID1();
 					int ceiling2 = cavearea.getCeilingTypeID2();
-					
+					Window.alert("einen eintrag gefunden");
 					dbService.getPositionbyCeiling(ceiling1, ceiling2, new AsyncCallback<ArrayList<OrnamentPositionEntry>>() {
 
 						@Override
@@ -409,15 +411,17 @@ public class OrnamentWallAttributes extends PopupPanel {
 							}
 							if (wallOrnamentCaveRelation != null) {
 								ornamentPositionComboBox.setValue(ornamentPositionEntryLS.findModelWithKey(Integer.toString(wallOrnamentCaveRelation.getOrnamenticPositionID())));
-							}
-						}
-					});
+							
 				}
 			}
 				
-				}
 	});
-
+				
 			}
+			}
+		}
+		else {
+			Window.alert("string pattern wuerden nicht gefunden");
+		}
 		}
 }

@@ -417,7 +417,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	
 	public ArrayList<PictorialElementEntry> getPictorialElementsObjects() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
-		return connector.getPictorialElements(5); // start with the 5th element subtree
+		return connector.getPictorialElements(2005); // start with the 5th element subtree
 	}
 
 
