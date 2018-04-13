@@ -128,19 +128,27 @@ public class MysqlConnector {
 		}
 		return connection;
 	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public ArrayList<DistrictEntry> getDistricts() {
+		return getDistricts(null);
+	}
 
 	/**
 	 * Selects all districts from the table 'Districts' in the database
 	 * 
 	 * @return
 	 */
-	public ArrayList<DistrictEntry> getDistricts() {
+	public ArrayList<DistrictEntry> getDistricts(String sqlWhere) {
 		ArrayList<DistrictEntry> result = new ArrayList<DistrictEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Districts ORDER BY Name Asc");
+			ResultSet rs = stmt.executeQuery(sqlWhere != null ? "SELECT * FROM Districts WHERE " + sqlWhere + " ORDER BY Name Asc" : "SELECT * FROM Districts ORDER BY Name Asc");
 			while (rs.next()) {
 				result.add(new DistrictEntry(rs.getInt("DistrictID"), rs.getString("Name"), rs.getInt("SiteID"), rs.getString("Description"),
 						rs.getString("Map"), rs.getString("ArialMap")));
@@ -684,15 +692,19 @@ public class MysqlConnector {
 		}
 		return result;
 	}
-
+	
 	public ArrayList<CaveTypeEntry> getCaveTypes() {
+		return getCaveTypes(null);
+	}
+
+	public ArrayList<CaveTypeEntry> getCaveTypes(String sqlWhere) {
 		Connection dbc = getConnection();
 		ArrayList<CaveTypeEntry> results = new ArrayList<CaveTypeEntry>();
 		Statement stmt;
 
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM CaveType ORDER BY NameEN");
+			ResultSet rs = stmt.executeQuery(sqlWhere != null ? "SELECT * FROM CaveType WHERE " + sqlWhere + " ORDER BY NameEN" : "SELECT * FROM CaveType ORDER BY NameEN");
 			while (rs.next()) {
 				CaveTypeEntry caveType = new CaveTypeEntry(rs.getInt("CaveTypeID"), rs.getString("NameEN"), rs.getString("DescriptionEN"),
 						rs.getString("SketchName"));
@@ -893,6 +905,24 @@ public class MysqlConnector {
 		return result;
 	}
 
+	public ArrayList<IconographyEntry> getIconographyEntries(String sqlWhere) {
+		ArrayList<IconographyEntry> result = new ArrayList<IconographyEntry>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Iconography WHERE " + sqlWhere + " ORDER BY Text Asc");
+			while (rs.next()) {
+				result.add(new IconographyEntry(rs.getInt("IconographyID"), rs.getInt("ParentID"), rs.getString("Text")));
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
 	public ArrayList<IconographyEntry> getIconography() {
 		ArrayList<IconographyEntry> root = getIconographyEntries(0);
 
@@ -1034,14 +1064,19 @@ public class MysqlConnector {
 		}
 		return results;
 	}
-
+	
 	public ArrayList<StyleEntry> getStyles() {
+		return getStyles(null);
+	}
+
+
+	public ArrayList<StyleEntry> getStyles(String sqlWhere) {
 		ArrayList<StyleEntry> results = new ArrayList<StyleEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Styles");
+			ResultSet rs = stmt.executeQuery(sqlWhere != null ? "SELECT * FROM Styles WHERE " + sqlWhere + " ORDER BY StyleName Asc": "SELECT * FROM Styles ORDER BY StyleName Asc");
 			while (rs.next()) {
 				results.add(new StyleEntry(rs.getInt("StyleID"), rs.getString("StyleName")));
 			}
@@ -1053,15 +1088,19 @@ public class MysqlConnector {
 		}
 		return results;
 	}
-
+	
 	public ArrayList<ExpeditionEntry> getExpeditions() {
+		return getExpeditions(null);
+	}
+
+	public ArrayList<ExpeditionEntry> getExpeditions(String sqlWhere) {
 		ArrayList<ExpeditionEntry> results = new ArrayList<ExpeditionEntry>();
 		Connection dbc = getConnection();
 
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Expeditions");
+			ResultSet rs = stmt.executeQuery(sqlWhere != null ? "SELECT * FROM Expeditions WHERE " + sqlWhere + " ORDER BY Name Asc" : "SELECT * FROM Expeditions ORDER BY Name Asc");
 			while (rs.next()) {
 				results.add(new ExpeditionEntry(rs.getInt("ExpeditionID"), rs.getString("Name"), rs.getString("Leader"), rs.getDate("StartDate"),
 						rs.getDate("EndDate")));
@@ -1197,14 +1236,14 @@ public class MysqlConnector {
 		}
 		return results;
 	}
-
+	
 	/**
-	 * Gets the images related to the depictionID
+	 * Gets the depictions related to the depictionID
 	 * 
 	 * @param depictionID
 	 * @return
 	 */
-	public ArrayList<DepictionEntry> getRelatedDepictions(int iconographyID) {
+	public ArrayList<DepictionEntry> getExclusiveRelatedDepictions(String iconographyIDs) {
 		ArrayList<DepictionEntry> results = new ArrayList<DepictionEntry>();
 		Connection dbc = getConnection();
 
@@ -1212,8 +1251,45 @@ public class MysqlConnector {
 		try {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery(
-					"SELECT * FROM Depictions WHERE DepictionID IN (SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID="
-							+ iconographyID + ")");
+					"SELECT * FROM Depictions WHERE DepictionID IN (SELECT DISTINCT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (" 
+							+ iconographyIDs + ") AND DepictionID NOT IN (SELECT DISTINCT DepictionID FROM DepictionIconographyRelation WHERE IconographyID NOT IN (" 
+							+ iconographyIDs + ")))");
+			while (rs.next()) {
+				DepictionEntry de = new DepictionEntry(rs.getInt("DepictionID"), rs.getInt("StyleID"), rs.getString("Inscriptions"),
+						rs.getString("SeparateAksaras"), rs.getString("Dating"), rs.getString("Description"), rs.getString("BackgroundColour"),
+						rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"), rs.getDouble("Width"), rs.getDouble("Height"),
+						rs.getInt("ExpeditionID"), rs.getDate("PurchaseDate"), rs.getInt("CurrentLocationID"), rs.getString("InventoryNumber"),
+						rs.getInt("VendorID"), rs.getInt("StoryID"), getCave(rs.getInt("CaveID")), rs.getInt("WallID"), rs.getInt("AbsoluteLeft"),
+						rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes"),
+						rs.getInt("MasterImageID"));
+				de.setRelatedImages(getRelatedImages(de.getDepictionID()));
+				results.add(de);
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return results;
+	}
+
+	/**
+	 * Gets the depictions related to the depictionID
+	 * 
+	 * @param depictionID
+	 * @return
+	 */
+	public ArrayList<DepictionEntry> getRelatedDepictions(String iconographyIDs) {
+		ArrayList<DepictionEntry> results = new ArrayList<DepictionEntry>();
+		Connection dbc = getConnection();
+
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery(
+					"SELECT * FROM Depictions WHERE DepictionID IN (SELECT DISTINCT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN ("
+							+ iconographyIDs + "))");
 			while (rs.next()) {
 				DepictionEntry de = new DepictionEntry(rs.getInt("DepictionID"), rs.getInt("StyleID"), rs.getString("Inscriptions"),
 						rs.getString("SeparateAksaras"), rs.getString("Dating"), rs.getString("Description"), rs.getString("BackgroundColour"),
@@ -1302,18 +1378,28 @@ public class MysqlConnector {
 		}
 		return true;
 	}
-
+	
 	/**
+	 * 
 	 * @return A list of all Regions as RegionEntry objects
 	 */
 	public ArrayList<RegionEntry> getRegions() {
+		return getRegions(null);
+	}
+	
+	/**
+	 * 
+	 * @param sqlWhere
+	 * @return A list of all Regions mathing the where clause as RegionEntry objects
+	 */
+	public ArrayList<RegionEntry> getRegions(String sqlWhere) {
 		ArrayList<RegionEntry> result = new ArrayList<RegionEntry>();
 		Connection dbc = getConnection();
 
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Regions ORDER BY EnglishName Asc, PhoneticName Asc, OriginalName Asc");
+			ResultSet rs = stmt.executeQuery(sqlWhere!=null ? "SELECT * FROM Regions WHERE " + sqlWhere + "ORDER BY EnglishName Asc, PhoneticName Asc, OriginalName Asc" : "SELECT * FROM Regions ORDER BY EnglishName Asc, PhoneticName Asc, OriginalName Asc");
 			while (rs.next()) {
 				result.add(new RegionEntry(rs.getInt("RegionID"), rs.getString("PhoneticName"), rs.getString("OriginalName"),
 						rs.getString("EnglishName"), rs.getInt("SiteID")));
@@ -1325,18 +1411,25 @@ public class MysqlConnector {
 		}
 		return result;
 	}
+	
+	
+	public ArrayList<SiteEntry> getSites() {
+		return getSites(null);
+	}
 
 	/**
+	 * 
+	 * @param sqlWhere
 	 * @return
 	 */
-	public ArrayList<SiteEntry> getSites() {
+	public ArrayList<SiteEntry> getSites(String sqlWhere) {
 		ArrayList<SiteEntry> result = new ArrayList<SiteEntry>();
 		Connection dbc = getConnection();
 
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Sites ORDER BY Name Asc, AlternativeName Asc");
+			ResultSet rs = stmt.executeQuery(sqlWhere != null ? "SELECT * FROM Sites WHERE " + sqlWhere + " ORDER BY Name Asc, AlternativeName Asc" : "SELECT * FROM Sites ORDER BY Name Asc, AlternativeName Asc");
 			while (rs.next()) {
 				result.add(new SiteEntry(rs.getInt("SiteID"), rs.getString("Name"), rs.getString("AlternativeName"), rs.getString("ShortName")));
 			}

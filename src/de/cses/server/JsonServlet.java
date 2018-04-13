@@ -67,33 +67,50 @@ public class JsonServlet extends HttpServlet {
 				case "caveID":
 					if (connector.checkSessionID(request.getParameter("sessionID")) != null) {
 						getCaves();
+					} else {
+						response.setStatus(403);
 					}
 					break;
 					
 				case "siteID":
 					if (connector.checkSessionID(request.getParameter("sessionID")) != null) {
 						getSites();
+					} else {
+						response.setStatus(403);
 					}
+					break;
 					
 				case "regionID":
 					if (connector.checkSessionID(request.getParameter("sessionID")) != null) {
 						getRegions();
+					} else {
+						response.setStatus(403);
 					}
+					break;
 					
 				case "districtID":
 					if (connector.checkSessionID(request.getParameter("sessionID")) != null) {
 						getDistricts();
+					} else {
+						response.setStatus(403);
 					}
+					break;
 					
 				case "iconographyID":
 					if (connector.checkSessionID(request.getParameter("sessionID")) != null) {
 						getIconography();
+					} else {
+						response.setStatus(403);
 					}
+					break;
 					
 				case "paintedRepID":
 					if (connector.checkSessionID(request.getParameter("sessionID")) != null) {
 						getDepiction();
+					} else {
+						response.setStatus(403);
 					}
+					break;
 					
 				case "caveTypeID":
 					getCaveTypes();
@@ -111,12 +128,15 @@ public class JsonServlet extends HttpServlet {
 					getRelatedDepictionsFromIconography();
 					break;
 					
+				case "exclusivePaintedRepFromIconographyID":
+					getExclusiveRelatedDepictionsFromIconography();
+					break;
+					
 				default:
 					break;
 			}
 		} else {
 			response.setStatus(404);
-			response.getWriter().close();
 		}
 		response.getWriter().close();
 	}
@@ -137,23 +157,24 @@ public class JsonServlet extends HttpServlet {
 		Gson gs = new Gson();
 		PrintWriter out = response.getWriter();
 		response.setContentType("application/json");
+		ArrayList<CaveEntry> caveEntries; 
 
 		if ("all".equals(caveIDStr)) {
 			if (request.getParameter("siteID") != null) {
-				sqlWhere = "(SiteID=" + Integer.parseInt(request.getParameter("siteID"));
+				sqlWhere = "(SiteID IN (" + request.getParameter("siteID") + ")";
 			}
 			if (request.getParameter("districtID") != null) {
 				if (sqlWhere != null) {
-					sqlWhere = sqlWhere.concat("OR DistrictID=" + Integer.parseInt(request.getParameter("districtID")));
+					sqlWhere = sqlWhere.concat(" OR DistrictID IN (" + request.getParameter("districtID") + ")");
 				} else {
-					sqlWhere = "(DistrictID=" + Integer.parseInt(request.getParameter("districtID"));
+					sqlWhere = "(DistrictID IN (" + request.getParameter("districtID") + ")";
 				}
 			}
 			if (request.getParameter("regionID") != null) {
 				if (sqlWhere != null) {
-					sqlWhere = sqlWhere.concat("OR RegionID=" + Integer.parseInt(request.getParameter("regionID")));
+					sqlWhere = sqlWhere.concat(" OR RegionID IN (" + request.getParameter("regionID") + ")");
 				} else {
-					sqlWhere = "(RegionID=" + Integer.parseInt(request.getParameter("regionID"));
+					sqlWhere = "(RegionID IN (" + request.getParameter("regionID") + ")";
 				}
 			}
 			if (sqlWhere != null) {
@@ -161,17 +182,16 @@ public class JsonServlet extends HttpServlet {
 			}
 			if (request.getParameter("caveTypeID") != null) {
 				if (sqlWhere != null) {
-					sqlWhere = sqlWhere.concat(") AND CaveTypeID=" + Integer.parseInt(request.getParameter("caveTypeID")));
+					sqlWhere = sqlWhere.concat(") AND CaveTypeID IN (" + request.getParameter("caveTypeID") + ")");
 				} else {
-					sqlWhere = "CaveTypeID=" + Integer.parseInt(request.getParameter("caveTypeID"));
+					sqlWhere = "CaveTypeID IN (" + request.getParameter("caveTypeID") + ")";
 				}
 			}
-			ArrayList<CaveEntry> caveEntries = connector.getCaves(sqlWhere);
-			out.println(gs.toJson(caveEntries));
+			caveEntries = connector.getCaves(sqlWhere);
 		} else {
-			CaveEntry entry = connector.getCave(Integer.parseInt(caveIDStr));			
-			out.println(gs.toJson(entry));
+			caveEntries = connector.getCaves("CaveID IN (" + caveIDStr + ")");			
 		}
+		out.println(gs.toJson(caveEntries));
 		out.close();
 	}
 
@@ -180,14 +200,14 @@ public class JsonServlet extends HttpServlet {
 		Gson gs = new Gson();
 		PrintWriter out = response.getWriter();
 		response.setContentType("application/json");
-
+		ArrayList<SiteEntry> siteEntries;
+		
 		if ("all".equals(siteIDStr)) {
-			ArrayList<SiteEntry> siteEntries = connector.getSites();
-			out.println(gs.toJson(siteEntries));
+			siteEntries = connector.getSites();
 		} else {
-			SiteEntry entry = connector.getSite(Integer.parseInt(siteIDStr));			
-			out.println(gs.toJson(entry));
+			siteEntries = connector.getSites("SiteID IN (" + siteIDStr + ")");			
 		}
+		out.println(gs.toJson(siteEntries));
 		out.close();
 	}
 
@@ -196,11 +216,14 @@ public class JsonServlet extends HttpServlet {
 		Gson gs = new Gson();
 		PrintWriter out = response.getWriter();
 		response.setContentType("application/json");
-
+		ArrayList<RegionEntry> regionEntries ;
+		
 		if ("all".equals(siteIDStr)) {
-			ArrayList<RegionEntry> regionEntries = connector.getRegions();
-			out.println(gs.toJson(regionEntries));
+			regionEntries = connector.getRegions();
+		} else {
+			regionEntries = connector.getRegions("RegionID IN (" + siteIDStr + ")");
 		}
+		out.println(gs.toJson(regionEntries));
 		out.close();
 	}
 
@@ -209,14 +232,14 @@ public class JsonServlet extends HttpServlet {
 		Gson gs = new Gson();
 		PrintWriter out = response.getWriter();
 		response.setContentType("application/json");
+		ArrayList<DistrictEntry> districtEntries;
 
 		if ("all".equals(districtIDStr)) {
-			ArrayList<DistrictEntry> districtEntries = connector.getDistricts();
-			out.println(gs.toJson(districtEntries));
+			districtEntries = connector.getDistricts();
 		} else {
-			DistrictEntry entry = connector.getDistrict(Integer.parseInt(districtIDStr));			
-			out.println(gs.toJson(entry));
+			districtEntries = connector.getDistricts("DistrictID IN (" + districtIDStr + ")");			
 		}
+		out.println(gs.toJson(districtEntries));
 		out.close();
 	}
 
@@ -225,14 +248,14 @@ public class JsonServlet extends HttpServlet {
 		Gson gs = new Gson();
 		PrintWriter out = response.getWriter();
 		response.setContentType("application/json");
+		ArrayList<IconographyEntry> iconographyEntries ;
 
 		if ("all".equals(iconographyIDStr)) {
-			ArrayList<IconographyEntry> districtEntries = connector.getIconography();
-			out.println(gs.toJson(districtEntries));
+			iconographyEntries = connector.getIconography();
 		} else {
-			IconographyEntry entry = connector.getIconographyEntry(Integer.parseInt(iconographyIDStr));			
-			out.println(gs.toJson(entry));
+			iconographyEntries = connector.getIconographyEntries("IconographyID IN (" + iconographyIDStr + ")");			
 		}
+		out.println(gs.toJson(iconographyEntries));
 		out.close();
 	}
 	
@@ -242,28 +265,43 @@ public class JsonServlet extends HttpServlet {
 		String sqlWhere = null;
 		PrintWriter out = response.getWriter();
 		response.setContentType("application/json");
+		ArrayList<DepictionEntry> depictionEntries ;
 
 		if ("all".equals(depictionIDStr)) {
 			if (request.getParameter("caveID") != null) {
-				sqlWhere = "(CaveID=" + Integer.parseInt(request.getParameter("caveID"));
+				sqlWhere = "CaveID IN (" + request.getParameter("caveID") + ")";
 			}
-			ArrayList<DepictionEntry> districtEntries = connector.getDepictions(sqlWhere);
-			out.println(gs.toJson(districtEntries));
+			depictionEntries = connector.getDepictions(sqlWhere);
 		} else {
-			DepictionEntry entry = connector.getDepictionEntry(Integer.parseInt(depictionIDStr));			
-			out.println(gs.toJson(entry));
+			if (request.getParameter("caveID") != null) {
+				sqlWhere = "DepictionID IN (" + depictionIDStr + ") AND CaveID IN (" + request.getParameter("caveID") + ")";
+			}
+			depictionEntries = connector.getDepictions(sqlWhere);
 		}
+		out.println(gs.toJson(depictionEntries));
 		out.close();
 	}
 	
 	private void getRelatedDepictionsFromIconography() throws IOException {
-		int iconographyID = Integer.parseInt(request.getParameter("paintedRepID"));
+		String iconographyIDs = request.getParameter("paintedRepFromIconographyID");
 		Gson gs = new Gson();
 		PrintWriter out = response.getWriter();
 		response.setContentType("application/json");
 
-		if (iconographyID > 0) {
-		 ArrayList<DepictionEntry> depictionEntries = connector.getRelatedDepictions(iconographyID);
+		if (iconographyIDs != null) {
+		 ArrayList<DepictionEntry> depictionEntries = connector.getRelatedDepictions(iconographyIDs);
+		 out.println(gs.toJson(depictionEntries));
+		}
+	}
+	
+	private void getExclusiveRelatedDepictionsFromIconography() throws IOException {
+		String iconographyIDs = request.getParameter("exclusivePaintedRepFromIconographyID");
+		Gson gs = new Gson();
+		PrintWriter out = response.getWriter();
+		response.setContentType("application/json");
+
+		if (iconographyIDs != null) {
+		 ArrayList<DepictionEntry> depictionEntries = connector.getRelatedDepictions(iconographyIDs);
 		 out.println(gs.toJson(depictionEntries));
 		}
 	}
@@ -273,14 +311,14 @@ public class JsonServlet extends HttpServlet {
 		Gson gs = new Gson();
 		PrintWriter out = response.getWriter();
 		response.setContentType("application/json");
+		ArrayList<CaveTypeEntry> caveTypeEntries;
 
 		if ("all".equals(caveTypeIDStr)) {
-			ArrayList<CaveTypeEntry> caveTypeEntries = connector.getCaveTypes();
-			out.println(gs.toJson(caveTypeEntries));
+			caveTypeEntries = connector.getCaveTypes();
 		} else {
-			CaveTypeEntry entry = connector.getCaveTypebyID(Integer.parseInt(caveTypeIDStr));
-			out.println(gs.toJson(entry));
+			caveTypeEntries = connector.getCaveTypes("CaveTypeID IN (" + caveTypeIDStr + ")");
 		}
+		out.println(gs.toJson(caveTypeEntries));
 		out.close();
 	}
 	
@@ -289,11 +327,14 @@ public class JsonServlet extends HttpServlet {
 		Gson gs = new Gson();
 		PrintWriter out = response.getWriter();
 		response.setContentType("application/json");
+		ArrayList<StyleEntry> caveTypeEntries;
 
 		if ("all".equals(styleIDStr)) {
-			ArrayList<StyleEntry> caveTypeEntries = connector.getStyles();
-			out.println(gs.toJson(caveTypeEntries));
+			caveTypeEntries = connector.getStyles();
+		} else {
+			caveTypeEntries = connector.getStyles("StyleID IN (" + styleIDStr + ")");
 		}
+		out.println(gs.toJson(caveTypeEntries));
 		out.close();
 	}
 	
@@ -302,11 +343,14 @@ public class JsonServlet extends HttpServlet {
 		Gson gs = new Gson();
 		PrintWriter out = response.getWriter();
 		response.setContentType("application/json");
+		ArrayList<ExpeditionEntry> expeditionEntries;
 
 		if ("all".equals(expeditionIDStr)) {
-			ArrayList<ExpeditionEntry> caveTypeEntries = connector.getExpeditions();
-			out.println(gs.toJson(caveTypeEntries));
+			expeditionEntries = connector.getExpeditions();
+		} else {
+			expeditionEntries = connector.getExpeditions("ExpeditionID IN (" + expeditionIDStr + ")");
 		}
+		out.println(gs.toJson(expeditionEntries));
 		out.close();
 	}
 	
