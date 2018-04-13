@@ -126,7 +126,7 @@ public abstract class AbstractResultView extends Portlet {
 			}
 		}
 		resultContainer.add(view, resultLayoutData);
-		setHeading(title + " (" + resultContainer.getWidgetCount() + " elements found");
+		setHeading(title + " (" + resultContainer.getWidgetCount() + " elements)");
 	}
 	
 	/**
