@@ -32,18 +32,15 @@ import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
-import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer.ExpandMode;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
+import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
-import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.form.TextField;
-import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
-import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -54,7 +51,6 @@ import de.cses.shared.DistrictEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.LocationEntry;
 import de.cses.shared.SiteEntry;
-import de.cses.shared.VendorEntry;
 
 /**
  * @author alingnau
@@ -65,6 +61,11 @@ public class DepictionFilter extends AbstractFilter {
 	interface LocationProperties extends PropertyAccess<LocationEntry> {
 		ModelKeyProvider<LocationEntry> locationID();
 		LabelProvider<LocationEntry> name();
+	}
+	
+	interface IconographyProperties extends PropertyAccess<IconographyEntry> {
+		ModelKeyProvider<IconographyEntry> iconographyID();
+		LabelProvider<IconographyEntry> name();
 	}
 
 	interface CaveViewTemplates extends XTemplates {
@@ -85,6 +86,11 @@ public class DepictionFilter extends AbstractFilter {
 		@XTemplate("<div>{name}</div>")
 		SafeHtml caveLabel(String name);
 	}
+	
+	interface IconographyViewTemplates extends XTemplates {
+		@XTemplate("<div>{name}</div>")
+		SafeHtml iconographyLabel(String name);
+	}
 
 	interface CaveProperties extends PropertyAccess<CaveEntry> {
 		ModelKeyProvider<CaveEntry> caveID();
@@ -95,11 +101,14 @@ public class DepictionFilter extends AbstractFilter {
 
 	private TextField shortNameSearch;
 	private CaveProperties caveProps;
+	private IconographyProperties icoProps;
 	private ListStore<CaveEntry> caveEntryLS;
+	private ListStore<IconographyEntry> selectedIconographyLS;
 	private ListView<CaveEntry, CaveEntry> caveSelectionLV;
 	private ListView<LocationEntry, LocationEntry> locationSelectionLV;
 	private IconographySelector icoPictSelector;
 	private ArrayList<String> sqlWhereClause;
+	private ListView<IconographyEntry, IconographyEntry> icoPictSelectionLV;
 
 	/**
 	 * @param filterName
@@ -109,6 +118,8 @@ public class DepictionFilter extends AbstractFilter {
 		caveProps = GWT.create(CaveProperties.class);
 		caveEntryLS = new ListStore<CaveEntry>(caveProps.caveID());
 		icoPictSelector = new IconographySelector(0);
+		icoProps = GWT.create(IconographyProperties.class);
+		selectedIconographyLS = new ListStore<>(icoProps.iconographyID());
 		loadCaves();
 	}
 
@@ -165,6 +176,20 @@ public class DepictionFilter extends AbstractFilter {
 		cavePanel.setHeading("Cave search");
 		cavePanel.add(caveSelectionLV);
 		
+		icoPictSelectionLV = new ListView<IconographyEntry, IconographyEntry>(selectedIconographyLS, new IdentityValueProvider<IconographyEntry>(), new SimpleSafeHtmlCell<IconographyEntry>(new AbstractSafeHtmlRenderer<IconographyEntry>() {
+
+			@Override
+			public SafeHtml render(IconographyEntry item) {
+				IconographyViewTemplates icTemplates = GWT.create(IconographyViewTemplates.class);
+				return icTemplates.iconographyLabel(item.getText());
+			}
+		}));
+		
+		ContentPanel icoPictPanel = new ContentPanel();
+		icoPictPanel.setHeaderVisible(true);
+		icoPictPanel.setHeading("Ico/PE");
+		icoPictPanel.add(icoPictSelectionLV);
+		
 		/**
 		 * assemble shortNameSearch
 		 */
@@ -218,6 +243,7 @@ public class DepictionFilter extends AbstractFilter {
     depictionFilterALC.setExpandMode(ExpandMode.SINGLE_FILL);
     depictionFilterALC.add(cavePanel);
     depictionFilterALC.add(currentLocationPanel);
+    depictionFilterALC.add(icoPictPanel);
     depictionFilterALC.setActiveWidget(cavePanel);
 
     BorderLayoutContainer depictionFilterBLC = new BorderLayoutContainer();
@@ -295,6 +321,8 @@ public class DepictionFilter extends AbstractFilter {
 
 			@Override
 			public void onSelect(SelectEvent event) {
+				selectedIconographyLS.clear();
+				selectedIconographyLS.addAll(icoPictSelector.getSelectedIconography());
 				extendedFilterDialog.hide();
 			}
 		});

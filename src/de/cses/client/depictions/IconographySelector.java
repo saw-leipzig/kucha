@@ -26,16 +26,12 @@ import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.Store;
-import com.sencha.gxt.data.shared.Store.StoreFilter;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.data.shared.event.StoreFilterEvent;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
-import com.sencha.gxt.widget.core.client.button.ToggleButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
@@ -88,7 +84,6 @@ public class IconographySelector implements IsWidget {
 	private StoreFilterField<IconographyEntry> filterField;
 	private int depictionID;
 	protected Map<String, IconographyEntry> selectedIconographyMap;
-	private ToggleButton showSelectedTB;
 
 	public IconographySelector(int depictionID) {
 		this.depictionID = depictionID;
@@ -109,14 +104,6 @@ public class IconographySelector implements IsWidget {
 			}
 		};
 		filterField.bind(iconographyTreeStore);
-		iconographyTreeStore.addFilter(new StoreFilter<IconographyEntry>() {
-			
-			@Override
-			public boolean select(Store<IconographyEntry> store, IconographyEntry parent, IconographyEntry item) {
-				return iconographyTree.isChecked(item);
-			}
-		});
-		iconographyTreeStore.setEnableFilters(false);
 		selectedIconographyMap = new HashMap<String, IconographyEntry>();
 		loadIconographyStore();
 	}
@@ -206,22 +193,9 @@ public class IconographySelector implements IsWidget {
 		treePanel.setHeaderVisible(false);
 		treePanel.add(vlc);
 		
-		ToggleButton showSelectedToggleButton = new ToggleButton("show selected only");
-		showSelectedToggleButton.addSelectHandler(new SelectHandler() {
-			
-			@Override
-			public void onSelect(SelectEvent event) {
-				iconographyTreeStore.setEnableFilters(showSelectedToggleButton.isEnabled());
-			}
-		});
-		
-		HorizontalLayoutContainer filterHLC = new HorizontalLayoutContainer();
-		filterHLC.add(filterField, new HorizontalLayoutData(.75, 1.0));
-		filterHLC.add(showSelectedToggleButton, new HorizontalLayoutData(.25, 1.0));
-
 		BorderLayoutContainer iconographySelectorBLC = new BorderLayoutContainer();
-		iconographySelectorBLC.setCenterWidget(treePanel, new MarginData(0, 5, 5, 5));
-		iconographySelectorBLC.setSouthWidget(filterHLC, new BorderLayoutData(25.0));
+		iconographySelectorBLC.setCenterWidget(treePanel, new MarginData(0, 2, 5, 2));
+		iconographySelectorBLC.setSouthWidget(filterField, new BorderLayoutData(25.0));
 		
 		ToolButton resetTB = new ToolButton(ToolButton.REFRESH);
 		resetTB.addSelectHandler(new SelectHandler() {
