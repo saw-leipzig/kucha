@@ -157,6 +157,7 @@ public class JsonServlet extends HttpServlet {
 		Gson gs = new Gson();
 		PrintWriter out = response.getWriter();
 		response.setContentType("application/json");
+		ArrayList<CaveEntry> caveEntries; 
 
 		if ("all".equals(caveIDStr)) {
 			if (request.getParameter("siteID") != null) {
@@ -186,12 +187,11 @@ public class JsonServlet extends HttpServlet {
 					sqlWhere = "CaveTypeID IN (" + request.getParameter("caveTypeID") + ")";
 				}
 			}
-			ArrayList<CaveEntry> caveEntries = connector.getCaves(sqlWhere);
-			out.println(gs.toJson(caveEntries));
+			caveEntries = connector.getCaves(sqlWhere);
 		} else {
-			CaveEntry entry = connector.getCave(Integer.parseInt(caveIDStr));			
-			out.println(gs.toJson(entry));
+			caveEntries = connector.getCaves("CaveID IN (" + caveIDStr + ")");			
 		}
+		out.println(gs.toJson(caveEntries));
 		out.close();
 	}
 
@@ -232,14 +232,14 @@ public class JsonServlet extends HttpServlet {
 		Gson gs = new Gson();
 		PrintWriter out = response.getWriter();
 		response.setContentType("application/json");
+		ArrayList<DistrictEntry> districtEntries;
 
 		if ("all".equals(districtIDStr)) {
-			ArrayList<DistrictEntry> districtEntries = connector.getDistricts();
-			out.println(gs.toJson(districtEntries));
+			districtEntries = connector.getDistricts();
 		} else {
-			DistrictEntry entry = connector.getDistrict(Integer.parseInt(districtIDStr));			
-			out.println(gs.toJson(entry));
+			districtEntries = connector.getDistricts("DistrictID IN (" + districtIDStr + ")");			
 		}
+		out.println(gs.toJson(districtEntries));
 		out.close();
 	}
 
@@ -269,11 +269,14 @@ public class JsonServlet extends HttpServlet {
 
 		if ("all".equals(depictionIDStr)) {
 			if (request.getParameter("caveID") != null) {
-				sqlWhere = "(CaveID=" + Integer.parseInt(request.getParameter("caveID"));
+				sqlWhere = "CaveID IN (" + request.getParameter("caveID") + ")";
 			}
 			depictionEntries = connector.getDepictions(sqlWhere);
 		} else {
-			depictionEntries = connector.getDepictions("DepictionID IN (" + depictionIDStr + ")");			
+			if (request.getParameter("caveID") != null) {
+				sqlWhere = "DepictionID IN (" + depictionIDStr + ") AND CaveID IN (" + request.getParameter("caveID") + ")";
+			}
+			depictionEntries = connector.getDepictions(sqlWhere);
 		}
 		out.println(gs.toJson(depictionEntries));
 		out.close();

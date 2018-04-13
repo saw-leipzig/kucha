@@ -128,19 +128,27 @@ public class MysqlConnector {
 		}
 		return connection;
 	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public ArrayList<DistrictEntry> getDistricts() {
+		return getDistricts(null);
+	}
 
 	/**
 	 * Selects all districts from the table 'Districts' in the database
 	 * 
 	 * @return
 	 */
-	public ArrayList<DistrictEntry> getDistricts() {
+	public ArrayList<DistrictEntry> getDistricts(String sqlWhere) {
 		ArrayList<DistrictEntry> result = new ArrayList<DistrictEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Districts ORDER BY Name Asc");
+			ResultSet rs = stmt.executeQuery(sqlWhere != null ? "SELECT * FROM Districts WHERE " + sqlWhere + " ORDER BY Name Asc" : "SELECT * FROM Districts ORDER BY Name Asc");
 			while (rs.next()) {
 				result.add(new DistrictEntry(rs.getInt("DistrictID"), rs.getString("Name"), rs.getInt("SiteID"), rs.getString("Description"),
 						rs.getString("Map"), rs.getString("ArialMap")));
