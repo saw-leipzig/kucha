@@ -1243,7 +1243,8 @@ public class MysqlConnector {
 	 * @param depictionID
 	 * @return
 	 */
-	public ArrayList<DepictionEntry> getExclusiveRelatedDepictions(String iconographyIDs) {
+	@Deprecated
+	public ArrayList<DepictionEntry> getFullMatchingDepictionsFromIconographyIDs(String iconographyIDs) {
 		ArrayList<DepictionEntry> results = new ArrayList<DepictionEntry>();
 		Connection dbc = getConnection();
 
@@ -1280,16 +1281,24 @@ public class MysqlConnector {
 	 * @param depictionID
 	 * @return
 	 */
-	public ArrayList<DepictionEntry> getRelatedDepictions(String iconographyIDs) {
+	public ArrayList<DepictionEntry> getRelatedDepictions(String iconographyIDs, boolean fullMatchingSearch) {
 		ArrayList<DepictionEntry> results = new ArrayList<DepictionEntry>();
 		Connection dbc = getConnection();
 
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery(
-					"SELECT * FROM Depictions WHERE DepictionID IN (SELECT DISTINCT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN ("
-							+ iconographyIDs + "))");
+			ResultSet rs;
+			if (fullMatchingSearch) {
+				rs = stmt.executeQuery(
+						"SELECT * FROM Depictions WHERE DepictionID IN (SELECT DISTINCT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (" 
+								+ iconographyIDs + ") AND DepictionID NOT IN (SELECT DISTINCT DepictionID FROM DepictionIconographyRelation WHERE IconographyID NOT IN (" 
+								+ iconographyIDs + ")))");
+			} else {
+				rs = stmt.executeQuery(
+						"SELECT * FROM Depictions WHERE DepictionID IN (SELECT DISTINCT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN ("
+								+ iconographyIDs + "))");
+			}
 			while (rs.next()) {
 				DepictionEntry de = new DepictionEntry(rs.getInt("DepictionID"), rs.getInt("StyleID"), rs.getString("Inscriptions"),
 						rs.getString("SeparateAksaras"), rs.getString("Dating"), rs.getString("Description"), rs.getString("BackgroundColour"),

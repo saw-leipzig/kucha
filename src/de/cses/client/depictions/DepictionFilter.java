@@ -32,12 +32,15 @@ import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
+import com.sencha.gxt.widget.core.client.button.ToggleButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer.ExpandMode;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.MarginData;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.TextField;
@@ -57,6 +60,19 @@ import de.cses.shared.SiteEntry;
  *
  */
 public class DepictionFilter extends AbstractFilter {
+
+	class NameElement {
+		private String element;
+		
+		public NameElement(String element) {
+			super();
+			this.element = element;
+		}
+
+		public String getElement() {
+			return element;
+		}
+	}
 
 	interface LocationProperties extends PropertyAccess<LocationEntry> {
 		ModelKeyProvider<LocationEntry> locationID();
@@ -88,8 +104,8 @@ public class DepictionFilter extends AbstractFilter {
 	}
 	
 	interface IconographyViewTemplates extends XTemplates {
-		@XTemplate("<div>{name}</div>")
-		SafeHtml iconographyLabel(String name);
+		@XTemplate("<div style=\"border: 1px solid grey;\"><tpl for='name'> {element}<wbr> </tpl></div>")
+		SafeHtml iconographyLabel(ArrayList<NameElement> name);
 	}
 
 	interface CaveProperties extends PropertyAccess<CaveEntry> {
@@ -109,6 +125,8 @@ public class DepictionFilter extends AbstractFilter {
 	private IconographySelector icoPictSelector;
 	private ArrayList<String> sqlWhereClause;
 	private ListView<IconographyEntry, IconographyEntry> icoPictSelectionLV;
+
+	private ToggleButton icoPeMatchingTGB;
 
 	/**
 	 * @param filterName
@@ -181,14 +199,25 @@ public class DepictionFilter extends AbstractFilter {
 			@Override
 			public SafeHtml render(IconographyEntry item) {
 				IconographyViewTemplates icTemplates = GWT.create(IconographyViewTemplates.class);
-				return icTemplates.iconographyLabel(item.getText());
+				ArrayList<NameElement> name = new ArrayList<NameElement>();
+				for (String s : item.getText().split(" ")) {
+					name.add(new NameElement(s));
+				}
+				return icTemplates.iconographyLabel(name);
 			}
 		}));
 		
+		icoPeMatchingTGB = new ToggleButton("matching all");
+		icoPeMatchingTGB.setEnabled(false);
+		
+		VerticalLayoutContainer icoPictVLC = new VerticalLayoutContainer();
+		icoPictVLC.add(icoPictSelectionLV, new VerticalLayoutData(1.0, .8));
+		icoPictVLC.add(icoPeMatchingTGB, new VerticalLayoutData(1.0, .2));
+		
 		ContentPanel icoPictPanel = new ContentPanel();
 		icoPictPanel.setHeaderVisible(true);
-		icoPictPanel.setHeading("Ico/PE");
-		icoPictPanel.add(icoPictSelectionLV);
+		icoPictPanel.setHeading("Iconography & PictElement");
+		icoPictPanel.add(icoPictVLC);
 		
 		/**
 		 * assemble shortNameSearch
@@ -291,20 +320,20 @@ public class DepictionFilter extends AbstractFilter {
 		return sqlWhereClause;
 	}
 	
-	public String getRelatedIconographyWhereSQL() {
-		String iconographySQL = null;
+	public String getRelatedIconographyIDs() {
+		String iconographyIDs = null;
 		for (IconographyEntry ie : icoPictSelector.getSelectedIconography()) {
-			if (iconographySQL == null) {
-				iconographySQL = Integer.toString(ie.getIconographyID());
+			if (iconographyIDs == null) {
+				iconographyIDs = Integer.toString(ie.getIconographyID());
 			} else {
-				iconographySQL = iconographySQL.concat(", " + ie.getIconographyID());
+				iconographyIDs = iconographyIDs.concat(", " + ie.getIconographyID());
 			}
 		}
-		if (iconographySQL != null) {
-			return "IconographyID IN (" + iconographySQL + ")";
-		} else {
-			return null;
-		}
+		return iconographyIDs;
+	}
+	
+	public boolean isAndSearch() {
+		return icoPeMatchingTGB.isEnabled();
 	}
 
 	/* (non-Javadoc)

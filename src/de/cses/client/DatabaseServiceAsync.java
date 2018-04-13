@@ -292,4 +292,6 @@ public interface DatabaseServiceAsync {
 
 	void getDepictionFromIconography(String sqlWhere, AsyncCallback<ArrayList<Integer>> asyncCallback) throws IllegalArgumentException;
 
+	void getRelatedDepictionIDs(String iconographyIDs, boolean isAndSearch, AsyncCallback<ArrayList<Integer>> asyncCallback) throws IllegalArgumentException;
+
 }

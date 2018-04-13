@@ -289,7 +289,7 @@ public class JsonServlet extends HttpServlet {
 		response.setContentType("application/json");
 
 		if (iconographyIDs != null) {
-		 ArrayList<DepictionEntry> depictionEntries = connector.getRelatedDepictions(iconographyIDs);
+		 ArrayList<DepictionEntry> depictionEntries = connector.getRelatedDepictions(iconographyIDs, false);
 		 out.println(gs.toJson(depictionEntries));
 		}
 	}
@@ -301,7 +301,7 @@ public class JsonServlet extends HttpServlet {
 		response.setContentType("application/json");
 
 		if (iconographyIDs != null) {
-		 ArrayList<DepictionEntry> depictionEntries = connector.getRelatedDepictions(iconographyIDs);
+		 ArrayList<DepictionEntry> depictionEntries = connector.getRelatedDepictions(iconographyIDs, true);
 		 out.println(gs.toJson(depictionEntries));
 		}
 	}
