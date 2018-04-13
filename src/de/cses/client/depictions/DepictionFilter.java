@@ -208,11 +208,11 @@ public class DepictionFilter extends AbstractFilter {
 		}));
 		
 		icoPeMatchingTGB = new ToggleButton("matching all");
-		icoPeMatchingTGB.setEnabled(false);
+		icoPeMatchingTGB.setValue(false);
 		
 		VerticalLayoutContainer icoPictVLC = new VerticalLayoutContainer();
-		icoPictVLC.add(icoPictSelectionLV, new VerticalLayoutData(1.0, .8));
-		icoPictVLC.add(icoPeMatchingTGB, new VerticalLayoutData(1.0, .2));
+		icoPictVLC.add(icoPictSelectionLV, new VerticalLayoutData(1.0, .9));
+		icoPictVLC.add(icoPeMatchingTGB, new VerticalLayoutData(1.0, .1));
 		
 		ContentPanel icoPictPanel = new ContentPanel();
 		icoPictPanel.setHeaderVisible(true);
@@ -333,7 +333,7 @@ public class DepictionFilter extends AbstractFilter {
 	}
 	
 	public boolean isAndSearch() {
-		return icoPeMatchingTGB.isEnabled();
+		return icoPeMatchingTGB.getValue();
 	}
 
 	/* (non-Javadoc)
