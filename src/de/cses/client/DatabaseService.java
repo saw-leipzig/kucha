@@ -23,7 +23,6 @@ import de.cses.shared.AuthorEntry;
 import de.cses.shared.CaveAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveGroupEntry;
-import de.cses.shared.CavePart;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
 import de.cses.shared.CurrentLocationEntry;
@@ -258,11 +257,13 @@ public interface DatabaseService extends RemoteService {
 
 	boolean updateAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry) throws IllegalArgumentException;
 	
-	ArrayList<OrnamentPositionEntry> getPositionbyWall (WallEntry wall)  throws IllegalArgumentException;
+	ArrayList<OrnamentPositionEntry> getPositionbyWall (WallEntry wall) throws IllegalArgumentException;
 	
-	ArrayList<OrnamentFunctionEntry> getFunctionbyPosition (OrnamentPositionEntry wall)  throws IllegalArgumentException;
+	ArrayList<OrnamentFunctionEntry> getFunctionbyPosition (OrnamentPositionEntry wall) throws IllegalArgumentException;
 
-	ArrayList<OrnamentPositionEntry> getPositionbyCeiling (int ceiling1, int ceiling2)  throws IllegalArgumentException;
+	ArrayList<OrnamentPositionEntry> getPositionbyCeiling (int ceiling1, int ceiling2) throws IllegalArgumentException;
 
-	ArrayList<Integer> getDepictionFromIconography(String sqlWhere);
+	ArrayList<Integer> getDepictionFromIconography(String sqlWhere) throws IllegalArgumentException;
+
+	ArrayList<Integer> getRelatedDepictionIDs(String iconographyIDs, boolean isAndSearch);
 }

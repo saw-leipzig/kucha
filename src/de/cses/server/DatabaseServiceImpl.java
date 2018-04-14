@@ -24,7 +24,6 @@ import de.cses.shared.AuthorEntry;
 import de.cses.shared.CaveAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveGroupEntry;
-import de.cses.shared.CavePart;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
 import de.cses.shared.CurrentLocationEntry;
@@ -824,5 +823,17 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public ArrayList<OrnamentPositionEntry> getPositionbyCeiling(int ceiling1, int ceiling2) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getPositionbyCeilingTypes(ceiling1, ceiling2);
+	}
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#getRelatedDepictions(java.lang.String)
+	 */
+	@Override
+	public ArrayList<Integer> getRelatedDepictionIDs(String iconographyIDs, boolean fullMatchingSearch) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		ArrayList<Integer> resultList = new ArrayList<Integer>();
+		for (DepictionEntry de : connector.getRelatedDepictions(iconographyIDs, fullMatchingSearch)) {
+			resultList.add(de.getDepictionID());
+		}
+		return resultList;
 	}
 }

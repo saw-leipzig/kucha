@@ -192,10 +192,21 @@ public class IconographySelector implements IsWidget {
 		ContentPanel treePanel = new ContentPanel();
 		treePanel.setHeaderVisible(false);
 		treePanel.add(vlc);
-
+		
 		BorderLayoutContainer iconographySelectorBLC = new BorderLayoutContainer();
-		iconographySelectorBLC.setCenterWidget(treePanel, new MarginData(0, 10, 5, 10));
+		iconographySelectorBLC.setCenterWidget(treePanel, new MarginData(0, 2, 5, 2));
 		iconographySelectorBLC.setSouthWidget(filterField, new BorderLayoutData(25.0));
+		
+		ToolButton resetTB = new ToolButton(ToolButton.REFRESH);
+		resetTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				for (IconographyEntry ie : getSelectedIconography()) {
+					iconographyTree.setChecked(ie, CheckState.UNCHECKED);
+				}
+			}
+		});
 
 		ToolButton iconographyExpandTB = new ToolButton(ToolButton.EXPAND);
 		iconographyExpandTB.addSelectHandler(new SelectHandler() {
@@ -216,6 +227,7 @@ public class IconographySelector implements IsWidget {
 		mainPanel = new FramedPanel();
 		mainPanel.setHeading("Iconography Selector");
 		mainPanel.add(iconographySelectorBLC);
+		mainPanel.addTool(resetTB);
 		mainPanel.addTool(iconographyExpandTB);
 		mainPanel.addTool(iconographyCollapseTB);
 	}
