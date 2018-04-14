@@ -81,7 +81,7 @@ public class DepictionFilter extends AbstractFilter {
 	
 	interface IconographyProperties extends PropertyAccess<IconographyEntry> {
 		ModelKeyProvider<IconographyEntry> iconographyID();
-		LabelProvider<IconographyEntry> name();
+		LabelProvider<IconographyEntry> text();
 	}
 
 	interface CaveViewTemplates extends XTemplates {
