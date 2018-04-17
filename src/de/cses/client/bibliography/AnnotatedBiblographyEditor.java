@@ -680,8 +680,8 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			});
 
 			VerticalLayoutContainer accessDateVLC = new VerticalLayoutContainer();
-			accessDateVLC.add(new FieldLabel(accessDateEN, "English"), new VerticalLayoutData(1.0, 1.0 / 3));
 			accessDateVLC.add(new FieldLabel(accessDateORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
+			accessDateVLC.add(new FieldLabel(accessDateEN, "English"), new VerticalLayoutData(1.0, 1.0 / 3));
 			accessDateVLC.add(new FieldLabel(accessDateTR, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
 
 			FramedPanel accessDateFP = new FramedPanel();
