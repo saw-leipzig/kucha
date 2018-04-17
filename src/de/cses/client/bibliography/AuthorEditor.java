@@ -104,7 +104,7 @@ public class AuthorEditor implements IsWidget {
 		if (currentAuthorEntry.getAuthorID() > 0) {
 			lastnameField.setValue(currentAuthorEntry.getLastname());
 			firstnameField.setValue(currentAuthorEntry.getFirstname());
-			kuchaVisitDateField.setValue(currentAuthorEntry.getKuchaVisitDate());
+//			kuchaVisitDateField.setValue(currentAuthorEntry.getKuchaVisitDate());
 			affiliationArea.setValue(currentAuthorEntry.getAffiliation());
 			emailField.setValue(currentAuthorEntry.getEmail());
 			homepageField.setValue(currentAuthorEntry.getHomepage());
@@ -158,7 +158,7 @@ public class AuthorEditor implements IsWidget {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<java.util.Date> event) {
-				currentAuthorEntry.setKuchaVisitDate(new Date(event.getValue().getTime()));
+//				currentAuthorEntry.setKuchaVisitDate(new Date(event.getValue().getTime()));
 			}
 		});
 		cp.add(kuchaVisitDateField);
