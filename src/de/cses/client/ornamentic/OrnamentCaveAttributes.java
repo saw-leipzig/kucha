@@ -161,12 +161,10 @@ public class OrnamentCaveAttributes extends PopupPanel {
 			@Override
 			public void onFailure(Throwable caught) {
 				caught.printStackTrace();
-				Window.alert("fehler beim laden von den Hoehlen");
 			}
 
 			@Override
 			public void onSuccess(ArrayList<CaveEntry> result) {
-				Window.alert("done! Caves added");
 				for (CaveEntry pe : result) {
 					caveEntryList.add(pe);
 				}
@@ -890,7 +888,6 @@ Window.alert("Please select a entry!");
 	}
 	
 	private void activateCaveFilter() {
-		Window.alert("vorher: "+ Integer.toString(caveEntryList.size()));
 		caveFilter = new StoreFilter<CaveEntry>() {
 
 			@Override
@@ -901,7 +898,6 @@ Window.alert("Please select a entry!");
 		caveEntryList.addFilter(caveFilter);
 		caveEntryList.setEnableFilters(true);
 		caveEntryComboBox.setEnabled(true); 
-		Window.alert("nachher: " + Integer.toString(caveEntryList.size()));// we enable the selector only after a site is selected 
 	}
 
 }
