@@ -13,7 +13,6 @@
  */
 package de.cses.client.bibliography;
 
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,7 +60,6 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
-import com.sencha.gxt.widget.core.client.form.DateField;
 import com.sencha.gxt.widget.core.client.form.DualListField;
 import com.sencha.gxt.widget.core.client.form.DualListField.Mode;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
@@ -305,7 +303,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			@Override
 			public void onSuccess(ArrayList<AuthorEntry> result) {
 				for (AuthorEntry ae : result) {
-					authorListStore.add(ae);
+					if (ae.getInstitution() == null) {
+						authorListStore.add(ae);
+					}
 					editorListStore.add(ae);
 				}
 				// now we shuffle the authors to the left in the correct order
@@ -828,7 +828,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				authorFirstNameTF.addValidator(new MaxLengthValidator(64));
 				authorFirstNameTF.setAutoValidate(true);
 				TextField institutionTF = new TextField();
-				institutionTF.addValidator(new MinLengthValidator(2));
+				institutionTF.setAllowBlank(false);
 				institutionTF.addValidator(new MaxLengthValidator(256));
 				institutionTF.setAutoValidate(true);
 				institutionTF.setEnabled(false);
@@ -901,7 +901,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 									addAuthorDialog.hide();
 									if (result > 0) {
 										authorEntry.setAuthorID(result);
-										authorListStore.add(authorEntry);
+										if (authorEntry.getInstitution() == null) {
+											authorListStore.add(authorEntry);
+										}
 										editorListStore.add(authorEntry);
 									} else {
 										Util.showWarning("Add New Author", "Error while saving!");
