@@ -821,15 +821,21 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				TextField authorLastNameTF = new TextField();
 				authorLastNameTF.addValidator(new MinLengthValidator(2));
 				authorLastNameTF.addValidator(new MaxLengthValidator(64));
-				authorLastNameTF.setValue("");
+				authorLastNameTF.setWidth(300);
 				TextField authorFirstNameTF = new TextField();
 				authorFirstNameTF.addValidator(new MinLengthValidator(2));
 				authorFirstNameTF.addValidator(new MaxLengthValidator(64));
-				authorFirstNameTF.setValue("");
 				TextField institutionTF = new TextField();
 				institutionTF.addValidator(new MaxLengthValidator(256));
-				institutionTF.setEmptyText("optional for editors");
 				institutionTF.setEnabled(false);
+				CheckBox kuchaVisitorCB = new CheckBox();
+				kuchaVisitorCB.setBoxLabel("has visited Kucha");
+				kuchaVisitorCB.setValue(false);
+				TextField authorAffiliation = new TextField();
+				TextField authorEmailTF = new TextField();
+				authorEmailTF.addValidator(new RegExValidator(Util.REGEX_EMAIL_PATTERN, "please enter valid email address"));
+				TextField authorHomepageTF = new TextField();
+				authorHomepageTF.addValidator(new RegExValidator(Util.REGEX_URL_PATTERN, "please enter valid URL"));
 				CheckBox institutionCB = new CheckBox();
 				institutionCB.setBoxLabel("is institution");
 				institutionCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
@@ -841,33 +847,32 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 							authorLastNameTF.setEnabled(false);
 							authorFirstNameTF.reset();
 							authorFirstNameTF.setEnabled(false);
+							authorAffiliation.reset();
+							authorAffiliation.setEnabled(false);
+							authorEmailTF.reset();
+							authorEmailTF.setEnabled(false);
 							institutionTF.setEnabled(true);
 						} else {
 							authorLastNameTF.setEnabled(true);
 							authorFirstNameTF.setEnabled(true);
+							authorAffiliation.setEnabled(true);
+							authorEmailTF.setEnabled(true);
+							institutionTF.reset();
 							institutionTF.setEnabled(false);
 						}
 					}
 				});
-				CheckBox kuchaVisitorCB = new CheckBox();
-				kuchaVisitorCB.setBoxLabel("has visited Kucha");
-				kuchaVisitorCB.setValue(false);
-				TextField authorAffiliation = new TextField();
-				TextField authorEmailTF = new TextField();
-				authorEmailTF.addValidator(new RegExValidator(Util.REGEX_EMAIL_PATTERN, "please enter valid email address"));
-				TextField authorHomepageTF = new TextField();
-				authorHomepageTF.addValidator(new RegExValidator(Util.REGEX_URL_PATTERN, "please enter valid URL"));
 				VerticalLayoutContainer newAuthorVLC = new VerticalLayoutContainer();
 				newAuthorVLC.add(new FieldLabel(authorLastNameTF, "Surname"), new VerticalLayoutData(1.0, 1.0 / 8));
 				newAuthorVLC.add(new FieldLabel(authorFirstNameTF, "First Name"), new VerticalLayoutData(1.0, 1.0 / 8));
-				newAuthorVLC.add(institutionCB, new VerticalLayoutData(1.0, 1.0 / 8));
-				newAuthorVLC.add(new FieldLabel(institutionTF, "Institution"), new VerticalLayoutData(1.0, 1.0 / 8));
 				newAuthorVLC.add(new FieldLabel(authorAffiliation, "Affiliation"), new VerticalLayoutData(1.0, 1.0 / 8));
 				newAuthorVLC.add(new FieldLabel(authorEmailTF, "E-mail"), new VerticalLayoutData(1.0, 1.0 / 8));
+				newAuthorVLC.add(institutionCB, new VerticalLayoutData(1.0, 1.0 / 8));
+				newAuthorVLC.add(new FieldLabel(institutionTF, "Institution"), new VerticalLayoutData(1.0, 1.0 / 8));
 				newAuthorVLC.add(new FieldLabel(authorHomepageTF, "Homepage"), new VerticalLayoutData(1.0, 1.0 / 8));
 				newAuthorVLC.add(kuchaVisitorCB, new VerticalLayoutData(1.0, 1.0 / 8));
 				addAuthorFP.add(newAuthorVLC);
-				TextButton saveButton = new TextButton("save");
+				TextButton saveButton = new TextButton("save & close");
 				saveButton.addSelectHandler(new SelectHandler() {
 
 					@Override
