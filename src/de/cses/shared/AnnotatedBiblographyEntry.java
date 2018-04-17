@@ -121,19 +121,19 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 
 	public AnnotatedBiblographyEntry clone() {
 		AnnotatedBiblographyEntry clonedEntry = new AnnotatedBiblographyEntry(annotatedBiblographyID, publicationType, 
-				titleEN, titleTR, titleORG, 
-				parentTitleEN, parentTitleTR, parentTitleORG, 
+				titleEN, titleORG, titleTR,
+				parentTitleEN, parentTitleORG, parentTitleTR,
 				universityEN, universityORG, universityTR, 
-				numberEN, numberTR, numberORG, 
-				accessdateEN, accessdateTR, accessdateORG, 
+				numberEN, numberORG, numberTR, 
+				accessdateEN, accessdateORG, accessdateTR, 
 				titleaddonEN, titleaddonORG, titleaddonTR, 
 				publisher, 
-				seriesEN, seriesTR, seriesORG, 
+				seriesEN, seriesORG, seriesTR,
 				editionEN, editionORG, editionTR, 
-				volumeEN, volumeTR, volumeORG,
-				issueEN, issueTR, issueORG, 
+				volumeEN, volumeORG, volumeTR,
+				issueEN, issueORG, issueTR,  
 				yearEN, yearORG, yearTR, 
-				monthEN, monthTR, monthORG, 
+				monthEN, monthORG, monthTR,  
 				pagesEN, pagesORG, pagesTR, 
 				comments, notes, url, uri, unpublished, firstEditionBibID, openAccess, abstractText);
 		ArrayList<AuthorEntry> clonedAuthorList = new ArrayList<AuthorEntry>();
