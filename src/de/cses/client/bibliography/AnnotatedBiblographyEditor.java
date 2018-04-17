@@ -817,8 +817,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			public void onSelect(SelectEvent event) {
 				PopupPanel addAuthorDialog = new PopupPanel();
 				FramedPanel addAuthorFP = new FramedPanel();
-				addAuthorFP.setHeading("Add New Author");
-				addAuthorFP.setWidth(250);
+				addAuthorFP.setHeading("Add New Author/Editor");
 				TextField authorLastNameTF = new TextField();
 				authorLastNameTF.addValidator(new MinLengthValidator(2));
 				authorLastNameTF.addValidator(new MaxLengthValidator(64));
@@ -827,9 +826,29 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				authorFirstNameTF.addValidator(new MinLengthValidator(2));
 				authorFirstNameTF.addValidator(new MaxLengthValidator(64));
 				authorFirstNameTF.setValue("");
-				TextField insitutionTF = new TextField();
-				insitutionTF.addValidator(new MaxLengthValidator(256));
-				insitutionTF.setValue("");
+				TextField institutionTF = new TextField();
+				institutionTF.addValidator(new MaxLengthValidator(256));
+				institutionTF.setEmptyText("optional for editors");
+				institutionTF.setEnabled(false);
+				CheckBox institutionCB = new CheckBox();
+				institutionCB.setBoxLabel("is institution");
+				institutionCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+
+					@Override
+					public void onValueChange(ValueChangeEvent<Boolean> event) {
+						if (event.getValue()) {
+							authorLastNameTF.reset();
+							authorLastNameTF.setEnabled(false);
+							authorFirstNameTF.reset();
+							authorFirstNameTF.setEnabled(false);
+							institutionTF.setEnabled(true);
+						} else {
+							authorLastNameTF.setEnabled(true);
+							authorFirstNameTF.setEnabled(true);
+							institutionTF.setEnabled(false);
+						}
+					}
+				});
 				CheckBox kuchaVisitorCB = new CheckBox();
 				kuchaVisitorCB.setBoxLabel("has visited Kucha");
 				kuchaVisitorCB.setValue(false);
@@ -839,13 +858,14 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				TextField authorHomepageTF = new TextField();
 				authorHomepageTF.addValidator(new RegExValidator(Util.REGEX_URL_PATTERN, "please enter valid URL"));
 				VerticalLayoutContainer newAuthorVLC = new VerticalLayoutContainer();
-				newAuthorVLC.add(new FieldLabel(authorLastNameTF, "Surname"), new VerticalLayoutData(1.0, 1.0 / 7));
-				newAuthorVLC.add(new FieldLabel(authorFirstNameTF, "First Name"), new VerticalLayoutData(1.0, 1.0 / 7));
-				newAuthorVLC.add(new FieldLabel(insitutionTF, "Institution"), new VerticalLayoutData(1.0, 1.0 / 7));
-				newAuthorVLC.add(new FieldLabel(authorAffiliation, "Affiliation"), new VerticalLayoutData(1.0, 1.0 / 7));
-				newAuthorVLC.add(new FieldLabel(authorEmailTF, "E-mail"), new VerticalLayoutData(1.0, 1.0 / 7));
-				newAuthorVLC.add(new FieldLabel(authorHomepageTF, "Homepage"), new VerticalLayoutData(1.0, 1.0 / 7));
-				newAuthorVLC.add(kuchaVisitorCB, new VerticalLayoutData(1.0, 1.0 / 7));
+				newAuthorVLC.add(new FieldLabel(authorLastNameTF, "Surname"), new VerticalLayoutData(1.0, 1.0 / 8));
+				newAuthorVLC.add(new FieldLabel(authorFirstNameTF, "First Name"), new VerticalLayoutData(1.0, 1.0 / 8));
+				newAuthorVLC.add(institutionCB, new VerticalLayoutData(1.0, 1.0 / 8));
+				newAuthorVLC.add(new FieldLabel(institutionTF, "Institution"), new VerticalLayoutData(1.0, 1.0 / 8));
+				newAuthorVLC.add(new FieldLabel(authorAffiliation, "Affiliation"), new VerticalLayoutData(1.0, 1.0 / 8));
+				newAuthorVLC.add(new FieldLabel(authorEmailTF, "E-mail"), new VerticalLayoutData(1.0, 1.0 / 8));
+				newAuthorVLC.add(new FieldLabel(authorHomepageTF, "Homepage"), new VerticalLayoutData(1.0, 1.0 / 8));
+				newAuthorVLC.add(kuchaVisitorCB, new VerticalLayoutData(1.0, 1.0 / 8));
 				addAuthorFP.add(newAuthorVLC);
 				TextButton saveButton = new TextButton("save");
 				saveButton.addSelectHandler(new SelectHandler() {
@@ -854,7 +874,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					public void onSelect(SelectEvent event) {
 						if (authorLastNameTF.validate() && authorFirstNameTF.validate() && authorEmailTF.validate() && authorHomepageTF.validate()) {
 							AuthorEntry authorEntry = new AuthorEntry(0, authorLastNameTF.getValue(), authorFirstNameTF.getValue(),
-									insitutionTF.getValue(), kuchaVisitorCB.getValue(), authorAffiliation.getValue(), authorEmailTF.getValue(),
+									institutionTF.getValue(), kuchaVisitorCB.getValue(), authorAffiliation.getValue(), authorEmailTF.getValue(),
 									authorHomepageTF.getValue());
 							dbService.insertAuthorEntry(authorEntry, new AsyncCallback<Integer>() {
 
