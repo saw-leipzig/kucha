@@ -905,9 +905,13 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 							@Override
 							public void onSuccess(Integer result) {
 								addAuthorDialog.hide();
-								authorEntry.setAuthorID(result);
-								authorListStore.add(authorEntry);
-								editorListStore.add(authorEntry);
+								if (result > 0) {
+									authorEntry.setAuthorID(result);
+									authorListStore.add(authorEntry);
+									editorListStore.add(authorEntry);
+								} else {
+									Util.showWarning("Add New Author", "Error while saving!");
+								}
 							}
 						});
 					}
