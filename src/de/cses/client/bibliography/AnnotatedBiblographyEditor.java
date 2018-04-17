@@ -437,6 +437,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				bibEntry.setTitleEN(event.getValue());
 			}
 		});
+		titleEN.addValidator(new MaxLengthValidator(256));
 		TextField titleORG = new TextField();
 		titleORG.setText(bibEntry.getTitleORG());
 		titleORG.addValueChangeHandler(new ValueChangeHandler<String>() {
@@ -447,6 +448,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			}
 		});
 		titleORG.addValidator(new MinLengthValidator(1));
+		titleORG.addValidator(new MaxLengthValidator(256));
 		TextField titleTR = new TextField();
 		titleTR.setText(bibEntry.getTitleTR());
 		titleTR.addValueChangeHandler(new ValueChangeHandler<String>() {
@@ -456,6 +458,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				bibEntry.setTitleTR(event.getValue());
 			}
 		});
+		titleTR.addValidator(new MaxLengthValidator(256));
 
 		VerticalLayoutContainer titleVLC = new VerticalLayoutContainer();
 		titleVLC.add(new FieldLabel(titleORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
@@ -479,6 +482,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				bibEntry.setTitleaddonEN(event.getValue());
 			}
 		});
+		titleaddonEN.addValidator(new MaxLengthValidator(256));
 		TextField titleaddonORG = new TextField();
 		titleaddonORG.setText(bibEntry.getTitleaddonORG());
 		titleaddonORG.addValueChangeHandler(new ValueChangeHandler<String>() {
@@ -488,6 +492,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				bibEntry.setTitleaddonORG(event.getValue());
 			}
 		});
+		titleaddonORG.addValidator(new MaxLengthValidator(256));
 		TextField titleaddonTR = new TextField();
 		titleaddonTR.setText(bibEntry.getTitleaddonTR());
 		titleaddonTR.addValueChangeHandler(new ValueChangeHandler<String>() {
@@ -497,6 +502,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				bibEntry.setTitleaddonTR(event.getValue());
 			}
 		});
+		titleaddonTR.addValidator(new MaxLengthValidator(256));
 
 		VerticalLayoutContainer titleAddonVLC = new VerticalLayoutContainer();
 		titleAddonVLC.add(new FieldLabel(titleaddonORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
@@ -521,6 +527,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					bibEntry.setParentTitleEN(event.getValue());
 				}
 			});
+			parentTitleEN.addValidator(new MaxLengthValidator(256));
 			TextField parentTitleORG = new TextField();
 			parentTitleORG.setText(bibEntry.getParentTitleORG());
 			parentTitleORG.addValueChangeHandler(new ValueChangeHandler<String>() {
@@ -530,6 +537,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					bibEntry.setParentTitleORG(event.getValue());
 				}
 			});
+			parentTitleORG.addValidator(new MaxLengthValidator(256));
 			parentTitleORG.addValidator(new MinLengthValidator(1));
 			TextField parentTitleTR = new TextField();
 			parentTitleTR.setText(bibEntry.getParentTitleTR());
@@ -540,6 +548,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					bibEntry.setParentTitleTR(event.getValue());
 				}
 			});
+			parentTitleTR.addValidator(new MaxLengthValidator(256));
 
 			VerticalLayoutContainer parentTitleVLC = new VerticalLayoutContainer();
 			parentTitleVLC.add(new FieldLabel(parentTitleORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
