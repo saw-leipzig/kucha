@@ -819,16 +819,18 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				FramedPanel addAuthorFP = new FramedPanel();
 				addAuthorFP.setHeading("Add New Author/Editor");
 				TextField authorLastNameTF = new TextField();
-				authorLastNameTF.setText("");
 				authorLastNameTF.addValidator(new MinLengthValidator(2));
 				authorLastNameTF.addValidator(new MaxLengthValidator(64));
+				authorLastNameTF.setAutoValidate(true);
 				authorLastNameTF.setWidth(300);
 				TextField authorFirstNameTF = new TextField();
 				authorFirstNameTF.addValidator(new MinLengthValidator(2));
 				authorFirstNameTF.addValidator(new MaxLengthValidator(64));
+				authorFirstNameTF.setAutoValidate(true);
 				TextField institutionTF = new TextField();
 				institutionTF.addValidator(new MinLengthValidator(2));
 				institutionTF.addValidator(new MaxLengthValidator(256));
+				institutionTF.setAutoValidate(true);
 				institutionTF.setEnabled(false);
 				CheckBox kuchaVisitorCB = new CheckBox();
 				kuchaVisitorCB.setBoxLabel("has visited Kucha");
@@ -836,8 +838,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				TextField authorAffiliation = new TextField();
 				TextField authorEmailTF = new TextField();
 				authorEmailTF.addValidator(new RegExValidator(Util.REGEX_EMAIL_PATTERN, "please enter valid email address"));
+				authorEmailTF.setAutoValidate(true);
 				TextField authorHomepageTF = new TextField();
 				authorHomepageTF.addValidator(new RegExValidator(Util.REGEX_URL_PATTERN, "please enter valid URL"));
+				authorHomepageTF.setAutoValidate(true);
 				CheckBox institutionCB = new CheckBox();
 				institutionCB.setBoxLabel("is institution");
 				institutionCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
@@ -879,27 +883,33 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 					@Override
 					public void onSelect(SelectEvent event) {
-						if (((institutionCB.getValue() && institutionTF.validate()) || (authorLastNameTF.validate() && authorFirstNameTF.validate() && authorEmailTF.validate())) && authorHomepageTF.validate()) {
-							AuthorEntry authorEntry = new AuthorEntry(0, authorLastNameTF.getValue(), authorFirstNameTF.getValue(),
-									institutionTF.getValue(), kuchaVisitorCB.getValue(), authorAffiliation.getValue(), authorEmailTF.getValue(),
-									authorHomepageTF.getValue());
-							dbService.insertAuthorEntry(authorEntry, new AsyncCallback<Integer>() {
-
-								@Override
-								public void onFailure(Throwable caught) {
-									addAuthorDialog.hide();
-									Util.showWarning("Add New Author", "Error while saving!");
-								}
-
-								@Override
-								public void onSuccess(Integer result) {
-									addAuthorDialog.hide();
-									authorEntry.setAuthorID(result);
-									authorListStore.add(authorEntry);
-									editorListStore.add(authorEntry);
-								}
-							});
+						if (institutionCB.getValue()) {
+							if (!institutionTF.validate() || !authorHomepageTF.validate()) {
+								return;
+							}
+						} else if (!authorLastNameTF.validate() || !authorFirstNameTF.validate() || !authorEmailTF.validate()
+								|| !authorHomepageTF.validate()) {
+							return;
 						}
+						AuthorEntry authorEntry = new AuthorEntry(0, authorLastNameTF.getValue(), authorFirstNameTF.getValue(),
+								institutionTF.getValue(), kuchaVisitorCB.getValue(), authorAffiliation.getValue(), authorEmailTF.getValue(),
+								authorHomepageTF.getValue());
+						dbService.insertAuthorEntry(authorEntry, new AsyncCallback<Integer>() {
+
+							@Override
+							public void onFailure(Throwable caught) {
+								addAuthorDialog.hide();
+								Util.showWarning("Add New Author", "Error while saving!");
+							}
+
+							@Override
+							public void onSuccess(Integer result) {
+								addAuthorDialog.hide();
+								authorEntry.setAuthorID(result);
+								authorListStore.add(authorEntry);
+								editorListStore.add(authorEntry);
+							}
+						});
 					}
 				});
 				addAuthorFP.addButton(saveButton);
