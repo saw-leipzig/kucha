@@ -456,14 +456,14 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			}
 		});
 
-		VerticalLayoutContainer titelVLC = new VerticalLayoutContainer();
-		titelVLC.add(new FieldLabel(titleEN, "English"), new VerticalLayoutData(1.0, 1.0 / 3));
-		titelVLC.add(new FieldLabel(titleORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
-		titelVLC.add(new FieldLabel(titleTR, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
+		VerticalLayoutContainer titleVLC = new VerticalLayoutContainer();
+		titleVLC.add(new FieldLabel(titleEN, "English"), new VerticalLayoutData(1.0, 1.0 / 3));
+		titleVLC.add(new FieldLabel(titleORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
+		titleVLC.add(new FieldLabel(titleTR, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
 
 		FramedPanel titleFP = new FramedPanel();
-		titleFP.setHeading("Titel");
-		titleFP.add(titelVLC);
+		titleFP.setHeading("Title");
+		titleFP.add(titleVLC);
 		firstTabInnerLeftVLC.add(titleFP, new VerticalLayoutData(1.0, 1.0 / 5));
 
 //		/**
@@ -557,27 +557,27 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		 * the parent title (i.e. Book Title, Journal Name, Conference Name, Proceedings Title, etc
 		 */
 		if (pubType.isParentTitleEnabled()) {
-			TextField booktitelEN = new TextField();
-			booktitelEN.setText(bibEntry.getParentTitleEN());
-			booktitelEN.addValueChangeHandler(new ValueChangeHandler<String>() {
+			TextField booktitleEN = new TextField();
+			booktitleEN.setText(bibEntry.getParentTitleEN());
+			booktitleEN.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
 				public void onValueChange(ValueChangeEvent<String> event) {
 					bibEntry.setParentTitleEN(event.getValue());
 				}
 			});
-			TextField booktitelORG = new TextField();
-			booktitelORG.setText(bibEntry.getParentTitleORG());
-			booktitelORG.addValueChangeHandler(new ValueChangeHandler<String>() {
+			TextField booktitleORG = new TextField();
+			booktitleORG.setText(bibEntry.getParentTitleORG());
+			booktitleORG.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
 				public void onValueChange(ValueChangeEvent<String> event) {
 					bibEntry.setParentTitleORG(event.getValue());
 				}
 			});
-			TextField booktitelTR = new TextField();
-			booktitelTR.setText(bibEntry.getParentTitleTR());
-			booktitelTR.addValueChangeHandler(new ValueChangeHandler<String>() {
+			TextField booktitleTR = new TextField();
+			booktitleTR.setText(bibEntry.getParentTitleTR());
+			booktitleTR.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
 				public void onValueChange(ValueChangeEvent<String> event) {
@@ -586,9 +586,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			});
 
 			VerticalLayoutContainer bookTitleVLC = new VerticalLayoutContainer();
-			bookTitleVLC.add(new FieldLabel(booktitelEN, "English"), new VerticalLayoutData(1.0, 1.0 / 3));
-			bookTitleVLC.add(new FieldLabel(booktitelORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
-			bookTitleVLC.add(new FieldLabel(booktitelTR, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
+			bookTitleVLC.add(new FieldLabel(booktitleEN, "English"), new VerticalLayoutData(1.0, 1.0 / 3));
+			bookTitleVLC.add(new FieldLabel(booktitleORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
+			bookTitleVLC.add(new FieldLabel(booktitleTR, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
 
 			FramedPanel bookTitleFP = new FramedPanel();
 			bookTitleFP.setHeading(pubType.getParentTitleLabel());

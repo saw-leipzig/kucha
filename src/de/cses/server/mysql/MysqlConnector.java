@@ -31,7 +31,6 @@ import de.cses.shared.C14DocumentEntry;
 import de.cses.shared.CaveAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveGroupEntry;
-import de.cses.shared.CavePart;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
 import de.cses.shared.CurrentLocationEntry;
@@ -1759,7 +1758,7 @@ public class MysqlConnector {
 						rs.getString("SeriesEN"), rs.getString("SeriesORG"), rs.getString("SeriesTR"), 
 						rs.getString("EditionEN"), rs.getString("EditionORG"), rs.getString("EditionTR"),
 						rs.getString("VolumeEN"), rs.getString("VolumeORG"), rs.getString("VolumeTR"), 
-						rs.getString("IssueEN"), rs.getString("IssueTR"), rs.getString("IssueORG"), 
+						rs.getString("IssueEN"), rs.getString("IssueORG"), rs.getString("IssueTR"), 
 						rs.getInt("YearEN"), rs.getString("YearORG"), rs.getString("YearTR"), 
 						rs.getString("MonthEN"), rs.getString("MonthORG"), rs.getString("MonthTR"), 
 						rs.getString("PagesEN"), rs.getString("PagesORG"), rs.getString("PagesTR"), 
