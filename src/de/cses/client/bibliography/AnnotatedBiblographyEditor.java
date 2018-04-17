@@ -596,7 +596,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		}
 
 		/**
-		 * number fields for issue 
+		 * fields for number
 		 */
 		if (pubType.isNumberEnabled()) { // achtung hier muss sie bleiben
 			TextField numberEN = new TextField();
@@ -1092,11 +1092,11 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		}
 
 		/**
-		 * issue 
+		 *  
 		 */
 		if (pubType.isIssueEnabled()) {
 			TextField issueEN = new TextField();
-			issueEN.setText(bibEntry.getVolumeEN());
+			issueEN.setText(bibEntry.getIssueEN());
 			issueEN.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
@@ -1105,7 +1105,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				}
 			});
 			TextField issueORG = new TextField();
-			issueORG.setText(bibEntry.getVolumeORG());
+			issueORG.setText(bibEntry.getIssueORG());
 			issueORG.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
@@ -1114,7 +1114,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				}
 			});
 			TextField issueTR = new TextField();
-			issueTR.setText(bibEntry.getVolumeTR());
+			issueTR.setText(bibEntry.getIssueTR());
 			issueTR.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
