@@ -524,7 +524,9 @@ ToolButton addOrnamentClassButton = new ToolButton(ToolButton.PLUS);
 				oEntry.setAnnotations(annotations.getText());
 				oEntry.setInterpretation(interpretation.getText());
 				oEntry.setReferences(references.getText());
+				if(ornamentClassComboBox.getValue() != null) {
 				oEntry.setOrnamentClass(ornamentClassComboBox.getValue().getOrnamentClassID());
+				}
 				for(int i = 0; i < selectedinnerSecondaryPatternsEntryList.size(); i++) {
 					oEntry.getInnerSecondaryPatterns().add(selectedinnerSecondaryPatternsEntryList.get(i));
 				}
