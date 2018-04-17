@@ -459,7 +459,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 		VerticalLayoutContainer titleVLC = new VerticalLayoutContainer();
 		titleVLC.add(new FieldLabel(titleORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
-		titleVLC.add(new FieldLabel(titleEN, "English Translation"), new VerticalLayoutData(1.0, 1.0 / 3));
+		titleVLC.add(new FieldLabel(titleEN, "English Transl."), new VerticalLayoutData(1.0, 1.0 / 3));
 		titleVLC.add(new FieldLabel(titleTR, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
 
 		FramedPanel titleFP = new FramedPanel();
@@ -500,7 +500,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 		VerticalLayoutContainer titleAddonVLC = new VerticalLayoutContainer();
 		titleAddonVLC.add(new FieldLabel(titleaddonORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
-		titleAddonVLC.add(new FieldLabel(titleaddonEN, "English Translation"), new VerticalLayoutData(1.0, 1.0 / 3));
+		titleAddonVLC.add(new FieldLabel(titleaddonEN, "English Transl."), new VerticalLayoutData(1.0, 1.0 / 3));
 		titleAddonVLC.add(new FieldLabel(titleaddonTR, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
 
 		FramedPanel titleAddonFP = new FramedPanel();
@@ -543,7 +543,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 			VerticalLayoutContainer parentTitleVLC = new VerticalLayoutContainer();
 			parentTitleVLC.add(new FieldLabel(parentTitleORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
-			parentTitleVLC.add(new FieldLabel(parentTitleEN, "English Translation"), new VerticalLayoutData(1.0, 1.0 / 3));
+			parentTitleVLC.add(new FieldLabel(parentTitleEN, "English Transl."), new VerticalLayoutData(1.0, 1.0 / 3));
 			parentTitleVLC.add(new FieldLabel(parentTitleTR, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
 
 			FramedPanel parentTitleFP = new FramedPanel();
@@ -586,7 +586,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 			VerticalLayoutContainer universityVLC = new VerticalLayoutContainer();
 			universityVLC.add(new FieldLabel(uniORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
-			universityVLC.add(new FieldLabel(uniEN, "English Translation"), new VerticalLayoutData(1.0, 1.0 / 3));
+			universityVLC.add(new FieldLabel(uniEN, "English Transl."), new VerticalLayoutData(1.0, 1.0 / 3));
 			universityVLC.add(new FieldLabel(uniTR, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
 
 			FramedPanel universityFP = new FramedPanel();
@@ -629,7 +629,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 			VerticalLayoutContainer numberVLC = new VerticalLayoutContainer();
 			numberVLC.add(new FieldLabel(numberORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
-			numberVLC.add(new FieldLabel(numberEN, "English Translation"), new VerticalLayoutData(1.0, 1.0 / 3));
+			numberVLC.add(new FieldLabel(numberEN, "English Transl."), new VerticalLayoutData(1.0, 1.0 / 3));
 			numberVLC.add(new FieldLabel(numberTR, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
 
 			FramedPanel numberFP = new FramedPanel();
@@ -996,7 +996,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 			VerticalLayoutContainer seriesVLC = new VerticalLayoutContainer();
 			seriesVLC.add(new FieldLabel(seriesORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
-			seriesVLC.add(new FieldLabel(seriesEN, "English Translation"), new VerticalLayoutData(1.0, 1.0 / 3));
+			seriesVLC.add(new FieldLabel(seriesEN, "English Transl."), new VerticalLayoutData(1.0, 1.0 / 3));
 			seriesVLC.add(new FieldLabel(seriesTR, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
 
 			FramedPanel seriesFP = new FramedPanel();
@@ -1039,7 +1039,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 			VerticalLayoutContainer editionVLC = new VerticalLayoutContainer();
 			editionVLC.add(new FieldLabel(editionORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
-			editionVLC.add(new FieldLabel(editionEN, "English Translation"), new VerticalLayoutData(1.0, 1.0 / 3));
+			editionVLC.add(new FieldLabel(editionEN, "English Transl."), new VerticalLayoutData(1.0, 1.0 / 3));
 			editionVLC.add(new FieldLabel(editionTR, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
 
 			FramedPanel editionFP = new FramedPanel();
@@ -1125,7 +1125,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 			VerticalLayoutContainer volumeVLC = new VerticalLayoutContainer();
 			volumeVLC.add(new FieldLabel(issueORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
-			volumeVLC.add(new FieldLabel(issueEN, "English Translation"), new VerticalLayoutData(1.0, 1.0 / 3));
+			volumeVLC.add(new FieldLabel(issueEN, "English Transl."), new VerticalLayoutData(1.0, 1.0 / 3));
 			volumeVLC.add(new FieldLabel(issueTR, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
 
 			FramedPanel volumeFP = new FramedPanel();
@@ -1172,7 +1172,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 		VerticalLayoutContainer yearVLC = new VerticalLayoutContainer();
 		yearVLC.add(new FieldLabel(yearORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
-		yearVLC.add(new FieldLabel(yearEN, "English Translation"), new VerticalLayoutData(1.0, 1.0 / 3));
+		yearVLC.add(new FieldLabel(yearEN, "English Transl."), new VerticalLayoutData(1.0, 1.0 / 3));
 		yearVLC.add(new FieldLabel(yearTR, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
 
 		FramedPanel yearFP = new FramedPanel();
@@ -1211,7 +1211,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 			VerticalLayoutContainer monthVLC = new VerticalLayoutContainer();
 			monthVLC.add(new FieldLabel(monthORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
-			monthVLC.add(new FieldLabel(monthEN, "English Translation"), new VerticalLayoutData(1.0, 1.0 / 3));
+			monthVLC.add(new FieldLabel(monthEN, "English Transl."), new VerticalLayoutData(1.0, 1.0 / 3));
 			monthVLC.add(new FieldLabel(monthTR, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
 
 			FramedPanel monthFP = new FramedPanel();
@@ -1254,7 +1254,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 			VerticalLayoutContainer pagesVLC = new VerticalLayoutContainer();
 			pagesVLC.add(new FieldLabel(pagesORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
-			pagesVLC.add(new FieldLabel(pagesEN, "English Translation"), new VerticalLayoutData(1.0, 1.0 / 3));
+			pagesVLC.add(new FieldLabel(pagesEN, "English Transl."), new VerticalLayoutData(1.0, 1.0 / 3));
 			pagesVLC.add(new FieldLabel(pagesTR, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
 
 			FramedPanel pagesFP = new FramedPanel();
