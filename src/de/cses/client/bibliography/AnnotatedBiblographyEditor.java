@@ -818,7 +818,6 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				PopupPanel addAuthorDialog = new PopupPanel();
 				FramedPanel addAuthorFP = new FramedPanel();
 				addAuthorFP.setHeading("Add New Author");
-//				addAuthorFP.setWidth("400px");
 				TextField authorLastNameTF = new TextField();
 				authorLastNameTF.addValidator(new MinLengthValidator(2));
 				authorLastNameTF.addValidator(new MaxLengthValidator(128));
@@ -827,19 +826,26 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				authorFirstNameTF.addValidator(new MinLengthValidator(2));
 				authorFirstNameTF.addValidator(new MaxLengthValidator(128));
 				authorFirstNameTF.setValue("");
-				DateField authorDateOfVisitDF = new DateField();
+				TextField insitutionTF = new TextField();
+				insitutionTF.addValidator(new MinLengthValidator(2));
+				insitutionTF.addValidator(new MaxLengthValidator(128));
+				insitutionTF.setValue("");
+				CheckBox kuchaVisitorCB = new CheckBox();
+				kuchaVisitorCB.setBoxLabel("has visited Kucha");
+				kuchaVisitorCB.setValue(false);
 				TextField authorAffiliation = new TextField();
 				TextField authorEmailTF = new TextField();
 				authorEmailTF.addValidator(new RegExValidator(Util.REGEX_EMAIL_PATTERN, "please enter valid email address"));
 				TextField authorHomepageTF = new TextField();
 				authorHomepageTF.addValidator(new RegExValidator(Util.REGEX_URL_PATTERN, "please enter valid URL"));
 				VerticalLayoutContainer newAuthorVLC = new VerticalLayoutContainer();
-				newAuthorVLC.add(new FieldLabel(authorLastNameTF, "Surname"), new VerticalLayoutData(1.0, 1.0 / 6));
-				newAuthorVLC.add(new FieldLabel(authorFirstNameTF, "First Name"), new VerticalLayoutData(1.0, 1.0 / 6));
-				newAuthorVLC.add(new FieldLabel(authorDateOfVisitDF, "Date of visit"), new VerticalLayoutData(1.0, 1.0 / 6));
-				newAuthorVLC.add(new FieldLabel(authorAffiliation, "Affiliation"), new VerticalLayoutData(1.0, 1.0 / 6));
-				newAuthorVLC.add(new FieldLabel(authorEmailTF, "E-mail"), new VerticalLayoutData(1.0, 1.0 / 6));
-				newAuthorVLC.add(new FieldLabel(authorHomepageTF, "Homepage"), new VerticalLayoutData(1.0, 1.0 / 6));
+				newAuthorVLC.add(new FieldLabel(authorLastNameTF, "Surname"), new VerticalLayoutData(1.0, 1.0 / 7));
+				newAuthorVLC.add(new FieldLabel(authorFirstNameTF, "First Name"), new VerticalLayoutData(1.0, 1.0 / 7));
+				newAuthorVLC.add(new FieldLabel(insitutionTF, "Institution"), new VerticalLayoutData(1.0, 1.0 / 7));
+				newAuthorVLC.add(new FieldLabel(authorAffiliation, "Affiliation"), new VerticalLayoutData(1.0, 1.0 / 7));
+				newAuthorVLC.add(new FieldLabel(authorEmailTF, "E-mail"), new VerticalLayoutData(1.0, 1.0 / 7));
+				newAuthorVLC.add(new FieldLabel(authorHomepageTF, "Homepage"), new VerticalLayoutData(1.0, 1.0 / 7));
+				newAuthorVLC.add(kuchaVisitorCB, new VerticalLayoutData(1.0, 1.0 / 7));
 				addAuthorFP.add(newAuthorVLC);
 				TextButton saveButton = new TextButton("save");
 				saveButton.addSelectHandler(new SelectHandler() {
@@ -847,9 +853,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					@Override
 					public void onSelect(SelectEvent event) {
 						if (authorLastNameTF.validate() && authorFirstNameTF.validate() && authorEmailTF.validate() && authorHomepageTF.validate()) {
-							AuthorEntry authorEntry = new AuthorEntry(0, authorLastNameTF.getCurrentValue(), authorFirstNameTF.getCurrentValue(),
-									new Date(authorDateOfVisitDF.getCurrentValue().getTime()), authorAffiliation.getCurrentValue(), authorEmailTF.getCurrentValue(),
-									authorHomepageTF.getCurrentValue());
+							AuthorEntry authorEntry = new AuthorEntry(0, authorLastNameTF.getValue(), authorFirstNameTF.getValue(),
+									insitutionTF.getValue(), kuchaVisitorCB.getValue(), authorAffiliation.getValue(), authorEmailTF.getValue(),
+									authorHomepageTF.getValue());
 							dbService.insertAuthorEntry(authorEntry, new AsyncCallback<Integer>() {
 
 								@Override

@@ -1170,7 +1170,7 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Authors WHERE AuthorID=" + id);
 			if (rs.first()) {
-				result = new AuthorEntry(rs.getInt("AuthorID"), rs.getString("Lastname"), rs.getString("Firstname"), rs.getDate("KuchaVisitDate"),
+				result = new AuthorEntry(rs.getInt("AuthorID"), rs.getString("Lastname"), rs.getString("Firstname"), rs.getString("Institution"), rs.getBoolean("KuchaVisitor"),
 						rs.getString("Affiliation"), rs.getString("Email"), rs.getString("Homepage"));
 			}
 			rs.close();
@@ -2678,14 +2678,15 @@ public class MysqlConnector {
 		int rowCount = 0;
 		try {
 			authorStatement = dbc.prepareStatement(
-					"UPDATE Authors SET LastName=?, FirstName=?, KuchaVisitDate=?, Affiliation=?, Email=?, Homepage=? WHERE AuthorID=?");
+					"UPDATE Authors SET LastName=?, FirstName=?, Institution=?, KuchaVisitor=?, Affiliation=?, Email=?, Homepage=? WHERE AuthorID=?");
 			authorStatement.setString(1, authorEntry.getLastname());
 			authorStatement.setString(2, authorEntry.getFirstname());
-			authorStatement.setDate(3, authorEntry.getKuchaVisitDate());
-			authorStatement.setString(4, authorEntry.getAffiliation());
-			authorStatement.setString(5, authorEntry.getEmail());
-			authorStatement.setString(6, authorEntry.getHomepage());
-			authorStatement.setInt(7, authorEntry.getAuthorID());
+			authorStatement.setString(3, authorEntry.getInstitution());
+			authorStatement.setBoolean(4, authorEntry.isKuchaVisitor());
+			authorStatement.setString(5, authorEntry.getAffiliation());
+			authorStatement.setString(6, authorEntry.getEmail());
+			authorStatement.setString(7, authorEntry.getHomepage());
+			authorStatement.setInt(8, authorEntry.getAuthorID());
 			rowCount = authorStatement.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -2703,14 +2704,15 @@ public class MysqlConnector {
 		int authorID = 0;
 		try {
 			authorStatement = dbc.prepareStatement(
-					"INSERT INTO Authors (LastName, FirstName, KuchaVisitDate, Affiliation, Email, Homepage) VALUES (?, ?, ?, ?, ?, ?)",
+					"INSERT INTO Authors (LastName, FirstName, Institution, KuchaVisitor, Affiliation, Email, Homepage) VALUES (?, ?, ?, ?, ?, ?, ?)",
 					Statement.RETURN_GENERATED_KEYS);
 			authorStatement.setString(1, authorEntry.getLastname());
 			authorStatement.setString(2, authorEntry.getFirstname());
-			authorStatement.setDate(3, authorEntry.getKuchaVisitDate());
-			authorStatement.setString(4, authorEntry.getAffiliation());
-			authorStatement.setString(5, authorEntry.getEmail());
-			authorStatement.setString(6, authorEntry.getHomepage());
+			authorStatement.setString(3, authorEntry.getInstitution());
+			authorStatement.setBoolean(4, authorEntry.isKuchaVisitor());
+			authorStatement.setString(5, authorEntry.getAffiliation());
+			authorStatement.setString(6, authorEntry.getEmail());
+			authorStatement.setString(7, authorEntry.getHomepage());
 			authorStatement.executeUpdate();
 			ResultSet keys = authorStatement.getGeneratedKeys();
 			if (keys.next()) {
@@ -2920,7 +2922,7 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Authors");
 			while (rs.next()) {
-				result.add(new AuthorEntry(rs.getInt("AuthorID"), rs.getString("Lastname"), rs.getString("Firstname"), rs.getDate("KuchaVisitDate"),
+				result.add(new AuthorEntry(rs.getInt("AuthorID"), rs.getString("Lastname"), rs.getString("Firstname"), rs.getString("Institution"), rs.getBoolean("KuchaVisitor"),
 						rs.getString("Affiliation"), rs.getString("Email"), rs.getString("Homepage")));
 			}
 			rs.close();
