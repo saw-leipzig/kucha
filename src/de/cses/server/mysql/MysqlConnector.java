@@ -724,6 +724,7 @@ public class MysqlConnector {
 		int newOrnamentID = 0;
 		Connection dbc = getConnection();
 		PreparedStatement ornamentStatement;
+		//deleteEntry("DELETE FROM Ornaments WHERE OrnamentID=" + ornamentEntry.getCode());
 		try {
 			ornamentStatement = dbc.prepareStatement(
 					"INSERT INTO Ornaments (Code, Description, Remarks, Interpretation, OrnamentReferences, Annotation , OrnamentClassID, StructureOrganizationID) "
@@ -801,17 +802,17 @@ public class MysqlConnector {
 		PreparedStatement ornamentCaveRelationStatement;
 		try {
 			ornamentCaveRelationStatement = dbc.prepareStatement("INSERT INTO CaveOrnamentRelation "
-					+ "(CaveID, OrnamentID, Colours, Notes, GroupOfOrnaments, RelatedElementsOfOtherCultures, SimilarElementsOfOtherCultures, StyleID) "
-					+ "VALUES (?, ?, ?, ?, ?, ?, ?,?)", Statement.RETURN_GENERATED_KEYS);
+					+ "(CaveID, OrnamentID, Colours, Notes, GroupOfOrnaments, SimilarElementsOfOtherCultures, StyleID) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			ornamentCaveRelationStatement.setInt(2, ornamentID);
 			for (OrnamentCaveRelation ornamentCaveR : cavesRelations) {
 				ornamentCaveRelationStatement.setInt(1, ornamentCaveR.getCave().getCaveID());
 				ornamentCaveRelationStatement.setString(3, ornamentCaveR.getColours());
 				ornamentCaveRelationStatement.setString(4, ornamentCaveR.getNotes());
 				ornamentCaveRelationStatement.setString(5, ornamentCaveR.getGroup());
-				ornamentCaveRelationStatement.setString(6, ornamentCaveR.getRelatedelementeofOtherCultures());
-				ornamentCaveRelationStatement.setString(7, ornamentCaveR.getSimilarelementsOfOtherCultures());
-				ornamentCaveRelationStatement.setInt(8, ornamentCaveR.getStyle().getStyleID());
+				//ornamentCaveRelationStatement.setString(6, ornamentCaveR.getRelatedelementeofOtherCultures());
+				ornamentCaveRelationStatement.setString(6, ornamentCaveR.getSimilarelementsOfOtherCultures());
+				ornamentCaveRelationStatement.setInt(7, ornamentCaveR.getStyle().getStyleID());
 				ornamentCaveRelationStatement.executeUpdate();
 				ResultSet keys = ornamentCaveRelationStatement.getGeneratedKeys();
 				if (keys.next()) { // there should only be 1 key returned here
