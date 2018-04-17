@@ -819,6 +819,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				FramedPanel addAuthorFP = new FramedPanel();
 				addAuthorFP.setHeading("Add New Author/Editor");
 				TextField authorLastNameTF = new TextField();
+				authorLastNameTF.setText("");
 				authorLastNameTF.addValidator(new MinLengthValidator(2));
 				authorLastNameTF.addValidator(new MaxLengthValidator(64));
 				authorLastNameTF.setWidth(300);
@@ -826,6 +827,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				authorFirstNameTF.addValidator(new MinLengthValidator(2));
 				authorFirstNameTF.addValidator(new MaxLengthValidator(64));
 				TextField institutionTF = new TextField();
+				institutionTF.addValidator(new MinLengthValidator(2));
 				institutionTF.addValidator(new MaxLengthValidator(256));
 				institutionTF.setEnabled(false);
 				CheckBox kuchaVisitorCB = new CheckBox();
@@ -877,7 +879,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 					@Override
 					public void onSelect(SelectEvent event) {
-						if (authorLastNameTF.validate() && authorFirstNameTF.validate() && authorEmailTF.validate() && authorHomepageTF.validate()) {
+						if (((institutionCB.getValue() && institutionTF.validate()) || (authorLastNameTF.validate() && authorFirstNameTF.validate() && authorEmailTF.validate())) && authorHomepageTF.validate()) {
 							AuthorEntry authorEntry = new AuthorEntry(0, authorLastNameTF.getValue(), authorFirstNameTF.getValue(),
 									institutionTF.getValue(), kuchaVisitorCB.getValue(), authorAffiliation.getValue(), authorEmailTF.getValue(),
 									authorHomepageTF.getValue());
@@ -886,7 +888,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 								@Override
 								public void onFailure(Throwable caught) {
 									addAuthorDialog.hide();
-									Window.alert("Error while saving!");
+									Util.showWarning("Add New Author", "Error while saving!");
 								}
 
 								@Override
