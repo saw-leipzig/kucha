@@ -446,6 +446,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				bibEntry.setTitleORG(event.getValue());
 			}
 		});
+		titleORG.addValidator(new MinLengthValidator(1));
 		TextField titleTR = new TextField();
 		titleTR.setText(bibEntry.getTitleTR());
 		titleTR.addValueChangeHandler(new ValueChangeHandler<String>() {
@@ -575,6 +576,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					bibEntry.setParentTitleORG(event.getValue());
 				}
 			});
+			booktitleORG.addValidator(new MinLengthValidator(1));
 			TextField booktitleTR = new TextField();
 			booktitleTR.setText(bibEntry.getParentTitleTR());
 			booktitleTR.addValueChangeHandler(new ValueChangeHandler<String>() {
