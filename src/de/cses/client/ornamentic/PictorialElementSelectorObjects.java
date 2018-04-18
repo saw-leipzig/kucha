@@ -172,6 +172,7 @@ public class PictorialElementSelectorObjects implements IsWidget {
 	 */
 	public void setOrnamentCaveRelationEntry(OrnamentCaveRelation ornamentCaveRelationEntry) {
 		this.ornamentCaveRelationEntry = ornamentCaveRelationEntry;
+		refreshPEStore();
 	}
 	
 

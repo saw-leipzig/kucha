@@ -147,6 +147,12 @@ public class OrnamentCaveAttributes extends PopupPanel {
 					for (OrientationEntry oe : ornamentCaveRelationEntry.getOrientations()) {
 						selectedorientationListStore.add(oe);
 					}
+					if( ornamentCaveRelationEntry.getOrientations().size() == 0) {
+						for (OrientationEntry nu : result) {
+							orientationListStore.add(nu);
+					}
+					}
+					
 				} else {
 					for (OrientationEntry pe : result) {
 						orientationListStore.add(pe);
@@ -169,7 +175,9 @@ public class OrnamentCaveAttributes extends PopupPanel {
 					caveEntryList.add(pe);
 				}
 				if (ornamentCaveRelationEntry != null) {
+					districtComboBox.setValue(ornamentCaveRelationEntry.getDistrict(), false);
 					caveEntryComboBox.setValue(ornamentCaveRelationEntry.getCave());
+					
 				}
 			}
 		});
@@ -249,7 +257,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 		// @Override
 		// public void onSuccess(ArrayList<DistrictEntry> result) {
 		// districtEntryList.clear();
-		
+
 		for (DistrictEntry pe : StaticTables.getInstance().getDistrictEntries().values()) {
 			districtEntryList.add(pe);
 		}
@@ -436,6 +444,14 @@ public class OrnamentCaveAttributes extends PopupPanel {
 		header.setHeading("Walls");
 		header.add(selectedWallsHorizontalPanel, new VerticalLayoutData(1.0, 1.0));
 		vlcCave.add(header, new VerticalLayoutData(0.5, .125));
+		
+		
+		if(ornamentCaveRelationEntry != null) {
+			wallsListStore.clear();
+			for(WallOrnamentCaveRelation pe: ornamentCaveRelationEntry.getWalls()){
+			wallsListStore.add(pe);
+			}
+		}
 
 		// wallList = new ListView<WallOrnamentCaveRelation, String>(wallsListStore, wallRelationProps.name());
 		wallList = new ListView<WallOrnamentCaveRelation, String>(wallsListStore, new ValueProvider<WallOrnamentCaveRelation, String>() {
@@ -525,12 +541,7 @@ Window.alert("Please select a entry!");
 
 		header = new FramedPanel();
 		header.setHeading("Select Orientation");
-		if (ornamentCaveRelationEntry != null) {
-			for (int i = 0; i < ornamentCaveRelationEntry.getOrientations().size(); i++) {
-				selectedorientationListStore.add(ornamentCaveRelationEntry.getOrientations().get(i));
-
-			}
-		}
+	
 		header.add(orientationHorizontalPanel);
 
 		horizontalContainerLayout.add(header, new HorizontalLayoutData(.5, 1.0));
@@ -719,11 +730,6 @@ Window.alert("Please select a entry!");
 				ornamentCaveRelation.getRelatedOrnamentsRelations().clear();
 				for (OrnamentEntry ornament : relatedOrnaments) {
 					ornamentCaveRelation.getRelatedOrnamentsRelations().add(ornament);
-				}
-				ornamentCaveRelation.getSimilarOrnamentsRelations().clear();
-				List<OrnamentEntry> similarOrnaments = selectedSimilarOrnaments.getAll();
-				for (OrnamentEntry ornament : similarOrnaments) {
-					ornamentCaveRelation.getSimilarOrnamentsRelations().add(ornament);
 				}
 
 				ornamentCaveRelation.getPictorialElements().clear();

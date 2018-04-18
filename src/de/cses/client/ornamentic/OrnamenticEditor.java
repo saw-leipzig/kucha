@@ -219,6 +219,9 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 				for (OrnamentClassEntry pe : result) {
 					ornamentClassEntryList.add(pe);
 				}
+				if (ornamentEntry != null) {
+					ornamentClassComboBox.setValue(ornamentClassEntryList.findModelWithKey(Integer.toString(ornamentEntry.getOrnamentClass())));
+				}
 			}
 		});
 		
@@ -331,9 +334,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		ornamentClassComboBox.setTriggerAction(TriggerAction.ALL);
 		header.add(ornamentClassComboBox);
 		panel.add(header, new VerticalLayoutData(1.0, .125));
-		if (ornamentEntry != null) {
-			ornamentClassComboBox.select(ornamentClassEntryList.findModelWithKey(Integer.toString(ornamentEntry.getOrnamentClass())));
-		}
+	
 		
 ToolButton addOrnamentClassButton = new ToolButton(ToolButton.PLUS);
 		
@@ -524,8 +525,12 @@ ToolButton addOrnamentClassButton = new ToolButton(ToolButton.PLUS);
 				oEntry.setAnnotations(annotations.getText());
 				oEntry.setInterpretation(interpretation.getText());
 				oEntry.setReferences(references.getText());
-				if(ornamentClassComboBox.getValue() != null) {
-				oEntry.setOrnamentClass(ornamentClassComboBox.getValue().getOrnamentClassID());
+				if(ornamentClassComboBox.getValue() == null) {
+				
+				}
+				else {
+					Window.alert("ID gesetzt");
+					oEntry.setOrnamentClass(ornamentClassComboBox.getValue().getOrnamentClassID());
 				}
 				for(int i = 0; i < selectedinnerSecondaryPatternsEntryList.size(); i++) {
 					oEntry.getInnerSecondaryPatterns().add(selectedinnerSecondaryPatternsEntryList.get(i));
