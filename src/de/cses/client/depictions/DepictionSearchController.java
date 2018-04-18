@@ -96,7 +96,9 @@ public class DepictionSearchController extends AbstractSearchController {
 							sqlWhere = sqlWhere.concat(" AND " + "DepictionID IN (" + sqlDepictionWhere + ")");
 						}
 					}
-					doSearch(sqlWhere);
+					if (sqlWhere != null) {
+						doSearch(sqlWhere);
+					}
 				}
 			});
 		} else {
