@@ -142,7 +142,7 @@ public class CaveView extends AbstractView {
 	 */
 	@Override
 	protected String getPermalink() {
-		return "/json?request=Caves&caveID=" + cEntry.getCaveID();
+		return "/json?caveID=" + cEntry.getCaveID();
 	}
 
 }
