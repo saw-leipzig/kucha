@@ -11,9 +11,7 @@ public class OrnamentCaveRelation extends AbstractEntry {
 	private String notes;
 	private DistrictEntry district;
 	private String group;
-	private String relatedelementeofOtherCultures;
 	private String similarelementsOfOtherCultures;
-	private ArrayList<OrnamentEntry> similarOrnamentsRelations= new ArrayList<OrnamentEntry>();
 	private ArrayList<OrientationEntry> orientations = new ArrayList<OrientationEntry>();
 	private ArrayList<PictorialElementEntry> PictorialElements = new ArrayList<PictorialElementEntry>();
 	private ArrayList<OrnamentEntry> relatedOrnamentsRelations = new ArrayList<OrnamentEntry>();
@@ -24,6 +22,19 @@ public class OrnamentCaveRelation extends AbstractEntry {
 	
 	public OrnamentCaveRelation(){
 		
+	}
+	public OrnamentCaveRelation(int ornamentID, CaveEntry caveEntry, String colours, String notes, String group, String similarElementsOfOtherCultures, ArrayList<PictorialElementEntry> PictorialElements,ArrayList<OrnamentEntry> relatedOrnamentsRelations ,  ArrayList<WallOrnamentCaveRelation> walls, ArrayList<OrientationEntry> orientations){
+		this.ornamentID = ornamentID;
+		this.name = "Cave: " + caveEntry.getCaveID();
+		this.colours = colours;
+		this.notes = notes;
+		this.similarelementsOfOtherCultures = similarElementsOfOtherCultures;
+		this.orientations = orientations;
+		this.PictorialElements = PictorialElements;
+		this.group = group;
+		this.relatedOrnamentsRelations = relatedOrnamentsRelations;
+		this.walls = walls;
+
 	}
 
 
@@ -135,14 +146,7 @@ public class OrnamentCaveRelation extends AbstractEntry {
 	}
 
 
-	public String getRelatedelementeofOtherCultures() {
-		return relatedelementeofOtherCultures;
-	}
-
-
-	public void setRelatedelementeofOtherCultures(String relatedelementeofOtherCultures) {
-		this.relatedelementeofOtherCultures = relatedelementeofOtherCultures;
-	}
+	
 
 
 	public String getSimilarelementsOfOtherCultures() {
@@ -154,21 +158,6 @@ public class OrnamentCaveRelation extends AbstractEntry {
 		this.similarelementsOfOtherCultures = similarelementsOfOtherCultures;
 	}
 
-
-	/**
-	 * @return the similarOrnamentsRelations
-	 */
-	public ArrayList<OrnamentEntry> getSimilarOrnamentsRelations() {
-		return similarOrnamentsRelations;
-	}
-
-
-	/**
-	 * @param similarOrnamentsRelations the similarOrnamentsRelations to set
-	 */
-	public void setSimilarOrnamentsRelations(ArrayList<OrnamentEntry> similarOrnamentsRelations) {
-		this.similarOrnamentsRelations = similarOrnamentsRelations;
-	}
 
 
 	/**

@@ -24,7 +24,6 @@ public class OrnamentEntry extends AbstractEntry {
 	private String annotations;
 	private String interpretation;
 	private String references;
-	private String sketch;
 	private int ornamentClass;
 	private int structureOrganizationID;
 	private ArrayList<ImageEntry> images = new ArrayList<ImageEntry>();
@@ -40,7 +39,32 @@ public class OrnamentEntry extends AbstractEntry {
 		super();
 		this.ornamentID = ornamentID;
 		this.code = code;
-		cavesRelations = new ArrayList<OrnamentCaveRelation>();
+	}
+	public OrnamentEntry(int ornamentID, String code, String description, String remarks, String annotations, String interpretation, String references, int ornamentClassID, ArrayList<ImageEntry> images, ArrayList<OrnamentCaveRelation> cavesRelations, ArrayList<OrnamentComponentsEntry> ornamentComponents,  ArrayList<InnerSecondaryPatternsEntry> innerSecondaryPatterns) {
+		super();
+		this.ornamentID = ornamentID;
+		this.code = code;
+		this.description = description;
+		this.remarks = remarks;
+		this.annotations = annotations;
+		this.interpretation = interpretation;
+		this.references = references;
+		this.ornamentClass = ornamentClassID;
+		this.images = images;
+		this.innerSecondaryPatterns = innerSecondaryPatterns;
+		this.cavesRelations = cavesRelations;
+		this.ornamentComponents = ornamentComponents;
+	}
+	public OrnamentEntry(int ornamentID, String code, String description, String remarks, String annotations, String interpretation, String references, int ornamentClassID) {
+		super();
+		this.ornamentID = ornamentID;
+		this.code = code;
+		this.description = description;
+		this.remarks = remarks;
+		this.annotations = annotations;
+		this.interpretation = interpretation;
+		this.references = references;
+		this.ornamentClass = ornamentClassID;
 	}
 
 	public int getOrnamentID() {
@@ -91,13 +115,6 @@ public class OrnamentEntry extends AbstractEntry {
 		this.references = references;
 	}
 
-	public String getSketch() {
-		return sketch;
-	}
-
-	public void setSketch(String sketch) {
-		this.sketch = sketch;
-	}
 
 	public List<OrnamentCaveRelation> getCavesRelations() {
 		return cavesRelations;
