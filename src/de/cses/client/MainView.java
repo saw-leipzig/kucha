@@ -51,7 +51,6 @@ import de.cses.client.ornamentic.OrnamenticResultView;
 import de.cses.client.ornamentic.OrnamenticSearchController;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.client.ui.AbstractSearchController;
-import de.cses.client.ui.LocationFilter;
 import de.cses.client.ui.ResultCollectorController;
 import de.cses.client.ui.ResultCollectorView;
 import de.cses.client.user.UserLogin;
@@ -228,7 +227,7 @@ public class MainView implements IsWidget {
 		
 		// result collector
 		
-		resultCollectorController = new ResultCollectorController("Result Collector", new ResultCollectorView("Result Collector"));
+		resultCollectorController = new ResultCollectorController("Personal Desktop", new ResultCollectorView("Personal Desktop"));
 		resultCollectorController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
 			@Override
