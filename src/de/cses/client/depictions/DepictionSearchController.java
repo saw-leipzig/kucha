@@ -81,6 +81,10 @@ public class DepictionSearchController extends AbstractSearchController {
 
 				@Override
 				public void onSuccess(ArrayList<Integer> result) {
+					if (result.isEmpty()) {
+						getResultView().reset();
+						return;
+					}
 					String sqlDepictionWhere = null;
 					for (Integer depictionID : result) {
 						if (sqlDepictionWhere == null) {
@@ -96,9 +100,7 @@ public class DepictionSearchController extends AbstractSearchController {
 							sqlWhere = sqlWhere.concat(" AND " + "DepictionID IN (" + sqlDepictionWhere + ")");
 						}
 					}
-					if (sqlWhere != null) {
-						doSearch(sqlWhere);
-					}
+					doSearch(sqlWhere);
 				}
 			});
 		} else {

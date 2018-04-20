@@ -1302,10 +1302,13 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs;
 			if (fullMatchingSearch) {
-				rs = stmt.executeQuery(
-						"SELECT * FROM Depictions WHERE DepictionID IN (SELECT DISTINCT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (" 
-								+ iconographyIDs + ") AND DepictionID NOT IN (SELECT DISTINCT DepictionID FROM DepictionIconographyRelation WHERE IconographyID NOT IN (" 
-								+ iconographyIDs + ")))");
+				String[] icoIDs = iconographyIDs.split(",");
+				String sqlQuery = "SELECT * FROM Depictions WHERE ";
+				for (int i=0; i<icoIDs.length; ++i) {
+					sqlQuery = sqlQuery.concat(i != 0 ? "AND DepictionID IN (SELECT DISTINCT DepictionID FROM DepictionIconographyRelation WHERE IconographyID=" + icoIDs[i] : "DepictionID IN (SELECT DISTINCT DepictionID FROM DepictionIconographyRelation WHERE IconographyID=" + icoIDs[i]);
+				}
+				System.err.println(sqlQuery);
+				rs = stmt.executeQuery(sqlQuery);
 			} else {
 				rs = stmt.executeQuery(
 						"SELECT * FROM Depictions WHERE DepictionID IN (SELECT DISTINCT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN ("
