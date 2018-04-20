@@ -326,7 +326,7 @@ public class DepictionFilter extends AbstractFilter {
 			if (iconographyIDs == null) {
 				iconographyIDs = Integer.toString(ie.getIconographyID());
 			} else {
-				iconographyIDs = iconographyIDs.concat(", " + ie.getIconographyID());
+				iconographyIDs = iconographyIDs.concat("," + ie.getIconographyID());
 			}
 		}
 		return iconographyIDs;
