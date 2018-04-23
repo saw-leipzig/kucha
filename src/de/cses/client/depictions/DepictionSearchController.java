@@ -53,14 +53,14 @@ public class DepictionSearchController extends AbstractSearchController {
 		sqlWhere = null;
 		ArrayList<String> sqlWhereClauses = new ArrayList<String>();
 		String iconographyIDs = null;
-		boolean fullMatchingSearch = false;
+		int correlationFactor = 100;
 		for (AbstractFilter filter : getRelatedFilter()) {
 			if ((filter != null) && (filter.getSqlWhereClause() != null)) {
 				sqlWhereClauses.addAll(filter.getSqlWhereClause());
 			}
 			if (filter instanceof DepictionFilter) {
 				iconographyIDs = ((DepictionFilter)filter).getRelatedIconographyIDs();
-				fullMatchingSearch = ((DepictionFilter)filter).isAndSearch();
+				correlationFactor = ((DepictionFilter)filter).getCorrelationFactor();
 			}
 		}
 
@@ -73,7 +73,7 @@ public class DepictionSearchController extends AbstractSearchController {
 		}
 		
 		if (iconographyIDs != null) {
-			dbService.getRelatedDepictionIDs(iconographyIDs, fullMatchingSearch, new AsyncCallback<ArrayList<Integer>>() {
+			dbService.getRelatedDepictionIDs(iconographyIDs, correlationFactor, new AsyncCallback<ArrayList<Integer>>() {
 
 				@Override
 				public void onFailure(Throwable caught) {

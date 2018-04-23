@@ -1293,7 +1293,7 @@ public class MysqlConnector {
 	 * @param depictionID
 	 * @return
 	 */
-	public ArrayList<DepictionEntry> getRelatedDepictions(String iconographyIDs, boolean fullMatchingSearch) {
+	public ArrayList<DepictionEntry> getRelatedDepictions(String iconographyIDs, int correlationFactor) {
 		ArrayList<DepictionEntry> results = new ArrayList<DepictionEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -1302,14 +1302,14 @@ public class MysqlConnector {
 		try {
 			stmt = dbc.createStatement();
 			ResultSet rs;
-			if (fullMatchingSearch) {
+			if ((correlationFactor > 0) && (iconographyIDs != null)) {
 				/*
 					SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (1236,2063,2124)
 					GROUP By DepictionID
 					HAVING ( COUNT(DepictionID) = 2 )
 				 */
-				int fullMatchingCount = iconographyIDs.split(",").length;
-				sqlQuery = "SELECT * FROM Depictions WHERE DepictionID IN (SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (" + iconographyIDs + ") GROUP BY DepictionID HAVING (COUNT(DepictionID) = " + fullMatchingCount + "))";
+				int fullMatchingCount = Math.max(1, Math.round(iconographyIDs.split(",").length * correlationFactor / 100));
+				sqlQuery = "SELECT * FROM Depictions WHERE DepictionID IN (SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (" + iconographyIDs + ") GROUP BY DepictionID HAVING (COUNT(DepictionID) >= " + fullMatchingCount + "))";
 			} else {
 				sqlQuery = "SELECT * FROM Depictions WHERE DepictionID IN (SELECT DISTINCT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (" + iconographyIDs + "))";
 			}

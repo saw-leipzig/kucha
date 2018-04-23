@@ -32,7 +32,6 @@ import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
-import com.sencha.gxt.widget.core.client.button.ToggleButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer.ExpandMode;
@@ -43,6 +42,8 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
+import com.sencha.gxt.widget.core.client.form.FieldLabel;
+import com.sencha.gxt.widget.core.client.form.IntegerSpinnerField;
 import com.sencha.gxt.widget.core.client.form.TextField;
 
 import de.cses.client.DatabaseService;
@@ -126,7 +127,7 @@ public class DepictionFilter extends AbstractFilter {
 	private ArrayList<String> sqlWhereClause;
 	private ListView<IconographyEntry, IconographyEntry> icoPictSelectionLV;
 
-	private ToggleButton icoPeMatchingTGB;
+	private IntegerSpinnerField icoPeSpinnerField;
 
 	/**
 	 * @param filterName
@@ -207,12 +208,16 @@ public class DepictionFilter extends AbstractFilter {
 			}
 		}));
 		
-		icoPeMatchingTGB = new ToggleButton("matching all");
-		icoPeMatchingTGB.setValue(false);
+		icoPeSpinnerField = new IntegerSpinnerField();
+		icoPeSpinnerField.setValue(100);
+		icoPeSpinnerField.setMinValue(10);
+		icoPeSpinnerField.setMaxValue(100);
+		icoPeSpinnerField.setIncrement(10);
+		FieldLabel icoPeFieldLabel = new FieldLabel(icoPeSpinnerField, "Correlation in %");
 		
 		VerticalLayoutContainer icoPictVLC = new VerticalLayoutContainer();
 		icoPictVLC.add(icoPictSelectionLV, new VerticalLayoutData(1.0, .9));
-		icoPictVLC.add(icoPeMatchingTGB, new VerticalLayoutData(1.0, .1));
+		icoPictVLC.add(icoPeFieldLabel, new VerticalLayoutData(1.0, .1));
 		
 		ContentPanel icoPictPanel = new ContentPanel();
 		icoPictPanel.setHeaderVisible(true);
@@ -332,10 +337,14 @@ public class DepictionFilter extends AbstractFilter {
 		return iconographyIDs;
 	}
 	
-	public boolean isAndSearch() {
-		return icoPeMatchingTGB.getValue();
+	public int getCorrelationFactor() {
+		return icoPeSpinnerField.getValue();
 	}
-
+	
+//	public boolean isAndSearch() {
+//		return icoPeMatchingTGB.getValue();
+//	}
+//
 	/* (non-Javadoc)
 	 * @see de.cses.client.ui.AbstractFilter#showExtendedFilterView()
 	 */
