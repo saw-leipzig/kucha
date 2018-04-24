@@ -65,14 +65,10 @@ public class DepictionSearchController extends AbstractSearchController {
 		}
 
 		for (String sql : sqlWhereClauses) {
-			if (sqlWhere == null) {
-				sqlWhere = sql;
-			} else {
-				sqlWhere = sqlWhere.concat(" AND " + sql);
-			}
+			sqlWhere = (sqlWhere == null) ? sql : sqlWhere.concat(" AND " + sql);
 		}
 		
-		if (iconographyIDs != null) {
+		if ((iconographyIDs != null) && (correlationFactor > 0)) {
 			dbService.getRelatedDepictionIDs(iconographyIDs, correlationFactor, new AsyncCallback<ArrayList<Integer>>() {
 
 				@Override

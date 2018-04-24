@@ -25,6 +25,7 @@ import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.core.client.XTemplates;
+import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
@@ -211,16 +212,21 @@ public class DepictionFilter extends AbstractFilter {
 		icoPeSpinnerField = new IntegerSpinnerField();
 		icoPeSpinnerField.setMinValue(1);
 		icoPeSpinnerField.setIncrement(1);
+		icoPeSpinnerField.setEnabled(false);
 		FieldLabel icoPeFieldLabel = new FieldLabel(icoPeSpinnerField, "Correlation");
 		
-		VerticalLayoutContainer icoPictVLC = new VerticalLayoutContainer();
-		icoPictVLC.add(icoPictSelectionLV, new VerticalLayoutData(1.0, .9));
-		icoPictVLC.add(icoPeFieldLabel, new VerticalLayoutData(1.0, .1));
+		BorderLayoutContainer iconographyBLC = new BorderLayoutContainer();
+		iconographyBLC.setSouthWidget(icoPeFieldLabel, new BorderLayoutData(20));
+		iconographyBLC.setCenterWidget(icoPictSelectionLV, new MarginData(2));
+		
+//		VerticalLayoutContainer icoPictVLC = new VerticalLayoutContainer();
+//		icoPictVLC.add(icoPictSelectionLV, new VerticalLayoutData(1.0, .9, new Margins(2)));
+//		icoPictVLC.add(icoPeFieldLabel, new VerticalLayoutData(1.0, .1, new Margins(2)));
 		
 		ContentPanel icoPictPanel = new ContentPanel();
 		icoPictPanel.setHeaderVisible(true);
 		icoPictPanel.setHeading("Iconography & PictElement");
-		icoPictPanel.add(icoPictVLC);
+		icoPictPanel.add(iconographyBLC);
 		
 		/**
 		 * assemble shortNameSearch
@@ -326,17 +332,13 @@ public class DepictionFilter extends AbstractFilter {
 	public String getRelatedIconographyIDs() {
 		String iconographyIDs = null;
 		for (IconographyEntry ie : icoPictSelector.getSelectedIconography()) {
-			if (iconographyIDs == null) {
-				iconographyIDs = Integer.toString(ie.getIconographyID());
-			} else {
-				iconographyIDs = iconographyIDs.concat("," + ie.getIconographyID());
-			}
+			iconographyIDs = (iconographyIDs == null) ? Integer.toString(ie.getIconographyID()) : iconographyIDs.concat("," + ie.getIconographyID());
 		}
 		return iconographyIDs;
 	}
 	
 	public int getCorrelationFactor() {
-		return icoPeSpinnerField.getValue();
+		return icoPeSpinnerField.isEnabled() ? icoPeSpinnerField.getValue() : 0;
 	}
 	
 //	public boolean isAndSearch() {

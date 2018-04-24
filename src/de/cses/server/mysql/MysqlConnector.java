@@ -1302,7 +1302,7 @@ public class MysqlConnector {
 		try {
 			stmt = dbc.createStatement();
 			ResultSet rs;
-			if ((correlationFactor > 0) && (iconographyIDs != null)) {
+			if (correlationFactor > 0) {
 				/*
 					SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (1236,2063,2124)
 					GROUP By DepictionID
