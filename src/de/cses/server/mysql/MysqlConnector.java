@@ -1308,8 +1308,7 @@ public class MysqlConnector {
 					GROUP By DepictionID
 					HAVING ( COUNT(DepictionID) = 2 )
 				 */
-				int fullMatchingCount = Math.max(1, Math.round(iconographyIDs.split(",").length * correlationFactor / 100));
-				sqlQuery = "SELECT * FROM Depictions WHERE DepictionID IN (SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (" + iconographyIDs + ") GROUP BY DepictionID HAVING (COUNT(DepictionID) >= " + fullMatchingCount + "))";
+				sqlQuery = "SELECT * FROM Depictions WHERE DepictionID IN (SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (" + iconographyIDs + ") GROUP BY DepictionID HAVING (COUNT(DepictionID) >= " + correlationFactor + "))";
 			} else {
 				sqlQuery = "SELECT * FROM Depictions WHERE DepictionID IN (SELECT DISTINCT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (" + iconographyIDs + "))";
 			}

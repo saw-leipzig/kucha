@@ -209,11 +209,9 @@ public class DepictionFilter extends AbstractFilter {
 		}));
 		
 		icoPeSpinnerField = new IntegerSpinnerField();
-		icoPeSpinnerField.setValue(100);
-		icoPeSpinnerField.setMinValue(10);
-		icoPeSpinnerField.setMaxValue(100);
-		icoPeSpinnerField.setIncrement(10);
-		FieldLabel icoPeFieldLabel = new FieldLabel(icoPeSpinnerField, "Correlation in %");
+		icoPeSpinnerField.setMinValue(1);
+		icoPeSpinnerField.setIncrement(1);
+		FieldLabel icoPeFieldLabel = new FieldLabel(icoPeSpinnerField, "Correlation");
 		
 		VerticalLayoutContainer icoPictVLC = new VerticalLayoutContainer();
 		icoPictVLC.add(icoPictSelectionLV, new VerticalLayoutData(1.0, .9));
@@ -361,6 +359,13 @@ public class DepictionFilter extends AbstractFilter {
 			public void onSelect(SelectEvent event) {
 				selectedIconographyLS.clear();
 				selectedIconographyLS.addAll(icoPictSelector.getSelectedIconography());
+				if (icoPictSelector.getSelectedIconography() != null) {
+					icoPeSpinnerField.setEnabled(true);
+					icoPeSpinnerField.setValue(selectedIconographyLS.size());
+					icoPeSpinnerField.setMaxValue(selectedIconographyLS.size());
+				} else {
+					icoPeSpinnerField.setEnabled(false);
+				}
 				extendedFilterDialog.hide();
 			}
 		});

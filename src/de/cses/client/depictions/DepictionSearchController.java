@@ -53,7 +53,7 @@ public class DepictionSearchController extends AbstractSearchController {
 		sqlWhere = null;
 		ArrayList<String> sqlWhereClauses = new ArrayList<String>();
 		String iconographyIDs = null;
-		int correlationFactor = 100;
+		int correlationFactor = 0;
 		for (AbstractFilter filter : getRelatedFilter()) {
 			if ((filter != null) && (filter.getSqlWhereClause() != null)) {
 				sqlWhereClauses.addAll(filter.getSqlWhereClause());
