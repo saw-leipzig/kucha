@@ -25,7 +25,6 @@ import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.core.client.XTemplates;
-import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
@@ -39,8 +38,6 @@ import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer.Expa
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.MarginData;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
@@ -213,10 +210,11 @@ public class DepictionFilter extends AbstractFilter {
 		icoPeSpinnerField.setMinValue(1);
 		icoPeSpinnerField.setIncrement(1);
 		icoPeSpinnerField.setEnabled(false);
+		icoPeSpinnerField.setEditable(false);
 		FieldLabel icoPeFieldLabel = new FieldLabel(icoPeSpinnerField, "Correlation");
 		
 		BorderLayoutContainer iconographyBLC = new BorderLayoutContainer();
-		iconographyBLC.setSouthWidget(icoPeFieldLabel, new BorderLayoutData(20));
+		iconographyBLC.setSouthWidget(icoPeFieldLabel, new BorderLayoutData(25));
 		iconographyBLC.setCenterWidget(icoPictSelectionLV, new MarginData(2));
 		
 //		VerticalLayoutContainer icoPictVLC = new VerticalLayoutContainer();
@@ -361,7 +359,7 @@ public class DepictionFilter extends AbstractFilter {
 			public void onSelect(SelectEvent event) {
 				selectedIconographyLS.clear();
 				selectedIconographyLS.addAll(icoPictSelector.getSelectedIconography());
-				if (icoPictSelector.getSelectedIconography() != null) {
+				if ((icoPictSelector.getSelectedIconography() != null) && (selectedIconographyLS.size() > 0)) {
 					icoPeSpinnerField.setEnabled(true);
 					icoPeSpinnerField.setValue(selectedIconographyLS.size());
 					icoPeSpinnerField.setMaxValue(selectedIconographyLS.size());
