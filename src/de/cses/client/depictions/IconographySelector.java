@@ -32,15 +32,12 @@ import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.MarginData;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.event.CheckChangeEvent;
 import com.sencha.gxt.widget.core.client.event.CheckChangeEvent.CheckChangeHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.StoreFilterField;
 import com.sencha.gxt.widget.core.client.tree.Tree;
-import com.sencha.gxt.widget.core.client.tree.TreeStyle;
-import com.sencha.gxt.widget.core.client.tree.TreeView;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckCascade;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckNodes;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
@@ -81,7 +78,6 @@ public class IconographySelector implements IsWidget {
 	private TreeStore<IconographyEntry> iconographyTreeStore;
 	private Tree<IconographyEntry, String> iconographyTree;
 	private FramedPanel mainPanel;
-//	private VerticalLayoutContainer vlc;
 	private StoreFilterField<IconographyEntry> filterField;
 	private int depictionID;
 	protected Map<String, IconographyEntry> selectedIconographyMap;
@@ -183,13 +179,6 @@ public class IconographySelector implements IsWidget {
 				}
 			}
 		});
-		
-//		VerticalLayoutContainer vlc = new VerticalLayoutContainer();
-//		vlc.add(iconographyTree, new VerticalLayoutData(1, 1));
-
-//		ContentPanel treePanel = new ContentPanel();
-//		treePanel.setHeaderVisible(false);
-//		treePanel.add(vlc);
 		
 		BorderLayoutContainer iconographySelectorBLC = new BorderLayoutContainer();
 		iconographySelectorBLC.setCenterWidget(iconographyTree, new MarginData(0, 2, 5, 2));

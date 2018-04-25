@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 
+ * Copyright 2017, 2018 
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -121,9 +121,9 @@ public class DepictionFilter extends AbstractFilter {
 	private ListStore<IconographyEntry> selectedIconographyLS;
 	private ListView<CaveEntry, CaveEntry> caveSelectionLV;
 	private ListView<LocationEntry, LocationEntry> locationSelectionLV;
-	private IconographySelector icoPictSelector;
+	private IconographySelector icoSelector;
 	private ArrayList<String> sqlWhereClause;
-	private ListView<IconographyEntry, IconographyEntry> icoPictSelectionLV;
+	private ListView<IconographyEntry, IconographyEntry> icoSelectionLV;
 
 	private IntegerSpinnerField icoPeSpinnerField;
 
@@ -134,7 +134,7 @@ public class DepictionFilter extends AbstractFilter {
 		super(filterName);
 		caveProps = GWT.create(CaveProperties.class);
 		caveEntryLS = new ListStore<CaveEntry>(caveProps.caveID());
-		icoPictSelector = new IconographySelector(0);
+		icoSelector = new IconographySelector(0);
 		icoProps = GWT.create(IconographyProperties.class);
 		selectedIconographyLS = new ListStore<>(icoProps.iconographyID());
 		loadCaves();
@@ -193,7 +193,7 @@ public class DepictionFilter extends AbstractFilter {
 		cavePanel.setHeading("Cave search");
 		cavePanel.add(caveSelectionLV);
 		
-		icoPictSelectionLV = new ListView<IconographyEntry, IconographyEntry>(selectedIconographyLS, new IdentityValueProvider<IconographyEntry>(), new SimpleSafeHtmlCell<IconographyEntry>(new AbstractSafeHtmlRenderer<IconographyEntry>() {
+		icoSelectionLV = new ListView<IconographyEntry, IconographyEntry>(selectedIconographyLS, new IdentityValueProvider<IconographyEntry>(), new SimpleSafeHtmlCell<IconographyEntry>(new AbstractSafeHtmlRenderer<IconographyEntry>() {
 
 			@Override
 			public SafeHtml render(IconographyEntry item) {
@@ -215,10 +215,10 @@ public class DepictionFilter extends AbstractFilter {
 		
 		BorderLayoutContainer iconographyBLC = new BorderLayoutContainer();
 		iconographyBLC.setSouthWidget(icoPeFieldLabel, new BorderLayoutData(25));
-		iconographyBLC.setCenterWidget(icoPictSelectionLV, new MarginData(2));
+		iconographyBLC.setCenterWidget(icoSelectionLV, new MarginData(2));
 		
 //		VerticalLayoutContainer icoPictVLC = new VerticalLayoutContainer();
-//		icoPictVLC.add(icoPictSelectionLV, new VerticalLayoutData(1.0, .9, new Margins(2)));
+//		icoPictVLC.add(icoSelectionLV, new VerticalLayoutData(1.0, .9, new Margins(2)));
 //		icoPictVLC.add(icoPeFieldLabel, new VerticalLayoutData(1.0, .1, new Margins(2)));
 		
 		ContentPanel icoPictPanel = new ContentPanel();
@@ -329,7 +329,7 @@ public class DepictionFilter extends AbstractFilter {
 	
 	public String getRelatedIconographyIDs() {
 		String iconographyIDs = null;
-		for (IconographyEntry ie : icoPictSelector.getSelectedIconography()) {
+		for (IconographyEntry ie : icoSelector.getSelectedIconography()) {
 			iconographyIDs = (iconographyIDs == null) ? Integer.toString(ie.getIconographyID()) : iconographyIDs.concat("," + ie.getIconographyID());
 		}
 		return iconographyIDs;
@@ -339,10 +339,6 @@ public class DepictionFilter extends AbstractFilter {
 		return icoPeSpinnerField.isEnabled() ? icoPeSpinnerField.getValue() : 0;
 	}
 	
-//	public boolean isAndSearch() {
-//		return icoPeMatchingTGB.getValue();
-//	}
-//
 	/* (non-Javadoc)
 	 * @see de.cses.client.ui.AbstractFilter#showExtendedFilterView()
 	 */
@@ -351,15 +347,15 @@ public class DepictionFilter extends AbstractFilter {
 		PopupPanel extendedFilterDialog = new PopupPanel();
 		FramedPanel extendedFilterFP = new FramedPanel();
 		extendedFilterFP.setHeading("more filter options");
-		extendedFilterFP.add(icoPictSelector);
+		extendedFilterFP.add(icoSelector);
 		ToolButton closeTB = new ToolButton(ToolButton.CLOSE);
 		closeTB.addSelectHandler(new SelectHandler() {
 
 			@Override
 			public void onSelect(SelectEvent event) {
 				selectedIconographyLS.clear();
-				selectedIconographyLS.addAll(icoPictSelector.getSelectedIconography());
-				if ((icoPictSelector.getSelectedIconography() != null) && (selectedIconographyLS.size() > 0)) {
+				selectedIconographyLS.addAll(icoSelector.getSelectedIconography());
+				if ((icoSelector.getSelectedIconography() != null) && (selectedIconographyLS.size() > 0)) {
 					icoPeSpinnerField.setEnabled(true);
 					icoPeSpinnerField.setValue(selectedIconographyLS.size());
 					icoPeSpinnerField.setMaxValue(selectedIconographyLS.size());
