@@ -84,22 +84,25 @@ public class DepictionFilter extends AbstractFilter {
 	}
 
 	interface CaveViewTemplates extends XTemplates {
-		@XTemplate("<div style=\"border: 1px solid grey;\">{officialNumber}: {officialName}<br>{siteDistrictInformation}</div>")
-		SafeHtml caveLabel(String siteDistrictInformation, String officialNumber, String officialName);
+		@XTemplate("<div style=\"border: 1px solid grey;\">{officialNumber}: {siteDistrictInformation}.<br> <tpl for='name'> {element}<wbr> </tpl></div>")
+		SafeHtml caveLabel(String siteDistrictInformation, String officialNumber, ArrayList<NameElement> name);
 
-		@XTemplate("<div style=\"border: 1px solid grey;\">{officialNumber}<br>{siteDistrictInformation}</div>")
+		@XTemplate("<div style=\"border: 1px solid grey;\">{officialNumber}: {siteDistrictInformation}</div>")
 		SafeHtml caveLabel(String siteDistrictInformation, String officialNumber);
 	}
 
 	interface LocationViewTemplates extends XTemplates {
-		@XTemplate("<div>{name}<br>{town}, {country}</div>")
-		SafeHtml caveLabel(String name, String town, String country);
+//		@XTemplate("<div>{name}<br>{town}, {country}</div>")
+//		SafeHtml caveLabel(String name, String town, String country);
+//
+//		@XTemplate("<div>{name}<br>{country}</div>")
+//		SafeHtml caveLabel(String name, String country);
+//
+//		@XTemplate("<div>{name}</div>")
+//		SafeHtml caveLabel(ArrayList<NameElement> name);
 
-		@XTemplate("<div>{name}<br>{country}</div>")
-		SafeHtml caveLabel(String name, String country);
-
-		@XTemplate("<div>{name}</div>")
-		SafeHtml caveLabel(String name);
+		@XTemplate("<div style=\"border: 1px solid grey;\"><tpl for='name'> {element}<wbr> </tpl></div>")
+		SafeHtml locationLabel(ArrayList<NameElement> name);
 	}
 	
 	interface IconographyViewTemplates extends XTemplates {
@@ -125,7 +128,7 @@ public class DepictionFilter extends AbstractFilter {
 	private ArrayList<String> sqlWhereClause;
 	private ListView<IconographyEntry, IconographyEntry> icoSelectionLV;
 
-	private IntegerSpinnerField icoPeSpinnerField;
+	private IntegerSpinnerField iconographySpinnerField;
 
 	/**
 	 * @param filterName
@@ -180,7 +183,11 @@ public class DepictionFilter extends AbstractFilter {
 				}
 				String siteDistrictInformation = (se != null ? se.getName() : "") + (de != null ? (se != null ? " / " : "") + de.getName() : "");
 				if ((entry.getHistoricName() != null) && (entry.getHistoricName().length() > 0)) {
-					return cvTemplates.caveLabel(siteDistrictInformation, entry.getOfficialNumber(), entry.getHistoricName());
+					ArrayList<NameElement> historicNameList = new ArrayList<NameElement>();
+					for (String s : entry.getHistoricName().split(" ")) {
+						historicNameList.add(new NameElement(s));
+					}
+					return cvTemplates.caveLabel(siteDistrictInformation, entry.getOfficialNumber(), historicNameList);
 				} else {
 					return cvTemplates.caveLabel(siteDistrictInformation, entry.getOfficialNumber());
 				}
@@ -206,25 +213,22 @@ public class DepictionFilter extends AbstractFilter {
 			}
 		}));
 		
-		icoPeSpinnerField = new IntegerSpinnerField();
-		icoPeSpinnerField.setMinValue(1);
-		icoPeSpinnerField.setIncrement(1);
-		icoPeSpinnerField.setEnabled(false);
-		icoPeSpinnerField.setEditable(false);
-		FieldLabel icoPeFieldLabel = new FieldLabel(icoPeSpinnerField, "Correlation");
+		iconographySpinnerField = new IntegerSpinnerField();
+		iconographySpinnerField.setMinValue(1);
+		iconographySpinnerField.setIncrement(1);
+		iconographySpinnerField.setEnabled(false);
+		iconographySpinnerField.setEditable(false);
+		FieldLabel iconographyFieldLabel = new FieldLabel(iconographySpinnerField, "Matching elements");
+		iconographyFieldLabel.setLabelWidth(120);
 		
 		BorderLayoutContainer iconographyBLC = new BorderLayoutContainer();
-		iconographyBLC.setSouthWidget(icoPeFieldLabel, new BorderLayoutData(25));
+		iconographyBLC.setSouthWidget(iconographyFieldLabel, new BorderLayoutData(25));
 		iconographyBLC.setCenterWidget(icoSelectionLV, new MarginData(2));
 		
-//		VerticalLayoutContainer icoPictVLC = new VerticalLayoutContainer();
-//		icoPictVLC.add(icoSelectionLV, new VerticalLayoutData(1.0, .9, new Margins(2)));
-//		icoPictVLC.add(icoPeFieldLabel, new VerticalLayoutData(1.0, .1, new Margins(2)));
-		
-		ContentPanel icoPictPanel = new ContentPanel();
-		icoPictPanel.setHeaderVisible(true);
-		icoPictPanel.setHeading("Iconography & PictElement");
-		icoPictPanel.add(iconographyBLC);
+		ContentPanel iconographyPanel = new ContentPanel();
+		iconographyPanel.setHeaderVisible(true);
+		iconographyPanel.setHeading("Iconography & PE search");
+		iconographyPanel.add(iconographyBLC);
 		
 		/**
 		 * assemble shortNameSearch
@@ -251,17 +255,23 @@ public class DepictionFilter extends AbstractFilter {
 			@Override
 			public SafeHtml render(LocationEntry item) {
 				final LocationViewTemplates lvTemplates = GWT.create(LocationViewTemplates.class);
+				String label;
 				if ((item.getCounty() != null) && (!item.getCounty().isEmpty())) {
 					if ((item.getTown() != null) && (!item.getTown().isEmpty())) {
-						return lvTemplates.caveLabel(item.getName(), item.getRegion()!=null && !item.getRegion().isEmpty() ? item.getTown()+" ("+item.getRegion()+")" : item.getTown(), item.getCounty());
+						label = item.getName()+", " + (item.getRegion()!=null && !item.getRegion().isEmpty() ? item.getTown()+", " + item.getRegion() : item.getTown()) + ", " + item.getCounty();
 					} else if ((item.getRegion() != null) && (!item.getRegion().isEmpty())) {
-						return lvTemplates.caveLabel(item.getName(), item.getTown()!=null && !item.getTown().isEmpty() ? item.getTown()+" ("+item.getRegion()+")" : item.getRegion(), item.getCounty());
+						label = item.getName() +", "+ (item.getTown()!=null && !item.getTown().isEmpty() ? item.getTown()+", "+item.getRegion() : item.getRegion()) + ", " + item.getCounty();
 					} else {
-						return lvTemplates.caveLabel(item.getName(), item.getCounty());
+						label = item.getName() + ", " + item.getCounty();
 					}
 				} else {
-					return lvTemplates.caveLabel(item.getName());
+					label = item.getName();
 				}
+				ArrayList<NameElement> labelList = new ArrayList<NameElement>();
+				for (String s : label.split(" ")) {
+					labelList.add(new NameElement(s));
+				}
+				return lvTemplates.locationLabel(labelList);
 			}
 		}));
 		locationSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
@@ -279,7 +289,7 @@ public class DepictionFilter extends AbstractFilter {
     depictionFilterALC.setExpandMode(ExpandMode.SINGLE_FILL);
     depictionFilterALC.add(cavePanel);
     depictionFilterALC.add(currentLocationPanel);
-    depictionFilterALC.add(icoPictPanel);
+    depictionFilterALC.add(iconographyPanel);
     depictionFilterALC.setActiveWidget(cavePanel);
 
     BorderLayoutContainer depictionFilterBLC = new BorderLayoutContainer();
@@ -336,7 +346,7 @@ public class DepictionFilter extends AbstractFilter {
 	}
 	
 	public int getCorrelationFactor() {
-		return icoPeSpinnerField.isEnabled() ? icoPeSpinnerField.getValue() : 0;
+		return iconographySpinnerField.isEnabled() ? iconographySpinnerField.getValue() : 0;
 	}
 	
 	/* (non-Javadoc)
@@ -356,11 +366,11 @@ public class DepictionFilter extends AbstractFilter {
 				selectedIconographyLS.clear();
 				selectedIconographyLS.addAll(icoSelector.getSelectedIconography());
 				if ((icoSelector.getSelectedIconography() != null) && (selectedIconographyLS.size() > 0)) {
-					icoPeSpinnerField.setEnabled(true);
-					icoPeSpinnerField.setValue(selectedIconographyLS.size());
-					icoPeSpinnerField.setMaxValue(selectedIconographyLS.size());
+					iconographySpinnerField.setEnabled(true);
+					iconographySpinnerField.setValue(selectedIconographyLS.size());
+					iconographySpinnerField.setMaxValue(selectedIconographyLS.size());
 				} else {
-					icoPeSpinnerField.setEnabled(false);
+					iconographySpinnerField.setEnabled(false);
 				}
 				extendedFilterDialog.hide();
 			}
