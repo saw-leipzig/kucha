@@ -160,6 +160,11 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 					for (OrnamentComponentsEntry oe : ornamentEntry.getOrnamentComponents()) {
 						selectedOrnamentComponents.add(oe);
 					}
+					if( ornamentEntry.getOrnamentComponents().size() == 0) {
+						for (OrnamentComponentsEntry nu : result) {
+							ornamentComponents.add(nu);
+					}
+					}
 				} else {
 					for (OrnamentComponentsEntry pe : result) {
 						ornamentComponents.add(pe);
@@ -197,7 +202,13 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 					for (InnerSecondaryPatternsEntry oe : ornamentEntry.getInnerSecondaryPatterns()) {
 						selectedinnerSecondaryPatternsEntryList.add(oe);
 					}
-				} else {
+					if( ornamentEntry.getInnerSecondaryPatterns().size() == 0) {
+						for (InnerSecondaryPatternsEntry nu : result) {
+							innerSecondaryPatternsEntryList.add(nu);
+					}
+					}
+				}
+				else {
 					for (InnerSecondaryPatternsEntry pe : result) {
 						innerSecondaryPatternsEntryList.add(pe);
 					}
