@@ -828,10 +828,10 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	 * @see de.cses.client.DatabaseService#getRelatedDepictions(java.lang.String)
 	 */
 	@Override
-	public ArrayList<Integer> getRelatedDepictionIDs(String iconographyIDs, boolean fullMatchingSearch) throws IllegalArgumentException {
+	public ArrayList<Integer> getRelatedDepictionIDs(String iconographyIDs, int correlationFactor) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		ArrayList<Integer> resultList = new ArrayList<Integer>();
-		for (DepictionEntry de : connector.getRelatedDepictions(iconographyIDs, fullMatchingSearch)) {
+		for (DepictionEntry de : connector.getRelatedDepictions(iconographyIDs, correlationFactor)) {
 			resultList.add(de.getDepictionID());
 		}
 		return resultList;

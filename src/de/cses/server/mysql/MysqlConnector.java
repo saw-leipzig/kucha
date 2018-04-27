@@ -1293,27 +1293,27 @@ public class MysqlConnector {
 	 * @param depictionID
 	 * @return
 	 */
-	public ArrayList<DepictionEntry> getRelatedDepictions(String iconographyIDs, boolean fullMatchingSearch) {
+	public ArrayList<DepictionEntry> getRelatedDepictions(String iconographyIDs, int correlationFactor) {
 		ArrayList<DepictionEntry> results = new ArrayList<DepictionEntry>();
 		Connection dbc = getConnection();
-
 		Statement stmt;
+		String sqlQuery;
+		
 		try {
 			stmt = dbc.createStatement();
 			ResultSet rs;
-			if (fullMatchingSearch) {
-				String[] icoIDs = iconographyIDs.split(",");
-				String sqlQuery = "SELECT * FROM Depictions WHERE ";
-				for (int i=0; i<icoIDs.length; ++i) {
-					sqlQuery = sqlQuery.concat(i != 0 ? "AND DepictionID IN (SELECT DISTINCT DepictionID FROM DepictionIconographyRelation WHERE IconographyID=" + icoIDs[i] : "DepictionID IN (SELECT DISTINCT DepictionID FROM DepictionIconographyRelation WHERE IconographyID=" + icoIDs[i]);
-				}
-				System.err.println(sqlQuery);
-				rs = stmt.executeQuery(sqlQuery);
+			if (correlationFactor > 0) {
+				/*
+					SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (1236,2063,2124)
+					GROUP By DepictionID
+					HAVING ( COUNT(DepictionID) = 2 )
+				 */
+				sqlQuery = "SELECT * FROM Depictions WHERE DepictionID IN (SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (" + iconographyIDs + ") GROUP BY DepictionID HAVING (COUNT(DepictionID) >= " + correlationFactor + "))";
 			} else {
-				rs = stmt.executeQuery(
-						"SELECT * FROM Depictions WHERE DepictionID IN (SELECT DISTINCT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN ("
-								+ iconographyIDs + "))");
+				sqlQuery = "SELECT * FROM Depictions WHERE DepictionID IN (SELECT DISTINCT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (" + iconographyIDs + "))";
 			}
+			System.err.println(sqlQuery);
+			rs = stmt.executeQuery(sqlQuery);
 			while (rs.next()) {
 				DepictionEntry de = new DepictionEntry(rs.getInt("DepictionID"), rs.getInt("StyleID"), rs.getString("Inscriptions"),
 						rs.getString("SeparateAksaras"), rs.getString("Dating"), rs.getString("Description"), rs.getString("BackgroundColour"),

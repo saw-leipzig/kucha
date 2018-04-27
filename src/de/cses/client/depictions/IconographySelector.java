@@ -23,19 +23,15 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.core.client.ValueProvider;
-import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.data.shared.event.StoreFilterEvent;
-import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.MarginData;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.CheckChangeEvent;
 import com.sencha.gxt.widget.core.client.event.CheckChangeEvent.CheckChangeHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
@@ -68,7 +64,9 @@ public class IconographySelector implements IsWidget {
 		}
 
 		@Override
-		public void setValue(IconographyEntry object, String value) { }
+		public void setValue(IconographyEntry object, String value) { 
+			object.setText(value);
+		}
 
 		@Override
 		public String getPath() {
@@ -76,11 +74,10 @@ public class IconographySelector implements IsWidget {
 		}
 	}
 
-	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
+	private DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	private TreeStore<IconographyEntry> iconographyTreeStore;
 	private Tree<IconographyEntry, String> iconographyTree;
 	private FramedPanel mainPanel;
-	private VerticalLayoutContainer vlc;
 	private StoreFilterField<IconographyEntry> filterField;
 	private int depictionID;
 	protected Map<String, IconographyEntry> selectedIconographyMap;
@@ -150,8 +147,6 @@ public class IconographySelector implements IsWidget {
 	}
 
 	private void initPanel() {
-		vlc = new VerticalLayoutContainer();
-
 		iconographyTree = new Tree<IconographyEntry, String>(iconographyTreeStore, new IconographyValueProvider()) {
 
 			@Override
@@ -169,7 +164,7 @@ public class IconographySelector implements IsWidget {
 		iconographyTree.setAutoLoad(true);
 		iconographyTree.setCheckStyle(CheckCascade.NONE);
 		iconographyTree.setCheckNodes(CheckNodes.BOTH);
-		
+
 		iconographyTree.addCheckChangeHandler(new CheckChangeHandler<IconographyEntry>() {
 			
 			@Override
@@ -184,17 +179,9 @@ public class IconographySelector implements IsWidget {
 				}
 			}
 		});
-				
-//		iconographyTree.setWidth(350);
-		vlc.add(iconographyTree, new VerticalLayoutData(1.0, 1.0));
-		vlc.setScrollMode(ScrollMode.AUTOY);
-
-		ContentPanel treePanel = new ContentPanel();
-		treePanel.setHeaderVisible(false);
-		treePanel.add(vlc);
 		
 		BorderLayoutContainer iconographySelectorBLC = new BorderLayoutContainer();
-		iconographySelectorBLC.setCenterWidget(treePanel, new MarginData(0, 2, 5, 2));
+		iconographySelectorBLC.setCenterWidget(iconographyTree, new MarginData(0, 2, 5, 2));
 		iconographySelectorBLC.setSouthWidget(filterField, new BorderLayoutData(25.0));
 		
 		ToolButton resetTB = new ToolButton(ToolButton.REFRESH);
