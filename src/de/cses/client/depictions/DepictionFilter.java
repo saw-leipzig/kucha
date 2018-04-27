@@ -52,6 +52,7 @@ import de.cses.shared.CaveEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.LocationEntry;
+import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 
 /**
@@ -84,23 +85,14 @@ public class DepictionFilter extends AbstractFilter {
 	}
 
 	interface CaveViewTemplates extends XTemplates {
-		@XTemplate("<div style=\"border: 1px solid grey;\">{officialNumber}: {siteDistrictInformation}.<br> <tpl for='name'> {element}<wbr> </tpl></div>")
-		SafeHtml caveLabel(String siteDistrictInformation, String officialNumber, ArrayList<NameElement> name);
+		@XTemplate("<div style=\"border: 1px solid grey;\">{shortName}: {officialNumber}<br> {districtRegion}<br> <tpl for='name'> {element}<wbr> </tpl></div>")
+		SafeHtml caveLabel(String shortName, String officialNumber, String districtRegion, ArrayList<NameElement> name);
 
-		@XTemplate("<div style=\"border: 1px solid grey;\">{officialNumber}: {siteDistrictInformation}</div>")
-		SafeHtml caveLabel(String siteDistrictInformation, String officialNumber);
+		@XTemplate("<div style=\"border: 1px solid grey;\">{shortName}: {officialNumber}<br> {districtRegion}</div>")
+		SafeHtml caveLabel(String shortName, String officialNumber, String districtRegion);
 	}
 
 	interface LocationViewTemplates extends XTemplates {
-//		@XTemplate("<div>{name}<br>{town}, {country}</div>")
-//		SafeHtml caveLabel(String name, String town, String country);
-//
-//		@XTemplate("<div>{name}<br>{country}</div>")
-//		SafeHtml caveLabel(String name, String country);
-//
-//		@XTemplate("<div>{name}</div>")
-//		SafeHtml caveLabel(ArrayList<NameElement> name);
-
 		@XTemplate("<div style=\"border: 1px solid grey;\"><tpl for='name'> {element}<wbr> </tpl></div>")
 		SafeHtml locationLabel(ArrayList<NameElement> name);
 	}
@@ -175,21 +167,18 @@ public class DepictionFilter extends AbstractFilter {
 			public SafeHtml render(CaveEntry entry) {
 				final CaveViewTemplates cvTemplates = GWT.create(CaveViewTemplates.class);
 				StaticTables st = StaticTables.getInstance();
-				DistrictEntry de = null;
-				SiteEntry se = null;
-				de = st.getDistrictEntries().get(entry.getDistrictID());
-				if (de != null) {
-					se = st.getSiteEntries().get(de.getSiteID());
-				}
-				String siteDistrictInformation = (se != null ? se.getName() : "") + (de != null ? (se != null ? " / " : "") + de.getName() : "");
+				DistrictEntry de = st.getDistrictEntries().get(entry.getDistrictID());
+				SiteEntry se = st.getSiteEntries().get(entry.getSiteID());
+				RegionEntry re = st.getRegionEntries().get(entry.getRegionID());
+				String districtRegionInformation = (de != null ? de.getName() + (re != null ? " / " + re.getOriginalName() : "") : re.getOriginalName());
 				if ((entry.getHistoricName() != null) && (entry.getHistoricName().length() > 0)) {
 					ArrayList<NameElement> historicNameList = new ArrayList<NameElement>();
 					for (String s : entry.getHistoricName().split(" ")) {
 						historicNameList.add(new NameElement(s));
 					}
-					return cvTemplates.caveLabel(siteDistrictInformation, entry.getOfficialNumber(), historicNameList);
+					return cvTemplates.caveLabel(se.getShortName(), entry.getOfficialNumber(), districtRegionInformation, historicNameList);
 				} else {
-					return cvTemplates.caveLabel(siteDistrictInformation, entry.getOfficialNumber());
+					return cvTemplates.caveLabel(se.getShortName(), entry.getOfficialNumber(), districtRegionInformation);
 				}
 			}
 		}));
