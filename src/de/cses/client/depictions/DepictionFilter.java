@@ -85,7 +85,7 @@ public class DepictionFilter extends AbstractFilter {
 	}
 
 	interface CaveViewTemplates extends XTemplates {
-		@XTemplate("<div style=\"border: 1px solid grey;\">{shortName}: {officialNumber}<br> {districtRegion}<br> <tpl for='name'> {element}<wbr> </tpl></div>")
+		@XTemplate("<div style=\"border: 1px solid grey;\">{shortName}: {officialNumber}<br> {districtRegion}<br><tpl for='name'> {element}<wbr> </tpl></div>")
 		SafeHtml caveLabel(String shortName, String officialNumber, String districtRegion, ArrayList<NameElement> name);
 
 		@XTemplate("<div style=\"border: 1px solid grey;\">{shortName}: {officialNumber}<br> {districtRegion}</div>")
@@ -170,15 +170,15 @@ public class DepictionFilter extends AbstractFilter {
 				DistrictEntry de = st.getDistrictEntries().get(entry.getDistrictID());
 				SiteEntry se = st.getSiteEntries().get(entry.getSiteID());
 				RegionEntry re = st.getRegionEntries().get(entry.getRegionID());
-				String districtRegionInformation = (de != null ? de.getName() + (re != null ? " / " + re.getOriginalName() : "") : re.getOriginalName());
+				String districtRegionInformation = (de != null) ? de.getName() + (re != null ? " / " + re.getOriginalName() : "") : (re != null ? re.getOriginalName() : "");
 				if ((entry.getHistoricName() != null) && (entry.getHistoricName().length() > 0)) {
 					ArrayList<NameElement> historicNameList = new ArrayList<NameElement>();
 					for (String s : entry.getHistoricName().split(" ")) {
 						historicNameList.add(new NameElement(s));
 					}
-					return cvTemplates.caveLabel(se.getShortName(), entry.getOfficialNumber(), districtRegionInformation, historicNameList);
+					return cvTemplates.caveLabel(se != null ? se.getShortName() : "", entry.getOfficialNumber(), districtRegionInformation, historicNameList);
 				} else {
-					return cvTemplates.caveLabel(se.getShortName(), entry.getOfficialNumber(), districtRegionInformation);
+					return cvTemplates.caveLabel(se != null ? se.getShortName() : "", entry.getOfficialNumber(), districtRegionInformation);
 				}
 			}
 		}));
