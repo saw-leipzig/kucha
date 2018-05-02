@@ -150,6 +150,7 @@ public class BibliographySelector implements IsWidget {
     
     BorderLayoutContainer bibSelectorBLC = new BorderLayoutContainer();
     bibSelectorBLC.setCenterWidget(grid, new MarginData(5));
+    grid.getView().refresh(true);
     
     mainPanel = new ContentPanel();
 		mainPanel.setHeaderVisible(false);
