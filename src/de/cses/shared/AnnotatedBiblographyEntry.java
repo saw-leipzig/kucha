@@ -892,9 +892,17 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 	
 	public String getAuthors() {
-		String result = null;
+		String result = "";
 		for (AuthorEntry ae : authorList) {
-			result = result.concat(result != null ? "; " + ae.getLastname() + ", " + ae.getFirstname() : ae.getLastname() + ", " + ae.getFirstname());
+			result = result.concat((result.length() > 0 ? "; " : "") + (ae.getInstitution()!=null ? ae.getInstitution() : ae.getLastname() + ", " + ae.getFirstname()));
+		}
+		return result;
+	}
+
+	public String getEditors() {
+		String result = "";
+		for (AuthorEntry ae : editorList) {
+			result = result.concat(result.length() > 0 ? "; " + ae.getLastname() + ", " + ae.getFirstname() : ae.getLastname() + ", " + ae.getFirstname());
 		}
 		return result;
 	}

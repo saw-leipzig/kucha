@@ -21,13 +21,15 @@ import com.google.gwt.editor.client.Editor.Path;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.core.client.GXT;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
+import com.sencha.gxt.state.client.CookieProvider;
 import com.sencha.gxt.state.client.GridFilterStateHandler;
+import com.sencha.gxt.state.client.StateManager;
 import com.sencha.gxt.widget.core.client.ContentPanel;
-import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
@@ -58,8 +60,8 @@ public class BibliographySelector implements IsWidget {
 		@Path("yearORG")
 		ValueProvider<AnnotatedBiblographyEntry, String> year();
 		
-		@Path("publicationType.name")
-		ValueProvider<AnnotatedBiblographyEntry, String> publicationType();
+//		@Path("publicationType.name")
+//		ValueProvider<AnnotatedBiblographyEntry, String> publicationType();
 	}
 	
 	private ContentPanel mainPanel = null;
@@ -83,13 +85,13 @@ public class BibliographySelector implements IsWidget {
 	private void createUI() {
 		ColumnConfig<AnnotatedBiblographyEntry, String> titleCol = new ColumnConfig<AnnotatedBiblographyEntry, String>(bibProps.title(), 200, "Title");
 		ColumnConfig<AnnotatedBiblographyEntry, String> authorsCol = new ColumnConfig<AnnotatedBiblographyEntry, String>(bibProps.authors(), 200, "Authors");
-		ColumnConfig<AnnotatedBiblographyEntry, String> publicationTypeColumn = new ColumnConfig<AnnotatedBiblographyEntry, String>(bibProps.title(), 100, "Publication Type");
+//		ColumnConfig<AnnotatedBiblographyEntry, String> publicationTypeColumn = new ColumnConfig<AnnotatedBiblographyEntry, String>(bibProps.title(), 100, "Publication Type");
 		ColumnConfig<AnnotatedBiblographyEntry, String> yearColumn = new ColumnConfig<AnnotatedBiblographyEntry, String>(bibProps.year(), 50, "Year");
 		
     List<ColumnConfig<AnnotatedBiblographyEntry, ?>> columns = new ArrayList<ColumnConfig<AnnotatedBiblographyEntry, ?>>();
     columns.add(titleCol);
     columns.add(authorsCol);
-    columns.add(publicationTypeColumn);
+//    columns.add(publicationTypeColumn);
     columns.add(yearColumn);
 
     ColumnModel<AnnotatedBiblographyEntry> cm = new ColumnModel<AnnotatedBiblographyEntry>(columns);		
@@ -119,7 +121,7 @@ public class BibliographySelector implements IsWidget {
 
     // State manager, make this grid stateful
     grid.setStateful(true);
-    grid.setStateId("filterGridExample");
+    grid.setStateId("bibSelector");
 
     StringFilter<AnnotatedBiblographyEntry> titleFilter = new StringFilter<AnnotatedBiblographyEntry>(bibProps.title());
     StringFilter<AnnotatedBiblographyEntry> authorFilter = new StringFilter<AnnotatedBiblographyEntry>(bibProps.authors());
@@ -132,7 +134,7 @@ public class BibliographySelector implements IsWidget {
     
     // Stage manager, load the previous state
     GridFilterStateHandler<AnnotatedBiblographyEntry> handler = new GridFilterStateHandler<AnnotatedBiblographyEntry>(grid, filters);
-    handler.loadState();    
+    handler.loadState();
     
     BorderLayoutContainer bibSelectorBLC = new BorderLayoutContainer();
     bibSelectorBLC.setCenterWidget(grid, new MarginData(5));
