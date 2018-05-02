@@ -57,6 +57,8 @@ public class BibliographySelector implements IsWidget {
 		
 		ValueProvider<AnnotatedBiblographyEntry, String> authors();
 		
+		ValueProvider<AnnotatedBiblographyEntry, String> editors();
+		
 		@Path("yearORG")
 		ValueProvider<AnnotatedBiblographyEntry, String> year();
 		
@@ -85,13 +87,14 @@ public class BibliographySelector implements IsWidget {
 	private void createUI() {
 		ColumnConfig<AnnotatedBiblographyEntry, String> titleCol = new ColumnConfig<AnnotatedBiblographyEntry, String>(bibProps.title(), 200, "Title");
 		ColumnConfig<AnnotatedBiblographyEntry, String> authorsCol = new ColumnConfig<AnnotatedBiblographyEntry, String>(bibProps.authors(), 200, "Authors");
+		ColumnConfig<AnnotatedBiblographyEntry, String> editorsCol = new ColumnConfig<AnnotatedBiblographyEntry, String>(bibProps.authors(), 200, "Editors");
 //		ColumnConfig<AnnotatedBiblographyEntry, String> publicationTypeColumn = new ColumnConfig<AnnotatedBiblographyEntry, String>(bibProps.title(), 100, "Publication Type");
 		ColumnConfig<AnnotatedBiblographyEntry, String> yearColumn = new ColumnConfig<AnnotatedBiblographyEntry, String>(bibProps.year(), 50, "Year");
 		
     List<ColumnConfig<AnnotatedBiblographyEntry, ?>> columns = new ArrayList<ColumnConfig<AnnotatedBiblographyEntry, ?>>();
     columns.add(titleCol);
     columns.add(authorsCol);
-//    columns.add(publicationTypeColumn);
+    columns.add(editorsCol);
     columns.add(yearColumn);
 
     ColumnModel<AnnotatedBiblographyEntry> cm = new ColumnModel<AnnotatedBiblographyEntry>(columns);		
@@ -118,6 +121,9 @@ public class BibliographySelector implements IsWidget {
     grid.setBorders(false);
     grid.getView().setStripeRows(true);
     grid.getView().setColumnLines(true);
+    
+    // we don't want all columns visible at the beginning
+    grid.getColumnModel().setHidden(grid.getColumnModel().indexOf(editorsCol), true);
 
     // State manager, make this grid stateful
     grid.setStateful(true);
@@ -125,12 +131,18 @@ public class BibliographySelector implements IsWidget {
 
     StringFilter<AnnotatedBiblographyEntry> titleFilter = new StringFilter<AnnotatedBiblographyEntry>(bibProps.title());
     StringFilter<AnnotatedBiblographyEntry> authorFilter = new StringFilter<AnnotatedBiblographyEntry>(bibProps.authors());
+    StringFilter<AnnotatedBiblographyEntry> editorFilter = new StringFilter<AnnotatedBiblographyEntry>(bibProps.editors());
 
     GridFilters<AnnotatedBiblographyEntry> filters = new GridFilters<AnnotatedBiblographyEntry>();
     filters.initPlugin(grid);
     filters.setLocal(true);
     filters.addFilter(titleFilter);
     filters.addFilter(authorFilter);
+    filters.addFilter(editorFilter);
+    
+    titleFilter.setActive(true, false);
+    authorFilter.setActive(true, false);
+    editorFilter.setActive(true, false);
     
     // Stage manager, load the previous state
     GridFilterStateHandler<AnnotatedBiblographyEntry> handler = new GridFilterStateHandler<AnnotatedBiblographyEntry>(grid, filters);
