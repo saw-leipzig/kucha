@@ -79,6 +79,7 @@ import com.sencha.gxt.widget.core.client.form.validator.MinNumberValidator;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
+import de.cses.client.bibliography.BibliographySelector;
 import de.cses.client.images.ImageSelector;
 import de.cses.client.images.ImageSelectorListener;
 import de.cses.client.ui.AbstractEditor;
@@ -147,6 +148,7 @@ public class DepictionEditor extends AbstractEditor {
 	private PreservationAttributeProperties presAttributeProps;
 	private ListStore<PreservationAttributeEntry> preservationAttributesLS, selectedPreservationAttributesLS;
 	private TextField shortNameTF;
+	private BibliographySelector bibliographySelector;
 
 	interface DepictionProperties extends PropertyAccess<DepictionEntry> {
 		ModelKeyProvider<DepictionEntry> depictionID();
@@ -1126,53 +1128,6 @@ public class DepictionEditor extends AbstractEditor {
 		});
 		backgroundColourFP.add(backgroundColourField);
 
-//		FramedPanel iconographyFP = new FramedPanel();
-//		iconographyFP.setHeading("Iconography");
-//		iconographyLabel = new Label();
-//		if (correspondingDepictionEntry.getIconographyID() > 0) {
-//			dbService.getIconographyEntry(correspondingDepictionEntry.getIconographyID(), new AsyncCallback<IconographyEntry>() {
-//
-//				@Override
-//				public void onFailure(Throwable caught) {
-//					caught.printStackTrace();
-//				}
-//
-//				@Override
-//				public void onSuccess(IconographyEntry iconResults) {
-//					if (iconResults != null) {
-//						iconographyLabel.setText(iconResults.getText());
-//					}
-//				}
-//			});
-//		}
-//		iconographyFP.add(iconographyLabel);
-//		iconographySelector = new IconographySelector(correspondingDepictionEntry.getIconographyID(), new IconographySelectorListener() {
-//
-//			@Override
-//			public void iconographySelected(IconographyEntry entry) {
-//				correspondingDepictionEntry.setIconographyID(entry.getIconographyID());
-//				iconographyLabel.setText(entry.getText());
-//				iconographySelectionDialog.hide();
-//			}
-//
-//			@Override
-//			public void cancel() {
-//				iconographySelectionDialog.hide();
-//			}
-//		});
-//		TextButton selectIconographyButton = new TextButton("select Iconography");
-//		selectIconographyButton.addSelectHandler(new SelectHandler() {
-//
-//			@Override
-//			public void onSelect(SelectEvent event) {
-//				iconographySelectionDialog = new PopupPanel();
-//				iconographySelectionDialog.add(iconographySelector);
-//				iconographySelectionDialog.setModal(true);
-//				iconographySelectionDialog.center();
-//			}
-//		});
-//		iconographyFP.addButton(selectIconographyButton);
-
 		FramedPanel inscriptionsFP = new FramedPanel();
 		inscriptionsFP.setHeading("Inscriptions");
 		inscriptionsTestArea = new TextArea();
@@ -1373,6 +1328,12 @@ public class DepictionEditor extends AbstractEditor {
 		 * ---------------------- content of third tab (Iconography & Pictorial Elements starts here ---------------------
 		 */
 		iconographySelector = new IconographySelector(correspondingDepictionEntry.getDepictionID());
+
+		
+		/**
+		 * 
+		 */
+		bibliographySelector = new BibliographySelector();
 		
 		/**
 		 * --------------------------- next the editor as a whole will be assembled -------------------
@@ -1383,7 +1344,7 @@ public class DepictionEditor extends AbstractEditor {
 		tabPanel.add(basicsTabHLC, "Basics");
 		tabPanel.add(descriptionTabHLC, "Description");
 		tabPanel.add(iconographySelector, "Iconography & Pictorial Elements");
-//		tabPanel.add(pictorialElementsTabHLC, "Pictorial Elements");
+		tabPanel.add(bibliographySelector, "Bibliography Selector");
 		
 		HorizontalLayoutContainer mainHLC = new HorizontalLayoutContainer();
 		mainHLC.add(tabPanel, new HorizontalLayoutData(.7, 1.0));

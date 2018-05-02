@@ -890,5 +890,13 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	public void setParentTitleORG(String parentTitleORG) {
 		this.parentTitleORG = parentTitleORG;
 	}
+	
+	public String getAuthors() {
+		String result = null;
+		for (AuthorEntry ae : authorList) {
+			result = result.concat(result != null ? "; " + ae.getLastname() + ", " + ae.getFirstname() : ae.getLastname() + ", " + ae.getFirstname());
+		}
+		return result;
+	}
 
 }
