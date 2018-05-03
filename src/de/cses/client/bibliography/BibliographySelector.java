@@ -30,11 +30,13 @@ import com.sencha.gxt.state.client.CookieProvider;
 import com.sencha.gxt.state.client.GridFilterStateHandler;
 import com.sencha.gxt.state.client.StateManager;
 import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
+import com.sencha.gxt.widget.core.client.grid.GridView;
 import com.sencha.gxt.widget.core.client.grid.filters.GridFilters;
 import com.sencha.gxt.widget.core.client.grid.filters.StringFilter;
 
@@ -52,8 +54,9 @@ public class BibliographySelector implements IsWidget {
 		@Path("annotatedBiblographyID")
 		ModelKeyProvider<AnnotatedBiblographyEntry> key();
 
-		@Path("titleORG")
-		ValueProvider<AnnotatedBiblographyEntry, String> title();
+		ValueProvider<AnnotatedBiblographyEntry, String> titleORG();
+		
+		ValueProvider<AnnotatedBiblographyEntry, String> titleEN();
 		
 		ValueProvider<AnnotatedBiblographyEntry, String> authors();
 		
@@ -69,6 +72,7 @@ public class BibliographySelector implements IsWidget {
 	private ContentPanel mainPanel = null;
 	private BibliographyProperties bibProps = GWT.create(BibliographyProperties.class);
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
+	private Grid<AnnotatedBiblographyEntry> grid;
 
 	/* (non-Javadoc)
 	 * @see com.google.gwt.user.client.ui.IsWidget#asWidget()
@@ -85,19 +89,24 @@ public class BibliographySelector implements IsWidget {
 	 * 
 	 */
 	private void createUI() {
-		ColumnConfig<AnnotatedBiblographyEntry, String> titleCol = new ColumnConfig<AnnotatedBiblographyEntry, String>(bibProps.title(), 200, "Title");
+		ColumnConfig<AnnotatedBiblographyEntry, String> titleOrgCol = new ColumnConfig<AnnotatedBiblographyEntry, String>(bibProps.titleORG(), 250, "Original Title");
+		ColumnConfig<AnnotatedBiblographyEntry, String> titleEnCol = new ColumnConfig<AnnotatedBiblographyEntry, String>(bibProps.titleEN(), 250, "English Translation");
 		ColumnConfig<AnnotatedBiblographyEntry, String> authorsCol = new ColumnConfig<AnnotatedBiblographyEntry, String>(bibProps.authors(), 200, "Authors");
 		ColumnConfig<AnnotatedBiblographyEntry, String> editorsCol = new ColumnConfig<AnnotatedBiblographyEntry, String>(bibProps.authors(), 200, "Editors");
-//		ColumnConfig<AnnotatedBiblographyEntry, String> publicationTypeColumn = new ColumnConfig<AnnotatedBiblographyEntry, String>(bibProps.title(), 100, "Publication Type");
 		ColumnConfig<AnnotatedBiblographyEntry, String> yearColumn = new ColumnConfig<AnnotatedBiblographyEntry, String>(bibProps.year(), 50, "Year");
 		
+    // we don't want all columns visible at the beginning
+		editorsCol.setHidden(true);
+		titleEnCol.setHidden(true);
+		
     List<ColumnConfig<AnnotatedBiblographyEntry, ?>> columns = new ArrayList<ColumnConfig<AnnotatedBiblographyEntry, ?>>();
-    columns.add(titleCol);
+    columns.add(titleOrgCol);
+    columns.add(titleEnCol);
     columns.add(authorsCol);
     columns.add(editorsCol);
     columns.add(yearColumn);
 
-    ColumnModel<AnnotatedBiblographyEntry> cm = new ColumnModel<AnnotatedBiblographyEntry>(columns);		
+    ColumnModel<AnnotatedBiblographyEntry> cm = new ColumnModel<AnnotatedBiblographyEntry>(columns);
     
     ListStore<AnnotatedBiblographyEntry> store = new ListStore<AnnotatedBiblographyEntry>(bibProps.key());
 		dbService.getAnnotatedBibliography(new AsyncCallback<ArrayList<AnnotatedBiblographyEntry>>() {
@@ -112,24 +121,24 @@ public class BibliographySelector implements IsWidget {
 				for (AnnotatedBiblographyEntry abe : result) {
 					store.add(abe);
 				}
+				grid.getView().refresh(true);
 			}
 		});
-    
-    final Grid<AnnotatedBiblographyEntry> grid = new Grid<AnnotatedBiblographyEntry>(store, cm);
+		
+		GridView<AnnotatedBiblographyEntry> bibGridView = new GridView<AnnotatedBiblographyEntry>();
+		bibGridView.setAutoExpandColumn(titleOrgCol);
+		bibGridView.setColumnLines(true);
+		
+    grid = new Grid<AnnotatedBiblographyEntry>(store, cm, bibGridView);
+    grid.setAllowTextSelection(true);
+    grid.setBorders(true);
     grid.setColumnReordering(true);
-    grid.getView().setAutoExpandColumn(titleCol);
-    grid.setBorders(false);
-    grid.getView().setStripeRows(true);
-    grid.getView().setColumnLines(true);
     
-    // we don't want all columns visible at the beginning
-    grid.getColumnModel().setHidden(grid.getColumnModel().indexOf(editorsCol), true);
-
     // State manager, make this grid stateful
     grid.setStateful(true);
     grid.setStateId("bibSelector");
 
-    StringFilter<AnnotatedBiblographyEntry> titleFilter = new StringFilter<AnnotatedBiblographyEntry>(bibProps.title());
+    StringFilter<AnnotatedBiblographyEntry> titleFilter = new StringFilter<AnnotatedBiblographyEntry>(bibProps.titleORG());
     StringFilter<AnnotatedBiblographyEntry> authorFilter = new StringFilter<AnnotatedBiblographyEntry>(bibProps.authors());
     StringFilter<AnnotatedBiblographyEntry> editorFilter = new StringFilter<AnnotatedBiblographyEntry>(bibProps.editors());
 
@@ -150,8 +159,7 @@ public class BibliographySelector implements IsWidget {
     
     BorderLayoutContainer bibSelectorBLC = new BorderLayoutContainer();
     bibSelectorBLC.setCenterWidget(grid, new MarginData(5));
-    grid.getView().refresh(true);
-    
+
     mainPanel = new ContentPanel();
 		mainPanel.setHeaderVisible(false);
 		mainPanel.add(bibSelectorBLC);
