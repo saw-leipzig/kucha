@@ -25,6 +25,7 @@ import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 
+import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
 import de.cses.shared.ChamberTypeEntry;
@@ -76,6 +77,7 @@ public class StaticTables {
 	protected HashMap<Integer, LocationEntry> locationMap;
 	protected HashMap<Integer, VendorEntry> vendorMap;
 	protected HashMap<Integer, PublicationTypeEntry> publicationTypeMap;
+	protected HashMap<Integer, AnnotatedBiblographyEntry> bibEntryMap;
 
 	private int loadCounter;
 
@@ -101,7 +103,7 @@ public class StaticTables {
 	 */
 	public StaticTables(ListsLoadedListener l) {
 		listener = l;
-		loadCounter = 18;
+		loadCounter = 19;
 		loadDistricts();
 		loadSites();
 		loadRegions();
@@ -120,11 +122,12 @@ public class StaticTables {
 		loadLocationMap();
 		loadVendor();
 		loadPublicationTypes();
+		loadBiliography();
 	}
 
 	private void listLoaded() {
 		--loadCounter;
-		listener.listsLoaded((17.0 - loadCounter) / 17.0);
+		listener.listsLoaded((19.0 - loadCounter) / 19.0);
 	}
 
 	/**
@@ -493,7 +496,25 @@ public class StaticTables {
 				listLoaded();
 			}
 		});
-		
+	}
+	
+	private void loadBiliography() {
+		bibEntryMap = new HashMap<Integer, AnnotatedBiblographyEntry>();
+		dbService.getAnnotatedBibliography(new AsyncCallback<ArrayList<AnnotatedBiblographyEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(ArrayList<AnnotatedBiblographyEntry> result) {
+				for (AnnotatedBiblographyEntry abe : result) {
+					bibEntryMap.put(abe.getAnnotatedBiblographyID(), abe);
+				}
+				listLoaded();
+			}
+		});
 	}
 
 	public Map<Integer, DistrictEntry> getDistrictEntries() {
@@ -570,6 +591,10 @@ public class StaticTables {
 	
 	public Map<Integer, PublicationTypeEntry> getPublicationTypes() {
 		return publicationTypeMap;
+	}
+	
+	public Map<Integer, AnnotatedBiblographyEntry> getBibliographyEntries() {
+		return bibEntryMap;
 	}
 	
 }

@@ -63,7 +63,7 @@ public class KuchaApplication implements EntryPoint {
 		});
 		RootPanel.get().add(v, 0, 0); // use RootPanel, not RootLayoutPanel here!
 
-		StateManager.get().setProvider(new CookieProvider("/", null, null, GXT.isSecure()));
+//		StateManager.get().setProvider(new CookieProvider("/", null, null, GXT.isSecure()));
 	}
 
 }

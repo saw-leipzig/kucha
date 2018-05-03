@@ -42,7 +42,9 @@ import com.sencha.gxt.widget.core.client.grid.filters.StringFilter;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.StaticTables;
 import de.cses.shared.AnnotatedBiblographyEntry;
+import de.cses.shared.AuthorEntry;
 
 /**
  * @author alingnau
@@ -98,6 +100,7 @@ public class BibliographySelector implements IsWidget {
     // we don't want all columns visible at the beginning
 		editorsCol.setHidden(true);
 		titleEnCol.setHidden(true);
+		titleOrgCol.setMenuDisabled(false);
 		
     List<ColumnConfig<AnnotatedBiblographyEntry, ?>> columns = new ArrayList<ColumnConfig<AnnotatedBiblographyEntry, ?>>();
     columns.add(titleOrgCol);
@@ -109,21 +112,23 @@ public class BibliographySelector implements IsWidget {
     ColumnModel<AnnotatedBiblographyEntry> cm = new ColumnModel<AnnotatedBiblographyEntry>(columns);
     
     ListStore<AnnotatedBiblographyEntry> store = new ListStore<AnnotatedBiblographyEntry>(bibProps.key());
-		dbService.getAnnotatedBibliography(new AsyncCallback<ArrayList<AnnotatedBiblographyEntry>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(ArrayList<AnnotatedBiblographyEntry> result) {
-				for (AnnotatedBiblographyEntry abe : result) {
-					store.add(abe);
-				}
-				grid.getView().refresh(true);
-			}
-		});
+    for (AnnotatedBiblographyEntry abe : StaticTables.getInstance().getBibliographyEntries().values()) {
+    	store.add(abe);
+    }
+    
+//		dbService.getAnnotatedBibliography(new AsyncCallback<ArrayList<AnnotatedBiblographyEntry>>() {
+//
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				caught.printStackTrace();
+//			}
+//
+//			@Override
+//			public void onSuccess(ArrayList<AnnotatedBiblographyEntry> result) {
+//				for (AnnotatedBiblographyEntry abe : result) {
+//				}
+//			}
+//		});
 		
 		GridView<AnnotatedBiblographyEntry> bibGridView = new GridView<AnnotatedBiblographyEntry>();
 		bibGridView.setAutoExpandColumn(titleOrgCol);
@@ -149,13 +154,13 @@ public class BibliographySelector implements IsWidget {
     filters.addFilter(authorFilter);
     filters.addFilter(editorFilter);
     
-    titleFilter.setActive(true, false);
-    authorFilter.setActive(true, false);
-    editorFilter.setActive(true, false);
+//    titleFilter.setActive(true, false);
+//    authorFilter.setActive(true, false);
+//    editorFilter.setActive(true, false);
     
     // Stage manager, load the previous state
-    GridFilterStateHandler<AnnotatedBiblographyEntry> handler = new GridFilterStateHandler<AnnotatedBiblographyEntry>(grid, filters);
-    handler.loadState();
+//    GridFilterStateHandler<AnnotatedBiblographyEntry> handler = new GridFilterStateHandler<AnnotatedBiblographyEntry>(grid, filters);
+//    handler.loadState();
     
     BorderLayoutContainer bibSelectorBLC = new BorderLayoutContainer();
     bibSelectorBLC.setCenterWidget(grid, new MarginData(5));
