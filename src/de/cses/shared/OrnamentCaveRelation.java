@@ -28,13 +28,7 @@ public class OrnamentCaveRelation extends AbstractEntry {
 		this.ornamentCaveRelationID = ornamentCaveRelationID;
 		this.ornamentID = ornamentID;
 		this.district = district;
-		if(caveEntry.getHistoricName() != null) {
-			this.name = "Cave: " + caveEntry.getHistoricName() + "ID: " + caveEntry.getCaveID();
-		}
-		else {
-			this.name = "Cave: " + caveEntry.getCaveID();
-		}
-		
+		this.name = caveEntry.getHistoricName() != null ? "Cave: " + caveEntry.getOfficialNumber() + " (" + caveEntry.getHistoricName() + ")" : "Cave: " + caveEntry.getOfficialNumber();
 		this.colours = colours;
 		this.notes = notes;
 		this.similarelementsOfOtherCultures = similarElementsOfOtherCultures;

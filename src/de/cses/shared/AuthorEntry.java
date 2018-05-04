@@ -13,8 +13,6 @@
  */
 package de.cses.shared;
 
-import java.sql.Date;
-
 /**
  * @author alingnau
  *
@@ -22,8 +20,8 @@ import java.sql.Date;
 public class AuthorEntry extends AbstractEntry {
 
 	private int authorID = 0;
-	private String lastname, firstname;
-	private Date kuchaVisitDate;
+	private String lastname, firstname, institution;
+	private boolean kuchaVisitor;
 	private String affiliation, email, homepage;
 
 	/**
@@ -33,12 +31,13 @@ public class AuthorEntry extends AbstractEntry {
 	 */
 	public AuthorEntry() {	}
 
-	public AuthorEntry(int authorID, String lastname, String firstname, Date kuchaVisitDate, String affiliation, String email,
+	public AuthorEntry(int authorID, String lastname, String firstname, String institution, boolean kuchaVisitor, String affiliation, String email,
 			String homepage) {
 		this.authorID = authorID;
 		this.lastname = lastname;
+		this.setInstitution(institution);
 		this.firstname = firstname;
-		this.kuchaVisitDate = kuchaVisitDate;
+		this.kuchaVisitor = kuchaVisitor;
 		this.affiliation = affiliation;
 		this.email = email;
 		this.homepage = homepage;
@@ -66,14 +65,6 @@ public class AuthorEntry extends AbstractEntry {
 
 	public void setFirstname(String firstname) {
 		this.firstname = firstname;
-	}
-
-	public Date getKuchaVisitDate() {
-		return kuchaVisitDate;
-	}
-
-	public void setKuchaVisitDate(Date kuchaVisitDate) {
-		this.kuchaVisitDate = kuchaVisitDate;
 	}
 
 	public String getAffiliation() {
@@ -110,6 +101,22 @@ public class AuthorEntry extends AbstractEntry {
 	@Override
 	public String getUniqueID() {
 		return "Author-" + authorID;
+	}
+
+	public boolean isKuchaVisitor() {
+		return kuchaVisitor;
+	}
+
+	public void setKuchaVisitor(boolean kuchaVisitor) {
+		this.kuchaVisitor = kuchaVisitor;
+	}
+
+	public String getInstitution() {
+		return institution;
+	}
+
+	public void setInstitution(String institution) {
+		this.institution = institution;
 	}
 
 }

@@ -18,6 +18,7 @@ import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
+import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.sencha.gxt.cell.core.client.ButtonCell.ButtonScale;
 import com.sencha.gxt.cell.core.client.ButtonCell.IconAlign;
@@ -31,6 +32,7 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
 import de.cses.client.ui.AbstractEditor;
 import de.cses.client.ui.AbstractView;
+import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.OrnamentEntry;
 
@@ -49,8 +51,11 @@ public class OrnamenticView extends AbstractView {
 //		@XTemplate("<div><center><img src='{imgUri}' height='16px' width='16px'> <b style='font-size: 20px'> {officialNumber} </b></center><label style='font-size:9px'> {officialName} <br> {historicName} </label></div>")
 //		SafeHtml view(SafeUri imgUri, String officialNumber, String officialName, String historicName);
 
-		@XTemplate("<div><center><img src='{imgUri}' height='16px' width='16px' > <b style='font-size: 20px'> {name} </b></center></div>")
-		SafeHtml view(SafeUri imgUri, String name);
+		@XTemplate("<div><center><img src='{imgUri}'></img></center><label style='font-size:9px' >{shortName}</label></div>")
+		SafeHtml view(SafeUri imgUri, String shortName);
+
+//		@XTemplate("<div><center><img src='{imgUri}' height='16px' width='16px' > <b style='font-size: 12px'> {name} </b></center></div>")
+//		SafeHtml view(SafeUri imgUri, String name);
 	}
 
 	private OrnamentEntry entry;
@@ -65,7 +70,11 @@ public class OrnamenticView extends AbstractView {
 		this.entry = entry;
 		resources = GWT.create(Resources.class);
 		ovTemplate = GWT.create(OrnamentationViewTemplates.class);
-		setHTML(ovTemplate.view(resources.logo().getSafeUri(), "ID = " + entry.getOrnamentID()));
+		SafeUri imageUri = null;
+		if ((entry.getImages() != null) && (!entry.getImages().isEmpty())) {
+			imageUri = UriUtils.fromString("resource?imageID=" + entry.getImages().get(0).getImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
+		}
+		setHTML(ovTemplate.view(imageUri != null ? imageUri : resources.logo().getSafeUri(), "Ornament Code: " + entry.getCode()));
 		setPixelSize(110, 110);
 
 		DragSource source = new DragSource(this) {

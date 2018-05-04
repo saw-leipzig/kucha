@@ -41,9 +41,11 @@ public abstract class AbstractResultView extends Portlet {
 	private ToolButton searchToolButton, saveToolButton, plusToolButton, resetButton;
 	private FlowLayoutContainer resultContainer;
 	private MarginData resultLayoutData;
+	private String title;
 
 	public AbstractResultView(String title) {
 		super();
+		this.title = title;
 		this.setHeading(title);
 		setCollapsible(true);
 		setAnimCollapse(true);
@@ -124,6 +126,7 @@ public abstract class AbstractResultView extends Portlet {
 			}
 		}
 		resultContainer.add(view, resultLayoutData);
+		setHeading(title + " (" + resultContainer.getWidgetCount() + " elements)");
 	}
 	
 	/**
@@ -147,6 +150,7 @@ public abstract class AbstractResultView extends Portlet {
 	 */
 	public void reset() {
 		resultContainer.clear();
+		setHeading(title);
 	}
 	
 //	/**

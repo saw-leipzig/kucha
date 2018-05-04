@@ -33,7 +33,6 @@ import de.cses.shared.C14DocumentEntry;
 import de.cses.shared.CaveAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveGroupEntry;
-import de.cses.shared.CavePart;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
 import de.cses.shared.CurrentLocationEntry;
@@ -1186,7 +1185,7 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Authors WHERE AuthorID=" + id);
 			if (rs.first()) {
-				result = new AuthorEntry(rs.getInt("AuthorID"), rs.getString("Lastname"), rs.getString("Firstname"), rs.getDate("KuchaVisitDate"),
+				result = new AuthorEntry(rs.getInt("AuthorID"), rs.getString("Lastname"), rs.getString("Firstname"), rs.getString("Institution"), rs.getBoolean("KuchaVisitor"),
 						rs.getString("Affiliation"), rs.getString("Email"), rs.getString("Homepage"));
 			}
 			rs.close();
@@ -1258,7 +1257,8 @@ public class MysqlConnector {
 	 * @param depictionID
 	 * @return
 	 */
-	public ArrayList<DepictionEntry> getExclusiveRelatedDepictions(String iconographyIDs) {
+	@Deprecated
+	public ArrayList<DepictionEntry> getFullMatchingDepictionsFromIconographyIDs(String iconographyIDs) {
 		ArrayList<DepictionEntry> results = new ArrayList<DepictionEntry>();
 		Connection dbc = getConnection();
 
@@ -1295,16 +1295,27 @@ public class MysqlConnector {
 	 * @param depictionID
 	 * @return
 	 */
-	public ArrayList<DepictionEntry> getRelatedDepictions(String iconographyIDs) {
+	public ArrayList<DepictionEntry> getRelatedDepictions(String iconographyIDs, int correlationFactor) {
 		ArrayList<DepictionEntry> results = new ArrayList<DepictionEntry>();
 		Connection dbc = getConnection();
-
 		Statement stmt;
+		String sqlQuery;
+		
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery(
-					"SELECT * FROM Depictions WHERE DepictionID IN (SELECT DISTINCT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN ("
-							+ iconographyIDs + "))");
+			ResultSet rs;
+			if (correlationFactor > 0) {
+				/*
+					SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (1236,2063,2124)
+					GROUP By DepictionID
+					HAVING ( COUNT(DepictionID) = 2 )
+				 */
+				sqlQuery = "SELECT * FROM Depictions WHERE DepictionID IN (SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (" + iconographyIDs + ") GROUP BY DepictionID HAVING (COUNT(DepictionID) >= " + correlationFactor + "))";
+			} else {
+				sqlQuery = "SELECT * FROM Depictions WHERE DepictionID IN (SELECT DISTINCT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (" + iconographyIDs + "))";
+			}
+			System.err.println(sqlQuery);
+			rs = stmt.executeQuery(sqlQuery);
 			while (rs.next()) {
 				DepictionEntry de = new DepictionEntry(rs.getInt("DepictionID"), rs.getInt("StyleID"), rs.getString("Inscriptions"),
 						rs.getString("SeparateAksaras"), rs.getString("Dating"), rs.getString("Description"), rs.getString("BackgroundColour"),
@@ -1765,7 +1776,7 @@ public class MysqlConnector {
 						rs.getString("SeriesEN"), rs.getString("SeriesORG"), rs.getString("SeriesTR"), 
 						rs.getString("EditionEN"), rs.getString("EditionORG"), rs.getString("EditionTR"),
 						rs.getString("VolumeEN"), rs.getString("VolumeORG"), rs.getString("VolumeTR"), 
-						rs.getString("IssueEN"), rs.getString("IssueTR"), rs.getString("IssueORG"), 
+						rs.getString("IssueEN"), rs.getString("IssueORG"), rs.getString("IssueTR"), 
 						rs.getInt("YearEN"), rs.getString("YearORG"), rs.getString("YearTR"), 
 						rs.getString("MonthEN"), rs.getString("MonthORG"), rs.getString("MonthTR"), 
 						rs.getString("PagesEN"), rs.getString("PagesORG"), rs.getString("PagesTR"), 
@@ -2692,14 +2703,15 @@ public class MysqlConnector {
 		int rowCount = 0;
 		try {
 			authorStatement = dbc.prepareStatement(
-					"UPDATE Authors SET LastName=?, FirstName=?, KuchaVisitDate=?, Affiliation=?, Email=?, Homepage=? WHERE AuthorID=?");
+					"UPDATE Authors SET LastName=?, FirstName=?, Institution=?, KuchaVisitor=?, Affiliation=?, Email=?, Homepage=? WHERE AuthorID=?");
 			authorStatement.setString(1, authorEntry.getLastname());
 			authorStatement.setString(2, authorEntry.getFirstname());
-			authorStatement.setDate(3, authorEntry.getKuchaVisitDate());
-			authorStatement.setString(4, authorEntry.getAffiliation());
-			authorStatement.setString(5, authorEntry.getEmail());
-			authorStatement.setString(6, authorEntry.getHomepage());
-			authorStatement.setInt(7, authorEntry.getAuthorID());
+			authorStatement.setString(3, authorEntry.getInstitution());
+			authorStatement.setBoolean(4, authorEntry.isKuchaVisitor());
+			authorStatement.setString(5, authorEntry.getAffiliation());
+			authorStatement.setString(6, authorEntry.getEmail());
+			authorStatement.setString(7, authorEntry.getHomepage());
+			authorStatement.setInt(8, authorEntry.getAuthorID());
 			rowCount = authorStatement.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -2717,14 +2729,15 @@ public class MysqlConnector {
 		int authorID = 0;
 		try {
 			authorStatement = dbc.prepareStatement(
-					"INSERT INTO Authors (LastName, FirstName, KuchaVisitDate, Affiliation, Email, Homepage) VALUES (?, ?, ?, ?, ?, ?)",
+					"INSERT INTO Authors (LastName, FirstName, Institution, KuchaVisitor, Affiliation, Email, Homepage) VALUES (?, ?, ?, ?, ?, ?, ?)",
 					Statement.RETURN_GENERATED_KEYS);
 			authorStatement.setString(1, authorEntry.getLastname());
 			authorStatement.setString(2, authorEntry.getFirstname());
-			authorStatement.setDate(3, authorEntry.getKuchaVisitDate());
-			authorStatement.setString(4, authorEntry.getAffiliation());
-			authorStatement.setString(5, authorEntry.getEmail());
-			authorStatement.setString(6, authorEntry.getHomepage());
+			authorStatement.setString(3, authorEntry.getInstitution());
+			authorStatement.setBoolean(4, authorEntry.isKuchaVisitor());
+			authorStatement.setString(5, authorEntry.getAffiliation());
+			authorStatement.setString(6, authorEntry.getEmail());
+			authorStatement.setString(7, authorEntry.getHomepage());
 			authorStatement.executeUpdate();
 			ResultSet keys = authorStatement.getGeneratedKeys();
 			if (keys.next()) {
@@ -2934,7 +2947,7 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Authors");
 			while (rs.next()) {
-				result.add(new AuthorEntry(rs.getInt("AuthorID"), rs.getString("Lastname"), rs.getString("Firstname"), rs.getDate("KuchaVisitDate"),
+				result.add(new AuthorEntry(rs.getInt("AuthorID"), rs.getString("Lastname"), rs.getString("Firstname"), rs.getString("Institution"), rs.getBoolean("KuchaVisitor"),
 						rs.getString("Affiliation"), rs.getString("Email"), rs.getString("Homepage")));
 			}
 			rs.close();

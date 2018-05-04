@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 
+ * Copyright 2017, 2018 
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -32,18 +32,17 @@ import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
-import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer.ExpandMode;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
+import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
-import com.sencha.gxt.widget.core.client.container.MarginData;
+import com.sencha.gxt.widget.core.client.form.FieldLabel;
+import com.sencha.gxt.widget.core.client.form.IntegerSpinnerField;
 import com.sencha.gxt.widget.core.client.form.TextField;
-import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
-import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -53,8 +52,8 @@ import de.cses.shared.CaveEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.LocationEntry;
+import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
-import de.cses.shared.VendorEntry;
 
 /**
  * @author alingnau
@@ -62,28 +61,45 @@ import de.cses.shared.VendorEntry;
  */
 public class DepictionFilter extends AbstractFilter {
 
+	class NameElement {
+		private String element;
+		
+		public NameElement(String element) {
+			super();
+			this.element = element;
+		}
+
+		public String getElement() {
+			return element;
+		}
+	}
+
 	interface LocationProperties extends PropertyAccess<LocationEntry> {
 		ModelKeyProvider<LocationEntry> locationID();
 		LabelProvider<LocationEntry> name();
 	}
+	
+	interface IconographyProperties extends PropertyAccess<IconographyEntry> {
+		ModelKeyProvider<IconographyEntry> iconographyID();
+		LabelProvider<IconographyEntry> text();
+	}
 
 	interface CaveViewTemplates extends XTemplates {
-		@XTemplate("<div style=\"border: 1px solid grey;\">{officialNumber}: {officialName}<br>{siteDistrictInformation}</div>")
-		SafeHtml caveLabel(String siteDistrictInformation, String officialNumber, String officialName);
+		@XTemplate("<div style=\"border: 1px solid grey;\">{shortName}: {officialNumber}<br> {districtRegion}<br><tpl for='name'> {element}<wbr> </tpl></div>")
+		SafeHtml caveLabel(String shortName, String officialNumber, String districtRegion, ArrayList<NameElement> name);
 
-		@XTemplate("<div style=\"border: 1px solid grey;\">{officialNumber}<br>{siteDistrictInformation}</div>")
-		SafeHtml caveLabel(String siteDistrictInformation, String officialNumber);
+		@XTemplate("<div style=\"border: 1px solid grey;\">{shortName}: {officialNumber}<br> {districtRegion}</div>")
+		SafeHtml caveLabel(String shortName, String officialNumber, String districtRegion);
 	}
 
 	interface LocationViewTemplates extends XTemplates {
-		@XTemplate("<div>{name}<br>{town}, {country}</div>")
-		SafeHtml caveLabel(String name, String town, String country);
-
-		@XTemplate("<div>{name}<br>{country}</div>")
-		SafeHtml caveLabel(String name, String country);
-
-		@XTemplate("<div>{name}</div>")
-		SafeHtml caveLabel(String name);
+		@XTemplate("<div style=\"border: 1px solid grey;\"><tpl for='name'> {element}<wbr> </tpl></div>")
+		SafeHtml locationLabel(ArrayList<NameElement> name);
+	}
+	
+	interface IconographyViewTemplates extends XTemplates {
+		@XTemplate("<div style=\"border: 1px solid grey;\"><tpl for='name'> {element}<wbr> </tpl></div>")
+		SafeHtml iconographyLabel(ArrayList<NameElement> name);
 	}
 
 	interface CaveProperties extends PropertyAccess<CaveEntry> {
@@ -95,11 +111,16 @@ public class DepictionFilter extends AbstractFilter {
 
 	private TextField shortNameSearch;
 	private CaveProperties caveProps;
+	private IconographyProperties icoProps;
 	private ListStore<CaveEntry> caveEntryLS;
+	private ListStore<IconographyEntry> selectedIconographyLS;
 	private ListView<CaveEntry, CaveEntry> caveSelectionLV;
 	private ListView<LocationEntry, LocationEntry> locationSelectionLV;
-	private IconographySelector icoPictSelector;
+	private IconographySelector icoSelector;
 	private ArrayList<String> sqlWhereClause;
+	private ListView<IconographyEntry, IconographyEntry> icoSelectionLV;
+
+	private IntegerSpinnerField iconographySpinnerField;
 
 	/**
 	 * @param filterName
@@ -108,7 +129,9 @@ public class DepictionFilter extends AbstractFilter {
 		super(filterName);
 		caveProps = GWT.create(CaveProperties.class);
 		caveEntryLS = new ListStore<CaveEntry>(caveProps.caveID());
-		icoPictSelector = new IconographySelector(0);
+		icoSelector = new IconographySelector(0);
+		icoProps = GWT.create(IconographyProperties.class);
+		selectedIconographyLS = new ListStore<>(icoProps.iconographyID());
 		loadCaves();
 	}
 
@@ -144,17 +167,18 @@ public class DepictionFilter extends AbstractFilter {
 			public SafeHtml render(CaveEntry entry) {
 				final CaveViewTemplates cvTemplates = GWT.create(CaveViewTemplates.class);
 				StaticTables st = StaticTables.getInstance();
-				DistrictEntry de = null;
-				SiteEntry se = null;
-				de = st.getDistrictEntries().get(entry.getDistrictID());
-				if (de != null) {
-					se = st.getSiteEntries().get(de.getSiteID());
-				}
-				String siteDistrictInformation = (se != null ? se.getName() : "") + (de != null ? (se != null ? " / " : "") + de.getName() : "");
+				DistrictEntry de = st.getDistrictEntries().get(entry.getDistrictID());
+				SiteEntry se = st.getSiteEntries().get(entry.getSiteID());
+				RegionEntry re = st.getRegionEntries().get(entry.getRegionID());
+				String districtRegionInformation = (de != null) ? de.getName() + (re != null ? " / " + re.getOriginalName() : "") : (re != null ? re.getOriginalName() : "");
 				if ((entry.getHistoricName() != null) && (entry.getHistoricName().length() > 0)) {
-					return cvTemplates.caveLabel(siteDistrictInformation, entry.getOfficialNumber(), entry.getHistoricName());
+					ArrayList<NameElement> historicNameList = new ArrayList<NameElement>();
+					for (String s : entry.getHistoricName().split(" ")) {
+						historicNameList.add(new NameElement(s));
+					}
+					return cvTemplates.caveLabel(se != null ? se.getShortName() : "", entry.getOfficialNumber(), districtRegionInformation, historicNameList);
 				} else {
-					return cvTemplates.caveLabel(siteDistrictInformation, entry.getOfficialNumber());
+					return cvTemplates.caveLabel(se != null ? se.getShortName() : "", entry.getOfficialNumber(), districtRegionInformation);
 				}
 			}
 		}));
@@ -164,6 +188,36 @@ public class DepictionFilter extends AbstractFilter {
 		cavePanel.setHeaderVisible(true);
 		cavePanel.setHeading("Cave search");
 		cavePanel.add(caveSelectionLV);
+		
+		icoSelectionLV = new ListView<IconographyEntry, IconographyEntry>(selectedIconographyLS, new IdentityValueProvider<IconographyEntry>(), new SimpleSafeHtmlCell<IconographyEntry>(new AbstractSafeHtmlRenderer<IconographyEntry>() {
+
+			@Override
+			public SafeHtml render(IconographyEntry item) {
+				IconographyViewTemplates icTemplates = GWT.create(IconographyViewTemplates.class);
+				ArrayList<NameElement> name = new ArrayList<NameElement>();
+				for (String s : item.getText().split(" ")) {
+					name.add(new NameElement(s));
+				}
+				return icTemplates.iconographyLabel(name);
+			}
+		}));
+		
+		iconographySpinnerField = new IntegerSpinnerField();
+		iconographySpinnerField.setMinValue(1);
+		iconographySpinnerField.setIncrement(1);
+		iconographySpinnerField.setEnabled(false);
+		iconographySpinnerField.setEditable(false);
+		FieldLabel iconographyFieldLabel = new FieldLabel(iconographySpinnerField, "Matching elements");
+		iconographyFieldLabel.setLabelWidth(120);
+		
+		BorderLayoutContainer iconographyBLC = new BorderLayoutContainer();
+		iconographyBLC.setSouthWidget(iconographyFieldLabel, new BorderLayoutData(25));
+		iconographyBLC.setCenterWidget(icoSelectionLV, new MarginData(2));
+		
+		ContentPanel iconographyPanel = new ContentPanel();
+		iconographyPanel.setHeaderVisible(true);
+		iconographyPanel.setHeading("Iconography & PE search");
+		iconographyPanel.add(iconographyBLC);
 		
 		/**
 		 * assemble shortNameSearch
@@ -190,17 +244,23 @@ public class DepictionFilter extends AbstractFilter {
 			@Override
 			public SafeHtml render(LocationEntry item) {
 				final LocationViewTemplates lvTemplates = GWT.create(LocationViewTemplates.class);
+				String label;
 				if ((item.getCounty() != null) && (!item.getCounty().isEmpty())) {
 					if ((item.getTown() != null) && (!item.getTown().isEmpty())) {
-						return lvTemplates.caveLabel(item.getName(), item.getRegion()!=null && !item.getRegion().isEmpty() ? item.getTown()+" ("+item.getRegion()+")" : item.getTown(), item.getCounty());
+						label = item.getName()+", " + (item.getRegion()!=null && !item.getRegion().isEmpty() ? item.getTown()+", " + item.getRegion() : item.getTown()) + ", " + item.getCounty();
 					} else if ((item.getRegion() != null) && (!item.getRegion().isEmpty())) {
-						return lvTemplates.caveLabel(item.getName(), item.getTown()!=null && !item.getTown().isEmpty() ? item.getTown()+" ("+item.getRegion()+")" : item.getRegion(), item.getCounty());
+						label = item.getName() +", "+ (item.getTown()!=null && !item.getTown().isEmpty() ? item.getTown()+", "+item.getRegion() : item.getRegion()) + ", " + item.getCounty();
 					} else {
-						return lvTemplates.caveLabel(item.getName(), item.getCounty());
+						label = item.getName() + ", " + item.getCounty();
 					}
 				} else {
-					return lvTemplates.caveLabel(item.getName());
+					label = item.getName();
 				}
+				ArrayList<NameElement> labelList = new ArrayList<NameElement>();
+				for (String s : label.split(" ")) {
+					labelList.add(new NameElement(s));
+				}
+				return lvTemplates.locationLabel(labelList);
 			}
 		}));
 		locationSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
@@ -218,6 +278,7 @@ public class DepictionFilter extends AbstractFilter {
     depictionFilterALC.setExpandMode(ExpandMode.SINGLE_FILL);
     depictionFilterALC.add(cavePanel);
     depictionFilterALC.add(currentLocationPanel);
+    depictionFilterALC.add(iconographyPanel);
     depictionFilterALC.setActiveWidget(cavePanel);
 
     BorderLayoutContainer depictionFilterBLC = new BorderLayoutContainer();
@@ -265,22 +326,18 @@ public class DepictionFilter extends AbstractFilter {
 		return sqlWhereClause;
 	}
 	
-	public String getRelatedIconographyWhereSQL() {
-		String iconographySQL = null;
-		for (IconographyEntry ie : icoPictSelector.getSelectedIconography()) {
-			if (iconographySQL == null) {
-				iconographySQL = Integer.toString(ie.getIconographyID());
-			} else {
-				iconographySQL = iconographySQL.concat(", " + ie.getIconographyID());
-			}
+	public String getRelatedIconographyIDs() {
+		String iconographyIDs = null;
+		for (IconographyEntry ie : icoSelector.getSelectedIconography()) {
+			iconographyIDs = (iconographyIDs == null) ? Integer.toString(ie.getIconographyID()) : iconographyIDs.concat("," + ie.getIconographyID());
 		}
-		if (iconographySQL != null) {
-			return "IconographyID IN (" + iconographySQL + ")";
-		} else {
-			return null;
-		}
+		return iconographyIDs;
 	}
-
+	
+	public int getCorrelationFactor() {
+		return iconographySpinnerField.isEnabled() ? iconographySpinnerField.getValue() : 0;
+	}
+	
 	/* (non-Javadoc)
 	 * @see de.cses.client.ui.AbstractFilter#showExtendedFilterView()
 	 */
@@ -289,12 +346,21 @@ public class DepictionFilter extends AbstractFilter {
 		PopupPanel extendedFilterDialog = new PopupPanel();
 		FramedPanel extendedFilterFP = new FramedPanel();
 		extendedFilterFP.setHeading("more filter options");
-		extendedFilterFP.add(icoPictSelector);
+		extendedFilterFP.add(icoSelector);
 		ToolButton closeTB = new ToolButton(ToolButton.CLOSE);
 		closeTB.addSelectHandler(new SelectHandler() {
 
 			@Override
 			public void onSelect(SelectEvent event) {
+				selectedIconographyLS.clear();
+				selectedIconographyLS.addAll(icoSelector.getSelectedIconography());
+				if ((icoSelector.getSelectedIconography() != null) && (selectedIconographyLS.size() > 0)) {
+					iconographySpinnerField.setEnabled(true);
+					iconographySpinnerField.setValue(selectedIconographyLS.size());
+					iconographySpinnerField.setMaxValue(selectedIconographyLS.size());
+				} else {
+					iconographySpinnerField.setEnabled(false);
+				}
 				extendedFilterDialog.hide();
 			}
 		});

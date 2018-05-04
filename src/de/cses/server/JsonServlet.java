@@ -65,11 +65,11 @@ public class JsonServlet extends HttpServlet {
 					break;
 					
 				case "caveID":
-					if (connector.checkSessionID(request.getParameter("sessionID")) != null) {
-						getCaves();
-					} else {
-						response.setStatus(403);
-					}
+					getCaves(connector.checkSessionID(request.getParameter("sessionID")) == null);
+//					if (connector.checkSessionID(request.getParameter("sessionID")) != null) {
+//					} else {
+//						response.setStatus(403);
+//					}
 					break;
 					
 				case "siteID":
@@ -151,7 +151,7 @@ public class JsonServlet extends HttpServlet {
 		response.setContentType("application/json");
 	}
 	
-	private void getCaves() throws IOException {
+	private void getCaves(boolean publicOnly) throws IOException {
 		String caveIDStr = request.getParameter("caveID");
 		String sqlWhere=null;
 		Gson gs = new Gson();
@@ -182,11 +182,19 @@ public class JsonServlet extends HttpServlet {
 			}
 			if (request.getParameter("caveTypeID") != null) {
 				if (sqlWhere != null) {
-					sqlWhere = sqlWhere.concat(") AND CaveTypeID IN (" + request.getParameter("caveTypeID") + ")");
+					sqlWhere = sqlWhere.concat(" AND CaveTypeID IN (" + request.getParameter("caveTypeID") + ")");
 				} else {
 					sqlWhere = "CaveTypeID IN (" + request.getParameter("caveTypeID") + ")";
 				}
 			}
+			if (publicOnly) {
+				if (sqlWhere != null) {
+					sqlWhere = sqlWhere.concat(") AND OpenAccess=1");
+				} else {
+					sqlWhere = "OpenAccess=1";
+				}
+			}
+			
 			caveEntries = connector.getCaves(sqlWhere);
 		} else {
 			caveEntries = connector.getCaves("CaveID IN (" + caveIDStr + ")");			
@@ -289,7 +297,7 @@ public class JsonServlet extends HttpServlet {
 		response.setContentType("application/json");
 
 		if (iconographyIDs != null) {
-		 ArrayList<DepictionEntry> depictionEntries = connector.getRelatedDepictions(iconographyIDs);
+		 ArrayList<DepictionEntry> depictionEntries = connector.getRelatedDepictions(iconographyIDs, 0);
 		 out.println(gs.toJson(depictionEntries));
 		}
 	}
@@ -301,7 +309,7 @@ public class JsonServlet extends HttpServlet {
 		response.setContentType("application/json");
 
 		if (iconographyIDs != null) {
-		 ArrayList<DepictionEntry> depictionEntries = connector.getRelatedDepictions(iconographyIDs);
+		 ArrayList<DepictionEntry> depictionEntries = connector.getRelatedDepictions(iconographyIDs, 100);
 		 out.println(gs.toJson(depictionEntries));
 		}
 	}
