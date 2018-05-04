@@ -3669,6 +3669,7 @@ public class MysqlConnector {
 			return null;
 		}
 		return results;
+		
 	}
 	
 	public ArrayList<WallOrnamentCaveRelation> getWallsbyOrnamentCaveID(int ornamentCaveID){
