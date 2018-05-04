@@ -36,6 +36,8 @@ import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.MarginData;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
@@ -124,7 +126,6 @@ public class BibliographySelector implements IsWidget {
     sourceGrid.setBorders(false);
     sourceGrid.getView().setStripeRows(true);
     sourceGrid.getView().setColumnLines(true);
-    sourceGrid.getView().setForceFit(true);
     
     Grid<AnnotatedBiblographyEntry> selectedGrid = new Grid<AnnotatedBiblographyEntry>(selectedStore, cm);
     selectedGrid.setColumnReordering(true);
@@ -167,14 +168,14 @@ public class BibliographySelector implements IsWidget {
     selectedFP.setHeading("selected");
     selectedFP.add(selectedGrid);
 
-    BorderLayoutContainer bibSelectorBLC = new BorderLayoutContainer();
-    bibSelectorBLC.setCenterWidget(sourceFP, new MarginData(5));
-    bibSelectorBLC.setSouthWidget(selectedFP, new BorderLayoutData(150));
+    VerticalLayoutContainer bibSelectorVLC = new VerticalLayoutContainer();
+    bibSelectorVLC.add(sourceFP, new VerticalLayoutData(1.0, .5));
+    bibSelectorVLC.add(selectedFP, new VerticalLayoutData(1.0, .5));
 //    bibSelectorBLC.setWidth("600px");
 
     mainPanel = new ContentPanel();
 		mainPanel.setHeaderVisible(false);
-		mainPanel.add(bibSelectorBLC);
+		mainPanel.add(bibSelectorVLC);
 	}
 
 }
