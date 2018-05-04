@@ -16,12 +16,10 @@ package de.cses.client;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.sencha.gxt.core.client.GXT;
-import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.state.client.CookieProvider;
 import com.sencha.gxt.state.client.StateManager;
 import com.sencha.gxt.widget.core.client.ProgressBar;
 import com.sencha.gxt.widget.core.client.container.CenterLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.container.Viewport;
 
 
@@ -48,6 +46,7 @@ public class KuchaApplication implements EntryPoint {
 		c.add(bar);
 		
 		v.add(c);
+//		StateManager.get().setProvider(new CookieProvider("/", null, null, GXT.isSecure()));
 		StaticTables.createInstance(new StaticTables.ListsLoadedListener() {
 			
 			@Override
@@ -62,8 +61,6 @@ public class KuchaApplication implements EntryPoint {
 			}
 		});
 		RootPanel.get().add(v, 0, 0); // use RootPanel, not RootLayoutPanel here!
-
-//		StateManager.get().setProvider(new CookieProvider("/", null, null, GXT.isSecure()));
 	}
 
 }
