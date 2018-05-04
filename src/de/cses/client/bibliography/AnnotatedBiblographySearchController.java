@@ -49,7 +49,7 @@ import de.cses.shared.PublicationTypeEntry;
  * @author Nina
  *
  */
-public class AnnotatedBiblographySearchController extends AbstractSearchController{
+public class AnnotatedBiblographySearchController extends AbstractSearchController {
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	private PublicationTypeProperties publicationTypeProps;
 	private ListStore<PublicationTypeEntry> publicationTypeListStore;
