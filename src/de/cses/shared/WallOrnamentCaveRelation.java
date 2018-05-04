@@ -49,7 +49,8 @@ public class WallOrnamentCaveRelation extends AbstractEntry {
 	public WallOrnamentCaveRelation() {
 		
 	}
-public WallOrnamentCaveRelation(int caveOrnamentRelationID, int wallLocationID, int ornamentPositionID, int ornamentFunctionID, String notes, WallEntry wall){
+public WallOrnamentCaveRelation(int wallOrnamentCaveRelationID, int caveOrnamentRelationID, int wallLocationID, int ornamentPositionID, int ornamentFunctionID, String notes, WallEntry wall){
+	this.wallOrnamentCaveRelationID = wallOrnamentCaveRelationID;
 	this.ornamentCaveRelationID = caveOrnamentRelationID;
 	this.wallLocationID = wallLocationID;
 	this.notes = notes;

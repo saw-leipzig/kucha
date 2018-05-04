@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OrnamentCaveRelation extends AbstractEntry {
+	int ornamentCaveRelationID;
 	private int ornamentID;
 	private String name;
 	private CaveEntry cave;
@@ -23,8 +24,10 @@ public class OrnamentCaveRelation extends AbstractEntry {
 	public OrnamentCaveRelation(){
 		
 	}
-	public OrnamentCaveRelation(int ornamentID, CaveEntry caveEntry, String colours, String notes, String group, String similarElementsOfOtherCultures, ArrayList<PictorialElementEntry> PictorialElements,ArrayList<OrnamentEntry> relatedOrnamentsRelations ,  ArrayList<WallOrnamentCaveRelation> walls, ArrayList<OrientationEntry> orientations){
+	public OrnamentCaveRelation(int ornamentCaveRelationID, int ornamentID, DistrictEntry district,CaveEntry caveEntry, String colours, String notes, String group, String similarElementsOfOtherCultures, ArrayList<PictorialElementEntry> PictorialElements,ArrayList<OrnamentEntry> relatedOrnamentsRelations ,  ArrayList<WallOrnamentCaveRelation> walls, ArrayList<OrientationEntry> orientations){
+		this.ornamentCaveRelationID = ornamentCaveRelationID;
 		this.ornamentID = ornamentID;
+		this.district = district;
 		this.name = caveEntry.getHistoricName() != null ? "Cave: " + caveEntry.getOfficialNumber() + " (" + caveEntry.getHistoricName() + ")" : "Cave: " + caveEntry.getOfficialNumber();
 		this.colours = colours;
 		this.notes = notes;
@@ -34,6 +37,7 @@ public class OrnamentCaveRelation extends AbstractEntry {
 		this.group = group;
 		this.relatedOrnamentsRelations = relatedOrnamentsRelations;
 		this.walls = walls;
+		this.cave = caveEntry;
 
 	}
 
@@ -230,6 +234,18 @@ public class OrnamentCaveRelation extends AbstractEntry {
 	 */
 	public void setStyle(StyleEntry style) {
 		this.style = style;
+	}
+	/**
+	 * @return the ornamentCaveRelationID
+	 */
+	public int getOrnamentCaveRelationID() {
+		return ornamentCaveRelationID;
+	}
+	/**
+	 * @param ornamentCaveRelationID the ornamentCaveRelationID to set
+	 */
+	public void setOrnamentCaveRelationID(int ornamentCaveRelationID) {
+		this.ornamentCaveRelationID = ornamentCaveRelationID;
 	}
 
 

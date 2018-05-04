@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.google.gwt.user.client.Window;
+
 import de.cses.server.ServerProperties;
 import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.AuthorEntry;
@@ -862,7 +864,7 @@ public class MysqlConnector {
 				// }
 				System.err.println("vor ornamentcavewall");
 				PreparedStatement wallCaveOrnamentRelationStatement = dbc
-						.prepareStatement("INSERT INTO OrnamentCaveWallRelation (WallLocationID, PositionID, FunctionID, Notes, OrnamentCaveRelationID, CaveID) VALUES (?,?,?,?,?)");
+						.prepareStatement("INSERT INTO OrnamentCaveWallRelation (WallLocationID, PositionID, FunctionID, Notes, OrnamentCaveRelationID, CaveID) VALUES (?,?,?,?,?,?)");
 				for (WallOrnamentCaveRelation we : ornamentCaveR.getWalls()) {
 					wallCaveOrnamentRelationStatement.setInt(1, we.getWallLocationID());
 					wallCaveOrnamentRelationStatement.setInt(2, we.getOrnamenticPositionID());
@@ -3596,7 +3598,7 @@ public class MysqlConnector {
 		
 			rs = stmt.executeQuery("SELECT * FROM CaveOrnamentRelation WHERE OrnamentID = " + ornamentID);
 			while (rs.next()) {
-				result.add(new OrnamentCaveRelation(rs.getInt("OrnamentID"),getCave(rs.getInt("CaveID")), rs.getString("Colours"), rs.getString("Notes"), rs.getString("GroupOfOrnaments"), rs.getString("SimilarElementsofOtherCultures"), getPictorialElementsbyOrnamentCaveID(rs.getInt("CaveOrnamentRelationID")), getRelatedOrnamentsbyOrnamentCaveID(rs.getInt("CaveOrnamentRelationID")), getWallsbyOrnamentCaveID(rs.getInt("CaveOrnamentRelationID")), getOrientationsbyOrnamentCaveID(rs.getInt("CaveOrnamentRelationID"))));
+				result.add(new OrnamentCaveRelation(rs.getInt("CaveOrnamentRelationID"), rs.getInt("OrnamentID"),getDistrict(getCave(rs.getInt("CaveID")).getDistrictID()), getCave(rs.getInt("CaveID")), rs.getString("Colours"), rs.getString("Notes"), rs.getString("GroupOfOrnaments"), rs.getString("SimilarElementsofOtherCultures"), getPictorialElementsbyOrnamentCaveID(rs.getInt("CaveOrnamentRelationID")), getRelatedOrnamentsbyOrnamentCaveID(rs.getInt("CaveOrnamentRelationID")), getWallsbyOrnamentCaveID(rs.getInt("CaveOrnamentRelationID")), getOrientationsbyOrnamentCaveID(rs.getInt("CaveOrnamentRelationID"))));
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -3680,6 +3682,7 @@ public class MysqlConnector {
 			return null;
 		}
 		return results;
+		
 	}
 	
 	public ArrayList<WallOrnamentCaveRelation> getWallsbyOrnamentCaveID(int ornamentCaveID){
@@ -3690,8 +3693,9 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM OrnamentCaveWallRelation WHERE OrnamentCaveRelationID = " + ornamentCaveID  );
 			while (rs.next()) {
-				results.add(new WallOrnamentCaveRelation(rs.getInt("OrnamentCaveRelationID"), rs.getInt("WallLocationID"), rs.getInt("PositionID"), rs.getInt("FunctionID"), rs.getString("Notes"), getWallbyWallLocationANDCaveID(rs.getInt("WallLocationID"), rs.getInt("CaveID"))));
-			
+				Window.alert("wallloc: "+ rs.getInt("WallLocationID")+ "caveid: " + rs.getInt("CaveID"));
+				results.add(new WallOrnamentCaveRelation(rs.getInt("OrnamentCaveWallRelationID"),rs.getInt("OrnamentCaveRelationID"), rs.getInt("WallLocationID"), rs.getInt("PositionID"), rs.getInt("FunctionID"), rs.getString("Notes"), getWallbyWallLocationANDCaveID(rs.getInt("WallLocationID"), rs.getInt("CaveID"))));
+				Window.alert(Double.toString(getWallbyWallLocationANDCaveID(rs.getInt("WallLocationID"), rs.getInt("CaveID")).getHeight()));
 			}
 			rs.close();
 			stmt.close();

@@ -96,15 +96,16 @@ public class PictorialElementSelectorObjects implements IsWidget {
 				for (PictorialElementEntry item : result) {
 					store.add(item);
 					if (item.getChildren() != null) {
+						if(ornamentCaveRelationEntry != null){
+							if(ornamentCaveRelationEntry.getPictorialElements().contains(item)) {
+									tree.setChecked(item, CheckState.CHECKED);
+							}
+						}
 						processParent(store, item);
 //						Info.display("Children added", item.getText());
 					}
 				}
-				if(ornamentCaveRelationEntry != null){
-					for(PictorialElementEntry pe: ornamentCaveRelationEntry.getPictorialElements()) {
-							tree.setChecked(pe, CheckState.CHECKED);
-					}
-				}
+			
 			}
 		});
 	}
