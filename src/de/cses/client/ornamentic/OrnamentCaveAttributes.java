@@ -95,7 +95,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 	public OrnamentCaveAttributes(OrnamentCaveRelation ornamentCaveRelationEntry) {
 		this.ornamentCaveRelationEntry = ornamentCaveRelationEntry;
 		init();
-	
+		Window.alert(Integer.toString(ornamentCaveRelationEntry.getCave().getCaveID()));
 	}
 
 	public OrnamentCaveAttributes() {
@@ -120,6 +120,9 @@ public class OrnamentCaveAttributes extends PopupPanel {
 		styleEntryList = new ListStore<StyleEntry>(styleProps.styleID());
 		wallsListStore = new ListStore<WallOrnamentCaveRelation>(wallRelationProps.wallLocationID());
 
+		for (DistrictEntry pe : StaticTables.getInstance().getDistrictEntries().values()) {
+			districtEntryList.add(pe);
+		}
 		
 		dbService.getOrientations(new AsyncCallback<ArrayList<OrientationEntry>>() {
 
@@ -175,8 +178,9 @@ public class OrnamentCaveAttributes extends PopupPanel {
 					caveEntryList.add(pe);
 				}
 				if (ornamentCaveRelationEntry != null) {
-					districtComboBox.setValue(ornamentCaveRelationEntry.getDistrict(), false);
-					caveEntryComboBox.setValue(ornamentCaveRelationEntry.getCave());
+					Window.alert(districtEntryList.findModelWithKey(Integer.toString(ornamentCaveRelationEntry.getDistrict().getDistrictID())).getName());
+					districtComboBox.setValue(districtEntryList.findModelWithKey(Integer.toString(ornamentCaveRelationEntry.getDistrict().getDistrictID())),false);
+					caveEntryComboBox.setValue(caveEntryList.findModelWithKey(Integer.toString(ornamentCaveRelationEntry.getCave().getCaveID())),false);
 					
 				}
 			}
@@ -247,20 +251,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 			}
 		});
 
-		// dbService.getDistricts(new AsyncCallback<ArrayList<DistrictEntry>>() {
-		//
-		// @Override
-		// public void onFailure(Throwable caught) {
-		// caught.printStackTrace();
-		// }
-		//
-		// @Override
-		// public void onSuccess(ArrayList<DistrictEntry> result) {
-		// districtEntryList.clear();
 
-		for (DistrictEntry pe : StaticTables.getInstance().getDistrictEntries().values()) {
-			districtEntryList.add(pe);
-		}
 
 
 		setWidget(createForm());
@@ -445,11 +436,14 @@ public class OrnamentCaveAttributes extends PopupPanel {
 		header.add(selectedWallsHorizontalPanel, new VerticalLayoutData(1.0, 1.0));
 		vlcCave.add(header, new VerticalLayoutData(0.5, .125));
 		
+
 		
 		if(ornamentCaveRelationEntry != null) {
+
 			wallsListStore.clear();
 			for(WallOrnamentCaveRelation pe: ornamentCaveRelationEntry.getWalls()){
 			wallsListStore.add(pe);
+			Window.alert("added wall");
 			}
 		}
 
@@ -549,7 +543,6 @@ Window.alert("Please select a entry!");
 		final TextArea notes = new TextArea();
 	
 		header = new FramedPanel();
-
 		if (ornamentCaveRelationEntry != null) {
 			notes.setText(ornamentCaveRelationEntry.getNotes());
 		}

@@ -468,15 +468,20 @@ ToolButton addOrnamentClassButton = new ToolButton(ToolButton.PLUS);
 
 		cavesContentPanel = new FramedPanel();
 		cavesPanel.add(cavesContentPanel);
-		caveOrnamentRelationList = new ListStore<OrnamentCaveRelation>(ornamentCaveRelationProps.ornamentID());
+		caveOrnamentRelationList = new ListStore<OrnamentCaveRelation>(ornamentCaveRelationProps.ornamentCaveRelationID());
 
 		cavesList = new ListView<OrnamentCaveRelation, String>(caveOrnamentRelationList, ornamentCaveRelationProps.name());
 		cavesList.setAllowTextSelection(true);
 
 		if (ornamentEntry != null) {
+			Window.alert("Listengroesse: " + ornamentEntry.getCavesRelations().size());
 			for (int i = 0; i < ornamentEntry.getCavesRelations().size(); i++) {
 				caveOrnamentRelationList.add(ornamentEntry.getCavesRelations().get(i));
+				Window.alert("Daten: notes: " + ornamentEntry.getCavesRelations().get(i).getNotes());
+
+				Window.alert("Daten: ID: " + ornamentEntry.getCavesRelations().get(i).getCave().getCaveID() + "DistrictID: " + ornamentEntry.getCavesRelations().get(i).getCave().getDistrictID());
 			}
+			Window.alert("nachher liste: " + Integer.toString(caveOrnamentRelationList.size()));
 		}
 
 		cavesContentPanel.setHeading("Added caves:");
@@ -503,6 +508,8 @@ ToolButton addOrnamentClassButton = new ToolButton(ToolButton.PLUS);
 
 			@Override
 			public void onClick(ClickEvent event) {
+				Window.alert("Vorher caveid: " + cavesList.getSelectionModel().getSelectedItem());
+				Window.alert("Vorher caveid: " + cavesList.getSelectionModel().getSelectedItem().getCave().getOfficialNumber());
 				OrnamentCaveAttributes attributespopup = new OrnamentCaveAttributes(cavesList.getSelectionModel().getSelectedItem());
 				attributespopup.setOrnamentic(ornamenticEditor);
 				attributespopup.setGlassEnabled(true);
@@ -891,7 +898,7 @@ ToolButton addOrnamentClassButton = new ToolButton(ToolButton.PLUS);
 	}
 
 	interface OrnamentCaveRelationProperties extends PropertyAccess<CaveEntry> {
-		ModelKeyProvider<OrnamentCaveRelation> ornamentID(); // changed to ornamentID (was caveID) (Andreas)
+		ModelKeyProvider<OrnamentCaveRelation> ornamentCaveRelationID(); 
 		ValueProvider<OrnamentCaveRelation, String> name();
 	}
 
