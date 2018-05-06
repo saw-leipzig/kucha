@@ -141,9 +141,9 @@ public class OrnamentCaveAttributes extends PopupPanel {
 						for (OrientationEntry oe : ornamentCaveRelationEntry.getOrientations()) {
 							if (pe.getOrientationID() != oe.getOrientationID()) {
 								count++;
-							}
 							if (count == ornamentCaveRelationEntry.getOrientations().size()) {
 								orientationListStore.add(pe);
+							}
 							}
 						}
 					}
@@ -181,7 +181,9 @@ public class OrnamentCaveAttributes extends PopupPanel {
 					Window.alert(districtEntryList.findModelWithKey(Integer.toString(ornamentCaveRelationEntry.getDistrict().getDistrictID())).getName());
 					districtComboBox.setValue(districtEntryList.findModelWithKey(Integer.toString(ornamentCaveRelationEntry.getDistrict().getDistrictID())),false);
 					caveEntryComboBox.setValue(caveEntryList.findModelWithKey(Integer.toString(ornamentCaveRelationEntry.getCave().getCaveID())),false);
-					
+					 int p = ornamentCaveRelationEntry.getCave().getCaveTypeID();
+					 caveType.setText(StaticTables.getInstance().getCaveTypeEntries().get(p).getNameEN());
+
 				}
 			}
 		});
@@ -393,6 +395,8 @@ public class OrnamentCaveAttributes extends PopupPanel {
 				});
 		
 		if (ornamentCaveRelationEntry != null) {
+			Window.alert("set style: " + ornamentCaveRelationEntry.getStyle().getStyleName());
+			
 			styleComboBox.setValue(ornamentCaveRelationEntry.getStyle());
 		}
 		

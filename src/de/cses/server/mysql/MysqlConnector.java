@@ -1103,6 +1103,25 @@ public class MysqlConnector {
 		return results;
 	}
 	
+	public StyleEntry getStylebyID(int styleID) {
+		Connection dbc = getConnection();
+		Statement stmt;
+		StyleEntry result = null;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery( "SELECT * FROM Styles WHERE StyleID = " + styleID);
+			while (rs.next()) {
+				result = new StyleEntry(rs.getInt("StyleID"), rs.getString("StyleName"));
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return result;
+	}
+	
 	public ArrayList<ExpeditionEntry> getExpeditions() {
 		return getExpeditions(null);
 	}
@@ -3598,7 +3617,7 @@ public class MysqlConnector {
 		
 			rs = stmt.executeQuery("SELECT * FROM CaveOrnamentRelation WHERE OrnamentID = " + ornamentID);
 			while (rs.next()) {
-				result.add(new OrnamentCaveRelation(rs.getInt("CaveOrnamentRelationID"), rs.getInt("OrnamentID"),getDistrict(getCave(rs.getInt("CaveID")).getDistrictID()), getCave(rs.getInt("CaveID")), rs.getString("Colours"), rs.getString("Notes"), rs.getString("GroupOfOrnaments"), rs.getString("SimilarElementsofOtherCultures"), getPictorialElementsbyOrnamentCaveID(rs.getInt("CaveOrnamentRelationID")), getRelatedOrnamentsbyOrnamentCaveID(rs.getInt("CaveOrnamentRelationID")), getWallsbyOrnamentCaveID(rs.getInt("CaveOrnamentRelationID")), getOrientationsbyOrnamentCaveID(rs.getInt("CaveOrnamentRelationID"))));
+				result.add(new OrnamentCaveRelation(rs.getInt("CaveOrnamentRelationID"), getStylebyID(rs.getInt("StyleID")),rs.getInt("OrnamentID"),getDistrict(getCave(rs.getInt("CaveID")).getDistrictID()), getCave(rs.getInt("CaveID")), rs.getString("Colours"), rs.getString("Notes"), rs.getString("GroupOfOrnaments"), rs.getString("SimilarElementsofOtherCultures"), getPictorialElementsbyOrnamentCaveID(rs.getInt("CaveOrnamentRelationID")), getRelatedOrnamentsbyOrnamentCaveID(rs.getInt("CaveOrnamentRelationID")), getWallsbyOrnamentCaveID(rs.getInt("CaveOrnamentRelationID")), getOrientationsbyOrnamentCaveID(rs.getInt("CaveOrnamentRelationID"))));
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
