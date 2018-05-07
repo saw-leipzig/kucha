@@ -24,8 +24,9 @@ public class OrnamentCaveRelation extends AbstractEntry {
 	public OrnamentCaveRelation(){
 		
 	}
-	public OrnamentCaveRelation(int ornamentCaveRelationID, int ornamentID, DistrictEntry district,CaveEntry caveEntry, String colours, String notes, String group, String similarElementsOfOtherCultures, ArrayList<PictorialElementEntry> PictorialElements,ArrayList<OrnamentEntry> relatedOrnamentsRelations ,  ArrayList<WallOrnamentCaveRelation> walls, ArrayList<OrientationEntry> orientations){
+	public OrnamentCaveRelation(int ornamentCaveRelationID,   StyleEntry style,int ornamentID, DistrictEntry district,CaveEntry caveEntry, String colours, String notes, String group, String similarElementsOfOtherCultures, ArrayList<PictorialElementEntry> PictorialElements,ArrayList<OrnamentEntry> relatedOrnamentsRelations ,  ArrayList<WallOrnamentCaveRelation> walls, ArrayList<OrientationEntry> orientations){
 		this.ornamentCaveRelationID = ornamentCaveRelationID;
+		this.style = style;
 		this.ornamentID = ornamentID;
 		this.district = district;
 		this.name = caveEntry.getHistoricName() != null ? "Cave: " + caveEntry.getOfficialNumber() + " (" + caveEntry.getHistoricName() + ")" : "Cave: " + caveEntry.getOfficialNumber();
