@@ -104,27 +104,27 @@ public class PictorialElementSelector implements IsWidget {
 	}
 
 	private void loadPictorialElementsStore() {
-		for (PictorialElementEntry item : StaticTables.getInstance().getPictorialElementEntries().values()) {
-			peTreeStore.add(item);
-			if (item.getChildren() != null) {
-				processParent(peTreeStore, item);
-			}
-		}
-		dbService.getRelatedPE(depictionID, new AsyncCallback<ArrayList<PictorialElementEntry>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(ArrayList<PictorialElementEntry> peRelationList) {
-				for (PictorialElementEntry peEntry : peRelationList) {
-					pictorialElementTree.setChecked(peEntry, CheckState.CHECKED);
-					selectedPictorialElementsMap.put(peEntry.getUniqueID(), peEntry);
-				}
-			}
-		});
+//		for (PictorialElementEntry item : StaticTables.getInstance().getPictorialElementEntries().values()) {
+//			peTreeStore.add(item);
+//			if (item.getChildren() != null) {
+//				processParent(peTreeStore, item);
+//			}
+//		}
+//		dbService.getRelatedPE(depictionID, new AsyncCallback<ArrayList<PictorialElementEntry>>() {
+//
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				caught.printStackTrace();
+//			}
+//
+//			@Override
+//			public void onSuccess(ArrayList<PictorialElementEntry> peRelationList) {
+//				for (PictorialElementEntry peEntry : peRelationList) {
+//					pictorialElementTree.setChecked(peEntry, CheckState.CHECKED);
+//					selectedPictorialElementsMap.put(peEntry.getUniqueID(), peEntry);
+//				}
+//			}
+//		});
 	}
 
 	@Override
