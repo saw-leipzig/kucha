@@ -50,6 +50,7 @@ import de.cses.shared.DistrictEntry;
 import de.cses.shared.OrientationEntry;
 import de.cses.shared.OrnamentCaveRelation;
 import de.cses.shared.OrnamentCaveType;
+import de.cses.shared.OrnamentComponentsEntry;
 import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.StructureOrganization;
@@ -132,22 +133,23 @@ public class OrnamentCaveAttributes extends PopupPanel {
 			}
 
 			public void onSuccess(ArrayList<OrientationEntry> result) {
-				
+				Window.alert("groesse orientation " +result.size());
 				orientationListStore.clear();
 				selectedorientationListStore.clear();
 				if (ornamentCaveRelationEntry != null) {
+					Window.alert("groesse orientation in entry" + ornamentCaveRelationEntry.getOrientations().size());
 					for (OrientationEntry pe : result) {
 						int count = 0;
 						for (OrientationEntry oe : ornamentCaveRelationEntry.getOrientations()) {
 							if (pe.getOrientationID() != oe.getOrientationID()) {
 								count++;
+							}
 							if (count == ornamentCaveRelationEntry.getOrientations().size()) {
 								orientationListStore.add(pe);
 							}
-							}
 						}
 					}
-					for (OrientationEntry oe : ornamentCaveRelationEntry.getOrientations()) {
+					for (OrientationEntry oe :ornamentCaveRelationEntry.getOrientations()) {
 						selectedorientationListStore.add(oe);
 					}
 					if( ornamentCaveRelationEntry.getOrientations().size() == 0) {
@@ -155,8 +157,8 @@ public class OrnamentCaveAttributes extends PopupPanel {
 							orientationListStore.add(nu);
 					}
 					}
-					
-				} else {
+				}
+				else {
 					for (OrientationEntry pe : result) {
 						orientationListStore.add(pe);
 					}
@@ -443,7 +445,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 
 		
 		if(ornamentCaveRelationEntry != null) {
-
+Window.alert("Walls list laenge: "+ ornamentCaveRelationEntry.getWalls().size());
 			wallsListStore.clear();
 			for(WallOrnamentCaveRelation pe: ornamentCaveRelationEntry.getWalls()){
 			wallsListStore.add(pe);
@@ -728,7 +730,11 @@ Window.alert("Please select a entry!");
 				for (OrnamentEntry ornament : relatedOrnaments) {
 					ornamentCaveRelation.getRelatedOrnamentsRelations().add(ornament);
 				}
-
+				List<OrientationEntry> orientationslist = selectedorientationListStore.getAll();
+				for (OrientationEntry orientation : orientationslist) {
+					ornamentCaveRelation.getOrientations().add(orientation);
+				}
+				
 				ornamentCaveRelation.getPictorialElements().clear();
 				for (int i = 0; i < selector.getSelectedPE().size(); i++) {
 					ornamentCaveRelation.getPictorialElements().add(selector.getSelectedPE().get(i));
