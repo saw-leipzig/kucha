@@ -1327,7 +1327,7 @@ public class DepictionEditor extends AbstractEditor {
 		depictionImagesPanel.addTool(setMasterTB);
 
 		/**
-		 * ---------------------- content of third tab (Iconography & Pictorial Elements starts here ---------------------
+		 * ---------------------- content of third tab (Iconography & Pictorial Elements) starts here ---------------------
 		 */
 		iconographySelector = new IconographySelector(StaticTables.getInstance().getIconographyEntries().values());
 		dbService.getRelatedIconography(correspondingDepictionEntry.getDepictionID(), new AsyncCallback<ArrayList<IconographyEntry>>() {
@@ -1344,32 +1344,8 @@ public class DepictionEditor extends AbstractEditor {
 		});
 		
 		/**
-		 * 
+		 * ---------------------- content of fourth tab (Bibliography Selector) ---------------------
 		 */
-//		TextButton bibSelectorButton = new TextButton("Bibliography Selector");
-//		bibSelectorButton.addSelectHandler(new SelectHandler() {
-//			
-//			@Override
-//			public void onSelect(SelectEvent event) {
-//				PopupPanel bibSelectorPopupPanel = new PopupPanel();
-//				bibliographySelector = new BibliographySelector();
-//				FramedPanel fp = new FramedPanel();
-//				fp.setHeading("Bibliography Selector");
-//				fp.add(bibliographySelector);
-//				ToolButton closeTB = new ToolButton(ToolButton.CLOSE);
-//				closeTB.addSelectHandler(new SelectHandler() {
-//					
-//					@Override
-//					public void onSelect(SelectEvent event) {
-//						bibSelectorPopupPanel.hide();
-//					}
-//				});
-//				fp.addTool(closeTB);
-//				bibSelectorPopupPanel.add(fp);
-//				bibSelectorPopupPanel.setModal(true);
-//				bibSelectorPopupPanel.center();
-//			}
-//		});
 		bibliographySelector = new BibliographySelector();
 		
 		/**
