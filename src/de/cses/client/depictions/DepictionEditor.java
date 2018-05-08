@@ -1328,7 +1328,6 @@ public class DepictionEditor extends AbstractEditor {
 		 * ---------------------- content of third tab (Iconography & Pictorial Elements starts here ---------------------
 		 */
 		iconographySelector = new IconographySelector(correspondingDepictionEntry.getDepictionID());
-
 		
 		/**
 		 * 
