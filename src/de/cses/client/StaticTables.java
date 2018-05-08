@@ -19,16 +19,10 @@ import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
-import com.sencha.gxt.core.client.Style.SelectionMode;
-import com.sencha.gxt.data.shared.LabelProvider;
-import com.sencha.gxt.data.shared.ModelKeyProvider;
-import com.sencha.gxt.data.shared.PropertyAccess;
 
 import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
-import de.cses.shared.ChamberTypeEntry;
 import de.cses.shared.CurrentLocationEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
@@ -38,7 +32,6 @@ import de.cses.shared.LocationEntry;
 import de.cses.shared.ModeOfRepresentationEntry;
 import de.cses.shared.OrnamentFunctionEntry;
 import de.cses.shared.OrnamentPositionEntry;
-import de.cses.shared.PictorialElementEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.PublicationTypeEntry;
 import de.cses.shared.RegionEntry;
@@ -46,7 +39,6 @@ import de.cses.shared.SiteEntry;
 import de.cses.shared.StyleEntry;
 import de.cses.shared.VendorEntry;
 import de.cses.shared.WallLocationEntry;
-import de.cses.shared.WallOrnamentCaveRelation;
 
 /**
  * @author alingnau
@@ -68,7 +60,6 @@ public class StaticTables {
 	protected HashMap<Integer, ExpeditionEntry> expeditionEntryMap;
 	protected HashMap<Integer, StyleEntry> styleEntryMap;
 	protected HashMap<Integer, IconographyEntry> iconographyEntryMap;
-//	protected HashMap<Integer, PictorialElementEntry> pictorialElementEntryMap;
 	protected HashMap<Integer, ModeOfRepresentationEntry> modesOfRepresentationEntryMap;
 	protected HashMap<Integer, WallLocationEntry> wallLocationEntryMap;
 	protected HashMap<Integer, OrnamentPositionEntry> ornamentPositionMap;
@@ -103,7 +94,7 @@ public class StaticTables {
 	 */
 	public StaticTables(ListsLoadedListener l) {
 		listener = l;
-		loadCounter = 19;
+		loadCounter = 18;
 		loadDistricts();
 		loadSites();
 		loadRegions();
@@ -114,7 +105,6 @@ public class StaticTables {
 		loadExpeditions();
 		loadStyles();
 		loadIconography();
-//		loadPictorialElements();
 		loadModesOfRepresentation();
 		loadWallLocations();
 		loadOrnamentPositionTable();
