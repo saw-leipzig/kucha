@@ -75,6 +75,7 @@ import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinNumberValidator;
+import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -90,6 +91,7 @@ import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
+import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.LocationEntry;
 import de.cses.shared.ModeOfRepresentationEntry;
@@ -1327,11 +1329,47 @@ public class DepictionEditor extends AbstractEditor {
 		/**
 		 * ---------------------- content of third tab (Iconography & Pictorial Elements starts here ---------------------
 		 */
-		iconographySelector = new IconographySelector(correspondingDepictionEntry.getDepictionID());
+		iconographySelector = new IconographySelector(StaticTables.getInstance().getIconographyEntries().values());
+		dbService.getRelatedIconography(correspondingDepictionEntry.getDepictionID(), new AsyncCallback<ArrayList<IconographyEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(ArrayList<IconographyEntry> iconographyRelationList) {
+				iconographySelector.setSelectedIconography(iconographyRelationList);
+			}
+		});
 		
 		/**
 		 * 
 		 */
+//		TextButton bibSelectorButton = new TextButton("Bibliography Selector");
+//		bibSelectorButton.addSelectHandler(new SelectHandler() {
+//			
+//			@Override
+//			public void onSelect(SelectEvent event) {
+//				PopupPanel bibSelectorPopupPanel = new PopupPanel();
+//				bibliographySelector = new BibliographySelector();
+//				FramedPanel fp = new FramedPanel();
+//				fp.setHeading("Bibliography Selector");
+//				fp.add(bibliographySelector);
+//				ToolButton closeTB = new ToolButton(ToolButton.CLOSE);
+//				closeTB.addSelectHandler(new SelectHandler() {
+//					
+//					@Override
+//					public void onSelect(SelectEvent event) {
+//						bibSelectorPopupPanel.hide();
+//					}
+//				});
+//				fp.addTool(closeTB);
+//				bibSelectorPopupPanel.add(fp);
+//				bibSelectorPopupPanel.setModal(true);
+//				bibSelectorPopupPanel.center();
+//			}
+//		});
 		bibliographySelector = new BibliographySelector();
 		
 		/**

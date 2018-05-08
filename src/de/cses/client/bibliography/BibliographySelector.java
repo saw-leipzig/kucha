@@ -26,14 +26,6 @@ import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
-import com.sencha.gxt.data.shared.SortDir;
-import com.sencha.gxt.data.shared.Store.StoreSortInfo;
-import com.sencha.gxt.dnd.core.client.GridDragSource;
-import com.sencha.gxt.dnd.core.client.GridDropTarget;
-import com.sencha.gxt.widget.core.client.ContentPanel;
-import com.sencha.gxt.widget.core.client.FramedPanel;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
@@ -70,17 +62,17 @@ public class BibliographySelector implements IsWidget {
 	
 //	private ContentPanel mainPanel = null;
 	private BibliographyProperties bibProps = GWT.create(BibliographyProperties.class);
-	private VerticalLayoutContainer bibSelectorVLC = null;
+	private Grid<AnnotatedBiblographyEntry> sourceGrid = null;
 
 	/* (non-Javadoc)
 	 * @see com.google.gwt.user.client.ui.IsWidget#asWidget()
 	 */
 	@Override
 	public Widget asWidget() {
-		if (bibSelectorVLC == null) {
+		if (sourceGrid == null) {
 			createUI();
 		}
-		return bibSelectorVLC;
+		return sourceGrid;
 	}
 
 	/**
@@ -106,13 +98,7 @@ public class BibliographySelector implements IsWidget {
     sourceColumns.add(editorsCol);
     sourceColumns.add(yearColumn);
 
-    List<ColumnConfig<AnnotatedBiblographyEntry, ?>> selectedColumns = new ArrayList<ColumnConfig<AnnotatedBiblographyEntry, ?>>();
-    selectedColumns.add(new ColumnConfig<AnnotatedBiblographyEntry, String>(bibProps.titleORG(), 350, "Title"));
-    selectedColumns.add(new ColumnConfig<AnnotatedBiblographyEntry, String>(bibProps.authors(), 350, "Authors"));
-//    selectedColumns.add(new ColumnConfig<AnnotatedBiblographyEntry, String>(bibProps.year(), 50, "Year"));
-
     ColumnModel<AnnotatedBiblographyEntry> sourceColumnModel = new ColumnModel<AnnotatedBiblographyEntry>(sourceColumns);
-    ColumnModel<AnnotatedBiblographyEntry> selectedColumnModel = new ColumnModel<AnnotatedBiblographyEntry>(selectedColumns);
     
     ListStore<AnnotatedBiblographyEntry> sourceStore = new ListStore<AnnotatedBiblographyEntry>(bibProps.key());
 //    sourceStore.addSortInfo(new StoreSortInfo<AnnotatedBiblographyEntry>(bibProps.titleORG(), SortDir.ASC));
@@ -120,30 +106,13 @@ public class BibliographySelector implements IsWidget {
     	sourceStore.add(abe);
     }
     
-    ListStore<AnnotatedBiblographyEntry> selectedStore = new ListStore<AnnotatedBiblographyEntry>(bibProps.key());
-//    selectedStore.addSortInfo(new StoreSortInfo<AnnotatedBiblographyEntry>(bibProps.titleORG(), SortDir.ASC));
-    
-    final Grid<AnnotatedBiblographyEntry> sourceGrid = new Grid<AnnotatedBiblographyEntry>(sourceStore, sourceColumnModel);
+    sourceGrid = new Grid<AnnotatedBiblographyEntry>(sourceStore, sourceColumnModel);
     sourceGrid.setColumnReordering(true);
     sourceGrid.getView().setAutoExpandColumn(titleOrgCol);
     sourceGrid.setBorders(false);
     sourceGrid.getView().setStripeRows(true);
     sourceGrid.getView().setColumnLines(true);
     sourceGrid.getView().setForceFit(true);
-    
-    final Grid<AnnotatedBiblographyEntry> selectedGrid = new Grid<AnnotatedBiblographyEntry>(selectedStore, selectedColumnModel);
-    selectedGrid.setColumnReordering(true);
-    selectedGrid.getView().setAutoExpandColumn(titleOrgCol);
-    selectedGrid.setBorders(false);
-    selectedGrid.getView().setStripeRows(true);
-    selectedGrid.getView().setColumnLines(true);
-    selectedGrid.getView().setForceFit(true);
-    
-    new GridDragSource<AnnotatedBiblographyEntry>(sourceGrid).setGroup("bib");
-    new GridDragSource<AnnotatedBiblographyEntry>(selectedGrid).setGroup("bib");
-    
-    new GridDropTarget<AnnotatedBiblographyEntry>(sourceGrid).setGroup("bib");
-    new GridDropTarget<AnnotatedBiblographyEntry>(selectedGrid).setGroup("bib");
     
     // State manager, make this sourceGrid stateful
 //    sourceGrid.setStateful(true);
@@ -164,22 +133,5 @@ public class BibliographySelector implements IsWidget {
 //    GridFilterStateHandler<AnnotatedBiblographyEntry> handler = new GridFilterStateHandler<AnnotatedBiblographyEntry>(sourceGrid, filters);
 //    handler.loadState();
     
-    FramedPanel sourceFP = new FramedPanel();
-    sourceFP.setHeading("source");
-    sourceFP.add(sourceGrid);
-    
-    FramedPanel selectedFP = new FramedPanel();
-    selectedFP.setHeading("selected");
-    selectedFP.add(selectedGrid);
-
-    bibSelectorVLC = new VerticalLayoutContainer();
-    bibSelectorVLC.add(sourceFP, new VerticalLayoutData(1.0, .6));
-    bibSelectorVLC.add(selectedFP, new VerticalLayoutData(1.0, .4));
-    bibSelectorVLC.setSize("500px", "300px");
-
-//    mainPanel = new ContentPanel();
-//		mainPanel.setHeaderVisible(false);
-//		mainPanel.add(bibSelectorVLC);
 	}
-
 }

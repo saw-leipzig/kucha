@@ -14,6 +14,7 @@
 package de.cses.client.depictions;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -79,11 +80,9 @@ public class IconographySelector implements IsWidget {
 	private Tree<IconographyEntry, String> iconographyTree;
 	private FramedPanel mainPanel;
 	private StoreFilterField<IconographyEntry> filterField;
-	private int depictionID;
 	protected Map<String, IconographyEntry> selectedIconographyMap;
 
-	public IconographySelector(int depictionID) {
-		this.depictionID = depictionID;
+	public IconographySelector(Collection<IconographyEntry> elements) {
 		iconographyTreeStore = new TreeStore<IconographyEntry>(new IconographyKeyProvider());
 		filterField = new StoreFilterField<IconographyEntry>() {
 
@@ -102,7 +101,7 @@ public class IconographySelector implements IsWidget {
 		};
 		filterField.bind(iconographyTreeStore);
 		selectedIconographyMap = new HashMap<String, IconographyEntry>();
-		loadIconographyStore();
+		setIconographyStore(elements);
 	}
 
 	private void processParentIconographyEntry(TreeStore<IconographyEntry> store, IconographyEntry item) {
@@ -113,29 +112,45 @@ public class IconographySelector implements IsWidget {
 			}
 		}
 	}
-
-	private void loadIconographyStore() {
-		for (IconographyEntry item : StaticTables.getInstance().getIconographyEntries().values()) {
+	
+	private void setIconographyStore(Collection<IconographyEntry> elements) {
+		for (IconographyEntry item : elements) {
 			iconographyTreeStore.add(item);
 			if (item.getChildren() != null) {
 				processParentIconographyEntry(iconographyTreeStore, item);
 			}
 		}
-		dbService.getRelatedIconography(depictionID, new AsyncCallback<ArrayList<IconographyEntry>>() {
+	}
 
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(ArrayList<IconographyEntry> iconographyRelationList) {
-				for (IconographyEntry entry : iconographyRelationList) {
-					iconographyTree.setChecked(entry, CheckState.CHECKED);
-					selectedIconographyMap.put(entry.getUniqueID(), entry);
-				}
-			}
-		});
+//	private void loadIconographyStore(int rootElementIndex) {
+//		for (IconographyEntry item : StaticTables.getInstance().getIconographyEntries().values()) {
+//			iconographyTreeStore.add(item);
+//			if (item.getChildren() != null) {
+//				processParentIconographyEntry(iconographyTreeStore, item);
+//			}
+//		}
+//		dbService.getRelatedIconography(depictionID, new AsyncCallback<ArrayList<IconographyEntry>>() {
+//
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				caught.printStackTrace();
+//			}
+//
+//			@Override
+//			public void onSuccess(ArrayList<IconographyEntry> iconographyRelationList) {
+//				for (IconographyEntry entry : iconographyRelationList) {
+//					iconographyTree.setChecked(entry, CheckState.CHECKED);
+//					selectedIconographyMap.put(entry.getUniqueID(), entry);
+//				}
+//			}
+//		});
+//	}
+	
+	public void setSelectedIconography(ArrayList<IconographyEntry> iconographyRelationList) {
+		for (IconographyEntry entry : iconographyRelationList) {
+			iconographyTree.setChecked(entry, CheckState.CHECKED);
+			selectedIconographyMap.put(entry.getUniqueID(), entry);
+		}
 	}
 
 	@Override

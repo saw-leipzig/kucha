@@ -68,7 +68,7 @@ public class StaticTables {
 	protected HashMap<Integer, ExpeditionEntry> expeditionEntryMap;
 	protected HashMap<Integer, StyleEntry> styleEntryMap;
 	protected HashMap<Integer, IconographyEntry> iconographyEntryMap;
-	protected HashMap<Integer, PictorialElementEntry> pictorialElementEntryMap;
+//	protected HashMap<Integer, PictorialElementEntry> pictorialElementEntryMap;
 	protected HashMap<Integer, ModeOfRepresentationEntry> modesOfRepresentationEntryMap;
 	protected HashMap<Integer, WallLocationEntry> wallLocationEntryMap;
 	protected HashMap<Integer, OrnamentPositionEntry> ornamentPositionMap;
@@ -114,7 +114,7 @@ public class StaticTables {
 		loadExpeditions();
 		loadStyles();
 		loadIconography();
-		loadPictorialElements();
+//		loadPictorialElements();
 		loadModesOfRepresentation();
 		loadWallLocations();
 		loadOrnamentPositionTable();
@@ -127,7 +127,7 @@ public class StaticTables {
 
 	private void listLoaded() {
 		--loadCounter;
-		listener.listsLoaded((19.0 - loadCounter) / 19.0);
+		listener.listsLoaded((18.0 - loadCounter) / 18.0);
 	}
 
 	/**
@@ -346,24 +346,24 @@ public class StaticTables {
 		});
 	}
 
-	private void loadPictorialElements() {
-		pictorialElementEntryMap = new HashMap<Integer, PictorialElementEntry>();
-		dbService.getPictorialElements(new AsyncCallback<ArrayList<PictorialElementEntry>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				listLoaded();
-			}
-
-			@Override
-			public void onSuccess(ArrayList<PictorialElementEntry> peList) {
-				for (PictorialElementEntry item : peList) {
-					pictorialElementEntryMap.put(item.getPictorialElementID(), item);
-				}
-				listLoaded();
-			}
-		});
-	}
+//	private void loadPictorialElements() {
+//		pictorialElementEntryMap = new HashMap<Integer, PictorialElementEntry>();
+//		dbService.getPictorialElements(new AsyncCallback<ArrayList<PictorialElementEntry>>() {
+//
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				listLoaded();
+//			}
+//
+//			@Override
+//			public void onSuccess(ArrayList<PictorialElementEntry> peList) {
+//				for (PictorialElementEntry item : peList) {
+//					pictorialElementEntryMap.put(item.getPictorialElementID(), item);
+//				}
+//				listLoaded();
+//			}
+//		});
+//	}
 	
 	private void loadModesOfRepresentation() {
 		modesOfRepresentationEntryMap = new HashMap<Integer, ModeOfRepresentationEntry>();
@@ -557,9 +557,13 @@ public class StaticTables {
 		return iconographyEntryMap;
 	}
 
-	public Map<Integer, PictorialElementEntry> getPictorialElementEntries() {
-		return pictorialElementEntryMap;
+	public Map<Integer, IconographyEntry> getIconographyEntries(int rootIndex) {
+		return iconographyEntryMap;
 	}
+
+//	public Map<Integer, PictorialElementEntry> getPictorialElementEntries() {
+//		return pictorialElementEntryMap;
+//	}
 	
 	public Map<Integer, ModeOfRepresentationEntry> getModesOfRepresentationEntries() {
 		return modesOfRepresentationEntryMap;
