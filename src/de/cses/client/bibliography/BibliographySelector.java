@@ -51,7 +51,7 @@ public class BibliographySelector implements IsWidget {
 
 	interface RowExpanderViewTemplates extends XTemplates {
 		@XTemplate("<div style='font-size:12px'> {title}<br>{editors} (Eds.) </div>")
-		SafeHtml view(String tile, String editors);
+		SafeHtml view(String title, String editors);
 	}
 	
 	interface BibliographyProperties extends PropertyAccess<AnnotatedBiblographyEntry> {
@@ -75,8 +75,8 @@ public class BibliographySelector implements IsWidget {
 	
 //	private ContentPanel mainPanel = null;
 	private BibliographyProperties bibProps = GWT.create(BibliographyProperties.class);
-	private RowExpanderViewTemplates rowExpanderTemplates = GWT.create(RowExpander.class);
-	private Grid<AnnotatedBiblographyEntry> sourceGrid = null;
+	private RowExpanderViewTemplates rowExpanderTemplates = GWT.create(RowExpanderViewTemplates.class);
+	private Grid<AnnotatedBiblographyEntry> grid = null;
 	private CheckBoxSelectionModel<AnnotatedBiblographyEntry> selectionModel;
 
 	/* (non-Javadoc)
@@ -84,10 +84,10 @@ public class BibliographySelector implements IsWidget {
 	 */
 	@Override
 	public Widget asWidget() {
-		if (sourceGrid == null) {
+		if (grid == null) {
 			createUI();
 		}
-		return sourceGrid;
+		return grid;
 	}
 
 	/**
@@ -96,7 +96,7 @@ public class BibliographySelector implements IsWidget {
 	private void createUI() {
     IdentityValueProvider<AnnotatedBiblographyEntry> identity = new IdentityValueProvider<AnnotatedBiblographyEntry>();
     selectionModel = new CheckBoxSelectionModel<AnnotatedBiblographyEntry>(identity);
-    selectionModel.setSelectionMode(SelectionMode.SINGLE);
+    selectionModel.setSelectionMode(SelectionMode.SIMPLE);
 		
     RowExpander<AnnotatedBiblographyEntry> rowExpander = new RowExpander<AnnotatedBiblographyEntry>(new AbstractCell<AnnotatedBiblographyEntry>() {
 			@Override
@@ -134,31 +134,33 @@ public class BibliographySelector implements IsWidget {
     	sourceStore.add(abe);
     }
     
-    sourceGrid = new Grid<AnnotatedBiblographyEntry>(sourceStore, sourceColumnModel);
-    sourceGrid.setColumnReordering(true);
-    sourceGrid.getView().setAutoExpandColumn(titleOrgCol);
-    sourceGrid.setBorders(false);
-    sourceGrid.getView().setStripeRows(true);
-    sourceGrid.getView().setColumnLines(true);
-    sourceGrid.getView().setForceFit(true);
+    grid = new Grid<AnnotatedBiblographyEntry>(sourceStore, sourceColumnModel);
+    grid.setColumnReordering(true);
+    grid.getView().setAutoExpandColumn(titleOrgCol);
+    grid.setBorders(false);
+    grid.getView().setStripeRows(true);
+    grid.getView().setColumnLines(true);
+    grid.getView().setForceFit(true);
     
-    // State manager, make this sourceGrid stateful
-//    sourceGrid.setStateful(true);
-//    sourceGrid.setStateId("bibSelector");
+    // State manager, make this grid stateful
+//    grid.setStateful(true);
+//    grid.setStateId("bibSelector");
 
     StringFilter<AnnotatedBiblographyEntry> titleFilter = new StringFilter<AnnotatedBiblographyEntry>(bibProps.titleORG());
     StringFilter<AnnotatedBiblographyEntry> authorFilter = new StringFilter<AnnotatedBiblographyEntry>(bibProps.authors());
     StringFilter<AnnotatedBiblographyEntry> editorFilter = new StringFilter<AnnotatedBiblographyEntry>(bibProps.editors());
 
     GridFilters<AnnotatedBiblographyEntry> filters = new GridFilters<AnnotatedBiblographyEntry>();
-    filters.initPlugin(sourceGrid);
+    filters.initPlugin(grid);
     filters.setLocal(true);
     filters.addFilter(titleFilter);
     filters.addFilter(authorFilter);
     filters.addFilter(editorFilter);
     
+    rowExpander.initPlugin(grid);
+    
     // Stage manager, load the previous state
-//    GridFilterStateHandler<AnnotatedBiblographyEntry> handler = new GridFilterStateHandler<AnnotatedBiblographyEntry>(sourceGrid, filters);
+//    GridFilterStateHandler<AnnotatedBiblographyEntry> handler = new GridFilterStateHandler<AnnotatedBiblographyEntry>(grid, filters);
 //    handler.loadState();
     
 	}
