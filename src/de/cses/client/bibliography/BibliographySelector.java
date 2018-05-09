@@ -135,6 +135,7 @@ public class BibliographySelector implements IsWidget {
     }
     
     grid = new Grid<AnnotatedBiblographyEntry>(sourceStore, sourceColumnModel);
+    grid.setSelectionModel(selectionModel);
     grid.setColumnReordering(true);
     grid.getView().setAutoExpandColumn(titleOrgCol);
     grid.setBorders(false);
