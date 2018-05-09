@@ -266,4 +266,6 @@ public interface DatabaseService extends RemoteService {
 	ArrayList<Integer> getDepictionFromIconography(String sqlWhere) throws IllegalArgumentException;
 
 	ArrayList<Integer> getRelatedDepictionIDs(String iconographyIDs, int correlationFactor);
+
+	ArrayList<IconographyEntry> getIconography(int rootIndex);
 }

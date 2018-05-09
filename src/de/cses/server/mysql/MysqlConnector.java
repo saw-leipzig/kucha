@@ -937,8 +937,8 @@ public class MysqlConnector {
 		return result;
 	}
 
-	public ArrayList<IconographyEntry> getIconography() {
-		ArrayList<IconographyEntry> root = getIconographyEntries(0);
+	public ArrayList<IconographyEntry> getIconography(int rootIndex) {
+		ArrayList<IconographyEntry> root = getIconographyEntries(rootIndex);
 
 		for (IconographyEntry item : root) {
 			processIconographyTree(item);

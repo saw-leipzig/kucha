@@ -14,8 +14,6 @@
 package de.cses.client.bibliography;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.safehtml.shared.SafeHtml;
-import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.dnd.core.client.DndDragStartEvent;
 import com.sencha.gxt.dnd.core.client.DragSource;
 
@@ -31,14 +29,6 @@ import de.cses.shared.AuthorEntry;
  */
 public class AnnotatedBiblographyView  extends AbstractView {
 	
-	interface AnnotatedBiblographyViewTemplates extends XTemplates {
-		@XTemplate("<div style='font-size:9px'>{title}</div>")
-		SafeHtml view(String title);
-
-		@XTemplate("<div style='font-size:12px'> {authors} ({year}). <i>{title}</i>. {publisher} </div>")
-		SafeHtml view(String authors, String year, String title, String publisher);
-	}
-
 	private AnnotatedBiblographyEntry annotatedBiblographyEntry;
 	private AnnotatedBiblographyViewTemplates dvTemplates;
 
