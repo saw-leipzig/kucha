@@ -49,11 +49,6 @@ import de.cses.shared.AnnotatedBiblographyEntry;
  */
 public class BibliographySelector implements IsWidget {
 
-	interface RowExpanderViewTemplates extends XTemplates {
-		@XTemplate("<div style='font-size:12px'> {title}<br>{editors} (Eds.) </div>")
-		SafeHtml view(String title, String editors);
-	}
-	
 	interface BibliographyProperties extends PropertyAccess<AnnotatedBiblographyEntry> {
 		@Path("annotatedBiblographyID")
 		ModelKeyProvider<AnnotatedBiblographyEntry> key();
@@ -75,7 +70,7 @@ public class BibliographySelector implements IsWidget {
 	
 //	private ContentPanel mainPanel = null;
 	private BibliographyProperties bibProps = GWT.create(BibliographyProperties.class);
-	private RowExpanderViewTemplates rowExpanderTemplates = GWT.create(RowExpanderViewTemplates.class);
+	private AnnotatedBiblographyViewTemplates rowExpanderTemplates = GWT.create(AnnotatedBiblographyViewTemplates.class);
 	private Grid<AnnotatedBiblographyEntry> grid = null;
 	private CheckBoxSelectionModel<AnnotatedBiblographyEntry> selectionModel;
 
@@ -101,7 +96,7 @@ public class BibliographySelector implements IsWidget {
     RowExpander<AnnotatedBiblographyEntry> rowExpander = new RowExpander<AnnotatedBiblographyEntry>(new AbstractCell<AnnotatedBiblographyEntry>() {
 			@Override
 			public void render(Context context, AnnotatedBiblographyEntry value, SafeHtmlBuilder sb) {
-				sb.append(rowExpanderTemplates.view(value.getParentTitleORG(), value.getEditors()));
+				sb.append(rowExpanderTemplates.view(value.getAuthors(), value.getYearORG(), value.getTitleORG(), "publisher"));
 			}
     });		
 		
