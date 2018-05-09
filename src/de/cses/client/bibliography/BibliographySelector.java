@@ -25,12 +25,14 @@ import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment.HorizontalAlignmentConstant;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
-import com.sencha.gxt.core.client.XTemplates.XTemplate;
+import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
+import com.sencha.gxt.widget.core.client.grid.CheckBoxSelectionModel;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
@@ -75,6 +77,7 @@ public class BibliographySelector implements IsWidget {
 	private BibliographyProperties bibProps = GWT.create(BibliographyProperties.class);
 	private RowExpanderViewTemplates rowExpanderTemplates = GWT.create(RowExpander.class);
 	private Grid<AnnotatedBiblographyEntry> sourceGrid = null;
+	private CheckBoxSelectionModel<AnnotatedBiblographyEntry> selectionModel;
 
 	/* (non-Javadoc)
 	 * @see com.google.gwt.user.client.ui.IsWidget#asWidget()
@@ -91,6 +94,10 @@ public class BibliographySelector implements IsWidget {
 	 * 
 	 */
 	private void createUI() {
+    IdentityValueProvider<AnnotatedBiblographyEntry> identity = new IdentityValueProvider<AnnotatedBiblographyEntry>();
+    selectionModel = new CheckBoxSelectionModel<AnnotatedBiblographyEntry>(identity);
+    selectionModel.setSelectionMode(SelectionMode.SINGLE);
+		
     RowExpander<AnnotatedBiblographyEntry> rowExpander = new RowExpander<AnnotatedBiblographyEntry>(new AbstractCell<AnnotatedBiblographyEntry>() {
 			@Override
 			public void render(Context context, AnnotatedBiblographyEntry value, SafeHtmlBuilder sb) {
@@ -111,6 +118,7 @@ public class BibliographySelector implements IsWidget {
 		titleEnCol.setHidden(true);
 		
     List<ColumnConfig<AnnotatedBiblographyEntry, ?>> sourceColumns = new ArrayList<ColumnConfig<AnnotatedBiblographyEntry, ?>>();
+    sourceColumns.add(selectionModel.getColumn());
     sourceColumns.add(rowExpander);
     sourceColumns.add(titleOrgCol);
     sourceColumns.add(titleEnCol);
@@ -154,4 +162,13 @@ public class BibliographySelector implements IsWidget {
 //    handler.loadState();
     
 	}
+	
+	public List<AnnotatedBiblographyEntry> getSelectedEntries() {
+		return selectionModel.getSelectedItems();
+	}
+	
+	public void setSelectedEntries(List<AnnotatedBiblographyEntry> list) {
+		selectionModel.setSelection(list);
+	}
+	
 }
