@@ -294,4 +294,6 @@ public interface DatabaseServiceAsync {
 
 	void getRelatedDepictionIDs(String iconographyIDs, int correlationFactor, AsyncCallback<ArrayList<Integer>> asyncCallback) throws IllegalArgumentException;
 
+	void getIconography(int rootIndex, AsyncCallback<ArrayList<IconographyEntry>> asyncCallback) throws IllegalArgumentException;
+
 }

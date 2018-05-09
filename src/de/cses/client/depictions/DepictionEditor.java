@@ -59,6 +59,7 @@ import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
+import com.sencha.gxt.widget.core.client.container.Viewport;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
@@ -1342,7 +1343,7 @@ public class DepictionEditor extends AbstractEditor {
 				iconographySelector.setSelectedIconography(iconographyRelationList);
 			}
 		});
-		
+
 		/**
 		 * ---------------------- content of fourth tab (Bibliography Selector) ---------------------
 		 */

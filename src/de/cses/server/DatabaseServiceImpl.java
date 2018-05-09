@@ -199,7 +199,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	@Override
 	public ArrayList<IconographyEntry> getIconography() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
-		return connector.getIconography();
+		return connector.getIconography(0); // root index =0 so we load them all
 	}
 
 	@Override
@@ -690,6 +690,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.inserVendorEntry(vEntry);
 	}
+	
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#insertLocationEntry(de.cses.shared.LocationEntry)
 	 */
@@ -698,6 +699,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.insertLocationEntry(lEntry);
 	}
+	
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#checkSessionID(java.lang.String)
 	 */
@@ -706,16 +708,16 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.checkSessionID(sessionID);
 	}
+
 	/* (non-Javadoc)
-<<<<<<< HEAD
 	 * @see de.cses.client.DatabaseService#getInnerSecondaryPatterns()
 	 */
 	@Override
 	public ArrayList<InnerSecondaryPatternsEntry> getInnerSecondaryPatterns() throws IllegalArgumentException {
-		// TODO Auto-generated method stub
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getInnerSecondaryPatterns();
 	}
+	
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getOrnamentComponents()
 	 */
@@ -724,6 +726,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getOrnamentComponents();
 	}
+	
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getOrnamentClass()
 	 */
@@ -835,5 +838,13 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 			resultList.add(de.getDepictionID());
 		}
 		return resultList;
+	}
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#getIconography(int)
+	 */
+	@Override
+	public ArrayList<IconographyEntry> getIconography(int rootIndex) {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getIconography(rootIndex);
 	}
 }

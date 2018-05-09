@@ -259,7 +259,7 @@ public class JsonServlet extends HttpServlet {
 		ArrayList<IconographyEntry> iconographyEntries ;
 
 		if ("all".equals(iconographyIDStr)) {
-			iconographyEntries = connector.getIconography();
+			iconographyEntries = connector.getIconography(0);
 		} else {
 			iconographyEntries = connector.getIconographyEntries("IconographyID IN (" + iconographyIDStr + ")");			
 		}

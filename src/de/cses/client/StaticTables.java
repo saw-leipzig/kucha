@@ -60,6 +60,7 @@ public class StaticTables {
 	protected HashMap<Integer, ExpeditionEntry> expeditionEntryMap;
 	protected HashMap<Integer, StyleEntry> styleEntryMap;
 	protected HashMap<Integer, IconographyEntry> iconographyEntryMap;
+	protected HashMap<Integer, IconographyEntry> iconographyForOrnamenticEntryMap;
 	protected HashMap<Integer, ModeOfRepresentationEntry> modesOfRepresentationEntryMap;
 	protected HashMap<Integer, WallLocationEntry> wallLocationEntryMap;
 	protected HashMap<Integer, OrnamentPositionEntry> ornamentPositionMap;
@@ -94,7 +95,7 @@ public class StaticTables {
 	 */
 	public StaticTables(ListsLoadedListener l) {
 		listener = l;
-		loadCounter = 18;
+		loadCounter = 19;
 		loadDistricts();
 		loadSites();
 		loadRegions();
@@ -105,6 +106,7 @@ public class StaticTables {
 		loadExpeditions();
 		loadStyles();
 		loadIconography();
+		loadIconographyForOrnamentic();
 		loadModesOfRepresentation();
 		loadWallLocations();
 		loadOrnamentPositionTable();
@@ -117,7 +119,7 @@ public class StaticTables {
 
 	private void listLoaded() {
 		--loadCounter;
-		listener.listsLoaded((18.0 - loadCounter) / 18.0);
+		listener.listsLoaded((19.0 - loadCounter) / 19.0);
 	}
 
 	/**
@@ -336,25 +338,25 @@ public class StaticTables {
 		});
 	}
 
-//	private void loadPictorialElements() {
-//		pictorialElementEntryMap = new HashMap<Integer, PictorialElementEntry>();
-//		dbService.getPictorialElements(new AsyncCallback<ArrayList<PictorialElementEntry>>() {
-//
-//			@Override
-//			public void onFailure(Throwable caught) {
-//				listLoaded();
-//			}
-//
-//			@Override
-//			public void onSuccess(ArrayList<PictorialElementEntry> peList) {
-//				for (PictorialElementEntry item : peList) {
-//					pictorialElementEntryMap.put(item.getPictorialElementID(), item);
-//				}
-//				listLoaded();
-//			}
-//		});
-//	}
-	
+	private void loadIconographyForOrnamentic() {
+		iconographyForOrnamenticEntryMap = new HashMap<Integer, IconographyEntry>();
+		dbService.getIconography(2005, new AsyncCallback<ArrayList<IconographyEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				listLoaded();
+			}
+
+			@Override
+			public void onSuccess(ArrayList<IconographyEntry> result) {
+				for (IconographyEntry ie : result) {
+					iconographyForOrnamenticEntryMap.put(ie.getIconographyID(), ie);
+				}
+				listLoaded();
+			}
+		});
+	}
+
 	private void loadModesOfRepresentation() {
 		modesOfRepresentationEntryMap = new HashMap<Integer, ModeOfRepresentationEntry>();
 		dbService.getModesOfRepresentation(new AsyncCallback<ArrayList<ModeOfRepresentationEntry>>() {
@@ -547,14 +549,10 @@ public class StaticTables {
 		return iconographyEntryMap;
 	}
 
-	public Map<Integer, IconographyEntry> getIconographyEntries(int rootIndex) {
-		return iconographyEntryMap;
+	public Map<Integer, IconographyEntry> getIconographyForOrnamenticEntries() {
+		return iconographyForOrnamenticEntryMap;
 	}
 
-//	public Map<Integer, PictorialElementEntry> getPictorialElementEntries() {
-//		return pictorialElementEntryMap;
-//	}
-	
 	public Map<Integer, ModeOfRepresentationEntry> getModesOfRepresentationEntries() {
 		return modesOfRepresentationEntryMap;
 	}

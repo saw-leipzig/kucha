@@ -16,19 +16,25 @@ package de.cses.client.bibliography;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.editor.client.Editor.Path;
 import com.google.gwt.i18n.client.HasDirection.Direction;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment.HorizontalAlignmentConstant;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.ValueProvider;
+import com.sencha.gxt.core.client.XTemplates;
+import com.sencha.gxt.core.client.XTemplates.XTemplate;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
+import com.sencha.gxt.widget.core.client.grid.RowExpander;
 import com.sencha.gxt.widget.core.client.grid.filters.GridFilters;
 import com.sencha.gxt.widget.core.client.grid.filters.StringFilter;
 
@@ -40,6 +46,11 @@ import de.cses.shared.AnnotatedBiblographyEntry;
  *
  */
 public class BibliographySelector implements IsWidget {
+
+	interface RowExpanderViewTemplates extends XTemplates {
+		@XTemplate("<div style='font-size:12px'> {title}<br>{editors} (Eds.) </div>")
+		SafeHtml view(String tile, String editors);
+	}
 	
 	interface BibliographyProperties extends PropertyAccess<AnnotatedBiblographyEntry> {
 		@Path("annotatedBiblographyID")
@@ -62,6 +73,7 @@ public class BibliographySelector implements IsWidget {
 	
 //	private ContentPanel mainPanel = null;
 	private BibliographyProperties bibProps = GWT.create(BibliographyProperties.class);
+	private RowExpanderViewTemplates rowExpanderTemplates = GWT.create(RowExpander.class);
 	private Grid<AnnotatedBiblographyEntry> sourceGrid = null;
 
 	/* (non-Javadoc)
@@ -79,6 +91,13 @@ public class BibliographySelector implements IsWidget {
 	 * 
 	 */
 	private void createUI() {
+    RowExpander<AnnotatedBiblographyEntry> rowExpander = new RowExpander<AnnotatedBiblographyEntry>(new AbstractCell<AnnotatedBiblographyEntry>() {
+			@Override
+			public void render(Context context, AnnotatedBiblographyEntry value, SafeHtmlBuilder sb) {
+				sb.append(rowExpanderTemplates.view(value.getParentTitleORG(), value.getEditors()));
+			}
+    });		
+		
 		ColumnConfig<AnnotatedBiblographyEntry, String> titleOrgCol = new ColumnConfig<AnnotatedBiblographyEntry, String>(bibProps.titleORG(), 350, "Title");
 		ColumnConfig<AnnotatedBiblographyEntry, String> titleEnCol = new ColumnConfig<AnnotatedBiblographyEntry, String>(bibProps.titleEN(), 350, "English Translation");
 		ColumnConfig<AnnotatedBiblographyEntry, String> authorsCol = new ColumnConfig<AnnotatedBiblographyEntry, String>(bibProps.authors(), 300, "Authors");
@@ -92,6 +111,7 @@ public class BibliographySelector implements IsWidget {
 		titleEnCol.setHidden(true);
 		
     List<ColumnConfig<AnnotatedBiblographyEntry, ?>> sourceColumns = new ArrayList<ColumnConfig<AnnotatedBiblographyEntry, ?>>();
+    sourceColumns.add(rowExpander);
     sourceColumns.add(titleOrgCol);
     sourceColumns.add(titleEnCol);
     sourceColumns.add(authorsCol);
