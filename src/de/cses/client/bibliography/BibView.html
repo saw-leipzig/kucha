@@ -1,0 +1,12 @@
+<!--  Harrer, A., Kienle, A., & Lingnau, A. (2014). MeET US -- An Eyetracking Study to Evaluate Awareness Functionality in the CSCL System Metafora. In 2014 IEEE
+	 * 14th International Conference on Advanced Learning Technologies (pp. 286–290). IEEE. http://doi.org/10.1109/ICALT.2014.89 -->
+<div style='font-size:12px'> 
+	{authors} ({year}). <i>{titleORG}</i>.
+	<tpl if="parentTitleORG.lenght &gt; 0">
+		{parentTitleORG} (pp. {pagesORG}).
+  </tpl>
+  {publisher}.
+  <tpl if="url.length &gt; 0">
+	  <a target="_blank" href="{url}">Click here to open link in new tab.</a> 
+  </tpl>
+</div>"

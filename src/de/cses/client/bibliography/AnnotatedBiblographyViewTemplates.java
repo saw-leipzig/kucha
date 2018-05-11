@@ -16,16 +16,26 @@ package de.cses.client.bibliography;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.sencha.gxt.core.client.XTemplates;
 
+import de.cses.shared.AnnotatedBiblographyEntry;
+
 /**
  * @author alingnau
  *
  */
 public interface AnnotatedBiblographyViewTemplates extends XTemplates {
 
-	@XTemplate("<div style='font-size:9px'>{title}</div>")
-	SafeHtml view(String title);
-
-	@XTemplate("<div style='font-size:12px'> {authors} ({year}). <i>{title}</i>. {publisher} </div>")
-	SafeHtml view(String authors, String year, String title, String publisher);
-
+//	@XTemplate("<div style='font-size:9px'>{title}</div>")
+//	SafeHtml view(String title);
+//
+//	@XTemplate("<div style='font-size:12px'> {authors} ({year}). <i>{title}</i>. {publisher} </div>")
+//	SafeHtml view(String authors, String year, String title, String publisher);
+	
+	/**
+	 * 
+	 * @param bibEntry
+	 * @return
+	 */
+	@XTemplate(source = "BibView.html")
+	SafeHtml view(AnnotatedBiblographyEntry bibEntry);
+	
 }

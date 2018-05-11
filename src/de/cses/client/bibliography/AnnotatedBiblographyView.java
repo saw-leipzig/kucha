@@ -58,7 +58,8 @@ public class AnnotatedBiblographyView  extends AbstractView {
 			authors = authors.concat(" (Eds.)");
 		}
 		String publisherName = annotatedBiblographyEntry.getPublisher() != null ? annotatedBiblographyEntry.getPublisher().getName() : "unknown publisher";
-		setHTML(dvTemplates.view(authors, Integer.toString(annotatedBiblographyEntry.getYearEN()), annotatedBiblographyEntry.getTitleEN(), publisherName));
+//		setHTML(dvTemplates.view(authors, Integer.toString(annotatedBiblographyEntry.getYearEN()), annotatedBiblographyEntry.getTitleEN(), publisherName));
+		setHTML(dvTemplates.view(annotatedBiblographyEntry));
 
 		setPixelSize(600, 80);
 
@@ -68,7 +69,8 @@ public class AnnotatedBiblographyView  extends AbstractView {
 			protected void onDragStart(DndDragStartEvent event) {
 				super.onDragStart(event);
 				event.setData(annotatedBiblographyEntry);
-				event.getStatusProxy().update(dvTemplates.view(annotatedBiblographyEntry.getTitleEN()));
+				event.getStatusProxy().update(dvTemplates.view(annotatedBiblographyEntry));
+//				event.getStatusProxy().update(dvTemplates.view(annotatedBiblographyEntry.getTitleEN()));
 			}
 			
 		};

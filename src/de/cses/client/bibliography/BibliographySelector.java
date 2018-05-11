@@ -96,7 +96,7 @@ public class BibliographySelector implements IsWidget {
     RowExpander<AnnotatedBiblographyEntry> rowExpander = new RowExpander<AnnotatedBiblographyEntry>(new AbstractCell<AnnotatedBiblographyEntry>() {
 			@Override
 			public void render(Context context, AnnotatedBiblographyEntry value, SafeHtmlBuilder sb) {
-				sb.append(rowExpanderTemplates.view(value.getAuthors(), value.getYearORG(), value.getTitleORG(), "publisher"));
+				sb.append(rowExpanderTemplates.view(value));
 			}
     });		
 		
