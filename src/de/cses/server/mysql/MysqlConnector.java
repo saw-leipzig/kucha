@@ -424,6 +424,7 @@ public class MysqlConnector {
 						rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes"),
 						rs.getInt("MasterImageID"));
 				de.setRelatedImages(getRelatedImages(de.getDepictionID()));
+				de.setRelatedBibliographyList(getAnnotatedBiblography());
 				results.add(de);
 			}
 			rs.close();
@@ -1721,6 +1722,31 @@ public class MysqlConnector {
 	}
 
 	/**
+	 * @param depictionID
+	 * @return
+	 */
+	private ArrayList<AnnotatedBiblographyEntry> getDepictionBibRelation(int depictionID) {
+		AnnotatedBiblographyEntry entry = null;
+		ArrayList<AnnotatedBiblographyEntry> result = new ArrayList<AnnotatedBiblographyEntry>();
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM DepictionBibliographyRelation WHERE DepictionID=?");
+			pstmt.setInt(1, depictionID);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				entry = getAnnotatedBiblographybyID(rs.getInt("BibID"));
+				result.add(entry);
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	/**
 	 * @return
 	 */
 	public ArrayList<AnnotatedBiblographyEntry> getAnnotatedBiblography() {
@@ -2358,6 +2384,10 @@ public class MysqlConnector {
 			if (iconographyLists.size() > 0) {
 				insertDepictionIconographyRelation(de.getDepictionID(), iconographyLists);
 			}
+			deleteEntry("DELETE FROM DepictionBibliographyRelation WHERE DepictionID=" + de.getDepictionID());
+			if (de.getRelatedBibliographyList().size() > 0) {
+				insertDepictionBibliographyRelation(de.getDepictionID(), de.getRelatedBibliographyList());
+			}
 		}
 		return newDepictionID;
 	}
@@ -2417,6 +2447,10 @@ public class MysqlConnector {
 		if (iconographyList.size() > 0) {
 			insertDepictionIconographyRelation(de.getDepictionID(), iconographyList);
 		}
+		deleteEntry("DELETE FROM DepictionBibliographyRelation WHERE DepictionID=" + de.getDepictionID());
+		if (de.getRelatedBibliographyList().size() > 0) {
+			insertDepictionBibliographyRelation(de.getDepictionID(), de.getRelatedBibliographyList());
+		}
 		return true;
 	}
 
@@ -2464,6 +2498,27 @@ public class MysqlConnector {
 			for (IconographyEntry entry : iconographyList) {
 				relationStatement.setInt(1, depictionID);
 				relationStatement.setInt(2, entry.getIconographyID());
+				relationStatement.executeUpdate();
+			}
+			relationStatement.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * @param depictionID
+	 * @param relatedBibliographyList
+	 */
+	private synchronized void insertDepictionBibliographyRelation(int depictionID, ArrayList<AnnotatedBiblographyEntry> relatedBibliographyList) {
+		Connection dbc = getConnection();
+		PreparedStatement relationStatement;
+
+		try {
+			relationStatement = dbc.prepareStatement("INSERT INTO DepictionBibliographyRelation VALUES (?, ?)");
+			for (AnnotatedBiblographyEntry entry : relatedBibliographyList) {
+				relationStatement.setInt(1, depictionID);
+				relationStatement.setInt(2, entry.getAnnotatedBiblographyID());
 				relationStatement.executeUpdate();
 			}
 			relationStatement.close();

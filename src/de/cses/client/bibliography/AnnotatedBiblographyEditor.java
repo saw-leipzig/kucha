@@ -84,7 +84,6 @@ import de.cses.client.user.UserLogin;
 import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.PublicationTypeEntry;
-import de.cses.shared.PublisherEntry;
 
 /**
  * @author Nina

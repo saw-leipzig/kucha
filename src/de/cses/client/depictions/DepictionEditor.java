@@ -1427,6 +1427,7 @@ public class DepictionEditor extends AbstractEditor {
 			relatedImageEntryList.add(imageEntryLS.get(i));
 		}
 		correspondingDepictionEntry.setRelatedImages(relatedImageEntryList);
+		correspondingDepictionEntry.setRelatedBibliographyList(bibliographySelector.getSelectedEntries());
 		
 		if (correspondingDepictionEntry.getDepictionID() == 0) {
 			dbService.insertDepictionEntry(correspondingDepictionEntry, iconographySelector.getSelectedIconography(), new AsyncCallback<Integer>() {
