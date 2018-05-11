@@ -27,4 +27,7 @@ public interface AnnotatedBiblographyViewTemplates extends XTemplates {
 	@XTemplate(source = "BibView.html")
 	SafeHtml view(AnnotatedBiblographyEntry bibEntry);
 	
+	@XTemplate(source = "ExtendedBibView.html")
+	SafeHtml extendedView(AnnotatedBiblographyEntry bibEntry);
+	
 }

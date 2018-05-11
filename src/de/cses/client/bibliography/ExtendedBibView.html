@@ -1,4 +1,4 @@
-<div style='font-size:12px; text-align:left;'> 
+<div style='font-size:12px'> 
 	<p>
 		{authors} <tpl if="yearORG != &quot;&quot;">({yearORG})</tpl>. <i>{titleORG}</i>.
 		<tpl if="parentTitleORG != &quot;&quot;">
@@ -7,5 +7,8 @@
 	  <tpl if="publisher != &quot;&quot;">
 	  	<br> {publisher}.
 	  </tpl>
+	 	<tpl if="abstractText != &quot;&quot;">
+	 		<br><i><b>Abstract: </b></i>{abstractText}
+	 	</tpl>
 	</p>
 </div>

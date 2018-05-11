@@ -19,9 +19,7 @@ import java.util.List;
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.editor.client.Editor.Path;
-import com.google.gwt.i18n.client.HasDirection.Direction;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment.HorizontalAlignmentConstant;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.IdentityValueProvider;
@@ -87,15 +85,15 @@ public class BibliographySelector implements IsWidget {
     RowExpander<AnnotatedBiblographyEntry> rowExpander = new RowExpander<AnnotatedBiblographyEntry>(new AbstractCell<AnnotatedBiblographyEntry>() {
 			@Override
 			public void render(Context context, AnnotatedBiblographyEntry value, SafeHtmlBuilder sb) {
-				sb.append(rowExpanderTemplates.view(value));
+				sb.append(rowExpanderTemplates.extendedView(value));
 			}
     });		
 		
 		ColumnConfig<AnnotatedBiblographyEntry, String> titleOrgCol = new ColumnConfig<AnnotatedBiblographyEntry, String>(bibProps.title(), 350, "Title");
 		ColumnConfig<AnnotatedBiblographyEntry, String> authorsCol = new ColumnConfig<AnnotatedBiblographyEntry, String>(bibProps.authors(), 300, "Authors");
 		ColumnConfig<AnnotatedBiblographyEntry, String> yearColumn = new ColumnConfig<AnnotatedBiblographyEntry, String>(bibProps.year(), 50, "Year");
-		yearColumn.setHideable(false);
-		yearColumn.setHorizontalHeaderAlignment(HorizontalAlignmentConstant.startOf(Direction.DEFAULT));
+//		yearColumn.setHideable(false);
+//		yearColumn.setHorizontalHeaderAlignment(HorizontalAlignmentConstant.startOf(Direction.DEFAULT));
 		
     List<ColumnConfig<AnnotatedBiblographyEntry, ?>> sourceColumns = new ArrayList<ColumnConfig<AnnotatedBiblographyEntry, ?>>();
     sourceColumns.add(selectionModel.getColumn());
@@ -114,7 +112,7 @@ public class BibliographySelector implements IsWidget {
     
     grid = new Grid<AnnotatedBiblographyEntry>(sourceStore, sourceColumnModel);
     grid.setSelectionModel(selectionModel);
-    grid.setColumnReordering(true);
+//    grid.setColumnReordering(true);
     grid.getView().setAutoExpandColumn(titleOrgCol);
     grid.setBorders(false);
     grid.getView().setStripeRows(true);
