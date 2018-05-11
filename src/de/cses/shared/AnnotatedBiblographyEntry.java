@@ -891,10 +891,10 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 		String result = "";
 		if (authorList.size() > 3) {
 			AuthorEntry ae = authorList.get(0);
-			result = (ae.getInstitution()!=null ? ae.getInstitution() : ae.getLastname() + ", " + ae.getFirstname().charAt(0) + "., et al.") ;
+			result = (ae.getInstitution()!=null ? ae.getInstitution() : ae.getLastname() + (ae.getFirstname() != null ? ", " + ae.getFirstname().charAt(0) + "., et al." : ", et al.")) ;
 		} else {
 			for (AuthorEntry ae : authorList) {
-				result = result.concat((result.length() > 0 ? "; " : "") + (ae.getInstitution()!=null ? ae.getInstitution() : ae.getLastname() + ", " + ae.getFirstname().charAt(0) + "."));
+				result = result.concat((result.length() > 0 ? "; " : "") + (ae.getInstitution()!=null ? ae.getInstitution() : ae.getLastname() + (ae.getFirstname() != null ? ", " + ae.getFirstname().charAt(0) + "." : "")));
 			}
 		}
 		return result;
@@ -904,7 +904,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 		String result = "";
 		
 		for (AuthorEntry ae : editorList) {
-			result = result.concat(result.length() > 0 ? "; " + ae.getLastname() + ", " + ae.getFirstname() : ae.getLastname() + ", " + ae.getFirstname().charAt(0) + ".");
+			result = result.concat((result.length() > 0 ? "; " : "") + (ae.getInstitution()!=null ? ae.getInstitution() : ae.getLastname() + (ae.getFirstname() != null ? ", " + ae.getFirstname().charAt(0) + "." : "")));
 		}
 		return result;
 	}

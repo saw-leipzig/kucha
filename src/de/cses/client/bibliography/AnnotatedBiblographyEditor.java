@@ -834,7 +834,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				authorLastNameTF.setAutoValidate(true);
 				authorLastNameTF.setWidth(300);
 				TextField authorFirstNameTF = new TextField();
-				authorFirstNameTF.setAllowBlank(false);
+				authorFirstNameTF.setAllowBlank(true);
 				authorFirstNameTF.addValidator(new MaxLengthValidator(64));
 				authorFirstNameTF.setAutoValidate(true);
 				TextField institutionTF = new TextField();
