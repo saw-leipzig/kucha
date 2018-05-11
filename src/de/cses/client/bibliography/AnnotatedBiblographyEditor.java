@@ -94,7 +94,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 	private AnnotatedBiblographyEntry bibEntry;
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 
-	private ListStore<PublisherEntry> publisherListStore;
+//	private ListStore<PublisherEntry> publisherListStore;
 	private ListStore<AnnotatedBiblographyEntry> firstEditionBiblographyEntryLS;
 
 	private ListStore<AuthorEntry> authorListStore;
@@ -102,7 +102,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 	private ListStore<AuthorEntry> selectedAuthorListStore;
 	private ListStore<AuthorEntry> selectedEditorListStore;
 
-	private PublisherProperties publisherProps;
+//	private PublisherProperties publisherProps;
 	private AnnotatedBiblographyEntryProperties annotatedBiblographyEntryProps;
 	private AuthorProperties authorProps;
 
@@ -113,10 +113,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 	private StoreFilterField<AuthorEntry> editorListFilterField;
 	private DocumentLinkTemplate documentLinkTemplate;
 
-	interface PublisherViewTemplates extends XTemplates {
-		@XTemplate("<div>{name}</div>")
-		SafeHtml publisher(String name);
-	}
+//	interface PublisherViewTemplates extends XTemplates {
+//		@XTemplate("<div>{name}</div>")
+//		SafeHtml publisher(String name);
+//	}
 
 	interface AnnotatedBiblographyEntryViewTemplates extends XTemplates {
 		@XTemplate("<div>{name}</div>")
@@ -128,11 +128,11 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		SafeHtml publicationType(String name);
 	}
 
-	interface PublisherProperties extends PropertyAccess<PublisherEntry> {
-		ModelKeyProvider<PublisherEntry> publisherID();
-
-		LabelProvider<PublisherEntry> label();
-	}
+//	interface PublisherProperties extends PropertyAccess<PublisherEntry> {
+//		ModelKeyProvider<PublisherEntry> publisherID();
+//
+//		LabelProvider<PublisherEntry> label();
+//	}
 
 	interface AnnotatedBiblographyEntryProperties extends PropertyAccess<AnnotatedBiblographyEntry> {
 		ModelKeyProvider<AnnotatedBiblographyEntry> annotatedBiblographyID();
@@ -274,24 +274,24 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		firstEditionBiblographyEntryLS = new ListStore<AnnotatedBiblographyEntry>(annotatedBiblographyEntryProps.annotatedBiblographyID());
 		firstEditionBiblographyEntryLS.addSortInfo(new StoreSortInfo<>(annotatedBiblographyEntryProps.titleEN(), SortDir.ASC));
 
-		publisherProps = GWT.create(PublisherProperties.class);
-		publisherListStore = new ListStore<PublisherEntry>(publisherProps.publisherID());
-		publisherListStore.addSortInfo(new StoreSortInfo<PublisherEntry>(new ValueProvider<PublisherEntry, String>() {
-
-			@Override
-			public String getValue(PublisherEntry object) {
-				return object.getLabel();
-			}
-
-			@Override
-			public void setValue(PublisherEntry object, String value) {
-			}
-
-			@Override
-			public String getPath() {
-				return "label";
-			}
-		}, SortDir.ASC));
+//		publisherProps = GWT.create(PublisherProperties.class);
+//		publisherListStore = new ListStore<PublisherEntry>(publisherProps.publisherID());
+//		publisherListStore.addSortInfo(new StoreSortInfo<PublisherEntry>(new ValueProvider<PublisherEntry, String>() {
+//
+//			@Override
+//			public String getValue(PublisherEntry object) {
+//				return object.getLabel();
+//			}
+//
+//			@Override
+//			public void setValue(PublisherEntry object, String value) {
+//			}
+//
+//			@Override
+//			public String getPath() {
+//				return "label";
+//			}
+//		}, SortDir.ASC));
 
 		dbService.getAuthors(new AsyncCallback<ArrayList<AuthorEntry>>() {
 
@@ -326,21 +326,21 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			}
 		});
 
-		dbService.getPublishers(new AsyncCallback<ArrayList<PublisherEntry>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-				Window.alert("Error while loading publisher list!");
-			}
-
-			@Override
-			public void onSuccess(ArrayList<PublisherEntry> result) {
-				for (PublisherEntry pe : result) {
-					publisherListStore.add(pe);
-				}
-			}
-		});
+//		dbService.getPublishers(new AsyncCallback<ArrayList<PublisherEntry>>() {
+//
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				caught.printStackTrace();
+//				Window.alert("Error while loading publisher list!");
+//			}
+//
+//			@Override
+//			public void onSuccess(ArrayList<PublisherEntry> result) {
+//				for (PublisherEntry pe : result) {
+//					publisherListStore.add(pe);
+//				}
+//			}
+//		});
 
 		/**
 		 * We're assuming that only publications of the same type can be first editions to the current publication
@@ -693,117 +693,127 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		/**
 		 * the publisher selection
 		 */
-		ComboBox<PublisherEntry> publisherComboBox = new ComboBox<PublisherEntry>(publisherListStore, publisherProps.label(),
-				new AbstractSafeHtmlRenderer<PublisherEntry>() {
-
-					@Override
-					public SafeHtml render(PublisherEntry item) {
-						final PublisherViewTemplates pvTemplates = GWT.create(PublisherViewTemplates.class);
-						return pvTemplates.publisher(item.getLabel());
-					}
-				});
-		publisherComboBox.setEditable(false);
-		publisherComboBox.setTypeAhead(true);
-		publisherComboBox.setTriggerAction(TriggerAction.ALL);
-		PublisherEntry publisher = bibEntry.getPublisher();
-		if ((publisher != null) && (publisher.getPublisherID() > 0)) {
-			publisherComboBox.setValue(bibEntry.getPublisher());
-		}
-		publisherComboBox.addValidator(new Validator<PublisherEntry>() {
+		TextField publisherTextField = new TextField();
+		publisherTextField.setValue(bibEntry.getPublisher());
+		publisherTextField.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
-			public List<EditorError> validate(Editor<PublisherEntry> editor, PublisherEntry value) {
-				List<EditorError> l = new ArrayList<EditorError>();
-				if (value == null) {
-					l.add(new DefaultEditorError(editor, "please select publisher", value));
-				}
-				return l;
+			public void onValueChange(ValueChangeEvent<String> event) {
+				bibEntry.setPublisher(event.getValue());
 			}
 		});
-		publisherComboBox.addSelectionHandler(new SelectionHandler<PublisherEntry>() {
-
-			@Override
-			public void onSelection(SelectionEvent<PublisherEntry> event) {
-				bibEntry.setPublisher(event.getSelectedItem());
-			}
-		});
+		
+//		ComboBox<PublisherEntry> publisherComboBox = new ComboBox<PublisherEntry>(publisherListStore, publisherProps.label(),
+//				new AbstractSafeHtmlRenderer<PublisherEntry>() {
+//
+//					@Override
+//					public SafeHtml render(PublisherEntry item) {
+//						final PublisherViewTemplates pvTemplates = GWT.create(PublisherViewTemplates.class);
+//						return pvTemplates.publisher(item.getLabel());
+//					}
+//				});
+//		publisherComboBox.setEditable(false);
+//		publisherComboBox.setTypeAhead(true);
+//		publisherComboBox.setTriggerAction(TriggerAction.ALL);
+//		PublisherEntry publisher = bibEntry.getPublisher();
+//		if ((publisher != null) && (publisher.getPublisherID() > 0)) {
+//			publisherComboBox.setValue(bibEntry.getPublisher());
+//		}
+//		publisherComboBox.addValidator(new Validator<PublisherEntry>() {
+//
+//			@Override
+//			public List<EditorError> validate(Editor<PublisherEntry> editor, PublisherEntry value) {
+//				List<EditorError> l = new ArrayList<EditorError>();
+//				if (value == null) {
+//					l.add(new DefaultEditorError(editor, "please select publisher", value));
+//				}
+//				return l;
+//			}
+//		});
+//		publisherComboBox.addSelectionHandler(new SelectionHandler<PublisherEntry>() {
+//
+//			@Override
+//			public void onSelection(SelectionEvent<PublisherEntry> event) {
+//				bibEntry.setPublisher(event.getSelectedItem());
+//			}
+//		});
 		FramedPanel publisherFP = new FramedPanel();
 		publisherFP.setHeading("Publisher");
-		publisherFP.add(publisherComboBox);
+		publisherFP.add(publisherTextField);
 		
-		ToolButton resetPublisherSelectionTB = new ToolButton(ToolButton.REFRESH);
-		publisherFP.addTool(resetPublisherSelectionTB);
-		resetPublisherSelectionTB.addSelectHandler(new SelectHandler() {
-			
-			@Override
-			public void onSelect(SelectEvent event) {
-				publisherComboBox.setValue(null, true);
-			}
-		});
+//		ToolButton resetPublisherSelectionTB = new ToolButton(ToolButton.REFRESH);
+//		publisherFP.addTool(resetPublisherSelectionTB);
+//		resetPublisherSelectionTB.addSelectHandler(new SelectHandler() {
+//			
+//			@Override
+//			public void onSelect(SelectEvent event) {
+//				publisherComboBox.setValue(null, true);
+//			}
+//		});
 
-		ToolButton addPublisherTB = new ToolButton(ToolButton.PLUS);
-		publisherFP.addTool(addPublisherTB);
-		addPublisherTB.addSelectHandler(new SelectHandler() {
-
-			@Override
-			public void onSelect(SelectEvent event) {
-				PopupPanel addPublisherDialog = new PopupPanel();
-				FramedPanel addPublisherFP = new FramedPanel();
-				addPublisherFP.setHeading("Add New Publisher");
-//				addPublisherFP.setWidth("400px");
-				TextField publisherNameField = new TextField();
-				publisherNameField.addValidator(new MinLengthValidator(2));
-				publisherNameField.addValidator(new MaxLengthValidator(128));
-				publisherNameField.setValue("");
-				TextField publisherLocationField = new TextField();
-				publisherLocationField.addValidator(new MinLengthValidator(2));
-				publisherLocationField.addValidator(new MaxLengthValidator(128));
-				publisherLocationField.setValue("");
-				VerticalLayoutContainer newPublisherVLC = new VerticalLayoutContainer();
-				newPublisherVLC.add(new FieldLabel(publisherNameField, "Name"), new VerticalLayoutData(1.0, .5));
-				newPublisherVLC.add(new FieldLabel(publisherLocationField, "Location"), new VerticalLayoutData(1.0, .5));
-				addPublisherFP.add(newPublisherVLC);
-				TextButton saveButton = new TextButton("save");
-				saveButton.addSelectHandler(new SelectHandler() {
-
-					@Override
-					public void onSelect(SelectEvent event) {
-						if (publisherNameField.isValid() && publisherLocationField.isValid()) {
-							PublisherEntry publisherEntry = new PublisherEntry(0, publisherNameField.getCurrentValue(),
-									publisherLocationField.getCurrentValue());
-							dbService.insertPublisherEntry(publisherEntry, new AsyncCallback<Integer>() {
-
-								@Override
-								public void onFailure(Throwable caught) {
-									addPublisherDialog.hide();
-									Window.alert("Error while saving!");
-								}
-
-								@Override
-								public void onSuccess(Integer result) {
-									addPublisherDialog.hide();
-									publisherEntry.setPublisherID(result);
-									publisherListStore.add(publisherEntry);
-								}
-							});
-						}
-					}
-				});
-				addPublisherFP.addButton(saveButton);
-				TextButton cancelButton = new TextButton("cancel");
-				cancelButton.addSelectHandler(new SelectHandler() {
-
-					@Override
-					public void onSelect(SelectEvent event) {
-						addPublisherDialog.hide();
-					}
-				});
-				addPublisherFP.addButton(cancelButton);
-				addPublisherDialog.add(addPublisherFP);
-				addPublisherDialog.setModal(true);
-				addPublisherDialog.center();
-			}
-		});
+//		ToolButton addPublisherTB = new ToolButton(ToolButton.PLUS);
+//		publisherFP.addTool(addPublisherTB);
+//		addPublisherTB.addSelectHandler(new SelectHandler() {
+//
+//			@Override
+//			public void onSelect(SelectEvent event) {
+//				PopupPanel addPublisherDialog = new PopupPanel();
+//				FramedPanel addPublisherFP = new FramedPanel();
+//				addPublisherFP.setHeading("Add New Publisher");
+////				addPublisherFP.setWidth("400px");
+//				TextField publisherNameField = new TextField();
+//				publisherNameField.addValidator(new MinLengthValidator(2));
+//				publisherNameField.addValidator(new MaxLengthValidator(128));
+//				publisherNameField.setValue("");
+//				TextField publisherLocationField = new TextField();
+//				publisherLocationField.addValidator(new MinLengthValidator(2));
+//				publisherLocationField.addValidator(new MaxLengthValidator(128));
+//				publisherLocationField.setValue("");
+//				VerticalLayoutContainer newPublisherVLC = new VerticalLayoutContainer();
+//				newPublisherVLC.add(new FieldLabel(publisherNameField, "Name"), new VerticalLayoutData(1.0, .5));
+//				newPublisherVLC.add(new FieldLabel(publisherLocationField, "Location"), new VerticalLayoutData(1.0, .5));
+//				addPublisherFP.add(newPublisherVLC);
+//				TextButton saveButton = new TextButton("save");
+//				saveButton.addSelectHandler(new SelectHandler() {
+//
+//					@Override
+//					public void onSelect(SelectEvent event) {
+//						if (publisherNameField.isValid() && publisherLocationField.isValid()) {
+//							PublisherEntry publisherEntry = new PublisherEntry(0, publisherNameField.getCurrentValue(),
+//									publisherLocationField.getCurrentValue());
+//							dbService.insertPublisherEntry(publisherEntry, new AsyncCallback<Integer>() {
+//
+//								@Override
+//								public void onFailure(Throwable caught) {
+//									addPublisherDialog.hide();
+//									Window.alert("Error while saving!");
+//								}
+//
+//								@Override
+//								public void onSuccess(Integer result) {
+//									addPublisherDialog.hide();
+//									publisherEntry.setPublisherID(result);
+//									publisherListStore.add(publisherEntry);
+//								}
+//							});
+//						}
+//					}
+//				});
+//				addPublisherFP.addButton(saveButton);
+//				TextButton cancelButton = new TextButton("cancel");
+//				cancelButton.addSelectHandler(new SelectHandler() {
+//
+//					@Override
+//					public void onSelect(SelectEvent event) {
+//						addPublisherDialog.hide();
+//					}
+//				});
+//				addPublisherFP.addButton(cancelButton);
+//				addPublisherDialog.add(addPublisherFP);
+//				addPublisherDialog.setModal(true);
+//				addPublisherDialog.center();
+//			}
+//		});
 		secondTabVLC.add(publisherFP, new VerticalLayoutData(1.0, .1));
 
 		/**
@@ -1492,7 +1502,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			}
 		});
 		ToolButton resetFirstEditionSelectionTB = new ToolButton(ToolButton.REFRESH);
-		resetPublisherSelectionTB.addSelectHandler(new SelectHandler() {
+		resetFirstEditionSelectionTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
 			public void onSelect(SelectEvent event) {

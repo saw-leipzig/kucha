@@ -129,7 +129,7 @@ public class MysqlConnector {
 		}
 		return connection;
 	}
-	
+
 	/**
 	 * 
 	 * @return
@@ -149,7 +149,8 @@ public class MysqlConnector {
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery(sqlWhere != null ? "SELECT * FROM Districts WHERE " + sqlWhere + " ORDER BY Name Asc" : "SELECT * FROM Districts ORDER BY Name Asc");
+			ResultSet rs = stmt.executeQuery(sqlWhere != null ? "SELECT * FROM Districts WHERE " + sqlWhere + " ORDER BY Name Asc"
+					: "SELECT * FROM Districts ORDER BY Name Asc");
 			while (rs.next()) {
 				result.add(new DistrictEntry(rs.getInt("DistrictID"), rs.getString("Name"), rs.getInt("SiteID"), rs.getString("Description"),
 						rs.getString("Map"), rs.getString("ArialMap")));
@@ -198,10 +199,11 @@ public class MysqlConnector {
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.first()) {
 				result = new PublicationTypeEntry(rs.getInt("PublicationTypeID"), rs.getString("Name"), rs.getBoolean("AccessDateEnabled"),
-						rs.getBoolean("AuthorEnabled"), rs.getBoolean("ParentTitleEnabled"), rs.getString("ParentTitleLabel"), rs.getBoolean("EditionEnabled"),
-						rs.getBoolean("EditorEnabled"), rs.getBoolean("MonthEnabled"), rs.getBoolean("NumberEnabled"), rs.getBoolean("PagesEnabled"), 
-						rs.getBoolean("SeriesEnabled"),rs.getBoolean("TitleAddonEnabled"), rs.getBoolean("UniversityEnabled"), 
-						rs.getBoolean("VolumeEnabled"), rs.getBoolean("IssueEnabled"), rs.getBoolean("YearEnabled"));
+						rs.getBoolean("AuthorEnabled"), rs.getBoolean("ParentTitleEnabled"), rs.getString("ParentTitleLabel"),
+						rs.getBoolean("EditionEnabled"), rs.getBoolean("EditorEnabled"), rs.getBoolean("MonthEnabled"), rs.getBoolean("NumberEnabled"),
+						rs.getBoolean("PagesEnabled"), rs.getBoolean("SeriesEnabled"), rs.getBoolean("TitleAddonEnabled"),
+						rs.getBoolean("UniversityEnabled"), rs.getBoolean("VolumeEnabled"), rs.getBoolean("IssueEnabled"),
+						rs.getBoolean("YearEnabled"));
 			}
 			rs.close();
 			pstmt.close();
@@ -221,10 +223,11 @@ public class MysqlConnector {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM PublicationTypes ORDER BY Name");
 			while (rs.next()) {
 				entry = new PublicationTypeEntry(rs.getInt("PublicationTypeID"), rs.getString("Name"), rs.getBoolean("AccessDateEnabled"),
-						rs.getBoolean("AuthorEnabled"), rs.getBoolean("ParentTitleEnabled"), rs.getString("ParentTitleLabel"), rs.getBoolean("EditionEnabled"),
-						rs.getBoolean("EditorEnabled"), rs.getBoolean("MonthEnabled"), rs.getBoolean("NumberEnabled"), rs.getBoolean("PagesEnabled"), 
-						rs.getBoolean("SeriesEnabled"),rs.getBoolean("TitleAddonEnabled"), rs.getBoolean("UniversityEnabled"), 
-						rs.getBoolean("VolumeEnabled"), rs.getBoolean("IssueEnabled"), rs.getBoolean("YearEnabled"));
+						rs.getBoolean("AuthorEnabled"), rs.getBoolean("ParentTitleEnabled"), rs.getString("ParentTitleLabel"),
+						rs.getBoolean("EditionEnabled"), rs.getBoolean("EditorEnabled"), rs.getBoolean("MonthEnabled"), rs.getBoolean("NumberEnabled"),
+						rs.getBoolean("PagesEnabled"), rs.getBoolean("SeriesEnabled"), rs.getBoolean("TitleAddonEnabled"),
+						rs.getBoolean("UniversityEnabled"), rs.getBoolean("VolumeEnabled"), rs.getBoolean("IssueEnabled"),
+						rs.getBoolean("YearEnabled"));
 				result.add(entry);
 
 			}
@@ -645,15 +648,11 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Ornaments");
 			while (rs.next()) {
-				results.add(new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"),
-						rs.getString("Description"), rs.getString("Remarks"),rs.getString("Annotation"),
-						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-						getImagesbyOrnamentID(rs.getInt("OrnamentID")),
-						getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")), 
-						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")),
-						getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID"))
-						));	
-				
+				results.add(new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
+						rs.getString("Annotation"), rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
+						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
+						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID"))));
+
 			}
 			rs.close();
 			stmt.close();
@@ -701,7 +700,7 @@ public class MysqlConnector {
 		}
 		return result;
 	}
-	
+
 	public ArrayList<CaveTypeEntry> getCaveTypes() {
 		return getCaveTypes(null);
 	}
@@ -713,7 +712,8 @@ public class MysqlConnector {
 
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery(sqlWhere != null ? "SELECT * FROM CaveType WHERE " + sqlWhere + " ORDER BY NameEN" : "SELECT * FROM CaveType ORDER BY NameEN");
+			ResultSet rs = stmt.executeQuery(
+					sqlWhere != null ? "SELECT * FROM CaveType WHERE " + sqlWhere + " ORDER BY NameEN" : "SELECT * FROM CaveType ORDER BY NameEN");
 			while (rs.next()) {
 				CaveTypeEntry caveType = new CaveTypeEntry(rs.getInt("CaveTypeID"), rs.getString("NameEN"), rs.getString("DescriptionEN"),
 						rs.getString("SketchName"));
@@ -733,7 +733,7 @@ public class MysqlConnector {
 		int newOrnamentID = 0;
 		Connection dbc = getConnection();
 		PreparedStatement ornamentStatement;
-		//deleteEntry("DELETE FROM Ornaments WHERE OrnamentID=" + ornamentEntry.getCode());
+		// deleteEntry("DELETE FROM Ornaments WHERE OrnamentID=" + ornamentEntry.getCode());
 		try {
 			ornamentStatement = dbc.prepareStatement(
 					"INSERT INTO Ornaments (Code, Description, Remarks, Interpretation, OrnamentReferences, Annotation , OrnamentClassID, StructureOrganizationID) "
@@ -819,7 +819,7 @@ public class MysqlConnector {
 				ornamentCaveRelationStatement.setString(3, ornamentCaveR.getColours());
 				ornamentCaveRelationStatement.setString(4, ornamentCaveR.getNotes());
 				ornamentCaveRelationStatement.setString(5, ornamentCaveR.getGroup());
-				//ornamentCaveRelationStatement.setString(6, ornamentCaveR.getRelatedelementeofOtherCultures());
+				// ornamentCaveRelationStatement.setString(6, ornamentCaveR.getRelatedelementeofOtherCultures());
 				ornamentCaveRelationStatement.setString(6, ornamentCaveR.getSimilarelementsOfOtherCultures());
 				ornamentCaveRelationStatement.setInt(7, ornamentCaveR.getStyle().getStyleID());
 				ornamentCaveRelationStatement.executeUpdate();
@@ -863,14 +863,14 @@ public class MysqlConnector {
 				// similarOrnamentsRelationStatement.executeUpdate();
 				// }
 				System.err.println("vor ornamentcavewall");
-				PreparedStatement wallCaveOrnamentRelationStatement = dbc
-						.prepareStatement("INSERT INTO OrnamentCaveWallRelation (WallLocationID, PositionID, FunctionID, Notes, OrnamentCaveRelationID, CaveID) VALUES (?,?,?,?,?,?)");
+				PreparedStatement wallCaveOrnamentRelationStatement = dbc.prepareStatement(
+						"INSERT INTO OrnamentCaveWallRelation (WallLocationID, PositionID, FunctionID, Notes, OrnamentCaveRelationID, CaveID) VALUES (?,?,?,?,?,?)");
 				for (WallOrnamentCaveRelation we : ornamentCaveR.getWalls()) {
 					wallCaveOrnamentRelationStatement.setInt(1, we.getWallLocationID());
 					wallCaveOrnamentRelationStatement.setInt(2, we.getOrnamenticPositionID());
 					wallCaveOrnamentRelationStatement.setInt(3, we.getOrnamenticFunctionID());
 					wallCaveOrnamentRelationStatement.setString(4, we.getNotes());
-					wallCaveOrnamentRelationStatement.setInt(5,newCaveOrnamentRelationID );
+					wallCaveOrnamentRelationStatement.setInt(5, newCaveOrnamentRelationID);
 					wallCaveOrnamentRelationStatement.setInt(6, we.getWall().getCaveID());
 					wallCaveOrnamentRelationStatement.executeUpdate();
 					System.err.println("erfolg");
@@ -1078,11 +1078,10 @@ public class MysqlConnector {
 		}
 		return results;
 	}
-	
+
 	public ArrayList<StyleEntry> getStyles() {
 		return getStyles(null);
 	}
-
 
 	public ArrayList<StyleEntry> getStyles(String sqlWhere) {
 		ArrayList<StyleEntry> results = new ArrayList<StyleEntry>();
@@ -1090,7 +1089,8 @@ public class MysqlConnector {
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery(sqlWhere != null ? "SELECT * FROM Styles WHERE " + sqlWhere + " ORDER BY StyleName Asc": "SELECT * FROM Styles ORDER BY StyleName Asc");
+			ResultSet rs = stmt.executeQuery(sqlWhere != null ? "SELECT * FROM Styles WHERE " + sqlWhere + " ORDER BY StyleName Asc"
+					: "SELECT * FROM Styles ORDER BY StyleName Asc");
 			while (rs.next()) {
 				results.add(new StyleEntry(rs.getInt("StyleID"), rs.getString("StyleName")));
 			}
@@ -1102,14 +1102,14 @@ public class MysqlConnector {
 		}
 		return results;
 	}
-	
+
 	public StyleEntry getStylebyID(int styleID) {
 		Connection dbc = getConnection();
 		Statement stmt;
 		StyleEntry result = null;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery( "SELECT * FROM Styles WHERE StyleID = " + styleID);
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Styles WHERE StyleID = " + styleID);
 			while (rs.next()) {
 				result = new StyleEntry(rs.getInt("StyleID"), rs.getString("StyleName"));
 			}
@@ -1121,7 +1121,7 @@ public class MysqlConnector {
 		}
 		return result;
 	}
-	
+
 	public ArrayList<ExpeditionEntry> getExpeditions() {
 		return getExpeditions(null);
 	}
@@ -1133,7 +1133,8 @@ public class MysqlConnector {
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery(sqlWhere != null ? "SELECT * FROM Expeditions WHERE " + sqlWhere + " ORDER BY Name Asc" : "SELECT * FROM Expeditions ORDER BY Name Asc");
+			ResultSet rs = stmt.executeQuery(sqlWhere != null ? "SELECT * FROM Expeditions WHERE " + sqlWhere + " ORDER BY Name Asc"
+					: "SELECT * FROM Expeditions ORDER BY Name Asc");
 			while (rs.next()) {
 				results.add(new ExpeditionEntry(rs.getInt("ExpeditionID"), rs.getString("Name"), rs.getString("Leader"), rs.getDate("StartDate"),
 						rs.getDate("EndDate")));
@@ -1204,8 +1205,8 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Authors WHERE AuthorID=" + id);
 			if (rs.first()) {
-				result = new AuthorEntry(rs.getInt("AuthorID"), rs.getString("Lastname"), rs.getString("Firstname"), rs.getString("Institution"), rs.getBoolean("KuchaVisitor"),
-						rs.getString("Affiliation"), rs.getString("Email"), rs.getString("Homepage"));
+				result = new AuthorEntry(rs.getInt("AuthorID"), rs.getString("Lastname"), rs.getString("Firstname"), rs.getString("Institution"),
+						rs.getBoolean("KuchaVisitor"), rs.getString("Affiliation"), rs.getString("Email"), rs.getString("Homepage"));
 			}
 			rs.close();
 			stmt.close();
@@ -1269,7 +1270,7 @@ public class MysqlConnector {
 		}
 		return results;
 	}
-	
+
 	/**
 	 * Gets the depictions related to the depictionID
 	 * 
@@ -1285,8 +1286,9 @@ public class MysqlConnector {
 		try {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery(
-					"SELECT * FROM Depictions WHERE DepictionID IN (SELECT DISTINCT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (" 
-							+ iconographyIDs + ") AND DepictionID NOT IN (SELECT DISTINCT DepictionID FROM DepictionIconographyRelation WHERE IconographyID NOT IN (" 
+					"SELECT * FROM Depictions WHERE DepictionID IN (SELECT DISTINCT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN ("
+							+ iconographyIDs
+							+ ") AND DepictionID NOT IN (SELECT DISTINCT DepictionID FROM DepictionIconographyRelation WHERE IconographyID NOT IN ("
 							+ iconographyIDs + ")))");
 			while (rs.next()) {
 				DepictionEntry de = new DepictionEntry(rs.getInt("DepictionID"), rs.getInt("StyleID"), rs.getString("Inscriptions"),
@@ -1319,19 +1321,19 @@ public class MysqlConnector {
 		Connection dbc = getConnection();
 		Statement stmt;
 		String sqlQuery;
-		
+
 		try {
 			stmt = dbc.createStatement();
 			ResultSet rs;
 			if (correlationFactor > 0) {
 				/*
-					SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (1236,2063,2124)
-					GROUP By DepictionID
-					HAVING ( COUNT(DepictionID) = 2 )
+				 * SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (1236,2063,2124) GROUP By DepictionID HAVING ( COUNT(DepictionID) = 2 )
 				 */
-				sqlQuery = "SELECT * FROM Depictions WHERE DepictionID IN (SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (" + iconographyIDs + ") GROUP BY DepictionID HAVING (COUNT(DepictionID) >= " + correlationFactor + "))";
+				sqlQuery = "SELECT * FROM Depictions WHERE DepictionID IN (SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN ("
+						+ iconographyIDs + ") GROUP BY DepictionID HAVING (COUNT(DepictionID) >= " + correlationFactor + "))";
 			} else {
-				sqlQuery = "SELECT * FROM Depictions WHERE DepictionID IN (SELECT DISTINCT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (" + iconographyIDs + "))";
+				sqlQuery = "SELECT * FROM Depictions WHERE DepictionID IN (SELECT DISTINCT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN ("
+						+ iconographyIDs + "))";
 			}
 			System.err.println(sqlQuery);
 			rs = stmt.executeQuery(sqlQuery);
@@ -1423,7 +1425,7 @@ public class MysqlConnector {
 		}
 		return true;
 	}
-	
+
 	/**
 	 * 
 	 * @return A list of all Regions as RegionEntry objects
@@ -1431,7 +1433,7 @@ public class MysqlConnector {
 	public ArrayList<RegionEntry> getRegions() {
 		return getRegions(null);
 	}
-	
+
 	/**
 	 * 
 	 * @param sqlWhere
@@ -1444,7 +1446,9 @@ public class MysqlConnector {
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery(sqlWhere!=null ? "SELECT * FROM Regions WHERE " + sqlWhere + "ORDER BY EnglishName Asc, PhoneticName Asc, OriginalName Asc" : "SELECT * FROM Regions ORDER BY EnglishName Asc, PhoneticName Asc, OriginalName Asc");
+			ResultSet rs = stmt.executeQuery(
+					sqlWhere != null ? "SELECT * FROM Regions WHERE " + sqlWhere + "ORDER BY EnglishName Asc, PhoneticName Asc, OriginalName Asc"
+							: "SELECT * FROM Regions ORDER BY EnglishName Asc, PhoneticName Asc, OriginalName Asc");
 			while (rs.next()) {
 				result.add(new RegionEntry(rs.getInt("RegionID"), rs.getString("PhoneticName"), rs.getString("OriginalName"),
 						rs.getString("EnglishName"), rs.getInt("SiteID")));
@@ -1456,8 +1460,7 @@ public class MysqlConnector {
 		}
 		return result;
 	}
-	
-	
+
 	public ArrayList<SiteEntry> getSites() {
 		return getSites(null);
 	}
@@ -1474,7 +1477,9 @@ public class MysqlConnector {
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery(sqlWhere != null ? "SELECT * FROM Sites WHERE " + sqlWhere + " ORDER BY Name Asc, AlternativeName Asc" : "SELECT * FROM Sites ORDER BY Name Asc, AlternativeName Asc");
+			ResultSet rs = stmt
+					.executeQuery(sqlWhere != null ? "SELECT * FROM Sites WHERE " + sqlWhere + " ORDER BY Name Asc, AlternativeName Asc"
+							: "SELECT * FROM Sites ORDER BY Name Asc, AlternativeName Asc");
 			while (rs.next()) {
 				result.add(new SiteEntry(rs.getInt("SiteID"), rs.getString("Name"), rs.getString("AlternativeName"), rs.getString("ShortName")));
 			}
@@ -1690,22 +1695,18 @@ public class MysqlConnector {
 					(sqlWhere == null) ? "SELECT * FROM AnnotatedBibliography" : "SELECT * FROM AnnotatedBibliography WHERE " + sqlWhere);
 			while (rs.next()) {
 				entry = new AnnotatedBiblographyEntry(rs.getInt("BibID"), getPublicationType(rs.getInt("PublicationTypeID")),
-						rs.getString("TitleEN"), rs.getString("TitleORG"), rs.getString("TitleTR"), 
-						rs.getString("ParentTitleEN"), rs.getString("ParentTitleORG"), rs.getString("ParentTitleTR"), 
-						rs.getString("UniversityEN"), rs.getString("UniversityORG"), rs.getString("UniversityTR"),
-						rs.getString("NumberEN"), rs.getString("NumberORG"), rs.getString("NumberTR"), 
-						rs.getString("AccessDateEN"), rs.getString("AccessDateORG"), rs.getString("AccessDateTR"), 
-						rs.getString("TitleAddonEN"), rs.getString("TitleAddonORG"), rs.getString("TitleAddonTR"), 
-						getPublisher(rs.getInt("PublisherID")), 
-						rs.getString("SeriesEN"), rs.getString("SeriesORG"), rs.getString("SeriesTR"), 
-						rs.getString("EditionEN"), rs.getString("EditionORG"), rs.getString("EditionTR"),
-						rs.getString("VolumeEN"), rs.getString("VolumeORG"), rs.getString("VolumeTR"), 
-						rs.getString("IssueEN"), rs.getString("IssueTR"), rs.getString("IssueORG"), 
-						rs.getInt("YearEN"), rs.getString("YearORG"), rs.getString("YearTR"), 
-						rs.getString("MonthEN"), rs.getString("MonthORG"), rs.getString("MonthTR"), 
-						rs.getString("PagesEN"), rs.getString("PagesORG"), rs.getString("PagesTR"), 
-						rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"), rs.getString("URI"), rs.getBoolean("Unpublished"), 
-						rs.getInt("FirstEditionBibID"), rs.getBoolean("OpenAccess"), rs.getString("AbstractText"));
+						rs.getString("TitleEN"), rs.getString("TitleORG"), rs.getString("TitleTR"), rs.getString("ParentTitleEN"),
+						rs.getString("ParentTitleORG"), rs.getString("ParentTitleTR"), rs.getString("UniversityEN"), rs.getString("UniversityORG"),
+						rs.getString("UniversityTR"), rs.getString("NumberEN"), rs.getString("NumberORG"), rs.getString("NumberTR"),
+						rs.getString("AccessDateEN"), rs.getString("AccessDateORG"), rs.getString("AccessDateTR"), rs.getString("TitleAddonEN"),
+						rs.getString("TitleAddonORG"), rs.getString("TitleAddonTR"), rs.getString("Publisher"), rs.getString("SeriesEN"),
+						rs.getString("SeriesORG"), rs.getString("SeriesTR"), rs.getString("EditionEN"), rs.getString("EditionORG"),
+						rs.getString("EditionTR"), rs.getString("VolumeEN"), rs.getString("VolumeORG"), rs.getString("VolumeTR"),
+						rs.getString("IssueEN"), rs.getString("IssueTR"), rs.getString("IssueORG"), rs.getInt("YearEN"), rs.getString("YearORG"),
+						rs.getString("YearTR"), rs.getString("MonthEN"), rs.getString("MonthORG"), rs.getString("MonthTR"), rs.getString("PagesEN"),
+						rs.getString("PagesORG"), rs.getString("PagesTR"), rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"),
+						rs.getString("URI"), rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getBoolean("OpenAccess"),
+						rs.getString("AbstractText"));
 				entry.setAuthorList(getAuthorBibRelation(entry.getAnnotatedBiblographyID()));
 				entry.setEditorList(getEditorBibRelation(entry.getAnnotatedBiblographyID()));
 				result.add(entry);
@@ -1785,22 +1786,18 @@ public class MysqlConnector {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM AnnotatedBibliography WHERE BibID=" + bibID);
 			if (rs.first()) {
 				result = new AnnotatedBiblographyEntry(rs.getInt("BibID"), getPublicationType(rs.getInt("PublicationTypeID")),
-						rs.getString("TitleEN"), rs.getString("TitleORG"), rs.getString("TitleTR"), 
-						rs.getString("ParentTitleEN"), rs.getString("ParentTitleORG"), rs.getString("ParentTitleTR"), 
-						rs.getString("UniversityEN"), rs.getString("UniversityORG"), rs.getString("UniversityTR"),
-						rs.getString("NumberEN"), rs.getString("NumberORG"), rs.getString("NumberTR"), 
-						rs.getString("AccessDateEN"), rs.getString("AccessDateORG"), rs.getString("AccessDateTR"), 
-						rs.getString("TitleAddonEN"), rs.getString("TitleAddonORG"), rs.getString("TitleAddonTR"), 
-						getPublisher(rs.getInt("PublisherID")), 
-						rs.getString("SeriesEN"), rs.getString("SeriesORG"), rs.getString("SeriesTR"), 
-						rs.getString("EditionEN"), rs.getString("EditionORG"), rs.getString("EditionTR"),
-						rs.getString("VolumeEN"), rs.getString("VolumeORG"), rs.getString("VolumeTR"), 
-						rs.getString("IssueEN"), rs.getString("IssueORG"), rs.getString("IssueTR"), 
-						rs.getInt("YearEN"), rs.getString("YearORG"), rs.getString("YearTR"), 
-						rs.getString("MonthEN"), rs.getString("MonthORG"), rs.getString("MonthTR"), 
-						rs.getString("PagesEN"), rs.getString("PagesORG"), rs.getString("PagesTR"), 
-						rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"), rs.getString("URI"), rs.getBoolean("Unpublished"), 
-						rs.getInt("FirstEditionBibID"), rs.getBoolean("OpenAccess"), rs.getString("AbstractText"));
+						rs.getString("TitleEN"), rs.getString("TitleORG"), rs.getString("TitleTR"), rs.getString("ParentTitleEN"),
+						rs.getString("ParentTitleORG"), rs.getString("ParentTitleTR"), rs.getString("UniversityEN"), rs.getString("UniversityORG"),
+						rs.getString("UniversityTR"), rs.getString("NumberEN"), rs.getString("NumberORG"), rs.getString("NumberTR"),
+						rs.getString("AccessDateEN"), rs.getString("AccessDateORG"), rs.getString("AccessDateTR"), rs.getString("TitleAddonEN"),
+						rs.getString("TitleAddonORG"), rs.getString("TitleAddonTR"), rs.getString("Publisher"), rs.getString("SeriesEN"),
+						rs.getString("SeriesORG"), rs.getString("SeriesTR"), rs.getString("EditionEN"), rs.getString("EditionORG"),
+						rs.getString("EditionTR"), rs.getString("VolumeEN"), rs.getString("VolumeORG"), rs.getString("VolumeTR"),
+						rs.getString("IssueEN"), rs.getString("IssueORG"), rs.getString("IssueTR"), rs.getInt("YearEN"), rs.getString("YearORG"),
+						rs.getString("YearTR"), rs.getString("MonthEN"), rs.getString("MonthORG"), rs.getString("MonthTR"), rs.getString("PagesEN"),
+						rs.getString("PagesORG"), rs.getString("PagesTR"), rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"),
+						rs.getString("URI"), rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getBoolean("OpenAccess"),
+						rs.getString("AbstractText"));
 
 				result.setAuthorList(getAuthorBibRelation(result.getAnnotatedBiblographyID()));
 				result.setEditorList(getEditorBibRelation(result.getAnnotatedBiblographyID()));
@@ -1832,8 +1829,6 @@ public class MysqlConnector {
 		}
 		return structureOrganizations;
 	}
-
-
 
 	public ArrayList<OrnamentPositionEntry> getOrnamentPosition() {
 		OrnamentPositionEntry result = null;
@@ -1903,14 +1898,10 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery((sqlWhere == null) ? "SELECT * FROM Ornaments" : "SELECT * FROM Ornaments WHERE " + sqlWhere);
 			while (rs.next()) {
-				results.add(new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"),
-						rs.getString("Description"), rs.getString("Remarks"),rs.getString("Annotation"),
-						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-						getImagesbyOrnamentID(rs.getInt("OrnamentID")),
-						getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")), 
-						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")),
-						getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID"))
-						));	
+				results.add(new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
+						rs.getString("Annotation"), rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
+						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
+						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID"))));
 			}
 			rs.close();
 			stmt.close();
@@ -2317,9 +2308,10 @@ public class MysqlConnector {
 		try {
 			pstmt = dbc.prepareStatement(
 					"INSERT INTO Depictions (StyleID, Inscriptions, SeparateAksaras, Dating, Description, BackgroundColour, GeneralRemarks, "
-					+ "OtherSuggestedIdentifications, Width, Height, ExpeditionID, PurchaseDate, CurrentLocationID, InventoryNumber, VendorID, "
-					+ "StoryID, CaveID, WallID, AbsoluteLeft, AbsoluteTop, ModeOfRepresentationID, ShortName, PositionNotes, MasterImageID) "
-							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+							+ "OtherSuggestedIdentifications, Width, Height, ExpeditionID, PurchaseDate, CurrentLocationID, InventoryNumber, VendorID, "
+							+ "StoryID, CaveID, WallID, AbsoluteLeft, AbsoluteTop, ModeOfRepresentationID, ShortName, PositionNotes, MasterImageID) "
+							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+					Statement.RETURN_GENERATED_KEYS);
 			pstmt.setInt(1, de.getStyleID());
 			pstmt.setString(2, de.getInscriptions());
 			pstmt.setString(3, de.getSeparateAksaras());
@@ -2779,27 +2771,12 @@ public class MysqlConnector {
 		int newBibID = 0;
 		System.err.println("insertAnnotatedBiblographyEntry - saving");
 		try {
-			pstmt = dbc.prepareStatement(
-					"INSERT INTO AnnotatedBibliography (PublicationTypeID, "
-					+ "AccessDateEN, AccessDateORG, AccessDateTR, "
-					+ "ParentTitleEN, ParentTitleORG, ParentTitleTR, "
-					+ "Comments, "
-					+ "EditionEN, EditionORG, EditionTR, "
-					+ "FirstEditionBibID, "
-					+ "MonthEN, MonthORG, MonthTR, "
-					+ "Notes, "
-					+ "NumberEN, NumberORG, NumberTR, "
-					+ "PagesEN, PagesORG, PagesTR, "
-					+ "PublisherID, "
-					+ "SeriesEN, SeriesORG, SeriesTR, "
-					+ "TitleAddonEN, TitleAddonORG, TitleAddonTR, "
-					+ "TitleEN, TitleORG, TitleTR, "
-					+ "UniversityEN, UniversityORG, UniversityTR, "
-					+ "URI, URL, "
-					+ "VolumeEN, VolumeORG, VolumeTR, "
-					+ "IssueEN, IssueORG, IssueTR, "
-					+ "YearEN, YearORG, YearTR, "
-					+ "Unpublished, OpenAccess, AbstractText) "
+			pstmt = dbc.prepareStatement("INSERT INTO AnnotatedBibliography (PublicationTypeID, " + "AccessDateEN, AccessDateORG, AccessDateTR, "
+					+ "ParentTitleEN, ParentTitleORG, ParentTitleTR, " + "Comments, " + "EditionEN, EditionORG, EditionTR, " + "FirstEditionBibID, "
+					+ "MonthEN, MonthORG, MonthTR, " + "Notes, " + "NumberEN, NumberORG, NumberTR, " + "PagesEN, PagesORG, PagesTR, " + "Publisher, "
+					+ "SeriesEN, SeriesORG, SeriesTR, " + "TitleAddonEN, TitleAddonORG, TitleAddonTR, " + "TitleEN, TitleORG, TitleTR, "
+					+ "UniversityEN, UniversityORG, UniversityTR, " + "URI, URL, " + "VolumeEN, VolumeORG, VolumeTR, "
+					+ "IssueEN, IssueORG, IssueTR, " + "YearEN, YearORG, YearTR, " + "Unpublished, OpenAccess, AbstractText) "
 					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 					Statement.RETURN_GENERATED_KEYS);
 			pstmt.setInt(1, bibEntry.getPublicationType().getPublicationTypeID());
@@ -2824,7 +2801,7 @@ public class MysqlConnector {
 			pstmt.setString(20, bibEntry.getPagesEN());
 			pstmt.setString(21, bibEntry.getPagesORG());
 			pstmt.setString(22, bibEntry.getPagesTR());
-			pstmt.setInt(23, bibEntry.getPublisher() != null ? bibEntry.getPublisher().getPublisherID() : 0);
+			pstmt.setString(23, bibEntry.getPublisher());
 			pstmt.setString(24, bibEntry.getSeriesEN());
 			pstmt.setString(25, bibEntry.getSeriesORG());
 			pstmt.setString(26, bibEntry.getSeriesTR());
@@ -2966,8 +2943,8 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Authors");
 			while (rs.next()) {
-				result.add(new AuthorEntry(rs.getInt("AuthorID"), rs.getString("Lastname"), rs.getString("Firstname"), rs.getString("Institution"), rs.getBoolean("KuchaVisitor"),
-						rs.getString("Affiliation"), rs.getString("Email"), rs.getString("Homepage")));
+				result.add(new AuthorEntry(rs.getInt("AuthorID"), rs.getString("Lastname"), rs.getString("Firstname"), rs.getString("Institution"),
+						rs.getBoolean("KuchaVisitor"), rs.getString("Affiliation"), rs.getString("Email"), rs.getString("Homepage")));
 			}
 			rs.close();
 			stmt.close();
@@ -3311,7 +3288,7 @@ public class MysqlConnector {
 
 		PreparedStatement stmt;
 		try {
-			
+
 			stmt = dbc.prepareStatement("INSERT INTO InnerSecondaryPattern (Name) VALUES (?)", Statement.RETURN_GENERATED_KEYS);
 			stmt.setString(1, innerSecPattern.getName());
 			stmt.executeUpdate();
@@ -3403,7 +3380,8 @@ public class MysqlConnector {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
-			pstmt = dbc.prepareStatement("SELECT * FROM OrnamenticPosition JOIN OrnamentPositionWallRelation ON OrnamenticPosition.OrnamenticPositionID = OrnamentPositionWallRelation.OrnamentPositionID WHERE WallPositionID = 1");
+			pstmt = dbc.prepareStatement(
+					"SELECT * FROM OrnamenticPosition JOIN OrnamentPositionWallRelation ON OrnamenticPosition.OrnamenticPositionID = OrnamentPositionWallRelation.OrnamentPositionID WHERE WallPositionID = 1");
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
 				result.add(new OrnamentPositionEntry(rs.getInt("OrnamenticPositionID"), rs.getString("Name")));
@@ -3415,14 +3393,16 @@ public class MysqlConnector {
 		}
 		return result;
 	}
-	
+
 	public ArrayList<OrnamentPositionEntry> getPositionbyCeilingTypes(int ceilingID1, int ceilingID2) {
 
 		ArrayList<OrnamentPositionEntry> result = new ArrayList<OrnamentPositionEntry>();
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
-			pstmt = dbc.prepareStatement("SELECT * FROM OrnamenticPosition JOIN OrnamentPositionCeilingRelation ON OrnamenticPosition.OrnamenticPositionID = OrnamentPositionCeilingRelation.OrnamentPositionID WHERE CeilingID = " + ceilingID1 +" OR CeilingID =" + ceilingID2);
+			pstmt = dbc.prepareStatement(
+					"SELECT * FROM OrnamenticPosition JOIN OrnamentPositionCeilingRelation ON OrnamenticPosition.OrnamenticPositionID = OrnamentPositionCeilingRelation.OrnamentPositionID WHERE CeilingID = "
+							+ ceilingID1 + " OR CeilingID =" + ceilingID2);
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
 				result.add(new OrnamentPositionEntry(rs.getInt("OrnamenticPositionID"), rs.getString("Name")));
@@ -3434,14 +3414,15 @@ public class MysqlConnector {
 		}
 		return result;
 	}
-	
 
 	public ArrayList<OrnamentFunctionEntry> getFunctionbyPosition(OrnamentPositionEntry position) {
 		ArrayList<OrnamentFunctionEntry> result = new ArrayList<OrnamentFunctionEntry>();
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
-			pstmt = dbc.prepareStatement("SELECT * FROM OrnamenticFunction JOIN OrnamentPositionOrnamentFunctionRelation ON OrnamenticFunction.OrnamenticFunctionID = OrnamentPositionOrnamentFunctionRelation.OrnamentFunctionID WHERE OrnamentPositionID = " + position.getOrnamentPositionID());
+			pstmt = dbc.prepareStatement(
+					"SELECT * FROM OrnamenticFunction JOIN OrnamentPositionOrnamentFunctionRelation ON OrnamenticFunction.OrnamenticFunctionID = OrnamentPositionOrnamentFunctionRelation.OrnamentFunctionID WHERE OrnamentPositionID = "
+							+ position.getOrnamentPositionID());
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
 				result.add(new OrnamentFunctionEntry(rs.getInt("OrnamenticFunctionID"), rs.getString("Name")));
@@ -3453,7 +3434,7 @@ public class MysqlConnector {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * @param bibEntry
 	 * @return
@@ -3463,26 +3444,13 @@ public class MysqlConnector {
 		PreparedStatement pstmt;
 		System.err.println("insertAnnotatedBiblographyEntry - saving");
 		try {
-			pstmt = dbc.prepareStatement(
-					"UPDATE AnnotatedBibliography SET PublicationTypeID=?, "
-					+ "AccessDateEN=?, AccessDateORG=?, AccessDateTR=?, "
-					+ "ParentTitleEN=?, ParentTitleORG=?, ParentTitleTR=?, "
-					+ "Comments=?, "
-					+ "EditionEN=?, EditionORG=?, EditionTR=?, "
-					+ "FirstEditionBibID=?, "
-					+ "MonthEN=?, MonthORG=?, MonthTR=?, "
-					+ "Notes=?, "
-					+ "NumberEN=?, NumberORG=?, NumberTR=?, "
-					+ "PagesEN=?, PagesORG=?, PagesTR=?, "
-					+ "PublisherID=?, "
-					+ "SeriesEN=?, SeriesORG=?, SeriesTR=?, "
-					+ "TitleAddonEN=?, TitleAddonORG=?, TitleAddonTR=?, "
-					+ "TitleEN=?, TitleORG=?, TitleTR=?, "
-					+ "UniversityEN=?, UniversityORG=?, UniversityTR=?, "
-					+ "URI=?, URL=?, "
-					+ "VolumeEN=?, VolumeORG=?, VolumeTR=?, "
-					+ "IssueEN=?, IssueORG=?, IssueTR=?, "
-					+ "YearEN=?, YearORG=?, YearTR=?, "
+			pstmt = dbc.prepareStatement("UPDATE AnnotatedBibliography SET PublicationTypeID=?, "
+					+ "AccessDateEN=?, AccessDateORG=?, AccessDateTR=?, " + "ParentTitleEN=?, ParentTitleORG=?, ParentTitleTR=?, " + "Comments=?, "
+					+ "EditionEN=?, EditionORG=?, EditionTR=?, " + "FirstEditionBibID=?, " + "MonthEN=?, MonthORG=?, MonthTR=?, " + "Notes=?, "
+					+ "NumberEN=?, NumberORG=?, NumberTR=?, " + "PagesEN=?, PagesORG=?, PagesTR=?, " + "Publisher=?, "
+					+ "SeriesEN=?, SeriesORG=?, SeriesTR=?, " + "TitleAddonEN=?, TitleAddonORG=?, TitleAddonTR=?, "
+					+ "TitleEN=?, TitleORG=?, TitleTR=?, " + "UniversityEN=?, UniversityORG=?, UniversityTR=?, " + "URI=?, URL=?, "
+					+ "VolumeEN=?, VolumeORG=?, VolumeTR=?, " + "IssueEN=?, IssueORG=?, IssueTR=?, " + "YearEN=?, YearORG=?, YearTR=?, "
 					+ "Unpublished=?, OpenAccess=?, AbstractText=? WHERE BibID=?");
 			pstmt.setInt(1, bibEntry.getPublicationType().getPublicationTypeID());
 			pstmt.setString(2, bibEntry.getAccessdateEN());
@@ -3506,7 +3474,7 @@ public class MysqlConnector {
 			pstmt.setString(20, bibEntry.getPagesEN());
 			pstmt.setString(21, bibEntry.getPagesORG());
 			pstmt.setString(22, bibEntry.getPagesTR());
-			pstmt.setInt(23, bibEntry.getPublisher() != null ? bibEntry.getPublisher().getPublisherID() : 0);
+			pstmt.setString(23, bibEntry.getPublisher());
 			pstmt.setString(24, bibEntry.getSeriesEN());
 			pstmt.setString(25, bibEntry.getSeriesORG());
 			pstmt.setString(26, bibEntry.getSeriesTR());
@@ -3567,14 +3535,16 @@ public class MysqlConnector {
 		}
 		return result;
 	}
-	
+
 	public ArrayList<ImageEntry> getImagesbyOrnamentID(int ornamentID) {
 		ArrayList<ImageEntry> results = new ArrayList<ImageEntry>();
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
-		pstmt = dbc.prepareStatement("SELECT * FROM Images JOIN OrnamentImageRelation ON OrnamentImageRelation.ImageID = Images.ImageID WHERE OrnamentID ="+ ornamentID + " ORDER BY Title Asc");
-		ResultSet rs = pstmt.executeQuery();
+			pstmt = dbc.prepareStatement(
+					"SELECT * FROM Images JOIN OrnamentImageRelation ON OrnamentImageRelation.ImageID = Images.ImageID WHERE OrnamentID ="
+							+ ornamentID + " ORDER BY Title Asc");
+			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
 				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
 						rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
@@ -3588,14 +3558,16 @@ public class MysqlConnector {
 		}
 		return results;
 	}
-	
-	public ArrayList<InnerSecondaryPatternsEntry> getInnerSecPatternsbyOrnamentID(int ornamentID){
+
+	public ArrayList<InnerSecondaryPatternsEntry> getInnerSecPatternsbyOrnamentID(int ornamentID) {
 		ArrayList<InnerSecondaryPatternsEntry> result = new ArrayList<InnerSecondaryPatternsEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM InnerSecondaryPattern JOIN InnerSecondaryPatternRelation ON InnerSecondaryPatternRelation.InnerSecID = InnerSecondaryPattern.InnerSecID WHERE OrnamentID =" + ornamentID);
+			ResultSet rs = stmt.executeQuery(
+					"SELECT * FROM InnerSecondaryPattern JOIN InnerSecondaryPatternRelation ON InnerSecondaryPatternRelation.InnerSecID = InnerSecondaryPattern.InnerSecID WHERE OrnamentID ="
+							+ ornamentID);
 			while (rs.next()) {
 				result.add(new InnerSecondaryPatternsEntry(rs.getInt("InnerSecID"), rs.getString("Name")));
 			}
@@ -3606,53 +3578,65 @@ public class MysqlConnector {
 		}
 		return result;
 	}
-	
-	public ArrayList<OrnamentCaveRelation> getCaveRelationbyOrnamentID(int ornamentID){
+
+	public ArrayList<OrnamentCaveRelation> getCaveRelationbyOrnamentID(int ornamentID) {
 		Connection dbc = getConnection();
 		ArrayList<OrnamentCaveRelation> result = new ArrayList<OrnamentCaveRelation>();
 		Statement stmt;
 		try {
-		stmt =  dbc.createStatement();
-		ResultSet rs;
-		
+			stmt = dbc.createStatement();
+			ResultSet rs;
+
 			rs = stmt.executeQuery("SELECT * FROM CaveOrnamentRelation WHERE OrnamentID = " + ornamentID);
 			while (rs.next()) {
-				result.add(new OrnamentCaveRelation(rs.getInt("CaveOrnamentRelationID"), getStylebyID(rs.getInt("StyleID")),rs.getInt("OrnamentID"),getDistrict(getCave(rs.getInt("CaveID")).getDistrictID()), getCave(rs.getInt("CaveID")), rs.getString("Colours"), rs.getString("Notes"), rs.getString("GroupOfOrnaments"), rs.getString("SimilarElementsofOtherCultures"), getPictorialElementsbyOrnamentCaveID(rs.getInt("CaveOrnamentRelationID")), getRelatedOrnamentsbyOrnamentCaveID(rs.getInt("CaveOrnamentRelationID")), getWallsbyOrnamentCaveID(rs.getInt("CaveOrnamentRelationID")), getOrientationsbyOrnamentCaveID(rs.getInt("CaveOrnamentRelationID"))));
+				result.add(new OrnamentCaveRelation(rs.getInt("CaveOrnamentRelationID"), getStylebyID(rs.getInt("StyleID")),
+						rs.getInt("OrnamentID"), getDistrict(getCave(rs.getInt("CaveID")).getDistrictID()), getCave(rs.getInt("CaveID")),
+						rs.getString("Colours"), rs.getString("Notes"), rs.getString("GroupOfOrnaments"),
+						rs.getString("SimilarElementsofOtherCultures"), getPictorialElementsbyOrnamentCaveID(rs.getInt("CaveOrnamentRelationID")),
+						getRelatedOrnamentsbyOrnamentCaveID(rs.getInt("CaveOrnamentRelationID")),
+						getWallsbyOrnamentCaveID(rs.getInt("CaveOrnamentRelationID")),
+						getOrientationsbyOrnamentCaveID(rs.getInt("CaveOrnamentRelationID"))));
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-   return result;
+		return result;
 	}
-	public ArrayList<OrnamentComponentsEntry> getOrnamentComponentsbyOrnamentID(int ornamentID){
-	
-			ArrayList<OrnamentComponentsEntry> result = new ArrayList<OrnamentComponentsEntry>();
-			Connection dbc = getConnection();
 
-			Statement stmt;
-			try {
-				stmt = dbc.createStatement();
-				ResultSet rs = stmt.executeQuery("SELECT * FROM OrnamentComponent JOIN OrnamentComponentRelation ON OrnamentComponent.OrnamentComponentID = OrnamentComponentRelation.OrnamentComponentID WHERE OrnamentID = "+ ornamentID);
-				while (rs.next()) {
-					result.add(new OrnamentComponentsEntry(rs.getInt("OrnamentComponentID"), rs.getString("Name")));
-				}
-				rs.close();
-				stmt.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
+	public ArrayList<OrnamentComponentsEntry> getOrnamentComponentsbyOrnamentID(int ornamentID) {
+
+		ArrayList<OrnamentComponentsEntry> result = new ArrayList<OrnamentComponentsEntry>();
+		Connection dbc = getConnection();
+
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery(
+					"SELECT * FROM OrnamentComponent JOIN OrnamentComponentRelation ON OrnamentComponent.OrnamentComponentID = OrnamentComponentRelation.OrnamentComponentID WHERE OrnamentID = "
+							+ ornamentID);
+			while (rs.next()) {
+				result.add(new OrnamentComponentsEntry(rs.getInt("OrnamentComponentID"), rs.getString("Name")));
 			}
-			return result;
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
-	public ArrayList<OrientationEntry> getOrientationsbyOrnamentCaveID(int ornamentCaveID){
+		return result;
+	}
+
+	public ArrayList<OrientationEntry> getOrientationsbyOrnamentCaveID(int ornamentCaveID) {
 		OrientationEntry result = null;
 		ArrayList<OrientationEntry> orientations = new ArrayList<OrientationEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM OrnamenticOrientation JOIN OrnamentOrientationRelation ON OrnamenticOrientation.OrnamenticOrientationID = OrnamentOrientationRelation.OrientationID WHERE OrnamentCaveRelationID="+ ornamentCaveID);
+			ResultSet rs = stmt.executeQuery(
+					"SELECT * FROM OrnamenticOrientation JOIN OrnamentOrientationRelation ON OrnamenticOrientation.OrnamenticOrientationID = OrnamentOrientationRelation.OrientationID WHERE OrnamentCaveRelationID="
+							+ ornamentCaveID);
 			while (rs.next()) {
 				result = new OrientationEntry(rs.getInt("OrnamenticOrientationID"), rs.getString("Name"));
 				orientations.add(result);
@@ -3664,33 +3648,38 @@ public class MysqlConnector {
 		}
 		return orientations;
 	}
-	
-	public ArrayList<PictorialElementEntry> getPictorialElementsbyOrnamentCaveID(int ornamentCaveID){
-	ArrayList<PictorialElementEntry> results = new ArrayList<PictorialElementEntry>();
-	Connection dbc = getConnection();
-	Statement stmt;
 
-	try {
-		stmt = dbc.createStatement();
-		ResultSet rs = stmt.executeQuery("SELECT * FROM PictorialElements JOIN OrnamentCavePictorialRelation ON PictorialElements.PictorialElementID = OrnamentCavePictorialRelation.PictorialElementID  WHERE PictorialElements.ParentID IS NULL AND OrnamentCavePictorialRelation.OrnamentCaveRelationID = " + ornamentCaveID);
-		while (rs.next()) {
-			results.add(new PictorialElementEntry(rs.getInt("PictorialElementID"), rs.getInt("ParentID"), rs.getString("Text")));
+	public ArrayList<PictorialElementEntry> getPictorialElementsbyOrnamentCaveID(int ornamentCaveID) {
+		ArrayList<PictorialElementEntry> results = new ArrayList<PictorialElementEntry>();
+		Connection dbc = getConnection();
+		Statement stmt;
+
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery(
+					"SELECT * FROM PictorialElements JOIN OrnamentCavePictorialRelation ON PictorialElements.PictorialElementID = OrnamentCavePictorialRelation.PictorialElementID  WHERE PictorialElements.ParentID IS NULL AND OrnamentCavePictorialRelation.OrnamentCaveRelationID = "
+							+ ornamentCaveID);
+			while (rs.next()) {
+				results.add(new PictorialElementEntry(rs.getInt("PictorialElementID"), rs.getInt("ParentID"), rs.getString("Text")));
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
 		}
-		rs.close();
-		stmt.close();
-	} catch (SQLException e) {
-		e.printStackTrace();
-		return null;
+		return results;
 	}
-	return results;
-	}
-	public ArrayList<OrnamentEntry> getRelatedOrnamentsbyOrnamentCaveID(int ornamentCaveID){
+
+	public ArrayList<OrnamentEntry> getRelatedOrnamentsbyOrnamentCaveID(int ornamentCaveID) {
 		ArrayList<OrnamentEntry> results = new ArrayList<OrnamentEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Ornaments JOIN RelatedOrnamentsRelation ON Ornaments.OrnamentID = RelatedOrnamentsRelation.OrnamentID WHERE OrnamentCaveRelationID = " + ornamentCaveID  );
+			ResultSet rs = stmt.executeQuery(
+					"SELECT * FROM Ornaments JOIN RelatedOrnamentsRelation ON Ornaments.OrnamentID = RelatedOrnamentsRelation.OrnamentID WHERE OrnamentCaveRelationID = "
+							+ ornamentCaveID);
 			while (rs.next()) {
 				results.add(new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code")));
 			}
@@ -3701,20 +3690,21 @@ public class MysqlConnector {
 			return null;
 		}
 		return results;
-		
-		
+
 	}
-	
-	public ArrayList<WallOrnamentCaveRelation> getWallsbyOrnamentCaveID(int ornamentCaveID){
+
+	public ArrayList<WallOrnamentCaveRelation> getWallsbyOrnamentCaveID(int ornamentCaveID) {
 		ArrayList<WallOrnamentCaveRelation> results = new ArrayList<WallOrnamentCaveRelation>();
 		Connection dbc = getConnection();
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM OrnamentCaveWallRelation WHERE OrnamentCaveRelationID = " + ornamentCaveID  );
+			ResultSet rs = stmt.executeQuery("SELECT * FROM OrnamentCaveWallRelation WHERE OrnamentCaveRelationID = " + ornamentCaveID);
 			while (rs.next()) {
-				Window.alert("wallloc: "+ rs.getInt("WallLocationID")+ "caveid: " + rs.getInt("CaveID"));
-				results.add(new WallOrnamentCaveRelation(rs.getInt("OrnamentCaveWallRelationID"),rs.getInt("OrnamentCaveRelationID"), rs.getInt("WallLocationID"), rs.getInt("PositionID"), rs.getInt("FunctionID"), rs.getString("Notes"), getWallbyWallLocationANDCaveID(rs.getInt("WallLocationID"), rs.getInt("CaveID"))));
+				Window.alert("wallloc: " + rs.getInt("WallLocationID") + "caveid: " + rs.getInt("CaveID"));
+				results.add(new WallOrnamentCaveRelation(rs.getInt("OrnamentCaveWallRelationID"), rs.getInt("OrnamentCaveRelationID"),
+						rs.getInt("WallLocationID"), rs.getInt("PositionID"), rs.getInt("FunctionID"), rs.getString("Notes"),
+						getWallbyWallLocationANDCaveID(rs.getInt("WallLocationID"), rs.getInt("CaveID"))));
 				Window.alert(Double.toString(getWallbyWallLocationANDCaveID(rs.getInt("WallLocationID"), rs.getInt("CaveID")).getHeight()));
 			}
 			rs.close();
@@ -3724,20 +3714,21 @@ public class MysqlConnector {
 			return null;
 		}
 		return results;
-		
+
 	}
+
 	public WallEntry getWallbyWallLocationANDCaveID(int wallLocationID, int caveID) {
 		WallEntry result = null;
-	
+
 		Connection dbc = getConnection();
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Walls WHERE WallLocationID ="+ wallLocationID + " AND CaveID = "+ caveID);
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Walls WHERE WallLocationID =" + wallLocationID + " AND CaveID = " + caveID);
 			while (rs.next()) {
 				result = new WallEntry(rs.getInt("CaveID"), rs.getInt("WallLocationID"), rs.getInt("PreservationClassificationID"),
 						rs.getDouble("Width"), rs.getDouble("Height"));
-		
+
 			}
 			rs.close();
 			stmt.close();

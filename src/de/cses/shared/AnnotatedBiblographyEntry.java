@@ -29,7 +29,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	private String numberEN, numberTR, numberORG;
 	private String accessdateEN, accessdateTR, accessdateORG;
 	private String titleaddonEN, titleaddonORG, titleaddonTR;
-	private PublisherEntry publisher = new PublisherEntry();
+	private String publisher;
 	private String seriesEN, seriesTR, seriesORG;
 	private String editionEN, editionORG, editionTR;
 	private String volumeEN, volumeTR, volumeORG;
@@ -55,7 +55,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 			String numberEN, String numberORG, String numberTR, 
 			String accessdateEN, String accessdateORG, String accessdateTR,
 			String titleaddonEN, String titleaddonORG, String titleaddonTR, 
-			PublisherEntry publisher, 
+			String publisher, 
 			String seriesEN, String seriesORG, String seriesTR,
 			String editionEN, String editionORG, String editionTR, 
 			String volumeEN, String volumeORG, String volumeTR, 
@@ -387,10 +387,6 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @return the publisherID
-	 */
-
-	/**
 	 * @return the serieEN
 	 */
 	public String getSeriesEN() {
@@ -400,7 +396,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	/**
 	 * @return the publisher
 	 */
-	public PublisherEntry getPublisher() {
+	public String getPublisher() {
 		return publisher;
 	}
 
@@ -408,7 +404,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	 * @param publisher
 	 *          the publisher to set
 	 */
-	public void setPublisher(PublisherEntry publisher) {
+	public void setPublisher(String publisher) {
 		this.publisher = publisher;
 	}
 
@@ -830,7 +826,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 			result = result.concat(" (Eds.). ");
 		}
 		result = result.concat(titleEN != null ? titleEN + ". " : titleORG != null ? titleORG + ". " : titleTR + ". ");
-		result = result.concat(publisher != null ? publisher.getLabel() + ". " : "publisher unknown. ");
+		result = result.concat(publisher != null ? publisher + ". " : "publisher unknown. ");
 		result = result.concat(yearEN + ". ");
 		return result;
 	}

@@ -57,7 +57,7 @@ public class AnnotatedBiblographyView  extends AbstractView {
 			}
 			authors = authors.concat(" (Eds.)");
 		}
-		String publisherName = annotatedBiblographyEntry.getPublisher() != null ? annotatedBiblographyEntry.getPublisher().getName() : "unknown publisher";
+//		String publisherName = annotatedBiblographyEntry.getPublisher() != null ? annotatedBiblographyEntry.getPublisher().getName() : "unknown publisher";
 //		setHTML(dvTemplates.view(authors, Integer.toString(annotatedBiblographyEntry.getYearEN()), annotatedBiblographyEntry.getTitleEN(), publisherName));
 		setHTML(dvTemplates.view(annotatedBiblographyEntry));
 
