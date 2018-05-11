@@ -1,7 +1,7 @@
 <div style='font-size:12px'> 
-	{authors} ({yearORG}). <i>{titleORG}</i>.<br>
-	<tpl if="publicationType.parentTitleEnabled == true">
-		In 	<tpl if="publicationType.editorEnabled == true"> {editors} (eds.)</tpl> <i>{parentTitleORG}</i> (pp. {pagesORG}).
+	{authors} ({yearORG}). <i>{titleORG}</i>.
+	<tpl if="parentTitleORG != &quot;&quot;">
+		<br>In 	<tpl if="editors != &quot;&quot;"> {editors} (eds.)</tpl> <i>{parentTitleORG}</i> <tpl if="pagesORG != &quot;&quot;"> (pp. {pagesORG})</tpl>.
   </tpl>
-  {publisher}.
-</div>"
+  <tpl if="publisher != &quot;&quot;"><br> {publisher}.</tpl>
+</div>
