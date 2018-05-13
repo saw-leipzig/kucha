@@ -88,6 +88,7 @@ import de.cses.client.ui.AbstractEditor;
 import de.cses.client.user.UserLogin;
 import de.cses.client.walls.WallSelector;
 import de.cses.client.walls.Walls;
+import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
@@ -1347,10 +1348,10 @@ public class DepictionEditor extends AbstractEditor {
 		/**
 		 * ---------------------- content of fourth tab (Bibliography Selector) ---------------------
 		 */
-		bibliographySelector = new BibliographySelector();
-		if (correspondingDepictionEntry.getRelatedBibliographyList().size() > 0) {
-			bibliographySelector.setSelectedEntries(correspondingDepictionEntry.getRelatedBibliographyList());
-		}
+		bibliographySelector = new BibliographySelector(correspondingDepictionEntry.getRelatedBibliographyList());
+//		if (correspondingDepictionEntry.getRelatedBibliographyList().size() > 0) {
+//			bibliographySelector.setSelectedEntries(correspondingDepictionEntry.getRelatedBibliographyList());
+//		}
 		
 		/**
 		 * --------------------------- next the editor as a whole will be assembled -------------------

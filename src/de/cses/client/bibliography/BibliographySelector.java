@@ -62,7 +62,15 @@ public class BibliographySelector implements IsWidget {
 	private AnnotatedBiblographyViewTemplates rowExpanderTemplates = GWT.create(AnnotatedBiblographyViewTemplates.class);
 	private Grid<AnnotatedBiblographyEntry> grid = null;
 	private CheckBoxSelectionModel<AnnotatedBiblographyEntry> selectionModel;
+	private List<AnnotatedBiblographyEntry> selectedEntries;
 
+	/**
+	 * 
+	 */
+	public BibliographySelector(List<AnnotatedBiblographyEntry> selectedEntries) {
+		this.selectedEntries = selectedEntries;
+	}
+	
 	/* (non-Javadoc)
 	 * @see com.google.gwt.user.client.ui.IsWidget#asWidget()
 	 */
@@ -136,6 +144,10 @@ public class BibliographySelector implements IsWidget {
     
     rowExpander.initPlugin(grid);
     
+    if (selectedEntries != null && selectedEntries.size() > 0) {
+    	selectionModel.setSelection(selectedEntries);
+    }
+    
     // Stage manager, load the previous state
 //    GridFilterStateHandler<AnnotatedBiblographyEntry> handler = new GridFilterStateHandler<AnnotatedBiblographyEntry>(grid, filters);
 //    handler.loadState();
@@ -146,8 +158,8 @@ public class BibliographySelector implements IsWidget {
 		return new ArrayList<AnnotatedBiblographyEntry>(selectionModel.getSelectedItems());
 	}
 	
-	public void setSelectedEntries(ArrayList<AnnotatedBiblographyEntry> list) {
-		selectionModel.setSelection(list);
-	}
-	
+//	public void setSelectedEntries(List<AnnotatedBiblographyEntry> list) {
+//		selectionModel.setSelection(list);
+//	}
+
 }
