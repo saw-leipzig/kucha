@@ -1348,7 +1348,9 @@ public class DepictionEditor extends AbstractEditor {
 		 * ---------------------- content of fourth tab (Bibliography Selector) ---------------------
 		 */
 		bibliographySelector = new BibliographySelector();
-		bibliographySelector.setSelectedEntries(correspondingDepictionEntry.getRelatedBibliographyList());
+		if (correspondingDepictionEntry.getRelatedBibliographyList().size() > 0) {
+			bibliographySelector.setSelectedEntries(correspondingDepictionEntry.getRelatedBibliographyList());
+		}
 		
 		/**
 		 * --------------------------- next the editor as a whole will be assembled -------------------
