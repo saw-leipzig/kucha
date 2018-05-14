@@ -64,6 +64,14 @@ public class JsonServlet extends HttpServlet {
 					login();
 					break;
 					
+				case "checkSession":
+					if (connector.checkSessionID(request.getParameter("sessionID")) != null) {
+						response.setStatus(204);
+					} else {
+						response.setStatus(403);
+					}
+					break;
+					
 				case "caveID":
 					getCaves(connector.checkSessionID(request.getParameter("sessionID")) == null);
 //					if (connector.checkSessionID(request.getParameter("sessionID")) != null) {
