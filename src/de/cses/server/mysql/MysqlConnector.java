@@ -424,7 +424,7 @@ public class MysqlConnector {
 						rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes"),
 						rs.getInt("MasterImageID"));
 				de.setRelatedImages(getRelatedImages(de.getDepictionID()));
-				de.setRelatedBibliographyList(getAnnotatedBiblography());
+				de.setRelatedBibliographyList(getRelatedBibliographyFromDepiction(de.getDepictionID()));
 				results.add(de);
 			}
 			rs.close();
@@ -453,6 +453,7 @@ public class MysqlConnector {
 						rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes"),
 						rs.getInt("MasterImageID"));
 				result.setRelatedImages(getRelatedImages(result.getDepictionID()));
+				result.setRelatedBibliographyList(getRelatedBibliographyFromDepiction(result.getDepictionID()));
 			}
 			rs.close();
 			stmt.close();
@@ -2524,6 +2525,26 @@ public class MysqlConnector {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private ArrayList<AnnotatedBiblographyEntry> getRelatedBibliographyFromDepiction(int depictionID) {
+		Connection dbc = getConnection();
+		PreparedStatement relationStatement;
+		ArrayList<AnnotatedBiblographyEntry> result = new ArrayList<AnnotatedBiblographyEntry>();
+
+		try {
+			relationStatement = dbc.prepareStatement("SELECT * FROM DepictionBibliographyRelation WHERE DepictionID=?");
+			relationStatement.setInt(1, depictionID);
+			ResultSet rs = relationStatement.executeQuery();
+			while (rs.next()) {
+				result.add(getAnnotatedBiblographybyID(rs.getInt("BibID")));
+			}
+			rs.close();
+			relationStatement.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 
 	/**

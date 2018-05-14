@@ -446,7 +446,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				bibEntry.setTitleORG(event.getValue());
 			}
 		});
-		titleORG.addValidator(new MinLengthValidator(1));
+		titleORG.setAllowBlank(false);
 		titleORG.addValidator(new MaxLengthValidator(256));
 		TextField titleTR = new TextField();
 		titleTR.setText(bibEntry.getTitleTR());
