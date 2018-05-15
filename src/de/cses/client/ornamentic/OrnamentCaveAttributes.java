@@ -45,8 +45,10 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
+import de.cses.client.depictions.IconographySelector;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DistrictEntry;
+import de.cses.shared.IconographyEntry;
 import de.cses.shared.OrientationEntry;
 import de.cses.shared.OrnamentCaveRelation;
 import de.cses.shared.OrnamentCaveType;
@@ -77,7 +79,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 	private ListStore<OrnamentEntry> selectedSimilarOrnaments;
 	private ListStore<OrnamentEntry> selectedRedlatedOrnaments;
 	private WallRelationProperties wallRelationProps;
-	private PictorialElementSelectorObjects selector;
+	private IconographySelector selector;
 	private OrnamenticEditor ornamenticEditor;
 	private ComboBox<StyleEntry> styleComboBox;
 	private TextField caveType = new TextField();
@@ -397,9 +399,12 @@ public class OrnamentCaveAttributes extends PopupPanel {
 				});
 		
 		if (ornamentCaveRelationEntry != null) {
-			Window.alert("set style: " + ornamentCaveRelationEntry.getStyle().getStyleName());
-			
+			if(ornamentCaveRelationEntry.getStyle() == null) {
+				
+			}
+			else {
 			styleComboBox.setValue(ornamentCaveRelationEntry.getStyle());
+			}
 		}
 		
 		header = new FramedPanel();
@@ -633,11 +638,11 @@ Window.alert("Please select a entry!");
 		vlcRelationToTherornaments2.add(header, new VerticalLayoutData(1.0, .4));
 		*/
 
-		selector = new PictorialElementSelectorObjects();
+		selector = new IconographySelector(StaticTables.getInstance().getIconographyForOrnamenticEntries().values());
 		header = new FramedPanel();
 		header.setHeading("Select elements showing similar pattern");
 		if (ornamentCaveRelationEntry != null) {
-			selector.setOrnamentCaveRelationEntry(ornamentCaveRelationEntry);
+			selector.setSelectedIconography(ornamentCaveRelationEntry.getIconographyElements());
 		}
 		header.add(selector.asWidget());
 		vlcRelationToTherornaments2.add(header, new VerticalLayoutData(1, .4));
@@ -735,9 +740,9 @@ Window.alert("Please select a entry!");
 					ornamentCaveRelation.getOrientations().add(orientation);
 				}
 				
-				ornamentCaveRelation.getPictorialElements().clear();
-				for (int i = 0; i < selector.getSelectedPE().size(); i++) {
-					ornamentCaveRelation.getPictorialElements().add(selector.getSelectedPE().get(i));
+				ornamentCaveRelation.getIconographyElements().clear();
+				for (int i = 0; i < selector.getSelectedIconography().size(); i++) {
+					ornamentCaveRelation.getIconographyElements().add(selector.getSelectedIconography().get(i));
 				}
 			
 				ornamentCaveRelation.getWalls().clear();

@@ -823,7 +823,12 @@ public class MysqlConnector {
 				ornamentCaveRelationStatement.setString(5, ornamentCaveR.getGroup());
 				// ornamentCaveRelationStatement.setString(6, ornamentCaveR.getRelatedelementeofOtherCultures());
 				ornamentCaveRelationStatement.setString(6, ornamentCaveR.getSimilarelementsOfOtherCultures());
+				if(ornamentCaveR.getStyle() == null) {
+					ornamentCaveRelationStatement.setInt(7, 0);
+				}
+				else {
 				ornamentCaveRelationStatement.setInt(7, ornamentCaveR.getStyle().getStyleID());
+				}
 				ornamentCaveRelationStatement.executeUpdate();
 				ResultSet keys = ornamentCaveRelationStatement.getGeneratedKeys();
 				if (keys.next()) { // there should only be 1 key returned here
@@ -841,10 +846,10 @@ public class MysqlConnector {
 				}
 				System.err.println("vor pictorial element");
 				PreparedStatement ornamentCavePictorialRelationStatement = dbc
-						.prepareStatement("INSERT INTO OrnamentCavePictorialRelation (OrnamentCaveRelationID, PictorialElementID) VALUES (?, ?)");
+						.prepareStatement("INSERT INTO OrnamentCaveIconographyRelation (OrnamentCaveRelationID, IconographyID) VALUES (?, ?)");
 				ornamentCavePictorialRelationStatement.setInt(1, newCaveOrnamentRelationID);
-				for (PictorialElementEntry peEntry : ornamentCaveR.getPictorialElements()) {
-					ornamentCavePictorialRelationStatement.setInt(2, peEntry.getPictorialElementID());
+				for (IconographyEntry peEntry : ornamentCaveR.getIconographyElements()) {
+					ornamentCavePictorialRelationStatement.setInt(2, peEntry.getIconographyID());
 					ornamentCavePictorialRelationStatement.executeUpdate();
 				}
 
@@ -1049,9 +1054,9 @@ public class MysqlConnector {
 
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM PictorialElements WHERE ParentID " + where);
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Iconography WHERE ParentID " + where);
 			while (rs.next()) {
-				results.add(new PictorialElementEntry(rs.getInt("PictorialElementID"), rs.getInt("ParentID"), rs.getString("Text")));
+				results.add(new PictorialElementEntry(rs.getInt("IconographyID"), rs.getInt("ParentID"), rs.getString("Text")));
 			}
 			rs.close();
 			stmt.close();
@@ -3667,7 +3672,7 @@ public class MysqlConnector {
 				result.add(new OrnamentCaveRelation(rs.getInt("CaveOrnamentRelationID"), getStylebyID(rs.getInt("StyleID")),
 						rs.getInt("OrnamentID"), getDistrict(getCave(rs.getInt("CaveID")).getDistrictID()), getCave(rs.getInt("CaveID")),
 						rs.getString("Colours"), rs.getString("Notes"), rs.getString("GroupOfOrnaments"),
-						rs.getString("SimilarElementsofOtherCultures"), getPictorialElementsbyOrnamentCaveID(rs.getInt("CaveOrnamentRelationID")),
+						rs.getString("SimilarElementsofOtherCultures"), getIconographyElementsbyOrnamentCaveID(rs.getInt("CaveOrnamentRelationID")),
 						getRelatedOrnamentsbyOrnamentCaveID(rs.getInt("CaveOrnamentRelationID")),
 						getWallsbyOrnamentCaveID(rs.getInt("CaveOrnamentRelationID")),
 						getOrientationsbyOrnamentCaveID(rs.getInt("CaveOrnamentRelationID"))));
@@ -3724,18 +3729,18 @@ public class MysqlConnector {
 		return orientations;
 	}
 
-	public ArrayList<PictorialElementEntry> getPictorialElementsbyOrnamentCaveID(int ornamentCaveID) {
-		ArrayList<PictorialElementEntry> results = new ArrayList<PictorialElementEntry>();
+	public ArrayList<IconographyEntry> getIconographyElementsbyOrnamentCaveID(int ornamentCaveID) {
+		ArrayList<IconographyEntry> results = new ArrayList<IconographyEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
 
 		try {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery(
-					"SELECT * FROM PictorialElements JOIN OrnamentCavePictorialRelation ON PictorialElements.PictorialElementID = OrnamentCavePictorialRelation.PictorialElementID  WHERE PictorialElements.ParentID IS NULL AND OrnamentCavePictorialRelation.OrnamentCaveRelationID = "
+					"SELECT * FROM Iconography JOIN OrnamentCaveIconographyRelation ON Iconography.IconographyID = OrnamentCaveIconographyRelation.IconographyID  WHERE Iconography.ParentID IS NULL AND OrnamentCaveIconographyRelation.OrnamentCaveRelationID = "
 							+ ornamentCaveID);
 			while (rs.next()) {
-				results.add(new PictorialElementEntry(rs.getInt("PictorialElementID"), rs.getInt("ParentID"), rs.getString("Text")));
+				results.add(new IconographyEntry(rs.getInt("IconographyID"), rs.getInt("ParentID"), rs.getString("Text")));
 			}
 			rs.close();
 			stmt.close();
