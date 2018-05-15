@@ -45,7 +45,6 @@ import de.cses.shared.OrnamentFunctionEntry;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.OrnamentPositionEntry;
 import de.cses.shared.PhotographerEntry;
-import de.cses.shared.PictorialElementEntry;
 import de.cses.shared.PreservationAttributeEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.PublicationEntry;
@@ -118,7 +117,6 @@ public interface DatabaseServiceAsync {
 
 	void getIconography(AsyncCallback<ArrayList<IconographyEntry>> callback) throws IllegalArgumentException;
 
-	void getPictorialElements(AsyncCallback<ArrayList<PictorialElementEntry>> asyncCallback) throws IllegalArgumentException;
 
 	void getCaveTypebyID(int caveTypeID, AsyncCallback<CaveTypeEntry> callback) throws IllegalArgumentException;
 
@@ -166,12 +164,6 @@ public interface DatabaseServiceAsync {
 
 	void getIconographyEntry(int iconographyID, AsyncCallback<IconographyEntry> asyncCallback) throws IllegalArgumentException;
 
-	/**
-	 * @param depictionID
-	 * @param asyncCallback
-	 */
-	void getRelatedPE(int depictionID, AsyncCallback<ArrayList<PictorialElementEntry>> asyncCallback) throws IllegalArgumentException;
-
 	void getOrientations(AsyncCallback<ArrayList<OrientationEntry>> asyncCallback) throws IllegalArgumentException;
 
 	void getMainTypologicalClasses(AsyncCallback<ArrayList<MainTypologicalClass>> asyncCallback) throws IllegalArgumentException;
@@ -196,8 +188,6 @@ public interface DatabaseServiceAsync {
 
 	void getPreservationClassifications(AsyncCallback<ArrayList<PreservationClassificationEntry>> asyncCallback)
 			throws IllegalArgumentException;
-
-	void getPictorialElementsObjects(AsyncCallback<ArrayList<PictorialElementEntry>> asyncCallback) throws IllegalArgumentException;
 
 	void updateCaveEntry(CaveEntry caveEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 

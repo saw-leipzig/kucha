@@ -45,7 +45,6 @@ import de.cses.shared.OrnamentFunctionEntry;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.OrnamentPositionEntry;
 import de.cses.shared.PhotographerEntry;
-import de.cses.shared.PictorialElementEntry;
 import de.cses.shared.PreservationAttributeEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.PublicationEntry;
@@ -100,8 +99,6 @@ public interface DatabaseService extends RemoteService {
 //	int insertEntry(String sqlInsert);
 
 	ArrayList<IconographyEntry> getIconography() throws IllegalArgumentException;
-
-	ArrayList<PictorialElementEntry> getPictorialElements() throws IllegalArgumentException;
 
 	boolean saveOrnamentEntry(OrnamentEntry ornamentEntry) throws IllegalArgumentException;
 
@@ -172,13 +169,11 @@ public interface DatabaseService extends RemoteService {
 	
 	IconographyEntry getIconographyEntry(int iconographyID) throws IllegalArgumentException;
 	
-	ArrayList<PictorialElementEntry> getRelatedPE(int depictionID) throws IllegalArgumentException;
 
 	ArrayList<CeilingTypeEntry> getCeilingTypes() throws IllegalArgumentException;
 
 	ArrayList<PreservationClassificationEntry> getPreservationClassifications();
 
-	ArrayList<PictorialElementEntry> getPictorialElementsObjects() throws IllegalArgumentException;
 
 	boolean updateCaveEntry(CaveEntry caveEntry) throws IllegalArgumentException;
 

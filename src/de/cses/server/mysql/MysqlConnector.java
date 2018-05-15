@@ -56,7 +56,6 @@ import de.cses.shared.OrnamentFunctionEntry;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.OrnamentPositionEntry;
 import de.cses.shared.PhotographerEntry;
-import de.cses.shared.PictorialElementEntry;
 import de.cses.shared.PreservationAttributeEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.PublicationEntry;
@@ -844,7 +843,6 @@ public class MysqlConnector {
 					ornamentOrientationRelationStatement.setInt(2, orientationEntry.getOrientationID());
 					ornamentOrientationRelationStatement.executeUpdate();
 				}
-				System.err.println("vor pictorial element");
 				PreparedStatement ornamentCavePictorialRelationStatement = dbc
 						.prepareStatement("INSERT INTO OrnamentCaveIconographyRelation (OrnamentCaveRelationID, IconographyID) VALUES (?, ?)");
 				ornamentCavePictorialRelationStatement.setInt(1, newCaveOrnamentRelationID);
@@ -1027,45 +1025,9 @@ public class MysqlConnector {
 		return results;
 	}
 
-	public ArrayList<PictorialElementEntry> getPictorialElements(int rootID) {
-		ArrayList<PictorialElementEntry> root = getPictorialElementEntries(rootID);
 
-		for (PictorialElementEntry item : root) {
-			processPictorialElementsTree(item);
-		}
-		return root;
-	}
 
-	private void processPictorialElementsTree(PictorialElementEntry parent) {
-		ArrayList<PictorialElementEntry> children = getPictorialElementEntries(parent.getPictorialElementID());
-		if (children != null) {
-			parent.setChildren(children);
-			for (PictorialElementEntry child : children) {
-				processPictorialElementsTree(child);
-			}
-		}
-	}
 
-	protected ArrayList<PictorialElementEntry> getPictorialElementEntries(int parentID) {
-		ArrayList<PictorialElementEntry> results = new ArrayList<PictorialElementEntry>();
-		Connection dbc = getConnection();
-		Statement stmt;
-		String where = (parentID == 0) ? "IS NULL" : "= " + parentID;
-
-		try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Iconography WHERE ParentID " + where);
-			while (rs.next()) {
-				results.add(new PictorialElementEntry(rs.getInt("IconographyID"), rs.getInt("ParentID"), rs.getString("Text")));
-			}
-			rs.close();
-			stmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return null;
-		}
-		return results;
-	}
 
 	public ArrayList<VendorEntry> getVendors() {
 		ArrayList<VendorEntry> results = new ArrayList<VendorEntry>();
@@ -1561,29 +1523,6 @@ public class MysqlConnector {
 		return result;
 	}
 
-	/**
-	 * @param depictionID
-	 * @return
-	 */
-	public ArrayList<PictorialElementEntry> getRelatedPE(int depictionID) {
-		ArrayList<PictorialElementEntry> result = new ArrayList<PictorialElementEntry>();
-		Connection dbc = getConnection();
-		Statement stmt;
-		try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery(
-					"SELECT * FROM PictorialElements WHERE PictorialElementID IN (SELECT PictorialElementID FROM DepictionPERelation WHERE DepictionID="
-							+ depictionID + ")");
-			while (rs.next()) {
-				result.add(new PictorialElementEntry(rs.getInt("PictorialElementID"), rs.getInt("ParentID"), rs.getString("Text")));
-			}
-			rs.close();
-			stmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return result;
-	}
 
 	public ArrayList<MainTypologicalClass> getMainTypologicalClass() {
 		MainTypologicalClass result = null;
@@ -2477,22 +2416,6 @@ public class MysqlConnector {
 		}
 	}
 
-	private synchronized void insertDepictionPERelation(int depictionID, ArrayList<PictorialElementEntry> peEntryList) {
-		Connection dbc = getConnection();
-		PreparedStatement relationStatement;
-
-		try {
-			relationStatement = dbc.prepareStatement("INSERT INTO DepictionPERelation VALUES (?, ?)");
-			for (PictorialElementEntry entry : peEntryList) {
-				relationStatement.setInt(1, depictionID);
-				relationStatement.setInt(2, entry.getPictorialElementID());
-				relationStatement.executeUpdate();
-			}
-			relationStatement.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
 
 	private synchronized void insertDepictionIconographyRelation(int depictionID, ArrayList<IconographyEntry> iconographyList) {
 		Connection dbc = getConnection();
