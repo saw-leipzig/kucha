@@ -46,7 +46,6 @@ import de.cses.shared.OrnamentFunctionEntry;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.OrnamentPositionEntry;
 import de.cses.shared.PhotographerEntry;
-import de.cses.shared.PictorialElementEntry;
 import de.cses.shared.PreservationAttributeEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.PublicationEntry;
@@ -202,11 +201,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		return connector.getIconography(0); // root index =0 so we load them all
 	}
 
-	@Override
-	public ArrayList<PictorialElementEntry> getPictorialElements() throws IllegalArgumentException {
-		MysqlConnector connector = MysqlConnector.getInstance();
-		return connector.getPictorialElements(0); // start with the absolute root elements
-	}
+
 
 	@Override
 	public ArrayList<VendorEntry> getVendors() throws IllegalArgumentException {
@@ -414,10 +409,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		return connector.getOrnamentsWHERE(sqlWhere);
 	}
 	
-	public ArrayList<PictorialElementEntry> getPictorialElementsObjects() throws IllegalArgumentException {
-		MysqlConnector connector = MysqlConnector.getInstance();
-		return connector.getPictorialElements(2005); // start with the 5th element subtree
-	}
+
 
 
 	/* (non-Javadoc)
@@ -438,14 +430,6 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		return connector.getIconographyEntry(iconographyID);
 	}
 
-	/* (non-Javadoc)
-	 * @see de.cses.client.DatabaseService#getRelatedPictorialElements(int)
-	 */
-	@Override
-	public ArrayList<PictorialElementEntry> getRelatedPE(int depictionID) throws IllegalArgumentException {
-		MysqlConnector connector = MysqlConnector.getInstance();
-		return connector.getRelatedPE(depictionID);
-	}
 
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getCeilingTypes()

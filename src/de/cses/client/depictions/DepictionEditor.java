@@ -118,7 +118,6 @@ public class DepictionEditor extends AbstractEditor {
 	private TextField backgroundColourField;
 	private TextArea generalRemarksArea;
 	protected IconographySelector iconographySelector;
-	protected PictorialElementSelector peSelector;
 	protected ImageSelector imageSelector;
 	private FramedPanel mainPanel;
 	protected PopupPanel imageSelectionDialog;
