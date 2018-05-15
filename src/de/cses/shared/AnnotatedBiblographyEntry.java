@@ -23,28 +23,28 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 
 	private int annotatedBiblographyID = 0;
 	private PublicationTypeEntry publicationType = null;
-	private String titleEN, titleTR, titleORG;
-	private String parentTitleEN, parentTitleTR, parentTitleORG;
-	private String universityEN, universityORG, universityTR;
-	private String numberEN, numberTR, numberORG;
-	private String accessdateEN, accessdateTR, accessdateORG;
-	private String titleaddonEN, titleaddonORG, titleaddonTR;
-	private PublisherEntry publisher = new PublisherEntry();
-	private String seriesEN, seriesTR, seriesORG;
-	private String editionEN, editionORG, editionTR;
-	private String volumeEN, volumeTR, volumeORG;
-	private String issueEN, issueTR, issueORG;
+	private String titleEN="", titleTR="", titleORG="";
+	private String parentTitleEN="", parentTitleTR="", parentTitleORG="";
+	private String universityEN="", universityORG="", universityTR="";
+	private String numberEN="", numberTR="", numberORG="";
+	private String accessdateEN="", accessdateTR="", accessdateORG="";
+	private String titleaddonEN="", titleaddonORG="", titleaddonTR="";
+	private String publisher="";
+	private String seriesEN="", seriesTR="", seriesORG="";
+	private String editionEN="", editionORG="", editionTR="";
+	private String volumeEN="", volumeTR="", volumeORG="";
+	private String issueEN="", issueTR="", issueORG="";
 	private int yearEN;
-	private String yearORG, yearTR;
-	private String monthEN, monthTR, monthORG;
-	private String pagesEN, pagesORG, pagesTR;
-	private String comments;
-	private String notes;
-	private String url;
-	private String uri;
+	private String yearORG="", yearTR="";
+	private String monthEN="", monthTR="", monthORG="";
+	private String pagesEN="", pagesORG="", pagesTR="";
+	private String comments="";
+	private String notes="";
+	private String url="";
+	private String uri="";
 	private boolean unpublished = false;
 	private int firstEditionBibID = 0;
-	private String abstractText;
+	private String abstractText="";
 	private ArrayList<AuthorEntry> authorList = new ArrayList<AuthorEntry>();
 	private ArrayList<AuthorEntry> editorList = new ArrayList<AuthorEntry>();
 
@@ -55,7 +55,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 			String numberEN, String numberORG, String numberTR, 
 			String accessdateEN, String accessdateORG, String accessdateTR,
 			String titleaddonEN, String titleaddonORG, String titleaddonTR, 
-			PublisherEntry publisher, 
+			String publisher, 
 			String seriesEN, String seriesORG, String seriesTR,
 			String editionEN, String editionORG, String editionTR, 
 			String volumeEN, String volumeORG, String volumeTR, 
@@ -387,10 +387,6 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @return the publisherID
-	 */
-
-	/**
 	 * @return the serieEN
 	 */
 	public String getSeriesEN() {
@@ -400,7 +396,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	/**
 	 * @return the publisher
 	 */
-	public PublisherEntry getPublisher() {
+	public String getPublisher() {
 		return publisher;
 	}
 
@@ -408,7 +404,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	 * @param publisher
 	 *          the publisher to set
 	 */
-	public void setPublisher(PublisherEntry publisher) {
+	public void setPublisher(String publisher) {
 		this.publisher = publisher;
 	}
 
@@ -830,7 +826,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 			result = result.concat(" (Eds.). ");
 		}
 		result = result.concat(titleEN != null ? titleEN + ". " : titleORG != null ? titleORG + ". " : titleTR + ". ");
-		result = result.concat(publisher != null ? publisher.getLabel() + ". " : "publisher unknown. ");
+		result = result.concat(publisher != null ? publisher + ". " : "publisher unknown. ");
 		result = result.concat(yearEN + ". ");
 		return result;
 	}
@@ -895,10 +891,10 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 		String result = "";
 		if (authorList.size() > 3) {
 			AuthorEntry ae = authorList.get(0);
-			result = (ae.getInstitution()!=null ? ae.getInstitution() : ae.getLastname() + ", " + ae.getFirstname().charAt(0) + "., et al.") ;
+			result = (ae.getInstitution()!=null ? ae.getInstitution() : ae.getLastname() + (ae.getFirstname() != null ? ", " + ae.getFirstname().charAt(0) + "., et al." : ", et al.")) ;
 		} else {
 			for (AuthorEntry ae : authorList) {
-				result = result.concat((result.length() > 0 ? "; " : "") + (ae.getInstitution()!=null ? ae.getInstitution() : ae.getLastname() + ", " + ae.getFirstname().charAt(0) + "."));
+				result = result.concat((result.length() > 0 ? "; " : "") + (ae.getInstitution()!=null ? ae.getInstitution() : ae.getLastname() + (ae.getFirstname() != null ? ", " + ae.getFirstname().charAt(0) + "." : "")));
 			}
 		}
 		return result;
@@ -908,7 +904,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 		String result = "";
 		
 		for (AuthorEntry ae : editorList) {
-			result = result.concat(result.length() > 0 ? "; " + ae.getLastname() + ", " + ae.getFirstname() : ae.getLastname() + ", " + ae.getFirstname().charAt(0) + ".");
+			result = result.concat((result.length() > 0 ? "; " : "") + (ae.getInstitution()!=null ? ae.getInstitution() : ae.getLastname() + (ae.getFirstname() != null ? ", " + ae.getFirstname().charAt(0) + "." : "")));
 		}
 		return result;
 	}

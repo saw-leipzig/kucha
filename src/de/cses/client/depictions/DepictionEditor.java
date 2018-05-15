@@ -88,6 +88,7 @@ import de.cses.client.ui.AbstractEditor;
 import de.cses.client.user.UserLogin;
 import de.cses.client.walls.WallSelector;
 import de.cses.client.walls.Walls;
+import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
@@ -1347,7 +1348,10 @@ public class DepictionEditor extends AbstractEditor {
 		/**
 		 * ---------------------- content of fourth tab (Bibliography Selector) ---------------------
 		 */
-		bibliographySelector = new BibliographySelector();
+		bibliographySelector = new BibliographySelector(correspondingDepictionEntry.getRelatedBibliographyList());
+//		if (correspondingDepictionEntry.getRelatedBibliographyList().size() > 0) {
+//			bibliographySelector.setSelectedEntries(correspondingDepictionEntry.getRelatedBibliographyList());
+//		}
 		
 		/**
 		 * --------------------------- next the editor as a whole will be assembled -------------------
@@ -1427,6 +1431,7 @@ public class DepictionEditor extends AbstractEditor {
 			relatedImageEntryList.add(imageEntryLS.get(i));
 		}
 		correspondingDepictionEntry.setRelatedImages(relatedImageEntryList);
+		correspondingDepictionEntry.setRelatedBibliographyList(bibliographySelector.getSelectedEntries());
 		
 		if (correspondingDepictionEntry.getDepictionID() == 0) {
 			dbService.insertDepictionEntry(correspondingDepictionEntry, iconographySelector.getSelectedIconography(), new AsyncCallback<Integer>() {

@@ -64,6 +64,16 @@ public class JsonServlet extends HttpServlet {
 					login();
 					break;
 					
+				case "checkSession":
+					if (connector.checkSessionID(request.getParameter("sessionID")) != null) {
+//						response.setStatus(204);
+						response.sendError(HttpServletResponse.SC_NO_CONTENT);
+					} else {
+//						response.setStatus(403);
+						response.sendError(HttpServletResponse.SC_FORBIDDEN);
+					}
+					break;
+					
 				case "caveID":
 					getCaves(connector.checkSessionID(request.getParameter("sessionID")) == null);
 //					if (connector.checkSessionID(request.getParameter("sessionID")) != null) {
@@ -76,7 +86,7 @@ public class JsonServlet extends HttpServlet {
 					if (connector.checkSessionID(request.getParameter("sessionID")) != null) {
 						getSites();
 					} else {
-						response.setStatus(403);
+						response.sendError(HttpServletResponse.SC_FORBIDDEN);
 					}
 					break;
 					
@@ -84,7 +94,7 @@ public class JsonServlet extends HttpServlet {
 					if (connector.checkSessionID(request.getParameter("sessionID")) != null) {
 						getRegions();
 					} else {
-						response.setStatus(403);
+						response.sendError(HttpServletResponse.SC_FORBIDDEN);
 					}
 					break;
 					
@@ -92,7 +102,7 @@ public class JsonServlet extends HttpServlet {
 					if (connector.checkSessionID(request.getParameter("sessionID")) != null) {
 						getDistricts();
 					} else {
-						response.setStatus(403);
+						response.sendError(HttpServletResponse.SC_FORBIDDEN);
 					}
 					break;
 					
@@ -100,7 +110,7 @@ public class JsonServlet extends HttpServlet {
 					if (connector.checkSessionID(request.getParameter("sessionID")) != null) {
 						getIconography();
 					} else {
-						response.setStatus(403);
+						response.sendError(HttpServletResponse.SC_FORBIDDEN);
 					}
 					break;
 					
@@ -108,7 +118,7 @@ public class JsonServlet extends HttpServlet {
 					if (connector.checkSessionID(request.getParameter("sessionID")) != null) {
 						getDepiction();
 					} else {
-						response.setStatus(403);
+						response.sendError(HttpServletResponse.SC_FORBIDDEN);
 					}
 					break;
 					
@@ -136,7 +146,7 @@ public class JsonServlet extends HttpServlet {
 					break;
 			}
 		} else {
-			response.setStatus(404);
+			response.sendError(HttpServletResponse.SC_NOT_FOUND);
 		}
 		response.getWriter().close();
 	}
