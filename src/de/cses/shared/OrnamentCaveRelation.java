@@ -14,7 +14,7 @@ public class OrnamentCaveRelation extends AbstractEntry {
 	private String group;
 	private String similarelementsOfOtherCultures;
 	private ArrayList<OrientationEntry> orientations = new ArrayList<OrientationEntry>();
-	private ArrayList<PictorialElementEntry> PictorialElements = new ArrayList<PictorialElementEntry>();
+	private ArrayList<IconographyEntry> iconographyElements = new ArrayList<IconographyEntry>();
 	private ArrayList<OrnamentEntry> relatedOrnamentsRelations = new ArrayList<OrnamentEntry>();
 	private ArrayList<WallOrnamentCaveRelation> walls = new ArrayList<WallOrnamentCaveRelation>();
 	private StyleEntry style;
@@ -24,7 +24,7 @@ public class OrnamentCaveRelation extends AbstractEntry {
 	public OrnamentCaveRelation(){
 		
 	}
-	public OrnamentCaveRelation(int ornamentCaveRelationID,   StyleEntry style,int ornamentID, DistrictEntry district,CaveEntry caveEntry, String colours, String notes, String group, String similarElementsOfOtherCultures, ArrayList<PictorialElementEntry> PictorialElements,ArrayList<OrnamentEntry> relatedOrnamentsRelations ,  ArrayList<WallOrnamentCaveRelation> walls, ArrayList<OrientationEntry> orientations){
+	public OrnamentCaveRelation(int ornamentCaveRelationID,   StyleEntry style,int ornamentID, DistrictEntry district,CaveEntry caveEntry, String colours, String notes, String group, String similarElementsOfOtherCultures, ArrayList<IconographyEntry> iconographyElements,ArrayList<OrnamentEntry> relatedOrnamentsRelations ,  ArrayList<WallOrnamentCaveRelation> walls, ArrayList<OrientationEntry> orientations){
 		this.ornamentCaveRelationID = ornamentCaveRelationID;
 		this.style = style;
 		this.ornamentID = ornamentID;
@@ -34,7 +34,7 @@ public class OrnamentCaveRelation extends AbstractEntry {
 		this.notes = notes;
 		this.similarelementsOfOtherCultures = similarElementsOfOtherCultures;
 		this.orientations = orientations;
-		this.PictorialElements = PictorialElements;
+		this.iconographyElements = iconographyElements;
 		this.group = group;
 		this.relatedOrnamentsRelations = relatedOrnamentsRelations;
 		this.walls = walls;
@@ -184,17 +184,6 @@ public class OrnamentCaveRelation extends AbstractEntry {
 	/**
 	 * @return the pictorialElements
 	 */
-	public ArrayList<PictorialElementEntry> getPictorialElements() {
-		return PictorialElements;
-	}
-
-
-	/**
-	 * @param pictorialElements the pictorialElements to set
-	 */
-	public void setPictorialElements(ArrayList<PictorialElementEntry> pictorialElements) {
-		PictorialElements = pictorialElements;
-	}
 
 
 	/**
@@ -205,6 +194,18 @@ public class OrnamentCaveRelation extends AbstractEntry {
 	}
 
 
+	/**
+	 * @return the iconographyElements
+	 */
+	public ArrayList<IconographyEntry> getIconographyElements() {
+		return iconographyElements;
+	}
+	/**
+	 * @param iconographyElements the iconographyElements to set
+	 */
+	public void setIconographyElements(ArrayList<IconographyEntry> iconographyElements) {
+		this.iconographyElements = iconographyElements;
+	}
 	/**
 	 * @param relatedOrnamentsRelations the relatedOrnamentsRelations to set
 	 */
