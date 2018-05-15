@@ -3664,6 +3664,7 @@ public class MysqlConnector {
 							+ ornamentCaveID);
 			while (rs.next()) {
 				results.add(new IconographyEntry(rs.getInt("IconographyID"), rs.getInt("ParentID"), rs.getString("Text")));
+				System.err.println("es wurde einpassender icnography eintrag gefunden");
 			}
 			rs.close();
 			stmt.close();
