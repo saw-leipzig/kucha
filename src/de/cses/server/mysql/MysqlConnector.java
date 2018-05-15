@@ -3660,7 +3660,7 @@ public class MysqlConnector {
 		try {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery(
-					"SELECT * FROM Iconography JOIN OrnamentCaveIconographyRelation ON Iconography.IconographyID = OrnamentCaveIconographyRelation.IconographyID  WHERE Iconography.ParentID IS NULL AND OrnamentCaveIconographyRelation.OrnamentCaveRelationID = "
+					"SELECT * FROM Iconography JOIN OrnamentCaveIconographyRelation ON Iconography.IconographyID = OrnamentCaveIconographyRelation.IconographyID  WHERE OrnamentCaveIconographyRelation.OrnamentCaveRelationID = "
 							+ ornamentCaveID);
 			while (rs.next()) {
 				results.add(new IconographyEntry(rs.getInt("IconographyID"), rs.getInt("ParentID"), rs.getString("Text")));
