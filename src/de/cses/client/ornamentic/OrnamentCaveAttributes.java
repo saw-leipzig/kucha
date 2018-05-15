@@ -642,6 +642,7 @@ Window.alert("Please select a entry!");
 		header = new FramedPanel();
 		header.setHeading("Select elements showing similar pattern");
 		if (ornamentCaveRelationEntry != null) {
+			Window.alert("Size iconography: "+ ornamentCaveRelationEntry.getIconographyElements().size());
 			selector.setSelectedIconography(ornamentCaveRelationEntry.getIconographyElements());
 		}
 		header.add(selector.asWidget());
