@@ -46,6 +46,7 @@ import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
+import de.cses.client.Util;
 import de.cses.shared.IconographyEntry;
 
 public class IconographySelector implements IsWidget {
@@ -148,8 +149,11 @@ public class IconographySelector implements IsWidget {
 	
 	public void setSelectedIconography(ArrayList<IconographyEntry> iconographyRelationList) {
 		for (IconographyEntry entry : iconographyRelationList) {
+			Util.doLogging("setSelectedIconography setting entry = " + entry.getIconographyID());
 			iconographyTree.setChecked(entry, CheckState.CHECKED);
+			Util.doLogging("setSelectedIconography setChecked sucessful");
 			selectedIconographyMap.put(entry.getUniqueID(), entry);
+			Util.doLogging("setSelectedIconography put sucessful");
 		}
 	}
 

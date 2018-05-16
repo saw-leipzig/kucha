@@ -49,11 +49,9 @@ import de.cses.client.Util;
 import de.cses.client.depictions.IconographySelector;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DistrictEntry;
-import de.cses.shared.IconographyEntry;
 import de.cses.shared.OrientationEntry;
 import de.cses.shared.OrnamentCaveRelation;
 import de.cses.shared.OrnamentCaveType;
-import de.cses.shared.OrnamentComponentsEntry;
 import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.StructureOrganization;
@@ -642,11 +640,11 @@ Window.alert("Please select an entry!");
 		selector = new IconographySelector(StaticTables.getInstance().getIconographyForOrnamenticEntries().values());
 		header = new FramedPanel();
 		header.setHeading("Select elements showing similar pattern");
+		header.add(selector);
 		if (ornamentCaveRelationEntry != null) {
 			Util.doLogging(this.getClass().getName() + "Size iconography: "+ ornamentCaveRelationEntry.getIconographyElements().size());
 			selector.setSelectedIconography(ornamentCaveRelationEntry.getIconographyElements());
 		}
-		header.add(selector.asWidget());
 		vlcRelationToTherornaments2.add(header, new VerticalLayoutData(1, .4));
 
 		final TextField groupOfOrnaments = new TextField();
