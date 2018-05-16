@@ -3746,6 +3746,6 @@ public class MysqlConnector {
 	 * @param message
 	 */
 	public void doLogging(String clientName, String message) {
-		System.err.print(">>> " + clientName + ": " + message);
+		System.err.println(">>> " + clientName + ": " + message);
 	}
 }

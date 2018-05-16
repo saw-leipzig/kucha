@@ -99,7 +99,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 	public OrnamentCaveAttributes(OrnamentCaveRelation ornamentCaveRelationEntry) {
 		this.ornamentCaveRelationEntry = ornamentCaveRelationEntry;
 		init();
-		Util.doLogging(this.getClass().getName() + "caveID = " + ornamentCaveRelationEntry.getCave().getCaveID());
+		Util.doLogging(this.getClass().getName() + " caveID = " + ornamentCaveRelationEntry.getCave().getCaveID());
 	}
 
 	public OrnamentCaveAttributes() {
@@ -136,7 +136,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 			}
 
 			public void onSuccess(ArrayList<OrientationEntry> result) {
-				Util.doLogging(this.getClass().getName() + "groesse orientation " +result.size());
+				Util.doLogging(this.getClass().getName() + " groesse orientation " +result.size());
 				orientationListStore.clear();
 				selectedorientationListStore.clear();
 				if (ornamentCaveRelationEntry != null) {
@@ -183,7 +183,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 					caveEntryList.add(pe);
 				}
 				if (ornamentCaveRelationEntry != null) {
-					Util.doLogging(this.getClass().getName() + districtEntryList.findModelWithKey(Integer.toString(ornamentCaveRelationEntry.getDistrict().getDistrictID())).getName());
+					Util.doLogging(this.getClass().getName() + " " + districtEntryList.findModelWithKey(Integer.toString(ornamentCaveRelationEntry.getDistrict().getDistrictID())).getName());
 					districtComboBox.setValue(districtEntryList.findModelWithKey(Integer.toString(ornamentCaveRelationEntry.getDistrict().getDistrictID())),false);
 					caveEntryComboBox.setValue(caveEntryList.findModelWithKey(Integer.toString(ornamentCaveRelationEntry.getCave().getCaveID())),false);
 					 int p = ornamentCaveRelationEntry.getCave().getCaveTypeID();
@@ -451,7 +451,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 
 		
 		if(ornamentCaveRelationEntry != null) {
-Util.doLogging(this.getClass().getName() + "Walls list laenge: "+ ornamentCaveRelationEntry.getWalls().size());
+Util.doLogging(this.getClass().getName() + " Walls list laenge: "+ ornamentCaveRelationEntry.getWalls().size());
 			wallsListStore.clear();
 			for(WallOrnamentCaveRelation pe: ornamentCaveRelationEntry.getWalls()){
 			wallsListStore.add(pe);

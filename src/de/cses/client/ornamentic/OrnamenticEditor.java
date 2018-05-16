@@ -475,14 +475,14 @@ ToolButton addOrnamentClassButton = new ToolButton(ToolButton.PLUS);
 		cavesList.setAllowTextSelection(true);
 
 		if (ornamentEntry != null) {
-			Window.alert("Listengroesse: " + ornamentEntry.getCavesRelations().size());
+			Util.doLogging("Listengroesse: " + ornamentEntry.getCavesRelations().size());
 			for (int i = 0; i < ornamentEntry.getCavesRelations().size(); i++) {
 				caveOrnamentRelationList.add(ornamentEntry.getCavesRelations().get(i));
-				Window.alert("Daten: notes: " + ornamentEntry.getCavesRelations().get(i).getNotes());
+				Util.doLogging("Daten: notes: " + ornamentEntry.getCavesRelations().get(i).getNotes());
 
-				Window.alert("Daten: ID: " + ornamentEntry.getCavesRelations().get(i).getCave().getCaveID() + "DistrictID: " + ornamentEntry.getCavesRelations().get(i).getCave().getDistrictID());
+				Util.doLogging("Daten: ID: " + ornamentEntry.getCavesRelations().get(i).getCave().getCaveID() + "DistrictID: " + ornamentEntry.getCavesRelations().get(i).getCave().getDistrictID());
 			}
-			Window.alert("nachher liste: " + Integer.toString(caveOrnamentRelationList.size()));
+			Util.doLogging("nachher liste: " + Integer.toString(caveOrnamentRelationList.size()));
 		}
 
 		cavesContentPanel.setHeading("Added caves:");
@@ -509,8 +509,8 @@ ToolButton addOrnamentClassButton = new ToolButton(ToolButton.PLUS);
 
 			@Override
 			public void onClick(ClickEvent event) {
-				Window.alert("Vorher caveid: " + cavesList.getSelectionModel().getSelectedItem());
-				Window.alert("Vorher caveid: " + cavesList.getSelectionModel().getSelectedItem().getCave().getOfficialNumber());
+				Util.doLogging("Vorher caveid: " + cavesList.getSelectionModel().getSelectedItem());
+				Util.doLogging("Vorher caveid: " + cavesList.getSelectionModel().getSelectedItem().getCave().getOfficialNumber());
 				OrnamentCaveAttributes attributespopup = new OrnamentCaveAttributes(cavesList.getSelectionModel().getSelectedItem());
 				attributespopup.setOrnamentic(ornamenticEditor);
 				attributespopup.setGlassEnabled(true);
@@ -548,7 +548,7 @@ ToolButton addOrnamentClassButton = new ToolButton(ToolButton.PLUS);
 				
 				}
 				else {
-					Window.alert("ID gesetzt");
+					Util.doLogging("ID gesetzt");
 					oEntry.setOrnamentClass(ornamentClassComboBox.getValue().getOrnamentClassID());
 				}
 				for(int i = 0; i < selectedinnerSecondaryPatternsEntryList.size(); i++) {
@@ -571,13 +571,12 @@ ToolButton addOrnamentClassButton = new ToolButton(ToolButton.PLUS);
 					@Override
 					public void onFailure(Throwable caught) {
 						caught.printStackTrace();
-						Window.alert("Saving failed");
-						Window.alert(caught.getMessage());
+						Util.showWarning("Saving failed", caught.getMessage());
 					}
 
 					@Override
 					public void onSuccess(Boolean result) {
-						Window.alert("saved");
+						Util.doLogging(this.getClass().getName() + " saving sucessful");
 						closeEditor();
 					}
 				});
@@ -697,7 +696,7 @@ ToolButton addOrnamentClassButton = new ToolButton(ToolButton.PLUS);
 							@Override
 							public void onSuccess(OrnamentComponentsEntry result) {
 								ornamentComponents.add(entry);
-								Window.alert("saved");
+								Util.doLogging(this.getClass().getName() + " saving sucessful");
 								newComponentPopup.hide();
 							}
 						});
@@ -769,7 +768,7 @@ ToolButton addOrnamentClassButton = new ToolButton(ToolButton.PLUS);
 
 							@Override
 							public void onSuccess(InnerSecondaryPatternsEntry result) {
-								Window.alert("saved");
+								Util.doLogging(this.getClass().getName() + "saving sucessful");
 								innerSecondaryPatternsEntryList.add(result);
 								newInnerSecondaryPatternPopup.hide();
 							}
