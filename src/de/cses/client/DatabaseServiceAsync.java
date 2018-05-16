@@ -102,7 +102,7 @@ public interface DatabaseServiceAsync {
 	 */
 	void deleteEntry(String sqlDelete, AsyncCallback<Boolean> callback) throws IllegalArgumentException;
 
-	void saveOrnamentEntry(OrnamentEntry ornamentEntry, AsyncCallback<Boolean> callback) throws IllegalArgumentException;
+	void saveOrnamentEntry(OrnamentEntry ornamentEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 
 	/**
 	 * Executes a pre-defined SQL INSERT statement and returns the generated (auto-increment) unique key from the table.
@@ -287,5 +287,7 @@ public interface DatabaseServiceAsync {
 	void getIconography(int rootIndex, AsyncCallback<ArrayList<IconographyEntry>> asyncCallback) throws IllegalArgumentException;
 
 	void doLogging(String message, AsyncCallback asyncCallback) throws IllegalArgumentException;
+
+	void updateOrnamentEntry(OrnamentEntry oEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
 }

@@ -165,7 +165,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	}
 
 	@Override
-	public boolean saveOrnamentEntry(OrnamentEntry ornamentEntry) throws IllegalArgumentException {
+	public int saveOrnamentEntry(OrnamentEntry ornamentEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.saveOrnamentEntry(ornamentEntry);
 	}
@@ -811,6 +811,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getPositionbyCeilingTypes(ceiling1, ceiling2);
 	}
+	
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getRelatedDepictions(java.lang.String)
 	 */
@@ -823,6 +824,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		}
 		return resultList;
 	}
+
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getIconography(int)
 	 */
@@ -831,6 +833,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getIconography(rootIndex);
 	}
+
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#doLogging(java.lang.String, java.lang.String)
 	 */
@@ -839,5 +842,14 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		MysqlConnector connector = MysqlConnector.getInstance();
 		String host = getThreadLocalRequest().getRemoteHost();
 		connector.doLogging(host, message);
+	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#updateOrnamentEntry(de.cses.shared.OrnamentEntry)
+	 */
+	@Override
+	public boolean updateOrnamentEntry(OrnamentEntry oEntry) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.updateOrnamentEntry(oEntry);
 	}
 }

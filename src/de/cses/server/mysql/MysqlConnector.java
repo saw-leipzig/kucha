@@ -730,7 +730,7 @@ public class MysqlConnector {
 
 	}
 
-	public boolean saveOrnamentEntry(OrnamentEntry ornamentEntry) {
+	public int saveOrnamentEntry(OrnamentEntry ornamentEntry) {
 		int newOrnamentID = 0;
 		Connection dbc = getConnection();
 		PreparedStatement ornamentStatement;
@@ -759,6 +759,39 @@ public class MysqlConnector {
 			updateOrnamentComponentsRelations(newOrnamentID, ornamentEntry.getOrnamentComponents());
 			updateOrnamentImageRelations(newOrnamentID, ornamentEntry.getImages());
 			updateCaveOrnamentRelation(newOrnamentID, ornamentEntry.getCavesRelations());
+			ornamentStatement.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return 0;
+		}
+		return newOrnamentID;
+	}
+	
+	/**
+	 * @param oEntry
+	 * @return
+	 */
+	public boolean updateOrnamentEntry(OrnamentEntry ornamentEntry) {
+		Connection dbc = getConnection();
+		PreparedStatement ornamentStatement;
+		try {
+			ornamentStatement = dbc.prepareStatement("UPDATE Ornaments SET Code=?, Description=?, Remarks=?, Interpretation=?, OrnamentReferences=?, Annotation=?, OrnamentClassID=?, StructureOrganizationID=? WHERE OrnamentID=" + ornamentEntry.getOrnamentID()
+							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+					Statement.RETURN_GENERATED_KEYS);
+			ornamentStatement.setString(1, ornamentEntry.getCode());
+			ornamentStatement.setString(2, ornamentEntry.getDescription());
+			ornamentStatement.setString(3, ornamentEntry.getRemarks());
+			ornamentStatement.setString(4, ornamentEntry.getInterpretation());
+			ornamentStatement.setString(5, ornamentEntry.getReferences());
+			ornamentStatement.setString(6, ornamentEntry.getAnnotations());
+			ornamentStatement.setInt(7, ornamentEntry.getOrnamentClass());
+			ornamentStatement.setInt(8, ornamentEntry.getStructureOrganizationID());
+			ornamentStatement.executeUpdate();
+
+			updateInnerSecondaryPatternsRelations(ornamentEntry.getOrnamentID(), ornamentEntry.getInnerSecondaryPatterns());
+			updateOrnamentComponentsRelations(ornamentEntry.getOrnamentID(), ornamentEntry.getOrnamentComponents());
+			updateOrnamentImageRelations(ornamentEntry.getOrnamentID(), ornamentEntry.getImages());
+			updateCaveOrnamentRelation(ornamentEntry.getOrnamentID(), ornamentEntry.getCavesRelations());
 			ornamentStatement.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -3733,4 +3766,5 @@ public class MysqlConnector {
 	public void doLogging(String clientName, String message) {
 		System.err.println(">>> " + clientName + ": " + message);
 	}
+
 }
