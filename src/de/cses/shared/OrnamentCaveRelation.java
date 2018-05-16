@@ -6,8 +6,7 @@ import java.util.List;
 public class OrnamentCaveRelation extends AbstractEntry {
 	int ornamentCaveRelationID;
 	private int ornamentID;
-	private String name;
-	private CaveEntry cave;
+	private CaveEntry caveEntry;
 	private String colours;
 	private String notes;
 	private DistrictEntry district;
@@ -31,8 +30,6 @@ public class OrnamentCaveRelation extends AbstractEntry {
 		this.style = style;
 		this.ornamentID = ornamentID;
 		this.district = district;
-		this.name = caveEntry.getHistoricName() != null ? "Cave: " + caveEntry.getOfficialNumber() + " (" + caveEntry.getHistoricName() + ")"
-				: "Cave: " + caveEntry.getOfficialNumber();
 		this.colours = colours;
 		this.notes = notes;
 		this.similarelementsOfOtherCultures = similarElementsOfOtherCultures;
@@ -41,7 +38,7 @@ public class OrnamentCaveRelation extends AbstractEntry {
 		this.group = group;
 		this.relatedOrnamentsRelations = relatedOrnamentsRelations;
 		this.walls = walls;
-		this.cave = caveEntry;
+		this.caveEntry = caveEntry;
 
 	}
 
@@ -69,18 +66,18 @@ public class OrnamentCaveRelation extends AbstractEntry {
 	}
 
 	/**
-	 * @return the cave
+	 * @return the caveEntry
 	 */
-	public CaveEntry getCave() {
-		return cave;
+	public CaveEntry getCaveEntry() {
+		return caveEntry;
 	}
 
 	/**
-	 * @param cave
-	 *          the cave to set
+	 * @param caveEntry
+	 *          the caveEntry to set
 	 */
-	public void setCave(CaveEntry cave) {
-		this.cave = cave;
+	public void setCaveEntry(CaveEntry cave) {
+		this.caveEntry = cave;
 	}
 
 	public String getColours() {
@@ -115,11 +112,7 @@ public class OrnamentCaveRelation extends AbstractEntry {
 	}
 
 	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
+		return (caveEntry.getHistoricName() != null && caveEntry.getHistoricName().length()>0) ? "Cave: " + caveEntry.getOfficialNumber() + " (" + caveEntry.getHistoricName() + ")" : "Cave: " + caveEntry.getOfficialNumber();
 	}
 
 	public List<WallOrnamentCaveRelation> getWalls() {

@@ -446,15 +446,15 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 				caveOrnamentRelationList.add(ornamentEntry.getCavesRelations().get(i));
 				Util.doLogging("Daten: notes: " + ornamentEntry.getCavesRelations().get(i).getNotes());
 
-				Util.doLogging("Daten: ID: " + ornamentEntry.getCavesRelations().get(i).getCave().getCaveID() + "DistrictID: "
-						+ ornamentEntry.getCavesRelations().get(i).getCave().getDistrictID());
+				Util.doLogging("Daten: ID: " + ornamentEntry.getCavesRelations().get(i).getCaveEntry().getCaveID() + "DistrictID: "
+						+ ornamentEntry.getCavesRelations().get(i).getCaveEntry().getDistrictID());
 			}
 			Util.doLogging("nachher liste: " + Integer.toString(caveOrnamentRelationList.size()));
 		}
 
-		cavesContentPanel.setHeading("Added caves:");
-
+		cavesContentPanel.setHeading("Added caves");
 		cavesContentPanel.add(cavesList);
+
 		TextButton edit = new TextButton("edit");
 		TextButton delete = new TextButton("delete");
 
@@ -477,7 +477,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 			@Override
 			public void onClick(ClickEvent event) {
 				Util.doLogging("Vorher caveid: " + cavesList.getSelectionModel().getSelectedItem());
-				Util.doLogging("Vorher caveid: " + cavesList.getSelectionModel().getSelectedItem().getCave().getOfficialNumber());
+				Util.doLogging("Vorher caveid: " + cavesList.getSelectionModel().getSelectedItem().getCaveEntry().getOfficialNumber());
 				OrnamentCaveAttributes attributespopup = new OrnamentCaveAttributes(cavesList.getSelectionModel().getSelectedItem());
 				attributespopup.setOrnamentic(ornamenticEditor);
 				attributespopup.setGlassEnabled(true);
@@ -553,13 +553,13 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 						@Override
 						public void onFailure(Throwable caught) {
 							// TODO Auto-generated method stub
-							
+
 						}
 
 						@Override
 						public void onSuccess(Boolean result) {
 							// TODO Auto-generated method stub
-							
+
 						}
 					});
 				}
@@ -873,7 +873,6 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 	interface OrnamentCaveRelationProperties extends PropertyAccess<CaveEntry> {
 		ModelKeyProvider<OrnamentCaveRelation> ornamentCaveRelationID();
-
 		ValueProvider<OrnamentCaveRelation, String> name();
 	}
 

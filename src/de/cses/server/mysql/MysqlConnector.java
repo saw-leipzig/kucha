@@ -849,7 +849,7 @@ public class MysqlConnector {
 					+ "VALUES (?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			ornamentCaveRelationStatement.setInt(2, ornamentID);
 			for (OrnamentCaveRelation ornamentCaveR : cavesRelations) {
-				ornamentCaveRelationStatement.setInt(1, ornamentCaveR.getCave().getCaveID());
+				ornamentCaveRelationStatement.setInt(1, ornamentCaveR.getCaveEntry().getCaveID());
 				ornamentCaveRelationStatement.setString(3, ornamentCaveR.getColours());
 				ornamentCaveRelationStatement.setString(4, ornamentCaveR.getNotes());
 				ornamentCaveRelationStatement.setString(5, ornamentCaveR.getGroup());
