@@ -47,6 +47,7 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.Util;
 import de.cses.client.images.ImageSelector;
 import de.cses.client.images.ImageSelectorListener;
 import de.cses.client.ornamentic.OrnamentCaveAttributes.StructureOrganizationProperties;
@@ -394,7 +395,7 @@ ToolButton addOrnamentClassButton = new ToolButton(ToolButton.PLUS);
 
 							@Override
 							public void onSuccess(OrnamentClassEntry result) {
-								Window.alert("saved");
+								Util.doLogging(this.getClass().getName() + " added " + result.getName()); 
 								ornamentClassEntryList.add(result);
 								newOrnamentClassPopup.hide();
 							}

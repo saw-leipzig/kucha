@@ -831,4 +831,13 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getIconography(rootIndex);
 	}
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#doLogging(java.lang.String, java.lang.String)
+	 */
+	@Override
+	public void doLogging(String message) {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		String host = getThreadLocalRequest().getRemoteHost();
+		connector.doLogging(host, message);
+	}
 }

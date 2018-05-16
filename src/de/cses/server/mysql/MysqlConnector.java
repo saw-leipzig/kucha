@@ -3660,11 +3660,10 @@ public class MysqlConnector {
 		try {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery(
-					"SELECT * FROM Iconography JOIN OrnamentCaveIconographyRelation ON Iconography.IconographyID = OrnamentCaveIconographyRelation.IconographyID  WHERE OrnamentCaveIconographyRelation.OrnamentCaveRelationID = "
-							+ ornamentCaveID);
+					"SELECT * FROM Iconography WHERE IconographyID IN (SELECT IconographyID FROM OrnamentCaveIconographyRelation WHERE OrnamentCaveRelationID=" + ornamentCaveID + ")");
 			while (rs.next()) {
 				results.add(new IconographyEntry(rs.getInt("IconographyID"), rs.getInt("ParentID"), rs.getString("Text")));
-				System.err.println("es wurde einpassender icnography eintrag gefunden");
+				System.err.println("getIconographyElementsbyOrnamentCaveID: IconographyID=" + rs.getInt("IconographyID"));
 			}
 			rs.close();
 			stmt.close();
@@ -3740,5 +3739,13 @@ public class MysqlConnector {
 			e.printStackTrace();
 		}
 		return result;
+	}
+
+	/**
+	 * @param clientName
+	 * @param message
+	 */
+	public void doLogging(String clientName, String message) {
+		System.err.print(">>> " + clientName + ": " + message);
 	}
 }

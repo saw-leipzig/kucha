@@ -45,6 +45,7 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
+import de.cses.client.Util;
 import de.cses.client.depictions.IconographySelector;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DistrictEntry;
@@ -98,7 +99,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 	public OrnamentCaveAttributes(OrnamentCaveRelation ornamentCaveRelationEntry) {
 		this.ornamentCaveRelationEntry = ornamentCaveRelationEntry;
 		init();
-		Window.alert(Integer.toString(ornamentCaveRelationEntry.getCave().getCaveID()));
+		Util.doLogging(this.getClass().getName() + "caveID = " + ornamentCaveRelationEntry.getCave().getCaveID());
 	}
 
 	public OrnamentCaveAttributes() {
@@ -135,11 +136,11 @@ public class OrnamentCaveAttributes extends PopupPanel {
 			}
 
 			public void onSuccess(ArrayList<OrientationEntry> result) {
-				Window.alert("groesse orientation " +result.size());
+				Util.doLogging(this.getClass().getName() + "groesse orientation " +result.size());
 				orientationListStore.clear();
 				selectedorientationListStore.clear();
 				if (ornamentCaveRelationEntry != null) {
-					Window.alert("groesse orientation in entry" + ornamentCaveRelationEntry.getOrientations().size());
+					Util.doLogging(this.getClass().getName() + "groesse orientation in entry" + ornamentCaveRelationEntry.getOrientations().size());
 					for (OrientationEntry pe : result) {
 						int count = 0;
 						for (OrientationEntry oe : ornamentCaveRelationEntry.getOrientations()) {
@@ -182,7 +183,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 					caveEntryList.add(pe);
 				}
 				if (ornamentCaveRelationEntry != null) {
-					Window.alert(districtEntryList.findModelWithKey(Integer.toString(ornamentCaveRelationEntry.getDistrict().getDistrictID())).getName());
+					Util.doLogging(this.getClass().getName() + districtEntryList.findModelWithKey(Integer.toString(ornamentCaveRelationEntry.getDistrict().getDistrictID())).getName());
 					districtComboBox.setValue(districtEntryList.findModelWithKey(Integer.toString(ornamentCaveRelationEntry.getDistrict().getDistrictID())),false);
 					caveEntryComboBox.setValue(caveEntryList.findModelWithKey(Integer.toString(ornamentCaveRelationEntry.getCave().getCaveID())),false);
 					 int p = ornamentCaveRelationEntry.getCave().getCaveTypeID();
@@ -450,11 +451,11 @@ public class OrnamentCaveAttributes extends PopupPanel {
 
 		
 		if(ornamentCaveRelationEntry != null) {
-Window.alert("Walls list laenge: "+ ornamentCaveRelationEntry.getWalls().size());
+Util.doLogging(this.getClass().getName() + "Walls list laenge: "+ ornamentCaveRelationEntry.getWalls().size());
 			wallsListStore.clear();
 			for(WallOrnamentCaveRelation pe: ornamentCaveRelationEntry.getWalls()){
 			wallsListStore.add(pe);
-			Window.alert("added wall");
+			Util.doLogging(this.getClass().getName() + "added wall");
 			}
 		}
 
@@ -497,7 +498,7 @@ Window.alert("Walls list laenge: "+ ornamentCaveRelationEntry.getWalls().size())
 					attributespopup.setGlassEnabled(true);
 					attributespopup.center();
 				} else {
-Window.alert("Please select a entry!");
+Window.alert("Please select an entry!");
 				}
 
 			}
@@ -642,7 +643,7 @@ Window.alert("Please select a entry!");
 		header = new FramedPanel();
 		header.setHeading("Select elements showing similar pattern");
 		if (ornamentCaveRelationEntry != null) {
-			Window.alert("Size iconography: "+ ornamentCaveRelationEntry.getIconographyElements().size());
+			Util.doLogging(this.getClass().getName() + "Size iconography: "+ ornamentCaveRelationEntry.getIconographyElements().size());
 			selector.setSelectedIconography(ornamentCaveRelationEntry.getIconographyElements());
 		}
 		header.add(selector.asWidget());

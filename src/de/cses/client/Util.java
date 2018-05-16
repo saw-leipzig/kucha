@@ -32,7 +32,7 @@ import de.cses.shared.ImageEntry;
  *
  */
 public class Util {
-	
+
 	public static final String REGEX_EMAIL_PATTERN = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
 	public static final String REGEX_URL_PATTERN = "^(((https?|ftps?)://)(%[0-9A-Fa-f]{2}|[-()_.!~*';/?:@&=+$,A-Za-z0-9])+)([).!';/?:,][[:blank:]])?$";
 
@@ -42,10 +42,12 @@ public class Util {
 	/**
 	 * This class only contains static methods for utility purpose, so we never want to create an instance
 	 */
-	private Util() { }
-	
+	private Util() {
+	}
+
 	/**
-	 * Returns a SafeUri for either the full image or the thumbnail related to 
+	 * Returns a SafeUri for either the full image or the thumbnail related to
+	 * 
 	 * @param entry
 	 * @return The main (master) image representing the depiction as a preview
 	 */
@@ -60,12 +62,13 @@ public class Util {
 
 			@Override
 			public void onSuccess(ImageEntry result) {
-				imageUri  = UriUtils.fromString("resource?imageID=" + result.getImageID() + (thumbnail>0 ? "&thumb=" + thumbnail : "") + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
+				imageUri = UriUtils.fromString("resource?imageID=" + result.getImageID() + (thumbnail > 0 ? "&thumb=" + thumbnail : "")
+						+ UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 			}
 		});
 		return imageUri;
 	}
-	
+
 	public static void showWarning(String header, String message) {
 		final PopupPanel dialog = new PopupPanel();
 		FramedPanel dialogPanel = new FramedPanel();
@@ -74,7 +77,7 @@ public class Util {
 		dialogPanel.add(new Label(message));
 		TextButton okButton = new TextButton("OK");
 		okButton.addSelectHandler(new SelectHandler() {
-			
+
 			@Override
 			public void onSelect(SelectEvent event) {
 				dialog.hide();
@@ -85,6 +88,17 @@ public class Util {
 		dialog.setModal(true);
 		dialog.setGlassEnabled(true);
 		dialog.center();
+	}
+
+	public static void doLogging(String message) {
+		dbService.doLogging(message, new AsyncCallback() {
+
+			@Override
+			public void onFailure(Throwable caught) { }
+
+			@Override
+			public void onSuccess(Object result) { }
+		});
 	}
 
 }

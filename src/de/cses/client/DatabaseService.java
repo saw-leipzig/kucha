@@ -263,4 +263,6 @@ public interface DatabaseService extends RemoteService {
 	ArrayList<Integer> getRelatedDepictionIDs(String iconographyIDs, int correlationFactor);
 
 	ArrayList<IconographyEntry> getIconography(int rootIndex);
+
+	void doLogging(String message);
 }

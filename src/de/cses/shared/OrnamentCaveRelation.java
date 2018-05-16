@@ -19,17 +19,20 @@ public class OrnamentCaveRelation extends AbstractEntry {
 	private ArrayList<WallOrnamentCaveRelation> walls = new ArrayList<WallOrnamentCaveRelation>();
 	private StyleEntry style;
 
-	
-	
-	public OrnamentCaveRelation(){
-		
+	public OrnamentCaveRelation() {
+
 	}
-	public OrnamentCaveRelation(int ornamentCaveRelationID,   StyleEntry style,int ornamentID, DistrictEntry district,CaveEntry caveEntry, String colours, String notes, String group, String similarElementsOfOtherCultures, ArrayList<IconographyEntry> iconographyElements,ArrayList<OrnamentEntry> relatedOrnamentsRelations ,  ArrayList<WallOrnamentCaveRelation> walls, ArrayList<OrientationEntry> orientations){
+
+	public OrnamentCaveRelation(int ornamentCaveRelationID, StyleEntry style, int ornamentID, DistrictEntry district, CaveEntry caveEntry,
+			String colours, String notes, String group, String similarElementsOfOtherCultures, ArrayList<IconographyEntry> iconographyElements,
+			ArrayList<OrnamentEntry> relatedOrnamentsRelations, ArrayList<WallOrnamentCaveRelation> walls,
+			ArrayList<OrientationEntry> orientations) {
 		this.ornamentCaveRelationID = ornamentCaveRelationID;
 		this.style = style;
 		this.ornamentID = ornamentID;
 		this.district = district;
-		this.name = caveEntry.getHistoricName() != null ? "Cave: " + caveEntry.getOfficialNumber() + " (" + caveEntry.getHistoricName() + ")" : "Cave: " + caveEntry.getOfficialNumber();
+		this.name = caveEntry.getHistoricName() != null ? "Cave: " + caveEntry.getOfficialNumber() + " (" + caveEntry.getHistoricName() + ")"
+				: "Cave: " + caveEntry.getOfficialNumber();
 		this.colours = colours;
 		this.notes = notes;
 		this.similarelementsOfOtherCultures = similarElementsOfOtherCultures;
@@ -42,17 +45,13 @@ public class OrnamentCaveRelation extends AbstractEntry {
 
 	}
 
-
 	public int getOrnamentID() {
 		return ornamentID;
 	}
 
-
 	public void setOrnamentID(int ornamentID) {
 		this.ornamentID = ornamentID;
 	}
-
-
 
 	/**
 	 * @return the district
@@ -61,14 +60,13 @@ public class OrnamentCaveRelation extends AbstractEntry {
 		return district;
 	}
 
-
 	/**
-	 * @param district the district to set
+	 * @param district
+	 *          the district to set
 	 */
 	public void setDistrict(DistrictEntry district) {
 		this.district = district;
 	}
-
 
 	/**
 	 * @return the cave
@@ -77,40 +75,29 @@ public class OrnamentCaveRelation extends AbstractEntry {
 		return cave;
 	}
 
-
 	/**
-	 * @param cave the cave to set
+	 * @param cave
+	 *          the cave to set
 	 */
 	public void setCave(CaveEntry cave) {
 		this.cave = cave;
 	}
 
-
 	public String getColours() {
 		return colours;
 	}
-
 
 	public void setColours(String colours) {
 		this.colours = colours;
 	}
 
-
-
-
 	public String getNotes() {
 		return notes;
 	}
 
-
 	public void setNotes(String notes) {
 		this.notes = notes;
 	}
-
-
-
-
-
 
 	/**
 	 * @return the group
@@ -119,51 +106,37 @@ public class OrnamentCaveRelation extends AbstractEntry {
 		return group;
 	}
 
-
 	/**
-	 * @param group the group to set
+	 * @param group
+	 *          the group to set
 	 */
 	public void setGroup(String group) {
 		this.group = group;
 	}
 
-
 	public String getName() {
 		return name;
 	}
-
 
 	public void setName(String name) {
 		this.name = name;
 	}
 
-
 	public List<WallOrnamentCaveRelation> getWalls() {
 		return walls;
 	}
-
-
-
-
 
 	public void setWalls(ArrayList<WallOrnamentCaveRelation> walls) {
 		this.walls = walls;
 	}
 
-
-	
-
-
 	public String getSimilarelementsOfOtherCultures() {
 		return similarelementsOfOtherCultures;
 	}
 
-
 	public void setSimilarelementsOfOtherCultures(String similarelementsOfOtherCultures) {
 		this.similarelementsOfOtherCultures = similarelementsOfOtherCultures;
 	}
-
-
 
 	/**
 	 * @return the orientations
@@ -172,19 +145,13 @@ public class OrnamentCaveRelation extends AbstractEntry {
 		return orientations;
 	}
 
-
 	/**
-	 * @param orientations the orientations to set
+	 * @param orientations
+	 *          the orientations to set
 	 */
 	public void setOrientations(ArrayList<OrientationEntry> orientations) {
 		this.orientations = orientations;
 	}
-
-
-	/**
-	 * @return the pictorialElements
-	 */
-
 
 	/**
 	 * @return the relatedOrnamentsRelations
@@ -193,35 +160,38 @@ public class OrnamentCaveRelation extends AbstractEntry {
 		return relatedOrnamentsRelations;
 	}
 
-
 	/**
 	 * @return the iconographyElements
 	 */
 	public ArrayList<IconographyEntry> getIconographyElements() {
 		return iconographyElements;
 	}
+
 	/**
-	 * @param iconographyElements the iconographyElements to set
+	 * @param iconographyElements
+	 *          the iconographyElements to set
 	 */
 	public void setIconographyElements(ArrayList<IconographyEntry> iconographyElements) {
 		this.iconographyElements = iconographyElements;
 	}
+
 	/**
-	 * @param relatedOrnamentsRelations the relatedOrnamentsRelations to set
+	 * @param relatedOrnamentsRelations
+	 *          the relatedOrnamentsRelations to set
 	 */
 	public void setRelatedOrnamentsRelations(ArrayList<OrnamentEntry> relatedOrnamentsRelations) {
 		this.relatedOrnamentsRelations = relatedOrnamentsRelations;
 	}
 
-
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.cses.shared.AbstractEntry#getUniqueID()
 	 */
 	@Override
 	public String getUniqueID() {
 		return "OrnamentCaveRelation" + ornamentID;
 	}
-
 
 	/**
 	 * @return the style
@@ -230,32 +200,27 @@ public class OrnamentCaveRelation extends AbstractEntry {
 		return style;
 	}
 
-
 	/**
-	 * @param style the style to set
+	 * @param style
+	 *          the style to set
 	 */
 	public void setStyle(StyleEntry style) {
 		this.style = style;
 	}
+
 	/**
 	 * @return the ornamentCaveRelationID
 	 */
 	public int getOrnamentCaveRelationID() {
 		return ornamentCaveRelationID;
 	}
+
 	/**
-	 * @param ornamentCaveRelationID the ornamentCaveRelationID to set
+	 * @param ornamentCaveRelationID
+	 *          the ornamentCaveRelationID to set
 	 */
 	public void setOrnamentCaveRelationID(int ornamentCaveRelationID) {
 		this.ornamentCaveRelationID = ornamentCaveRelationID;
 	}
-
-
-
-	
-
-
-	
-	
 
 }
