@@ -133,32 +133,41 @@ public class OrnamentCaveAttributes extends PopupPanel {
 				Util.doLogging(this.getClass().getName() + " groesse orientation " + result.size());
 				orientationListStore.clear();
 				selectedorientationListStore.clear();
-				if (ornamentCaveRelationEntry != null) {
-					Util.doLogging(this.getClass().getName() + "groesse orientation in entry" + ornamentCaveRelationEntry.getOrientations().size());
-					for (OrientationEntry pe : result) {
-						int count = 0;
-						for (OrientationEntry oe : ornamentCaveRelationEntry.getOrientations()) {
-							if (pe.getOrientationID() != oe.getOrientationID()) {
-								count++;
-							}
-							if (count == ornamentCaveRelationEntry.getOrientations().size()) {
-								orientationListStore.add(pe);
-							}
-						}
-					}
-					for (OrientationEntry oe : ornamentCaveRelationEntry.getOrientations()) {
-						selectedorientationListStore.add(oe);
-					}
-					if (ornamentCaveRelationEntry.getOrientations().size() == 0) {
-						for (OrientationEntry nu : result) {
-							orientationListStore.add(nu);
-						}
-					}
-				} else {
-					for (OrientationEntry pe : result) {
-						orientationListStore.add(pe);
-					}
+				for (OrientationEntry pe : result) {
+					orientationListStore.add(pe);
 				}
+				for (OrientationEntry oe : ornamentCaveRelationEntry.getOrientations()) {
+					orientationListStore.remove(orientationListStore.findModelWithKey(Integer.toString(oe.getOrientationID())));
+					selectedorientationListStore.add(oe);
+				}
+//				
+//				
+//				if (ornamentCaveRelationEntry != null) {
+//					Util.doLogging(this.getClass().getName() + "groesse orientation in entry" + ornamentCaveRelationEntry.getOrientations().size());
+//					for (OrientationEntry pe : result) {
+//						int count = 0;
+//						for (OrientationEntry oe : ornamentCaveRelationEntry.getOrientations()) {
+//							if (pe.getOrientationID() != oe.getOrientationID()) {
+//								count++;
+//							}
+//							if (count == ornamentCaveRelationEntry.getOrientations().size()) {
+//								orientationListStore.add(pe);
+//							}
+//						}
+//					}
+//					for (OrientationEntry oe : ornamentCaveRelationEntry.getOrientations()) {
+//						selectedorientationListStore.add(oe);
+//					}
+//					if (ornamentCaveRelationEntry.getOrientations().size() == 0) {
+//						for (OrientationEntry nu : result) {
+//							orientationListStore.add(nu);
+//						}
+//					}
+//				} else {
+//					for (OrientationEntry pe : result) {
+//						orientationListStore.add(pe);
+//					}
+//				}
 
 			}
 		});
@@ -238,7 +247,6 @@ public class OrnamentCaveAttributes extends PopupPanel {
 					// selectedSimilarOrnaments.add(oe);
 					// }
 					for (OrnamentEntry oe : ornamentCaveRelationEntry.getRelatedOrnamentsRelations()) {
-
 						selectedRedlatedOrnaments.add(oe);
 					}
 
@@ -518,10 +526,8 @@ public class OrnamentCaveAttributes extends PopupPanel {
 
 		HorizontalLayoutContainer orientationHorizontalPanel = new HorizontalLayoutContainer();
 
-		ListView<OrientationEntry, String> orientationView = new ListView<OrientationEntry, String>(orientationListStore,
-				orientationProps.name());
-		ListView<OrientationEntry, String> selectedOrientationView = new ListView<OrientationEntry, String>(selectedorientationListStore,
-				orientationProps.name());
+		ListView<OrientationEntry, String> orientationView = new ListView<OrientationEntry, String>(orientationListStore, orientationProps.name());
+		ListView<OrientationEntry, String> selectedOrientationView = new ListView<OrientationEntry, String>(selectedorientationListStore, orientationProps.name());
 		orientationHorizontalPanel.add(orientationView, new HorizontalLayoutData(.5, 1.0, new Margins(1)));
 		orientationHorizontalPanel.add(selectedOrientationView, new HorizontalLayoutData(.5, 1.0, new Margins(1)));
 
@@ -537,7 +543,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 
 		horizontalContainerLayout.add(header, new HorizontalLayoutData(.5, 1.0));
 
-		final TextArea notes = new TextArea();
+		TextArea notes = new TextArea();
 
 		header = new FramedPanel();
 		if (ornamentCaveRelationEntry != null) {
@@ -547,7 +553,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 		header.add(notes);
 		horizontalContainerLayout.add(header, new HorizontalLayoutData(.5, 1.0));
 
-		final TextArea colours = new TextArea();
+		TextArea colours = new TextArea();
 		colours.setAllowBlank(true);
 		header = new FramedPanel();
 
@@ -715,10 +721,11 @@ public class OrnamentCaveAttributes extends PopupPanel {
 				for (OrnamentEntry ornament : relatedOrnaments) {
 					ornamentCaveRelation.getRelatedOrnamentsRelations().add(ornament);
 				}
-				List<OrientationEntry> orientationslist = selectedorientationListStore.getAll();
-				for (OrientationEntry orientation : orientationslist) {
-					ornamentCaveRelation.getOrientations().add(orientation);
-				}
+//				List<OrientationEntry> orientationslist = selectedorientationListStore.getAll();
+//				for (OrientationEntry orientation : orientationslist) {
+//					ornamentCaveRelation.getOrientations().add(orientation);
+//				}
+				ornamentCaveRelation.setOrientations(new ArrayList<OrientationEntry>(selectedorientationListStore.getAll()));
 
 				ornamentCaveRelation.getIconographyElements().clear();
 				for (int i = 0; i < selector.getSelectedIconography().size(); i++) {
