@@ -35,10 +35,13 @@ import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.TabPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
@@ -90,7 +93,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 	private StoreFilter<CaveEntry> caveFilter;
 	private ListStore<StyleEntry> styleEntryList;
 	private StyleProperties styleProps;
-	private ContentPanel mainPanel = null;
+	private FramedPanel mainPanel = null;
 
 	public OrnamentCaveAttributes() {
 		this(null);
@@ -289,7 +292,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 		districtComboBox.setTypeAhead(true);
 		districtComboBox.setEditable(false);
 		districtComboBox.setTriggerAction(TriggerAction.ALL);
-		if (ornamentCaveRelationEntry.getDistrict() != null) {
+		if ((ornamentCaveRelationEntry != null) && (ornamentCaveRelationEntry.getDistrict() != null)) {
 			districtComboBox.setValue(StaticTables.getInstance().getDistrictEntries().get(ornamentCaveRelationEntry.getDistrict().getDistrictID()), false);
 		}
 		
@@ -668,43 +671,45 @@ public class OrnamentCaveAttributes extends PopupPanel {
 
 		tabPanel.add(relationToOtherOrnamentsHLC, "Relations");
 
-		HorizontalPanel buttonsPanel = new HorizontalPanel();
+//		HorizontalPanel buttonsPanel = new HorizontalPanel();
 
-		TextButton save = new TextButton("save");
-		TextButton cancel = new TextButton("cancel");
+		ToolButton saveTB = new ToolButton(ToolButton.SAVE);
+		ToolButton cancelTB = new ToolButton(ToolButton.CLOSE);
 
-		caveAttributesVerticalPanel.add(buttonsPanel);
+//		caveAttributesVerticalPanel.add(buttonsPanel);
 
-		ClickHandler cancelClickHandler = new ClickHandler() {
+//		ClickHandler cancelClickHandler = new ClickHandler() {
+//
+//			@Override
+//			public void onClick(ClickEvent event) {
+//				popup.hide();
+//
+//			}
+//		};
 
+		cancelTB.addSelectHandler(new SelectHandler() {
+			
 			@Override
-			public void onClick(ClickEvent event) {
+			public void onSelect(SelectEvent event) {
 				popup.hide();
-
 			}
-		};
-		cancel.addHandler(cancelClickHandler, ClickEvent.getType());
-
-		ClickHandler saveClickHandler = new ClickHandler() {
-
+		}); 
+		
+		saveTB.addSelectHandler(new SelectHandler() {
+			
 			@Override
-			public void onClick(ClickEvent event) {
+			public void onSelect(SelectEvent event) {
 
 				OrnamentCaveRelation ornamentCaveRelation;
-
 				if (ornamentCaveRelationEntry == null) {
-
 					ornamentCaveRelation = new OrnamentCaveRelation();
 				} else {
 					ornamentCaveRelation = ornamentCaveRelationEntry;
-
 				}
 				if (districtComboBox.getValue() == null) {
-
 					return;
 				}
 				if (caveEntryComboBox.getValue() == null) {
-
 					return;
 				}
 
@@ -744,23 +749,82 @@ public class OrnamentCaveAttributes extends PopupPanel {
 				}
 
 				popup.hide();
-
 			}
-		};
-		save.addHandler(saveClickHandler, ClickEvent.getType());
+		});
+//		ClickHandler saveClickHandler = new ClickHandler() {
+//
+//			@Override
+//			public void onClick(ClickEvent event) {
+//
+//				OrnamentCaveRelation ornamentCaveRelation;
+//
+//				if (ornamentCaveRelationEntry == null) {
+//
+//					ornamentCaveRelation = new OrnamentCaveRelation();
+//				} else {
+//					ornamentCaveRelation = ornamentCaveRelationEntry;
+//
+//				}
+//				if (districtComboBox.getValue() == null) {
+//
+//					return;
+//				}
+//				if (caveEntryComboBox.getValue() == null) {
+//
+//					return;
+//				}
+//
+////				ornamentCaveRelation.setName("Cave: " + caveEntryComboBox.getValue().getCaveID());
+//				ornamentCaveRelation.setCaveEntry(caveEntryComboBox.getValue());
+//				ornamentCaveRelation.setDistrict(districtComboBox.getValue());
+//				ornamentCaveRelation.setColours(colours.getText());
+//				ornamentCaveRelation.setGroup(groupOfOrnaments.getText());
+//
+//				ornamentCaveRelation.setStyle(styleComboBox.getValue());
+//				ornamentCaveRelation.setNotes(notes.getText());
+//				List<OrnamentEntry> relatedOrnaments = selectedRedlatedOrnaments.getAll();
+//				ornamentCaveRelation.getRelatedOrnamentsRelations().clear();
+//				for (OrnamentEntry ornament : relatedOrnaments) {
+//					ornamentCaveRelation.getRelatedOrnamentsRelations().add(ornament);
+//				}
+////				List<OrientationEntry> orientationslist = selectedorientationListStore.getAll();
+////				for (OrientationEntry orientation : orientationslist) {
+////					ornamentCaveRelation.getOrientations().add(orientation);
+////				}
+//				ornamentCaveRelation.setOrientations(new ArrayList<OrientationEntry>(selectedorientationListStore.getAll()));
+//
+//				ornamentCaveRelation.getIconographyElements().clear();
+//				for (int i = 0; i < icoSelector.getSelectedIconography().size(); i++) {
+//					ornamentCaveRelation.getIconographyElements().add(icoSelector.getSelectedIconography().get(i));
+//				}
+//
+//				ornamentCaveRelation.getWalls().clear();
+//				for (int i = 0; i < wallsListStore.size(); i++) {
+//					ornamentCaveRelation.getWalls().add(wallsListStore.get(i));
+//				}
+//				// ornamentCaveRelation.setRelatedelementeofOtherCultures(relatedElementsofOtherCultures.getText());
+//				ornamentCaveRelation.setSimilarelementsOfOtherCultures(similarElementsofOtherCultures.getText());
+//				// set walls
+//				if (ornamentCaveRelationEntry == null) {
+//					ornamenticEditor.getCaveOrnamentRelationList().add(ornamentCaveRelation);
+//				}
+//
+//				popup.hide();
+//
+//			}
+//		};
+//		save.addHandler(saveClickHandler, ClickEvent.getType());
 
-		mainPanel = new ContentPanel();
-		mainPanel.addButton(save);
-		mainPanel.addButton(cancel);
+		mainPanel = new FramedPanel();
+		mainPanel.addTool(saveTB);
+		mainPanel.addTool(cancelTB);
 		mainPanel.setHeading("New Cave Relation");
 		mainPanel.add(caveAttributesVerticalPanel);
-		
 		this.add(mainPanel);
 	}
 
 	interface CaveEntryProperties extends PropertyAccess<CaveEntry> {
 		ModelKeyProvider<CaveEntry> caveID();
-
 		LabelProvider<CaveEntry> officialNumber();
 	}
 
