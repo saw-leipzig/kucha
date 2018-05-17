@@ -100,7 +100,7 @@ public interface DatabaseService extends RemoteService {
 
 	ArrayList<IconographyEntry> getIconography() throws IllegalArgumentException;
 
-	boolean saveOrnamentEntry(OrnamentEntry ornamentEntry) throws IllegalArgumentException;
+	int saveOrnamentEntry(OrnamentEntry ornamentEntry);
 
 	CaveTypeEntry getCaveTypebyID(int caveTypeID) throws IllegalArgumentException;
 
@@ -260,7 +260,11 @@ public interface DatabaseService extends RemoteService {
 
 	ArrayList<Integer> getDepictionFromIconography(String sqlWhere) throws IllegalArgumentException;
 
-	ArrayList<Integer> getRelatedDepictionIDs(String iconographyIDs, int correlationFactor);
+	ArrayList<Integer> getRelatedDepictionIDs(String iconographyIDs, int correlationFactor) throws IllegalArgumentException;
 
-	ArrayList<IconographyEntry> getIconography(int rootIndex);
+	ArrayList<IconographyEntry> getIconography(int rootIndex) throws IllegalArgumentException;
+
+	void doLogging(String usertag, String message);
+
+	boolean updateOrnamentEntry(OrnamentEntry oEntry) throws IllegalArgumentException;
 }

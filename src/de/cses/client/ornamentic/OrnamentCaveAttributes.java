@@ -30,14 +30,18 @@ import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.Store.StoreFilter;
 import com.sencha.gxt.dnd.core.client.ListViewDragSource;
 import com.sencha.gxt.dnd.core.client.ListViewDropTarget;
+import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.TabPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
@@ -45,14 +49,13 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
+import de.cses.client.Util;
 import de.cses.client.depictions.IconographySelector;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DistrictEntry;
-import de.cses.shared.IconographyEntry;
 import de.cses.shared.OrientationEntry;
 import de.cses.shared.OrnamentCaveRelation;
 import de.cses.shared.OrnamentCaveType;
-import de.cses.shared.OrnamentComponentsEntry;
 import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.StructureOrganization;
@@ -79,7 +82,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 	private ListStore<OrnamentEntry> selectedSimilarOrnaments;
 	private ListStore<OrnamentEntry> selectedRedlatedOrnaments;
 	private WallRelationProperties wallRelationProps;
-	private IconographySelector selector;
+	private IconographySelector icoSelector;
 	private OrnamenticEditor ornamenticEditor;
 	private ComboBox<StyleEntry> styleComboBox;
 	private TextField caveType = new TextField();
@@ -87,25 +90,18 @@ public class OrnamentCaveAttributes extends PopupPanel {
 	private ListStore<OrientationEntry> orientationListStore;
 	private ListStore<OrientationEntry> selectedorientationListStore;
 	private OrientationProperties orientationProps;
-	private StoreFilter<CaveEntry> caveFilter ;
+	private StoreFilter<CaveEntry> caveFilter;
 	private ListStore<StyleEntry> styleEntryList;
 	private StyleProperties styleProps;
-
-
-
-
-
-	public OrnamentCaveAttributes(OrnamentCaveRelation ornamentCaveRelationEntry) {
-		this.ornamentCaveRelationEntry = ornamentCaveRelationEntry;
-		init();
-		Window.alert(Integer.toString(ornamentCaveRelationEntry.getCave().getCaveID()));
-	}
+	private FramedPanel mainPanel = null;
 
 	public OrnamentCaveAttributes() {
-		init();
+		this(null);
 	}
+	
+	public OrnamentCaveAttributes(OrnamentCaveRelation ornamentCaveRelationEntry) {
+		this.ornamentCaveRelationEntry = ornamentCaveRelationEntry;
 
-	public void init() {
 		caveEntryProps = GWT.create(CaveEntryProperties.class);
 		styleProps = GWT.create(StyleProperties.class);
 		ornamentEntryProps = GWT.create(OrnamentEntryProperties.class);
@@ -126,7 +122,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 		for (DistrictEntry pe : StaticTables.getInstance().getDistrictEntries().values()) {
 			districtEntryList.add(pe);
 		}
-		
+
 		dbService.getOrientations(new AsyncCallback<ArrayList<OrientationEntry>>() {
 
 			@Override
@@ -135,63 +131,69 @@ public class OrnamentCaveAttributes extends PopupPanel {
 			}
 
 			public void onSuccess(ArrayList<OrientationEntry> result) {
-				Window.alert("groesse orientation " +result.size());
+				Util.doLogging(this.getClass().getName() + " groesse orientation " + result.size());
 				orientationListStore.clear();
 				selectedorientationListStore.clear();
+				for (OrientationEntry pe : result) {
+					orientationListStore.add(pe);
+				}
 				if (ornamentCaveRelationEntry != null) {
-					Window.alert("groesse orientation in entry" + ornamentCaveRelationEntry.getOrientations().size());
-					for (OrientationEntry pe : result) {
-						int count = 0;
-						for (OrientationEntry oe : ornamentCaveRelationEntry.getOrientations()) {
-							if (pe.getOrientationID() != oe.getOrientationID()) {
-								count++;
-							}
-							if (count == ornamentCaveRelationEntry.getOrientations().size()) {
-								orientationListStore.add(pe);
-							}
-						}
-					}
-					for (OrientationEntry oe :ornamentCaveRelationEntry.getOrientations()) {
+					for (OrientationEntry oe : ornamentCaveRelationEntry.getOrientations()) {
+						orientationListStore.remove(orientationListStore.findModelWithKey(Integer.toString(oe.getOrientationID())));
 						selectedorientationListStore.add(oe);
 					}
-					if( ornamentCaveRelationEntry.getOrientations().size() == 0) {
-						for (OrientationEntry nu : result) {
-							orientationListStore.add(nu);
-					}
-					}
 				}
-				else {
-					for (OrientationEntry pe : result) {
-						orientationListStore.add(pe);
-					}
-				}
+				//				
+//				
+//				if (ornamentCaveRelationEntry != null) {
+//					Util.doLogging(this.getClass().getName() + "groesse orientation in entry" + ornamentCaveRelationEntry.getOrientations().size());
+//					for (OrientationEntry pe : result) {
+//						int count = 0;
+//						for (OrientationEntry oe : ornamentCaveRelationEntry.getOrientations()) {
+//							if (pe.getOrientationID() != oe.getOrientationID()) {
+//								count++;
+//							}
+//							if (count == ornamentCaveRelationEntry.getOrientations().size()) {
+//								orientationListStore.add(pe);
+//							}
+//						}
+//					}
+//					for (OrientationEntry oe : ornamentCaveRelationEntry.getOrientations()) {
+//						selectedorientationListStore.add(oe);
+//					}
+//					if (ornamentCaveRelationEntry.getOrientations().size() == 0) {
+//						for (OrientationEntry nu : result) {
+//							orientationListStore.add(nu);
+//						}
+//					}
+//				} else {
+//					for (OrientationEntry pe : result) {
+//						orientationListStore.add(pe);
+//					}
+//				}
 
 			}
 		});
 
-		dbService.getCaves( new AsyncCallback<ArrayList<CaveEntry>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(ArrayList<CaveEntry> result) {
-				for (CaveEntry pe : result) {
-					caveEntryList.add(pe);
-				}
-				if (ornamentCaveRelationEntry != null) {
-					Window.alert(districtEntryList.findModelWithKey(Integer.toString(ornamentCaveRelationEntry.getDistrict().getDistrictID())).getName());
-					districtComboBox.setValue(districtEntryList.findModelWithKey(Integer.toString(ornamentCaveRelationEntry.getDistrict().getDistrictID())),false);
-					caveEntryComboBox.setValue(caveEntryList.findModelWithKey(Integer.toString(ornamentCaveRelationEntry.getCave().getCaveID())),false);
-					 int p = ornamentCaveRelationEntry.getCave().getCaveTypeID();
-					 caveType.setText(StaticTables.getInstance().getCaveTypeEntries().get(p).getNameEN());
-
-				}
-			}
-		});
+//		dbService.getCaves(new AsyncCallback<ArrayList<CaveEntry>>() {
+//
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				caught.printStackTrace();
+//			}
+//
+//			@Override
+//			public void onSuccess(ArrayList<CaveEntry> result) {
+//				for (CaveEntry pe : result) {
+//					caveEntryList.add(pe);
+//				}
+//			}
+//		});
 		
+		for (CaveEntry ce : StaticTables.getInstance().getCaveEntries().values()) {
+			caveEntryList.add(ce);
+		}
+
 		dbService.getOrnaments(new AsyncCallback<ArrayList<OrnamentEntry>>() {
 
 			@Override
@@ -201,70 +203,63 @@ public class OrnamentCaveAttributes extends PopupPanel {
 
 			@Override
 			public void onSuccess(ArrayList<OrnamentEntry> result) {
-			
+
 				ornamentEntryList.clear();
-				//ornamentEntryList2.clear();
-				//selectedSimilarOrnaments.clear();
+				// ornamentEntryList2.clear();
+				// selectedSimilarOrnaments.clear();
 				selectedRedlatedOrnaments.clear();
-				if (ornamentCaveRelationEntry != null) {
 					for (OrnamentEntry pe : result) {
-
-						//int count = 0;
-						//for (OrnamentEntry oe : ornamentCaveRelationEntry.getSimilarOrnamentsRelations()) {
-							//if (pe.getOrnamentID() != oe.getOrnamentID()) {
-							//	count++;
-							//}
-						//	if (count == ornamentCaveRelationEntry.getSimilarOrnamentsRelations().size()) {
-						//		ornamentEntryList2.add(pe);
-						//	}
-					//	}
-					
-						int countrelated = 0;
-						for (OrnamentEntry oe : ornamentCaveRelationEntry.getRelatedOrnamentsRelations()) {
-							
-							if (pe.getOrnamentID() != oe.getOrnamentID()) {
-								countrelated++;
-							}
-							if (countrelated == ornamentCaveRelationEntry.getRelatedOrnamentsRelations().size()) {
-								ornamentEntryList.add(pe);
-							}
-						}
-						if( ornamentCaveRelationEntry.getRelatedOrnamentsRelations().size() == 0) {
-							for (OrnamentEntry nu : result) {
-								ornamentEntryList.add(nu);
-						}
-						}
-
-					}
-					
-					//for (OrnamentEntry oe : ornamentCaveRelationEntry.getSimilarOrnamentsRelations()) {
-						//selectedSimilarOrnaments.add(oe);
-					//}
-					for (OrnamentEntry oe : ornamentCaveRelationEntry.getRelatedOrnamentsRelations()) {
-						
-						selectedRedlatedOrnaments.add(oe);
-					}
-				
-
-				} else {
-					for (OrnamentEntry pe : result) {
-						//ornamentEntryList2.add(pe);
 						ornamentEntryList.add(pe);
-						
 					}
-				}
+					if (ornamentCaveRelationEntry != null) {
+						for (OrnamentEntry oe : ornamentCaveRelationEntry.getRelatedOrnamentsRelations()) {
+							ornamentEntryList.remove(ornamentEntryList.findModelWithKey(Integer.toString(oe.getOrnamentID())));
+							selectedRedlatedOrnaments.add(oe);
+						}
+					}
+					
+//					for (OrnamentEntry pe : result) {
+//
+//						// int count = 0;
+//						// for (OrnamentEntry oe : ornamentCaveRelationEntry.getSimilarOrnamentsRelations()) {
+//						// if (pe.getOrnamentID() != oe.getOrnamentID()) {
+//						// count++;
+//						// }
+//						// if (count == ornamentCaveRelationEntry.getSimilarOrnamentsRelations().size()) {
+//						// ornamentEntryList2.add(pe);
+//						// }
+//						// }
+//
+//						int countrelated = 0;
+//						for (OrnamentEntry oe : ornamentCaveRelationEntry.getRelatedOrnamentsRelations()) {
+//
+//							if (pe.getOrnamentID() != oe.getOrnamentID()) {
+//								countrelated++;
+//							}
+//							if (countrelated == ornamentCaveRelationEntry.getRelatedOrnamentsRelations().size()) {
+//								ornamentEntryList.add(pe);
+//							}
+//						}
+//						if (ornamentCaveRelationEntry.getRelatedOrnamentsRelations().size() == 0) {
+//							for (OrnamentEntry nu : result) {
+//								ornamentEntryList.add(nu);
+//							}
+//						}
+//
+//					}
+
+					// for (OrnamentEntry oe : ornamentCaveRelationEntry.getSimilarOrnamentsRelations()) {
+					// selectedSimilarOrnaments.add(oe);
+					// }
+
 
 			}
 		});
-
-
-
-
-		setWidget(createForm());
-
+		
+		createForm();
 	}
 
-	public Widget createForm() {
+	public void createForm() {
 		for (StyleEntry pe : StaticTables.getInstance().getStyleEntries().values()) {
 			styleEntryList.add(pe);
 		}
@@ -297,14 +292,14 @@ public class OrnamentCaveAttributes extends PopupPanel {
 		districtComboBox.setTypeAhead(true);
 		districtComboBox.setEditable(false);
 		districtComboBox.setTriggerAction(TriggerAction.ALL);
-
+		if ((ornamentCaveRelationEntry != null) && (ornamentCaveRelationEntry.getDistrict() != null)) {
+			districtComboBox.setValue(StaticTables.getInstance().getDistrictEntries().get(ornamentCaveRelationEntry.getDistrict().getDistrictID()), false);
+		}
+		
 		header = new FramedPanel();
-
 		header.setHeading("Select District");
 		header.add(districtComboBox);
 		vlcCave.add(header, new VerticalLayoutData(0.5, .125));
-		
-
 
 		ValueChangeHandler<DistrictEntry> districtSelectionHandler = new ValueChangeHandler<DistrictEntry>() {
 
@@ -319,8 +314,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 		};
 
 		// hier aenderungen
-		
-		
+
 		districtComboBox.addValueChangeHandler(districtSelectionHandler);
 
 		caveEntryComboBox = new ComboBox<CaveEntry>(caveEntryList, caveEntryProps.officialNumber(), new AbstractSafeHtmlRenderer<CaveEntry>() {
@@ -336,16 +330,22 @@ public class OrnamentCaveAttributes extends PopupPanel {
 			}
 		});
 		caveEntryComboBox.setEnabled(false);
-
 		caveEntryComboBox.setTypeAhead(true);
 		caveEntryComboBox.setEditable(false);
 		caveEntryComboBox.setTriggerAction(TriggerAction.ALL);
-		
-		if (ornamentCaveRelationEntry != null) {
 
+		if (ornamentCaveRelationEntry != null) {
+			if (ornamentCaveRelationEntry.getCaveEntry() != null) {
+				caveEntryComboBox.setValue(caveEntryList.findModelWithKey(Integer.toString(ornamentCaveRelationEntry.getCaveEntry().getCaveID())), false);
+			}
+			int p = ornamentCaveRelationEntry.getCaveEntry().getCaveTypeID();
+			caveType.setText(StaticTables.getInstance().getCaveTypeEntries().get(p).getNameEN());
+
+		}
+
+		if (ornamentCaveRelationEntry != null) {
 			districtComboBox.setValue(ornamentCaveRelationEntry.getDistrict());
 			ValueChangeEvent.fire(districtComboBox, ornamentCaveRelationEntry.getDistrict());
-
 		}
 
 		header = new FramedPanel();
@@ -388,25 +388,21 @@ public class OrnamentCaveAttributes extends PopupPanel {
 
 		};
 
-		styleComboBox = new ComboBox<StyleEntry>(styleEntryList, styleProps.styleName(),
-				new AbstractSafeHtmlRenderer<StyleEntry>() {
+		styleComboBox = new ComboBox<StyleEntry>(styleEntryList, styleProps.styleName(), new AbstractSafeHtmlRenderer<StyleEntry>() {
 
-					@Override
-					public SafeHtml render(StyleEntry item) {
-						final StyleViewTemplates pvTemplates = GWT.create(StyleViewTemplates.class);
-						return pvTemplates.style(item.getStyleName());
-					}
-				});
-		
-		if (ornamentCaveRelationEntry != null) {
-			if(ornamentCaveRelationEntry.getStyle() == null) {
-				
+			@Override
+			public SafeHtml render(StyleEntry item) {
+				final StyleViewTemplates pvTemplates = GWT.create(StyleViewTemplates.class);
+				return pvTemplates.style(item.getStyleName());
 			}
-			else {
-			styleComboBox.setValue(ornamentCaveRelationEntry.getStyle());
+		});
+
+		if (ornamentCaveRelationEntry != null) {
+			if (ornamentCaveRelationEntry.getStyle() != null) {
+				styleComboBox.setValue(ornamentCaveRelationEntry.getStyle());
 			}
 		}
-		
+
 		header = new FramedPanel();
 
 		header.setHeading("Style");
@@ -420,11 +416,11 @@ public class OrnamentCaveAttributes extends PopupPanel {
 			@Override
 			public void onClick(ClickEvent event) {
 				if (districtComboBox.getValue() == null) {
-				
+
 					return;
 				}
 				if (caveEntryComboBox.getValue() == null) {
-				
+
 					return;
 				}
 				OrnamentWallAttributes attributespopup = new OrnamentWallAttributes(caveEntryComboBox.getValue(), null);
@@ -446,15 +442,13 @@ public class OrnamentCaveAttributes extends PopupPanel {
 		header.setHeading("Walls");
 		header.add(selectedWallsHorizontalPanel, new VerticalLayoutData(1.0, 1.0));
 		vlcCave.add(header, new VerticalLayoutData(0.5, .125));
-		
 
-		
-		if(ornamentCaveRelationEntry != null) {
-Window.alert("Walls list laenge: "+ ornamentCaveRelationEntry.getWalls().size());
+		if (ornamentCaveRelationEntry != null) {
+			Util.doLogging(this.getClass().getName() + " Walls list laenge: " + ornamentCaveRelationEntry.getWalls().size());
 			wallsListStore.clear();
-			for(WallOrnamentCaveRelation pe: ornamentCaveRelationEntry.getWalls()){
-			wallsListStore.add(pe);
-			Window.alert("added wall");
+			for (WallOrnamentCaveRelation pe : ornamentCaveRelationEntry.getWalls()) {
+				wallsListStore.add(pe);
+				Util.doLogging(this.getClass().getName() + "added wall");
 			}
 		}
 
@@ -497,7 +491,7 @@ Window.alert("Walls list laenge: "+ ornamentCaveRelationEntry.getWalls().size())
 					attributespopup.setGlassEnabled(true);
 					attributespopup.center();
 				} else {
-Window.alert("Please select a entry!");
+					Window.alert("Please select an entry!");
 				}
 
 			}
@@ -520,21 +514,20 @@ Window.alert("Please select a entry!");
 			}
 		};
 		delete.addHandler(deleteClickHandler, ClickEvent.getType());
-		
+
 		if (ornamentCaveRelationEntry != null) {
-		wallsListStore.clear();
-		 wallsListStore.addAll(ornamentCaveRelationEntry.getWalls());
-		 }
+			wallsListStore.clear();
+			wallsListStore.addAll(ornamentCaveRelationEntry.getWalls());
+		}
 
 		VerticalLayoutContainer vlcAttributes = new VerticalLayoutContainer();
 
-		
 		HorizontalLayoutContainer horizontalContainerLayout = new HorizontalLayoutContainer();
-		
+
 		HorizontalLayoutContainer orientationHorizontalPanel = new HorizontalLayoutContainer();
 
 		ListView<OrientationEntry, String> orientationView = new ListView<OrientationEntry, String>(orientationListStore, orientationProps.name());
-		ListView<OrientationEntry, String> selectedOrientationView = new ListView<OrientationEntry, String>(selectedorientationListStore,orientationProps.name());
+		ListView<OrientationEntry, String> selectedOrientationView = new ListView<OrientationEntry, String>(selectedorientationListStore, orientationProps.name());
 		orientationHorizontalPanel.add(orientationView, new HorizontalLayoutData(.5, 1.0, new Margins(1)));
 		orientationHorizontalPanel.add(selectedOrientationView, new HorizontalLayoutData(.5, 1.0, new Margins(1)));
 
@@ -546,13 +539,12 @@ Window.alert("Please select a entry!");
 
 		header = new FramedPanel();
 		header.setHeading("Select Orientation");
-	
 		header.add(orientationHorizontalPanel);
 
 		horizontalContainerLayout.add(header, new HorizontalLayoutData(.5, 1.0));
 
-		final TextArea notes = new TextArea();
-	
+		TextArea notes = new TextArea();
+
 		header = new FramedPanel();
 		if (ornamentCaveRelationEntry != null) {
 			notes.setText(ornamentCaveRelationEntry.getNotes());
@@ -560,10 +552,8 @@ Window.alert("Please select a entry!");
 		header.setHeading("Notes");
 		header.add(notes);
 		horizontalContainerLayout.add(header, new HorizontalLayoutData(.5, 1.0));
-		
 
-
-		final TextArea colours = new TextArea();
+		TextArea colours = new TextArea();
 		colours.setAllowBlank(true);
 		header = new FramedPanel();
 
@@ -574,24 +564,24 @@ Window.alert("Please select a entry!");
 		header.add(colours);
 		vlcAttributes.add(horizontalContainerLayout, new VerticalLayoutData(1.0, .3));
 		vlcAttributes.add(header, new VerticalLayoutData(0.5, .3));
-	
+
 		colours.setAllowBlank(true);
-		
-		
+
 		FramedPanel attributes = new FramedPanel();
 		attributes.setHeading("Attributes");
 		attributes.add(vlcAttributes);
 		tabPanel.add(attributes, "Attributes");
 
-		FramedPanel relationToOtherOrnaments = new FramedPanel();
-		relationToOtherOrnaments.setHeading("Relations");
+//		FramedPanel relationToOtherOrnaments = new FramedPanel();
+//		relationToOtherOrnaments.setHeading("Relations");
 		VerticalLayoutContainer vlcRelationToTherornaments1 = new VerticalLayoutContainer();
 		VerticalLayoutContainer vlcRelationToTherornaments2 = new VerticalLayoutContainer();
-		HorizontalLayoutContainer backgroundHorizontalPanel = new HorizontalLayoutContainer();
+		
+		HorizontalLayoutContainer relationToOtherOrnamentsHLC = new HorizontalLayoutContainer();
 
-		relationToOtherOrnaments.add(backgroundHorizontalPanel);
-		backgroundHorizontalPanel.add(vlcRelationToTherornaments1, new HorizontalLayoutData(.5, 1.0));
-		backgroundHorizontalPanel.add(vlcRelationToTherornaments2, new HorizontalLayoutData(.5, 1.0));
+//		relationToOtherOrnaments.add(relationToOtherOrnamentsHLC);
+		relationToOtherOrnamentsHLC.add(vlcRelationToTherornaments1, new HorizontalLayoutData(.5, 1.0));
+		relationToOtherOrnamentsHLC.add(vlcRelationToTherornaments2, new HorizontalLayoutData(.5, 1.0));
 
 		HorizontalLayoutContainer relatedOrnamentsHorizontalPanel = new HorizontalLayoutContainer();
 
@@ -632,21 +622,24 @@ Window.alert("Please select a entry!");
 		new ListViewDropTarget<OrnamentEntry>(selectedSimilarOrnamentsListView).setGroup("similarOrnament");
 		new ListViewDropTarget<OrnamentEntry>(ornamentListViewSimilar).setGroup("similarOrnament");
 
-		/* header = new FramedPanel();
-		header.setHeading("Select similar ornaments");
-		header.add(similarOrnamentsHorizontalPanel);
-		vlcRelationToTherornaments2.add(header, new VerticalLayoutData(1.0, .4));
-		*/
+		/*
+		 * header = new FramedPanel(); header.setHeading("Select similar ornaments"); header.add(similarOrnamentsHorizontalPanel);
+		 * vlcRelationToTherornaments2.add(header, new VerticalLayoutData(1.0, .4));
+		 */
 
-		selector = new IconographySelector(StaticTables.getInstance().getIconographyForOrnamenticEntries().values());
-		header = new FramedPanel();
-		header.setHeading("Select elements showing similar pattern");
+		icoSelector = new IconographySelector(StaticTables.getInstance().getIconographyForOrnamenticEntries().values());
+		Util.doLogging("OrnamentCaveAttributes - IconographySelector initialised");
+//		header = new FramedPanel();
+//		header.setHeading("Select elements showing similar pattern");
+//		header.add(icoSelector);
 		if (ornamentCaveRelationEntry != null) {
-			Window.alert("Size iconography: "+ ornamentCaveRelationEntry.getIconographyElements().size());
-			selector.setSelectedIconography(ornamentCaveRelationEntry.getIconographyElements());
+			if (ornamentCaveRelationEntry.getIconographyElements() == null) {
+				Util.doLogging("OrnamentCaveAttributes - ornamentCaveRelationEntry.getIconographyElements() is NULL");
+			}
+			Util.doLogging("OrnamentCaveAttributes - ornamentCaveRelationEntry.getIconographyElements().size() = " + ornamentCaveRelationEntry.getIconographyElements().size());
+			icoSelector.setSelectedIconography(ornamentCaveRelationEntry.getIconographyElements());
 		}
-		header.add(selector.asWidget());
-		vlcRelationToTherornaments2.add(header, new VerticalLayoutData(1, .4));
+		vlcRelationToTherornaments2.add(icoSelector, new VerticalLayoutData(1.0, .4));
 
 		final TextField groupOfOrnaments = new TextField();
 		groupOfOrnaments.setAllowBlank(true);
@@ -658,17 +651,14 @@ Window.alert("Please select a entry!");
 		header.add(groupOfOrnaments);
 		vlcRelationToTherornaments1.add(header, new VerticalLayoutData(1, .125));
 
-		/* final TextField relatedElementsofOtherCultures = new TextField();
+		/*
+		 * final TextField relatedElementsofOtherCultures = new TextField();
+		 * 
+		 * header = new FramedPanel(); header.setHeading("Describe related elements of other cultures"); if (ornamentCaveRelationEntry != null) {
+		 * relatedElementsofOtherCultures.setText(ornamentCaveRelationEntry.getRelatedelementeofOtherCultures()); } header.add(relatedElementsofOtherCultures);
+		 * vlcRelationToTherornaments1.add(header, new VerticalLayoutData(1, .125));
+		 */
 
-		header = new FramedPanel();
-		header.setHeading("Describe related elements of other cultures");
-		if (ornamentCaveRelationEntry != null) {
-			relatedElementsofOtherCultures.setText(ornamentCaveRelationEntry.getRelatedelementeofOtherCultures());
-		}
-		header.add(relatedElementsofOtherCultures);
-		vlcRelationToTherornaments1.add(header, new VerticalLayoutData(1, .125));
-*/
-		
 		final TextArea similarElementsofOtherCultures = new TextArea();
 
 		header = new FramedPanel();
@@ -679,52 +669,52 @@ Window.alert("Please select a entry!");
 		header.add(similarElementsofOtherCultures);
 		vlcRelationToTherornaments1.add(header, new VerticalLayoutData(1, .3));
 
-		tabPanel.add(relationToOtherOrnaments, "Relations");
+		tabPanel.add(relationToOtherOrnamentsHLC, "Relations");
 
-		HorizontalPanel buttonsPanel = new HorizontalPanel();
+//		HorizontalPanel buttonsPanel = new HorizontalPanel();
 
-		TextButton save = new TextButton("save");
-		FramedPanel panel = new FramedPanel();
-		TextButton cancel = new TextButton("cancel");
-		panel.addButton(save);
-		panel.addButton(cancel);
-		caveAttributesVerticalPanel.add(buttonsPanel);
+		ToolButton saveTB = new ToolButton(ToolButton.SAVE);
+		ToolButton cancelTB = new ToolButton(ToolButton.CLOSE);
 
-		ClickHandler cancelClickHandler = new ClickHandler() {
+//		caveAttributesVerticalPanel.add(buttonsPanel);
 
+//		ClickHandler cancelClickHandler = new ClickHandler() {
+//
+//			@Override
+//			public void onClick(ClickEvent event) {
+//				popup.hide();
+//
+//			}
+//		};
+
+		cancelTB.addSelectHandler(new SelectHandler() {
+			
 			@Override
-			public void onClick(ClickEvent event) {
+			public void onSelect(SelectEvent event) {
 				popup.hide();
-
 			}
-		};
-		cancel.addHandler(cancelClickHandler, ClickEvent.getType());
-
-		ClickHandler saveClickHandler = new ClickHandler() {
-
+		}); 
+		
+		saveTB.addSelectHandler(new SelectHandler() {
+			
 			@Override
-			public void onClick(ClickEvent event) {
-				
+			public void onSelect(SelectEvent event) {
+
 				OrnamentCaveRelation ornamentCaveRelation;
-				
 				if (ornamentCaveRelationEntry == null) {
-					
 					ornamentCaveRelation = new OrnamentCaveRelation();
 				} else {
 					ornamentCaveRelation = ornamentCaveRelationEntry;
-					
 				}
 				if (districtComboBox.getValue() == null) {
-				
 					return;
 				}
 				if (caveEntryComboBox.getValue() == null) {
-					
 					return;
 				}
-			
-				ornamentCaveRelation.setName("Cave: " + caveEntryComboBox.getValue().getCaveID());
-				ornamentCaveRelation.setCave(caveEntryComboBox.getValue());
+
+//				ornamentCaveRelation.setName("Cave: " + caveEntryComboBox.getValue().getCaveID());
+				ornamentCaveRelation.setCaveEntry(caveEntryComboBox.getValue());
 				ornamentCaveRelation.setDistrict(districtComboBox.getValue());
 				ornamentCaveRelation.setColours(colours.getText());
 				ornamentCaveRelation.setGroup(groupOfOrnaments.getText());
@@ -736,21 +726,22 @@ Window.alert("Please select a entry!");
 				for (OrnamentEntry ornament : relatedOrnaments) {
 					ornamentCaveRelation.getRelatedOrnamentsRelations().add(ornament);
 				}
-				List<OrientationEntry> orientationslist = selectedorientationListStore.getAll();
-				for (OrientationEntry orientation : orientationslist) {
-					ornamentCaveRelation.getOrientations().add(orientation);
-				}
-				
+//				List<OrientationEntry> orientationslist = selectedorientationListStore.getAll();
+//				for (OrientationEntry orientation : orientationslist) {
+//					ornamentCaveRelation.getOrientations().add(orientation);
+//				}
+				ornamentCaveRelation.setOrientations(new ArrayList<OrientationEntry>(selectedorientationListStore.getAll()));
+
 				ornamentCaveRelation.getIconographyElements().clear();
-				for (int i = 0; i < selector.getSelectedIconography().size(); i++) {
-					ornamentCaveRelation.getIconographyElements().add(selector.getSelectedIconography().get(i));
+				for (int i = 0; i < icoSelector.getSelectedIconography().size(); i++) {
+					ornamentCaveRelation.getIconographyElements().add(icoSelector.getSelectedIconography().get(i));
 				}
-			
+
 				ornamentCaveRelation.getWalls().clear();
 				for (int i = 0; i < wallsListStore.size(); i++) {
 					ornamentCaveRelation.getWalls().add(wallsListStore.get(i));
 				}
-				//ornamentCaveRelation.setRelatedelementeofOtherCultures(relatedElementsofOtherCultures.getText());
+				// ornamentCaveRelation.setRelatedelementeofOtherCultures(relatedElementsofOtherCultures.getText());
 				ornamentCaveRelation.setSimilarelementsOfOtherCultures(similarElementsofOtherCultures.getText());
 				// set walls
 				if (ornamentCaveRelationEntry == null) {
@@ -758,20 +749,82 @@ Window.alert("Please select a entry!");
 				}
 
 				popup.hide();
-
 			}
-		};
-		save.addHandler(saveClickHandler, ClickEvent.getType());
+		});
+//		ClickHandler saveClickHandler = new ClickHandler() {
+//
+//			@Override
+//			public void onClick(ClickEvent event) {
+//
+//				OrnamentCaveRelation ornamentCaveRelation;
+//
+//				if (ornamentCaveRelationEntry == null) {
+//
+//					ornamentCaveRelation = new OrnamentCaveRelation();
+//				} else {
+//					ornamentCaveRelation = ornamentCaveRelationEntry;
+//
+//				}
+//				if (districtComboBox.getValue() == null) {
+//
+//					return;
+//				}
+//				if (caveEntryComboBox.getValue() == null) {
+//
+//					return;
+//				}
+//
+////				ornamentCaveRelation.setName("Cave: " + caveEntryComboBox.getValue().getCaveID());
+//				ornamentCaveRelation.setCaveEntry(caveEntryComboBox.getValue());
+//				ornamentCaveRelation.setDistrict(districtComboBox.getValue());
+//				ornamentCaveRelation.setColours(colours.getText());
+//				ornamentCaveRelation.setGroup(groupOfOrnaments.getText());
+//
+//				ornamentCaveRelation.setStyle(styleComboBox.getValue());
+//				ornamentCaveRelation.setNotes(notes.getText());
+//				List<OrnamentEntry> relatedOrnaments = selectedRedlatedOrnaments.getAll();
+//				ornamentCaveRelation.getRelatedOrnamentsRelations().clear();
+//				for (OrnamentEntry ornament : relatedOrnaments) {
+//					ornamentCaveRelation.getRelatedOrnamentsRelations().add(ornament);
+//				}
+////				List<OrientationEntry> orientationslist = selectedorientationListStore.getAll();
+////				for (OrientationEntry orientation : orientationslist) {
+////					ornamentCaveRelation.getOrientations().add(orientation);
+////				}
+//				ornamentCaveRelation.setOrientations(new ArrayList<OrientationEntry>(selectedorientationListStore.getAll()));
+//
+//				ornamentCaveRelation.getIconographyElements().clear();
+//				for (int i = 0; i < icoSelector.getSelectedIconography().size(); i++) {
+//					ornamentCaveRelation.getIconographyElements().add(icoSelector.getSelectedIconography().get(i));
+//				}
+//
+//				ornamentCaveRelation.getWalls().clear();
+//				for (int i = 0; i < wallsListStore.size(); i++) {
+//					ornamentCaveRelation.getWalls().add(wallsListStore.get(i));
+//				}
+//				// ornamentCaveRelation.setRelatedelementeofOtherCultures(relatedElementsofOtherCultures.getText());
+//				ornamentCaveRelation.setSimilarelementsOfOtherCultures(similarElementsofOtherCultures.getText());
+//				// set walls
+//				if (ornamentCaveRelationEntry == null) {
+//					ornamenticEditor.getCaveOrnamentRelationList().add(ornamentCaveRelation);
+//				}
+//
+//				popup.hide();
+//
+//			}
+//		};
+//		save.addHandler(saveClickHandler, ClickEvent.getType());
 
-		panel.setHeading("New Cave Relation");
-		panel.add(caveAttributesVerticalPanel);
-		return panel;
-
+		mainPanel = new FramedPanel();
+		mainPanel.addTool(saveTB);
+		mainPanel.addTool(cancelTB);
+		mainPanel.setHeading("New Cave Relation");
+		mainPanel.add(caveAttributesVerticalPanel);
+		this.add(mainPanel);
 	}
 
 	interface CaveEntryProperties extends PropertyAccess<CaveEntry> {
 		ModelKeyProvider<CaveEntry> caveID();
-
 		LabelProvider<CaveEntry> officialNumber();
 	}
 
@@ -817,8 +870,6 @@ Window.alert("Please select a entry!");
 		SafeHtml ornamentOfOtherCultures(String name);
 	}
 
-
-
 	interface StructureOrganizationViewTemplates extends XTemplates {
 		@XTemplate("<div>{name}</div>")
 		SafeHtml structureOrganization(String name);
@@ -833,13 +884,11 @@ Window.alert("Please select a entry!");
 		@XTemplate("<div>{name}</div>")
 		SafeHtml ornamentCaveType(String name);
 	}
-	
+
 	interface StyleViewTemplates extends XTemplates {
 		@XTemplate("<div>{name}</div>")
 		SafeHtml style(String name);
 	}
-
-
 
 	interface StyleProperties extends PropertyAccess<StyleEntry> {
 		ModelKeyProvider<StyleEntry> styleID();
@@ -872,15 +921,18 @@ Window.alert("Please select a entry!");
 	 * 
 	 * @see com.google.gwt.user.client.ui.IsWidget#asWidget()
 	 */
-	@Override
-	public Widget asWidget() {
-		return createForm();
-	}
+//	@Override
+//	public Widget asWidget() {
+//		if (mainPanel == null) {
+//			createForm();
+//		}
+//		return mainPanel;
+//	}
 
 	interface WallRelationProperties extends PropertyAccess<CaveEntry> {
 		ModelKeyProvider<WallOrnamentCaveRelation> wallLocationID();
 	}
-	
+
 	interface OrientationProperties extends PropertyAccess<OrientationEntry> {
 		ModelKeyProvider<OrientationEntry> orientationID();
 
@@ -901,7 +953,7 @@ Window.alert("Please select a entry!");
 	public void setWallsListStore(ListStore<WallOrnamentCaveRelation> wallsListStore) {
 		this.wallsListStore = wallsListStore;
 	}
-	
+
 	private void activateCaveFilter() {
 		caveFilter = new StoreFilter<CaveEntry>() {
 
@@ -912,7 +964,7 @@ Window.alert("Please select a entry!");
 		};
 		caveEntryList.addFilter(caveFilter);
 		caveEntryList.setEnableFilters(true);
-		caveEntryComboBox.setEnabled(true); 
+		caveEntryComboBox.setEnabled(true);
 	}
 
 }

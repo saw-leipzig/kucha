@@ -13,8 +13,6 @@
  */
 package de.cses.shared;
 
-import de.cses.client.StaticTables;
-
 /**
  * @author nina
  *
@@ -37,7 +35,6 @@ public class WallOrnamentCaveRelation extends AbstractEntry {
 	 * @param notes
 	 */
 
-
 	/**
 	 * @param caveID
 	 * @param wallLocationID
@@ -46,21 +43,24 @@ public class WallOrnamentCaveRelation extends AbstractEntry {
 		this.caveID = caveID;
 		this.wall = wall;
 	}
+
 	public WallOrnamentCaveRelation() {
-		
 	}
-public WallOrnamentCaveRelation(int wallOrnamentCaveRelationID, int caveOrnamentRelationID, int wallLocationID, int ornamentPositionID, int ornamentFunctionID, String notes, WallEntry wall){
-	this.wallOrnamentCaveRelationID = wallOrnamentCaveRelationID;
-	this.ornamentCaveRelationID = caveOrnamentRelationID;
-	this.wallLocationID = wallLocationID;
-	this.notes = notes;
-	this.ornamenticFunctionID = ornamentFunctionID;
-	this.ornamenticPositionID = ornamentPositionID;
-	this.wall = wall;
-	{
-}
-		
+
+	public WallOrnamentCaveRelation(int wallOrnamentCaveRelationID, int caveOrnamentRelationID, int wallLocationID, int ornamentPositionID,
+			int ornamentFunctionID, String notes, WallEntry wall) {
+		this.wallOrnamentCaveRelationID = wallOrnamentCaveRelationID;
+		this.ornamentCaveRelationID = caveOrnamentRelationID;
+		this.wallLocationID = wallLocationID;
+		this.notes = notes;
+		this.ornamenticFunctionID = ornamentFunctionID;
+		this.ornamenticPositionID = ornamentPositionID;
+		this.wall = wall;
+		{
+		}
+
 	}
+
 	public WallEntry getWall() {
 		return wall;
 	}
@@ -100,12 +100,11 @@ public WallOrnamentCaveRelation(int wallOrnamentCaveRelationID, int caveOrnament
 	public void setOrnamenticFunctionID(int ornamenticFunctionID) {
 		this.ornamenticFunctionID = ornamenticFunctionID;
 	}
-	
+
 	public int getWallLocationID() {
 		return wallLocationID;
 	}
-	
-	
+
 	/**
 	 * @return the ornamentCaveRelationID
 	 */
@@ -114,7 +113,8 @@ public WallOrnamentCaveRelation(int wallOrnamentCaveRelationID, int caveOrnament
 	}
 
 	/**
-	 * @param ornamentCaveRelationID the ornamentCaveRelationID to set
+	 * @param ornamentCaveRelationID
+	 *          the ornamentCaveRelationID to set
 	 */
 	public void setOrnamentCaveRelationID(int ornamentCaveRelationID) {
 		this.ornamentCaveRelationID = ornamentCaveRelationID;
@@ -128,7 +128,8 @@ public WallOrnamentCaveRelation(int wallOrnamentCaveRelationID, int caveOrnament
 	}
 
 	/**
-	 * @param wallOrnamentCaveRelationID the wallOrnamentCaveRelationID to set
+	 * @param wallOrnamentCaveRelationID
+	 *          the wallOrnamentCaveRelationID to set
 	 */
 	public void setWallOrnamentCaveRelationID(int wallOrnamentCaveRelationID) {
 		this.wallOrnamentCaveRelationID = wallOrnamentCaveRelationID;
@@ -143,6 +144,10 @@ public WallOrnamentCaveRelation(int wallOrnamentCaveRelationID, int caveOrnament
 	public String getUniqueID() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public void setWallLocationID(int wallLocationID) {
+		this.wallLocationID = wallLocationID;
 	}
 
 }

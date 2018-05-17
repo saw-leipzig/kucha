@@ -21,6 +21,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import de.cses.shared.AnnotatedBiblographyEntry;
+import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
 import de.cses.shared.CurrentLocationEntry;
@@ -70,6 +71,7 @@ public class StaticTables {
 	protected HashMap<Integer, VendorEntry> vendorMap;
 	protected HashMap<Integer, PublicationTypeEntry> publicationTypeMap;
 	protected HashMap<Integer, AnnotatedBiblographyEntry> bibEntryMap;
+	protected HashMap<Integer, CaveEntry> caveEntryMap;
 
 	private int loadCounter;
 
@@ -95,7 +97,7 @@ public class StaticTables {
 	 */
 	public StaticTables(ListsLoadedListener l) {
 		listener = l;
-		loadCounter = 19;
+		loadCounter = 20;
 		loadDistricts();
 		loadSites();
 		loadRegions();
@@ -115,11 +117,12 @@ public class StaticTables {
 		loadVendor();
 		loadPublicationTypes();
 		loadBiliography();
+		loadCaves();
 	}
 
 	private void listLoaded() {
 		--loadCounter;
-		listener.listsLoaded((19.0 - loadCounter) / 19.0);
+		listener.listsLoaded((20.0 - loadCounter) / 20.0);
 	}
 
 	/**
@@ -508,6 +511,25 @@ public class StaticTables {
 			}
 		});
 	}
+	
+	private void loadCaves() {
+		caveEntryMap = new HashMap<Integer, CaveEntry>();
+		dbService.getCaves(new AsyncCallback<ArrayList<CaveEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(ArrayList<CaveEntry> result) {
+				for (CaveEntry ce : result) {
+					caveEntryMap.put(ce.getCaveID(), ce);
+				}
+				listLoaded();
+			}
+		});
+	}
 
 	public Map<Integer, DistrictEntry> getDistrictEntries() {
 		return districtEntryMap;
@@ -587,6 +609,10 @@ public class StaticTables {
 	
 	public Map<Integer, AnnotatedBiblographyEntry> getBibliographyEntries() {
 		return bibEntryMap;
+	}
+	
+	public Map<Integer, CaveEntry> getCaveEntries() {
+		return caveEntryMap;
 	}
 	
 }

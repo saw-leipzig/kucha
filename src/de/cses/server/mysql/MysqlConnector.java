@@ -730,7 +730,7 @@ public class MysqlConnector {
 
 	}
 
-	public boolean saveOrnamentEntry(OrnamentEntry ornamentEntry) {
+	public int saveOrnamentEntry(OrnamentEntry ornamentEntry) {
 		int newOrnamentID = 0;
 		Connection dbc = getConnection();
 		PreparedStatement ornamentStatement;
@@ -759,6 +759,38 @@ public class MysqlConnector {
 			updateOrnamentComponentsRelations(newOrnamentID, ornamentEntry.getOrnamentComponents());
 			updateOrnamentImageRelations(newOrnamentID, ornamentEntry.getImages());
 			updateCaveOrnamentRelation(newOrnamentID, ornamentEntry.getCavesRelations());
+			ornamentStatement.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return 0;
+		}
+		return newOrnamentID;
+	}
+	
+	/**
+	 * @param oEntry
+	 * @return
+	 */
+	public boolean updateOrnamentEntry(OrnamentEntry ornamentEntry) {
+		Connection dbc = getConnection();
+		PreparedStatement ornamentStatement;
+		try {
+			ornamentStatement = dbc.prepareStatement("UPDATE Ornaments SET Code=?, Description=?, Remarks=?, Interpretation=?, OrnamentReferences=?, Annotation=?, OrnamentClassID=?, StructureOrganizationID=? WHERE OrnamentID=?");
+			ornamentStatement.setString(1, ornamentEntry.getCode());
+			ornamentStatement.setString(2, ornamentEntry.getDescription());
+			ornamentStatement.setString(3, ornamentEntry.getRemarks());
+			ornamentStatement.setString(4, ornamentEntry.getInterpretation());
+			ornamentStatement.setString(5, ornamentEntry.getReferences());
+			ornamentStatement.setString(6, ornamentEntry.getAnnotations());
+			ornamentStatement.setInt(7, ornamentEntry.getOrnamentClass());
+			ornamentStatement.setInt(8, ornamentEntry.getStructureOrganizationID());
+			ornamentStatement.setInt(9, ornamentEntry.getOrnamentID());
+			ornamentStatement.executeUpdate();
+
+			updateInnerSecondaryPatternsRelations(ornamentEntry.getOrnamentID(), ornamentEntry.getInnerSecondaryPatterns());
+			updateOrnamentComponentsRelations(ornamentEntry.getOrnamentID(), ornamentEntry.getOrnamentComponents());
+			updateOrnamentImageRelations(ornamentEntry.getOrnamentID(), ornamentEntry.getImages());
+			updateCaveOrnamentRelation(ornamentEntry.getOrnamentID(), ornamentEntry.getCavesRelations());
 			ornamentStatement.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -816,17 +848,16 @@ public class MysqlConnector {
 					+ "VALUES (?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			ornamentCaveRelationStatement.setInt(2, ornamentID);
 			for (OrnamentCaveRelation ornamentCaveR : cavesRelations) {
-				ornamentCaveRelationStatement.setInt(1, ornamentCaveR.getCave().getCaveID());
+				ornamentCaveRelationStatement.setInt(1, ornamentCaveR.getCaveEntry().getCaveID());
 				ornamentCaveRelationStatement.setString(3, ornamentCaveR.getColours());
 				ornamentCaveRelationStatement.setString(4, ornamentCaveR.getNotes());
 				ornamentCaveRelationStatement.setString(5, ornamentCaveR.getGroup());
 				// ornamentCaveRelationStatement.setString(6, ornamentCaveR.getRelatedelementeofOtherCultures());
 				ornamentCaveRelationStatement.setString(6, ornamentCaveR.getSimilarelementsOfOtherCultures());
-				if(ornamentCaveR.getStyle() == null) {
+				if (ornamentCaveR.getStyle() == null) {
 					ornamentCaveRelationStatement.setInt(7, 0);
-				}
-				else {
-				ornamentCaveRelationStatement.setInt(7, ornamentCaveR.getStyle().getStyleID());
+				} else {
+					ornamentCaveRelationStatement.setInt(7, ornamentCaveR.getStyle().getStyleID());
 				}
 				ornamentCaveRelationStatement.executeUpdate();
 				ResultSet keys = ornamentCaveRelationStatement.getGeneratedKeys();
@@ -836,40 +867,32 @@ public class MysqlConnector {
 				keys.close();
 				System.err.println("vor orientation");
 
-				PreparedStatement ornamentOrientationRelationStatement = dbc
-						.prepareStatement("INSERT INTO OrnamentOrientationRelation (OrnamentCaveRelationID, OrientationID) VALUES (?, ?)");
+				deleteEntry("DELETE FROM OrnamentOrientationRelation WHERE OrnamentCaveRelationID=" + newCaveOrnamentRelationID);
+				PreparedStatement ornamentOrientationRelationStatement = dbc.prepareStatement("INSERT INTO OrnamentOrientationRelation (OrnamentCaveRelationID, OrientationID) VALUES (?, ?)");
 				ornamentOrientationRelationStatement.setInt(1, newCaveOrnamentRelationID);
 				for (OrientationEntry orientationEntry : ornamentCaveR.getOrientations()) {
 					ornamentOrientationRelationStatement.setInt(2, orientationEntry.getOrientationID());
 					ornamentOrientationRelationStatement.executeUpdate();
 				}
-				PreparedStatement ornamentCavePictorialRelationStatement = dbc
-						.prepareStatement("INSERT INTO OrnamentCaveIconographyRelation (OrnamentCaveRelationID, IconographyID) VALUES (?, ?)");
+				
+				deleteEntry("DELETE FROM OrnamentCaveIconographyRelation WHERE OrnamentCaveRelationID=" + newCaveOrnamentRelationID);
+				PreparedStatement ornamentCavePictorialRelationStatement = dbc.prepareStatement("INSERT INTO OrnamentCaveIconographyRelation (OrnamentCaveRelationID, IconographyID) VALUES (?, ?)");
 				ornamentCavePictorialRelationStatement.setInt(1, newCaveOrnamentRelationID);
 				for (IconographyEntry peEntry : ornamentCaveR.getIconographyElements()) {
 					ornamentCavePictorialRelationStatement.setInt(2, peEntry.getIconographyID());
 					ornamentCavePictorialRelationStatement.executeUpdate();
 				}
 
-				System.err.println("vor related ornaments");
-				PreparedStatement relatedOrnamentsRelationStatement = dbc
-						.prepareStatement("INSERT INTO RelatedOrnamentsRelation (OrnamentID, OrnamentCaveRelationID) VALUES (?, ?)");
+				deleteEntry("DELETE FROM RelatedOrnamentsRelation WHERE OrnamentCaveRelationID=" + newCaveOrnamentRelationID);
+				PreparedStatement relatedOrnamentsRelationStatement = dbc.prepareStatement("INSERT INTO RelatedOrnamentsRelation (OrnamentID, OrnamentCaveRelationID) VALUES (?, ?)");
 				relatedOrnamentsRelationStatement.setInt(2, newCaveOrnamentRelationID);
 				for (OrnamentEntry ornamentEntry : ornamentCaveR.getRelatedOrnamentsRelations()) {
 					relatedOrnamentsRelationStatement.setInt(1, ornamentEntry.getOrnamentID());
 					relatedOrnamentsRelationStatement.executeUpdate();
 				}
-
-				// PreparedStatement similarOrnamentsRelationStatement = dbc.prepareStatement("INSERT INTO SimilarOrnamentsRelation (OrnamentID, OrnamentCaveRelationID)
-				// VALUES (?, ?)");
-				// similarOrnamentsRelationStatement.setInt(2, newCaveOrnamentRelationID);
-				// for (OrnamentEntry oEntry : ornamentCaveR.getSimilarOrnamentsRelations()) {
-				// similarOrnamentsRelationStatement.setInt(1, oEntry.getOrnamentID());
-				// similarOrnamentsRelationStatement.executeUpdate();
-				// }
-				System.err.println("vor ornamentcavewall");
-				PreparedStatement wallCaveOrnamentRelationStatement = dbc.prepareStatement(
-						"INSERT INTO OrnamentCaveWallRelation (WallLocationID, PositionID, FunctionID, Notes, OrnamentCaveRelationID, CaveID) VALUES (?,?,?,?,?,?)");
+				
+				deleteEntry("DELETE FROM OrnamentCaveWallRelation WHERE OrnamentCaveRelationID=" + newCaveOrnamentRelationID);
+				PreparedStatement wallCaveOrnamentRelationStatement = dbc.prepareStatement("INSERT INTO OrnamentCaveWallRelation (WallLocationID, PositionID, FunctionID, Notes, OrnamentCaveRelationID, CaveID) VALUES (?,?,?,?,?,?)");
 				for (WallOrnamentCaveRelation we : ornamentCaveR.getWalls()) {
 					wallCaveOrnamentRelationStatement.setInt(1, we.getWallLocationID());
 					wallCaveOrnamentRelationStatement.setInt(2, we.getOrnamenticPositionID());
@@ -878,9 +901,7 @@ public class MysqlConnector {
 					wallCaveOrnamentRelationStatement.setInt(5, newCaveOrnamentRelationID);
 					wallCaveOrnamentRelationStatement.setInt(6, we.getWall().getCaveID());
 					wallCaveOrnamentRelationStatement.executeUpdate();
-					System.err.println("erfolg");
 				}
-
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -1024,10 +1045,6 @@ public class MysqlConnector {
 		}
 		return results;
 	}
-
-
-
-
 
 	public ArrayList<VendorEntry> getVendors() {
 		ArrayList<VendorEntry> results = new ArrayList<VendorEntry>();
@@ -1523,7 +1540,6 @@ public class MysqlConnector {
 		return result;
 	}
 
-
 	public ArrayList<MainTypologicalClass> getMainTypologicalClass() {
 		MainTypologicalClass result = null;
 		ArrayList<MainTypologicalClass> maintypologicalclasses = new ArrayList<MainTypologicalClass>();
@@ -1860,7 +1876,7 @@ public class MysqlConnector {
 		return cavetypes;
 	}
 
-	public ArrayList<OrnamentEntry> getOrnamentsWHERE(String sqlWhere) {
+	public ArrayList<OrnamentEntry> getOrnamentsWhere(String sqlWhere) {
 		ArrayList<OrnamentEntry> results = new ArrayList<OrnamentEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -2416,7 +2432,6 @@ public class MysqlConnector {
 		}
 	}
 
-
 	private synchronized void insertDepictionIconographyRelation(int depictionID, ArrayList<IconographyEntry> iconographyList) {
 		Connection dbc = getConnection();
 		PreparedStatement relationStatement;
@@ -2438,7 +2453,8 @@ public class MysqlConnector {
 	 * @param depictionID
 	 * @param relatedBibliographyList
 	 */
-	private synchronized void insertDepictionBibliographyRelation(int depictionID, ArrayList<AnnotatedBiblographyEntry> relatedBibliographyList) {
+	private synchronized void insertDepictionBibliographyRelation(int depictionID,
+			ArrayList<AnnotatedBiblographyEntry> relatedBibliographyList) {
 		Connection dbc = getConnection();
 		PreparedStatement relationStatement;
 
@@ -2454,7 +2470,7 @@ public class MysqlConnector {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private ArrayList<AnnotatedBiblographyEntry> getRelatedBibliographyFromDepiction(int depictionID) {
 		Connection dbc = getConnection();
 		PreparedStatement relationStatement;
@@ -3582,7 +3598,7 @@ public class MysqlConnector {
 		return result;
 	}
 
-	public ArrayList<OrnamentCaveRelation> getCaveRelationbyOrnamentID(int ornamentID) {
+	private ArrayList<OrnamentCaveRelation> getCaveRelationbyOrnamentID(int ornamentID) {
 		Connection dbc = getConnection();
 		ArrayList<OrnamentCaveRelation> result = new ArrayList<OrnamentCaveRelation>();
 		Statement stmt;
@@ -3652,7 +3668,7 @@ public class MysqlConnector {
 		return orientations;
 	}
 
-	public ArrayList<IconographyEntry> getIconographyElementsbyOrnamentCaveID(int ornamentCaveID) {
+	private ArrayList<IconographyEntry> getIconographyElementsbyOrnamentCaveID(int ornamentCaveID) {
 		ArrayList<IconographyEntry> results = new ArrayList<IconographyEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -3660,11 +3676,11 @@ public class MysqlConnector {
 		try {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery(
-					"SELECT * FROM Iconography JOIN OrnamentCaveIconographyRelation ON Iconography.IconographyID = OrnamentCaveIconographyRelation.IconographyID  WHERE OrnamentCaveIconographyRelation.OrnamentCaveRelationID = "
-							+ ornamentCaveID);
+					"SELECT * FROM Iconography WHERE IconographyID IN (SELECT IconographyID FROM OrnamentCaveIconographyRelation WHERE OrnamentCaveRelationID="
+							+ ornamentCaveID + ")");
 			while (rs.next()) {
 				results.add(new IconographyEntry(rs.getInt("IconographyID"), rs.getInt("ParentID"), rs.getString("Text")));
-				System.err.println("es wurde einpassender icnography eintrag gefunden");
+				System.err.println("getIconographyElementsbyOrnamentCaveID: IconographyID=" + rs.getInt("IconographyID"));
 			}
 			rs.close();
 			stmt.close();
@@ -3741,4 +3757,13 @@ public class MysqlConnector {
 		}
 		return result;
 	}
+
+	/**
+	 * @param clientName
+	 * @param message
+	 */
+	public void doLogging(String clientName, String message) {
+		System.err.println(">>> " + clientName + ": " + message);
+	}
+
 }

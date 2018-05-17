@@ -41,7 +41,8 @@ import de.cses.client.Util;
 public class UserLogin extends SimpleContainer {
 
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
-	private static final String SESSION_ID = "sessionID";
+	public static final String SESSION_ID = "sessionID";
+	public static final String USERNAME = "username";
 
 	private static UserLogin instance = null;
 	private TextButton loginButton, logoutButton;
@@ -86,6 +87,7 @@ public class UserLogin extends SimpleContainer {
 				if (result != null) {
 					loginView.removeFromParent();
 					Cookies.setCookie(SESSION_ID, result);
+					Cookies.setCookie(USERNAME, username);
 					logoutButton.setText("logout " + username);
 			    headline.setHTML("<h1>Welcome to the Kucha Information System! You are logged in!</h1>");
 					add(userView);
@@ -123,6 +125,7 @@ public class UserLogin extends SimpleContainer {
 
 	private void logout() {
 		Cookies.removeCookie(SESSION_ID);
+		Cookies.removeCookie(USERNAME);
 		usernameField.setValue(username);
 		passwordField.reset();
 		userView.removeFromParent();

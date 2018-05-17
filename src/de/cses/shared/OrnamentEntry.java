@@ -36,12 +36,13 @@ public class OrnamentEntry extends AbstractEntry {
 	}
 
 	public OrnamentEntry(int ornamentID, String code) {
-		super();
 		this.ornamentID = ornamentID;
 		this.code = code;
 	}
-	public OrnamentEntry(int ornamentID, String code, String description, String remarks, String annotations, String interpretation, String references, int ornamentClassID, ArrayList<ImageEntry> images, ArrayList<OrnamentCaveRelation> cavesRelations, ArrayList<OrnamentComponentsEntry> ornamentComponents,  ArrayList<InnerSecondaryPatternsEntry> innerSecondaryPatterns) {
-		super();
+
+	public OrnamentEntry(int ornamentID, String code, String description, String remarks, String annotations, String interpretation,
+			String references, int ornamentClassID, ArrayList<ImageEntry> images, ArrayList<OrnamentCaveRelation> cavesRelations,
+			ArrayList<OrnamentComponentsEntry> ornamentComponents, ArrayList<InnerSecondaryPatternsEntry> innerSecondaryPatterns) {
 		this.ornamentID = ornamentID;
 		this.code = code;
 		this.description = description;
@@ -55,8 +56,9 @@ public class OrnamentEntry extends AbstractEntry {
 		this.cavesRelations = cavesRelations;
 		this.ornamentComponents = ornamentComponents;
 	}
-	public OrnamentEntry(int ornamentID, String code, String description, String remarks, String annotations, String interpretation, String references, int ornamentClassID) {
-		super();
+
+	public OrnamentEntry(int ornamentID, String code, String description, String remarks, String annotations, String interpretation,
+			String references, int ornamentClassID) {
 		this.ornamentID = ornamentID;
 		this.code = code;
 		this.description = description;
@@ -115,7 +117,6 @@ public class OrnamentEntry extends AbstractEntry {
 		this.references = references;
 	}
 
-
 	public List<OrnamentCaveRelation> getCavesRelations() {
 		return cavesRelations;
 	}
@@ -157,7 +158,6 @@ public class OrnamentEntry extends AbstractEntry {
 		return "OrnamentEntry" + ornamentID;
 	}
 
-
 	/**
 	 * @return the ornamentClass
 	 */
@@ -166,7 +166,8 @@ public class OrnamentEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param ornamentClass the ornamentClass to set
+	 * @param ornamentClass
+	 *          the ornamentClass to set
 	 */
 	public void setOrnamentClass(int ornamentClass) {
 		this.ornamentClass = ornamentClass;
@@ -180,7 +181,8 @@ public class OrnamentEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param structureOrganizationID the structureOrganizationID to set
+	 * @param structureOrganizationID
+	 *          the structureOrganizationID to set
 	 */
 	public void setStructureOrganizationID(int structureOrganizationID) {
 		this.structureOrganizationID = structureOrganizationID;
@@ -194,7 +196,8 @@ public class OrnamentEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param ornamentComponents the ornamentComponents to set
+	 * @param ornamentComponents
+	 *          the ornamentComponents to set
 	 */
 	public void setOrnamentComponents(ArrayList<OrnamentComponentsEntry> ornamentComponents) {
 		this.ornamentComponents = ornamentComponents;
@@ -208,12 +211,11 @@ public class OrnamentEntry extends AbstractEntry {
 	}
 
 	/**
-	 * @param innerSecondaryPatterns the innerSecondaryPatterns to set
+	 * @param innerSecondaryPatterns
+	 *          the innerSecondaryPatterns to set
 	 */
 	public void setInnerSecondaryPatterns(ArrayList<InnerSecondaryPatternsEntry> innerSecondaryPatterns) {
 		this.innerSecondaryPatterns = innerSecondaryPatterns;
 	}
-	
-	
 
 }

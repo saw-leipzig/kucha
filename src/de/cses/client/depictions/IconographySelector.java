@@ -46,6 +46,7 @@ import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
+import de.cses.client.Util;
 import de.cses.shared.IconographyEntry;
 
 public class IconographySelector implements IsWidget {
@@ -75,10 +76,9 @@ public class IconographySelector implements IsWidget {
 		}
 	}
 
-	private DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	private TreeStore<IconographyEntry> iconographyTreeStore;
 	private Tree<IconographyEntry, String> iconographyTree;
-	private FramedPanel mainPanel;
+	private FramedPanel mainPanel = null;
 	private StoreFilterField<IconographyEntry> filterField;
 	protected Map<String, IconographyEntry> selectedIconographyMap;
 
@@ -102,6 +102,7 @@ public class IconographySelector implements IsWidget {
 		filterField.bind(iconographyTreeStore);
 		selectedIconographyMap = new HashMap<String, IconographyEntry>();
 		setIconographyStore(elements);
+		initPanel();
 	}
 
 	private void processParentIconographyEntry(TreeStore<IconographyEntry> store, IconographyEntry item) {
@@ -147,7 +148,9 @@ public class IconographySelector implements IsWidget {
 //	}
 	
 	public void setSelectedIconography(ArrayList<IconographyEntry> iconographyRelationList) {
+		Util.doLogging("*** setSelectedIconography called - iconographyTree no. of items = " + iconographyTree.getStore().getAllItemsCount());
 		for (IconographyEntry entry : iconographyRelationList) {
+			Util.doLogging("setSelectedIconography setting entry = " + entry.getIconographyID());
 			iconographyTree.setChecked(entry, CheckState.CHECKED);
 			selectedIconographyMap.put(entry.getUniqueID(), entry);
 		}
@@ -162,6 +165,8 @@ public class IconographySelector implements IsWidget {
 	}
 
 	private void initPanel() {
+		Util.doLogging("IconographySelector.init() has been called! " + this.getClass().toString());
+		
 		iconographyTree = new Tree<IconographyEntry, String>(iconographyTreeStore, new IconographyValueProvider()) {
 
 			@Override
