@@ -1877,7 +1877,7 @@ public class MysqlConnector {
 		return cavetypes;
 	}
 
-	public ArrayList<OrnamentEntry> getOrnamentsWHERE(String sqlWhere) {
+	public ArrayList<OrnamentEntry> getOrnamentsWhere(String sqlWhere) {
 		ArrayList<OrnamentEntry> results = new ArrayList<OrnamentEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -3599,7 +3599,7 @@ public class MysqlConnector {
 		return result;
 	}
 
-	public ArrayList<OrnamentCaveRelation> getCaveRelationbyOrnamentID(int ornamentID) {
+	private ArrayList<OrnamentCaveRelation> getCaveRelationbyOrnamentID(int ornamentID) {
 		Connection dbc = getConnection();
 		ArrayList<OrnamentCaveRelation> result = new ArrayList<OrnamentCaveRelation>();
 		Statement stmt;
@@ -3669,7 +3669,7 @@ public class MysqlConnector {
 		return orientations;
 	}
 
-	public ArrayList<IconographyEntry> getIconographyElementsbyOrnamentCaveID(int ornamentCaveID) {
+	private ArrayList<IconographyEntry> getIconographyElementsbyOrnamentCaveID(int ornamentCaveID) {
 		ArrayList<IconographyEntry> results = new ArrayList<IconographyEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;

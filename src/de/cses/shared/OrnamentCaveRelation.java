@@ -19,7 +19,6 @@ public class OrnamentCaveRelation extends AbstractEntry {
 	private StyleEntry style;
 
 	public OrnamentCaveRelation() {
-
 	}
 
 	public OrnamentCaveRelation(int ornamentCaveRelationID, StyleEntry style, int ornamentID, DistrictEntry district, CaveEntry caveEntry,
@@ -112,7 +111,9 @@ public class OrnamentCaveRelation extends AbstractEntry {
 	}
 
 	public String getName() {
-		return (caveEntry.getHistoricName() != null && caveEntry.getHistoricName().length()>0) ? "Cave: " + caveEntry.getOfficialNumber() + " (" + caveEntry.getHistoricName() + ")" : "Cave: " + caveEntry.getOfficialNumber();
+		return (caveEntry.getHistoricName() != null && caveEntry.getHistoricName().length() > 0)
+				? "Cave: " + caveEntry.getOfficialNumber() + " (" + caveEntry.getHistoricName() + ")"
+				: "Cave: " + caveEntry.getOfficialNumber();
 	}
 
 	public List<WallOrnamentCaveRelation> getWalls() {

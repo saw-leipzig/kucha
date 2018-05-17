@@ -406,7 +406,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	
 	public ArrayList<OrnamentEntry> getOrnamentsWHERE(String sqlWhere) {
 		MysqlConnector connector = MysqlConnector.getInstance();
-		return connector.getOrnamentsWHERE(sqlWhere);
+		return connector.getOrnamentsWhere(sqlWhere);
 	}
 	
 
