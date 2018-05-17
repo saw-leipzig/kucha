@@ -78,7 +78,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 	private ListStore<OrnamentEntry> selectedSimilarOrnaments;
 	private ListStore<OrnamentEntry> selectedRedlatedOrnaments;
 	private WallRelationProperties wallRelationProps;
-	private IconographySelector selector;
+	private IconographySelector icoSelector;
 	private OrnamenticEditor ornamenticEditor;
 	private ComboBox<StyleEntry> styleComboBox;
 	private TextField caveType = new TextField();
@@ -626,15 +626,19 @@ public class OrnamentCaveAttributes extends PopupPanel {
 		 * vlcRelationToTherornaments2.add(header, new VerticalLayoutData(1.0, .4));
 		 */
 
-		selector = new IconographySelector(StaticTables.getInstance().getIconographyForOrnamenticEntries().values());
-		header = new FramedPanel();
-		header.setHeading("Select elements showing similar pattern");
-		header.add(selector);
+		icoSelector = new IconographySelector(StaticTables.getInstance().getIconographyForOrnamenticEntries().values());
+		Util.doLogging("OrnamentCaveAttributes - IconographySelector initialised");
+//		header = new FramedPanel();
+//		header.setHeading("Select elements showing similar pattern");
+//		header.add(icoSelector);
 		if (ornamentCaveRelationEntry != null) {
-			Util.doLogging(this.getClass().getName() + "Size iconography: " + ornamentCaveRelationEntry.getIconographyElements().size());
-			selector.setSelectedIconography(ornamentCaveRelationEntry.getIconographyElements());
+			if (ornamentCaveRelationEntry.getIconographyElements() == null) {
+				Util.doLogging("OrnamentCaveAttributes - ornamentCaveRelationEntry.getIconographyElements() is NULL");
+			}
+			Util.doLogging("OrnamentCaveAttributes - ornamentCaveRelationEntry.getIconographyElements().size() = " + ornamentCaveRelationEntry.getIconographyElements().size());
+			icoSelector.setSelectedIconography(ornamentCaveRelationEntry.getIconographyElements());
 		}
-		vlcRelationToTherornaments2.add(header, new VerticalLayoutData(1, .4));
+		vlcRelationToTherornaments2.add(icoSelector, new VerticalLayoutData(1.0, .4));
 
 		final TextField groupOfOrnaments = new TextField();
 		groupOfOrnaments.setAllowBlank(true);
@@ -728,8 +732,8 @@ public class OrnamentCaveAttributes extends PopupPanel {
 				ornamentCaveRelation.setOrientations(new ArrayList<OrientationEntry>(selectedorientationListStore.getAll()));
 
 				ornamentCaveRelation.getIconographyElements().clear();
-				for (int i = 0; i < selector.getSelectedIconography().size(); i++) {
-					ornamentCaveRelation.getIconographyElements().add(selector.getSelectedIconography().get(i));
+				for (int i = 0; i < icoSelector.getSelectedIconography().size(); i++) {
+					ornamentCaveRelation.getIconographyElements().add(icoSelector.getSelectedIconography().get(i));
 				}
 
 				ornamentCaveRelation.getWalls().clear();

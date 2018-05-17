@@ -838,10 +838,9 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	 * @see de.cses.client.DatabaseService#doLogging(java.lang.String, java.lang.String)
 	 */
 	@Override
-	public void doLogging(String message) {
+	public void doLogging(String usertag, String message) {
 		MysqlConnector connector = MysqlConnector.getInstance();
-		String host = getThreadLocalRequest().getRemoteHost();
-		connector.doLogging(host, message);
+		connector.doLogging(usertag, message);
 	}
 
 	/* (non-Javadoc)

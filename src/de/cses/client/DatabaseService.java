@@ -264,7 +264,7 @@ public interface DatabaseService extends RemoteService {
 
 	ArrayList<IconographyEntry> getIconography(int rootIndex) throws IllegalArgumentException;
 
-	void doLogging(String message) throws IllegalArgumentException;
+	void doLogging(String usertag, String message);
 
 	boolean updateOrnamentEntry(OrnamentEntry oEntry) throws IllegalArgumentException;
 }

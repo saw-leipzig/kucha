@@ -76,10 +76,9 @@ public class IconographySelector implements IsWidget {
 		}
 	}
 
-	private DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	private TreeStore<IconographyEntry> iconographyTreeStore;
 	private Tree<IconographyEntry, String> iconographyTree;
-	private FramedPanel mainPanel;
+	private FramedPanel mainPanel = null;
 	private StoreFilterField<IconographyEntry> filterField;
 	protected Map<String, IconographyEntry> selectedIconographyMap;
 
@@ -103,6 +102,7 @@ public class IconographySelector implements IsWidget {
 		filterField.bind(iconographyTreeStore);
 		selectedIconographyMap = new HashMap<String, IconographyEntry>();
 		setIconographyStore(elements);
+		initPanel();
 	}
 
 	private void processParentIconographyEntry(TreeStore<IconographyEntry> store, IconographyEntry item) {

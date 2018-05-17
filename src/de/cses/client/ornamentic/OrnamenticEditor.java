@@ -493,35 +493,47 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 			@Override
 			public void onClick(ClickEvent event) {
-				OrnamentEntry oEntry = new OrnamentEntry();
-				for (int i = 0; i < caveOrnamentRelationList.size(); i++) {
-					oEntry.getCavesRelations().add(caveOrnamentRelationList.get(i));
-				}
-				for (int i = 0; i < imageEntryList.size(); i++) {
-					oEntry.getImages().add(imageEntryList.get(i));
-				}
-				if (ornamentCode.getText() == "") {
+				if (ornamentCode.validate()) {
 					Window.alert("Please insert Ornamentation Code");
 					return;
 				}
-				oEntry.setCode(ornamentCode.getText());
-				oEntry.setDescription(discription.getText());
-				oEntry.setRemarks(remarks.getText());
-				oEntry.setAnnotations(annotations.getText());
-				oEntry.setInterpretation(interpretation.getText());
-				oEntry.setReferences(references.getText());
+
+				ArrayList<OrnamentCaveRelation> corList = new ArrayList<OrnamentCaveRelation>();
+				for (int i = 0; i < caveOrnamentRelationList.size(); i++) {
+					corList.add(caveOrnamentRelationList.get(i));
+				}
+				ornamentEntry.setCavesRelations(corList);
+				
+				ArrayList<ImageEntry> ieList = new ArrayList<ImageEntry>();
+				for (int i = 0; i < imageEntryList.size(); i++) {
+					ieList.add(imageEntryList.get(i));
+				}
+				ornamentEntry.setImages(ieList);
+				
+				ornamentEntry.setCode(ornamentCode.getText());
+				ornamentEntry.setDescription(discription.getText());
+				ornamentEntry.setRemarks(remarks.getText());
+				ornamentEntry.setAnnotations(annotations.getText());
+				ornamentEntry.setInterpretation(interpretation.getText());
+				ornamentEntry.setReferences(references.getText());
 				if (ornamentClassComboBox.getValue() == null) {
 					// what should happen here?
 				} else {
 					Util.doLogging("ID gesetzt");
-					oEntry.setOrnamentClass(ornamentClassComboBox.getValue().getOrnamentClassID());
+					ornamentEntry.setOrnamentClass(ornamentClassComboBox.getValue().getOrnamentClassID());
 				}
+				
+				ArrayList<InnerSecondaryPatternsEntry> ispeList = new ArrayList<InnerSecondaryPatternsEntry>();
 				for (int i = 0; i < selectedinnerSecondaryPatternsEntryList.size(); i++) {
-					oEntry.getInnerSecondaryPatterns().add(selectedinnerSecondaryPatternsEntryList.get(i));
+					ispeList.add(selectedinnerSecondaryPatternsEntryList.get(i));
 				}
+				ornamentEntry.setInnerSecondaryPatterns(ispeList);
+
+				ArrayList<OrnamentComponentsEntry> oceList = new ArrayList<OrnamentComponentsEntry>();
 				for (int i = 0; i < selectedOrnamentComponents.size(); i++) {
-					oEntry.getOrnamentComponents().add(selectedOrnamentComponents.get(i));
+					oceList.add(selectedOrnamentComponents.get(i));
 				}
+				ornamentEntry.setOrnamentComponents(oceList);
 
 				// if(structureorganizationComboBox.getCurrentValue() == null) {
 				// oEntry.setStructureOrganizationID(0); // unknown
@@ -531,35 +543,32 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 				// }
 
 				// send ornament to server
-				if (oEntry.getOrnamentID() == 0) {
-					dbService.saveOrnamentEntry(oEntry, new AsyncCallback<Integer>() {
+				if (ornamentEntry.getOrnamentID() == 0) {
+					dbService.saveOrnamentEntry(ornamentEntry, new AsyncCallback<Integer>() {
 
 						@Override
 						public void onFailure(Throwable caught) {
-							caught.printStackTrace();
 							Util.showWarning("Saving failed", caught.getMessage());
 						}
 
 						@Override
 						public void onSuccess(Integer result) {
 							Util.doLogging(this.getClass().getName() + " saving sucessful");
-							oEntry.setOrnamentID(result);
+							ornamentEntry.setOrnamentID(result);
 							closeEditor();
 						}
 					});
 				} else {
-					dbService.updateOrnamentEntry(oEntry, new AsyncCallback<Boolean>() {
+					dbService.updateOrnamentEntry(ornamentEntry, new AsyncCallback<Boolean>() {
 
 						@Override
 						public void onFailure(Throwable caught) {
-							// TODO Auto-generated method stub
-
+							Util.showWarning("Update failed", caught.getMessage());
 						}
 
 						@Override
 						public void onSuccess(Boolean result) {
-							// TODO Auto-generated method stub
-
+							closeEditor();
 						}
 					});
 				}

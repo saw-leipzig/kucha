@@ -286,7 +286,7 @@ public interface DatabaseServiceAsync {
 
 	void getIconography(int rootIndex, AsyncCallback<ArrayList<IconographyEntry>> asyncCallback) throws IllegalArgumentException;
 
-	void doLogging(String message, AsyncCallback asyncCallback) throws IllegalArgumentException;
+	void doLogging(String usertag, String message, AsyncCallback asyncCallback) throws IllegalArgumentException;
 
 	void updateOrnamentEntry(OrnamentEntry oEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 

@@ -16,6 +16,7 @@ package de.cses.client;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -91,7 +92,8 @@ public class Util {
 	}
 
 	public static void doLogging(String message) {
-		dbService.doLogging(message, new AsyncCallback() {
+		String usertag = Cookies.getCookie(UserLogin.USERNAME);
+		dbService.doLogging(usertag!=null ? usertag : "unknown", message, new AsyncCallback() {
 
 			@Override
 			public void onFailure(Throwable caught) { }

@@ -36,7 +36,6 @@ public class OrnamentEntry extends AbstractEntry {
 	}
 
 	public OrnamentEntry(int ornamentID, String code) {
-		super();
 		this.ornamentID = ornamentID;
 		this.code = code;
 	}
@@ -44,7 +43,6 @@ public class OrnamentEntry extends AbstractEntry {
 	public OrnamentEntry(int ornamentID, String code, String description, String remarks, String annotations, String interpretation,
 			String references, int ornamentClassID, ArrayList<ImageEntry> images, ArrayList<OrnamentCaveRelation> cavesRelations,
 			ArrayList<OrnamentComponentsEntry> ornamentComponents, ArrayList<InnerSecondaryPatternsEntry> innerSecondaryPatterns) {
-		super();
 		this.ornamentID = ornamentID;
 		this.code = code;
 		this.description = description;
@@ -61,7 +59,6 @@ public class OrnamentEntry extends AbstractEntry {
 
 	public OrnamentEntry(int ornamentID, String code, String description, String remarks, String annotations, String interpretation,
 			String references, int ornamentClassID) {
-		super();
 		this.ornamentID = ornamentID;
 		this.code = code;
 		this.description = description;
