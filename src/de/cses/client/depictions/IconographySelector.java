@@ -148,13 +148,11 @@ public class IconographySelector implements IsWidget {
 //	}
 	
 	public void setSelectedIconography(ArrayList<IconographyEntry> iconographyRelationList) {
-		Util.doLogging("*** setSelectedIconography called - iconographyRelationList.size() = " + iconographyRelationList.size());
+		Util.doLogging("*** setSelectedIconography called - iconographyTree no. of items = " + iconographyTree.getStore().getAllItemsCount());
 		for (IconographyEntry entry : iconographyRelationList) {
 			Util.doLogging("setSelectedIconography setting entry = " + entry.getIconographyID());
 			iconographyTree.setChecked(entry, CheckState.CHECKED);
-			Util.doLogging("setSelectedIconography setChecked sucessful");
 			selectedIconographyMap.put(entry.getUniqueID(), entry);
-			Util.doLogging("setSelectedIconography put sucessful");
 		}
 	}
 

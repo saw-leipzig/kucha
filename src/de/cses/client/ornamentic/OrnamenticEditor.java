@@ -91,6 +91,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 	private ListStore<OrnamentComponentsEntry> ornamentComponents;
 	private ListStore<OrnamentComponentsEntry> selectedOrnamentComponents;
 	private OrnamentComponentsProperties ornamentComponentsProps;
+	private TextField ornamentCodeTextField;
 
 	@Override
 	public Widget asWidget() {
@@ -255,14 +256,15 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		VerticalLayoutContainer panel = new VerticalLayoutContainer();
 		VerticalLayoutContainer panel2 = new VerticalLayoutContainer();
 
-		final TextField ornamentCode = new TextField();
-		ornamentCode.setAllowBlank(false);
+		ornamentCodeTextField = new TextField();
+		ornamentCodeTextField.setAllowBlank(false);
+		ornamentCodeTextField.setAutoValidate(true);
 		header = new FramedPanel();
 		header.setHeading("Ornament Code");
-		header.add(ornamentCode);
+		header.add(ornamentCodeTextField);
 		panel.add(header, new VerticalLayoutData(1.0, .125));
 		if (ornamentEntry != null) {
-			ornamentCode.setText(ornamentEntry.getCode());
+			ornamentCodeTextField.setText(ornamentEntry.getCode());
 		}
 
 		header = new FramedPanel();
@@ -492,8 +494,8 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 			@Override
 			public void onClick(ClickEvent event) {
-				if (ornamentCode.validate()) {
-					Window.alert("Please insert Ornamentation Code");
+				if (!ornamentCodeTextField.validate()) {
+					Util.showWarning("Missing information", "Please insert Ornamentation Code!");
 					return;
 				}
 
@@ -509,7 +511,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 				}
 				ornamentEntry.setImages(ieList);
 
-				ornamentEntry.setCode(ornamentCode.getText());
+				ornamentEntry.setCode(ornamentCodeTextField.getText());
 				ornamentEntry.setDescription(discription.getText());
 				ornamentEntry.setRemarks(remarks.getText());
 				ornamentEntry.setAnnotations(annotations.getText());
