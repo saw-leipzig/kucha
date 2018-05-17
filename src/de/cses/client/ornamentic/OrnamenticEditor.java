@@ -125,8 +125,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		structureOrganization = new ListStore<StructureOrganization>(structureOrganizationProps.structureOrganizationID());
 		ornamentClassEntryList = new ListStore<OrnamentClassEntry>(ornamentClassProps.ornamentClassID());
 		innerSecondaryPatternsEntryList = new ListStore<InnerSecondaryPatternsEntry>(innerSecondaryPatternsProps.innerSecondaryPatternsID());
-		selectedinnerSecondaryPatternsEntryList = new ListStore<InnerSecondaryPatternsEntry>(
-				innerSecondaryPatternsProps.innerSecondaryPatternsID());
+		selectedinnerSecondaryPatternsEntryList = new ListStore<InnerSecondaryPatternsEntry>(innerSecondaryPatternsProps.innerSecondaryPatternsID());
 
 		selectedOrnamentComponents = new ListStore<OrnamentComponentsEntry>(ornamentComponentsProps.ornamentComponentsID());
 		ornamentComponents = new ListStore<OrnamentComponentsEntry>(ornamentComponentsProps.ornamentComponentsID());
@@ -503,13 +502,13 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 					corList.add(caveOrnamentRelationList.get(i));
 				}
 				ornamentEntry.setCavesRelations(corList);
-				
+
 				ArrayList<ImageEntry> ieList = new ArrayList<ImageEntry>();
 				for (int i = 0; i < imageEntryList.size(); i++) {
 					ieList.add(imageEntryList.get(i));
 				}
 				ornamentEntry.setImages(ieList);
-				
+
 				ornamentEntry.setCode(ornamentCode.getText());
 				ornamentEntry.setDescription(discription.getText());
 				ornamentEntry.setRemarks(remarks.getText());
@@ -522,7 +521,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 					Util.doLogging("ID gesetzt");
 					ornamentEntry.setOrnamentClass(ornamentClassComboBox.getValue().getOrnamentClassID());
 				}
-				
+
 				ArrayList<InnerSecondaryPatternsEntry> ispeList = new ArrayList<InnerSecondaryPatternsEntry>();
 				for (int i = 0; i < selectedinnerSecondaryPatternsEntryList.size(); i++) {
 					ispeList.add(selectedinnerSecondaryPatternsEntryList.get(i));
@@ -766,7 +765,6 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 						newInnerSecondaryPatternPopup.hide();
 					}
 				});
-
 			}
 		});
 
@@ -882,6 +880,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 	interface OrnamentCaveRelationProperties extends PropertyAccess<CaveEntry> {
 		ModelKeyProvider<OrnamentCaveRelation> ornamentCaveRelationID();
+
 		ValueProvider<OrnamentCaveRelation, String> name();
 	}
 

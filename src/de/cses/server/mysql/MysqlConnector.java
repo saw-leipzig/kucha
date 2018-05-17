@@ -775,9 +775,7 @@ public class MysqlConnector {
 		Connection dbc = getConnection();
 		PreparedStatement ornamentStatement;
 		try {
-			ornamentStatement = dbc.prepareStatement("UPDATE Ornaments SET Code=?, Description=?, Remarks=?, Interpretation=?, OrnamentReferences=?, Annotation=?, OrnamentClassID=?, StructureOrganizationID=? WHERE OrnamentID=" + ornamentEntry.getOrnamentID()
-							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-					Statement.RETURN_GENERATED_KEYS);
+			ornamentStatement = dbc.prepareStatement("UPDATE Ornaments SET Code=?, Description=?, Remarks=?, Interpretation=?, OrnamentReferences=?, Annotation=?, OrnamentClassID=?, StructureOrganizationID=? WHERE OrnamentID=?");
 			ornamentStatement.setString(1, ornamentEntry.getCode());
 			ornamentStatement.setString(2, ornamentEntry.getDescription());
 			ornamentStatement.setString(3, ornamentEntry.getRemarks());
@@ -786,6 +784,7 @@ public class MysqlConnector {
 			ornamentStatement.setString(6, ornamentEntry.getAnnotations());
 			ornamentStatement.setInt(7, ornamentEntry.getOrnamentClass());
 			ornamentStatement.setInt(8, ornamentEntry.getStructureOrganizationID());
+			ornamentStatement.setInt(9, ornamentEntry.getOrnamentID());
 			ornamentStatement.executeUpdate();
 
 			updateInnerSecondaryPatternsRelations(ornamentEntry.getOrnamentID(), ornamentEntry.getInnerSecondaryPatterns());

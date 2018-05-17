@@ -148,6 +148,7 @@ public class IconographySelector implements IsWidget {
 //	}
 	
 	public void setSelectedIconography(ArrayList<IconographyEntry> iconographyRelationList) {
+		Util.doLogging("*** setSelectedIconography called - iconographyRelationList.size() = " + iconographyRelationList.size());
 		for (IconographyEntry entry : iconographyRelationList) {
 			Util.doLogging("setSelectedIconography setting entry = " + entry.getIconographyID());
 			iconographyTree.setChecked(entry, CheckState.CHECKED);
@@ -166,6 +167,8 @@ public class IconographySelector implements IsWidget {
 	}
 
 	private void initPanel() {
+		Util.doLogging("IconographySelector.init() has been called! " + this.getClass().toString());
+		
 		iconographyTree = new Tree<IconographyEntry, String>(iconographyTreeStore, new IconographyValueProvider()) {
 
 			@Override

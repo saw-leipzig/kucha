@@ -30,6 +30,7 @@ import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.Store.StoreFilter;
 import com.sencha.gxt.dnd.core.client.ListViewDragSource;
 import com.sencha.gxt.dnd.core.client.ListViewDropTarget;
+import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.TabPanel;
@@ -89,18 +90,15 @@ public class OrnamentCaveAttributes extends PopupPanel {
 	private StoreFilter<CaveEntry> caveFilter;
 	private ListStore<StyleEntry> styleEntryList;
 	private StyleProperties styleProps;
-
-	public OrnamentCaveAttributes(OrnamentCaveRelation ornamentCaveRelationEntry) {
-		this.ornamentCaveRelationEntry = ornamentCaveRelationEntry;
-		init();
-		Util.doLogging(this.getClass().getName() + " caveID = " + ornamentCaveRelationEntry.getCaveEntry().getCaveID());
-	}
+	private ContentPanel mainPanel = null;
 
 	public OrnamentCaveAttributes() {
-		init();
+		this(null);
 	}
+	
+	public OrnamentCaveAttributes(OrnamentCaveRelation ornamentCaveRelationEntry) {
+		this.ornamentCaveRelationEntry = ornamentCaveRelationEntry;
 
-	public void init() {
 		caveEntryProps = GWT.create(CaveEntryProperties.class);
 		styleProps = GWT.create(StyleProperties.class);
 		ornamentEntryProps = GWT.create(OrnamentEntryProperties.class);
@@ -136,11 +134,13 @@ public class OrnamentCaveAttributes extends PopupPanel {
 				for (OrientationEntry pe : result) {
 					orientationListStore.add(pe);
 				}
-				for (OrientationEntry oe : ornamentCaveRelationEntry.getOrientations()) {
-					orientationListStore.remove(orientationListStore.findModelWithKey(Integer.toString(oe.getOrientationID())));
-					selectedorientationListStore.add(oe);
+				if (ornamentCaveRelationEntry != null) {
+					for (OrientationEntry oe : ornamentCaveRelationEntry.getOrientations()) {
+						orientationListStore.remove(orientationListStore.findModelWithKey(Integer.toString(oe.getOrientationID())));
+						selectedorientationListStore.add(oe);
+					}
 				}
-//				
+				//				
 //				
 //				if (ornamentCaveRelationEntry != null) {
 //					Util.doLogging(this.getClass().getName() + "groesse orientation in entry" + ornamentCaveRelationEntry.getOrientations().size());
@@ -185,12 +185,13 @@ public class OrnamentCaveAttributes extends PopupPanel {
 					caveEntryList.add(pe);
 				}
 				if (ornamentCaveRelationEntry != null) {
-					Util.doLogging(this.getClass().getName() + " "
-							+ districtEntryList.findModelWithKey(Integer.toString(ornamentCaveRelationEntry.getDistrict().getDistrictID())).getName());
-					districtComboBox.setValue(
-							districtEntryList.findModelWithKey(Integer.toString(ornamentCaveRelationEntry.getDistrict().getDistrictID())), false);
-					caveEntryComboBox.setValue(caveEntryList.findModelWithKey(Integer.toString(ornamentCaveRelationEntry.getCaveEntry().getCaveID())),
-							false);
+					Util.doLogging(this.getClass().getName() + " " + districtEntryList.findModelWithKey(Integer.toString(ornamentCaveRelationEntry.getDistrict().getDistrictID())).getName());
+					if (ornamentCaveRelationEntry.getDistrict() != null) {
+						districtComboBox.setValue(StaticTables.getInstance().getDistrictEntries().get(ornamentCaveRelationEntry.getDistrict().getDistrictID()), false);
+					}
+					if (ornamentCaveRelationEntry.getCaveEntry() != null) {
+						caveEntryComboBox.setValue(caveEntryList.findModelWithKey(Integer.toString(ornamentCaveRelationEntry.getCaveEntry().getCaveID())), false);
+					}
 					int p = ornamentCaveRelationEntry.getCaveEntry().getCaveTypeID();
 					caveType.setText(StaticTables.getInstance().getCaveTypeEntries().get(p).getNameEN());
 
@@ -212,60 +213,56 @@ public class OrnamentCaveAttributes extends PopupPanel {
 				// ornamentEntryList2.clear();
 				// selectedSimilarOrnaments.clear();
 				selectedRedlatedOrnaments.clear();
-				if (ornamentCaveRelationEntry != null) {
 					for (OrnamentEntry pe : result) {
-
-						// int count = 0;
-						// for (OrnamentEntry oe : ornamentCaveRelationEntry.getSimilarOrnamentsRelations()) {
-						// if (pe.getOrnamentID() != oe.getOrnamentID()) {
-						// count++;
-						// }
-						// if (count == ornamentCaveRelationEntry.getSimilarOrnamentsRelations().size()) {
-						// ornamentEntryList2.add(pe);
-						// }
-						// }
-
-						int countrelated = 0;
-						for (OrnamentEntry oe : ornamentCaveRelationEntry.getRelatedOrnamentsRelations()) {
-
-							if (pe.getOrnamentID() != oe.getOrnamentID()) {
-								countrelated++;
-							}
-							if (countrelated == ornamentCaveRelationEntry.getRelatedOrnamentsRelations().size()) {
-								ornamentEntryList.add(pe);
-							}
-						}
-						if (ornamentCaveRelationEntry.getRelatedOrnamentsRelations().size() == 0) {
-							for (OrnamentEntry nu : result) {
-								ornamentEntryList.add(nu);
-							}
-						}
-
+						ornamentEntryList.add(pe);
 					}
+					if (ornamentCaveRelationEntry != null) {
+						for (OrnamentEntry oe : ornamentCaveRelationEntry.getRelatedOrnamentsRelations()) {
+							ornamentEntryList.remove(ornamentEntryList.findModelWithKey(Integer.toString(oe.getOrnamentID())));
+							selectedRedlatedOrnaments.add(oe);
+						}
+					}
+					
+//					for (OrnamentEntry pe : result) {
+//
+//						// int count = 0;
+//						// for (OrnamentEntry oe : ornamentCaveRelationEntry.getSimilarOrnamentsRelations()) {
+//						// if (pe.getOrnamentID() != oe.getOrnamentID()) {
+//						// count++;
+//						// }
+//						// if (count == ornamentCaveRelationEntry.getSimilarOrnamentsRelations().size()) {
+//						// ornamentEntryList2.add(pe);
+//						// }
+//						// }
+//
+//						int countrelated = 0;
+//						for (OrnamentEntry oe : ornamentCaveRelationEntry.getRelatedOrnamentsRelations()) {
+//
+//							if (pe.getOrnamentID() != oe.getOrnamentID()) {
+//								countrelated++;
+//							}
+//							if (countrelated == ornamentCaveRelationEntry.getRelatedOrnamentsRelations().size()) {
+//								ornamentEntryList.add(pe);
+//							}
+//						}
+//						if (ornamentCaveRelationEntry.getRelatedOrnamentsRelations().size() == 0) {
+//							for (OrnamentEntry nu : result) {
+//								ornamentEntryList.add(nu);
+//							}
+//						}
+//
+//					}
 
 					// for (OrnamentEntry oe : ornamentCaveRelationEntry.getSimilarOrnamentsRelations()) {
 					// selectedSimilarOrnaments.add(oe);
 					// }
-					for (OrnamentEntry oe : ornamentCaveRelationEntry.getRelatedOrnamentsRelations()) {
-						selectedRedlatedOrnaments.add(oe);
-					}
 
-				} else {
-					for (OrnamentEntry pe : result) {
-						// ornamentEntryList2.add(pe);
-						ornamentEntryList.add(pe);
-
-					}
-				}
 
 			}
 		});
-
-		setWidget(createForm());
-
 	}
 
-	public Widget createForm() {
+	public void createForm() {
 		for (StyleEntry pe : StaticTables.getInstance().getStyleEntries().values()) {
 			styleEntryList.add(pe);
 		}
@@ -340,10 +337,8 @@ public class OrnamentCaveAttributes extends PopupPanel {
 		caveEntryComboBox.setTriggerAction(TriggerAction.ALL);
 
 		if (ornamentCaveRelationEntry != null) {
-
 			districtComboBox.setValue(ornamentCaveRelationEntry.getDistrict());
 			ValueChangeEvent.fire(districtComboBox, ornamentCaveRelationEntry.getDistrict());
-
 		}
 
 		header = new FramedPanel();
@@ -396,9 +391,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 		});
 
 		if (ornamentCaveRelationEntry != null) {
-			if (ornamentCaveRelationEntry.getStyle() == null) {
-
-			} else {
+			if (ornamentCaveRelationEntry.getStyle() != null) {
 				styleComboBox.setValue(ornamentCaveRelationEntry.getStyle());
 			}
 		}
@@ -572,15 +565,16 @@ public class OrnamentCaveAttributes extends PopupPanel {
 		attributes.add(vlcAttributes);
 		tabPanel.add(attributes, "Attributes");
 
-		FramedPanel relationToOtherOrnaments = new FramedPanel();
-		relationToOtherOrnaments.setHeading("Relations");
+//		FramedPanel relationToOtherOrnaments = new FramedPanel();
+//		relationToOtherOrnaments.setHeading("Relations");
 		VerticalLayoutContainer vlcRelationToTherornaments1 = new VerticalLayoutContainer();
 		VerticalLayoutContainer vlcRelationToTherornaments2 = new VerticalLayoutContainer();
-		HorizontalLayoutContainer backgroundHorizontalPanel = new HorizontalLayoutContainer();
+		
+		HorizontalLayoutContainer relationToOtherOrnamentsHLC = new HorizontalLayoutContainer();
 
-		relationToOtherOrnaments.add(backgroundHorizontalPanel);
-		backgroundHorizontalPanel.add(vlcRelationToTherornaments1, new HorizontalLayoutData(.5, 1.0));
-		backgroundHorizontalPanel.add(vlcRelationToTherornaments2, new HorizontalLayoutData(.5, 1.0));
+//		relationToOtherOrnaments.add(relationToOtherOrnamentsHLC);
+		relationToOtherOrnamentsHLC.add(vlcRelationToTherornaments1, new HorizontalLayoutData(.5, 1.0));
+		relationToOtherOrnamentsHLC.add(vlcRelationToTherornaments2, new HorizontalLayoutData(.5, 1.0));
 
 		HorizontalLayoutContainer relatedOrnamentsHorizontalPanel = new HorizontalLayoutContainer();
 
@@ -668,15 +662,13 @@ public class OrnamentCaveAttributes extends PopupPanel {
 		header.add(similarElementsofOtherCultures);
 		vlcRelationToTherornaments1.add(header, new VerticalLayoutData(1, .3));
 
-		tabPanel.add(relationToOtherOrnaments, "Relations");
+		tabPanel.add(relationToOtherOrnamentsHLC, "Relations");
 
 		HorizontalPanel buttonsPanel = new HorizontalPanel();
 
 		TextButton save = new TextButton("save");
-		FramedPanel panel = new FramedPanel();
 		TextButton cancel = new TextButton("cancel");
-		panel.addButton(save);
-		panel.addButton(cancel);
+
 		caveAttributesVerticalPanel.add(buttonsPanel);
 
 		ClickHandler cancelClickHandler = new ClickHandler() {
@@ -753,10 +745,10 @@ public class OrnamentCaveAttributes extends PopupPanel {
 		};
 		save.addHandler(saveClickHandler, ClickEvent.getType());
 
-		panel.setHeading("New Cave Relation");
-		panel.add(caveAttributesVerticalPanel);
-		return panel;
-
+		mainPanel.addButton(save);
+		mainPanel.addButton(cancel);
+		mainPanel.setHeading("New Cave Relation");
+		mainPanel.add(caveAttributesVerticalPanel);
 	}
 
 	interface CaveEntryProperties extends PropertyAccess<CaveEntry> {
@@ -860,7 +852,10 @@ public class OrnamentCaveAttributes extends PopupPanel {
 	 */
 	@Override
 	public Widget asWidget() {
-		return createForm();
+		if (mainPanel == null) {
+			createForm();
+		}
+		return mainPanel;
 	}
 
 	interface WallRelationProperties extends PropertyAccess<CaveEntry> {
