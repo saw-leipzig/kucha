@@ -172,32 +172,24 @@ public class OrnamentCaveAttributes extends PopupPanel {
 			}
 		});
 
-		dbService.getCaves(new AsyncCallback<ArrayList<CaveEntry>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(ArrayList<CaveEntry> result) {
-				for (CaveEntry pe : result) {
-					caveEntryList.add(pe);
-				}
-				if (ornamentCaveRelationEntry != null) {
-					Util.doLogging(this.getClass().getName() + " " + districtEntryList.findModelWithKey(Integer.toString(ornamentCaveRelationEntry.getDistrict().getDistrictID())).getName());
-					if (ornamentCaveRelationEntry.getDistrict() != null) {
-						districtComboBox.setValue(StaticTables.getInstance().getDistrictEntries().get(ornamentCaveRelationEntry.getDistrict().getDistrictID()), false);
-					}
-					if (ornamentCaveRelationEntry.getCaveEntry() != null) {
-						caveEntryComboBox.setValue(caveEntryList.findModelWithKey(Integer.toString(ornamentCaveRelationEntry.getCaveEntry().getCaveID())), false);
-					}
-					int p = ornamentCaveRelationEntry.getCaveEntry().getCaveTypeID();
-					caveType.setText(StaticTables.getInstance().getCaveTypeEntries().get(p).getNameEN());
-
-				}
-			}
-		});
+//		dbService.getCaves(new AsyncCallback<ArrayList<CaveEntry>>() {
+//
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				caught.printStackTrace();
+//			}
+//
+//			@Override
+//			public void onSuccess(ArrayList<CaveEntry> result) {
+//				for (CaveEntry pe : result) {
+//					caveEntryList.add(pe);
+//				}
+//			}
+//		});
+		
+		for (CaveEntry ce : StaticTables.getInstance().getCaveEntries().values()) {
+			caveEntryList.add(ce);
+		}
 
 		dbService.getOrnaments(new AsyncCallback<ArrayList<OrnamentEntry>>() {
 
@@ -260,6 +252,8 @@ public class OrnamentCaveAttributes extends PopupPanel {
 
 			}
 		});
+		
+		createForm();
 	}
 
 	public void createForm() {
@@ -295,9 +289,11 @@ public class OrnamentCaveAttributes extends PopupPanel {
 		districtComboBox.setTypeAhead(true);
 		districtComboBox.setEditable(false);
 		districtComboBox.setTriggerAction(TriggerAction.ALL);
-
+		if (ornamentCaveRelationEntry.getDistrict() != null) {
+			districtComboBox.setValue(StaticTables.getInstance().getDistrictEntries().get(ornamentCaveRelationEntry.getDistrict().getDistrictID()), false);
+		}
+		
 		header = new FramedPanel();
-
 		header.setHeading("Select District");
 		header.add(districtComboBox);
 		vlcCave.add(header, new VerticalLayoutData(0.5, .125));
@@ -331,10 +327,18 @@ public class OrnamentCaveAttributes extends PopupPanel {
 			}
 		});
 		caveEntryComboBox.setEnabled(false);
-
 		caveEntryComboBox.setTypeAhead(true);
 		caveEntryComboBox.setEditable(false);
 		caveEntryComboBox.setTriggerAction(TriggerAction.ALL);
+
+		if (ornamentCaveRelationEntry != null) {
+			if (ornamentCaveRelationEntry.getCaveEntry() != null) {
+				caveEntryComboBox.setValue(caveEntryList.findModelWithKey(Integer.toString(ornamentCaveRelationEntry.getCaveEntry().getCaveID())), false);
+			}
+			int p = ornamentCaveRelationEntry.getCaveEntry().getCaveTypeID();
+			caveType.setText(StaticTables.getInstance().getCaveTypeEntries().get(p).getNameEN());
+
+		}
 
 		if (ornamentCaveRelationEntry != null) {
 			districtComboBox.setValue(ornamentCaveRelationEntry.getDistrict());
@@ -745,10 +749,13 @@ public class OrnamentCaveAttributes extends PopupPanel {
 		};
 		save.addHandler(saveClickHandler, ClickEvent.getType());
 
+		mainPanel = new ContentPanel();
 		mainPanel.addButton(save);
 		mainPanel.addButton(cancel);
 		mainPanel.setHeading("New Cave Relation");
 		mainPanel.add(caveAttributesVerticalPanel);
+		
+		this.add(mainPanel);
 	}
 
 	interface CaveEntryProperties extends PropertyAccess<CaveEntry> {
@@ -850,13 +857,13 @@ public class OrnamentCaveAttributes extends PopupPanel {
 	 * 
 	 * @see com.google.gwt.user.client.ui.IsWidget#asWidget()
 	 */
-	@Override
-	public Widget asWidget() {
-		if (mainPanel == null) {
-			createForm();
-		}
-		return mainPanel;
-	}
+//	@Override
+//	public Widget asWidget() {
+//		if (mainPanel == null) {
+//			createForm();
+//		}
+//		return mainPanel;
+//	}
 
 	interface WallRelationProperties extends PropertyAccess<CaveEntry> {
 		ModelKeyProvider<WallOrnamentCaveRelation> wallLocationID();
