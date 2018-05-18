@@ -639,7 +639,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 			Util.doLogging("OrnamentCaveAttributes - ornamentCaveRelationEntry.getIconographyElements().size() = " + ornamentCaveRelationEntry.getIconographyElements().size());
 			icoSelector.setSelectedIconography(ornamentCaveRelationEntry.getIconographyElements());
 		}
-		vlcRelationToTherornaments2.add(icoSelector, new VerticalLayoutData(1.0, .4));
+//		vlcRelationToTherornaments2.add(icoSelector, new VerticalLayoutData(1.0, .4));
 
 		final TextField groupOfOrnaments = new TextField();
 		groupOfOrnaments.setAllowBlank(true);
@@ -670,6 +670,8 @@ public class OrnamentCaveAttributes extends PopupPanel {
 		vlcRelationToTherornaments1.add(header, new VerticalLayoutData(1, .3));
 
 		tabPanel.add(relationToOtherOrnamentsHLC, "Relations");
+		
+		tabPanel.add(icoSelector, "Pictorial Elements");
 
 //		HorizontalPanel buttonsPanel = new HorizontalPanel();
 
