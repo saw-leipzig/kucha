@@ -498,6 +498,10 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 					Util.showWarning("Missing information", "Please insert Ornamentation Code!");
 					return;
 				}
+				
+				if (ornamentEntry == null) {
+					ornamentEntry = new OrnamentEntry();
+				}
 
 				ArrayList<OrnamentCaveRelation> corList = new ArrayList<OrnamentCaveRelation>();
 				for (int i = 0; i < caveOrnamentRelationList.size(); i++) {

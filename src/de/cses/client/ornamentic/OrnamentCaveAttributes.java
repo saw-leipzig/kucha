@@ -633,10 +633,6 @@ public class OrnamentCaveAttributes extends PopupPanel {
 //		header.setHeading("Select elements showing similar pattern");
 //		header.add(icoSelector);
 		if (ornamentCaveRelationEntry != null) {
-			if (ornamentCaveRelationEntry.getIconographyElements() == null) {
-				Util.doLogging("OrnamentCaveAttributes - ornamentCaveRelationEntry.getIconographyElements() is NULL");
-			}
-			Util.doLogging("OrnamentCaveAttributes - ornamentCaveRelationEntry.getIconographyElements().size() = " + ornamentCaveRelationEntry.getIconographyElements().size());
 			icoSelector.setSelectedIconography(ornamentCaveRelationEntry.getIconographyElements());
 		}
 //		vlcRelationToTherornaments2.add(icoSelector, new VerticalLayoutData(1.0, .4));
