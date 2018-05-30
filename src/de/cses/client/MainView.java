@@ -51,6 +51,8 @@ import de.cses.client.ornamentic.OrnamenticResultView;
 import de.cses.client.ornamentic.OrnamenticSearchController;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.client.ui.AbstractSearchController;
+import de.cses.client.ui.DataDisplayController;
+import de.cses.client.ui.DataDisplayView;
 import de.cses.client.ui.ResultCollectorController;
 import de.cses.client.ui.ResultCollectorView;
 import de.cses.client.user.UserLogin;
@@ -77,6 +79,7 @@ public class MainView implements IsWidget {
 	private ResultCollectorController resultCollectorController;
 	private AnnotatedBiblographySearchController annotatedBiblographySearchController;
 	private PortalLayoutContainer dataViewPLC;
+	private DataDisplayController dataDisplayController;
 
 	/**
 	 * 
@@ -240,6 +243,21 @@ public class MainView implements IsWidget {
 				}
 			}
 		});
+		
+		// Data Display
+		
+		dataDisplayController = new DataDisplayController("Data", new DataDisplayView("Data"));
+		dataDisplayController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				if (event.getValue()) {
+					dataViewPLC.add(dataDisplayController.getResultView(), 0);
+				} else {
+					dataDisplayController.getResultView().removeFromParent();
+				}
+			}
+		});
 
 		
 		// ----------------------------------- assembling the menu bar ---------------------------------------------
@@ -251,6 +269,7 @@ public class MainView implements IsWidget {
 		selectorLayoutContainer.add(ornamenticSearchController, hLayoutData);
 		selectorLayoutContainer.add(annotatedBiblographySearchController, hLayoutData);
 		selectorLayoutContainer.add(resultCollectorController, hLayoutData);
+		selectorLayoutContainer.add(dataDisplayController, hLayoutData);
 		
     ContentPanel centerPanel = new ContentPanel();
     centerPanel.setHeading("Results");
@@ -289,7 +308,7 @@ public class MainView implements IsWidget {
     
     ContentPanel dataViewPanel = new ContentPanel();
     dataViewPanel.setResize(true);
-    dataViewPanel.setHeading("View Data");
+    dataViewPanel.setHeading("View");
     dataViewPanel.add(dataViewPLC);
     
     BorderLayoutData northData = new BorderLayoutData(150);
