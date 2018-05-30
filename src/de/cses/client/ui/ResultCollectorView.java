@@ -16,11 +16,12 @@ package de.cses.client.ui;
 import com.sencha.gxt.dnd.core.client.DndDropEvent;
 import com.sencha.gxt.dnd.core.client.DropTarget;
 
+import de.cses.client.bibliography.AnnotatedBiblographyView;
 import de.cses.client.caves.CaveView;
 import de.cses.client.depictions.DepictionView;
 import de.cses.client.images.ImageView;
 import de.cses.client.ornamentic.OrnamenticView;
-import de.cses.shared.AbstractEntry;
+import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.ImageEntry;
@@ -49,7 +50,9 @@ public class ResultCollectorView extends AbstractResultView {
 				} else if (event.getData() instanceof ImageEntry) {
 					addResult(new ImageView((ImageEntry) event.getData()));
 				} else if (event.getData() instanceof OrnamentEntry) {
-//					addResult(new OrnamenticView((OrnamentEntry) event.getData()));
+					addResult(new OrnamenticView((OrnamentEntry) event.getData()));
+				} else if (event.getData() instanceof AnnotatedBiblographyEntry) {
+					addResult(new AnnotatedBiblographyView((AnnotatedBiblographyEntry) event.getData()));
 				}
 			}
 		};
