@@ -988,7 +988,7 @@ public class DepictionEditor extends AbstractEditor {
 		basicsLeftVLC.add(currentLocationFP, new VerticalLayoutData(1.0, .1));
 		basicsLeftVLC.add(inventoryNumberFP, new VerticalLayoutData(1.0, .1));
 //		basicsLeftVLC.add(positionNoteFP, new VerticalLayoutData(1.0, .15));
-		basicsLeftVLC.add(stateOfPreservationFP, new VerticalLayoutData(1.0, .3));
+		basicsLeftVLC.add(stateOfPreservationFP, new VerticalLayoutData(1.0, .25));
 
 		FramedPanel wallSelectorFP = new FramedPanel();
 		wallSelectorFP.setHeading("Wall");
