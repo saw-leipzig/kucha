@@ -135,8 +135,7 @@ public class DepictionView extends AbstractView {
 	 */
 	@Override
 	protected String getPermalink() {
-		// TODO Auto-generated method stub
-		return null;
+		return "/json?paintedRepID=" + depictionEntry.getDepictionID();
 	}
 
 }

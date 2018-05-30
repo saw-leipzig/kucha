@@ -42,10 +42,10 @@ public abstract class AbstractView extends Button implements EditorListener {
 			public void onClick(ClickEvent event) {
 				if (UserLogin.isLoggedIn()) {
 					showEditor();
-				} else if (getEntry().isOpenAccess()) {
-					viewDataSet(getPermalink());
+//				} else if (getEntry().isOpenAccess()) {
+//					viewDataSet(getPermalink());
 				} else {
-					Util.showWarning("You are not logged in", "Sorry, but in future versions a view only display will appear!");
+					Util.showWarning("Permission denied", "Sorry, you either don't have the permission\n to edit or you are currently not logged in!");
 				}
 			}
 		});
