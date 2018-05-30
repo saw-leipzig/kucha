@@ -62,6 +62,7 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.Verti
 import com.sencha.gxt.widget.core.client.container.Viewport;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
+import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.DateField;
 import com.sencha.gxt.widget.core.client.form.DateTimePropertyEditor;
@@ -553,7 +554,21 @@ public class DepictionEditor extends AbstractEditor {
 				correspondingDepictionEntry.setShortName(event.getValue());
 			}
 		});
-		shortNameFP.add(shortNameTF);
+		CheckBox openAccessCB = new CheckBox();
+		openAccessCB.setBoxLabel("open access");
+		openAccessCB.setValue(correspondingDepictionEntry.isOpenAccess());
+		openAccessCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				correspondingDepictionEntry.setOpenAccess(event.getValue());
+			}
+		});
+		VerticalLayoutContainer shortNameVLC = new VerticalLayoutContainer();
+		shortNameVLC.add(shortNameTF, new VerticalLayoutData(1.0, .5));
+		shortNameVLC.add(openAccessCB, new VerticalLayoutData(1.0, .5));
+		shortNameFP.add(shortNameVLC);
+
 		
 		FramedPanel caveSelectionFP = new FramedPanel();
 		caveSelectionFP.setHeading("Located in Cave");
@@ -964,7 +979,8 @@ public class DepictionEditor extends AbstractEditor {
     stateOfPreservationFP.add(borderLayoutContainer);
     
 		VerticalLayoutContainer basicsLeftVLC = new VerticalLayoutContainer();
-		basicsLeftVLC.add(shortNameFP, new VerticalLayoutData(1.0, .1));
+		
+		basicsLeftVLC.add(shortNameFP, new VerticalLayoutData(1.0, .15));
 		basicsLeftVLC.add(caveSelectionFP, new VerticalLayoutData(1.0, .1));
 		basicsLeftVLC.add(acquiredByExpeditionFP, new VerticalLayoutData(1.0, .1));
 		basicsLeftVLC.add(vendorFP, new VerticalLayoutData(1.0, .1));
