@@ -14,7 +14,6 @@
 package de.cses.client.depictions;
 
 import com.google.gwt.core.shared.GWT;
-import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.user.client.ui.HTML;

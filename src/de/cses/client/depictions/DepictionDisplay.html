@@ -1,7 +1,10 @@
-<div style='font-size:12px'> 
+<div style='font-size:20px'> 
 	<p>
-		<center><img src='{imageUri}'></img></center><br>
-		{shortName} <tpl if="inventoryNumber != &quot;&quot;">(Inventory No.: {inventoryNumber})</tpl>. 
+		<figure style='text-align: center; margin: 10;'>
+			<img src='{imageUri}' style='position: relative; width: 100%; height: auto;'>
+			<figcaption style='font-size:16px;'>{shortName}</figcaption>
+		</figure>
+		<tpl if="inventoryNumber != &quot;&quot;">(Inventory No.: {inventoryNumber})</tpl>. 
 		<tpl if="cave != &quot;&quot;"><br><i>Located in Cave</i> {cave} </tpl> 
 		<tpl if="expedition != &quot;&quot;"><br><i>Found by expedition:</i> {expedition}</tpl>.
 		<tpl if="vendor != &quot;&quot;"><br><i>Vendor:</i> {vendor}</tpl>.
