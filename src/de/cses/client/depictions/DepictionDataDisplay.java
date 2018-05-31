@@ -42,14 +42,14 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 			if (e.getCave().getSiteID() > 0) {
 				cave += StaticTables.getInstance().getSiteEntries().get(e.getCave().getSiteID()).getShortName() + ": ";
 			}
-			cave += e.getCave().getOfficialNumber() + ((e.getCave().getHistoricName() != null && e.getCave().getHistoricName().length() > 0) ? e.getCave().getHistoricName() : ""); 
+			cave += e.getCave().getOfficialNumber() + ((e.getCave().getHistoricName() != null && e.getCave().getHistoricName().length() > 0) ? " (" + e.getCave().getHistoricName() + ")" : ""); 
 		}
 		String shortname = e.getShortName() != null ? e.getShortName() : "";
 		String expedition = e.getExpeditionID() > 0 ? StaticTables.getInstance().getExpeditionEntries().get(e.getExpeditionID()).getName() : "";
 		String vendor = e.getVendorID() > 0 ? StaticTables.getInstance().getVendorEntries().get(e.getVendorID()).getVendorName() : "";
 		String location = e.getLocationID() > 0 ? StaticTables.getInstance().getLocationEntries().get(e.getLocationID()).getName() : "";
 		String date = e.getPurchaseDate() != null ? e.getPurchaseDate().toString() : "";
-		SafeUri imageUri = UriUtils.fromString("resource?imageID=" + e.getMasterImageID() + "&thumb=150" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
+		SafeUri imageUri = UriUtils.fromString("resource?imageID=" + e.getMasterImageID() + "&thumb=300" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 		add(new HTML(view.display(
 				shortname, 
 				e.getInventoryNumber(), 
@@ -60,7 +60,7 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 				location, 
 				e.getPreservationAttributesList(), 
 				imageUri)));
-		setHeading(shortname + " " + cave);
+		setHeading((shortname.length() > 0 ? shortname + " " : "") + (cave.length() > 0 ? " in " + cave : ""));
 	}
 
 }
