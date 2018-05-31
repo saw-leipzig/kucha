@@ -48,17 +48,19 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 		String vendor = e.getVendorID() > 0 ? StaticTables.getInstance().getVendorEntries().get(e.getVendorID()).getVendorName() : "";
 		String location = e.getLocationID() > 0 ? StaticTables.getInstance().getLocationEntries().get(e.getLocationID()).getName() : "";
 		String date = e.getPurchaseDate() != null ? e.getPurchaseDate().toString() : "";
-		SafeUri imageUri = UriUtils.fromString("resource?imageID=" + e.getMasterImageID() + "&thumb=300" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
+		SafeUri imageUri = UriUtils.fromString("resource?imageID=" + e.getMasterImageID() + "&thumb=700" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
+		SafeUri fullImageUri = UriUtils.fromString("resource?imageID=" + e.getMasterImageID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 		add(new HTML(view.display(
 				shortname, 
-				e.getInventoryNumber(), 
+				e.getInventoryNumber() != null ? e.getInventoryNumber() : "",  
 				cave,
 				expedition, 
 				vendor, 
 				date, 
 				location, 
 				e.getPreservationAttributesList(), 
-				imageUri)));
+				imageUri,
+				fullImageUri)));
 		setHeading((shortname.length() > 0 ? shortname + " " : "") + (cave.length() > 0 ? " in " + cave : ""));
 	}
 
