@@ -14,10 +14,14 @@
 package de.cses.client.depictions;
 
 import com.google.gwt.core.shared.GWT;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeUri;
+import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.user.client.ui.HTML;
 
 import de.cses.client.StaticTables;
 import de.cses.client.ui.AbstractDataDisplay;
+import de.cses.client.user.UserLogin;
 import de.cses.shared.DepictionEntry;
 
 /**
@@ -26,24 +30,36 @@ import de.cses.shared.DepictionEntry;
  */
 public class DepictionDataDisplay extends AbstractDataDisplay {
 	
-	DepictionViewTemplates view = GWT.create(DepictionViewTemplates.class);
 
 	/**
 	 * 
 	 */
 	public DepictionDataDisplay(DepictionEntry e) {
 		super();
+		String cave = "";
+		DepictionViewTemplates view = GWT.create(DepictionViewTemplates.class);
+		if (e.getCave() != null) {
+			if (e.getCave().getSiteID() > 0) {
+				cave += StaticTables.getInstance().getSiteEntries().get(e.getCave().getSiteID()).getShortName() + ": ";
+			}
+			cave += e.getCave().getOfficialNumber() + ((e.getCave().getHistoricName() != null && e.getCave().getHistoricName().length() > 0) ? e.getCave().getHistoricName() : ""); 
+		}
+		String expedition = e.getExpeditionID() > 0 ? StaticTables.getInstance().getExpeditionEntries().get(e.getExpeditionID()).getName() : "";
+		String vendor = e.getVendorID() > 0 ? StaticTables.getInstance().getVendorEntries().get(e.getVendorID()).getVendorName() : "";
+		String location = e.getLocationID() > 0 ? StaticTables.getInstance().getLocationEntries().get(e.getLocationID()).getName() : "";
+		String date = e.getPurchaseDate() != null ? e.getPurchaseDate().toString() : "";
+		SafeUri imageUri = UriUtils.fromString("resource?imageID=" + e.getMasterImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 		add(new HTML(view.display(
 				e.getShortName() != null ? e.getShortName() : "", 
 				e.getInventoryNumber(), 
-				e.getCave(), 
-				StaticTables.getInstance().getSiteEntries().get(e.getCave().getSiteID()).getShortName(), 
-				StaticTables.getInstance().getExpeditionEntries().get(e.getExpeditionID()), 
-				StaticTables.getInstance().getVendorEntries().get(e.getVendorID()), 
-				e.getPurchaseDate().toString(), 
-				StaticTables.getInstance().getLocationEntries().get(e.getLocationID()), 
-				e.getPreservationAttributesList())));
-		setSize("300", "300");
+				cave,
+				expedition, 
+				vendor, 
+				date, 
+				location, 
+				e.getPreservationAttributesList(), 
+				imageUri)));
+//		setSize("100%", "300");
 	}
 
 }

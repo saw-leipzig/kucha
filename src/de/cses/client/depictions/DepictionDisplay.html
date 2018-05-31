@@ -1,10 +1,11 @@
 <div style='font-size:12px'> 
 	<p>
+		<center><img src='{imgUri}'></img></center><br>
 		{shortName} <tpl if="inventoryNumber != &quot;&quot;">(Inventory No.: {inventoryNumber})</tpl>. 
-		<br><i>Located in Cave {siteShortName} {cave.officialNumber} <tpl if="cave.historicName != &quot;&quot;">({cave.historicName})</tpl></i> 
-		<tpl if="expedition.name != &quot;&quot;"><br>Found by expedition: {expedition.name}</tpl>.
-		<tpl if="vendor.vendorName != &quot;&quot;"><br>Vendor: {vendor.vendorName}</tpl>.
-		<tpl if="purchaseDate != &quot;&quot;"><br>Purchase Date: {purchaseDate}</tpl>.
-		<tpl if="currentLocation.locationID != 0"><br>Current location: {currentLocation.name}</tpl>.
+		<tpl if="cave != &quot;&quot;"><br><i>Located in Cave</i> {cave} </tpl> 
+		<tpl if="expedition != &quot;&quot;"><br><i>Found by expedition:</i> {expedition}</tpl>.
+		<tpl if="vendor != &quot;&quot;"><br><i>Vendor:</i> {vendor}</tpl>.
+		<tpl if="purchaseDate != &quot;&quot;"><br><i>Purchase Date:</i> {purchaseDate}</tpl>.
+		<tpl if="currentLocation != &quot;&quot;"><br><i>Current location:</i> {currentLocation}</tpl>.
 	</p>
 </div>

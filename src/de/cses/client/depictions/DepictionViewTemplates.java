@@ -16,13 +16,10 @@ package de.cses.client.depictions;
 import java.util.ArrayList;
 
 import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeUri;
 import com.sencha.gxt.core.client.XTemplates;
 
-import de.cses.shared.CaveEntry;
-import de.cses.shared.ExpeditionEntry;
-import de.cses.shared.LocationEntry;
 import de.cses.shared.PreservationAttributeEntry;
-import de.cses.shared.VendorEntry;
 
 /**
  * @author alingnau
@@ -31,6 +28,6 @@ import de.cses.shared.VendorEntry;
 public interface DepictionViewTemplates extends XTemplates {
 	
 	@XTemplate(source = "DepictionDisplay.html")
-	SafeHtml display(String shortName, String inventoryNumber, CaveEntry cave, String siteShortName, ExpeditionEntry expedition, VendorEntry vendor, String purchaseDate, LocationEntry currentLocation, ArrayList<PreservationAttributeEntry> stateOfPreservation);
+	SafeHtml display(String shortName, String inventoryNumber, String cave, String expedition, String vendor, String purchaseDate, String currentLocation, ArrayList<PreservationAttributeEntry> stateOfPreservation, SafeUri imageUri);
 
 }
