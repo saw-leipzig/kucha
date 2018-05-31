@@ -44,13 +44,14 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 			}
 			cave += e.getCave().getOfficialNumber() + ((e.getCave().getHistoricName() != null && e.getCave().getHistoricName().length() > 0) ? e.getCave().getHistoricName() : ""); 
 		}
+		String shortname = e.getShortName() != null ? e.getShortName() : "";
 		String expedition = e.getExpeditionID() > 0 ? StaticTables.getInstance().getExpeditionEntries().get(e.getExpeditionID()).getName() : "";
 		String vendor = e.getVendorID() > 0 ? StaticTables.getInstance().getVendorEntries().get(e.getVendorID()).getVendorName() : "";
 		String location = e.getLocationID() > 0 ? StaticTables.getInstance().getLocationEntries().get(e.getLocationID()).getName() : "";
 		String date = e.getPurchaseDate() != null ? e.getPurchaseDate().toString() : "";
-		SafeUri imageUri = UriUtils.fromString("resource?imageID=" + e.getMasterImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
+		SafeUri imageUri = UriUtils.fromString("resource?imageID=" + e.getMasterImageID() + "&thumb=150" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 		add(new HTML(view.display(
-				e.getShortName() != null ? e.getShortName() : "", 
+				shortname, 
 				e.getInventoryNumber(), 
 				cave,
 				expedition, 
@@ -59,7 +60,7 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 				location, 
 				e.getPreservationAttributesList(), 
 				imageUri)));
-//		setSize("100%", "300");
+		setHeading(shortname + " " + cave);
 	}
 
 }

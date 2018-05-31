@@ -38,6 +38,7 @@ public abstract class AbstractDataDisplay extends ContentPanel {
 			}
 		});
 		addTool(closeButton);
+		setCollapsible(true);
 	}
 
 }

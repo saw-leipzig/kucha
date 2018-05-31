@@ -321,6 +321,7 @@ public class MainView implements IsWidget {
     westData.setSplit(true);
     
     BorderLayoutData eastData = new BorderLayoutData(400);
+    eastData.setMaxSize(800);
     eastData.setMargins(new Margins(5));
     eastData.setCollapsible(true);
     eastData.setCollapseHeaderVisible(true);
