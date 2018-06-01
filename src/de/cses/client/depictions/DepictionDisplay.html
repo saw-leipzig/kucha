@@ -5,24 +5,24 @@
 			</a>
 			<figcaption style='font-size:14px;'>{shortName}</figcaption>
 		</figure>
-		<table style='width: 100%;'>
-			<tpl if="inventoryNumber != &quot;&quot;"><tr style="border-bottom:1px solid gray">
-				<td style='width: 30%;'><i>Inventory No.:</i></td><td style='width: 70%;'>{inventoryNumber}</td>
+		<table style='width: 100%; border-width:1px; border-color:black; border-style:solid;'>
+			<tpl if="inventoryNumber != &quot;&quot;"><tr style="border-bottom:1px solid black">
+				<td style='width: 30%;'><i>Inventory No.</i></td><td style='width: 70%;'>{inventoryNumber}</td>
 			</tr></tpl>
-			<tpl if="cave != &quot;&quot;"><tr style="border-bottom:1px solid gray">
+			<tpl if="cave != &quot;&quot;"><tr style="border-bottom:1px solid black">
 				<td style='width: 30%;'><i>Located in Cave</i></td><td style='width: 70%;'>{cave}</td>
 			</tr></tpl> 
-			<tpl if="expedition != &quot;&quot;"><tr style="border-bottom:1px solid gray">
-				<td style='width: 30%;'><i>Found by expedition:</i></td><td style='width: 70%;'>{expedition}</td>
+			<tpl if="expedition != &quot;&quot;"><tr style="border-bottom:1px solid black">
+				<td style='width: 30%;'><i>Found by expedition</i></td><td style='width: 70%;'>{expedition}</td>
 			</tr></tpl>
-			<tpl if="vendor != &quot;&quot;"><tr style="border-bottom:1px solid gray">
-				<td style='width: 30%;'><i>Vendor:</i></td><td style='width: 70%;'>{vendor}</td>
+			<tpl if="vendor != &quot;&quot;"><tr style="border-bottom:1px solid black">
+				<td style='width: 30%;'><i>Vendor</i></td><td style='width: 70%;'>{vendor}</td>
 			</tr></tpl>
-			<tpl if="purchaseDate != &quot;&quot;"><tr style="border-bottom:1px solid gray">
-				<td style='width: 30%;'><i>Purchase Date:</i></td><td style='width: 70%;'>{purchaseDate}</td>
+			<tpl if="purchaseDate != &quot;&quot;"><tr style="border-bottom:1px solid black">
+				<td style='width: 30%;'><i>Purchase Date</i></td><td style='width: 70%;'>{purchaseDate}</td>
 			</tr></tpl>
-			<tpl if="currentLocation != &quot;&quot;"><tr style="border-bottom:1px solid gray">
-				<td style='width: 30%;'><i>Current location:</i></td><td style='width: 70%;'>{currentLocation}</td>
+			<tpl if="currentLocation != &quot;&quot;"><tr style="border-bottom:1px solid black">
+				<td style='width: 30%;'><i>Current location</i></td><td style='width: 70%;'>{currentLocation}</td>
 			</tr></tpl>
 		</table>
 </div>
