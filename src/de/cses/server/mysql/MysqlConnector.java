@@ -926,6 +926,24 @@ public class MysqlConnector {
 			e.printStackTrace();
 		}
 	}
+	
+	public ArrayList<IconographyEntry> getIconographyEntriesUsedInDepictions() {
+		ArrayList<IconographyEntry> result = new ArrayList<IconographyEntry>();
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM Iconography WHERE IconographyID IN (SELECT IconographyID FROM DepictionIconographyRelation) ORDER BY Text Asc");
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				result.add(new IconographyEntry(rs.getInt("IconographyID"), rs.getInt("ParentID"), rs.getString("Text")));
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
 
 	public IconographyEntry getIconographyEntry(int id) {
 		IconographyEntry result = null;
