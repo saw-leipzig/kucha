@@ -143,6 +143,7 @@ public class JsonServlet extends HttpServlet {
 					break;
 					
 				default:
+					response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
 					break;
 			}
 		} else {
@@ -270,6 +271,8 @@ public class JsonServlet extends HttpServlet {
 
 		if ("all".equals(iconographyIDStr)) {
 			iconographyEntries = connector.getIconography(0);
+		} else if ("used".equals(iconographyIDStr)) {
+			iconographyEntries = connector.getIconographyEntriesUsedInDepictions();
 		} else {
 			iconographyEntries = connector.getIconographyEntries("IconographyID IN (" + iconographyIDStr + ")");			
 		}
