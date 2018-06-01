@@ -927,6 +927,10 @@ public class MysqlConnector {
 		}
 	}
 	
+	/**
+	 * This method allows selecting only used IconoghtaphyEntry elements
+	 * @return List of IconographyEntry that are used in relation with pictorial elements
+	 */
 	public ArrayList<IconographyEntry> getIconographyEntriesUsedInDepictions() {
 		ArrayList<IconographyEntry> result = new ArrayList<IconographyEntry>();
 		Connection dbc = getConnection();
