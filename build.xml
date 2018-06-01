@@ -55,7 +55,7 @@
 				<path refid="gwt.class.path"/>
 			</classpath>
 			<!-- add jvmarg -Xss16M or similar if you see a StackOverflowError -->
-			<jvmarg value="-Xmx512M" />
+			<jvmarg value="-Xmx2048M" />
 			<arg value="${main.class}" />
 		</java>
 	</target>
@@ -67,7 +67,7 @@
 				<path refid="gxt.class.path"/>
 				<path refid="gwt.class.path"/>
 			</classpath>
-			<jvmarg value="-Xmx512M" />
+			<jvmarg value="-Xmx1024M" />
 			<jvmarg value="-Xdebug" if:true="${enable.debug.port}" />
 			<jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000" if:true="${enable.debug.port}" />
 			<arg value="${main.class}" />

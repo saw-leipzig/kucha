@@ -51,6 +51,8 @@ import de.cses.client.ornamentic.OrnamenticResultView;
 import de.cses.client.ornamentic.OrnamenticSearchController;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.client.ui.AbstractSearchController;
+import de.cses.client.ui.DataDisplayController;
+import de.cses.client.ui.DataDisplayView;
 import de.cses.client.ui.ResultCollectorController;
 import de.cses.client.ui.ResultCollectorView;
 import de.cses.client.user.UserLogin;
@@ -76,6 +78,8 @@ public class MainView implements IsWidget {
 	private OrnamenticSearchController ornamenticSearchController;
 	private ResultCollectorController resultCollectorController;
 	private AnnotatedBiblographySearchController annotatedBiblographySearchController;
+	private PortalLayoutContainer dataViewPLC;
+	private DataDisplayController dataDisplayController;
 
 	/**
 	 * 
@@ -233,9 +237,24 @@ public class MainView implements IsWidget {
 			@Override
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
 				if (event.getValue()) {
-					resultView.add(resultCollectorController.getResultView(), 1);
+					dataViewPLC.add(resultCollectorController.getResultView(), 0);
 				} else {
 					resultCollectorController.getResultView().removeFromParent();
+				}
+			}
+		});
+		
+		// Data Display
+		
+		dataDisplayController = new DataDisplayController("Data", new DataDisplayView("Data"));
+		dataDisplayController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				if (event.getValue()) {
+					dataViewPLC.add(dataDisplayController.getResultView(), 0);
+				} else {
+					dataDisplayController.getResultView().removeFromParent();
 				}
 			}
 		});
@@ -250,18 +269,18 @@ public class MainView implements IsWidget {
 		selectorLayoutContainer.add(ornamenticSearchController, hLayoutData);
 		selectorLayoutContainer.add(annotatedBiblographySearchController, hLayoutData);
 		selectorLayoutContainer.add(resultCollectorController, hLayoutData);
+		selectorLayoutContainer.add(dataDisplayController, hLayoutData);
 		
     ContentPanel centerPanel = new ContentPanel();
     centerPanel.setHeading("Results");
     centerPanel.setResize(true);
-
     /*
      * Currently we implement a 2-column layout with a spacing of 10. 
      */
-    resultView = new PortalLayoutContainer(2);
+    resultView = new PortalLayoutContainer(1);
     resultView.setSpacing(10);
-    resultView.setColumnWidth(0, .60);
-    resultView.setColumnWidth(1, .40);
+    resultView.setColumnWidth(0, 1.0);
+//    resultView.setColumnWidth(1, .40);
     centerPanel.add(resultView);
 
     ContentPanel north = new ContentPanel();
@@ -283,6 +302,15 @@ public class MainView implements IsWidget {
     filterPanel.setHeading("Filter");
     filterPanel.add(filterView);
     
+    dataViewPLC = new PortalLayoutContainer(1);
+    dataViewPLC.setSpacing(10);
+    dataViewPLC.setColumnWidth(0, 1.00);
+    
+    ContentPanel dataViewPanel = new ContentPanel();
+    dataViewPanel.setResize(true);
+    dataViewPanel.setHeading("View");
+    dataViewPanel.add(dataViewPLC);
+    
     BorderLayoutData northData = new BorderLayoutData(150);
     northData.setMargins(new Margins(5));
 
@@ -291,6 +319,14 @@ public class MainView implements IsWidget {
     westData.setCollapsible(true);
     westData.setCollapseHeaderVisible(true);
     westData.setSplit(true);
+    
+    BorderLayoutData eastData = new BorderLayoutData(400);
+    eastData.setMaxSize(800);
+    eastData.setMinSize(300);
+    eastData.setMargins(new Margins(5));
+    eastData.setCollapsible(true);
+    eastData.setCollapseHeaderVisible(true);
+    eastData.setSplit(true);
 
     MarginData centerData = new MarginData(5);
 
@@ -298,6 +334,7 @@ public class MainView implements IsWidget {
     view.setBorders(borders);
     view.setNorthWidget(northPanel, northData);
     view.setWestWidget(filterPanel, westData);
+    view.setEastWidget(dataViewPanel, eastData);
     view.setCenterWidget(centerPanel, centerData);
 
 	}

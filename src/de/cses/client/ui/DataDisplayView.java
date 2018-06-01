@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 
+ * Copyright 2018 
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -16,8 +16,10 @@ package de.cses.client.ui;
 import com.sencha.gxt.dnd.core.client.DndDropEvent;
 import com.sencha.gxt.dnd.core.client.DropTarget;
 
+import de.cses.client.Util;
 import de.cses.client.bibliography.AnnotatedBiblographyView;
 import de.cses.client.caves.CaveView;
+import de.cses.client.depictions.DepictionDataDisplay;
 import de.cses.client.depictions.DepictionView;
 import de.cses.client.images.ImageView;
 import de.cses.client.ornamentic.OrnamenticView;
@@ -31,28 +33,32 @@ import de.cses.shared.OrnamentEntry;
  * @author alingnau
  *
  */
-public class ResultCollectorView extends AbstractResultView {
+public class DataDisplayView extends AbstractResultView {
 
 	/**
 	 * @param title
 	 */
-	public ResultCollectorView(String title) {
+	public DataDisplayView(String title) {
 		super(title);
+		
 		DropTarget target = new DropTarget(this) {
 
 			@Override
 			protected void onDragDrop(DndDropEvent event) {
 				super.onDragDrop(event);
+				Util.doLogging("DataDisplayView.onDragDrop called: " + event.getData().getClass().toString());
 				if (event.getData() instanceof CaveEntry) {
-					addResult(new CaveView((CaveEntry) event.getData()));
+//					addResult(new CaveView((CaveEntry) event.getData()));
 				} else if (event.getData() instanceof DepictionEntry) {
-					addResult(new DepictionView((DepictionEntry) event.getData()));
+					Util.doLogging("adding result ... ");
+					addResult(new DepictionDataDisplay((DepictionEntry) event.getData()));
+					Util.doLogging("new DisplayData for depictionID = " + ((DepictionEntry) event.getData()).getDepictionID());
 				} else if (event.getData() instanceof ImageEntry) {
-					addResult(new ImageView((ImageEntry) event.getData()));
+//					addResult(new ImageView((ImageEntry) event.getData()));
 				} else if (event.getData() instanceof OrnamentEntry) {
-					addResult(new OrnamenticView((OrnamentEntry) event.getData()));
+//					addResult(new OrnamenticView((OrnamentEntry) event.getData()));
 				} else if (event.getData() instanceof AnnotatedBiblographyEntry) {
-					addResult(new AnnotatedBiblographyView((AnnotatedBiblographyEntry) event.getData()));
+//					addResult(new AnnotatedBiblographyView((AnnotatedBiblographyEntry) event.getData()));
 				}
 			}
 		};

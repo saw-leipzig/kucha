@@ -421,7 +421,7 @@ public class MysqlConnector {
 						rs.getInt("ExpeditionID"), rs.getDate("PurchaseDate"), rs.getInt("CurrentLocationID"), rs.getString("InventoryNumber"),
 						rs.getInt("VendorID"), rs.getInt("StoryID"), getCave(rs.getInt("CaveID")), rs.getInt("WallID"), rs.getInt("AbsoluteLeft"),
 						rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes"),
-						rs.getInt("MasterImageID"));
+						rs.getInt("MasterImageID"), rs.getBoolean("OpenAccess"));
 				de.setRelatedImages(getRelatedImages(de.getDepictionID()));
 				de.setRelatedBibliographyList(getRelatedBibliographyFromDepiction(de.getDepictionID()));
 				results.add(de);
@@ -450,7 +450,7 @@ public class MysqlConnector {
 						rs.getInt("ExpeditionID"), rs.getDate("PurchaseDate"), rs.getInt("CurrentLocationID"), rs.getString("InventoryNumber"),
 						rs.getInt("VendorID"), rs.getInt("StoryID"), getCave(rs.getInt("CaveID")), rs.getInt("WallID"), rs.getInt("AbsoluteLeft"),
 						rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes"),
-						rs.getInt("MasterImageID"));
+						rs.getInt("MasterImageID"), rs.getBoolean("OpenAccess"));
 				result.setRelatedImages(getRelatedImages(result.getDepictionID()));
 				result.setRelatedBibliographyList(getRelatedBibliographyFromDepiction(result.getDepictionID()));
 			}
@@ -1283,7 +1283,7 @@ public class MysqlConnector {
 						rs.getInt("ExpeditionID"), rs.getDate("PurchaseDate"), rs.getInt("CurrentLocationID"), rs.getString("InventoryNumber"),
 						rs.getInt("VendorID"), rs.getInt("StoryID"), getCave(rs.getInt("CaveID")), rs.getInt("WallID"), rs.getInt("AbsoluteLeft"),
 						rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes"),
-						rs.getInt("MasterImageID"));
+						rs.getInt("MasterImageID"), rs.getBoolean("OpenAccess"));
 				de.setRelatedImages(getRelatedImages(de.getDepictionID()));
 				results.add(de);
 			}
@@ -1330,7 +1330,7 @@ public class MysqlConnector {
 						rs.getInt("ExpeditionID"), rs.getDate("PurchaseDate"), rs.getInt("CurrentLocationID"), rs.getString("InventoryNumber"),
 						rs.getInt("VendorID"), rs.getInt("StoryID"), getCave(rs.getInt("CaveID")), rs.getInt("WallID"), rs.getInt("AbsoluteLeft"),
 						rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes"),
-						rs.getInt("MasterImageID"));
+						rs.getInt("MasterImageID"), rs.getBoolean("OpenAccess"));
 				de.setRelatedImages(getRelatedImages(de.getDepictionID()));
 				results.add(de);
 			}
@@ -2295,8 +2295,8 @@ public class MysqlConnector {
 			pstmt = dbc.prepareStatement(
 					"INSERT INTO Depictions (StyleID, Inscriptions, SeparateAksaras, Dating, Description, BackgroundColour, GeneralRemarks, "
 							+ "OtherSuggestedIdentifications, Width, Height, ExpeditionID, PurchaseDate, CurrentLocationID, InventoryNumber, VendorID, "
-							+ "StoryID, CaveID, WallID, AbsoluteLeft, AbsoluteTop, ModeOfRepresentationID, ShortName, PositionNotes, MasterImageID) "
-							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+							+ "StoryID, CaveID, WallID, AbsoluteLeft, AbsoluteTop, ModeOfRepresentationID, ShortName, PositionNotes, MasterImageID, OpenAccess) "
+							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 					Statement.RETURN_GENERATED_KEYS);
 			pstmt.setInt(1, de.getStyleID());
 			pstmt.setString(2, de.getInscriptions());
@@ -2322,6 +2322,7 @@ public class MysqlConnector {
 			pstmt.setString(22, de.getShortName());
 			pstmt.setString(23, de.getPositionNotes());
 			pstmt.setInt(24, de.getMasterImageID());
+			pstmt.setBoolean(25, de.isOpenAccess());
 			pstmt.executeUpdate();
 			ResultSet keys = pstmt.getGeneratedKeys();
 			if (keys.next()) { // there should only be 1 key returned here
@@ -2367,7 +2368,7 @@ public class MysqlConnector {
 			pstmt = dbc.prepareStatement(
 					"UPDATE Depictions SET StyleID=?, Inscriptions=?, SeparateAksaras=?, Dating=?, Description=?, BackgroundColour=?, GeneralRemarks=?, "
 							+ "OtherSuggestedIdentifications=?, Width=?, Height=?, ExpeditionID=?, PurchaseDate=?, CurrentLocationID=?, InventoryNumber=?, VendorID=?, "
-							+ "StoryID=?, CaveID=?, WallID=?, AbsoluteLeft=?, AbsoluteTop=?, ModeOfRepresentationID=?, ShortName=?, PositionNotes=?, MasterImageID=? WHERE DepictionID=?");
+							+ "StoryID=?, CaveID=?, WallID=?, AbsoluteLeft=?, AbsoluteTop=?, ModeOfRepresentationID=?, ShortName=?, PositionNotes=?, MasterImageID=?, OpenAccess=? WHERE DepictionID=?");
 			pstmt.setInt(1, de.getStyleID());
 			pstmt.setString(2, de.getInscriptions());
 			pstmt.setString(3, de.getSeparateAksaras());
@@ -2392,7 +2393,8 @@ public class MysqlConnector {
 			pstmt.setString(22, de.getShortName());
 			pstmt.setString(23, de.getPositionNotes());
 			pstmt.setInt(24, de.getMasterImageID());
-			pstmt.setInt(25, de.getDepictionID());
+			pstmt.setBoolean(25, de.isOpenAccess());
+			pstmt.setInt(26, de.getDepictionID());
 			pstmt.executeUpdate();
 			pstmt.close();
 		} catch (SQLException ex) {

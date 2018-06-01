@@ -17,13 +17,16 @@ import java.util.Iterator;
 
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
+import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.widget.core.client.Portlet;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.MarginData;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
+import de.cses.client.depictions.DepictionDataDisplay;
 import de.cses.shared.AbstractEntry;
 
 /**
@@ -125,7 +128,11 @@ public abstract class AbstractResultView extends Portlet {
 				}
 			}
 		}
-		resultContainer.add(view, resultLayoutData);
+		if (view instanceof DepictionDataDisplay) {
+			resultContainer.add(view, new VerticalLayoutContainer.VerticalLayoutData(1.0, 300.0, new Margins(10)));
+		} else {
+			resultContainer.add(view, resultLayoutData);
+		}
 		setHeading(title + " (" + resultContainer.getWidgetCount() + " elements)");
 	}
 	
