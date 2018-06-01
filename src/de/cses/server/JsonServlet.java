@@ -143,6 +143,7 @@ public class JsonServlet extends HttpServlet {
 					break;
 					
 				default:
+					response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
 					break;
 			}
 		} else {
