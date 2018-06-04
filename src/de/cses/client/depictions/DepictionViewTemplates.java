@@ -28,6 +28,7 @@ import de.cses.shared.PreservationAttributeEntry;
 public interface DepictionViewTemplates extends XTemplates {
 	
 	@XTemplate(source = "DepictionDisplay.html")
-	SafeHtml display(String shortName, String inventoryNumber, String cave, String expedition, String vendor, String purchaseDate, String currentLocation, ArrayList<PreservationAttributeEntry> stateOfPreservation, SafeUri imageUri, SafeUri fullImageUri);
+	SafeHtml display(String shortName, String inventoryNumber, String cave, String expedition, String vendor, String purchaseDate, String currentLocation, String stateOfPreservation, SafeUri imageUri, SafeUri fullImageUri,
+			SafeUri realCaveSketchUri);
 
 }

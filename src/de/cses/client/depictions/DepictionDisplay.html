@@ -24,5 +24,14 @@
 			<tpl if="currentLocation != &quot;&quot;"><tr style="border-bottom:1px solid black">
 				<td style='width: 30%;'><i>Current location</i></td><td style='width: 70%;'>{currentLocation}</td>
 			</tr></tpl>
+			<tpl if="stateOfPreservation != &quot;&quot;"><tr style="border-bottom:1px solid black">
+				<td style='width: 30%;'><i>State of preservation</i></td><td style='width: 70%;'>{stateOfPreservation}</td>
+			</tr></tpl>
 		</table>
+		<tpl if="cave != &quot;&quot;">
+			<figure style='text-align: center; margin: 10;'>
+				<img src='{realCaveSketchUri}' style='position: relative; width: 50%; height: auto;'>
+				<figcaption style='font-size:14px;'>Cave sketch</figcaption>
+			</figure>
+		</tpl>
 </div>
