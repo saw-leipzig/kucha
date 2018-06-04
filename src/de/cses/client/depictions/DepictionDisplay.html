@@ -1,4 +1,4 @@
-<div style='font-size:16px'> 
+<div style='font-size:16px; background-color:#ffcc66;'> 
 		<figure style='text-align: center; margin: 10;'>
 			<a href = '{fullImageUri}' target = '_blank'>			
 				<img src='{imageUri}' style='position: relative; width: 100%; height: auto;'>
@@ -7,10 +7,10 @@
 		</figure>
 		<table style='width: 100%; border-width:1px; border-color:black; border-style:solid;'>
 			<tpl if="inventoryNumber != &quot;&quot;"><tr style="border-bottom:1px solid black">
-				<td style='width: 30%;'><i>Inventory No.</i></td><td style='width: 70%;'>{inventoryNumber}</td>
+				<td style='width: 30%; background-color: #ffdd99;'><i>Inventory No.</i></td><td style='width: 70%; background-color: #ffdd99;'>{inventoryNumber}</td>
 			</tr></tpl>
 			<tpl if="cave != &quot;&quot;"><tr style="border-bottom:1px solid black">
-				<td style='width: 30%;'><i>Located in Cave</i></td><td style='width: 70%;'>{cave}</td>
+				<td style='width: 30%; background-color: #ffdd99;'><i>Located in Cave</i></td><td style='width: 70%; background-color: #ffdd99;'>{cave}</td>
 			</tr></tpl> 
 			<tpl if="expedition != &quot;&quot;"><tr style="border-bottom:1px solid black">
 				<td style='width: 30%;'><i>Found by expedition</i></td><td style='width: 70%;'>{expedition}</td>
@@ -36,7 +36,7 @@
 		</table>
 		<tpl if="cave != &quot;&quot;">
 			<figure style='text-align: center; margin: 10;'>
-				<img src='{realCaveSketchUri}' style='position: relative; width: 50%; height: auto;'>
+				<img src='{realCaveSketchUri}' style='position: relative; width: 100%; height: auto;'>
 				<figcaption style='font-size:14px;'>Cave sketch</figcaption>
 			</figure>
 		</tpl>
