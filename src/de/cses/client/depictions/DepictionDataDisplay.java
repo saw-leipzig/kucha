@@ -44,7 +44,7 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 				cave += StaticTables.getInstance().getSiteEntries().get(e.getCave().getSiteID()).getShortName() + ": ";
 			}
 			cave += e.getCave().getOfficialNumber() + ((e.getCave().getHistoricName() != null && e.getCave().getHistoricName().length() > 0) ? " (" + e.getCave().getHistoricName() + ")" : ""); 
-			realCaveSketchUri = UriUtils.fromString("/resource?cavesketch=" + e.getCave().getCaveID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
+			realCaveSketchUri = UriUtils.fromString("/resource?cavesketch=" + e.getCave().getOptionalCaveSketch() + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 		}
 		String shortname = e.getShortName() != null ? e.getShortName() : "";
 		String expedition = e.getExpeditionID() > 0 ? StaticTables.getInstance().getExpeditionEntries().get(e.getExpeditionID()).getName() : "";
@@ -57,6 +57,8 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 		}
 		SafeUri imageUri = UriUtils.fromString("resource?imageID=" + e.getMasterImageID() + "&thumb=700" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 		SafeUri fullImageUri = UriUtils.fromString("resource?imageID=" + e.getMasterImageID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
+		String style = e.getStyleID() > 0 ? StaticTables.getInstance().getStyleEntries().get(e.getStyleID()).getStyleName() : "";
+		String modesOfRepresentation = e.getModeOfRepresentationID() > 0 ? StaticTables.getInstance().getModesOfRepresentationEntries().get(e.getModeOfRepresentationID()).getName() : "";
 		add(new HTML(view.display(
 				shortname, 
 				e.getInventoryNumber() != null ? e.getInventoryNumber() : "",  
@@ -68,7 +70,10 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 				stateOfPreservation, 
 				imageUri,
 				fullImageUri, 
-				realCaveSketchUri)));
+				realCaveSketchUri, 
+				e.getWidth(), e.getHeight(),
+				style, 
+				modesOfRepresentation)));
 		setHeading((shortname.length() > 0 ? shortname + " " : "") + (cave.length() > 0 ? " in " + cave : ""));
 	}
 

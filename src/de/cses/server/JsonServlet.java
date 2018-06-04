@@ -15,6 +15,7 @@ package de.cses.server;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Enumeration;
 
@@ -35,6 +36,7 @@ import de.cses.shared.IconographyEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 import de.cses.shared.StyleEntry;
+import sun.misc.CharacterEncoder;
 
 /**
  * @author alingnau
@@ -166,8 +168,9 @@ public class JsonServlet extends HttpServlet {
 		String caveIDStr = request.getParameter("caveID");
 		String sqlWhere=null;
 		Gson gs = new Gson();
-		PrintWriter out = response.getWriter();
 		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF8");
+		PrintWriter out = response.getWriter();
 		ArrayList<CaveEntry> caveEntries; 
 
 		if ("all".equals(caveIDStr)) {
