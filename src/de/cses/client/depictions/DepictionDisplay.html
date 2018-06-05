@@ -1,4 +1,4 @@
-<div style='font-size: 16px; background-color: #ffcc66;'>
+<div style='font-size: 16px; background-color: #ffcc66; margin: 5px;'>
 	<figure style='text-align: center; margin: 0;'>
 		<a href='{fullImageUri}' target='_blank'> <img src='{imageUri}'
 			style='position: relative; width: 100%; height: auto;'>
@@ -9,6 +9,8 @@
 			cm)</tpl>
 		</figcaption>
 	</figure>
+	
+	<h3>Summary</h3>
 	<table class="data-view-table">
 		<tpl if="inventoryNumber != &quot;&quot;">
 		<tr style="border-bottom: 1px solid black">
@@ -76,6 +78,12 @@
 	<h3>Description</h3>
 	<div style="text-align: justify">{description}</div>
 
+	<h3>General Remarks</h3>
+	<div style="text-align: justify">{description}</div>
+
+	<h3>Other Suggested iIdentifications</h3>
+	<div style="text-align: justify">{description}</div>
+	
 	<h3>Related Bibliography</h3>
 	<ol>
 		<tpl for='bib'>

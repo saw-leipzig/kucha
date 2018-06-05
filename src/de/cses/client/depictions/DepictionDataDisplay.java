@@ -59,7 +59,7 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 		SafeUri fullImageUri = UriUtils.fromString("resource?imageID=" + e.getMasterImageID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 		String style = e.getStyleID() > 0 ? StaticTables.getInstance().getStyleEntries().get(e.getStyleID()).getStyleName() : "";
 		String modesOfRepresentation = e.getModeOfRepresentationID() > 0 ? StaticTables.getInstance().getModesOfRepresentationEntries().get(e.getModeOfRepresentationID()).getName() : "";
-		add(new HTML(view.display(
+		HTML htmlWidget = new HTML(view.display(
 				shortname, 
 				e.getInventoryNumber() != null ? e.getInventoryNumber() : "",  
 				cave,
@@ -75,8 +75,13 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 				style, 
 				modesOfRepresentation, 
 				e.getDescription() != null ? e.getDescription() : "",
+				e.getGeneralRemarks() != null ? e.getGeneralRemarks() : "",
+				e.getOtherSuggestedIdentifications() != null ? e.getOtherSuggestedIdentifications() : "",
+				
 				e.getRelatedBibliographyList()
-			)), new MarginData(0, 0, 0, 0));
+			));
+		htmlWidget.addStyleName(".html-data-display");
+		add(htmlWidget, new MarginData(0, 0, 0, 0));
 		setHeading((shortname.length() > 0 ? shortname + " " : "") + (cave.length() > 0 ? " in " + cave : ""));
 	}
 
