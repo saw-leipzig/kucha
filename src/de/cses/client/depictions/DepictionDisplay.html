@@ -89,10 +89,10 @@
 		<tpl for='bib'>
 		<li>{authors} <tpl if="yearORG != &quot;&quot;">({yearORG})</tpl>.
 			<i>{titleORG}</i> <tpl if="titleEN != &quot;&quot;">({titleEN})</tpl>.
-			<tpl if="parentTitleORG != &quot;&quot;"> <br>
+			<tpl if="parentTitleORG != &quot;&quot;"> 
 			In <tpl if="editors != &quot;&quot;"> {editors} (eds.)</tpl> <i>{parentTitleORG}</i>
 			<tpl if="pagesORG != &quot;&quot;"> (pp. {pagesORG})</tpl>. </tpl> <tpl
-				if="publisher != &quot;&quot;"> <br>
+				if="publisher != &quot;&quot;"> 
 			{publisher}. </tpl> </li>
 		</tpl>
 	</ol>

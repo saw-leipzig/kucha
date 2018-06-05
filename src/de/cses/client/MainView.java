@@ -272,7 +272,7 @@ public class MainView implements IsWidget {
 		selectorLayoutContainer.add(dataDisplayController, hLayoutData);
 		
     ContentPanel centerPanel = new ContentPanel();
-    centerPanel.setHeading("Results");
+    centerPanel.setHeading("Search Results");
     centerPanel.setResize(true);
     /*
      * Currently we implement a 2-column layout with a spacing of 10. 
@@ -320,7 +320,7 @@ public class MainView implements IsWidget {
     westData.setCollapseHeaderVisible(true);
     westData.setSplit(true);
     
-    BorderLayoutData eastData = new BorderLayoutData(400);
+    BorderLayoutData eastData = new BorderLayoutData(500);
     eastData.setMaxSize(800);
     eastData.setMinSize(300);
     eastData.setMargins(new Margins(5));
