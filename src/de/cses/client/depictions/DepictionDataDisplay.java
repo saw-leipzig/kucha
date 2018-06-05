@@ -80,7 +80,7 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 				
 				e.getRelatedBibliographyList()
 			));
-		htmlWidget.addStyleName(".html-data-display");
+		htmlWidget.addStyleName("html-data-display");
 		add(htmlWidget, new MarginData(0, 0, 0, 0));
 		setHeading((shortname.length() > 0 ? shortname + " " : "") + (cave.length() > 0 ? " in " + cave : ""));
 	}

@@ -5,23 +5,93 @@ h1 {
 	color: blue;
 }
 
-.data-view-table {
+h4.data-display {
+  border-width: 2px;
+  border-radius: 25px;
+  border-color: gray;
+  width: 90%;
+  border-style: solid;
+  padding: 10px;
+  margin-left:5px;
+  margin-top: 25px;
+  margin-bottom: 25px;
+  font-family: verdana;
+  font-size: 16px;
+}
+
+p.data-display {
+	margin-left: 5px;
+	margin-right: 5px;
+	margin-top: 5px;
+	margin-bottom: 10px;
+	font-size: 12px;
+  font-family: verdana;
+}
+
+div.data-view {
+	font-size: 12px; 
+	background-color: #ffcc66; 
+	margin: 0
+}
+
+table.data-view {
 	width: 100%;
 	border-width: 1px;
 	border-color: black;
 	border-style: solid;
+	margin-left: 5px;
+	margin-right: 5px;
+	margin-top: 5px;
+	margin-bottom: 10px;
+	font-size: 12px;
+  font-family: verdana;
 }
 
-.data-view-td-left {
+td.data-view-left {
 	background-color: #ffdd99;
 	width: 30%;
 }
 
-.data-view-td-right {
+td.data-view-right {
 	background-color: #ffdd99;
 	width: 70%;
 }
 
-.html-data-display {
+html.data-display {
 	backround-color: #ffcc66;	
+}
+
+ol.simple-list {
+    list-style-type: none;
+    list-style-type: decimal !ie; /*IE 7- hack*/
+     
+    margin: 0;
+    margin-left: 3em;
+    padding: 0;
+     
+    counter-reset: li-counter;
+}
+ol.simple-list > li {
+    position: relative;
+    margin-bottom: 20px;
+    padding-left: 0.5em;
+    min-height: 3em;
+    border-left: 2px solid #CCCCCC;
+    font-family: verdana;
+    font-size: 12px;
+}
+ol.simple-list > li:before {
+    position: absolute;
+    top: 0;
+    left: -1em;
+    width: 0.8em;
+     
+    font-size: 3em;
+    line-height: 1;
+    font-weight: bold;
+    text-align: right;
+    color: #464646;
+ 
+    content: counter(li-counter);
+    counter-increment: li-counter;
 }
