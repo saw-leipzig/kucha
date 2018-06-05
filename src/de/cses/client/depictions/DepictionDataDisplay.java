@@ -17,6 +17,7 @@ import com.google.gwt.core.shared.GWT;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.user.client.ui.HTML;
+import com.sencha.gxt.widget.core.client.container.MarginData;
 
 import de.cses.client.StaticTables;
 import de.cses.client.ui.AbstractDataDisplay;
@@ -30,7 +31,6 @@ import de.cses.shared.PreservationAttributeEntry;
  */
 public class DepictionDataDisplay extends AbstractDataDisplay {
 	
-
 	/**
 	 * 
 	 */
@@ -73,7 +73,10 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 				realCaveSketchUri, 
 				e.getWidth(), e.getHeight(),
 				style, 
-				modesOfRepresentation)));
+				modesOfRepresentation, 
+				e.getDescription() != null ? e.getDescription() : "",
+				e.getRelatedBibliographyList()
+			)), new MarginData(0, 0, 0, 0));
 		setHeading((shortname.length() > 0 ? shortname + " " : "") + (cave.length() > 0 ? " in " + cave : ""));
 	}
 

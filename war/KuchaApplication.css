@@ -1,7 +1,23 @@
 /** Add css rules here for your application. */
-
 h1 {
 	font-size: 24px;
 	text-align: center;
 	color: blue;
-}	
+}
+
+.data-view-table {
+	width: 100%;
+	border-width: 1px;
+	border-color: black;
+	border-style: solid;
+}
+
+.data-view-td-left {
+	background-color: #ffdd99;
+	width: 30%;
+}
+
+.data-view-td-right {
+	background-color: #ffdd99;
+	width: 70%;
+}
