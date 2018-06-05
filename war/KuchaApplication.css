@@ -12,7 +12,7 @@ h4.data-display {
   width: 90%;
   border-style: solid;
   padding: 10px;
-  margin-left:5px;
+  margin-left: 5%;
   margin-top: 25px;
   margin-bottom: 25px;
   font-family: verdana;
@@ -26,6 +26,7 @@ p.data-display {
 	margin-bottom: 10px;
 	font-size: 12px;
   font-family: verdana;
+  text-align: justify;
 }
 
 div.data-view {
@@ -35,12 +36,12 @@ div.data-view {
 }
 
 table.data-view {
-	width: 90%;
-	border-width: 1px;
-	border-color: black;
+	width: 96%;
+	border-width: 2px;
+	border-color: gray;
 	border-style: solid;
-	margin-left: 5px;
-	margin-right: 5px;
+	margin-left: 2%;
+	margin-right: 2%;
 	margin-top: 5px;
 	margin-bottom: 10px;
 	font-size: 12px;
