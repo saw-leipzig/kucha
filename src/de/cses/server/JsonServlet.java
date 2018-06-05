@@ -15,7 +15,6 @@ package de.cses.server;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Enumeration;
 
@@ -36,7 +35,6 @@ import de.cses.shared.IconographyEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 import de.cses.shared.StyleEntry;
-import sun.misc.CharacterEncoder;
 
 /**
  * @author alingnau
@@ -220,8 +218,9 @@ public class JsonServlet extends HttpServlet {
 	private void getSites() throws IOException {
 		String siteIDStr = request.getParameter("siteID");
 		Gson gs = new Gson();
-		PrintWriter out = response.getWriter();
 		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF8");
+		PrintWriter out = response.getWriter();
 		ArrayList<SiteEntry> siteEntries;
 		
 		if ("all".equals(siteIDStr)) {
@@ -236,8 +235,9 @@ public class JsonServlet extends HttpServlet {
 	private void getRegions() throws IOException {
 		String siteIDStr = request.getParameter("regionID");
 		Gson gs = new Gson();
-		PrintWriter out = response.getWriter();
 		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF8");
+		PrintWriter out = response.getWriter();
 		ArrayList<RegionEntry> regionEntries ;
 		
 		if ("all".equals(siteIDStr)) {
@@ -252,8 +252,9 @@ public class JsonServlet extends HttpServlet {
 	private void getDistricts() throws IOException {
 		String districtIDStr = request.getParameter("districtID");
 		Gson gs = new Gson();
-		PrintWriter out = response.getWriter();
 		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF8");
+		PrintWriter out = response.getWriter();
 		ArrayList<DistrictEntry> districtEntries;
 
 		if ("all".equals(districtIDStr)) {
@@ -268,8 +269,9 @@ public class JsonServlet extends HttpServlet {
 	private void getIconography() throws IOException {
 		String iconographyIDStr = request.getParameter("iconographyID");
 		Gson gs = new Gson();
-		PrintWriter out = response.getWriter();
 		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF8");
+		PrintWriter out = response.getWriter();
 		ArrayList<IconographyEntry> iconographyEntries ;
 
 		if ("all".equals(iconographyIDStr)) {
@@ -287,8 +289,9 @@ public class JsonServlet extends HttpServlet {
 		String depictionIDStr = request.getParameter("paintedRepID");
 		Gson gs = new Gson();
 		String sqlWhere = null;
-		PrintWriter out = response.getWriter();
 		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF8");
+		PrintWriter out = response.getWriter();
 		ArrayList<DepictionEntry> depictionEntries ;
 
 		if ("all".equals(depictionIDStr)) {
@@ -309,8 +312,9 @@ public class JsonServlet extends HttpServlet {
 	private void getRelatedDepictionsFromIconography() throws IOException {
 		String iconographyIDs = request.getParameter("paintedRepFromIconographyID");
 		Gson gs = new Gson();
-		PrintWriter out = response.getWriter();
 		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF8");
+		PrintWriter out = response.getWriter();
 
 		if (iconographyIDs != null) {
 		 ArrayList<DepictionEntry> depictionEntries = connector.getRelatedDepictions(iconographyIDs, 0);
@@ -321,8 +325,9 @@ public class JsonServlet extends HttpServlet {
 	private void getExclusiveRelatedDepictionsFromIconography() throws IOException {
 		String iconographyIDs = request.getParameter("exclusivePaintedRepFromIconographyID");
 		Gson gs = new Gson();
-		PrintWriter out = response.getWriter();
 		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF8");
+		PrintWriter out = response.getWriter();
 
 		if (iconographyIDs != null) {
 		 ArrayList<DepictionEntry> depictionEntries = connector.getRelatedDepictions(iconographyIDs, 100);
@@ -333,8 +338,10 @@ public class JsonServlet extends HttpServlet {
 	private void getCaveTypes() throws IOException {
 		String caveTypeIDStr = request.getParameter("caveTypeID");
 		Gson gs = new Gson();
-		PrintWriter out = response.getWriter();
 		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF8");
+		PrintWriter out = response.getWriter();
+
 		ArrayList<CaveTypeEntry> caveTypeEntries;
 
 		if ("all".equals(caveTypeIDStr)) {
@@ -349,8 +356,10 @@ public class JsonServlet extends HttpServlet {
 	private void getStyles() throws IOException {
 		String styleIDStr = request.getParameter("styleID");
 		Gson gs = new Gson();
-		PrintWriter out = response.getWriter();
 		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF8");
+		PrintWriter out = response.getWriter();
+
 		ArrayList<StyleEntry> caveTypeEntries;
 
 		if ("all".equals(styleIDStr)) {
@@ -365,8 +374,10 @@ public class JsonServlet extends HttpServlet {
 	private void getExpeditions() throws IOException {
 		String expeditionIDStr = request.getParameter("expeditionID");
 		Gson gs = new Gson();
-		PrintWriter out = response.getWriter();
 		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF8");
+		PrintWriter out = response.getWriter();
+
 		ArrayList<ExpeditionEntry> expeditionEntries;
 
 		if ("all".equals(expeditionIDStr)) {
