@@ -45,6 +45,7 @@ public class DepictionEntry extends AbstractEntry {
 	private ArrayList<ImageEntry> relatedImages = new ArrayList<ImageEntry>();
 	private ArrayList<PreservationAttributeEntry> preservationAttributesList = new ArrayList<PreservationAttributeEntry>();
 	private ArrayList<AnnotatedBiblographyEntry> relatedBibliographyList = new ArrayList<AnnotatedBiblographyEntry>();
+	private ArrayList<IconographyEntry> relatedIconographyList = new ArrayList<IconographyEntry>();
 
 	public DepictionEntry() { }
 
@@ -371,6 +372,14 @@ public class DepictionEntry extends AbstractEntry {
 
 	public void setRelatedBibliographyList(ArrayList<AnnotatedBiblographyEntry> relatedBibliographyList) {
 		this.relatedBibliographyList = relatedBibliographyList;
+	}
+
+	public ArrayList<IconographyEntry> getRelatedIconographyList() {
+		return relatedIconographyList;
+	}
+
+	public void setRelatedIconographyList(ArrayList<IconographyEntry> relatedIconographyList) {
+		this.relatedIconographyList = relatedIconographyList;
 	}
 
 }

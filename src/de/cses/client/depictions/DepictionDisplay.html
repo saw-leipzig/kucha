@@ -9,7 +9,7 @@
 			cm)</tpl>
 		</figcaption>
 	</figure>
-	
+
 	<h4 class="data-display">Summary</h4>
 	<table class="data-view">
 		<tpl if="inventoryNumber != &quot;&quot;">
@@ -74,29 +74,42 @@
 		<figcaption style='font-size: 14px;'>Cave sketch</figcaption>
 	</figure>
 	</tpl>
-	
-	<h4 class="data-display">Iconography &amp; Pictorial Elements</h4>
-	<p class="data-display">ToDo</p>
+
+	<h4 class="data-display">Indexing</h4>
+
+	<h5 class="data-display">Iconography</h5>
+	<ul class="simple-list">
+		<tpl for="iconography">
+			<tpl if="iconographyID &lt; 2000"><li>{text}</li></tpl>
+		</tpl>
+	</ul>
+
+	<h5 class="data-display">Pictorial Elements</h5>
+	<ul class="simple-list">
+		<tpl for="iconography">
+			<tpl if="iconographyID &gt; 2000"><li>{text}</li></tpl>
+		</tpl>
+	</ul>
 
 	<h4 class="data-display">Description</h4>
 	<p class="data-display">{description}</p>
 
 	<h4 class="data-display">General Remarks</h4>
-	<p class="data-display">{description}</p>
+	<p class="data-display">{generalRemarks}</p>
 
 	<h4 class="data-display">Other Suggested Identifications</h4>
-	<p class="data-display">{description}</p>
-	
+	<p class="data-display">{otherSuggestedIdentifications}</p>
+
 	<h4 class="data-display">Related Bibliography</h4>
 	<ol class="simple-list">
 		<tpl for='bib'>
 		<li>{authors} <tpl if="yearORG != &quot;&quot;">({yearORG})</tpl>.
 			<i>{titleORG}</i> <tpl if="titleEN != &quot;&quot;">({titleEN})</tpl>.
-			<tpl if="parentTitleORG != &quot;&quot;"> 
-			In <tpl if="editors != &quot;&quot;"> {editors} (eds.)</tpl> <i>{parentTitleORG}</i>
+			<tpl if="parentTitleORG != &quot;&quot;"> In <tpl
+				if="editors != &quot;&quot;"> {editors} (eds.)</tpl> <i>{parentTitleORG}</i>
 			<tpl if="pagesORG != &quot;&quot;"> (pp. {pagesORG})</tpl>. </tpl> <tpl
-				if="publisher != &quot;&quot;"> 
-			{publisher}. </tpl> </li>
+				if="publisher != &quot;&quot;"> {publisher}. </tpl>
+		</li>
 		</tpl>
 	</ol>
 </div>

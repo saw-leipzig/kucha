@@ -424,6 +424,7 @@ public class MysqlConnector {
 						rs.getInt("MasterImageID"), rs.getBoolean("OpenAccess"));
 				de.setRelatedImages(getRelatedImages(de.getDepictionID()));
 				de.setRelatedBibliographyList(getRelatedBibliographyFromDepiction(de.getDepictionID()));
+				de.setRelatedIconographyList(getRelatedIconography(de.getDepictionID()));
 				results.add(de);
 			}
 			rs.close();
@@ -453,6 +454,7 @@ public class MysqlConnector {
 						rs.getInt("MasterImageID"), rs.getBoolean("OpenAccess"));
 				result.setRelatedImages(getRelatedImages(result.getDepictionID()));
 				result.setRelatedBibliographyList(getRelatedBibliographyFromDepiction(result.getDepictionID()));
+				result.setRelatedIconographyList(getRelatedIconography(result.getDepictionID()));
 			}
 			rs.close();
 			stmt.close();

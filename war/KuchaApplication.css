@@ -6,17 +6,31 @@ h1 {
 }
 
 h4.data-display {
-  border-width: 2px;
-  border-radius: 25px;
-  border-color: gray;
-  width: 90%;
-  border-style: solid;
-  padding: 10px;
-  margin-left: 5%;
-  margin-top: 25px;
-  margin-bottom: 25px;
-  font-family: verdana;
-  font-size: 16px;
+	border-width: 2px;
+	border-radius: 25px;
+	border-color: gray;
+	width: 90%;
+	border-style: solid;
+	padding: 10px;
+	margin-left: 10px;
+	margin-top: 25px;
+	margin-bottom: 15px;
+	font-family: verdana;
+	font-size: 16px;
+}
+
+h5.data-display {
+	border-width: 2px;
+	border-radius: 25px;
+	border-color: gray;
+	width: 80%;
+	border-style: solid;
+	padding: 5px;
+	margin-left: 30px;
+	margin-top: 25px;
+	margin-bottom: 15px;
+	font-family: verdana;
+	font-size: 13px;
 }
 
 p.data-display {
@@ -25,13 +39,13 @@ p.data-display {
 	margin-top: 5px;
 	margin-bottom: 10px;
 	font-size: 12px;
-  font-family: verdana;
-  text-align: justify;
+	font-family: verdana;
+	text-align: justify;
 }
 
 div.data-view {
-	font-size: 12px; 
-	background-color: #ffcc66; 
+	font-size: 12px;
+	background-color: #ffcc66;
 	margin: 0
 }
 
@@ -45,7 +59,7 @@ table.data-view {
 	margin-top: 5px;
 	margin-bottom: 10px;
 	font-size: 12px;
-  font-family: verdana;
+	font-family: verdana;
 }
 
 td.data-view-left {
@@ -59,40 +73,57 @@ td.data-view-right {
 }
 
 html.data-display {
-	backround-color: #ffcc66;	
+	backround-color: #ffcc66;
+}
+
+ul.simple-list {
+	list-style-type: none;
+	margin: 0;
+	margin-left: 3em;
+	padding: 0;
+}
+
+ul.simple-list>li {
+  padding-left: 1em; 
+  text-indent: -1.2em;
+	font-family: verdana;
+	font-size: 12px;
+}
+
+ul.simple-list>li::before {
+  content: "⬥ ";
+  color: gray; /* or whatever color you prefer */
 }
 
 ol.simple-list {
-    list-style-type: none;
-    list-style-type: decimal !ie; /*IE 7- hack*/
-     
-    margin: 0;
-    margin-left: 3em;
-    padding: 0;
-     
-    counter-reset: li-counter;
+	list-style-type: none;
+	list-style-type: decimal!ie; /*IE 7- hack*/
+	margin: 0;
+	margin-left: 3em;
+	padding: 0;
+	counter-reset: li-counter;
 }
-ol.simple-list > li {
-    position: relative;
-    margin-bottom: 20px;
-    padding-left: 0.5em;
-    min-height: 3em;
-    border-left: 2px solid #CCCCCC;
-    font-family: verdana;
-    font-size: 12px;
+
+ol.simple-list>li {
+	position: relative;
+	margin-bottom: 20px;
+	padding-left: 0.5em;
+	min-height: 3em;
+	border-left: 2px solid #CCCCCC;
+	font-family: verdana;
+	font-size: 12px;
 }
-ol.simple-list > li:before {
-    position: absolute;
-    top: 0;
-    left: -1em;
-    width: 0.8em;
-     
-    font-size: 3em;
-    line-height: 1;
-    font-weight: bold;
-    text-align: right;
-    color: #464646;
- 
-    content: counter(li-counter);
-    counter-increment: li-counter;
+
+ol.simple-list>li:before {
+	position: absolute;
+	top: 0;
+	left: -1em;
+	width: 0.8em;
+	font-size: 3em;
+	line-height: 1;
+	font-weight: bold;
+	text-align: right;
+	color: #464646;
+	content: counter(li-counter);
+	counter-increment: li-counter;
 }

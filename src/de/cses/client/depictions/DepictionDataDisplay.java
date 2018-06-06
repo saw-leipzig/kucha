@@ -77,7 +77,7 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 				e.getDescription() != null ? e.getDescription() : "",
 				e.getGeneralRemarks() != null ? e.getGeneralRemarks() : "",
 				e.getOtherSuggestedIdentifications() != null ? e.getOtherSuggestedIdentifications() : "",
-				
+				e.getRelatedIconographyList(),
 				e.getRelatedBibliographyList()
 			));
 		htmlWidget.addStyleName("html-data-display");
