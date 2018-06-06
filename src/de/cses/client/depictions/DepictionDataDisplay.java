@@ -17,11 +17,13 @@ import com.google.gwt.core.shared.GWT;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.user.client.ui.HTML;
+import com.sencha.gxt.widget.core.client.container.MarginData;
 
 import de.cses.client.StaticTables;
 import de.cses.client.ui.AbstractDataDisplay;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.DepictionEntry;
+import de.cses.shared.PreservationAttributeEntry;
 
 /**
  * @author alingnau
@@ -29,28 +31,35 @@ import de.cses.shared.DepictionEntry;
  */
 public class DepictionDataDisplay extends AbstractDataDisplay {
 	
-
 	/**
 	 * 
 	 */
 	public DepictionDataDisplay(DepictionEntry e) {
 		super();
 		String cave = "";
+		SafeUri realCaveSketchUri = null;
 		DepictionViewTemplates view = GWT.create(DepictionViewTemplates.class);
 		if (e.getCave() != null) {
 			if (e.getCave().getSiteID() > 0) {
 				cave += StaticTables.getInstance().getSiteEntries().get(e.getCave().getSiteID()).getShortName() + ": ";
 			}
 			cave += e.getCave().getOfficialNumber() + ((e.getCave().getHistoricName() != null && e.getCave().getHistoricName().length() > 0) ? " (" + e.getCave().getHistoricName() + ")" : ""); 
+			realCaveSketchUri = UriUtils.fromString("/resource?cavesketch=" + e.getCave().getOptionalCaveSketch() + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 		}
 		String shortname = e.getShortName() != null ? e.getShortName() : "";
 		String expedition = e.getExpeditionID() > 0 ? StaticTables.getInstance().getExpeditionEntries().get(e.getExpeditionID()).getName() : "";
 		String vendor = e.getVendorID() > 0 ? StaticTables.getInstance().getVendorEntries().get(e.getVendorID()).getVendorName() : "";
 		String location = e.getLocationID() > 0 ? StaticTables.getInstance().getLocationEntries().get(e.getLocationID()).getName() : "";
 		String date = e.getPurchaseDate() != null ? e.getPurchaseDate().toString() : "";
+		String stateOfPreservation = "";
+		for (PreservationAttributeEntry pae : e.getPreservationAttributesList()) {
+			stateOfPreservation += stateOfPreservation.length() > 0 ? ", " + pae.getName() : pae.getName();
+		}
 		SafeUri imageUri = UriUtils.fromString("resource?imageID=" + e.getMasterImageID() + "&thumb=700" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 		SafeUri fullImageUri = UriUtils.fromString("resource?imageID=" + e.getMasterImageID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
-		add(new HTML(view.display(
+		String style = e.getStyleID() > 0 ? StaticTables.getInstance().getStyleEntries().get(e.getStyleID()).getStyleName() : "";
+		String modesOfRepresentation = e.getModeOfRepresentationID() > 0 ? StaticTables.getInstance().getModesOfRepresentationEntries().get(e.getModeOfRepresentationID()).getName() : "";
+		HTML htmlWidget = new HTML(view.display(
 				shortname, 
 				e.getInventoryNumber() != null ? e.getInventoryNumber() : "",  
 				cave,
@@ -58,9 +67,23 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 				vendor, 
 				date, 
 				location, 
-				e.getPreservationAttributesList(), 
+				stateOfPreservation, 
 				imageUri,
-				fullImageUri)));
+				fullImageUri, 
+				realCaveSketchUri, 
+				e.getWidth(), e.getHeight(),
+				style, 
+				modesOfRepresentation, 
+				e.getDescription() != null ? e.getDescription() : "",
+				e.getGeneralRemarks() != null ? e.getGeneralRemarks() : "",
+				e.getOtherSuggestedIdentifications() != null ? e.getOtherSuggestedIdentifications() : "",
+				e.getRelatedIconographyList(),
+				e.getRelatedBibliographyList(),
+				e.getLastChangedByUser(),
+				e.getLastChangedOnDate()
+			));
+		htmlWidget.addStyleName("html-data-display");
+		add(htmlWidget, new MarginData(0, 0, 0, 0));
 		setHeading((shortname.length() > 0 ? shortname + " " : "") + (cave.length() > 0 ? " in " + cave : ""));
 	}
 

@@ -28,6 +28,7 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -1447,6 +1448,7 @@ public class DepictionEditor extends AbstractEditor {
 		}
 		correspondingDepictionEntry.setRelatedImages(relatedImageEntryList);
 		correspondingDepictionEntry.setRelatedBibliographyList(bibliographySelector.getSelectedEntries());
+		correspondingDepictionEntry.setLastChangedByUser(UserLogin.getInstance().getUsername());
 		
 		if (correspondingDepictionEntry.getDepictionID() == 0) {
 			dbService.insertDepictionEntry(correspondingDepictionEntry, iconographySelector.getSelectedIconography(), new AsyncCallback<Integer>() {
