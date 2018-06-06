@@ -22,6 +22,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public abstract class AbstractEntry implements IsSerializable {
 	
 	protected boolean openAccess = false;
+	protected String lastChangedByUser = "unknown";
+	protected String lastChangedOnDate = "unknown";
 	
 	/**
 	 * @param openAccess
@@ -46,6 +48,22 @@ public abstract class AbstractEntry implements IsSerializable {
 	
 	public void setOpenAccess(boolean openAccess) {
 		this.openAccess = openAccess;
+	}
+
+	public String getLastChangedByUser() {
+		return lastChangedByUser;
+	}
+
+	public void setLastChangedByUser(String lastChangedByUser) {
+		this.lastChangedByUser = lastChangedByUser;
+	}
+
+	public String getLastChangedOnDate() {
+		return lastChangedOnDate;
+	}
+
+	public void setLastChangedOnDate(String lastChangedOnDate) {
+		this.lastChangedOnDate = lastChangedOnDate;
 	}
 
 }

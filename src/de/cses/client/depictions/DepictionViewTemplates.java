@@ -31,6 +31,6 @@ public interface DepictionViewTemplates extends XTemplates {
 	@XTemplate(source = "DepictionDisplay.html")
 	SafeHtml display(String shortName, String inventoryNumber, String cave, String expedition, String vendor, String purchaseDate, String currentLocation, String stateOfPreservation, SafeUri imageUri, SafeUri fullImageUri,
 			SafeUri realCaveSketchUri, double width, double height, String style, String modeOfRepresentation, String description, String generalRemarks, String otherSuggestedIdentifications, 
-			ArrayList<IconographyEntry> iconography, ArrayList<AnnotatedBiblographyEntry> bib);
+			ArrayList<IconographyEntry> iconography, ArrayList<AnnotatedBiblographyEntry> bib, String user, String timestamp);
 
 }

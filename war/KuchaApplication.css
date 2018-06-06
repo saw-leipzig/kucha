@@ -1,4 +1,6 @@
 /** Add css rules here for your application. */
+@charset "utf-8";
+
 h1 {
 	font-size: 24px;
 	text-align: center;
@@ -41,6 +43,15 @@ p.data-display {
 	font-size: 12px;
 	font-family: verdana;
 	text-align: justify;
+}
+
+p.date {
+	margin-top: 10px;
+	margin-bottom: 10px;
+	font-size: 9px;
+	font-family: verdana;
+	text-align: right;
+	margin-bottom: 0;
 }
 
 div.data-view {
@@ -91,7 +102,7 @@ ul.simple-list>li {
 }
 
 ul.simple-list>li::before {
-  content: "⬥ ";
+  content: "\2B22  ";
   color: gray; /* or whatever color you prefer */
 }
 

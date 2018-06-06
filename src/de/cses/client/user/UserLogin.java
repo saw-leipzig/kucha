@@ -201,4 +201,8 @@ public class UserLogin extends SimpleContainer {
 		return (Cookies.getCookie(SESSION_ID) != null);
 	}
 
+	public String getUsername() {
+		return username;
+	}
+
 }
