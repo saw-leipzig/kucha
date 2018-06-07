@@ -9,7 +9,6 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -64,6 +63,9 @@ import de.cses.shared.OrnamentEntry;
 import de.cses.shared.StructureOrganization;
 
 public class OrnamenticEditor extends AbstractEditor implements ImageSelectorListener {
+	
+	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
+
 	FramedPanel header;
 	private VBoxLayoutContainer widget;
 	FramedPanel cavesContentPanel;
@@ -71,7 +73,6 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 	private ListStore<OrnamentCaveRelation> caveOrnamentRelationList;
 	private OrnamenticEditor ornamenticEditor = this;
 	private ListView<OrnamentCaveRelation, String> cavesList;
-	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	protected PopupPanel imageSelectionDialog;
 	protected ImageSelector imageSelector;
 	private ListView<ImageEntry, ImageEntry> imageListView;
@@ -258,47 +259,45 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 		ornamentCodeTextField = new TextField();
 		ornamentCodeTextField.setAllowBlank(false);
-		ornamentCodeTextField.setAutoValidate(true);
 		header = new FramedPanel();
 		header.setHeading("Ornament Code");
 		header.add(ornamentCodeTextField);
 		panel.add(header, new VerticalLayoutData(1.0, .125));
 		if (ornamentEntry != null) {
-			ornamentCodeTextField.setText(ornamentEntry.getCode());
+			ornamentCodeTextField.setValue(ornamentEntry.getCode());
 		}
 
 		header = new FramedPanel();
 		header.setHeading("Description");
-		final TextArea discription = new TextArea();
+		TextArea discription = new TextArea();
 		panel.add(header, new VerticalLayoutData(1.0, .3));
 		header.add(discription);
 		discription.setAllowBlank(true);
 		if (ornamentEntry != null) {
-			discription.setText(ornamentEntry.getDescription());
+			discription.setValue(ornamentEntry.getDescription());
 		}
 
-		final TextArea remarks = new TextArea();
+		TextArea remarks = new TextArea();
 		remarks.setAllowBlank(true);
 		header = new FramedPanel();
 		header.setHeading("Remarks");
 		header.add(remarks);
 		panel.add(header, new VerticalLayoutData(1.0, .3));
 		if (ornamentEntry != null) {
-			remarks.setText(ornamentEntry.getRemarks());
+			remarks.setValue(ornamentEntry.getRemarks());
 		}
 
-		final TextArea annotations = new TextArea();
+		TextArea annotations = new TextArea();
 		annotations.setAllowBlank(true);
 		header = new FramedPanel();
-
 		header.setHeading("Annotations");
 		header.add(annotations);
 		verticalgeneral2Background.add(header, new VerticalLayoutData(1.0, .3));
 		if (ornamentEntry != null) {
-			annotations.setText(ornamentEntry.getAnnotations());
+			annotations.setValue(ornamentEntry.getAnnotations());
 		}
 
-		final TextArea interpretation = new TextArea();
+		TextArea interpretation = new TextArea();
 		interpretation.setAllowBlank(true);
 		header = new FramedPanel();
 		header.setWidth(300);
@@ -306,7 +305,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		header.add(interpretation);
 		verticalgeneral2Background.add(header, new VerticalLayoutData(1.0, .3));
 		if (ornamentEntry != null) {
-			interpretation.setText(ornamentEntry.getInterpretation());
+			interpretation.setValue(ornamentEntry.getInterpretation());
 		}
 
 		ornamentClassComboBox = new ComboBox<OrnamentClassEntry>(ornamentClassEntryList, ornamentClassProps.name(),
