@@ -24,7 +24,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
+import de.cses.server.json.CaveEntrySerializer;
+import de.cses.server.json.DepictionSerializer;
 import de.cses.server.mysql.MysqlConnector;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveTypeEntry;
@@ -66,20 +69,14 @@ public class JsonServlet extends HttpServlet {
 					
 				case "checkSession":
 					if (connector.checkSessionID(request.getParameter("sessionID")) != null) {
-//						response.setStatus(204);
 						response.sendError(HttpServletResponse.SC_NO_CONTENT);
 					} else {
-//						response.setStatus(403);
 						response.sendError(HttpServletResponse.SC_FORBIDDEN);
 					}
 					break;
 					
 				case "caveID":
 					getCaves(connector.checkSessionID(request.getParameter("sessionID")) == null);
-//					if (connector.checkSessionID(request.getParameter("sessionID")) != null) {
-//					} else {
-//						response.setStatus(403);
-//					}
 					break;
 					
 				case "siteID":
@@ -165,7 +162,6 @@ public class JsonServlet extends HttpServlet {
 	private void getCaves(boolean publicOnly) throws IOException {
 		String caveIDStr = request.getParameter("caveID");
 		String sqlWhere=null;
-		Gson gs = new Gson();
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF8");
 		PrintWriter out = response.getWriter();
@@ -211,7 +207,11 @@ public class JsonServlet extends HttpServlet {
 		} else {
 			caveEntries = connector.getCaves("CaveID IN (" + caveIDStr + ")");			
 		}
-		out.println(gs.toJson(caveEntries));
+
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(CaveEntry.class, new CaveEntrySerializer());
+		Gson gson = gsonBuilder.create();		
+		out.println(gson.toJson(caveEntries));
 		out.close();
 	}
 
@@ -287,7 +287,6 @@ public class JsonServlet extends HttpServlet {
 	
 	private void getDepiction() throws IOException {
 		String depictionIDStr = request.getParameter("paintedRepID");
-		Gson gs = new Gson();
 		String sqlWhere = null;
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF8");
@@ -305,7 +304,11 @@ public class JsonServlet extends HttpServlet {
 			}
 			depictionEntries = connector.getDepictions(sqlWhere);
 		}
-		out.println(gs.toJson(depictionEntries));
+		
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(DepictionEntry.class, new DepictionSerializer());
+		Gson gson = gsonBuilder.create();		
+		out.println(gson.toJson(depictionEntries));
 		out.close();
 	}
 	

@@ -3763,11 +3763,9 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM OrnamentCaveWallRelation WHERE OrnamentCaveRelationID = " + ornamentCaveID);
 			while (rs.next()) {
-				Window.alert("wallloc: " + rs.getInt("WallLocationID") + "caveid: " + rs.getInt("CaveID"));
 				results.add(new WallOrnamentCaveRelation(rs.getInt("OrnamentCaveWallRelationID"), rs.getInt("OrnamentCaveRelationID"),
 						rs.getInt("WallLocationID"), rs.getInt("PositionID"), rs.getInt("FunctionID"), rs.getString("Notes"),
 						getWallbyWallLocationANDCaveID(rs.getInt("WallLocationID"), rs.getInt("CaveID"))));
-				Window.alert(Double.toString(getWallbyWallLocationANDCaveID(rs.getInt("WallLocationID"), rs.getInt("CaveID")).getHeight()));
 			}
 			rs.close();
 			stmt.close();
