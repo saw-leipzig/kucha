@@ -47,23 +47,18 @@ public class AuthorEditor implements IsWidget {
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	private AuthorEntry authorEntry = null;
 	private FramedPanel mainPanel = null;
-	private ArrayList<AuthorEditorListener> listenerList;
+	private AuthorEditorListener listener;
 	
 	public AuthorEditor(AuthorEditorListener listener) {
-		this(null, listener);
+		this(new AuthorEntry(), listener);
 	}
 
 	/**
 	 * 
 	 */
 	public AuthorEditor(AuthorEntry authorEntry, AuthorEditorListener listener) {
-		listenerList = new ArrayList<AuthorEditorListener>();
-		listenerList.add(listener);
-		if (authorEntry == null) {
-			authorEntry = new AuthorEntry();
-		} else {
-			this.authorEntry = authorEntry;
-		}
+		this.listener = listener;
+		this.authorEntry = authorEntry;
 	}
 
 	/*
@@ -81,13 +76,9 @@ public class AuthorEditor implements IsWidget {
 	
 	private void closeEditor(boolean saved) {
 		if (saved) {
-			for (AuthorEditorListener l : listenerList) {
-				l.authorSaved(authorEntry);
-			}
+			listener.authorSaved(authorEntry);
 		} else {
-			for (AuthorEditorListener l : listenerList) {
-				l.editorCanceled();
-			}
+			listener.editorCanceled();
 		}
 	}
 
@@ -132,7 +123,15 @@ public class AuthorEditor implements IsWidget {
 		
 		
 		TextField authorAffiliation = new TextField();
-		
+		authorAffiliation.setValue(authorEntry.getAffiliation());
+		authorAffiliation.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				authorEntry.setAffiliation(event.getValue());
+			}
+		});
+
 		TextField authorEmailTF = new TextField();
 		authorEmailTF.addValidator(new RegExValidator(Util.REGEX_EMAIL_PATTERN, "please enter valid email address"));
 		authorEmailTF.setAutoValidate(true);
@@ -260,7 +259,7 @@ public class AuthorEditor implements IsWidget {
 		});
 		mainPanel.addButton(cancelButton);
 		
-		mainPanel.setSize("300", "450");
+		mainPanel.setWidth(450);
 	}
 
 }

@@ -113,6 +113,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 	private StoreFilterField<AuthorEntry> authorListFilterField;
 	private StoreFilterField<AuthorEntry> editorListFilterField;
 	private DocumentLinkTemplate documentLinkTemplate;
+	private DualListField<AuthorEntry, String> authorSelection;
 
 //	interface PublisherViewTemplates extends XTemplates {
 //		@XTemplate("<div>{name}</div>")
@@ -858,12 +859,36 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 						"Since authors can also be editors,\n newly added authors will\n appear in both author and editor selection.");
 			}
 		});
+		
+		ToolButton editAuthorTB = new ToolButton(ToolButton.GEAR);
+		editAuthorTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				PopupPanel addAuthorDialog = new PopupPanel();
+				AuthorEditor aEditor = new AuthorEditor(authorSelection.getFromView().getSelectionModel().getSelectedItem(), new AuthorEditorListener() {
+					
+					@Override
+					public void editorCanceled() {
+						addAuthorDialog.hide();
+					}
+					
+					@Override
+					public void authorSaved(AuthorEntry authorEntry) {
+						addAuthorDialog.hide();
+					}
+				});
+				addAuthorDialog.add(aEditor);
+				addAuthorDialog.setModal(true);
+				addAuthorDialog.center();
+			}
+		});
 
 		/**
 		 * the author selection
 		 */
 		if (pubType.isAuthorEnabled()) {
-			DualListField<AuthorEntry, String> authorSelection = new DualListField<AuthorEntry, String>(authorListStore, selectedAuthorListStore,
+			authorSelection = new DualListField<AuthorEntry, String>(authorListStore, selectedAuthorListStore,
 					authorProps.name(), new TextCell());
 			authorSelection.setMode(Mode.INSERT);
 			authorSelection.setEnableDnd(true);
@@ -897,6 +922,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			authorFP.setHeading("Author");
 			authorFP.add(authorVLC);
 			authorFP.addTool(addAuthorTB);
+			authorFP.addTool(editAuthorTB);
 			secondTabVLC.add(authorFP, new VerticalLayoutData(1.0, .45));
 		}
 
