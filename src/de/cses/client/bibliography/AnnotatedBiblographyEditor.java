@@ -855,8 +855,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 			@Override
 			public void onSelect(SelectEvent event) {
-				Window.alert(
-						"Since authors can also be editors,\n newly added authors will\n appear in both author and editor selection.");
+				Util.showWarning("Information", "Since authors can also be editors,\n newly added authors will\n appear in both author and editor selection.");
 			}
 		});
 		
