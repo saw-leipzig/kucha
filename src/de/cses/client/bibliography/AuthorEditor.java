@@ -226,25 +226,40 @@ public class AuthorEditor implements IsWidget {
 
 			@Override
 			public void onSelect(SelectEvent event) {
-				if ((authorEntry.getAuthorID()==0 && institutionCB.getValue() && institutionTF.validate() && authorHomepageTF.validate()) || (authorLastNameTF.validate()
+				if ((institutionCB.getValue() && institutionTF.validate() && authorHomepageTF.validate()) || (authorLastNameTF.validate()
 						&& authorFirstNameTF.validate() && authorEmailTF.validate() && authorHomepageTF.validate())) {
-					dbService.insertAuthorEntry(authorEntry, new AsyncCallback<Integer>() {
-
-						@Override
-						public void onFailure(Throwable caught) {
-							closeEditor(false);
-						}
-
-						@Override
-						public void onSuccess(Integer result) {
-							if (result > 0) {
-								authorEntry.setAuthorID(result);
-								closeEditor(true);
-							} else {
+					if (authorEntry.getAuthorID()==0) {
+						dbService.insertAuthorEntry(authorEntry, new AsyncCallback<Integer>() {
+							
+							@Override
+							public void onFailure(Throwable caught) {
 								Util.showWarning("Add New Author", "Error while saving!");
 							}
-						}
-					});
+							
+							@Override
+							public void onSuccess(Integer result) {
+								if (result > 0) {
+									authorEntry.setAuthorID(result);
+									closeEditor(true);
+								} else {
+									Util.showWarning("Add New Author", "Error while saving!");
+								}
+							}
+						});
+					} else {
+						dbService.updateAuthorEntry(authorEntry, new AsyncCallback<Boolean>() {
+
+							@Override
+							public void onFailure(Throwable caught) {
+								Util.showWarning("Update Author", "Error while saving!");
+							}
+
+							@Override
+							public void onSuccess(Boolean result) {
+								closeEditor(true);
+							}
+						});
+					}
 				}
 			}
 		});
