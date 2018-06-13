@@ -949,6 +949,31 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			};
 			editorListFilterField.bind(editorListStore);
 			editorVLC.add(new FieldLabel(editorListFilterField, "Filter"), new VerticalLayoutData(.5, .15, new Margins(10, 0, 0, 0)));
+
+			ToolButton editEditorTB = new ToolButton(ToolButton.GEAR);
+			editEditorTB.addSelectHandler(new SelectHandler() {
+				
+				@Override
+				public void onSelect(SelectEvent event) {
+					PopupPanel addAuthorDialog = new PopupPanel();
+					AuthorEditor aEditor = new AuthorEditor(editorSelection.getFromView().getSelectionModel().getSelectedItem(), new AuthorEditorListener() {
+						
+						@Override
+						public void editorCanceled() {
+							addAuthorDialog.hide();
+						}
+						
+						@Override
+						public void authorSaved(AuthorEntry authorEntry) {
+							addAuthorDialog.hide();
+						}
+					});
+					addAuthorDialog.add(aEditor);
+					addAuthorDialog.setModal(true);
+					addAuthorDialog.center();
+				}
+			});
+			
 			FramedPanel editorFP = new FramedPanel();
 			editorFP.setHeading("Editor");
 			editorFP.add(editorVLC);
@@ -957,9 +982,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			} else {
 				editorFP.addTool(addAuthorTB);
 			}
+			editorFP.addTool(editEditorTB);
 			secondTabVLC.add(editorFP, new VerticalLayoutData(1.0, .45));
-
 		}
+		
 
 		/**
 		 * series
