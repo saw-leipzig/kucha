@@ -827,114 +827,23 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			@Override
 			public void onSelect(SelectEvent event) {
 				PopupPanel addAuthorDialog = new PopupPanel();
-				FramedPanel addAuthorFP = new FramedPanel();
-				addAuthorFP.setHeading("Add New Author/Editor");
-				TextField authorLastNameTF = new TextField();
-				authorLastNameTF.setAllowBlank(false);
-				authorLastNameTF.addValidator(new MaxLengthValidator(64));
-				authorLastNameTF.setAutoValidate(true);
-				authorLastNameTF.setWidth(300);
-				TextField authorFirstNameTF = new TextField();
-				authorFirstNameTF.setAllowBlank(true);
-				authorFirstNameTF.addValidator(new MaxLengthValidator(64));
-				authorFirstNameTF.setAutoValidate(true);
-				TextField institutionTF = new TextField();
-				institutionTF.setAllowBlank(false);
-				institutionTF.addValidator(new MaxLengthValidator(256));
-				institutionTF.setAutoValidate(true);
-				institutionTF.setEnabled(false);
-				CheckBox kuchaVisitorCB = new CheckBox();
-				kuchaVisitorCB.setBoxLabel("has visited Kucha");
-				kuchaVisitorCB.setValue(false);
-				TextField authorAffiliation = new TextField();
-				TextField authorEmailTF = new TextField();
-				authorEmailTF.addValidator(new RegExValidator(Util.REGEX_EMAIL_PATTERN, "please enter valid email address"));
-				authorEmailTF.setAutoValidate(true);
-				TextField authorHomepageTF = new TextField();
-				authorHomepageTF.addValidator(new RegExValidator(Util.REGEX_URL_PATTERN, "please enter valid URL"));
-				authorHomepageTF.setAutoValidate(true);
-				CheckBox institutionCB = new CheckBox();
-				institutionCB.setBoxLabel("is institution");
-				institutionCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-
+				AuthorEditor aEditor = new AuthorEditor(new AuthorEditorListener() {
+					
 					@Override
-					public void onValueChange(ValueChangeEvent<Boolean> event) {
-						if (event.getValue()) {
-							authorLastNameTF.reset();
-							authorLastNameTF.setEnabled(false);
-							authorFirstNameTF.reset();
-							authorFirstNameTF.setEnabled(false);
-							authorAffiliation.reset();
-							authorAffiliation.setEnabled(false);
-							authorEmailTF.reset();
-							authorEmailTF.setEnabled(false);
-							institutionTF.setEnabled(true);
-						} else {
-							authorLastNameTF.setEnabled(true);
-							authorFirstNameTF.setEnabled(true);
-							authorAffiliation.setEnabled(true);
-							authorEmailTF.setEnabled(true);
-							institutionTF.reset();
-							institutionTF.setEnabled(false);
-						}
+					public void editorCanceled() {
+						addAuthorDialog.hide();
 					}
-				});
-				VerticalLayoutContainer newAuthorVLC = new VerticalLayoutContainer();
-				newAuthorVLC.add(new FieldLabel(authorLastNameTF, "Surname"), new VerticalLayoutData(1.0, 1.0 / 8));
-				newAuthorVLC.add(new FieldLabel(authorFirstNameTF, "First Name"), new VerticalLayoutData(1.0, 1.0 / 8));
-				newAuthorVLC.add(new FieldLabel(authorAffiliation, "Affiliation"), new VerticalLayoutData(1.0, 1.0 / 8));
-				newAuthorVLC.add(new FieldLabel(authorEmailTF, "E-mail"), new VerticalLayoutData(1.0, 1.0 / 8));
-				newAuthorVLC.add(institutionCB, new VerticalLayoutData(1.0, 1.0 / 8));
-				newAuthorVLC.add(new FieldLabel(institutionTF, "Institution"), new VerticalLayoutData(1.0, 1.0 / 8));
-				newAuthorVLC.add(new FieldLabel(authorHomepageTF, "Homepage"), new VerticalLayoutData(1.0, 1.0 / 8));
-				newAuthorVLC.add(kuchaVisitorCB, new VerticalLayoutData(1.0, 1.0 / 8));
-				addAuthorFP.add(newAuthorVLC);
-				TextButton saveButton = new TextButton("save & close");
-				saveButton.addSelectHandler(new SelectHandler() {
-
+					
 					@Override
-					public void onSelect(SelectEvent event) {
-						if ((institutionCB.getValue() && institutionTF.validate() && authorHomepageTF.validate()) || (authorLastNameTF.validate()
-								&& authorFirstNameTF.validate() && authorEmailTF.validate() && authorHomepageTF.validate())) {
-							AuthorEntry authorEntry = new AuthorEntry(0, authorLastNameTF.getValue(), authorFirstNameTF.getValue(),
-									institutionTF.getValue(), kuchaVisitorCB.getValue(), authorAffiliation.getValue(), authorEmailTF.getValue(),
-									authorHomepageTF.getValue());
-							dbService.insertAuthorEntry(authorEntry, new AsyncCallback<Integer>() {
-
-								@Override
-								public void onFailure(Throwable caught) {
-									addAuthorDialog.hide();
-									Util.showWarning("Add New Author", "Error while saving!");
-								}
-
-								@Override
-								public void onSuccess(Integer result) {
-									addAuthorDialog.hide();
-									if (result > 0) {
-										authorEntry.setAuthorID(result);
-										if (authorEntry.getInstitution() == null) {
-											authorListStore.add(authorEntry);
-										}
-										editorListStore.add(authorEntry);
-									} else {
-										Util.showWarning("Add New Author", "Error while saving!");
-									}
-								}
-							});
+					public void authorSaved(AuthorEntry authorEntry) {
+						if (authorEntry.getInstitution() == null) {
+							authorListStore.add(authorEntry);
 						}
-					}
-				});
-				addAuthorFP.addButton(saveButton);
-				TextButton cancelButton = new TextButton("cancel");
-				cancelButton.addSelectHandler(new SelectHandler() {
-
-					@Override
-					public void onSelect(SelectEvent event) {
+						editorListStore.add(authorEntry);
 						addAuthorDialog.hide();
 					}
 				});
-				addAuthorFP.addButton(cancelButton);
-				addAuthorDialog.add(addAuthorFP);
+				addAuthorDialog.add(aEditor);
 				addAuthorDialog.setModal(true);
 				addAuthorDialog.center();
 			}

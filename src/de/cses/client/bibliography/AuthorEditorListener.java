@@ -22,5 +22,6 @@ import de.cses.shared.AuthorEntry;
 public interface AuthorEditorListener {
 	
 	public void authorSaved(AuthorEntry entry);
+	public void editorCanceled();
 
 }
