@@ -23,6 +23,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
@@ -220,12 +221,12 @@ public class AuthorEditor implements IsWidget {
 		
 		mainPanel.add(newAuthorVLC);
 
-		TextButton saveButton = new TextButton("save & close");
-		saveButton.addSelectHandler(new SelectHandler() {
+		ToolButton saveToolButton = new ToolButton(ToolButton.SAVE);
+		saveToolButton.addSelectHandler(new SelectHandler() {
 
 			@Override
 			public void onSelect(SelectEvent event) {
-				if ((institutionCB.getValue() && institutionTF.validate() && authorHomepageTF.validate()) || (authorLastNameTF.validate()
+				if ((authorEntry.getAuthorID()==0 && institutionCB.getValue() && institutionTF.validate() && authorHomepageTF.validate()) || (authorLastNameTF.validate()
 						&& authorFirstNameTF.validate() && authorEmailTF.validate() && authorHomepageTF.validate())) {
 					dbService.insertAuthorEntry(authorEntry, new AsyncCallback<Integer>() {
 
@@ -247,17 +248,17 @@ public class AuthorEditor implements IsWidget {
 				}
 			}
 		});
-		mainPanel.addButton(saveButton);
+		mainPanel.addTool(saveToolButton);
 		
-		TextButton cancelButton = new TextButton("cancel");
-		cancelButton.addSelectHandler(new SelectHandler() {
+		ToolButton cancelToolButton = new ToolButton(ToolButton.CLOSE);
+		cancelToolButton.addSelectHandler(new SelectHandler() {
 
 			@Override
 			public void onSelect(SelectEvent event) {
 				closeEditor(false);
 			}
 		});
-		mainPanel.addButton(cancelButton);
+		mainPanel.addTool(cancelToolButton);
 		
 		mainPanel.setWidth(450);
 	}
