@@ -24,8 +24,6 @@ import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.junit.JUnitMessageQueue.ClientStatus;
-import com.google.gwt.junit.client.impl.JUnitHost.ClientInfo;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
@@ -52,7 +50,6 @@ import com.sencha.gxt.widget.core.client.Dialog;
 import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.TabPanel;
-import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
@@ -453,7 +450,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				bibEntry.setTitleORG(event.getValue());
 			}
 		});
-		titleORG.setAllowBlank(false);
+		titleORG.setAllowBlank(false); // at least the original title should be put in
 		titleORG.addValidator(new MaxLengthValidator(256));
 		TextField titleTR = new TextField();
 		titleTR.setText(bibEntry.getTitleTR());
@@ -479,46 +476,48 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		/**
 		 * some publication types have a addon to the title
 		 */
-		TextField titleaddonEN = new TextField();
-		titleaddonEN.setText(bibEntry.getTitleaddonEN());
-		titleaddonEN.addValueChangeHandler(new ValueChangeHandler<String>() {
-
-			@Override
-			public void onValueChange(ValueChangeEvent<String> event) {
-				bibEntry.setTitleaddonEN(event.getValue());
-			}
-		});
-		titleaddonEN.addValidator(new MaxLengthValidator(256));
-		TextField titleaddonORG = new TextField();
-		titleaddonORG.setText(bibEntry.getTitleaddonORG());
-		titleaddonORG.addValueChangeHandler(new ValueChangeHandler<String>() {
-
-			@Override
-			public void onValueChange(ValueChangeEvent<String> event) {
-				bibEntry.setTitleaddonORG(event.getValue());
-			}
-		});
-		titleaddonORG.addValidator(new MaxLengthValidator(256));
-		TextField titleaddonTR = new TextField();
-		titleaddonTR.setText(bibEntry.getTitleaddonTR());
-		titleaddonTR.addValueChangeHandler(new ValueChangeHandler<String>() {
-
-			@Override
-			public void onValueChange(ValueChangeEvent<String> event) {
-				bibEntry.setTitleaddonTR(event.getValue());
-			}
-		});
-		titleaddonTR.addValidator(new MaxLengthValidator(256));
-
-		VerticalLayoutContainer titleAddonVLC = new VerticalLayoutContainer();
-		titleAddonVLC.add(new FieldLabel(titleaddonORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
-		titleAddonVLC.add(new FieldLabel(titleaddonEN, "English Transl."), new VerticalLayoutData(1.0, 1.0 / 3));
-		titleAddonVLC.add(new FieldLabel(titleaddonTR, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
-
-		FramedPanel titleAddonFP = new FramedPanel();
-		titleAddonFP.setHeading("Titleaddon");
-		titleAddonFP.add(titleAddonVLC);
-		firstTabInnerLeftVLC.add(titleAddonFP, new VerticalLayoutData(1.0, 1.0 / 5));
+		if (pubType.isTitleAddonEnabled()) {
+			TextField titleaddonEN = new TextField();
+			titleaddonEN.setText(bibEntry.getTitleaddonEN());
+			titleaddonEN.addValueChangeHandler(new ValueChangeHandler<String>() {
+				
+				@Override
+				public void onValueChange(ValueChangeEvent<String> event) {
+					bibEntry.setTitleaddonEN(event.getValue());
+				}
+			});
+			titleaddonEN.addValidator(new MaxLengthValidator(256));
+			TextField titleaddonORG = new TextField();
+			titleaddonORG.setText(bibEntry.getTitleaddonORG());
+			titleaddonORG.addValueChangeHandler(new ValueChangeHandler<String>() {
+				
+				@Override
+				public void onValueChange(ValueChangeEvent<String> event) {
+					bibEntry.setTitleaddonORG(event.getValue());
+				}
+			});
+			titleaddonORG.addValidator(new MaxLengthValidator(256));
+			TextField titleaddonTR = new TextField();
+			titleaddonTR.setText(bibEntry.getTitleaddonTR());
+			titleaddonTR.addValueChangeHandler(new ValueChangeHandler<String>() {
+				
+				@Override
+				public void onValueChange(ValueChangeEvent<String> event) {
+					bibEntry.setTitleaddonTR(event.getValue());
+				}
+			});
+			titleaddonTR.addValidator(new MaxLengthValidator(256));
+			
+			VerticalLayoutContainer titleAddonVLC = new VerticalLayoutContainer();
+			titleAddonVLC.add(new FieldLabel(titleaddonORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
+			titleAddonVLC.add(new FieldLabel(titleaddonEN, "English Transl."), new VerticalLayoutData(1.0, 1.0 / 3));
+			titleAddonVLC.add(new FieldLabel(titleaddonTR, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
+			
+			FramedPanel titleAddonFP = new FramedPanel();
+			titleAddonFP.setHeading("Titleaddon");
+			titleAddonFP.add(titleAddonVLC);
+			firstTabInnerLeftVLC.add(titleAddonFP, new VerticalLayoutData(1.0, 1.0 / 5));
+		}
 
 		/**
 		 * the parent title (i.e. Book Title, Journal Name, Conference Name, Proceedings Title, etc
