@@ -261,7 +261,7 @@ public class MysqlConnector {
 			pstmt.setString(2, entry.getTitle());
 			pstmt.setString(3, entry.getShortName());
 			pstmt.setString(4, entry.getCopyright());
-			pstmt.setInt(5, entry.getPhotographerID());
+			pstmt.setInt(5, entry.getImageAuthor().getPhotographerID());
 			pstmt.setString(6, entry.getComment());
 			pstmt.setString(7, entry.getDate());
 			pstmt.setInt(8, entry.getImageTypeID());
@@ -490,7 +490,7 @@ public class MysqlConnector {
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
 				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
-						rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
+						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
 						rs.getBoolean("OpenAccess")));
 			}
 			rs.close();
@@ -516,7 +516,7 @@ public class MysqlConnector {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Images WHERE ImageID=" + imageID);
 			if (rs.first()) {
 				result = new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
-						rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
+						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
 						rs.getBoolean("OpenAccess"));
 			}
 			rs.close();
@@ -549,6 +549,30 @@ public class MysqlConnector {
 			return null;
 		}
 		return results;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public PhotographerEntry getPhotographerEntry(int id) {
+		PhotographerEntry result = null;
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM Photographers WHERE PhotographerID=?");
+			pstmt.setInt(1, id);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.first()) {
+				result = new PhotographerEntry(rs.getInt("PhotographerID"), rs.getString("Name"), rs.getString("Institution"));
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return result;
 	}
 
 	public ArrayList<CaveEntry> getCaves() {
@@ -1274,7 +1298,7 @@ public class MysqlConnector {
 					"SELECT * FROM Images WHERE ImageID IN (SELECT ImageID FROM DepictionImageRelation WHERE DepictionID=" + depictionID + ")");
 			while (rs.next()) {
 				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
-						rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
+						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
 						rs.getBoolean("OpenAccess")));
 			}
 			rs.close();
@@ -1427,7 +1451,7 @@ public class MysqlConnector {
 			pstmt.setString(2, entry.getTitle());
 			pstmt.setString(3, entry.getShortName());
 			pstmt.setString(4, entry.getCopyright());
-			pstmt.setInt(5, entry.getPhotographerID());
+			pstmt.setInt(5, entry.getImageAuthor().getPhotographerID());
 			pstmt.setString(6, entry.getComment());
 			pstmt.setString(7, entry.getDate());
 			pstmt.setInt(8, entry.getImageTypeID());
@@ -3608,7 +3632,7 @@ public class MysqlConnector {
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
 				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
-						rs.getString("Copyright"), rs.getInt("PhotographerID"), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
+						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
 						rs.getBoolean("OpenAccess")));
 			}
 			rs.close();

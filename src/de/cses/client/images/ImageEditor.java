@@ -237,7 +237,7 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 					copyrightArea.setValue(selectedImageItem.getCopyright());
 					commentArea.setValue(selectedImageItem.getComment());
 					dateField.setValue(selectedImageItem.getDate());
-					photographerSelection.setValue(photographerEntryList.findModelWithKey(Integer.toString(selectedImageItem.getPhotographerID())), true);
+					photographerSelection.setValue(selectedImageItem.getImageAuthor(), true);
 					imageTypeSelection.setValue(imageTypeEntryList.findModelWithKey(Integer.toString(selectedImageItem.getImageTypeID())));
 				}
 			}
@@ -553,7 +553,7 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 				selectedItem.setCopyright(copyrightArea.getCurrentValue());
 				selectedItem.setComment(commentArea.getCurrentValue());
 				selectedItem.setDate(dateField.getCurrentValue());
-				selectedItem.setPhotographerID(photographerSelection.getCurrentValue()!=null ? photographerSelection.getCurrentValue().getPhotographerID() : 0);
+				selectedItem.setImageAuthor(photographerSelection.getCurrentValue());
 				selectedItem.setImageTypeID(imageTypeSelection.getCurrentValue().getImageTypeID());
 				dbService.updateImageEntry(selectedItem, new AsyncCallback<Boolean>() {
 					public void onFailure(Throwable caught) {

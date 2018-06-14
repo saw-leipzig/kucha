@@ -15,14 +15,15 @@ package de.cses.shared;
 
 public class ImageEntry extends AbstractEntry {
 
-	private int imageID, photographerID, imageTypeID;
+	private int imageID, imageTypeID;
+	private PhotographerEntry imageAuthor;
 	private String copyright, comment, filename, title, shortName, date;
 //	private boolean publicImage;
 
 	public static final int FILENAME = 2;
 
 	public ImageEntry() {
-		this(0, "", "", "", "", 0, "", "", 1, false);
+		this(0, "", "", "", "", null, "", "", 1, false);
 	}
 	
 	/**
@@ -36,14 +37,14 @@ public class ImageEntry extends AbstractEntry {
 	 * @param captureDate
 	 */
 	public ImageEntry(int imageID, String filename, String title, String shortName, String copyright,
-			int photographerID, String comment, String date, int imageTypeID, boolean openAccess) {
+			PhotographerEntry imageAuthor, String comment, String date, int imageTypeID, boolean openAccess) {
 		super(openAccess);
 		this.imageID = imageID;
 		this.filename = filename;
 		this.title = title;
 		this.shortName = shortName;
 		this.copyright = copyright;
-		this.photographerID = photographerID;
+		this.setImageAuthor(imageAuthor);
 		this.comment = comment;
 		this.date = date;
 		this.setImageTypeID(imageTypeID);
@@ -71,14 +72,6 @@ public class ImageEntry extends AbstractEntry {
 
 	public void setTitle(String title) {
 		this.title = title;
-	}
-
-	public int getPhotographerID() {
-		return photographerID;
-	}
-
-	public void setPhotographerID(int photographerID) {
-		this.photographerID = photographerID;
 	}
 
 	public String getCopyright() {
@@ -160,6 +153,14 @@ public class ImageEntry extends AbstractEntry {
 	 */
 	public void setImageTypeID(int imageTypeID) {
 		this.imageTypeID = imageTypeID;
+	}
+
+	public PhotographerEntry getImageAuthor() {
+		return imageAuthor;
+	}
+
+	public void setImageAuthor(PhotographerEntry imageAuthor) {
+		this.imageAuthor = imageAuthor;
 	}
 
 //	/**
