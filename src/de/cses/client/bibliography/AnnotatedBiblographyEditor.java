@@ -111,6 +111,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 	private StoreFilterField<AuthorEntry> editorListFilterField;
 	private DocumentLinkTemplate documentLinkTemplate;
 	private DualListField<AuthorEntry, String> authorSelection;
+	private ComboBox<AnnotatedBiblographyEntry> firstEditionComboBox;
 
 //	interface PublisherViewTemplates extends XTemplates {
 //		@XTemplate("<div>{name}</div>")
@@ -359,6 +360,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					public void onSuccess(ArrayList<AnnotatedBiblographyEntry> result) {
 						for (AnnotatedBiblographyEntry ae : result) {
 							firstEditionBiblographyEntryLS.add(ae);
+						}
+						if (bibEntry.getFirstEditionBibID() > 0) {
+							firstEditionComboBox.setValue(firstEditionBiblographyEntryLS.findModelWithKey(Integer.toString(bibEntry.getFirstEditionBibID())));
 						}
 					}
 				});
@@ -1415,7 +1419,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		/**
 		 * first edition
 		 */
-		ComboBox<AnnotatedBiblographyEntry> firstEditionComboBox = new ComboBox<AnnotatedBiblographyEntry>(firstEditionBiblographyEntryLS,
+		firstEditionComboBox = new ComboBox<AnnotatedBiblographyEntry>(firstEditionBiblographyEntryLS,
 				annotatedBiblographyEntryProps.label(), new AbstractSafeHtmlRenderer<AnnotatedBiblographyEntry>() {
 
 					@Override
@@ -1446,7 +1450,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		if (bibEntry.getFirstEditionBibID() > 0) {
 			firstEditionCB.setValue(true);
 			firstEditionComboBox.setEnabled(true);
-			firstEditionComboBox.setValue(firstEditionBiblographyEntryLS.findModelWithKey(Integer.toString(bibEntry.getFirstEditionBibID())));
+//			firstEditionComboBox.setValue(firstEditionBiblographyEntryLS.findModelWithKey(Integer.toString(bibEntry.getFirstEditionBibID())));
 		} else {
 			firstEditionCB.setValue(false);
 			firstEditionComboBox.setEnabled(false);
