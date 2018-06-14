@@ -124,8 +124,14 @@ public class AuthorEditor implements IsWidget {
 
 		CheckBox kuchaVisitorCB = new CheckBox();
 		kuchaVisitorCB.setBoxLabel("has visited Kucha");
-		kuchaVisitorCB.setValue(false);
-		
+		kuchaVisitorCB.setValue(authorEntry.isKuchaVisitor());
+		kuchaVisitorCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				authorEntry.setKuchaVisitor(event.getValue());
+			}
+		});
 		
 		TextField authorAffiliation = new TextField();
 		authorAffiliation.setValue(authorEntry.getAffiliation());
