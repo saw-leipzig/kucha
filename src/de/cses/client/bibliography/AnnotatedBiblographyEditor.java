@@ -172,10 +172,14 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 	public void save(boolean close) {
 
-		authorListFilterField.clear();
-		authorListFilterField.validate();
-		editorListFilterField.clear();
-		editorListFilterField.validate();
+		if (authorListFilterField != null) {
+			authorListFilterField.clear();
+			authorListFilterField.validate();
+		}
+		if (editorListFilterField != null) {
+			editorListFilterField.clear();
+			editorListFilterField.validate();
+		}
 
 		ArrayList<AuthorEntry> selectedAuthorsList = new ArrayList<AuthorEntry>();
 		for (AuthorEntry ae : selectedAuthorListStore.getAll()) {
