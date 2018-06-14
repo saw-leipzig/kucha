@@ -24,8 +24,6 @@ import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.junit.JUnitMessageQueue.ClientStatus;
-import com.google.gwt.junit.client.impl.JUnitHost.ClientInfo;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
@@ -52,7 +50,6 @@ import com.sencha.gxt.widget.core.client.Dialog;
 import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.TabPanel;
-import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
@@ -113,6 +110,8 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 	private StoreFilterField<AuthorEntry> authorListFilterField;
 	private StoreFilterField<AuthorEntry> editorListFilterField;
 	private DocumentLinkTemplate documentLinkTemplate;
+	private DualListField<AuthorEntry, String> authorSelection;
+	private ComboBox<AnnotatedBiblographyEntry> firstEditionComboBox;
 
 //	interface PublisherViewTemplates extends XTemplates {
 //		@XTemplate("<div>{name}</div>")
@@ -171,10 +170,14 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 	public void save(boolean close) {
 
-		authorListFilterField.clear();
-		authorListFilterField.validate();
-		editorListFilterField.clear();
-		editorListFilterField.validate();
+		if (authorListFilterField != null) {
+			authorListFilterField.clear();
+			authorListFilterField.validate();
+		}
+		if (editorListFilterField != null) {
+			editorListFilterField.clear();
+			editorListFilterField.validate();
+		}
 
 		ArrayList<AuthorEntry> selectedAuthorsList = new ArrayList<AuthorEntry>();
 		for (AuthorEntry ae : selectedAuthorListStore.getAll()) {
@@ -214,7 +217,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				@Override
 				public void onFailure(Throwable caught) {
 					caught.printStackTrace();
-					Window.alert("Error while saving!");
+					Util.showWarning("Error", "A problem occured while saving!");
 				}
 
 				@Override
@@ -358,6 +361,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 						for (AnnotatedBiblographyEntry ae : result) {
 							firstEditionBiblographyEntryLS.add(ae);
 						}
+						if (bibEntry.getFirstEditionBibID() > 0) {
+							firstEditionComboBox.setValue(firstEditionBiblographyEntryLS.findModelWithKey(Integer.toString(bibEntry.getFirstEditionBibID())));
+						}
 					}
 				});
 	}
@@ -448,7 +454,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				bibEntry.setTitleORG(event.getValue());
 			}
 		});
-		titleORG.setAllowBlank(false);
+		titleORG.setAllowBlank(false); // at least the original title should be put in
 		titleORG.addValidator(new MaxLengthValidator(256));
 		TextField titleTR = new TextField();
 		titleTR.setText(bibEntry.getTitleTR());
@@ -474,46 +480,48 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		/**
 		 * some publication types have a addon to the title
 		 */
-		TextField titleaddonEN = new TextField();
-		titleaddonEN.setText(bibEntry.getTitleaddonEN());
-		titleaddonEN.addValueChangeHandler(new ValueChangeHandler<String>() {
-
-			@Override
-			public void onValueChange(ValueChangeEvent<String> event) {
-				bibEntry.setTitleaddonEN(event.getValue());
-			}
-		});
-		titleaddonEN.addValidator(new MaxLengthValidator(256));
-		TextField titleaddonORG = new TextField();
-		titleaddonORG.setText(bibEntry.getTitleaddonORG());
-		titleaddonORG.addValueChangeHandler(new ValueChangeHandler<String>() {
-
-			@Override
-			public void onValueChange(ValueChangeEvent<String> event) {
-				bibEntry.setTitleaddonORG(event.getValue());
-			}
-		});
-		titleaddonORG.addValidator(new MaxLengthValidator(256));
-		TextField titleaddonTR = new TextField();
-		titleaddonTR.setText(bibEntry.getTitleaddonTR());
-		titleaddonTR.addValueChangeHandler(new ValueChangeHandler<String>() {
-
-			@Override
-			public void onValueChange(ValueChangeEvent<String> event) {
-				bibEntry.setTitleaddonTR(event.getValue());
-			}
-		});
-		titleaddonTR.addValidator(new MaxLengthValidator(256));
-
-		VerticalLayoutContainer titleAddonVLC = new VerticalLayoutContainer();
-		titleAddonVLC.add(new FieldLabel(titleaddonORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
-		titleAddonVLC.add(new FieldLabel(titleaddonEN, "English Transl."), new VerticalLayoutData(1.0, 1.0 / 3));
-		titleAddonVLC.add(new FieldLabel(titleaddonTR, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
-
-		FramedPanel titleAddonFP = new FramedPanel();
-		titleAddonFP.setHeading("Titleaddon");
-		titleAddonFP.add(titleAddonVLC);
-		firstTabInnerLeftVLC.add(titleAddonFP, new VerticalLayoutData(1.0, 1.0 / 5));
+		if (pubType.isTitleAddonEnabled()) {
+			TextField titleaddonEN = new TextField();
+			titleaddonEN.setText(bibEntry.getTitleaddonEN());
+			titleaddonEN.addValueChangeHandler(new ValueChangeHandler<String>() {
+				
+				@Override
+				public void onValueChange(ValueChangeEvent<String> event) {
+					bibEntry.setTitleaddonEN(event.getValue());
+				}
+			});
+			titleaddonEN.addValidator(new MaxLengthValidator(256));
+			TextField titleaddonORG = new TextField();
+			titleaddonORG.setText(bibEntry.getTitleaddonORG());
+			titleaddonORG.addValueChangeHandler(new ValueChangeHandler<String>() {
+				
+				@Override
+				public void onValueChange(ValueChangeEvent<String> event) {
+					bibEntry.setTitleaddonORG(event.getValue());
+				}
+			});
+			titleaddonORG.addValidator(new MaxLengthValidator(256));
+			TextField titleaddonTR = new TextField();
+			titleaddonTR.setText(bibEntry.getTitleaddonTR());
+			titleaddonTR.addValueChangeHandler(new ValueChangeHandler<String>() {
+				
+				@Override
+				public void onValueChange(ValueChangeEvent<String> event) {
+					bibEntry.setTitleaddonTR(event.getValue());
+				}
+			});
+			titleaddonTR.addValidator(new MaxLengthValidator(256));
+			
+			VerticalLayoutContainer titleAddonVLC = new VerticalLayoutContainer();
+			titleAddonVLC.add(new FieldLabel(titleaddonORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
+			titleAddonVLC.add(new FieldLabel(titleaddonEN, "English Transl."), new VerticalLayoutData(1.0, 1.0 / 3));
+			titleAddonVLC.add(new FieldLabel(titleaddonTR, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
+			
+			FramedPanel titleAddonFP = new FramedPanel();
+			titleAddonFP.setHeading("Titleaddon");
+			titleAddonFP.add(titleAddonVLC);
+			firstTabInnerLeftVLC.add(titleAddonFP, new VerticalLayoutData(1.0, 1.0 / 5));
+		}
 
 		/**
 		 * the parent title (i.e. Book Title, Journal Name, Conference Name, Proceedings Title, etc
@@ -827,114 +835,23 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			@Override
 			public void onSelect(SelectEvent event) {
 				PopupPanel addAuthorDialog = new PopupPanel();
-				FramedPanel addAuthorFP = new FramedPanel();
-				addAuthorFP.setHeading("Add New Author/Editor");
-				TextField authorLastNameTF = new TextField();
-				authorLastNameTF.setAllowBlank(false);
-				authorLastNameTF.addValidator(new MaxLengthValidator(64));
-				authorLastNameTF.setAutoValidate(true);
-				authorLastNameTF.setWidth(300);
-				TextField authorFirstNameTF = new TextField();
-				authorFirstNameTF.setAllowBlank(true);
-				authorFirstNameTF.addValidator(new MaxLengthValidator(64));
-				authorFirstNameTF.setAutoValidate(true);
-				TextField institutionTF = new TextField();
-				institutionTF.setAllowBlank(false);
-				institutionTF.addValidator(new MaxLengthValidator(256));
-				institutionTF.setAutoValidate(true);
-				institutionTF.setEnabled(false);
-				CheckBox kuchaVisitorCB = new CheckBox();
-				kuchaVisitorCB.setBoxLabel("has visited Kucha");
-				kuchaVisitorCB.setValue(false);
-				TextField authorAffiliation = new TextField();
-				TextField authorEmailTF = new TextField();
-				authorEmailTF.addValidator(new RegExValidator(Util.REGEX_EMAIL_PATTERN, "please enter valid email address"));
-				authorEmailTF.setAutoValidate(true);
-				TextField authorHomepageTF = new TextField();
-				authorHomepageTF.addValidator(new RegExValidator(Util.REGEX_URL_PATTERN, "please enter valid URL"));
-				authorHomepageTF.setAutoValidate(true);
-				CheckBox institutionCB = new CheckBox();
-				institutionCB.setBoxLabel("is institution");
-				institutionCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-
+				AuthorEditor aEditor = new AuthorEditor(new AuthorEditorListener() {
+					
 					@Override
-					public void onValueChange(ValueChangeEvent<Boolean> event) {
-						if (event.getValue()) {
-							authorLastNameTF.reset();
-							authorLastNameTF.setEnabled(false);
-							authorFirstNameTF.reset();
-							authorFirstNameTF.setEnabled(false);
-							authorAffiliation.reset();
-							authorAffiliation.setEnabled(false);
-							authorEmailTF.reset();
-							authorEmailTF.setEnabled(false);
-							institutionTF.setEnabled(true);
-						} else {
-							authorLastNameTF.setEnabled(true);
-							authorFirstNameTF.setEnabled(true);
-							authorAffiliation.setEnabled(true);
-							authorEmailTF.setEnabled(true);
-							institutionTF.reset();
-							institutionTF.setEnabled(false);
-						}
+					public void editorCanceled() {
+						addAuthorDialog.hide();
 					}
-				});
-				VerticalLayoutContainer newAuthorVLC = new VerticalLayoutContainer();
-				newAuthorVLC.add(new FieldLabel(authorLastNameTF, "Surname"), new VerticalLayoutData(1.0, 1.0 / 8));
-				newAuthorVLC.add(new FieldLabel(authorFirstNameTF, "First Name"), new VerticalLayoutData(1.0, 1.0 / 8));
-				newAuthorVLC.add(new FieldLabel(authorAffiliation, "Affiliation"), new VerticalLayoutData(1.0, 1.0 / 8));
-				newAuthorVLC.add(new FieldLabel(authorEmailTF, "E-mail"), new VerticalLayoutData(1.0, 1.0 / 8));
-				newAuthorVLC.add(institutionCB, new VerticalLayoutData(1.0, 1.0 / 8));
-				newAuthorVLC.add(new FieldLabel(institutionTF, "Institution"), new VerticalLayoutData(1.0, 1.0 / 8));
-				newAuthorVLC.add(new FieldLabel(authorHomepageTF, "Homepage"), new VerticalLayoutData(1.0, 1.0 / 8));
-				newAuthorVLC.add(kuchaVisitorCB, new VerticalLayoutData(1.0, 1.0 / 8));
-				addAuthorFP.add(newAuthorVLC);
-				TextButton saveButton = new TextButton("save & close");
-				saveButton.addSelectHandler(new SelectHandler() {
-
+					
 					@Override
-					public void onSelect(SelectEvent event) {
-						if ((institutionCB.getValue() && institutionTF.validate() && authorHomepageTF.validate()) || (authorLastNameTF.validate()
-								&& authorFirstNameTF.validate() && authorEmailTF.validate() && authorHomepageTF.validate())) {
-							AuthorEntry authorEntry = new AuthorEntry(0, authorLastNameTF.getValue(), authorFirstNameTF.getValue(),
-									institutionTF.getValue(), kuchaVisitorCB.getValue(), authorAffiliation.getValue(), authorEmailTF.getValue(),
-									authorHomepageTF.getValue());
-							dbService.insertAuthorEntry(authorEntry, new AsyncCallback<Integer>() {
-
-								@Override
-								public void onFailure(Throwable caught) {
-									addAuthorDialog.hide();
-									Util.showWarning("Add New Author", "Error while saving!");
-								}
-
-								@Override
-								public void onSuccess(Integer result) {
-									addAuthorDialog.hide();
-									if (result > 0) {
-										authorEntry.setAuthorID(result);
-										if (authorEntry.getInstitution() == null) {
-											authorListStore.add(authorEntry);
-										}
-										editorListStore.add(authorEntry);
-									} else {
-										Util.showWarning("Add New Author", "Error while saving!");
-									}
-								}
-							});
+					public void authorSaved(AuthorEntry authorEntry) {
+						if (authorEntry.getInstitution() == null) {
+							authorListStore.add(authorEntry);
 						}
-					}
-				});
-				addAuthorFP.addButton(saveButton);
-				TextButton cancelButton = new TextButton("cancel");
-				cancelButton.addSelectHandler(new SelectHandler() {
-
-					@Override
-					public void onSelect(SelectEvent event) {
+						editorListStore.add(authorEntry);
 						addAuthorDialog.hide();
 					}
 				});
-				addAuthorFP.addButton(cancelButton);
-				addAuthorDialog.add(addAuthorFP);
+				addAuthorDialog.add(aEditor);
 				addAuthorDialog.setModal(true);
 				addAuthorDialog.center();
 			}
@@ -945,8 +862,31 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 			@Override
 			public void onSelect(SelectEvent event) {
-				Window.alert(
-						"Since authors can also be editors,\n newly added authors will\n appear in both author and editor selection.");
+				Util.showWarning("Information", "Since authors can also be editors,\n newly added authors will\n appear in both author and editor selection.");
+			}
+		});
+		
+		ToolButton editAuthorTB = new ToolButton(ToolButton.GEAR);
+		editAuthorTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				PopupPanel addAuthorDialog = new PopupPanel();
+				AuthorEditor aEditor = new AuthorEditor(authorSelection.getFromView().getSelectionModel().getSelectedItem(), new AuthorEditorListener() {
+					
+					@Override
+					public void editorCanceled() {
+						addAuthorDialog.hide();
+					}
+					
+					@Override
+					public void authorSaved(AuthorEntry authorEntry) {
+						addAuthorDialog.hide();
+					}
+				});
+				addAuthorDialog.add(aEditor);
+				addAuthorDialog.setModal(true);
+				addAuthorDialog.center();
 			}
 		});
 
@@ -954,7 +894,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		 * the author selection
 		 */
 		if (pubType.isAuthorEnabled()) {
-			DualListField<AuthorEntry, String> authorSelection = new DualListField<AuthorEntry, String>(authorListStore, selectedAuthorListStore,
+			authorSelection = new DualListField<AuthorEntry, String>(authorListStore, selectedAuthorListStore,
 					authorProps.name(), new TextCell());
 			authorSelection.setMode(Mode.INSERT);
 			authorSelection.setEnableDnd(true);
@@ -988,6 +928,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			authorFP.setHeading("Author");
 			authorFP.add(authorVLC);
 			authorFP.addTool(addAuthorTB);
+			authorFP.addTool(editAuthorTB);
 			secondTabVLC.add(authorFP, new VerticalLayoutData(1.0, .45));
 		}
 
@@ -1014,6 +955,31 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			};
 			editorListFilterField.bind(editorListStore);
 			editorVLC.add(new FieldLabel(editorListFilterField, "Filter"), new VerticalLayoutData(.5, .15, new Margins(10, 0, 0, 0)));
+
+			ToolButton editEditorTB = new ToolButton(ToolButton.GEAR);
+			editEditorTB.addSelectHandler(new SelectHandler() {
+				
+				@Override
+				public void onSelect(SelectEvent event) {
+					PopupPanel addAuthorDialog = new PopupPanel();
+					AuthorEditor aEditor = new AuthorEditor(editorSelection.getFromView().getSelectionModel().getSelectedItem(), new AuthorEditorListener() {
+						
+						@Override
+						public void editorCanceled() {
+							addAuthorDialog.hide();
+						}
+						
+						@Override
+						public void authorSaved(AuthorEntry authorEntry) {
+							addAuthorDialog.hide();
+						}
+					});
+					addAuthorDialog.add(aEditor);
+					addAuthorDialog.setModal(true);
+					addAuthorDialog.center();
+				}
+			});
+			
 			FramedPanel editorFP = new FramedPanel();
 			editorFP.setHeading("Editor");
 			editorFP.add(editorVLC);
@@ -1022,9 +988,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			} else {
 				editorFP.addTool(addAuthorTB);
 			}
+			editorFP.addTool(editEditorTB);
 			secondTabVLC.add(editorFP, new VerticalLayoutData(1.0, .45));
-
 		}
+		
 
 		/**
 		 * series
@@ -1452,7 +1419,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		/**
 		 * first edition
 		 */
-		ComboBox<AnnotatedBiblographyEntry> firstEditionComboBox = new ComboBox<AnnotatedBiblographyEntry>(firstEditionBiblographyEntryLS,
+		firstEditionComboBox = new ComboBox<AnnotatedBiblographyEntry>(firstEditionBiblographyEntryLS,
 				annotatedBiblographyEntryProps.label(), new AbstractSafeHtmlRenderer<AnnotatedBiblographyEntry>() {
 
 					@Override
@@ -1483,7 +1450,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		if (bibEntry.getFirstEditionBibID() > 0) {
 			firstEditionCB.setValue(true);
 			firstEditionComboBox.setEnabled(true);
-			firstEditionComboBox.setValue(firstEditionBiblographyEntryLS.findModelWithKey(Integer.toString(bibEntry.getFirstEditionBibID())));
+//			firstEditionComboBox.setValue(firstEditionBiblographyEntryLS.findModelWithKey(Integer.toString(bibEntry.getFirstEditionBibID())));
 		} else {
 			firstEditionCB.setValue(false);
 			firstEditionComboBox.setEnabled(false);

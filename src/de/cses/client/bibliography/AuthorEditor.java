@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 
+ * Copyright 2016 - 2018
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -13,29 +13,30 @@
  */
 package de.cses.client.bibliography;
 
-import java.sql.Date;
-import java.util.ArrayList;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.Dialog;
 import com.sencha.gxt.widget.core.client.FramedPanel;
-import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
-import com.sencha.gxt.widget.core.client.form.DateField;
-import com.sencha.gxt.widget.core.client.form.DateTimePropertyEditor;
+import com.sencha.gxt.widget.core.client.form.CheckBox;
+import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
+import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.Util;
 import de.cses.shared.AuthorEntry;
 
 /**
@@ -45,42 +46,20 @@ import de.cses.shared.AuthorEntry;
 public class AuthorEditor implements IsWidget {
 
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
-	private AuthorEntry currentAuthorEntry = null;
+	private AuthorEntry authorEntry = null;
 	private FramedPanel mainPanel = null;
-	private TextField lastnameField, firstnameField, emailField, homepageField;
-	private DateField kuchaVisitDateField;
-	private TextArea affiliationArea;
-	private ArrayList<AuthorEditorListener> listenerList;
+	private AuthorEditorListener listener;
+	
+	public AuthorEditor(AuthorEditorListener listener) {
+		this(new AuthorEntry(), listener);
+	}
 
 	/**
 	 * 
 	 */
-	public AuthorEditor(int authorID, AuthorEditorListener listener) {
-		listenerList = new ArrayList<AuthorEditorListener>();
-		listenerList.add(listener);
-		if (authorID > 0) {
-			loadAuthor(authorID);
-		} else {
-			currentAuthorEntry = new AuthorEntry();
-		}
-	}
-
-	/**
-	 * @param authorID
-	 */
-	public void loadAuthor(int authorID) {
-		dbService.getAuthorEntry(authorID, new AsyncCallback<AuthorEntry>() {
-
-			@Override
-			public void onSuccess(AuthorEntry result) {
-				currentAuthorEntry = result;
-			}
-
-			@Override
-			public void onFailure(Throwable caught) {
-				currentAuthorEntry = null;
-			}
-		});
+	public AuthorEditor(AuthorEntry authorEntry, AuthorEditorListener listener) {
+		this.listener = listener;
+		this.authorEntry = authorEntry;
 	}
 
 	/*
@@ -93,21 +72,14 @@ public class AuthorEditor implements IsWidget {
 		if (mainPanel == null) {
 			initUI();
 		}
-		setAuthorValues();
 		return mainPanel;
 	}
-
-	/**
-	 * 
-	 */
-	private void setAuthorValues() {
-		if (currentAuthorEntry.getAuthorID() > 0) {
-			lastnameField.setValue(currentAuthorEntry.getLastname());
-			firstnameField.setValue(currentAuthorEntry.getFirstname());
-//			kuchaVisitDateField.setValue(currentAuthorEntry.getKuchaVisitDate());
-			affiliationArea.setValue(currentAuthorEntry.getAffiliation());
-			emailField.setValue(currentAuthorEntry.getEmail());
-			homepageField.setValue(currentAuthorEntry.getHomepage());
+	
+	private void closeEditor(boolean saved) {
+		if (saved) {
+			listener.authorSaved(authorEntry);
+		} else {
+			listener.editorCanceled();
 		}
 	}
 
@@ -116,159 +88,231 @@ public class AuthorEditor implements IsWidget {
 	 */
 	private void initUI() {
 		mainPanel = new FramedPanel();
-		mainPanel.setHeading("Author Editor");
 
-		VerticalPanel vPanel = new VerticalPanel();
-
-		ContentPanel cp = new ContentPanel();
-		cp.setHeading("Last name");
-		lastnameField = new TextField();
-		lastnameField.setEmptyText("enter last name");
-		lastnameField.setAllowBlank(false);
-		lastnameField.setWidth(200);
-		lastnameField.addValueChangeHandler(new ValueChangeHandler<String>() {
-			
-			@Override
-			public void onValueChange(ValueChangeEvent<String> event) {
-				currentAuthorEntry.setLastname(event.getValue());;
-			}
-		});
-		cp.add(lastnameField);
-		vPanel.add(cp);
-
-		cp = new ContentPanel();
-		cp.setHeading("First name");
-		firstnameField = new TextField();
-		firstnameField.setEmptyText("enter first name");
-		firstnameField.setWidth(200);
-		firstnameField.addValueChangeHandler(new ValueChangeHandler<String>() {
-
-			@Override
-			public void onValueChange(ValueChangeEvent<String> event) {
-				currentAuthorEntry.setFirstname(event.getValue());
-			}
-		});
-		cp.add(firstnameField);
-		vPanel.add(cp);
-
-		cp = new ContentPanel();
-		cp.setHeading("Kucha Visit Date");
-		kuchaVisitDateField = new DateField(new DateTimePropertyEditor("MMMM yyyy"));
-		kuchaVisitDateField.addValueChangeHandler(new ValueChangeHandler<java.util.Date>() {
-
-			@Override
-			public void onValueChange(ValueChangeEvent<java.util.Date> event) {
-//				currentAuthorEntry.setKuchaVisitDate(new Date(event.getValue().getTime()));
-			}
-		});
-		cp.add(kuchaVisitDateField);
-		vPanel.add(cp);
-
-		cp = new ContentPanel();
-		cp.setHeading("Affiliation");
-		affiliationArea = new TextArea();
-		affiliationArea.setSize("200px", "3em");
-		affiliationArea.addValueChangeHandler(new ValueChangeHandler<String>() {
-
-			@Override
-			public void onValueChange(ValueChangeEvent<String> event) {
-				currentAuthorEntry.setAffiliation(event.getValue());
-			}
-		});
-		cp.add(affiliationArea);
-		vPanel.add(cp);
-
-		cp = new ContentPanel();
-		cp.setHeading("Email");
-		emailField = new TextField();
-		emailField.setWidth(200);
-		emailField.addValueChangeHandler(new ValueChangeHandler<String>() {
-
-			@Override
-			public void onValueChange(ValueChangeEvent<String> event) {
-				currentAuthorEntry.setEmail(event.getValue());
-			}
-			
-		});
-		cp.add(emailField);
-		vPanel.add(cp);
+		if (authorEntry.getAuthorID() == 0) {
+			mainPanel.setHeading("Add New Author/Editor");
+		} else {
+			mainPanel.setHeading("Edit Author/Editor");
+		}
 		
-		cp = new ContentPanel();
-		cp.setHeading("Homepage");
-		homepageField = new TextField();
-		homepageField.setWidth(200);
-		homepageField.addValueChangeHandler(new ValueChangeHandler<String>() {
+		TextField authorLastNameTF = new TextField();
+		authorLastNameTF.setAllowBlank(false);
+		authorLastNameTF.addValidator(new MaxLengthValidator(64));
+		authorLastNameTF.setAutoValidate(true);
+		authorLastNameTF.setWidth(300);
+		authorLastNameTF.setValue(authorEntry.getLastname());
+		authorLastNameTF.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<String> event) {
-				currentAuthorEntry.setHomepage(event.getValue());
+				authorEntry.setLastname(event.getValue());
 			}
 		});
-		cp.add(homepageField);
-		vPanel.add(cp);
 		
-		mainPanel.add(vPanel);
-
-		TextButton cancelButton = new TextButton("Cancel");
-		cancelButton.addSelectHandler(new SelectHandler() {
+		TextField authorFirstNameTF = new TextField();
+		authorFirstNameTF.setAllowBlank(true);
+		authorFirstNameTF.addValidator(new MaxLengthValidator(64));
+		authorFirstNameTF.setAutoValidate(true);
+		authorFirstNameTF.setValue(authorEntry.getFirstname());
+		authorFirstNameTF.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
-			public void onSelect(SelectEvent event) {
-				for (AuthorEditorListener l : listenerList) {
-					l.authorSaved(null);
-				}
+			public void onValueChange(ValueChangeEvent<String> event) {
+				authorEntry.setFirstname(event.getValue());
 			}
 		});
 
-		TextButton saveButton = new TextButton("Save & Exit");
-		saveButton.addSelectHandler(new SelectHandler() {
+		CheckBox kuchaVisitorCB = new CheckBox();
+		kuchaVisitorCB.setBoxLabel("has visited Kucha");
+		kuchaVisitorCB.setValue(authorEntry.isKuchaVisitor());
+		kuchaVisitorCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
 			@Override
-			public void onSelect(SelectEvent event) {
-				DateTimeFormat dtf = DateTimeFormat.getFormat("yyyy-MM-dd");
-				if (!lastnameField.isValid()) {
-					return; // do nothing because we need at least a lastname of an author!
-				}
-				if (currentAuthorEntry.getAuthorID() == 0) {
-					dbService.insertAuthorEntry(currentAuthorEntry, new AsyncCallback<Integer>() {
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				authorEntry.setKuchaVisitor(event.getValue());
+			}
+		});
+		
+		TextField authorAffiliation = new TextField();
+		authorAffiliation.setValue(authorEntry.getAffiliation());
+		authorAffiliation.addValueChangeHandler(new ValueChangeHandler<String>() {
 
-						@Override
-						public void onFailure(Throwable caught) {
-							// TODO Auto-generated method stub
-							
-						}
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				authorEntry.setAffiliation(event.getValue());
+			}
+		});
 
-						@Override
-						public void onSuccess(Integer result) {
-							currentAuthorEntry.setAuthorID(result);
-						}
-					});
+		TextField authorEmailTF = new TextField();
+		authorEmailTF.addValidator(new RegExValidator(Util.REGEX_EMAIL_PATTERN, "please enter valid email address"));
+		authorEmailTF.setAutoValidate(true);
+		authorEmailTF.setValue(authorEntry.getEmail());
+		authorEmailTF.addValueChangeHandler(new ValueChangeHandler<String>() {
 
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				authorEntry.setEmail(event.getValue());
+			}
+		});
+		
+		TextField authorHomepageTF = new TextField();
+		authorHomepageTF.addValidator(new RegExValidator(Util.REGEX_URL_PATTERN, "please enter valid URL"));
+		authorHomepageTF.setAutoValidate(true);
+		authorHomepageTF.setValue(authorEntry.getHomepage());
+		authorHomepageTF.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				authorEntry.setHomepage(event.getValue());
+			}
+		});
+
+		TextField institutionTF = new TextField();
+		institutionTF.setAllowBlank(false);
+		institutionTF.addValidator(new MaxLengthValidator(256));
+		institutionTF.setAutoValidate(true);
+		if (authorEntry.getInstitution() != null) {
+			authorLastNameTF.reset();
+			authorLastNameTF.setEnabled(false);
+			authorFirstNameTF.reset();
+			authorFirstNameTF.setEnabled(false);
+			authorAffiliation.reset();
+			authorAffiliation.setEnabled(false);
+			authorEmailTF.reset();
+			authorEmailTF.setEnabled(false);
+			institutionTF.setEnabled(true);
+			institutionTF.setValue(authorEntry.getInstitution());
+		} else {
+			institutionTF.setEnabled(false);
+		}
+		institutionTF.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				authorEntry.setInstitution(event.getValue());
+			}
+		});		
+		
+		CheckBox institutionCB = new CheckBox();
+		institutionCB.setBoxLabel("is institution");
+		institutionCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				if (event.getValue()) {
+					authorLastNameTF.reset();
+					authorLastNameTF.setEnabled(false);
+					authorFirstNameTF.reset();
+					authorFirstNameTF.setEnabled(false);
+					authorAffiliation.reset();
+					authorAffiliation.setEnabled(false);
+					authorEmailTF.reset();
+					authorEmailTF.setEnabled(false);
+					institutionTF.setEnabled(true);
 				} else {
-					dbService.updateAuthorEntry(currentAuthorEntry, new AsyncCallback<Boolean>() {
-
-						@Override
-						public void onFailure(Throwable caught) {
-							// TODO Auto-generated method stub
-							
-						}
-
-						@Override
-						public void onSuccess(Boolean result) {
-							// TODO Auto-generated method stub
-							
-						}
-					});
-				}
-
-				for (AuthorEditorListener l : listenerList) {
-					l.authorSaved(currentAuthorEntry);
+					authorLastNameTF.setEnabled(true);
+					authorFirstNameTF.setEnabled(true);
+					authorAffiliation.setEnabled(true);
+					authorEmailTF.setEnabled(true);
+					institutionTF.reset();
+					institutionTF.setEnabled(false);
 				}
 			}
 		});
+		VerticalLayoutContainer newAuthorVLC = new VerticalLayoutContainer();
+		newAuthorVLC.add(new FieldLabel(authorLastNameTF, "Family name"), new VerticalLayoutData(1.0, 1.0 / 8));
+		newAuthorVLC.add(new FieldLabel(authorFirstNameTF, "Given Name"), new VerticalLayoutData(1.0, 1.0 / 8));
+		newAuthorVLC.add(new FieldLabel(authorAffiliation, "Affiliation"), new VerticalLayoutData(1.0, 1.0 / 8));
+		newAuthorVLC.add(new FieldLabel(authorEmailTF, "E-mail"), new VerticalLayoutData(1.0, 1.0 / 8));
+		newAuthorVLC.add(institutionCB, new VerticalLayoutData(1.0, 1.0 / 8));
+		newAuthorVLC.add(new FieldLabel(institutionTF, "Institution"), new VerticalLayoutData(1.0, 1.0 / 8));
+		newAuthorVLC.add(new FieldLabel(authorHomepageTF, "Homepage"), new VerticalLayoutData(1.0, 1.0 / 8));
+		newAuthorVLC.add(kuchaVisitorCB, new VerticalLayoutData(1.0, 1.0 / 8));
+		
+		mainPanel.add(newAuthorVLC);
 
-		mainPanel.addButton(saveButton);
-		mainPanel.addButton(cancelButton);
+		ToolButton saveToolButton = new ToolButton(ToolButton.SAVE);
+		saveToolButton.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				if ((institutionCB.getValue() && institutionTF.validate() && authorHomepageTF.validate()) || (authorLastNameTF.validate()
+						&& authorFirstNameTF.validate() && authorEmailTF.validate() && authorHomepageTF.validate())) {
+					if (authorEntry.getAuthorID()==0) {
+						dbService.insertAuthorEntry(authorEntry, new AsyncCallback<Integer>() {
+							
+							@Override
+							public void onFailure(Throwable caught) {
+								Util.showWarning("Add New Author", "Error while saving!");
+							}
+							
+							@Override
+							public void onSuccess(Integer result) {
+								if (result > 0) {
+									authorEntry.setAuthorID(result);
+									closeEditor(true);
+								} else {
+									Util.showWarning("Add New Author", "Error while saving!");
+								}
+							}
+						});
+					} else {
+						dbService.updateAuthorEntry(authorEntry, new AsyncCallback<Boolean>() {
+
+							@Override
+							public void onFailure(Throwable caught) {
+								Util.showWarning("Update Author", "Error while saving!");
+							}
+
+							@Override
+							public void onSuccess(Boolean result) {
+								closeEditor(true);
+							}
+						});
+					}
+				}
+			}
+		});
+		mainPanel.addTool(saveToolButton);
+		
+		ToolButton cancelToolButton = new ToolButton(ToolButton.CLOSE);
+		cancelToolButton.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				closeEditor(false);
+				/**
+				 * this isn't working because there's already a modal dialog open
+				 * might work when we integrate the editor as separate window in data view
+				 */
+//				Dialog d = new Dialog();
+//				d.setHeading("Exit Warning!");
+//				d.setWidget(new HTML("Do you wish to save before exiting?"));
+//				d.setBodyStyle("fontWeight:bold;padding:13px;");
+//				d.setPixelSize(300, 100);
+//				d.setHideOnButtonClick(true);
+//				d.setPredefinedButtons(PredefinedButton.YES, PredefinedButton.NO, PredefinedButton.CANCEL);
+//				d.setModal(true);
+//				d.center();
+//				d.getButton(PredefinedButton.YES).addSelectHandler(new SelectHandler() {
+//
+//					@Override
+//					public void onSelect(SelectEvent event) {
+//						closeEditor(true);
+//					}
+//				});
+//				d.getButton(PredefinedButton.NO).addSelectHandler(new SelectHandler() {
+//
+//					@Override
+//					public void onSelect(SelectEvent event) {
+//						closeEditor(false);
+//					}
+//				});
+			}
+		});
+		mainPanel.addTool(cancelToolButton);
+		
+		mainPanel.setWidth(450);
 	}
 
 }
