@@ -17,9 +17,12 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.widget.core.client.Dialog;
 import com.sencha.gxt.widget.core.client.FramedPanel;
+import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
@@ -86,7 +89,11 @@ public class AuthorEditor implements IsWidget {
 	private void initUI() {
 		mainPanel = new FramedPanel();
 
-		mainPanel.setHeading("Add New Author/Editor");
+		if (authorEntry.getAuthorID() == 0) {
+			mainPanel.setHeading("Add New Author/Editor");
+		} else {
+			mainPanel.setHeading("Edit Author/Editor");
+		}
 		
 		TextField authorLastNameTF = new TextField();
 		authorLastNameTF.setAllowBlank(false);
@@ -267,7 +274,30 @@ public class AuthorEditor implements IsWidget {
 
 			@Override
 			public void onSelect(SelectEvent event) {
-				closeEditor(false);
+				Dialog d = new Dialog();
+				d.setHeading("Exit Warning!");
+				d.setWidget(new HTML("Do you wish to save before exiting?"));
+				d.setBodyStyle("fontWeight:bold;padding:13px;");
+				d.setPixelSize(300, 100);
+				d.setHideOnButtonClick(true);
+				d.setPredefinedButtons(PredefinedButton.YES, PredefinedButton.NO, PredefinedButton.CANCEL);
+				d.setModal(true);
+				d.center();
+				d.show();
+				d.getButton(PredefinedButton.YES).addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						closeEditor(true);
+					}
+				});
+				d.getButton(PredefinedButton.NO).addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						closeEditor(false);
+					}
+				});
 			}
 		});
 		mainPanel.addTool(cancelToolButton);
