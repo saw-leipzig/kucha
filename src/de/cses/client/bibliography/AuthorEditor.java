@@ -274,30 +274,34 @@ public class AuthorEditor implements IsWidget {
 
 			@Override
 			public void onSelect(SelectEvent event) {
-				Dialog d = new Dialog();
-				d.setHeading("Exit Warning!");
-				d.setWidget(new HTML("Do you wish to save before exiting?"));
-				d.setBodyStyle("fontWeight:bold;padding:13px;");
-				d.setPixelSize(300, 100);
-				d.setHideOnButtonClick(true);
-				d.setPredefinedButtons(PredefinedButton.YES, PredefinedButton.NO, PredefinedButton.CANCEL);
-				d.setModal(true);
-				d.center();
-				d.show();
-				d.getButton(PredefinedButton.YES).addSelectHandler(new SelectHandler() {
-
-					@Override
-					public void onSelect(SelectEvent event) {
-						closeEditor(true);
-					}
-				});
-				d.getButton(PredefinedButton.NO).addSelectHandler(new SelectHandler() {
-
-					@Override
-					public void onSelect(SelectEvent event) {
-						closeEditor(false);
-					}
-				});
+				closeEditor(false);
+				/**
+				 * this isn't working because there's already a modal dialog open
+				 * might work when we integrate the editor as separate window in data view
+				 */
+//				Dialog d = new Dialog();
+//				d.setHeading("Exit Warning!");
+//				d.setWidget(new HTML("Do you wish to save before exiting?"));
+//				d.setBodyStyle("fontWeight:bold;padding:13px;");
+//				d.setPixelSize(300, 100);
+//				d.setHideOnButtonClick(true);
+//				d.setPredefinedButtons(PredefinedButton.YES, PredefinedButton.NO, PredefinedButton.CANCEL);
+//				d.setModal(true);
+//				d.center();
+//				d.getButton(PredefinedButton.YES).addSelectHandler(new SelectHandler() {
+//
+//					@Override
+//					public void onSelect(SelectEvent event) {
+//						closeEditor(true);
+//					}
+//				});
+//				d.getButton(PredefinedButton.NO).addSelectHandler(new SelectHandler() {
+//
+//					@Override
+//					public void onSelect(SelectEvent event) {
+//						closeEditor(false);
+//					}
+//				});
 			}
 		});
 		mainPanel.addTool(cancelToolButton);
