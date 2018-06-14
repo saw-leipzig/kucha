@@ -23,7 +23,8 @@ import de.cses.client.depictions.DepictionEditor.TitleElement;
 
 /**
  * @author alingnau
- *
+ * 
+ * This interface is for displaying images in the DepictionEditor. In future versions the style shall be moved to a CSS file 
  */
 public interface ImageViewTemplates extends XTemplates {
 
