@@ -167,6 +167,10 @@ public class SingleImageEditor extends AbstractEditor {
 				for (PhotographerEntry pe : result) {
 					photographerEntryList.add(pe);
 				}
+				if (imgEntry.getImageAuthor() != null) {
+//					authorSelectionCB.setValue(photographerEntryList.findModelWithKey(Integer.toString(imgEntry.getImageAuthor().getPhotographerID())));
+					authorSelectionCB.setValue(imgEntry.getImageAuthor());
+				}
 			}
 		});
 
@@ -174,7 +178,6 @@ public class SingleImageEditor extends AbstractEditor {
 			imageTypeEntryList.add(ite);
 		}
 		imageTypeSelection.setValue(imageTypeEntryList.findModelWithKey(Integer.toString(imgEntry.getImageTypeID())));
-
 	}
 
 	@Override
@@ -271,10 +274,10 @@ public class SingleImageEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<PhotographerEntry> event) {
-				imgEntry.setPhotographerID(event.getSelectedItem().getPhotographerID());
+				imgEntry.setImageAuthor(event.getSelectedItem());
 			}
 		});
-		authorSelectionCB.setValue(photographerEntryList.findModelWithKey(Integer.toString(imgEntry.getPhotographerID())));
+//		authorSelectionCB.setValue(photographerEntryList.findModelWithKey(Integer.toString(imgEntry.getPhotographerID())));
 		
 		ToolButton addPhotoAuthorTB = new ToolButton(ToolButton.PLUS);
 		addPhotoAuthorTB.addSelectHandler(new SelectHandler() {
@@ -540,7 +543,7 @@ public class SingleImageEditor extends AbstractEditor {
 		imgEntry.setCopyright(copyrightArea.getCurrentValue());
 		imgEntry.setComment(commentArea.getCurrentValue());
 		imgEntry.setDate(dateField.getCurrentValue());
-		imgEntry.setPhotographerID(authorSelectionCB.getCurrentValue() != null ? authorSelectionCB.getCurrentValue().getPhotographerID() : 0);
+		imgEntry.setImageAuthor(authorSelectionCB.getCurrentValue());
 		imgEntry.setImageTypeID(imageTypeSelection.getCurrentValue().getImageTypeID());
 	}
 
