@@ -25,6 +25,7 @@ import com.google.gson.JsonSerializer;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.ExpeditionEntry;
+import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.LocationEntry;
 
@@ -37,9 +38,7 @@ public class DepictionSerializer implements JsonSerializer<DepictionEntry> {
 	/**
 	 * 
 	 */
-	public DepictionSerializer() {
-		// TODO Auto-generated constructor stub
-	}
+	public DepictionSerializer() { }
 
 	/* (non-Javadoc)
 	 * @see com.google.gson.JsonSerializer#serialize(java.lang.Object, java.lang.reflect.Type, com.google.gson.JsonSerializationContext)
@@ -59,6 +58,17 @@ public class DepictionSerializer implements JsonSerializer<DepictionEntry> {
 			jsonObj.addProperty("vendor", entry.getVendor().getVendorName());
 		}
 		jsonObj.addProperty("current location", entry.getLocation().getName() + "(" + entry.getLocation().getCounty() + ")");
+		JsonArray jsonIconography = new JsonArray();
+		JsonArray jsonPictorialElements = new JsonArray();
+		for (IconographyEntry ie : entry.getRelatedIconographyList()) {
+			if (ie.getIconographyID() < 2000) {
+				jsonIconography.add(ie.getText());
+			} else {
+				jsonPictorialElements.add(ie.getText());
+			}
+		}
+		jsonObj.add("Iconography", jsonIconography);
+		jsonObj.add("Pictorial Elements", jsonPictorialElements);
 		return jsonObj;
 	}
 	
@@ -97,5 +107,5 @@ public class DepictionSerializer implements JsonSerializer<DepictionEntry> {
 		jsonObj.addProperty("filename", ie.getFilename());
 		return jsonObj;
 	}
-
+	
 }
