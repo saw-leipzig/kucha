@@ -48,7 +48,7 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 		}
 		String shortname = e.getShortName() != null ? e.getShortName() : "";
 		String expedition = e.getExpedition() != null ? e.getExpedition().getName() : "";
-		String vendor = e.getVendorID() > 0 ? StaticTables.getInstance().getVendorEntries().get(e.getVendorID()).getVendorName() : "";
+		String vendor = e.getVendor() != null ? e.getVendor().getVendorName() : "";
 		String location = e.getLocationID() > 0 ? StaticTables.getInstance().getLocationEntries().get(e.getLocationID()).getName() : "";
 		String date = e.getPurchaseDate() != null ? e.getPurchaseDate().toString() : "";
 		String stateOfPreservation = "";

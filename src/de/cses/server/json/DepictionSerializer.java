@@ -54,6 +54,9 @@ public class DepictionSerializer implements JsonSerializer<DepictionEntry> {
 		if (exp != null) {
 			jsonObj.addProperty("acquired by expedition", exp.getName());
 		}
+		if (entry.getVendor() != null) {
+			jsonObj.addProperty("vendor", entry.getVendor().getVendorName());
+		}
 		return jsonObj;
 	}
 	

@@ -32,7 +32,7 @@ public class DepictionEntry extends AbstractEntry {
 	private Date purchaseDate;
 	private int locationID = 0;
 	private String inventoryNumber;
-	private int vendorID = 0;
+	private VendorEntry vendor;
 	private int storyID = 0;
 	private CaveEntry cave;
 	private int wallID = 0;
@@ -76,7 +76,7 @@ public class DepictionEntry extends AbstractEntry {
 	 */
 	public DepictionEntry(int depictionID, int styleID, String inscriptions, String separateAksaras, String dating, String description,
 			String backgroundColour, String generalRemarks, String otherSuggestedIdentifications, double width, double height, ExpeditionEntry expedition,
-			Date purchaseDate, int locationID, String inventoryNumber, int vendorID, int storyID, CaveEntry cave, int wallID, int absoluteLeft,
+			Date purchaseDate, int locationID, String inventoryNumber, VendorEntry vendor, int storyID, CaveEntry cave, int wallID, int absoluteLeft,
 			int absoluteTop, int modeOfRepresentationID, String shortName, String positionNotes, int masterImageID, boolean openAccess, String lastChangedByUser, String lastChangedOnDate) {
 		super();
 		this.depictionID = depictionID;
@@ -94,7 +94,7 @@ public class DepictionEntry extends AbstractEntry {
 		this.purchaseDate = purchaseDate;
 		this.locationID = locationID;
 		this.inventoryNumber = inventoryNumber;
-		this.vendorID = vendorID;
+		this.vendor = vendor;
 		this.storyID = storyID;
 		this.cave = cave;
 		this.wallID = wallID;
@@ -111,7 +111,7 @@ public class DepictionEntry extends AbstractEntry {
 
 	public DepictionEntry clone() {
 		DepictionEntry clonedDepictionEntry = new DepictionEntry(depictionID, styleID, inscriptions, separateAksaras, dating, description, backgroundColour, generalRemarks,
-				otherSuggestedIdentifications, width, height, expedition, purchaseDate, locationID, inventoryNumber, vendorID, storyID,
+				otherSuggestedIdentifications, width, height, expedition, purchaseDate, locationID, inventoryNumber, vendor, storyID,
 				cave, wallID, absoluteLeft, absoluteTop, modeOfRepresentationID, shortName, positionNotes, masterImageID, openAccess, lastChangedByUser, lastChangedOnDate);
 		ArrayList<ImageEntry> clonedRelatedImages = new ArrayList<ImageEntry>();
 		for (ImageEntry ie : this.relatedImages) {
@@ -228,12 +228,12 @@ public class DepictionEntry extends AbstractEntry {
 		this.locationID = locationID;
 	}
 
-	public int getVendorID() {
-		return vendorID;
+	public VendorEntry getVendor() {
+		return vendor;
 	}
 
-	public void setVendorID(int vendorID) {
-		this.vendorID = vendorID;
+	public void setVendor(VendorEntry vendor) {
+		this.vendor = vendor;
 	}
 
 	public int getStoryID() {

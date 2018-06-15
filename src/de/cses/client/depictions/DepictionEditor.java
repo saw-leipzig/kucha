@@ -346,8 +346,8 @@ public class DepictionEditor extends AbstractEditor {
 		for (VendorEntry ve : StaticTables.getInstance().getVendorEntries().values()) {
 			vendorEntryLS.add(ve);
 		}
-		if (correspondingDepictionEntry.getVendorID() > 0) {
-			vendorSelection.setValue(vendorEntryLS.findModelWithKey(Integer.toString(correspondingDepictionEntry.getVendorID())));
+		if (correspondingDepictionEntry.getVendor() != null) {
+			vendorSelection.setValue(correspondingDepictionEntry.getVendor());
 		}
 		vendorEntryLS.addSortInfo(new StoreSortInfo<VendorEntry>(new ValueProvider<VendorEntry, String>() {
 
@@ -695,7 +695,7 @@ public class DepictionEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<VendorEntry> event) {
-				correspondingDepictionEntry.setVendorID(event.getSelectedItem().getVendorID());
+				correspondingDepictionEntry.setVendor(event.getSelectedItem());
 			}
 		});
 		ToolButton resetVendorSelectionTB = new ToolButton(ToolButton.REFRESH);
