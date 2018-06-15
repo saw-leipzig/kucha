@@ -334,8 +334,8 @@ public class DepictionEditor extends AbstractEditor {
 		for (ExpeditionEntry exped : StaticTables.getInstance().getExpeditionEntries().values()) {
 			expedEntryLS.add(exped);
 		}
-		if (correspondingDepictionEntry.getExpeditionID() > 0) {
-			expedSelectionCB.setValue(expedEntryLS.findModelWithKey(Integer.toString(correspondingDepictionEntry.getExpeditionID())));
+		if (correspondingDepictionEntry.getExpedition() != null) {
+			expedSelectionCB.setValue(correspondingDepictionEntry.getExpedition());
 		}
 	}
 
@@ -652,7 +652,7 @@ public class DepictionEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<ExpeditionEntry> event) {
-				correspondingDepictionEntry.setExpeditionID(event.getSelectedItem().getExpeditionID());
+				correspondingDepictionEntry.setExpedition(event.getSelectedItem());
 			}
 		});
 		expedSelectionCB.setTypeAhead(false);
@@ -662,7 +662,7 @@ public class DepictionEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<ExpeditionEntry> event) {
-				correspondingDepictionEntry.setExpeditionID(event.getSelectedItem().getExpeditionID());
+				correspondingDepictionEntry.setExpedition(event.getSelectedItem());
 			}
 		});
 		ToolButton expedSelectionTB = new ToolButton(ToolButton.REFRESH);

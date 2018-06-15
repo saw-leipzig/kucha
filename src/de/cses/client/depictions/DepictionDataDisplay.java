@@ -47,7 +47,7 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 			realCaveSketchUri = UriUtils.fromString("/resource?cavesketch=" + e.getCave().getOptionalCaveSketch() + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 		}
 		String shortname = e.getShortName() != null ? e.getShortName() : "";
-		String expedition = e.getExpeditionID() > 0 ? StaticTables.getInstance().getExpeditionEntries().get(e.getExpeditionID()).getName() : "";
+		String expedition = e.getExpedition() != null ? e.getExpedition().getName() : "";
 		String vendor = e.getVendorID() > 0 ? StaticTables.getInstance().getVendorEntries().get(e.getVendorID()).getVendorName() : "";
 		String location = e.getLocationID() > 0 ? StaticTables.getInstance().getLocationEntries().get(e.getLocationID()).getName() : "";
 		String date = e.getPurchaseDate() != null ? e.getPurchaseDate().toString() : "";

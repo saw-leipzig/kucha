@@ -14,12 +14,14 @@
 package de.cses.server.json;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
+import de.cses.shared.CaveAreaEntry;
 import de.cses.shared.CaveEntry;
 
 /**
@@ -48,7 +50,24 @@ public class CaveEntrySerializer implements JsonSerializer<CaveEntry> {
 		jsonObj.addProperty("districtID", ce.getDistrictID());
 		jsonObj.addProperty("regionID", ce.getRegionID());
 		jsonObj.addProperty("optionalCaveSketch", ce.getOptionalCaveSketch());
+		jsonObj.addProperty("measurementString", getMeasurements(ce.getCaveAreaList()));
 		return jsonObj;
+	}
+	
+	private String getMeasurements(ArrayList<CaveAreaEntry> caList) {
+		String measurementStr = "";
+		for (CaveAreaEntry cae : caList) {
+			if (cae.getExpeditionWidth() + cae.getExpeditionLength() + cae.getExpeditionTotalHeight() + cae.getExpeditionWallHeight() > 0.0) {
+				measurementStr += cae.getCaveAreaLabel() + " (expedition): " + cae.getExpeditionWidth() + "/" + cae.getExpeditionLength() + "/" + cae.getExpeditionTotalHeight() + "/" + cae.getExpeditionWallHeight() + "\n";
+			}
+			if (cae.getModernMinWidth() + cae.getModernMinHeight() + cae.getModernMinLength() + cae.getModernMaxWidth()
+					+ cae.getModernMaxLength() + cae.getModernMaxHeight() > 0.0) {
+				measurementStr += cae.getCaveAreaLabel() + " (modern): " + cae.getModernMinWidth() + (cae.getModernMaxWidth() > 0.0 ? " - " + cae.getModernMaxWidth() : "") + "/"
+						+ cae.getModernMinLength() + (cae.getModernMaxLength() > 0.0 ? " - " + cae.getModernMaxLength() : "") + "/" + cae.getModernMinHeight() 
+						+ (cae.getModernMaxHeight() > 0.0 ? " - " + cae.getModernMaxHeight() : "") + "\n";
+			}
+		}
+		return measurementStr;
 	}
 	
 }

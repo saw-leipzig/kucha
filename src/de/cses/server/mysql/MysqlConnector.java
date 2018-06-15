@@ -423,7 +423,7 @@ public class MysqlConnector {
 				DepictionEntry de = new DepictionEntry(rs.getInt("DepictionID"), rs.getInt("StyleID"), rs.getString("Inscriptions"),
 						rs.getString("SeparateAksaras"), rs.getString("Dating"), rs.getString("Description"), rs.getString("BackgroundColour"),
 						rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"), rs.getDouble("Width"), rs.getDouble("Height"),
-						rs.getInt("ExpeditionID"), rs.getDate("PurchaseDate"), rs.getInt("CurrentLocationID"), rs.getString("InventoryNumber"),
+						getExpedition(rs.getInt("ExpeditionID")), rs.getDate("PurchaseDate"), rs.getInt("CurrentLocationID"), rs.getString("InventoryNumber"),
 						rs.getInt("VendorID"), rs.getInt("StoryID"), getCave(rs.getInt("CaveID")), rs.getInt("WallID"), rs.getInt("AbsoluteLeft"),
 						rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes"),
 						rs.getInt("MasterImageID"), rs.getBoolean("OpenAccess"), rs.getString("LastChangedByUser"), rs.getString("LastChangedOnDate"));
@@ -453,7 +453,7 @@ public class MysqlConnector {
 				result = new DepictionEntry(rs.getInt("DepictionID"), rs.getInt("StyleID"), rs.getString("Inscriptions"),
 						rs.getString("SeparateAksaras"), rs.getString("Dating"), rs.getString("Description"), rs.getString("BackgroundColour"),
 						rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"), rs.getDouble("Width"), rs.getDouble("Height"),
-						rs.getInt("ExpeditionID"), rs.getDate("PurchaseDate"), rs.getInt("CurrentLocationID"), rs.getString("InventoryNumber"),
+						getExpedition(rs.getInt("ExpeditionID")), rs.getDate("PurchaseDate"), rs.getInt("CurrentLocationID"), rs.getString("InventoryNumber"),
 						rs.getInt("VendorID"), rs.getInt("StoryID"), getCave(rs.getInt("CaveID")), rs.getInt("WallID"), rs.getInt("AbsoluteLeft"),
 						rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes"),
 						rs.getInt("MasterImageID"), rs.getBoolean("OpenAccess"), rs.getString("LastChangedByUser"), rs.getString("LastChangedOnDate"));
@@ -1186,6 +1186,27 @@ public class MysqlConnector {
 		}
 		return results;
 	}
+	
+	public ExpeditionEntry getExpedition(int id) {
+		ExpeditionEntry result = null;
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM Expeditions WHERE ExpeditionID=?");
+			pstmt.setInt(1, id);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.first()) {
+				result = new ExpeditionEntry(rs.getInt("ExpeditionID"), rs.getString("Name"), rs.getString("Leader"), rs.getDate("StartDate"), rs.getDate("EndDate"));
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return result;
+	}
 
 	public ArrayList<PublicationEntry> getPublications() {
 		ArrayList<PublicationEntry> results = new ArrayList<PublicationEntry>();
@@ -1333,7 +1354,7 @@ public class MysqlConnector {
 				DepictionEntry de = new DepictionEntry(rs.getInt("DepictionID"), rs.getInt("StyleID"), rs.getString("Inscriptions"),
 						rs.getString("SeparateAksaras"), rs.getString("Dating"), rs.getString("Description"), rs.getString("BackgroundColour"),
 						rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"), rs.getDouble("Width"), rs.getDouble("Height"),
-						rs.getInt("ExpeditionID"), rs.getDate("PurchaseDate"), rs.getInt("CurrentLocationID"), rs.getString("InventoryNumber"),
+						getExpedition(rs.getInt("ExpeditionID")), rs.getDate("PurchaseDate"), rs.getInt("CurrentLocationID"), rs.getString("InventoryNumber"),
 						rs.getInt("VendorID"), rs.getInt("StoryID"), getCave(rs.getInt("CaveID")), rs.getInt("WallID"), rs.getInt("AbsoluteLeft"),
 						rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes"),
 						rs.getInt("MasterImageID"), rs.getBoolean("OpenAccess"), rs.getString("LastChangedByUser"), rs.getString("LastChangedOnDate"));
@@ -1380,7 +1401,7 @@ public class MysqlConnector {
 				DepictionEntry de = new DepictionEntry(rs.getInt("DepictionID"), rs.getInt("StyleID"), rs.getString("Inscriptions"),
 						rs.getString("SeparateAksaras"), rs.getString("Dating"), rs.getString("Description"), rs.getString("BackgroundColour"),
 						rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"), rs.getDouble("Width"), rs.getDouble("Height"),
-						rs.getInt("ExpeditionID"), rs.getDate("PurchaseDate"), rs.getInt("CurrentLocationID"), rs.getString("InventoryNumber"),
+						getExpedition(rs.getInt("ExpeditionID")), rs.getDate("PurchaseDate"), rs.getInt("CurrentLocationID"), rs.getString("InventoryNumber"),
 						rs.getInt("VendorID"), rs.getInt("StoryID"), getCave(rs.getInt("CaveID")), rs.getInt("WallID"), rs.getInt("AbsoluteLeft"),
 						rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes"),
 						rs.getInt("MasterImageID"), rs.getBoolean("OpenAccess"), rs.getString("LastChangedByUser"), rs.getString("LastChangedOnDate"));
@@ -2364,7 +2385,7 @@ public class MysqlConnector {
 			pstmt.setString(8, de.getOtherSuggestedIdentifications());
 			pstmt.setDouble(9, de.getHeight());
 			pstmt.setDouble(10, de.getWidth());
-			pstmt.setInt(11, de.getExpeditionID());
+			pstmt.setInt(11, de.getExpedition().getExpeditionID());
 			pstmt.setDate(12, de.getPurchaseDate());
 			pstmt.setInt(13, de.getLocationID());
 			pstmt.setString(14, de.getInventoryNumber());
@@ -2441,7 +2462,7 @@ public class MysqlConnector {
 			pstmt.setString(8, de.getOtherSuggestedIdentifications());
 			pstmt.setDouble(9, de.getHeight());
 			pstmt.setDouble(10, de.getWidth());
-			pstmt.setInt(11, de.getExpeditionID());
+			pstmt.setInt(11, de.getExpedition().getExpeditionID());
 			pstmt.setDate(12, de.getPurchaseDate());
 			pstmt.setInt(13, de.getLocationID());
 			pstmt.setString(14, de.getInventoryNumber());

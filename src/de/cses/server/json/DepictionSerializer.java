@@ -24,6 +24,7 @@ import com.google.gson.JsonSerializer;
 
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
+import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.ImageEntry;
 
 /**
@@ -49,6 +50,10 @@ public class DepictionSerializer implements JsonSerializer<DepictionEntry> {
 		jsonObj.addProperty("description", entry.getDescription());
 		jsonObj.add("cave", serializeCave(entry.getCave()));
 		jsonObj.add("relatedImages", serializeImageList(entry.getRelatedImages()));
+		ExpeditionEntry exp = entry.getExpedition();
+		if (exp != null) {
+			jsonObj.addProperty("acquired by expedition", exp.getName());
+		}
 		return jsonObj;
 	}
 	
