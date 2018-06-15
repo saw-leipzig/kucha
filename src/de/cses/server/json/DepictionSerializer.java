@@ -26,6 +26,7 @@ import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.ImageEntry;
+import de.cses.shared.LocationEntry;
 
 /**
  * @author alingnau
@@ -57,6 +58,7 @@ public class DepictionSerializer implements JsonSerializer<DepictionEntry> {
 		if (entry.getVendor() != null) {
 			jsonObj.addProperty("vendor", entry.getVendor().getVendorName());
 		}
+		jsonObj.addProperty("current location", entry.getLocation().getName() + "(" + entry.getLocation().getCounty() + ")");
 		return jsonObj;
 	}
 	

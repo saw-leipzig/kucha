@@ -436,8 +436,8 @@ public class DepictionEditor extends AbstractEditor {
 //					return "name";
 //				}}, SortDir.ASC));
 			
-			if (correspondingDepictionEntry.getLocationID() > 0) {
-				locationSelectionCB.setValue(locationEntryLS.findModelWithKey(Integer.toString(correspondingDepictionEntry.getLocationID())));
+			if (correspondingDepictionEntry.getLocation() != null) {
+				locationSelectionCB.setValue(correspondingDepictionEntry.getLocation());
 			}
 	 }
 	 
@@ -802,7 +802,7 @@ public class DepictionEditor extends AbstractEditor {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<LocationEntry> event) {
-				correspondingDepictionEntry.setLocationID(event.getValue().getLocationID());
+				correspondingDepictionEntry.setLocation(event.getValue());
 			}
 		});
 		ToolButton resetLocationSelectionTB = new ToolButton(ToolButton.REFRESH);
