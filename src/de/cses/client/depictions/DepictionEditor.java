@@ -334,8 +334,8 @@ public class DepictionEditor extends AbstractEditor {
 		for (ExpeditionEntry exped : StaticTables.getInstance().getExpeditionEntries().values()) {
 			expedEntryLS.add(exped);
 		}
-		if (correspondingDepictionEntry.getExpeditionID() > 0) {
-			expedSelectionCB.setValue(expedEntryLS.findModelWithKey(Integer.toString(correspondingDepictionEntry.getExpeditionID())));
+		if (correspondingDepictionEntry.getExpedition() != null) {
+			expedSelectionCB.setValue(correspondingDepictionEntry.getExpedition());
 		}
 	}
 
@@ -346,8 +346,8 @@ public class DepictionEditor extends AbstractEditor {
 		for (VendorEntry ve : StaticTables.getInstance().getVendorEntries().values()) {
 			vendorEntryLS.add(ve);
 		}
-		if (correspondingDepictionEntry.getVendorID() > 0) {
-			vendorSelection.setValue(vendorEntryLS.findModelWithKey(Integer.toString(correspondingDepictionEntry.getVendorID())));
+		if (correspondingDepictionEntry.getVendor() != null) {
+			vendorSelection.setValue(correspondingDepictionEntry.getVendor());
 		}
 		vendorEntryLS.addSortInfo(new StoreSortInfo<VendorEntry>(new ValueProvider<VendorEntry, String>() {
 
@@ -436,8 +436,8 @@ public class DepictionEditor extends AbstractEditor {
 //					return "name";
 //				}}, SortDir.ASC));
 			
-			if (correspondingDepictionEntry.getLocationID() > 0) {
-				locationSelectionCB.setValue(locationEntryLS.findModelWithKey(Integer.toString(correspondingDepictionEntry.getLocationID())));
+			if (correspondingDepictionEntry.getLocation() != null) {
+				locationSelectionCB.setValue(correspondingDepictionEntry.getLocation());
 			}
 	 }
 	 
@@ -652,7 +652,7 @@ public class DepictionEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<ExpeditionEntry> event) {
-				correspondingDepictionEntry.setExpeditionID(event.getSelectedItem().getExpeditionID());
+				correspondingDepictionEntry.setExpedition(event.getSelectedItem());
 			}
 		});
 		expedSelectionCB.setTypeAhead(false);
@@ -662,7 +662,7 @@ public class DepictionEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<ExpeditionEntry> event) {
-				correspondingDepictionEntry.setExpeditionID(event.getSelectedItem().getExpeditionID());
+				correspondingDepictionEntry.setExpedition(event.getSelectedItem());
 			}
 		});
 		ToolButton expedSelectionTB = new ToolButton(ToolButton.REFRESH);
@@ -695,7 +695,7 @@ public class DepictionEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<VendorEntry> event) {
-				correspondingDepictionEntry.setVendorID(event.getSelectedItem().getVendorID());
+				correspondingDepictionEntry.setVendor(event.getSelectedItem());
 			}
 		});
 		ToolButton resetVendorSelectionTB = new ToolButton(ToolButton.REFRESH);
@@ -802,7 +802,7 @@ public class DepictionEditor extends AbstractEditor {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<LocationEntry> event) {
-				correspondingDepictionEntry.setLocationID(event.getValue().getLocationID());
+				correspondingDepictionEntry.setLocation(event.getValue());
 			}
 		});
 		ToolButton resetLocationSelectionTB = new ToolButton(ToolButton.REFRESH);

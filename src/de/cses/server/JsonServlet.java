@@ -43,6 +43,7 @@ import de.cses.shared.StyleEntry;
  * @author alingnau
  *
  */
+@SuppressWarnings("serial")
 public class JsonServlet extends HttpServlet {
 
 	private MysqlConnector connector = MysqlConnector.getInstance();
@@ -314,28 +315,34 @@ public class JsonServlet extends HttpServlet {
 	
 	private void getRelatedDepictionsFromIconography() throws IOException {
 		String iconographyIDs = request.getParameter("paintedRepFromIconographyID");
-		Gson gs = new Gson();
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF8");
 		PrintWriter out = response.getWriter();
 
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(DepictionEntry.class, new DepictionSerializer());
+		Gson gson = gsonBuilder.create();		
 		if (iconographyIDs != null) {
 		 ArrayList<DepictionEntry> depictionEntries = connector.getRelatedDepictions(iconographyIDs, 0);
-		 out.println(gs.toJson(depictionEntries));
+		 out.println(gson.toJson(depictionEntries));
 		}
+		out.close();
 	}
 	
 	private void getExclusiveRelatedDepictionsFromIconography() throws IOException {
 		String iconographyIDs = request.getParameter("exclusivePaintedRepFromIconographyID");
-		Gson gs = new Gson();
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF8");
 		PrintWriter out = response.getWriter();
 
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(DepictionEntry.class, new DepictionSerializer());
+		Gson gson = gsonBuilder.create();		
 		if (iconographyIDs != null) {
 		 ArrayList<DepictionEntry> depictionEntries = connector.getRelatedDepictions(iconographyIDs, 100);
-		 out.println(gs.toJson(depictionEntries));
+		 out.println(gson.toJson(depictionEntries));
 		}
+		out.close();
 	}
 	
 	private void getCaveTypes() throws IOException {

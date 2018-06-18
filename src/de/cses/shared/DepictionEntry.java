@@ -28,11 +28,11 @@ public class DepictionEntry extends AbstractEntry {
 	private String generalRemarks;
 	private String otherSuggestedIdentifications;
 	private double width = 0, height = 0;
-	private int expeditionID = 0;
+	private ExpeditionEntry expedition;
 	private Date purchaseDate;
-	private int locationID = 0;
+	private LocationEntry location;
 	private String inventoryNumber;
-	private int vendorID = 0;
+	private VendorEntry vendor;
 	private int storyID = 0;
 	private CaveEntry cave;
 	private int wallID = 0;
@@ -75,8 +75,8 @@ public class DepictionEntry extends AbstractEntry {
 	 * @param paintedRepresentationShortName
 	 */
 	public DepictionEntry(int depictionID, int styleID, String inscriptions, String separateAksaras, String dating, String description,
-			String backgroundColour, String generalRemarks, String otherSuggestedIdentifications, double width, double height, int expeditionID,
-			Date purchaseDate, int locationID, String inventoryNumber, int vendorID, int storyID, CaveEntry cave, int wallID, int absoluteLeft,
+			String backgroundColour, String generalRemarks, String otherSuggestedIdentifications, double width, double height, ExpeditionEntry expedition,
+			Date purchaseDate, LocationEntry location, String inventoryNumber, VendorEntry vendor, int storyID, CaveEntry cave, int wallID, int absoluteLeft,
 			int absoluteTop, int modeOfRepresentationID, String shortName, String positionNotes, int masterImageID, boolean openAccess, String lastChangedByUser, String lastChangedOnDate) {
 		super();
 		this.depictionID = depictionID;
@@ -90,11 +90,11 @@ public class DepictionEntry extends AbstractEntry {
 		this.otherSuggestedIdentifications = otherSuggestedIdentifications;
 		this.width = width;
 		this.height = height;
-		this.expeditionID = expeditionID;
+		this.expedition = expedition;
 		this.purchaseDate = purchaseDate;
-		this.locationID = locationID;
+		this.location = location;
 		this.inventoryNumber = inventoryNumber;
-		this.vendorID = vendorID;
+		this.vendor = vendor;
 		this.storyID = storyID;
 		this.cave = cave;
 		this.wallID = wallID;
@@ -111,7 +111,7 @@ public class DepictionEntry extends AbstractEntry {
 
 	public DepictionEntry clone() {
 		DepictionEntry clonedDepictionEntry = new DepictionEntry(depictionID, styleID, inscriptions, separateAksaras, dating, description, backgroundColour, generalRemarks,
-				otherSuggestedIdentifications, width, height, expeditionID, purchaseDate, locationID, inventoryNumber, vendorID, storyID,
+				otherSuggestedIdentifications, width, height, expedition, purchaseDate, location, inventoryNumber, vendor, storyID,
 				cave, wallID, absoluteLeft, absoluteTop, modeOfRepresentationID, shortName, positionNotes, masterImageID, openAccess, lastChangedByUser, lastChangedOnDate);
 		ArrayList<ImageEntry> clonedRelatedImages = new ArrayList<ImageEntry>();
 		for (ImageEntry ie : this.relatedImages) {
@@ -204,12 +204,12 @@ public class DepictionEntry extends AbstractEntry {
 		this.height = height;
 	}
 
-	public int getExpeditionID() {
-		return expeditionID;
+	public ExpeditionEntry getExpedition() {
+		return expedition;
 	}
 
-	public void setExpeditionID(int expeditionID) {
-		this.expeditionID = expeditionID;
+	public void setExpedition(ExpeditionEntry expedition) {
+		this.expedition = expedition;
 	}
 
 	public Date getPurchaseDate() {
@@ -220,20 +220,20 @@ public class DepictionEntry extends AbstractEntry {
 		this.purchaseDate = purchaseDate;
 	}
 
-	public int getLocationID() {
-		return locationID;
+	public LocationEntry getLocation() {
+		return location;
 	}
 
-	public void setLocationID(int locationID) {
-		this.locationID = locationID;
+	public void setLocation(LocationEntry location) {
+		this.location = location;
 	}
 
-	public int getVendorID() {
-		return vendorID;
+	public VendorEntry getVendor() {
+		return vendor;
 	}
 
-	public void setVendorID(int vendorID) {
-		this.vendorID = vendorID;
+	public void setVendor(VendorEntry vendor) {
+		this.vendor = vendor;
 	}
 
 	public int getStoryID() {
