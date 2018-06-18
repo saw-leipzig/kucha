@@ -57,7 +57,9 @@ public class DepictionSerializer implements JsonSerializer<DepictionEntry> {
 		if (entry.getVendor() != null) {
 			jsonObj.addProperty("vendor", entry.getVendor().getVendorName());
 		}
-		jsonObj.addProperty("current location", entry.getLocation().getName() + "(" + entry.getLocation().getCounty() + ")");
+		if (entry.getLocation() != null) {
+			jsonObj.addProperty("current location", entry.getLocation().getName() + "(" + entry.getLocation().getCounty() + ")");
+		}
 		JsonArray jsonIconography = new JsonArray();
 		JsonArray jsonPictorialElements = new JsonArray();
 		for (IconographyEntry ie : entry.getRelatedIconographyList()) {
