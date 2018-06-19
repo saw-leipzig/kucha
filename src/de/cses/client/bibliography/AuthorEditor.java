@@ -79,6 +79,7 @@ public class AuthorEditor implements IsWidget {
 		if (saved) {
 			listener.authorSaved(authorEntry);
 		} else {
+			
 			listener.editorCanceled();
 		}
 	}
