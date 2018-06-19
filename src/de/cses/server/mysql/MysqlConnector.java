@@ -261,7 +261,7 @@ public class MysqlConnector {
 			pstmt.setString(2, entry.getTitle());
 			pstmt.setString(3, entry.getShortName());
 			pstmt.setString(4, entry.getCopyright());
-			pstmt.setInt(5, entry.getImageAuthor().getPhotographerID());
+			pstmt.setInt(5, entry.getImageAuthor() != null ? entry.getImageAuthor().getPhotographerID() : 0);
 			pstmt.setString(6, entry.getComment());
 			pstmt.setString(7, entry.getDate());
 			pstmt.setInt(8, entry.getImageTypeID());
@@ -1492,7 +1492,7 @@ public class MysqlConnector {
 			pstmt.setString(2, entry.getTitle());
 			pstmt.setString(3, entry.getShortName());
 			pstmt.setString(4, entry.getCopyright());
-			pstmt.setInt(5, entry.getImageAuthor().getPhotographerID());
+			pstmt.setInt(5, entry.getImageAuthor() != null ? entry.getImageAuthor().getPhotographerID() : 0);
 			pstmt.setString(6, entry.getComment());
 			pstmt.setString(7, entry.getDate());
 			pstmt.setInt(8, entry.getImageTypeID());

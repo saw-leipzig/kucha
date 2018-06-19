@@ -91,6 +91,39 @@ public class Util {
 		dialog.center();
 	}
 
+	public static void showYesNo(String header, String message, SelectHandler yesHandler, SelectHandler noHandler) {
+		final PopupPanel dialog = new PopupPanel();
+		FramedPanel dialogPanel = new FramedPanel();
+		dialog.getElement().getStyle().setBorderColor("#FF0000");
+		dialogPanel.setHeading(header);
+		dialogPanel.add(new Label(message));
+		TextButton yesButton = new TextButton("Yes");
+		yesButton.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				dialog.hide();
+				yesHandler.onSelect(event);
+			}
+		});
+		dialogPanel.addButton(yesButton);
+		TextButton noButton = new TextButton("No");
+		yesButton.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				dialog.hide();
+				noHandler.onSelect(event);
+			}
+		});
+		dialogPanel.addButton(noButton);
+		
+		dialog.add(dialogPanel);
+		dialog.setModal(true);
+		dialog.setGlassEnabled(true);
+		dialog.center();
+	}
+
 	public static void doLogging(String message) {
 		String usertag = Cookies.getCookie(UserLogin.USERNAME);
 		dbService.doLogging(usertag!=null ? usertag : "unknown", message, new AsyncCallback() {

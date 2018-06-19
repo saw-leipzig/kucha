@@ -49,6 +49,12 @@ public class AuthorEditor implements IsWidget {
 	private AuthorEntry authorEntry = null;
 	private FramedPanel mainPanel = null;
 	private AuthorEditorListener listener;
+	private TextField authorLastNameTF;
+	private TextField authorFirstNameTF;
+	private CheckBox institutionCB;
+	private TextField institutionTF;
+	private TextField authorHomepageTF;
+	private TextField authorEmailTF;
 	
 	public AuthorEditor(AuthorEditorListener listener) {
 		this(new AuthorEntry(), listener);
@@ -79,6 +85,7 @@ public class AuthorEditor implements IsWidget {
 		if (saved) {
 			listener.authorSaved(authorEntry);
 		} else {
+			
 			listener.editorCanceled();
 		}
 	}
@@ -95,7 +102,7 @@ public class AuthorEditor implements IsWidget {
 			mainPanel.setHeading("Edit Author/Editor");
 		}
 		
-		TextField authorLastNameTF = new TextField();
+		authorLastNameTF = new TextField();
 		authorLastNameTF.setAllowBlank(false);
 		authorLastNameTF.addValidator(new MaxLengthValidator(64));
 		authorLastNameTF.setAutoValidate(true);
@@ -109,7 +116,7 @@ public class AuthorEditor implements IsWidget {
 			}
 		});
 		
-		TextField authorFirstNameTF = new TextField();
+		authorFirstNameTF = new TextField();
 		authorFirstNameTF.setAllowBlank(true);
 		authorFirstNameTF.addValidator(new MaxLengthValidator(64));
 		authorFirstNameTF.setAutoValidate(true);
@@ -143,7 +150,7 @@ public class AuthorEditor implements IsWidget {
 			}
 		});
 
-		TextField authorEmailTF = new TextField();
+		authorEmailTF = new TextField();
 		authorEmailTF.addValidator(new RegExValidator(Util.REGEX_EMAIL_PATTERN, "please enter valid email address"));
 		authorEmailTF.setAutoValidate(true);
 		authorEmailTF.setValue(authorEntry.getEmail());
@@ -155,7 +162,7 @@ public class AuthorEditor implements IsWidget {
 			}
 		});
 		
-		TextField authorHomepageTF = new TextField();
+		authorHomepageTF = new TextField();
 		authorHomepageTF.addValidator(new RegExValidator(Util.REGEX_URL_PATTERN, "please enter valid URL"));
 		authorHomepageTF.setAutoValidate(true);
 		authorHomepageTF.setValue(authorEntry.getHomepage());
@@ -167,7 +174,7 @@ public class AuthorEditor implements IsWidget {
 			}
 		});
 
-		TextField institutionTF = new TextField();
+		institutionTF = new TextField();
 		institutionTF.setAllowBlank(false);
 		institutionTF.addValidator(new MaxLengthValidator(256));
 		institutionTF.setAutoValidate(true);
@@ -193,7 +200,7 @@ public class AuthorEditor implements IsWidget {
 			}
 		});		
 		
-		CheckBox institutionCB = new CheckBox();
+		institutionCB = new CheckBox();
 		institutionCB.setBoxLabel("is institution");
 		institutionCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
@@ -236,41 +243,7 @@ public class AuthorEditor implements IsWidget {
 
 			@Override
 			public void onSelect(SelectEvent event) {
-				if ((institutionCB.getValue() && institutionTF.validate() && authorHomepageTF.validate()) || (authorLastNameTF.validate()
-						&& authorFirstNameTF.validate() && authorEmailTF.validate() && authorHomepageTF.validate())) {
-					if (authorEntry.getAuthorID()==0) {
-						dbService.insertAuthorEntry(authorEntry, new AsyncCallback<Integer>() {
-							
-							@Override
-							public void onFailure(Throwable caught) {
-								Util.showWarning("Add New Author", "Error while saving!");
-							}
-							
-							@Override
-							public void onSuccess(Integer result) {
-								if (result > 0) {
-									authorEntry.setAuthorID(result);
-									closeEditor(true);
-								} else {
-									Util.showWarning("Add New Author", "Error while saving!");
-								}
-							}
-						});
-					} else {
-						dbService.updateAuthorEntry(authorEntry, new AsyncCallback<Boolean>() {
-
-							@Override
-							public void onFailure(Throwable caught) {
-								Util.showWarning("Update Author", "Error while saving!");
-							}
-
-							@Override
-							public void onSuccess(Boolean result) {
-								closeEditor(true);
-							}
-						});
-					}
-				}
+				save();
 			}
 		});
 		mainPanel.addTool(saveToolButton);
@@ -280,39 +253,65 @@ public class AuthorEditor implements IsWidget {
 
 			@Override
 			public void onSelect(SelectEvent event) {
-				closeEditor(false);
-				/**
-				 * this isn't working because there's already a modal dialog open
-				 * might work when we integrate the editor as separate window in data view
-				 */
-//				Dialog d = new Dialog();
-//				d.setHeading("Exit Warning!");
-//				d.setWidget(new HTML("Do you wish to save before exiting?"));
-//				d.setBodyStyle("fontWeight:bold;padding:13px;");
-//				d.setPixelSize(300, 100);
-//				d.setHideOnButtonClick(true);
-//				d.setPredefinedButtons(PredefinedButton.YES, PredefinedButton.NO, PredefinedButton.CANCEL);
-//				d.setModal(true);
-//				d.center();
-//				d.getButton(PredefinedButton.YES).addSelectHandler(new SelectHandler() {
-//
-//					@Override
-//					public void onSelect(SelectEvent event) {
-//						closeEditor(true);
-//					}
-//				});
-//				d.getButton(PredefinedButton.NO).addSelectHandler(new SelectHandler() {
-//
-//					@Override
-//					public void onSelect(SelectEvent event) {
-//						closeEditor(false);
-//					}
-//				});
+				Util.showYesNo("Exit Warning!", "Do you wish to save before exiting?", new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						save();
+					}
+				}, new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						closeEditor(false);
+					}
+				});
 			}
 		});
 		mainPanel.addTool(cancelToolButton);
 		
 		mainPanel.setWidth(450);
+	}
+
+	/**
+	 * 
+	 */
+	protected void save() {
+		if ((institutionCB.getValue() && institutionTF.validate() && authorHomepageTF.validate()) || (authorLastNameTF.validate()
+				&& authorFirstNameTF.validate() && authorEmailTF.validate() && authorHomepageTF.validate())) {
+			if (authorEntry.getAuthorID()==0) {
+				dbService.insertAuthorEntry(authorEntry, new AsyncCallback<Integer>() {
+					
+					@Override
+					public void onFailure(Throwable caught) {
+						Util.showWarning("Add New Author", "Error while saving!");
+					}
+					
+					@Override
+					public void onSuccess(Integer result) {
+						if (result > 0) {
+							authorEntry.setAuthorID(result);
+							closeEditor(true);
+						} else {
+							Util.showWarning("Add New Author", "Error while saving!");
+						}
+					}
+				});
+			} else {
+				dbService.updateAuthorEntry(authorEntry, new AsyncCallback<Boolean>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						Util.showWarning("Update Author", "Error while saving!");
+					}
+
+					@Override
+					public void onSuccess(Boolean result) {
+						closeEditor(true);
+					}
+				});
+			}
+		}
 	}
 
 }
