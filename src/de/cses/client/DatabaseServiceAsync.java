@@ -290,4 +290,6 @@ public interface DatabaseServiceAsync {
 
 	void updateOrnamentEntry(OrnamentEntry oEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
+	void getAnnotatedBibliographyFromAuthors(ArrayList<AuthorEntry> authorList, AsyncCallback<ArrayList<AnnotatedBiblographyEntry>> asyncCallback) throws IllegalArgumentException;
+
 }

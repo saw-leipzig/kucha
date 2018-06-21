@@ -347,9 +347,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 //		});
 
 		/**
-		 * We're assuming that only publications of the same type can be first editions to the current publication
+		 * We're assuming that only publications from same authors can be first editions to the current publication
 		 */
-		dbService.getAnnotatedBibliography(new AsyncCallback<ArrayList<AnnotatedBiblographyEntry>>() {
+		dbService.getAnnotatedBibliographyFromAuthors(bibEntry.getAuthorList(), new AsyncCallback<ArrayList<AnnotatedBiblographyEntry>>() {
 
 					@Override
 					public void onFailure(Throwable caught) {

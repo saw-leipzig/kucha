@@ -1776,6 +1776,51 @@ public class MysqlConnector {
 	}
 
 	/**
+	 * @param authorList
+	 * @return
+	 */
+	public ArrayList<AnnotatedBiblographyEntry> getAnnotatedBibliographyFromAuthors(ArrayList<AuthorEntry> authorList) {
+		AnnotatedBiblographyEntry entry;
+		ArrayList<AnnotatedBiblographyEntry> result = new ArrayList<AnnotatedBiblographyEntry>();
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		String authorIDs = "";
+		for (AuthorEntry ae : authorList) {
+			authorIDs += (authorIDs.length() > 0) ? "," + ae.getAuthorID() : ae.getAuthorID();
+		}
+		try {
+			pstmt = dbc.prepareStatement(
+					"SELECT DISTINCT * FROM AnnotatedBibliography LEFT JOIN AuthorBibliographyRelation ON AuthorBibliographyRelation.BibID = AnnotatedBibliography.BibID "
+					+ "WHERE AuthorBibliographyRelation.AuthorID IN (" + authorIDs + ")"
+				);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				entry = new AnnotatedBiblographyEntry(rs.getInt("BibID"), getPublicationType(rs.getInt("PublicationTypeID")),
+						rs.getString("TitleEN"), rs.getString("TitleORG"), rs.getString("TitleTR"), rs.getString("ParentTitleEN"),
+						rs.getString("ParentTitleORG"), rs.getString("ParentTitleTR"), rs.getString("UniversityEN"), rs.getString("UniversityORG"),
+						rs.getString("UniversityTR"), rs.getString("NumberEN"), rs.getString("NumberORG"), rs.getString("NumberTR"),
+						rs.getString("AccessDateEN"), rs.getString("AccessDateORG"), rs.getString("AccessDateTR"), rs.getString("TitleAddonEN"),
+						rs.getString("TitleAddonORG"), rs.getString("TitleAddonTR"), rs.getString("Publisher"), rs.getString("SeriesEN"),
+						rs.getString("SeriesORG"), rs.getString("SeriesTR"), rs.getString("EditionEN"), rs.getString("EditionORG"),
+						rs.getString("EditionTR"), rs.getString("VolumeEN"), rs.getString("VolumeORG"), rs.getString("VolumeTR"),
+						rs.getString("IssueEN"), rs.getString("IssueTR"), rs.getString("IssueORG"), rs.getInt("YearEN"), rs.getString("YearORG"),
+						rs.getString("YearTR"), rs.getString("MonthEN"), rs.getString("MonthORG"), rs.getString("MonthTR"), rs.getString("PagesEN"),
+						rs.getString("PagesORG"), rs.getString("PagesTR"), rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"),
+						rs.getString("URI"), rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getBoolean("OpenAccess"),
+						rs.getString("AbstractText"));
+				entry.setAuthorList(getAuthorBibRelation(entry.getAnnotatedBiblographyID()));
+				entry.setEditorList(getEditorBibRelation(entry.getAnnotatedBiblographyID()));
+				result.add(entry);
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	/**
 	 * @param depictionID
 	 * @return
 	 */
@@ -1856,7 +1901,7 @@ public class MysqlConnector {
 		}
 		return result;
 	}
-
+	
 	public AnnotatedBiblographyEntry getAnnotatedBiblographybyID(int bibID) {
 		AnnotatedBiblographyEntry result = null;
 		Connection dbc = getConnection();
