@@ -1782,6 +1782,9 @@ public class MysqlConnector {
 	public ArrayList<AnnotatedBiblographyEntry> getAnnotatedBibliographyFromAuthors(ArrayList<AuthorEntry> authorList) {
 		AnnotatedBiblographyEntry entry;
 		ArrayList<AnnotatedBiblographyEntry> result = new ArrayList<AnnotatedBiblographyEntry>();
+		if (authorList.isEmpty()) {
+			return result;
+		}
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		String authorIDs = "";
@@ -2941,12 +2944,26 @@ public class MysqlConnector {
 		int newBibID = 0;
 		System.err.println("insertAnnotatedBiblographyEntry - saving");
 		try {
-			pstmt = dbc.prepareStatement("INSERT INTO AnnotatedBibliography (PublicationTypeID, " + "AccessDateEN, AccessDateORG, AccessDateTR, "
-					+ "ParentTitleEN, ParentTitleORG, ParentTitleTR, " + "Comments, " + "EditionEN, EditionORG, EditionTR, " + "FirstEditionBibID, "
-					+ "MonthEN, MonthORG, MonthTR, " + "Notes, " + "NumberEN, NumberORG, NumberTR, " + "PagesEN, PagesORG, PagesTR, " + "Publisher, "
-					+ "SeriesEN, SeriesORG, SeriesTR, " + "TitleAddonEN, TitleAddonORG, TitleAddonTR, " + "TitleEN, TitleORG, TitleTR, "
-					+ "UniversityEN, UniversityORG, UniversityTR, " + "URI, URL, " + "VolumeEN, VolumeORG, VolumeTR, "
-					+ "IssueEN, IssueORG, IssueTR, " + "YearEN, YearORG, YearTR, " + "Unpublished, OpenAccess, AbstractText) "
+			pstmt = dbc.prepareStatement("INSERT INTO AnnotatedBibliography (PublicationTypeID, " 
+					+ "AccessDateEN, AccessDateORG, AccessDateTR, "
+					+ "ParentTitleEN, ParentTitleORG, ParentTitleTR, " 
+					+ "Comments, " 
+					+ "EditionEN, EditionORG, EditionTR, " 
+					+ "FirstEditionBibID, "
+					+ "MonthEN, MonthORG, MonthTR, " 
+					+ "Notes, " 
+					+ "NumberEN, NumberORG, NumberTR, " 
+					+ "PagesEN, PagesORG, PagesTR, " 
+					+ "Publisher, "
+					+ "SeriesEN, SeriesORG, SeriesTR, " 
+					+ "TitleAddonEN, TitleAddonORG, TitleAddonTR, " 
+					+ "TitleEN, TitleORG, TitleTR, "
+					+ "UniversityEN, UniversityORG, UniversityTR, " 
+					+ "URI, URL, " 
+					+ "VolumeEN, VolumeORG, VolumeTR, "
+					+ "IssueEN, IssueORG, IssueTR, " 
+					+ "YearEN, YearORG, YearTR, " 
+					+ "Unpublished, OpenAccess, AbstractText) "
 					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 					Statement.RETURN_GENERATED_KEYS);
 			pstmt.setInt(1, bibEntry.getPublicationType().getPublicationTypeID());
@@ -2990,8 +3007,8 @@ public class MysqlConnector {
 			pstmt.setString(39, bibEntry.getVolumeORG());
 			pstmt.setString(40, bibEntry.getVolumeTR());
 			pstmt.setString(41, bibEntry.getIssueEN());
-			pstmt.setString(42, bibEntry.getIssueEN());
-			pstmt.setString(43, bibEntry.getIssueEN());
+			pstmt.setString(42, bibEntry.getIssueORG());
+			pstmt.setString(43, bibEntry.getIssueTR());
 			pstmt.setInt(44, bibEntry.getYearEN());
 			pstmt.setString(45, bibEntry.getYearORG());
 			pstmt.setString(46, bibEntry.getYearTR());
@@ -3638,12 +3655,23 @@ public class MysqlConnector {
 		System.err.println("insertAnnotatedBiblographyEntry - saving");
 		try {
 			pstmt = dbc.prepareStatement("UPDATE AnnotatedBibliography SET PublicationTypeID=?, "
-					+ "AccessDateEN=?, AccessDateORG=?, AccessDateTR=?, " + "ParentTitleEN=?, ParentTitleORG=?, ParentTitleTR=?, " + "Comments=?, "
-					+ "EditionEN=?, EditionORG=?, EditionTR=?, " + "FirstEditionBibID=?, " + "MonthEN=?, MonthORG=?, MonthTR=?, " + "Notes=?, "
-					+ "NumberEN=?, NumberORG=?, NumberTR=?, " + "PagesEN=?, PagesORG=?, PagesTR=?, " + "Publisher=?, "
-					+ "SeriesEN=?, SeriesORG=?, SeriesTR=?, " + "TitleAddonEN=?, TitleAddonORG=?, TitleAddonTR=?, "
-					+ "TitleEN=?, TitleORG=?, TitleTR=?, " + "UniversityEN=?, UniversityORG=?, UniversityTR=?, " + "URI=?, URL=?, "
-					+ "VolumeEN=?, VolumeORG=?, VolumeTR=?, " + "IssueEN=?, IssueORG=?, IssueTR=?, " + "YearEN=?, YearORG=?, YearTR=?, "
+					+ "AccessDateEN=?, AccessDateORG=?, AccessDateTR=?, " 
+					+ "ParentTitleEN=?, ParentTitleORG=?, ParentTitleTR=?, " 
+					+ "Comments=?, "
+					+ "EditionEN=?, EditionORG=?, EditionTR=?, " 
+					+ "FirstEditionBibID=?, " 
+					+ "MonthEN=?, MonthORG=?, MonthTR=?, " + "Notes=?, "
+					+ "NumberEN=?, NumberORG=?, NumberTR=?, " 
+					+ "PagesEN=?, PagesORG=?, PagesTR=?, " 
+					+ "Publisher=?, "
+					+ "SeriesEN=?, SeriesORG=?, SeriesTR=?, " 
+					+ "TitleAddonEN=?, TitleAddonORG=?, TitleAddonTR=?, "
+					+ "TitleEN=?, TitleORG=?, TitleTR=?, " 
+					+ "UniversityEN=?, UniversityORG=?, UniversityTR=?, " 
+					+ "URI=?, URL=?, "
+					+ "VolumeEN=?, VolumeORG=?, VolumeTR=?, " 
+					+ "IssueEN=?, IssueORG=?, IssueTR=?, " 
+					+ "YearEN=?, YearORG=?, YearTR=?, "
 					+ "Unpublished=?, OpenAccess=?, AbstractText=? WHERE BibID=?");
 			pstmt.setInt(1, bibEntry.getPublicationType().getPublicationTypeID());
 			pstmt.setString(2, bibEntry.getAccessdateEN());
@@ -3686,8 +3714,8 @@ public class MysqlConnector {
 			pstmt.setString(39, bibEntry.getVolumeORG());
 			pstmt.setString(40, bibEntry.getVolumeTR());
 			pstmt.setString(41, bibEntry.getIssueEN());
-			pstmt.setString(42, bibEntry.getIssueEN());
-			pstmt.setString(43, bibEntry.getIssueEN());
+			pstmt.setString(42, bibEntry.getIssueORG());
+			pstmt.setString(43, bibEntry.getIssueTR());
 			pstmt.setInt(44, bibEntry.getYearEN());
 			pstmt.setString(45, bibEntry.getYearORG());
 			pstmt.setString(46, bibEntry.getYearTR());
