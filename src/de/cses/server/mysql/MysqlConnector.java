@@ -1790,8 +1790,7 @@ public class MysqlConnector {
 		}
 		try {
 			pstmt = dbc.prepareStatement(
-					"SELECT DISTINCT * FROM AnnotatedBibliography LEFT JOIN AuthorBibliographyRelation ON AuthorBibliographyRelation.BibID = AnnotatedBibliography.BibID "
-					+ "WHERE AuthorBibliographyRelation.AuthorID IN (" + authorIDs + ")"
+					"SELECT * FROM AnnotatedBibliography WHERE AnnotatedBibliography.BibID IN (SELECT DISTINCT BibID FROM AuthorBibliographyRelation WHERE AuthorBibliographyRelation.AuthorID IN (" + authorIDs + "))"
 				);
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
