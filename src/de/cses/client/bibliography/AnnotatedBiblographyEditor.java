@@ -71,7 +71,6 @@ import com.sencha.gxt.widget.core.client.form.Validator;
 import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MaxNumberValidator;
-import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 
 import de.cses.client.DatabaseService;
@@ -1545,7 +1544,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		bibDocPaperFP.add(new HTMLPanel(documentLinkTemplate.documentLink(UriUtils.fromString(
 				"resource?document=" + bibEntry.getUniqueID() + "-paper.pdf" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()),
 				"paper")));
-		ToolButton paperUploadButton = new ToolButton(ToolButton.UP);
+		ToolButton paperUploadButton = new ToolButton(ToolButton.PLUS);
 		paperUploadButton.setToolTip("upload PDF");
 		paperUploadButton.addSelectHandler(new SelectHandler() {
 
@@ -1620,7 +1619,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		bibDocAnnotationFP.add(new HTMLPanel(documentLinkTemplate.documentLink(UriUtils.fromString(
 				"resource?document=" + bibEntry.getUniqueID() + "-annotation.pdf" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()),
 				"annotation")));
-		ToolButton annotationUploadButton = new ToolButton(ToolButton.UP);
+		ToolButton annotationUploadButton = new ToolButton(ToolButton.PLUS);
 		annotationUploadButton.setToolTip("upload annotation PDF");
 		annotationUploadButton.addSelectHandler(new SelectHandler() {
 
