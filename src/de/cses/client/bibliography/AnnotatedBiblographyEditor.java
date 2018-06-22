@@ -119,7 +119,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 	interface AnnotatedBiblographyEntryViewTemplates extends XTemplates {
 		@XTemplate("<div>{name}</div>")
-		SafeHtml AnnotatedBiblographyEntry(String name);
+		SafeHtml label(String name);
 	}
 
 	interface PublicationTypeViewTemplates extends XTemplates {
@@ -974,11 +974,8 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 				@Override
 				protected boolean doSelect(Store<AuthorEntry> store, AuthorEntry parent, AuthorEntry item, String filter) {
-					if (item.getName().toLowerCase().contains(filter.toLowerCase())) {
-						return true;
-					} else {
-						return false;
-					}
+					return ((item.getInstitution() != null && item.getInstitution().toLowerCase().contains(filter.toLowerCase())) 
+							|| item.getName().toLowerCase().contains(filter.toLowerCase())) ? true : false; 
 				}
 			};
 			editorListFilterField.bind(editorListStore);
@@ -1489,7 +1486,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					@Override
 					public SafeHtml render(AnnotatedBiblographyEntry item) {
 						final AnnotatedBiblographyEntryViewTemplates pvTemplates = GWT.create(AnnotatedBiblographyEntryViewTemplates.class);
-						return pvTemplates.AnnotatedBiblographyEntry(item.getLabel());
+						return pvTemplates.label(item.getLabel());
 					}
 				});
 		firstEditionComboBox.setTypeAhead(false);

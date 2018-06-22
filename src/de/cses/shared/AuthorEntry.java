@@ -92,7 +92,7 @@ public class AuthorEntry extends AbstractEntry {
 	}
 
 	public String getName() {
-		return lastname + ", " + firstname; 
+		return (institution != null && institution.length() > 0) ? institution : lastname + ", " + firstname; 
 	}
 
 	/* (non-Javadoc)
