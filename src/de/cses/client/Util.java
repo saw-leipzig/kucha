@@ -108,7 +108,7 @@ public class Util {
 		});
 		dialogPanel.addButton(yesButton);
 		TextButton noButton = new TextButton("No");
-		yesButton.addSelectHandler(new SelectHandler() {
+		noButton.addSelectHandler(new SelectHandler() {
 
 			@Override
 			public void onSelect(SelectEvent event) {
