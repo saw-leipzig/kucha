@@ -302,6 +302,8 @@ public class JsonServlet extends HttpServlet {
 		} else {
 			if (request.getParameter("caveID") != null) {
 				sqlWhere = "DepictionID IN (" + depictionIDStr + ") AND CaveID IN (" + request.getParameter("caveID") + ")";
+			} else {
+				sqlWhere = "DepictionID IN (" + depictionIDStr + ")";
 			}
 			depictionEntries = connector.getDepictions(sqlWhere);
 		}

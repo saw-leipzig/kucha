@@ -1379,6 +1379,8 @@ public class MysqlConnector {
 						rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes"),
 						rs.getInt("MasterImageID"), rs.getBoolean("OpenAccess"), rs.getString("LastChangedByUser"), rs.getString("LastChangedOnDate"));
 				de.setRelatedImages(getRelatedImages(de.getDepictionID()));
+				de.setRelatedBibliographyList(getRelatedBibliographyFromDepiction(de.getDepictionID()));
+				de.setRelatedIconographyList(getRelatedIconography(de.getDepictionID()));
 				results.add(de);
 			}
 			rs.close();
@@ -1426,6 +1428,8 @@ public class MysqlConnector {
 						rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes"),
 						rs.getInt("MasterImageID"), rs.getBoolean("OpenAccess"), rs.getString("LastChangedByUser"), rs.getString("LastChangedOnDate"));
 				de.setRelatedImages(getRelatedImages(de.getDepictionID()));
+				de.setRelatedBibliographyList(getRelatedBibliographyFromDepiction(de.getDepictionID()));
+				de.setRelatedIconographyList(getRelatedIconography(de.getDepictionID()));
 				results.add(de);
 			}
 			rs.close();
