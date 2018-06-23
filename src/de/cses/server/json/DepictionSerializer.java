@@ -48,18 +48,12 @@ public class DepictionSerializer implements JsonSerializer<DepictionEntry> {
 		JsonObject jsonObj = new JsonObject();
 		jsonObj.addProperty("depictionID", entry.getDepictionID());
 		jsonObj.addProperty("description", entry.getDescription());
-		jsonObj.add("cave", serializeCave(entry.getCave()));
+//		jsonObj.add("cave", serializeCave(entry.getCave()));
+		jsonObj.addProperty("caveID", entry.getCave() != null ? entry.getCave().getCaveID() : 0);
 		jsonObj.add("relatedImages", serializeImageList(entry.getRelatedImages()));
-		ExpeditionEntry exp = entry.getExpedition();
-		if (exp != null) {
-			jsonObj.addProperty("acquired by expedition", exp.getName());
-		}
-		if (entry.getVendor() != null) {
-			jsonObj.addProperty("vendor", entry.getVendor().getVendorName());
-		}
-		if (entry.getLocation() != null) {
-			jsonObj.addProperty("current location", entry.getLocation().getName() + "(" + entry.getLocation().getCounty() + ")");
-		}
+		jsonObj.addProperty("acquiredByExpedition", entry.getExpedition() != null ? entry.getExpedition().getName() : "");
+		jsonObj.addProperty("vendor", entry.getVendor() != null ? entry.getVendor().getVendorName() : "");
+		jsonObj.addProperty("currentLocation", entry.getLocation() != null ? entry.getLocation().getName() + "(" + entry.getLocation().getCounty() + ")" : "");
 		JsonArray jsonIconography = new JsonArray();
 		JsonArray jsonPictorialElements = new JsonArray();
 		for (IconographyEntry ie : entry.getRelatedIconographyList()) {
@@ -70,7 +64,7 @@ public class DepictionSerializer implements JsonSerializer<DepictionEntry> {
 			}
 		}
 		jsonObj.add("Iconography", jsonIconography);
-		jsonObj.add("Pictorial Elements", jsonPictorialElements);
+		jsonObj.add("PictorialElements", jsonPictorialElements);
 		return jsonObj;
 	}
 	

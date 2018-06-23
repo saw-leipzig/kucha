@@ -341,7 +341,7 @@ public class JsonServlet extends HttpServlet {
 		gsonBuilder.registerTypeAdapter(DepictionEntry.class, new DepictionSerializer());
 		Gson gson = gsonBuilder.create();		
 		if (iconographyIDs != null) {
-		 ArrayList<DepictionEntry> depictionEntries = connector.getRelatedDepictions(iconographyIDs, 100);
+		 ArrayList<DepictionEntry> depictionEntries = connector.getRelatedDepictions(iconographyIDs, iconographyIDs.split(",").length);
 		 out.println(gson.toJson(depictionEntries));
 		}
 		out.close();
