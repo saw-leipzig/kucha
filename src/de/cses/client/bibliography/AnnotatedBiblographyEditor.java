@@ -71,7 +71,6 @@ import com.sencha.gxt.widget.core.client.form.Validator;
 import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MaxNumberValidator;
-import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 
 import de.cses.client.DatabaseService;
@@ -120,7 +119,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 	interface AnnotatedBiblographyEntryViewTemplates extends XTemplates {
 		@XTemplate("<div>{name}</div>")
-		SafeHtml AnnotatedBiblographyEntry(String name);
+		SafeHtml label(String name);
 	}
 
 	interface PublicationTypeViewTemplates extends XTemplates {
@@ -346,10 +345,16 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 //			}
 //		});
 
+	}
+	
+	private void loadFirstEditionCandidates() {
 		/**
-		 * We're assuming that only publications of the same type can be first editions to the current publication
+		 * We're assuming that only publications from same authors can be first editions to the current publication
 		 */
-		dbService.getAnnotatedBibliography(new AsyncCallback<ArrayList<AnnotatedBiblographyEntry>>() {
+		if (bibEntry.getAuthorList() == null || bibEntry.getAuthorList().isEmpty()) {
+			return;
+		}
+		dbService.getAnnotatedBibliographyFromAuthors(bibEntry.getAuthorList(), new AsyncCallback<ArrayList<AnnotatedBiblographyEntry>>() {
 
 					@Override
 					public void onFailure(Throwable caught) {
@@ -358,6 +363,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 					@Override
 					public void onSuccess(ArrayList<AnnotatedBiblographyEntry> result) {
+						firstEditionBiblographyEntryLS.clear();
 						for (AnnotatedBiblographyEntry ae : result) {
 							firstEditionBiblographyEntryLS.add(ae);
 						}
@@ -436,7 +442,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		 * The publicaton title
 		 */
 		TextField titleEN = new TextField();
-		titleEN.setText(bibEntry.getTitleEN());
+		titleEN.setValue(bibEntry.getTitleEN());
 		titleEN.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
@@ -445,8 +451,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			}
 		});
 		titleEN.addValidator(new MaxLengthValidator(256));
+		
 		TextField titleORG = new TextField();
-		titleORG.setText(bibEntry.getTitleORG());
+		titleORG.setValue(bibEntry.getTitleORG());
 		titleORG.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
@@ -456,8 +463,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		});
 		titleORG.setAllowBlank(false); // at least the original title should be put in
 		titleORG.addValidator(new MaxLengthValidator(256));
+		
 		TextField titleTR = new TextField();
-		titleTR.setText(bibEntry.getTitleTR());
+		titleTR.setValue(bibEntry.getTitleTR());
 		titleTR.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
@@ -482,7 +490,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		 */
 		if (pubType.isTitleAddonEnabled()) {
 			TextField titleaddonEN = new TextField();
-			titleaddonEN.setText(bibEntry.getTitleaddonEN());
+			titleaddonEN.setValue(bibEntry.getTitleaddonEN());
 			titleaddonEN.addValueChangeHandler(new ValueChangeHandler<String>() {
 				
 				@Override
@@ -491,8 +499,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				}
 			});
 			titleaddonEN.addValidator(new MaxLengthValidator(256));
+			
 			TextField titleaddonORG = new TextField();
-			titleaddonORG.setText(bibEntry.getTitleaddonORG());
+			titleaddonORG.setValue(bibEntry.getTitleaddonORG());
 			titleaddonORG.addValueChangeHandler(new ValueChangeHandler<String>() {
 				
 				@Override
@@ -501,8 +510,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				}
 			});
 			titleaddonORG.addValidator(new MaxLengthValidator(256));
+			
 			TextField titleaddonTR = new TextField();
-			titleaddonTR.setText(bibEntry.getTitleaddonTR());
+			titleaddonTR.setValue(bibEntry.getTitleaddonTR());
 			titleaddonTR.addValueChangeHandler(new ValueChangeHandler<String>() {
 				
 				@Override
@@ -528,7 +538,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		 */
 		if (pubType.isParentTitleEnabled()) {
 			TextField parentTitleEN = new TextField();
-			parentTitleEN.setText(bibEntry.getParentTitleEN());
+			parentTitleEN.setValue(bibEntry.getParentTitleEN());
 			parentTitleEN.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
@@ -537,8 +547,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				}
 			});
 			parentTitleEN.addValidator(new MaxLengthValidator(256));
+			
 			TextField parentTitleORG = new TextField();
-			parentTitleORG.setText(bibEntry.getParentTitleORG());
+			parentTitleORG.setValue(bibEntry.getParentTitleORG());
 			parentTitleORG.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
@@ -547,9 +558,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				}
 			});
 			parentTitleORG.addValidator(new MaxLengthValidator(256));
-			parentTitleORG.addValidator(new MinLengthValidator(1));
+			parentTitleORG.setAllowBlank(false);
+			
 			TextField parentTitleTR = new TextField();
-			parentTitleTR.setText(bibEntry.getParentTitleTR());
+			parentTitleTR.setValue(bibEntry.getParentTitleTR());
 			parentTitleTR.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
@@ -575,7 +587,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		 */
 		if (pubType.isUniversityEnabled()) {
 			TextField uniEN = new TextField();
-			uniEN.setText(bibEntry.getUniversityEN());
+			uniEN.setValue(bibEntry.getUniversityEN());
 			uniEN.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
@@ -583,8 +595,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					bibEntry.setUniversityEN(event.getValue());
 				}
 			});
+			uniEN.addValidator(new MaxLengthValidator(128));
+			
 			TextField uniORG = new TextField();
-			uniORG.setText(bibEntry.getUniversityORG());
+			uniORG.setValue(bibEntry.getUniversityORG());
 			uniORG.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
@@ -592,8 +606,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					bibEntry.setUniversityORG(event.getValue());
 				}
 			});
+			uniORG.addValidator(new MaxLengthValidator(128));
+			
 			TextField uniTR = new TextField();
-			uniTR.setText(bibEntry.getUniversityTR());
+			uniTR.setValue(bibEntry.getUniversityTR());
 			uniTR.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
@@ -601,6 +617,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					bibEntry.setUniversityTR(event.getValue());
 				}
 			});
+			uniTR.addValidator(new MaxLengthValidator(128));
 
 			VerticalLayoutContainer universityVLC = new VerticalLayoutContainer();
 			universityVLC.add(new FieldLabel(uniORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
@@ -618,7 +635,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		 */
 		if (pubType.isNumberEnabled()) { // achtung hier muss sie bleiben
 			TextField numberEN = new TextField();
-			numberEN.setText(bibEntry.getNumberEN());
+			numberEN.setValue(bibEntry.getNumberEN());
 			numberEN.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
@@ -626,8 +643,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					bibEntry.setNumberEN(event.getValue());
 				}
 			});
+			numberEN.addValidator(new MaxLengthValidator(32));
+			
 			TextField numberORG = new TextField();
-			numberORG.setText(bibEntry.getNumberORG());
+			numberORG.setValue(bibEntry.getNumberORG());
 			numberORG.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
@@ -635,8 +654,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					bibEntry.setNumberORG(event.getValue());
 				}
 			});
+			numberORG.addValidator(new MaxLengthValidator(32));
+			
 			TextField numberTR = new TextField();
-			numberTR.setText(bibEntry.getNumberTR());
+			numberTR.setValue(bibEntry.getNumberTR());
 			numberTR.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
@@ -644,6 +665,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					bibEntry.setNumberTR(event.getValue());
 				}
 			});
+			numberTR.addValidator(new MaxLengthValidator(32));
 
 			VerticalLayoutContainer numberVLC = new VerticalLayoutContainer();
 			numberVLC.add(new FieldLabel(numberORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
@@ -661,7 +683,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		 */
 		if (pubType.isAccessDateEnabled()) {
 			TextField accessDateEN = new TextField();
-			accessDateEN.setText(bibEntry.getAccessdateEN());
+			accessDateEN.setValue(bibEntry.getAccessdateEN());
 			accessDateEN.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
@@ -669,8 +691,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					bibEntry.setAccessdateEN(event.getValue());
 				}
 			});
+			accessDateEN.addValidator(new MaxLengthValidator(32));
+			
 			TextField accessDateORG = new TextField();
-			accessDateORG.setText(bibEntry.getAccessdateORG());
+			accessDateORG.setValue(bibEntry.getAccessdateORG());
 			accessDateORG.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
@@ -678,8 +702,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					bibEntry.setAccessdateORG(event.getValue());
 				}
 			});
+			accessDateORG.addValidator(new MaxLengthValidator(32));
+			
 			TextField accessDateTR = new TextField();
-			accessDateTR.setText(bibEntry.getAccessdateTR());
+			accessDateTR.setValue(bibEntry.getAccessdateTR());
 			accessDateTR.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
@@ -687,6 +713,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					bibEntry.setAccessdateTR(event.getValue());
 				}
 			});
+			accessDateTR.addValidator(new MaxLengthValidator(32));
 
 			VerticalLayoutContainer accessDateVLC = new VerticalLayoutContainer();
 			accessDateVLC.add(new FieldLabel(accessDateORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
@@ -711,6 +738,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				bibEntry.setPublisher(event.getValue());
 			}
 		});
+		publisherTextField.addValidator(new MaxLengthValidator(256));
 		
 //		ComboBox<PublisherEntry> publisherComboBox = new ComboBox<PublisherEntry>(publisherListStore, publisherProps.label(),
 //				new AbstractSafeHtmlRenderer<PublisherEntry>() {
@@ -946,11 +974,8 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 				@Override
 				protected boolean doSelect(Store<AuthorEntry> store, AuthorEntry parent, AuthorEntry item, String filter) {
-					if (item.getName().toLowerCase().contains(filter.toLowerCase())) {
-						return true;
-					} else {
-						return false;
-					}
+					return ((item.getInstitution() != null && item.getInstitution().toLowerCase().contains(filter.toLowerCase())) 
+							|| item.getName().toLowerCase().contains(filter.toLowerCase())) ? true : false; 
 				}
 			};
 			editorListFilterField.bind(editorListStore);
@@ -998,7 +1023,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		 */
 		if (pubType.isSeriesEnabled()) { // hier muss sie bleiben
 			TextField seriesEN = new TextField();
-			seriesEN.setText(bibEntry.getSeriesEN());
+			seriesEN.setValue(bibEntry.getSeriesEN());
 			seriesEN.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
@@ -1006,8 +1031,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					bibEntry.setSeriesEN(event.getValue());
 				}
 			});
+			seriesEN.addValidator(new MaxLengthValidator(32));
+			
 			TextField seriesORG = new TextField();
-			seriesORG.setText(bibEntry.getSeriesORG());
+			seriesORG.setValue(bibEntry.getSeriesORG());
 			seriesORG.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
@@ -1015,8 +1042,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					bibEntry.setSeriesORG(event.getValue());
 				}
 			});
+			seriesORG.addValidator(new MaxLengthValidator(32));
+			
 			TextField seriesTR = new TextField();
-			seriesTR.setText(bibEntry.getSeriesTR());
+			seriesTR.setValue(bibEntry.getSeriesTR());
 			seriesTR.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
@@ -1024,6 +1053,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					bibEntry.setSeriesTR(event.getValue());
 				}
 			});
+			seriesTR.addValidator(new MaxLengthValidator(32));
 
 			VerticalLayoutContainer seriesVLC = new VerticalLayoutContainer();
 			seriesVLC.add(new FieldLabel(seriesORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
@@ -1041,7 +1071,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		 */
 		if (pubType.isEditionEnabled()) {
 			TextField editionEN = new TextField();
-			editionEN.setText(bibEntry.getEditionEN());
+			editionEN.setValue(bibEntry.getEditionEN());
 			editionEN.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
@@ -1049,8 +1079,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					bibEntry.setEditionEN(event.getValue());
 				}
 			});
+			editionEN.addValidator(new MaxLengthValidator(32));
+			
 			TextField editionORG = new TextField();
-			editionORG.setText(bibEntry.getEditionORG());
+			editionORG.setValue(bibEntry.getEditionORG());
 			editionORG.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
@@ -1058,8 +1090,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					bibEntry.setEditionORG(event.getValue());
 				}
 			});
+			editionORG.addValidator(new MaxLengthValidator(32));
+			
 			TextField editionTR = new TextField();
-			editionTR.setText(bibEntry.getEditionTR());
+			editionTR.setValue(bibEntry.getEditionTR());
 			editionTR.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
@@ -1067,6 +1101,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					bibEntry.setEditionTR(event.getValue());
 				}
 			});
+			editionTR.addValidator(new MaxLengthValidator(32));
 
 			VerticalLayoutContainer editionVLC = new VerticalLayoutContainer();
 			editionVLC.add(new FieldLabel(editionORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
@@ -1084,7 +1119,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		 */
 		if (pubType.isVolumeEnabled()) {
 			TextField volumeEN = new TextField();
-			volumeEN.setText(bibEntry.getVolumeEN());
+			volumeEN.setValue(bibEntry.getVolumeEN());
 			volumeEN.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
@@ -1092,8 +1127,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					bibEntry.setVolumeEN(event.getValue());
 				}
 			});
+			volumeEN.addValidator(new MaxLengthValidator(32));
+			
 			TextField volumeORG = new TextField();
-			volumeORG.setText(bibEntry.getVolumeORG());
+			volumeORG.setValue(bibEntry.getVolumeORG());
 			volumeORG.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
@@ -1101,8 +1138,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					bibEntry.setVolumeORG(event.getValue());
 				}
 			});
+			volumeORG.addValidator(new MaxLengthValidator(32));
+			
 			TextField volumeTR = new TextField();
-			volumeTR.setText(bibEntry.getVolumeTR());
+			volumeTR.setValue(bibEntry.getVolumeTR());
 			volumeTR.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
@@ -1110,10 +1149,11 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					bibEntry.setVolumeTR(event.getValue());
 				}
 			});
+			volumeTR.addValidator(new MaxLengthValidator(32));
 
 			VerticalLayoutContainer volumeVLC = new VerticalLayoutContainer();
-			volumeVLC.add(new FieldLabel(volumeEN, "English"), new VerticalLayoutData(1.0, 1.0 / 3));
 			volumeVLC.add(new FieldLabel(volumeORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
+			volumeVLC.add(new FieldLabel(volumeEN, "English"), new VerticalLayoutData(1.0, 1.0 / 3));
 			volumeVLC.add(new FieldLabel(volumeTR, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
 
 			FramedPanel volumeFP = new FramedPanel();
@@ -1127,7 +1167,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		 */
 		if (pubType.isIssueEnabled()) {
 			TextField issueEN = new TextField();
-			issueEN.setText(bibEntry.getIssueEN());
+			issueEN.setValue(bibEntry.getIssueEN());
 			issueEN.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
@@ -1135,8 +1175,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					bibEntry.setIssueEN(event.getValue());
 				}
 			});
+			issueEN.addValidator(new MaxLengthValidator(32));
+			
 			TextField issueORG = new TextField();
-			issueORG.setText(bibEntry.getIssueORG());
+			issueORG.setValue(bibEntry.getIssueORG());
 			issueORG.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
@@ -1144,8 +1186,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					bibEntry.setIssueORG(event.getValue());
 				}
 			});
+			issueORG.addValidator(new MaxLengthValidator(32));
+			
 			TextField issueTR = new TextField();
-			issueTR.setText(bibEntry.getIssueTR());
+			issueTR.setValue(bibEntry.getIssueTR());
 			issueTR.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
@@ -1153,6 +1197,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					bibEntry.setIssueTR(event.getValue());
 				}
 			});
+			issueTR.addValidator(new MaxLengthValidator(32));
 
 			VerticalLayoutContainer volumeVLC = new VerticalLayoutContainer();
 			volumeVLC.add(new FieldLabel(issueORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
@@ -1182,8 +1227,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				bibEntry.setYearEN(event.getValue());
 			}
 		});
+		
 		TextField yearORG = new TextField();
-		yearORG.setText(bibEntry.getYearORG());
+		yearORG.setValue(bibEntry.getYearORG());
 		yearORG.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
@@ -1191,8 +1237,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				bibEntry.setYearORG(event.getValue());
 			}
 		});
+		yearORG.addValidator(new MaxLengthValidator(32));
+		
 		TextField yearTR = new TextField();
-		yearTR.setText(bibEntry.getYearTR());
+		yearTR.setValue(bibEntry.getYearTR());
 		yearTR.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
@@ -1200,6 +1248,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				bibEntry.setYearTR(event.getValue());
 			}
 		});
+		yearTR.addValidator(new MaxLengthValidator(32));
 
 		VerticalLayoutContainer yearVLC = new VerticalLayoutContainer();
 		yearVLC.add(new FieldLabel(yearORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
@@ -1213,7 +1262,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 		if (pubType.isMonthEnabled()) { // bleiben
 			TextField monthEN = new TextField();
-			monthEN.setText(bibEntry.getMonthEN());
+			monthEN.setValue(bibEntry.getMonthEN());
 			monthEN.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
@@ -1221,8 +1270,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					bibEntry.setMonthEN(event.getValue());
 				}
 			});
+			monthEN.addValidator(new MaxLengthValidator(32));
+			
 			TextField monthORG = new TextField();
-			monthORG.setText(bibEntry.getMonthORG());
+			monthORG.setValue(bibEntry.getMonthORG());
 			monthORG.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
@@ -1230,8 +1281,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					bibEntry.setMonthORG(event.getValue());
 				}
 			});
+			monthORG.addValidator(new MaxLengthValidator(32));
+			
 			TextField monthTR = new TextField();
-			monthTR.setText(bibEntry.getMonthTR());
+			monthTR.setValue(bibEntry.getMonthTR());
 			monthTR.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
@@ -1239,6 +1292,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					bibEntry.setMonthTR(event.getValue());
 				}
 			});
+			monthTR.addValidator(new MaxLengthValidator(32));
 
 			VerticalLayoutContainer monthVLC = new VerticalLayoutContainer();
 			monthVLC.add(new FieldLabel(monthORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
@@ -1256,7 +1310,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		 */
 		if (pubType.isPagesEnabled()) {
 			TextField pagesEN = new TextField();
-			pagesEN.setText(bibEntry.getPagesEN());
+			pagesEN.setValue(bibEntry.getPagesEN());
 			pagesEN.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
@@ -1264,8 +1318,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					bibEntry.setPagesEN(event.getValue());
 				}
 			});
+			pagesEN.addValidator(new MaxLengthValidator(32));
+			
 			TextField pagesORG = new TextField();
-			pagesORG.setText(bibEntry.getPagesORG());
+			pagesORG.setValue(bibEntry.getPagesORG());
 			pagesORG.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
@@ -1273,8 +1329,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					bibEntry.setPagesORG(event.getValue());
 				}
 			});
+			pagesORG.addValidator(new MaxLengthValidator(32));
+			
 			TextField pagesTR = new TextField();
-			pagesTR.setText(bibEntry.getPagesTR());
+			pagesTR.setValue(bibEntry.getPagesTR());
 			pagesTR.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 				@Override
@@ -1282,6 +1340,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					bibEntry.setPagesTR(event.getValue());
 				}
 			});
+			pagesTR.addValidator(new MaxLengthValidator(32));
 
 			VerticalLayoutContainer pagesVLC = new VerticalLayoutContainer();
 			pagesVLC.add(new FieldLabel(pagesORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
@@ -1301,7 +1360,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		FramedPanel commentsFP = new FramedPanel();
 		commentsFP.setHeading("Comments");
 		commentsFP.add(commentsTA);
-		commentsTA.setText(bibEntry.getComments());
+		commentsTA.setValue(bibEntry.getComments());
 		commentsTA.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
@@ -1317,7 +1376,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		FramedPanel notesFP = new FramedPanel();
 		notesFP.setHeading("Notes");
 		notesFP.add(notesTA);
-		notesTA.setText(bibEntry.getNotes());
+		notesTA.setValue(bibEntry.getNotes());
 		notesTA.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
@@ -1333,7 +1392,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		FramedPanel abstractTextFP = new FramedPanel();
 		abstractTextFP.setHeading("Abstract");
 		abstractTextFP.add(abstractTextTA);
-		abstractTextTA.setText(bibEntry.getAbstractText());
+		abstractTextTA.setValue(bibEntry.getAbstractText());
 		abstractTextTA.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
@@ -1351,8 +1410,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		FramedPanel urlFP = new FramedPanel();
 		urlFP.setHeading("URL");
 		urlFP.add(urlHLC, new HorizontalLayoutData(1.0, 1.0));
-		urlTF.setText(bibEntry.getUrl());
+		urlTF.setValue(bibEntry.getUrl());
 		urlTF.addValidator(new RegExValidator(Util.REGEX_URL_PATTERN, "Please enter valid URL"));
+		urlTF.addValidator(new MaxLengthValidator(256));
 		urlTF.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
@@ -1370,8 +1430,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		FramedPanel uriFP = new FramedPanel();
 		uriFP.setHeading("URI");
 		uriFP.add(uriTF);
-		uriTF.setText(bibEntry.getUri());
+		uriTF.setValue(bibEntry.getUri());
 		uriTF.addValidator(new RegExValidator(Util.REGEX_URL_PATTERN, "Please enter valid URI"));
+		uriTF.addValidator(new MaxLengthValidator(256));
 		uriTF.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
@@ -1425,7 +1486,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					@Override
 					public SafeHtml render(AnnotatedBiblographyEntry item) {
 						final AnnotatedBiblographyEntryViewTemplates pvTemplates = GWT.create(AnnotatedBiblographyEntryViewTemplates.class);
-						return pvTemplates.AnnotatedBiblographyEntry(item.getLabel());
+						return pvTemplates.label(item.getLabel());
 					}
 				});
 		firstEditionComboBox.setTypeAhead(false);
@@ -1459,6 +1520,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				if (event.getValue()) {
+					loadFirstEditionCandidates();
+				}
 				firstEditionComboBox.setEnabled(event.getValue());
 			}
 		});
@@ -1488,6 +1552,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				"resource?document=" + bibEntry.getUniqueID() + "-paper.pdf" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()),
 				"paper")));
 		ToolButton paperUploadButton = new ToolButton(ToolButton.PLUS);
+		paperUploadButton.setToolTip("upload PDF");
 		paperUploadButton.addSelectHandler(new SelectHandler() {
 
 			@Override
@@ -1562,6 +1627,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				"resource?document=" + bibEntry.getUniqueID() + "-annotation.pdf" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()),
 				"annotation")));
 		ToolButton annotationUploadButton = new ToolButton(ToolButton.PLUS);
+		annotationUploadButton.setToolTip("upload annotation PDF");
 		annotationUploadButton.addSelectHandler(new SelectHandler() {
 
 			@Override

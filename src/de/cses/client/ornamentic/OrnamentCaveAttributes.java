@@ -927,7 +927,8 @@ public class OrnamentCaveAttributes extends PopupPanel {
 //		return mainPanel;
 //	}
 
-	interface WallRelationProperties extends PropertyAccess<CaveEntry> {
+	interface WallRelationProperties extends PropertyAccess<WallOrnamentCaveRelation> {
+		@Path("wall.wallLocationID")
 		ModelKeyProvider<WallOrnamentCaveRelation> wallLocationID();
 	}
 

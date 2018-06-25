@@ -1,8 +1,13 @@
-<div style='font-size:12px; text-align:left;'> 
+<div style='font-size:12px'> 
 	<p>
 		{authors} <tpl if="yearORG != &quot;&quot;">({yearORG})</tpl>. <i>{titleORG}</i> <tpl if="titleEN != &quot;&quot;">({titleEN})</tpl>.
 		<tpl if="parentTitleORG != &quot;&quot;">
-			<br>In 	<tpl if="editors != &quot;&quot;"> {editors} (eds.)</tpl> <i>{parentTitleORG}</i> <tpl if="pagesORG != &quot;&quot;"> (pp. {pagesORG})</tpl>.
+			<br>In 	
+				<tpl if="editors != &quot;&quot;"> {editors} (eds.)</tpl> 
+				<i>{parentTitleORG}</i> 
+				<tpl if="volumeORG != &quot;&quot;"> Volume {volumeORG}.</tpl> 
+				<tpl if="issueORG != &quot;&quot;"> Issue {issueORG}.</tpl> 
+				<tpl if="pagesORG != &quot;&quot;"> (pp. {pagesORG}).</tpl>
 	  </tpl>
 	  <tpl if="publisher != &quot;&quot;">
 	  	<br> {publisher}.

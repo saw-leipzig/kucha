@@ -530,14 +530,14 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		return connector.getModesOfRepresentations();
 	}
 
-	/* (non-Javadoc)
-	 * @see de.cses.client.DatabaseService#getWall(int, int)
-	 */
-	@Override
-	public WallEntry getWall(int caveID, String locationLabel) throws IllegalArgumentException {
-		MysqlConnector connector = MysqlConnector.getInstance();
-		return connector.getWall(caveID, locationLabel);
-	}
+//	/* (non-Javadoc)
+//	 * @see de.cses.client.DatabaseService#getWall(int, int)
+//	 */
+//	@Override
+//	public WallEntry getWall(int caveID, String locationLabel) throws IllegalArgumentException {
+//		MysqlConnector connector = MysqlConnector.getInstance();
+//		return connector.getWall(caveID, locationLabel);
+//	}
 
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getWalls(int)
@@ -850,5 +850,13 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public boolean updateOrnamentEntry(OrnamentEntry oEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.updateOrnamentEntry(oEntry);
+	}
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#getAnnotatedBibliographyFromAuthors(java.util.ArrayList)
+	 */
+	@Override
+	public ArrayList<AnnotatedBiblographyEntry> getAnnotatedBibliographyFromAuthors(ArrayList<AuthorEntry> authorList) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getAnnotatedBibliographyFromAuthors(authorList);
 	}
 }

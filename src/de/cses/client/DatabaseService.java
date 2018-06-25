@@ -92,15 +92,13 @@ public interface DatabaseService extends RemoteService {
 
 	DepictionEntry getDepictionEntry(int depictionID) throws IllegalArgumentException;
 
-	boolean updateEntry(String sqlUpdate);
+	boolean updateEntry(String sqlUpdate) throws IllegalArgumentException;
 
-	boolean deleteEntry(String sqlDelete);
-
-//	int insertEntry(String sqlInsert);
+	boolean deleteEntry(String sqlDelete) throws IllegalArgumentException;
 
 	ArrayList<IconographyEntry> getIconography() throws IllegalArgumentException;
 
-	int saveOrnamentEntry(OrnamentEntry ornamentEntry);
+	int saveOrnamentEntry(OrnamentEntry ornamentEntry) throws IllegalArgumentException;
 
 	CaveTypeEntry getCaveTypebyID(int caveTypeID) throws IllegalArgumentException;
 
@@ -151,7 +149,7 @@ public interface DatabaseService extends RemoteService {
 	
 	ArrayList<WallEntry> getWalls() throws IllegalArgumentException;
 
-	WallEntry getWall(int caveID, String locationLabel) throws IllegalArgumentException;
+//	WallEntry getWall(int caveID, String locationLabel) throws IllegalArgumentException;
 
 	ArrayList<WallEntry> getWalls(int caveID) throws IllegalArgumentException;
 
@@ -267,4 +265,6 @@ public interface DatabaseService extends RemoteService {
 	void doLogging(String usertag, String message);
 
 	boolean updateOrnamentEntry(OrnamentEntry oEntry) throws IllegalArgumentException;
+
+	ArrayList<AnnotatedBiblographyEntry> getAnnotatedBibliographyFromAuthors(ArrayList<AuthorEntry> authorList) throws IllegalArgumentException;
 }

@@ -925,7 +925,7 @@ public class MysqlConnector {
 				deleteEntry("DELETE FROM OrnamentCaveWallRelation WHERE OrnamentCaveRelationID=" + newCaveOrnamentRelationID);
 				PreparedStatement wallCaveOrnamentRelationStatement = dbc.prepareStatement("INSERT INTO OrnamentCaveWallRelation (WallLocationID, PositionID, FunctionID, Notes, OrnamentCaveRelationID, CaveID) VALUES (?,?,?,?,?,?)");
 				for (WallOrnamentCaveRelation we : ornamentCaveR.getWalls()) {
-					wallCaveOrnamentRelationStatement.setInt(1, we.getWallLocationID());
+					wallCaveOrnamentRelationStatement.setInt(1, we.getWall().getWallLocationID());
 					wallCaveOrnamentRelationStatement.setInt(2, we.getOrnamenticPositionID());
 					wallCaveOrnamentRelationStatement.setInt(3, we.getOrnamenticFunctionID());
 					wallCaveOrnamentRelationStatement.setString(4, we.getNotes());
@@ -1379,6 +1379,8 @@ public class MysqlConnector {
 						rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes"),
 						rs.getInt("MasterImageID"), rs.getBoolean("OpenAccess"), rs.getString("LastChangedByUser"), rs.getString("LastChangedOnDate"));
 				de.setRelatedImages(getRelatedImages(de.getDepictionID()));
+				de.setRelatedBibliographyList(getRelatedBibliographyFromDepiction(de.getDepictionID()));
+				de.setRelatedIconographyList(getRelatedIconography(de.getDepictionID()));
 				results.add(de);
 			}
 			rs.close();
@@ -1426,6 +1428,8 @@ public class MysqlConnector {
 						rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes"),
 						rs.getInt("MasterImageID"), rs.getBoolean("OpenAccess"), rs.getString("LastChangedByUser"), rs.getString("LastChangedOnDate"));
 				de.setRelatedImages(getRelatedImages(de.getDepictionID()));
+				de.setRelatedBibliographyList(getRelatedBibliographyFromDepiction(de.getDepictionID()));
+				de.setRelatedIconographyList(getRelatedIconography(de.getDepictionID()));
 				results.add(de);
 			}
 			rs.close();
@@ -1694,13 +1698,14 @@ public class MysqlConnector {
 		return walls;
 	}
 
-	public WallEntry getWall(int wallID) {
+	public WallEntry getWall(int caveID, int wallLocationID) {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		WallEntry result = null;
 		try {
-			pstmt = dbc.prepareStatement("SELECT * FROM Walls WHERE WallID=?");
-			pstmt.setInt(1, wallID);
+			pstmt = dbc.prepareStatement("SELECT * FROM Walls WHERE CaveID=? AND WallLocationID=?");
+			pstmt.setInt(1, caveID);
+			pstmt.setInt(2, wallLocationID);
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.first()) {
 				result = new WallEntry(rs.getInt("CaveID"), rs.getInt("WallLocationID"), rs.getInt("PreservationClassificationID"),
@@ -1714,26 +1719,26 @@ public class MysqlConnector {
 		return result;
 	}
 
-	public WallEntry getWall(int caveID, String locationLabel) {
-		Connection dbc = getConnection();
-		PreparedStatement pstmt;
-		WallEntry result = null;
-		try {
-			pstmt = dbc.prepareStatement("SELECT * FROM Walls WHERE CaveID=? AND LocationLabel=?");
-			pstmt.setInt(1, caveID);
-			pstmt.setString(2, locationLabel);
-			ResultSet rs = pstmt.executeQuery();
-			if (rs.first()) {
-				result = new WallEntry(rs.getInt("CaveID"), rs.getInt("WallLocationID"), rs.getInt("PreservationClassificationID"),
-						rs.getDouble("Width"), rs.getDouble("Height"));
-			}
-			pstmt.close();
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-			return null;
-		}
-		return result;
-	}
+//	public WallEntry getWall(int caveID, String locationLabel) {
+//		Connection dbc = getConnection();
+//		PreparedStatement pstmt;
+//		WallEntry result = null;
+//		try {
+//			pstmt = dbc.prepareStatement("SELECT * FROM Walls WHERE CaveID=? AND LocationLabel=?");
+//			pstmt.setInt(1, caveID);
+//			pstmt.setString(2, locationLabel);
+//			ResultSet rs = pstmt.executeQuery();
+//			if (rs.first()) {
+//				result = new WallEntry(rs.getInt("CaveID"), rs.getInt("WallLocationID"), rs.getInt("PreservationClassificationID"),
+//						rs.getDouble("Width"), rs.getDouble("Height"));
+//			}
+//			pstmt.close();
+//		} catch (SQLException ex) {
+//			ex.printStackTrace();
+//			return null;
+//		}
+//		return result;
+//	}
 
 	/**
 	 * @param sqlWhere
@@ -1758,7 +1763,7 @@ public class MysqlConnector {
 						rs.getString("TitleAddonORG"), rs.getString("TitleAddonTR"), rs.getString("Publisher"), rs.getString("SeriesEN"),
 						rs.getString("SeriesORG"), rs.getString("SeriesTR"), rs.getString("EditionEN"), rs.getString("EditionORG"),
 						rs.getString("EditionTR"), rs.getString("VolumeEN"), rs.getString("VolumeORG"), rs.getString("VolumeTR"),
-						rs.getString("IssueEN"), rs.getString("IssueTR"), rs.getString("IssueORG"), rs.getInt("YearEN"), rs.getString("YearORG"),
+						rs.getString("IssueEN"), rs.getString("IssueORG"), rs.getString("IssueTR"), rs.getInt("YearEN"), rs.getString("YearORG"),
 						rs.getString("YearTR"), rs.getString("MonthEN"), rs.getString("MonthORG"), rs.getString("MonthTR"), rs.getString("PagesEN"),
 						rs.getString("PagesORG"), rs.getString("PagesTR"), rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"),
 						rs.getString("URI"), rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getBoolean("OpenAccess"),
@@ -1769,6 +1774,53 @@ public class MysqlConnector {
 			}
 			rs.close();
 			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	/**
+	 * @param authorList
+	 * @return
+	 */
+	public ArrayList<AnnotatedBiblographyEntry> getAnnotatedBibliographyFromAuthors(ArrayList<AuthorEntry> authorList) {
+		AnnotatedBiblographyEntry entry;
+		ArrayList<AnnotatedBiblographyEntry> result = new ArrayList<AnnotatedBiblographyEntry>();
+		if (authorList.isEmpty()) {
+			return result;
+		}
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		String authorIDs = "";
+		for (AuthorEntry ae : authorList) {
+			authorIDs += (authorIDs.length() > 0) ? "," + ae.getAuthorID() : ae.getAuthorID();
+		}
+		try {
+			pstmt = dbc.prepareStatement(
+					"SELECT * FROM AnnotatedBibliography WHERE AnnotatedBibliography.BibID IN (SELECT DISTINCT BibID FROM AuthorBibliographyRelation WHERE AuthorBibliographyRelation.AuthorID IN (" + authorIDs + "))"
+				);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				entry = new AnnotatedBiblographyEntry(rs.getInt("BibID"), getPublicationType(rs.getInt("PublicationTypeID")),
+						rs.getString("TitleEN"), rs.getString("TitleORG"), rs.getString("TitleTR"), rs.getString("ParentTitleEN"),
+						rs.getString("ParentTitleORG"), rs.getString("ParentTitleTR"), rs.getString("UniversityEN"), rs.getString("UniversityORG"),
+						rs.getString("UniversityTR"), rs.getString("NumberEN"), rs.getString("NumberORG"), rs.getString("NumberTR"),
+						rs.getString("AccessDateEN"), rs.getString("AccessDateORG"), rs.getString("AccessDateTR"), rs.getString("TitleAddonEN"),
+						rs.getString("TitleAddonORG"), rs.getString("TitleAddonTR"), rs.getString("Publisher"), rs.getString("SeriesEN"),
+						rs.getString("SeriesORG"), rs.getString("SeriesTR"), rs.getString("EditionEN"), rs.getString("EditionORG"),
+						rs.getString("EditionTR"), rs.getString("VolumeEN"), rs.getString("VolumeORG"), rs.getString("VolumeTR"),
+						rs.getString("IssueEN"), rs.getString("IssueORG"), rs.getString("IssueTR"), rs.getInt("YearEN"), rs.getString("YearORG"),
+						rs.getString("YearTR"), rs.getString("MonthEN"), rs.getString("MonthORG"), rs.getString("MonthTR"), rs.getString("PagesEN"),
+						rs.getString("PagesORG"), rs.getString("PagesTR"), rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"),
+						rs.getString("URI"), rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getBoolean("OpenAccess"),
+						rs.getString("AbstractText"));
+				entry.setAuthorList(getAuthorBibRelation(entry.getAnnotatedBiblographyID()));
+				entry.setEditorList(getEditorBibRelation(entry.getAnnotatedBiblographyID()));
+				result.add(entry);
+			}
+			rs.close();
+			pstmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -1856,7 +1908,7 @@ public class MysqlConnector {
 		}
 		return result;
 	}
-
+	
 	public AnnotatedBiblographyEntry getAnnotatedBiblographybyID(int bibID) {
 		AnnotatedBiblographyEntry result = null;
 		Connection dbc = getConnection();
@@ -2897,12 +2949,26 @@ public class MysqlConnector {
 		int newBibID = 0;
 		System.err.println("insertAnnotatedBiblographyEntry - saving");
 		try {
-			pstmt = dbc.prepareStatement("INSERT INTO AnnotatedBibliography (PublicationTypeID, " + "AccessDateEN, AccessDateORG, AccessDateTR, "
-					+ "ParentTitleEN, ParentTitleORG, ParentTitleTR, " + "Comments, " + "EditionEN, EditionORG, EditionTR, " + "FirstEditionBibID, "
-					+ "MonthEN, MonthORG, MonthTR, " + "Notes, " + "NumberEN, NumberORG, NumberTR, " + "PagesEN, PagesORG, PagesTR, " + "Publisher, "
-					+ "SeriesEN, SeriesORG, SeriesTR, " + "TitleAddonEN, TitleAddonORG, TitleAddonTR, " + "TitleEN, TitleORG, TitleTR, "
-					+ "UniversityEN, UniversityORG, UniversityTR, " + "URI, URL, " + "VolumeEN, VolumeORG, VolumeTR, "
-					+ "IssueEN, IssueORG, IssueTR, " + "YearEN, YearORG, YearTR, " + "Unpublished, OpenAccess, AbstractText) "
+			pstmt = dbc.prepareStatement("INSERT INTO AnnotatedBibliography (PublicationTypeID, " 
+					+ "AccessDateEN, AccessDateORG, AccessDateTR, "
+					+ "ParentTitleEN, ParentTitleORG, ParentTitleTR, " 
+					+ "Comments, " 
+					+ "EditionEN, EditionORG, EditionTR, " 
+					+ "FirstEditionBibID, "
+					+ "MonthEN, MonthORG, MonthTR, " 
+					+ "Notes, " 
+					+ "NumberEN, NumberORG, NumberTR, " 
+					+ "PagesEN, PagesORG, PagesTR, " 
+					+ "Publisher, "
+					+ "SeriesEN, SeriesORG, SeriesTR, " 
+					+ "TitleAddonEN, TitleAddonORG, TitleAddonTR, " 
+					+ "TitleEN, TitleORG, TitleTR, "
+					+ "UniversityEN, UniversityORG, UniversityTR, " 
+					+ "URI, URL, " 
+					+ "VolumeEN, VolumeORG, VolumeTR, "
+					+ "IssueEN, IssueORG, IssueTR, " 
+					+ "YearEN, YearORG, YearTR, " 
+					+ "Unpublished, OpenAccess, AbstractText) "
 					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 					Statement.RETURN_GENERATED_KEYS);
 			pstmt.setInt(1, bibEntry.getPublicationType().getPublicationTypeID());
@@ -2946,8 +3012,8 @@ public class MysqlConnector {
 			pstmt.setString(39, bibEntry.getVolumeORG());
 			pstmt.setString(40, bibEntry.getVolumeTR());
 			pstmt.setString(41, bibEntry.getIssueEN());
-			pstmt.setString(42, bibEntry.getIssueEN());
-			pstmt.setString(43, bibEntry.getIssueEN());
+			pstmt.setString(42, bibEntry.getIssueORG());
+			pstmt.setString(43, bibEntry.getIssueTR());
 			pstmt.setInt(44, bibEntry.getYearEN());
 			pstmt.setString(45, bibEntry.getYearORG());
 			pstmt.setString(46, bibEntry.getYearTR());
@@ -3594,12 +3660,23 @@ public class MysqlConnector {
 		System.err.println("insertAnnotatedBiblographyEntry - saving");
 		try {
 			pstmt = dbc.prepareStatement("UPDATE AnnotatedBibliography SET PublicationTypeID=?, "
-					+ "AccessDateEN=?, AccessDateORG=?, AccessDateTR=?, " + "ParentTitleEN=?, ParentTitleORG=?, ParentTitleTR=?, " + "Comments=?, "
-					+ "EditionEN=?, EditionORG=?, EditionTR=?, " + "FirstEditionBibID=?, " + "MonthEN=?, MonthORG=?, MonthTR=?, " + "Notes=?, "
-					+ "NumberEN=?, NumberORG=?, NumberTR=?, " + "PagesEN=?, PagesORG=?, PagesTR=?, " + "Publisher=?, "
-					+ "SeriesEN=?, SeriesORG=?, SeriesTR=?, " + "TitleAddonEN=?, TitleAddonORG=?, TitleAddonTR=?, "
-					+ "TitleEN=?, TitleORG=?, TitleTR=?, " + "UniversityEN=?, UniversityORG=?, UniversityTR=?, " + "URI=?, URL=?, "
-					+ "VolumeEN=?, VolumeORG=?, VolumeTR=?, " + "IssueEN=?, IssueORG=?, IssueTR=?, " + "YearEN=?, YearORG=?, YearTR=?, "
+					+ "AccessDateEN=?, AccessDateORG=?, AccessDateTR=?, " 
+					+ "ParentTitleEN=?, ParentTitleORG=?, ParentTitleTR=?, " 
+					+ "Comments=?, "
+					+ "EditionEN=?, EditionORG=?, EditionTR=?, " 
+					+ "FirstEditionBibID=?, " 
+					+ "MonthEN=?, MonthORG=?, MonthTR=?, " + "Notes=?, "
+					+ "NumberEN=?, NumberORG=?, NumberTR=?, " 
+					+ "PagesEN=?, PagesORG=?, PagesTR=?, " 
+					+ "Publisher=?, "
+					+ "SeriesEN=?, SeriesORG=?, SeriesTR=?, " 
+					+ "TitleAddonEN=?, TitleAddonORG=?, TitleAddonTR=?, "
+					+ "TitleEN=?, TitleORG=?, TitleTR=?, " 
+					+ "UniversityEN=?, UniversityORG=?, UniversityTR=?, " 
+					+ "URI=?, URL=?, "
+					+ "VolumeEN=?, VolumeORG=?, VolumeTR=?, " 
+					+ "IssueEN=?, IssueORG=?, IssueTR=?, " 
+					+ "YearEN=?, YearORG=?, YearTR=?, "
 					+ "Unpublished=?, OpenAccess=?, AbstractText=? WHERE BibID=?");
 			pstmt.setInt(1, bibEntry.getPublicationType().getPublicationTypeID());
 			pstmt.setString(2, bibEntry.getAccessdateEN());
@@ -3642,8 +3719,8 @@ public class MysqlConnector {
 			pstmt.setString(39, bibEntry.getVolumeORG());
 			pstmt.setString(40, bibEntry.getVolumeTR());
 			pstmt.setString(41, bibEntry.getIssueEN());
-			pstmt.setString(42, bibEntry.getIssueEN());
-			pstmt.setString(43, bibEntry.getIssueEN());
+			pstmt.setString(42, bibEntry.getIssueORG());
+			pstmt.setString(43, bibEntry.getIssueTR());
 			pstmt.setInt(44, bibEntry.getYearEN());
 			pstmt.setString(45, bibEntry.getYearORG());
 			pstmt.setString(46, bibEntry.getYearTR());
@@ -3852,7 +3929,7 @@ public class MysqlConnector {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM OrnamentCaveWallRelation WHERE OrnamentCaveRelationID = " + ornamentCaveID);
 			while (rs.next()) {
 				results.add(new WallOrnamentCaveRelation(rs.getInt("OrnamentCaveWallRelationID"), rs.getInt("OrnamentCaveRelationID"),
-						rs.getInt("WallLocationID"), rs.getInt("PositionID"), rs.getInt("FunctionID"), rs.getString("Notes"),
+						rs.getInt("PositionID"), rs.getInt("FunctionID"), rs.getString("Notes"),
 						getWallbyWallLocationANDCaveID(rs.getInt("WallLocationID"), rs.getInt("CaveID"))));
 			}
 			rs.close();
