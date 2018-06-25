@@ -22,7 +22,7 @@ public class WallOrnamentCaveRelation extends AbstractEntry {
 	int ornamentCaveRelationID;
 	int wallOrnamentCaveRelationID;
 	WallEntry wall;
-	int wallLocationID;
+//	int wallLocationID;
 	int ornamenticPositionID;
 	int ornamenticFunctionID;
 	String notes;
@@ -47,17 +47,14 @@ public class WallOrnamentCaveRelation extends AbstractEntry {
 	public WallOrnamentCaveRelation() {
 	}
 
-	public WallOrnamentCaveRelation(int wallOrnamentCaveRelationID, int caveOrnamentRelationID, int wallLocationID, int ornamentPositionID,
-			int ornamentFunctionID, String notes, WallEntry wall) {
+	public WallOrnamentCaveRelation(int wallOrnamentCaveRelationID, int caveOrnamentRelationID, int ornamentPositionID, int ornamentFunctionID, String notes, WallEntry wall) {
 		this.wallOrnamentCaveRelationID = wallOrnamentCaveRelationID;
 		this.ornamentCaveRelationID = caveOrnamentRelationID;
-		this.wallLocationID = wallLocationID;
+//		this.wallLocationID = wallLocationID;
 		this.notes = notes;
 		this.ornamenticFunctionID = ornamentFunctionID;
 		this.ornamenticPositionID = ornamentPositionID;
 		this.wall = wall;
-		{
-		}
 
 	}
 
@@ -101,9 +98,9 @@ public class WallOrnamentCaveRelation extends AbstractEntry {
 		this.ornamenticFunctionID = ornamenticFunctionID;
 	}
 
-	public int getWallLocationID() {
-		return wallLocationID;
-	}
+//	public int getWallLocationID() {
+//		return wallLocationID;
+//	}
 
 	/**
 	 * @return the ornamentCaveRelationID
@@ -146,8 +143,8 @@ public class WallOrnamentCaveRelation extends AbstractEntry {
 		return null;
 	}
 
-	public void setWallLocationID(int wallLocationID) {
-		this.wallLocationID = wallLocationID;
-	}
+//	public void setWallLocationID(int wallLocationID) {
+//		this.wallLocationID = wallLocationID;
+//	}
 
 }

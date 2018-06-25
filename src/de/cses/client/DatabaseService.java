@@ -149,7 +149,7 @@ public interface DatabaseService extends RemoteService {
 	
 	ArrayList<WallEntry> getWalls() throws IllegalArgumentException;
 
-	WallEntry getWall(int caveID, String locationLabel) throws IllegalArgumentException;
+//	WallEntry getWall(int caveID, String locationLabel) throws IllegalArgumentException;
 
 	ArrayList<WallEntry> getWalls(int caveID) throws IllegalArgumentException;
 

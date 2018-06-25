@@ -295,6 +295,7 @@ public class OrnamentWallAttributes extends PopupPanel {
 		if(wallOrnamentCaveRelation != null) {
 			ornamentCaveRelation.getWallsListStore().remove(wallOrnamentCaveRelation);
 		}
+		
 		ornamentCaveRelation.getWallsListStore().add(caveWallOrnamentRelation);
 	}
 

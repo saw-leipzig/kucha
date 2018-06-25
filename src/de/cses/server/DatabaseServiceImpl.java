@@ -530,14 +530,14 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		return connector.getModesOfRepresentations();
 	}
 
-	/* (non-Javadoc)
-	 * @see de.cses.client.DatabaseService#getWall(int, int)
-	 */
-	@Override
-	public WallEntry getWall(int caveID, String locationLabel) throws IllegalArgumentException {
-		MysqlConnector connector = MysqlConnector.getInstance();
-		return connector.getWall(caveID, locationLabel);
-	}
+//	/* (non-Javadoc)
+//	 * @see de.cses.client.DatabaseService#getWall(int, int)
+//	 */
+//	@Override
+//	public WallEntry getWall(int caveID, String locationLabel) throws IllegalArgumentException {
+//		MysqlConnector connector = MysqlConnector.getInstance();
+//		return connector.getWall(caveID, locationLabel);
+//	}
 
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getWalls(int)

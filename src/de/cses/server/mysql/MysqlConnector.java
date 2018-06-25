@@ -925,7 +925,7 @@ public class MysqlConnector {
 				deleteEntry("DELETE FROM OrnamentCaveWallRelation WHERE OrnamentCaveRelationID=" + newCaveOrnamentRelationID);
 				PreparedStatement wallCaveOrnamentRelationStatement = dbc.prepareStatement("INSERT INTO OrnamentCaveWallRelation (WallLocationID, PositionID, FunctionID, Notes, OrnamentCaveRelationID, CaveID) VALUES (?,?,?,?,?,?)");
 				for (WallOrnamentCaveRelation we : ornamentCaveR.getWalls()) {
-					wallCaveOrnamentRelationStatement.setInt(1, we.getWallLocationID());
+					wallCaveOrnamentRelationStatement.setInt(1, we.getWall().getWallLocationID());
 					wallCaveOrnamentRelationStatement.setInt(2, we.getOrnamenticPositionID());
 					wallCaveOrnamentRelationStatement.setInt(3, we.getOrnamenticFunctionID());
 					wallCaveOrnamentRelationStatement.setString(4, we.getNotes());
@@ -1698,13 +1698,14 @@ public class MysqlConnector {
 		return walls;
 	}
 
-	public WallEntry getWall(int wallID) {
+	public WallEntry getWall(int caveID, int wallLocationID) {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		WallEntry result = null;
 		try {
-			pstmt = dbc.prepareStatement("SELECT * FROM Walls WHERE WallID=?");
-			pstmt.setInt(1, wallID);
+			pstmt = dbc.prepareStatement("SELECT * FROM Walls WHERE CaveID=? AND WallLocationID=?");
+			pstmt.setInt(1, caveID);
+			pstmt.setInt(2, wallLocationID);
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.first()) {
 				result = new WallEntry(rs.getInt("CaveID"), rs.getInt("WallLocationID"), rs.getInt("PreservationClassificationID"),
@@ -1718,26 +1719,26 @@ public class MysqlConnector {
 		return result;
 	}
 
-	public WallEntry getWall(int caveID, String locationLabel) {
-		Connection dbc = getConnection();
-		PreparedStatement pstmt;
-		WallEntry result = null;
-		try {
-			pstmt = dbc.prepareStatement("SELECT * FROM Walls WHERE CaveID=? AND LocationLabel=?");
-			pstmt.setInt(1, caveID);
-			pstmt.setString(2, locationLabel);
-			ResultSet rs = pstmt.executeQuery();
-			if (rs.first()) {
-				result = new WallEntry(rs.getInt("CaveID"), rs.getInt("WallLocationID"), rs.getInt("PreservationClassificationID"),
-						rs.getDouble("Width"), rs.getDouble("Height"));
-			}
-			pstmt.close();
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-			return null;
-		}
-		return result;
-	}
+//	public WallEntry getWall(int caveID, String locationLabel) {
+//		Connection dbc = getConnection();
+//		PreparedStatement pstmt;
+//		WallEntry result = null;
+//		try {
+//			pstmt = dbc.prepareStatement("SELECT * FROM Walls WHERE CaveID=? AND LocationLabel=?");
+//			pstmt.setInt(1, caveID);
+//			pstmt.setString(2, locationLabel);
+//			ResultSet rs = pstmt.executeQuery();
+//			if (rs.first()) {
+//				result = new WallEntry(rs.getInt("CaveID"), rs.getInt("WallLocationID"), rs.getInt("PreservationClassificationID"),
+//						rs.getDouble("Width"), rs.getDouble("Height"));
+//			}
+//			pstmt.close();
+//		} catch (SQLException ex) {
+//			ex.printStackTrace();
+//			return null;
+//		}
+//		return result;
+//	}
 
 	/**
 	 * @param sqlWhere
@@ -3928,7 +3929,7 @@ public class MysqlConnector {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM OrnamentCaveWallRelation WHERE OrnamentCaveRelationID = " + ornamentCaveID);
 			while (rs.next()) {
 				results.add(new WallOrnamentCaveRelation(rs.getInt("OrnamentCaveWallRelationID"), rs.getInt("OrnamentCaveRelationID"),
-						rs.getInt("WallLocationID"), rs.getInt("PositionID"), rs.getInt("FunctionID"), rs.getString("Notes"),
+						rs.getInt("PositionID"), rs.getInt("FunctionID"), rs.getString("Notes"),
 						getWallbyWallLocationANDCaveID(rs.getInt("WallLocationID"), rs.getInt("CaveID"))));
 			}
 			rs.close();

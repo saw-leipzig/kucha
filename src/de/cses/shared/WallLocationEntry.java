@@ -26,7 +26,7 @@ public class WallLocationEntry extends AbstractEntry {
 	public static final String REAR_AREA_LEFT_CORRIDOR_LABEL = "rear area left corridor";
 	public static final String REAR_AREA_RIGHT_CORRIDOR_LABEL = "rear area right corridor";
 	
-	private int wallLocationID;
+	private int wallLocationID = 0;
 	private String label;
 	private String caveAreaLabel; // see CaveAreaEntry
 
@@ -43,9 +43,7 @@ public class WallLocationEntry extends AbstractEntry {
 	/**
 	 * 
 	 */
-	public WallLocationEntry() {
-		wallLocationID=0;
-	}
+	public WallLocationEntry() { }
 
 	/* (non-Javadoc)
 	 * @see de.cses.shared.AbstractEntry#getUniqueID()
