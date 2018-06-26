@@ -23,6 +23,7 @@ import com.sencha.gxt.dnd.core.client.DropTarget;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.ui.AbstractResultView;
+import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
 
@@ -45,21 +46,28 @@ public class DepictionResultView extends AbstractResultView {
 			@Override
 			protected void onDragDrop(DndDropEvent event) {
 				super.onDragDrop(event);
+				String sqlWhere = null;
 				if (event.getData() instanceof CaveEntry) {
 					int caveID = ((CaveEntry) event.getData()).getCaveID();
-					dbService.getDepictions("CaveID="+caveID, new AsyncCallback<ArrayList<DepictionEntry>>() {
-
-						@Override
-						public void onFailure(Throwable caught) { }
-
-						@Override
-						public void onSuccess(ArrayList<DepictionEntry> result) {
-							for (DepictionEntry de : result) {
-								addResult(new DepictionView(de));
-							}
-						}
-					});
+					sqlWhere = "CaveID=" + caveID;
+				} else if (event.getData() instanceof AnnotatedBiblographyEntry) {
+					int bibID = ((AnnotatedBiblographyEntry) event.getData()).getAnnotatedBiblographyID();
+					sqlWhere = "DepictionID IN (SELECT DISTINCT DepictionID FROM DepictionBibliographyRelation WHERE BibID=" + bibID + ")";
+				} else {
+					return;
 				}
+				dbService.getDepictions(sqlWhere, new AsyncCallback<ArrayList<DepictionEntry>>() {
+					
+					@Override
+					public void onFailure(Throwable caught) { }
+					
+					@Override
+					public void onSuccess(ArrayList<DepictionEntry> result) {
+						for (DepictionEntry de : result) {
+							addResult(new DepictionView(de));
+						}
+					}
+				});
 			}
 		};
 	
