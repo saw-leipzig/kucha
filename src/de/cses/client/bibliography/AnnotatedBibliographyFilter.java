@@ -47,7 +47,7 @@ public class AnnotatedBibliographyFilter extends AbstractFilter {
 		authorNameTF = new TextField();
 		authorNameTF.setEmptyText("search in author or institute");
 		titleTF = new TextField();
-		titleTF.setEmptyText("search in title (original/english/transcription)");
+		titleTF.setEmptyText("search in title (orig./eng./trans.)");
 		VerticalLayoutContainer bibFilterVLC = new VerticalLayoutContainer();
 		bibFilterVLC.add(authorNameTF, new VerticalLayoutData(1.0, .5));
 		bibFilterVLC.add(titleTF, new VerticalLayoutData(1.0, .5));
@@ -65,7 +65,7 @@ public class AnnotatedBibliographyFilter extends AbstractFilter {
 			String searchTerm = authorNameTF.getValue();
 			String sqlTerm = "";
 			for (String name : searchTerm.split(" ")) {
-				sqlTerm += sqlTerm.length() > 0 ? " OR (FirstName LIKE '%" + name + "%') OR (LastName LIKE '%" + name + "%') OR (Institution LIKE '%" + name + "%')" : "(FirstName LIKE '%" + name + "%') OR (LastName LIKE '%" + name + "%') OR (Institution LIKE '%" + name + "%')";
+				sqlTerm += sqlTerm.length() > 0 ? " AND (FirstName LIKE '%" + name + "%') OR (LastName LIKE '%" + name + "%') OR (Institution LIKE '%" + name + "%')" : "(FirstName LIKE '%" + name + "%') OR (LastName LIKE '%" + name + "%') OR (Institution LIKE '%" + name + "%')";
 			}
 			sqlTerm = "BibID IN (SELECT DISTINCT BibID FROM AuthorBibliographyRelation WHERE AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (" + sqlTerm + ")))";
 			result.add(sqlTerm);
