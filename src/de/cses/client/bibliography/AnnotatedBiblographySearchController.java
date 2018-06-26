@@ -98,7 +98,7 @@ public class AnnotatedBiblographySearchController extends AbstractSearchControll
 				sqlWhere = sqlWhere + " AND " + sql;
 			}
 		}
-		dbService.getAnnotatedBibliography(new AsyncCallback<ArrayList<AnnotatedBiblographyEntry>>() {
+		dbService.getAnnotatedBibliography(sqlWhere, new AsyncCallback<ArrayList<AnnotatedBiblographyEntry>>() {
 
 			@Override
 			public void onFailure(Throwable caught) {

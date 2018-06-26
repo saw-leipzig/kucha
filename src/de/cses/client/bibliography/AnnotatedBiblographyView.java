@@ -38,30 +38,30 @@ public class AnnotatedBiblographyView  extends AbstractView {
 	public AnnotatedBiblographyView(AnnotatedBiblographyEntry annotatedBiblographyEntry) {
 		this.annotatedBiblographyEntry = annotatedBiblographyEntry;
 		dvTemplates = GWT.create(AnnotatedBiblographyViewTemplates.class);
-		String authors = null;
-		if (annotatedBiblographyEntry.getPublicationType().isAuthorEnabled()) {
-			for (AuthorEntry ae : annotatedBiblographyEntry.getAuthorList()) {
-				if (authors == null) {
-					authors = ae.getName();
-				} else {
-					authors = authors.concat("; " + ae.getName());
-				}
-			}
-		} else {
-			for (AuthorEntry ae : annotatedBiblographyEntry.getEditorList()) {
-				if (authors == null) {
-					authors = ae.getName();
-				} else {
-					authors = authors.concat("; " + ae.getName());
-				}
-			}
-			authors = authors.concat(" (Eds.)");
-		}
+//		String authors = null;
+//		if (annotatedBiblographyEntry.getPublicationType().isAuthorEnabled()) {
+//			for (AuthorEntry ae : annotatedBiblographyEntry.getAuthorList()) {
+//				if (authors == null) {
+//					authors = ae.getName();
+//				} else {
+//					authors = authors.concat("; " + ae.getName());
+//				}
+//			}
+//		} else {
+//			for (AuthorEntry ae : annotatedBiblographyEntry.getEditorList()) {
+//				if (authors == null) {
+//					authors = ae.getName();
+//				} else {
+//					authors = authors.concat("; " + ae.getName());
+//				}
+//			}
+//			authors = authors.concat(" (Eds.)");
+//		}
 //		String publisherName = annotatedBiblographyEntry.getPublisher() != null ? annotatedBiblographyEntry.getPublisher().getName() : "unknown publisher";
 //		setHTML(dvTemplates.view(authors, Integer.toString(annotatedBiblographyEntry.getYearEN()), annotatedBiblographyEntry.getTitleEN(), publisherName));
 		setHTML(dvTemplates.view(annotatedBiblographyEntry));
-
-		setPixelSize(600, 80);
+		setSize("95%", "80px");
+//		setPixelSize(600, 80);
 
 		DragSource source = new DragSource(this) {
 
