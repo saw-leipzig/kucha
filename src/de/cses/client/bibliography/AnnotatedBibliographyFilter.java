@@ -64,19 +64,10 @@ public class AnnotatedBibliographyFilter extends AbstractFilter {
 		if ((authorNameTF.getValue() != null) && !authorNameTF.getValue().isEmpty()) {
 			String searchTerm = authorNameTF.getValue();
 			String sqlTerm = "";
-			for (String name : searchTerm.split(" ")) {
-				sqlTerm += sqlTerm.length() > 0 ? " INTERSECT " : "" + "SELECT BibID FROM AuthorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE ((FirstName LIKE '%" + name + "%') OR (LastName LIKE '%" + name + "%') OR (Institution LIKE '%" + name + "%')))";
+			for (String name : searchTerm.split("\\s+")) {
+				sqlTerm += sqlTerm.length() > 0 ? " INTERSECT SELECT BibID FROM AuthorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE ((FirstName LIKE '%" + name + "%') OR (LastName LIKE '%" + name + "%') OR (Institution LIKE '%" + name + "%'))))" 
+						: "SELECT BibID FROM AuthorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE ((FirstName LIKE '%" + name + "%') OR (LastName LIKE '%" + name + "%') OR (Institution LIKE '%" + name + "%'))))";
 			}
-/**
- 
- SELECT * FROM AnnotatedBibliography WHERE BibID IN 
-(SELECT BibID FROM AuthorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (LastName LIKE '%Lingnau%'))) 
-INTERSECT 
-SELECT BibID FROM AuthorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE ((FirstName LIKE '%" + name + "%') OR (LastName LIKE '%" + name + "%') OR (Institution LIKE '%" + name + "%')))
-
- 			
-  			
- */
 			sqlTerm = "BibID IN (" + sqlTerm + ")";
 			result.add(sqlTerm);
 		}
