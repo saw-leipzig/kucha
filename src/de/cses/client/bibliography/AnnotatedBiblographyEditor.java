@@ -1367,6 +1367,8 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			});
 			thesisTypeCB.add("Master Thesis");
 			thesisTypeCB.add("PhD");
+			thesisTypeCB.setEditable(false);
+			thesisTypeCB.setTypeAhead(false);
 			thesisTypeCB.setValue(bibEntry.getThesisType());
 			thesisTypeCB.addValueChangeHandler(new ValueChangeHandler<String>() {
 
