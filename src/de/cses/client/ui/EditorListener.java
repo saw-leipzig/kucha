@@ -23,5 +23,4 @@ public interface EditorListener {
 
 	public void closeRequest();
 	public void updateEntryRequest(AbstractEntry updatedEntry);
-
 }

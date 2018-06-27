@@ -559,6 +559,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 						public void onSuccess(Integer result) {
 							Util.doLogging(this.getClass().getName() + " saving sucessful");
 							ornamentEntry.setOrnamentID(result);
+							updateEntry(ornamentEntry);
 							closeEditor();
 						}
 					});

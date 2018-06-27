@@ -42,5 +42,5 @@ public abstract class AbstractEditor implements IsWidget {
 			el.updateEntryRequest(entry);
 		}
 	}
-
+	
 }

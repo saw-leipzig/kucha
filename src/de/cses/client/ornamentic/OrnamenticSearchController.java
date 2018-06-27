@@ -22,11 +22,13 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.caves.CaveEditor;
+import de.cses.client.caves.CaveView;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.client.ui.AbstractResultView;
 import de.cses.client.ui.AbstractSearchController;
 import de.cses.client.ui.EditorListener;
 import de.cses.shared.AbstractEntry;
+import de.cses.shared.CaveEntry;
 import de.cses.shared.OrnamentEntry;
 
 /**
@@ -97,7 +99,7 @@ public class OrnamenticSearchController extends AbstractSearchController {
 
 			@Override
 			public void updateEntryRequest(AbstractEntry updatedEntry) {
-				// nothing needs to be done here
+				getResultView().addResult(new OrnamenticView((OrnamentEntry)updatedEntry));
 			}
 		});
 		ornamenticEditorPanel.add(ornamenticEditor);

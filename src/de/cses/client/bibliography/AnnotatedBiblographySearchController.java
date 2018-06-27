@@ -37,6 +37,7 @@ import com.sencha.gxt.widget.core.client.form.ComboBox;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
+import de.cses.client.images.ImageView;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.client.ui.AbstractResultView;
 import de.cses.client.ui.AbstractSearchController;
@@ -162,7 +163,7 @@ public class AnnotatedBiblographySearchController extends AbstractSearchControll
 
 						@Override
 						public void updateEntryRequest(AbstractEntry updatedEntry) {
-							// nothing is happening here
+							getResultView().addResult(new AnnotatedBiblographyView((AnnotatedBiblographyEntry)updatedEntry));
 						}
 					});
 					depictionEditorPanel.add(abe);

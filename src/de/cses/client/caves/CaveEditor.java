@@ -339,7 +339,7 @@ public class CaveEditor extends AbstractEditor {
 
 	public CaveEditor(CaveEntry caveEntry) {
 		if (caveEntry == null) {
-			createNewCaveEntry();
+			correspondingCaveEntry = new CaveEntry();
 		} else {
 			correspondingCaveEntry = caveEntry;
 		}
@@ -645,13 +645,6 @@ public class CaveEditor extends AbstractEditor {
 //				activateDistrictFilter();
 //			}
 		}
-	}
-
-	/**
-	 * 
-	 */
-	private void createNewCaveEntry() {
-		correspondingCaveEntry = new CaveEntry();
 	}
 
 	@Override

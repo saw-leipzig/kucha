@@ -23,6 +23,7 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
+import de.cses.client.images.ImageView;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.client.ui.AbstractSearchController;
 import de.cses.client.ui.EditorListener;
@@ -149,6 +150,7 @@ public class CaveSearchController extends AbstractSearchController {
 
 			@Override
 			public void updateEntryRequest(AbstractEntry updatedEntry) {
+				getResultView().addResult(new CaveView((CaveEntry)updatedEntry));
 			}
 		});
 		caveEditorPanel.add(ced);
