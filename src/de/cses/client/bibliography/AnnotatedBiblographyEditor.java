@@ -64,6 +64,7 @@ import com.sencha.gxt.widget.core.client.form.DualListField.Mode;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
+import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
 import com.sencha.gxt.widget.core.client.form.StoreFilterField;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
@@ -1351,6 +1352,33 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			pagesFP.setHeading("Pages");
 			pagesFP.add(pagesVLC);
 			firstTabInnerRightVLC.add(pagesFP, new VerticalLayoutData(1.0, 1.0 / 5));
+		}
+		
+		/**
+		 * thesis type
+		 */
+		if (pubType.isThesisTypeEnabled()) {
+			SimpleComboBox<String> thesisTypeCB = new SimpleComboBox<String>(new LabelProvider<String>() {
+
+				@Override
+				public String getLabel(String item) {
+					return item;
+				}
+			});
+			thesisTypeCB.add("Master Thesis");
+			thesisTypeCB.add("PhD");
+			thesisTypeCB.setValue(bibEntry.getThesisType());
+			thesisTypeCB.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+				@Override
+				public void onValueChange(ValueChangeEvent<String> event) {
+					bibEntry.setThesisType(event.getValue());
+				}
+			});
+			FramedPanel thesisTypeFP = new FramedPanel();
+			thesisTypeFP.setHeading("Thesis Type");
+			thesisTypeFP.add(thesisTypeCB);
+			firstTabInnerRightVLC.add(thesisTypeFP, new VerticalLayoutData(1.0, 1.0 / 10));
 		}
 
 		/**
