@@ -52,6 +52,7 @@ public class AuthorEditor implements IsWidget {
 	private TextField institutionTF;
 	private TextField authorHomepageTF;
 	private TextField authorEmailTF;
+	private TextField authorAliasTF;
 	
 	public AuthorEditor(AuthorEditorListener listener) {
 		this(new AuthorEntry(), listener);
@@ -123,6 +124,20 @@ public class AuthorEditor implements IsWidget {
 			@Override
 			public void onValueChange(ValueChangeEvent<String> event) {
 				authorEntry.setFirstname(event.getValue());
+			}
+		});
+		
+		authorAliasTF = new TextField();
+		authorAliasTF.setAllowBlank(false);
+		authorAliasTF.addValidator(new MaxLengthValidator(32));
+		authorAliasTF.setAutoValidate(true);
+		authorAliasTF.setWidth(300);
+		authorAliasTF.setValue(authorEntry.getAlias());
+		authorAliasTF.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				authorEntry.setAlias(event.getValue());
 			}
 		});
 
@@ -224,14 +239,15 @@ public class AuthorEditor implements IsWidget {
 			}
 		});
 		VerticalLayoutContainer newAuthorVLC = new VerticalLayoutContainer();
-		newAuthorVLC.add(new FieldLabel(authorLastNameTF, "Family name"), new VerticalLayoutData(1.0, 1.0 / 8));
-		newAuthorVLC.add(new FieldLabel(authorFirstNameTF, "Given Name"), new VerticalLayoutData(1.0, 1.0 / 8));
-		newAuthorVLC.add(new FieldLabel(authorAffiliation, "Affiliation"), new VerticalLayoutData(1.0, 1.0 / 8));
-		newAuthorVLC.add(new FieldLabel(authorEmailTF, "E-mail"), new VerticalLayoutData(1.0, 1.0 / 8));
-		newAuthorVLC.add(institutionCB, new VerticalLayoutData(1.0, 1.0 / 8));
-		newAuthorVLC.add(new FieldLabel(institutionTF, "Institution"), new VerticalLayoutData(1.0, 1.0 / 8));
-		newAuthorVLC.add(new FieldLabel(authorHomepageTF, "Homepage"), new VerticalLayoutData(1.0, 1.0 / 8));
-		newAuthorVLC.add(kuchaVisitorCB, new VerticalLayoutData(1.0, 1.0 / 8));
+		newAuthorVLC.add(new FieldLabel(authorLastNameTF, "Family name"), new VerticalLayoutData(1.0, 1.0 / 9));
+		newAuthorVLC.add(new FieldLabel(authorFirstNameTF, "Given Name"), new VerticalLayoutData(1.0, 1.0 / 9));
+		newAuthorVLC.add(new FieldLabel(authorAliasTF, "Alias"), new VerticalLayoutData(1.0, 1.0 / 9));
+		newAuthorVLC.add(new FieldLabel(authorAffiliation, "Affiliation"), new VerticalLayoutData(1.0, 1.0 / 9));
+		newAuthorVLC.add(new FieldLabel(authorEmailTF, "E-mail"), new VerticalLayoutData(1.0, 1.0 / 9));
+		newAuthorVLC.add(institutionCB, new VerticalLayoutData(1.0, 1.0 / 9));
+		newAuthorVLC.add(new FieldLabel(institutionTF, "Institution"), new VerticalLayoutData(1.0, 1.0 / 9));
+		newAuthorVLC.add(new FieldLabel(authorHomepageTF, "Homepage"), new VerticalLayoutData(1.0, 1.0 / 9));
+		newAuthorVLC.add(kuchaVisitorCB, new VerticalLayoutData(1.0, 1.0 / 9));
 		
 		mainPanel.add(newAuthorVLC);
 
