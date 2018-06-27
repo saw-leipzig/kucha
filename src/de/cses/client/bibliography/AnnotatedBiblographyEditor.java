@@ -1031,7 +1031,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					bibEntry.setSeriesEN(event.getValue());
 				}
 			});
-			seriesEN.addValidator(new MaxLengthValidator(32));
+			seriesEN.addValidator(new MaxLengthValidator(256));
 			
 			TextField seriesORG = new TextField();
 			seriesORG.setValue(bibEntry.getSeriesORG());
@@ -1042,7 +1042,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					bibEntry.setSeriesORG(event.getValue());
 				}
 			});
-			seriesORG.addValidator(new MaxLengthValidator(32));
+			seriesORG.addValidator(new MaxLengthValidator(256));
 			
 			TextField seriesTR = new TextField();
 			seriesTR.setValue(bibEntry.getSeriesTR());
@@ -1053,7 +1053,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					bibEntry.setSeriesTR(event.getValue());
 				}
 			});
-			seriesTR.addValidator(new MaxLengthValidator(32));
+			seriesTR.addValidator(new MaxLengthValidator(256));
 
 			VerticalLayoutContainer seriesVLC = new VerticalLayoutContainer();
 			seriesVLC.add(new FieldLabel(seriesORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
@@ -1063,7 +1063,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			FramedPanel seriesFP = new FramedPanel();
 			seriesFP.setHeading("Series");
 			seriesFP.add(seriesVLC);
-			firstTabInnerRightVLC.add(seriesFP, new VerticalLayoutData(1.0, 1.0 / 5));
+			firstTabInnerLeftVLC.add(seriesFP, new VerticalLayoutData(1.0, 1.0 / 5));
 		}
 		
 		/**
