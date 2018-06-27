@@ -1365,8 +1365,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					return item;
 				}
 			});
-			thesisTypeCB.add("Master Thesis");
+			thesisTypeCB.add("Master");
 			thesisTypeCB.add("PhD");
+			thesisTypeCB.add("other");
 			thesisTypeCB.setEditable(false);
 			thesisTypeCB.setTypeAhead(false);
 			thesisTypeCB.setValue(bibEntry.getThesisType());
@@ -1378,7 +1379,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				}
 			});
 			FramedPanel thesisTypeFP = new FramedPanel();
-			thesisTypeFP.setHeading("Thesis Type");
+			thesisTypeFP.setHeading("Degree");
 			thesisTypeFP.add(thesisTypeCB);
 			firstTabInnerRightVLC.add(thesisTypeFP, new VerticalLayoutData(1.0, 1.0 / 10));
 		}
