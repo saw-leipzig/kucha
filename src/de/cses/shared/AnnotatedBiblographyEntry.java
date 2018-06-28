@@ -48,6 +48,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	private String thesisType="";
 	private ArrayList<AuthorEntry> authorList = new ArrayList<AuthorEntry>();
 	private ArrayList<AuthorEntry> editorList = new ArrayList<AuthorEntry>();
+	private ArrayList<BibKeywordEntry> keywordList = new ArrayList<BibKeywordEntry>();
 
 	public AnnotatedBiblographyEntry(int annotatedBiblographyID, PublicationTypeEntry publicationType, 
 			String titleEN, String titleORG, String titleTR,
@@ -917,6 +918,14 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 
 	public void setThesisType(String thesisType) {
 		this.thesisType = thesisType;
+	}
+
+	public ArrayList<BibKeywordEntry> getKeywordList() {
+		return keywordList;
+	}
+
+	public void setKeywordList(ArrayList<BibKeywordEntry> keywordList) {
+		this.keywordList = keywordList;
 	}
 
 }

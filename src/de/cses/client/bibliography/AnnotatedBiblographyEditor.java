@@ -30,6 +30,7 @@ import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Frame;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -82,6 +83,7 @@ import de.cses.client.ui.AbstractEditor;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.AuthorEntry;
+import de.cses.shared.BibKeywordEntry;
 import de.cses.shared.PublicationTypeEntry;
 
 /**
@@ -92,7 +94,6 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 	private AnnotatedBiblographyEntry bibEntry;
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 
-//	private ListStore<PublisherEntry> publisherListStore;
 	private ListStore<AnnotatedBiblographyEntry> firstEditionBiblographyEntryLS;
 
 	private ListStore<AuthorEntry> authorListStore;
@@ -100,7 +101,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 	private ListStore<AuthorEntry> selectedAuthorListStore;
 	private ListStore<AuthorEntry> selectedEditorListStore;
 
-//	private PublisherProperties publisherProps;
+	private ListStore<BibKeywordEntry> bibKeywordsStore;
+	private ListStore<BibKeywordEntry> selectedBibKeywordsStore;
+	private BibKeywordProperties bibKeywordProps;
+
 	private AnnotatedBiblographyEntryProperties annotatedBiblographyEntryProps;
 	private AuthorProperties authorProps;
 
@@ -109,8 +113,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 	private TabPanel tabpanel;
 	private StoreFilterField<AuthorEntry> authorListFilterField;
 	private StoreFilterField<AuthorEntry> editorListFilterField;
+	private StoreFilterField<BibKeywordEntry> bibKeywordFilterField;
 	private DocumentLinkTemplate documentLinkTemplate;
 	private DualListField<AuthorEntry, String> authorSelection;
+	private DualListField<BibKeywordEntry, String> bibKeywordSelectionDLF;
 	private ComboBox<AnnotatedBiblographyEntry> firstEditionComboBox;
 
 //	interface PublisherViewTemplates extends XTemplates {
@@ -136,16 +142,18 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 	interface AnnotatedBiblographyEntryProperties extends PropertyAccess<AnnotatedBiblographyEntry> {
 		ModelKeyProvider<AnnotatedBiblographyEntry> annotatedBiblographyID();
-
 		ValueProvider<AnnotatedBiblographyEntry, String> titleEN();
-
 		LabelProvider<AnnotatedBiblographyEntry> label();
 	}
 
 	interface AuthorProperties extends PropertyAccess<AuthorEntry> {
 		ModelKeyProvider<AuthorEntry> authorID();
-
 		ValueProvider<AuthorEntry, String> name();
+	}
+	
+	interface BibKeywordProperties extends PropertyAccess<BibKeywordEntry> {
+		ModelKeyProvider<BibKeywordEntry> bibKeywordID();
+		ValueProvider<BibKeywordEntry, String> bibKeyword();
 	}
 
 	interface DocumentLinkTemplate extends XTemplates {
@@ -178,6 +186,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			editorListFilterField.clear();
 			editorListFilterField.validate();
 		}
+		if (bibKeywordFilterField != null) {
+			bibKeywordFilterField.clear();
+			bibKeywordFilterField.validate();
+		}
 
 		ArrayList<AuthorEntry> selectedAuthorsList = new ArrayList<AuthorEntry>();
 		for (AuthorEntry ae : selectedAuthorListStore.getAll()) {
@@ -190,6 +202,12 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			selectedEditorsList.add(ae);
 		}
 		bibEntry.setEditorList(selectedEditorsList);
+		
+		ArrayList<BibKeywordEntry> selectedBibKeywordsList = new ArrayList<BibKeywordEntry>();
+		for (BibKeywordEntry bke : selectedBibKeywordsStore.getAll()) {
+			selectedBibKeywordsList.add(bke);
+		}
+		bibEntry.setKeywordList(selectedBibKeywordsList);
 
 		if (bibEntry.getAnnotatedBiblographyID() > 0) {
 			dbService.updateAnnotatedBiblographyEntry(bibEntry, new AsyncCallback<Boolean>() {
@@ -239,63 +257,24 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		selectedAuthorListStore = new ListStore<AuthorEntry>(authorProps.authorID()); // the order of authors should be accorings to the order on the paper
 		selectedEditorListStore = new ListStore<AuthorEntry>(authorProps.authorID()); // the order of editors should be according to the order of the publication
 		authorListStore = new ListStore<AuthorEntry>(authorProps.authorID());
-		authorListStore.addSortInfo(new StoreSortInfo<AuthorEntry>(new ValueProvider<AuthorEntry, String>() {
-
-			@Override
-			public String getValue(AuthorEntry object) {
-				return object.getName();
-			}
-
-			@Override
-			public void setValue(AuthorEntry object, String value) {
-			}
-
-			@Override
-			public String getPath() {
-				return "name";
-			}
-		}, SortDir.ASC));
+		authorListStore.addSortInfo(new StoreSortInfo<AuthorEntry>(authorProps.name(), SortDir.ASC));
 
 		editorListStore = new ListStore<AuthorEntry>(authorProps.authorID());
-		editorListStore.addSortInfo(new StoreSortInfo<AuthorEntry>(new ValueProvider<AuthorEntry, String>() {
-
-			@Override
-			public String getValue(AuthorEntry object) {
-				return object.getName();
-			}
-
-			@Override
-			public void setValue(AuthorEntry object, String value) {
-			}
-
-			@Override
-			public String getPath() {
-				return "name";
-			}
-		}, SortDir.ASC));
+		editorListStore.addSortInfo(new StoreSortInfo<AuthorEntry>(authorProps.name(), SortDir.ASC));
+		
+		bibKeywordProps = GWT.create(BibKeywordProperties.class);
+		selectedBibKeywordsStore = new ListStore<BibKeywordEntry>(bibKeywordProps.bibKeywordID());
+		selectedBibKeywordsStore.addSortInfo(new StoreSortInfo<>(bibKeywordProps.bibKeyword(), SortDir.ASC));
+		for (BibKeywordEntry bkw : bibEntry.getKeywordList()) {
+			selectedBibKeywordsStore.add(bkw);
+		}
+		
+		bibKeywordsStore = new ListStore<BibKeywordEntry>(bibKeywordProps.bibKeywordID());
+		bibKeywordsStore.addSortInfo(new StoreSortInfo<>(bibKeywordProps.bibKeyword(), SortDir.ASC));
 
 		annotatedBiblographyEntryProps = GWT.create(AnnotatedBiblographyEntryProperties.class);
 		firstEditionBiblographyEntryLS = new ListStore<AnnotatedBiblographyEntry>(annotatedBiblographyEntryProps.annotatedBiblographyID());
 		firstEditionBiblographyEntryLS.addSortInfo(new StoreSortInfo<>(annotatedBiblographyEntryProps.titleEN(), SortDir.ASC));
-
-//		publisherProps = GWT.create(PublisherProperties.class);
-//		publisherListStore = new ListStore<PublisherEntry>(publisherProps.publisherID());
-//		publisherListStore.addSortInfo(new StoreSortInfo<PublisherEntry>(new ValueProvider<PublisherEntry, String>() {
-//
-//			@Override
-//			public String getValue(PublisherEntry object) {
-//				return object.getLabel();
-//			}
-//
-//			@Override
-//			public void setValue(PublisherEntry object, String value) {
-//			}
-//
-//			@Override
-//			public String getPath() {
-//				return "label";
-//			}
-//		}, SortDir.ASC));
 
 		dbService.getAuthors(new AsyncCallback<ArrayList<AuthorEntry>>() {
 
@@ -330,21 +309,22 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			}
 		});
 
-//		dbService.getPublishers(new AsyncCallback<ArrayList<PublisherEntry>>() {
-//
-//			@Override
-//			public void onFailure(Throwable caught) {
-//				caught.printStackTrace();
-//				Window.alert("Error while loading publisher list!");
-//			}
-//
-//			@Override
-//			public void onSuccess(ArrayList<PublisherEntry> result) {
-//				for (PublisherEntry pe : result) {
-//					publisherListStore.add(pe);
-//				}
-//			}
-//		});
+		dbService.getBibKeywords(new AsyncCallback<ArrayList<BibKeywordEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(ArrayList<BibKeywordEntry> result) {
+				for (BibKeywordEntry bke : result) {
+					if (!selectedBibKeywordsStore.hasRecord(bke)) {
+						bibKeywordsStore.add(bke);
+					}
+				}
+			}
+		});
 
 	}
 	
@@ -741,117 +721,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		});
 		publisherTextField.addValidator(new MaxLengthValidator(256));
 		
-//		ComboBox<PublisherEntry> publisherComboBox = new ComboBox<PublisherEntry>(publisherListStore, publisherProps.label(),
-//				new AbstractSafeHtmlRenderer<PublisherEntry>() {
-//
-//					@Override
-//					public SafeHtml render(PublisherEntry item) {
-//						final PublisherViewTemplates pvTemplates = GWT.create(PublisherViewTemplates.class);
-//						return pvTemplates.publisher(item.getLabel());
-//					}
-//				});
-//		publisherComboBox.setEditable(false);
-//		publisherComboBox.setTypeAhead(true);
-//		publisherComboBox.setTriggerAction(TriggerAction.ALL);
-//		PublisherEntry publisher = bibEntry.getPublisher();
-//		if ((publisher != null) && (publisher.getPublisherID() > 0)) {
-//			publisherComboBox.setValue(bibEntry.getPublisher());
-//		}
-//		publisherComboBox.addValidator(new Validator<PublisherEntry>() {
-//
-//			@Override
-//			public List<EditorError> validate(Editor<PublisherEntry> editor, PublisherEntry value) {
-//				List<EditorError> l = new ArrayList<EditorError>();
-//				if (value == null) {
-//					l.add(new DefaultEditorError(editor, "please select publisher", value));
-//				}
-//				return l;
-//			}
-//		});
-//		publisherComboBox.addSelectionHandler(new SelectionHandler<PublisherEntry>() {
-//
-//			@Override
-//			public void onSelection(SelectionEvent<PublisherEntry> event) {
-//				bibEntry.setPublisher(event.getSelectedItem());
-//			}
-//		});
 		FramedPanel publisherFP = new FramedPanel();
 		publisherFP.setHeading("Publisher");
 		publisherFP.add(publisherTextField);
 		
-//		ToolButton resetPublisherSelectionTB = new ToolButton(ToolButton.REFRESH);
-//		publisherFP.addTool(resetPublisherSelectionTB);
-//		resetPublisherSelectionTB.addSelectHandler(new SelectHandler() {
-//			
-//			@Override
-//			public void onSelect(SelectEvent event) {
-//				publisherComboBox.setValue(null, true);
-//			}
-//		});
-
-//		ToolButton addPublisherTB = new ToolButton(ToolButton.PLUS);
-//		publisherFP.addTool(addPublisherTB);
-//		addPublisherTB.addSelectHandler(new SelectHandler() {
-//
-//			@Override
-//			public void onSelect(SelectEvent event) {
-//				PopupPanel addPublisherDialog = new PopupPanel();
-//				FramedPanel addPublisherFP = new FramedPanel();
-//				addPublisherFP.setHeading("Add New Publisher");
-////				addPublisherFP.setWidth("400px");
-//				TextField publisherNameField = new TextField();
-//				publisherNameField.addValidator(new MinLengthValidator(2));
-//				publisherNameField.addValidator(new MaxLengthValidator(128));
-//				publisherNameField.setValue("");
-//				TextField publisherLocationField = new TextField();
-//				publisherLocationField.addValidator(new MinLengthValidator(2));
-//				publisherLocationField.addValidator(new MaxLengthValidator(128));
-//				publisherLocationField.setValue("");
-//				VerticalLayoutContainer newPublisherVLC = new VerticalLayoutContainer();
-//				newPublisherVLC.add(new FieldLabel(publisherNameField, "Name"), new VerticalLayoutData(1.0, .5));
-//				newPublisherVLC.add(new FieldLabel(publisherLocationField, "Location"), new VerticalLayoutData(1.0, .5));
-//				addPublisherFP.add(newPublisherVLC);
-//				TextButton saveButton = new TextButton("save");
-//				saveButton.addSelectHandler(new SelectHandler() {
-//
-//					@Override
-//					public void onSelect(SelectEvent event) {
-//						if (publisherNameField.isValid() && publisherLocationField.isValid()) {
-//							PublisherEntry publisherEntry = new PublisherEntry(0, publisherNameField.getCurrentValue(),
-//									publisherLocationField.getCurrentValue());
-//							dbService.insertPublisherEntry(publisherEntry, new AsyncCallback<Integer>() {
-//
-//								@Override
-//								public void onFailure(Throwable caught) {
-//									addPublisherDialog.hide();
-//									Window.alert("Error while saving!");
-//								}
-//
-//								@Override
-//								public void onSuccess(Integer result) {
-//									addPublisherDialog.hide();
-//									publisherEntry.setPublisherID(result);
-//									publisherListStore.add(publisherEntry);
-//								}
-//							});
-//						}
-//					}
-//				});
-//				addPublisherFP.addButton(saveButton);
-//				TextButton cancelButton = new TextButton("cancel");
-//				cancelButton.addSelectHandler(new SelectHandler() {
-//
-//					@Override
-//					public void onSelect(SelectEvent event) {
-//						addPublisherDialog.hide();
-//					}
-//				});
-//				addPublisherFP.addButton(cancelButton);
-//				addPublisherDialog.add(addPublisherFP);
-//				addPublisherDialog.setModal(true);
-//				addPublisherDialog.center();
-//			}
-//		});
 		secondTabVLC.add(publisherFP, new VerticalLayoutData(1.0, .1));
 
 		/**
@@ -1017,7 +890,29 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			editorFP.addTool(editEditorTB);
 			secondTabVLC.add(editorFP, new VerticalLayoutData(1.0, .45));
 		}
+
+		/**
+		 * Keywords
+		 */
+		bibKeywordSelectionDLF = new DualListField<>(bibKeywordsStore, selectedBibKeywordsStore, bibKeywordProps.bibKeyword(), new TextCell());
+		bibKeywordSelectionDLF.setMode(Mode.INSERT);
+		bibKeywordSelectionDLF.setEnableDnd(true);
+		VerticalLayoutContainer bibKeywordVLC = new VerticalLayoutContainer();
+		bibKeywordVLC.add(bibKeywordSelectionDLF, new VerticalLayoutData(1.0, .85));
+		bibKeywordFilterField = new StoreFilterField<BibKeywordEntry>() {
+			
+			@Override
+			protected boolean doSelect(Store<BibKeywordEntry> store, BibKeywordEntry parent, BibKeywordEntry item, String filter) {
+				return item.getBibKeyword().toLowerCase().contains(filter.toLowerCase()) ? true : false;
+			}
+			
+		};
+		bibKeywordFilterField.bind(bibKeywordsStore);
+		bibKeywordVLC.add(bibKeywordFilterField, new VerticalLayoutData(1.0, .15, new Margins(5, 10, 0, 10)));
 		
+		FramedPanel bibKeywordFP = new FramedPanel();
+		bibKeywordFP.setHeading("Keyword selection");
+		bibKeywordFP.add(bibKeywordVLC);
 
 		/**
 		 * series
@@ -1687,27 +1582,32 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		});
 		bibDocAnnotationFP.addTool(annotationUploadButton);
 		
-		HorizontalLayoutContainer documentsHLC = new HorizontalLayoutContainer();
-		documentsHLC.add(bibDocPaperFP, new HorizontalLayoutData(.5, 1.0));
-		documentsHLC.add(bibDocAnnotationFP, new HorizontalLayoutData(.5, 1.0));
+		HorizontalLayoutContainer bottonHLC = new HorizontalLayoutContainer();
+		bottonHLC.add(unpublishedFP, new HorizontalLayoutData(.25, 1.0));
+		bottonHLC.add(openAccessFP, new HorizontalLayoutData(.25, 1.0));
+		bottonHLC.add(bibDocPaperFP, new HorizontalLayoutData(.25, 1.0));
+		bottonHLC.add(bibDocAnnotationFP, new HorizontalLayoutData(.25, 1.0));
 //		documentsHLC.add(bibDocSummaryFP, new HorizontalLayoutData(1.0 / 3, 1.0));
 		
-		VerticalLayoutContainer thirdTabVLC = new VerticalLayoutContainer();
-		VerticalLayoutContainer notesCommentsVLC = new VerticalLayoutContainer();
-		notesCommentsVLC.add(commentsFP, new VerticalLayoutData(1.0, .5));
-		notesCommentsVLC.add(notesFP, new VerticalLayoutData(1.0, .5));
+		VerticalLayoutContainer notesCommentsRightVLC = new VerticalLayoutContainer();
+		notesCommentsRightVLC.add(bibKeywordFP, new VerticalLayoutData(1.0, .65));
+		notesCommentsRightVLC.add(notesFP, new VerticalLayoutData(1.0, .35));
+
+		VerticalLayoutContainer notesCommentsLeftVLC = new VerticalLayoutContainer();
+		notesCommentsLeftVLC.add(abstractTextFP, new VerticalLayoutData(1.0, .65));
+		notesCommentsLeftVLC.add(commentsFP, new VerticalLayoutData(1.0, .35));
+		
 		HorizontalLayoutContainer notesCommtentsAbstractHLC = new HorizontalLayoutContainer();
-		notesCommtentsAbstractHLC.add(abstractTextFP, new HorizontalLayoutData(.5, 1.0));
-		notesCommtentsAbstractHLC.add(notesCommentsVLC, new HorizontalLayoutData(.5, 1.0));
-		thirdTabVLC.add(notesCommtentsAbstractHLC, new VerticalLayoutData(1.0, .5));
+		notesCommtentsAbstractHLC.add(notesCommentsLeftVLC, new HorizontalLayoutData(.5, 1.0));
+		notesCommtentsAbstractHLC.add(notesCommentsRightVLC, new HorizontalLayoutData(.5, 1.0));
+		
+		VerticalLayoutContainer thirdTabVLC = new VerticalLayoutContainer();
+		thirdTabVLC.add(notesCommtentsAbstractHLC, new VerticalLayoutData(1.0, .6));
 		thirdTabVLC.add(urlFP, new VerticalLayoutData(1.0, .1));
 		thirdTabVLC.add(uriFP, new VerticalLayoutData(1.0, .1));
-		HorizontalLayoutContainer unpublishedOpenAccessHLC = new HorizontalLayoutContainer();
-		unpublishedOpenAccessHLC.add(unpublishedFP, new HorizontalLayoutData(.5, 1.0));
-		unpublishedOpenAccessHLC.add(openAccessFP, new HorizontalLayoutData(.5, 1.0));
-		thirdTabVLC.add(unpublishedOpenAccessHLC, new VerticalLayoutData(1.0, .1));
+//		thirdTabVLC.add(unpublishedOpenAccessHLC, new VerticalLayoutData(1.0, .1));
 		thirdTabVLC.add(firstEditionFP, new VerticalLayoutData(1.0, .1));
-		thirdTabVLC.add(documentsHLC, new VerticalLayoutData(1.0, .1));
+		thirdTabVLC.add(bottonHLC, new VerticalLayoutData(1.0, .1));
 
 		/**
 		 * now we assemble the TabPanel

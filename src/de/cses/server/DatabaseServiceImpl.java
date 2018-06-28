@@ -21,6 +21,7 @@ import de.cses.client.DatabaseService;
 import de.cses.server.mysql.MysqlConnector;
 import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.AuthorEntry;
+import de.cses.shared.BibKeywordEntry;
 import de.cses.shared.CaveAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveGroupEntry;
@@ -858,5 +859,13 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public ArrayList<AnnotatedBiblographyEntry> getAnnotatedBibliographyFromAuthors(ArrayList<AuthorEntry> authorList) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getAnnotatedBibliographyFromAuthors(authorList);
+	}
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#getBibKeywords()
+	 */
+	@Override
+	public ArrayList<BibKeywordEntry> getBibKeywords() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getBibKeywords();
 	}
 }

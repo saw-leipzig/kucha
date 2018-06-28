@@ -33,6 +33,7 @@ import com.google.gwt.user.client.Window;
 import de.cses.server.ServerProperties;
 import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.AuthorEntry;
+import de.cses.shared.BibKeywordEntry;
 import de.cses.shared.C14AnalysisUrlEntry;
 import de.cses.shared.C14DocumentEntry;
 import de.cses.shared.CaveAreaEntry;
@@ -1770,6 +1771,7 @@ public class MysqlConnector {
 						rs.getString("AbstractText"), rs.getString("ThesisType"));
 				entry.setAuthorList(getAuthorBibRelation(entry.getAnnotatedBiblographyID()));
 				entry.setEditorList(getEditorBibRelation(entry.getAnnotatedBiblographyID()));
+				entry.setKeywordList(getRelatedBibKeywords(entry.getAnnotatedBiblographyID()));
 				result.add(entry);
 			}
 			rs.close();
@@ -1817,6 +1819,7 @@ public class MysqlConnector {
 						rs.getString("AbstractText"), rs.getString("ThesisType"));
 				entry.setAuthorList(getAuthorBibRelation(entry.getAnnotatedBiblographyID()));
 				entry.setEditorList(getEditorBibRelation(entry.getAnnotatedBiblographyID()));
+				entry.setKeywordList(getRelatedBibKeywords(entry.getAnnotatedBiblographyID()));
 				result.add(entry);
 			}
 			rs.close();
@@ -1933,6 +1936,7 @@ public class MysqlConnector {
 
 				result.setAuthorList(getAuthorBibRelation(result.getAnnotatedBiblographyID()));
 				result.setEditorList(getEditorBibRelation(result.getAnnotatedBiblographyID()));
+				result.setKeywordList(getRelatedBibKeywords(result.getAnnotatedBiblographyID()));
 			}
 			rs.close();
 			stmt.close();
@@ -3973,6 +3977,51 @@ public class MysqlConnector {
 	 */
 	public void doLogging(String clientName, String message) {
 		System.err.println(">>> " + clientName + ": " + message);
+	}
+
+	/**
+	 * @return
+	 */
+	public ArrayList<BibKeywordEntry> getBibKeywords() {
+		ArrayList<BibKeywordEntry> result = new ArrayList<BibKeywordEntry>();
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM BibKeywords");
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				result.add(new BibKeywordEntry(rs.getInt("BibKeywordID"), rs.getString("BibKeyword")));
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	/**
+	 * loads bibKeywords related to the annotated bibliography ID
+	 * @param bibID
+	 * @return
+	 */
+	private ArrayList<BibKeywordEntry> getRelatedBibKeywords(int bibID) {
+		ArrayList<BibKeywordEntry> result = new ArrayList<BibKeywordEntry>();
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM BibKeywords WHERE BibKeywordID IN (SELECT DISTINCT BibKeywordID FROM BibKeywordBibliographyRelation WHERE BibID=?)");
+			pstmt.setInt(1, bibID);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				result.add(new BibKeywordEntry(rs.getInt("BibKeywordID"), rs.getString("BibKeyword")));
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 
 }
