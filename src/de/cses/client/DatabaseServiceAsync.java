@@ -295,4 +295,6 @@ public interface DatabaseServiceAsync {
 
 	void getBibKeywords(AsyncCallback<ArrayList<BibKeywordEntry>> asyncCallback) throws IllegalArgumentException;
 
+	void insertBibKeyword(BibKeywordEntry bkEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
+
 }

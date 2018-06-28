@@ -868,4 +868,12 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getBibKeywords();
 	}
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#insertBibKeyword(de.cses.shared.BibKeywordEntry)
+	 */
+	@Override
+	public int insertBibKeyword(BibKeywordEntry bkEntry) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.insertBibKeyword(bkEntry);
+	}
 }

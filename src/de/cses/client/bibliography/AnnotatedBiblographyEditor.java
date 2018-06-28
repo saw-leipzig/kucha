@@ -51,6 +51,7 @@ import com.sencha.gxt.widget.core.client.Dialog;
 import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.TabPanel;
+import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
@@ -73,6 +74,7 @@ import com.sencha.gxt.widget.core.client.form.Validator;
 import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MaxNumberValidator;
+import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 
 import de.cses.client.DatabaseService;
@@ -84,6 +86,7 @@ import de.cses.client.user.UserLogin;
 import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.BibKeywordEntry;
+import de.cses.shared.CaveGroupEntry;
 import de.cses.shared.PublicationTypeEntry;
 
 /**
@@ -910,9 +913,69 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		bibKeywordFilterField.bind(bibKeywordsStore);
 		bibKeywordVLC.add(bibKeywordFilterField, new VerticalLayoutData(1.0, .15, new Margins(5, 10, 0, 10)));
 		
+		ToolButton addKeywordToolButton = new ToolButton(ToolButton.PLUS);
+		addKeywordToolButton.setToolTip("new keyword");
+		addKeywordToolButton.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				PopupPanel addKeywordDialog = new PopupPanel();
+				FramedPanel addKeywordFP = new FramedPanel();
+				addKeywordFP.setHeading("Add Keyword");
+				TextField keywordField = new TextField();
+				keywordField.setAllowBlank(false);
+				keywordField.addValidator(new MaxLengthValidator(32));
+				keywordField.setValue("");
+				keywordField.setWidth(200);
+				addKeywordFP.add(keywordField);
+				TextButton saveButton = new TextButton("save");
+				saveButton.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						if (keywordField.validate()) {
+							BibKeywordEntry bkEntry = new BibKeywordEntry();
+							bkEntry.setBibKeyword(keywordField.getValue());
+							dbService.insertBibKeyword(bkEntry, new AsyncCallback<Integer>() {
+
+								@Override
+								public void onFailure(Throwable caught) {
+									caught.printStackTrace();
+									Util.showWarning("Error", "The new keyword could not be saved!");
+								}
+
+								@Override
+								public void onSuccess(Integer result) {
+									if (result > 0) {
+										bkEntry.setBibKeywordID(result);
+										selectedBibKeywordsStore.add(bkEntry);
+									}
+								}
+							});
+							addKeywordDialog.hide();
+						}
+					}
+				});
+				addKeywordFP.addButton(saveButton);
+				TextButton cancelButton = new TextButton("cancel");
+				cancelButton.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						addKeywordDialog.hide();
+					}
+				});
+				addKeywordFP.addButton(cancelButton);
+				addKeywordDialog.add(addKeywordFP);
+				addKeywordDialog.setModal(true);
+				addKeywordDialog.center();
+			}
+		});
+		
 		FramedPanel bibKeywordFP = new FramedPanel();
 		bibKeywordFP.setHeading("Keyword selection");
 		bibKeywordFP.add(bibKeywordVLC);
+		bibKeywordFP.addTool(addKeywordToolButton);
 
 		/**
 		 * series

@@ -823,7 +823,7 @@ public class CaveEditor extends AbstractEditor {
 
 					@Override
 					public void onSelect(SelectEvent event) {
-						if (caveGroupNameField.isValid()) {
+						if (caveGroupNameField.validate()) {
 							CaveGroupEntry cgEntry = new CaveGroupEntry();
 							cgEntry.setName(caveGroupNameField.getCurrentValue());
 							dbService.insertCaveGroupEntry(cgEntry, new AsyncCallback<Integer>() {

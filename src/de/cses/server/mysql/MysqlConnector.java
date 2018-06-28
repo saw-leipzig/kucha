@@ -4045,4 +4045,27 @@ public class MysqlConnector {
 		}
 	}
 
+	/**
+	 * @param bkEntry
+	 * @return
+	 */
+	public int insertBibKeyword(BibKeywordEntry bkEntry) {
+		Connection dbc = getConnection();
+		PreparedStatement cgStatement;
+		int bibKeywordID = 0;
+		try {
+			cgStatement = dbc.prepareStatement("INSERT INTO BibKeywords (Keyword) VALUES (?)", Statement.RETURN_GENERATED_KEYS);
+			cgStatement.setString(1, bkEntry.getBibKeyword());
+			cgStatement.executeUpdate();
+			ResultSet keys = cgStatement.getGeneratedKeys();
+			if (keys.first()) {
+				bibKeywordID = keys.getInt(1);
+			}
+			keys.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return bibKeywordID;
+	}
+
 }

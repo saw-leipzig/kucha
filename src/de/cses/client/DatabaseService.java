@@ -270,4 +270,6 @@ public interface DatabaseService extends RemoteService {
 	ArrayList<AnnotatedBiblographyEntry> getAnnotatedBibliographyFromAuthors(ArrayList<AuthorEntry> authorList) throws IllegalArgumentException;
 
 	ArrayList<BibKeywordEntry> getBibKeywords() throws IllegalArgumentException;
+
+	int insertBibKeyword(BibKeywordEntry bkEntry) throws IllegalArgumentException; 
 }
