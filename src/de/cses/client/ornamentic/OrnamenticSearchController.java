@@ -95,11 +95,13 @@ public class OrnamenticSearchController extends AbstractSearchController {
 			@Override
 			public void closeRequest(AbstractEntry entry) {
 				ornamenticEditorPanel.hide();
-				getResultView().addResult(new OrnamenticView((OrnamentEntry)entry));
+				if (entry != null) {
+					getResultView().addResult(new OrnamenticView((OrnamentEntry)entry));
+				}
 			}
 
-			@Override
-			public void updateEntryRequest(AbstractEntry updatedEntry) { }
+//			@Override
+//			public void updateEntryRequest(AbstractEntry updatedEntry) { }
 		});
 		ornamenticEditorPanel.add(ornamenticEditor);
 		ornamenticEditorPanel.setGlassEnabled(true);

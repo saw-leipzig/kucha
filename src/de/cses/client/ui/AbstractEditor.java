@@ -37,10 +37,10 @@ public abstract class AbstractEditor implements IsWidget {
 		}
 	}
 	
-	protected void updateEntry(AbstractEntry entry) {
-		for (EditorListener el : listenerList) {
-			el.updateEntryRequest(entry);
-		}
-	}
+//	protected void updateEntry(AbstractEntry entry) {
+//		for (EditorListener el : listenerList) {
+//			el.updateEntryRequest(entry);
+//		}
+//	}
 	
 }

@@ -101,7 +101,7 @@ public class ImageView extends AbstractView {
 	@Override
 	public void closeRequest(AbstractEntry entry) {
 		super.closeRequest(entry);
-		if (entry instanceof ImageEntry) {
+		if (entry != null && entry instanceof ImageEntry) {
 			imgEntry = (ImageEntry) entry;
 		}
 		setHTML(ivTemplates.view(UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), 
@@ -117,11 +117,11 @@ public class ImageView extends AbstractView {
 		return imgEntry;
 	}
 
-	/* (non-Javadoc)
-	 * @see de.cses.client.ui.EditorListener#updateEntryRequest(de.cses.shared.AbstractEntry)
-	 */
-	@Override
-	public void updateEntryRequest(AbstractEntry updatedEntry) { }
+//	/* (non-Javadoc)
+//	 * @see de.cses.client.ui.EditorListener#updateEntryRequest(de.cses.shared.AbstractEntry)
+//	 */
+//	@Override
+//	public void updateEntryRequest(AbstractEntry updatedEntry) { }
 
 	/* (non-Javadoc)
 	 * @see de.cses.client.ui.AbstractView#getPermalink()

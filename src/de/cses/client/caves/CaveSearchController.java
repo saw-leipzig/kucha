@@ -146,11 +146,13 @@ public class CaveSearchController extends AbstractSearchController {
 			@Override
 			public void closeRequest(AbstractEntry entry) {
 				caveEditorPanel.hide();
-				getResultView().addResult(new CaveView((CaveEntry)entry));
+				if (entry != null) {
+					getResultView().addResult(new CaveView((CaveEntry)entry));
+				}
 			}
 
-			@Override
-			public void updateEntryRequest(AbstractEntry updatedEntry) { }
+//			@Override
+//			public void updateEntryRequest(AbstractEntry updatedEntry) { }
 		});
 		caveEditorPanel.add(ced);
 		caveEditorPanel.setGlassEnabled(true);

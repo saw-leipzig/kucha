@@ -1459,7 +1459,7 @@ public class DepictionEditor extends AbstractEditor {
 				@Override
 				public void onSuccess(Integer newDepictionID) {
 					correspondingDepictionEntry.setDepictionID(newDepictionID.intValue());
-					updateEntry(correspondingDepictionEntry);
+//					updateEntry(correspondingDepictionEntry);
 					if (close) {
 						closeEditor(correspondingDepictionEntry);
 					}
@@ -1480,7 +1480,7 @@ public class DepictionEditor extends AbstractEditor {
 
 				@Override
 				public void onSuccess(Boolean updateSucessful) {
-					updateEntry(correspondingDepictionEntry);
+//					updateEntry(correspondingDepictionEntry);
 					if (close) {
 						closeEditor(correspondingDepictionEntry);
 					}

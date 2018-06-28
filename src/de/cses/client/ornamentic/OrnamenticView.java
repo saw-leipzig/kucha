@@ -58,23 +58,23 @@ public class OrnamenticView extends AbstractView {
 //		SafeHtml view(SafeUri imgUri, String name);
 	}
 
-	private OrnamentEntry entry;
+	private OrnamentEntry oEntry;
 	private OrnamentationViewTemplates ovTemplate;
 	private Resources resources;
 
 	/**
 	 * @param text
 	 */
-	public OrnamenticView(OrnamentEntry entry) {
+	public OrnamenticView(OrnamentEntry oe) {
 		super();
-		this.entry = entry;
+		oEntry = oe;
 		resources = GWT.create(Resources.class);
 		ovTemplate = GWT.create(OrnamentationViewTemplates.class);
 		SafeUri imageUri = null;
-		if ((entry.getImages() != null) && (!entry.getImages().isEmpty())) {
-			imageUri = UriUtils.fromString("resource?imageID=" + entry.getImages().get(0).getImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
+		if ((oEntry.getImages() != null) && (!oEntry.getImages().isEmpty())) {
+			imageUri = UriUtils.fromString("resource?imageID=" + oEntry.getImages().get(0).getImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 		}
-		setHTML(ovTemplate.view(imageUri != null ? imageUri : resources.logo().getSafeUri(), "Ornament Code: " + entry.getCode()));
+		setHTML(ovTemplate.view(imageUri != null ? imageUri : resources.logo().getSafeUri(), "Ornament Code: " + oEntry.getCode()));
 		setPixelSize(110, 110);
 
 		DragSource source = new DragSource(this) {
@@ -82,8 +82,8 @@ public class OrnamenticView extends AbstractView {
 			@Override
 			protected void onDragStart(DndDragStartEvent event) {
 				super.onDragStart(event);
-				event.setData(entry);
-				event.getStatusProxy().update(ovTemplate.view(resources.logo().getSafeUri(), "ID = " + entry.getOrnamentID()));
+				event.setData(oEntry);
+				event.getStatusProxy().update(ovTemplate.view(resources.logo().getSafeUri(), "ID = " + oEntry.getOrnamentID()));
 			}
 			
 		};
@@ -94,7 +94,7 @@ public class OrnamenticView extends AbstractView {
 	 */
 	@Override
 	protected AbstractEditor getEditor() {
-		return new OrnamenticEditor(entry);
+		return new OrnamenticEditor(oEntry);
 	}
 
 	/* (non-Javadoc)
@@ -102,18 +102,23 @@ public class OrnamenticView extends AbstractView {
 	 */
 	@Override
 	protected AbstractEntry getEntry() {
-		return entry;
+		return oEntry;
 	}
 
-	/* (non-Javadoc)
-	 * @see de.cses.client.ui.EditorListener#updateEntryRequest(de.cses.shared.AbstractEntry)
-	 */
 	@Override
-	public void updateEntryRequest(AbstractEntry updatedEntry) {
-		if (updatedEntry instanceof OrnamentEntry) {
-			entry = (OrnamentEntry) updatedEntry;
+	public void closeRequest(AbstractEntry entry) {
+		super.closeRequest(entry);
+		if (entry != null && entry instanceof OrnamentEntry) {
+			oEntry = (OrnamentEntry) entry;
 		}
 	}
+
+//	/* (non-Javadoc)
+//	 * @see de.cses.client.ui.EditorListener#updateEntryRequest(de.cses.shared.AbstractEntry)
+//	 */
+//	@Override
+//	public void updateEntryRequest(AbstractEntry updatedEntry) {
+//	}
 
 	/* (non-Javadoc)
 	 * @see de.cses.client.ui.AbstractView#getPermalink()

@@ -3144,7 +3144,7 @@ public class CaveEditor extends AbstractEditor {
 
 					@Override
 					public void onSuccess(Boolean result) {
-						updateEntry(correspondingCaveEntry);
+//						updateEntry(correspondingCaveEntry);
 						if (close) {
 							closeEditor(correspondingCaveEntry);
 						}
@@ -3162,7 +3162,7 @@ public class CaveEditor extends AbstractEditor {
 					@Override
 					public void onSuccess(Integer result) {
 						correspondingCaveEntry.setCaveID(result.intValue());
-						updateEntry(correspondingCaveEntry);
+//						updateEntry(correspondingCaveEntry);
 						if (close) {
 							closeEditor(correspondingCaveEntry);
 						}

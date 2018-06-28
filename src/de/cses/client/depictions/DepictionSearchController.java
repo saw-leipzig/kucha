@@ -136,11 +136,13 @@ public class DepictionSearchController extends AbstractSearchController {
 			@Override
 			public void closeRequest(AbstractEntry entry) {
 				depictionEditorPanel.hide();
-				getResultView().addResult(new DepictionView((DepictionEntry)entry));
+				if (entry != null) {
+					getResultView().addResult(new DepictionView((DepictionEntry)entry));
+				}
 			}
 
-			@Override
-			public void updateEntryRequest(AbstractEntry updatedEntry) { }
+//			@Override
+//			public void updateEntryRequest(AbstractEntry updatedEntry) { }
 		});
 		depictionEditorPanel.add(de);
 		depictionEditorPanel.setGlassEnabled(true);

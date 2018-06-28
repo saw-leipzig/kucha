@@ -203,7 +203,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				@Override
 				public void onSuccess(Boolean result) {
 					if (result) {
-						updateEntry(bibEntry);
+//						updateEntry(bibEntry);
 						if (close) {
 							closeEditor(bibEntry);
 						}
@@ -223,7 +223,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				@Override
 				public void onSuccess(Integer result) {
 					bibEntry.setAnnotatedBiblographyID(result);
-					updateEntry(bibEntry);
+//					updateEntry(bibEntry);
 					if (close) {
 						closeEditor(bibEntry);
 					}
