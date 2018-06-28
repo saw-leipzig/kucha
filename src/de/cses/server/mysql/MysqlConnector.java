@@ -3992,7 +3992,7 @@ public class MysqlConnector {
 			pstmt = dbc.prepareStatement("SELECT * FROM BibKeywords");
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
-				result.add(new BibKeywordEntry(rs.getInt("BibKeywordID"), rs.getString("BibKeyword")));
+				result.add(new BibKeywordEntry(rs.getInt("BibKeywordID"), rs.getString("Keyword")));
 			}
 			rs.close();
 			pstmt.close();
@@ -4016,7 +4016,7 @@ public class MysqlConnector {
 			pstmt.setInt(1, bibID);
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
-				result.add(new BibKeywordEntry(rs.getInt("BibKeywordID"), rs.getString("BibKeyword")));
+				result.add(new BibKeywordEntry(rs.getInt("BibKeywordID"), rs.getString("Keyword")));
 			}
 			rs.close();
 			pstmt.close();
