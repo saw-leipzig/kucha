@@ -3038,6 +3038,7 @@ public class MysqlConnector {
 			if (newBibID > 0) {
 				updateAuthorBibRelation(newBibID, bibEntry.getAuthorList());
 				updateEditorBibRelation(newBibID, bibEntry.getEditorList());
+				updateBibKeywordRelation(newBibID, bibEntry.getKeywordList());
 			}
 		} catch (SQLException ex) {
 			ex.printStackTrace();
@@ -3740,6 +3741,7 @@ public class MysqlConnector {
 
 			updateAuthorBibRelation(bibEntry.getAnnotatedBiblographyID(), bibEntry.getAuthorList());
 			updateEditorBibRelation(bibEntry.getAnnotatedBiblographyID(), bibEntry.getEditorList());
+			updateBibKeywordRelation(bibEntry.getAnnotatedBiblographyID(), bibEntry.getKeywordList());
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 			return false;
@@ -4022,6 +4024,25 @@ public class MysqlConnector {
 			e.printStackTrace();
 		}
 		return result;
+	}
+	
+	private void updateBibKeywordRelation(int bibID, ArrayList<BibKeywordEntry> keywordList) {
+		if (keywordList == null)
+			return;
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		deleteEntry("DELETE FROM BibKeywordBibliographyRelation WHERE BibID=" + bibID); // in case there are already relations
+		try {
+			pstmt = dbc.prepareStatement("INSERT INTO BibKeywordBibliographyRelation (BibID, BibKeywordID) VALUES (?, ?)");
+			pstmt.setInt(1, bibID);
+			for (BibKeywordEntry bke : keywordList) {
+				pstmt.setInt(2, bke.getBibKeywordID());
+				pstmt.executeUpdate();
+			}
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
