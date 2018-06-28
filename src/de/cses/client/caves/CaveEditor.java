@@ -2530,7 +2530,7 @@ public class CaveEditor extends AbstractEditor {
 
 					@Override
 					public void onSelect(SelectEvent event) {
-						closeEditor();
+						closeEditor(null);
 					}
 				});
 			}
@@ -3146,7 +3146,7 @@ public class CaveEditor extends AbstractEditor {
 					public void onSuccess(Boolean result) {
 						updateEntry(correspondingCaveEntry);
 						if (close) {
-							closeEditor();
+							closeEditor(correspondingCaveEntry);
 						}
 					}
 				});
@@ -3164,7 +3164,7 @@ public class CaveEditor extends AbstractEditor {
 						correspondingCaveEntry.setCaveID(result.intValue());
 						updateEntry(correspondingCaveEntry);
 						if (close) {
-							closeEditor();
+							closeEditor(correspondingCaveEntry);
 						}
 					}
 				});

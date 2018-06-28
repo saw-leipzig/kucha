@@ -108,15 +108,13 @@ public class ImageSearchController extends AbstractSearchController {
 						singleIE.addEditorListener(new EditorListener() {
 							
 							@Override
-							public void closeRequest() {
+							public void closeRequest(AbstractEntry entry) {
 								imageEditorPanel.hide();
 								getResultView().addResult(new ImageView(imgEntry));
 							}
 
 							@Override
-							public void updateEntryRequest(AbstractEntry updatedEntry) {
-								// nothing needs to be done here
-							}
+							public void updateEntryRequest(AbstractEntry updatedEntry) {  }
 						});
 						imageEditorPanel.add(singleIE);
 						imageEditorPanel.setGlassEnabled(true);

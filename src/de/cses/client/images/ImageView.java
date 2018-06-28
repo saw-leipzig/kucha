@@ -99,8 +99,11 @@ public class ImageView extends AbstractView {
 	}
 
 	@Override
-	public void closeRequest() {
-		super.closeRequest();
+	public void closeRequest(AbstractEntry entry) {
+		super.closeRequest(entry);
+		if (entry instanceof ImageEntry) {
+			imgEntry = (ImageEntry) entry;
+		}
 		setHTML(ivTemplates.view(UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), 
 				imgEntry.getShortName(), imgEntry.isOpenAccess() ? res.open().getSafeUri() : res.locked().getSafeUri()));
 //		setHTML(ivTemplates.view(UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), imgEntry.getShortName()));
@@ -118,11 +121,7 @@ public class ImageView extends AbstractView {
 	 * @see de.cses.client.ui.EditorListener#updateEntryRequest(de.cses.shared.AbstractEntry)
 	 */
 	@Override
-	public void updateEntryRequest(AbstractEntry updatedEntry) {
-		if (updatedEntry instanceof ImageEntry) {
-			imgEntry = (ImageEntry) updatedEntry;
-		}
-	}
+	public void updateEntryRequest(AbstractEntry updatedEntry) { }
 
 	/* (non-Javadoc)
 	 * @see de.cses.client.ui.AbstractView#getPermalink()

@@ -205,7 +205,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					if (result) {
 						updateEntry(bibEntry);
 						if (close) {
-							closeEditor();
+							closeEditor(bibEntry);
 						}
 					}
 				}
@@ -225,7 +225,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					bibEntry.setAnnotatedBiblographyID(result);
 					updateEntry(bibEntry);
 					if (close) {
-						closeEditor();
+						closeEditor(bibEntry);
 					}
 				}
 			});
@@ -405,7 +405,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 					@Override
 					public void onSelect(SelectEvent event) {
-						closeEditor();
+						closeEditor(null);
 					}
 				});
 			}

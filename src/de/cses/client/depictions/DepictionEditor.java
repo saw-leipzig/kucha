@@ -1421,7 +1421,7 @@ public class DepictionEditor extends AbstractEditor {
 						
 					@Override
 					public void onSelect(SelectEvent event) {
-						 closeEditor();
+						 closeEditor(null);
 					}
 				});
 			}
@@ -1461,7 +1461,7 @@ public class DepictionEditor extends AbstractEditor {
 					correspondingDepictionEntry.setDepictionID(newDepictionID.intValue());
 					updateEntry(correspondingDepictionEntry);
 					if (close) {
-						closeEditor();
+						closeEditor(correspondingDepictionEntry);
 					}
 				}
 
@@ -1482,7 +1482,7 @@ public class DepictionEditor extends AbstractEditor {
 				public void onSuccess(Boolean updateSucessful) {
 					updateEntry(correspondingDepictionEntry);
 					if (close) {
-						closeEditor();
+						closeEditor(correspondingDepictionEntry);
 					}
 				}
 			});

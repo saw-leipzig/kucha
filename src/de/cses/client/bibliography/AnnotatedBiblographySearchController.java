@@ -157,14 +157,13 @@ public class AnnotatedBiblographySearchController extends AbstractSearchControll
 					abe.addEditorListener(new EditorListener() {
 						
 						@Override
-						public void closeRequest() {
+						public void closeRequest(AbstractEntry entry) {
 							depictionEditorPanel.hide();
+							getResultView().addResult(new AnnotatedBiblographyView((AnnotatedBiblographyEntry)entry));
 						}
 
 						@Override
-						public void updateEntryRequest(AbstractEntry updatedEntry) {
-							getResultView().addResult(new AnnotatedBiblographyView((AnnotatedBiblographyEntry)updatedEntry));
-						}
+						public void updateEntryRequest(AbstractEntry updatedEntry) { }
 					});
 					depictionEditorPanel.add(abe);
 					depictionEditorPanel.setGlassEnabled(true);
