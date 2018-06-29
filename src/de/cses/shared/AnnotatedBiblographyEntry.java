@@ -45,8 +45,10 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	private boolean unpublished = false;
 	private int firstEditionBibID = 0;
 	private String abstractText="";
+	private String thesisType="";
 	private ArrayList<AuthorEntry> authorList = new ArrayList<AuthorEntry>();
 	private ArrayList<AuthorEntry> editorList = new ArrayList<AuthorEntry>();
+	private ArrayList<BibKeywordEntry> keywordList = new ArrayList<BibKeywordEntry>();
 
 	public AnnotatedBiblographyEntry(int annotatedBiblographyID, PublicationTypeEntry publicationType, 
 			String titleEN, String titleORG, String titleTR,
@@ -63,7 +65,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 			int yearEN, String yearORG, String yearTR, 
 			String monthEN, String monthORG, String monthTR, 
 			String pagesEN, String pagesORG, String pagesTR, 
-			String comments, String notes, String url, String uri, boolean unpublished, int firstEditionBibID, boolean openAccess, String abstractText) {
+			String comments, String notes, String url, String uri, boolean unpublished, int firstEditionBibID, boolean openAccess, String abstractText, String thesisType) {
 		super();
 		this.annotatedBiblographyID = annotatedBiblographyID;
 		this.publicationType = publicationType;
@@ -115,6 +117,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 		this.firstEditionBibID = firstEditionBibID;
 		this.openAccess = openAccess;
 		this.abstractText = abstractText;
+		this.thesisType = thesisType;
 	}
 
 	public AnnotatedBiblographyEntry() { }
@@ -135,7 +138,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 				yearEN, yearORG, yearTR, 
 				monthEN, monthORG, monthTR,  
 				pagesEN, pagesORG, pagesTR, 
-				comments, notes, url, uri, unpublished, firstEditionBibID, openAccess, abstractText);
+				comments, notes, url, uri, unpublished, firstEditionBibID, openAccess, abstractText, thesisType);
 		ArrayList<AuthorEntry> clonedAuthorList = new ArrayList<AuthorEntry>();
 		for (AuthorEntry ae : this.authorList) {
 			clonedAuthorList.add(ae);
@@ -146,6 +149,11 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 			clonedEditorList.add(ae);
 		}
 		clonedEntry.setEditorList(clonedEditorList);
+		ArrayList<BibKeywordEntry> clonedKeywordList = new ArrayList<BibKeywordEntry>();
+		for (BibKeywordEntry bke : this.getKeywordList()) {
+			clonedKeywordList.add(bke);
+		}
+		clonedEntry.setKeywordList(clonedKeywordList);
 		return clonedEntry;
 	}
 
@@ -907,6 +915,22 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 			result = result.concat((result.length() > 0 ? "; " : "") + (ae.getInstitution()!=null ? ae.getInstitution() : ae.getLastname() + (ae.getFirstname() != null ? ", " + ae.getFirstname().charAt(0) + "." : "")));
 		}
 		return result;
+	}
+
+	public String getThesisType() {
+		return thesisType;
+	}
+
+	public void setThesisType(String thesisType) {
+		this.thesisType = thesisType;
+	}
+
+	public ArrayList<BibKeywordEntry> getKeywordList() {
+		return keywordList;
+	}
+
+	public void setKeywordList(ArrayList<BibKeywordEntry> keywordList) {
+		this.keywordList = keywordList;
 	}
 
 }

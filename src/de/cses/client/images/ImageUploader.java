@@ -109,7 +109,7 @@ public class ImageUploader implements IsWidget {
 				Node node = nodelist.item(0);
 				int newImageID = Integer.parseInt(node.getFirstChild().toString());
 				if (newImageID == 0) {
-					com.google.gwt.user.client.Window.alert("This image has already been uploaded!");
+					Util.showWarning("Duplicate Image Error", "This image has already been uploaded!");
 				} else {
 					for (ImageUploadListener listener : uploadListener) {
 						listener.uploadCompleted(newImageID, filename);

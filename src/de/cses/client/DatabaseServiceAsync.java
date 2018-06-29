@@ -19,6 +19,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.AuthorEntry;
+import de.cses.shared.BibKeywordEntry;
 import de.cses.shared.CaveAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveGroupEntry;
@@ -291,5 +292,9 @@ public interface DatabaseServiceAsync {
 	void updateOrnamentEntry(OrnamentEntry oEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
 	void getAnnotatedBibliographyFromAuthors(ArrayList<AuthorEntry> authorList, AsyncCallback<ArrayList<AnnotatedBiblographyEntry>> asyncCallback) throws IllegalArgumentException;
+
+	void getBibKeywords(AsyncCallback<ArrayList<BibKeywordEntry>> asyncCallback) throws IllegalArgumentException;
+
+	void insertBibKeyword(BibKeywordEntry bkEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 
 }

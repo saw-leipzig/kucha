@@ -339,7 +339,7 @@ public class CaveEditor extends AbstractEditor {
 
 	public CaveEditor(CaveEntry caveEntry) {
 		if (caveEntry == null) {
-			createNewCaveEntry();
+			correspondingCaveEntry = new CaveEntry();
 		} else {
 			correspondingCaveEntry = caveEntry;
 		}
@@ -647,13 +647,6 @@ public class CaveEditor extends AbstractEditor {
 		}
 	}
 
-	/**
-	 * 
-	 */
-	private void createNewCaveEntry() {
-		correspondingCaveEntry = new CaveEntry();
-	}
-
 	@Override
 	public Widget asWidget() {
 		if (mainPanel == null) {
@@ -830,7 +823,7 @@ public class CaveEditor extends AbstractEditor {
 
 					@Override
 					public void onSelect(SelectEvent event) {
-						if (caveGroupNameField.isValid()) {
+						if (caveGroupNameField.validate()) {
 							CaveGroupEntry cgEntry = new CaveGroupEntry();
 							cgEntry.setName(caveGroupNameField.getCurrentValue());
 							dbService.insertCaveGroupEntry(cgEntry, new AsyncCallback<Integer>() {
@@ -2537,7 +2530,7 @@ public class CaveEditor extends AbstractEditor {
 
 					@Override
 					public void onSelect(SelectEvent event) {
-						closeEditor();
+						closeEditor(null);
 					}
 				});
 			}
@@ -3151,9 +3144,9 @@ public class CaveEditor extends AbstractEditor {
 
 					@Override
 					public void onSuccess(Boolean result) {
-						updateEntry(correspondingCaveEntry);
+//						updateEntry(correspondingCaveEntry);
 						if (close) {
-							closeEditor();
+							closeEditor(correspondingCaveEntry);
 						}
 					}
 				});
@@ -3169,9 +3162,9 @@ public class CaveEditor extends AbstractEditor {
 					@Override
 					public void onSuccess(Integer result) {
 						correspondingCaveEntry.setCaveID(result.intValue());
-						updateEntry(correspondingCaveEntry);
+//						updateEntry(correspondingCaveEntry);
 						if (close) {
-							closeEditor();
+							closeEditor(correspondingCaveEntry);
 						}
 					}
 				});

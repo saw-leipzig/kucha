@@ -110,8 +110,11 @@ public class DepictionView extends AbstractView {
 	}
 
 	@Override
-	public void closeRequest() {
-		super.closeRequest();
+	public void closeRequest(AbstractEntry entry) {
+		super.closeRequest(entry);
+		if (entry != null && entry instanceof DepictionEntry) {
+			depictionEntry = (DepictionEntry) entry;
+		}
 //		setHTML(dvTemplates.view(UriUtils.fromString("resource?imageID=" + depictionEntry.getMasterImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), depictionEntry.getDepictionID()));
 
 		CaveEntry ce = depictionEntry.getCave();
@@ -120,15 +123,11 @@ public class DepictionView extends AbstractView {
 				ce.getHistoricName() != null ? ce.getHistoricName() : (depictionEntry.getShortName() != null ? depictionEntry.getShortName() : "")));
 	}
 
-	/* (non-Javadoc)
-	 * @see de.cses.client.ui.EditorListener#updateEntryRequest(de.cses.shared.AbstractEntry)
-	 */
-	@Override
-	public void updateEntryRequest(AbstractEntry updatedEntry) {
-		if (updatedEntry instanceof DepictionEntry) {
-			depictionEntry = (DepictionEntry) updatedEntry;
-		}
-	}
+//	/* (non-Javadoc)
+//	 * @see de.cses.client.ui.EditorListener#updateEntryRequest(de.cses.shared.AbstractEntry)
+//	 */
+//	@Override
+//	public void updateEntryRequest(AbstractEntry updatedEntry) { }
 
 	/* (non-Javadoc)
 	 * @see de.cses.client.ui.AbstractView#getPermalink()

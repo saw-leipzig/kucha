@@ -23,6 +23,7 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
+import de.cses.client.images.ImageView;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.client.ui.AbstractSearchController;
 import de.cses.client.ui.EditorListener;
@@ -143,13 +144,15 @@ public class CaveSearchController extends AbstractSearchController {
 		ced.addEditorListener(new EditorListener() {
 
 			@Override
-			public void closeRequest() {
+			public void closeRequest(AbstractEntry entry) {
 				caveEditorPanel.hide();
+				if (entry != null) {
+					getResultView().addResult(new CaveView((CaveEntry)entry));
+				}
 			}
 
-			@Override
-			public void updateEntryRequest(AbstractEntry updatedEntry) {
-			}
+//			@Override
+//			public void updateEntryRequest(AbstractEntry updatedEntry) { }
 		});
 		caveEditorPanel.add(ced);
 		caveEditorPanel.setGlassEnabled(true);

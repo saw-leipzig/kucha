@@ -21,12 +21,14 @@ import com.google.gwt.user.client.ui.PopupPanel;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.ornamentic.OrnamenticView;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.client.ui.AbstractResultView;
 import de.cses.client.ui.AbstractSearchController;
 import de.cses.client.ui.EditorListener;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.DepictionEntry;
+import de.cses.shared.OrnamentEntry;
 
 /**
  * @author alingnau
@@ -132,14 +134,15 @@ public class DepictionSearchController extends AbstractSearchController {
 		de.addEditorListener(new EditorListener() {
 			
 			@Override
-			public void closeRequest() {
+			public void closeRequest(AbstractEntry entry) {
 				depictionEditorPanel.hide();
+				if (entry != null) {
+					getResultView().addResult(new DepictionView((DepictionEntry)entry));
+				}
 			}
 
-			@Override
-			public void updateEntryRequest(AbstractEntry updatedEntry) {
-				// nothing needs to happen here
-			}
+//			@Override
+//			public void updateEntryRequest(AbstractEntry updatedEntry) { }
 		});
 		depictionEditorPanel.add(de);
 		depictionEditorPanel.setGlassEnabled(true);

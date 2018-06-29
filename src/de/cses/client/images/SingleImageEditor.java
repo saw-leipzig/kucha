@@ -431,7 +431,7 @@ public class SingleImageEditor extends AbstractEditor {
 						
 					@Override
 					public void onSelect(SelectEvent event) {
-						 closeEditor();
+						 closeEditor(null);
 					}
 				});
 			}
@@ -518,7 +518,7 @@ public class SingleImageEditor extends AbstractEditor {
 					public void onSuccess(Boolean result) {
 						if (result) {
 							if (closeEditorRequested) {
-								closeEditor();
+								closeEditor(imgEntry);
 							}
 						} else {
 							Info.display("ERROR", "Image information has NOT been updated!");

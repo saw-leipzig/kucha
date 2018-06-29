@@ -627,7 +627,9 @@ public class OrnamentCaveAttributes extends PopupPanel {
 		 * vlcRelationToTherornaments2.add(header, new VerticalLayoutData(1.0, .4));
 		 */
 
-		icoSelector = new IconographySelector(StaticTables.getInstance().getIconographyForOrnamenticEntries().values());
+		// Luca has decided that all elements should be selectable!
+		icoSelector = new IconographySelector(StaticTables.getInstance().getIconographyEntries().values());
+//		icoSelector = new IconographySelector(StaticTables.getInstance().getIconographyForOrnamenticEntries().values());
 		Util.doLogging("OrnamentCaveAttributes - IconographySelector initialised");
 //		header = new FramedPanel();
 //		header.setHeading("Select elements showing similar pattern");

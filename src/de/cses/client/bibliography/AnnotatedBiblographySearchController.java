@@ -37,6 +37,7 @@ import com.sencha.gxt.widget.core.client.form.ComboBox;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
+import de.cses.client.images.ImageView;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.client.ui.AbstractResultView;
 import de.cses.client.ui.AbstractSearchController;
@@ -156,14 +157,15 @@ public class AnnotatedBiblographySearchController extends AbstractSearchControll
 					abe.addEditorListener(new EditorListener() {
 						
 						@Override
-						public void closeRequest() {
+						public void closeRequest(AbstractEntry entry) {
 							depictionEditorPanel.hide();
+							if (entry != null) {
+								getResultView().addResult(new AnnotatedBiblographyView((AnnotatedBiblographyEntry)entry));
+							}
 						}
 
-						@Override
-						public void updateEntryRequest(AbstractEntry updatedEntry) {
-							// nothing is happening here
-						}
+//						@Override
+//						public void updateEntryRequest(AbstractEntry updatedEntry) { }
 					});
 					depictionEditorPanel.add(abe);
 					depictionEditorPanel.setGlassEnabled(true);

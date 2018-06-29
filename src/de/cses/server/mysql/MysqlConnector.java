@@ -33,6 +33,7 @@ import com.google.gwt.user.client.Window;
 import de.cses.server.ServerProperties;
 import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.AuthorEntry;
+import de.cses.shared.BibKeywordEntry;
 import de.cses.shared.C14AnalysisUrlEntry;
 import de.cses.shared.C14DocumentEntry;
 import de.cses.shared.CaveAreaEntry;
@@ -207,7 +208,7 @@ public class MysqlConnector {
 						rs.getBoolean("EditionEnabled"), rs.getBoolean("EditorEnabled"), rs.getBoolean("MonthEnabled"), rs.getBoolean("NumberEnabled"),
 						rs.getBoolean("PagesEnabled"), rs.getBoolean("SeriesEnabled"), rs.getBoolean("TitleAddonEnabled"),
 						rs.getBoolean("UniversityEnabled"), rs.getBoolean("VolumeEnabled"), rs.getBoolean("IssueEnabled"),
-						rs.getBoolean("YearEnabled"));
+						rs.getBoolean("YearEnabled"), rs.getBoolean("ThesisTypeEnabled"));
 			}
 			rs.close();
 			pstmt.close();
@@ -231,7 +232,7 @@ public class MysqlConnector {
 						rs.getBoolean("EditionEnabled"), rs.getBoolean("EditorEnabled"), rs.getBoolean("MonthEnabled"), rs.getBoolean("NumberEnabled"),
 						rs.getBoolean("PagesEnabled"), rs.getBoolean("SeriesEnabled"), rs.getBoolean("TitleAddonEnabled"),
 						rs.getBoolean("UniversityEnabled"), rs.getBoolean("VolumeEnabled"), rs.getBoolean("IssueEnabled"),
-						rs.getBoolean("YearEnabled"));
+						rs.getBoolean("YearEnabled"), rs.getBoolean("ThesisTypeEnabled"));
 				result.add(entry);
 
 			}
@@ -1286,7 +1287,7 @@ public class MysqlConnector {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Authors WHERE AuthorID=" + id);
 			if (rs.first()) {
 				result = new AuthorEntry(rs.getInt("AuthorID"), rs.getString("Lastname"), rs.getString("Firstname"), rs.getString("Institution"),
-						rs.getBoolean("KuchaVisitor"), rs.getString("Affiliation"), rs.getString("Email"), rs.getString("Homepage"));
+						rs.getBoolean("KuchaVisitor"), rs.getString("Affiliation"), rs.getString("Email"), rs.getString("Homepage"), rs.getString("Alias"));
 			}
 			rs.close();
 			stmt.close();
@@ -1767,9 +1768,10 @@ public class MysqlConnector {
 						rs.getString("YearTR"), rs.getString("MonthEN"), rs.getString("MonthORG"), rs.getString("MonthTR"), rs.getString("PagesEN"),
 						rs.getString("PagesORG"), rs.getString("PagesTR"), rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"),
 						rs.getString("URI"), rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getBoolean("OpenAccess"),
-						rs.getString("AbstractText"));
+						rs.getString("AbstractText"), rs.getString("ThesisType"));
 				entry.setAuthorList(getAuthorBibRelation(entry.getAnnotatedBiblographyID()));
 				entry.setEditorList(getEditorBibRelation(entry.getAnnotatedBiblographyID()));
+				entry.setKeywordList(getRelatedBibKeywords(entry.getAnnotatedBiblographyID()));
 				result.add(entry);
 			}
 			rs.close();
@@ -1814,9 +1816,10 @@ public class MysqlConnector {
 						rs.getString("YearTR"), rs.getString("MonthEN"), rs.getString("MonthORG"), rs.getString("MonthTR"), rs.getString("PagesEN"),
 						rs.getString("PagesORG"), rs.getString("PagesTR"), rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"),
 						rs.getString("URI"), rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getBoolean("OpenAccess"),
-						rs.getString("AbstractText"));
+						rs.getString("AbstractText"), rs.getString("ThesisType"));
 				entry.setAuthorList(getAuthorBibRelation(entry.getAnnotatedBiblographyID()));
 				entry.setEditorList(getEditorBibRelation(entry.getAnnotatedBiblographyID()));
+				entry.setKeywordList(getRelatedBibKeywords(entry.getAnnotatedBiblographyID()));
 				result.add(entry);
 			}
 			rs.close();
@@ -1929,10 +1932,11 @@ public class MysqlConnector {
 						rs.getString("YearTR"), rs.getString("MonthEN"), rs.getString("MonthORG"), rs.getString("MonthTR"), rs.getString("PagesEN"),
 						rs.getString("PagesORG"), rs.getString("PagesTR"), rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"),
 						rs.getString("URI"), rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getBoolean("OpenAccess"),
-						rs.getString("AbstractText"));
+						rs.getString("AbstractText"), rs.getString("ThesisType"));
 
 				result.setAuthorList(getAuthorBibRelation(result.getAnnotatedBiblographyID()));
 				result.setEditorList(getEditorBibRelation(result.getAnnotatedBiblographyID()));
+				result.setKeywordList(getRelatedBibKeywords(result.getAnnotatedBiblographyID()));
 			}
 			rs.close();
 			stmt.close();
@@ -2892,7 +2896,7 @@ public class MysqlConnector {
 		int rowCount = 0;
 		try {
 			authorStatement = dbc.prepareStatement(
-					"UPDATE Authors SET LastName=?, FirstName=?, Institution=?, KuchaVisitor=?, Affiliation=?, Email=?, Homepage=? WHERE AuthorID=?");
+					"UPDATE Authors SET LastName=?, FirstName=?, Institution=?, KuchaVisitor=?, Affiliation=?, Email=?, Homepage=?, Alias=? WHERE AuthorID=?");
 			authorStatement.setString(1, authorEntry.getLastname());
 			authorStatement.setString(2, authorEntry.getFirstname());
 			authorStatement.setString(3, authorEntry.getInstitution());
@@ -2900,7 +2904,8 @@ public class MysqlConnector {
 			authorStatement.setString(5, authorEntry.getAffiliation());
 			authorStatement.setString(6, authorEntry.getEmail());
 			authorStatement.setString(7, authorEntry.getHomepage());
-			authorStatement.setInt(8, authorEntry.getAuthorID());
+			authorStatement.setString(8, authorEntry.getAlias());
+			authorStatement.setInt(9, authorEntry.getAuthorID());
 			rowCount = authorStatement.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -2918,7 +2923,7 @@ public class MysqlConnector {
 		int authorID = 0;
 		try {
 			authorStatement = dbc.prepareStatement(
-					"INSERT INTO Authors (LastName, FirstName, Institution, KuchaVisitor, Affiliation, Email, Homepage) VALUES (?, ?, ?, ?, ?, ?, ?)",
+					"INSERT INTO Authors (LastName, FirstName, Institution, KuchaVisitor, Affiliation, Email, Homepage, Alias) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
 					Statement.RETURN_GENERATED_KEYS);
 			authorStatement.setString(1, authorEntry.getLastname());
 			authorStatement.setString(2, authorEntry.getFirstname());
@@ -2927,6 +2932,7 @@ public class MysqlConnector {
 			authorStatement.setString(5, authorEntry.getAffiliation());
 			authorStatement.setString(6, authorEntry.getEmail());
 			authorStatement.setString(7, authorEntry.getHomepage());
+			authorStatement.setString(8, authorEntry.getAlias());
 			authorStatement.executeUpdate();
 			ResultSet keys = authorStatement.getGeneratedKeys();
 			if (keys.next()) {
@@ -2968,8 +2974,8 @@ public class MysqlConnector {
 					+ "VolumeEN, VolumeORG, VolumeTR, "
 					+ "IssueEN, IssueORG, IssueTR, " 
 					+ "YearEN, YearORG, YearTR, " 
-					+ "Unpublished, OpenAccess, AbstractText) "
-					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+					+ "Unpublished, OpenAccess, AbstractText, ThesisType) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 					Statement.RETURN_GENERATED_KEYS);
 			pstmt.setInt(1, bibEntry.getPublicationType().getPublicationTypeID());
 			pstmt.setString(2, bibEntry.getAccessdateEN());
@@ -3020,6 +3026,7 @@ public class MysqlConnector {
 			pstmt.setBoolean(47, bibEntry.isUnpublished());
 			pstmt.setBoolean(48, bibEntry.isOpenAccess());
 			pstmt.setString(49, bibEntry.getAbstractText());
+			pstmt.setString(50, bibEntry.getThesisType());
 			pstmt.executeUpdate();
 
 			ResultSet keys = pstmt.getGeneratedKeys();
@@ -3031,6 +3038,7 @@ public class MysqlConnector {
 			if (newBibID > 0) {
 				updateAuthorBibRelation(newBibID, bibEntry.getAuthorList());
 				updateEditorBibRelation(newBibID, bibEntry.getEditorList());
+				updateBibKeywordRelation(newBibID, bibEntry.getKeywordList());
 			}
 		} catch (SQLException ex) {
 			ex.printStackTrace();
@@ -3136,7 +3144,7 @@ public class MysqlConnector {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Authors");
 			while (rs.next()) {
 				result.add(new AuthorEntry(rs.getInt("AuthorID"), rs.getString("Lastname"), rs.getString("Firstname"), rs.getString("Institution"),
-						rs.getBoolean("KuchaVisitor"), rs.getString("Affiliation"), rs.getString("Email"), rs.getString("Homepage")));
+						rs.getBoolean("KuchaVisitor"), rs.getString("Affiliation"), rs.getString("Email"), rs.getString("Homepage"), rs.getString("Alias")));
 			}
 			rs.close();
 			stmt.close();
@@ -3677,7 +3685,7 @@ public class MysqlConnector {
 					+ "VolumeEN=?, VolumeORG=?, VolumeTR=?, " 
 					+ "IssueEN=?, IssueORG=?, IssueTR=?, " 
 					+ "YearEN=?, YearORG=?, YearTR=?, "
-					+ "Unpublished=?, OpenAccess=?, AbstractText=? WHERE BibID=?");
+					+ "Unpublished=?, OpenAccess=?, AbstractText=?, ThesisType=? WHERE BibID=?");
 			pstmt.setInt(1, bibEntry.getPublicationType().getPublicationTypeID());
 			pstmt.setString(2, bibEntry.getAccessdateEN());
 			pstmt.setString(3, bibEntry.getAccessdateORG());
@@ -3727,11 +3735,13 @@ public class MysqlConnector {
 			pstmt.setBoolean(47, bibEntry.isUnpublished());
 			pstmt.setBoolean(48, bibEntry.isOpenAccess());
 			pstmt.setString(49, bibEntry.getAbstractText());
-			pstmt.setInt(50, bibEntry.getAnnotatedBiblographyID());
+			pstmt.setString(50, bibEntry.getThesisType());
+			pstmt.setInt(51, bibEntry.getAnnotatedBiblographyID());
 			pstmt.executeUpdate();
 
 			updateAuthorBibRelation(bibEntry.getAnnotatedBiblographyID(), bibEntry.getAuthorList());
 			updateEditorBibRelation(bibEntry.getAnnotatedBiblographyID(), bibEntry.getEditorList());
+			updateBibKeywordRelation(bibEntry.getAnnotatedBiblographyID(), bibEntry.getKeywordList());
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 			return false;
@@ -3969,6 +3979,93 @@ public class MysqlConnector {
 	 */
 	public void doLogging(String clientName, String message) {
 		System.err.println(">>> " + clientName + ": " + message);
+	}
+
+	/**
+	 * @return
+	 */
+	public ArrayList<BibKeywordEntry> getBibKeywords() {
+		ArrayList<BibKeywordEntry> result = new ArrayList<BibKeywordEntry>();
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM BibKeywords");
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				result.add(new BibKeywordEntry(rs.getInt("BibKeywordID"), rs.getString("Keyword")));
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	/**
+	 * loads bibKeywords related to the annotated bibliography ID
+	 * @param bibID
+	 * @return
+	 */
+	private ArrayList<BibKeywordEntry> getRelatedBibKeywords(int bibID) {
+		ArrayList<BibKeywordEntry> result = new ArrayList<BibKeywordEntry>();
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM BibKeywords WHERE BibKeywordID IN (SELECT DISTINCT BibKeywordID FROM BibKeywordBibliographyRelation WHERE BibID=?)");
+			pstmt.setInt(1, bibID);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				result.add(new BibKeywordEntry(rs.getInt("BibKeywordID"), rs.getString("Keyword")));
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	private void updateBibKeywordRelation(int bibID, ArrayList<BibKeywordEntry> keywordList) {
+		if (keywordList == null)
+			return;
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		deleteEntry("DELETE FROM BibKeywordBibliographyRelation WHERE BibID=" + bibID); // in case there are already relations
+		try {
+			pstmt = dbc.prepareStatement("INSERT INTO BibKeywordBibliographyRelation (BibID, BibKeywordID) VALUES (?, ?)");
+			pstmt.setInt(1, bibID);
+			for (BibKeywordEntry bke : keywordList) {
+				pstmt.setInt(2, bke.getBibKeywordID());
+				pstmt.executeUpdate();
+			}
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * @param bkEntry
+	 * @return
+	 */
+	public int insertBibKeyword(BibKeywordEntry bkEntry) {
+		Connection dbc = getConnection();
+		PreparedStatement cgStatement;
+		int bibKeywordID = 0;
+		try {
+			cgStatement = dbc.prepareStatement("INSERT INTO BibKeywords (Keyword) VALUES (?)", Statement.RETURN_GENERATED_KEYS);
+			cgStatement.setString(1, bkEntry.getBibKeyword());
+			cgStatement.executeUpdate();
+			ResultSet keys = cgStatement.getGeneratedKeys();
+			if (keys.first()) {
+				bibKeywordID = keys.getInt(1);
+			}
+			keys.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return bibKeywordID;
 	}
 
 }

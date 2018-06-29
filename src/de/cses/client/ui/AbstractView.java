@@ -71,7 +71,7 @@ public abstract class AbstractView extends Button implements EditorListener {
 	abstract protected String getPermalink(); // this will be the URI for the server request...
 	 
 	@Override
-	public void closeRequest() {
+	public void closeRequest(AbstractEntry entry) {
 		editorPanel.hide();
 		getElement().getStyle().setBorderColor("#FFA500");
 		getElement().getStyle().setBorderWidth(3.0, Unit.PX);

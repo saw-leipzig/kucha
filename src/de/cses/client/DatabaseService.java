@@ -20,6 +20,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.AuthorEntry;
+import de.cses.shared.BibKeywordEntry;
 import de.cses.shared.CaveAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveGroupEntry;
@@ -267,4 +268,8 @@ public interface DatabaseService extends RemoteService {
 	boolean updateOrnamentEntry(OrnamentEntry oEntry) throws IllegalArgumentException;
 
 	ArrayList<AnnotatedBiblographyEntry> getAnnotatedBibliographyFromAuthors(ArrayList<AuthorEntry> authorList) throws IllegalArgumentException;
+
+	ArrayList<BibKeywordEntry> getBibKeywords() throws IllegalArgumentException;
+
+	int insertBibKeyword(BibKeywordEntry bkEntry) throws IllegalArgumentException; 
 }

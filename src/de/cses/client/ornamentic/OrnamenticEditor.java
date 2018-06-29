@@ -559,7 +559,8 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 						public void onSuccess(Integer result) {
 							Util.doLogging(this.getClass().getName() + " saving sucessful");
 							ornamentEntry.setOrnamentID(result);
-							closeEditor();
+//							updateEntry(ornamentEntry);
+							closeEditor(ornamentEntry);
 						}
 					});
 				} else {
@@ -572,7 +573,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 						@Override
 						public void onSuccess(Boolean result) {
-							closeEditor();
+							closeEditor(ornamentEntry);
 						}
 					});
 				}
@@ -588,7 +589,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 			@Override
 			public void onClick(ClickEvent event) {
-				closeEditor();
+				closeEditor(null);
 			}
 
 		};

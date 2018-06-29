@@ -37,6 +37,7 @@ public class PublicationTypeEntry extends AbstractEntry {
 	boolean volumeEnabled = false;
 	boolean issueEnabled = false;
 	boolean yearEnabled = false;
+	boolean thesisTypeEnabled = false;
 	
 	/**
 	 * @return the publicationTypeID
@@ -62,11 +63,12 @@ public class PublicationTypeEntry extends AbstractEntry {
 	 * @param volumeEnabled
 	 * @param issueEnabled
 	 * @param yearEnabled
+	 * @param thesisTypeEnabled
 	 */
 	public PublicationTypeEntry(int publicationTypeID, String name, boolean accessDateEnabled, boolean authorEnabled,
 			boolean parentTitleEnabled, String parentTitleLabel, boolean editionEnabled, boolean editorEnabled, boolean monthEnabled,
 			boolean numberEnabled, boolean pagesEnabled, boolean seriesEnabled, boolean titleAddonEnabled, boolean universityEnabled,
-			boolean volumeEnabled, boolean issueEnabled, boolean yearEnabled) {
+			boolean volumeEnabled, boolean issueEnabled, boolean yearEnabled, boolean thesisTypeEnabled) {
 		this.publicationTypeID = publicationTypeID;
 		this.name = name;
 		this.accessDateEnabled = accessDateEnabled;
@@ -84,6 +86,7 @@ public class PublicationTypeEntry extends AbstractEntry {
 		this.volumeEnabled = volumeEnabled;
 		this.issueEnabled = issueEnabled;
 		this.yearEnabled = yearEnabled;
+		this.thesisTypeEnabled = thesisTypeEnabled;
 	}
 
 	/**
@@ -238,8 +241,13 @@ public class PublicationTypeEntry extends AbstractEntry {
 	public void setParentTitleLabel(String parentTitleLabel) {
 		this.parentTitleLabel = parentTitleLabel;
 	}
-	
-	
-	
 
+	public boolean isThesisTypeEnabled() {
+		return thesisTypeEnabled;
+	}
+
+	public void setThesisTypeEnabled(boolean thesisTypeEnabled) {
+		this.thesisTypeEnabled = thesisTypeEnabled;
+	}
+	
 }

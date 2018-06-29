@@ -31,16 +31,16 @@ public abstract class AbstractEditor implements IsWidget {
 		listenerList.add(l);
 	}
 	
-	protected void closeEditor() {
+	protected void closeEditor(AbstractEntry entry) {
 		for (EditorListener el : listenerList) {
-			el.closeRequest();
+			el.closeRequest(entry);
 		}
 	}
 	
-	protected void updateEntry(AbstractEntry entry) {
-		for (EditorListener el : listenerList) {
-			el.updateEntryRequest(entry);
-		}
-	}
-
+//	protected void updateEntry(AbstractEntry entry) {
+//		for (EditorListener el : listenerList) {
+//			el.updateEntryRequest(entry);
+//		}
+//	}
+	
 }

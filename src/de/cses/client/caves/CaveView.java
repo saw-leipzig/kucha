@@ -128,10 +128,15 @@ public class CaveView extends AbstractView {
 	 * 
 	 * @see de.cses.client.ui.EditorListener#updateEntryRequest(de.cses.shared.AbstractEntry)
 	 */
+//	@Override
+//	public void updateEntryRequest(AbstractEntry updatedEntry) {
+//	}
+
 	@Override
-	public void updateEntryRequest(AbstractEntry updatedEntry) {
-		if (updatedEntry instanceof CaveEntry) {
-			cEntry = (CaveEntry) updatedEntry;
+	public void closeRequest(AbstractEntry entry) {
+		super.closeRequest(entry);
+		if (entry != null && entry instanceof CaveEntry) {
+			cEntry = (CaveEntry) entry;
 		}
 	}
 
