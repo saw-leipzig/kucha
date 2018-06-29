@@ -322,7 +322,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			@Override
 			public void onSuccess(ArrayList<BibKeywordEntry> result) {
 				for (BibKeywordEntry bke : result) {
-					if (!selectedBibKeywordsStore.hasRecord(bke)) {
+					if (selectedBibKeywordsStore.findModelWithKey(Integer.toString(bke.getBibKeywordID())) == null) {
 						bibKeywordsStore.add(bke);
 					}
 				}
