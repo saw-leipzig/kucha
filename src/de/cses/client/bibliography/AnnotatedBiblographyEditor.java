@@ -898,6 +898,8 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		 * Keywords
 		 */
 		bibKeywordSelectionDLF = new DualListField<>(bibKeywordsStore, selectedBibKeywordsStore, bibKeywordProps.bibKeyword(), new TextCell());
+		bibKeywordSelectionDLF.getUpButton().removeFromParent();
+		bibKeywordSelectionDLF.getDownButton().removeFromParent();
 		bibKeywordSelectionDLF.setMode(Mode.INSERT);
 		bibKeywordSelectionDLF.setEnableDnd(true);
 		VerticalLayoutContainer bibKeywordVLC = new VerticalLayoutContainer();
