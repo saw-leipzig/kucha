@@ -23,7 +23,7 @@ public class BibKeywordEntry extends AbstractEntry {
 	private String bibKeyword;
 
 	/**
-	 * default contructor
+	 * default constructor
 	 */
 	public BibKeywordEntry() { }
 

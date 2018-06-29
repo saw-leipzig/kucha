@@ -149,6 +149,11 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 			clonedEditorList.add(ae);
 		}
 		clonedEntry.setEditorList(clonedEditorList);
+		ArrayList<BibKeywordEntry> clonedKeywordList = new ArrayList<BibKeywordEntry>();
+		for (BibKeywordEntry bke : this.getKeywordList()) {
+			clonedKeywordList.add(bke);
+		}
+		clonedEntry.setKeywordList(clonedKeywordList);
 		return clonedEntry;
 	}
 
