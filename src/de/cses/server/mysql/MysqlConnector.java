@@ -590,7 +590,8 @@ public class MysqlConnector {
 			while (rs.next()) {
 				CaveEntry ce = new CaveEntry(rs.getInt("CaveID"), rs.getString("OfficialNumber"), rs.getString("HistoricName"),
 						rs.getString("OptionalHistoricName"), rs.getInt("CaveTypeID"), rs.getInt("SiteID"), rs.getInt("DistrictID"),
-						rs.getInt("RegionID"), rs.getInt("OrientationID"), rs.getString("StateOfPreservation"), rs.getString("Findings"),
+						rs.getInt("RegionID"),rs.getInt("OrientationID"),
+						rs.getString("StateOfPreservation"), rs.getString("Findings"),
 						rs.getString("Notes"), rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedInYear"),
 						rs.getInt("PreservationClassificationID"), rs.getInt("CaveGroupID"), rs.getString("OptionalCaveSketch"),
 						rs.getString("CaveLayoutComments"), rs.getBoolean("HasVolutedHorseShoeArch"), rs.getBoolean("HasSculptures"),
@@ -621,7 +622,8 @@ public class MysqlConnector {
 			if (rs.first()) {
 				result = new CaveEntry(rs.getInt("CaveID"), rs.getString("OfficialNumber"), rs.getString("HistoricName"),
 						rs.getString("OptionalHistoricName"), rs.getInt("CaveTypeID"), rs.getInt("SiteID"), rs.getInt("DistrictID"),
-						rs.getInt("RegionID"), rs.getInt("OrientationID"), rs.getString("StateOfPreservation"), rs.getString("Findings"),
+						rs.getInt("RegionID"),	rs.getInt("OrientationID"),
+						rs.getString("StateOfPreservation"), rs.getString("Findings"),
 						rs.getString("Notes"), rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedInYear"),
 						rs.getInt("PreservationClassificationID"), rs.getInt("CaveGroupID"), rs.getString("OptionalCaveSketch"),
 						rs.getString("CaveLayoutComments"), rs.getBoolean("HasVolutedHorseShoeArch"), rs.getBoolean("HasSculptures"),
@@ -682,7 +684,8 @@ public class MysqlConnector {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Ornaments");
 			while (rs.next()) {
 				results.add(new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
-						rs.getString("Annotation"), rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
+						//rs.getString("Annotation"),
+						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
 						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
 						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID"))));
 
@@ -777,7 +780,7 @@ public class MysqlConnector {
 			ornamentStatement.setString(3, ornamentEntry.getRemarks());
 			ornamentStatement.setString(4, ornamentEntry.getInterpretation());
 			ornamentStatement.setString(5, ornamentEntry.getReferences());
-			ornamentStatement.setString(6, ornamentEntry.getAnnotations());
+			//ornamentStatement.setString(6, ornamentEntry.getAnnotations());
 			ornamentStatement.setInt(7, ornamentEntry.getOrnamentClass());
 			ornamentStatement.setInt(8, ornamentEntry.getStructureOrganizationID());
 			ornamentStatement.executeUpdate();
@@ -813,7 +816,7 @@ public class MysqlConnector {
 			ornamentStatement.setString(3, ornamentEntry.getRemarks());
 			ornamentStatement.setString(4, ornamentEntry.getInterpretation());
 			ornamentStatement.setString(5, ornamentEntry.getReferences());
-			ornamentStatement.setString(6, ornamentEntry.getAnnotations());
+			//ornamentStatement.setString(6, ornamentEntry.getAnnotations());
 			ornamentStatement.setInt(7, ornamentEntry.getOrnamentClass());
 			ornamentStatement.setInt(8, ornamentEntry.getStructureOrganizationID());
 			ornamentStatement.setInt(9, ornamentEntry.getOrnamentID());
@@ -899,13 +902,14 @@ public class MysqlConnector {
 				keys.close();
 				System.err.println("vor orientation");
 
-				deleteEntry("DELETE FROM OrnamentOrientationRelation WHERE OrnamentCaveRelationID=" + newCaveOrnamentRelationID);
+				/*deleteEntry("DELETE FROM OrnamentOrientationRelation WHERE OrnamentCaveRelationID=" + newCaveOrnamentRelationID);
 				PreparedStatement ornamentOrientationRelationStatement = dbc.prepareStatement("INSERT INTO OrnamentOrientationRelation (OrnamentCaveRelationID, OrientationID) VALUES (?, ?)");
 				ornamentOrientationRelationStatement.setInt(1, newCaveOrnamentRelationID);
 				for (OrientationEntry orientationEntry : ornamentCaveR.getOrientations()) {
 					ornamentOrientationRelationStatement.setInt(2, orientationEntry.getOrientationID());
 					ornamentOrientationRelationStatement.executeUpdate();
 				}
+				*/
 				
 				deleteEntry("DELETE FROM OrnamentCaveIconographyRelation WHERE OrnamentCaveRelationID=" + newCaveOrnamentRelationID);
 				PreparedStatement ornamentCavePictorialRelationStatement = dbc.prepareStatement("INSERT INTO OrnamentCaveIconographyRelation (OrnamentCaveRelationID, IconographyID) VALUES (?, ?)");
@@ -1598,7 +1602,7 @@ public class MysqlConnector {
 		return result;
 	}
 
-	public ArrayList<OrientationEntry> getOrientations() {
+	/*public ArrayList<OrientationEntry> getOrientations() {
 		OrientationEntry result = null;
 		ArrayList<OrientationEntry> orientations = new ArrayList<OrientationEntry>();
 		Connection dbc = getConnection();
@@ -2035,7 +2039,8 @@ public class MysqlConnector {
 			ResultSet rs = stmt.executeQuery((sqlWhere == null) ? "SELECT * FROM Ornaments" : "SELECT * FROM Ornaments WHERE " + sqlWhere);
 			while (rs.next()) {
 				results.add(new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
-						rs.getString("Annotation"), rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
+						//rs.getString("Annotation"),
+						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
 						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
 						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID"))));
 			}
@@ -3830,8 +3835,8 @@ public class MysqlConnector {
 						rs.getString("Colours"), rs.getString("Notes"), rs.getString("GroupOfOrnaments"),
 						rs.getString("SimilarElementsofOtherCultures"), getIconographyElementsbyOrnamentCaveID(rs.getInt("CaveOrnamentRelationID")),
 						getRelatedOrnamentsbyOrnamentCaveID(rs.getInt("CaveOrnamentRelationID")),
-						getWallsbyOrnamentCaveID(rs.getInt("CaveOrnamentRelationID")),
-						getOrientationsbyOrnamentCaveID(rs.getInt("CaveOrnamentRelationID"))));
+						getWallsbyOrnamentCaveID(rs.getInt("CaveOrnamentRelationID"))));
+					//	,getOrientationsbyOrnamentCaveID(rs.getInt("CaveOrnamentRelationID"))));
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -3863,7 +3868,7 @@ public class MysqlConnector {
 		return result;
 	}
 
-	public ArrayList<OrientationEntry> getOrientationsbyOrnamentCaveID(int ornamentCaveID) {
+	/*public ArrayList<OrientationEntry> getOrientationsbyOrnamentCaveID(int ornamentCaveID) {
 		OrientationEntry result = null;
 		ArrayList<OrientationEntry> orientations = new ArrayList<OrientationEntry>();
 		Connection dbc = getConnection();
@@ -3884,7 +3889,8 @@ public class MysqlConnector {
 		}
 		return orientations;
 	}
-
+*/
+	
 	private ArrayList<IconographyEntry> getIconographyElementsbyOrnamentCaveID(int ornamentCaveID) {
 		ArrayList<IconographyEntry> results = new ArrayList<IconographyEntry>();
 		Connection dbc = getConnection();

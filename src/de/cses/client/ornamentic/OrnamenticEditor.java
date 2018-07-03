@@ -287,7 +287,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 			remarks.setValue(ornamentEntry.getRemarks());
 		}
 
-		TextArea annotations = new TextArea();
+		/*TextArea annotations = new TextArea();
 		annotations.setAllowBlank(true);
 		header = new FramedPanel();
 		header.setHeading("Annotations");
@@ -296,7 +296,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		if (ornamentEntry != null) {
 			annotations.setValue(ornamentEntry.getAnnotations());
 		}
-
+*/
 		TextArea interpretation = new TextArea();
 		interpretation.setAllowBlank(true);
 		header = new FramedPanel();
@@ -517,7 +517,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 				ornamentEntry.setCode(ornamentCodeTextField.getText());
 				ornamentEntry.setDescription(discription.getText());
 				ornamentEntry.setRemarks(remarks.getText());
-				ornamentEntry.setAnnotations(annotations.getText());
+				//ornamentEntry.setAnnotations(annotations.getText());
 				ornamentEntry.setInterpretation(interpretation.getText());
 				ornamentEntry.setReferences(references.getText());
 				if (ornamentClassComboBox.getValue() == null) {

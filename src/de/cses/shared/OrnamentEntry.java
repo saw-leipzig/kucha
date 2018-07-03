@@ -21,7 +21,7 @@ public class OrnamentEntry extends AbstractEntry {
 	private String code;
 	private String description;
 	private String remarks;
-	private String annotations;
+	//private String annotations;
 	private String interpretation;
 	private String references;
 	private int ornamentClass;
@@ -40,14 +40,16 @@ public class OrnamentEntry extends AbstractEntry {
 		this.code = code;
 	}
 
-	public OrnamentEntry(int ornamentID, String code, String description, String remarks, String annotations, String interpretation,
+	public OrnamentEntry(int ornamentID, String code, String description, String remarks, 
+			//String annotations,
+			String interpretation,
 			String references, int ornamentClassID, ArrayList<ImageEntry> images, ArrayList<OrnamentCaveRelation> cavesRelations,
 			ArrayList<OrnamentComponentsEntry> ornamentComponents, ArrayList<InnerSecondaryPatternsEntry> innerSecondaryPatterns) {
 		this.ornamentID = ornamentID;
 		this.code = code;
 		this.description = description;
 		this.remarks = remarks;
-		this.annotations = annotations;
+		//this.annotations = annotations;
 		this.interpretation = interpretation;
 		this.references = references;
 		this.ornamentClass = ornamentClassID;
@@ -57,13 +59,15 @@ public class OrnamentEntry extends AbstractEntry {
 		this.ornamentComponents = ornamentComponents;
 	}
 
-	public OrnamentEntry(int ornamentID, String code, String description, String remarks, String annotations, String interpretation,
+	public OrnamentEntry(int ornamentID, String code, String description, String remarks, 
+			//String annotations, 
+			String interpretation,
 			String references, int ornamentClassID) {
 		this.ornamentID = ornamentID;
 		this.code = code;
 		this.description = description;
 		this.remarks = remarks;
-		this.annotations = annotations;
+		//this.annotations = annotations;
 		this.interpretation = interpretation;
 		this.references = references;
 		this.ornamentClass = ornamentClassID;
@@ -125,7 +129,7 @@ public class OrnamentEntry extends AbstractEntry {
 		this.cavesRelations = list;
 	}
 
-	public String getAnnotations() {
+	/*public String getAnnotations() {
 		return annotations;
 	}
 

@@ -165,7 +165,7 @@ public interface DatabaseServiceAsync {
 
 	void getIconographyEntry(int iconographyID, AsyncCallback<IconographyEntry> asyncCallback) throws IllegalArgumentException;
 
-	void getOrientations(AsyncCallback<ArrayList<OrientationEntry>> asyncCallback) throws IllegalArgumentException;
+	//void getOrientations(AsyncCallback<ArrayList<OrientationEntry>> asyncCallback) throws IllegalArgumentException;
 
 	void getMainTypologicalClasses(AsyncCallback<ArrayList<MainTypologicalClass>> asyncCallback) throws IllegalArgumentException;
 
