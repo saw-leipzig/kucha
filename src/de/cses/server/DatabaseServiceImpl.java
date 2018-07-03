@@ -366,10 +366,11 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		return connector.getRelatedImages(depictionID);
 	}
 	
-	public ArrayList<OrientationEntry> getOrientations() throws IllegalArgumentException {
+	/*public ArrayList<OrientationEntry> getOrientations() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getOrientations();
 	}
+	*/
 	public ArrayList<MainTypologicalClass> getMainTypologicalClasses() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getMainTypologicalClass();

@@ -142,7 +142,7 @@ public interface DatabaseService extends RemoteService {
 
 	ArrayList<ImageEntry> getRelatedImages(int depictionID) throws IllegalArgumentException;
 	
-	ArrayList<OrientationEntry> getOrientations() throws IllegalArgumentException;
+	//ArrayList<OrientationEntry> getOrientations() throws IllegalArgumentException;
 
 	ArrayList<MainTypologicalClass> getMainTypologicalClasses() throws IllegalArgumentException;
 	

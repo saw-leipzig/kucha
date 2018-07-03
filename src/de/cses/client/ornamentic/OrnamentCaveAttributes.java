@@ -87,8 +87,8 @@ public class OrnamentCaveAttributes extends PopupPanel {
 	private ComboBox<StyleEntry> styleComboBox;
 	private TextField caveType = new TextField();
 	private OrnamentCaveRelation ornamentCaveRelationEntry;
-	private ListStore<OrientationEntry> orientationListStore;
-	private ListStore<OrientationEntry> selectedorientationListStore;
+	//private ListStore<OrientationEntry> orientationListStore;
+	//private ListStore<OrientationEntry> selectedorientationListStore;
 	private OrientationProperties orientationProps;
 	private StoreFilter<CaveEntry> caveFilter;
 	private ListStore<StyleEntry> styleEntryList;
@@ -114,8 +114,8 @@ public class OrnamentCaveAttributes extends PopupPanel {
 		ornamentEntryList2 = new ListStore<OrnamentEntry>(ornamentEntryProps.OrnamentID());
 		selectedSimilarOrnaments = new ListStore<OrnamentEntry>(ornamentEntryProps.OrnamentID());
 		selectedRedlatedOrnaments = new ListStore<OrnamentEntry>(ornamentEntryProps.OrnamentID());
-		orientationListStore = new ListStore<OrientationEntry>(orientationProps.orientationID());
-		selectedorientationListStore = new ListStore<OrientationEntry>(orientationProps.orientationID());
+		//orientationListStore = new ListStore<OrientationEntry>(orientationProps.orientationID());
+		//selectedorientationListStore = new ListStore<OrientationEntry>(orientationProps.orientationID());
 		styleEntryList = new ListStore<StyleEntry>(styleProps.styleID());
 		wallsListStore = new ListStore<WallOrnamentCaveRelation>(wallRelationProps.wallLocationID());
 
@@ -123,7 +123,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 			districtEntryList.add(pe);
 		}
 
-		dbService.getOrientations(new AsyncCallback<ArrayList<OrientationEntry>>() {
+		/*dbService.getOrientations(new AsyncCallback<ArrayList<OrientationEntry>>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
@@ -142,7 +142,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 						orientationListStore.remove(orientationListStore.findModelWithKey(Integer.toString(oe.getOrientationID())));
 						selectedorientationListStore.add(oe);
 					}
-				}
+				}*/
 				//				
 //				
 //				if (ornamentCaveRelationEntry != null) {
@@ -172,8 +172,8 @@ public class OrnamentCaveAttributes extends PopupPanel {
 //					}
 //				}
 
-			}
-		});
+			//}
+		//});
 
 //		dbService.getCaves(new AsyncCallback<ArrayList<CaveEntry>>() {
 //
@@ -524,7 +524,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 
 		HorizontalLayoutContainer horizontalContainerLayout = new HorizontalLayoutContainer();
 
-		HorizontalLayoutContainer orientationHorizontalPanel = new HorizontalLayoutContainer();
+		/*HorizontalLayoutContainer orientationHorizontalPanel = new HorizontalLayoutContainer();
 
 		ListView<OrientationEntry, String> orientationView = new ListView<OrientationEntry, String>(orientationListStore, orientationProps.name());
 		ListView<OrientationEntry, String> selectedOrientationView = new ListView<OrientationEntry, String>(selectedorientationListStore, orientationProps.name());
@@ -542,7 +542,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 		header.add(orientationHorizontalPanel);
 
 		horizontalContainerLayout.add(header, new HorizontalLayoutData(.5, 1.0));
-
+*/
 		TextArea notes = new TextArea();
 
 		header = new FramedPanel();
@@ -730,7 +730,7 @@ public class OrnamentCaveAttributes extends PopupPanel {
 //				for (OrientationEntry orientation : orientationslist) {
 //					ornamentCaveRelation.getOrientations().add(orientation);
 //				}
-				ornamentCaveRelation.setOrientations(new ArrayList<OrientationEntry>(selectedorientationListStore.getAll()));
+			//	ornamentCaveRelation.setOrientations(new ArrayList<OrientationEntry>(selectedorientationListStore.getAll()));
 
 				ornamentCaveRelation.getIconographyElements().clear();
 				for (int i = 0; i < icoSelector.getSelectedIconography().size(); i++) {

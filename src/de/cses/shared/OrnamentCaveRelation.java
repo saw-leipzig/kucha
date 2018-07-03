@@ -12,7 +12,7 @@ public class OrnamentCaveRelation extends AbstractEntry {
 	private DistrictEntry district;
 	private String group;
 	private String similarelementsOfOtherCultures;
-	private ArrayList<OrientationEntry> orientations = new ArrayList<OrientationEntry>();
+	//private ArrayList<OrientationEntry> orientations = new ArrayList<OrientationEntry>();
 	private ArrayList<IconographyEntry> iconographyElements = new ArrayList<IconographyEntry>();
 	private ArrayList<OrnamentEntry> relatedOrnamentsRelations = new ArrayList<OrnamentEntry>();
 	private ArrayList<WallOrnamentCaveRelation> walls = new ArrayList<WallOrnamentCaveRelation>();
@@ -23,8 +23,9 @@ public class OrnamentCaveRelation extends AbstractEntry {
 
 	public OrnamentCaveRelation(int ornamentCaveRelationID, StyleEntry style, int ornamentID, DistrictEntry district, CaveEntry caveEntry,
 			String colours, String notes, String group, String similarElementsOfOtherCultures, ArrayList<IconographyEntry> iconographyElements,
-			ArrayList<OrnamentEntry> relatedOrnamentsRelations, ArrayList<WallOrnamentCaveRelation> walls,
-			ArrayList<OrientationEntry> orientations) {
+			ArrayList<OrnamentEntry> relatedOrnamentsRelations, ArrayList<WallOrnamentCaveRelation> walls
+			//,ArrayList<OrientationEntry> orientations
+			) {
 		this.ornamentCaveRelationID = ornamentCaveRelationID;
 		this.style = style;
 		this.ornamentID = ornamentID;
@@ -32,7 +33,7 @@ public class OrnamentCaveRelation extends AbstractEntry {
 		this.colours = colours;
 		this.notes = notes;
 		this.similarelementsOfOtherCultures = similarElementsOfOtherCultures;
-		this.orientations = orientations;
+		//this.orientations = orientations;
 		this.iconographyElements = iconographyElements;
 		this.group = group;
 		this.relatedOrnamentsRelations = relatedOrnamentsRelations;
@@ -135,7 +136,7 @@ public class OrnamentCaveRelation extends AbstractEntry {
 	/**
 	 * @return the orientations
 	 */
-	public ArrayList<OrientationEntry> getOrientations() {
+/*	public ArrayList<OrientationEntry> getOrientations() {
 		return orientations;
 	}
 
@@ -143,7 +144,7 @@ public class OrnamentCaveRelation extends AbstractEntry {
 	 * @param orientations
 	 *          the orientations to set
 	 */
-	public void setOrientations(ArrayList<OrientationEntry> orientations) {
+	/*public void setOrientations(ArrayList<OrientationEntry> orientations) {
 		this.orientations = orientations;
 	}
 
