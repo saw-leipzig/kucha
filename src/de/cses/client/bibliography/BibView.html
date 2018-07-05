@@ -15,12 +15,13 @@
 			<tpl if="editors != &quot;&quot;"> {editors} (eds.)</tpl> 
 			<i>{parentTitleORG}</i> 
 	  </tpl>
+		<tpl if="thesisType != &quot;&quot;"> {thesisType} thesis. </tpl>
 		<tpl if="editionORG != &quot;&quot;"> Edition: {editionORG} </tpl>
 		<tpl if="numberORG != &quot;&quot;"> No: {numberORG} </tpl>
 		<tpl if="seriesORG != &quot;&quot;"> Series: {seriesORG} </tpl>
 		<tpl if="volumeORG != &quot;&quot;"> Volume {volumeORG}.</tpl> 
 		<tpl if="issueORG != &quot;&quot;"> Issue {issueORG}.</tpl> 
-		<tpl if="pagesORG != &quot;&quot;"> (pp. {pagesORG}).</tpl>
+		<tpl if="pagesORG != &quot;&quot;"> pp. {pagesORG}.</tpl>
 	  <tpl if="publisher != &quot;&quot;">{publisher}.</tpl>
 	</p>
 </div>
