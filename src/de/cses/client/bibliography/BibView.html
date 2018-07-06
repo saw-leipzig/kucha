@@ -1,16 +1,27 @@
 <div style='font-size:12px; text-align: left;'> 
 	<p>
-		{authors} <tpl if="yearORG != &quot;&quot;">({yearORG})</tpl>. <i>{titleORG}</i> <tpl if="titleEN != &quot;&quot;">({titleEN})</tpl>.
+		<tpl if="parentTitleORG == &quot;&quot;">
+			<tpl if="authors != &quot;&quot;">
+				{authors} <tpl if="yearORG != &quot;&quot;">({yearORG})</tpl>. <i><b>{titleORG}</b></i> <tpl if="titleEN != &quot;&quot;">({titleEN})</tpl>.
+				<tpl if="editors != &quot;&quot;"> {editors} (eds.)</tpl>
+			</tpl>
+			<tpl if="authors == &quot;&quot;">
+				{editors} <tpl if="yearORG != &quot;&quot;">({yearORG})</tpl>. <i><b>{titleORG}</b></i> <tpl if="titleEN != &quot;&quot;">({titleEN})</tpl>.
+			</tpl>
+		</tpl>
 		<tpl if="parentTitleORG != &quot;&quot;">
+			{authors} <tpl if="yearORG != &quot;&quot;">({yearORG})</tpl>. <i><b>{titleORG}</b></i> <tpl if="titleEN != &quot;&quot;">({titleEN})</tpl>.
 			In 	
-				<tpl if="editors != &quot;&quot;"> {editors} (eds.)</tpl> 
-				<i><b>{parentTitleORG}</b></i> 
-				<tpl if="volumeORG != &quot;&quot;"> Volume {volumeORG}.</tpl> 
-				<tpl if="issueORG != &quot;&quot;"> Issue {issueORG}.</tpl> 
-				<tpl if="pagesORG != &quot;&quot;"> (pp. {pagesORG}).</tpl>
+			<tpl if="editors != &quot;&quot;"> {editors} (eds.)</tpl> 
+			<i>{parentTitleORG}</i> 
 	  </tpl>
-	  <tpl if="publisher != &quot;&quot;">
-	  	{publisher}.
-	  </tpl>
+		<tpl if="thesisType != &quot;&quot;"> {thesisType} thesis. </tpl>
+		<tpl if="editionORG != &quot;&quot;"> Edition: {editionORG} </tpl>
+		<tpl if="numberORG != &quot;&quot;"> No: {numberORG} </tpl>
+		<tpl if="seriesORG != &quot;&quot;"> Series: {seriesORG} </tpl>
+		<tpl if="volumeORG != &quot;&quot;"> Volume {volumeORG}.</tpl> 
+		<tpl if="issueORG != &quot;&quot;"> Issue {issueORG}.</tpl> 
+		<tpl if="pagesORG != &quot;&quot;"> pp. {pagesORG}.</tpl>
+	  <tpl if="publisher != &quot;&quot;">{publisher}.</tpl>
 	</p>
 </div>
