@@ -468,7 +468,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		});
 		
 		HorizontalLayoutContainer titleEnHLC = new HorizontalLayoutContainer();
-		titleEnHLC.add(titleEN, new HorizontalLayoutData(.9, 1.0));
+		titleEnHLC.add(titleEN, new HorizontalLayoutData(.9, 1.0, new Margins(0, 10, 0, 0)));
 		titleEnHLC.add(originalTranslationCB, new HorizontalLayoutData(.1, 1.0));
 
 		VerticalLayoutContainer titleVLC = new VerticalLayoutContainer();
