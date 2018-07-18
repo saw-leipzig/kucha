@@ -24,6 +24,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	private int annotatedBiblographyID = 0;
 	private PublicationTypeEntry publicationType = null;
 	private String titleEN="", titleTR="", titleORG="";
+	private String subtitleEN="", subtitleTR="", subtitleORG="";
 	private String parentTitleEN="", parentTitleTR="", parentTitleORG="";
 	private String universityEN="", universityORG="", universityTR="";
 	private String numberEN="", numberTR="", numberORG="";
@@ -54,6 +55,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	public AnnotatedBiblographyEntry(int annotatedBiblographyID, PublicationTypeEntry publicationType, 
 			String titleEN, String titleORG, String titleTR,
 			String parentTitleEN, String parentTitleORG, String parentTitleTR,
+			String subtitleEN, String subtitleORG, String subtitleTR,
 			String universityEN, String universityORG, String universityTR,
 			String numberEN, String numberORG, String numberTR, 
 			String accessdateEN, String accessdateORG, String accessdateTR,
@@ -76,6 +78,9 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 		this.parentTitleEN = parentTitleEN;
 		this.parentTitleTR = parentTitleTR;
 		this.parentTitleORG = parentTitleORG;
+		this.subtitleEN = subtitleEN;
+		this.subtitleORG = subtitleORG;
+		this.subtitleTR = subtitleTR;
 		this.universityEN = universityEN;
 		this.universityORG = universityORG;
 		this.universityTR = universityTR;
@@ -128,6 +133,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 		AnnotatedBiblographyEntry clonedEntry = new AnnotatedBiblographyEntry(annotatedBiblographyID, publicationType, 
 				titleEN, titleORG, titleTR,
 				parentTitleEN, parentTitleORG, parentTitleTR,
+				subtitleEN, subtitleORG, subtitleTR,
 				universityEN, universityORG, universityTR, 
 				numberEN, numberORG, numberTR, 
 				accessdateEN, accessdateORG, accessdateTR, 
@@ -941,6 +947,30 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 
 	public void setEditorType(String editorType) {
 		this.editorType = editorType;
+	}
+
+	public String getSubtitleORG() {
+		return subtitleORG;
+	}
+
+	public void setSubtitleORG(String subtitleORG) {
+		this.subtitleORG = subtitleORG;
+	}
+
+	public String getSubtitleEN() {
+		return subtitleEN;
+	}
+
+	public void setSubtitleEN(String subtitleEN) {
+		this.subtitleEN = subtitleEN;
+	}
+
+	public String getSubtitleTR() {
+		return subtitleTR;
+	}
+
+	public void setSubtitleTR(String subtitleTR) {
+		this.subtitleTR = subtitleTR;
 	}
 
 }

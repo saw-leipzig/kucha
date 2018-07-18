@@ -862,7 +862,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			};
 			editorListFilterField.bind(editorListStore);
 			TextField editorTypeTF = new TextField();
-			editorTypeTF.setEmptyText("e.g. eds. / ed.");
+			editorTypeTF.setEmptyText("e.g. eds. / ed. / transl.");
 			editorTypeTF.setValue(bibEntry.getEditorType());
 			editorTypeTF.addValueChangeHandler(new ValueChangeHandler<String>() {
 
@@ -873,10 +873,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			});
 			
 			HorizontalLayoutContainer filterEditorTypeHLC = new HorizontalLayoutContainer();
-			filterEditorTypeHLC.add(new FieldLabel(editorListFilterField, "Filter"), new HorizontalLayoutData(.5, 1.0, new Margins(0, 10, 0, 5)));
-			filterEditorTypeHLC.add(new FieldLabel(editorTypeTF, "Editor type"), new HorizontalLayoutData(.5, 1.0, new Margins(0, 5, 0, 0)));
+			filterEditorTypeHLC.add(new FieldLabel(editorListFilterField, "Filter"), new HorizontalLayoutData(.5, 1.0, new Margins(0, 20, 0, 0)));
+			filterEditorTypeHLC.add(new FieldLabel(editorTypeTF, "Editor type"), new HorizontalLayoutData(.5, 1.0, new Margins(0, 0, 0, 20)));
 			
-			editorVLC.add(filterEditorTypeHLC, new VerticalLayoutData(.5, .15, new Margins(10, 0, 0, 0)));
+			editorVLC.add(filterEditorTypeHLC, new VerticalLayoutData(1.0, .15, new Margins(10, 0, 0, 0)));
 
 			ToolButton editEditorTB = new ToolButton(ToolButton.GEAR);
 			editEditorTB.addSelectHandler(new SelectHandler() {
