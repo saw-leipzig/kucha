@@ -766,9 +766,8 @@ public class MysqlConnector {
 		PreparedStatement ornamentStatement;
 		// deleteEntry("DELETE FROM Ornaments WHERE OrnamentID=" + ornamentEntry.getCode());
 		try {
-			ornamentStatement = dbc.prepareStatement(
-					"INSERT INTO Ornaments (Code, Description, Remarks, Interpretation, OrnamentReferences, Annotation , OrnamentClassID, StructureOrganizationID) "
-							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+			ornamentStatement = dbc.prepareStatement("INSERT INTO Ornaments (Code, Description, Remarks, Interpretation, OrnamentReferences, OrnamentClassID, StructureOrganizationID) VALUES (?, ?, ?, ?, ?, ?, ?)",
+//					ornamentStatement = dbc.prepareStatement("INSERT INTO Ornaments (Code, Description, Remarks, Interpretation, OrnamentReferences, Annotation , OrnamentClassID, StructureOrganizationID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
 					Statement.RETURN_GENERATED_KEYS);
 			ornamentStatement.setString(1, ornamentEntry.getCode());
 			ornamentStatement.setString(2, ornamentEntry.getDescription());
@@ -776,8 +775,8 @@ public class MysqlConnector {
 			ornamentStatement.setString(4, ornamentEntry.getInterpretation());
 			ornamentStatement.setString(5, ornamentEntry.getReferences());
 			//ornamentStatement.setString(6, ornamentEntry.getAnnotations());
-			ornamentStatement.setInt(7, ornamentEntry.getOrnamentClass());
-			ornamentStatement.setInt(8, ornamentEntry.getStructureOrganizationID());
+			ornamentStatement.setInt(6, ornamentEntry.getOrnamentClass());
+			ornamentStatement.setInt(7, ornamentEntry.getStructureOrganizationID());
 			ornamentStatement.executeUpdate();
 			ResultSet keys = ornamentStatement.getGeneratedKeys();
 			if (keys.next()) { // there should only be 1 key returned here
