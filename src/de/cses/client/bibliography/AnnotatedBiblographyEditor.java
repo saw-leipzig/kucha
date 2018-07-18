@@ -30,7 +30,6 @@ import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Frame;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -74,7 +73,6 @@ import com.sencha.gxt.widget.core.client.form.Validator;
 import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MaxNumberValidator;
-import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 
 import de.cses.client.DatabaseService;
@@ -86,7 +84,6 @@ import de.cses.client.user.UserLogin;
 import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.BibKeywordEntry;
-import de.cses.shared.CaveGroupEntry;
 import de.cses.shared.PublicationTypeEntry;
 
 /**
@@ -777,7 +774,15 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			@Override
 			public void onSelect(SelectEvent event) {
 				PopupPanel addAuthorDialog = new PopupPanel();
-				AuthorEditor aEditor = new AuthorEditor(authorSelection.getFromView().getSelectionModel().getSelectedItem(), new AuthorEditorListener() {
+				AuthorEntry selectedEntry;
+				if (authorSelection.getToView().getSelectionModel().getSelectedItem() != null) {
+					selectedEntry = authorSelection.getToView().getSelectionModel().getSelectedItem();
+				} else if (authorSelection.getFromView().getSelectionModel().getSelectedItem() != null) {
+					selectedEntry = authorSelection.getFromView().getSelectionModel().getSelectedItem();
+				} else {
+					return;
+				}
+				AuthorEditor aEditor = new AuthorEditor(selectedEntry, new AuthorEditorListener() {
 					
 					@Override
 					public void editorCanceled() {
@@ -864,7 +869,15 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				@Override
 				public void onSelect(SelectEvent event) {
 					PopupPanel addAuthorDialog = new PopupPanel();
-					AuthorEditor aEditor = new AuthorEditor(editorSelection.getFromView().getSelectionModel().getSelectedItem(), new AuthorEditorListener() {
+					AuthorEntry selectedEntry;
+					if (editorSelection.getToView().getSelectionModel().getSelectedItem() != null) {
+						selectedEntry = editorSelection.getToView().getSelectionModel().getSelectedItem();
+					} else if (editorSelection.getFromView().getSelectionModel().getSelectedItem() != null) {
+						selectedEntry = editorSelection.getFromView().getSelectionModel().getSelectedItem();
+					} else {
+						return;
+					}
+					AuthorEditor aEditor = new AuthorEditor(selectedEntry, new AuthorEditorListener() {
 						
 						@Override
 						public void editorCanceled() {
