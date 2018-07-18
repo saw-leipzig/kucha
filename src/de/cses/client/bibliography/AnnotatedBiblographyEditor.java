@@ -465,6 +465,52 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		titleFP.setHeading("Title");
 		titleFP.add(titleVLC);
 		firstTabInnerLeftVLC.add(titleFP, new VerticalLayoutData(1.0, 1.0 / 5));
+		
+		/**
+		 * Subtitle
+		 */
+		TextField subtitleEN = new TextField();
+		subtitleEN.setValue(bibEntry.getSubtitleEN());
+		subtitleEN.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				bibEntry.setSubtitleEN(event.getValue());
+			}
+		});
+		subtitleEN.addValidator(new MaxLengthValidator(256));
+		
+		TextField subtitleORG = new TextField();
+		subtitleORG.setValue(bibEntry.getSubtitleORG());
+		subtitleORG.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				bibEntry.setSubtitleORG(event.getValue());
+			}
+		});
+		subtitleORG.addValidator(new MaxLengthValidator(256));
+		
+		TextField subtitleTR = new TextField();
+		subtitleTR.setValue(bibEntry.getSubtitleTR());
+		subtitleTR.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				bibEntry.setSubtitleTR(event.getValue());
+			}
+		});
+		subtitleTR.addValidator(new MaxLengthValidator(256));
+
+		VerticalLayoutContainer subtitleVLC = new VerticalLayoutContainer();
+		subtitleVLC.add(new FieldLabel(subtitleORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
+		subtitleVLC.add(new FieldLabel(subtitleEN, "English Transl."), new VerticalLayoutData(1.0, 1.0 / 3));
+		subtitleVLC.add(new FieldLabel(subtitleTR, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
+
+		FramedPanel subtitleFP = new FramedPanel();
+		subtitleFP.setHeading("Subtitle");
+		subtitleFP.add(subtitleVLC);
+		firstTabInnerLeftVLC.add(subtitleFP, new VerticalLayoutData(1.0, 1.0 / 5));
 
 		/**
 		 * some publication types have a addon to the title
