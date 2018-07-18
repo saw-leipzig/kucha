@@ -861,6 +861,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				}
 			};
 			editorListFilterField.bind(editorListStore);
+
 			editorVLC.add(new FieldLabel(editorListFilterField, "Filter"), new VerticalLayoutData(.5, .15, new Margins(10, 0, 0, 0)));
 
 			ToolButton editEditorTB = new ToolButton(ToolButton.GEAR);
@@ -1295,6 +1296,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			pagesEN.addValidator(new MaxLengthValidator(32));
 			
 			TextField pagesORG = new TextField();
+			pagesORG.setEmptyText("e.g. pp. xx - yy / p. xx");
 			pagesORG.setValue(bibEntry.getPagesORG());
 			pagesORG.addValueChangeHandler(new ValueChangeHandler<String>() {
 

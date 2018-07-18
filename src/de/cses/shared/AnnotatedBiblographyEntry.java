@@ -46,6 +46,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	private int firstEditionBibID = 0;
 	private String abstractText="";
 	private String thesisType="";
+	private String editorType="";
 	private ArrayList<AuthorEntry> authorList = new ArrayList<AuthorEntry>();
 	private ArrayList<AuthorEntry> editorList = new ArrayList<AuthorEntry>();
 	private ArrayList<BibKeywordEntry> keywordList = new ArrayList<BibKeywordEntry>();
@@ -65,7 +66,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 			int yearEN, String yearORG, String yearTR, 
 			String monthEN, String monthORG, String monthTR, 
 			String pagesEN, String pagesORG, String pagesTR, 
-			String comments, String notes, String url, String uri, boolean unpublished, int firstEditionBibID, boolean openAccess, String abstractText, String thesisType) {
+			String comments, String notes, String url, String uri, boolean unpublished, int firstEditionBibID, boolean openAccess, String abstractText, String thesisType, String editorType) {
 		super();
 		this.annotatedBiblographyID = annotatedBiblographyID;
 		this.publicationType = publicationType;
@@ -118,6 +119,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 		this.openAccess = openAccess;
 		this.abstractText = abstractText;
 		this.thesisType = thesisType;
+		this.editorType = editorType;
 	}
 
 	public AnnotatedBiblographyEntry() { }
@@ -138,7 +140,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 				yearEN, yearORG, yearTR, 
 				monthEN, monthORG, monthTR,  
 				pagesEN, pagesORG, pagesTR, 
-				comments, notes, url, uri, unpublished, firstEditionBibID, openAccess, abstractText, thesisType);
+				comments, notes, url, uri, unpublished, firstEditionBibID, openAccess, abstractText, thesisType, editorType);
 		ArrayList<AuthorEntry> clonedAuthorList = new ArrayList<AuthorEntry>();
 		for (AuthorEntry ae : this.authorList) {
 			clonedAuthorList.add(ae);
@@ -931,6 +933,14 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 
 	public void setKeywordList(ArrayList<BibKeywordEntry> keywordList) {
 		this.keywordList = keywordList;
+	}
+
+	public String getEditorType() {
+		return editorType;
+	}
+
+	public void setEditorType(String editorType) {
+		this.editorType = editorType;
 	}
 
 }

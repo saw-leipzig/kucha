@@ -1764,7 +1764,7 @@ public class MysqlConnector {
 						rs.getString("YearTR"), rs.getString("MonthEN"), rs.getString("MonthORG"), rs.getString("MonthTR"), rs.getString("PagesEN"),
 						rs.getString("PagesORG"), rs.getString("PagesTR"), rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"),
 						rs.getString("URI"), rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getBoolean("OpenAccess"),
-						rs.getString("AbstractText"), rs.getString("ThesisType"));
+						rs.getString("AbstractText"), rs.getString("ThesisType"), rs.getString("EditorType"));
 				entry.setAuthorList(getAuthorBibRelation(entry.getAnnotatedBiblographyID()));
 				entry.setEditorList(getEditorBibRelation(entry.getAnnotatedBiblographyID()));
 				entry.setKeywordList(getRelatedBibKeywords(entry.getAnnotatedBiblographyID()));
@@ -1812,7 +1812,7 @@ public class MysqlConnector {
 						rs.getString("YearTR"), rs.getString("MonthEN"), rs.getString("MonthORG"), rs.getString("MonthTR"), rs.getString("PagesEN"),
 						rs.getString("PagesORG"), rs.getString("PagesTR"), rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"),
 						rs.getString("URI"), rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getBoolean("OpenAccess"),
-						rs.getString("AbstractText"), rs.getString("ThesisType"));
+						rs.getString("AbstractText"), rs.getString("ThesisType"), rs.getString("EditorType"));
 				entry.setAuthorList(getAuthorBibRelation(entry.getAnnotatedBiblographyID()));
 				entry.setEditorList(getEditorBibRelation(entry.getAnnotatedBiblographyID()));
 				entry.setKeywordList(getRelatedBibKeywords(entry.getAnnotatedBiblographyID()));
@@ -1928,7 +1928,7 @@ public class MysqlConnector {
 						rs.getString("YearTR"), rs.getString("MonthEN"), rs.getString("MonthORG"), rs.getString("MonthTR"), rs.getString("PagesEN"),
 						rs.getString("PagesORG"), rs.getString("PagesTR"), rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"),
 						rs.getString("URI"), rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getBoolean("OpenAccess"),
-						rs.getString("AbstractText"), rs.getString("ThesisType"));
+						rs.getString("AbstractText"), rs.getString("ThesisType"), rs.getString("EditorType"));
 
 				result.setAuthorList(getAuthorBibRelation(result.getAnnotatedBiblographyID()));
 				result.setEditorList(getEditorBibRelation(result.getAnnotatedBiblographyID()));
@@ -2971,8 +2971,8 @@ public class MysqlConnector {
 					+ "VolumeEN, VolumeORG, VolumeTR, "
 					+ "IssueEN, IssueORG, IssueTR, " 
 					+ "YearEN, YearORG, YearTR, " 
-					+ "Unpublished, OpenAccess, AbstractText, ThesisType) "
-					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+					+ "Unpublished, OpenAccess, AbstractText, ThesisType, EditorType) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 					Statement.RETURN_GENERATED_KEYS);
 			pstmt.setInt(1, bibEntry.getPublicationType().getPublicationTypeID());
 			pstmt.setString(2, bibEntry.getAccessdateEN());
@@ -3024,6 +3024,7 @@ public class MysqlConnector {
 			pstmt.setBoolean(48, bibEntry.isOpenAccess());
 			pstmt.setString(49, bibEntry.getAbstractText());
 			pstmt.setString(50, bibEntry.getThesisType());
+			pstmt.setString(51, bibEntry.getEditorType());
 			pstmt.executeUpdate();
 
 			ResultSet keys = pstmt.getGeneratedKeys();
@@ -3682,7 +3683,7 @@ public class MysqlConnector {
 					+ "VolumeEN=?, VolumeORG=?, VolumeTR=?, " 
 					+ "IssueEN=?, IssueORG=?, IssueTR=?, " 
 					+ "YearEN=?, YearORG=?, YearTR=?, "
-					+ "Unpublished=?, OpenAccess=?, AbstractText=?, ThesisType=? WHERE BibID=?");
+					+ "Unpublished=?, OpenAccess=?, AbstractText=?, ThesisType=?, EditorType=? WHERE BibID=?");
 			pstmt.setInt(1, bibEntry.getPublicationType().getPublicationTypeID());
 			pstmt.setString(2, bibEntry.getAccessdateEN());
 			pstmt.setString(3, bibEntry.getAccessdateORG());
@@ -3733,7 +3734,8 @@ public class MysqlConnector {
 			pstmt.setBoolean(48, bibEntry.isOpenAccess());
 			pstmt.setString(49, bibEntry.getAbstractText());
 			pstmt.setString(50, bibEntry.getThesisType());
-			pstmt.setInt(51, bibEntry.getAnnotatedBiblographyID());
+			pstmt.setString(51, bibEntry.getEditorType());
+			pstmt.setInt(52, bibEntry.getAnnotatedBiblographyID());
 			pstmt.executeUpdate();
 
 			updateAuthorBibRelation(bibEntry.getAnnotatedBiblographyID(), bibEntry.getAuthorList());
