@@ -455,10 +455,25 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			}
 		});
 		titleTR.addValidator(new MaxLengthValidator(256));
+		
+		CheckBox originalTranslationCB = new CheckBox();
+		originalTranslationCB.setBoxLabel("orig.");
+		originalTranslationCB.setValue(bibEntry.isOfficialTitleTranslation());
+		originalTranslationCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				bibEntry.setOfficialTitleTranslation(event.getValue());
+			}
+		});
+		
+		HorizontalLayoutContainer titleEnHLC = new HorizontalLayoutContainer();
+		titleEnHLC.add(titleEN, new HorizontalLayoutData(.9, 1.0));
+		titleEnHLC.add(originalTranslationCB, new HorizontalLayoutData(.1, 1.0));
 
 		VerticalLayoutContainer titleVLC = new VerticalLayoutContainer();
 		titleVLC.add(new FieldLabel(titleORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
-		titleVLC.add(new FieldLabel(titleEN, "English Transl."), new VerticalLayoutData(1.0, 1.0 / 3));
+		titleVLC.add(new FieldLabel(titleEnHLC, "English Transl."), new VerticalLayoutData(1.0, 1.0 / 3));
 		titleVLC.add(new FieldLabel(titleTR, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
 
 		FramedPanel titleFP = new FramedPanel();
