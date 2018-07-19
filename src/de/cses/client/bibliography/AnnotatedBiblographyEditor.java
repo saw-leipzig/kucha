@@ -457,7 +457,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		titleTR.addValidator(new MaxLengthValidator(256));
 		
 		CheckBox originalTranslationCB = new CheckBox();
-		originalTranslationCB.setBoxLabel("orig.");
+		originalTranslationCB.setBoxLabel("official");
 		originalTranslationCB.setValue(bibEntry.isOfficialTitleTranslation());
 		originalTranslationCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
@@ -468,8 +468,8 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		});
 		
 		HorizontalLayoutContainer titleEnHLC = new HorizontalLayoutContainer();
-		titleEnHLC.add(titleEN, new HorizontalLayoutData(.9, 1.0, new Margins(0, 10, 0, 0)));
-		titleEnHLC.add(originalTranslationCB, new HorizontalLayoutData(.1, 1.0));
+		titleEnHLC.add(titleEN, new HorizontalLayoutData(.85, 1.0, new Margins(0, 10, 0, 0)));
+		titleEnHLC.add(originalTranslationCB, new HorizontalLayoutData(.15, 1.0));
 
 		VerticalLayoutContainer titleVLC = new VerticalLayoutContainer();
 		titleVLC.add(new FieldLabel(titleORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
