@@ -135,6 +135,7 @@ public class OrnamentWallAttributes extends PopupPanel {
 				});
 		
 		
+		
 		ornamentPositionComboBox.setTypeAhead(false);
 		ornamentPositionComboBox.setEditable(false);
 		ornamentPositionComboBox.setTriggerAction(TriggerAction.ALL);
