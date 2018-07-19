@@ -4080,4 +4080,33 @@ public class MysqlConnector {
 		return bibKeywordID;
 	}
 
+	/**
+	 * @param selectedEntry
+	 * @return
+	 */
+	public boolean deleteAuthorEntry(AuthorEntry selectedEntry) {
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM AuthorBibliographyRelation WHERE AuthorID=?");
+			pstmt.setInt(1, selectedEntry.getAuthorID());
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.first()) {
+				return false;
+			}
+			pstmt = dbc.prepareStatement("SELECT * FROM EditorBibliographyRelation WHERE AuthorID=?");
+			pstmt.setInt(1, selectedEntry.getAuthorID());
+			rs = pstmt.executeQuery();
+			if (rs.first()) {
+				return false;
+			}
+			if (deleteEntry("DELETE FROM Authors WHERE  AuthorID=" + selectedEntry.getAuthorID())) {
+				return true;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
 }

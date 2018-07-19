@@ -16,6 +16,7 @@ package de.cses.client.bibliography;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.apple.laf.AquaButtonBorder.Toolbar;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor;
@@ -118,6 +119,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 	private DualListField<AuthorEntry, String> authorSelection;
 	private DualListField<BibKeywordEntry, String> bibKeywordSelectionDLF;
 	private ComboBox<AnnotatedBiblographyEntry> firstEditionComboBox;
+	private DualListField<AuthorEntry, String> editorSelection;
 
 //	interface PublisherViewTemplates extends XTemplates {
 //		@XTemplate("<div>{name}</div>")
@@ -860,6 +862,44 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				addAuthorDialog.center();
 			}
 		});
+		
+		ToolButton deleteAuthorTB = new ToolButton(ToolButton.MINUS);
+		deleteAuthorTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				AuthorEntry selectedEntry;
+				selectedEntry = authorSelection.getFromView().getSelectionModel().getSelectedItem();
+				Util.showYesNo("Delete Author", "Do you really want to delete " + selectedEntry.getName() + "?", new SelectHandler() {
+					
+					@Override
+					public void onSelect(SelectEvent event) {
+						dbService.deleteAuthorEntry(selectedEntry, new AsyncCallback<Boolean>() {
+
+							@Override
+							public void onFailure(Throwable caught) {
+								Util.showWarning("Delete Author", selectedEntry.getName() + " can't be deleted.\n It might be used somewhere.");
+							}
+
+							@Override
+							public void onSuccess(Boolean result) {
+								authorSelection.getFromStore().remove(selectedEntry);
+								if (editorSelection != null) {
+									editorSelection.getFromStore().remove(selectedEntry);
+								}
+							}
+						});
+					}
+				}, new SelectHandler() {
+					
+					@Override
+					public void onSelect(SelectEvent event) {
+						// TODO Auto-generated method stub
+						
+					}
+				});
+			}
+		});
 
 		/**
 		 * the author selection
@@ -894,7 +934,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				}
 			};
 			authorListFilterField.bind(authorListStore);
-			authorVLC.add(new FieldLabel(authorListFilterField, "Filter"), new VerticalLayoutData(.5, .15, new Margins(10, 0, 0, 0)));
+			authorVLC.add(new FieldLabel(authorListFilterField, "Filter"), new VerticalLayoutData(.5, .15, new Margins(10, 20, 0, 0)));
 			FramedPanel authorFP = new FramedPanel();
 			authorFP.setHeading("Author");
 			authorFP.add(authorVLC);
@@ -907,7 +947,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		 * the editor selection
 		 */
 		if (pubType.isEditorEnabled()) {
-			DualListField<AuthorEntry, String> editorSelection = new DualListField<AuthorEntry, String>(editorListStore, selectedEditorListStore,
+			editorSelection = new DualListField<AuthorEntry, String>(editorListStore, selectedEditorListStore,
 					authorProps.name(), new TextCell());
 			editorSelection.setMode(Mode.INSERT);
 			editorSelection.setEnableDnd(true);

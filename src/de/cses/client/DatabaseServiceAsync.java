@@ -297,4 +297,6 @@ public interface DatabaseServiceAsync {
 
 	void insertBibKeyword(BibKeywordEntry bkEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 
+	void deleteAuthorEntry(AuthorEntry selectedEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
+
 }

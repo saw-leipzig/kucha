@@ -877,4 +877,12 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.insertBibKeyword(bkEntry);
 	}
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#deleteAuthorEntry(de.cses.shared.AuthorEntry)
+	 */
+	@Override
+	public boolean deleteAuthorEntry(AuthorEntry selectedEntry) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.deleteAuthorEntry(selectedEntry);
+	}
 }
