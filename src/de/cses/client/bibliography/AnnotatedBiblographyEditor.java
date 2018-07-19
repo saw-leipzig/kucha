@@ -30,7 +30,6 @@ import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Frame;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -74,7 +73,6 @@ import com.sencha.gxt.widget.core.client.form.Validator;
 import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MaxNumberValidator;
-import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 
 import de.cses.client.DatabaseService;
@@ -86,7 +84,6 @@ import de.cses.client.user.UserLogin;
 import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.BibKeywordEntry;
-import de.cses.shared.CaveGroupEntry;
 import de.cses.shared.PublicationTypeEntry;
 
 /**
@@ -458,16 +455,77 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			}
 		});
 		titleTR.addValidator(new MaxLengthValidator(256));
+		
+		CheckBox originalTranslationCB = new CheckBox();
+		originalTranslationCB.setBoxLabel("official");
+		originalTranslationCB.setValue(bibEntry.isOfficialTitleTranslation());
+		originalTranslationCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				bibEntry.setOfficialTitleTranslation(event.getValue());
+			}
+		});
+		
+		HorizontalLayoutContainer titleEnHLC = new HorizontalLayoutContainer();
+		titleEnHLC.add(titleEN, new HorizontalLayoutData(.85, 1.0, new Margins(0, 10, 0, 0)));
+		titleEnHLC.add(originalTranslationCB, new HorizontalLayoutData(.15, 1.0));
 
 		VerticalLayoutContainer titleVLC = new VerticalLayoutContainer();
 		titleVLC.add(new FieldLabel(titleORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
-		titleVLC.add(new FieldLabel(titleEN, "English Transl."), new VerticalLayoutData(1.0, 1.0 / 3));
+		titleVLC.add(new FieldLabel(titleEnHLC, "English Transl."), new VerticalLayoutData(1.0, 1.0 / 3));
 		titleVLC.add(new FieldLabel(titleTR, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
 
 		FramedPanel titleFP = new FramedPanel();
 		titleFP.setHeading("Title");
 		titleFP.add(titleVLC);
 		firstTabInnerLeftVLC.add(titleFP, new VerticalLayoutData(1.0, 1.0 / 5));
+		
+		/**
+		 * Subtitle
+		 */
+		TextField subtitleEN = new TextField();
+		subtitleEN.setValue(bibEntry.getSubtitleEN());
+		subtitleEN.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				bibEntry.setSubtitleEN(event.getValue());
+			}
+		});
+		subtitleEN.addValidator(new MaxLengthValidator(256));
+		
+		TextField subtitleORG = new TextField();
+		subtitleORG.setValue(bibEntry.getSubtitleORG());
+		subtitleORG.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				bibEntry.setSubtitleORG(event.getValue());
+			}
+		});
+		subtitleORG.addValidator(new MaxLengthValidator(256));
+		
+		TextField subtitleTR = new TextField();
+		subtitleTR.setValue(bibEntry.getSubtitleTR());
+		subtitleTR.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				bibEntry.setSubtitleTR(event.getValue());
+			}
+		});
+		subtitleTR.addValidator(new MaxLengthValidator(256));
+
+		VerticalLayoutContainer subtitleVLC = new VerticalLayoutContainer();
+		subtitleVLC.add(new FieldLabel(subtitleORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
+		subtitleVLC.add(new FieldLabel(subtitleEN, "English Transl."), new VerticalLayoutData(1.0, 1.0 / 3));
+		subtitleVLC.add(new FieldLabel(subtitleTR, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
+
+		FramedPanel subtitleFP = new FramedPanel();
+		subtitleFP.setHeading("Subtitle");
+		subtitleFP.add(subtitleVLC);
+		firstTabInnerLeftVLC.add(subtitleFP, new VerticalLayoutData(1.0, 1.0 / 5));
 
 		/**
 		 * some publication types have a addon to the title
@@ -777,7 +835,15 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			@Override
 			public void onSelect(SelectEvent event) {
 				PopupPanel addAuthorDialog = new PopupPanel();
-				AuthorEditor aEditor = new AuthorEditor(authorSelection.getFromView().getSelectionModel().getSelectedItem(), new AuthorEditorListener() {
+				AuthorEntry selectedEntry;
+				if (authorSelection.getToView().getSelectionModel().getSelectedItem() != null) {
+					selectedEntry = authorSelection.getToView().getSelectionModel().getSelectedItem();
+				} else if (authorSelection.getFromView().getSelectionModel().getSelectedItem() != null) {
+					selectedEntry = authorSelection.getFromView().getSelectionModel().getSelectedItem();
+				} else {
+					return;
+				}
+				AuthorEditor aEditor = new AuthorEditor(selectedEntry, new AuthorEditorListener() {
 					
 					@Override
 					public void editorCanceled() {
@@ -856,7 +922,22 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				}
 			};
 			editorListFilterField.bind(editorListStore);
-			editorVLC.add(new FieldLabel(editorListFilterField, "Filter"), new VerticalLayoutData(.5, .15, new Margins(10, 0, 0, 0)));
+			TextField editorTypeTF = new TextField();
+			editorTypeTF.setEmptyText("e.g. eds. / ed. / transl.");
+			editorTypeTF.setValue(bibEntry.getEditorType());
+			editorTypeTF.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+				@Override
+				public void onValueChange(ValueChangeEvent<String> event) {
+					bibEntry.setEditorType(event.getValue());
+				}
+			});
+			
+			HorizontalLayoutContainer filterEditorTypeHLC = new HorizontalLayoutContainer();
+			filterEditorTypeHLC.add(new FieldLabel(editorListFilterField, "Filter"), new HorizontalLayoutData(.5, 1.0, new Margins(0, 20, 0, 0)));
+			filterEditorTypeHLC.add(new FieldLabel(editorTypeTF, "Editor type"), new HorizontalLayoutData(.5, 1.0, new Margins(0, 0, 0, 20)));
+			
+			editorVLC.add(filterEditorTypeHLC, new VerticalLayoutData(1.0, .15, new Margins(10, 0, 0, 0)));
 
 			ToolButton editEditorTB = new ToolButton(ToolButton.GEAR);
 			editEditorTB.addSelectHandler(new SelectHandler() {
@@ -864,7 +945,15 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				@Override
 				public void onSelect(SelectEvent event) {
 					PopupPanel addAuthorDialog = new PopupPanel();
-					AuthorEditor aEditor = new AuthorEditor(editorSelection.getFromView().getSelectionModel().getSelectedItem(), new AuthorEditorListener() {
+					AuthorEntry selectedEntry;
+					if (editorSelection.getToView().getSelectionModel().getSelectedItem() != null) {
+						selectedEntry = editorSelection.getToView().getSelectionModel().getSelectedItem();
+					} else if (editorSelection.getFromView().getSelectionModel().getSelectedItem() != null) {
+						selectedEntry = editorSelection.getFromView().getSelectionModel().getSelectedItem();
+					} else {
+						return;
+					}
+					AuthorEditor aEditor = new AuthorEditor(selectedEntry, new AuthorEditorListener() {
 						
 						@Override
 						public void editorCanceled() {
@@ -1282,6 +1371,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			pagesEN.addValidator(new MaxLengthValidator(32));
 			
 			TextField pagesORG = new TextField();
+			pagesORG.setEmptyText("e.g. pp. xx - yy / p. xx");
 			pagesORG.setValue(bibEntry.getPagesORG());
 			pagesORG.addValueChangeHandler(new ValueChangeHandler<String>() {
 
