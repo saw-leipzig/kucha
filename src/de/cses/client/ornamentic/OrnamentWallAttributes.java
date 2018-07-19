@@ -105,6 +105,7 @@ public class OrnamentWallAttributes extends PopupPanel {
 		selectWallFP.add(wallselector);
 		if (wallOrnamentCaveRelation != null) {
 			wallselector.setWallEntry(wallOrnamentCaveRelation.getWall());
+			filterPositionbyCaveArea();
 		}
 		ValueChangeHandler<WallEntry> wallSelectionHandler = new ValueChangeHandler<WallEntry>() {
 
@@ -137,6 +138,7 @@ public class OrnamentWallAttributes extends PopupPanel {
 		ornamentPositionComboBox.setTriggerAction(TriggerAction.ALL);
 		if (wallOrnamentCaveRelation != null) {
 			ornamentPositionComboBox.setValue(ornamentPositionEntryLS.findModelWithKey(Integer.toString(wallOrnamentCaveRelation.getOrnamenticPositionID())));
+			getFunctionbyPosition();
 		}
 		FramedPanel ornamentPositionFP = new FramedPanel();
 		ornamentPositionFP.setHeading("Select ornament position");
@@ -163,34 +165,7 @@ public class OrnamentWallAttributes extends PopupPanel {
 
 		
 		
-		ValueChangeHandler<OrnamentPositionEntry> positionSelectionHandler = new ValueChangeHandler<OrnamentPositionEntry>() {
-
-			@Override
-			public void onValueChange(ValueChangeEvent<OrnamentPositionEntry> event) {
-				ornamentFunctionEntryLS.clear();
-				
-				dbService.getFunctionbyPosition(event.getValue(), new AsyncCallback<ArrayList<OrnamentFunctionEntry>>() {
-
-					@Override
-					public void onFailure(Throwable caught) {
-						caught.printStackTrace();
-					}
-
-					@Override
-					public void onSuccess(ArrayList<OrnamentFunctionEntry> result) {
-						for (OrnamentFunctionEntry pe : result) {
-							ornamentFunctionEntryLS.add(pe);
-						}
-						if (wallOrnamentCaveRelation != null) {
-							ornamentfunctionComboBox.setValue(ornamentFunctionEntryLS.findModelWithKey(Integer.toString(wallOrnamentCaveRelation.getOrnamenticFunctionID())));
-						}
-					}
-				});
-				ornamentfunctionComboBox.setEnabled(true);
-			}
-
-		};
-		ornamentPositionComboBox.addValueChangeHandler(positionSelectionHandler);
+		getFunctionbyPosition();
 		
 		
 		notes = new TextArea();
@@ -421,4 +396,35 @@ public class OrnamentWallAttributes extends PopupPanel {
 		else {
 		}
 		}
+	
+	public void getFunctionbyPosition() {
+	ValueChangeHandler<OrnamentPositionEntry> positionSelectionHandler = new ValueChangeHandler<OrnamentPositionEntry>() {
+
+		@Override
+		public void onValueChange(ValueChangeEvent<OrnamentPositionEntry> event) {
+			ornamentFunctionEntryLS.clear();
+			
+			dbService.getFunctionbyPosition(event.getValue(), new AsyncCallback<ArrayList<OrnamentFunctionEntry>>() {
+
+				@Override
+				public void onFailure(Throwable caught) {
+					caught.printStackTrace();
+				}
+
+				@Override
+				public void onSuccess(ArrayList<OrnamentFunctionEntry> result) {
+					for (OrnamentFunctionEntry pe : result) {
+						ornamentFunctionEntryLS.add(pe);
+					}
+					if (wallOrnamentCaveRelation != null) {
+						ornamentfunctionComboBox.setValue(ornamentFunctionEntryLS.findModelWithKey(Integer.toString(wallOrnamentCaveRelation.getOrnamenticFunctionID())));
+					}
+				}
+			});
+			ornamentfunctionComboBox.setEnabled(true);
+		}
+
+	};
+	ornamentPositionComboBox.addValueChangeHandler(positionSelectionHandler);
+	}
 }

@@ -645,25 +645,27 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		ToolButton addComponentButton = new ToolButton(ToolButton.PLUS);
 		header.addTool(addComponentButton);
 
-		FramedPanel componentFramedPanel = new FramedPanel();
-		componentFramedPanel.setHeading("New Component");
 
-		ToolButton saveComponent = new ToolButton(ToolButton.SAVE);
-		componentFramedPanel.addTool(saveComponent);
-
-		ToolButton cancelComponent = new ToolButton(ToolButton.CLOSE);
-
-		componentFramedPanel.addTool(cancelComponent);
-
-		HorizontalLayoutContainer newComponentLayoutPanel = new HorizontalLayoutContainer();
-		TextField newComponentTextField = new TextField();
-		newComponentLayoutPanel.add(newComponentTextField);
-		componentFramedPanel.add(newComponentLayoutPanel);
 		addComponentButton.addSelectHandler(new SelectHandler() {
 
 			@Override
 			public void onSelect(SelectEvent event) {
 				PopupPanel newComponentPopup = new PopupPanel();
+				FramedPanel componentFramedPanel = new FramedPanel();
+				componentFramedPanel.setHeading("New Component");
+
+				ToolButton saveComponent = new ToolButton(ToolButton.SAVE);
+				componentFramedPanel.addTool(saveComponent);
+
+				ToolButton cancelComponent = new ToolButton(ToolButton.CLOSE);
+
+				componentFramedPanel.addTool(cancelComponent);
+
+				HorizontalLayoutContainer newComponentLayoutPanel = new HorizontalLayoutContainer();
+				TextField newComponentTextField = new TextField();
+				newComponentLayoutPanel.add(newComponentTextField);
+				componentFramedPanel.add(newComponentLayoutPanel);
+				
 				newComponentPopup.add(componentFramedPanel);
 				newComponentPopup.setSize("150px", "80px");
 				newComponentPopup.center();
@@ -719,26 +721,27 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		header.setHeading("Select inner Secondary Patterns");
 		ToolButton addInnerSecondaryPatternsButton = new ToolButton(ToolButton.PLUS);
 
-		FramedPanel innersecFramedPanel = new FramedPanel();
-		innersecFramedPanel.setHeading("New Inner Secondary Pattern");
-
-		ToolButton saveInnerSec = new ToolButton(ToolButton.SAVE);
-		innersecFramedPanel.add(saveInnerSec);
-
-		ToolButton cancelInnerSec = new ToolButton(ToolButton.CLOSE);
-
-		innersecFramedPanel.addTool(cancelInnerSec);
-		innersecFramedPanel.addTool(saveInnerSec);
-
-		HorizontalLayoutContainer newinnersecLayoutPanel = new HorizontalLayoutContainer();
-		TextField newinnersecTextField = new TextField();
-		newinnersecLayoutPanel.add(newinnersecTextField);
-		innersecFramedPanel.add(newinnersecLayoutPanel);
+		
 		addInnerSecondaryPatternsButton.addSelectHandler(new SelectHandler() {
 
 			@Override
 			public void onSelect(SelectEvent event) {
 				PopupPanel newInnerSecondaryPatternPopup = new PopupPanel();
+				FramedPanel innersecFramedPanel = new FramedPanel();
+				innersecFramedPanel.setHeading("New Inner Secondary Pattern");
+
+				ToolButton saveInnerSec = new ToolButton(ToolButton.SAVE);
+				innersecFramedPanel.add(saveInnerSec);
+
+				ToolButton cancelInnerSec = new ToolButton(ToolButton.CLOSE);
+
+				innersecFramedPanel.addTool(cancelInnerSec);
+				innersecFramedPanel.addTool(saveInnerSec);
+
+				HorizontalLayoutContainer newinnersecLayoutPanel = new HorizontalLayoutContainer();
+				TextField newinnersecTextField = new TextField();
+				newinnersecLayoutPanel.add(newinnersecTextField);
+				innersecFramedPanel.add(newinnersecLayoutPanel);
 				newInnerSecondaryPatternPopup.add(innersecFramedPanel);
 				innersecFramedPanel.setSize("150", "80");
 				newInnerSecondaryPatternPopup.center();
