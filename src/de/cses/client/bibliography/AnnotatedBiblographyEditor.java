@@ -894,8 +894,6 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					
 					@Override
 					public void onSelect(SelectEvent event) {
-						// TODO Auto-generated method stub
-						
 					}
 				});
 			}
@@ -939,6 +937,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			authorFP.setHeading("Author");
 			authorFP.add(authorVLC);
 			authorFP.addTool(addAuthorTB);
+			authorFP.addTool(deleteAuthorTB);
 			authorFP.addTool(editAuthorTB);
 			secondTabVLC.add(authorFP, new VerticalLayoutData(1.0, .45));
 		}
