@@ -133,6 +133,8 @@ public class OrnamentWallAttributes extends PopupPanel {
 						return pvTemplates.ornamentPosition(item.getName());
 					}
 				});
+		
+		
 		ornamentPositionComboBox.setTypeAhead(false);
 		ornamentPositionComboBox.setEditable(false);
 		ornamentPositionComboBox.setTriggerAction(TriggerAction.ALL);
