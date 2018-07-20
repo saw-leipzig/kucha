@@ -16,7 +16,6 @@ package de.cses.client.bibliography;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.apple.laf.AquaButtonBorder.Toolbar;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor;
@@ -832,6 +831,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		});
 		
 		ToolButton editAuthorTB = new ToolButton(ToolButton.GEAR);
+		editAuthorTB.setToolTip("Select author in left column to delete. Please note that only names not used as authors or editors can be deleted!");
 		editAuthorTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
@@ -870,7 +870,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			public void onSelect(SelectEvent event) {
 				AuthorEntry selectedEntry;
 				selectedEntry = authorSelection.getFromView().getSelectionModel().getSelectedItem();
-				Util.showYesNo("Delete Author", "Do you really want to delete " + selectedEntry.getName() + "?", new SelectHandler() {
+				Util.showYesNo("Delete Author", "Do you really want to delete \n" + selectedEntry.getName() + "?", new SelectHandler() {
 					
 					@Override
 					public void onSelect(SelectEvent event) {
@@ -878,14 +878,18 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 							@Override
 							public void onFailure(Throwable caught) {
-								Util.showWarning("Delete Author", selectedEntry.getName() + " can't be deleted.\n It might be used somewhere.");
+								Util.showWarning("Delete Author", "Unknown error while trying to delete " + selectedEntry.getName() + ".");
 							}
 
 							@Override
 							public void onSuccess(Boolean result) {
-								authorSelection.getFromStore().remove(selectedEntry);
-								if (editorSelection != null) {
-									editorSelection.getFromStore().remove(selectedEntry);
+								if (result) {
+									authorSelection.getFromStore().remove(selectedEntry);
+									if (editorSelection != null) {
+										editorSelection.getFromStore().remove(selectedEntry);
+									}
+								} else {
+									Util.showWarning("Delete Author", selectedEntry.getName() + " couln't be deleted.\n It' probably used already.");
 								}
 							}
 						});

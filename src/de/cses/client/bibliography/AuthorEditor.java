@@ -128,7 +128,6 @@ public class AuthorEditor implements IsWidget {
 		});
 		
 		authorAliasTF = new TextField();
-		authorAliasTF.setAllowBlank(false);
 		authorAliasTF.addValidator(new MaxLengthValidator(128));
 		authorAliasTF.setAutoValidate(true);
 		authorAliasTF.setWidth(300);
