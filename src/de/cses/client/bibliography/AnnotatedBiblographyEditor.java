@@ -831,7 +831,6 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		});
 		
 		ToolButton editAuthorTB = new ToolButton(ToolButton.GEAR);
-		editAuthorTB.setToolTip("Select author in left column to delete. Please note that only names not used as authors or editors can be deleted!");
 		editAuthorTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
@@ -855,6 +854,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					@Override
 					public void authorSaved(AuthorEntry authorEntry) {
 						addAuthorDialog.hide();
+						
 					}
 				});
 				addAuthorDialog.add(aEditor);
@@ -864,6 +864,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		});
 		
 		ToolButton deleteAuthorTB = new ToolButton(ToolButton.MINUS);
+		deleteAuthorTB.setToolTip("Select author in left column to delete. Please note that only names not used as authors or editors can be deleted!");
 		deleteAuthorTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
@@ -996,7 +997,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					} else {
 						return;
 					}
-					AuthorEditor aEditor = new AuthorEditor(selectedEntry.clone(), new AuthorEditorListener() {
+					AuthorEditor aEditor = new AuthorEditor(selectedEntry, new AuthorEditorListener() {
 						
 						@Override
 						public void editorCanceled() {
@@ -1006,14 +1007,6 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 						@Override
 						public void authorSaved(AuthorEntry authorEntry) {
 							addAuthorDialog.hide();
-							if (!selectedEntry.isInstitutionEnabled()) {
-								authorListStore.remove(selectedEntry);
-							}
-							if (!authorEntry.isInstitutionEnabled()) {
-								authorListStore.add(authorEntry);
-							}
-							editorListStore.remove(selectedEntry);
-							editorListStore.add(authorEntry);
 						}
 					});
 					addAuthorDialog.add(aEditor);
