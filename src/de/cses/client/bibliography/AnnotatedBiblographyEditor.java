@@ -854,7 +854,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					@Override
 					public void authorSaved(AuthorEntry authorEntry) {
 						addAuthorDialog.hide();
-						
+						authorSelection.getFromView().refresh();
+						authorSelection.getToView().refresh();
+						editorSelection.getFromView().refresh();
+						editorSelection.getToView().refresh();
 					}
 				});
 				addAuthorDialog.add(aEditor);
@@ -1007,6 +1010,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 						@Override
 						public void authorSaved(AuthorEntry authorEntry) {
 							addAuthorDialog.hide();
+							authorSelection.getFromView().refresh();
+							authorSelection.getToView().refresh();
+							editorSelection.getFromView().refresh();
+							editorSelection.getToView().refresh();
 						}
 					});
 					addAuthorDialog.add(aEditor);
