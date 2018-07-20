@@ -213,6 +213,7 @@ public class AuthorEditor implements IsWidget {
 		
 		institutionCB = new CheckBox();
 		institutionCB.setBoxLabel("is institution");
+		institutionCB.setValue(authorEntry.isInstitutionEnabled());
 		institutionCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
 			@Override
@@ -235,8 +236,11 @@ public class AuthorEditor implements IsWidget {
 					institutionTF.reset();
 					institutionTF.setEnabled(false);
 				}
+				authorEntry.setInstitutionEnabled(event.getValue());
 			}
 		});
+		institutionCB.setEnabled(authorEntry.getAuthorID() == 0);
+		
 		VerticalLayoutContainer newAuthorVLC = new VerticalLayoutContainer();
 		newAuthorVLC.add(new FieldLabel(authorLastNameTF, "Family name"), new VerticalLayoutData(1.0, 1.0 / 9));
 		newAuthorVLC.add(new FieldLabel(authorFirstNameTF, "Given Name"), new VerticalLayoutData(1.0, 1.0 / 9));

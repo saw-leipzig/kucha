@@ -845,7 +845,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				} else {
 					return;
 				}
-				AuthorEditor aEditor = new AuthorEditor(selectedEntry.clone(), new AuthorEditorListener() {
+				AuthorEditor aEditor = new AuthorEditor(selectedEntry, new AuthorEditorListener() {
 					
 					@Override
 					public void editorCanceled() {
@@ -855,12 +855,6 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					@Override
 					public void authorSaved(AuthorEntry authorEntry) {
 						addAuthorDialog.hide();
-						authorListStore.remove(selectedEntry);
-						if (!authorEntry.isInstitutionEnabled()) {
-							authorListStore.add(authorEntry);
-						}
-						editorListStore.remove(selectedEntry);
-						editorListStore.add(authorEntry);
 					}
 				});
 				addAuthorDialog.add(aEditor);
@@ -895,7 +889,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 										editorSelection.getFromStore().remove(selectedEntry);
 									}
 								} else {
-									Util.showWarning("Delete Author", selectedEntry.getName() + " couln't be deleted.\n It' probably used already.");
+									Util.showWarning("Delete Author", selectedEntry.getName() + " couln't be deleted.\n It's probably used already.");
 								}
 							}
 						});
@@ -1012,7 +1006,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 						@Override
 						public void authorSaved(AuthorEntry authorEntry) {
 							addAuthorDialog.hide();
-							authorListStore.remove(selectedEntry);
+							if (!selectedEntry.isInstitutionEnabled()) {
+								authorListStore.remove(selectedEntry);
+							}
 							if (!authorEntry.isInstitutionEnabled()) {
 								authorListStore.add(authorEntry);
 							}

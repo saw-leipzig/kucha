@@ -46,10 +46,6 @@ public class AuthorEntry extends AbstractEntry {
 		this.institutionEnabled = institutionEnabled;
 	}
 	
-	public AuthorEntry clone() {
-		return new AuthorEntry(authorID, lastname, firstname, institution, kuchaVisitor, affiliation, email, homepage, alias, institutionEnabled);
-	}
-
 	public int getAuthorID() {
 		return authorID;
 	}
