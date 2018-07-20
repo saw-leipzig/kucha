@@ -23,6 +23,7 @@ public class AuthorEntry extends AbstractEntry {
 	private String lastname, firstname, institution, alias;
 	private boolean kuchaVisitor;
 	private String affiliation, email, homepage;
+	private boolean institutionEnabled;
 
 	/**
 	 * The default constructor is used to create a new AuthorEntry. The authorID
@@ -32,7 +33,7 @@ public class AuthorEntry extends AbstractEntry {
 	public AuthorEntry() {	}
 
 	public AuthorEntry(int authorID, String lastname, String firstname, String institution, boolean kuchaVisitor, String affiliation, String email,
-			String homepage, String alias) {
+			String homepage, String alias, boolean institutionEnabled) {
 		this.authorID = authorID;
 		this.lastname = lastname;
 		this.setInstitution(institution);
@@ -42,6 +43,11 @@ public class AuthorEntry extends AbstractEntry {
 		this.email = email;
 		this.homepage = homepage;
 		this.alias = alias;
+		this.institutionEnabled = institutionEnabled;
+	}
+	
+	public AuthorEntry clone() {
+		return new AuthorEntry(authorID, lastname, firstname, institution, kuchaVisitor, affiliation, email, homepage, alias, institutionEnabled);
 	}
 
 	public int getAuthorID() {
@@ -126,6 +132,14 @@ public class AuthorEntry extends AbstractEntry {
 
 	public void setAlias(String alias) {
 		this.alias = alias;
+	}
+
+	public boolean isInstitutionEnabled() {
+		return institutionEnabled;
+	}
+
+	public void setInstitutionEnabled(boolean institutionEnabled) {
+		this.institutionEnabled = institutionEnabled;
 	}
 
 }
