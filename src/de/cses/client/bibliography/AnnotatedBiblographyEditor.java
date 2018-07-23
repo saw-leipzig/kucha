@@ -1016,6 +1016,45 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					addAuthorDialog.center();
 				}
 			});
+
+			ToolButton deleteEditorTB = new ToolButton(ToolButton.MINUS);
+			deleteEditorTB.setToolTip("Select editor in left column to delete. Please note that only names not used as authors or editors can be deleted!");
+			deleteEditorTB.addSelectHandler(new SelectHandler() {
+				
+				@Override
+				public void onSelect(SelectEvent event) {
+					AuthorEntry selectedEntry;
+					selectedEntry = editorSelection.getFromView().getSelectionModel().getSelectedItem();
+					Util.showYesNo("Delete Editor", "Do you really want to delete \n" + selectedEntry.getName() + "?", new SelectHandler() {
+						
+						@Override
+						public void onSelect(SelectEvent event) {
+							dbService.deleteAuthorEntry(selectedEntry, new AsyncCallback<Boolean>() {
+								
+								@Override
+								public void onFailure(Throwable caught) {
+									Util.showWarning("Delete Editor", "Unknown error while trying to delete " + selectedEntry.getName() + ".");
+								}
+								
+								@Override
+								public void onSuccess(Boolean result) {
+									if (result) {
+										editorSelection.getFromStore().remove(selectedEntry);
+										authorSelection.getFromStore().remove(selectedEntry);
+									} else {
+										Util.showWarning("Delete Editor", selectedEntry.getName() + " couln't be deleted.\n It's probably used already.");
+									}
+								}
+							});
+						}
+					}, new SelectHandler() {
+						
+						@Override
+						public void onSelect(SelectEvent event) {
+						}
+					});
+				}
+			});		
 			
 			FramedPanel editorFP = new FramedPanel();
 			editorFP.setHeading("Editor");
@@ -1025,9 +1064,11 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			} else {
 				editorFP.addTool(addAuthorTB);
 			}
+			editorFP.addTool(deleteEditorTB);
 			editorFP.addTool(editEditorTB);
 			secondTabVLC.add(editorFP, new VerticalLayoutData(1.0, .45));
 		}
+		
 
 		/**
 		 * Keywords
