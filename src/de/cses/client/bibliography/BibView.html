@@ -2,15 +2,15 @@
 	<p>
 		<tpl if="parentTitleORG == &quot;&quot;">
 			<tpl if="authors != &quot;&quot;">
-				{authors} <tpl if="yearORG != &quot;&quot;">({yearORG})</tpl>. <i><b>{titleORG}</b></i><tpl if="titleEN != &quot;&quot;"><tpl if="officialTitleTranslation == true">({titleEN})</tpl><tpl if="officialTitleTranslation == false">[{titleEN}]</tpl></tpl>.
+				{authors} <tpl if="yearORG != &quot;&quot;">({yearORG})</tpl>. <i><b>{titleORG}<tpl if="subtitleORG != &quot;&quot;">: {subtitleORG}</tpl></b></i><tpl if="titleEN != &quot;&quot;"><tpl if="officialTitleTranslation == true">({titleEN}<tpl if="subtitleEN != &quot;&quot;">: {subtitleEN}</tpl>)</tpl><tpl if="officialTitleTranslation == false">[{titleEN}<tpl if="subtitleEN != &quot;&quot;">: {subtitleEN}</tpl>]</tpl></tpl>.
 				<tpl if="editors != &quot;&quot;">{editors} ({editorType}).</tpl>
 			</tpl>
 			<tpl if="authors == &quot;&quot;">
-				{editors} <tpl if="yearORG != &quot;&quot;">({yearORG})</tpl>. <i><b>{titleORG}</b></i><tpl if="titleEN != &quot;&quot;"><tpl if="officialTitleTranslation == true">({titleEN})</tpl><tpl if="officialTitleTranslation == false">[{titleEN}]</tpl></tpl>.
+				{editors} <tpl if="yearORG != &quot;&quot;">({yearORG})</tpl>. <i><b>{titleORG}<tpl if="subtitleORG != &quot;&quot;">: {subtitleORG}</tpl></b></i><tpl if="titleEN != &quot;&quot;"><tpl if="officialTitleTranslation == true">({titleEN}<tpl if="subtitleEN != &quot;&quot;">: {subtitleEN}</tpl>)</tpl><tpl if="officialTitleTranslation == false">[{titleEN}<tpl if="subtitleEN != &quot;&quot;">: {subtitleEN}</tpl>]</tpl></tpl>.
 			</tpl>
 		</tpl>
 		<tpl if="parentTitleORG != &quot;&quot;">
-			{authors} <tpl if="yearORG != &quot;&quot;">({yearORG})</tpl>. <i><b>{titleORG}</b></i><tpl if="titleEN != &quot;&quot;"><tpl if="officialTitleTranslation == true">({titleEN})</tpl><tpl if="officialTitleTranslation == false">[{titleEN}]</tpl></tpl>.
+			{authors} <tpl if="yearORG != &quot;&quot;">({yearORG})</tpl>. <i><b>{titleORG}<tpl if="subtitleORG != &quot;&quot;">: {subtitleORG}</tpl></b></i><tpl if="titleEN != &quot;&quot;"><tpl if="officialTitleTranslation == true">({titleEN}<tpl if="subtitleEN != &quot;&quot;">: {subtitleEN}</tpl>)</tpl><tpl if="officialTitleTranslation == false">[{titleEN}<tpl if="subtitleEN != &quot;&quot;">: {subtitleEN}</tpl>]</tpl></tpl>.
 			In 
 			<tpl if="editors != &quot;&quot;">{editors} ({editorType}),</tpl>
 			<i>{parentTitleORG}</i>.
