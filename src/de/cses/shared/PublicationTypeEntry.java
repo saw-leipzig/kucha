@@ -33,6 +33,7 @@ public class PublicationTypeEntry extends AbstractEntry {
 	boolean pagesEnabled = false;
 	boolean seriesEnabled = false;
 	boolean titleAddonEnabled = false;
+	String titleAddonLabel;
 	boolean universityEnabled = false;
 	boolean volumeEnabled = false;
 	boolean issueEnabled = false;
@@ -67,7 +68,7 @@ public class PublicationTypeEntry extends AbstractEntry {
 	 */
 	public PublicationTypeEntry(int publicationTypeID, String name, boolean accessDateEnabled, boolean authorEnabled,
 			boolean parentTitleEnabled, String parentTitleLabel, boolean editionEnabled, boolean editorEnabled, boolean monthEnabled,
-			boolean numberEnabled, boolean pagesEnabled, boolean seriesEnabled, boolean titleAddonEnabled, boolean universityEnabled,
+			boolean numberEnabled, boolean pagesEnabled, boolean seriesEnabled, boolean titleAddonEnabled, String titleAddonLabel, boolean universityEnabled,
 			boolean volumeEnabled, boolean issueEnabled, boolean yearEnabled, boolean thesisTypeEnabled) {
 		this.publicationTypeID = publicationTypeID;
 		this.name = name;
@@ -82,6 +83,7 @@ public class PublicationTypeEntry extends AbstractEntry {
 		this.pagesEnabled = pagesEnabled;
 		this.seriesEnabled = seriesEnabled;
 		this.titleAddonEnabled = titleAddonEnabled;
+		this.titleAddonLabel = titleAddonLabel;
 		this.universityEnabled = universityEnabled;
 		this.volumeEnabled = volumeEnabled;
 		this.issueEnabled = issueEnabled;
@@ -248,6 +250,14 @@ public class PublicationTypeEntry extends AbstractEntry {
 
 	public void setThesisTypeEnabled(boolean thesisTypeEnabled) {
 		this.thesisTypeEnabled = thesisTypeEnabled;
+	}
+
+	public String getTitleAddonLabel() {
+		return titleAddonLabel;
+	}
+
+	public void setTitleAddonLabel(String titleAddonLabel) {
+		this.titleAddonLabel = titleAddonLabel;
 	}
 	
 }

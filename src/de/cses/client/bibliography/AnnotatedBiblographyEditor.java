@@ -571,7 +571,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			titleAddonVLC.add(new FieldLabel(titleaddonTR, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
 			
 			FramedPanel titleAddonFP = new FramedPanel();
-			titleAddonFP.setHeading("Titleaddon");
+			titleAddonFP.setHeading(pubType.getTitleAddonLabel());
 			titleAddonFP.add(titleAddonVLC);
 			firstTabInnerLeftVLC.add(titleAddonFP, new VerticalLayoutData(1.0, 1.0 / 5));
 		}
@@ -932,11 +932,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 				@Override
 				protected boolean doSelect(Store<AuthorEntry> store, AuthorEntry parent, AuthorEntry item, String filter) {
-					if (item.getName().toLowerCase().contains(filter.toLowerCase())) {
-						return true;
-					} else {
-						return false;
-					}
+					return item.getName().toLowerCase().contains(filter.toLowerCase()) ? true : false; 
 				}
 			};
 			authorListFilterField.bind(authorListStore);
