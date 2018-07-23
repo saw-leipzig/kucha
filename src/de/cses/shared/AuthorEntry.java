@@ -95,7 +95,7 @@ public class AuthorEntry extends AbstractEntry {
 	}
 
 	public String getName() {
-		return institution != null && !institution.isEmpty() ? institution : lastname + (firstname!=null && !firstname.isEmpty() ? ", " + firstname : "") + (alias != null && !alias.isEmpty() ? " [alias: " + alias + "]" : ""); 
+		return institutionEnabled ? institution : lastname + (firstname!=null && !firstname.isEmpty() ? ", " + firstname : "") + (alias != null && !alias.isEmpty() ? " [alias: " + alias + "]" : ""); 
 	}
 
 	/* (non-Javadoc)

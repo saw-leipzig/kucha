@@ -287,7 +287,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			@Override
 			public void onSuccess(ArrayList<AuthorEntry> result) {
 				for (AuthorEntry ae : result) {
-					if (ae.getInstitution() == null) {
+					if (!ae.isInstitutionEnabled()) {
 						authorListStore.add(ae);
 					}
 					editorListStore.add(ae);
@@ -964,8 +964,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 				@Override
 				protected boolean doSelect(Store<AuthorEntry> store, AuthorEntry parent, AuthorEntry item, String filter) {
-					return ((item.getInstitution() != null && item.getInstitution().toLowerCase().contains(filter.toLowerCase())) 
-							|| item.getName().toLowerCase().contains(filter.toLowerCase())) ? true : false; 
+					return item.getName().toLowerCase().contains(filter.toLowerCase()) ? true : false; 
 				}
 			};
 			editorListFilterField.bind(editorListStore);
