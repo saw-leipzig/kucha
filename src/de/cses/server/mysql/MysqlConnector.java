@@ -2461,11 +2461,11 @@ public class MysqlConnector {
 			pstmt.setString(8, de.getOtherSuggestedIdentifications());
 			pstmt.setDouble(9, de.getHeight());
 			pstmt.setDouble(10, de.getWidth());
-			pstmt.setInt(11, de.getExpedition().getExpeditionID());
+			pstmt.setInt(11, de.getExpedition() != null ? de.getExpedition().getExpeditionID() : 0);
 			pstmt.setDate(12, de.getPurchaseDate());
-			pstmt.setInt(13, de.getLocation().getLocationID());
+			pstmt.setInt(13, de.getLocation() != null ? de.getLocation().getLocationID() : 0);
 			pstmt.setString(14, de.getInventoryNumber());
-			pstmt.setInt(15, de.getVendor().getVendorID());
+			pstmt.setInt(15, de.getVendor() != null ? de.getVendor().getVendorID() : 0);
 			pstmt.setInt(16, de.getStoryID());
 			pstmt.setInt(17, de.getCave() != null ? de.getCave().getCaveID() : 0);
 			pstmt.setInt(18, de.getWallID());
@@ -2515,14 +2515,14 @@ public class MysqlConnector {
 	 * @return <code>true</code> when operation is successful
 	 */
 	public synchronized boolean updateDepictionEntry(DepictionEntry de, ArrayList<IconographyEntry> iconographyList) {
-		// System.err.println("==> updateDepictionEntry called");
+		System.err.println("==> updateDepictionEntry called");
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		Date date = new Date(System.currentTimeMillis());
 		DateFormat df = DateFormat.getDateTimeInstance();
 		de.setLastChangedOnDate(df.format(date));
 		try {
-			System.err.println("===> updateDepictionEntry");
+			System.err.println("===> updateDepictionEntry ID = " + de.getDepictionID());
 			pstmt = dbc.prepareStatement(
 					"UPDATE Depictions SET StyleID=?, Inscriptions=?, SeparateAksaras=?, Dating=?, Description=?, BackgroundColour=?, GeneralRemarks=?, "
 							+ "OtherSuggestedIdentifications=?, Width=?, Height=?, ExpeditionID=?, PurchaseDate=?, CurrentLocationID=?, InventoryNumber=?, VendorID=?, "
@@ -2538,11 +2538,11 @@ public class MysqlConnector {
 			pstmt.setString(8, de.getOtherSuggestedIdentifications());
 			pstmt.setDouble(9, de.getHeight());
 			pstmt.setDouble(10, de.getWidth());
-			pstmt.setInt(11, de.getExpedition().getExpeditionID());
+			pstmt.setInt(11, de.getExpedition() != null ? de.getExpedition().getExpeditionID() : 0);
 			pstmt.setDate(12, de.getPurchaseDate());
-			pstmt.setInt(13, de.getLocation().getLocationID());
+			pstmt.setInt(13, de.getLocation() != null ? de.getLocation().getLocationID() : 0);
 			pstmt.setString(14, de.getInventoryNumber());
-			pstmt.setInt(15, de.getVendor().getVendorID());
+			pstmt.setInt(15, de.getVendor() != null ? de.getVendor().getVendorID() : 0);
 			pstmt.setInt(16, de.getStoryID());
 			pstmt.setInt(17, de.getCave() != null ? de.getCave().getCaveID() : 0);
 			pstmt.setInt(18, de.getWallID());
@@ -2559,21 +2559,25 @@ public class MysqlConnector {
 			pstmt.executeUpdate();
 			pstmt.close();
 		} catch (SQLException ex) {
-			ex.printStackTrace();
+			System.err.println(ex.getLocalizedMessage());
 			return false;
 		}
+//		System.err.println("DELETE FROM DepictionImageRelation WHERE DepictionID=" + de.getDepictionID());
 		deleteEntry("DELETE FROM DepictionImageRelation WHERE DepictionID=" + de.getDepictionID());
 		if (de.getRelatedImages().size() > 0) {
 			insertDepictionImageRelation(de.getDepictionID(), de.getRelatedImages());
 		}
+//		System.err.println("DELETE FROM DepictionIconographyRelation WHERE DepictionID=" + de.getDepictionID());
 		deleteEntry("DELETE FROM DepictionIconographyRelation WHERE DepictionID=" + de.getDepictionID());
 		if (iconographyList.size() > 0) {
 			insertDepictionIconographyRelation(de.getDepictionID(), iconographyList);
 		}
+//		System.err.println("DELETE FROM DepictionBibliographyRelation WHERE DepictionID=" + de.getDepictionID());
 		deleteEntry("DELETE FROM DepictionBibliographyRelation WHERE DepictionID=" + de.getDepictionID());
 		if (de.getRelatedBibliographyList().size() > 0) {
 			insertDepictionBibliographyRelation(de.getDepictionID(), de.getRelatedBibliographyList());
 		}
+		System.err.println("==> updateDepictionEntry finished");
 		return true;
 	}
 
