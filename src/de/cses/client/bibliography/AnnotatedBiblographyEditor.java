@@ -118,6 +118,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 	private DualListField<AuthorEntry, String> authorSelection;
 	private DualListField<BibKeywordEntry, String> bibKeywordSelectionDLF;
 	private ComboBox<AnnotatedBiblographyEntry> firstEditionComboBox;
+	private DualListField<AuthorEntry, String> editorSelection;
 
 //	interface PublisherViewTemplates extends XTemplates {
 //		@XTemplate("<div>{name}</div>")
@@ -286,7 +287,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			@Override
 			public void onSuccess(ArrayList<AuthorEntry> result) {
 				for (AuthorEntry ae : result) {
-					if (ae.getInstitution() == null) {
+					if (!ae.isInstitutionEnabled()) {
 						authorListStore.add(ae);
 					}
 					editorListStore.add(ae);
@@ -570,7 +571,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			titleAddonVLC.add(new FieldLabel(titleaddonTR, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
 			
 			FramedPanel titleAddonFP = new FramedPanel();
-			titleAddonFP.setHeading("Titleaddon");
+			titleAddonFP.setHeading(pubType.getTitleAddonLabel());
 			titleAddonFP.add(titleAddonVLC);
 			firstTabInnerLeftVLC.add(titleAddonFP, new VerticalLayoutData(1.0, 1.0 / 5));
 		}
@@ -807,7 +808,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					
 					@Override
 					public void authorSaved(AuthorEntry authorEntry) {
-						if (authorEntry.getInstitution() == null) {
+						if (!authorEntry.isInstitutionEnabled()) {
 							authorListStore.add(authorEntry);
 						}
 						editorListStore.add(authorEntry);
@@ -853,11 +854,56 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					@Override
 					public void authorSaved(AuthorEntry authorEntry) {
 						addAuthorDialog.hide();
+						authorSelection.getFromView().refresh();
+						authorSelection.getToView().refresh();
+						editorSelection.getFromView().refresh();
+						editorSelection.getToView().refresh();
 					}
 				});
 				addAuthorDialog.add(aEditor);
 				addAuthorDialog.setModal(true);
 				addAuthorDialog.center();
+			}
+		});
+		
+		ToolButton deleteAuthorTB = new ToolButton(ToolButton.MINUS);
+		deleteAuthorTB.setToolTip("Select author in left column to delete. Please note that only names not used as authors or editors can be deleted!");
+		deleteAuthorTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				AuthorEntry selectedEntry;
+				selectedEntry = authorSelection.getFromView().getSelectionModel().getSelectedItem();
+				Util.showYesNo("Delete Author", "Do you really want to delete \n" + selectedEntry.getName() + "?", new SelectHandler() {
+					
+					@Override
+					public void onSelect(SelectEvent event) {
+						dbService.deleteAuthorEntry(selectedEntry, new AsyncCallback<Boolean>() {
+
+							@Override
+							public void onFailure(Throwable caught) {
+								Util.showWarning("Delete Author", "Unknown error while trying to delete " + selectedEntry.getName() + ".");
+							}
+
+							@Override
+							public void onSuccess(Boolean result) {
+								if (result) {
+									authorSelection.getFromStore().remove(selectedEntry);
+									if (editorSelection != null) {
+										editorSelection.getFromStore().remove(selectedEntry);
+									}
+								} else {
+									Util.showWarning("Delete Author", selectedEntry.getName() + " couln't be deleted.\n It's probably used already.");
+								}
+							}
+						});
+					}
+				}, new SelectHandler() {
+					
+					@Override
+					public void onSelect(SelectEvent event) {
+					}
+				});
 			}
 		});
 
@@ -886,19 +932,16 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 				@Override
 				protected boolean doSelect(Store<AuthorEntry> store, AuthorEntry parent, AuthorEntry item, String filter) {
-					if (item.getName().toLowerCase().contains(filter.toLowerCase())) {
-						return true;
-					} else {
-						return false;
-					}
+					return item.getName().toLowerCase().contains(filter.toLowerCase()) ? true : false; 
 				}
 			};
 			authorListFilterField.bind(authorListStore);
-			authorVLC.add(new FieldLabel(authorListFilterField, "Filter"), new VerticalLayoutData(.5, .15, new Margins(10, 0, 0, 0)));
+			authorVLC.add(new FieldLabel(authorListFilterField, "Filter"), new VerticalLayoutData(.5, .15, new Margins(10, 20, 0, 0)));
 			FramedPanel authorFP = new FramedPanel();
 			authorFP.setHeading("Author");
 			authorFP.add(authorVLC);
 			authorFP.addTool(addAuthorTB);
+			authorFP.addTool(deleteAuthorTB);
 			authorFP.addTool(editAuthorTB);
 			secondTabVLC.add(authorFP, new VerticalLayoutData(1.0, .45));
 		}
@@ -907,7 +950,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		 * the editor selection
 		 */
 		if (pubType.isEditorEnabled()) {
-			DualListField<AuthorEntry, String> editorSelection = new DualListField<AuthorEntry, String>(editorListStore, selectedEditorListStore,
+			editorSelection = new DualListField<AuthorEntry, String>(editorListStore, selectedEditorListStore,
 					authorProps.name(), new TextCell());
 			editorSelection.setMode(Mode.INSERT);
 			editorSelection.setEnableDnd(true);
@@ -917,8 +960,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 				@Override
 				protected boolean doSelect(Store<AuthorEntry> store, AuthorEntry parent, AuthorEntry item, String filter) {
-					return ((item.getInstitution() != null && item.getInstitution().toLowerCase().contains(filter.toLowerCase())) 
-							|| item.getName().toLowerCase().contains(filter.toLowerCase())) ? true : false; 
+					return item.getName().toLowerCase().contains(filter.toLowerCase()) ? true : false; 
 				}
 			};
 			editorListFilterField.bind(editorListStore);
@@ -963,6 +1005,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 						@Override
 						public void authorSaved(AuthorEntry authorEntry) {
 							addAuthorDialog.hide();
+							authorSelection.getFromView().refresh();
+							authorSelection.getToView().refresh();
+							editorSelection.getFromView().refresh();
+							editorSelection.getToView().refresh();
 						}
 					});
 					addAuthorDialog.add(aEditor);
@@ -970,6 +1016,45 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					addAuthorDialog.center();
 				}
 			});
+
+			ToolButton deleteEditorTB = new ToolButton(ToolButton.MINUS);
+			deleteEditorTB.setToolTip("Select editor in left column to delete. Please note that only names not used as authors or editors can be deleted!");
+			deleteEditorTB.addSelectHandler(new SelectHandler() {
+				
+				@Override
+				public void onSelect(SelectEvent event) {
+					AuthorEntry selectedEntry;
+					selectedEntry = editorSelection.getFromView().getSelectionModel().getSelectedItem();
+					Util.showYesNo("Delete Editor", "Do you really want to delete \n" + selectedEntry.getName() + "?", new SelectHandler() {
+						
+						@Override
+						public void onSelect(SelectEvent event) {
+							dbService.deleteAuthorEntry(selectedEntry, new AsyncCallback<Boolean>() {
+								
+								@Override
+								public void onFailure(Throwable caught) {
+									Util.showWarning("Delete Editor", "Unknown error while trying to delete " + selectedEntry.getName() + ".");
+								}
+								
+								@Override
+								public void onSuccess(Boolean result) {
+									if (result) {
+										editorSelection.getFromStore().remove(selectedEntry);
+										authorSelection.getFromStore().remove(selectedEntry);
+									} else {
+										Util.showWarning("Delete Editor", selectedEntry.getName() + " couln't be deleted.\n It's probably used already.");
+									}
+								}
+							});
+						}
+					}, new SelectHandler() {
+						
+						@Override
+						public void onSelect(SelectEvent event) {
+						}
+					});
+				}
+			});		
 			
 			FramedPanel editorFP = new FramedPanel();
 			editorFP.setHeading("Editor");
@@ -979,9 +1064,11 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			} else {
 				editorFP.addTool(addAuthorTB);
 			}
+			editorFP.addTool(deleteEditorTB);
 			editorFP.addTool(editEditorTB);
 			secondTabVLC.add(editorFP, new VerticalLayoutData(1.0, .45));
 		}
+		
 
 		/**
 		 * Keywords

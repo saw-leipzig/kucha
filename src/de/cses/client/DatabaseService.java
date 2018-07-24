@@ -271,5 +271,7 @@ public interface DatabaseService extends RemoteService {
 
 	ArrayList<BibKeywordEntry> getBibKeywords() throws IllegalArgumentException;
 
-	int insertBibKeyword(BibKeywordEntry bkEntry) throws IllegalArgumentException; 
+	int insertBibKeyword(BibKeywordEntry bkEntry) throws IllegalArgumentException;
+
+	boolean deleteAuthorEntry(AuthorEntry selectedEntry) throws IllegalArgumentException; 
 }

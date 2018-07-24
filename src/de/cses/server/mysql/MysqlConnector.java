@@ -201,7 +201,7 @@ public class MysqlConnector {
 				result = new PublicationTypeEntry(rs.getInt("PublicationTypeID"), rs.getString("Name"), rs.getBoolean("AccessDateEnabled"),
 						rs.getBoolean("AuthorEnabled"), rs.getBoolean("ParentTitleEnabled"), rs.getString("ParentTitleLabel"),
 						rs.getBoolean("EditionEnabled"), rs.getBoolean("EditorEnabled"), rs.getBoolean("MonthEnabled"), rs.getBoolean("NumberEnabled"),
-						rs.getBoolean("PagesEnabled"), rs.getBoolean("SeriesEnabled"), rs.getBoolean("TitleAddonEnabled"),
+						rs.getBoolean("PagesEnabled"), rs.getBoolean("SeriesEnabled"), rs.getBoolean("TitleAddonEnabled"), rs.getString("TitleAddonLabel"),
 						rs.getBoolean("UniversityEnabled"), rs.getBoolean("VolumeEnabled"), rs.getBoolean("IssueEnabled"),
 						rs.getBoolean("YearEnabled"), rs.getBoolean("ThesisTypeEnabled"));
 			}
@@ -225,7 +225,7 @@ public class MysqlConnector {
 				entry = new PublicationTypeEntry(rs.getInt("PublicationTypeID"), rs.getString("Name"), rs.getBoolean("AccessDateEnabled"),
 						rs.getBoolean("AuthorEnabled"), rs.getBoolean("ParentTitleEnabled"), rs.getString("ParentTitleLabel"),
 						rs.getBoolean("EditionEnabled"), rs.getBoolean("EditorEnabled"), rs.getBoolean("MonthEnabled"), rs.getBoolean("NumberEnabled"),
-						rs.getBoolean("PagesEnabled"), rs.getBoolean("SeriesEnabled"), rs.getBoolean("TitleAddonEnabled"),
+						rs.getBoolean("PagesEnabled"), rs.getBoolean("SeriesEnabled"), rs.getBoolean("TitleAddonEnabled"), rs.getString("TitleAddonLabel"),
 						rs.getBoolean("UniversityEnabled"), rs.getBoolean("VolumeEnabled"), rs.getBoolean("IssueEnabled"),
 						rs.getBoolean("YearEnabled"), rs.getBoolean("ThesisTypeEnabled"));
 				result.add(entry);
@@ -1283,7 +1283,7 @@ public class MysqlConnector {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Authors WHERE AuthorID=" + id);
 			if (rs.first()) {
 				result = new AuthorEntry(rs.getInt("AuthorID"), rs.getString("Lastname"), rs.getString("Firstname"), rs.getString("Institution"),
-						rs.getBoolean("KuchaVisitor"), rs.getString("Affiliation"), rs.getString("Email"), rs.getString("Homepage"), rs.getString("Alias"));
+						rs.getBoolean("KuchaVisitor"), rs.getString("Affiliation"), rs.getString("Email"), rs.getString("Homepage"), rs.getString("Alias"), rs.getBoolean("InstitutionEnabled"));
 			}
 			rs.close();
 			stmt.close();
@@ -2896,7 +2896,7 @@ public class MysqlConnector {
 		int rowCount = 0;
 		try {
 			authorStatement = dbc.prepareStatement(
-					"UPDATE Authors SET LastName=?, FirstName=?, Institution=?, KuchaVisitor=?, Affiliation=?, Email=?, Homepage=?, Alias=? WHERE AuthorID=?");
+					"UPDATE Authors SET LastName=?, FirstName=?, Institution=?, KuchaVisitor=?, Affiliation=?, Email=?, Homepage=?, Alias=?, InstitutionEnabled=? WHERE AuthorID=?");
 			authorStatement.setString(1, authorEntry.getLastname());
 			authorStatement.setString(2, authorEntry.getFirstname());
 			authorStatement.setString(3, authorEntry.getInstitution());
@@ -2905,7 +2905,8 @@ public class MysqlConnector {
 			authorStatement.setString(6, authorEntry.getEmail());
 			authorStatement.setString(7, authorEntry.getHomepage());
 			authorStatement.setString(8, authorEntry.getAlias());
-			authorStatement.setInt(9, authorEntry.getAuthorID());
+			authorStatement.setBoolean(9, authorEntry.isInstitutionEnabled());
+			authorStatement.setInt(10, authorEntry.getAuthorID());
 			rowCount = authorStatement.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -2923,7 +2924,7 @@ public class MysqlConnector {
 		int authorID = 0;
 		try {
 			authorStatement = dbc.prepareStatement(
-					"INSERT INTO Authors (LastName, FirstName, Institution, KuchaVisitor, Affiliation, Email, Homepage, Alias) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+					"INSERT INTO Authors (LastName, FirstName, Institution, KuchaVisitor, Affiliation, Email, Homepage, Alias, InstitutionEnabled) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
 					Statement.RETURN_GENERATED_KEYS);
 			authorStatement.setString(1, authorEntry.getLastname());
 			authorStatement.setString(2, authorEntry.getFirstname());
@@ -2933,6 +2934,7 @@ public class MysqlConnector {
 			authorStatement.setString(6, authorEntry.getEmail());
 			authorStatement.setString(7, authorEntry.getHomepage());
 			authorStatement.setString(8, authorEntry.getAlias());
+			authorStatement.setBoolean(9, authorEntry.isInstitutionEnabled());
 			authorStatement.executeUpdate();
 			ResultSet keys = authorStatement.getGeneratedKeys();
 			if (keys.next()) {
@@ -3150,7 +3152,7 @@ public class MysqlConnector {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Authors");
 			while (rs.next()) {
 				result.add(new AuthorEntry(rs.getInt("AuthorID"), rs.getString("Lastname"), rs.getString("Firstname"), rs.getString("Institution"),
-						rs.getBoolean("KuchaVisitor"), rs.getString("Affiliation"), rs.getString("Email"), rs.getString("Homepage"), rs.getString("Alias")));
+						rs.getBoolean("KuchaVisitor"), rs.getString("Affiliation"), rs.getString("Email"), rs.getString("Homepage"), rs.getString("Alias"), rs.getBoolean("InstitutionEnabled")));
 			}
 			rs.close();
 			stmt.close();
@@ -4078,6 +4080,35 @@ public class MysqlConnector {
 			e.printStackTrace();
 		}
 		return bibKeywordID;
+	}
+
+	/**
+	 * @param selectedEntry
+	 * @return
+	 */
+	public boolean deleteAuthorEntry(AuthorEntry selectedEntry) {
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM AuthorBibliographyRelation WHERE AuthorID=?");
+			pstmt.setInt(1, selectedEntry.getAuthorID());
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.first()) {
+				return false;
+			}
+			pstmt = dbc.prepareStatement("SELECT * FROM EditorBibliographyRelation WHERE AuthorID=?");
+			pstmt.setInt(1, selectedEntry.getAuthorID());
+			rs = pstmt.executeQuery();
+			if (rs.first()) {
+				return false;
+			}
+			if (deleteEntry("DELETE FROM Authors WHERE  AuthorID=" + selectedEntry.getAuthorID())) {
+				return true;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 
 }
