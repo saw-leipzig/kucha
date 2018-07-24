@@ -27,7 +27,7 @@ import de.cses.shared.AuthorEntry;
  * @author Nina
  *
  */
-public class AnnotatedBiblographyView  extends AbstractView {
+public class AnnotatedBiblographyView extends AbstractView {
 	
 	private AnnotatedBiblographyEntry annotatedBiblographyEntry;
 	private AnnotatedBiblographyViewTemplates dvTemplates;
