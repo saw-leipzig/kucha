@@ -189,7 +189,7 @@ public class AuthorEditor implements IsWidget {
 		institutionTF.setAllowBlank(false);
 		institutionTF.addValidator(new MaxLengthValidator(256));
 		institutionTF.setAutoValidate(true);
-		if (!authorEntry.isInstitutionEnabled()) {
+		if (authorEntry.isInstitutionEnabled()) {
 			authorLastNameTF.reset();
 			authorLastNameTF.setEnabled(false);
 			authorFirstNameTF.reset();
