@@ -79,7 +79,8 @@ public class BibTexServlet extends HttpServlet {
 		String bibIDStr = request.getParameter("bibID");
 
 		response.setContentType("application/txt");
-		response.setCharacterEncoding("UTF8");
+    response.setHeader("Content-Disposition", "filename=\"kucha.bib\"");
+    response.setCharacterEncoding("UTF8");
 		PrintWriter out = response.getWriter();
 
 		ArrayList<AnnotatedBiblographyEntry> bibEntries;

@@ -21,6 +21,7 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
 import de.cses.client.ui.AbstractResultView;
 import de.cses.client.user.UserLogin;
+import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.DepictionEntry;
 
@@ -41,10 +42,17 @@ public class AnnotatedBiblographyResultView extends AbstractResultView {
 			
 			@Override
 			public void onSelect(SelectEvent event) {
-				com.google.gwt.user.client.Window.open("/bibtex?bibID=all" + UserLogin.getInstance().getUsernameSessionIDParameterForUri(),"_blank",null);
+				String idStr = "all";
+				for (AbstractEntry e : getEntriesOnDisplay()) {
+					if (e instanceof AnnotatedBiblographyEntry) {
+						idStr = "all".equals(idStr) ? Integer.toString(((AnnotatedBiblographyEntry)e).getAnnotatedBiblographyID()) : idStr + "," + ((AnnotatedBiblographyEntry)e).getAnnotatedBiblographyID();
+					}
+				}
+				com.google.gwt.user.client.Window.open("/bibtex?bibID=" + idStr + UserLogin.getInstance().getUsernameSessionIDParameterForUri(),"_blank",null);
 			}
 
 		});
+		bibTexExportTB.setToolTip("Export search result in BibTeX format (empty window = export all)");
 		getHeader().addTool(bibTexExportTB);
 
 		new DropTarget(this) {
