@@ -984,9 +984,9 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	}
 	
 	public String getTitleFull() {
-		String result = subtitleORG != null ? titleORG + ": " + subtitleORG : titleORG;
-		if (titleEN != null && titleEN.length() > 0) {
-			String translation = subtitleEN != null ? titleEN + ": " + subtitleEN : titleEN;
+		String result = subtitleORG.isEmpty() ? titleORG : titleORG + ": " + subtitleORG;
+		if (!titleEN.isEmpty()) {
+			String translation = subtitleEN.isEmpty() ? titleEN : titleEN + ": " + subtitleEN;
 			result += officialTitleTranslation ? " (" + translation + ")" : " [" + translation + "]";
 		}
 		return result;
