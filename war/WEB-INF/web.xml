@@ -98,6 +98,16 @@
   		<url-pattern>/json</url-pattern>
   </servlet-mapping>
   
+  <servlet>
+	  	<servlet-name>bibtexServlet</servlet-name>
+  		<servlet-class>de.cses.server.BibTexServlet</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+  		<servlet-name>bibtexServlet</servlet-name>
+  		<url-pattern>/bibtex</url-pattern>
+  </servlet-mapping>
+  
   
   <!-- Default page to serve -->
   <welcome-file-list>

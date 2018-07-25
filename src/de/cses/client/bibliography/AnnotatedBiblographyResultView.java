@@ -15,8 +15,12 @@ package de.cses.client.bibliography;
 
 import com.sencha.gxt.dnd.core.client.DndDropEvent;
 import com.sencha.gxt.dnd.core.client.DropTarget;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
 import de.cses.client.ui.AbstractResultView;
+import de.cses.client.user.UserLogin;
 import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.DepictionEntry;
 
@@ -32,6 +36,17 @@ public class AnnotatedBiblographyResultView extends AbstractResultView {
 	public AnnotatedBiblographyResultView(String title) {
 		super(title);
 		
+		ToolButton bibTexExportTB = new ToolButton(ToolButton.SAVE);
+		bibTexExportTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				com.google.gwt.user.client.Window.open("/bibtex?bibID=all" + UserLogin.getInstance().getUsernameSessionIDParameterForUri(),"_blank",null);
+			}
+
+		});
+		getHeader().addTool(bibTexExportTB);
+
 		new DropTarget(this) {
 
 			@Override
@@ -46,5 +61,5 @@ public class AnnotatedBiblographyResultView extends AbstractResultView {
 		};
 	
 	}
-
+	
 }

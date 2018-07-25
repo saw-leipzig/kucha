@@ -766,9 +766,9 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 
 	@Override
 	public String getUniqueID() {
-		return "AnnotatedBibliography-" + annotatedBiblographyID;
+		return "AnnotatedBibliography." + annotatedBiblographyID;
 	}
-
+	
 	/**
 	 * @return the annotatedBiblographyID
 	 */
