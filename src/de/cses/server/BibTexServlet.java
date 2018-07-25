@@ -107,39 +107,40 @@ public class BibTexServlet extends HttpServlet {
 		switch (abe.getPublicationType().getPublicationTypeID()) {
 			case 1: // Book
 				bte = new BibTeXEntry(BibTeXEntry.TYPE_BOOK, new Key(abe.getUniqueID()));
-				checkAndAdd(bte, BibTeXEntry.KEY_BOOKTITLE, abe.getTitleORG());
+				checkAndAdd(bte, BibTeXEntry.KEY_BOOKTITLE, abe.getTitleFull());
 				break;
 			
 			case 3: // PhD 
 				bte = new BibTeXEntry(BibTeXEntry.TYPE_PHDTHESIS, new Key(abe.getUniqueID()));
-				checkAndAdd(bte, BibTeXEntry.KEY_TITLE, abe.getTitleORG());
+				checkAndAdd(bte, BibTeXEntry.KEY_TITLE, abe.getTitleFull());
 				break;
 			
 			case 4: // Incollection
 				bte = new BibTeXEntry(BibTeXEntry.TYPE_INCOLLECTION, new Key(abe.getUniqueID()));
-				checkAndAdd(bte, BibTeXEntry.KEY_TITLE, abe.getTitleORG());
+				checkAndAdd(bte, BibTeXEntry.KEY_BOOKTITLE, abe.getParentTitleORG());
+				checkAndAdd(bte, BibTeXEntry.KEY_TITLE, abe.getTitleFull());
 				break;
 			
 			case 5: // Book section
 				bte = new BibTeXEntry(BibTeXEntry.TYPE_INBOOK, new Key(abe.getUniqueID()));
 				checkAndAdd(bte, BibTeXEntry.KEY_BOOKTITLE, abe.getParentTitleORG());
-				checkAndAdd(bte, BibTeXEntry.KEY_CHAPTER, abe.getTitleORG());
+				checkAndAdd(bte, BibTeXEntry.KEY_CHAPTER, abe.getTitleFull());
 				break;
 			
 			case 7: // Electronic
 				bte = new BibTeXEntry(BibTeXEntry.TYPE_MISC, new Key(abe.getUniqueID()));
-				checkAndAdd(bte, BibTeXEntry.KEY_TITLE, abe.getTitleORG());
+				checkAndAdd(bte, BibTeXEntry.KEY_TITLE, abe.getTitleFull());
 				break;
 			
 			case 8: // Journal Article
 				bte = new BibTeXEntry(BibTeXEntry.TYPE_ARTICLE, new Key(abe.getUniqueID()));
 				checkAndAdd(bte, BibTeXEntry.KEY_JOURNAL, abe.getParentTitleORG());
-				checkAndAdd(bte, BibTeXEntry.KEY_TITLE, abe.getTitleORG());
+				checkAndAdd(bte, BibTeXEntry.KEY_TITLE, abe.getTitleFull());
 				break;
 			
 			default: 
 				bte = new BibTeXEntry(BibTeXEntry.TYPE_MISC, new Key(abe.getUniqueID()));
-				checkAndAdd(bte, BibTeXEntry.KEY_TITLE, abe.getTitleORG());
+				checkAndAdd(bte, BibTeXEntry.KEY_TITLE, abe.getTitleFull());
 				break;
 		}
 		checkAndAdd(bte, BibTeXEntry.KEY_AUTHOR, abe.getAuthors());
