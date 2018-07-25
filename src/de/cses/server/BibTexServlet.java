@@ -92,21 +92,67 @@ public class BibTexServlet extends HttpServlet {
 		System.err.println("No. of elements found in AnnotatedBib: " + bibEntries.size());
 		
 		BibTeXDatabase database = new BibTeXDatabase();
-		BibTeXEntry bte;
 		for (AnnotatedBiblographyEntry be : bibEntries) {
-			bte = new BibTeXEntry(BibTeXEntry.TYPE_ARTICLE, new Key(be.getUniqueID()));
-			checkAndAdd(bte, BibTeXEntry.KEY_AUTHOR, be.getAuthors());
-			checkAndAdd(bte, BibTeXEntry.KEY_TITLE, be.getTitleORG());
-			checkAndAdd(bte, BibTeXEntry.KEY_YEAR, be.getYearORG());
-			checkAndAdd(bte, BibTeXEntry.KEY_PAGES, be.getPagesORG());
-			checkAndAdd(bte, BibTeXEntry.KEY_EDITOR, be.getEditors());
-			database.addObject(bte);
+			database.addObject(bibEntryConverter(be));
 		}
 		System.err.println("No. of references in BibTexDatabase: " + database.getObjects().size());
 		BibTeXFormatter bibtexFormatter = new BibTeXFormatter();
 		bibtexFormatter.format(database, out);
 		out.flush();
 		out.close();
+	}
+	
+	private BibTeXEntry bibEntryConverter(AnnotatedBiblographyEntry abe) {
+		BibTeXEntry bte;
+		switch (abe.getPublicationType().getPublicationTypeID()) {
+			case 1: // Book
+				bte = new BibTeXEntry(BibTeXEntry.TYPE_BOOK, new Key(abe.getUniqueID()));
+				checkAndAdd(bte, BibTeXEntry.KEY_BOOKTITLE, abe.getTitleORG());
+				break;
+			
+			case 3: // PhD 
+				bte = new BibTeXEntry(BibTeXEntry.TYPE_PHDTHESIS, new Key(abe.getUniqueID()));
+				checkAndAdd(bte, BibTeXEntry.KEY_TITLE, abe.getTitleORG());
+				break;
+			
+			case 4: // Incollection
+				bte = new BibTeXEntry(BibTeXEntry.TYPE_INCOLLECTION, new Key(abe.getUniqueID()));
+				checkAndAdd(bte, BibTeXEntry.KEY_TITLE, abe.getTitleORG());
+				break;
+			
+			case 5: // Book section
+				bte = new BibTeXEntry(BibTeXEntry.TYPE_INBOOK, new Key(abe.getUniqueID()));
+				checkAndAdd(bte, BibTeXEntry.KEY_BOOKTITLE, abe.getParentTitleORG());
+				checkAndAdd(bte, BibTeXEntry.KEY_CHAPTER, abe.getTitleORG());
+				break;
+			
+			case 7: // Electronic
+				bte = new BibTeXEntry(BibTeXEntry.TYPE_MISC, new Key(abe.getUniqueID()));
+				checkAndAdd(bte, BibTeXEntry.KEY_TITLE, abe.getTitleORG());
+				break;
+			
+			case 8: // Journal Article
+				bte = new BibTeXEntry(BibTeXEntry.TYPE_ARTICLE, new Key(abe.getUniqueID()));
+				checkAndAdd(bte, BibTeXEntry.KEY_JOURNAL, abe.getParentTitleORG());
+				checkAndAdd(bte, BibTeXEntry.KEY_TITLE, abe.getTitleORG());
+				break;
+			
+			default: 
+				bte = new BibTeXEntry(BibTeXEntry.TYPE_MISC, new Key(abe.getUniqueID()));
+				checkAndAdd(bte, BibTeXEntry.KEY_TITLE, abe.getTitleORG());
+				break;
+		}
+		checkAndAdd(bte, BibTeXEntry.KEY_AUTHOR, abe.getAuthors());
+		checkAndAdd(bte, BibTeXEntry.KEY_EDITOR, abe.getEditors());
+		checkAndAdd(bte, BibTeXEntry.KEY_MONTH, abe.getMonthORG());
+		checkAndAdd(bte, BibTeXEntry.KEY_NUMBER, abe.getNumberORG());
+		checkAndAdd(bte, BibTeXEntry.KEY_PAGES, abe.getPagesORG());
+		checkAndAdd(bte, BibTeXEntry.KEY_PUBLISHER, abe.getPublisher());
+		checkAndAdd(bte, BibTeXEntry.KEY_SERIES, abe.getSeriesORG());
+		checkAndAdd(bte, BibTeXEntry.KEY_URL, abe.getUrl());
+		checkAndAdd(bte, BibTeXEntry.KEY_VOLUME, abe.getVolumeORG());
+		checkAndAdd(bte, BibTeXEntry.KEY_YEAR, abe.getYearORG());
+		return bte;
 	}
 	
 	private void checkAndAdd(BibTeXEntry entry, Key bibTexKey, String value) {
