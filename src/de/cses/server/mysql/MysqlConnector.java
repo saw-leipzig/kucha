@@ -2956,7 +2956,7 @@ public class MysqlConnector {
 	 * @return
 	 */
 	private String createBibtexKey(AuthorEntry entry, String year) {
-		String result = (entry.isInstitutionEnabled() ? entry.getInstitution().substring(0, entry.getInstitution().indexOf(" ")) : entry.getLastname()) + year;
+		String result = (entry.isInstitutionEnabled() ? entry.getInstitution().replace(" ", "") : entry.getLastname()) + year;
 		List<String> appendix = Arrays.asList("","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z");
 		int count = 0;
 		while (!getAnnotatedBibliography("BibTexKey='"+result+appendix.get(count)+"'").isEmpty()) {
@@ -3699,14 +3699,15 @@ public class MysqlConnector {
 	public AnnotatedBiblographyEntry updateAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry) {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
-		System.err.println("insertAnnotatedBiblographyEntry - saving");
-		if (bibEntry.getBibtexKey().isEmpty() || !getAnnotatedBibliography("BibTexKey='"+bibEntry.getBibtexKey()+"'").isEmpty()) {
-			if (bibEntry.getAuthorList().get(0) != null) {
+		System.err.println("updateAnnotatedBiblographyEntry - saving");
+		if (bibEntry.getBibtexKey().isEmpty() || !getAnnotatedBibliography("BibTexKey='"+bibEntry.getBibtexKey()+"' AND BibID!="+bibEntry.getAnnotatedBiblographyID()).isEmpty()) {
+			if (!bibEntry.getAuthorList().isEmpty()) {
 				bibEntry.setBibtexKey(createBibtexKey(bibEntry.getAuthorList().get(0), bibEntry.getYearORG()));
-			} else if (bibEntry.getEditorList().get(0) != null) {
-				bibEntry.setBibtexKey(createBibtexKey(bibEntry.getAuthorList().get(0), bibEntry.getYearORG()));
+			} else if (!bibEntry.getEditorList().isEmpty()) {
+				bibEntry.setBibtexKey(createBibtexKey(bibEntry.getEditorList().get(0), bibEntry.getYearORG()));
 			}
 		}
+		System.err.println("updateAnnotatedBiblographyEntry - bibtexKey = " + bibEntry.getBibtexKey());
 		try {
 			pstmt = dbc.prepareStatement("UPDATE AnnotatedBibliography SET PublicationTypeID=?, "
 					+ "AccessDateEN=?, AccessDateORG=?, AccessDateTR=?, " 

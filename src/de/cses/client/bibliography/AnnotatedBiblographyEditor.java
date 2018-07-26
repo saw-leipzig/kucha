@@ -217,7 +217,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				@Override
 				public void onFailure(Throwable caught) {
 					caught.printStackTrace();
-					Window.alert("Error while saving!");
+					Util.showWarning("Error", "A problem occured while saving!");
 				}
 
 				@Override
