@@ -1770,6 +1770,14 @@ public class MysqlConnector {
 				entry.setAuthorList(getAuthorBibRelation(entry.getAnnotatedBiblographyID()));
 				entry.setEditorList(getEditorBibRelation(entry.getAnnotatedBiblographyID()));
 				entry.setKeywordList(getRelatedBibKeywords(entry.getAnnotatedBiblographyID()));
+				if (entry.getBibtexKey().isEmpty()) {
+					if (!entry.getAuthorList().isEmpty()) {
+						entry.setBibtexKey(createBibtexKey(entry.getAuthorList().get(0), entry.getYearORG()));
+					} else if (!entry.getEditorList().isEmpty()) {
+						entry.setBibtexKey(createBibtexKey(entry.getEditorList().get(0), entry.getYearORG()));
+					}
+					updateAnnotatedBiblographyEntry(entry);
+				}
 				result.add(entry);
 			}
 			rs.close();
