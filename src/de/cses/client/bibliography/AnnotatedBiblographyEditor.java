@@ -926,8 +926,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					return l;
 				}
 			});
-			VerticalLayoutContainer authorVLC = new VerticalLayoutContainer();
-			authorVLC.add(authorSelection, new VerticalLayoutData(1.0, .85));
+
 			authorListFilterField = new StoreFilterField<AuthorEntry>() {
 
 				@Override
@@ -936,7 +935,27 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				}
 			};
 			authorListFilterField.bind(authorListStore);
-			authorVLC.add(new FieldLabel(authorListFilterField, "Filter"), new VerticalLayoutData(.5, .15, new Margins(10, 20, 0, 0)));
+
+			TextField bibtexKeyTF = new TextField();
+			bibtexKeyTF.setEmptyText("generated automatically when saved");
+			bibtexKeyTF.setAllowBlank(false);
+			bibtexKeyTF.setValue(bibEntry.getBibtexKey());
+			bibtexKeyTF.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+				@Override
+				public void onValueChange(ValueChangeEvent<String> event) {
+					bibEntry.setBibtexKey(event.getValue());
+				}
+			});
+			
+			HorizontalLayoutContainer filterBibTexKeyHLC = new HorizontalLayoutContainer();
+			filterBibTexKeyHLC.add(new FieldLabel(authorListFilterField, "Filter"), new HorizontalLayoutData(.5, 1.0, new Margins(0, 20, 0, 0)));
+			filterBibTexKeyHLC.add(new FieldLabel(bibtexKeyTF, "BibTex key"), new HorizontalLayoutData(.5, 1.0, new Margins(0, 0, 0, 20)));
+
+			VerticalLayoutContainer authorVLC = new VerticalLayoutContainer();
+			authorVLC.add(authorSelection, new VerticalLayoutData(1.0, .85));
+			authorVLC.add(filterBibTexKeyHLC, new VerticalLayoutData(1.0, .15, new Margins(10, 20, 0, 0)));
+
 			FramedPanel authorFP = new FramedPanel();
 			authorFP.setHeading("Author");
 			authorFP.add(authorVLC);
@@ -964,6 +983,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				}
 			};
 			editorListFilterField.bind(editorListStore);
+			
 			TextField editorTypeTF = new TextField();
 			editorTypeTF.setEmptyText("e.g. eds. / ed. / transl.");
 			editorTypeTF.setValue(bibEntry.getEditorType());

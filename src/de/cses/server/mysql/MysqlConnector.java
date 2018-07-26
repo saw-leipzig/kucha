@@ -21,6 +21,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -1765,7 +1766,7 @@ public class MysqlConnector {
 						rs.getString("MonthEN"), rs.getString("MonthORG"), rs.getString("MonthTR"), rs.getString("PagesEN"), rs.getString("PagesORG"),
 						rs.getString("PagesTR"), rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"), rs.getString("URI"),
 						rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getBoolean("OpenAccess"), rs.getString("AbstractText"),
-						rs.getString("ThesisType"), rs.getString("EditorType"), rs.getBoolean("OfficialTitleTranslation"));
+						rs.getString("ThesisType"), rs.getString("EditorType"), rs.getBoolean("OfficialTitleTranslation"), rs.getString("BibTexKey"));
 				entry.setAuthorList(getAuthorBibRelation(entry.getAnnotatedBiblographyID()));
 				entry.setEditorList(getEditorBibRelation(entry.getAnnotatedBiblographyID()));
 				entry.setKeywordList(getRelatedBibKeywords(entry.getAnnotatedBiblographyID()));
@@ -1814,7 +1815,7 @@ public class MysqlConnector {
 						rs.getString("MonthEN"), rs.getString("MonthORG"), rs.getString("MonthTR"), rs.getString("PagesEN"), rs.getString("PagesORG"),
 						rs.getString("PagesTR"), rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"), rs.getString("URI"),
 						rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getBoolean("OpenAccess"), rs.getString("AbstractText"),
-						rs.getString("ThesisType"), rs.getString("EditorType"), rs.getBoolean("OfficialTitleTranslation"));
+						rs.getString("ThesisType"), rs.getString("EditorType"), rs.getBoolean("OfficialTitleTranslation"), rs.getString("BibTexKey"));
 				entry.setAuthorList(getAuthorBibRelation(entry.getAnnotatedBiblographyID()));
 				entry.setEditorList(getEditorBibRelation(entry.getAnnotatedBiblographyID()));
 				entry.setKeywordList(getRelatedBibKeywords(entry.getAnnotatedBiblographyID()));
@@ -1931,7 +1932,7 @@ public class MysqlConnector {
 						rs.getString("MonthEN"), rs.getString("MonthORG"), rs.getString("MonthTR"), rs.getString("PagesEN"), rs.getString("PagesORG"),
 						rs.getString("PagesTR"), rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"), rs.getString("URI"),
 						rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getBoolean("OpenAccess"), rs.getString("AbstractText"),
-						rs.getString("ThesisType"), rs.getString("EditorType"), rs.getBoolean("OfficialTitleTranslation"));
+						rs.getString("ThesisType"), rs.getString("EditorType"), rs.getBoolean("OfficialTitleTranslation"), rs.getString("BibTexKey"));
 
 				result.setAuthorList(getAuthorBibRelation(result.getAnnotatedBiblographyID()));
 				result.setEditorList(getEditorBibRelation(result.getAnnotatedBiblographyID()));
@@ -2952,6 +2953,19 @@ public class MysqlConnector {
 	}
 
 	/**
+	 * @return
+	 */
+	private String createBibtexKey(AuthorEntry entry, String year) {
+		String result = (entry.isInstitutionEnabled() ? entry.getInstitution().substring(0, entry.getInstitution().indexOf(" ")) : entry.getLastname()) + year;
+		List<String> appendix = Arrays.asList("","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z");
+		int count = 0;
+		while (!getAnnotatedBibliography("BibTexKey='"+result+appendix.get(count)+"'").isEmpty()) {
+			++count;
+		}
+		return result+appendix.get(count);
+	}
+
+	/**
 	 * @param bibEntry
 	 * @return
 	 */
@@ -2959,6 +2973,13 @@ public class MysqlConnector {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		int newBibID = 0;
+		if (bibEntry.getBibtexKey().isEmpty() || !getAnnotatedBibliography("BibTexKey='"+bibEntry.getBibtexKey()+"'").isEmpty()) {
+			if (bibEntry.getAuthorList().get(0) != null) {
+				bibEntry.setBibtexKey(createBibtexKey(bibEntry.getAuthorList().get(0), bibEntry.getYearORG()));
+			} else if (bibEntry.getEditorList().get(0) != null) {
+				bibEntry.setBibtexKey(createBibtexKey(bibEntry.getAuthorList().get(0), bibEntry.getYearORG()));
+			}
+		}
 		System.err.println("insertAnnotatedBiblographyEntry - saving");
 		try {
 			pstmt = dbc.prepareStatement("INSERT INTO AnnotatedBibliography (PublicationTypeID, " 
@@ -2981,8 +3002,8 @@ public class MysqlConnector {
 					+ "VolumeEN, VolumeORG, VolumeTR, "
 					+ "IssueEN, IssueORG, IssueTR, " 
 					+ "YearEN, YearORG, YearTR, " 
-					+ "Unpublished, OpenAccess, AbstractText, ThesisType, EditorType, OfficialTitleTranslation) "
-					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+					+ "Unpublished, OpenAccess, AbstractText, ThesisType, EditorType, OfficialTitleTranslation, BibTexKey) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 					Statement.RETURN_GENERATED_KEYS);
 			pstmt.setInt(1, bibEntry.getPublicationType().getPublicationTypeID());
 			pstmt.setString(2, bibEntry.getAccessdateEN());
@@ -3039,6 +3060,7 @@ public class MysqlConnector {
 			pstmt.setString(53, bibEntry.getThesisType());
 			pstmt.setString(54, bibEntry.getEditorType());
 			pstmt.setBoolean(55, bibEntry.isOfficialTitleTranslation());
+			pstmt.setString(56, bibEntry.getBibtexKey());
 			pstmt.executeUpdate();
 
 			ResultSet keys = pstmt.getGeneratedKeys();
@@ -3678,6 +3700,13 @@ public class MysqlConnector {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		System.err.println("insertAnnotatedBiblographyEntry - saving");
+		if (bibEntry.getBibtexKey().isEmpty() || !getAnnotatedBibliography("BibTexKey='"+bibEntry.getBibtexKey()+"'").isEmpty()) {
+			if (bibEntry.getAuthorList().get(0) != null) {
+				bibEntry.setBibtexKey(createBibtexKey(bibEntry.getAuthorList().get(0), bibEntry.getYearORG()));
+			} else if (bibEntry.getEditorList().get(0) != null) {
+				bibEntry.setBibtexKey(createBibtexKey(bibEntry.getAuthorList().get(0), bibEntry.getYearORG()));
+			}
+		}
 		try {
 			pstmt = dbc.prepareStatement("UPDATE AnnotatedBibliography SET PublicationTypeID=?, "
 					+ "AccessDateEN=?, AccessDateORG=?, AccessDateTR=?, " 
@@ -3698,7 +3727,7 @@ public class MysqlConnector {
 					+ "VolumeEN=?, VolumeORG=?, VolumeTR=?, " 
 					+ "IssueEN=?, IssueORG=?, IssueTR=?, " 
 					+ "YearEN=?, YearORG=?, YearTR=?, "
-					+ "Unpublished=?, OpenAccess=?, AbstractText=?, ThesisType=?, EditorType=?, OfficialTitleTranslation=? WHERE BibID=?");
+					+ "Unpublished=?, OpenAccess=?, AbstractText=?, ThesisType=?, EditorType=?, OfficialTitleTranslation=?, BibTexKey=? WHERE BibID=?");
 			pstmt.setInt(1, bibEntry.getPublicationType().getPublicationTypeID());
 			pstmt.setString(2, bibEntry.getAccessdateEN());
 			pstmt.setString(3, bibEntry.getAccessdateORG());
@@ -3754,7 +3783,8 @@ public class MysqlConnector {
 			pstmt.setString(53, bibEntry.getThesisType());
 			pstmt.setString(54, bibEntry.getEditorType());
 			pstmt.setBoolean(55, bibEntry.isOfficialTitleTranslation());
-			pstmt.setInt(56, bibEntry.getAnnotatedBiblographyID());
+			pstmt.setString(56, bibEntry.getBibtexKey());
+			pstmt.setInt(57, bibEntry.getAnnotatedBiblographyID());
 			pstmt.executeUpdate();
 
 			updateAuthorBibRelation(bibEntry.getAnnotatedBiblographyID(), bibEntry.getAuthorList());
