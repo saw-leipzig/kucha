@@ -119,6 +119,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 	private DualListField<BibKeywordEntry, String> bibKeywordSelectionDLF;
 	private ComboBox<AnnotatedBiblographyEntry> firstEditionComboBox;
 	private DualListField<AuthorEntry, String> editorSelection;
+	private TextField bibtexKeyTF;
 
 //	interface PublisherViewTemplates extends XTemplates {
 //		@XTemplate("<div>{name}</div>")
@@ -211,7 +212,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		bibEntry.setKeywordList(selectedBibKeywordsList);
 
 		if (bibEntry.getAnnotatedBiblographyID() > 0) {
-			dbService.updateAnnotatedBiblographyEntry(bibEntry, new AsyncCallback<Boolean>() {
+			dbService.updateAnnotatedBiblographyEntry(bibEntry, new AsyncCallback<AnnotatedBiblographyEntry>() {
 
 				@Override
 				public void onFailure(Throwable caught) {
@@ -220,9 +221,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				}
 
 				@Override
-				public void onSuccess(Boolean result) {
-					if (result) {
-//						updateEntry(bibEntry);
+				public void onSuccess(AnnotatedBiblographyEntry result) {
+					if (result!=null) {
+						bibtexKeyTF.setValue(result.getBibtexKey(), true);
 						if (close) {
 							closeEditor(bibEntry);
 						}
@@ -231,7 +232,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 			});
 		} else {
-			dbService.insertAnnotatedBiblographyEntry(bibEntry, new AsyncCallback<Integer>() {
+			dbService.insertAnnotatedBiblographyEntry(bibEntry, new AsyncCallback<AnnotatedBiblographyEntry>() {
 
 				@Override
 				public void onFailure(Throwable caught) {
@@ -240,8 +241,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				}
 
 				@Override
-				public void onSuccess(Integer result) {
-					bibEntry.setAnnotatedBiblographyID(result);
+				public void onSuccess(AnnotatedBiblographyEntry result) {
+					bibEntry.setAnnotatedBiblographyID(result.getAnnotatedBiblographyID());
+					bibtexKeyTF.setValue(result.getBibtexKey(), true);
 //					updateEntry(bibEntry);
 					if (close) {
 						closeEditor(bibEntry);
@@ -936,7 +938,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			};
 			authorListFilterField.bind(authorListStore);
 
-			TextField bibtexKeyTF = new TextField();
+			bibtexKeyTF = new TextField();
 			bibtexKeyTF.setEmptyText("generated automatically when saved");
 			bibtexKeyTF.setAllowBlank(false);
 			bibtexKeyTF.setValue(bibEntry.getBibtexKey());

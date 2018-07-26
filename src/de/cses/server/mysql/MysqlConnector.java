@@ -2969,7 +2969,7 @@ public class MysqlConnector {
 	 * @param bibEntry
 	 * @return
 	 */
-	public int insertAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry) {
+	public AnnotatedBiblographyEntry insertAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry) {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		int newBibID = 0;
@@ -3076,9 +3076,9 @@ public class MysqlConnector {
 			}
 		} catch (SQLException ex) {
 			ex.printStackTrace();
-			return 0;
+			return null;
 		}
-		return newBibID;
+		return bibEntry;
 	}
 
 	private void updateAuthorBibRelation(int bibID, ArrayList<AuthorEntry> authorList) {
@@ -3696,7 +3696,7 @@ public class MysqlConnector {
 	 * @param bibEntry
 	 * @return
 	 */
-	public boolean updateAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry) {
+	public AnnotatedBiblographyEntry updateAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry) {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		System.err.println("insertAnnotatedBiblographyEntry - saving");
@@ -3792,9 +3792,9 @@ public class MysqlConnector {
 			updateBibKeywordRelation(bibEntry.getAnnotatedBiblographyID(), bibEntry.getKeywordList());
 		} catch (SQLException ex) {
 			ex.printStackTrace();
-			return false;
+			return null;
 		}
-		return true;
+		return bibEntry;
 	}
 
 	/**

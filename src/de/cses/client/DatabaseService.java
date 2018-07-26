@@ -196,7 +196,7 @@ public interface DatabaseService extends RemoteService {
 
 	boolean updateAuthorEntry(AuthorEntry currentAuthorEntry) throws IllegalArgumentException;
 	
-	int insertAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry) throws IllegalArgumentException;
+	AnnotatedBiblographyEntry insertAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry) throws IllegalArgumentException;
 	
 	ArrayList<AnnotatedBiblographyEntry> getAnnotatedBibliography() throws IllegalArgumentException;
 
@@ -249,7 +249,7 @@ public interface DatabaseService extends RemoteService {
 
 	ArrayList<AnnotatedBiblographyEntry> getAnnotatedBibliography(String sqlWhere) throws IllegalArgumentException;
 
-	boolean updateAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry) throws IllegalArgumentException;
+	AnnotatedBiblographyEntry updateAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry);
 	
 	ArrayList<OrnamentPositionEntry> getPositionbyWall (WallEntry wall) throws IllegalArgumentException;
 	
