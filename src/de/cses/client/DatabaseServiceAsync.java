@@ -219,7 +219,7 @@ public interface DatabaseServiceAsync {
 	 */
 	void updateAuthorEntry(AuthorEntry currentAuthorEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
-	void insertAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry, AsyncCallback<Integer> callback);
+	void insertAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry, AsyncCallback<AnnotatedBiblographyEntry> callback);
 
 	void getAuthors(AsyncCallback<ArrayList<AuthorEntry>> callback) throws IllegalArgumentException;// ?
 
@@ -273,7 +273,7 @@ public interface DatabaseServiceAsync {
 
 	void getAnnotatedBibliography(String sqlWhere, AsyncCallback<ArrayList<AnnotatedBiblographyEntry>> asyncCallback) throws IllegalArgumentException;
 
-	void updateAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
+	void updateAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry, AsyncCallback<AnnotatedBiblographyEntry> asyncCallback) throws IllegalArgumentException;
 	
 	void getPositionbyWall(WallEntry wall, AsyncCallback<ArrayList<OrnamentPositionEntry>> asyncCallback) throws IllegalArgumentException;
 

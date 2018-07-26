@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 
+ * Copyright 2017 - 2018
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -13,22 +13,23 @@
  */
 package de.cses.client.bibliography;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.sencha.gxt.dnd.core.client.DndDropEvent;
 import com.sencha.gxt.dnd.core.client.DropTarget;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
-import de.cses.client.DatabaseService;
-import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.ui.AbstractResultView;
+import de.cses.client.user.UserLogin;
+import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBiblographyEntry;
+import de.cses.shared.DepictionEntry;
 
 /**
  * @author Nina
  *
  */
-public class AnnotatedBiblographyResultView extends AbstractResultView{
-	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
+public class AnnotatedBiblographyResultView extends AbstractResultView {
 
 	/**
 	 * @param title
@@ -36,28 +37,37 @@ public class AnnotatedBiblographyResultView extends AbstractResultView{
 	public AnnotatedBiblographyResultView(String title) {
 		super(title);
 		
-//		DropTarget target = new DropTarget(this) {
-//
-//			@Override
-//			protected void onDragDrop(DndDropEvent event) {
-//				super.onDragDrop(event);
-//				if (event.getData() instanceof AnnotatedBiblographyEntry) {
-//					int bibID = ((AnnotatedBiblographyEntry) event.getData()).getAnnotatedBiblographyID();
-//					dbService.getAnnotatedBiblographybyID( bibID, new AsyncCallback<AnnotatedBiblographyEntry>() {
-//
-//						@Override
-//						public void onFailure(Throwable caught) { }
-//
-//						public void onSuccess(AnnotatedBiblographyEntry result) {
-//							
-//								addResult(new AnnotatedBiblographyView(result));
-//							
-//						}
-//					});
-//				}
-//			}
-//		};
+		ToolButton bibTexExportTB = new ToolButton(ToolButton.SAVE);
+		bibTexExportTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				String idStr = "all";
+				for (AbstractEntry e : getEntriesOnDisplay()) {
+					if (e instanceof AnnotatedBiblographyEntry) {
+						idStr = "all".equals(idStr) ? Integer.toString(((AnnotatedBiblographyEntry)e).getAnnotatedBiblographyID()) : idStr + "," + ((AnnotatedBiblographyEntry)e).getAnnotatedBiblographyID();
+					}
+				}
+				com.google.gwt.user.client.Window.open("/bibtex?bibID=" + idStr + UserLogin.getInstance().getUsernameSessionIDParameterForUri(),"_blank",null);
+			}
+
+		});
+		bibTexExportTB.setToolTip("Export search result in BibTeX format (empty window = export all)");
+		getHeader().addTool(bibTexExportTB);
+
+		new DropTarget(this) {
+
+			@Override
+			protected void onDragDrop(DndDropEvent event) {
+				super.onDragDrop(event);
+				if (event.getData() instanceof DepictionEntry) {
+					for (AnnotatedBiblographyEntry bibEntry : ((DepictionEntry) event.getData()).getRelatedBibliographyList()) {
+						addResult(new AnnotatedBiblographyView(bibEntry));
+					}
+				}
+			}
+		};
 	
 	}
-
+	
 }

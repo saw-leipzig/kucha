@@ -119,6 +119,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 	private DualListField<BibKeywordEntry, String> bibKeywordSelectionDLF;
 	private ComboBox<AnnotatedBiblographyEntry> firstEditionComboBox;
 	private DualListField<AuthorEntry, String> editorSelection;
+	private TextField bibtexKeyTF;
 
 //	interface PublisherViewTemplates extends XTemplates {
 //		@XTemplate("<div>{name}</div>")
@@ -211,27 +212,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		bibEntry.setKeywordList(selectedBibKeywordsList);
 
 		if (bibEntry.getAnnotatedBiblographyID() > 0) {
-			dbService.updateAnnotatedBiblographyEntry(bibEntry, new AsyncCallback<Boolean>() {
-
-				@Override
-				public void onFailure(Throwable caught) {
-					caught.printStackTrace();
-					Window.alert("Error while saving!");
-				}
-
-				@Override
-				public void onSuccess(Boolean result) {
-					if (result) {
-//						updateEntry(bibEntry);
-						if (close) {
-							closeEditor(bibEntry);
-						}
-					}
-				}
-
-			});
-		} else {
-			dbService.insertAnnotatedBiblographyEntry(bibEntry, new AsyncCallback<Integer>() {
+			dbService.updateAnnotatedBiblographyEntry(bibEntry, new AsyncCallback<AnnotatedBiblographyEntry>() {
 
 				@Override
 				public void onFailure(Throwable caught) {
@@ -240,8 +221,29 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				}
 
 				@Override
-				public void onSuccess(Integer result) {
-					bibEntry.setAnnotatedBiblographyID(result);
+				public void onSuccess(AnnotatedBiblographyEntry result) {
+					if (result!=null) {
+						bibtexKeyTF.setValue(result.getBibtexKey(), true);
+						if (close) {
+							closeEditor(bibEntry);
+						}
+					}
+				}
+
+			});
+		} else {
+			dbService.insertAnnotatedBiblographyEntry(bibEntry, new AsyncCallback<AnnotatedBiblographyEntry>() {
+
+				@Override
+				public void onFailure(Throwable caught) {
+					caught.printStackTrace();
+					Util.showWarning("Error", "A problem occured while saving!");
+				}
+
+				@Override
+				public void onSuccess(AnnotatedBiblographyEntry result) {
+					bibEntry.setAnnotatedBiblographyID(result.getAnnotatedBiblographyID());
+					bibtexKeyTF.setValue(result.getBibtexKey(), true);
 //					updateEntry(bibEntry);
 					if (close) {
 						closeEditor(bibEntry);
@@ -926,8 +928,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					return l;
 				}
 			});
-			VerticalLayoutContainer authorVLC = new VerticalLayoutContainer();
-			authorVLC.add(authorSelection, new VerticalLayoutData(1.0, .85));
+
 			authorListFilterField = new StoreFilterField<AuthorEntry>() {
 
 				@Override
@@ -936,7 +937,27 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				}
 			};
 			authorListFilterField.bind(authorListStore);
-			authorVLC.add(new FieldLabel(authorListFilterField, "Filter"), new VerticalLayoutData(.5, .15, new Margins(10, 20, 0, 0)));
+
+			bibtexKeyTF = new TextField();
+			bibtexKeyTF.setEmptyText("generated automatically when saved");
+			bibtexKeyTF.setAllowBlank(false);
+			bibtexKeyTF.setValue(bibEntry.getBibtexKey());
+			bibtexKeyTF.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+				@Override
+				public void onValueChange(ValueChangeEvent<String> event) {
+					bibEntry.setBibtexKey(event.getValue());
+				}
+			});
+			
+			HorizontalLayoutContainer filterBibTexKeyHLC = new HorizontalLayoutContainer();
+			filterBibTexKeyHLC.add(new FieldLabel(authorListFilterField, "Filter"), new HorizontalLayoutData(.5, 1.0, new Margins(0, 20, 0, 0)));
+			filterBibTexKeyHLC.add(new FieldLabel(bibtexKeyTF, "BibTex key"), new HorizontalLayoutData(.5, 1.0, new Margins(0, 0, 0, 20)));
+
+			VerticalLayoutContainer authorVLC = new VerticalLayoutContainer();
+			authorVLC.add(authorSelection, new VerticalLayoutData(1.0, .85));
+			authorVLC.add(filterBibTexKeyHLC, new VerticalLayoutData(1.0, .15, new Margins(10, 20, 0, 0)));
+
 			FramedPanel authorFP = new FramedPanel();
 			authorFP.setHeading("Author");
 			authorFP.add(authorVLC);
@@ -964,6 +985,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				}
 			};
 			editorListFilterField.bind(editorListStore);
+			
 			TextField editorTypeTF = new TextField();
 			editorTypeTF.setEmptyText("e.g. eds. / ed. / transl.");
 			editorTypeTF.setValue(bibEntry.getEditorType());

@@ -13,6 +13,7 @@
  */
 package de.cses.client.ui;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import com.google.gwt.user.client.ui.Widget;
@@ -158,6 +159,18 @@ public abstract class AbstractResultView extends Portlet {
 	public void reset() {
 		resultContainer.clear();
 		setHeading(title);
+	}
+	
+	public ArrayList<AbstractEntry> getEntriesOnDisplay() {
+		ArrayList<AbstractEntry> results = new ArrayList<AbstractEntry>();
+		Iterator<Widget> widgetIterator = resultContainer.iterator();
+		while (widgetIterator.hasNext()) {
+			Widget w = widgetIterator.next();
+			if (w instanceof AbstractView && ((AbstractView)w).getEntry() instanceof AbstractEntry) {
+				results.add(((AbstractView)w).getEntry());
+			}
+		}
+		return results;
 	}
 	
 //	/**

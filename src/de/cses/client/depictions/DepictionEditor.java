@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dev.jjs.ast.HasName.Util;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -1467,7 +1468,7 @@ public class DepictionEditor extends AbstractEditor {
 
 				@Override
 				public void onFailure(Throwable caught) {
-					caught.printStackTrace();
+					de.cses.client.Util.doLogging(caught.getLocalizedMessage());
 				}
 			});
 		} else {
@@ -1475,7 +1476,7 @@ public class DepictionEditor extends AbstractEditor {
 
 				@Override
 				public void onFailure(Throwable caught) {
-					caught.printStackTrace();
+					de.cses.client.Util.doLogging(caught.getLocalizedMessage());
 				}
 
 				@Override

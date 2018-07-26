@@ -49,6 +49,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 	private String thesisType="";
 	private String editorType="";
 	private boolean officialTitleTranslation = false;
+	private String bibtexKey="";
 	private ArrayList<AuthorEntry> authorList = new ArrayList<AuthorEntry>();
 	private ArrayList<AuthorEntry> editorList = new ArrayList<AuthorEntry>();
 	private ArrayList<BibKeywordEntry> keywordList = new ArrayList<BibKeywordEntry>();
@@ -69,7 +70,9 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 			int yearEN, String yearORG, String yearTR, 
 			String monthEN, String monthORG, String monthTR, 
 			String pagesEN, String pagesORG, String pagesTR, 
-			String comments, String notes, String url, String uri, boolean unpublished, int firstEditionBibID, boolean openAccess, String abstractText, String thesisType, String editorType, boolean officialTitleTranslation) {
+			String comments, String notes, String url, String uri, boolean unpublished, int firstEditionBibID, 
+			boolean openAccess, String abstractText, String thesisType, String editorType, boolean officialTitleTranslation,
+			String bibtexKey) {
 		super();
 		this.annotatedBiblographyID = annotatedBiblographyID;
 		this.publicationType = publicationType;
@@ -127,6 +130,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 		this.thesisType = thesisType;
 		this.editorType = editorType;
 		this.officialTitleTranslation = officialTitleTranslation;
+		this.bibtexKey = bibtexKey;
 	}
 
 	public AnnotatedBiblographyEntry() { }
@@ -148,7 +152,8 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 				yearEN, yearORG, yearTR, 
 				monthEN, monthORG, monthTR,  
 				pagesEN, pagesORG, pagesTR, 
-				comments, notes, url, uri, unpublished, firstEditionBibID, openAccess, abstractText, thesisType, editorType, officialTitleTranslation);
+				comments, notes, url, uri, unpublished, firstEditionBibID, openAccess, 
+				abstractText, thesisType, editorType, officialTitleTranslation, bibtexKey);
 		ArrayList<AuthorEntry> clonedAuthorList = new ArrayList<AuthorEntry>();
 		for (AuthorEntry ae : this.authorList) {
 			clonedAuthorList.add(ae);
@@ -766,9 +771,9 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 
 	@Override
 	public String getUniqueID() {
-		return "AnnotatedBibliography-" + annotatedBiblographyID;
+		return "AnnotatedBibliography." + annotatedBiblographyID;
 	}
-
+	
 	/**
 	 * @return the annotatedBiblographyID
 	 */
@@ -981,6 +986,23 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 
 	public void setOfficialTitleTranslation(boolean officialTitleTranslation) {
 		this.officialTitleTranslation = officialTitleTranslation;
+	}
+	
+	public String getTitleFull() {
+		String result = subtitleORG.isEmpty() ? titleORG : titleORG + ": " + subtitleORG;
+		if (!titleEN.isEmpty()) {
+			String translation = subtitleEN.isEmpty() ? titleEN : titleEN + ": " + subtitleEN;
+			result += officialTitleTranslation ? " (" + translation + ")" : " [" + translation + "]";
+		}
+		return result;
+	}
+
+	public String getBibtexKey() {
+		return bibtexKey;
+	}
+
+	public void setBibtexKey(String bibtexKey) {
+		this.bibtexKey = bibtexKey;
 	}
 
 }
