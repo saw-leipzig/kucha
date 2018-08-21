@@ -1785,6 +1785,7 @@ public class MysqlConnector {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		result.sort(null);
 		return result;
 	}
 
@@ -1834,6 +1835,7 @@ public class MysqlConnector {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		result.sort(null);
 		return result;
 	}
 

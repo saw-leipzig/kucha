@@ -55,6 +55,8 @@ public class AnnotatedBiblographySearchController extends AbstractSearchControll
 	private PublicationTypeProperties publicationTypeProps;
 	private ListStore<PublicationTypeEntry> publicationTypeListStore;
 	protected PublicationTypeEntry publicationType = null;
+	private ArrayList<AnnotatedBiblographyEntry> searchResultList = null;
+	
 
 	interface PublicationTypeViewTemplates extends XTemplates {
 		@XTemplate("<div>{name}</div>")
