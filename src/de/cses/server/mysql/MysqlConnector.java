@@ -22,6 +22,7 @@ import java.sql.Statement;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -1740,7 +1741,7 @@ public class MysqlConnector {
 
 	/**
 	 * @param sqlWhere
-	 * @return
+	 * @return sorted list based on implementation of {@link #Comparable} in {@link #AnnotatedBiblographyEntry}
 	 */
 	public ArrayList<AnnotatedBiblographyEntry> getAnnotatedBibliography(String sqlWhere) {
 
@@ -1784,14 +1785,14 @@ public class MysqlConnector {
 			stmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}
-		result.sort(null);
+		} 
+		result.sort(null); // because AnnotatedBiblographyEntry implements Comparable
 		return result;
 	}
 
 	/**
 	 * @param authorList
-	 * @return
+	 * @return sorted list based on implementation of {@link #Comparable} in {@link #AnnotatedBiblographyEntry}
 	 */
 	public ArrayList<AnnotatedBiblographyEntry> getAnnotatedBibliographyFromAuthors(ArrayList<AuthorEntry> authorList) {
 		AnnotatedBiblographyEntry entry;
@@ -1835,7 +1836,7 @@ public class MysqlConnector {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		result.sort(null);
+		result.sort(null); // because AnnotatedBiblographyEntry implements Comparable
 		return result;
 	}
 
