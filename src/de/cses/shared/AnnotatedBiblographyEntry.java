@@ -19,7 +19,7 @@ import java.util.ArrayList;
  * @author Nina
  *
  */
-public class AnnotatedBiblographyEntry extends AbstractEntry {
+public class AnnotatedBiblographyEntry extends AbstractEntry implements Comparable<AnnotatedBiblographyEntry> {
 
 	private int annotatedBiblographyID = 0;
 	private PublicationTypeEntry publicationType = null;
@@ -1003,6 +1003,16 @@ public class AnnotatedBiblographyEntry extends AbstractEntry {
 
 	public void setBibtexKey(String bibtexKey) {
 		this.bibtexKey = bibtexKey;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	@Override
+	public int compareTo(AnnotatedBiblographyEntry bibEntry) {
+		String toString = !bibEntry.authorList.isEmpty() ? bibEntry.getAuthors() : (!bibEntry.getEditorList().isEmpty() ? bibEntry.getEditors(): "");
+		String fromString = !authorList.isEmpty() ? getAuthors() : (!getEditorList().isEmpty() ? getEditors(): "");
+		return fromString.compareTo(toString);
 	}
 
 }
