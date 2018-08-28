@@ -9,6 +9,7 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -382,7 +383,72 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 			}
 		});
 		header.addTool(addOrnamentClassButton);
+		
+		ToolButton renameOrnamentClassButton = new ToolButton(ToolButton.REFRESH);
+		
+		FramedPanel renameornamentClassFramedPanel = new FramedPanel();
+		renameornamentClassFramedPanel.setHeading("New Ornament Class");
 
+		ToolButton saveRenameOrnamentClass = new ToolButton(ToolButton.SAVE);
+		renameornamentClassFramedPanel.add(saveRenameOrnamentClass);
+
+		ToolButton cancelRenameOrnamentClass = new ToolButton(ToolButton.CLOSE);
+
+		ornamentClassFramedPanel.addTool(cancelRenameOrnamentClass);
+		ornamentClassFramedPanel.addTool(saveRenameOrnamentClass);
+
+		HorizontalLayoutContainer renameOrnamentClassLayoutPanel = new HorizontalLayoutContainer();
+		TextField renameOrnamentClassTextField = new TextField();
+		newOrnamentClassLayoutPanel.add(renameOrnamentClassTextField);
+		ornamentClassFramedPanel.add(renameOrnamentClassLayoutPanel);
+		
+		renameOrnamentClassButton.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				if(ornamentClassComboBox.getValue() == null) {
+					Window.alert("Please select an item to rename");
+				}
+				else {
+				PopupPanel renameOrnamentClassPopup = new PopupPanel();
+				renameOrnamentClassPopup.add(renameornamentClassFramedPanel);
+				renameornamentClassFramedPanel.setSize("150", "80");
+				renameOrnamentClassPopup.center();
+				renameOrnamentClassTextField.setText(ornamentClassComboBox.getSelectedText());
+				cancelOrnamentClass.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						renameOrnamentClassPopup.hide();
+					}
+				});
+				saveOrnamentClass.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						
+						OrnamentClassEntry entry = 	ornamentClassComboBox.getValue();
+						entry.setName(renameOrnamentClassTextField.getText());
+						dbService.renameOrnamentClass(entry, new AsyncCallback<OrnamentClassEntry>() {
+
+							public void onFailure(Throwable caught) {
+								caught.printStackTrace();
+							}
+
+							@Override
+							public void onSuccess(OrnamentClassEntry result) {
+								Util.doLogging(this.getClass().getName() + " renamed " + result.getName());
+								renameOrnamentClassPopup.hide();
+							}
+						});
+						renameOrnamentClassPopup.hide();
+					}
+				});
+
+			}
+		}});
+		
+		header.addTool(renameOrnamentClassButton);
 		// wird eventuell mal privat oder geloescht
 		/*
 		 * structureorganizationComboBox = new ComboBox<StructureOrganization>(structureOrganization, structureOrganizationProps.name(), new
@@ -706,6 +772,72 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 			}
 		});
 
+		ToolButton renameComponentButton = new ToolButton(ToolButton.PLUS);
+		header.addTool(renameComponentButton);
+		renameComponentButton.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				if(ornamentComponentView.getSelectionModel().getSelectedItem() == null) {
+					Window.alert("Please select an item to rename");
+					
+				}
+				else {
+				PopupPanel renameComponentPopup = new PopupPanel();
+				FramedPanel renamecomponentFramedPanel = new FramedPanel();
+				renamecomponentFramedPanel.setHeading("New Component");
+
+				ToolButton saveRenameComponent = new ToolButton(ToolButton.SAVE);
+				renamecomponentFramedPanel.addTool(saveRenameComponent);
+
+				ToolButton cancelRenameComponent = new ToolButton(ToolButton.CLOSE);
+
+				renamecomponentFramedPanel.addTool(cancelRenameComponent);
+
+				HorizontalLayoutContainer renameComponentLayoutPanel = new HorizontalLayoutContainer();
+				TextField renameComponentTextField = new TextField();
+				renameComponentLayoutPanel.add(renameComponentTextField);
+				renamecomponentFramedPanel.add(renameComponentLayoutPanel);
+				
+				renameComponentPopup.add(renamecomponentFramedPanel);
+				renameComponentPopup.setSize("150px", "80px");
+				renameComponentPopup.center();
+				
+				renameComponentTextField.setText(ornamentComponentView.getSelectionModel().getSelectedItem().getName());
+
+				cancelRenameComponent.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						renameComponentPopup.hide();
+					}
+				});
+				saveRenameComponent.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						OrnamentComponentsEntry entry = new OrnamentComponentsEntry();
+						entry.setName(renameComponentTextField.getText());
+						
+
+						dbService.renameOrnamentComponents(entry, new AsyncCallback<OrnamentComponentsEntry>() {
+
+							public void onFailure(Throwable caught) {
+								caught.printStackTrace();
+							}
+
+							@Override
+							public void onSuccess(OrnamentComponentsEntry result) {
+								Util.doLogging(this.getClass().getName() + " renaming sucessful");
+								renameComponentPopup.hide();
+							}
+						});
+					}
+				});
+			}
+		}});
+		
+		
 		HorizontalLayoutContainer innerSecondaryPatternsHorizontalPanel = new HorizontalLayoutContainer();
 
 		ListView<InnerSecondaryPatternsEntry, String> innerSecondaryPatternsView = new ListView<InnerSecondaryPatternsEntry, String>(

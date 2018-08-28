@@ -3550,6 +3550,41 @@ public class MysqlConnector {
 		return entry;
 	}
 
+	public OrnamentClassEntry renameOrnamentClass(OrnamentClassEntry ornamentClass) {
+		Connection dbc = getConnection();
+		OrnamentClassEntry entry = null;
+
+		PreparedStatement stmt;
+		try {
+			stmt = dbc.prepareStatement("UPDATE OrnamentClass SET Name = ? WHERE VALUES OrnamentClassID = ?");
+			stmt.setString(1, ornamentClass.getName());
+			stmt.setInt(1, ornamentClass.getOrnamentClassID());
+			stmt.executeUpdate();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return entry;
+		}
+		return entry;
+	}
+	
+	public OrnamentComponentsEntry renameOrnamentComponents(OrnamentComponentsEntry ornamentComponents) {
+		Connection dbc = getConnection();
+		OrnamentComponentsEntry entry = null;
+
+		PreparedStatement stmt;
+		try {
+			stmt = dbc.prepareStatement("UPDATE OrnamentComponents SET Name = ? WHERE VALUES OrnamentComponentsID = ?");
+			stmt.setString(1, ornamentComponents.getName());
+			stmt.setInt(1, ornamentComponents.getOrnamentComponentsID());
+			stmt.executeUpdate();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return entry;
+		}
+		return entry;
+	}
 	public InnerSecondaryPatternsEntry addInnerSecondaryPatterns(InnerSecondaryPatternsEntry innerSecPattern) {
 		Connection dbc = getConnection();
 		InnerSecondaryPatternsEntry entry;

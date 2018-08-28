@@ -885,4 +885,21 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.deleteAuthorEntry(selectedEntry);
 	}
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#renameOrnamentClass(de.cses.shared.OrnamentClassEntry)
+	 */
+	@Override
+	public OrnamentClassEntry renameOrnamentClass(OrnamentClassEntry entry) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.renameOrnamentClass(entry);// TODO Auto-generated method stub
+		
+	}
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#renameOrnamentComponents(de.cses.shared.OrnamentComponentsEntry)
+	 */
+	@Override
+	public OrnamentComponentsEntry renameOrnamentComponents(OrnamentComponentsEntry entry) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.renameOrnamentComponents(entry);
+	}
 }
