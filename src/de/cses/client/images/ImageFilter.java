@@ -32,6 +32,7 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.Verti
 import com.sencha.gxt.widget.core.client.form.DualListField;
 import com.sencha.gxt.widget.core.client.form.Radio;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 
 import de.cses.client.StaticTables;
 import de.cses.client.ui.AbstractFilter;
@@ -86,17 +87,24 @@ public class ImageFilter extends AbstractFilter {
 	protected Widget getFilterUI() {
 		VerticalLayoutContainer vlc = new VerticalLayoutContainer();
 
+		// TODO 
 		titleSearch = new TextField();
+		titleSearch.addValidator(new RegExValidator("^[a-zA-Z0-9 ]*$", "We are working on a new search interface. Currently only letters and numbers are allowed."));
+		titleSearch.setAutoValidate(true);
 		titleSearch.setValue("");
 		titleSearch.setEmptyText("search image title");
 		vlc.add(titleSearch, new VerticalLayoutData(1.0, .125));
 
 		shortnameSearch = new TextField();
+		shortnameSearch.addValidator(new RegExValidator("^[a-zA-Z0-9 ]*$", "We are working on a new search interface. Currently only letters and numbers are allowed."));
+		shortnameSearch.setAutoValidate(true);
 		shortnameSearch.setValue("");
 		shortnameSearch.setEmptyText("search image short name");
 		vlc.add(shortnameSearch, new VerticalLayoutData(1.0, .125));
 
 		copyrightSearch = new TextField();
+		copyrightSearch.addValidator(new RegExValidator("^[a-zA-Z0-9 ]*$", "We are working on a new search interface. Currently only letters and numbers are allowed."));
+		copyrightSearch.setAutoValidate(true);
 		copyrightSearch.setValue("");
 		copyrightSearch.setEmptyText("search image copyright");
 		vlc.add(copyrightSearch, new VerticalLayoutData(1.0, .125));
@@ -137,14 +145,14 @@ public class ImageFilter extends AbstractFilter {
 		ArrayList<String> result = new ArrayList<String>();
 		String textFieldQuery = "";
 		
-		if (!titleSearch.getValue().isEmpty()) {
+		if (!titleSearch.getValue().isEmpty() && titleSearch.validate()) {
 			textFieldQuery = "Title LIKE '%" + titleSearch.getValue() + "%'";
 		}
-		if (!shortnameSearch.getValue().isEmpty()) {
+		if (!shortnameSearch.getValue().isEmpty() && shortnameSearch.validate()) {
 			textFieldQuery = textFieldQuery.concat((!textFieldQuery.isEmpty() ? (andSearch.getValue() ? " AND " : " OR ") : "")
 					+ "ShortName LIKE '%" + shortnameSearch.getValue() + "%'");
 		}
-		if (!copyrightSearch.getValue().isEmpty()) {
+		if (!copyrightSearch.getValue().isEmpty() && copyrightSearch.validate()) {
 			textFieldQuery = textFieldQuery.concat((!textFieldQuery.isEmpty() ? (andSearch.getValue() ? " AND " : " OR ") : "")
 					+ "Copyright LIKE '%" + copyrightSearch.getValue() + "%'");
 		}

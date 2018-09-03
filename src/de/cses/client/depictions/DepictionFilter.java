@@ -43,6 +43,7 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.IntegerSpinnerField;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -225,6 +226,9 @@ public class DepictionFilter extends AbstractFilter {
 		
 		shortNameSearch = new TextField();
 		shortNameSearch.setEmptyText("search short name");
+		// TODO 
+		shortNameSearch.addValidator(new RegExValidator("^[a-zA-Z0-9 ]*$", "We are working on a new search interface. Currently only letters and numbers are allowed."));
+		shortNameSearch.setAutoValidate(true);
 
 		FramedPanel shortNamePanel = new FramedPanel();
 		shortNamePanel.setHeading("Shortname search");

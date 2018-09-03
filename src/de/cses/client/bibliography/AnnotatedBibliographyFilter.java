@@ -19,6 +19,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 
 import de.cses.client.ui.AbstractFilter;
 
@@ -46,8 +47,16 @@ public class AnnotatedBibliographyFilter extends AbstractFilter {
 	protected Widget getFilterUI() {
 		authorNameTF = new TextField();
 		authorNameTF.setEmptyText("search in author or institute");
+		// TODO 
+		authorNameTF.addValidator(new RegExValidator("^[a-zA-Z0-9 ]*$", "We are working on a new search interface. Currently only letters and numbers are allowed."));
+		authorNameTF.setAutoValidate(true);
+		
 		titleTF = new TextField();
 		titleTF.setEmptyText("search in title (orig./eng./trans.)");
+		// TODO 
+		titleTF.addValidator(new RegExValidator("^[a-zA-Z0-9 ]*$", "We are working on a new search interface. Currently only letters and numbers are allowed."));
+		titleTF.setAutoValidate(true);
+
 		VerticalLayoutContainer bibFilterVLC = new VerticalLayoutContainer();
 		bibFilterVLC.add(authorNameTF, new VerticalLayoutData(1.0, .5));
 		bibFilterVLC.add(titleTF, new VerticalLayoutData(1.0, .5));
