@@ -69,5 +69,9 @@ public class CaveSketchEntry extends AbstractEntry {
 	public void setCaveID(int caveID) {
 		this.caveID = caveID;
 	}
+	
+	public String getCaveSketchFilename() {
+		return caveSketchID + "." + imageType;
+	}
 
 }
