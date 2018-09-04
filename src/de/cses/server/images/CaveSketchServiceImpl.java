@@ -30,6 +30,8 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import de.cses.server.ServerProperties;
+import de.cses.server.mysql.MysqlConnector;
+import de.cses.shared.CaveSketchEntry;
 
 /**
  * This HttpServlet is used to upload images to the server's cave sketch directory. It also creates a new entry in the Images table of the database.
@@ -41,6 +43,7 @@ import de.cses.server.ServerProperties;
 @MultipartConfig
 public class CaveSketchServiceImpl extends HttpServlet {
 
+	private MysqlConnector connector = MysqlConnector.getInstance();
 	private ServerProperties serverProperties = ServerProperties.getInstance();
 
 	public CaveSketchServiceImpl() {
@@ -56,6 +59,7 @@ public class CaveSketchServiceImpl extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String uploadFileName;
 		String fileType, filename = null;
+		int caveID = 0;
 
 		response.setContentType("text/plain");
 		File imgHomeDir = new File(serverProperties.getProperty("home.cavesketches"));
@@ -73,16 +77,19 @@ public class CaveSketchServiceImpl extends HttpServlet {
 				uploadFileName = item.getName();
 				// we take the sub dir from the field name which corresponds with the
 				// purpose of the upload (e.g. depictions, backgrounds, ...)
-				fileType = uploadFileName.substring(uploadFileName.lastIndexOf(".")).toLowerCase();
+				fileType = uploadFileName.substring(uploadFileName.lastIndexOf(".") + 1).toLowerCase();
+				caveID = Integer.parseInt(request.getParameter("caveID"));
 				if (item.isFormField()) {
 					throw new ServletException("Unsupported non-file property [" + item.getFieldName() + "] with value: " + item.getString());
-				} else {
-					filename = request.getParameter("caveID") + fileType;
+				} else if (caveID>0) {
+					CaveSketchEntry newEntry = new CaveSketchEntry(0, caveID, fileType);
+					filename = caveID + "." + fileType;
 					System.err.println("writing filename " + filename);
 					target = new File(imgHomeDir, filename);
 					item.write(target);
 					item.delete();
-					response.getWriter().write(String.valueOf(filename));
+					int newCaveSketchID = connector.insertCaveSketchEntry(newEntry);
+					response.getWriter().write(Integer.toString(newCaveSketchID));
 					response.getWriter().close();
 				}
 			}

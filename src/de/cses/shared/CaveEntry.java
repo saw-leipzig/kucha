@@ -44,6 +44,7 @@ public class CaveEntry extends AbstractEntry {
 	private ArrayList<WallEntry> wallList = new ArrayList<WallEntry>();
 	private ArrayList<C14AnalysisUrlEntry> c14AnalysisUrlList = new ArrayList<C14AnalysisUrlEntry>();
 	private ArrayList<C14DocumentEntry> c14DocumentList = new ArrayList<C14DocumentEntry>();
+	private ArrayList<CaveSketchEntry> caveSketchList = new ArrayList<CaveSketchEntry>();
 
 	public CaveEntry() { 	}
 
@@ -406,6 +407,14 @@ public class CaveEntry extends AbstractEntry {
 
 	public void setSiteID(int siteID) {
 		this.siteID = siteID;
+	}
+
+	public ArrayList<CaveSketchEntry> getCaveSketchList() {
+		return caveSketchList;
+	}
+
+	public void setCaveSketchList(ArrayList<CaveSketchEntry> caveSketchList) {
+		this.caveSketchList = caveSketchList;
 	}
 	
 }
