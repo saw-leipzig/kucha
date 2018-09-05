@@ -32,6 +32,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
@@ -63,6 +64,7 @@ import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.DualListField;
 import com.sencha.gxt.widget.core.client.form.DualListField.Mode;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
+import com.sencha.gxt.widget.core.client.form.FieldLabel.FieldLabelAppearance;
 import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
@@ -368,10 +370,11 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			@Override
 			public void onSelect(SelectEvent event) {
 				Dialog d = new Dialog();
+				d.setClosable(false);
 				d.setHeading("Exit Warning!");
 				d.setWidget(new HTML("Do you wish to save before exiting?"));
 				d.setBodyStyle("fontWeight:bold;padding:13px;");
-				d.setPixelSize(300, 100);
+//				d.setPixelSize(300, 100);
 				d.setHideOnButtonClick(true);
 				d.setPredefinedButtons(PredefinedButton.YES, PredefinedButton.NO, PredefinedButton.CANCEL);
 				d.setModal(true);
@@ -951,12 +954,14 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			});
 			
 			HorizontalLayoutContainer filterBibTexKeyHLC = new HorizontalLayoutContainer();
-			filterBibTexKeyHLC.add(new FieldLabel(authorListFilterField, "Filter"), new HorizontalLayoutData(.5, 1.0, new Margins(0, 20, 0, 0)));
-			filterBibTexKeyHLC.add(new FieldLabel(bibtexKeyTF, "BibTex key"), new HorizontalLayoutData(.5, 1.0, new Margins(0, 0, 0, 20)));
+			filterBibTexKeyHLC.add(new HTML("<span style='font: 12px tahoma,arial,verdana,sans-serif;'>Filter:</span>", true), new HorizontalLayoutData(.15, 1.0, new Margins(0, 0, 0, 0)));
+			filterBibTexKeyHLC.add(authorListFilterField, new HorizontalLayoutData(.35, 1.0, new Margins(0, 20, 0, 0)));
+			filterBibTexKeyHLC.add(new HTML("<span style='font: 12px tahoma,arial,verdana,sans-serif;'>BibTex key:</span>", true), new HorizontalLayoutData(.15, 1.0, new Margins(0, 0, 0, 20)));
+			filterBibTexKeyHLC.add(bibtexKeyTF, new HorizontalLayoutData(.35, 1.0, new Margins(0, 0, 0, 0)));
 
 			VerticalLayoutContainer authorVLC = new VerticalLayoutContainer();
 			authorVLC.add(authorSelection, new VerticalLayoutData(1.0, .85));
-			authorVLC.add(filterBibTexKeyHLC, new VerticalLayoutData(1.0, .15, new Margins(10, 20, 0, 0)));
+			authorVLC.add(filterBibTexKeyHLC, new VerticalLayoutData(1.0, .15, new Margins(10, 0, 0, 0)));
 
 			FramedPanel authorFP = new FramedPanel();
 			authorFP.setHeading("Author");
@@ -998,8 +1003,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			});
 			
 			HorizontalLayoutContainer filterEditorTypeHLC = new HorizontalLayoutContainer();
-			filterEditorTypeHLC.add(new FieldLabel(editorListFilterField, "Filter"), new HorizontalLayoutData(.5, 1.0, new Margins(0, 20, 0, 0)));
-			filterEditorTypeHLC.add(new FieldLabel(editorTypeTF, "Editor type"), new HorizontalLayoutData(.5, 1.0, new Margins(0, 0, 0, 20)));
+			filterEditorTypeHLC.add(new HTML("<span style='font: 12px tahoma,arial,verdana,sans-serif;'>Filter:</span>", true), new HorizontalLayoutData(.15, 1.0, new Margins(0, 0, 0, 0)));
+			filterEditorTypeHLC.add(editorListFilterField, new HorizontalLayoutData(.35, 1.0, new Margins(0, 20, 0, 0)));
+			filterEditorTypeHLC.add(new HTML("<span style='font: 12px tahoma,arial,verdana,sans-serif;'>Editor type:</span>", true), new HorizontalLayoutData(.15, 1.0, new Margins(0, 0, 0, 20)));
+			filterEditorTypeHLC.add(editorTypeTF, new HorizontalLayoutData(.35, 1.0, new Margins(0, 0, 0, 0)));
 			
 			editorVLC.add(filterEditorTypeHLC, new VerticalLayoutData(1.0, .15, new Margins(10, 0, 0, 0)));
 
@@ -1035,6 +1042,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					});
 					addAuthorDialog.add(aEditor);
 					addAuthorDialog.setModal(true);
+					addAuthorDialog.setGlassEnabled(true);
 					addAuthorDialog.center();
 				}
 			});

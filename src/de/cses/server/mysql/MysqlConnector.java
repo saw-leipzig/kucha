@@ -632,6 +632,7 @@ public class MysqlConnector {
 				result.setWallList(getWalls(result.getCaveID()));
 				result.setC14AnalysisUrlList(getC14AnalysisEntries(result.getCaveID()));
 				result.setC14DocumentList(getC14Documents(result.getCaveID()));
+				result.setCaveSketchList(getCaveSketchEntriesFromCave(result.getCaveID()));
 			}
 			rs.close();
 			stmt.close();
@@ -663,6 +664,7 @@ public class MysqlConnector {
 				ce.setWallList(getWalls(ce.getCaveID()));
 				ce.setC14AnalysisUrlList(getC14AnalysisEntries(ce.getCaveID()));
 				ce.setC14DocumentList(getC14Documents(ce.getCaveID()));
+				ce.setCaveSketchList(getCaveSketchEntriesFromCave(ce.getCaveID()));
 				results.add(ce);
 			}
 			rs.close();
@@ -2289,8 +2291,11 @@ public class MysqlConnector {
 		try {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM CaveSketches WHERE CaveID=" + caveID);
+			CaveSketchEntry cse;
 			while (rs.next()) {
-				result.add(new CaveSketchEntry(rs.getInt("CaveSketchID"), caveID, rs.getString("ImageType")));
+				cse = new CaveSketchEntry(rs.getInt("CaveSketchID"), caveID, rs.getString("ImageType"));
+				result.add(cse);
+				System.err.println("getCaveSketchEntriesFromCave(" + caveID + ")" + cse.getCaveSketchFilename());
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
