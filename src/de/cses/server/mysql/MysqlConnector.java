@@ -2285,7 +2285,7 @@ public class MysqlConnector {
 	}
 	
 	private ArrayList<CaveSketchEntry> getCaveSketchEntriesFromCave(int caveID) {
-		ArrayList<CaveSketchEntry> result = new ArrayList<CaveSketchEntry>();
+		ArrayList<CaveSketchEntry> results = new ArrayList<CaveSketchEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
 		try {
@@ -2294,14 +2294,13 @@ public class MysqlConnector {
 			CaveSketchEntry cse;
 			while (rs.next()) {
 				cse = new CaveSketchEntry(rs.getInt("CaveSketchID"), caveID, rs.getString("ImageType"));
-				result.add(cse);
-				System.err.println("getCaveSketchEntriesFromCave(" + caveID + ")" + cse.getCaveSketchFilename());
+				results.add(cse);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
 		}
-		return result;
+		return results;
 	}
 
 	/**

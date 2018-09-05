@@ -83,12 +83,13 @@ public class CaveSketchServiceImpl extends HttpServlet {
 					throw new ServletException("Unsupported non-file property [" + item.getFieldName() + "] with value: " + item.getString());
 				} else if (caveID>0) {
 					CaveSketchEntry newEntry = new CaveSketchEntry(0, caveID, fileType);
-					filename = caveID + "." + fileType;
+					int newCaveSketchID = connector.insertCaveSketchEntry(newEntry);
+					newEntry.setCaveSketchID(newCaveSketchID);
+					filename = newEntry.getCaveSketchFilename();
 					System.err.println("writing filename " + filename);
 					target = new File(imgHomeDir, filename);
 					item.write(target);
 					item.delete();
-					int newCaveSketchID = connector.insertCaveSketchEntry(newEntry);
 					response.getWriter().write(Integer.toString(newCaveSketchID));
 					response.getWriter().close();
 				}

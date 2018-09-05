@@ -103,6 +103,11 @@ public class CaveEntry extends AbstractEntry {
 			clonedC14DocumentList.add(c14DocEntry);
 		}
 		clonedCE.setC14DocumentList(clonedC14DocumentList);
+		ArrayList<CaveSketchEntry> clonedCaveSketchList = new ArrayList<CaveSketchEntry>();
+		for (CaveSketchEntry csEntry : caveSketchList) {
+			clonedCaveSketchList.add(csEntry);
+		}
+		clonedCE.setCaveSketchList(clonedCaveSketchList);
 		return clonedCE;
 	}
 
