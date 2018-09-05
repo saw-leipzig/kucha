@@ -92,6 +92,7 @@ import de.cses.shared.C14DocumentEntry;
 import de.cses.shared.CaveAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveGroupEntry;
+import de.cses.shared.CaveSketchEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
 import de.cses.shared.DistrictEntry;
@@ -398,12 +399,18 @@ public class CaveEditor extends AbstractEditor {
 
 	private void refreshCaveSketchFLC(String caveTypeSketchName, String optionalCaveSketchName) {
 		caveSketchFLC.clear();
-		if ((optionalCaveSketchName != null) && !optionalCaveSketchName.isEmpty()) {
+		for (CaveSketchEntry cse : correspondingCaveEntry.getCaveSketchList()) {
 			caveSketchFLC.add(
 					new HTMLPanel(caveLayoutViewTemplates.image(UriUtils.fromString(
-							"resource?cavesketch=" + optionalCaveSketchName + UserLogin.getInstance().getUsernameSessionIDParameterForUri()))),
+							"resource?cavesketch=" + cse.getCaveSketchFilename() + UserLogin.getInstance().getUsernameSessionIDParameterForUri()))),
 					new MarginData(5));
 		}
+//		if ((optionalCaveSketchName != null) && !optionalCaveSketchName.isEmpty()) {
+//			caveSketchFLC.add(
+//					new HTMLPanel(caveLayoutViewTemplates.image(UriUtils.fromString(
+//							"resource?cavesketch=" + optionalCaveSketchName + UserLogin.getInstance().getUsernameSessionIDParameterForUri()))),
+//					new MarginData(5));
+//		}
 		if ((caveTypeSketchName != null) && !caveTypeSketchName.isEmpty()) {
 			caveSketchFLC.add(
 					new HTMLPanel(caveLayoutViewTemplates.image(UriUtils

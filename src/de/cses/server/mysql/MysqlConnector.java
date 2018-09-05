@@ -36,6 +36,7 @@ import de.cses.shared.C14DocumentEntry;
 import de.cses.shared.CaveAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveGroupEntry;
+import de.cses.shared.CaveSketchEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
 import de.cses.shared.CurrentLocationEntry;
@@ -276,7 +277,7 @@ public class MysqlConnector {
 		}
 		return entry;
 	}
-
+	
 	/**
 	 * 
 	 * @param caveID
@@ -598,6 +599,7 @@ public class MysqlConnector {
 				ce.setWallList(getWalls(ce.getCaveID()));
 				ce.setC14AnalysisUrlList(getC14AnalysisEntries(ce.getCaveID()));
 				ce.setC14DocumentList(getC14Documents(ce.getCaveID()));
+				ce.setCaveSketchList(getCaveSketchEntriesFromCave(ce.getCaveID()));
 				results.add(ce);
 			}
 			rs.close();
@@ -630,6 +632,7 @@ public class MysqlConnector {
 				result.setWallList(getWalls(result.getCaveID()));
 				result.setC14AnalysisUrlList(getC14AnalysisEntries(result.getCaveID()));
 				result.setC14DocumentList(getC14Documents(result.getCaveID()));
+				result.setCaveSketchList(getCaveSketchEntriesFromCave(result.getCaveID()));
 			}
 			rs.close();
 			stmt.close();
@@ -661,6 +664,7 @@ public class MysqlConnector {
 				ce.setWallList(getWalls(ce.getCaveID()));
 				ce.setC14AnalysisUrlList(getC14AnalysisEntries(ce.getCaveID()));
 				ce.setC14DocumentList(getC14Documents(ce.getCaveID()));
+				ce.setCaveSketchList(getCaveSketchEntriesFromCave(ce.getCaveID()));
 				results.add(ce);
 			}
 			rs.close();
@@ -2248,6 +2252,55 @@ public class MysqlConnector {
 			return 0;
 		}
 		return newCaveID;
+	}
+
+	/**
+	 * 
+	 * @param entry
+	 * @return
+	 */
+	public synchronized int insertCaveSketchEntry(CaveSketchEntry entry) {
+		int newCaveSketchID = 0;
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement(
+					"INSERT INTO CaveSketches (CaveID, ImageType) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
+			pstmt.setInt(1, entry.getCaveID());
+			pstmt.setString(2, entry.getImageType());
+			pstmt.executeUpdate();
+			ResultSet keys = pstmt.getGeneratedKeys();
+			if (keys.next()) { // there should only be 1 key returned here
+				newCaveSketchID = keys.getInt(1);
+			}
+
+			keys.close();
+			pstmt.close();
+
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			return 0;
+		}
+		return newCaveSketchID;
+	}
+	
+	private ArrayList<CaveSketchEntry> getCaveSketchEntriesFromCave(int caveID) {
+		ArrayList<CaveSketchEntry> results = new ArrayList<CaveSketchEntry>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM CaveSketches WHERE CaveID=" + caveID);
+			CaveSketchEntry cse;
+			while (rs.next()) {
+				cse = new CaveSketchEntry(rs.getInt("CaveSketchID"), caveID, rs.getString("ImageType"));
+				results.add(cse);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return results;
 	}
 
 	/**
