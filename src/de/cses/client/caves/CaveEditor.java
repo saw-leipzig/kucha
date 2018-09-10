@@ -397,7 +397,7 @@ public class CaveEditor extends AbstractEditor {
 		loadCaveGroups();
 	}
 
-	private void refreshCaveSketchFLC(String caveTypeSketchName, String optionalCaveSketchName) {
+	private void refreshCaveSketchFLC(String caveTypeSketchName) {
 		caveSketchFLC.clear();
 		for (CaveSketchEntry cse : correspondingCaveEntry.getCaveSketchList()) {
 			caveSketchFLC.add(
@@ -405,12 +405,6 @@ public class CaveEditor extends AbstractEditor {
 							"resource?cavesketch=" + cse.getCaveSketchFilename() + UserLogin.getInstance().getUsernameSessionIDParameterForUri()))),
 					new MarginData(5));
 		}
-//		if ((optionalCaveSketchName != null) && !optionalCaveSketchName.isEmpty()) {
-//			caveSketchFLC.add(
-//					new HTMLPanel(caveLayoutViewTemplates.image(UriUtils.fromString(
-//							"resource?cavesketch=" + optionalCaveSketchName + UserLogin.getInstance().getUsernameSessionIDParameterForUri()))),
-//					new MarginData(5));
-//		}
 		if ((caveTypeSketchName != null) && !caveTypeSketchName.isEmpty()) {
 			caveSketchFLC.add(
 					new HTMLPanel(caveLayoutViewTemplates.image(UriUtils
@@ -455,7 +449,7 @@ public class CaveEditor extends AbstractEditor {
 			CaveTypeEntry correspondingCaveTypeEntry = caveTypeEntryListStore
 					.findModelWithKey(Integer.toString(correspondingCaveEntry.getCaveTypeID()));
 			caveTypeSelectionCB.setValue(correspondingCaveTypeEntry);
-			refreshCaveSketchFLC(correspondingCaveTypeEntry.getSketchName(), correspondingCaveEntry.getOptionalCaveSketch());
+			refreshCaveSketchFLC(correspondingCaveTypeEntry.getSketchName());
 			updateCeilingTypePanel(correspondingCaveEntry.getCaveTypeID());
 			updateStateOfPreservationPanel(correspondingCaveEntry.getCaveTypeID());
 			updateWallList(correspondingCaveEntry.getCaveTypeID());
@@ -1961,7 +1955,7 @@ public class CaveEditor extends AbstractEditor {
 				correspondingCaveEntry.setCaveTypeID(event.getSelectedItem().getCaveTypeID());
 				CaveTypeEntry correspondingCaveTypeEntry = caveTypeEntryListStore
 						.findModelWithKey(Integer.toString(correspondingCaveEntry.getCaveTypeID()));
-				refreshCaveSketchFLC(correspondingCaveTypeEntry.getSketchName(), correspondingCaveEntry.getOptionalCaveSketch());
+				refreshCaveSketchFLC(correspondingCaveTypeEntry.getSketchName());
 				updateCeilingTypePanel(correspondingCaveEntry.getCaveTypeID());
 				updateStateOfPreservationPanel(correspondingCaveEntry.getCaveTypeID());
 				updateWallList(correspondingCaveEntry.getCaveTypeID());
@@ -2355,12 +2349,11 @@ public class CaveEditor extends AbstractEditor {
 				CaveSketchUploader uploader = new CaveSketchUploader(correspondingCaveEntry.getCaveID(), new CaveSketchUploadListener() {
 
 					@Override
-					public void uploadCompleted(String caveSketchFilename) {
-						correspondingCaveEntry.setOptionalCaveSketch(caveSketchFilename);
+					public void uploadCompleted(CaveSketchEntry csEntry) {
+						correspondingCaveEntry.getCaveSketchList().add(csEntry);
 						caveSketchUploadPanel.hide();
 						refreshCaveSketchFLC(
-								caveTypeEntryListStore.findModelWithKey(Integer.toString(correspondingCaveEntry.getCaveTypeID())).getSketchName(),
-								caveSketchFilename);
+								caveTypeEntryListStore.findModelWithKey(Integer.toString(correspondingCaveEntry.getCaveTypeID())).getSketchName());
 					}
 
 					@Override
