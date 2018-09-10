@@ -2222,7 +2222,7 @@ public class CaveEditor extends AbstractEditor {
 		caveLayoutCommentsFP.setHeading("Comments on Cave Layout");
 		
 		CheckBox volutedHorseshoeArchCB = new CheckBox();
-		volutedHorseshoeArchCB.setBoxLabel("has Voluted Horseshow Arch");
+		volutedHorseshoeArchCB.setBoxLabel("has Voluted Horseshoe Arch");
 		volutedHorseshoeArchCB.setValue(correspondingCaveEntry.isHasVolutedHorseShoeArch());
 		volutedHorseshoeArchCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
