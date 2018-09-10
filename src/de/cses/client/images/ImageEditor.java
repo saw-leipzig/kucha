@@ -62,6 +62,7 @@ import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.Selecti
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
+import de.cses.client.Util;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageTypeEntry;
@@ -449,16 +450,7 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 	 */
 	private void deleteSelectedImageEntry() {
 		if (imageListView.getSelectionModel().getSelectedItem() != null) {
-			Dialog simple = new Dialog();
-			simple.setHeading("Delete");
-			simple.setWidth(300);
-			simple.setResizable(false);
-			simple.setHideOnButtonClick(true);
-			simple.setPredefinedButtons(PredefinedButton.YES, PredefinedButton.NO);
-			simple.setBodyStyleName("pad-text");
-			simple.getBody().addClassName("pad-text");
-			simple.add(new Label("Do you really want to delete the selected entry?"));
-			simple.getButton(PredefinedButton.YES).addSelectHandler(new SelectHandler() {
+			Util.showYesNo("Delete", "Do you really want to delete the selected entry?", new SelectHandler() {
 
 				@Override
 				public void onSelect(SelectEvent event) {
@@ -482,14 +474,48 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 						}
 					});
 				}
-			});
-			simple.show();
+			}, null);
+//			Dialog simple = new Dialog();
+//			simple.setHeading("Delete");
+//			simple.setWidth(300);
+//			simple.setResizable(false);
+//			simple.setHideOnButtonClick(true);
+//			simple.setPredefinedButtons(PredefinedButton.YES, PredefinedButton.NO);
+//			simple.setBodyStyleName("pad-text");
+//			simple.getBody().addClassName("pad-text");
+//			simple.add(new Label("Do you really want to delete the selected entry?"));
+//			simple.getButton(PredefinedButton.YES).addSelectHandler(new SelectHandler() {
+//
+//				@Override
+//				public void onSelect(SelectEvent event) {
+//					// only of the yes button is selected, we will perform the command
+//					// to simplify we just ignore the no button event by doing nothing
+//					int imageID = imageListView.getSelectionModel().getSelectedItem().getImageID();
+//					dbService.updateEntry("DELETE FROM Images WHERE ImageID=" + imageID, new AsyncCallback<Boolean>() {
+//						public void onFailure(Throwable caught) {
+//							Info.display("Error", "Problem with database connection!");
+//						}
+//
+//						@Override
+//						public void onSuccess(Boolean result) {
+//							if (result) {
+////								Info.display("Image information", "Image information has been updated!");
+//							} else {
+////								Info.display("Image information", "Image information has been updated!");
+//							}
+//							refreshImages();
+//							imageListView.getSelectionModel().select(imageEntryList.get(0), true);
+//						}
+//					});
+//				}
+//			});
+//			simple.show();
 			// constrain the dialog to the viewport (for small mobile screen sizes)
-			Rectangle bounds = simple.getElement().getBounds();
-			Rectangle adjusted = simple.getElement().adjustForConstraints(bounds);
-			if (adjusted.getWidth() != bounds.getWidth() || adjusted.getHeight() != bounds.getHeight()) {
-				simple.setPixelSize(adjusted.getWidth(), adjusted.getHeight());
-			}
+//			Rectangle bounds = simple.getElement().getBounds();
+//			Rectangle adjusted = simple.getElement().adjustForConstraints(bounds);
+//			if (adjusted.getWidth() != bounds.getWidth() || adjusted.getHeight() != bounds.getHeight()) {
+//				simple.setPixelSize(adjusted.getWidth(), adjusted.getHeight());
+//			}
 		}
 	}
 

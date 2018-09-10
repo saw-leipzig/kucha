@@ -32,7 +32,6 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
@@ -64,7 +63,6 @@ import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.DualListField;
 import com.sencha.gxt.widget.core.client.form.DualListField.Mode;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
-import com.sencha.gxt.widget.core.client.form.FieldLabel.FieldLabelAppearance;
 import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
@@ -369,31 +367,45 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		closeToolButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-				Dialog d = new Dialog();
-				d.setClosable(false);
-				d.setHeading("Exit Warning!");
-				d.setWidget(new HTML("Do you wish to save before exiting?"));
-				d.setBodyStyle("fontWeight:bold;padding:13px;");
-//				d.setPixelSize(300, 100);
-				d.setHideOnButtonClick(true);
-				d.setPredefinedButtons(PredefinedButton.YES, PredefinedButton.NO, PredefinedButton.CANCEL);
-				d.setModal(true);
-				d.center();
-				d.show();
-				d.getButton(PredefinedButton.YES).addSelectHandler(new SelectHandler() {
+				Util.showYesNo("Exit Warning!", "Do you wish to save before exiting?", new SelectHandler() {
 
 					@Override
 					public void onSelect(SelectEvent event) {
 						save(true);
 					}
-				});
-				d.getButton(PredefinedButton.NO).addSelectHandler(new SelectHandler() {
+				}, new SelectHandler() {
 
 					@Override
 					public void onSelect(SelectEvent event) {
 						closeEditor(null);
 					}
 				});
+				
+//				Dialog d = new Dialog();
+//				d.setClosable(false);
+//				d.setHeading("Exit Warning!");
+//				d.setWidget(new HTML("Do you wish to save before exiting?"));
+//				d.setBodyStyle("fontWeight:bold;padding:13px;");
+////				d.setPixelSize(300, 100);
+//				d.setHideOnButtonClick(true);
+//				d.setPredefinedButtons(PredefinedButton.YES, PredefinedButton.NO, PredefinedButton.CANCEL);
+//				d.setModal(true);
+//				d.center();
+//				d.show();
+//				d.getButton(PredefinedButton.YES).addSelectHandler(new SelectHandler() {
+//
+//					@Override
+//					public void onSelect(SelectEvent event) {
+//						save(true);
+//					}
+//				});
+//				d.getButton(PredefinedButton.NO).addSelectHandler(new SelectHandler() {
+//
+//					@Override
+//					public void onSelect(SelectEvent event) {
+//						closeEditor(null);
+//					}
+//				});
 			}
 		});
 
@@ -534,54 +546,6 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		firstTabInnerLeftVLC.add(subtitleFP, new VerticalLayoutData(1.0, 1.0 / 5));
 
 		/**
-		 * some publication types have a addon to the title
-		 */
-		if (pubType.isTitleAddonEnabled()) {
-			TextField titleaddonEN = new TextField();
-			titleaddonEN.setValue(bibEntry.getTitleaddonEN());
-			titleaddonEN.addValueChangeHandler(new ValueChangeHandler<String>() {
-				
-				@Override
-				public void onValueChange(ValueChangeEvent<String> event) {
-					bibEntry.setTitleaddonEN(event.getValue());
-				}
-			});
-			titleaddonEN.addValidator(new MaxLengthValidator(256));
-			
-			TextField titleaddonORG = new TextField();
-			titleaddonORG.setValue(bibEntry.getTitleaddonORG());
-			titleaddonORG.addValueChangeHandler(new ValueChangeHandler<String>() {
-				
-				@Override
-				public void onValueChange(ValueChangeEvent<String> event) {
-					bibEntry.setTitleaddonORG(event.getValue());
-				}
-			});
-			titleaddonORG.addValidator(new MaxLengthValidator(256));
-			
-			TextField titleaddonTR = new TextField();
-			titleaddonTR.setValue(bibEntry.getTitleaddonTR());
-			titleaddonTR.addValueChangeHandler(new ValueChangeHandler<String>() {
-				
-				@Override
-				public void onValueChange(ValueChangeEvent<String> event) {
-					bibEntry.setTitleaddonTR(event.getValue());
-				}
-			});
-			titleaddonTR.addValidator(new MaxLengthValidator(256));
-			
-			VerticalLayoutContainer titleAddonVLC = new VerticalLayoutContainer();
-			titleAddonVLC.add(new FieldLabel(titleaddonORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
-			titleAddonVLC.add(new FieldLabel(titleaddonEN, "English Transl."), new VerticalLayoutData(1.0, 1.0 / 3));
-			titleAddonVLC.add(new FieldLabel(titleaddonTR, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
-			
-			FramedPanel titleAddonFP = new FramedPanel();
-			titleAddonFP.setHeading(pubType.getTitleAddonLabel());
-			titleAddonFP.add(titleAddonVLC);
-			firstTabInnerLeftVLC.add(titleAddonFP, new VerticalLayoutData(1.0, 1.0 / 5));
-		}
-
-		/**
 		 * the parent title (i.e. Book Title, Journal Name, Conference Name, Proceedings Title, etc
 		 */
 		if (pubType.isParentTitleEnabled()) {
@@ -630,6 +594,54 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			firstTabInnerLeftVLC.add(parentTitleFP, new VerticalLayoutData(1.0, 1.0 / 5));
 		}
 
+		/**
+		 * some publication types have a addon to the title
+		 */
+		if (pubType.isTitleAddonEnabled()) {
+			TextField titleaddonEN = new TextField();
+			titleaddonEN.setValue(bibEntry.getTitleaddonEN());
+			titleaddonEN.addValueChangeHandler(new ValueChangeHandler<String>() {
+				
+				@Override
+				public void onValueChange(ValueChangeEvent<String> event) {
+					bibEntry.setTitleaddonEN(event.getValue());
+				}
+			});
+			titleaddonEN.addValidator(new MaxLengthValidator(256));
+			
+			TextField titleaddonORG = new TextField();
+			titleaddonORG.setValue(bibEntry.getTitleaddonORG());
+			titleaddonORG.addValueChangeHandler(new ValueChangeHandler<String>() {
+				
+				@Override
+				public void onValueChange(ValueChangeEvent<String> event) {
+					bibEntry.setTitleaddonORG(event.getValue());
+				}
+			});
+			titleaddonORG.addValidator(new MaxLengthValidator(256));
+			
+			TextField titleaddonTR = new TextField();
+			titleaddonTR.setValue(bibEntry.getTitleaddonTR());
+			titleaddonTR.addValueChangeHandler(new ValueChangeHandler<String>() {
+				
+				@Override
+				public void onValueChange(ValueChangeEvent<String> event) {
+					bibEntry.setTitleaddonTR(event.getValue());
+				}
+			});
+			titleaddonTR.addValidator(new MaxLengthValidator(256));
+			
+			VerticalLayoutContainer titleAddonVLC = new VerticalLayoutContainer();
+			titleAddonVLC.add(new FieldLabel(titleaddonORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
+			titleAddonVLC.add(new FieldLabel(titleaddonEN, "English Transl."), new VerticalLayoutData(1.0, 1.0 / 3));
+			titleAddonVLC.add(new FieldLabel(titleaddonTR, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
+			
+			FramedPanel titleAddonFP = new FramedPanel();
+			titleAddonFP.setHeading(pubType.getTitleAddonLabel());
+			titleAddonFP.add(titleAddonVLC);
+			firstTabInnerLeftVLC.add(titleAddonFP, new VerticalLayoutData(1.0, 1.0 / 5));
+		}
+		
 		/**
 		 * university name
 		 */

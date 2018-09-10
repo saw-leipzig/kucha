@@ -38,11 +38,12 @@ import com.sencha.gxt.widget.core.client.form.FormPanel.Encoding;
 import com.sencha.gxt.widget.core.client.form.FormPanel.Method;
 
 import de.cses.client.Util;
+import de.cses.shared.CaveSketchEntry;
 
 public class CaveSketchUploader implements IsWidget {
 	
 	public interface CaveSketchUploadListener {
-		public void uploadCompleted(String imageFilename);
+		public void uploadCompleted(CaveSketchEntry csEntry);
 		public void uploadCanceled();
 	}
 
@@ -53,6 +54,7 @@ public class CaveSketchUploader implements IsWidget {
 	private FramedPanel mainPanel;
 	private ArrayList<String> typeList;
 	private int caveID;
+	protected String imageType;
 
 
 	public CaveSketchUploader(int caveID, CaveSketchUploadListener listener) {
@@ -82,7 +84,7 @@ public class CaveSketchUploader implements IsWidget {
 
 		mainPanel = new FramedPanel();
 		mainPanel.setHeading("Cave Sketch Uploader");
-
+		
 		file = new FileUploadField();
 		file.setName("uploadedsketch");
 		file.setAllowBlank(false);
@@ -92,7 +94,8 @@ public class CaveSketchUploader implements IsWidget {
 			@Override
 			public void onChange(ChangeEvent event) {
 				String selected = file.getValue().toLowerCase();
-				if ((selected.lastIndexOf(".") < 0) || !typeList.contains(selected.substring(selected.lastIndexOf(".")+1))) {
+				imageType = selected.substring(selected.lastIndexOf(".")+1);
+				if ((selected.lastIndexOf(".") < 0) || !typeList.contains(imageType)) {
 					Util.showWarning("Unsopported Image Type", "Please select JPG, PNG or TIFF!");
 					file.reset();
 				}
@@ -110,7 +113,8 @@ public class CaveSketchUploader implements IsWidget {
 				NodeList nodelist = doc.getElementsByTagName("pre");
 				Node node = nodelist.item(0);
 				for (CaveSketchUploadListener listener : uploadListener) {
-					listener.uploadCompleted(node.getFirstChild().toString());
+					int newCaveSketchID = Integer.parseInt(node.getFirstChild().toString());
+					listener.uploadCompleted(new CaveSketchEntry(newCaveSketchID, caveID, imageType));
 				}
 			}
 		});
