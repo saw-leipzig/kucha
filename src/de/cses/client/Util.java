@@ -119,7 +119,7 @@ public class Util {
 		FramedPanel dialogPanel = new FramedPanel();
 		dialog.getElement().getStyle().setBorderColor("#FF0000");
 		dialogPanel.setHeading(header);
-		dialogPanel.add(new HTML("<span style='font: 12px tahoma,arial,verdana,sans-serif;'>" + message + "</span>", true));
+		dialogPanel.add(new HTML("<div style='font: 12px tahoma,arial,verdana,sans-serif; width: 300px;'>" + message + "</div>", true));
 		TextButton yesButton = new TextButton("Yes");
 		yesButton.addSelectHandler(new SelectHandler() {
 
@@ -130,16 +130,18 @@ public class Util {
 			}
 		});
 		dialogPanel.addButton(yesButton);
-		TextButton noButton = new TextButton("No");
-		noButton.addSelectHandler(new SelectHandler() {
-
-			@Override
-			public void onSelect(SelectEvent event) {
-				dialog.hide();
-				noHandler.onSelect(event);
-			}
-		});
-		dialogPanel.addButton(noButton);
+		if (noHandler != null) {
+			TextButton noButton = new TextButton("No");
+			noButton.addSelectHandler(new SelectHandler() {
+				
+				@Override
+				public void onSelect(SelectEvent event) {
+					dialog.hide();
+					noHandler.onSelect(event);
+				}
+			});
+			dialogPanel.addButton(noButton);
+		}
 		TextButton cancelButton = new TextButton("Cancel");
 		cancelButton.addSelectHandler(new SelectHandler() {
 
