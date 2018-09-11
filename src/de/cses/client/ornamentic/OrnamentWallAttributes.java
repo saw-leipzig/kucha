@@ -42,6 +42,7 @@ import com.sencha.gxt.widget.core.client.form.TextArea;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
+import de.cses.client.Util;
 import de.cses.client.walls.WallSelector;
 import de.cses.shared.CaveAreaEntry;
 import de.cses.shared.CaveEntry;
@@ -258,6 +259,7 @@ public class OrnamentWallAttributes extends PopupPanel {
 	 */
 	protected void save() {
 		WallOrnamentCaveRelation caveWallOrnamentRelation = new WallOrnamentCaveRelation(caveEntry.getCaveID(), wallselector.getSelectedWallEntry());
+		Util.doLogging(this.getClass().getName() + " cavewallornamentrelation wurde erstellt");
 		if (ornamentfunctionComboBox.getValue() == null) {
 			caveWallOrnamentRelation.setOrnamenticFunctionID(18); // 18 = unknown
 		} else {
@@ -273,8 +275,10 @@ public class OrnamentWallAttributes extends PopupPanel {
 		if(wallOrnamentCaveRelation != null) {
 			ornamentCaveRelation.getWallsListStore().remove(wallOrnamentCaveRelation);
 		}
-		
+		Util.doLogging(this.getClass().getName() + " save wurde ausgefuert und vor list store hingezugefuegt");
 		ornamentCaveRelation.getWallsListStore().add(caveWallOrnamentRelation);
+		ornamentCaveRelation.getWallsListView().refresh();
+		Util.doLogging(this.getClass().getName() + " save wurde ausgefuert und nach list store hingezugefuegt");
 	}
 
 	public CaveEntry getCave() {
