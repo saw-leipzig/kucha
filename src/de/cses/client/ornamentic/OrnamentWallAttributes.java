@@ -272,6 +272,7 @@ public class OrnamentWallAttributes extends PopupPanel {
 		}
 		caveWallOrnamentRelation.setNotes(notes.getText());
 		
+		
 		if(wallOrnamentCaveRelation != null) {
 			ornamentCaveRelation.getWallsListStore().remove(wallOrnamentCaveRelation);
 		}
