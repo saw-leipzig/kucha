@@ -308,8 +308,9 @@ public class WallOrnamentCaveRelationEditor {
 		ornamentPositionEntryLS.clear();
 		Util.doLogging("Nina: in create form step 3 wallornamenteditor");
 		String wallOrCeiling = StaticTables.getInstance().getWallLocationEntries().get(wallselector.getSelectedWallEntry().getWallLocationID()).getLabel();
-	
+		Util.doLogging("Nina: 3.A nach wallorCeiling string");
 		if( wallOrCeiling.contains("wall")) {
+			Util.doLogging("Nina: in create form step 4 variante 1 wallornamenteditor");
 	
 			dbService.getPositionbyWall(wallselector.getSelectedWallEntry(), new AsyncCallback<ArrayList<OrnamentPositionEntry>>() {
 
@@ -320,7 +321,7 @@ public class WallOrnamentCaveRelationEditor {
 
 				@Override
 				public void onSuccess(ArrayList<OrnamentPositionEntry> result) {
-					Util.doLogging("Nina: in create form step 4 variante 1 wallornamenteditor");
+					
 		
 					for (OrnamentPositionEntry pe : result) {
 						ornamentPositionEntryLS.add(pe);
@@ -361,6 +362,7 @@ public class WallOrnamentCaveRelationEditor {
 			}
 		}
 		else {
+			Util.doLogging("keinen Case gefunden!");
 		}
 		}
 	
@@ -379,9 +381,11 @@ public class WallOrnamentCaveRelationEditor {
 		Util.doLogging("Nina: in show start wallornamenteditor mit entry ");
 		this.wallOrnamentCaveRelation = wallOrnamentCaveRelation;
 		popup = new PopupPanel();
+		Util.doLogging("Nina: in create form step 1 vor create form wallornamenteditor");
 		popup.setWidget(createForm());
 			wallselector.setWallEntry(wallOrnamentCaveRelation.getWall());
 			ornamentPositionComboBox.setValue(ornamentPositionEntryLS.findModelWithKey(Integer.toString(wallOrnamentCaveRelation.getOrnamenticPositionID())));
+			Util.doLogging("Nina: in create form step 2 nach position setzenwallornamenteditor");
 			filterPositionbyCaveArea();
 			ornamentfunctionComboBox.setValue(ornamentFunctionEntryLS.findModelWithKey(Integer.toString(wallOrnamentCaveRelation.getOrnamenticFunctionID())), true);
 			popup.center();
