@@ -98,7 +98,9 @@ public class WallOrnamentCaveRelationEditor {
 		selectWallFP.setHeading("Select Wall");
 		selectWallFP.add(wallselector);
 		if (wallOrnamentCaveRelation != null) {
+			Util.doLogging("Nina: in create form step 1 wallornamenteditor");
 			wallselector.setWallEntry(wallOrnamentCaveRelation.getWall());
+			Util.doLogging("Nina: in create form step 2 wallornamenteditor");
 			filterPositionbyCaveArea();
 		}
 		ValueChangeHandler<WallEntry> wallSelectionHandler = new ValueChangeHandler<WallEntry>() {
@@ -292,6 +294,7 @@ public class WallOrnamentCaveRelationEditor {
 	}
 	
 	public void filterPositionbyCaveArea() {
+		Util.doLogging("Nina: in create form step 3 wallornamenteditor");
 		String wallOrCeiling = StaticTables.getInstance().getWallLocationEntries().get(wallselector.getSelectedWallEntry().getWallLocationID()).getLabel();
 	
 		if( wallOrCeiling.contains("wall")) {
@@ -305,6 +308,7 @@ public class WallOrnamentCaveRelationEditor {
 
 				@Override
 				public void onSuccess(ArrayList<OrnamentPositionEntry> result) {
+					Util.doLogging("Nina: in create form step 4 variante 1 wallornamenteditor");
 		
 					for (OrnamentPositionEntry pe : result) {
 						ornamentPositionEntryLS.add(pe);
@@ -316,7 +320,7 @@ public class WallOrnamentCaveRelationEditor {
 			});
 		}
 		else if( wallOrCeiling.contains("ceiling"))  {
-			;
+			Util.doLogging("Nina: in create form step 4 variante 2 wallornamenteditor");
 			ArrayList<CaveAreaEntry> result = caveEntry.getCaveAreaList();
 			String cavearealabel = StaticTables.getInstance().getWallLocationEntries().get(wallselector.getSelectedWallEntry().getWallLocationID()).getCaveAreaLabel();
 			for(int i = 0; i < result.size(); i++){
@@ -336,6 +340,7 @@ public class WallOrnamentCaveRelationEditor {
 
 						@Override
 						public void onSuccess(ArrayList<OrnamentPositionEntry> result) {
+							Util.doLogging("Nina: in create form step 4.2 variante 2 wallornamenteditor");
 							for (OrnamentPositionEntry pe : result) {
 								ornamentPositionEntryLS.add(pe);
 							}
@@ -355,6 +360,7 @@ public class WallOrnamentCaveRelationEditor {
 		}
 	
 	public void getFunctionbyPosition() {
+		Util.doLogging("Nina: in create form step 5 functionbyposition wallornamenteditor");
 	ValueChangeHandler<OrnamentPositionEntry> positionSelectionHandler = new ValueChangeHandler<OrnamentPositionEntry>() {
 
 		@Override
@@ -387,17 +393,19 @@ public class WallOrnamentCaveRelationEditor {
 	
 	public void show() {
 		popup = new PopupPanel();
-		Util.doLogging("Nina: in show start wallornamenteditor");
+		Util.doLogging("Nina: in show start wallornamenteditor ohne entry ");
 		popup.setWidget(createForm());
 		popup.center();
-		Util.doLogging("Nina: in show ende wallornamenteditor");
+		Util.doLogging("Nina: in show ende wallornamenteditor ohne entry");
 	}
 	
 	public void show(WallOrnamentCaveRelation wallOrnamentCaveRelation) {
+		Util.doLogging("Nina: in show start wallornamenteditor mit entry ");
 		this.wallOrnamentCaveRelation = wallOrnamentCaveRelation;
 		popup = new PopupPanel();
 		popup.setWidget(createForm());
 		popup.center();
+		Util.doLogging("Nina: in show ende wallornamenteditor mit entry");
 		
 	}
 }
