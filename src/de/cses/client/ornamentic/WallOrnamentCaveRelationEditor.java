@@ -47,7 +47,6 @@ import de.cses.client.walls.WallSelector;
 import de.cses.shared.CaveAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CavePart;
-import de.cses.shared.InnerSecondaryPatternsEntry;
 import de.cses.shared.OrnamentFunctionEntry;
 import de.cses.shared.OrnamentPositionEntry;
 import de.cses.shared.WallEntry;
@@ -57,29 +56,25 @@ import de.cses.shared.WallOrnamentCaveRelation;
  * @author nina
  *
  */
-public class OrnamentWallAttributes extends PopupPanel {
+public class WallOrnamentCaveRelationEditor {
 
-	private CaveEntry caveEntry;
-	// private PopupPanel popup;
-	private OrnamentCaveAttributes ornamentCaveRelation;
 	private OrnamentPositionProperties ornamentPositionProps;
 	private OrnamentFunctionProperties ornamentFunctionProps;
 	private ListStore<OrnamentPositionEntry> ornamentPositionEntryLS;
 	private ComboBox<OrnamentPositionEntry> ornamentPositionComboBox;
 	private ListStore<OrnamentFunctionEntry> ornamentFunctionEntryLS;
 	private ComboBox<OrnamentFunctionEntry> ornamentfunctionComboBox;
-	// private ComboBox<WallEntry> wallsComboBox;
 	private WallOrnamentCaveRelation wallOrnamentCaveRelation;
+	private CaveEntry caveEntry;
+	PopupPanel popup = new PopupPanel();
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 
 	private TextArea notes;
 
 	private WallSelector wallselector;
 
-	public OrnamentWallAttributes(CaveEntry cave, WallOrnamentCaveRelation wallOrnamentCaveRelation) {
-		super(false);
-		this.wallOrnamentCaveRelation = wallOrnamentCaveRelation;
-		this.caveEntry = cave;
+	public WallOrnamentCaveRelationEditor() {
+		Util.doLogging("Nina: im konstruktor wallornamenteditor");
 		ornamentPositionProps = GWT.create(OrnamentPositionProperties.class);
 		ornamentFunctionProps = GWT.create(OrnamentFunctionProperties.class);
 		ornamentPositionEntryLS = new ListStore<OrnamentPositionEntry>(ornamentPositionProps.ornamentPositionID());
@@ -91,15 +86,13 @@ public class OrnamentWallAttributes extends PopupPanel {
 		for (OrnamentFunctionEntry ofe : StaticTables.getInstance().getOrmanemtFunctionEntries().values()) {
 			ornamentFunctionEntryLS.add(ofe);
 		}
-		
-
-
-		setWidget(createForm());
 	}
 
 	private FramedPanel createForm() {
+		this.caveEntry = OrnamenticEditor.ornamentCaveRelationEditor.getCaveEntryComboBox().getValue();
+		Util.doLogging("Nina: in create form start wallornamenteditor");
 		wallselector = new WallSelector();
-		wallselector.setCave(caveEntry);
+		wallselector.setCave(OrnamenticEditor.ornamentCaveRelationEditor.getCaveEntryComboBox().getValue());
 
 		FramedPanel selectWallFP = new FramedPanel();
 		selectWallFP.setHeading("Select Wall");
@@ -182,7 +175,6 @@ public class OrnamentWallAttributes extends PopupPanel {
 		notesFP.add(notes);
 
 		VerticalLayoutContainer vlcWalls = new VerticalLayoutContainer();
-//		vlcWalls.add(selectWallFP, new VerticalLayoutData(1.0, .5));
 		vlcWalls.add(ornamentPositionFP, new VerticalLayoutData(1.0, .15));
 		vlcWalls.add(ornamentFunctionFP, new VerticalLayoutData(1.0, .15));
 		vlcWalls.add(notesFP, new VerticalLayoutData(1.0, .7));
@@ -201,7 +193,7 @@ public class OrnamentWallAttributes extends PopupPanel {
 
 			@Override
 			public void onSelect(SelectEvent event) {
-				hide();
+				popup.hide();
 			}
 		});
 
@@ -211,52 +203,17 @@ public class OrnamentWallAttributes extends PopupPanel {
 			@Override
 			public void onSelect(SelectEvent event) {
 				save();
-				hide();
+				popup.hide();
 			}
 		});
 		wallrelationFramedPanel.addTool(saveTB);
 		wallrelationFramedPanel.addTool(cancelTB);
 
-//		ToolButton closeTB = new ToolButton(ToolButton.CLOSE);
-//		closeTB.addSelectHandler(new SelectHandler() {
-//
-//			@Override
-//			public void onSelect(SelectEvent event) {
-//				Dialog d = new Dialog();
-//				d.setHeading("Exit Warning!");
-//				d.setWidget(new HTML("Do you wish to save before exiting?"));
-//				d.setBodyStyle("fontWeight:bold;padding:13px;");
-//				d.setPixelSize(300, 100);
-//				d.setHideOnButtonClick(true);
-//				d.setPredefinedButtons(PredefinedButton.YES, PredefinedButton.NO, PredefinedButton.CANCEL);
-//				d.setModal(true);
-//				d.center();
-//				d.show();
-//				d.getButton(PredefinedButton.YES).addSelectHandler(new SelectHandler() {
-//
-//					@Override
-//					public void onSelect(SelectEvent event) {
-//						save();
-//						hide();
-//					}
-//				});
-//				d.getButton(PredefinedButton.NO).addSelectHandler(new SelectHandler() {
-//
-//					@Override
-//					public void onSelect(SelectEvent event) {
-//						hide();
-//					}
-//				});
-//			}
-//		});
-//		wallrelationFramedPanel.addTool(closeTB);
 
+		Util.doLogging("Nina: in createform ende wallornamenteditor");
 		return wallrelationFramedPanel;
 	}
 
-	/**
-	 * 
-	 */
 	protected void save() {
 		WallOrnamentCaveRelation caveWallOrnamentRelation = new WallOrnamentCaveRelation(caveEntry.getCaveID(), wallselector.getSelectedWallEntry());
 		Util.doLogging(this.getClass().getName() + " cavewallornamentrelation wurde erstellt");
@@ -274,12 +231,10 @@ public class OrnamentWallAttributes extends PopupPanel {
 		
 		
 		if(wallOrnamentCaveRelation != null) {
-			ornamentCaveRelation.getWallsListStore().remove(wallOrnamentCaveRelation);
+			OrnamenticEditor.ornamentCaveRelationEditor.getWallsListStore().remove(wallOrnamentCaveRelation);
 		}
-		Util.doLogging(this.getClass().getName() + " save wurde ausgefuert und vor list store hingezugefuegt");
-		ornamentCaveRelation.getWallsListStore().add(caveWallOrnamentRelation);
-		ornamentCaveRelation.getWallsListView().refresh();
-		Util.doLogging(this.getClass().getName() + " save wurde ausgefuert und nach list store hingezugefuegt");
+		OrnamenticEditor.ornamentCaveRelationEditor.getWallsListStore().add(caveWallOrnamentRelation);
+		OrnamenticEditor.ornamentCaveRelationEditor.getWallsListView().refresh();
 	}
 
 	public CaveEntry getCave() {
@@ -290,13 +245,7 @@ public class OrnamentWallAttributes extends PopupPanel {
 		this.caveEntry = cave;
 	}
 
-	public OrnamentCaveAttributes getOrnamentCaveRelation() {
-		return ornamentCaveRelation;
-	}
 
-	public void setOrnamentCaveRelation(OrnamentCaveAttributes ornamentCaveRelation) {
-		this.ornamentCaveRelation = ornamentCaveRelation;
-	}
 
 	interface CavePartProperties extends PropertyAccess<CavePart> {
 		ModelKeyProvider<CavePart> cavePartID();
@@ -434,5 +383,21 @@ public class OrnamentWallAttributes extends PopupPanel {
 
 	};
 	ornamentPositionComboBox.addValueChangeHandler(positionSelectionHandler);
+	}
+	
+	public void show() {
+		popup = new PopupPanel();
+		Util.doLogging("Nina: in show start wallornamenteditor");
+		popup.setWidget(createForm());
+		popup.center();
+		Util.doLogging("Nina: in show ende wallornamenteditor");
+	}
+	
+	public void show(WallOrnamentCaveRelation wallOrnamentCaveRelation) {
+		this.wallOrnamentCaveRelation = wallOrnamentCaveRelation;
+		popup = new PopupPanel();
+		popup.setWidget(createForm());
+		popup.center();
+		
 	}
 }
