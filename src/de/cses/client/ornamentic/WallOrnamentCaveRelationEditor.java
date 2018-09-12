@@ -89,10 +89,10 @@ public class WallOrnamentCaveRelationEditor {
 	}
 
 	private FramedPanel createForm() {
-		this.caveEntry = OrnamenticEditor.ornamentCaveRelationEditor.getCaveEntryComboBox().getValue();
+		
 		Util.doLogging("Nina: in create form start wallornamenteditor");
 		wallselector = new WallSelector();
-		wallselector.setCave(OrnamenticEditor.ornamentCaveRelationEditor.getCaveEntryComboBox().getValue());
+		wallselector.setCave(caveEntry);
 
 		FramedPanel selectWallFP = new FramedPanel();
 		selectWallFP.setHeading("Select Wall");
@@ -107,6 +107,7 @@ public class WallOrnamentCaveRelationEditor {
 				ornamentPositionComboBox.disable();
 				ornamentfunctionComboBox.disable();
 				ornamentPositionEntryLS.clear();
+				ornamentFunctionEntryLS.clear();
 				filterPositionbyCaveArea();
 
 				ornamentPositionComboBox.setEnabled(true);
@@ -147,17 +148,35 @@ public class WallOrnamentCaveRelationEditor {
 		ornamentfunctionComboBox.setTypeAhead(false);
 		ornamentfunctionComboBox.setEditable(false);
 		ornamentfunctionComboBox.setTriggerAction(TriggerAction.ALL);
-		if (wallOrnamentCaveRelation != null) {
-			ornamentfunctionComboBox.setValue(ornamentFunctionEntryLS.findModelWithKey(Integer.toString(wallOrnamentCaveRelation.getOrnamenticFunctionID())));
-		}
 		FramedPanel ornamentFunctionFP = new FramedPanel();
 		ornamentFunctionFP.setHeading("Select the ornament function");
 		ornamentFunctionFP.add(ornamentfunctionComboBox);
+		
+		ValueChangeHandler<OrnamentPositionEntry> positionSelectionHandler = new ValueChangeHandler<OrnamentPositionEntry>() {
 
-		
-		
-		getFunctionbyPosition();
-		
+			@Override
+			public void onValueChange(ValueChangeEvent<OrnamentPositionEntry> event) {
+				ornamentFunctionEntryLS.clear();
+				
+				dbService.getFunctionbyPosition(event.getValue(), new AsyncCallback<ArrayList<OrnamentFunctionEntry>>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+					}
+
+					@Override
+					public void onSuccess(ArrayList<OrnamentFunctionEntry> result) {
+						for (OrnamentFunctionEntry pe : result) {
+							ornamentFunctionEntryLS.add(pe);
+						}
+						ornamentfunctionComboBox.setEnabled(true);
+					}
+				});
+			}
+
+		};
+		ornamentPositionComboBox.addValueChangeHandler(positionSelectionHandler);
 		
 		notes = new TextArea();
 		notes.setAllowBlank(true);
@@ -334,10 +353,6 @@ public class WallOrnamentCaveRelationEditor {
 							for (OrnamentPositionEntry pe : result) {
 								ornamentPositionEntryLS.add(pe);
 							}
-							if (wallOrnamentCaveRelation != null) {
-								ornamentPositionComboBox.setValue(ornamentPositionEntryLS.findModelWithKey(Integer.toString(wallOrnamentCaveRelation.getOrnamenticPositionID())));
-							
-				}
 			}
 				
 	});
@@ -349,37 +364,10 @@ public class WallOrnamentCaveRelationEditor {
 		}
 		}
 	
-	public void getFunctionbyPosition() {
-		Util.doLogging("Nina: in create form step 5 functionbyposition wallornamenteditor");
-	ValueChangeHandler<OrnamentPositionEntry> positionSelectionHandler = new ValueChangeHandler<OrnamentPositionEntry>() {
-
-		@Override
-		public void onValueChange(ValueChangeEvent<OrnamentPositionEntry> event) {
-			ornamentFunctionEntryLS.clear();
-			
-			dbService.getFunctionbyPosition(event.getValue(), new AsyncCallback<ArrayList<OrnamentFunctionEntry>>() {
-
-				@Override
-				public void onFailure(Throwable caught) {
-					caught.printStackTrace();
-				}
-
-				@Override
-				public void onSuccess(ArrayList<OrnamentFunctionEntry> result) {
-					for (OrnamentFunctionEntry pe : result) {
-						ornamentFunctionEntryLS.add(pe);
-					}
-				}
-			});
-			ornamentfunctionComboBox.setEnabled(true);
-		}
-
-	};
-	ornamentPositionComboBox.addValueChangeHandler(positionSelectionHandler);
-	}
 	
 	public void show() {
 		popup = new PopupPanel();
+		this.caveEntry = OrnamenticEditor.ornamentCaveRelationEditor.getCaveEntryComboBox().getValue();
 		Util.doLogging("Nina: in show start wallornamenteditor ohne entry ");
 		popup.setWidget(createForm());
 		popup.center();
@@ -387,16 +375,16 @@ public class WallOrnamentCaveRelationEditor {
 	}
 	
 	public void show(WallOrnamentCaveRelation wallOrnamentCaveRelation) {
+		this.caveEntry = OrnamenticEditor.ornamentCaveRelationEditor.getCaveEntryComboBox().getValue();
 		Util.doLogging("Nina: in show start wallornamenteditor mit entry ");
 		this.wallOrnamentCaveRelation = wallOrnamentCaveRelation;
 		popup = new PopupPanel();
 		popup.setWidget(createForm());
 			wallselector.setWallEntry(wallOrnamentCaveRelation.getWall());
-			filterPositionbyCaveArea();
 			ornamentPositionComboBox.setValue(ornamentPositionEntryLS.findModelWithKey(Integer.toString(wallOrnamentCaveRelation.getOrnamenticPositionID())));
-			getFunctionbyPosition();
-			ornamentfunctionComboBox.setValue(ornamentFunctionEntryLS.findModelWithKey(Integer.toString(wallOrnamentCaveRelation.getOrnamenticFunctionID())));
-		popup.center();
+			filterPositionbyCaveArea();
+			ornamentfunctionComboBox.setValue(ornamentFunctionEntryLS.findModelWithKey(Integer.toString(wallOrnamentCaveRelation.getOrnamenticFunctionID())), true);
+			popup.center();
 		Util.doLogging("Nina: in show ende wallornamenteditor mit entry");
 		
 	}
