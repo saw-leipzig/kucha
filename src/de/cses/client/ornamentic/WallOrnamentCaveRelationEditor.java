@@ -97,12 +97,7 @@ public class WallOrnamentCaveRelationEditor {
 		FramedPanel selectWallFP = new FramedPanel();
 		selectWallFP.setHeading("Select Wall");
 		selectWallFP.add(wallselector);
-		if (wallOrnamentCaveRelation != null) {
-			Util.doLogging("Nina: in create form step 1 wallornamenteditor");
-			wallselector.setWallEntry(wallOrnamentCaveRelation.getWall());
-			Util.doLogging("Nina: in create form step 2 wallornamenteditor");
-			filterPositionbyCaveArea();
-		}
+	
 		ValueChangeHandler<WallEntry> wallSelectionHandler = new ValueChangeHandler<WallEntry>() {
 
 			@Override
@@ -135,10 +130,7 @@ public class WallOrnamentCaveRelationEditor {
 		ornamentPositionComboBox.setTypeAhead(false);
 		ornamentPositionComboBox.setEditable(false);
 		ornamentPositionComboBox.setTriggerAction(TriggerAction.ALL);
-		if (wallOrnamentCaveRelation != null) {
-			ornamentPositionComboBox.setValue(ornamentPositionEntryLS.findModelWithKey(Integer.toString(wallOrnamentCaveRelation.getOrnamenticPositionID())));
-			getFunctionbyPosition();
-		}
+
 		FramedPanel ornamentPositionFP = new FramedPanel();
 		ornamentPositionFP.setHeading("Select ornament position");
 		ornamentPositionFP.add(ornamentPositionComboBox);
@@ -294,6 +286,7 @@ public class WallOrnamentCaveRelationEditor {
 	}
 	
 	public void filterPositionbyCaveArea() {
+		ornamentPositionEntryLS.clear();
 		Util.doLogging("Nina: in create form step 3 wallornamenteditor");
 		String wallOrCeiling = StaticTables.getInstance().getWallLocationEntries().get(wallselector.getSelectedWallEntry().getWallLocationID()).getLabel();
 	
@@ -312,9 +305,6 @@ public class WallOrnamentCaveRelationEditor {
 		
 					for (OrnamentPositionEntry pe : result) {
 						ornamentPositionEntryLS.add(pe);
-					}
-					if (wallOrnamentCaveRelation != null) {
-						ornamentPositionComboBox.setValue(ornamentPositionEntryLS.findModelWithKey(Integer.toString(wallOrnamentCaveRelation.getOrnamenticPositionID())));
 					}
 				}
 			});
@@ -379,9 +369,6 @@ public class WallOrnamentCaveRelationEditor {
 					for (OrnamentFunctionEntry pe : result) {
 						ornamentFunctionEntryLS.add(pe);
 					}
-					if (wallOrnamentCaveRelation != null) {
-						ornamentfunctionComboBox.setValue(ornamentFunctionEntryLS.findModelWithKey(Integer.toString(wallOrnamentCaveRelation.getOrnamenticFunctionID())));
-					}
 				}
 			});
 			ornamentfunctionComboBox.setEnabled(true);
@@ -404,6 +391,11 @@ public class WallOrnamentCaveRelationEditor {
 		this.wallOrnamentCaveRelation = wallOrnamentCaveRelation;
 		popup = new PopupPanel();
 		popup.setWidget(createForm());
+			wallselector.setWallEntry(wallOrnamentCaveRelation.getWall());
+			filterPositionbyCaveArea();
+			ornamentPositionComboBox.setValue(ornamentPositionEntryLS.findModelWithKey(Integer.toString(wallOrnamentCaveRelation.getOrnamenticPositionID())));
+			getFunctionbyPosition();
+			ornamentfunctionComboBox.setValue(ornamentFunctionEntryLS.findModelWithKey(Integer.toString(wallOrnamentCaveRelation.getOrnamenticFunctionID())));
 		popup.center();
 		Util.doLogging("Nina: in show ende wallornamenteditor mit entry");
 		
