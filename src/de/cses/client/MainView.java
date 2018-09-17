@@ -284,7 +284,11 @@ public class MainView implements IsWidget {
     centerPanel.add(resultView);
 
     ContentPanel north = new ContentPanel();
-    north.setHeading("What are you looking for?");
+    if (UserLogin.isLoggedIn()) {
+    	north.setHeading("Welcome back, " + UserLogin.getInstance().getUsername());
+    } else {
+    	north.setHeading("Welcome! Your are currently here as a guest!");
+    }
     north.add(selectorLayoutContainer);
 
     ToolButton loginTB = new ToolButton(ToolButton.GEAR);
