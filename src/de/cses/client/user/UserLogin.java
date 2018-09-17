@@ -155,6 +155,7 @@ public class UserLogin extends PopupPanel {
 		loginFP.setHeading("Login");
 		loginFP.add(loginView);
 		loginFP.setSize("300px", "250px");
+		loginFP.add(loginView);
 		clear();
 		add(loginFP);
 		super.center();
@@ -180,6 +181,7 @@ public class UserLogin extends PopupPanel {
 		FramedPanel userFP = new FramedPanel();
 		userFP.setHeading("User Information");
 		userFP.setSize("300px", "150px");
+		userFP.add(userView);
 		clear();
 		add(userFP);
 		super.center();
