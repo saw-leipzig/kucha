@@ -24,14 +24,15 @@ import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.Portlet;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.container.PortalLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.TextField;
 
 import de.cses.client.bibliography.AnnotatedBibliographyFilter;
@@ -70,7 +71,6 @@ public class MainView implements IsWidget {
 	private PortalLayoutContainer resultView;
 //	private TextButton searchButton;
 	private TextField searchText;
-	private VerticalLayoutContainer northPanel;
 	private FramedPanel searchTextPanel;
 	private HorizontalLayoutContainer selectorLayoutContainer;
 	private DepictionSearchController depictionSearchController;
@@ -102,9 +102,9 @@ public class MainView implements IsWidget {
 	private void initView() {
     boolean borders = true;
     
-    northPanel = new VerticalLayoutContainer();
-
-    northPanel.add(UserLogin.getInstance(), new VerticalLayoutData(1.0, .4));
+//    northPanel = new VerticalLayoutContainer();
+//
+//    northPanel.add(UserLogin.getInstance(), new VerticalLayoutData(1.0, .4));
     
     HorizontalLayoutData hLayoutData = new HorizontalLayoutData(140, 1.0, new Margins(5, 0, 5, 5));
     
@@ -286,7 +286,17 @@ public class MainView implements IsWidget {
     ContentPanel north = new ContentPanel();
     north.setHeading("What are you looking for?");
     north.add(selectorLayoutContainer);
-    northPanel.add(north, new VerticalLayoutData(1.0, .6));
+
+    ToolButton loginTB = new ToolButton(ToolButton.GEAR);
+    loginTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				UserLogin.getInstance().center();
+			}
+		});
+    north.addTool(loginTB);
+//    northPanel.add(north, new VerticalLayoutData(1.0, .6));
     
     filterView = new PortalLayoutContainer(1);
     filterView.setSpacing(10);
@@ -311,7 +321,7 @@ public class MainView implements IsWidget {
     dataViewPanel.setHeading("View");
     dataViewPanel.add(dataViewPLC);
     
-    BorderLayoutData northData = new BorderLayoutData(150);
+    BorderLayoutData northData = new BorderLayoutData(70);
     northData.setMargins(new Margins(5));
 
     BorderLayoutData westData = new BorderLayoutData(220);
@@ -332,7 +342,7 @@ public class MainView implements IsWidget {
 
     view = new BorderLayoutContainer();
     view.setBorders(borders);
-    view.setNorthWidget(northPanel, northData);
+    view.setNorthWidget(north, northData);
     view.setWestWidget(filterPanel, westData);
     view.setEastWidget(dataViewPanel, eastData);
     view.setCenterWidget(centerPanel, centerData);

@@ -19,12 +19,18 @@ import java.security.NoSuchAlgorithmException;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.sencha.gxt.core.client.util.Margins;
+import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.Header;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.SimpleContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.PasswordField;
@@ -38,31 +44,31 @@ import de.cses.client.Util;
  * @author alingnau
  *
  */
-public class UserLogin extends SimpleContainer {
+public class UserLogin extends PopupPanel {
 
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	public static final String SESSION_ID = "sessionID";
 	public static final String USERNAME = "username";
 
 	private static UserLogin instance = null;
-	private TextButton loginButton, logoutButton;
+//	private TextButton loginButton, logoutButton;
 	private TextField usernameField;
 	private PasswordField passwordField;
-	private HorizontalLayoutContainer loginView, userView;
-	private Header loginHeadline, headline;
+//	private HorizontalLayoutContainer loginView, userView;
+//	private Header loginHeadline, headline;
+//	private FramedPanel loginFP, userFP;
 	private String username;
 
 	/**
 	 * 
 	 */
 	private UserLogin() {
-		initLoginView();
-		initUserView();
-		add(loginView);
 		String localSessionID = Cookies.getCookie(SESSION_ID);
 		if (localSessionID != null) {
 			checkIfLoggedIn(localSessionID);
 		}
+		setModal(true);
+		setGlassEnabled(true);
 	}
 
 	public static synchronized UserLogin getInstance() {
@@ -85,12 +91,12 @@ public class UserLogin extends SimpleContainer {
 			@Override
 			public void onSuccess(String result) { // we get the sessionID
 				if (result != null) {
-					loginView.removeFromParent();
+					hide();
 					Cookies.setCookie(SESSION_ID, result);
 					Cookies.setCookie(USERNAME, username);
-					logoutButton.setText("logout " + username);
-			    headline.setHTML("<h1>Welcome to the Kucha Information System! You are logged in!</h1>");
-					add(userView);
+//					logoutButton.setText("logout " + username);
+//			    headline.setHTML("<h1>Welcome to the Kucha Information System! You are logged in!</h1>");
+//					add(userView);
 				} else {
 					Util.showWarning("Login Message", "Login error! Please check username / password!");
 					usernameField.reset();
@@ -114,10 +120,6 @@ public class UserLogin extends SimpleContainer {
 			public void onSuccess(String result) { // we get the username
 				if (result != null) {
 					username = result;
-					loginView.removeFromParent();
-					logoutButton.setText("logout " + username);
-			    headline.setHTML("<h1>Welcome to the Kucha Information System! You are logged in!</h1>");
-					add(userView);
 				}
 			}
 		});
@@ -128,19 +130,16 @@ public class UserLogin extends SimpleContainer {
 		Cookies.removeCookie(USERNAME);
 		usernameField.setValue(username);
 		passwordField.reset();
-		userView.removeFromParent();
-		add(loginView);
+		hide();
 	}
 
-	private void initLoginView() {
-		loginHeadline = new Header();
-		loginHeadline.setHTML("<h1>Welcome to the Kucha Information System</h1>");
-		loginView = new HorizontalLayoutContainer();
+	private void showLoginView() {
+		HorizontalLayoutContainer loginView = new HorizontalLayoutContainer();
 		usernameField = new TextField();
 		usernameField.setEmptyText("username");
 		passwordField = new PasswordField();
 		passwordField.setEmptyText("password");
-		loginButton = new TextButton("login");
+		TextButton loginButton = new TextButton("login");
 		loginButton.addSelectHandler(new SelectHandler() {
 
 			@Override
@@ -148,17 +147,25 @@ public class UserLogin extends SimpleContainer {
 				login();
 			}
 		});
-		loginView.add(loginHeadline, new HorizontalLayoutData(1.0, 1.0, new Margins(5)));
-		loginView.add(usernameField, new HorizontalLayoutData(120.0, 1.0, new Margins(5)));
-		loginView.add(passwordField, new HorizontalLayoutData(120.0, 1.0, new Margins(5)));
-		loginView.add(loginButton, new HorizontalLayoutData(50.0, 30.0, new Margins(5)));
+//		loginView.add(loginHeadline, new HorizontalLayoutData(1.0, 1.0, new Margins(5)));
+		loginView.add(usernameField, new HorizontalLayoutData(1.0, .4, new Margins(5)));
+		loginView.add(passwordField, new HorizontalLayoutData(1.0, .4, new Margins(5)));
+		loginView.add(loginButton, new HorizontalLayoutData(80.0, .2, new Margins(5, 110, 5, 110)));
+		FramedPanel loginFP = new FramedPanel();
+		loginFP.setHeading("Login");
+		loginFP.add(loginView);
+		loginFP.setSize("300px", "250px");
+		clear();
+		add(loginFP);
+		super.center();
 	}
 
-	private void initUserView() {
-		headline = new Header();
-		userView = new HorizontalLayoutContainer();
+	private void showUserView() { // all Information about the user and the possibility to change it
+		VerticalLayoutContainer userView = new VerticalLayoutContainer();
 
-		logoutButton = new TextButton("logout");
+		Label userLabel = new Label(username);
+		
+		TextButton logoutButton = new TextButton("logout");
 		logoutButton.addSelectHandler(new SelectHandler() {
 
 			@Override
@@ -167,11 +174,26 @@ public class UserLogin extends SimpleContainer {
 			}
 		});
 		
-    headline.setHTML("<h1>Welcome to the Kucha Information System</h1>");
-		userView.add(headline, new HorizontalLayoutData(.9, 1.0, new Margins(5)));
-		userView.add(logoutButton, new HorizontalLayoutData(.1, 1.0, new Margins(5)));
+//    headline.setHTML("<h1>Welcome to the Kucha Information System</h1>");
+		userView.add(userLabel, new VerticalLayoutData(1.0, .6, new Margins(5)));
+		userView.add(logoutButton, new VerticalLayoutData(1.0, .4, new Margins(5)));
+		FramedPanel userFP = new FramedPanel();
+		userFP.setHeading("User Information");
+		userFP.setSize("300px", "150px");
+		clear();
+		add(userFP);
+		super.center();
 	}
 	
+	@Override
+	public void center() {
+		if (Cookies.getCookie(SESSION_ID) != null) {
+			showUserView();
+		} else {
+			showLoginView();
+		}
+	}
+
 	private static String cryptWithMD5(String pass) {
 		try {
 			MessageDigest md = MessageDigest.getInstance("MD5");
