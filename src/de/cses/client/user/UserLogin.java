@@ -64,6 +64,10 @@ public class UserLogin extends PopupPanel {
 	 */
 	private UserLogin() {
 		String localSessionID = Cookies.getCookie(SESSION_ID);
+		usernameField = new TextField();
+		usernameField.setEmptyText("username");
+		passwordField = new PasswordField();
+		passwordField.setEmptyText("password");
 		if (localSessionID != null) {
 			checkIfLoggedIn(localSessionID);
 		}
@@ -135,10 +139,6 @@ public class UserLogin extends PopupPanel {
 
 	private void showLoginView() {
 		HorizontalLayoutContainer loginView = new HorizontalLayoutContainer();
-		usernameField = new TextField();
-		usernameField.setEmptyText("username");
-		passwordField = new PasswordField();
-		passwordField.setEmptyText("password");
 		TextButton loginButton = new TextButton("login");
 		loginButton.addSelectHandler(new SelectHandler() {
 
