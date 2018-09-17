@@ -16,9 +16,12 @@ package de.cses.client;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import com.google.gwt.event.logical.shared.CloseEvent;
+import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.widget.core.client.ContentPanel;
@@ -290,6 +293,19 @@ public class MainView implements IsWidget {
     	north.setHeading("Welcome! Your are currently here as a guest!");
     }
     north.add(selectorLayoutContainer);
+    
+    // updating heading when user is logged in / out
+    UserLogin.getInstance().addCloseHandler(new CloseHandler<PopupPanel>() {
+			
+			@Override
+			public void onClose(CloseEvent<PopupPanel> event) {
+		    if (UserLogin.isLoggedIn()) {
+		    	north.setHeading("Welcome back, " + UserLogin.getInstance().getUsername());
+		    } else {
+		    	north.setHeading("Welcome! Your are currently here as a guest!");
+		    }
+			}
+		});
 
     ToolButton loginTB = new ToolButton(ToolButton.GEAR);
     loginTB.addSelectHandler(new SelectHandler() {

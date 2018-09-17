@@ -22,13 +22,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.sencha.gxt.core.client.util.Margins;
-import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
-import com.sencha.gxt.widget.core.client.Header;
 import com.sencha.gxt.widget.core.client.button.TextButton;
-import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
-import com.sencha.gxt.widget.core.client.container.SimpleContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
@@ -95,12 +90,9 @@ public class UserLogin extends PopupPanel {
 			@Override
 			public void onSuccess(String result) { // we get the sessionID
 				if (result != null) {
-					hide();
 					Cookies.setCookie(SESSION_ID, result);
 					Cookies.setCookie(USERNAME, username);
-//					logoutButton.setText("logout " + username);
-//			    headline.setHTML("<h1>Welcome to the Kucha Information System! You are logged in!</h1>");
-//					add(userView);
+					hide();
 				} else {
 					Util.showWarning("Login Message", "Login error! Please check username / password!");
 					usernameField.reset();
@@ -138,7 +130,7 @@ public class UserLogin extends PopupPanel {
 	}
 
 	private void showLoginView() {
-		HorizontalLayoutContainer loginView = new HorizontalLayoutContainer();
+		VerticalLayoutContainer loginView = new VerticalLayoutContainer();
 		TextButton loginButton = new TextButton("login");
 		loginButton.addSelectHandler(new SelectHandler() {
 
@@ -148,9 +140,9 @@ public class UserLogin extends PopupPanel {
 			}
 		});
 //		loginView.add(loginHeadline, new HorizontalLayoutData(1.0, 1.0, new Margins(5)));
-		loginView.add(usernameField, new HorizontalLayoutData(1.0, .4, new Margins(5)));
-		loginView.add(passwordField, new HorizontalLayoutData(1.0, .4, new Margins(5)));
-		loginView.add(loginButton, new HorizontalLayoutData(80.0, .2, new Margins(5, 110, 5, 110)));
+		loginView.add(usernameField, new VerticalLayoutData(1.0, .4, new Margins(5)));
+		loginView.add(passwordField, new VerticalLayoutData(1.0, .4, new Margins(5)));
+		loginView.add(loginButton, new VerticalLayoutData(80.0, .2, new Margins(5, 100, 5, 100)));
 		FramedPanel loginFP = new FramedPanel();
 		loginFP.setHeading("Login");
 		loginFP.add(loginView);
@@ -177,7 +169,7 @@ public class UserLogin extends PopupPanel {
 		
 //    headline.setHTML("<h1>Welcome to the Kucha Information System</h1>");
 		userView.add(userLabel, new VerticalLayoutData(1.0, .6, new Margins(5)));
-		userView.add(logoutButton, new VerticalLayoutData(1.0, .4, new Margins(5)));
+		userView.add(logoutButton, new VerticalLayoutData(1.0, .4, new Margins(5, 100, 5, 100)));
 		FramedPanel userFP = new FramedPanel();
 		userFP.setHeading("User Information");
 		userFP.setSize("300px", "150px");
