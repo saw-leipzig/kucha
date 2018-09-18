@@ -228,7 +228,7 @@ public interface DatabaseService extends RemoteService {
 
 	int insertLocationEntry(LocationEntry lEntry) throws IllegalArgumentException;
 
-	String checkSessionID(String sessionID) throws IllegalArgumentException;
+	UserEntry checkSessionID(String sessionID, String username);
 	
 	ArrayList<InnerSecondaryPatternsEntry> getInnerSecondaryPatterns() throws IllegalArgumentException;
 	
@@ -274,5 +274,7 @@ public interface DatabaseService extends RemoteService {
 
 	int insertBibKeyword(BibKeywordEntry bkEntry) throws IllegalArgumentException;
 
-	boolean deleteAuthorEntry(AuthorEntry selectedEntry) throws IllegalArgumentException; 
+	boolean deleteAuthorEntry(AuthorEntry selectedEntry) throws IllegalArgumentException;
+
+	boolean updateUserEntry(UserEntry currentUser) throws IllegalArgumentException; 
 }

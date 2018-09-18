@@ -19,6 +19,10 @@ import java.security.NoSuchAlgorithmException;
 import org.cyberneko.html.HTMLScanner.CurrentEntity;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Label;
@@ -52,20 +56,21 @@ public class UserLogin extends PopupPanel {
 	private static UserLogin instance = null;
 	private TextField usernameField;
 	private PasswordField passwordField;
-	private String username;
-	private UserEntry currentUser;
+//	private String username;
+	private UserEntry currentUser = null;
 
 	/**
 	 * 
 	 */
 	private UserLogin() {
 		String localSessionID = Cookies.getCookie(SESSION_ID);
+		String username = Cookies.getCookie(USERNAME);
 		usernameField = new TextField();
 		usernameField.setEmptyText("username");
 		passwordField = new PasswordField();
 		passwordField.setEmptyText("password");
 		if (localSessionID != null) {
-			checkIfLoggedIn(localSessionID);
+			checkIfLoggedIn(localSessionID, username);
 		}
 		setModal(true);
 		setGlassEnabled(true);
@@ -79,7 +84,7 @@ public class UserLogin extends PopupPanel {
 	}
 	
 	private void login() {
-		username = usernameField.getValue().toLowerCase();
+		String username = usernameField.getValue().toLowerCase();
 		dbService.userLogin(username, cryptWithMD5(passwordField.getValue()), new AsyncCallback<UserEntry>() {
 
 			@Override
@@ -92,7 +97,7 @@ public class UserLogin extends PopupPanel {
 			public void onSuccess(UserEntry result) { // we get the sessionID
 				if (result != null) {
 					Cookies.setCookie(SESSION_ID, result.getSessionID());
-					Cookies.setCookie(USERNAME, username);
+					Cookies.setCookie(USERNAME, result.getUsername());
 					currentUser = result;
 					hide();
 				} else {
@@ -107,17 +112,17 @@ public class UserLogin extends PopupPanel {
 	/**
 	 * 
 	 */
-	private void checkIfLoggedIn(String sessionID) {
-		dbService.checkSessionID(sessionID, new AsyncCallback<String>() {
+	private void checkIfLoggedIn(String sessionID, String username) {
+		dbService.checkSessionID(sessionID, username, new AsyncCallback<UserEntry>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
 			}
 
 			@Override
-			public void onSuccess(String result) { // we get the username
+			public void onSuccess(UserEntry result) { // we get the current user
 				if (result != null) {
-					username = result;
+					currentUser = result;
 				}
 			}
 		});
@@ -126,8 +131,9 @@ public class UserLogin extends PopupPanel {
 	private void logout() {
 		Cookies.removeCookie(SESSION_ID);
 		Cookies.removeCookie(USERNAME);
-		usernameField.setValue(username);
+		usernameField.setValue(currentUser.getUsername());
 		passwordField.reset();
+		currentUser = null;
 		hide();
 	}
 
@@ -143,12 +149,12 @@ public class UserLogin extends PopupPanel {
 		});
 		loginView.add(usernameField, new VerticalLayoutData(1.0, .4, new Margins(5)));
 		loginView.add(passwordField, new VerticalLayoutData(1.0, .4, new Margins(5)));
-		loginView.add(loginButton, new VerticalLayoutData(80.0, .2, new Margins(5, 100, 5, 100)));
 		FramedPanel loginFP = new FramedPanel();
 		loginFP.setHeading("Login");
 		loginFP.add(loginView);
-		loginFP.setSize("300px", "250px");
+		loginFP.setSize("300px", "150px");
 		loginFP.add(loginView);
+		loginFP.addButton(loginButton);
 		clear();
 		add(loginFP);
 		super.center();
@@ -156,8 +162,42 @@ public class UserLogin extends PopupPanel {
 
 	private void showUserView() { // all Information about the user and the possibility to change it
 		VerticalLayoutContainer userView = new VerticalLayoutContainer();
+		PasswordField passwordField = new PasswordField();
+		
+		Label usernameLabel = new Label(currentUser.getUsername());
+		Label firstnameLabel = new Label(currentUser.getFirstname());
+		Label lastnameLabel = new Label(currentUser.getLastname());
+		TextField emailTF = new TextField();
+		emailTF.setText(currentUser.getEmail());
+		emailTF.addValueChangeHandler(new ValueChangeHandler<String>() {
+			
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				currentUser.setEmail(event.getValue()!=null ? event.getValue() : "");
+			}
+		});
+		
+		TextButton updateButton = new TextButton("update");
+		updateButton.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				dbService.updateUserEntry(currentUser, new AsyncCallback<Boolean>() {
 
-		Label userLabel = new Label(username);
+					@Override
+					public void onFailure(Throwable caught) {
+						// TODO Auto-generated method stub
+					}
+
+					@Override
+					public void onSuccess(Boolean result) {
+						if (result) {
+							hide();
+						}
+					}
+				});
+			}
+		});
 		
 		TextButton logoutButton = new TextButton("logout");
 		logoutButton.addSelectHandler(new SelectHandler() {
@@ -168,15 +208,16 @@ public class UserLogin extends PopupPanel {
 			}
 		});
 		
-		
-		
-//    headline.setHTML("<h1>Welcome to the Kucha Information System</h1>");
-		userView.add(new FieldLabel(userLabel, "User"), new VerticalLayoutData(1.0, .6, new Margins(5)));
-		userView.add(logoutButton, new VerticalLayoutData(1.0, .4, new Margins(5, 100, 5, 100)));
+		userView.add(new FieldLabel(usernameLabel, "You are logged in as"), new VerticalLayoutData(1.0, .2, new Margins(5)));
+		userView.add(new FieldLabel(firstnameLabel, "First name"), new VerticalLayoutData(1.0, .2, new Margins(5)));
+		userView.add(new FieldLabel(lastnameLabel, "Last name"), new VerticalLayoutData(1.0, .2, new Margins(5)));
+		userView.add(new FieldLabel(emailTF, "E-Mail"), new VerticalLayoutData(1.0, .2, new Margins(5)));
+		userView.add(new FieldLabel(passwordField, "Password"), new VerticalLayoutData(1.0, .2, new Margins(5)));
 		FramedPanel userFP = new FramedPanel();
 		userFP.setHeading("User Information");
-		userFP.setSize("300px", "150px");
+		userFP.setSize("300px", "450px");
 		userFP.add(userView);
+		userFP.addButton(logoutButton);
 		clear();
 		add(userFP);
 		super.center();
@@ -221,7 +262,7 @@ public class UserLogin extends PopupPanel {
 	}
 
 	public String getUsername() {
-		return username;
+		return currentUser.getUsername();
 	}
 
 }

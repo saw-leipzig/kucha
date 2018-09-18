@@ -70,7 +70,7 @@ public class JsonServlet extends HttpServlet {
 					break;
 					
 				case "checkSession":
-					if (connector.checkSessionID(request.getParameter("sessionID")) != null) {
+					if (connector.checkSessionID(request.getParameter("sessionID"))) {
 						response.sendError(HttpServletResponse.SC_NO_CONTENT);
 					} else {
 						response.sendError(HttpServletResponse.SC_FORBIDDEN);
@@ -78,11 +78,11 @@ public class JsonServlet extends HttpServlet {
 					break;
 					
 				case "caveID":
-					getCaves(connector.checkSessionID(request.getParameter("sessionID")) == null);
+					getCaves(connector.checkSessionID(request.getParameter("sessionID")));
 					break;
 					
 				case "siteID":
-					if (connector.checkSessionID(request.getParameter("sessionID")) != null) {
+					if (connector.checkSessionID(request.getParameter("sessionID"))) {
 						getSites();
 					} else {
 						response.sendError(HttpServletResponse.SC_FORBIDDEN);
@@ -90,7 +90,7 @@ public class JsonServlet extends HttpServlet {
 					break;
 					
 				case "regionID":
-					if (connector.checkSessionID(request.getParameter("sessionID")) != null) {
+					if (connector.checkSessionID(request.getParameter("sessionID"))) {
 						getRegions();
 					} else {
 						response.sendError(HttpServletResponse.SC_FORBIDDEN);
@@ -98,7 +98,7 @@ public class JsonServlet extends HttpServlet {
 					break;
 					
 				case "districtID":
-					if (connector.checkSessionID(request.getParameter("sessionID")) != null) {
+					if (connector.checkSessionID(request.getParameter("sessionID"))) {
 						getDistricts();
 					} else {
 						response.sendError(HttpServletResponse.SC_FORBIDDEN);
@@ -106,7 +106,7 @@ public class JsonServlet extends HttpServlet {
 					break;
 					
 				case "iconographyID":
-					if (connector.checkSessionID(request.getParameter("sessionID")) != null) {
+					if (connector.checkSessionID(request.getParameter("sessionID"))) {
 						getIconography();
 					} else {
 						response.sendError(HttpServletResponse.SC_FORBIDDEN);
@@ -114,7 +114,7 @@ public class JsonServlet extends HttpServlet {
 					break;
 					
 				case "paintedRepID":
-					if (connector.checkSessionID(request.getParameter("sessionID")) != null) {
+					if (connector.checkSessionID(request.getParameter("sessionID"))) {
 						getDepiction();
 					} else {
 						response.sendError(HttpServletResponse.SC_FORBIDDEN);

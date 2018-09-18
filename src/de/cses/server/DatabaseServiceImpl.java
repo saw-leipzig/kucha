@@ -691,9 +691,9 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	 * @see de.cses.client.DatabaseService#checkSessionID(java.lang.String)
 	 */
 	@Override
-	public String checkSessionID(String sessionID) throws IllegalArgumentException {
+	public UserEntry checkSessionID(String sessionID, String username) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
-		return connector.checkSessionID(sessionID);
+		return connector.checkSessionID(sessionID, username);
 	}
 
 	/* (non-Javadoc)
@@ -885,5 +885,13 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public boolean deleteAuthorEntry(AuthorEntry selectedEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.deleteAuthorEntry(selectedEntry);
+	}
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#updateUserEntry(de.cses.shared.UserEntry)
+	 */
+	@Override
+	public boolean updateUserEntry(UserEntry currentUser) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.updateUserEntry(currentUser);
 	}
 }

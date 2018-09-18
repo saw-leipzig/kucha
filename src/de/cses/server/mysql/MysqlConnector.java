@@ -1474,10 +1474,10 @@ public class MysqlConnector {
 			pstmt.setInt(2, AbsoluteTop);
 			pstmt.setInt(3, depictionID);
 			pstmt.executeUpdate();
+			pstmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return "failed to save depiction";
-
 		}
 		return "saved";
 	}
@@ -2452,21 +2452,46 @@ public class MysqlConnector {
 			e.printStackTrace();
 		}
 	}
-
-	/**
-	 * @param sessionID
-	 * @return username
-	 */
-	public String checkSessionID(String sessionID) {
-		String username = null;
+	
+	public boolean checkSessionID(String sessionID) {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
+		boolean result = false;
+		
 		try {
-			pstmt = dbc.prepareStatement("SELECT Username FROM Users WHERE SessionID=?");
+			pstmt = dbc.prepareStatement("SELECT * FROM Users WHERE SessionID=?");
 			pstmt.setString(1, sessionID);
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.first()) {
-				username = rs.getString("Username");
+				// TODO add expiry date and check whether sessionID is still valid
+				result = true;
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+ 
+	/**
+	 * @param sessionID
+	 * @param username
+	 * @return username
+	 */
+	public UserEntry checkSessionID(String sessionID, String username) {
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		UserEntry result = null;
+		
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM Users WHERE SessionID=? AND Username=?");
+			pstmt.setString(1, sessionID);
+			pstmt.setString(2, username);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.first()) {
+				result = new UserEntry(rs.getInt("UserID"), rs.getString("Username"), rs.getString("Firstname"), rs.getString("Lastname"),
+						rs.getString("Email"), rs.getString("Affiliation"), rs.getInt("Accessrights"), rs.getString("SessionID"));
 			}
 			rs.close();
 			pstmt.close();
@@ -2474,7 +2499,7 @@ public class MysqlConnector {
 			e.printStackTrace();
 			return null;
 		}
-		return username;
+		return result;
 	}
 
 	/**
@@ -3624,6 +3649,11 @@ public class MysqlConnector {
 		return entry;
 	}
 	
+	/**
+	 * 
+	 * @param ornamentComponents
+	 * @return
+	 */
 	public OrnamentComponentsEntry renameOrnamentComponents(OrnamentComponentsEntry ornamentComponents) {
 		Connection dbc = getConnection();
 		OrnamentComponentsEntry entry = null;
@@ -3641,6 +3671,12 @@ public class MysqlConnector {
 		}
 		return entry;
 	}
+
+	/**
+	 * 
+	 * @param innerSecPattern
+	 * @return
+	 */
 	public InnerSecondaryPatternsEntry addInnerSecondaryPatterns(InnerSecondaryPatternsEntry innerSecPattern) {
 		Connection dbc = getConnection();
 		InnerSecondaryPatternsEntry entry;
@@ -4246,6 +4282,25 @@ public class MysqlConnector {
 			e.printStackTrace();
 		}
 		return false;
+	}
+
+	/**
+	 * @param currentUser
+	 * @return
+	 */
+	public boolean updateUserEntry(UserEntry currentUser) {
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("UPDATE Users SET Email=? WHERE UserID=?");
+			pstmt.setString(1, currentUser.getEmail());
+			pstmt.executeUpdate();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 
 }

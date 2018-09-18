@@ -23,7 +23,6 @@ import de.cses.shared.BibKeywordEntry;
 import de.cses.shared.CaveAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveGroupEntry;
-import de.cses.shared.CavePart;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
 import de.cses.shared.CurrentLocationEntry;
@@ -251,7 +250,7 @@ public interface DatabaseServiceAsync {
 
 	void insertLocationEntry(LocationEntry lEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 
-	void checkSessionID(String sessionID, AsyncCallback<String> asyncCallback) throws IllegalArgumentException;
+	void checkSessionID(String sessionID, String username, AsyncCallback<UserEntry> asyncCallback);
 
 	void getInnerSecondaryPatterns( AsyncCallback<ArrayList<InnerSecondaryPatternsEntry>> callback) throws IllegalArgumentException;
 
@@ -299,5 +298,7 @@ public interface DatabaseServiceAsync {
 	void insertBibKeyword(BibKeywordEntry bkEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 
 	void deleteAuthorEntry(AuthorEntry selectedEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
+
+	void updateUserEntry(UserEntry currentUser, AsyncCallback<Boolean> asyncCallback);
 
 }
