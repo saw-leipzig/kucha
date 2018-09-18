@@ -152,11 +152,11 @@ public class UserLogin extends PopupPanel {
 		FramedPanel loginFP = new FramedPanel();
 		loginFP.setHeading("Login");
 		loginFP.add(loginView);
-		loginFP.setSize("300px", "150px");
 		loginFP.add(loginView);
 		loginFP.addButton(loginButton);
 		clear();
 		add(loginFP);
+		super.setSize("300px", "150px");
 		super.center();
 	}
 
@@ -215,11 +215,11 @@ public class UserLogin extends PopupPanel {
 		userView.add(new FieldLabel(passwordField, "Password"), new VerticalLayoutData(1.0, .2, new Margins(5)));
 		FramedPanel userFP = new FramedPanel();
 		userFP.setHeading("User Information");
-		userFP.setSize("300px", "450px");
 		userFP.add(userView);
 		userFP.addButton(logoutButton);
 		clear();
 		add(userFP);
+		super.setSize("300px", "450px");
 		super.center();
 	}
 	
