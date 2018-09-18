@@ -16,6 +16,8 @@ package de.cses.client.user;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import org.cyberneko.html.HTMLScanner.CurrentEntity;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -28,12 +30,14 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
+import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.PasswordField;
 import com.sencha.gxt.widget.core.client.form.TextField;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.Util;
+import de.cses.shared.UserEntry;
 
 /**
  * @author alingnau
@@ -46,13 +50,10 @@ public class UserLogin extends PopupPanel {
 	public static final String USERNAME = "username";
 
 	private static UserLogin instance = null;
-//	private TextButton loginButton, logoutButton;
 	private TextField usernameField;
 	private PasswordField passwordField;
-//	private HorizontalLayoutContainer loginView, userView;
-//	private Header loginHeadline, headline;
-//	private FramedPanel loginFP, userFP;
 	private String username;
+	private UserEntry currentUser;
 
 	/**
 	 * 
@@ -79,7 +80,7 @@ public class UserLogin extends PopupPanel {
 	
 	private void login() {
 		username = usernameField.getValue().toLowerCase();
-		dbService.userLogin(username, cryptWithMD5(passwordField.getValue()), new AsyncCallback<String>() {
+		dbService.userLogin(username, cryptWithMD5(passwordField.getValue()), new AsyncCallback<UserEntry>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
@@ -88,10 +89,11 @@ public class UserLogin extends PopupPanel {
 			}
 
 			@Override
-			public void onSuccess(String result) { // we get the sessionID
+			public void onSuccess(UserEntry result) { // we get the sessionID
 				if (result != null) {
-					Cookies.setCookie(SESSION_ID, result);
+					Cookies.setCookie(SESSION_ID, result.getSessionID());
 					Cookies.setCookie(USERNAME, username);
+					currentUser = result;
 					hide();
 				} else {
 					Util.showWarning("Login Message", "Login error! Please check username / password!");
@@ -139,7 +141,6 @@ public class UserLogin extends PopupPanel {
 				login();
 			}
 		});
-//		loginView.add(loginHeadline, new HorizontalLayoutData(1.0, 1.0, new Margins(5)));
 		loginView.add(usernameField, new VerticalLayoutData(1.0, .4, new Margins(5)));
 		loginView.add(passwordField, new VerticalLayoutData(1.0, .4, new Margins(5)));
 		loginView.add(loginButton, new VerticalLayoutData(80.0, .2, new Margins(5, 100, 5, 100)));
@@ -167,8 +168,10 @@ public class UserLogin extends PopupPanel {
 			}
 		});
 		
+		
+		
 //    headline.setHTML("<h1>Welcome to the Kucha Information System</h1>");
-		userView.add(userLabel, new VerticalLayoutData(1.0, .6, new Margins(5)));
+		userView.add(new FieldLabel(userLabel, "User"), new VerticalLayoutData(1.0, .6, new Margins(5)));
 		userView.add(logoutButton, new VerticalLayoutData(1.0, .4, new Margins(5, 100, 5, 100)));
 		FramedPanel userFP = new FramedPanel();
 		userFP.setHeading("User Information");

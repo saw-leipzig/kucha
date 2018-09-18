@@ -38,6 +38,7 @@ import de.cses.shared.IconographyEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 import de.cses.shared.StyleEntry;
+import de.cses.shared.UserEntry;
 
 /**
  * @author alingnau
@@ -153,9 +154,9 @@ public class JsonServlet extends HttpServlet {
 	private void login() throws IOException {
 		String loginStr = request.getParameter("login");
 		String passwordStr = request.getParameter("pw");
-		String newSessionIDStr = connector.userLogin(loginStr, passwordStr);
-		if (newSessionIDStr != null) {
-			response.getWriter().write(newSessionIDStr);
+		UserEntry currentUser = connector.userLogin(loginStr, passwordStr);
+		if (currentUser.getSessionID() != null) {
+			response.getWriter().write(currentUser.getSessionID());
 		}
 		response.setContentType("application/json");
 	}

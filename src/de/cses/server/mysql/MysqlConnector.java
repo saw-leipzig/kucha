@@ -2329,16 +2329,20 @@ public class MysqlConnector {
 	 * @param password
 	 * @return
 	 */
-	public synchronized String userLogin(String username, String password) {
+	public synchronized UserEntry userLogin(String username, String password) {
 		String newSessionID = null;
 		Connection dbc = getConnection();
 		Statement stmt;
+		UserEntry result = null;
+		
 		try {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Users WHERE Username = '" + username + "' AND Password = '" + password + "'");
 			if (rs.first()) {
 				newSessionID = UUID.randomUUID().toString();
 				updateSessionIDforUser(username, newSessionID);
+				result = new UserEntry(rs.getInt("UserID"), rs.getString("Username"), rs.getString("Firstname"), rs.getString("Lastname"),
+						rs.getString("Email"), rs.getString("Affiliation"), rs.getInt("Accessrights"), newSessionID);
 			} else {
 				System.err.println("wrong password for user " + username + ": hash = " + password);
 			}
@@ -2348,7 +2352,7 @@ public class MysqlConnector {
 			e.printStackTrace();
 			return null;
 		}
-		return newSessionID;
+		return result;
 	}
 
 	/**
@@ -2365,7 +2369,7 @@ public class MysqlConnector {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Users WHERE Username = '" + username + "'");
 			if (rs.first()) {
 				result = new UserEntry(rs.getInt("UserID"), rs.getString("Username"), rs.getString("Firstname"), rs.getString("Lastname"),
-						rs.getString("Email"), rs.getString("Affiliation"), rs.getInt("Accessrights"));
+						rs.getString("Email"), rs.getString("Affiliation"), rs.getInt("Accessrights"), rs.getString("SessionID"));
 			} else {
 				System.err.println("no user " + username + " existing");
 			}
@@ -3602,6 +3606,41 @@ public class MysqlConnector {
 		return entry;
 	}
 
+	public OrnamentClassEntry renameOrnamentClass(OrnamentClassEntry ornamentClass) {
+		Connection dbc = getConnection();
+		OrnamentClassEntry entry = null;
+
+		PreparedStatement stmt;
+		try {
+			stmt = dbc.prepareStatement("UPDATE OrnamentClass SET Name = ? WHERE VALUES OrnamentClassID = ?");
+			stmt.setString(1, ornamentClass.getName());
+			stmt.setInt(1, ornamentClass.getOrnamentClassID());
+			stmt.executeUpdate();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return entry;
+		}
+		return entry;
+	}
+	
+	public OrnamentComponentsEntry renameOrnamentComponents(OrnamentComponentsEntry ornamentComponents) {
+		Connection dbc = getConnection();
+		OrnamentComponentsEntry entry = null;
+
+		PreparedStatement stmt;
+		try {
+			stmt = dbc.prepareStatement("UPDATE OrnamentComponents SET Name = ? WHERE VALUES OrnamentComponentsID = ?");
+			stmt.setString(1, ornamentComponents.getName());
+			stmt.setInt(1, ornamentComponents.getOrnamentComponentsID());
+			stmt.executeUpdate();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return entry;
+		}
+		return entry;
+	}
 	public InnerSecondaryPatternsEntry addInnerSecondaryPatterns(InnerSecondaryPatternsEntry innerSecPattern) {
 		Connection dbc = getConnection();
 		InnerSecondaryPatternsEntry entry;
