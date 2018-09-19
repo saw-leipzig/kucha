@@ -2332,12 +2332,18 @@ public class MysqlConnector {
 	public synchronized UserEntry userLogin(String username, String password) {
 		String newSessionID = null;
 		Connection dbc = getConnection();
-		Statement stmt;
+		PreparedStatement pstmt;
 		UserEntry result = null;
 		
 		try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Users WHERE Username = '" + username + "' AND Password = '" + password + "'");
+			if (username.contains("@")) {
+				pstmt = dbc.prepareStatement("SELECT * FROM Users WHERE Email=? AND Password=?");
+			} else {
+				pstmt = dbc.prepareStatement("SELECT * FROM Users WHERE Username=? AND Password=?");
+			}
+			pstmt.setString(1, username);
+			pstmt.setString(2, password);
+			ResultSet rs = pstmt.executeQuery();
 			if (rs.first()) {
 				newSessionID = UUID.randomUUID().toString();
 				updateSessionIDforUser(username, newSessionID);
@@ -2347,7 +2353,7 @@ public class MysqlConnector {
 				System.err.println("wrong password for user " + username + ": hash = " + password);
 			}
 			rs.close();
-			stmt.close();
+			pstmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -4289,24 +4295,36 @@ public class MysqlConnector {
 
 	/**
 	 * @param currentUser
+	 * @param newPasswordHash 
 	 * @return
 	 */
-	public boolean updateUserEntry(UserEntry currentUser, String passwordHash) {
+	public boolean updateUserEntry(UserEntry currentUser, String passwordHash, String newPasswordHash) {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
+		int rowsChangedCount;
+		
 		try {
-			pstmt = dbc.prepareStatement("UPDATE Users SET Email=?, Affiliation=? WHERE UserID=? AND Password=?");
-			pstmt.setString(1, currentUser.getEmail());
-			pstmt.setString(2, currentUser.getAffiliation());
-			pstmt.setInt(3, currentUser.getUserID());
-			pstmt.setString(4, passwordHash);
-			pstmt.executeUpdate();
+			if (newPasswordHash != null && !newPasswordHash.isEmpty()) {
+				pstmt = dbc.prepareStatement("UPDATE Users SET Email=?, Affiliation=?, Password=? WHERE UserID=? AND Password=?");
+				pstmt.setString(1, currentUser.getEmail());
+				pstmt.setString(2, currentUser.getAffiliation());
+				pstmt.setString(3, newPasswordHash);
+				pstmt.setInt(4, currentUser.getUserID());
+				pstmt.setString(5, passwordHash);
+			} else {
+				pstmt = dbc.prepareStatement("UPDATE Users SET Email=?, Affiliation=? WHERE UserID=? AND Password=?");
+				pstmt.setString(1, currentUser.getEmail());
+				pstmt.setString(2, currentUser.getAffiliation());
+				pstmt.setInt(3, currentUser.getUserID());
+				pstmt.setString(4, passwordHash);
+			}	
+			rowsChangedCount = pstmt.executeUpdate();
 			pstmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
 		}
-		return true;
+		return rowsChangedCount > 0;
 	}
 
 }

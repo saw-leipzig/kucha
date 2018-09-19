@@ -890,8 +890,8 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	 * @see de.cses.client.DatabaseService#updateUserEntry(de.cses.shared.UserEntry)
 	 */
 	@Override
-	public boolean updateUserEntry(UserEntry currentUser, String passwordHash) throws IllegalArgumentException {
+	public boolean updateUserEntry(UserEntry currentUser, String passwordHash, String newPasswordHash) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
-		return connector.updateUserEntry(currentUser, passwordHash);
+		return connector.updateUserEntry(currentUser, passwordHash, newPasswordHash);
 	}
 }

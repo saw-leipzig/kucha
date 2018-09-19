@@ -15,26 +15,36 @@ package de.cses.client.user;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.editor.client.Editor;
+import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
-import com.sencha.gxt.widget.core.client.form.FormPanel.LabelAlign;
 import com.sencha.gxt.widget.core.client.form.PasswordField;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.form.Validator;
+import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
+import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -46,6 +56,11 @@ import de.cses.shared.UserEntry;
  *
  */
 public class UserLogin extends PopupPanel {
+	
+	interface UserInformationTemplate extends XTemplates {
+		@XTemplate("<div style='font: 10px tahoma,arial,verdana,sans-serif;'>{name}</div>")
+		SafeHtml userLabel(String name);
+	}
 
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	public static final String SESSION_ID = "sessionID";
@@ -56,6 +71,7 @@ public class UserLogin extends PopupPanel {
 	private PasswordField passwordField;
 //	private String username;
 	private UserEntry currentUser = null;
+	private UserInformationTemplate uiTemplate;
 
 	/**
 	 * 
@@ -72,6 +88,7 @@ public class UserLogin extends PopupPanel {
 		if (localSessionID != null) {
 			checkIfLoggedIn(localSessionID, username);
 		}
+		uiTemplate = GWT.create(UserInformationTemplate.class);
 		setModal(true);
 		setGlassEnabled(true);
 	}
@@ -156,6 +173,7 @@ public class UserLogin extends PopupPanel {
 			@Override
 			public void onSelect(SelectEvent event) {
 				hide();
+				clear();
 			}
 		});
 		loginView.add(new FieldLabel(usernameField, "Login name"), new VerticalLayoutData(1.0, .5));
@@ -171,9 +189,12 @@ public class UserLogin extends PopupPanel {
 	}
 
 	private void showUserView() { // all Information about the user and the possibility to change it
-		VerticalLayoutContainer userView = new VerticalLayoutContainer();
+		
 		PasswordField passwordField = new PasswordField();
 		passwordField.setWidth(200);
+		FramedPanel passwordFP = new FramedPanel();
+		passwordFP.setHeading("Password");
+		passwordFP.add(passwordField);
 		
 		TextField emailTF = new TextField();
 		emailTF.setWidth(300);
@@ -185,6 +206,9 @@ public class UserLogin extends PopupPanel {
 				currentUser.setEmail(event.getValue()!=null ? event.getValue() : "");
 			}
 		});
+		FramedPanel emailFP = new FramedPanel();
+		emailFP.setHeading("E-Mail");
+		emailFP.add(emailTF);
 		
 		TextArea affiliationTA = new TextArea();
 		affiliationTA.setWidth(300);
@@ -196,13 +220,51 @@ public class UserLogin extends PopupPanel {
 				currentUser.setAffiliation(event.getValue()!=null ? event.getValue() : "");
 			}
 		});
+		FramedPanel affiliationFP = new FramedPanel();
+		affiliationFP.setHeading("Affiliation");
+		affiliationFP.add(affiliationTA);
+		
+		PasswordField newPassword, repeatNewPassword;
+		newPassword = new PasswordField();
+		newPassword.addValidator(new Validator<String>() {
+			
+			@Override
+			public List<EditorError> validate(Editor<String> editor, String value) {
+				List<EditorError> l = new ArrayList<EditorError>();
+				if (!newPassword.getCurrentValue().isEmpty() && (newPassword.getValue().length() < 8)) {
+					l.add(new DefaultEditorError(editor, "the new password needs at least 8 characters", value));
+				}
+				return l;
+			}
+		});
+		newPassword.addValidator(new RegExValidator("([A-Za-z]+[0-9]|[0-9]+[A-Za-z])[A-Za-z0-9]*", "please use at least one number and one character"));
+		newPassword.setEmptyText("type in new password");
+		repeatNewPassword = new PasswordField();
+		repeatNewPassword.setEmptyText("repeat new password");
+		repeatNewPassword.addValidator(new Validator<String>() {
+			
+			@Override
+			public List<EditorError> validate(Editor<String> editor, String value) {
+				List<EditorError> l = new ArrayList<EditorError>();
+				if (!value.equals(newPassword.getCurrentValue())) {
+					l.add(new DefaultEditorError(editor, "not matching", value));
+				}
+				return l;
+			}
+		});
+		repeatNewPassword.setAutoValidate(true);
+		FramedPanel changePasswordFP = new FramedPanel();
+		changePasswordFP.setHeading("Change password");
+		VerticalLayoutContainer changePasswordVLC = new VerticalLayoutContainer();
+		changePasswordVLC.add(newPassword, new VerticalLayoutData(1.0, .5));
+		changePasswordVLC.add(repeatNewPassword, new VerticalLayoutData(1.0, .5));
 		
 		TextButton updateButton = new TextButton("update");
 		updateButton.addSelectHandler(new SelectHandler() {
 			
 			@Override
 			public void onSelect(SelectEvent event) {
-				dbService.updateUserEntry(currentUser, cryptWithMD5(passwordField.getValue()), new AsyncCallback<Boolean>() {
+				dbService.updateUserEntry(currentUser, cryptWithMD5(passwordField.getValue()), cryptWithMD5(newPassword.getValue()), new AsyncCallback<Boolean>() {
 
 					@Override
 					public void onFailure(Throwable caught) {
@@ -234,21 +296,25 @@ public class UserLogin extends PopupPanel {
 			@Override
 			public void onSelect(SelectEvent event) {
 				hide();
+				clear();
 			}
 		});
 		
-		userView.add(new Label("You are logged in as" + currentUser.getFirstname() + " " + currentUser.getLastname() + " (" + currentUser.getUsername() + ")"), new VerticalLayoutData(1.0, .15));
-		userView.add(new FieldLabel(emailTF, "E-Mail"), new VerticalLayoutData(1.0, .15));
-		userView.add(new FieldLabel(passwordField, "Password"), new VerticalLayoutData(1.0, .15));
-		FieldLabel affiliationFL = new FieldLabel(affiliationTA, "Affiliation");
-		affiliationFL.setLabelAlign(LabelAlign.TOP);
-		userView.add(affiliationFL, new VerticalLayoutData(1.0, .55));
+		VerticalLayoutContainer userVL = new VerticalLayoutContainer();
+		userVL.add(new HTML(uiTemplate.userLabel("You are logged in as " + currentUser.getFirstname() + " " + currentUser.getLastname() + " (" + currentUser.getUsername() + ")")), new VerticalLayoutData(1.0, 1.0/7));
+		userVL.add(emailFP, new VerticalLayoutData(1.0, 1.0/7));
+		userVL.add(affiliationFP, new VerticalLayoutData(1.0, 2.0/7));
+		userVL.add(passwordFP, new VerticalLayoutData(1.0, 1.0/7));
+		userVL.add(changePasswordVLC, new VerticalLayoutData(1.0, 2.0/7));
+		HorizontalLayoutContainer userHL = new HorizontalLayoutContainer();
+		userHL.add(userVL, new HorizontalLayoutData(1.0, 1.0));
 		FramedPanel userFP = new FramedPanel();
 		userFP.setHeading("User Information");
-		userFP.add(userView);
+		userFP.add(userHL);
 		userFP.addButton(updateButton);
 		userFP.addButton(logoutButton);
 		userFP.addTool(closeTB);
+		userFP.setHeight(500);
 		add(userFP);
 //		super.setSize("300px", "250px");
 		super.center();
