@@ -276,5 +276,5 @@ public interface DatabaseService extends RemoteService {
 
 	boolean deleteAuthorEntry(AuthorEntry selectedEntry) throws IllegalArgumentException;
 
-	boolean updateUserEntry(UserEntry currentUser) throws IllegalArgumentException; 
+	boolean updateUserEntry(UserEntry currentUser, String passwordHash) throws IllegalArgumentException; 
 }

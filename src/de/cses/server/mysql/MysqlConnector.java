@@ -2484,6 +2484,9 @@ public class MysqlConnector {
 		PreparedStatement pstmt;
 		UserEntry result = null;
 		
+//		System.err.println("sessionID = " + sessionID);
+//		System.err.println("username = " + username);
+		
 		try {
 			pstmt = dbc.prepareStatement("SELECT * FROM Users WHERE SessionID=? AND Username=?");
 			pstmt.setString(1, sessionID);
@@ -4275,7 +4278,7 @@ public class MysqlConnector {
 			if (rs.first()) {
 				return false;
 			}
-			if (deleteEntry("DELETE FROM Authors WHERE  AuthorID=" + selectedEntry.getAuthorID())) {
+			if (deleteEntry("DELETE FROM Authors WHERE AuthorID=" + selectedEntry.getAuthorID())) {
 				return true;
 			}
 		} catch (SQLException e) {
@@ -4288,12 +4291,15 @@ public class MysqlConnector {
 	 * @param currentUser
 	 * @return
 	 */
-	public boolean updateUserEntry(UserEntry currentUser) {
+	public boolean updateUserEntry(UserEntry currentUser, String passwordHash) {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
-			pstmt = dbc.prepareStatement("UPDATE Users SET Email=? WHERE UserID=?");
+			pstmt = dbc.prepareStatement("UPDATE Users SET Email=?, Affiliation=? WHERE UserID=? AND Password=?");
 			pstmt.setString(1, currentUser.getEmail());
+			pstmt.setString(2, currentUser.getAffiliation());
+			pstmt.setInt(3, currentUser.getUserID());
+			pstmt.setString(4, passwordHash);
 			pstmt.executeUpdate();
 			pstmt.close();
 		} catch (SQLException e) {

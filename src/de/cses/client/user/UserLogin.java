@@ -16,26 +16,24 @@ package de.cses.client.user;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import org.cyberneko.html.HTMLScanner.CurrentEntity;
-
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
-import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
+import com.sencha.gxt.widget.core.client.form.FormPanel.LabelAlign;
 import com.sencha.gxt.widget.core.client.form.PasswordField;
+import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
 
 import de.cses.client.DatabaseService;
@@ -67,8 +65,10 @@ public class UserLogin extends PopupPanel {
 		String username = Cookies.getCookie(USERNAME);
 		usernameField = new TextField();
 		usernameField.setEmptyText("username");
+		usernameField.setWidth(200);
 		passwordField = new PasswordField();
 		passwordField.setEmptyText("password");
+		passwordField.setWidth(200);
 		if (localSessionID != null) {
 			checkIfLoggedIn(localSessionID, username);
 		}
@@ -100,6 +100,7 @@ public class UserLogin extends PopupPanel {
 					Cookies.setCookie(USERNAME, result.getUsername());
 					currentUser = result;
 					hide();
+					clear();
 				} else {
 					Util.showWarning("Login Message", "Login error! Please check username / password!");
 					usernameField.reset();
@@ -117,6 +118,7 @@ public class UserLogin extends PopupPanel {
 
 			@Override
 			public void onFailure(Throwable caught) {
+				Util.doLogging("checkSessionID failed!");
 			}
 
 			@Override
@@ -135,6 +137,7 @@ public class UserLogin extends PopupPanel {
 		passwordField.reset();
 		currentUser = null;
 		hide();
+		clear();
 	}
 
 	private void showLoginView() {
@@ -147,28 +150,34 @@ public class UserLogin extends PopupPanel {
 				login();
 			}
 		});
-		loginView.add(usernameField, new VerticalLayoutData(1.0, .4, new Margins(5)));
-		loginView.add(passwordField, new VerticalLayoutData(1.0, .4, new Margins(5)));
+		ToolButton closeTB = new ToolButton(ToolButton.CLOSE);
+		closeTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				hide();
+			}
+		});
+		loginView.add(new FieldLabel(usernameField, "Login name"), new VerticalLayoutData(1.0, .5));
+		loginView.add(new FieldLabel(passwordField, "Password"), new VerticalLayoutData(1.0, .5));
 		FramedPanel loginFP = new FramedPanel();
 		loginFP.setHeading("Login");
 		loginFP.add(loginView);
-		loginFP.add(loginView);
 		loginFP.addButton(loginButton);
-		clear();
+		loginFP.addTool(closeTB);
 		add(loginFP);
-		super.setSize("300px", "150px");
+//		super.setSize("300px", "200px");
 		super.center();
 	}
 
 	private void showUserView() { // all Information about the user and the possibility to change it
 		VerticalLayoutContainer userView = new VerticalLayoutContainer();
 		PasswordField passwordField = new PasswordField();
+		passwordField.setWidth(200);
 		
-		Label usernameLabel = new Label(currentUser.getUsername());
-		Label firstnameLabel = new Label(currentUser.getFirstname());
-		Label lastnameLabel = new Label(currentUser.getLastname());
 		TextField emailTF = new TextField();
-		emailTF.setText(currentUser.getEmail());
+		emailTF.setWidth(300);
+		emailTF.setValue(currentUser.getEmail());
 		emailTF.addValueChangeHandler(new ValueChangeHandler<String>() {
 			
 			@Override
@@ -177,22 +186,34 @@ public class UserLogin extends PopupPanel {
 			}
 		});
 		
+		TextArea affiliationTA = new TextArea();
+		affiliationTA.setWidth(300);
+		affiliationTA.setValue(currentUser.getAffiliation());
+		affiliationTA.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				currentUser.setAffiliation(event.getValue()!=null ? event.getValue() : "");
+			}
+		});
+		
 		TextButton updateButton = new TextButton("update");
 		updateButton.addSelectHandler(new SelectHandler() {
 			
 			@Override
 			public void onSelect(SelectEvent event) {
-				dbService.updateUserEntry(currentUser, new AsyncCallback<Boolean>() {
+				dbService.updateUserEntry(currentUser, cryptWithMD5(passwordField.getValue()), new AsyncCallback<Boolean>() {
 
 					@Override
 					public void onFailure(Throwable caught) {
-						// TODO Auto-generated method stub
+						Util.doLogging("Updating user information failed!");
 					}
 
 					@Override
 					public void onSuccess(Boolean result) {
 						if (result) {
 							hide();
+							clear();
 						}
 					}
 				});
@@ -207,19 +228,29 @@ public class UserLogin extends PopupPanel {
 				logout();
 			}
 		});
+		ToolButton closeTB = new ToolButton(ToolButton.CLOSE);
+		closeTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				hide();
+			}
+		});
 		
-		userView.add(new FieldLabel(usernameLabel, "You are logged in as"), new VerticalLayoutData(1.0, .2, new Margins(5)));
-		userView.add(new FieldLabel(firstnameLabel, "First name"), new VerticalLayoutData(1.0, .2, new Margins(5)));
-		userView.add(new FieldLabel(lastnameLabel, "Last name"), new VerticalLayoutData(1.0, .2, new Margins(5)));
-		userView.add(new FieldLabel(emailTF, "E-Mail"), new VerticalLayoutData(1.0, .2, new Margins(5)));
-		userView.add(new FieldLabel(passwordField, "Password"), new VerticalLayoutData(1.0, .2, new Margins(5)));
+		userView.add(new Label("You are logged in as" + currentUser.getFirstname() + " " + currentUser.getLastname() + " (" + currentUser.getUsername() + ")"), new VerticalLayoutData(1.0, .15));
+		userView.add(new FieldLabel(emailTF, "E-Mail"), new VerticalLayoutData(1.0, .15));
+		userView.add(new FieldLabel(passwordField, "Password"), new VerticalLayoutData(1.0, .15));
+		FieldLabel affiliationFL = new FieldLabel(affiliationTA, "Affiliation");
+		affiliationFL.setLabelAlign(LabelAlign.TOP);
+		userView.add(affiliationFL, new VerticalLayoutData(1.0, .55));
 		FramedPanel userFP = new FramedPanel();
 		userFP.setHeading("User Information");
 		userFP.add(userView);
+		userFP.addButton(updateButton);
 		userFP.addButton(logoutButton);
-		clear();
+		userFP.addTool(closeTB);
 		add(userFP);
-		super.setSize("300px", "450px");
+//		super.setSize("300px", "250px");
 		super.center();
 	}
 	
@@ -262,7 +293,7 @@ public class UserLogin extends PopupPanel {
 	}
 
 	public String getUsername() {
-		return currentUser.getUsername();
+		return currentUser != null ? currentUser.getUsername() : "";
 	}
 
 }

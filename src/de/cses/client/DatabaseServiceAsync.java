@@ -299,6 +299,6 @@ public interface DatabaseServiceAsync {
 
 	void deleteAuthorEntry(AuthorEntry selectedEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
-	void updateUserEntry(UserEntry currentUser, AsyncCallback<Boolean> asyncCallback);
+	void updateUserEntry(UserEntry currentUser, String passwordHash, AsyncCallback<Boolean> asyncCallback);
 
 }
