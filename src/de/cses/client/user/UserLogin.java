@@ -58,8 +58,8 @@ import de.cses.shared.UserEntry;
 public class UserLogin extends PopupPanel {
 	
 	interface UserInformationTemplate extends XTemplates {
-		@XTemplate("<div style='font: 10px tahoma,arial,verdana,sans-serif;'>{name}</div>")
-		SafeHtml userLabel(String name);
+		@XTemplate("<div style='font: 11px tahoma,arial,verdana,sans-serif;'>You are logged in as {fullname}<br>Username: {username}<br>Password only needed when updating information!</div>")
+		SafeHtml userLabel(String fullname, String username);
 	}
 
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
@@ -80,7 +80,7 @@ public class UserLogin extends PopupPanel {
 		String localSessionID = Cookies.getCookie(SESSION_ID);
 		String username = Cookies.getCookie(USERNAME);
 		usernameField = new TextField();
-		usernameField.setEmptyText("username");
+		usernameField.setEmptyText("username or email");
 		usernameField.setWidth(200);
 		passwordField = new PasswordField();
 		passwordField.setEmptyText("password");
@@ -142,6 +142,12 @@ public class UserLogin extends PopupPanel {
 			public void onSuccess(UserEntry result) { // we get the current user
 				if (result != null) {
 					currentUser = result;
+				} else {
+					Cookies.removeCookie(SESSION_ID);
+					Cookies.removeCookie(USERNAME);
+					currentUser = null;
+					usernameField.reset();
+					passwordField.reset();
 				}
 			}
 		});
@@ -176,8 +182,9 @@ public class UserLogin extends PopupPanel {
 				clear();
 			}
 		});
-		loginView.add(new FieldLabel(usernameField, "Login name"), new VerticalLayoutData(1.0, .5));
-		loginView.add(new FieldLabel(passwordField, "Password"), new VerticalLayoutData(1.0, .5));
+		loginView.add(new HTML("<div style='font: 11px tahoma,arial,verdana,sans-serif;'>You can now also use your email to log in!</div>"), new VerticalLayoutData(1.0, .3));
+		loginView.add(new FieldLabel(usernameField, "Login name"), new VerticalLayoutData(1.0, .35));
+		loginView.add(new FieldLabel(passwordField, "Password"), new VerticalLayoutData(1.0, .35));
 		FramedPanel loginFP = new FramedPanel();
 		loginFP.setHeading("Login");
 		loginFP.add(loginView);
@@ -193,7 +200,7 @@ public class UserLogin extends PopupPanel {
 		PasswordField passwordField = new PasswordField();
 		passwordField.setWidth(200);
 		FramedPanel passwordFP = new FramedPanel();
-		passwordFP.setHeading("Password");
+		passwordFP.setHeading("Please confirm update with password");
 		passwordFP.add(passwordField);
 		
 		TextField emailTF = new TextField();
@@ -253,11 +260,12 @@ public class UserLogin extends PopupPanel {
 			}
 		});
 		repeatNewPassword.setAutoValidate(true);
-		FramedPanel changePasswordFP = new FramedPanel();
-		changePasswordFP.setHeading("Change password");
 		VerticalLayoutContainer changePasswordVLC = new VerticalLayoutContainer();
 		changePasswordVLC.add(newPassword, new VerticalLayoutData(1.0, .5));
 		changePasswordVLC.add(repeatNewPassword, new VerticalLayoutData(1.0, .5));
+		FramedPanel changePasswordFP = new FramedPanel();
+		changePasswordFP.setHeading("Change password (optional)");
+		changePasswordFP.add(changePasswordVLC);
 		
 		TextButton updateButton = new TextButton("update");
 		updateButton.addSelectHandler(new SelectHandler() {
@@ -301,11 +309,11 @@ public class UserLogin extends PopupPanel {
 		});
 		
 		VerticalLayoutContainer userVL = new VerticalLayoutContainer();
-		userVL.add(new HTML(uiTemplate.userLabel("You are logged in as " + currentUser.getFirstname() + " " + currentUser.getLastname() + " (" + currentUser.getUsername() + ")")), new VerticalLayoutData(1.0, 1.0/7));
+		userVL.add(new HTML(uiTemplate.userLabel(currentUser.getFirstname() + " " + currentUser.getLastname(), currentUser.getUsername())), new VerticalLayoutData(1.0, 1.0/7));
 		userVL.add(emailFP, new VerticalLayoutData(1.0, 1.0/7));
 		userVL.add(affiliationFP, new VerticalLayoutData(1.0, 2.0/7));
+		userVL.add(changePasswordFP, new VerticalLayoutData(1.0, 2.0/7));
 		userVL.add(passwordFP, new VerticalLayoutData(1.0, 1.0/7));
-		userVL.add(changePasswordVLC, new VerticalLayoutData(1.0, 2.0/7));
 		HorizontalLayoutContainer userHL = new HorizontalLayoutContainer();
 		userHL.add(userVL, new HorizontalLayoutData(1.0, 1.0));
 		FramedPanel userFP = new FramedPanel();
