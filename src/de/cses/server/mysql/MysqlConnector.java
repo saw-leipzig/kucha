@@ -2345,6 +2345,7 @@ public class MysqlConnector {
 			pstmt.setString(2, password);
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.first()) {
+				System.err.println("user logged in sucessfully");
 				newSessionID = UUID.randomUUID().toString();
 				updateSessionIDforUser(username, newSessionID);
 				result = new UserEntry(rs.getInt("UserID"), rs.getString("Username"), rs.getString("Firstname"), rs.getString("Lastname"),
@@ -2449,13 +2450,19 @@ public class MysqlConnector {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
-			pstmt = dbc.prepareStatement("UPDATE Users SET SessionID=? WHERE Username=?");
+			if (username.contains("@")) {
+				pstmt = dbc.prepareStatement("UPDATE Users SET SessionID=? WHERE Email=?");
+			} else {
+				pstmt = dbc.prepareStatement("UPDATE Users SET SessionID=? WHERE Username=?");
+			}
 			pstmt.setString(1, sessionID);
 			pstmt.setString(2, username);
-			pstmt.executeUpdate();
+//			pstmt.executeUpdate();
+			if (pstmt.executeUpdate() > 0) // temporary check 
+				System.err.println("updated sessionID for user " + username + " to " + sessionID);
 			pstmt.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			System.err.println(e.getLocalizedMessage());
 		}
 	}
 	
@@ -2490,8 +2497,8 @@ public class MysqlConnector {
 		PreparedStatement pstmt;
 		UserEntry result = null;
 		
-//		System.err.println("sessionID = " + sessionID);
-//		System.err.println("username = " + username);
+		System.err.println("sessionID = " + sessionID);
+		System.err.println("username = " + username);
 		
 		try {
 			pstmt = dbc.prepareStatement("SELECT * FROM Users WHERE SessionID=? AND Username=?");

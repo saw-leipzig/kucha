@@ -58,7 +58,7 @@ import de.cses.shared.UserEntry;
 public class UserLogin extends PopupPanel {
 	
 	interface UserInformationTemplate extends XTemplates {
-		@XTemplate("<div style='font: 11px tahoma,arial,verdana,sans-serif;'>You are logged in as {fullname}<br>Username: {username}<br>Password only needed when updating information!</div>")
+		@XTemplate("<div style='font: 11px tahoma,arial,verdana,sans-serif;'>You are logged in as {fullname}<br>Username: {username}<br>Password is only needed when updating information!</div>")
 		SafeHtml userLabel(String fullname, String username);
 	}
 
@@ -69,7 +69,6 @@ public class UserLogin extends PopupPanel {
 	private static UserLogin instance = null;
 	private TextField usernameField;
 	private PasswordField passwordField;
-//	private String username;
 	private UserEntry currentUser = null;
 	private UserInformationTemplate uiTemplate;
 
@@ -231,7 +230,7 @@ public class UserLogin extends PopupPanel {
 		affiliationFP.setHeading("Affiliation");
 		affiliationFP.add(affiliationTA);
 		
-		PasswordField newPassword, repeatNewPassword;
+		PasswordField newPassword, retypeNewPassword;
 		newPassword = new PasswordField();
 		newPassword.addValidator(new Validator<String>() {
 			
@@ -246,9 +245,9 @@ public class UserLogin extends PopupPanel {
 		});
 		newPassword.addValidator(new RegExValidator("([A-Za-z]+[0-9]|[0-9]+[A-Za-z])[A-Za-z0-9]*", "please use at least one number and one character"));
 		newPassword.setEmptyText("type in new password");
-		repeatNewPassword = new PasswordField();
-		repeatNewPassword.setEmptyText("repeat new password");
-		repeatNewPassword.addValidator(new Validator<String>() {
+		retypeNewPassword = new PasswordField();
+		retypeNewPassword.setEmptyText("retype new password");
+		retypeNewPassword.addValidator(new Validator<String>() {
 			
 			@Override
 			public List<EditorError> validate(Editor<String> editor, String value) {
@@ -259,10 +258,10 @@ public class UserLogin extends PopupPanel {
 				return l;
 			}
 		});
-		repeatNewPassword.setAutoValidate(true);
+		retypeNewPassword.setAutoValidate(true);
 		VerticalLayoutContainer changePasswordVLC = new VerticalLayoutContainer();
 		changePasswordVLC.add(newPassword, new VerticalLayoutData(1.0, .5));
-		changePasswordVLC.add(repeatNewPassword, new VerticalLayoutData(1.0, .5));
+		changePasswordVLC.add(retypeNewPassword, new VerticalLayoutData(1.0, .5));
 		FramedPanel changePasswordFP = new FramedPanel();
 		changePasswordFP.setHeading("Change password (optional)");
 		changePasswordFP.add(changePasswordVLC);
@@ -309,11 +308,11 @@ public class UserLogin extends PopupPanel {
 		});
 		
 		VerticalLayoutContainer userVL = new VerticalLayoutContainer();
-		userVL.add(new HTML(uiTemplate.userLabel(currentUser.getFirstname() + " " + currentUser.getLastname(), currentUser.getUsername())), new VerticalLayoutData(1.0, 1.0/7));
-		userVL.add(emailFP, new VerticalLayoutData(1.0, 1.0/7));
-		userVL.add(affiliationFP, new VerticalLayoutData(1.0, 2.0/7));
-		userVL.add(changePasswordFP, new VerticalLayoutData(1.0, 2.0/7));
-		userVL.add(passwordFP, new VerticalLayoutData(1.0, 1.0/7));
+		userVL.add(new HTML(uiTemplate.userLabel(currentUser.getFirstname() + " " + currentUser.getLastname(), currentUser.getUsername())), new VerticalLayoutData(1.0, .2));
+		userVL.add(emailFP, new VerticalLayoutData(1.0, .14));
+		userVL.add(affiliationFP, new VerticalLayoutData(1.0, .3));
+		userVL.add(changePasswordFP, new VerticalLayoutData(1.0, .22));
+		userVL.add(passwordFP, new VerticalLayoutData(1.0, .14));
 		HorizontalLayoutContainer userHL = new HorizontalLayoutContainer();
 		userHL.add(userVL, new HorizontalLayoutData(1.0, 1.0));
 		FramedPanel userFP = new FramedPanel();
