@@ -40,5 +40,7 @@ public abstract class AbstractDataDisplay extends Portlet {
 		addTool(closeButton);
 		setCollapsible(true);
 	}
-
+	
+	public abstract String getUniqueID();
+	
 }

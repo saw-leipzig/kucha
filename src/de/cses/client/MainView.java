@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 
+ * Copyright 2017, 2018 
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -30,7 +30,6 @@ import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.Portlet;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
-import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
@@ -57,12 +56,9 @@ import de.cses.client.images.ImageSearchController;
 import de.cses.client.ornamentic.OrnamenticFilter;
 import de.cses.client.ornamentic.OrnamenticResultView;
 import de.cses.client.ornamentic.OrnamenticSearchController;
+import de.cses.client.ui.AbstractDataDisplay;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.client.ui.AbstractSearchController;
-import de.cses.client.ui.DataDisplayController;
-import de.cses.client.ui.DataDisplayView;
-import de.cses.client.ui.ResultCollectorController;
-import de.cses.client.ui.ResultCollectorView;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.CaveEntry;
@@ -119,8 +115,6 @@ public class MainView implements IsWidget {
 //    northPanel = new VerticalLayoutContainer();
 //
 //    northPanel.add(UserLogin.getInstance(), new VerticalLayoutData(1.0, .4));
-    
-    HorizontalLayoutData hLayoutData = new HorizontalLayoutData(140, 1.0, new Margins(5, 0, 5, 5));
     
 //    LocationFilter lFilter = new LocationFilter("Location Filter");
 
@@ -276,6 +270,8 @@ public class MainView implements IsWidget {
 		
 		// ----------------------------------- assembling the menu bar ---------------------------------------------
 		
+    HorizontalLayoutData hLayoutData = new HorizontalLayoutData(140, 1.0, new Margins(5, 0, 5, 5));
+    
 		selectorLayoutContainer = new HorizontalLayoutContainer();
 		selectorLayoutContainer.add(caveSearchController, hLayoutData);
 		selectorLayoutContainer.add(depictionSearchController, hLayoutData);
@@ -284,8 +280,6 @@ public class MainView implements IsWidget {
 		selectorLayoutContainer.add(imageSearchController, hLayoutData);
 //		selectorLayoutContainer.add(resultCollectorController, hLayoutData);
 //		selectorLayoutContainer.add(dataDisplayController, hLayoutData);
-		
-		
 		
     ContentPanel centerPanel = new ContentPanel();
     centerPanel.setHeading("Search Results");
@@ -309,12 +303,14 @@ public class MainView implements IsWidget {
 			public void onClose(CloseEvent<PopupPanel> event) {
 		    if (UserLogin.isLoggedIn()) {
 		    	north.setHeading("Welcome back, " + UserLogin.getInstance().getUsername());
-		    	imageSearchController.setVisible(true);
+//		    	imageSearchController.setVisible(true);
+		    	imageSearchController.setEnabled(true);
 		    	loadWorkspaceToolButton.setVisible(true);
 		    	saveWorkspaceToolButton.setVisible(true);
 		    } else {
 		    	north.setHeading("Welcome! Your are currently here as a guest!");
-		    	imageSearchController.setVisible(false);
+		    	imageSearchController.setEnabled(false);
+//		    	imageSearchController.setVisible(false);
 		    	loadWorkspaceToolButton.setVisible(false);
 		    	saveWorkspaceToolButton.setVisible(false);
 		    }
@@ -380,13 +376,10 @@ public class MainView implements IsWidget {
 			@Override
 			protected void onDragDrop(DndDropEvent event) {
 				super.onDragDrop(event);
-				Util.doLogging("DataDisplayView.onDragDrop called: " + event.getData().getClass().toString());
 				if (event.getData() instanceof CaveEntry) {
 //					addResult(new CaveView((CaveEntry) event.getData()));
 				} else if (event.getData() instanceof DepictionEntry) {
-					Util.doLogging("adding result ... ");
-					dataViewPLC.add(new DepictionDataDisplay((DepictionEntry) event.getData()), 0);
-					Util.doLogging("new DisplayData for depictionID = " + ((DepictionEntry) event.getData()).getDepictionID());
+					addDroppedDataDisplay(new DepictionDataDisplay((DepictionEntry) event.getData()));
 				} else if (event.getData() instanceof ImageEntry) {
 //					addResult(new ImageView((ImageEntry) event.getData()));
 				} else if (event.getData() instanceof OrnamentEntry) {
@@ -427,10 +420,24 @@ public class MainView implements IsWidget {
     	north.setHeading("Welcome back, " + UserLogin.getInstance().getUsername());
     } else {
     	north.setHeading("Welcome! Your are currently here as a guest!");
-    	imageSearchController.setVisible(false);
+//    	imageSearchController.setVisible(false);
+    	imageSearchController.setEnabled(false);
     	saveWorkspaceToolButton.setVisible(false);
     	loadWorkspaceToolButton.setVisible(false);
     }
+	}
+	
+	private void addDroppedDataDisplay(AbstractDataDisplay dd) {
+		Iterator<Widget> widgetIterator = dataViewPLC.getContainer().iterator();
+		while (widgetIterator.hasNext()) {
+			Widget w = widgetIterator.next();
+			if (w instanceof AbstractDataDisplay) {
+				if (((AbstractDataDisplay)w).getUniqueID().equals(dd.getUniqueID())) {
+					return;
+				}
+			}
+		}
+		dataViewPLC.add(dd, 0);
 	}
 	
 	/**
