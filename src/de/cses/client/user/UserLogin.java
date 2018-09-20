@@ -58,7 +58,7 @@ import de.cses.shared.UserEntry;
 public class UserLogin extends PopupPanel {
 	
 	interface UserInformationTemplate extends XTemplates {
-		@XTemplate("<div style='font: 11px tahoma,arial,verdana,sans-serif;'>You are logged in as {fullname}<br>Username: {username}<br>Password is only needed when updating information!</div>")
+		@XTemplate("<div style='font: 12px tahoma,arial,verdana,sans-serif;'>You are logged in as {fullname}<br>Username: {username}<br>Password is only needed when updating information!</div>")
 		SafeHtml userLabel(String fullname, String username);
 	}
 
@@ -199,7 +199,7 @@ public class UserLogin extends PopupPanel {
 		PasswordField passwordField = new PasswordField();
 		passwordField.setWidth(200);
 		FramedPanel passwordFP = new FramedPanel();
-		passwordFP.setHeading("Please confirm update with password");
+		passwordFP.setHeading("Password (for update/change password only)");
 		passwordFP.add(passwordField);
 		
 		TextField emailTF = new TextField();
