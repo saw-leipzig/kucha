@@ -13,7 +13,7 @@
  */
 package de.cses.client.ui;
 
-import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.Portlet;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
@@ -22,7 +22,7 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
  * @author alingnau
  *
  */
-public abstract class AbstractDataDisplay extends ContentPanel {
+public abstract class AbstractDataDisplay extends Portlet {
 
 	/**
 	 * 
