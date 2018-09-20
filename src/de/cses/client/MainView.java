@@ -92,6 +92,8 @@ public class MainView implements IsWidget {
 	private AnnotatedBiblographySearchController annotatedBiblographySearchController;
 	private PortalLayoutContainer dataViewPLC;
 //	private DataDisplayController dataDisplayController;
+	private ToolButton saveWorkspaceToolButton;
+	private ToolButton loadWorkspaceToolButton;
 
 	/**
 	 * 
@@ -298,12 +300,6 @@ public class MainView implements IsWidget {
     centerPanel.add(resultView);
 
     ContentPanel north = new ContentPanel();
-    if (UserLogin.isLoggedIn()) {
-    	north.setHeading("Welcome back, " + UserLogin.getInstance().getUsername());
-    } else {
-    	north.setHeading("Welcome! Your are currently here as a guest!");
-    	imageSearchController.setVisible(false);
-    }
     north.add(selectorLayoutContainer);
     
     // updating heading when user is logged in / out
@@ -314,9 +310,13 @@ public class MainView implements IsWidget {
 		    if (UserLogin.isLoggedIn()) {
 		    	north.setHeading("Welcome back, " + UserLogin.getInstance().getUsername());
 		    	imageSearchController.setVisible(true);
+		    	loadWorkspaceToolButton.setVisible(true);
+		    	saveWorkspaceToolButton.setVisible(true);
 		    } else {
 		    	north.setHeading("Welcome! Your are currently here as a guest!");
 		    	imageSearchController.setVisible(false);
+		    	loadWorkspaceToolButton.setVisible(false);
+		    	saveWorkspaceToolButton.setVisible(false);
 		    }
 			}
 		});
@@ -354,7 +354,7 @@ public class MainView implements IsWidget {
     dataViewPanel.setResize(true);
     dataViewPanel.setHeading("View");
     dataViewPanel.add(dataViewPLC);
-    ToolButton saveWorkspaceToolButton = new ToolButton(ToolButton.SAVE);
+    saveWorkspaceToolButton = new ToolButton(ToolButton.SAVE);
     saveWorkspaceToolButton.setToolTip("save");
     saveWorkspaceToolButton.addSelectHandler(new SelectHandler() {
 			
@@ -364,7 +364,7 @@ public class MainView implements IsWidget {
 			}
 		});
     dataViewPanel.addTool(saveWorkspaceToolButton);
-    ToolButton loadWorkspaceToolButton = new ToolButton(ToolButton.RESTORE);
+    loadWorkspaceToolButton = new ToolButton(ToolButton.RESTORE);
     loadWorkspaceToolButton.setToolTip("load");
     loadWorkspaceToolButton.addSelectHandler(new SelectHandler() {
 			
@@ -373,7 +373,9 @@ public class MainView implements IsWidget {
 				// TODO load workspace
 			}
 		});
-		DropTarget target = new DropTarget(dataViewPanel) {
+    dataViewPanel.addTool(loadWorkspaceToolButton);
+
+    DropTarget target = new DropTarget(dataViewPanel) {
 
 			@Override
 			protected void onDragDrop(DndDropEvent event) {
@@ -394,7 +396,6 @@ public class MainView implements IsWidget {
 				}
 			}
 		};
-
     
     BorderLayoutData northData = new BorderLayoutData(70);
     northData.setMargins(new Margins(5));
@@ -422,6 +423,14 @@ public class MainView implements IsWidget {
     view.setEastWidget(dataViewPanel, eastData);
     view.setCenterWidget(centerPanel, centerData);
 
+    if (UserLogin.isLoggedIn()) {
+    	north.setHeading("Welcome back, " + UserLogin.getInstance().getUsername());
+    } else {
+    	north.setHeading("Welcome! Your are currently here as a guest!");
+    	imageSearchController.setVisible(false);
+    	saveWorkspaceToolButton.setVisible(false);
+    	loadWorkspaceToolButton.setVisible(false);
+    }
 	}
 	
 	/**
