@@ -325,6 +325,7 @@ public class MainView implements IsWidget {
 				UserLogin.getInstance().center();
 			}
 		});
+    loginTB.setToolTip("login");
     north.addTool(loginTB);
 //    northPanel.add(north, new VerticalLayoutData(1.0, .6));
     
