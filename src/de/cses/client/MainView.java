@@ -71,6 +71,8 @@ import de.cses.shared.OrnamentEntry;
  *
  */
 public class MainView implements IsWidget {
+	
+	private static ArrayList<String> dataDisplayUniqueIDList = null;
 
 	private BorderLayoutContainer view = null;
 	private CaveSearchController caveSearchController;
@@ -380,7 +382,12 @@ public class MainView implements IsWidget {
 				if (event.getData() instanceof CaveEntry) {
 //					addResult(new CaveView((CaveEntry) event.getData()));
 				} else if (event.getData() instanceof DepictionEntry) {
-					addDroppedDataDisplay(new DepictionDataDisplay((DepictionEntry) event.getData()));
+					Util.doLogging("dropped element: DepictionDataDisplay");
+					DepictionDataDisplay ddd = new DepictionDataDisplay((DepictionEntry) event.getData());
+					if (!MainView.getDataDisplayUniqueIDList().contains(ddd.getUniqueID())) {
+						dataViewPLC.add(ddd, 0);
+						MainView.getDataDisplayUniqueIDList().add(ddd.getUniqueID());
+					}
 				} else if (event.getData() instanceof ImageEntry) {
 //					addResult(new ImageView((ImageEntry) event.getData()));
 				} else if (event.getData() instanceof OrnamentEntry) {
@@ -428,18 +435,20 @@ public class MainView implements IsWidget {
     }
 	}
 	
-	private void addDroppedDataDisplay(AbstractDataDisplay dd) {
-		Iterator<Widget> widgetIterator = dataViewPLC.getContainer().iterator();
-		while (widgetIterator.hasNext()) {
-			Widget w = widgetIterator.next();
-			if (w instanceof AbstractDataDisplay) {
-				if (((AbstractDataDisplay)w).getUniqueID().equals(dd.getUniqueID())) {
-					return;
-				}
-			}
-		}
-		dataViewPLC.add(dd, 0);
-	}
+//	private void addDroppedDataDisplay(AbstractDataDisplay dd) {
+//		Iterator<Widget> widgetIterator = dataViewPLC.getContainer().iterator();
+//		while (widgetIterator.hasNext()) {
+//			if (dd instanceof Widget) {
+//				Widget w = widgetIterator.next();
+//				if (w.toString().equals(((Widget)dd).toString())) {
+//					Util.doLogging("AbstractDataDisplay already added");
+//					return;
+//				}
+//			}
+//		}
+//		Util.doLogging("adding newly dropped element");
+//		dataViewPLC.add(dd, 0);
+//	}
 	
 	/**
 	 * 
@@ -481,6 +490,13 @@ public class MainView implements IsWidget {
 			}
 		}
 		return activeSelectors;
+	}
+
+	public static ArrayList<String> getDataDisplayUniqueIDList() {
+		if (dataDisplayUniqueIDList == null) {
+			dataDisplayUniqueIDList = new ArrayList<String>();
+		}
+		return dataDisplayUniqueIDList;
 	}
 	
 }

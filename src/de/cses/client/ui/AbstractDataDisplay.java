@@ -18,6 +18,8 @@ import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
+import de.cses.client.MainView;
+
 /**
  * @author alingnau
  *
@@ -35,6 +37,7 @@ public abstract class AbstractDataDisplay extends Portlet {
 			@Override
 			public void onSelect(SelectEvent event) {
 				removeFromParent();
+				MainView.getDataDisplayUniqueIDList().remove(getUniqueID());
 			}
 		});
 		addTool(closeButton);
