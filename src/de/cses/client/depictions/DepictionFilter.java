@@ -217,8 +217,17 @@ public class DepictionFilter extends AbstractFilter {
 		
 		ContentPanel iconographyPanel = new ContentPanel();
 		iconographyPanel.setHeaderVisible(true);
-		iconographyPanel.setHeading("Iconography & PE search");
+		iconographyPanel.setHeading("Iconography & Pictorial Element search");
 		iconographyPanel.add(iconographyBLC);
+		ToolButton selectorTB = new ToolButton(ToolButton.GEAR);
+		selectorTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				showIconographySelection();
+			}
+		});
+		iconographyPanel.addTool(selectorTB);
 		
 		/**
 		 * assemble shortNameSearch
@@ -342,11 +351,7 @@ public class DepictionFilter extends AbstractFilter {
 		return iconographySpinnerField.isEnabled() ? iconographySpinnerField.getValue() : 0;
 	}
 	
-	/* (non-Javadoc)
-	 * @see de.cses.client.ui.AbstractFilter#showExtendedFilterView()
-	 */
-	@Override
-	protected void showExtendedFilterView() {
+	private void showIconographySelection() {
 		PopupPanel extendedFilterDialog = new PopupPanel();
 		FramedPanel extendedFilterFP = new FramedPanel();
 		extendedFilterFP.setHeading("more filter options");

@@ -271,21 +271,23 @@ public class UserLogin extends PopupPanel {
 			
 			@Override
 			public void onSelect(SelectEvent event) {
-				dbService.updateUserEntry(currentUser, cryptWithMD5(passwordField.getValue()), cryptWithMD5(newPassword.getValue()), new AsyncCallback<Boolean>() {
-
-					@Override
-					public void onFailure(Throwable caught) {
-						Util.doLogging("Updating user information failed!");
-					}
-
-					@Override
-					public void onSuccess(Boolean result) {
-						if (result) {
-							hide();
-							clear();
+				if (passwordField.validate()) {
+					dbService.updateUserEntry(currentUser, cryptWithMD5(passwordField.getValue()), cryptWithMD5(newPassword.getValue()), new AsyncCallback<Boolean>() {
+						
+						@Override
+						public void onFailure(Throwable caught) {
+							Util.doLogging("Updating user information failed!");
 						}
-					}
-				});
+						
+						@Override
+						public void onSuccess(Boolean result) {
+							if (result) {
+								hide();
+								clear();
+							}
+						}
+					});
+				}
 			}
 		});
 		
@@ -337,6 +339,9 @@ public class UserLogin extends PopupPanel {
 	}
 
 	private static String cryptWithMD5(String pass) {
+		if (pass == null || pass.isEmpty()) {
+			return null;
+		}
 		try {
 			MessageDigest md = MessageDigest.getInstance("MD5");
 			byte[] passBytes = pass.getBytes();
@@ -351,7 +356,6 @@ public class UserLogin extends PopupPanel {
 			ex.printStackTrace();
 		}
 		return null;
-
 	}
 
 	public String getUsernameSessionIDParameterForUri() {
