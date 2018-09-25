@@ -98,13 +98,13 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 		return entry.getUniqueID();
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof DepictionDataDisplay) {
-			return ((DepictionDataDisplay) obj).getUniqueID() == this.getUniqueID();
-		} else {
-			return false;
-		}
-	}
+//	@Override
+//	public boolean equals(Object obj) {
+//		if (obj instanceof DepictionDataDisplay) {
+//			return ((DepictionDataDisplay) obj).getUniqueID() == this.getUniqueID();
+//		} else {
+//			return false;
+//		}
+//	}
 
 }

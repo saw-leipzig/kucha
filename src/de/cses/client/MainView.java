@@ -382,7 +382,6 @@ public class MainView implements IsWidget {
 				if (event.getData() instanceof CaveEntry) {
 //					addResult(new CaveView((CaveEntry) event.getData()));
 				} else if (event.getData() instanceof DepictionEntry) {
-					Util.doLogging("dropped element: DepictionDataDisplay");
 					DepictionDataDisplay ddd = new DepictionDataDisplay((DepictionEntry) event.getData());
 					if (!MainView.getDataDisplayUniqueIDList().contains(ddd.getUniqueID())) {
 						dataViewPLC.add(ddd, 0);
