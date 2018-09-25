@@ -22,7 +22,6 @@ import java.sql.Statement;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -1475,10 +1474,10 @@ public class MysqlConnector {
 			pstmt.setInt(2, AbsoluteTop);
 			pstmt.setInt(3, depictionID);
 			pstmt.executeUpdate();
+			pstmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return "failed to save depiction";
-
 		}
 		return "saved";
 	}
@@ -2330,26 +2329,37 @@ public class MysqlConnector {
 	 * @param password
 	 * @return
 	 */
-	public synchronized String userLogin(String username, String password) {
+	public synchronized UserEntry userLogin(String username, String password) {
 		String newSessionID = null;
 		Connection dbc = getConnection();
-		Statement stmt;
+		PreparedStatement pstmt;
+		UserEntry result = null;
+		
 		try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Users WHERE Username = '" + username + "' AND Password = '" + password + "'");
+			if (username.contains("@")) {
+				pstmt = dbc.prepareStatement("SELECT * FROM Users WHERE Email=? AND Password=?");
+			} else {
+				pstmt = dbc.prepareStatement("SELECT * FROM Users WHERE Username=? AND Password=?");
+			}
+			pstmt.setString(1, username);
+			pstmt.setString(2, password);
+			ResultSet rs = pstmt.executeQuery();
 			if (rs.first()) {
+				System.err.println("user logged in sucessfully");
 				newSessionID = UUID.randomUUID().toString();
 				updateSessionIDforUser(username, newSessionID);
+				result = new UserEntry(rs.getInt("UserID"), rs.getString("Username"), rs.getString("Firstname"), rs.getString("Lastname"),
+						rs.getString("Email"), rs.getString("Affiliation"), rs.getInt("Accessrights"), newSessionID);
 			} else {
 				System.err.println("wrong password for user " + username + ": hash = " + password);
 			}
 			rs.close();
-			stmt.close();
+			pstmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
 		}
-		return newSessionID;
+		return result;
 	}
 
 	/**
@@ -2366,7 +2376,7 @@ public class MysqlConnector {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Users WHERE Username = '" + username + "'");
 			if (rs.first()) {
 				result = new UserEntry(rs.getInt("UserID"), rs.getString("Username"), rs.getString("Firstname"), rs.getString("Lastname"),
-						rs.getString("Email"), rs.getString("Affiliation"), rs.getInt("Accessrights"));
+						rs.getString("Email"), rs.getString("Affiliation"), rs.getInt("Accessrights"), rs.getString("SessionID"));
 			} else {
 				System.err.println("no user " + username + " existing");
 			}
@@ -2440,30 +2450,64 @@ public class MysqlConnector {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
-			pstmt = dbc.prepareStatement("UPDATE Users SET SessionID=? WHERE Username=?");
+			if (username.contains("@")) {
+				pstmt = dbc.prepareStatement("UPDATE Users SET SessionID=? WHERE Email=?");
+			} else {
+				pstmt = dbc.prepareStatement("UPDATE Users SET SessionID=? WHERE Username=?");
+			}
 			pstmt.setString(1, sessionID);
 			pstmt.setString(2, username);
-			pstmt.executeUpdate();
+//			pstmt.executeUpdate();
+			if (pstmt.executeUpdate() > 0) // temporary check 
+				System.err.println("updated sessionID for user " + username + " to " + sessionID);
+			pstmt.close();
+		} catch (SQLException e) {
+			System.err.println(e.getLocalizedMessage());
+		}
+	}
+	
+	public boolean checkSessionID(String sessionID) {
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		boolean result = false;
+		
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM Users WHERE SessionID=?");
+			pstmt.setString(1, sessionID);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.first()) {
+				// TODO add expiry date and check whether sessionID is still valid
+				result = true;
+			}
+			rs.close();
 			pstmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		return result;
 	}
-
+ 
 	/**
 	 * @param sessionID
+	 * @param username
 	 * @return username
 	 */
-	public String checkSessionID(String sessionID) {
-		String username = null;
+	public UserEntry checkSessionID(String sessionID, String username) {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
+		UserEntry result = null;
+		
+		System.err.println("sessionID = " + sessionID);
+		System.err.println("username = " + username);
+		
 		try {
-			pstmt = dbc.prepareStatement("SELECT Username FROM Users WHERE SessionID=?");
+			pstmt = dbc.prepareStatement("SELECT * FROM Users WHERE SessionID=? AND Username=?");
 			pstmt.setString(1, sessionID);
+			pstmt.setString(2, username);
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.first()) {
-				username = rs.getString("Username");
+				result = new UserEntry(rs.getInt("UserID"), rs.getString("Username"), rs.getString("Firstname"), rs.getString("Lastname"),
+						rs.getString("Email"), rs.getString("Affiliation"), rs.getInt("Accessrights"), rs.getString("SessionID"));
 			}
 			rs.close();
 			pstmt.close();
@@ -2471,7 +2515,7 @@ public class MysqlConnector {
 			e.printStackTrace();
 			return null;
 		}
-		return username;
+		return result;
 	}
 
 	/**
@@ -3603,6 +3647,52 @@ public class MysqlConnector {
 		return entry;
 	}
 
+	public OrnamentClassEntry renameOrnamentClass(OrnamentClassEntry ornamentClass) {
+		Connection dbc = getConnection();
+		OrnamentClassEntry entry = null;
+
+		PreparedStatement stmt;
+		try {
+			stmt = dbc.prepareStatement("UPDATE OrnamentClass SET Name = ? WHERE VALUES OrnamentClassID = ?");
+			stmt.setString(1, ornamentClass.getName());
+			stmt.setInt(1, ornamentClass.getOrnamentClassID());
+			stmt.executeUpdate();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return entry;
+		}
+		return entry;
+	}
+	
+	/**
+	 * 
+	 * @param ornamentComponents
+	 * @return
+	 */
+	public OrnamentComponentsEntry renameOrnamentComponents(OrnamentComponentsEntry ornamentComponents) {
+		Connection dbc = getConnection();
+		OrnamentComponentsEntry entry = null;
+
+		PreparedStatement stmt;
+		try {
+			stmt = dbc.prepareStatement("UPDATE OrnamentComponents SET Name = ? WHERE VALUES OrnamentComponentsID = ?");
+			stmt.setString(1, ornamentComponents.getName());
+			stmt.setInt(1, ornamentComponents.getOrnamentComponentsID());
+			stmt.executeUpdate();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return entry;
+		}
+		return entry;
+	}
+
+	/**
+	 * 
+	 * @param innerSecPattern
+	 * @return
+	 */
 	public InnerSecondaryPatternsEntry addInnerSecondaryPatterns(InnerSecondaryPatternsEntry innerSecPattern) {
 		Connection dbc = getConnection();
 		InnerSecondaryPatternsEntry entry;
@@ -4201,13 +4291,47 @@ public class MysqlConnector {
 			if (rs.first()) {
 				return false;
 			}
-			if (deleteEntry("DELETE FROM Authors WHERE  AuthorID=" + selectedEntry.getAuthorID())) {
+			if (deleteEntry("DELETE FROM Authors WHERE AuthorID=" + selectedEntry.getAuthorID())) {
 				return true;
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return false;
+	}
+
+	/**
+	 * @param currentUser
+	 * @param newPasswordHash 
+	 * @return
+	 */
+	public boolean updateUserEntry(UserEntry currentUser, String passwordHash, String newPasswordHash) {
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		int rowsChangedCount;
+		
+		try {
+			if (newPasswordHash != null && !newPasswordHash.isEmpty()) {
+				pstmt = dbc.prepareStatement("UPDATE Users SET Email=?, Affiliation=?, Password=? WHERE UserID=? AND Password=?");
+				pstmt.setString(1, currentUser.getEmail());
+				pstmt.setString(2, currentUser.getAffiliation());
+				pstmt.setString(3, newPasswordHash);
+				pstmt.setInt(4, currentUser.getUserID());
+				pstmt.setString(5, passwordHash);
+			} else {
+				pstmt = dbc.prepareStatement("UPDATE Users SET Email=?, Affiliation=? WHERE UserID=? AND Password=?");
+				pstmt.setString(1, currentUser.getEmail());
+				pstmt.setString(2, currentUser.getAffiliation());
+				pstmt.setInt(3, currentUser.getUserID());
+				pstmt.setString(4, passwordHash);
+			}	
+			rowsChangedCount = pstmt.executeUpdate();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return rowsChangedCount > 0;
 	}
 
 }

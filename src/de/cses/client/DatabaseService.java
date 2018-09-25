@@ -55,6 +55,7 @@ import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 import de.cses.shared.StructureOrganization;
 import de.cses.shared.StyleEntry;
+import de.cses.shared.UserEntry;
 import de.cses.shared.VendorEntry;
 import de.cses.shared.WallEntry;
 import de.cses.shared.WallLocationEntry;
@@ -180,7 +181,7 @@ public interface DatabaseService extends RemoteService {
 
 	ArrayList<CaveGroupEntry> getCaveGroups() throws IllegalArgumentException;
 
-	String userLogin(String username, String password) throws IllegalArgumentException;
+	UserEntry userLogin(String username, String password);
 
 	boolean updateImageEntry(ImageEntry imgEntry) throws IllegalArgumentException;
 
@@ -227,7 +228,7 @@ public interface DatabaseService extends RemoteService {
 
 	int insertLocationEntry(LocationEntry lEntry) throws IllegalArgumentException;
 
-	String checkSessionID(String sessionID) throws IllegalArgumentException;
+	UserEntry checkSessionID(String sessionID, String username);
 	
 	ArrayList<InnerSecondaryPatternsEntry> getInnerSecondaryPatterns() throws IllegalArgumentException;
 	
@@ -273,5 +274,7 @@ public interface DatabaseService extends RemoteService {
 
 	int insertBibKeyword(BibKeywordEntry bkEntry) throws IllegalArgumentException;
 
-	boolean deleteAuthorEntry(AuthorEntry selectedEntry) throws IllegalArgumentException; 
+	boolean deleteAuthorEntry(AuthorEntry selectedEntry) throws IllegalArgumentException;
+
+	boolean updateUserEntry(UserEntry currentUser, String passwordHash, String newPasswordHash); 
 }

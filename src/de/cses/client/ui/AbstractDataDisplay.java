@@ -13,16 +13,18 @@
  */
 package de.cses.client.ui;
 
-import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.Portlet;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
+
+import de.cses.client.MainView;
 
 /**
  * @author alingnau
  *
  */
-public abstract class AbstractDataDisplay extends ContentPanel {
+public abstract class AbstractDataDisplay extends Portlet {
 
 	/**
 	 * 
@@ -35,10 +37,13 @@ public abstract class AbstractDataDisplay extends ContentPanel {
 			@Override
 			public void onSelect(SelectEvent event) {
 				removeFromParent();
+				MainView.getDataDisplayUniqueIDList().remove(getUniqueID());
 			}
 		});
 		addTool(closeButton);
 		setCollapsible(true);
 	}
-
+	
+	public abstract String getUniqueID();
+	
 }

@@ -50,13 +50,4 @@ public class OrnamenticFilter  extends AbstractFilter{
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see de.cses.client.ui.AbstractFilter#showExtendedFilterView()
-	 */
-	@Override
-	protected void showExtendedFilterView() {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

@@ -56,6 +56,7 @@ import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 import de.cses.shared.StructureOrganization;
 import de.cses.shared.StyleEntry;
+import de.cses.shared.UserEntry;
 import de.cses.shared.VendorEntry;
 import de.cses.shared.WallEntry;
 import de.cses.shared.WallLocationEntry;
@@ -482,7 +483,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	 * @see de.cses.client.DatabaseService#userLogin(java.lang.String, java.lang.String)
 	 */
 	@Override
-	public String userLogin(String username, String password) throws IllegalArgumentException {
+	public UserEntry userLogin(String username, String password) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.userLogin(username, password);
 	}
@@ -690,9 +691,9 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	 * @see de.cses.client.DatabaseService#checkSessionID(java.lang.String)
 	 */
 	@Override
-	public String checkSessionID(String sessionID) throws IllegalArgumentException {
+	public UserEntry checkSessionID(String sessionID, String username) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
-		return connector.checkSessionID(sessionID);
+		return connector.checkSessionID(sessionID, username);
 	}
 
 	/* (non-Javadoc)
@@ -884,5 +885,13 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public boolean deleteAuthorEntry(AuthorEntry selectedEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.deleteAuthorEntry(selectedEntry);
+	}
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#updateUserEntry(de.cses.shared.UserEntry)
+	 */
+	@Override
+	public boolean updateUserEntry(UserEntry currentUser, String passwordHash, String newPasswordHash) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.updateUserEntry(currentUser, passwordHash, newPasswordHash);
 	}
 }

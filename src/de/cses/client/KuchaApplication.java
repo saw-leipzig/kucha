@@ -15,12 +15,11 @@ package de.cses.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.sencha.gxt.core.client.GXT;
-import com.sencha.gxt.state.client.CookieProvider;
-import com.sencha.gxt.state.client.StateManager;
 import com.sencha.gxt.widget.core.client.ProgressBar;
 import com.sencha.gxt.widget.core.client.container.CenterLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.Viewport;
+
+import de.cses.client.user.UserLogin;
 
 
 /**
@@ -41,10 +40,10 @@ public class KuchaApplication implements EntryPoint {
 		 */
 		Viewport v = new Viewport();
 		CenterLayoutContainer c = new CenterLayoutContainer();
+		UserLogin.getInstance(); // we do this to ensure that the current status of the login is checked
 		ProgressBar bar = new ProgressBar();
 		bar.setSize("250px", "50px");
 		c.add(bar);
-		
 		v.add(c);
 //		StateManager.get().setProvider(new CookieProvider("/", null, null, GXT.isSecure()));
 		StaticTables.createInstance(new StaticTables.ListsLoadedListener() {
