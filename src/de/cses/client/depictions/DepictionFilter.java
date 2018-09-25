@@ -370,7 +370,7 @@ public class DepictionFilter extends AbstractFilter {
 				extendedFilterDialog.hide();
 			}
 		});
-		((FramedPanel)icoSelector.asWidget()).addTool(closeTB);
+		icoSelector.addTool(closeTB);
 		extendedFilterDialog.add(icoSelector);
 		extendedFilterDialog.setSize("750", "500");
 		extendedFilterDialog.setModal(true);
