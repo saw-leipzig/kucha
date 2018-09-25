@@ -353,9 +353,6 @@ public class DepictionFilter extends AbstractFilter {
 	
 	private void showIconographySelection() {
 		PopupPanel extendedFilterDialog = new PopupPanel();
-		FramedPanel extendedFilterFP = new FramedPanel();
-		extendedFilterFP.setHeading("more filter options");
-		extendedFilterFP.add(icoSelector);
 		ToolButton closeTB = new ToolButton(ToolButton.CLOSE);
 		closeTB.addSelectHandler(new SelectHandler() {
 
@@ -373,8 +370,8 @@ public class DepictionFilter extends AbstractFilter {
 				extendedFilterDialog.hide();
 			}
 		});
-		extendedFilterFP.addTool(closeTB);
-		extendedFilterDialog.add(extendedFilterFP);
+		((FramedPanel)icoSelector.asWidget()).addTool(closeTB);
+		extendedFilterDialog.add(icoSelector);
 		extendedFilterDialog.setSize("750", "500");
 		extendedFilterDialog.setModal(true);
 		extendedFilterDialog.center();
