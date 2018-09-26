@@ -80,7 +80,8 @@ public class ResourceDownloadServlet extends HttpServlet {
 				if (request.getParameter("thumb") != null) {
 					int tnSize = Integer.valueOf(request.getParameter("thumb")); // the requested size is given as a parameter
 //					out.write(getScaledThumbnailInstance(inputFile, "png", tnSize));
-					URL imageURL = new URL("http://localhost:8182/iiif/2/" + "tn" + filename.substring(0, filename.lastIndexOf(".")) + ".png" + "/full/!" + tnSize + "," + tnSize + "/0/default.png");
+					URL imageURL = new URL("http://localhost:8182/iiif/2/" + filename + "/full/!" + tnSize + "," + tnSize + "/0/default.png");
+//					URL imageURL = new URL("http://localhost:8182/iiif/2/" + "tn" + filename.substring(0, filename.lastIndexOf(".")) + ".png" + "/full/!" + tnSize + "," + tnSize + "/0/default.png");
 					InputStream in = imageURL.openStream();
 					response.setContentType("image/png");
 					byte buffer[] = new byte[4096];
