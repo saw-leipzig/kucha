@@ -238,6 +238,10 @@ public interface DatabaseService extends RemoteService {
 	
 	OrnamentClassEntry addOrnamentClass(OrnamentClassEntry entry)  throws IllegalArgumentException;
 	
+	OrnamentClassEntry renameOrnamentClass(OrnamentClassEntry entry)  throws IllegalArgumentException;
+	
+	OrnamentComponentsEntry renameOrnamentComponents(OrnamentComponentsEntry entry)  throws IllegalArgumentException;
+	
 	InnerSecondaryPatternsEntry addInnerSecondaryPatterns(InnerSecondaryPatternsEntry entry)  throws IllegalArgumentException;
 	
 	OrnamentComponentsEntry addOrnamentComponent(OrnamentComponentsEntry entry)  throws IllegalArgumentException;

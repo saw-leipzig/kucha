@@ -15,10 +15,17 @@ package de.cses.server;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.CharBuffer;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
@@ -72,7 +79,17 @@ public class ResourceDownloadServlet extends HttpServlet {
 			if (inputFile.exists()) {
 				if (request.getParameter("thumb") != null) {
 					int tnSize = Integer.valueOf(request.getParameter("thumb")); // the requested size is given as a parameter
-					out.write(getScaledThumbnailInstance(inputFile, "png", tnSize));
+//					out.write(getScaledThumbnailInstance(inputFile, "png", tnSize));
+					URL imageURL = new URL("http://localhost:8182/iiif/2/" + filename + "/full/!" + tnSize + "," + tnSize + "/0/default.png");
+//					URL imageURL = new URL("http://localhost:8182/iiif/2/" + "tn" + filename.substring(0, filename.lastIndexOf(".")) + ".png" + "/full/!" + tnSize + "," + tnSize + "/0/default.png");
+					InputStream in = imageURL.openStream();
+					response.setContentType("image/png");
+					byte buffer[] = new byte[4096];
+					int bytesRead = 0;
+					while ((bytesRead = in.read(buffer)) > 0) {
+						out.write(buffer, 0, bytesRead);
+					}
+					in.close();
 				} else { // load the original file
 					if (filename.toLowerCase().endsWith("png")) {
 						response.setContentType("image/png");

@@ -9,6 +9,7 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -49,29 +50,24 @@ import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.Util;
 import de.cses.client.images.ImageSelector;
 import de.cses.client.images.ImageSelectorListener;
-import de.cses.client.ornamentic.OrnamentCaveAttributes.StructureOrganizationProperties;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.InnerSecondaryPatternsEntry;
-import de.cses.shared.MainTypologicalClass;
 import de.cses.shared.OrnamentCaveRelation;
 import de.cses.shared.OrnamentClassEntry;
 import de.cses.shared.OrnamentComponentsEntry;
 import de.cses.shared.OrnamentEntry;
-import de.cses.shared.StructureOrganization;
 
-public class OrnamenticEditor extends AbstractEditor implements ImageSelectorListener {
+public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorListener {
 	
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
-
 	FramedPanel header;
 	private VBoxLayoutContainer widget;
 	FramedPanel cavesContentPanel;
 	private OrnamentCaveRelationProperties ornamentCaveRelationProps;
 	private ListStore<OrnamentCaveRelation> caveOrnamentRelationList;
-	private OrnamenticEditor ornamenticEditor = this;
 	private ListView<OrnamentCaveRelation, String> cavesList;
 	protected PopupPanel imageSelectionDialog;
 	protected ImageSelector imageSelector;
@@ -80,11 +76,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 	private ListStore<OrnamentClassEntry> ornamentClassEntryList;
 	private ImageProperties imgProperties;
 	private OrnamentEntry ornamentEntry = null;;
-	private ListStore<StructureOrganization> structureOrganization;
-	private ComboBox<StructureOrganization> structureorganizationComboBox;
 	private ComboBox<OrnamentClassEntry> ornamentClassComboBox;
-	private StructureOrganizationProperties structureOrganizationProps;
-	private ListStore<MainTypologicalClass> mainTypologicalClass;
 	private OrnamentClassProperties ornamentClassProps;
 	private InnerSecondaryPatternsProperties innerSecondaryPatternsProps;
 	private ListStore<InnerSecondaryPatternsEntry> innerSecondaryPatternsEntryList;
@@ -93,6 +85,10 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 	private ListStore<OrnamentComponentsEntry> selectedOrnamentComponents;
 	private OrnamentComponentsProperties ornamentComponentsProps;
 	private TextField ornamentCodeTextField;
+	public static OrnamentCaveRelationEditor ornamentCaveRelationEditor;
+	public static WallOrnamentCaveRelationEditor wallOrnamentCaveRelationEditor;
+	public static OrnamenticEditor ornamenticEditor;
+	
 
 	@Override
 	public Widget asWidget() {
@@ -110,6 +106,10 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 	}
 
 	public Widget createForm() {
+		Util.doLogging("Create form von ornamenticeditor gestartet");
+		ornamentCaveRelationEditor = new OrnamentCaveRelationEditor();
+		 wallOrnamentCaveRelationEditor = new WallOrnamentCaveRelationEditor();
+		 ornamenticEditor = this;
 		HorizontalLayoutContainer horizontBackground = new HorizontalLayoutContainer();
 		VerticalLayoutContainer verticalgeneral2Background = new VerticalLayoutContainer();
 
@@ -122,9 +122,6 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		ornamentComponentsProps = GWT.create(OrnamentComponentsProperties.class);
 		imageEntryList = new ListStore<ImageEntry>(imgProperties.imageID());
 		ornamentCaveRelationProps = GWT.create(OrnamentCaveRelationProperties.class);
-
-		structureOrganizationProps = GWT.create(StructureOrganizationProperties.class);
-		structureOrganization = new ListStore<StructureOrganization>(structureOrganizationProps.structureOrganizationID());
 		ornamentClassEntryList = new ListStore<OrnamentClassEntry>(ornamentClassProps.ornamentClassID());
 		innerSecondaryPatternsEntryList = new ListStore<InnerSecondaryPatternsEntry>(innerSecondaryPatternsProps.innerSecondaryPatternsID());
 		selectedinnerSecondaryPatternsEntryList = new ListStore<InnerSecondaryPatternsEntry>(innerSecondaryPatternsProps.innerSecondaryPatternsID());
@@ -232,24 +229,6 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 			}
 		});
 
-		/*
-		 * dbService.getStructureOrganizations(new AsyncCallback<ArrayList<StructureOrganization>>() {
-		 * 
-		 * @Override public void onFailure(Throwable caught) { caught.printStackTrace(); }
-		 * 
-		 * @Override public void onSuccess(ArrayList<StructureOrganization> result) { structureOrganization.clear(); for (StructureOrganization pe : result) {
-		 * structureOrganization.add(pe); } } });
-		 */
-
-		/*
-		 * dbService.getMainTypologicalClasses(new AsyncCallback<ArrayList<MainTypologicalClass>>() {
-		 * 
-		 * @Override public void onFailure(Throwable caught) { caught.printStackTrace(); }
-		 * 
-		 * @Override public void onSuccess(ArrayList<MainTypologicalClass> result) { mainTypologicalClass.clear(); for (MainTypologicalClass pe : result) {
-		 * mainTypologicalClass.add(pe); } } });
-		 */
-
 		TabPanel tabpanel = new TabPanel();
 		tabpanel.setWidth(620);
 		tabpanel.setHeight(600);
@@ -287,16 +266,6 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 			remarks.setValue(ornamentEntry.getRemarks());
 		}
 
-		/*TextArea annotations = new TextArea();
-		annotations.setAllowBlank(true);
-		header = new FramedPanel();
-		header.setHeading("Annotations");
-		header.add(annotations);
-		verticalgeneral2Background.add(header, new VerticalLayoutData(1.0, .3));
-		if (ornamentEntry != null) {
-			annotations.setValue(ornamentEntry.getAnnotations());
-		}
-*/
 		TextArea interpretation = new TextArea();
 		interpretation.setAllowBlank(true);
 		header = new FramedPanel();
@@ -382,19 +351,73 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 			}
 		});
 		header.addTool(addOrnamentClassButton);
+		
+		ToolButton renameOrnamentClassButton = new ToolButton(ToolButton.REFRESH);
+		
+		FramedPanel renameornamentClassFramedPanel = new FramedPanel();
+		renameornamentClassFramedPanel.setHeading("New Ornament Class");
 
-		// wird eventuell mal privat oder geloescht
-		/*
-		 * structureorganizationComboBox = new ComboBox<StructureOrganization>(structureOrganization, structureOrganizationProps.name(), new
-		 * AbstractSafeHtmlRenderer<StructureOrganization>() {
-		 * 
-		 * @Override public SafeHtml render(StructureOrganization item) { final StructureOrganizationViewTemplates pvTemplates =
-		 * GWT.create(StructureOrganizationViewTemplates.class); return pvTemplates.structureOrganization(item.getName()); } });
-		 * 
-		 * header = new FramedPanel(); header.setHeading("Structure-Organization"); header.add(structureorganizationComboBox);
-		 * structureorganizationComboBox.setTriggerAction(TriggerAction.ALL); panel.add(header, new VerticalLayoutData(1.0, .125)); if (ornamentEntry != null) {
-		 * structureorganizationComboBox.select(structureOrganization.findModelWithKey(Integer.toString(ornamentEntry.getStructureOrganizationID()))); }
-		 */
+		ToolButton saveRenameOrnamentClass = new ToolButton(ToolButton.SAVE);
+		renameornamentClassFramedPanel.add(saveRenameOrnamentClass);
+
+		ToolButton cancelRenameOrnamentClass = new ToolButton(ToolButton.CLOSE);
+
+		ornamentClassFramedPanel.addTool(cancelRenameOrnamentClass);
+		ornamentClassFramedPanel.addTool(saveRenameOrnamentClass);
+
+		HorizontalLayoutContainer renameOrnamentClassLayoutPanel = new HorizontalLayoutContainer();
+		TextField renameOrnamentClassTextField = new TextField();
+		newOrnamentClassLayoutPanel.add(renameOrnamentClassTextField);
+		ornamentClassFramedPanel.add(renameOrnamentClassLayoutPanel);
+		
+		renameOrnamentClassButton.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				if(ornamentClassComboBox.getValue() == null) {
+					Window.alert("Please select an item to rename");
+				}
+				else {
+				PopupPanel renameOrnamentClassPopup = new PopupPanel();
+				renameOrnamentClassPopup.add(renameornamentClassFramedPanel);
+				renameornamentClassFramedPanel.setSize("150", "80");
+				renameOrnamentClassPopup.center();
+				renameOrnamentClassTextField.setText(ornamentClassComboBox.getSelectedText());
+				cancelOrnamentClass.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						renameOrnamentClassPopup.hide();
+					}
+				});
+				saveOrnamentClass.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						
+						OrnamentClassEntry entry = 	ornamentClassComboBox.getValue();
+						entry.setName(renameOrnamentClassTextField.getText());
+						dbService.renameOrnamentClass(entry, new AsyncCallback<OrnamentClassEntry>() {
+
+							public void onFailure(Throwable caught) {
+								caught.printStackTrace();
+							}
+
+							@Override
+							public void onSuccess(OrnamentClassEntry result) {
+								Util.doLogging(this.getClass().getName() + " renamed " + result.getName());
+								renameOrnamentClassPopup.hide();
+							}
+						});
+						renameOrnamentClassPopup.hide();
+					}
+				});
+
+			}
+		}});
+		
+		header.addTool(renameOrnamentClassButton);
+
 
 		final TextArea references = new TextArea();
 		references.setAllowBlank(true);
@@ -416,19 +439,12 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		header.add(cavesPanel);
 		panel2.add(header, new VerticalLayoutData(1.0, 1.0));
 
-		// Place for Caves
 		ClickHandler addCaveClickHandler = new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				OrnamentCaveAttributes attributespopup = new OrnamentCaveAttributes();
-
-				attributespopup.setOrnamentic(ornamenticEditor);
-				attributespopup.setGlassEnabled(true);
-				attributespopup.center();
-
+			ornamentCaveRelationEditor.show();
 			}
-
 		};
 
 		addCaveButton.addHandler(addCaveClickHandler, ClickEvent.getType());
@@ -441,15 +457,9 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		cavesList.setAllowTextSelection(true);
 
 		if (ornamentEntry != null) {
-			Util.doLogging("Listengroesse: " + ornamentEntry.getCavesRelations().size());
 			for (int i = 0; i < ornamentEntry.getCavesRelations().size(); i++) {
 				caveOrnamentRelationList.add(ornamentEntry.getCavesRelations().get(i));
-				Util.doLogging("Daten: notes: " + ornamentEntry.getCavesRelations().get(i).getNotes());
-
-				Util.doLogging("Daten: ID: " + ornamentEntry.getCavesRelations().get(i).getCaveEntry().getCaveID() + "DistrictID: "
-						+ ornamentEntry.getCavesRelations().get(i).getCaveEntry().getDistrictID());
 			}
-			Util.doLogging("nachher liste: " + Integer.toString(caveOrnamentRelationList.size()));
 		}
 
 		cavesContentPanel.setHeading("Added caves");
@@ -476,13 +486,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 			@Override
 			public void onClick(ClickEvent event) {
-				Util.doLogging("Vorher caveid: " + cavesList.getSelectionModel().getSelectedItem());
-				Util.doLogging("Vorher caveid: " + cavesList.getSelectionModel().getSelectedItem().getCaveEntry().getOfficialNumber());
-				OrnamentCaveAttributes attributespopup = new OrnamentCaveAttributes(cavesList.getSelectionModel().getSelectedItem());
-				attributespopup.setOrnamentic(ornamenticEditor);
-				attributespopup.setGlassEnabled(true);
-				attributespopup.center();
-
+				ornamentCaveRelationEditor.show(cavesList.getSelectionModel().getSelectedItem());
 			}
 		};
 		edit.addHandler(editClickHandler, ClickEvent.getType());
@@ -517,11 +521,10 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 				ornamentEntry.setCode(ornamentCodeTextField.getText());
 				ornamentEntry.setDescription(discription.getText());
 				ornamentEntry.setRemarks(remarks.getText());
-				//ornamentEntry.setAnnotations(annotations.getText());
 				ornamentEntry.setInterpretation(interpretation.getText());
 				ornamentEntry.setReferences(references.getText());
 				if (ornamentClassComboBox.getValue() == null) {
-					// what should happen here?
+					ornamentEntry.setOrnamentClass(0);
 				} else {
 					Util.doLogging("ID gesetzt");
 					ornamentEntry.setOrnamentClass(ornamentClassComboBox.getValue().getOrnamentClassID());
@@ -538,13 +541,6 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 					oceList.add(selectedOrnamentComponents.get(i));
 				}
 				ornamentEntry.setOrnamentComponents(oceList);
-
-				// if(structureorganizationComboBox.getCurrentValue() == null) {
-				// oEntry.setStructureOrganizationID(0); // unknown
-				// }
-				// else {
-				// oEntry.setStructureOrganizationID(structureorganizationComboBox.getCurrentValue().getStructureOrganizationID());
-				// }
 
 				// send ornament to server
 				if (ornamentEntry.getOrnamentID() == 0) {
@@ -706,6 +702,72 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 			}
 		});
 
+		ToolButton renameComponentButton = new ToolButton(ToolButton.PLUS);
+		header.addTool(renameComponentButton);
+		renameComponentButton.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				if(ornamentComponentView.getSelectionModel().getSelectedItem() == null) {
+					Window.alert("Please select an item to rename");
+					
+				}
+				else {
+				PopupPanel renameComponentPopup = new PopupPanel();
+				FramedPanel renamecomponentFramedPanel = new FramedPanel();
+				renamecomponentFramedPanel.setHeading("New Component");
+
+				ToolButton saveRenameComponent = new ToolButton(ToolButton.SAVE);
+				renamecomponentFramedPanel.addTool(saveRenameComponent);
+
+				ToolButton cancelRenameComponent = new ToolButton(ToolButton.CLOSE);
+
+				renamecomponentFramedPanel.addTool(cancelRenameComponent);
+
+				HorizontalLayoutContainer renameComponentLayoutPanel = new HorizontalLayoutContainer();
+				TextField renameComponentTextField = new TextField();
+				renameComponentLayoutPanel.add(renameComponentTextField);
+				renamecomponentFramedPanel.add(renameComponentLayoutPanel);
+				
+				renameComponentPopup.add(renamecomponentFramedPanel);
+				renameComponentPopup.setSize("150px", "80px");
+				renameComponentPopup.center();
+				
+				renameComponentTextField.setText(ornamentComponentView.getSelectionModel().getSelectedItem().getName());
+
+				cancelRenameComponent.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						renameComponentPopup.hide();
+					}
+				});
+				saveRenameComponent.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						OrnamentComponentsEntry entry = new OrnamentComponentsEntry();
+						entry.setName(renameComponentTextField.getText());
+						
+
+						dbService.renameOrnamentComponents(entry, new AsyncCallback<OrnamentComponentsEntry>() {
+
+							public void onFailure(Throwable caught) {
+								caught.printStackTrace();
+							}
+
+							@Override
+							public void onSuccess(OrnamentComponentsEntry result) {
+								Util.doLogging(this.getClass().getName() + " renaming sucessful");
+								renameComponentPopup.hide();
+							}
+						});
+					}
+				});
+			}
+		}});
+		
+		
 		HorizontalLayoutContainer innerSecondaryPatternsHorizontalPanel = new HorizontalLayoutContainer();
 
 		ListView<InnerSecondaryPatternsEntry, String> innerSecondaryPatternsView = new ListView<InnerSecondaryPatternsEntry, String>(
@@ -913,11 +975,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		this.cavesList = cavesList;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.cses.client.images.ImageSelectorListener#imageSelected(de.cses.shared.ImageEntry)
-	 */
+
 	@Override
 	public void imageSelected(ImageEntry entry) {
 		if (entry.getImageID() != 0) {
