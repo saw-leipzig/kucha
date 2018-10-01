@@ -38,6 +38,7 @@ import de.cses.shared.IconographyEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 import de.cses.shared.StyleEntry;
+import de.cses.shared.UserEntry;
 
 /**
  * @author alingnau
@@ -69,7 +70,7 @@ public class JsonServlet extends HttpServlet {
 					break;
 					
 				case "checkSession":
-					if (connector.checkSessionID(request.getParameter("sessionID")) != null) {
+					if (connector.checkSessionID(request.getParameter("sessionID"))) {
 						response.sendError(HttpServletResponse.SC_NO_CONTENT);
 					} else {
 						response.sendError(HttpServletResponse.SC_FORBIDDEN);
@@ -77,11 +78,11 @@ public class JsonServlet extends HttpServlet {
 					break;
 					
 				case "caveID":
-					getCaves(connector.checkSessionID(request.getParameter("sessionID")) == null);
+					getCaves(connector.checkSessionID(request.getParameter("sessionID")));
 					break;
 					
 				case "siteID":
-					if (connector.checkSessionID(request.getParameter("sessionID")) != null) {
+					if (connector.checkSessionID(request.getParameter("sessionID"))) {
 						getSites();
 					} else {
 						response.sendError(HttpServletResponse.SC_FORBIDDEN);
@@ -89,7 +90,7 @@ public class JsonServlet extends HttpServlet {
 					break;
 					
 				case "regionID":
-					if (connector.checkSessionID(request.getParameter("sessionID")) != null) {
+					if (connector.checkSessionID(request.getParameter("sessionID"))) {
 						getRegions();
 					} else {
 						response.sendError(HttpServletResponse.SC_FORBIDDEN);
@@ -97,7 +98,7 @@ public class JsonServlet extends HttpServlet {
 					break;
 					
 				case "districtID":
-					if (connector.checkSessionID(request.getParameter("sessionID")) != null) {
+					if (connector.checkSessionID(request.getParameter("sessionID"))) {
 						getDistricts();
 					} else {
 						response.sendError(HttpServletResponse.SC_FORBIDDEN);
@@ -105,7 +106,7 @@ public class JsonServlet extends HttpServlet {
 					break;
 					
 				case "iconographyID":
-					if (connector.checkSessionID(request.getParameter("sessionID")) != null) {
+					if (connector.checkSessionID(request.getParameter("sessionID"))) {
 						getIconography();
 					} else {
 						response.sendError(HttpServletResponse.SC_FORBIDDEN);
@@ -113,7 +114,7 @@ public class JsonServlet extends HttpServlet {
 					break;
 					
 				case "paintedRepID":
-					if (connector.checkSessionID(request.getParameter("sessionID")) != null) {
+					if (connector.checkSessionID(request.getParameter("sessionID"))) {
 						getDepiction();
 					} else {
 						response.sendError(HttpServletResponse.SC_FORBIDDEN);
@@ -153,9 +154,9 @@ public class JsonServlet extends HttpServlet {
 	private void login() throws IOException {
 		String loginStr = request.getParameter("login");
 		String passwordStr = request.getParameter("pw");
-		String newSessionIDStr = connector.userLogin(loginStr, passwordStr);
-		if (newSessionIDStr != null) {
-			response.getWriter().write(newSessionIDStr);
+		UserEntry currentUser = connector.userLogin(loginStr, passwordStr);
+		if (currentUser.getSessionID() != null) {
+			response.getWriter().write(currentUser.getSessionID());
 		}
 		response.setContentType("application/json");
 	}

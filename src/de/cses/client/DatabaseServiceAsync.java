@@ -23,7 +23,6 @@ import de.cses.shared.BibKeywordEntry;
 import de.cses.shared.CaveAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveGroupEntry;
-import de.cses.shared.CavePart;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
 import de.cses.shared.CurrentLocationEntry;
@@ -55,6 +54,7 @@ import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 import de.cses.shared.StructureOrganization;
 import de.cses.shared.StyleEntry;
+import de.cses.shared.UserEntry;
 import de.cses.shared.VendorEntry;
 import de.cses.shared.WallEntry;
 import de.cses.shared.WallLocationEntry;
@@ -196,7 +196,7 @@ public interface DatabaseServiceAsync {
 
 	void getCaveGroups(AsyncCallback<ArrayList<CaveGroupEntry>> asyncCallback) throws IllegalArgumentException;
 
-	void userLogin(String username, String password, AsyncCallback<String> asyncCallback) throws IllegalArgumentException;
+	void userLogin(String username, String password, AsyncCallback<UserEntry> asyncCallback);
 
 	void updateImageEntry(ImageEntry imgEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
@@ -250,7 +250,7 @@ public interface DatabaseServiceAsync {
 
 	void insertLocationEntry(LocationEntry lEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 
-	void checkSessionID(String sessionID, AsyncCallback<String> asyncCallback) throws IllegalArgumentException;
+	void checkSessionID(String sessionID, String username, AsyncCallback<UserEntry> asyncCallback);
 
 	void getInnerSecondaryPatterns( AsyncCallback<ArrayList<InnerSecondaryPatternsEntry>> callback) throws IllegalArgumentException;
 
@@ -302,5 +302,7 @@ public interface DatabaseServiceAsync {
 	void insertBibKeyword(BibKeywordEntry bkEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 
 	void deleteAuthorEntry(AuthorEntry selectedEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
+
+	void updateUserEntry(UserEntry currentUser, String passwordHash, String newPasswordHash, AsyncCallback<Boolean> asyncCallback);
 
 }

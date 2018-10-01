@@ -53,23 +53,23 @@ public abstract class AbstractFilter implements IsWidget {
 			panel.setHeading(filterName);
 			panel.add(getFilterUI());
 			
-			ToolButton extendedFilterTB = new ToolButton(ToolButton.GEAR);
-			extendedFilterTB.addSelectHandler(new SelectHandler() {
-				
-				@Override
-				public void onSelect(SelectEvent event) {
-					showExtendedFilterView();
-				}
-			});
-			panel.addTool(extendedFilterTB);
+//			ToolButton extendedFilterTB = new ToolButton(ToolButton.GEAR);
+//			extendedFilterTB.addSelectHandler(new SelectHandler() {
+//				
+//				@Override
+//				public void onSelect(SelectEvent event) {
+//					showExtendedFilterView();
+//				}
+//			});
+//			panel.addTool(extendedFilterTB);
 		}
 		return panel;
 	}
 	
-	/**
-	 * This method should implement the exteded filter options by opening a PopupPanel
-	 */
-	protected abstract void showExtendedFilterView();
+//	/**
+//	 * This method should implement the exteded filter options by opening a PopupPanel
+//	 */
+//	protected abstract void showExtendedFilterView();
 
 	/**
 	 * 

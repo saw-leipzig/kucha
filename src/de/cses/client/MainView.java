@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 
+ * Copyright 2017, 2018 
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -16,22 +16,28 @@ package de.cses.client;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import com.google.gwt.event.logical.shared.CloseEvent;
+import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.util.Margins;
+import com.sencha.gxt.dnd.core.client.DndDropEvent;
+import com.sencha.gxt.dnd.core.client.DropTarget;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.Portlet;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.container.PortalLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.TextField;
 
 import de.cses.client.bibliography.AnnotatedBibliographyFilter;
@@ -40,6 +46,7 @@ import de.cses.client.bibliography.AnnotatedBiblographySearchController;
 import de.cses.client.caves.CaveFilter;
 import de.cses.client.caves.CaveResultView;
 import de.cses.client.caves.CaveSearchController;
+import de.cses.client.depictions.DepictionDataDisplay;
 import de.cses.client.depictions.DepictionFilter;
 import de.cses.client.depictions.DepictionResultView;
 import de.cses.client.depictions.DepictionSearchController;
@@ -49,19 +56,23 @@ import de.cses.client.images.ImageSearchController;
 import de.cses.client.ornamentic.OrnamenticFilter;
 import de.cses.client.ornamentic.OrnamenticResultView;
 import de.cses.client.ornamentic.OrnamenticSearchController;
+import de.cses.client.ui.AbstractDataDisplay;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.client.ui.AbstractSearchController;
-import de.cses.client.ui.DataDisplayController;
-import de.cses.client.ui.DataDisplayView;
-import de.cses.client.ui.ResultCollectorController;
-import de.cses.client.ui.ResultCollectorView;
 import de.cses.client.user.UserLogin;
+import de.cses.shared.AnnotatedBiblographyEntry;
+import de.cses.shared.CaveEntry;
+import de.cses.shared.DepictionEntry;
+import de.cses.shared.ImageEntry;
+import de.cses.shared.OrnamentEntry;
 
 /**
  * @author alingnau
  *
  */
 public class MainView implements IsWidget {
+	
+	private static ArrayList<String> dataDisplayUniqueIDList = null;
 
 	private BorderLayoutContainer view = null;
 	private CaveSearchController caveSearchController;
@@ -70,16 +81,17 @@ public class MainView implements IsWidget {
 	private PortalLayoutContainer resultView;
 //	private TextButton searchButton;
 	private TextField searchText;
-	private VerticalLayoutContainer northPanel;
 	private FramedPanel searchTextPanel;
 	private HorizontalLayoutContainer selectorLayoutContainer;
 	private DepictionSearchController depictionSearchController;
 	private ImageSearchController imageSearchController;
 	private OrnamenticSearchController ornamenticSearchController;
-	private ResultCollectorController resultCollectorController;
+//	private ResultCollectorController resultCollectorController;
 	private AnnotatedBiblographySearchController annotatedBiblographySearchController;
 	private PortalLayoutContainer dataViewPLC;
-	private DataDisplayController dataDisplayController;
+//	private DataDisplayController dataDisplayController;
+	private ToolButton saveWorkspaceToolButton;
+	private ToolButton loadWorkspaceToolButton;
 
 	/**
 	 * 
@@ -102,11 +114,9 @@ public class MainView implements IsWidget {
 	private void initView() {
     boolean borders = true;
     
-    northPanel = new VerticalLayoutContainer();
-
-    northPanel.add(UserLogin.getInstance(), new VerticalLayoutData(1.0, .4));
-    
-    HorizontalLayoutData hLayoutData = new HorizontalLayoutData(140, 1.0, new Margins(5, 0, 5, 5));
+//    northPanel = new VerticalLayoutContainer();
+//
+//    northPanel.add(UserLogin.getInstance(), new VerticalLayoutData(1.0, .4));
     
 //    LocationFilter lFilter = new LocationFilter("Location Filter");
 
@@ -231,45 +241,47 @@ public class MainView implements IsWidget {
 		
 		// result collector
 		
-		resultCollectorController = new ResultCollectorController("Personal Desktop", new ResultCollectorView("Personal Desktop"));
-		resultCollectorController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-
-			@Override
-			public void onValueChange(ValueChangeEvent<Boolean> event) {
-				if (event.getValue()) {
-					dataViewPLC.add(resultCollectorController.getResultView(), 0);
-				} else {
-					resultCollectorController.getResultView().removeFromParent();
-				}
-			}
-		});
+//		resultCollectorController = new ResultCollectorController("Personal Desktop", new ResultCollectorView("Personal Desktop"));
+//		resultCollectorController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+//
+//			@Override
+//			public void onValueChange(ValueChangeEvent<Boolean> event) {
+//				if (event.getValue()) {
+//					dataViewPLC.add(resultCollectorController.getResultView(), 0);
+//				} else {
+//					resultCollectorController.getResultView().removeFromParent();
+//				}
+//			}
+//		});
 		
 		// Data Display
 		
-		dataDisplayController = new DataDisplayController("Data", new DataDisplayView("Data"));
-		dataDisplayController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-
-			@Override
-			public void onValueChange(ValueChangeEvent<Boolean> event) {
-				if (event.getValue()) {
-					dataViewPLC.add(dataDisplayController.getResultView(), 0);
-				} else {
-					dataDisplayController.getResultView().removeFromParent();
-				}
-			}
-		});
+//		dataDisplayController = new DataDisplayController("Data", new DataDisplayView("Data"));
+//		dataDisplayController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+//
+//			@Override
+//			public void onValueChange(ValueChangeEvent<Boolean> event) {
+//				if (event.getValue()) {
+//					dataViewPLC.add(dataDisplayController.getResultView(), 0);
+//				} else {
+//					dataDisplayController.getResultView().removeFromParent();
+//				}
+//			}
+//		});
 
 		
 		// ----------------------------------- assembling the menu bar ---------------------------------------------
 		
+    HorizontalLayoutData hLayoutData = new HorizontalLayoutData(140, 1.0, new Margins(5, 0, 5, 5));
+    
 		selectorLayoutContainer = new HorizontalLayoutContainer();
 		selectorLayoutContainer.add(caveSearchController, hLayoutData);
 		selectorLayoutContainer.add(depictionSearchController, hLayoutData);
-		selectorLayoutContainer.add(imageSearchController, hLayoutData);
 		selectorLayoutContainer.add(ornamenticSearchController, hLayoutData);
 		selectorLayoutContainer.add(annotatedBiblographySearchController, hLayoutData);
-		selectorLayoutContainer.add(resultCollectorController, hLayoutData);
-		selectorLayoutContainer.add(dataDisplayController, hLayoutData);
+		selectorLayoutContainer.add(imageSearchController, hLayoutData);
+//		selectorLayoutContainer.add(resultCollectorController, hLayoutData);
+//		selectorLayoutContainer.add(dataDisplayController, hLayoutData);
 		
     ContentPanel centerPanel = new ContentPanel();
     centerPanel.setHeading("Search Results");
@@ -284,9 +296,40 @@ public class MainView implements IsWidget {
     centerPanel.add(resultView);
 
     ContentPanel north = new ContentPanel();
-    north.setHeading("What are you looking for?");
     north.add(selectorLayoutContainer);
-    northPanel.add(north, new VerticalLayoutData(1.0, .6));
+    
+    // updating heading when user is logged in / out
+    UserLogin.getInstance().addCloseHandler(new CloseHandler<PopupPanel>() {
+			
+			@Override
+			public void onClose(CloseEvent<PopupPanel> event) {
+		    if (UserLogin.isLoggedIn()) {
+		    	north.setHeading("Welcome back, " + UserLogin.getInstance().getUsername());
+//		    	imageSearchController.setVisible(true);
+		    	imageSearchController.setEnabled(true);
+		    	loadWorkspaceToolButton.setVisible(true);
+		    	saveWorkspaceToolButton.setVisible(true);
+		    } else {
+		    	north.setHeading("Welcome! Your are currently here as a guest!");
+		    	imageSearchController.setEnabled(false);
+//		    	imageSearchController.setVisible(false);
+		    	loadWorkspaceToolButton.setVisible(false);
+		    	saveWorkspaceToolButton.setVisible(false);
+		    }
+			}
+		});
+
+    ToolButton loginTB = new ToolButton(ToolButton.GEAR);
+    loginTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				UserLogin.getInstance().center();
+			}
+		});
+    loginTB.setToolTip("login");
+    north.addTool(loginTB);
+//    northPanel.add(north, new VerticalLayoutData(1.0, .6));
     
     filterView = new PortalLayoutContainer(1);
     filterView.setSpacing(10);
@@ -310,8 +353,51 @@ public class MainView implements IsWidget {
     dataViewPanel.setResize(true);
     dataViewPanel.setHeading("View");
     dataViewPanel.add(dataViewPLC);
+    saveWorkspaceToolButton = new ToolButton(ToolButton.SAVE);
+    saveWorkspaceToolButton.setToolTip("save");
+    saveWorkspaceToolButton.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				// TODO save view
+			}
+		});
+    dataViewPanel.addTool(saveWorkspaceToolButton);
+    loadWorkspaceToolButton = new ToolButton(ToolButton.RESTORE);
+    loadWorkspaceToolButton.setToolTip("load");
+    loadWorkspaceToolButton.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				// TODO load workspace
+			}
+		});
+    dataViewPanel.addTool(loadWorkspaceToolButton);
+
+    DropTarget target = new DropTarget(dataViewPanel) {
+
+			@Override
+			protected void onDragDrop(DndDropEvent event) {
+				super.onDragDrop(event);
+				if (event.getData() instanceof CaveEntry) {
+//					addResult(new CaveView((CaveEntry) event.getData()));
+				} else if (event.getData() instanceof DepictionEntry) {
+					DepictionDataDisplay ddd = new DepictionDataDisplay((DepictionEntry) event.getData());
+					if (!MainView.getDataDisplayUniqueIDList().contains(ddd.getUniqueID())) {
+						dataViewPLC.add(ddd, 0);
+						MainView.getDataDisplayUniqueIDList().add(ddd.getUniqueID());
+					}
+				} else if (event.getData() instanceof ImageEntry) {
+//					addResult(new ImageView((ImageEntry) event.getData()));
+				} else if (event.getData() instanceof OrnamentEntry) {
+//					addResult(new OrnamenticView((OrnamentEntry) event.getData()));
+				} else if (event.getData() instanceof AnnotatedBiblographyEntry) {
+//					addResult(new AnnotatedBiblographyView((AnnotatedBiblographyEntry) event.getData()));
+				}
+			}
+		};
     
-    BorderLayoutData northData = new BorderLayoutData(150);
+    BorderLayoutData northData = new BorderLayoutData(70);
     northData.setMargins(new Margins(5));
 
     BorderLayoutData westData = new BorderLayoutData(220);
@@ -332,12 +418,36 @@ public class MainView implements IsWidget {
 
     view = new BorderLayoutContainer();
     view.setBorders(borders);
-    view.setNorthWidget(northPanel, northData);
+    view.setNorthWidget(north, northData);
     view.setWestWidget(filterPanel, westData);
     view.setEastWidget(dataViewPanel, eastData);
     view.setCenterWidget(centerPanel, centerData);
 
+    if (UserLogin.isLoggedIn()) {
+    	north.setHeading("Welcome back, " + UserLogin.getInstance().getUsername());
+    } else {
+    	north.setHeading("Welcome! Your are currently here as a guest!");
+//    	imageSearchController.setVisible(false);
+    	imageSearchController.setEnabled(false);
+    	saveWorkspaceToolButton.setVisible(false);
+    	loadWorkspaceToolButton.setVisible(false);
+    }
 	}
+	
+//	private void addDroppedDataDisplay(AbstractDataDisplay dd) {
+//		Iterator<Widget> widgetIterator = dataViewPLC.getContainer().iterator();
+//		while (widgetIterator.hasNext()) {
+//			if (dd instanceof Widget) {
+//				Widget w = widgetIterator.next();
+//				if (w.toString().equals(((Widget)dd).toString())) {
+//					Util.doLogging("AbstractDataDisplay already added");
+//					return;
+//				}
+//			}
+//		}
+//		Util.doLogging("adding newly dropped element");
+//		dataViewPLC.add(dd, 0);
+//	}
 	
 	/**
 	 * 
@@ -379,6 +489,13 @@ public class MainView implements IsWidget {
 			}
 		}
 		return activeSelectors;
+	}
+
+	public static ArrayList<String> getDataDisplayUniqueIDList() {
+		if (dataDisplayUniqueIDList == null) {
+			dataDisplayUniqueIDList = new ArrayList<String>();
+		}
+		return dataDisplayUniqueIDList;
 	}
 	
 }

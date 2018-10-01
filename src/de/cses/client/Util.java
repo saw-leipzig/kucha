@@ -18,10 +18,14 @@ import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.sencha.gxt.widget.core.client.Dialog;
 import com.sencha.gxt.widget.core.client.FramedPanel;
+import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutPack;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
@@ -75,7 +79,7 @@ public class Util {
 		FramedPanel dialogPanel = new FramedPanel();
 		dialog.getElement().getStyle().setBorderColor("#FF0000");
 		dialogPanel.setHeading(header);
-		dialogPanel.add(new Label(message));
+		dialogPanel.add(new HTML("<span style='font: 12px tahoma,arial,verdana,sans-serif;'>" + message + "</span>", true));
 		TextButton okButton = new TextButton("OK");
 		okButton.addSelectHandler(new SelectHandler() {
 
@@ -89,6 +93,25 @@ public class Util {
 		dialog.setModal(true);
 		dialog.setGlassEnabled(true);
 		dialog.center();
+		
+//		
+//		Dialog d = new Dialog();
+//		d.setClosable(false);
+//		d.setHeading(header);
+//		d.setWidget(new HTML(message));
+//		d.setBodyStyle("padding:12px; border-color:#FF0000");
+//		d.setHideOnButtonClick(true);
+//		d.setPredefinedButtons(PredefinedButton.OK);
+//		d.setModal(true);
+//		d.show();
+//		d.getButton(PredefinedButton.OK).addSelectHandler(new SelectHandler() {
+//
+//			@Override
+//			public void onSelect(SelectEvent event) {
+//				d.hide();
+//			}
+//		});
+		
 	}
 
 	public static void showYesNo(String header, String message, SelectHandler yesHandler, SelectHandler noHandler) {
@@ -96,7 +119,7 @@ public class Util {
 		FramedPanel dialogPanel = new FramedPanel();
 		dialog.getElement().getStyle().setBorderColor("#FF0000");
 		dialogPanel.setHeading(header);
-		dialogPanel.add(new Label(message));
+		dialogPanel.add(new HTML("<div style='font: 12px tahoma,arial,verdana,sans-serif; width: 300px;'>" + message + "</div>", true));
 		TextButton yesButton = new TextButton("Yes");
 		yesButton.addSelectHandler(new SelectHandler() {
 
@@ -107,17 +130,27 @@ public class Util {
 			}
 		});
 		dialogPanel.addButton(yesButton);
-		TextButton noButton = new TextButton("No");
-		noButton.addSelectHandler(new SelectHandler() {
+		if (noHandler != null) {
+			TextButton noButton = new TextButton("No");
+			noButton.addSelectHandler(new SelectHandler() {
+				
+				@Override
+				public void onSelect(SelectEvent event) {
+					dialog.hide();
+					noHandler.onSelect(event);
+				}
+			});
+			dialogPanel.addButton(noButton);
+		}
+		TextButton cancelButton = new TextButton("Cancel");
+		cancelButton.addSelectHandler(new SelectHandler() {
 
 			@Override
 			public void onSelect(SelectEvent event) {
 				dialog.hide();
-				noHandler.onSelect(event);
 			}
 		});
-		dialogPanel.addButton(noButton);
-		
+		dialogPanel.addButton(cancelButton);
 		dialog.add(dialogPanel);
 		dialog.setModal(true);
 		dialog.setGlassEnabled(true);

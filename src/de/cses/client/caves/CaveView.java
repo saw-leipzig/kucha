@@ -31,8 +31,6 @@ import de.cses.client.ui.AbstractView;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveTypeEntry;
-import de.cses.shared.DistrictEntry;
-import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 
 /**

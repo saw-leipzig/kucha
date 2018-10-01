@@ -30,7 +30,6 @@ import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Label;
@@ -51,8 +50,6 @@ import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.Store.StoreFilter;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.widget.core.client.ContentPanel;
-import com.sencha.gxt.widget.core.client.Dialog;
-import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.PlainTabPanel;
 import com.sencha.gxt.widget.core.client.TabItemConfig;
@@ -92,6 +89,7 @@ import de.cses.shared.C14DocumentEntry;
 import de.cses.shared.CaveAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveGroupEntry;
+import de.cses.shared.CaveSketchEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
 import de.cses.shared.DistrictEntry;
@@ -396,12 +394,12 @@ public class CaveEditor extends AbstractEditor {
 		loadCaveGroups();
 	}
 
-	private void refreshCaveSketchFLC(String caveTypeSketchName, String optionalCaveSketchName) {
+	private void refreshCaveSketchFLC(String caveTypeSketchName) {
 		caveSketchFLC.clear();
-		if ((optionalCaveSketchName != null) && !optionalCaveSketchName.isEmpty()) {
+		for (CaveSketchEntry cse : correspondingCaveEntry.getCaveSketchList()) {
 			caveSketchFLC.add(
 					new HTMLPanel(caveLayoutViewTemplates.image(UriUtils.fromString(
-							"resource?cavesketch=" + optionalCaveSketchName + UserLogin.getInstance().getUsernameSessionIDParameterForUri()))),
+							"resource?cavesketch=" + cse.getCaveSketchFilename() + UserLogin.getInstance().getUsernameSessionIDParameterForUri()))),
 					new MarginData(5));
 		}
 		if ((caveTypeSketchName != null) && !caveTypeSketchName.isEmpty()) {
@@ -448,7 +446,7 @@ public class CaveEditor extends AbstractEditor {
 			CaveTypeEntry correspondingCaveTypeEntry = caveTypeEntryListStore
 					.findModelWithKey(Integer.toString(correspondingCaveEntry.getCaveTypeID()));
 			caveTypeSelectionCB.setValue(correspondingCaveTypeEntry);
-			refreshCaveSketchFLC(correspondingCaveTypeEntry.getSketchName(), correspondingCaveEntry.getOptionalCaveSketch());
+			refreshCaveSketchFLC(correspondingCaveTypeEntry.getSketchName());
 			updateCeilingTypePanel(correspondingCaveEntry.getCaveTypeID());
 			updateStateOfPreservationPanel(correspondingCaveEntry.getCaveTypeID());
 			updateWallList(correspondingCaveEntry.getCaveTypeID());
@@ -1954,7 +1952,7 @@ public class CaveEditor extends AbstractEditor {
 				correspondingCaveEntry.setCaveTypeID(event.getSelectedItem().getCaveTypeID());
 				CaveTypeEntry correspondingCaveTypeEntry = caveTypeEntryListStore
 						.findModelWithKey(Integer.toString(correspondingCaveEntry.getCaveTypeID()));
-				refreshCaveSketchFLC(correspondingCaveTypeEntry.getSketchName(), correspondingCaveEntry.getOptionalCaveSketch());
+				refreshCaveSketchFLC(correspondingCaveTypeEntry.getSketchName());
 				updateCeilingTypePanel(correspondingCaveEntry.getCaveTypeID());
 				updateStateOfPreservationPanel(correspondingCaveEntry.getCaveTypeID());
 				updateWallList(correspondingCaveEntry.getCaveTypeID());
@@ -2221,7 +2219,7 @@ public class CaveEditor extends AbstractEditor {
 		caveLayoutCommentsFP.setHeading("Comments on Cave Layout");
 		
 		CheckBox volutedHorseshoeArchCB = new CheckBox();
-		volutedHorseshoeArchCB.setBoxLabel("has Voluted Horseshow Arch");
+		volutedHorseshoeArchCB.setBoxLabel("has Voluted Horseshoe Arch");
 		volutedHorseshoeArchCB.setValue(correspondingCaveEntry.isHasVolutedHorseShoeArch());
 		volutedHorseshoeArchCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
@@ -2348,12 +2346,11 @@ public class CaveEditor extends AbstractEditor {
 				CaveSketchUploader uploader = new CaveSketchUploader(correspondingCaveEntry.getCaveID(), new CaveSketchUploadListener() {
 
 					@Override
-					public void uploadCompleted(String caveSketchFilename) {
-						correspondingCaveEntry.setOptionalCaveSketch(caveSketchFilename);
+					public void uploadCompleted(CaveSketchEntry csEntry) {
+						correspondingCaveEntry.getCaveSketchList().add(csEntry);
 						caveSketchUploadPanel.hide();
 						refreshCaveSketchFLC(
-								caveTypeEntryListStore.findModelWithKey(Integer.toString(correspondingCaveEntry.getCaveTypeID())).getSketchName(),
-								caveSketchFilename);
+								caveTypeEntryListStore.findModelWithKey(Integer.toString(correspondingCaveEntry.getCaveTypeID())).getSketchName());
 					}
 
 					@Override
@@ -2509,30 +2506,43 @@ public class CaveEditor extends AbstractEditor {
 		closeToolButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-				Dialog d = new Dialog();
-				d.setHeading("Exit Warning!");
-				d.setWidget(new HTML("Do you wish to save before exiting?"));
-				d.setBodyStyle("fontWeight:bold;padding:13px;");
-				d.setPixelSize(300, 100);
-				d.setHideOnButtonClick(true);
-				d.setPredefinedButtons(PredefinedButton.YES, PredefinedButton.NO, PredefinedButton.CANCEL);
-				d.setModal(true);
-				d.center();
-				d.show();
-				d.getButton(PredefinedButton.YES).addSelectHandler(new SelectHandler() {
+				Util.showYesNo("Exit Warning!", "Do you wish to save before exiting?", new SelectHandler() {
 
 					@Override
 					public void onSelect(SelectEvent event) {
 						saveEntries(true);
 					}
-				});
-				d.getButton(PredefinedButton.NO).addSelectHandler(new SelectHandler() {
+				}, new SelectHandler() {
 
 					@Override
 					public void onSelect(SelectEvent event) {
 						closeEditor(null);
 					}
 				});
+//				Dialog d = new Dialog();
+//				d.setHeading("Exit Warning!");
+//				d.setWidget(new HTML("Do you wish to save before exiting?"));
+//				d.setBodyStyle("fontWeight:bold;padding:13px;");
+//				d.setPixelSize(300, 100);
+//				d.setHideOnButtonClick(true);
+//				d.setPredefinedButtons(PredefinedButton.YES, PredefinedButton.NO, PredefinedButton.CANCEL);
+//				d.setModal(true);
+//				d.center();
+//				d.show();
+//				d.getButton(PredefinedButton.YES).addSelectHandler(new SelectHandler() {
+//
+//					@Override
+//					public void onSelect(SelectEvent event) {
+//						saveEntries(true);
+//					}
+//				});
+//				d.getButton(PredefinedButton.NO).addSelectHandler(new SelectHandler() {
+//
+//					@Override
+//					public void onSelect(SelectEvent event) {
+//						closeEditor(null);
+//					}
+//				});
 			}
 		});
 

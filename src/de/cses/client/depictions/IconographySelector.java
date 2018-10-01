@@ -18,10 +18,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
@@ -43,13 +39,10 @@ import com.sencha.gxt.widget.core.client.tree.Tree.CheckCascade;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckNodes;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
 
-import de.cses.client.DatabaseService;
-import de.cses.client.DatabaseServiceAsync;
-import de.cses.client.StaticTables;
 import de.cses.client.Util;
 import de.cses.shared.IconographyEntry;
 
-public class IconographySelector implements IsWidget {
+public class IconographySelector extends FramedPanel {
 
 	class IconographyKeyProvider implements ModelKeyProvider<IconographyEntry> {
 		@Override
@@ -78,7 +71,7 @@ public class IconographySelector implements IsWidget {
 
 	private TreeStore<IconographyEntry> iconographyTreeStore;
 	private Tree<IconographyEntry, String> iconographyTree;
-	private FramedPanel mainPanel = null;
+//	private FramedPanel mainPanel = null;
 	private StoreFilterField<IconographyEntry> filterField;
 	protected Map<String, IconographyEntry> selectedIconographyMap;
 
@@ -156,13 +149,13 @@ public class IconographySelector implements IsWidget {
 		}
 	}
 
-	@Override
-	public Widget asWidget() {
-		if (mainPanel == null) {
-			initPanel();
-		}
-		return mainPanel;
-	}
+//	@Override
+//	public Widget asWidget() {
+//		if (mainPanel == null) {
+//			initPanel();
+//		}
+//		return mainPanel;
+//	}
 
 	private void initPanel() {
 		Util.doLogging("IconographySelector.init() has been called! " + this.getClass().toString());
@@ -231,12 +224,12 @@ public class IconographySelector implements IsWidget {
 			}
 		});
 
-		mainPanel = new FramedPanel();
-		mainPanel.setHeading("Iconography Selector");
-		mainPanel.add(iconographySelectorBLC);
-		mainPanel.addTool(resetTB);
-		mainPanel.addTool(iconographyExpandTB);
-		mainPanel.addTool(iconographyCollapseTB);
+//		mainPanel = new FramedPanel();
+		setHeading("Iconography Selector");
+		add(iconographySelectorBLC);
+		addTool(resetTB);
+		addTool(iconographyExpandTB);
+		addTool(iconographyCollapseTB);
 	}
 
 	public ArrayList<IconographyEntry> getSelectedIconography() {

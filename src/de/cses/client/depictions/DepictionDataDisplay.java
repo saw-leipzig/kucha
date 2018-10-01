@@ -31,11 +31,14 @@ import de.cses.shared.PreservationAttributeEntry;
  */
 public class DepictionDataDisplay extends AbstractDataDisplay {
 	
+	private DepictionEntry entry;
+	
 	/**
 	 * 
 	 */
 	public DepictionDataDisplay(DepictionEntry e) {
 		super();
+		entry = e;
 		String cave = "";
 		SafeUri realCaveSketchUri = null;
 		DepictionViewTemplates view = GWT.create(DepictionViewTemplates.class);
@@ -86,5 +89,22 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 		add(htmlWidget, new MarginData(0, 0, 0, 0));
 		setHeading((shortname.length() > 0 ? shortname + " " : "") + (cave.length() > 0 ? " in " + cave : ""));
 	}
+
+	/* (non-Javadoc)
+	 * @see de.cses.client.ui.AbstractDataDisplay#getUniqueID()
+	 */
+	@Override
+	public String getUniqueID() {
+		return entry.getUniqueID();
+	}
+
+//	@Override
+//	public boolean equals(Object obj) {
+//		if (obj instanceof DepictionDataDisplay) {
+//			return ((DepictionDataDisplay) obj).getUniqueID() == this.getUniqueID();
+//		} else {
+//			return false;
+//		}
+//	}
 
 }

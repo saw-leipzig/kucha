@@ -269,14 +269,4 @@ public class LocationFilter extends AbstractFilter {
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see de.cses.client.ui.AbstractFilter#showExtendedFilterView()
-	 */
-	@Override
-	protected void showExtendedFilterView() {
-		// TODO Auto-generated method stub
-		
-	}
-	
-
 }

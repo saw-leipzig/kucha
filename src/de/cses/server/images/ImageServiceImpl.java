@@ -94,7 +94,7 @@ public class ImageServiceImpl extends HttpServlet {
 					// purpose of the upload (e.g. depictions, backgrounds, ...)
 					System.err.println("uploadFileName = " + uploadFileName);
 					fileType = uploadFileName.substring(uploadFileName.lastIndexOf(".")).toLowerCase();
-					System.err.println("fileType = " + fileType);
+					System.err.println("imageType = " + fileType);
 					if (item.isFormField()) {
 						throw new ServletException("Unsupported non-file property [" + item.getFieldName() + "] with value: " + item.getString());
 					} else {
