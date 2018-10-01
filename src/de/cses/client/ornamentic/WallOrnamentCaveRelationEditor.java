@@ -42,11 +42,11 @@ import com.sencha.gxt.widget.core.client.form.TextArea;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
+import de.cses.client.Util;
 import de.cses.client.walls.WallSelector;
 import de.cses.shared.CaveAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CavePart;
-import de.cses.shared.InnerSecondaryPatternsEntry;
 import de.cses.shared.OrnamentFunctionEntry;
 import de.cses.shared.OrnamentPositionEntry;
 import de.cses.shared.WallEntry;
@@ -56,29 +56,25 @@ import de.cses.shared.WallOrnamentCaveRelation;
  * @author nina
  *
  */
-public class OrnamentWallAttributes extends PopupPanel {
+public class WallOrnamentCaveRelationEditor {
 
-	private CaveEntry caveEntry;
-	// private PopupPanel popup;
-	private OrnamentCaveAttributes ornamentCaveRelation;
 	private OrnamentPositionProperties ornamentPositionProps;
 	private OrnamentFunctionProperties ornamentFunctionProps;
 	private ListStore<OrnamentPositionEntry> ornamentPositionEntryLS;
 	private ComboBox<OrnamentPositionEntry> ornamentPositionComboBox;
 	private ListStore<OrnamentFunctionEntry> ornamentFunctionEntryLS;
 	private ComboBox<OrnamentFunctionEntry> ornamentfunctionComboBox;
-	// private ComboBox<WallEntry> wallsComboBox;
 	private WallOrnamentCaveRelation wallOrnamentCaveRelation;
+	private CaveEntry caveEntry;
+	PopupPanel popup = new PopupPanel();
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 
 	private TextArea notes;
 
 	private WallSelector wallselector;
 
-	public OrnamentWallAttributes(CaveEntry cave, WallOrnamentCaveRelation wallOrnamentCaveRelation) {
-		super(false);
-		this.wallOrnamentCaveRelation = wallOrnamentCaveRelation;
-		this.caveEntry = cave;
+	public WallOrnamentCaveRelationEditor() {
+		Util.doLogging("Nina: im konstruktor wallornamenteditor");
 		ornamentPositionProps = GWT.create(OrnamentPositionProperties.class);
 		ornamentFunctionProps = GWT.create(OrnamentFunctionProperties.class);
 		ornamentPositionEntryLS = new ListStore<OrnamentPositionEntry>(ornamentPositionProps.ornamentPositionID());
@@ -90,23 +86,18 @@ public class OrnamentWallAttributes extends PopupPanel {
 		for (OrnamentFunctionEntry ofe : StaticTables.getInstance().getOrmanemtFunctionEntries().values()) {
 			ornamentFunctionEntryLS.add(ofe);
 		}
-		
-
-
-		setWidget(createForm());
 	}
 
 	private FramedPanel createForm() {
+		
+		Util.doLogging("Nina: in create form start wallornamenteditor");
 		wallselector = new WallSelector();
 		wallselector.setCave(caveEntry);
 
 		FramedPanel selectWallFP = new FramedPanel();
 		selectWallFP.setHeading("Select Wall");
 		selectWallFP.add(wallselector);
-		if (wallOrnamentCaveRelation != null) {
-			wallselector.setWallEntry(wallOrnamentCaveRelation.getWall());
-			filterPositionbyCaveArea();
-		}
+	
 		ValueChangeHandler<WallEntry> wallSelectionHandler = new ValueChangeHandler<WallEntry>() {
 
 			@Override
@@ -116,6 +107,7 @@ public class OrnamentWallAttributes extends PopupPanel {
 				ornamentPositionComboBox.disable();
 				ornamentfunctionComboBox.disable();
 				ornamentPositionEntryLS.clear();
+				ornamentFunctionEntryLS.clear();
 				filterPositionbyCaveArea();
 
 				ornamentPositionComboBox.setEnabled(true);
@@ -139,10 +131,7 @@ public class OrnamentWallAttributes extends PopupPanel {
 		ornamentPositionComboBox.setTypeAhead(false);
 		ornamentPositionComboBox.setEditable(false);
 		ornamentPositionComboBox.setTriggerAction(TriggerAction.ALL);
-		if (wallOrnamentCaveRelation != null) {
-			ornamentPositionComboBox.setValue(ornamentPositionEntryLS.findModelWithKey(Integer.toString(wallOrnamentCaveRelation.getOrnamenticPositionID())));
-			getFunctionbyPosition();
-		}
+
 		FramedPanel ornamentPositionFP = new FramedPanel();
 		ornamentPositionFP.setHeading("Select ornament position");
 		ornamentPositionFP.add(ornamentPositionComboBox);
@@ -159,17 +148,35 @@ public class OrnamentWallAttributes extends PopupPanel {
 		ornamentfunctionComboBox.setTypeAhead(false);
 		ornamentfunctionComboBox.setEditable(false);
 		ornamentfunctionComboBox.setTriggerAction(TriggerAction.ALL);
-		if (wallOrnamentCaveRelation != null) {
-			ornamentfunctionComboBox.setValue(ornamentFunctionEntryLS.findModelWithKey(Integer.toString(wallOrnamentCaveRelation.getOrnamenticFunctionID())));
-		}
 		FramedPanel ornamentFunctionFP = new FramedPanel();
 		ornamentFunctionFP.setHeading("Select the ornament function");
 		ornamentFunctionFP.add(ornamentfunctionComboBox);
+		
+		ValueChangeHandler<OrnamentPositionEntry> positionSelectionHandler = new ValueChangeHandler<OrnamentPositionEntry>() {
 
-		
-		
-		getFunctionbyPosition();
-		
+			@Override
+			public void onValueChange(ValueChangeEvent<OrnamentPositionEntry> event) {
+				ornamentFunctionEntryLS.clear();
+				
+				dbService.getFunctionbyPosition(event.getValue(), new AsyncCallback<ArrayList<OrnamentFunctionEntry>>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+					}
+
+					@Override
+					public void onSuccess(ArrayList<OrnamentFunctionEntry> result) {
+						for (OrnamentFunctionEntry pe : result) {
+							ornamentFunctionEntryLS.add(pe);
+						}
+						ornamentfunctionComboBox.setEnabled(true);
+					}
+				});
+			}
+
+		};
+		ornamentPositionComboBox.addValueChangeHandler(positionSelectionHandler);
 		
 		notes = new TextArea();
 		notes.setAllowBlank(true);
@@ -181,7 +188,6 @@ public class OrnamentWallAttributes extends PopupPanel {
 		notesFP.add(notes);
 
 		VerticalLayoutContainer vlcWalls = new VerticalLayoutContainer();
-//		vlcWalls.add(selectWallFP, new VerticalLayoutData(1.0, .5));
 		vlcWalls.add(ornamentPositionFP, new VerticalLayoutData(1.0, .15));
 		vlcWalls.add(ornamentFunctionFP, new VerticalLayoutData(1.0, .15));
 		vlcWalls.add(notesFP, new VerticalLayoutData(1.0, .7));
@@ -200,7 +206,7 @@ public class OrnamentWallAttributes extends PopupPanel {
 
 			@Override
 			public void onSelect(SelectEvent event) {
-				hide();
+				popup.hide();
 			}
 		});
 
@@ -210,54 +216,20 @@ public class OrnamentWallAttributes extends PopupPanel {
 			@Override
 			public void onSelect(SelectEvent event) {
 				save();
-				hide();
+				popup.hide();
 			}
 		});
 		wallrelationFramedPanel.addTool(saveTB);
 		wallrelationFramedPanel.addTool(cancelTB);
 
-//		ToolButton closeTB = new ToolButton(ToolButton.CLOSE);
-//		closeTB.addSelectHandler(new SelectHandler() {
-//
-//			@Override
-//			public void onSelect(SelectEvent event) {
-//				Dialog d = new Dialog();
-//				d.setHeading("Exit Warning!");
-//				d.setWidget(new HTML("Do you wish to save before exiting?"));
-//				d.setBodyStyle("fontWeight:bold;padding:13px;");
-//				d.setPixelSize(300, 100);
-//				d.setHideOnButtonClick(true);
-//				d.setPredefinedButtons(PredefinedButton.YES, PredefinedButton.NO, PredefinedButton.CANCEL);
-//				d.setModal(true);
-//				d.center();
-//				d.show();
-//				d.getButton(PredefinedButton.YES).addSelectHandler(new SelectHandler() {
-//
-//					@Override
-//					public void onSelect(SelectEvent event) {
-//						save();
-//						hide();
-//					}
-//				});
-//				d.getButton(PredefinedButton.NO).addSelectHandler(new SelectHandler() {
-//
-//					@Override
-//					public void onSelect(SelectEvent event) {
-//						hide();
-//					}
-//				});
-//			}
-//		});
-//		wallrelationFramedPanel.addTool(closeTB);
 
+		Util.doLogging("Nina: in createform ende wallornamenteditor");
 		return wallrelationFramedPanel;
 	}
 
-	/**
-	 * 
-	 */
 	protected void save() {
 		WallOrnamentCaveRelation caveWallOrnamentRelation = new WallOrnamentCaveRelation(caveEntry.getCaveID(), wallselector.getSelectedWallEntry());
+		Util.doLogging(this.getClass().getName() + " cavewallornamentrelation wurde erstellt");
 		if (ornamentfunctionComboBox.getValue() == null) {
 			caveWallOrnamentRelation.setOrnamenticFunctionID(18); // 18 = unknown
 		} else {
@@ -270,11 +242,12 @@ public class OrnamentWallAttributes extends PopupPanel {
 		}
 		caveWallOrnamentRelation.setNotes(notes.getText());
 		
-		if(wallOrnamentCaveRelation != null) {
-			ornamentCaveRelation.getWallsListStore().remove(wallOrnamentCaveRelation);
-		}
 		
-		ornamentCaveRelation.getWallsListStore().add(caveWallOrnamentRelation);
+		if(wallOrnamentCaveRelation != null) {
+			OrnamenticEditor.ornamentCaveRelationEditor.getWallsListStore().remove(wallOrnamentCaveRelation);
+		}
+		OrnamenticEditor.ornamentCaveRelationEditor.getWallsListStore().add(caveWallOrnamentRelation);
+		OrnamenticEditor.ornamentCaveRelationEditor.getWallsListView().refresh();
 	}
 
 	public CaveEntry getCave() {
@@ -285,13 +258,7 @@ public class OrnamentWallAttributes extends PopupPanel {
 		this.caveEntry = cave;
 	}
 
-	public OrnamentCaveAttributes getOrnamentCaveRelation() {
-		return ornamentCaveRelation;
-	}
 
-	public void setOrnamentCaveRelation(OrnamentCaveAttributes ornamentCaveRelation) {
-		this.ornamentCaveRelation = ornamentCaveRelation;
-	}
 
 	interface CavePartProperties extends PropertyAccess<CavePart> {
 		ModelKeyProvider<CavePart> cavePartID();
@@ -338,9 +305,12 @@ public class OrnamentWallAttributes extends PopupPanel {
 	}
 	
 	public void filterPositionbyCaveArea() {
+		ornamentPositionEntryLS.clear();
+		Util.doLogging("Nina: in create form step 3 wallornamenteditor");
 		String wallOrCeiling = StaticTables.getInstance().getWallLocationEntries().get(wallselector.getSelectedWallEntry().getWallLocationID()).getLabel();
-	
+		Util.doLogging("Nina: 3.A nach wallorCeiling string");
 		if( wallOrCeiling.contains("wall")) {
+			Util.doLogging("Nina: in create form step 4 variante 1 wallornamenteditor");
 	
 			dbService.getPositionbyWall(wallselector.getSelectedWallEntry(), new AsyncCallback<ArrayList<OrnamentPositionEntry>>() {
 
@@ -351,18 +321,16 @@ public class OrnamentWallAttributes extends PopupPanel {
 
 				@Override
 				public void onSuccess(ArrayList<OrnamentPositionEntry> result) {
+					
 		
 					for (OrnamentPositionEntry pe : result) {
 						ornamentPositionEntryLS.add(pe);
-					}
-					if (wallOrnamentCaveRelation != null) {
-						ornamentPositionComboBox.setValue(ornamentPositionEntryLS.findModelWithKey(Integer.toString(wallOrnamentCaveRelation.getOrnamenticPositionID())));
 					}
 				}
 			});
 		}
 		else if( wallOrCeiling.contains("ceiling"))  {
-			;
+			Util.doLogging("Nina: in create form step 4 variante 2 wallornamenteditor");
 			ArrayList<CaveAreaEntry> result = caveEntry.getCaveAreaList();
 			String cavearealabel = StaticTables.getInstance().getWallLocationEntries().get(wallselector.getSelectedWallEntry().getWallLocationID()).getCaveAreaLabel();
 			for(int i = 0; i < result.size(); i++){
@@ -382,13 +350,10 @@ public class OrnamentWallAttributes extends PopupPanel {
 
 						@Override
 						public void onSuccess(ArrayList<OrnamentPositionEntry> result) {
+							Util.doLogging("Nina: in create form step 4.2 variante 2 wallornamenteditor");
 							for (OrnamentPositionEntry pe : result) {
 								ornamentPositionEntryLS.add(pe);
 							}
-							if (wallOrnamentCaveRelation != null) {
-								ornamentPositionComboBox.setValue(ornamentPositionEntryLS.findModelWithKey(Integer.toString(wallOrnamentCaveRelation.getOrnamenticPositionID())));
-							
-				}
 			}
 				
 	});
@@ -397,37 +362,34 @@ public class OrnamentWallAttributes extends PopupPanel {
 			}
 		}
 		else {
+			Util.doLogging("keinen Case gefunden!");
 		}
 		}
 	
-	public void getFunctionbyPosition() {
-	ValueChangeHandler<OrnamentPositionEntry> positionSelectionHandler = new ValueChangeHandler<OrnamentPositionEntry>() {
-
-		@Override
-		public void onValueChange(ValueChangeEvent<OrnamentPositionEntry> event) {
-			ornamentFunctionEntryLS.clear();
-			
-			dbService.getFunctionbyPosition(event.getValue(), new AsyncCallback<ArrayList<OrnamentFunctionEntry>>() {
-
-				@Override
-				public void onFailure(Throwable caught) {
-					caught.printStackTrace();
-				}
-
-				@Override
-				public void onSuccess(ArrayList<OrnamentFunctionEntry> result) {
-					for (OrnamentFunctionEntry pe : result) {
-						ornamentFunctionEntryLS.add(pe);
-					}
-					if (wallOrnamentCaveRelation != null) {
-						ornamentfunctionComboBox.setValue(ornamentFunctionEntryLS.findModelWithKey(Integer.toString(wallOrnamentCaveRelation.getOrnamenticFunctionID())));
-					}
-				}
-			});
-			ornamentfunctionComboBox.setEnabled(true);
-		}
-
-	};
-	ornamentPositionComboBox.addValueChangeHandler(positionSelectionHandler);
+	
+	public void show() {
+		popup = new PopupPanel();
+		this.caveEntry = OrnamenticEditor.ornamentCaveRelationEditor.getCaveEntryComboBox().getValue();
+		Util.doLogging("Nina: in show start wallornamenteditor ohne entry ");
+		popup.setWidget(createForm());
+		popup.center();
+		Util.doLogging("Nina: in show ende wallornamenteditor ohne entry");
+	}
+	
+	public void show(WallOrnamentCaveRelation wallOrnamentCaveRelation) {
+		this.caveEntry = OrnamenticEditor.ornamentCaveRelationEditor.getCaveEntryComboBox().getValue();
+		Util.doLogging("Nina: in show start wallornamenteditor mit entry ");
+		this.wallOrnamentCaveRelation = wallOrnamentCaveRelation;
+		popup = new PopupPanel();
+		Util.doLogging("Nina: in create form step 1 vor create form wallornamenteditor");
+		popup.setWidget(createForm());
+			wallselector.setWallEntry(wallOrnamentCaveRelation.getWall());
+			ornamentPositionComboBox.setValue(ornamentPositionEntryLS.findModelWithKey(Integer.toString(wallOrnamentCaveRelation.getOrnamenticPositionID())));
+			Util.doLogging("Nina: in create form step 2 nach position setzenwallornamenteditor");
+			filterPositionbyCaveArea();
+			ornamentfunctionComboBox.setValue(ornamentFunctionEntryLS.findModelWithKey(Integer.toString(wallOrnamentCaveRelation.getOrnamenticFunctionID())), true);
+			popup.center();
+		Util.doLogging("Nina: in show ende wallornamenteditor mit entry");
+		
 	}
 }
