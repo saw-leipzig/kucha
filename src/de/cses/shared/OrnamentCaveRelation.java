@@ -12,7 +12,6 @@ public class OrnamentCaveRelation extends AbstractEntry {
 	private DistrictEntry district;
 	private String group;
 	private String similarelementsOfOtherCultures;
-	//private ArrayList<OrientationEntry> orientations = new ArrayList<OrientationEntry>();
 	private ArrayList<IconographyEntry> iconographyElements = new ArrayList<IconographyEntry>();
 	private ArrayList<OrnamentEntry> relatedOrnamentsRelations = new ArrayList<OrnamentEntry>();
 	private ArrayList<WallOrnamentCaveRelation> walls = new ArrayList<WallOrnamentCaveRelation>();
@@ -24,7 +23,6 @@ public class OrnamentCaveRelation extends AbstractEntry {
 	public OrnamentCaveRelation(int ornamentCaveRelationID, StyleEntry style, int ornamentID, DistrictEntry district, CaveEntry caveEntry,
 			String colours, String notes, String group, String similarElementsOfOtherCultures, ArrayList<IconographyEntry> iconographyElements,
 			ArrayList<OrnamentEntry> relatedOrnamentsRelations, ArrayList<WallOrnamentCaveRelation> walls
-			//,ArrayList<OrientationEntry> orientations
 			) {
 		this.ornamentCaveRelationID = ornamentCaveRelationID;
 		this.style = style;
@@ -133,24 +131,6 @@ public class OrnamentCaveRelation extends AbstractEntry {
 		this.similarelementsOfOtherCultures = similarelementsOfOtherCultures;
 	}
 
-	/**
-	 * @return the orientations
-	 */
-/*	public ArrayList<OrientationEntry> getOrientations() {
-		return orientations;
-	}
-
-	/**
-	 * @param orientations
-	 *          the orientations to set
-	 */
-	/*public void setOrientations(ArrayList<OrientationEntry> orientations) {
-		this.orientations = orientations;
-	}
-
-	/**
-	 * @return the relatedOrnamentsRelations
-	 */
 	public ArrayList<OrnamentEntry> getRelatedOrnamentsRelations() {
 		return relatedOrnamentsRelations;
 	}

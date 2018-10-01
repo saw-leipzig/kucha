@@ -809,16 +809,15 @@ public class MysqlConnector {
 		Connection dbc = getConnection();
 		PreparedStatement ornamentStatement;
 		try {
-			ornamentStatement = dbc.prepareStatement("UPDATE Ornaments SET Code=?, Description=?, Remarks=?, Interpretation=?, OrnamentReferences=?, Annotation=?, OrnamentClassID=?, StructureOrganizationID=? WHERE OrnamentID=?");
+			ornamentStatement = dbc.prepareStatement("UPDATE Ornaments SET Code=?, Description=?, Remarks=?, Interpretation=?, OrnamentReferences=?, OrnamentClassID=?, StructureOrganizationID=? WHERE OrnamentID=?");
 			ornamentStatement.setString(1, ornamentEntry.getCode());
 			ornamentStatement.setString(2, ornamentEntry.getDescription());
 			ornamentStatement.setString(3, ornamentEntry.getRemarks());
 			ornamentStatement.setString(4, ornamentEntry.getInterpretation());
 			ornamentStatement.setString(5, ornamentEntry.getReferences());
-			//ornamentStatement.setString(6, ornamentEntry.getAnnotations());
-			ornamentStatement.setInt(7, ornamentEntry.getOrnamentClass());
-			ornamentStatement.setInt(8, ornamentEntry.getStructureOrganizationID());
-			ornamentStatement.setInt(9, ornamentEntry.getOrnamentID());
+			ornamentStatement.setInt(6, ornamentEntry.getOrnamentClass());
+			ornamentStatement.setInt(7, ornamentEntry.getStructureOrganizationID());
+			ornamentStatement.setInt(8, ornamentEntry.getOrnamentID());
 			ornamentStatement.executeUpdate();
 
 			updateInnerSecondaryPatternsRelations(ornamentEntry.getOrnamentID(), ornamentEntry.getInnerSecondaryPatterns());
@@ -3653,9 +3652,9 @@ public class MysqlConnector {
 
 		PreparedStatement stmt;
 		try {
-			stmt = dbc.prepareStatement("UPDATE OrnamentClass SET Name = ? WHERE VALUES OrnamentClassID = ?");
+			stmt = dbc.prepareStatement("UPDATE OrnamentClass SET Name=? WHERE VALUES OrnamentClassID=?");
 			stmt.setString(1, ornamentClass.getName());
-			stmt.setInt(1, ornamentClass.getOrnamentClassID());
+			stmt.setInt(2, ornamentClass.getOrnamentClassID());
 			stmt.executeUpdate();
 			stmt.close();
 		} catch (SQLException e) {
@@ -3676,9 +3675,9 @@ public class MysqlConnector {
 
 		PreparedStatement stmt;
 		try {
-			stmt = dbc.prepareStatement("UPDATE OrnamentComponents SET Name = ? WHERE VALUES OrnamentComponentsID = ?");
+			stmt = dbc.prepareStatement("UPDATE OrnamentComponents SET Name=? WHERE VALUES OrnamentComponentsID=?");
 			stmt.setString(1, ornamentComponents.getName());
-			stmt.setInt(1, ornamentComponents.getOrnamentComponentsID());
+			stmt.setInt(2, ornamentComponents.getOrnamentComponentsID());
 			stmt.executeUpdate();
 			stmt.close();
 		} catch (SQLException e) {
