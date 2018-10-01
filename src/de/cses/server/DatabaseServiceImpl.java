@@ -894,8 +894,8 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public OrnamentClassEntry renameOrnamentClass(OrnamentClassEntry entry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.renameOrnamentClass(entry);// TODO Auto-generated method stub
-		
 	}
+	
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#renameOrnamentComponents(de.cses.shared.OrnamentComponentsEntry)
 	 */
@@ -903,7 +903,9 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public OrnamentComponentsEntry renameOrnamentComponents(OrnamentComponentsEntry entry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.renameOrnamentComponents(entry);
+	}
 
+		/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#updateUserEntry(de.cses.shared.UserEntry)
 	 */
 	@Override
