@@ -285,7 +285,7 @@ public  class OrnamentCaveRelationEditor  {
 		header.add(styleComboBox);
 		vlcCave.add(header, new VerticalLayoutData(0.5, .125));
 
-		TextButton addWalls = new TextButton("Add Wall");
+		ToolButton addWalls = new ToolButton(ToolButton.PLUS);
 
 		ClickHandler addWallsClickHandler = new ClickHandler() {
 
@@ -352,7 +352,7 @@ public  class OrnamentCaveRelationEditor  {
 
 		selectedWallsHorizontalPanel.add(wallList);
 
-		TextButton edit = new TextButton("edit");
+		ToolButton edit = new ToolButton(ToolButton.REFRESH);
 		ClickHandler editWallsClickHandler = new ClickHandler() {
 
 			@Override
@@ -368,11 +368,11 @@ public  class OrnamentCaveRelationEditor  {
 		};
 		edit.addHandler(editWallsClickHandler, ClickEvent.getType());
 
-		TextButton delete = new TextButton("delete");
+		ToolButton delete = new ToolButton(ToolButton.CLOSE);
 
-		header.addButton(addWalls);
-		header.addButton(edit);
-		header.addButton(delete);
+		header.addTool(addWalls);
+		header.addTool(edit);
+		header.addTool(delete);
 
 		ClickHandler deleteClickHandler = new ClickHandler() {
 

@@ -362,13 +362,13 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 
 		ToolButton cancelRenameOrnamentClass = new ToolButton(ToolButton.CLOSE);
 
-		ornamentClassFramedPanel.addTool(cancelRenameOrnamentClass);
-		ornamentClassFramedPanel.addTool(saveRenameOrnamentClass);
+		renameornamentClassFramedPanel.addTool(cancelRenameOrnamentClass);
+		renameornamentClassFramedPanel.addTool(saveRenameOrnamentClass);
 
 		HorizontalLayoutContainer renameOrnamentClassLayoutPanel = new HorizontalLayoutContainer();
 		TextField renameOrnamentClassTextField = new TextField();
-		newOrnamentClassLayoutPanel.add(renameOrnamentClassTextField);
-		ornamentClassFramedPanel.add(renameOrnamentClassLayoutPanel);
+		renameOrnamentClassLayoutPanel.add(renameOrnamentClassTextField);
+		renameornamentClassFramedPanel.add(renameOrnamentClassLayoutPanel);
 		
 		renameOrnamentClassButton.addSelectHandler(new SelectHandler() {
 
@@ -382,15 +382,15 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 				renameOrnamentClassPopup.add(renameornamentClassFramedPanel);
 				renameornamentClassFramedPanel.setSize("150", "80");
 				renameOrnamentClassPopup.center();
-				renameOrnamentClassTextField.setText(ornamentClassComboBox.getSelectedText());
-				cancelOrnamentClass.addSelectHandler(new SelectHandler() {
+				renameOrnamentClassTextField.setText(ornamentClassComboBox.getValue().getName());
+				cancelRenameOrnamentClass.addSelectHandler(new SelectHandler() {
 
 					@Override
 					public void onSelect(SelectEvent event) {
 						renameOrnamentClassPopup.hide();
 					}
 				});
-				saveOrnamentClass.addSelectHandler(new SelectHandler() {
+				saveRenameOrnamentClass.addSelectHandler(new SelectHandler() {
 
 					@Override
 					public void onSelect(SelectEvent event) {
@@ -429,8 +429,10 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 			references.setText(ornamentEntry.getReferences());
 		}
 
-		TextButton addCaveButton = new TextButton();
-		addCaveButton.setText("Add Cave");
+
+		
+		ToolButton addCaveTool = new ToolButton(ToolButton.PLUS);
+		
 
 		VerticalPanel cavesPanel = new VerticalPanel();
 		header = new FramedPanel();
@@ -447,7 +449,7 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 			}
 		};
 
-		addCaveButton.addHandler(addCaveClickHandler, ClickEvent.getType());
+		addCaveTool.addHandler(addCaveClickHandler, ClickEvent.getType());
 
 		cavesContentPanel = new FramedPanel();
 		cavesPanel.add(cavesContentPanel);
@@ -465,12 +467,12 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 		cavesContentPanel.setHeading("Added caves");
 		cavesContentPanel.add(cavesList);
 
-		TextButton edit = new TextButton("edit");
-		TextButton delete = new TextButton("delete");
+		ToolButton edit = new ToolButton(ToolButton.REFRESH);
+		ToolButton delete = new ToolButton(ToolButton.CLOSE);
 
-		header.addButton(addCaveButton);
-		header.addButton(edit);
-		header.addButton(delete);
+		cavesContentPanel.addTool(addCaveTool);
+		cavesContentPanel.addTool(edit);
+		cavesContentPanel.addTool(delete);
 
 		ClickHandler deleteClickHandler = new ClickHandler() {
 
@@ -491,7 +493,6 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 		};
 		edit.addHandler(editClickHandler, ClickEvent.getType());
 
-		TextButton save = new TextButton("save");
 
 		ClickHandler saveClickHandler = new ClickHandler() {
 
@@ -580,10 +581,10 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 
 			}
 		};
-		save.addHandler(saveClickHandler, ClickEvent.getType());
+		
 
 		FramedPanel framedpanelornamentic = new FramedPanel();
-		TextButton cancel = new TextButton("cancel");
+		
 
 		ClickHandler cancelHandler = new ClickHandler() {
 
@@ -593,14 +594,13 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 			}
 
 		};
-		cancel.addHandler(cancelHandler, ClickEvent.getType());
+		
 
-		framedpanelornamentic.addButton(save);
-		framedpanelornamentic.addButton(cancel);
+
 
 		horizontBackground.add(panel, new HorizontalLayoutData(.5, 1.0));
 		horizontBackground.add(panel2, new HorizontalLayoutData(.5, 1.0));
-		framedpanelornamentic.setHeading("Ornamentation Editor");
+		framedpanelornamentic.setHeading("1. General");
 		framedpanelornamentic.add(horizontBackground);
 
 		tabpanel.add(framedpanelornamentic, "1. General");
@@ -914,7 +914,22 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 		imagesFramedPanel.add(imagesVerticalPanel);
 		tabpanel.setTabScroll(true);
 
-		return tabpanel;
+		ToolButton closeButton = new ToolButton(ToolButton.CLOSE);
+		ToolButton saveButton = new ToolButton(ToolButton.SAVE);
+		closeButton.addHandler(cancelHandler, ClickEvent.getType());
+		saveButton.addHandler(saveClickHandler, ClickEvent.getType());
+		
+		
+		FramedPanel backgroundPanel = new FramedPanel();
+		HorizontalLayoutContainer horiPanel = new HorizontalLayoutContainer();
+		horiPanel.setSize("650", "600");
+		backgroundPanel.add(horiPanel);
+		horiPanel.add(tabpanel);
+		backgroundPanel.setHeading("Ornamentic Editor");
+		backgroundPanel.addTool(saveButton);
+		backgroundPanel.addTool(closeButton);
+		
+		return backgroundPanel;
 
 	}
 

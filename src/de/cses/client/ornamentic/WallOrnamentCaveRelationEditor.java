@@ -26,7 +26,7 @@ import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
-import com.sencha.gxt.data.shared.ModelKeyProvider;
+import com.sencha.gxt.data.shared.ModelKeyProvider; 
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
@@ -66,6 +66,7 @@ public class WallOrnamentCaveRelationEditor {
 	private ComboBox<OrnamentFunctionEntry> ornamentfunctionComboBox;
 	private WallOrnamentCaveRelation wallOrnamentCaveRelation;
 	private CaveEntry caveEntry;
+	int init= 0;
 	PopupPanel popup = new PopupPanel();
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 
@@ -169,6 +170,10 @@ public class WallOrnamentCaveRelationEditor {
 					public void onSuccess(ArrayList<OrnamentFunctionEntry> result) {
 						for (OrnamentFunctionEntry pe : result) {
 							ornamentFunctionEntryLS.add(pe);
+						}
+						if(wallOrnamentCaveRelation != null && init == 1) {
+							ornamentfunctionComboBox.setValue(ornamentFunctionEntryLS.findModelWithKey(Integer.toString(wallOrnamentCaveRelation.getOrnamenticFunctionID())));
+							init = 0;
 						}
 						ornamentfunctionComboBox.setEnabled(true);
 					}
@@ -321,10 +326,11 @@ public class WallOrnamentCaveRelationEditor {
 
 				@Override
 				public void onSuccess(ArrayList<OrnamentPositionEntry> result) {
-					
-		
 					for (OrnamentPositionEntry pe : result) {
 						ornamentPositionEntryLS.add(pe);
+					}
+					if(wallOrnamentCaveRelation != null && init == 1) {
+						ornamentPositionComboBox.setValue(ornamentPositionEntryLS.findModelWithKey(Integer.toString(wallOrnamentCaveRelation.getOrnamenticPositionID())),true);
 					}
 				}
 			});
@@ -354,6 +360,9 @@ public class WallOrnamentCaveRelationEditor {
 							for (OrnamentPositionEntry pe : result) {
 								ornamentPositionEntryLS.add(pe);
 							}
+							if(wallOrnamentCaveRelation != null && init == 1) {
+								ornamentPositionComboBox.setValue(ornamentPositionEntryLS.findModelWithKey(Integer.toString(wallOrnamentCaveRelation.getOrnamenticPositionID())),true);
+							}
 			}
 				
 	});
@@ -377,17 +386,15 @@ public class WallOrnamentCaveRelationEditor {
 	}
 	
 	public void show(WallOrnamentCaveRelation wallOrnamentCaveRelation) {
+		init = 1;
 		this.caveEntry = OrnamenticEditor.ornamentCaveRelationEditor.getCaveEntryComboBox().getValue();
 		Util.doLogging("Nina: in show start wallornamenteditor mit entry ");
 		this.wallOrnamentCaveRelation = wallOrnamentCaveRelation;
 		popup = new PopupPanel();
-		Util.doLogging("Nina: in create form step 1 vor create form wallornamenteditor");
+		
 		popup.setWidget(createForm());
 			wallselector.setWallEntry(wallOrnamentCaveRelation.getWall());
-			ornamentPositionComboBox.setValue(ornamentPositionEntryLS.findModelWithKey(Integer.toString(wallOrnamentCaveRelation.getOrnamenticPositionID())));
-			Util.doLogging("Nina: in create form step 2 nach position setzenwallornamenteditor");
 			filterPositionbyCaveArea();
-			ornamentfunctionComboBox.setValue(ornamentFunctionEntryLS.findModelWithKey(Integer.toString(wallOrnamentCaveRelation.getOrnamenticFunctionID())), true);
 			popup.center();
 		Util.doLogging("Nina: in show ende wallornamenteditor mit entry");
 		
