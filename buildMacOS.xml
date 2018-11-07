@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="war" name="KUCHA" xmlns:if="ant:if">
+	<!-- Configure path to GWT SDK -->
+	<property name="GWT_HOME" value="/Users/alingnau/.p2/pool/plugins/com.gwtplugins.gwt.eclipse.sdkbundle.gwt28_2.8.0.201803211650/gwt-2.8.2" />
+
+	<!-- enable the following property for devmode debugging in an IDE; for Eclipse create an "Remote Java Application" launcher conneting to port 8000 -->
+	<property name="enable.debug.port" value="false" />
+
+	<property name="target.java.version" value="1.8" />
+	<property name="main.class" value="de.cses.KuchaApplication" />
+	<path id="gwt.class.path">
+		<pathelement location="${GWT_HOME}/gwt-servlet.jar" />
+		<pathelement location="${GWT_HOME}/gwt-user.jar" />
+		<fileset dir="${GWT_HOME}" includes="gwt-dev*.jar" />
+		<fileset dir="${GWT_HOME}" includes="validation-api*.jar" />
+	</path>
+	<path id="webinflib.class.path">
+		<fileset dir="war/WEB-INF/lib" includes="**/*.jar" />
+	</path>
+	<path id="gxt.class.path">
+		<fileset dir="lib" includes="*.jar" />
+<!--		<fileset dir="lib" includes="gxt-chart.jar" />  -->
+	</path>
+	<target name="compile-servlets" description="Compiles the servlets source">
+		<delete dir="war/WEB-INF/classes" failonerror="false" />
+		<mkdir dir="war/WEB-INF/classes" />
+		<javac destdir="war/WEB-INF/classes" srcdir="src" source="${target.java.version}" excludes="" listfiles="true" target="${target.java.version}" debug="true" debuglevel="lines,vars,source" includeantruntime="false">
+			<classpath>
+				<path refid="webinflib.class.path"/>
+				<path refid="gwt.class.path"/>
+				<path refid="gxt.class.path"/>
+			</classpath>
+		</javac>
+	</target>
+	<target name="war" depends="compile-servlets,gwtc">
+		<available file="war/infosystem/infosystem.nocache.js" property="gwt_compiled" />
+		<fail unless="gwt_compiled">GWT must be compiled first!</fail>
+		<zip destfile="kis.war">
+			<zipfileset dir="war" />
+			<zipfileset dir="${GWT_HOME}" includes="gwt-servlet.jar" prefix="WEB-INF/lib/" />
+		</zip>
+	</target>
+	<target name="deploy" depends="war">
+		<available file="kis.war" property="war_created" />
+		<fail unless="war_created">WAR file must be created first!</fail>
+		<scp file="kis.war" todir="${saw_username}@talentix.saw-leipzig.de:/var/lib/tomcat8/webapps/kistest.war" password="${saw_password}" port="22104"/>
+  </target>
+	<target name="gwtc" description="GWT compile to JavaScript (production mode)">
+		<java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler">
+			<classpath>
+				<pathelement location="src" />
+				<path refid="webinflib.class.path"/>
+				<path refid="gxt.class.path"/>
+				<path refid="gwt.class.path"/>
+			</classpath>
+			<!-- add jvmarg -Xss16M or similar if you see a StackOverflowError -->
+			<jvmarg value="-Xmx2048M" />
+			<arg value="${main.class}" />
+		</java>
+	</target>
+	<target name="devmode" description="Run development mode" depends="compile-servlets">
+		<java failonerror="true" fork="true" classname="com.google.gwt.dev.DevMode">
+			<classpath>
+				<pathelement location="src" />
+				<path refid="webinflib"/>
+				<path refid="gxt.class.path"/>
+				<path refid="gwt.class.path"/>
+			</classpath>
+			<jvmarg value="-Xmx1024M" />
+			<jvmarg value="-Xdebug" if:true="${enable.debug.port}" />
+			<jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000" if:true="${enable.debug.port}" />
+			<arg value="${main.class}" />
+		</java>
+	</target>
+</project>
