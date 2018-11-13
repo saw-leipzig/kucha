@@ -455,92 +455,91 @@ public class CaveEditor extends AbstractEditor {
 			ceilingTypeEntryList.add(cte);
 		}
 		if (correspondingCaveEntry.getCaveTypeID() > 0) {
-			rearAreaCeilingTypeSelector1.setValue(ceilingTypeEntryList
-					.findModelWithKey(Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).getCeilingTypeID1())));
+			rearAreaCeilingTypeSelector1.setValue(ceilingTypeEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).getCeilingType1().getCeilingTypeID())));
 			rearAreaCeilingTypeSelector2.setValue(ceilingTypeEntryList
-					.findModelWithKey(Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).getCeilingTypeID2())));
+					.findModelWithKey(Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).getCeilingType2().getCeilingTypeID())));
 
 			leftCorridorCeilingTypeSelector1.setValue(ceilingTypeEntryList.findModelWithKey(
-					Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).getCeilingTypeID1())));
+					Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).getCeilingType1().getCeilingTypeID())));
 			leftCorridorCeilingTypeSelector2.setValue(ceilingTypeEntryList.findModelWithKey(
-					Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).getCeilingTypeID2())));
+					Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).getCeilingType2().getCeilingTypeID())));
 
 			rightCorridorCeilingTypeSelector1.setValue(ceilingTypeEntryList.findModelWithKey(
-					Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).getCeilingTypeID1())));
+					Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).getCeilingType1().getCeilingTypeID())));
 			rightCorridorCeilingTypeSelector2.setValue(ceilingTypeEntryList.findModelWithKey(
-					Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).getCeilingTypeID2())));
+					Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).getCeilingType2().getCeilingTypeID())));
 
 			mainChamberCeilingTypeSelector1.setValue(ceilingTypeEntryList
-					.findModelWithKey(Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).getCeilingTypeID1())));
+					.findModelWithKey(Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).getCeilingType1().getCeilingTypeID())));
 			mainChamberCeilingTypeSelector2.setValue(ceilingTypeEntryList
-					.findModelWithKey(Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).getCeilingTypeID2())));
+					.findModelWithKey(Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).getCeilingType2().getCeilingTypeID())));
 
 			corridorCeilingTypeSelector1.setValue(ceilingTypeEntryList
-					.findModelWithKey(Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).getCeilingTypeID1())));
+					.findModelWithKey(Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).getCeilingType1().getCeilingTypeID())));
 			corridorCeilingTypeSelector2.setValue(ceilingTypeEntryList
-					.findModelWithKey(Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).getCeilingTypeID2())));
+					.findModelWithKey(Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).getCeilingType2().getCeilingTypeID())));
 
 			antechamberCeilingTypeSelector1.setValue(ceilingTypeEntryList
-					.findModelWithKey(Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).getCeilingTypeID1())));
+					.findModelWithKey(Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).getCeilingType1().getCeilingTypeID())));
 			antechamberCeilingTypeSelector2.setValue(ceilingTypeEntryList
-					.findModelWithKey(Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).getCeilingTypeID2())));
+					.findModelWithKey(Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).getCeilingType2().getCeilingTypeID())));
 			rearAreaPreservationSelectorCB.setValue(preservationClassificationEntryList.findModelWithKey(
-					Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).getPreservationClassificationID())));
+					Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).getPreservationClassification().getPreservationClassificationID())));
 			rearAreaCeilingPreservationSelectorCB1.setValue(preservationClassificationEntryList.findModelWithKey(
-					Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).getCeilingPreservationClassificationID1())));
+					Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).getCeilingPreservationClassification1().getPreservationClassificationID())));
 			rearAreaCeilingPreservationSelectorCB2.setValue(preservationClassificationEntryList.findModelWithKey(
-					Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).getCeilingPreservationClassificationID2())));
+					Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).getCeilingPreservationClassification2().getPreservationClassificationID())));
 			rearAreaFloorPreservationSelectorCB.setValue(preservationClassificationEntryList.findModelWithKey(
-					Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).getFloorPreservationClassificationID())));
+					Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).getFloorPreservationClassification().getPreservationClassificationID())));
 
 			leftCorridorPreservationSelectorCB.setValue(preservationClassificationEntryList.findModelWithKey(
-					Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).getPreservationClassificationID())));
+					Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).getPreservationClassification().getPreservationClassificationID())));
 			leftCorridorCeilingPreservationSelectorCB1.setValue(preservationClassificationEntryList.findModelWithKey(Integer
-					.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).getCeilingPreservationClassificationID1())));
+					.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).getCeilingPreservationClassification1().getPreservationClassificationID())));
 			leftCorridorCeilingPreservationSelectorCB2.setValue(preservationClassificationEntryList.findModelWithKey(Integer
-					.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).getCeilingPreservationClassificationID2())));
+					.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).getCeilingPreservationClassification2().getPreservationClassificationID())));
 			leftCorridorFloorPreservationSelectorCB.setValue(preservationClassificationEntryList.findModelWithKey(Integer
-					.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).getFloorPreservationClassificationID())));
+					.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).getFloorPreservationClassification().getPreservationClassificationID())));
 		}
 
 		for (PreservationClassificationEntry pce : StaticTables.getInstance().getPreservationClassificationEntries().values()) {
 			preservationClassificationEntryList.add(pce);
 		}
 		rightCorridorPreservationSelectorCB.setValue(preservationClassificationEntryList.findModelWithKey(
-				Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).getPreservationClassificationID())));
+				Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).getPreservationClassification().getPreservationClassificationID())));
 		rightCorridorCeilingPreservationSelectorCB1.setValue(preservationClassificationEntryList.findModelWithKey(Integer
-				.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).getCeilingPreservationClassificationID1())));
+				.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).getCeilingPreservationClassification1().getPreservationClassificationID())));
 		rightCorridorCeilingPreservationSelectorCB2.setValue(preservationClassificationEntryList.findModelWithKey(Integer
-				.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).getCeilingPreservationClassificationID2())));
+				.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).getCeilingPreservationClassification2().getPreservationClassificationID())));
 		rightCorridorFloorPreservationSelectorCB.setValue(preservationClassificationEntryList.findModelWithKey(Integer
-				.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).getFloorPreservationClassificationID())));
+				.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).getFloorPreservationClassification().getPreservationClassificationID())));
 
 		mainChamberPreservationSelectorCB.setValue(preservationClassificationEntryList.findModelWithKey(
-				Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).getPreservationClassificationID())));
+				Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).getPreservationClassification().getPreservationClassificationID())));
 		mainChamberCeilingPreservationSelectorCB1.setValue(preservationClassificationEntryList.findModelWithKey(
-				Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).getCeilingPreservationClassificationID1())));
+				Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).getCeilingPreservationClassification1().getPreservationClassificationID())));
 		mainChamberCeilingPreservationSelectorCB2.setValue(preservationClassificationEntryList.findModelWithKey(
-				Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).getCeilingPreservationClassificationID2())));
+				Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).getCeilingPreservationClassification2().getPreservationClassificationID())));
 		mainChamberFloorPreservationSelectorCB.setValue(preservationClassificationEntryList.findModelWithKey(
-				Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).getFloorPreservationClassificationID())));
+				Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).getFloorPreservationClassification().getPreservationClassificationID())));
 
 		corridorPreservationSelectorCB.setValue(preservationClassificationEntryList.findModelWithKey(
-				Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).getPreservationClassificationID())));
+				Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).getPreservationClassification().getPreservationClassificationID())));
 		corridorCeilingPreservationSelectorCB1.setValue(preservationClassificationEntryList.findModelWithKey(Integer
-				.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).getCeilingPreservationClassificationID1())));
+				.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).getCeilingPreservationClassification1().getPreservationClassificationID())));
 		corridorCeilingPreservationSelectorCB2.setValue(preservationClassificationEntryList.findModelWithKey(Integer
-				.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).getCeilingPreservationClassificationID2())));
+				.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).getCeilingPreservationClassification2().getPreservationClassificationID())));
 		corridorFloorPreservationSelectorCB.setValue(preservationClassificationEntryList.findModelWithKey(
-				Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).getFloorPreservationClassificationID())));
+				Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).getFloorPreservationClassification().getPreservationClassificationID())));
 
 		antechamberPreservationSelectorCB.setValue(preservationClassificationEntryList.findModelWithKey(
-				Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).getPreservationClassificationID())));
+				Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).getPreservationClassification().getPreservationClassificationID())));
 		antechamberCeilingPreservationSelectorCB1.setValue(preservationClassificationEntryList.findModelWithKey(
-				Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).getCeilingPreservationClassificationID1())));
+				Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).getCeilingPreservationClassification1().getPreservationClassificationID())));
 		antechamberCeilingPreservationSelectorCB2.setValue(preservationClassificationEntryList.findModelWithKey(
-				Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).getCeilingPreservationClassificationID2())));
+				Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).getCeilingPreservationClassification2().getPreservationClassificationID())));
 		antechamberFloorPreservationSelectorCB.setValue(preservationClassificationEntryList.findModelWithKey(
-				Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).getFloorPreservationClassificationID())));
+				Integer.toString(correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).getFloorPreservationClassification().getPreservationClassificationID())));
 	}
 
 	/**
@@ -1139,8 +1138,7 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA)
-						.setPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
+				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).setPreservationClassification(event.getSelectedItem());
 			}
 		});
 		ToolButton rearAreaStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
@@ -1161,8 +1159,7 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA)
-						.setCeilingPreservationClassificationID1(event.getSelectedItem().getPreservationClassificationID());
+				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).setCeilingPreservationClassification1(event.getSelectedItem());
 			}
 		});
 		rearAreaCeilingPreservationSelectorCB2 = createStateOfPreservationSelector("optional 2nd type");
@@ -1170,8 +1167,7 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA)
-						.setCeilingPreservationClassificationID2(event.getSelectedItem().getPreservationClassificationID());
+				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).setCeilingPreservationClassification2(event.getSelectedItem());
 			}
 		});
 		HorizontalLayoutContainer rearAreaCeilingPreservationHLC = new HorizontalLayoutContainer();
@@ -1196,8 +1192,7 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR)
-						.setPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
+				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).setPreservationClassification(event.getSelectedItem());
 			}
 		});
 		ToolButton leftCorridorStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
@@ -1218,8 +1213,7 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR)
-						.setCeilingPreservationClassificationID1(event.getSelectedItem().getPreservationClassificationID());
+				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).setCeilingPreservationClassification1(event.getSelectedItem());
 			}
 		});
 		leftCorridorCeilingPreservationSelectorCB2 = createStateOfPreservationSelector("optional 2nd type");
@@ -1227,8 +1221,7 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR)
-						.setCeilingPreservationClassificationID2(event.getSelectedItem().getPreservationClassificationID());
+				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).setCeilingPreservationClassification2(event.getSelectedItem());
 			}
 		});
 		HorizontalLayoutContainer leftCorridorCeilingPreservationHLC = new HorizontalLayoutContainer();
@@ -1254,8 +1247,7 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR)
-						.setPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
+				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).setPreservationClassification(event.getSelectedItem());
 			}
 		});
 		ToolButton rightCorridorStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
@@ -1276,8 +1268,7 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR)
-						.setCeilingPreservationClassificationID1(event.getSelectedItem().getPreservationClassificationID());
+				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).setCeilingPreservationClassification1(event.getSelectedItem());
 			}
 		});
 		rightCorridorCeilingPreservationSelectorCB2 = createStateOfPreservationSelector("optional 2nd type");
@@ -1285,8 +1276,7 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR)
-						.setCeilingPreservationClassificationID2(event.getSelectedItem().getPreservationClassificationID());
+				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).setCeilingPreservationClassification2(event.getSelectedItem());
 			}
 		});
 		HorizontalLayoutContainer rightCorridorCeilingPreservationHLC = new HorizontalLayoutContainer();
@@ -1312,8 +1302,7 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER)
-						.setPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
+				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).setPreservationClassification(event.getSelectedItem());
 			}
 		});
 		ToolButton mainChamberStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
@@ -1334,8 +1323,7 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER)
-						.setCeilingPreservationClassificationID1(event.getSelectedItem().getPreservationClassificationID());
+				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).setCeilingPreservationClassification1(event.getSelectedItem());
 			}
 		});
 		mainChamberCeilingPreservationSelectorCB2 = createStateOfPreservationSelector("optional 2nd type");
@@ -1343,8 +1331,7 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER)
-						.setCeilingPreservationClassificationID2(event.getSelectedItem().getPreservationClassificationID());
+				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).setCeilingPreservationClassification2(event.getSelectedItem());
 			}
 		});
 		HorizontalLayoutContainer mainChamberCeilingPreservationHLC = new HorizontalLayoutContainer();
@@ -1370,8 +1357,7 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR)
-						.setPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
+				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).setPreservationClassification(event.getSelectedItem());
 			}
 		});
 		ToolButton corridorStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
@@ -1392,8 +1378,7 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR)
-						.setCeilingPreservationClassificationID1(event.getSelectedItem().getPreservationClassificationID());
+				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).setCeilingPreservationClassification1(event.getSelectedItem());
 			}
 		});
 		corridorCeilingPreservationSelectorCB2 = createStateOfPreservationSelector("optional 2nd type");
@@ -1401,8 +1386,7 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR)
-						.setCeilingPreservationClassificationID2(event.getSelectedItem().getPreservationClassificationID());
+				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).setCeilingPreservationClassification2(event.getSelectedItem());
 			}
 		});
 		HorizontalLayoutContainer corridorCeilingPreservationHLC = new HorizontalLayoutContainer();
@@ -1427,8 +1411,7 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER)
-						.setPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
+				correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).setPreservationClassification(event.getSelectedItem());
 			}
 		});
 		ToolButton antechamberStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
@@ -1449,8 +1432,7 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER)
-						.setCeilingPreservationClassificationID1(event.getSelectedItem().getPreservationClassificationID());
+				correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).setCeilingPreservationClassification1(event.getSelectedItem());
 			}
 		});
 		antechamberCeilingPreservationSelectorCB2 = createStateOfPreservationSelector("optional 2nd type");
@@ -1458,8 +1440,7 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER)
-						.setCeilingPreservationClassificationID2(event.getSelectedItem().getPreservationClassificationID());
+				correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).setCeilingPreservationClassification2(event.getSelectedItem());
 			}
 		});
 		HorizontalLayoutContainer antechamberCeilingPreservationHLC = new HorizontalLayoutContainer();
@@ -1485,8 +1466,7 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER)
-						.setFloorPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
+				correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).setFloorPreservationClassification(event.getSelectedItem());
 			}
 		});
 		ToolButton antechamberFloorStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
@@ -1507,8 +1487,7 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER)
-						.setFloorPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
+				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).setFloorPreservationClassification(event.getSelectedItem());
 			}
 		});
 		ToolButton mainChamberFloorStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
@@ -1529,8 +1508,7 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR)
-						.setFloorPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
+				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).setFloorPreservationClassification(event.getSelectedItem());
 			}
 		});
 		ToolButton corridorFloorStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
@@ -1551,8 +1529,7 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA)
-						.setFloorPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
+				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).setFloorPreservationClassification(event.getSelectedItem());
 			}
 		});
 		ToolButton rearAreaFloorStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
@@ -1573,8 +1550,7 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR)
-						.setFloorPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
+				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).setFloorPreservationClassification(event.getSelectedItem());
 			}
 		});
 		ToolButton leftCorridorFloorStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
@@ -1595,8 +1571,7 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR)
-						.setFloorPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
+				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).setFloorPreservationClassification(event.getSelectedItem());
 			}
 		});
 		ToolButton rightCorridorFloorStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
@@ -1986,7 +1961,7 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).setCeilingTypeID1(event.getSelectedItem().getCeilingTypeID());
+				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).setCeilingType1(event.getSelectedItem());
 			}
 		});
 		rearAreaCeilingTypeSelector2 = createCeilingTypeSelector("optional 2nd type");
@@ -1994,7 +1969,7 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).setCeilingTypeID2(event.getSelectedItem().getCeilingTypeID());
+				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).setCeilingType2(event.getSelectedItem());
 			}
 		});
 		ToolButton resetRearAreaCeilingTypeSelectionTB = new ToolButton(ToolButton.REFRESH);
@@ -2022,7 +1997,7 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).setCeilingTypeID1(event.getSelectedItem().getCeilingTypeID());
+				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).setCeilingType1(event.getSelectedItem());
 			}
 		});
 		mainChamberCeilingTypeSelector2 = createCeilingTypeSelector("optional 2nd type");
@@ -2030,7 +2005,7 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).setCeilingTypeID2(event.getSelectedItem().getCeilingTypeID());
+				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).setCeilingType2(event.getSelectedItem());
 			}
 		});
 		ToolButton resetMainChamberCeilingTypeSelectionTB = new ToolButton(ToolButton.REFRESH);
@@ -2058,7 +2033,7 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).setCeilingTypeID1(event.getSelectedItem().getCeilingTypeID());
+				correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).setCeilingType1(event.getSelectedItem());
 			}
 		});
 		antechamberCeilingTypeSelector2 = createCeilingTypeSelector("optional 2nd type");
@@ -2066,7 +2041,7 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).setCeilingTypeID1(event.getSelectedItem().getCeilingTypeID());
+				correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).setCeilingType2(event.getSelectedItem());
 			}
 		});
 		ToolButton resetAntechamberCeilingTypeSelectionTB = new ToolButton(ToolButton.REFRESH);
@@ -2094,8 +2069,7 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR)
-						.setCeilingTypeID1(event.getSelectedItem().getCeilingTypeID());
+				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).setCeilingType1(event.getSelectedItem());
 			}
 		});
 		corridorCeilingTypeSelector2 = createCeilingTypeSelector("optional 2nd type");
@@ -2103,8 +2077,7 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR)
-						.setCeilingTypeID2(event.getSelectedItem().getCeilingTypeID());
+				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).setCeilingType2(event.getSelectedItem());
 			}
 		});
 		ToolButton resetCorridorCeilingTypeSelectionTB = new ToolButton(ToolButton.REFRESH);
@@ -2132,8 +2105,7 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR)
-						.setCeilingTypeID1(event.getSelectedItem().getCeilingTypeID());
+				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).setCeilingType1(event.getSelectedItem());
 			}
 		});
 		leftCorridorCeilingTypeSelector2 = createCeilingTypeSelector("optional 2nd type");
@@ -2141,8 +2113,7 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR)
-						.setCeilingTypeID2(event.getSelectedItem().getCeilingTypeID());
+				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).setCeilingType2(event.getSelectedItem());
 			}
 		});
 		ToolButton resetLeftCorridorCeilingTypeSelectionTB = new ToolButton(ToolButton.REFRESH);
@@ -2170,8 +2141,7 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR)
-						.setCeilingTypeID1(event.getSelectedItem().getCeilingTypeID());
+				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).setCeilingType1(event.getSelectedItem());
 			}
 		});
 		rightCorridorCeilingTypeSelector2 = createCeilingTypeSelector("optional 2nd type");
@@ -2179,8 +2149,7 @@ public class CaveEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR)
-						.setCeilingTypeID2(event.getSelectedItem().getCeilingTypeID());
+				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).setCeilingType2(event.getSelectedItem());
 			}
 
 		});

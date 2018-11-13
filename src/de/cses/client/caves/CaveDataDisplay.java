@@ -53,7 +53,7 @@ public class CaveDataDisplay extends AbstractDataDisplay {
 				entry.getOfficialNumber(), 
 				entry.getHistoricName(), 
 				entry.getOptionalHistoricName(), 
-				se != null ? se.getShortName() : "", 
+				se != null ? se.getName() + (!se.getAlternativeName().isEmpty() ? " ("+se.getAlternativeName()+")" : "") : "site unknown", 
 				de != null ? de.getLabel() : "", 
 				re != null ? re.getLabel(): "", 
 				entry.getLastChangedByUser(),
@@ -66,7 +66,7 @@ public class CaveDataDisplay extends AbstractDataDisplay {
 			));
 		htmlWidget.addStyleName("html-data-display");
 		add(htmlWidget, new MarginData(0, 0, 0, 0));
-		setHeading((se != null ? se.getShortName() : "Site Unknown") + entry.getOfficialNumber() + (!entry.getHistoricName().isEmpty() ? "(" + entry.getHistoricName() + ")" : ""));
+		setHeading((se != null ? se.getShortName() : "Site Unknown") + " " + entry.getOfficialNumber() + (!entry.getHistoricName().isEmpty() ? " (" + entry.getHistoricName() + ")" : ""));
 	}
 	
 	private ArrayList<CaveSketchUri> getCaveSketchURIs() {

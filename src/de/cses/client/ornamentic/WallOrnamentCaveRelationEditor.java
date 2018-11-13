@@ -342,8 +342,8 @@ public class WallOrnamentCaveRelationEditor {
 			for(int i = 0; i < result.size(); i++){
 				if(result.get(i).getCaveAreaLabel().contains(cavearealabel)) {
 					CaveAreaEntry cavearea = result.get(i);
-					int ceiling1 = cavearea.getCeilingTypeID1();
-					int ceiling2 = cavearea.getCeilingTypeID2();
+					int ceiling1 = cavearea.getCeilingType1().getCeilingTypeID();
+					int ceiling2 = cavearea.getCeilingType2().getCeilingTypeID();
 					if(ceiling1 == 0 && ceiling2 == 0) {
 						ceiling1 = 11;
 					}
