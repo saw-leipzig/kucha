@@ -27,17 +27,66 @@
 				<td class="data-view-right">{region}</td>
 			</tr>
 		</tpl>
+		<tpl if="firstDocumentedBy != &quot;&quot;">
+			<tr style="border-bottom: 1px solid black">
+				<td class="data-view-left"><i>First documented by</i></td>
+				<td class="data-view-right">{firstDocumentedBy}</td>
+			</tr>
+		</tpl>
+		<tpl if="region != &quot;&quot;">
+			<tr style="border-bottom: 1px solid black">
+				<td class="data-view-left"><i>First documented in</i></td>
+				<td class="data-view-right">{firstDocumentedInYear}</td>
+			</tr>
+		</tpl>
+	</table>
+	
+	<h4 class="data-display">Cave Layout</h4>
+	<table class="data-view">
+		<tpl if="caveType != &quot;&quot;">
+			<tr style="border-bottom: 1px solid black">
+				<td class="data-view-left"><i>Cave Type</i></td>
+				<td class="data-view-right">{caveType}</td>
+			</tr>
+		</tpl>
+		<tpl if="site != &quot;&quot;">
+			<tr style="border-bottom: 1px solid black">
+				<td class="data-view-left"><i>Site</i></td>
+				<td class="data-view-right">{site}</td>
+			</tr>
+		</tpl>
+		<tpl if="district != &quot;&quot;">
+			<tr style="border-bottom: 1px solid black">
+				<td class="data-view-left"><i>District</i></td>
+				<td class="data-view-right">{district}</td>
+			</tr>
+		</tpl>
+		<tpl if="region != &quot;&quot;">
+			<tr style="border-bottom: 1px solid black">
+				<td class="data-view-left"><i>Region</i></td>
+				<td class="data-view-right">{region}</td>
+			</tr>
+		</tpl>
+		<tpl if="firstDocumentedBy != &quot;&quot;">
+			<tr style="border-bottom: 1px solid black">
+				<td class="data-view-left"><i>First documented by</i></td>
+				<td class="data-view-right">{firstDocumentedBy}</td>
+			</tr>
+		</tpl>
+		<tpl if="region != &quot;&quot;">
+			<tr style="border-bottom: 1px solid black">
+				<td class="data-view-left"><i>First documented in</i></td>
+				<td class="data-view-right">{firstDocumentedInYear}</td>
+			</tr>
+		</tpl>
 	</table>
 
-	<h4 class="data-display">Related Bibliography</h4>
+	<h4 class="data-display">Cave Sketches</h4>
 	<tpl for='caveSketchList'>
 		<figure style='text-align: center; margin: 10;'>
 			<img src='{uri}'
-				style='position: relative; width: 100%; height: auto;'>
+				style='position: relative; width: 33%; height: auto;'>
 		</figure>
-	</tpl>
-	
-	<tpl if="cave != &quot;&quot;">
 	</tpl>
 	
 	<p class="date">Last changes on {timestamp} by {user}.</p>

@@ -561,26 +561,13 @@ public class CaveEditor extends AbstractEditor {
 	 * 
 	 */
 	private void loadOrientation() {
-		dbService.getOrientationInformation(new AsyncCallback<ArrayList<OrientationEntry>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				System.err.println("Problem loading OrientationEntry");
+		orientationEntryList.clear();
+		for (OrientationEntry entry : StaticTables.getInstance().getOrientationEntries().values()) {
+			orientationEntryList.add(entry);
+			if (correspondingCaveEntry.getOrientationID() > 0) {
+				orientationSelection.setValue(orientationEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getOrientationID())));
 			}
-
-			@Override
-			public void onSuccess(ArrayList<OrientationEntry> result) {
-				orientationEntryList.clear();
-				for (OrientationEntry entry : result) {
-					orientationEntryList.add(entry);
-					if (correspondingCaveEntry.getOrientationID() > 0) {
-						orientationSelection
-								.setValue(orientationEntryList.findModelWithKey(Integer.toString(correspondingCaveEntry.getOrientationID())));
-					}
-
-				}
-			}
-		});
+		}
 	}
 
 	/**
