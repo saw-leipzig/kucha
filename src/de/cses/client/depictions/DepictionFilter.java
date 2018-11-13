@@ -285,7 +285,7 @@ public class DepictionFilter extends AbstractFilter {
 		shortNameSearch = new TextField();
 		shortNameSearch.setEmptyText("search short name");
 		// TODO 
-		shortNameSearch.addValidator(new RegExValidator("^[a-zA-Z0-9 ]*$", "We are working on a new search interface. Currently only letters and numbers are allowed."));
+		shortNameSearch.addValidator(new RegExValidator("^[a-zA-Z0-9 _\\-]*$", "We are working on a new search interface. Currently only a-z, A-Z, 0-9, _, - and [SPACE] are allowed."));
 		shortNameSearch.setAutoValidate(true);
 
 		FramedPanel shortNamePanel = new FramedPanel();
@@ -311,7 +311,7 @@ public class DepictionFilter extends AbstractFilter {
 					if ((item.getTown() != null) && (!item.getTown().isEmpty())) {
 						label = item.getName()+", " + (item.getRegion()!=null && !item.getRegion().isEmpty() ? item.getTown()+", " + item.getRegion() : item.getTown()) + ", " + item.getCounty();
 					} else if ((item.getRegion() != null) && (!item.getRegion().isEmpty())) {
-						label = item.getName() +", "+ (item.getTown()!=null && !item.getTown().isEmpty() ? item.getTown()+", "+item.getRegion() : item.getRegion()) + ", " + item.getCounty();
+						label = item.getName() +", "+ (item.getTown()!=null && !item.getTown().isEmpty() ? item.getTown()+", "+ item.getRegion() : item.getRegion()) + ", " + item.getCounty();
 					} else {
 						label = item.getName() + ", " + item.getCounty();
 					}
@@ -358,7 +358,7 @@ public class DepictionFilter extends AbstractFilter {
 	public ArrayList<String> getSqlWhereClause() {
 		sqlWhereClause = new ArrayList<String>();
 		if ((shortNameSearch.getValue() != null) && (shortNameSearch.getValue().length() > 0)) {
-			sqlWhereClause.add("ShortName LIKE '%" + shortNameSearch.getValue() + "%'");
+			sqlWhereClause.add("ShortName LIKE '%" + shortNameSearch.getValue().replace("_", "\\_") + "%'");
 		}
 
 		String locationQuery = null;
