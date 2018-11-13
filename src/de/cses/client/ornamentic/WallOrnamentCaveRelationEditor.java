@@ -75,7 +75,7 @@ public class WallOrnamentCaveRelationEditor {
 	private WallSelector wallselector;
 
 	public WallOrnamentCaveRelationEditor() {
-		Util.doLogging("Nina: im konstruktor wallornamenteditor");
+		Util.doLogging("WallOrnamentCaveRelationEditor()");
 		ornamentPositionProps = GWT.create(OrnamentPositionProperties.class);
 		ornamentFunctionProps = GWT.create(OrnamentFunctionProperties.class);
 		ornamentPositionEntryLS = new ListStore<OrnamentPositionEntry>(ornamentPositionProps.ornamentPositionID());
@@ -91,7 +91,7 @@ public class WallOrnamentCaveRelationEditor {
 
 	private FramedPanel createForm() {
 		
-		Util.doLogging("Nina: in create form start wallornamenteditor");
+		Util.doLogging("WallOrnamentCaveRelationEditor.createForm()");
 		wallselector = new WallSelector();
 		wallselector.setCave(caveEntry);
 
@@ -228,7 +228,7 @@ public class WallOrnamentCaveRelationEditor {
 		wallrelationFramedPanel.addTool(cancelTB);
 
 
-		Util.doLogging("Nina: in createform ende wallornamenteditor");
+		Util.doLogging("WallOrnamentCaveRelationEditor.createForm() finished");
 		return wallrelationFramedPanel;
 	}
 
@@ -311,11 +311,11 @@ public class WallOrnamentCaveRelationEditor {
 	
 	public void filterPositionbyCaveArea() {
 		ornamentPositionEntryLS.clear();
-		Util.doLogging("Nina: in create form step 3 wallornamenteditor");
+//		Util.doLogging("Nina: in create form step 3 wallornamenteditor");
 		String wallOrCeiling = StaticTables.getInstance().getWallLocationEntries().get(wallselector.getSelectedWallEntry().getWallLocationID()).getLabel();
-		Util.doLogging("Nina: 3.A nach wallorCeiling string");
+//		Util.doLogging("Nina: 3.A nach wallorCeiling string");
 		if( wallOrCeiling.contains("wall")) {
-			Util.doLogging("Nina: in create form step 4 variante 1 wallornamenteditor");
+//			Util.doLogging("Nina: in create form step 4 variante 1 wallornamenteditor");
 	
 			dbService.getPositionbyWall(wallselector.getSelectedWallEntry(), new AsyncCallback<ArrayList<OrnamentPositionEntry>>() {
 
@@ -336,7 +336,7 @@ public class WallOrnamentCaveRelationEditor {
 			});
 		}
 		else if( wallOrCeiling.contains("ceiling"))  {
-			Util.doLogging("Nina: in create form step 4 variante 2 wallornamenteditor");
+//			Util.doLogging("Nina: in create form step 4 variante 2 wallornamenteditor");
 			ArrayList<CaveAreaEntry> result = caveEntry.getCaveAreaList();
 			String cavearealabel = StaticTables.getInstance().getWallLocationEntries().get(wallselector.getSelectedWallEntry().getWallLocationID()).getCaveAreaLabel();
 			for(int i = 0; i < result.size(); i++){
@@ -356,7 +356,7 @@ public class WallOrnamentCaveRelationEditor {
 
 						@Override
 						public void onSuccess(ArrayList<OrnamentPositionEntry> result) {
-							Util.doLogging("Nina: in create form step 4.2 variante 2 wallornamenteditor");
+//							Util.doLogging("Nina: in create form step 4.2 variante 2 wallornamenteditor");
 							for (OrnamentPositionEntry pe : result) {
 								ornamentPositionEntryLS.add(pe);
 							}
@@ -371,7 +371,7 @@ public class WallOrnamentCaveRelationEditor {
 			}
 		}
 		else {
-			Util.doLogging("keinen Case gefunden!");
+//			Util.doLogging("keinen Case gefunden!");
 		}
 		}
 	
@@ -379,16 +379,16 @@ public class WallOrnamentCaveRelationEditor {
 	public void show() {
 		popup = new PopupPanel();
 		this.caveEntry = OrnamenticEditor.ornamentCaveRelationEditor.getCaveEntryComboBox().getValue();
-		Util.doLogging("Nina: in show start wallornamenteditor ohne entry ");
+//		Util.doLogging("Nina: in show start wallornamenteditor ohne entry ");
 		popup.setWidget(createForm());
 		popup.center();
-		Util.doLogging("Nina: in show ende wallornamenteditor ohne entry");
+//		Util.doLogging("Nina: in show ende wallornamenteditor ohne entry");
 	}
 	
 	public void show(WallOrnamentCaveRelation wallOrnamentCaveRelation) {
 		init = 1;
 		this.caveEntry = OrnamenticEditor.ornamentCaveRelationEditor.getCaveEntryComboBox().getValue();
-		Util.doLogging("Nina: in show start wallornamenteditor mit entry ");
+//		Util.doLogging("Nina: in show start wallornamenteditor mit entry ");
 		this.wallOrnamentCaveRelation = wallOrnamentCaveRelation;
 		popup = new PopupPanel();
 		
@@ -396,7 +396,7 @@ public class WallOrnamentCaveRelationEditor {
 			wallselector.setWallEntry(wallOrnamentCaveRelation.getWall());
 			filterPositionbyCaveArea();
 			popup.center();
-		Util.doLogging("Nina: in show ende wallornamenteditor mit entry");
+//		Util.doLogging("Nina: in show ende wallornamenteditor mit entry");
 		
 	}
 }

@@ -62,25 +62,19 @@ public class ResourceDownloadServlet extends HttpServlet {
 			ImageEntry imgEntry = connector.getImageEntry(Integer.parseInt(imageID));
 			String filename;
 			File inputFile;
+			// TODO: image rights management
 			if ((imgEntry!=null && imgEntry.isOpenAccess()) || (connector.getAccessRightsFromUsers(sessionID) == UserEntry.FULL)) {
 				filename = imgEntry.getFilename();
 				inputFile = new File(serverProperties.getProperty("home.images"), filename);
 			} else {
 				response.setStatus(403);
 				return;
-//				filename = "placeholder_buddha.png";
-//				inputFile = new File(serverProperties.getProperty("home.backgrounds"), filename);
 			}
-//			File inputFile = new File(serverProperties.getProperty("home.images"), filename);
 			ServletOutputStream out = response.getOutputStream();
 			if (inputFile.exists()) {
 				if (request.getParameter("thumb") != null) {
 					int tnSize = Integer.valueOf(request.getParameter("thumb")); // the requested size is given as a parameter
-//					out.write(getScaledThumbnailInstance(inputFile, "png", tnSize));
-//					http://127.0.0.1:8182/iiif/2/kuchatest%2Fimages%2F100.jpg/info.json
 					URL imageURL = new URL("http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/!" + tnSize + "," + tnSize + "/0/default.png");
-//					URL imageURL = new URL("http://localhost:8182/iiif/2/" + filename + "/full/!" + tnSize + "," + tnSize + "/0/default.png");
-//					URL imageURL = new URL("http://localhost:8182/iiif/2/" + "tn" + filename.substring(0, filename.lastIndexOf(".")) + ".png" + "/full/!" + tnSize + "," + tnSize + "/0/default.png");
 					System.err.println("reading image: " + imageURL.getFile());
 					InputStream in = imageURL.openStream();
 					response.setContentType("image/png");
