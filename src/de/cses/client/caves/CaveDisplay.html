@@ -1,0 +1,54 @@
+<div class="data-view">
+	<h4 class="data-display">
+		{site} {officialNumber} <tpl if="historicName != &quot;&quot;">({historicName})</tpl>
+	</h4>
+	<table class="data-view">
+		<tpl if="optionalHistoricName != &quot;&quot;">
+			<tr style="border-bottom: 1px solid black">
+				<td class="data-view-left"><i>Optional Historical Name</i></td>
+				<td class="data-view-right">{optionalHistoricName}</td>
+			</tr>
+		</tpl>
+		<tpl if="site != &quot;&quot;">
+			<tr style="border-bottom: 1px solid black">
+				<td class="data-view-left"><i>Site</i></td>
+				<td class="data-view-right">{site}</td>
+			</tr>
+		</tpl>
+		<tpl if="district != &quot;&quot;">
+			<tr style="border-bottom: 1px solid black">
+				<td class="data-view-left"><i>District</i></td>
+				<td class="data-view-right">{district}</td>
+			</tr>
+		</tpl>
+		<tpl if="region != &quot;&quot;">
+			<tr style="border-bottom: 1px solid black">
+				<td class="data-view-left"><i>Region</i></td>
+				<td class="data-view-right">{region}</td>
+			</tr>
+		</tpl>
+	</table>
+
+	<h4 class="data-display">Related Bibliography</h4>
+	<ol class="simple-list">
+		<tpl for='bib'>
+		<li>{authors} <tpl if="yearORG != &quot;&quot;">({yearORG})</tpl>.
+			<i>{titleORG}</i> <tpl if="titleEN != &quot;&quot;">({titleEN})</tpl>.
+			<tpl if="parentTitleORG != &quot;&quot;"> In <tpl
+				if="editors != &quot;&quot;"> {editors} (eds.)</tpl> <i>{parentTitleORG}</i>
+			<tpl if="pagesORG != &quot;&quot;"> (pp. {pagesORG})</tpl>. </tpl> <tpl
+				if="publisher != &quot;&quot;"> {publisher}. </tpl>
+		</li>
+		</tpl>
+	</ol>
+	
+	<tpl if="cave != &quot;&quot;">
+		<figure style='text-align: center; margin: 10;'>
+			<img src='{realCaveSketchUri}'
+				style='position: relative; width: 100%; height: auto;'>
+			<figcaption style='font-size: 14px;'>Cave sketch</figcaption>
+		</figure>
+	</tpl>
+	
+	<p class="date">Last changes on {timestamp} by {user}.</p>
+</div>

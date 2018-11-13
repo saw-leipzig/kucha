@@ -43,6 +43,7 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 import de.cses.client.bibliography.AnnotatedBibliographyFilter;
 import de.cses.client.bibliography.AnnotatedBiblographyResultView;
 import de.cses.client.bibliography.AnnotatedBiblographySearchController;
+import de.cses.client.caves.CaveDataDisplay;
 import de.cses.client.caves.CaveFilter;
 import de.cses.client.caves.CaveResultView;
 import de.cses.client.caves.CaveSearchController;
@@ -380,7 +381,11 @@ public class MainView implements IsWidget {
 			protected void onDragDrop(DndDropEvent event) {
 				super.onDragDrop(event);
 				if (event.getData() instanceof CaveEntry) {
-//					addResult(new CaveView((CaveEntry) event.getData()));
+					CaveDataDisplay cdd = new CaveDataDisplay((CaveEntry) event.getData());
+					if (!MainView.getDataDisplayUniqueIDList().contains(cdd.getUniqueID())) {
+						dataViewPLC.add(cdd, 0);
+						MainView.getDataDisplayUniqueIDList().add(cdd.getUniqueID());
+					}
 				} else if (event.getData() instanceof DepictionEntry) {
 					DepictionDataDisplay ddd = new DepictionDataDisplay((DepictionEntry) event.getData());
 					if (!MainView.getDataDisplayUniqueIDList().contains(ddd.getUniqueID())) {
