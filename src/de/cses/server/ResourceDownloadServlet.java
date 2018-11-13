@@ -62,26 +62,20 @@ public class ResourceDownloadServlet extends HttpServlet {
 			ImageEntry imgEntry = connector.getImageEntry(Integer.parseInt(imageID));
 			String filename;
 			File inputFile;
+			// TODO: image rights management
 			if ((imgEntry!=null && imgEntry.isOpenAccess()) || (connector.getAccessRightsFromUsers(sessionID) == UserEntry.FULL)) {
 				filename = imgEntry.getFilename();
-				inputFile = new File(
-						serverProperties.getProperty("home.images"), 
-						(request.getParameter("thumb") != null ? "tn" + filename.substring(0, filename.lastIndexOf(".")) + ".png" : filename) 
-					);
+				inputFile = new File(serverProperties.getProperty("home.images"), filename);
 			} else {
 				response.setStatus(403);
 				return;
-//				filename = "placeholder_buddha.png";
-//				inputFile = new File(serverProperties.getProperty("home.backgrounds"), filename);
 			}
-//			File inputFile = new File(serverProperties.getProperty("home.images"), filename);
 			ServletOutputStream out = response.getOutputStream();
 			if (inputFile.exists()) {
 				if (request.getParameter("thumb") != null) {
 					int tnSize = Integer.valueOf(request.getParameter("thumb")); // the requested size is given as a parameter
-//					out.write(getScaledThumbnailInstance(inputFile, "png", tnSize));
-					URL imageURL = new URL("http://localhost:8182/iiif/2/" + filename + "/full/!" + tnSize + "," + tnSize + "/0/default.png");
-//					URL imageURL = new URL("http://localhost:8182/iiif/2/" + "tn" + filename.substring(0, filename.lastIndexOf(".")) + ".png" + "/full/!" + tnSize + "," + tnSize + "/0/default.png");
+					URL imageURL = new URL("http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/!" + tnSize + "," + tnSize + "/0/default.png");
+					System.err.println("reading image: " + imageURL.getFile());
 					InputStream in = imageURL.openStream();
 					response.setContentType("image/png");
 					byte buffer[] = new byte[4096];
@@ -199,43 +193,43 @@ public class ResourceDownloadServlet extends HttpServlet {
 	 *          of the image
 	 * @return
 	 */
-	private byte[] getScaledThumbnailInstance(File readFile, String imgType, int thumbnailSize) {
-		// File tnFile;
-		// String type;
-		BufferedImage tnImg = null;
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-		// tnFile = new File(path, "tn" + filename);
-		// File readFile = new File(inputFile);
-		// type = filename.substring(filename.lastIndexOf(".") + 1).toUpperCase();
-		try {
-			BufferedImage buf = ImageIO.read(readFile);
-			float w = buf.getWidth();
-			float h = buf.getHeight();
-			if (w == h) {
-				tnImg = new BufferedImage(thumbnailSize, thumbnailSize, BufferedImage.TYPE_INT_RGB);
-				tnImg.createGraphics().drawImage(buf.getScaledInstance(thumbnailSize, thumbnailSize, Image.SCALE_SMOOTH), 0, 0, null);
-				ImageIO.write(tnImg, imgType, baos);
-				// ImageIO.write(tnImg, type, tnFile);
-			} else if (w > h) {
-				float factor = thumbnailSize / w;
-				float tnHeight = h * factor;
-				tnImg = new BufferedImage(thumbnailSize, Math.round(tnHeight), BufferedImage.TYPE_INT_RGB);
-				tnImg.createGraphics().drawImage(buf.getScaledInstance(thumbnailSize, Math.round(tnHeight), Image.SCALE_SMOOTH), 0, 0, null);
-				ImageIO.write(tnImg, imgType, baos);
-				// ImageIO.write(tnImg, type, tnFile);
-			} else {
-				float factor = thumbnailSize / h;
-				float tnWidth = w * factor;
-				tnImg = new BufferedImage(Math.round(tnWidth), thumbnailSize, BufferedImage.TYPE_INT_RGB);
-				tnImg.createGraphics().drawImage(buf.getScaledInstance(Math.round(tnWidth), thumbnailSize, Image.SCALE_SMOOTH), 0, 0, null);
-				ImageIO.write(tnImg, imgType, baos);
-				// ImageIO.write(tnImg, type, tnFile);
-			}
-		} catch (IOException e) {
-			System.out.println("Scaled instance of thumbnail could not be created!");
-		}
-		return baos.toByteArray();
-	}
+//	private byte[] getScaledThumbnailInstance(File readFile, String imgType, int thumbnailSize) {
+//		// File tnFile;
+//		// String type;
+//		BufferedImage tnImg = null;
+//		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//
+//		// tnFile = new File(path, "tn" + filename);
+//		// File readFile = new File(inputFile);
+//		// type = filename.substring(filename.lastIndexOf(".") + 1).toUpperCase();
+//		try {
+//			BufferedImage buf = ImageIO.read(readFile);
+//			float w = buf.getWidth();
+//			float h = buf.getHeight();
+//			if (w == h) {
+//				tnImg = new BufferedImage(thumbnailSize, thumbnailSize, BufferedImage.TYPE_INT_RGB);
+//				tnImg.createGraphics().drawImage(buf.getScaledInstance(thumbnailSize, thumbnailSize, Image.SCALE_SMOOTH), 0, 0, null);
+//				ImageIO.write(tnImg, imgType, baos);
+//				// ImageIO.write(tnImg, type, tnFile);
+//			} else if (w > h) {
+//				float factor = thumbnailSize / w;
+//				float tnHeight = h * factor;
+//				tnImg = new BufferedImage(thumbnailSize, Math.round(tnHeight), BufferedImage.TYPE_INT_RGB);
+//				tnImg.createGraphics().drawImage(buf.getScaledInstance(thumbnailSize, Math.round(tnHeight), Image.SCALE_SMOOTH), 0, 0, null);
+//				ImageIO.write(tnImg, imgType, baos);
+//				// ImageIO.write(tnImg, type, tnFile);
+//			} else {
+//				float factor = thumbnailSize / h;
+//				float tnWidth = w * factor;
+//				tnImg = new BufferedImage(Math.round(tnWidth), thumbnailSize, BufferedImage.TYPE_INT_RGB);
+//				tnImg.createGraphics().drawImage(buf.getScaledInstance(Math.round(tnWidth), thumbnailSize, Image.SCALE_SMOOTH), 0, 0, null);
+//				ImageIO.write(tnImg, imgType, baos);
+//				// ImageIO.write(tnImg, type, tnFile);
+//			}
+//		} catch (IOException e) {
+//			System.out.println("Scaled instance of thumbnail could not be created!");
+//		}
+//		return baos.toByteArray();
+//	}
 
 }

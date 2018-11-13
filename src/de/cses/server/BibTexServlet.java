@@ -40,7 +40,6 @@ import de.cses.shared.AnnotatedBiblographyEntry;
 public class BibTexServlet extends HttpServlet {
 
 	private MysqlConnector connector = MysqlConnector.getInstance();
-//	private ServerProperties serverProperties = ServerProperties.getInstance();
 	private HttpServletRequest request;
 	private HttpServletResponse response;
 

@@ -92,7 +92,7 @@ public  class OrnamentCaveRelationEditor  {
 	
 	public OrnamentCaveRelationEditor() {
 
-		Util.doLogging("Nina: kontruktor wurde gestartet");
+		Util.doLogging("OrnamentCaveRelationEditor() started");
 		
 		caveEntryProps = GWT.create(CaveEntryProperties.class);
 		styleProps = GWT.create(StyleProperties.class);
@@ -143,11 +143,11 @@ public  class OrnamentCaveRelationEditor  {
 			}
 		});
 
-		Util.doLogging("Nina: kontruktor fertig");
+		Util.doLogging("OrnamentCaveRelationEditor() finished");
 	}
 
 	public FramedPanel createForm() {
-		Util.doLogging("Nina: create form beginning");
+		Util.doLogging("OrnamentCaveRelationEditor.createForm");
 
 		TabPanel tabPanel = new TabPanel();
 		tabPanel.setWidth(650);
@@ -181,7 +181,7 @@ public  class OrnamentCaveRelationEditor  {
 			districtComboBox.setValue(StaticTables.getInstance().getDistrictEntries().get(ornamentCaveRelationEntry.getDistrict().getDistrictID()), false);
 		}
 		
-		Util.doLogging("Nina: create form step 1");
+		Util.doLogging("OrnamentCaveRelationEditor.createForm step 1");
 		
 		header = new FramedPanel();
 		header.setHeading("Select District");
@@ -228,7 +228,7 @@ public  class OrnamentCaveRelationEditor  {
 			caveType.setText(StaticTables.getInstance().getCaveTypeEntries().get(p).getNameEN());
 
 		}
-		Util.doLogging("Nina: create form step 2");
+		Util.doLogging("OrnamentCaveRelationEditor.createForm step 2");
 
 		if (ornamentCaveRelationEntry != null) {
 			districtComboBox.setValue(ornamentCaveRelationEntry.getDistrict());
@@ -262,7 +262,7 @@ public  class OrnamentCaveRelationEditor  {
 
 		};
 
-		Util.doLogging("Nina: create form step 2");
+		Util.doLogging("OrnamentCaveRelationEditor.createForm step 3");
 		
 		styleComboBox = new ComboBox<StyleEntry>(styleEntryList, styleProps.styleName(), new AbstractSafeHtmlRenderer<StyleEntry>() {
 
@@ -308,7 +308,7 @@ public  class OrnamentCaveRelationEditor  {
 
 		caveEntryComboBox.addSelectionHandler(caveSelectionHandler);
 
-		Util.doLogging("Nina: create form step 3");
+		Util.doLogging("OrnamentCaveRelationEditor.createForm step 4");
 		
 		header = new FramedPanel();
 
@@ -348,7 +348,7 @@ public  class OrnamentCaveRelationEditor  {
 			}
 		});
 		wallList.setAllowTextSelection(true);
-		Util.doLogging("Nina: create form step 4");
+		Util.doLogging("OrnamentCaveRelationEditor.createForm step 5");
 
 		selectedWallsHorizontalPanel.add(wallList);
 
@@ -389,7 +389,7 @@ public  class OrnamentCaveRelationEditor  {
 			wallsListStore.addAll(ornamentCaveRelationEntry.getWalls());
 		}
 
-		Util.doLogging("Nina: create form step 5");
+		Util.doLogging("OrnamentCaveRelationEditor.createForm step 6");
 		
 		VerticalLayoutContainer vlcAttributes = new VerticalLayoutContainer();
 
@@ -475,7 +475,7 @@ public  class OrnamentCaveRelationEditor  {
 			icoSelector.setSelectedIconography(ornamentCaveRelationEntry.getIconographyElements());
 		}
 
-		Util.doLogging("Nina: create form step 6");
+		Util.doLogging("OrnamentCaveRelationEditor.createForm step 7");
 		
 		final TextField groupOfOrnaments = new TextField();
 		groupOfOrnaments.setAllowBlank(true);
@@ -558,7 +558,7 @@ public  class OrnamentCaveRelationEditor  {
 				if (ornamentCaveRelationEntry == null) {
 					OrnamenticEditor.ornamenticEditor.getCaveOrnamentRelationList().add(ornamentCaveRelation);
 				}
-				Util.doLogging("Nina: create form step 7");
+				Util.doLogging("OrnamentCaveRelationEditor.createForm step 8");
 				popup.hide();
 			}
 		});
@@ -569,7 +569,7 @@ public  class OrnamentCaveRelationEditor  {
 		mainPanel.addTool(cancelTB);
 		mainPanel.setHeading("New Cave Relation");
 		mainPanel.add(caveAttributesVerticalPanel);
-		Util.doLogging("Nina: create form ende");
+		Util.doLogging("OrnamentCaveRelationEditor.createForm finished");
 		return mainPanel;
 	}
 
