@@ -30,24 +30,14 @@
 	</table>
 
 	<h4 class="data-display">Related Bibliography</h4>
-	<ol class="simple-list">
-		<tpl for='bib'>
-		<li>{authors} <tpl if="yearORG != &quot;&quot;">({yearORG})</tpl>.
-			<i>{titleORG}</i> <tpl if="titleEN != &quot;&quot;">({titleEN})</tpl>.
-			<tpl if="parentTitleORG != &quot;&quot;"> In <tpl
-				if="editors != &quot;&quot;"> {editors} (eds.)</tpl> <i>{parentTitleORG}</i>
-			<tpl if="pagesORG != &quot;&quot;"> (pp. {pagesORG})</tpl>. </tpl> <tpl
-				if="publisher != &quot;&quot;"> {publisher}. </tpl>
-		</li>
-		</tpl>
-	</ol>
+	<tpl for='caveSketcheList'>
+		<figure style='text-align: center; margin: 10;'>
+			<img src='{uri}'
+				style='position: relative; width: 100%; height: auto;'>
+		</figure>
+	</tpl>
 	
 	<tpl if="cave != &quot;&quot;">
-		<figure style='text-align: center; margin: 10;'>
-			<img src='{realCaveSketchUri}'
-				style='position: relative; width: 100%; height: auto;'>
-			<figcaption style='font-size: 14px;'>Cave sketch</figcaption>
-		</figure>
 	</tpl>
 	
 	<p class="date">Last changes on {timestamp} by {user}.</p>
