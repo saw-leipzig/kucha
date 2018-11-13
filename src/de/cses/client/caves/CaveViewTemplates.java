@@ -6,7 +6,6 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.sencha.gxt.core.client.XTemplates;
 
 import de.cses.client.caves.CaveDataDisplay.CaveSketchUri;
-import de.cses.shared.CaveSketchEntry;
 
 public interface CaveViewTemplates extends XTemplates {
 	

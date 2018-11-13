@@ -3,6 +3,8 @@ package de.cses.client.caves;
 import java.util.ArrayList;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.safehtml.shared.SafeUri;
+import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.user.client.ui.HTML;
 import com.sencha.gxt.widget.core.client.container.MarginData;
 
@@ -20,20 +22,20 @@ public class CaveDataDisplay extends AbstractDataDisplay {
 	
 	class CaveSketchUri {
 		
-		String uri;
+		SafeUri uri;
 
 		/**
 		 * @param caveSketch
 		 */
-		public CaveSketchUri(String uri) {
+		public CaveSketchUri(SafeUri uri) {
 			this.uri = uri;
 		}
 
-		public String getUri() {
+		public SafeUri getUri() {
 			return uri;
 		}
 
-		public void setUri(String uri) {
+		public void setUri(SafeUri uri) {
 			this.uri = uri;
 		}
 	}
@@ -66,11 +68,11 @@ public class CaveDataDisplay extends AbstractDataDisplay {
 	private ArrayList<CaveSketchUri> getCaveSketchURIs() {
 		ArrayList<CaveSketchUri> result = new ArrayList<CaveSketchUri>();
 		for (CaveSketchEntry cse : entry.getCaveSketchList()) {
-			result.add(new CaveSketchUri("resource?cavesketch=" + cse.getCaveSketchFilename() + UserLogin.getInstance().getUsernameSessionIDParameterForUri()));
+			result.add(new CaveSketchUri(UriUtils.fromString("resource?cavesketch=" + cse.getCaveSketchFilename() + UserLogin.getInstance().getUsernameSessionIDParameterForUri())));
 		}
 		CaveTypeEntry cte = StaticTables.getInstance().getCaveTypeEntries().get(entry.getCaveTypeID());
 		if ((cte != null) && !cte.getSketchName().isEmpty()) {
-			result.add(new CaveSketchUri("resource?background=" + cte.getSketchName() + UserLogin.getInstance().getUsernameSessionIDParameterForUri()));
+			result.add(new CaveSketchUri(UriUtils.fromString("resource?background=" + cte.getSketchName() + UserLogin.getInstance().getUsernameSessionIDParameterForUri())));
 		}
 		return result;
 	}
