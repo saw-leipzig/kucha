@@ -48,7 +48,6 @@ import de.cses.shared.UserEntry;
 public class JsonServlet extends HttpServlet {
 
 	private MysqlConnector connector = MysqlConnector.getInstance();
-//	private ServerProperties serverProperties = ServerProperties.getInstance();
 	private HttpServletRequest request;
 	private HttpServletResponse response;
 

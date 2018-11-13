@@ -13,14 +13,11 @@
  */
 package de.cses.server.images;
 
-import java.awt.Image;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
@@ -47,7 +44,7 @@ import de.cses.shared.ImageEntry;
 @MultipartConfig
 public class ImageServiceImpl extends HttpServlet {
 
-	private static final int THUMBNAIL_SIZE = 300;
+//	private static final int THUMBNAIL_SIZE = 300;
 	private MysqlConnector connector = MysqlConnector.getInstance();
 	private ServerProperties serverProperties = ServerProperties.getInstance();
 	private int newImageID = 0;
@@ -122,9 +119,9 @@ public class ImageServiceImpl extends HttpServlet {
 		} finally {
 			if (target != null && target.exists()) {
 				System.err.println("Uploaded file stored as: " + target.getAbsolutePath());
-				if (!target.getAbsolutePath().endsWith("tif")) {
-				  createThumbnail(target, new File(imgHomeDir, "tn" + newImageID + ".png"));
-				}
+//				if (!target.getAbsolutePath().endsWith("tif")) {
+//				  createThumbnail(target, new File(imgHomeDir, "tn" + newImageID + ".png"));
+//				}
 				response.getWriter().write(String.valueOf(newImageID));
 				response.getWriter().close();
 			}
@@ -139,43 +136,43 @@ public class ImageServiceImpl extends HttpServlet {
 	 * @param tnFile
 	 *          the new thumbnail file
 	 */
-	private void createThumbnail(File readFile, File tnFile) {
-		String type = "png";
-		BufferedImage tnImg;
-
-		try {
-			System.err.println("trying to create thumbnail ...");
-			// we need to call the scanner in order to detect the additional libraries
-			// the libraries used are from https://haraldk.github.io/TwelveMonkeys/
-			ImageIO.scanForPlugins();
-			
-			BufferedImage buf = ImageIO.read(readFile);
-			float w = buf.getWidth();
-			float h = buf.getHeight();
-			System.err.println("w=" + w + " h=" + h);
-			if (w == h) {
-				tnImg = new BufferedImage(THUMBNAIL_SIZE, THUMBNAIL_SIZE, BufferedImage.TYPE_INT_RGB);
-				tnImg.createGraphics().drawImage(buf.getScaledInstance(THUMBNAIL_SIZE, THUMBNAIL_SIZE, Image.SCALE_SMOOTH), 0, 0, null);
-			} else if (w > h) {
-				float factor = THUMBNAIL_SIZE / w;
-				float tnHeight = h * factor;
-				tnImg = new BufferedImage(THUMBNAIL_SIZE, Math.round(tnHeight), BufferedImage.TYPE_INT_RGB);
-				tnImg.createGraphics().drawImage(buf.getScaledInstance(THUMBNAIL_SIZE, Math.round(tnHeight), Image.SCALE_SMOOTH), 0, 0, null);
-			} else {
-				float factor = THUMBNAIL_SIZE / h;
-				float tnWidth = w * factor;
-				tnImg = new BufferedImage(Math.round(tnWidth), THUMBNAIL_SIZE, BufferedImage.TYPE_INT_RGB);
-				tnImg.createGraphics().drawImage(buf.getScaledInstance(Math.round(tnWidth), THUMBNAIL_SIZE, Image.SCALE_SMOOTH), 0, 0, null);
-			}
-			System.err.println("creating thumbnail = " + tnFile.getAbsolutePath());
-			ImageIO.write(tnImg, type, tnFile);
-		} catch (IOException e) {
-			System.err.println("I/O Exception - thumbnail could not be created!");
-		} catch (OutOfMemoryError e) {
-			System.err.println("An OutOfMemoryError has occurred while scaling the image!");
-		} catch (Exception e) {
-			System.err.println("An unknown exception occurred during thumbnail creation!");
-		}
-	}
+//	private void createThumbnail(File readFile, File tnFile) {
+//		String type = "png";
+//		BufferedImage tnImg;
+//
+//		try {
+//			System.err.println("trying to create thumbnail ...");
+//			// we need to call the scanner in order to detect the additional libraries
+//			// the libraries used are from https://haraldk.github.io/TwelveMonkeys/
+//			ImageIO.scanForPlugins();
+//			
+//			BufferedImage buf = ImageIO.read(readFile);
+//			float w = buf.getWidth();
+//			float h = buf.getHeight();
+//			System.err.println("w=" + w + " h=" + h);
+//			if (w == h) {
+//				tnImg = new BufferedImage(THUMBNAIL_SIZE, THUMBNAIL_SIZE, BufferedImage.TYPE_INT_RGB);
+//				tnImg.createGraphics().drawImage(buf.getScaledInstance(THUMBNAIL_SIZE, THUMBNAIL_SIZE, Image.SCALE_SMOOTH), 0, 0, null);
+//			} else if (w > h) {
+//				float factor = THUMBNAIL_SIZE / w;
+//				float tnHeight = h * factor;
+//				tnImg = new BufferedImage(THUMBNAIL_SIZE, Math.round(tnHeight), BufferedImage.TYPE_INT_RGB);
+//				tnImg.createGraphics().drawImage(buf.getScaledInstance(THUMBNAIL_SIZE, Math.round(tnHeight), Image.SCALE_SMOOTH), 0, 0, null);
+//			} else {
+//				float factor = THUMBNAIL_SIZE / h;
+//				float tnWidth = w * factor;
+//				tnImg = new BufferedImage(Math.round(tnWidth), THUMBNAIL_SIZE, BufferedImage.TYPE_INT_RGB);
+//				tnImg.createGraphics().drawImage(buf.getScaledInstance(Math.round(tnWidth), THUMBNAIL_SIZE, Image.SCALE_SMOOTH), 0, 0, null);
+//			}
+//			System.err.println("creating thumbnail = " + tnFile.getAbsolutePath());
+//			ImageIO.write(tnImg, type, tnFile);
+//		} catch (IOException e) {
+//			System.err.println("I/O Exception - thumbnail could not be created!");
+//		} catch (OutOfMemoryError e) {
+//			System.err.println("An OutOfMemoryError has occurred while scaling the image!");
+//		} catch (Exception e) {
+//			System.err.println("An unknown exception occurred during thumbnail creation!");
+//		}
+//	}
 	
 }
