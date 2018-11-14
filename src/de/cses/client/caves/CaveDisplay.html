@@ -55,39 +55,17 @@
 				<td class="data-view-right">{orientation}</td>
 			</tr>
 		</tpl>
-		<tpl if="district != &quot;&quot;">
-			<tr style="border-bottom: 1px solid black">
-				<td class="data-view-left"><i>District</i></td>
-				<td class="data-view-right">{district}</td>
-			</tr>
-		</tpl>
-		<tpl if="region != &quot;&quot;">
-			<tr style="border-bottom: 1px solid black">
-				<td class="data-view-left"><i>Region</i></td>
-				<td class="data-view-right">{region}</td>
-			</tr>
-		</tpl>
-		<tpl if="firstDocumentedBy != &quot;&quot;">
-			<tr style="border-bottom: 1px solid black">
-				<td class="data-view-left"><i>First documented by</i></td>
-				<td class="data-view-right">{firstDocumentedBy}</td>
-			</tr>
-		</tpl>
-		<tpl if="region != &quot;&quot;">
-			<tr style="border-bottom: 1px solid black">
-				<td class="data-view-left"><i>First documented in</i></td>
-				<td class="data-view-right">{firstDocumentedInYear}</td>
-			</tr>
-		</tpl>
 	</table>
+	<tpl for='caveAreaList'>
+		<h5 class="data-display">{caveAreaLabel}</h5>
+	</tpl>
 
 	<h4 class="data-display">Cave Sketches</h4>
-	<tpl for='caveSketchList'>
-		<figure style='text-align: center; margin: 10;'>
-			<img src='{uri}'
-				style='position: relative; width: 33%; height: auto;'>
+		<figure style='margin: 10;'>
+		<tpl for='caveSketchList'>
+			<img src='{uri}' style='width: 50%; height: auto;'>
+		</tpl>
 		</figure>
-	</tpl>
 	
 	<p class="date">Last changes on {timestamp} by {user}.</p>
 </div>

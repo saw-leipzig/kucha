@@ -62,7 +62,8 @@ public class CaveDataDisplay extends AbstractDataDisplay {
 				entry.getFirstDocumentedBy(), 
 				entry.getFirstDocumentedInYear() > 0 ? String.valueOf(entry.getFirstDocumentedInYear()) : "",
 				entry.getCaveTypeID() > 0 ? stab.getCaveTypeEntries().get(entry.getCaveTypeID()).getNameEN() : "",
-				entry.getOrientationID() > 0 ? stab.getOrientationEntries().get(entry.getOrientationID()).getName() : ""
+				entry.getOrientationID() > 0 ? stab.getOrientationEntries().get(entry.getOrientationID()).getName() : "",
+				entry.getCaveAreaList()
 			));
 		htmlWidget.addStyleName("html-data-display");
 		add(htmlWidget, new MarginData(0, 0, 0, 0));
