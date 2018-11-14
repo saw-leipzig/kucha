@@ -39,15 +39,11 @@ public class CaveAreaEntry extends AbstractEntry {
 	protected double modernMinHeight = 0;
 	protected double modernMaxHeight = 0;
 	protected PreservationClassificationEntry preservationClassification;
-//	protected int preservationClassificationID = 0;
 	protected CeilingTypeEntry ceilingType1;
 	protected CeilingTypeEntry ceilingType2;
-//	protected int ceilingTypeID1 = 0, ceilingTypeID2 = 0;
 	protected PreservationClassificationEntry ceilingPreservationClassification1;
 	protected PreservationClassificationEntry ceilingPreservationClassification2;
 	protected PreservationClassificationEntry floorPreservationClassification;
-//	protected int ceilingPreservationClassificationID1 = 0, ceilingPreservationClassificationID2 = 0;
-//	protected int floorPreservationClassificationID = 0;
 	
 	/**
 	 * 
