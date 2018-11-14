@@ -2088,6 +2088,9 @@ public class MysqlConnector {
 	 * @return
 	 */
 	public CeilingTypeEntry getCeilingType(int id) {
+		if (id == 0) {
+			return null;
+		}
 		CeilingTypeEntry result = new CeilingTypeEntry();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -2132,6 +2135,9 @@ public class MysqlConnector {
 	 * @return
 	 */
 	private PreservationClassificationEntry getPreservationClassification(int id) {
+		if (id == 0) {
+			return null;
+		}
 		PreservationClassificationEntry result = null;
 		Connection dbc = getConnection();
 		Statement stmt;

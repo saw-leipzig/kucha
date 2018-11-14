@@ -99,7 +99,7 @@ public class StaticTables {
 	 */
 	public StaticTables(ListsLoadedListener l) {
 		listener = l;
-		loadCounter = 20;
+		loadCounter = 21;
 		loadDistricts();
 		loadSites();
 		loadRegions();
@@ -119,7 +119,7 @@ public class StaticTables {
 		loadVendor();
 		loadPublicationTypes();
 		loadBiliography();
-//		loadCaves();
+		loadCaves();
 		loadOrientation();
 	}
 
