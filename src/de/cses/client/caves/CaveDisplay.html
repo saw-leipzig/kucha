@@ -61,40 +61,17 @@
 	</tpl>
 	<tpl for='caveAreaList'>
 		<h5 class="data-display">{caveAreaLabel}</h5>
-		<h6>Expedition measurements</h6>
-		<table>
-			<tr>
-				<td><i>Width:</i></td>
-				<td>{expeditionWidth} meter</td>
-			</tr>
-			<tr>
-				<td><i>Length:</i></td>
-				<td>{expeditionLength} meter</td>
-			</tr>
-			<tr>
-				<td><i>Wall Height:</i></td>
-				<td>{expeditionWallHeight} meter</td>
-			</tr>
-			<tr>
-				<td><i>Total Height:</i></td>
-				<td>{expeditionTotalHeight} meter</td>
-			</tr>
-		</table>
-		<h6>Modern measurements</h6>
-		<table>
-			<tr>
-				<td><i>Width:</i></td>
-				<td>{modernMinWidth}<tpl if='modernMaxWidth &gt; 0'> - {modernMaxWidth}</tpl> meter</td>
-			</tr>
-			<tr>
-				<td><i>Lenght:</i></td>
-				<td>{modernMinLength}<tpl if='modernMaxLength &gt; 0'> - {modernMaxLength}</tpl> meter</td>
-			</tr>
-			<tr>
-				<td><i>Height:</i></td>
-				<td>{modernMinHeight}<tpl if='modernMaxHeight &gt; 0'> - {modernMaxHeight}</tpl> meter</td>
-			</tr>
-		</table>		
+		<dl  class="simple-list">
+			<dt>Expedition measurements</dt>
+				<dd><tpl if='expeditionWidth &gt; 0'><li>Width: {expeditionWidth} meter</li></tpl></dd>
+				<dd><tpl if='expeditionLength &gt; 0'><li>Length: {expeditionLength} meter</li></tpl></dd>
+				<dd><tpl if='expeditionWallHeight &gt; 0'><li>Wall Height: {expeditionWallHeight} meter</li></tpl></dd>
+				<dd><tpl if='expeditionTotalHeight &gt; 0'><li>Total Height: {expeditionTotalHeight} meter</li></tpl></dd>
+			<dt>Modern measurements</dt>
+				<dd><tpl if='modernMinWidth &gt; 0'><li>Width: {modernMinWidth}<tpl if='modernMaxWidth &gt; 0'> - {modernMaxWidth}</tpl> meter</li></tpl></dd>
+				<dd><tpl if='modernMinLength &gt; 0'><li>Length: {modernMinLength}<tpl if='modernMaxLength &gt; 0'> - {modernMaxLength}</tpl> meter</li></tpl></dd>
+				<dd><tpl if='modernMinHeight &gt; 0'><li>Height: {modernMinHeight}<tpl if='modernMaxHeight &gt; 0'> - {modernMaxHeight}</tpl> meter</li></tpl></dd>
+		</dl>
 	</tpl>
 	
 	<p class="date">Last changes on {timestamp} by {user}.</p>
