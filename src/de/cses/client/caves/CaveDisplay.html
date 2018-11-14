@@ -81,11 +81,16 @@
 				<tpl if='floorPreservationClassification != null'><dd>Floor preservation classification: {floorPreservationClassification.name}</dd></tpl>
 		</dl>
 	</tpl>
-	<h4>Findings</h4>
-	<p class="data-display">{findings}</p>
+	
+	<tpl if='findings != &quot;&quot;'>
+		<h4 class="data-display">Findings</h4>
+		<p class="data-display">{findings}</p>
+	</tpl>
 
-	<h4>Notes</h4>
-	<p class="data-display">{notes}</p>
+	<tpl if='notes != &quot;&quot;'>
+		<h4 class="data-display">Notes</h4>
+		<p class="data-display">{notes}</p>
+	</tpl>
 
 	<p class="date">Last changes on {timestamp} by {user}.</p>
 </div>
