@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
+import com.google.gwt.thirdparty.guava.common.collect.Multiset.Entry;
 import com.google.gwt.user.client.ui.HTML;
 import com.sencha.gxt.widget.core.client.container.MarginData;
 
@@ -65,7 +66,14 @@ public class CaveDataDisplay extends AbstractDataDisplay {
 				entry.getOrientationID() > 0 ? stab.getOrientationEntries().get(entry.getOrientationID()).getName() : "",
 				entry.getCaveAreaList(),
 				entry.getFindings() != null ? entry.getFindings() : "",
-				entry.getNotes() != null ? entry.getNotes() : ""
+				entry.getNotes() != null ? entry.getNotes() : "",
+				entry.getCaveLayoutComments(),
+				entry.isHasVolutedHorseShoeArch(),
+				entry.isHasSculptures(),
+				entry.isHasClayFigures(),
+				entry.isHasImmitationOfMountains(),
+				entry.isHasHolesForFixationOfPlasticalItems(),
+				entry.isHasWoodenConstruction()
 			));
 		htmlWidget.addStyleName("html-data-display");
 		add(htmlWidget, new MarginData(0, 0, 0, 0));
