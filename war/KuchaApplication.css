@@ -169,9 +169,10 @@ details.data-display {
 	font-size: 12px;
 }
 
-details.bib-display {
+details.abstract {
 	margin-left: 1em;
 	padding: 0;
 	font-size: 12px;
+	text-align: justify;
 }
 

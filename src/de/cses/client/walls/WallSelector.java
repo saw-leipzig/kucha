@@ -59,11 +59,10 @@ public class WallSelector implements IsWidget {
 	private ComboBox<WallEntry> wallSelectorCB;
 	private WallProperties wallProps;
 	private CaveEntry currentCave;
-	private WallEntry selectedWallEntry;
 	private WallViewTemplate wallVT;
 	private ListStore<WallEntry> wallEntryLS;
 //	private VerticalLayoutContainer mainVLC = null;
-	private Widget mainWidget = null;
+	private BorderLayoutContainer mainBLC;
 
 	interface CaveLayoutViewTemplates extends XTemplates {
 		@XTemplate("<img src=\"{imageUri}\" style=\"{defaultSketchWidth}; height: auto; align-content: center; margin: 5px;\">")
@@ -87,11 +86,12 @@ public class WallSelector implements IsWidget {
 	 * @param defaultCaveSketchWidth
 	 *          string representing the default sketch width in pixel (px)
 	 */
-	public WallSelector() {
+	public WallSelector(SelectionHandler<WallEntry> wallSelectionHandler) {
 		caveLayoutViewTemplates = GWT.create(CaveLayoutViewTemplates.class);
 		wallProps = GWT.create(WallProperties.class);
 		wallVT = GWT.create(WallViewTemplate.class);
 		wallEntryLS = new ListStore<WallEntry>(wallProps.wallLocationID());
+
 		Comparator<WallEntry> comparator = new Comparator<WallEntry>() {
 			@Override
 			public int compare(WallEntry we1, WallEntry we2) {
@@ -100,7 +100,8 @@ public class WallSelector implements IsWidget {
 			}
 		};
 		wallEntryLS.addSortInfo(new StoreSortInfo<WallEntry>(comparator, SortDir.ASC));
-		getUI();
+		createUI();
+		wallSelectorCB.addSelectionHandler(wallSelectionHandler);
 	}
 
 	/*
@@ -110,16 +111,16 @@ public class WallSelector implements IsWidget {
 	 */
 	@Override
 	public Widget asWidget() {
-		if (mainWidget == null) {
-			mainWidget = getUI();
+		if (mainBLC == null) {
+			createUI();
 		}
-		return mainWidget;
+		return mainBLC;
 	}
 
 	/**
 	 * 
 	 */
-	private Widget getUI() {
+	private void createUI() {
 		caveSketchContainer = new FlowLayoutContainer();
 		caveSketchContainer.setScrollMode(ScrollMode.AUTOY);
 
@@ -141,19 +142,19 @@ public class WallSelector implements IsWidget {
 		wallSelectorCB.setEditable(false);
 		wallSelectorCB.setTypeAhead(false);
 		wallSelectorCB.setTriggerAction(TriggerAction.ALL);
-		wallSelectorCB.addSelectionHandler(new SelectionHandler<WallEntry>() {
+		wallSelectorCB.setEmptyText("select wall");
+//		wallSelectorCB.addSelectionHandler(new SelectionHandler<WallEntry>() {
+//
+//			@Override
+//			public void onSelection(SelectionEvent<WallEntry> event) {
+//				selectedWallEntry = event.getSelectedItem();
+//			}
+//		});
 
-			@Override
-			public void onSelection(SelectionEvent<WallEntry> event) {
-				selectedWallEntry = event.getSelectedItem();
-			}
-		});
-		
-		BorderLayoutContainer mainBLC = new BorderLayoutContainer();
+		mainBLC = new BorderLayoutContainer();
 		mainBLC.setCenterWidget(caveSketchContainer, new BorderLayoutData());
 		mainBLC.setSouthWidget(wallSelectorCB, new BorderLayoutData(25));
 
-		return mainBLC;
 	}
 
 	/**
@@ -218,23 +219,24 @@ public class WallSelector implements IsWidget {
 	public WallEntry getSelectedWallEntry() {
 		return wallSelectorCB.getCurrentValue();
 	}
+
 	public void setWallEntry(WallEntry wallEntry) {
 		wallSelectorCB.setValue(wallEntry, true);
 	}
 
-	/**
-	 * @return the wallSelectorCB
-	 */
-	public ComboBox<WallEntry> getWallSelectorCB() {
-		return wallSelectorCB;
-	}
-
-	/**
-	 * @param wallSelectorCB the wallSelectorCB to set
-	 */
-	public void setWallSelectorCB(ComboBox<WallEntry> wallSelectorCB) {
-		this.wallSelectorCB = wallSelectorCB;
-	}
+//	/**
+//	 * @return the wallSelectorCB
+//	 */
+//	public ComboBox<WallEntry> getWallSelectorCB() {
+//		return wallSelectorCB;
+//	}
+//
+//	/**
+//	 * @param wallSelectorCB the wallSelectorCB to set
+//	 */
+//	public void setWallSelectorCB(ComboBox<WallEntry> wallSelectorCB) {
+//		this.wallSelectorCB = wallSelectorCB;
+//	}
 	
 
 }

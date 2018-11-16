@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dev.jjs.ast.HasName.Util;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -29,7 +28,6 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
-import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -48,8 +46,6 @@ import com.sencha.gxt.data.shared.SortDir;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.dnd.core.client.ListViewDragSource;
 import com.sencha.gxt.dnd.core.client.ListViewDropTarget;
-import com.sencha.gxt.widget.core.client.Dialog;
-import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.TabPanel;
@@ -61,7 +57,6 @@ import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
-import com.sencha.gxt.widget.core.client.container.Viewport;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.CheckBox;
@@ -79,7 +74,6 @@ import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinNumberValidator;
-import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -91,7 +85,6 @@ import de.cses.client.ui.AbstractEditor;
 import de.cses.client.user.UserLogin;
 import de.cses.client.walls.WallSelector;
 import de.cses.client.walls.Walls;
-import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;
@@ -104,6 +97,7 @@ import de.cses.shared.PreservationAttributeEntry;
 import de.cses.shared.SiteEntry;
 import de.cses.shared.StyleEntry;
 import de.cses.shared.VendorEntry;
+import de.cses.shared.WallEntry;
 
 public class DepictionEditor extends AbstractEditor {
 
@@ -998,6 +992,7 @@ public class DepictionEditor extends AbstractEditor {
 		FramedPanel wallSelectorFP = new FramedPanel();
 		wallSelectorFP.setHeading("Wall");
 		ToolButton wallEditorTB = new ToolButton(ToolButton.PIN);
+		wallEditorTB.setEnabled(false);
 		wallEditorTB.setToolTip("set position on wall");
 		
 //		TextButton wallEditorButton = new TextButton("set position on wall");
@@ -1015,7 +1010,16 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		wallSelectorFP.addTool(wallEditorTB);
-		wallSelectorPanel = new WallSelector();
+		wallSelectorPanel = new WallSelector(new SelectionHandler<WallEntry>() {
+
+			@Override
+			public void onSelection(SelectionEvent<WallEntry> event) {
+				correspondingDepictionEntry.setWallID(event.getSelectedItem().getWallLocationID());
+			}
+		});
+		if (correspondingDepictionEntry.getCave() != null) {
+			wallSelectorPanel.setWallEntry(new WallEntry(correspondingDepictionEntry.getCave().getCaveID(), correspondingDepictionEntry.getWallID()));;
+		}
 		wallSelectorFP.add(wallSelectorPanel);
 
 		FramedPanel positionNoteFP = new FramedPanel();
