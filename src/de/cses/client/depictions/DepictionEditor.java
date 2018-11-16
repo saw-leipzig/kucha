@@ -1017,9 +1017,9 @@ public class DepictionEditor extends AbstractEditor {
 				correspondingDepictionEntry.setWallID(event.getSelectedItem().getWallLocationID());
 			}
 		});
-		if (correspondingDepictionEntry.getCave() != null) {
-			wallSelectorPanel.setWallEntry(new WallEntry(correspondingDepictionEntry.getCave().getCaveID(), correspondingDepictionEntry.getWallID()));;
-		}
+//		if (correspondingDepictionEntry.getCave() != null && correspondingDepictionEntry.getWallID() > 0) {
+//			wallSelectorPanel.setWallEntry(new WallEntry(correspondingDepictionEntry.getCave().getCaveID(), correspondingDepictionEntry.getWallID()));;
+//		}
 		wallSelectorFP.add(wallSelectorPanel);
 
 		FramedPanel positionNoteFP = new FramedPanel();
