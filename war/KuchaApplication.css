@@ -37,17 +37,7 @@ h5.data-display {
 	background-color: #ffdd99;
 }
 
-p.data-display {
-	margin-left: 5px;
-	margin-right: 5px;
-	margin-top: 5px;
-	margin-bottom: 10px;
-	font-size: 12px;
-	font-family: verdana;
-	text-align: justify;
-}
-
-p.date {
+div.date {
 	margin-top: 10px;
 	margin-bottom: 10px;
 	font-size: 9px;
@@ -60,6 +50,16 @@ div.data-view {
 	font-size: 12px;
 	background-color: #ffcc66;
 	margin: 0
+}
+
+div.text {
+	margin-left: 45px;
+	margin-right: 45px;
+	margin-top: 0;
+	margin-bottom: 0;
+	font-size: 12px;
+	font-family: verdana;
+	text-align: justify;
 }
 
 table.data-view {
@@ -140,3 +140,39 @@ ol.simple-list>li:before {
 	content: counter(li-counter);
 	counter-increment: li-counter;
 }
+
+dl.simple-list {
+	list-style-type: none;
+	margin: 0;
+	margin-left: 3em;
+	padding: 0;
+}
+
+dl.simple-list>dt {
+	padding-top: 0.5em;
+  padding-left: 1em; 
+  text-indent: -1.2em;
+	font-family: verdana;
+	font-size: 12px;
+}
+
+dl.simple-list>dd {
+  padding-left: 2em; 
+  text-indent: -1.2em;
+	font-family: verdana;
+	font-size: 12px;
+}
+
+details.data-display {
+	margin-left: 1em;
+	padding: 0;
+	font-size: 12px;
+}
+
+details.abstract {
+	margin-left: 1em;
+	padding: 0;
+	font-size: 12px;
+	text-align: justify;
+}
+

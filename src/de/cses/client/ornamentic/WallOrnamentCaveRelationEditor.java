@@ -16,6 +16,8 @@ package de.cses.client.ornamentic;
 import java.util.ArrayList;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
@@ -92,17 +94,10 @@ public class WallOrnamentCaveRelationEditor {
 	private FramedPanel createForm() {
 		
 		Util.doLogging("WallOrnamentCaveRelationEditor.createForm()");
-		wallselector = new WallSelector();
-		wallselector.setCave(caveEntry);
-
-		FramedPanel selectWallFP = new FramedPanel();
-		selectWallFP.setHeading("Select Wall");
-		selectWallFP.add(wallselector);
-	
-		ValueChangeHandler<WallEntry> wallSelectionHandler = new ValueChangeHandler<WallEntry>() {
-
+		wallselector = new WallSelector(new SelectionHandler<WallEntry>() {
+			
 			@Override
-			public void onValueChange(ValueChangeEvent<WallEntry> event) {
+			public void onSelection(SelectionEvent<WallEntry> event) {
 				ornamentPositionComboBox.clear();
 				ornamentfunctionComboBox.clear();
 				ornamentPositionComboBox.disable();
@@ -110,12 +105,32 @@ public class WallOrnamentCaveRelationEditor {
 				ornamentPositionEntryLS.clear();
 				ornamentFunctionEntryLS.clear();
 				filterPositionbyCaveArea();
-
 				ornamentPositionComboBox.setEnabled(true);
 			}
+		});
+		wallselector.setCave(caveEntry);
 
-		};
-		wallselector.getWallSelectorCB().addValueChangeHandler(wallSelectionHandler);
+		FramedPanel selectWallFP = new FramedPanel();
+		selectWallFP.setHeading("Select Wall");
+		selectWallFP.add(wallselector);
+	
+//		ValueChangeHandler<WallEntry> wallSelectionHandler = new ValueChangeHandler<WallEntry>() {
+//
+//			@Override
+//			public void onValueChange(ValueChangeEvent<WallEntry> event) {
+//				ornamentPositionComboBox.clear();
+//				ornamentfunctionComboBox.clear();
+//				ornamentPositionComboBox.disable();
+//				ornamentfunctionComboBox.disable();
+//				ornamentPositionEntryLS.clear();
+//				ornamentFunctionEntryLS.clear();
+//				filterPositionbyCaveArea();
+//
+//				ornamentPositionComboBox.setEnabled(true);
+//			}
+//
+//		};
+//		wallselector.getWallSelectorCB().addValueChangeHandler(wallSelectionHandler);
 
 		ornamentPositionComboBox = new ComboBox<OrnamentPositionEntry>(ornamentPositionEntryLS, ornamentPositionProps.name(),
 				new AbstractSafeHtmlRenderer<OrnamentPositionEntry>() {
@@ -342,8 +357,8 @@ public class WallOrnamentCaveRelationEditor {
 			for(int i = 0; i < result.size(); i++){
 				if(result.get(i).getCaveAreaLabel().contains(cavearealabel)) {
 					CaveAreaEntry cavearea = result.get(i);
-					int ceiling1 = cavearea.getCeilingTypeID1();
-					int ceiling2 = cavearea.getCeilingTypeID2();
+					int ceiling1 = cavearea.getCeilingType1() != null ? cavearea.getCeilingType1().getCeilingTypeID() : 0;
+					int ceiling2 = cavearea.getCeilingType2() != null ? cavearea.getCeilingType2().getCeilingTypeID() : 0;
 					if(ceiling1 == 0 && ceiling2 == 0) {
 						ceiling1 = 11;
 					}

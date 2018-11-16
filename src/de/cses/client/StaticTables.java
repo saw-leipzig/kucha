@@ -31,6 +31,7 @@ import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageTypeEntry;
 import de.cses.shared.LocationEntry;
 import de.cses.shared.ModeOfRepresentationEntry;
+import de.cses.shared.OrientationEntry;
 import de.cses.shared.OrnamentFunctionEntry;
 import de.cses.shared.OrnamentPositionEntry;
 import de.cses.shared.PreservationClassificationEntry;
@@ -72,6 +73,7 @@ public class StaticTables {
 	protected HashMap<Integer, PublicationTypeEntry> publicationTypeMap;
 	protected HashMap<Integer, AnnotatedBiblographyEntry> bibEntryMap;
 	protected HashMap<Integer, CaveEntry> caveEntryMap;
+	protected HashMap<Integer, OrientationEntry> orientationEntryMap;
 
 	private int loadCounter;
 
@@ -97,7 +99,7 @@ public class StaticTables {
 	 */
 	public StaticTables(ListsLoadedListener l) {
 		listener = l;
-		loadCounter = 20;
+		loadCounter = 21;
 		loadDistricts();
 		loadSites();
 		loadRegions();
@@ -118,6 +120,7 @@ public class StaticTables {
 		loadPublicationTypes();
 		loadBiliography();
 		loadCaves();
+		loadOrientation();
 	}
 
 	private void listLoaded() {
@@ -531,6 +534,28 @@ public class StaticTables {
 		});
 	}
 
+	/**
+	 * 
+	 */
+	private void loadOrientation() {
+		orientationEntryMap = new HashMap<Integer, OrientationEntry>();
+		dbService.getOrientationInformation(new AsyncCallback<ArrayList<OrientationEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(ArrayList<OrientationEntry> result) {
+				for (OrientationEntry oe : result) {
+					orientationEntryMap.put(oe.getOrientationID(), oe);
+				}
+				listLoaded();
+			}
+		});
+	}	
+	
 	public Map<Integer, DistrictEntry> getDistrictEntries() {
 		return districtEntryMap;
 	}
@@ -613,6 +638,10 @@ public class StaticTables {
 	
 	public Map<Integer, CaveEntry> getCaveEntries() {
 		return caveEntryMap;
+	}
+	
+	public Map<Integer, OrientationEntry> getOrientationEntries() {
+		return orientationEntryMap;
 	}
 	
 }

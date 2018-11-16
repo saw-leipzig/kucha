@@ -89,21 +89,21 @@ public class ImageFilter extends AbstractFilter {
 
 		// TODO 
 		titleSearch = new TextField();
-		titleSearch.addValidator(new RegExValidator("^[a-zA-Z0-9 ]*$", "We are working on a new search interface. Currently only letters and numbers are allowed."));
+		titleSearch.addValidator(new RegExValidator("^[a-zA-Z0-9 _\\-]*$", "We are working on a new search interface. Currently only a-z, A-Z, 0-9, _, - and [SPACE] are allowed."));
 		titleSearch.setAutoValidate(true);
 		titleSearch.setValue("");
 		titleSearch.setEmptyText("search image title");
 		vlc.add(titleSearch, new VerticalLayoutData(1.0, .125));
 
 		shortnameSearch = new TextField();
-		shortnameSearch.addValidator(new RegExValidator("^[a-zA-Z0-9 ]*$", "We are working on a new search interface. Currently only letters and numbers are allowed."));
+		shortnameSearch.addValidator(new RegExValidator("^[a-zA-Z0-9 _\\-]*$", "We are working on a new search interface. Currently only a-z, A-Z, 0-9, _, - and [SPACE] are allowed."));
 		shortnameSearch.setAutoValidate(true);
 		shortnameSearch.setValue("");
 		shortnameSearch.setEmptyText("search image short name");
 		vlc.add(shortnameSearch, new VerticalLayoutData(1.0, .125));
 
 		copyrightSearch = new TextField();
-		copyrightSearch.addValidator(new RegExValidator("^[a-zA-Z0-9 ]*$", "We are working on a new search interface. Currently only letters and numbers are allowed."));
+		copyrightSearch.addValidator(new RegExValidator("^[a-zA-Z0-9 _\\-]*$", "We are working on a new search interface. Currently only a-z, A-Z, 0-9, _, - and [SPACE] are allowed."));
 		copyrightSearch.setAutoValidate(true);
 		copyrightSearch.setValue("");
 		copyrightSearch.setEmptyText("search image copyright");
@@ -146,15 +146,15 @@ public class ImageFilter extends AbstractFilter {
 		String textFieldQuery = "";
 		
 		if (!titleSearch.getValue().isEmpty() && titleSearch.validate()) {
-			textFieldQuery = "Title LIKE '%" + titleSearch.getValue() + "%'";
+			textFieldQuery = "Title LIKE '%" + titleSearch.getValue().replace("_", "\\_") + "%'";
 		}
 		if (!shortnameSearch.getValue().isEmpty() && shortnameSearch.validate()) {
 			textFieldQuery = textFieldQuery.concat((!textFieldQuery.isEmpty() ? (andSearch.getValue() ? " AND " : " OR ") : "")
-					+ "ShortName LIKE '%" + shortnameSearch.getValue() + "%'");
+					+ "ShortName LIKE '%" + shortnameSearch.getValue().replace("_", "\\_") + "%'");
 		}
 		if (!copyrightSearch.getValue().isEmpty() && copyrightSearch.validate()) {
 			textFieldQuery = textFieldQuery.concat((!textFieldQuery.isEmpty() ? (andSearch.getValue() ? " AND " : " OR ") : "")
-					+ "Copyright LIKE '%" + copyrightSearch.getValue() + "%'");
+					+ "Copyright LIKE '%" + copyrightSearch.getValue().replace("_", "\\_") + "%'");
 		}
 		if (!textFieldQuery.isEmpty()) {
 			result.add("(" + textFieldQuery + ")");

@@ -38,10 +38,12 @@ public class CaveAreaEntry extends AbstractEntry {
 	protected double modernMaxLength = 0;
 	protected double modernMinHeight = 0;
 	protected double modernMaxHeight = 0;
-	protected int preservationClassificationID = 0;
-	protected int ceilingTypeID1 = 0, ceilingTypeID2 = 0;
-	protected int ceilingPreservationClassificationID1 = 0, ceilingPreservationClassificationID2 = 0;
-	protected int floorPreservationClassificationID = 0;
+	protected PreservationClassificationEntry preservationClassification;
+	protected CeilingTypeEntry ceilingType1;
+	protected CeilingTypeEntry ceilingType2;
+	protected PreservationClassificationEntry ceilingPreservationClassification1;
+	protected PreservationClassificationEntry ceilingPreservationClassification2;
+	protected PreservationClassificationEntry floorPreservationClassification;
 	
 	/**
 	 * 
@@ -59,8 +61,8 @@ public class CaveAreaEntry extends AbstractEntry {
 	 */
 	public CaveAreaEntry(int caveID, String caveAreaLabel, double expeditionWidth, double expeditionLength, double expeditionWallHeight, double expeditionTotalHeight,
 			double modernMinWidth, double modernMaxWidth, double modernMinLength, double modernMaxLength, double modernMinHeight, double modernMaxHeight, 
-			int preservationClassificationID, int ceilingTypeID1, int ceilingTypeID2, int ceilingPreservationClassificationID1, int ceilingPreservationClassificationID2, 
-			int floorPreservationClassificationID) {
+			PreservationClassificationEntry preservationClassification, CeilingTypeEntry ceilingType1, CeilingTypeEntry ceilingType2, PreservationClassificationEntry ceilingPreservationClassification1, PreservationClassificationEntry ceilingPreservationClassification2, 
+			PreservationClassificationEntry floorPreservationClassification) {
 		this.caveID = caveID;
 		this.caveAreaLabel = caveAreaLabel;
 		this.expeditionWidth = expeditionWidth;
@@ -73,12 +75,12 @@ public class CaveAreaEntry extends AbstractEntry {
 		this.modernMaxLength = modernMaxLength;
 		this.modernMinHeight = modernMinHeight;
 		this.modernMaxHeight = modernMaxHeight;
-		this.preservationClassificationID = preservationClassificationID;
-		this.ceilingTypeID1 = ceilingTypeID1;
-		this.ceilingTypeID2 = ceilingTypeID2;
-		this.ceilingPreservationClassificationID1 = ceilingPreservationClassificationID1;
-		this.ceilingPreservationClassificationID2 = ceilingPreservationClassificationID2;
-		this.floorPreservationClassificationID = floorPreservationClassificationID;
+		this.preservationClassification = preservationClassification;
+		this.ceilingType1 = ceilingType1;
+		this.ceilingType2 = ceilingType2;
+		this.ceilingPreservationClassification1 = ceilingPreservationClassification1;
+		this.ceilingPreservationClassification2 = ceilingPreservationClassification2;
+		this.floorPreservationClassification = floorPreservationClassification;
 	}
 
 	/**
@@ -93,8 +95,8 @@ public class CaveAreaEntry extends AbstractEntry {
 	public CaveAreaEntry clone() {
 		return new CaveAreaEntry(caveID, caveAreaLabel, expeditionWidth, expeditionLength, expeditionWallHeight, expeditionTotalHeight, 
 				modernMinWidth, modernMaxWidth, modernMinLength, modernMaxLength, modernMinHeight, modernMaxHeight, 
-				preservationClassificationID, ceilingTypeID1, ceilingTypeID2, ceilingPreservationClassificationID1, ceilingPreservationClassificationID2, 
-				floorPreservationClassificationID);
+				preservationClassification, ceilingType1, ceilingType2, ceilingPreservationClassification1, ceilingPreservationClassification2, 
+				floorPreservationClassification);
 	}
 
 	/*
@@ -121,46 +123,6 @@ public class CaveAreaEntry extends AbstractEntry {
 
 	public void setCaveAreaLabel(String caveAreaLabel) {
 		this.caveAreaLabel = caveAreaLabel;
-	}
-
-	public int getPreservationClassificationID() {
-		return preservationClassificationID;
-	}
-
-	public void setPreservationClassificationID(int preservationClassificationID) {
-		this.preservationClassificationID = preservationClassificationID;
-	}
-
-	public int getCeilingTypeID1() {
-		return ceilingTypeID1;
-	}
-
-	public void setCeilingTypeID1(int ceilingTypeID1) {
-		this.ceilingTypeID1 = ceilingTypeID1;
-	}
-
-	public int getCeilingTypeID2() {
-		return ceilingTypeID2;
-	}
-
-	public void setCeilingTypeID2(int ceilingTypeID2) {
-		this.ceilingTypeID2 = ceilingTypeID2;
-	}
-
-	public int getCeilingPreservationClassificationID1() {
-		return ceilingPreservationClassificationID1;
-	}
-
-	public void setCeilingPreservationClassificationID1(int ceilingPreservationClassificationID1) {
-		this.ceilingPreservationClassificationID1 = ceilingPreservationClassificationID1;
-	}
-
-	public int getCeilingPreservationClassificationID2() {
-		return ceilingPreservationClassificationID2;
-	}
-
-	public void setCeilingPreservationClassificationID2(int ceilingPreservationClassificationID2) {
-		this.ceilingPreservationClassificationID2 = ceilingPreservationClassificationID2;
 	}
 
 	public double getExpeditionWidth() {
@@ -243,12 +205,52 @@ public class CaveAreaEntry extends AbstractEntry {
 		this.modernMaxHeight = modernMaxHeight;
 	}
 
-	public int getFloorPreservationClassificationID() {
-		return floorPreservationClassificationID;
+	public PreservationClassificationEntry getPreservationClassification() {
+		return preservationClassification;
 	}
 
-	public void setFloorPreservationClassificationID(int floorPreservationClassificationID) {
-		this.floorPreservationClassificationID = floorPreservationClassificationID;
+	public void setPreservationClassification(PreservationClassificationEntry preservationClassification) {
+		this.preservationClassification = preservationClassification;
+	}
+
+	public CeilingTypeEntry getCeilingType1() {
+		return ceilingType1;
+	}
+
+	public void setCeilingType1(CeilingTypeEntry ceilingType1) {
+		this.ceilingType1 = ceilingType1;
+	}
+
+	public CeilingTypeEntry getCeilingType2() {
+		return ceilingType2;
+	}
+
+	public void setCeilingType2(CeilingTypeEntry ceilingType2) {
+		this.ceilingType2 = ceilingType2;
+	}
+
+	public PreservationClassificationEntry getCeilingPreservationClassification1() {
+		return ceilingPreservationClassification1;
+	}
+
+	public void setCeilingPreservationClassification1(PreservationClassificationEntry ceilingPreservationClassification1) {
+		this.ceilingPreservationClassification1 = ceilingPreservationClassification1;
+	}
+
+	public PreservationClassificationEntry getCeilingPreservationClassification2() {
+		return ceilingPreservationClassification2;
+	}
+
+	public void setCeilingPreservationClassification2(PreservationClassificationEntry ceilingPreservationClassification2) {
+		this.ceilingPreservationClassification2 = ceilingPreservationClassification2;
+	}
+
+	public PreservationClassificationEntry getFloorPreservationClassification() {
+		return floorPreservationClassification;
+	}
+
+	public void setFloorPreservationClassification(PreservationClassificationEntry floorPreservationClassification) {
+		this.floorPreservationClassification = floorPreservationClassification;
 	}
 	
 }

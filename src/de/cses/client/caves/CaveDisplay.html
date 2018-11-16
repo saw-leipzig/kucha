@@ -1,0 +1,127 @@
+<div class="data-view">
+	<h4 class="data-display">
+		{site} {officialNumber} <tpl if="historicName != &quot;&quot;">({historicName})</tpl>
+	</h4>
+	<table class="data-view">
+		<tpl if="optionalHistoricName != &quot;&quot;">
+			<tr style="border-bottom: 1px solid black">
+				<td class="data-view-left"><i>Optional Historical Name</i></td>
+				<td class="data-view-right">{optionalHistoricName}</td>
+			</tr>
+		</tpl>
+		<tpl if="site != &quot;&quot;">
+			<tr style="border-bottom: 1px solid black">
+				<td class="data-view-left"><i>Site</i></td>
+				<td class="data-view-right">{site}</td>
+			</tr>
+		</tpl>
+		<tpl if="district != &quot;&quot;">
+			<tr style="border-bottom: 1px solid black">
+				<td class="data-view-left"><i>District</i></td>
+				<td class="data-view-right">{district}</td>
+			</tr>
+		</tpl>
+		<tpl if="region != &quot;&quot;">
+			<tr style="border-bottom: 1px solid black">
+				<td class="data-view-left"><i>Region</i></td>
+				<td class="data-view-right">{region}</td>
+			</tr>
+		</tpl>
+		<tpl if="firstDocumentedBy != &quot;&quot;">
+			<tr style="border-bottom: 1px solid black">
+				<td class="data-view-left"><i>First documented by</i></td>
+				<td class="data-view-right">{firstDocumentedBy}</td>
+			</tr>
+		</tpl>
+		<tpl if="firstDocumentedInYear != &quot;&quot;">
+			<tr style="border-bottom: 1px solid black">
+				<td class="data-view-left"><i>First documented in</i></td>
+				<td class="data-view-right">{firstDocumentedInYear}</td>
+			</tr>
+		</tpl>
+	</table>
+	
+	<h4 class="data-display">Cave Layout</h4>
+	<table class="data-view">
+		<tpl if="caveType != &quot;&quot;">
+			<tr style="border-bottom: 1px solid black">
+				<td class="data-view-left"><i>Cave Type</i></td>
+				<td class="data-view-right">{caveType}</td>
+			</tr>
+		</tpl>
+		<tpl if="orientation != &quot;&quot;">
+			<tr style="border-bottom: 1px solid black">
+				<td class="data-view-left"><i>Orientation</i></td>
+				<td class="data-view-right">{orientation}</td>
+			</tr>
+		</tpl>
+		<tpl if="caveLayoutComments != &quot;&quot;">
+			<tr style="border-bottom: 1px solid black">
+				<td class="data-view-left"><i>Comments on layout</i></td>
+				<td class="data-view-right">{caveLayoutComments}</td>
+			</tr>
+		</tpl>		
+		<tr style="border-bottom: 1px solid black">
+			<td class="data-view-left"><i>Has voluted horse shoe arch</i></td>
+			<tpl if="hasVolutedHorseShoeArch == true">
+					<td class="data-view-right">&#x1f44d;</td>
+			</tpl>
+			<tpl if="hasVolutedHorseShoeArch != true">
+					<td class="data-view-right">&#x1f44e;</td>
+			</tpl>
+		</tr>
+	</table>
+	<tpl for='caveSketchList'>
+		<img src='{uri}' style='width: 300px; height: auto; margin: 5px;'>
+	</tpl>
+	
+	<details class='data-display'>
+		<summary>click to open cave area list</summary>
+	
+		<tpl for='caveAreaList'>
+			<h5 class="data-display">{caveAreaLabel}</h5>
+			<dl class="simple-list">
+				<dt>Expedition measurements</dt>
+					<tpl if='expeditionWidth &gt; 0'><dd>Width: {expeditionWidth} meter</dd></tpl>
+					<tpl if='expeditionLength &gt; 0'><dd>Length: {expeditionLength} meter</dd></tpl>
+					<tpl if='expeditionWallHeight &gt; 0'><dd>Wall Height: {expeditionWallHeight} meter</dd></tpl>
+					<tpl if='expeditionTotalHeight &gt; 0'><dd>Total Height: {expeditionTotalHeight} meter</dd></tpl>
+				<dt>Modern measurements</dt>
+					<tpl if='modernMinWidth &gt; 0'><dd>Width: {modernMinWidth}<tpl if='modernMaxWidth &gt; 0'> - {modernMaxWidth}</tpl> meter</dd></tpl>
+					<tpl if='modernMinLength &gt; 0'><dd>Length: {modernMinLength}<tpl if='modernMaxLength &gt; 0'> - {modernMaxLength}</tpl> meter</dd></tpl>
+					<tpl if='modernMinHeight &gt; 0'><dd>Height: {modernMinHeight}<tpl if='modernMaxHeight &gt; 0'> - {modernMaxHeight}</tpl> meter</dd></tpl>
+				<dt>Ceiling Type</dt>
+					<tpl if='ceilingType1 != null'><dd>Ceiling type: {ceilingType1.name}</dd></tpl>
+					<tpl if='ceilingType2 != null'><dd>Second ceiling type: {ceilingType2.name}</dd></tpl>
+				<dt>State of preservation</dt>
+					<tpl if='preservationClassification != null'><dd>Preservation classification: {preservationClassification.name}</dd></tpl>
+					<tpl if='ceilingPreservationClassification1 != null'><dd>Ceiling preservation classification: {ceilingPreservationClassification1.name}</dd></tpl>
+					<tpl if='ceilingPreservationClassification2 != null'><dd>Second ceiling preservation classification: {ceilingPreservationClassification2.name}</dd></tpl>
+					<tpl if='floorPreservationClassification != null'><dd>Floor preservation classification: {floorPreservationClassification.name}</dd></tpl>
+			</dl>
+		</tpl>
+	</details>
+	
+<h4 class="data-display">Description</h4>
+
+	<h5 class="data-display">Plastical Items</h4>
+	<dl class="simple-list">
+		<dt>Has sculptures <tpl if='hasSculptures == true'>&#x1f44d;</tpl><tpl if='hasSculptures != true'>&#x1f44e;</tpl></dt>
+			<dd>Has clay figures <tpl if='hasClayFigures == true'>&#x1f44d;</tpl><tpl if='hasClayFigures != true'>&#x1f44e;</tpl></dd>
+			<dd>Has immitation of mountains <tpl if='hasImmitationOfMountains == true'>&#x1f44d;</tpl><tpl if='hasImmitationOfMountains != true'>&#x1f44e;</tpl></dd>
+		<dt>Has holes for fixation of plastical items <tpl if='hasHolesForFixationOfPlasticalItems == true'>&#x1f44d;</tpl><tpl if='hasHolesForFixationOfPlasticalItems != true'>&#x1f44e;</tpl></dt>
+		<dt>Has wooden contruction <tpl if='hasWoodenConstruction == true'>&#x1f44d;</tpl><tpl if='hasWoodenConstruction != true'>&#x1f44e;</tpl></dt>
+	</dl>
+	
+	<tpl if='findings != &quot;&quot;'>
+		<h5 class="data-display">Findings</h4>
+		<div class="text">{findings}</div>
+	</tpl>
+
+	<tpl if='notes != &quot;&quot;'>
+		<h5 class="data-display">Notes</h4>
+		<div class="text">{notes}</div>
+	</tpl>
+
+	<div class="date">Last changes on {timestamp} by {user}.</div>
+</div>

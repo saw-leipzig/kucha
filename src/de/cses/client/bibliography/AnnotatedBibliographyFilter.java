@@ -48,13 +48,13 @@ public class AnnotatedBibliographyFilter extends AbstractFilter {
 		authorNameTF = new TextField();
 		authorNameTF.setEmptyText("search in author or institute");
 		// TODO 
-		authorNameTF.addValidator(new RegExValidator("^[a-zA-Z0-9 ]*$", "We are working on a new search interface. Currently only letters and numbers are allowed."));
+		authorNameTF.addValidator(new RegExValidator("^[a-zA-Z0-9 _\\-]*$", "We are working on a new search interface. Currently only a-z, A-Z, 0-9, _, - and [SPACE] are allowed."));
 		authorNameTF.setAutoValidate(true);
 		
 		titleTF = new TextField();
 		titleTF.setEmptyText("search in title (orig./eng./trans.)");
 		// TODO 
-		titleTF.addValidator(new RegExValidator("^[a-zA-Z0-9 ]*$", "We are working on a new search interface. Currently only letters and numbers are allowed."));
+		titleTF.addValidator(new RegExValidator("^[a-zA-Z0-9 _\\-]*$", "We are working on a new search interface. Currently only a-z, A-Z, 0-9, _, - and [SPACE] are allowed."));
 		titleTF.setAutoValidate(true);
 
 		VerticalLayoutContainer bibFilterVLC = new VerticalLayoutContainer();
@@ -71,7 +71,7 @@ public class AnnotatedBibliographyFilter extends AbstractFilter {
 	public ArrayList<String> getSqlWhereClause() {
 		ArrayList<String> result = new ArrayList<String>();
 		if ((authorNameTF.getValue() != null) && !authorNameTF.getValue().isEmpty()) {
-			String searchTerm = authorNameTF.getValue();
+			String searchTerm = authorNameTF.getValue().replace("_", "\\_");
 			String sqlTerm = "";
 			for (String name : searchTerm.split("\\s+")) {
 				sqlTerm += sqlTerm.length() > 0 ? " INTERSECT SELECT BibID FROM AuthorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE ((FirstName LIKE '%" + name + "%') OR (LastName LIKE '%" + name + "%') OR (Institution LIKE '%" + name + "%'))))" 
@@ -81,7 +81,7 @@ public class AnnotatedBibliographyFilter extends AbstractFilter {
 			result.add(sqlTerm);
 		}
 		if ((titleTF.getValue() != null) && !titleTF.getValue().isEmpty()) {
-			String searchTerm = titleTF.getValue();
+			String searchTerm = titleTF.getValue().replace("_", "\\_");
 			result.add("("
 					+ "(TitleORG LIKE '%" + searchTerm + "%')"
 					+ "OR (TitleEN LIKE '%" + searchTerm + "%')"

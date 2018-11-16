@@ -46,8 +46,6 @@ import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.data.shared.SortDir;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
-import com.sencha.gxt.widget.core.client.Dialog;
-import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.TabPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
@@ -178,7 +176,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		return mainFP;
 	}
 
-	public void save(boolean close) {
+	public synchronized void save(boolean close) {
 
 		if (authorListFilterField != null) {
 			authorListFilterField.clear();
@@ -1549,6 +1547,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			thesisTypeCB.add("other");
 			thesisTypeCB.setEditable(false);
 			thesisTypeCB.setTypeAhead(false);
+			thesisTypeCB.setTriggerAction(TriggerAction.ALL);
 			thesisTypeCB.setValue(bibEntry.getThesisType());
 			thesisTypeCB.addValueChangeHandler(new ValueChangeHandler<String>() {
 

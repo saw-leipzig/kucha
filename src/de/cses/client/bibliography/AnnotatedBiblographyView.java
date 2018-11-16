@@ -39,6 +39,7 @@ public class AnnotatedBiblographyView extends AbstractView {
 		this.annotatedBiblographyEntry = annotatedBiblographyEntry;
 		dvTemplates = GWT.create(AnnotatedBiblographyViewTemplates.class);
 		setHTML(dvTemplates.view(annotatedBiblographyEntry));
+//		setHTML(dvTemplates.extendedView(annotatedBiblographyEntry));
 		setSize("95%", "80px");
 
 		DragSource source = new DragSource(this) {
@@ -81,6 +82,7 @@ public class AnnotatedBiblographyView extends AbstractView {
 		if (entry != null && entry instanceof AnnotatedBiblographyEntry) { // refresh view
 			annotatedBiblographyEntry = (AnnotatedBiblographyEntry) entry;
 			setHTML(dvTemplates.view(annotatedBiblographyEntry));
+//			setHTML(dvTemplates.extendedView(annotatedBiblographyEntry));
 		}
 	}
 
