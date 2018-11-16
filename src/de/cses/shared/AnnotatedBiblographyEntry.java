@@ -925,9 +925,13 @@ public class AnnotatedBiblographyEntry extends AbstractEntry implements Comparab
 
 	public String getEditors() {
 		String result = "";
-		
-		for (AuthorEntry ae : editorList) {
-			result = result.concat(!result.isEmpty() ? "; " + ae.getName() : ae.getName());
+		if (editorList.size() > 3) {
+			AuthorEntry ae = editorList.get(0);
+			result = ae.getName() + ", et al.";
+		} else {
+			for (AuthorEntry ae : editorList) {
+				result = result.concat(!result.isEmpty() ? "; " + ae.getName() : ae.getName());
+			}
 		}
 		return result;
 	}
