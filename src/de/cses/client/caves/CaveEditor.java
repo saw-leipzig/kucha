@@ -30,6 +30,7 @@ import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Label;
@@ -1609,8 +1610,9 @@ public class CaveEditor extends AbstractEditor {
 			@Override
 			public void onSelection(SelectionEvent<WallEntry> event) {
 				selectedWallEntry = event.getSelectedItem();
-				selectedWallStateOfPreservationCB.setValue(
-						preservationClassificationEntryList.findModelWithKey(Integer.toString(selectedWallEntry.getPreservationClassificationID())));
+				selectedWallStateOfPreservationCB.setValue(preservationClassificationEntryList.findModelWithKey(Integer.toString(selectedWallEntry.getPreservationClassificationID())));
+				wallWidthNF.setValue(selectedWallEntry.getWidth());
+				wallHeightNF.setValue(selectedWallEntry.getHeight());
 			}
 		});
 		selectedWallStateOfPreservationCB = createStateOfPreservationSelector("select wall preservation");
@@ -1650,10 +1652,10 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		HorizontalLayoutContainer wallMeasuresHLC = new HorizontalLayoutContainer();
-		wallMeasuresHLC.add(wallWidthNF, new HorizontalLayoutData(.2, 1.0));
-		wallMeasuresHLC.add(new Label("width (m)"), new HorizontalLayoutData(.3, 1.0));
-		wallMeasuresHLC.add(wallHeightNF, new HorizontalLayoutData(.2, 1.0));
-		wallMeasuresHLC.add(new Label("height (m)"), new HorizontalLayoutData(.3, 1.0));
+		wallMeasuresHLC.add(wallWidthNF, new HorizontalLayoutData(.3, 1.0));
+		wallMeasuresHLC.add(new HTML("<div class='label'> meter (w)</div>"), new HorizontalLayoutData(.2, 1.0));
+		wallMeasuresHLC.add(wallHeightNF, new HorizontalLayoutData(.3, 1.0));
+		wallMeasuresHLC.add(new HTML("<div class='label'> meter (h)</div>"), new HorizontalLayoutData(.2, 1.0));
 		
 		VerticalLayoutContainer wallManagementVLC = new VerticalLayoutContainer();
 		wallManagementVLC.add(wallSelectorCB, new VerticalLayoutData(1.0, .35));
