@@ -218,6 +218,8 @@ public class CaveEditor extends AbstractEditor {
 	private FlowLayoutContainer c14AnalysisLinksFLC;
 	private FlowLayoutContainer c14DocumentsFLC;
 	protected C14DocumentUploader uploader;
+	private NumberField<Double> wallWidthNF;
+	private NumberField<Double> wallHeightNF;
 
 	interface CaveTypeProperties extends PropertyAccess<CaveTypeEntry> {
 		ModelKeyProvider<CaveTypeEntry> caveTypeID();
@@ -1584,6 +1586,95 @@ public class CaveEditor extends AbstractEditor {
 		});
 		furtherCommentsPanel.add(stateOfPreservationTextArea);
 
+		// Walls
+		wallSelectorCB = new ComboBox<WallEntry>(wallEntryLS, new LabelProvider<WallEntry>() {
+
+			@Override
+			public String getLabel(WallEntry entry) {
+				return StaticTables.getInstance().getWallLocationEntries().get(entry.getWallLocationID()).getLabel();
+			}
+		}, new AbstractSafeHtmlRenderer<WallEntry>() {
+
+			@Override
+			public SafeHtml render(WallEntry entry) {
+				return wallVT.wallLabel(StaticTables.getInstance().getWallLocationEntries().get(entry.getWallLocationID()).getLabel());
+			}
+		});
+		wallSelectorCB.setEditable(false);
+		wallSelectorCB.setTypeAhead(false);
+		wallSelectorCB.setEmptyText("select a wall");
+		wallSelectorCB.setTriggerAction(TriggerAction.ALL);
+		wallSelectorCB.addSelectionHandler(new SelectionHandler<WallEntry>() {
+
+			@Override
+			public void onSelection(SelectionEvent<WallEntry> event) {
+				selectedWallEntry = event.getSelectedItem();
+				selectedWallStateOfPreservationCB.setValue(
+						preservationClassificationEntryList.findModelWithKey(Integer.toString(selectedWallEntry.getPreservationClassificationID())));
+			}
+		});
+		selectedWallStateOfPreservationCB = createStateOfPreservationSelector("select wall preservation");
+		selectedWallStateOfPreservationCB.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
+
+			@Override
+			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
+				selectedWallEntry.setPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
+			}
+		});
+		wallWidthNF = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor(NumberFormat.getFormat("#0.00")));
+		wallWidthNF.setAllowNegative(false);
+		wallWidthNF.setEmptyText("wall width");
+		wallWidthNF.addValueChangeHandler(new ValueChangeHandler<Double>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Double> event) {
+				if (event.getValue() == null) {
+					selectedWallEntry.setWidth(0.0);
+				} else if (wallWidthNF.validate()) {
+					selectedWallEntry.setWidth(event.getValue());
+				} 
+			}
+		});
+		wallHeightNF = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor(NumberFormat.getFormat("#0.00")));
+		wallHeightNF.setAllowNegative(false);
+		wallHeightNF.setEmptyText("wall height");
+		wallHeightNF.addValueChangeHandler(new ValueChangeHandler<Double>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Double> event) {
+				if (event.getValue() == null) {
+					selectedWallEntry.setHeight(0.0);
+				} else if (wallHeightNF.validate()) {
+					selectedWallEntry.setHeight(event.getValue());
+				} 
+			}
+		});
+		HorizontalLayoutContainer wallMeasuresHLC = new HorizontalLayoutContainer();
+		wallMeasuresHLC.add(wallWidthNF, new HorizontalLayoutData(.2, 1.0));
+		wallMeasuresHLC.add(new Label("width (m)"), new HorizontalLayoutData(.3, 1.0));
+		wallMeasuresHLC.add(wallHeightNF, new HorizontalLayoutData(.2, 1.0));
+		wallMeasuresHLC.add(new Label("height (m)"), new HorizontalLayoutData(.3, 1.0));
+		
+		VerticalLayoutContainer wallManagementVLC = new VerticalLayoutContainer();
+		wallManagementVLC.add(wallSelectorCB, new VerticalLayoutData(1.0, .35));
+		wallManagementVLC.add(selectedWallStateOfPreservationCB, new VerticalLayoutData(1.0, .35));
+		wallManagementVLC.add(wallMeasuresHLC, new VerticalLayoutData(1.0, .3));
+		wallManagementFP = new FramedPanel();
+		wallManagementFP.setHeading("Walls");
+		wallManagementFP.add(wallManagementVLC);
+		ToolButton showWallTB = new ToolButton(ToolButton.QUESTION);
+		showWallTB.setToolTip("show wall");
+		showWallTB.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				// TODO implementation of show wall
+				Util.showWarning("Show Wall", "This feature will be implemented in a future version.");
+			}
+		});
+		wallManagementFP.addTool(showWallTB);
+		wallManagementFP.add(wallManagementVLC);
+		
 		VerticalLayoutContainer floorStateOfPreservationVLC = new VerticalLayoutContainer();
 		floorStateOfPreservationVLC.add(rearAnteFloorHLC, new VerticalLayoutData(1.0, 1.0 / 3));
 		floorStateOfPreservationVLC.add(leftRightCorridorFloorHLC, new VerticalLayoutData(1.0, 1.0 / 3));
@@ -1621,10 +1712,14 @@ public class CaveEditor extends AbstractEditor {
 		HorizontalLayoutContainer stateOfPreservationHLC = new HorizontalLayoutContainer();
 		stateOfPreservationHLC.add(stateOfPreservationLeftVLC, new HorizontalLayoutData(.5, 1.0));
 		stateOfPreservationHLC.add(ceilingStateOfPreservationFP, new HorizontalLayoutData(.5, 1.0));
+		
+		HorizontalLayoutContainer commentsAndWallHLC = new HorizontalLayoutContainer();
+		commentsAndWallHLC.add(furtherCommentsPanel, new HorizontalLayoutData(.5, 1.0));
+		commentsAndWallHLC.add(wallManagementFP, new HorizontalLayoutData(.5, 1.0));
 
 		VerticalLayoutContainer finalStateOfPreservationVLC = new VerticalLayoutContainer();
 		finalStateOfPreservationVLC.add(stateOfPreservationHLC, new VerticalLayoutData(1.0, .75));
-		finalStateOfPreservationVLC.add(furtherCommentsPanel, new VerticalLayoutData(1.0, .25));
+		finalStateOfPreservationVLC.add(commentsAndWallHLC, new VerticalLayoutData(1.0, .25));
 
 		updateStateOfPreservationPanel(0);
 
@@ -2291,64 +2386,11 @@ public class CaveEditor extends AbstractEditor {
 		caveSketchFLC.setScrollMode(ScrollMode.AUTOY);
 		caveSketchFP.add(caveSketchFLC);
 		
-		wallSelectorCB = new ComboBox<WallEntry>(wallEntryLS, new LabelProvider<WallEntry>() {
+//		VerticalLayoutContainer caveLayoutRightVLC = new VerticalLayoutContainer();
+//		caveLayoutRightVLC.add(caveSketchFP, new VerticalLayoutData(1.0, .85));
+//		caveLayoutRightVLC.add(wallManagementFP, new VerticalLayoutData(1.0, .15));
 
-			@Override
-			public String getLabel(WallEntry entry) {
-				return StaticTables.getInstance().getWallLocationEntries().get(entry.getWallLocationID()).getLabel();
-			}
-		}, new AbstractSafeHtmlRenderer<WallEntry>() {
-
-			@Override
-			public SafeHtml render(WallEntry entry) {
-				return wallVT.wallLabel(StaticTables.getInstance().getWallLocationEntries().get(entry.getWallLocationID()).getLabel());
-			}
-		});
-		wallSelectorCB.setEditable(false);
-		wallSelectorCB.setTypeAhead(false);
-		wallSelectorCB.setEmptyText("select a wall");
-		wallSelectorCB.setTriggerAction(TriggerAction.ALL);
-		wallSelectorCB.addSelectionHandler(new SelectionHandler<WallEntry>() {
-
-			@Override
-			public void onSelection(SelectionEvent<WallEntry> event) {
-				selectedWallEntry = event.getSelectedItem();
-				selectedWallStateOfPreservationCB.setValue(
-						preservationClassificationEntryList.findModelWithKey(Integer.toString(selectedWallEntry.getPreservationClassificationID())));
-			}
-		});
-		selectedWallStateOfPreservationCB = createStateOfPreservationSelector("select wall preservation");
-		selectedWallStateOfPreservationCB.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
-
-			@Override
-			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				selectedWallEntry.setPreservationClassificationID(event.getSelectedItem().getPreservationClassificationID());
-			}
-		});
-		VerticalLayoutContainer wallManagementVLC = new VerticalLayoutContainer();
-		wallManagementVLC.add(wallSelectorCB, new VerticalLayoutData(1.0, .5));
-		wallManagementVLC.add(selectedWallStateOfPreservationCB, new VerticalLayoutData(1.0, .5));
-		wallManagementFP = new FramedPanel();
-		wallManagementFP.setHeading("Walls");
-		wallManagementFP.add(wallManagementVLC);
-		ToolButton showWallTB = new ToolButton(ToolButton.QUESTION);
-		showWallTB.setToolTip("show wall");
-		showWallTB.addSelectHandler(new SelectHandler() {
-
-			@Override
-			public void onSelect(SelectEvent event) {
-				// TODO implementation of show wall
-				Util.showWarning("Show Wall", "This feature will be implemented in a future version.");
-			}
-		});
-		wallManagementFP.addTool(showWallTB);
-		wallManagementFP.add(wallManagementVLC);
-
-		VerticalLayoutContainer caveLayoutRightVLC = new VerticalLayoutContainer();
-		caveLayoutRightVLC.add(caveSketchFP, new VerticalLayoutData(1.0, .85));
-		caveLayoutRightVLC.add(wallManagementFP, new VerticalLayoutData(1.0, .15));
-
-		caveTypeHLC.add(caveLayoutRightVLC, new HorizontalLayoutData(.5, 1.0));
+		caveTypeHLC.add(caveSketchFP, new HorizontalLayoutData(.5, 1.0));
 
 		/**
 		 * --------------------------------- measurement tab ------------------------------------------
