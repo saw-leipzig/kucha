@@ -78,6 +78,7 @@ import com.sencha.gxt.widget.core.client.form.validator.MinNumberValidator;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
+import de.cses.client.Util;
 import de.cses.client.bibliography.BibliographySelector;
 import de.cses.client.images.ImageSelector;
 import de.cses.client.images.ImageSelectorListener;
@@ -622,6 +623,7 @@ public class DepictionEditor extends AbstractEditor {
 		caveSelectionCB.setToolTip("This field can only be changed until a depiction is allocated to a wall");
 		// TODO check if wallTypeID is set, then set caveSelectionCB.editable(false)
 		ToolButton resetCaveSelectionTB = new ToolButton(ToolButton.REFRESH);
+		resetCaveSelectionTB.setToolTip(Util.toolTip.create("reset selection"));
 		resetCaveSelectionTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
@@ -662,6 +664,7 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		ToolButton expedSelectionTB = new ToolButton(ToolButton.REFRESH);
+		expedSelectionTB.setToolTip(Util.toolTip.create("reset selection"));
 		expedSelectionTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
@@ -695,6 +698,7 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		ToolButton resetVendorSelectionTB = new ToolButton(ToolButton.REFRESH);
+		resetVendorSelectionTB.setToolTip(Util.toolTip.create("reset selection"));
 		resetVendorSelectionTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
@@ -704,7 +708,7 @@ public class DepictionEditor extends AbstractEditor {
 		});
 		// adding new vendors is necessary
 		ToolButton newVendorPlusTool = new ToolButton(ToolButton.PLUS);
-		newVendorPlusTool.setToolTip("New Vendor");
+		newVendorPlusTool.setToolTip(Util.toolTip.create("add Vendor"));
 		newVendorPlusTool.addSelectHandler(new SelectHandler() {
 
 			@Override
@@ -802,6 +806,7 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		ToolButton resetLocationSelectionTB = new ToolButton(ToolButton.REFRESH);
+		resetLocationSelectionTB.setToolTip(Util.toolTip.create("reset selection"));
 		resetLocationSelectionTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
@@ -811,7 +816,7 @@ public class DepictionEditor extends AbstractEditor {
 		});
 		// adding new locations
 		ToolButton newLocationPlusTool = new ToolButton(ToolButton.PLUS);
-		newLocationPlusTool.setToolTip("New Location");
+		newLocationPlusTool.setToolTip(Util.toolTip.create("add Location"));
 		newLocationPlusTool.addSelectHandler(new SelectHandler() {
 
 			@Override
@@ -906,6 +911,7 @@ public class DepictionEditor extends AbstractEditor {
 		FramedPanel stateOfPreservationFP = new FramedPanel();
 		stateOfPreservationFP.setHeading("State of Preservation");
 		ToolButton addPreservationAttributeTB = new ToolButton(ToolButton.PLUS);
+		addPreservationAttributeTB.setToolTip(Util.toolTip.create("Add Preservation Attribute"));
 		stateOfPreservationFP.addTool(addPreservationAttributeTB);
 		addPreservationAttributeTB.addSelectHandler(new SelectHandler() {
 			
@@ -994,7 +1000,7 @@ public class DepictionEditor extends AbstractEditor {
 		wallSelectorFP.setHeading("Wall");
 		ToolButton wallEditorTB = new ToolButton(ToolButton.PIN);
 		wallEditorTB.setEnabled(false);
-		wallEditorTB.setToolTip("set position on wall");
+		wallEditorTB.setToolTip(Util.toolTip.create("set position on wall"));
 		
 //		TextButton wallEditorButton = new TextButton("set position on wall");
 		wallEditor = new Walls(1, false);
@@ -1010,7 +1016,10 @@ public class DepictionEditor extends AbstractEditor {
 				wallEditorDialog.center();
 			}
 		});
-		wallSelectorFP.addTool(wallEditorTB);
+		/**
+		 * the wall visualisation will be implemented at a later time
+		 */
+//		wallSelectorFP.addTool(wallEditorTB);
 		wallSelectorPanel = new WallSelector(new SelectionHandler<WallEntry>() {
 
 			@Override
@@ -1098,6 +1107,7 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		ToolButton resetStyleSelectionTB = new ToolButton(ToolButton.REFRESH);
+		resetStyleSelectionTB.setToolTip(Util.toolTip.create("reset selection"));
 		resetStyleSelectionTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
@@ -1131,6 +1141,7 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		ToolButton resetModeOfRepresentationSelectionTB = new ToolButton(ToolButton.REFRESH);
+		resetModeOfRepresentationSelectionTB.setToolTip(Util.toolTip.create("reset selection"));
 		resetModeOfRepresentationSelectionTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
@@ -1266,6 +1277,7 @@ public class DepictionEditor extends AbstractEditor {
 		});
 		
 		ToolButton addImageTB = new ToolButton(ToolButton.PLUS);
+		addImageTB.setToolTip(Util.toolTip.create("add image"));
 		addImageTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
@@ -1276,9 +1288,9 @@ public class DepictionEditor extends AbstractEditor {
 				imageSelectionDialog.center();
 			}
 		});
-		addImageTB.setToolTip("add image");
 
 		ToolButton removeImageTB = new ToolButton(ToolButton.MINUS);
+		removeImageTB.setToolTip(Util.toolTip.create("remove image"));
 		removeImageTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
@@ -1286,9 +1298,9 @@ public class DepictionEditor extends AbstractEditor {
 				imageEntryLS.remove(imageListView.getSelectionModel().getSelectedItem());
 			}
 		});
-		removeImageTB.setToolTip("remove image");
 		
 		ToolButton setMasterTB = new ToolButton(ToolButton.PIN);
+		setMasterTB.setToolTip(Util.toolTip.create("Set master image.", "The master image will be displayed on top of this list and used for previews in the system (e.g. thumbnails)."));
 		setMasterTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
@@ -1298,7 +1310,6 @@ public class DepictionEditor extends AbstractEditor {
 				imageListView.refresh();
 			}
 		});
-		setMasterTB.setToolTip("set master image");
 		
 		ToolButton infoTB = new ToolButton(ToolButton.QUESTION);
 		infoTB.addSelectHandler(new SelectHandler() {
@@ -1339,7 +1350,7 @@ public class DepictionEditor extends AbstractEditor {
 				}
 			}
 		});
-		zoomTB.setToolTip("view selected image full size");
+		zoomTB.setToolTip(Util.toolTip.create("View selected image in full size.", "This will open a new browser tab."));
 
 		FramedPanel depictionImagesPanel = new FramedPanel();
 		depictionImagesPanel.setHeading("Images");
@@ -1391,6 +1402,7 @@ public class DepictionEditor extends AbstractEditor {
 		mainHLC.add(depictionImagesPanel, new HorizontalLayoutData(.3, 1.0));
 		
 		ToolButton saveToolButton = new ToolButton(ToolButton.SAVE);
+		saveToolButton.setToolTip(Util.toolTip.create("save"));
 		saveToolButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
@@ -1399,7 +1411,7 @@ public class DepictionEditor extends AbstractEditor {
 		});
 		
 		ToolButton closeToolButton = new ToolButton(ToolButton.CLOSE);
-		closeToolButton.setToolTip("close");
+		closeToolButton.setToolTip(Util.toolTip.create("close"));
 		closeToolButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
@@ -1416,36 +1428,11 @@ public class DepictionEditor extends AbstractEditor {
 						 closeEditor(null);
 					}
 				});
-//				 Dialog d = new Dialog();
-//				 d.setHeading("Exit Warning!");
-//				 d.setWidget(new HTML("Do you wish to save before exiting?"));
-//				 d.setBodyStyle("fontWeight:bold;padding:13px;");
-//				 d.setPixelSize(300, 100);
-//				 d.setHideOnButtonClick(true);
-//				 d.setPredefinedButtons(PredefinedButton.YES, PredefinedButton.NO, PredefinedButton.CANCEL);
-//				 d.setModal(true);
-//				 d.center();
-//				 d.show();
-//				 d.getButton(PredefinedButton.YES).addSelectHandler(new SelectHandler() {
-//					
-//					@Override
-//					public void onSelect(SelectEvent event) {
-//						saveDepictionEntry(true);
-//					}
-//				});
-//				 d.getButton(PredefinedButton.NO).addSelectHandler(new SelectHandler() {
-//						
-//					@Override
-//					public void onSelect(SelectEvent event) {
-//						 closeEditor(null);
-//					}
-//				});
 			}
 		});
 		
 		mainPanel = new FramedPanel();
-		mainPanel.setHeading("Painted Representation Editor ("
-				+ (correspondingDepictionEntry.getDepictionID() > 0 ? correspondingDepictionEntry.getShortName() : "NEW") + ")");
+		mainPanel.setHeading("Painted Representation Editor (" + (correspondingDepictionEntry.getDepictionID() > 0 ? correspondingDepictionEntry.getShortName() : "NEW") + ")");
 
 		mainPanel.add(mainHLC);
 		mainPanel.setSize("900px", "650px");

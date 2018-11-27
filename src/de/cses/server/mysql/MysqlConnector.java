@@ -409,6 +409,11 @@ public class MysqlConnector {
 		return getDepictions(null);
 	}
 
+	/**
+	 * 
+	 * @param sqlWhere
+	 * @return
+	 */
 	public ArrayList<DepictionEntry> getDepictions(String sqlWhere) {
 		ArrayList<DepictionEntry> results = new ArrayList<DepictionEntry>();
 		Connection dbc = getConnection();

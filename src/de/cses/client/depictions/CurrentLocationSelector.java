@@ -33,6 +33,7 @@ import com.sencha.gxt.widget.core.client.tree.Tree.CheckNodes;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
 
 import de.cses.client.StaticTables;
+import de.cses.client.Util;
 import de.cses.shared.CurrentLocationEntry;
 
 public class CurrentLocationSelector implements IsWidget {
@@ -125,6 +126,7 @@ public class CurrentLocationSelector implements IsWidget {
 
 		
 		ToolButton expandTB = new ToolButton(ToolButton.EXPAND);
+		expandTB.setToolTip(Util.toolTip.create("expand window"));
 		expandTB.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
@@ -133,6 +135,7 @@ public class CurrentLocationSelector implements IsWidget {
 		});
 
 		ToolButton collapseTB = new ToolButton(ToolButton.COLLAPSE);
+		collapseTB.setToolTip(Util.toolTip.create("collapse window"));
 		collapseTB.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {

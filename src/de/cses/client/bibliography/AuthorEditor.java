@@ -255,6 +255,7 @@ public class AuthorEditor implements IsWidget {
 		mainPanel.add(newAuthorVLC);
 
 		ToolButton saveToolButton = new ToolButton(ToolButton.SAVE);
+		saveToolButton.setToolTip(Util.toolTip.create("save"));
 		saveToolButton.addSelectHandler(new SelectHandler() {
 
 			@Override
@@ -265,6 +266,7 @@ public class AuthorEditor implements IsWidget {
 		mainPanel.addTool(saveToolButton);
 		
 		ToolButton cancelToolButton = new ToolButton(ToolButton.CLOSE);
+		cancelToolButton.setToolTip(Util.toolTip.create("close"));
 		cancelToolButton.addSelectHandler(new SelectHandler() {
 
 			@Override
