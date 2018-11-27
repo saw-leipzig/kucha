@@ -408,7 +408,7 @@ public class WallOrnamentCaveRelationEditor {
 		popup = new PopupPanel();
 		
 		popup.setWidget(createForm());
-			wallselector.setWallEntry(wallOrnamentCaveRelation.getWall());
+			wallselector.selectWall(wallOrnamentCaveRelation.getWall().getWallLocationID());
 			filterPositionbyCaveArea();
 			popup.center();
 //		Util.doLogging("Nina: in show ende wallornamenteditor mit entry");

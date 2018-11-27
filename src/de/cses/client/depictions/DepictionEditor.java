@@ -407,6 +407,7 @@ public class DepictionEditor extends AbstractEditor {
 //					CaveEntry ce = caveEntryLS.findModelWithKey(Integer.toString(correspondingDepictionEntry.getCaveID()));
 					caveSelectionCB.setValue(ce);
 					wallSelectorPanel.setCave(ce);
+					wallSelectorPanel.selectWall(correspondingDepictionEntry.getWallID());
 				}
 			}
 		});
@@ -1017,9 +1018,6 @@ public class DepictionEditor extends AbstractEditor {
 				correspondingDepictionEntry.setWallID(event.getSelectedItem().getWallLocationID());
 			}
 		});
-//		if (correspondingDepictionEntry.getCave() != null && correspondingDepictionEntry.getWallID() > 0) {
-//			wallSelectorPanel.setWallEntry(new WallEntry(correspondingDepictionEntry.getCave().getCaveID(), correspondingDepictionEntry.getWallID()));;
-//		}
 		wallSelectorFP.add(wallSelectorPanel);
 
 		FramedPanel positionNoteFP = new FramedPanel();

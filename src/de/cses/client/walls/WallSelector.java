@@ -218,14 +218,18 @@ public class WallSelector implements IsWidget {
 //				break;
 //		}
 	}
+	
+	public void selectWall(int wallLocationID) {
+		wallSelectorCB.setValue(wallEntryLS.findModelWithKey(Integer.toString(wallLocationID)), true);
+	}
 
 	public WallEntry getSelectedWallEntry() {
 		return wallSelectorCB.getCurrentValue();
 	}
-
-	public void setWallEntry(WallEntry wallEntry) {
-		wallSelectorCB.setValue(wallEntry, true);
-	}
+//
+//	public void setWallEntry(WallEntry wallEntry) {
+//		wallSelectorCB.setValue(wallEntry, true);
+//	}
 
 //	/**
 //	 * @return the wallSelectorCB
