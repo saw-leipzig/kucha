@@ -54,6 +54,7 @@ public class KuchaApplication implements EntryPoint {
 				if (progressCounter == 1.0) {
 					MainView main = new MainView();
 					v.remove(c);
+//					v.setStyleName("background-color: #FFFAE0;");
 					v.add(main);
 					v.forceLayout();
 				}

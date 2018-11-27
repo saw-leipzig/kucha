@@ -282,7 +282,7 @@ public class CaveEntry extends AbstractEntry {
 				return we;
 			}
 		}
-		WallEntry newEntry = new WallEntry(caveID, wallLocationID);
+		WallEntry newEntry = new WallEntry(caveID, wallLocationID, 0, 0, 0);
 		wallList.add(newEntry);
 		return newEntry;
 	}

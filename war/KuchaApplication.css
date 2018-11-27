@@ -1,6 +1,10 @@
 /** Add css rules here for your application. */
 @charset "utf-8";
 
+body {
+	background-color: #FFFAE0;
+}
+
 h1 {
 	font-size: 24px;
 	text-align: center;
@@ -50,6 +54,15 @@ div.data-view {
 	font-size: 12px;
 	background-color: #ffcc66;
 	margin: 0
+}
+
+div.label {
+	font-size: 10px;
+	font-family: verdana;
+	margin: 0;
+	text-align: left;
+	position: absolute;
+	bottom: 5px;
 }
 
 div.text {

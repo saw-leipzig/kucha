@@ -1720,27 +1720,6 @@ public class MysqlConnector {
 		return result;
 	}
 
-//	public WallEntry getWall(int caveID, String locationLabel) {
-//		Connection dbc = getConnection();
-//		PreparedStatement pstmt;
-//		WallEntry result = null;
-//		try {
-//			pstmt = dbc.prepareStatement("SELECT * FROM Walls WHERE CaveID=? AND LocationLabel=?");
-//			pstmt.setInt(1, caveID);
-//			pstmt.setString(2, locationLabel);
-//			ResultSet rs = pstmt.executeQuery();
-//			if (rs.first()) {
-//				result = new WallEntry(rs.getInt("CaveID"), rs.getInt("WallLocationID"), rs.getInt("PreservationClassificationID"),
-//						rs.getDouble("Width"), rs.getDouble("Height"));
-//			}
-//			pstmt.close();
-//		} catch (SQLException ex) {
-//			ex.printStackTrace();
-//			return null;
-//		}
-//		return result;
-//	}
-
 	/**
 	 * @param sqlWhere
 	 * @return sorted list based on implementation of {@link #Comparable} in {@link #AnnotatedBiblographyEntry}
@@ -4170,7 +4149,7 @@ public class MysqlConnector {
 			while (rs.next()) {
 				results.add(new WallOrnamentCaveRelation(rs.getInt("OrnamentCaveWallRelationID"), rs.getInt("OrnamentCaveRelationID"),
 						rs.getInt("PositionID"), rs.getInt("FunctionID"), rs.getString("Notes"),
-						getWallbyWallLocationANDCaveID(rs.getInt("WallLocationID"), rs.getInt("CaveID"))));
+						getWall(rs.getInt("CaveID"), rs.getInt("WallLocationID"))));
 			}
 			rs.close();
 			stmt.close();
@@ -4182,7 +4161,13 @@ public class MysqlConnector {
 
 	}
 
-	public WallEntry getWallbyWallLocationANDCaveID(int wallLocationID, int caveID) {
+	/**
+	 * @deprecated please use {@link #getWall(int, int)} instead!
+	 * @param wallLocationID
+	 * @param caveID
+	 * @return
+	 */
+	private WallEntry getWallbyWallLocationANDCaveID(int wallLocationID, int caveID) {
 		WallEntry result = null;
 
 		Connection dbc = getConnection();
