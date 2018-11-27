@@ -168,7 +168,7 @@ public class MainView implements IsWidget {
 			}
 		});
 		
-		imageSearchController = new ImageSearchController("Images", new ImageResultView("Images"));
+		imageSearchController = new ImageSearchController("Image Pool", new ImageResultView("Image Pool"));
 		imageSearchController.addRelatedFilter(new ImageFilter("Image Filter"));
 		imageSearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
@@ -427,6 +427,7 @@ public class MainView implements IsWidget {
     view.setWestWidget(filterPanel, westData);
     view.setEastWidget(dataViewPanel, eastData);
     view.setCenterWidget(centerPanel, centerData);
+    view.setStyleName("");
 
     if (UserLogin.isLoggedIn()) {
     	north.setHeading("Welcome back, " + UserLogin.getInstance().getUsername());

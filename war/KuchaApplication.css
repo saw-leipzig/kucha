@@ -1,6 +1,10 @@
 /** Add css rules here for your application. */
 @charset "utf-8";
 
+body {
+	background-color: #FFFAE0;
+}
+
 h1 {
 	font-size: 24px;
 	text-align: center;
@@ -56,8 +60,9 @@ div.label {
 	font-size: 10px;
 	font-family: verdana;
 	margin: 0;
-	text-align: center;
-	vertical-align: middle;
+	text-align: left;
+	position: absolute;
+	bottom: 5px;
 }
 
 div.text {

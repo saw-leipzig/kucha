@@ -66,6 +66,7 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
+import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.TextArea;
@@ -1651,16 +1652,14 @@ public class CaveEditor extends AbstractEditor {
 				} 
 			}
 		});
-		HorizontalLayoutContainer wallMeasuresHLC = new HorizontalLayoutContainer();
-		wallMeasuresHLC.add(wallWidthNF, new HorizontalLayoutData(.3, 1.0));
-		wallMeasuresHLC.add(new HTML("<div class='label'> meter (w)</div>"), new HorizontalLayoutData(.2, 1.0));
-		wallMeasuresHLC.add(wallHeightNF, new HorizontalLayoutData(.3, 1.0));
-		wallMeasuresHLC.add(new HTML("<div class='label'> meter (h)</div>"), new HorizontalLayoutData(.2, 1.0));
+		HorizontalLayoutContainer wallMeasureHLC = new HorizontalLayoutContainer();
+		wallMeasureHLC.add(new FieldLabel(wallWidthNF, "Width in meter:"), new HorizontalLayoutData(.5, 1.0));
+		wallMeasureHLC.add(new FieldLabel(wallHeightNF, "Height in meter:"), new HorizontalLayoutData(.5, 1.0));
 		
 		VerticalLayoutContainer wallManagementVLC = new VerticalLayoutContainer();
 		wallManagementVLC.add(wallSelectorCB, new VerticalLayoutData(1.0, .35));
 		wallManagementVLC.add(selectedWallStateOfPreservationCB, new VerticalLayoutData(1.0, .35));
-		wallManagementVLC.add(wallMeasuresHLC, new VerticalLayoutData(1.0, .3));
+		wallManagementVLC.add(wallMeasureHLC, new VerticalLayoutData(1.0, .3));
 		wallManagementFP = new FramedPanel();
 		wallManagementFP.setHeading("Walls");
 		wallManagementFP.add(wallManagementVLC);
