@@ -1626,7 +1626,7 @@ public class CaveEditor extends AbstractEditor {
 		});
 		wallWidthNF = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor(NumberFormat.getFormat("#0.00")));
 		wallWidthNF.setAllowNegative(false);
-		wallWidthNF.setEmptyText("wall width");
+		wallWidthNF.setEmptyText("n/a");
 		wallWidthNF.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
 			@Override
@@ -1640,7 +1640,7 @@ public class CaveEditor extends AbstractEditor {
 		});
 		wallHeightNF = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor(NumberFormat.getFormat("#0.00")));
 		wallHeightNF.setAllowNegative(false);
-		wallHeightNF.setEmptyText("wall height");
+		wallHeightNF.setEmptyText("n/a");
 		wallHeightNF.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
 			@Override
@@ -1653,8 +1653,8 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		HorizontalLayoutContainer wallMeasureHLC = new HorizontalLayoutContainer();
-		wallMeasureHLC.add(new FieldLabel(wallWidthNF, "Width in meter:"), new HorizontalLayoutData(.5, 1.0));
-		wallMeasureHLC.add(new FieldLabel(wallHeightNF, "Height in meter:"), new HorizontalLayoutData(.5, 1.0));
+		wallMeasureHLC.add(new FieldLabel(wallWidthNF, "Width in meter"), new HorizontalLayoutData(.5, 1.0, new Margins(0, 5, 0, 0)));
+		wallMeasureHLC.add(new FieldLabel(wallHeightNF, "Height in meter"), new HorizontalLayoutData(.5, 1.0, new Margins(0, 0, 0, 5)));
 		
 		VerticalLayoutContainer wallManagementVLC = new VerticalLayoutContainer();
 		wallManagementVLC.add(wallSelectorCB, new VerticalLayoutData(1.0, .35));
