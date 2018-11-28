@@ -321,7 +321,7 @@ public class MainView implements IsWidget {
 		});
 
     ToolButton loginTB = new ToolButton(ToolButton.GEAR);
-    loginTB.setToolTip(Util.toolTip.create("User Login"));
+    loginTB.setToolTip(Util.createToolTip("User Login"));
     loginTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
@@ -356,7 +356,7 @@ public class MainView implements IsWidget {
     dataViewPanel.setHeading("View");
     dataViewPanel.add(dataViewPLC);
     saveWorkspaceToolButton = new ToolButton(ToolButton.SAVE);
-    saveWorkspaceToolButton.setToolTip(Util.toolTip.create("save", "not yet implemented"));
+    saveWorkspaceToolButton.setToolTip(Util.createToolTip("save", "not yet implemented"));
     saveWorkspaceToolButton.addSelectHandler(new SelectHandler() {
 			
 			@Override
@@ -366,7 +366,7 @@ public class MainView implements IsWidget {
 		});
     dataViewPanel.addTool(saveWorkspaceToolButton);
     loadWorkspaceToolButton = new ToolButton(ToolButton.RESTORE);
-    loadWorkspaceToolButton.setToolTip(Util.toolTip.create("load", "not yet implemented"));
+    loadWorkspaceToolButton.setToolTip(Util.createToolTip("load", "not yet implemented"));
     loadWorkspaceToolButton.addSelectHandler(new SelectHandler() {
 			
 			@Override

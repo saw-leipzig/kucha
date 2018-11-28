@@ -33,7 +33,7 @@ public abstract class AbstractDataDisplay extends Portlet {
 	public AbstractDataDisplay() {
 		setHeaderVisible(true);
 		ToolButton closeButton = new ToolButton(ToolButton.CLOSE);
-		closeButton.setToolTip(Util.toolTip.create("close"));
+		closeButton.setToolTip(Util.createToolTip("close"));
 		closeButton.addSelectHandler(new SelectHandler() {
 			
 			@Override

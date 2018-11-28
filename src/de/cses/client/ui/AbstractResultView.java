@@ -57,11 +57,11 @@ public abstract class AbstractResultView extends Portlet {
 		setHeight(MIN_HEIGHT);
 		
 		searchToolButton = new ToolButton(ToolButton.SEARCH);
-		searchToolButton.setToolTip(Util.toolTip.create("start search"));
+		searchToolButton.setToolTip(Util.createToolTip("start search"));
 		getHeader().addTool(searchToolButton);
 		
 //		saveToolButton = new ToolButton(ToolButton.SAVE);
-//		saveToolButton.setToolTip(Util.toolTip.create("save"));
+//		saveToolButton.setToolTip(Util.createToolTip("save"));
 //		saveToolButton.addSelectHandler(new SelectHandler() {
 //			
 //			@Override
@@ -71,11 +71,11 @@ public abstract class AbstractResultView extends Portlet {
 //		getHeader().addTool(saveToolButton);
 		
 		plusToolButton = new ToolButton(ToolButton.PLUS);
-		plusToolButton.setToolTip(Util.toolTip.create("Add New"));
+		plusToolButton.setToolTip(Util.createToolTip("Add New"));
 		getHeader().addTool(plusToolButton);
 		
 		ToolButton toolButton = new ToolButton(ToolButton.MINIMIZE);
-		toolButton.setToolTip(Util.toolTip.create("minimise"));
+		toolButton.setToolTip(Util.createToolTip("minimise"));
 		toolButton.addSelectHandler(new SelectHandler() {
 			
 			@Override
@@ -86,7 +86,7 @@ public abstract class AbstractResultView extends Portlet {
 		getHeader().addTool(toolButton);
 
 		toolButton = new ToolButton(ToolButton.MAXIMIZE);
-		toolButton.setToolTip(Util.toolTip.create("maximise"));
+		toolButton.setToolTip(Util.createToolTip("maximise"));
 		toolButton.addSelectHandler(new SelectHandler() {
 			
 			@Override
@@ -97,7 +97,7 @@ public abstract class AbstractResultView extends Portlet {
 		getHeader().addTool(toolButton);
 		
 		resetButton = new ToolButton(ToolButton.REFRESH);
-		resetButton.setToolTip(Util.toolTip.create("Reset Results"));
+		resetButton.setToolTip(Util.createToolTip("Reset Results"));
 		resetButton.addSelectHandler(new SelectHandler() {
 			
 			@Override

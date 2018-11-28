@@ -270,7 +270,7 @@ public class DepictionFilter extends AbstractFilter {
 		iconographyPanel.setHeading("Iconography & Pictorial Element search");
 		iconographyPanel.add(iconographyBLC);
 		ToolButton selectorTB = new ToolButton(ToolButton.GEAR);
-		selectorTB.setToolTip(Util.toolTip.create("Open Iconography & Pictorial Element selection"));
+		selectorTB.setToolTip(Util.createToolTip("Open Iconography & Pictorial Element selection"));
 		selectorTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
@@ -405,7 +405,7 @@ public class DepictionFilter extends AbstractFilter {
 	private void showIconographySelection() {
 		PopupPanel extendedFilterDialog = new PopupPanel();
 		ToolButton closeTB = new ToolButton(ToolButton.CLOSE);
-		closeTB.setToolTip(Util.toolTip.create("Close selection.", "Currently selected items will be used in the filter."));
+		closeTB.setToolTip(Util.createToolTip("Close selection.", "Currently selected items will be used in the filter."));
 		closeTB.addSelectHandler(new SelectHandler() {
 
 			@Override

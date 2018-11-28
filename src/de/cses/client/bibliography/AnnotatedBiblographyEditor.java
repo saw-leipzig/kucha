@@ -361,7 +361,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		rebuildMainInput();
 
 		ToolButton closeToolButton = new ToolButton(ToolButton.CLOSE);
-		closeToolButton.setToolTip(Util.toolTip.create("close"));
+		closeToolButton.setToolTip(Util.createToolTip("close"));
 		closeToolButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
@@ -408,7 +408,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		});
 
 		ToolButton saveToolButton = new ToolButton(ToolButton.SAVE);
-		saveToolButton.setToolTip(Util.toolTip.create("save"));
+		saveToolButton.setToolTip(Util.createToolTip("save"));
 		saveToolButton.addSelectHandler(new SelectHandler() {
 
 			@Override
@@ -808,7 +808,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		 * add new author
 		 */
 		ToolButton addAuthorTB = new ToolButton(ToolButton.PLUS);
-		addAuthorTB.setToolTip(Util.toolTip.create("Add author", "New authors will appear in both author and editor selection."));
+		addAuthorTB.setToolTip(Util.createToolTip("Add author", "New authors will appear in both author and editor selection."));
 		addAuthorTB.addSelectHandler(new SelectHandler() {
 
 			@Override
@@ -846,7 +846,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		});
 		
 		ToolButton editAuthorTB = new ToolButton(ToolButton.GEAR);
-		editAuthorTB.setToolTip(Util.toolTip.create("Edit author information", "Select author in left column, then click here."));
+		editAuthorTB.setToolTip(Util.createToolTip("Edit author information", "Select author in left column, then click here."));
 		editAuthorTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
@@ -883,7 +883,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		});
 		
 		ToolButton deleteAuthorTB = new ToolButton(ToolButton.MINUS);
-		deleteAuthorTB.setToolTip(Util.toolTip.create("Delete author", "Select author in left column, then click here. Please note that only names not used as authors or editors can be deleted!"));
+		deleteAuthorTB.setToolTip(Util.createToolTip("Delete author", "Select author in left column, then click here. Please note that only names not already linked to publications can be deleted!"));
 		deleteAuthorTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
@@ -1022,7 +1022,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			editorVLC.add(filterEditorTypeHLC, new VerticalLayoutData(1.0, .15, new Margins(10, 0, 0, 0)));
 
 			ToolButton editEditorTB = new ToolButton(ToolButton.GEAR);
-			editEditorTB.setToolTip(Util.toolTip.create("Edit author", "Select editor in left column, then click here to edit information."));
+			editEditorTB.setToolTip(Util.createToolTip("Edit author", "Select editor in left column, then click here to edit information."));
 			editEditorTB.addSelectHandler(new SelectHandler() {
 				
 				@Override
@@ -1060,7 +1060,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			});
 
 			ToolButton deleteEditorTB = new ToolButton(ToolButton.MINUS);
-			deleteEditorTB.setToolTip(Util.toolTip.create("Delete editor", "Select editor in left column, then click here to delete. Please note that only names not used as authors or editors can be deleted!"));
+			deleteEditorTB.setToolTip(Util.createToolTip("Delete editor", "Select editor in left column, then click here to delete. Please note that only names not already linked to publications can be deleted!"));
 			deleteEditorTB.addSelectHandler(new SelectHandler() {
 				
 				@Override
@@ -1134,7 +1134,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		bibKeywordVLC.add(bibKeywordFilterField, new VerticalLayoutData(1.0, .15, new Margins(5, 10, 0, 10)));
 		
 		ToolButton addKeywordToolButton = new ToolButton(ToolButton.PLUS);
-		addKeywordToolButton.setToolTip(Util.toolTip.create("add keyword"));
+		addKeywordToolButton.setToolTip(Util.createToolTip("add keyword"));
 		addKeywordToolButton.addSelectHandler(new SelectHandler() {
 
 			@Override
@@ -1746,7 +1746,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			}
 		});
 		ToolButton resetFirstEditionSelectionTB = new ToolButton(ToolButton.REFRESH);
-		resetFirstEditionSelectionTB.setToolTip(Util.toolTip.create("reset selection"));
+		resetFirstEditionSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		resetFirstEditionSelectionTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
@@ -1765,7 +1765,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				"resource?document=" + bibEntry.getUniqueID() + "-paper.pdf" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()),
 				"paper")));
 		ToolButton paperUploadButton = new ToolButton(ToolButton.PLUS);
-		paperUploadButton.setToolTip(Util.toolTip.create("upload paper as PDF"));
+		paperUploadButton.setToolTip(Util.createToolTip("upload paper as PDF"));
 		paperUploadButton.addSelectHandler(new SelectHandler() {
 
 			@Override
@@ -1840,7 +1840,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				"resource?document=" + bibEntry.getUniqueID() + "-annotation.pdf" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()),
 				"annotation")));
 		ToolButton annotationUploadButton = new ToolButton(ToolButton.PLUS);
-		annotationUploadButton.setToolTip(Util.toolTip.create("upload annotation as PDF"));
+		annotationUploadButton.setToolTip(Util.createToolTip("upload annotation as PDF"));
 		annotationUploadButton.addSelectHandler(new SelectHandler() {
 
 			@Override

@@ -623,7 +623,7 @@ public class DepictionEditor extends AbstractEditor {
 		caveSelectionCB.setToolTip("This field can only be changed until a depiction is allocated to a wall");
 		// TODO check if wallTypeID is set, then set caveSelectionCB.editable(false)
 		ToolButton resetCaveSelectionTB = new ToolButton(ToolButton.REFRESH);
-		resetCaveSelectionTB.setToolTip(Util.toolTip.create("reset selection"));
+		resetCaveSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		resetCaveSelectionTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
@@ -664,7 +664,7 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		ToolButton expedSelectionTB = new ToolButton(ToolButton.REFRESH);
-		expedSelectionTB.setToolTip(Util.toolTip.create("reset selection"));
+		expedSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		expedSelectionTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
@@ -698,7 +698,7 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		ToolButton resetVendorSelectionTB = new ToolButton(ToolButton.REFRESH);
-		resetVendorSelectionTB.setToolTip(Util.toolTip.create("reset selection"));
+		resetVendorSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		resetVendorSelectionTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
@@ -708,7 +708,7 @@ public class DepictionEditor extends AbstractEditor {
 		});
 		// adding new vendors is necessary
 		ToolButton newVendorPlusTool = new ToolButton(ToolButton.PLUS);
-		newVendorPlusTool.setToolTip(Util.toolTip.create("add Vendor"));
+		newVendorPlusTool.setToolTip(Util.createToolTip("add Vendor"));
 		newVendorPlusTool.addSelectHandler(new SelectHandler() {
 
 			@Override
@@ -806,7 +806,7 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		ToolButton resetLocationSelectionTB = new ToolButton(ToolButton.REFRESH);
-		resetLocationSelectionTB.setToolTip(Util.toolTip.create("reset selection"));
+		resetLocationSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		resetLocationSelectionTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
@@ -816,7 +816,7 @@ public class DepictionEditor extends AbstractEditor {
 		});
 		// adding new locations
 		ToolButton newLocationPlusTool = new ToolButton(ToolButton.PLUS);
-		newLocationPlusTool.setToolTip(Util.toolTip.create("add Location"));
+		newLocationPlusTool.setToolTip(Util.createToolTip("add Location"));
 		newLocationPlusTool.addSelectHandler(new SelectHandler() {
 
 			@Override
@@ -911,7 +911,7 @@ public class DepictionEditor extends AbstractEditor {
 		FramedPanel stateOfPreservationFP = new FramedPanel();
 		stateOfPreservationFP.setHeading("State of Preservation");
 		ToolButton addPreservationAttributeTB = new ToolButton(ToolButton.PLUS);
-		addPreservationAttributeTB.setToolTip(Util.toolTip.create("Add Preservation Attribute"));
+		addPreservationAttributeTB.setToolTip(Util.createToolTip("Add Preservation Attribute"));
 		stateOfPreservationFP.addTool(addPreservationAttributeTB);
 		addPreservationAttributeTB.addSelectHandler(new SelectHandler() {
 			
@@ -1000,7 +1000,7 @@ public class DepictionEditor extends AbstractEditor {
 		wallSelectorFP.setHeading("Wall");
 		ToolButton wallEditorTB = new ToolButton(ToolButton.PIN);
 		wallEditorTB.setEnabled(false);
-		wallEditorTB.setToolTip(Util.toolTip.create("set position on wall"));
+		wallEditorTB.setToolTip(Util.createToolTip("set position on wall"));
 		
 //		TextButton wallEditorButton = new TextButton("set position on wall");
 		wallEditor = new Walls(1, false);
@@ -1107,7 +1107,7 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		ToolButton resetStyleSelectionTB = new ToolButton(ToolButton.REFRESH);
-		resetStyleSelectionTB.setToolTip(Util.toolTip.create("reset selection"));
+		resetStyleSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		resetStyleSelectionTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
@@ -1141,7 +1141,7 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		ToolButton resetModeOfRepresentationSelectionTB = new ToolButton(ToolButton.REFRESH);
-		resetModeOfRepresentationSelectionTB.setToolTip(Util.toolTip.create("reset selection"));
+		resetModeOfRepresentationSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		resetModeOfRepresentationSelectionTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
@@ -1277,7 +1277,7 @@ public class DepictionEditor extends AbstractEditor {
 		});
 		
 		ToolButton addImageTB = new ToolButton(ToolButton.PLUS);
-		addImageTB.setToolTip(Util.toolTip.create("add image"));
+		addImageTB.setToolTip(Util.createToolTip("add image"));
 		addImageTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
@@ -1290,7 +1290,7 @@ public class DepictionEditor extends AbstractEditor {
 		});
 
 		ToolButton removeImageTB = new ToolButton(ToolButton.MINUS);
-		removeImageTB.setToolTip(Util.toolTip.create("remove image"));
+		removeImageTB.setToolTip(Util.createToolTip("remove image"));
 		removeImageTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
@@ -1300,7 +1300,7 @@ public class DepictionEditor extends AbstractEditor {
 		});
 		
 		ToolButton setMasterTB = new ToolButton(ToolButton.PIN);
-		setMasterTB.setToolTip(Util.toolTip.create("Set master image.", "The master image will be displayed on top of this list and used for previews in the system (e.g. thumbnails)."));
+		setMasterTB.setToolTip(Util.createToolTip("Set master image.", "The master image will be displayed on top of this list and used for previews in the system (e.g. thumbnails)."));
 		setMasterTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
@@ -1350,7 +1350,7 @@ public class DepictionEditor extends AbstractEditor {
 				}
 			}
 		});
-		zoomTB.setToolTip(Util.toolTip.create("View selected image in full size.", "This will open a new browser tab."));
+		zoomTB.setToolTip(Util.createToolTip("View selected image in full size.", "This will open a new browser tab."));
 
 		FramedPanel depictionImagesPanel = new FramedPanel();
 		depictionImagesPanel.setHeading("Images");
@@ -1402,7 +1402,7 @@ public class DepictionEditor extends AbstractEditor {
 		mainHLC.add(depictionImagesPanel, new HorizontalLayoutData(.3, 1.0));
 		
 		ToolButton saveToolButton = new ToolButton(ToolButton.SAVE);
-		saveToolButton.setToolTip(Util.toolTip.create("save"));
+		saveToolButton.setToolTip(Util.createToolTip("save"));
 		saveToolButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
@@ -1411,7 +1411,7 @@ public class DepictionEditor extends AbstractEditor {
 		});
 		
 		ToolButton closeToolButton = new ToolButton(ToolButton.CLOSE);
-		closeToolButton.setToolTip(Util.toolTip.create("close"));
+		closeToolButton.setToolTip(Util.createToolTip("close"));
 		closeToolButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {

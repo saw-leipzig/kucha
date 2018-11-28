@@ -20,15 +20,10 @@ import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.sencha.gxt.core.client.XTemplates;
-import com.sencha.gxt.core.client.XTemplates.XTemplate;
-import com.sencha.gxt.widget.core.client.Dialog;
 import com.sencha.gxt.widget.core.client.FramedPanel;
-import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.button.TextButton;
-import com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutPack;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
@@ -47,9 +42,9 @@ public class Util {
 	private static final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	protected static SafeUri imageUri;
 	
-	public static ToolTipView toolTip = GWT.create(ToolTipView.class);
+	private static ToolTipView toolTip = GWT.create(ToolTipView.class);
 	
-	public interface ToolTipView extends XTemplates {
+	private interface ToolTipView extends XTemplates {
 		@XTemplate("<div class='tooltip'>{text}</div>")
 		SafeHtml create(String text);
 
@@ -62,7 +57,14 @@ public class Util {
 	 */
 	private Util() {
 	}
+
+	public static SafeHtml createToolTip(String text) {
+		return toolTip.create(text);
+	}
 	
+	public static SafeHtml createToolTip(String headline, String text) {
+		return toolTip.create(headline, text);
+	}
 	
 
 	/**

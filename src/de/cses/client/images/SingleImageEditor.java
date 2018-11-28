@@ -281,7 +281,7 @@ public class SingleImageEditor extends AbstractEditor {
 //		authorSelectionCB.setValue(photographerEntryList.findModelWithKey(Integer.toString(imgEntry.getPhotographerID())));
 		
 		ToolButton addPhotoAuthorTB = new ToolButton(ToolButton.PLUS);
-		addPhotoAuthorTB.setToolTip(Util.toolTip.create("Add new Photo Author"));
+		addPhotoAuthorTB.setToolTip(Util.createToolTip("Add new Photo Author"));
 		addPhotoAuthorTB.addSelectHandler(new SelectHandler() {
 
 			@Override
@@ -344,7 +344,7 @@ public class SingleImageEditor extends AbstractEditor {
 		});
 		
 		ToolButton resetSelectionTB = new ToolButton(ToolButton.REFRESH);
-		resetSelectionTB.setToolTip(Util.toolTip.create("reset selection"));
+		resetSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		resetSelectionTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
@@ -401,7 +401,7 @@ public class SingleImageEditor extends AbstractEditor {
 		imageOpenAccessHLC.add(openAccessImagePanel, new HorizontalLayoutData(.5, 1.0));
 		
 		ToolButton saveToolButton = new ToolButton(ToolButton.SAVE);
-		saveToolButton.setToolTip(Util.toolTip.create("save"));
+		saveToolButton.setToolTip(Util.createToolTip("save"));
 		saveToolButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
@@ -410,7 +410,7 @@ public class SingleImageEditor extends AbstractEditor {
 		});
 		
 		ToolButton closeToolButton = new ToolButton(ToolButton.CLOSE);
-		closeToolButton.setToolTip(Util.toolTip.create("close"));
+		closeToolButton.setToolTip(Util.createToolTip("close"));
 		closeToolButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
@@ -437,7 +437,7 @@ public class SingleImageEditor extends AbstractEditor {
 				com.google.gwt.user.client.Window.open("/resource?imageID=" + imgEntry.getImageID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri(),"_blank",null);
 			}
 		});
-		viewFullSizeTB.setToolTip(Util.toolTip.create("View image full size.", "A new tab will be opened in the browser."));
+		viewFullSizeTB.setToolTip(Util.createToolTip("View image full size.", "A new tab will be opened in the browser."));
 		
 		SafeUri imageUri = UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=300" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 		HTMLPanel imgHP = new HTMLPanel(imgViewTemplates.view(imageUri));

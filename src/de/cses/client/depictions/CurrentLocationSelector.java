@@ -126,7 +126,7 @@ public class CurrentLocationSelector implements IsWidget {
 
 		
 		ToolButton expandTB = new ToolButton(ToolButton.EXPAND);
-		expandTB.setToolTip(Util.toolTip.create("expand window"));
+		expandTB.setToolTip(Util.createToolTip("expand window"));
 		expandTB.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
@@ -135,7 +135,7 @@ public class CurrentLocationSelector implements IsWidget {
 		});
 
 		ToolButton collapseTB = new ToolButton(ToolButton.COLLAPSE);
-		collapseTB.setToolTip(Util.toolTip.create("collapse window"));
+		collapseTB.setToolTip(Util.createToolTip("collapse window"));
 		collapseTB.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {

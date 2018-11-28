@@ -53,7 +53,7 @@ public class AnnotatedBiblographyResultView extends AbstractResultView {
 			}
 
 		});
-		bibTexExportTB.setToolTip(Util.toolTip.create("Export search result in BibTeX format", "Empty window = export all"));
+		bibTexExportTB.setToolTip(Util.createToolTip("Export search result in BibTeX format", "Empty window = export all"));
 		getHeader().addTool(bibTexExportTB);
 
 		new DropTarget(this) {
