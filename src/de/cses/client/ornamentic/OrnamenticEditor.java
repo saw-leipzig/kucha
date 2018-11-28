@@ -294,14 +294,17 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 		panel.add(header, new VerticalLayoutData(1.0, .125));
 
 		ToolButton addOrnamentClassButton = new ToolButton(ToolButton.PLUS);
+		addOrnamentClassButton.setToolTip(Util.createToolTip("Add Ornament Class"));
 
 		FramedPanel ornamentClassFramedPanel = new FramedPanel();
 		ornamentClassFramedPanel.setHeading("New Ornament Class");
 
 		ToolButton saveOrnamentClass = new ToolButton(ToolButton.SAVE);
+		saveOrnamentClass.setToolTip(Util.createToolTip("save"));
 		ornamentClassFramedPanel.add(saveOrnamentClass);
 
 		ToolButton cancelOrnamentClass = new ToolButton(ToolButton.CLOSE);
+		cancelOrnamentClass.setToolTip(Util.createToolTip("cancel"));
 
 		ornamentClassFramedPanel.addTool(cancelOrnamentClass);
 		ornamentClassFramedPanel.addTool(saveOrnamentClass);
@@ -353,14 +356,17 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 		header.addTool(addOrnamentClassButton);
 		
 		ToolButton renameOrnamentClassButton = new ToolButton(ToolButton.REFRESH);
+		renameOrnamentClassButton.setToolTip(Util.createToolTip("Rename Ornament Class", "Select item and click here."));
 		
 		FramedPanel renameornamentClassFramedPanel = new FramedPanel();
 		renameornamentClassFramedPanel.setHeading("New Ornament Class");
 
 		ToolButton saveRenameOrnamentClass = new ToolButton(ToolButton.SAVE);
+		saveRenameOrnamentClass.setToolTip(Util.createToolTip("save"));
 		renameornamentClassFramedPanel.add(saveRenameOrnamentClass);
 
 		ToolButton cancelRenameOrnamentClass = new ToolButton(ToolButton.CLOSE);
+		cancelRenameOrnamentClass.setToolTip(Util.createToolTip("cancel"));
 
 		renameornamentClassFramedPanel.addTool(cancelRenameOrnamentClass);
 		renameornamentClassFramedPanel.addTool(saveRenameOrnamentClass);
@@ -432,7 +438,7 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 
 		
 		ToolButton addCaveTool = new ToolButton(ToolButton.PLUS);
-		
+		addCaveTool.setToolTip(Util.createToolTip("Add Cave"));
 
 		VerticalPanel cavesPanel = new VerticalPanel();
 		header = new FramedPanel();
@@ -468,7 +474,10 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 		cavesContentPanel.add(cavesList);
 
 		ToolButton edit = new ToolButton(ToolButton.REFRESH);
+		edit.setToolTip(Util.createToolTip("Edit Cave"));
+		
 		ToolButton delete = new ToolButton(ToolButton.CLOSE);
+		delete.setToolTip(Util.createToolTip("Delete Cave.", "Select cave, then click here."));
 
 		cavesContentPanel.addTool(addCaveTool);
 		cavesContentPanel.addTool(edit);
@@ -643,8 +652,8 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 		verticalgeneral3Background.add(header, new VerticalLayoutData(1.0, .3));
 
 		ToolButton addComponentButton = new ToolButton(ToolButton.PLUS);
+		addComponentButton.setToolTip(Util.createToolTip("New Component"));
 		header.addTool(addComponentButton);
-
 
 		addComponentButton.addSelectHandler(new SelectHandler() {
 
@@ -655,9 +664,11 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 				componentFramedPanel.setHeading("New Component");
 
 				ToolButton saveComponent = new ToolButton(ToolButton.SAVE);
+				saveComponent.setToolTip(Util.createToolTip("save"));
 				componentFramedPanel.addTool(saveComponent);
 
 				ToolButton cancelComponent = new ToolButton(ToolButton.CLOSE);
+				cancelComponent.setToolTip(Util.createToolTip("cancel"));
 
 				componentFramedPanel.addTool(cancelComponent);
 
@@ -703,6 +714,8 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 		});
 
 		ToolButton renameComponentButton = new ToolButton(ToolButton.PLUS);
+		renameComponentButton.setToolTip(Util.createToolTip("Rename Component", "Select entry and click here to edit."));
+		
 		header.addTool(renameComponentButton);
 		renameComponentButton.addSelectHandler(new SelectHandler() {
 
@@ -718,9 +731,11 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 				renamecomponentFramedPanel.setHeading("New Component");
 
 				ToolButton saveRenameComponent = new ToolButton(ToolButton.SAVE);
+				saveRenameComponent.setToolTip(Util.createToolTip("save"));
 				renamecomponentFramedPanel.addTool(saveRenameComponent);
 
 				ToolButton cancelRenameComponent = new ToolButton(ToolButton.CLOSE);
+				cancelRenameComponent.setToolTip(Util.createToolTip("cancel"));
 
 				renamecomponentFramedPanel.addTool(cancelRenameComponent);
 
@@ -786,7 +801,7 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 		header = new FramedPanel();
 		header.setHeading("Select inner Secondary Patterns");
 		ToolButton addInnerSecondaryPatternsButton = new ToolButton(ToolButton.PLUS);
-
+		addInnerSecondaryPatternsButton.setToolTip(Util.createToolTip("Add New Inner Secondary Pattern"));
 		
 		addInnerSecondaryPatternsButton.addSelectHandler(new SelectHandler() {
 
@@ -797,9 +812,11 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 				innersecFramedPanel.setHeading("New Inner Secondary Pattern");
 
 				ToolButton saveInnerSec = new ToolButton(ToolButton.SAVE);
+				saveInnerSec.setToolTip(Util.createToolTip("save"));
 				innersecFramedPanel.add(saveInnerSec);
 
 				ToolButton cancelInnerSec = new ToolButton(ToolButton.CLOSE);
+				cancelInnerSec.setToolTip(Util.createToolTip("cancel"));
 
 				innersecFramedPanel.addTool(cancelInnerSec);
 				innersecFramedPanel.addTool(saveInnerSec);
@@ -915,7 +932,9 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 		tabpanel.setTabScroll(true);
 
 		ToolButton closeButton = new ToolButton(ToolButton.CLOSE);
+		closeButton.setToolTip(Util.createToolTip("close"));
 		ToolButton saveButton = new ToolButton(ToolButton.SAVE);
+		saveButton.setToolTip(Util.createToolTip("save"));
 		closeButton.addHandler(cancelHandler, ClickEvent.getType());
 		saveButton.addHandler(saveClickHandler, ClickEvent.getType());
 		

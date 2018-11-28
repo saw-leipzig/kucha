@@ -222,6 +222,7 @@ public class WallOrnamentCaveRelationEditor {
 		wallrelationFramedPanel.add(wallRelationHLC);
 		
 		ToolButton cancelTB = new ToolButton(ToolButton.CLOSE);
+		cancelTB.setToolTip(Util.createToolTip("close"));
 		cancelTB.addSelectHandler(new SelectHandler() {
 
 			@Override
@@ -231,6 +232,7 @@ public class WallOrnamentCaveRelationEditor {
 		});
 
 		ToolButton saveTB = new ToolButton(ToolButton.SAVE);
+		saveTB.setToolTip(Util.createToolTip("save"));
 		saveTB.addSelectHandler(new SelectHandler() {
 
 			@Override
