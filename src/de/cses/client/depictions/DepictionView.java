@@ -98,7 +98,7 @@ public class DepictionView extends AbstractView {
 	 */
 	@Override
 	protected AbstractEditor getEditor() {
-		return new DepictionEditor(depictionEntry);
+		return new DepictionEditor(depictionEntry.clone());
 	}
 
 	/* (non-Javadoc)
