@@ -49,6 +49,7 @@ import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
+import de.cses.client.Util;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DistrictEntry;
@@ -269,6 +270,7 @@ public class DepictionFilter extends AbstractFilter {
 		iconographyPanel.setHeading("Iconography & Pictorial Element search");
 		iconographyPanel.add(iconographyBLC);
 		ToolButton selectorTB = new ToolButton(ToolButton.GEAR);
+		selectorTB.setToolTip(Util.createToolTip("Open Iconography & Pictorial Element selection"));
 		selectorTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
@@ -403,6 +405,7 @@ public class DepictionFilter extends AbstractFilter {
 	private void showIconographySelection() {
 		PopupPanel extendedFilterDialog = new PopupPanel();
 		ToolButton closeTB = new ToolButton(ToolButton.CLOSE);
+		closeTB.setToolTip(Util.createToolTip("Close selection.", "Currently selected items will be used in the filter."));
 		closeTB.addSelectHandler(new SelectHandler() {
 
 			@Override

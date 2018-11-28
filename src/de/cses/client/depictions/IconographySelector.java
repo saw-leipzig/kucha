@@ -198,6 +198,7 @@ public class IconographySelector extends FramedPanel {
 		iconographySelectorBLC.setSouthWidget(filterField, new BorderLayoutData(25.0));
 		
 		ToolButton resetTB = new ToolButton(ToolButton.REFRESH);
+		resetTB.setToolTip(Util.createToolTip("Reset selection.", "All selected items will be deselected."));
 		resetTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
@@ -209,6 +210,7 @@ public class IconographySelector extends FramedPanel {
 		});
 
 		ToolButton iconographyExpandTB = new ToolButton(ToolButton.EXPAND);
+		iconographyExpandTB.setToolTip(Util.createToolTip("Expand full tree."));
 		iconographyExpandTB.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
@@ -217,6 +219,7 @@ public class IconographySelector extends FramedPanel {
 		});
 
 		ToolButton iconographyCollapseTB = new ToolButton(ToolButton.COLLAPSE);
+		iconographyCollapseTB.setToolTip(Util.createToolTip("Collapse tree."));
 		iconographyCollapseTB.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {

@@ -281,6 +281,7 @@ public class SingleImageEditor extends AbstractEditor {
 //		authorSelectionCB.setValue(photographerEntryList.findModelWithKey(Integer.toString(imgEntry.getPhotographerID())));
 		
 		ToolButton addPhotoAuthorTB = new ToolButton(ToolButton.PLUS);
+		addPhotoAuthorTB.setToolTip(Util.createToolTip("Add new Photo Author"));
 		addPhotoAuthorTB.addSelectHandler(new SelectHandler() {
 
 			@Override
@@ -343,6 +344,7 @@ public class SingleImageEditor extends AbstractEditor {
 		});
 		
 		ToolButton resetSelectionTB = new ToolButton(ToolButton.REFRESH);
+		resetSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		resetSelectionTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
@@ -399,6 +401,7 @@ public class SingleImageEditor extends AbstractEditor {
 		imageOpenAccessHLC.add(openAccessImagePanel, new HorizontalLayoutData(.5, 1.0));
 		
 		ToolButton saveToolButton = new ToolButton(ToolButton.SAVE);
+		saveToolButton.setToolTip(Util.createToolTip("save"));
 		saveToolButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
@@ -407,7 +410,7 @@ public class SingleImageEditor extends AbstractEditor {
 		});
 		
 		ToolButton closeToolButton = new ToolButton(ToolButton.CLOSE);
-		closeToolButton.setToolTip("close");
+		closeToolButton.setToolTip(Util.createToolTip("close"));
 		closeToolButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
@@ -424,30 +427,6 @@ public class SingleImageEditor extends AbstractEditor {
 						 closeEditor(null);
 					}
 				});
-//				 Dialog d = new Dialog();
-//				 d.setHeading("Exit Warning!");
-//				 d.setWidget(new HTML("Do you wish to save before exiting?"));
-//				 d.setBodyStyle("fontWeight:bold;padding:13px;");
-//				 d.setPixelSize(300, 100);
-//				 d.setHideOnButtonClick(true);
-//				 d.setPredefinedButtons(PredefinedButton.YES, PredefinedButton.NO, PredefinedButton.CANCEL);
-//				 d.setModal(true);
-//				 d.center();
-//				 d.show();
-//				 d.getButton(PredefinedButton.YES).addSelectHandler(new SelectHandler() {
-//					
-//					@Override
-//					public void onSelect(SelectEvent event) {
-//						saveImageEntry(true);
-//					}
-//				});
-//				 d.getButton(PredefinedButton.NO).addSelectHandler(new SelectHandler() {
-//						
-//					@Override
-//					public void onSelect(SelectEvent event) {
-//						 closeEditor(null);
-//					}
-//				});
 			}
 		});		
 
@@ -458,7 +437,7 @@ public class SingleImageEditor extends AbstractEditor {
 				com.google.gwt.user.client.Window.open("/resource?imageID=" + imgEntry.getImageID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri(),"_blank",null);
 			}
 		});
-		viewFullSizeTB.setToolTip("view image full size");
+		viewFullSizeTB.setToolTip(Util.createToolTip("View image full size.", "A new tab will be opened in the browser."));
 		
 		SafeUri imageUri = UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=300" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 		HTMLPanel imgHP = new HTMLPanel(imgViewTemplates.view(imageUri));

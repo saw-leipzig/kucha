@@ -57,6 +57,7 @@ import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.Selecti
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.Util;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.ImageEntry;
 
@@ -270,6 +271,7 @@ public class ImageSelector implements IsWidget {
 		});
 
 		ToolButton zoomTB = new ToolButton(ToolButton.MAXIMIZE);
+		zoomTB.setToolTip(Util.createToolTip("View selected image in full.", "A new tab will be opened."));
 		zoomTB.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {

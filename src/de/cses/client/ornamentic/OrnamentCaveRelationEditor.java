@@ -286,6 +286,7 @@ public  class OrnamentCaveRelationEditor  {
 		vlcCave.add(header, new VerticalLayoutData(0.5, .125));
 
 		ToolButton addWalls = new ToolButton(ToolButton.PLUS);
+		addWalls.setToolTip(Util.createToolTip("add walls"));
 
 		ClickHandler addWallsClickHandler = new ClickHandler() {
 
@@ -369,6 +370,7 @@ public  class OrnamentCaveRelationEditor  {
 		edit.addHandler(editWallsClickHandler, ClickEvent.getType());
 
 		ToolButton delete = new ToolButton(ToolButton.CLOSE);
+		delete.setToolTip(Util.createToolTip("Delete Wall", "Select a wall, then click here."));
 
 		header.addTool(addWalls);
 		header.addTool(edit);
@@ -501,12 +503,8 @@ public  class OrnamentCaveRelationEditor  {
 		
 		tabPanel.add(icoSelector, "Pictorial Elements");
 
-
-		ToolButton saveTB = new ToolButton(ToolButton.SAVE);
 		ToolButton cancelTB = new ToolButton(ToolButton.CLOSE);
-
-
-
+		cancelTB.setToolTip(Util.createToolTip("close"));
 		cancelTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
@@ -515,6 +513,8 @@ public  class OrnamentCaveRelationEditor  {
 			}
 		}); 
 		
+		ToolButton saveTB = new ToolButton(ToolButton.SAVE);
+		saveTB.setToolTip(Util.createToolTip("save"));
 		saveTB.addSelectHandler(new SelectHandler() {
 			
 			@Override

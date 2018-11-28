@@ -19,6 +19,7 @@ import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
+import de.cses.client.Util;
 import de.cses.client.ui.AbstractResultView;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
@@ -52,7 +53,7 @@ public class AnnotatedBiblographyResultView extends AbstractResultView {
 			}
 
 		});
-		bibTexExportTB.setToolTip("Export search result in BibTeX format (empty window = export all)");
+		bibTexExportTB.setToolTip(Util.createToolTip("Export search result in BibTeX format", "Empty window = export all"));
 		getHeader().addTool(bibTexExportTB);
 
 		new DropTarget(this) {

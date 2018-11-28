@@ -75,6 +75,13 @@ div.text {
 	text-align: justify;
 }
 
+div.tooltip {
+	font-size: 12px;
+	font-family: verdana;
+	max-width: 200px;
+	height: auto;
+}
+
 table.data-view {
 	width: 96%;
 	border-width: 2px;

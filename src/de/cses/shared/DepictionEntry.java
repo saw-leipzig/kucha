@@ -117,10 +117,22 @@ public class DepictionEntry extends AbstractEntry {
 		for (ImageEntry ie : this.relatedImages) {
 			clonedRelatedImages.add(ie);
 		}
+		clonedDepictionEntry.setRelatedImages(clonedRelatedImages);
 		ArrayList<PreservationAttributeEntry> clonedPreservationAttributesList = new ArrayList<PreservationAttributeEntry>();
 		for (PreservationAttributeEntry pae : this.preservationAttributesList) {
 			clonedPreservationAttributesList.add(pae);
 		}
+		clonedDepictionEntry.setPreservationAttributesList(clonedPreservationAttributesList);
+		ArrayList<AnnotatedBiblographyEntry> clonedRelatedBibliographyList = new ArrayList<AnnotatedBiblographyEntry>();
+		for (AnnotatedBiblographyEntry abe : this.relatedBibliographyList) {
+			clonedRelatedBibliographyList.add(abe);
+		}
+		clonedDepictionEntry.setRelatedBibliographyList(clonedRelatedBibliographyList);
+		ArrayList<IconographyEntry> clonedRelatedIconographyList = new ArrayList<IconographyEntry>();
+		for (IconographyEntry ie : this.relatedIconographyList) {
+			clonedRelatedIconographyList.add(ie);
+		}
+		clonedDepictionEntry.setRelatedIconographyList(clonedRelatedIconographyList);
 		return clonedDepictionEntry;
 	}
 
