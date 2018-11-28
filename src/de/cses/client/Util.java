@@ -44,7 +44,7 @@ public class Util {
 	
 	private static ToolTipView toolTip = GWT.create(ToolTipView.class);
 	
-	private interface ToolTipView extends XTemplates {
+	public interface ToolTipView extends XTemplates {
 		@XTemplate("<div class='tooltip'>{text}</div>")
 		SafeHtml create(String text);
 

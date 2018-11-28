@@ -877,6 +877,7 @@ public class CaveEditor extends AbstractEditor {
 		districtPanel.add(districtSelection);
 
 		ToolButton resetDistrictSelectionTB = new ToolButton(ToolButton.REFRESH);
+		resetDistrictSelectionTB.setToolTip(Util.createToolTip("add District"));
 		districtPanel.addTool(resetDistrictSelectionTB);
 		resetDistrictSelectionTB.addSelectHandler(new SelectHandler() {
 			
