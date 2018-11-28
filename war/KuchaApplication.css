@@ -78,7 +78,7 @@ div.text {
 div.tooltip {
 	font-size: 10px;
 	font-family: verdana;
-	width: 200px;
+	max-width: 200px;
 	height: auto;
 }
 

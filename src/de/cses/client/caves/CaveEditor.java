@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017
+ * Copyright 2016-2018
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -30,7 +30,6 @@ import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Label;
@@ -1260,6 +1259,7 @@ public class CaveEditor extends AbstractEditor {
 				new HorizontalLayoutData(.5, 1.0, new Margins(0, 5, 0, 0)));
 		rightCorridorCeilingPreservationHLC.add(rightCorridorCeilingPreservationSelectorCB2, new HorizontalLayoutData(.5, 1.0, new Margins(0)));
 		ToolButton rightCorridorCeilingStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
+		rightCorridorCeilingStateOfPreservationResetSelectionTB.setToolTip(Util.toolTip.create("reset selection"));
 		rightCorridorCeilingStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
@@ -1339,6 +1339,7 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		ToolButton corridorStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
+		corridorStateOfPreservationResetSelectionTB.setToolTip(Util.toolTip.create("reset selection"));
 		corridorStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
@@ -1394,6 +1395,7 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		ToolButton antechamberStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
+		antechamberStateOfPreservationResetSelectionTB.setToolTip(Util.toolTip.create("reset selection"));
 		antechamberStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
@@ -1450,6 +1452,7 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		ToolButton antechamberFloorStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
+		antechamberFloorStateOfPreservationResetSelectionTB.setToolTip(Util.toolTip.create("reset selection"));
 		antechamberFloorStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
 			
 			@Override

@@ -173,6 +173,7 @@ public class UserLogin extends PopupPanel {
 			}
 		});
 		ToolButton closeTB = new ToolButton(ToolButton.CLOSE);
+		closeTB.setToolTip(Util.toolTip.create("close"));
 		closeTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
@@ -300,6 +301,7 @@ public class UserLogin extends PopupPanel {
 			}
 		});
 		ToolButton closeTB = new ToolButton(ToolButton.CLOSE);
+		closeTB.setToolTip(Util.toolTip.create("close"));
 		closeTB.addSelectHandler(new SelectHandler() {
 			
 			@Override

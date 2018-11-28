@@ -19,6 +19,7 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
 import de.cses.client.MainView;
+import de.cses.client.Util;
 
 /**
  * @author alingnau
@@ -32,6 +33,7 @@ public abstract class AbstractDataDisplay extends Portlet {
 	public AbstractDataDisplay() {
 		setHeaderVisible(true);
 		ToolButton closeButton = new ToolButton(ToolButton.CLOSE);
+		closeButton.setToolTip(Util.toolTip.create("close"));
 		closeButton.addSelectHandler(new SelectHandler() {
 			
 			@Override
