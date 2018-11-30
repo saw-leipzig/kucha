@@ -56,15 +56,15 @@ public class DepictionSearchController extends AbstractSearchController {
 		ArrayList<String> sqlWhereClauses = new ArrayList<String>();
 		String iconographyIDs = null;
 		int correlationFactor = 0;
-		for (AbstractFilter filter : getRelatedFilter()) {
-			if ((filter != null) && (filter.getSqlWhereClause() != null)) {
-				sqlWhereClauses.addAll(filter.getSqlWhereClause());
-			}
-			if (filter instanceof DepictionFilter) {
-				iconographyIDs = ((DepictionFilter)filter).getRelatedIconographyIDs();
-				correlationFactor = ((DepictionFilter)filter).getCorrelationFactor();
-			}
-		}
+//		for (AbstractFilter filter : getRelatedFilter()) {
+//			if ((filter != null) && (filter.getSqlWhereClause() != null)) {
+//				sqlWhereClauses.addAll(filter.getSqlWhereClause());
+//			}
+//			if (filter instanceof DepictionFilter) {
+//				iconographyIDs = ((DepictionFilter)filter).getRelatedIconographyIDs();
+//				correlationFactor = ((DepictionFilter)filter).getCorrelationFactor();
+//			}
+//		}
 
 		for (String sql : sqlWhereClauses) {
 			sqlWhere = (sqlWhere == null) ? sql : sqlWhere.concat(" AND " + sql);

@@ -40,6 +40,8 @@ import com.sencha.gxt.widget.core.client.form.ComboBox;
 
 import de.cses.client.StaticTables;
 import de.cses.client.ui.AbstractFilter;
+import de.cses.shared.AbstractSearchEntry;
+import de.cses.shared.CaveSearchEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.RegionEntry;
@@ -338,6 +340,40 @@ public class CaveFilter extends AbstractFilter {
 			result.add("(" + sqlQuery + ")");
 		}
 		
+		return result;
+	}
+
+	@Override
+	public CaveSearchEntry getSearchEntry() {
+		CaveSearchEntry result = new CaveSearchEntry();
+		
+		if (caveTypeSelection.getValue() != null) {
+			ArrayList<Integer> caveTypeIdList = new ArrayList<Integer>();
+			caveTypeIdList.add(caveTypeSelection.getCurrentValue().getCaveTypeID());
+			result.setCaveTypeIdList(caveTypeIdList);
+		}
+		
+		if (!siteSelectionLV.getSelectionModel().getSelectedItems().isEmpty()) {
+			ArrayList<Integer> siteIdList = new ArrayList<Integer>();
+			for (SiteEntry se : siteSelectionLV.getSelectionModel().getSelectedItems()) {
+				siteIdList.add(se.getSiteID());
+			}
+		}
+
+		if (!districtSelectionLV.getSelectionModel().getSelectedItems().isEmpty()) {
+			ArrayList<Integer> districtIdList = new ArrayList<Integer>();
+			for (DistrictEntry de : districtSelectionLV.getSelectionModel().getSelectedItems()) {
+				districtIdList.add(de.getDistrictID());
+			}
+		}
+
+		if (!regionSelectionLV.getSelectionModel().getSelectedItems().isEmpty()) {
+			ArrayList<Integer> regionIdList = new ArrayList<Integer>();
+			for (RegionEntry re : regionSelectionLV.getSelectionModel().getSelectedItems()) {
+				regionIdList.add(re.getRegionID());
+			}
+		}
+
 		return result;
 	}
 

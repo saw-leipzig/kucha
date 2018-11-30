@@ -33,7 +33,7 @@ import de.cses.client.user.UserLogin;
 public abstract class AbstractSearchController extends ToggleButton {
 	
 	private String searchControllerTitle;
-	private ArrayList<AbstractFilter> relatedFilter;
+	private AbstractFilter relatedFilter = null;
 	private AbstractResultView resultView;
 	
 		
@@ -64,7 +64,6 @@ public abstract class AbstractSearchController extends ToggleButton {
 				}
 			}
 		});
-		relatedFilter = new ArrayList<AbstractFilter>();
 		setText(searchControllerTitle);
 		setSize("50px", "50px");
 	}
@@ -78,15 +77,15 @@ public abstract class AbstractSearchController extends ToggleButton {
 	 *
 	 * @param filter
 	 */
-	public void addRelatedFilter(AbstractFilter filter) {
-		relatedFilter.add(filter);
+	public void setRelatedFilter(AbstractFilter filter) {
+		relatedFilter = filter;
 	}
 	
 	public String getSelectorTitle() {
 		return searchControllerTitle;
 	}
 
-	public ArrayList <AbstractFilter> getRelatedFilter() {
+	public AbstractFilter getRelatedFilter() {
 		return relatedFilter;
 	}
 

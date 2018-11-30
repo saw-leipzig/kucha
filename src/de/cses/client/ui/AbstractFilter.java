@@ -22,6 +22,8 @@ import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
+import de.cses.shared.AbstractSearchEntry;
+
 /**
  * This class shall be extended to implement a new filter. To make sure all filters
  * follow a common structure, a <code>FramedPanel</code> is provided where the Widget from {@link #getFilterUI()} is 
@@ -87,5 +89,11 @@ public abstract class AbstractFilter implements IsWidget {
 	 * @see de.cses.client.caves.CaveFilter#getSqlWhereClause()
 	 */
 	public abstract ArrayList<String> getSqlWhereClause();
+
+	/**
+	 * Every filter needs to implement a SearchEntry which will be used to request filtered searches from the server side.
+	 * @return
+	 */
+	public abstract AbstractSearchEntry getSearchEntry();
 
 }

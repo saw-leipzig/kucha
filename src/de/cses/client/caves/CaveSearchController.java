@@ -23,12 +23,11 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
-import de.cses.client.images.ImageView;
-import de.cses.client.ui.AbstractFilter;
 import de.cses.client.ui.AbstractSearchController;
 import de.cses.client.ui.EditorListener;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.CaveEntry;
+import de.cses.shared.CaveSearchEntry;
 
 /**
  * @author alingnau
@@ -53,21 +52,9 @@ public class CaveSearchController extends AbstractSearchController {
 	 */
 	@Override
 	public void invokeSearch() {
-		ArrayList<String> sqlWhereClauses = new ArrayList<String>();
-		for (AbstractFilter filter : getRelatedFilter()) {
-			if (filter != null) {
-				sqlWhereClauses.addAll(filter.getSqlWhereClause());
-			}
-		}
-		String sqlWhere = null;
-		for (int i=0; i<sqlWhereClauses.size(); ++i) {
-			if (i == 0) {
-				sqlWhere = sqlWhereClauses.get(i);
-			} else {
-				sqlWhere = sqlWhere + " AND " + sqlWhereClauses.get(i);
-			}
-		}
-		dbService.getCaves(sqlWhere, new AsyncCallback<ArrayList<CaveEntry>>() {
+		CaveSearchEntry searchEntry = ((CaveFilter)getRelatedFilter()).getSearchEntry();
+		
+		dbService.searchCaves(searchEntry, new AsyncCallback<ArrayList<CaveEntry>>() {
 			
 			private String getComparisonLabel(CaveEntry ce) {
 				StaticTables stab = StaticTables.getInstance();
@@ -105,7 +92,48 @@ public class CaveSearchController extends AbstractSearchController {
 					getResultView().addResult(new CaveView(ce));	
 				}
 			}
+
 		});
+		
+//		dbService.getCaves(sqlWhere, new AsyncCallback<ArrayList<CaveEntry>>() {
+//			
+//			private String getComparisonLabel(CaveEntry ce) {
+//				StaticTables stab = StaticTables.getInstance();
+//				String shortName = stab.getSiteEntries().get(ce.getSiteID()).getShortName();
+//				int len = 0;
+//				while ((len < ce.getOfficialNumber().length()) && isInteger(ce.getOfficialNumber().substring(0, len+1))) {
+//					++len;
+//				}
+//				switch (len) {
+//					case 1:
+//						return shortName + "  " + ce.getOfficialNumber();
+//					case 2:
+//						return shortName + " " + ce.getOfficialNumber();
+//					default:
+//						return shortName + ce.getOfficialNumber();
+//				}
+//			}
+//			
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				caught.printStackTrace();
+//			}
+//
+//			@Override
+//			public void onSuccess(ArrayList<CaveEntry> result) {
+//				result.sort(new Comparator<CaveEntry>() {
+//
+//					@Override
+//					public int compare(CaveEntry ce1, CaveEntry ce2) {
+//						return getComparisonLabel(ce1).compareTo(getComparisonLabel(ce2));
+//					}
+//				});
+//				getResultView().reset();
+//				for (CaveEntry ce : result) {
+//					getResultView().addResult(new CaveView(ce));	
+//				}
+//			}
+//		});
 	}
 
 	private boolean isInteger(String str) {

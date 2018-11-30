@@ -24,6 +24,7 @@ import de.cses.shared.BibKeywordEntry;
 import de.cses.shared.CaveAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveGroupEntry;
+import de.cses.shared.CaveSearchEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
 import de.cses.shared.CurrentLocationEntry;
@@ -280,5 +281,7 @@ public interface DatabaseService extends RemoteService {
 
 	boolean deleteAuthorEntry(AuthorEntry selectedEntry) throws IllegalArgumentException;
 
-	boolean updateUserEntry(UserEntry currentUser, String passwordHash, String newPasswordHash); 
+	boolean updateUserEntry(UserEntry currentUser, String passwordHash, String newPasswordHash) throws IllegalArgumentException;
+
+	ArrayList<CaveEntry> searchCaves(CaveSearchEntry searchEntry) throws IllegalArgumentException;
 }

@@ -35,6 +35,7 @@ import de.cses.shared.C14DocumentEntry;
 import de.cses.shared.CaveAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveGroupEntry;
+import de.cses.shared.CaveSearchEntry;
 import de.cses.shared.CaveSketchEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
@@ -576,6 +577,69 @@ public class MysqlConnector {
 			return null;
 		}
 		return result;
+	}
+
+	public ArrayList<CaveEntry> searchCaves(CaveSearchEntry searchEntry) {
+		ArrayList<CaveEntry> results = new ArrayList<CaveEntry>();
+		Connection dbc = getConnection();
+		String caveTypeIdSet = "";
+		String siteIdSet = "";
+		String districtIdSet = "";
+		String regionIdSet = "";
+		String where = "";
+		for (int caveTypeID : searchEntry.getCaveTypeIdList()) {
+			caveTypeIdSet += caveTypeIdSet.isEmpty() ? Integer.toString(caveTypeID) : "," + caveTypeID;
+		}
+		if (!caveTypeIdSet.isEmpty()) {
+			where = "CaveTypeID IN (" + caveTypeIdSet + ")";
+		}
+		for (int siteID : searchEntry.getSiteIdList()) {
+			siteIdSet += siteIdSet.isEmpty() ? Integer.toString(siteID) : "," + siteID;
+		}
+		if (!siteIdSet.isEmpty()) {
+			where += where.isEmpty() ? "SiteID IN (" + siteIdSet + ")" : " AND SiteID IN (" + siteIdSet + ")";
+		}
+		for (int districtID : searchEntry.getDistrictIdList()) { 
+			districtIdSet += districtIdSet.isEmpty() ? Integer.toString(districtID) : "," + districtID;
+		}
+		if (!districtIdSet.isEmpty()) {
+			where += where.isEmpty() ? "DistrictID IN (" + districtIdSet + ")" : " AND DistrictID IN (" + districtIdSet + ")";
+		}
+		for (int regionID : searchEntry.getRegionIdList()) {
+			regionIdSet += regionIdSet.isEmpty() ? Integer.toString(regionID) : "," + regionID;
+		}
+		if (!regionIdSet.isEmpty()) {
+			where += where.isEmpty() ? "RegionID IN (" + regionIdSet + ")" : " AND RegionID IN (" + regionIdSet + ")";
+		}
+		PreparedStatement pstmt;
+		
+		try {
+			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Caves" : "SELECT * FROM Caves WHERE " + where);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				CaveEntry ce = new CaveEntry(rs.getInt("CaveID"), rs.getString("OfficialNumber"), rs.getString("HistoricName"),
+						rs.getString("OptionalHistoricName"), rs.getInt("CaveTypeID"), rs.getInt("SiteID"), rs.getInt("DistrictID"),
+						rs.getInt("RegionID"),rs.getInt("OrientationID"),
+						rs.getString("StateOfPreservation"), rs.getString("Findings"),
+						rs.getString("Notes"), rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedInYear"),
+						rs.getInt("PreservationClassificationID"), rs.getInt("CaveGroupID"), rs.getString("OptionalCaveSketch"),
+						rs.getString("CaveLayoutComments"), rs.getBoolean("HasVolutedHorseShoeArch"), rs.getBoolean("HasSculptures"),
+						rs.getBoolean("HasClayFigures"), rs.getBoolean("HasImmitationOfMountains"),
+						rs.getBoolean("HasHolesForFixationOfPlasticalItems"), rs.getBoolean("HasWoodenConstruction"), rs.getBoolean("OpenAccess"));
+				ce.setCaveAreaList(getCaveAreas(ce.getCaveID()));
+				ce.setWallList(getWalls(ce.getCaveID()));
+				ce.setC14AnalysisUrlList(getC14AnalysisEntries(ce.getCaveID()));
+				ce.setC14DocumentList(getC14Documents(ce.getCaveID()));
+				ce.setCaveSketchList(getCaveSketchEntriesFromCave(ce.getCaveID()));
+				results.add(ce);
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return results;
 	}
 
 	public ArrayList<CaveEntry> getCaves() {

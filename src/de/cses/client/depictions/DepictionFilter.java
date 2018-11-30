@@ -51,6 +51,7 @@ import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
 import de.cses.client.Util;
 import de.cses.client.ui.AbstractFilter;
+import de.cses.shared.AbstractSearchEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.IconographyEntry;
@@ -431,6 +432,12 @@ public class DepictionFilter extends AbstractFilter {
 			extendedFilterDialog.setModal(true);
 		}
 		extendedFilterDialog.center();
+	}
+
+	@Override
+	public AbstractSearchEntry getSearchEntry() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -53,11 +53,11 @@ public class ImageSearchController extends AbstractSearchController {
 	@Override
 	public void invokeSearch() {
 		ArrayList<String> sqlWhereClauses = new ArrayList<String>();
-		for (AbstractFilter filter : getRelatedFilter()) {
-			if (filter != null) {
-				sqlWhereClauses.addAll(filter.getSqlWhereClause());
-			}
-		}
+//		for (AbstractFilter filter : getRelatedFilter()) {
+//			if (filter != null) {
+//				sqlWhereClauses.addAll(filter.getSqlWhereClause());
+//			}
+//		}
 		String sqlWhere = null;
 		for (String sql :  sqlWhereClauses) {
 			if (sqlWhere == null) {

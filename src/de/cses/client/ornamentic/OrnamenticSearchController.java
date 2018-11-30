@@ -53,11 +53,11 @@ public class OrnamenticSearchController extends AbstractSearchController {
 	@Override
 	public void invokeSearch() {
 		ArrayList<String> sqlWhereClauses = new ArrayList<String>();
-		for (AbstractFilter filter : getRelatedFilter()) {
-			if ((filter != null) && (filter.getSqlWhereClause() != null)) {
-				sqlWhereClauses.addAll(filter.getSqlWhereClause());
-			}
-		}
+//		for (AbstractFilter filter : getRelatedFilter()) {
+//			if ((filter != null) && (filter.getSqlWhereClause() != null)) {
+//				sqlWhereClauses.addAll(filter.getSqlWhereClause());
+//			}
+//		}
 		String sqlWhere = null;
 		for (int i=0; i<sqlWhereClauses.size(); ++i) {
 			if (i == 0) {

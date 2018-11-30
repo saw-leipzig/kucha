@@ -20,6 +20,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.widget.core.client.form.TextField;
 
 import de.cses.client.ui.AbstractFilter;
+import de.cses.shared.AbstractSearchEntry;
 
 /**
  * @author nina
@@ -47,6 +48,12 @@ public class OrnamenticFilter  extends AbstractFilter{
 	 */
 	@Override
 	public ArrayList<String> getSqlWhereClause() {
+		return null;
+	}
+
+	@Override
+	public AbstractSearchEntry getSearchEntry() {
+		// TODO Auto-generated method stub
 		return null;
 	}
 

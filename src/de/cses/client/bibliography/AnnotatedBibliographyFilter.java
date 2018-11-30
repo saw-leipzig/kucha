@@ -22,6 +22,7 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 
 import de.cses.client.ui.AbstractFilter;
+import de.cses.shared.AbstractSearchEntry;
 
 /**
  * @author alingnau
@@ -89,6 +90,12 @@ public class AnnotatedBibliographyFilter extends AbstractFilter {
 							+ ")");
 		}
 		return result;
+	}
+
+	@Override
+	public AbstractSearchEntry getSearchEntry() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

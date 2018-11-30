@@ -25,6 +25,7 @@ import de.cses.shared.BibKeywordEntry;
 import de.cses.shared.CaveAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveGroupEntry;
+import de.cses.shared.CaveSearchEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
 import de.cses.shared.CurrentLocationEntry;
@@ -912,5 +913,11 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public boolean updateUserEntry(UserEntry currentUser, String passwordHash, String newPasswordHash) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.updateUserEntry(currentUser, passwordHash, newPasswordHash);
+	}
+	
+	@Override
+	public ArrayList<CaveEntry> searchCaves(CaveSearchEntry searchEntry) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.searchCaves(searchEntry);
 	}
 }

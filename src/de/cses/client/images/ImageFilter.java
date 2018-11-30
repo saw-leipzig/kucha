@@ -36,6 +36,7 @@ import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 
 import de.cses.client.StaticTables;
 import de.cses.client.ui.AbstractFilter;
+import de.cses.shared.AbstractSearchEntry;
 import de.cses.shared.ImageTypeEntry;
 
 /**
@@ -172,6 +173,12 @@ public class ImageFilter extends AbstractFilter {
 			result.add("(ImageTypeID IN (" + imageTypeQuery + "))");
 		}
 		return result;
+	}
+
+	@Override
+	public AbstractSearchEntry getSearchEntry() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

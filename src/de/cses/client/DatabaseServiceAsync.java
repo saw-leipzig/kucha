@@ -23,6 +23,7 @@ import de.cses.shared.BibKeywordEntry;
 import de.cses.shared.CaveAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveGroupEntry;
+import de.cses.shared.CaveSearchEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
 import de.cses.shared.CurrentLocationEntry;
@@ -303,6 +304,8 @@ public interface DatabaseServiceAsync {
 
 	void deleteAuthorEntry(AuthorEntry selectedEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
-	void updateUserEntry(UserEntry currentUser, String passwordHash, String newPasswordHash, AsyncCallback<Boolean> asyncCallback);
+	void updateUserEntry(UserEntry currentUser, String passwordHash, String newPasswordHash, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
+
+	void searchCaves(CaveSearchEntry searchEntry, AsyncCallback<ArrayList<CaveEntry>> asyncCallback) throws IllegalArgumentException;
 
 }
