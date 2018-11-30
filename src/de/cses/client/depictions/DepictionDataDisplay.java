@@ -40,6 +40,7 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 		super();
 		entry = e;
 		String cave = "";
+		String wall = "";
 		SafeUri realCaveSketchUri = null;
 		DepictionViewTemplates view = GWT.create(DepictionViewTemplates.class);
 		if (e.getCave() != null) {
@@ -48,8 +49,8 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 			}
 			cave += e.getCave().getOfficialNumber() + ((e.getCave().getHistoricName() != null && e.getCave().getHistoricName().length() > 0) ? " (" + e.getCave().getHistoricName() + ")" : ""); 
 			realCaveSketchUri = UriUtils.fromString("/resource?cavesketch=" + e.getCave().getOptionalCaveSketch() + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
+			wall = e.getWallID() > 0 ? StaticTables.getInstance().getWallLocationEntries().get(e.getCave().getWall(e.getWallID()).getWallLocationID()).getLabel() : "";
 		}
-		String wall = e.getWallID() > 0 ? StaticTables.getInstance().getWallLocationEntries().get(e.getCave().getWall(e.getWallID()).getWallLocationID()).getLabel() : "";
 		String shortname = e.getShortName() != null ? e.getShortName() : "";
 		String expedition = e.getExpedition() != null ? e.getExpedition().getName() : "";
 		String vendor = e.getVendor() != null ? e.getVendor().getVendorName() : "";

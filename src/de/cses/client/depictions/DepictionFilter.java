@@ -125,6 +125,8 @@ public class DepictionFilter extends AbstractFilter {
 
 	private IntegerSpinnerField iconographySpinnerField;
 
+	private PopupPanel extendedFilterDialog = null;
+
 	/**
 	 * @param filterName
 	 */
@@ -403,29 +405,31 @@ public class DepictionFilter extends AbstractFilter {
 	}
 	
 	private void showIconographySelection() {
-		PopupPanel extendedFilterDialog = new PopupPanel();
-		ToolButton closeTB = new ToolButton(ToolButton.CLOSE);
-		closeTB.setToolTip(Util.createToolTip("Close selection.", "Currently selected items will be used in the filter."));
-		closeTB.addSelectHandler(new SelectHandler() {
-
-			@Override
-			public void onSelect(SelectEvent event) {
-				selectedIconographyLS.clear();
-				selectedIconographyLS.addAll(icoSelector.getSelectedIconography());
-				if ((icoSelector.getSelectedIconography() != null) && (selectedIconographyLS.size() > 0)) {
-					iconographySpinnerField.setEnabled(true);
-					iconographySpinnerField.setValue(selectedIconographyLS.size());
-					iconographySpinnerField.setMaxValue(selectedIconographyLS.size());
-				} else {
-					iconographySpinnerField.setEnabled(false);
+		if (extendedFilterDialog == null) {
+			extendedFilterDialog = new PopupPanel();
+			ToolButton closeTB = new ToolButton(ToolButton.CLOSE);
+			closeTB.setToolTip(Util.createToolTip("Close selection.", "Currently selected items will be used in the filter."));
+			closeTB.addSelectHandler(new SelectHandler() {
+				
+				@Override
+				public void onSelect(SelectEvent event) {
+					selectedIconographyLS.clear();
+					selectedIconographyLS.addAll(icoSelector.getSelectedIconography());
+					if ((icoSelector.getSelectedIconography() != null) && (selectedIconographyLS.size() > 0)) {
+						iconographySpinnerField.setEnabled(true);
+						iconographySpinnerField.setValue(selectedIconographyLS.size());
+						iconographySpinnerField.setMaxValue(selectedIconographyLS.size());
+					} else {
+						iconographySpinnerField.setEnabled(false);
+					}
+					extendedFilterDialog.hide();
 				}
-				extendedFilterDialog.hide();
-			}
-		});
-		icoSelector.addTool(closeTB);
-		extendedFilterDialog.add(icoSelector);
-		extendedFilterDialog.setSize("750", "500");
-		extendedFilterDialog.setModal(true);
+			});
+			icoSelector.addTool(closeTB);
+			extendedFilterDialog.add(icoSelector);
+			extendedFilterDialog.setSize("750", "500");
+			extendedFilterDialog.setModal(true);
+		}
 		extendedFilterDialog.center();
 	}
 
