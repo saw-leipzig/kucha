@@ -43,14 +43,6 @@ public class OrnamenticFilter  extends AbstractFilter{
 		return vp;
 	}
 
-	/* (non-Javadoc)
-	 * @see de.cses.client.ui.AbstractFilter#getSqlWhereClause()
-	 */
-	@Override
-	public ArrayList<String> getSqlWhereClause() {
-		return null;
-	}
-
 	@Override
 	public AbstractSearchEntry getSearchEntry() {
 		// TODO Auto-generated method stub

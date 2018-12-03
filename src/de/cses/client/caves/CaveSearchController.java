@@ -41,8 +41,8 @@ public class CaveSearchController extends AbstractSearchController {
 	 * @param searchControllerTitle
 	 * @param caveResultView
 	 */
-	public CaveSearchController(String selectorTitle, CaveResultView caveResultView) {
-		super(selectorTitle, caveResultView);
+	public CaveSearchController(String selectorTitle, CaveFilter filter, CaveResultView caveResultView) {
+		super(selectorTitle, filter, caveResultView);
 	}
 
 	/*
@@ -52,7 +52,7 @@ public class CaveSearchController extends AbstractSearchController {
 	 */
 	@Override
 	public void invokeSearch() {
-		CaveSearchEntry searchEntry = ((CaveFilter)getRelatedFilter()).getSearchEntry();
+		CaveSearchEntry searchEntry = ((CaveFilter)getFilter()).getSearchEntry();
 		
 		dbService.searchCaves(searchEntry, new AsyncCallback<ArrayList<CaveEntry>>() {
 			

@@ -23,8 +23,8 @@ public class DataDisplayController extends AbstractSearchController {
 	 * @param searchControllerTitle
 	 * @param resultView
 	 */
-	public DataDisplayController(String searchControllerTitle, AbstractResultView resultView) {
-		super(searchControllerTitle, resultView);
+	private DataDisplayController(String searchControllerTitle, AbstractResultView resultView) {
+		super(searchControllerTitle, null, resultView);
 		// TODO Auto-generated constructor stub
 	}
 

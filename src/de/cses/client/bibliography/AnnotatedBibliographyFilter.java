@@ -68,7 +68,6 @@ public class AnnotatedBibliographyFilter extends AbstractFilter {
 	/* (non-Javadoc)
 	 * @see de.cses.client.ui.AbstractFilter#getSqlWhereClause()
 	 */
-	@Override
 	public ArrayList<String> getSqlWhereClause() {
 		ArrayList<String> result = new ArrayList<String>();
 		if ((authorNameTF.getValue() != null) && !authorNameTF.getValue().isEmpty()) {

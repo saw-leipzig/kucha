@@ -43,8 +43,8 @@ public class OrnamenticSearchController extends AbstractSearchController {
 	 * @param searchControllerTitle
 	 * @param resultView
 	 */
-	public OrnamenticSearchController(String selectorTitle, AbstractResultView resultView) {
-		super(selectorTitle, resultView);
+	public OrnamenticSearchController(String selectorTitle, OrnamenticFilter filter, OrnamenticResultView resultView) {
+		super(selectorTitle, filter, resultView);
 	}
 
 	/* (non-Javadoc)

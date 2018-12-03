@@ -43,8 +43,8 @@ public class DepictionSearchController extends AbstractSearchController {
 	 * @param searchControllerTitle
 	 * @param resultView
 	 */
-	public DepictionSearchController(String selectorTitle, AbstractResultView resultView) {
-		super(selectorTitle, resultView);
+	public DepictionSearchController(String selectorTitle, DepictionFilter filter, DepictionResultView resultView) {
+		super(selectorTitle, filter, resultView);
 	}
 
 	/* (non-Javadoc)

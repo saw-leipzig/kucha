@@ -88,7 +88,7 @@ public abstract class AbstractFilter implements IsWidget {
 	 * the SQL request.
 	 * @see de.cses.client.caves.CaveFilter#getSqlWhereClause()
 	 */
-	public abstract ArrayList<String> getSqlWhereClause();
+//	public abstract ArrayList<String> getSqlWhereClause();
 
 	/**
 	 * Every filter needs to implement a SearchEntry which will be used to request filtered searches from the server side.

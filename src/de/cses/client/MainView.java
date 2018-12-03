@@ -121,20 +121,18 @@ public class MainView implements IsWidget {
     
 //    LocationFilter lFilter = new LocationFilter("Location Filter");
 
-		caveSearchController = new CaveSearchController("Caves", new CaveResultView("Caves"));
-		caveSearchController.setRelatedFilter(new CaveFilter("Caves"));
-//		caveSearchController.addRelatedFilter(lFilter);
+		caveSearchController = new CaveSearchController("Caves", new CaveFilter("Caves"), new CaveResultView("Caves"));
 		caveSearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 			
 			@Override
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
 				if (event.getValue()) {
-					filterView.add(caveSearchController.getRelatedFilter(), 0);
+					filterView.add(caveSearchController.getFilter(), 0);
 					resultView.add(caveSearchController.getResultView(), 0);
 				} else {
 //					filterView.remove(caveSearchController.getRelatedFilter(), 0);
 					caveSearchController.getResultView().removeFromParent();
-					caveSearchController.getRelatedFilter().asWidget().removeFromParent();
+					caveSearchController.getFilter().asWidget().removeFromParent();
 //					ArrayList<AbstractFilter> usedFilter = getUsedFilter();
 //					for (AbstractFilter filter : caveSearchController.getRelatedFilter()) {
 //						if (!usedFilter.contains(filter)){
@@ -144,14 +142,13 @@ public class MainView implements IsWidget {
 			}
 		});
 		
-		depictionSearchController = new DepictionSearchController("Painted Representations", new DepictionResultView("Painted Representations"));
-		depictionSearchController.setRelatedFilter(new DepictionFilter("Painted Representations"));
+		depictionSearchController = new DepictionSearchController("Painted Representations", new DepictionFilter("Painted Representations"), new DepictionResultView("Painted Representations"));
 		depictionSearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
 				if (event.getValue()) {
-					filterView.add(depictionSearchController.getRelatedFilter(), 0);
+					filterView.add(depictionSearchController.getFilter(), 0);
 					resultView.add(depictionSearchController.getResultView(), 0);
 //					for (AbstractFilter filter : depictionSearchController.getRelatedFilter()) {
 //					}
@@ -162,14 +159,13 @@ public class MainView implements IsWidget {
 //							filterView.remove(filter, 0);
 //						}
 //					}
-					depictionSearchController.getRelatedFilter().asWidget().removeFromParent();
+					depictionSearchController.getFilter().asWidget().removeFromParent();
 					depictionSearchController.getResultView().removeFromParent();
 				}
 			}
 		});
 		
-		imageSearchController = new ImageSearchController("Image Pool", new ImageResultView("Image Pool"));
-		imageSearchController.setRelatedFilter(new ImageFilter("Image Filter"));
+		imageSearchController = new ImageSearchController("Image Pool", new ImageFilter("Image Filter"), new ImageResultView("Image Pool"));
 		imageSearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
 			@Override
@@ -177,7 +173,7 @@ public class MainView implements IsWidget {
 				if (event.getValue()) {
 //					for (AbstractFilter filter : imageSearchController.getRelatedFilter()) {
 //					}
-					filterView.add(imageSearchController.getRelatedFilter(), 0);
+					filterView.add(imageSearchController.getFilter(), 0);
 					resultView.add(imageSearchController.getResultView(), 0);
 				} else {
 //					ArrayList<AbstractFilter> usedFilter = getUsedFilter();
@@ -186,15 +182,14 @@ public class MainView implements IsWidget {
 //							filterView.remove(filter, 0);
 //						}
 //					}
-					imageSearchController.getRelatedFilter().asWidget().removeFromParent();
+					imageSearchController.getFilter().asWidget().removeFromParent();
 					imageSearchController.getResultView().removeFromParent();
 				}
 			}
 			
 		});
 		
-		ornamenticSearchController = new OrnamenticSearchController("Ornamentation", new OrnamenticResultView("Ornamentation"));
-		ornamenticSearchController.setRelatedFilter(new OrnamenticFilter("Ornamentations"));
+		ornamenticSearchController = new OrnamenticSearchController("Ornamentation", new OrnamenticFilter("Ornamentations"), new OrnamenticResultView("Ornamentation"));
 		ornamenticSearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
 			@Override
@@ -202,7 +197,7 @@ public class MainView implements IsWidget {
 				if (event.getValue()) {
 //					for (AbstractFilter filter : ornamenticSearchController.getRelatedFilter()) {
 //					}
-					filterView.add(ornamenticSearchController.getRelatedFilter(), 0);
+					filterView.add(ornamenticSearchController.getFilter(), 0);
 					resultView.add(ornamenticSearchController.getResultView(), 0);
 				} else {
 //					ArrayList<AbstractFilter> usedFilter = getUsedFilter();
@@ -211,7 +206,7 @@ public class MainView implements IsWidget {
 //							filterView.remove(filter, 0);
 //						}
 //					}
-					ornamenticSearchController.getRelatedFilter().asWidget().removeFromParent();
+					ornamenticSearchController.getFilter().asWidget().removeFromParent();
 					ornamenticSearchController.getResultView().removeFromParent();
 				}
 			}
@@ -219,8 +214,7 @@ public class MainView implements IsWidget {
 		
 		// annotated bibliography
 		
-		annotatedBiblographySearchController = new AnnotatedBiblographySearchController("Annotated Biblography", new AnnotatedBiblographyResultView("Annotated Biblography"));
-		annotatedBiblographySearchController.setRelatedFilter(new AnnotatedBibliographyFilter("Bibliography"));
+		annotatedBiblographySearchController = new AnnotatedBiblographySearchController("Annotated Biblography", new AnnotatedBibliographyFilter("Bibliography"), new AnnotatedBiblographyResultView("Annotated Biblography"));
 		annotatedBiblographySearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
 			@Override
@@ -228,7 +222,7 @@ public class MainView implements IsWidget {
 				if (event.getValue()) {
 //					for (AbstractFilter filter : annotatedBiblographySearchController.getRelatedFilter()) {
 //					}
-					filterView.add(annotatedBiblographySearchController.getRelatedFilter(), 0);
+					filterView.add(annotatedBiblographySearchController.getFilter(), 0);
 					resultView.add(annotatedBiblographySearchController.getResultView(), 0);
 				} else {
 //					ArrayList<AbstractFilter> usedFilter = getUsedFilter();
@@ -237,41 +231,11 @@ public class MainView implements IsWidget {
 //							filterView.remove(filter, 0);
 //						}
 //					}
-					annotatedBiblographySearchController.getRelatedFilter().asWidget().removeFromParent();
+					annotatedBiblographySearchController.getFilter().asWidget().removeFromParent();
 					annotatedBiblographySearchController.getResultView().removeFromParent();
 				}
 			}
 		});
-		
-		// result collector
-		
-//		resultCollectorController = new ResultCollectorController("Personal Desktop", new ResultCollectorView("Personal Desktop"));
-//		resultCollectorController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-//
-//			@Override
-//			public void onValueChange(ValueChangeEvent<Boolean> event) {
-//				if (event.getValue()) {
-//					dataViewPLC.add(resultCollectorController.getResultView(), 0);
-//				} else {
-//					resultCollectorController.getResultView().removeFromParent();
-//				}
-//			}
-//		});
-		
-		// Data Display
-		
-//		dataDisplayController = new DataDisplayController("Data", new DataDisplayView("Data"));
-//		dataDisplayController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-//
-//			@Override
-//			public void onValueChange(ValueChangeEvent<Boolean> event) {
-//				if (event.getValue()) {
-//					dataViewPLC.add(dataDisplayController.getResultView(), 0);
-//				} else {
-//					dataDisplayController.getResultView().removeFromParent();
-//				}
-//			}
-//		});
 
 		
 		// ----------------------------------- assembling the menu bar ---------------------------------------------

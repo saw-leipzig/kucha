@@ -359,7 +359,6 @@ public class DepictionFilter extends AbstractFilter {
 	/* (non-Javadoc)
 	 * @see de.cses.client.ui.AbstractFilter#getSqlWhereClause()
 	 */
-	@Override
 	public ArrayList<String> getSqlWhereClause() {
 		sqlWhereClause = new ArrayList<String>();
 		if ((shortNameSearch.getValue() != null) && (shortNameSearch.getValue().length() > 0)) {

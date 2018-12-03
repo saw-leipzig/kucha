@@ -23,8 +23,8 @@ public class ResultCollectorController extends AbstractSearchController {
 	 * @param searchControllerTitle
 	 * @param resultView
 	 */
-	public ResultCollectorController(String searchControllerTitle, AbstractResultView resultView) {
-		super(searchControllerTitle, resultView);
+	private ResultCollectorController(String searchControllerTitle, AbstractResultView resultView) {
+		super(searchControllerTitle, null, resultView);
 	}
 
 	/* (non-Javadoc)

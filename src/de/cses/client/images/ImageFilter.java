@@ -141,7 +141,6 @@ public class ImageFilter extends AbstractFilter {
 	 * 
 	 * @see de.cses.client.ui.AbstractFilter#getSqlWhereClause()
 	 */
-	@Override
 	public ArrayList<String> getSqlWhereClause() {
 		ArrayList<String> result = new ArrayList<String>();
 		String textFieldQuery = "";
