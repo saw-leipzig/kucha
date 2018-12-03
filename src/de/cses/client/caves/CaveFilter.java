@@ -30,6 +30,7 @@ import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer.ExpandMode;
@@ -37,6 +38,7 @@ import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
+import com.sencha.gxt.widget.core.client.form.TextField;
 
 import de.cses.client.StaticTables;
 import de.cses.client.Util;
@@ -67,6 +69,7 @@ public class CaveFilter extends AbstractFilter {
 	private ListView<DistrictEntry, DistrictEntry> districtSelectionLV;
 	private ListView<RegionEntry, RegionEntry> regionSelectionLV;
 	private ListView<SiteEntry, SiteEntry> siteSelectionLV;
+	private TextField searchNameTF;
 
 	interface DistrictProperties extends PropertyAccess<DistrictEntry> {
 		ModelKeyProvider<DistrictEntry> districtID();
@@ -149,19 +152,8 @@ public class CaveFilter extends AbstractFilter {
 	 */
 	@Override
 	protected Widget getFilterUI() {
-//		caveTypeSelection = new ComboBox<CaveTypeEntry>(caveTypeEntryList, caveTypeProps.nameEN(),
-//				new AbstractSafeHtmlRenderer<CaveTypeEntry>() {
-//
-//					@Override
-//					public SafeHtml render(CaveTypeEntry item) {
-//						final CaveTypeViewTemplates ctvTemplates = GWT.create(CaveTypeViewTemplates.class);
-//						return ctvTemplates.caveTypeLabel(item.getNameEN());
-//					}
-//				});
-//		caveTypeSelection.setEmptyText("select cave type");
-//		caveTypeSelection.setTypeAhead(false);
-//		caveTypeSelection.setEditable(false);
-//		caveTypeSelection.setTriggerAction(TriggerAction.ALL);
+		
+		searchNameTF = new TextField();
 		
 		caveTypeSelectionLV = new ListView<CaveTypeEntry, CaveTypeEntry>(caveTypeEntryList, new IdentityValueProvider<CaveTypeEntry>(), new SimpleSafeHtmlCell<CaveTypeEntry>(new AbstractSafeHtmlRenderer<CaveTypeEntry>() {
 			final CaveTypeViewTemplates ctvTemplates = GWT.create(CaveTypeViewTemplates.class);
@@ -245,12 +237,12 @@ public class CaveFilter extends AbstractFilter {
     locationALC.add(regionPanel);
     locationALC.setActiveWidget(caveTypePanel);
 		
-//    BorderLayoutContainer depictionFilterBLC = new BorderLayoutContainer();
-//    depictionFilterBLC.setNorthWidget(caveTypeSelection, new BorderLayoutData(30));
-//    depictionFilterBLC.setCenterWidget(locationALC, new MarginData(5, 0, 0, 0));
-//    depictionFilterBLC.setHeight(450);
+    BorderLayoutContainer depictionFilterBLC = new BorderLayoutContainer();
+    depictionFilterBLC.setNorthWidget(searchNameTF, new BorderLayoutData(20));
+    depictionFilterBLC.setCenterWidget(locationALC, new MarginData(5, 0, 0, 0));
+    depictionFilterBLC.setHeight(450);
 
-    return locationALC;
+    return depictionFilterBLC;
 	}
 
 	/**
@@ -293,11 +285,14 @@ public class CaveFilter extends AbstractFilter {
 	public CaveSearchEntry getSearchEntry() {
 		CaveSearchEntry result = new CaveSearchEntry();
 		
+		if (!searchNameTF.getValue().isEmpty()) {
+			result.setHistoricalName(searchNameTF.getValue());
+		}
+		
 		if (!caveTypeSelectionLV.getSelectionModel().getSelectedItems().isEmpty()) {
 			for (CaveTypeEntry cte : caveTypeSelectionLV.getSelectionModel().getSelectedItems()) {
 				result.getCaveTypeIdList().add(cte.getCaveTypeID());
 			}
-//			result.getCaveTypeIdList().add(caveTypeSelection.getCurrentValue().getCaveTypeID());
 		}
 		
 		if (!siteSelectionLV.getSelectionModel().getSelectedItems().isEmpty()) {

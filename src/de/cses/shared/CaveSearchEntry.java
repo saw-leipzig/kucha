@@ -3,7 +3,8 @@ package de.cses.shared;
 import java.util.ArrayList;
 
 public class CaveSearchEntry extends AbstractSearchEntry {
-	
+
+	private String historicalName = "";
 	private ArrayList<Integer> caveTypeIdList = new ArrayList<Integer>();
 	private ArrayList<Integer> siteIdList = new ArrayList<Integer>();
 	private ArrayList<Integer> districtIdList = new ArrayList<Integer>();
@@ -48,6 +49,14 @@ public class CaveSearchEntry extends AbstractSearchEntry {
 
 	public void setRegionIdList(ArrayList<Integer> regionIdList) {
 		this.regionIdList = regionIdList;
+	}
+
+	public String getHistoricalName() {
+		return historicalName;
+	}
+
+	public void setHistoricalName(String historicalName) {
+		this.historicalName = historicalName;
 	}
 
 }

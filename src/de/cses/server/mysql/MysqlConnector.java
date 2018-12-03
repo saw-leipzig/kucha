@@ -588,42 +588,48 @@ public class MysqlConnector {
 		String regionIdSet = "";
 		PreparedStatement pstmt;
 		String where = "";
-		if (searchEntry.getCaveTypeIdList() != null) {
-			for (int caveTypeID : searchEntry.getCaveTypeIdList()) {
-				caveTypeIdSet += caveTypeIdSet.isEmpty() ? Integer.toString(caveTypeID) : "," + caveTypeID;
-			}
-			if (!caveTypeIdSet.isEmpty()) {
-				where = "CaveTypeID IN (" + caveTypeIdSet + ")";
-			}
+
+		for (int caveTypeID : searchEntry.getCaveTypeIdList()) {
+			caveTypeIdSet += caveTypeIdSet.isEmpty() ? Integer.toString(caveTypeID) : "," + caveTypeID;
 		}
-		if (searchEntry.getSiteIdList() != null) {
-			for (int siteID : searchEntry.getSiteIdList()) {
-				siteIdSet += siteIdSet.isEmpty() ? Integer.toString(siteID) : "," + siteID;
-			}
-			if (!siteIdSet.isEmpty()) {
-				where += where.isEmpty() ? "SiteID IN (" + siteIdSet + ")" : " AND SiteID IN (" + siteIdSet + ")";
-			}
+		if (!caveTypeIdSet.isEmpty()) {
+			where = "CaveTypeID IN (" + caveTypeIdSet + ")";
 		}
-		if (searchEntry.getDistrictIdList() != null) {
-			for (int districtID : searchEntry.getDistrictIdList()) { 
-				districtIdSet += districtIdSet.isEmpty() ? Integer.toString(districtID) : "," + districtID;
-			}
-			if (!districtIdSet.isEmpty()) {
-				where += where.isEmpty() ? "DistrictID IN (" + districtIdSet + ")" : " AND DistrictID IN (" + districtIdSet + ")";
-			}
+		
+		for (int siteID : searchEntry.getSiteIdList()) {
+			siteIdSet += siteIdSet.isEmpty() ? Integer.toString(siteID) : "," + siteID;
 		}
-		if (searchEntry.getRegionIdList() != null) {
-			for (int regionID : searchEntry.getRegionIdList()) {
-				regionIdSet += regionIdSet.isEmpty() ? Integer.toString(regionID) : "," + regionID;
-			}
-			if (!regionIdSet.isEmpty()) {
-				where += where.isEmpty() ? "RegionID IN (" + regionIdSet + ")" : " AND RegionID IN (" + regionIdSet + ")";
-			}
+		if (!siteIdSet.isEmpty()) {
+			where += where.isEmpty() ? "SiteID IN (" + siteIdSet + ")" : " AND SiteID IN (" + siteIdSet + ")";
 		}
+		
+		for (int districtID : searchEntry.getDistrictIdList()) { 
+			districtIdSet += districtIdSet.isEmpty() ? Integer.toString(districtID) : "," + districtID;
+		}
+		if (!districtIdSet.isEmpty()) {
+			where += where.isEmpty() ? "DistrictID IN (" + districtIdSet + ")" : " AND DistrictID IN (" + districtIdSet + ")";
+		}
+
+		for (int regionID : searchEntry.getRegionIdList()) {
+			regionIdSet += regionIdSet.isEmpty() ? Integer.toString(regionID) : "," + regionID;
+		}
+		if (!regionIdSet.isEmpty()) {
+			where += where.isEmpty() ? "RegionID IN (" + regionIdSet + ")" : " AND RegionID IN (" + regionIdSet + ")";
+		}
+		
+		if (!searchEntry.getHistoricalName().isEmpty()) {
+			where += where.isEmpty() ? "(HistoricName LIKE ? OR OptionalHistoricName LIKE ?)" : " AND (HistoricName LIKE ? OR OptionalHistoricName LIKE ?)";
+		}
+
 		System.err.println("searchCaves: where = " + where);
 		
 		try {
+			int i=1; // counter for ? insert
 			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Caves" : "SELECT * FROM Caves WHERE " + where);
+			if (!searchEntry.getHistoricalName().isEmpty()) {
+				pstmt.setString(i++, searchEntry.getHistoricalName());
+				pstmt.setString(i++, searchEntry.getHistoricalName());
+			}
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
 				CaveEntry ce = new CaveEntry(rs.getInt("CaveID"), rs.getString("OfficialNumber"), rs.getString("HistoricName"),
