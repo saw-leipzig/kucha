@@ -45,10 +45,12 @@ public abstract class AbstractSearchController extends ToggleButton {
 		super();
 		this.searchControllerTitle = searchControllerTitle;
 		this.resultView = resultView;
+		this.filter = filter;
 		this.resultView.addSearchSelectHandler(new SelectHandler() {
 			
 			@Override
 			public void onSelect(SelectEvent event) {
+				Util.doLogging("Search Controller: calling invokeSearch()");
 				invokeSearch();
 			}
 		});

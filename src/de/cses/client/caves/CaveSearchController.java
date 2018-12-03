@@ -23,6 +23,7 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
+import de.cses.client.Util;
 import de.cses.client.ui.AbstractSearchController;
 import de.cses.client.ui.EditorListener;
 import de.cses.shared.AbstractEntry;
@@ -52,7 +53,8 @@ public class CaveSearchController extends AbstractSearchController {
 	 */
 	@Override
 	public void invokeSearch() {
-		CaveSearchEntry searchEntry = ((CaveFilter)getFilter()).getSearchEntry();
+		CaveSearchEntry searchEntry = (CaveSearchEntry) getFilter().getSearchEntry();
+		Util.doLogging("search entry received");
 		
 		dbService.searchCaves(searchEntry, new AsyncCallback<ArrayList<CaveEntry>>() {
 			
@@ -75,6 +77,7 @@ public class CaveSearchController extends AbstractSearchController {
 			
 			@Override
 			public void onFailure(Throwable caught) {
+				Util.doLogging("a problem with searchCaves() occured!");
 				caught.printStackTrace();
 			}
 
