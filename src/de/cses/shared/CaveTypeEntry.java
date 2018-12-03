@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 
+ * Copyright 2016-2018
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -13,9 +13,7 @@
  */
 package de.cses.shared;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
-public class CaveTypeEntry implements IsSerializable{
+public class CaveTypeEntry extends AbstractEntry {
 	private int caveTypeID;
 	private String nameEN;
 	private String descriptionEN;
@@ -69,6 +67,11 @@ public class CaveTypeEntry implements IsSerializable{
 	 */
 	public void setSketchName(String sketchName) {
 		this.sketchName = sketchName;
+	}
+
+	@Override
+	public String getUniqueID() {
+		return "CaveType_" + caveTypeID;
 	}
 	
 
