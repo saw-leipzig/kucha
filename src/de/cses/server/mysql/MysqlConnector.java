@@ -586,32 +586,41 @@ public class MysqlConnector {
 		String siteIdSet = "";
 		String districtIdSet = "";
 		String regionIdSet = "";
-		String where = "";
-		for (int caveTypeID : searchEntry.getCaveTypeIdList()) {
-			caveTypeIdSet += caveTypeIdSet.isEmpty() ? Integer.toString(caveTypeID) : "," + caveTypeID;
-		}
-		if (!caveTypeIdSet.isEmpty()) {
-			where = "CaveTypeID IN (" + caveTypeIdSet + ")";
-		}
-		for (int siteID : searchEntry.getSiteIdList()) {
-			siteIdSet += siteIdSet.isEmpty() ? Integer.toString(siteID) : "," + siteID;
-		}
-		if (!siteIdSet.isEmpty()) {
-			where += where.isEmpty() ? "SiteID IN (" + siteIdSet + ")" : " AND SiteID IN (" + siteIdSet + ")";
-		}
-		for (int districtID : searchEntry.getDistrictIdList()) { 
-			districtIdSet += districtIdSet.isEmpty() ? Integer.toString(districtID) : "," + districtID;
-		}
-		if (!districtIdSet.isEmpty()) {
-			where += where.isEmpty() ? "DistrictID IN (" + districtIdSet + ")" : " AND DistrictID IN (" + districtIdSet + ")";
-		}
-		for (int regionID : searchEntry.getRegionIdList()) {
-			regionIdSet += regionIdSet.isEmpty() ? Integer.toString(regionID) : "," + regionID;
-		}
-		if (!regionIdSet.isEmpty()) {
-			where += where.isEmpty() ? "RegionID IN (" + regionIdSet + ")" : " AND RegionID IN (" + regionIdSet + ")";
-		}
 		PreparedStatement pstmt;
+		String where = "";
+		if (searchEntry.getCaveTypeIdList() != null) {
+			for (int caveTypeID : searchEntry.getCaveTypeIdList()) {
+				caveTypeIdSet += caveTypeIdSet.isEmpty() ? Integer.toString(caveTypeID) : "," + caveTypeID;
+			}
+			if (!caveTypeIdSet.isEmpty()) {
+				where = "CaveTypeID IN (" + caveTypeIdSet + ")";
+			}
+		}
+		if (searchEntry.getSiteIdList() != null) {
+			for (int siteID : searchEntry.getSiteIdList()) {
+				siteIdSet += siteIdSet.isEmpty() ? Integer.toString(siteID) : "," + siteID;
+			}
+			if (!siteIdSet.isEmpty()) {
+				where += where.isEmpty() ? "SiteID IN (" + siteIdSet + ")" : " AND SiteID IN (" + siteIdSet + ")";
+			}
+		}
+		if (searchEntry.getDistrictIdList() != null) {
+			for (int districtID : searchEntry.getDistrictIdList()) { 
+				districtIdSet += districtIdSet.isEmpty() ? Integer.toString(districtID) : "," + districtID;
+			}
+			if (!districtIdSet.isEmpty()) {
+				where += where.isEmpty() ? "DistrictID IN (" + districtIdSet + ")" : " AND DistrictID IN (" + districtIdSet + ")";
+			}
+		}
+		if (searchEntry.getRegionIdList() != null) {
+			for (int regionID : searchEntry.getRegionIdList()) {
+				regionIdSet += regionIdSet.isEmpty() ? Integer.toString(regionID) : "," + regionID;
+			}
+			if (!regionIdSet.isEmpty()) {
+				where += where.isEmpty() ? "RegionID IN (" + regionIdSet + ")" : " AND RegionID IN (" + regionIdSet + ")";
+			}
+		}
+		System.err.println("searchCaves: where = " + where);
 		
 		try {
 			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Caves" : "SELECT * FROM Caves WHERE " + where);

@@ -278,108 +278,33 @@ public class CaveFilter extends AbstractFilter {
 			districtEntryList.add(de);
 		}
 	}
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.cses.client.ui.AbstractFilter#getSqlWhereClause()
-	 */
-//	@Override
-//	public ArrayList<String> getSqlWhereClause() {
-//		ArrayList<String> result = new ArrayList<String>();
-//		String districtQuery = null;
-//		String regionQuery = null;
-//		String siteQuery = null;
-//		String sqlQuery = null;
-//		
-//		if (caveTypeSelection.getValue() != null) {
-//			result.add("CaveTypeID=" + caveTypeSelection.getCurrentValue().getCaveTypeID());
-//		}
-//		
-//		for (SiteEntry se : siteSelectionLV.getSelectionModel().getSelectedItems()) {
-//			if (siteQuery == null) {
-//				siteQuery = Integer.toString(se.getSiteID());
-//			} else {
-//				siteQuery = siteQuery.concat(", " + se.getSiteID());
-//			}
-//		}
-//		if (siteQuery != null) {
-//			sqlQuery = "SiteID IN (" + siteQuery + ")";
-//		}
-//		
-//		for (DistrictEntry de : districtSelectionLV.getSelectionModel().getSelectedItems()) {
-//			if (districtQuery == null) {
-//				districtQuery = Integer.toString(de.getDistrictID());
-//			} else {
-//				districtQuery = districtQuery.concat(", " + de.getDistrictID());
-//			}
-//		}
-//		if (districtQuery != null) {
-//			if (sqlQuery == null) {
-//				sqlQuery = "DistrictID IN (" + districtQuery + ")";
-//			} else {
-//				sqlQuery = sqlQuery.concat(" OR DistrictID IN (" + districtQuery + ")");
-//			}
-//		}
-//		
-//		for (RegionEntry re : regionSelectionLV.getSelectionModel().getSelectedItems()) {
-//			if (regionQuery == null) {
-//				regionQuery = Integer.toString(re.getRegionID());
-//			} else {
-//				regionQuery = regionQuery.concat(", " + re.getRegionID());
-//			}
-//		}
-//		if (districtQuery != null) {
-//			if (sqlQuery == null) {
-//				sqlQuery = "RegionID IN (" + regionQuery + ")";
-//			} else {
-//				sqlQuery = sqlQuery.concat(" OR RegionID IN (" + regionQuery + ")");
-//			}
-//		}
-//		
-//		if (sqlQuery != null) {
-//			result.add("(" + sqlQuery + ")");
-//		}
-//		
-//		return result;
-//	}
 
 	@Override
 	public CaveSearchEntry getSearchEntry() {
 		CaveSearchEntry result = new CaveSearchEntry();
 		
-		Util.doLogging("CaveFilter.getSearchEntry() - 1");
 		if (caveTypeSelection.getValue() != null) {
-			ArrayList<Integer> caveTypeIdList = new ArrayList<Integer>();
-			caveTypeIdList.add(caveTypeSelection.getCurrentValue().getCaveTypeID());
-			result.setCaveTypeIdList(caveTypeIdList);
+			result.getCaveTypeIdList().add(caveTypeSelection.getCurrentValue().getCaveTypeID());
 		}
 		
-		Util.doLogging("CaveFilter.getSearchEntry() - 2");
 		if (!siteSelectionLV.getSelectionModel().getSelectedItems().isEmpty()) {
-			ArrayList<Integer> siteIdList = new ArrayList<Integer>();
 			for (SiteEntry se : siteSelectionLV.getSelectionModel().getSelectedItems()) {
-				siteIdList.add(se.getSiteID());
+				result.getSiteIdList().add(se.getSiteID());
 			}
 		}
 
-		Util.doLogging("CaveFilter.getSearchEntry() - 3");
 		if (!districtSelectionLV.getSelectionModel().getSelectedItems().isEmpty()) {
-			ArrayList<Integer> districtIdList = new ArrayList<Integer>();
 			for (DistrictEntry de : districtSelectionLV.getSelectionModel().getSelectedItems()) {
-				districtIdList.add(de.getDistrictID());
+				result.getDistrictIdList().add(de.getDistrictID());
 			}
 		}
 
-		Util.doLogging("CaveFilter.getSearchEntry() - 4");
 		if (!regionSelectionLV.getSelectionModel().getSelectedItems().isEmpty()) {
-			ArrayList<Integer> regionIdList = new ArrayList<Integer>();
 			for (RegionEntry re : regionSelectionLV.getSelectionModel().getSelectedItems()) {
-				regionIdList.add(re.getRegionID());
+				result.getRegionIdList().add(re.getRegionID());
 			}
 		}
 
-		Util.doLogging("CaveFilter.getSearchEntry() - 5");
 		return result;
 	}
 

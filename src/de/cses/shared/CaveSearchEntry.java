@@ -4,10 +4,10 @@ import java.util.ArrayList;
 
 public class CaveSearchEntry extends AbstractSearchEntry {
 	
-	private ArrayList<Integer> caveTypeIdList = null;
-	private ArrayList<Integer> siteIdList = null;
-	private ArrayList<Integer> districtIdList = null;
-	private ArrayList<Integer> regionIdList = null;
+	private ArrayList<Integer> caveTypeIdList = new ArrayList<Integer>();
+	private ArrayList<Integer> siteIdList = new ArrayList<Integer>();
+	private ArrayList<Integer> districtIdList = new ArrayList<Integer>();
+	private ArrayList<Integer> regionIdList = new ArrayList<Integer>();
 
 	public CaveSearchEntry(boolean orSearch) {
 		super(orSearch);
