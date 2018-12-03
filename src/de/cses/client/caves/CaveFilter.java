@@ -56,7 +56,8 @@ public class CaveFilter extends AbstractFilter {
 
 	private CaveTypeProperties caveTypeProps;
 	private ListStore<CaveTypeEntry> caveTypeEntryList;
-	private ComboBox<CaveTypeEntry> caveTypeSelection;
+	private ListView<CaveTypeEntry, CaveTypeEntry> caveTypeSelectionLV;
+//	private ComboBox<CaveTypeEntry> caveTypeSelection;
 	private SiteProperties siteProps;
 	private ListStore<SiteEntry> siteEntryList;
 	private RegionProperties regionProps;
@@ -108,7 +109,8 @@ public class CaveFilter extends AbstractFilter {
 
 	interface CaveTypeProperties extends PropertyAccess<CaveTypeEntry> {
 		ModelKeyProvider<CaveTypeEntry> caveTypeID();
-		LabelProvider<CaveTypeEntry> nameEN();
+		LabelProvider<CaveTypeEntry> uniqueID();
+		ValueProvider<CaveTypeEntry, String> nameEN();
 	}
 
 	interface CaveTypeViewTemplates extends XTemplates {
@@ -147,28 +149,35 @@ public class CaveFilter extends AbstractFilter {
 	 */
 	@Override
 	protected Widget getFilterUI() {
-		caveTypeSelection = new ComboBox<CaveTypeEntry>(caveTypeEntryList, caveTypeProps.nameEN(),
-				new AbstractSafeHtmlRenderer<CaveTypeEntry>() {
-
-					@Override
-					public SafeHtml render(CaveTypeEntry item) {
-						final CaveTypeViewTemplates ctvTemplates = GWT.create(CaveTypeViewTemplates.class);
-						return ctvTemplates.caveTypeLabel(item.getNameEN());
-					}
-				});
-		caveTypeSelection.setEmptyText("select cave type");
-		caveTypeSelection.setTypeAhead(false);
-		caveTypeSelection.setEditable(false);
-		caveTypeSelection.setTriggerAction(TriggerAction.ALL);
-//		caveTypeSelection.addSelectionHandler(new SelectionHandler<CaveTypeEntry>() {
+//		caveTypeSelection = new ComboBox<CaveTypeEntry>(caveTypeEntryList, caveTypeProps.nameEN(),
+//				new AbstractSafeHtmlRenderer<CaveTypeEntry>() {
 //
-//			@Override
-//			public void onSelection(SelectionEvent<CaveTypeEntry> event) {
-//				
-//			}
-//		});
-//		caveTypeSelection.setWidth(180);
+//					@Override
+//					public SafeHtml render(CaveTypeEntry item) {
+//						final CaveTypeViewTemplates ctvTemplates = GWT.create(CaveTypeViewTemplates.class);
+//						return ctvTemplates.caveTypeLabel(item.getNameEN());
+//					}
+//				});
+//		caveTypeSelection.setEmptyText("select cave type");
+//		caveTypeSelection.setTypeAhead(false);
+//		caveTypeSelection.setEditable(false);
+//		caveTypeSelection.setTriggerAction(TriggerAction.ALL);
+		
+		caveTypeSelectionLV = new ListView<CaveTypeEntry, CaveTypeEntry>(caveTypeEntryList, new IdentityValueProvider<CaveTypeEntry>(), new SimpleSafeHtmlCell<CaveTypeEntry>(new AbstractSafeHtmlRenderer<CaveTypeEntry>() {
+			final CaveTypeViewTemplates ctvTemplates = GWT.create(CaveTypeViewTemplates.class);
 
+			@Override
+			public SafeHtml render(CaveTypeEntry entry) {
+				return ctvTemplates.caveTypeLabel(entry.getNameEN());
+			}
+			
+		}));
+		caveTypeSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+		
+		ContentPanel caveTypePanel = new ContentPanel();
+		caveTypePanel.setHeaderVisible(true);
+		caveTypePanel.setHeading("Cave Types");
+		caveTypePanel.add(caveTypeSelectionLV);
 		
 		siteSelectionLV = new ListView<SiteEntry, SiteEntry>(siteEntryList, new IdentityValueProvider<SiteEntry>(), new SimpleSafeHtmlCell<SiteEntry>(new AbstractSafeHtmlRenderer<SiteEntry>() {
 			final SiteViewTemplates svTemplates = GWT.create(SiteViewTemplates.class);
@@ -230,17 +239,18 @@ public class CaveFilter extends AbstractFilter {
 		
 		AccordionLayoutContainer locationALC = new AccordionLayoutContainer();
     locationALC.setExpandMode(ExpandMode.SINGLE_FILL);
+    locationALC.add(caveTypePanel);
     locationALC.add(sitePanel);
     locationALC.add(districtPanel);
     locationALC.add(regionPanel);
-    locationALC.setActiveWidget(sitePanel);
+    locationALC.setActiveWidget(caveTypePanel);
 		
-    BorderLayoutContainer depictionFilterBLC = new BorderLayoutContainer();
-    depictionFilterBLC.setNorthWidget(caveTypeSelection, new BorderLayoutData(30));
-    depictionFilterBLC.setCenterWidget(locationALC, new MarginData(5, 0, 0, 0));
-    depictionFilterBLC.setHeight(450);
+//    BorderLayoutContainer depictionFilterBLC = new BorderLayoutContainer();
+//    depictionFilterBLC.setNorthWidget(caveTypeSelection, new BorderLayoutData(30));
+//    depictionFilterBLC.setCenterWidget(locationALC, new MarginData(5, 0, 0, 0));
+//    depictionFilterBLC.setHeight(450);
 
-    return depictionFilterBLC;
+    return locationALC;
 	}
 
 	/**
@@ -283,8 +293,11 @@ public class CaveFilter extends AbstractFilter {
 	public CaveSearchEntry getSearchEntry() {
 		CaveSearchEntry result = new CaveSearchEntry();
 		
-		if (caveTypeSelection.getValue() != null) {
-			result.getCaveTypeIdList().add(caveTypeSelection.getCurrentValue().getCaveTypeID());
+		if (!caveTypeSelectionLV.getSelectionModel().getSelectedItems().isEmpty()) {
+			for (CaveTypeEntry cte : caveTypeSelectionLV.getSelectionModel().getSelectedItems()) {
+				result.getCaveTypeIdList().add(cte.getCaveTypeID());
+			}
+//			result.getCaveTypeIdList().add(caveTypeSelection.getCurrentValue().getCaveTypeID());
 		}
 		
 		if (!siteSelectionLV.getSelectionModel().getSelectedItems().isEmpty()) {
