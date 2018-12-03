@@ -627,8 +627,8 @@ public class MysqlConnector {
 			int i=1; // counter for ? insert
 			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Caves" : "SELECT * FROM Caves WHERE " + where);
 			if (!searchEntry.getHistoricalName().isEmpty()) {
-				pstmt.setString(i++, searchEntry.getHistoricalName());
-				pstmt.setString(i++, searchEntry.getHistoricalName());
+				pstmt.setString(i++, "%" + searchEntry.getHistoricalName() + "%");
+				pstmt.setString(i++, "%" + searchEntry.getHistoricalName() + "%");
 			}
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {

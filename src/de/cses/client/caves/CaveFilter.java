@@ -154,6 +154,7 @@ public class CaveFilter extends AbstractFilter {
 	protected Widget getFilterUI() {
 		
 		searchNameTF = new TextField();
+		searchNameTF.setEmptyText("search historical names");
 		
 		caveTypeSelectionLV = new ListView<CaveTypeEntry, CaveTypeEntry>(caveTypeEntryList, new IdentityValueProvider<CaveTypeEntry>(), new SimpleSafeHtmlCell<CaveTypeEntry>(new AbstractSafeHtmlRenderer<CaveTypeEntry>() {
 			final CaveTypeViewTemplates ctvTemplates = GWT.create(CaveTypeViewTemplates.class);
