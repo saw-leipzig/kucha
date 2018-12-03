@@ -54,7 +54,6 @@ public class CaveSearchController extends AbstractSearchController {
 	@Override
 	public void invokeSearch() {
 		CaveSearchEntry searchEntry = (CaveSearchEntry) getFilter().getSearchEntry();
-		Util.doLogging("search entry received");
 		
 		dbService.searchCaves(searchEntry, new AsyncCallback<ArrayList<CaveEntry>>() {
 			
@@ -77,7 +76,6 @@ public class CaveSearchController extends AbstractSearchController {
 			
 			@Override
 			public void onFailure(Throwable caught) {
-				Util.doLogging("a problem with searchCaves() occured!");
 				caught.printStackTrace();
 			}
 
@@ -98,45 +96,6 @@ public class CaveSearchController extends AbstractSearchController {
 
 		});
 		
-//		dbService.getCaves(sqlWhere, new AsyncCallback<ArrayList<CaveEntry>>() {
-//			
-//			private String getComparisonLabel(CaveEntry ce) {
-//				StaticTables stab = StaticTables.getInstance();
-//				String shortName = stab.getSiteEntries().get(ce.getSiteID()).getShortName();
-//				int len = 0;
-//				while ((len < ce.getOfficialNumber().length()) && isInteger(ce.getOfficialNumber().substring(0, len+1))) {
-//					++len;
-//				}
-//				switch (len) {
-//					case 1:
-//						return shortName + "  " + ce.getOfficialNumber();
-//					case 2:
-//						return shortName + " " + ce.getOfficialNumber();
-//					default:
-//						return shortName + ce.getOfficialNumber();
-//				}
-//			}
-//			
-//			@Override
-//			public void onFailure(Throwable caught) {
-//				caught.printStackTrace();
-//			}
-//
-//			@Override
-//			public void onSuccess(ArrayList<CaveEntry> result) {
-//				result.sort(new Comparator<CaveEntry>() {
-//
-//					@Override
-//					public int compare(CaveEntry ce1, CaveEntry ce2) {
-//						return getComparisonLabel(ce1).compareTo(getComparisonLabel(ce2));
-//					}
-//				});
-//				getResultView().reset();
-//				for (CaveEntry ce : result) {
-//					getResultView().addResult(new CaveView(ce));	
-//				}
-//			}
-//		});
 	}
 
 	private boolean isInteger(String str) {

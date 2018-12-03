@@ -53,6 +53,7 @@ import de.cses.client.Util;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.shared.AbstractSearchEntry;
 import de.cses.shared.CaveEntry;
+import de.cses.shared.DepictionSearchEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.LocationEntry;
@@ -113,7 +114,7 @@ public class DepictionFilter extends AbstractFilter {
 	
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 
-	private TextField shortNameSearch;
+	private TextField shortNameSearchTF;
 	private CaveProperties caveProps;
 	private IconographyProperties icoProps;
 	private ListStore<CaveEntry> caveEntryLS;
@@ -284,18 +285,11 @@ public class DepictionFilter extends AbstractFilter {
 		iconographyPanel.addTool(selectorTB);
 		
 		/**
-		 * assemble shortNameSearch
+		 * assemble shortNameSearchTF
 		 */
 		
-		shortNameSearch = new TextField();
-		shortNameSearch.setEmptyText("search short name");
-		// TODO 
-		shortNameSearch.addValidator(new RegExValidator("^[a-zA-Z0-9 _\\-]*$", "We are working on a new search interface. Currently only a-z, A-Z, 0-9, _, - and [SPACE] are allowed."));
-		shortNameSearch.setAutoValidate(true);
-
-		FramedPanel shortNamePanel = new FramedPanel();
-		shortNamePanel.setHeading("Shortname search");
-		shortNamePanel.add(shortNameSearch);		
+		shortNameSearchTF = new TextField();
+		shortNameSearchTF.setEmptyText("search short name");
 
 		/**
 		 * assemble current location selection
@@ -349,7 +343,7 @@ public class DepictionFilter extends AbstractFilter {
     depictionFilterALC.setActiveWidget(cavePanel);
 
     BorderLayoutContainer depictionFilterBLC = new BorderLayoutContainer();
-    depictionFilterBLC.setNorthWidget(shortNamePanel, new BorderLayoutData(60));
+    depictionFilterBLC.setNorthWidget(shortNameSearchTF, new BorderLayoutData(20));
     depictionFilterBLC.setCenterWidget(depictionFilterALC, new MarginData(5, 0, 0, 0));
     depictionFilterBLC.setHeight(450);
 
@@ -361,8 +355,8 @@ public class DepictionFilter extends AbstractFilter {
 	 */
 	public ArrayList<String> getSqlWhereClause() {
 		sqlWhereClause = new ArrayList<String>();
-		if ((shortNameSearch.getValue() != null) && (shortNameSearch.getValue().length() > 0)) {
-			sqlWhereClause.add("ShortName LIKE '%" + shortNameSearch.getValue().replace("_", "\\_") + "%'");
+		if ((shortNameSearchTF.getValue() != null) && (shortNameSearchTF.getValue().length() > 0)) {
+			sqlWhereClause.add("ShortName LIKE '%" + shortNameSearchTF.getValue().replace("_", "\\_") + "%'");
 		}
 
 		String locationQuery = null;
@@ -435,8 +429,27 @@ public class DepictionFilter extends AbstractFilter {
 
 	@Override
 	public AbstractSearchEntry getSearchEntry() {
-		// TODO Auto-generated method stub
-		return null;
+		DepictionSearchEntry searchEntry = new DepictionSearchEntry();
+		
+		if (!shortNameSearchTF.getValue().isEmpty()) {
+			searchEntry.setShortName(shortNameSearchTF.getValue());
+		}
+		
+		for (CaveEntry ce : caveSelectionLV.getSelectionModel().getSelectedItems()) {
+			searchEntry.getCaveIdList().add(ce.getCaveID());
+		}
+		
+		for (LocationEntry le : locationSelectionLV.getSelectionModel().getSelectedItems()) {
+			searchEntry.getLocationIdList().add(le.getLocationID());
+		}
+		
+		for (IconographyEntry ie : icoSelector.getSelectedIconography()) {
+			searchEntry.getIconographyIdList().add(ie.getIconographyID());
+		}
+		
+		searchEntry.setCorrelationFactor(iconographySpinnerField.isEnabled() ? iconographySpinnerField.getValue() : 0);
+		
+		return searchEntry;
 	}
 
 }

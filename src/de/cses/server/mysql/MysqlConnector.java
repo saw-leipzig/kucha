@@ -41,6 +41,7 @@ import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
 import de.cses.shared.CurrentLocationEntry;
 import de.cses.shared.DepictionEntry;
+import de.cses.shared.DepictionSearchEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
@@ -4428,6 +4429,82 @@ public class MysqlConnector {
 			return false;
 		}
 		return rowsChangedCount > 0;
+	}
+
+	/**
+	 * 
+	 * @param searchEntry
+	 * @return
+	 */
+	public ArrayList<DepictionEntry> searchDepictions(DepictionSearchEntry searchEntry) {
+		// TODO Auto-generated method stub
+		/*
+		 * SELECT * FROM Depictions WHERE DepictionID IN (SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (1092,1108,1220,1221,1222,1236,1317,2290) GROUP BY DepictionID HAVING (COUNT(DepictionID) >= 3))
+		 */
+		ArrayList<DepictionEntry> results = new ArrayList<DepictionEntry>();
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		String where = "";
+		
+		if (!searchEntry.getShortName().isEmpty()) {
+			where = "ShortName LIKE ?";
+		}
+
+		String caveIDs="";
+		for (int caveID : searchEntry.getCaveIdList()) {
+			caveIDs += caveIDs.isEmpty() ? Integer.toString(caveID) : "," + caveID;
+		}
+		if (!caveIDs.isEmpty()) {
+			where += where.isEmpty() ? "CaveID IN (" + caveIDs + ")" : "AND CaveID IN (" + caveIDs + ")";
+		}
+		
+		String locationIDs = "";
+		for (int locationID : searchEntry.getLocationIdList()) {
+			locationIDs += locationIDs.isEmpty() ? Integer.toString(locationID) : "," + locationID;
+		}
+		if (!locationIDs.isEmpty()) {
+			where += where.isEmpty() ? "CurrentLocationID IN (" + locationIDs + ")" : " AND CurrentLocationID IN (" + locationIDs + ")";
+		}
+		
+		String iconographyIDs = "";
+		for (int iconographyID : searchEntry.getIconographyIdList()) {
+			iconographyIDs += iconographyIDs.isEmpty() ? Integer.toString(iconographyID) : "," + iconographyID;
+		}
+		if (!iconographyIDs.isEmpty()) {
+			where += where.isEmpty() 
+					? "DepictionID IN (SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (" + iconographyIDs + ") GROUP BY DepictionID HAVING (COUNT(DepictionID) >= " 
+						+ searchEntry.getCorrelationFactor() + "))"
+					: "AND DepictionID IN (SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (" + iconographyIDs + ") GROUP BY DepictionID HAVING (COUNT(DepictionID) >= " 
+					+ searchEntry.getCorrelationFactor() + "))";
+		}
+		
+		try {
+			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Depictions" : "SELECT * FROM Depictions WHERE " + where);
+			if (!searchEntry.getShortName().isEmpty()) {
+				pstmt.setString(1, "%" + searchEntry.getShortName() + "%");
+			}
+
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				DepictionEntry de = new DepictionEntry(rs.getInt("DepictionID"), rs.getInt("StyleID"), rs.getString("Inscriptions"),
+						rs.getString("SeparateAksaras"), rs.getString("Dating"), rs.getString("Description"), rs.getString("BackgroundColour"),
+						rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"), rs.getDouble("Width"), rs.getDouble("Height"),
+						getExpedition(rs.getInt("ExpeditionID")), rs.getDate("PurchaseDate"), getLocation(rs.getInt("CurrentLocationID")), rs.getString("InventoryNumber"),
+						getVendor(rs.getInt("VendorID")), rs.getInt("StoryID"), getCave(rs.getInt("CaveID")), rs.getInt("WallID"), rs.getInt("AbsoluteLeft"),
+						rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes"),
+						rs.getInt("MasterImageID"), rs.getBoolean("OpenAccess"), rs.getString("LastChangedByUser"), rs.getString("LastChangedOnDate"));
+				de.setRelatedImages(getRelatedImages(de.getDepictionID()));
+				de.setRelatedBibliographyList(getRelatedBibliographyFromDepiction(de.getDepictionID()));
+				de.setRelatedIconographyList(getRelatedIconography(de.getDepictionID()));
+				results.add(de);
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return results;
 	}
 
 }
