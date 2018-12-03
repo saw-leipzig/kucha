@@ -350,54 +350,6 @@ public class DepictionFilter extends AbstractFilter {
     return depictionFilterBLC;
 	}
 
-	/* (non-Javadoc)
-	 * @see de.cses.client.ui.AbstractFilter#getSqlWhereClause()
-	 */
-	public ArrayList<String> getSqlWhereClause() {
-		sqlWhereClause = new ArrayList<String>();
-		if ((shortNameSearchTF.getValue() != null) && (shortNameSearchTF.getValue().length() > 0)) {
-			sqlWhereClause.add("ShortName LIKE '%" + shortNameSearchTF.getValue().replace("_", "\\_") + "%'");
-		}
-
-		String locationQuery = null;
-		for (LocationEntry le : locationSelectionLV.getSelectionModel().getSelectedItems()) {
-			if (locationQuery == null) {
-				locationQuery = Integer.toString(le.getLocationID());
-			} else {
-				locationQuery = locationQuery.concat(", " + le.getLocationID());
-			}
-		}
-		if (locationQuery != null) {
-			sqlWhereClause.add("CurrentLocationID IN (" + locationQuery + ")");
-		}		
-
-		String caveQuery = null;
-		for (CaveEntry ce : caveSelectionLV.getSelectionModel().getSelectedItems()) {
-			if (caveQuery == null) {
-				caveQuery = Integer.toString(ce.getCaveID());
-			} else {
-				caveQuery = caveQuery.concat(", " + ce.getCaveID());
-			}
-		}
-		if (caveQuery != null) {
-			sqlWhereClause.add("CaveID IN (" + caveQuery + ")");
-		}
-		
-		return sqlWhereClause;
-	}
-	
-	public String getRelatedIconographyIDs() {
-		String iconographyIDs = null;
-		for (IconographyEntry ie : icoSelector.getSelectedIconography()) {
-			iconographyIDs = (iconographyIDs == null) ? Integer.toString(ie.getIconographyID()) : iconographyIDs.concat("," + ie.getIconographyID());
-		}
-		return iconographyIDs;
-	}
-	
-	public int getCorrelationFactor() {
-		return iconographySpinnerField.isEnabled() ? iconographySpinnerField.getValue() : 0;
-	}
-	
 	private void showIconographySelection() {
 		if (extendedFilterDialog == null) {
 			extendedFilterDialog = new PopupPanel();
@@ -443,7 +395,7 @@ public class DepictionFilter extends AbstractFilter {
 			searchEntry.getLocationIdList().add(le.getLocationID());
 		}
 		
-		for (IconographyEntry ie : icoSelector.getSelectedIconography()) {
+		for (IconographyEntry ie : selectedIconographyLS.getAll()) {
 			searchEntry.getIconographyIdList().add(ie.getIconographyID());
 		}
 		

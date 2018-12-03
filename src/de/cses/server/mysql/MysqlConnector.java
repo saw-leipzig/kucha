@@ -4475,7 +4475,7 @@ public class MysqlConnector {
 					? "DepictionID IN (SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (" + iconographyIDs + ") GROUP BY DepictionID HAVING (COUNT(DepictionID) >= " 
 						+ searchEntry.getCorrelationFactor() + "))"
 					: "AND DepictionID IN (SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (" + iconographyIDs + ") GROUP BY DepictionID HAVING (COUNT(DepictionID) >= " 
-					+ searchEntry.getCorrelationFactor() + "))";
+						+ searchEntry.getCorrelationFactor() + "))";
 		}
 		
 		try {

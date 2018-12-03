@@ -55,7 +55,6 @@ public class DepictionSearchController extends AbstractSearchController {
 	public void invokeSearch() {
 		DepictionSearchEntry searchEntry = (DepictionSearchEntry) getFilter().getSearchEntry();
 
-		
 		dbService.searchDepictions(searchEntry, new AsyncCallback<ArrayList<DepictionEntry>>() {
 
 			@Override
