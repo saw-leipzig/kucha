@@ -30,6 +30,8 @@ import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
+import com.sencha.gxt.dnd.core.client.DndDropEvent;
+import com.sencha.gxt.dnd.core.client.DropTarget;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
@@ -53,6 +55,7 @@ import de.cses.client.Util;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.shared.AbstractSearchEntry;
 import de.cses.shared.CaveEntry;
+import de.cses.shared.DepictionEntry;
 import de.cses.shared.DepictionSearchEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.IconographyEntry;
@@ -273,6 +276,28 @@ public class DepictionFilter extends AbstractFilter {
 		iconographyPanel.setHeaderVisible(true);
 		iconographyPanel.setHeading("Iconography & Pictorial Element search");
 		iconographyPanel.add(iconographyBLC);
+
+		new DropTarget(iconographyPanel) {
+
+			@Override
+			protected void onDragDrop(DndDropEvent event) {
+				super.onDragDrop(event);
+				if (event.getData() instanceof DepictionEntry) {
+					DepictionEntry de = (DepictionEntry) event.getData();
+					selectedIconographyLS.clear();
+					selectedIconographyLS.addAll(de.getRelatedIconographyList());
+					if ((de.getRelatedIconographyList() != null) && (selectedIconographyLS.size() > 0)) {
+						iconographySpinnerField.setEnabled(true);
+						iconographySpinnerField.setValue(selectedIconographyLS.size());
+						iconographySpinnerField.setMaxValue(selectedIconographyLS.size());
+					} else {
+						iconographySpinnerField.setEnabled(false);
+					}
+				}
+			}
+			
+		};
+		
 		ToolButton selectorTB = new ToolButton(ToolButton.GEAR);
 		selectorTB.setToolTip(Util.createToolTip("Open Iconography & Pictorial Element selection"));
 		selectorTB.addSelectHandler(new SelectHandler() {
@@ -381,26 +406,33 @@ public class DepictionFilter extends AbstractFilter {
 
 	@Override
 	public AbstractSearchEntry getSearchEntry() {
+		Util.doLogging("DepictionFilter.getSearchEntry() - 1");
 		DepictionSearchEntry searchEntry = new DepictionSearchEntry();
 		
+		Util.doLogging("DepictionFilter.getSearchEntry() - 2");
 		if (!shortNameSearchTF.getValue().isEmpty()) {
 			searchEntry.setShortName(shortNameSearchTF.getValue());
 		}
 		
+		Util.doLogging("DepictionFilter.getSearchEntry() - 3");
 		for (CaveEntry ce : caveSelectionLV.getSelectionModel().getSelectedItems()) {
 			searchEntry.getCaveIdList().add(ce.getCaveID());
 		}
 		
+		Util.doLogging("DepictionFilter.getSearchEntry() - 4");
 		for (LocationEntry le : locationSelectionLV.getSelectionModel().getSelectedItems()) {
 			searchEntry.getLocationIdList().add(le.getLocationID());
 		}
 		
+		Util.doLogging("DepictionFilter.getSearchEntry() - 5");
 		for (IconographyEntry ie : selectedIconographyLS.getAll()) {
 			searchEntry.getIconographyIdList().add(ie.getIconographyID());
 		}
 		
+		Util.doLogging("DepictionFilter.getSearchEntry() - 6");
 		searchEntry.setCorrelationFactor(iconographySpinnerField.isEnabled() ? iconographySpinnerField.getValue() : 0);
 		
+		Util.doLogging("DepictionFilter.getSearchEntry() - 7");
 		return searchEntry;
 	}
 
