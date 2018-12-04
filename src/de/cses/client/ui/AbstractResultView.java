@@ -77,7 +77,7 @@ public abstract class AbstractResultView extends Portlet {
 		getHeader().addTool(plusToolButton);
 		
 		minTB = new ToolButton(ToolButton.MINIMIZE);
-		minTB.setToolTip(Util.createToolTip("minimise"));
+		minTB.setToolTip(Util.createToolTip("small window"));
 		minTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
@@ -91,7 +91,7 @@ public abstract class AbstractResultView extends Portlet {
 		minTB.setVisible(false);
 
 		maxTB= new ToolButton(ToolButton.MAXIMIZE);
-		maxTB.setToolTip(Util.createToolTip("maximise"));
+		maxTB.setToolTip(Util.createToolTip("large window"));
 		maxTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
