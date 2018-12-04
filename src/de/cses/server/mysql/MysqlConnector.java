@@ -491,7 +491,7 @@ public class MysqlConnector {
 			where += where.isEmpty() ? "Filename LIKE ?" : "AND Filename LIKE ?";
 		}
 		if (searchEntry.getDaysSinceUploadSearch() > 0) {
-			where += where.isEmpty() ? "DATEDIFF(NOW(),AddedOn)<=" + searchEntry.getDaysSinceUploadSearch() : "AND DATEDIFF(NOW(),AddedOn)<=" + searchEntry.getDaysSinceUploadSearch();
+			where += where.isEmpty() ? "DATEDIFF(NOW(),AddedOn)<=" + searchEntry.getDaysSinceUploadSearch() : " AND DATEDIFF(NOW(),AddedOn)<=" + searchEntry.getDaysSinceUploadSearch();
 		}
 		String imageTypeIDs = "";
 		for (int imageTypeID : searchEntry.getImageTypeIdList()) {

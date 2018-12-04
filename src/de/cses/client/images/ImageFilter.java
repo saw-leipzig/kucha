@@ -140,32 +140,26 @@ public class ImageFilter extends AbstractFilter {
 	public AbstractSearchEntry getSearchEntry() {
 		ImageSearchEntry entry = new ImageSearchEntry();
 
-		Util.doLogging("ImageFilter.getSearchEntry - 1");
 		if (titleSearch.getValue() != null && !titleSearch.getValue().isEmpty()) {
 			entry.setTitleSearch(titleSearch.getValue());
 		}
 		
-		Util.doLogging("ImageFilter.getSearchEntry - 2");
 		if (copyrightSearch.getValue() != null && !copyrightSearch.getValue().isEmpty()) {
 			entry.setCopyrightSearch(copyrightSearch.getValue());
 		}
 		
-		Util.doLogging("ImageFilter.getSearchEntry - 3");
 		if (filenameSearch.getValue() != null && !filenameSearch.getValue().isEmpty()) {
 			entry.setFilenameSearch(filenameSearch.getValue());
 		}
 		
-		Util.doLogging("ImageFilter.getSearchEntry - 4");
 		if (daysSinceUploadSearch.getValue() != null && daysSinceUploadSearch.getValue() > 0) {
 			entry.setDaysSinceUploadSearch(daysSinceUploadSearch.getValue());
 		}
 		
-		Util.doLogging("ImageFilter.getSearchEntry - 5");
 		for (ImageTypeEntry ite : selectedImagesTypesList.getAll()) {
 			entry.getImageTypeIdList().add(ite.getImageTypeID());
 		}
 
-		Util.doLogging("ImageFilter.getSearchEntry - 6");
 		return entry;
 	}
 
