@@ -47,6 +47,8 @@ public abstract class AbstractResultView extends Portlet {
 	private FlowLayoutContainer resultContainer;
 	private MarginData resultLayoutData;
 	private String title;
+	private ToolButton minTB;
+	private ToolButton maxTB;
 
 	public AbstractResultView(String title) {
 		super();
@@ -74,27 +76,32 @@ public abstract class AbstractResultView extends Portlet {
 		plusToolButton.setToolTip(Util.createToolTip("Add New"));
 		getHeader().addTool(plusToolButton);
 		
-		ToolButton toolButton = new ToolButton(ToolButton.MINIMIZE);
-		toolButton.setToolTip(Util.createToolTip("minimise"));
-		toolButton.addSelectHandler(new SelectHandler() {
+		minTB = new ToolButton(ToolButton.MINIMIZE);
+		minTB.setToolTip(Util.createToolTip("minimise"));
+		minTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
 			public void onSelect(SelectEvent event) {
 				setHeight(MIN_HEIGHT);
+				minTB.setVisible(false);
+				maxTB.setVisible(true);
 			}
 		});
-		getHeader().addTool(toolButton);
+		getHeader().addTool(minTB);
+		minTB.setVisible(false);
 
-		toolButton = new ToolButton(ToolButton.MAXIMIZE);
-		toolButton.setToolTip(Util.createToolTip("maximise"));
-		toolButton.addSelectHandler(new SelectHandler() {
+		maxTB= new ToolButton(ToolButton.MAXIMIZE);
+		maxTB.setToolTip(Util.createToolTip("maximise"));
+		maxTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
 			public void onSelect(SelectEvent event) {
 				setHeight(MAX_HEIGHT);
+				maxTB.setVisible(false);
+				minTB.setVisible(true);
 			}
 		});
-		getHeader().addTool(toolButton);
+		getHeader().addTool(maxTB);
 		
 		resetButton = new ToolButton(ToolButton.REFRESH);
 		resetButton.setToolTip(Util.createToolTip("Reset Results"));
