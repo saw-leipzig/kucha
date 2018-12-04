@@ -490,6 +490,9 @@ public class MysqlConnector {
 		if (searchEntry.getFilenameSearch() != null && !searchEntry.getFilenameSearch().isEmpty()) {
 			where += where.isEmpty() ? "Filename LIKE ?" : "AND Filename LIKE ?";
 		}
+		if (searchEntry.getDaysSinceUploadSearch() > 0) {
+			where += where.isEmpty() ? "DATEDIFF(NOW(),AddedOn)<=" + searchEntry.getDaysSinceUploadSearch() : "AND DATEDIFF(NOW(),AddedOn)<=" + searchEntry.getDaysSinceUploadSearch();
+		}
 		String imageTypeIDs = "";
 		for (int imageTypeID : searchEntry.getImageTypeIdList()) {
 			imageTypeIDs += imageTypeIDs.isEmpty() ? Integer.toString(imageTypeID) : "," + imageTypeID;
@@ -497,7 +500,7 @@ public class MysqlConnector {
 		if (!imageTypeIDs.isEmpty()) {
 			where += where.isEmpty() ? "ImageTypeID IN (" + imageTypeIDs + ")" : " AND ImageTypeID IN (" + imageTypeIDs + ")" ;
 		}
-		
+		System.out.println("SELECT * FROM Images" + (!where.isEmpty() ? " WHERE " + where : "") + " ORDER BY Title Asc");
 		try {
 			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Images ORDER BY Title Asc" : "SELECT * FROM Images WHERE " + where + " ORDER BY Title Asc");
 			int i = 1; // counter to fill ? in where clause
@@ -523,7 +526,8 @@ public class MysqlConnector {
 			e.printStackTrace();
 			return null;
 		}
-		return results;	}
+		return results;	
+	}
 
 	/**
 	 * 
