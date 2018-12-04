@@ -1880,7 +1880,7 @@ public class MysqlConnector {
 						? "SELECT BibID FROM EditorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE ((FirstName LIKE ?) OR (LastName LIKE ?) OR (Institution LIKE ?))))"
 						: " INTERSECT SELECT BibID FROM EditorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE ((FirstName LIKE ?) OR (LastName LIKE ?) OR (Institution LIKE ?))))";
 			}
-			where = "BibID IN ((" + authorTerm + ") UNION (" + editorTerm + "))";
+			where = "BibID IN (" + authorTerm + ") OR BibID IN (" + editorTerm + ")";
 		}
 		
 		if (searchEntry.getPublisherSearch() != null && !searchEntry.getPublisherSearch().isEmpty()) {
