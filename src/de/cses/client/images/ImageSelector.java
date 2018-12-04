@@ -60,6 +60,7 @@ import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.Util;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.ImageEntry;
+import de.cses.shared.ImageSearchEntry;
 
 public class ImageSelector implements IsWidget {
 
@@ -298,17 +299,9 @@ public class ImageSelector implements IsWidget {
 	 * @see imageEntryList
 	 */
 	private void refreshImages() {
-		String sqlWhere = null;
-		ArrayList<String> sqlWhereList = imgFilter.getSqlWhereClause();
-		for (int i = 0; i < sqlWhereList.size(); ++i) {
-			if (i == 0) {
-				sqlWhere = sqlWhereList.get(i);
-			} else {
-				sqlWhere = sqlWhere + " AND " + sqlWhereList.get(i);
-			}
-		}
+		ImageSearchEntry searchEntry = (ImageSearchEntry) imgFilter.getSearchEntry();
 		
-		dbService.getImages(sqlWhere, new AsyncCallback<ArrayList<ImageEntry>>() {
+		dbService.searchImages(searchEntry, new AsyncCallback<ArrayList<ImageEntry>>() {
 
 			@Override
 			public void onFailure(Throwable caught) {

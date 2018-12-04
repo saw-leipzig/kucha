@@ -46,6 +46,7 @@ import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
+import de.cses.shared.ImageSearchEntry;
 import de.cses.shared.ImageTypeEntry;
 import de.cses.shared.InnerSecondaryPatternsEntry;
 import de.cses.shared.LocationEntry;
@@ -473,6 +474,56 @@ public class MysqlConnector {
 		}
 		return result;
 	}
+	
+	public ArrayList<ImageEntry> searchImages(ImageSearchEntry searchEntry) {
+		ArrayList<ImageEntry> results = new ArrayList<ImageEntry>();
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		String where = "";
+		
+		if (searchEntry.getTitleSearch() != null && !searchEntry.getTitleSearch().isEmpty()) {
+			where = "(Title LIKE ? OR ShortName LIKE ?)";
+		}
+		if (searchEntry.getCopyrightSearch() != null && !searchEntry.getCopyrightSearch().isEmpty()) {
+			where += where.isEmpty() ? "Copyright LIKE ?" : " AND Copyright LIKE ?";
+		}
+		if (searchEntry.getFilenameSearch() != null && !searchEntry.getFilenameSearch().isEmpty()) {
+			where += where.isEmpty() ? "Filename LIKE ?" : "AND Filename LIKE ?";
+		}
+		String imageTypeIDs = "";
+		for (int imageTypeID : searchEntry.getImageTypeIdList()) {
+			imageTypeIDs += imageTypeIDs.isEmpty() ? Integer.toString(imageTypeID) : "," + imageTypeID;
+		}
+		if (!imageTypeIDs.isEmpty()) {
+			where += where.isEmpty() ? "ImageTypeID IN (" + imageTypeIDs + ")" : " AND ImageTypeID IN (" + imageTypeIDs + ")" ;
+		}
+		
+		try {
+			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Images ORDER BY Title Asc" : "SELECT * FROM Images WHERE " + where + " ORDER BY Title Asc");
+			int i = 1; // counter to fill ? in where clause
+			if (searchEntry.getTitleSearch() != null && !searchEntry.getTitleSearch().isEmpty()) {
+				pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");
+			}
+			if (searchEntry.getCopyrightSearch() != null && !searchEntry.getCopyrightSearch().isEmpty()) {
+				pstmt.setString(i++, "%" + searchEntry.getCopyrightSearch() + "%");
+			}
+			if (searchEntry.getFilenameSearch() != null && !searchEntry.getFilenameSearch().isEmpty()) {
+				pstmt.setString(i++, "%" + searchEntry.getFilenameSearch() + "%");
+			}
+			
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
+						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
+						rs.getBoolean("OpenAccess")));
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return results;	}
 
 	/**
 	 * 

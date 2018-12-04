@@ -28,6 +28,7 @@ import de.cses.client.ui.AbstractSearchController;
 import de.cses.client.ui.EditorListener;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.ImageEntry;
+import de.cses.shared.ImageSearchEntry;
 
 /**
  * @author alingnau
@@ -52,21 +53,9 @@ public class ImageSearchController extends AbstractSearchController {
 	 */
 	@Override
 	public void invokeSearch() {
-		ArrayList<String> sqlWhereClauses = new ArrayList<String>();
-//		for (AbstractFilter filter : getRelatedFilter()) {
-//			if (filter != null) {
-//				sqlWhereClauses.addAll(filter.getSqlWhereClause());
-//			}
-//		}
-		String sqlWhere = null;
-		for (String sql :  sqlWhereClauses) {
-			if (sqlWhere == null) {
-				sqlWhere = sql;
-			} else {
-				sqlWhere = sqlWhere.concat(" AND " + sql);
-			}
-		}
-		dbService.getImages(sqlWhere, new AsyncCallback<ArrayList<ImageEntry>>() {
+		ImageSearchEntry searchEntry = (ImageSearchEntry) getFilter().getSearchEntry();
+
+		dbService.searchImages(searchEntry, new AsyncCallback<ArrayList<ImageEntry>>() {
 
 			@Override
 			public void onSuccess(ArrayList<ImageEntry> result) {

@@ -34,6 +34,7 @@ import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
+import de.cses.shared.ImageSearchEntry;
 import de.cses.shared.ImageTypeEntry;
 import de.cses.shared.InnerSecondaryPatternsEntry;
 import de.cses.shared.LocationEntry;
@@ -287,4 +288,6 @@ public interface DatabaseService extends RemoteService {
 	ArrayList<CaveEntry> searchCaves(CaveSearchEntry searchEntry) throws IllegalArgumentException;
 
 	ArrayList<DepictionEntry> searchDepictions(DepictionSearchEntry searchEntry) throws IllegalArgumentException;
+
+	ArrayList<ImageEntry> searchImages(ImageSearchEntry searchEntry) throws IllegalArgumentException;
 }

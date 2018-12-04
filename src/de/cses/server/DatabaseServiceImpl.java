@@ -35,6 +35,7 @@ import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
+import de.cses.shared.ImageSearchEntry;
 import de.cses.shared.ImageTypeEntry;
 import de.cses.shared.InnerSecondaryPatternsEntry;
 import de.cses.shared.LocationEntry;
@@ -926,5 +927,11 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public ArrayList<DepictionEntry> searchDepictions(DepictionSearchEntry searchEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.searchDepictions(searchEntry);
+	}
+	
+	@Override
+	public ArrayList<ImageEntry> searchImages(ImageSearchEntry searchEntry) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.searchImages(searchEntry);
 	}
 }
