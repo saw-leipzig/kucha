@@ -20,6 +20,7 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
+import com.sencha.gxt.core.client.XTemplates.XTemplate;
 import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
@@ -46,6 +47,11 @@ import de.cses.shared.ImageTypeEntry;
  *
  */
 public class ImageFilter extends AbstractFilter {
+	
+	protected interface LabelTemplate extends XTemplates {
+		@XTemplate("<div class='label'>{text}</div>")
+		SafeHtml label(String text);
+	}
 
 //	private TextField shortnameSearch;
 	private TextField titleSearch;
@@ -91,6 +97,7 @@ public class ImageFilter extends AbstractFilter {
 	@Override
 	protected Widget getFilterUI() {
 		VerticalLayoutContainer vlc = new VerticalLayoutContainer();
+		LabelTemplate lt = GWT.create(LabelTemplate.class); 
 
 		titleSearch = new TextField();
 		titleSearch.setEmptyText("search title / shortname");
@@ -109,11 +116,11 @@ public class ImageFilter extends AbstractFilter {
 		
 		daysSinceUploadSearch = new NumberField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
 		daysSinceUploadSearch.setAllowNegative(false);
-		daysSinceUploadSearch.setEmptyText("uploaded within last X days");
-		daysSinceUploadSearch.setToolTip(Util.createToolTip("search last X days", "Searches for images uploaded within the last X days."));
+		daysSinceUploadSearch.setEmptyText("last X days");
+		daysSinceUploadSearch.setToolTip(Util.createToolTip("Search in last X days.", "Searches for images uploaded in the last X days."));
 		HorizontalLayoutContainer uploadedSinceHLC = new HorizontalLayoutContainer();
 		uploadedSinceHLC.add(daysSinceUploadSearch, new HorizontalLayoutData(.7, 1.0, new Margins(0, 10, 0, 0)));
-		uploadedSinceHLC.add(new HTML("days"), new HorizontalLayoutData(.3, 1.0));
+		uploadedSinceHLC.add(new HTML(lt.label("days")), new HorizontalLayoutData(.3, 1.0));
 		vlc.add(uploadedSinceHLC, new VerticalLayoutData(1.0, .125));
 
 		DualListField<ImageTypeEntry, String> dualListField = new DualListField<ImageTypeEntry, String>(imageTypeEntryList,
@@ -132,27 +139,33 @@ public class ImageFilter extends AbstractFilter {
 	@Override
 	public AbstractSearchEntry getSearchEntry() {
 		ImageSearchEntry entry = new ImageSearchEntry();
-		
+
+		Util.doLogging("ImageFilter.getSearchEntry - 1");
 		if (titleSearch.getValue() != null && !titleSearch.getValue().isEmpty()) {
 			entry.setTitleSearch(titleSearch.getValue());
 		}
 		
+		Util.doLogging("ImageFilter.getSearchEntry - 2");
 		if (copyrightSearch.getValue() != null && !copyrightSearch.getValue().isEmpty()) {
 			entry.setCopyrightSearch(copyrightSearch.getValue());
 		}
 		
+		Util.doLogging("ImageFilter.getSearchEntry - 3");
 		if (filenameSearch.getValue() != null && !filenameSearch.getValue().isEmpty()) {
 			entry.setFilenameSearch(filenameSearch.getValue());
 		}
 		
+		Util.doLogging("ImageFilter.getSearchEntry - 4");
 		if (daysSinceUploadSearch.getValue() != null && daysSinceUploadSearch.getValue() > 0) {
 			entry.setDaysSinceUploadSearch(daysSinceUploadSearch.getValue());
 		}
 		
+		Util.doLogging("ImageFilter.getSearchEntry - 5");
 		for (ImageTypeEntry ite : selectedImagesTypesList.getAll()) {
 			entry.getImageTypeIdList().add(ite.getImageTypeID());
 		}
 
+		Util.doLogging("ImageFilter.getSearchEntry - 6");
 		return entry;
 	}
 

@@ -506,6 +506,7 @@ public class MysqlConnector {
 			int i = 1; // counter to fill ? in where clause
 			if (searchEntry.getTitleSearch() != null && !searchEntry.getTitleSearch().isEmpty()) {
 				pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");
+				pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");
 			}
 			if (searchEntry.getCopyrightSearch() != null && !searchEntry.getCopyrightSearch().isEmpty()) {
 				pstmt.setString(i++, "%" + searchEntry.getCopyrightSearch() + "%");
