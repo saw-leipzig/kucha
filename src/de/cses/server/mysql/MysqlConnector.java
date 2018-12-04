@@ -62,6 +62,7 @@ import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamentFunctionEntry;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.OrnamentPositionEntry;
+import de.cses.shared.OrnamenticSearchEntry;
 import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PreservationAttributeEntry;
 import de.cses.shared.PreservationClassificationEntry;
@@ -2254,6 +2255,52 @@ public class MysqlConnector {
 			e.printStackTrace();
 		}
 		return cavetypes;
+	}
+
+	/**
+	 * This method unfolds the searchEntry and creates the query incl. sophisticated WHERE clause
+	 * @param searchEntry
+	 * @return
+	 */
+	public ArrayList<OrnamentEntry> searchOrnaments(OrnamenticSearchEntry searchEntry) {
+		ArrayList<OrnamentEntry> results = new ArrayList<OrnamentEntry>();
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		String where = "";
+
+		/**
+		 *  we need to add Strings with ? only to avoid code injection! 
+		 *  it's then important to set the values in the correct order (see below) after creating the statement!
+		 */
+		if (searchEntry.getSearchOrnamentCode()!= null && !searchEntry.getSearchOrnamentCode().isEmpty()) {
+			where = "Code LIKE ?";
+		}
+		
+		try {
+			int i=1; // we use a little counter to make sure we put in values at the right place
+			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Ornaments" : "SELECT * FROM Ornaments WHERE " + where);
+			if (searchEntry.getSearchOrnamentCode()!= null && !searchEntry.getSearchOrnamentCode().isEmpty()) {
+				pstmt.setString(i++, searchEntry.getSearchOrnamentCode());
+			}
+			// @nina: mit i++ stellst du sicher, dass die ? korrekt gesetzt werden, solange du hier noch mal die 
+			// gleiche Reihenfolge von if-statements durchläufst. 
+			// siehe auch: searchDepictions()!
+			
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				results.add(new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
+						//rs.getString("Annotation"),
+						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
+						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
+						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID"))));
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return results;
 	}
 
 	public ArrayList<OrnamentEntry> getOrnamentsWhere(String sqlWhere) {

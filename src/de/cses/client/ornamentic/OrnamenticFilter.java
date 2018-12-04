@@ -17,16 +17,22 @@ import java.util.ArrayList;
 
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.form.TextField;
 
+import de.cses.client.Util;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.shared.AbstractSearchEntry;
+import de.cses.shared.OrnamenticSearchEntry;
 
 /**
  * @author nina
  *
  */
 public class OrnamenticFilter  extends AbstractFilter{
+	private TextField ornamentCodeSearchTF;
+
 	public OrnamenticFilter(String filterName) {
 		super(filterName);
 	}
@@ -36,17 +42,34 @@ public class OrnamenticFilter  extends AbstractFilter{
 	 */
 	@Override
 	protected Widget getFilterUI() {
-		VerticalPanel vp = new VerticalPanel();
-		TextField tf = new TextField();
-		tf.setText("Enter text..");
-		vp.add(tf);
-		return vp;
+
+		ornamentCodeSearchTF = new TextField();
+		ornamentCodeSearchTF.setEmptyText("search ornament code");
+		ornamentCodeSearchTF.setToolTip(Util.createToolTip("search ornament code", "Search for this character sequence in the ornament code field."));
+
+		// Example - add the rest here
+
+		VerticalLayoutContainer ornamenticFilterVLC = new VerticalLayoutContainer();
+		ornamenticFilterVLC.add(ornamentCodeSearchTF, new VerticalLayoutData(1.0, .25));
+		ornamenticFilterVLC.setHeight("120px");
+		return ornamenticFilterVLC;
 	}
 
+	/**
+	 * In this method we assemble the search entry from the fields in the filter. Here we create the search entry 
+	 * that will be send to the server.
+	 */
 	@Override
 	public AbstractSearchEntry getSearchEntry() {
-		// TODO Auto-generated method stub
-		return null;
+		OrnamenticSearchEntry searchEntry = new OrnamenticSearchEntry();
+		
+		if (ornamentCodeSearchTF.getValue() != null && !ornamentCodeSearchTF.getValue().isEmpty()) {
+			searchEntry.setSearchOrnamentCode(ornamentCodeSearchTF.getValue());
+		}
+		
+		// @nina: siehe auch getSearchEntry() z.B. in DepictionFilter
+		
+		return searchEntry;
 	}
 
 }

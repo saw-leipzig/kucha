@@ -50,6 +50,7 @@ import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamentFunctionEntry;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.OrnamentPositionEntry;
+import de.cses.shared.OrnamenticSearchEntry;
 import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PreservationAttributeEntry;
 import de.cses.shared.PreservationClassificationEntry;
@@ -940,5 +941,10 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 			throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.searchAnnotatedBibliography(searchEntry);
+	}
+	@Override
+	public ArrayList<OrnamentEntry> searchOrnaments(OrnamenticSearchEntry searchEntry) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.searchOrnaments(searchEntry);
 	}
 }

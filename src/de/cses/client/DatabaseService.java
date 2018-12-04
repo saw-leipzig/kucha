@@ -49,6 +49,7 @@ import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamentFunctionEntry;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.OrnamentPositionEntry;
+import de.cses.shared.OrnamenticSearchEntry;
 import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PreservationAttributeEntry;
 import de.cses.shared.PreservationClassificationEntry;
@@ -293,4 +294,6 @@ public interface DatabaseService extends RemoteService {
 	ArrayList<ImageEntry> searchImages(ImageSearchEntry searchEntry) throws IllegalArgumentException;
 
 	ArrayList<AnnotatedBiblographyEntry> searchAnnotatedBibliography(AnnotatedBibliographySearchEntry searchEntry) throws IllegalArgumentException;
+
+	ArrayList<OrnamentEntry> searchOrnaments(OrnamenticSearchEntry searchEntry) throws IllegalArgumentException;
 }
