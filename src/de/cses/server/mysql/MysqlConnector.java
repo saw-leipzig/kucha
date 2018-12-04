@@ -4446,7 +4446,7 @@ public class MysqlConnector {
 		PreparedStatement pstmt;
 		String where = "";
 		
-		if (!searchEntry.getShortName().isEmpty()) {
+		if (searchEntry.getShortName() != null && !searchEntry.getShortName().isEmpty()) {
 			where = "ShortName LIKE ?";
 		}
 

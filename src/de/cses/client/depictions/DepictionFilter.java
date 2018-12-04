@@ -286,6 +286,7 @@ public class DepictionFilter extends AbstractFilter {
 					DepictionEntry de = (DepictionEntry) event.getData();
 					selectedIconographyLS.clear();
 					selectedIconographyLS.addAll(de.getRelatedIconographyList());
+					icoSelector.setSelectedIconography(de.getRelatedIconographyList());
 					if ((de.getRelatedIconographyList() != null) && (selectedIconographyLS.size() > 0)) {
 						iconographySpinnerField.setEnabled(true);
 						iconographySpinnerField.setValue(selectedIconographyLS.size());
@@ -406,33 +407,26 @@ public class DepictionFilter extends AbstractFilter {
 
 	@Override
 	public AbstractSearchEntry getSearchEntry() {
-		Util.doLogging("DepictionFilter.getSearchEntry() - 1");
 		DepictionSearchEntry searchEntry = new DepictionSearchEntry();
 		
-		Util.doLogging("DepictionFilter.getSearchEntry() - 2");
-		if (!shortNameSearchTF.getValue().isEmpty()) {
+		if (shortNameSearchTF.getValue() != null && !shortNameSearchTF.getValue().isEmpty()) {
 			searchEntry.setShortName(shortNameSearchTF.getValue());
 		}
 		
-		Util.doLogging("DepictionFilter.getSearchEntry() - 3");
 		for (CaveEntry ce : caveSelectionLV.getSelectionModel().getSelectedItems()) {
 			searchEntry.getCaveIdList().add(ce.getCaveID());
 		}
 		
-		Util.doLogging("DepictionFilter.getSearchEntry() - 4");
 		for (LocationEntry le : locationSelectionLV.getSelectionModel().getSelectedItems()) {
 			searchEntry.getLocationIdList().add(le.getLocationID());
 		}
 		
-		Util.doLogging("DepictionFilter.getSearchEntry() - 5");
 		for (IconographyEntry ie : selectedIconographyLS.getAll()) {
 			searchEntry.getIconographyIdList().add(ie.getIconographyID());
 		}
 		
-		Util.doLogging("DepictionFilter.getSearchEntry() - 6");
 		searchEntry.setCorrelationFactor(iconographySpinnerField.isEnabled() ? iconographySpinnerField.getValue() : 0);
 		
-		Util.doLogging("DepictionFilter.getSearchEntry() - 7");
 		return searchEntry;
 	}
 
