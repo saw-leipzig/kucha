@@ -19,6 +19,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 import de.cses.client.DatabaseService;
 import de.cses.server.mysql.MysqlConnector;
+import de.cses.shared.AnnotatedBibliographySearchEntry;
 import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.BibKeywordEntry;
@@ -933,5 +934,11 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public ArrayList<ImageEntry> searchImages(ImageSearchEntry searchEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.searchImages(searchEntry);
+	}
+	@Override
+	public ArrayList<AnnotatedBiblographyEntry> searchAnnotatedBibliography(AnnotatedBibliographySearchEntry searchEntry)
+			throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.searchAnnotatedBibliography(searchEntry);
 	}
 }

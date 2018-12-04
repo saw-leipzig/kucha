@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.UUID;
 
 import de.cses.server.ServerProperties;
+import de.cses.shared.AnnotatedBibliographySearchEntry;
 import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.BibKeywordEntry;
@@ -1858,6 +1859,102 @@ public class MysqlConnector {
 			ex.printStackTrace();
 			return null;
 		}
+		return result;
+	}
+
+	public ArrayList<AnnotatedBiblographyEntry> searchAnnotatedBibliography(AnnotatedBibliographySearchEntry searchEntry) {
+		AnnotatedBiblographyEntry entry = null;
+		ArrayList<AnnotatedBiblographyEntry> result = new ArrayList<AnnotatedBiblographyEntry>();
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		String where = "";
+		
+		if ((searchEntry.getAuthorSearch() != null) && !searchEntry.getAuthorSearch().isEmpty()) {
+			String authorTerm = "";
+			String editorTerm = "";
+			for (String name : searchEntry.getAuthorSearch().split("\\s+")) {
+				authorTerm += authorTerm.isEmpty() 
+						? "SELECT BibID FROM AuthorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE ((FirstName LIKE ?) OR (LastName LIKE ?) OR (Institution LIKE ?))))"
+						: " INTERSECT SELECT BibID FROM AuthorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE ((FirstName LIKE ?) OR (LastName LIKE ?) OR (Institution LIKE ?))))";
+				editorTerm += editorTerm.isEmpty() 
+						? "SELECT BibID FROM EditorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE ((FirstName LIKE ?) OR (LastName LIKE ?) OR (Institution LIKE ?))))"
+						: " INTERSECT SELECT BibID FROM EditorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE ((FirstName LIKE ?) OR (LastName LIKE ?) OR (Institution LIKE ?))))";
+			}
+			where = "BibID IN ((" + authorTerm + ") UNION (" + editorTerm + "))";
+		}
+		
+		if (searchEntry.getPublisherSearch() != null && !searchEntry.getPublisherSearch().isEmpty()) {
+			where += where.isEmpty() ? "Publisher LIKE ?" : "AND Publisher LIKE ?";
+		}
+
+		if (searchEntry.getTitleSearch() != null && !searchEntry.getTitleSearch().isEmpty()) {
+			where += where.isEmpty()
+					? "((TitleORG LIKE ?) OR (TitleEN LIKE ?) OR (TitleTR LIKE ?) OR (ParentTitleORG LIKE ?) OR (ParentTitleEN LIKE ?) OR (ParentTitleTR LIKE ?) OR (TitleAddonORG LIKE ?) "
+							+ "OR (TitleAddonEN LIKE ?) OR (TitleAddonTR LIKE ?))"
+					: "AND ((TitleORG LIKE ?) OR (TitleEN LIKE ?) OR (TitleTR LIKE ?) OR (ParentTitleORG LIKE ?) OR (ParentTitleEN LIKE ?) OR (ParentTitleTR LIKE ?) OR (TitleAddonORG LIKE ?) "
+							+ "OR (TitleAddonEN LIKE ?) OR (TitleAddonTR LIKE ?))";
+		}
+		
+		try {
+			int i = 1;
+			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM AnnotatedBibliography" : "SELECT * FROM AnnotatedBibliography WHERE " + where);
+			if ((searchEntry.getAuthorSearch() != null) && !searchEntry.getAuthorSearch().isEmpty()) {
+				for (String name : searchEntry.getAuthorSearch().split("\\s+")) {
+					for (int j=0; j<3; ++j) {
+						pstmt.setString(i++, "%" + name + "%");
+					}
+				}
+				for (String name : searchEntry.getAuthorSearch().split("\\s+")) {
+					for (int j=0; j<3; ++j) {
+						pstmt.setString(i++, "%" + name + "%");
+					}
+				}
+			}
+			if (searchEntry.getPublisherSearch() != null && !searchEntry.getPublisherSearch().isEmpty()) {
+				pstmt.setString(i++, "%" + searchEntry.getPublisherSearch() + "%");
+			}
+			if (searchEntry.getTitleSearch() != null && !searchEntry.getTitleSearch().isEmpty()) {
+				for (int j=0; j<9; ++j) {
+					pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");
+				}
+			}
+			System.out.println(where.isEmpty() ? "SELECT * FROM AnnotatedBiblography" : "SELECT * FROM AnnotatedBiblography WHERE " + where);
+			
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				entry = new AnnotatedBiblographyEntry(rs.getInt("BibID"), getPublicationType(rs.getInt("PublicationTypeID")),
+						rs.getString("TitleEN"), rs.getString("TitleORG"), rs.getString("TitleTR"), rs.getString("ParentTitleEN"),
+						rs.getString("ParentTitleORG"), rs.getString("ParentTitleTR"), rs.getString("SubtitleEN"), rs.getString("SubtitleORG"),
+						rs.getString("SubtitleTR"), rs.getString("UniversityEN"), rs.getString("UniversityORG"), rs.getString("UniversityTR"),
+						rs.getString("NumberEN"), rs.getString("NumberORG"), rs.getString("NumberTR"), rs.getString("AccessDateEN"),
+						rs.getString("AccessDateORG"), rs.getString("AccessDateTR"), rs.getString("TitleAddonEN"), rs.getString("TitleAddonORG"),
+						rs.getString("TitleAddonTR"), rs.getString("Publisher"), rs.getString("SeriesEN"), rs.getString("SeriesORG"),
+						rs.getString("SeriesTR"), rs.getString("EditionEN"), rs.getString("EditionORG"), rs.getString("EditionTR"),
+						rs.getString("VolumeEN"), rs.getString("VolumeORG"), rs.getString("VolumeTR"), rs.getString("IssueEN"),
+						rs.getString("IssueORG"), rs.getString("IssueTR"), rs.getInt("YearEN"), rs.getString("YearORG"), rs.getString("YearTR"),
+						rs.getString("MonthEN"), rs.getString("MonthORG"), rs.getString("MonthTR"), rs.getString("PagesEN"), rs.getString("PagesORG"),
+						rs.getString("PagesTR"), rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"), rs.getString("URI"),
+						rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getBoolean("OpenAccess"), rs.getString("AbstractText"),
+						rs.getString("ThesisType"), rs.getString("EditorType"), rs.getBoolean("OfficialTitleTranslation"), rs.getString("BibTexKey"));
+				entry.setAuthorList(getAuthorBibRelation(entry.getAnnotatedBiblographyID()));
+				entry.setEditorList(getEditorBibRelation(entry.getAnnotatedBiblographyID()));
+				entry.setKeywordList(getRelatedBibKeywords(entry.getAnnotatedBiblographyID()));
+				if (entry.getBibtexKey().isEmpty()) {
+					if (!entry.getAuthorList().isEmpty()) {
+						entry.setBibtexKey(createBibtexKey(entry.getAuthorList().get(0), entry.getYearORG()));
+					} else if (!entry.getEditorList().isEmpty()) {
+						entry.setBibtexKey(createBibtexKey(entry.getEditorList().get(0), entry.getYearORG()));
+					}
+					updateAnnotatedBiblographyEntry(entry);
+				}
+				result.add(entry);
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} 
+		result.sort(null); // because AnnotatedBiblographyEntry implements Comparable
 		return result;
 	}
 

@@ -65,9 +65,7 @@ public class ImageFilter extends AbstractFilter {
 
 	interface ImageTypeProperties extends PropertyAccess<ImageTypeEntry> {
 		ModelKeyProvider<ImageTypeEntry> imageTypeID();
-
 		LabelProvider<ImageTypeEntry> uniqueID();
-
 		ValueProvider<ImageTypeEntry, String> name();
 	}
 

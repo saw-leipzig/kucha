@@ -17,6 +17,7 @@ import java.util.ArrayList;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import de.cses.shared.AnnotatedBibliographySearchEntry;
 import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.BibKeywordEntry;
@@ -313,5 +314,7 @@ public interface DatabaseServiceAsync {
 	void searchDepictions(DepictionSearchEntry searchEntry, AsyncCallback<ArrayList<DepictionEntry>> asyncCallback) throws IllegalArgumentException;
 
 	void searchImages(ImageSearchEntry searchEntry, AsyncCallback<ArrayList<ImageEntry>> asyncCallback) throws IllegalArgumentException;
+
+	void searchAnnotatedBibliography(AnnotatedBibliographySearchEntry searchEntry, AsyncCallback<ArrayList<AnnotatedBiblographyEntry>> asyncCallback) throws IllegalArgumentException;
 
 }

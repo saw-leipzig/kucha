@@ -43,6 +43,7 @@ import de.cses.client.ui.AbstractResultView;
 import de.cses.client.ui.AbstractSearchController;
 import de.cses.client.ui.EditorListener;
 import de.cses.shared.AbstractEntry;
+import de.cses.shared.AnnotatedBibliographySearchEntry;
 import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.PublicationTypeEntry;
 
@@ -87,21 +88,9 @@ public class AnnotatedBiblographySearchController extends AbstractSearchControll
 	 */
 	@Override
 	public void invokeSearch() {
-		ArrayList<String> sqlWhereClauses = new ArrayList<String>();
-//		for (AbstractFilter filter : getRelatedFilter()) {
-//			if ((filter != null) && (filter.getSqlWhereClause() != null)) {
-//				sqlWhereClauses.addAll(filter.getSqlWhereClause());
-//			}
-//		}
-		String sqlWhere = null;
-		for (String sql : sqlWhereClauses) {
-			if (sqlWhere == null) {
-				sqlWhere = sql;
-			} else {
-				sqlWhere = sqlWhere + " AND " + sql;
-			}
-		}
-		dbService.getAnnotatedBibliography(sqlWhere, new AsyncCallback<ArrayList<AnnotatedBiblographyEntry>>() {
+		AnnotatedBibliographySearchEntry searchEntry = (AnnotatedBibliographySearchEntry) getFilter().getSearchEntry();
+
+		dbService.searchAnnotatedBibliography(searchEntry, new AsyncCallback<ArrayList<AnnotatedBiblographyEntry>>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
