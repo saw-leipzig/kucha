@@ -484,7 +484,7 @@ public class MysqlConnector {
 		String where = "";
 		
 		if (searchEntry.getTitleSearch() != null && !searchEntry.getTitleSearch().isEmpty()) {
-			where = "(Title LIKE ? OR ShortName LIKE ?)";
+			where = "CONCAT(Title, ShortName) LIKE ?";
 		}
 		if (searchEntry.getCopyrightSearch() != null && !searchEntry.getCopyrightSearch().isEmpty()) {
 			where += where.isEmpty() ? "Copyright LIKE ?" : " AND Copyright LIKE ?";
@@ -507,7 +507,6 @@ public class MysqlConnector {
 			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Images ORDER BY Title Asc" : "SELECT * FROM Images WHERE " + where + " ORDER BY Title Asc");
 			int i = 1; // counter to fill ? in where clause
 			if (searchEntry.getTitleSearch() != null && !searchEntry.getTitleSearch().isEmpty()) {
-				pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");
 				pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");
 			}
 			if (searchEntry.getCopyrightSearch() != null && !searchEntry.getCopyrightSearch().isEmpty()) {
@@ -677,7 +676,7 @@ public class MysqlConnector {
 		}
 		
 		if (!searchEntry.getHistoricalName().isEmpty()) {
-			where += where.isEmpty() ? "(HistoricName LIKE ? OR OptionalHistoricName LIKE ?)" : " AND (HistoricName LIKE ? OR OptionalHistoricName LIKE ?)";
+			where += where.isEmpty() ? "CONCAT(HistoricName, OptionalHistoricName) LIKE ?" : " AND CONCAT(HistoricName, OptionalHistoricName) LIKE ?";
 		}
 
 		System.err.println("searchCaves: where = " + where);
@@ -686,7 +685,6 @@ public class MysqlConnector {
 			int i=1; // counter for ? insert
 			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Caves" : "SELECT * FROM Caves WHERE " + where);
 			if (!searchEntry.getHistoricalName().isEmpty()) {
-				pstmt.setString(i++, "%" + searchEntry.getHistoricalName() + "%");
 				pstmt.setString(i++, "%" + searchEntry.getHistoricalName() + "%");
 			}
 			ResultSet rs = pstmt.executeQuery();
@@ -1875,11 +1873,11 @@ public class MysqlConnector {
 			String editorTerm = "";
 			for (String name : searchEntry.getAuthorSearch().split("\\s+")) {
 				authorTerm += authorTerm.isEmpty() 
-						? "SELECT BibID FROM AuthorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE ((FirstName LIKE ?) OR (LastName LIKE ?) OR (Institution LIKE ?))))"
-						: " INTERSECT SELECT BibID FROM AuthorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE ((FirstName LIKE ?) OR (LastName LIKE ?) OR (Institution LIKE ?))))";
+						? "SELECT BibID FROM AuthorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (CONCAT(FirstName, LastName, Institution) LIKE ?)))"
+						: " INTERSECT SELECT BibID FROM AuthorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (CONCAT(FirstName, LastName, Institution) LIKE ?)))";
 				editorTerm += editorTerm.isEmpty() 
-						? "SELECT BibID FROM EditorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE ((FirstName LIKE ?) OR (LastName LIKE ?) OR (Institution LIKE ?))))"
-						: " INTERSECT SELECT BibID FROM EditorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE ((FirstName LIKE ?) OR (LastName LIKE ?) OR (Institution LIKE ?))))";
+						? "SELECT BibID FROM EditorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (CONCAT(FirstName, LastName, Institution) LIKE ?)))"
+						: " INTERSECT SELECT BibID FROM EditorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (CONCAT(FirstName, LastName, Institution) LIKE ?)))";
 			}
 			where = "BibID IN (" + authorTerm + ") OR BibID IN (" + editorTerm + ")";
 		}
@@ -1889,11 +1887,8 @@ public class MysqlConnector {
 		}
 
 		if (searchEntry.getTitleSearch() != null && !searchEntry.getTitleSearch().isEmpty()) {
-			where += where.isEmpty()
-					? "((TitleORG LIKE ?) OR (TitleEN LIKE ?) OR (TitleTR LIKE ?) OR (ParentTitleORG LIKE ?) OR (ParentTitleEN LIKE ?) OR (ParentTitleTR LIKE ?) OR (TitleAddonORG LIKE ?) "
-							+ "OR (TitleAddonEN LIKE ?) OR (TitleAddonTR LIKE ?))"
-					: "AND ((TitleORG LIKE ?) OR (TitleEN LIKE ?) OR (TitleTR LIKE ?) OR (ParentTitleORG LIKE ?) OR (ParentTitleEN LIKE ?) OR (ParentTitleTR LIKE ?) OR (TitleAddonORG LIKE ?) "
-							+ "OR (TitleAddonEN LIKE ?) OR (TitleAddonTR LIKE ?))";
+			where += (where.isEmpty() ? "" : " AND ") + 
+					"CONCAT(TitleORG, TitleEN, TitleTR, ParentTitleORG, ParentTitleEN, ParentTitleTR, TitleAddonORG, TitleAddonEN, TitleAddonTR, SubtitleORG, SubtitleEN, SubtitleTR) LIKE ?";
 		}
 		
 		try {
@@ -1901,23 +1896,17 @@ public class MysqlConnector {
 			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM AnnotatedBibliography" : "SELECT * FROM AnnotatedBibliography WHERE " + where);
 			if ((searchEntry.getAuthorSearch() != null) && !searchEntry.getAuthorSearch().isEmpty()) {
 				for (String name : searchEntry.getAuthorSearch().split("\\s+")) {
-					for (int j=0; j<3; ++j) {
-						pstmt.setString(i++, "%" + name + "%");
-					}
+					pstmt.setString(i++, "%" + name + "%");
 				}
 				for (String name : searchEntry.getAuthorSearch().split("\\s+")) {
-					for (int j=0; j<3; ++j) {
-						pstmt.setString(i++, "%" + name + "%");
-					}
+					pstmt.setString(i++, "%" + name + "%");
 				}
 			}
 			if (searchEntry.getPublisherSearch() != null && !searchEntry.getPublisherSearch().isEmpty()) {
 				pstmt.setString(i++, "%" + searchEntry.getPublisherSearch() + "%");
 			}
 			if (searchEntry.getTitleSearch() != null && !searchEntry.getTitleSearch().isEmpty()) {
-				for (int j=0; j<9; ++j) {
-					pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");
-				}
+				pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");
 			}
 			System.out.println(where.isEmpty() ? "SELECT * FROM AnnotatedBiblography" : "SELECT * FROM AnnotatedBiblography WHERE " + where);
 			
