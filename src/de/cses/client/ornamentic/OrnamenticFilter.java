@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 
+ * Copyright 2017, 2018
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -22,10 +22,9 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
 import com.sencha.gxt.core.client.IdentityValueProvider;
+import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
-import com.sencha.gxt.core.client.Style.SelectionMode;
-import com.sencha.gxt.core.client.XTemplates.XTemplate;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
@@ -38,11 +37,9 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
-import de.cses.client.StaticTables;
 import de.cses.client.Util;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.shared.AbstractSearchEntry;
-import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.OrnamentClassEntry;
 import de.cses.shared.OrnamenticSearchEntry;
 
@@ -128,7 +125,8 @@ public class OrnamenticFilter  extends AbstractFilter{
 		VerticalLayoutContainer ornamenticFilterVLC = new VerticalLayoutContainer();
 		ornamenticFilterVLC.add(ornamentCodeSearchTF, new VerticalLayoutData(1.0, .15));
 		ornamenticFilterVLC.add(ornamentClassPanel, new VerticalLayoutData(1.0, .85));
-		ornamenticFilterVLC.setHeight("200px");
+		ornamenticFilterVLC.setHeight("300px");
+		
 		return ornamenticFilterVLC;
 	}
 
@@ -142,6 +140,12 @@ public class OrnamenticFilter  extends AbstractFilter{
 		
 		if (ornamentCodeSearchTF.getValue() != null && !ornamentCodeSearchTF.getValue().isEmpty()) {
 			searchEntry.setSearchOrnamentCode(ornamentCodeSearchTF.getValue());
+		}
+		
+		if (!ornamentClassSelectionLV.getSelectionModel().getSelectedItems().isEmpty()) {
+			for (OrnamentClassEntry oce : ornamentClassSelectionLV.getSelectionModel().getSelectedItems()) {
+				searchEntry.getSearchOrnamenClassIdList().add(oce.getOrnamentClassID());
+			}
 		}
 		
 		// @nina: siehe auch getSearchEntry() z.B. in DepictionFilter
