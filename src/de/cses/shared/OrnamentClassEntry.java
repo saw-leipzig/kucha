@@ -19,8 +19,8 @@ package de.cses.shared;
  */
 public class OrnamentClassEntry extends AbstractEntry{
 	
-	int ornamentClassID;
-	String name;
+	private int ornamentClassID;
+	private String name;
 	/**
 	 * @return the ornamentClassId
 	 */
@@ -61,8 +61,7 @@ public class OrnamentClassEntry extends AbstractEntry{
 	 */
 	@Override
 	public String getUniqueID() {
-		// TODO Auto-generated method stub
-		return null;
+		return "OrnamentClass_" + ornamentClassID;
 	}
 
 	

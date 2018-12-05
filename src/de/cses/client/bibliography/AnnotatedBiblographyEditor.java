@@ -1732,9 +1732,6 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
-				if (event.getValue()) {
-					loadFirstEditionCandidates();
-				}
 				firstEditionComboBox.setEnabled(event.getValue());
 			}
 		});
@@ -1755,6 +1752,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			}
 		});
 		firstEditionFP.addTool(resetFirstEditionSelectionTB);
+		loadFirstEditionCandidates();
 		
 		/**
 		 * paper upload

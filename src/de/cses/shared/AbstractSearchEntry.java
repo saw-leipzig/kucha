@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 
+ * Copyright 2018
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -11,37 +11,34 @@
  * You should have received a copy of the GPL v3 along with the software. 
  * If not, you can access it from here: <https://www.gnu.org/licenses/gpl-3.0.txt>.
  */
-package de.cses.client.ui;
+package de.cses.shared;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * @author alingnau
  *
  */
-public class ResultCollectorController extends AbstractSearchController {
-
+public abstract class AbstractSearchEntry implements IsSerializable {
+	
+	protected boolean orSearch = false; // the default case is AND search
+	
 	/**
-	 * @param searchControllerTitle
-	 * @param resultView
+	 * @param openAccess
 	 */
-	private ResultCollectorController(String searchControllerTitle, AbstractResultView resultView) {
-		super(searchControllerTitle, null, resultView);
+	public AbstractSearchEntry(boolean orSearch) {
+		super();
+		this.orSearch = orSearch;
 	}
 
-	/* (non-Javadoc)
-	 * @see de.cses.client.ui.AbstractSearchController#invokeSearch()
-	 */
-	@Override
-	public void invokeSearch() {
-		// TODO Auto-generated method stub
+	public AbstractSearchEntry() { }
 
+	public boolean isOrSearch() {
+		return orSearch;
 	}
 
-	/* (non-Javadoc)
-	 * @see de.cses.client.ui.AbstractSearchController#addNewElement()
-	 */
-	@Override
-	public void addNewElement() {
-		
+	public void setOrSearch(boolean orSearch) {
+		this.orSearch = orSearch;
 	}
 
 }

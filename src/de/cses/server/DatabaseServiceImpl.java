@@ -19,20 +19,24 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 import de.cses.client.DatabaseService;
 import de.cses.server.mysql.MysqlConnector;
+import de.cses.shared.AnnotatedBibliographySearchEntry;
 import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.BibKeywordEntry;
 import de.cses.shared.CaveAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveGroupEntry;
+import de.cses.shared.CaveSearchEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
 import de.cses.shared.CurrentLocationEntry;
 import de.cses.shared.DepictionEntry;
+import de.cses.shared.DepictionSearchEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
+import de.cses.shared.ImageSearchEntry;
 import de.cses.shared.ImageTypeEntry;
 import de.cses.shared.InnerSecondaryPatternsEntry;
 import de.cses.shared.LocationEntry;
@@ -46,6 +50,7 @@ import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamentFunctionEntry;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.OrnamentPositionEntry;
+import de.cses.shared.OrnamenticSearchEntry;
 import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PreservationAttributeEntry;
 import de.cses.shared.PreservationClassificationEntry;
@@ -912,5 +917,34 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public boolean updateUserEntry(UserEntry currentUser, String passwordHash, String newPasswordHash) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.updateUserEntry(currentUser, passwordHash, newPasswordHash);
+	}
+	
+	@Override
+	public ArrayList<CaveEntry> searchCaves(CaveSearchEntry searchEntry) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.searchCaves(searchEntry);
+	}
+	
+	@Override
+	public ArrayList<DepictionEntry> searchDepictions(DepictionSearchEntry searchEntry) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.searchDepictions(searchEntry);
+	}
+	
+	@Override
+	public ArrayList<ImageEntry> searchImages(ImageSearchEntry searchEntry) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.searchImages(searchEntry);
+	}
+	@Override
+	public ArrayList<AnnotatedBiblographyEntry> searchAnnotatedBibliography(AnnotatedBibliographySearchEntry searchEntry)
+			throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.searchAnnotatedBibliography(searchEntry);
+	}
+	@Override
+	public ArrayList<OrnamentEntry> searchOrnaments(OrnamenticSearchEntry searchEntry) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.searchOrnaments(searchEntry);
 	}
 }

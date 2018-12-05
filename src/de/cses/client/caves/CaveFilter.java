@@ -30,16 +30,24 @@ import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer.ExpandMode;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
+import com.sencha.gxt.widget.core.client.form.TextField;
 
 import de.cses.client.StaticTables;
+import de.cses.client.Util;
 import de.cses.client.ui.AbstractFilter;
+import de.cses.shared.AbstractSearchEntry;
+import de.cses.shared.CaveSearchEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.RegionEntry;
@@ -53,7 +61,7 @@ public class CaveFilter extends AbstractFilter {
 
 	private CaveTypeProperties caveTypeProps;
 	private ListStore<CaveTypeEntry> caveTypeEntryList;
-	private ComboBox<CaveTypeEntry> caveTypeSelection;
+	private ListView<CaveTypeEntry, CaveTypeEntry> caveTypeSelectionLV;
 	private SiteProperties siteProps;
 	private ListStore<SiteEntry> siteEntryList;
 	private RegionProperties regionProps;
@@ -63,6 +71,7 @@ public class CaveFilter extends AbstractFilter {
 	private ListView<DistrictEntry, DistrictEntry> districtSelectionLV;
 	private ListView<RegionEntry, RegionEntry> regionSelectionLV;
 	private ListView<SiteEntry, SiteEntry> siteSelectionLV;
+	private TextField searchNameTF;
 
 	interface DistrictProperties extends PropertyAccess<DistrictEntry> {
 		ModelKeyProvider<DistrictEntry> districtID();
@@ -105,7 +114,8 @@ public class CaveFilter extends AbstractFilter {
 
 	interface CaveTypeProperties extends PropertyAccess<CaveTypeEntry> {
 		ModelKeyProvider<CaveTypeEntry> caveTypeID();
-		LabelProvider<CaveTypeEntry> nameEN();
+		LabelProvider<CaveTypeEntry> uniqueID();
+		ValueProvider<CaveTypeEntry, String> nameEN();
 	}
 
 	interface CaveTypeViewTemplates extends XTemplates {
@@ -144,28 +154,36 @@ public class CaveFilter extends AbstractFilter {
 	 */
 	@Override
 	protected Widget getFilterUI() {
-		caveTypeSelection = new ComboBox<CaveTypeEntry>(caveTypeEntryList, caveTypeProps.nameEN(),
-				new AbstractSafeHtmlRenderer<CaveTypeEntry>() {
+		
+		searchNameTF = new TextField();
+		searchNameTF.setEmptyText("search historical names");
+		
+		caveTypeSelectionLV = new ListView<CaveTypeEntry, CaveTypeEntry>(caveTypeEntryList, new IdentityValueProvider<CaveTypeEntry>(), new SimpleSafeHtmlCell<CaveTypeEntry>(new AbstractSafeHtmlRenderer<CaveTypeEntry>() {
+			final CaveTypeViewTemplates ctvTemplates = GWT.create(CaveTypeViewTemplates.class);
 
-					@Override
-					public SafeHtml render(CaveTypeEntry item) {
-						final CaveTypeViewTemplates ctvTemplates = GWT.create(CaveTypeViewTemplates.class);
-						return ctvTemplates.caveTypeLabel(item.getNameEN());
-					}
-				});
-		caveTypeSelection.setEmptyText("select cave type");
-		caveTypeSelection.setTypeAhead(false);
-		caveTypeSelection.setEditable(false);
-		caveTypeSelection.setTriggerAction(TriggerAction.ALL);
-//		caveTypeSelection.addSelectionHandler(new SelectionHandler<CaveTypeEntry>() {
-//
-//			@Override
-//			public void onSelection(SelectionEvent<CaveTypeEntry> event) {
-//				
-//			}
-//		});
-//		caveTypeSelection.setWidth(180);
-
+			@Override
+			public SafeHtml render(CaveTypeEntry entry) {
+				return ctvTemplates.caveTypeLabel(entry.getNameEN());
+			}
+			
+		}));
+		caveTypeSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+		
+		ContentPanel caveTypePanel = new ContentPanel();
+		caveTypePanel.setHeaderVisible(true);
+		caveTypePanel.setHeading("Cave Types");
+		caveTypePanel.add(caveTypeSelectionLV);
+		
+		ToolButton caveTypeSelectionResetTB = new ToolButton(ToolButton.RESTORE);
+		caveTypeSelectionResetTB.setToolTip(Util.createToolTip("Reset selection"));
+		caveTypeSelectionResetTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				caveTypeSelectionLV.getSelectionModel().deselectAll();
+			}
+		});
+		caveTypePanel.addTool(caveTypeSelectionResetTB);
 		
 		siteSelectionLV = new ListView<SiteEntry, SiteEntry>(siteEntryList, new IdentityValueProvider<SiteEntry>(), new SimpleSafeHtmlCell<SiteEntry>(new AbstractSafeHtmlRenderer<SiteEntry>() {
 			final SiteViewTemplates svTemplates = GWT.create(SiteViewTemplates.class);
@@ -182,6 +200,17 @@ public class CaveFilter extends AbstractFilter {
 		sitePanel.setHeading("Sites");
 		sitePanel.add(siteSelectionLV);
 		
+		ToolButton siteSelectionResetTB = new ToolButton(ToolButton.RESTORE);
+		siteSelectionResetTB.setToolTip(Util.createToolTip("Reset selection"));
+		siteSelectionResetTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				siteSelectionLV.getSelectionModel().deselectAll();
+			}
+		});
+		sitePanel.addTool(siteSelectionResetTB);
+		
 		districtSelectionLV = new ListView<DistrictEntry, DistrictEntry>(districtEntryList, new IdentityValueProvider<DistrictEntry>(), new SimpleSafeHtmlCell<DistrictEntry>(new AbstractSafeHtmlRenderer<DistrictEntry>() {
 			final DistrictViewTemplates dvTemplates = GWT.create(DistrictViewTemplates.class);
 
@@ -196,7 +225,18 @@ public class CaveFilter extends AbstractFilter {
 		districtPanel.setHeaderVisible(true);
 		districtPanel.setHeading("Districts");
 		districtPanel.add(districtSelectionLV);
-		
+
+		ToolButton districtSelectionResetTB = new ToolButton(ToolButton.RESTORE);
+		districtSelectionResetTB.setToolTip(Util.createToolTip("Reset selection"));
+		districtSelectionResetTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				districtSelectionLV.getSelectionModel().deselectAll();
+			}
+		});
+		districtPanel.addTool(districtSelectionResetTB);
+
 		regionSelectionLV = new ListView<RegionEntry, RegionEntry>(regionEntryList, new IdentityValueProvider<RegionEntry>(), new SimpleSafeHtmlCell<RegionEntry>(new AbstractSafeHtmlRenderer<RegionEntry>() {
 			final RegionViewTemplates rvTemplates = GWT.create(RegionViewTemplates.class);
 
@@ -220,20 +260,32 @@ public class CaveFilter extends AbstractFilter {
 		regionPanel.setHeaderVisible(true);
 		regionPanel.setHeading("Regions");
 		regionPanel.add(regionSelectionLV);
-		
+
+		ToolButton regionSelectionResetTB = new ToolButton(ToolButton.RESTORE);
+		regionSelectionResetTB.setToolTip(Util.createToolTip("Reset selection"));
+		regionSelectionResetTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				regionSelectionLV.getSelectionModel().deselectAll();
+			}
+		});
+		regionPanel.addTool(regionSelectionResetTB);
+
 		/**
 		 * create the view
 		 */
 		
 		AccordionLayoutContainer locationALC = new AccordionLayoutContainer();
     locationALC.setExpandMode(ExpandMode.SINGLE_FILL);
+    locationALC.add(caveTypePanel);
     locationALC.add(sitePanel);
     locationALC.add(districtPanel);
     locationALC.add(regionPanel);
-    locationALC.setActiveWidget(sitePanel);
+    locationALC.setActiveWidget(caveTypePanel);
 		
     BorderLayoutContainer depictionFilterBLC = new BorderLayoutContainer();
-    depictionFilterBLC.setNorthWidget(caveTypeSelection, new BorderLayoutData(30));
+    depictionFilterBLC.setNorthWidget(searchNameTF, new BorderLayoutData(20));
     depictionFilterBLC.setCenterWidget(locationALC, new MarginData(5, 0, 0, 0));
     depictionFilterBLC.setHeight(450);
 
@@ -275,69 +327,39 @@ public class CaveFilter extends AbstractFilter {
 			districtEntryList.add(de);
 		}
 	}
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.cses.client.ui.AbstractFilter#getSqlWhereClause()
-	 */
+
 	@Override
-	public ArrayList<String> getSqlWhereClause() {
-		ArrayList<String> result = new ArrayList<String>();
-		String districtQuery = null;
-		String regionQuery = null;
-		String siteQuery = null;
-		String sqlQuery = null;
+	public CaveSearchEntry getSearchEntry() {
+		CaveSearchEntry result = new CaveSearchEntry();
 		
-		if (caveTypeSelection.getValue() != null) {
-			result.add("CaveTypeID=" + caveTypeSelection.getCurrentValue().getCaveTypeID());
+		if (searchNameTF.getValue() != null && !searchNameTF.getValue().isEmpty()) {
+			result.setHistoricalName(searchNameTF.getValue());
 		}
 		
-		for (SiteEntry se : siteSelectionLV.getSelectionModel().getSelectedItems()) {
-			if (siteQuery == null) {
-				siteQuery = Integer.toString(se.getSiteID());
-			} else {
-				siteQuery = siteQuery.concat(", " + se.getSiteID());
-			}
-		}
-		if (siteQuery != null) {
-			sqlQuery = "SiteID IN (" + siteQuery + ")";
-		}
-		
-		for (DistrictEntry de : districtSelectionLV.getSelectionModel().getSelectedItems()) {
-			if (districtQuery == null) {
-				districtQuery = Integer.toString(de.getDistrictID());
-			} else {
-				districtQuery = districtQuery.concat(", " + de.getDistrictID());
-			}
-		}
-		if (districtQuery != null) {
-			if (sqlQuery == null) {
-				sqlQuery = "DistrictID IN (" + districtQuery + ")";
-			} else {
-				sqlQuery = sqlQuery.concat(" OR DistrictID IN (" + districtQuery + ")");
+		if (!caveTypeSelectionLV.getSelectionModel().getSelectedItems().isEmpty()) {
+			for (CaveTypeEntry cte : caveTypeSelectionLV.getSelectionModel().getSelectedItems()) {
+				result.getCaveTypeIdList().add(cte.getCaveTypeID());
 			}
 		}
 		
-		for (RegionEntry re : regionSelectionLV.getSelectionModel().getSelectedItems()) {
-			if (regionQuery == null) {
-				regionQuery = Integer.toString(re.getRegionID());
-			} else {
-				regionQuery = regionQuery.concat(", " + re.getRegionID());
+		if (!siteSelectionLV.getSelectionModel().getSelectedItems().isEmpty()) {
+			for (SiteEntry se : siteSelectionLV.getSelectionModel().getSelectedItems()) {
+				result.getSiteIdList().add(se.getSiteID());
 			}
 		}
-		if (districtQuery != null) {
-			if (sqlQuery == null) {
-				sqlQuery = "RegionID IN (" + regionQuery + ")";
-			} else {
-				sqlQuery = sqlQuery.concat(" OR RegionID IN (" + regionQuery + ")");
+
+		if (!districtSelectionLV.getSelectionModel().getSelectedItems().isEmpty()) {
+			for (DistrictEntry de : districtSelectionLV.getSelectionModel().getSelectedItems()) {
+				result.getDistrictIdList().add(de.getDistrictID());
 			}
 		}
-		
-		if (sqlQuery != null) {
-			result.add("(" + sqlQuery + ")");
+
+		if (!regionSelectionLV.getSelectionModel().getSelectedItems().isEmpty()) {
+			for (RegionEntry re : regionSelectionLV.getSelectionModel().getSelectedItems()) {
+				result.getRegionIdList().add(re.getRegionID());
+			}
 		}
-		
+
 		return result;
 	}
 

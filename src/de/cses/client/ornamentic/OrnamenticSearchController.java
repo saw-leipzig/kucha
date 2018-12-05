@@ -30,6 +30,7 @@ import de.cses.client.ui.EditorListener;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.OrnamentEntry;
+import de.cses.shared.OrnamenticSearchEntry;
 
 /**
  * @author nina
@@ -43,8 +44,8 @@ public class OrnamenticSearchController extends AbstractSearchController {
 	 * @param searchControllerTitle
 	 * @param resultView
 	 */
-	public OrnamenticSearchController(String selectorTitle, AbstractResultView resultView) {
-		super(selectorTitle, resultView);
+	public OrnamenticSearchController(String selectorTitle, OrnamenticFilter filter, OrnamenticResultView resultView) {
+		super(selectorTitle, filter, resultView);
 	}
 
 	/* (non-Javadoc)
@@ -52,21 +53,9 @@ public class OrnamenticSearchController extends AbstractSearchController {
 	 */
 	@Override
 	public void invokeSearch() {
-		ArrayList<String> sqlWhereClauses = new ArrayList<String>();
-		for (AbstractFilter filter : getRelatedFilter()) {
-			if ((filter != null) && (filter.getSqlWhereClause() != null)) {
-				sqlWhereClauses.addAll(filter.getSqlWhereClause());
-			}
-		}
-		String sqlWhere = null;
-		for (int i=0; i<sqlWhereClauses.size(); ++i) {
-			if (i == 0) {
-				sqlWhere = sqlWhereClauses.get(i);
-			} else {
-				sqlWhere = sqlWhere + " AND " + sqlWhereClauses.get(i);
-			}
-		}
-		dbService.getOrnamentsWHERE(sqlWhere, new AsyncCallback<ArrayList<OrnamentEntry>>() {
+		OrnamenticSearchEntry searchEntry = (OrnamenticSearchEntry) getFilter().getSearchEntry();
+		
+		dbService.searchOrnaments(searchEntry, new AsyncCallback<ArrayList<OrnamentEntry>>() {
 
 			@Override
 			public void onFailure(Throwable caught) {

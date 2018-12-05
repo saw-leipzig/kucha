@@ -33,23 +33,24 @@ import de.cses.client.user.UserLogin;
 public abstract class AbstractSearchController extends ToggleButton {
 	
 	private String searchControllerTitle;
-	private ArrayList<AbstractFilter> relatedFilter;
 	private AbstractResultView resultView;
-	
+	private AbstractFilter filter;
 		
 	/**
 	 * 
 	 * @param searchControllerTitle
 	 * @param resultView 
 	 */
-	public AbstractSearchController(String searchControllerTitle, AbstractResultView resultView) {
+	public AbstractSearchController(String searchControllerTitle, AbstractFilter filter, AbstractResultView resultView) {
 		super();
 		this.searchControllerTitle = searchControllerTitle;
 		this.resultView = resultView;
+		this.filter = filter;
 		this.resultView.addSearchSelectHandler(new SelectHandler() {
 			
 			@Override
 			public void onSelect(SelectEvent event) {
+				Util.doLogging("Search Controller: calling invokeSearch()");
 				invokeSearch();
 			}
 		});
@@ -64,30 +65,12 @@ public abstract class AbstractSearchController extends ToggleButton {
 				}
 			}
 		});
-		relatedFilter = new ArrayList<AbstractFilter>();
 		setText(searchControllerTitle);
 		setSize("50px", "50px");
-	}
-
-	/**
-	 * Use this method to add the related filters. Adding a filter as a related filter makes sure
-	 * this filter will be visible on the MainView as long as it is related to an implementation of
-	 * AbstractResult view. 
-	 * E.g. if two different classes, both extending AbstractResultView are using the same filter, 
-	 * making on of the invisible will not remove the filter until all view are made invisibe.
-	 *
-	 * @param filter
-	 */
-	public void addRelatedFilter(AbstractFilter filter) {
-		relatedFilter.add(filter);
 	}
 	
 	public String getSelectorTitle() {
 		return searchControllerTitle;
-	}
-
-	public ArrayList <AbstractFilter> getRelatedFilter() {
-		return relatedFilter;
 	}
 
 	public AbstractResultView getResultView() {
@@ -110,5 +93,9 @@ public abstract class AbstractSearchController extends ToggleButton {
 	 * where a new element is created and added to the database.
 	 */
 	public abstract void addNewElement();
+
+	public AbstractFilter getFilter() {
+		return filter;
+	}
 	
 }

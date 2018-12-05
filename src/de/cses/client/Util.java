@@ -110,25 +110,6 @@ public class Util {
 		dialog.setModal(true);
 		dialog.setGlassEnabled(true);
 		dialog.center();
-		
-//		
-//		Dialog d = new Dialog();
-//		d.setClosable(false);
-//		d.setHeading(header);
-//		d.setWidget(new HTML(message));
-//		d.setBodyStyle("padding:12px; border-color:#FF0000");
-//		d.setHideOnButtonClick(true);
-//		d.setPredefinedButtons(PredefinedButton.OK);
-//		d.setModal(true);
-//		d.show();
-//		d.getButton(PredefinedButton.OK).addSelectHandler(new SelectHandler() {
-//
-//			@Override
-//			public void onSelect(SelectEvent event) {
-//				d.hide();
-//			}
-//		});
-		
 	}
 
 	public static void showYesNo(String header, String message, SelectHandler yesHandler, SelectHandler noHandler) {
@@ -176,7 +157,7 @@ public class Util {
 
 	public static void doLogging(String message) {
 		String usertag = Cookies.getCookie(UserLogin.USERNAME);
-		dbService.doLogging(usertag!=null ? usertag : "unknown", message, new AsyncCallback() {
+		dbService.doLogging(usertag!=null ? usertag : "unknown", message, new AsyncCallback<Object>() {
 
 			@Override
 			public void onFailure(Throwable caught) { }

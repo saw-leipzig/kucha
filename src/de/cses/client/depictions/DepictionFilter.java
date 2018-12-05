@@ -30,6 +30,8 @@ import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
+import com.sencha.gxt.dnd.core.client.DndDropEvent;
+import com.sencha.gxt.dnd.core.client.DropTarget;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
@@ -51,7 +53,10 @@ import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
 import de.cses.client.Util;
 import de.cses.client.ui.AbstractFilter;
+import de.cses.shared.AbstractSearchEntry;
 import de.cses.shared.CaveEntry;
+import de.cses.shared.DepictionEntry;
+import de.cses.shared.DepictionSearchEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.LocationEntry;
@@ -112,7 +117,7 @@ public class DepictionFilter extends AbstractFilter {
 	
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 
-	private TextField shortNameSearch;
+	private TextField shortNameSearchTF;
 	private CaveProperties caveProps;
 	private IconographyProperties icoProps;
 	private ListStore<CaveEntry> caveEntryLS;
@@ -242,6 +247,17 @@ public class DepictionFilter extends AbstractFilter {
 		cavePanel.setHeading("Cave search");
 		cavePanel.add(caveSelectionLV);
 		
+		ToolButton caveSelectionResetTB = new ToolButton(ToolButton.RESTORE);
+		caveSelectionResetTB.setToolTip(Util.createToolTip("Reset selection"));
+		caveSelectionResetTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				caveSelectionLV.getSelectionModel().deselectAll();
+			}
+		});
+		cavePanel.addTool(caveSelectionResetTB);
+		
 		icoSelectionLV = new ListView<IconographyEntry, IconographyEntry>(selectedIconographyLS, new IdentityValueProvider<IconographyEntry>(), new SimpleSafeHtmlCell<IconographyEntry>(new AbstractSafeHtmlRenderer<IconographyEntry>() {
 
 			@Override
@@ -271,6 +287,29 @@ public class DepictionFilter extends AbstractFilter {
 		iconographyPanel.setHeaderVisible(true);
 		iconographyPanel.setHeading("Iconography & Pictorial Element search");
 		iconographyPanel.add(iconographyBLC);
+
+		new DropTarget(iconographyPanel) {
+
+			@Override
+			protected void onDragDrop(DndDropEvent event) {
+				super.onDragDrop(event);
+				if (event.getData() instanceof DepictionEntry) {
+					DepictionEntry de = (DepictionEntry) event.getData();
+					selectedIconographyLS.clear();
+					selectedIconographyLS.addAll(de.getRelatedIconographyList());
+					icoSelector.setSelectedIconography(de.getRelatedIconographyList());
+					if ((de.getRelatedIconographyList() != null) && (selectedIconographyLS.size() > 0)) {
+						iconographySpinnerField.setEnabled(true);
+						iconographySpinnerField.setValue(selectedIconographyLS.size());
+						iconographySpinnerField.setMaxValue(selectedIconographyLS.size());
+					} else {
+						iconographySpinnerField.setEnabled(false);
+					}
+				}
+			}
+			
+		};
+		
 		ToolButton selectorTB = new ToolButton(ToolButton.GEAR);
 		selectorTB.setToolTip(Util.createToolTip("Open Iconography & Pictorial Element selection"));
 		selectorTB.addSelectHandler(new SelectHandler() {
@@ -281,20 +320,24 @@ public class DepictionFilter extends AbstractFilter {
 			}
 		});
 		iconographyPanel.addTool(selectorTB);
+
+		ToolButton iconographySelectionResetTB = new ToolButton(ToolButton.RESTORE);
+		iconographySelectionResetTB.setToolTip(Util.createToolTip("Reset selection"));
+		iconographySelectionResetTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				selectedIconographyLS.clear();
+			}
+		});
+		iconographyPanel.addTool(iconographySelectionResetTB);
 		
 		/**
-		 * assemble shortNameSearch
+		 * assemble shortNameSearchTF
 		 */
 		
-		shortNameSearch = new TextField();
-		shortNameSearch.setEmptyText("search short name");
-		// TODO 
-		shortNameSearch.addValidator(new RegExValidator("^[a-zA-Z0-9 _\\-]*$", "We are working on a new search interface. Currently only a-z, A-Z, 0-9, _, - and [SPACE] are allowed."));
-		shortNameSearch.setAutoValidate(true);
-
-		FramedPanel shortNamePanel = new FramedPanel();
-		shortNamePanel.setHeading("Shortname search");
-		shortNamePanel.add(shortNameSearch);		
+		shortNameSearchTF = new TextField();
+		shortNameSearchTF.setEmptyText("search short name");
 
 		/**
 		 * assemble current location selection
@@ -336,6 +379,17 @@ public class DepictionFilter extends AbstractFilter {
 		currentLocationPanel.setHeading("Location search");
 		currentLocationPanel.add(locationSelectionLV);
 		
+		ToolButton locationSelectionResetTB = new ToolButton(ToolButton.RESTORE);
+		locationSelectionResetTB.setToolTip(Util.createToolTip("Reset selection"));
+		locationSelectionResetTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				locationSelectionLV.getSelectionModel().deselectAll();
+			}
+		});
+		currentLocationPanel.addTool(locationSelectionResetTB);
+		
 		/**
 		 * create the view
 		 */
@@ -348,62 +402,13 @@ public class DepictionFilter extends AbstractFilter {
     depictionFilterALC.setActiveWidget(cavePanel);
 
     BorderLayoutContainer depictionFilterBLC = new BorderLayoutContainer();
-    depictionFilterBLC.setNorthWidget(shortNamePanel, new BorderLayoutData(60));
+    depictionFilterBLC.setNorthWidget(shortNameSearchTF, new BorderLayoutData(20));
     depictionFilterBLC.setCenterWidget(depictionFilterALC, new MarginData(5, 0, 0, 0));
     depictionFilterBLC.setHeight(450);
 
     return depictionFilterBLC;
 	}
 
-	/* (non-Javadoc)
-	 * @see de.cses.client.ui.AbstractFilter#getSqlWhereClause()
-	 */
-	@Override
-	public ArrayList<String> getSqlWhereClause() {
-		sqlWhereClause = new ArrayList<String>();
-		if ((shortNameSearch.getValue() != null) && (shortNameSearch.getValue().length() > 0)) {
-			sqlWhereClause.add("ShortName LIKE '%" + shortNameSearch.getValue().replace("_", "\\_") + "%'");
-		}
-
-		String locationQuery = null;
-		for (LocationEntry le : locationSelectionLV.getSelectionModel().getSelectedItems()) {
-			if (locationQuery == null) {
-				locationQuery = Integer.toString(le.getLocationID());
-			} else {
-				locationQuery = locationQuery.concat(", " + le.getLocationID());
-			}
-		}
-		if (locationQuery != null) {
-			sqlWhereClause.add("CurrentLocationID IN (" + locationQuery + ")");
-		}		
-
-		String caveQuery = null;
-		for (CaveEntry ce : caveSelectionLV.getSelectionModel().getSelectedItems()) {
-			if (caveQuery == null) {
-				caveQuery = Integer.toString(ce.getCaveID());
-			} else {
-				caveQuery = caveQuery.concat(", " + ce.getCaveID());
-			}
-		}
-		if (caveQuery != null) {
-			sqlWhereClause.add("CaveID IN (" + caveQuery + ")");
-		}
-		
-		return sqlWhereClause;
-	}
-	
-	public String getRelatedIconographyIDs() {
-		String iconographyIDs = null;
-		for (IconographyEntry ie : icoSelector.getSelectedIconography()) {
-			iconographyIDs = (iconographyIDs == null) ? Integer.toString(ie.getIconographyID()) : iconographyIDs.concat("," + ie.getIconographyID());
-		}
-		return iconographyIDs;
-	}
-	
-	public int getCorrelationFactor() {
-		return iconographySpinnerField.isEnabled() ? iconographySpinnerField.getValue() : 0;
-	}
-	
 	private void showIconographySelection() {
 		if (extendedFilterDialog == null) {
 			extendedFilterDialog = new PopupPanel();
@@ -431,6 +436,31 @@ public class DepictionFilter extends AbstractFilter {
 			extendedFilterDialog.setModal(true);
 		}
 		extendedFilterDialog.center();
+	}
+
+	@Override
+	public AbstractSearchEntry getSearchEntry() {
+		DepictionSearchEntry searchEntry = new DepictionSearchEntry();
+		
+		if (shortNameSearchTF.getValue() != null && !shortNameSearchTF.getValue().isEmpty()) {
+			searchEntry.setShortName(shortNameSearchTF.getValue());
+		}
+		
+		for (CaveEntry ce : caveSelectionLV.getSelectionModel().getSelectedItems()) {
+			searchEntry.getCaveIdList().add(ce.getCaveID());
+		}
+		
+		for (LocationEntry le : locationSelectionLV.getSelectionModel().getSelectedItems()) {
+			searchEntry.getLocationIdList().add(le.getLocationID());
+		}
+		
+		for (IconographyEntry ie : selectedIconographyLS.getAll()) {
+			searchEntry.getIconographyIdList().add(ie.getIconographyID());
+		}
+		
+		searchEntry.setCorrelationFactor(iconographySpinnerField.isEnabled() ? iconographySpinnerField.getValue() : 0);
+		
+		return searchEntry;
 	}
 
 }

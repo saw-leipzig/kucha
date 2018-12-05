@@ -13,29 +13,33 @@
  */
 package de.cses.client.images;
 
-import java.util.ArrayList;
-
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
-import com.sencha.gxt.core.client.util.ToggleGroup;
+import com.sencha.gxt.core.client.XTemplates.XTemplate;
+import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
+import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.form.DualListField;
-import com.sencha.gxt.widget.core.client.form.Radio;
+import com.sencha.gxt.widget.core.client.form.NumberField;
+import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.TextField;
-import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 
 import de.cses.client.StaticTables;
+import de.cses.client.Util;
 import de.cses.client.ui.AbstractFilter;
+import de.cses.shared.AbstractSearchEntry;
+import de.cses.shared.ImageSearchEntry;
 import de.cses.shared.ImageTypeEntry;
 
 /**
@@ -43,20 +47,25 @@ import de.cses.shared.ImageTypeEntry;
  *
  */
 public class ImageFilter extends AbstractFilter {
+	
+	protected interface LabelTemplate extends XTemplates {
+		@XTemplate("<div class='label'>{text}</div>")
+		SafeHtml label(String text);
+	}
 
-	private TextField shortnameSearch;
+//	private TextField shortnameSearch;
 	private TextField titleSearch;
 	private TextField copyrightSearch;
-	private Radio andSearch;
-	private Radio orSearch;
+	private TextField filenameSearch;
+//	private Radio andSearch;
+//	private Radio orSearch;
 	private ImageTypeProperties imageTypeProps;
 	private ListStore<ImageTypeEntry> imageTypeEntryList, selectedImagesTypesList;
+	private NumberField<Integer> daysSinceUploadSearch;
 
 	interface ImageTypeProperties extends PropertyAccess<ImageTypeEntry> {
 		ModelKeyProvider<ImageTypeEntry> imageTypeID();
-
 		LabelProvider<ImageTypeEntry> uniqueID();
-
 		ValueProvider<ImageTypeEntry, String> name();
 	}
 
@@ -86,41 +95,31 @@ public class ImageFilter extends AbstractFilter {
 	@Override
 	protected Widget getFilterUI() {
 		VerticalLayoutContainer vlc = new VerticalLayoutContainer();
+		LabelTemplate lt = GWT.create(LabelTemplate.class); 
 
-		// TODO 
 		titleSearch = new TextField();
-		titleSearch.addValidator(new RegExValidator("^[a-zA-Z0-9 _\\-]*$", "We are working on a new search interface. Currently only a-z, A-Z, 0-9, _, - and [SPACE] are allowed."));
-		titleSearch.setAutoValidate(true);
-		titleSearch.setValue("");
-		titleSearch.setEmptyText("search image title");
+		titleSearch.setEmptyText("search title / shortname");
+		titleSearch.setToolTip(Util.createToolTip("search in title or shortname", "Search if the title or shortname contains this sequence of characters."));
 		vlc.add(titleSearch, new VerticalLayoutData(1.0, .125));
-
-		shortnameSearch = new TextField();
-		shortnameSearch.addValidator(new RegExValidator("^[a-zA-Z0-9 _\\-]*$", "We are working on a new search interface. Currently only a-z, A-Z, 0-9, _, - and [SPACE] are allowed."));
-		shortnameSearch.setAutoValidate(true);
-		shortnameSearch.setValue("");
-		shortnameSearch.setEmptyText("search image short name");
-		vlc.add(shortnameSearch, new VerticalLayoutData(1.0, .125));
+		
+		filenameSearch = new TextField();
+		filenameSearch.setEmptyText("search filename");
+		filenameSearch.setToolTip(Util.createToolTip("search in filename", "Search if the filename contains this sequence of characters."));
+		vlc.add(filenameSearch, new VerticalLayoutData(1.0, .125));
 
 		copyrightSearch = new TextField();
-		copyrightSearch.addValidator(new RegExValidator("^[a-zA-Z0-9 _\\-]*$", "We are working on a new search interface. Currently only a-z, A-Z, 0-9, _, - and [SPACE] are allowed."));
-		copyrightSearch.setAutoValidate(true);
-		copyrightSearch.setValue("");
-		copyrightSearch.setEmptyText("search image copyright");
+		copyrightSearch.setEmptyText("search copyright");
+		copyrightSearch.setToolTip(Util.createToolTip("search in copyright", "Search if the copyright contains this sequence of characters."));
 		vlc.add(copyrightSearch, new VerticalLayoutData(1.0, .125));
-
-		HorizontalPanel searchTypeHP = new HorizontalPanel();
-		andSearch = new Radio();
-		andSearch.setBoxLabel("AND");
-		orSearch = new Radio();
-		orSearch.setBoxLabel("OR");
-		ToggleGroup tg = new ToggleGroup();
-		tg.add(andSearch);
-		tg.add(orSearch);
-		andSearch.setValue(true);
-		searchTypeHP.add(andSearch);
-		searchTypeHP.add(orSearch);
-		vlc.add(searchTypeHP, new VerticalLayoutData(1.0, .125));
+		
+		daysSinceUploadSearch = new NumberField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
+		daysSinceUploadSearch.setAllowNegative(false);
+		daysSinceUploadSearch.setEmptyText("last X days");
+		daysSinceUploadSearch.setToolTip(Util.createToolTip("Search in last X days.", "Searches for images uploaded in the last X days."));
+		HorizontalLayoutContainer uploadedSinceHLC = new HorizontalLayoutContainer();
+		uploadedSinceHLC.add(daysSinceUploadSearch, new HorizontalLayoutData(.7, 1.0, new Margins(0, 10, 0, 0)));
+		uploadedSinceHLC.add(new HTML(lt.label("days")), new HorizontalLayoutData(.3, 1.0));
+		vlc.add(uploadedSinceHLC, new VerticalLayoutData(1.0, .125));
 
 		DualListField<ImageTypeEntry, String> dualListField = new DualListField<ImageTypeEntry, String>(imageTypeEntryList,
 				selectedImagesTypesList, imageTypeProps.name(), new TextCell());
@@ -135,43 +134,31 @@ public class ImageFilter extends AbstractFilter {
 		return vlc;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.cses.client.ui.AbstractFilter#getSqlWhereClause()
-	 */
 	@Override
-	public ArrayList<String> getSqlWhereClause() {
-		ArrayList<String> result = new ArrayList<String>();
-		String textFieldQuery = "";
+	public AbstractSearchEntry getSearchEntry() {
+		ImageSearchEntry entry = new ImageSearchEntry();
+
+		if (titleSearch.getValue() != null && !titleSearch.getValue().isEmpty()) {
+			entry.setTitleSearch(titleSearch.getValue());
+		}
 		
-		if (!titleSearch.getValue().isEmpty() && titleSearch.validate()) {
-			textFieldQuery = "Title LIKE '%" + titleSearch.getValue().replace("_", "\\_") + "%'";
+		if (copyrightSearch.getValue() != null && !copyrightSearch.getValue().isEmpty()) {
+			entry.setCopyrightSearch(copyrightSearch.getValue());
 		}
-		if (!shortnameSearch.getValue().isEmpty() && shortnameSearch.validate()) {
-			textFieldQuery = textFieldQuery.concat((!textFieldQuery.isEmpty() ? (andSearch.getValue() ? " AND " : " OR ") : "")
-					+ "ShortName LIKE '%" + shortnameSearch.getValue().replace("_", "\\_") + "%'");
+		
+		if (filenameSearch.getValue() != null && !filenameSearch.getValue().isEmpty()) {
+			entry.setFilenameSearch(filenameSearch.getValue());
 		}
-		if (!copyrightSearch.getValue().isEmpty() && copyrightSearch.validate()) {
-			textFieldQuery = textFieldQuery.concat((!textFieldQuery.isEmpty() ? (andSearch.getValue() ? " AND " : " OR ") : "")
-					+ "Copyright LIKE '%" + copyrightSearch.getValue().replace("_", "\\_") + "%'");
+		
+		if (daysSinceUploadSearch.getValue() != null && daysSinceUploadSearch.getValue() > 0) {
+			entry.setDaysSinceUploadSearch(daysSinceUploadSearch.getValue());
 		}
-		if (!textFieldQuery.isEmpty()) {
-			result.add("(" + textFieldQuery + ")");
+		
+		for (ImageTypeEntry ite : selectedImagesTypesList.getAll()) {
+			entry.getImageTypeIdList().add(ite.getImageTypeID());
 		}
 
-		String imageTypeQuery = "";
-		for (ImageTypeEntry ite : selectedImagesTypesList.getAll()) {
-			if (imageTypeQuery.isEmpty()) {
-				imageTypeQuery = "" + ite.getImageTypeID();
-			} else {
-				imageTypeQuery = imageTypeQuery.concat(", " + ite.getImageTypeID());
-			}
-		}
-		if (!imageTypeQuery.isEmpty()) {
-			result.add("(ImageTypeID IN (" + imageTypeQuery + "))");
-		}
-		return result;
+		return entry;
 	}
 
 }

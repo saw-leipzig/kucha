@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.UUID;
 
 import de.cses.server.ServerProperties;
+import de.cses.shared.AnnotatedBibliographySearchEntry;
 import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.BibKeywordEntry;
@@ -35,15 +36,18 @@ import de.cses.shared.C14DocumentEntry;
 import de.cses.shared.CaveAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveGroupEntry;
+import de.cses.shared.CaveSearchEntry;
 import de.cses.shared.CaveSketchEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
 import de.cses.shared.CurrentLocationEntry;
 import de.cses.shared.DepictionEntry;
+import de.cses.shared.DepictionSearchEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
+import de.cses.shared.ImageSearchEntry;
 import de.cses.shared.ImageTypeEntry;
 import de.cses.shared.InnerSecondaryPatternsEntry;
 import de.cses.shared.LocationEntry;
@@ -58,6 +62,7 @@ import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamentFunctionEntry;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.OrnamentPositionEntry;
+import de.cses.shared.OrnamenticSearchEntry;
 import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PreservationAttributeEntry;
 import de.cses.shared.PreservationClassificationEntry;
@@ -471,6 +476,60 @@ public class MysqlConnector {
 		}
 		return result;
 	}
+	
+	public ArrayList<ImageEntry> searchImages(ImageSearchEntry searchEntry) {
+		ArrayList<ImageEntry> results = new ArrayList<ImageEntry>();
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		String where = "";
+		
+		if (searchEntry.getTitleSearch() != null && !searchEntry.getTitleSearch().isEmpty()) {
+			where = "CONCAT(Title, ShortName) LIKE ?";
+		}
+		if (searchEntry.getCopyrightSearch() != null && !searchEntry.getCopyrightSearch().isEmpty()) {
+			where += where.isEmpty() ? "Copyright LIKE ?" : " AND Copyright LIKE ?";
+		}
+		if (searchEntry.getFilenameSearch() != null && !searchEntry.getFilenameSearch().isEmpty()) {
+			where += where.isEmpty() ? "Filename LIKE ?" : "AND Filename LIKE ?";
+		}
+		if (searchEntry.getDaysSinceUploadSearch() > 0) {
+			where += where.isEmpty() ? "DATEDIFF(NOW(),AddedOn)<=" + searchEntry.getDaysSinceUploadSearch() : " AND DATEDIFF(NOW(),AddedOn)<=" + searchEntry.getDaysSinceUploadSearch();
+		}
+		String imageTypeIDs = "";
+		for (int imageTypeID : searchEntry.getImageTypeIdList()) {
+			imageTypeIDs += imageTypeIDs.isEmpty() ? Integer.toString(imageTypeID) : "," + imageTypeID;
+		}
+		if (!imageTypeIDs.isEmpty()) {
+			where += where.isEmpty() ? "ImageTypeID IN (" + imageTypeIDs + ")" : " AND ImageTypeID IN (" + imageTypeIDs + ")" ;
+		}
+		System.out.println("SELECT * FROM Images" + (!where.isEmpty() ? " WHERE " + where : "") + " ORDER BY Title Asc");
+		try {
+			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Images ORDER BY Title Asc" : "SELECT * FROM Images WHERE " + where + " ORDER BY Title Asc");
+			int i = 1; // counter to fill ? in where clause
+			if (searchEntry.getTitleSearch() != null && !searchEntry.getTitleSearch().isEmpty()) {
+				pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");
+			}
+			if (searchEntry.getCopyrightSearch() != null && !searchEntry.getCopyrightSearch().isEmpty()) {
+				pstmt.setString(i++, "%" + searchEntry.getCopyrightSearch() + "%");
+			}
+			if (searchEntry.getFilenameSearch() != null && !searchEntry.getFilenameSearch().isEmpty()) {
+				pstmt.setString(i++, "%" + searchEntry.getFilenameSearch() + "%");
+			}
+			
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
+						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
+						rs.getBoolean("OpenAccess")));
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return results;	
+	}
 
 	/**
 	 * 
@@ -576,6 +635,83 @@ public class MysqlConnector {
 			return null;
 		}
 		return result;
+	}
+
+	public ArrayList<CaveEntry> searchCaves(CaveSearchEntry searchEntry) {
+		ArrayList<CaveEntry> results = new ArrayList<CaveEntry>();
+		Connection dbc = getConnection();
+		String caveTypeIdSet = "";
+		String siteIdSet = "";
+		String districtIdSet = "";
+		String regionIdSet = "";
+		PreparedStatement pstmt;
+		String where = "";
+
+		for (int caveTypeID : searchEntry.getCaveTypeIdList()) {
+			caveTypeIdSet += caveTypeIdSet.isEmpty() ? Integer.toString(caveTypeID) : "," + caveTypeID;
+		}
+		if (!caveTypeIdSet.isEmpty()) {
+			where = "CaveTypeID IN (" + caveTypeIdSet + ")";
+		}
+		
+		for (int siteID : searchEntry.getSiteIdList()) {
+			siteIdSet += siteIdSet.isEmpty() ? Integer.toString(siteID) : "," + siteID;
+		}
+		if (!siteIdSet.isEmpty()) {
+			where += where.isEmpty() ? "SiteID IN (" + siteIdSet + ")" : " AND SiteID IN (" + siteIdSet + ")";
+		}
+		
+		for (int districtID : searchEntry.getDistrictIdList()) { 
+			districtIdSet += districtIdSet.isEmpty() ? Integer.toString(districtID) : "," + districtID;
+		}
+		if (!districtIdSet.isEmpty()) {
+			where += where.isEmpty() ? "DistrictID IN (" + districtIdSet + ")" : " AND DistrictID IN (" + districtIdSet + ")";
+		}
+
+		for (int regionID : searchEntry.getRegionIdList()) {
+			regionIdSet += regionIdSet.isEmpty() ? Integer.toString(regionID) : "," + regionID;
+		}
+		if (!regionIdSet.isEmpty()) {
+			where += where.isEmpty() ? "RegionID IN (" + regionIdSet + ")" : " AND RegionID IN (" + regionIdSet + ")";
+		}
+		
+		if (!searchEntry.getHistoricalName().isEmpty()) {
+			where += where.isEmpty() ? "CONCAT(HistoricName, OptionalHistoricName) LIKE ?" : " AND CONCAT(HistoricName, OptionalHistoricName) LIKE ?";
+		}
+
+		System.err.println("searchCaves: where = " + where);
+		
+		try {
+			int i=1; // counter for ? insert
+			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Caves" : "SELECT * FROM Caves WHERE " + where);
+			if (!searchEntry.getHistoricalName().isEmpty()) {
+				pstmt.setString(i++, "%" + searchEntry.getHistoricalName() + "%");
+			}
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				CaveEntry ce = new CaveEntry(rs.getInt("CaveID"), rs.getString("OfficialNumber"), rs.getString("HistoricName"),
+						rs.getString("OptionalHistoricName"), rs.getInt("CaveTypeID"), rs.getInt("SiteID"), rs.getInt("DistrictID"),
+						rs.getInt("RegionID"),rs.getInt("OrientationID"),
+						rs.getString("StateOfPreservation"), rs.getString("Findings"),
+						rs.getString("Notes"), rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedInYear"),
+						rs.getInt("PreservationClassificationID"), rs.getInt("CaveGroupID"), rs.getString("OptionalCaveSketch"),
+						rs.getString("CaveLayoutComments"), rs.getBoolean("HasVolutedHorseShoeArch"), rs.getBoolean("HasSculptures"),
+						rs.getBoolean("HasClayFigures"), rs.getBoolean("HasImmitationOfMountains"),
+						rs.getBoolean("HasHolesForFixationOfPlasticalItems"), rs.getBoolean("HasWoodenConstruction"), rs.getBoolean("OpenAccess"));
+				ce.setCaveAreaList(getCaveAreas(ce.getCaveID()));
+				ce.setWallList(getWalls(ce.getCaveID()));
+				ce.setC14AnalysisUrlList(getC14AnalysisEntries(ce.getCaveID()));
+				ce.setC14DocumentList(getC14Documents(ce.getCaveID()));
+				ce.setCaveSketchList(getCaveSketchEntriesFromCave(ce.getCaveID()));
+				results.add(ce);
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return results;
 	}
 
 	public ArrayList<CaveEntry> getCaves() {
@@ -1725,6 +1861,100 @@ public class MysqlConnector {
 		return result;
 	}
 
+	public ArrayList<AnnotatedBiblographyEntry> searchAnnotatedBibliography(AnnotatedBibliographySearchEntry searchEntry) {
+		AnnotatedBiblographyEntry entry = null;
+		ArrayList<AnnotatedBiblographyEntry> result = new ArrayList<AnnotatedBiblographyEntry>();
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		String where = "";
+		
+		if ((searchEntry.getAuthorSearch() != null) && !searchEntry.getAuthorSearch().isEmpty()) {
+			String authorTerm = "";
+			String editorTerm = "";
+			for (String name : searchEntry.getAuthorSearch().split("\\s+")) {
+				authorTerm += authorTerm.isEmpty() 
+						? "SELECT BibID FROM AuthorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (CONCAT(FirstName, LastName, Institution) LIKE ?)))"
+						: " INTERSECT SELECT BibID FROM AuthorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (CONCAT(FirstName, LastName, Institution) LIKE ?)))";
+				editorTerm += editorTerm.isEmpty() 
+						? "SELECT BibID FROM EditorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (CONCAT(FirstName, LastName, Institution) LIKE ?)))"
+						: " INTERSECT SELECT BibID FROM EditorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (CONCAT(FirstName, LastName, Institution) LIKE ?)))";
+			}
+			where = "BibID IN (" + authorTerm + ") OR BibID IN (" + editorTerm + ")";
+		}
+		
+		if (searchEntry.getPublisherSearch() != null && !searchEntry.getPublisherSearch().isEmpty()) {
+			where += where.isEmpty() ? "Publisher LIKE ?" : "AND Publisher LIKE ?";
+		}
+
+		if (searchEntry.getTitleSearch() != null && !searchEntry.getTitleSearch().isEmpty()) {
+			where += (where.isEmpty() ? "" : " AND ") + 
+					"CONCAT(TitleORG, TitleEN, TitleTR, ParentTitleORG, ParentTitleEN, ParentTitleTR, TitleAddonORG, TitleAddonEN, TitleAddonTR, SubtitleORG, SubtitleEN, SubtitleTR) LIKE ?";
+		}
+		
+		if (searchEntry.getYearSearch() > 0) {
+			where += where.isEmpty() ? "YearORG LIKE ?" : " AND YearORG LIKE ?";
+		}
+		
+		try {
+			int i = 1;
+			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM AnnotatedBibliography" : "SELECT * FROM AnnotatedBibliography WHERE " + where);
+			if ((searchEntry.getAuthorSearch() != null) && !searchEntry.getAuthorSearch().isEmpty()) {
+				for (String name : searchEntry.getAuthorSearch().split("\\s+")) {
+					pstmt.setString(i++, "%" + name + "%");
+				}
+				for (String name : searchEntry.getAuthorSearch().split("\\s+")) {
+					pstmt.setString(i++, "%" + name + "%");
+				}
+			}
+			if (searchEntry.getPublisherSearch() != null && !searchEntry.getPublisherSearch().isEmpty()) {
+				pstmt.setString(i++, "%" + searchEntry.getPublisherSearch() + "%");
+			}
+			if (searchEntry.getTitleSearch() != null && !searchEntry.getTitleSearch().isEmpty()) {
+				pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");
+			}
+			if (searchEntry.getYearSearch() > 0) {
+				pstmt.setString(i++, "%" + searchEntry.getYearSearch() + "%");
+			}
+			System.out.println(where.isEmpty() ? "SELECT * FROM AnnotatedBiblography" : "SELECT * FROM AnnotatedBiblography WHERE " + where);
+			
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				entry = new AnnotatedBiblographyEntry(rs.getInt("BibID"), getPublicationType(rs.getInt("PublicationTypeID")),
+						rs.getString("TitleEN"), rs.getString("TitleORG"), rs.getString("TitleTR"), rs.getString("ParentTitleEN"),
+						rs.getString("ParentTitleORG"), rs.getString("ParentTitleTR"), rs.getString("SubtitleEN"), rs.getString("SubtitleORG"),
+						rs.getString("SubtitleTR"), rs.getString("UniversityEN"), rs.getString("UniversityORG"), rs.getString("UniversityTR"),
+						rs.getString("NumberEN"), rs.getString("NumberORG"), rs.getString("NumberTR"), rs.getString("AccessDateEN"),
+						rs.getString("AccessDateORG"), rs.getString("AccessDateTR"), rs.getString("TitleAddonEN"), rs.getString("TitleAddonORG"),
+						rs.getString("TitleAddonTR"), rs.getString("Publisher"), rs.getString("SeriesEN"), rs.getString("SeriesORG"),
+						rs.getString("SeriesTR"), rs.getString("EditionEN"), rs.getString("EditionORG"), rs.getString("EditionTR"),
+						rs.getString("VolumeEN"), rs.getString("VolumeORG"), rs.getString("VolumeTR"), rs.getString("IssueEN"),
+						rs.getString("IssueORG"), rs.getString("IssueTR"), rs.getInt("YearEN"), rs.getString("YearORG"), rs.getString("YearTR"),
+						rs.getString("MonthEN"), rs.getString("MonthORG"), rs.getString("MonthTR"), rs.getString("PagesEN"), rs.getString("PagesORG"),
+						rs.getString("PagesTR"), rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"), rs.getString("URI"),
+						rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getBoolean("OpenAccess"), rs.getString("AbstractText"),
+						rs.getString("ThesisType"), rs.getString("EditorType"), rs.getBoolean("OfficialTitleTranslation"), rs.getString("BibTexKey"));
+				entry.setAuthorList(getAuthorBibRelation(entry.getAnnotatedBiblographyID()));
+				entry.setEditorList(getEditorBibRelation(entry.getAnnotatedBiblographyID()));
+				entry.setKeywordList(getRelatedBibKeywords(entry.getAnnotatedBiblographyID()));
+				if (entry.getBibtexKey().isEmpty()) {
+					if (!entry.getAuthorList().isEmpty()) {
+						entry.setBibtexKey(createBibtexKey(entry.getAuthorList().get(0), entry.getYearORG()));
+					} else if (!entry.getEditorList().isEmpty()) {
+						entry.setBibtexKey(createBibtexKey(entry.getEditorList().get(0), entry.getYearORG()));
+					}
+					updateAnnotatedBiblographyEntry(entry);
+				}
+				result.add(entry);
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} 
+		result.sort(null); // because AnnotatedBiblographyEntry implements Comparable
+		return result;
+	}
+
 	/**
 	 * @param sqlWhere
 	 * @return sorted list based on implementation of {@link #Comparable} in {@link #AnnotatedBiblographyEntry}
@@ -2021,6 +2251,61 @@ public class MysqlConnector {
 			e.printStackTrace();
 		}
 		return cavetypes;
+	}
+
+	/**
+	 * This method unfolds the searchEntry and creates the query incl. sophisticated WHERE clause
+	 * @param searchEntry
+	 * @return
+	 */
+	public ArrayList<OrnamentEntry> searchOrnaments(OrnamenticSearchEntry searchEntry) {
+		ArrayList<OrnamentEntry> results = new ArrayList<OrnamentEntry>();
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		String where = "";
+
+		/**
+		 *  we need to add Strings with ? only to avoid code injection! 
+		 *  it's then important to set the values in the correct order (see below) after creating the statement!
+		 */
+		if (searchEntry.getSearchOrnamentCode()!= null && !searchEntry.getSearchOrnamentCode().isEmpty()) {
+			where = "Code LIKE ?";
+		}
+		String classIDs = "";
+		for (int classID : searchEntry.getSearchOrnamenClassIdList()) { // the class ids we are searching for...
+			classIDs += classIDs.isEmpty() ? Integer.toString(classID) : "," + classID;
+		}
+		if (!classIDs.isEmpty()) {
+			where += where.isEmpty() ? "OrnamentClassID IN (" + classIDs + ")" : "AND OrnamentClassID IN (" + classIDs + ")";
+		}
+		
+		System.err.println(where.isEmpty() ? "SELECT * FROM Ornaments" : "SELECT * FROM Ornaments WHERE " + where);
+		try {
+			int i=1; // we use a little counter to make sure we put in values at the right place
+			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Ornaments" : "SELECT * FROM Ornaments WHERE " + where);
+			if (searchEntry.getSearchOrnamentCode()!= null && !searchEntry.getSearchOrnamentCode().isEmpty()) {
+				pstmt.setString(i++, "%" + searchEntry.getSearchOrnamentCode() + "%");
+			}
+			
+			// @nina: mit i++ stellst du sicher, dass die ? korrekt gesetzt werden, solange du hier noch mal die 
+			// gleiche Reihenfolge von if-statements für die Strings durchläufst. 
+			// siehe auch: searchDepictions()!
+			
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				results.add(new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
+						//rs.getString("Annotation"),
+						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
+						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
+						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID"))));
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return results;
 	}
 
 	public ArrayList<OrnamentEntry> getOrnamentsWhere(String sqlWhere) {
@@ -4349,6 +4634,82 @@ public class MysqlConnector {
 			return false;
 		}
 		return rowsChangedCount > 0;
+	}
+
+	/**
+	 * 
+	 * @param searchEntry
+	 * @return
+	 */
+	public ArrayList<DepictionEntry> searchDepictions(DepictionSearchEntry searchEntry) {
+		// TODO Auto-generated method stub
+		/*
+		 * SELECT * FROM Depictions WHERE DepictionID IN (SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (1092,1108,1220,1221,1222,1236,1317,2290) GROUP BY DepictionID HAVING (COUNT(DepictionID) >= 3))
+		 */
+		ArrayList<DepictionEntry> results = new ArrayList<DepictionEntry>();
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		String where = "";
+		
+		if (searchEntry.getShortName() != null && !searchEntry.getShortName().isEmpty()) {
+			where = "ShortName LIKE ?";
+		}
+
+		String caveIDs="";
+		for (int caveID : searchEntry.getCaveIdList()) {
+			caveIDs += caveIDs.isEmpty() ? Integer.toString(caveID) : "," + caveID;
+		}
+		if (!caveIDs.isEmpty()) {
+			where += where.isEmpty() ? "CaveID IN (" + caveIDs + ")" : "AND CaveID IN (" + caveIDs + ")";
+		}
+		
+		String locationIDs = "";
+		for (int locationID : searchEntry.getLocationIdList()) {
+			locationIDs += locationIDs.isEmpty() ? Integer.toString(locationID) : "," + locationID;
+		}
+		if (!locationIDs.isEmpty()) {
+			where += where.isEmpty() ? "CurrentLocationID IN (" + locationIDs + ")" : " AND CurrentLocationID IN (" + locationIDs + ")";
+		}
+		
+		String iconographyIDs = "";
+		for (int iconographyID : searchEntry.getIconographyIdList()) {
+			iconographyIDs += iconographyIDs.isEmpty() ? Integer.toString(iconographyID) : "," + iconographyID;
+		}
+		if (!iconographyIDs.isEmpty()) {
+			where += where.isEmpty() 
+					? "DepictionID IN (SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (" + iconographyIDs + ") GROUP BY DepictionID HAVING (COUNT(DepictionID) >= " 
+						+ searchEntry.getCorrelationFactor() + "))"
+					: "AND DepictionID IN (SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (" + iconographyIDs + ") GROUP BY DepictionID HAVING (COUNT(DepictionID) >= " 
+						+ searchEntry.getCorrelationFactor() + "))";
+		}
+		
+		try {
+			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Depictions" : "SELECT * FROM Depictions WHERE " + where);
+			if (!searchEntry.getShortName().isEmpty()) {
+				pstmt.setString(1, "%" + searchEntry.getShortName() + "%");
+			}
+
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				DepictionEntry de = new DepictionEntry(rs.getInt("DepictionID"), rs.getInt("StyleID"), rs.getString("Inscriptions"),
+						rs.getString("SeparateAksaras"), rs.getString("Dating"), rs.getString("Description"), rs.getString("BackgroundColour"),
+						rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"), rs.getDouble("Width"), rs.getDouble("Height"),
+						getExpedition(rs.getInt("ExpeditionID")), rs.getDate("PurchaseDate"), getLocation(rs.getInt("CurrentLocationID")), rs.getString("InventoryNumber"),
+						getVendor(rs.getInt("VendorID")), rs.getInt("StoryID"), getCave(rs.getInt("CaveID")), rs.getInt("WallID"), rs.getInt("AbsoluteLeft"),
+						rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes"),
+						rs.getInt("MasterImageID"), rs.getBoolean("OpenAccess"), rs.getString("LastChangedByUser"), rs.getString("LastChangedOnDate"));
+				de.setRelatedImages(getRelatedImages(de.getDepictionID()));
+				de.setRelatedBibliographyList(getRelatedBibliographyFromDepiction(de.getDepictionID()));
+				de.setRelatedIconographyList(getRelatedIconography(de.getDepictionID()));
+				results.add(de);
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return results;
 	}
 
 }

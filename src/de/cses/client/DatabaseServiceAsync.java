@@ -17,20 +17,24 @@ import java.util.ArrayList;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import de.cses.shared.AnnotatedBibliographySearchEntry;
 import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.BibKeywordEntry;
 import de.cses.shared.CaveAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveGroupEntry;
+import de.cses.shared.CaveSearchEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
 import de.cses.shared.CurrentLocationEntry;
 import de.cses.shared.DepictionEntry;
+import de.cses.shared.DepictionSearchEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
+import de.cses.shared.ImageSearchEntry;
 import de.cses.shared.ImageTypeEntry;
 import de.cses.shared.InnerSecondaryPatternsEntry;
 import de.cses.shared.LocationEntry;
@@ -44,6 +48,7 @@ import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamentFunctionEntry;
 import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.OrnamentPositionEntry;
+import de.cses.shared.OrnamenticSearchEntry;
 import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PreservationAttributeEntry;
 import de.cses.shared.PreservationClassificationEntry;
@@ -303,6 +308,16 @@ public interface DatabaseServiceAsync {
 
 	void deleteAuthorEntry(AuthorEntry selectedEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
-	void updateUserEntry(UserEntry currentUser, String passwordHash, String newPasswordHash, AsyncCallback<Boolean> asyncCallback);
+	void updateUserEntry(UserEntry currentUser, String passwordHash, String newPasswordHash, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
+
+	void searchCaves(CaveSearchEntry searchEntry, AsyncCallback<ArrayList<CaveEntry>> asyncCallback) throws IllegalArgumentException;
+
+	void searchDepictions(DepictionSearchEntry searchEntry, AsyncCallback<ArrayList<DepictionEntry>> asyncCallback) throws IllegalArgumentException;
+
+	void searchImages(ImageSearchEntry searchEntry, AsyncCallback<ArrayList<ImageEntry>> asyncCallback) throws IllegalArgumentException;
+
+	void searchAnnotatedBibliography(AnnotatedBibliographySearchEntry searchEntry, AsyncCallback<ArrayList<AnnotatedBiblographyEntry>> asyncCallback) throws IllegalArgumentException;
+
+	void searchOrnaments(OrnamenticSearchEntry searchEntry, AsyncCallback<ArrayList<OrnamentEntry>> asyncCallback) throws IllegalArgumentException;
 
 }

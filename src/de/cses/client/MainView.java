@@ -57,8 +57,6 @@ import de.cses.client.images.ImageSearchController;
 import de.cses.client.ornamentic.OrnamenticFilter;
 import de.cses.client.ornamentic.OrnamenticResultView;
 import de.cses.client.ornamentic.OrnamenticSearchController;
-import de.cses.client.ui.AbstractDataDisplay;
-import de.cses.client.ui.AbstractFilter;
 import de.cses.client.ui.AbstractSearchController;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AnnotatedBiblographyEntry;
@@ -121,95 +119,84 @@ public class MainView implements IsWidget {
     
 //    LocationFilter lFilter = new LocationFilter("Location Filter");
 
-		caveSearchController = new CaveSearchController("Caves", new CaveResultView("Caves"));
-		caveSearchController.addRelatedFilter(new CaveFilter("Caves"));
-//		caveSearchController.addRelatedFilter(lFilter);
+		caveSearchController = new CaveSearchController("Caves", new CaveFilter("Caves"), new CaveResultView("Caves"));
 		caveSearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 			
 			@Override
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
 				if (event.getValue()) {
-					for (AbstractFilter filter : caveSearchController.getRelatedFilter()) {
-						filterView.add(filter, 0);
-					}
+					filterView.add(caveSearchController.getFilter(), 0);
 					resultView.add(caveSearchController.getResultView(), 0);
 				} else {
-					ArrayList<AbstractFilter> usedFilter = getUsedFilter();
-					for (AbstractFilter filter : caveSearchController.getRelatedFilter()) {
-						if (!usedFilter.contains(filter)){
-							filterView.remove(filter, 0);
-						}
-					}
+//					filterView.remove(caveSearchController.getRelatedFilter(), 0);
 					caveSearchController.getResultView().removeFromParent();
+					caveSearchController.getFilter().asWidget().removeFromParent();
+//					ArrayList<AbstractFilter> usedFilter = getUsedFilter();
+//					for (AbstractFilter filter : caveSearchController.getRelatedFilter()) {
+//						if (!usedFilter.contains(filter)){
+//						}
+//					}
 				}
 			}
 		});
 		
-		depictionSearchController = new DepictionSearchController("Painted Representations", new DepictionResultView("Painted Representations"));
-		depictionSearchController.addRelatedFilter(new DepictionFilter("Painted Representations"));
+		depictionSearchController = new DepictionSearchController("Painted Representations", new DepictionFilter("Painted Representations"), new DepictionResultView("Painted Representations"));
 		depictionSearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
 				if (event.getValue()) {
-					for (AbstractFilter filter : depictionSearchController.getRelatedFilter()) {
-						filterView.add(filter, 0);
-					}
+					filterView.add(depictionSearchController.getFilter(), 0);
 					resultView.add(depictionSearchController.getResultView(), 0);
+//					for (AbstractFilter filter : depictionSearchController.getRelatedFilter()) {
+//					}
 				} else {
-					ArrayList<AbstractFilter> usedFilter = getUsedFilter();
-					for (AbstractFilter filter : depictionSearchController.getRelatedFilter()) {
-						if (!usedFilter.contains(filter)){
-							filterView.remove(filter, 0);
-						}
-					}
+//					ArrayList<AbstractFilter> usedFilter = getUsedFilter();
+//					for (AbstractFilter filter : depictionSearchController.getRelatedFilter()) {
+//						if (!usedFilter.contains(filter)){
+//							filterView.remove(filter, 0);
+//						}
+//					}
+					depictionSearchController.getFilter().asWidget().removeFromParent();
 					depictionSearchController.getResultView().removeFromParent();
 				}
 			}
 		});
 		
-		imageSearchController = new ImageSearchController("Image Pool", new ImageResultView("Image Pool"));
-		imageSearchController.addRelatedFilter(new ImageFilter("Image Filter"));
+		imageSearchController = new ImageSearchController("Image Pool", new ImageFilter("Image Filter"), new ImageResultView("Image Pool"));
 		imageSearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
 				if (event.getValue()) {
-					for (AbstractFilter filter : imageSearchController.getRelatedFilter()) {
-						filterView.add(filter, 0);
-					}
+//					for (AbstractFilter filter : imageSearchController.getRelatedFilter()) {
+//					}
+					filterView.add(imageSearchController.getFilter(), 0);
 					resultView.add(imageSearchController.getResultView(), 0);
 				} else {
-					ArrayList<AbstractFilter> usedFilter = getUsedFilter();
-					for (AbstractFilter filter : imageSearchController.getRelatedFilter()) {
-						if (!usedFilter.contains(filter)) {
-							filterView.remove(filter, 0);
-						}
-					}
+//					ArrayList<AbstractFilter> usedFilter = getUsedFilter();
+//					for (AbstractFilter filter : imageSearchController.getRelatedFilter()) {
+//						if (!usedFilter.contains(filter)) {
+//							filterView.remove(filter, 0);
+//						}
+//					}
+					imageSearchController.getFilter().asWidget().removeFromParent();
 					imageSearchController.getResultView().removeFromParent();
 				}
 			}
 			
 		});
 		
-		ornamenticSearchController = new OrnamenticSearchController("Ornamentation", new OrnamenticResultView("Ornamentation"));
-		ornamenticSearchController.addRelatedFilter(new OrnamenticFilter("Ornamentations"));
+		ornamenticSearchController = new OrnamenticSearchController("Ornamentation", new OrnamenticFilter("Ornamentation"), new OrnamenticResultView("Ornamentation"));
 		ornamenticSearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
 				if (event.getValue()) {
-					for (AbstractFilter filter : ornamenticSearchController.getRelatedFilter()) {
-						filterView.add(filter, 0);
-					}
+					filterView.add(ornamenticSearchController.getFilter(), 0);
 					resultView.add(ornamenticSearchController.getResultView(), 0);
 				} else {
-					ArrayList<AbstractFilter> usedFilter = getUsedFilter();
-					for (AbstractFilter filter : ornamenticSearchController.getRelatedFilter()) {
-						if (!usedFilter.contains(filter)){
-							filterView.remove(filter, 0);
-						}
-					}
+					ornamenticSearchController.getFilter().asWidget().removeFromParent();
 					ornamenticSearchController.getResultView().removeFromParent();
 				}
 			}
@@ -217,58 +204,22 @@ public class MainView implements IsWidget {
 		
 		// annotated bibliography
 		
-		annotatedBiblographySearchController = new AnnotatedBiblographySearchController("Annotated Biblography", new AnnotatedBiblographyResultView("Annotated Biblography"));
-		annotatedBiblographySearchController.addRelatedFilter(new AnnotatedBibliographyFilter("Bibliography"));
+		annotatedBiblographySearchController = new AnnotatedBiblographySearchController("Annotated Biblography", new AnnotatedBibliographyFilter("Bibliography"), new AnnotatedBiblographyResultView("Annotated Biblography"));
 		annotatedBiblographySearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
 				if (event.getValue()) {
-					for (AbstractFilter filter : annotatedBiblographySearchController.getRelatedFilter()) {
-						filterView.add(filter, 0);
-					}
+//					for (AbstractFilter filter : annotatedBiblographySearchController.getRelatedFilter()) {
+//					}
+					filterView.add(annotatedBiblographySearchController.getFilter(), 0);
 					resultView.add(annotatedBiblographySearchController.getResultView(), 0);
 				} else {
-					ArrayList<AbstractFilter> usedFilter = getUsedFilter();
-					for (AbstractFilter filter : annotatedBiblographySearchController.getRelatedFilter()) {
-						if (!usedFilter.contains(filter)){
-							filterView.remove(filter, 0);
-						}
-					}
+					annotatedBiblographySearchController.getFilter().asWidget().removeFromParent();
 					annotatedBiblographySearchController.getResultView().removeFromParent();
 				}
 			}
 		});
-		
-		// result collector
-		
-//		resultCollectorController = new ResultCollectorController("Personal Desktop", new ResultCollectorView("Personal Desktop"));
-//		resultCollectorController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-//
-//			@Override
-//			public void onValueChange(ValueChangeEvent<Boolean> event) {
-//				if (event.getValue()) {
-//					dataViewPLC.add(resultCollectorController.getResultView(), 0);
-//				} else {
-//					resultCollectorController.getResultView().removeFromParent();
-//				}
-//			}
-//		});
-		
-		// Data Display
-		
-//		dataDisplayController = new DataDisplayController("Data", new DataDisplayView("Data"));
-//		dataDisplayController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-//
-//			@Override
-//			public void onValueChange(ValueChangeEvent<Boolean> event) {
-//				if (event.getValue()) {
-//					dataViewPLC.add(dataDisplayController.getResultView(), 0);
-//				} else {
-//					dataDisplayController.getResultView().removeFromParent();
-//				}
-//			}
-//		});
 
 		
 		// ----------------------------------- assembling the menu bar ---------------------------------------------
@@ -459,23 +410,23 @@ public class MainView implements IsWidget {
 	/**
 	 * 
 	 */
-	protected ArrayList<AbstractFilter> getUsedFilter() {
-		ArrayList<AbstractFilter> usedFilter = new ArrayList<AbstractFilter>();
-		Widget w;
-		Iterator<Widget> it;
-		AbstractSearchController selector;
-		it = selectorLayoutContainer.iterator();
-		while (it.hasNext()) {
-			w = it.next();
-			if (w instanceof AbstractSearchController) {
-				selector = ((AbstractSearchController) w);
-				if (selector.getValue()) {
-					usedFilter.addAll(selector.getRelatedFilter());
-				}
-			}
-		}
-		return usedFilter;
-	}
+//	protected ArrayList<AbstractFilter> getUsedFilter() {
+//		ArrayList<AbstractFilter> usedFilter = new ArrayList<AbstractFilter>();
+//		Widget w;
+//		Iterator<Widget> it;
+//		AbstractSearchController selector;
+//		it = selectorLayoutContainer.iterator();
+//		while (it.hasNext()) {
+//			w = it.next();
+//			if (w instanceof AbstractSearchController) {
+//				selector = ((AbstractSearchController) w);
+//				if (selector.getValue()) {
+//					usedFilter.addAll(selector.getRelatedFilter());
+//				}
+//			}
+//		}
+//		return usedFilter;
+//	}
 	
 	/**
 	 * 

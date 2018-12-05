@@ -23,12 +23,12 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
-import de.cses.client.images.ImageView;
-import de.cses.client.ui.AbstractFilter;
+import de.cses.client.Util;
 import de.cses.client.ui.AbstractSearchController;
 import de.cses.client.ui.EditorListener;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.CaveEntry;
+import de.cses.shared.CaveSearchEntry;
 
 /**
  * @author alingnau
@@ -42,8 +42,8 @@ public class CaveSearchController extends AbstractSearchController {
 	 * @param searchControllerTitle
 	 * @param caveResultView
 	 */
-	public CaveSearchController(String selectorTitle, CaveResultView caveResultView) {
-		super(selectorTitle, caveResultView);
+	public CaveSearchController(String selectorTitle, CaveFilter filter, CaveResultView caveResultView) {
+		super(selectorTitle, filter, caveResultView);
 	}
 
 	/*
@@ -53,21 +53,9 @@ public class CaveSearchController extends AbstractSearchController {
 	 */
 	@Override
 	public void invokeSearch() {
-		ArrayList<String> sqlWhereClauses = new ArrayList<String>();
-		for (AbstractFilter filter : getRelatedFilter()) {
-			if (filter != null) {
-				sqlWhereClauses.addAll(filter.getSqlWhereClause());
-			}
-		}
-		String sqlWhere = null;
-		for (int i=0; i<sqlWhereClauses.size(); ++i) {
-			if (i == 0) {
-				sqlWhere = sqlWhereClauses.get(i);
-			} else {
-				sqlWhere = sqlWhere + " AND " + sqlWhereClauses.get(i);
-			}
-		}
-		dbService.getCaves(sqlWhere, new AsyncCallback<ArrayList<CaveEntry>>() {
+		CaveSearchEntry searchEntry = (CaveSearchEntry) getFilter().getSearchEntry();
+		
+		dbService.searchCaves(searchEntry, new AsyncCallback<ArrayList<CaveEntry>>() {
 			
 			private String getComparisonLabel(CaveEntry ce) {
 				StaticTables stab = StaticTables.getInstance();
@@ -105,7 +93,9 @@ public class CaveSearchController extends AbstractSearchController {
 					getResultView().addResult(new CaveView(ce));	
 				}
 			}
+
 		});
+		
 	}
 
 	private boolean isInteger(String str) {

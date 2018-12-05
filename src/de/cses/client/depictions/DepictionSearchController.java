@@ -28,6 +28,7 @@ import de.cses.client.ui.AbstractSearchController;
 import de.cses.client.ui.EditorListener;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.DepictionEntry;
+import de.cses.shared.DepictionSearchEntry;
 import de.cses.shared.OrnamentEntry;
 
 /**
@@ -43,8 +44,8 @@ public class DepictionSearchController extends AbstractSearchController {
 	 * @param searchControllerTitle
 	 * @param resultView
 	 */
-	public DepictionSearchController(String selectorTitle, AbstractResultView resultView) {
-		super(selectorTitle, resultView);
+	public DepictionSearchController(String selectorTitle, DepictionFilter filter, DepictionResultView resultView) {
+		super(selectorTitle, filter, resultView);
 	}
 
 	/* (non-Javadoc)
@@ -52,62 +53,9 @@ public class DepictionSearchController extends AbstractSearchController {
 	 */
 	@Override
 	public void invokeSearch() {
-		sqlWhere = null;
-		ArrayList<String> sqlWhereClauses = new ArrayList<String>();
-		String iconographyIDs = null;
-		int correlationFactor = 0;
-		for (AbstractFilter filter : getRelatedFilter()) {
-			if ((filter != null) && (filter.getSqlWhereClause() != null)) {
-				sqlWhereClauses.addAll(filter.getSqlWhereClause());
-			}
-			if (filter instanceof DepictionFilter) {
-				iconographyIDs = ((DepictionFilter)filter).getRelatedIconographyIDs();
-				correlationFactor = ((DepictionFilter)filter).getCorrelationFactor();
-			}
-		}
+		DepictionSearchEntry searchEntry = (DepictionSearchEntry) getFilter().getSearchEntry();
 
-		for (String sql : sqlWhereClauses) {
-			sqlWhere = (sqlWhere == null) ? sql : sqlWhere.concat(" AND " + sql);
-		}
-		
-		if ((iconographyIDs != null) && (correlationFactor > 0)) {
-			dbService.getRelatedDepictionIDs(iconographyIDs, correlationFactor, new AsyncCallback<ArrayList<Integer>>() {
-
-				@Override
-				public void onFailure(Throwable caught) {
-				}
-
-				@Override
-				public void onSuccess(ArrayList<Integer> result) {
-					if (result.isEmpty()) {
-						getResultView().reset();
-						return;
-					}
-					String sqlDepictionWhere = null;
-					for (Integer depictionID : result) {
-						if (sqlDepictionWhere == null) {
-							sqlDepictionWhere = Integer.toString(depictionID);
-						} else {
-							sqlDepictionWhere = sqlDepictionWhere.concat(", " + depictionID);
-						}
-					}
-					if (sqlDepictionWhere != null) {
-						if (sqlWhere == null) {
-							sqlWhere = "DepictionID IN (" + sqlDepictionWhere + ")";
-						} else {
-							sqlWhere = sqlWhere.concat(" AND " + "DepictionID IN (" + sqlDepictionWhere + ")");
-						}
-					}
-					doSearch(sqlWhere);
-				}
-			});
-		} else {
-			doSearch(sqlWhere);
-		}
-	}
-	
-	private void doSearch(String sqlWhere) {
-		dbService.getDepictions(sqlWhere, new AsyncCallback<ArrayList<DepictionEntry>>() {
+		dbService.searchDepictions(searchEntry, new AsyncCallback<ArrayList<DepictionEntry>>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
@@ -123,7 +71,7 @@ public class DepictionSearchController extends AbstractSearchController {
 			}
 		});
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see de.cses.client.ui.AbstractSearchController#addNewElement()
 	 */

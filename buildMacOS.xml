@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project default="war" name="KUCHA" xmlns:if="ant:if">
 	<!-- Configure path to GWT SDK -->
-	<property name="GWT_HOME" value="/Users/alingnau/.p2/pool/plugins/com.gwtplugins.gwt.eclipse.sdkbundle.gwt28_2.8.0.201803211650/gwt-2.8.2" />
-
+	<!-- <property name="GWT_HOME" value="/Users/alingnau/.p2/pool/plugins/com.gwtplugins.gwt.eclipse.sdkbundle.gwt28_2.8.0.201803211650/gwt-2.8.2" /> -->
+	<property name="GWT_HOME" value="/Applications/Eclipse.app/Contents/Eclipse/plugins/com.gwtplugins.gwt.eclipse.sdkbundle.gwt28_2.8.0.201808130607/gwt-2.8.2/" />
+	
 	<!-- enable the following property for devmode debugging in an IDE; for Eclipse create an "Remote Java Application" launcher conneting to port 8000 -->
 	<property name="enable.debug.port" value="false" />
 

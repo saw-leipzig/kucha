@@ -830,27 +830,22 @@ public class AnnotatedBiblographyEntry extends AbstractEntry implements Comparab
 	public String getLabel() {
 		String result = null;
 		if (publicationType.isAuthorEnabled()) {
-			for (AuthorEntry author : authorList) {
-				if (result == null) {
-					result = author.getName();
-				} else {
-					result = result.concat("; " + author.getName());
-				}
-			}
-			result = result.concat(". ");
+			result = getAuthors() + ". ";
 		} else {
-			for (AuthorEntry editor : editorList) {
-				if (result == null) {
-					result = editor.getName();
-				} else {
-					result = result.concat("; " + editor.getName());
-				}
+			result = getEditors();
+			if (!editorType.isEmpty()) {
+				result += " (" + editorType + "). ";
 			}
-			result = result.concat(" (Eds.). ");
 		}
-		result = result.concat(titleEN != null ? titleEN + ". " : titleORG != null ? titleORG + ". " : titleTR + ". ");
-		result = result.concat(publisher != null ? publisher + ". " : "publisher unknown. ");
-		result = result.concat(yearEN + ". ");
+		if (!titleORG.isEmpty()) {
+			result += titleORG + ". ";
+		}
+		if (!publisher.isEmpty()) {
+			result += publisher + ". ";
+		}
+		if (yearEN > 0) {
+			result += yearEN + ". ";
+		}
 		return result;
 	}
 
