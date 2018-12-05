@@ -2275,16 +2275,24 @@ public class MysqlConnector {
 		if (searchEntry.getSearchOrnamentCode()!= null && !searchEntry.getSearchOrnamentCode().isEmpty()) {
 			where = "Code LIKE ?";
 		}
+		String classIDs = "";
+		for (int classID : searchEntry.getSearchOrnamenClassIdList()) { // the class ids we are searching for...
+			classIDs += classIDs.isEmpty() ? Integer.toString(classID) : "," + classID;
+		}
+		if (!classIDs.isEmpty()) {
+			where += where.isEmpty() ? "OrnamentClassID IN (" + classIDs + ")" : "AND OrnamentClassID IN (" + classIDs + ")";
+		}
 		
 		System.err.println(where.isEmpty() ? "SELECT * FROM Ornaments" : "SELECT * FROM Ornaments WHERE " + where);
 		try {
 			int i=1; // we use a little counter to make sure we put in values at the right place
 			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Ornaments" : "SELECT * FROM Ornaments WHERE " + where);
 			if (searchEntry.getSearchOrnamentCode()!= null && !searchEntry.getSearchOrnamentCode().isEmpty()) {
-				pstmt.setString(i++, searchEntry.getSearchOrnamentCode());
+				pstmt.setString(i++, "%" + searchEntry.getSearchOrnamentCode() + "%");
 			}
+			
 			// @nina: mit i++ stellst du sicher, dass die ? korrekt gesetzt werden, solange du hier noch mal die 
-			// gleiche Reihenfolge von if-statements durchläufst. 
+			// gleiche Reihenfolge von if-statements für die Strings durchläufst. 
 			// siehe auch: searchDepictions()!
 			
 			ResultSet rs = pstmt.executeQuery();
