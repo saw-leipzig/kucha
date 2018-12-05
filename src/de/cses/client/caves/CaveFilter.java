@@ -62,7 +62,6 @@ public class CaveFilter extends AbstractFilter {
 	private CaveTypeProperties caveTypeProps;
 	private ListStore<CaveTypeEntry> caveTypeEntryList;
 	private ListView<CaveTypeEntry, CaveTypeEntry> caveTypeSelectionLV;
-//	private ComboBox<CaveTypeEntry> caveTypeSelection;
 	private SiteProperties siteProps;
 	private ListStore<SiteEntry> siteEntryList;
 	private RegionProperties regionProps;
@@ -333,7 +332,7 @@ public class CaveFilter extends AbstractFilter {
 	public CaveSearchEntry getSearchEntry() {
 		CaveSearchEntry result = new CaveSearchEntry();
 		
-		if (!searchNameTF.getValue().isEmpty()) {
+		if (searchNameTF.getValue() != null && !searchNameTF.getValue().isEmpty()) {
 			result.setHistoricalName(searchNameTF.getValue());
 		}
 		
