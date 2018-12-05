@@ -247,6 +247,17 @@ public class DepictionFilter extends AbstractFilter {
 		cavePanel.setHeading("Cave search");
 		cavePanel.add(caveSelectionLV);
 		
+		ToolButton caveSelectionResetTB = new ToolButton(ToolButton.RESTORE);
+		caveSelectionResetTB.setToolTip(Util.createToolTip("Reset selection"));
+		caveSelectionResetTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				caveSelectionLV.getSelectionModel().deselectAll();
+			}
+		});
+		cavePanel.addTool(caveSelectionResetTB);
+		
 		icoSelectionLV = new ListView<IconographyEntry, IconographyEntry>(selectedIconographyLS, new IdentityValueProvider<IconographyEntry>(), new SimpleSafeHtmlCell<IconographyEntry>(new AbstractSafeHtmlRenderer<IconographyEntry>() {
 
 			@Override
@@ -309,6 +320,17 @@ public class DepictionFilter extends AbstractFilter {
 			}
 		});
 		iconographyPanel.addTool(selectorTB);
+
+		ToolButton iconographySelectionResetTB = new ToolButton(ToolButton.RESTORE);
+		iconographySelectionResetTB.setToolTip(Util.createToolTip("Reset selection"));
+		iconographySelectionResetTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				selectedIconographyLS.clear();
+			}
+		});
+		iconographyPanel.addTool(iconographySelectionResetTB);
 		
 		/**
 		 * assemble shortNameSearchTF
@@ -356,6 +378,17 @@ public class DepictionFilter extends AbstractFilter {
 		currentLocationPanel.setHeaderVisible(true);
 		currentLocationPanel.setHeading("Location search");
 		currentLocationPanel.add(locationSelectionLV);
+		
+		ToolButton locationSelectionResetTB = new ToolButton(ToolButton.RESTORE);
+		locationSelectionResetTB.setToolTip(Util.createToolTip("Reset selection"));
+		locationSelectionResetTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				locationSelectionLV.getSelectionModel().deselectAll();
+			}
+		});
+		currentLocationPanel.addTool(locationSelectionResetTB);
 		
 		/**
 		 * create the view

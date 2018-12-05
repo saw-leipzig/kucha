@@ -32,10 +32,13 @@ import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer.ExpandMode;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.TextField;
@@ -172,6 +175,17 @@ public class CaveFilter extends AbstractFilter {
 		caveTypePanel.setHeading("Cave Types");
 		caveTypePanel.add(caveTypeSelectionLV);
 		
+		ToolButton caveTypeSelectionResetTB = new ToolButton(ToolButton.RESTORE);
+		caveTypeSelectionResetTB.setToolTip(Util.createToolTip("Reset selection"));
+		caveTypeSelectionResetTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				caveTypeSelectionLV.getSelectionModel().deselectAll();
+			}
+		});
+		caveTypePanel.addTool(caveTypeSelectionResetTB);
+		
 		siteSelectionLV = new ListView<SiteEntry, SiteEntry>(siteEntryList, new IdentityValueProvider<SiteEntry>(), new SimpleSafeHtmlCell<SiteEntry>(new AbstractSafeHtmlRenderer<SiteEntry>() {
 			final SiteViewTemplates svTemplates = GWT.create(SiteViewTemplates.class);
 			
@@ -187,6 +201,17 @@ public class CaveFilter extends AbstractFilter {
 		sitePanel.setHeading("Sites");
 		sitePanel.add(siteSelectionLV);
 		
+		ToolButton siteSelectionResetTB = new ToolButton(ToolButton.RESTORE);
+		siteSelectionResetTB.setToolTip(Util.createToolTip("Reset selection"));
+		siteSelectionResetTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				siteSelectionLV.getSelectionModel().deselectAll();
+			}
+		});
+		sitePanel.addTool(siteSelectionResetTB);
+		
 		districtSelectionLV = new ListView<DistrictEntry, DistrictEntry>(districtEntryList, new IdentityValueProvider<DistrictEntry>(), new SimpleSafeHtmlCell<DistrictEntry>(new AbstractSafeHtmlRenderer<DistrictEntry>() {
 			final DistrictViewTemplates dvTemplates = GWT.create(DistrictViewTemplates.class);
 
@@ -201,7 +226,18 @@ public class CaveFilter extends AbstractFilter {
 		districtPanel.setHeaderVisible(true);
 		districtPanel.setHeading("Districts");
 		districtPanel.add(districtSelectionLV);
-		
+
+		ToolButton districtSelectionResetTB = new ToolButton(ToolButton.RESTORE);
+		districtSelectionResetTB.setToolTip(Util.createToolTip("Reset selection"));
+		districtSelectionResetTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				districtSelectionLV.getSelectionModel().deselectAll();
+			}
+		});
+		districtPanel.addTool(districtSelectionResetTB);
+
 		regionSelectionLV = new ListView<RegionEntry, RegionEntry>(regionEntryList, new IdentityValueProvider<RegionEntry>(), new SimpleSafeHtmlCell<RegionEntry>(new AbstractSafeHtmlRenderer<RegionEntry>() {
 			final RegionViewTemplates rvTemplates = GWT.create(RegionViewTemplates.class);
 
@@ -225,7 +261,18 @@ public class CaveFilter extends AbstractFilter {
 		regionPanel.setHeaderVisible(true);
 		regionPanel.setHeading("Regions");
 		regionPanel.add(regionSelectionLV);
-		
+
+		ToolButton regionSelectionResetTB = new ToolButton(ToolButton.RESTORE);
+		regionSelectionResetTB.setToolTip(Util.createToolTip("Reset selection"));
+		regionSelectionResetTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				regionSelectionLV.getSelectionModel().deselectAll();
+			}
+		});
+		regionPanel.addTool(regionSelectionResetTB);
+
 		/**
 		 * create the view
 		 */

@@ -136,6 +136,7 @@ public class OrnamenticFilter  extends AbstractFilter{
 				ornamentClassSelectionLV.getSelectionModel().deselectAll();
 			}
 		});
+		ornamentClassPanel.addTool(resetOrnamentClassPanelTB);
 
 		// add more here
 
