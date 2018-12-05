@@ -2276,6 +2276,7 @@ public class MysqlConnector {
 			where = "Code LIKE ?";
 		}
 		
+		System.err.println(where.isEmpty() ? "SELECT * FROM Ornaments" : "SELECT * FROM Ornaments WHERE " + where);
 		try {
 			int i=1; // we use a little counter to make sure we put in values at the right place
 			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Ornaments" : "SELECT * FROM Ornaments WHERE " + where);
