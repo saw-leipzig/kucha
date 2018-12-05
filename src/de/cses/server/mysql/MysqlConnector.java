@@ -1891,6 +1891,10 @@ public class MysqlConnector {
 					"CONCAT(TitleORG, TitleEN, TitleTR, ParentTitleORG, ParentTitleEN, ParentTitleTR, TitleAddonORG, TitleAddonEN, TitleAddonTR, SubtitleORG, SubtitleEN, SubtitleTR) LIKE ?";
 		}
 		
+		if (searchEntry.getYearSearch() > 0) {
+			where += where.isEmpty() ? "YearORG LIKE ?" : " AND YearORG LIKE ?";
+		}
+		
 		try {
 			int i = 1;
 			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM AnnotatedBibliography" : "SELECT * FROM AnnotatedBibliography WHERE " + where);
@@ -1907,6 +1911,9 @@ public class MysqlConnector {
 			}
 			if (searchEntry.getTitleSearch() != null && !searchEntry.getTitleSearch().isEmpty()) {
 				pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");
+			}
+			if (searchEntry.getYearSearch() > 0) {
+				pstmt.setString(i++, "%" + searchEntry.getYearSearch() + "%");
 			}
 			System.out.println(where.isEmpty() ? "SELECT * FROM AnnotatedBiblography" : "SELECT * FROM AnnotatedBiblography WHERE " + where);
 			

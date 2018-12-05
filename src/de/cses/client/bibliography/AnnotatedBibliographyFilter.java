@@ -58,7 +58,7 @@ public class AnnotatedBibliographyFilter extends AbstractFilter {
 		
 		titleTF = new TextField();
 		titleTF.setEmptyText("search title (orig./eng./trans.)");
-		titleTF.setToolTip(Util.createToolTip("Searches in all sorts of titles.", "Includes Subtitle, Colection Title, ..."));
+		titleTF.setToolTip(Util.createToolTip("Searches in all sorts of titles.", "Includes Parent Title, Subtitle, Collection Title, Titleaddon, Book Title, etc."));
 		
 		publisherTF = new TextField();
 		publisherTF.setEmptyText("search publisher");
@@ -76,32 +76,6 @@ public class AnnotatedBibliographyFilter extends AbstractFilter {
 		bibFilterVLC.add(yearSearch, new VerticalLayoutData(1.0, .25));
 		bibFilterVLC.setHeight("120px");
 		return bibFilterVLC;
-	}
-
-	/* (non-Javadoc)
-	 * @see de.cses.client.ui.AbstractFilter#getSqlWhereClause()
-	 */
-	public ArrayList<String> getSqlWhereClause() {
-		ArrayList<String> result = new ArrayList<String>();
-		if ((authorNameTF.getValue() != null) && !authorNameTF.getValue().isEmpty()) {
-			String searchTerm = authorNameTF.getValue().replace("_", "\\_");
-			String sqlTerm = "";
-			for (String name : searchTerm.split("\\s+")) {
-				sqlTerm += sqlTerm.length() > 0 ? " INTERSECT SELECT BibID FROM AuthorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE ((FirstName LIKE '%" + name + "%') OR (LastName LIKE '%" + name + "%') OR (Institution LIKE '%" + name + "%'))))" 
-						: "SELECT BibID FROM AuthorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE ((FirstName LIKE '%" + name + "%') OR (LastName LIKE '%" + name + "%') OR (Institution LIKE '%" + name + "%'))))";
-			}
-			sqlTerm = "BibID IN (" + sqlTerm + ")";
-			result.add(sqlTerm);
-		}
-		if ((titleTF.getValue() != null) && !titleTF.getValue().isEmpty()) {
-			String searchTerm = titleTF.getValue().replace("_", "\\_");
-			result.add("("
-					+ "(TitleORG LIKE '%" + searchTerm + "%')"
-					+ "OR (TitleEN LIKE '%" + searchTerm + "%')"
-					+ "OR (TitleTR LIKE '%" + searchTerm + "%')"
-							+ ")");
-		}
-		return result;
 	}
 
 	@Override
