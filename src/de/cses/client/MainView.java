@@ -193,17 +193,9 @@ public class MainView implements IsWidget {
 			@Override
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
 				if (event.getValue()) {
-//					for (AbstractFilter filter : ornamenticSearchController.getRelatedFilter()) {
-//					}
 					filterView.add(ornamenticSearchController.getFilter(), 0);
 					resultView.add(ornamenticSearchController.getResultView(), 0);
 				} else {
-//					ArrayList<AbstractFilter> usedFilter = getUsedFilter();
-//					for (AbstractFilter filter : ornamenticSearchController.getRelatedFilter()) {
-//						if (!usedFilter.contains(filter)){
-//							filterView.remove(filter, 0);
-//						}
-//					}
 					ornamenticSearchController.getFilter().asWidget().removeFromParent();
 					ornamenticSearchController.getResultView().removeFromParent();
 				}
@@ -223,12 +215,6 @@ public class MainView implements IsWidget {
 					filterView.add(annotatedBiblographySearchController.getFilter(), 0);
 					resultView.add(annotatedBiblographySearchController.getResultView(), 0);
 				} else {
-//					ArrayList<AbstractFilter> usedFilter = getUsedFilter();
-//					for (AbstractFilter filter : annotatedBiblographySearchController.getRelatedFilter()) {
-//						if (!usedFilter.contains(filter)){
-//							filterView.remove(filter, 0);
-//						}
-//					}
 					annotatedBiblographySearchController.getFilter().asWidget().removeFromParent();
 					annotatedBiblographySearchController.getResultView().removeFromParent();
 				}

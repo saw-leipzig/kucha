@@ -15,6 +15,8 @@ package de.cses.client.ornamentic;
 
 import java.util.ArrayList;
 
+import javax.swing.Icon;
+
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
@@ -31,8 +33,12 @@ import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.ListView;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.TextField;
 
 import de.cses.client.DatabaseService;
@@ -42,6 +48,7 @@ import de.cses.client.ui.AbstractFilter;
 import de.cses.shared.AbstractSearchEntry;
 import de.cses.shared.OrnamentClassEntry;
 import de.cses.shared.OrnamenticSearchEntry;
+import javafx.scene.control.ToolBar;
 
 /**
  * @author nina
@@ -116,9 +123,19 @@ public class OrnamenticFilter  extends AbstractFilter{
 		
 		ContentPanel ornamentClassPanel = new ContentPanel();
 		ornamentClassPanel.setHeaderVisible(true);
-		ornamentClassPanel.setToolTip(Util.createToolTip("Search for ornament class."));
+		ornamentClassPanel.setToolTip(Util.createToolTip("Search for ornament class.", "Select one or more elements to search for Ornamentations."));
 		ornamentClassPanel.setHeading("Ornament Class");
 		ornamentClassPanel.add(ornamentClassSelectionLV);
+		
+		ToolButton resetOrnamentClassPanelTB = new ToolButton(ToolButton.REFRESH);
+		resetOrnamentClassPanelTB.setToolTip(Util.createToolTip("Reset selection"));
+		resetOrnamentClassPanelTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				ornamentClassSelectionLV.getSelectionModel().deselectAll();
+			}
+		});
 
 		// add more here
 
