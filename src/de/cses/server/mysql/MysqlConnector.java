@@ -2276,7 +2276,7 @@ public class MysqlConnector {
 			classIDs += classIDs.isEmpty() ? Integer.toString(classID) : "," + classID;
 		}
 		if (!classIDs.isEmpty()) {
-			where += where.isEmpty() ? "OrnamentClassID IN (" + classIDs + ")" : "AND OrnamentClassID IN (" + classIDs + ")";
+			where += where.isEmpty() ? "OrnamentClassID IN (" + classIDs + ")" : " AND OrnamentClassID IN (" + classIDs + ")";
 		}
 		
 		System.err.println(where.isEmpty() ? "SELECT * FROM Ornaments" : "SELECT * FROM Ornaments WHERE " + where);
