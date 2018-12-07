@@ -394,7 +394,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		});
 
 		mainFP = new FramedPanel();
-		mainFP.setHeading("Annotated Biblography (last modified on " + bibEntry.getModifiedOn() + ")");
+		mainFP.setHeading("Annotated Biblography (entry last modified on " + bibEntry.getModifiedOn() + ")");
 		mainFP.setSize("900px", "650px"); // here we set the size of the panel
 		mainFP.add(tabpanel, new VerticalLayoutData(1.0, 1.0));
 		mainFP.addTool(saveToolButton);

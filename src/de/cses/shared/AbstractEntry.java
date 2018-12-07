@@ -22,8 +22,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public abstract class AbstractEntry implements IsSerializable {
 	
 	protected boolean openAccess = false;
-	protected String lastChangedByUser = "unknown";
-	protected String modifiedOn = "unknown";
+	protected String lastChangedByUser = "";
+	protected String modifiedOn = "";
 	
 	/**
 	 * @param openAccess

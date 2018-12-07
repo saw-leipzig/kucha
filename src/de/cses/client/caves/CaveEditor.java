@@ -2508,7 +2508,7 @@ public class CaveEditor extends AbstractEditor {
 		});
 
 		mainPanel = new FramedPanel();
-		mainPanel.setHeading("Cave Editor");
+		mainPanel.setHeading("Cave Editor (entry last modified on " + correspondingCaveEntry.getModifiedOn() + ")");
 		mainPanel.setSize("900px", "650px"); // here we set the size of the panel
 		mainPanel.add(mainHlContainer);
 		mainPanel.addTool(saveToolButton);

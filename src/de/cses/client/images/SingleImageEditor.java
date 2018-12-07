@@ -468,7 +468,7 @@ public class SingleImageEditor extends AbstractEditor {
 		mainHLC.add(imgFP, new HorizontalLayoutData(.4, 1.0));
 		mainHLC.add(editVLC, new HorizontalLayoutData(.6, 1.0));
 
-		panel.setHeading("Image Editor");
+		panel.setHeading("Image Editor (entry last modified on " + imgEntry.getModifiedOn() + ")");
 		panel.add(mainHLC);
 		panel.addTool(saveToolButton);
 		panel.addTool(closeToolButton);

@@ -1432,7 +1432,7 @@ public class DepictionEditor extends AbstractEditor {
 		});
 		
 		mainPanel = new FramedPanel();
-		mainPanel.setHeading("Painted Representation Editor (" + (correspondingDepictionEntry.getDepictionID() > 0 ? correspondingDepictionEntry.getShortName() : "NEW") + ")");
+		mainPanel.setHeading("Painted Representation Editor (entry last modified on " + correspondingDepictionEntry.getModifiedOn() + ")");
 
 		mainPanel.add(mainHLC);
 		mainPanel.setSize("900px", "650px");
