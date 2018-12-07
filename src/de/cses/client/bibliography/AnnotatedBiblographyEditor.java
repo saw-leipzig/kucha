@@ -379,31 +379,6 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					}
 				});
 				
-//				Dialog d = new Dialog();
-//				d.setClosable(false);
-//				d.setHeading("Exit Warning!");
-//				d.setWidget(new HTML("Do you wish to save before exiting?"));
-//				d.setBodyStyle("fontWeight:bold;padding:13px;");
-////				d.setPixelSize(300, 100);
-//				d.setHideOnButtonClick(true);
-//				d.setPredefinedButtons(PredefinedButton.YES, PredefinedButton.NO, PredefinedButton.CANCEL);
-//				d.setModal(true);
-//				d.center();
-//				d.show();
-//				d.getButton(PredefinedButton.YES).addSelectHandler(new SelectHandler() {
-//
-//					@Override
-//					public void onSelect(SelectEvent event) {
-//						save(true);
-//					}
-//				});
-//				d.getButton(PredefinedButton.NO).addSelectHandler(new SelectHandler() {
-//
-//					@Override
-//					public void onSelect(SelectEvent event) {
-//						closeEditor(null);
-//					}
-//				});
 			}
 		});
 
@@ -419,7 +394,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		});
 
 		mainFP = new FramedPanel();
-		mainFP.setHeading("Annotated Biblography");
+		mainFP.setHeading("Annotated Biblography (last modified on " + bibEntry.getModifiedOn() + ")");
 		mainFP.setSize("900px", "650px"); // here we set the size of the panel
 		mainFP.add(tabpanel, new VerticalLayoutData(1.0, 1.0));
 		mainFP.addTool(saveToolButton);
@@ -794,10 +769,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			@Override
 			public void onValueChange(ValueChangeEvent<String> event) {
 				bibEntry.setPublisher(event.getValue());
+				
 			}
 		});
 		publisherTextField.addValidator(new MaxLengthValidator(256));
-		
 		FramedPanel publisherFP = new FramedPanel();
 		publisherFP.setHeading("Publisher");
 		publisherFP.add(publisherTextField);
@@ -1003,7 +978,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			editorListFilterField.bind(editorListStore);
 			
 			TextField editorTypeTF = new TextField();
-			editorTypeTF.setEmptyText("e.g. eds. / ed. / transl.");
+			editorTypeTF.setEmptyText("e.g. edd. / ed. / transl.");
 			editorTypeTF.setValue(bibEntry.getEditorType());
 			editorTypeTF.addValueChangeHandler(new ValueChangeHandler<String>() {
 

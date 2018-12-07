@@ -33,7 +33,7 @@ public class AuthorEntry extends AbstractEntry {
 	public AuthorEntry() {	}
 
 	public AuthorEntry(int authorID, String lastname, String firstname, String institution, boolean kuchaVisitor, String affiliation, String email,
-			String homepage, String alias, boolean institutionEnabled) {
+			String homepage, String alias, boolean institutionEnabled, String lastChangedOn) {
 		this.authorID = authorID;
 		this.lastname = lastname;
 		this.setInstitution(institution);
@@ -44,6 +44,7 @@ public class AuthorEntry extends AbstractEntry {
 		this.homepage = homepage;
 		this.alias = alias;
 		this.institutionEnabled = institutionEnabled;
+		this.setModifiedOn(lastChangedOn);
 	}
 	
 	public int getAuthorID() {

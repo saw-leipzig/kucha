@@ -86,7 +86,7 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 				e.getRelatedIconographyList(),
 				e.getRelatedBibliographyList(),
 				e.getLastChangedByUser(),
-				e.getLastChangedOnDate()
+				e.getModifiedOn()
 			));
 		htmlWidget.addStyleName("html-data-display");
 		add(htmlWidget, new MarginData(0, 0, 0, 0));

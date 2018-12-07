@@ -23,7 +23,7 @@ public class ImageEntry extends AbstractEntry {
 	public static final int FILENAME = 2;
 
 	public ImageEntry() {
-		this(0, "", "", "", "", null, "", "", 1, false);
+		this(0, "", "", "", "", null, "", "", 1, false, "");
 	}
 	
 	/**
@@ -37,7 +37,7 @@ public class ImageEntry extends AbstractEntry {
 	 * @param captureDate
 	 */
 	public ImageEntry(int imageID, String filename, String title, String shortName, String copyright,
-			PhotographerEntry imageAuthor, String comment, String date, int imageTypeID, boolean openAccess) {
+			PhotographerEntry imageAuthor, String comment, String date, int imageTypeID, boolean openAccess, String modifiedOn) {
 		super(openAccess);
 		this.imageID = imageID;
 		this.filename = filename;
@@ -48,6 +48,7 @@ public class ImageEntry extends AbstractEntry {
 		this.comment = comment;
 		this.date = date;
 		this.setImageTypeID(imageTypeID);
+		this.setModifiedOn(modifiedOn);
 	}
 
 	public int getImageID() {

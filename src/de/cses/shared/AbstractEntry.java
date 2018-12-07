@@ -23,7 +23,7 @@ public abstract class AbstractEntry implements IsSerializable {
 	
 	protected boolean openAccess = false;
 	protected String lastChangedByUser = "unknown";
-	protected String lastChangedOnDate = "unknown";
+	protected String modifiedOn = "unknown";
 	
 	/**
 	 * @param openAccess
@@ -58,12 +58,12 @@ public abstract class AbstractEntry implements IsSerializable {
 		this.lastChangedByUser = lastChangedByUser;
 	}
 
-	public String getLastChangedOnDate() {
-		return lastChangedOnDate;
+	public String getModifiedOn() {
+		return modifiedOn;
 	}
 
-	public void setLastChangedOnDate(String lastChangedOnDate) {
-		this.lastChangedOnDate = lastChangedOnDate;
+	public void setModifiedOn(String modifiedOn) {
+		this.modifiedOn = modifiedOn;
 	}
 
 }
