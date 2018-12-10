@@ -190,6 +190,11 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			bibKeywordFilterField.clear();
 			bibKeywordFilterField.validate();
 		}
+		
+		if (selectedAuthorListStore.size() < 1 && selectedEditorListStore.size() < 1) {
+			Util.showWarning("No author of editor selected", "Please select either an author or an editor before saving!");
+			return;
+		}
 
 		ArrayList<AuthorEntry> selectedAuthorsList = new ArrayList<AuthorEntry>();
 		for (AuthorEntry ae : selectedAuthorListStore.getAll()) {
