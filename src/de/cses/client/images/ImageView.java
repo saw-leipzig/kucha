@@ -50,15 +50,10 @@ public class ImageView extends AbstractView {
 		@XTemplate("<div><center><img src='{imgUri}'></img></center></div>")
 		SafeHtml view(SafeUri imgUri);
 		
-		@XTemplate("<div><center><img src='{imgUri}'></img></center><label style='font-size:9px' >{shortName}</label></div>")
-		SafeHtml view(SafeUri imgUri, String shortName);
-		
-		@XTemplate("<figure style='text-align: right; margin: 0;'>"
-				+ "<img src='{lockUri}' style='position: relative; width: 16px; height: 16px;'>"
-				+ "</figure><figure style='text-align: center; margin: 0;'>"
-				+ "<img src='{imgUri}' style='position: relative;'>"
-				+ "<figcaption style='font-size:11px;'>{shortName}</figcaption></figure>")
-		SafeHtml view(SafeUri imgUri, String shortName, SafeUri lockUri);
+		@XTemplate("<div style='text-align: left;'><figure style='float: right; margin: 0;'><img src='{lockUri}' style='position: relative; width: 16px; height: 16px;'></figure>"
+				+ "Title: {title}<br> Shortname: {shortName}<br> Author: {author}<br> Orig. filename: {filename}"
+				+ "<figure style='float: left; margin: 0;'><img src='{imgUri}' style='position: relative;'></figure></div>")
+		SafeHtml view(SafeUri imgUri, String title, String shortName, String author, String filename, SafeUri lockUri);
 	}
 	
 	private ImageEntry imgEntry;
@@ -74,11 +69,16 @@ public class ImageView extends AbstractView {
 		res = GWT.create(ImageViewResources.class);
 		this.imgEntry = imgEntry;
 		
-		setHTML(ivTemplates.view(UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), 
-				imgEntry.getShortName(), imgEntry.isOpenAccess() ? res.open().getSafeUri() : res.locked().getSafeUri()));
-		setPixelSize(150, 150);
+		setHTML(ivTemplates.view(
+				UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=120" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), 
+				imgEntry.getTitle() != null ? imgEntry.getTitle() : "n/a", 
+				imgEntry.getShortName() != null ? imgEntry.getShortName() : "n/a", 
+				imgEntry.getImageAuthor() != null ? imgEntry.getImageAuthor().getLabel() : "n/a",
+				imgEntry.getFilename() != null ? imgEntry.getFilename() : "n/a", 
+				imgEntry.isOpenAccess() ? res.open().getSafeUri() : res.locked().getSafeUri()));
+		setSize("95%", "auto");
 
-		DragSource source = new DragSource(this) {
+		new DragSource(this) {
 
 			@Override
 			protected void onDragStart(DndDragStartEvent event) {
@@ -95,7 +95,7 @@ public class ImageView extends AbstractView {
 	 */
 	@Override
 	protected AbstractEditor getEditor() {
-		return new SingleImageEditor(imgEntry);
+		return new SingleImageEditor(imgEntry.clone());
 	}
 
 	@Override
@@ -104,9 +104,13 @@ public class ImageView extends AbstractView {
 		if (entry != null && entry instanceof ImageEntry) {
 			imgEntry = (ImageEntry) entry;
 		}
-		setHTML(ivTemplates.view(UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), 
-				imgEntry.getShortName(), imgEntry.isOpenAccess() ? res.open().getSafeUri() : res.locked().getSafeUri()));
-//		setHTML(ivTemplates.view(UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), imgEntry.getShortName()));
+		setHTML(ivTemplates.view(
+				UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=120" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), 
+				imgEntry.getTitle() != null ? imgEntry.getTitle() : "n/a", 
+				imgEntry.getShortName() != null ? imgEntry.getShortName() : "n/a", 
+				imgEntry.getImageAuthor() != null ? imgEntry.getImageAuthor().getLabel() : "n/a",
+				imgEntry.getFilename() != null ? imgEntry.getFilename() : "n/a", 
+				imgEntry.isOpenAccess() ? res.open().getSafeUri() : res.locked().getSafeUri()));
 	}
 
 	/* (non-Javadoc)
@@ -116,12 +120,6 @@ public class ImageView extends AbstractView {
 	protected AbstractEntry getEntry() {
 		return imgEntry;
 	}
-
-//	/* (non-Javadoc)
-//	 * @see de.cses.client.ui.EditorListener#updateEntryRequest(de.cses.shared.AbstractEntry)
-//	 */
-//	@Override
-//	public void updateEntryRequest(AbstractEntry updatedEntry) { }
 
 	/* (non-Javadoc)
 	 * @see de.cses.client.ui.AbstractView#getPermalink()
