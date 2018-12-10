@@ -105,6 +105,17 @@ td.data-view-right {
 	width: 70%;
 }
 
+table.image-view {
+	width: 96%;
+	height: auto;
+	border-width: 1px;
+	border-style: hidden;
+	margin: 5px 0 5px 0;
+	font-size: 10px;
+	font-family: verdana;
+	text-align: left;
+}
+
 html.data-display {
 	backround-color: #ffcc66;
 }
