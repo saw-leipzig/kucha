@@ -30,6 +30,9 @@ import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
+import de.cses.shared.DistrictEntry;
+import de.cses.shared.SiteEntry;
+import de.cses.shared.WallLocationEntry;
 
 /**
  * @author alingnau
@@ -40,23 +43,20 @@ public class DepictionView extends AbstractView {
 	interface Resources extends ClientBundle {
 		@Source("buddha.png")
 		ImageResource logo();
-	}
+
+		@Source("lock-protection.png")
+		ImageResource locked();
+
+		@Source("photo.png")
+		ImageResource open();
+}
 
 	interface DepictionViewTemplates extends XTemplates {
 		@XTemplate("<div><center><img src='{imgUri}'></img></center></div>")
 		SafeHtml view(SafeUri imgUri);
 		
-//		@XTemplate("<div><center><img src='{imgUri}'></img></center><label style='font-size:9px' > DepictionID {id} </label></br></div>")
-//		SafeHtml view(SafeUri imgUri, int id);
-
-		@XTemplate("<div><center><img src='{imgUri}'></img></center><label style='font-size:9px' > {label} </label></br></div>")
-		SafeHtml view(SafeUri imgUri, String label);
-
-		@XTemplate("<div><center><img src='{imgUri}'></img></center><label style='font-size:9px'>{caveLabel}<br>{depictionLabel}</label></br></div>")
-		SafeHtml view(SafeUri imgUri, String caveLabel, String depictionLabel);
-
-//		@XTemplate("<div><center><img src='{imgUri}'></img></center><label style='font-size:9px'>{caveLabel}<br>{caveName}<br>{depictionLabel}</label></br></div>")
-//		SafeHtml view(SafeUri imgUri, String caveLabel, String caveName, String depictionLabel);
+		@XTemplate(source = "DepictionViewTemplate.html")
+		SafeHtml view(SafeUri imgUri, String officialCaveNumber, String historicCaveName, String shortName, String siteDistrictInformation, String wallLocation, SafeUri lockUri);
 	}
 
 	private DepictionEntry depictionEntry;
@@ -70,18 +70,11 @@ public class DepictionView extends AbstractView {
 		depictionEntry = entry;
 		resources = GWT.create(Resources.class);
 		dvTemplates = GWT.create(DepictionViewTemplates.class);
-		CaveEntry ce = entry.getCave();
-		if (ce != null) {
-			setHTML(dvTemplates.view(UriUtils.fromString("resource?imageID=" + entry.getMasterImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), 
-					StaticTables.getInstance().getSiteEntries().get(ce.getSiteID()).getShortName() + " " + ce.getOfficialNumber(), 
-					ce.getHistoricName() != null ? ce.getHistoricName() : (depictionEntry.getShortName() != null ? depictionEntry.getShortName() : "")));
-		} else {
-			setHTML(dvTemplates.view(UriUtils.fromString("resource?imageID=" + entry.getMasterImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), 
-					depictionEntry.getShortName() != null ? depictionEntry.getShortName() : ""));
-		}
-		setPixelSize(150, 150);
 
-		DragSource source = new DragSource(this) {
+		refreshHTML();
+		setSize("350px", "auto");
+
+		new DragSource(this) {
 
 			@Override
 			protected void onDragStart(DndDragStartEvent event) {
@@ -91,6 +84,32 @@ public class DepictionView extends AbstractView {
 			}
 			
 		};
+	}
+	
+	private void refreshHTML() {
+		StaticTables st = StaticTables.getInstance();
+		CaveEntry ce = depictionEntry.getCave();
+		DistrictEntry de = null;
+		SiteEntry se = null;
+		de = st.getDistrictEntries().get(ce.getDistrictID());
+		if (de != null) {
+			se = st.getSiteEntries().get(de.getSiteID());
+		}
+		String siteDistrictInformation = (se != null ? se.getName() : "") + (de != null ? (se != null ? " / " : "") + de.getName() : "");
+		String wallLocation = "";
+		if (depictionEntry.getWallID() > 0) {
+			WallLocationEntry wle = st.getWallLocationEntries().get(depictionEntry.getWallID());
+			wallLocation = wle.getLabel();
+		}
+		setHTML(dvTemplates.view(
+				UriUtils.fromString("resource?imageID=" + depictionEntry.getMasterImageID() + "&thumb=120" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), 
+				st.getSiteEntries().get(ce.getSiteID()).getShortName() + " " + ce.getOfficialNumber(), 
+				ce != null && ce.getHistoricName() != null ? ce.getHistoricName() : "",
+				depictionEntry.getShortName() != null ? depictionEntry.getShortName() : "",
+				siteDistrictInformation,
+				wallLocation,
+				depictionEntry.isOpenAccess() ? resources.open().getSafeUri() : resources.locked().getSafeUri()
+		));
 	}
 
 	/* (non-Javadoc)
@@ -115,19 +134,16 @@ public class DepictionView extends AbstractView {
 		if (entry != null && entry instanceof DepictionEntry) {
 			depictionEntry = (DepictionEntry) entry;
 		}
-//		setHTML(dvTemplates.view(UriUtils.fromString("resource?imageID=" + depictionEntry.getMasterImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), depictionEntry.getDepictionID()));
-
-		CaveEntry ce = depictionEntry.getCave();
-		setHTML(dvTemplates.view(UriUtils.fromString("resource?imageID=" + depictionEntry.getMasterImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), 
-				StaticTables.getInstance().getSiteEntries().get(ce.getSiteID()).getShortName() + " " + ce.getOfficialNumber(), 
-				ce.getHistoricName() != null ? ce.getHistoricName() : (depictionEntry.getShortName() != null ? depictionEntry.getShortName() : "")));
+		refreshHTML();
+//		CaveEntry ce = depictionEntry.getCave();
+//		setHTML(dvTemplates.view(
+//				UriUtils.fromString("resource?imageID=" + depictionEntry.getMasterImageID() + "&thumb=120" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), 
+//				StaticTables.getInstance().getSiteEntries().get(ce.getSiteID()).getShortName() + " " + ce.getOfficialNumber(), 
+//				ce != null && ce.getHistoricName() != null ? ce.getHistoricName() : "",
+//				depictionEntry.getShortName() != null ? depictionEntry.getShortName() : "",
+//				depictionEntry.isOpenAccess() ? resources.open().getSafeUri() : resources.locked().getSafeUri()
+//		));
 	}
-
-//	/* (non-Javadoc)
-//	 * @see de.cses.client.ui.EditorListener#updateEntryRequest(de.cses.shared.AbstractEntry)
-//	 */
-//	@Override
-//	public void updateEntryRequest(AbstractEntry updatedEntry) { }
 
 	/* (non-Javadoc)
 	 * @see de.cses.client.ui.AbstractView#getPermalink()
