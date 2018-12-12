@@ -2,7 +2,7 @@
 @charset "utf-8";
 
 body {
-	background-color: #FFFAE0;
+	background-image: url(backgroundKIS.jpg);
 }
 
 h1 {
@@ -106,11 +106,10 @@ td.data-view-right {
 }
 
 table.image-view {
-	width: 96%;
-	height: auto;
-	border-width: 1px;
-	border-style: hidden;
-	margin: 5px 0 5px 0;
+	width: 100%;
+	height: 100%;
+	border-style: none;
+	margin: 0;
 	font-size: 10px;
 	font-family: verdana;
 	text-align: left;
@@ -208,5 +207,9 @@ details.abstract {
 }
 
 button.gwt-Button {
-	background-color: #91A78F;
+	background-color: rgba(145, 167, 143, 1.0);
+}
+
+div.transparent {
+	opacity: 0.8;
 }

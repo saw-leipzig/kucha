@@ -51,7 +51,7 @@ public class CaveView extends AbstractView {
 
 	interface CaveViewTemplates extends XTemplates {
 		@XTemplate(source = "CaveViewTemplate.html")
-		SafeHtml view(SafeUri imgUri, String sitename, String officialNumber, String historicalName, String district, String region, SafeUri lockUri);
+		SafeHtml view(SafeUri imgUri, String sitename, String officialNumber, String caveType, String historicalName, String district, String region, SafeUri lockUri);
 
 		@XTemplate("<div><img src='{imgUri}' height='16px' width='16px' > <b style='font-size: 20px'> {officialNumber} </b></div>")
 		SafeHtml view(SafeUri imgUri, String officialNumber);
@@ -80,7 +80,7 @@ public class CaveView extends AbstractView {
 		cvTemplate = GWT.create(CaveViewTemplates.class);
 
 		refreshHTML();
-		setSize("150px", "110px");
+		setSize("350px", "130px");
 
 		new DragSource(this) {
 
@@ -104,6 +104,7 @@ public class CaveView extends AbstractView {
 				resources.logo().getSafeUri(), 
 				site,
 				cEntry.getOfficialNumber(),
+				cEntry.getCaveTypeID() > 0 ? stab.getCaveTypeEntries().get(cEntry.getCaveTypeID()).getNameEN() : "",
 				cEntry.getHistoricName() != null ? cEntry.getHistoricName() : "",
 				district,
 				region,

@@ -238,13 +238,13 @@ public class MainView implements IsWidget {
     ContentPanel centerPanel = new ContentPanel();
     centerPanel.setHeading("Search Results");
     centerPanel.setResize(true);
-    /*
-     * Currently we implement a 2-column layout with a spacing of 10. 
-     */
+    centerPanel.addStyleName("transparent");
+
     resultView = new PortalLayoutContainer(1);
     resultView.setSpacing(10);
     resultView.setColumnWidth(0, 1.0);
 //    resultView.setColumnWidth(1, .40);
+    resultView.addStyleName("gleaming");
     centerPanel.add(resultView);
 
     ContentPanel north = new ContentPanel();
@@ -296,6 +296,7 @@ public class MainView implements IsWidget {
     filterPanel = new ContentPanel();
     filterPanel.setResize(true);
     filterPanel.setHeading("Filter");
+    filterPanel.addStyleName("transparent");
     filterPanel.add(filterView);
     
     dataViewPLC = new PortalLayoutContainer(1);
@@ -305,6 +306,7 @@ public class MainView implements IsWidget {
     ContentPanel dataViewPanel = new ContentPanel();
     dataViewPanel.setResize(true);
     dataViewPanel.setHeading("View");
+    dataViewPanel.addStyleName("transparent");
     dataViewPanel.add(dataViewPLC);
     saveWorkspaceToolButton = new ToolButton(ToolButton.SAVE);
     saveWorkspaceToolButton.setToolTip(Util.createToolTip("save", "not yet implemented"));
