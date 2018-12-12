@@ -77,7 +77,7 @@ public class ImageView extends AbstractView {
 				imgEntry.getImageAuthor() != null ? imgEntry.getImageAuthor().getLabel() : "n/a",
 				imgEntry.getImageTypeID() > 0 ? StaticTables.getInstance().getImageTypeEntries().get(imgEntry.getImageTypeID()).getName() : "n/a", 
 				imgEntry.isOpenAccess() ? res.open().getSafeUri() : res.locked().getSafeUri()));
-		setSize("350px", "auto");
+		setSize("350px", "130px");
 
 		new DragSource(this) {
 
