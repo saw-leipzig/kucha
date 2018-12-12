@@ -157,12 +157,12 @@ public class OrnamenticFilter  extends AbstractFilter{
 		OrnamenticSearchEntry searchEntry = new OrnamenticSearchEntry();
 		
 		if (ornamentCodeSearchTF.getValue() != null && !ornamentCodeSearchTF.getValue().isEmpty()) {
-			searchEntry.setSearchOrnamentCode(ornamentCodeSearchTF.getValue());
+			searchEntry.setCode(ornamentCodeSearchTF.getValue());
 		}
 		
 		if (!ornamentClassSelectionLV.getSelectionModel().getSelectedItems().isEmpty()) {
 			for (OrnamentClassEntry oce : ornamentClassSelectionLV.getSelectionModel().getSelectedItems()) {
-				searchEntry.getSearchOrnamenClassIdList().add(oce.getOrnamentClassID());
+				searchEntry.setOrnamentClass(oce);
 			}
 		}
 		
