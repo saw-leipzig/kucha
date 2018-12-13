@@ -112,12 +112,6 @@ public class MainView implements IsWidget {
 	
 	private void initView() {
     boolean borders = true;
-    
-//    northPanel = new VerticalLayoutContainer();
-//
-//    northPanel.add(UserLogin.getInstance(), new VerticalLayoutData(1.0, .4));
-    
-//    LocationFilter lFilter = new LocationFilter("Location Filter");
 
 		caveSearchController = new CaveSearchController("Caves", new CaveFilter("Caves"), new CaveResultView("Caves"));
 		caveSearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
