@@ -46,9 +46,9 @@ import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.Util;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.shared.AbstractSearchEntry;
-import de.cses.shared.OrnamentClassEntry;
+import de.cses.shared.OrnamentComponentsEntry;
 import de.cses.shared.OrnamenticSearchEntry;
-import javafx.scene.control.ToolBar;
+
 
 /**
  * @author nina
@@ -57,32 +57,32 @@ import javafx.scene.control.ToolBar;
 public class OrnamenticFilter  extends AbstractFilter{
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	private TextField ornamentCodeSearchTF;
-	private ListStore<OrnamentClassEntry> ornamentClassEntryList;
-	private OrnamentClassProperties ornamentClassProps;
-	private ListView<OrnamentClassEntry, OrnamentClassEntry> ornamentClassSelectionLV;
+	private ListStore<OrnamentComponentsEntry> ornamentComponentsEntryList;
+	private OrnamentComponentsProperties ornamentComponentsProps;
+	private ListView<OrnamentComponentsEntry, OrnamentComponentsEntry> ornamentComponentsSelectionLV;
 	
-	interface OrnamentClassProperties extends PropertyAccess<OrnamentClassEntry> {
-		ModelKeyProvider<OrnamentClassEntry> ornamentClassID();
-		LabelProvider<OrnamentClassEntry> uniqueID();
-		ValueProvider<OrnamentClassEntry, String> name();
+	interface OrnamentComponentsProperties extends PropertyAccess<OrnamentComponentsEntry> {
+		ModelKeyProvider<OrnamentComponentsEntry> ornamentComponentsID();
+		LabelProvider<OrnamentComponentsEntry> uniqueID();
+		ValueProvider<OrnamentComponentsEntry, String> name();
 	}
 
-	interface OrnamentClassViewTemplates extends XTemplates {
+	interface OrnamentComponentsViewTemplates extends XTemplates {
 		@XTemplate("<div>{name}</div>")
-		SafeHtml ornamentClassLabel(String name);
+		SafeHtml ornamentComponentsLabel(String name);
 	}
 	
 	
 	public OrnamenticFilter(String filterName) {
 		super(filterName);
 		
-		ornamentClassProps = GWT.create(OrnamentClassProperties.class);
-		ornamentClassEntryList = new ListStore<OrnamentClassEntry>(ornamentClassProps.ornamentClassID());
-		loadOrnamentClassEntryList();
+		ornamentComponentsProps = GWT.create(OrnamentComponentsProperties.class);
+		ornamentComponentsEntryList = new ListStore<OrnamentComponentsEntry>(ornamentComponentsProps.ornamentComponentsID());
+		loadOrnamentComponentsEntryList();
 	}
 
-	private void loadOrnamentClassEntryList() {
-		dbService.getOrnamentClass(new AsyncCallback<ArrayList<OrnamentClassEntry>>() {
+	private void loadOrnamentComponentsEntryList() {
+		dbService.getOrnamentComponents(new AsyncCallback<ArrayList<OrnamentComponentsEntry>>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
@@ -90,10 +90,10 @@ public class OrnamenticFilter  extends AbstractFilter{
 			}
 
 			@Override
-			public void onSuccess(ArrayList<OrnamentClassEntry> result) {
-				ornamentClassEntryList.clear();
-				for (OrnamentClassEntry pe : result) {
-					ornamentClassEntryList.add(pe);
+			public void onSuccess(ArrayList<OrnamentComponentsEntry> result) {
+				ornamentComponentsEntryList.clear();
+				for (OrnamentComponentsEntry pe : result) {
+					ornamentComponentsEntryList.add(pe);
 				}
 			}
 		});
@@ -109,40 +109,40 @@ public class OrnamenticFilter  extends AbstractFilter{
 		ornamentCodeSearchTF.setEmptyText("search ornament code");
 		ornamentCodeSearchTF.setToolTip(Util.createToolTip("search ornament code", "Search for this character sequence in the ornament code field."));
 
-		ornamentClassSelectionLV = new ListView<OrnamentClassEntry, OrnamentClassEntry>(ornamentClassEntryList, new IdentityValueProvider<OrnamentClassEntry>(), 
-				new SimpleSafeHtmlCell<OrnamentClassEntry>(new AbstractSafeHtmlRenderer<OrnamentClassEntry>() {
-			final OrnamentClassViewTemplates ocvTemplates = GWT.create(OrnamentClassViewTemplates.class);
+		ornamentComponentsSelectionLV = new ListView<OrnamentComponentsEntry, OrnamentComponentsEntry>(ornamentComponentsEntryList, new IdentityValueProvider<OrnamentComponentsEntry>(), 
+				new SimpleSafeHtmlCell<OrnamentComponentsEntry>(new AbstractSafeHtmlRenderer<OrnamentComponentsEntry>() {
+			final OrnamentComponentsViewTemplates ocvTemplates = GWT.create(OrnamentComponentsViewTemplates.class);
 
 			@Override
-			public SafeHtml render(OrnamentClassEntry entry) {
-				return ocvTemplates.ornamentClassLabel(entry.getName());
+			public SafeHtml render(OrnamentComponentsEntry entry) {
+				return ocvTemplates.ornamentComponentsLabel(entry.getName());
 			}
 			
 		}));
-		ornamentClassSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+		ornamentComponentsSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
 		
-		ContentPanel ornamentClassPanel = new ContentPanel();
-		ornamentClassPanel.setHeaderVisible(true);
-		ornamentClassPanel.setToolTip(Util.createToolTip("Search for ornament class.", "Select one or more elements to search for Ornamentations."));
-		ornamentClassPanel.setHeading("Ornament Class");
-		ornamentClassPanel.add(ornamentClassSelectionLV);
+		ContentPanel ornamentComponentsPanel = new ContentPanel();
+		ornamentComponentsPanel.setHeaderVisible(true);
+		ornamentComponentsPanel.setToolTip(Util.createToolTip("Search for ornament components.", "Select one or more elements to search for Ornamentations."));
+		ornamentComponentsPanel.setHeading("Ornament Components");
+		ornamentComponentsPanel.add(ornamentComponentsSelectionLV);
 		
-		ToolButton resetOrnamentClassPanelTB = new ToolButton(ToolButton.REFRESH);
-		resetOrnamentClassPanelTB.setToolTip(Util.createToolTip("Reset selection"));
-		resetOrnamentClassPanelTB.addSelectHandler(new SelectHandler() {
+		ToolButton resetOrnamentComponentsPanelTB = new ToolButton(ToolButton.REFRESH);
+		resetOrnamentComponentsPanelTB.setToolTip(Util.createToolTip("Reset selection"));
+		resetOrnamentComponentsPanelTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
 			public void onSelect(SelectEvent event) {
-				ornamentClassSelectionLV.getSelectionModel().deselectAll();
+				ornamentComponentsSelectionLV.getSelectionModel().deselectAll();
 			}
 		});
-		ornamentClassPanel.addTool(resetOrnamentClassPanelTB);
+		ornamentComponentsPanel.addTool(resetOrnamentComponentsPanelTB);
 
 		// add more here
 
 		VerticalLayoutContainer ornamenticFilterVLC = new VerticalLayoutContainer();
 		ornamenticFilterVLC.add(ornamentCodeSearchTF, new VerticalLayoutData(1.0, .15));
-		ornamenticFilterVLC.add(ornamentClassPanel, new VerticalLayoutData(1.0, .85));
+		ornamenticFilterVLC.add(ornamentComponentsPanel, new VerticalLayoutData(1.0, .85));
 		ornamenticFilterVLC.setHeight("300px");
 		
 		return ornamenticFilterVLC;
@@ -160,9 +160,9 @@ public class OrnamenticFilter  extends AbstractFilter{
 			searchEntry.setCode(ornamentCodeSearchTF.getValue());
 		}
 		
-		if (!ornamentClassSelectionLV.getSelectionModel().getSelectedItems().isEmpty()) {
-			for (OrnamentClassEntry oce : ornamentClassSelectionLV.getSelectionModel().getSelectedItems()) {
-				searchEntry.setOrnamentClass(oce);
+		if (!ornamentComponentsSelectionLV.getSelectionModel().getSelectedItems().isEmpty()) {
+			for (OrnamentComponentsEntry oce : ornamentComponentsSelectionLV.getSelectionModel().getSelectedItems()) {
+				searchEntry.getComponents().add(oce);
 			}
 		}
 		
