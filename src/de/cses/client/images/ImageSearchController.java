@@ -19,6 +19,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -100,21 +101,24 @@ public class ImageSearchController extends AbstractSearchController {
 							public void closeRequest(AbstractEntry entry) {
 								imageEditorPanel.hide();
 								if (entry != null) {
-									getResultView().addResult(new ImageView(imgEntry));
-								} else { // that means the uploaded image will not be saved and the image is delected on the server
-									dbService.deleteEntry("DELETE FROM Images WHERE ImageID=" + imgEntry.getImageID(), new AsyncCallback<Boolean>() {
+									getResultView().addResult(new ImageView((ImageEntry)entry));
+								} else {
+									// we should at least save the title of the image!
+									dbService.updateImageEntry(imgEntry, new AsyncCallback<Boolean>() {
 										
 										@Override
-										public void onSuccess(Boolean result) { }
+										public void onSuccess(Boolean result) { 
+											getResultView().addResult(new ImageView(imgEntry));
+										}
 										
 										@Override
-										public void onFailure(Throwable caught) { }
+										public void onFailure(Throwable caught) {
+											Info.display("ERROR", "Image information has NOT been updated!");
+										}
 									});
 								}
 							}
 
-//							@Override
-//							public void updateEntryRequest(AbstractEntry updatedEntry) {  }
 						});
 						imageEditorPanel.add(singleIE);
 						imageEditorPanel.setGlassEnabled(true);
