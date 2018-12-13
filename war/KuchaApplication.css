@@ -207,9 +207,13 @@ details.abstract {
 }
 
 button.gwt-Button {
-	background-color: rgba(145, 167, 143, 1.0);
+	background-color: #91A78F;
 }
 
 div.transparent {
-	opacity: 0.8;
+	opacity: 0.85;
+}
+
+div.mouse-over {
+	opacity: 1.0;
 }

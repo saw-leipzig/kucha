@@ -238,16 +238,16 @@ public class MainView implements IsWidget {
     ContentPanel centerPanel = new ContentPanel();
     centerPanel.setHeading("Search Results");
     centerPanel.setResize(true);
-    centerPanel.addStyleName("transparent");
 
     resultView = new PortalLayoutContainer(1);
     resultView.setSpacing(10);
     resultView.setColumnWidth(0, 1.0);
 //    resultView.setColumnWidth(1, .40);
-    resultView.addStyleName("gleaming");
+    centerPanel.addStyleName("transparent");
     centerPanel.add(resultView);
 
     ContentPanel north = new ContentPanel();
+    north.addStyleName("transparent");
     north.add(selectorLayoutContainer);
     
     // updating heading when user is logged in / out
