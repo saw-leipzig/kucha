@@ -2259,62 +2259,156 @@ public class MysqlConnector {
 	 * @return
 	 */
 	public ArrayList<OrnamentEntry> searchOrnaments(OrnamenticSearchEntry search) {
-		ArrayList<OrnamentEntry> results = new ArrayList<OrnamentEntry>();
 		Connection dbc = getConnection();
-		PreparedStatement pstmt;
+		Statement stmt;
 		ArrayList<ArrayList<OrnamentEntry>> listen = new ArrayList<ArrayList<OrnamentEntry>>();
 		
 
 		if(search.getCaves() != null) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-			String mysqlquerry = "SELECT * FROM Ornaments JOIN CaveOrnamentRelation ON Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID WHERE CaveID =";
+			String mysqlquerry = "SELECT * FROM Ornaments JOIN CaveOrnamentRelation ON Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID WHERE CaveID IN(";
 			for(int i = 0; search.getCaves().size() > i; i++) {
 				mysqlquerry = mysqlquerry +  Integer.toString(search.getCaves().get(i).getCaveID());
 				if(search.getCaves().size() > i+1) {
-					mysqlquerry = mysqlquerry + " or ";
+					mysqlquerry = mysqlquerry + " , ";
 				}
 			}
-			
+			mysqlquerry = mysqlquerry + ") GROUP BY Ornaments.OrnamentID HAVING COUNT(*) =" + search.getIconographys().size();
+			try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery(mysqlquerry);
+			while (rs.next()) {
+				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
+						//rs.getString("Annotation"),
+						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
+						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
+						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")));
+				result.add(entry);
+			}
+			}
+			catch(SQLException e){
+				e.printStackTrace();
+			}
 			listen.add(result);
 		}
 		
 		if(search.getCode() != null) {
+			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
 			String mysqlquerry = "SELECT * FROM Ornaments LIKE OrnamentCode = " + search.getCode();
+			try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery(mysqlquerry);
+			while (rs.next()) {
+				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
+						//rs.getString("Annotation"),
+						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
+						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
+						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")));
+				result.add(entry);
+			}
+			}
+			catch(SQLException e){
+				e.printStackTrace();
+			}
 		}
 		
 		if(search.getComponents() != null) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-			String mysqlquerry = "SELECT * FROM Ornaments JOIN OrnamentComponentRelation ON Ornaments.OrnamentID = OrnamentComponentRelation.OrnamentID WHERE OrnamentComponentID =";
+			String mysqlquerry = "SELECT * FROM Ornaments JOIN OrnamentComponentRelation ON Ornaments.OrnamentID = OrnamentComponentRelation.OrnamentID WHERE OrnamentComponentID IN(";
 			for(int i = 0; search.getComponents().size() > i; i++) {
 				mysqlquerry = mysqlquerry +  Integer.toString(search.getComponents().get(i).getOrnamentComponentsID());
 				if(search.getComponents().size() > i+1) {
-					mysqlquerry = mysqlquerry + " or ";
+					mysqlquerry = mysqlquerry + " , ";
 				}
+			}
+			mysqlquerry = mysqlquerry + ") GROUP BY Ornaments.OrnamentID HAVING COUNT(*) =" + search.getIconographys().size();
+			try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery(mysqlquerry);
+			while (rs.next()) {
+				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
+						//rs.getString("Annotation"),
+						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
+						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
+						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")));
+				result.add(entry);
+			}
+			}
+			catch(SQLException e){
+				e.printStackTrace();
 			}
 			listen.add(result);
 		}
 		if(search.getDescription()!= null ) {
+			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
 			String mysqlquerry = "SELECT * FROM Ornaments LIKE OrnamentCode = " + search.getCode();
+			try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery(mysqlquerry);
+			while (rs.next()) {
+				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
+						//rs.getString("Annotation"),
+						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
+						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
+						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")));
+				result.add(entry);
+			}
+			}
+			catch(SQLException e){
+				e.printStackTrace();
+			}
 		}
 		if(search.getDistricts().size() != 0) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-			String mysqlquerry = "SELECT * FROM (Ornaments JOIN CaveOrnamentRelation ON Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID) JOIN Caves ON Caves.CaveID = CaveOrnamentRelation.CaveID WHERE Caves.DistrictID =";
+			String mysqlquerry = "SELECT * FROM (Ornaments JOIN CaveOrnamentRelation ON Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID) JOIN Caves ON Caves.CaveID = CaveOrnamentRelation.CaveID WHERE Caves.DistrictID IN(";
 			for(int i = 0; search.getDistricts().size() > i; i++) {
 				mysqlquerry = mysqlquerry +  Integer.toString(search.getDistricts().get(i).getDistrictID());
 				if(search.getDistricts().size() > i+1) {
-					mysqlquerry = mysqlquerry + " or ";
+					mysqlquerry = mysqlquerry + " , ";
 				}
+			}
+			mysqlquerry = mysqlquerry + ") GROUP BY Ornaments.OrnamentID HAVING COUNT(*) =" + search.getIconographys().size();
+			try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery(mysqlquerry);
+			while (rs.next()) {
+				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
+						//rs.getString("Annotation"),
+						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
+						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
+						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")));
+				result.add(entry);
+			}
+			}
+			catch(SQLException e){
+				e.printStackTrace();
 			}
 			listen.add(result);
 		}
 		if(search.getFunction().size()!=0) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-			String mysqlquerry = "SELECT * FROM Ornaments JOIN (OrnamentCaveRelation ON Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID) JOIN OrnamentCaveWallRelation ON OrnamentCaveWallRelation.CaveOrnamentRelationID = CaveOrnamentRelation.CaveOrnamentRelationID WHERE FuctionID =";
+			String mysqlquerry = "SELECT * FROM Ornaments JOIN (OrnamentCaveRelation ON Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID) JOIN OrnamentCaveWallRelation ON OrnamentCaveWallRelation.CaveOrnamentRelationID = CaveOrnamentRelation.CaveOrnamentRelationID WHERE FuctionID IN(";
 			for(int i = 0; search.getFunction().size() > i; i++) {
 				mysqlquerry = mysqlquerry +  Integer.toString(search.getFunction().get(i).getOrnamentFunctionID());
 				if(search.getFunction().size()> i+1) {
-					mysqlquerry = mysqlquerry + " or ";
+					mysqlquerry = mysqlquerry + " , ";
 				}
+			}
+			mysqlquerry = mysqlquerry + ") GROUP BY Ornaments.OrnamentID HAVING COUNT(*) =" + search.getIconographys().size();
+			try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery(mysqlquerry);
+			while (rs.next()) {
+				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
+						//rs.getString("Annotation"),
+						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
+						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
+						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")));
+				result.add(entry);
+			}
+			}
+			catch(SQLException e){
+				e.printStackTrace();
 			}
 			listen.add(result);
 			
@@ -2327,13 +2421,44 @@ public class MysqlConnector {
 				if(search.getIconographys().size() > i+1) {
 					mysqlquerry = mysqlquerry + " , ";
 				}
-				mysqlquerry = mysqlquerry + ") GROUP BY Ornaments.OrnamentID HAVING COUNT(*) =" + search.getIconographys().size();
+			}
+			mysqlquerry = mysqlquerry + ") GROUP BY Ornaments.OrnamentID HAVING COUNT(*) =" + search.getIconographys().size();
+			try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery(mysqlquerry);
+			while (rs.next()) {
+				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
+						//rs.getString("Annotation"),
+						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
+						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
+						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")));
+				result.add(entry);
+			}
+			}
+			catch(SQLException e){
+				e.printStackTrace();
 			}
 			listen.add(result);
 			
 		}
 		if(search.getInterpretation()!= null) {
+			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
 			String mysqlquerry = "SELECT * FROM Ornaments LIKE Interpretation = " + search.getInterpretation();
+			try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery(mysqlquerry);
+			while (rs.next()) {
+				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
+						//rs.getString("Annotation"),
+						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
+						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
+						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")));
+				result.add(entry);
+			}
+			}
+			catch(SQLException e){
+				e.printStackTrace();
+			}
 		}
 		if(search.getPosition()!= null) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
@@ -2341,65 +2466,186 @@ public class MysqlConnector {
 			for(int i = 0; search.getPosition().size() > i; i++) {
 				mysqlquerry = mysqlquerry +  Integer.toString(search.getPosition().get(i).getOrnamentPositionID());
 				if(search.getPosition().size()> i+1) {
-					mysqlquerry = mysqlquerry + " or ";
+					mysqlquerry = mysqlquerry + " , ";
 				}
+			}
+			mysqlquerry = mysqlquerry + ") GROUP BY Ornaments.OrnamentID HAVING COUNT(*) =" + search.getPosition().size();
+			try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery(mysqlquerry);
+			while (rs.next()) {
+				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
+						//rs.getString("Annotation"),
+						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
+						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
+						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")));
+				result.add(entry);
+			}
+			}
+			catch(SQLException e){
+				e.printStackTrace();
 			}
 			listen.add(result);
 			
 		}
 		if(search.getOrnamentClass()!= null) {
-			String mysqlquerry = "SELECT * FROM Ornaments LIKE OrnamentClassID = " + search.getOrnamentClass().getOrnamentClassID();
+			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
+			String mysqlquerry = "SELECT * FROM Ornaments WHERE OrnamentClassID = " + search.getOrnamentClass().getOrnamentClassID();
+			try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery(mysqlquerry);
+			while (rs.next()) {
+				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
+						//rs.getString("Annotation"),
+						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
+						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
+						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")));
+				result.add(entry);
+			}
+			}
+			catch(SQLException e){
+				e.printStackTrace();
+			}
+			listen.add(result);
+
 		}
+		
 		if(search.getReferences()!= null) {
-			String mysqlquerry = "SELECT * FROM Ornaments LIKE References = " + search.getReferences();
+			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
+			String mysqlquerry = "SELECT * FROM Ornaments WHERE References LIKE " + search.getReferences();
+			try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery(mysqlquerry);
+			while (rs.next()) {
+				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
+						//rs.getString("Annotation"),
+						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
+						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
+						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")));
+				result.add(entry);
+			}
+			}
+			catch(SQLException e){
+				e.printStackTrace();
+			}
+			listen.add(result);
+
 		}
 		if(search.getRelatedOrnaments().size()!= 0) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-			String mysqlquerry = "SELECT * FROM Ornaments JOIN OrnamentComponentRelation ON Ornaments.OrnamentID = OrnamentComponentRelation.OrnamentID WHERE OrnamentComponentID =";
+			String mysqlquerry = "SELECT * FROM (Ornaments JOIN CaveOrnamentsRelation on Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID) JOIN RelatedOrnamentsRelation ON CaveOrnamentRelation.CaveOrnamentRelationID = RelatedOrnamentsRelation.CaveOrnamentRelationID WHERE OrnamentID IN(";
 			for(int i = 0; search.getComponents().size() > i; i++) {
-				mysqlquerry = mysqlquerry +  Integer.toString(search.getComponents().get(i).getOrnamentComponentsID());
+				mysqlquerry = mysqlquerry +  Integer.toString(search.getRelatedOrnaments().get(i).getOrnamentID());
 				if(search.getCaves().size() > i+1) {
-					mysqlquerry = mysqlquerry + " or ";
+					mysqlquerry = mysqlquerry + " , ";
 				}
+			}
+			mysqlquerry = mysqlquerry + ") GROUP BY Ornaments.OrnamentID HAVING COUNT(*) =" + search.getRelatedOrnaments().size();
+			try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery(mysqlquerry);
+			while (rs.next()) {
+				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
+						//rs.getString("Annotation"),
+						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
+						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
+						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")));
+				result.add(entry);
+			}
+			}
+			catch(SQLException e){
+				e.printStackTrace();
 			}
 			listen.add(result);
 			
 		}
 		if(search.getRemarks()!= null) {
-			String mysqlquerry = "SELECT * FROM Ornaments LIKE Remarks = " + search.getRemarks();
+			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
+			String mysqlquerry = "SELECT * FROM Ornaments WHERE Remarks LIKE " + search.getRemarks();
+			try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery(mysqlquerry);
+			while (rs.next()) {
+				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
+						//rs.getString("Annotation"),
+						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
+						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
+						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")));
+				result.add(entry);
+			}
+			}
+			catch(SQLException e){
+				e.printStackTrace();
+			}
+			listen.add(result);
+
 		}
 		if(search.getSecondarypatterns().size()!= 0) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-			String mysqlquerry = "SELECT * FROM Ornaments JOIN OrnamentComponentRelation ON Ornaments.OrnamentID = OrnamentComponentRelation.OrnamentID WHERE OrnamentComponentID =";
-			for(int i = 0; search.getComponents().size() > i; i++) {
-				mysqlquerry = mysqlquerry +  Integer.toString(search.getComponents().get(i).getOrnamentComponentsID());
-				if(search.getCaves().size() > i+1) {
-					mysqlquerry = mysqlquerry + " or ";
+			String mysqlquerry = "SELECT * FROM Ornaments JOIN InnerSecondaryPatternRelation ON Ornaments.OrnamentID = InnerSecondaryPatternRelation.OrnamentID WHERE InnerSecID IN(";
+			for(int i = 0; search.getSecondarypatterns().size() > i; i++) {
+				mysqlquerry = mysqlquerry +  Integer.toString(search.getSecondarypatterns().get(i).getInnerSecondaryPatternsID());
+				if(search.getSecondarypatterns().size() > i+1) {
+					mysqlquerry = mysqlquerry + " , ";
 				}
+			}
+			mysqlquerry = mysqlquerry + ") GROUP BY Ornaments.OrnamentID HAVING COUNT(*) =" + search.getSecondarypatterns().size();
+			try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery(mysqlquerry);
+			while (rs.next()) {
+				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
+						//rs.getString("Annotation"),
+						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
+						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
+						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")));
+				result.add(entry);
+			}
+			}
+			catch(SQLException e){
+				e.printStackTrace();
 			}
 			listen.add(result);
 			
 		}
 		if(search.getSimilaritys() !=null) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-			String mysqlquerry = "SELECT * FROM Ornaments JOIN OrnamentComponentRelation ON Ornaments.OrnamentID = OrnamentComponentRelation.OrnamentID WHERE OrnamentComponentID =";
-			for(int i = 0; search.getComponents().size() > i; i++) {
-				mysqlquerry = mysqlquerry +  Integer.toString(search.getComponents().get(i).getOrnamentComponentsID());
-				if(search.getCaves().size() > i+1) {
-					mysqlquerry = mysqlquerry + " or ";
-				}
+			String mysqlquerry= "SELECT * FROM Ornaments JOIN CaveOrnamentsRelation on Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID WHERE SimilarElementsOfOtherCultures LIKE " + search.getSimilaritys();
+			try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery(mysqlquerry);
+			while (rs.next()) {
+				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
+						//rs.getString("Annotation"),
+						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
+						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
+						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")));
+				result.add(entry);
+			}
+			}
+			catch(SQLException e){
+				e.printStackTrace();
 			}
 			listen.add(result);
 			
 		}
 		if(search.getStyle()!= null) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-			String mysqlquerry = "SELECT * FROM Ornaments JOIN OrnamentComponentRelation ON Ornaments.OrnamentID = OrnamentComponentRelation.OrnamentID WHERE OrnamentComponentID =";
-			for(int i = 0; search.getComponents().size() > i; i++) {
-				mysqlquerry = mysqlquerry +  Integer.toString(search.getComponents().get(i).getOrnamentComponentsID());
-				if(search.getCaves().size() > i+1) {
-					mysqlquerry = mysqlquerry + " or ";
-				}
+			String mysqlquerry = "SELECT * FROM Ornaments JOIN CaveOrnamentsRelation on Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID WHERE StyleID =" + search.getStyle().getStyleID();
+			try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery(mysqlquerry);
+			while (rs.next()) {
+				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
+						//rs.getString("Annotation"),
+						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
+						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
+						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")));
+				result.add(entry);
+			}
+			}
+			catch(SQLException e){
+				e.printStackTrace();
 			}
 			listen.add(result);
 			
