@@ -101,6 +101,15 @@ public class ImageSearchController extends AbstractSearchController {
 								imageEditorPanel.hide();
 								if (entry != null) {
 									getResultView().addResult(new ImageView(imgEntry));
+								} else { // that means the uploaded image will not be saved and the image is delected on the server
+									dbService.deleteEntry("DELETE FROM Images WHERE ImageID=" + imgEntry.getImageID(), new AsyncCallback<Boolean>() {
+										
+										@Override
+										public void onSuccess(Boolean result) { }
+										
+										@Override
+										public void onFailure(Throwable caught) { }
+									});
 								}
 							}
 
