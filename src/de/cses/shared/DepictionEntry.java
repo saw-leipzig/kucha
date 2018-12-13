@@ -77,7 +77,8 @@ public class DepictionEntry extends AbstractEntry {
 	public DepictionEntry(int depictionID, int styleID, String inscriptions, String separateAksaras, String dating, String description,
 			String backgroundColour, String generalRemarks, String otherSuggestedIdentifications, double width, double height, ExpeditionEntry expedition,
 			Date purchaseDate, LocationEntry location, String inventoryNumber, VendorEntry vendor, int storyID, CaveEntry cave, int wallID, int absoluteLeft,
-			int absoluteTop, int modeOfRepresentationID, String shortName, String positionNotes, int masterImageID, boolean openAccess, String lastChangedByUser, String lastChangedOnDate) {
+			int absoluteTop, int modeOfRepresentationID, String shortName, String positionNotes, int masterImageID, boolean openAccess, String lastChangedByUser, 
+			String lastChangedOnDate) {
 		super();
 		this.depictionID = depictionID;
 		this.styleID = styleID;
@@ -106,13 +107,13 @@ public class DepictionEntry extends AbstractEntry {
 		this.masterImageID = masterImageID;
 		this.setOpenAccess(openAccess);
 		this.setLastChangedByUser(lastChangedByUser);
-		this.setLastChangedOnDate(lastChangedOnDate);
+		this.setModifiedOn(lastChangedOnDate);
 	}
 
 	public DepictionEntry clone() {
 		DepictionEntry clonedDepictionEntry = new DepictionEntry(depictionID, styleID, inscriptions, separateAksaras, dating, description, backgroundColour, generalRemarks,
 				otherSuggestedIdentifications, width, height, expedition, purchaseDate, location, inventoryNumber, vendor, storyID,
-				cave, wallID, absoluteLeft, absoluteTop, modeOfRepresentationID, shortName, positionNotes, masterImageID, openAccess, lastChangedByUser, lastChangedOnDate);
+				cave, wallID, absoluteLeft, absoluteTop, modeOfRepresentationID, shortName, positionNotes, masterImageID, openAccess, lastChangedByUser, modifiedOn);
 		ArrayList<ImageEntry> clonedRelatedImages = new ArrayList<ImageEntry>();
 		for (ImageEntry ie : this.relatedImages) {
 			clonedRelatedImages.add(ie);

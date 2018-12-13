@@ -58,7 +58,7 @@ public class CaveDataDisplay extends AbstractDataDisplay {
 				de != null ? de.getLabel() : "", 
 				re != null ? re.getLabel(): "", 
 				entry.getLastChangedByUser(),
-				entry.getLastChangedOnDate(), 
+				entry.getModifiedOn(), 
 				getCaveSketchURIs(),
 				entry.getFirstDocumentedBy(), 
 				entry.getFirstDocumentedInYear() > 0 ? String.valueOf(entry.getFirstDocumentedInYear()) : "",

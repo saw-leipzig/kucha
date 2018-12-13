@@ -38,7 +38,7 @@ public class UserEntry extends AbstractEntry {
 	 * 
 	 */
 	public UserEntry() {
-		this(0, "", "", "", "", "", ASSOCIATED, "");
+		this(0, "", "", "", "", "", ASSOCIATED, "", "");
 	}
 
 	/**
@@ -50,7 +50,8 @@ public class UserEntry extends AbstractEntry {
 	 * @param affiliation
 	 * @param accessrights
 	 */
-	public UserEntry(int userID, String username, String firstname, String lastname, String email, String affiliation, int accessrights, String sessionID) {
+	public UserEntry(int userID, String username, String firstname, String lastname, String email, String affiliation, int accessrights, 
+			String sessionID, String modifiedOn) {
 		super();
 		this.userID = userID;
 		this.username = username;
@@ -60,6 +61,7 @@ public class UserEntry extends AbstractEntry {
 		this.affiliation = affiliation;
 		this.accessrights = accessrights;
 		this.sessionID = sessionID;
+		this.setModifiedOn(modifiedOn);
 		Date now = new Date();
 		setLoginDate(now.getTime());
 	}

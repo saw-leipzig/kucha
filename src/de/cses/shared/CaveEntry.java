@@ -51,7 +51,7 @@ public class CaveEntry extends AbstractEntry {
 	public CaveEntry(int caveID, String officialNumber, String historicName, String optionalHistoricName, int caveTypeID, int siteID, int districtID,
 			int regionID, int orientationID, String stateOfPerservation, String findings, String notes, String firstDocumentedBy, int firstDocumentedInYear, int preservationClassificationID,
 			int caveGroupID, String optionalCaveSketch, String caveLayoutComments, boolean hasVolutedHorseShoeArch, boolean hasSculptures, boolean hasClayFigures, boolean hasImmitationOfMountains,
-			boolean hasHolesForFixationOfPlasticalItems, boolean hasWoodenConstruction, boolean openAccess) {
+			boolean hasHolesForFixationOfPlasticalItems, boolean hasWoodenConstruction, boolean openAccess, String lastChangedOn) {
 		this.caveID = caveID;
 		this.officialNumber = officialNumber;
 		this.historicName = historicName;
@@ -77,12 +77,14 @@ public class CaveEntry extends AbstractEntry {
 		this.hasHolesForFixationOfPlasticalItems = hasHolesForFixationOfPlasticalItems;
 		this.hasWoodenConstruction = hasWoodenConstruction;
 		this.setOpenAccess(openAccess);
+		this.setModifiedOn(lastChangedOn);
 	}
 	
 	public CaveEntry clone() {
 		CaveEntry clonedCE = new CaveEntry(caveID, officialNumber, historicName, optionalHistoricName, caveTypeID, siteID, districtID,
 				regionID, orientationID, stateOfPerservation, findings, notes, firstDocumentedBy, firstDocumentedInYear, preservationClassificationID,
-				caveGroupID, optionalCaveSketch, caveLayoutComments, hasVolutedHorseShoeArch, hasSculptures, hasClayFigures, hasImmitationOfMountains, hasHolesForFixationOfPlasticalItems, hasWoodenConstruction, this.isOpenAccess());
+				caveGroupID, optionalCaveSketch, caveLayoutComments, hasVolutedHorseShoeArch, hasSculptures, hasClayFigures, hasImmitationOfMountains, 
+				hasHolesForFixationOfPlasticalItems, hasWoodenConstruction, this.isOpenAccess(), this.modifiedOn);
 		ArrayList<CaveAreaEntry> clonedCaveAreaList = new ArrayList<CaveAreaEntry>();
 		for (CaveAreaEntry cae : caveAreaList) {
 			clonedCaveAreaList.add(cae.clone());

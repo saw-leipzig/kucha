@@ -33,7 +33,6 @@ import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.dnd.core.client.DndDropEvent;
 import com.sencha.gxt.dnd.core.client.DropTarget;
 import com.sencha.gxt.widget.core.client.ContentPanel;
-import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer;
@@ -46,7 +45,6 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.IntegerSpinnerField;
 import com.sencha.gxt.widget.core.client.form.TextField;
-import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -297,7 +295,7 @@ public class DepictionFilter extends AbstractFilter {
 					DepictionEntry de = (DepictionEntry) event.getData();
 					selectedIconographyLS.clear();
 					selectedIconographyLS.addAll(de.getRelatedIconographyList());
-					icoSelector.setSelectedIconography(de.getRelatedIconographyList());
+//					icoSelector.setSelectedIconography(de.getRelatedIconographyList());
 					if ((de.getRelatedIconographyList() != null) && (selectedIconographyLS.size() > 0)) {
 						iconographySpinnerField.setEnabled(true);
 						iconographySpinnerField.setValue(selectedIconographyLS.size());
@@ -328,6 +326,7 @@ public class DepictionFilter extends AbstractFilter {
 			@Override
 			public void onSelect(SelectEvent event) {
 				selectedIconographyLS.clear();
+				icoSelector.resetSelection();
 			}
 		});
 		iconographyPanel.addTool(iconographySelectionResetTB);
@@ -436,6 +435,9 @@ public class DepictionFilter extends AbstractFilter {
 			extendedFilterDialog.setModal(true);
 		}
 		extendedFilterDialog.center();
+		ArrayList<IconographyEntry> list = new ArrayList<IconographyEntry>();
+		list.addAll(selectedIconographyLS.getAll());
+		icoSelector.setSelectedIconography(list);
 	}
 
 	@Override

@@ -97,13 +97,11 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 
 	interface ImageProperties extends PropertyAccess<ImageEntry> {
 		ModelKeyProvider<ImageEntry> imageID();
-
 		LabelProvider<ImageEntry> title();
 	}
 
 	interface PhotographerProperties extends PropertyAccess<PhotographerEntry> {
 		ModelKeyProvider<PhotographerEntry> photographerID();
-
 		LabelProvider<PhotographerEntry> name();
 	}
 
