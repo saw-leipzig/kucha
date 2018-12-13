@@ -115,6 +115,11 @@ table.image-view {
 	text-align: left;
 }
 
+td.image-view {
+	height: 23px;
+}
+
+
 html.data-display {
 	backround-color: #ffcc66;
 }

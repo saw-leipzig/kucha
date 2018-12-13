@@ -54,7 +54,7 @@ public class ImageView extends AbstractView {
 		SafeHtml view(SafeUri imgUri);
 		
 		@XTemplate(source = "ImageViewTemplate.html")
-		SafeHtml view(SafeUri imgUri, String title, String shortName, String author, String imgType, SafeUri lockUri);
+		SafeHtml view(SafeUri imgUri, String title, String shortName, String author, String imgType, String date, SafeUri lockUri);
 	}
 	
 	private ImageEntry imgEntry;
@@ -69,14 +69,8 @@ public class ImageView extends AbstractView {
 		ivTemplates = GWT.create(ImageViewTemplates.class);
 		res = GWT.create(ImageViewResources.class);
 		this.imgEntry = imgEntry;
-		
-		setHTML(ivTemplates.view(
-				UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=120" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), 
-				imgEntry.getTitle() != null ? imgEntry.getTitle() : "n/a", 
-				imgEntry.getShortName() != null ? imgEntry.getShortName() : "n/a", 
-				imgEntry.getImageAuthor() != null ? imgEntry.getImageAuthor().getLabel() : "n/a",
-				imgEntry.getImageTypeID() > 0 ? StaticTables.getInstance().getImageTypeEntries().get(imgEntry.getImageTypeID()).getName() : "n/a", 
-				imgEntry.isOpenAccess() ? res.open().getSafeUri() : res.locked().getSafeUri()));
+
+		refreshHTML();
 		setSize("350px", "130px");
 
 		new DragSource(this) {
@@ -89,6 +83,17 @@ public class ImageView extends AbstractView {
 			}
 			
 		};
+	}
+
+	private void refreshHTML() {
+		setHTML(ivTemplates.view(
+				UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=120" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), 
+				imgEntry.getTitle() != null ? imgEntry.getTitle() : "n/a", 
+				imgEntry.getShortName() != null ? imgEntry.getShortName() : "n/a", 
+				imgEntry.getImageAuthor() != null ? imgEntry.getImageAuthor().getLabel() : "n/a",
+				imgEntry.getImageTypeID() > 0 ? StaticTables.getInstance().getImageTypeEntries().get(imgEntry.getImageTypeID()).getName() : "n/a", 
+				imgEntry.getDate(),
+				imgEntry.isOpenAccess() ? res.open().getSafeUri() : res.locked().getSafeUri()));
 	}
 
 	/* (non-Javadoc)
@@ -105,14 +110,7 @@ public class ImageView extends AbstractView {
 		if (entry != null && entry instanceof ImageEntry) {
 			imgEntry = (ImageEntry) entry;
 		}
-
-		setHTML(ivTemplates.view(
-				UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=120" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), 
-				imgEntry.getTitle() != null ? imgEntry.getTitle() : "n/a", 
-				imgEntry.getShortName() != null ? imgEntry.getShortName() : "n/a", 
-				imgEntry.getImageAuthor() != null ? imgEntry.getImageAuthor().getLabel() : "n/a",
-				imgEntry.getImageTypeID() > 0 ? StaticTables.getInstance().getImageTypeEntries().get(imgEntry.getImageTypeID()).getName() : "n/a", 
-				imgEntry.isOpenAccess() ? res.open().getSafeUri() : res.locked().getSafeUri()));
+		refreshHTML();
 	}
 
 	/* (non-Javadoc)
