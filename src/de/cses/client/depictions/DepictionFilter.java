@@ -26,6 +26,7 @@ import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.core.client.XTemplates;
+import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
@@ -256,26 +257,21 @@ public class DepictionFilter extends AbstractFilter {
 
 			@Override
 			protected boolean doSelect(Store<CaveEntry> store, CaveEntry parent, CaveEntry item, String filter) {
-				TreeStore<CaveEntry> treeStore = (TreeStore<CaveEntry>) store;
 				StaticTables st = StaticTables.getInstance();
 				DistrictEntry de = st.getDistrictEntries().get(item.getDistrictID());
 				SiteEntry se = st.getSiteEntries().get(item.getSiteID());
 				RegionEntry re = st.getRegionEntries().get(item.getRegionID());
-				do {
-					if (de.getName().contains(filter.toLowerCase()) || se.getName().contains(filter.toLowerCase()) || se.getShortName().contains(filter.toLowerCase())
-							|| re.getOriginalName().contains(filter.toLowerCase()) || re.getEnglishName().contains(filter.toLowerCase()) 
-							|| item.getHistoricName().contains(filter.toLowerCase()) || item.getOfficialNumber().contains(filter.toLowerCase())) {
-						return true;
-					}
-					item = treeStore.getParent(item);
-				} while (item != null);
-				return false;
+				String searchString = de.getName().toLowerCase() + se.getName().toLowerCase() + se.getShortName().toLowerCase() + re.getOriginalName().toLowerCase()
+						+ re.getEnglishName().toLowerCase() + item.getHistoricName().toLowerCase() + item.getOfficialNumber().toLowerCase();
+				return searchString.contains(filter.toLowerCase());
 			}
 		};
 		filterField.bind(caveEntryLS);
 		
+		BorderLayoutData south = new BorderLayoutData();
+		south.setMargins(new Margins(5, 3, 3, 3));
 		BorderLayoutContainer caveBLC = new BorderLayoutContainer();
-		caveBLC.setSouthWidget(filterField, new BorderLayoutData(25));
+		caveBLC.setSouthWidget(filterField, south);
 		caveBLC.setCenterWidget(caveSelectionLV, new MarginData(2));
 		
 		ContentPanel cavePanel = new ContentPanel();

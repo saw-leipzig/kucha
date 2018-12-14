@@ -927,7 +927,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 				@Override
 				protected boolean doSelect(Store<AuthorEntry> store, AuthorEntry parent, AuthorEntry item, String filter) {
-					return item.getName().toLowerCase().contains(filter.toLowerCase()) ? true : false; 
+					return item.getName().toLowerCase().contains(filter.toLowerCase()); 
 				}
 			};
 			authorListFilterField.bind(authorListStore);
