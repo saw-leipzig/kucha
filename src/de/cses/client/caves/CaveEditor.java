@@ -2480,7 +2480,7 @@ public class CaveEditor extends AbstractEditor {
 		tabPanel.add(measurementPTP, new TabItemConfig("Measurements", false));
 		tabPanel.add(finalStateOfPreservationVLC, new TabItemConfig("State of Preservation", false));
 		tabPanel.add(descriptionHLC, new TabItemConfig("Descriptions", false));
-		tabPanel.add(bibliographySelector, "Bibliography Selector");
+		tabPanel.add(bibliographySelector, new TabItemConfig("Bibliography Selector", false));
 
 		mainHlContainer.add(tabPanel, new HorizontalLayoutData(.7, 1.0));
 

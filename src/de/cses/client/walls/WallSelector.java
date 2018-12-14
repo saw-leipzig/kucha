@@ -13,8 +13,6 @@
  */
 package de.cses.client.walls;
 
-import java.util.Comparator;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.safecss.shared.SafeStyles;
@@ -33,8 +31,6 @@ import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
-import com.sencha.gxt.data.shared.SortDir;
-import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
