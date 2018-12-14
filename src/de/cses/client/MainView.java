@@ -355,13 +355,12 @@ public class MainView implements IsWidget {
 		};
 		
 		Label footerLabel = new Label("\u00A9 Sächsische Akademie der Wissenschaften zu Leipzig");
-		footerLabel.setStyleName("frame-header");
-		footerLabel.setStyleName("transparent");
+		footerLabel.setStyleName("footer");
     
     BorderLayoutData northData = new BorderLayoutData(70);
     northData.setMargins(new Margins(5));
     
-    BorderLayoutData southData = new BorderLayoutData();
+    BorderLayoutData southData = new BorderLayoutData(20);
     northData.setMargins(new Margins(5));
 
     BorderLayoutData westData = new BorderLayoutData(220);

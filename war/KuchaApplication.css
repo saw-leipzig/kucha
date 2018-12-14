@@ -220,6 +220,12 @@ div.frame-header {
 	height: 20px;
 }
 
+div.footer {
+	background-color: #9dc9b8;
+	opacity: 0.85;
+	text-align: right;
+}
+
 div.transparent {
 	opacity: 0.85;
 }

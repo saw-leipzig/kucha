@@ -275,18 +275,19 @@ public class DepictionFilter extends AbstractFilter {
 				return searchString.toLowerCase().contains(filter.toLowerCase());
 			}
 		};
-		filterField.bind(caveEntryLS);
+		// TODO why is filter killing selection?
+//		filterField.bind(caveEntryLS);
 		
-		BorderLayoutData south = new BorderLayoutData();
-		south.setMargins(new Margins(5, 3, 3, 3));
-		BorderLayoutContainer caveBLC = new BorderLayoutContainer();
-		caveBLC.setSouthWidget(filterField, south);
-		caveBLC.setCenterWidget(caveSelectionLV, new MarginData(2));
+//		BorderLayoutData south = new BorderLayoutData();
+//		south.setMargins(new Margins(5, 3, 3, 3));
+//		BorderLayoutContainer caveBLC = new BorderLayoutContainer();
+//		caveBLC.setSouthWidget(filterField, south);
+//		caveBLC.setCenterWidget(caveSelectionLV, new MarginData(2));
 		
 		ContentPanel cavePanel = new ContentPanel();
 		cavePanel.setHeaderVisible(true);
 		cavePanel.setHeading("Cave search");
-		cavePanel.add(caveBLC);
+		cavePanel.add(caveSelectionLV);
 		
 		ToolButton caveSelectionResetTB = new ToolButton(ToolButton.RESTORE);
 		caveSelectionResetTB.setToolTip(Util.createToolTip("Reset selection"));
