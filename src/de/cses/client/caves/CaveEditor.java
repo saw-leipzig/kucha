@@ -81,6 +81,7 @@ import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
 import de.cses.client.Util;
+import de.cses.client.bibliography.BibliographySelector;
 import de.cses.client.caves.C14DocumentUploader.C14DocumentUploadListener;
 import de.cses.client.caves.CaveSketchUploader.CaveSketchUploadListener;
 import de.cses.client.ui.AbstractEditor;
@@ -221,6 +222,7 @@ public class CaveEditor extends AbstractEditor {
 	protected C14DocumentUploader uploader;
 	private NumberField<Double> wallWidthNF;
 	private NumberField<Double> wallHeightNF;
+	private BibliographySelector bibliographySelector;
 
 	interface CaveTypeProperties extends PropertyAccess<CaveTypeEntry> {
 		ModelKeyProvider<CaveTypeEntry> caveTypeID();
@@ -2463,6 +2465,10 @@ public class CaveEditor extends AbstractEditor {
 		measurementPTP.add(expeditionMeasurementVLC, new TabItemConfig("Expedition Measurement", false));
 		measurementPTP.add(modernMeasurementVLC, new TabItemConfig("Modern Measurement", false));
 
+		/**
+		 * ----------------------------- Annotated Bibliography Connection ------------------------------------------------------------
+		 */
+		bibliographySelector = new BibliographySelector(correspondingCaveEntry.getRelatedBibliographyList());
 
 		/**
 		 * ------------------------------ now we are assembling the tabs and add them to the main hlc ----------------------------------
@@ -2474,6 +2480,7 @@ public class CaveEditor extends AbstractEditor {
 		tabPanel.add(measurementPTP, new TabItemConfig("Measurements", false));
 		tabPanel.add(finalStateOfPreservationVLC, new TabItemConfig("State of Preservation", false));
 		tabPanel.add(descriptionHLC, new TabItemConfig("Descriptions", false));
+		tabPanel.add(bibliographySelector, "Bibliography Selector");
 
 		mainHlContainer.add(tabPanel, new HorizontalLayoutData(.7, 1.0));
 
@@ -3104,6 +3111,7 @@ public class CaveEditor extends AbstractEditor {
 	 */
 	protected void saveEntries(boolean close) {
 		if (siteSelection.validate() && officialNumberField.validate()) {
+			correspondingCaveEntry.setRelatedBibliographyList(bibliographySelector.getSelectedEntries());
 			
 			if (correspondingCaveEntry.getCaveID() > 0) {
 				dbService.updateCaveEntry(correspondingCaveEntry, new AsyncCallback<Boolean>() {
