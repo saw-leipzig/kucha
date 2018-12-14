@@ -231,17 +231,17 @@ public class MainView implements IsWidget {
 		
     ContentPanel centerPanel = new ContentPanel();
     centerPanel.setHeading("Search Results");
+    centerPanel.getHeader().setStylePrimaryName("frame-header");
+//    centerPanel.addStyleName("transparent");
     centerPanel.setResize(true);
 
     resultView = new PortalLayoutContainer(1);
     resultView.setSpacing(10);
     resultView.setColumnWidth(0, 1.0);
-//    resultView.setColumnWidth(1, .40);
-    centerPanel.addStyleName("transparent");
     centerPanel.add(resultView);
 
     ContentPanel north = new ContentPanel();
-    north.addStyleName("transparent");
+//    north.addStyleName("transparent");
     north.add(selectorLayoutContainer);
     
     // updating heading when user is logged in / out
@@ -290,7 +290,7 @@ public class MainView implements IsWidget {
     filterPanel = new ContentPanel();
     filterPanel.setResize(true);
     filterPanel.setHeading("Filter");
-    filterPanel.addStyleName("transparent");
+//    filterPanel.addStyleName("transparent");
     filterPanel.add(filterView);
     
     dataViewPLC = new PortalLayoutContainer(1);
@@ -300,7 +300,7 @@ public class MainView implements IsWidget {
     ContentPanel dataViewPanel = new ContentPanel();
     dataViewPanel.setResize(true);
     dataViewPanel.setHeading("View");
-    dataViewPanel.addStyleName("transparent");
+//    dataViewPanel.addStyleName("transparent");
     dataViewPanel.add(dataViewPLC);
     saveWorkspaceToolButton = new ToolButton(ToolButton.SAVE);
     saveWorkspaceToolButton.setToolTip(Util.createToolTip("save", "not yet implemented"));
@@ -370,6 +370,7 @@ public class MainView implements IsWidget {
     MarginData centerData = new MarginData(5);
 
     view = new BorderLayoutContainer();
+    view.addStyleName("transparent");
     view.setBorders(borders);
     view.setNorthWidget(north, northData);
     view.setWestWidget(filterPanel, westData);

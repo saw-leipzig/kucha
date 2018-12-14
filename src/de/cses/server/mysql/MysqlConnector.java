@@ -3297,7 +3297,7 @@ public class MysqlConnector {
 		ArrayList<WallLocationEntry> result = new ArrayList<WallLocationEntry>();
 		ResultSet wallLocationRS;
 		try {
-			wallLocationStatement = dbc.prepareStatement("SELECT * FROM WallLocations");
+			wallLocationStatement = dbc.prepareStatement("SELECT * FROM WallLocations ORDER BY Label Asc");
 			wallLocationRS = wallLocationStatement.executeQuery();
 			while (wallLocationRS.next()) {
 				entry = new WallLocationEntry(wallLocationRS.getInt("WallLocationID"), wallLocationRS.getString("Label"),
