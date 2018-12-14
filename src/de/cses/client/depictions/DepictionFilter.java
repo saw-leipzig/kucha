@@ -258,12 +258,21 @@ public class DepictionFilter extends AbstractFilter {
 			@Override
 			protected boolean doSelect(Store<CaveEntry> store, CaveEntry parent, CaveEntry item, String filter) {
 				StaticTables st = StaticTables.getInstance();
-				DistrictEntry de = st.getDistrictEntries().get(item.getDistrictID());
-				SiteEntry se = st.getSiteEntries().get(item.getSiteID());
-				RegionEntry re = st.getRegionEntries().get(item.getRegionID());
-				String searchString = de.getName().toLowerCase() + se.getName().toLowerCase() + se.getShortName().toLowerCase() + re.getOriginalName().toLowerCase()
-						+ re.getEnglishName().toLowerCase() + item.getHistoricName().toLowerCase() + item.getOfficialNumber().toLowerCase();
-				return searchString.contains(filter.toLowerCase());
+				String searchString = "";
+				if (item.getSiteID() > 0) {
+					SiteEntry se = st.getSiteEntries().get(item.getSiteID());
+					searchString += se.getName() + " " + se.getShortName() + " ";
+				}
+				if (item.getDistrictID() > 0) {
+					DistrictEntry de = st.getDistrictEntries().get(item.getDistrictID());
+					searchString += de.getName() + " ";
+				}
+				if (item.getRegionID() > 0) {
+					RegionEntry re = st.getRegionEntries().get(item.getRegionID());
+					searchString += re.getEnglishName() + " " + re.getOriginalName() + " ";
+				}
+				searchString += item.getHistoricName() + " " + item.getOfficialNumber();
+				return searchString.toLowerCase().contains(filter.toLowerCase());
 			}
 		};
 		filterField.bind(caveEntryLS);
