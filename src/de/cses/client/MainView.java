@@ -231,7 +231,7 @@ public class MainView implements IsWidget {
 		
     ContentPanel centerPanel = new ContentPanel();
     centerPanel.setHeading("Search Results");
-    centerPanel.getHeader().addStyleName("frame-header");
+    centerPanel.getHeader().setStylePrimaryName("frame-header");
     centerPanel.addStyleName("transparent");
     centerPanel.setResize(true);
 
@@ -242,7 +242,7 @@ public class MainView implements IsWidget {
 
     ContentPanel north = new ContentPanel();
     north.addStyleName("transparent");
-    north.getHeader().addStyleName("frame-header");
+    north.getHeader().setStylePrimaryName("frame-header");
     north.add(selectorLayoutContainer);
     
     // updating heading when user is logged in / out
@@ -292,7 +292,7 @@ public class MainView implements IsWidget {
     filterPanel.setResize(true);
     filterPanel.setHeading("Filter");
     filterPanel.addStyleName("transparent");
-    filterPanel.getHeader().addStyleName("frame-header");
+    filterPanel.getHeader().setStylePrimaryName("frame-header");
     filterPanel.add(filterView);
     
     dataViewPLC = new PortalLayoutContainer(1);
@@ -303,7 +303,7 @@ public class MainView implements IsWidget {
     dataViewPanel.setResize(true);
     dataViewPanel.setHeading("View");
     dataViewPanel.addStyleName("transparent");
-    dataViewPanel.getHeader().addStyleName("frame-header");
+    dataViewPanel.getHeader().setStylePrimaryName("frame-header");
     dataViewPanel.add(dataViewPLC);
     saveWorkspaceToolButton = new ToolButton(ToolButton.SAVE);
     saveWorkspaceToolButton.setToolTip(Util.createToolTip("save", "not yet implemented"));
