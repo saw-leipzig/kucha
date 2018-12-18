@@ -15,15 +15,21 @@ package de.cses.shared;
 
 public class ImageEntry extends AbstractEntry {
 
-	private int imageID, imageTypeID;
-	private PhotographerEntry imageAuthor;
-	private String copyright, comment, filename, title, shortName, date;
+	private int imageID = 0;
+  private int imageTypeID = 0;
+	private PhotographerEntry imageAuthor = null;
+	private String copyright = "";
+	private String comment = "";
+	private String filename = "";
+	private String title = "";
+	private String shortName = "";
+	private String date = "";
 //	private boolean publicImage;
 
 	public static final int FILENAME = 2;
 
 	public ImageEntry() {
-		this(0, "", "", "", "", null, "", "", 1, false);
+		this(0, "", "", "", "", null, "", "", 1, false, "");
 	}
 	
 	/**
@@ -37,7 +43,7 @@ public class ImageEntry extends AbstractEntry {
 	 * @param captureDate
 	 */
 	public ImageEntry(int imageID, String filename, String title, String shortName, String copyright,
-			PhotographerEntry imageAuthor, String comment, String date, int imageTypeID, boolean openAccess) {
+			PhotographerEntry imageAuthor, String comment, String date, int imageTypeID, boolean openAccess, String modifiedOn) {
 		super(openAccess);
 		this.imageID = imageID;
 		this.filename = filename;
@@ -48,6 +54,12 @@ public class ImageEntry extends AbstractEntry {
 		this.comment = comment;
 		this.date = date;
 		this.setImageTypeID(imageTypeID);
+		this.setModifiedOn(modifiedOn);
+	}
+	
+	public ImageEntry clone() {
+		ImageEntry clonedImageEntry = new ImageEntry(imageID, filename, title, shortName, copyright, imageAuthor, comment, date, imageTypeID, openAccess, super.modifiedOn);
+		return clonedImageEntry;
 	}
 
 	public int getImageID() {

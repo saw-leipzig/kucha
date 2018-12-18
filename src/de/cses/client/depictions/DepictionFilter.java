@@ -26,14 +26,18 @@ import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.core.client.XTemplates;
+import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
+import com.sencha.gxt.data.shared.SortDir;
+import com.sencha.gxt.data.shared.Store;
+import com.sencha.gxt.data.shared.TreeStore;
+import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.dnd.core.client.DndDropEvent;
 import com.sencha.gxt.dnd.core.client.DropTarget;
 import com.sencha.gxt.widget.core.client.ContentPanel;
-import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer;
@@ -45,8 +49,10 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.IntegerSpinnerField;
+import com.sencha.gxt.widget.core.client.form.StoreFilterField;
 import com.sencha.gxt.widget.core.client.form.TextField;
-import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
+import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
+import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -93,10 +99,10 @@ public class DepictionFilter extends AbstractFilter {
 	}
 
 	interface CaveViewTemplates extends XTemplates {
-		@XTemplate("<div style=\"border: 1px solid grey;\">{shortName}: {officialNumber}<br> {districtRegion}<br><tpl for='name'> {element}<wbr> </tpl></div>")
+		@XTemplate("<div style=\"border: 1px solid grey;\">{shortName} {officialNumber}<br> {districtRegion}<br><tpl for='name'> {element}<wbr> </tpl></div>")
 		SafeHtml caveLabel(String shortName, String officialNumber, String districtRegion, ArrayList<NameElement> name);
 
-		@XTemplate("<div style=\"border: 1px solid grey;\">{shortName}: {officialNumber}<br> {districtRegion}</div>")
+		@XTemplate("<div style=\"border: 1px solid grey;\">{shortName} {officialNumber}<br> {districtRegion}</div>")
 		SafeHtml caveLabel(String shortName, String officialNumber, String districtRegion);
 	}
 
@@ -125,11 +131,9 @@ public class DepictionFilter extends AbstractFilter {
 	private ListView<CaveEntry, CaveEntry> caveSelectionLV;
 	private ListView<LocationEntry, LocationEntry> locationSelectionLV;
 	private IconographySelector icoSelector;
-	private ArrayList<String> sqlWhereClause;
 	private ListView<IconographyEntry, IconographyEntry> icoSelectionLV;
-
+	private StoreFilterField<CaveEntry> filterField;
 	private IntegerSpinnerField iconographySpinnerField;
-
 	private PopupPanel extendedFilterDialog = null;
 
 	/**
@@ -148,47 +152,6 @@ public class DepictionFilter extends AbstractFilter {
 	private void loadCaves() {
 		dbService.getCaves(new AsyncCallback<ArrayList<CaveEntry>>() {
 
-			private String getComparisonLabel(CaveEntry ce) {
-				StaticTables stab = StaticTables.getInstance();
-				String shortName = stab.getSiteEntries().get(ce.getSiteID()).getShortName();
-				int len = 0;
-				while ((len < ce.getOfficialNumber().length()) && isInteger(ce.getOfficialNumber().substring(0, len+1))) {
-					++len;
-				}
-				switch (len) {
-					case 1:
-						return shortName + "  " + ce.getOfficialNumber();
-					case 2:
-						return shortName + " " + ce.getOfficialNumber();
-					default:
-						return shortName + ce.getOfficialNumber();
-				}
-			}
-			
-			private boolean isInteger(String str) {
-				if (str == null) {
-					return false;
-				}
-				int length = str.length();
-				if (length == 0) {
-					return false;
-				}
-				int i = 0;
-				if (str.charAt(0) == '-') {
-					if (length == 1) {
-						return false;
-					}
-					i = 1;
-				}
-				for (; i < length; i++) {
-					char c = str.charAt(i);
-					if (c < '0' || c > '9') {
-						return false;
-					}
-				}
-				return true;
-			}
-
 			@Override
 			public void onFailure(Throwable caught) {
 				caught.printStackTrace();
@@ -196,13 +159,6 @@ public class DepictionFilter extends AbstractFilter {
 
 			@Override
 			public void onSuccess(ArrayList<CaveEntry> caveResults) {
-				caveResults.sort(new Comparator<CaveEntry>() {
-
-					@Override
-					public int compare(CaveEntry ce1, CaveEntry ce2) {
-						return getComparisonLabel(ce1).compareTo(getComparisonLabel(ce2));
-					}
-				});
 				for (CaveEntry ce : caveResults) {
 					caveEntryLS.add(ce);
 				}
@@ -210,6 +166,47 @@ public class DepictionFilter extends AbstractFilter {
 		});
 	}
 	
+	private String getComparisonLabel(CaveEntry ce) {
+		StaticTables stab = StaticTables.getInstance();
+		String shortName =  caveSelectionLV.getSelectionModel().isSelected(ce) ? "!" : "" + stab.getSiteEntries().get(ce.getSiteID()).getShortName();
+		int len = 0;
+		while ((len < ce.getOfficialNumber().length()) && isInteger(ce.getOfficialNumber().substring(0, len+1))) {
+			++len;
+		}
+		switch (len) {
+			case 1:
+				return shortName + "  " + ce.getOfficialNumber();
+			case 2:
+				return shortName + " " + ce.getOfficialNumber();
+			default:
+				return shortName + ce.getOfficialNumber();
+		}
+	}
+	
+	private boolean isInteger(String str) {
+		if (str == null) {
+			return false;
+		}
+		int length = str.length();
+		if (length == 0) {
+			return false;
+		}
+		int i = 0;
+		if (str.charAt(0) == '-') {
+			if (length == 1) {
+				return false;
+			}
+			i = 1;
+		}
+		for (; i < length; i++) {
+			char c = str.charAt(i);
+			if (c < '0' || c > '9') {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	/* (non-Javadoc)
 	 * @see de.cses.client.ui.AbstractFilter#getFilterUI()
 	 */
@@ -241,6 +238,51 @@ public class DepictionFilter extends AbstractFilter {
 			}
 		}));
 		caveSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+		caveSelectionLV.getSelectionModel().addSelectionChangedHandler(new SelectionChangedHandler<CaveEntry>() {
+			
+			@Override
+			public void onSelectionChanged(SelectionChangedEvent<CaveEntry> event) {
+				caveEntryLS.applySort(false);
+			}
+		});
+		caveEntryLS.addSortInfo(new StoreSortInfo<CaveEntry>(new Comparator<CaveEntry>() {
+
+			@Override
+			public int compare(CaveEntry ce1, CaveEntry ce2) {
+				return getComparisonLabel(ce1).compareTo(getComparisonLabel(ce2));
+			}
+		}, SortDir.ASC));
+		
+		filterField = new StoreFilterField<CaveEntry>() {
+
+			@Override
+			protected boolean doSelect(Store<CaveEntry> store, CaveEntry parent, CaveEntry item, String filter) {
+				StaticTables st = StaticTables.getInstance();
+				String searchString = "";
+				if (item.getSiteID() > 0) {
+					SiteEntry se = st.getSiteEntries().get(item.getSiteID());
+					searchString += se.getName() + " " + se.getShortName() + " ";
+				}
+				if (item.getDistrictID() > 0) {
+					DistrictEntry de = st.getDistrictEntries().get(item.getDistrictID());
+					searchString += de.getName() + " ";
+				}
+				if (item.getRegionID() > 0) {
+					RegionEntry re = st.getRegionEntries().get(item.getRegionID());
+					searchString += re.getEnglishName() + " " + re.getOriginalName() + " ";
+				}
+				searchString += item.getHistoricName() + " " + item.getOfficialNumber();
+				return searchString.toLowerCase().contains(filter.toLowerCase());
+			}
+		};
+		// TODO why is filter killing selection?
+//		filterField.bind(caveEntryLS);
+		
+//		BorderLayoutData south = new BorderLayoutData();
+//		south.setMargins(new Margins(5, 3, 3, 3));
+//		BorderLayoutContainer caveBLC = new BorderLayoutContainer();
+//		caveBLC.setSouthWidget(filterField, south);
+//		caveBLC.setCenterWidget(caveSelectionLV, new MarginData(2));
 		
 		ContentPanel cavePanel = new ContentPanel();
 		cavePanel.setHeaderVisible(true);
@@ -297,7 +339,7 @@ public class DepictionFilter extends AbstractFilter {
 					DepictionEntry de = (DepictionEntry) event.getData();
 					selectedIconographyLS.clear();
 					selectedIconographyLS.addAll(de.getRelatedIconographyList());
-					icoSelector.setSelectedIconography(de.getRelatedIconographyList());
+//					icoSelector.setSelectedIconography(de.getRelatedIconographyList());
 					if ((de.getRelatedIconographyList() != null) && (selectedIconographyLS.size() > 0)) {
 						iconographySpinnerField.setEnabled(true);
 						iconographySpinnerField.setValue(selectedIconographyLS.size());
@@ -328,6 +370,7 @@ public class DepictionFilter extends AbstractFilter {
 			@Override
 			public void onSelect(SelectEvent event) {
 				selectedIconographyLS.clear();
+				icoSelector.resetSelection();
 			}
 		});
 		iconographyPanel.addTool(iconographySelectionResetTB);
@@ -436,6 +479,9 @@ public class DepictionFilter extends AbstractFilter {
 			extendedFilterDialog.setModal(true);
 		}
 		extendedFilterDialog.center();
+		ArrayList<IconographyEntry> list = new ArrayList<IconographyEntry>();
+		list.addAll(selectedIconographyLS.getAll());
+		icoSelector.setSelectedIconography(list);
 	}
 
 	@Override

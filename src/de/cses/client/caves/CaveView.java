@@ -31,7 +31,6 @@ import de.cses.client.ui.AbstractView;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveTypeEntry;
-import de.cses.shared.SiteEntry;
 
 /**
  * @author alingnau
@@ -42,14 +41,17 @@ public class CaveView extends AbstractView {
 	interface Resources extends ClientBundle {
 		@Source("cave.png")
 		ImageResource logo();
+
+		@Source("lock-protection.png")
+		ImageResource locked();
+
+		@Source("photo.png")
+		ImageResource open();
 	}
 
 	interface CaveViewTemplates extends XTemplates {
-		@XTemplate("<div><img src='{imgUri}' height='16px' width='16px'> <b style='font-size: 20px'> {sitename} {officialNumber} </b><p style='font-size:9px'> {officialName} <br> {historicName} </p></div>")
-		SafeHtml view(SafeUri imgUri, String officialNumber, String officialName, String historicName, String sitename);
-
-		@XTemplate("<div><img src='{imgUri}' height='16px' width='16px'> <b style='font-size: 20px'> {officialNumber} </b><p style='font-size:9px'> {officialName} <br> {historicName} </p></div>")
-		SafeHtml view(SafeUri imgUri, String officialNumber, String officialName, String historicName);
+		@XTemplate(source = "CaveViewTemplate.html")
+		SafeHtml view(SafeUri imgUri, String sitename, String officialNumber, String caveType, String historicalName, String district, String region, SafeUri lockUri);
 
 		@XTemplate("<div><img src='{imgUri}' height='16px' width='16px' > <b style='font-size: 20px'> {officialNumber} </b></div>")
 		SafeHtml view(SafeUri imgUri, String officialNumber);
@@ -76,19 +78,11 @@ public class CaveView extends AbstractView {
 		cEntry = entry;
 		resources = GWT.create(Resources.class);
 		cvTemplate = GWT.create(CaveViewTemplates.class);
-		SiteEntry se = stab.getSiteEntries().get(entry.getSiteID());
-		if ((se != null) && (se.getSiteID() > 0)) {
-			setHTML(cvTemplate.view(resources.logo().getSafeUri(), entry.getOfficialNumber(),
-					entry.getHistoricName() != null ? entry.getHistoricName() : "",
-					entry.getOptionalHistoricName() != null ? entry.getOptionalHistoricName() : "", se.getShortName()));
-		} else {
-			setHTML(cvTemplate.view(resources.logo().getSafeUri(), entry.getOfficialNumber(),
-					entry.getHistoricName() != null ? entry.getHistoricName() : "",
-					entry.getOptionalHistoricName() != null ? entry.getOptionalHistoricName() : ""));
-		}
-		setSize("150px", "110px");
 
-		DragSource source = new DragSource(this) {
+		refreshHTML();
+		setSize("350px", "130px");
+
+		new DragSource(this) {
 
 			@Override
 			protected void onDragStart(DndDragStartEvent event) {
@@ -99,6 +93,23 @@ public class CaveView extends AbstractView {
 
 		};
 
+	}
+
+	private void refreshHTML() {
+		String site = cEntry.getSiteID() > 0 ? stab.getSiteEntries().get(cEntry.getSiteID()).getShortName() : "";
+		String district = cEntry.getDistrictID() > 0 ? stab.getDistrictEntries().get(cEntry.getDistrictID()).getName() : "";
+		String region = cEntry.getRegionID() > 0 ? stab.getRegionEntries().get(cEntry.getRegionID()).getEnglishName() : "";
+		
+		setHTML(cvTemplate.view(
+				resources.logo().getSafeUri(), 
+				site,
+				cEntry.getOfficialNumber(),
+				cEntry.getCaveTypeID() > 0 ? stab.getCaveTypeEntries().get(cEntry.getCaveTypeID()).getNameEN() : "",
+				cEntry.getHistoricName() != null ? cEntry.getHistoricName() : "",
+				district,
+				region,
+				cEntry.isOpenAccess() ? resources.open().getSafeUri() : resources.locked().getSafeUri()
+		));
 	}
 
 	/*

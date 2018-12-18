@@ -13,6 +13,7 @@
  */
 package de.cses.shared;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 
 /**
@@ -72,7 +73,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry implements Comparab
 			String pagesEN, String pagesORG, String pagesTR, 
 			String comments, String notes, String url, String uri, boolean unpublished, int firstEditionBibID, 
 			boolean openAccess, String abstractText, String thesisType, String editorType, boolean officialTitleTranslation,
-			String bibtexKey) {
+			String bibtexKey, String lastChangedOn) {
 		super();
 		this.annotatedBiblographyID = annotatedBiblographyID;
 		this.publicationType = publicationType;
@@ -131,6 +132,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry implements Comparab
 		this.editorType = editorType;
 		this.officialTitleTranslation = officialTitleTranslation;
 		this.bibtexKey = bibtexKey;
+		this.setModifiedOn(lastChangedOn);
 	}
 
 	public AnnotatedBiblographyEntry() { }
@@ -153,7 +155,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry implements Comparab
 				monthEN, monthORG, monthTR,  
 				pagesEN, pagesORG, pagesTR, 
 				comments, notes, url, uri, unpublished, firstEditionBibID, openAccess, 
-				abstractText, thesisType, editorType, officialTitleTranslation, bibtexKey);
+				abstractText, thesisType, editorType, officialTitleTranslation, bibtexKey, this.modifiedOn);
 		ArrayList<AuthorEntry> clonedAuthorList = new ArrayList<AuthorEntry>();
 		for (AuthorEntry ae : this.authorList) {
 			clonedAuthorList.add(ae);

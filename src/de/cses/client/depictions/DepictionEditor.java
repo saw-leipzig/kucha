@@ -88,14 +88,12 @@ import de.cses.client.walls.WallSelector;
 import de.cses.client.walls.Walls;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
-import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.LocationEntry;
 import de.cses.shared.ModeOfRepresentationEntry;
 import de.cses.shared.PreservationAttributeEntry;
-import de.cses.shared.SiteEntry;
 import de.cses.shared.StyleEntry;
 import de.cses.shared.VendorEntry;
 import de.cses.shared.WallEntry;
@@ -167,11 +165,11 @@ public class DepictionEditor extends AbstractEditor {
 	}
 
 	interface CaveViewTemplates extends XTemplates {
-		@XTemplate("<div>{officialNumber}: {officialName}<br>{siteDistrictInformation}</div>")
-		SafeHtml caveLabel(String siteDistrictInformation, String officialNumber, String officialName);
+		@XTemplate("<div>{cave}<br>{name}</div>")
+		SafeHtml caveLabel(String cave, String name);
 
-		@XTemplate("<div>{officialNumber}<br>{siteDistrictInformation}</div>")
-		SafeHtml caveLabel(String siteDistrictInformation, String officialNumber);
+		@XTemplate("<div>{cave}</div>")
+		SafeHtml caveLabel(String cave);
 	}
 
 	interface LocationProperties extends PropertyAccess<LocationEntry> {
@@ -578,14 +576,10 @@ public class DepictionEditor extends AbstractEditor {
 			@Override
 			public String getLabel(CaveEntry item) {
 				StaticTables st = StaticTables.getInstance();
-				DistrictEntry de = null;
-				SiteEntry se = null;
-				de = st.getDistrictEntries().get(item.getDistrictID());
-				if (de != null) {
-					se = st.getSiteEntries().get(de.getSiteID());
-				}
-				return (se != null ? se.getName()+": " : (de != null ? de.getName()+": " : "")) + item.getOfficialNumber() 
-					+ (item.getHistoricName() != null ? " "+item.getHistoricName() : "");
+				String site = item.getSiteID() > 0 ? st.getSiteEntries().get(item.getSiteID()).getShortName() : "";
+				String district = item.getDistrictID() > 0 ? st.getDistrictEntries().get(item.getDistrictID()).getName() : "";
+				String region = item.getRegionID() > 0 ? st.getRegionEntries().get(item.getRegionID()).getEnglishName() : "";
+				return site  + " " + item.getOfficialNumber() + (!district.isEmpty() ? " / " + district : "") + (!region.isEmpty() ? " / " + region : "");
 			}
 		}, new AbstractSafeHtmlRenderer<CaveEntry>() {
 
@@ -593,23 +587,21 @@ public class DepictionEditor extends AbstractEditor {
 			public SafeHtml render(CaveEntry item) {
 				final CaveViewTemplates cvTemplates = GWT.create(CaveViewTemplates.class);
 				StaticTables st = StaticTables.getInstance();
-				DistrictEntry de = null;
-				SiteEntry se = null;
-				de = st.getDistrictEntries().get(item.getDistrictID());
-				if (de != null) {
-					se = st.getSiteEntries().get(de.getSiteID());
-				}
-				String siteDistrictInformation = (se != null ? se.getName() : "") + (de != null ? (se != null ? " / " : "") + de.getName() : "");
+				String site = item.getSiteID() > 0 ? st.getSiteEntries().get(item.getSiteID()).getShortName() : "";
+				String district = item.getDistrictID() > 0 ? st.getDistrictEntries().get(item.getDistrictID()).getName() : "";
+				String region = item.getRegionID() > 0 ? st.getRegionEntries().get(item.getRegionID()).getEnglishName() : "";
 				if ((item.getHistoricName() != null) && (item.getHistoricName().length() > 0)) {
-					return cvTemplates.caveLabel(siteDistrictInformation, item.getOfficialNumber(), item.getHistoricName());
+					return cvTemplates.caveLabel(
+							site  + " " + item.getOfficialNumber() + (!district.isEmpty() ? " / " + district : "") + (!region.isEmpty() ? " / " + region : ""),
+							item.getHistoricName());
 				} else {
-					return cvTemplates.caveLabel(siteDistrictInformation, item.getOfficialNumber());
+					return cvTemplates.caveLabel(site  + " " + item.getOfficialNumber() + (!district.isEmpty() ? " / " + district : "") + (!region.isEmpty() ? " / " + region : ""));
 				}
 			}
 		});
 		caveSelectionCB.setEmptyText("nothing selected");
 		caveSelectionCB.setTypeAhead(true);
-		caveSelectionCB.setEditable(false);
+		caveSelectionCB.setEditable(true);
 		caveSelectionCB.setTriggerAction(TriggerAction.ALL);
 		caveSelectionCB.addSelectionHandler(new SelectionHandler<CaveEntry>() {
 
@@ -1432,7 +1424,7 @@ public class DepictionEditor extends AbstractEditor {
 		});
 		
 		mainPanel = new FramedPanel();
-		mainPanel.setHeading("Painted Representation Editor (" + (correspondingDepictionEntry.getDepictionID() > 0 ? correspondingDepictionEntry.getShortName() : "NEW") + ")");
+		mainPanel.setHeading("Painted Representation Editor (entry last modified on " + correspondingDepictionEntry.getModifiedOn() + ")");
 
 		mainPanel.add(mainHLC);
 		mainPanel.setSize("900px", "650px");

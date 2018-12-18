@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.sencha.gxt.core.client.XTemplates;
+import com.sencha.gxt.core.client.XTemplates.XTemplate;
 
 import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.IconographyEntry;
@@ -32,5 +33,4 @@ public interface DepictionViewTemplates extends XTemplates {
 	SafeHtml display(String shortName, String inventoryNumber, String cave, String wall, String expedition, String vendor, String purchaseDate, String currentLocation, String stateOfPreservation, SafeUri imageUri, SafeUri fullImageUri,
 			SafeUri realCaveSketchUri, double width, double height, String style, String modeOfRepresentation, String description, String generalRemarks, String otherSuggestedIdentifications, 
 			ArrayList<IconographyEntry> iconography, ArrayList<AnnotatedBiblographyEntry> bib, String user, String timestamp);
-
 }

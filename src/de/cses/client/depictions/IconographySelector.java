@@ -116,46 +116,15 @@ public class IconographySelector extends FramedPanel {
 		}
 	}
 
-//	private void loadIconographyStore(int rootElementIndex) {
-//		for (IconographyEntry item : StaticTables.getInstance().getIconographyEntries().values()) {
-//			iconographyTreeStore.add(item);
-//			if (item.getChildren() != null) {
-//				processParentIconographyEntry(iconographyTreeStore, item);
-//			}
-//		}
-//		dbService.getRelatedIconography(depictionID, new AsyncCallback<ArrayList<IconographyEntry>>() {
-//
-//			@Override
-//			public void onFailure(Throwable caught) {
-//				caught.printStackTrace();
-//			}
-//
-//			@Override
-//			public void onSuccess(ArrayList<IconographyEntry> iconographyRelationList) {
-//				for (IconographyEntry entry : iconographyRelationList) {
-//					iconographyTree.setChecked(entry, CheckState.CHECKED);
-//					selectedIconographyMap.put(entry.getUniqueID(), entry);
-//				}
-//			}
-//		});
-//	}
-	
 	public void setSelectedIconography(ArrayList<IconographyEntry> iconographyRelationList) {
 		Util.doLogging("*** setSelectedIconography called - iconographyTree no. of items = " + iconographyTree.getStore().getAllItemsCount());
+		resetSelection();
 		for (IconographyEntry entry : iconographyRelationList) {
 			Util.doLogging("setSelectedIconography setting entry = " + entry.getIconographyID());
 			iconographyTree.setChecked(entry, CheckState.CHECKED);
 			selectedIconographyMap.put(entry.getUniqueID(), entry);
 		}
 	}
-
-//	@Override
-//	public Widget asWidget() {
-//		if (mainPanel == null) {
-//			initPanel();
-//		}
-//		return mainPanel;
-//	}
 
 	private void initPanel() {
 		Util.doLogging("IconographySelector.init() has been called! " + this.getClass().toString());
@@ -245,6 +214,15 @@ public class IconographySelector extends FramedPanel {
 			}
 		}
 		return result;	
+	}
+	
+	public void resetSelection() {
+		selectedIconographyMap.clear();
+		if (iconographyTree != null) {
+			for (IconographyEntry entry : iconographyTree.getCheckedSelection()) {
+				iconographyTree.setChecked(entry, CheckState.UNCHECKED);
+			}
+		}
 	}
 
 

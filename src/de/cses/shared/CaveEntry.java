@@ -45,13 +45,14 @@ public class CaveEntry extends AbstractEntry {
 	private ArrayList<C14AnalysisUrlEntry> c14AnalysisUrlList = new ArrayList<C14AnalysisUrlEntry>();
 	private ArrayList<C14DocumentEntry> c14DocumentList = new ArrayList<C14DocumentEntry>();
 	private ArrayList<CaveSketchEntry> caveSketchList = new ArrayList<CaveSketchEntry>();
+	private ArrayList<AnnotatedBiblographyEntry> relatedBibliographyList = new ArrayList<AnnotatedBiblographyEntry>();
 
 	public CaveEntry() { 	}
 
 	public CaveEntry(int caveID, String officialNumber, String historicName, String optionalHistoricName, int caveTypeID, int siteID, int districtID,
 			int regionID, int orientationID, String stateOfPerservation, String findings, String notes, String firstDocumentedBy, int firstDocumentedInYear, int preservationClassificationID,
 			int caveGroupID, String optionalCaveSketch, String caveLayoutComments, boolean hasVolutedHorseShoeArch, boolean hasSculptures, boolean hasClayFigures, boolean hasImmitationOfMountains,
-			boolean hasHolesForFixationOfPlasticalItems, boolean hasWoodenConstruction, boolean openAccess) {
+			boolean hasHolesForFixationOfPlasticalItems, boolean hasWoodenConstruction, boolean openAccess, String lastChangedOn) {
 		this.caveID = caveID;
 		this.officialNumber = officialNumber;
 		this.historicName = historicName;
@@ -77,12 +78,14 @@ public class CaveEntry extends AbstractEntry {
 		this.hasHolesForFixationOfPlasticalItems = hasHolesForFixationOfPlasticalItems;
 		this.hasWoodenConstruction = hasWoodenConstruction;
 		this.setOpenAccess(openAccess);
+		this.setModifiedOn(lastChangedOn);
 	}
 	
 	public CaveEntry clone() {
 		CaveEntry clonedCE = new CaveEntry(caveID, officialNumber, historicName, optionalHistoricName, caveTypeID, siteID, districtID,
 				regionID, orientationID, stateOfPerservation, findings, notes, firstDocumentedBy, firstDocumentedInYear, preservationClassificationID,
-				caveGroupID, optionalCaveSketch, caveLayoutComments, hasVolutedHorseShoeArch, hasSculptures, hasClayFigures, hasImmitationOfMountains, hasHolesForFixationOfPlasticalItems, hasWoodenConstruction, this.isOpenAccess());
+				caveGroupID, optionalCaveSketch, caveLayoutComments, hasVolutedHorseShoeArch, hasSculptures, hasClayFigures, hasImmitationOfMountains, 
+				hasHolesForFixationOfPlasticalItems, hasWoodenConstruction, this.isOpenAccess(), this.modifiedOn);
 		ArrayList<CaveAreaEntry> clonedCaveAreaList = new ArrayList<CaveAreaEntry>();
 		for (CaveAreaEntry cae : caveAreaList) {
 			clonedCaveAreaList.add(cae.clone());
@@ -108,6 +111,11 @@ public class CaveEntry extends AbstractEntry {
 			clonedCaveSketchList.add(csEntry);
 		}
 		clonedCE.setCaveSketchList(clonedCaveSketchList);
+		ArrayList<AnnotatedBiblographyEntry> clonedRelatedBibliographyList = new ArrayList<AnnotatedBiblographyEntry>();
+		for (AnnotatedBiblographyEntry abEntry : relatedBibliographyList) {
+			clonedRelatedBibliographyList.add(abEntry);
+		}
+		clonedCE.setRelatedBibliographyList(clonedRelatedBibliographyList);
 		return clonedCE;
 	}
 
@@ -420,6 +428,14 @@ public class CaveEntry extends AbstractEntry {
 
 	public void setCaveSketchList(ArrayList<CaveSketchEntry> caveSketchList) {
 		this.caveSketchList = caveSketchList;
+	}
+
+	public ArrayList<AnnotatedBiblographyEntry> getRelatedBibliographyList() {
+		return relatedBibliographyList;
+	}
+
+	public void setRelatedBibliographyList(ArrayList<AnnotatedBiblographyEntry> relatedBibliographyList) {
+		this.relatedBibliographyList = relatedBibliographyList;
 	}
 	
 }

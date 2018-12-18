@@ -21,6 +21,7 @@ import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.util.Margins;
@@ -112,12 +113,6 @@ public class MainView implements IsWidget {
 	
 	private void initView() {
     boolean borders = true;
-    
-//    northPanel = new VerticalLayoutContainer();
-//
-//    northPanel.add(UserLogin.getInstance(), new VerticalLayoutData(1.0, .4));
-    
-//    LocationFilter lFilter = new LocationFilter("Location Filter");
 
 		caveSearchController = new CaveSearchController("Caves", new CaveFilter("Caves"), new CaveResultView("Caves"));
 		caveSearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
@@ -237,17 +232,18 @@ public class MainView implements IsWidget {
 		
     ContentPanel centerPanel = new ContentPanel();
     centerPanel.setHeading("Search Results");
+    centerPanel.getHeader().setStylePrimaryName("frame-header");
+    centerPanel.addStyleName("transparent");
     centerPanel.setResize(true);
-    /*
-     * Currently we implement a 2-column layout with a spacing of 10. 
-     */
+
     resultView = new PortalLayoutContainer(1);
     resultView.setSpacing(10);
     resultView.setColumnWidth(0, 1.0);
-//    resultView.setColumnWidth(1, .40);
     centerPanel.add(resultView);
 
     ContentPanel north = new ContentPanel();
+    north.addStyleName("transparent");
+    north.getHeader().setStylePrimaryName("frame-header");
     north.add(selectorLayoutContainer);
     
     // updating heading when user is logged in / out
@@ -296,6 +292,8 @@ public class MainView implements IsWidget {
     filterPanel = new ContentPanel();
     filterPanel.setResize(true);
     filterPanel.setHeading("Filter");
+    filterPanel.addStyleName("transparent");
+    filterPanel.getHeader().setStylePrimaryName("frame-header");
     filterPanel.add(filterView);
     
     dataViewPLC = new PortalLayoutContainer(1);
@@ -305,6 +303,8 @@ public class MainView implements IsWidget {
     ContentPanel dataViewPanel = new ContentPanel();
     dataViewPanel.setResize(true);
     dataViewPanel.setHeading("View");
+    dataViewPanel.addStyleName("transparent");
+    dataViewPanel.getHeader().setStylePrimaryName("frame-header");
     dataViewPanel.add(dataViewPLC);
     saveWorkspaceToolButton = new ToolButton(ToolButton.SAVE);
     saveWorkspaceToolButton.setToolTip(Util.createToolTip("save", "not yet implemented"));
@@ -353,8 +353,14 @@ public class MainView implements IsWidget {
 				}
 			}
 		};
+		
+		Label footerLabel = new Label("\u00A9 Sächsische Akademie der Wissenschaften zu Leipzig");
+		footerLabel.setStyleName("footer");
     
     BorderLayoutData northData = new BorderLayoutData(70);
+    northData.setMargins(new Margins(5));
+    
+    BorderLayoutData southData = new BorderLayoutData(20);
     northData.setMargins(new Margins(5));
 
     BorderLayoutData westData = new BorderLayoutData(220);
@@ -378,6 +384,7 @@ public class MainView implements IsWidget {
     view.setNorthWidget(north, northData);
     view.setWestWidget(filterPanel, westData);
     view.setEastWidget(dataViewPanel, eastData);
+    view.setSouthWidget(footerLabel, southData);
     view.setCenterWidget(centerPanel, centerData);
     view.setStyleName("");
 

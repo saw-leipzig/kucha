@@ -61,8 +61,8 @@ public class AnnotatedBibliographyFilter extends AbstractFilter {
 		titleTF.setToolTip(Util.createToolTip("Searches in all sorts of titles.", "Includes Parent Title, Subtitle, Collection Title, Titleaddon, Book Title, etc."));
 		
 		publisherTF = new TextField();
-		publisherTF.setEmptyText("search publisher");
-		publisherTF.setToolTip(Util.createToolTip("searches publishers", "Please note: publisher is a free text field. Due to diffent spelling or typos, searing can become difficult."));
+		publisherTF.setEmptyText("search publisher & address");
+		publisherTF.setToolTip(Util.createToolTip("Search for publishers & addresses.", "Please note: publisher is a free text field. Due to diffent spelling or typos, searing can become difficult."));
 		
 		yearSearch = new NumberField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
 		yearSearch.setAllowNegative(false);

@@ -13,8 +13,6 @@
  */
 package de.cses.client.walls;
 
-import java.util.Comparator;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.safecss.shared.SafeStyles;
@@ -33,8 +31,6 @@ import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
-import com.sencha.gxt.data.shared.SortDir;
-import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
@@ -45,6 +41,7 @@ import de.cses.client.user.UserLogin;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.WallEntry;
+import de.cses.shared.WallLocationEntry;
 
 /**
  * @author alingnau
@@ -91,14 +88,14 @@ public class WallSelector implements IsWidget {
 		wallVT = GWT.create(WallViewTemplate.class);
 		wallEntryLS = new ListStore<WallEntry>(wallProps.wallLocationID());
 
-		Comparator<WallEntry> comparator = new Comparator<WallEntry>() {
-			@Override
-			public int compare(WallEntry we1, WallEntry we2) {
-				return StaticTables.getInstance().getWallLocationEntries().get(we1.getWallLocationID()).getLabel()
-						.compareTo(StaticTables.getInstance().getWallLocationEntries().get(we2.getWallLocationID()).getLabel());
-			}
-		};
-		wallEntryLS.addSortInfo(new StoreSortInfo<WallEntry>(comparator, SortDir.ASC));
+//		Comparator<WallEntry> comparator = new Comparator<WallEntry>() {
+//			@Override
+//			public int compare(WallEntry we1, WallEntry we2) {
+//				return StaticTables.getInstance().getWallLocationEntries().get(we1.getWallLocationID()).getLabel()
+//						.compareTo(StaticTables.getInstance().getWallLocationEntries().get(we2.getWallLocationID()).getLabel());
+//			}
+//		};
+//		wallEntryLS.addSortInfo(new StoreSortInfo<WallEntry>(comparator, SortDir.ASC));
 		createUI();
 		wallSelectorCB.addSelectionHandler(wallSelectionHandler);
 	}
@@ -178,45 +175,44 @@ public class WallSelector implements IsWidget {
 //					,SafeStylesUtils.forWidth(defaultCaveSketchWidth, Unit.PX))));
 		}
 		wallEntryLS.clear();
-		wallEntryLS.addAll(currentCave.getWallList());
-//		switch (ctEntry.getCaveTypeID()) {
-//
-//			case 2: // square cave
-//				for (WallLocationEntry wle : StaticTables.getInstance().getWallLocationEntries().values()) {
-//					if ((wle.getCaveAreaLabel() == WallLocationEntry.ANTECHAMBER_LABEL)
-//							|| (wle.getCaveAreaLabel() == WallLocationEntry.MAIN_CHAMBER_LABEL)) {
-//						wallEntryLS.add(currentCave.getWall(wle.getWallLocationID()));
-//					}
-//				}
-//				break;
-//
-//			case 3: // residential cave
-//				for (WallLocationEntry wle : StaticTables.getInstance().getWallLocationEntries().values()) {
-//					if ((wle.getCaveAreaLabel() == WallLocationEntry.ANTECHAMBER_LABEL)
-//							|| (wle.getCaveAreaLabel() == WallLocationEntry.MAIN_CHAMBER_LABEL)
-//							|| (wle.getCaveAreaLabel() == WallLocationEntry.MAIN_CHAMBER_CORRIDOR_LABEL)
-//							|| (wle.getCaveAreaLabel() == WallLocationEntry.REAR_AREA_LABEL)) {
-//						wallEntryLS.add(currentCave.getWall(wle.getWallLocationID()));
-//					}
-//				}
-//				break;
-//
-//			case 4: // central-pillar cave
-//			case 6: // monumental image cave
-//				for (WallLocationEntry wle : StaticTables.getInstance().getWallLocationEntries().values()) {
-//					if ((wle.getCaveAreaLabel() == WallLocationEntry.ANTECHAMBER_LABEL)
-//							|| (wle.getCaveAreaLabel() == WallLocationEntry.MAIN_CHAMBER_LABEL)
-//							|| (wle.getCaveAreaLabel() == WallLocationEntry.REAR_AREA_LABEL)
-//							|| (wle.getCaveAreaLabel() == WallLocationEntry.REAR_AREA_LEFT_CORRIDOR_LABEL)
-//							|| (wle.getCaveAreaLabel() == WallLocationEntry.REAR_AREA_RIGHT_CORRIDOR_LABEL)) {
-//						wallEntryLS.add(currentCave.getWall(wle.getWallLocationID()));
-//					}
-//				}
-//				break;
-//
-//			default:
-//				break;
-//		}
+		switch (ctEntry.getCaveTypeID()) {
+
+			case 2: // square cave
+				for (WallLocationEntry wle : StaticTables.getInstance().getWallLocationEntries().values()) {
+					if ((wle.getCaveAreaLabel() == WallLocationEntry.ANTECHAMBER_LABEL)
+							|| (wle.getCaveAreaLabel() == WallLocationEntry.MAIN_CHAMBER_LABEL)) {
+						wallEntryLS.add(currentCave.getWall(wle.getWallLocationID()));
+					}
+				}
+				break;
+
+			case 3: // residential cave
+				for (WallLocationEntry wle : StaticTables.getInstance().getWallLocationEntries().values()) {
+					if ((wle.getCaveAreaLabel() == WallLocationEntry.ANTECHAMBER_LABEL)
+							|| (wle.getCaveAreaLabel() == WallLocationEntry.MAIN_CHAMBER_LABEL)
+							|| (wle.getCaveAreaLabel() == WallLocationEntry.MAIN_CHAMBER_CORRIDOR_LABEL)
+							|| (wle.getCaveAreaLabel() == WallLocationEntry.REAR_AREA_LABEL)) {
+						wallEntryLS.add(currentCave.getWall(wle.getWallLocationID()));
+					}
+				}
+				break;
+
+			case 4: // central-pillar cave
+			case 6: // monumental image cave
+				for (WallLocationEntry wle : StaticTables.getInstance().getWallLocationEntries().values()) {
+					if ((wle.getCaveAreaLabel() == WallLocationEntry.ANTECHAMBER_LABEL)
+							|| (wle.getCaveAreaLabel() == WallLocationEntry.MAIN_CHAMBER_LABEL)
+							|| (wle.getCaveAreaLabel() == WallLocationEntry.REAR_AREA_LABEL)
+							|| (wle.getCaveAreaLabel() == WallLocationEntry.REAR_AREA_LEFT_CORRIDOR_LABEL)
+							|| (wle.getCaveAreaLabel() == WallLocationEntry.REAR_AREA_RIGHT_CORRIDOR_LABEL)) {
+						wallEntryLS.add(currentCave.getWall(wle.getWallLocationID()));
+					}
+				}
+				break;
+
+			default:
+				break;
+		}
 	}
 	
 	public void selectWall(int wallLocationID) {
