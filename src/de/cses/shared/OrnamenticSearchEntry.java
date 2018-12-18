@@ -10,14 +10,15 @@ public class OrnamenticSearchEntry extends AbstractSearchEntry {
 	private String interpretation;
 	private String references;
 	private String similaritys;
+	private String group;
 	private OrnamentClassEntry ornamentClass;
 	private StyleEntry style;
-	ArrayList <CaveEntry> caves = new ArrayList<CaveEntry>();
-	ArrayList <OrnamentComponentsEntry> components = new ArrayList<OrnamentComponentsEntry>();
-	ArrayList <InnerSecondaryPatternsEntry> secondarypatterns = new ArrayList<InnerSecondaryPatternsEntry>();
-	ArrayList <DistrictEntry> districts = new ArrayList<DistrictEntry>();
-	ArrayList <OrnamentEntry> relatedOrnaments = new ArrayList<OrnamentEntry>();
-	ArrayList <IconographyEntry> iconographys = new ArrayList<IconographyEntry>();
+	private ArrayList <CaveEntry> caves = new ArrayList<CaveEntry>();
+	private ArrayList <OrnamentComponentsEntry> components = new ArrayList<OrnamentComponentsEntry>();
+	private ArrayList <InnerSecondaryPatternsEntry> secondarypatterns = new ArrayList<InnerSecondaryPatternsEntry>();
+	private ArrayList <DistrictEntry> districts = new ArrayList<DistrictEntry>();
+	private ArrayList <OrnamentEntry> relatedOrnaments = new ArrayList<OrnamentEntry>();
+	private ArrayList <IconographyEntry> iconographys = new ArrayList<IconographyEntry>();
 	private ArrayList <OrnamentPositionEntry> position = new ArrayList <OrnamentPositionEntry>();
 	private ArrayList <OrnamentFunctionEntry> function = new ArrayList <OrnamentFunctionEntry>();
 	/**
@@ -211,6 +212,18 @@ public class OrnamenticSearchEntry extends AbstractSearchEntry {
 	 */
 	public void setFunction(ArrayList<OrnamentFunctionEntry> function) {
 		this.function = function;
+	}
+	/**
+	 * @return the group
+	 */
+	public String getGroup() {
+		return group;
+	}
+	/**
+	 * @param group the group to set
+	 */
+	public void setGroup(String group) {
+		this.group = group;
 	}
 
 	
