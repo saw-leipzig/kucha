@@ -45,6 +45,7 @@ public class CaveEntry extends AbstractEntry {
 	private ArrayList<C14AnalysisUrlEntry> c14AnalysisUrlList = new ArrayList<C14AnalysisUrlEntry>();
 	private ArrayList<C14DocumentEntry> c14DocumentList = new ArrayList<C14DocumentEntry>();
 	private ArrayList<CaveSketchEntry> caveSketchList = new ArrayList<CaveSketchEntry>();
+	private ArrayList<AnnotatedBiblographyEntry> relatedBibliographyList = new ArrayList<AnnotatedBiblographyEntry>();
 
 	public CaveEntry() { 	}
 
@@ -110,6 +111,11 @@ public class CaveEntry extends AbstractEntry {
 			clonedCaveSketchList.add(csEntry);
 		}
 		clonedCE.setCaveSketchList(clonedCaveSketchList);
+		ArrayList<AnnotatedBiblographyEntry> clonedRelatedBibliographyList = new ArrayList<AnnotatedBiblographyEntry>();
+		for (AnnotatedBiblographyEntry abEntry : relatedBibliographyList) {
+			clonedRelatedBibliographyList.add(abEntry);
+		}
+		clonedCE.setRelatedBibliographyList(clonedRelatedBibliographyList);
 		return clonedCE;
 	}
 
@@ -422,6 +428,14 @@ public class CaveEntry extends AbstractEntry {
 
 	public void setCaveSketchList(ArrayList<CaveSketchEntry> caveSketchList) {
 		this.caveSketchList = caveSketchList;
+	}
+
+	public ArrayList<AnnotatedBiblographyEntry> getRelatedBibliographyList() {
+		return relatedBibliographyList;
+	}
+
+	public void setRelatedBibliographyList(ArrayList<AnnotatedBiblographyEntry> relatedBibliographyList) {
+		this.relatedBibliographyList = relatedBibliographyList;
 	}
 	
 }

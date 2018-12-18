@@ -707,6 +707,7 @@ public class MysqlConnector {
 				ce.setC14AnalysisUrlList(getC14AnalysisEntries(ce.getCaveID()));
 				ce.setC14DocumentList(getC14Documents(ce.getCaveID()));
 				ce.setCaveSketchList(getCaveSketchEntriesFromCave(ce.getCaveID()));
+				ce.setRelatedBibliographyList(getRelatedBibliographyFromCave(ce.getCaveID()));
 				results.add(ce);
 			}
 			rs.close();
@@ -745,6 +746,7 @@ public class MysqlConnector {
 				ce.setC14AnalysisUrlList(getC14AnalysisEntries(ce.getCaveID()));
 				ce.setC14DocumentList(getC14Documents(ce.getCaveID()));
 				ce.setCaveSketchList(getCaveSketchEntriesFromCave(ce.getCaveID()));
+				ce.setRelatedBibliographyList(getRelatedBibliographyFromCave(ce.getCaveID()));
 				results.add(ce);
 			}
 			rs.close();
@@ -779,6 +781,7 @@ public class MysqlConnector {
 				result.setC14AnalysisUrlList(getC14AnalysisEntries(result.getCaveID()));
 				result.setC14DocumentList(getC14Documents(result.getCaveID()));
 				result.setCaveSketchList(getCaveSketchEntriesFromCave(result.getCaveID()));
+				result.setRelatedBibliographyList(getRelatedBibliographyFromCave(result.getCaveID()));
 			}
 			rs.close();
 			stmt.close();
@@ -812,6 +815,7 @@ public class MysqlConnector {
 				ce.setC14AnalysisUrlList(getC14AnalysisEntries(ce.getCaveID()));
 				ce.setC14DocumentList(getC14Documents(ce.getCaveID()));
 				ce.setCaveSketchList(getCaveSketchEntriesFromCave(ce.getCaveID()));
+				ce.setRelatedBibliographyList(getRelatedBibliographyFromCave(ce.getCaveID()));
 				results.add(ce);
 			}
 			rs.close();
@@ -2489,6 +2493,7 @@ public class MysqlConnector {
 			}
 			writeC14AnalysisUrlEntry(caveEntry.getCaveID(), caveEntry.getC14AnalysisUrlList());
 			writeC14DocumentEntry(caveEntry.getCaveID(), caveEntry.getC14DocumentList());
+			writeCaveBibliographyRelation(caveEntry.getCaveID(), caveEntry.getRelatedBibliographyList());
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 			return false;
@@ -2555,6 +2560,7 @@ public class MysqlConnector {
 				}
 				writeC14AnalysisUrlEntry(newCaveID, caveEntry.getC14AnalysisUrlList());
 				writeC14DocumentEntry(newCaveID, caveEntry.getC14DocumentList());
+				writeCaveBibliographyRelation(caveEntry.getCaveID(), caveEntry.getRelatedBibliographyList());
 			}
 		} catch (SQLException ex) {
 			ex.printStackTrace();
@@ -3068,6 +3074,50 @@ public class MysqlConnector {
 		try {
 			relationStatement = dbc.prepareStatement("SELECT * FROM DepictionBibliographyRelation WHERE DepictionID=?");
 			relationStatement.setInt(1, depictionID);
+			ResultSet rs = relationStatement.executeQuery();
+			while (rs.next()) {
+				result.add(getAnnotatedBiblographybyID(rs.getInt("BibID")));
+			}
+			rs.close();
+			relationStatement.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	/**
+	 * @param depictionID
+	 * @param relatedBibliographyList
+	 */
+	private synchronized void writeCaveBibliographyRelation(int caveID, ArrayList<AnnotatedBiblographyEntry> relatedBibliographyList) {
+		Connection dbc = getConnection();
+		PreparedStatement relationStatement;
+
+		if (caveID > 0 && relatedBibliographyList.size() > 0) {
+			deleteEntry("DELETE FROM CaveBibliographyRelation WHERE CaveID=" + caveID);
+			try {
+				relationStatement = dbc.prepareStatement("INSERT INTO CaveBibliographyRelation VALUES (?, ?)");
+				for (AnnotatedBiblographyEntry entry : relatedBibliographyList) {
+					relationStatement.setInt(1, caveID);
+					relationStatement.setInt(2, entry.getAnnotatedBiblographyID());
+					relationStatement.executeUpdate();
+				}
+				relationStatement.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private ArrayList<AnnotatedBiblographyEntry> getRelatedBibliographyFromCave(int caveID) {
+		Connection dbc = getConnection();
+		PreparedStatement relationStatement;
+		ArrayList<AnnotatedBiblographyEntry> result = new ArrayList<AnnotatedBiblographyEntry>();
+
+		try {
+			relationStatement = dbc.prepareStatement("SELECT * FROM CaveBibliographyRelation WHERE CaveID=?");
+			relationStatement.setInt(1, caveID);
 			ResultSet rs = relationStatement.executeQuery();
 			while (rs.next()) {
 				result.add(getAnnotatedBiblographybyID(rs.getInt("BibID")));

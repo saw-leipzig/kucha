@@ -21,6 +21,7 @@ import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.util.Margins;
@@ -352,8 +353,14 @@ public class MainView implements IsWidget {
 				}
 			}
 		};
+		
+		Label footerLabel = new Label("\u00A9 Sächsische Akademie der Wissenschaften zu Leipzig");
+		footerLabel.setStyleName("footer");
     
     BorderLayoutData northData = new BorderLayoutData(70);
+    northData.setMargins(new Margins(5));
+    
+    BorderLayoutData southData = new BorderLayoutData(20);
     northData.setMargins(new Margins(5));
 
     BorderLayoutData westData = new BorderLayoutData(220);
@@ -377,6 +384,7 @@ public class MainView implements IsWidget {
     view.setNorthWidget(north, northData);
     view.setWestWidget(filterPanel, westData);
     view.setEastWidget(dataViewPanel, eastData);
+    view.setSouthWidget(footerLabel, southData);
     view.setCenterWidget(centerPanel, centerData);
     view.setStyleName("");
 
