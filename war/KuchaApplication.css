@@ -218,6 +218,8 @@ button.gwt-Button {
 div.frame-header {
 	background-color: #9dc9b8;
 	height: 20px;
+	color: #234534;
+	line-height: 20px;
 }
 
 div.footer {
@@ -228,4 +230,28 @@ div.footer {
 
 div.transparent {
 	opacity: 0.85;
+}
+
+div.startSearchButton {
+	background-image: url(icons/start-search.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.startSearchButtonOver {
+	background-image: url(icons/start-search-mo.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.searchActiveButton {
+	background-image: url(icons/start-search-disabled.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
 }

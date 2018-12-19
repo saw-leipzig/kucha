@@ -30,6 +30,7 @@ import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
@@ -87,7 +88,7 @@ public class AnnotatedBiblographySearchController extends AbstractSearchControll
 	 * @see de.cses.client.ui.AbstractSearchController#invokeSearch()
 	 */
 	@Override
-	public void invokeSearch() {
+	public void invokeSearch(ToolButton sourceToolButton) {
 		AnnotatedBibliographySearchEntry searchEntry = (AnnotatedBibliographySearchEntry) getFilter().getSearchEntry();
 
 		dbService.searchAnnotatedBibliography(searchEntry, new AsyncCallback<ArrayList<AnnotatedBiblographyEntry>>() {
@@ -95,6 +96,7 @@ public class AnnotatedBiblographySearchController extends AbstractSearchControll
 			@Override
 			public void onFailure(Throwable caught) {
 				caught.printStackTrace();
+				sourceToolButton.setEnabled(true);
 			}
 
 			@Override
@@ -103,6 +105,7 @@ public class AnnotatedBiblographySearchController extends AbstractSearchControll
 				for (AnnotatedBiblographyEntry abe : result) {
 					getResultView().addResult(new AnnotatedBiblographyView(abe));
 				}
+				sourceToolButton.setEnabled(true);
 			}
 		});
 	}

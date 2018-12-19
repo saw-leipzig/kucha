@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -52,7 +53,7 @@ public class DepictionSearchController extends AbstractSearchController {
 	 * @see de.cses.client.ui.AbstractSearchController#invokeSearch()
 	 */
 	@Override
-	public void invokeSearch() {
+	public void invokeSearch(ToolButton sourceToolButton) {
 		DepictionSearchEntry searchEntry = (DepictionSearchEntry) getFilter().getSearchEntry();
 
 		dbService.searchDepictions(searchEntry, new AsyncCallback<ArrayList<DepictionEntry>>() {
@@ -60,6 +61,7 @@ public class DepictionSearchController extends AbstractSearchController {
 			@Override
 			public void onFailure(Throwable caught) {
 				caught.printStackTrace();
+				sourceToolButton.setEnabled(true);
 			}
 
 			@Override
@@ -68,6 +70,7 @@ public class DepictionSearchController extends AbstractSearchController {
 				for (DepictionEntry de : result) {
 					getResultView().addResult(new DepictionView(de));
 				}
+				sourceToolButton.setEnabled(true);
 			}
 		});
 	}
