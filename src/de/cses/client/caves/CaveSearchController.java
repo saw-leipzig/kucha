@@ -53,7 +53,7 @@ public class CaveSearchController extends AbstractSearchController {
 	 * @see de.cses.client.ui.AbstractSearchController#invokeSearch()
 	 */
 	@Override
-	public void invokeSearch(ToolButton sourceToolButton) {
+	public void invokeSearch() {
 		CaveSearchEntry searchEntry = (CaveSearchEntry) getFilter().getSearchEntry();
 		
 		dbService.searchCaves(searchEntry, new AsyncCallback<ArrayList<CaveEntry>>() {
@@ -78,7 +78,7 @@ public class CaveSearchController extends AbstractSearchController {
 			@Override
 			public void onFailure(Throwable caught) {
 				caught.printStackTrace();
-				sourceToolButton.setEnabled(true);
+				getResultView().setSearchEnabled(true);
 			}
 
 			@Override
@@ -94,7 +94,7 @@ public class CaveSearchController extends AbstractSearchController {
 				for (CaveEntry ce : result) {
 					getResultView().addResult(new CaveView(ce));	
 				}
-				sourceToolButton.setEnabled(true);
+				getResultView().setSearchEnabled(true);
 			}
 
 		});

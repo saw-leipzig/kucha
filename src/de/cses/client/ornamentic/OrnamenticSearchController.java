@@ -53,7 +53,7 @@ public class OrnamenticSearchController extends AbstractSearchController {
 	 * @see de.cses.client.ui.AbstractSearchController#invokeSearch()
 	 */
 	@Override
-	public void invokeSearch(ToolButton sourceToolButton) {
+	public void invokeSearch() {
 		OrnamenticSearchEntry searchEntry = (OrnamenticSearchEntry) getFilter().getSearchEntry();
 		
 		dbService.searchOrnaments(searchEntry, new AsyncCallback<ArrayList<OrnamentEntry>>() {
@@ -61,7 +61,7 @@ public class OrnamenticSearchController extends AbstractSearchController {
 			@Override
 			public void onFailure(Throwable caught) {
 				caught.printStackTrace();
-				sourceToolButton.setEnabled(true);
+				getResultView().setSearchEnabled(true);
 			}
 
 			@Override
@@ -70,7 +70,7 @@ public class OrnamenticSearchController extends AbstractSearchController {
 				for (OrnamentEntry de : result) {
 					getResultView().addResult(new OrnamenticView(de));
 				}
-				sourceToolButton.setEnabled(true);
+				getResultView().setSearchEnabled(true);
 			}
 		});
 	}

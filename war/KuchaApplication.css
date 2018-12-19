@@ -223,7 +223,11 @@ div.frame-header {
 }
 
 div.footer {
-	background-color: #9dc9b8;
+	background-color: #9dc9b8; 
+	color: #234534;
+	font-family: tahoma,arial,verdana,sans-serif;
+	font-size: 10px;
+	font-weight: normal;
 	opacity: 0.85;
 	text-align: right;
 }
@@ -250,6 +254,22 @@ div.startSearchButtonOver {
 
 div.searchActiveButton {
 	background-image: url(icons/start-search-disabled.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.loginButton {
+	background-image: url(icons/login-activ2.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.loginButtonOver {
+	background-image: url(icons/login-mo.png);
 	width: 20px;
 	height: 20px;
 	background-repeat: no-repeat;

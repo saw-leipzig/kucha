@@ -53,7 +53,7 @@ public abstract class AbstractSearchController extends ToggleButton {
 			public void onSelect(SelectEvent event) {
 				Util.doLogging("Search Controller: calling invokeSearch()");
 				((ToolButton)event.getSource()).setEnabled(false);
-				invokeSearch((ToolButton)event.getSource());
+				invokeSearch();
 			}
 		});
 		this.resultView.addPlusSelectHandler(new SelectHandler() {
@@ -89,7 +89,7 @@ public abstract class AbstractSearchController extends ToggleButton {
 	 * into some implementations in classes extending AbstractSearchController.
 	 * @param sourceToolButton 
 	 */
-	public abstract void invokeSearch(ToolButton sourceToolButton);
+	public abstract void invokeSearch();
 
 	/**
 	 * This abstract method needs to be implemented for each controller. It should open the corresponding editor in a mode

@@ -54,7 +54,7 @@ public class ImageSearchController extends AbstractSearchController {
 	 * @see de.cses.client.ui.AbstractSearchController#invokeSearch()
 	 */
 	@Override
-	public void invokeSearch(ToolButton sourceToolButton) {
+	public void invokeSearch() {
 		ImageSearchEntry searchEntry = (ImageSearchEntry) getFilter().getSearchEntry();
 
 		dbService.searchImages(searchEntry, new AsyncCallback<ArrayList<ImageEntry>>() {
@@ -65,13 +65,13 @@ public class ImageSearchController extends AbstractSearchController {
 				for (ImageEntry ie : result) {
 					getResultView().addResult(new ImageView(ie));
 				}
-				sourceToolButton.setEnabled(true);
+				getResultView().setSearchEnabled(true);
 			}
 
 			@Override
 			public void onFailure(Throwable caught) {
 				caught.printStackTrace();
-				sourceToolButton.setEnabled(true);
+				getResultView().setSearchEnabled(true);
 			}
 		});
 	}

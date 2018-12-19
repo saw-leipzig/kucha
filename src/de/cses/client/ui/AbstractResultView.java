@@ -49,7 +49,10 @@ public abstract class AbstractResultView extends Portlet {
 	
 	protected static final int MAX_HEIGHT = 700;
 	protected static final int MIN_HEIGHT = 300;
-	private ToolButton searchToolButton, saveToolButton, plusToolButton, resetButton;
+	private ToolButton searchToolButton;
+	private ToolButton saveToolButton;
+	private ToolButton plusToolButton;
+	private ToolButton resetButton;
 	private FlowLayoutContainer resultContainer;
 	private MarginData resultLayoutData;
 	private String title;
@@ -127,6 +130,14 @@ public abstract class AbstractResultView extends Portlet {
 		resultLayoutData = new MarginData(10);
 		this.add(resultContainer);
 		
+	}
+	
+	/**
+	 * 
+	 * @param enable
+	 */
+	public void setSearchEnabled(boolean enabled) {
+		searchToolButton.setEnabled(enabled);
 	}
 
 	/**

@@ -53,7 +53,7 @@ public class DepictionSearchController extends AbstractSearchController {
 	 * @see de.cses.client.ui.AbstractSearchController#invokeSearch()
 	 */
 	@Override
-	public void invokeSearch(ToolButton sourceToolButton) {
+	public void invokeSearch() {
 		DepictionSearchEntry searchEntry = (DepictionSearchEntry) getFilter().getSearchEntry();
 
 		dbService.searchDepictions(searchEntry, new AsyncCallback<ArrayList<DepictionEntry>>() {
@@ -61,7 +61,7 @@ public class DepictionSearchController extends AbstractSearchController {
 			@Override
 			public void onFailure(Throwable caught) {
 				caught.printStackTrace();
-				sourceToolButton.setEnabled(true);
+				getResultView().setSearchEnabled(true);
 			}
 
 			@Override
@@ -70,7 +70,7 @@ public class DepictionSearchController extends AbstractSearchController {
 				for (DepictionEntry de : result) {
 					getResultView().addResult(new DepictionView(de));
 				}
-				sourceToolButton.setEnabled(true);
+				getResultView().setSearchEnabled(true);
 			}
 		});
 	}

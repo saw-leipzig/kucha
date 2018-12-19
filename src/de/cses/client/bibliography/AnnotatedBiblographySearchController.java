@@ -88,7 +88,7 @@ public class AnnotatedBiblographySearchController extends AbstractSearchControll
 	 * @see de.cses.client.ui.AbstractSearchController#invokeSearch()
 	 */
 	@Override
-	public void invokeSearch(ToolButton sourceToolButton) {
+	public void invokeSearch() {
 		AnnotatedBibliographySearchEntry searchEntry = (AnnotatedBibliographySearchEntry) getFilter().getSearchEntry();
 
 		dbService.searchAnnotatedBibliography(searchEntry, new AsyncCallback<ArrayList<AnnotatedBiblographyEntry>>() {
@@ -96,7 +96,7 @@ public class AnnotatedBiblographySearchController extends AbstractSearchControll
 			@Override
 			public void onFailure(Throwable caught) {
 				caught.printStackTrace();
-				sourceToolButton.setEnabled(true);
+				getResultView().setSearchEnabled(true);
 			}
 
 			@Override
@@ -105,7 +105,7 @@ public class AnnotatedBiblographySearchController extends AbstractSearchControll
 				for (AnnotatedBiblographyEntry abe : result) {
 					getResultView().addResult(new AnnotatedBiblographyView(abe));
 				}
-				sourceToolButton.setEnabled(true);
+				getResultView().setSearchEnabled(true);
 			}
 		});
 	}
