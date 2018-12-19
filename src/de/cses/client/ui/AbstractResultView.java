@@ -16,11 +16,17 @@ package de.cses.client.ui;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.resources.client.ClientBundle.Source;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.widget.core.client.Portlet;
+import com.sencha.gxt.widget.core.client.button.IconButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
@@ -49,7 +55,7 @@ public abstract class AbstractResultView extends Portlet {
 	private String title;
 	private ToolButton minTB;
 	private ToolButton maxTB;
-
+	
 	public AbstractResultView(String title) {
 		super();
 		this.title = title;
@@ -57,8 +63,10 @@ public abstract class AbstractResultView extends Portlet {
 		setCollapsible(true);
 		setAnimCollapse(true);
 		setHeight(MIN_HEIGHT);
+    getHeader().setStylePrimaryName("frame-header");
+    addStyleName("transparent");
 		
-		searchToolButton = new ToolButton(ToolButton.SEARCH);
+		searchToolButton = new ToolButton(new IconConfig("startSearchButton", "startSearchButtonOver", "searchActiveButton"));
 		searchToolButton.setToolTip(Util.createToolTip("start search"));
 		getHeader().addTool(searchToolButton);
 		

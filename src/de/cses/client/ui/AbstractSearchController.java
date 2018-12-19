@@ -16,6 +16,7 @@ package de.cses.client.ui;
 import java.util.ArrayList;
 
 import com.sencha.gxt.widget.core.client.button.ToggleButton;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
@@ -51,7 +52,8 @@ public abstract class AbstractSearchController extends ToggleButton {
 			@Override
 			public void onSelect(SelectEvent event) {
 				Util.doLogging("Search Controller: calling invokeSearch()");
-				invokeSearch();
+				((ToolButton)event.getSource()).setEnabled(false);
+				invokeSearch((ToolButton)event.getSource());
 			}
 		});
 		this.resultView.addPlusSelectHandler(new SelectHandler() {
@@ -85,8 +87,9 @@ public abstract class AbstractSearchController extends ToggleButton {
 	 * This abstract method need to be implemented for each controller. It should use the relatedFilter list to compile an SQL
 	 * clause and then search for the data and display it in the resultView. For an example how it works, take a look
 	 * into some implementations in classes extending AbstractSearchController.
+	 * @param sourceToolButton 
 	 */
-	public abstract void invokeSearch();
+	public abstract void invokeSearch(ToolButton sourceToolButton);
 
 	/**
 	 * This abstract method needs to be implemented for each controller. It should open the corresponding editor in a mode
