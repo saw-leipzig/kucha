@@ -1011,9 +1011,9 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 
 
 	@Override
-	public void imageSelected(ImageEntry entry) {
-		if (entry.getImageID() != 0) {
-			imageEntryList.add(entry);
+	public void imageSelected(ArrayList<ImageEntry> entryList) {
+		for (ImageEntry ie : entryList) {
+			imageEntryList.add(ie);
 		}
 		imageSelectionDialog.hide();
 	}

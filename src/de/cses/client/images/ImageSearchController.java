@@ -19,6 +19,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
@@ -64,11 +65,13 @@ public class ImageSearchController extends AbstractSearchController {
 				for (ImageEntry ie : result) {
 					getResultView().addResult(new ImageView(ie));
 				}
+				getResultView().setSearchEnabled(true);
 			}
 
 			@Override
 			public void onFailure(Throwable caught) {
 				caught.printStackTrace();
+				getResultView().setSearchEnabled(true);
 			}
 		});
 	}

@@ -1260,9 +1260,9 @@ public class DepictionEditor extends AbstractEditor {
 		imageSelector = new ImageSelector(new ImageSelectorListener() {
 
 			@Override
-			public void imageSelected(ImageEntry imgEntry) {
-				if ((imgEntry != null) && (imgEntry.getImageID() != 0)) {
-					imageEntryLS.add(imgEntry);
+			public void imageSelected(ArrayList<ImageEntry> imgEntryList) {
+				for (ImageEntry imgEntry : imgEntryList) {
+					imageEntryLS.add(imgEntry); // TODO check if double adding possible and avoid!
 				}
 				imageSelectionDialog.hide();
 			}

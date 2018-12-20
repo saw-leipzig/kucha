@@ -531,6 +531,12 @@ public class MysqlConnector {
 			e.printStackTrace();
 			return null;
 		}
+		if (where.isEmpty() && results.size() > 100) {
+			// limiting the number of search results to avoid slowing down the system
+			while (results.size() > 100) {
+				results.remove(0);
+			}
+		}
 		return results;	
 	}
 

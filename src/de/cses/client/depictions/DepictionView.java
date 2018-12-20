@@ -89,21 +89,18 @@ public class DepictionView extends AbstractView {
 	private void refreshHTML() {
 		StaticTables st = StaticTables.getInstance();
 		CaveEntry ce = depictionEntry.getCave();
-		DistrictEntry de = null;
-		SiteEntry se = null;
-		de = st.getDistrictEntries().get(ce.getDistrictID());
-		if (de != null) {
-			se = st.getSiteEntries().get(de.getSiteID());
-		}
+		DistrictEntry de = (ce != null && ce.getDistrictID() > 0) ? st.getDistrictEntries().get(ce.getDistrictID()) : null;
+		SiteEntry se = (ce != null && ce.getSiteID() > 0) ? st.getSiteEntries().get(ce.getSiteID()) : null;
 		String siteDistrictInformation = (se != null ? se.getName() : "") + (de != null ? (se != null ? " / " : "") + de.getName() : "");
 		String wallLocation = "";
+		String officialCaveNumberStr = (se != null && ce != null) ? se.getShortName() + " " + ce.getOfficialNumber() : "";
 		if (depictionEntry.getWallID() > 0) {
 			WallLocationEntry wle = st.getWallLocationEntries().get(depictionEntry.getWallID());
 			wallLocation = wle.getLabel();
 		}
 		setHTML(dvTemplates.view(
 				UriUtils.fromString("resource?imageID=" + depictionEntry.getMasterImageID() + "&thumb=120" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), 
-				st.getSiteEntries().get(ce.getSiteID()).getShortName() + " " + ce.getOfficialNumber(), 
+				officialCaveNumberStr, 
 				ce != null && ce.getHistoricName() != null ? ce.getHistoricName() : "",
 				depictionEntry.getShortName() != null ? depictionEntry.getShortName() : "",
 				siteDistrictInformation,

@@ -18,9 +18,11 @@ import java.util.ArrayList;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.Util;
 import de.cses.client.ornamentic.OrnamenticView;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.client.ui.AbstractResultView;
@@ -60,14 +62,18 @@ public class DepictionSearchController extends AbstractSearchController {
 			@Override
 			public void onFailure(Throwable caught) {
 				caught.printStackTrace();
+				getResultView().setSearchEnabled(true);
 			}
 
 			@Override
 			public void onSuccess(ArrayList<DepictionEntry> result) {
 				getResultView().reset();
 				for (DepictionEntry de : result) {
+					Util.doLogging("adding to view DepictionID = " + de.getDepictionID());
 					getResultView().addResult(new DepictionView(de));
+					Util.doLogging("done");
 				}
+				getResultView().setSearchEnabled(true);
 			}
 		});
 	}

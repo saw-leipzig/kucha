@@ -30,6 +30,7 @@ import com.sencha.gxt.dnd.core.client.DropTarget;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.Portlet;
+import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
@@ -267,7 +268,7 @@ public class MainView implements IsWidget {
 			}
 		});
 
-    ToolButton loginTB = new ToolButton(ToolButton.GEAR);
+    ToolButton loginTB = new ToolButton(new IconConfig("loginButton", "loginButtonOver"));
     loginTB.setToolTip(Util.createToolTip("User Login"));
     loginTB.addSelectHandler(new SelectHandler() {
 			

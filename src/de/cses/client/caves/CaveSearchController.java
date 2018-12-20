@@ -19,6 +19,7 @@ import java.util.Comparator;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -77,6 +78,7 @@ public class CaveSearchController extends AbstractSearchController {
 			@Override
 			public void onFailure(Throwable caught) {
 				caught.printStackTrace();
+				getResultView().setSearchEnabled(true);
 			}
 
 			@Override
@@ -92,6 +94,7 @@ public class CaveSearchController extends AbstractSearchController {
 				for (CaveEntry ce : result) {
 					getResultView().addResult(new CaveView(ce));	
 				}
+				getResultView().setSearchEnabled(true);
 			}
 
 		});
