@@ -3,6 +3,7 @@
 
 body {
 	background-image: url(backgroundKIS.jpg);
+	background-size: cover;
 }
 
 h1 {

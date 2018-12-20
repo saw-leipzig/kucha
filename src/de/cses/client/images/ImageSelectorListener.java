@@ -13,10 +13,12 @@
  */
 package de.cses.client.images;
 
+import java.util.ArrayList;
+
 import de.cses.shared.ImageEntry;
 
 public interface ImageSelectorListener {
 	
-	public void imageSelected(ImageEntry entry);
+	public void imageSelected(ArrayList<ImageEntry> entryList);
 
 }

@@ -33,6 +33,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
+import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.core.client.XTemplates.XTemplate;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.data.shared.LabelProvider;
@@ -42,6 +43,7 @@ import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
+import com.sencha.gxt.widget.core.client.ListViewSelectionModel;
 import com.sencha.gxt.widget.core.client.Window;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
@@ -76,10 +78,10 @@ public class ImageSelector implements IsWidget {
 	private FlowLayoutContainer imageContainer;
 	private ImageFilter imgFilter;
 	private FramedPanel mainPanel = null;
-	private PopupPanel zoomPanel;
-	protected String zoomImageUri;
-	protected Window loadZoomInfoWindow;
-	private Image zoomImage;
+//	private PopupPanel zoomPanel;
+//	protected String zoomImageUri;
+//	protected Window loadZoomInfoWindow;
+//	private Image zoomImage;
 
 	interface ImageProperties extends PropertyAccess<ImageEntry> {
 		ModelKeyProvider<ImageEntry> imageID();
@@ -138,9 +140,9 @@ public class ImageSelector implements IsWidget {
 		imageContainer.setSize("600px", "600px");
 		imageContainer.setScrollMode(ScrollMode.AUTO);
 
-		zoomPanel = new PopupPanel(true);
-		zoomPanel.add(imageContainer);
-		loadZoomInfoWindow = new Window();
+//		zoomPanel = new PopupPanel(true);
+//		zoomPanel.add(imageContainer);
+//		loadZoomInfoWindow = new Window();
 
 		
 		imgFilter = new ImageFilter("Selector Filter");
@@ -164,15 +166,18 @@ public class ImageSelector implements IsWidget {
 
 		}));
 
-		imageListView.getSelectionModel().addSelectionChangedHandler(new SelectionChangedHandler<ImageEntry>() {
+		imageListView.getSelectionModel().setSelectionMode(SelectionMode.MULTI);
 
-			@Override
-			public void onSelectionChanged(SelectionChangedEvent<ImageEntry> event) {
-				ImageEntry item = event.getSelection().get(0);
-				zoomImageUri = "/resource?imageID=" + item.getImageID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri();
-			}
-		});
-
+		// we need to remove this due to multiple seleciton!!
+//		imageListView.getSelectionModel().addSelectionChangedHandler(new SelectionChangedHandler<ImageEntry>() {
+//
+//			@Override
+//			public void onSelectionChanged(SelectionChangedEvent<ImageEntry> event) {
+//				ImageEntry item = event.getSelection().get(0);
+//				zoomImageUri = "/resource?imageID=" + item.getImageID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri();
+//			}
+//		});
+//
 		imageListView.setSize("1.0", "1.0");
 
 		ListField<ImageEntry, ImageEntry> lf = new ListField<ImageEntry, ImageEntry>(imageListView);
@@ -180,26 +185,27 @@ public class ImageSelector implements IsWidget {
 		lf.setSize("1.0", "1.0");
 
 		
-		zoomImage = Image.wrap( Document.get().createImageElement() );
-		zoomImage.addLoadHandler(new LoadHandler() {
-			
-			@Override
-			public void onLoad(LoadEvent event) {
-				loadZoomInfoWindow.hide();
-			}
-		});
-		imageContainer.add(zoomImage);
+//		zoomImage = Image.wrap( Document.get().createImageElement() );
+//		zoomImage.addLoadHandler(new LoadHandler() {
+//			
+//			@Override
+//			public void onLoad(LoadEvent event) {
+//				loadZoomInfoWindow.hide();
+//			}
+//		});
+//		imageContainer.add(zoomImage);
 
 		TextButton selectButton = new TextButton("Select");
 
 		selectButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-				ImageEntry ie = imageListView.getSelectionModel().getSelectedItem();
-				if (ie != null) {
-					for (ImageSelectorListener listener : selectorListener) {
-						listener.imageSelected(ie);
-					}
+				ArrayList<ImageEntry> selectedEntries = new ArrayList<ImageEntry>();
+				for (ImageEntry ie : imageListView.getSelectionModel().getSelectedItems()) {
+					selectedEntries.add(ie);
+				}
+				for (ImageSelectorListener listener : selectorListener) {
+					listener.imageSelected(selectedEntries);
 				}
 			}
 		});
@@ -271,19 +277,19 @@ public class ImageSelector implements IsWidget {
 			}
 		});
 
-		ToolButton zoomTB = new ToolButton(ToolButton.MAXIMIZE);
-		zoomTB.setToolTip(Util.createToolTip("View selected image in full.", "A new tab will be opened."));
-		zoomTB.addSelectHandler(new SelectHandler() {
-			@Override
-			public void onSelect(SelectEvent event) {
-				com.google.gwt.user.client.Window.open(zoomImageUri,"_blank",null);
-			}
-		});
+//		ToolButton zoomTB = new ToolButton(ToolButton.MAXIMIZE);
+//		zoomTB.setToolTip(Util.createToolTip("View selected image in full.", "A new tab will be opened."));
+//		zoomTB.addSelectHandler(new SelectHandler() {
+//			@Override
+//			public void onSelect(SelectEvent event) {
+//				com.google.gwt.user.client.Window.open(zoomImageUri,"_blank",null);
+//			}
+//		});
 
 		FramedPanel imageListViewFP = new FramedPanel();
 		imageListViewFP.setHeading("Images");
 		imageListViewFP.add(lf);
-		imageListViewFP.addTool(zoomTB);
+//		imageListViewFP.addTool(zoomTB);
 		imageListViewFP.addTool(infoTB);
 		hlc.add(imageListViewFP, new HorizontalLayoutData(.6, 1.0));
 
