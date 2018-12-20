@@ -147,12 +147,7 @@ public class ImageSelector implements IsWidget {
 		
 		imgFilter = new ImageFilter("Selector Filter");
 		
-		imageListView = new ListView<ImageEntry, ImageEntry>(imageEntryList, new IdentityValueProvider<ImageEntry>() {
-			@Override
-			public void setValue(ImageEntry object, ImageEntry value) {
-			}
-		});
-		imageListView.setCell(new SimpleSafeHtmlCell<ImageEntry>(new AbstractSafeHtmlRenderer<ImageEntry>() {
+		imageListView = new ListView<ImageEntry, ImageEntry>(imageEntryList, new IdentityValueProvider<ImageEntry>(), new SimpleSafeHtmlCell<ImageEntry>(new AbstractSafeHtmlRenderer<ImageEntry>() {
 			final ImageViewTemplates imageViewTemplates = GWT.create(ImageViewTemplates.class);
 
 			public SafeHtml render(ImageEntry item) {
@@ -165,8 +160,7 @@ public class ImageSelector implements IsWidget {
 			}
 
 		}));
-
-		imageListView.getSelectionModel().setSelectionMode(SelectionMode.MULTI);
+		imageListView.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
 
 		// we need to remove this due to multiple seleciton!!
 //		imageListView.getSelectionModel().addSelectionChangedHandler(new SelectionChangedHandler<ImageEntry>() {
@@ -235,7 +229,6 @@ public class ImageSelector implements IsWidget {
 		resetButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-				
 				imageEntryList.clear();
 			}
 		});
@@ -320,9 +313,7 @@ public class ImageSelector implements IsWidget {
 				for (ImageEntry ie : result) {
 					imageEntryList.add(ie);
 				}
-				if (!result.isEmpty()) {
-					imageListView.getSelectionModel().select(0, false);
-				}
+				imageListView.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
 			}
 		});
 	}
