@@ -52,7 +52,7 @@ public abstract class AbstractSearchController extends ToggleButton {
 			@Override
 			public void onSelect(SelectEvent event) {
 				Util.doLogging("Search Controller: calling invokeSearch()");
-				((ToolButton)event.getSource()).setEnabled(false);
+				getResultView().setSearchEnabled(false);
 				invokeSearch();
 			}
 		});

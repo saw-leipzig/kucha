@@ -136,8 +136,8 @@ public abstract class AbstractResultView extends Portlet {
 	 * 
 	 * @param enable
 	 */
-	public void setSearchEnabled(boolean enabled) {
-		searchToolButton.setEnabled(enabled);
+	public void setSearchEnabled(boolean enable) {
+		searchToolButton.setEnabled(enable);
 	}
 
 	/**

@@ -212,7 +212,7 @@ details.abstract {
 }
 
 button.gwt-Button {
-	background-color: #91A78F
+	background-color: #9dc9b8
 }
 
 div.frame-header {
@@ -234,6 +234,7 @@ div.footer {
 
 div.transparent {
 	opacity: 0.85;
+	color: #234534;
 }
 
 div.startSearchButton {
