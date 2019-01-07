@@ -713,7 +713,7 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 			}
 		});
 
-		ToolButton renameComponentButton = new ToolButton(ToolButton.PLUS);
+		ToolButton renameComponentButton = new ToolButton(ToolButton.REFRESH);
 		renameComponentButton.setToolTip(Util.createToolTip("Rename Component", "Select entry and click here to edit."));
 		
 		header.addTool(renameComponentButton);
@@ -728,7 +728,7 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 				else {
 				PopupPanel renameComponentPopup = new PopupPanel();
 				FramedPanel renamecomponentFramedPanel = new FramedPanel();
-				renamecomponentFramedPanel.setHeading("New Component");
+				renamecomponentFramedPanel.setHeading("Rename Component");
 
 				ToolButton saveRenameComponent = new ToolButton(ToolButton.SAVE);
 				saveRenameComponent.setToolTip(Util.createToolTip("save"));
