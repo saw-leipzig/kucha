@@ -2300,6 +2300,7 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery(mysqlquerry);
 			while (rs.next()) {
+				System.err.println("Ergebnis gefunden");
 				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
 						//rs.getString("Annotation"),
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
@@ -2322,6 +2323,8 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery(mysqlquerry);
 			while (rs.next()) {
+				System.err.println("Ergebnis gefunden");
+
 				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
 						//rs.getString("Annotation"),
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
@@ -2350,6 +2353,8 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery(mysqlquerry);
 			while (rs.next()) {
+				System.err.println("Ergebnis gefunden");
+
 				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
 						//rs.getString("Annotation"),
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
@@ -2371,6 +2376,8 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery(mysqlquerry);
 			while (rs.next()) {
+				System.err.println("Ergebnis gefunden");
+
 				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
 						//rs.getString("Annotation"),
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
@@ -2398,6 +2405,8 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery(mysqlquerry);
 			while (rs.next()) {
+				System.err.println("Ergebnis gefunden");
+
 				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
 						//rs.getString("Annotation"),
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
@@ -2426,6 +2435,8 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery(mysqlquerry);
 			while (rs.next()) {
+				System.err.println("Ergebnis gefunden");
+
 				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
 						//rs.getString("Annotation"),
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
@@ -2455,6 +2466,8 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery(mysqlquerry);
 			while (rs.next()) {
+				System.err.println("Ergebnis gefunden");
+
 				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
 						//rs.getString("Annotation"),
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
@@ -2477,6 +2490,8 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery(mysqlquerry);
 			while (rs.next()) {
+				System.err.println("Ergebnis gefunden");
+
 				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
 						//rs.getString("Annotation"),
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
@@ -2504,6 +2519,8 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery(mysqlquerry);
 			while (rs.next()) {
+				System.err.println("Ergebnis gefunden");
+
 				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
 						//rs.getString("Annotation"),
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
@@ -2526,6 +2543,8 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery(mysqlquerry);
 			while (rs.next()) {
+				System.err.println("Ergebnis gefunden");
+
 				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
 						//rs.getString("Annotation"),
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
@@ -2549,6 +2568,8 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery(mysqlquerry);
 			while (rs.next()) {
+				System.err.println("Ergebnis gefunden");
+
 				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
 						//rs.getString("Annotation"),
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
@@ -2578,6 +2599,8 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery(mysqlquerry);
 			while (rs.next()) {
+				System.err.println("Ergebnis gefunden");
+
 				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
 						//rs.getString("Annotation"),
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
@@ -2600,6 +2623,8 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery(mysqlquerry);
 			while (rs.next()) {
+				System.err.println("Ergebnis gefunden");
+
 				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
 						//rs.getString("Annotation"),
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
@@ -2629,6 +2654,8 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery(mysqlquerry);
 			while (rs.next()) {
+				System.err.println("Ergebnis gefunden");
+
 				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
 						//rs.getString("Annotation"),
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
@@ -2651,6 +2678,8 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery(mysqlquerry);
 			while (rs.next()) {
+				System.err.println("Ergebnis gefunden");
+
 				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
 						//rs.getString("Annotation"),
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
@@ -2673,6 +2702,8 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery(mysqlquerry);
 			while (rs.next()) {
+				System.err.println("Ergebnis gefunden");
+
 				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
 						//rs.getString("Annotation"),
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
@@ -2690,13 +2721,15 @@ public class MysqlConnector {
 		}
 			
 		
-		
+		System.err.println("die anzahl der gefundenen elemente ist vor der sortierung von liste 0: "+ listen.get(0).size());
+
 		// Teilmengen finden aller Listen
 		for(int i = 1; i <listen.size(); i++) {
 			listen.get(0).retainAll(listen.get(i));
 		}
-		
+		System.err.println("die anzahl der gefundenen elemente ist nach der sortierung: "+ listen.get(0).size());
 		return listen.get(0);
+		
 	}
 
 
