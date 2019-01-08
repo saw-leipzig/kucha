@@ -127,7 +127,7 @@ public class OrnamenticFilter  extends AbstractFilter{
 	interface RelatedOrnamentsProperties extends PropertyAccess<OrnamentEntry> {
 		ModelKeyProvider<OrnamentEntry> ornamentID();
 		LabelProvider<OrnamentEntry> uniqueID();
-		ValueProvider<OrnamentEntry, String> name();
+		ValueProvider<OrnamentEntry, String> code();
 	}
 	interface PositionProperties extends PropertyAccess<OrnamentPositionEntry> {
 		ModelKeyProvider<OrnamentPositionEntry> ornamentPositionID();
@@ -162,8 +162,8 @@ public class OrnamenticFilter  extends AbstractFilter{
 		SafeHtml districtsLabel(String name);
 	}
 	interface RelatedOrnamentsViewTemplates extends XTemplates {
-		@XTemplate("<div>{name}</div>")
-		SafeHtml relatedOrnamentsLabel(String name);
+		@XTemplate("<div>{code}</div>")
+		SafeHtml relatedOrnamentsLabel(String code);
 	}
 	interface IconographyViewTemplates extends XTemplates {
 		@XTemplate("<div>{name}</div>")
