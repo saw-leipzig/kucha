@@ -2286,7 +2286,7 @@ public class MysqlConnector {
 		ArrayList<ArrayList<OrnamentEntry>> listen = new ArrayList<ArrayList<OrnamentEntry>>();
 		
 
-		if(search.getCaves() != null) {
+		if(search.getCaves().size() > 0) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
 			String mysqlquerry = "SELECT * FROM Ornaments JOIN CaveOrnamentRelation ON Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID WHERE CaveID IN(";
 			for(int i = 0; search.getCaves().size() > i; i++) {
@@ -2336,7 +2336,7 @@ public class MysqlConnector {
 			}
 		}
 		
-		if(search.getComponents() != null) {
+		if(search.getComponents().size() > 0) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
 			String mysqlquerry = "SELECT * FROM Ornaments JOIN OrnamentComponentRelation ON Ornaments.OrnamentID = OrnamentComponentRelation.OrnamentID WHERE OrnamentComponentID IN(";
 			for(int i = 0; search.getComponents().size() > i; i++) {
@@ -2384,7 +2384,7 @@ public class MysqlConnector {
 				e.printStackTrace();
 			}
 		}
-		if(search.getDistricts().size() != 0) {
+		if(search.getDistricts().size() > 0) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
 			String mysqlquerry = "SELECT * FROM (Ornaments JOIN CaveOrnamentRelation ON Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID) JOIN Caves ON Caves.CaveID = CaveOrnamentRelation.CaveID WHERE Caves.DistrictID IN(";
 			for(int i = 0; search.getDistricts().size() > i; i++) {
@@ -2412,7 +2412,7 @@ public class MysqlConnector {
 			}
 			listen.add(result);
 		}
-		if(search.getFunction().size()!=0) {
+		if(search.getFunction().size()>0) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
 			String mysqlquerry = "SELECT * FROM Ornaments JOIN (OrnamentCaveRelation ON Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID) JOIN OrnamentCaveWallRelation ON OrnamentCaveWallRelation.CaveOrnamentRelationID = CaveOrnamentRelation.CaveOrnamentRelationID WHERE FuctionID IN(";
 			for(int i = 0; search.getFunction().size() > i; i++) {
@@ -2441,7 +2441,7 @@ public class MysqlConnector {
 			listen.add(result);
 			
 		}
-		if(search.getIconographys().size()!= 0) {
+		if(search.getIconographys().size()> 0) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
 			String mysqlquerry = "SELECT * FROM (Ornaments JOIN CaveOrnamentRelation ON Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID) JOIN OrnamentCaveIconographyRelation ON OrnamentCaveIconographyRelation.OrnamentCaveRelationID = CaveOrnamentRelation.CaveOrnamentRelationID WHERE IconographyID IN (";
 			for(int i = 0; search.getIconographys().size() > i; i++) {
@@ -2490,7 +2490,7 @@ public class MysqlConnector {
 				e.printStackTrace();
 			}
 		}
-		if(search.getPosition()!= null) {
+		if(search.getPosition().size()> 0) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
 			String mysqlquerry = "SELECT * FROM Ornaments JOIN (OrnamentCaveRelation ON Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID) JOIN OrnamentCaveWallRelation ON OrnamentCaveWallRelation.CaveOrnamentRelationID = CaveOrnamentRelation.CaveOrnamentRelationID WHERE PositionID =";
 			for(int i = 0; search.getPosition().size() > i; i++) {
@@ -2564,7 +2564,7 @@ public class MysqlConnector {
 			listen.add(result);
 
 		}
-		if(search.getRelatedOrnaments().size()!= 0) {
+		if(search.getRelatedOrnaments().size()> 0) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
 			String mysqlquerry = "SELECT * FROM (Ornaments JOIN CaveOrnamentsRelation on Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID) JOIN RelatedOrnamentsRelation ON CaveOrnamentRelation.CaveOrnamentRelationID = RelatedOrnamentsRelation.CaveOrnamentRelationID WHERE OrnamentID IN(";
 			for(int i = 0; search.getComponents().size() > i; i++) {
@@ -2615,7 +2615,7 @@ public class MysqlConnector {
 			listen.add(result);
 
 		}
-		if(search.getSecondarypatterns().size()!= 0) {
+		if(search.getSecondarypatterns().size()> 0) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
 			String mysqlquerry = "SELECT * FROM Ornaments JOIN InnerSecondaryPatternRelation ON Ornaments.OrnamentID = InnerSecondaryPatternRelation.OrnamentID WHERE InnerSecID IN(";
 			for(int i = 0; search.getSecondarypatterns().size() > i; i++) {
