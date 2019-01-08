@@ -332,7 +332,7 @@ public class OrnamenticFilter  extends AbstractFilter{
 
 			@Override
 			public void onSuccess(ArrayList<InnerSecondaryPatternsEntry> result) {
-				ornamentComponentsEntryList.clear();
+				innerSecondaryPatternsEntryList.clear();
 				for (InnerSecondaryPatternsEntry pe : result) {
 					innerSecondaryPatternsEntryList.add(pe);
 				}
@@ -485,7 +485,7 @@ public class OrnamenticFilter  extends AbstractFilter{
 		innerSecPanel.setHeaderVisible(true);
 		innerSecPanel.setToolTip(Util.createToolTip("Search for inner secondary patterns.", "Select one or more elements to search for Ornamentations."));
 		innerSecPanel.setHeading("InnerSecondary Pattern");
-		innerSecPanel.add(ornamentComponentsSelectionLV);
+		innerSecPanel.add(innerSecondaryPatternsSelectionLV);
 		
 		ToolButton resetInnerSecPanelTB = new ToolButton(ToolButton.REFRESH);
 		resetInnerSecPanelTB.setToolTip(Util.createToolTip("Reset selection"));
@@ -580,7 +580,7 @@ public class OrnamenticFilter  extends AbstractFilter{
 		ornamentFunctionPanel.setHeaderVisible(true);
 		ornamentFunctionPanel.setToolTip(Util.createToolTip("Search for ornament functions.", "Select one or more elements to search for Ornamentations."));
 		ornamentFunctionPanel.setHeading("Ornament Function");
-		ornamentFunctionPanel.add(ornamentComponentsSelectionLV);
+		ornamentFunctionPanel.add(functionSelectionLV);
 		
 		ToolButton resetOrnamentFunctionPanelTB = new ToolButton(ToolButton.REFRESH);
 		resetOrnamentFunctionPanelTB.setToolTip(Util.createToolTip("Reset selection"));
