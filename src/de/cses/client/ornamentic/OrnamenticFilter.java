@@ -332,7 +332,7 @@ public class OrnamenticFilter  extends AbstractFilter{
 
 			@Override
 			public void onSuccess(ArrayList<InnerSecondaryPatternsEntry> result) {
-				ornamentComponentsEntryList.clear();
+				innerSecondaryPatternsEntryList.clear();
 				for (InnerSecondaryPatternsEntry pe : result) {
 					innerSecondaryPatternsEntryList.add(pe);
 				}
