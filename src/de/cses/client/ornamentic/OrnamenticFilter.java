@@ -40,6 +40,9 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.Util;
+import de.cses.client.ornamentic.OrnamentCaveRelationEditor.OrnamentViewTemplates;
+import de.cses.client.ornamentic.WallOrnamentCaveRelationEditor.OrnamentFunctionViewTemplates;
+import de.cses.client.ornamentic.WallOrnamentCaveRelationEditor.OrnamentPositionViewTemplates;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.shared.AbstractSearchEntry;
 import de.cses.shared.CaveEntry;
@@ -49,7 +52,6 @@ import de.cses.shared.InnerSecondaryPatternsEntry;
 import de.cses.shared.OrnamentComponentsEntry;
 import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamentFunctionEntry;
-import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.OrnamentPositionEntry;
 import de.cses.shared.OrnamenticSearchEntry;
 
@@ -82,7 +84,7 @@ public class OrnamenticFilter  extends AbstractFilter{
 	
 	private ListStore<InnerSecondaryPatternsEntry> innerSecondaryPatternsEntryList;
 	private InnerSecondaryPatternsProperties innerSecondaryPatternsProps;
-	private ListView<InnerSecondaryPatternsEntry, OrnamentComponentsEntry> innerSecondaryPatternsSelectionLV;
+	private ListView<InnerSecondaryPatternsEntry, InnerSecondaryPatternsEntry> innerSecondaryPatternsSelectionLV;
 	
 	private ListStore<OrnamentEntry> relatedOrnamentsEntryList;
 	private RelatedOrnamentsProperties relatedOrnamentsProps;
@@ -189,29 +191,24 @@ public class OrnamenticFilter  extends AbstractFilter{
 		
 		cavesProps = GWT.create(CavesProperties.class);
 		cavesEntryList = new ListStore<CaveEntry>(cavesProps.caveID());
-		//loadCaveEntryList();
+		loadCaveEntryList();
 		
 		districtsProps = GWT.create(DistrictsProperties.class);
 		districtsEntryList = new ListStore<DistrictEntry>(districtsProps.districtID());
-		//loadDistrictEntryList();
+		loadDistrictEntryList();
 		
 		relatedOrnamentsProps = GWT.create(RelatedOrnamentsProperties.class);
 		relatedOrnamentsEntryList = new ListStore<OrnamentEntry>(relatedOrnamentsProps.ornamentID());
-		//loadInnerSecondaryPatternsEntryList();
-		
-		/*innerSecondaryPatternsProps = GWT.create(InnerSecondaryPatternsProperties.class);
-		innerSecondaryPatternsEntryList = new ListStore<InnerSecondaryPatternsEntry>(innerSecondaryPatternsProps.innerSecondaryPatternsID());
-		//loadInnerSecondaryPatternsEntryList();
-		  */
+		loadOrnamentEntryList();
 		 
 		
 		functionProps = GWT.create(FunctionProperties.class);
 		functionEntryList = new ListStore<OrnamentFunctionEntry>(functionProps.ornamentFunctionID());
-		//loadInnerSecondaryPatternsEntryList();
+		loadFunctionEntryList();
 		
 		positionProps = GWT.create(PositionProperties.class);
 		positionEntryList = new ListStore<OrnamentPositionEntry>(positionProps.ornamentPositionID());
-		//loadInnerSecondaryPatternsEntryList();
+		loadPositionEntryList();
 	}
 	
 	
@@ -233,6 +230,97 @@ public class OrnamenticFilter  extends AbstractFilter{
 			}
 		});
 	}
+	
+	private void loadCaveEntryList() {
+		dbService.getCaves(new AsyncCallback<ArrayList<CaveEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(ArrayList<CaveEntry> result) {
+				cavesEntryList.clear();
+				for (CaveEntry pe : result) {
+					cavesEntryList.add(pe);
+				}
+			}
+		});
+	}
+	
+	private void loadDistrictEntryList() {
+		dbService.getDistricts(new AsyncCallback<ArrayList<DistrictEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(ArrayList<DistrictEntry> result) {
+				districtsEntryList.clear();
+				for (DistrictEntry pe : result) {
+					districtsEntryList.add(pe);
+				}
+			}
+		});
+	}
+	
+	private void loadOrnamentEntryList() {
+		dbService.getOrnaments(new AsyncCallback<ArrayList<OrnamentEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(ArrayList<OrnamentEntry> result) {
+				relatedOrnamentsEntryList.clear();
+				for (OrnamentEntry pe : result) {
+					relatedOrnamentsEntryList.add(pe);
+				}
+			}
+		});
+	}
+	
+	private void loadFunctionEntryList() {
+		dbService.getOrnamentFunctions(new AsyncCallback<ArrayList<OrnamentFunctionEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(ArrayList<OrnamentFunctionEntry> result) {
+				functionEntryList.clear();
+				for (OrnamentFunctionEntry pe : result) {
+					functionEntryList.add(pe);
+				}
+			}
+		});
+	}
+	
+	private void loadPositionEntryList() {
+		dbService.getOrnamentPositions(new AsyncCallback<ArrayList<OrnamentPositionEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(ArrayList<OrnamentPositionEntry> result) {
+				positionEntryList.clear();
+				for (OrnamentPositionEntry pe : result) {
+					positionEntryList.add(pe);
+				}
+			}
+		});
+	}
+	
 	
 	private void loadInnerSecondaryPatternsEntryList() {
 		dbService.getInnerSecondaryPatterns(new AsyncCallback<ArrayList<InnerSecondaryPatternsEntry>>() {
@@ -287,6 +375,7 @@ public class OrnamenticFilter  extends AbstractFilter{
 		ornamentSimilaritiesSearchTF.setEmptyText("search similar ornaments");
 		ornamentSimilaritiesSearchTF.setToolTip(Util.createToolTip("search ornament code", "Search for this character sequence in the ornament code field."));
 
+		//Components
 		ornamentComponentsSelectionLV = new ListView<OrnamentComponentsEntry, OrnamentComponentsEntry>(ornamentComponentsEntryList, new IdentityValueProvider<OrnamentComponentsEntry>(), 
 				new SimpleSafeHtmlCell<OrnamentComponentsEntry>(new AbstractSafeHtmlRenderer<OrnamentComponentsEntry>() {
 			final OrnamentComponentsViewTemplates ocvTemplates = GWT.create(OrnamentComponentsViewTemplates.class);
@@ -316,17 +405,285 @@ public class OrnamenticFilter  extends AbstractFilter{
 		});
 		ornamentComponentsPanel.addTool(resetOrnamentComponentsPanelTB);
 
-		// add more here
+		// caves
+		cavesSelectionLV = new ListView<CaveEntry, CaveEntry>(cavesEntryList, new IdentityValueProvider<CaveEntry>(), 
+				new SimpleSafeHtmlCell<CaveEntry>(new AbstractSafeHtmlRenderer<CaveEntry>() {
+			final CavesViewTemplates ocvTemplates = GWT.create(CavesViewTemplates.class);
 
+			@Override
+			public SafeHtml render(CaveEntry entry) {
+				return ocvTemplates.cavesLabel(Integer.toString(entry.getCaveID()));
+			}
+			
+		}));
+		ornamentComponentsSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+		
+		
+		ContentPanel ornamentCavesPanel = new ContentPanel();
+		ornamentCavesPanel.setHeaderVisible(true);
+		ornamentCavesPanel.setToolTip(Util.createToolTip("Search for ornaments in specific caves.", "Select one or more elements to search for Ornamentations."));
+		ornamentCavesPanel.setHeading("Ornament Caves");
+		ornamentCavesPanel.add(cavesSelectionLV);
+		
+		ToolButton resetOrnamentCavesPanelTB = new ToolButton(ToolButton.REFRESH);
+		resetOrnamentCavesPanelTB.setToolTip(Util.createToolTip("Reset selection"));
+		resetOrnamentCavesPanelTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				cavesSelectionLV.getSelectionModel().deselectAll();
+			}
+		});
+		ornamentCavesPanel.addTool(resetOrnamentCavesPanelTB);
+		
+		//Districts
+		
+		districtsSelectionLV = new ListView<DistrictEntry, DistrictEntry>(districtsEntryList, new IdentityValueProvider<DistrictEntry>(), 
+				new SimpleSafeHtmlCell<DistrictEntry>(new AbstractSafeHtmlRenderer<DistrictEntry>() {
+			final DistrictsViewTemplates ocvTemplates = GWT.create(DistrictsViewTemplates.class);
+
+			@Override
+			public SafeHtml render(DistrictEntry entry) {
+				return ocvTemplates.districtsLabel(entry.getName());
+			}
+			
+		}));
+		cavesSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+		
+		ContentPanel ornamentdistrictsPanel = new ContentPanel();
+		ornamentdistrictsPanel.setHeaderVisible(true);
+		ornamentdistrictsPanel.setToolTip(Util.createToolTip("Search for districts.", "Select one or more elements to search for Ornamentations."));
+		ornamentdistrictsPanel.setHeading("Districts");
+		ornamentdistrictsPanel.add(districtsSelectionLV);
+		
+		ToolButton resetDistrictsPanelTB = new ToolButton(ToolButton.REFRESH);
+		resetDistrictsPanelTB.setToolTip(Util.createToolTip("Reset selection"));
+		resetDistrictsPanelTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				districtsSelectionLV.getSelectionModel().deselectAll();
+			}
+		});
+		ornamentdistrictsPanel.addTool(resetDistrictsPanelTB);
+		
+		//seconpary patterns
+		
+		innerSecondaryPatternsSelectionLV = new ListView<InnerSecondaryPatternsEntry, InnerSecondaryPatternsEntry>(innerSecondaryPatternsEntryList, new IdentityValueProvider<InnerSecondaryPatternsEntry>(), 
+				new SimpleSafeHtmlCell<InnerSecondaryPatternsEntry>(new AbstractSafeHtmlRenderer<InnerSecondaryPatternsEntry>() {
+			final InnerSecondaryPatternsViewTemplates ocvTemplates = GWT.create(InnerSecondaryPatternsViewTemplates.class);
+
+			@Override
+			public SafeHtml render(InnerSecondaryPatternsEntry entry) {
+				return ocvTemplates.innerSecondaryPatternsLabel(entry.getName());
+			}
+			
+		}));
+		innerSecondaryPatternsSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+		
+		ContentPanel innerSecPanel = new ContentPanel();
+		innerSecPanel.setHeaderVisible(true);
+		innerSecPanel.setToolTip(Util.createToolTip("Search for inner secondary patterns.", "Select one or more elements to search for Ornamentations."));
+		innerSecPanel.setHeading("InnerSecondary Pattern");
+		innerSecPanel.add(ornamentComponentsSelectionLV);
+		
+		ToolButton resetInnerSecPanelTB = new ToolButton(ToolButton.REFRESH);
+		resetInnerSecPanelTB.setToolTip(Util.createToolTip("Reset selection"));
+		resetInnerSecPanelTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				innerSecondaryPatternsSelectionLV.getSelectionModel().deselectAll();
+			}
+		});
+		innerSecPanel.addTool(resetInnerSecPanelTB);
+
+		
+		//related ornaments
+		relatedOrnamentsSelectionLV = new ListView<OrnamentEntry, OrnamentEntry>(relatedOrnamentsEntryList, new IdentityValueProvider<OrnamentEntry>(), 
+				new SimpleSafeHtmlCell<OrnamentEntry>(new AbstractSafeHtmlRenderer<OrnamentEntry>() {
+			final OrnamentViewTemplates ocvTemplates = GWT.create(OrnamentViewTemplates.class);
+
+			@Override
+			public SafeHtml render(OrnamentEntry entry) {
+				return ocvTemplates.ornament(entry.getCode());
+			}
+			
+		}));
+		relatedOrnamentsSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+		
+		ContentPanel relatedornamentPanel = new ContentPanel();
+		relatedornamentPanel.setHeaderVisible(true);
+		relatedornamentPanel.setToolTip(Util.createToolTip("Search for related ornaments.", "Select one or more elements to search for Ornamentations."));
+		relatedornamentPanel.setHeading("Related Ornaments");
+		relatedornamentPanel.add(relatedOrnamentsSelectionLV);
+		
+		ToolButton resetrelatedOrnamentsPanelTB = new ToolButton(ToolButton.REFRESH);
+		resetrelatedOrnamentsPanelTB.setToolTip(Util.createToolTip("Reset selection"));
+		resetrelatedOrnamentsPanelTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				relatedOrnamentsSelectionLV.getSelectionModel().deselectAll();
+			}
+		});
+		relatedornamentPanel.addTool(resetrelatedOrnamentsPanelTB);
+		
+		
+		//position
+		
+		positionSelectionLV = new ListView<OrnamentPositionEntry, OrnamentPositionEntry>(positionEntryList, new IdentityValueProvider<OrnamentPositionEntry>(), 
+				new SimpleSafeHtmlCell<OrnamentPositionEntry>(new AbstractSafeHtmlRenderer<OrnamentPositionEntry>() {
+			final OrnamentPositionViewTemplates ocvTemplates = GWT.create(OrnamentPositionViewTemplates.class);
+
+			@Override
+			public SafeHtml render(OrnamentPositionEntry entry) {
+				return ocvTemplates.ornamentPosition(entry.getName());
+			}
+			
+		}));
+		positionSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+		
+		ContentPanel ornamentpositionPanel = new ContentPanel();
+		ornamentpositionPanel.setHeaderVisible(true);
+		ornamentpositionPanel.setToolTip(Util.createToolTip("Search for ornament positions.", "Select one or more elements to search for Ornamentations."));
+		ornamentpositionPanel.setHeading("Ornament Position");
+		ornamentpositionPanel.add(positionSelectionLV);
+		
+		ToolButton resetOrnamentPositionPanelTB = new ToolButton(ToolButton.REFRESH);
+		resetOrnamentPositionPanelTB.setToolTip(Util.createToolTip("Reset selection"));
+		resetOrnamentPositionPanelTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				positionSelectionLV.getSelectionModel().deselectAll();
+			}
+		});
+		ornamentpositionPanel.addTool(resetOrnamentPositionPanelTB);
+
+		
+		//function
+		
+		functionSelectionLV = new ListView<OrnamentFunctionEntry, OrnamentFunctionEntry>(functionEntryList, new IdentityValueProvider<OrnamentFunctionEntry>(), 
+			new SimpleSafeHtmlCell<OrnamentFunctionEntry>(new AbstractSafeHtmlRenderer<OrnamentFunctionEntry>() {
+			final OrnamentFunctionViewTemplates ocvTemplates = GWT.create(OrnamentFunctionViewTemplates.class);
+
+			@Override
+			public SafeHtml render(OrnamentFunctionEntry entry) {
+				return ocvTemplates.ornamentFunction(entry.getName());
+			}
+			
+		}));
+		functionSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+		
+		ContentPanel ornamentFunctionPanel = new ContentPanel();
+		ornamentFunctionPanel.setHeaderVisible(true);
+		ornamentFunctionPanel.setToolTip(Util.createToolTip("Search for ornament functions.", "Select one or more elements to search for Ornamentations."));
+		ornamentFunctionPanel.setHeading("Ornament Function");
+		ornamentFunctionPanel.add(ornamentComponentsSelectionLV);
+		
+		ToolButton resetOrnamentFunctionPanelTB = new ToolButton(ToolButton.REFRESH);
+		resetOrnamentFunctionPanelTB.setToolTip(Util.createToolTip("Reset selection"));
+		resetOrnamentFunctionPanelTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				functionSelectionLV.getSelectionModel().deselectAll();
+			}
+		});
+		ornamentFunctionPanel.addTool(resetOrnamentFunctionPanelTB);
+		
+		//iconographys?
+		/*
+		ornamentComponentsSelectionLV = new ListView<OrnamentComponentsEntry, OrnamentComponentsEntry>(ornamentComponentsEntryList, new IdentityValueProvider<OrnamentComponentsEntry>(), 
+				new SimpleSafeHtmlCell<OrnamentComponentsEntry>(new AbstractSafeHtmlRenderer<OrnamentComponentsEntry>() {
+			final OrnamentComponentsViewTemplates ocvTemplates = GWT.create(OrnamentComponentsViewTemplates.class);
+
+			@Override
+			public SafeHtml render(OrnamentComponentsEntry entry) {
+				return ocvTemplates.ornamentComponentsLabel(entry.getName());
+			}
+			
+		}));
+		ornamentComponentsSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+		
+		ContentPanel ornamentComponentsPanel = new ContentPanel();
+		ornamentComponentsPanel.setHeaderVisible(true);
+		ornamentComponentsPanel.setToolTip(Util.createToolTip("Search for ornament components.", "Select one or more elements to search for Ornamentations."));
+		ornamentComponentsPanel.setHeading("Ornament Components");
+		ornamentComponentsPanel.add(ornamentComponentsSelectionLV);
+		
+		ToolButton resetOrnamentComponentsPanelTB = new ToolButton(ToolButton.REFRESH);
+		resetOrnamentComponentsPanelTB.setToolTip(Util.createToolTip("Reset selection"));
+		resetOrnamentComponentsPanelTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				ornamentComponentsSelectionLV.getSelectionModel().deselectAll();
+			}
+		});
+		ornamentComponentsPanel.addTool(resetOrnamentComponentsPanelTB);
+
+*/
 		VerticalLayoutContainer ornamenticFilterVLC = new VerticalLayoutContainer();
-		ornamenticFilterVLC.add(ornamentCodeSearchTF, new VerticalLayoutData(1.0, .05));
-		ornamenticFilterVLC.add(ornamentDeskriptionSearchTF, new VerticalLayoutData(1.0, .05));
-		ornamenticFilterVLC.add(ornamentInterpretationSearchTF, new VerticalLayoutData(1.0, .05));
-		ornamenticFilterVLC.add(ornamentOrnamentalGroupSearchTF, new VerticalLayoutData(1.0, .05));
-		ornamenticFilterVLC.add(ornamentReferencesSearchTF, new VerticalLayoutData(1.0, .05));
-		ornamenticFilterVLC.add(ornamentRemarksSearchTF, new VerticalLayoutData(1.0, .05));
-		ornamenticFilterVLC.add(ornamentSimilaritiesSearchTF, new VerticalLayoutData(1.0, .05));
-		ornamenticFilterVLC.add(ornamentComponentsPanel, new VerticalLayoutData(1.0, .65));
+		
+		ContentPanel ornamentCodePanel = new ContentPanel();
+		ornamentCodePanel.setHeaderVisible(true);
+		ornamentCodePanel.setToolTip(Util.createToolTip("Search for ornament codes."));
+		ornamentCodePanel.setHeading("Ornament Code");
+		ornamentCodePanel.add(ornamentCodeSearchTF);
+		ornamenticFilterVLC.add(ornamentCodePanel, new VerticalLayoutData(1.0, .02));
+		
+		ContentPanel ornamentDeskriptionPanel = new ContentPanel();
+		ornamentDeskriptionPanel.setHeaderVisible(true);
+		ornamentDeskriptionPanel.setToolTip(Util.createToolTip("Search for ornament deskription."));
+		ornamentDeskriptionPanel.setHeading("Ornament Deskription");
+		ornamentDeskriptionPanel.add(ornamentDeskriptionSearchTF);
+		ornamenticFilterVLC.add(ornamentDeskriptionPanel, new VerticalLayoutData(1.0, .02));
+		
+		ContentPanel ornamentInterpretationPanel = new ContentPanel();
+		ornamentInterpretationPanel.setHeaderVisible(true);
+		ornamentInterpretationPanel.setToolTip(Util.createToolTip("Search for ornament interpretation."));
+		ornamentInterpretationPanel.setHeading("Ornament Interpretation");
+		ornamentInterpretationPanel.add(ornamentInterpretationSearchTF);
+		ornamenticFilterVLC.add(ornamentInterpretationPanel, new VerticalLayoutData(1.0, .02));
+		
+		ContentPanel ornamentGroupPanel = new ContentPanel();
+		ornamentGroupPanel.setHeaderVisible(true);
+		ornamentGroupPanel.setToolTip(Util.createToolTip("Search for ornament groups."));
+		ornamentGroupPanel.setHeading("Ornament Group");
+		ornamentGroupPanel.add(ornamentOrnamentalGroupSearchTF);
+		ornamenticFilterVLC.add(ornamentGroupPanel, new VerticalLayoutData(1.0, .02));
+		
+		ContentPanel referencesPanel = new ContentPanel();
+		referencesPanel.setHeaderVisible(true);
+		referencesPanel.setToolTip(Util.createToolTip("Search for ornament references."));
+		referencesPanel.setHeading("Ornament References");
+		referencesPanel.add(ornamentReferencesSearchTF);
+		ornamenticFilterVLC.add(referencesPanel, new VerticalLayoutData(1.0, .02));
+		
+		ContentPanel remarksPanel = new ContentPanel();
+		remarksPanel.setHeaderVisible(true);
+		remarksPanel.setToolTip(Util.createToolTip("Search for ornament references."));
+		remarksPanel.setHeading("Ornament Refmarks");
+		remarksPanel.add(ornamentRemarksSearchTF);
+		ornamenticFilterVLC.add(remarksPanel, new VerticalLayoutData(1.0, .02));
+		
+		ContentPanel similatitiesPanel = new ContentPanel();
+		similatitiesPanel.setHeaderVisible(true);
+		similatitiesPanel.setToolTip(Util.createToolTip("Search for ornament references."));
+		similatitiesPanel.setHeading("Ornament Similarities to other ornaments or elements from other cultures");
+		similatitiesPanel.add(ornamentSimilaritiesSearchTF);
+		ornamenticFilterVLC.add(similatitiesPanel, new VerticalLayoutData(1.0, .02));
+		
+		ornamenticFilterVLC.add(ornamentCavesPanel, new VerticalLayoutData(1.0, .1));
+		ornamenticFilterVLC.add(ornamentFunctionPanel, new VerticalLayoutData(1.0, .1));
+		ornamenticFilterVLC.add(ornamentpositionPanel, new VerticalLayoutData(1.0, .1));
+		ornamenticFilterVLC.add(ornamentdistrictsPanel, new VerticalLayoutData(1.0, .1));
+		ornamenticFilterVLC.add(innerSecPanel, new VerticalLayoutData(1.0, .1));
+		ornamenticFilterVLC.add(relatedornamentPanel, new VerticalLayoutData(1.0, .1));
+		ornamenticFilterVLC.add(ornamentComponentsPanel, new VerticalLayoutData(1.0, .1));
+		//iconography? ornamenticFilterVLC.add(ornamentComponentsPanel, new VerticalLayoutData(1.0, .65));
 		ornamenticFilterVLC.setHeight("1000px");
 		
 		return ornamenticFilterVLC;
