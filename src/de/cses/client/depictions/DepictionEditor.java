@@ -180,12 +180,15 @@ public class DepictionEditor extends AbstractEditor {
 	}
 
 	interface CaveViewTemplates extends XTemplates {
-		@XTemplate("<div style=\"border: 1px solid grey;\">{shortName} {officialNumber}<br> {districtRegion}<br><tpl for='name'> {element}<wbr> </tpl></div>")
-		SafeHtml caveLabel(String shortName, String officialNumber, String districtRegion, ArrayList<NameElement> name);
+		@XTemplate("<div style=\"border: 1px solid grey;\">{shortName} {officialNumber}<br> {district}<br> {line1}<br> {line2}</div>")
+		SafeHtml caveLabel(String shortName, String officialNumber, String district, String line1, String line2);
 
-		@XTemplate("<div style=\"border: 1px solid grey;\">{shortName} {officialNumber}<br> {districtRegion}</div>")
-		SafeHtml caveLabel(String shortName, String officialNumber, String districtRegion);
-	}
+		@XTemplate("<div style=\"border: 1px solid grey;\">{shortName} {officialNumber}<br> {district}<br> {line}</div>")
+		SafeHtml caveLabel(String shortName, String officialNumber, String district, String line);
+
+		@XTemplate("<div style=\"border: 1px solid grey;\">{shortName} {officialNumber}<br> {district}</div>")
+		SafeHtml caveLabel(String shortName, String officialNumber, String district);
+}
 
 	interface LocationProperties extends PropertyAccess<LocationEntry> {
 		ModelKeyProvider<LocationEntry> locationID();
@@ -617,14 +620,14 @@ public class DepictionEditor extends AbstractEditor {
 				String site = item.getSiteID() > 0 ? st.getSiteEntries().get(item.getSiteID()).getShortName() : "";
 				String district = item.getDistrictID() > 0 ? st.getDistrictEntries().get(item.getDistrictID()).getName() : "";
 				String region = item.getRegionID() > 0 ? st.getRegionEntries().get(item.getRegionID()).getEnglishName() : "";
-				if ((item.getHistoricName() != null) && (item.getHistoricName().length() > 0)) {
-					ArrayList<NameElement> historicNameList = new ArrayList<NameElement>();
-					for (String s : item.getHistoricName().split(" ")) {
-						historicNameList.add(new NameElement(s));
-					}
-					return cvTemplates.caveLabel(site, item.getOfficialNumber(), (!district.isEmpty() ? " / " + district : "") + (!region.isEmpty() ? " / " + region : ""), historicNameList);
+				if (!region.isEmpty() && (item.getHistoricName() != null) && (item.getHistoricName().isEmpty())) {
+					return cvTemplates.caveLabel(site, item.getOfficialNumber(), district, region, item.getHistoricName());
+				} else if (!region.isEmpty()) {
+					return cvTemplates.caveLabel(site, item.getOfficialNumber(), district, region);
+				} else if ((item.getHistoricName() != null) && (item.getHistoricName().isEmpty())) {
+					return cvTemplates.caveLabel(site, item.getOfficialNumber(), district, item.getHistoricName());
 				} else {
-					return cvTemplates.caveLabel(site, item.getOfficialNumber(), (!district.isEmpty() ? " / " + district : "") + (!region.isEmpty() ? " / " + region : ""));
+					return cvTemplates.caveLabel(site, item.getOfficialNumber(), district);
 				}
 			}
 		});

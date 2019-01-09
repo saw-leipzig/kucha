@@ -26,6 +26,7 @@ import de.cses.client.StaticTables;
 import de.cses.client.ui.AbstractDataDisplay;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AnnotatedBiblographyEntry;
+import de.cses.shared.AuthorEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.PreservationAttributeEntry;
 
@@ -42,7 +43,7 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 	 */
 	public DepictionDataDisplay(DepictionEntry e) {
 		super();
-//		entry = e;
+		entry = e;
 		String cave = "";
 		String wall = "";
 		SafeUri realCaveSketchUri = null;
@@ -69,15 +70,33 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 		String style = e.getStyleID() > 0 ? StaticTables.getInstance().getStyleEntries().get(e.getStyleID()).getStyleName() : "";
 		String modesOfRepresentation = e.getModeOfRepresentationID() > 0 ? StaticTables.getInstance().getModesOfRepresentationEntries().get(e.getModeOfRepresentationID()).getName() : "";
 		ArrayList<AnnotatedBiblographyEntry> bibList = e.getRelatedBibliographyList();
-		bibList.sort(new Comparator<AnnotatedBiblographyEntry>() {
+		Comparator<AnnotatedBiblographyEntry> bibComparator = new Comparator<AnnotatedBiblographyEntry>() {
+			
+			String getComparisonString(AnnotatedBiblographyEntry entry) {
+				String result = "";
+				if (entry != null) {
+					if (!entry.getAuthorList().isEmpty()) {
+						for (AuthorEntry ae : entry.getAuthorList()) {
+							result += ae.getLastname() + " ";
+						}
+					} else if (!entry.getEditorList().isEmpty()) {
+						for (AuthorEntry ae : entry.getEditorList()) {
+							result += ae.getLastname() + " ";
+						}
+					}
+					result += entry.getYearORG() != null ? entry.getYearORG() : "";
+				}
+				return result;
+			}
 
 			@Override
 			public int compare(AnnotatedBiblographyEntry entry1, AnnotatedBiblographyEntry entry2) {
-				String comp1 = entry1.getAuthors() + " " + entry1.getEditors() + entry1.getYearORG();
-				String comp2 = entry2.getAuthors() + " " + entry2.getEditors() + entry2.getYearORG();
-				return comp1.toLowerCase().compareTo(comp2.toLowerCase());
+				return getComparisonString(entry1).compareTo(getComparisonString(entry2));
 			}
-		});
+		};
+		if (!bibList.isEmpty()) {
+			bibList.sort(bibComparator);
+		}
 		
 		HTML htmlWidget = new HTML(view.display(
 				shortname, 
@@ -100,8 +119,8 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 				e.getOtherSuggestedIdentifications() != null ? e.getOtherSuggestedIdentifications() : "",
 				e.getRelatedIconographyList(),
 				e.getRelatedBibliographyList(),
-				e.getLastChangedByUser(),
-				e.getModifiedOn()
+				e.getLastChangedByUser() != null ? e.getLastChangedByUser() : "",
+				e.getModifiedOn() != null ? e.getModifiedOn() : ""
 			));
 		htmlWidget.addStyleName("html-data-display");
 		add(htmlWidget, new MarginData(0, 0, 0, 0));
