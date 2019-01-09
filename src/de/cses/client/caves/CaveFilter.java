@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 
+ * Copyright 2017 - 2019
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -13,14 +13,13 @@
  */
 package de.cses.client.caves;
 
-import java.util.ArrayList;
+import java.util.Comparator;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
-import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.core.client.ValueProvider;
@@ -29,24 +28,23 @@ import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
+import com.sencha.gxt.data.shared.SortDir;
+import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.widget.core.client.ContentPanel;
-import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer.ExpandMode;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
+import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
-import com.sencha.gxt.widget.core.client.container.MarginData;
-import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.TextField;
 
 import de.cses.client.StaticTables;
 import de.cses.client.Util;
 import de.cses.client.ui.AbstractFilter;
-import de.cses.shared.AbstractSearchEntry;
 import de.cses.shared.CaveSearchEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.DistrictEntry;
@@ -55,6 +53,8 @@ import de.cses.shared.SiteEntry;
 
 /**
  * @author alingnau
+ * 
+ * The CaveFilter is shown on the left when Caves are activated for search.
  *
  */
 public class CaveFilter extends AbstractFilter {
@@ -80,7 +80,7 @@ public class CaveFilter extends AbstractFilter {
 	}
 	
 	interface DistrictViewTemplates extends XTemplates {
-		@XTemplate("<div style=\"border: 1px solid grey;\">{districtName}<br>{siteName}</div>")
+		@XTemplate("<div style=\"border: 1px solid grey;\">{siteName}<br>{districtName}</div>")
 		SafeHtml districtLabel(String districtName, String siteName);
 	}
 	
@@ -91,13 +91,13 @@ public class CaveFilter extends AbstractFilter {
 	}
 	
 	interface RegionViewTemplates extends XTemplates {
-		@XTemplate("<div style=\"border: 1px solid grey;\">{englishName}<br>{phoneticName} - {originalName}<br>{siteName}</div>")
+		@XTemplate("<div style=\"border: 1px solid grey;\">{siteName}<br>{englishName}<br>{phoneticName} - {originalName}</div>")
 		SafeHtml regionLabel(String englishName, String phoneticName, String originalName, String siteName);
 		
-		@XTemplate("<div style=\"border: 1px solid grey;\">{englishName}<br>{phoneticName}<br>{siteName}</div>")
+		@XTemplate("<div style=\"border: 1px solid grey;\">{siteName}<br>{englishName}<br>{phoneticName}</div>")
 		SafeHtml regionLabel(String englishName, String phoneticName, String siteName);
 		
-		@XTemplate("<div style=\"border: 1px solid grey;\">{englishName}<br>{siteName}</div>")
+		@XTemplate("<div style=\"border: 1px solid grey;\">{siteName}<br>{englishName}</div>")
 		SafeHtml regionLabel(String englishName, String siteName);
 	}
 	
@@ -125,6 +125,7 @@ public class CaveFilter extends AbstractFilter {
 
 	/**
 	 * 
+	 * @param filterName will be displayed as name of the frame on the left
 	 */
 	public CaveFilter(String filterName) {
 		super(filterName);
@@ -137,9 +138,31 @@ public class CaveFilter extends AbstractFilter {
 
 		regionProps = GWT.create(RegionProperties.class);
 		regionEntryList = new ListStore<RegionEntry>(regionProps.regionID());
+		Comparator<RegionEntry> regionEntryComparator = new Comparator<RegionEntry>() {
+			@Override
+			public int compare(RegionEntry re1, RegionEntry re2) {
+				SiteEntry se1 = re1.getSiteID() > 0 ? siteEntryList.findModelWithKey(Integer.toString(re1.getSiteID())) : null;
+				SiteEntry se2 = re2.getSiteID() > 0 ? siteEntryList.findModelWithKey(Integer.toString(re2.getSiteID())) : null;
+				String comp1 = se1 != null ? se1.getName() + " " + re1.getEnglishName() : re1.getEnglishName();
+				String comp2 = se2 != null ? se2.getName() + " " + re2.getEnglishName() : re2.getEnglishName();
+				return comp1.toLowerCase().compareTo(comp2.toLowerCase());
+			}
+		};
+		regionEntryList.addSortInfo(new StoreSortInfo<>(regionEntryComparator, SortDir.ASC));
 
 		districtProps = GWT.create(DistrictProperties.class);
 		districtEntryList = new ListStore<DistrictEntry>(districtProps.districtID());
+		Comparator<DistrictEntry> districtEntryComparator = new Comparator<DistrictEntry>() {
+			@Override
+			public int compare(DistrictEntry de1, DistrictEntry de2) {
+				SiteEntry se1 = de1.getSiteID() > 0 ? siteEntryList.findModelWithKey(Integer.toString(de1.getSiteID())) : null;
+				SiteEntry se2 = de2.getSiteID() > 0 ? siteEntryList.findModelWithKey(Integer.toString(de2.getSiteID())) : null;
+				String comp1 = se1 != null ? se1.getName() + " " + de1.getName() : de1.getName();
+				String comp2 = se2 != null ? se2.getName() + " " + de2.getName() : de2.getName();
+				return comp1.toLowerCase().compareTo(comp2.toLowerCase());
+			}
+		};
+		districtEntryList.addSortInfo(new StoreSortInfo<>(districtEntryComparator, SortDir.ASC));
 		
 		loadCaveTypes();
 		loadSites();		
