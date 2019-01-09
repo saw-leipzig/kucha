@@ -14,6 +14,7 @@
 package de.cses.client.depictions;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
@@ -297,18 +298,73 @@ public class DepictionEditor extends AbstractEditor {
 		}
 		vendorProps = GWT.create(VendorProperties.class);
 		vendorEntryLS = new ListStore<VendorEntry>(vendorProps.vendorID());
+
 		styleProps = GWT.create(StyleProperties.class);
 		styleEntryLS = new ListStore<StyleEntry>(styleProps.styleID());
+		
 		caveProps = GWT.create(CaveProperties.class);
 		caveEntryLS = new ListStore<CaveEntry>(caveProps.caveID());
+		caveEntryLS.addSortInfo(new StoreSortInfo<CaveEntry>(new Comparator<CaveEntry>() {
+
+			private boolean isInteger(String str) {
+				if (str == null) {
+					return false;
+				}
+				int length = str.length();
+				if (length == 0) {
+					return false;
+				}
+				int i = 0;
+				if (str.charAt(0) == '-') {
+					if (length == 1) {
+						return false;
+					}
+					i = 1;
+				}
+				for (; i < length; i++) {
+					char c = str.charAt(i);
+					if (c < '0' || c > '9') {
+						return false;
+					}
+				}
+				return true;
+			}
+
+			private String getComparisonLabel(CaveEntry ce) {
+				StaticTables stab = StaticTables.getInstance();
+				String shortName = stab.getSiteEntries().get(ce.getSiteID()).getShortName();
+				int len = 0;
+				while ((len < ce.getOfficialNumber().length()) && isInteger(ce.getOfficialNumber().substring(0, len+1))) {
+					++len;
+				}
+				switch (len) {
+					case 1:
+						return shortName + "  " + ce.getOfficialNumber();
+					case 2:
+						return shortName + " " + ce.getOfficialNumber();
+					default:
+						return shortName + ce.getOfficialNumber();
+				}
+			}
+			
+			@Override
+			public int compare(CaveEntry ce1, CaveEntry ce2) {
+				return getComparisonLabel(ce1).compareTo(getComparisonLabel(ce2));
+			}
+		}, SortDir.ASC));
+		
 		locationProps = GWT.create(LocationProperties.class);
 		locationEntryLS = new ListStore<LocationEntry>(locationProps.locationID());
+		
 		expedProps = GWT.create(ExpeditionProperties.class);
 		expedEntryLS = new ListStore<ExpeditionEntry>(expedProps.expeditionID());
+		
 		morProps = GWT.create(ModesOfRepresentationProperties.class);
 		modeOfRepresentationLS = new ListStore<ModeOfRepresentationEntry>(morProps.modeOfRepresentationID());
+		
 		presAttributeProps = GWT.create(PreservationAttributeProperties.class);
 		preservationAttributesLS = new ListStore<PreservationAttributeEntry>(presAttributeProps.preservationAttributeID());
+		
 		selectedPreservationAttributesLS = new ListStore<PreservationAttributeEntry>(presAttributeProps.preservationAttributeID());
 
 		initPanel();
