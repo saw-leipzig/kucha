@@ -53,6 +53,8 @@ import de.cses.shared.SiteEntry;
 
 /**
  * @author alingnau
+ * 
+ * The CaveFilter is shown on the left when Caves are activated for search.
  *
  */
 public class CaveFilter extends AbstractFilter {
@@ -123,6 +125,7 @@ public class CaveFilter extends AbstractFilter {
 
 	/**
 	 * 
+	 * @param filterName will be displayed as name of the frame on the left
 	 */
 	public CaveFilter(String filterName) {
 		super(filterName);
@@ -138,10 +141,10 @@ public class CaveFilter extends AbstractFilter {
 		Comparator<RegionEntry> regionEntryComparator = new Comparator<RegionEntry>() {
 			@Override
 			public int compare(RegionEntry re1, RegionEntry re2) {
-				SiteEntry se1 = siteEntryList.findModelWithKey(Integer.toString(re1.getSiteID()));
-				SiteEntry se2 = siteEntryList.findModelWithKey(Integer.toString(re2.getSiteID()));
-				String comp1 = se1.getName() + " " + re1.getEnglishName();
-				String comp2 = se2.getName() + " " + re2.getEnglishName();
+				SiteEntry se1 = re1.getSiteID() > 0 ? siteEntryList.findModelWithKey(Integer.toString(re1.getSiteID())) : null;
+				SiteEntry se2 = re2.getSiteID() > 0 ? siteEntryList.findModelWithKey(Integer.toString(re2.getSiteID())) : null;
+				String comp1 = se1 != null ? se1.getName() + " " + re1.getEnglishName() : re1.getEnglishName();
+				String comp2 = se2 != null ? se2.getName() + " " + re2.getEnglishName() : re2.getEnglishName();
 				return comp1.toLowerCase().compareTo(comp2.toLowerCase());
 			}
 		};
@@ -152,10 +155,10 @@ public class CaveFilter extends AbstractFilter {
 		Comparator<DistrictEntry> districtEntryComparator = new Comparator<DistrictEntry>() {
 			@Override
 			public int compare(DistrictEntry de1, DistrictEntry de2) {
-				SiteEntry se1 = siteEntryList.findModelWithKey(Integer.toString(de1.getSiteID()));
-				SiteEntry se2 = siteEntryList.findModelWithKey(Integer.toString(de2.getSiteID()));
-				String comp1 = se1.getName() + " " + de1.getName();
-				String comp2 = se2.getName() + " " + de2.getName();
+				SiteEntry se1 = de1.getSiteID() > 0 ? siteEntryList.findModelWithKey(Integer.toString(de1.getSiteID())) : null;
+				SiteEntry se2 = de2.getSiteID() > 0 ? siteEntryList.findModelWithKey(Integer.toString(de2.getSiteID())) : null;
+				String comp1 = se1 != null ? se1.getName() + " " + de1.getName() : de1.getName();
+				String comp2 = se2 != null ? se2.getName() + " " + de2.getName() : de2.getName();
 				return comp1.toLowerCase().compareTo(comp2.toLowerCase());
 			}
 		};
