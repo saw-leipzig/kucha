@@ -80,7 +80,7 @@ public class CaveFilter extends AbstractFilter {
 	}
 	
 	interface DistrictViewTemplates extends XTemplates {
-		@XTemplate("<div style=\"border: 1px solid grey;\">{districtName}<br>{siteName}</div>")
+		@XTemplate("<div style=\"border: 1px solid grey;\">{siteName}<br>{districtName}</div>")
 		SafeHtml districtLabel(String districtName, String siteName);
 	}
 	
@@ -91,13 +91,13 @@ public class CaveFilter extends AbstractFilter {
 	}
 	
 	interface RegionViewTemplates extends XTemplates {
-		@XTemplate("<div style=\"border: 1px solid grey;\">{englishName}<br>{phoneticName} - {originalName}<br>{siteName}</div>")
+		@XTemplate("<div style=\"border: 1px solid grey;\">{siteName}<br>{englishName}<br>{phoneticName} - {originalName}</div>")
 		SafeHtml regionLabel(String englishName, String phoneticName, String originalName, String siteName);
 		
-		@XTemplate("<div style=\"border: 1px solid grey;\">{englishName}<br>{phoneticName}<br>{siteName}</div>")
+		@XTemplate("<div style=\"border: 1px solid grey;\">{siteName}<br>{englishName}<br>{phoneticName}</div>")
 		SafeHtml regionLabel(String englishName, String phoneticName, String siteName);
 		
-		@XTemplate("<div style=\"border: 1px solid grey;\">{englishName}<br>{siteName}</div>")
+		@XTemplate("<div style=\"border: 1px solid grey;\">{siteName}<br>{englishName}</div>")
 		SafeHtml regionLabel(String englishName, String siteName);
 	}
 	
