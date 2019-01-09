@@ -13,6 +13,9 @@
  */
 package de.cses.client.depictions;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
@@ -22,6 +25,7 @@ import com.sencha.gxt.widget.core.client.container.MarginData;
 import de.cses.client.StaticTables;
 import de.cses.client.ui.AbstractDataDisplay;
 import de.cses.client.user.UserLogin;
+import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.PreservationAttributeEntry;
 
@@ -38,7 +42,7 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 	 */
 	public DepictionDataDisplay(DepictionEntry e) {
 		super();
-		entry = e;
+//		entry = e;
 		String cave = "";
 		String wall = "";
 		SafeUri realCaveSketchUri = null;
@@ -64,6 +68,17 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 		SafeUri fullImageUri = UriUtils.fromString("resource?imageID=" + e.getMasterImageID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 		String style = e.getStyleID() > 0 ? StaticTables.getInstance().getStyleEntries().get(e.getStyleID()).getStyleName() : "";
 		String modesOfRepresentation = e.getModeOfRepresentationID() > 0 ? StaticTables.getInstance().getModesOfRepresentationEntries().get(e.getModeOfRepresentationID()).getName() : "";
+		ArrayList<AnnotatedBiblographyEntry> bibList = e.getRelatedBibliographyList();
+		bibList.sort(new Comparator<AnnotatedBiblographyEntry>() {
+
+			@Override
+			public int compare(AnnotatedBiblographyEntry entry1, AnnotatedBiblographyEntry entry2) {
+				String comp1 = entry1.getAuthors() + " " + entry1.getEditors() + entry1.getYearORG();
+				String comp2 = entry2.getAuthors() + " " + entry2.getEditors() + entry2.getYearORG();
+				return comp1.toLowerCase().compareTo(comp2.toLowerCase());
+			}
+		});
+		
 		HTML htmlWidget = new HTML(view.display(
 				shortname, 
 				e.getInventoryNumber() != null ? e.getInventoryNumber() : "",  
