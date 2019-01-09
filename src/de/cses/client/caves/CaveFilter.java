@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 
+ * Copyright 2017 - 2019
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -13,14 +13,13 @@
  */
 package de.cses.client.caves;
 
-import java.util.ArrayList;
+import java.util.Comparator;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
-import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.core.client.ValueProvider;
@@ -29,24 +28,23 @@ import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
+import com.sencha.gxt.data.shared.SortDir;
+import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.widget.core.client.ContentPanel;
-import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer.ExpandMode;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
+import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
-import com.sencha.gxt.widget.core.client.container.MarginData;
-import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.TextField;
 
 import de.cses.client.StaticTables;
 import de.cses.client.Util;
 import de.cses.client.ui.AbstractFilter;
-import de.cses.shared.AbstractSearchEntry;
 import de.cses.shared.CaveSearchEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.DistrictEntry;
@@ -137,9 +135,31 @@ public class CaveFilter extends AbstractFilter {
 
 		regionProps = GWT.create(RegionProperties.class);
 		regionEntryList = new ListStore<RegionEntry>(regionProps.regionID());
+		Comparator<RegionEntry> regionEntryComparator = new Comparator<RegionEntry>() {
+			@Override
+			public int compare(RegionEntry re1, RegionEntry re2) {
+				SiteEntry se1 = siteEntryList.findModelWithKey(Integer.toString(re1.getSiteID()));
+				SiteEntry se2 = siteEntryList.findModelWithKey(Integer.toString(re2.getSiteID()));
+				String comp1 = se1.getName() + " " + re1.getEnglishName();
+				String comp2 = se2.getName() + " " + re2.getEnglishName();
+				return comp1.toLowerCase().compareTo(comp2.toLowerCase());
+			}
+		};
+		regionEntryList.addSortInfo(new StoreSortInfo<>(regionEntryComparator, SortDir.ASC));
 
 		districtProps = GWT.create(DistrictProperties.class);
 		districtEntryList = new ListStore<DistrictEntry>(districtProps.districtID());
+		Comparator<DistrictEntry> districtEntryComparator = new Comparator<DistrictEntry>() {
+			@Override
+			public int compare(DistrictEntry de1, DistrictEntry de2) {
+				SiteEntry se1 = siteEntryList.findModelWithKey(Integer.toString(de1.getSiteID()));
+				SiteEntry se2 = siteEntryList.findModelWithKey(Integer.toString(de2.getSiteID()));
+				String comp1 = se1.getName() + " " + de1.getName();
+				String comp2 = se2.getName() + " " + de2.getName();
+				return comp1.toLowerCase().compareTo(comp2.toLowerCase());
+			}
+		};
+		districtEntryList.addSortInfo(new StoreSortInfo<>(districtEntryComparator, SortDir.ASC));
 		
 		loadCaveTypes();
 		loadSites();		
