@@ -48,6 +48,7 @@ import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.TabPanel;
+import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
@@ -787,7 +788,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		/**
 		 * add new author
 		 */
-		ToolButton addAuthorTB = new ToolButton(ToolButton.PLUS);
+		ToolButton addAuthorTB = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		addAuthorTB.setToolTip(Util.createToolTip("Add author", "New authors will appear in both author and editor selection."));
 		addAuthorTB.addSelectHandler(new SelectHandler() {
 
@@ -862,7 +863,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			}
 		});
 		
-		ToolButton deleteAuthorTB = new ToolButton(ToolButton.MINUS);
+		ToolButton deleteAuthorTB = new ToolButton(new IconConfig("removeButton", "removeButtonOver"));
 		deleteAuthorTB.setToolTip(Util.createToolTip("Delete author", "Select author in left column, then click here. Please note that only names not already linked to publications can be deleted!"));
 		deleteAuthorTB.addSelectHandler(new SelectHandler() {
 			
@@ -1039,7 +1040,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				}
 			});
 
-			ToolButton deleteEditorTB = new ToolButton(ToolButton.MINUS);
+			ToolButton deleteEditorTB = new ToolButton(new IconConfig("removeButton", "removeButtonOver"));
 			deleteEditorTB.setToolTip(Util.createToolTip("Delete editor", "Select editor in left column, then click here to delete. Please note that only names not already linked to publications can be deleted!"));
 			deleteEditorTB.addSelectHandler(new SelectHandler() {
 				
@@ -1113,7 +1114,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		bibKeywordFilterField.bind(bibKeywordsStore);
 		bibKeywordVLC.add(bibKeywordFilterField, new VerticalLayoutData(1.0, .15, new Margins(5, 10, 0, 10)));
 		
-		ToolButton addKeywordToolButton = new ToolButton(ToolButton.PLUS);
+		ToolButton addKeywordToolButton = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		addKeywordToolButton.setToolTip(Util.createToolTip("add keyword"));
 		addKeywordToolButton.addSelectHandler(new SelectHandler() {
 
@@ -1742,7 +1743,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		bibDocPaperFP.add(new HTMLPanel(documentLinkTemplate.documentLink(UriUtils.fromString(
 				"resource?document=" + bibEntry.getUniqueID() + "-paper.pdf" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()),
 				"paper")));
-		ToolButton paperUploadButton = new ToolButton(ToolButton.PLUS);
+		ToolButton paperUploadButton = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		paperUploadButton.setToolTip(Util.createToolTip("upload paper as PDF"));
 		paperUploadButton.addSelectHandler(new SelectHandler() {
 
@@ -1817,7 +1818,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		bibDocAnnotationFP.add(new HTMLPanel(documentLinkTemplate.documentLink(UriUtils.fromString(
 				"resource?document=" + bibEntry.getUniqueID() + "-annotation.pdf" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()),
 				"annotation")));
-		ToolButton annotationUploadButton = new ToolButton(ToolButton.PLUS);
+		ToolButton annotationUploadButton = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		annotationUploadButton.setToolTip(Util.createToolTip("upload annotation as PDF"));
 		annotationUploadButton.addSelectHandler(new SelectHandler() {
 

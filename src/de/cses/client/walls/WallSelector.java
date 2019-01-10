@@ -88,14 +88,6 @@ public class WallSelector implements IsWidget {
 		wallVT = GWT.create(WallViewTemplate.class);
 		wallEntryLS = new ListStore<WallEntry>(wallProps.wallLocationID());
 
-//		Comparator<WallEntry> comparator = new Comparator<WallEntry>() {
-//			@Override
-//			public int compare(WallEntry we1, WallEntry we2) {
-//				return StaticTables.getInstance().getWallLocationEntries().get(we1.getWallLocationID()).getLabel()
-//						.compareTo(StaticTables.getInstance().getWallLocationEntries().get(we2.getWallLocationID()).getLabel());
-//			}
-//		};
-//		wallEntryLS.addSortInfo(new StoreSortInfo<WallEntry>(comparator, SortDir.ASC));
 		createUI();
 		wallSelectorCB.addSelectionHandler(wallSelectionHandler);
 	}

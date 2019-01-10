@@ -97,14 +97,20 @@
 		</tpl>
 	</ul>
 
-	<h4 class="data-display">Description</h4>
-	<div class="text">{description}</div>
+	<tpl if="description != &quot;&quot;">
+		<h4 class="data-display">Description</h4>
+		<div class="text">{description}</div>
+	</tpl>
 
-	<h4 class="data-display">General Remarks</h4>
-	<div class="text">{generalRemarks}</div>
+	<tpl if="generalRemarks != &quot;&quot;">
+		<h4 class="data-display">General Remarks</h4>
+		<div class="text">{generalRemarks}</div>
+	</tpl>
 
-	<h4 class="data-display">Other Suggested Identifications</h4>
-	<div class="text">{otherSuggestedIdentifications}</div>
+	<tpl if="otherSuggestedIdentifications != &quot;&quot;">
+		<h4 class="data-display">Other Suggested Identifications</h4>
+		<div class="text">{otherSuggestedIdentifications}</div>
+	</tpl>
 
 	<h4 class="data-display">Related Bibliography</h4>
 	<ol class="simple-list">

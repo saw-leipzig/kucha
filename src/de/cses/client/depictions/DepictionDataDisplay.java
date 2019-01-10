@@ -13,6 +13,9 @@
  */
 package de.cses.client.depictions;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
@@ -22,8 +25,11 @@ import com.sencha.gxt.widget.core.client.container.MarginData;
 import de.cses.client.StaticTables;
 import de.cses.client.ui.AbstractDataDisplay;
 import de.cses.client.user.UserLogin;
+import de.cses.shared.AnnotatedBiblographyEntry;
+import de.cses.shared.AuthorEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.PreservationAttributeEntry;
+import de.cses.shared.comparator.BibEntryComparator;
 
 /**
  * @author alingnau
@@ -64,6 +70,11 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 		SafeUri fullImageUri = UriUtils.fromString("resource?imageID=" + e.getMasterImageID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 		String style = e.getStyleID() > 0 ? StaticTables.getInstance().getStyleEntries().get(e.getStyleID()).getStyleName() : "";
 		String modesOfRepresentation = e.getModeOfRepresentationID() > 0 ? StaticTables.getInstance().getModesOfRepresentationEntries().get(e.getModeOfRepresentationID()).getName() : "";
+		ArrayList<AnnotatedBiblographyEntry> bibList = e.getRelatedBibliographyList();
+		if (!bibList.isEmpty()) {
+			bibList.sort(new BibEntryComparator());
+		}
+		
 		HTML htmlWidget = new HTML(view.display(
 				shortname, 
 				e.getInventoryNumber() != null ? e.getInventoryNumber() : "",  
@@ -85,8 +96,8 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 				e.getOtherSuggestedIdentifications() != null ? e.getOtherSuggestedIdentifications() : "",
 				e.getRelatedIconographyList(),
 				e.getRelatedBibliographyList(),
-				e.getLastChangedByUser(),
-				e.getModifiedOn()
+				e.getLastChangedByUser() != null ? e.getLastChangedByUser() : "",
+				e.getModifiedOn() != null ? e.getModifiedOn() : ""
 			));
 		htmlWidget.addStyleName("html-data-display");
 		add(htmlWidget, new MarginData(0, 0, 0, 0));
@@ -100,14 +111,5 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 	public String getUniqueID() {
 		return entry.getUniqueID();
 	}
-
-//	@Override
-//	public boolean equals(Object obj) {
-//		if (obj instanceof DepictionDataDisplay) {
-//			return ((DepictionDataDisplay) obj).getUniqueID() == this.getUniqueID();
-//		} else {
-//			return false;
-//		}
-//	}
 
 }

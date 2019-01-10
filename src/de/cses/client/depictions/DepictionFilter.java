@@ -68,6 +68,7 @@ import de.cses.shared.IconographyEntry;
 import de.cses.shared.LocationEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
+import de.cses.shared.comparator.CaveEntryComparator;
 
 /**
  * @author alingnau
@@ -166,47 +167,6 @@ public class DepictionFilter extends AbstractFilter {
 		});
 	}
 	
-	private String getComparisonLabel(CaveEntry ce) {
-		StaticTables stab = StaticTables.getInstance();
-		String shortName =  caveSelectionLV.getSelectionModel().isSelected(ce) ? "!" : "" + stab.getSiteEntries().get(ce.getSiteID()).getShortName();
-		int len = 0;
-		while ((len < ce.getOfficialNumber().length()) && isInteger(ce.getOfficialNumber().substring(0, len+1))) {
-			++len;
-		}
-		switch (len) {
-			case 1:
-				return shortName + "  " + ce.getOfficialNumber();
-			case 2:
-				return shortName + " " + ce.getOfficialNumber();
-			default:
-				return shortName + ce.getOfficialNumber();
-		}
-	}
-	
-	private boolean isInteger(String str) {
-		if (str == null) {
-			return false;
-		}
-		int length = str.length();
-		if (length == 0) {
-			return false;
-		}
-		int i = 0;
-		if (str.charAt(0) == '-') {
-			if (length == 1) {
-				return false;
-			}
-			i = 1;
-		}
-		for (; i < length; i++) {
-			char c = str.charAt(i);
-			if (c < '0' || c > '9') {
-				return false;
-			}
-		}
-		return true;
-	}
-
 	/* (non-Javadoc)
 	 * @see de.cses.client.ui.AbstractFilter#getFilterUI()
 	 */
@@ -245,13 +205,7 @@ public class DepictionFilter extends AbstractFilter {
 				caveEntryLS.applySort(false);
 			}
 		});
-		caveEntryLS.addSortInfo(new StoreSortInfo<CaveEntry>(new Comparator<CaveEntry>() {
-
-			@Override
-			public int compare(CaveEntry ce1, CaveEntry ce2) {
-				return getComparisonLabel(ce1).compareTo(getComparisonLabel(ce2));
-			}
-		}, SortDir.ASC));
+		caveEntryLS.addSortInfo(new StoreSortInfo<CaveEntry>(new CaveEntryComparator(), SortDir.ASC));
 		
 		filterField = new StoreFilterField<CaveEntry>() {
 

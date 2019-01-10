@@ -50,6 +50,8 @@ import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
+import de.cses.shared.comparator.DistrictEntryComparator;
+import de.cses.shared.comparator.RegionEntryComparator;
 
 /**
  * @author alingnau
@@ -138,31 +140,11 @@ public class CaveFilter extends AbstractFilter {
 
 		regionProps = GWT.create(RegionProperties.class);
 		regionEntryList = new ListStore<RegionEntry>(regionProps.regionID());
-		Comparator<RegionEntry> regionEntryComparator = new Comparator<RegionEntry>() {
-			@Override
-			public int compare(RegionEntry re1, RegionEntry re2) {
-				SiteEntry se1 = re1.getSiteID() > 0 ? siteEntryList.findModelWithKey(Integer.toString(re1.getSiteID())) : null;
-				SiteEntry se2 = re2.getSiteID() > 0 ? siteEntryList.findModelWithKey(Integer.toString(re2.getSiteID())) : null;
-				String comp1 = se1 != null ? se1.getName() + " " + re1.getEnglishName() : re1.getEnglishName();
-				String comp2 = se2 != null ? se2.getName() + " " + re2.getEnglishName() : re2.getEnglishName();
-				return comp1.toLowerCase().compareTo(comp2.toLowerCase());
-			}
-		};
-		regionEntryList.addSortInfo(new StoreSortInfo<>(regionEntryComparator, SortDir.ASC));
+		regionEntryList.addSortInfo(new StoreSortInfo<>(new RegionEntryComparator(), SortDir.ASC));
 
 		districtProps = GWT.create(DistrictProperties.class);
 		districtEntryList = new ListStore<DistrictEntry>(districtProps.districtID());
-		Comparator<DistrictEntry> districtEntryComparator = new Comparator<DistrictEntry>() {
-			@Override
-			public int compare(DistrictEntry de1, DistrictEntry de2) {
-				SiteEntry se1 = de1.getSiteID() > 0 ? siteEntryList.findModelWithKey(Integer.toString(de1.getSiteID())) : null;
-				SiteEntry se2 = de2.getSiteID() > 0 ? siteEntryList.findModelWithKey(Integer.toString(de2.getSiteID())) : null;
-				String comp1 = se1 != null ? se1.getName() + " " + de1.getName() : de1.getName();
-				String comp2 = se2 != null ? se2.getName() + " " + de2.getName() : de2.getName();
-				return comp1.toLowerCase().compareTo(comp2.toLowerCase());
-			}
-		};
-		districtEntryList.addSortInfo(new StoreSortInfo<>(districtEntryComparator, SortDir.ASC));
+		districtEntryList.addSortInfo(new StoreSortInfo<>(new DistrictEntryComparator(), SortDir.ASC));
 		
 		loadCaveTypes();
 		loadSites();		

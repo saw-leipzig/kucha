@@ -907,6 +907,10 @@ public class AnnotatedBiblographyEntry extends AbstractEntry implements Comparab
 		this.parentTitleORG = parentTitleORG;
 	}
 	
+	/**
+	 * 
+	 * @return the authors as a string of names using et al. if more than 3 authors
+	 */
 	public String getAuthors() {
 		String result = "";
 		if (authorList.size() > 3) {
@@ -920,6 +924,10 @@ public class AnnotatedBiblographyEntry extends AbstractEntry implements Comparab
 		return result;
 	}
 
+	/**
+	 * 
+	 * @return the editors as a string of names using et al. if more than 3 editors
+	 */
 	public String getEditors() {
 		String result = "";
 		if (editorList.size() > 3) {

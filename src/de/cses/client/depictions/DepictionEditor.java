@@ -14,6 +14,7 @@
 package de.cses.client.depictions;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
@@ -51,6 +52,7 @@ import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.TabPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
@@ -80,6 +82,7 @@ import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
 import de.cses.client.Util;
 import de.cses.client.bibliography.BibliographySelector;
+import de.cses.client.depictions.DepictionFilter.NameElement;
 import de.cses.client.images.ImageSelector;
 import de.cses.client.images.ImageSelectorListener;
 import de.cses.client.ui.AbstractEditor;
@@ -97,6 +100,7 @@ import de.cses.shared.PreservationAttributeEntry;
 import de.cses.shared.StyleEntry;
 import de.cses.shared.VendorEntry;
 import de.cses.shared.WallEntry;
+import de.cses.shared.comparator.CaveEntryComparator;
 
 public class DepictionEditor extends AbstractEditor {
 
@@ -149,6 +153,19 @@ public class DepictionEditor extends AbstractEditor {
 	private TextField shortNameTF;
 	private BibliographySelector bibliographySelector;
 
+	class NameElement {
+		private String element;
+		
+		public NameElement(String element) {
+			super();
+			this.element = element;
+		}
+
+		public String getElement() {
+			return element;
+		}
+	}
+
 	interface DepictionProperties extends PropertyAccess<DepictionEntry> {
 		ModelKeyProvider<DepictionEntry> depictionID();
 		LabelProvider<DepictionEntry> name();
@@ -165,12 +182,15 @@ public class DepictionEditor extends AbstractEditor {
 	}
 
 	interface CaveViewTemplates extends XTemplates {
-		@XTemplate("<div>{cave}<br>{name}</div>")
-		SafeHtml caveLabel(String cave, String name);
+		@XTemplate("<div style=\"border: 1px solid grey;\">{shortName} {officialNumber}<br> {district}<br> {line1}<br> {line2}</div>")
+		SafeHtml caveLabel(String shortName, String officialNumber, String district, String line1, String line2);
 
-		@XTemplate("<div>{cave}</div>")
-		SafeHtml caveLabel(String cave);
-	}
+		@XTemplate("<div style=\"border: 1px solid grey;\">{shortName} {officialNumber}<br> {district}<br> {line}</div>")
+		SafeHtml caveLabel(String shortName, String officialNumber, String district, String line);
+
+		@XTemplate("<div style=\"border: 1px solid grey;\">{shortName} {officialNumber}<br> {district}</div>")
+		SafeHtml caveLabel(String shortName, String officialNumber, String district);
+}
 
 	interface LocationProperties extends PropertyAccess<LocationEntry> {
 		ModelKeyProvider<LocationEntry> locationID();
@@ -255,34 +275,6 @@ public class DepictionEditor extends AbstractEditor {
 		}
 	}
 
-	/**
-	 * creates the view how a thumbnail of an image entry will be shown currently we are relying on the url of the image until we have user management implemented
-	 * and protect images from being viewed from the outside without permission
-	 * 
-	 * @author alingnau
-	 *
-	 */
-//	interface ImageViewTemplates extends XTemplates {
-////		@XTemplate("<div style='border-style: solid; border-color: #99ff66; border-width: 3px;'><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
-//		@XTemplate("<figure style='border-style: solid; border-color: #99ff66; border-width: 3px; margin: 0;'>"
-//				+ "<img src='{imageUri}' style='position: relative; padding: 5px; width: 230px; background: white;'>"
-//				+ "<figcaption style='font-size:12px; padding: 10px; text-align: center;'>{shortName} ({imageFormat})<p style='font-size:10px;'> <tpl for='titleList'> {element}<wbr> </tpl> </p></figcaption></figure>")
-//		SafeHtml openAccessImage(SafeUri imageUri, String shortName, ArrayList<TitleElement> titleList, String imageFormat);
-//
-////		@XTemplate("<div style='border-style: solid; border-color: #ff1a1a; border-width: 3px;'><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
-//		@XTemplate("<figure style='border-style: solid; border-color: #ff1a1a; border-width: 3px; margin: 0;'>"
-//				+ "<img src='{imageUri}' style='position: relative; padding: 5px; width: 230px; background: white;'>"
-//				+ "<figcaption style='font-size:12px; padding: 10px; text-align: center;'>{shortName} ({imageFormat})<p style='font-size:10px;'> <tpl for='titleList'> {element}<wbr> </tpl> </p></figcaption></figure>")
-//		SafeHtml nonOpenAccessImage(SafeUri imageUri, String shortName, ArrayList<TitleElement> titleList, String imageFormat);
-//
-////		@XTemplate("<div style='border-style: solid; border-color: #0073e6; border-width: 3px;'><center><img src='{imageUri}' style='width: 230px; height: auto; align-content: center; margin: 5px;'></center><label style='font-size:12px'>{shortName}</label></br><label style='font-size:8px'>{title}</label></div>")
-////		SafeHtml masterImage(SafeUri imageUri, String shortName, String title, String imageFormat);
-//		@XTemplate("<figure style='border-style: solid; border-color: #0073e6; border-width: 3px; margin: 0;'>"
-//				+ "<img src='{imageUri}' style='position: relative; padding: 5px; width: 230px; background: white;'>"
-//				+ "<figcaption style='font-size:12px; padding: 10px; text-align: center;'>{shortName} ({imageFormat})<p style='font-size:10px;'> <tpl for='titleList'> {element}<wbr> </tpl> </p></figcaption></figure>")
-//		SafeHtml masterImage(SafeUri imageUri, String shortName, ArrayList<TitleElement> titleList, String imageFormat);
-//	}
-
 	public DepictionEditor(DepictionEntry entry) {
 		if (entry != null) {
 			correspondingDepictionEntry = entry;
@@ -297,18 +289,26 @@ public class DepictionEditor extends AbstractEditor {
 		}
 		vendorProps = GWT.create(VendorProperties.class);
 		vendorEntryLS = new ListStore<VendorEntry>(vendorProps.vendorID());
+
 		styleProps = GWT.create(StyleProperties.class);
 		styleEntryLS = new ListStore<StyleEntry>(styleProps.styleID());
+		
 		caveProps = GWT.create(CaveProperties.class);
 		caveEntryLS = new ListStore<CaveEntry>(caveProps.caveID());
+		caveEntryLS.addSortInfo(new StoreSortInfo<CaveEntry>(new CaveEntryComparator(), SortDir.ASC));
+		
 		locationProps = GWT.create(LocationProperties.class);
 		locationEntryLS = new ListStore<LocationEntry>(locationProps.locationID());
+		
 		expedProps = GWT.create(ExpeditionProperties.class);
 		expedEntryLS = new ListStore<ExpeditionEntry>(expedProps.expeditionID());
+		
 		morProps = GWT.create(ModesOfRepresentationProperties.class);
 		modeOfRepresentationLS = new ListStore<ModeOfRepresentationEntry>(morProps.modeOfRepresentationID());
+		
 		presAttributeProps = GWT.create(PreservationAttributeProperties.class);
 		preservationAttributesLS = new ListStore<PreservationAttributeEntry>(presAttributeProps.preservationAttributeID());
+		
 		selectedPreservationAttributesLS = new ListStore<PreservationAttributeEntry>(presAttributeProps.preservationAttributeID());
 
 		initPanel();
@@ -462,21 +462,6 @@ public class DepictionEditor extends AbstractEditor {
 		for (ImageEntry ie : correspondingDepictionEntry.getRelatedImages()) {
 			imageEntryLS.add(ie);
 		}
-		
-//		dbService.getRelatedImages(correspondingDepictionEntry.getDepictionID(), new AsyncCallback<ArrayList<ImageEntry>>() {
-//
-//			@Override
-//			public void onFailure(Throwable caught) {
-//				caught.printStackTrace();
-//			}
-//
-//			@Override
-//			public void onSuccess(ArrayList<ImageEntry> imgResults) {
-//				for (ImageEntry ie : imgResults) {
-//					imageEntryLS.add(ie);
-//				}
-//			}
-//		});
 	}
 
 	@Override
@@ -590,12 +575,14 @@ public class DepictionEditor extends AbstractEditor {
 				String site = item.getSiteID() > 0 ? st.getSiteEntries().get(item.getSiteID()).getShortName() : "";
 				String district = item.getDistrictID() > 0 ? st.getDistrictEntries().get(item.getDistrictID()).getName() : "";
 				String region = item.getRegionID() > 0 ? st.getRegionEntries().get(item.getRegionID()).getEnglishName() : "";
-				if ((item.getHistoricName() != null) && (item.getHistoricName().length() > 0)) {
-					return cvTemplates.caveLabel(
-							site  + " " + item.getOfficialNumber() + (!district.isEmpty() ? " / " + district : "") + (!region.isEmpty() ? " / " + region : ""),
-							item.getHistoricName());
+				if (!region.isEmpty() && (item.getHistoricName() != null) && (item.getHistoricName().isEmpty())) {
+					return cvTemplates.caveLabel(site, item.getOfficialNumber(), district, region, item.getHistoricName());
+				} else if (!region.isEmpty()) {
+					return cvTemplates.caveLabel(site, item.getOfficialNumber(), district, region);
+				} else if ((item.getHistoricName() != null) && (item.getHistoricName().isEmpty())) {
+					return cvTemplates.caveLabel(site, item.getOfficialNumber(), district, item.getHistoricName());
 				} else {
-					return cvTemplates.caveLabel(site  + " " + item.getOfficialNumber() + (!district.isEmpty() ? " / " + district : "") + (!region.isEmpty() ? " / " + region : ""));
+					return cvTemplates.caveLabel(site, item.getOfficialNumber(), district);
 				}
 			}
 		});
@@ -699,7 +686,7 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		// adding new vendors is necessary
-		ToolButton newVendorPlusTool = new ToolButton(ToolButton.PLUS);
+		ToolButton newVendorPlusTool = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		newVendorPlusTool.setToolTip(Util.createToolTip("add Vendor"));
 		newVendorPlusTool.addSelectHandler(new SelectHandler() {
 
@@ -807,7 +794,7 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		// adding new locations
-		ToolButton newLocationPlusTool = new ToolButton(ToolButton.PLUS);
+		ToolButton newLocationPlusTool = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		newLocationPlusTool.setToolTip(Util.createToolTip("add Location"));
 		newLocationPlusTool.addSelectHandler(new SelectHandler() {
 
@@ -902,7 +889,7 @@ public class DepictionEditor extends AbstractEditor {
 		
 		FramedPanel stateOfPreservationFP = new FramedPanel();
 		stateOfPreservationFP.setHeading("State of Preservation");
-		ToolButton addPreservationAttributeTB = new ToolButton(ToolButton.PLUS);
+		ToolButton addPreservationAttributeTB = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		addPreservationAttributeTB.setToolTip(Util.createToolTip("Add Preservation Attribute"));
 		stateOfPreservationFP.addTool(addPreservationAttributeTB);
 		addPreservationAttributeTB.addSelectHandler(new SelectHandler() {
@@ -1268,7 +1255,7 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		
-		ToolButton addImageTB = new ToolButton(ToolButton.PLUS);
+		ToolButton addImageTB = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		addImageTB.setToolTip(Util.createToolTip("add image"));
 		addImageTB.addSelectHandler(new SelectHandler() {
 			
@@ -1281,7 +1268,7 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 
-		ToolButton removeImageTB = new ToolButton(ToolButton.MINUS);
+		ToolButton removeImageTB = new ToolButton(new IconConfig("removeButton", "removeButtonOver"));
 		removeImageTB.setToolTip(Util.createToolTip("remove image"));
 		removeImageTB.addSelectHandler(new SelectHandler() {
 			
