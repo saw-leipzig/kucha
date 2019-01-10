@@ -34,6 +34,7 @@ import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.TabPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
@@ -285,7 +286,7 @@ public  class OrnamentCaveRelationEditor  {
 		header.add(styleComboBox);
 		vlcCave.add(header, new VerticalLayoutData(0.5, .125));
 
-		ToolButton addWalls = new ToolButton(ToolButton.PLUS);
+		ToolButton addWalls = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		addWalls.setToolTip(Util.createToolTip("add walls"));
 
 		ClickHandler addWallsClickHandler = new ClickHandler() {

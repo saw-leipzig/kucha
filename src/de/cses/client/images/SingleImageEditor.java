@@ -51,6 +51,7 @@ import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
@@ -280,7 +281,7 @@ public class SingleImageEditor extends AbstractEditor {
 		});
 //		authorSelectionCB.setValue(photographerEntryList.findModelWithKey(Integer.toString(imgEntry.getPhotographerID())));
 		
-		ToolButton addPhotoAuthorTB = new ToolButton(ToolButton.PLUS);
+		ToolButton addPhotoAuthorTB = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		addPhotoAuthorTB.setToolTip(Util.createToolTip("Add new Photo Author"));
 		addPhotoAuthorTB.addSelectHandler(new SelectHandler() {
 

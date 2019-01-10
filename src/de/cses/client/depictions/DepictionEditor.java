@@ -52,6 +52,7 @@ import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.TabPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
@@ -685,7 +686,7 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		// adding new vendors is necessary
-		ToolButton newVendorPlusTool = new ToolButton(ToolButton.PLUS);
+		ToolButton newVendorPlusTool = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		newVendorPlusTool.setToolTip(Util.createToolTip("add Vendor"));
 		newVendorPlusTool.addSelectHandler(new SelectHandler() {
 
@@ -793,7 +794,7 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		// adding new locations
-		ToolButton newLocationPlusTool = new ToolButton(ToolButton.PLUS);
+		ToolButton newLocationPlusTool = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		newLocationPlusTool.setToolTip(Util.createToolTip("add Location"));
 		newLocationPlusTool.addSelectHandler(new SelectHandler() {
 
@@ -888,7 +889,7 @@ public class DepictionEditor extends AbstractEditor {
 		
 		FramedPanel stateOfPreservationFP = new FramedPanel();
 		stateOfPreservationFP.setHeading("State of Preservation");
-		ToolButton addPreservationAttributeTB = new ToolButton(ToolButton.PLUS);
+		ToolButton addPreservationAttributeTB = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		addPreservationAttributeTB.setToolTip(Util.createToolTip("Add Preservation Attribute"));
 		stateOfPreservationFP.addTool(addPreservationAttributeTB);
 		addPreservationAttributeTB.addSelectHandler(new SelectHandler() {
@@ -1254,7 +1255,7 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		
-		ToolButton addImageTB = new ToolButton(ToolButton.PLUS);
+		ToolButton addImageTB = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		addImageTB.setToolTip(Util.createToolTip("add image"));
 		addImageTB.addSelectHandler(new SelectHandler() {
 			

@@ -55,6 +55,7 @@ import com.sencha.gxt.widget.core.client.PlainTabPanel;
 import com.sencha.gxt.widget.core.client.TabItemConfig;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
@@ -746,7 +747,7 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		
-		ToolButton newCaveGroupPlusTool = new ToolButton(ToolButton.PLUS);
+		ToolButton newCaveGroupPlusTool = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		newCaveGroupPlusTool.setToolTip(Util.createToolTip("add Cave Group"));
 		caveGroupPanel.addTool(newCaveGroupPlusTool);
 		newCaveGroupPlusTool.addSelectHandler(new SelectHandler() {
@@ -878,7 +879,7 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		
-		ToolButton newDistrictPlusTool = new ToolButton(ToolButton.PLUS);
+		ToolButton newDistrictPlusTool = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		newDistrictPlusTool.setToolTip(Util.createToolTip("add District"));
 		districtPanel.addTool(newDistrictPlusTool);
 		newDistrictPlusTool.addSelectHandler(new SelectHandler() {
@@ -994,7 +995,7 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 
-		ToolButton addRegionPlusTool = new ToolButton(ToolButton.PLUS);
+		ToolButton addRegionPlusTool = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		addRegionPlusTool.setToolTip(Util.createToolTip("add Region"));
 		regionPanel.addTool(addRegionPlusTool);
 		addRegionPlusTool.addSelectHandler(new SelectHandler() {
@@ -1855,7 +1856,7 @@ public class CaveEditor extends AbstractEditor {
 		c14AnalysisLinkFP.add(c14AnalysisLinksFLC);
 		refreshC14AnalysisLinksFLC(correspondingCaveEntry.getC14AnalysisUrlList());
 
-		ToolButton addC14LinkTB = new ToolButton(ToolButton.PLUS);
+		ToolButton addC14LinkTB = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		addC14LinkTB.setToolTip(Util.createToolTip("add new C14 link"));
 		c14AnalysisLinkFP.addTool(addC14LinkTB);
 		addC14LinkTB.addSelectHandler(new SelectHandler() {
@@ -1914,7 +1915,7 @@ public class CaveEditor extends AbstractEditor {
 		c14UploadPanel.add(c14DocumentsFLC);
 		refreshC14DocumentsFLC(correspondingCaveEntry.getC14DocumentList());
 
-		ToolButton uploadButton = new ToolButton(ToolButton.PLUS);
+		ToolButton uploadButton = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		uploadButton.setToolTip(Util.createToolTip("Upload C14 document.", "A new Cave has to be saved first, otherwise upload won't work."));
 		uploadButton.addSelectHandler(new SelectHandler() {
 
@@ -2297,7 +2298,7 @@ public class CaveEditor extends AbstractEditor {
 		ceilingTyleSelectionsVLC.add(corridorCeilingTypeFP, new VerticalLayoutData(1.0, 1.0 / 6));
 		ceilingTyleSelectionsVLC.add(antechamberCeilingTypeFP, new VerticalLayoutData(1.0, 1.0 / 6));
 		
-		ToolButton addCeilingTypeTB = new ToolButton(ToolButton.PLUS);
+		ToolButton addCeilingTypeTB = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		addCeilingTypeTB.setToolTip(Util.createToolTip("add new ceiling type"));
 		addCeilingTypeTB.addSelectHandler(new SelectHandler() {
 
@@ -2368,7 +2369,7 @@ public class CaveEditor extends AbstractEditor {
 		updateCeilingTypePanel(0);
 
 		FramedPanel caveSketchFP = new FramedPanel();
-		ToolButton addSketchButton = new ToolButton(ToolButton.PLUS);
+		ToolButton addSketchButton = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		addSketchButton.setToolTip(Util.createToolTip("upload cave sketch"));
 		addSketchButton.addSelectHandler(new SelectHandler() {
 

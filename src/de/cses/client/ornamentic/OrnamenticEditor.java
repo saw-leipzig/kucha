@@ -32,6 +32,7 @@ import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.TabPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutData;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
@@ -293,7 +294,7 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 		header.add(ornamentClassComboBox);
 		panel.add(header, new VerticalLayoutData(1.0, .125));
 
-		ToolButton addOrnamentClassButton = new ToolButton(ToolButton.PLUS);
+		ToolButton addOrnamentClassButton = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		addOrnamentClassButton.setToolTip(Util.createToolTip("Add Ornament Class"));
 
 		FramedPanel ornamentClassFramedPanel = new FramedPanel();
@@ -437,7 +438,7 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 
 
 		
-		ToolButton addCaveTool = new ToolButton(ToolButton.PLUS);
+		ToolButton addCaveTool = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		addCaveTool.setToolTip(Util.createToolTip("Add Cave"));
 
 		VerticalPanel cavesPanel = new VerticalPanel();
@@ -651,7 +652,7 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 
 		verticalgeneral3Background.add(header, new VerticalLayoutData(1.0, .3));
 
-		ToolButton addComponentButton = new ToolButton(ToolButton.PLUS);
+		ToolButton addComponentButton = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		addComponentButton.setToolTip(Util.createToolTip("New Component"));
 		header.addTool(addComponentButton);
 
@@ -800,7 +801,7 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 
 		header = new FramedPanel();
 		header.setHeading("Select inner Secondary Patterns");
-		ToolButton addInnerSecondaryPatternsButton = new ToolButton(ToolButton.PLUS);
+		ToolButton addInnerSecondaryPatternsButton = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		addInnerSecondaryPatternsButton.setToolTip(Util.createToolTip("Add New Inner Secondary Pattern"));
 		
 		addInnerSecondaryPatternsButton.addSelectHandler(new SelectHandler() {

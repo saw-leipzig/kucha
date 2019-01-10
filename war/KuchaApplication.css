@@ -277,3 +277,51 @@ div.loginButtonOver {
 	background-repeat: no-repeat;
 	cursor: pointer;
 }
+
+div.addButton {
+	background-image: url(icons/add_new.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.addButtonOver {
+	background-image: url(icons/add_new_mo.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.minimizeLeftButton {
+	background-image: url(icons/nach_links_minimieren.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.minimizeLeftButtonOver {
+	background-image: url(icons/nach_links_minimieren_mo.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.removeButton {
+	background-image: url(icons/remove.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.removeButtonOver {
+	background-image: url(icons/remove_mo.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
