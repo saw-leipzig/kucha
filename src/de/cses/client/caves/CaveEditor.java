@@ -101,6 +101,8 @@ import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 import de.cses.shared.WallEntry;
 import de.cses.shared.WallLocationEntry;
+import de.cses.shared.comparator.CeilingTypeEntryComparator;
+import de.cses.shared.comparator.WallEntryComparator;
 
 public class CaveEditor extends AbstractEditor {
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
@@ -350,13 +352,7 @@ public class CaveEditor extends AbstractEditor {
 		caveTypeEntryListStore = new ListStore<CaveTypeEntry>(caveTypeProps.caveTypeID());
 		ceilingTypeProps = GWT.create(CeilingTypeProperties.class);
 		ceilingTypeEntryList = new ListStore<CeilingTypeEntry>(ceilingTypeProps.ceilingTypeID());
-		Comparator<CeilingTypeEntry> ceilingTypeEntryComparator = new Comparator<CeilingTypeEntry>() {
-			@Override
-			public int compare(CeilingTypeEntry ct1, CeilingTypeEntry ct2) {
-				return ct1.getName().toLowerCase().compareTo(ct2.getName().toLowerCase());
-			}
-		};
-		ceilingTypeEntryList.addSortInfo(new StoreSortInfo<CeilingTypeEntry>(ceilingTypeEntryComparator, SortDir.ASC));
+		ceilingTypeEntryList.addSortInfo(new StoreSortInfo<CeilingTypeEntry>(new CeilingTypeEntryComparator(), SortDir.ASC));
 		preservationClassificationProps = GWT.create(PreservationClassificationProperties.class);
 		preservationClassificationEntryList = new ListStore<PreservationClassificationEntry>(
 				preservationClassificationProps.preservationClassificationID());
@@ -381,14 +377,7 @@ public class CaveEditor extends AbstractEditor {
 		wallProps = GWT.create(WallProperties.class);
 		wallVT = GWT.create(WallViewTemplate.class);
 		wallEntryLS = new ListStore<WallEntry>(wallProps.wallLocationID());
-		Comparator<WallEntry> wallEntryComparator = new Comparator<WallEntry>() {
-			@Override
-			public int compare(WallEntry we1, WallEntry we2) {
-				return StaticTables.getInstance().getWallLocationEntries().get(we1.getWallLocationID()).getLabel()
-						.compareTo(StaticTables.getInstance().getWallLocationEntries().get(we2.getWallLocationID()).getLabel());
-			}
-		};
-		wallEntryLS.addSortInfo(new StoreSortInfo<WallEntry>(wallEntryComparator, SortDir.ASC));
+		wallEntryLS.addSortInfo(new StoreSortInfo<WallEntry>(new WallEntryComparator(), SortDir.ASC));
 
 		initPanel();
 		loadCaveAndCeilingTypes();

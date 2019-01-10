@@ -1,4 +1,4 @@
-package de.cses.client.bibliography;
+package de.cses.shared.comparator;
 
 import java.util.Comparator;
 

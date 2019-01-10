@@ -47,6 +47,7 @@ import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographySearchEntry;
 import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.PublicationTypeEntry;
+import de.cses.shared.comparator.BibEntryComparator;
 
 /**
  * @author Nina

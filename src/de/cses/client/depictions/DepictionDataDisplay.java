@@ -23,13 +23,13 @@ import com.google.gwt.user.client.ui.HTML;
 import com.sencha.gxt.widget.core.client.container.MarginData;
 
 import de.cses.client.StaticTables;
-import de.cses.client.bibliography.BibEntryComparator;
 import de.cses.client.ui.AbstractDataDisplay;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.PreservationAttributeEntry;
+import de.cses.shared.comparator.BibEntryComparator;
 
 /**
  * @author alingnau
