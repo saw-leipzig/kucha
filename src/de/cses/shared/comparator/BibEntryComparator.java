@@ -23,8 +23,11 @@ public class BibEntryComparator implements Comparator<AnnotatedBiblographyEntry>
 					result += ae.getLastname() + " ";
 				}
 			}
-			result += entry.getYearORG() != null ? entry.getYearORG() : "";
+			result += entry.getYearORG() != null ? entry.getYearORG() + " " : "";
+			result += entry.getTitleFull();
 		}
+		result = result.replace("ä", "ae").replace("ö", "oe").replace("ü", "ue");
+		result = result.replace("Ä", "Ae").replace("Ö", "Oe").replace("Ü", "Ue");
 		return result;
 	}
 
