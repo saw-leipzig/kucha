@@ -863,7 +863,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			}
 		});
 		
-		ToolButton deleteAuthorTB = new ToolButton(ToolButton.MINUS);
+		ToolButton deleteAuthorTB = new ToolButton(new IconConfig("removeButton", "removeButtonOver"));
 		deleteAuthorTB.setToolTip(Util.createToolTip("Delete author", "Select author in left column, then click here. Please note that only names not already linked to publications can be deleted!"));
 		deleteAuthorTB.addSelectHandler(new SelectHandler() {
 			
@@ -1040,7 +1040,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				}
 			});
 
-			ToolButton deleteEditorTB = new ToolButton(ToolButton.MINUS);
+			ToolButton deleteEditorTB = new ToolButton(new IconConfig("removeButton", "removeButtonOver"));
 			deleteEditorTB.setToolTip(Util.createToolTip("Delete editor", "Select editor in left column, then click here to delete. Please note that only names not already linked to publications can be deleted!"));
 			deleteEditorTB.addSelectHandler(new SelectHandler() {
 				

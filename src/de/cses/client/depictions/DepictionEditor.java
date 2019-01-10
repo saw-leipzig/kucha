@@ -1268,7 +1268,7 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 
-		ToolButton removeImageTB = new ToolButton(ToolButton.MINUS);
+		ToolButton removeImageTB = new ToolButton(new IconConfig("removeButton", "removeButtonOver"));
 		removeImageTB.setToolTip(Util.createToolTip("remove image"));
 		removeImageTB.addSelectHandler(new SelectHandler() {
 			
