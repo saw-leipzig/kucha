@@ -102,6 +102,7 @@ public class AnnotatedBiblographySearchController extends AbstractSearchControll
 			@Override
 			public void onSuccess(ArrayList<AnnotatedBiblographyEntry> result) {
 				getResultView().reset();
+				result.sort(new BibEntryComparator());
 				for (AnnotatedBiblographyEntry abe : result) {
 					getResultView().addResult(new AnnotatedBiblographyView(abe));
 				}

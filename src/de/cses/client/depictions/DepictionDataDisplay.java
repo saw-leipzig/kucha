@@ -23,6 +23,7 @@ import com.google.gwt.user.client.ui.HTML;
 import com.sencha.gxt.widget.core.client.container.MarginData;
 
 import de.cses.client.StaticTables;
+import de.cses.client.bibliography.BibEntryComparator;
 import de.cses.client.ui.AbstractDataDisplay;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AnnotatedBiblographyEntry;
@@ -70,32 +71,8 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 		String style = e.getStyleID() > 0 ? StaticTables.getInstance().getStyleEntries().get(e.getStyleID()).getStyleName() : "";
 		String modesOfRepresentation = e.getModeOfRepresentationID() > 0 ? StaticTables.getInstance().getModesOfRepresentationEntries().get(e.getModeOfRepresentationID()).getName() : "";
 		ArrayList<AnnotatedBiblographyEntry> bibList = e.getRelatedBibliographyList();
-		Comparator<AnnotatedBiblographyEntry> bibComparator = new Comparator<AnnotatedBiblographyEntry>() {
-			
-			String getComparisonString(AnnotatedBiblographyEntry entry) {
-				String result = "";
-				if (entry != null) {
-					if (!entry.getAuthorList().isEmpty()) {
-						for (AuthorEntry ae : entry.getAuthorList()) {
-							result += ae.getLastname() + " ";
-						}
-					} else if (!entry.getEditorList().isEmpty()) {
-						for (AuthorEntry ae : entry.getEditorList()) {
-							result += ae.getLastname() + " ";
-						}
-					}
-					result += entry.getYearORG() != null ? entry.getYearORG() : "";
-				}
-				return result;
-			}
-
-			@Override
-			public int compare(AnnotatedBiblographyEntry entry1, AnnotatedBiblographyEntry entry2) {
-				return getComparisonString(entry1).compareTo(getComparisonString(entry2));
-			}
-		};
 		if (!bibList.isEmpty()) {
-			bibList.sort(bibComparator);
+			bibList.sort(new BibEntryComparator());
 		}
 		
 		HTML htmlWidget = new HTML(view.display(
