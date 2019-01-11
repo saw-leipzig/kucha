@@ -114,7 +114,7 @@ public abstract class AbstractResultView extends Portlet {
 		});
 		getHeader().addTool(maxTB);
 		
-		resetButton = new ToolButton(ToolButton.REFRESH);
+		resetButton = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetButton.setToolTip(Util.createToolTip("Reset Results"));
 		resetButton.addSelectHandler(new SelectHandler() {
 			

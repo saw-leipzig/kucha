@@ -601,7 +601,7 @@ public class DepictionEditor extends AbstractEditor {
 		});
 		caveSelectionCB.setToolTip("This field can only be changed until a depiction is allocated to a wall");
 		// TODO check if wallTypeID is set, then set caveSelectionCB.editable(false)
-		ToolButton resetCaveSelectionTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton resetCaveSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetCaveSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		resetCaveSelectionTB.addSelectHandler(new SelectHandler() {
 			
@@ -642,7 +642,7 @@ public class DepictionEditor extends AbstractEditor {
 				correspondingDepictionEntry.setExpedition(event.getSelectedItem());
 			}
 		});
-		ToolButton expedSelectionTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton expedSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		expedSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		expedSelectionTB.addSelectHandler(new SelectHandler() {
 			
@@ -676,7 +676,7 @@ public class DepictionEditor extends AbstractEditor {
 				correspondingDepictionEntry.setVendor(event.getSelectedItem());
 			}
 		});
-		ToolButton resetVendorSelectionTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton resetVendorSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetVendorSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		resetVendorSelectionTB.addSelectHandler(new SelectHandler() {
 			
@@ -784,7 +784,7 @@ public class DepictionEditor extends AbstractEditor {
 				correspondingDepictionEntry.setLocation(event.getValue());
 			}
 		});
-		ToolButton resetLocationSelectionTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton resetLocationSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetLocationSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		resetLocationSelectionTB.addSelectHandler(new SelectHandler() {
 			
@@ -1085,7 +1085,7 @@ public class DepictionEditor extends AbstractEditor {
 				correspondingDepictionEntry.setStyleID(event.getSelectedItem().getStyleID());
 			}
 		});
-		ToolButton resetStyleSelectionTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton resetStyleSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetStyleSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		resetStyleSelectionTB.addSelectHandler(new SelectHandler() {
 			
@@ -1119,7 +1119,7 @@ public class DepictionEditor extends AbstractEditor {
 				correspondingDepictionEntry.setModeOfRepresentationID(event.getSelectedItem().getModeOfRepresentationID());
 			}
 		});
-		ToolButton resetModeOfRepresentationSelectionTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton resetModeOfRepresentationSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetModeOfRepresentationSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		resetModeOfRepresentationSelectionTB.addSelectHandler(new SelectHandler() {
 			

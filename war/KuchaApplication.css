@@ -325,3 +325,51 @@ div.removeButtonOver {
 	background-repeat: no-repeat;
 	cursor: pointer;
 }
+
+div.resetButton {
+	background-image: url(icons/reset_results_icon2.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.resetButtonOver {
+	background-image: url(icons/reset_results_mo.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.maximizeButton {
+	background-image: url(icons/vergroessern_enlarge.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.maximizeButtonOver {
+	background-image: url(icons/vergroessern_enlarge_mo.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.minimizeButton {
+	background-image: url(icons/verkleinern_decrease.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.minimizeButtonOver {
+	background-image: url(icons/verkleinern_decrease_mo.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}

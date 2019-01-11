@@ -1723,7 +1723,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				bibEntry.setFirstEditionBibID(event.getSelectedItem().getAnnotatedBiblographyID());
 			}
 		});
-		ToolButton resetFirstEditionSelectionTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton resetFirstEditionSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetFirstEditionSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		resetFirstEditionSelectionTB.addSelectHandler(new SelectHandler() {
 			

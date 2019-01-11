@@ -26,6 +26,7 @@ import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.data.shared.event.StoreFilterEvent;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.MarginData;
@@ -166,7 +167,7 @@ public class IconographySelector extends FramedPanel {
 		iconographySelectorBLC.setCenterWidget(iconographyTree, new MarginData(0, 2, 5, 2));
 		iconographySelectorBLC.setSouthWidget(filterField, new BorderLayoutData(25.0));
 		
-		ToolButton resetTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton resetTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetTB.setToolTip(Util.createToolTip("Reset selection.", "All selected items will be deselected."));
 		resetTB.addSelectHandler(new SelectHandler() {
 			

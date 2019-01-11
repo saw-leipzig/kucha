@@ -736,7 +736,7 @@ public class CaveEditor extends AbstractEditor {
 		});
 		caveGroupPanel.add(caveGroupSelector);
 		
-		ToolButton resetCaveGroupSelectionTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton resetCaveGroupSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetCaveGroupSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		caveGroupPanel.addTool(resetCaveGroupSelectionTB);
 		resetCaveGroupSelectionTB.addSelectHandler(new SelectHandler() {
@@ -868,7 +868,7 @@ public class CaveEditor extends AbstractEditor {
 		}
 		districtPanel.add(districtSelection);
 
-		ToolButton resetDistrictSelectionTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton resetDistrictSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetDistrictSelectionTB.setToolTip(Util.createToolTip("add District"));
 		districtPanel.addTool(resetDistrictSelectionTB);
 		resetDistrictSelectionTB.addSelectHandler(new SelectHandler() {
@@ -984,7 +984,7 @@ public class CaveEditor extends AbstractEditor {
 		}
 		regionPanel.add(regionSelection);
 
-		ToolButton resetRegionSelectionTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton resetRegionSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetRegionSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		regionPanel.addTool(resetRegionSelectionTB);
 		resetRegionSelectionTB.addSelectHandler(new SelectHandler() {
@@ -1104,7 +1104,7 @@ public class CaveEditor extends AbstractEditor {
 				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).setPreservationClassification(event.getSelectedItem());
 			}
 		});
-		ToolButton rearAreaStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton rearAreaStateOfPreservationResetSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		rearAreaStateOfPreservationResetSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		rearAreaStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
 			
@@ -1137,7 +1137,7 @@ public class CaveEditor extends AbstractEditor {
 		HorizontalLayoutContainer rearAreaCeilingPreservationHLC = new HorizontalLayoutContainer();
 		rearAreaCeilingPreservationHLC.add(rearAreaCeilingPreservationSelectorCB1, new HorizontalLayoutData(.5, 1.0, new Margins(0, 5, 0, 0)));
 		rearAreaCeilingPreservationHLC.add(rearAreaCeilingPreservationSelectorCB2, new HorizontalLayoutData(.5, 1.0, new Margins(0)));
-		ToolButton rearAreaCeilingStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton rearAreaCeilingStateOfPreservationResetSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		rearAreaCeilingStateOfPreservationResetSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		rearAreaCeilingStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
 			
@@ -1160,7 +1160,7 @@ public class CaveEditor extends AbstractEditor {
 				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).setPreservationClassification(event.getSelectedItem());
 			}
 		});
-		ToolButton leftCorridorStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton leftCorridorStateOfPreservationResetSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		leftCorridorStateOfPreservationResetSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		leftCorridorStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
 			
@@ -1194,7 +1194,7 @@ public class CaveEditor extends AbstractEditor {
 		leftCorridorCeilingPreservationHLC.add(leftCorridorCeilingPreservationSelectorCB1,
 				new HorizontalLayoutData(.5, 1.0, new Margins(0, 5, 0, 0)));
 		leftCorridorCeilingPreservationHLC.add(leftCorridorCeilingPreservationSelectorCB2, new HorizontalLayoutData(.5, 1.0, new Margins(0)));
-		ToolButton leftCorridorCeilingStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton leftCorridorCeilingStateOfPreservationResetSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		leftCorridorCeilingStateOfPreservationResetSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		leftCorridorCeilingStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
 			
@@ -1217,7 +1217,7 @@ public class CaveEditor extends AbstractEditor {
 				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).setPreservationClassification(event.getSelectedItem());
 			}
 		});
-		ToolButton rightCorridorStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton rightCorridorStateOfPreservationResetSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		rightCorridorStateOfPreservationResetSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		rightCorridorStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
 			
@@ -1251,7 +1251,7 @@ public class CaveEditor extends AbstractEditor {
 		rightCorridorCeilingPreservationHLC.add(rightCorridorCeilingPreservationSelectorCB1,
 				new HorizontalLayoutData(.5, 1.0, new Margins(0, 5, 0, 0)));
 		rightCorridorCeilingPreservationHLC.add(rightCorridorCeilingPreservationSelectorCB2, new HorizontalLayoutData(.5, 1.0, new Margins(0)));
-		ToolButton rightCorridorCeilingStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton rightCorridorCeilingStateOfPreservationResetSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		rightCorridorCeilingStateOfPreservationResetSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		rightCorridorCeilingStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
 			
@@ -1274,7 +1274,7 @@ public class CaveEditor extends AbstractEditor {
 				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).setPreservationClassification(event.getSelectedItem());
 			}
 		});
-		ToolButton mainChamberStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton mainChamberStateOfPreservationResetSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		mainChamberStateOfPreservationResetSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		mainChamberStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
 			
@@ -1308,7 +1308,7 @@ public class CaveEditor extends AbstractEditor {
 		mainChamberCeilingPreservationHLC.add(mainChamberCeilingPreservationSelectorCB1,
 				new HorizontalLayoutData(0.5, 1.0, new Margins(0, 5, 0, 0)));
 		mainChamberCeilingPreservationHLC.add(mainChamberCeilingPreservationSelectorCB2, new HorizontalLayoutData(0.5, 1.0, new Margins(0)));
-		ToolButton mainChamberCeilingStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton mainChamberCeilingStateOfPreservationResetSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		mainChamberCeilingStateOfPreservationResetSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		mainChamberCeilingStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
 			
@@ -1331,7 +1331,7 @@ public class CaveEditor extends AbstractEditor {
 				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).setPreservationClassification(event.getSelectedItem());
 			}
 		});
-		ToolButton corridorStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton corridorStateOfPreservationResetSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		corridorStateOfPreservationResetSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		corridorStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
 			
@@ -1364,7 +1364,7 @@ public class CaveEditor extends AbstractEditor {
 		HorizontalLayoutContainer corridorCeilingPreservationHLC = new HorizontalLayoutContainer();
 		corridorCeilingPreservationHLC.add(corridorCeilingPreservationSelectorCB1, new HorizontalLayoutData(.5, 1.0, new Margins(0, 5, 0, 0)));
 		corridorCeilingPreservationHLC.add(corridorCeilingPreservationSelectorCB2, new HorizontalLayoutData(.5, 1.0, new Margins(0)));
-		ToolButton corridorCeilingStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton corridorCeilingStateOfPreservationResetSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		corridorCeilingStateOfPreservationResetSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		corridorCeilingStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
 			
@@ -1387,7 +1387,7 @@ public class CaveEditor extends AbstractEditor {
 				correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).setPreservationClassification(event.getSelectedItem());
 			}
 		});
-		ToolButton antechamberStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton antechamberStateOfPreservationResetSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		antechamberStateOfPreservationResetSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		antechamberStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
 			
@@ -1421,7 +1421,7 @@ public class CaveEditor extends AbstractEditor {
 		antechamberCeilingPreservationHLC.add(antechamberCeilingPreservationSelectorCB1,
 				new HorizontalLayoutData(.5, 1.0, new Margins(0, 5, 0, 0)));
 		antechamberCeilingPreservationHLC.add(antechamberCeilingPreservationSelectorCB2, new HorizontalLayoutData(.5, 1.0, new Margins(0)));
-		ToolButton antechamberCeilingStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton antechamberCeilingStateOfPreservationResetSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		antechamberCeilingStateOfPreservationResetSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		antechamberCeilingStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
 			
@@ -1444,7 +1444,7 @@ public class CaveEditor extends AbstractEditor {
 				correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).setFloorPreservationClassification(event.getSelectedItem());
 			}
 		});
-		ToolButton antechamberFloorStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton antechamberFloorStateOfPreservationResetSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		antechamberFloorStateOfPreservationResetSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		antechamberFloorStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
 			
@@ -1466,7 +1466,7 @@ public class CaveEditor extends AbstractEditor {
 				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).setFloorPreservationClassification(event.getSelectedItem());
 			}
 		});
-		ToolButton mainChamberFloorStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton mainChamberFloorStateOfPreservationResetSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		mainChamberFloorStateOfPreservationResetSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		mainChamberFloorStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
 			
@@ -1488,7 +1488,7 @@ public class CaveEditor extends AbstractEditor {
 				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).setFloorPreservationClassification(event.getSelectedItem());
 			}
 		});
-		ToolButton corridorFloorStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton corridorFloorStateOfPreservationResetSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		corridorFloorStateOfPreservationResetSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		corridorFloorStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
 			
@@ -1510,7 +1510,7 @@ public class CaveEditor extends AbstractEditor {
 				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).setFloorPreservationClassification(event.getSelectedItem());
 			}
 		});
-		ToolButton rearAreaFloorStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton rearAreaFloorStateOfPreservationResetSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		rearAreaFloorStateOfPreservationResetSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		rearAreaFloorStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
 			
@@ -1532,7 +1532,7 @@ public class CaveEditor extends AbstractEditor {
 				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).setFloorPreservationClassification(event.getSelectedItem());
 			}
 		});
-		ToolButton leftCorridorFloorStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton leftCorridorFloorStateOfPreservationResetSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		leftCorridorFloorStateOfPreservationResetSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		leftCorridorFloorStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
 			
@@ -1554,7 +1554,7 @@ public class CaveEditor extends AbstractEditor {
 				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).setFloorPreservationClassification(event.getSelectedItem());
 			}
 		});
-		ToolButton rightCorridorFloorStateOfPreservationResetSelectionTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton rightCorridorFloorStateOfPreservationResetSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		rightCorridorFloorStateOfPreservationResetSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		rightCorridorFloorStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
 			
@@ -2048,7 +2048,7 @@ public class CaveEditor extends AbstractEditor {
 				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).setCeilingType2(event.getSelectedItem());
 			}
 		});
-		ToolButton resetRearAreaCeilingTypeSelectionTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton resetRearAreaCeilingTypeSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetRearAreaCeilingTypeSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		rearAreaCeilingTypeFP.addTool(resetRearAreaCeilingTypeSelectionTB);
 		resetRearAreaCeilingTypeSelectionTB.addSelectHandler(new SelectHandler() {
@@ -2085,7 +2085,7 @@ public class CaveEditor extends AbstractEditor {
 				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).setCeilingType2(event.getSelectedItem());
 			}
 		});
-		ToolButton resetMainChamberCeilingTypeSelectionTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton resetMainChamberCeilingTypeSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetMainChamberCeilingTypeSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		mainChamberCeilingTypeFP.addTool(resetMainChamberCeilingTypeSelectionTB);
 		resetMainChamberCeilingTypeSelectionTB.addSelectHandler(new SelectHandler() {
@@ -2122,7 +2122,7 @@ public class CaveEditor extends AbstractEditor {
 				correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).setCeilingType2(event.getSelectedItem());
 			}
 		});
-		ToolButton resetAntechamberCeilingTypeSelectionTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton resetAntechamberCeilingTypeSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetAntechamberCeilingTypeSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		antechamberCeilingTypeFP.addTool(resetAntechamberCeilingTypeSelectionTB);
 		resetAntechamberCeilingTypeSelectionTB.addSelectHandler(new SelectHandler() {
@@ -2159,7 +2159,7 @@ public class CaveEditor extends AbstractEditor {
 				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).setCeilingType2(event.getSelectedItem());
 			}
 		});
-		ToolButton resetCorridorCeilingTypeSelectionTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton resetCorridorCeilingTypeSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetCorridorCeilingTypeSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		corridorCeilingTypeFP.addTool(resetCorridorCeilingTypeSelectionTB);
 		resetCorridorCeilingTypeSelectionTB.addSelectHandler(new SelectHandler() {
@@ -2196,7 +2196,7 @@ public class CaveEditor extends AbstractEditor {
 				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).setCeilingType2(event.getSelectedItem());
 			}
 		});
-		ToolButton resetLeftCorridorCeilingTypeSelectionTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton resetLeftCorridorCeilingTypeSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetLeftCorridorCeilingTypeSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		leftCorridorCeilingTypeFP.addTool(resetLeftCorridorCeilingTypeSelectionTB);
 		resetLeftCorridorCeilingTypeSelectionTB.addSelectHandler(new SelectHandler() {
@@ -2234,7 +2234,7 @@ public class CaveEditor extends AbstractEditor {
 			}
 
 		});
-		ToolButton resetRightCorridorCeilingTypeSelectionTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton resetRightCorridorCeilingTypeSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetRightCorridorCeilingTypeSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		rightCorridorCeilingTypeFP.addTool(resetRightCorridorCeilingTypeSelectionTB);
 		resetRightCorridorCeilingTypeSelectionTB.addSelectHandler(new SelectHandler() {

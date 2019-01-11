@@ -32,6 +32,7 @@ import com.sencha.gxt.data.shared.SortDir;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.ListView;
+import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer.ExpandMode;
@@ -179,7 +180,7 @@ public class CaveFilter extends AbstractFilter {
 		caveTypePanel.setHeading("Cave Types");
 		caveTypePanel.add(caveTypeSelectionLV);
 		
-		ToolButton caveTypeSelectionResetTB = new ToolButton(ToolButton.RESTORE);
+		ToolButton caveTypeSelectionResetTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		caveTypeSelectionResetTB.setToolTip(Util.createToolTip("Reset selection"));
 		caveTypeSelectionResetTB.addSelectHandler(new SelectHandler() {
 			
@@ -205,7 +206,7 @@ public class CaveFilter extends AbstractFilter {
 		sitePanel.setHeading("Sites");
 		sitePanel.add(siteSelectionLV);
 		
-		ToolButton siteSelectionResetTB = new ToolButton(ToolButton.RESTORE);
+		ToolButton siteSelectionResetTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		siteSelectionResetTB.setToolTip(Util.createToolTip("Reset selection"));
 		siteSelectionResetTB.addSelectHandler(new SelectHandler() {
 			
@@ -231,7 +232,7 @@ public class CaveFilter extends AbstractFilter {
 		districtPanel.setHeading("Districts");
 		districtPanel.add(districtSelectionLV);
 
-		ToolButton districtSelectionResetTB = new ToolButton(ToolButton.RESTORE);
+		ToolButton districtSelectionResetTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		districtSelectionResetTB.setToolTip(Util.createToolTip("Reset selection"));
 		districtSelectionResetTB.addSelectHandler(new SelectHandler() {
 			
@@ -266,7 +267,7 @@ public class CaveFilter extends AbstractFilter {
 		regionPanel.setHeading("Regions");
 		regionPanel.add(regionSelectionLV);
 
-		ToolButton regionSelectionResetTB = new ToolButton(ToolButton.RESTORE);
+		ToolButton regionSelectionResetTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		regionSelectionResetTB.setToolTip(Util.createToolTip("Reset selection"));
 		regionSelectionResetTB.addSelectHandler(new SelectHandler() {
 			

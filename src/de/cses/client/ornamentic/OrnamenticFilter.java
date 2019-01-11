@@ -31,6 +31,7 @@ import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
@@ -394,7 +395,7 @@ public class OrnamenticFilter  extends AbstractFilter{
 		ornamentComponentsPanel.setHeading("Ornament Components");
 		ornamentComponentsPanel.add(ornamentComponentsSelectionLV);
 		
-		ToolButton resetOrnamentComponentsPanelTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton resetOrnamentComponentsPanelTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetOrnamentComponentsPanelTB.setToolTip(Util.createToolTip("Reset selection"));
 		resetOrnamentComponentsPanelTB.addSelectHandler(new SelectHandler() {
 			
@@ -425,7 +426,7 @@ public class OrnamenticFilter  extends AbstractFilter{
 		ornamentCavesPanel.setHeading("Ornament Caves");
 		ornamentCavesPanel.add(cavesSelectionLV);
 		
-		ToolButton resetOrnamentCavesPanelTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton resetOrnamentCavesPanelTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetOrnamentCavesPanelTB.setToolTip(Util.createToolTip("Reset selection"));
 		resetOrnamentCavesPanelTB.addSelectHandler(new SelectHandler() {
 			
@@ -456,7 +457,7 @@ public class OrnamenticFilter  extends AbstractFilter{
 		ornamentdistrictsPanel.setHeading("Districts");
 		ornamentdistrictsPanel.add(districtsSelectionLV);
 		
-		ToolButton resetDistrictsPanelTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton resetDistrictsPanelTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetDistrictsPanelTB.setToolTip(Util.createToolTip("Reset selection"));
 		resetDistrictsPanelTB.addSelectHandler(new SelectHandler() {
 			
@@ -487,7 +488,7 @@ public class OrnamenticFilter  extends AbstractFilter{
 		innerSecPanel.setHeading("InnerSecondary Pattern");
 		innerSecPanel.add(innerSecondaryPatternsSelectionLV);
 		
-		ToolButton resetInnerSecPanelTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton resetInnerSecPanelTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetInnerSecPanelTB.setToolTip(Util.createToolTip("Reset selection"));
 		resetInnerSecPanelTB.addSelectHandler(new SelectHandler() {
 			
@@ -518,7 +519,7 @@ public class OrnamenticFilter  extends AbstractFilter{
 		relatedornamentPanel.setHeading("Related Ornaments");
 		relatedornamentPanel.add(relatedOrnamentsSelectionLV);
 		
-		ToolButton resetrelatedOrnamentsPanelTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton resetrelatedOrnamentsPanelTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetrelatedOrnamentsPanelTB.setToolTip(Util.createToolTip("Reset selection"));
 		resetrelatedOrnamentsPanelTB.addSelectHandler(new SelectHandler() {
 			
@@ -550,7 +551,7 @@ public class OrnamenticFilter  extends AbstractFilter{
 		ornamentpositionPanel.setHeading("Ornament Position");
 		ornamentpositionPanel.add(positionSelectionLV);
 		
-		ToolButton resetOrnamentPositionPanelTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton resetOrnamentPositionPanelTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetOrnamentPositionPanelTB.setToolTip(Util.createToolTip("Reset selection"));
 		resetOrnamentPositionPanelTB.addSelectHandler(new SelectHandler() {
 			
@@ -582,7 +583,7 @@ public class OrnamenticFilter  extends AbstractFilter{
 		ornamentFunctionPanel.setHeading("Ornament Function");
 		ornamentFunctionPanel.add(functionSelectionLV);
 		
-		ToolButton resetOrnamentFunctionPanelTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton resetOrnamentFunctionPanelTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetOrnamentFunctionPanelTB.setToolTip(Util.createToolTip("Reset selection"));
 		resetOrnamentFunctionPanelTB.addSelectHandler(new SelectHandler() {
 			
@@ -613,7 +614,7 @@ public class OrnamenticFilter  extends AbstractFilter{
 		ornamentComponentsPanel.setHeading("Ornament Components");
 		ornamentComponentsPanel.add(ornamentComponentsSelectionLV);
 		
-		ToolButton resetOrnamentComponentsPanelTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton resetOrnamentComponentsPanelTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetOrnamentComponentsPanelTB.setToolTip(Util.createToolTip("Reset selection"));
 		resetOrnamentComponentsPanelTB.addSelectHandler(new SelectHandler() {
 			

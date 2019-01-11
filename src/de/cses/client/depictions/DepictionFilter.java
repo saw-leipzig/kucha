@@ -40,6 +40,7 @@ import com.sencha.gxt.dnd.core.client.DropTarget;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer.ExpandMode;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
@@ -243,7 +244,7 @@ public class DepictionFilter extends AbstractFilter {
 		cavePanel.setHeading("Cave search");
 		cavePanel.add(caveSelectionLV);
 		
-		ToolButton caveSelectionResetTB = new ToolButton(ToolButton.RESTORE);
+		ToolButton caveSelectionResetTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		caveSelectionResetTB.setToolTip(Util.createToolTip("Reset selection"));
 		caveSelectionResetTB.addSelectHandler(new SelectHandler() {
 			
@@ -317,7 +318,7 @@ public class DepictionFilter extends AbstractFilter {
 		});
 		iconographyPanel.addTool(selectorTB);
 
-		ToolButton iconographySelectionResetTB = new ToolButton(ToolButton.RESTORE);
+		ToolButton iconographySelectionResetTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		iconographySelectionResetTB.setToolTip(Util.createToolTip("Reset selection"));
 		iconographySelectionResetTB.addSelectHandler(new SelectHandler() {
 			
@@ -376,7 +377,7 @@ public class DepictionFilter extends AbstractFilter {
 		currentLocationPanel.setHeading("Location search");
 		currentLocationPanel.add(locationSelectionLV);
 		
-		ToolButton locationSelectionResetTB = new ToolButton(ToolButton.RESTORE);
+		ToolButton locationSelectionResetTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		locationSelectionResetTB.setToolTip(Util.createToolTip("Reset selection"));
 		locationSelectionResetTB.addSelectHandler(new SelectHandler() {
 			
