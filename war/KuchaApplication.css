@@ -429,3 +429,43 @@ div.maxMinButtonOver {
 	background-repeat: no-repeat;
 	cursor: pointer;
 }
+
+div.favouriteButton {
+	background-image: url(icons/favourite_icon.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.favouriteActiveButton {
+	background-image: url(icons/favourite_active.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.favouriteButtonOver {
+	background-image: url(icons/favourite_mo.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.editButton {
+	background-image: url(icons/edit.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.editButtonOver {
+	background-image: url(icons/edit_mo.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}

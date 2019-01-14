@@ -108,6 +108,7 @@ public class DepictionEditor extends AbstractEditor {
 	 * Create a remote service proxy to talk to the server-side service.
 	 */
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
+
 	private TextArea inscriptionsTestArea;
 	private TextField datingField;
 	private NumberField<Double> widthNF;
@@ -1278,7 +1279,7 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		
-		ToolButton setMasterTB = new ToolButton(ToolButton.PIN);
+		ToolButton setMasterTB = new ToolButton(new IconConfig("favouriteButton", "favouriteButtonOver"));
 		setMasterTB.setToolTip(Util.createToolTip("Set master image.", "The master image will be displayed on top of this list and used for previews in the system (e.g. thumbnails)."));
 		setMasterTB.addSelectHandler(new SelectHandler() {
 			
@@ -1290,34 +1291,34 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		
-		ToolButton infoTB = new ToolButton(ToolButton.QUESTION);
-		infoTB.addSelectHandler(new SelectHandler() {
-			
-			@Override
-			public void onSelect(SelectEvent event) {
-				PopupPanel dialog = new PopupPanel();
-				FramedPanel infoDialogFP = new FramedPanel();
-				infoDialogFP.setHeading("Colour schema");
-				VerticalPanel infoVP = new VerticalPanel();
-				infoVP.add(new HTML("<div><label style='font-size: 12px; color: #0073e6;'>Master Image</label></div>"));
-				infoVP.add(new HTML("<div><label style='font-size: 12px; color: #99ff66;'>Open Access Image</label></div>"));
-				infoVP.add(new HTML("<div><label style='font-size: 12px; color: #ff1a1a;'>Non Open Access Image</label></div>"));
-				infoDialogFP.add(infoVP);
-				TextButton okButton = new TextButton("OK");
-				okButton.addSelectHandler(new SelectHandler() {
-					
-					@Override
-					public void onSelect(SelectEvent event) {
-						dialog.hide();
-					}
-				});
-				infoDialogFP.addButton(okButton);
-				dialog.add(infoDialogFP);
-				dialog.setModal(true);
-				dialog.setGlassEnabled(true);
-				dialog.center();
-			}
-		});
+//		ToolButton infoTB = new ToolButton(ToolButton.QUESTION);
+//		infoTB.addSelectHandler(new SelectHandler() {
+//			
+//			@Override
+//			public void onSelect(SelectEvent event) {
+//				PopupPanel dialog = new PopupPanel();
+//				FramedPanel infoDialogFP = new FramedPanel();
+//				infoDialogFP.setHeading("Colour schema");
+//				VerticalPanel infoVP = new VerticalPanel();
+//				infoVP.add(new HTML("<div><label style='font-size: 12px; color: #0073e6;'>Master Image</label></div>"));
+//				infoVP.add(new HTML("<div><label style='font-size: 12px; color: #99ff66;'>Open Access Image</label></div>"));
+//				infoVP.add(new HTML("<div><label style='font-size: 12px; color: #ff1a1a;'>Non Open Access Image</label></div>"));
+//				infoDialogFP.add(infoVP);
+//				TextButton okButton = new TextButton("OK");
+//				okButton.addSelectHandler(new SelectHandler() {
+//					
+//					@Override
+//					public void onSelect(SelectEvent event) {
+//						dialog.hide();
+//					}
+//				});
+//				infoDialogFP.addButton(okButton);
+//				dialog.add(infoDialogFP);
+//				dialog.setModal(true);
+//				dialog.setGlassEnabled(true);
+//				dialog.center();
+//			}
+//		});
 
 		ToolButton zoomTB = new ToolButton(ToolButton.MAXIMIZE);
 		zoomTB.addSelectHandler(new SelectHandler() {
@@ -1334,7 +1335,7 @@ public class DepictionEditor extends AbstractEditor {
 		FramedPanel depictionImagesPanel = new FramedPanel();
 		depictionImagesPanel.setHeading("Images");
 		depictionImagesPanel.add(imageViewLF);
-		depictionImagesPanel.addTool(infoTB);
+//		depictionImagesPanel.addTool(infoTB);
 		depictionImagesPanel.addTool(zoomTB);
 		depictionImagesPanel.addTool(addImageTB);
 		depictionImagesPanel.addTool(removeImageTB);

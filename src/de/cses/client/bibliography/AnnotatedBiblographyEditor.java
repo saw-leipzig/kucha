@@ -826,7 +826,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			}
 		});
 		
-		ToolButton editAuthorTB = new ToolButton(ToolButton.GEAR);
+		ToolButton editAuthorTB = new ToolButton(new IconConfig("editButton", "editButtonOver"));
 		editAuthorTB.setToolTip(Util.createToolTip("Edit author information", "Select author in left column, then click here."));
 		editAuthorTB.addSelectHandler(new SelectHandler() {
 			
@@ -1002,7 +1002,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			
 			editorVLC.add(filterEditorTypeHLC, new VerticalLayoutData(1.0, .15, new Margins(10, 0, 0, 0)));
 
-			ToolButton editEditorTB = new ToolButton(ToolButton.GEAR);
+			ToolButton editEditorTB = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 			editEditorTB.setToolTip(Util.createToolTip("Edit author", "Select editor in left column, then click here to edit information."));
 			editEditorTB.addSelectHandler(new SelectHandler() {
 				

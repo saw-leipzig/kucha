@@ -307,7 +307,7 @@ public class DepictionFilter extends AbstractFilter {
 			
 		};
 		
-		ToolButton selectorTB = new ToolButton(ToolButton.GEAR);
+		ToolButton selectorTB = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		selectorTB.setToolTip(Util.createToolTip("Open Iconography & Pictorial Element selection"));
 		selectorTB.addSelectHandler(new SelectHandler() {
 			
