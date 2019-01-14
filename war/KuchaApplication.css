@@ -469,3 +469,19 @@ div.editButtonOver {
 	background-repeat: no-repeat;
 	cursor: pointer;
 }
+
+div.freeIcon {
+	background-image: url(icons/free_icon2.png);
+	width: 25px;
+	height: 25px;
+	background-repeat: no-repeat;
+}
+
+
+div.blockedIcon {
+	background-image: url(icons/blocked_icon2.png);
+	width: 25px;
+	height: 25px;
+	background-repeat: no-repeat;
+}
+
