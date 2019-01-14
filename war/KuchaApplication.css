@@ -373,3 +373,35 @@ div.minimizeButtonOver {
 	background-repeat: no-repeat;
 	cursor: pointer;
 }
+
+div.unfoldButton {
+	background-image: url(icons/list_unfold.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.unfoldButtonOver {
+	background-image: url(icons/list_unfold_mo.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.foldButton {
+	background-image: url(icons/list_fold_up.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.foldButtonOver {
+	background-image: url(icons/list_fold_up_mo.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
