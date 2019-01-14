@@ -305,7 +305,7 @@ public class CaveFilter extends AbstractFilter {
     dfVLC.add(decoratedOnlyCB, new VerticalLayoutData(1.0, .5));
 		
     BorderLayoutContainer depictionFilterBLC = new BorderLayoutContainer();
-    depictionFilterBLC.setNorthWidget(dfVLC, new BorderLayoutData(20));
+    depictionFilterBLC.setNorthWidget(dfVLC, new BorderLayoutData(40));
     depictionFilterBLC.setCenterWidget(locationALC, new MarginData(5, 0, 0, 0));
     depictionFilterBLC.setHeight(450);
 
