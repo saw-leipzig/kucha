@@ -16,6 +16,8 @@ package de.cses.client.caves;
 import java.util.Comparator;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.ui.Widget;
@@ -39,8 +41,11 @@ import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer.Expa
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.MarginData;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
+import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.TextField;
 
 import de.cses.client.StaticTables;
@@ -75,6 +80,7 @@ public class CaveFilter extends AbstractFilter {
 	private ListView<RegionEntry, RegionEntry> regionSelectionLV;
 	private ListView<SiteEntry, SiteEntry> siteSelectionLV;
 	private TextField searchNameTF;
+	private CheckBox decoratedOnlyCB;
 
 	interface DistrictProperties extends PropertyAccess<DistrictEntry> {
 		ModelKeyProvider<DistrictEntry> districtID();
@@ -163,6 +169,10 @@ public class CaveFilter extends AbstractFilter {
 		
 		searchNameTF = new TextField();
 		searchNameTF.setEmptyText("search historical names");
+		
+		decoratedOnlyCB = new CheckBox();
+		decoratedOnlyCB.setBoxLabel("decorated caves only");
+		decoratedOnlyCB.setValue(false);
 		
 		caveTypeSelectionLV = new ListView<CaveTypeEntry, CaveTypeEntry>(caveTypeEntryList, new IdentityValueProvider<CaveTypeEntry>(), new SimpleSafeHtmlCell<CaveTypeEntry>(new AbstractSafeHtmlRenderer<CaveTypeEntry>() {
 			final CaveTypeViewTemplates ctvTemplates = GWT.create(CaveTypeViewTemplates.class);
@@ -289,9 +299,13 @@ public class CaveFilter extends AbstractFilter {
     locationALC.add(districtPanel);
     locationALC.add(regionPanel);
     locationALC.setActiveWidget(caveTypePanel);
+    
+    VerticalLayoutContainer dfVLC = new VerticalLayoutContainer();
+    dfVLC.add(searchNameTF, new VerticalLayoutData(1.0, .5));
+    dfVLC.add(decoratedOnlyCB, new VerticalLayoutData(1.0, .5));
 		
     BorderLayoutContainer depictionFilterBLC = new BorderLayoutContainer();
-    depictionFilterBLC.setNorthWidget(searchNameTF, new BorderLayoutData(20));
+    depictionFilterBLC.setNorthWidget(dfVLC, new BorderLayoutData(20));
     depictionFilterBLC.setCenterWidget(locationALC, new MarginData(5, 0, 0, 0));
     depictionFilterBLC.setHeight(450);
 
@@ -341,6 +355,8 @@ public class CaveFilter extends AbstractFilter {
 		if (searchNameTF.getValue() != null && !searchNameTF.getValue().isEmpty()) {
 			result.setHistoricalName(searchNameTF.getValue());
 		}
+		
+		result.setDecoratedOnly(decoratedOnlyCB.getValue());
 		
 		if (!caveTypeSelectionLV.getSelectionModel().getSelectedItems().isEmpty()) {
 			for (CaveTypeEntry cte : caveTypeSelectionLV.getSelectionModel().getSelectedItems()) {

@@ -688,6 +688,10 @@ public class MysqlConnector {
 			where += where.isEmpty() ? "CONCAT(HistoricName, OptionalHistoricName) LIKE ?" : " AND CONCAT(HistoricName, OptionalHistoricName) LIKE ?";
 		}
 
+		if (searchEntry.isDecoratedOnly()) {
+			where += where.isEmpty() ? "CaveID IN (SELECT CaveID FROM Depictions)" : " AND CaveID IN (SELECT CaveID FROM Depictions)";
+		}
+		
 		System.err.println("searchCaves: where = " + where);
 		
 		try {
