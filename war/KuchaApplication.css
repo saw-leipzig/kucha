@@ -470,18 +470,39 @@ div.editButtonOver {
 	cursor: pointer;
 }
 
-div.freeIcon {
+span.freeIconText {
 	background-image: url(icons/free_icon2.png);
 	width: 25px;
 	height: 25px;
+	font-size: 25px;
 	background-repeat: no-repeat;
+  padding-left: 30px
 }
 
-
-div.blockedIcon {
+span.blockedIconText {
 	background-image: url(icons/blocked_icon2.png);
 	width: 25px;
 	height: 25px;
+	font-size: 25px;
 	background-repeat: no-repeat;
+  padding-left: 30px
 }
 
+span.favouriteIconText {
+	background-image: url(icons/favourite_active.png);
+	width: 25px;
+	height: 25px;
+	font-size: 25px;
+	background-repeat: no-repeat;
+  padding-left: 30px
+}
+
+figure.paintRepImgPreview {
+	border-style: solid; 
+	border-color: #807853; 
+	border-width: 3px; 
+	border-radius: 10px; 
+	margin: 0; 
+	padding: 2px; 
+	width: 95%'	
+}

@@ -28,23 +28,26 @@ import de.cses.client.depictions.DepictionEditor.TitleElement;
  */
 public interface ImageViewTemplates extends XTemplates {
 
-	@XTemplate("<figure style='border-style: solid; border-color: #99ff66; border-width: 3px; border-radius: 10px; margin: 0; padding: 2px; width: 95%'>"
+	@XTemplate("<figure class='paintRepImgPreview'>"
 			+ "<img src='{imageUri}' style='border-radius: 10px; position: relative; margin-left: 2px; width: 230px; background: white;'>"
-			+ "<figcaption style='font-size:12px; padding: 10px; text-align: center;'>{shortName} ({imageFormat}) <div class='freeIcon' style='text-align: left;'/>"
+			+ "<figcaption style='font-size:12px; padding: 10px; text-align: center;'>"
+			+ "<span class='freeIconText'>{shortName} ({imageFormat})</span>"
 			+ "<p style='font-size:10px;'> <tpl for='titleList'> {element}<wbr> </tpl> </p>"
 			+ "<p style='font-size: 8px; text-align: right;'>{imageAuthor}<br>{copyright}</p></figcaption></figure>")
 	SafeHtml openAccessImage(SafeUri imageUri, String shortName, ArrayList<TitleElement> titleList, String imageFormat, String imageAuthor, String copyright);
 
-	@XTemplate("<figure style='border-style: solid; border-color: #ff1a1a; border-width: 3px; border-radius: 10px; margin: 0; padding: 2px; width: 95%'>"
+	@XTemplate("<figure class='paintRepImgPreview'>"
 			+ "<img src='{imageUri}' style='border-radius: 10px; position: relative; margin-left: 2px; width: 230px; background: white;'>"
-			+ "<figcaption style='font-size:12px; padding: 10px; text-align: center;'>{shortName} ({imageFormat})"
+			+ "<figcaption style='font-size:12px; padding: 10px; text-align: center;'>"
+			+ "<span class='blockedIconText'>{shortName} ({imageFormat})</span>"
 			+ "<p style='font-size:10px;'> <tpl for='titleList'> {element}<wbr> </tpl> </p>"
 			+ "<p style='font-size: 8px; text-align: right;'>{imageAuthor}<br>{copyright}</p></figcaption></figure>")
 	SafeHtml nonOpenAccessImage(SafeUri imageUri, String shortName, ArrayList<TitleElement> titleList, String imageFormat, String imageAuthor, String copyright);
 
-	@XTemplate("<figure style='border-style: solid; border-color: #0073e6; border-width: 3px; border-radius: 10px; margin: 0; padding: 2px; width: 95%'>"
+	@XTemplate("<figure class='paintRepImgPreview'>"
 			+ "<img src='{imageUri}' style='border-radius: 10px; position: relative; margin-left: 2px; width: 230px; background: white;'>"
-			+ "<figcaption style='font-size:12px; padding: 10px; text-align: center;'>{shortName} ({imageFormat})"
+			+ "<figcaption style='font-size:12px; padding: 10px; text-align: center;'>"
+			+ "<span class='favouriteIconText'>{shortName} ({imageFormat})</span>"
 			+ "<p style='font-size:10px;'> <tpl for='titleList'> {element}<wbr> </tpl> </p>"
 			+ "<p style='font-size: 8px; text-align: right;'>{imageAuthor}<br>{copyright}</p></figcaption></figure>")
 	SafeHtml masterImage(SafeUri imageUri, String shortName, ArrayList<TitleElement> titleList, String imageFormat, String imageAuthor, String copyright);
