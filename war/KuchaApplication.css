@@ -325,3 +325,184 @@ div.removeButtonOver {
 	background-repeat: no-repeat;
 	cursor: pointer;
 }
+
+div.resetButton {
+	background-image: url(icons/reset_results_icon2.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.resetButtonOver {
+	background-image: url(icons/reset_results_mo.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.maximizeButton {
+	background-image: url(icons/vergroessern_enlarge.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.maximizeButtonOver {
+	background-image: url(icons/vergroessern_enlarge_mo.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.minimizeButton {
+	background-image: url(icons/verkleinern_decrease.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.minimizeButtonOver {
+	background-image: url(icons/verkleinern_decrease_mo.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.unfoldButton {
+	background-image: url(icons/list_unfold.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.unfoldButtonOver {
+	background-image: url(icons/list_unfold_mo.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.foldButton {
+	background-image: url(icons/list_fold_up.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.foldButtonOver {
+	background-image: url(icons/list_fold_up_mo.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.minMaxButton {
+	background-image: url(icons/minimize_maximize.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.minMaxButtonOver {
+	background-image: url(icons/minimize_maximize_mo.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.maxMinButtonOver {
+	background-image: url(icons/minimize_maximize_mo2.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.favouriteButton {
+	background-image: url(icons/favourite_icon.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.favouriteActiveButton {
+	background-image: url(icons/favourite_active.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.favouriteButtonOver {
+	background-image: url(icons/favourite_mo.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.editButton {
+	background-image: url(icons/edit.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.editButtonOver {
+	background-image: url(icons/edit_mo.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+span.freeIconText {
+	background-image: url(icons/free_icon2.png);
+	width: 25px;
+	height: 25px;
+	font-size: 20px;
+	background-repeat: no-repeat;
+  padding-left: 30px
+}
+
+span.blockedIconText {
+	background-image: url(icons/blocked_icon2.png);
+	width: 25px;
+	height: 25px;
+	font-size: 20px;
+	background-repeat: no-repeat;
+  padding-left: 30px
+}
+
+span.favouriteIconText {
+	background-image: url(icons/favourite_active.png);
+	width: 25px;
+	height: 25px;
+	font-size: 20px;
+	background-repeat: no-repeat;
+  padding-left: 30px
+}
+
+figure.paintRepImgPreview {
+	border-style: solid; 
+	border-color: #807853; 
+	border-width: 3px; 
+	border-radius: 10px; 
+	margin: 0; 
+	padding: 2px; 
+	width: 95%'	
+}

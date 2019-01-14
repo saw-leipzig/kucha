@@ -344,7 +344,7 @@ public class SingleImageEditor extends AbstractEditor {
 			}
 		});
 		
-		ToolButton resetSelectionTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton resetSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		resetSelectionTB.addSelectHandler(new SelectHandler() {
 			

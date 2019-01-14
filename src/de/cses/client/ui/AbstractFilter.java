@@ -19,6 +19,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.widget.core.client.Portlet;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
@@ -55,7 +56,7 @@ public abstract class AbstractFilter implements IsWidget {
 			panel.setHeading(filterName);
 			panel.add(getFilterUI());
 			
-//			ToolButton extendedFilterTB = new ToolButton(ToolButton.GEAR);
+//			ToolButton extendedFilterTB = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 //			extendedFilterTB.addSelectHandler(new SelectHandler() {
 //				
 //				@Override

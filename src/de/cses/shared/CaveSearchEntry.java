@@ -5,6 +5,7 @@ import java.util.ArrayList;
 public class CaveSearchEntry extends AbstractSearchEntry {
 
 	private String historicalName = "";
+	private boolean decoratedOnly = false;
 	private ArrayList<Integer> caveTypeIdList = new ArrayList<Integer>();
 	private ArrayList<Integer> siteIdList = new ArrayList<Integer>();
 	private ArrayList<Integer> districtIdList = new ArrayList<Integer>();
@@ -57,6 +58,14 @@ public class CaveSearchEntry extends AbstractSearchEntry {
 
 	public void setHistoricalName(String historicalName) {
 		this.historicalName = historicalName;
+	}
+
+	public boolean isDecoratedOnly() {
+		return decoratedOnly;
+	}
+
+	public void setDecoratedOnly(boolean decoratedOnly) {
+		this.decoratedOnly = decoratedOnly;
 	}
 
 }

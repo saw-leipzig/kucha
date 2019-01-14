@@ -14,7 +14,6 @@
 package de.cses.client.depictions;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
@@ -30,9 +29,7 @@ import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
@@ -50,9 +47,9 @@ import com.sencha.gxt.dnd.core.client.ListViewDropTarget;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.TabPanel;
+import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
-import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
@@ -82,7 +79,6 @@ import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
 import de.cses.client.Util;
 import de.cses.client.bibliography.BibliographySelector;
-import de.cses.client.depictions.DepictionFilter.NameElement;
 import de.cses.client.images.ImageSelector;
 import de.cses.client.images.ImageSelectorListener;
 import de.cses.client.ui.AbstractEditor;
@@ -108,6 +104,7 @@ public class DepictionEditor extends AbstractEditor {
 	 * Create a remote service proxy to talk to the server-side service.
 	 */
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
+
 	private TextArea inscriptionsTestArea;
 	private TextField datingField;
 	private NumberField<Double> widthNF;
@@ -601,7 +598,7 @@ public class DepictionEditor extends AbstractEditor {
 		});
 		caveSelectionCB.setToolTip("This field can only be changed until a depiction is allocated to a wall");
 		// TODO check if wallTypeID is set, then set caveSelectionCB.editable(false)
-		ToolButton resetCaveSelectionTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton resetCaveSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetCaveSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		resetCaveSelectionTB.addSelectHandler(new SelectHandler() {
 			
@@ -642,7 +639,7 @@ public class DepictionEditor extends AbstractEditor {
 				correspondingDepictionEntry.setExpedition(event.getSelectedItem());
 			}
 		});
-		ToolButton expedSelectionTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton expedSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		expedSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		expedSelectionTB.addSelectHandler(new SelectHandler() {
 			
@@ -676,7 +673,7 @@ public class DepictionEditor extends AbstractEditor {
 				correspondingDepictionEntry.setVendor(event.getSelectedItem());
 			}
 		});
-		ToolButton resetVendorSelectionTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton resetVendorSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetVendorSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		resetVendorSelectionTB.addSelectHandler(new SelectHandler() {
 			
@@ -741,8 +738,8 @@ public class DepictionEditor extends AbstractEditor {
 				addVendorDialog.center();
 			}
 		});		
-		vendorFP.addTool(resetVendorSelectionTB);
 		vendorFP.addTool(newVendorPlusTool);
+		vendorFP.addTool(resetVendorSelectionTB);
 		vendorFP.add(vendorSelection);
 
 		FramedPanel datePurchasedFP = new FramedPanel();
@@ -784,7 +781,7 @@ public class DepictionEditor extends AbstractEditor {
 				correspondingDepictionEntry.setLocation(event.getValue());
 			}
 		});
-		ToolButton resetLocationSelectionTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton resetLocationSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetLocationSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		resetLocationSelectionTB.addSelectHandler(new SelectHandler() {
 			
@@ -869,8 +866,8 @@ public class DepictionEditor extends AbstractEditor {
 				addLocationDialog.center();
 			}
 		});				
-		currentLocationFP.addTool(resetLocationSelectionTB);
 		currentLocationFP.addTool(newLocationPlusTool);
+		currentLocationFP.addTool(resetLocationSelectionTB);
 		currentLocationFP.add(locationSelectionCB);
 
 		FramedPanel inventoryNumberFP = new FramedPanel();
@@ -965,15 +962,15 @@ public class DepictionEditor extends AbstractEditor {
     
 		VerticalLayoutContainer basicsLeftVLC = new VerticalLayoutContainer();
 		
-		basicsLeftVLC.add(shortNameFP, new VerticalLayoutData(1.0, .15));
-		basicsLeftVLC.add(caveSelectionFP, new VerticalLayoutData(1.0, .1));
-		basicsLeftVLC.add(acquiredByExpeditionFP, new VerticalLayoutData(1.0, .1));
-		basicsLeftVLC.add(vendorFP, new VerticalLayoutData(1.0, .1));
-		basicsLeftVLC.add(datePurchasedFP, new VerticalLayoutData(1.0, .1));
-		basicsLeftVLC.add(currentLocationFP, new VerticalLayoutData(1.0, .1));
-		basicsLeftVLC.add(inventoryNumberFP, new VerticalLayoutData(1.0, .1));
+		basicsLeftVLC.add(shortNameFP, new VerticalLayoutData(1.0, .13));
+		basicsLeftVLC.add(caveSelectionFP, new VerticalLayoutData(1.0, .11));
+		basicsLeftVLC.add(acquiredByExpeditionFP, new VerticalLayoutData(1.0, .11));
+		basicsLeftVLC.add(vendorFP, new VerticalLayoutData(1.0, .11));
+		basicsLeftVLC.add(datePurchasedFP, new VerticalLayoutData(1.0, .11));
+		basicsLeftVLC.add(currentLocationFP, new VerticalLayoutData(1.0, .11));
+		basicsLeftVLC.add(inventoryNumberFP, new VerticalLayoutData(1.0, .11));
 //		basicsLeftVLC.add(positionNoteFP, new VerticalLayoutData(1.0, .15));
-		basicsLeftVLC.add(stateOfPreservationFP, new VerticalLayoutData(1.0, .25));
+		basicsLeftVLC.add(stateOfPreservationFP, new VerticalLayoutData(1.0, .21));
 
 		FramedPanel wallSelectorFP = new FramedPanel();
 		wallSelectorFP.setHeading("Wall");
@@ -1085,7 +1082,7 @@ public class DepictionEditor extends AbstractEditor {
 				correspondingDepictionEntry.setStyleID(event.getSelectedItem().getStyleID());
 			}
 		});
-		ToolButton resetStyleSelectionTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton resetStyleSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetStyleSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		resetStyleSelectionTB.addSelectHandler(new SelectHandler() {
 			
@@ -1119,7 +1116,7 @@ public class DepictionEditor extends AbstractEditor {
 				correspondingDepictionEntry.setModeOfRepresentationID(event.getSelectedItem().getModeOfRepresentationID());
 			}
 		});
-		ToolButton resetModeOfRepresentationSelectionTB = new ToolButton(ToolButton.REFRESH);
+		ToolButton resetModeOfRepresentationSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetModeOfRepresentationSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		resetModeOfRepresentationSelectionTB.addSelectHandler(new SelectHandler() {
 			
@@ -1186,11 +1183,11 @@ public class DepictionEditor extends AbstractEditor {
 
 		VerticalLayoutContainer descriptionLeftVLC = new VerticalLayoutContainer();
 		descriptionLeftVLC.add(dimensionHLC, new VerticalLayoutData(1.0, .1));
-		descriptionLeftVLC.add(styleFP, new VerticalLayoutData(1.0, .1));
-		descriptionLeftVLC.add(modesOfRepresentationFP, new VerticalLayoutData(1.0, .1));
+		descriptionLeftVLC.add(styleFP, new VerticalLayoutData(1.0, .11));
+		descriptionLeftVLC.add(modesOfRepresentationFP, new VerticalLayoutData(1.0, .11));
 		descriptionLeftVLC.add(backgroundColourFP, new VerticalLayoutData(1.0, .1));
-		descriptionLeftVLC.add(inscriptionsFP, new VerticalLayoutData(1.0, .25));
-		descriptionLeftVLC.add(separateAksarasFP, new VerticalLayoutData(1.0, .25));
+		descriptionLeftVLC.add(inscriptionsFP, new VerticalLayoutData(1.0, .24));
+		descriptionLeftVLC.add(separateAksarasFP, new VerticalLayoutData(1.0, .24));
 		descriptionLeftVLC.add(datingFP, new VerticalLayoutData(1.0, .1));
 
 		FramedPanel descriptionFP = new FramedPanel();
@@ -1278,7 +1275,7 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		
-		ToolButton setMasterTB = new ToolButton(ToolButton.PIN);
+		ToolButton setMasterTB = new ToolButton(new IconConfig("favouriteButton", "favouriteButtonOver"));
 		setMasterTB.setToolTip(Util.createToolTip("Set master image.", "The master image will be displayed on top of this list and used for previews in the system (e.g. thumbnails)."));
 		setMasterTB.addSelectHandler(new SelectHandler() {
 			
@@ -1290,34 +1287,34 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		
-		ToolButton infoTB = new ToolButton(ToolButton.QUESTION);
-		infoTB.addSelectHandler(new SelectHandler() {
-			
-			@Override
-			public void onSelect(SelectEvent event) {
-				PopupPanel dialog = new PopupPanel();
-				FramedPanel infoDialogFP = new FramedPanel();
-				infoDialogFP.setHeading("Colour schema");
-				VerticalPanel infoVP = new VerticalPanel();
-				infoVP.add(new HTML("<div><label style='font-size: 12px; color: #0073e6;'>Master Image</label></div>"));
-				infoVP.add(new HTML("<div><label style='font-size: 12px; color: #99ff66;'>Open Access Image</label></div>"));
-				infoVP.add(new HTML("<div><label style='font-size: 12px; color: #ff1a1a;'>Non Open Access Image</label></div>"));
-				infoDialogFP.add(infoVP);
-				TextButton okButton = new TextButton("OK");
-				okButton.addSelectHandler(new SelectHandler() {
-					
-					@Override
-					public void onSelect(SelectEvent event) {
-						dialog.hide();
-					}
-				});
-				infoDialogFP.addButton(okButton);
-				dialog.add(infoDialogFP);
-				dialog.setModal(true);
-				dialog.setGlassEnabled(true);
-				dialog.center();
-			}
-		});
+//		ToolButton infoTB = new ToolButton(ToolButton.QUESTION);
+//		infoTB.addSelectHandler(new SelectHandler() {
+//			
+//			@Override
+//			public void onSelect(SelectEvent event) {
+//				PopupPanel dialog = new PopupPanel();
+//				FramedPanel infoDialogFP = new FramedPanel();
+//				infoDialogFP.setHeading("Colour schema");
+//				VerticalPanel infoVP = new VerticalPanel();
+//				infoVP.add(new HTML("<div><label style='font-size: 12px; color: #0073e6;'>Master Image</label></div>"));
+//				infoVP.add(new HTML("<div><label style='font-size: 12px; color: #99ff66;'>Open Access Image</label></div>"));
+//				infoVP.add(new HTML("<div><label style='font-size: 12px; color: #ff1a1a;'>Non Open Access Image</label></div>"));
+//				infoDialogFP.add(infoVP);
+//				TextButton okButton = new TextButton("OK");
+//				okButton.addSelectHandler(new SelectHandler() {
+//					
+//					@Override
+//					public void onSelect(SelectEvent event) {
+//						dialog.hide();
+//					}
+//				});
+//				infoDialogFP.addButton(okButton);
+//				dialog.add(infoDialogFP);
+//				dialog.setModal(true);
+//				dialog.setGlassEnabled(true);
+//				dialog.center();
+//			}
+//		});
 
 		ToolButton zoomTB = new ToolButton(ToolButton.MAXIMIZE);
 		zoomTB.addSelectHandler(new SelectHandler() {
@@ -1334,7 +1331,7 @@ public class DepictionEditor extends AbstractEditor {
 		FramedPanel depictionImagesPanel = new FramedPanel();
 		depictionImagesPanel.setHeading("Images");
 		depictionImagesPanel.add(imageViewLF);
-		depictionImagesPanel.addTool(infoTB);
+//		depictionImagesPanel.addTool(infoTB);
 		depictionImagesPanel.addTool(zoomTB);
 		depictionImagesPanel.addTool(addImageTB);
 		depictionImagesPanel.addTool(removeImageTB);
