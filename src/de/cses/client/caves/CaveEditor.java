@@ -736,17 +736,6 @@ public class CaveEditor extends AbstractEditor {
 		});
 		caveGroupPanel.add(caveGroupSelector);
 		
-		ToolButton resetCaveGroupSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
-		resetCaveGroupSelectionTB.setToolTip(Util.createToolTip("reset selection"));
-		caveGroupPanel.addTool(resetCaveGroupSelectionTB);
-		resetCaveGroupSelectionTB.addSelectHandler(new SelectHandler() {
-			
-			@Override
-			public void onSelect(SelectEvent event) {
-				caveGroupSelector.setValue(null, true);
-			}
-		});
-		
 		ToolButton newCaveGroupPlusTool = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		newCaveGroupPlusTool.setToolTip(Util.createToolTip("add Cave Group"));
 		caveGroupPanel.addTool(newCaveGroupPlusTool);
@@ -803,6 +792,17 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 
+		ToolButton resetCaveGroupSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
+		resetCaveGroupSelectionTB.setToolTip(Util.createToolTip("reset selection"));
+		caveGroupPanel.addTool(resetCaveGroupSelectionTB);
+		resetCaveGroupSelectionTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				caveGroupSelector.setValue(null, true);
+			}
+		});
+		
 		FramedPanel sitePanel = new FramedPanel();
 		sitePanel.setHeading("Site");
 		siteSelection = new ComboBox<SiteEntry>(siteEntryListStore, siteProps.name(), new AbstractSafeHtmlRenderer<SiteEntry>() {
@@ -839,6 +839,16 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 		siteSelection.setWidth(250);
+		ToolButton resetSiteSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
+		resetSiteSelectionTB.setToolTip(Util.createToolTip("reset Site"));
+		sitePanel.addTool(resetSiteSelectionTB);
+		resetSiteSelectionTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				siteSelection.setValue(null, true);
+			}
+		});
 		sitePanel.add(siteSelection);
 
 		FramedPanel districtPanel = new FramedPanel();
@@ -867,17 +877,6 @@ public class CaveEditor extends AbstractEditor {
 			districtSelection.setEnabled(false);
 		}
 		districtPanel.add(districtSelection);
-
-		ToolButton resetDistrictSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
-		resetDistrictSelectionTB.setToolTip(Util.createToolTip("add District"));
-		districtPanel.addTool(resetDistrictSelectionTB);
-		resetDistrictSelectionTB.addSelectHandler(new SelectHandler() {
-			
-			@Override
-			public void onSelect(SelectEvent event) {
-				districtSelection.setValue(null, true);
-			}
-		});
 		
 		ToolButton newDistrictPlusTool = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		newDistrictPlusTool.setToolTip(Util.createToolTip("add District"));
@@ -952,6 +951,17 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 
+		ToolButton resetDistrictSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
+		resetDistrictSelectionTB.setToolTip(Util.createToolTip("reset District"));
+		districtPanel.addTool(resetDistrictSelectionTB);
+		resetDistrictSelectionTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				districtSelection.setValue(null, true);
+			}
+		});
+
 		FramedPanel regionPanel = new FramedPanel();
 		regionPanel.setHeading("Region");
 		regionSelection = new ComboBox<RegionEntry>(regionEntryListStore, regionProps.englishName(),
@@ -983,17 +993,6 @@ public class CaveEditor extends AbstractEditor {
 			regionSelection.setEnabled(false);
 		}
 		regionPanel.add(regionSelection);
-
-		ToolButton resetRegionSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
-		resetRegionSelectionTB.setToolTip(Util.createToolTip("reset selection"));
-		regionPanel.addTool(resetRegionSelectionTB);
-		resetRegionSelectionTB.addSelectHandler(new SelectHandler() {
-			
-			@Override
-			public void onSelect(SelectEvent event) {
-				regionSelection.setValue(null, true);
-			}
-		});
 
 		ToolButton addRegionPlusTool = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		addRegionPlusTool.setToolTip(Util.createToolTip("add Region"));
@@ -1076,16 +1075,27 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 
+		ToolButton resetRegionSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
+		resetRegionSelectionTB.setToolTip(Util.createToolTip("reset selection"));
+		regionPanel.addTool(resetRegionSelectionTB);
+		resetRegionSelectionTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				regionSelection.setValue(null, true);
+			}
+		});
+
 		// assembling the left side
 		mainInformationVLC.add(officialNumberPanel, new VerticalLayoutData(1.0, .15));
 		mainInformationVLC.add(historicalNamePanel, new VerticalLayoutData(1.0, .1));
 		mainInformationVLC.add(optionalHistoricalNamePanel, new VerticalLayoutData(1.0, .1));
 		mainInformationVLC.add(firstDocumentedByPanel, new VerticalLayoutData(1.0, .1));
 		mainInformationVLC.add(firstDocumentedInYearFP, new VerticalLayoutData(1.0, .1));
-		mainInformationVLC.add(caveGroupPanel, new VerticalLayoutData(1.0, .1));
+		mainInformationVLC.add(caveGroupPanel, new VerticalLayoutData(1.0, .11));
 		mainInformationVLC.add(sitePanel, new VerticalLayoutData(1.0, .1));
-		mainInformationVLC.add(districtPanel, new VerticalLayoutData(1.0, .1));
-		mainInformationVLC.add(regionPanel, new VerticalLayoutData(1.0, .1));
+		mainInformationVLC.add(districtPanel, new VerticalLayoutData(1.0, .11));
+		mainInformationVLC.add(regionPanel, new VerticalLayoutData(1.0, .11));
 
 		// and adding it to the main VLC
 		mainHlContainer.add(mainInformationVLC, new HorizontalLayoutData(.3, 1.0));
@@ -1731,8 +1741,8 @@ public class CaveEditor extends AbstractEditor {
 		commentsAndWallHLC.add(wallManagementFP, new HorizontalLayoutData(.5, 1.0));
 
 		VerticalLayoutContainer finalStateOfPreservationVLC = new VerticalLayoutContainer();
-		finalStateOfPreservationVLC.add(stateOfPreservationHLC, new VerticalLayoutData(1.0, .75));
-		finalStateOfPreservationVLC.add(commentsAndWallHLC, new VerticalLayoutData(1.0, .25));
+		finalStateOfPreservationVLC.add(stateOfPreservationHLC, new VerticalLayoutData(1.0, .8));
+		finalStateOfPreservationVLC.add(commentsAndWallHLC, new VerticalLayoutData(1.0, .2));
 
 		updateStateOfPreservationPanel(0);
 
@@ -2278,8 +2288,8 @@ public class CaveEditor extends AbstractEditor {
 		caveLayoutCommentsTextArea.setValue(correspondingCaveEntry.getCaveLayoutComments());
 		
 		VerticalLayoutContainer caveLayoutCommentsVLC = new VerticalLayoutContainer();
-		caveLayoutCommentsVLC.add(volutedHorseshoeArchCB, new VerticalLayoutData(1.0, .2));
-		caveLayoutCommentsVLC.add(caveLayoutCommentsTextArea, new VerticalLayoutData(1.0, .8));
+		caveLayoutCommentsVLC.add(volutedHorseshoeArchCB, new VerticalLayoutData(1.0, .35));
+		caveLayoutCommentsVLC.add(caveLayoutCommentsTextArea, new VerticalLayoutData(1.0, .65));
 		
 		caveLayoutCommentsFP.add(caveLayoutCommentsVLC);
 
@@ -2360,9 +2370,9 @@ public class CaveEditor extends AbstractEditor {
 		ceilingTypeSelectionsFP.addTool(addCeilingTypeTB);
 
 		VerticalLayoutContainer caveLayoutLeftVLC = new VerticalLayoutContainer();
-		caveLayoutLeftVLC.add(typeOrientationHLC, new VerticalLayoutData(1.0, .11));
-		caveLayoutLeftVLC.add(ceilingTypeSelectionsFP, new VerticalLayoutData(1.0, .65));
-		caveLayoutLeftVLC.add(caveLayoutCommentsFP, new VerticalLayoutData(1.0, .24));
+		caveLayoutLeftVLC.add(typeOrientationHLC, new VerticalLayoutData(1.0, .1));
+		caveLayoutLeftVLC.add(ceilingTypeSelectionsFP, new VerticalLayoutData(1.0, .73));
+		caveLayoutLeftVLC.add(caveLayoutCommentsFP, new VerticalLayoutData(1.0, .17));
 
 		caveTypeHLC.add(caveLayoutLeftVLC, new HorizontalLayoutData(.5, 1.0));
 
