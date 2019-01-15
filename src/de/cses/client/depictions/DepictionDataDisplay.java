@@ -14,21 +14,20 @@
 package de.cses.client.depictions;
 
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.HashMap;
 
 import com.google.gwt.core.shared.GWT;
-import com.google.gwt.dom.client.Text;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.user.client.ui.HTML;
 import com.sencha.gxt.widget.core.client.container.MarginData;
 
 import de.cses.client.StaticTables;
+import de.cses.client.Util;
 import de.cses.client.ui.AbstractDataDisplay;
 import de.cses.client.ui.TextElement;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AnnotatedBiblographyEntry;
-import de.cses.shared.AuthorEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.PreservationAttributeEntry;
@@ -44,13 +43,20 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 	private ArrayList<TextElement> iconographyList;
 	private ArrayList<TextElement> pictorialElementsList;
 	private ArrayList<TextElement> decorationOrnamentsList;
+	private StaticTables stab = StaticTables.getInstance();
+	private HashMap<Integer, IconographyEntry> allIconographyEntriesList = new HashMap<Integer, IconographyEntry>();
 	
 	/**
-	 * 
+	 * Visualization of the content of a DepictionEntry as a HTML page (right column of UI)
 	 */
 	public DepictionDataDisplay(DepictionEntry e) {
 		super();
 		entry = e;
+		
+		for (IconographyEntry ie : stab.getIconographyEntries().values()) {
+			addToIconographiesList(ie);
+		}
+		
 		String cave = "";
 		String wall = "";
 		SafeUri realCaveSketchUri = null;
@@ -77,7 +83,14 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 		String style = e.getStyleID() > 0 ? StaticTables.getInstance().getStyleEntries().get(e.getStyleID()).getStyleName() : "";
 		String modesOfRepresentation = e.getModeOfRepresentationID() > 0 ? StaticTables.getInstance().getModesOfRepresentationEntries().get(e.getModeOfRepresentationID()).getName() : "";
 		ArrayList<AnnotatedBiblographyEntry> bibList = e.getRelatedBibliographyList();
-		processIconography(e.getRelatedIconographyList());
+		// TODO ugly and hard wired but it will do the trick for now
+		iconographyList = new ArrayList<TextElement>();
+		pictorialElementsList = new ArrayList<TextElement>();
+		decorationOrnamentsList = new ArrayList<TextElement>();
+		for (IconographyEntry ie : e.getRelatedIconographyList()) {
+			processIconographyEntry("", ie);
+		}
+		Util.doLogging("iconographyList.size()=" + iconographyList.size() + ", pictorialElementsList.size()=" + pictorialElementsList.size() + ", decorationOrnamentsList.size()=" + decorationOrnamentsList.size());
 		
 		if (!bibList.isEmpty()) {
 			bibList.sort(new BibEntryComparator());
@@ -114,16 +127,13 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 		setHeading((shortname.length() > 0 ? shortname + " " : "") + (cave.length() > 0 ? " in " + cave : ""));
 	}
 	
-	private void processIconography(ArrayList<IconographyEntry> list) {
-		// TODO ugly and hard wired but it will do the trick for now
-		iconographyList = new ArrayList<TextElement>();
-		pictorialElementsList = new ArrayList<TextElement>();
-		decorationOrnamentsList = new ArrayList<TextElement>();
-		for (IconographyEntry ie : list) {
-			processIconographyEntry("", ie);
+	private void addToIconographiesList(IconographyEntry iconographyEntry) {
+		allIconographyEntriesList.put(iconographyEntry.getIconographyID(), iconographyEntry);
+		for (IconographyEntry ie : iconographyEntry.getChildren()) {
+			addToIconographiesList(ie);
 		}
 	}
-	
+
 	/**
 	 * sorts the IconographyElements into the correct lists
 	 * @param text
@@ -131,8 +141,8 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 	 */
 	private void processIconographyEntry(String text, IconographyEntry ie) {
 		String s = text.isEmpty() ? ie.getText() : ie.getText() + " \u2192 " + text;
-		if (ie.getIconographyID() > 999) { // that means it is not one of the basic categories
-			IconographyEntry nextEntry = StaticTables.getInstance().getIconographyEntries().get(ie.getParentID());
+		if (ie.getParentID() > 1000) { // that means it is not one of the basic categories
+			IconographyEntry nextEntry = allIconographyEntriesList.get(ie.getParentID());
 			processIconographyEntry(s, nextEntry);
 		} else {
 			switch (ie.getParentID()) {
