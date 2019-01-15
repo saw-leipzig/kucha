@@ -86,14 +86,21 @@
 	<h5 class="data-display">Iconography</h5>
 	<ul class="simple-list">
 		<tpl for="iconography">
-			<tpl if="iconographyID &lt; 2000"><li>{text}</li></tpl>
+			<li>{element}</li>
 		</tpl>
 	</ul>
 
 	<h5 class="data-display">Pictorial Elements</h5>
 	<ul class="simple-list">
-		<tpl for="iconography">
-			<tpl if="iconographyID &gt; 2000"><li>{text}</li></tpl>
+		<tpl for="pictorialElements">
+			<li>{element}</li>
+		</tpl>
+	</ul>
+
+	<h5 class="data-display">Decoration \& Ornaments</h5>
+	<ul class="simple-list">
+		<tpl for="decorationOrnaments">
+			<li>{element}</li>
 		</tpl>
 	</ul>
 

@@ -82,6 +82,7 @@ import de.cses.client.bibliography.BibliographySelector;
 import de.cses.client.images.ImageSelector;
 import de.cses.client.images.ImageSelectorListener;
 import de.cses.client.ui.AbstractEditor;
+import de.cses.client.ui.TextElement;
 import de.cses.client.user.UserLogin;
 import de.cses.client.walls.WallSelector;
 import de.cses.client.walls.Walls;
@@ -259,19 +260,6 @@ public class DepictionEditor extends AbstractEditor {
 		ValueProvider<ImageEntry, String> shortName();
 	}
 	
-	class TitleElement {
-		private String element;
-		
-		public TitleElement(String element) {
-			super();
-			this.element = element;
-		}
-
-		public String getElement() {
-			return element;
-		}
-	}
-
 	public DepictionEditor(DepictionEntry entry) {
 		if (entry != null) {
 			correspondingDepictionEntry = entry;
@@ -486,9 +474,9 @@ public class DepictionEditor extends AbstractEditor {
 
 			public SafeHtml render(ImageEntry item) {
 				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=300" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
-				ArrayList<TitleElement> titleList = new ArrayList<TitleElement>();
+				ArrayList<TextElement> titleList = new ArrayList<TextElement>();
 				for (String s : item.getTitle().split("_")) {
-					titleList.add(new TitleElement(s));
+					titleList.add(new TextElement(s));
 				}
 				String imageAuthor = item.getImageAuthor() != null ? "Author: " + item.getImageAuthor().getLabel() : "";
 				String copyrightStr = (item.getCopyright() != null && item.getCopyright().length() > 0) ? "\u00A9 " + item.getCopyright() : ""; 

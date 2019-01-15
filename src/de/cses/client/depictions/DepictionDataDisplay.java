@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 
 import com.google.gwt.core.shared.GWT;
+import com.google.gwt.dom.client.Text;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.user.client.ui.HTML;
@@ -24,10 +25,12 @@ import com.sencha.gxt.widget.core.client.container.MarginData;
 
 import de.cses.client.StaticTables;
 import de.cses.client.ui.AbstractDataDisplay;
+import de.cses.client.ui.TextElement;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.DepictionEntry;
+import de.cses.shared.IconographyEntry;
 import de.cses.shared.PreservationAttributeEntry;
 import de.cses.shared.comparator.BibEntryComparator;
 
@@ -38,6 +41,9 @@ import de.cses.shared.comparator.BibEntryComparator;
 public class DepictionDataDisplay extends AbstractDataDisplay {
 	
 	private DepictionEntry entry;
+	private ArrayList<TextElement> iconographyList;
+	private ArrayList<TextElement> pictorialElementsList;
+	private ArrayList<TextElement> decorationOrnamentsList;
 	
 	/**
 	 * 
@@ -71,6 +77,8 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 		String style = e.getStyleID() > 0 ? StaticTables.getInstance().getStyleEntries().get(e.getStyleID()).getStyleName() : "";
 		String modesOfRepresentation = e.getModeOfRepresentationID() > 0 ? StaticTables.getInstance().getModesOfRepresentationEntries().get(e.getModeOfRepresentationID()).getName() : "";
 		ArrayList<AnnotatedBiblographyEntry> bibList = e.getRelatedBibliographyList();
+		processIconography(e.getRelatedIconographyList());
+		
 		if (!bibList.isEmpty()) {
 			bibList.sort(new BibEntryComparator());
 		}
@@ -94,7 +102,9 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 				e.getDescription() != null ? e.getDescription() : "",
 				e.getGeneralRemarks() != null ? e.getGeneralRemarks() : "",
 				e.getOtherSuggestedIdentifications() != null ? e.getOtherSuggestedIdentifications() : "",
-				e.getRelatedIconographyList(),
+				iconographyList,
+				pictorialElementsList,
+				decorationOrnamentsList,
 				e.getRelatedBibliographyList(),
 				e.getLastChangedByUser() != null ? e.getLastChangedByUser() : "",
 				e.getModifiedOn() != null ? e.getModifiedOn() : ""
@@ -102,6 +112,43 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 		htmlWidget.addStyleName("html-data-display");
 		add(htmlWidget, new MarginData(0, 0, 0, 0));
 		setHeading((shortname.length() > 0 ? shortname + " " : "") + (cave.length() > 0 ? " in " + cave : ""));
+	}
+	
+	private void processIconography(ArrayList<IconographyEntry> list) {
+		// TODO ugly and hard wired but it will do the trick for now
+		iconographyList = new ArrayList<TextElement>();
+		pictorialElementsList = new ArrayList<TextElement>();
+		decorationOrnamentsList = new ArrayList<TextElement>();
+		for (IconographyEntry ie : list) {
+			processIconographyEntry("", ie);
+		}
+	}
+	
+	/**
+	 * sorts the IconographyElements into the correct lists
+	 * @param text
+	 * @param ie
+	 */
+	private void processIconographyEntry(String text, IconographyEntry ie) {
+		String s = text.isEmpty() ? ie.getText() : ie.getText() + " \u2192 " + text;
+		if (ie.getIconographyID() > 999) { // that means it is not one of the basic categories
+			IconographyEntry nextEntry = StaticTables.getInstance().getIconographyEntries().get(ie.getParentID());
+			processIconographyEntry(s, nextEntry);
+		} else {
+			switch (ie.getParentID()) {
+				case 1:
+					iconographyList.add(new TextElement(s));
+					break;
+				case 2:
+					pictorialElementsList.add(new TextElement(s));
+					break;
+				case 3:
+					decorationOrnamentsList.add(new TextElement(s));
+					break;
+				default:
+					break;
+			}
+		}
 	}
 
 	/* (non-Javadoc)
