@@ -1396,7 +1396,8 @@ public class DepictionEditor extends AbstractEditor {
 		});
 		
 		mainPanel = new FramedPanel();
-		mainPanel.setHeading("Painted Representation Editor (entry last modified on " + correspondingDepictionEntry.getModifiedOn() + ")");
+		mainPanel.setHeading("Painted Representation Editor (entry last modified on " + correspondingDepictionEntry.getModifiedOn() + 
+				(!correspondingDepictionEntry.getLastChangedByUser().isEmpty() ? " by " + correspondingDepictionEntry.getLastChangedByUser() + ")" : ")"));
 
 		mainPanel.add(mainHLC);
 		mainPanel.setSize("900px", "650px");
