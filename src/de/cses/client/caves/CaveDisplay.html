@@ -61,15 +61,12 @@
 				<td class="data-view-right">{caveLayoutComments}</td>
 			</tr>
 		</tpl>		
+			<tpl if="hasVolutedHorseShoeArch">
 		<tr style="border-bottom: 1px solid black">
 			<td class="data-view-left"><i>Has voluted horse shoe arch</i></td>
-			<tpl if="hasVolutedHorseShoeArch == true">
-					<td class="data-view-right">&#x1f44d;</td>
-			</tpl>
-			<tpl if="hasVolutedHorseShoeArch != true">
-					<td class="data-view-right">&#x1f44e;</td>
-			</tpl>
+			<td class="data-view-right">yes</td>
 		</tr>
+			</tpl>
 	</table>
 	<tpl for='caveSketchList'>
 		<img src='{uri}' style='width: 300px; height: auto; margin: 5px;'>
@@ -106,11 +103,11 @@
 
 	<h5 class="data-display">Plastical Items</h4>
 	<dl class="simple-list">
-		<dt>Has sculptures <tpl if='hasSculptures == true'>&#x1f44d;</tpl><tpl if='hasSculptures != true'>&#x1f44e;</tpl></dt>
-			<dd>Has clay figures <tpl if='hasClayFigures == true'>&#x1f44d;</tpl><tpl if='hasClayFigures != true'>&#x1f44e;</tpl></dd>
-			<dd>Has immitation of mountains <tpl if='hasImmitationOfMountains == true'>&#x1f44d;</tpl><tpl if='hasImmitationOfMountains != true'>&#x1f44e;</tpl></dd>
-		<dt>Has holes for fixation of plastical items <tpl if='hasHolesForFixationOfPlasticalItems == true'>&#x1f44d;</tpl><tpl if='hasHolesForFixationOfPlasticalItems != true'>&#x1f44e;</tpl></dt>
-		<dt>Has wooden contruction <tpl if='hasWoodenConstruction == true'>&#x1f44d;</tpl><tpl if='hasWoodenConstruction != true'>&#x1f44e;</tpl></dt>
+		<dt><tpl if='hasSculptures'>Has sculptures</tpl></dt>
+			<dd><tpl if='hasClayFigures'>Has clay figures</tpl></dd>
+			<dd><tpl if='hasImmitationOfMountains'>Has immitation of mountains</tpl></dd>
+		<dt><tpl if='hasHolesForFixationOfPlasticalItems'>Has holes for fixation of plastical items</tpl></dt>
+		<dt><tpl if='hasWoodenConstruction'>Has wooden contruction</tpl></dt>
 	</dl>
 	
 	<tpl if='findings != &quot;&quot;'>
