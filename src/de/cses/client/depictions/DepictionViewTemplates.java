@@ -18,11 +18,9 @@ import java.util.ArrayList;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.sencha.gxt.core.client.XTemplates;
-import com.sencha.gxt.core.client.XTemplates.XTemplate;
 
 import de.cses.client.ui.TextElement;
 import de.cses.shared.AnnotatedBiblographyEntry;
-import de.cses.shared.IconographyEntry;
 
 /**
  * @author alingnau
