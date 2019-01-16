@@ -21,6 +21,7 @@ import java.util.Map;
 import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.sencha.gxt.core.client.ValueProvider;
@@ -35,6 +36,8 @@ import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.MarginData;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.CheckChangeEvent;
 import com.sencha.gxt.widget.core.client.event.CheckChangeEvent.CheckChangeHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
@@ -228,13 +231,18 @@ public class IconographySelector extends FramedPanel {
 				}
 				PopupPanel addIconographyEntryDialog = new PopupPanel();
 				FramedPanel newIconographyEntryFP = new FramedPanel();
-				Label label = new Label(iconographyTree.getSelectionModel().getSelectedItem().getText());
+				HTML html = new HTML(iconographyTree.getSelectionModel().getSelectedItem().getText());
+				html.setWidth("280px");
+				html.setWordWrap(true);
 				TextField ieTextField = new TextField();
 				ieTextField.addValidator(new MinLengthValidator(2));
 				ieTextField.addValidator(new MaxLengthValidator(256));
 				ieTextField.setValue("");
-				ieTextField.setWidth(200);
-				newIconographyEntryFP.add(ieTextField);
+				ieTextField.setWidth(300);
+				VerticalLayoutContainer newIconogryphyVLC = new VerticalLayoutContainer();
+				newIconogryphyVLC.add(html, new VerticalLayoutData(1.0, .65));
+				newIconogryphyVLC.add(ieTextField, new VerticalLayoutData(1.0, .35));
+				newIconographyEntryFP.add(newIconogryphyVLC);
 				newIconographyEntryFP.setHeading("add child element to");
 				TextButton saveButton = new TextButton("save");
 				saveButton.addSelectHandler(new SelectHandler() {
@@ -280,6 +288,64 @@ public class IconographySelector extends FramedPanel {
 			}
 		});
 
+		ToolButton renameEntryTB = new ToolButton(new IconConfig("editButton", "editButtonOver"));
+		renameEntryTB.setToolTip(Util.createToolTip("Edit entry text.", "Select entry first (selection indicated by shade) and click here."));
+		renameEntryTB.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				if (iconographyTree.getSelectionModel().getSelectedItem() == null) { // we can only add a new entry if there is a parent selected
+					return;
+				}
+				IconographyEntry iconographyEntryToEdit = iconographyTree.getSelectionModel().getSelectedItem();
+				PopupPanel addIconographyEntryDialog = new PopupPanel();
+				FramedPanel newIconographyEntryFP = new FramedPanel();
+				TextField ieTextField = new TextField();
+				ieTextField.addValidator(new MinLengthValidator(2));
+				ieTextField.addValidator(new MaxLengthValidator(256));
+				ieTextField.setValue(iconographyEntryToEdit.getText());
+				ieTextField.setWidth(300);
+				newIconographyEntryFP.add(ieTextField);
+				newIconographyEntryFP.setHeading("edit text");
+				TextButton saveButton = new TextButton("save");
+				saveButton.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						if (ieTextField.isValid()) {
+							iconographyEntryToEdit.setText(ieTextField.getValue());
+							dbService.updateIconographyEntry(iconographyEntryToEdit, new AsyncCallback<Boolean>() {
+
+								@Override
+								public void onFailure(Throwable caught) {
+									caught.printStackTrace();
+								}
+
+								@Override
+								public void onSuccess(Boolean result) {
+									StaticTables.getInstance().loadIconography(); // we need to reload the whole tree otherwise this won't work
+								}
+							});
+							addIconographyEntryDialog.hide();
+						}
+					}
+				});
+				newIconographyEntryFP.addButton(saveButton);
+				TextButton cancelButton = new TextButton("cancel");
+				cancelButton.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						addIconographyEntryDialog.hide();
+					}
+				});
+				newIconographyEntryFP.addButton(cancelButton);
+				addIconographyEntryDialog.add(newIconographyEntryFP);
+				addIconographyEntryDialog.setModal(true);
+				addIconographyEntryDialog.center();
+			}
+		});
+
 //		mainPanel = new FramedPanel();
 		setHeading("Iconography Selector");
 		add(iconographySelectorBLC);
@@ -287,6 +353,7 @@ public class IconographySelector extends FramedPanel {
 		addTool(iconographyCollapseTB);
 		if (UserLogin.getInstance().getAccessRights() >= UserEntry.FULL) {
 			addTool(addEntryTB);
+			addTool(renameEntryTB);
 		}
 		addTool(resetTB);
 	}

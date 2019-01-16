@@ -298,4 +298,6 @@ public interface DatabaseService extends RemoteService {
 	ArrayList<OrnamentEntry> searchOrnaments(OrnamenticSearchEntry searchEntry) throws IllegalArgumentException;
 
 	int insertIconographyEntry(IconographyEntry iconographyEntry) throws IllegalArgumentException;
+
+	boolean updateIconographyEntry(IconographyEntry iconographyEntryToEdit) throws IllegalArgumentException;
 }

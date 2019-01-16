@@ -322,4 +322,6 @@ public interface DatabaseServiceAsync {
 
 	void insertIconographyEntry(IconographyEntry iconographyEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 
+	void updateIconographyEntry(IconographyEntry iconographyEntryToEdit, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
+
 }

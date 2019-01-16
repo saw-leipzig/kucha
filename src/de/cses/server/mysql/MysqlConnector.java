@@ -1250,6 +1250,28 @@ public class MysqlConnector {
 		return newID;		
 	}
 
+	/**
+	 * 
+	 * @param iconographyEntryToEdit
+	 * @return
+	 */
+	public boolean updateIconographyEntry(IconographyEntry iconographyEntryToEdit) {
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("UPDATE Iconography SET ParentID=?, Text=? WHERE IconographyID =?");
+			pstmt.setInt(1, iconographyEntryToEdit.getParentID());
+			pstmt.setString(2, iconographyEntryToEdit.getText());
+			pstmt.setInt(3, iconographyEntryToEdit.getIconographyID());
+			pstmt.executeUpdate();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
 	@Deprecated
 	public ArrayList<CurrentLocationEntry> getCurrentLocations() {
 		ArrayList<CurrentLocationEntry> root = getCurrentLocationEntries(0);

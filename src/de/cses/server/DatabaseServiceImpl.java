@@ -952,4 +952,9 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.insertIconographyEntry(iconographyEntry);
 	}
+	@Override
+	public boolean updateIconographyEntry(IconographyEntry iconographyEntryToEdit) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.updateIconographyEntry(iconographyEntryToEdit);
+	}
 }
