@@ -477,6 +477,38 @@ div.editButtonOver {
 	cursor: pointer;
 }
 
+div.cancelButton {
+	background-image: url(icons/save.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.cancelButtonOver {
+	background-image: url(icons/save_mo.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.saveButton {
+	background-image: url(icons/save.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.saveButtonOver {
+	background-image: url(icons/save_mo.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
 span.freeIconText {
 	background-image: url(icons/free_icon2.png);
 	width: 25px;

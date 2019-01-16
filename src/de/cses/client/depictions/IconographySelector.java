@@ -244,9 +244,10 @@ public class IconographySelector extends FramedPanel {
 				newIconogryphyVLC.add(html, new VerticalLayoutData(1.0, .5));
 				newIconogryphyVLC.add(ieTextArea, new VerticalLayoutData(1.0, .5));
 				newIconographyEntryFP.add(newIconogryphyVLC);
+				newIconographyEntryFP.setSize("300px", "280px");
 				newIconographyEntryFP.setHeading("add child element to");
-				TextButton saveButton = new TextButton("save");
-				saveButton.addSelectHandler(new SelectHandler() {
+				ToolButton saveTB = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
+				saveTB.addSelectHandler(new SelectHandler() {
 
 					@Override
 					public void onSelect(SelectEvent event) {
@@ -272,18 +273,17 @@ public class IconographySelector extends FramedPanel {
 						}
 					}
 				});
-				newIconographyEntryFP.addButton(saveButton);
-				TextButton cancelButton = new TextButton("cancel");
-				cancelButton.addSelectHandler(new SelectHandler() {
+				newIconographyEntryFP.addTool(saveTB);
+				ToolButton cancelTB = new ToolButton(ToolButton.CLOSE);
+				cancelTB.addSelectHandler(new SelectHandler() {
 
 					@Override
 					public void onSelect(SelectEvent event) {
 						addIconographyEntryDialog.hide();
 					}
 				});
-				newIconographyEntryFP.addButton(cancelButton);
-				addIconographyEntryDialog.add(newIconographyEntryFP);
-				addIconographyEntryDialog.setSize("300px", "250px");
+				newIconographyEntryFP.addTool(cancelTB);
+				addIconographyEntryDialog.add(newIconographyEntryFP);				
 				addIconographyEntryDialog.setModal(true);
 				addIconographyEntryDialog.center();
 			}
@@ -305,9 +305,9 @@ public class IconographySelector extends FramedPanel {
 				ieTextArea.addValidator(new MinLengthValidator(2));
 				ieTextArea.addValidator(new MaxLengthValidator(256));
 				ieTextArea.setValue(iconographyEntryToEdit.getText());
-//				ieTextArea.setSize("300px", "100px");
 				newIconographyEntryFP.add(ieTextArea);
 				newIconographyEntryFP.setHeading("edit text");
+				newIconographyEntryFP.setSize("300px", "280px");
 				TextButton saveButton = new TextButton("save");
 				saveButton.addSelectHandler(new SelectHandler() {
 
@@ -343,7 +343,6 @@ public class IconographySelector extends FramedPanel {
 				});
 				newIconographyEntryFP.addButton(cancelButton);
 				addIconographyEntryDialog.add(newIconographyEntryFP);
-				addIconographyEntryDialog.setSize("300px", "200px");
 				addIconographyEntryDialog.setModal(true);
 				addIconographyEntryDialog.center();
 			}
