@@ -308,8 +308,8 @@ public class IconographySelector extends FramedPanel {
 				newIconographyEntryFP.add(ieTextArea);
 				newIconographyEntryFP.setHeading("edit text");
 				newIconographyEntryFP.setSize("300px", "280px");
-				TextButton saveButton = new TextButton("save");
-				saveButton.addSelectHandler(new SelectHandler() {
+				ToolButton saveTB = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
+				saveTB.addSelectHandler(new SelectHandler() {
 
 					@Override
 					public void onSelect(SelectEvent event) {
@@ -332,16 +332,16 @@ public class IconographySelector extends FramedPanel {
 						}
 					}
 				});
-				newIconographyEntryFP.addButton(saveButton);
-				TextButton cancelButton = new TextButton("cancel");
-				cancelButton.addSelectHandler(new SelectHandler() {
+				newIconographyEntryFP.addTool(saveTB);
+				ToolButton cancelTB = new ToolButton(ToolButton.CLOSE);
+				cancelTB.addSelectHandler(new SelectHandler() {
 
 					@Override
 					public void onSelect(SelectEvent event) {
 						addIconographyEntryDialog.hide();
 					}
 				});
-				newIconographyEntryFP.addButton(cancelButton);
+				newIconographyEntryFP.addTool(cancelTB);
 				addIconographyEntryDialog.add(newIconographyEntryFP);
 				addIconographyEntryDialog.setModal(true);
 				addIconographyEntryDialog.center();
