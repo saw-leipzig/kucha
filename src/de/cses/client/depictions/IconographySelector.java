@@ -307,7 +307,7 @@ public class IconographySelector extends FramedPanel {
 				ieTextArea.setValue(iconographyEntryToEdit.getText());
 				newIconographyEntryFP.add(ieTextArea);
 				newIconographyEntryFP.setHeading("edit text");
-				newIconographyEntryFP.setSize("300px", "280px");
+				newIconographyEntryFP.setSize("300px", "150px");
 				ToolButton saveTB = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 				saveTB.addSelectHandler(new SelectHandler() {
 
