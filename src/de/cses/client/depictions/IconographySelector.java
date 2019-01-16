@@ -19,29 +19,47 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.sencha.gxt.core.client.Style.SelectionMode;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.data.shared.event.StoreFilterEvent;
 import com.sencha.gxt.widget.core.client.FramedPanel;
+import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.MarginData;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.CheckChangeEvent;
 import com.sencha.gxt.widget.core.client.event.CheckChangeEvent.CheckChangeHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.StoreFilterField;
+import com.sencha.gxt.widget.core.client.form.TextArea;
+import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
+import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
 import com.sencha.gxt.widget.core.client.tree.Tree;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckCascade;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckNodes;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
 
+import de.cses.client.DatabaseService;
+import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.StaticTables;
 import de.cses.client.Util;
+import de.cses.client.user.UserLogin;
 import de.cses.shared.IconographyEntry;
+import de.cses.shared.UserEntry;
+import de.cses.shared.VendorEntry;
 
 public class IconographySelector extends FramedPanel {
 
@@ -69,6 +87,11 @@ public class IconographySelector extends FramedPanel {
 			return "name";
 		}
 	}
+
+	/**
+	 * Create a remote service proxy to talk to the server-side service.
+	 */
+	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 
 	private TreeStore<IconographyEntry> iconographyTreeStore;
 	private Tree<IconographyEntry, String> iconographyTree;
@@ -109,6 +132,7 @@ public class IconographySelector extends FramedPanel {
 	}
 	
 	private void setIconographyStore(Collection<IconographyEntry> elements) {
+		iconographyTreeStore.clear();
 		for (IconographyEntry item : elements) {
 			iconographyTreeStore.add(item);
 			if (item.getChildren() != null) {
@@ -196,15 +220,154 @@ public class IconographySelector extends FramedPanel {
 				iconographyTree.collapseAll();
 			}
 		});
+		
+		ToolButton addEntryTB = new ToolButton(new IconConfig("addButton", "addButtonOver"));
+		addEntryTB.setToolTip(Util.createToolTip("Add new entry to tree.", "Select parent entry first (selection indicated by shade) and click here."));
+		addEntryTB.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				if (iconographyTree.getSelectionModel().getSelectedItem() == null) { // we can only add a new entry if there is a parent selected
+					return;
+				}
+				PopupPanel addIconographyEntryDialog = new PopupPanel();
+				FramedPanel newIconographyEntryFP = new FramedPanel();
+				HTML html = new HTML(iconographyTree.getSelectionModel().getSelectedItem().getText());
+				html.setWidth("100%");
+				html.setWordWrap(true);
+				html.setStylePrimaryName("html-display");
+				html.setWidth("280px");
+				TextArea ieTextArea = new TextArea();
+				ieTextArea.addValidator(new MinLengthValidator(2));
+				ieTextArea.addValidator(new MaxLengthValidator(256));
+				VerticalLayoutContainer newIconogryphyVLC = new VerticalLayoutContainer();
+				newIconogryphyVLC.add(html, new VerticalLayoutData(1.0, .5));
+				newIconogryphyVLC.add(ieTextArea, new VerticalLayoutData(1.0, .5));
+				newIconographyEntryFP.add(newIconogryphyVLC);
+				newIconographyEntryFP.setSize("300px", "280px");
+				newIconographyEntryFP.setHeading("add child element to");
+				ToolButton saveTB = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
+				saveTB.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						if (ieTextArea.isValid()) {
+							IconographyEntry iconographyEntry = new IconographyEntry(0, iconographyTree.getSelectionModel().getSelectedItem().getIconographyID(), ieTextArea.getValue());
+							dbService.insertIconographyEntry(iconographyEntry, new AsyncCallback<Integer>() {
+
+								@Override
+								public void onFailure(Throwable caught) {
+									caught.printStackTrace();
+								}
+
+								@Override
+								public void onSuccess(Integer result) {
+									if (result > 0) { // otherwise there has been a problem adding the entry
+										iconographyEntry.setIconographyID(result);
+										StaticTables.getInstance().reloadIconography(); // we need to reload the whole tree otherwise this won't work
+										addChildIconographyEntry(iconographyTreeStore, iconographyEntry);
+									}
+								}
+							});
+							addIconographyEntryDialog.hide();
+						}
+					}
+				});
+				newIconographyEntryFP.addTool(saveTB);
+				ToolButton cancelTB = new ToolButton(ToolButton.CLOSE);
+				cancelTB.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						addIconographyEntryDialog.hide();
+					}
+				});
+				newIconographyEntryFP.addTool(cancelTB);
+				addIconographyEntryDialog.add(newIconographyEntryFP);				
+				addIconographyEntryDialog.setModal(true);
+				addIconographyEntryDialog.center();
+			}
+		});
+
+		ToolButton renameEntryTB = new ToolButton(new IconConfig("editButton", "editButtonOver"));
+		renameEntryTB.setToolTip(Util.createToolTip("Edit entry text.", "Select entry first (selection indicated by shade) and click here."));
+		renameEntryTB.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				if (iconographyTree.getSelectionModel().getSelectedItem() == null) { // we can only add a new entry if there is a parent selected
+					return;
+				}
+				IconographyEntry iconographyEntryToEdit = iconographyTree.getSelectionModel().getSelectedItem();
+				PopupPanel addIconographyEntryDialog = new PopupPanel();
+				FramedPanel newIconographyEntryFP = new FramedPanel();
+				TextArea ieTextArea = new TextArea();
+				ieTextArea.addValidator(new MinLengthValidator(2));
+				ieTextArea.addValidator(new MaxLengthValidator(256));
+				ieTextArea.setValue(iconographyEntryToEdit.getText());
+				newIconographyEntryFP.add(ieTextArea);
+				newIconographyEntryFP.setHeading("edit text");
+				newIconographyEntryFP.setSize("300px", "150px");
+				ToolButton saveTB = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
+				saveTB.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						if (ieTextArea.isValid()) {
+							iconographyEntryToEdit.setText(ieTextArea.getValue());
+							iconographyTreeStore.update(iconographyEntryToEdit);
+							dbService.updateIconographyEntry(iconographyEntryToEdit, new AsyncCallback<Boolean>() {
+
+								@Override
+								public void onFailure(Throwable caught) {
+									caught.printStackTrace();
+								}
+
+								@Override
+								public void onSuccess(Boolean result) {
+									StaticTables.getInstance().reloadIconography(); // we need to reload the whole tree otherwise this won't work
+								}
+							});
+							addIconographyEntryDialog.hide();
+						}
+					}
+				});
+				newIconographyEntryFP.addTool(saveTB);
+				ToolButton cancelTB = new ToolButton(ToolButton.CLOSE);
+				cancelTB.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						addIconographyEntryDialog.hide();
+					}
+				});
+				newIconographyEntryFP.addTool(cancelTB);
+				addIconographyEntryDialog.add(newIconographyEntryFP);
+				addIconographyEntryDialog.setModal(true);
+				addIconographyEntryDialog.center();
+			}
+		});
 
 //		mainPanel = new FramedPanel();
 		setHeading("Iconography Selector");
 		add(iconographySelectorBLC);
-		addTool(resetTB);
 		addTool(iconographyExpandTB);
 		addTool(iconographyCollapseTB);
+		if (UserLogin.getInstance().getAccessRights() >= UserEntry.FULL) {
+			addTool(addEntryTB);
+			addTool(renameEntryTB);
+		}
+		addTool(resetTB);
 	}
-
+	
+	private void addChildIconographyEntry(TreeStore<IconographyEntry> store, IconographyEntry child) {
+		for (IconographyEntry entry : store.getAll()) {
+			if (entry.getIconographyID() == child.getParentID()) {
+				store.add(entry, child);
+			}
+		}
+	}
+	
 	public ArrayList<IconographyEntry> getSelectedIconography() {
 		filterField.clear();
 		filterField.validate();

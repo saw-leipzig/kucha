@@ -1220,6 +1220,58 @@ public class MysqlConnector {
 		return results;
 	}
 
+	/**
+	 * insert new IconogrpahyEntry in tree structure
+	 * @param iconographyEntry
+	 * @return
+	 */
+	public int insertIconographyEntry(IconographyEntry entry) {
+		if (entry.getIconographyID() != 0 || entry.getParentID() == 0 || entry.getText().isEmpty()) { // otherwise this is not a new entry!
+			return 0;
+		}
+		int newID = 0;
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("INSERT INTO Iconography (ParentID, Text) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
+			pstmt.setInt(1, entry.getParentID());
+			pstmt.setString(2, entry.getText());
+			pstmt.executeUpdate();
+			ResultSet keys = pstmt.getGeneratedKeys();
+			if (keys.next()) { // there should only be 1 key returned here
+				newID = keys.getInt(1);
+			}
+			keys.close();
+			pstmt.close();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			return 0;
+		}
+		return newID;		
+	}
+
+	/**
+	 * 
+	 * @param iconographyEntryToEdit
+	 * @return
+	 */
+	public boolean updateIconographyEntry(IconographyEntry iconographyEntryToEdit) {
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("UPDATE Iconography SET ParentID=?, Text=? WHERE IconographyID =?");
+			pstmt.setInt(1, iconographyEntryToEdit.getParentID());
+			pstmt.setString(2, iconographyEntryToEdit.getText());
+			pstmt.setInt(3, iconographyEntryToEdit.getIconographyID());
+			pstmt.executeUpdate();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
 	@Deprecated
 	public ArrayList<CurrentLocationEntry> getCurrentLocations() {
 		ArrayList<CurrentLocationEntry> root = getCurrentLocationEntries(0);

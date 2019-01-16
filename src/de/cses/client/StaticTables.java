@@ -125,7 +125,7 @@ public class StaticTables {
 
 	private void listLoaded() {
 		--loadCounter;
-		listener.listsLoaded((20.0 - loadCounter) / 20.0);
+		listener.listsLoaded((21.0 - loadCounter) / 21.0);
 	}
 
 	/**
@@ -556,6 +556,23 @@ public class StaticTables {
 		});
 	}	
 	
+	public void reloadIconography() {
+		iconographyEntryMap.clear();;
+		dbService.getIconography(new AsyncCallback<ArrayList<IconographyEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+			}
+
+			@Override
+			public void onSuccess(ArrayList<IconographyEntry> result) {
+				for (IconographyEntry ie : result) {
+					iconographyEntryMap.put(ie.getIconographyID(), ie);
+				}
+			}
+		});
+	}
+
 	public Map<Integer, DistrictEntry> getDistrictEntries() {
 		return districtEntryMap;
 	}

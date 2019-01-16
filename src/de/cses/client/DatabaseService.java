@@ -296,4 +296,8 @@ public interface DatabaseService extends RemoteService {
 	ArrayList<AnnotatedBiblographyEntry> searchAnnotatedBibliography(AnnotatedBibliographySearchEntry searchEntry) throws IllegalArgumentException;
 
 	ArrayList<OrnamentEntry> searchOrnaments(OrnamenticSearchEntry searchEntry) throws IllegalArgumentException;
+
+	int insertIconographyEntry(IconographyEntry iconographyEntry) throws IllegalArgumentException;
+
+	boolean updateIconographyEntry(IconographyEntry iconographyEntryToEdit) throws IllegalArgumentException;
 }
