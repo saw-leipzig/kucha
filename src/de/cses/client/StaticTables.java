@@ -125,7 +125,7 @@ public class StaticTables {
 
 	private void listLoaded() {
 		--loadCounter;
-		listener.listsLoaded((20.0 - loadCounter) / 20.0);
+		listener.listsLoaded((21.0 - loadCounter) / 21.0);
 	}
 
 	/**
@@ -325,7 +325,7 @@ public class StaticTables {
 		});
 	}
 
-	private void loadIconography() {
+	public void loadIconography() {
 		iconographyEntryMap = new HashMap<Integer, IconographyEntry>();
 		dbService.getIconography(new AsyncCallback<ArrayList<IconographyEntry>>() {
 

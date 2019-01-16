@@ -374,5 +374,9 @@ public class UserLogin extends PopupPanel {
 	public String getUsername() {
 		return currentUser != null ? currentUser.getUsername() : "";
 	}
+	
+	public int getAccessRights() {
+		return currentUser != null ? currentUser.getAccessrights() : 0;
+	}
 
 }

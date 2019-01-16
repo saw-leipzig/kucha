@@ -21,8 +21,10 @@ import java.util.Date;
  */
 public class UserEntry extends AbstractEntry {
 
-	public static final int ASSOCIATED = 1;
-	public static final int FULL = 2;
+	public static final int GUEST = 1;
+	public static final int ASSOCIATED = 2;
+	public static final int FULL = 3;
+	public static final int ADMIN = 4;
 	
 	private int userID;
 	private String username;

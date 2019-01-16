@@ -320,4 +320,6 @@ public interface DatabaseServiceAsync {
 
 	void searchOrnaments(OrnamenticSearchEntry searchEntry, AsyncCallback<ArrayList<OrnamentEntry>> asyncCallback) throws IllegalArgumentException;
 
+	void insertIconographyEntry(IconographyEntry iconographyEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
+
 }
