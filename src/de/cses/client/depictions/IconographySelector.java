@@ -43,6 +43,7 @@ import com.sencha.gxt.widget.core.client.event.CheckChangeEvent.CheckChangeHandl
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.StoreFilterField;
+import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
@@ -232,16 +233,16 @@ public class IconographySelector extends FramedPanel {
 				PopupPanel addIconographyEntryDialog = new PopupPanel();
 				FramedPanel newIconographyEntryFP = new FramedPanel();
 				HTML html = new HTML(iconographyTree.getSelectionModel().getSelectedItem().getText());
-				html.setWidth("280px");
+				html.setWidth("100%");
 				html.setWordWrap(true);
-				TextField ieTextField = new TextField();
-				ieTextField.addValidator(new MinLengthValidator(2));
-				ieTextField.addValidator(new MaxLengthValidator(256));
-				ieTextField.setValue("");
-				ieTextField.setWidth(300);
+				html.setStylePrimaryName("html-display");
+				html.setWidth("280px");
+				TextArea ieTextArea = new TextArea();
+				ieTextArea.addValidator(new MinLengthValidator(2));
+				ieTextArea.addValidator(new MaxLengthValidator(256));
 				VerticalLayoutContainer newIconogryphyVLC = new VerticalLayoutContainer();
-				newIconogryphyVLC.add(html, new VerticalLayoutData(1.0, .65));
-				newIconogryphyVLC.add(ieTextField, new VerticalLayoutData(1.0, .35));
+				newIconogryphyVLC.add(html, new VerticalLayoutData(1.0, .5));
+				newIconogryphyVLC.add(ieTextArea, new VerticalLayoutData(1.0, .5));
 				newIconographyEntryFP.add(newIconogryphyVLC);
 				newIconographyEntryFP.setHeading("add child element to");
 				TextButton saveButton = new TextButton("save");
@@ -249,8 +250,8 @@ public class IconographySelector extends FramedPanel {
 
 					@Override
 					public void onSelect(SelectEvent event) {
-						if (ieTextField.isValid()) {
-							IconographyEntry iconographyEntry = new IconographyEntry(0, iconographyTree.getSelectionModel().getSelectedItem().getIconographyID(), ieTextField.getValue());
+						if (ieTextArea.isValid()) {
+							IconographyEntry iconographyEntry = new IconographyEntry(0, iconographyTree.getSelectionModel().getSelectedItem().getIconographyID(), ieTextArea.getValue());
 							dbService.insertIconographyEntry(iconographyEntry, new AsyncCallback<Integer>() {
 
 								@Override
@@ -262,8 +263,7 @@ public class IconographySelector extends FramedPanel {
 								public void onSuccess(Integer result) {
 									if (result > 0) { // otherwise there has been a problem adding the entry
 										iconographyEntry.setIconographyID(result);
-										StaticTables stab = StaticTables.getInstance();
-										stab.loadIconography(); // we need to reload the whole tree otherwise this won't work
+										StaticTables.getInstance().reloadIconography(); // we need to reload the whole tree otherwise this won't work
 										addChildIconographyEntry(iconographyTreeStore, iconographyEntry);
 									}
 								}
@@ -283,6 +283,7 @@ public class IconographySelector extends FramedPanel {
 				});
 				newIconographyEntryFP.addButton(cancelButton);
 				addIconographyEntryDialog.add(newIconographyEntryFP);
+				addIconographyEntryDialog.setSize("300px", "250px");
 				addIconographyEntryDialog.setModal(true);
 				addIconographyEntryDialog.center();
 			}
@@ -300,20 +301,21 @@ public class IconographySelector extends FramedPanel {
 				IconographyEntry iconographyEntryToEdit = iconographyTree.getSelectionModel().getSelectedItem();
 				PopupPanel addIconographyEntryDialog = new PopupPanel();
 				FramedPanel newIconographyEntryFP = new FramedPanel();
-				TextField ieTextField = new TextField();
-				ieTextField.addValidator(new MinLengthValidator(2));
-				ieTextField.addValidator(new MaxLengthValidator(256));
-				ieTextField.setValue(iconographyEntryToEdit.getText());
-				ieTextField.setWidth(300);
-				newIconographyEntryFP.add(ieTextField);
+				TextArea ieTextArea = new TextArea();
+				ieTextArea.addValidator(new MinLengthValidator(2));
+				ieTextArea.addValidator(new MaxLengthValidator(256));
+				ieTextArea.setValue(iconographyEntryToEdit.getText());
+//				ieTextArea.setSize("300px", "100px");
+				newIconographyEntryFP.add(ieTextArea);
 				newIconographyEntryFP.setHeading("edit text");
 				TextButton saveButton = new TextButton("save");
 				saveButton.addSelectHandler(new SelectHandler() {
 
 					@Override
 					public void onSelect(SelectEvent event) {
-						if (ieTextField.isValid()) {
-							iconographyEntryToEdit.setText(ieTextField.getValue());
+						if (ieTextArea.isValid()) {
+							iconographyEntryToEdit.setText(ieTextArea.getValue());
+							iconographyTreeStore.update(iconographyEntryToEdit);
 							dbService.updateIconographyEntry(iconographyEntryToEdit, new AsyncCallback<Boolean>() {
 
 								@Override
@@ -323,7 +325,7 @@ public class IconographySelector extends FramedPanel {
 
 								@Override
 								public void onSuccess(Boolean result) {
-									StaticTables.getInstance().loadIconography(); // we need to reload the whole tree otherwise this won't work
+									StaticTables.getInstance().reloadIconography(); // we need to reload the whole tree otherwise this won't work
 								}
 							});
 							addIconographyEntryDialog.hide();
@@ -341,6 +343,7 @@ public class IconographySelector extends FramedPanel {
 				});
 				newIconographyEntryFP.addButton(cancelButton);
 				addIconographyEntryDialog.add(newIconographyEntryFP);
+				addIconographyEntryDialog.setSize("300px", "200px");
 				addIconographyEntryDialog.setModal(true);
 				addIconographyEntryDialog.center();
 			}

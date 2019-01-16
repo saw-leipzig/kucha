@@ -325,7 +325,7 @@ public class StaticTables {
 		});
 	}
 
-	public void loadIconography() {
+	private void loadIconography() {
 		iconographyEntryMap = new HashMap<Integer, IconographyEntry>();
 		dbService.getIconography(new AsyncCallback<ArrayList<IconographyEntry>>() {
 
@@ -556,6 +556,23 @@ public class StaticTables {
 		});
 	}	
 	
+	public void reloadIconography() {
+		iconographyEntryMap.clear();;
+		dbService.getIconography(new AsyncCallback<ArrayList<IconographyEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+			}
+
+			@Override
+			public void onSuccess(ArrayList<IconographyEntry> result) {
+				for (IconographyEntry ie : result) {
+					iconographyEntryMap.put(ie.getIconographyID(), ie);
+				}
+			}
+		});
+	}
+
 	public Map<Integer, DistrictEntry> getDistrictEntries() {
 		return districtEntryMap;
 	}

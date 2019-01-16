@@ -233,6 +233,13 @@ div.footer {
 	text-align: right;
 }
 
+div.html-display {
+	font-family: tahoma,arial,verdana,sans-serif;
+	font-size: 10px;
+	font-weight: normal;
+	text-align: left;
+}
+
 div.transparent {
 	opacity: 0.85;
 	color: #234534;
