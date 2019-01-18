@@ -553,7 +553,7 @@ public class MysqlConnector {
 		UserEntry user = !searchEntry.getUsername().isEmpty() ? getUser(searchEntry.getUsername()) : null;
 		// check if user has full access rights! If not, there are restrictions!
 		if (user == null || searchEntry.getSessionID().isEmpty() || !searchEntry.getSessionID().equals(user.getSessionID())) { // we are not logged in!
-			where += where.isEmpty() ? "OpenAccess=1" : " AND OpenAccess=1";
+			where += where.isEmpty() ? "OpenAccess = TRUE" : " AND OpenAccess = TRUE";
 //		} else if (user.getSessionID().equals(searchEntry.getSessionID()) && user.getAccessrights() == UserEntry.GUEST) {
 			
 		}
