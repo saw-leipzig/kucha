@@ -27,8 +27,8 @@ public abstract class AbstractSearchEntry implements IsSerializable {
 	
 	protected boolean orSearch = false; // the default case is AND search
 	// we send sessionID and username automatically with each request to allow for filtering of restricted information
-	private String sessionID;
-	private String username;
+	private String sessionID = "";
+	private String username = "";
 
 	/**
 	 * 
@@ -39,8 +39,8 @@ public abstract class AbstractSearchEntry implements IsSerializable {
 	public AbstractSearchEntry(boolean orSearch, String sessionID, String username) {
 		super();
 		this.orSearch = orSearch;
-		this.sessionID = sessionID != null ? sessionID : "";
-		this.username = username != null ? username : "";
+		this.sessionID = sessionID;
+		this.username = username;
 	}
 
 	public AbstractSearchEntry(String sessionID, String username) {

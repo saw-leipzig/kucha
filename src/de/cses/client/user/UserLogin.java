@@ -364,6 +364,10 @@ public class UserLogin extends PopupPanel {
 		return "&sessionID=" + Cookies.getCookie(SESSION_ID);
 	}
 
+	public String getSessionID() {
+		return currentUser != null ? currentUser.getSessionID() : "";
+	}
+
 	/**
 	 * @return
 	 */

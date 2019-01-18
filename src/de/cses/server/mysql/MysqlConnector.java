@@ -506,7 +506,7 @@ public class MysqlConnector {
 		if (!imageTypeIDs.isEmpty()) {
 			where += where.isEmpty() ? "ImageTypeID IN (" + imageTypeIDs + ")" : " AND ImageTypeID IN (" + imageTypeIDs + ")" ;
 		}
-		addAccessRightsCondition(where, searchEntry);
+		where += addAccessRightsCondition(where, searchEntry);
 		
 		System.out.println("SELECT * FROM Images" + (!where.isEmpty() ? " WHERE " + where : "") + " ORDER BY Title Asc");
 		
@@ -549,13 +549,16 @@ public class MysqlConnector {
 	 * @param where
 	 * @param searchEntry
 	 */
-	private void addAccessRightsCondition(String where, AbstractSearchEntry searchEntry) {
-		UserEntry user = !searchEntry.getUsername().isEmpty() ? getUser(searchEntry.getUsername()) : null;
+	private String addAccessRightsCondition(String where, AbstractSearchEntry searchEntry) {
+		System.err.println("addAccessRightsCondition called");
+		UserEntry user = checkSessionID(searchEntry.getSessionID(), searchEntry.getUsername());
 		// check if user has full access rights! If not, there are restrictions!
-		if (user == null || searchEntry.getSessionID().isEmpty() || !searchEntry.getSessionID().equals(user.getSessionID())) { // we are not logged in!
-			where += where.isEmpty() ? "OpenAccess = TRUE" : " AND OpenAccess = TRUE";
+		if (user == null) { // we are not logged in!
+			System.err.println("addAccessRightsCondition has identified case for access rights restrictions");
+			return where.isEmpty() ? "OpenAccess = TRUE" : " AND OpenAccess = TRUE";
 //		} else if (user.getSessionID().equals(searchEntry.getSessionID()) && user.getAccessrights() == UserEntry.GUEST) {
-			
+		} else {
+			return "";
 		}
 	}
 
@@ -710,7 +713,7 @@ public class MysqlConnector {
 		if (searchEntry.isDecoratedOnly()) {
 			where += where.isEmpty() ? "CaveID IN (SELECT CaveID FROM Depictions)" : " AND CaveID IN (SELECT CaveID FROM Depictions)";
 		}
-		addAccessRightsCondition(where, searchEntry);
+		where += addAccessRightsCondition(where, searchEntry);
 		
 		System.err.println("searchCaves: where = " + where);
 		
@@ -1990,7 +1993,7 @@ public class MysqlConnector {
 			where += where.isEmpty() ? "YearORG LIKE ?" : " AND YearORG LIKE ?";
 		}
 		
-		addAccessRightsCondition(where, searchEntry);
+		where += addAccessRightsCondition(where, searchEntry);
 		
 		try {
 			int i = 1;
@@ -3171,6 +3174,7 @@ public class MysqlConnector {
 	 * @return
 	 */
 	public UserEntry getUser(String username) {
+		System.out.println("getUser called for username = " + username);
 		if (username == null || username.isEmpty()) {
 			return null;
 		}
@@ -3298,9 +3302,12 @@ public class MysqlConnector {
 	/**
 	 * @param sessionID
 	 * @param username
-	 * @return username
+	 * @return UserEntry if user & sessionID combination exists, null else
 	 */
 	public UserEntry checkSessionID(String sessionID, String username) {
+		if ((sessionID == null) || (username == null)) {
+			return null;
+		}
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		UserEntry result = null;
@@ -5240,7 +5247,7 @@ public class MysqlConnector {
 					: "AND DepictionID IN (SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (" + iconographyIDs + ") GROUP BY DepictionID HAVING (COUNT(DepictionID) >= " 
 						+ searchEntry.getCorrelationFactor() + "))";
 		}
-		addAccessRightsCondition(where, searchEntry);
+		where += addAccessRightsCondition(where, searchEntry);
 		
 		try {
 			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Depictions" : "SELECT * FROM Depictions WHERE " + where);
