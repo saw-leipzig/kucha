@@ -97,7 +97,7 @@ public interface DatabaseService extends RemoteService {
 
 	ArrayList<DepictionEntry> getDepictions() throws IllegalArgumentException;
 
-	DepictionEntry getDepictionEntry(int depictionID) throws IllegalArgumentException;
+//	DepictionEntry getDepictionEntry(int depictionID) throws IllegalArgumentException;
 
 	boolean updateEntry(String sqlUpdate) throws IllegalArgumentException;
 

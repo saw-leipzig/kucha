@@ -30,6 +30,7 @@ import de.cses.server.json.CaveEntrySerializer;
 import de.cses.server.json.DepictionSerializer;
 import de.cses.server.mysql.MysqlConnector;
 import de.cses.shared.CaveEntry;
+import de.cses.shared.CaveSearchEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DistrictEntry;

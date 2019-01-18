@@ -128,7 +128,7 @@ public interface DatabaseServiceAsync {
 
 	void getCaveTypes(AsyncCallback<ArrayList<CaveTypeEntry>> callback) throws IllegalArgumentException;
 
-	void getDepictionEntry(int depictionID, AsyncCallback<DepictionEntry> callback);
+//	void getDepictionEntry(int depictionID, AsyncCallback<DepictionEntry> callback);
 
 	void getVendors(AsyncCallback<ArrayList<VendorEntry>> callback) throws IllegalArgumentException;
 

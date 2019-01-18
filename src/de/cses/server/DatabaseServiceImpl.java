@@ -195,12 +195,12 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		return connector.getDepictions();
 	}
 
-	@Override
-	public DepictionEntry getDepictionEntry(int depictionID) throws IllegalArgumentException {
-		MysqlConnector connector = MysqlConnector.getInstance();
-		return connector.getDepictionEntry(depictionID);
-		// this.getThreadLocalRequest().getAttribute("user");
-	}
+//	@Override
+//	public DepictionEntry getDepictionEntry(int depictionID) throws IllegalArgumentException {
+//		MysqlConnector connector = MysqlConnector.getInstance();
+//		return connector.getDepictionEntry(depictionID);
+//		// this.getThreadLocalRequest().getAttribute("user");
+//	}
 
 	@Override
 	public ArrayList<IconographyEntry> getIconography() throws IllegalArgumentException {

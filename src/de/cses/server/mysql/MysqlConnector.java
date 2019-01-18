@@ -452,40 +452,41 @@ public class MysqlConnector {
 		return results;
 	}
 
-	public DepictionEntry getDepictionEntry(int depictionID) {
-		Connection dbc = getConnection();
-		DepictionEntry result = null;
-		Statement stmt;
-		try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Depictions WHERE DepictionID=" + depictionID);
-			if (rs.next()) { // we only need to call this once, since we do not expect
-												// more than 1 result!
-				result = new DepictionEntry(rs.getInt("DepictionID"), rs.getInt("StyleID"), rs.getString("Inscriptions"),
-						rs.getString("SeparateAksaras"), rs.getString("Dating"), rs.getString("Description"), rs.getString("BackgroundColour"),
-						rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"), rs.getDouble("Width"), rs.getDouble("Height"),
-						getExpedition(rs.getInt("ExpeditionID")), rs.getDate("PurchaseDate"), getLocation(rs.getInt("CurrentLocationID")), rs.getString("InventoryNumber"),
-						getVendor(rs.getInt("VendorID")), rs.getInt("StoryID"), getCave(rs.getInt("CaveID")), rs.getInt("WallID"), rs.getInt("AbsoluteLeft"),
-						rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes"),
-						rs.getInt("MasterImageID"), rs.getBoolean("OpenAccess"), rs.getString("LastChangedByUser"), 
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
-				result.setRelatedImages(getRelatedImages(result.getDepictionID()));
-				result.setRelatedBibliographyList(getRelatedBibliographyFromDepiction(result.getDepictionID()));
-				result.setRelatedIconographyList(getRelatedIconography(result.getDepictionID()));
-			}
-			rs.close();
-			stmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return result;
-	}
+//	public DepictionEntry getDepictionEntry(int depictionID) {
+//		Connection dbc = getConnection();
+//		DepictionEntry result = null;
+//		Statement stmt;
+//		try {
+//			stmt = dbc.createStatement();
+//			ResultSet rs = stmt.executeQuery("SELECT * FROM Depictions WHERE DepictionID=" + depictionID);
+//			if (rs.next()) { // we only need to call this once, since we do not expect
+//												// more than 1 result!
+//				result = new DepictionEntry(rs.getInt("DepictionID"), rs.getInt("StyleID"), rs.getString("Inscriptions"),
+//						rs.getString("SeparateAksaras"), rs.getString("Dating"), rs.getString("Description"), rs.getString("BackgroundColour"),
+//						rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"), rs.getDouble("Width"), rs.getDouble("Height"),
+//						getExpedition(rs.getInt("ExpeditionID")), rs.getDate("PurchaseDate"), getLocation(rs.getInt("CurrentLocationID")), rs.getString("InventoryNumber"),
+//						getVendor(rs.getInt("VendorID")), rs.getInt("StoryID"), getCave(rs.getInt("CaveID")), rs.getInt("WallID"), rs.getInt("AbsoluteLeft"),
+//						rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes"),
+//						rs.getInt("MasterImageID"), rs.getBoolean("OpenAccess"), rs.getString("LastChangedByUser"), 
+//						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
+//				result.setRelatedImages(getRelatedImages(result.getDepictionID()));
+//				result.setRelatedBibliographyList(getRelatedBibliographyFromDepiction(result.getDepictionID()));
+//				result.setRelatedIconographyList(getRelatedIconography(result.getDepictionID()));
+//			}
+//			rs.close();
+//			stmt.close();
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
+//		return result;
+//	}
 	
 	public ArrayList<ImageEntry> searchImages(ImageSearchEntry searchEntry) {
 		ArrayList<ImageEntry> results = new ArrayList<ImageEntry>();
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		String where = "";
+		UserEntry ue = checkSessionID(searchEntry.getSessionID(), searchEntry.getUsername());
 		
 		if (searchEntry.getTitleSearch() != null && !searchEntry.getTitleSearch().isEmpty()) {
 			where = "CONCAT(Title, ShortName) LIKE ?";
@@ -506,7 +507,9 @@ public class MysqlConnector {
 		if (!imageTypeIDs.isEmpty()) {
 			where += where.isEmpty() ? "ImageTypeID IN (" + imageTypeIDs + ")" : " AND ImageTypeID IN (" + imageTypeIDs + ")" ;
 		}
-		where += addAccessRightsCondition(where, searchEntry);
+		if (ue == null) { // we are not logged in!
+			where += where.isEmpty() ? "OpenAccess=TRUE" : " AND OpenAccess=TRUE";
+		}
 		
 		System.out.println("SELECT * FROM Images" + (!where.isEmpty() ? " WHERE " + where : "") + " ORDER BY Title Asc");
 		
@@ -542,24 +545,6 @@ public class MysqlConnector {
 			}
 		}
 		return results;	
-	}
-
-	/**
-	 *  Checks whether the access rights are given and adds WHERE clause if necessary
-	 * @param where
-	 * @param searchEntry
-	 */
-	private String addAccessRightsCondition(String where, AbstractSearchEntry searchEntry) {
-		System.err.println("addAccessRightsCondition called");
-		UserEntry user = checkSessionID(searchEntry.getSessionID(), searchEntry.getUsername());
-		// check if user has full access rights! If not, there are restrictions!
-		if (user == null) { // we are not logged in!
-			System.err.println("addAccessRightsCondition has identified case for access rights restrictions");
-			return where.isEmpty() ? "OpenAccess = TRUE" : " AND OpenAccess = TRUE";
-//		} else if (user.getSessionID().equals(searchEntry.getSessionID()) && user.getAccessrights() == UserEntry.GUEST) {
-		} else {
-			return "";
-		}
 	}
 
 	/**
@@ -677,6 +662,7 @@ public class MysqlConnector {
 		String regionIdSet = "";
 		PreparedStatement pstmt;
 		String where = "";
+		UserEntry ue = checkSessionID(searchEntry.getSessionID(), searchEntry.getUsername());
 
 		for (int caveTypeID : searchEntry.getCaveTypeIdList()) {
 			caveTypeIdSet += caveTypeIdSet.isEmpty() ? Integer.toString(caveTypeID) : "," + caveTypeID;
@@ -713,7 +699,9 @@ public class MysqlConnector {
 		if (searchEntry.isDecoratedOnly()) {
 			where += where.isEmpty() ? "CaveID IN (SELECT CaveID FROM Depictions)" : " AND CaveID IN (SELECT CaveID FROM Depictions)";
 		}
-		where += addAccessRightsCondition(where, searchEntry);
+		if (ue == null) { // we are not logged in!
+			where += where.isEmpty() ? "OpenAccess=TRUE" : " AND OpenAccess=TRUE";
+		}
 		
 		System.err.println("searchCaves: where = " + where);
 		
@@ -1576,7 +1564,7 @@ public class MysqlConnector {
 		try {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery(
-					"SELECT * FROM Images WHERE ImageID IN (SELECT ImageID FROM DepictionImageRelation WHERE DepictionID=" + depictionID + ")");
+					"SELECT * FROM Images WHERE ImageID IN (SELECT ImageID FROM DepictionImageRelation WHERE DepictionID=" + depictionID + ") ");
 			while (rs.next()) {
 				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
 						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), 
@@ -1965,6 +1953,7 @@ public class MysqlConnector {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		String where = "";
+		UserEntry ue = checkSessionID(searchEntry.getSessionID(), searchEntry.getUsername());
 		
 		if ((searchEntry.getAuthorSearch() != null) && !searchEntry.getAuthorSearch().isEmpty()) {
 			String authorTerm = "";
@@ -1992,8 +1981,9 @@ public class MysqlConnector {
 		if (searchEntry.getYearSearch() > 0) {
 			where += where.isEmpty() ? "YearORG LIKE ?" : " AND YearORG LIKE ?";
 		}
-		
-		where += addAccessRightsCondition(where, searchEntry);
+		if (ue == null) { // we are not logged in!
+			where += where.isEmpty() ? "OpenAccess=TRUE" : " AND OpenAccess=TRUE";
+		}
 		
 		try {
 			int i = 1;
@@ -5207,14 +5197,11 @@ public class MysqlConnector {
 	 * @return
 	 */
 	public ArrayList<DepictionEntry> searchDepictions(DepictionSearchEntry searchEntry) {
-		// TODO Auto-generated method stub
-		/*
-		 * SELECT * FROM Depictions WHERE DepictionID IN (SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (1092,1108,1220,1221,1222,1236,1317,2290) GROUP BY DepictionID HAVING (COUNT(DepictionID) >= 3))
-		 */
 		ArrayList<DepictionEntry> results = new ArrayList<DepictionEntry>();
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		String where = "";
+		UserEntry ue = checkSessionID(searchEntry.getSessionID(), searchEntry.getUsername());
 		
 		if (searchEntry.getShortName() != null && !searchEntry.getShortName().isEmpty()) {
 			where = "ShortName LIKE ?";
@@ -5247,7 +5234,9 @@ public class MysqlConnector {
 					: "AND DepictionID IN (SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (" + iconographyIDs + ") GROUP BY DepictionID HAVING (COUNT(DepictionID) >= " 
 						+ searchEntry.getCorrelationFactor() + "))";
 		}
-		where += addAccessRightsCondition(where, searchEntry);
+		if (ue == null) { // we are not logged in!
+			where += where.isEmpty() ? "OpenAccess=TRUE" : " AND OpenAccess=TRUE";
+		}
 		
 		try {
 			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Depictions" : "SELECT * FROM Depictions WHERE " + where);
