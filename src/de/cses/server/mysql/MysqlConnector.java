@@ -550,9 +550,9 @@ public class MysqlConnector {
 	 * @param searchEntry
 	 */
 	private void addAccessRightsCondition(String where, AbstractSearchEntry searchEntry) {
-		UserEntry user = getUser(searchEntry.getUsername());
+		UserEntry user = !searchEntry.getUsername().isEmpty() ? getUser(searchEntry.getUsername()) : null;
 		// check if user has full access rights! If not, there are restrictions!
-		if (user == null || !user.getSessionID().equals(searchEntry.getSessionID())) { // we are not logged in!
+		if (user == null || searchEntry.getSessionID().isEmpty() || !searchEntry.getSessionID().equals(user.getSessionID())) { // we are not logged in!
 			where += where.isEmpty() ? "OpenAccess=1" : " AND OpenAccess=1";
 //		} else if (user.getSessionID().equals(searchEntry.getSessionID()) && user.getAccessrights() == UserEntry.GUEST) {
 			
@@ -3171,12 +3171,16 @@ public class MysqlConnector {
 	 * @return
 	 */
 	public UserEntry getUser(String username) {
+		if (username == null || username.isEmpty()) {
+			return null;
+		}
 		UserEntry result = null;
 		Connection dbc = getConnection();
-		Statement stmt;
+		PreparedStatement pstmt;
 		try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Users WHERE Username = '" + username + "'");
+			pstmt = dbc.prepareStatement("SELECT * FROM Users WHERE Username = ?");
+			pstmt.setString(1, username);
+			ResultSet rs = pstmt.executeQuery();
 			if (rs.first()) {
 				result = new UserEntry(rs.getInt("UserID"), rs.getString("Username"), rs.getString("Firstname"), rs.getString("Lastname"),
 						rs.getString("Email"), rs.getString("Affiliation"), rs.getInt("Accessrights"), rs.getString("SessionID"),
@@ -3185,7 +3189,7 @@ public class MysqlConnector {
 				System.err.println("no user " + username + " existing");
 			}
 			rs.close();
-			stmt.close();
+			pstmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
