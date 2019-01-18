@@ -12,15 +12,15 @@ public class AnnotatedBibliographySearchEntry extends AbstractSearchEntry {
 	private String publisherSearch = "";
 	private int yearSearch = 0;
 	
-
-	public AnnotatedBibliographySearchEntry(boolean orSearch) {
-		super(orSearch, Cookies.getCookie(UserLogin.SESSION_ID), Cookies.getCookie(UserLogin.USERNAME));
-		Util.doLogging("AnnotatedBibliographySearchEntry");
+	public AnnotatedBibliographySearchEntry(boolean orSearch, String sessionID, String username) {
+		super(orSearch, sessionID, username);
 	}
 
-	public AnnotatedBibliographySearchEntry() { 
-		super(Cookies.getCookie(UserLogin.SESSION_ID), Cookies.getCookie(UserLogin.USERNAME));
+	public AnnotatedBibliographySearchEntry(String sessionID, String username) {
+		super(sessionID, username);
 	}
+
+	public AnnotatedBibliographySearchEntry() {	}
 
 	public String getTitleSearch() {
 		return titleSearch;

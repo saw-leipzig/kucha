@@ -19,6 +19,7 @@ import java.util.Comparator;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -60,6 +61,7 @@ import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
 import de.cses.client.Util;
 import de.cses.client.ui.AbstractFilter;
+import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractSearchEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
@@ -441,7 +443,7 @@ public class DepictionFilter extends AbstractFilter {
 
 	@Override
 	public AbstractSearchEntry getSearchEntry() {
-		DepictionSearchEntry searchEntry = new DepictionSearchEntry();
+		DepictionSearchEntry searchEntry = new DepictionSearchEntry(Cookies.getCookie(UserLogin.SESSION_ID), Cookies.getCookie(UserLogin.USERNAME));
 		
 		if (shortNameSearchTF.getValue() != null && !shortNameSearchTF.getValue().isEmpty()) {
 			searchEntry.setShortName(shortNameSearchTF.getValue());

@@ -15,13 +15,15 @@ public class CaveSearchEntry extends AbstractSearchEntry {
 	private ArrayList<Integer> districtIdList = new ArrayList<Integer>();
 	private ArrayList<Integer> regionIdList = new ArrayList<Integer>();
 
-	public CaveSearchEntry(boolean orSearch) {
-		super(orSearch, Cookies.getCookie(UserLogin.SESSION_ID), Cookies.getCookie(UserLogin.USERNAME));
+	public CaveSearchEntry(boolean orSearch, String sessionID, String username) {
+		super(orSearch, sessionID, username);
 	}
 
-	public CaveSearchEntry() {
-		super(Cookies.getCookie(UserLogin.SESSION_ID), Cookies.getCookie(UserLogin.USERNAME));
+	public CaveSearchEntry(String sessionID, String username) {
+		super(sessionID, username);
 	}
+
+	public CaveSearchEntry() { }
 
 	public ArrayList<Integer> getCaveTypeIdList() {
 		return caveTypeIdList;

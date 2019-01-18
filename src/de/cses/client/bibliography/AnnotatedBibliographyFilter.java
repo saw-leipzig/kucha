@@ -15,6 +15,7 @@ package de.cses.client.bibliography;
 
 import java.util.ArrayList;
 
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
@@ -25,6 +26,7 @@ import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 
 import de.cses.client.Util;
 import de.cses.client.ui.AbstractFilter;
+import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractSearchEntry;
 import de.cses.shared.AnnotatedBibliographySearchEntry;
 
@@ -80,7 +82,7 @@ public class AnnotatedBibliographyFilter extends AbstractFilter {
 
 	@Override
 	public AbstractSearchEntry getSearchEntry() {
-		AnnotatedBibliographySearchEntry searchEntry = new AnnotatedBibliographySearchEntry();
+		AnnotatedBibliographySearchEntry searchEntry = new AnnotatedBibliographySearchEntry(Cookies.getCookie(UserLogin.SESSION_ID), Cookies.getCookie(UserLogin.USERNAME));
 		
 		if (authorNameTF.getValue() != null && !authorNameTF.getValue().isEmpty()) {
 			searchEntry.setAuthorSearch(authorNameTF.getValue());

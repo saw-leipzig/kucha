@@ -14,14 +14,15 @@ public class ImageSearchEntry extends AbstractSearchEntry {
 	private int daysSinceUploadSearch = 0;
 	ArrayList<Integer> imageTypeIdList = new ArrayList<Integer>();
 
-	public ImageSearchEntry(boolean orSearch) {
-		super(orSearch, Cookies.getCookie(UserLogin.SESSION_ID), Cookies.getCookie(UserLogin.USERNAME));
-
+	public ImageSearchEntry(boolean orSearch, String sessionID, String username) {
+		super(orSearch, sessionID, username);
 	}
 
-	public ImageSearchEntry() {
-		super(Cookies.getCookie(UserLogin.SESSION_ID), Cookies.getCookie(UserLogin.USERNAME));
+	public ImageSearchEntry(String sessionID, String username) {
+		super(sessionID, username);
 	}
+
+	public ImageSearchEntry() { }
 
 	public String getTitleSearch() {
 		return titleSearch;

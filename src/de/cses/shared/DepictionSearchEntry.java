@@ -14,14 +14,15 @@ public class DepictionSearchEntry extends AbstractSearchEntry {
 	private ArrayList<Integer> iconographyIdList = new ArrayList<Integer>();
 	private int correlationFactor = 0;
 
-	public DepictionSearchEntry(boolean orSearch) {
-		super(orSearch, Cookies.getCookie(UserLogin.SESSION_ID), Cookies.getCookie(UserLogin.USERNAME));
-
+	public DepictionSearchEntry(boolean orSearch, String sessionID, String username) {
+		super(orSearch, sessionID, username);
 	}
 
-	public DepictionSearchEntry() {
-		super(Cookies.getCookie(UserLogin.SESSION_ID), Cookies.getCookie(UserLogin.USERNAME));
+	public DepictionSearchEntry(String sessionID, String username) {
+		super(sessionID, username);
 	}
+
+	public DepictionSearchEntry() {	}
 
 	public String getShortName() {
 		return shortName;
