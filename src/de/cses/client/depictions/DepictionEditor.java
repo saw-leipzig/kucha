@@ -66,6 +66,7 @@ import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.ListField;
 import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
+import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.Validator;
@@ -86,6 +87,7 @@ import de.cses.client.ui.TextElement;
 import de.cses.client.user.UserLogin;
 import de.cses.client.walls.WallSelector;
 import de.cses.client.walls.Walls;
+import de.cses.shared.AbstractEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.ExpeditionEntry;
@@ -523,19 +525,30 @@ public class DepictionEditor extends AbstractEditor {
 				correspondingDepictionEntry.setShortName(event.getValue());
 			}
 		});
-		CheckBox openAccessCB = new CheckBox();
-		openAccessCB.setBoxLabel("open access");
-		openAccessCB.setValue(correspondingDepictionEntry.isOpenAccess());
-		openAccessCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+		SimpleComboBox<String> accessRightsCB = new SimpleComboBox<String>(new LabelProvider<String>() {
 
 			@Override
-			public void onValueChange(ValueChangeEvent<Boolean> event) {
-				correspondingDepictionEntry.setOpenAccess(event.getValue());
+			public String getLabel(String item) {
+				return item;
+			}
+		});
+		accessRightsCB.add(AbstractEntry.ACCESS_LABEL.get(0));
+		accessRightsCB.add(AbstractEntry.ACCESS_LABEL.get(1));
+		accessRightsCB.add(AbstractEntry.ACCESS_LABEL.get(2));
+		accessRightsCB.setEditable(false);
+		accessRightsCB.setTypeAhead(false);
+		accessRightsCB.setTriggerAction(TriggerAction.ALL);
+		accessRightsCB.setValue(AbstractEntry.ACCESS_LABEL.get(correspondingDepictionEntry.getAccessRight()));
+		accessRightsCB.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				correspondingDepictionEntry.setAccessRight(accessRightsCB.getSelectedIndex());
 			}
 		});
 		VerticalLayoutContainer shortNameVLC = new VerticalLayoutContainer();
 		shortNameVLC.add(shortNameTF, new VerticalLayoutData(1.0, .5));
-		shortNameVLC.add(openAccessCB, new VerticalLayoutData(1.0, .5));
+		shortNameVLC.add(new FieldLabel(accessRightsCB, "Access Rights"), new VerticalLayoutData(1.0, .5));
 		shortNameFP.add(shortNameVLC);
 
 		
@@ -950,15 +963,15 @@ public class DepictionEditor extends AbstractEditor {
     
 		VerticalLayoutContainer basicsLeftVLC = new VerticalLayoutContainer();
 		
-		basicsLeftVLC.add(shortNameFP, new VerticalLayoutData(1.0, .13));
+		basicsLeftVLC.add(shortNameFP, new VerticalLayoutData(1.0, .15));
 		basicsLeftVLC.add(caveSelectionFP, new VerticalLayoutData(1.0, .11));
 		basicsLeftVLC.add(acquiredByExpeditionFP, new VerticalLayoutData(1.0, .11));
 		basicsLeftVLC.add(vendorFP, new VerticalLayoutData(1.0, .11));
 		basicsLeftVLC.add(datePurchasedFP, new VerticalLayoutData(1.0, .11));
 		basicsLeftVLC.add(currentLocationFP, new VerticalLayoutData(1.0, .11));
-		basicsLeftVLC.add(inventoryNumberFP, new VerticalLayoutData(1.0, .11));
+		basicsLeftVLC.add(inventoryNumberFP, new VerticalLayoutData(1.0, .10));
 //		basicsLeftVLC.add(positionNoteFP, new VerticalLayoutData(1.0, .15));
-		basicsLeftVLC.add(stateOfPreservationFP, new VerticalLayoutData(1.0, .21));
+		basicsLeftVLC.add(stateOfPreservationFP, new VerticalLayoutData(1.0, .2));
 
 		FramedPanel wallSelectorFP = new FramedPanel();
 		wallSelectorFP.setHeading("Wall");

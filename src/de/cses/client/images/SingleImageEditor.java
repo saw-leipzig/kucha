@@ -60,6 +60,7 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
+import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.Validator;
@@ -73,6 +74,7 @@ import de.cses.client.StaticTables;
 import de.cses.client.Util;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.client.user.UserLogin;
+import de.cses.shared.AbstractEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageTypeEntry;
 import de.cses.shared.PhotographerEntry;
@@ -383,23 +385,34 @@ public class SingleImageEditor extends AbstractEditor {
 		imageTypeSelectionPanel.add(imageTypeSelection);
 		imageTypeSelectionPanel.setHeading("Image Type");
 
-		FramedPanel openAccessImagePanel = new FramedPanel();
-		openAccessImagePanel.setHeading("Open Access");
-		CheckBox openAccessImageCB = new CheckBox();
-		openAccessImageCB.setBoxLabel("allow");
-		openAccessImageCB.setValue(imgEntry.isOpenAccess());
-		openAccessImageCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+		SimpleComboBox<String> accessRightsCB = new SimpleComboBox<String>(new LabelProvider<String>() {
 
 			@Override
-			public void onValueChange(ValueChangeEvent<Boolean> event) {
-				imgEntry.setOpenAccess(event.getValue());
+			public String getLabel(String item) {
+				return item;
 			}
 		});
-		openAccessImagePanel.add(openAccessImageCB);
+		accessRightsCB.add(AbstractEntry.ACCESS_LABEL.get(0));
+		accessRightsCB.add(AbstractEntry.ACCESS_LABEL.get(1));
+		accessRightsCB.add(AbstractEntry.ACCESS_LABEL.get(2));
+		accessRightsCB.setEditable(false);
+		accessRightsCB.setTypeAhead(false);
+		accessRightsCB.setTriggerAction(TriggerAction.ALL);
+		accessRightsCB.setValue(AbstractEntry.ACCESS_LABEL.get(imgEntry.getAccessRight()));
+		accessRightsCB.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				imgEntry.setAccessRight(accessRightsCB.getSelectedIndex());
+			}
+		});
+		FramedPanel accessRightsFP = new FramedPanel();
+		accessRightsFP.setHeading("Access Rights");
+		accessRightsFP.add(accessRightsCB);
 
 		HorizontalLayoutContainer imageOpenAccessHLC = new HorizontalLayoutContainer();
 		imageOpenAccessHLC.add(imageTypeSelectionPanel, new HorizontalLayoutData(.5, 1.0));
-		imageOpenAccessHLC.add(openAccessImagePanel, new HorizontalLayoutData(.5, 1.0));
+		imageOpenAccessHLC.add(accessRightsFP, new HorizontalLayoutData(.5, 1.0));
 		
 		ToolButton saveToolButton = new ToolButton(ToolButton.SAVE);
 		saveToolButton.setToolTip(Util.createToolTip("save"));

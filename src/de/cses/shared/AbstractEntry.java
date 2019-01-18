@@ -13,6 +13,10 @@
  */
 package de.cses.shared;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
@@ -21,7 +25,13 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public abstract class AbstractEntry implements IsSerializable {
 	
+	public static final int ACCESS_PRIVATE = 0;
+	public static final int ACCESS_COPYRIGHT = 1;
+	public static final int ACCESS_PUBLIC = 2;
+	public static final List<String> ACCESS_LABEL = Arrays.asList("private", "copyright", "public");
+	
 	protected boolean openAccess = false;
+	protected int accessRight = ACCESS_PRIVATE;
 	protected String lastChangedByUser = "";
 	protected String modifiedOn = "";
 	
@@ -64,6 +74,14 @@ public abstract class AbstractEntry implements IsSerializable {
 
 	public void setModifiedOn(String modifiedOn) {
 		this.modifiedOn = modifiedOn;
+	}
+
+	public int getAccessRight() {
+		return accessRight;
+	}
+
+	public void setAccessRight(int accessRight) {
+		this.accessRight = accessRight;
 	}
 
 }

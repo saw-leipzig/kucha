@@ -69,6 +69,7 @@ import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
+import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.Validator;
@@ -87,6 +88,7 @@ import de.cses.client.caves.C14DocumentUploader.C14DocumentUploadListener;
 import de.cses.client.caves.CaveSketchUploader.CaveSketchUploadListener;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.client.user.UserLogin;
+import de.cses.shared.AbstractEntry;
 import de.cses.shared.C14AnalysisUrlEntry;
 import de.cses.shared.C14DocumentEntry;
 import de.cses.shared.CaveAreaEntry;
@@ -629,19 +631,32 @@ public class CaveEditor extends AbstractEditor {
 				}
 			}
 		});
-		CheckBox openAccessCB = new CheckBox();
-		openAccessCB.setBoxLabel("open access");
-		openAccessCB.setValue(correspondingCaveEntry.isOpenAccess());
-		openAccessCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+
+		SimpleComboBox<String> accessRightsCB = new SimpleComboBox<String>(new LabelProvider<String>() {
 
 			@Override
-			public void onValueChange(ValueChangeEvent<Boolean> event) {
-				correspondingCaveEntry.setOpenAccess(event.getValue());
+			public String getLabel(String item) {
+				return item;
 			}
 		});
+		accessRightsCB.add(AbstractEntry.ACCESS_LABEL.get(0));
+		accessRightsCB.add(AbstractEntry.ACCESS_LABEL.get(1));
+		accessRightsCB.add(AbstractEntry.ACCESS_LABEL.get(2));
+		accessRightsCB.setEditable(false);
+		accessRightsCB.setTypeAhead(false);
+		accessRightsCB.setTriggerAction(TriggerAction.ALL);
+		accessRightsCB.setValue(AbstractEntry.ACCESS_LABEL.get(correspondingCaveEntry.getAccessRight()));
+		accessRightsCB.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				correspondingCaveEntry.setAccessRight(accessRightsCB.getSelectedIndex());
+			}
+		});
+
 		VerticalLayoutContainer officialNumberVLC = new VerticalLayoutContainer();
 		officialNumberVLC.add(officialNumberField, new VerticalLayoutData(1.0, .5));
-		officialNumberVLC.add(openAccessCB, new VerticalLayoutData(1.0, .5));
+		officialNumberVLC.add(new FieldLabel(accessRightsCB, "Access Rights"), new VerticalLayoutData(1.0, .5));
 		officialNumberPanel.add(officialNumberVLC);
 
 		FramedPanel historicalNamePanel = new FramedPanel();
