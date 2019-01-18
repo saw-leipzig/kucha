@@ -1,5 +1,10 @@
 package de.cses.shared;
 
+import com.google.gwt.user.client.Cookies;
+
+import de.cses.client.Util;
+import de.cses.client.user.UserLogin;
+
 public class AnnotatedBibliographySearchEntry extends AbstractSearchEntry {
 	
 	private String titleSearch = "";
@@ -9,10 +14,13 @@ public class AnnotatedBibliographySearchEntry extends AbstractSearchEntry {
 	
 
 	public AnnotatedBibliographySearchEntry(boolean orSearch) {
-		super(orSearch);
+		super(orSearch, Cookies.getCookie(UserLogin.SESSION_ID), Cookies.getCookie(UserLogin.USERNAME));
+		Util.doLogging("AnnotatedBibliographySearchEntry");
 	}
 
-	public AnnotatedBibliographySearchEntry() { }
+	public AnnotatedBibliographySearchEntry() { 
+		super(Cookies.getCookie(UserLogin.SESSION_ID), Cookies.getCookie(UserLogin.USERNAME));
+	}
 
 	public String getTitleSearch() {
 		return titleSearch;

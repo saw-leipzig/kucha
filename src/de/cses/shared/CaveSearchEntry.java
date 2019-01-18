@@ -2,6 +2,10 @@ package de.cses.shared;
 
 import java.util.ArrayList;
 
+import com.google.gwt.user.client.Cookies;
+
+import de.cses.client.user.UserLogin;
+
 public class CaveSearchEntry extends AbstractSearchEntry {
 
 	private String historicalName = "";
@@ -12,12 +16,11 @@ public class CaveSearchEntry extends AbstractSearchEntry {
 	private ArrayList<Integer> regionIdList = new ArrayList<Integer>();
 
 	public CaveSearchEntry(boolean orSearch) {
-		super(orSearch);
-		// TODO Auto-generated constructor stub
+		super(orSearch, Cookies.getCookie(UserLogin.SESSION_ID), Cookies.getCookie(UserLogin.USERNAME));
 	}
 
 	public CaveSearchEntry() {
-		// TODO Auto-generated constructor stub
+		super(Cookies.getCookie(UserLogin.SESSION_ID), Cookies.getCookie(UserLogin.USERNAME));
 	}
 
 	public ArrayList<Integer> getCaveTypeIdList() {

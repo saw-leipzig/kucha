@@ -509,6 +509,54 @@ div.saveButtonOver {
 	cursor: pointer;
 }
 
+div.closeButton {
+	background-image: url(icons/close_icon.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.closeButtonOver {
+	background-image: url(icons/close_icon_mo.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.closeWindowButton {
+	background-image: url(icons/close_window.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.closeWindowButtonOver {
+	background-image: url(icons/close_window_mo.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.openWindowButton {
+	background-image: url(icons/open_window.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.openWindowButtonOver {
+	background-image: url(icons/open_window_mo.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
 span.freeIconText {
 	background-image: url(icons/free_icon2.png);
 	width: 25px;

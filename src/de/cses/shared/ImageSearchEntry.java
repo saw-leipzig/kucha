@@ -2,6 +2,10 @@ package de.cses.shared;
 
 import java.util.ArrayList;
 
+import com.google.gwt.user.client.Cookies;
+
+import de.cses.client.user.UserLogin;
+
 public class ImageSearchEntry extends AbstractSearchEntry {
 	
 	private String titleSearch = "";
@@ -11,10 +15,12 @@ public class ImageSearchEntry extends AbstractSearchEntry {
 	ArrayList<Integer> imageTypeIdList = new ArrayList<Integer>();
 
 	public ImageSearchEntry(boolean orSearch) {
-		super(orSearch);
+		super(orSearch, Cookies.getCookie(UserLogin.SESSION_ID), Cookies.getCookie(UserLogin.USERNAME));
+
 	}
 
 	public ImageSearchEntry() {
+		super(Cookies.getCookie(UserLogin.SESSION_ID), Cookies.getCookie(UserLogin.USERNAME));
 	}
 
 	public String getTitleSearch() {

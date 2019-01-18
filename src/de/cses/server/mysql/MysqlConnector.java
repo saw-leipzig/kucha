@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2018 
+ * Copyright 2016-2019
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.UUID;
 
 import de.cses.server.ServerProperties;
+import de.cses.shared.AbstractSearchEntry;
 import de.cses.shared.AnnotatedBibliographySearchEntry;
 import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.AuthorEntry;
@@ -505,7 +506,10 @@ public class MysqlConnector {
 		if (!imageTypeIDs.isEmpty()) {
 			where += where.isEmpty() ? "ImageTypeID IN (" + imageTypeIDs + ")" : " AND ImageTypeID IN (" + imageTypeIDs + ")" ;
 		}
+		addAccessRightsCondition(where, searchEntry);
+		
 		System.out.println("SELECT * FROM Images" + (!where.isEmpty() ? " WHERE " + where : "") + " ORDER BY Title Asc");
+		
 		try {
 			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Images ORDER BY Title Asc" : "SELECT * FROM Images WHERE " + where + " ORDER BY Title Asc");
 			int i = 1; // counter to fill ? in where clause
@@ -538,6 +542,21 @@ public class MysqlConnector {
 			}
 		}
 		return results;	
+	}
+
+	/**
+	 *  Checks whether the access rights are given and adds WHERE clause if necessary
+	 * @param where
+	 * @param searchEntry
+	 */
+	private void addAccessRightsCondition(String where, AbstractSearchEntry searchEntry) {
+		UserEntry user = getUser(searchEntry.getUsername());
+		// check if user has full access rights! If not, there are restrictions!
+		if (user == null || !user.getSessionID().equals(searchEntry.getSessionID())) { // we are not logged in!
+			where += where.isEmpty() ? "OpenAccess=1" : " AND OpenAccess=1";
+//		} else if (user.getSessionID().equals(searchEntry.getSessionID()) && user.getAccessrights() == UserEntry.GUEST) {
+			
+		}
 	}
 
 	/**
@@ -691,6 +710,7 @@ public class MysqlConnector {
 		if (searchEntry.isDecoratedOnly()) {
 			where += where.isEmpty() ? "CaveID IN (SELECT CaveID FROM Depictions)" : " AND CaveID IN (SELECT CaveID FROM Depictions)";
 		}
+		addAccessRightsCondition(where, searchEntry);
 		
 		System.err.println("searchCaves: where = " + where);
 		
@@ -1969,6 +1989,8 @@ public class MysqlConnector {
 		if (searchEntry.getYearSearch() > 0) {
 			where += where.isEmpty() ? "YearORG LIKE ?" : " AND YearORG LIKE ?";
 		}
+		
+		addAccessRightsCondition(where, searchEntry);
 		
 		try {
 			int i = 1;
@@ -5214,6 +5236,7 @@ public class MysqlConnector {
 					: "AND DepictionID IN (SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (" + iconographyIDs + ") GROUP BY DepictionID HAVING (COUNT(DepictionID) >= " 
 						+ searchEntry.getCorrelationFactor() + "))";
 		}
+		addAccessRightsCondition(where, searchEntry);
 		
 		try {
 			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Depictions" : "SELECT * FROM Depictions WHERE " + where);
