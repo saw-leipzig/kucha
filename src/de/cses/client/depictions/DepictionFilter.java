@@ -443,7 +443,12 @@ public class DepictionFilter extends AbstractFilter {
 
 	@Override
 	public AbstractSearchEntry getSearchEntry() {
-		DepictionSearchEntry searchEntry = new DepictionSearchEntry(Cookies.getCookie(UserLogin.SESSION_ID), Cookies.getCookie(UserLogin.USERNAME));
+		DepictionSearchEntry searchEntry;
+		if (UserLogin.isLoggedIn()) {
+			searchEntry = new DepictionSearchEntry(UserLogin.getInstance().getSessionID());
+		} else {
+			searchEntry = new DepictionSearchEntry();
+		}
 		
 		if (shortNameSearchTF.getValue() != null && !shortNameSearchTF.getValue().isEmpty()) {
 			searchEntry.setShortName(shortNameSearchTF.getValue());

@@ -435,7 +435,7 @@ public class MysqlConnector {
 		}
 		
 		int userAccessLevel = AbstractEntry.ACCESS_LEVEL_PUBLIC; // default: lowest possible access rights
-		UserEntry user = checkSessionID(searchEntry.getSessionID(), searchEntry.getUsername());
+		UserEntry user = checkSessionID(searchEntry.getSessionID());
 		if (user != null) {
 			switch (user.getAccessLevel()) {
 				case UserEntry.GUEST:
@@ -600,7 +600,7 @@ public class MysqlConnector {
 		String regionIdSet = "";
 		PreparedStatement pstmt;
 		String where = "";
-		UserEntry ue = checkSessionID(searchEntry.getSessionID(), searchEntry.getUsername());
+		UserEntry ue = checkSessionID(searchEntry.getSessionID());
 
 		for (int caveTypeID : searchEntry.getCaveTypeIdList()) {
 			caveTypeIdSet += caveTypeIdSet.isEmpty() ? Integer.toString(caveTypeID) : "," + caveTypeID;
@@ -639,7 +639,7 @@ public class MysqlConnector {
 		}
 
 		int userAccessLevel = AbstractEntry.ACCESS_LEVEL_PUBLIC; // default: lowest possible access rights
-		UserEntry user = checkSessionID(searchEntry.getSessionID(), searchEntry.getUsername());
+		UserEntry user = checkSessionID(searchEntry.getSessionID());
 		if (user != null) {
 			switch (user.getAccessLevel()) {
 				case UserEntry.GUEST:
@@ -1510,7 +1510,7 @@ public class MysqlConnector {
 		UserEntry user = null;
 		int accessLevel = AbstractEntry.ACCESS_LEVEL_PUBLIC; // default: lowest possible access rights
 		if (entry != null) {
-			user = checkSessionID(entry.getSessionID(), entry.getUsername());
+			user = checkSessionID(entry.getSessionID());
 			switch (user.getAccessLevel()) {
 				case UserEntry.GUEST:
 				case UserEntry.ASSOCIATED:
@@ -1857,7 +1857,7 @@ public class MysqlConnector {
 		}
 
 		int accessLevel = AbstractEntry.ACCESS_LEVEL_PUBLIC; // default: lowest possible access rights
-		UserEntry user = checkSessionID(searchEntry.getSessionID(), searchEntry.getUsername());
+		UserEntry user = checkSessionID(searchEntry.getSessionID());
 		if (user != null) {
 			switch (user.getAccessLevel()) {
 				case UserEntry.GUEST:
@@ -5089,7 +5089,7 @@ public class MysqlConnector {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		String where = "";
-		UserEntry ue = checkSessionID(searchEntry.getSessionID(), searchEntry.getUsername());
+		UserEntry ue = checkSessionID(searchEntry.getSessionID());
 		
 		if (searchEntry.getShortName() != null && !searchEntry.getShortName().isEmpty()) {
 			where = "ShortName LIKE ?";
@@ -5134,7 +5134,7 @@ public class MysqlConnector {
 		}
 
 		int userAccessLevel = AbstractEntry.ACCESS_LEVEL_PUBLIC; // default: lowest possible access rights
-		UserEntry user = checkSessionID(searchEntry.getSessionID(), searchEntry.getUsername());
+		UserEntry user = checkSessionID(searchEntry.getSessionID());
 		if (user != null) {
 			switch (user.getAccessLevel()) {
 				case UserEntry.GUEST:

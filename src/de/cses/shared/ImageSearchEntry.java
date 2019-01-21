@@ -14,12 +14,12 @@ public class ImageSearchEntry extends AbstractSearchEntry {
 	private int daysSinceUploadSearch = 0;
 	ArrayList<Integer> imageTypeIdList = new ArrayList<Integer>();
 
-	public ImageSearchEntry(boolean orSearch, String sessionID, String username) {
-		super(orSearch, sessionID, username);
+	public ImageSearchEntry(boolean orSearch, String sessionID) {
+		super(orSearch, sessionID);
 	}
 
-	public ImageSearchEntry(String sessionID, String username) {
-		super(sessionID, username);
+	public ImageSearchEntry(String sessionID) {
+		super(sessionID);
 	}
 
 	public ImageSearchEntry() { }

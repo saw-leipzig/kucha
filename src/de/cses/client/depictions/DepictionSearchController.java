@@ -18,20 +18,15 @@ import java.util.ArrayList;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.PopupPanel;
-import com.sencha.gxt.widget.core.client.button.ToolButton;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.Util;
-import de.cses.client.ornamentic.OrnamenticView;
-import de.cses.client.ui.AbstractFilter;
-import de.cses.client.ui.AbstractResultView;
 import de.cses.client.ui.AbstractSearchController;
 import de.cses.client.ui.EditorListener;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DepictionSearchEntry;
-import de.cses.shared.OrnamentEntry;
 
 /**
  * @author alingnau
@@ -40,7 +35,6 @@ import de.cses.shared.OrnamentEntry;
 public class DepictionSearchController extends AbstractSearchController {
 
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
-	private String sqlWhere;
 
 	/**
 	 * @param searchControllerTitle

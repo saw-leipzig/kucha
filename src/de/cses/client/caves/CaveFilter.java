@@ -352,8 +352,12 @@ public class CaveFilter extends AbstractFilter {
 
 	@Override
 	public CaveSearchEntry getSearchEntry() {
-		UserLogin ul = UserLogin.getInstance();
-		CaveSearchEntry result = new CaveSearchEntry(ul.getSessionID(), ul.getUsername());
+		CaveSearchEntry result;
+		if (UserLogin.isLoggedIn()) {
+			result = new CaveSearchEntry(UserLogin.getInstance().getSessionID());
+		} else {
+			result = new CaveSearchEntry();
+		}
 		
 		if (searchNameTF.getValue() != null && !searchNameTF.getValue().isEmpty()) {
 			result.setHistoricalName(searchNameTF.getValue());

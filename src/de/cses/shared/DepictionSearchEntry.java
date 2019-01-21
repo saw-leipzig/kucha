@@ -15,12 +15,12 @@ public class DepictionSearchEntry extends AbstractSearchEntry {
 	private ArrayList<Integer> bibIdList = new ArrayList<Integer>();
 	private int correlationFactor = 0;
 
-	public DepictionSearchEntry(boolean orSearch, String sessionID, String username) {
-		super(orSearch, sessionID, username);
+	public DepictionSearchEntry(boolean orSearch, String sessionID) {
+		super(orSearch, sessionID);
 	}
 
-	public DepictionSearchEntry(String sessionID, String username) {
-		super(sessionID, username);
+	public DepictionSearchEntry(String sessionID) {
+		super(sessionID);
 	}
 
 	public DepictionSearchEntry() {	}

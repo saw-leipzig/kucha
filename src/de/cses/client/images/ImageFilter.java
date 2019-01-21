@@ -138,29 +138,34 @@ public class ImageFilter extends AbstractFilter {
 
 	@Override
 	public AbstractSearchEntry getSearchEntry() {
-		ImageSearchEntry entry = new ImageSearchEntry(Cookies.getCookie(UserLogin.SESSION_ID), Cookies.getCookie(UserLogin.USERNAME));
+		ImageSearchEntry searchEntry;
+		if (UserLogin.isLoggedIn()) {
+			searchEntry = new ImageSearchEntry(UserLogin.getInstance().getSessionID());
+		} else {
+			searchEntry = new ImageSearchEntry();
+		}
 
 		if (titleSearch.getValue() != null && !titleSearch.getValue().isEmpty()) {
-			entry.setTitleSearch(titleSearch.getValue());
+			searchEntry.setTitleSearch(titleSearch.getValue());
 		}
 		
 		if (copyrightSearch.getValue() != null && !copyrightSearch.getValue().isEmpty()) {
-			entry.setCopyrightSearch(copyrightSearch.getValue());
+			searchEntry.setCopyrightSearch(copyrightSearch.getValue());
 		}
 		
 		if (filenameSearch.getValue() != null && !filenameSearch.getValue().isEmpty()) {
-			entry.setFilenameSearch(filenameSearch.getValue());
+			searchEntry.setFilenameSearch(filenameSearch.getValue());
 		}
 		
 		if (daysSinceUploadSearch.getValue() != null && daysSinceUploadSearch.getValue() > 0) {
-			entry.setDaysSinceUploadSearch(daysSinceUploadSearch.getValue());
+			searchEntry.setDaysSinceUploadSearch(daysSinceUploadSearch.getValue());
 		}
 		
 		for (ImageTypeEntry ite : selectedImagesTypesList.getAll()) {
-			entry.getImageTypeIdList().add(ite.getImageTypeID());
+			searchEntry.getImageTypeIdList().add(ite.getImageTypeID());
 		}
 
-		return entry;
+		return searchEntry;
 	}
 
 }

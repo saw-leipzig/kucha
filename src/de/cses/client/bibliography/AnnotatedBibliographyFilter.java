@@ -82,7 +82,12 @@ public class AnnotatedBibliographyFilter extends AbstractFilter {
 
 	@Override
 	public AbstractSearchEntry getSearchEntry() {
-		AnnotatedBibliographySearchEntry searchEntry = new AnnotatedBibliographySearchEntry(Cookies.getCookie(UserLogin.SESSION_ID), Cookies.getCookie(UserLogin.USERNAME));
+		AnnotatedBibliographySearchEntry searchEntry;
+		if (UserLogin.isLoggedIn()) {
+			searchEntry = new AnnotatedBibliographySearchEntry(UserLogin.getInstance().getSessionID());
+		} else {
+			searchEntry = new AnnotatedBibliographySearchEntry();
+		}
 		
 		if (authorNameTF.getValue() != null && !authorNameTF.getValue().isEmpty()) {
 			searchEntry.setAuthorSearch(authorNameTF.getValue());

@@ -26,9 +26,8 @@ import de.cses.client.user.UserLogin;
 public abstract class AbstractSearchEntry implements IsSerializable {
 	
 	protected boolean orSearch = false; // the default case is AND search
-	// we send sessionID and username automatically with each request to allow for filtering of restricted information
+	// we send sessionID with each request to allow for filtering of restricted information
 	private String sessionID = "";
-	private String username = "";
 
 	/**
 	 * 
@@ -36,15 +35,14 @@ public abstract class AbstractSearchEntry implements IsSerializable {
 	 * @param sessionID
 	 * @param username
 	 */
-	public AbstractSearchEntry(boolean orSearch, String sessionID, String username) {
+	public AbstractSearchEntry(boolean orSearch, String sessionID) {
 		super();
 		this.orSearch = orSearch;
 		this.sessionID = sessionID;
-		this.username = username;
 	}
 
-	public AbstractSearchEntry(String sessionID, String username) {
-		this(false, sessionID, username);
+	public AbstractSearchEntry(String sessionID) {
+		this(false, sessionID);
 	}
 
 	public AbstractSearchEntry() { }
@@ -63,14 +61,6 @@ public abstract class AbstractSearchEntry implements IsSerializable {
 
 	public void setSessionID(String sessionID) {
 		this.sessionID = sessionID;
-	}
-
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
 	}
 
 }

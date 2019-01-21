@@ -48,7 +48,12 @@ public class DepictionResultView extends AbstractResultView {
 			@Override
 			protected void onDragDrop(DndDropEvent event) {
 				super.onDragDrop(event);
-				DepictionSearchEntry searchEntry = new DepictionSearchEntry(UserLogin.getInstance().getSessionID(), UserLogin.getInstance().getUsername());
+				DepictionSearchEntry searchEntry;
+				if (UserLogin.isLoggedIn()) {
+					searchEntry = new DepictionSearchEntry(UserLogin.getInstance().getSessionID());
+				} else {
+					searchEntry = new DepictionSearchEntry();
+				}
 				if (event.getData() instanceof CaveEntry) {
 					int caveID = ((CaveEntry) event.getData()).getCaveID();
 					searchEntry.getCaveIdList().add(caveID);

@@ -12,12 +12,12 @@ public class AnnotatedBibliographySearchEntry extends AbstractSearchEntry {
 	private String publisherSearch = "";
 	private int yearSearch = 0;
 	
-	public AnnotatedBibliographySearchEntry(boolean orSearch, String sessionID, String username) {
-		super(orSearch, sessionID, username);
+	public AnnotatedBibliographySearchEntry(boolean orSearch, String sessionID) {
+		super(orSearch, sessionID);
 	}
 
-	public AnnotatedBibliographySearchEntry(String sessionID, String username) {
-		super(sessionID, username);
+	public AnnotatedBibliographySearchEntry(String sessionID) {
+		super(sessionID);
 	}
 
 	public AnnotatedBibliographySearchEntry() {	}
