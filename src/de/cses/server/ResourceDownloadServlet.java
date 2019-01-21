@@ -75,7 +75,7 @@ public class ResourceDownloadServlet extends HttpServlet {
 					userAccessLevel = AbstractEntry.ACCESS_LEVEL_PRIVATE;
 			}
 			
-			if (imgEntry!=null && (userAccessLevel >= imgEntry.getAccessLevel())) {
+			if (imgEntry!=null && (imgEntry.getAccessLevel() >= userAccessLevel)) {
 				filename = imgEntry.getFilename();
 				inputFile = new File(serverProperties.getProperty("home.images"), filename);
 			} else {

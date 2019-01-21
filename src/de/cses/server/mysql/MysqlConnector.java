@@ -447,7 +447,7 @@ public class MysqlConnector {
 					userAccessLevel = AbstractEntry.ACCESS_LEVEL_PRIVATE;
 			}
 		}
-		where += where.isEmpty() ? "AccessLevel<=" + userAccessLevel : " AND AccessLevel<=" + userAccessLevel;
+		where += where.isEmpty() ? "AccessLevel>=" + userAccessLevel : " AND AccessLevel>=" + userAccessLevel;
 		
 		System.out.println("SELECT * FROM Images" + (!where.isEmpty() ? " WHERE " + where : "") + " ORDER BY Title Asc");
 		
@@ -651,7 +651,7 @@ public class MysqlConnector {
 					userAccessLevel = AbstractEntry.ACCESS_LEVEL_PRIVATE;
 			}
 		}
-		where += where.isEmpty() ? "AccessLevel<=" + userAccessLevel : " AND AccessLevel<=" + userAccessLevel;
+		where += where.isEmpty() ? "AccessLevel>=" + userAccessLevel : " AND AccessLevel>=" + userAccessLevel;
 		
 		System.err.println("searchCaves: where = " + where);
 		
@@ -5092,7 +5092,6 @@ public class MysqlConnector {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		String where = "";
-		UserEntry ue = checkSessionID(searchEntry.getSessionID());
 		
 		if (searchEntry.getShortName() != null && !searchEntry.getShortName().isEmpty()) {
 			where = "ShortName LIKE ?";
@@ -5149,13 +5148,16 @@ public class MysqlConnector {
 					userAccessLevel = AbstractEntry.ACCESS_LEVEL_PRIVATE;
 			}
 		}
-		where += where.isEmpty() ? "AccessLevel<=" + userAccessLevel : " AND AccessLevel<=" + userAccessLevel;
+		where += where.isEmpty() ? "AccessLevel>=" + userAccessLevel : " AND AccessLevel>=" + userAccessLevel;
 				
+		System.err.println(where.isEmpty() ? "SELECT * FROM Depictions" : "SELECT * FROM Depictions WHERE " + where);
+
 		try {
 			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Depictions" : "SELECT * FROM Depictions WHERE " + where);
 			if (!searchEntry.getShortName().isEmpty()) {
 				pstmt.setString(1, "%" + searchEntry.getShortName() + "%");
 			}
+			
 
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
