@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -33,6 +34,7 @@ import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveSearchEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.DepictionEntry;
+import de.cses.shared.DepictionSearchEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
@@ -289,24 +291,39 @@ public class JsonServlet extends HttpServlet {
 	
 	private void getDepiction() throws IOException {
 		String depictionIDStr = request.getParameter("paintedRepID");
-		String sqlWhere = null;
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF8");
 		PrintWriter out = response.getWriter();
-		ArrayList<DepictionEntry> depictionEntries ;
+		ArrayList<DepictionEntry> depictionEntries;
+		DepictionSearchEntry searchEntry = new DepictionSearchEntry();
+		ArrayList<Integer> caveIDList = new ArrayList<Integer>();
 
 		if ("all".equals(depictionIDStr)) {
 			if (request.getParameter("caveID") != null) {
-				sqlWhere = "CaveID IN (" + request.getParameter("caveID") + ")";
+				String[] caveIdStr = request.getParameter("caveID").split(",");
+				for (String s : caveIdStr) {
+					caveIDList.add(Integer.getInteger(s));
+				}
+				searchEntry.setCaveIdList(caveIDList);
 			}
-			depictionEntries = connector.getDepictions(sqlWhere);
+			depictionEntries = connector.searchDepictions(searchEntry);
 		} else {
 			if (request.getParameter("caveID") != null) {
-				sqlWhere = "DepictionID IN (" + depictionIDStr + ") AND CaveID IN (" + request.getParameter("caveID") + ")";
-			} else {
-				sqlWhere = "DepictionID IN (" + depictionIDStr + ")";
+				String[] caveIdStr = request.getParameter("caveID").split(",");
+				for (String s : caveIdStr) {
+					caveIDList.add(Integer.getInteger(s));
+				}
+				searchEntry.setCaveIdList(caveIDList);
 			}
-			depictionEntries = connector.getDepictions(sqlWhere);
+			HashMap<Integer, DepictionEntry> results = new HashMap<Integer, DepictionEntry>();
+			for (DepictionEntry de : connector.searchDepictions(searchEntry)) { // we search
+				results.put(de.getDepictionID(), de);
+			}
+			for (String s : depictionIDStr.split(",")) { // and then we remove those not matching
+				results.remove(Integer.getInteger(s));
+			}
+			depictionEntries = new ArrayList<DepictionEntry>();
+			depictionEntries.addAll(results.values());
 		}
 		
 		GsonBuilder gsonBuilder = new GsonBuilder();
@@ -326,7 +343,12 @@ public class JsonServlet extends HttpServlet {
 		gsonBuilder.registerTypeAdapter(DepictionEntry.class, new DepictionSerializer());
 		Gson gson = gsonBuilder.create();		
 		if (iconographyIDs != null) {
-		 ArrayList<DepictionEntry> depictionEntries = connector.getRelatedDepictions(iconographyIDs, 0);
+			DepictionSearchEntry searchEntry = new DepictionSearchEntry();
+			for (String id : iconographyIDs.split(",")) {
+				searchEntry.getIconographyIdList().add(Integer.getInteger(id));
+			}
+			searchEntry.setCorrelationFactor(0);
+			ArrayList<DepictionEntry> depictionEntries = connector.searchDepictions(searchEntry);
 		 out.println(gson.toJson(depictionEntries));
 		}
 		out.close();
@@ -342,8 +364,13 @@ public class JsonServlet extends HttpServlet {
 		gsonBuilder.registerTypeAdapter(DepictionEntry.class, new DepictionSerializer());
 		Gson gson = gsonBuilder.create();		
 		if (iconographyIDs != null) {
-		 ArrayList<DepictionEntry> depictionEntries = connector.getRelatedDepictions(iconographyIDs, iconographyIDs.split(",").length);
-		 out.println(gson.toJson(depictionEntries));
+			DepictionSearchEntry searchEntry = new DepictionSearchEntry();
+			for (String id : iconographyIDs.split(",")) {
+				searchEntry.getIconographyIdList().add(Integer.getInteger(id));
+			}
+			searchEntry.setCorrelationFactor(iconographyIDs.split(",").length);
+			ArrayList<DepictionEntry> depictionEntries = connector.searchDepictions(searchEntry);
+			out.println(gson.toJson(depictionEntries));
 		}
 		out.close();
 	}

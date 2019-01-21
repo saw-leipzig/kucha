@@ -32,8 +32,6 @@ import de.cses.shared.ImageEntry;
  *
  */
 public class ImageResultView extends AbstractResultView {
-
-	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	
 	/**
 	 * @param title
@@ -48,20 +46,9 @@ public class ImageResultView extends AbstractResultView {
 			protected void onDragDrop(DndDropEvent event) {
 				super.onDragDrop(event);
 				if (event.getData() instanceof DepictionEntry) {
-					int depictionID = ((DepictionEntry) event.getData()).getDepictionID();
-					dbService.getRelatedImages(depictionID, new AsyncCallback<ArrayList<ImageEntry>>() {
-						
-						@Override
-						public void onSuccess(ArrayList<ImageEntry> result) {
-							
-							for (ImageEntry ie : result) {
-								addResult(new ImageView(ie));
-							}
-						}
-						
-						@Override
-						public void onFailure(Throwable caught) { }
-					});
+					for (ImageEntry ie : ((DepictionEntry) event.getData()).getRelatedImages()) {
+						addResult(new ImageView(ie));
+					}
 				}
 			}
 		};

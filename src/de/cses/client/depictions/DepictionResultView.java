@@ -23,9 +23,11 @@ import com.sencha.gxt.dnd.core.client.DropTarget;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.ui.AbstractResultView;
+import de.cses.client.user.UserLogin;
 import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
+import de.cses.shared.DepictionSearchEntry;
 
 /**
  * @author alingnau
@@ -46,17 +48,17 @@ public class DepictionResultView extends AbstractResultView {
 			@Override
 			protected void onDragDrop(DndDropEvent event) {
 				super.onDragDrop(event);
-				String sqlWhere = null;
+				DepictionSearchEntry searchEntry = new DepictionSearchEntry(UserLogin.getInstance().getSessionID(), UserLogin.getInstance().getUsername());
 				if (event.getData() instanceof CaveEntry) {
 					int caveID = ((CaveEntry) event.getData()).getCaveID();
-					sqlWhere = "CaveID=" + caveID;
+					searchEntry.getCaveIdList().add(caveID);
 				} else if (event.getData() instanceof AnnotatedBiblographyEntry) {
 					int bibID = ((AnnotatedBiblographyEntry) event.getData()).getAnnotatedBiblographyID();
-					sqlWhere = "DepictionID IN (SELECT DISTINCT DepictionID FROM DepictionBibliographyRelation WHERE BibID=" + bibID + ")";
+					searchEntry.getBibIdList().add(bibID);
 				} else {
 					return;
 				}
-				dbService.getDepictions(sqlWhere, new AsyncCallback<ArrayList<DepictionEntry>>() {
+				dbService.searchDepictions(searchEntry, new AsyncCallback<ArrayList<DepictionEntry>>() {
 					
 					@Override
 					public void onFailure(Throwable caught) { }

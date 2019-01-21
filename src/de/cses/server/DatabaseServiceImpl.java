@@ -189,11 +189,11 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		return connector.getCaveTypes();
 	}
 
-	@Override
-	public ArrayList<DepictionEntry> getDepictions() throws IllegalArgumentException {
-		MysqlConnector connector = MysqlConnector.getInstance();
-		return connector.getDepictions();
-	}
+//	@Override
+//	public ArrayList<DepictionEntry> getDepictions() throws IllegalArgumentException {
+//		MysqlConnector connector = MysqlConnector.getInstance();
+//		return connector.getDepictions();
+//	}
 
 //	@Override
 //	public DepictionEntry getDepictionEntry(int depictionID) throws IllegalArgumentException {
@@ -342,11 +342,11 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getDepictions(java.lang.String)
 	 */
-	@Override
-	public ArrayList<DepictionEntry> getDepictions(String sqlWhere) {
-		MysqlConnector connector = MysqlConnector.getInstance();
-		return connector.getDepictions(sqlWhere);
-	}
+//	@Override
+//	public ArrayList<DepictionEntry> getDepictions(String sqlWhere) {
+//		MysqlConnector connector = MysqlConnector.getInstance();
+//		return connector.getDepictions(sqlWhere);
+//	}
 
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getDepictionsbyWallID(int)
@@ -367,10 +367,10 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	 * @see de.cses.client.DatabaseService#getRelatedImages(int)
 	 */
 	@Override
-	public ArrayList<ImageEntry> getRelatedImages(int depictionID) throws IllegalArgumentException {
-		MysqlConnector connector = MysqlConnector.getInstance();
-		return connector.getRelatedImages(depictionID);
-	}
+//	public ArrayList<ImageEntry> getRelatedImages(int depictionID) throws IllegalArgumentException {
+//		MysqlConnector connector = MysqlConnector.getInstance();
+//		return connector.getRelatedImages(depictionID);
+//	}
 	
 	/*public ArrayList<OrientationEntry> getOrientations() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
@@ -823,19 +823,20 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getRelatedDepictions(java.lang.String)
 	 */
-	@Override
-	public ArrayList<Integer> getRelatedDepictionIDs(String iconographyIDs, int correlationFactor) throws IllegalArgumentException {
-		MysqlConnector connector = MysqlConnector.getInstance();
-		ArrayList<Integer> resultList = new ArrayList<Integer>();
-		for (DepictionEntry de : connector.getRelatedDepictions(iconographyIDs, correlationFactor)) {
-			resultList.add(de.getDepictionID());
-		}
-		return resultList;
-	}
+//	@Override
+//	public ArrayList<Integer> getRelatedDepictionIDs(String iconographyIDs, int correlationFactor) throws IllegalArgumentException {
+//		MysqlConnector connector = MysqlConnector.getInstance();
+//		ArrayList<Integer> resultList = new ArrayList<Integer>();
+//		for (DepictionEntry de : connector.getRelatedDepictions(iconographyIDs, correlationFactor)) {
+//			resultList.add(de.getDepictionID());
+//		}
+//		return resultList;
+//	}
 
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getIconography(int)
 	 */
+
 	@Override
 	public ArrayList<IconographyEntry> getIconography(int rootIndex) {
 		MysqlConnector connector = MysqlConnector.getInstance();
@@ -957,4 +958,9 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.updateIconographyEntry(iconographyEntryToEdit);
 	}
+//	@Override
+//	public ArrayList<DepictionEntry> getDepictions() throws IllegalArgumentException {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 }

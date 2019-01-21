@@ -119,7 +119,7 @@ public interface DatabaseServiceAsync {
 	 */
 	// void insertEntry(String sqlInsert, AsyncCallback<Integer> callback) throws IllegalArgumentException;
 
-	void getDepictions(AsyncCallback<ArrayList<DepictionEntry>> callback) throws IllegalArgumentException;
+//	void getDepictions(AsyncCallback<ArrayList<DepictionEntry>> callback) throws IllegalArgumentException;
 
 	void getIconography(AsyncCallback<ArrayList<IconographyEntry>> callback) throws IllegalArgumentException;
 
@@ -157,14 +157,14 @@ public interface DatabaseServiceAsync {
 
 	void getSite(int id, AsyncCallback<SiteEntry> asyncCallback) throws IllegalArgumentException;
 
-	void getDepictions(String sqlWhere, AsyncCallback<ArrayList<DepictionEntry>> asyncCallback) throws IllegalArgumentException;
+//	void getDepictions(String sqlWhere, AsyncCallback<ArrayList<DepictionEntry>> asyncCallback) throws IllegalArgumentException;
 
 	void getDepictionsbyWallID(int wallID, AsyncCallback<ArrayList<DepictionEntry>> asyncCallback) throws IllegalArgumentException;
 
 	void saveDepiction(int depictionID, int absoluteLeft, int absoluteTop, AsyncCallback<String> asyncCallback)
 			throws IllegalArgumentException;
 
-	void getRelatedImages(int depictionID, AsyncCallback<ArrayList<ImageEntry>> asyncCallback) throws IllegalArgumentException;
+//	void getRelatedImages(int depictionID, AsyncCallback<ArrayList<ImageEntry>> asyncCallback) throws IllegalArgumentException;
 
 	void getOrientationInformation(AsyncCallback<ArrayList<OrientationEntry>> asyncCallback) throws IllegalArgumentException;
 
@@ -292,7 +292,7 @@ public interface DatabaseServiceAsync {
 
 	void getDepictionFromIconography(String sqlWhere, AsyncCallback<ArrayList<Integer>> asyncCallback) throws IllegalArgumentException;
 
-	void getRelatedDepictionIDs(String iconographyIDs, int correlationFactor, AsyncCallback<ArrayList<Integer>> asyncCallback) throws IllegalArgumentException;
+//	void getRelatedDepictionIDs(String iconographyIDs, int correlationFactor, AsyncCallback<ArrayList<Integer>> asyncCallback) throws IllegalArgumentException;
 
 	void getIconography(int rootIndex, AsyncCallback<ArrayList<IconographyEntry>> asyncCallback) throws IllegalArgumentException;
 
