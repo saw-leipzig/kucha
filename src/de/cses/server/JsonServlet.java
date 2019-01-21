@@ -201,9 +201,9 @@ public class JsonServlet extends HttpServlet {
 			}
 			if (publicOnly) {
 				if (sqlWhere != null) {
-					sqlWhere = sqlWhere.concat(") AND OpenAccess=1");
+					sqlWhere = sqlWhere.concat(") AND AccessLevel=1");
 				} else {
-					sqlWhere = "OpenAccess=1";
+					sqlWhere = "AccessLevel=1";
 				}
 			}
 			

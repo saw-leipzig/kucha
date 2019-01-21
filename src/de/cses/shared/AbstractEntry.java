@@ -32,9 +32,10 @@ public abstract class AbstractEntry implements IsSerializable {
 	protected int accessLevel = ACCESS_LEVEL_PRIVATE;
 	protected String lastChangedByUser = "";
 	protected String modifiedOn = "";
-	
+
 	/**
-	 * @param openAccess
+	 * 
+	 * @param accessLevel
 	 */
 	public AbstractEntry(int accessLevel) {
 		super();

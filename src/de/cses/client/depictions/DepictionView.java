@@ -132,14 +132,6 @@ public class DepictionView extends AbstractView {
 			depictionEntry = (DepictionEntry) entry;
 		}
 		refreshHTML();
-//		CaveEntry ce = depictionEntry.getCave();
-//		setHTML(dvTemplates.view(
-//				UriUtils.fromString("resource?imageID=" + depictionEntry.getMasterImageID() + "&thumb=120" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), 
-//				StaticTables.getInstance().getSiteEntries().get(ce.getSiteID()).getShortName() + " " + ce.getOfficialNumber(), 
-//				ce != null && ce.getHistoricName() != null ? ce.getHistoricName() : "",
-//				depictionEntry.getShortName() != null ? depictionEntry.getShortName() : "",
-//				depictionEntry.isOpenAccess() ? resources.open().getSafeUri() : resources.locked().getSafeUri()
-//		));
 	}
 
 	/* (non-Javadoc)
