@@ -13,7 +13,6 @@
  */
 package de.cses.shared;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -31,7 +30,7 @@ public abstract class AbstractEntry implements IsSerializable {
 	public static final List<String> ACCESS_LABEL = Arrays.asList("private", "copyright", "public");
 	
 	protected boolean openAccess = false;
-	protected int accessRight = ACCESS_PRIVATE;
+	protected int accessLevel = ACCESS_PRIVATE;
 	protected String lastChangedByUser = "";
 	protected String modifiedOn = "";
 	
@@ -76,12 +75,12 @@ public abstract class AbstractEntry implements IsSerializable {
 		this.modifiedOn = modifiedOn;
 	}
 
-	public int getAccessRight() {
-		return accessRight;
+	public int getAccessLevel() {
+		return accessLevel;
 	}
 
-	public void setAccessRight(int accessRight) {
-		this.accessRight = accessRight;
+	public void setAccessLevel(int accessLevel) {
+		this.accessLevel = accessLevel;
 	}
 
 }

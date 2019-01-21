@@ -398,21 +398,21 @@ public class SingleImageEditor extends AbstractEditor {
 		accessRightsCB.setEditable(false);
 		accessRightsCB.setTypeAhead(false);
 		accessRightsCB.setTriggerAction(TriggerAction.ALL);
-		accessRightsCB.setValue(AbstractEntry.ACCESS_LABEL.get(imgEntry.getAccessRight()));
+		accessRightsCB.setValue(AbstractEntry.ACCESS_LABEL.get(imgEntry.getAccessLevel()));
 		accessRightsCB.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<String> event) {
-				imgEntry.setAccessRight(accessRightsCB.getSelectedIndex());
+				imgEntry.setAccessLevel(accessRightsCB.getSelectedIndex());
 			}
 		});
-		FramedPanel accessRightsFP = new FramedPanel();
-		accessRightsFP.setHeading("Access Rights");
-		accessRightsFP.add(accessRightsCB);
+		FramedPanel accessLevelFP = new FramedPanel();
+		accessLevelFP.setHeading("Access Level");
+		accessLevelFP.add(accessRightsCB);
 
 		HorizontalLayoutContainer imageOpenAccessHLC = new HorizontalLayoutContainer();
 		imageOpenAccessHLC.add(imageTypeSelectionPanel, new HorizontalLayoutData(.5, 1.0));
-		imageOpenAccessHLC.add(accessRightsFP, new HorizontalLayoutData(.5, 1.0));
+		imageOpenAccessHLC.add(accessLevelFP, new HorizontalLayoutData(.5, 1.0));
 		
 		ToolButton saveToolButton = new ToolButton(ToolButton.SAVE);
 		saveToolButton.setToolTip(Util.createToolTip("save"));

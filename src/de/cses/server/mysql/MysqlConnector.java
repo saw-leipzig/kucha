@@ -487,7 +487,6 @@ public class MysqlConnector {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		String where = "";
-		UserEntry ue = checkSessionID(searchEntry.getSessionID(), searchEntry.getUsername());
 		
 		if (searchEntry.getTitleSearch() != null && !searchEntry.getTitleSearch().isEmpty()) {
 			where = "CONCAT(Title, ShortName) LIKE ?";
@@ -508,9 +507,21 @@ public class MysqlConnector {
 		if (!imageTypeIDs.isEmpty()) {
 			where += where.isEmpty() ? "ImageTypeID IN (" + imageTypeIDs + ")" : " AND ImageTypeID IN (" + imageTypeIDs + ")" ;
 		}
-		if (ue == null) { // we are not logged in!
-			where += where.isEmpty() ? "OpenAccess=TRUE" : " AND OpenAccess=TRUE";
+		
+		int accessLevel = AbstractEntry.ACCESS_PUBLIC; // default: lowest possible access rights
+		UserEntry user = checkSessionID(searchEntry.getSessionID(), searchEntry.getUsername());
+		if (user != null) {
+			switch (user.getAccessLevel()) {
+				case UserEntry.GUEST:
+				case UserEntry.ASSOCIATED:
+					accessLevel = AbstractEntry.ACCESS_COPYRIGHT;
+					break; 
+				case UserEntry.FULL:
+				case UserEntry.ADMIN:
+					accessLevel = AbstractEntry.ACCESS_PRIVATE;
+			}
 		}
+		where += where.isEmpty() ? "AccessLevel<=" + accessLevel : " AND AccessLevel<=" + accessLevel;
 		
 		System.out.println("SELECT * FROM Images" + (!where.isEmpty() ? " WHERE " + where : "") + " ORDER BY Title Asc");
 		
@@ -1562,7 +1573,7 @@ public class MysqlConnector {
 		int accessLevel = AbstractEntry.ACCESS_PUBLIC; // default: lowest possible access rights
 		if (entry != null) {
 			user = checkSessionID(entry.getSessionID(), entry.getUsername());
-			switch (user.getAccessRight()) {
+			switch (user.getAccessLevel()) {
 				case UserEntry.GUEST:
 				case UserEntry.ASSOCIATED:
 					accessLevel = AbstractEntry.ACCESS_COPYRIGHT;
@@ -1975,7 +1986,6 @@ public class MysqlConnector {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		String where = "";
-		UserEntry ue = checkSessionID(searchEntry.getSessionID(), searchEntry.getUsername());
 		
 		if ((searchEntry.getAuthorSearch() != null) && !searchEntry.getAuthorSearch().isEmpty()) {
 			String authorTerm = "";
@@ -2003,9 +2013,21 @@ public class MysqlConnector {
 		if (searchEntry.getYearSearch() > 0) {
 			where += where.isEmpty() ? "YearORG LIKE ?" : " AND YearORG LIKE ?";
 		}
-		if (ue == null) { // we are not logged in!
-			where += where.isEmpty() ? "OpenAccess=TRUE" : " AND OpenAccess=TRUE";
+
+		int accessLevel = AbstractEntry.ACCESS_PUBLIC; // default: lowest possible access rights
+		UserEntry user = checkSessionID(searchEntry.getSessionID(), searchEntry.getUsername());
+		if (user != null) {
+			switch (user.getAccessLevel()) {
+				case UserEntry.GUEST:
+				case UserEntry.ASSOCIATED:
+					accessLevel = AbstractEntry.ACCESS_COPYRIGHT;
+					break; 
+				case UserEntry.FULL:
+				case UserEntry.ADMIN:
+					accessLevel = AbstractEntry.ACCESS_PRIVATE;
+			}
 		}
+		where += where.isEmpty() ? "AccessLevel<=" + accessLevel : " AND AccessLevel<=" + accessLevel;
 		
 		try {
 			int i = 1;
@@ -5266,7 +5288,6 @@ public class MysqlConnector {
 					? "DepictionID IN (SELECT DISTINCT DepictionID FROM DepictionBibliographyRelation WHERE BibID IN (" + bibIDs + "))" 
 					: " AND DepictionID IN (SELECT DISTINCT DepictionID FROM DepictionBibliographyRelation WHERE BibID IN (" + bibIDs + "))";
 		}
-		// "DepictionID IN (SELECT DISTINCT DepictionID FROM DepictionBibliographyRelation WHERE BibID=" + bibID + ")"
 
 		if (ue == null) { // we are not logged in!
 			where += where.isEmpty() ? "OpenAccess=TRUE" : " AND OpenAccess=TRUE";

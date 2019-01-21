@@ -538,12 +538,12 @@ public class DepictionEditor extends AbstractEditor {
 		accessRightsCB.setEditable(false);
 		accessRightsCB.setTypeAhead(false);
 		accessRightsCB.setTriggerAction(TriggerAction.ALL);
-		accessRightsCB.setValue(AbstractEntry.ACCESS_LABEL.get(correspondingDepictionEntry.getAccessRight()));
+		accessRightsCB.setValue(AbstractEntry.ACCESS_LABEL.get(correspondingDepictionEntry.getAccessLevel()));
 		accessRightsCB.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<String> event) {
-				correspondingDepictionEntry.setAccessRight(accessRightsCB.getSelectedIndex());
+				correspondingDepictionEntry.setAccessLevel(accessRightsCB.getSelectedIndex());
 			}
 		});
 		VerticalLayoutContainer shortNameVLC = new VerticalLayoutContainer();

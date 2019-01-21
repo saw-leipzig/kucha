@@ -645,12 +645,12 @@ public class CaveEditor extends AbstractEditor {
 		accessRightsCB.setEditable(false);
 		accessRightsCB.setTypeAhead(false);
 		accessRightsCB.setTriggerAction(TriggerAction.ALL);
-		accessRightsCB.setValue(AbstractEntry.ACCESS_LABEL.get(correspondingCaveEntry.getAccessRight()));
+		accessRightsCB.setValue(AbstractEntry.ACCESS_LABEL.get(correspondingCaveEntry.getAccessLevel()));
 		accessRightsCB.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<String> event) {
-				correspondingCaveEntry.setAccessRight(accessRightsCB.getSelectedIndex());
+				correspondingCaveEntry.setAccessLevel(accessRightsCB.getSelectedIndex());
 			}
 		});
 
