@@ -57,7 +57,7 @@ public class BibTexServlet extends HttpServlet {
 		if (reqList.hasMoreElements()) {
 			switch (reqList.nextElement()) {
 				case "bibID":
-					if (connector.checkSessionID(request.getParameter("sessionID"))) {
+					if (connector.checkSessionID(request.getParameter("sessionID")) != null) {
 						getBibTex();
 					} else {
 						response.sendError(HttpServletResponse.SC_FORBIDDEN);
