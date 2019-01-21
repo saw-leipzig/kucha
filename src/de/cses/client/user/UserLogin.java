@@ -32,6 +32,7 @@ import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
@@ -172,7 +173,7 @@ public class UserLogin extends PopupPanel {
 				login();
 			}
 		});
-		ToolButton closeTB = new ToolButton(ToolButton.CLOSE);
+		ToolButton closeTB = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
 		closeTB.setToolTip(Util.createToolTip("close"));
 		closeTB.addSelectHandler(new SelectHandler() {
 			
@@ -300,7 +301,7 @@ public class UserLogin extends PopupPanel {
 				logout();
 			}
 		});
-		ToolButton closeTB = new ToolButton(ToolButton.CLOSE);
+		ToolButton closeTB = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
 		closeTB.setToolTip(Util.createToolTip("close"));
 		closeTB.addSelectHandler(new SelectHandler() {
 			

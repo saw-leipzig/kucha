@@ -367,7 +367,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 		rebuildMainInput();
 
-		ToolButton closeToolButton = new ToolButton(ToolButton.CLOSE);
+		ToolButton closeToolButton = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
 		closeToolButton.setToolTip(Util.createToolTip("close"));
 		closeToolButton.addSelectHandler(new SelectHandler() {
 			@Override

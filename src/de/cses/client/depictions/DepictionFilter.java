@@ -412,7 +412,7 @@ public class DepictionFilter extends AbstractFilter {
 	private void showIconographySelection() {
 		if (extendedFilterDialog == null) {
 			extendedFilterDialog = new PopupPanel();
-			ToolButton closeTB = new ToolButton(ToolButton.CLOSE);
+			ToolButton closeTB = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
 			closeTB.setToolTip(Util.createToolTip("Close selection.", "Currently selected items will be used in the filter."));
 			closeTB.addSelectHandler(new SelectHandler() {
 				

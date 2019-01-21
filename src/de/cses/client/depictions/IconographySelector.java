@@ -270,7 +270,7 @@ public class IconographySelector extends FramedPanel {
 					}
 				});
 				newIconographyEntryFP.addTool(saveTB);
-				ToolButton cancelTB = new ToolButton(ToolButton.CLOSE);
+				ToolButton cancelTB = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
 				cancelTB.addSelectHandler(new SelectHandler() {
 
 					@Override
@@ -329,7 +329,7 @@ public class IconographySelector extends FramedPanel {
 					}
 				});
 				newIconographyEntryFP.addTool(saveTB);
-				ToolButton cancelTB = new ToolButton(ToolButton.CLOSE);
+				ToolButton cancelTB = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
 				cancelTB.addSelectHandler(new SelectHandler() {
 
 					@Override

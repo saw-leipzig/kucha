@@ -1915,7 +1915,7 @@ public class CaveEditor extends AbstractEditor {
 						}
 					}
 				});
-				ToolButton cancelTB = new ToolButton(ToolButton.CLOSE);
+				ToolButton cancelTB = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
 				cancelTB.setToolTip(Util.createToolTip("close"));
 				cancelTB.addSelectHandler(new SelectHandler() {
 
@@ -2508,7 +2508,7 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 
-		ToolButton closeToolButton = new ToolButton(ToolButton.CLOSE);
+		ToolButton closeToolButton = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
 		closeToolButton.setToolTip(Util.createToolTip("close"));
 		closeToolButton.addSelectHandler(new SelectHandler() {
 			@Override
