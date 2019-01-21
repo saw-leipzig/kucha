@@ -295,6 +295,10 @@ public class MainView implements IsWidget {
     filterPanel.setHeading("Filter");
     filterPanel.addStyleName("transparent");
     filterPanel.getHeader().setStylePrimaryName("frame-header");
+    filterPanel.getAppearance().collapseIcon().setStyle("doubleLeftButton");
+    filterPanel.getAppearance().collapseIcon().setOverStyle("doubleLeftButtonOver");
+    filterPanel.getAppearance().expandIcon().setStyle("expandWindowButton");
+    filterPanel.getAppearance().expandIcon().setOverStyle("expandWindowButtonOver");
     filterPanel.add(filterView);
     
     dataViewPLC = new PortalLayoutContainer(1);

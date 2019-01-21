@@ -301,16 +301,16 @@ div.addButtonOver {
 	cursor: pointer;
 }
 
-div.minimizeLeftButton {
-	background-image: url(icons/nach_links_minimieren.png);
+div.doubleLeftButton {
+	background-image: url(icons/doppel_links.png);
 	width: 20px;
 	height: 20px;
 	background-repeat: no-repeat;
 	cursor: pointer;
 }
 
-div.minimizeLeftButtonOver {
-	background-image: url(icons/nach_links_minimieren_mo.png);
+div.doubleLeftButtonOver {
+	background-image: url(icons/doppel_links_mo.png);
 	width: 20px;
 	height: 20px;
 	background-repeat: no-repeat;
@@ -525,7 +525,7 @@ div.closeButtonOver {
 	cursor: pointer;
 }
 
-div.closeWindowButton {
+div.expandWindowButton {
 	background-image: url(icons/close_window.png);
 	width: 20px;
 	height: 20px;
@@ -533,7 +533,7 @@ div.closeWindowButton {
 	cursor: pointer;
 }
 
-div.closeWindowButtonOver {
+div.expandWindowButtonOver {
 	background-image: url(icons/close_window_mo.png);
 	width: 20px;
 	height: 20px;
@@ -541,7 +541,7 @@ div.closeWindowButtonOver {
 	cursor: pointer;
 }
 
-div.openWindowButton {
+div.collapseWindowButton {
 	background-image: url(icons/open_window.png);
 	width: 20px;
 	height: 20px;
@@ -549,7 +549,7 @@ div.openWindowButton {
 	cursor: pointer;
 }
 
-div.openWindowButtonOver {
+div.collapseWindowButtonOver {
 	background-image: url(icons/open_window_mo.png);
 	width: 20px;
 	height: 20px;
