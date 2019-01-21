@@ -3157,6 +3157,9 @@ public class MysqlConnector {
 	}
 	
 	public UserEntry checkSessionID(String sessionID) {
+		if (sessionID == null) {
+			return null;
+		}
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		UserEntry result = null;

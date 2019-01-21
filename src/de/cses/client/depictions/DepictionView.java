@@ -56,7 +56,7 @@ public class DepictionView extends AbstractView {
 		SafeHtml view(SafeUri imgUri);
 		
 		@XTemplate(source = "DepictionViewTemplate.html")
-		SafeHtml view(SafeUri imgUri, String officialCaveNumber, String historicCaveName, String shortName, String siteDistrictInformation, String wallLocation, SafeUri lockUri);
+		SafeHtml view(SafeUri imgUri, String officialCaveNumber, String historicCaveName, String shortName, String siteDistrictInformation, String wallLocation, boolean isPublic);
 	}
 
 	private DepictionEntry depictionEntry;
@@ -105,7 +105,7 @@ public class DepictionView extends AbstractView {
 				depictionEntry.getShortName() != null ? depictionEntry.getShortName() : "",
 				siteDistrictInformation,
 				wallLocation,
-				depictionEntry.getAccessLevel() == AbstractEntry.ACCESS_LEVEL_PUBLIC ? resources.open().getSafeUri() : resources.locked().getSafeUri()
+				depictionEntry.getAccessLevel() == AbstractEntry.ACCESS_LEVEL_PUBLIC
 		));
 	}
 

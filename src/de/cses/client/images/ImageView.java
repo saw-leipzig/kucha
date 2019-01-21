@@ -54,7 +54,7 @@ public class ImageView extends AbstractView {
 		SafeHtml view(SafeUri imgUri);
 		
 		@XTemplate(source = "ImageViewTemplate.html")
-		SafeHtml view(SafeUri imgUri, String title, String shortName, String author, String imgType, String date, SafeUri lockUri);
+		SafeHtml view(SafeUri imgUri, String title, String shortName, String author, String imgType, String date, boolean isPublic);
 	}
 	
 	private ImageEntry imgEntry;
@@ -93,7 +93,7 @@ public class ImageView extends AbstractView {
 				imgEntry.getImageAuthor() != null ? imgEntry.getImageAuthor().getLabel() : "n/a",
 				imgEntry.getImageTypeID() > 0 ? StaticTables.getInstance().getImageTypeEntries().get(imgEntry.getImageTypeID()).getName() : "n/a", 
 				imgEntry.getDate(),
-				imgEntry.getAccessLevel() == AbstractEntry.ACCESS_LEVEL_PUBLIC ? res.open().getSafeUri() : res.locked().getSafeUri()));
+				imgEntry.getAccessLevel() == AbstractEntry.ACCESS_LEVEL_PUBLIC));
 	}
 
 	/* (non-Javadoc)
