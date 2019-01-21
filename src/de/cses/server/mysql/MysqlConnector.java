@@ -1557,7 +1557,7 @@ public class MysqlConnector {
 	 * @param depictionID
 	 * @return
 	 */
-	public ArrayList<ImageEntry> getRelatedImages(int depictionID, DepictionSearchEntry entry) {
+	private ArrayList<ImageEntry> getRelatedImages(int depictionID, DepictionSearchEntry entry) {
 		UserEntry user = null;
 		int accessLevel = AbstractEntry.ACCESS_PUBLIC; // default: lowest possible access rights
 		if (entry != null) {
@@ -1642,54 +1642,54 @@ public class MysqlConnector {
 	 * @param depictionID
 	 * @return
 	 */
-	public ArrayList<DepictionEntry> getRelatedDepictions(DepictionSearchEntry searchEntry) {
-		ArrayList<DepictionEntry> results = new ArrayList<DepictionEntry>();
-		Connection dbc = getConnection();
-		Statement stmt;
-		String sqlQuery;
-		String iconographyIDs = "";
-		for (int id : searchEntry.getIconographyIdList()) {
-			iconographyIDs += iconographyIDs.isEmpty() ? id : "," + id;
-		}
-		if (iconographyIDs.isEmpty()) {
-			return results;
-		}
-		try {
-			stmt = dbc.createStatement();
-			ResultSet rs;
-			if (searchEntry.getCorrelationFactor() > 0) {
-				/*
-				 * SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (1236,2063,2124) GROUP By DepictionID HAVING ( COUNT(DepictionID) = 2 )
-				 */
-				sqlQuery = "SELECT * FROM Depictions WHERE DepictionID IN (SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN ("
-						+ iconographyIDs + ") GROUP BY DepictionID HAVING (COUNT(DepictionID) >= " + searchEntry.getCorrelationFactor() + "))";
-			} else {
-				sqlQuery = "SELECT * FROM Depictions WHERE DepictionID IN (SELECT DISTINCT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN ("
-						+ iconographyIDs + "))";
-			}
-			System.err.println(sqlQuery);
-			rs = stmt.executeQuery(sqlQuery);
-			while (rs.next()) {
-				DepictionEntry de = new DepictionEntry(rs.getInt("DepictionID"), rs.getInt("StyleID"), rs.getString("Inscriptions"),
-						rs.getString("SeparateAksaras"), rs.getString("Dating"), rs.getString("Description"), rs.getString("BackgroundColour"),
-						rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"), rs.getDouble("Width"), rs.getDouble("Height"),
-						getExpedition(rs.getInt("ExpeditionID")), rs.getDate("PurchaseDate"), getLocation(rs.getInt("CurrentLocationID")), rs.getString("InventoryNumber"),
-						getVendor(rs.getInt("VendorID")), rs.getInt("StoryID"), getCave(rs.getInt("CaveID")), rs.getInt("WallID"), rs.getInt("AbsoluteLeft"),
-						rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes"),
-						rs.getInt("MasterImageID"), rs.getBoolean("OpenAccess"), rs.getString("LastChangedByUser"), rs.getString("LastChangedOnDate"));
-				de.setRelatedImages(getRelatedImages(de.getDepictionID(), searchEntry));
-				de.setRelatedBibliographyList(getRelatedBibliographyFromDepiction(de.getDepictionID()));
-				de.setRelatedIconographyList(getRelatedIconography(de.getDepictionID()));
-				results.add(de);
-			}
-			rs.close();
-			stmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return null;
-		}
-		return results;
-	}
+//	public ArrayList<DepictionEntry> getRelatedDepictions(DepictionSearchEntry searchEntry) {
+//		ArrayList<DepictionEntry> results = new ArrayList<DepictionEntry>();
+//		Connection dbc = getConnection();
+//		Statement stmt;
+//		String sqlQuery;
+//		String iconographyIDs = "";
+//		for (int id : searchEntry.getIconographyIdList()) {
+//			iconographyIDs += iconographyIDs.isEmpty() ? id : "," + id;
+//		}
+//		if (iconographyIDs.isEmpty()) {
+//			return results;
+//		}
+//		try {
+//			stmt = dbc.createStatement();
+//			ResultSet rs;
+//			if (searchEntry.getCorrelationFactor() > 0) {
+//				/*
+//				 * SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (1236,2063,2124) GROUP By DepictionID HAVING ( COUNT(DepictionID) = 2 )
+//				 */
+//				sqlQuery = "SELECT * FROM Depictions WHERE DepictionID IN (SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN ("
+//						+ iconographyIDs + ") GROUP BY DepictionID HAVING (COUNT(DepictionID) >= " + searchEntry.getCorrelationFactor() + "))";
+//			} else {
+//				sqlQuery = "SELECT * FROM Depictions WHERE DepictionID IN (SELECT DISTINCT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN ("
+//						+ iconographyIDs + "))";
+//			}
+//			System.err.println(sqlQuery);
+//			rs = stmt.executeQuery(sqlQuery);
+//			while (rs.next()) {
+//				DepictionEntry de = new DepictionEntry(rs.getInt("DepictionID"), rs.getInt("StyleID"), rs.getString("Inscriptions"),
+//						rs.getString("SeparateAksaras"), rs.getString("Dating"), rs.getString("Description"), rs.getString("BackgroundColour"),
+//						rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"), rs.getDouble("Width"), rs.getDouble("Height"),
+//						getExpedition(rs.getInt("ExpeditionID")), rs.getDate("PurchaseDate"), getLocation(rs.getInt("CurrentLocationID")), rs.getString("InventoryNumber"),
+//						getVendor(rs.getInt("VendorID")), rs.getInt("StoryID"), getCave(rs.getInt("CaveID")), rs.getInt("WallID"), rs.getInt("AbsoluteLeft"),
+//						rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes"),
+//						rs.getInt("MasterImageID"), rs.getBoolean("OpenAccess"), rs.getString("LastChangedByUser"), rs.getString("LastChangedOnDate"));
+//				de.setRelatedImages(getRelatedImages(de.getDepictionID(), searchEntry));
+//				de.setRelatedBibliographyList(getRelatedBibliographyFromDepiction(de.getDepictionID()));
+//				de.setRelatedIconographyList(getRelatedIconography(de.getDepictionID()));
+//				results.add(de);
+//			}
+//			rs.close();
+//			stmt.close();
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//			return null;
+//		}
+//		return results;
+//	}
 
 	public ArrayList<DepictionEntry> getAllDepictionsbyWall(int wallID) {
 		ArrayList<DepictionEntry> depictions = new ArrayList<DepictionEntry>();
