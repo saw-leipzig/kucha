@@ -532,13 +532,13 @@ public class DepictionEditor extends AbstractEditor {
 				return item;
 			}
 		});
-		accessRightsCB.add(AbstractEntry.ACCESS_LABEL.get(0));
-		accessRightsCB.add(AbstractEntry.ACCESS_LABEL.get(1));
-		accessRightsCB.add(AbstractEntry.ACCESS_LABEL.get(2));
+		accessRightsCB.add(AbstractEntry.ACCESS_LEVEL_LABEL.get(0));
+		accessRightsCB.add(AbstractEntry.ACCESS_LEVEL_LABEL.get(1));
+		accessRightsCB.add(AbstractEntry.ACCESS_LEVEL_LABEL.get(2));
 		accessRightsCB.setEditable(false);
 		accessRightsCB.setTypeAhead(false);
 		accessRightsCB.setTriggerAction(TriggerAction.ALL);
-		accessRightsCB.setValue(AbstractEntry.ACCESS_LABEL.get(correspondingDepictionEntry.getAccessLevel()));
+		accessRightsCB.setValue(AbstractEntry.ACCESS_LEVEL_LABEL.get(correspondingDepictionEntry.getAccessLevel()));
 		accessRightsCB.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override

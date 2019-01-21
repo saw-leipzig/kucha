@@ -508,17 +508,17 @@ public class MysqlConnector {
 			where += where.isEmpty() ? "ImageTypeID IN (" + imageTypeIDs + ")" : " AND ImageTypeID IN (" + imageTypeIDs + ")" ;
 		}
 		
-		int accessLevel = AbstractEntry.ACCESS_PUBLIC; // default: lowest possible access rights
+		int accessLevel = AbstractEntry.ACCESS_LEVEL_PUBLIC; // default: lowest possible access rights
 		UserEntry user = checkSessionID(searchEntry.getSessionID(), searchEntry.getUsername());
 		if (user != null) {
 			switch (user.getAccessLevel()) {
 				case UserEntry.GUEST:
 				case UserEntry.ASSOCIATED:
-					accessLevel = AbstractEntry.ACCESS_COPYRIGHT;
+					accessLevel = AbstractEntry.ACCESS_LEVEL_COPYRIGHT;
 					break; 
 				case UserEntry.FULL:
 				case UserEntry.ADMIN:
-					accessLevel = AbstractEntry.ACCESS_PRIVATE;
+					accessLevel = AbstractEntry.ACCESS_LEVEL_PRIVATE;
 			}
 		}
 		where += where.isEmpty() ? "AccessLevel<=" + accessLevel : " AND AccessLevel<=" + accessLevel;
@@ -1570,17 +1570,17 @@ public class MysqlConnector {
 	 */
 	private ArrayList<ImageEntry> getRelatedImages(int depictionID, DepictionSearchEntry entry) {
 		UserEntry user = null;
-		int accessLevel = AbstractEntry.ACCESS_PUBLIC; // default: lowest possible access rights
+		int accessLevel = AbstractEntry.ACCESS_LEVEL_PUBLIC; // default: lowest possible access rights
 		if (entry != null) {
 			user = checkSessionID(entry.getSessionID(), entry.getUsername());
 			switch (user.getAccessLevel()) {
 				case UserEntry.GUEST:
 				case UserEntry.ASSOCIATED:
-					accessLevel = AbstractEntry.ACCESS_COPYRIGHT;
+					accessLevel = AbstractEntry.ACCESS_LEVEL_COPYRIGHT;
 					break; 
 				case UserEntry.FULL:
 				case UserEntry.ADMIN:
-					accessLevel = AbstractEntry.ACCESS_PRIVATE;
+					accessLevel = AbstractEntry.ACCESS_LEVEL_PRIVATE;
 			}
 		}
 		ArrayList<ImageEntry> results = new ArrayList<ImageEntry>();
@@ -2014,17 +2014,17 @@ public class MysqlConnector {
 			where += where.isEmpty() ? "YearORG LIKE ?" : " AND YearORG LIKE ?";
 		}
 
-		int accessLevel = AbstractEntry.ACCESS_PUBLIC; // default: lowest possible access rights
+		int accessLevel = AbstractEntry.ACCESS_LEVEL_PUBLIC; // default: lowest possible access rights
 		UserEntry user = checkSessionID(searchEntry.getSessionID(), searchEntry.getUsername());
 		if (user != null) {
 			switch (user.getAccessLevel()) {
 				case UserEntry.GUEST:
 				case UserEntry.ASSOCIATED:
-					accessLevel = AbstractEntry.ACCESS_COPYRIGHT;
+					accessLevel = AbstractEntry.ACCESS_LEVEL_COPYRIGHT;
 					break; 
 				case UserEntry.FULL:
 				case UserEntry.ADMIN:
-					accessLevel = AbstractEntry.ACCESS_PRIVATE;
+					accessLevel = AbstractEntry.ACCESS_LEVEL_PRIVATE;
 			}
 		}
 		where += where.isEmpty() ? "AccessLevel<=" + accessLevel : " AND AccessLevel<=" + accessLevel;

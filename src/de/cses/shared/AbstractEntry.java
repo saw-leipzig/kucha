@@ -24,13 +24,13 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public abstract class AbstractEntry implements IsSerializable {
 	
-	public static final int ACCESS_PRIVATE = 0;
-	public static final int ACCESS_COPYRIGHT = 1;
-	public static final int ACCESS_PUBLIC = 2;
-	public static final List<String> ACCESS_LABEL = Arrays.asList("private", "copyright", "public");
+	public static final int ACCESS_LEVEL_PRIVATE = 0;
+	public static final int ACCESS_LEVEL_COPYRIGHT = 1;
+	public static final int ACCESS_LEVEL_PUBLIC = 2;
+	public static final List<String> ACCESS_LEVEL_LABEL = Arrays.asList("private", "copyright", "public");
 	
 	protected boolean openAccess = false;
-	protected int accessLevel = ACCESS_PRIVATE;
+	protected int accessLevel = ACCESS_LEVEL_PRIVATE;
 	protected String lastChangedByUser = "";
 	protected String modifiedOn = "";
 	

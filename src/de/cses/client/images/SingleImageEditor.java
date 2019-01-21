@@ -385,30 +385,30 @@ public class SingleImageEditor extends AbstractEditor {
 		imageTypeSelectionPanel.add(imageTypeSelection);
 		imageTypeSelectionPanel.setHeading("Image Type");
 
-		SimpleComboBox<String> accessRightsCB = new SimpleComboBox<String>(new LabelProvider<String>() {
+		SimpleComboBox<String> accessLevelCB = new SimpleComboBox<String>(new LabelProvider<String>() {
 
 			@Override
 			public String getLabel(String item) {
 				return item;
 			}
 		});
-		accessRightsCB.add(AbstractEntry.ACCESS_LABEL.get(0));
-		accessRightsCB.add(AbstractEntry.ACCESS_LABEL.get(1));
-		accessRightsCB.add(AbstractEntry.ACCESS_LABEL.get(2));
-		accessRightsCB.setEditable(false);
-		accessRightsCB.setTypeAhead(false);
-		accessRightsCB.setTriggerAction(TriggerAction.ALL);
-		accessRightsCB.setValue(AbstractEntry.ACCESS_LABEL.get(imgEntry.getAccessLevel()));
-		accessRightsCB.addValueChangeHandler(new ValueChangeHandler<String>() {
+		accessLevelCB.add(AbstractEntry.ACCESS_LEVEL_LABEL.get(0));
+		accessLevelCB.add(AbstractEntry.ACCESS_LEVEL_LABEL.get(1));
+		accessLevelCB.add(AbstractEntry.ACCESS_LEVEL_LABEL.get(2));
+		accessLevelCB.setEditable(false);
+		accessLevelCB.setTypeAhead(false);
+		accessLevelCB.setTriggerAction(TriggerAction.ALL);
+		accessLevelCB.setValue(AbstractEntry.ACCESS_LEVEL_LABEL.get(imgEntry.getAccessLevel()));
+		accessLevelCB.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<String> event) {
-				imgEntry.setAccessLevel(accessRightsCB.getSelectedIndex());
+				imgEntry.setAccessLevel(accessLevelCB.getSelectedIndex());
 			}
 		});
 		FramedPanel accessLevelFP = new FramedPanel();
 		accessLevelFP.setHeading("Access Level");
-		accessLevelFP.add(accessRightsCB);
+		accessLevelFP.add(accessLevelCB);
 
 		HorizontalLayoutContainer imageOpenAccessHLC = new HorizontalLayoutContainer();
 		imageOpenAccessHLC.add(imageTypeSelectionPanel, new HorizontalLayoutData(.5, 1.0));
