@@ -109,7 +109,7 @@ public class CaveView extends AbstractView {
 				cEntry.getHistoricName() != null ? cEntry.getHistoricName() : "",
 				district,
 				region,
-				cEntry.getAccessLevel() <= UserLogin.getInstance().getAccessRights()? resources.open().getSafeUri() : resources.locked().getSafeUri()
+				cEntry.getAccessLevel() == AbstractEntry.ACCESS_LEVEL_PUBLIC ? resources.open().getSafeUri() : resources.locked().getSafeUri()
 		));
 	}
 

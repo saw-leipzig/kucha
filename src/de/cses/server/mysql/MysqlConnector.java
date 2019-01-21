@@ -3030,7 +3030,7 @@ public class MysqlConnector {
 				newSessionID = UUID.randomUUID().toString();
 				updateSessionIDforUser(username, newSessionID);
 				result = new UserEntry(rs.getInt("UserID"), rs.getString("Username"), rs.getString("Firstname"), rs.getString("Lastname"),
-						rs.getString("Email"), rs.getString("Affiliation"), rs.getInt("Accessrights"), newSessionID, 
+						rs.getString("Email"), rs.getString("Affiliation"), rs.getInt("AccessLevel"), newSessionID, 
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
 			} else {
 				System.err.println("wrong password for user " + username + ": hash = " + password);
@@ -3063,7 +3063,7 @@ public class MysqlConnector {
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.first()) {
 				result = new UserEntry(rs.getInt("UserID"), rs.getString("Username"), rs.getString("Firstname"), rs.getString("Lastname"),
-						rs.getString("Email"), rs.getString("Affiliation"), rs.getInt("Accessrights"), rs.getString("SessionID"),
+						rs.getString("Email"), rs.getString("Affiliation"), rs.getInt("AccessLevel"), rs.getString("SessionID"),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
 			} else {
 				System.err.println("no user " + username + " existing");
@@ -3109,21 +3109,23 @@ public class MysqlConnector {
 	 * @param username
 	 * @return
 	 */
-	public int getAccessRightsFromUsers(String sessionID) {
+	public int getAccessLevelForSessionID(String sessionID) {
 		int accessRights = 0;
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
+		System.err.println("getAccessLevelForSessionID(" + sessionID + ")");
 		try {
-			pstmt = dbc.prepareStatement("SELECT Accessrights FROM Users WHERE SessionID=?");
+			pstmt = dbc.prepareStatement("SELECT AccessLevel FROM Users WHERE SessionID=?");
 			pstmt.setString(1, sessionID);
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.first()) {
-				accessRights = rs.getInt("Accessrights");
+				accessRights = rs.getInt("AccessLevel");
+				System.err.println("accessLevel=" + accessRights);
 			}
 			rs.close();
 			pstmt.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			e.printStackTrace(System.err);
 			return 0;
 		}
 		return accessRights;
@@ -3154,18 +3156,19 @@ public class MysqlConnector {
 		}
 	}
 	
-	public boolean checkSessionID(String sessionID) {
+	public UserEntry checkSessionID(String sessionID) {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
-		boolean result = false;
+		UserEntry result = null;
 		
 		try {
 			pstmt = dbc.prepareStatement("SELECT * FROM Users WHERE SessionID=?");
 			pstmt.setString(1, sessionID);
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.first()) {
-				// TODO add expiry date and check whether sessionID is still valid
-				result = true;
+				result = new UserEntry(rs.getInt("UserID"), rs.getString("Username"), rs.getString("Firstname"), rs.getString("Lastname"),
+						rs.getString("Email"), rs.getString("Affiliation"), rs.getInt("AccessLevel"), rs.getString("SessionID"),
+						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
 			}
 			rs.close();
 			pstmt.close();
@@ -3198,14 +3201,13 @@ public class MysqlConnector {
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.first()) {
 				result = new UserEntry(rs.getInt("UserID"), rs.getString("Username"), rs.getString("Firstname"), rs.getString("Lastname"),
-						rs.getString("Email"), rs.getString("Affiliation"), rs.getInt("Accessrights"), rs.getString("SessionID"),
+						rs.getString("Email"), rs.getString("Affiliation"), rs.getInt("AccessLevel"), rs.getString("SessionID"),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
 			}
 			rs.close();
 			pstmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
-			return null;
 		}
 		return result;
 	}

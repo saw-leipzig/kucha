@@ -64,7 +64,8 @@ public class ResourceDownloadServlet extends HttpServlet {
 			String filename;
 			File inputFile;
 			int userAccessLevel = AbstractEntry.ACCESS_LEVEL_PUBLIC;
-			switch (connector.getAccessRightsFromUsers(sessionID)) {
+			UserEntry user = connector.checkSessionID(sessionID);
+			switch (user.getAccessLevel()) {
 				case UserEntry.GUEST:
 				case UserEntry.ASSOCIATED:
 					userAccessLevel = AbstractEntry.ACCESS_LEVEL_COPYRIGHT;
@@ -78,6 +79,11 @@ public class ResourceDownloadServlet extends HttpServlet {
 				filename = imgEntry.getFilename();
 				inputFile = new File(serverProperties.getProperty("home.images"), filename);
 			} else {
+				if (imgEntry==null) {
+					System.err.println("imageID=" + imageID + " has no ImageEntry");
+				} else {
+					System.err.println("sessionID=" + sessionID + ", userAccessLevel=" + userAccessLevel + ", ImageEntry accessLevel=" + imgEntry.getAccessLevel());
+				}
 				response.setStatus(403);
 				return;
 			}
@@ -163,7 +169,7 @@ public class ResourceDownloadServlet extends HttpServlet {
 				}
 			}
 		} else if (request.getParameter("document") != null) {
-			if (connector.getAccessRightsFromUsers(sessionID) == UserEntry.FULL) {
+			if (connector.getAccessLevelForSessionID(sessionID) == UserEntry.FULL) {
 				String filename = request.getParameter("document");
 				if (filename.startsWith(".")) {
 					response.setStatus(400);

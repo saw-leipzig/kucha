@@ -93,7 +93,7 @@ public class ImageView extends AbstractView {
 				imgEntry.getImageAuthor() != null ? imgEntry.getImageAuthor().getLabel() : "n/a",
 				imgEntry.getImageTypeID() > 0 ? StaticTables.getInstance().getImageTypeEntries().get(imgEntry.getImageTypeID()).getName() : "n/a", 
 				imgEntry.getDate(),
-				imgEntry.getAccessLevel() <= UserLogin.getInstance().getAccessRights() ? res.open().getSafeUri() : res.locked().getSafeUri()));
+				imgEntry.getAccessLevel() == AbstractEntry.ACCESS_LEVEL_PUBLIC ? res.open().getSafeUri() : res.locked().getSafeUri()));
 	}
 
 	/* (non-Javadoc)
