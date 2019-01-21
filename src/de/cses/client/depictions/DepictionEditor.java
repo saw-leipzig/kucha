@@ -485,7 +485,7 @@ public class DepictionEditor extends AbstractEditor {
 				
 				if (item.getImageID() == correspondingDepictionEntry.getMasterImageID()) {
 					return imageViewTemplates.masterImage(imageUri, item.getShortName(), titleList, item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase(), imageAuthor, copyrightStr);
-				} else if (item.isOpenAccess()) {
+				} else if (item.getAccessLevel() == AbstractEntry.ACCESS_LEVEL_PUBLIC) {
 					return imageViewTemplates.openAccessImage(imageUri, item.getShortName(), titleList, item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase(), imageAuthor, copyrightStr);
 				} else {
 					return imageViewTemplates.nonOpenAccessImage(imageUri, item.getShortName(), titleList, item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase(), imageAuthor, copyrightStr);

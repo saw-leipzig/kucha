@@ -28,6 +28,7 @@ import com.sencha.gxt.dnd.core.client.DragSource;
 import de.cses.client.StaticTables;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.client.ui.AbstractView;
+import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveTypeEntry;
@@ -108,7 +109,7 @@ public class CaveView extends AbstractView {
 				cEntry.getHistoricName() != null ? cEntry.getHistoricName() : "",
 				district,
 				region,
-				cEntry.isOpenAccess() ? resources.open().getSafeUri() : resources.locked().getSafeUri()
+				cEntry.getAccessLevel() <= UserLogin.getInstance().getAccessRights()? resources.open().getSafeUri() : resources.locked().getSafeUri()
 		));
 	}
 

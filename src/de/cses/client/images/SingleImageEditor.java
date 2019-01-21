@@ -410,9 +410,9 @@ public class SingleImageEditor extends AbstractEditor {
 		accessLevelFP.setHeading("Access Level");
 		accessLevelFP.add(accessLevelCB);
 
-		HorizontalLayoutContainer imageOpenAccessHLC = new HorizontalLayoutContainer();
-		imageOpenAccessHLC.add(imageTypeSelectionPanel, new HorizontalLayoutData(.5, 1.0));
-		imageOpenAccessHLC.add(accessLevelFP, new HorizontalLayoutData(.5, 1.0));
+		HorizontalLayoutContainer imageAccessLevelHLC = new HorizontalLayoutContainer();
+		imageAccessLevelHLC.add(imageTypeSelectionPanel, new HorizontalLayoutData(.5, 1.0));
+		imageAccessLevelHLC.add(accessLevelFP, new HorizontalLayoutData(.5, 1.0));
 		
 		ToolButton saveToolButton = new ToolButton(ToolButton.SAVE);
 		saveToolButton.setToolTip(Util.createToolTip("save"));
@@ -466,7 +466,7 @@ public class SingleImageEditor extends AbstractEditor {
 		leftEditVLC.add(datePanel, new VerticalLayoutData(1.0, .25));
 
 		VerticalLayoutContainer rightEditVLC = new VerticalLayoutContainer();
-		rightEditVLC.add(imageOpenAccessHLC, new VerticalLayoutData(1.0, .25));
+		rightEditVLC.add(imageAccessLevelHLC, new VerticalLayoutData(1.0, .25));
 		rightEditVLC.add(commentPanel, new VerticalLayoutData(1.0, .75));
 
 		HorizontalLayoutContainer editHLC = new HorizontalLayoutContainer();

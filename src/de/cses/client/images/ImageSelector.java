@@ -61,6 +61,7 @@ import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.Util;
 import de.cses.client.user.UserLogin;
+import de.cses.shared.AbstractEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageSearchEntry;
 
@@ -152,7 +153,7 @@ public class ImageSelector implements IsWidget {
 
 			public SafeHtml render(ImageEntry item) {
 				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=700" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
-				if (item.isOpenAccess()) {
+				if (item.getAccessLevel() == AbstractEntry.ACCESS_LEVEL_PUBLIC) {
 					return imageViewTemplates.openAccessImage(imageUri, item.getTitle(), item.getShortName(), item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase());
 				} else {
 					return imageViewTemplates.nonOpenAccessImage(imageUri, item.getTitle(), item.getShortName(), item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase());

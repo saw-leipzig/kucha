@@ -29,7 +29,6 @@ public abstract class AbstractEntry implements IsSerializable {
 	public static final int ACCESS_LEVEL_PUBLIC = 2;
 	public static final List<String> ACCESS_LEVEL_LABEL = Arrays.asList("private", "copyright", "public");
 	
-	protected boolean openAccess = false;
 	protected int accessLevel = ACCESS_LEVEL_PRIVATE;
 	protected String lastChangedByUser = "";
 	protected String modifiedOn = "";
@@ -37,9 +36,9 @@ public abstract class AbstractEntry implements IsSerializable {
 	/**
 	 * @param openAccess
 	 */
-	public AbstractEntry(boolean openAccess) {
+	public AbstractEntry(int accessLevel) {
 		super();
-		this.openAccess = openAccess;
+		this.accessLevel = accessLevel;
 	}
 
 	public AbstractEntry() { }
@@ -51,15 +50,7 @@ public abstract class AbstractEntry implements IsSerializable {
 	 */
 	abstract public String getUniqueID();
 	
-	public boolean isOpenAccess() {
-		return openAccess;
-	}
-	
-	public void setOpenAccess(boolean openAccess) {
-		this.openAccess = openAccess;
-	}
-
-	public String getLastChangedByUser() {
+		public String getLastChangedByUser() {
 		return lastChangedByUser;
 	}
 

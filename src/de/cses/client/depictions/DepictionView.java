@@ -105,7 +105,7 @@ public class DepictionView extends AbstractView {
 				depictionEntry.getShortName() != null ? depictionEntry.getShortName() : "",
 				siteDistrictInformation,
 				wallLocation,
-				depictionEntry.isOpenAccess() ? resources.open().getSafeUri() : resources.locked().getSafeUri()
+				depictionEntry.getAccessLevel() <= UserLogin.getInstance().getAccessRights() ? resources.open().getSafeUri() : resources.locked().getSafeUri()
 		));
 	}
 

@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import de.cses.server.mysql.MysqlConnector;
+import de.cses.shared.AbstractEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.UserEntry;
 
@@ -62,8 +63,18 @@ public class ResourceDownloadServlet extends HttpServlet {
 			ImageEntry imgEntry = connector.getImageEntry(Integer.parseInt(imageID));
 			String filename;
 			File inputFile;
-			// TODO: image rights management
-			if ((imgEntry!=null && imgEntry.isOpenAccess()) || (connector.getAccessRightsFromUsers(sessionID) == UserEntry.FULL)) {
+			int userAccessLevel = AbstractEntry.ACCESS_LEVEL_PUBLIC;
+			switch (connector.getAccessRightsFromUsers(sessionID)) {
+				case UserEntry.GUEST:
+				case UserEntry.ASSOCIATED:
+					userAccessLevel = AbstractEntry.ACCESS_LEVEL_COPYRIGHT;
+					break; 
+				case UserEntry.FULL:
+				case UserEntry.ADMIN:
+					userAccessLevel = AbstractEntry.ACCESS_LEVEL_PRIVATE;
+			}
+			
+			if (imgEntry!=null && (userAccessLevel >= imgEntry.getAccessLevel())) {
 				filename = imgEntry.getFilename();
 				inputFile = new File(serverProperties.getProperty("home.images"), filename);
 			} else {

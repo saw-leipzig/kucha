@@ -80,6 +80,7 @@ import de.cses.client.Util;
 import de.cses.client.bibliography.BibDocumentUploader.BibDocumentUploadListener;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.client.user.UserLogin;
+import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.BibKeywordEntry;
@@ -1652,22 +1653,34 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			}
 		});
 
+
 		/**
-		 * open access
+		 * Acess Level
 		 */
-		FramedPanel openAccessFP = new FramedPanel();
-		openAccessFP.setHeading("Open Access");
-		CheckBox openAccessCB = new CheckBox();
-		openAccessCB.setBoxLabel("allow");
-		openAccessCB.setValue(bibEntry.isOpenAccess());
-		openAccessFP.add(openAccessCB);
-		openAccessCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+		SimpleComboBox<String> accessLevelCB = new SimpleComboBox<String>(new LabelProvider<String>() {
 
 			@Override
-			public void onValueChange(ValueChangeEvent<Boolean> event) {
-				bibEntry.setOpenAccess(event.getValue());
+			public String getLabel(String item) {
+				return item;
 			}
 		});
+		accessLevelCB.add(AbstractEntry.ACCESS_LEVEL_LABEL.get(0));
+		accessLevelCB.add(AbstractEntry.ACCESS_LEVEL_LABEL.get(1));
+		accessLevelCB.add(AbstractEntry.ACCESS_LEVEL_LABEL.get(2));
+		accessLevelCB.setEditable(false);
+		accessLevelCB.setTypeAhead(false);
+		accessLevelCB.setTriggerAction(TriggerAction.ALL);
+		accessLevelCB.setValue(AbstractEntry.ACCESS_LEVEL_LABEL.get(bibEntry.getAccessLevel()));
+		accessLevelCB.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				bibEntry.setAccessLevel(accessLevelCB.getSelectedIndex());
+			}
+		});
+		FramedPanel accessLevelFP = new FramedPanel();
+		accessLevelFP.setHeading("Access Level");
+		accessLevelFP.add(accessLevelCB);
 
 		/**
 		 * first edition
@@ -1850,7 +1863,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		
 		HorizontalLayoutContainer bottonHLC = new HorizontalLayoutContainer();
 		bottonHLC.add(unpublishedFP, new HorizontalLayoutData(.25, 1.0));
-		bottonHLC.add(openAccessFP, new HorizontalLayoutData(.25, 1.0));
+		bottonHLC.add(accessLevelFP, new HorizontalLayoutData(.25, 1.0));
 		bottonHLC.add(bibDocPaperFP, new HorizontalLayoutData(.25, 1.0));
 		bottonHLC.add(bibDocAnnotationFP, new HorizontalLayoutData(.25, 1.0));
 //		documentsHLC.add(bibDocSummaryFP, new HorizontalLayoutData(1.0 / 3, 1.0));
@@ -1871,7 +1884,6 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		thirdTabVLC.add(notesCommtentsAbstractHLC, new VerticalLayoutData(1.0, .6));
 		thirdTabVLC.add(urlFP, new VerticalLayoutData(1.0, .1));
 		thirdTabVLC.add(uriFP, new VerticalLayoutData(1.0, .1));
-//		thirdTabVLC.add(unpublishedOpenAccessHLC, new VerticalLayoutData(1.0, .1));
 		thirdTabVLC.add(firstEditionFP, new VerticalLayoutData(1.0, .1));
 		thirdTabVLC.add(bottonHLC, new VerticalLayoutData(1.0, .1));
 

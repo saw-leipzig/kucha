@@ -29,7 +29,6 @@ import java.util.UUID;
 
 import de.cses.server.ServerProperties;
 import de.cses.shared.AbstractEntry;
-import de.cses.shared.AbstractSearchEntry;
 import de.cses.shared.AnnotatedBibliographySearchEntry;
 import de.cses.shared.AnnotatedBiblographyEntry;
 import de.cses.shared.AuthorEntry;
@@ -261,7 +260,7 @@ public class MysqlConnector {
 
 		try {
 			pstmt = dbc.prepareStatement(
-					"INSERT INTO Images (Filename, Title, ShortName, Copyright, PhotographerID, Comment, Date, ImageTypeID, OpenAccess) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+					"INSERT INTO Images (Filename, Title, ShortName, Copyright, PhotographerID, Comment, Date, ImageTypeID, AccessLevel) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
 					Statement.RETURN_GENERATED_KEYS);
 			pstmt.setString(1, "");
 			pstmt.setString(2, entry.getTitle());
@@ -271,7 +270,7 @@ public class MysqlConnector {
 			pstmt.setString(6, entry.getComment());
 			pstmt.setString(7, entry.getDate());
 			pstmt.setInt(8, entry.getImageTypeID());
-			pstmt.setBoolean(9, entry.isOpenAccess());
+			pstmt.setInt(9, entry.getAccessLevel());
 			pstmt.executeUpdate();
 			ResultSet keys = pstmt.getGeneratedKeys();
 			if (keys.next()) { // there should only be 1 key returned here
@@ -542,7 +541,7 @@ public class MysqlConnector {
 			while (rs.next()) {
 				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
 						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
-						rs.getBoolean("OpenAccess"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn"))));
+						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn"))));
 			}
 			rs.close();
 			pstmt.close();
@@ -581,7 +580,7 @@ public class MysqlConnector {
 			while (rs.next()) {
 				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
 						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), 
-						rs.getInt("ImageTypeID"), rs.getBoolean("OpenAccess"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn"))));
+						rs.getInt("ImageTypeID"), rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn"))));
 			}
 			rs.close();
 			pstmt.close();
@@ -607,7 +606,7 @@ public class MysqlConnector {
 			if (rs.first()) {
 				result = new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
 						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), 
-						rs.getInt("ImageTypeID"), rs.getBoolean("OpenAccess"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
+						rs.getInt("ImageTypeID"), rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
 			}
 			rs.close();
 			stmt.close();
@@ -733,7 +732,7 @@ public class MysqlConnector {
 						rs.getInt("PreservationClassificationID"), rs.getInt("CaveGroupID"), rs.getString("OptionalCaveSketch"),
 						rs.getString("CaveLayoutComments"), rs.getBoolean("HasVolutedHorseShoeArch"), rs.getBoolean("HasSculptures"),
 						rs.getBoolean("HasClayFigures"), rs.getBoolean("HasImmitationOfMountains"),
-						rs.getBoolean("HasHolesForFixationOfPlasticalItems"), rs.getBoolean("HasWoodenConstruction"), rs.getBoolean("OpenAccess"),
+						rs.getBoolean("HasHolesForFixationOfPlasticalItems"), rs.getBoolean("HasWoodenConstruction"), rs.getInt("AccessLevel"),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
 				ce.setCaveAreaList(getCaveAreas(ce.getCaveID()));
 				ce.setWallList(getWalls(ce.getCaveID()));
@@ -772,7 +771,7 @@ public class MysqlConnector {
 						rs.getInt("PreservationClassificationID"), rs.getInt("CaveGroupID"), rs.getString("OptionalCaveSketch"),
 						rs.getString("CaveLayoutComments"), rs.getBoolean("HasVolutedHorseShoeArch"), rs.getBoolean("HasSculptures"),
 						rs.getBoolean("HasClayFigures"), rs.getBoolean("HasImmitationOfMountains"),
-						rs.getBoolean("HasHolesForFixationOfPlasticalItems"), rs.getBoolean("HasWoodenConstruction"), rs.getBoolean("OpenAccess"), 
+						rs.getBoolean("HasHolesForFixationOfPlasticalItems"), rs.getBoolean("HasWoodenConstruction"), rs.getInt("AccessLevel"), 
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
 				ce.setCaveAreaList(getCaveAreas(ce.getCaveID()));
 				ce.setWallList(getWalls(ce.getCaveID()));
@@ -807,7 +806,7 @@ public class MysqlConnector {
 						rs.getInt("PreservationClassificationID"), rs.getInt("CaveGroupID"), rs.getString("OptionalCaveSketch"),
 						rs.getString("CaveLayoutComments"), rs.getBoolean("HasVolutedHorseShoeArch"), rs.getBoolean("HasSculptures"),
 						rs.getBoolean("HasClayFigures"), rs.getBoolean("HasImmitationOfMountains"),
-						rs.getBoolean("HasHolesForFixationOfPlasticalItems"), rs.getBoolean("HasWoodenConstruction"), rs.getBoolean("OpenAccess"),
+						rs.getBoolean("HasHolesForFixationOfPlasticalItems"), rs.getBoolean("HasWoodenConstruction"), rs.getInt("AccessLevel"),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
 				result.setCaveAreaList(getCaveAreas(result.getCaveID()));
 				result.setWallList(getWalls(result.getCaveID()));
@@ -841,7 +840,7 @@ public class MysqlConnector {
 						rs.getInt("PreservationClassificationID"), rs.getInt("CaveGroupID"), rs.getString("OptionalCaveSketch"),
 						rs.getString("CaveLayoutComments"), rs.getBoolean("HasVolutedHorseShoeArch"), rs.getBoolean("HasSculptures"),
 						rs.getBoolean("HasClayFigures"), rs.getBoolean("HasImmitationOfMountains"),
-						rs.getBoolean("HasHolesForFixationOfPlasticalItems"), rs.getBoolean("HasWoodenConstruction"), rs.getBoolean("OpenAccess"),
+						rs.getBoolean("HasHolesForFixationOfPlasticalItems"), rs.getBoolean("HasWoodenConstruction"), rs.getInt("AccessLevel"),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
 				ce.setCaveAreaList(getCaveAreas(ce.getCaveID()));
 				ce.setWallList(getWalls(ce.getCaveID()));
@@ -1595,7 +1594,7 @@ public class MysqlConnector {
 			while (rs.next()) {
 				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
 						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), 
-						rs.getInt("ImageTypeID"), rs.getBoolean("OpenAccess"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn"))));
+						rs.getInt("ImageTypeID"), rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn"))));
 			}
 			rs.close();
 			pstmt.close();
@@ -1752,7 +1751,7 @@ public class MysqlConnector {
 		PreparedStatement pstmt;
 		try {
 			pstmt = dbc.prepareStatement(
-					"UPDATE Images SET Filename=?, Title=?, ShortName=?, Copyright=?, PhotographerID=?, Comment=?, Date=?, ImageTypeID=?, OpenAccess=? WHERE ImageID=?");
+					"UPDATE Images SET Filename=?, Title=?, ShortName=?, Copyright=?, PhotographerID=?, Comment=?, Date=?, ImageTypeID=?, AccessLevel=? WHERE ImageID=?");
 			pstmt.setString(1, entry.getFilename());
 			pstmt.setString(2, entry.getTitle());
 			pstmt.setString(3, entry.getShortName());
@@ -1761,7 +1760,7 @@ public class MysqlConnector {
 			pstmt.setString(6, entry.getComment());
 			pstmt.setString(7, entry.getDate());
 			pstmt.setInt(8, entry.getImageTypeID());
-			pstmt.setBoolean(9, entry.isOpenAccess());
+			pstmt.setInt(9, entry.getAccessLevel());
 			pstmt.setInt(10, entry.getImageID());
 			pstmt.execute();
 			pstmt.close();
@@ -2065,7 +2064,7 @@ public class MysqlConnector {
 						rs.getString("IssueORG"), rs.getString("IssueTR"), rs.getInt("YearEN"), rs.getString("YearORG"), rs.getString("YearTR"),
 						rs.getString("MonthEN"), rs.getString("MonthORG"), rs.getString("MonthTR"), rs.getString("PagesEN"), rs.getString("PagesORG"),
 						rs.getString("PagesTR"), rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"), rs.getString("URI"),
-						rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getBoolean("OpenAccess"), rs.getString("AbstractText"),
+						rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getInt("AccessLevel"), rs.getString("AbstractText"),
 						rs.getString("ThesisType"), rs.getString("EditorType"), rs.getBoolean("OfficialTitleTranslation"), rs.getString("BibTexKey"),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
 				entry.setAuthorList(getAuthorBibRelation(entry.getAnnotatedBiblographyID()));
@@ -2117,7 +2116,7 @@ public class MysqlConnector {
 						rs.getString("IssueORG"), rs.getString("IssueTR"), rs.getInt("YearEN"), rs.getString("YearORG"), rs.getString("YearTR"),
 						rs.getString("MonthEN"), rs.getString("MonthORG"), rs.getString("MonthTR"), rs.getString("PagesEN"), rs.getString("PagesORG"),
 						rs.getString("PagesTR"), rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"), rs.getString("URI"),
-						rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getBoolean("OpenAccess"), rs.getString("AbstractText"),
+						rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getInt("AccessLevel"), rs.getString("AbstractText"),
 						rs.getString("ThesisType"), rs.getString("EditorType"), rs.getBoolean("OfficialTitleTranslation"), rs.getString("BibTexKey"),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
 				entry.setAuthorList(getAuthorBibRelation(entry.getAnnotatedBiblographyID()));
@@ -2176,7 +2175,7 @@ public class MysqlConnector {
 						rs.getString("IssueORG"), rs.getString("IssueTR"), rs.getInt("YearEN"), rs.getString("YearORG"), rs.getString("YearTR"),
 						rs.getString("MonthEN"), rs.getString("MonthORG"), rs.getString("MonthTR"), rs.getString("PagesEN"), rs.getString("PagesORG"),
 						rs.getString("PagesTR"), rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"), rs.getString("URI"),
-						rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getBoolean("OpenAccess"), rs.getString("AbstractText"),
+						rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getInt("AccessLevel"), rs.getString("AbstractText"),
 						rs.getString("ThesisType"), rs.getString("EditorType"), rs.getBoolean("OfficialTitleTranslation"), rs.getString("BibTexKey"),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
 				entry.setAuthorList(getAuthorBibRelation(entry.getAnnotatedBiblographyID()));
@@ -2295,7 +2294,7 @@ public class MysqlConnector {
 						rs.getString("IssueORG"), rs.getString("IssueTR"), rs.getInt("YearEN"), rs.getString("YearORG"), rs.getString("YearTR"),
 						rs.getString("MonthEN"), rs.getString("MonthORG"), rs.getString("MonthTR"), rs.getString("PagesEN"), rs.getString("PagesORG"),
 						rs.getString("PagesTR"), rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"), rs.getString("URI"),
-						rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getBoolean("OpenAccess"), rs.getString("AbstractText"),
+						rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getInt("AccessLevel"), rs.getString("AbstractText"),
 						rs.getString("ThesisType"), rs.getString("EditorType"), rs.getBoolean("OfficialTitleTranslation"), rs.getString("BibTexKey"),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
 				result.setAuthorList(getAuthorBibRelation(result.getAnnotatedBiblographyID()));
@@ -2980,7 +2979,7 @@ public class MysqlConnector {
 					"UPDATE Caves SET OfficialNumber=?, HistoricName=?, OptionalHistoricName=?, CaveTypeID=?, SiteID=?, DistrictID=?, "
 							+ "RegionID=?, OrientationID=?, StateOfPreservation=?, Findings=?, Notes=?, FirstDocumentedBy=?, FirstDocumentedInYear=?, PreservationClassificationID=?, "
 							+ "CaveGroupID=?, OptionalCaveSketch=?, CaveLayoutComments=?, HasVolutedHorseShoeArch=?, HasSculptures=?, HasClayFigures=?, HasImmitationOfMountains=?, "
-							+ "HasHolesForFixationOfPlasticalItems=?, HasWoodenConstruction=?, OpenAccess=? WHERE CaveID=?");
+							+ "HasHolesForFixationOfPlasticalItems=?, HasWoodenConstruction=?, AccessLevel=? WHERE CaveID=?");
 			pstmt.setString(1, caveEntry.getOfficialNumber());
 			pstmt.setString(2, caveEntry.getHistoricName());
 			pstmt.setString(3, caveEntry.getOptionalHistoricName());
@@ -3004,7 +3003,7 @@ public class MysqlConnector {
 			pstmt.setBoolean(21, caveEntry.isHasImmitationOfMountains());
 			pstmt.setBoolean(22, caveEntry.isHasHolesForFixationOfPlasticalItems());
 			pstmt.setBoolean(23, caveEntry.isHasWoodenConstruction());
-			pstmt.setBoolean(24, caveEntry.isOpenAccess());
+			pstmt.setInt(24, caveEntry.getAccessLevel());
 			pstmt.setInt(25, caveEntry.getCaveID());
 			pstmt.executeUpdate();
 			pstmt.close();
@@ -3036,7 +3035,7 @@ public class MysqlConnector {
 			pstmt = dbc.prepareStatement(
 					"INSERT INTO Caves (OfficialNumber, HistoricName, OptionalHistoricName, CaveTypeID, SiteID, DistrictID, RegionID, OrientationID, StateOfPreservation, "
 							+ "Findings, Notes, FirstDocumentedBy, FirstDocumentedInYear, PreservationClassificationID, CaveGroupID, OptionalCaveSketch, CaveLayoutComments, HasVolutedHorseShoeArch, "
-							+ "HasSculptures, HasClayFigures, HasImmitationOfMountains, HasHolesForFixationOfPlasticalItems, HasWoodenConstruction, OpenAccess) "
+							+ "HasSculptures, HasClayFigures, HasImmitationOfMountains, HasHolesForFixationOfPlasticalItems, HasWoodenConstruction, AccessLevel) "
 							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 					Statement.RETURN_GENERATED_KEYS);
 			pstmt.setString(1, caveEntry.getOfficialNumber());
@@ -3062,7 +3061,7 @@ public class MysqlConnector {
 			pstmt.setBoolean(21, caveEntry.isHasImmitationOfMountains());
 			pstmt.setBoolean(22, caveEntry.isHasHolesForFixationOfPlasticalItems());
 			pstmt.setBoolean(23, caveEntry.isHasWoodenConstruction());
-			pstmt.setBoolean(24, caveEntry.isOpenAccess());
+			pstmt.setInt(24, caveEntry.getAccessLevel());
 			pstmt.executeUpdate();
 			ResultSet keys = pstmt.getGeneratedKeys();
 			if (keys.next()) { // there should only be 1 key returned here
@@ -3407,7 +3406,7 @@ public class MysqlConnector {
 			pstmt = dbc.prepareStatement(
 					"INSERT INTO Depictions (StyleID, Inscriptions, SeparateAksaras, Dating, Description, BackgroundColour, GeneralRemarks, "
 							+ "OtherSuggestedIdentifications, Width, Height, ExpeditionID, PurchaseDate, CurrentLocationID, InventoryNumber, VendorID, "
-							+ "StoryID, CaveID, WallID, AbsoluteLeft, AbsoluteTop, ModeOfRepresentationID, ShortName, PositionNotes, MasterImageID, OpenAccess, LastChangedByUser, LastChangedOnDate) "
+							+ "StoryID, CaveID, WallID, AbsoluteLeft, AbsoluteTop, ModeOfRepresentationID, ShortName, PositionNotes, MasterImageID, AccessLevel, LastChangedByUser, LastChangedOnDate) "
 							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 					Statement.RETURN_GENERATED_KEYS);
 			pstmt.setInt(1, de.getStyleID());
@@ -3434,7 +3433,7 @@ public class MysqlConnector {
 			pstmt.setString(22, de.getShortName());
 			pstmt.setString(23, de.getPositionNotes());
 			pstmt.setInt(24, de.getMasterImageID());
-			pstmt.setBoolean(25, de.isOpenAccess());
+			pstmt.setInt(25, de.getAccessLevel());
 			pstmt.setString(26, de.getLastChangedByUser());
 			pstmt.setString(27, de.getModifiedOn());
 			pstmt.executeUpdate();
@@ -3485,7 +3484,7 @@ public class MysqlConnector {
 			pstmt = dbc.prepareStatement(
 					"UPDATE Depictions SET StyleID=?, Inscriptions=?, SeparateAksaras=?, Dating=?, Description=?, BackgroundColour=?, GeneralRemarks=?, "
 							+ "OtherSuggestedIdentifications=?, Width=?, Height=?, ExpeditionID=?, PurchaseDate=?, CurrentLocationID=?, InventoryNumber=?, VendorID=?, "
-							+ "StoryID=?, CaveID=?, WallID=?, AbsoluteLeft=?, AbsoluteTop=?, ModeOfRepresentationID=?, ShortName=?, PositionNotes=?, MasterImageID=?, OpenAccess=?, LastChangedByUser=?, "
+							+ "StoryID=?, CaveID=?, WallID=?, AbsoluteLeft=?, AbsoluteTop=?, ModeOfRepresentationID=?, ShortName=?, PositionNotes=?, MasterImageID=?, AccessLevel=?, LastChangedByUser=?, "
 							+ "LastChangedOnDate=? WHERE DepictionID=?");
 			pstmt.setInt(1, de.getStyleID());
 			pstmt.setString(2, de.getInscriptions());
@@ -3511,7 +3510,7 @@ public class MysqlConnector {
 			pstmt.setString(22, de.getShortName());
 			pstmt.setString(23, de.getPositionNotes());
 			pstmt.setInt(24, de.getMasterImageID());
-			pstmt.setBoolean(25, de.isOpenAccess());
+			pstmt.setInt(25, de.getAccessLevel());
 			pstmt.setString(26, de.getLastChangedByUser());
 			pstmt.setString(27, de.getModifiedOn());
 			pstmt.setInt(28, de.getDepictionID());
@@ -4004,7 +4003,7 @@ public class MysqlConnector {
 					+ "VolumeEN, VolumeORG, VolumeTR, "
 					+ "IssueEN, IssueORG, IssueTR, " 
 					+ "YearEN, YearORG, YearTR, " 
-					+ "Unpublished, OpenAccess, AbstractText, ThesisType, EditorType, OfficialTitleTranslation, BibTexKey) "
+					+ "Unpublished, AccessLevel, AbstractText, ThesisType, EditorType, OfficialTitleTranslation, BibTexKey) "
 					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 					Statement.RETURN_GENERATED_KEYS);
 			pstmt.setInt(1, bibEntry.getPublicationType().getPublicationTypeID());
@@ -4057,7 +4056,7 @@ public class MysqlConnector {
 			pstmt.setString(48, bibEntry.getYearORG());
 			pstmt.setString(49, bibEntry.getYearTR());
 			pstmt.setBoolean(50, bibEntry.isUnpublished());
-			pstmt.setBoolean(51, bibEntry.isOpenAccess());
+			pstmt.setInt(51, bibEntry.getAccessLevel());
 			pstmt.setString(52, bibEntry.getAbstractText());
 			pstmt.setString(53, bibEntry.getThesisType());
 			pstmt.setString(54, bibEntry.getEditorType());
@@ -4777,7 +4776,7 @@ public class MysqlConnector {
 					+ "VolumeEN=?, VolumeORG=?, VolumeTR=?, " 
 					+ "IssueEN=?, IssueORG=?, IssueTR=?, " 
 					+ "YearEN=?, YearORG=?, YearTR=?, "
-					+ "Unpublished=?, OpenAccess=?, AbstractText=?, ThesisType=?, EditorType=?, OfficialTitleTranslation=?, BibTexKey=? WHERE BibID=?");
+					+ "Unpublished=?, AccessLevel=?, AbstractText=?, ThesisType=?, EditorType=?, OfficialTitleTranslation=?, BibTexKey=? WHERE BibID=?");
 			pstmt.setInt(1, bibEntry.getPublicationType().getPublicationTypeID());
 			pstmt.setString(2, bibEntry.getAccessdateEN());
 			pstmt.setString(3, bibEntry.getAccessdateORG());
@@ -4828,7 +4827,7 @@ public class MysqlConnector {
 			pstmt.setString(48, bibEntry.getYearORG());
 			pstmt.setString(49, bibEntry.getYearTR());
 			pstmt.setBoolean(50, bibEntry.isUnpublished());
-			pstmt.setBoolean(51, bibEntry.isOpenAccess());
+			pstmt.setInt(51, bibEntry.getAccessLevel());
 			pstmt.setString(52, bibEntry.getAbstractText());
 			pstmt.setString(53, bibEntry.getThesisType());
 			pstmt.setString(54, bibEntry.getEditorType());
@@ -4882,7 +4881,7 @@ public class MysqlConnector {
 			while (rs.next()) {
 				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
 						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), 
-						rs.getInt("ImageTypeID"), rs.getBoolean("OpenAccess"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn"))));
+						rs.getInt("ImageTypeID"), rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn"))));
 			}
 			rs.close();
 			pstmt.close();
@@ -5307,7 +5306,7 @@ public class MysqlConnector {
 						getExpedition(rs.getInt("ExpeditionID")), rs.getDate("PurchaseDate"), getLocation(rs.getInt("CurrentLocationID")), rs.getString("InventoryNumber"),
 						getVendor(rs.getInt("VendorID")), rs.getInt("StoryID"), getCave(rs.getInt("CaveID")), rs.getInt("WallID"), rs.getInt("AbsoluteLeft"),
 						rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes"),
-						rs.getInt("MasterImageID"), rs.getBoolean("OpenAccess"), rs.getString("LastChangedByUser"), rs.getString("LastChangedOnDate"));
+						rs.getInt("MasterImageID"), rs.getInt("AccessLevel"), rs.getString("LastChangedByUser"), rs.getString("LastChangedOnDate"));
 				de.setRelatedImages(getRelatedImages(de.getDepictionID(), searchEntry));
 				de.setRelatedBibliographyList(getRelatedBibliographyFromDepiction(de.getDepictionID()));
 				de.setRelatedIconographyList(getRelatedIconography(de.getDepictionID()));

@@ -49,8 +49,8 @@ public class WallEntry extends AbstractEntry {
 	 * @param width
 	 * @param height
 	 */
-	public WallEntry(boolean openAccess, int caveID, int wallLocationID, int preservationClassificationID, double width, double height) {
-		super(openAccess);
+	public WallEntry(int accessLevel, int caveID, int wallLocationID, int preservationClassificationID, double width, double height) {
+		super(accessLevel);
 		this.caveID = caveID;
 		this.wallLocationID = wallLocationID;
 		this.preservationClassificationID = preservationClassificationID;
