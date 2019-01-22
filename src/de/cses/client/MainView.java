@@ -364,7 +364,7 @@ public class MainView implements IsWidget {
     northData.setMargins(new Margins(5));
     
     BorderLayoutData southData = new BorderLayoutData(20);
-    northData.setMargins(new Margins(5, 15, 5, 15));
+    southData.setMargins(new Margins(5));
 
     BorderLayoutData westData = new BorderLayoutData(220);
     westData.setMargins(new Margins(5));
