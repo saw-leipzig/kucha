@@ -56,7 +56,6 @@ public class ResourceDownloadServlet extends HttpServlet {
 			String filename;
 			File inputFile;
 			int userAccessLevel = AbstractEntry.ACCESS_LEVEL_PUBLIC;
-//			UserEntry user = connector.checkSessionID(sessionID);
 			ArrayList<Integer> authorizedAccessLevel = new ArrayList<Integer>();
 			switch (connector.getAccessLevelForSessionID(sessionID)) {
 				case UserEntry.GUEST:
@@ -92,43 +91,25 @@ public class ResourceDownloadServlet extends HttpServlet {
 			}
 			ServletOutputStream out = response.getOutputStream();
 			URL imageURL;
-//			if (inputFile.exists()) {
-				if (request.getParameter("thumb") != null) {
-					int tnSize = Integer.valueOf(request.getParameter("thumb")); // the requested size is given as a parameter
-					imageURL = new URL("http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/!" + tnSize + "," + tnSize + "/0/default.png");
-				} else {
-					imageURL = new URL("http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/max/0/default.png");
-				}
-//					System.err.println("reading image: " + imageURL.getFile());
-					InputStream in = imageURL.openStream();
-					response.setContentType("image/png");
-					byte buffer[] = new byte[4096];
-					int bytesRead = 0;
-					while ((bytesRead = in.read(buffer)) > 0) {
-						out.write(buffer, 0, bytesRead);
-					}
-					in.close();
-//				} else { // load the original file
-//					if (filename.toLowerCase().endsWith("png")) {
-//						response.setContentType("image/png");
-//					} else if (filename.toLowerCase().endsWith("jpg")) {
-//						response.setContentType("image/jpeg");
-//					} else if (filename.toLowerCase().endsWith("tiff")) {
-//						response.setContentType("image/tiff");
-//					}
-//					FileInputStream fis = new FileInputStream(inputFile);
-//					byte buffer[] = new byte[4096];
-//					int bytesRead = 0;
-//					while ((bytesRead = fis.read(buffer)) > 0) {
-//						out.write(buffer, 0, bytesRead);
-//					}
-//					fis.close();
-//				}
-				out.close();
-//			} else {
-//				response.setStatus(404);
-//				return;
-//			}
+			if (request.getParameter("thumb") != null) {
+				int tnSize = Integer.valueOf(request.getParameter("thumb")); // the requested size is given as a parameter
+				imageURL = new URL(
+						"http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/!" + tnSize + "," + tnSize + "/0/default.png"
+					);
+			} else {
+				imageURL = new URL(
+						"http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/max/0/default.png"
+					);
+			}
+			InputStream in = imageURL.openStream();
+			response.setContentType("image/png");
+			byte buffer[] = new byte[4096];
+			int bytesRead = 0;
+			while ((bytesRead = in.read(buffer)) > 0) {
+				out.write(buffer, 0, bytesRead);
+			}
+			in.close();
+			out.close();
 		} else if (request.getParameter("background") != null) {
 			String filename = request.getParameter("background");
 			if (filename.startsWith(".")) {
