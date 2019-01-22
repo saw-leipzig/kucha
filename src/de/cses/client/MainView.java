@@ -267,7 +267,7 @@ public class MainView implements IsWidget {
 		    }
 			}
 		});
-
+    
     ToolButton loginTB = new ToolButton(new IconConfig("loginButton", "loginButtonOver"));
     loginTB.setToolTip(Util.createToolTip("User Login"));
     loginTB.addSelectHandler(new SelectHandler() {

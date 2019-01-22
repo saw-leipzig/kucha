@@ -50,6 +50,9 @@ import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.Util;
+import de.cses.client.bibliography.AuthorEditor;
+import de.cses.client.bibliography.AuthorEditorListener;
+import de.cses.shared.AuthorEntry;
 import de.cses.shared.UserEntry;
 
 /**
@@ -301,6 +304,35 @@ public class UserLogin extends PopupPanel {
 				logout();
 			}
 		});
+
+		ToolButton adminTB = null;
+		if (getAccessRights() == UserEntry.ADMIN) {
+			adminTB = new ToolButton(new IconConfig("editButton", "editButtonOver"));
+			adminTB.addSelectHandler(new SelectHandler() {
+				
+				@Override
+				public void onSelect(SelectEvent event) {
+					PopupPanel userManagerDialog = new PopupPanel();
+					FramedPanel userManagerFP = new FramedPanel();
+					userManagerFP.setHeading("User Manager");
+					ToolButton closeTB = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
+					closeTB.addSelectHandler(new SelectHandler() {
+						
+						@Override
+						public void onSelect(SelectEvent event) {
+							userManagerDialog.hide();
+						}
+					});
+					userManagerFP.add(new UserManager());
+					userManagerFP.addTool(closeTB);
+					userManagerDialog.add(userManagerFP);
+					userManagerDialog.setSize("900px", "450px");
+					userManagerDialog.setModal(true);
+					userManagerDialog.center();
+				}
+			});
+		}
+		
 		ToolButton closeTB = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
 		closeTB.setToolTip(Util.createToolTip("close"));
 		closeTB.addSelectHandler(new SelectHandler() {
@@ -325,6 +357,9 @@ public class UserLogin extends PopupPanel {
 		userFP.add(userHL);
 		userFP.addButton(updateButton);
 		userFP.addButton(logoutButton);
+		if (adminTB != null) {
+			userFP.addTool(adminTB);
+		}
 		userFP.addTool(closeTB);
 		userFP.setHeight(500);
 		add(userFP);

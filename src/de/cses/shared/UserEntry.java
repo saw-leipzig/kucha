@@ -13,7 +13,9 @@
  */
 package de.cses.shared;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author alingnau
@@ -25,6 +27,8 @@ public class UserEntry extends AbstractEntry {
 	public static final int ASSOCIATED = 2;
 	public static final int FULL = 3;
 	public static final int ADMIN = 4;
+	public static final List<String> ACCESS_RIGHTS_LABEL = Arrays.asList("guest", "associated", "full", "admin");
+
 	
 	private int userID;
 	private String username;

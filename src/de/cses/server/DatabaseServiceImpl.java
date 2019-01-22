@@ -937,30 +937,35 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.searchImages(searchEntry);
 	}
+	
 	@Override
 	public ArrayList<AnnotatedBiblographyEntry> searchAnnotatedBibliography(AnnotatedBibliographySearchEntry searchEntry)
 			throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.searchAnnotatedBibliography(searchEntry);
 	}
+	
 	@Override
 	public ArrayList<OrnamentEntry> searchOrnaments(OrnamenticSearchEntry searchEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.searchOrnaments(searchEntry);
 	}
+	
 	@Override
 	public int insertIconographyEntry(IconographyEntry iconographyEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.insertIconographyEntry(iconographyEntry);
 	}
+
 	@Override
 	public boolean updateIconographyEntry(IconographyEntry iconographyEntryToEdit) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.updateIconographyEntry(iconographyEntryToEdit);
 	}
-//	@Override
-//	public ArrayList<DepictionEntry> getDepictions() throws IllegalArgumentException {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
+
+	@Override
+	public ArrayList<UserEntry> getUsers() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getUsers();
+	}
 }

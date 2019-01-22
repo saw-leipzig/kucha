@@ -525,6 +525,7 @@ public class DepictionEditor extends AbstractEditor {
 				correspondingDepictionEntry.setShortName(event.getValue());
 			}
 		});
+
 		SimpleComboBox<String> accessRightsCB = new SimpleComboBox<String>(new LabelProvider<String>() {
 
 			@Override
