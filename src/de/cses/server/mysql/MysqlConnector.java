@@ -434,20 +434,19 @@ public class MysqlConnector {
 			where += where.isEmpty() ? "ImageTypeID IN (" + imageTypeIDs + ")" : " AND ImageTypeID IN (" + imageTypeIDs + ")" ;
 		}
 		
-		int userAccessLevel = AbstractEntry.ACCESS_LEVEL_PUBLIC; // default: lowest possible access rights
-		UserEntry user = checkSessionID(searchEntry.getSessionID());
-		if (user != null) {
-			switch (user.getAccessLevel()) {
-				case UserEntry.GUEST:
-				case UserEntry.ASSOCIATED:
-					userAccessLevel = AbstractEntry.ACCESS_LEVEL_COPYRIGHT;
-					break; 
-				case UserEntry.FULL:
-				case UserEntry.ADMIN:
-					userAccessLevel = AbstractEntry.ACCESS_LEVEL_PRIVATE;
-			}
+		String inStatement = Integer.toString(AbstractEntry.ACCESS_LEVEL_PUBLIC); // public is always permitted
+		switch (getAccessLevelForSessionID(searchEntry.getSessionID())) {
+			case UserEntry.GUEST:
+			case UserEntry.ASSOCIATED:
+				inStatement += "," + AbstractEntry.ACCESS_LEVEL_COPYRIGHT;
+				break; 
+			case UserEntry.FULL:
+			case UserEntry.ADMIN:
+				inStatement += "," + AbstractEntry.ACCESS_LEVEL_COPYRIGHT + "," + AbstractEntry.ACCESS_LEVEL_PRIVATE;
+				break;
 		}
-		where += where.isEmpty() ? "AccessLevel>=" + userAccessLevel : " AND AccessLevel>=" + userAccessLevel;
+		
+		where += where.isEmpty() ? "AccessLevel IN (" + inStatement + ")" : " AND AccessLevel IN (" + inStatement + ")";
 		
 		System.out.println("SELECT * FROM Images" + (!where.isEmpty() ? " WHERE " + where : "") + " ORDER BY Title Asc");
 		
@@ -638,21 +637,19 @@ public class MysqlConnector {
 			where += where.isEmpty() ? "CaveID IN (SELECT CaveID FROM Depictions)" : " AND CaveID IN (SELECT CaveID FROM Depictions)";
 		}
 
-		int userAccessLevel = AbstractEntry.ACCESS_LEVEL_PUBLIC; // default: lowest possible access rights
-		UserEntry user = checkSessionID(searchEntry.getSessionID());
-		if (user != null) {
-			switch (user.getAccessLevel()) {
-				case UserEntry.GUEST:
-				case UserEntry.ASSOCIATED:
-					userAccessLevel = AbstractEntry.ACCESS_LEVEL_COPYRIGHT;
-					break; 
-				case UserEntry.FULL:
-				case UserEntry.ADMIN:
-					userAccessLevel = AbstractEntry.ACCESS_LEVEL_PRIVATE;
-			}
+		String inStatement = Integer.toString(AbstractEntry.ACCESS_LEVEL_PUBLIC); // public is always permitted
+		switch (getAccessLevelForSessionID(searchEntry.getSessionID())) {
+			case UserEntry.GUEST:
+			case UserEntry.ASSOCIATED:
+				inStatement += "," + AbstractEntry.ACCESS_LEVEL_COPYRIGHT;
+				break; 
+			case UserEntry.FULL:
+			case UserEntry.ADMIN:
+				inStatement += "," + AbstractEntry.ACCESS_LEVEL_COPYRIGHT + "," + AbstractEntry.ACCESS_LEVEL_PRIVATE;
+				break;
 		}
-		where += where.isEmpty() ? "AccessLevel>=" + userAccessLevel : " AND AccessLevel>=" + userAccessLevel;
-		
+		where += where.isEmpty() ? "AccessLevel IN (" + inStatement + ")" : " AND AccessLevel IN (" + inStatement + ")";
+
 		System.err.println("searchCaves: where = " + where);
 		
 		try {
@@ -1506,29 +1503,26 @@ public class MysqlConnector {
 	 * @param depictionID
 	 * @return
 	 */
-	private ArrayList<ImageEntry> getRelatedImages(int depictionID, DepictionSearchEntry entry) {
-		UserEntry user = null;
-		int accessLevel = AbstractEntry.ACCESS_LEVEL_PUBLIC; // default: lowest possible access rights
-		if (entry != null) {
-			user = checkSessionID(entry.getSessionID());
-			switch (user.getAccessLevel()) {
-				case UserEntry.GUEST:
-				case UserEntry.ASSOCIATED:
-					accessLevel = AbstractEntry.ACCESS_LEVEL_COPYRIGHT;
-					break; 
-				case UserEntry.FULL:
-				case UserEntry.ADMIN:
-					accessLevel = AbstractEntry.ACCESS_LEVEL_PRIVATE;
-			}
+	private ArrayList<ImageEntry> getRelatedImages(int depictionID, String sessionID) {
+		String inStatement = Integer.toString(AbstractEntry.ACCESS_LEVEL_PUBLIC); // public is always permitted
+		switch (getAccessLevelForSessionID(sessionID)) {
+			case UserEntry.GUEST:
+			case UserEntry.ASSOCIATED:
+				inStatement += "," + AbstractEntry.ACCESS_LEVEL_COPYRIGHT;
+				break; 
+			case UserEntry.FULL:
+			case UserEntry.ADMIN:
+				inStatement += "," + AbstractEntry.ACCESS_LEVEL_COPYRIGHT + "," + AbstractEntry.ACCESS_LEVEL_PRIVATE;
+				break;
 		}
+
 		ArrayList<ImageEntry> results = new ArrayList<ImageEntry>();
 		Connection dbc = getConnection();
 
 		PreparedStatement pstmt;
 		try {
-			pstmt = dbc.prepareStatement("SELECT * FROM Images WHERE ImageID IN (SELECT ImageID FROM DepictionImageRelation WHERE DepictionID=?) AND AccessLevel<=?");
+			pstmt = dbc.prepareStatement("SELECT * FROM Images WHERE ImageID IN (SELECT ImageID FROM DepictionImageRelation WHERE DepictionID=?) AND AccessLevel IN (" + inStatement + ")");
 			pstmt.setInt(1, depictionID);
-			pstmt.setInt(2, accessLevel);
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
 				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
@@ -5135,20 +5129,18 @@ public class MysqlConnector {
 					: " AND DepictionID IN (SELECT DISTINCT DepictionID FROM DepictionBibliographyRelation WHERE BibID IN (" + bibIDs + "))";
 		}
 
-		int userAccessLevel = AbstractEntry.ACCESS_LEVEL_PUBLIC; // default: lowest possible access rights
-		UserEntry user = checkSessionID(searchEntry.getSessionID());
-		if (user != null) {
-			switch (user.getAccessLevel()) {
-				case UserEntry.GUEST:
-				case UserEntry.ASSOCIATED:
-					userAccessLevel = AbstractEntry.ACCESS_LEVEL_COPYRIGHT;
-					break; 
-				case UserEntry.FULL:
-				case UserEntry.ADMIN:
-					userAccessLevel = AbstractEntry.ACCESS_LEVEL_PRIVATE;
-			}
+		String inStatement = Integer.toString(AbstractEntry.ACCESS_LEVEL_PUBLIC); // public is always permitted
+		switch (getAccessLevelForSessionID(searchEntry.getSessionID())) {
+			case UserEntry.GUEST:
+			case UserEntry.ASSOCIATED:
+				inStatement += "," + AbstractEntry.ACCESS_LEVEL_COPYRIGHT;
+				break; 
+			case UserEntry.FULL:
+			case UserEntry.ADMIN:
+				inStatement += "," + AbstractEntry.ACCESS_LEVEL_COPYRIGHT + "," + AbstractEntry.ACCESS_LEVEL_PRIVATE;
+				break;
 		}
-		where += where.isEmpty() ? "AccessLevel>=" + userAccessLevel : " AND AccessLevel>=" + userAccessLevel;
+		where += where.isEmpty() ? "AccessLevel IN (" + inStatement + ")" : " AND AccessLevel IN (" + inStatement + ")";
 				
 		System.err.println(where.isEmpty() ? "SELECT * FROM Depictions" : "SELECT * FROM Depictions WHERE " + where);
 
@@ -5168,7 +5160,7 @@ public class MysqlConnector {
 						getVendor(rs.getInt("VendorID")), rs.getInt("StoryID"), getCave(rs.getInt("CaveID")), rs.getInt("WallID"), rs.getInt("AbsoluteLeft"),
 						rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes"),
 						rs.getInt("MasterImageID"), rs.getInt("AccessLevel"), rs.getString("LastChangedByUser"), rs.getString("LastChangedOnDate"));
-				de.setRelatedImages(getRelatedImages(de.getDepictionID(), searchEntry));
+				de.setRelatedImages(getRelatedImages(de.getDepictionID(), searchEntry.getSessionID()));
 				de.setRelatedBibliographyList(getRelatedBibliographyFromDepiction(de.getDepictionID()));
 				de.setRelatedIconographyList(getRelatedIconography(de.getDepictionID()));
 				results.add(de);

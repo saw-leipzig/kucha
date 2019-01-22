@@ -26,6 +26,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.CharBuffer;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
@@ -64,26 +65,33 @@ public class ResourceDownloadServlet extends HttpServlet {
 			String filename;
 			File inputFile;
 			int userAccessLevel = AbstractEntry.ACCESS_LEVEL_PUBLIC;
-			UserEntry user = connector.checkSessionID(sessionID);
-			switch (user.getAccessLevel()) {
+//			UserEntry user = connector.checkSessionID(sessionID);
+			ArrayList<Integer> authorizedAccessLevel = new ArrayList<Integer>();
+			switch (connector.getAccessLevelForSessionID(sessionID)) {
 				case UserEntry.GUEST:
 				case UserEntry.ASSOCIATED:
-					userAccessLevel = AbstractEntry.ACCESS_LEVEL_COPYRIGHT;
+					authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_PUBLIC);
+					authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_COPYRIGHT);
+					System.err.println("acess Level PUBLIC and COPYRIGHT");
 					break; 
 				case UserEntry.FULL:
 				case UserEntry.ADMIN:
-					userAccessLevel = AbstractEntry.ACCESS_LEVEL_PRIVATE;
+					authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_PUBLIC);
+					authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_COPYRIGHT);
+					authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_PRIVATE);
+					System.err.println("acess Level PUBLIC, COPYRIGHT and PRIVATE");
+					break;
+				default:
+					authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_PUBLIC);
+					System.err.println("acess Level PUBLIC");
+					break;
 			}
+			System.err.println("sessionID=" + sessionID + ", userAccessLevel=" + connector.getAccessLevelForSessionID(sessionID) + ", ImageEntry accessLevel=" + imgEntry.getAccessLevel());
 			
-			if (imgEntry!=null && (imgEntry.getAccessLevel() >= userAccessLevel)) {
+			if (imgEntry!=null && authorizedAccessLevel.contains(imgEntry.getAccessLevel())) {
 				filename = imgEntry.getFilename();
 				inputFile = new File(serverProperties.getProperty("home.images"), filename);
 			} else {
-				if (imgEntry==null) {
-					System.err.println("imageID=" + imageID + " has no ImageEntry");
-				} else {
-					System.err.println("sessionID=" + sessionID + ", userAccessLevel=" + userAccessLevel + ", ImageEntry accessLevel=" + imgEntry.getAccessLevel());
-				}
 				response.setStatus(403);
 				return;
 			}
