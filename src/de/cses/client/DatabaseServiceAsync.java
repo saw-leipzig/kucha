@@ -326,4 +326,6 @@ public interface DatabaseServiceAsync {
 
 	void getUsers(AsyncCallback<ArrayList<UserEntry>> asyncCallback) throws IllegalArgumentException;
 
+	void updateUserEntry(UserEntry userEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
+
 }

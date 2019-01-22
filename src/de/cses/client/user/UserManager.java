@@ -42,6 +42,7 @@ import com.sencha.gxt.widget.core.client.grid.filters.StringFilter;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.Util;
 import de.cses.shared.UserEntry;
 
 /**
@@ -62,6 +63,7 @@ public class UserManager implements IsWidget {
 		ValueProvider<UserEntry, String> username();
 		ValueProvider<UserEntry, String> firstname();
 		ValueProvider<UserEntry, String> lastname();
+		ValueProvider<UserEntry, String> email();
 		ValueProvider<UserEntry, Integer> accessrights(); 
 	}
 	
@@ -105,6 +107,7 @@ public class UserManager implements IsWidget {
 		ColumnConfig<UserEntry, String> usernameCol = new ColumnConfig<UserEntry, String>(userProps.username(), 300, "Username");
 		ColumnConfig<UserEntry, String> firstnameCol = new ColumnConfig<UserEntry, String>(userProps.firstname(), 300, "Firstname");
 		ColumnConfig<UserEntry, String> lastnameCol = new ColumnConfig<UserEntry, String>(userProps.lastname(), 300, "Lastname");
+		ColumnConfig<UserEntry, String> emailCol = new ColumnConfig<UserEntry, String>(userProps.email(), 300, "Email");
 		ColumnConfig<UserEntry, Integer> accessLevelCol = new ColumnConfig<UserEntry, Integer>(userProps.accessrights(), 150, "Access Level");
 		
 //		yearColumn.setHideable(false);
@@ -115,6 +118,7 @@ public class UserManager implements IsWidget {
     sourceColumns.add(usernameCol);
     sourceColumns.add(firstnameCol);
     sourceColumns.add(lastnameCol);
+    sourceColumns.add(emailCol);
     sourceColumns.add(accessLevelCol);
 
     ColumnModel<UserEntry> sourceColumnModel = new ColumnModel<UserEntry>(sourceColumns);
@@ -158,27 +162,33 @@ public class UserManager implements IsWidget {
 		accessRightsCB.setEditable(false);
 		accessRightsCB.setTypeAhead(false);
 		accessRightsCB.setTriggerAction(TriggerAction.ALL);
-//		accessRightsCB.setValue(AbstractEntry.ACCESS_LEVEL_LABEL.get(correspondingDepictionEntry.getAccessLevel()));
-//		accessRightsCB.addValueChangeHandler(new ValueChangeHandler<String>() {
-//
-//			@Override
-//			public void onValueChange(ValueChangeEvent<String> event) {
-//				correspondingDepictionEntry.setAccessLevel(accessRightsCB.getSelectedIndex());
-//			}
-//		});
 
 		// Setup the editors. Designate the input type per column.
     GridEditing<UserEntry> editing = new GridRowEditing<UserEntry>(grid);
     editing.addEditor(usernameCol, new TextField());
     editing.addEditor(firstnameCol, new TextField());
     editing.addEditor(lastnameCol, new TextField());
+    editing.addEditor(emailCol, new TextField());
     editing.addEditor(accessLevelCol, accessRightsCB);
     editing.addCompleteEditHandler(new CompleteEditHandler<UserEntry>() {
 			
 			@Override
 			public void onCompleteEdit(CompleteEditEvent<UserEntry> event) {
-				// TODO Auto-generated method stub
-				
+				dbService.updateUserEntry(grid.getSelectionModel().getSelectedItem(), new AsyncCallback<Boolean>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						Util.showWarning("Server Error", "The changes could not be saved!");
+					}
+
+					@Override
+					public void onSuccess(Boolean result) {
+						if (!result) {
+							Util.showWarning("Server Error", "The changes could not be saved!");
+						}
+					}
+				});
+				Util.doLogging("editing completed for userID=" + grid.getSelectionModel().getSelectedItem().getUserID());
 			}
 		});
 

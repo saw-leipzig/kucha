@@ -899,7 +899,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	@Override
 	public OrnamentClassEntry renameOrnamentClass(OrnamentClassEntry entry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
-		return connector.renameOrnamentClass(entry);// TODO Auto-generated method stub
+		return connector.renameOrnamentClass(entry);
 	}
 	
 	/* (non-Javadoc)
@@ -967,5 +967,10 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public ArrayList<UserEntry> getUsers() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getUsers();
+	}
+	@Override
+	public boolean updateUserEntry(UserEntry userEntry) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.updateUserEntry(userEntry);
 	}
 }

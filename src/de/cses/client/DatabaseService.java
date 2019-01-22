@@ -302,4 +302,6 @@ public interface DatabaseService extends RemoteService {
 	boolean updateIconographyEntry(IconographyEntry iconographyEntryToEdit) throws IllegalArgumentException;
 
 	ArrayList<UserEntry> getUsers() throws IllegalArgumentException;
+
+	boolean updateUserEntry(UserEntry userEntry) throws IllegalArgumentException;
 }

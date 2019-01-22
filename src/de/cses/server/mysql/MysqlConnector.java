@@ -5078,6 +5078,37 @@ public class MysqlConnector {
 
 	/**
 	 * 
+	 * @param userEntry
+	 * @return
+	 */
+	public boolean updateUserEntry(UserEntry userEntry) {
+		if (userEntry == null) {
+			return false;
+		}
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		int rowsChangedCount;
+		
+		try {
+			pstmt = dbc.prepareStatement("UPDATE Users SET Username=?, Firstname=?, Lastname=?, Email=?, Affiliation=?, AccessLevel=? WHERE UserID=?");
+			pstmt.setString(1, userEntry.getUsername());
+			pstmt.setString(2, userEntry.getFirstname());
+			pstmt.setString(3, userEntry.getLastname());
+			pstmt.setString(4, userEntry.getEmail());
+			pstmt.setString(5, userEntry.getAffiliation());
+			pstmt.setInt(6, userEntry.getAccessrights());
+			pstmt.setInt(7, userEntry.getUserID());
+			rowsChangedCount = pstmt.executeUpdate();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return rowsChangedCount > 0;
+	}
+
+	/**
+	 * 
 	 * @param searchEntry
 	 * @return
 	 */

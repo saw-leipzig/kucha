@@ -36,7 +36,7 @@ public class UserEntry extends AbstractEntry {
 	private String lastname;
 	private String email;
 	private String affiliation;
-	private int accessrights;
+	private int accessrights; // TODO we could use accessLevel from AbstractEntry instead!
 	private String sessionID;
 	private long loginDate;
 
