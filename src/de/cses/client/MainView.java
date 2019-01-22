@@ -73,6 +73,8 @@ import de.cses.shared.OrnamentEntry;
  */
 public class MainView implements IsWidget {
 	
+	private static String FOOTER_TEXT = "\u00A9 2019 Sächsische Akademie der Wissenschaften zu Leipzig (V 0.9)";
+	
 	private static ArrayList<String> dataDisplayUniqueIDList = null;
 
 	private BorderLayoutContainer view = null;
@@ -355,14 +357,14 @@ public class MainView implements IsWidget {
 			}
 		};
 		
-		Label footerLabel = new Label("\u00A9 Sächsische Akademie der Wissenschaften zu Leipzig");
+		Label footerLabel = new Label(FOOTER_TEXT);
 		footerLabel.setStyleName("footer");
     
     BorderLayoutData northData = new BorderLayoutData(70);
     northData.setMargins(new Margins(5));
     
     BorderLayoutData southData = new BorderLayoutData(20);
-    northData.setMargins(new Margins(5));
+    northData.setMargins(new Margins(5, 15, 5, 15));
 
     BorderLayoutData westData = new BorderLayoutData(220);
     westData.setMargins(new Margins(5));
