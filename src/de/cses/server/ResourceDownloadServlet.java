@@ -84,11 +84,7 @@ public class ResourceDownloadServlet extends HttpServlet {
 				filename = imgEntry.getFilename();
 				inputFile = new File(serverProperties.getProperty("home.images"), filename);
 			} else if ((connector.getAccessLevelForSessionID(sessionID) == UserEntry.GUEST) && (imgEntry.getAccessLevel() == AbstractEntry.ACCESS_LEVEL_COPYRIGHT)) {
-				// guests should be informed that there is an image
-				response.setContentType("text/html");
-				ServletOutputStream out = response.getOutputStream();
-				out.write("<div>This image is copyright protected.<br>Please contact kucha@saw-leipzig.de</div>".getBytes());
-				out.close();
+				response.setStatus(401);
 				return;
 			} else {
 				response.setStatus(403);
