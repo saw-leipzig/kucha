@@ -73,7 +73,7 @@ import de.cses.shared.OrnamentEntry;
  */
 public class MainView implements IsWidget {
 	
-	private static String FOOTER_TEXT = "\u00A9 2019 Sächsische Akademie der Wissenschaften zu Leipzig (V 0.9)";
+	private static String FOOTER_TEXT = "\u00A9 2019 Sächsische Akademie der Wissenschaften zu Leipzig (V0.9)";
 	
 	private static ArrayList<String> dataDisplayUniqueIDList = null;
 
