@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 
+ * Copyright 2016 - 2019
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -13,22 +13,13 @@
  */
 package de.cses.server;
 
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.CharBuffer;
 import java.util.ArrayList;
 
-import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
@@ -69,6 +60,7 @@ public class ResourceDownloadServlet extends HttpServlet {
 			ArrayList<Integer> authorizedAccessLevel = new ArrayList<Integer>();
 			switch (connector.getAccessLevelForSessionID(sessionID)) {
 				case UserEntry.GUEST:
+					break;
 				case UserEntry.ASSOCIATED:
 					authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_PUBLIC);
 					authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_COPYRIGHT);
@@ -91,6 +83,13 @@ public class ResourceDownloadServlet extends HttpServlet {
 			if (imgEntry!=null && authorizedAccessLevel.contains(imgEntry.getAccessLevel())) {
 				filename = imgEntry.getFilename();
 				inputFile = new File(serverProperties.getProperty("home.images"), filename);
+			} else if ((connector.getAccessLevelForSessionID(sessionID) == UserEntry.GUEST) && (imgEntry.getAccessLevel() == AbstractEntry.ACCESS_LEVEL_COPYRIGHT)) {
+				// guests should be informed that there is an image
+				response.setContentType("text/html");
+				ServletOutputStream out = response.getOutputStream();
+				out.write("<div>This image is copyright protected.<br>Please contact kucha@saw-leipzig.de</div>".getBytes());
+				out.close();
+				return;
 			} else {
 				response.setStatus(403);
 				return;
@@ -100,7 +99,7 @@ public class ResourceDownloadServlet extends HttpServlet {
 				if (request.getParameter("thumb") != null) {
 					int tnSize = Integer.valueOf(request.getParameter("thumb")); // the requested size is given as a parameter
 					URL imageURL = new URL("http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/!" + tnSize + "," + tnSize + "/0/default.png");
-					System.err.println("reading image: " + imageURL.getFile());
+//					System.err.println("reading image: " + imageURL.getFile());
 					InputStream in = imageURL.openStream();
 					response.setContentType("image/png");
 					byte buffer[] = new byte[4096];
@@ -208,53 +207,5 @@ public class ResourceDownloadServlet extends HttpServlet {
 			response.setStatus(400);
 		}
 	}
-
-	/**
-	 * Create a thumbnail image file with a max side length of THUMBNAIL_SIZE
-	 * 
-	 * @param path
-	 *          the directory where the image is located
-	 * @param filename
-	 *          of the image
-	 * @return
-	 */
-//	private byte[] getScaledThumbnailInstance(File readFile, String imgType, int thumbnailSize) {
-//		// File tnFile;
-//		// String type;
-//		BufferedImage tnImg = null;
-//		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//
-//		// tnFile = new File(path, "tn" + filename);
-//		// File readFile = new File(inputFile);
-//		// type = filename.substring(filename.lastIndexOf(".") + 1).toUpperCase();
-//		try {
-//			BufferedImage buf = ImageIO.read(readFile);
-//			float w = buf.getWidth();
-//			float h = buf.getHeight();
-//			if (w == h) {
-//				tnImg = new BufferedImage(thumbnailSize, thumbnailSize, BufferedImage.TYPE_INT_RGB);
-//				tnImg.createGraphics().drawImage(buf.getScaledInstance(thumbnailSize, thumbnailSize, Image.SCALE_SMOOTH), 0, 0, null);
-//				ImageIO.write(tnImg, imgType, baos);
-//				// ImageIO.write(tnImg, type, tnFile);
-//			} else if (w > h) {
-//				float factor = thumbnailSize / w;
-//				float tnHeight = h * factor;
-//				tnImg = new BufferedImage(thumbnailSize, Math.round(tnHeight), BufferedImage.TYPE_INT_RGB);
-//				tnImg.createGraphics().drawImage(buf.getScaledInstance(thumbnailSize, Math.round(tnHeight), Image.SCALE_SMOOTH), 0, 0, null);
-//				ImageIO.write(tnImg, imgType, baos);
-//				// ImageIO.write(tnImg, type, tnFile);
-//			} else {
-//				float factor = thumbnailSize / h;
-//				float tnWidth = w * factor;
-//				tnImg = new BufferedImage(Math.round(tnWidth), thumbnailSize, BufferedImage.TYPE_INT_RGB);
-//				tnImg.createGraphics().drawImage(buf.getScaledInstance(Math.round(tnWidth), thumbnailSize, Image.SCALE_SMOOTH), 0, 0, null);
-//				ImageIO.write(tnImg, imgType, baos);
-//				// ImageIO.write(tnImg, type, tnFile);
-//			}
-//		} catch (IOException e) {
-//			System.out.println("Scaled instance of thumbnail could not be created!");
-//		}
-//		return baos.toByteArray();
-//	}
 
 }
