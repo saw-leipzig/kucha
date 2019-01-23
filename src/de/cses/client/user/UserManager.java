@@ -91,6 +91,7 @@ public class UserManager extends PopupPanel {
 				hide();
 			}
 		});
+		closeTB.setToolTip(Util.createToolTip("Exit without saving"));
 		ToolButton saveTB = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 		closeTB.addSelectHandler(new SelectHandler() {
 			
@@ -99,6 +100,7 @@ public class UserManager extends PopupPanel {
 				saveClose();
 			}
 		});
+		saveTB.setToolTip(Util.createToolTip("save & exit"));
 		createUI();
 		userManagerFP.add(grid);
 		userManagerFP.addTool(closeTB);
