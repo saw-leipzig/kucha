@@ -1828,11 +1828,11 @@ public class MysqlConnector {
 			String editorTerm = "";
 			for (String name : searchEntry.getAuthorSearch().split("\\s+")) {
 				authorTerm += authorTerm.isEmpty() 
-						? "SELECT BibID FROM AuthorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (CONCAT(FirstName, LastName, Institution) LIKE ?)))"
-						: " INTERSECT SELECT BibID FROM AuthorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (CONCAT(FirstName, LastName, Institution) LIKE ?)))";
+						? "SELECT BibID FROM AuthorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (FirstNameLIKE ?) OR (LastName LIKE ?) OR (Institution LIKE ?)))"
+						: " INTERSECT SELECT BibID FROM AuthorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (FirstNameLIKE ?) OR (LastName LIKE ?) OR (Institution LIKE ?)))";
 				editorTerm += editorTerm.isEmpty() 
-						? "SELECT BibID FROM EditorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (CONCAT(FirstName, LastName, Institution) LIKE ?)))"
-						: " INTERSECT SELECT BibID FROM EditorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (CONCAT(FirstName, LastName, Institution) LIKE ?)))";
+						? "SELECT BibID FROM EditorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (FirstNameLIKE ?) OR (LastName LIKE ?) OR (Institution LIKE ?)))"
+						: " INTERSECT SELECT BibID FROM EditorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (FirstNameLIKE ?) OR (LastName LIKE ?) OR (Institution LIKE ?)))";
 			}
 			where = "BibID IN (" + authorTerm + ") OR BibID IN (" + editorTerm + ")";
 		}
@@ -1843,7 +1843,8 @@ public class MysqlConnector {
 
 		if (searchEntry.getTitleSearch() != null && !searchEntry.getTitleSearch().isEmpty()) {
 			where += (where.isEmpty() ? "" : " AND ") + 
-					"CONCAT(TitleORG, TitleEN, TitleTR, ParentTitleORG, ParentTitleEN, ParentTitleTR, TitleAddonORG, TitleAddonEN, TitleAddonTR, SubtitleORG, SubtitleEN, SubtitleTR) LIKE ?";
+					"((TitleORG LIKE ?) OR (TitleEN LIKE ?) OR (TitleTR LIKE ?) OR (ParentTitleORG LIKE ?) OR (ParentTitleEN LIKE ?) OR (ParentTitleTR LIKE ?) OR "
+					+ "(TitleAddonORG LIKE ?) OR (TitleAddonEN LIKE ?) OR (TitleAddonTR LIKE ?) OR (SubtitleORG LIKE ?) OR (SubtitleEN LIKE ?) OR (SubtitleTR LIKE ?))";
 		}
 		
 		if (searchEntry.getYearSearch() > 0) {
@@ -1869,8 +1870,12 @@ public class MysqlConnector {
 			if ((searchEntry.getAuthorSearch() != null) && !searchEntry.getAuthorSearch().isEmpty()) {
 				for (String name : searchEntry.getAuthorSearch().split("\\s+")) {
 					pstmt.setString(i++, "%" + name + "%");
+					pstmt.setString(i++, "%" + name + "%");
+					pstmt.setString(i++, "%" + name + "%");
 				}
 				for (String name : searchEntry.getAuthorSearch().split("\\s+")) {
+					pstmt.setString(i++, "%" + name + "%");
+					pstmt.setString(i++, "%" + name + "%");
 					pstmt.setString(i++, "%" + name + "%");
 				}
 			}
@@ -1878,7 +1883,9 @@ public class MysqlConnector {
 				pstmt.setString(i++, "%" + searchEntry.getPublisherSearch() + "%");
 			}
 			if (searchEntry.getTitleSearch() != null && !searchEntry.getTitleSearch().isEmpty()) {
-				pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");
+				for (int k=0; i<12; ++k) { // we have 12 times ?
+					pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");
+				}
 			}
 			if (searchEntry.getYearSearch() > 0) {
 				pstmt.setString(i++, "%" + searchEntry.getYearSearch() + "%");
