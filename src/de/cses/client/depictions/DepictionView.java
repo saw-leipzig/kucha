@@ -80,7 +80,9 @@ public class DepictionView extends AbstractView {
 			protected void onDragStart(DndDragStartEvent event) {
 				super.onDragStart(event);
 				event.setData(depictionEntry);
-				event.getStatusProxy().update(dvTemplates.view(resources.logo().getSafeUri()));
+				event.getStatusProxy().update(
+						dvTemplates.view(UriUtils.fromString("resource?imageID=" + depictionEntry.getMasterImageID() + "&thumb=120" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()))
+					);
 			}
 			
 		};
