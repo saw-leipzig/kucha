@@ -14,13 +14,13 @@
 package de.cses.client.user;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.editor.client.Editor.Path;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.ValueProvider;
@@ -28,8 +28,12 @@ import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
-import com.sencha.gxt.widget.core.client.event.CompleteEditEvent;
-import com.sencha.gxt.widget.core.client.event.CompleteEditEvent.CompleteEditHandler;
+import com.sencha.gxt.data.shared.Store;
+import com.sencha.gxt.widget.core.client.FramedPanel;
+import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
@@ -49,7 +53,7 @@ import de.cses.shared.UserEntry;
  * @author alingnau
  *
  */
-public class UserManager implements IsWidget {
+public class UserManager extends PopupPanel {
 
 	/**
 	 * Create a remote service proxy to talk to the server-side service.
@@ -71,24 +75,36 @@ public class UserManager implements IsWidget {
 	private UserProperties userProps = GWT.create(UserProperties.class);
 	private Grid<UserEntry> grid = null;
 //	private CheckBoxSelectionModel<UserEntry> selectionModel;
+	private ListStore<UserEntry> sourceStore;
 
 	/**
 	 * 
 	 */
 	public UserManager() {
+		FramedPanel userManagerFP = new FramedPanel();
+		userManagerFP.setHeading("User Manager");
+		ToolButton closeTB = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
+		closeTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				hide();
+			}
+		});
+		ToolButton saveTB = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
+		closeTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				saveClose();
+			}
+		});
+		createUI();
+		userManagerFP.add(grid);
+		userManagerFP.addTool(closeTB);
+		add(userManagerFP);
 	}
 	
-	/* (non-Javadoc)
-	 * @see com.google.gwt.user.client.ui.IsWidget#asWidget()
-	 */
-	@Override
-	public Widget asWidget() {
-		if (grid == null) {
-			createUI();
-		}
-		return grid;
-	}
-
 	/**
 	 * 
 	 */
@@ -123,7 +139,7 @@ public class UserManager implements IsWidget {
 
     ColumnModel<UserEntry> sourceColumnModel = new ColumnModel<UserEntry>(sourceColumns);
     
-    ListStore<UserEntry> sourceStore = new ListStore<UserEntry>(userProps.key());
+    sourceStore = new ListStore<UserEntry>(userProps.key());
 
     dbService.getUsers(new AsyncCallback<ArrayList<UserEntry>>() {
 			
@@ -170,27 +186,6 @@ public class UserManager implements IsWidget {
     editing.addEditor(lastnameCol, new TextField());
     editing.addEditor(emailCol, new TextField());
     editing.addEditor(accessLevelCol, accessRightsCB);
-    editing.addCompleteEditHandler(new CompleteEditHandler<UserEntry>() {
-			
-			@Override
-			public void onCompleteEdit(CompleteEditEvent<UserEntry> event) {
-				dbService.updateUserEntry(grid.getSelectionModel().getSelectedItem(), new AsyncCallback<Boolean>() {
-
-					@Override
-					public void onFailure(Throwable caught) {
-						Util.showWarning("Server Error", "The changes could not be saved!");
-					}
-
-					@Override
-					public void onSuccess(Boolean result) {
-						if (!result) {
-							Util.showWarning("Server Error", "The changes could not be saved!");
-						}
-					}
-				});
-				Util.doLogging("editing completed for userID=" + grid.getSelectionModel().getSelectedItem().getUserID());
-			}
-		});
 
     StringFilter<UserEntry> usernameFilter = new StringFilter<UserEntry>(userProps.username());
 
@@ -201,4 +196,33 @@ public class UserManager implements IsWidget {
     
 	}
 	
+	private void saveClose() {
+		Collection<Store<UserEntry>.Record> recordsModified = sourceStore.getModifiedRecords();
+
+		for (Store<UserEntry>.Record record : recordsModified) {
+			UserEntry entry = record.getModel();
+
+			// record.getValue(...) will return null if it has not been changed
+
+			dbService.updateUserEntry(entry, new AsyncCallback<Boolean>() {
+
+				@Override
+				public void onFailure(Throwable caught) {
+					Util.showWarning("Server Error", "The changes in the usermanager could not be saved!");
+				}
+
+				@Override
+				public void onSuccess(Boolean result) {
+					if (!result) {
+						Util.showWarning("Server Error", "The changes could not be saved!");
+					} else {
+						// Once the changes have been dealt with, commit them to the local store.
+						// This will add the changed values to the model in the local store.
+						record.commit(true);
+						hide();
+					}
+				}
+			});
+		}
+	}
 }

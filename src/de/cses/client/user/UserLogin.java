@@ -312,20 +312,7 @@ public class UserLogin extends PopupPanel {
 				
 				@Override
 				public void onSelect(SelectEvent event) {
-					PopupPanel userManagerDialog = new PopupPanel();
-					FramedPanel userManagerFP = new FramedPanel();
-					userManagerFP.setHeading("User Manager");
-					ToolButton closeTB = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
-					closeTB.addSelectHandler(new SelectHandler() {
-						
-						@Override
-						public void onSelect(SelectEvent event) {
-							userManagerDialog.hide();
-						}
-					});
-					userManagerFP.add(new UserManager());
-					userManagerFP.addTool(closeTB);
-					userManagerDialog.add(userManagerFP);
+					UserManager userManagerDialog = new UserManager();
 					userManagerDialog.setSize("900px", "450px");
 					userManagerDialog.setModal(true);
 					userManagerDialog.center();
