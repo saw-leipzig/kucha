@@ -973,4 +973,9 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.updateUserEntry(userEntry);
 	}
+	@Override
+	public int insertUserEntry(UserEntry entry) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.insertUserEntry(entry);
+	}
 }

@@ -5076,6 +5076,37 @@ public class MysqlConnector {
 		return rowsChangedCount > 0;
 	}
 
+
+	public int insertUserEntry(UserEntry userEntry) {
+		if (userEntry == null || userEntry.getUserID() > 0) {
+			return 0;
+		}
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		int newUserID = 0;
+		
+		try {
+			pstmt = dbc.prepareStatement("INSERT INTO Users (Username, Firstname, Lastname, Email, Affiliation, AccessLevel) VALUES (?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+			pstmt.setString(1, userEntry.getUsername());
+			pstmt.setString(2, userEntry.getFirstname());
+			pstmt.setString(3, userEntry.getLastname());
+			pstmt.setString(4, userEntry.getEmail());
+			pstmt.setString(5, userEntry.getAffiliation());
+			pstmt.setInt(6, userEntry.getAccessrights());
+			pstmt.executeUpdate();
+			ResultSet keys = pstmt.getGeneratedKeys();
+			if (keys.first()) {
+				newUserID = keys.getInt(1);
+			}
+			keys.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return 0;
+		}
+		return newUserID;
+	}
+
 	/**
 	 * 
 	 * @param userEntry

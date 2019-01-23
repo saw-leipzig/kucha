@@ -93,7 +93,7 @@ public class UserManager extends PopupPanel {
 		});
 		closeTB.setToolTip(Util.createToolTip("Exit without saving"));
 		ToolButton saveTB = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
-		closeTB.addSelectHandler(new SelectHandler() {
+		saveTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
 			public void onSelect(SelectEvent event) {
@@ -101,8 +101,19 @@ public class UserManager extends PopupPanel {
 			}
 		});
 		saveTB.setToolTip(Util.createToolTip("save & exit"));
+		ToolButton addUserTB = new ToolButton(new IconConfig("addButton", "addButtonOver"));
+		addUserTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				UserEntry newUser = new UserEntry(0, "username", "John", "Doe", "", "SAW Leipzig", 1, "", "");
+				sourceStore.add(newUser);
+			}
+		});
 		createUI();
 		userManagerFP.add(grid);
+		userManagerFP.addTool(saveTB);
+		userManagerFP.addTool(addUserTB);
 		userManagerFP.addTool(closeTB);
 		add(userManagerFP);
 	}
@@ -188,7 +199,7 @@ public class UserManager extends PopupPanel {
     editing.addEditor(lastnameCol, new TextField());
     editing.addEditor(emailCol, new TextField());
     editing.addEditor(accessLevelCol, accessRightsCB);
-
+    
     StringFilter<UserEntry> usernameFilter = new StringFilter<UserEntry>(userProps.username());
 
     GridFilters<UserEntry> filters = new GridFilters<UserEntry>();
@@ -203,28 +214,66 @@ public class UserManager extends PopupPanel {
 
 		for (Store<UserEntry>.Record record : recordsModified) {
 			UserEntry entry = record.getModel();
-
 			// record.getValue(...) will return null if it has not been changed
+			String username = record.getValue(userProps.username());
+			if (username != null) {
+				entry.setUsername(username);
+			}
+			String firstname = record.getValue(userProps.firstname());
+			if (firstname != null) {
+				entry.setFirstname(firstname);
+			}
+			String lastname = record.getValue(userProps.lastname());
+			if (lastname != null) {
+				entry.setLastname(lastname);
+			}
+			String email = record.getValue(userProps.email());
+			if (email != null) {
+				entry.setEmail(email);
+			}
+			Integer userAccessLevel = record.getValue(userProps.accessrights());
+			if (userAccessLevel != null) {
+				entry.setAccessrights(userAccessLevel);
+			}
 
-			dbService.updateUserEntry(entry, new AsyncCallback<Boolean>() {
-
-				@Override
-				public void onFailure(Throwable caught) {
-					Util.showWarning("Server Error", "The changes in the usermanager could not be saved!");
-				}
-
-				@Override
-				public void onSuccess(Boolean result) {
-					if (!result) {
-						Util.showWarning("Server Error", "The changes could not be saved!");
-					} else {
-						// Once the changes have been dealt with, commit them to the local store.
-						// This will add the changed values to the model in the local store.
-						record.commit(true);
-						hide();
+			if (entry.getUserID() > 0) {
+				dbService.updateUserEntry(entry, new AsyncCallback<Boolean>() {
+					
+					@Override
+					public void onFailure(Throwable caught) {
+						Util.showWarning("Server Error", "The changes for " + entry.getUsername() + " could not be saved!");
 					}
-				}
-			});
+					
+					@Override
+					public void onSuccess(Boolean result) {
+						if (!result) {
+							Util.showWarning("Server Error", "The changes for " + entry.getUsername() + " could not be saved!");
+						}
+					}
+				});
+			} else {
+				dbService.insertUserEntry(entry, new AsyncCallback<Integer>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						Util.showWarning("Server Error", entry.getUsername() + " could not be created!");
+					}
+
+					@Override
+					public void onSuccess(Integer result) {
+						if (result > 0) {
+							entry.setUserID(result);
+						} else {
+							Util.showWarning("Server Error", entry.getUsername() + " could not be created!");
+						}
+					}
+					
+				});
+			}
+			// Once the changes have been dealt with, commit them to the local store.
+			// This will add the changed values to the model in the local store.
+			record.commit(true);
 		}
+		hide();
 	}
 }
