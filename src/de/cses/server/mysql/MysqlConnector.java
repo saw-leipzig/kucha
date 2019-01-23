@@ -5086,13 +5086,14 @@ public class MysqlConnector {
 		int newUserID = 0;
 		
 		try {
-			pstmt = dbc.prepareStatement("INSERT INTO Users (Username, Firstname, Lastname, Email, Affiliation, AccessLevel) VALUES (?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+			pstmt = dbc.prepareStatement("INSERT INTO Users (Username, Password, Firstname, Lastname, Email, Affiliation, AccessLevel) VALUES (?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
 			pstmt.setString(1, userEntry.getUsername());
-			pstmt.setString(2, userEntry.getFirstname());
-			pstmt.setString(3, userEntry.getLastname());
-			pstmt.setString(4, userEntry.getEmail());
-			pstmt.setString(5, userEntry.getAffiliation());
-			pstmt.setInt(6, userEntry.getAccessrights());
+			pstmt.setString(2, "ff4ea6b28f247ccdd4a03321dc2bd1a");
+			pstmt.setString(3, userEntry.getFirstname());
+			pstmt.setString(4, userEntry.getLastname());
+			pstmt.setString(5, userEntry.getEmail());
+			pstmt.setString(6, userEntry.getAffiliation());
+			pstmt.setInt(7, userEntry.getAccessrights());
 			pstmt.executeUpdate();
 			ResultSet keys = pstmt.getGeneratedKeys();
 			if (keys.first()) {

@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.tools.Tool;
+
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.editor.client.Editor.Path;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -31,14 +33,22 @@ import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
+import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
+import com.sencha.gxt.widget.core.client.form.PasswordField;
 import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
+import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
+import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
+import com.sencha.gxt.widget.core.client.grid.Grid.GridCell;
 import com.sencha.gxt.widget.core.client.grid.editing.GridEditing;
 import com.sencha.gxt.widget.core.client.grid.editing.GridRowEditing;
 import com.sencha.gxt.widget.core.client.grid.filters.GridFilters;
@@ -48,6 +58,7 @@ import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.Util;
 import de.cses.shared.UserEntry;
+import de.cses.shared.VendorEntry;
 
 /**
  * @author alingnau
@@ -76,6 +87,7 @@ public class UserManager extends PopupPanel {
 	private Grid<UserEntry> grid = null;
 //	private CheckBoxSelectionModel<UserEntry> selectionModel;
 	private ListStore<UserEntry> sourceStore;
+	private GridRowEditing<UserEntry> editing;
 
 	/**
 	 * 
@@ -108,6 +120,7 @@ public class UserManager extends PopupPanel {
 			public void onSelect(SelectEvent event) {
 				UserEntry newUser = new UserEntry(0, "username", "John", "Doe", "", "SAW Leipzig", 1, "", "");
 				sourceStore.add(newUser);
+				editing.startEditing(new GridCell(sourceStore.size()-1, 0));
 			}
 		});
 		createUI();
@@ -193,11 +206,20 @@ public class UserManager extends PopupPanel {
 		accessRightsCB.setTriggerAction(TriggerAction.ALL);
 
 		// Setup the editors. Designate the input type per column.
-    GridEditing<UserEntry> editing = new GridRowEditing<UserEntry>(grid);
-    editing.addEditor(usernameCol, new TextField());
-    editing.addEditor(firstnameCol, new TextField());
-    editing.addEditor(lastnameCol, new TextField());
-    editing.addEditor(emailCol, new TextField());
+    editing = new GridRowEditing<UserEntry>(grid);
+    TextField usernameTF = new TextField();
+    usernameTF.setAllowBlank(false);
+    editing.addEditor(usernameCol, usernameTF);
+    TextField firstnameTF = new TextField();
+    firstnameTF.setAllowBlank(false);
+    editing.addEditor(firstnameCol, firstnameTF);
+    TextField lastnameTF = new TextField();
+    lastnameTF.setAllowBlank(false);
+    editing.addEditor(lastnameCol, lastnameTF);
+    TextField emailTF = new TextField();
+    emailTF.setAllowBlank(false);
+    emailTF.addValidator(new RegExValidator(Util.REGEX_EMAIL_PATTERN, "please enter valid email"));
+    editing.addEditor(emailCol, emailTF);
     editing.addEditor(accessLevelCol, accessRightsCB);
     
     StringFilter<UserEntry> usernameFilter = new StringFilter<UserEntry>(userProps.username());
@@ -276,4 +298,5 @@ public class UserManager extends PopupPanel {
 		}
 		hide();
 	}
+
 }
