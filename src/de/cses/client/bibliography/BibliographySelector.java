@@ -46,7 +46,7 @@ import de.cses.shared.AnnotatedBibliographyEntry;
 public class BibliographySelector implements IsWidget {
 
 	interface BibliographyProperties extends PropertyAccess<AnnotatedBibliographyEntry> {
-		@Path("annotatedBiblographyID")
+		@Path("annotatedBibliographyID")
 		ModelKeyProvider<AnnotatedBibliographyEntry> key();
 
 		@Path("titleORG")
