@@ -58,7 +58,6 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
-import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.DateField;
 import com.sencha.gxt.widget.core.client.form.DateTimePropertyEditor;
@@ -1318,7 +1317,7 @@ public class DepictionEditor extends AbstractEditor {
 //			}
 //		});
 
-		ToolButton zoomTB = new ToolButton(ToolButton.MAXIMIZE);
+		ToolButton zoomTB = new ToolButton(new IconConfig("expandButton", "expandButtonOver"));
 		zoomTB.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
@@ -1379,7 +1378,7 @@ public class DepictionEditor extends AbstractEditor {
 		mainHLC.add(tabPanel, new HorizontalLayoutData(.7, 1.0));
 		mainHLC.add(depictionImagesPanel, new HorizontalLayoutData(.3, 1.0));
 		
-		ToolButton saveToolButton = new ToolButton(ToolButton.SAVE);
+		ToolButton saveToolButton = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 		saveToolButton.setToolTip(Util.createToolTip("save"));
 		saveToolButton.addSelectHandler(new SelectHandler() {
 			@Override

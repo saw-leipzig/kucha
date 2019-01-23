@@ -1901,7 +1901,7 @@ public class CaveEditor extends AbstractEditor {
 				c14AnalysisVLC.add(c14AnalysisShortName, new VerticalLayoutData(1.0, .5));
 				c14AnalysisVLC.add(c14AnalysisUrlTextField, new VerticalLayoutData(1.0, .5));
 				newC14LinkFP.add(c14AnalysisVLC);
-				ToolButton saveTB = new ToolButton(ToolButton.SAVE);
+				ToolButton saveTB = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 				saveTB.setToolTip(Util.createToolTip("save"));
 				saveTB.addSelectHandler(new SelectHandler() {
 
@@ -2499,7 +2499,7 @@ public class CaveEditor extends AbstractEditor {
 
 		mainHlContainer.add(tabPanel, new HorizontalLayoutData(.7, 1.0));
 
-		ToolButton saveToolButton = new ToolButton(ToolButton.SAVE);
+		ToolButton saveToolButton = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 		saveToolButton.setToolTip(Util.createToolTip("save"));
 		saveToolButton.addSelectHandler(new SelectHandler() {
 			@Override

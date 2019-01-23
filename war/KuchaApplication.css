@@ -413,7 +413,7 @@ div.foldButtonOver {
 	cursor: pointer;
 }
 
-div.minMaxButton {
+div.expandButton {
 	background-image: url(icons/minimize_maximize.png);
 	width: 20px;
 	height: 20px;
@@ -421,15 +421,7 @@ div.minMaxButton {
 	cursor: pointer;
 }
 
-div.minMaxButtonOver {
-	background-image: url(icons/minimize_maximize_mo.png);
-	width: 20px;
-	height: 20px;
-	background-repeat: no-repeat;
-	cursor: pointer;
-}
-
-div.maxMinButtonOver {
+div.expandButtonOver {
 	background-image: url(icons/minimize_maximize_mo2.png);
 	width: 20px;
 	height: 20px;

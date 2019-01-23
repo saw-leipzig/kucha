@@ -414,7 +414,7 @@ public class SingleImageEditor extends AbstractEditor {
 		imageAccessLevelHLC.add(imageTypeSelectionPanel, new HorizontalLayoutData(.5, 1.0));
 		imageAccessLevelHLC.add(accessLevelFP, new HorizontalLayoutData(.5, 1.0));
 		
-		ToolButton saveToolButton = new ToolButton(ToolButton.SAVE);
+		ToolButton saveToolButton = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 		saveToolButton.setToolTip(Util.createToolTip("save"));
 		saveToolButton.addSelectHandler(new SelectHandler() {
 			@Override

@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.sencha.gxt.dnd.core.client.DndDropEvent;
 import com.sencha.gxt.dnd.core.client.DropTarget;
+import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
@@ -45,7 +46,7 @@ public class AnnotatedBiblographyResultView extends AbstractResultView {
 	public AnnotatedBiblographyResultView(String title) {
 		super(title);
 		
-		ToolButton bibTexExportTB = new ToolButton(ToolButton.SAVE);
+		ToolButton bibTexExportTB = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 		bibTexExportTB.addSelectHandler(new SelectHandler() {
 			
 			@Override

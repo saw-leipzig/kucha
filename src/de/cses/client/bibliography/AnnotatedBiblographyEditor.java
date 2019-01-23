@@ -389,7 +389,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 			}
 		});
 
-		ToolButton saveToolButton = new ToolButton(ToolButton.SAVE);
+		ToolButton saveToolButton = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 		saveToolButton.setToolTip(Util.createToolTip("save"));
 		saveToolButton.addSelectHandler(new SelectHandler() {
 

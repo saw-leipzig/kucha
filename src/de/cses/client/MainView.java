@@ -310,7 +310,7 @@ public class MainView implements IsWidget {
     dataViewPanel.addStyleName("transparent");
     dataViewPanel.getHeader().setStylePrimaryName("frame-header");
     dataViewPanel.add(dataViewPLC);
-    saveWorkspaceToolButton = new ToolButton(ToolButton.SAVE);
+    saveWorkspaceToolButton = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
     saveWorkspaceToolButton.setToolTip(Util.createToolTip("save", "not yet implemented"));
     saveWorkspaceToolButton.addSelectHandler(new SelectHandler() {
 			

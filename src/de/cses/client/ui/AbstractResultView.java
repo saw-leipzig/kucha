@@ -73,7 +73,7 @@ public abstract class AbstractResultView extends Portlet {
 		this.getAppearance().expandIcon().setStyle("expandWindowButton");
 		this.getAppearance().expandIcon().setOverStyle("expandWindowButtonOver");
 		
-//		saveToolButton = new ToolButton(ToolButton.SAVE);
+//		saveToolButton = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 //		saveToolButton.setToolTip(Util.createToolTip("save"));
 //		saveToolButton.addSelectHandler(new SelectHandler() {
 //			
