@@ -79,7 +79,7 @@ public class UserManager extends PopupPanel {
 		ValueProvider<UserEntry, String> firstname();
 		ValueProvider<UserEntry, String> lastname();
 		ValueProvider<UserEntry, String> email();
-		ValueProvider<UserEntry, Integer> accessrights(); 
+		ValueProvider<UserEntry, Integer> accessLevel(); 
 	}
 	
 //	private ContentPanel mainPanel = null;
@@ -118,7 +118,7 @@ public class UserManager extends PopupPanel {
 			
 			@Override
 			public void onSelect(SelectEvent event) {
-				UserEntry newUser = new UserEntry(0, "username", "John", "Doe", "", "SAW Leipzig", 1, "", "");
+				UserEntry newUser = new UserEntry(0, "", "", "", "", "Affiliation", 1, "", "");
 				sourceStore.add(newUser);
 				editing.startEditing(new GridCell(sourceStore.size()-1, 0));
 			}
@@ -150,7 +150,7 @@ public class UserManager extends PopupPanel {
 		ColumnConfig<UserEntry, String> firstnameCol = new ColumnConfig<UserEntry, String>(userProps.firstname(), 300, "Firstname");
 		ColumnConfig<UserEntry, String> lastnameCol = new ColumnConfig<UserEntry, String>(userProps.lastname(), 300, "Lastname");
 		ColumnConfig<UserEntry, String> emailCol = new ColumnConfig<UserEntry, String>(userProps.email(), 300, "Email");
-		ColumnConfig<UserEntry, Integer> accessLevelCol = new ColumnConfig<UserEntry, Integer>(userProps.accessrights(), 150, "Access Level");
+		ColumnConfig<UserEntry, Integer> accessLevelCol = new ColumnConfig<UserEntry, Integer>(userProps.accessLevel(), 150, "Access Level");
 		
 //		yearColumn.setHideable(false);
 //		yearColumn.setHorizontalHeaderAlignment(HorizontalAlignmentConstant.startOf(Direction.DEFAULT));
@@ -253,7 +253,7 @@ public class UserManager extends PopupPanel {
 			if (email != null) {
 				entry.setEmail(email);
 			}
-			Integer userAccessLevel = record.getValue(userProps.accessrights());
+			Integer userAccessLevel = record.getValue(userProps.accessLevel());
 			if (userAccessLevel != null) {
 				entry.setAccessLevel(userAccessLevel);
 			}
