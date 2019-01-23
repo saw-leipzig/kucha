@@ -16,7 +16,7 @@ package de.cses.client.bibliography;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.sencha.gxt.core.client.XTemplates;
 
-import de.cses.shared.AnnotatedBiblographyEntry;
+import de.cses.shared.AnnotatedBibliographyEntry;
 
 /**
  * @author alingnau
@@ -25,9 +25,9 @@ import de.cses.shared.AnnotatedBiblographyEntry;
 public interface AnnotatedBiblographyViewTemplates extends XTemplates {
 
 	@XTemplate(source = "BibView.html")
-	SafeHtml view(AnnotatedBiblographyEntry bibEntry);
+	SafeHtml view(AnnotatedBibliographyEntry bibEntry);
 	
 	@XTemplate(source = "ExtendedBibView.html")
-	SafeHtml extendedView(AnnotatedBiblographyEntry bibEntry);
+	SafeHtml extendedView(AnnotatedBibliographyEntry bibEntry);
 	
 }

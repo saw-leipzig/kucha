@@ -20,7 +20,7 @@ import java.util.ArrayList;
  * @author Nina
  *
  */
-public class AnnotatedBiblographyEntry extends AbstractEntry implements Comparable<AnnotatedBiblographyEntry> {
+public class AnnotatedBibliographyEntry extends AbstractEntry implements Comparable<AnnotatedBibliographyEntry> {
 
 	private int annotatedBiblographyID = 0;
 	private PublicationTypeEntry publicationType = null;
@@ -55,7 +55,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry implements Comparab
 	private ArrayList<AuthorEntry> editorList = new ArrayList<AuthorEntry>();
 	private ArrayList<BibKeywordEntry> keywordList = new ArrayList<BibKeywordEntry>();
 
-	public AnnotatedBiblographyEntry(int annotatedBiblographyID, PublicationTypeEntry publicationType, 
+	public AnnotatedBibliographyEntry(int annotatedBiblographyID, PublicationTypeEntry publicationType, 
 			String titleEN, String titleORG, String titleTR,
 			String parentTitleEN, String parentTitleORG, String parentTitleTR,
 			String subtitleEN, String subtitleORG, String subtitleTR,
@@ -135,10 +135,10 @@ public class AnnotatedBiblographyEntry extends AbstractEntry implements Comparab
 		this.setModifiedOn(lastChangedOn);
 	}
 
-	public AnnotatedBiblographyEntry() { }
+	public AnnotatedBibliographyEntry() { }
 
-	public AnnotatedBiblographyEntry clone() {
-		AnnotatedBiblographyEntry clonedEntry = new AnnotatedBiblographyEntry(annotatedBiblographyID, publicationType, 
+	public AnnotatedBibliographyEntry clone() {
+		AnnotatedBibliographyEntry clonedEntry = new AnnotatedBibliographyEntry(annotatedBiblographyID, publicationType, 
 				titleEN, titleORG, titleTR,
 				parentTitleEN, parentTitleORG, parentTitleTR,
 				subtitleEN, subtitleORG, subtitleTR,
@@ -779,7 +779,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry implements Comparab
 	/**
 	 * @return the annotatedBiblographyID
 	 */
-	public int getAnnotatedBiblographyID() {
+	public int getAnnotatedBibliographyID() {
 		return annotatedBiblographyID;
 	}
 
@@ -1018,7 +1018,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry implements Comparab
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	@Override
-	public int compareTo(AnnotatedBiblographyEntry bibEntry) {
+	public int compareTo(AnnotatedBibliographyEntry bibEntry) {
 		String toString = !bibEntry.authorList.isEmpty() ? bibEntry.getAuthors() : (!bibEntry.getEditorList().isEmpty() ? bibEntry.getEditors(): "");
 		String fromString = !authorList.isEmpty() ? getAuthors() : (!getEditorList().isEmpty() ? getEditors(): "");
 		return fromString.compareTo(toString);

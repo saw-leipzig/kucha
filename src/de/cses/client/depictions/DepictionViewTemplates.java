@@ -20,7 +20,7 @@ import com.google.gwt.safehtml.shared.SafeUri;
 import com.sencha.gxt.core.client.XTemplates;
 
 import de.cses.client.ui.TextElement;
-import de.cses.shared.AnnotatedBiblographyEntry;
+import de.cses.shared.AnnotatedBibliographyEntry;
 
 /**
  * @author alingnau
@@ -31,5 +31,5 @@ public interface DepictionViewTemplates extends XTemplates {
 	@XTemplate(source = "DepictionDisplay.html")
 	SafeHtml display(String shortName, String inventoryNumber, String cave, String wall, String expedition, String vendor, String purchaseDate, String currentLocation, String stateOfPreservation, SafeUri imageUri, SafeUri fullImageUri,
 			SafeUri realCaveSketchUri, double width, double height, String style, String modeOfRepresentation, String description, String generalRemarks, String otherSuggestedIdentifications, 
-			ArrayList<TextElement> iconography, ArrayList<TextElement> pictorialElements, ArrayList<TextElement> decorationOrnaments, ArrayList<AnnotatedBiblographyEntry> bib, String user, String timestamp);
+			ArrayList<TextElement> iconography, ArrayList<TextElement> pictorialElements, ArrayList<TextElement> decorationOrnaments, ArrayList<AnnotatedBibliographyEntry> bib, String user, String timestamp);
 }

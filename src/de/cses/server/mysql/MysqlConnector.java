@@ -30,7 +30,7 @@ import java.util.UUID;
 import de.cses.server.ServerProperties;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographySearchEntry;
-import de.cses.shared.AnnotatedBiblographyEntry;
+import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.BibKeywordEntry;
 import de.cses.shared.C14AnalysisUrlEntry;
@@ -1816,9 +1816,9 @@ public class MysqlConnector {
 		return result;
 	}
 
-	public ArrayList<AnnotatedBiblographyEntry> searchAnnotatedBibliography(AnnotatedBibliographySearchEntry searchEntry) {
-		AnnotatedBiblographyEntry entry = null;
-		ArrayList<AnnotatedBiblographyEntry> result = new ArrayList<AnnotatedBiblographyEntry>();
+	public ArrayList<AnnotatedBibliographyEntry> searchAnnotatedBibliography(AnnotatedBibliographySearchEntry searchEntry) {
+		AnnotatedBibliographyEntry entry = null;
+		ArrayList<AnnotatedBibliographyEntry> result = new ArrayList<AnnotatedBibliographyEntry>();
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		String where = "";
@@ -1883,11 +1883,11 @@ public class MysqlConnector {
 			if (searchEntry.getYearSearch() > 0) {
 				pstmt.setString(i++, "%" + searchEntry.getYearSearch() + "%");
 			}
-			System.out.println(where.isEmpty() ? "SELECT * FROM AnnotatedBiblography" : "SELECT * FROM AnnotatedBiblography WHERE " + where);
+			System.out.println(where.isEmpty() ? "SELECT * FROM AnnotatedBibliography" : "SELECT * FROM AnnotatedBibliography WHERE " + where);
 			
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
-				entry = new AnnotatedBiblographyEntry(rs.getInt("BibID"), getPublicationType(rs.getInt("PublicationTypeID")),
+				entry = new AnnotatedBibliographyEntry(rs.getInt("BibID"), getPublicationType(rs.getInt("PublicationTypeID")),
 						rs.getString("TitleEN"), rs.getString("TitleORG"), rs.getString("TitleTR"), rs.getString("ParentTitleEN"),
 						rs.getString("ParentTitleORG"), rs.getString("ParentTitleTR"), rs.getString("SubtitleEN"), rs.getString("SubtitleORG"),
 						rs.getString("SubtitleTR"), rs.getString("UniversityEN"), rs.getString("UniversityORG"), rs.getString("UniversityTR"),
@@ -1902,9 +1902,9 @@ public class MysqlConnector {
 						rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getInt("AccessLevel"), rs.getString("AbstractText"),
 						rs.getString("ThesisType"), rs.getString("EditorType"), rs.getBoolean("OfficialTitleTranslation"), rs.getString("BibTexKey"),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
-				entry.setAuthorList(getAuthorBibRelation(entry.getAnnotatedBiblographyID()));
-				entry.setEditorList(getEditorBibRelation(entry.getAnnotatedBiblographyID()));
-				entry.setKeywordList(getRelatedBibKeywords(entry.getAnnotatedBiblographyID()));
+				entry.setAuthorList(getAuthorBibRelation(entry.getAnnotatedBibliographyID()));
+				entry.setEditorList(getEditorBibRelation(entry.getAnnotatedBibliographyID()));
+				entry.setKeywordList(getRelatedBibKeywords(entry.getAnnotatedBibliographyID()));
 				if (entry.getBibtexKey().isEmpty()) {
 					if (!entry.getAuthorList().isEmpty()) {
 						entry.setBibtexKey(createBibtexKey(entry.getAuthorList().get(0), entry.getYearORG()));
@@ -1920,18 +1920,18 @@ public class MysqlConnector {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} 
-		result.sort(null); // because AnnotatedBiblographyEntry implements Comparable
+		result.sort(null); // because AnnotatedBibliographyEntry implements Comparable
 		return result;
 	}
 
 	/**
 	 * @param sqlWhere
-	 * @return sorted list based on implementation of {@link #Comparable} in {@link #AnnotatedBiblographyEntry}
+	 * @return sorted list based on implementation of {@link #Comparable} in {@link #AnnotatedBibliographyEntry}
 	 */
-	public ArrayList<AnnotatedBiblographyEntry> getAnnotatedBibliography(String sqlWhere) {
+	public ArrayList<AnnotatedBibliographyEntry> getAnnotatedBibliography(String sqlWhere) {
 
-		AnnotatedBiblographyEntry entry = null;
-		ArrayList<AnnotatedBiblographyEntry> result = new ArrayList<AnnotatedBiblographyEntry>();
+		AnnotatedBibliographyEntry entry = null;
+		ArrayList<AnnotatedBibliographyEntry> result = new ArrayList<AnnotatedBibliographyEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
 		try {
@@ -1939,7 +1939,7 @@ public class MysqlConnector {
 			ResultSet rs = stmt.executeQuery(
 					(sqlWhere == null) ? "SELECT * FROM AnnotatedBibliography" : "SELECT * FROM AnnotatedBibliography WHERE " + sqlWhere);
 			while (rs.next()) {
-				entry = new AnnotatedBiblographyEntry(rs.getInt("BibID"), getPublicationType(rs.getInt("PublicationTypeID")),
+				entry = new AnnotatedBibliographyEntry(rs.getInt("BibID"), getPublicationType(rs.getInt("PublicationTypeID")),
 						rs.getString("TitleEN"), rs.getString("TitleORG"), rs.getString("TitleTR"), rs.getString("ParentTitleEN"),
 						rs.getString("ParentTitleORG"), rs.getString("ParentTitleTR"), rs.getString("SubtitleEN"), rs.getString("SubtitleORG"),
 						rs.getString("SubtitleTR"), rs.getString("UniversityEN"), rs.getString("UniversityORG"), rs.getString("UniversityTR"),
@@ -1954,9 +1954,9 @@ public class MysqlConnector {
 						rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getInt("AccessLevel"), rs.getString("AbstractText"),
 						rs.getString("ThesisType"), rs.getString("EditorType"), rs.getBoolean("OfficialTitleTranslation"), rs.getString("BibTexKey"),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
-				entry.setAuthorList(getAuthorBibRelation(entry.getAnnotatedBiblographyID()));
-				entry.setEditorList(getEditorBibRelation(entry.getAnnotatedBiblographyID()));
-				entry.setKeywordList(getRelatedBibKeywords(entry.getAnnotatedBiblographyID()));
+				entry.setAuthorList(getAuthorBibRelation(entry.getAnnotatedBibliographyID()));
+				entry.setEditorList(getEditorBibRelation(entry.getAnnotatedBibliographyID()));
+				entry.setKeywordList(getRelatedBibKeywords(entry.getAnnotatedBibliographyID()));
 				if (entry.getBibtexKey().isEmpty()) {
 					if (!entry.getAuthorList().isEmpty()) {
 						entry.setBibtexKey(createBibtexKey(entry.getAuthorList().get(0), entry.getYearORG()));
@@ -1972,17 +1972,17 @@ public class MysqlConnector {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} 
-		result.sort(null); // because AnnotatedBiblographyEntry implements Comparable
+		result.sort(null); // because AnnotatedBibliographyEntry implements Comparable
 		return result;
 	}
 
 	/**
 	 * @param authorList
-	 * @return sorted list based on implementation of {@link #Comparable} in {@link #AnnotatedBiblographyEntry}
+	 * @return sorted list based on implementation of {@link #Comparable} in {@link #AnnotatedBibliographyEntry}
 	 */
-	public ArrayList<AnnotatedBiblographyEntry> getAnnotatedBibliographyFromAuthors(ArrayList<AuthorEntry> authorList) {
-		AnnotatedBiblographyEntry entry;
-		ArrayList<AnnotatedBiblographyEntry> result = new ArrayList<AnnotatedBiblographyEntry>();
+	public ArrayList<AnnotatedBibliographyEntry> getAnnotatedBibliographyFromAuthors(ArrayList<AuthorEntry> authorList) {
+		AnnotatedBibliographyEntry entry;
+		ArrayList<AnnotatedBibliographyEntry> result = new ArrayList<AnnotatedBibliographyEntry>();
 		if (authorList.isEmpty()) {
 			return result;
 		}
@@ -1998,7 +1998,7 @@ public class MysqlConnector {
 				);
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
-				entry = new AnnotatedBiblographyEntry(rs.getInt("BibID"), getPublicationType(rs.getInt("PublicationTypeID")),
+				entry = new AnnotatedBibliographyEntry(rs.getInt("BibID"), getPublicationType(rs.getInt("PublicationTypeID")),
 						rs.getString("TitleEN"), rs.getString("TitleORG"), rs.getString("TitleTR"), rs.getString("ParentTitleEN"),
 						rs.getString("ParentTitleORG"), rs.getString("ParentTitleTR"), rs.getString("SubtitleEN"), rs.getString("SubtitleORG"),
 						rs.getString("SubtitleTR"), rs.getString("UniversityEN"), rs.getString("UniversityORG"), rs.getString("UniversityTR"),
@@ -2013,9 +2013,9 @@ public class MysqlConnector {
 						rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getInt("AccessLevel"), rs.getString("AbstractText"),
 						rs.getString("ThesisType"), rs.getString("EditorType"), rs.getBoolean("OfficialTitleTranslation"), rs.getString("BibTexKey"),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
-				entry.setAuthorList(getAuthorBibRelation(entry.getAnnotatedBiblographyID()));
-				entry.setEditorList(getEditorBibRelation(entry.getAnnotatedBiblographyID()));
-				entry.setKeywordList(getRelatedBibKeywords(entry.getAnnotatedBiblographyID()));
+				entry.setAuthorList(getAuthorBibRelation(entry.getAnnotatedBibliographyID()));
+				entry.setEditorList(getEditorBibRelation(entry.getAnnotatedBibliographyID()));
+				entry.setKeywordList(getRelatedBibKeywords(entry.getAnnotatedBibliographyID()));
 				result.add(entry);
 			}
 			rs.close();
@@ -2023,7 +2023,7 @@ public class MysqlConnector {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		result.sort(null); // because AnnotatedBiblographyEntry implements Comparable
+		result.sort(null); // because AnnotatedBibliographyEntry implements Comparable
 		return result;
 	}
 
@@ -2031,9 +2031,9 @@ public class MysqlConnector {
 	 * @param depictionID
 	 * @return
 	 */
-	private ArrayList<AnnotatedBiblographyEntry> getDepictionBibRelation(int depictionID) {
-		AnnotatedBiblographyEntry entry = null;
-		ArrayList<AnnotatedBiblographyEntry> result = new ArrayList<AnnotatedBiblographyEntry>();
+	private ArrayList<AnnotatedBibliographyEntry> getDepictionBibRelation(int depictionID) {
+		AnnotatedBibliographyEntry entry = null;
+		ArrayList<AnnotatedBibliographyEntry> result = new ArrayList<AnnotatedBibliographyEntry>();
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
@@ -2055,7 +2055,7 @@ public class MysqlConnector {
 	/**
 	 * @return
 	 */
-	public ArrayList<AnnotatedBiblographyEntry> getAnnotatedBiblography() {
+	public ArrayList<AnnotatedBibliographyEntry> getAnnotatedBiblography() {
 		return getAnnotatedBibliography(null);
 	}
 
@@ -2109,15 +2109,15 @@ public class MysqlConnector {
 		return result;
 	}
 	
-	public AnnotatedBiblographyEntry getAnnotatedBiblographybyID(int bibID) {
-		AnnotatedBiblographyEntry result = null;
+	public AnnotatedBibliographyEntry getAnnotatedBiblographybyID(int bibID) {
+		AnnotatedBibliographyEntry result = null;
 		Connection dbc = getConnection();
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM AnnotatedBibliography WHERE BibID=" + bibID);
 			if (rs.first()) {
-				result = new AnnotatedBiblographyEntry(rs.getInt("BibID"), getPublicationType(rs.getInt("PublicationTypeID")),
+				result = new AnnotatedBibliographyEntry(rs.getInt("BibID"), getPublicationType(rs.getInt("PublicationTypeID")),
 						rs.getString("TitleEN"), rs.getString("TitleORG"), rs.getString("TitleTR"), rs.getString("ParentTitleEN"),
 						rs.getString("ParentTitleORG"), rs.getString("ParentTitleTR"), rs.getString("SubtitleEN"), rs.getString("SubtitleORG"),
 						rs.getString("SubtitleTR"), rs.getString("UniversityEN"), rs.getString("UniversityORG"), rs.getString("UniversityTR"),
@@ -2132,9 +2132,9 @@ public class MysqlConnector {
 						rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getInt("AccessLevel"), rs.getString("AbstractText"),
 						rs.getString("ThesisType"), rs.getString("EditorType"), rs.getBoolean("OfficialTitleTranslation"), rs.getString("BibTexKey"),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
-				result.setAuthorList(getAuthorBibRelation(result.getAnnotatedBiblographyID()));
-				result.setEditorList(getEditorBibRelation(result.getAnnotatedBiblographyID()));
-				result.setKeywordList(getRelatedBibKeywords(result.getAnnotatedBiblographyID()));
+				result.setAuthorList(getAuthorBibRelation(result.getAnnotatedBibliographyID()));
+				result.setEditorList(getEditorBibRelation(result.getAnnotatedBibliographyID()));
+				result.setKeywordList(getRelatedBibKeywords(result.getAnnotatedBibliographyID()));
 			}
 			rs.close();
 			stmt.close();
@@ -3419,15 +3419,15 @@ public class MysqlConnector {
 	 * @param relatedBibliographyList
 	 */
 	private synchronized void insertDepictionBibliographyRelation(int depictionID,
-			ArrayList<AnnotatedBiblographyEntry> relatedBibliographyList) {
+			ArrayList<AnnotatedBibliographyEntry> relatedBibliographyList) {
 		Connection dbc = getConnection();
 		PreparedStatement relationStatement;
 
 		try {
 			relationStatement = dbc.prepareStatement("INSERT INTO DepictionBibliographyRelation VALUES (?, ?)");
-			for (AnnotatedBiblographyEntry entry : relatedBibliographyList) {
+			for (AnnotatedBibliographyEntry entry : relatedBibliographyList) {
 				relationStatement.setInt(1, depictionID);
-				relationStatement.setInt(2, entry.getAnnotatedBiblographyID());
+				relationStatement.setInt(2, entry.getAnnotatedBibliographyID());
 				relationStatement.executeUpdate();
 			}
 			relationStatement.close();
@@ -3436,10 +3436,10 @@ public class MysqlConnector {
 		}
 	}
 
-	private ArrayList<AnnotatedBiblographyEntry> getRelatedBibliographyFromDepiction(int depictionID) {
+	private ArrayList<AnnotatedBibliographyEntry> getRelatedBibliographyFromDepiction(int depictionID) {
 		Connection dbc = getConnection();
 		PreparedStatement relationStatement;
-		ArrayList<AnnotatedBiblographyEntry> result = new ArrayList<AnnotatedBiblographyEntry>();
+		ArrayList<AnnotatedBibliographyEntry> result = new ArrayList<AnnotatedBibliographyEntry>();
 
 		try {
 			relationStatement = dbc.prepareStatement("SELECT * FROM DepictionBibliographyRelation WHERE DepictionID=?");
@@ -3460,7 +3460,7 @@ public class MysqlConnector {
 	 * @param depictionID
 	 * @param relatedBibliographyList
 	 */
-	private synchronized void writeCaveBibliographyRelation(int caveID, ArrayList<AnnotatedBiblographyEntry> relatedBibliographyList) {
+	private synchronized void writeCaveBibliographyRelation(int caveID, ArrayList<AnnotatedBibliographyEntry> relatedBibliographyList) {
 		Connection dbc = getConnection();
 		PreparedStatement relationStatement;
 
@@ -3468,9 +3468,9 @@ public class MysqlConnector {
 			deleteEntry("DELETE FROM CaveBibliographyRelation WHERE CaveID=" + caveID);
 			try {
 				relationStatement = dbc.prepareStatement("INSERT INTO CaveBibliographyRelation VALUES (?, ?)");
-				for (AnnotatedBiblographyEntry entry : relatedBibliographyList) {
+				for (AnnotatedBibliographyEntry entry : relatedBibliographyList) {
 					relationStatement.setInt(1, caveID);
-					relationStatement.setInt(2, entry.getAnnotatedBiblographyID());
+					relationStatement.setInt(2, entry.getAnnotatedBibliographyID());
 					relationStatement.executeUpdate();
 				}
 				relationStatement.close();
@@ -3480,10 +3480,10 @@ public class MysqlConnector {
 		}
 	}
 
-	private ArrayList<AnnotatedBiblographyEntry> getRelatedBibliographyFromCave(int caveID) {
+	private ArrayList<AnnotatedBibliographyEntry> getRelatedBibliographyFromCave(int caveID) {
 		Connection dbc = getConnection();
 		PreparedStatement relationStatement;
-		ArrayList<AnnotatedBiblographyEntry> result = new ArrayList<AnnotatedBiblographyEntry>();
+		ArrayList<AnnotatedBibliographyEntry> result = new ArrayList<AnnotatedBibliographyEntry>();
 
 		try {
 			relationStatement = dbc.prepareStatement("SELECT * FROM CaveBibliographyRelation WHERE CaveID=?");
@@ -3810,7 +3810,7 @@ public class MysqlConnector {
 	 * @param bibEntry
 	 * @return
 	 */
-	public AnnotatedBiblographyEntry insertAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry) {
+	public AnnotatedBibliographyEntry insertAnnotatedBiblographyEntry(AnnotatedBibliographyEntry bibEntry) {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		int newBibID = 0;
@@ -4584,11 +4584,11 @@ public class MysqlConnector {
 	 * @param bibEntry
 	 * @return
 	 */
-	public AnnotatedBiblographyEntry updateAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry) {
+	public AnnotatedBibliographyEntry updateAnnotatedBiblographyEntry(AnnotatedBibliographyEntry bibEntry) {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		System.err.println("updateAnnotatedBiblographyEntry - saving");
-		if (bibEntry.getBibtexKey().isEmpty() || !getAnnotatedBibliography("BibTexKey='"+bibEntry.getBibtexKey()+"' AND BibID!="+bibEntry.getAnnotatedBiblographyID()).isEmpty()) {
+		if (bibEntry.getBibtexKey().isEmpty() || !getAnnotatedBibliography("BibTexKey='"+bibEntry.getBibtexKey()+"' AND BibID!="+bibEntry.getAnnotatedBibliographyID()).isEmpty()) {
 			if (!bibEntry.getAuthorList().isEmpty()) {
 				bibEntry.setBibtexKey(createBibtexKey(bibEntry.getAuthorList().get(0), bibEntry.getYearORG()));
 			} else if (!bibEntry.getEditorList().isEmpty()) {
@@ -4673,12 +4673,12 @@ public class MysqlConnector {
 			pstmt.setString(54, bibEntry.getEditorType());
 			pstmt.setBoolean(55, bibEntry.isOfficialTitleTranslation());
 			pstmt.setString(56, bibEntry.getBibtexKey());
-			pstmt.setInt(57, bibEntry.getAnnotatedBiblographyID());
+			pstmt.setInt(57, bibEntry.getAnnotatedBibliographyID());
 			pstmt.executeUpdate();
 
-			updateAuthorBibRelation(bibEntry.getAnnotatedBiblographyID(), bibEntry.getAuthorList());
-			updateEditorBibRelation(bibEntry.getAnnotatedBiblographyID(), bibEntry.getEditorList());
-			updateBibKeywordRelation(bibEntry.getAnnotatedBiblographyID(), bibEntry.getKeywordList());
+			updateAuthorBibRelation(bibEntry.getAnnotatedBibliographyID(), bibEntry.getAuthorList());
+			updateEditorBibRelation(bibEntry.getAnnotatedBibliographyID(), bibEntry.getEditorList());
+			updateBibKeywordRelation(bibEntry.getAnnotatedBibliographyID(), bibEntry.getKeywordList());
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 			return null;

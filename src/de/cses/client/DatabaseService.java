@@ -19,7 +19,7 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 import de.cses.shared.AnnotatedBibliographySearchEntry;
-import de.cses.shared.AnnotatedBiblographyEntry;
+import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.BibKeywordEntry;
 import de.cses.shared.CaveAreaEntry;
@@ -77,7 +77,7 @@ public interface DatabaseService extends RemoteService {
 
 	ArrayList<ImageEntry> getImages() throws IllegalArgumentException;
 
-	AnnotatedBiblographyEntry getAnnotatedBiblographybyID(int bibid) throws IllegalArgumentException;
+	AnnotatedBibliographyEntry getAnnotatedBiblographybyID(int bibid) throws IllegalArgumentException;
 	
 	ArrayList<PublicationTypeEntry> getPublicationTypes() throws IllegalArgumentException;
 
@@ -202,9 +202,9 @@ public interface DatabaseService extends RemoteService {
 
 	boolean updateAuthorEntry(AuthorEntry currentAuthorEntry) throws IllegalArgumentException;
 	
-	AnnotatedBiblographyEntry insertAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry) throws IllegalArgumentException;
+	AnnotatedBibliographyEntry insertAnnotatedBiblographyEntry(AnnotatedBibliographyEntry bibEntry) throws IllegalArgumentException;
 	
-	ArrayList<AnnotatedBiblographyEntry> getAnnotatedBibliography() throws IllegalArgumentException;
+	ArrayList<AnnotatedBibliographyEntry> getAnnotatedBibliography() throws IllegalArgumentException;
 
 	ArrayList<PublisherEntry> getPublishers() throws IllegalArgumentException;
 
@@ -257,9 +257,9 @@ public interface DatabaseService extends RemoteService {
 
 	int insertPublisherEntry(PublisherEntry publisherEntry) throws IllegalArgumentException;
 
-	ArrayList<AnnotatedBiblographyEntry> getAnnotatedBibliography(String sqlWhere) throws IllegalArgumentException;
+	ArrayList<AnnotatedBibliographyEntry> getAnnotatedBibliography(String sqlWhere) throws IllegalArgumentException;
 
-	AnnotatedBiblographyEntry updateAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry);
+	AnnotatedBibliographyEntry updateAnnotatedBiblographyEntry(AnnotatedBibliographyEntry bibEntry);
 	
 	ArrayList<OrnamentPositionEntry> getPositionbyWall (WallEntry wall) throws IllegalArgumentException;
 	
@@ -277,7 +277,7 @@ public interface DatabaseService extends RemoteService {
 
 	boolean updateOrnamentEntry(OrnamentEntry oEntry) throws IllegalArgumentException;
 
-	ArrayList<AnnotatedBiblographyEntry> getAnnotatedBibliographyFromAuthors(ArrayList<AuthorEntry> authorList) throws IllegalArgumentException;
+	ArrayList<AnnotatedBibliographyEntry> getAnnotatedBibliographyFromAuthors(ArrayList<AuthorEntry> authorList) throws IllegalArgumentException;
 
 	ArrayList<BibKeywordEntry> getBibKeywords() throws IllegalArgumentException;
 
@@ -293,7 +293,7 @@ public interface DatabaseService extends RemoteService {
 
 	ArrayList<ImageEntry> searchImages(ImageSearchEntry searchEntry) throws IllegalArgumentException;
 
-	ArrayList<AnnotatedBiblographyEntry> searchAnnotatedBibliography(AnnotatedBibliographySearchEntry searchEntry) throws IllegalArgumentException;
+	ArrayList<AnnotatedBibliographyEntry> searchAnnotatedBibliography(AnnotatedBibliographySearchEntry searchEntry) throws IllegalArgumentException;
 
 	ArrayList<OrnamentEntry> searchOrnaments(OrnamenticSearchEntry searchEntry) throws IllegalArgumentException;
 

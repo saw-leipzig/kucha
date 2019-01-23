@@ -30,7 +30,7 @@ import org.jbibtex.Key;
 import org.jbibtex.KeyValue;
 
 import de.cses.server.mysql.MysqlConnector;
-import de.cses.shared.AnnotatedBiblographyEntry;
+import de.cses.shared.AnnotatedBibliographyEntry;
 
 /**
  * @author alingnau
@@ -82,7 +82,7 @@ public class BibTexServlet extends HttpServlet {
     response.setCharacterEncoding("UTF8");
 		PrintWriter out = response.getWriter();
 
-		ArrayList<AnnotatedBiblographyEntry> bibEntries;
+		ArrayList<AnnotatedBibliographyEntry> bibEntries;
 
 		if ("all".equals(bibIDStr)) {
 			bibEntries = connector.getAnnotatedBiblography();
@@ -92,7 +92,7 @@ public class BibTexServlet extends HttpServlet {
 		System.err.println("No. of elements found in AnnotatedBib: " + bibEntries.size());
 		
 		BibTeXDatabase database = new BibTeXDatabase();
-		for (AnnotatedBiblographyEntry be : bibEntries) {
+		for (AnnotatedBibliographyEntry be : bibEntries) {
 			database.addObject(bibEntryConverter(be));
 		}
 		System.err.println("No. of references in BibTexDatabase: " + database.getObjects().size());
@@ -102,7 +102,7 @@ public class BibTexServlet extends HttpServlet {
 		out.close();
 	}
 	
-	private BibTeXEntry bibEntryConverter(AnnotatedBiblographyEntry abe) {
+	private BibTeXEntry bibEntryConverter(AnnotatedBibliographyEntry abe) {
 		BibTeXEntry bte;
 		switch (abe.getPublicationType().getPublicationTypeID()) {
 			case 1: // Book

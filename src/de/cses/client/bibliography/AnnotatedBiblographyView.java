@@ -20,7 +20,7 @@ import com.sencha.gxt.dnd.core.client.DragSource;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.client.ui.AbstractView;
 import de.cses.shared.AbstractEntry;
-import de.cses.shared.AnnotatedBiblographyEntry;
+import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.AuthorEntry;
 
 /**
@@ -29,17 +29,17 @@ import de.cses.shared.AuthorEntry;
  */
 public class AnnotatedBiblographyView extends AbstractView {
 	
-	private AnnotatedBiblographyEntry annotatedBiblographyEntry;
+	private AnnotatedBibliographyEntry annotatedBibliographyEntry;
 	private AnnotatedBiblographyViewTemplates dvTemplates;
 
 	/**
 	 * @param text
 	 */
-	public AnnotatedBiblographyView(AnnotatedBiblographyEntry annotatedBiblographyEntry) {
-		this.annotatedBiblographyEntry = annotatedBiblographyEntry;
+	public AnnotatedBiblographyView(AnnotatedBibliographyEntry annotatedBibliographyEntry) {
+		this.annotatedBibliographyEntry = annotatedBibliographyEntry;
 		dvTemplates = GWT.create(AnnotatedBiblographyViewTemplates.class);
-		setHTML(dvTemplates.view(annotatedBiblographyEntry));
-//		setHTML(dvTemplates.extendedView(annotatedBiblographyEntry));
+		setHTML(dvTemplates.view(annotatedBibliographyEntry));
+//		setHTML(dvTemplates.extendedView(annotatedBibliographyEntry));
 		setSize("95%", "80px");
 
 		DragSource source = new DragSource(this) {
@@ -47,9 +47,9 @@ public class AnnotatedBiblographyView extends AbstractView {
 			@Override
 			protected void onDragStart(DndDragStartEvent event) {
 				super.onDragStart(event);
-				event.setData(annotatedBiblographyEntry);
-				event.getStatusProxy().update(dvTemplates.view(annotatedBiblographyEntry));
-//				event.getStatusProxy().update(dvTemplates.view(annotatedBiblographyEntry.getTitleEN()));
+				event.setData(annotatedBibliographyEntry);
+				event.getStatusProxy().update(dvTemplates.view(annotatedBibliographyEntry));
+//				event.getStatusProxy().update(dvTemplates.view(annotatedBibliographyEntry.getTitleEN()));
 			}
 			
 		};
@@ -59,14 +59,14 @@ public class AnnotatedBiblographyView extends AbstractView {
 	 * @see de.cses.client.ui.AbstractView#getEditor()
 	 */
 	protected AbstractEditor getEditor() {
-		return new AnnotatedBiblographyEditor(annotatedBiblographyEntry.clone());
+		return new AnnotatedBiblographyEditor(annotatedBibliographyEntry.clone());
 	}
 
 	/* (non-Javadoc)
 	 * @see de.cses.client.ui.AbstractView#getEntry()
 	 */
 	protected AbstractEntry getEntry() {
-		return annotatedBiblographyEntry;
+		return annotatedBibliographyEntry;
 	}
 
 //	/* (non-Javadoc)
@@ -79,10 +79,10 @@ public class AnnotatedBiblographyView extends AbstractView {
 	@Override
 	public void closeRequest(AbstractEntry entry) {
 		super.closeRequest(entry);
-		if (entry != null && entry instanceof AnnotatedBiblographyEntry) { // refresh view
-			annotatedBiblographyEntry = (AnnotatedBiblographyEntry) entry;
-			setHTML(dvTemplates.view(annotatedBiblographyEntry));
-//			setHTML(dvTemplates.extendedView(annotatedBiblographyEntry));
+		if (entry != null && entry instanceof AnnotatedBibliographyEntry) { // refresh view
+			annotatedBibliographyEntry = (AnnotatedBibliographyEntry) entry;
+			setHTML(dvTemplates.view(annotatedBibliographyEntry));
+//			setHTML(dvTemplates.extendedView(annotatedBibliographyEntry));
 		}
 	}
 

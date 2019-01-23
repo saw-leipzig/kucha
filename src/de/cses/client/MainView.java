@@ -61,7 +61,7 @@ import de.cses.client.ornamentic.OrnamenticResultView;
 import de.cses.client.ornamentic.OrnamenticSearchController;
 import de.cses.client.ui.AbstractSearchController;
 import de.cses.client.user.UserLogin;
-import de.cses.shared.AnnotatedBiblographyEntry;
+import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.ImageEntry;
@@ -352,8 +352,8 @@ public class MainView implements IsWidget {
 //					addResult(new ImageView((ImageEntry) event.getData()));
 				} else if (event.getData() instanceof OrnamentEntry) {
 //					addResult(new OrnamenticView((OrnamentEntry) event.getData()));
-				} else if (event.getData() instanceof AnnotatedBiblographyEntry) {
-//					addResult(new AnnotatedBiblographyView((AnnotatedBiblographyEntry) event.getData()));
+				} else if (event.getData() instanceof AnnotatedBibliographyEntry) {
+//					addResult(new AnnotatedBiblographyView((AnnotatedBibliographyEntry) event.getData()));
 				}
 			}
 		};

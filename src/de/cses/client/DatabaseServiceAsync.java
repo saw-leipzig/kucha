@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import de.cses.shared.AnnotatedBibliographySearchEntry;
-import de.cses.shared.AnnotatedBiblographyEntry;
+import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.BibKeywordEntry;
 import de.cses.shared.CaveAreaEntry;
@@ -86,7 +86,7 @@ public interface DatabaseServiceAsync {
 
 	void getOrnaments(AsyncCallback<ArrayList<OrnamentEntry>> callback) throws IllegalArgumentException;
 
-	void getAnnotatedBiblographybyID(int bibid, AsyncCallback<AnnotatedBiblographyEntry> callback) throws IllegalArgumentException;
+	void getAnnotatedBiblographybyID(int bibid, AsyncCallback<AnnotatedBibliographyEntry> callback) throws IllegalArgumentException;
 
 	void getOrnamentsOfOtherCultures(AsyncCallback<ArrayList<OrnamentOfOtherCulturesEntry>> callback) throws IllegalArgumentException;
 
@@ -224,13 +224,13 @@ public interface DatabaseServiceAsync {
 	 */
 	void updateAuthorEntry(AuthorEntry currentAuthorEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
-	void insertAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry, AsyncCallback<AnnotatedBiblographyEntry> callback);
+	void insertAnnotatedBiblographyEntry(AnnotatedBibliographyEntry bibEntry, AsyncCallback<AnnotatedBibliographyEntry> callback);
 
 	void getAuthors(AsyncCallback<ArrayList<AuthorEntry>> callback) throws IllegalArgumentException;// ?
 
 	void getPublishers(AsyncCallback<ArrayList<PublisherEntry>> callback) throws IllegalArgumentException;
 
-	void getAnnotatedBibliography(AsyncCallback<ArrayList<AnnotatedBiblographyEntry>> callback) throws IllegalArgumentException;
+	void getAnnotatedBibliography(AsyncCallback<ArrayList<AnnotatedBibliographyEntry>> callback) throws IllegalArgumentException;
 
 	void insertPhotographerEntry(PhotographerEntry photographerEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 
@@ -280,9 +280,9 @@ public interface DatabaseServiceAsync {
 
 	void insertPublisherEntry(PublisherEntry publisherEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 
-	void getAnnotatedBibliography(String sqlWhere, AsyncCallback<ArrayList<AnnotatedBiblographyEntry>> asyncCallback) throws IllegalArgumentException;
+	void getAnnotatedBibliography(String sqlWhere, AsyncCallback<ArrayList<AnnotatedBibliographyEntry>> asyncCallback) throws IllegalArgumentException;
 
-	void updateAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry, AsyncCallback<AnnotatedBiblographyEntry> asyncCallback) throws IllegalArgumentException;
+	void updateAnnotatedBiblographyEntry(AnnotatedBibliographyEntry bibEntry, AsyncCallback<AnnotatedBibliographyEntry> asyncCallback) throws IllegalArgumentException;
 	
 	void getPositionbyWall(WallEntry wall, AsyncCallback<ArrayList<OrnamentPositionEntry>> asyncCallback) throws IllegalArgumentException;
 
@@ -300,7 +300,7 @@ public interface DatabaseServiceAsync {
 
 	void updateOrnamentEntry(OrnamentEntry oEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
-	void getAnnotatedBibliographyFromAuthors(ArrayList<AuthorEntry> authorList, AsyncCallback<ArrayList<AnnotatedBiblographyEntry>> asyncCallback) throws IllegalArgumentException;
+	void getAnnotatedBibliographyFromAuthors(ArrayList<AuthorEntry> authorList, AsyncCallback<ArrayList<AnnotatedBibliographyEntry>> asyncCallback) throws IllegalArgumentException;
 
 	void getBibKeywords(AsyncCallback<ArrayList<BibKeywordEntry>> asyncCallback) throws IllegalArgumentException;
 
@@ -316,7 +316,7 @@ public interface DatabaseServiceAsync {
 
 	void searchImages(ImageSearchEntry searchEntry, AsyncCallback<ArrayList<ImageEntry>> asyncCallback) throws IllegalArgumentException;
 
-	void searchAnnotatedBibliography(AnnotatedBibliographySearchEntry searchEntry, AsyncCallback<ArrayList<AnnotatedBiblographyEntry>> asyncCallback) throws IllegalArgumentException;
+	void searchAnnotatedBibliography(AnnotatedBibliographySearchEntry searchEntry, AsyncCallback<ArrayList<AnnotatedBibliographyEntry>> asyncCallback) throws IllegalArgumentException;
 
 	void searchOrnaments(OrnamenticSearchEntry searchEntry, AsyncCallback<ArrayList<OrnamentEntry>> asyncCallback) throws IllegalArgumentException;
 

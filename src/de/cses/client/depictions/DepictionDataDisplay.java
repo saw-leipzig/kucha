@@ -27,7 +27,7 @@ import de.cses.client.Util;
 import de.cses.client.ui.AbstractDataDisplay;
 import de.cses.client.ui.TextElement;
 import de.cses.client.user.UserLogin;
-import de.cses.shared.AnnotatedBiblographyEntry;
+import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.PreservationAttributeEntry;
@@ -82,7 +82,7 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 		SafeUri fullImageUri = UriUtils.fromString("resource?imageID=" + e.getMasterImageID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 		String style = e.getStyleID() > 0 ? StaticTables.getInstance().getStyleEntries().get(e.getStyleID()).getStyleName() : "";
 		String modesOfRepresentation = e.getModeOfRepresentationID() > 0 ? StaticTables.getInstance().getModesOfRepresentationEntries().get(e.getModeOfRepresentationID()).getName() : "";
-		ArrayList<AnnotatedBiblographyEntry> bibList = e.getRelatedBibliographyList();
+		ArrayList<AnnotatedBibliographyEntry> bibList = e.getRelatedBibliographyList();
 		// TODO ugly and hard wired but it will do the trick for now
 		iconographyList = new ArrayList<TextElement>();
 		pictorialElementsList = new ArrayList<TextElement>();

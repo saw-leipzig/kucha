@@ -37,7 +37,7 @@ import com.sencha.gxt.widget.core.client.grid.filters.GridFilters;
 import com.sencha.gxt.widget.core.client.grid.filters.StringFilter;
 
 import de.cses.client.StaticTables;
-import de.cses.shared.AnnotatedBiblographyEntry;
+import de.cses.shared.AnnotatedBibliographyEntry;
 
 /**
  * @author alingnau
@@ -45,29 +45,29 @@ import de.cses.shared.AnnotatedBiblographyEntry;
  */
 public class BibliographySelector implements IsWidget {
 
-	interface BibliographyProperties extends PropertyAccess<AnnotatedBiblographyEntry> {
+	interface BibliographyProperties extends PropertyAccess<AnnotatedBibliographyEntry> {
 		@Path("annotatedBiblographyID")
-		ModelKeyProvider<AnnotatedBiblographyEntry> key();
+		ModelKeyProvider<AnnotatedBibliographyEntry> key();
 
 		@Path("titleORG")
-		ValueProvider<AnnotatedBiblographyEntry, String> title();
+		ValueProvider<AnnotatedBibliographyEntry, String> title();
 		
-		ValueProvider<AnnotatedBiblographyEntry, String> authors();
+		ValueProvider<AnnotatedBibliographyEntry, String> authors();
 		@Path("yearORG")
-		ValueProvider<AnnotatedBiblographyEntry, String> year();
+		ValueProvider<AnnotatedBibliographyEntry, String> year();
 	}
 	
 //	private ContentPanel mainPanel = null;
 	private BibliographyProperties bibProps = GWT.create(BibliographyProperties.class);
 	private AnnotatedBiblographyViewTemplates rowExpanderTemplates = GWT.create(AnnotatedBiblographyViewTemplates.class);
-	private Grid<AnnotatedBiblographyEntry> grid = null;
-	private CheckBoxSelectionModel<AnnotatedBiblographyEntry> selectionModel;
-	private List<AnnotatedBiblographyEntry> selectedEntries;
+	private Grid<AnnotatedBibliographyEntry> grid = null;
+	private CheckBoxSelectionModel<AnnotatedBibliographyEntry> selectionModel;
+	private List<AnnotatedBibliographyEntry> selectedEntries;
 
 	/**
 	 * 
 	 */
-	public BibliographySelector(List<AnnotatedBiblographyEntry> selectedEntries) {
+	public BibliographySelector(List<AnnotatedBibliographyEntry> selectedEntries) {
 		this.selectedEntries = selectedEntries;
 	}
 	
@@ -86,39 +86,39 @@ public class BibliographySelector implements IsWidget {
 	 * 
 	 */
 	private void createUI() {
-    IdentityValueProvider<AnnotatedBiblographyEntry> identity = new IdentityValueProvider<AnnotatedBiblographyEntry>();
-    selectionModel = new CheckBoxSelectionModel<AnnotatedBiblographyEntry>(identity);
+    IdentityValueProvider<AnnotatedBibliographyEntry> identity = new IdentityValueProvider<AnnotatedBibliographyEntry>();
+    selectionModel = new CheckBoxSelectionModel<AnnotatedBibliographyEntry>(identity);
     selectionModel.setSelectionMode(SelectionMode.SIMPLE);
 		
-    RowExpander<AnnotatedBiblographyEntry> rowExpander = new RowExpander<AnnotatedBiblographyEntry>(new AbstractCell<AnnotatedBiblographyEntry>() {
+    RowExpander<AnnotatedBibliographyEntry> rowExpander = new RowExpander<AnnotatedBibliographyEntry>(new AbstractCell<AnnotatedBibliographyEntry>() {
 			@Override
-			public void render(Context context, AnnotatedBiblographyEntry value, SafeHtmlBuilder sb) {
+			public void render(Context context, AnnotatedBibliographyEntry value, SafeHtmlBuilder sb) {
 				sb.append(rowExpanderTemplates.extendedView(value));
 			}
     });		
 		
-		ColumnConfig<AnnotatedBiblographyEntry, String> titleOrgCol = new ColumnConfig<AnnotatedBiblographyEntry, String>(bibProps.title(), 350, "Title");
-		ColumnConfig<AnnotatedBiblographyEntry, String> authorsCol = new ColumnConfig<AnnotatedBiblographyEntry, String>(bibProps.authors(), 300, "Authors");
-		ColumnConfig<AnnotatedBiblographyEntry, String> yearColumn = new ColumnConfig<AnnotatedBiblographyEntry, String>(bibProps.year(), 50, "Year");
+		ColumnConfig<AnnotatedBibliographyEntry, String> titleOrgCol = new ColumnConfig<AnnotatedBibliographyEntry, String>(bibProps.title(), 350, "Title");
+		ColumnConfig<AnnotatedBibliographyEntry, String> authorsCol = new ColumnConfig<AnnotatedBibliographyEntry, String>(bibProps.authors(), 300, "Authors");
+		ColumnConfig<AnnotatedBibliographyEntry, String> yearColumn = new ColumnConfig<AnnotatedBibliographyEntry, String>(bibProps.year(), 50, "Year");
 //		yearColumn.setHideable(false);
 //		yearColumn.setHorizontalHeaderAlignment(HorizontalAlignmentConstant.startOf(Direction.DEFAULT));
 		
-    List<ColumnConfig<AnnotatedBiblographyEntry, ?>> sourceColumns = new ArrayList<ColumnConfig<AnnotatedBiblographyEntry, ?>>();
+    List<ColumnConfig<AnnotatedBibliographyEntry, ?>> sourceColumns = new ArrayList<ColumnConfig<AnnotatedBibliographyEntry, ?>>();
     sourceColumns.add(selectionModel.getColumn());
     sourceColumns.add(rowExpander);
     sourceColumns.add(titleOrgCol);
     sourceColumns.add(authorsCol);
     sourceColumns.add(yearColumn);
 
-    ColumnModel<AnnotatedBiblographyEntry> sourceColumnModel = new ColumnModel<AnnotatedBiblographyEntry>(sourceColumns);
+    ColumnModel<AnnotatedBibliographyEntry> sourceColumnModel = new ColumnModel<AnnotatedBibliographyEntry>(sourceColumns);
     
-    ListStore<AnnotatedBiblographyEntry> sourceStore = new ListStore<AnnotatedBiblographyEntry>(bibProps.key());
-//    sourceStore.addSortInfo(new StoreSortInfo<AnnotatedBiblographyEntry>(bibProps.titleORG(), SortDir.ASC));
-    for (AnnotatedBiblographyEntry abe : StaticTables.getInstance().getBibliographyEntries().values()) {
+    ListStore<AnnotatedBibliographyEntry> sourceStore = new ListStore<AnnotatedBibliographyEntry>(bibProps.key());
+//    sourceStore.addSortInfo(new StoreSortInfo<AnnotatedBibliographyEntry>(bibProps.titleORG(), SortDir.ASC));
+    for (AnnotatedBibliographyEntry abe : StaticTables.getInstance().getBibliographyEntries().values()) {
     	sourceStore.add(abe);
     }
     
-    grid = new Grid<AnnotatedBiblographyEntry>(sourceStore, sourceColumnModel);
+    grid = new Grid<AnnotatedBibliographyEntry>(sourceStore, sourceColumnModel);
     grid.setSelectionModel(selectionModel);
 //    grid.setColumnReordering(true);
     grid.getView().setAutoExpandColumn(titleOrgCol);
@@ -131,11 +131,11 @@ public class BibliographySelector implements IsWidget {
 //    grid.setStateful(true);
 //    grid.setStateId("bibSelector");
 
-    StringFilter<AnnotatedBiblographyEntry> titleFilter = new StringFilter<AnnotatedBiblographyEntry>(bibProps.title());
-    StringFilter<AnnotatedBiblographyEntry> authorFilter = new StringFilter<AnnotatedBiblographyEntry>(bibProps.authors());
-    StringFilter<AnnotatedBiblographyEntry> yearFilter = new StringFilter<AnnotatedBiblographyEntry>(bibProps.year());
+    StringFilter<AnnotatedBibliographyEntry> titleFilter = new StringFilter<AnnotatedBibliographyEntry>(bibProps.title());
+    StringFilter<AnnotatedBibliographyEntry> authorFilter = new StringFilter<AnnotatedBibliographyEntry>(bibProps.authors());
+    StringFilter<AnnotatedBibliographyEntry> yearFilter = new StringFilter<AnnotatedBibliographyEntry>(bibProps.year());
 
-    GridFilters<AnnotatedBiblographyEntry> filters = new GridFilters<AnnotatedBiblographyEntry>();
+    GridFilters<AnnotatedBibliographyEntry> filters = new GridFilters<AnnotatedBibliographyEntry>();
     filters.initPlugin(grid);
     filters.setLocal(true);
     filters.addFilter(titleFilter);
@@ -149,16 +149,16 @@ public class BibliographySelector implements IsWidget {
     }
     
     // Stage manager, load the previous state
-//    GridFilterStateHandler<AnnotatedBiblographyEntry> handler = new GridFilterStateHandler<AnnotatedBiblographyEntry>(grid, filters);
+//    GridFilterStateHandler<AnnotatedBibliographyEntry> handler = new GridFilterStateHandler<AnnotatedBibliographyEntry>(grid, filters);
 //    handler.loadState();
     
 	}
 	
-	public ArrayList<AnnotatedBiblographyEntry> getSelectedEntries() {
-		return new ArrayList<AnnotatedBiblographyEntry>(selectionModel.getSelectedItems());
+	public ArrayList<AnnotatedBibliographyEntry> getSelectedEntries() {
+		return new ArrayList<AnnotatedBibliographyEntry>(selectionModel.getSelectedItems());
 	}
 	
-//	public void setSelectedEntries(List<AnnotatedBiblographyEntry> list) {
+//	public void setSelectedEntries(List<AnnotatedBibliographyEntry> list) {
 //		selectionModel.setSelection(list);
 //	}
 

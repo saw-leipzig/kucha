@@ -45,7 +45,7 @@ import de.cses.client.ui.AbstractSearchController;
 import de.cses.client.ui.EditorListener;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographySearchEntry;
-import de.cses.shared.AnnotatedBiblographyEntry;
+import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.PublicationTypeEntry;
 import de.cses.shared.comparator.BibEntryComparator;
 
@@ -58,7 +58,7 @@ public class AnnotatedBiblographySearchController extends AbstractSearchControll
 	private PublicationTypeProperties publicationTypeProps;
 	private ListStore<PublicationTypeEntry> publicationTypeListStore;
 	protected PublicationTypeEntry publicationType = null;
-	private ArrayList<AnnotatedBiblographyEntry> searchResultList = null;
+	private ArrayList<AnnotatedBibliographyEntry> searchResultList = null;
 	
 
 	interface PublicationTypeViewTemplates extends XTemplates {
@@ -92,7 +92,7 @@ public class AnnotatedBiblographySearchController extends AbstractSearchControll
 	public void invokeSearch() {
 		AnnotatedBibliographySearchEntry searchEntry = (AnnotatedBibliographySearchEntry) getFilter().getSearchEntry();
 
-		dbService.searchAnnotatedBibliography(searchEntry, new AsyncCallback<ArrayList<AnnotatedBiblographyEntry>>() {
+		dbService.searchAnnotatedBibliography(searchEntry, new AsyncCallback<ArrayList<AnnotatedBibliographyEntry>>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
@@ -101,10 +101,10 @@ public class AnnotatedBiblographySearchController extends AbstractSearchControll
 			}
 
 			@Override
-			public void onSuccess(ArrayList<AnnotatedBiblographyEntry> result) {
+			public void onSuccess(ArrayList<AnnotatedBibliographyEntry> result) {
 				getResultView().reset();
 				result.sort(new BibEntryComparator());
-				for (AnnotatedBiblographyEntry abe : result) {
+				for (AnnotatedBibliographyEntry abe : result) {
 					getResultView().addResult(new AnnotatedBiblographyView(abe));
 				}
 				getResultView().setSearchEnabled(true);
@@ -147,7 +147,7 @@ public class AnnotatedBiblographySearchController extends AbstractSearchControll
 				if (publicationType != null) {
 					publicationTypeDialog.hide();
 					PopupPanel depictionEditorPanel = new PopupPanel(false);
-					AnnotatedBiblographyEntry newBibEntry = new AnnotatedBiblographyEntry();
+					AnnotatedBibliographyEntry newBibEntry = new AnnotatedBibliographyEntry();
 					newBibEntry.setPublicationType(publicationType);
 					AnnotatedBiblographyEditor abe = new AnnotatedBiblographyEditor(newBibEntry);
 					abe.addEditorListener(new EditorListener() {
@@ -156,7 +156,7 @@ public class AnnotatedBiblographySearchController extends AbstractSearchControll
 						public void closeRequest(AbstractEntry entry) {
 							depictionEditorPanel.hide();
 							if (entry != null) {
-								getResultView().addResult(new AnnotatedBiblographyView((AnnotatedBiblographyEntry)entry));
+								getResultView().addResult(new AnnotatedBiblographyView((AnnotatedBibliographyEntry)entry));
 							}
 						}
 

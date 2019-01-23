@@ -20,7 +20,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import de.cses.client.DatabaseService;
 import de.cses.server.mysql.MysqlConnector;
 import de.cses.shared.AnnotatedBibliographySearchEntry;
-import de.cses.shared.AnnotatedBiblographyEntry;
+import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.BibKeywordEntry;
 import de.cses.shared.CaveAreaEntry;
@@ -77,15 +77,15 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		ArrayList<DistrictEntry> districts = connector.getDistricts();
 		return districts;
 	}
-	public ArrayList<AnnotatedBiblographyEntry> getAnnotatedBiblography() throws IllegalArgumentException {
+	public ArrayList<AnnotatedBibliographyEntry> getAnnotatedBiblography() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
-		ArrayList<AnnotatedBiblographyEntry> biblography = connector.getAnnotatedBiblography();
+		ArrayList<AnnotatedBibliographyEntry> biblography = connector.getAnnotatedBiblography();
 		return biblography;
 	}
 	
-	public AnnotatedBiblographyEntry getAnnotatedBiblographybyID(int id) throws IllegalArgumentException {
+	public AnnotatedBibliographyEntry getAnnotatedBiblographybyID(int id) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
-		AnnotatedBiblographyEntry biblographyEntry = connector.getAnnotatedBiblographybyID(id);
+		AnnotatedBibliographyEntry biblographyEntry = connector.getAnnotatedBiblographybyID(id);
 		return biblographyEntry;
 	}
 
@@ -581,7 +581,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	}
 
 	@Override
-	public AnnotatedBiblographyEntry insertAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry) throws IllegalArgumentException {
+	public AnnotatedBibliographyEntry insertAnnotatedBiblographyEntry(AnnotatedBibliographyEntry bibEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.insertAnnotatedBiblographyEntry(bibEntry);
 	}
@@ -596,7 +596,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		return connector.getAuthors();
 	}
 	
-	public ArrayList<AnnotatedBiblographyEntry> getAnnotatedBibliography() throws IllegalArgumentException {
+	public ArrayList<AnnotatedBibliographyEntry> getAnnotatedBibliography() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getAnnotatedBiblography();
 	}
@@ -774,16 +774,16 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	 * @see de.cses.client.DatabaseService#getAnnotatedBibliography(java.lang.String)
 	 */
 	@Override
-	public ArrayList<AnnotatedBiblographyEntry> getAnnotatedBibliography(String sqlWhere) throws IllegalArgumentException {
+	public ArrayList<AnnotatedBibliographyEntry> getAnnotatedBibliography(String sqlWhere) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getAnnotatedBibliography(sqlWhere);
 	}
 
 	/* (non-Javadoc)
-	 * @see de.cses.client.DatabaseService#updateAnnotatedBiblographyEntry(de.cses.shared.AnnotatedBiblographyEntry)
+	 * @see de.cses.client.DatabaseService#updateAnnotatedBiblographyEntry(de.cses.shared.AnnotatedBibliographyEntry)
 	 */
 	@Override
-	public AnnotatedBiblographyEntry updateAnnotatedBiblographyEntry(AnnotatedBiblographyEntry bibEntry) throws IllegalArgumentException {
+	public AnnotatedBibliographyEntry updateAnnotatedBiblographyEntry(AnnotatedBibliographyEntry bibEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.updateAnnotatedBiblographyEntry(bibEntry);
 	}
@@ -864,7 +864,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	 * @see de.cses.client.DatabaseService#getAnnotatedBibliographyFromAuthors(java.util.ArrayList)
 	 */
 	@Override
-	public ArrayList<AnnotatedBiblographyEntry> getAnnotatedBibliographyFromAuthors(ArrayList<AuthorEntry> authorList) throws IllegalArgumentException {
+	public ArrayList<AnnotatedBibliographyEntry> getAnnotatedBibliographyFromAuthors(ArrayList<AuthorEntry> authorList) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getAnnotatedBibliographyFromAuthors(authorList);
 	}
@@ -939,7 +939,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	}
 	
 	@Override
-	public ArrayList<AnnotatedBiblographyEntry> searchAnnotatedBibliography(AnnotatedBibliographySearchEntry searchEntry)
+	public ArrayList<AnnotatedBibliographyEntry> searchAnnotatedBibliography(AnnotatedBibliographySearchEntry searchEntry)
 			throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.searchAnnotatedBibliography(searchEntry);

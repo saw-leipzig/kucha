@@ -26,7 +26,7 @@ import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.depictions.DepictionView;
 import de.cses.client.ui.AbstractResultView;
 import de.cses.client.user.UserLogin;
-import de.cses.shared.AnnotatedBiblographyEntry;
+import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DepictionSearchEntry;
@@ -68,8 +68,8 @@ public class ImageResultView extends AbstractResultView {
 					return;
 				} else if (event.getData() instanceof CaveEntry) {
 					dse.getCaveIdList().add(((CaveEntry) event.getData()).getCaveID());
-				} else if (event.getData() instanceof AnnotatedBiblographyEntry) {
-					int bibID = ((AnnotatedBiblographyEntry) event.getData()).getAnnotatedBiblographyID();
+				} else if (event.getData() instanceof AnnotatedBibliographyEntry) {
+					int bibID = ((AnnotatedBibliographyEntry) event.getData()).getAnnotatedBibliographyID();
 					dse.getBibIdList().add(bibID);
 				}
 				dbService.searchDepictions(dse, new AsyncCallback<ArrayList<DepictionEntry>>() {

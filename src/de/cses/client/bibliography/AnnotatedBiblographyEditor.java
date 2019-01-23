@@ -81,7 +81,7 @@ import de.cses.client.bibliography.BibDocumentUploader.BibDocumentUploadListener
 import de.cses.client.ui.AbstractEditor;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
-import de.cses.shared.AnnotatedBiblographyEntry;
+import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.BibKeywordEntry;
 import de.cses.shared.PublicationTypeEntry;
@@ -91,10 +91,10 @@ import de.cses.shared.PublicationTypeEntry;
  *
  */
 public class AnnotatedBiblographyEditor extends AbstractEditor {
-	private AnnotatedBiblographyEntry bibEntry;
+	private AnnotatedBibliographyEntry bibEntry;
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 
-	private ListStore<AnnotatedBiblographyEntry> firstEditionBiblographyEntryLS;
+	private ListStore<AnnotatedBibliographyEntry> firstEditionBiblographyEntryLS;
 
 	private ListStore<AuthorEntry> authorListStore;
 	private ListStore<AuthorEntry> editorListStore;
@@ -117,7 +117,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 	private DocumentLinkTemplate documentLinkTemplate;
 	private DualListField<AuthorEntry, String> authorSelection;
 	private DualListField<BibKeywordEntry, String> bibKeywordSelectionDLF;
-	private ComboBox<AnnotatedBiblographyEntry> firstEditionComboBox;
+	private ComboBox<AnnotatedBibliographyEntry> firstEditionComboBox;
 	private DualListField<AuthorEntry, String> editorSelection;
 	private TextField bibtexKeyTF;
 
@@ -142,10 +142,10 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 //		LabelProvider<PublisherEntry> label();
 //	}
 
-	interface AnnotatedBiblographyEntryProperties extends PropertyAccess<AnnotatedBiblographyEntry> {
-		ModelKeyProvider<AnnotatedBiblographyEntry> annotatedBiblographyID();
-		ValueProvider<AnnotatedBiblographyEntry, String> titleEN();
-		LabelProvider<AnnotatedBiblographyEntry> label();
+	interface AnnotatedBiblographyEntryProperties extends PropertyAccess<AnnotatedBibliographyEntry> {
+		ModelKeyProvider<AnnotatedBibliographyEntry> annotatedBiblographyID();
+		ValueProvider<AnnotatedBibliographyEntry, String> titleEN();
+		LabelProvider<AnnotatedBibliographyEntry> label();
 	}
 
 	interface AuthorProperties extends PropertyAccess<AuthorEntry> {
@@ -163,7 +163,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		SafeHtml documentLink(SafeUri documentUri, String documentDescription);
 	}
 
-	public AnnotatedBiblographyEditor(AnnotatedBiblographyEntry entry) {
+	public AnnotatedBiblographyEditor(AnnotatedBibliographyEntry entry) {
 		this.bibEntry = entry;
 		documentLinkTemplate = GWT.create(DocumentLinkTemplate.class);
 	}
@@ -216,8 +216,8 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		}
 		bibEntry.setKeywordList(selectedBibKeywordsList);
 
-		if (bibEntry.getAnnotatedBiblographyID() > 0) {
-			dbService.updateAnnotatedBiblographyEntry(bibEntry, new AsyncCallback<AnnotatedBiblographyEntry>() {
+		if (bibEntry.getAnnotatedBibliographyID() > 0) {
+			dbService.updateAnnotatedBiblographyEntry(bibEntry, new AsyncCallback<AnnotatedBibliographyEntry>() {
 
 				@Override
 				public void onFailure(Throwable caught) {
@@ -226,7 +226,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				}
 
 				@Override
-				public void onSuccess(AnnotatedBiblographyEntry result) {
+				public void onSuccess(AnnotatedBibliographyEntry result) {
 					if (result!=null) {
 						bibtexKeyTF.setValue(result.getBibtexKey(), true);
 						if (close) {
@@ -237,7 +237,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 			});
 		} else {
-			dbService.insertAnnotatedBiblographyEntry(bibEntry, new AsyncCallback<AnnotatedBiblographyEntry>() {
+			dbService.insertAnnotatedBiblographyEntry(bibEntry, new AsyncCallback<AnnotatedBibliographyEntry>() {
 
 				@Override
 				public void onFailure(Throwable caught) {
@@ -246,8 +246,8 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				}
 
 				@Override
-				public void onSuccess(AnnotatedBiblographyEntry result) {
-					bibEntry.setAnnotatedBiblographyID(result.getAnnotatedBiblographyID());
+				public void onSuccess(AnnotatedBibliographyEntry result) {
+					bibEntry.setAnnotatedBiblographyID(result.getAnnotatedBibliographyID());
 					bibtexKeyTF.setValue(result.getBibtexKey(), true);
 //					updateEntry(bibEntry);
 					if (close) {
@@ -281,7 +281,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		bibKeywordsStore.addSortInfo(new StoreSortInfo<>(bibKeywordProps.bibKeyword(), SortDir.ASC));
 
 		annotatedBiblographyEntryProps = GWT.create(AnnotatedBiblographyEntryProperties.class);
-		firstEditionBiblographyEntryLS = new ListStore<AnnotatedBiblographyEntry>(annotatedBiblographyEntryProps.annotatedBiblographyID());
+		firstEditionBiblographyEntryLS = new ListStore<AnnotatedBibliographyEntry>(annotatedBiblographyEntryProps.annotatedBiblographyID());
 		firstEditionBiblographyEntryLS.addSortInfo(new StoreSortInfo<>(annotatedBiblographyEntryProps.titleEN(), SortDir.ASC));
 
 		dbService.getAuthors(new AsyncCallback<ArrayList<AuthorEntry>>() {
@@ -343,7 +343,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		if (bibEntry.getAuthorList() == null || bibEntry.getAuthorList().isEmpty()) {
 			return;
 		}
-		dbService.getAnnotatedBibliographyFromAuthors(bibEntry.getAuthorList(), new AsyncCallback<ArrayList<AnnotatedBiblographyEntry>>() {
+		dbService.getAnnotatedBibliographyFromAuthors(bibEntry.getAuthorList(), new AsyncCallback<ArrayList<AnnotatedBibliographyEntry>>() {
 
 					@Override
 					public void onFailure(Throwable caught) {
@@ -351,9 +351,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 					}
 
 					@Override
-					public void onSuccess(ArrayList<AnnotatedBiblographyEntry> result) {
+					public void onSuccess(ArrayList<AnnotatedBibliographyEntry> result) {
 						firstEditionBiblographyEntryLS.clear();
-						for (AnnotatedBiblographyEntry ae : result) {
+						for (AnnotatedBibliographyEntry ae : result) {
 							firstEditionBiblographyEntryLS.add(ae);
 						}
 						if (bibEntry.getFirstEditionBibID() > 0) {
@@ -1685,11 +1685,11 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		/**
 		 * first edition
 		 */
-		firstEditionComboBox = new ComboBox<AnnotatedBiblographyEntry>(firstEditionBiblographyEntryLS,
-				annotatedBiblographyEntryProps.label(), new AbstractSafeHtmlRenderer<AnnotatedBiblographyEntry>() {
+		firstEditionComboBox = new ComboBox<AnnotatedBibliographyEntry>(firstEditionBiblographyEntryLS,
+				annotatedBiblographyEntryProps.label(), new AbstractSafeHtmlRenderer<AnnotatedBibliographyEntry>() {
 
 					@Override
-					public SafeHtml render(AnnotatedBiblographyEntry item) {
+					public SafeHtml render(AnnotatedBibliographyEntry item) {
 						final AnnotatedBiblographyEntryViewTemplates pvTemplates = GWT.create(AnnotatedBiblographyEntryViewTemplates.class);
 						return pvTemplates.label(item.getLabel());
 					}
@@ -1698,11 +1698,11 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		firstEditionComboBox.setTypeAhead(true);
 		firstEditionComboBox.setEditable(false);
 		firstEditionComboBox.setTriggerAction(TriggerAction.ALL);
-		firstEditionComboBox.addSelectionHandler(new SelectionHandler<AnnotatedBiblographyEntry>() {
+		firstEditionComboBox.addSelectionHandler(new SelectionHandler<AnnotatedBibliographyEntry>() {
 
 			@Override
-			public void onSelection(SelectionEvent<AnnotatedBiblographyEntry> event) {
-				bibEntry.setFirstEditionBibID(event.getSelectedItem().getAnnotatedBiblographyID());
+			public void onSelection(SelectionEvent<AnnotatedBibliographyEntry> event) {
+				bibEntry.setFirstEditionBibID(event.getSelectedItem().getAnnotatedBibliographyID());
 			}
 		});
 
@@ -1729,11 +1729,11 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 				firstEditionComboBox.setEnabled(event.getValue());
 			}
 		});
-		firstEditionComboBox.addSelectionHandler(new SelectionHandler<AnnotatedBiblographyEntry>() {
+		firstEditionComboBox.addSelectionHandler(new SelectionHandler<AnnotatedBibliographyEntry>() {
 
 			@Override
-			public void onSelection(SelectionEvent<AnnotatedBiblographyEntry> event) {
-				bibEntry.setFirstEditionBibID(event.getSelectedItem().getAnnotatedBiblographyID());
+			public void onSelection(SelectionEvent<AnnotatedBibliographyEntry> event) {
+				bibEntry.setFirstEditionBibID(event.getSelectedItem().getAnnotatedBibliographyID());
 			}
 		});
 		ToolButton resetFirstEditionSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
@@ -1762,7 +1762,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 			@Override
 			public void onSelect(SelectEvent event) {
-				if (bibEntry.getAnnotatedBiblographyID() == 0) {
+				if (bibEntry.getAnnotatedBibliographyID() == 0) {
 					Window.alert("Documents cannot be uploaded\n before the new entry has been saved.");
 					return;
 				}
@@ -1837,7 +1837,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 			@Override
 			public void onSelect(SelectEvent event) {
-				if (bibEntry.getAnnotatedBiblographyID() == 0) {
+				if (bibEntry.getAnnotatedBibliographyID() == 0) {
 					Window.alert("Documents cannot be uploaded\n before the new entry has been saved.");
 					return;
 				}

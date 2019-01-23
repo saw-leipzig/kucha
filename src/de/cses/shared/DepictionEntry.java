@@ -44,7 +44,7 @@ public class DepictionEntry extends AbstractEntry {
 	private int masterImageID;
 	private ArrayList<ImageEntry> relatedImages = new ArrayList<ImageEntry>();
 	private ArrayList<PreservationAttributeEntry> preservationAttributesList = new ArrayList<PreservationAttributeEntry>();
-	private ArrayList<AnnotatedBiblographyEntry> relatedBibliographyList = new ArrayList<AnnotatedBiblographyEntry>();
+	private ArrayList<AnnotatedBibliographyEntry> relatedBibliographyList = new ArrayList<AnnotatedBibliographyEntry>();
 	private ArrayList<IconographyEntry> relatedIconographyList = new ArrayList<IconographyEntry>();
 
 	public DepictionEntry() { }
@@ -124,8 +124,8 @@ public class DepictionEntry extends AbstractEntry {
 			clonedPreservationAttributesList.add(pae);
 		}
 		clonedDepictionEntry.setPreservationAttributesList(clonedPreservationAttributesList);
-		ArrayList<AnnotatedBiblographyEntry> clonedRelatedBibliographyList = new ArrayList<AnnotatedBiblographyEntry>();
-		for (AnnotatedBiblographyEntry abe : this.relatedBibliographyList) {
+		ArrayList<AnnotatedBibliographyEntry> clonedRelatedBibliographyList = new ArrayList<AnnotatedBibliographyEntry>();
+		for (AnnotatedBibliographyEntry abe : this.relatedBibliographyList) {
 			clonedRelatedBibliographyList.add(abe);
 		}
 		clonedDepictionEntry.setRelatedBibliographyList(clonedRelatedBibliographyList);
@@ -381,11 +381,11 @@ public class DepictionEntry extends AbstractEntry {
 		this.masterImageID = masterImageID;
 	}
 
-	public ArrayList<AnnotatedBiblographyEntry> getRelatedBibliographyList() {
+	public ArrayList<AnnotatedBibliographyEntry> getRelatedBibliographyList() {
 		return relatedBibliographyList;
 	}
 
-	public void setRelatedBibliographyList(ArrayList<AnnotatedBiblographyEntry> relatedBibliographyList) {
+	public void setRelatedBibliographyList(ArrayList<AnnotatedBibliographyEntry> relatedBibliographyList) {
 		this.relatedBibliographyList = relatedBibliographyList;
 	}
 

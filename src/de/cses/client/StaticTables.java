@@ -20,7 +20,7 @@ import java.util.Map;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-import de.cses.shared.AnnotatedBiblographyEntry;
+import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
@@ -71,7 +71,7 @@ public class StaticTables {
 	protected HashMap<Integer, LocationEntry> locationMap;
 	protected HashMap<Integer, VendorEntry> vendorMap;
 	protected HashMap<Integer, PublicationTypeEntry> publicationTypeMap;
-	protected HashMap<Integer, AnnotatedBiblographyEntry> bibEntryMap;
+	protected HashMap<Integer, AnnotatedBibliographyEntry> bibEntryMap;
 	protected HashMap<Integer, CaveEntry> caveEntryMap;
 	protected HashMap<Integer, OrientationEntry> orientationEntryMap;
 
@@ -497,8 +497,8 @@ public class StaticTables {
 	}
 	
 	private void loadBiliography() {
-		bibEntryMap = new HashMap<Integer, AnnotatedBiblographyEntry>();
-		dbService.getAnnotatedBibliography(new AsyncCallback<ArrayList<AnnotatedBiblographyEntry>>() {
+		bibEntryMap = new HashMap<Integer, AnnotatedBibliographyEntry>();
+		dbService.getAnnotatedBibliography(new AsyncCallback<ArrayList<AnnotatedBibliographyEntry>>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
@@ -506,9 +506,9 @@ public class StaticTables {
 			}
 
 			@Override
-			public void onSuccess(ArrayList<AnnotatedBiblographyEntry> result) {
-				for (AnnotatedBiblographyEntry abe : result) {
-					bibEntryMap.put(abe.getAnnotatedBiblographyID(), abe);
+			public void onSuccess(ArrayList<AnnotatedBibliographyEntry> result) {
+				for (AnnotatedBibliographyEntry abe : result) {
+					bibEntryMap.put(abe.getAnnotatedBibliographyID(), abe);
 				}
 				listLoaded();
 			}
@@ -649,7 +649,7 @@ public class StaticTables {
 		return publicationTypeMap;
 	}
 	
-	public Map<Integer, AnnotatedBiblographyEntry> getBibliographyEntries() {
+	public Map<Integer, AnnotatedBibliographyEntry> getBibliographyEntries() {
 		return bibEntryMap;
 	}
 	
