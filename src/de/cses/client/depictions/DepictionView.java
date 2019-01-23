@@ -40,17 +40,6 @@ import de.cses.shared.WallLocationEntry;
  */
 public class DepictionView extends AbstractView {
 
-	interface Resources extends ClientBundle {
-		@Source("buddha.png")
-		ImageResource logo();
-
-		@Source("lock-protection.png")
-		ImageResource locked();
-
-		@Source("photo.png")
-		ImageResource open();
-}
-
 	interface DepictionViewTemplates extends XTemplates {
 		@XTemplate("<div><center><img src='{imgUri}'></img></center></div>")
 		SafeHtml view(SafeUri imgUri);
@@ -61,14 +50,12 @@ public class DepictionView extends AbstractView {
 
 	private DepictionEntry depictionEntry;
 	private DepictionViewTemplates dvTemplates;
-	private Resources resources;
 
 	/**
 	 * @param text
 	 */
 	public DepictionView(DepictionEntry entry) {
 		depictionEntry = entry;
-		resources = GWT.create(Resources.class);
 		dvTemplates = GWT.create(DepictionViewTemplates.class);
 
 		refreshHTML();
