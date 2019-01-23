@@ -36,7 +36,6 @@ public class UserEntry extends AbstractEntry {
 	private String lastname;
 	private String email;
 	private String affiliation;
-	private int accessrights; // TODO we could use accessLevel from AbstractEntry instead!
 	private String sessionID;
 	private long loginDate;
 
@@ -56,7 +55,7 @@ public class UserEntry extends AbstractEntry {
 	 * @param affiliation
 	 * @param accessrights
 	 */
-	public UserEntry(int userID, String username, String firstname, String lastname, String email, String affiliation, int accessrights, 
+	public UserEntry(int userID, String username, String firstname, String lastname, String email, String affiliation, int accessLevel, 
 			String sessionID, String modifiedOn) {
 		super();
 		this.userID = userID;
@@ -65,7 +64,7 @@ public class UserEntry extends AbstractEntry {
 		this.lastname = lastname;
 		this.email = email;
 		this.affiliation = affiliation;
-		this.accessrights = accessrights;
+		this.setAccessLevel(accessLevel);
 		this.sessionID = sessionID;
 		this.setModifiedOn(modifiedOn);
 		Date now = new Date();
@@ -118,14 +117,6 @@ public class UserEntry extends AbstractEntry {
 
 	public void setAffiliation(String affiliation) {
 		this.affiliation = affiliation;
-	}
-
-	public int getAccessrights() {
-		return accessrights;
-	}
-
-	public void setAccessrights(int accessrights) {
-		this.accessrights = accessrights;
 	}
 
 	/* (non-Javadoc)

@@ -5093,7 +5093,7 @@ public class MysqlConnector {
 			pstmt.setString(4, userEntry.getLastname());
 			pstmt.setString(5, userEntry.getEmail());
 			pstmt.setString(6, userEntry.getAffiliation());
-			pstmt.setInt(7, userEntry.getAccessrights());
+			pstmt.setInt(7, userEntry.getAccessLevel());
 			pstmt.executeUpdate();
 			ResultSet keys = pstmt.getGeneratedKeys();
 			if (keys.first()) {
@@ -5128,7 +5128,7 @@ public class MysqlConnector {
 			pstmt.setString(3, userEntry.getLastname());
 			pstmt.setString(4, userEntry.getEmail());
 			pstmt.setString(5, userEntry.getAffiliation());
-			pstmt.setInt(6, userEntry.getAccessrights());
+			pstmt.setInt(6, userEntry.getAccessLevel());
 			pstmt.setInt(7, userEntry.getUserID());
 			rowsChangedCount = pstmt.executeUpdate();
 			pstmt.close();

@@ -403,7 +403,7 @@ public class UserLogin extends PopupPanel {
 	}
 	
 	public int getAccessRights() {
-		return currentUser != null ? currentUser.getAccessrights() : 0;
+		return currentUser != null ? currentUser.getAccessLevel() : 0;
 	}
 
 }

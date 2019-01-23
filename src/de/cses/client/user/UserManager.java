@@ -255,7 +255,7 @@ public class UserManager extends PopupPanel {
 			}
 			Integer userAccessLevel = record.getValue(userProps.accessrights());
 			if (userAccessLevel != null) {
-				entry.setAccessrights(userAccessLevel);
+				entry.setAccessLevel(userAccessLevel);
 			}
 
 			if (entry.getUserID() > 0) {
