@@ -90,11 +90,11 @@ import de.cses.shared.PublicationTypeEntry;
  * @author Nina
  *
  */
-public class AnnotatedBiblographyEditor extends AbstractEditor {
+public class AnnotatedBibliographyEditor extends AbstractEditor {
 	private AnnotatedBibliographyEntry bibEntry;
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 
-	private ListStore<AnnotatedBibliographyEntry> firstEditionBiblographyEntryLS;
+	private ListStore<AnnotatedBibliographyEntry> firstEditionBibliographyEntryLS;
 
 	private ListStore<AuthorEntry> authorListStore;
 	private ListStore<AuthorEntry> editorListStore;
@@ -105,7 +105,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 	private ListStore<BibKeywordEntry> selectedBibKeywordsStore;
 	private BibKeywordProperties bibKeywordProps;
 
-	private AnnotatedBiblographyEntryProperties annotatedBiblographyEntryProps;
+	private AnnotatedBibliographyEntryProperties annotatedBibliographyEntryProps;
 	private AuthorProperties authorProps;
 
 	private FramedPanel mainFP = null; // das oberste Framed Panel als Rahmen
@@ -126,7 +126,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 //		SafeHtml publisher(String name);
 //	}
 	
-	interface AnnotatedBiblographyEntryViewTemplates extends XTemplates {
+	interface AnnotatedBibliographyEntryViewTemplates extends XTemplates {
 		@XTemplate("<div>{name}</div>")
 		SafeHtml label(String name);
 	}
@@ -142,8 +142,8 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 //		LabelProvider<PublisherEntry> label();
 //	}
 
-	interface AnnotatedBiblographyEntryProperties extends PropertyAccess<AnnotatedBibliographyEntry> {
-		ModelKeyProvider<AnnotatedBibliographyEntry> annotatedBiblographyID();
+	interface AnnotatedBibliographyEntryProperties extends PropertyAccess<AnnotatedBibliographyEntry> {
+		ModelKeyProvider<AnnotatedBibliographyEntry> annotatedBibliographyID();
 		ValueProvider<AnnotatedBibliographyEntry, String> titleEN();
 		LabelProvider<AnnotatedBibliographyEntry> label();
 	}
@@ -163,7 +163,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		SafeHtml documentLink(SafeUri documentUri, String documentDescription);
 	}
 
-	public AnnotatedBiblographyEditor(AnnotatedBibliographyEntry entry) {
+	public AnnotatedBibliographyEditor(AnnotatedBibliographyEntry entry) {
 		this.bibEntry = entry;
 		documentLinkTemplate = GWT.create(DocumentLinkTemplate.class);
 	}
@@ -247,7 +247,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 				@Override
 				public void onSuccess(AnnotatedBibliographyEntry result) {
-					bibEntry.setAnnotatedBiblographyID(result.getAnnotatedBibliographyID());
+					bibEntry.setAnnotatedBibliographyID(result.getAnnotatedBibliographyID());
 					bibtexKeyTF.setValue(result.getBibtexKey(), true);
 //					updateEntry(bibEntry);
 					if (close) {
@@ -280,9 +280,9 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		bibKeywordsStore = new ListStore<BibKeywordEntry>(bibKeywordProps.bibKeywordID());
 		bibKeywordsStore.addSortInfo(new StoreSortInfo<>(bibKeywordProps.bibKeyword(), SortDir.ASC));
 
-		annotatedBiblographyEntryProps = GWT.create(AnnotatedBiblographyEntryProperties.class);
-		firstEditionBiblographyEntryLS = new ListStore<AnnotatedBibliographyEntry>(annotatedBiblographyEntryProps.annotatedBiblographyID());
-		firstEditionBiblographyEntryLS.addSortInfo(new StoreSortInfo<>(annotatedBiblographyEntryProps.titleEN(), SortDir.ASC));
+		annotatedBibliographyEntryProps = GWT.create(AnnotatedBibliographyEntryProperties.class);
+		firstEditionBibliographyEntryLS = new ListStore<AnnotatedBibliographyEntry>(annotatedBibliographyEntryProps.annotatedBibliographyID());
+		firstEditionBibliographyEntryLS.addSortInfo(new StoreSortInfo<>(annotatedBibliographyEntryProps.titleEN(), SortDir.ASC));
 
 		dbService.getAuthors(new AsyncCallback<ArrayList<AuthorEntry>>() {
 
@@ -352,12 +352,12 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 
 					@Override
 					public void onSuccess(ArrayList<AnnotatedBibliographyEntry> result) {
-						firstEditionBiblographyEntryLS.clear();
+						firstEditionBibliographyEntryLS.clear();
 						for (AnnotatedBibliographyEntry ae : result) {
-							firstEditionBiblographyEntryLS.add(ae);
+							firstEditionBibliographyEntryLS.add(ae);
 						}
 						if (bibEntry.getFirstEditionBibID() > 0) {
-							firstEditionComboBox.setValue(firstEditionBiblographyEntryLS.findModelWithKey(Integer.toString(bibEntry.getFirstEditionBibID())));
+							firstEditionComboBox.setValue(firstEditionBibliographyEntryLS.findModelWithKey(Integer.toString(bibEntry.getFirstEditionBibID())));
 						}
 					}
 				});
@@ -401,7 +401,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		});
 
 		mainFP = new FramedPanel();
-		mainFP.setHeading("Annotated Biblography (entry last modified on " + bibEntry.getModifiedOn() + ")");
+		mainFP.setHeading("Annotated Bibliography (entry last modified on " + bibEntry.getModifiedOn() + ")");
 		mainFP.setSize("900px", "650px"); // here we set the size of the panel
 		mainFP.add(tabpanel, new VerticalLayoutData(1.0, 1.0));
 		mainFP.addTool(saveToolButton);
@@ -1685,12 +1685,12 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		/**
 		 * first edition
 		 */
-		firstEditionComboBox = new ComboBox<AnnotatedBibliographyEntry>(firstEditionBiblographyEntryLS,
-				annotatedBiblographyEntryProps.label(), new AbstractSafeHtmlRenderer<AnnotatedBibliographyEntry>() {
+		firstEditionComboBox = new ComboBox<AnnotatedBibliographyEntry>(firstEditionBibliographyEntryLS,
+				annotatedBibliographyEntryProps.label(), new AbstractSafeHtmlRenderer<AnnotatedBibliographyEntry>() {
 
 					@Override
 					public SafeHtml render(AnnotatedBibliographyEntry item) {
-						final AnnotatedBiblographyEntryViewTemplates pvTemplates = GWT.create(AnnotatedBiblographyEntryViewTemplates.class);
+						final AnnotatedBibliographyEntryViewTemplates pvTemplates = GWT.create(AnnotatedBibliographyEntryViewTemplates.class);
 						return pvTemplates.label(item.getLabel());
 					}
 				});
@@ -1717,7 +1717,7 @@ public class AnnotatedBiblographyEditor extends AbstractEditor {
 		if (bibEntry.getFirstEditionBibID() > 0) {
 			firstEditionCB.setValue(true);
 			firstEditionComboBox.setEnabled(true);
-//			firstEditionComboBox.setValue(firstEditionBiblographyEntryLS.findModelWithKey(Integer.toString(bibEntry.getFirstEditionBibID())));
+//			firstEditionComboBox.setValue(firstEditionBibliographyEntryLS.findModelWithKey(Integer.toString(bibEntry.getFirstEditionBibID())));
 		} else {
 			firstEditionCB.setValue(false);
 			firstEditionComboBox.setEnabled(false);

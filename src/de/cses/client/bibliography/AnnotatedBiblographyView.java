@@ -30,14 +30,14 @@ import de.cses.shared.AuthorEntry;
 public class AnnotatedBiblographyView extends AbstractView {
 	
 	private AnnotatedBibliographyEntry annotatedBibliographyEntry;
-	private AnnotatedBiblographyViewTemplates dvTemplates;
+	private AnnotatedBibliographyViewTemplates dvTemplates;
 
 	/**
 	 * @param text
 	 */
 	public AnnotatedBiblographyView(AnnotatedBibliographyEntry annotatedBibliographyEntry) {
 		this.annotatedBibliographyEntry = annotatedBibliographyEntry;
-		dvTemplates = GWT.create(AnnotatedBiblographyViewTemplates.class);
+		dvTemplates = GWT.create(AnnotatedBibliographyViewTemplates.class);
 		setHTML(dvTemplates.view(annotatedBibliographyEntry));
 //		setHTML(dvTemplates.extendedView(annotatedBibliographyEntry));
 		setSize("95%", "80px");
@@ -59,7 +59,7 @@ public class AnnotatedBiblographyView extends AbstractView {
 	 * @see de.cses.client.ui.AbstractView#getEditor()
 	 */
 	protected AbstractEditor getEditor() {
-		return new AnnotatedBiblographyEditor(annotatedBibliographyEntry.clone());
+		return new AnnotatedBibliographyEditor(annotatedBibliographyEntry.clone());
 	}
 
 	/* (non-Javadoc)

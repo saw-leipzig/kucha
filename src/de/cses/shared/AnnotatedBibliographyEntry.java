@@ -22,7 +22,7 @@ import java.util.ArrayList;
  */
 public class AnnotatedBibliographyEntry extends AbstractEntry implements Comparable<AnnotatedBibliographyEntry> {
 
-	private int annotatedBiblographyID = 0;
+	private int annotatedBibliographyID = 0;
 	private PublicationTypeEntry publicationType = null;
 	private String titleEN="", titleTR="", titleORG="";
 	private String subtitleEN="", subtitleTR="", subtitleORG="";
@@ -55,7 +55,7 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 	private ArrayList<AuthorEntry> editorList = new ArrayList<AuthorEntry>();
 	private ArrayList<BibKeywordEntry> keywordList = new ArrayList<BibKeywordEntry>();
 
-	public AnnotatedBibliographyEntry(int annotatedBiblographyID, PublicationTypeEntry publicationType, 
+	public AnnotatedBibliographyEntry(int annotatedBibliographyID, PublicationTypeEntry publicationType, 
 			String titleEN, String titleORG, String titleTR,
 			String parentTitleEN, String parentTitleORG, String parentTitleTR,
 			String subtitleEN, String subtitleORG, String subtitleTR,
@@ -75,7 +75,7 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 			int accessLevel, String abstractText, String thesisType, String editorType, boolean officialTitleTranslation,
 			String bibtexKey, String lastChangedOn) {
 		super();
-		this.annotatedBiblographyID = annotatedBiblographyID;
+		this.annotatedBibliographyID = annotatedBibliographyID;
 		this.publicationType = publicationType;
 		this.titleEN = titleEN;
 		this.titleTR = titleTR;
@@ -138,7 +138,7 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 	public AnnotatedBibliographyEntry() { }
 
 	public AnnotatedBibliographyEntry clone() {
-		AnnotatedBibliographyEntry clonedEntry = new AnnotatedBibliographyEntry(annotatedBiblographyID, publicationType, 
+		AnnotatedBibliographyEntry clonedEntry = new AnnotatedBibliographyEntry(annotatedBibliographyID, publicationType, 
 				titleEN, titleORG, titleTR,
 				parentTitleEN, parentTitleORG, parentTitleTR,
 				subtitleEN, subtitleORG, subtitleTR,
@@ -773,22 +773,22 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 
 	@Override
 	public String getUniqueID() {
-		return "AnnotatedBibliography." + annotatedBiblographyID;
+		return "AnnotatedBibliography." + annotatedBibliographyID;
 	}
 	
 	/**
 	 * @return the annotatedBiblographyID
 	 */
 	public int getAnnotatedBibliographyID() {
-		return annotatedBiblographyID;
+		return annotatedBibliographyID;
 	}
 
 	/**
-	 * @param annotatedBiblographyID
+	 * @param annotatedBibliographyID
 	 *          the annotatedBiblographyID to set
 	 */
-	public void setAnnotatedBiblographyID(int annotatedBiblographyID) {
-		this.annotatedBiblographyID = annotatedBiblographyID;
+	public void setAnnotatedBibliographyID(int annotatedBibliographyID) {
+		this.annotatedBibliographyID = annotatedBibliographyID;
 	}
 
 	/**

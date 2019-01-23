@@ -59,7 +59,7 @@ public class BibliographySelector implements IsWidget {
 	
 //	private ContentPanel mainPanel = null;
 	private BibliographyProperties bibProps = GWT.create(BibliographyProperties.class);
-	private AnnotatedBiblographyViewTemplates rowExpanderTemplates = GWT.create(AnnotatedBiblographyViewTemplates.class);
+	private AnnotatedBibliographyViewTemplates rowExpanderTemplates = GWT.create(AnnotatedBibliographyViewTemplates.class);
 	private Grid<AnnotatedBibliographyEntry> grid = null;
 	private CheckBoxSelectionModel<AnnotatedBibliographyEntry> selectionModel;
 	private List<AnnotatedBibliographyEntry> selectedEntries;

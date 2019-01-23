@@ -22,7 +22,7 @@ import de.cses.shared.AnnotatedBibliographyEntry;
  * @author alingnau
  *
  */
-public interface AnnotatedBiblographyViewTemplates extends XTemplates {
+public interface AnnotatedBibliographyViewTemplates extends XTemplates {
 
 	@XTemplate(source = "BibView.html")
 	SafeHtml view(AnnotatedBibliographyEntry bibEntry);

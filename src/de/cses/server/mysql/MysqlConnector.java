@@ -1828,11 +1828,11 @@ public class MysqlConnector {
 			String editorTerm = "";
 			for (String name : searchEntry.getAuthorSearch().split("\\s+")) {
 				authorTerm += authorTerm.isEmpty() 
-						? "SELECT BibID FROM AuthorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (FirstNameLIKE ?) OR (LastName LIKE ?) OR (Institution LIKE ?)))"
-						: " INTERSECT SELECT BibID FROM AuthorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (FirstNameLIKE ?) OR (LastName LIKE ?) OR (Institution LIKE ?)))";
+						? "SELECT BibID FROM AuthorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (FirstName LIKE ?) OR (LastName LIKE ?) OR (Institution LIKE ?)))"
+						: " INTERSECT SELECT BibID FROM AuthorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (FirstName LIKE ?) OR (LastName LIKE ?) OR (Institution LIKE ?)))";
 				editorTerm += editorTerm.isEmpty() 
-						? "SELECT BibID FROM EditorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (FirstNameLIKE ?) OR (LastName LIKE ?) OR (Institution LIKE ?)))"
-						: " INTERSECT SELECT BibID FROM EditorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (FirstNameLIKE ?) OR (LastName LIKE ?) OR (Institution LIKE ?)))";
+						? "SELECT BibID FROM EditorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (FirstName LIKE ?) OR (LastName LIKE ?) OR (Institution LIKE ?)))"
+						: " INTERSECT SELECT BibID FROM EditorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (FirstName LIKE ?) OR (LastName LIKE ?) OR (Institution LIKE ?)))";
 			}
 			where = "BibID IN (" + authorTerm + ") OR BibID IN (" + editorTerm + ")";
 		}
