@@ -1850,20 +1850,18 @@ public class MysqlConnector {
 			where += where.isEmpty() ? "YearORG LIKE ?" : " AND YearORG LIKE ?";
 		}
 
-		int accessLevel = AbstractEntry.ACCESS_LEVEL_PUBLIC; // default: lowest possible access rights
-		UserEntry user = checkSessionID(searchEntry.getSessionID());
-		if (user != null) {
-			switch (user.getAccessLevel()) {
-				case UserEntry.GUEST:
-				case UserEntry.ASSOCIATED:
-					accessLevel = AbstractEntry.ACCESS_LEVEL_COPYRIGHT;
-					break; 
-				case UserEntry.FULL:
-				case UserEntry.ADMIN:
-					accessLevel = AbstractEntry.ACCESS_LEVEL_PRIVATE;
-			}
+		String inStatement = Integer.toString(AbstractEntry.ACCESS_LEVEL_PUBLIC); // public is always permitted
+		switch (getAccessLevelForSessionID(searchEntry.getSessionID())) {
+			case UserEntry.GUEST:
+			case UserEntry.ASSOCIATED:
+				inStatement += "," + AbstractEntry.ACCESS_LEVEL_COPYRIGHT;
+				break; 
+			case UserEntry.FULL:
+			case UserEntry.ADMIN:
+				inStatement += "," + AbstractEntry.ACCESS_LEVEL_COPYRIGHT + "," + AbstractEntry.ACCESS_LEVEL_PRIVATE;
+				break;
 		}
-		where += where.isEmpty() ? "AccessLevel<=" + accessLevel : " AND AccessLevel<=" + accessLevel;
+		where += where.isEmpty() ? "AccessLevel IN (" + inStatement + ")" : " AND AccessLevel IN (" + inStatement + ")";
 		
 		try {
 			int i = 1;
