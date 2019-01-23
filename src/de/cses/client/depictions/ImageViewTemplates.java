@@ -34,7 +34,7 @@ public interface ImageViewTemplates extends XTemplates {
 			+ "<span class='freeIconText'>{shortName} ({imageFormat})</span>"
 			+ "<p style='font-size:10px;'> <tpl for='titleList'> {element}<wbr> </tpl> </p>"
 			+ "<p style='font-size: 8px; text-align: right;'>{imageAuthor}<br>{copyright}</p></figcaption></figure>")
-	SafeHtml openAccessImage(SafeUri imageUri, String shortName, ArrayList<TextElement> titleList, String imageFormat, String imageAuthor, String copyright);
+	SafeHtml publicImage(SafeUri imageUri, String shortName, ArrayList<TextElement> titleList, String imageFormat, String imageAuthor, String copyright);
 
 	@XTemplate("<figure class='paintRepImgPreview'>"
 			+ "<img src='{imageUri}' style='border-radius: 10px; position: relative; margin-left: 2px; width: 230px; background: white;'>"
@@ -42,7 +42,7 @@ public interface ImageViewTemplates extends XTemplates {
 			+ "<span class='blockedIconText'>{shortName} ({imageFormat})</span>"
 			+ "<p style='font-size:10px;'> <tpl for='titleList'> {element}<wbr> </tpl> </p>"
 			+ "<p style='font-size: 8px; text-align: right;'>{imageAuthor}<br>{copyright}</p></figcaption></figure>")
-	SafeHtml nonOpenAccessImage(SafeUri imageUri, String shortName, ArrayList<TextElement> titleList, String imageFormat, String imageAuthor, String copyright);
+	SafeHtml nonPublicImage(SafeUri imageUri, String shortName, ArrayList<TextElement> titleList, String imageFormat, String imageAuthor, String copyright);
 
 	@XTemplate("<figure class='paintRepImgPreview'>"
 			+ "<img src='{imageUri}' style='border-radius: 10px; position: relative; margin-left: 2px; width: 230px; background: white;'>"

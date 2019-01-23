@@ -1,5 +1,10 @@
 package de.cses.shared;
 
+import com.google.gwt.user.client.Cookies;
+
+import de.cses.client.Util;
+import de.cses.client.user.UserLogin;
+
 public class AnnotatedBibliographySearchEntry extends AbstractSearchEntry {
 	
 	private String titleSearch = "";
@@ -7,12 +12,15 @@ public class AnnotatedBibliographySearchEntry extends AbstractSearchEntry {
 	private String publisherSearch = "";
 	private int yearSearch = 0;
 	
-
-	public AnnotatedBibliographySearchEntry(boolean orSearch) {
-		super(orSearch);
+	public AnnotatedBibliographySearchEntry(boolean orSearch, String sessionID) {
+		super(orSearch, sessionID);
 	}
 
-	public AnnotatedBibliographySearchEntry() { }
+	public AnnotatedBibliographySearchEntry(String sessionID) {
+		super(sessionID);
+	}
+
+	public AnnotatedBibliographySearchEntry() {	}
 
 	public String getTitleSearch() {
 		return titleSearch;

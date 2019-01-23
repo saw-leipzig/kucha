@@ -40,35 +40,22 @@ import de.cses.shared.WallLocationEntry;
  */
 public class DepictionView extends AbstractView {
 
-	interface Resources extends ClientBundle {
-		@Source("buddha.png")
-		ImageResource logo();
-
-		@Source("lock-protection.png")
-		ImageResource locked();
-
-		@Source("photo.png")
-		ImageResource open();
-}
-
 	interface DepictionViewTemplates extends XTemplates {
 		@XTemplate("<div><center><img src='{imgUri}'></img></center></div>")
 		SafeHtml view(SafeUri imgUri);
 		
 		@XTemplate(source = "DepictionViewTemplate.html")
-		SafeHtml view(SafeUri imgUri, String officialCaveNumber, String historicCaveName, String shortName, String siteDistrictInformation, String wallLocation, SafeUri lockUri);
+		SafeHtml view(SafeUri imgUri, String officialCaveNumber, String historicCaveName, String shortName, String siteDistrictInformation, String wallLocation, boolean isPublic);
 	}
 
 	private DepictionEntry depictionEntry;
 	private DepictionViewTemplates dvTemplates;
-	private Resources resources;
 
 	/**
 	 * @param text
 	 */
 	public DepictionView(DepictionEntry entry) {
 		depictionEntry = entry;
-		resources = GWT.create(Resources.class);
 		dvTemplates = GWT.create(DepictionViewTemplates.class);
 
 		refreshHTML();
@@ -80,7 +67,9 @@ public class DepictionView extends AbstractView {
 			protected void onDragStart(DndDragStartEvent event) {
 				super.onDragStart(event);
 				event.setData(depictionEntry);
-				event.getStatusProxy().update(dvTemplates.view(resources.logo().getSafeUri()));
+				event.getStatusProxy().update(
+						dvTemplates.view(UriUtils.fromString("resource?imageID=" + depictionEntry.getMasterImageID() + "&thumb=120" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()))
+					);
 			}
 			
 		};
@@ -105,7 +94,7 @@ public class DepictionView extends AbstractView {
 				depictionEntry.getShortName() != null ? depictionEntry.getShortName() : "",
 				siteDistrictInformation,
 				wallLocation,
-				depictionEntry.isOpenAccess() ? resources.open().getSafeUri() : resources.locked().getSafeUri()
+				depictionEntry.getAccessLevel() == AbstractEntry.ACCESS_LEVEL_PUBLIC
 		));
 	}
 
@@ -132,14 +121,6 @@ public class DepictionView extends AbstractView {
 			depictionEntry = (DepictionEntry) entry;
 		}
 		refreshHTML();
-//		CaveEntry ce = depictionEntry.getCave();
-//		setHTML(dvTemplates.view(
-//				UriUtils.fromString("resource?imageID=" + depictionEntry.getMasterImageID() + "&thumb=120" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), 
-//				StaticTables.getInstance().getSiteEntries().get(ce.getSiteID()).getShortName() + " " + ce.getOfficialNumber(), 
-//				ce != null && ce.getHistoricName() != null ? ce.getHistoricName() : "",
-//				depictionEntry.getShortName() != null ? depictionEntry.getShortName() : "",
-//				depictionEntry.isOpenAccess() ? resources.open().getSafeUri() : resources.locked().getSafeUri()
-//		));
 	}
 
 	/* (non-Javadoc)

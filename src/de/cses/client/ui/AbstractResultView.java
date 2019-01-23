@@ -68,12 +68,12 @@ public abstract class AbstractResultView extends Portlet {
 		searchToolButton.setToolTip(Util.createToolTip("start search"));
 		getHeader().addTool(searchToolButton);
 		
-		this.getAppearance().collapseIcon().setStyle("minMaxButton");
-		this.getAppearance().collapseIcon().setOverStyle("maxMinButtonOver");
-		this.getAppearance().expandIcon().setStyle("minMaxButton");
-		this.getAppearance().expandIcon().setOverStyle("minMaxButtonOver");
+		this.getAppearance().collapseIcon().setStyle("collapseWindowButton");
+		this.getAppearance().collapseIcon().setOverStyle("collapseWindowButtonOver");
+		this.getAppearance().expandIcon().setStyle("expandWindowButton");
+		this.getAppearance().expandIcon().setOverStyle("expandWindowButtonOver");
 		
-//		saveToolButton = new ToolButton(ToolButton.SAVE);
+//		saveToolButton = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 //		saveToolButton.setToolTip(Util.createToolTip("save"));
 //		saveToolButton.addSelectHandler(new SelectHandler() {
 //			

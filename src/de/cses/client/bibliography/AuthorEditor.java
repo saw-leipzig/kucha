@@ -21,6 +21,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
@@ -254,7 +255,7 @@ public class AuthorEditor implements IsWidget {
 		
 		mainPanel.add(newAuthorVLC);
 
-		ToolButton saveToolButton = new ToolButton(ToolButton.SAVE);
+		ToolButton saveToolButton = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 		saveToolButton.setToolTip(Util.createToolTip("save"));
 		saveToolButton.addSelectHandler(new SelectHandler() {
 
@@ -265,7 +266,7 @@ public class AuthorEditor implements IsWidget {
 		});
 		mainPanel.addTool(saveToolButton);
 		
-		ToolButton cancelToolButton = new ToolButton(ToolButton.CLOSE);
+		ToolButton cancelToolButton = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
 		cancelToolButton.setToolTip(Util.createToolTip("close"));
 		cancelToolButton.addSelectHandler(new SelectHandler() {
 

@@ -19,6 +19,7 @@ import java.util.Comparator;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -60,6 +61,7 @@ import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
 import de.cses.client.Util;
 import de.cses.client.ui.AbstractFilter;
+import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractSearchEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
@@ -410,7 +412,7 @@ public class DepictionFilter extends AbstractFilter {
 	private void showIconographySelection() {
 		if (extendedFilterDialog == null) {
 			extendedFilterDialog = new PopupPanel();
-			ToolButton closeTB = new ToolButton(ToolButton.CLOSE);
+			ToolButton closeTB = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
 			closeTB.setToolTip(Util.createToolTip("Close selection.", "Currently selected items will be used in the filter."));
 			closeTB.addSelectHandler(new SelectHandler() {
 				
@@ -441,7 +443,12 @@ public class DepictionFilter extends AbstractFilter {
 
 	@Override
 	public AbstractSearchEntry getSearchEntry() {
-		DepictionSearchEntry searchEntry = new DepictionSearchEntry();
+		DepictionSearchEntry searchEntry;
+		if (UserLogin.isLoggedIn()) {
+			searchEntry = new DepictionSearchEntry(UserLogin.getInstance().getSessionID());
+		} else {
+			searchEntry = new DepictionSearchEntry();
+		}
 		
 		if (shortNameSearchTF.getValue() != null && !shortNameSearchTF.getValue().isEmpty()) {
 			searchEntry.setShortName(shortNameSearchTF.getValue());

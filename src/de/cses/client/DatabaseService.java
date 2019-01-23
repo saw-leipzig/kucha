@@ -95,9 +95,9 @@ public interface DatabaseService extends RemoteService {
 
 	ArrayList<OrnamentOfOtherCulturesEntry> getOrnamentsOfOtherCultures() throws IllegalArgumentException;
 
-	ArrayList<DepictionEntry> getDepictions() throws IllegalArgumentException;
+//	ArrayList<DepictionEntry> getDepictions() throws IllegalArgumentException;
 
-	DepictionEntry getDepictionEntry(int depictionID) throws IllegalArgumentException;
+//	DepictionEntry getDepictionEntry(int depictionID) throws IllegalArgumentException;
 
 	boolean updateEntry(String sqlUpdate) throws IllegalArgumentException;
 
@@ -140,13 +140,13 @@ public interface DatabaseService extends RemoteService {
 
 	ArrayList<CaveEntry> getCaves(String sqlWhere) throws IllegalArgumentException;
 
-	ArrayList<DepictionEntry> getDepictions(String sqlWhere) throws IllegalArgumentException;
+//	ArrayList<DepictionEntry> getDepictions(String sqlWhere) throws IllegalArgumentException;
 	
 	ArrayList<DepictionEntry> getDepictionsbyWallID(int wallID) throws IllegalArgumentException;
 	
 	String saveDepiction(int depictionID, int absoluteLeft, int absoluteTop) throws IllegalArgumentException;
 
-	ArrayList<ImageEntry> getRelatedImages(int depictionID) throws IllegalArgumentException;
+//	ArrayList<ImageEntry> getRelatedImages(int depictionID) throws IllegalArgumentException;
 	
 	//ArrayList<OrientationEntry> getOrientations() throws IllegalArgumentException;
 
@@ -269,7 +269,7 @@ public interface DatabaseService extends RemoteService {
 
 	ArrayList<Integer> getDepictionFromIconography(String sqlWhere) throws IllegalArgumentException;
 
-	ArrayList<Integer> getRelatedDepictionIDs(String iconographyIDs, int correlationFactor) throws IllegalArgumentException;
+//	ArrayList<Integer> getRelatedDepictionIDs(String iconographyIDs, int correlationFactor) throws IllegalArgumentException;
 
 	ArrayList<IconographyEntry> getIconography(int rootIndex) throws IllegalArgumentException;
 
@@ -300,4 +300,10 @@ public interface DatabaseService extends RemoteService {
 	int insertIconographyEntry(IconographyEntry iconographyEntry) throws IllegalArgumentException;
 
 	boolean updateIconographyEntry(IconographyEntry iconographyEntryToEdit) throws IllegalArgumentException;
+
+	ArrayList<UserEntry> getUsers() throws IllegalArgumentException;
+
+	boolean updateUserEntry(UserEntry userEntry) throws IllegalArgumentException;
+
+	int insertUserEntry(UserEntry entry) throws IllegalArgumentException;
 }

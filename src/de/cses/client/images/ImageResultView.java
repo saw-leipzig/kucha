@@ -14,6 +14,7 @@
 package de.cses.client.images;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -24,7 +25,11 @@ import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.depictions.DepictionView;
 import de.cses.client.ui.AbstractResultView;
+import de.cses.client.user.UserLogin;
+import de.cses.shared.AnnotatedBiblographyEntry;
+import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
+import de.cses.shared.DepictionSearchEntry;
 import de.cses.shared.ImageEntry;
 
 /**
@@ -33,38 +38,58 @@ import de.cses.shared.ImageEntry;
  */
 public class ImageResultView extends AbstractResultView {
 
+	/**
+	 * Create a remote service proxy to talk to the server-side service.
+	 */
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
-	
+
 	/**
 	 * @param title
 	 */
 	public ImageResultView(String title) {
 		super(title);
 		setHeight(300);
-		
-		DropTarget target = new DropTarget(this) {
+
+		new DropTarget(this) {
 
 			@Override
 			protected void onDragDrop(DndDropEvent event) {
 				super.onDragDrop(event);
+				DepictionSearchEntry dse;
+				if (UserLogin.isLoggedIn()) {
+					dse = new DepictionSearchEntry(UserLogin.getInstance().getSessionID());
+				} else {
+					dse = new DepictionSearchEntry();
+				}
 				if (event.getData() instanceof DepictionEntry) {
-					int depictionID = ((DepictionEntry) event.getData()).getDepictionID();
-					dbService.getRelatedImages(depictionID, new AsyncCallback<ArrayList<ImageEntry>>() {
-						
-						@Override
-						public void onSuccess(ArrayList<ImageEntry> result) {
-							
-							for (ImageEntry ie : result) {
+					for (ImageEntry ie : ((DepictionEntry) event.getData()).getRelatedImages()) {
+						addResult(new ImageView(ie));
+					}
+					return;
+				} else if (event.getData() instanceof CaveEntry) {
+					dse.getCaveIdList().add(((CaveEntry) event.getData()).getCaveID());
+				} else if (event.getData() instanceof AnnotatedBiblographyEntry) {
+					int bibID = ((AnnotatedBiblographyEntry) event.getData()).getAnnotatedBiblographyID();
+					dse.getBibIdList().add(bibID);
+				}
+				dbService.searchDepictions(dse, new AsyncCallback<ArrayList<DepictionEntry>>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+					}
+
+					@Override
+					public void onSuccess(ArrayList<DepictionEntry> result) {
+						for (DepictionEntry de : result) {
+							for (ImageEntry ie : de.getRelatedImages()) {
 								addResult(new ImageView(ie));
 							}
 						}
-						
-						@Override
-						public void onFailure(Throwable caught) { }
-					});
-				}
+					}
+				});
+
 			}
 		};
 	}
-		
+
 }

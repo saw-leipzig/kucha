@@ -51,7 +51,6 @@ public abstract class AbstractSearchController extends ToggleButton {
 			
 			@Override
 			public void onSelect(SelectEvent event) {
-				Util.doLogging("Search Controller: calling invokeSearch()");
 				getResultView().setSearchEnabled(false);
 				invokeSearch();
 			}
@@ -84,8 +83,8 @@ public abstract class AbstractSearchController extends ToggleButton {
 	}
 
 	/**
-	 * This abstract method need to be implemented for each controller. It should use the relatedFilter list to compile an SQL
-	 * clause and then search for the data and display it in the resultView. For an example how it works, take a look
+	 * This abstract method need to be implemented for each controller. It should use the SearchEntry
+	 * and then search for the data and display it in the resultView. For an example how it works, take a look
 	 * into some implementations in classes extending AbstractSearchController.
 	 * @param sourceToolButton 
 	 */

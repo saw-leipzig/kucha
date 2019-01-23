@@ -18,21 +18,19 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.data.shared.event.StoreFilterEvent;
 import com.sencha.gxt.widget.core.client.FramedPanel;
-import com.sencha.gxt.widget.core.client.button.TextButton;
-import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.MarginData;
@@ -44,7 +42,6 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.StoreFilterField;
 import com.sencha.gxt.widget.core.client.form.TextArea;
-import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
 import com.sencha.gxt.widget.core.client.tree.Tree;
@@ -59,7 +56,6 @@ import de.cses.client.Util;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.UserEntry;
-import de.cses.shared.VendorEntry;
 
 public class IconographySelector extends FramedPanel {
 
@@ -274,7 +270,7 @@ public class IconographySelector extends FramedPanel {
 					}
 				});
 				newIconographyEntryFP.addTool(saveTB);
-				ToolButton cancelTB = new ToolButton(ToolButton.CLOSE);
+				ToolButton cancelTB = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
 				cancelTB.addSelectHandler(new SelectHandler() {
 
 					@Override
@@ -333,7 +329,7 @@ public class IconographySelector extends FramedPanel {
 					}
 				});
 				newIconographyEntryFP.addTool(saveTB);
-				ToolButton cancelTB = new ToolButton(ToolButton.CLOSE);
+				ToolButton cancelTB = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
 				cancelTB.addSelectHandler(new SelectHandler() {
 
 					@Override

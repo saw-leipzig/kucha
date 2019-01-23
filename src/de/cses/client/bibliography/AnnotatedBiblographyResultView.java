@@ -13,18 +13,26 @@
  */
 package de.cses.client.bibliography;
 
+import java.util.ArrayList;
+
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.sencha.gxt.dnd.core.client.DndDropEvent;
 import com.sencha.gxt.dnd.core.client.DropTarget;
+import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
 import de.cses.client.Util;
+import de.cses.client.images.ImageView;
 import de.cses.client.ui.AbstractResultView;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBiblographyEntry;
+import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
+import de.cses.shared.DepictionSearchEntry;
+import de.cses.shared.ImageEntry;
 
 /**
  * @author Nina
@@ -38,7 +46,7 @@ public class AnnotatedBiblographyResultView extends AbstractResultView {
 	public AnnotatedBiblographyResultView(String title) {
 		super(title);
 		
-		ToolButton bibTexExportTB = new ToolButton(ToolButton.SAVE);
+		ToolButton bibTexExportTB = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 		bibTexExportTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
@@ -63,6 +71,10 @@ public class AnnotatedBiblographyResultView extends AbstractResultView {
 				super.onDragDrop(event);
 				if (event.getData() instanceof DepictionEntry) {
 					for (AnnotatedBiblographyEntry bibEntry : ((DepictionEntry) event.getData()).getRelatedBibliographyList()) {
+						addResult(new AnnotatedBiblographyView(bibEntry));
+					}
+				} else if (event.getData() instanceof CaveEntry) {
+					for (AnnotatedBiblographyEntry bibEntry : ((CaveEntry) event.getData()).getRelatedBibliographyList()) {
 						addResult(new AnnotatedBiblographyView(bibEntry));
 					}
 				}

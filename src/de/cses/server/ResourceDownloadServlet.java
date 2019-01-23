@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 
+ * Copyright 2016 - 2019
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -13,21 +13,13 @@
  */
 package de.cses.server;
 
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.CharBuffer;
+import java.util.ArrayList;
 
-import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
@@ -35,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import de.cses.server.mysql.MysqlConnector;
+import de.cses.shared.AbstractEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.UserEntry;
 
@@ -62,49 +55,61 @@ public class ResourceDownloadServlet extends HttpServlet {
 			ImageEntry imgEntry = connector.getImageEntry(Integer.parseInt(imageID));
 			String filename;
 			File inputFile;
-			// TODO: image rights management
-			if ((imgEntry!=null && imgEntry.isOpenAccess()) || (connector.getAccessRightsFromUsers(sessionID) == UserEntry.FULL)) {
+			int userAccessLevel = AbstractEntry.ACCESS_LEVEL_PUBLIC;
+			ArrayList<Integer> authorizedAccessLevel = new ArrayList<Integer>();
+			switch (connector.getAccessLevelForSessionID(sessionID)) {
+				case UserEntry.GUEST:
+					break;
+				case UserEntry.ASSOCIATED:
+					authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_PUBLIC);
+					authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_COPYRIGHT);
+					System.err.println("acess Level PUBLIC and COPYRIGHT");
+					break; 
+				case UserEntry.FULL:
+				case UserEntry.ADMIN:
+					authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_PUBLIC);
+					authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_COPYRIGHT);
+					authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_PRIVATE);
+					System.err.println("acess Level PUBLIC, COPYRIGHT and PRIVATE");
+					break;
+				default:
+					authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_PUBLIC);
+					System.err.println("acess Level PUBLIC");
+					break;
+			}
+			System.err.println("sessionID=" + sessionID + ", userAccessLevel=" + connector.getAccessLevelForSessionID(sessionID) + ", ImageEntry accessLevel=" + imgEntry.getAccessLevel());
+			
+			if (imgEntry!=null && authorizedAccessLevel.contains(imgEntry.getAccessLevel())) {
 				filename = imgEntry.getFilename();
-				inputFile = new File(serverProperties.getProperty("home.images"), filename);
+//				inputFile = new File(serverProperties.getProperty("home.images"), filename);
+			} else if ((connector.getAccessLevelForSessionID(sessionID) == UserEntry.GUEST) && (imgEntry.getAccessLevel() == AbstractEntry.ACCESS_LEVEL_COPYRIGHT)) {
+				// guests should be informed that there is an image
+				filename = "accessNotPermitted.png";
 			} else {
 				response.setStatus(403);
 				return;
 			}
 			ServletOutputStream out = response.getOutputStream();
-			if (inputFile.exists()) {
-				if (request.getParameter("thumb") != null) {
-					int tnSize = Integer.valueOf(request.getParameter("thumb")); // the requested size is given as a parameter
-					URL imageURL = new URL("http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/!" + tnSize + "," + tnSize + "/0/default.png");
-					System.err.println("reading image: " + imageURL.getFile());
-					InputStream in = imageURL.openStream();
-					response.setContentType("image/png");
-					byte buffer[] = new byte[4096];
-					int bytesRead = 0;
-					while ((bytesRead = in.read(buffer)) > 0) {
-						out.write(buffer, 0, bytesRead);
-					}
-					in.close();
-				} else { // load the original file
-					if (filename.toLowerCase().endsWith("png")) {
-						response.setContentType("image/png");
-					} else if (filename.toLowerCase().endsWith("jpg")) {
-						response.setContentType("image/jpeg");
-					} else if (filename.toLowerCase().endsWith("tiff")) {
-						response.setContentType("image/tiff");
-					}
-					FileInputStream fis = new FileInputStream(inputFile);
-					byte buffer[] = new byte[4096];
-					int bytesRead = 0;
-					while ((bytesRead = fis.read(buffer)) > 0) {
-						out.write(buffer, 0, bytesRead);
-					}
-					fis.close();
-				}
-				out.close();
+			URL imageURL;
+			if (request.getParameter("thumb") != null) {
+				int tnSize = Integer.valueOf(request.getParameter("thumb")); // the requested size is given as a parameter
+				imageURL = new URL(
+						"http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/!" + tnSize + "," + tnSize + "/0/default.png"
+					);
 			} else {
-				response.setStatus(404);
-				return;
+				imageURL = new URL(
+						"http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/max/0/default.png"
+					);
 			}
+			InputStream in = imageURL.openStream();
+			response.setContentType("image/png");
+			byte buffer[] = new byte[4096];
+			int bytesRead = 0;
+			while ((bytesRead = in.read(buffer)) > 0) {
+				out.write(buffer, 0, bytesRead);
+			}
+			in.close();
+			out.close();
 		} else if (request.getParameter("background") != null) {
 			String filename = request.getParameter("background");
 			if (filename.startsWith(".")) {
@@ -152,7 +157,7 @@ public class ResourceDownloadServlet extends HttpServlet {
 				}
 			}
 		} else if (request.getParameter("document") != null) {
-			if (connector.getAccessRightsFromUsers(sessionID) == UserEntry.FULL) {
+			if (connector.getAccessLevelForSessionID(sessionID) == UserEntry.FULL) {
 				String filename = request.getParameter("document");
 				if (filename.startsWith(".")) {
 					response.setStatus(400);
@@ -183,53 +188,5 @@ public class ResourceDownloadServlet extends HttpServlet {
 			response.setStatus(400);
 		}
 	}
-
-	/**
-	 * Create a thumbnail image file with a max side length of THUMBNAIL_SIZE
-	 * 
-	 * @param path
-	 *          the directory where the image is located
-	 * @param filename
-	 *          of the image
-	 * @return
-	 */
-//	private byte[] getScaledThumbnailInstance(File readFile, String imgType, int thumbnailSize) {
-//		// File tnFile;
-//		// String type;
-//		BufferedImage tnImg = null;
-//		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//
-//		// tnFile = new File(path, "tn" + filename);
-//		// File readFile = new File(inputFile);
-//		// type = filename.substring(filename.lastIndexOf(".") + 1).toUpperCase();
-//		try {
-//			BufferedImage buf = ImageIO.read(readFile);
-//			float w = buf.getWidth();
-//			float h = buf.getHeight();
-//			if (w == h) {
-//				tnImg = new BufferedImage(thumbnailSize, thumbnailSize, BufferedImage.TYPE_INT_RGB);
-//				tnImg.createGraphics().drawImage(buf.getScaledInstance(thumbnailSize, thumbnailSize, Image.SCALE_SMOOTH), 0, 0, null);
-//				ImageIO.write(tnImg, imgType, baos);
-//				// ImageIO.write(tnImg, type, tnFile);
-//			} else if (w > h) {
-//				float factor = thumbnailSize / w;
-//				float tnHeight = h * factor;
-//				tnImg = new BufferedImage(thumbnailSize, Math.round(tnHeight), BufferedImage.TYPE_INT_RGB);
-//				tnImg.createGraphics().drawImage(buf.getScaledInstance(thumbnailSize, Math.round(tnHeight), Image.SCALE_SMOOTH), 0, 0, null);
-//				ImageIO.write(tnImg, imgType, baos);
-//				// ImageIO.write(tnImg, type, tnFile);
-//			} else {
-//				float factor = thumbnailSize / h;
-//				float tnWidth = w * factor;
-//				tnImg = new BufferedImage(Math.round(tnWidth), thumbnailSize, BufferedImage.TYPE_INT_RGB);
-//				tnImg.createGraphics().drawImage(buf.getScaledInstance(Math.round(tnWidth), thumbnailSize, Image.SCALE_SMOOTH), 0, 0, null);
-//				ImageIO.write(tnImg, imgType, baos);
-//				// ImageIO.write(tnImg, type, tnFile);
-//			}
-//		} catch (IOException e) {
-//			System.out.println("Scaled instance of thumbnail could not be created!");
-//		}
-//		return baos.toByteArray();
-//	}
 
 }

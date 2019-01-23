@@ -32,6 +32,7 @@ import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
@@ -49,6 +50,9 @@ import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.Util;
+import de.cses.client.bibliography.AuthorEditor;
+import de.cses.client.bibliography.AuthorEditorListener;
+import de.cses.shared.AuthorEntry;
 import de.cses.shared.UserEntry;
 
 /**
@@ -172,7 +176,7 @@ public class UserLogin extends PopupPanel {
 				login();
 			}
 		});
-		ToolButton closeTB = new ToolButton(ToolButton.CLOSE);
+		ToolButton closeTB = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
 		closeTB.setToolTip(Util.createToolTip("close"));
 		closeTB.addSelectHandler(new SelectHandler() {
 			
@@ -300,7 +304,23 @@ public class UserLogin extends PopupPanel {
 				logout();
 			}
 		});
-		ToolButton closeTB = new ToolButton(ToolButton.CLOSE);
+
+		ToolButton adminTB = null;
+		if (getAccessRights() == UserEntry.ADMIN) {
+			adminTB = new ToolButton(new IconConfig("editButton", "editButtonOver"));
+			adminTB.addSelectHandler(new SelectHandler() {
+				
+				@Override
+				public void onSelect(SelectEvent event) {
+					UserManager userManagerDialog = new UserManager();
+					userManagerDialog.setSize("900px", "450px");
+					userManagerDialog.setModal(true);
+					userManagerDialog.center();
+				}
+			});
+		}
+		
+		ToolButton closeTB = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
 		closeTB.setToolTip(Util.createToolTip("close"));
 		closeTB.addSelectHandler(new SelectHandler() {
 			
@@ -324,6 +344,9 @@ public class UserLogin extends PopupPanel {
 		userFP.add(userHL);
 		userFP.addButton(updateButton);
 		userFP.addButton(logoutButton);
+		if (adminTB != null) {
+			userFP.addTool(adminTB);
+		}
 		userFP.addTool(closeTB);
 		userFP.setHeight(500);
 		add(userFP);
@@ -364,6 +387,10 @@ public class UserLogin extends PopupPanel {
 		return "&sessionID=" + Cookies.getCookie(SESSION_ID);
 	}
 
+	public String getSessionID() {
+		return currentUser != null ? currentUser.getSessionID() : "";
+	}
+
 	/**
 	 * @return
 	 */
@@ -376,7 +403,7 @@ public class UserLogin extends PopupPanel {
 	}
 	
 	public int getAccessRights() {
-		return currentUser != null ? currentUser.getAccessrights() : 0;
+		return currentUser != null ? currentUser.getAccessLevel() : 0;
 	}
 
 }

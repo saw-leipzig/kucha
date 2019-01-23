@@ -55,6 +55,7 @@ public class CaveSearchController extends AbstractSearchController {
 	 */
 	@Override
 	public void invokeSearch() {
+		Util.doLogging("calling CaveSearchController.invokeSearch()"); 
 		CaveSearchEntry searchEntry = (CaveSearchEntry) getFilter().getSearchEntry();
 		
 		dbService.searchCaves(searchEntry, new AsyncCallback<ArrayList<CaveEntry>>() {
@@ -67,6 +68,7 @@ public class CaveSearchController extends AbstractSearchController {
 
 			@Override
 			public void onSuccess(ArrayList<CaveEntry> result) {
+				Util.doLogging("Cave search sucessful");
 				result.sort(new CaveEntryComparator());
 				getResultView().reset();
 				for (CaveEntry ce : result) {

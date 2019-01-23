@@ -58,7 +58,6 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
-import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.DateField;
 import com.sencha.gxt.widget.core.client.form.DateTimePropertyEditor;
@@ -66,6 +65,7 @@ import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.ListField;
 import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
+import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.Validator;
@@ -86,6 +86,7 @@ import de.cses.client.ui.TextElement;
 import de.cses.client.user.UserLogin;
 import de.cses.client.walls.WallSelector;
 import de.cses.client.walls.Walls;
+import de.cses.shared.AbstractEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.ExpeditionEntry;
@@ -483,10 +484,10 @@ public class DepictionEditor extends AbstractEditor {
 				
 				if (item.getImageID() == correspondingDepictionEntry.getMasterImageID()) {
 					return imageViewTemplates.masterImage(imageUri, item.getShortName(), titleList, item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase(), imageAuthor, copyrightStr);
-				} else if (item.isOpenAccess()) {
-					return imageViewTemplates.openAccessImage(imageUri, item.getShortName(), titleList, item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase(), imageAuthor, copyrightStr);
+				} else if (item.getAccessLevel() == AbstractEntry.ACCESS_LEVEL_PUBLIC) {
+					return imageViewTemplates.publicImage(imageUri, item.getShortName(), titleList, item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase(), imageAuthor, copyrightStr);
 				} else {
-					return imageViewTemplates.nonOpenAccessImage(imageUri, item.getShortName(), titleList, item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase(), imageAuthor, copyrightStr);
+					return imageViewTemplates.nonPublicImage(imageUri, item.getShortName(), titleList, item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase(), imageAuthor, copyrightStr);
 				}
 			}
 		}));
@@ -523,19 +524,31 @@ public class DepictionEditor extends AbstractEditor {
 				correspondingDepictionEntry.setShortName(event.getValue());
 			}
 		});
-		CheckBox openAccessCB = new CheckBox();
-		openAccessCB.setBoxLabel("open access");
-		openAccessCB.setValue(correspondingDepictionEntry.isOpenAccess());
-		openAccessCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+
+		SimpleComboBox<String> accessRightsCB = new SimpleComboBox<String>(new LabelProvider<String>() {
 
 			@Override
-			public void onValueChange(ValueChangeEvent<Boolean> event) {
-				correspondingDepictionEntry.setOpenAccess(event.getValue());
+			public String getLabel(String item) {
+				return item;
+			}
+		});
+		accessRightsCB.add(AbstractEntry.ACCESS_LEVEL_LABEL.get(0));
+		accessRightsCB.add(AbstractEntry.ACCESS_LEVEL_LABEL.get(1));
+		accessRightsCB.add(AbstractEntry.ACCESS_LEVEL_LABEL.get(2));
+		accessRightsCB.setEditable(false);
+		accessRightsCB.setTypeAhead(false);
+		accessRightsCB.setTriggerAction(TriggerAction.ALL);
+		accessRightsCB.setValue(AbstractEntry.ACCESS_LEVEL_LABEL.get(correspondingDepictionEntry.getAccessLevel()));
+		accessRightsCB.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				correspondingDepictionEntry.setAccessLevel(accessRightsCB.getSelectedIndex());
 			}
 		});
 		VerticalLayoutContainer shortNameVLC = new VerticalLayoutContainer();
 		shortNameVLC.add(shortNameTF, new VerticalLayoutData(1.0, .5));
-		shortNameVLC.add(openAccessCB, new VerticalLayoutData(1.0, .5));
+		shortNameVLC.add(new FieldLabel(accessRightsCB, "Access Rights"), new VerticalLayoutData(1.0, .5));
 		shortNameFP.add(shortNameVLC);
 
 		
@@ -950,15 +963,15 @@ public class DepictionEditor extends AbstractEditor {
     
 		VerticalLayoutContainer basicsLeftVLC = new VerticalLayoutContainer();
 		
-		basicsLeftVLC.add(shortNameFP, new VerticalLayoutData(1.0, .13));
+		basicsLeftVLC.add(shortNameFP, new VerticalLayoutData(1.0, .15));
 		basicsLeftVLC.add(caveSelectionFP, new VerticalLayoutData(1.0, .11));
 		basicsLeftVLC.add(acquiredByExpeditionFP, new VerticalLayoutData(1.0, .11));
 		basicsLeftVLC.add(vendorFP, new VerticalLayoutData(1.0, .11));
 		basicsLeftVLC.add(datePurchasedFP, new VerticalLayoutData(1.0, .11));
 		basicsLeftVLC.add(currentLocationFP, new VerticalLayoutData(1.0, .11));
-		basicsLeftVLC.add(inventoryNumberFP, new VerticalLayoutData(1.0, .11));
+		basicsLeftVLC.add(inventoryNumberFP, new VerticalLayoutData(1.0, .10));
 //		basicsLeftVLC.add(positionNoteFP, new VerticalLayoutData(1.0, .15));
-		basicsLeftVLC.add(stateOfPreservationFP, new VerticalLayoutData(1.0, .21));
+		basicsLeftVLC.add(stateOfPreservationFP, new VerticalLayoutData(1.0, .2));
 
 		FramedPanel wallSelectorFP = new FramedPanel();
 		wallSelectorFP.setHeading("Wall");
@@ -1304,7 +1317,7 @@ public class DepictionEditor extends AbstractEditor {
 //			}
 //		});
 
-		ToolButton zoomTB = new ToolButton(ToolButton.MAXIMIZE);
+		ToolButton zoomTB = new ToolButton(new IconConfig("expandButton", "expandButtonOver"));
 		zoomTB.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
@@ -1365,7 +1378,7 @@ public class DepictionEditor extends AbstractEditor {
 		mainHLC.add(tabPanel, new HorizontalLayoutData(.7, 1.0));
 		mainHLC.add(depictionImagesPanel, new HorizontalLayoutData(.3, 1.0));
 		
-		ToolButton saveToolButton = new ToolButton(ToolButton.SAVE);
+		ToolButton saveToolButton = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 		saveToolButton.setToolTip(Util.createToolTip("save"));
 		saveToolButton.addSelectHandler(new SelectHandler() {
 			@Override
@@ -1374,7 +1387,7 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		
-		ToolButton closeToolButton = new ToolButton(ToolButton.CLOSE);
+		ToolButton closeToolButton = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
 		closeToolButton.setToolTip(Util.createToolTip("close"));
 		closeToolButton.addSelectHandler(new SelectHandler() {
 			@Override

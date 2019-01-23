@@ -13,7 +13,9 @@
  */
 package de.cses.shared;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author alingnau
@@ -25,6 +27,8 @@ public class UserEntry extends AbstractEntry {
 	public static final int ASSOCIATED = 2;
 	public static final int FULL = 3;
 	public static final int ADMIN = 4;
+	public static final List<String> ACCESS_RIGHTS_LABEL = Arrays.asList("guest", "associated", "full", "admin");
+
 	
 	private int userID;
 	private String username;
@@ -32,7 +36,6 @@ public class UserEntry extends AbstractEntry {
 	private String lastname;
 	private String email;
 	private String affiliation;
-	private int accessrights;
 	private String sessionID;
 	private long loginDate;
 
@@ -52,7 +55,7 @@ public class UserEntry extends AbstractEntry {
 	 * @param affiliation
 	 * @param accessrights
 	 */
-	public UserEntry(int userID, String username, String firstname, String lastname, String email, String affiliation, int accessrights, 
+	public UserEntry(int userID, String username, String firstname, String lastname, String email, String affiliation, int accessLevel, 
 			String sessionID, String modifiedOn) {
 		super();
 		this.userID = userID;
@@ -61,7 +64,7 @@ public class UserEntry extends AbstractEntry {
 		this.lastname = lastname;
 		this.email = email;
 		this.affiliation = affiliation;
-		this.accessrights = accessrights;
+		this.setAccessLevel(accessLevel);
 		this.sessionID = sessionID;
 		this.setModifiedOn(modifiedOn);
 		Date now = new Date();
@@ -114,14 +117,6 @@ public class UserEntry extends AbstractEntry {
 
 	public void setAffiliation(String affiliation) {
 		this.affiliation = affiliation;
-	}
-
-	public int getAccessrights() {
-		return accessrights;
-	}
-
-	public void setAccessrights(int accessrights) {
-		this.accessrights = accessrights;
 	}
 
 	/* (non-Javadoc)

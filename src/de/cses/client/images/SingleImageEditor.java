@@ -60,6 +60,7 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
+import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.Validator;
@@ -73,6 +74,7 @@ import de.cses.client.StaticTables;
 import de.cses.client.Util;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.client.user.UserLogin;
+import de.cses.shared.AbstractEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageTypeEntry;
 import de.cses.shared.PhotographerEntry;
@@ -383,25 +385,36 @@ public class SingleImageEditor extends AbstractEditor {
 		imageTypeSelectionPanel.add(imageTypeSelection);
 		imageTypeSelectionPanel.setHeading("Image Type");
 
-		FramedPanel openAccessImagePanel = new FramedPanel();
-		openAccessImagePanel.setHeading("Open Access");
-		CheckBox openAccessImageCB = new CheckBox();
-		openAccessImageCB.setBoxLabel("allow");
-		openAccessImageCB.setValue(imgEntry.isOpenAccess());
-		openAccessImageCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+		SimpleComboBox<String> accessLevelCB = new SimpleComboBox<String>(new LabelProvider<String>() {
 
 			@Override
-			public void onValueChange(ValueChangeEvent<Boolean> event) {
-				imgEntry.setOpenAccess(event.getValue());
+			public String getLabel(String item) {
+				return item;
 			}
 		});
-		openAccessImagePanel.add(openAccessImageCB);
+		accessLevelCB.add(AbstractEntry.ACCESS_LEVEL_LABEL.get(0));
+		accessLevelCB.add(AbstractEntry.ACCESS_LEVEL_LABEL.get(1));
+		accessLevelCB.add(AbstractEntry.ACCESS_LEVEL_LABEL.get(2));
+		accessLevelCB.setEditable(false);
+		accessLevelCB.setTypeAhead(false);
+		accessLevelCB.setTriggerAction(TriggerAction.ALL);
+		accessLevelCB.setValue(AbstractEntry.ACCESS_LEVEL_LABEL.get(imgEntry.getAccessLevel()));
+		accessLevelCB.addValueChangeHandler(new ValueChangeHandler<String>() {
 
-		HorizontalLayoutContainer imageOpenAccessHLC = new HorizontalLayoutContainer();
-		imageOpenAccessHLC.add(imageTypeSelectionPanel, new HorizontalLayoutData(.5, 1.0));
-		imageOpenAccessHLC.add(openAccessImagePanel, new HorizontalLayoutData(.5, 1.0));
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				imgEntry.setAccessLevel(accessLevelCB.getSelectedIndex());
+			}
+		});
+		FramedPanel accessLevelFP = new FramedPanel();
+		accessLevelFP.setHeading("Access Level");
+		accessLevelFP.add(accessLevelCB);
+
+		HorizontalLayoutContainer imageAccessLevelHLC = new HorizontalLayoutContainer();
+		imageAccessLevelHLC.add(imageTypeSelectionPanel, new HorizontalLayoutData(.5, 1.0));
+		imageAccessLevelHLC.add(accessLevelFP, new HorizontalLayoutData(.5, 1.0));
 		
-		ToolButton saveToolButton = new ToolButton(ToolButton.SAVE);
+		ToolButton saveToolButton = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 		saveToolButton.setToolTip(Util.createToolTip("save"));
 		saveToolButton.addSelectHandler(new SelectHandler() {
 			@Override
@@ -410,7 +423,7 @@ public class SingleImageEditor extends AbstractEditor {
 			}
 		});
 		
-		ToolButton closeToolButton = new ToolButton(ToolButton.CLOSE);
+		ToolButton closeToolButton = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
 		closeToolButton.setToolTip(Util.createToolTip("close"));
 		closeToolButton.addSelectHandler(new SelectHandler() {
 			@Override
@@ -453,7 +466,7 @@ public class SingleImageEditor extends AbstractEditor {
 		leftEditVLC.add(datePanel, new VerticalLayoutData(1.0, .25));
 
 		VerticalLayoutContainer rightEditVLC = new VerticalLayoutContainer();
-		rightEditVLC.add(imageOpenAccessHLC, new VerticalLayoutData(1.0, .25));
+		rightEditVLC.add(imageAccessLevelHLC, new VerticalLayoutData(1.0, .25));
 		rightEditVLC.add(commentPanel, new VerticalLayoutData(1.0, .75));
 
 		HorizontalLayoutContainer editHLC = new HorizontalLayoutContainer();

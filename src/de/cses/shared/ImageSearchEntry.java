@@ -2,6 +2,10 @@ package de.cses.shared;
 
 import java.util.ArrayList;
 
+import com.google.gwt.user.client.Cookies;
+
+import de.cses.client.user.UserLogin;
+
 public class ImageSearchEntry extends AbstractSearchEntry {
 	
 	private String titleSearch = "";
@@ -10,12 +14,15 @@ public class ImageSearchEntry extends AbstractSearchEntry {
 	private int daysSinceUploadSearch = 0;
 	ArrayList<Integer> imageTypeIdList = new ArrayList<Integer>();
 
-	public ImageSearchEntry(boolean orSearch) {
-		super(orSearch);
+	public ImageSearchEntry(boolean orSearch, String sessionID) {
+		super(orSearch, sessionID);
 	}
 
-	public ImageSearchEntry() {
+	public ImageSearchEntry(String sessionID) {
+		super(sessionID);
 	}
+
+	public ImageSearchEntry() { }
 
 	public String getTitleSearch() {
 		return titleSearch;

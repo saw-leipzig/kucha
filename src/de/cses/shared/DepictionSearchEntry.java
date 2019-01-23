@@ -2,22 +2,28 @@ package de.cses.shared;
 
 import java.util.ArrayList;
 
+import com.google.gwt.user.client.Cookies;
+
+import de.cses.client.user.UserLogin;
+
 public class DepictionSearchEntry extends AbstractSearchEntry {
 	
 	private String shortName="";
 	private ArrayList<Integer> caveIdList = new ArrayList<Integer>();
 	private ArrayList<Integer> locationIdList = new ArrayList<Integer>();
 	private ArrayList<Integer> iconographyIdList = new ArrayList<Integer>();
+	private ArrayList<Integer> bibIdList = new ArrayList<Integer>();
 	private int correlationFactor = 0;
 
-	public DepictionSearchEntry(boolean orSearch) {
-		super(orSearch);
-		// TODO Auto-generated constructor stub
+	public DepictionSearchEntry(boolean orSearch, String sessionID) {
+		super(orSearch, sessionID);
 	}
 
-	public DepictionSearchEntry() {
-		// TODO Auto-generated constructor stub
+	public DepictionSearchEntry(String sessionID) {
+		super(sessionID);
 	}
+
+	public DepictionSearchEntry() {	}
 
 	public String getShortName() {
 		return shortName;
@@ -57,6 +63,14 @@ public class DepictionSearchEntry extends AbstractSearchEntry {
 
 	public void setCorrelationFactor(int correlationFactor) {
 		this.correlationFactor = correlationFactor;
+	}
+
+	public ArrayList<Integer> getBibIdList() {
+		return bibIdList;
+	}
+
+	public void setBibIdList(ArrayList<Integer> bibIdList) {
+		this.bibIdList = bibIdList;
 	}
 
 }

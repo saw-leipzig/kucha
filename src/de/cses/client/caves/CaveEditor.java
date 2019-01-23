@@ -69,6 +69,7 @@ import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
+import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.Validator;
@@ -87,6 +88,7 @@ import de.cses.client.caves.C14DocumentUploader.C14DocumentUploadListener;
 import de.cses.client.caves.CaveSketchUploader.CaveSketchUploadListener;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.client.user.UserLogin;
+import de.cses.shared.AbstractEntry;
 import de.cses.shared.C14AnalysisUrlEntry;
 import de.cses.shared.C14DocumentEntry;
 import de.cses.shared.CaveAreaEntry;
@@ -629,19 +631,32 @@ public class CaveEditor extends AbstractEditor {
 				}
 			}
 		});
-		CheckBox openAccessCB = new CheckBox();
-		openAccessCB.setBoxLabel("open access");
-		openAccessCB.setValue(correspondingCaveEntry.isOpenAccess());
-		openAccessCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+
+		SimpleComboBox<String> accessRightsCB = new SimpleComboBox<String>(new LabelProvider<String>() {
 
 			@Override
-			public void onValueChange(ValueChangeEvent<Boolean> event) {
-				correspondingCaveEntry.setOpenAccess(event.getValue());
+			public String getLabel(String item) {
+				return item;
 			}
 		});
+		accessRightsCB.add(AbstractEntry.ACCESS_LEVEL_LABEL.get(0));
+		accessRightsCB.add(AbstractEntry.ACCESS_LEVEL_LABEL.get(1));
+		accessRightsCB.add(AbstractEntry.ACCESS_LEVEL_LABEL.get(2));
+		accessRightsCB.setEditable(false);
+		accessRightsCB.setTypeAhead(false);
+		accessRightsCB.setTriggerAction(TriggerAction.ALL);
+		accessRightsCB.setValue(AbstractEntry.ACCESS_LEVEL_LABEL.get(correspondingCaveEntry.getAccessLevel()));
+		accessRightsCB.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				correspondingCaveEntry.setAccessLevel(accessRightsCB.getSelectedIndex());
+			}
+		});
+
 		VerticalLayoutContainer officialNumberVLC = new VerticalLayoutContainer();
 		officialNumberVLC.add(officialNumberField, new VerticalLayoutData(1.0, .5));
-		officialNumberVLC.add(openAccessCB, new VerticalLayoutData(1.0, .5));
+		officialNumberVLC.add(new FieldLabel(accessRightsCB, "Access Rights"), new VerticalLayoutData(1.0, .5));
 		officialNumberPanel.add(officialNumberVLC);
 
 		FramedPanel historicalNamePanel = new FramedPanel();
@@ -1886,7 +1901,7 @@ public class CaveEditor extends AbstractEditor {
 				c14AnalysisVLC.add(c14AnalysisShortName, new VerticalLayoutData(1.0, .5));
 				c14AnalysisVLC.add(c14AnalysisUrlTextField, new VerticalLayoutData(1.0, .5));
 				newC14LinkFP.add(c14AnalysisVLC);
-				ToolButton saveTB = new ToolButton(ToolButton.SAVE);
+				ToolButton saveTB = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 				saveTB.setToolTip(Util.createToolTip("save"));
 				saveTB.addSelectHandler(new SelectHandler() {
 
@@ -1900,7 +1915,7 @@ public class CaveEditor extends AbstractEditor {
 						}
 					}
 				});
-				ToolButton cancelTB = new ToolButton(ToolButton.CLOSE);
+				ToolButton cancelTB = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
 				cancelTB.setToolTip(Util.createToolTip("close"));
 				cancelTB.addSelectHandler(new SelectHandler() {
 
@@ -2484,7 +2499,7 @@ public class CaveEditor extends AbstractEditor {
 
 		mainHlContainer.add(tabPanel, new HorizontalLayoutData(.7, 1.0));
 
-		ToolButton saveToolButton = new ToolButton(ToolButton.SAVE);
+		ToolButton saveToolButton = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 		saveToolButton.setToolTip(Util.createToolTip("save"));
 		saveToolButton.addSelectHandler(new SelectHandler() {
 			@Override
@@ -2493,7 +2508,7 @@ public class CaveEditor extends AbstractEditor {
 			}
 		});
 
-		ToolButton closeToolButton = new ToolButton(ToolButton.CLOSE);
+		ToolButton closeToolButton = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
 		closeToolButton.setToolTip(Util.createToolTip("close"));
 		closeToolButton.addSelectHandler(new SelectHandler() {
 			@Override

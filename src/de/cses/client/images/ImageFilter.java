@@ -16,6 +16,7 @@ package de.cses.client.images;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.ValueProvider;
@@ -38,6 +39,7 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 import de.cses.client.StaticTables;
 import de.cses.client.Util;
 import de.cses.client.ui.AbstractFilter;
+import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractSearchEntry;
 import de.cses.shared.ImageSearchEntry;
 import de.cses.shared.ImageTypeEntry;
@@ -136,29 +138,34 @@ public class ImageFilter extends AbstractFilter {
 
 	@Override
 	public AbstractSearchEntry getSearchEntry() {
-		ImageSearchEntry entry = new ImageSearchEntry();
+		ImageSearchEntry searchEntry;
+		if (UserLogin.isLoggedIn()) {
+			searchEntry = new ImageSearchEntry(UserLogin.getInstance().getSessionID());
+		} else {
+			searchEntry = new ImageSearchEntry();
+		}
 
 		if (titleSearch.getValue() != null && !titleSearch.getValue().isEmpty()) {
-			entry.setTitleSearch(titleSearch.getValue());
+			searchEntry.setTitleSearch(titleSearch.getValue());
 		}
 		
 		if (copyrightSearch.getValue() != null && !copyrightSearch.getValue().isEmpty()) {
-			entry.setCopyrightSearch(copyrightSearch.getValue());
+			searchEntry.setCopyrightSearch(copyrightSearch.getValue());
 		}
 		
 		if (filenameSearch.getValue() != null && !filenameSearch.getValue().isEmpty()) {
-			entry.setFilenameSearch(filenameSearch.getValue());
+			searchEntry.setFilenameSearch(filenameSearch.getValue());
 		}
 		
 		if (daysSinceUploadSearch.getValue() != null && daysSinceUploadSearch.getValue() > 0) {
-			entry.setDaysSinceUploadSearch(daysSinceUploadSearch.getValue());
+			searchEntry.setDaysSinceUploadSearch(daysSinceUploadSearch.getValue());
 		}
 		
 		for (ImageTypeEntry ite : selectedImagesTypesList.getAll()) {
-			entry.getImageTypeIdList().add(ite.getImageTypeID());
+			searchEntry.getImageTypeIdList().add(ite.getImageTypeID());
 		}
 
-		return entry;
+		return searchEntry;
 	}
 
 }

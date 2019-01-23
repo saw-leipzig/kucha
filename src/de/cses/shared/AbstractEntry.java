@@ -13,6 +13,9 @@
  */
 package de.cses.shared;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
@@ -21,16 +24,22 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public abstract class AbstractEntry implements IsSerializable {
 	
-	protected boolean openAccess = false;
+	public static final int ACCESS_LEVEL_PRIVATE = 0;
+	public static final int ACCESS_LEVEL_COPYRIGHT = 1;
+	public static final int ACCESS_LEVEL_PUBLIC = 2;
+	public static final List<String> ACCESS_LEVEL_LABEL = Arrays.asList("private", "copyright", "public");
+	
+	protected int accessLevel = ACCESS_LEVEL_PRIVATE;
 	protected String lastChangedByUser = "";
 	protected String modifiedOn = "";
-	
+
 	/**
-	 * @param openAccess
+	 * 
+	 * @param accessLevel
 	 */
-	public AbstractEntry(boolean openAccess) {
+	public AbstractEntry(int accessLevel) {
 		super();
-		this.openAccess = openAccess;
+		this.accessLevel = accessLevel;
 	}
 
 	public AbstractEntry() { }
@@ -42,15 +51,7 @@ public abstract class AbstractEntry implements IsSerializable {
 	 */
 	abstract public String getUniqueID();
 	
-	public boolean isOpenAccess() {
-		return openAccess;
-	}
-	
-	public void setOpenAccess(boolean openAccess) {
-		this.openAccess = openAccess;
-	}
-
-	public String getLastChangedByUser() {
+		public String getLastChangedByUser() {
 		return lastChangedByUser;
 	}
 
@@ -64,6 +65,14 @@ public abstract class AbstractEntry implements IsSerializable {
 
 	public void setModifiedOn(String modifiedOn) {
 		this.modifiedOn = modifiedOn;
+	}
+
+	public int getAccessLevel() {
+		return accessLevel;
+	}
+
+	public void setAccessLevel(int accessLevel) {
+		this.accessLevel = accessLevel;
 	}
 
 }

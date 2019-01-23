@@ -28,6 +28,7 @@ import com.sencha.gxt.dnd.core.client.DragSource;
 import de.cses.client.StaticTables;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.client.ui.AbstractView;
+import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveTypeEntry;
@@ -51,7 +52,7 @@ public class CaveView extends AbstractView {
 
 	interface CaveViewTemplates extends XTemplates {
 		@XTemplate(source = "CaveViewTemplate.html")
-		SafeHtml view(SafeUri imgUri, String sitename, String officialNumber, String caveType, String historicalName, String district, String region, SafeUri lockUri);
+		SafeHtml view(SafeUri imgUri, String sitename, String officialNumber, String caveType, String historicalName, String district, String region, boolean isPublic);
 
 		@XTemplate("<div><img src='{imgUri}' height='16px' width='16px' > <b style='font-size: 20px'> {officialNumber} </b></div>")
 		SafeHtml view(SafeUri imgUri, String officialNumber);
@@ -108,7 +109,7 @@ public class CaveView extends AbstractView {
 				cEntry.getHistoricName() != null ? cEntry.getHistoricName() : "",
 				district,
 				region,
-				cEntry.isOpenAccess() ? resources.open().getSafeUri() : resources.locked().getSafeUri()
+				cEntry.getAccessLevel() == AbstractEntry.ACCESS_LEVEL_PUBLIC
 		));
 	}
 

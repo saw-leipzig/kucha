@@ -23,6 +23,7 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import de.cses.client.Util;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
+import de.cses.shared.UserEntry;
 
 /**
  * @author alingnau
@@ -40,12 +41,8 @@ public abstract class AbstractView extends Button implements EditorListener {
 			
 			@Override
 			public void onClick(ClickEvent event) {
-				if (UserLogin.isLoggedIn()) {
+				if (UserLogin.getInstance().getAccessRights() >= UserEntry.FULL) { // guests are not allowed to edit
 					showEditor();
-				} else if (getEntry().isOpenAccess()) {
-					Util.showWarning("Login required", "Sorry, you either don't have the permission\n to edit but you can still view this data!");
-				} else {
-					Util.showWarning("Permission denied", "Sorry, you have no permission\n to edit or view this data!");
 				}
 			}
 		});

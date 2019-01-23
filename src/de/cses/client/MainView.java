@@ -73,6 +73,9 @@ import de.cses.shared.OrnamentEntry;
  */
 public class MainView implements IsWidget {
 	
+	// this footer will be shown at the bottom of the WebApp
+	private static String FOOTER_TEXT = "\u00A9 2019 Sächsische Akademie der Wissenschaften zu Leipzig (Version 0.9)";
+	
 	private static ArrayList<String> dataDisplayUniqueIDList = null;
 
 	private BorderLayoutContainer view = null;
@@ -267,7 +270,7 @@ public class MainView implements IsWidget {
 		    }
 			}
 		});
-
+    
     ToolButton loginTB = new ToolButton(new IconConfig("loginButton", "loginButtonOver"));
     loginTB.setToolTip(Util.createToolTip("User Login"));
     loginTB.addSelectHandler(new SelectHandler() {
@@ -307,7 +310,7 @@ public class MainView implements IsWidget {
     dataViewPanel.addStyleName("transparent");
     dataViewPanel.getHeader().setStylePrimaryName("frame-header");
     dataViewPanel.add(dataViewPLC);
-    saveWorkspaceToolButton = new ToolButton(ToolButton.SAVE);
+    saveWorkspaceToolButton = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
     saveWorkspaceToolButton.setToolTip(Util.createToolTip("save", "not yet implemented"));
     saveWorkspaceToolButton.addSelectHandler(new SelectHandler() {
 			
@@ -355,14 +358,14 @@ public class MainView implements IsWidget {
 			}
 		};
 		
-		Label footerLabel = new Label("\u00A9 Sächsische Akademie der Wissenschaften zu Leipzig");
+		Label footerLabel = new Label(FOOTER_TEXT);
 		footerLabel.setStyleName("footer");
     
     BorderLayoutData northData = new BorderLayoutData(70);
     northData.setMargins(new Margins(5));
     
     BorderLayoutData southData = new BorderLayoutData(20);
-    northData.setMargins(new Margins(5));
+    southData.setMargins(new Margins(5));
 
     BorderLayoutData westData = new BorderLayoutData(220);
     westData.setMargins(new Margins(5));
@@ -388,7 +391,7 @@ public class MainView implements IsWidget {
     view.setSouthWidget(footerLabel, southData);
     view.setCenterWidget(centerPanel, centerData);
     view.setStyleName("");
-
+    
     if (UserLogin.isLoggedIn()) {
     	north.setHeading("Welcome back, " + UserLogin.getInstance().getUsername());
     } else {

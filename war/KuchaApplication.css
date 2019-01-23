@@ -301,16 +301,16 @@ div.addButtonOver {
 	cursor: pointer;
 }
 
-div.minimizeLeftButton {
-	background-image: url(icons/nach_links_minimieren.png);
+div.doubleLeftButton {
+	background-image: url(icons/doppel_links.png);
 	width: 20px;
 	height: 20px;
 	background-repeat: no-repeat;
 	cursor: pointer;
 }
 
-div.minimizeLeftButtonOver {
-	background-image: url(icons/nach_links_minimieren_mo.png);
+div.doubleLeftButtonOver {
+	background-image: url(icons/doppel_links_mo.png);
 	width: 20px;
 	height: 20px;
 	background-repeat: no-repeat;
@@ -413,24 +413,16 @@ div.foldButtonOver {
 	cursor: pointer;
 }
 
-div.minMaxButton {
-	background-image: url(icons/minimize_maximize.png);
+div.expandButton {
+	background-image: url(icons/expand_object.png);
 	width: 20px;
 	height: 20px;
 	background-repeat: no-repeat;
 	cursor: pointer;
 }
 
-div.minMaxButtonOver {
-	background-image: url(icons/minimize_maximize_mo.png);
-	width: 20px;
-	height: 20px;
-	background-repeat: no-repeat;
-	cursor: pointer;
-}
-
-div.maxMinButtonOver {
-	background-image: url(icons/minimize_maximize_mo2.png);
+div.expandButtonOver {
+	background-image: url(icons/expand_object_mo2.png);
 	width: 20px;
 	height: 20px;
 	background-repeat: no-repeat;
@@ -503,6 +495,54 @@ div.saveButton {
 
 div.saveButtonOver {
 	background-image: url(icons/save_mo.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.closeButton {
+	background-image: url(icons/close_icon.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.closeButtonOver {
+	background-image: url(icons/close_icon_mo.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.expandWindowButton {
+	background-image: url(icons/close_window.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.expandWindowButtonOver {
+	background-image: url(icons/close_window_mo.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.collapseWindowButton {
+	background-image: url(icons/open_window.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.collapseWindowButtonOver {
+	background-image: url(icons/open_window_mo.png);
 	width: 20px;
 	height: 20px;
 	background-repeat: no-repeat;

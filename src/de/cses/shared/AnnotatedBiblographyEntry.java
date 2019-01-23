@@ -72,7 +72,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry implements Comparab
 			String monthEN, String monthORG, String monthTR, 
 			String pagesEN, String pagesORG, String pagesTR, 
 			String comments, String notes, String url, String uri, boolean unpublished, int firstEditionBibID, 
-			boolean openAccess, String abstractText, String thesisType, String editorType, boolean officialTitleTranslation,
+			int accessLevel, String abstractText, String thesisType, String editorType, boolean officialTitleTranslation,
 			String bibtexKey, String lastChangedOn) {
 		super();
 		this.annotatedBiblographyID = annotatedBiblographyID;
@@ -126,7 +126,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry implements Comparab
 		this.uri = uri;
 		this.unpublished = unpublished;
 		this.firstEditionBibID = firstEditionBibID;
-		this.openAccess = openAccess;
+		this.accessLevel = accessLevel;
 		this.abstractText = abstractText;
 		this.thesisType = thesisType;
 		this.editorType = editorType;
@@ -154,7 +154,7 @@ public class AnnotatedBiblographyEntry extends AbstractEntry implements Comparab
 				yearEN, yearORG, yearTR, 
 				monthEN, monthORG, monthTR,  
 				pagesEN, pagesORG, pagesTR, 
-				comments, notes, url, uri, unpublished, firstEditionBibID, openAccess, 
+				comments, notes, url, uri, unpublished, firstEditionBibID, accessLevel, 
 				abstractText, thesisType, editorType, officialTitleTranslation, bibtexKey, this.modifiedOn);
 		ArrayList<AuthorEntry> clonedAuthorList = new ArrayList<AuthorEntry>();
 		for (AuthorEntry ae : this.authorList) {

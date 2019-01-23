@@ -20,6 +20,7 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
 import com.sencha.gxt.core.client.IdentityValueProvider;
@@ -51,6 +52,7 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 import de.cses.client.StaticTables;
 import de.cses.client.Util;
 import de.cses.client.ui.AbstractFilter;
+import de.cses.client.user.UserLogin;
 import de.cses.shared.CaveSearchEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.DistrictEntry;
@@ -350,7 +352,12 @@ public class CaveFilter extends AbstractFilter {
 
 	@Override
 	public CaveSearchEntry getSearchEntry() {
-		CaveSearchEntry result = new CaveSearchEntry();
+		CaveSearchEntry result;
+		if (UserLogin.isLoggedIn()) {
+			result = new CaveSearchEntry(UserLogin.getInstance().getSessionID());
+		} else {
+			result = new CaveSearchEntry();
+		}
 		
 		if (searchNameTF.getValue() != null && !searchNameTF.getValue().isEmpty()) {
 			result.setHistoricalName(searchNameTF.getValue());
