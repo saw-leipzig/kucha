@@ -665,15 +665,15 @@ public class OrnamenticFilter  extends AbstractFilter{
 		
 		ContentPanel remarksPanel = new ContentPanel();
 		remarksPanel.setHeaderVisible(true);
-		remarksPanel.setToolTip(Util.createToolTip("Search for ornament references."));
+		remarksPanel.setToolTip(Util.createToolTip("Search for ornament remarks."));
 		remarksPanel.setHeading("Ornament Refmarks");
 		remarksPanel.add(ornamentRemarksSearchTF);
 		ornamenticFilterVLC.add(remarksPanel, new VerticalLayoutData(1.0, .02));
 		
 		ContentPanel similatitiesPanel = new ContentPanel();
 		similatitiesPanel.setHeaderVisible(true);
-		similatitiesPanel.setToolTip(Util.createToolTip("Search for ornament references."));
-		similatitiesPanel.setHeading("Ornament Similarities to other ornaments or elements from other cultures");
+		similatitiesPanel.setToolTip(Util.createToolTip("Search for similar ornaments or elements of other cultures."));
+		similatitiesPanel.setHeading("Similarities");
 		similatitiesPanel.add(ornamentSimilaritiesSearchTF);
 		ornamenticFilterVLC.add(similatitiesPanel, new VerticalLayoutData(1.0, .02));
 		
@@ -700,33 +700,73 @@ public class OrnamenticFilter  extends AbstractFilter{
 		
 		if (ornamentCodeSearchTF.getValue() != null && !ornamentCodeSearchTF.getValue().isEmpty()) {
 			searchEntry.setCode(ornamentCodeSearchTF.getValue());
+			searchEntry.setEmpty(false);
 		}
 		if (ornamentDeskriptionSearchTF.getValue() != null && !ornamentDeskriptionSearchTF.getValue().isEmpty()) {
 			searchEntry.setDescription(ornamentDeskriptionSearchTF.getValue());
+			searchEntry.setEmpty(false);
 		}
 		if (ornamentInterpretationSearchTF.getValue() != null && !ornamentInterpretationSearchTF.getValue().isEmpty()) {
 			searchEntry.setInterpretation(ornamentInterpretationSearchTF.getValue());
+			searchEntry.setEmpty(false);
 		}
 		if (ornamentOrnamentalGroupSearchTF.getValue() != null && !ornamentOrnamentalGroupSearchTF.getValue().isEmpty()) {
 			searchEntry.setGroup(ornamentOrnamentalGroupSearchTF.getValue());
+			searchEntry.setEmpty(false);
 		}
 		if (ornamentReferencesSearchTF.getValue() != null && !ornamentReferencesSearchTF.getValue().isEmpty()) {
 			searchEntry.setReferences(ornamentReferencesSearchTF.getValue());
+			searchEntry.setEmpty(false);
 		}
 		if (ornamentRemarksSearchTF.getValue() != null && !ornamentRemarksSearchTF.getValue().isEmpty()) {
 			searchEntry.setRemarks(ornamentRemarksSearchTF.getValue());
+			searchEntry.setEmpty(false);
 		}
 		if (ornamentSimilaritiesSearchTF.getValue() != null && !ornamentSimilaritiesSearchTF.getValue().isEmpty()) {
 			searchEntry.setSimilaritys(ornamentSimilaritiesSearchTF.getValue());
+			searchEntry.setEmpty(false);
 		}
 		
 		if (!ornamentComponentsSelectionLV.getSelectionModel().getSelectedItems().isEmpty()) {
 			for (OrnamentComponentsEntry oce : ornamentComponentsSelectionLV.getSelectionModel().getSelectedItems()) {
 				searchEntry.getComponents().add(oce);
 			}
+			searchEntry.setEmpty(false);
+		}
+		if (!innerSecondaryPatternsSelectionLV.getSelectionModel().getSelectedItems().isEmpty()) {
+			for (InnerSecondaryPatternsEntry oce : innerSecondaryPatternsSelectionLV.getSelectionModel().getSelectedItems()) {
+				searchEntry.getSecondarypatterns().add(oce);
+			}
+			searchEntry.setEmpty(false);
+		}
+		if (!districtsSelectionLV.getSelectionModel().getSelectedItems().isEmpty()) {
+			for (DistrictEntry oce : districtsSelectionLV.getSelectionModel().getSelectedItems()) {
+				searchEntry.getDistricts().add(oce);
+			}
+			searchEntry.setEmpty(false);
+		}
+		if (!relatedOrnamentsSelectionLV.getSelectionModel().getSelectedItems().isEmpty()) {
+			for (OrnamentEntry oce : relatedOrnamentsSelectionLV.getSelectionModel().getSelectedItems()) {
+				searchEntry.getRelatedOrnaments().add(oce);
+			}
+			searchEntry.setEmpty(false);
 		}
 		
-		// @nina: siehe auch getSearchEntry() z.B. in DepictionFilter
+		if (!positionSelectionLV.getSelectionModel().getSelectedItems().isEmpty()) {
+			for (OrnamentPositionEntry oce : positionSelectionLV.getSelectionModel().getSelectedItems()) {
+				searchEntry.getPosition().add(oce);
+			}
+			searchEntry.setEmpty(false);
+		}
+		
+		
+		if (!functionSelectionLV.getSelectionModel().getSelectedItems().isEmpty()) {
+			for (OrnamentFunctionEntry oce : functionSelectionLV.getSelectionModel().getSelectedItems()) {
+				searchEntry.getFunction().add(oce);
+			}
+			searchEntry.setEmpty(false);
+		}
+		
 		
 		return searchEntry;
 	}
