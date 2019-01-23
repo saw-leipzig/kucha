@@ -414,7 +414,7 @@ div.foldButtonOver {
 }
 
 div.expandButton {
-	background-image: url(icons/minimize_maximize.png);
+	background-image: url(icons/expand_object.png);
 	width: 20px;
 	height: 20px;
 	background-repeat: no-repeat;
@@ -422,7 +422,7 @@ div.expandButton {
 }
 
 div.expandButtonOver {
-	background-image: url(icons/minimize_maximize_mo2.png);
+	background-image: url(icons/expand_object_mo2.png);
 	width: 20px;
 	height: 20px;
 	background-repeat: no-repeat;
