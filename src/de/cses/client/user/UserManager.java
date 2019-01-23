@@ -270,6 +270,11 @@ public class UserManager extends PopupPanel {
 					public void onSuccess(Boolean result) {
 						if (!result) {
 							Util.showWarning("Server Error", "The changes for " + entry.getUsername() + " could not be saved!");
+						} else {
+							// Once the changes have been dealt with, commit them to the local store.
+							// This will add the changed values to the model in the local store.
+							record.commit(true);
+							hide();
 						}
 					}
 				});
@@ -285,6 +290,10 @@ public class UserManager extends PopupPanel {
 					public void onSuccess(Integer result) {
 						if (result > 0) {
 							entry.setUserID(result);
+							// Once the changes have been dealt with, commit them to the local store.
+							// This will add the changed values to the model in the local store.
+							record.commit(true);
+							hide();
 						} else {
 							Util.showWarning("Server Error", entry.getUsername() + " could not be created!");
 						}
@@ -292,11 +301,7 @@ public class UserManager extends PopupPanel {
 					
 				});
 			}
-			// Once the changes have been dealt with, commit them to the local store.
-			// This will add the changed values to the model in the local store.
-			record.commit(true);
 		}
-		hide();
 	}
 
 }
