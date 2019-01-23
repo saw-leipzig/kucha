@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 
+ * Copyright 2018 - 2019
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -17,14 +17,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.tools.Tool;
-
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.editor.client.Editor.Path;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
-import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
@@ -33,23 +30,20 @@ import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
-import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
+import com.sencha.gxt.widget.core.client.event.CancelEditEvent;
+import com.sencha.gxt.widget.core.client.event.CancelEditEvent.CancelEditHandler;
+import com.sencha.gxt.widget.core.client.event.CompleteEditEvent;
+import com.sencha.gxt.widget.core.client.event.CompleteEditEvent.CompleteEditHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
-import com.sencha.gxt.widget.core.client.form.PasswordField;
 import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
 import com.sencha.gxt.widget.core.client.form.TextField;
-import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
-import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
 import com.sencha.gxt.widget.core.client.grid.Grid.GridCell;
-import com.sencha.gxt.widget.core.client.grid.editing.GridEditing;
 import com.sencha.gxt.widget.core.client.grid.editing.GridRowEditing;
 import com.sencha.gxt.widget.core.client.grid.filters.GridFilters;
 import com.sencha.gxt.widget.core.client.grid.filters.StringFilter;
@@ -58,7 +52,6 @@ import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.Util;
 import de.cses.shared.UserEntry;
-import de.cses.shared.VendorEntry;
 
 /**
  * @author alingnau
@@ -135,7 +128,7 @@ public class UserManager extends PopupPanel {
 	 * 
 	 */
 	private void createUI() {
-    IdentityValueProvider<UserEntry> identity = new IdentityValueProvider<UserEntry>();
+//    IdentityValueProvider<UserEntry> identity = new IdentityValueProvider<UserEntry>();
 //    selectionModel = new CheckBoxSelectionModel<UserEntry>(identity);
 //    selectionModel.setSelectionMode(SelectionMode.SIMPLE);
 		
@@ -221,6 +214,27 @@ public class UserManager extends PopupPanel {
     emailTF.addValidator(new RegExValidator(Util.REGEX_EMAIL_PATTERN, "please enter valid email"));
     editing.addEditor(emailCol, emailTF);
     editing.addEditor(accessLevelCol, accessRightsCB);
+    
+    editing.addCancelEditHandler(new CancelEditHandler<UserEntry>() {
+			
+			@Override
+			public void onCancelEdit(CancelEditEvent<UserEntry> event) {
+				UserEntry entry = event.getSource().getEditableGrid().getSelectionModel().getSelectedItem();
+				if (entry.getUserID() == 0 && (!usernameTF.isValid() || !firstnameTF.isValid() || !lastnameTF.isValid() || !emailTF.isValid())) {
+					sourceStore.remove(entry);
+				}
+			}
+		});
+    editing.addCompleteEditHandler(new CompleteEditHandler<UserEntry>() {
+			
+			@Override
+			public void onCompleteEdit(CompleteEditEvent<UserEntry> event) {
+				UserEntry entry = event.getSource().getEditableGrid().getSelectionModel().getSelectedItem();
+				if (entry.getUserID() == 0 && (!usernameTF.isValid() || !firstnameTF.isValid() || !lastnameTF.isValid() || !emailTF.isValid())) {
+					sourceStore.remove(entry);
+				}
+			}
+		});
     
     StringFilter<UserEntry> usernameFilter = new StringFilter<UserEntry>(userProps.username());
 
