@@ -1883,9 +1883,18 @@ public class MysqlConnector {
 				pstmt.setString(i++, "%" + searchEntry.getPublisherSearch() + "%");
 			}
 			if (searchEntry.getTitleSearch() != null && !searchEntry.getTitleSearch().isEmpty()) {
-				for (int k=0; i<12; ++k) { // we have 12 times ?
-					pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");
-				}
+				pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");
+				pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");
+				pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");
+				pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");
+				pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");
+				pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");
+				pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");
+				pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");
+				pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");
+				pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");
+				pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");
+				pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");
 			}
 			if (searchEntry.getYearSearch() > 0) {
 				pstmt.setString(i++, "%" + searchEntry.getYearSearch() + "%");
