@@ -41,19 +41,27 @@ public class AnnotatedBibliographyEntrySerializer implements JsonSerializer<Anno
 	@Override
 	public JsonElement serialize(AnnotatedBibliographyEntry abe, Type typeOfSource, JsonSerializationContext context) {
 		JsonObject jsonObj = new JsonObject();
-		jsonObj.addProperty("id", abe.getAnnotatedBibliographyID());
-		jsonObj.addProperty("authors", getAuthors(abe.getAuthorList()));
+		if (!abe.getAuthorList().isEmpty()) {
+			jsonObj.addProperty("authors", getAuthors(abe.getAuthorList()));
+		}
+		if (!abe.getEditorList().isEmpty()) {
+			jsonObj.addProperty("editors", getAuthors(abe.getEditorList()));
+		}
 		jsonObj.addProperty("year", abe.getYearORG());
 		jsonObj.addProperty("title", abe.getTitleFull());
-		jsonObj.addProperty("editors", getAuthors(abe.getEditorList()));
+		jsonObj.addProperty("type", abe.getPublicationType().getName());
 		jsonObj.addProperty("in", abe.getParentTitleORG());
+		jsonObj.addProperty("edition", abe.getEditionORG());
+		jsonObj.addProperty("number", abe.getNumberORG());
+		jsonObj.addProperty("publisher", abe.getPublisher());
+		jsonObj.addProperty("pages", abe.getPagesORG());
 		return jsonObj;
 	}
 	
 	private String getAuthors(ArrayList<AuthorEntry> authorList) {
 		String result = "";
 		for (AuthorEntry ae : authorList) {
-			result+= result.isEmpty() ? ae.getName() : ", " + ae.getName();
+			result+= result.isEmpty() ? ae.getName() : "; " + ae.getName();
 		}
 		return result;
 	}
