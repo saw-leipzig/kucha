@@ -598,6 +598,7 @@ public class MysqlConnector {
 		String siteIdSet = "";
 		String districtIdSet = "";
 		String regionIdSet = "";
+		String caveIdSet = "";
 		PreparedStatement pstmt;
 		String where = "";
 		UserEntry ue = checkSessionID(searchEntry.getSessionID());
@@ -628,6 +629,13 @@ public class MysqlConnector {
 		}
 		if (!regionIdSet.isEmpty()) {
 			where += where.isEmpty() ? "RegionID IN (" + regionIdSet + ")" : " AND RegionID IN (" + regionIdSet + ")";
+		}
+		
+		for (int caveID : searchEntry.getCaveIdList()) {
+			caveIdSet += caveIdSet.isEmpty() ? Integer.toString(caveID) : "," + caveID;
+		}
+		if (!caveIdSet.isEmpty()) {
+			where += where.isEmpty() ? "CaveID IN (" + caveIdSet + ")" : " AND CaveID IN (" + caveIdSet + ")";
 		}
 		
 		if (!searchEntry.getHistoricalName().isEmpty()) {
