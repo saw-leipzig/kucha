@@ -2274,6 +2274,7 @@ public class MysqlConnector {
 			catch(SQLException e){
 				e.printStackTrace();
 			}
+			listen.add(result);
 		}
 
 		if(search.getCaves().size() > 0) {
@@ -2331,6 +2332,7 @@ public class MysqlConnector {
 			catch(SQLException e){
 				e.printStackTrace();
 			}
+			listen.add(result);
 		}
 		
 		if(search.getComponents().size() > 0) {
@@ -2388,6 +2390,7 @@ public class MysqlConnector {
 			catch(SQLException e){
 				e.printStackTrace();
 			}
+			listen.add(result);
 		}
 		if(search.getDistricts().size() > 0) {
 			System.err.println("in dis");
@@ -2507,6 +2510,7 @@ public class MysqlConnector {
 			catch(SQLException e){
 				e.printStackTrace();
 			}
+			listen.add(result);
 		}
 		if(search.getPosition().size()> 0) {
 			System.err.println("in pos");
@@ -2748,10 +2752,12 @@ public class MysqlConnector {
 		*/
 		for(int i = 1; i< listen.size();i++) {
 		listen.get(0).retainAll(listen.get(i));
-		}
 		System.err.println("die anzahl der gefundenen elemente ist nach der sortierung: "+ listen.get(0).size());
+		}
+		
 		if(listen.size() == 0) {
 			ArrayList<OrnamentEntry> emptyList = new ArrayList<OrnamentEntry>();
+			System.err.println("die listen sind leer");
 			return emptyList;
 		}
 		else {
