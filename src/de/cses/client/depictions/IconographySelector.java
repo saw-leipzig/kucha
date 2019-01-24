@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 - 2018
+ * Copyright 2016 - 2019
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -112,6 +112,7 @@ public class IconographySelector extends FramedPanel {
 				return false;
 			}
 		};
+		filterField.setEmptyText("enter a search term");
 		filterField.bind(iconographyTreeStore);
 		selectedIconographyMap = new HashMap<String, IconographyEntry>();
 		setIconographyStore(elements);

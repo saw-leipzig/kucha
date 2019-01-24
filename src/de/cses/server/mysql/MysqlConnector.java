@@ -415,7 +415,7 @@ public class MysqlConnector {
 		String where = "";
 		
 		if (searchEntry.getTitleSearch() != null && !searchEntry.getTitleSearch().isEmpty()) {
-			where = "CONCAT(Title, ShortName) LIKE ?";
+			where = "(Title LIKE ? OR ShortName LIKE ?)";
 		}
 		if (searchEntry.getCopyrightSearch() != null && !searchEntry.getCopyrightSearch().isEmpty()) {
 			where += where.isEmpty() ? "Copyright LIKE ?" : " AND Copyright LIKE ?";
@@ -454,6 +454,7 @@ public class MysqlConnector {
 			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Images ORDER BY Title Asc" : "SELECT * FROM Images WHERE " + where + " ORDER BY Title Asc");
 			int i = 1; // counter to fill ? in where clause
 			if (searchEntry.getTitleSearch() != null && !searchEntry.getTitleSearch().isEmpty()) {
+				pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");
 				pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");
 			}
 			if (searchEntry.getCopyrightSearch() != null && !searchEntry.getCopyrightSearch().isEmpty()) {
@@ -630,7 +631,7 @@ public class MysqlConnector {
 		}
 		
 		if (!searchEntry.getHistoricalName().isEmpty()) {
-			where += where.isEmpty() ? "CONCAT(HistoricName, OptionalHistoricName) LIKE ?" : " AND CONCAT(HistoricName, OptionalHistoricName) LIKE ?";
+			where += where.isEmpty() ? "(HistoricName LIKE ? OR OptionalHistoricName LIKE ?)" : " AND (HistoricName LIKE ? OR OptionalHistoricName LIKE ?)";
 		}
 
 		if (searchEntry.isDecoratedOnly()) {
@@ -656,6 +657,7 @@ public class MysqlConnector {
 			int i=1; // counter for ? insert
 			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Caves" : "SELECT * FROM Caves WHERE " + where);
 			if (!searchEntry.getHistoricalName().isEmpty()) {
+				pstmt.setString(i++, "%" + searchEntry.getHistoricalName() + "%");
 				pstmt.setString(i++, "%" + searchEntry.getHistoricalName() + "%");
 			}
 			ResultSet rs = pstmt.executeQuery();
