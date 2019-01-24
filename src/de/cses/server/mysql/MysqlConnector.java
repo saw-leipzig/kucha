@@ -23,6 +23,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -2736,7 +2737,7 @@ public class MysqlConnector {
 		}
 			
 		
-		/*System.err.println("die anzahl der gefundenen elemente ist vor der sortierung von liste 0: "+ listen.get(0).size());
+	/*	System.err.println("die anzahl der gefundenen elemente ist vor der sortierung von liste 0: "+ listen.get(0).size());
 		ArrayList<OrnamentEntry> resultList = new ArrayList<OrnamentEntry>();
 		// Teilmengen finden aller Listen
 		for(int i = 1; i <listen.size(); i++) {
@@ -2750,10 +2751,15 @@ public class MysqlConnector {
 			}
 		}
 		*/
-		for(int i = 1; i< listen.size();i++) {
-		listen.get(0).retainAll(listen.get(i));
-		System.err.println("die anzahl der gefundenen elemente ist nach der sortierung: "+ listen.get(0).size());
+		
+		Collection<OrnamentEntry> intersection = listen.get(0);
+		for (Collection<OrnamentEntry> col : listen) {
+			intersection.retainAll(col);
 		}
+//		for(int i = 1; i< listen.size();i++) {
+//		listen.get(0).retainAll(listen.get(i));
+		System.err.println("die anzahl der gefundenen elemente ist nach der sortierung: "+ listen.get(0).size());
+//		}
 		
 		if(listen.size() == 0) {
 			ArrayList<OrnamentEntry> emptyList = new ArrayList<OrnamentEntry>();
@@ -2761,7 +2767,7 @@ public class MysqlConnector {
 			return emptyList;
 		}
 		else {
-		return listen.get(0);
+		return (ArrayList<OrnamentEntry>) intersection;
 		}
 		
 	}
