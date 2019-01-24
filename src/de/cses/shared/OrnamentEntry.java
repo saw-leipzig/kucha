@@ -34,6 +34,15 @@ public class OrnamentEntry extends AbstractEntry {
 	public OrnamentEntry() {
 		ornamentID = 0;
 	}
+	@Override
+	public boolean equals(Object object) {
+		if (object == null || object.getClass() != getClass()) {
+			return false;
+		} else {
+			OrnamentEntry tiger = (OrnamentEntry) object;
+			return (this.ornamentID == tiger.getOrnamentID());
+			}
+	}
 
 	public OrnamentEntry(int ornamentID, String code) {
 		this.ornamentID = ornamentID;
