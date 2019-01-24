@@ -27,9 +27,12 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import de.cses.server.json.AnnotatedBibliographyEntrySerializer;
 import de.cses.server.json.CaveEntrySerializer;
 import de.cses.server.json.DepictionSerializer;
 import de.cses.server.mysql.MysqlConnector;
+import de.cses.shared.AnnotatedBibliographyEntry;
+import de.cses.shared.AnnotatedBibliographySearchEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.DepictionEntry;
@@ -76,6 +79,10 @@ public class JsonServlet extends HttpServlet {
 					} else {
 						response.sendError(HttpServletResponse.SC_FORBIDDEN);
 					}
+					break;
+					
+				case "bibID":
+					getBibliographyEntries();
 					break;
 					
 				case "caveID":
@@ -162,6 +169,24 @@ public class JsonServlet extends HttpServlet {
 		response.setContentType("application/json");
 	}
 	
+	private void getBibliographyEntries() throws IOException {
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF8");
+		PrintWriter out = response.getWriter();
+		String bibIDStr = request.getParameter("bibID");
+		ArrayList<AnnotatedBibliographyEntry> bibEntries;
+		if ("all".equals(bibIDStr)) {
+			bibEntries = connector.getAnnotatedBiblography();
+		} else {
+			bibEntries = connector.getAnnotatedBibliography("BibID IN (" + bibIDStr + ")");			
+		}
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(AnnotatedBibliographyEntry.class, new AnnotatedBibliographyEntrySerializer());
+		Gson gson = gsonBuilder.create();		
+		out.println(gson.toJson(bibEntries));
+		out.close();
+	}
+
 	private void getCaves(boolean publicOnly) throws IOException {
 		String caveIDStr = request.getParameter("caveID");
 		String sqlWhere=null;
