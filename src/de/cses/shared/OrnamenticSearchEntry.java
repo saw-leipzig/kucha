@@ -5,6 +5,7 @@ import java.util.ArrayList;
 public class OrnamenticSearchEntry extends AbstractSearchEntry {
 	
 	private String code;
+	private boolean empty = true;
 	private String description;
 	private String remarks;
 	private String interpretation;
@@ -21,6 +22,20 @@ public class OrnamenticSearchEntry extends AbstractSearchEntry {
 	private ArrayList <IconographyEntry> iconographys = new ArrayList<IconographyEntry>();
 	private ArrayList <OrnamentPositionEntry> position = new ArrayList <OrnamentPositionEntry>();
 	private ArrayList <OrnamentFunctionEntry> function = new ArrayList <OrnamentFunctionEntry>();
+	
+	
+	/**
+	 * @return the empty
+	 */
+	public boolean isEmpty() {
+		return empty;
+	}
+	/**
+	 * @param empty the empty to set
+	 */
+	public void setEmpty(boolean empty) {
+		this.empty = empty;
+	}
 	/**
 	 * @return the code
 	 */

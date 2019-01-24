@@ -425,7 +425,7 @@ public  class OrnamentCaveRelationEditor  {
 		FramedPanel attributes = new FramedPanel();
 		attributes.setHeading("Attributes");
 		attributes.add(vlcAttributes);
-		tabPanel.add(attributes, "Attributes");
+		//tabPanel.add(attributes, "Attributes");
 
 		VerticalLayoutContainer vlcRelationToTherornaments1 = new VerticalLayoutContainer();
 		VerticalLayoutContainer vlcRelationToTherornaments2 = new VerticalLayoutContainer();
@@ -480,10 +480,10 @@ public  class OrnamentCaveRelationEditor  {
 
 		Util.doLogging("OrnamentCaveRelationEditor.createForm step 7");
 		
-		final TextField groupOfOrnaments = new TextField();
+		final TextArea groupOfOrnaments = new TextArea();
 		groupOfOrnaments.setAllowBlank(true);
 		header = new FramedPanel();
-		header.setHeading("Ornamental Group");
+		header.setHeading("Ornamental Unit");
 		if (ornamentCaveRelationEntry != null) {
 			groupOfOrnaments.setText(ornamentCaveRelationEntry.getGroup());
 		}
@@ -496,7 +496,7 @@ public  class OrnamentCaveRelationEditor  {
 		if (ornamentCaveRelationEntry != null) {
 			similarElementsofOtherCultures.setText(ornamentCaveRelationEntry.getSimilarelementsOfOtherCultures());
 		}
-		header.setHeading("Describe similarities with elements of other cultural areas");
+		header.setHeading("Similarities with elements of other cultural areas");
 		header.add(similarElementsofOtherCultures);
 		vlcRelationToTherornaments1.add(header, new VerticalLayoutData(1, .3));
 

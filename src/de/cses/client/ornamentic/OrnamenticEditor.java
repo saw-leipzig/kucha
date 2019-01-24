@@ -246,38 +246,6 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 		if (ornamentEntry != null) {
 			ornamentCodeTextField.setValue(ornamentEntry.getCode());
 		}
-
-		header = new FramedPanel();
-		header.setHeading("Description");
-		TextArea discription = new TextArea();
-		panel.add(header, new VerticalLayoutData(1.0, .3));
-		header.add(discription);
-		discription.setAllowBlank(true);
-		if (ornamentEntry != null) {
-			discription.setValue(ornamentEntry.getDescription());
-		}
-
-		TextArea remarks = new TextArea();
-		remarks.setAllowBlank(true);
-		header = new FramedPanel();
-		header.setHeading("Remarks");
-		header.add(remarks);
-		panel.add(header, new VerticalLayoutData(1.0, .3));
-		if (ornamentEntry != null) {
-			remarks.setValue(ornamentEntry.getRemarks());
-		}
-
-		TextArea interpretation = new TextArea();
-		interpretation.setAllowBlank(true);
-		header = new FramedPanel();
-		header.setWidth(300);
-		header.setHeading("Interpretation");
-		header.add(interpretation);
-		verticalgeneral2Background.add(header, new VerticalLayoutData(1.0, .3));
-		if (ornamentEntry != null) {
-			interpretation.setValue(ornamentEntry.getInterpretation());
-		}
-
 		ornamentClassComboBox = new ComboBox<OrnamentClassEntry>(ornamentClassEntryList, ornamentClassProps.name(),
 				new AbstractSafeHtmlRenderer<OrnamentClassEntry>() {
 
@@ -289,7 +257,7 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 				});
 
 		header = new FramedPanel();
-		header.setHeading("Ornament Class");
+		header.setHeading("Ornament Motif");
 		ornamentClassComboBox.setTriggerAction(TriggerAction.ALL);
 		header.add(ornamentClassComboBox);
 		panel.add(header, new VerticalLayoutData(1.0, .125));
@@ -424,6 +392,39 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 		}});
 		
 		header.addTool(renameOrnamentClassButton);
+
+		header = new FramedPanel();
+		header.setHeading("Description");
+		TextArea discription = new TextArea();
+		panel.add(header, new VerticalLayoutData(1.0, .3));
+		header.add(discription);
+		discription.setAllowBlank(true);
+		if (ornamentEntry != null) {
+			discription.setValue(ornamentEntry.getDescription());
+		}
+
+		TextArea remarks = new TextArea();
+		remarks.setAllowBlank(true);
+		header = new FramedPanel();
+		header.setHeading("Remarks");
+		header.add(remarks);
+		panel.add(header, new VerticalLayoutData(1.0, .3));
+		if (ornamentEntry != null) {
+			remarks.setValue(ornamentEntry.getRemarks());
+		}
+
+		TextArea interpretation = new TextArea();
+		interpretation.setAllowBlank(true);
+		header = new FramedPanel();
+		header.setWidth(300);
+		header.setHeading("Interpretation");
+		header.add(interpretation);
+		verticalgeneral2Background.add(header, new VerticalLayoutData(1.0, .3));
+		if (ornamentEntry != null) {
+			interpretation.setValue(ornamentEntry.getInterpretation());
+		}
+
+
 
 
 		final TextArea references = new TextArea();
