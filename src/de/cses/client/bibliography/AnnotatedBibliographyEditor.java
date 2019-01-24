@@ -1003,7 +1003,7 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 			
 			editorVLC.add(filterEditorTypeHLC, new VerticalLayoutData(1.0, .15, new Margins(10, 0, 0, 0)));
 
-			ToolButton editEditorTB = new ToolButton(new IconConfig("addButton", "addButtonOver"));
+			ToolButton editEditorTB = new ToolButton(new IconConfig("editButton", "editButtonOver"));
 			editEditorTB.setToolTip(Util.createToolTip("Edit author", "Select editor in left column, then click here to edit information."));
 			editEditorTB.addSelectHandler(new SelectHandler() {
 				
@@ -1083,9 +1083,7 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 			FramedPanel editorFP = new FramedPanel();
 			editorFP.setHeading("Editor");
 			editorFP.add(editorVLC);
-			if (pubType.isAuthorEnabled()) {
-				editorFP.addTool(infoTB);
-			} else {
+			if (!pubType.isAuthorEnabled()) {
 				editorFP.addTool(addAuthorTB);
 			}
 			editorFP.addTool(deleteEditorTB);
