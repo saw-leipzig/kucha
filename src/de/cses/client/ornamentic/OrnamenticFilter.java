@@ -701,6 +701,7 @@ public class OrnamenticFilter  extends AbstractFilter{
 		if (ornamentCodeSearchTF.getValue() != null && !ornamentCodeSearchTF.getValue().isEmpty()) {
 			searchEntry.setCode(ornamentCodeSearchTF.getValue());
 			searchEntry.setEmpty(false);
+	
 		}
 		if (ornamentDeskriptionSearchTF.getValue() != null && !ornamentDeskriptionSearchTF.getValue().isEmpty()) {
 			searchEntry.setDescription(ornamentDeskriptionSearchTF.getValue());
