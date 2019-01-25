@@ -138,7 +138,8 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 	 * This widget allows to edit the information of an ImageEntry, i.e. an image
 	 * in the database. It also allows for uploading new images to the database.
 	 */
-	public ImageEditor(ImageEditorListener listener) {
+	@Deprecated
+	private ImageEditor(ImageEditorListener listener) {
 		editorListenerList = new ArrayList<ImageEditorListener>();
 		editorListenerList.add(listener);
 		properties = GWT.create(ImageProperties.class);

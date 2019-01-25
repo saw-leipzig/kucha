@@ -538,6 +538,10 @@ public class DepictionEditor extends AbstractEditor {
 		accessRightsCB.setEditable(false);
 		accessRightsCB.setTypeAhead(false);
 		accessRightsCB.setTriggerAction(TriggerAction.ALL);
+		accessRightsCB.setToolTip(Util.createToolTip(
+				"The acccess rights for the painted representation will influence which fields are visible.",
+				"There are no restrictions at the moment but this might be implemented in the future."
+			));
 		accessRightsCB.setValue(AbstractEntry.ACCESS_LEVEL_LABEL.get(correspondingDepictionEntry.getAccessLevel()));
 		accessRightsCB.addValueChangeHandler(new ValueChangeHandler<String>() {
 
