@@ -59,8 +59,10 @@ import de.cses.client.images.ImageSearchController;
 import de.cses.client.ornamentic.OrnamenticFilter;
 import de.cses.client.ornamentic.OrnamenticResultView;
 import de.cses.client.ornamentic.OrnamenticSearchController;
+import de.cses.client.ui.AbstractDataDisplay;
 import de.cses.client.ui.AbstractSearchController;
 import de.cses.client.user.UserLogin;
+import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
@@ -74,10 +76,10 @@ import de.cses.shared.OrnamentEntry;
 public class MainView implements IsWidget {
 	
 	// this footer will be shown at the bottom of the WebApp
-	private static String FOOTER_TEXT = "\u00A9 2019 Sächsische Akademie der Wissenschaften zu Leipzig (Version 0.9.1)";
+	private static final String FOOTER_TEXT = "\u00A9 2019 Sächsische Akademie der Wissenschaften zu Leipzig (Version 0.9.1)";
 	
 	private static ArrayList<String> dataDisplayUniqueIDList = null;
-
+	
 	private BorderLayoutContainer view = null;
 	private CaveSearchController caveSearchController;
 	private ContentPanel filterPanel;
@@ -316,7 +318,14 @@ public class MainView implements IsWidget {
 			
 			@Override
 			public void onSelect(SelectEvent event) {
-				// TODO save view
+				// we need to figure out how to access the content
+//				for (int i=0; i<dataViewPLC. getWidgetCount(); ++i) {
+//					Widget w = dataViewPLC.getContainer().getWidget(i);
+//					if (w instanceof AbstractDataDisplay) {
+//						AbstractEntry e = ((AbstractDataDisplay)w).getEntry();
+//						Util.doLogging(e.getUniqueID());
+//					}
+//				}
 			}
 		});
     dataViewPanel.addTool(saveWorkspaceToolButton);
@@ -402,42 +411,6 @@ public class MainView implements IsWidget {
     	loadWorkspaceToolButton.setVisible(false);
     }
 	}
-	
-//	private void addDroppedDataDisplay(AbstractDataDisplay dd) {
-//		Iterator<Widget> widgetIterator = dataViewPLC.getContainer().iterator();
-//		while (widgetIterator.hasNext()) {
-//			if (dd instanceof Widget) {
-//				Widget w = widgetIterator.next();
-//				if (w.toString().equals(((Widget)dd).toString())) {
-//					Util.doLogging("AbstractDataDisplay already added");
-//					return;
-//				}
-//			}
-//		}
-//		Util.doLogging("adding newly dropped element");
-//		dataViewPLC.add(dd, 0);
-//	}
-	
-	/**
-	 * 
-	 */
-//	protected ArrayList<AbstractFilter> getUsedFilter() {
-//		ArrayList<AbstractFilter> usedFilter = new ArrayList<AbstractFilter>();
-//		Widget w;
-//		Iterator<Widget> it;
-//		AbstractSearchController selector;
-//		it = selectorLayoutContainer.iterator();
-//		while (it.hasNext()) {
-//			w = it.next();
-//			if (w instanceof AbstractSearchController) {
-//				selector = ((AbstractSearchController) w);
-//				if (selector.getValue()) {
-//					usedFilter.addAll(selector.getRelatedFilter());
-//				}
-//			}
-//		}
-//		return usedFilter;
-//	}
 	
 	/**
 	 * 

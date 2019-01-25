@@ -27,6 +27,7 @@ import de.cses.client.Util;
 import de.cses.client.ui.AbstractDataDisplay;
 import de.cses.client.ui.TextElement;
 import de.cses.client.user.UserLogin;
+import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.IconographyEntry;
@@ -167,6 +168,11 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 	@Override
 	public String getUniqueID() {
 		return entry.getUniqueID();
+	}
+
+	@Override
+	public AbstractEntry getEntry() {
+		return entry;
 	}
 
 }
