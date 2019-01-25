@@ -22,6 +22,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.Style.SelectionMode;
+import com.sencha.gxt.core.client.XTemplates.XTemplate;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.data.shared.LabelProvider;
@@ -32,6 +33,7 @@ import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
+import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
@@ -76,7 +78,7 @@ public class OrnamenticFilter  extends AbstractFilter{
 	private ListView<OrnamentComponentsEntry, OrnamentComponentsEntry> ornamentComponentsSelectionLV;
 	
 	private ListStore<CaveEntry> cavesEntryList;
-	private CavesProperties cavesProps;
+	private CaveEntryProperties cavesProps;
 	private ListView<CaveEntry, CaveEntry> cavesSelectionLV;
 	
 	private ListStore<DistrictEntry> districtsEntryList;
@@ -115,10 +117,9 @@ public class OrnamenticFilter  extends AbstractFilter{
 		LabelProvider<InnerSecondaryPatternsEntry> uniqueID();
 		ValueProvider<InnerSecondaryPatternsEntry, String> name();
 	}
-	interface CavesProperties extends PropertyAccess<CaveEntry> {
+	interface CaveEntryProperties extends PropertyAccess<CaveEntry> {
 		ModelKeyProvider<CaveEntry> caveID();
-		LabelProvider<CaveEntry> uniqueID();
-		ValueProvider<CaveEntry, String> name();
+		LabelProvider<CaveEntry> officialNumber();
 	}
 	interface DistrictsProperties extends PropertyAccess<DistrictEntry> {
 		ModelKeyProvider<DistrictEntry> districtID();
@@ -154,9 +155,12 @@ public class OrnamenticFilter  extends AbstractFilter{
 		@XTemplate("<div>{name}</div>")
 		SafeHtml innerSecondaryPatternsLabel(String name);
 	}
-	interface CavesViewTemplates extends XTemplates {
-		@XTemplate("<div>{name}</div>")
-		SafeHtml cavesLabel(String name);
+	interface CaveViewTemplates extends XTemplates {
+		@XTemplate("<div>{officialNumber}: {historicName}</div>")
+		SafeHtml caveLabel(String officialNumber, String historicName);
+
+		@XTemplate("<div>{officialNumber}</div>")
+		SafeHtml caveLabel(String officialNumber);
 	}
 	interface DistrictsViewTemplates extends XTemplates {
 		@XTemplate("<div>{name}</div>")
@@ -190,7 +194,7 @@ public class OrnamenticFilter  extends AbstractFilter{
 		innerSecondaryPatternsEntryList = new ListStore<InnerSecondaryPatternsEntry>(innerSecondaryPatternsProps.innerSecondaryPatternsID());
 		loadInnerSecondaryPatternsEntryList();
 		
-		cavesProps = GWT.create(CavesProperties.class);
+		cavesProps = GWT.create(CaveEntryProperties.class);
 		cavesEntryList = new ListStore<CaveEntry>(cavesProps.caveID());
 		loadCaveEntryList();
 		
@@ -354,15 +358,15 @@ public class OrnamenticFilter  extends AbstractFilter{
 		
 		ornamentInterpretationSearchTF = new TextField();
 		ornamentInterpretationSearchTF.setEmptyText("search ornament interpretation");
-		ornamentInterpretationSearchTF.setToolTip(Util.createToolTip("search ornament code", "Search for this character sequence in the ornament code field."));
+		ornamentInterpretationSearchTF.setToolTip(Util.createToolTip("search ornament code", "Search for this character sequence in the ornament interpretation field."));
 		
 		ornamentDeskriptionSearchTF = new TextField();
 		ornamentDeskriptionSearchTF.setEmptyText("search ornament deskription");
-		ornamentDeskriptionSearchTF.setToolTip(Util.createToolTip("search ornament code", "Search for this character sequence in the ornament code field."));
+		ornamentDeskriptionSearchTF.setToolTip(Util.createToolTip("search ornament code", "Search for this character sequence in the ornament deskription field."));
 		
 		ornamentOrnamentalGroupSearchTF = new TextField();
-		ornamentOrnamentalGroupSearchTF.setEmptyText("search ornamental group");
-		ornamentOrnamentalGroupSearchTF.setToolTip(Util.createToolTip("search ornament code", "Search for this character sequence in the ornament code field."));
+		ornamentOrnamentalGroupSearchTF.setEmptyText("search ornamental motif");
+		ornamentOrnamentalGroupSearchTF.setToolTip(Util.createToolTip("search ornament code", "Search for this character sequence in the ornament motif field."));
 		
 		ornamentReferencesSearchTF = new TextField();
 		ornamentReferencesSearchTF.setEmptyText("search ornament references");
@@ -370,11 +374,11 @@ public class OrnamenticFilter  extends AbstractFilter{
 		
 		ornamentRemarksSearchTF = new TextField();
 		ornamentRemarksSearchTF.setEmptyText("search ornament remarks");
-		ornamentRemarksSearchTF.setToolTip(Util.createToolTip("search ornament code", "Search for this character sequence in the ornament code field."));
+		ornamentRemarksSearchTF.setToolTip(Util.createToolTip("search ornament code", "Search for this character sequence in the ornament remarks field."));
 		
 		ornamentSimilaritiesSearchTF = new TextField();
 		ornamentSimilaritiesSearchTF.setEmptyText("search similar ornaments");
-		ornamentSimilaritiesSearchTF.setToolTip(Util.createToolTip("search ornament code", "Search for this character sequence in the ornament code field."));
+		ornamentSimilaritiesSearchTF.setToolTip(Util.createToolTip("search ornament code", "Search for this character sequence in the similar ornaments field."));
 
 		//Components
 		ornamentComponentsSelectionLV = new ListView<OrnamentComponentsEntry, OrnamentComponentsEntry>(ornamentComponentsEntryList, new IdentityValueProvider<OrnamentComponentsEntry>(), 
@@ -409,11 +413,11 @@ public class OrnamenticFilter  extends AbstractFilter{
 		// caves
 		cavesSelectionLV = new ListView<CaveEntry, CaveEntry>(cavesEntryList, new IdentityValueProvider<CaveEntry>(), 
 				new SimpleSafeHtmlCell<CaveEntry>(new AbstractSafeHtmlRenderer<CaveEntry>() {
-			final CavesViewTemplates ocvTemplates = GWT.create(CavesViewTemplates.class);
+			final CaveViewTemplates ocvTemplates = GWT.create(CaveViewTemplates.class);
 
 			@Override
 			public SafeHtml render(CaveEntry entry) {
-				return ocvTemplates.cavesLabel(Integer.toString(entry.getCaveID()));
+				return ocvTemplates.caveLabel(Integer.toString(entry.getCaveID()));
 			}
 			
 		}));
@@ -423,7 +427,7 @@ public class OrnamenticFilter  extends AbstractFilter{
 		ContentPanel ornamentCavesPanel = new ContentPanel();
 		ornamentCavesPanel.setHeaderVisible(true);
 		ornamentCavesPanel.setToolTip(Util.createToolTip("Search for ornaments in specific caves.", "Select one or more elements to search for Ornamentations."));
-		ornamentCavesPanel.setHeading("Ornament Caves");
+		ornamentCavesPanel.setHeading("Caves");
 		ornamentCavesPanel.add(cavesSelectionLV);
 		
 		ToolButton resetOrnamentCavesPanelTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
@@ -626,6 +630,7 @@ public class OrnamenticFilter  extends AbstractFilter{
 		ornamentComponentsPanel.addTool(resetOrnamentComponentsPanelTB);
 
 */
+		AccordionLayoutContainer accordion = new AccordionLayoutContainer();
 		VerticalLayoutContainer ornamenticFilterVLC = new VerticalLayoutContainer();
 		
 		ContentPanel ornamentCodePanel = new ContentPanel();
@@ -633,57 +638,91 @@ public class OrnamenticFilter  extends AbstractFilter{
 		ornamentCodePanel.setToolTip(Util.createToolTip("Search for ornament codes."));
 		ornamentCodePanel.setHeading("Ornament Code");
 		ornamentCodePanel.add(ornamentCodeSearchTF);
-		ornamenticFilterVLC.add(ornamentCodePanel, new VerticalLayoutData(1.0, .02));
+		ornamenticFilterVLC.add(accordion);
+		accordion.add(ornamentCodePanel);
 		
 		ContentPanel ornamentDeskriptionPanel = new ContentPanel();
 		ornamentDeskriptionPanel.setHeaderVisible(true);
 		ornamentDeskriptionPanel.setToolTip(Util.createToolTip("Search for ornament deskription."));
 		ornamentDeskriptionPanel.setHeading("Ornament Deskription");
 		ornamentDeskriptionPanel.add(ornamentDeskriptionSearchTF);
-		ornamenticFilterVLC.add(ornamentDeskriptionPanel, new VerticalLayoutData(1.0, .02));
+		ornamenticFilterVLC = new VerticalLayoutContainer();
+		ornamenticFilterVLC.add(accordion);
+		accordion.add(ornamentDeskriptionPanel);
 		
 		ContentPanel ornamentInterpretationPanel = new ContentPanel();
 		ornamentInterpretationPanel.setHeaderVisible(true);
 		ornamentInterpretationPanel.setToolTip(Util.createToolTip("Search for ornament interpretation."));
 		ornamentInterpretationPanel.setHeading("Ornament Interpretation");
 		ornamentInterpretationPanel.add(ornamentInterpretationSearchTF);
-		ornamenticFilterVLC.add(ornamentInterpretationPanel, new VerticalLayoutData(1.0, .02));
+		ornamenticFilterVLC = new VerticalLayoutContainer();
+		ornamenticFilterVLC.add(accordion);
+		accordion.add(ornamentInterpretationPanel);
 		
 		ContentPanel ornamentGroupPanel = new ContentPanel();
 		ornamentGroupPanel.setHeaderVisible(true);
-		ornamentGroupPanel.setToolTip(Util.createToolTip("Search for ornament groups."));
+		ornamentGroupPanel.setToolTip(Util.createToolTip("Search for ornament motif."));
 		ornamentGroupPanel.setHeading("Ornament Group");
 		ornamentGroupPanel.add(ornamentOrnamentalGroupSearchTF);
-		ornamenticFilterVLC.add(ornamentGroupPanel, new VerticalLayoutData(1.0, .02));
+		ornamenticFilterVLC = new VerticalLayoutContainer();
+		ornamenticFilterVLC.add(accordion);
+		accordion.add(ornamentGroupPanel);
 		
 		ContentPanel referencesPanel = new ContentPanel();
 		referencesPanel.setHeaderVisible(true);
 		referencesPanel.setToolTip(Util.createToolTip("Search for ornament references."));
 		referencesPanel.setHeading("Ornament References");
 		referencesPanel.add(ornamentReferencesSearchTF);
-		ornamenticFilterVLC.add(referencesPanel, new VerticalLayoutData(1.0, .02));
+		ornamenticFilterVLC = new VerticalLayoutContainer();
+		ornamenticFilterVLC.add(accordion);
+		accordion.add(referencesPanel);
 		
 		ContentPanel remarksPanel = new ContentPanel();
 		remarksPanel.setHeaderVisible(true);
 		remarksPanel.setToolTip(Util.createToolTip("Search for ornament remarks."));
 		remarksPanel.setHeading("Ornament Refmarks");
 		remarksPanel.add(ornamentRemarksSearchTF);
-		ornamenticFilterVLC.add(remarksPanel, new VerticalLayoutData(1.0, .02));
+		ornamenticFilterVLC = new VerticalLayoutContainer();
+		ornamenticFilterVLC.add(accordion);
+		accordion.add(remarksPanel);
 		
 		ContentPanel similatitiesPanel = new ContentPanel();
 		similatitiesPanel.setHeaderVisible(true);
 		similatitiesPanel.setToolTip(Util.createToolTip("Search for similar ornaments or elements of other cultures."));
 		similatitiesPanel.setHeading("Similarities");
 		similatitiesPanel.add(ornamentSimilaritiesSearchTF);
-		ornamenticFilterVLC.add(similatitiesPanel, new VerticalLayoutData(1.0, .02));
+		ornamenticFilterVLC = new VerticalLayoutContainer();
+		ornamenticFilterVLC.add(accordion);
+		accordion.add(similatitiesPanel);
 		
-		ornamenticFilterVLC.add(ornamentCavesPanel, new VerticalLayoutData(1.0, .1));
-		ornamenticFilterVLC.add(ornamentFunctionPanel, new VerticalLayoutData(1.0, .1));
-		ornamenticFilterVLC.add(ornamentpositionPanel, new VerticalLayoutData(1.0, .1));
-		ornamenticFilterVLC.add(ornamentdistrictsPanel, new VerticalLayoutData(1.0, .1));
-		ornamenticFilterVLC.add(innerSecPanel, new VerticalLayoutData(1.0, .1));
-		ornamenticFilterVLC.add(relatedornamentPanel, new VerticalLayoutData(1.0, .1));
-		ornamenticFilterVLC.add(ornamentComponentsPanel, new VerticalLayoutData(1.0, .1));
+		ornamenticFilterVLC = new VerticalLayoutContainer();
+		ornamenticFilterVLC.add(accordion);
+		accordion.add(ornamentCavesPanel);
+		
+		ornamenticFilterVLC = new VerticalLayoutContainer();
+		ornamenticFilterVLC.add(accordion);
+		accordion.add(ornamentFunctionPanel);
+		
+		ornamenticFilterVLC = new VerticalLayoutContainer();
+		ornamenticFilterVLC.add(accordion);
+		accordion.add(ornamentpositionPanel);
+		
+		ornamenticFilterVLC = new VerticalLayoutContainer();
+		ornamenticFilterVLC.add(accordion);
+		accordion.add(ornamentdistrictsPanel);
+		
+		ornamenticFilterVLC = new VerticalLayoutContainer();
+		ornamenticFilterVLC.add(accordion);
+		accordion.add(innerSecPanel);
+		
+		ornamenticFilterVLC = new VerticalLayoutContainer();
+		ornamenticFilterVLC.add(accordion);
+		accordion.add(relatedornamentPanel);
+		
+		ornamenticFilterVLC = new VerticalLayoutContainer();
+		ornamenticFilterVLC.add(accordion);
+		accordion.add(ornamentComponentsPanel);
+		
 		//iconography? ornamenticFilterVLC.add(ornamentComponentsPanel, new VerticalLayoutData(1.0, .65));
 		ornamenticFilterVLC.setHeight("1000px");
 		
