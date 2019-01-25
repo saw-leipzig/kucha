@@ -503,7 +503,6 @@ public class OrnamenticFilter  extends AbstractFilter{
 		});
 		innerSecPanel.addTool(resetInnerSecPanelTB);
 
-		
 		//related ornaments
 		relatedOrnamentsSelectionLV = new ListView<OrnamentEntry, OrnamentEntry>(relatedOrnamentsEntryList, new IdentityValueProvider<OrnamentEntry>(), 
 				new SimpleSafeHtmlCell<OrnamentEntry>(new AbstractSafeHtmlRenderer<OrnamentEntry>() {
