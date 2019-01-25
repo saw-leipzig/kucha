@@ -647,18 +647,23 @@ public class MysqlConnector {
 			where += where.isEmpty() ? "CaveID IN (SELECT CaveID FROM Depictions)" : " AND CaveID IN (SELECT CaveID FROM Depictions)";
 		}
 
-		String inStatement = Integer.toString(AbstractEntry.ACCESS_LEVEL_PUBLIC); // public is always permitted
-		switch (getAccessLevelForSessionID(searchEntry.getSessionID())) {
-			case UserEntry.GUEST:
-			case UserEntry.ASSOCIATED:
-				inStatement += "," + AbstractEntry.ACCESS_LEVEL_COPYRIGHT;
-				break; 
-			case UserEntry.FULL:
-			case UserEntry.ADMIN:
-				inStatement += "," + AbstractEntry.ACCESS_LEVEL_COPYRIGHT + "," + AbstractEntry.ACCESS_LEVEL_PRIVATE;
-				break;
-		}
-		where += where.isEmpty() ? "AccessLevel IN (" + inStatement + ")" : " AND AccessLevel IN (" + inStatement + ")";
+		/**
+		 * We cannot filter the accessLevel because that would create problems e.g. when choosing a cave for a depiction.
+		 * What we can do is restricting the visibility of certain fields e.g. comments but this has to be done 
+		 * when the UI is build on the client side!
+		 */
+//		String inStatement = Integer.toString(AbstractEntry.ACCESS_LEVEL_PUBLIC); // public is always permitted
+//		switch (getAccessLevelForSessionID(searchEntry.getSessionID())) {
+//			case UserEntry.GUEST:
+//			case UserEntry.ASSOCIATED:
+//				inStatement += "," + AbstractEntry.ACCESS_LEVEL_COPYRIGHT;
+//				break; 
+//			case UserEntry.FULL:
+//			case UserEntry.ADMIN:
+//				inStatement += "," + AbstractEntry.ACCESS_LEVEL_COPYRIGHT + "," + AbstractEntry.ACCESS_LEVEL_PRIVATE;
+//				break;
+//		}
+//		where += where.isEmpty() ? "AccessLevel IN (" + inStatement + ")" : " AND AccessLevel IN (" + inStatement + ")";
 
 		System.err.println("searchCaves: where = " + where);
 		
@@ -1862,18 +1867,23 @@ public class MysqlConnector {
 			where += where.isEmpty() ? "YearORG LIKE ?" : " AND YearORG LIKE ?";
 		}
 
-		String inStatement = Integer.toString(AbstractEntry.ACCESS_LEVEL_PUBLIC); // public is always permitted
-		switch (getAccessLevelForSessionID(searchEntry.getSessionID())) {
-			case UserEntry.GUEST:
-			case UserEntry.ASSOCIATED:
-				inStatement += "," + AbstractEntry.ACCESS_LEVEL_COPYRIGHT;
-				break; 
-			case UserEntry.FULL:
-			case UserEntry.ADMIN:
-				inStatement += "," + AbstractEntry.ACCESS_LEVEL_COPYRIGHT + "," + AbstractEntry.ACCESS_LEVEL_PRIVATE;
-				break;
-		}
-		where += where.isEmpty() ? "AccessLevel IN (" + inStatement + ")" : " AND AccessLevel IN (" + inStatement + ")";
+		/**
+		 * We cannot filter the accessLevel because that would create problems e.g. when choosing a cave for a depiction.
+		 * What we can do is restricting the visibility of certain fields e.g. comments but this has to be done 
+		 * when the UI is build on the client side!
+		 */
+//		String inStatement = Integer.toString(AbstractEntry.ACCESS_LEVEL_PUBLIC); // public is always permitted
+//		switch (getAccessLevelForSessionID(searchEntry.getSessionID())) {
+//			case UserEntry.GUEST:
+//			case UserEntry.ASSOCIATED:
+//				inStatement += "," + AbstractEntry.ACCESS_LEVEL_COPYRIGHT;
+//				break; 
+//			case UserEntry.FULL:
+//			case UserEntry.ADMIN:
+//				inStatement += "," + AbstractEntry.ACCESS_LEVEL_COPYRIGHT + "," + AbstractEntry.ACCESS_LEVEL_PRIVATE;
+//				break;
+//		}
+//		where += where.isEmpty() ? "AccessLevel IN (" + inStatement + ")" : " AND AccessLevel IN (" + inStatement + ")";
 		
 		try {
 			int i = 1;
@@ -5289,18 +5299,23 @@ public class MysqlConnector {
 					: " AND DepictionID IN (SELECT DISTINCT DepictionID FROM DepictionBibliographyRelation WHERE BibID IN (" + bibIDs + "))";
 		}
 
-		String inStatement = Integer.toString(AbstractEntry.ACCESS_LEVEL_PUBLIC); // public is always permitted
-		switch (getAccessLevelForSessionID(searchEntry.getSessionID())) {
-			case UserEntry.GUEST:
-			case UserEntry.ASSOCIATED:
-				inStatement += "," + AbstractEntry.ACCESS_LEVEL_COPYRIGHT;
-				break; 
-			case UserEntry.FULL:
-			case UserEntry.ADMIN:
-				inStatement += "," + AbstractEntry.ACCESS_LEVEL_COPYRIGHT + "," + AbstractEntry.ACCESS_LEVEL_PRIVATE;
-				break;
-		}
-		where += where.isEmpty() ? "AccessLevel IN (" + inStatement + ")" : " AND AccessLevel IN (" + inStatement + ")";
+		/**
+		 * We cannot filter the accessLevel because that would create problems e.g. when choosing a cave for a depiction.
+		 * What we can do is restricting the visibility of certain fields e.g. comments but this has to be done 
+		 * when the UI is build on the client side!
+		 */
+//		String inStatement = Integer.toString(AbstractEntry.ACCESS_LEVEL_PUBLIC); // public is always permitted
+//		switch (getAccessLevelForSessionID(searchEntry.getSessionID())) {
+//			case UserEntry.GUEST:
+//			case UserEntry.ASSOCIATED:
+//				inStatement += "," + AbstractEntry.ACCESS_LEVEL_COPYRIGHT;
+//				break; 
+//			case UserEntry.FULL:
+//			case UserEntry.ADMIN:
+//				inStatement += "," + AbstractEntry.ACCESS_LEVEL_COPYRIGHT + "," + AbstractEntry.ACCESS_LEVEL_PRIVATE;
+//				break;
+//		}
+//		where += where.isEmpty() ? "AccessLevel IN (" + inStatement + ")" : " AND AccessLevel IN (" + inStatement + ")";
 				
 		System.err.println(where.isEmpty() ? "SELECT * FROM Depictions" : "SELECT * FROM Depictions WHERE " + where);
 
