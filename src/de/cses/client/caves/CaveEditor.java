@@ -659,7 +659,7 @@ public class CaveEditor extends AbstractEditor {
 
 		VerticalLayoutContainer officialNumberVLC = new VerticalLayoutContainer();
 		officialNumberVLC.add(officialNumberField, new VerticalLayoutData(1.0, .5));
-		officialNumberVLC.add(new FieldLabel(accessRightsCB, "Access Rights"), new VerticalLayoutData(1.0, .5));
+		officialNumberVLC.add(new FieldLabel(accessRightsCB, "Access Level"), new VerticalLayoutData(1.0, .5));
 		officialNumberPanel.add(officialNumberVLC);
 
 		FramedPanel historicalNamePanel = new FramedPanel();

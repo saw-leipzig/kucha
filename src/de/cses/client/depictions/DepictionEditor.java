@@ -552,7 +552,7 @@ public class DepictionEditor extends AbstractEditor {
 		});
 		VerticalLayoutContainer shortNameVLC = new VerticalLayoutContainer();
 		shortNameVLC.add(shortNameTF, new VerticalLayoutData(1.0, .5));
-		shortNameVLC.add(new FieldLabel(accessRightsCB, "Access Rights"), new VerticalLayoutData(1.0, .5));
+		shortNameVLC.add(new FieldLabel(accessRightsCB, "Access Level"), new VerticalLayoutData(1.0, .5));
 		shortNameFP.add(shortNameVLC);
 
 		
