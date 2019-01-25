@@ -32,6 +32,7 @@ import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
@@ -221,7 +222,7 @@ public class WallOrnamentCaveRelationEditor {
 		wallrelationFramedPanel.setSize("600px", "450px");
 		wallrelationFramedPanel.add(wallRelationHLC);
 		
-		ToolButton cancelTB = new ToolButton(ToolButton.CLOSE);
+		ToolButton cancelTB = new ToolButton(new IconConfig("cancelButton", "cancelButtonOver"));
 		cancelTB.setToolTip(Util.createToolTip("close"));
 		cancelTB.addSelectHandler(new SelectHandler() {
 
@@ -231,7 +232,7 @@ public class WallOrnamentCaveRelationEditor {
 			}
 		});
 
-		ToolButton saveTB = new ToolButton(ToolButton.SAVE);
+		ToolButton saveTB = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 		saveTB.setToolTip(Util.createToolTip("save"));
 		saveTB.addSelectHandler(new SelectHandler() {
 

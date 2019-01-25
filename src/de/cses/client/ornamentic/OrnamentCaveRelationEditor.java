@@ -354,7 +354,7 @@ public  class OrnamentCaveRelationEditor  {
 
 		selectedWallsHorizontalPanel.add(wallList);
 
-		ToolButton edit = new ToolButton(ToolButton.REFRESH);
+		ToolButton edit = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		ClickHandler editWallsClickHandler = new ClickHandler() {
 
 			@Override
@@ -370,7 +370,7 @@ public  class OrnamentCaveRelationEditor  {
 		};
 		edit.addHandler(editWallsClickHandler, ClickEvent.getType());
 
-		ToolButton delete = new ToolButton(ToolButton.CLOSE);
+		ToolButton delete = new ToolButton(new IconConfig("cancelButton", "cancelButtonOver"));
 		delete.setToolTip(Util.createToolTip("Delete Wall", "Select a wall, then click here."));
 
 		header.addTool(addWalls);
@@ -504,7 +504,7 @@ public  class OrnamentCaveRelationEditor  {
 		
 		tabPanel.add(icoSelector, "Pictorial Elements");
 
-		ToolButton cancelTB = new ToolButton(ToolButton.CLOSE);
+		ToolButton cancelTB = new ToolButton(new IconConfig("cancelButton", "cancelButtonOver"));
 		cancelTB.setToolTip(Util.createToolTip("close"));
 		cancelTB.addSelectHandler(new SelectHandler() {
 			
@@ -514,7 +514,7 @@ public  class OrnamentCaveRelationEditor  {
 			}
 		}); 
 		
-		ToolButton saveTB = new ToolButton(ToolButton.SAVE);
+		ToolButton saveTB = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 		saveTB.setToolTip(Util.createToolTip("save"));
 		saveTB.addSelectHandler(new SelectHandler() {
 			

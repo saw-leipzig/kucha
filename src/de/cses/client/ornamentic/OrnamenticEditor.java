@@ -268,11 +268,11 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 		FramedPanel ornamentClassFramedPanel = new FramedPanel();
 		ornamentClassFramedPanel.setHeading("New Ornament Class");
 
-		ToolButton saveOrnamentClass = new ToolButton(ToolButton.SAVE);
+		ToolButton saveOrnamentClass = new ToolButton(new IconConfig("safeButton", "safeButtonOver"));
 		saveOrnamentClass.setToolTip(Util.createToolTip("save"));
 		ornamentClassFramedPanel.add(saveOrnamentClass);
 
-		ToolButton cancelOrnamentClass = new ToolButton(ToolButton.CLOSE);
+		ToolButton cancelOrnamentClass = new ToolButton(new IconConfig("cancelButton", "cancelButtonOver"));
 		cancelOrnamentClass.setToolTip(Util.createToolTip("cancel"));
 
 		ornamentClassFramedPanel.addTool(cancelOrnamentClass);
@@ -324,17 +324,17 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 		});
 		header.addTool(addOrnamentClassButton);
 		
-		ToolButton renameOrnamentClassButton = new ToolButton(ToolButton.REFRESH);
+		ToolButton renameOrnamentClassButton = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		renameOrnamentClassButton.setToolTip(Util.createToolTip("Rename Ornament Class", "Select item and click here."));
 		
 		FramedPanel renameornamentClassFramedPanel = new FramedPanel();
 		renameornamentClassFramedPanel.setHeading("New Ornament Class");
 
-		ToolButton saveRenameOrnamentClass = new ToolButton(ToolButton.SAVE);
+		ToolButton saveRenameOrnamentClass = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 		saveRenameOrnamentClass.setToolTip(Util.createToolTip("save"));
 		renameornamentClassFramedPanel.add(saveRenameOrnamentClass);
 
-		ToolButton cancelRenameOrnamentClass = new ToolButton(ToolButton.CLOSE);
+		ToolButton cancelRenameOrnamentClass = new ToolButton(new IconConfig("cancelButton", "cancelButtonOver"));
 		cancelRenameOrnamentClass.setToolTip(Util.createToolTip("cancel"));
 
 		renameornamentClassFramedPanel.addTool(cancelRenameOrnamentClass);
@@ -475,10 +475,10 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 		cavesContentPanel.setHeading("Added caves");
 		cavesContentPanel.add(cavesList);
 
-		ToolButton edit = new ToolButton(ToolButton.REFRESH);
+		ToolButton edit = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		edit.setToolTip(Util.createToolTip("Edit Cave"));
 		
-		ToolButton delete = new ToolButton(ToolButton.CLOSE);
+		ToolButton delete = new ToolButton(new IconConfig("cancelButton", "cButtonOver"));
 		delete.setToolTip(Util.createToolTip("Delete Cave.", "Select cave, then click here."));
 
 		cavesContentPanel.addTool(addCaveTool);
@@ -665,11 +665,11 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 				FramedPanel componentFramedPanel = new FramedPanel();
 				componentFramedPanel.setHeading("New Component");
 
-				ToolButton saveComponent = new ToolButton(ToolButton.SAVE);
+				ToolButton saveComponent = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 				saveComponent.setToolTip(Util.createToolTip("save"));
 				componentFramedPanel.addTool(saveComponent);
 
-				ToolButton cancelComponent = new ToolButton(ToolButton.CLOSE);
+				ToolButton cancelComponent = new ToolButton(new IconConfig("cancelButton", "cancelButtonOver"));
 				cancelComponent.setToolTip(Util.createToolTip("cancel"));
 
 				componentFramedPanel.addTool(cancelComponent);
@@ -715,7 +715,7 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 			}
 		});
 
-		ToolButton renameComponentButton = new ToolButton(ToolButton.REFRESH);
+		ToolButton renameComponentButton = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		renameComponentButton.setToolTip(Util.createToolTip("Rename Component", "Select entry and click here to edit."));
 		
 		header.addTool(renameComponentButton);
@@ -732,11 +732,11 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 				FramedPanel renamecomponentFramedPanel = new FramedPanel();
 				renamecomponentFramedPanel.setHeading("Rename Component");
 
-				ToolButton saveRenameComponent = new ToolButton(ToolButton.SAVE);
+				ToolButton saveRenameComponent = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 				saveRenameComponent.setToolTip(Util.createToolTip("save"));
 				renamecomponentFramedPanel.addTool(saveRenameComponent);
 
-				ToolButton cancelRenameComponent = new ToolButton(ToolButton.CLOSE);
+				ToolButton cancelRenameComponent = new ToolButton(new IconConfig("cancelButton", "cancelButtonOver"));
 				cancelRenameComponent.setToolTip(Util.createToolTip("cancel"));
 
 				renamecomponentFramedPanel.addTool(cancelRenameComponent);
@@ -813,11 +813,11 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 				FramedPanel innersecFramedPanel = new FramedPanel();
 				innersecFramedPanel.setHeading("New Inner Secondary Pattern");
 
-				ToolButton saveInnerSec = new ToolButton(ToolButton.SAVE);
+				ToolButton saveInnerSec = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 				saveInnerSec.setToolTip(Util.createToolTip("save"));
 				innersecFramedPanel.add(saveInnerSec);
 
-				ToolButton cancelInnerSec = new ToolButton(ToolButton.CLOSE);
+				ToolButton cancelInnerSec = new ToolButton(new IconConfig("cancelButton", "cancelButtonOver"));
 				cancelInnerSec.setToolTip(Util.createToolTip("cancel"));
 
 				innersecFramedPanel.addTool(cancelInnerSec);
@@ -933,9 +933,9 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 		imagesFramedPanel.add(imagesVerticalPanel);
 		tabpanel.setTabScroll(true);
 
-		ToolButton closeButton = new ToolButton(ToolButton.CLOSE);
+		ToolButton closeButton = new ToolButton(new IconConfig("cancelButton", "cancelButtonOver"));
 		closeButton.setToolTip(Util.createToolTip("close"));
-		ToolButton saveButton = new ToolButton(ToolButton.SAVE);
+		ToolButton saveButton = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 		saveButton.setToolTip(Util.createToolTip("save"));
 		closeButton.addHandler(cancelHandler, ClickEvent.getType());
 		saveButton.addHandler(saveClickHandler, ClickEvent.getType());
