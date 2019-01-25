@@ -555,6 +555,7 @@ span.freeIconText {
 	height: 25px;
 	font-size: 20px;
 	background-repeat: no-repeat;
+	background-position: right;
   padding-left: 30px
 }
 
@@ -564,6 +565,7 @@ span.blockedIconText {
 	height: 25px;
 	font-size: 20px;
 	background-repeat: no-repeat;
+	background-position: right;
   padding-left: 30px
 }
 

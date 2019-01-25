@@ -2,19 +2,19 @@
 	<tr>
 		<td rowspan='4' style='width: 130px; text-align: center; vertical-align: middle;'><img src='{imgUri}' style='max-height: 90px; max-width: 120px; margin: 0 5px 0 0;'></td>
 		<td class='image-view'><i>{officialCaveNumber}</i></td>
-		<tpl if="isPublic"> <td rowspan='4'><span class='freeIconText'></span></td>  </tpl>
-		<tpl if="!isPublic"> <td rowspan='4'><span class='blockedIconText'></span></td>  </tpl>
+		<tpl if="isPublic"> <td rowspan='2'><span class='freeIconText'></span></td>  </tpl>
+		<tpl if="!isPublic"> <td rowspan='2'><span class='blockedIconText'></span></td>  </tpl>
 	</tr>
 	<tr>
 		<td class='image-view'>{siteDistrictInformation}</td>
 	</tr>
 	<tr>
-		<td class='image-view'><i>{shortName}</i></td>
+		<td colspan='2' class='image-view'><i>{shortName}</i></td>
 	</tr>
 	<tr>
-		<td class='image-view'>{wallLocation}</td>
+		<td colspan='2' class='image-view'>{wallLocation}</td>
 	</tr>
 	<tr>
-		<td  colspan='3' class='image-view'>{historicCaveName}</td>
+		<td  colspan='4' class='image-view'>{historicCaveName}</td>
 	</tr>
 </table>

@@ -538,6 +538,10 @@ public class DepictionEditor extends AbstractEditor {
 		accessRightsCB.setEditable(false);
 		accessRightsCB.setTypeAhead(false);
 		accessRightsCB.setTriggerAction(TriggerAction.ALL);
+		accessRightsCB.setToolTip(Util.createToolTip(
+				"The acccess rights for the painted representation will influence which fields are visible.",
+				"There are no restrictions at the moment but this might be implemented in the future."
+			));
 		accessRightsCB.setValue(AbstractEntry.ACCESS_LEVEL_LABEL.get(correspondingDepictionEntry.getAccessLevel()));
 		accessRightsCB.addValueChangeHandler(new ValueChangeHandler<String>() {
 
@@ -548,7 +552,7 @@ public class DepictionEditor extends AbstractEditor {
 		});
 		VerticalLayoutContainer shortNameVLC = new VerticalLayoutContainer();
 		shortNameVLC.add(shortNameTF, new VerticalLayoutData(1.0, .5));
-		shortNameVLC.add(new FieldLabel(accessRightsCB, "Access Rights"), new VerticalLayoutData(1.0, .5));
+		shortNameVLC.add(new FieldLabel(accessRightsCB, "Access Level"), new VerticalLayoutData(1.0, .5));
 		shortNameFP.add(shortNameVLC);
 
 		

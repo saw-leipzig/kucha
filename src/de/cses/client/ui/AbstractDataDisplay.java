@@ -21,6 +21,7 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
 import de.cses.client.MainView;
 import de.cses.client.Util;
+import de.cses.shared.AbstractEntry;
 
 /**
  * @author alingnau
@@ -49,5 +50,7 @@ public abstract class AbstractDataDisplay extends Portlet {
 	}
 	
 	public abstract String getUniqueID();
+	
+	public abstract AbstractEntry getEntry();
 	
 }

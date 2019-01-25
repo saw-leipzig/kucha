@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2018
+ * Copyright 2016-2019
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -14,7 +14,6 @@
 package de.cses.client.caves;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
@@ -53,9 +52,9 @@ import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.PlainTabPanel;
 import com.sencha.gxt.widget.core.client.TabItemConfig;
+import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
-import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
@@ -645,6 +644,10 @@ public class CaveEditor extends AbstractEditor {
 		accessRightsCB.setEditable(false);
 		accessRightsCB.setTypeAhead(false);
 		accessRightsCB.setTriggerAction(TriggerAction.ALL);
+		accessRightsCB.setToolTip(Util.createToolTip(
+				"The acccess rights for the cave description will influence which fields are visible.",
+				"There are no restrictions at the moment but this might be implemented in the future."
+			));
 		accessRightsCB.setValue(AbstractEntry.ACCESS_LEVEL_LABEL.get(correspondingCaveEntry.getAccessLevel()));
 		accessRightsCB.addValueChangeHandler(new ValueChangeHandler<String>() {
 
@@ -656,7 +659,7 @@ public class CaveEditor extends AbstractEditor {
 
 		VerticalLayoutContainer officialNumberVLC = new VerticalLayoutContainer();
 		officialNumberVLC.add(officialNumberField, new VerticalLayoutData(1.0, .5));
-		officialNumberVLC.add(new FieldLabel(accessRightsCB, "Access Rights"), new VerticalLayoutData(1.0, .5));
+		officialNumberVLC.add(new FieldLabel(accessRightsCB, "Access Level"), new VerticalLayoutData(1.0, .5));
 		officialNumberPanel.add(officialNumberVLC);
 
 		FramedPanel historicalNamePanel = new FramedPanel();

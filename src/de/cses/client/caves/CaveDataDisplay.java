@@ -12,6 +12,7 @@ import com.sencha.gxt.widget.core.client.container.MarginData;
 import de.cses.client.StaticTables;
 import de.cses.client.ui.AbstractDataDisplay;
 import de.cses.client.user.UserLogin;
+import de.cses.shared.AbstractEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveSketchEntry;
 import de.cses.shared.CaveTypeEntry;
@@ -95,6 +96,11 @@ public class CaveDataDisplay extends AbstractDataDisplay {
 	@Override
 	public String getUniqueID() {
 		return entry.getUniqueID();
+	}
+
+	@Override
+	public AbstractEntry getEntry() {
+		return entry;
 	}
 
 }

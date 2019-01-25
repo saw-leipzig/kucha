@@ -398,6 +398,10 @@ public class SingleImageEditor extends AbstractEditor {
 		accessLevelCB.setEditable(false);
 		accessLevelCB.setTypeAhead(false);
 		accessLevelCB.setTriggerAction(TriggerAction.ALL);
+		accessLevelCB.setToolTip(Util.createToolTip(
+				"The acccess level for the image will influence who can see the image.",
+				"PRIVATE means that users need at least FULL access rights, COPYRIGHT means user need ASSICIATED access rights."
+			));
 		accessLevelCB.setValue(AbstractEntry.ACCESS_LEVEL_LABEL.get(imgEntry.getAccessLevel()));
 		accessLevelCB.addValueChangeHandler(new ValueChangeHandler<String>() {
 
