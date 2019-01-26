@@ -924,6 +924,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 			for (int i = 0; i < ornamentEntry.getInnerSecondaryPatterns().size(); i++) {
 				selectedinnerSecondaryPatternsEntryList.add(ornamentEntry.getInnerSecondaryPatterns().get(i));
 
+				
 			}
 		}
 		header.add(innerSecondaryPatternsHorizontalPanel);
