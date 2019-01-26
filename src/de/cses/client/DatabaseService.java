@@ -19,6 +19,7 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 import de.cses.shared.AnnotatedBibliographySearchEntry;
+import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.BibKeywordEntry;
@@ -306,4 +307,6 @@ public interface DatabaseService extends RemoteService {
 	boolean updateUserEntry(UserEntry userEntry) throws IllegalArgumentException;
 
 	int insertUserEntry(UserEntry entry) throws IllegalArgumentException;
+
+	boolean saveCollectedEntries(String sessionID, String collectionLabel, ArrayList<AbstractEntry> entryList) throws IllegalArgumentException;
 }

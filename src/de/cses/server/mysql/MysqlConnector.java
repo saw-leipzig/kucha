@@ -5352,7 +5352,6 @@ public class MysqlConnector {
 	public ArrayList<UserEntry> getUsers() {
 		ArrayList<UserEntry> result = new ArrayList<UserEntry>();
 		Connection dbc = getConnection();
-
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
@@ -5368,6 +5367,61 @@ public class MysqlConnector {
 			e.printStackTrace();
 		}
 		return result;
+	}
+
+	public boolean saveCollectedEntries(String sessionID, String collectionLabel, ArrayList<AbstractEntry> entryList) {
+		UserEntry ue = this.checkSessionID(sessionID);
+		if (ue == null) {
+			return false;
+		}
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		int collectionID=0;
+
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM Collections WHERE UserID=? AND CollectionLabel=?)");
+			pstmt.setInt(1, ue.getUserID());
+			pstmt.setString(2, collectionLabel);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.first()) {
+				collectionID = rs.getInt("CollectionID");
+				rs.close();
+				pstmt.close();
+			} else {
+				rs.close();
+				pstmt.close();
+				pstmt = dbc.prepareStatement("INSERT INTO Collections (UserID, CollectionLabel) VALUES (?,?)", Statement.RETURN_GENERATED_KEYS);
+				pstmt.setInt(1, ue.getUserID());
+				pstmt.setString(2, collectionLabel);
+				pstmt.executeQuery();
+				ResultSet keys = pstmt.getGeneratedKeys();
+				if (keys.first()) {
+					collectionID = keys.getInt(1);
+				}
+				keys.close();
+				pstmt.close();
+			}
+			if (collectionID > 0) {
+				deleteEntry("DELETE FROM CollectionEntryRelation WHERE CollectionID=" + collectionID);
+				PreparedStatement insertStatement = dbc.prepareStatement("INSERT INTO CollectionEntryRelation (CollectionID, EntryID, EntryClass) VALUES (?,?,?)");
+				insertStatement.setInt(1, collectionID);
+				for (AbstractEntry entry : entryList) {
+					if (entry instanceof CaveEntry) {
+						insertStatement.setInt(2, ((CaveEntry)entry).getCaveID());
+						insertStatement.setString(3, "CaveEntry");
+					} else if (entry instanceof DepictionEntry) {
+						insertStatement.setInt(2, ((DepictionEntry)entry).getDepictionID());
+						insertStatement.setString(3, "DepictionEntry");
+					}
+					insertStatement.executeQuery();
+				}
+				insertStatement.close();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 
 }

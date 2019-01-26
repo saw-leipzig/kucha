@@ -45,11 +45,9 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 import de.cses.client.bibliography.AnnotatedBibliographyFilter;
 import de.cses.client.bibliography.AnnotatedBiblographyResultView;
 import de.cses.client.bibliography.AnnotatedBiblographySearchController;
-import de.cses.client.caves.CaveDataDisplay;
 import de.cses.client.caves.CaveFilter;
 import de.cses.client.caves.CaveResultView;
 import de.cses.client.caves.CaveSearchController;
-import de.cses.client.depictions.DepictionDataDisplay;
 import de.cses.client.depictions.DepictionFilter;
 import de.cses.client.depictions.DepictionResultView;
 import de.cses.client.depictions.DepictionSearchController;
@@ -59,16 +57,10 @@ import de.cses.client.images.ImageSearchController;
 import de.cses.client.ornamentic.OrnamenticFilter;
 import de.cses.client.ornamentic.OrnamenticResultView;
 import de.cses.client.ornamentic.OrnamenticSearchController;
-import de.cses.client.ui.AbstractDataDisplay;
 import de.cses.client.ui.AbstractSearchController;
 import de.cses.client.ui.DataViewPortalLayoutContainer;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
-import de.cses.shared.AnnotatedBibliographyEntry;
-import de.cses.shared.CaveEntry;
-import de.cses.shared.DepictionEntry;
-import de.cses.shared.ImageEntry;
-import de.cses.shared.OrnamentEntry;
 
 /**
  * @author alingnau
@@ -78,8 +70,6 @@ public class MainView implements IsWidget {
 	
 	// this footer will be shown at the bottom of the WebApp
 	private static final String FOOTER_TEXT = "\u00A9 2019 Sächsische Akademie der Wissenschaften zu Leipzig (Version 0.9.1)";
-	
-	private static ArrayList<String> dataDisplayUniqueIDList = null;
 	
 	private BorderLayoutContainer view = null;
 	private CaveSearchController caveSearchController;
