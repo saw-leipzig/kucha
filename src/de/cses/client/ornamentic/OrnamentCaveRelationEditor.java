@@ -61,7 +61,7 @@ import de.cses.shared.StructureOrganization;
 import de.cses.shared.StyleEntry;
 import de.cses.shared.WallOrnamentCaveRelation;
 
-public  class OrnamentCaveRelationEditor  {
+public class OrnamentCaveRelationEditor {
 
 	private FramedPanel header;
 	private ComboBox<CaveEntry> caveEntryComboBox;
@@ -89,12 +89,11 @@ public  class OrnamentCaveRelationEditor  {
 	private FramedPanel mainPanel = null;
 	private PopupPanel popup = new PopupPanel();
 
-	
-	
 	public OrnamentCaveRelationEditor() {
 
-		Util.doLogging("OrnamentCaveRelationEditor() started");
-		
+		// Zweite Ebene der Ornamentik. Eigenschaften, die von der Höhle abhängen.
+		//Erstellen aller Listen und Properties
+
 		caveEntryProps = GWT.create(CaveEntryProperties.class);
 		styleProps = GWT.create(StyleProperties.class);
 		ornamentEntryProps = GWT.create(OrnamentEntryProperties.class);
@@ -112,7 +111,7 @@ public  class OrnamentCaveRelationEditor  {
 		for (DistrictEntry pe : StaticTables.getInstance().getDistrictEntries().values()) {
 			districtEntryList.add(pe);
 		}
-		
+
 		for (CaveEntry ce : StaticTables.getInstance().getCaveEntries().values()) {
 			caveEntryList.add(ce);
 		}
@@ -132,23 +131,24 @@ public  class OrnamentCaveRelationEditor  {
 
 				ornamentEntryList.clear();
 				selectedRedlatedOrnaments.clear();
-					for (OrnamentEntry pe : result) {
-						ornamentEntryList.add(pe);
+				for (OrnamentEntry pe : result) {
+					ornamentEntryList.add(pe);
+				}
+				if (ornamentCaveRelationEntry != null) {
+					for (OrnamentEntry oe : ornamentCaveRelationEntry.getRelatedOrnamentsRelations()) {
+						ornamentEntryList
+								.remove(ornamentEntryList.findModelWithKey(Integer.toString(oe.getOrnamentID())));
+						selectedRedlatedOrnaments.add(oe);
 					}
-					if (ornamentCaveRelationEntry != null) {
-						for (OrnamentEntry oe : ornamentCaveRelationEntry.getRelatedOrnamentsRelations()) {
-							ornamentEntryList.remove(ornamentEntryList.findModelWithKey(Integer.toString(oe.getOrnamentID())));
-							selectedRedlatedOrnaments.add(oe);
-						}
-					}
+				}
 			}
 		});
 
-		Util.doLogging("OrnamentCaveRelationEditor() finished");
+		
 	}
 
 	public FramedPanel createForm() {
-		Util.doLogging("OrnamentCaveRelationEditor.createForm");
+		//Erstellen aller Panels auf der Client Seite
 
 		TabPanel tabPanel = new TabPanel();
 		tabPanel.setWidth(650);
@@ -179,11 +179,12 @@ public  class OrnamentCaveRelationEditor  {
 		districtComboBox.setEditable(false);
 		districtComboBox.setTriggerAction(TriggerAction.ALL);
 		if ((ornamentCaveRelationEntry != null) && (ornamentCaveRelationEntry.getDistrict() != null)) {
-			districtComboBox.setValue(StaticTables.getInstance().getDistrictEntries().get(ornamentCaveRelationEntry.getDistrict().getDistrictID()), false);
+			districtComboBox.setValue(StaticTables.getInstance().getDistrictEntries()
+					.get(ornamentCaveRelationEntry.getDistrict().getDistrictID()), false);
 		}
-		
+
 		Util.doLogging("OrnamentCaveRelationEditor.createForm step 1");
-		
+
 		header = new FramedPanel();
 		header.setHeading("Select District");
 		header.add(districtComboBox);
@@ -201,21 +202,21 @@ public  class OrnamentCaveRelationEditor  {
 
 		};
 
-
 		districtComboBox.addValueChangeHandler(districtSelectionHandler);
 
-		caveEntryComboBox = new ComboBox<CaveEntry>(caveEntryList, caveEntryProps.officialNumber(), new AbstractSafeHtmlRenderer<CaveEntry>() {
+		caveEntryComboBox = new ComboBox<CaveEntry>(caveEntryList, caveEntryProps.officialNumber(),
+				new AbstractSafeHtmlRenderer<CaveEntry>() {
 
-			@Override
-			public SafeHtml render(CaveEntry item) {
-				final CaveViewTemplates pvTemplates = GWT.create(CaveViewTemplates.class);
-				if ((item.getHistoricName() != null) && (item.getHistoricName().length() == 0)) {
-					return pvTemplates.caveLabel(item.getOfficialNumber());
-				} else {
-					return pvTemplates.caveLabel(item.getOfficialNumber(), item.getHistoricName());
-				}
-			}
-		});
+					@Override
+					public SafeHtml render(CaveEntry item) {
+						final CaveViewTemplates pvTemplates = GWT.create(CaveViewTemplates.class);
+						if ((item.getHistoricName() != null) && (item.getHistoricName().length() == 0)) {
+							return pvTemplates.caveLabel(item.getOfficialNumber());
+						} else {
+							return pvTemplates.caveLabel(item.getOfficialNumber(), item.getHistoricName());
+						}
+					}
+				});
 		caveEntryComboBox.setEnabled(false);
 		caveEntryComboBox.setTypeAhead(true);
 		caveEntryComboBox.setEditable(false);
@@ -223,7 +224,8 @@ public  class OrnamentCaveRelationEditor  {
 
 		if (ornamentCaveRelationEntry != null) {
 			if (ornamentCaveRelationEntry.getCaveEntry() != null) {
-				caveEntryComboBox.setValue(caveEntryList.findModelWithKey(Integer.toString(ornamentCaveRelationEntry.getCaveEntry().getCaveID())), false);
+				caveEntryComboBox.setValue(caveEntryList.findModelWithKey(
+						Integer.toString(ornamentCaveRelationEntry.getCaveEntry().getCaveID())), false);
 			}
 			int p = ornamentCaveRelationEntry.getCaveEntry().getCaveTypeID();
 			caveType.setText(StaticTables.getInstance().getCaveTypeEntries().get(p).getNameEN());
@@ -264,15 +266,16 @@ public  class OrnamentCaveRelationEditor  {
 		};
 
 		Util.doLogging("OrnamentCaveRelationEditor.createForm step 3");
-		
-		styleComboBox = new ComboBox<StyleEntry>(styleEntryList, styleProps.styleName(), new AbstractSafeHtmlRenderer<StyleEntry>() {
 
-			@Override
-			public SafeHtml render(StyleEntry item) {
-				final StyleViewTemplates pvTemplates = GWT.create(StyleViewTemplates.class);
-				return pvTemplates.style(item.getStyleName());
-			}
-		});
+		styleComboBox = new ComboBox<StyleEntry>(styleEntryList, styleProps.styleName(),
+				new AbstractSafeHtmlRenderer<StyleEntry>() {
+
+					@Override
+					public SafeHtml render(StyleEntry item) {
+						final StyleViewTemplates pvTemplates = GWT.create(StyleViewTemplates.class);
+						return pvTemplates.style(item.getStyleName());
+					}
+				});
 
 		if (ornamentCaveRelationEntry != null) {
 			if (ornamentCaveRelationEntry.getStyle() != null) {
@@ -311,7 +314,7 @@ public  class OrnamentCaveRelationEditor  {
 		caveEntryComboBox.addSelectionHandler(caveSelectionHandler);
 
 		Util.doLogging("OrnamentCaveRelationEditor.createForm step 4");
-		
+
 		header = new FramedPanel();
 
 		HorizontalPanel selectedWallsHorizontalPanel = new HorizontalPanel();
@@ -320,7 +323,8 @@ public  class OrnamentCaveRelationEditor  {
 		vlcCave.add(header, new VerticalLayoutData(0.5, .125));
 
 		if (ornamentCaveRelationEntry != null) {
-			Util.doLogging(this.getClass().getName() + " Walls list laenge: " + ornamentCaveRelationEntry.getWalls().size());
+			Util.doLogging(
+					this.getClass().getName() + " Walls list laenge: " + ornamentCaveRelationEntry.getWalls().size());
 			wallsListStore.clear();
 			for (WallOrnamentCaveRelation pe : ornamentCaveRelationEntry.getWalls()) {
 				wallsListStore.add(pe);
@@ -328,27 +332,32 @@ public  class OrnamentCaveRelationEditor  {
 			}
 		}
 
-		wallList = new ListView<WallOrnamentCaveRelation, String>(wallsListStore, new ValueProvider<WallOrnamentCaveRelation, String>() {
+		wallList = new ListView<WallOrnamentCaveRelation, String>(wallsListStore,
+				new ValueProvider<WallOrnamentCaveRelation, String>() {
 
-			@Override
-			public String getValue(WallOrnamentCaveRelation wocr) {
-				return StaticTables.getInstance().getWallLocationEntries().get(wocr.getWall().getWallLocationID()).getCaveAreaLabel() + ", "
-						+ StaticTables.getInstance().getOrnamentPositionEntries().get(wocr.getOrnamenticPositionID()).getName() + ", "
-						+ StaticTables.getInstance().getOrmanemtFunctionEntries().get(wocr.getOrnamenticFunctionID()).getName();
-			}
+					@Override
+					public String getValue(WallOrnamentCaveRelation wocr) {
+						return StaticTables.getInstance().getWallLocationEntries()
+								.get(wocr.getWall().getWallLocationID()).getCaveAreaLabel()
+								+ ", "
+								+ StaticTables.getInstance().getOrnamentPositionEntries()
+										.get(wocr.getOrnamenticPositionID()).getName()
+								+ ", " + StaticTables.getInstance().getOrmanemtFunctionEntries()
+										.get(wocr.getOrnamenticFunctionID()).getName();
+					}
 
-			@Override
-			public void setValue(WallOrnamentCaveRelation object, String value) {
-				// TODO Auto-generated method stub
+					@Override
+					public void setValue(WallOrnamentCaveRelation object, String value) {
+						// TODO Auto-generated method stub
 
-			}
+					}
 
-			@Override
-			public String getPath() {
-				// TODO Auto-generated method stub
-				return null;
-			}
-		});
+					@Override
+					public String getPath() {
+						// TODO Auto-generated method stub
+						return null;
+					}
+				});
 		wallList.setAllowTextSelection(true);
 		Util.doLogging("OrnamentCaveRelationEditor.createForm step 5");
 
@@ -360,7 +369,8 @@ public  class OrnamentCaveRelationEditor  {
 			@Override
 			public void onClick(ClickEvent event) {
 				if (!wallList.getSelectionModel().getSelectedItem().equals(null)) {
-					OrnamenticEditor.wallOrnamentCaveRelationEditor.show(wallList.getSelectionModel().getSelectedItem());
+					OrnamenticEditor.wallOrnamentCaveRelationEditor
+							.show(wallList.getSelectionModel().getSelectedItem());
 				} else {
 					Window.alert("Please select an entry!");
 				}
@@ -393,7 +403,7 @@ public  class OrnamentCaveRelationEditor  {
 		}
 
 		Util.doLogging("OrnamentCaveRelationEditor.createForm step 6");
-		
+
 		VerticalLayoutContainer vlcAttributes = new VerticalLayoutContainer();
 
 		HorizontalLayoutContainer horizontalContainerLayout = new HorizontalLayoutContainer();
@@ -425,11 +435,11 @@ public  class OrnamentCaveRelationEditor  {
 		FramedPanel attributes = new FramedPanel();
 		attributes.setHeading("Attributes");
 		attributes.add(vlcAttributes);
-		//tabPanel.add(attributes, "Attributes");
+		// tabPanel.add(attributes, "Attributes");
 
 		VerticalLayoutContainer vlcRelationToTherornaments1 = new VerticalLayoutContainer();
 		VerticalLayoutContainer vlcRelationToTherornaments2 = new VerticalLayoutContainer();
-		
+
 		HorizontalLayoutContainer relationToOtherOrnamentsHLC = new HorizontalLayoutContainer();
 
 		relationToOtherOrnamentsHLC.add(vlcRelationToTherornaments1, new HorizontalLayoutData(.5, 1.0));
@@ -439,10 +449,11 @@ public  class OrnamentCaveRelationEditor  {
 
 		ListView<OrnamentEntry, String> ornamentListViewRelated = new ListView<OrnamentEntry, String>(ornamentEntryList,
 				ornamentEntryProps.code());
-		ListView<OrnamentEntry, String> selectedRelatedOrnamentsListView = new ListView<OrnamentEntry, String>(selectedRedlatedOrnaments,
-				ornamentEntryProps.code());
+		ListView<OrnamentEntry, String> selectedRelatedOrnamentsListView = new ListView<OrnamentEntry, String>(
+				selectedRedlatedOrnaments, ornamentEntryProps.code());
 		relatedOrnamentsHorizontalPanel.add(ornamentListViewRelated, new HorizontalLayoutData(.5, 1.0, new Margins(1)));
-		relatedOrnamentsHorizontalPanel.add(selectedRelatedOrnamentsListView, new HorizontalLayoutData(.5, 1.0, new Margins(1)));
+		relatedOrnamentsHorizontalPanel.add(selectedRelatedOrnamentsListView,
+				new HorizontalLayoutData(.5, 1.0, new Margins(1)));
 
 		new ListViewDragSource<OrnamentEntry>(ornamentListViewRelated).setGroup("relatedOrnament");
 		new ListViewDragSource<OrnamentEntry>(selectedRelatedOrnamentsListView).setGroup("relatedOrnament");
@@ -457,19 +468,19 @@ public  class OrnamentCaveRelationEditor  {
 		vlcRelationToTherornaments1.add(header, new VerticalLayoutData(1.0, .4));
 
 		HorizontalLayoutContainer similarOrnamentsHorizontalPanel = new HorizontalLayoutContainer();
-		ListView<OrnamentEntry, String> ornamentListViewSimilar = new ListView<OrnamentEntry, String>(ornamentEntryList2,
-				ornamentEntryProps.code());
-		ListView<OrnamentEntry, String> selectedSimilarOrnamentsListView = new ListView<OrnamentEntry, String>(selectedSimilarOrnaments,
-				ornamentEntryProps.code());
+		ListView<OrnamentEntry, String> ornamentListViewSimilar = new ListView<OrnamentEntry, String>(
+				ornamentEntryList2, ornamentEntryProps.code());
+		ListView<OrnamentEntry, String> selectedSimilarOrnamentsListView = new ListView<OrnamentEntry, String>(
+				selectedSimilarOrnaments, ornamentEntryProps.code());
 		similarOrnamentsHorizontalPanel.add(ornamentListViewSimilar, new HorizontalLayoutData(.5, 1.0, new Margins(1)));
-		similarOrnamentsHorizontalPanel.add(selectedSimilarOrnamentsListView, new HorizontalLayoutData(.5, 1.0, new Margins(1)));
+		similarOrnamentsHorizontalPanel.add(selectedSimilarOrnamentsListView,
+				new HorizontalLayoutData(.5, 1.0, new Margins(1)));
 
 		new ListViewDragSource<OrnamentEntry>(ornamentListViewSimilar).setGroup("similarOrnament");
 		new ListViewDragSource<OrnamentEntry>(selectedSimilarOrnamentsListView).setGroup("similarOrnament");
 
 		new ListViewDropTarget<OrnamentEntry>(selectedSimilarOrnamentsListView).setGroup("similarOrnament");
 		new ListViewDropTarget<OrnamentEntry>(ornamentListViewSimilar).setGroup("similarOrnament");
-
 
 		icoSelector = new IconographySelector(StaticTables.getInstance().getIconographyEntries().values());
 		Util.doLogging("OrnamentCaveAttributes - IconographySelector initialised");
@@ -479,7 +490,7 @@ public  class OrnamentCaveRelationEditor  {
 		}
 
 		Util.doLogging("OrnamentCaveRelationEditor.createForm step 7");
-		
+
 		final TextArea groupOfOrnaments = new TextArea();
 		groupOfOrnaments.setAllowBlank(true);
 		header = new FramedPanel();
@@ -501,23 +512,23 @@ public  class OrnamentCaveRelationEditor  {
 		vlcRelationToTherornaments1.add(header, new VerticalLayoutData(1, .3));
 
 		tabPanel.add(relationToOtherOrnamentsHLC, "Relations");
-		
+
 		tabPanel.add(icoSelector, "Pictorial Elements");
 
 		ToolButton cancelTB = new ToolButton(new IconConfig("cancelButton", "cancelButtonOver"));
 		cancelTB.setToolTip(Util.createToolTip("close"));
 		cancelTB.addSelectHandler(new SelectHandler() {
-			
+
 			@Override
 			public void onSelect(SelectEvent event) {
 				popup.hide();
 			}
-		}); 
-		
+		});
+
 		ToolButton saveTB = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 		saveTB.setToolTip(Util.createToolTip("save"));
 		saveTB.addSelectHandler(new SelectHandler() {
-			
+
 			@Override
 			public void onSelect(SelectEvent event) {
 
@@ -564,7 +575,6 @@ public  class OrnamentCaveRelationEditor  {
 			}
 		});
 
-
 		mainPanel = new FramedPanel();
 		mainPanel.addTool(saveTB);
 		mainPanel.addTool(cancelTB);
@@ -574,8 +584,10 @@ public  class OrnamentCaveRelationEditor  {
 		return mainPanel;
 	}
 
+	//Interfaces für ComboBoxen und ListViews
 	interface CaveEntryProperties extends PropertyAccess<CaveEntry> {
 		ModelKeyProvider<CaveEntry> caveID();
+
 		LabelProvider<CaveEntry> officialNumber();
 	}
 
@@ -659,10 +671,9 @@ public  class OrnamentCaveRelationEditor  {
 		LabelProvider<OrnamentCaveType> name();
 	}
 
-
-public ComboBox<CaveEntry> getCaveEntryComboBox(){
-return caveEntryComboBox;
-}
+	public ComboBox<CaveEntry> getCaveEntryComboBox() {
+		return caveEntryComboBox;
+	}
 
 	interface WallRelationProperties extends PropertyAccess<WallOrnamentCaveRelation> {
 		@Path("wall.wallLocationID")
@@ -681,14 +692,14 @@ return caveEntryComboBox;
 	public ListStore<WallOrnamentCaveRelation> getWallsListStore() {
 		return wallsListStore;
 	}
-	
+
 	public ListView<WallOrnamentCaveRelation, String> getWallsListView() {
 		return wallList;
 	}
 
 	/**
 	 * @param wallsListStore
-	 *          the wallsListStore to set
+	 *            the wallsListStore to set
 	 */
 	public void setWallsListStore(ListStore<WallOrnamentCaveRelation> wallsListStore) {
 		this.wallsListStore = wallsListStore;
@@ -706,19 +717,19 @@ return caveEntryComboBox;
 		caveEntryList.setEnableFilters(true);
 		caveEntryComboBox.setEnabled(true);
 	}
-	
+
 	public void show() {
-		Util.doLogging("Nina: start von show");
+		//Aufruf ohne dass ein Entry geladen wird
 		popup.setWidget(createForm());
 		popup.center();
-		Util.doLogging("Nina: show wurde ausgefuehrt");
+		
 	}
+
 	public void show(OrnamentCaveRelation ornamentCaveRelation) {
-		Util.doLogging("Nina: start von show mit entry");
+		//Aufruf mit Entry
 		this.ornamentCaveRelationEntry = ornamentCaveRelation;
 		popup.setWidget(createForm());
 		popup.center();
-		Util.doLogging("Nina: ende von show mit entry");
 	}
 
 }

@@ -805,6 +805,10 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getPositionbyWall(wall);
 	}
+	public ArrayList<OrnamentPositionEntry> getPositionbyReveal(WallEntry wall) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getPositionbyReveal(wall);
+	}
 
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getFunctionbyPosition(de.cses.shared.OrnamentPositionEntry)

@@ -11,6 +11,7 @@ import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -27,17 +28,22 @@ import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.dnd.core.client.ListViewDragSource;
 import com.sencha.gxt.dnd.core.client.ListViewDropTarget;
+import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.TabPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.button.ButtonBar;
 import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
+import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutData;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.VBoxLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
@@ -61,8 +67,8 @@ import de.cses.shared.OrnamentClassEntry;
 import de.cses.shared.OrnamentComponentsEntry;
 import de.cses.shared.OrnamentEntry;
 
-public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorListener {
-	
+public class OrnamenticEditor extends AbstractEditor implements ImageSelectorListener {
+
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	FramedPanel header;
 	private VBoxLayoutContainer widget;
@@ -89,8 +95,23 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 	public static OrnamentCaveRelationEditor ornamentCaveRelationEditor;
 	public static WallOrnamentCaveRelationEditor wallOrnamentCaveRelationEditor;
 	public static OrnamenticEditor ornamenticEditor;
-	
 
+	//Hauptklasse zum Erstellen von Ornamenten. Gegliedert in 3 Hierarchie Ebenen: 
+	// 1. Eigenschaften die bei dem Ornament immer vorhanden sind
+	// 2. Eigenschaften die von der Höhle abhängen in dem sich das Ornament befindet
+	// 3. Eigenschaften, die von der Wand abhängen,an der sich das Ornament in einer bestimmten Höhle befindet
+	
+	// Für die Suche: OrnamentSearchEntry
+	// Die interne Repräsentation für die Kommunikation mit dem Server: OrnamentEntry
+	
+	// Beim Erstellen des Client seitigen Aufbaus werden 2 Fälle unterschieden: Es wird ein OrnamentEntry geladen und
+	// es werden die leeren Felder geladen um ein neues Ornament anzulegen
+	
+	// Die Speicherung in einen OrnamentEntry erfolgt erst beim Klicken des Save Buttons. Vorher werden keine Daten zwischengespeichert.
+	
+	// Viele der Eigenschaften der Ornamenten wurden inzwischen umbenannt (siehe OrnamentEntry für Kommentare zu den Eigenschafen)
+	
+	// 
 	@Override
 	public Widget asWidget() {
 		if (widget == null) {
@@ -107,10 +128,11 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 	}
 
 	public Widget createForm() {
+		// Aufbau der Listen welche geladen werden müssen aus der Datenbank
 		Util.doLogging("Create form von ornamenticeditor gestartet");
 		ornamentCaveRelationEditor = new OrnamentCaveRelationEditor();
-		 wallOrnamentCaveRelationEditor = new WallOrnamentCaveRelationEditor();
-		 ornamenticEditor = this;
+		wallOrnamentCaveRelationEditor = new WallOrnamentCaveRelationEditor();
+		ornamenticEditor = this;
 		HorizontalLayoutContainer horizontBackground = new HorizontalLayoutContainer();
 		VerticalLayoutContainer verticalgeneral2Background = new VerticalLayoutContainer();
 
@@ -124,12 +146,16 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 		imageEntryList = new ListStore<ImageEntry>(imgProperties.imageID());
 		ornamentCaveRelationProps = GWT.create(OrnamentCaveRelationProperties.class);
 		ornamentClassEntryList = new ListStore<OrnamentClassEntry>(ornamentClassProps.ornamentClassID());
-		innerSecondaryPatternsEntryList = new ListStore<InnerSecondaryPatternsEntry>(innerSecondaryPatternsProps.innerSecondaryPatternsID());
-		selectedinnerSecondaryPatternsEntryList = new ListStore<InnerSecondaryPatternsEntry>(innerSecondaryPatternsProps.innerSecondaryPatternsID());
+		innerSecondaryPatternsEntryList = new ListStore<InnerSecondaryPatternsEntry>(
+				innerSecondaryPatternsProps.innerSecondaryPatternsID());
+		selectedinnerSecondaryPatternsEntryList = new ListStore<InnerSecondaryPatternsEntry>(
+				innerSecondaryPatternsProps.innerSecondaryPatternsID());
 
-		selectedOrnamentComponents = new ListStore<OrnamentComponentsEntry>(ornamentComponentsProps.ornamentComponentsID());
+		selectedOrnamentComponents = new ListStore<OrnamentComponentsEntry>(
+				ornamentComponentsProps.ornamentComponentsID());
 		ornamentComponents = new ListStore<OrnamentComponentsEntry>(ornamentComponentsProps.ornamentComponentsID());
 
+		// laden der Daten aus der Datenbank
 		dbService.getOrnamentComponents(new AsyncCallback<ArrayList<OrnamentComponentsEntry>>() {
 
 			@Override
@@ -225,11 +251,13 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 					ornamentClassEntryList.add(pe);
 				}
 				if (ornamentEntry != null) {
-					ornamentClassComboBox.setValue(ornamentClassEntryList.findModelWithKey(Integer.toString(ornamentEntry.getOrnamentClass())));
+					ornamentClassComboBox.setValue(ornamentClassEntryList
+							.findModelWithKey(Integer.toString(ornamentEntry.getOrnamentClass())));
 				}
 			}
 		});
 
+		// Aufbau der Felder auf der Client Seite
 		TabPanel tabpanel = new TabPanel();
 		tabpanel.setWidth(620);
 		tabpanel.setHeight(600);
@@ -263,10 +291,10 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 		panel.add(header, new VerticalLayoutData(1.0, .125));
 
 		ToolButton addOrnamentClassButton = new ToolButton(new IconConfig("addButton", "addButtonOver"));
-		addOrnamentClassButton.setToolTip(Util.createToolTip("Add Ornament Class"));
+		addOrnamentClassButton.setToolTip(Util.createToolTip("Add Ornament Motif"));
 
 		FramedPanel ornamentClassFramedPanel = new FramedPanel();
-		ornamentClassFramedPanel.setHeading("New Ornament Class");
+		ornamentClassFramedPanel.setHeading("New Ornament Motif");
 
 		ToolButton saveOrnamentClass = new ToolButton(new IconConfig("safeButton", "safeButtonOver"));
 		saveOrnamentClass.setToolTip(Util.createToolTip("save"));
@@ -323,12 +351,13 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 			}
 		});
 		header.addTool(addOrnamentClassButton);
-		
+
 		ToolButton renameOrnamentClassButton = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
-		renameOrnamentClassButton.setToolTip(Util.createToolTip("Rename Ornament Class", "Select item and click here."));
-		
+		renameOrnamentClassButton
+				.setToolTip(Util.createToolTip("Rename Ornament Motif", "Select item and click here."));
+
 		FramedPanel renameornamentClassFramedPanel = new FramedPanel();
-		renameornamentClassFramedPanel.setHeading("New Ornament Class");
+		renameornamentClassFramedPanel.setHeading("New Ornament Motif");
 
 		ToolButton saveRenameOrnamentClass = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 		saveRenameOrnamentClass.setToolTip(Util.createToolTip("save"));
@@ -344,53 +373,53 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 		TextField renameOrnamentClassTextField = new TextField();
 		renameOrnamentClassLayoutPanel.add(renameOrnamentClassTextField);
 		renameornamentClassFramedPanel.add(renameOrnamentClassLayoutPanel);
-		
+
 		renameOrnamentClassButton.addSelectHandler(new SelectHandler() {
 
 			@Override
 			public void onSelect(SelectEvent event) {
-				if(ornamentClassComboBox.getValue() == null) {
+				if (ornamentClassComboBox.getValue() == null) {
 					Window.alert("Please select an item to rename");
+				} else {
+					PopupPanel renameOrnamentClassPopup = new PopupPanel();
+					renameOrnamentClassPopup.add(renameornamentClassFramedPanel);
+					renameornamentClassFramedPanel.setSize("150", "80");
+					renameOrnamentClassPopup.center();
+					renameOrnamentClassTextField.setText(ornamentClassComboBox.getValue().getName());
+					cancelRenameOrnamentClass.addSelectHandler(new SelectHandler() {
+
+						@Override
+						public void onSelect(SelectEvent event) {
+							renameOrnamentClassPopup.hide();
+						}
+					});
+					saveRenameOrnamentClass.addSelectHandler(new SelectHandler() {
+
+						@Override
+						public void onSelect(SelectEvent event) {
+
+							OrnamentClassEntry entry = ornamentClassComboBox.getValue();
+							entry.setName(renameOrnamentClassTextField.getText());
+							dbService.renameOrnamentClass(entry, new AsyncCallback<OrnamentClassEntry>() {
+
+								public void onFailure(Throwable caught) {
+									caught.printStackTrace();
+								}
+
+								@Override
+								public void onSuccess(OrnamentClassEntry result) {
+									Util.doLogging(this.getClass().getName() + " renamed " + result.getName());
+									renameOrnamentClassPopup.hide();
+								}
+							});
+							renameOrnamentClassPopup.hide();
+						}
+					});
+
 				}
-				else {
-				PopupPanel renameOrnamentClassPopup = new PopupPanel();
-				renameOrnamentClassPopup.add(renameornamentClassFramedPanel);
-				renameornamentClassFramedPanel.setSize("150", "80");
-				renameOrnamentClassPopup.center();
-				renameOrnamentClassTextField.setText(ornamentClassComboBox.getValue().getName());
-				cancelRenameOrnamentClass.addSelectHandler(new SelectHandler() {
-
-					@Override
-					public void onSelect(SelectEvent event) {
-						renameOrnamentClassPopup.hide();
-					}
-				});
-				saveRenameOrnamentClass.addSelectHandler(new SelectHandler() {
-
-					@Override
-					public void onSelect(SelectEvent event) {
-						
-						OrnamentClassEntry entry = 	ornamentClassComboBox.getValue();
-						entry.setName(renameOrnamentClassTextField.getText());
-						dbService.renameOrnamentClass(entry, new AsyncCallback<OrnamentClassEntry>() {
-
-							public void onFailure(Throwable caught) {
-								caught.printStackTrace();
-							}
-
-							@Override
-							public void onSuccess(OrnamentClassEntry result) {
-								Util.doLogging(this.getClass().getName() + " renamed " + result.getName());
-								renameOrnamentClassPopup.hide();
-							}
-						});
-						renameOrnamentClassPopup.hide();
-					}
-				});
-
 			}
-		}});
-		
+		});
+
 		header.addTool(renameOrnamentClassButton);
 
 		header = new FramedPanel();
@@ -424,9 +453,6 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 			interpretation.setValue(ornamentEntry.getInterpretation());
 		}
 
-
-
-
 		final TextArea references = new TextArea();
 		references.setAllowBlank(true);
 		header = new FramedPanel();
@@ -437,8 +463,6 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 			references.setText(ornamentEntry.getReferences());
 		}
 
-
-		
 		ToolButton addCaveTool = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		addCaveTool.setToolTip(Util.createToolTip("Add Cave"));
 
@@ -453,7 +477,7 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 
 			@Override
 			public void onClick(ClickEvent event) {
-			ornamentCaveRelationEditor.show();
+				ornamentCaveRelationEditor.show();
 			}
 		};
 
@@ -461,9 +485,11 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 
 		cavesContentPanel = new FramedPanel();
 		cavesPanel.add(cavesContentPanel);
-		caveOrnamentRelationList = new ListStore<OrnamentCaveRelation>(ornamentCaveRelationProps.ornamentCaveRelationID());
+		caveOrnamentRelationList = new ListStore<OrnamentCaveRelation>(
+				ornamentCaveRelationProps.ornamentCaveRelationID());
 
-		cavesList = new ListView<OrnamentCaveRelation, String>(caveOrnamentRelationList, ornamentCaveRelationProps.name());
+		cavesList = new ListView<OrnamentCaveRelation, String>(caveOrnamentRelationList,
+				ornamentCaveRelationProps.name());
 		cavesList.setAllowTextSelection(true);
 
 		if (ornamentEntry != null) {
@@ -477,7 +503,7 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 
 		ToolButton edit = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		edit.setToolTip(Util.createToolTip("Edit Cave"));
-		
+
 		ToolButton delete = new ToolButton(new IconConfig("cancelButton", "cButtonOver"));
 		delete.setToolTip(Util.createToolTip("Delete Cave.", "Select cave, then click here."));
 
@@ -504,8 +530,8 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 		};
 		edit.addHandler(editClickHandler, ClickEvent.getType());
 
-
 		ClickHandler saveClickHandler = new ClickHandler() {
+			// Sammeln der Informationen aus den Feldern und speicherung des OrnamentEntrys
 
 			@Override
 			public void onClick(ClickEvent event) {
@@ -513,7 +539,7 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 					Util.showWarning("Missing information", "Please insert Ornamentation Code!");
 					return;
 				}
-				
+
 				if (ornamentEntry == null) {
 					ornamentEntry = new OrnamentEntry();
 				}
@@ -568,7 +594,7 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 							if (result > 0) {
 								Util.doLogging(this.getClass().getName() + " saving sucessful");
 								ornamentEntry.setOrnamentID(result);
-//							updateEntry(ornamentEntry);
+								// updateEntry(ornamentEntry);
 								closeEditor(ornamentEntry);
 							} else {
 								Util.showWarning("Saving failed", "ornamentID == 0");
@@ -592,22 +618,50 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 
 			}
 		};
-		
 
 		FramedPanel framedpanelornamentic = new FramedPanel();
-		
 
 		ClickHandler cancelHandler = new ClickHandler() {
+			// Rückfrage über schließen ohne zu speichern
 
 			@Override
 			public void onClick(ClickEvent event) {
-				closeEditor(null);
+				PopupPanel security = new PopupPanel();
+				BorderLayoutContainer securityContent = new BorderLayoutContainer();
+				TextButton yesTB = new TextButton("yes");
+				TextButton noTB = new TextButton("no");
+				ButtonBar buttons = new ButtonBar();
+				buttons.add(yesTB);
+				buttons.add(noTB);
+				HTML text = new HTML("Really exit without saving? All unsaved data will be lost.");
+				securityContent.setNorthWidget(text, new BorderLayoutData(20));
+				securityContent.setCenterWidget(buttons, new MarginData(5, 0, 0, 0));
+				security.add(securityContent);
+				security.show();
+
+				ClickHandler yesHandler = new ClickHandler() {
+
+					@Override
+					public void onClick(ClickEvent event) {
+						security.hide();
+						closeEditor(null);
+
+					}
+				};
+				yesTB.addHandler(yesHandler, ClickEvent.getType());
+
+				ClickHandler noHandler = new ClickHandler() {
+
+					@Override
+					public void onClick(ClickEvent event) {
+						security.hide();
+					}
+				};
+				noTB.addHandler(noHandler, ClickEvent.getType());
+
 			}
 
 		};
-		
-
-
 
 		horizontBackground.add(panel, new HorizontalLayoutData(.5, 1.0));
 		horizontBackground.add(panel2, new HorizontalLayoutData(.5, 1.0));
@@ -628,12 +682,13 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 
 		HorizontalLayoutContainer ornamentComponentsHorizontalPanel = new HorizontalLayoutContainer();
 
-		ListView<OrnamentComponentsEntry, String> ornamentComponentView = new ListView<OrnamentComponentsEntry, String>(ornamentComponents,
-				ornamentComponentsProps.name());
+		ListView<OrnamentComponentsEntry, String> ornamentComponentView = new ListView<OrnamentComponentsEntry, String>(
+				ornamentComponents, ornamentComponentsProps.name());
 		ListView<OrnamentComponentsEntry, String> selectedOrnamentComponentView = new ListView<OrnamentComponentsEntry, String>(
 				selectedOrnamentComponents, ornamentComponentsProps.name());
 		ornamentComponentsHorizontalPanel.add(ornamentComponentView, new HorizontalLayoutData(.5, 1.0, new Margins(1)));
-		ornamentComponentsHorizontalPanel.add(selectedOrnamentComponentView, new HorizontalLayoutData(.5, 1.0, new Margins(1)));
+		ornamentComponentsHorizontalPanel.add(selectedOrnamentComponentView,
+				new HorizontalLayoutData(.5, 1.0, new Margins(1)));
 
 		new ListViewDragSource<OrnamentComponentsEntry>(ornamentComponentView).setGroup("Components");
 		new ListViewDragSource<OrnamentComponentsEntry>(selectedOrnamentComponentView).setGroup("Components");
@@ -678,7 +733,7 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 				TextField newComponentTextField = new TextField();
 				newComponentLayoutPanel.add(newComponentTextField);
 				componentFramedPanel.add(newComponentLayoutPanel);
-				
+
 				newComponentPopup.add(componentFramedPanel);
 				newComponentPopup.setSize("150px", "80px");
 				newComponentPopup.center();
@@ -716,83 +771,86 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 		});
 
 		ToolButton renameComponentButton = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
-		renameComponentButton.setToolTip(Util.createToolTip("Rename Component", "Select entry and click here to edit."));
-		
+		renameComponentButton
+				.setToolTip(Util.createToolTip("Rename Component", "Select entry and click here to edit."));
+
 		header.addTool(renameComponentButton);
 		renameComponentButton.addSelectHandler(new SelectHandler() {
 
 			@Override
 			public void onSelect(SelectEvent event) {
-				if(ornamentComponentView.getSelectionModel().getSelectedItem() == null) {
+				if (ornamentComponentView.getSelectionModel().getSelectedItem() == null) {
 					Window.alert("Please select an item to rename");
-					
+
+				} else {
+					PopupPanel renameComponentPopup = new PopupPanel();
+					FramedPanel renamecomponentFramedPanel = new FramedPanel();
+					renamecomponentFramedPanel.setHeading("Rename Component");
+
+					ToolButton saveRenameComponent = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
+					saveRenameComponent.setToolTip(Util.createToolTip("save"));
+					renamecomponentFramedPanel.addTool(saveRenameComponent);
+
+					ToolButton cancelRenameComponent = new ToolButton(
+							new IconConfig("cancelButton", "cancelButtonOver"));
+					cancelRenameComponent.setToolTip(Util.createToolTip("cancel"));
+
+					renamecomponentFramedPanel.addTool(cancelRenameComponent);
+
+					HorizontalLayoutContainer renameComponentLayoutPanel = new HorizontalLayoutContainer();
+					TextField renameComponentTextField = new TextField();
+					renameComponentLayoutPanel.add(renameComponentTextField);
+					renamecomponentFramedPanel.add(renameComponentLayoutPanel);
+
+					renameComponentPopup.add(renamecomponentFramedPanel);
+					renameComponentPopup.setSize("150px", "80px");
+					renameComponentPopup.center();
+
+					renameComponentTextField
+							.setText(ornamentComponentView.getSelectionModel().getSelectedItem().getName());
+
+					cancelRenameComponent.addSelectHandler(new SelectHandler() {
+
+						@Override
+						public void onSelect(SelectEvent event) {
+							renameComponentPopup.hide();
+						}
+					});
+					saveRenameComponent.addSelectHandler(new SelectHandler() {
+
+						@Override
+						public void onSelect(SelectEvent event) {
+							OrnamentComponentsEntry entry = new OrnamentComponentsEntry();
+							entry.setName(renameComponentTextField.getText());
+
+							dbService.renameOrnamentComponents(entry, new AsyncCallback<OrnamentComponentsEntry>() {
+
+								public void onFailure(Throwable caught) {
+									caught.printStackTrace();
+								}
+
+								@Override
+								public void onSuccess(OrnamentComponentsEntry result) {
+									Util.doLogging(this.getClass().getName() + " renaming sucessful");
+									renameComponentPopup.hide();
+								}
+							});
+						}
+					});
 				}
-				else {
-				PopupPanel renameComponentPopup = new PopupPanel();
-				FramedPanel renamecomponentFramedPanel = new FramedPanel();
-				renamecomponentFramedPanel.setHeading("Rename Component");
-
-				ToolButton saveRenameComponent = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
-				saveRenameComponent.setToolTip(Util.createToolTip("save"));
-				renamecomponentFramedPanel.addTool(saveRenameComponent);
-
-				ToolButton cancelRenameComponent = new ToolButton(new IconConfig("cancelButton", "cancelButtonOver"));
-				cancelRenameComponent.setToolTip(Util.createToolTip("cancel"));
-
-				renamecomponentFramedPanel.addTool(cancelRenameComponent);
-
-				HorizontalLayoutContainer renameComponentLayoutPanel = new HorizontalLayoutContainer();
-				TextField renameComponentTextField = new TextField();
-				renameComponentLayoutPanel.add(renameComponentTextField);
-				renamecomponentFramedPanel.add(renameComponentLayoutPanel);
-				
-				renameComponentPopup.add(renamecomponentFramedPanel);
-				renameComponentPopup.setSize("150px", "80px");
-				renameComponentPopup.center();
-				
-				renameComponentTextField.setText(ornamentComponentView.getSelectionModel().getSelectedItem().getName());
-
-				cancelRenameComponent.addSelectHandler(new SelectHandler() {
-
-					@Override
-					public void onSelect(SelectEvent event) {
-						renameComponentPopup.hide();
-					}
-				});
-				saveRenameComponent.addSelectHandler(new SelectHandler() {
-
-					@Override
-					public void onSelect(SelectEvent event) {
-						OrnamentComponentsEntry entry = new OrnamentComponentsEntry();
-						entry.setName(renameComponentTextField.getText());
-						
-
-						dbService.renameOrnamentComponents(entry, new AsyncCallback<OrnamentComponentsEntry>() {
-
-							public void onFailure(Throwable caught) {
-								caught.printStackTrace();
-							}
-
-							@Override
-							public void onSuccess(OrnamentComponentsEntry result) {
-								Util.doLogging(this.getClass().getName() + " renaming sucessful");
-								renameComponentPopup.hide();
-							}
-						});
-					}
-				});
 			}
-		}});
-		
-		
+		});
+
 		HorizontalLayoutContainer innerSecondaryPatternsHorizontalPanel = new HorizontalLayoutContainer();
 
 		ListView<InnerSecondaryPatternsEntry, String> innerSecondaryPatternsView = new ListView<InnerSecondaryPatternsEntry, String>(
 				innerSecondaryPatternsEntryList, innerSecondaryPatternsProps.name());
 		ListView<InnerSecondaryPatternsEntry, String> selectedinnerSecondaryPatternsView = new ListView<InnerSecondaryPatternsEntry, String>(
 				selectedinnerSecondaryPatternsEntryList, innerSecondaryPatternsProps.name());
-		innerSecondaryPatternsHorizontalPanel.add(innerSecondaryPatternsView, new HorizontalLayoutData(.5, 1.0, new Margins(1)));
-		innerSecondaryPatternsHorizontalPanel.add(selectedinnerSecondaryPatternsView, new HorizontalLayoutData(.5, 1.0, new Margins(1)));
+		innerSecondaryPatternsHorizontalPanel.add(innerSecondaryPatternsView,
+				new HorizontalLayoutData(.5, 1.0, new Margins(1)));
+		innerSecondaryPatternsHorizontalPanel.add(selectedinnerSecondaryPatternsView,
+				new HorizontalLayoutData(.5, 1.0, new Margins(1)));
 
 		new ListViewDragSource<InnerSecondaryPatternsEntry>(innerSecondaryPatternsView).setGroup("innersec");
 		new ListViewDragSource<InnerSecondaryPatternsEntry>(selectedinnerSecondaryPatternsView).setGroup("innersec");
@@ -804,7 +862,7 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 		header.setHeading("Select inner Secondary Patterns");
 		ToolButton addInnerSecondaryPatternsButton = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		addInnerSecondaryPatternsButton.setToolTip(Util.createToolTip("Add New Inner Secondary Pattern"));
-		
+
 		addInnerSecondaryPatternsButton.addSelectHandler(new SelectHandler() {
 
 			@Override
@@ -892,8 +950,8 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 			final ImageViewTemplates imageViewTemplates = GWT.create(ImageViewTemplates.class);
 
 			public SafeHtml render(ImageEntry item) {
-				SafeUri imageUri = UriUtils.fromString(
-						"resource?imageID=" + item.getImageID() + "&thumb=150" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
+				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=150"
+						+ UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 				return imageViewTemplates.image(imageUri, item.getTitle());
 			}
 		}));
@@ -939,8 +997,7 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 		saveButton.setToolTip(Util.createToolTip("save"));
 		closeButton.addHandler(cancelHandler, ClickEvent.getType());
 		saveButton.addHandler(saveClickHandler, ClickEvent.getType());
-		
-		
+
 		FramedPanel backgroundPanel = new FramedPanel();
 		HorizontalLayoutContainer horiPanel = new HorizontalLayoutContainer();
 		horiPanel.setSize("650", "600");
@@ -949,7 +1006,7 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 		backgroundPanel.setHeading("Ornamentic Editor");
 		backgroundPanel.addTool(saveButton);
 		backgroundPanel.addTool(closeButton);
-		
+
 		return backgroundPanel;
 
 	}
@@ -1010,7 +1067,6 @@ public  class OrnamenticEditor extends AbstractEditor implements ImageSelectorLi
 	public void setCavesList(ListView<OrnamentCaveRelation, String> cavesList) {
 		this.cavesList = cavesList;
 	}
-
 
 	@Override
 	public void imageSelected(ArrayList<ImageEntry> entryList) {

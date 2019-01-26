@@ -41,6 +41,7 @@ import de.cses.shared.OrnamentEntry;
  *
  */
 public class OrnamenticView extends AbstractView {
+	//Klasse zur Darstellung des Bildes für die Ornamentik in der Suche
 	
 	interface Resources extends ClientBundle {
 		@Source("buddha.png")
