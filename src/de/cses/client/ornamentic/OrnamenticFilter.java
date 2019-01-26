@@ -231,6 +231,7 @@ public class OrnamenticFilter  extends AbstractFilter{
 		positionEntryList = new ListStore<OrnamentPositionEntry>(positionProps.ornamentPositionID());
 		loadPositionEntryList();
 		
+		ornamentClassProps = GWT.create(OrnamentClassProperties.class);
 		ornamentClassEntryList = new ListStore<OrnamentClassEntry>(ornamentClassProps.ornamentClassID());
 		loadOrnamentClassEntryList();
 	}

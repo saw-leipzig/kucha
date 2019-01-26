@@ -580,7 +580,6 @@ public class OrnamentCaveRelationEditor {
 		mainPanel.addTool(cancelTB);
 		mainPanel.setHeading("New Cave Relation");
 		mainPanel.add(caveAttributesVerticalPanel);
-		Util.doLogging("OrnamentCaveRelationEditor.createForm finished");
 		return mainPanel;
 	}
 
