@@ -28,6 +28,7 @@ import de.cses.shared.CaveGroupEntry;
 import de.cses.shared.CaveSearchEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
+import de.cses.shared.CollectionEntry;
 import de.cses.shared.CurrentLocationEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DepictionSearchEntry;
@@ -332,5 +333,9 @@ public interface DatabaseServiceAsync {
 	void insertUserEntry(UserEntry entry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 
 	void saveCollectedEntries(String sessionID, String collectionLabel, Boolean isGroupCollection, ArrayList<AbstractEntry> entryList, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
+
+	void getRelatedCollectionNames(String sessionID, AsyncCallback<ArrayList<CollectionEntry>> asyncCallback) throws IllegalArgumentException;
+
+	void loadCollectedEntries(CollectionEntry value, AsyncCallback<ArrayList<AbstractEntry>> asyncCallback) throws IllegalArgumentException;
 
 }

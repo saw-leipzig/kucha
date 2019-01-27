@@ -315,7 +315,6 @@ public class CaveEditor extends AbstractEditor {
 
 	interface CaveGroupProperties extends PropertyAccess<CaveGroupEntry> {
 		ModelKeyProvider<CaveGroupEntry> caveGroupID();
-
 		LabelProvider<CaveGroupEntry> name();
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 
+ * Copyright 2016 - 2019
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -14,6 +14,7 @@
 package de.cses.server;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -30,6 +31,7 @@ import de.cses.shared.CaveGroupEntry;
 import de.cses.shared.CaveSearchEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
+import de.cses.shared.CollectionEntry;
 import de.cses.shared.CurrentLocationEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DepictionSearchEntry;
@@ -969,19 +971,33 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getUsers();
 	}
+	
 	@Override
 	public boolean updateUserEntry(UserEntry userEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.updateUserEntry(userEntry);
 	}
+	
 	@Override
 	public int insertUserEntry(UserEntry entry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.insertUserEntry(entry);
 	}
+	
 	@Override
 	public boolean saveCollectedEntries(String sessionID, String collectionLabel, Boolean isGroupCollection, ArrayList<AbstractEntry> entryList) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.saveCollectedEntries(sessionID, collectionLabel, isGroupCollection, entryList);
+	}
+	
+	@Override
+	public ArrayList<CollectionEntry> getRelatedCollectionNames(String sessionID) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getRelatedCollectionNames(sessionID);
+	}
+	@Override
+	public ArrayList<AbstractEntry> loadCollectedEntries(CollectionEntry value) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.loadCollectedEntries(value);
 	}
 }

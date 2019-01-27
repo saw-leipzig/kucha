@@ -15,6 +15,7 @@ package de.cses.client;
 
 import java.util.ArrayList;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -29,6 +30,7 @@ import de.cses.shared.CaveGroupEntry;
 import de.cses.shared.CaveSearchEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
+import de.cses.shared.CollectionEntry;
 import de.cses.shared.CurrentLocationEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DepictionSearchEntry;
@@ -309,4 +311,8 @@ public interface DatabaseService extends RemoteService {
 	int insertUserEntry(UserEntry entry) throws IllegalArgumentException;
 
 	boolean saveCollectedEntries(String sessionID, String collectionLabel, Boolean isGroupCollection, ArrayList<AbstractEntry> entryList) throws IllegalArgumentException;
+
+	ArrayList<CollectionEntry> getRelatedCollectionNames(String sessionID) throws IllegalArgumentException;
+
+	ArrayList<AbstractEntry> loadCollectedEntries(CollectionEntry value) throws IllegalArgumentException;
 }

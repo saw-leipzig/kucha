@@ -43,6 +43,7 @@ import de.cses.shared.CaveSearchEntry;
 import de.cses.shared.CaveSketchEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
+import de.cses.shared.CollectionEntry;
 import de.cses.shared.CurrentLocationEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DepictionSearchEntry;
@@ -2790,7 +2791,6 @@ public class MysqlConnector {
 		
 	}
 
-
 	public ArrayList<OrnamentEntry> getOrnamentsWhere(String sqlWhere) {
 		ArrayList<OrnamentEntry> results = new ArrayList<OrnamentEntry>();
 		Connection dbc = getConnection();
@@ -2813,6 +2813,33 @@ public class MysqlConnector {
 			return null;
 		}
 		return results;
+	}
+
+	public OrnamentEntry getOrnamentEntry(int id) {
+		OrnamentEntry result = null;
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		if (id == 0) {
+			return result;
+		}
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM Ornaments WHERE OrnamentID=?");
+			pstmt.setInt(1, id);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.first()) {
+				result = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
+						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
+						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
+						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
+						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return result;
 	}
 
 	/**
@@ -3168,6 +3195,38 @@ public class MysqlConnector {
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
 			} else {
 				System.err.println("no user " + username + " existing");
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return result;
+	}
+
+	/**
+	 * @param username
+	 * @param password
+	 * @return
+	 */
+	private UserEntry getUser(int userID) {
+		if (userID == 0) {
+			return null;
+		}
+		UserEntry result = null;
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM Users WHERE UserID = ?");
+			pstmt.setInt(1, userID);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.first()) {
+				result = new UserEntry(rs.getInt("UserID"), rs.getString("Username"), rs.getString("Firstname"), rs.getString("Lastname"),
+						rs.getString("Email"), rs.getString("Affiliation"), rs.getInt("AccessLevel"), rs.getString("SessionID"),
+						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
+			} else {
+				System.err.println("no user " + userID + " existing");
 			}
 			rs.close();
 			pstmt.close();
@@ -5390,7 +5449,7 @@ public class MysqlConnector {
 			} else {
 				rs.close();
 				pstmt.close();
-				pstmt = dbc.prepareStatement("INSERT INTO Collections (UserID, CollectionLabel) VALUES (?,?)", Statement.RETURN_GENERATED_KEYS);
+				pstmt = dbc.prepareStatement("INSERT INTO Collections (UserID, CollectionLabel, GroupCollection) VALUES (?,?, ?)", Statement.RETURN_GENERATED_KEYS);
 				pstmt.setInt(1, ue.getUserID());
 				pstmt.setString(2, collectionLabel);
 				pstmt.executeQuery();
@@ -5424,4 +5483,90 @@ public class MysqlConnector {
 		return true;
 	}
 
-}
+	public ArrayList<CollectionEntry> getRelatedCollectionNames(String sessionID) {
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		ArrayList<CollectionEntry> resultList = new ArrayList<CollectionEntry>();
+		UserEntry ue = checkSessionID(sessionID);
+		if (ue == null) {
+			return resultList;
+		}
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM Collections WHERE UserID=? OR GroupCollection=TRUE");
+			pstmt.setInt(1, ue.getUserID());
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				resultList.add(new CollectionEntry(rs.getInt("CollectionID"), getUser(rs.getInt("UserID")), rs.getString("CollectionLabel"), rs.getBoolean("GroupCollection")));
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return resultList;
+	}
+
+	public ArrayList<AbstractEntry> loadCollectedEntries(CollectionEntry entry) {
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		ArrayList<AbstractEntry> resultList = new ArrayList<AbstractEntry>();
+		if (entry == null) {
+			return resultList;
+		}
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM CollectionEntryRelation WHERE CollectionID=?");
+			pstmt.setInt(1, entry.getCollectionID());
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				int entryID = rs.getInt("EntryID");
+				String entryClass = rs.getString("EntryClass");
+				switch (entryClass) {
+					case "AnnotatedBibliographyEntry":
+						resultList.add(getAnnotatedBiblographybyID(entryID));
+					case "CaveEntry":
+						resultList.add(getCave(entryID));
+						break;
+					case "DepictionEntry":
+						resultList.add(getDepictionEntry(entryID, entry.getUser().getSessionID()));
+					case "ErnamentEntry":
+						resultList.add(getOrnamentEntry(entryID));
+					default:
+						break;
+				}
+				resultList.add(new CollectionEntry(rs.getInt("CollectionID"), getUser(rs.getInt("UserID")), rs.getString("CollectionLabel"), rs.getBoolean("GroupCollection")));
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return resultList;
+	}
+
+	private DepictionEntry getDepictionEntry(int depictionID, String sessionID) {
+		Connection dbc = getConnection();
+		DepictionEntry result = null;
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Depictions WHERE DepictionID=" + depictionID);
+			// we only need to call this once, since we do not expect more than 1 result!
+			if (rs.next()) { 
+				result = new DepictionEntry(rs.getInt("DepictionID"), rs.getInt("StyleID"), rs.getString("Inscriptions"),
+						rs.getString("SeparateAksaras"), rs.getString("Dating"), rs.getString("Description"), rs.getString("BackgroundColour"),
+						rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"), rs.getDouble("Width"), rs.getDouble("Height"),
+						getExpedition(rs.getInt("ExpeditionID")), rs.getDate("PurchaseDate"), getLocation(rs.getInt("CurrentLocationID")), rs.getString("InventoryNumber"),
+						getVendor(rs.getInt("VendorID")), rs.getInt("StoryID"), getCave(rs.getInt("CaveID")), rs.getInt("WallID"), rs.getInt("AbsoluteLeft"),
+						rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes"),
+						rs.getInt("MasterImageID"), rs.getInt("AccessLevel"), rs.getString("LastChangedByUser"), rs.getString("LastChangedOnDate"));
+				result.setRelatedImages(getRelatedImages(result.getDepictionID(), sessionID));
+				result.setRelatedBibliographyList(getRelatedBibliographyFromDepiction(result.getDepictionID()));
+				result.setRelatedIconographyList(getRelatedIconography(result.getDepictionID()));
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}}

@@ -293,15 +293,13 @@ public class MainView implements IsWidget {
     filterPanel.getHeader().setStylePrimaryName("frame-header");
     filterPanel.add(filterView);
     
-    dataViewPLC = new DataViewPortalLayoutContainer(1);
-//    dataViewPLC.setSpacing(10);
-//    dataViewPLC.setColumnWidth(0, 1.00);
     
     ContentPanel dataViewPanel = new ContentPanel();
     dataViewPanel.setResize(true);
     dataViewPanel.setHeading("View");
     dataViewPanel.addStyleName("transparent");
     dataViewPanel.getHeader().setStylePrimaryName("frame-header");
+    dataViewPLC = new DataViewPortalLayoutContainer(1, dataViewPanel);
     dataViewPanel.add(dataViewPLC);
     saveWorkspaceToolButton = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
     saveWorkspaceToolButton.setToolTip(Util.createToolTip("save", "not yet implemented"));

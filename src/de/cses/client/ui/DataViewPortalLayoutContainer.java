@@ -7,9 +7,13 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.util.Margins;
+import com.sencha.gxt.data.shared.LabelProvider;
+import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
+import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.PortalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
@@ -17,6 +21,7 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.Verti
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.CheckBox;
+import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 
@@ -29,6 +34,7 @@ import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.CaveEntry;
+import de.cses.shared.CollectionEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.OrnamentEntry;
@@ -36,11 +42,13 @@ import de.cses.shared.OrnamentEntry;
 public class DataViewPortalLayoutContainer extends PortalLayoutContainer {
 
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
+	private ContentPanel dataViewPanel;
 
-	public DataViewPortalLayoutContainer(int numColumns) {
+	public DataViewPortalLayoutContainer(int numColumns, ContentPanel dataViewPanel) {
 		super(numColumns);
     setSpacing(10);
     setColumnWidth(0, 1.00);
+    this.dataViewPanel = dataViewPanel;
 	}
 	
 	public void drop(AbstractEntry entry) {
@@ -77,6 +85,70 @@ public class DataViewPortalLayoutContainer extends PortalLayoutContainer {
 	}
 	
 	public void load() {
+		dbService.getRelatedCollectionNames(UserLogin.getInstance().getSessionID(), new AsyncCallback<ArrayList<CollectionEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onSuccess(ArrayList<CollectionEntry> result) {
+				PopupPanel loadCollectionDialog = new PopupPanel();
+				FramedPanel loadCollectionFP = new FramedPanel();
+				loadCollectionFP.setHeading("Select collection to load");
+				SimpleComboBox<CollectionEntry> collectionNameCB = new SimpleComboBox<CollectionEntry>(new LabelProvider<CollectionEntry>() {
+
+					@Override
+					public String getLabel(CollectionEntry item) {
+						return item.getCollectionName() + 
+								(UserLogin.getInstance().getUsername().equals(item.getUser().getUsername()) ? "(personal collection)" : "(" + item.getUser().getUsername() + ")");
+					}
+				});
+				collectionNameCB.add(result);
+				collectionNameCB.setEditable(false);
+				collectionNameCB.setTypeAhead(false);
+				collectionNameCB.setTriggerAction(TriggerAction.ALL);
+				collectionNameCB.setWidth(400);
+				loadCollectionFP.add(collectionNameCB);
+				TextButton loadButton = new TextButton("load");
+				loadButton.addSelectHandler(new SelectHandler() {
+					
+					@Override
+					public void onSelect(SelectEvent event) {
+						dbService.loadCollectedEntries(collectionNameCB.getValue(), new AsyncCallback<ArrayList<AbstractEntry>>() {
+
+							@Override
+							public void onFailure(Throwable caught) {
+							}
+
+							@Override
+							public void onSuccess(ArrayList<AbstractEntry> resultList) {
+								for (AbstractEntry entry : resultList) {
+									drop(entry);
+								}
+								dataViewPanel.setHeading("View collection: " + collectionNameCB.getValue().getCollectionName());
+								loadCollectionDialog.hide();
+							}
+						});
+					}
+				});
+				loadCollectionFP.addButton(loadButton);
+				TextButton cancelButton = new TextButton("cancel");
+				cancelButton.addSelectHandler(new SelectHandler() {
+					
+					@Override
+					public void onSelect(SelectEvent event) {
+						loadCollectionDialog.hide();
+					}
+				});
+				loadCollectionFP.addButton(cancelButton);
+				loadCollectionDialog.add(loadCollectionFP);
+				loadCollectionDialog.setModal(true);
+				loadCollectionDialog.center();
+			}
+		});
 		
 	}
 	
