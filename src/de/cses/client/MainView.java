@@ -302,7 +302,7 @@ public class MainView implements IsWidget {
     dataViewPLC = new DataViewPortalLayoutContainer(1, dataViewPanel);
     dataViewPanel.add(dataViewPLC);
     saveWorkspaceToolButton = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
-    saveWorkspaceToolButton.setToolTip(Util.createToolTip("save", "not yet implemented"));
+    saveWorkspaceToolButton.setToolTip(Util.createToolTip("save", "Save this view as a colletion either for private purpose or tp share with other users."));
     saveWorkspaceToolButton.addSelectHandler(new SelectHandler() {
 			
 			@Override
@@ -311,8 +311,8 @@ public class MainView implements IsWidget {
 			}
 		});
     dataViewPanel.addTool(saveWorkspaceToolButton);
-    loadWorkspaceToolButton = new ToolButton(ToolButton.RESTORE);
-    loadWorkspaceToolButton.setToolTip(Util.createToolTip("load", "not yet implemented"));
+    loadWorkspaceToolButton = new ToolButton(new IconConfig("loadButton", "loadButtonOver"));
+    loadWorkspaceToolButton.setToolTip(Util.createToolTip("load collection"));
     loadWorkspaceToolButton.addSelectHandler(new SelectHandler() {
 			
 			@Override

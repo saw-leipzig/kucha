@@ -110,7 +110,6 @@ public class DataViewPortalLayoutContainer extends PortalLayoutContainer {
 				collectionNameCB.setEditable(false);
 				collectionNameCB.setTypeAhead(false);
 				collectionNameCB.setTriggerAction(TriggerAction.ALL);
-				collectionNameCB.setWidth(400);
 				loadCollectionFP.add(collectionNameCB);
 				TextButton loadButton = new TextButton("load");
 				loadButton.addSelectHandler(new SelectHandler() {
@@ -146,6 +145,7 @@ public class DataViewPortalLayoutContainer extends PortalLayoutContainer {
 				loadCollectionFP.addButton(cancelButton);
 				loadCollectionDialog.add(loadCollectionFP);
 				loadCollectionDialog.setModal(true);
+				loadCollectionDialog.setWidth("450px");
 				loadCollectionDialog.center();
 			}
 		});
@@ -172,7 +172,6 @@ public class DataViewPortalLayoutContainer extends PortalLayoutContainer {
 			TextField collectionNameField = new TextField();
 			collectionNameField.setAllowBlank(false);
 			collectionNameField.addValidator(new MaxLengthValidator(256));
-			collectionNameField.setWidth(300);
 			newCollectionNameFP.add(collectionNameField);
 			CheckBox groupCollectionCB = new CheckBox();
 			groupCollectionCB.setBoxLabel("group collection");
@@ -214,6 +213,7 @@ public class DataViewPortalLayoutContainer extends PortalLayoutContainer {
 			newCollectionNameFP.addTool(cancelTB);
 			newCollectionNameDialog.add(newCollectionNameFP);
 			newCollectionNameDialog.setModal(true);
+			newCollectionNameDialog.setWidth("300px");
 			newCollectionNameDialog.center();
 		}
 	}
