@@ -331,6 +331,6 @@ public interface DatabaseServiceAsync {
 
 	void insertUserEntry(UserEntry entry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 
-	void saveCollectedEntries(String sessionID, String collectionLabel, ArrayList<AbstractEntry> entryList, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
+	void saveCollectedEntries(String sessionID, String collectionLabel, Boolean isGroupCollection, ArrayList<AbstractEntry> entryList, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
 }

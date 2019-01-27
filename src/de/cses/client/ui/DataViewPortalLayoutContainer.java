@@ -5,8 +5,20 @@ import java.util.Iterator;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.core.client.util.Margins;
+import com.sencha.gxt.widget.core.client.FramedPanel;
+import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.PortalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
+import com.sencha.gxt.widget.core.client.form.CheckBox;
+import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -82,22 +94,56 @@ public class DataViewPortalLayoutContainer extends PortalLayoutContainer {
 			}
 		}
 		if (!entryList.isEmpty()) {
-			String collectionLabel = "test";
-			dbService.saveCollectedEntries(UserLogin.getInstance().getSessionID() , collectionLabel, entryList, new AsyncCallback<Boolean>() {
+			PopupPanel newCollectionNameDialog = new PopupPanel();
+			FramedPanel newCollectionNameFP = new FramedPanel();
+			newCollectionNameFP.setHeading("Enter collection name");
+			TextField collectionNameField = new TextField();
+			collectionNameField.setAllowBlank(false);
+			collectionNameField.addValidator(new MaxLengthValidator(256));
+			collectionNameField.setWidth(300);
+			newCollectionNameFP.add(collectionNameField);
+			CheckBox groupCollectionCB = new CheckBox();
+			groupCollectionCB.setBoxLabel("group collection");
+			groupCollectionCB.setToolTip(Util.createToolTip("Check box if you want to share with other users.", "Users need at least ASSOCIATE rights to access collections."));
+			groupCollectionCB.setValue(false);
+			VerticalLayoutContainer groupCollectionDialogVLC = new VerticalLayoutContainer();
+			groupCollectionDialogVLC.add(collectionNameField, new VerticalLayoutData(1.0, .5, new Margins(5)));
+			groupCollectionDialogVLC.add(groupCollectionCB,  new VerticalLayoutData(1.0, .5, new Margins(5)));
+			ToolButton saveTB = new ToolButton(new IconConfig("saveButton","saveButtonOver"));
+			saveTB.addSelectHandler(new SelectHandler() {
 
 				@Override
-				public void onFailure(Throwable caught) {
-					// TODO Auto-generated method stub
-					
-				}
+				public void onSelect(SelectEvent event) {
+					if (collectionNameField.validate()) {
+						newCollectionNameDialog.hide();
+						dbService.saveCollectedEntries(UserLogin.getInstance().getSessionID() , collectionNameField.getValue(), groupCollectionCB.getValue(), entryList, new AsyncCallback<Boolean>() {
 
-				@Override
-				public void onSuccess(Boolean result) {
-					// TODO Auto-generated method stub
-					
+							@Override
+							public void onFailure(Throwable caught) {
+								Util.showWarning("Server error", "The collection could not be saved.");
+							}
+
+							@Override
+							public void onSuccess(Boolean result) {
+							}
+						});
+					}
 				}
 			});
+			newCollectionNameFP.addTool(saveTB);
+			ToolButton cancelTB= new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
+			cancelTB.addSelectHandler(new SelectHandler() {
+
+				@Override
+				public void onSelect(SelectEvent event) {
+					newCollectionNameDialog.hide();
+				}
+			});
+			newCollectionNameFP.addTool(cancelTB);
+			newCollectionNameDialog.add(newCollectionNameFP);
+			newCollectionNameDialog.setModal(true);
+			newCollectionNameDialog.center();
 		}
 	}
-
+	
 }

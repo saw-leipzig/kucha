@@ -980,8 +980,8 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		return connector.insertUserEntry(entry);
 	}
 	@Override
-	public boolean saveCollectedEntries(String sessionID, String collectionLabel, ArrayList<AbstractEntry> entryList) throws IllegalArgumentException {
+	public boolean saveCollectedEntries(String sessionID, String collectionLabel, Boolean isGroupCollection, ArrayList<AbstractEntry> entryList) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
-		return connector.saveCollectedEntries(sessionID, collectionLabel, entryList);
+		return connector.saveCollectedEntries(sessionID, collectionLabel, isGroupCollection, entryList);
 	}
 }

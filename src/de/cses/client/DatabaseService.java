@@ -308,5 +308,5 @@ public interface DatabaseService extends RemoteService {
 
 	int insertUserEntry(UserEntry entry) throws IllegalArgumentException;
 
-	boolean saveCollectedEntries(String sessionID, String collectionLabel, ArrayList<AbstractEntry> entryList) throws IllegalArgumentException;
+	boolean saveCollectedEntries(String sessionID, String collectionLabel, Boolean isGroupCollection, ArrayList<AbstractEntry> entryList) throws IllegalArgumentException;
 }

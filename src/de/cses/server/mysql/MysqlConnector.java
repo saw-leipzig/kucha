@@ -5369,7 +5369,7 @@ public class MysqlConnector {
 		return result;
 	}
 
-	public boolean saveCollectedEntries(String sessionID, String collectionLabel, ArrayList<AbstractEntry> entryList) {
+	public boolean saveCollectedEntries(String sessionID, String collectionLabel, boolean isGroupCollection, ArrayList<AbstractEntry> entryList) {
 		UserEntry ue = this.checkSessionID(sessionID);
 		if (ue == null) {
 			return false;
@@ -5379,7 +5379,7 @@ public class MysqlConnector {
 		int collectionID=0;
 
 		try {
-			pstmt = dbc.prepareStatement("SELECT * FROM Collections WHERE UserID=? AND CollectionLabel=?)");
+			pstmt = dbc.prepareStatement("SELECT * FROM Collections WHERE UserID=? AND CollectionLabel=?");
 			pstmt.setInt(1, ue.getUserID());
 			pstmt.setString(2, collectionLabel);
 			ResultSet rs = pstmt.executeQuery();
