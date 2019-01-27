@@ -21,11 +21,11 @@ public class OrnamentEntry extends AbstractEntry {
 	private String code;
 	private String description;
 	private String remarks;
-	//private String annotations;
+	//private String annotations; wurde mal geloescht, evtl wird es irgendwann wieder gewollt
 	private String interpretation;
 	private String references;
-	private int ornamentClass;
-	private int structureOrganizationID;
+	private int ornamentClass; // heiﬂt jetzt motif, name wurde nur oberfl‰chlich angepasst. 
+	private int structureOrganizationID; // gibt es nicht mehr, wird evtl. mal wieder gewollt
 	private ArrayList<ImageEntry> images = new ArrayList<ImageEntry>();
 	private ArrayList<OrnamentCaveRelation> cavesRelations = new ArrayList<OrnamentCaveRelation>();
 	private ArrayList<OrnamentComponentsEntry> ornamentComponents = new ArrayList<OrnamentComponentsEntry>();

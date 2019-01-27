@@ -16,6 +16,7 @@ package de.cses.client.ornamentic;
 import java.util.ArrayList;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
@@ -60,12 +61,14 @@ public class OrnamenticSearchController extends AbstractSearchController {
 
 			@Override
 			public void onFailure(Throwable caught) {
+				
 				caught.printStackTrace();
 				getResultView().setSearchEnabled(true);
 			}
 
 			@Override
 			public void onSuccess(ArrayList<OrnamentEntry> result) {
+				
 				getResultView().reset();
 				for (OrnamentEntry de : result) {
 					getResultView().addResult(new OrnamenticView(de));

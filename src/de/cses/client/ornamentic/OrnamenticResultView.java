@@ -32,6 +32,7 @@ import de.cses.shared.OrnamenticSearchEntry;
  *
  */
 public class OrnamenticResultView extends AbstractResultView{
+	//ResultView nach erfolgter Suche der Ornamentik
 	
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	

@@ -285,6 +285,9 @@ public interface DatabaseServiceAsync {
 	void updateAnnotatedBiblographyEntry(AnnotatedBibliographyEntry bibEntry, AsyncCallback<AnnotatedBibliographyEntry> asyncCallback) throws IllegalArgumentException;
 	
 	void getPositionbyWall(WallEntry wall, AsyncCallback<ArrayList<OrnamentPositionEntry>> asyncCallback) throws IllegalArgumentException;
+	
+	void getPositionbyReveal(WallEntry wall, AsyncCallback<ArrayList<OrnamentPositionEntry>> asyncCallback) throws IllegalArgumentException;
+
 
 	void getFunctionbyPosition(OrnamentPositionEntry position, AsyncCallback<ArrayList<OrnamentFunctionEntry>> asyncCallback) throws IllegalArgumentException;
 
