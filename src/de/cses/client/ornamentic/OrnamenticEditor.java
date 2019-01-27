@@ -626,18 +626,21 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 			@Override
 			public void onClick(ClickEvent event) {
+				
 				PopupPanel security = new PopupPanel();
-				BorderLayoutContainer securityContent = new BorderLayoutContainer();
+				ContentPanel securityContent = new ContentPanel();
+				VerticalLayoutContainer verticalPanel= new VerticalLayoutContainer();
+				securityContent.add(verticalPanel);
 				TextButton yesTB = new TextButton("yes");
 				TextButton noTB = new TextButton("no");
 				ButtonBar buttons = new ButtonBar();
 				buttons.add(yesTB);
 				buttons.add(noTB);
 				HTML text = new HTML("Really exit without saving? All unsaved data will be lost.");
-				securityContent.setNorthWidget(text, new BorderLayoutData(20));
-				securityContent.setCenterWidget(buttons, new MarginData(5, 0, 0, 0));
-				security.add(securityContent);
-				security.show();
+				verticalPanel.add(text);
+				verticalPanel.add(buttons);
+				security.setWidget(securityContent);
+				security.center();
 
 				ClickHandler yesHandler = new ClickHandler() {
 

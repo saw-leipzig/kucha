@@ -13,10 +13,12 @@
  */
 package de.cses.client.ornamentic;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -401,7 +403,7 @@ public class OrnamenticFilter  extends AbstractFilter{
 		
 		ornamentDeskriptionSearchTF = new TextField();
 		ornamentDeskriptionSearchTF.setEmptyText("search ornament deskription");
-		ornamentDeskriptionSearchTF.setToolTip(Util.createToolTip("search ornament deskriptio", "Search for this character sequence in the ornament deskription field."));
+		ornamentDeskriptionSearchTF.setToolTip(Util.createToolTip("search ornament deskription", "Search for this character sequence in the ornament deskription field."));
 		
 		ornamentOrnamentalGroupSearchTF = new TextField();
 		ornamentOrnamentalGroupSearchTF.setEmptyText("search ornamental unit");
@@ -679,7 +681,7 @@ public class OrnamenticFilter  extends AbstractFilter{
 					}
 				});
 
-		FramedPanel headerOrnamentClass = new FramedPanel();
+		ContentPanel headerOrnamentClass = new ContentPanel();
 		headerOrnamentClass.setHeading("Ornament Motif");
 		ornamentClassComboBox.setTriggerAction(TriggerAction.ALL);
 		headerOrnamentClass.add(ornamentClassComboBox);
@@ -687,21 +689,25 @@ public class OrnamenticFilter  extends AbstractFilter{
 		
 		
 		AccordionLayoutContainer accordion = new AccordionLayoutContainer();
-		accordion.setExpandMode(ExpandMode.SINGLE_FILL);
+		accordion.setExpandMode(ExpandMode.MULTI);
+		
+
+		
+		
+	    BorderLayoutContainer ornamentFilterBLC = new BorderLayoutContainer();
+	    
+	    ornamentFilterBLC.setCenterWidget(accordion);
+	    ornamentFilterBLC.setHeight(1000);
 		
 		ContentPanel ornamentCodePanel = new ContentPanel();
 		ornamentCodePanel.setHeaderVisible(true);
 		ornamentCodePanel.setToolTip(Util.createToolTip("Search for ornament codes."));
 		ornamentCodePanel.setHeading("Ornament Code");
 		ornamentCodePanel.add(ornamentCodeSearchTF);
-		
-	    BorderLayoutContainer depictionFilterBLC = new BorderLayoutContainer();
-	    depictionFilterBLC.setNorthWidget(ornamentCodePanel, new BorderLayoutData(20));
-	    depictionFilterBLC.setCenterWidget(accordion, new MarginData(5, 0, 0, 0));
-	    depictionFilterBLC.setHeight(1000);
-		
+		accordion.add(ornamentCodePanel);
 
 		VerticalPanel ornamenticFilterVLC =new VerticalPanel();
+		
 		ContentPanel ornamentDeskriptionPanel = new ContentPanel();
 		ornamentDeskriptionPanel.setHeaderVisible(true);
 		ornamentDeskriptionPanel.setToolTip(Util.createToolTip("Search for ornament deskription."));
@@ -744,20 +750,34 @@ public class OrnamenticFilter  extends AbstractFilter{
 		similatitiesPanel.add(ornamentSimilaritiesSearchTF);
 		ornamenticFilterVLC.add(similatitiesPanel);
 		
-		accordion.add(ornamenticFilterVLC);
-		accordion.add(ornamentCavesPanel);
-		accordion.add(ornamentFunctionPanel);
-		accordion.add(ornamentpositionPanel);
-		accordion.add(ornamentdistrictsPanel);
-		accordion.add(innerSecPanel);
-		accordion.add(relatedornamentPanel);
-		accordion.add(ornamentComponentsPanel);
+		ContentPanel textSearch = new ContentPanel();
+		textSearch.setHeading("Text Search");
+		textSearch.add(ornamenticFilterVLC);
+		
+	
 		accordion.add(headerOrnamentClass);
+		accordion.add(ornamentCavesPanel);
+		ornamentCavesPanel.setHeight(200);
+		accordion.add(ornamentFunctionPanel);
+		ornamentFunctionPanel.setHeight(200);
+		accordion.add(ornamentpositionPanel);
+		ornamentpositionPanel.setHeight(200);
+		accordion.add(ornamentdistrictsPanel);
+		ornamentdistrictsPanel.setHeight(200);
+		accordion.add(innerSecPanel);
+		innerSecPanel.setHeight(200);
+		accordion.add(relatedornamentPanel);
+		relatedornamentPanel.setHeight(200);
+		accordion.add(ornamentComponentsPanel);
+		ornamentComponentsPanel.setHeight(200);
+		accordion.add(textSearch);
+		
+		
 		
 		//iconography? accordion.add(iconographyPanel);
 		
 		
-		return depictionFilterBLC;
+		return ornamentFilterBLC;
 	}
 
 	/**
@@ -766,6 +786,7 @@ public class OrnamenticFilter  extends AbstractFilter{
 	 */
 	@Override
 	public AbstractSearchEntry getSearchEntry() {
+		
 		//Versenden der Einträge an den Server nach erfolgter Suche
 		OrnamenticSearchEntry searchEntry = new OrnamenticSearchEntry();
 		
@@ -794,6 +815,7 @@ public class OrnamenticFilter  extends AbstractFilter{
 			searchEntry.setRemarks(ornamentRemarksSearchTF.getValue());
 			searchEntry.setEmpty(false);
 		}
+	
 		if (ornamentSimilaritiesSearchTF.getValue() != null && !ornamentSimilaritiesSearchTF.getValue().isEmpty()) {
 			searchEntry.setSimilaritys(ornamentSimilaritiesSearchTF.getValue());
 			searchEntry.setEmpty(false);
@@ -838,12 +860,19 @@ public class OrnamenticFilter  extends AbstractFilter{
 			}
 			searchEntry.setEmpty(false);
 		}
-		if (!ornamentClassComboBox.getValue().equals(null)) {
-			searchEntry.setOrnamentClass(ornamentClassComboBox.getValue());
-			searchEntry.setEmpty(false);
+	
+		try {
+			if (!(ornamentClassComboBox.getValueOrThrow() == null)) {
+				
+				searchEntry.setOrnamentClass(ornamentClassComboBox.getValue());
+				searchEntry.setEmpty(false);
+			}
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
-		
+	
 		return searchEntry;
 	}
 
