@@ -60,8 +60,8 @@ import de.cses.shared.WallOrnamentCaveRelation;
  *
  */
 public class WallOrnamentCaveRelationEditor {
-	// 3. Ornamentik Ebene. Alle Informationen hier sind sowohl von der Höhle als auch von einer ausgewählten Wand abhängig.
-	// Die Wand wird über den WallSelector ausgewählt. 
+	// 3. Ornamentik Ebene. Alle Informationen hier sind sowohl von der Hoehle als auch von einer ausgewoehlten Wand abhaengig.
+	// Die Wand wird ueber den WallSelector ausgewaehlt. 
 
 	private OrnamentPositionProperties ornamentPositionProps;
 	private OrnamentFunctionProperties ornamentFunctionProps;
@@ -207,7 +207,7 @@ public class WallOrnamentCaveRelationEditor {
 		wallrelationFramedPanel.setSize("600px", "450px");
 		wallrelationFramedPanel.add(wallRelationHLC);
 		
-		ToolButton cancelTB = new ToolButton(new IconConfig("cancelButton", "cancelButtonOver"));
+		ToolButton cancelTB = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
 		cancelTB.setToolTip(Util.createToolTip("close"));
 		cancelTB.addSelectHandler(new SelectHandler() {
 
@@ -236,7 +236,7 @@ public class WallOrnamentCaveRelationEditor {
 	}
 
 	protected void save() {
-		//Speicherung der Wand und der zugehörigen Eigenschaften
+		//Speicherung der Wand und der zugehoerigen Eigenschaften
 		WallOrnamentCaveRelation caveWallOrnamentRelation = new WallOrnamentCaveRelation(caveEntry.getCaveID(), wallselector.getSelectedWallEntry());
 		Util.doLogging(this.getClass().getName() + " cavewallornamentrelation wurde erstellt");
 		if (ornamentfunctionComboBox.getValue() == null) {
@@ -312,11 +312,12 @@ public class WallOrnamentCaveRelationEditor {
 		@XTemplate("<div>{wallID}</div>")
 		SafeHtml walls(int wallID);
 	}
-	//Komplexe Filterung damit beim Eintragen schon keine Fehler gemacht werden können sondern 
-	// nur Felder ausgewählt werden können, die an einer bestimmten Position überhaupt möglich sind
+	//Komplexe Filterung damit beim Eintragen schon keine Fehler gemacht werden koennen sondern 
+	// nur Felder ausgewaaehlt werden koennen, die an einer bestimmten Position ueberhaupt moeglich sind
 	// Unterscheidung erst zwischen Wall, Ceiling und Reveal
 	
-	// Die eigentliche Filterung übernimmt die Datenbank mit den Tabellen OrnamentPosition, OrnamentFunction und den dazugehörigen Relationen Tabellen
+	// Die eigentliche Filterung uebernimmt die Datenbank mit den Tabellen OrnamentPosition, OrnamentFunction und den 
+	// dazugehoerigen Relationen Tabellen
 	public void filterPositionbyCaveArea() {
 		ornamentPositionEntryLS.clear();
 		String wallOrCeiling = StaticTables.getInstance().getWallLocationEntries().get(wallselector.getSelectedWallEntry().getWallLocationID()).getLabel();
@@ -403,7 +404,7 @@ public class WallOrnamentCaveRelationEditor {
 	
 	
 	public void show() {
-		//Aufruf mit leeren Feldern für die Eingabe
+		//Aufruf mit leeren Feldern fï¿½r die Eingabe
 		popup = new PopupPanel();
 		this.caveEntry = OrnamenticEditor.ornamentCaveRelationEditor.getCaveEntryComboBox().getValue();
 

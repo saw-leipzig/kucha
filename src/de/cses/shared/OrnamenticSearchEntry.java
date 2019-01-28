@@ -11,9 +11,9 @@ public class OrnamenticSearchEntry extends AbstractSearchEntry {
 	private String interpretation;
 	private String references;
 	private String similaritys;
-	private String group; // heißt mittlerweile unit
-	private OrnamentClassEntry ornamentClass; // heißt mittlerweile motif
-	private StyleEntry style; // fehlt noch, wurde bisher nicht gewünscht.
+	private String group; // heisst mittlerweile unit
+	private OrnamentClassEntry ornamentClass; // heisst mittlerweile motif
+	private StyleEntry style; // fehlt noch, wurde bisher nicht gewuenscht.
 	private ArrayList <CaveEntry> caves = new ArrayList<CaveEntry>();
 	private ArrayList <OrnamentComponentsEntry> components = new ArrayList<OrnamentComponentsEntry>();
 	private ArrayList <InnerSecondaryPatternsEntry> secondarypatterns = new ArrayList<InnerSecondaryPatternsEntry>();

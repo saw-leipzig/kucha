@@ -91,8 +91,8 @@ public class OrnamentCaveRelationEditor {
 
 	public OrnamentCaveRelationEditor() {
 
-		// Zweite Ebene der Ornamentik. Eigenschaften, die von der Höhle abhängen.
-		//Erstellen aller Listen und Properties
+		// Zweite Ebene der Ornamentik. Eigenschaften, die von der Hoehle abhaengen.
+		// Erstellen aller Listen und Properties
 
 		caveEntryProps = GWT.create(CaveEntryProperties.class);
 		styleProps = GWT.create(StyleProperties.class);
@@ -380,7 +380,7 @@ public class OrnamentCaveRelationEditor {
 		};
 		edit.addHandler(editWallsClickHandler, ClickEvent.getType());
 
-		ToolButton delete = new ToolButton(new IconConfig("cancelButton", "cancelButtonOver"));
+		ToolButton delete = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
 		delete.setToolTip(Util.createToolTip("Delete Wall", "Select a wall, then click here."));
 
 		header.addTool(addWalls);
@@ -515,7 +515,7 @@ public class OrnamentCaveRelationEditor {
 
 		tabPanel.add(icoSelector, "Pictorial Elements");
 
-		ToolButton cancelTB = new ToolButton(new IconConfig("cancelButton", "cancelButtonOver"));
+		ToolButton cancelTB = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
 		cancelTB.setToolTip(Util.createToolTip("close"));
 		cancelTB.addSelectHandler(new SelectHandler() {
 
@@ -583,7 +583,7 @@ public class OrnamentCaveRelationEditor {
 		return mainPanel;
 	}
 
-	//Interfaces für ComboBoxen und ListViews
+	//Interfaces fuer ComboBoxen und ListViews
 	interface CaveEntryProperties extends PropertyAccess<CaveEntry> {
 		ModelKeyProvider<CaveEntry> caveID();
 

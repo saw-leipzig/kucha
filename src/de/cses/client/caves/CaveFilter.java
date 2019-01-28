@@ -191,6 +191,7 @@ public class CaveFilter extends AbstractFilter {
 		caveTypePanel.setHeaderVisible(true);
 		caveTypePanel.setHeading("Cave Types");
 		caveTypePanel.add(caveTypeSelectionLV);
+		caveTypePanel.getHeader().setStylePrimaryName("frame-header");
 		
 		ToolButton caveTypeSelectionResetTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		caveTypeSelectionResetTB.setToolTip(Util.createToolTip("Reset selection"));
@@ -202,6 +203,7 @@ public class CaveFilter extends AbstractFilter {
 			}
 		});
 		caveTypePanel.addTool(caveTypeSelectionResetTB);
+
 		
 		siteSelectionLV = new ListView<SiteEntry, SiteEntry>(siteEntryList, new IdentityValueProvider<SiteEntry>(), new SimpleSafeHtmlCell<SiteEntry>(new AbstractSafeHtmlRenderer<SiteEntry>() {
 			final SiteViewTemplates svTemplates = GWT.create(SiteViewTemplates.class);
@@ -217,6 +219,8 @@ public class CaveFilter extends AbstractFilter {
 		sitePanel.setHeaderVisible(true);
 		sitePanel.setHeading("Sites");
 		sitePanel.add(siteSelectionLV);
+		sitePanel.getHeader().setStylePrimaryName("frame-header");
+
 		
 		ToolButton siteSelectionResetTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		siteSelectionResetTB.setToolTip(Util.createToolTip("Reset selection"));
@@ -243,6 +247,8 @@ public class CaveFilter extends AbstractFilter {
 		districtPanel.setHeaderVisible(true);
 		districtPanel.setHeading("Districts");
 		districtPanel.add(districtSelectionLV);
+		districtPanel.getHeader().setStylePrimaryName("frame-header");
+
 
 		ToolButton districtSelectionResetTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		districtSelectionResetTB.setToolTip(Util.createToolTip("Reset selection"));
@@ -278,6 +284,8 @@ public class CaveFilter extends AbstractFilter {
 		regionPanel.setHeaderVisible(true);
 		regionPanel.setHeading("Regions");
 		regionPanel.add(regionSelectionLV);
+		regionPanel.getHeader().setStylePrimaryName("frame-header");
+
 
 		ToolButton regionSelectionResetTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		regionSelectionResetTB.setToolTip(Util.createToolTip("Reset selection"));
