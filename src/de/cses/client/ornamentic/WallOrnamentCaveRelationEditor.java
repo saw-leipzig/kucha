@@ -207,7 +207,7 @@ public class WallOrnamentCaveRelationEditor {
 		wallrelationFramedPanel.setSize("600px", "450px");
 		wallrelationFramedPanel.add(wallRelationHLC);
 		
-		ToolButton cancelTB = new ToolButton(new IconConfig("cancelButton", "cancelButtonOver"));
+		ToolButton cancelTB = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
 		cancelTB.setToolTip(Util.createToolTip("close"));
 		cancelTB.addSelectHandler(new SelectHandler() {
 

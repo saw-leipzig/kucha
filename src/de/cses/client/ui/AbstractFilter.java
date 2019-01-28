@@ -13,15 +13,9 @@
  */
 package de.cses.client.ui;
 
-import java.util.ArrayList;
-
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.widget.core.client.Portlet;
-import com.sencha.gxt.widget.core.client.button.ToolButton;
-import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
-import com.sencha.gxt.widget.core.client.event.SelectEvent;
-import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
 import de.cses.shared.AbstractSearchEntry;
 
