@@ -57,6 +57,7 @@ import de.cses.client.images.ImageSelector;
 import de.cses.client.images.ImageSelectorListener;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.client.user.UserLogin;
+import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.InnerSecondaryPatternsEntry;
@@ -1002,7 +1003,11 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		closeButton.addHandler(cancelHandler, ClickEvent.getType());
 		saveButton.addHandler(saveClickHandler, ClickEvent.getType());
 		
-		bibSelector = new BibliographySelector(ornamentEntry.getRelatedBibliographyList());
+		if (ornamentEntry!=null) {
+			bibSelector = new BibliographySelector(ornamentEntry.getRelatedBibliographyList());
+		} else {
+			bibSelector = new BibliographySelector(new ArrayList<AnnotatedBibliographyEntry>());
+		}
 		tabpanel.add(bibSelector, "Related Bibliography");
 
 		FramedPanel backgroundPanel = new FramedPanel();
