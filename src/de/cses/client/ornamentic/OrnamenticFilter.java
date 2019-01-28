@@ -1,5 +1,5 @@
 /*
- * Copyright 2017, 2018
+ * Copyright 2017 - 2019
  * Saxon Academy of Science in Leipzig, Germany
  * 
  * This is free software: you can redistribute it and/or modify it under the terms of the 
@@ -15,10 +15,10 @@ package de.cses.client.ornamentic;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -26,7 +26,6 @@ import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.Style.SelectionMode;
-import com.sencha.gxt.core.client.XTemplates.XTemplate;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.data.shared.LabelProvider;
@@ -34,17 +33,12 @@ import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.widget.core.client.ContentPanel;
-import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
-import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.MarginData;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer.ExpandMode;
-import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
+import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
@@ -470,10 +464,10 @@ public class OrnamenticFilter extends AbstractFilter {
 
 		ContentPanel ornamentComponentsPanel = new ContentPanel();
 		ornamentComponentsPanel.setHeaderVisible(true);
-		ornamentComponentsPanel
-				.setToolTip(Util.createToolTip("Search for ornament components.", "Select one or more elements to search for Ornamentations."));
+		ornamentComponentsPanel.setToolTip(Util.createToolTip("Search for ornament components.", "Select one or more elements to search for Ornamentations."));
 		ornamentComponentsPanel.setHeading("Ornament Components");
 		ornamentComponentsPanel.add(ornamentComponentsSelectionLV);
+		ornamentComponentsPanel.getHeader().setStylePrimaryName("frame-header");
 
 		ToolButton resetOrnamentComponentsPanelTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetOrnamentComponentsPanelTB.setToolTip(Util.createToolTip("Reset selection"));
@@ -505,6 +499,7 @@ public class OrnamenticFilter extends AbstractFilter {
 				Util.createToolTip("Search for ornaments in specific caves.", "Select one or more elements to search for Ornamentations."));
 		ornamentCavesPanel.setHeading("Caves");
 		ornamentCavesPanel.add(cavesSelectionLV);
+		ornamentCavesPanel.getHeader().setStylePrimaryName("frame-header");
 
 		ToolButton resetOrnamentCavesPanelTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetOrnamentCavesPanelTB.setToolTip(Util.createToolTip("Reset selection"));
@@ -537,6 +532,7 @@ public class OrnamenticFilter extends AbstractFilter {
 				.setToolTip(Util.createToolTip("Search for districts.", "Select one or more elements to search for Ornamentations."));
 		ornamentdistrictsPanel.setHeading("Districts");
 		ornamentdistrictsPanel.add(districtsSelectionLV);
+		ornamentdistrictsPanel.getHeader().setStylePrimaryName("frame-header");
 
 		ToolButton resetDistrictsPanelTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetDistrictsPanelTB.setToolTip(Util.createToolTip("Reset selection"));
@@ -570,6 +566,7 @@ public class OrnamenticFilter extends AbstractFilter {
 				Util.createToolTip("Search for inner secondary patterns.", "Select one or more elements to search for Ornamentations."));
 		innerSecPanel.setHeading("InnerSecondary Pattern");
 		innerSecPanel.add(innerSecondaryPatternsSelectionLV);
+		innerSecPanel.getHeader().setStylePrimaryName("frame-header");
 
 		ToolButton resetInnerSecPanelTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetInnerSecPanelTB.setToolTip(Util.createToolTip("Reset selection"));
@@ -601,6 +598,7 @@ public class OrnamenticFilter extends AbstractFilter {
 				.setToolTip(Util.createToolTip("Search for related ornaments.", "Select one or more elements to search for Ornamentations."));
 		relatedornamentPanel.setHeading("Related Ornaments");
 		relatedornamentPanel.add(relatedOrnamentsSelectionLV);
+		relatedornamentPanel.getHeader().setStylePrimaryName("frame-header");
 
 		ToolButton resetrelatedOrnamentsPanelTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetrelatedOrnamentsPanelTB.setToolTip(Util.createToolTip("Reset selection"));
@@ -634,6 +632,7 @@ public class OrnamenticFilter extends AbstractFilter {
 				.setToolTip(Util.createToolTip("Search for ornament positions.", "Select one or more elements to search for Ornamentations."));
 		ornamentpositionPanel.setHeading("Ornament Position");
 		ornamentpositionPanel.add(positionSelectionLV);
+		ornamentpositionPanel.getHeader().setStylePrimaryName("frame-header");
 
 		ToolButton resetOrnamentPositionPanelTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetOrnamentPositionPanelTB.setToolTip(Util.createToolTip("Reset selection"));
@@ -667,6 +666,7 @@ public class OrnamenticFilter extends AbstractFilter {
 				.setToolTip(Util.createToolTip("Search for ornament functions.", "Select one or more elements to search for Ornamentations."));
 		ornamentFunctionPanel.setHeading("Ornament Function");
 		ornamentFunctionPanel.add(functionSelectionLV);
+		ornamentFunctionPanel.getHeader().setStylePrimaryName("frame-header");
 
 		ToolButton resetOrnamentFunctionPanelTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetOrnamentFunctionPanelTB.setToolTip(Util.createToolTip("Reset selection"));
@@ -715,6 +715,7 @@ public class OrnamenticFilter extends AbstractFilter {
 		headerOrnamentClass.setHeading("Ornament Motif");
 		ornamentClassComboBox.setTriggerAction(TriggerAction.ALL);
 		headerOrnamentClass.add(ornamentClassComboBox);
+		headerOrnamentClass.getHeader().setStylePrimaryName("frame-header");
 
 		AccordionLayoutContainer accordion = new AccordionLayoutContainer();
 		accordion.setExpandMode(ExpandMode.SINGLE_FILL);
@@ -729,6 +730,7 @@ public class OrnamenticFilter extends AbstractFilter {
 		ornamentCodePanel.setToolTip(Util.createToolTip("Search for ornament codes."));
 		ornamentCodePanel.setHeading("Ornament Code");
 		ornamentCodePanel.add(ornamentCodeSearchTF);
+		ornamentCodePanel.getHeader().setStylePrimaryName("frame-header");
 		accordion.add(ornamentCodePanel);
 
 		VerticalPanel ornamenticFilterVLC = new VerticalPanel();
@@ -738,6 +740,7 @@ public class OrnamenticFilter extends AbstractFilter {
 		ornamentDeskriptionPanel.setToolTip(Util.createToolTip("Search for ornament deskription."));
 		ornamentDeskriptionPanel.setHeading("Ornament Deskription");
 		ornamentDeskriptionPanel.add(ornamentDeskriptionSearchTF);
+		ornamentDeskriptionPanel.getHeader().setStylePrimaryName("frame-header");
 		ornamenticFilterVLC.add(ornamentDeskriptionPanel);
 
 		ContentPanel ornamentInterpretationPanel = new ContentPanel();
@@ -745,6 +748,7 @@ public class OrnamenticFilter extends AbstractFilter {
 		ornamentInterpretationPanel.setToolTip(Util.createToolTip("Search for ornament interpretation."));
 		ornamentInterpretationPanel.setHeading("Ornament Interpretation");
 		ornamentInterpretationPanel.add(ornamentInterpretationSearchTF);
+		ornamentInterpretationPanel.getHeader().setStylePrimaryName("frame-header");
 		ornamenticFilterVLC.add(ornamentInterpretationPanel);
 
 		ContentPanel ornamentGroupPanel = new ContentPanel();
@@ -752,6 +756,7 @@ public class OrnamenticFilter extends AbstractFilter {
 		ornamentGroupPanel.setToolTip(Util.createToolTip("Search for ornament unit."));
 		ornamentGroupPanel.setHeading("Ornament Unit");
 		ornamentGroupPanel.add(ornamentOrnamentalGroupSearchTF);
+		ornamentGroupPanel.getHeader().setStylePrimaryName("frame-header");
 		ornamenticFilterVLC.add(ornamentGroupPanel);
 
 		ContentPanel referencesPanel = new ContentPanel();
@@ -759,6 +764,7 @@ public class OrnamenticFilter extends AbstractFilter {
 		referencesPanel.setToolTip(Util.createToolTip("Search for ornament references."));
 		referencesPanel.setHeading("Ornament References");
 		referencesPanel.add(ornamentReferencesSearchTF);
+		referencesPanel.getHeader().setStylePrimaryName("frame-header");
 		ornamenticFilterVLC.add(referencesPanel);
 
 		ContentPanel remarksPanel = new ContentPanel();
@@ -778,6 +784,7 @@ public class OrnamenticFilter extends AbstractFilter {
 		ContentPanel textSearch = new ContentPanel();
 		textSearch.setHeading("Text Search");
 		textSearch.add(ornamenticFilterVLC);
+		textSearch.getHeader().setStylePrimaryName("frame-header");
 
 		accordion.add(headerOrnamentClass);
 		accordion.add(ornamentCavesPanel);

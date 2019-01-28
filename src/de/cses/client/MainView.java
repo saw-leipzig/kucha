@@ -216,7 +216,7 @@ public class MainView implements IsWidget {
 		
 		// ----------------------------------- assembling the menu bar ---------------------------------------------
 		
-    HorizontalLayoutData hLayoutData = new HorizontalLayoutData(140, 1.0, new Margins(5, 0, 5, 5));
+    HorizontalLayoutData hLayoutData = new HorizontalLayoutData(70, 70, new Margins(5, 0, 5, 5));
     
 		selectorLayoutContainer = new HorizontalLayoutContainer();
 		selectorLayoutContainer.add(caveSearchController, hLayoutData);
@@ -347,10 +347,10 @@ public class MainView implements IsWidget {
 		footerLabel.setStyleName("footer");
     
     BorderLayoutData northData = new BorderLayoutData(70);
-    northData.setMargins(new Margins(5));
+    northData.setMargins(new Margins(5, 5, 0, 5));
     
     BorderLayoutData southData = new BorderLayoutData(20);
-    southData.setMargins(new Margins(5));
+    southData.setMargins(new Margins(0, 5, 5, 5));
 
     BorderLayoutData westData = new BorderLayoutData(220);
     westData.setMargins(new Margins(5));
@@ -366,7 +366,7 @@ public class MainView implements IsWidget {
     eastData.setCollapseHeaderVisible(true);
     eastData.setSplit(true);
 
-    MarginData centerData = new MarginData(5);
+    MarginData centerData = new MarginData(5, 0, 5, 0);
 
     view = new BorderLayoutContainer();
     view.setBorders(borders);

@@ -67,7 +67,7 @@ public abstract class AbstractSearchController extends ToggleButton {
 			}
 		});
 		setText(searchControllerTitle);
-		setSize("50px", "50px");
+		setSize("70px", "70px");
 	}
 	
 	public String getSelectorTitle() {

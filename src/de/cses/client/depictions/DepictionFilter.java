@@ -245,6 +245,7 @@ public class DepictionFilter extends AbstractFilter {
 		cavePanel.setHeaderVisible(true);
 		cavePanel.setHeading("Cave search");
 		cavePanel.add(caveSelectionLV);
+		cavePanel.getHeader().setStylePrimaryName("frame-header");
 		
 		ToolButton caveSelectionResetTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		caveSelectionResetTB.setToolTip(Util.createToolTip("Reset selection"));
@@ -286,6 +287,7 @@ public class DepictionFilter extends AbstractFilter {
 		iconographyPanel.setHeaderVisible(true);
 		iconographyPanel.setHeading("Iconography & Pictorial Element search");
 		iconographyPanel.add(iconographyBLC);
+		iconographyPanel.getHeader().setStylePrimaryName("frame-header");
 
 		new DropTarget(iconographyPanel) {
 
@@ -378,6 +380,7 @@ public class DepictionFilter extends AbstractFilter {
 		currentLocationPanel.setHeaderVisible(true);
 		currentLocationPanel.setHeading("Location search");
 		currentLocationPanel.add(locationSelectionLV);
+		currentLocationPanel.getHeader().setStylePrimaryName("frame-header");
 		
 		ToolButton locationSelectionResetTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		locationSelectionResetTB.setToolTip(Util.createToolTip("Reset selection"));
