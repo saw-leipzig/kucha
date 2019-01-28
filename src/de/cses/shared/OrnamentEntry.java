@@ -24,12 +24,13 @@ public class OrnamentEntry extends AbstractEntry {
 	//private String annotations; wurde mal geloescht, evtl wird es irgendwann wieder gewollt
 	private String interpretation;
 	private String references;
-	private int ornamentClass; // heißt jetzt motif, name wurde nur oberflächlich angepasst. 
+	private int ornamentClass; // heiï¿½t jetzt motif, name wurde nur oberflï¿½chlich angepasst. 
 	private int structureOrganizationID; // gibt es nicht mehr, wird evtl. mal wieder gewollt
 	private ArrayList<ImageEntry> images = new ArrayList<ImageEntry>();
 	private ArrayList<OrnamentCaveRelation> cavesRelations = new ArrayList<OrnamentCaveRelation>();
 	private ArrayList<OrnamentComponentsEntry> ornamentComponents = new ArrayList<OrnamentComponentsEntry>();
 	private ArrayList<InnerSecondaryPatternsEntry> innerSecondaryPatterns = new ArrayList<InnerSecondaryPatternsEntry>();
+	private ArrayList<AnnotatedBibliographyEntry> relatedBibliographyList = new ArrayList<AnnotatedBibliographyEntry>();
 
 	public OrnamentEntry() {
 		ornamentID = 0;
@@ -54,7 +55,7 @@ public class OrnamentEntry extends AbstractEntry {
 			String interpretation,
 			String references, int ornamentClassID, ArrayList<ImageEntry> images, ArrayList<OrnamentCaveRelation> cavesRelations,
 			ArrayList<OrnamentComponentsEntry> ornamentComponents, ArrayList<InnerSecondaryPatternsEntry> innerSecondaryPatterns,
-			String modifiedOn) {
+			ArrayList<AnnotatedBibliographyEntry> relatedBibliographyList, String modifiedOn) {
 		this.ornamentID = ornamentID;
 		this.code = code;
 		this.description = description;
@@ -67,6 +68,7 @@ public class OrnamentEntry extends AbstractEntry {
 		this.innerSecondaryPatterns = innerSecondaryPatterns;
 		this.cavesRelations = cavesRelations;
 		this.ornamentComponents = ornamentComponents;
+		this.relatedBibliographyList = relatedBibliographyList;
 		this.setModifiedOn(modifiedOn);
 	}
 
@@ -232,6 +234,12 @@ public class OrnamentEntry extends AbstractEntry {
 	 */
 	public void setInnerSecondaryPatterns(ArrayList<InnerSecondaryPatternsEntry> innerSecondaryPatterns) {
 		this.innerSecondaryPatterns = innerSecondaryPatterns;
+	}
+	public ArrayList<AnnotatedBibliographyEntry> getRelatedBibliographyList() {
+		return relatedBibliographyList;
+	}
+	public void setRelatedBibliographyList(ArrayList<AnnotatedBibliographyEntry> relatedBibliographyList) {
+		this.relatedBibliographyList = relatedBibliographyList;
 	}
 
 }

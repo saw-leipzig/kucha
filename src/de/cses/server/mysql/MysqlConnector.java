@@ -825,8 +825,9 @@ public class MysqlConnector {
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
 						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
 						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")), 
+						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn"))));
-				// Aufruf der höheren Hierarchie Ebenen der Ornamentik mittels getCaveRelation
+				// Aufruf der hï¿½heren Hierarchie Ebenen der Ornamentik mittels getCaveRelation
 				// Aufruf der Tabellen OrnamentComponentsRelation, OrnamentImageRelation und InnerSecondaryPatternRelation
 			}
 			rs.close();
@@ -932,6 +933,7 @@ public class MysqlConnector {
 			updateOrnamentComponentsRelations(newOrnamentID, ornamentEntry.getOrnamentComponents());
 			updateOrnamentImageRelations(newOrnamentID, ornamentEntry.getImages());
 			updateCaveOrnamentRelation(newOrnamentID, ornamentEntry.getCavesRelations());
+			writeOrnamenticBibliographyRelation(newOrnamentID, ornamentEntry.getRelatedBibliographyList());
 			ornamentStatement.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -963,6 +965,7 @@ public class MysqlConnector {
 			updateOrnamentComponentsRelations(ornamentEntry.getOrnamentID(), ornamentEntry.getOrnamentComponents());
 			updateOrnamentImageRelations(ornamentEntry.getOrnamentID(), ornamentEntry.getImages());
 			updateCaveOrnamentRelation(ornamentEntry.getOrnamentID(), ornamentEntry.getCavesRelations());
+			writeOrnamenticBibliographyRelation(ornamentEntry.getOrnamentID(), ornamentEntry.getRelatedBibliographyList());
 			ornamentStatement.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -2269,7 +2272,7 @@ public class MysqlConnector {
 	 * @return
 	 */
 	public ArrayList<OrnamentEntry> searchOrnaments(OrnamenticSearchEntry search) {
-		// Suche ueber einzelne SQL Querys, speichern in ArrayList "listen", anschließend Schnittmenge bilden
+		// Suche ueber einzelne SQL Querys, speichern in ArrayList "listen", anschliessend Schnittmenge bilden
 		Connection dbc = getConnection();
 		Statement stmt;
 		ArrayList<ArrayList<OrnamentEntry>> listen = new ArrayList<ArrayList<OrnamentEntry>>();
@@ -2290,6 +2293,7 @@ public class MysqlConnector {
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
 						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
 						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
+						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
 				result.add(entry);
 			}
@@ -2299,7 +2303,7 @@ public class MysqlConnector {
 			}
 			listen.add(result);
 		}
-// Ab hier suche nach den einzelnen Kriterien, bauen von einzelnen Listen und später eine Teilmengenbildung der Listen.
+// Ab hier suche nach den einzelnen Kriterien, bauen von einzelnen Listen und spï¿½ter eine Teilmengenbildung der Listen.
 		if(search.getCaves().size() > 0) {
 			
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
@@ -2321,6 +2325,7 @@ public class MysqlConnector {
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
 						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
 						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
+						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
 				result.add(entry);
 			}
@@ -2345,6 +2350,7 @@ public class MysqlConnector {
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
 						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
 						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
+						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
 				result.add(entry);
 			}
@@ -2371,6 +2377,7 @@ public class MysqlConnector {
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
 						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
 						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
+						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
 				result.add(entry);
 			}
@@ -2403,6 +2410,7 @@ public class MysqlConnector {
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
 						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
 						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
+						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
 				result.add(entry);
 			}
@@ -2427,6 +2435,7 @@ public class MysqlConnector {
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
 						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
 						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
+						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
 				result.add(entry);
 			}
@@ -2458,6 +2467,7 @@ public class MysqlConnector {
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
 						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
 						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
+						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
 				result.add(entry);
 			}
@@ -2489,6 +2499,7 @@ public class MysqlConnector {
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
 						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
 						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
+						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
 				result.add(entry);
 			}
@@ -2521,6 +2532,7 @@ public class MysqlConnector {
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
 						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
 						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
+						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
 				result.add(entry);
 			}
@@ -2546,6 +2558,7 @@ public class MysqlConnector {
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
 						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
 						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
+						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
 				result.add(entry);
 			}
@@ -2577,6 +2590,7 @@ public class MysqlConnector {
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
 						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
 						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
+						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
 				result.add(entry);
 			}
@@ -2602,6 +2616,7 @@ public class MysqlConnector {
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
 						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
 						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
+						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
 				result.add(entry);
 			}
@@ -2628,6 +2643,7 @@ public class MysqlConnector {
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
 						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
 						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
+						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
 				result.add(entry);
 			}
@@ -2660,6 +2676,7 @@ public class MysqlConnector {
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
 						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
 						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
+						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
 				result.add(entry);
 			}
@@ -2685,6 +2702,7 @@ public class MysqlConnector {
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
 						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
 						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
+						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
 				result.add(entry);
 			}
@@ -2717,6 +2735,7 @@ public class MysqlConnector {
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
 						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
 						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
+						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
 				result.add(entry);
 			}
@@ -2742,6 +2761,7 @@ public class MysqlConnector {
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
 						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
 						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
+						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
 				result.add(entry);
 			}
@@ -2767,6 +2787,7 @@ public class MysqlConnector {
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
 						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
 						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
+						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
 				result.add(entry);
 			}
@@ -2793,7 +2814,7 @@ public class MysqlConnector {
 			return emptyList;
 		}
 		else {
-			// rückgabe der Teilmengenliste
+			// rï¿½ckgabe der Teilmengenliste
 			
 		return (ArrayList<OrnamentEntry>) intersection;
 		}
@@ -2813,6 +2834,7 @@ public class MysqlConnector {
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
 						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
 						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
+						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn"))));
 			}
 			rs.close();
@@ -2840,6 +2862,7 @@ public class MysqlConnector {
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
 						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
 						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
+						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
 			}
 			rs.close();
@@ -3645,8 +3668,8 @@ public class MysqlConnector {
 			deleteEntry("DELETE FROM CaveBibliographyRelation WHERE CaveID=" + caveID);
 			try {
 				relationStatement = dbc.prepareStatement("INSERT INTO CaveBibliographyRelation VALUES (?, ?)");
+				relationStatement.setInt(1, caveID);
 				for (AnnotatedBibliographyEntry entry : relatedBibliographyList) {
-					relationStatement.setInt(1, caveID);
 					relationStatement.setInt(2, entry.getAnnotatedBibliographyID());
 					relationStatement.executeUpdate();
 				}
@@ -3657,6 +3680,31 @@ public class MysqlConnector {
 		}
 	}
 
+	private synchronized void writeOrnamenticBibliographyRelation(int OrnamentID, ArrayList<AnnotatedBibliographyEntry> relatedBibliographyList) {
+		Connection dbc = getConnection();
+		PreparedStatement relationStatement;
+
+		if (OrnamentID > 0 && relatedBibliographyList.size() > 0) {
+			deleteEntry("DELETE FROM OrnamentBibliographyRelation WHERE OrnamentID=" + OrnamentID);
+			try {
+				relationStatement = dbc.prepareStatement("INSERT INTO OrnamentBibliographyRelation VALUES (?, ?)");
+				relationStatement.setInt(1, OrnamentID);
+				for (AnnotatedBibliographyEntry entry : relatedBibliographyList) {
+					relationStatement.setInt(2, entry.getAnnotatedBibliographyID());
+					relationStatement.executeUpdate();
+				}
+				relationStatement.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * 
+	 * @param caveID
+	 * @return
+	 */
 	private ArrayList<AnnotatedBibliographyEntry> getRelatedBibliographyFromCave(int caveID) {
 		Connection dbc = getConnection();
 		PreparedStatement relationStatement;
@@ -3665,6 +3713,26 @@ public class MysqlConnector {
 		try {
 			relationStatement = dbc.prepareStatement("SELECT * FROM CaveBibliographyRelation WHERE CaveID=?");
 			relationStatement.setInt(1, caveID);
+			ResultSet rs = relationStatement.executeQuery();
+			while (rs.next()) {
+				result.add(getAnnotatedBiblographybyID(rs.getInt("BibID")));
+			}
+			rs.close();
+			relationStatement.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	private ArrayList<AnnotatedBibliographyEntry> getRelatedBibliographyFromOrnamen(int ornamentID) {
+		Connection dbc = getConnection();
+		PreparedStatement relationStatement;
+		ArrayList<AnnotatedBibliographyEntry> result = new ArrayList<AnnotatedBibliographyEntry>();
+
+		try {
+			relationStatement = dbc.prepareStatement("SELECT * FROM OrnamentBibliographyRelation WHERE OrnamentID=?");
+			relationStatement.setInt(1, ornamentID);
 			ResultSet rs = relationStatement.executeQuery();
 			while (rs.next()) {
 				result.add(getAnnotatedBiblographybyID(rs.getInt("BibID")));
