@@ -252,14 +252,14 @@ public class MainView implements IsWidget {
 		    	north.setHeading("Welcome back, " + UserLogin.getInstance().getUsername());
 //		    	imageSearchController.setVisible(true);
 		    	imageSearchController.setEnabled(true);
-		    	loadWorkspaceToolButton.setVisible(true);
-		    	saveWorkspaceToolButton.setVisible(true);
+		    	loadWorkspaceToolButton.setEnabled(true);
+		    	saveWorkspaceToolButton.setEnabled(true);
 		    } else {
 		    	north.setHeading("Welcome! Your are currently here as a guest!");
 		    	imageSearchController.setEnabled(false);
 //		    	imageSearchController.setVisible(false);
-		    	loadWorkspaceToolButton.setVisible(false);
-		    	saveWorkspaceToolButton.setVisible(false);
+		    	loadWorkspaceToolButton.setEnabled(false);
+		    	saveWorkspaceToolButton.setEnabled(false);
 		    }
 			}
 		});
@@ -383,8 +383,8 @@ public class MainView implements IsWidget {
     	north.setHeading("Welcome! Your are currently here as a guest!");
 //    	imageSearchController.setVisible(false);
     	imageSearchController.setEnabled(false);
-    	saveWorkspaceToolButton.setVisible(false);
-    	loadWorkspaceToolButton.setVisible(false);
+    	saveWorkspaceToolButton.setEnabled(false);
+    	loadWorkspaceToolButton.setEnabled(false);
     }
 	}
 	
