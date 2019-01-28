@@ -5536,7 +5536,6 @@ public class MysqlConnector {
 					default:
 						break;
 				}
-				resultList.add(new CollectionEntry(rs.getInt("CollectionID"), getUser(rs.getInt("UserID")), rs.getString("CollectionLabel"), rs.getBoolean("GroupCollection")));
 			}
 			rs.close();
 			pstmt.close();
