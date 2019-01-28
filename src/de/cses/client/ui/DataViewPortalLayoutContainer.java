@@ -89,8 +89,7 @@ public class DataViewPortalLayoutContainer extends PortalLayoutContainer {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				// TODO Auto-generated method stub
-				
+				Util.showWarning("Error while loading", "List of collections could not be loaded.");
 			}
 
 			@Override
@@ -121,14 +120,16 @@ public class DataViewPortalLayoutContainer extends PortalLayoutContainer {
 
 							@Override
 							public void onFailure(Throwable caught) {
+								Util.showWarning("Error while loading", "Collection could not be loaded.");
 							}
 
 							@Override
 							public void onSuccess(ArrayList<AbstractEntry> resultList) {
+								clear();
 								for (AbstractEntry entry : resultList) {
 									drop(entry);
 								}
-								dataViewPanel.setHeading("View collection: " + collectionNameCB.getValue().getCollectionName());
+								dataViewPanel.setHeading("Collection: " + collectionNameCB.getValue().getCollectionName());
 								loadCollectionDialog.hide();
 							}
 						});
@@ -199,6 +200,9 @@ public class DataViewPortalLayoutContainer extends PortalLayoutContainer {
 
 							@Override
 							public void onSuccess(Boolean result) {
+								if (!result) {
+									Util.showWarning("Server error", "The collection could not be saved.");
+								}
 							}
 						});
 					}
@@ -219,6 +223,11 @@ public class DataViewPortalLayoutContainer extends PortalLayoutContainer {
 			newCollectionNameDialog.setModal(true);
 			newCollectionNameDialog.center();
 		}
+	}
+	
+	public void resetView() {
+		clear();
+		dataViewPanel.setHeading("Collection");
 	}
 	
 }

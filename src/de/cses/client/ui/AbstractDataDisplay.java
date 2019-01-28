@@ -44,6 +44,8 @@ public abstract class AbstractDataDisplay extends Portlet {
 			}
 		});
 		addTool(closeButton);
+		setWidth("100%");
+    getHeader().setStylePrimaryName("frame-header");
 		setCollapsible(true);
 		collapse();
 	}

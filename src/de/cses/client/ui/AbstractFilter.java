@@ -55,25 +55,11 @@ public abstract class AbstractFilter implements IsWidget {
 //			panel.setCollapsible(true);
 			panel.setHeading(filterName);
 			panel.add(getFilterUI());
-			
-//			ToolButton extendedFilterTB = new ToolButton(new IconConfig("addButton", "addButtonOver"));
-//			extendedFilterTB.addSelectHandler(new SelectHandler() {
-//				
-//				@Override
-//				public void onSelect(SelectEvent event) {
-//					showExtendedFilterView();
-//				}
-//			});
-//			panel.addTool(extendedFilterTB);
 		}
+    panel.getHeader().setStylePrimaryName("frame-header");
 		return panel;
 	}
 	
-//	/**
-//	 * This method should implement the exteded filter options by opening a PopupPanel
-//	 */
-//	protected abstract void showExtendedFilterView();
-
 	/**
 	 * 
 	 * @return 
@@ -82,15 +68,6 @@ public abstract class AbstractFilter implements IsWidget {
 	 */
 	protected abstract Widget getFilterUI();
 	
-	/**
-	 * 
-	 * @return
-	 * An <code>ArrayList</code> of type <code>String</code> that can be used to create the <code>WHERE</code> clause for
-	 * the SQL request.
-	 * @see de.cses.client.caves.CaveFilter#getSqlWhereClause()
-	 */
-//	public abstract ArrayList<String> getSqlWhereClause();
-
 	/**
 	 * Every filter needs to implement a SearchEntry which will be used to request filtered searches from the server side.
 	 * @return

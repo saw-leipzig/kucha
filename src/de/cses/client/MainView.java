@@ -321,6 +321,16 @@ public class MainView implements IsWidget {
 			}
 		});
     dataViewPanel.addTool(loadWorkspaceToolButton);
+    ToolButton resetWorkspaceToolButton = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
+    resetWorkspaceToolButton.setToolTip(Util.createToolTip("Reset to create new colection.", "Click here to delete content and start fresh collection."));
+    resetWorkspaceToolButton.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				dataViewPLC.resetView();
+			}
+		});
+    dataViewPanel.addTool(resetWorkspaceToolButton);
 
     new DropTarget(dataViewPanel) {
 
