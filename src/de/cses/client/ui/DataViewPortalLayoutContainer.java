@@ -175,7 +175,6 @@ public class DataViewPortalLayoutContainer extends PortalLayoutContainer {
 			collectionNameField.setAllowBlank(false);
 			collectionNameField.addValidator(new MaxLengthValidator(256));
 			collectionNameField.setWidth(450);
-			newCollectionNameFP.add(collectionNameField);
 			CheckBox groupCollectionCB = new CheckBox();
 			groupCollectionCB.setBoxLabel("group collection");
 			groupCollectionCB.setToolTip(Util.createToolTip("Check box if you want to share with other users.", "Users need at least ASSOCIATE rights to access collections."));
