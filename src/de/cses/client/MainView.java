@@ -45,11 +45,9 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 import de.cses.client.bibliography.AnnotatedBibliographyFilter;
 import de.cses.client.bibliography.AnnotatedBiblographyResultView;
 import de.cses.client.bibliography.AnnotatedBiblographySearchController;
-import de.cses.client.caves.CaveDataDisplay;
 import de.cses.client.caves.CaveFilter;
 import de.cses.client.caves.CaveResultView;
 import de.cses.client.caves.CaveSearchController;
-import de.cses.client.depictions.DepictionDataDisplay;
 import de.cses.client.depictions.DepictionFilter;
 import de.cses.client.depictions.DepictionResultView;
 import de.cses.client.depictions.DepictionSearchController;
@@ -59,15 +57,10 @@ import de.cses.client.images.ImageSearchController;
 import de.cses.client.ornamentic.OrnamenticFilter;
 import de.cses.client.ornamentic.OrnamenticResultView;
 import de.cses.client.ornamentic.OrnamenticSearchController;
-import de.cses.client.ui.AbstractDataDisplay;
 import de.cses.client.ui.AbstractSearchController;
+import de.cses.client.ui.DataViewPortalLayoutContainer;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
-import de.cses.shared.AnnotatedBibliographyEntry;
-import de.cses.shared.CaveEntry;
-import de.cses.shared.DepictionEntry;
-import de.cses.shared.ImageEntry;
-import de.cses.shared.OrnamentEntry;
 
 /**
  * @author alingnau
@@ -77,8 +70,6 @@ public class MainView implements IsWidget {
 	
 	// this footer will be shown at the bottom of the WebApp
 	private static final String FOOTER_TEXT = "\u00A9 2019 Sächsische Akademie der Wissenschaften zu Leipzig (Version 0.9.1)";
-	
-	private static ArrayList<String> dataDisplayUniqueIDList = null;
 	
 	private BorderLayoutContainer view = null;
 	private CaveSearchController caveSearchController;
@@ -94,7 +85,7 @@ public class MainView implements IsWidget {
 	private OrnamenticSearchController ornamenticSearchController;
 //	private ResultCollectorController resultCollectorController;
 	private AnnotatedBiblographySearchController annotatedBiblographySearchController;
-	private PortalLayoutContainer dataViewPLC;
+	private DataViewPortalLayoutContainer dataViewPLC;
 //	private DataDisplayController dataDisplayController;
 	private ToolButton saveWorkspaceToolButton;
 	private ToolButton loadWorkspaceToolButton;
@@ -302,67 +293,52 @@ public class MainView implements IsWidget {
     filterPanel.getHeader().setStylePrimaryName("frame-header");
     filterPanel.add(filterView);
     
-    dataViewPLC = new PortalLayoutContainer(1);
-    dataViewPLC.setSpacing(10);
-    dataViewPLC.setColumnWidth(0, 1.00);
     
     ContentPanel dataViewPanel = new ContentPanel();
     dataViewPanel.setResize(true);
     dataViewPanel.setHeading("View");
     dataViewPanel.addStyleName("transparent");
     dataViewPanel.getHeader().setStylePrimaryName("frame-header");
+    dataViewPLC = new DataViewPortalLayoutContainer(1, dataViewPanel);
     dataViewPanel.add(dataViewPLC);
     saveWorkspaceToolButton = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
-    saveWorkspaceToolButton.setToolTip(Util.createToolTip("save", "not yet implemented"));
+    saveWorkspaceToolButton.setToolTip(Util.createToolTip("save", "Save this view as a colletion either for private purpose or tp share with other users."));
     saveWorkspaceToolButton.addSelectHandler(new SelectHandler() {
 			
 			@Override
 			public void onSelect(SelectEvent event) {
-				// we need to figure out how to access the content
-//				for (int i=0; i<dataViewPLC. getWidgetCount(); ++i) {
-//					Widget w = dataViewPLC.getContainer().getWidget(i);
-//					if (w instanceof AbstractDataDisplay) {
-//						AbstractEntry e = ((AbstractDataDisplay)w).getEntry();
-//						Util.doLogging(e.getUniqueID());
-//					}
-//				}
+				dataViewPLC.save();
 			}
 		});
     dataViewPanel.addTool(saveWorkspaceToolButton);
-    loadWorkspaceToolButton = new ToolButton(ToolButton.RESTORE);
-    loadWorkspaceToolButton.setToolTip(Util.createToolTip("load", "not yet implemented"));
+    loadWorkspaceToolButton = new ToolButton(new IconConfig("loadButton", "loadButtonOver"));
+    loadWorkspaceToolButton.setToolTip(Util.createToolTip("load collection"));
     loadWorkspaceToolButton.addSelectHandler(new SelectHandler() {
 			
 			@Override
 			public void onSelect(SelectEvent event) {
-				// TODO load workspace
+				dataViewPLC.load();
 			}
 		});
     dataViewPanel.addTool(loadWorkspaceToolButton);
+    ToolButton resetWorkspaceToolButton = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
+    resetWorkspaceToolButton.setToolTip(Util.createToolTip("Reset to create new colection.", "Click here to delete content and start fresh collection."));
+    resetWorkspaceToolButton.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				dataViewPLC.resetView();
+			}
+		});
+    dataViewPanel.addTool(resetWorkspaceToolButton);
 
-    DropTarget target = new DropTarget(dataViewPanel) {
+    new DropTarget(dataViewPanel) {
 
 			@Override
 			protected void onDragDrop(DndDropEvent event) {
 				super.onDragDrop(event);
-				if (event.getData() instanceof CaveEntry) {
-					CaveDataDisplay cdd = new CaveDataDisplay((CaveEntry) event.getData());
-					if (!MainView.getDataDisplayUniqueIDList().contains(cdd.getUniqueID())) {
-						dataViewPLC.add(cdd, 0);
-						MainView.getDataDisplayUniqueIDList().add(cdd.getUniqueID());
-					}
-				} else if (event.getData() instanceof DepictionEntry) {
-					DepictionDataDisplay ddd = new DepictionDataDisplay((DepictionEntry) event.getData());
-					if (!MainView.getDataDisplayUniqueIDList().contains(ddd.getUniqueID())) {
-						dataViewPLC.add(ddd, 0);
-						MainView.getDataDisplayUniqueIDList().add(ddd.getUniqueID());
-					}
-				} else if (event.getData() instanceof ImageEntry) {
-//					addResult(new ImageView((ImageEntry) event.getData()));
-				} else if (event.getData() instanceof OrnamentEntry) {
-//					addResult(new OrnamenticView((OrnamentEntry) event.getData()));
-				} else if (event.getData() instanceof AnnotatedBibliographyEntry) {
-//					addResult(new AnnotatedBiblographyView((AnnotatedBibliographyEntry) event.getData()));
+				if (event.getData() instanceof AbstractEntry) {
+					dataViewPLC.drop((AbstractEntry)event.getData());
 				}
 			}
 		};
@@ -433,11 +409,4 @@ public class MainView implements IsWidget {
 		return activeSelectors;
 	}
 
-	public static ArrayList<String> getDataDisplayUniqueIDList() {
-		if (dataDisplayUniqueIDList == null) {
-			dataDisplayUniqueIDList = new ArrayList<String>();
-		}
-		return dataDisplayUniqueIDList;
-	}
-	
 }

@@ -41,10 +41,11 @@ public abstract class AbstractDataDisplay extends Portlet {
 			@Override
 			public void onSelect(SelectEvent event) {
 				removeFromParent();
-				MainView.getDataDisplayUniqueIDList().remove(getUniqueID());
 			}
 		});
 		addTool(closeButton);
+		setWidth("100%");
+    getHeader().setStylePrimaryName("frame-header");
 		setCollapsible(true);
 		collapse();
 	}

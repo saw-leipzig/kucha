@@ -15,10 +15,12 @@ package de.cses.client;
 
 import java.util.ArrayList;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 import de.cses.shared.AnnotatedBibliographySearchEntry;
+import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.BibKeywordEntry;
@@ -28,6 +30,7 @@ import de.cses.shared.CaveGroupEntry;
 import de.cses.shared.CaveSearchEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
+import de.cses.shared.CollectionEntry;
 import de.cses.shared.CurrentLocationEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DepictionSearchEntry;
@@ -308,4 +311,10 @@ public interface DatabaseService extends RemoteService {
 	boolean updateUserEntry(UserEntry userEntry) throws IllegalArgumentException;
 
 	int insertUserEntry(UserEntry entry) throws IllegalArgumentException;
+
+	boolean saveCollectedEntries(String sessionID, String collectionLabel, Boolean isGroupCollection, ArrayList<AbstractEntry> entryList) throws IllegalArgumentException;
+
+	ArrayList<CollectionEntry> getRelatedCollectionNames(String sessionID) throws IllegalArgumentException;
+
+	ArrayList<AbstractEntry> loadCollectedEntries(CollectionEntry value) throws IllegalArgumentException;
 }
