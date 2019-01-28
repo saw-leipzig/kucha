@@ -92,6 +92,10 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 	private OrnamentComponentsProperties ornamentComponentsProps;
 	private TextField ornamentCodeTextField;
 	private BibliographySelector bibSelector;
+	private TextArea discription;
+	private TextArea remarks;
+	private TextArea interpretation;
+	private TextArea references;
 	public static OrnamentCaveRelationEditor ornamentCaveRelationEditor;
 	public static WallOrnamentCaveRelationEditor wallOrnamentCaveRelationEditor;
 	public static OrnamenticEditor ornamenticEditor;
@@ -424,7 +428,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 		header = new FramedPanel();
 		header.setHeading("Description");
-		TextArea discription = new TextArea();
+		discription = new TextArea();
 		panel.add(header, new VerticalLayoutData(1.0, .3));
 		header.add(discription);
 		discription.setAllowBlank(true);
@@ -432,7 +436,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 			discription.setValue(ornamentEntry.getDescription());
 		}
 
-		TextArea remarks = new TextArea();
+		remarks = new TextArea();
 		remarks.setAllowBlank(true);
 		header = new FramedPanel();
 		header.setHeading("Remarks");
@@ -442,7 +446,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 			remarks.setValue(ornamentEntry.getRemarks());
 		}
 
-		TextArea interpretation = new TextArea();
+		interpretation = new TextArea();
 		interpretation.setAllowBlank(true);
 		header = new FramedPanel();
 		header.setWidth(300);
@@ -453,7 +457,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 			interpretation.setValue(ornamentEntry.getInterpretation());
 		}
 
-		final TextArea references = new TextArea();
+		references = new TextArea();
 		references.setAllowBlank(true);
 		header = new FramedPanel();
 		header.setHeading("References");
@@ -535,89 +539,9 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 			@Override
 			public void onClick(ClickEvent event) {
-				if (!ornamentCodeTextField.validate()) {
-					Util.showWarning("Missing information", "Please insert Ornamentation Code!");
-					return;
-				}
+				save();
 
-				if (ornamentEntry == null) {
-					ornamentEntry = new OrnamentEntry();
-				}
-
-				ArrayList<OrnamentCaveRelation> corList = new ArrayList<OrnamentCaveRelation>();
-				for (int i = 0; i < caveOrnamentRelationList.size(); i++) {
-					corList.add(caveOrnamentRelationList.get(i));
-				}
-				ornamentEntry.setCavesRelations(corList);
-
-				ArrayList<ImageEntry> ieList = new ArrayList<ImageEntry>();
-				for (int i = 0; i < imageEntryList.size(); i++) {
-					ieList.add(imageEntryList.get(i));
-				}
-				ornamentEntry.setImages(ieList);
-
-				ornamentEntry.setCode(ornamentCodeTextField.getText());
-				ornamentEntry.setDescription(discription.getText());
-				ornamentEntry.setRemarks(remarks.getText());
-				ornamentEntry.setInterpretation(interpretation.getText());
-				ornamentEntry.setReferences(references.getText());
-				if (ornamentClassComboBox.getValue() == null) {
-					ornamentEntry.setOrnamentClass(0);
-				} else {
-					Util.doLogging("ID gesetzt");
-					ornamentEntry.setOrnamentClass(ornamentClassComboBox.getValue().getOrnamentClassID());
-				}
-
-				ArrayList<InnerSecondaryPatternsEntry> ispeList = new ArrayList<InnerSecondaryPatternsEntry>();
-				for (int i = 0; i < selectedinnerSecondaryPatternsEntryList.size(); i++) {
-					ispeList.add(selectedinnerSecondaryPatternsEntryList.get(i));
-				}
-				ornamentEntry.setInnerSecondaryPatterns(ispeList);
-
-				ArrayList<OrnamentComponentsEntry> oceList = new ArrayList<OrnamentComponentsEntry>();
-				for (int i = 0; i < selectedOrnamentComponents.size(); i++) {
-					oceList.add(selectedOrnamentComponents.get(i));
-				}
-				ornamentEntry.setOrnamentComponents(oceList);
-				ornamentEntry.setRelatedBibliographyList(bibSelector.getSelectedEntries());
-
-				// send ornament to server
-				if (ornamentEntry.getOrnamentID() == 0) {
-					dbService.saveOrnamentEntry(ornamentEntry, new AsyncCallback<Integer>() {
-
-						@Override
-						public void onFailure(Throwable caught) {
-							Util.showWarning("Saving failed", caught.getMessage());
-						}
-
-						@Override
-						public void onSuccess(Integer result) {
-							if (result > 0) {
-								Util.doLogging(this.getClass().getName() + " saving sucessful");
-								ornamentEntry.setOrnamentID(result);
-								// updateEntry(ornamentEntry);
-								closeEditor(ornamentEntry);
-							} else {
-								Util.showWarning("Saving failed", "ornamentID == 0");
-							}
-						}
-					});
-				} else {
-					dbService.updateOrnamentEntry(ornamentEntry, new AsyncCallback<Boolean>() {
-
-						@Override
-						public void onFailure(Throwable caught) {
-							Util.showWarning("Update failed", caught.getMessage());
-						}
-
-						@Override
-						public void onSuccess(Boolean result) {
-							closeEditor(ornamentEntry);
-						}
-					});
-				}
-
-			}
+			} // end
 		};
 
 		FramedPanel framedpanelornamentic = new FramedPanel();
@@ -628,40 +552,57 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 			@Override
 			public void onClick(ClickEvent event) {
 				
-				PopupPanel security = new PopupPanel();
-				ContentPanel securityContent = new ContentPanel();
-				VerticalLayoutContainer verticalPanel= new VerticalLayoutContainer();
-				securityContent.add(verticalPanel);
-				TextButton yesTB = new TextButton("yes");
-				TextButton noTB = new TextButton("no");
-				ButtonBar buttons = new ButtonBar();
-				buttons.add(yesTB);
-				buttons.add(noTB);
-				HTML text = new HTML("Really exit without saving? All unsaved data will be lost.");
-				verticalPanel.add(text);
-				verticalPanel.add(buttons);
-				security.setWidget(securityContent);
-				security.center();
-
-				ClickHandler yesHandler = new ClickHandler() {
+				Util.showYesNo("Exit Warning!", "Do you wish to save before exiting?", new SelectHandler() {
 
 					@Override
-					public void onClick(ClickEvent event) {
-						security.hide();
+					public void onSelect(SelectEvent event) {
+						save();
 						closeEditor(null);
-
 					}
-				};
-				yesTB.addHandler(yesHandler, ClickEvent.getType());
-
-				ClickHandler noHandler = new ClickHandler() {
+				}, new SelectHandler() {
 
 					@Override
-					public void onClick(ClickEvent event) {
-						security.hide();
+					public void onSelect(SelectEvent event) {
+						closeEditor(null);
 					}
-				};
-				noTB.addHandler(noHandler, ClickEvent.getType());
+				});
+				
+//				
+//				PopupPanel security = new PopupPanel();
+//				ContentPanel securityContent = new ContentPanel();
+//				VerticalLayoutContainer verticalPanel= new VerticalLayoutContainer();
+//				securityContent.add(verticalPanel);
+//				TextButton yesTB = new TextButton("yes");
+//				TextButton noTB = new TextButton("no");
+//				ButtonBar buttons = new ButtonBar();
+//				buttons.add(yesTB);
+//				buttons.add(noTB);
+//
+//				HTML text = new HTML("Really exit without saving? All unsaved data will be lost.");
+//				verticalPanel.add(text);
+//				verticalPanel.add(buttons);
+//				security.setWidget(securityContent);
+//				security.center();
+
+//				ClickHandler yesHandler = new ClickHandler() {
+//
+//					@Override
+//					public void onClick(ClickEvent event) {
+//						security.hide();
+//						closeEditor(null);
+//
+//					}
+//				};
+//				yesTB.addHandler(yesHandler, ClickEvent.getType());
+
+//				ClickHandler noHandler = new ClickHandler() {
+//
+//					@Override
+//					public void onClick(ClickEvent event) {
+//						security.hide();
+//					}
+//				};
+//				noTB.addHandler(noHandler, ClickEvent.getType());
 
 			}
 
@@ -1021,6 +962,90 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 		return backgroundPanel;
 
+	}
+
+	protected void save() {
+		if (!ornamentCodeTextField.validate()) {
+			Util.showWarning("Missing information", "Please insert Ornamentation Code!");
+			return;
+		}
+
+		if (ornamentEntry == null) {
+			ornamentEntry = new OrnamentEntry();
+		}
+
+		ArrayList<OrnamentCaveRelation> corList = new ArrayList<OrnamentCaveRelation>();
+		for (int i = 0; i < caveOrnamentRelationList.size(); i++) {
+			corList.add(caveOrnamentRelationList.get(i));
+		}
+		ornamentEntry.setCavesRelations(corList);
+
+		ArrayList<ImageEntry> ieList = new ArrayList<ImageEntry>();
+		for (int i = 0; i < imageEntryList.size(); i++) {
+			ieList.add(imageEntryList.get(i));
+		}
+		ornamentEntry.setImages(ieList);
+
+		ornamentEntry.setCode(ornamentCodeTextField.getText());
+		ornamentEntry.setDescription(discription.getText());
+		ornamentEntry.setRemarks(remarks.getText());
+		ornamentEntry.setInterpretation(interpretation.getText());
+		ornamentEntry.setReferences(references.getText());
+		if (ornamentClassComboBox.getValue() == null) {
+			ornamentEntry.setOrnamentClass(0);
+		} else {
+			Util.doLogging("ID gesetzt");
+			ornamentEntry.setOrnamentClass(ornamentClassComboBox.getValue().getOrnamentClassID());
+		}
+
+		ArrayList<InnerSecondaryPatternsEntry> ispeList = new ArrayList<InnerSecondaryPatternsEntry>();
+		for (int i = 0; i < selectedinnerSecondaryPatternsEntryList.size(); i++) {
+			ispeList.add(selectedinnerSecondaryPatternsEntryList.get(i));
+		}
+		ornamentEntry.setInnerSecondaryPatterns(ispeList);
+
+		ArrayList<OrnamentComponentsEntry> oceList = new ArrayList<OrnamentComponentsEntry>();
+		for (int i = 0; i < selectedOrnamentComponents.size(); i++) {
+			oceList.add(selectedOrnamentComponents.get(i));
+		}
+		ornamentEntry.setOrnamentComponents(oceList);
+		ornamentEntry.setRelatedBibliographyList(bibSelector.getSelectedEntries());
+
+		// send ornament to server
+		if (ornamentEntry.getOrnamentID() == 0) {
+			dbService.saveOrnamentEntry(ornamentEntry, new AsyncCallback<Integer>() {
+
+				@Override
+				public void onFailure(Throwable caught) {
+					Util.showWarning("Saving failed", caught.getMessage());
+				}
+
+				@Override
+				public void onSuccess(Integer result) {
+					if (result > 0) {
+						Util.doLogging(this.getClass().getName() + " saving sucessful");
+						ornamentEntry.setOrnamentID(result);
+						// updateEntry(ornamentEntry);
+						closeEditor(ornamentEntry);
+					} else {
+						Util.showWarning("Saving failed", "ornamentID == 0");
+					}
+				}
+			});
+		} else {
+			dbService.updateOrnamentEntry(ornamentEntry, new AsyncCallback<Boolean>() {
+
+				@Override
+				public void onFailure(Throwable caught) {
+					Util.showWarning("Update failed", caught.getMessage());
+				}
+
+				@Override
+				public void onSuccess(Boolean result) {
+					closeEditor(ornamentEntry);
+				}
+			});
+		}
 	}
 
 	interface ImageProperties extends PropertyAccess<ImageEntry> {
