@@ -638,7 +638,7 @@ public class OrnamenticFilter  extends AbstractFilter{
 		});
 		ornamentFunctionPanel.addTool(resetOrnamentFunctionPanelTB);
 		
-		//iconographys? muesste noch bearbeitet werden, soll die Iconography hinzugefuegt werden. Hier bloﬂ ein Platzhalter mit Copy-Paste
+		//iconographys? muesste noch bearbeitet werden, soll die Iconography hinzugefuegt werden. Hier bloss ein Platzhalter mit Copy-Paste
 		/*
 		ornamentComponentsSelectionLV = new ListView<OrnamentComponentsEntry, OrnamentComponentsEntry>(ornamentComponentsEntryList, new IdentityValueProvider<OrnamentComponentsEntry>(), 
 				new SimpleSafeHtmlCell<OrnamentComponentsEntry>(new AbstractSafeHtmlRenderer<OrnamentComponentsEntry>() {
@@ -787,7 +787,7 @@ public class OrnamenticFilter  extends AbstractFilter{
 	@Override
 	public AbstractSearchEntry getSearchEntry() {
 		
-		//Versenden der Eintr‰ge an den Server nach erfolgter Suche
+		//Versenden der Eintraege an den Server nach erfolgter Suche
 		OrnamenticSearchEntry searchEntry = new OrnamenticSearchEntry();
 		
 		if (ornamentCodeSearchTF.getValue() != null && !ornamentCodeSearchTF.getValue().isEmpty()) {

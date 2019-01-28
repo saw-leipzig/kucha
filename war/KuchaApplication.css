@@ -502,7 +502,7 @@ div.saveButtonOver {
 }
 
 div.loadButton {
-	background-image: url(icons/add_new.png);
+	background-image: url(icons/load.png);
 	width: 20px;
 	height: 20px;
 	background-repeat: no-repeat;
@@ -510,7 +510,7 @@ div.loadButton {
 }
 
 div.loadButtonOver {
-	background-image: url(icons/add_new_mo.png);
+	background-image: url(icons/load_mo.png);
 	width: 20px;
 	height: 20px;
 	background-repeat: no-repeat;

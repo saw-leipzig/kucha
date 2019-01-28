@@ -91,8 +91,8 @@ public class OrnamentCaveRelationEditor {
 
 	public OrnamentCaveRelationEditor() {
 
-		// Zweite Ebene der Ornamentik. Eigenschaften, die von der Höhle abhängen.
-		//Erstellen aller Listen und Properties
+		// Zweite Ebene der Ornamentik. Eigenschaften, die von der Hoehle abhaengen.
+		// Erstellen aller Listen und Properties
 
 		caveEntryProps = GWT.create(CaveEntryProperties.class);
 		styleProps = GWT.create(StyleProperties.class);
@@ -583,7 +583,7 @@ public class OrnamentCaveRelationEditor {
 		return mainPanel;
 	}
 
-	//Interfaces für ComboBoxen und ListViews
+	//Interfaces fuer ComboBoxen und ListViews
 	interface CaveEntryProperties extends PropertyAccess<CaveEntry> {
 		ModelKeyProvider<CaveEntry> caveID();
 

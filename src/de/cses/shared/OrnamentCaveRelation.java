@@ -10,7 +10,7 @@ public class OrnamentCaveRelation extends AbstractEntry {
 	private String colours; // gibt es nicht mehr, vielleicht irgendwann mal wieder?
 	private String notes; // siehe colours
 	private DistrictEntry district;
-	private String group; // heiﬂt jetzt unit, name wurde nur oberfl‰chlich ge‰ndert
+	private String group; // heisst jetzt unit, name wurde nur oberflaechlich geaendert
 	private String similarelementsOfOtherCultures;
 	private ArrayList<IconographyEntry> iconographyElements = new ArrayList<IconographyEntry>();
 	private ArrayList<OrnamentEntry> relatedOrnamentsRelations = new ArrayList<OrnamentEntry>();
