@@ -32,18 +32,15 @@ import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.TabPanel;
-import com.sencha.gxt.widget.core.client.button.TextButton;
-import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.button.ButtonBar;
 import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
-import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
+import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutData;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.VBoxLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
@@ -55,6 +52,7 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.Util;
+import de.cses.client.bibliography.BibliographySelector;
 import de.cses.client.images.ImageSelector;
 import de.cses.client.images.ImageSelectorListener;
 import de.cses.client.ui.AbstractEditor;
@@ -92,24 +90,25 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 	private ListStore<OrnamentComponentsEntry> selectedOrnamentComponents;
 	private OrnamentComponentsProperties ornamentComponentsProps;
 	private TextField ornamentCodeTextField;
+	private BibliographySelector bibSelector;
 	public static OrnamentCaveRelationEditor ornamentCaveRelationEditor;
 	public static WallOrnamentCaveRelationEditor wallOrnamentCaveRelationEditor;
 	public static OrnamenticEditor ornamenticEditor;
 
 	//Hauptklasse zum Erstellen von Ornamenten. Gegliedert in 3 Hierarchie Ebenen: 
 	// 1. Eigenschaften die bei dem Ornament immer vorhanden sind
-	// 2. Eigenschaften die von der Höhle abhängen in dem sich das Ornament befindet
-	// 3. Eigenschaften, die von der Wand abhängen,an der sich das Ornament in einer bestimmten Höhle befindet
+	// 2. Eigenschaften die von der Hï¿½hle abhï¿½ngen in dem sich das Ornament befindet
+	// 3. Eigenschaften, die von der Wand abhï¿½ngen,an der sich das Ornament in einer bestimmten Hï¿½hle befindet
 	
-	// Für die Suche: OrnamentSearchEntry
-	// Die interne Repräsentation für die Kommunikation mit dem Server: OrnamentEntry
+	// Fï¿½r die Suche: OrnamentSearchEntry
+	// Die interne Reprï¿½sentation fï¿½r die Kommunikation mit dem Server: OrnamentEntry
 	
-	// Beim Erstellen des Client seitigen Aufbaus werden 2 Fälle unterschieden: Es wird ein OrnamentEntry geladen und
+	// Beim Erstellen des Client seitigen Aufbaus werden 2 Fï¿½lle unterschieden: Es wird ein OrnamentEntry geladen und
 	// es werden die leeren Felder geladen um ein neues Ornament anzulegen
 	
 	// Die Speicherung in einen OrnamentEntry erfolgt erst beim Klicken des Save Buttons. Vorher werden keine Daten zwischengespeichert.
 	
-	// Viele der Eigenschaften der Ornamenten wurden inzwischen umbenannt (siehe OrnamentEntry für Kommentare zu den Eigenschafen)
+	// Viele der Eigenschaften der Ornamenten wurden inzwischen umbenannt (siehe OrnamentEntry fï¿½r Kommentare zu den Eigenschafen)
 	
 	// 
 	@Override
@@ -128,7 +127,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 	}
 
 	public Widget createForm() {
-		// Aufbau der Listen welche geladen werden müssen aus der Datenbank
+		// Aufbau der Listen welche geladen werden mï¿½ssen aus der Datenbank
 		Util.doLogging("Create form von ornamenticeditor gestartet");
 		ornamentCaveRelationEditor = new OrnamentCaveRelationEditor();
 		wallOrnamentCaveRelationEditor = new WallOrnamentCaveRelationEditor();
@@ -579,6 +578,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 					oceList.add(selectedOrnamentComponents.get(i));
 				}
 				ornamentEntry.setOrnamentComponents(oceList);
+				ornamentEntry.setRelatedBibliographyList(bibSelector.getSelectedEntries());
 
 				// send ornament to server
 				if (ornamentEntry.getOrnamentID() == 0) {
@@ -622,7 +622,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		FramedPanel framedpanelornamentic = new FramedPanel();
 
 		ClickHandler cancelHandler = new ClickHandler() {
-			// Rückfrage über schließen ohne zu speichern
+			// Rï¿½ckfrage ï¿½ber schlieï¿½en ohne zu speichern
 
 			@Override
 			public void onClick(ClickEvent event) {
@@ -1001,6 +1001,9 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		saveButton.setToolTip(Util.createToolTip("save"));
 		closeButton.addHandler(cancelHandler, ClickEvent.getType());
 		saveButton.addHandler(saveClickHandler, ClickEvent.getType());
+		
+		bibSelector = new BibliographySelector(ornamentEntry.getRelatedBibliographyList());
+		tabpanel.add(bibSelector, "Related Bibliography");
 
 		FramedPanel backgroundPanel = new FramedPanel();
 		HorizontalLayoutContainer horiPanel = new HorizontalLayoutContainer();
