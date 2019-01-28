@@ -501,6 +501,22 @@ div.saveButtonOver {
 	cursor: pointer;
 }
 
+div.loadButton {
+	background-image: url(icons/add_new.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.loadButtonOver {
+	background-image: url(icons/add_new_mo.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
 div.closeButton {
 	background-image: url(icons/close_icon.png);
 	width: 20px;

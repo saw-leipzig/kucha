@@ -110,6 +110,7 @@ public class DataViewPortalLayoutContainer extends PortalLayoutContainer {
 				collectionNameCB.setEditable(false);
 				collectionNameCB.setTypeAhead(false);
 				collectionNameCB.setTriggerAction(TriggerAction.ALL);
+				collectionNameCB.setWidth(450);
 				loadCollectionFP.add(collectionNameCB);
 				TextButton loadButton = new TextButton("load");
 				loadButton.addSelectHandler(new SelectHandler() {
@@ -143,9 +144,9 @@ public class DataViewPortalLayoutContainer extends PortalLayoutContainer {
 					}
 				});
 				loadCollectionFP.addButton(cancelButton);
+//				loadCollectionFP.setSize("450px", "100px");
 				loadCollectionDialog.add(loadCollectionFP);
 				loadCollectionDialog.setModal(true);
-				loadCollectionDialog.setWidth("450px");
 				loadCollectionDialog.center();
 			}
 		});
@@ -172,6 +173,7 @@ public class DataViewPortalLayoutContainer extends PortalLayoutContainer {
 			TextField collectionNameField = new TextField();
 			collectionNameField.setAllowBlank(false);
 			collectionNameField.addValidator(new MaxLengthValidator(256));
+			collectionNameField.setWidth(450);
 			newCollectionNameFP.add(collectionNameField);
 			CheckBox groupCollectionCB = new CheckBox();
 			groupCollectionCB.setBoxLabel("group collection");
@@ -180,7 +182,8 @@ public class DataViewPortalLayoutContainer extends PortalLayoutContainer {
 			VerticalLayoutContainer groupCollectionDialogVLC = new VerticalLayoutContainer();
 			groupCollectionDialogVLC.add(collectionNameField, new VerticalLayoutData(1.0, .5, new Margins(5)));
 			groupCollectionDialogVLC.add(groupCollectionCB,  new VerticalLayoutData(1.0, .5, new Margins(5)));
-			ToolButton saveTB = new ToolButton(new IconConfig("saveButton","saveButtonOver"));
+			newCollectionNameFP.add(groupCollectionDialogVLC);
+			TextButton saveTB = new TextButton("save");
 			saveTB.addSelectHandler(new SelectHandler() {
 
 				@Override
@@ -201,8 +204,8 @@ public class DataViewPortalLayoutContainer extends PortalLayoutContainer {
 					}
 				}
 			});
-			newCollectionNameFP.addTool(saveTB);
-			ToolButton cancelTB= new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
+			newCollectionNameFP.addButton(saveTB);
+			TextButton cancelTB= new TextButton("cancel");
 			cancelTB.addSelectHandler(new SelectHandler() {
 
 				@Override
@@ -210,10 +213,10 @@ public class DataViewPortalLayoutContainer extends PortalLayoutContainer {
 					newCollectionNameDialog.hide();
 				}
 			});
-			newCollectionNameFP.addTool(cancelTB);
+			newCollectionNameFP.addButton(cancelTB);
+//			newCollectionNameFP.setSize("450px", "250px");
 			newCollectionNameDialog.add(newCollectionNameFP);
 			newCollectionNameDialog.setModal(true);
-			newCollectionNameDialog.setWidth("300px");
 			newCollectionNameDialog.center();
 		}
 	}
