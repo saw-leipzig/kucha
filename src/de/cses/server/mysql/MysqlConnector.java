@@ -5523,13 +5523,16 @@ public class MysqlConnector {
 				switch (entryClass) {
 					case "AnnotatedBibliographyEntry":
 						resultList.add(getAnnotatedBiblographybyID(entryID));
+						break;
 					case "CaveEntry":
 						resultList.add(getCave(entryID));
 						break;
 					case "DepictionEntry":
 						resultList.add(getDepictionEntry(entryID, entry.getUser().getSessionID()));
+						break;
 					case "ErnamentEntry":
 						resultList.add(getOrnamentEntry(entryID));
+						break;
 					default:
 						break;
 				}
