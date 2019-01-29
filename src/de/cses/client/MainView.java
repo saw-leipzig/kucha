@@ -217,14 +217,12 @@ public class MainView implements IsWidget {
 		
 		// ----------------------------------- assembling the menu bar ---------------------------------------------
 		
-    HorizontalLayoutData hLayoutData = new HorizontalLayoutData(70, 70, new Margins(5, 0, 5, 5));
-    
 		selectorLayoutContainer = new HorizontalLayoutContainer();
-		selectorLayoutContainer.add(caveSearchController, hLayoutData);
-		selectorLayoutContainer.add(depictionSearchController, hLayoutData);
-		selectorLayoutContainer.add(ornamenticSearchController, hLayoutData);
-		selectorLayoutContainer.add(annotatedBiblographySearchController, hLayoutData);
-		selectorLayoutContainer.add(imageSearchController, hLayoutData);
+		selectorLayoutContainer.add(caveSearchController, new HorizontalLayoutData(70, 70, new Margins(5, 0, 5, 5)));
+		selectorLayoutContainer.add(depictionSearchController, new HorizontalLayoutData(70, 70, new Margins(5, 0, 5, 5)));
+		selectorLayoutContainer.add(ornamenticSearchController, new HorizontalLayoutData(70, 70, new Margins(5, 0, 5, 5)));
+		selectorLayoutContainer.add(annotatedBiblographySearchController, new HorizontalLayoutData(70, 70, new Margins(5, 0, 5, 5)));
+		selectorLayoutContainer.add(imageSearchController, new HorizontalLayoutData(70, 70, new Margins(5, 0, 5, 5)));
 //		selectorLayoutContainer.add(resultCollectorController, hLayoutData);
 //		selectorLayoutContainer.add(dataDisplayController, hLayoutData);
 		
@@ -349,7 +347,8 @@ public class MainView implements IsWidget {
 		Label footerLabel = new Label(FOOTER_TEXT);
 		footerLabel.setStyleName("footer");
     
-    BorderLayoutData northData = new BorderLayoutData(70);
+    BorderLayoutData northData = new BorderLayoutData(100);
+    northData.setMinSize(100);
     northData.setMargins(new Margins(5, 5, 0, 5));
     
     BorderLayoutData southData = new BorderLayoutData(20);

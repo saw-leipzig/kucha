@@ -34,7 +34,7 @@ import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.dnd.core.client.DndDropEvent;
 import com.sencha.gxt.dnd.core.client.DropTarget;
-import com.sencha.gxt.widget.core.client.FramedPanel;
+import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
@@ -237,7 +237,8 @@ public class DepictionFilter extends AbstractFilter {
 //		caveBLC.setSouthWidget(filterField, south);
 //		caveBLC.setCenterWidget(caveSelectionLV, new MarginData(2));
 		
-		FramedPanel cavePanel = new FramedPanel();
+		ContentPanel cavePanel = new ContentPanel();
+		cavePanel.setHeaderVisible(true);
 		cavePanel.setHeading("Cave search");
 		cavePanel.add(caveSelectionLV);
 		cavePanel.getHeader().setStylePrimaryName("frame-header");
@@ -278,8 +279,9 @@ public class DepictionFilter extends AbstractFilter {
 		iconographyBLC.setSouthWidget(iconographyFieldLabel, new BorderLayoutData(25));
 		iconographyBLC.setCenterWidget(icoSelectionLV, new MarginData(2));
 		
-		FramedPanel iconographyPanel = new FramedPanel();
-		iconographyPanel.setHeading("Iconography & Pictorial Element search");
+		ContentPanel iconographyPanel = new ContentPanel();
+		iconographyPanel.setHeaderVisible(true);
+		iconographyPanel.setHeading("Iconography search");
 		iconographyPanel.add(iconographyBLC);
 		iconographyPanel.getHeader().setStylePrimaryName("frame-header");
 
@@ -370,7 +372,8 @@ public class DepictionFilter extends AbstractFilter {
 		}));
 		locationSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
 		
-		FramedPanel currentLocationPanel = new FramedPanel();
+		ContentPanel currentLocationPanel = new ContentPanel();
+		currentLocationPanel.setHeaderVisible(true);
 		currentLocationPanel.setHeading("Location search");
 		currentLocationPanel.add(locationSelectionLV);
 		currentLocationPanel.getHeader().setStylePrimaryName("frame-header");
