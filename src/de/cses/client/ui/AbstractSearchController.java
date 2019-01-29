@@ -102,9 +102,11 @@ public abstract class AbstractSearchController extends ContentPanel {
 		if (active) {
 			inactiveTB.removeFromParent();
 			add(activeTB, new MarginData(2));
+			activeTB.show();
 		} else {
 			activeTB.removeFromParent();
 			add(inactiveTB, new MarginData(2));
+			inactiveTB.show();
 		}
 	}
 	
