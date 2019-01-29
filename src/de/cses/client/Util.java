@@ -118,7 +118,7 @@ public class Util {
 	public static void showYesNo(String header, String message, SelectHandler yesHandler, SelectHandler noHandler) {
 		final PopupPanel dialog = new PopupPanel();
 		FramedPanel dialogPanel = new FramedPanel();
-		dialogPanel.getHeader().setStylePrimaryName("frame-header");
+		dialogPanel.getHeader().setStyleName("frame-header");
 		dialog.getElement().getStyle().setBorderColor("#FF0000");
 		dialogPanel.setHeading(header);
 		dialogPanel.add(new HTML("<div style='font: 12px tahoma,arial,verdana,sans-serif; width: 300px;'>" + message + "</div>", true));

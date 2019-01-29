@@ -181,8 +181,8 @@ public class DataViewPortalLayoutContainer extends PortalLayoutContainer {
 			groupCollectionCB.setToolTip(Util.createToolTip("Check box if you want to share with other users.", "Users need at least ASSOCIATE rights to access collections."));
 			groupCollectionCB.setValue(false);
 			VerticalLayoutContainer groupCollectionDialogVLC = new VerticalLayoutContainer();
-			groupCollectionDialogVLC.add(collectionNameField, new VerticalLayoutData(1.0, .5));
-			groupCollectionDialogVLC.add(groupCollectionCB,  new VerticalLayoutData(1.0, .5));
+			groupCollectionDialogVLC.add(collectionNameField, new VerticalLayoutData(1.0, .35));
+			groupCollectionDialogVLC.add(groupCollectionCB,  new VerticalLayoutData(1.0, .35));
 			newCollectionNameFP.add(groupCollectionDialogVLC);
 			TextButton saveTB = new TextButton("save");
 			saveTB.addSelectHandler(new SelectHandler() {

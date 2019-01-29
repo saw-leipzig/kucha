@@ -537,7 +537,7 @@ public class OrnamenticFilter extends AbstractFilter {
 					}
 
 				}));
-		ornamentComponentsSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+		ornamentComponentsSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
 
 		ContentPanel ornamentComponentsPanel = new ContentPanel();
 		ornamentComponentsPanel.setHeaderVisible(true);
@@ -593,7 +593,7 @@ public class OrnamenticFilter extends AbstractFilter {
 				}
 			}
 		}));
-		cavesSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+		cavesSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
 		cavesSelectionLV.getSelectionModel().addSelectionChangedHandler(new SelectionChangedHandler<CaveEntry>() {
 			
 			@Override
@@ -604,7 +604,7 @@ public class OrnamenticFilter extends AbstractFilter {
 		cavesEntryList.addSortInfo(new StoreSortInfo<CaveEntry>(new CaveEntryComparator(), SortDir.ASC));
 		
 
-		ornamentComponentsSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+		ornamentComponentsSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
 
 		ContentPanel ornamentCavesPanel = new ContentPanel();
 		ornamentCavesPanel.setHeaderVisible(true);
@@ -646,9 +646,9 @@ public class OrnamenticFilter extends AbstractFilter {
 				SiteEntry se = siteEntryList.findModelWithKey(Integer.toString(entry.getSiteID()));
 				return dvTemplates.districtLabel(entry.getName(), se.getName());
 			}}));
-		districtsSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+		districtsSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
 		
-		cavesSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+		cavesSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
 
 		ContentPanel ornamentdistrictsPanel = new ContentPanel();
 		ornamentdistrictsPanel.setHeaderVisible(true);
@@ -682,7 +682,7 @@ public class OrnamenticFilter extends AbstractFilter {
 					}
 
 				}));
-		innerSecondaryPatternsSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+		innerSecondaryPatternsSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
 
 		ContentPanel innerSecPanel = new ContentPanel();
 		innerSecPanel.setHeaderVisible(true);
@@ -714,7 +714,7 @@ public class OrnamenticFilter extends AbstractFilter {
 					}
 
 				}));
-		relatedOrnamentsSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+		relatedOrnamentsSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
 
 		ContentPanel relatedornamentPanel = new ContentPanel();
 		relatedornamentPanel.setHeaderVisible(true);
@@ -748,7 +748,7 @@ public class OrnamenticFilter extends AbstractFilter {
 					}
 
 				}));
-		positionSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+		positionSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
 
 		ContentPanel ornamentpositionPanel = new ContentPanel();
 		ornamentpositionPanel.setHeaderVisible(true);
@@ -782,7 +782,7 @@ public class OrnamenticFilter extends AbstractFilter {
 					}
 
 				}));
-		functionSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+		functionSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
 
 		ContentPanel ornamentFunctionPanel = new ContentPanel();
 		ornamentFunctionPanel.setHeaderVisible(true);
@@ -811,7 +811,7 @@ public class OrnamenticFilter extends AbstractFilter {
 		 * 
 		 * @Override public SafeHtml render(OrnamentComponentsEntry entry) { return ocvTemplates.ornamentComponentsLabel(entry.getName()); }
 		 * 
-		 * })); ornamentComponentsSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+		 * })); ornamentComponentsSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
 		 * 
 		 * ContentPanel ornamentComponentsPanel = new ContentPanel(); ornamentComponentsPanel.setHeaderVisible(true);
 		 * ornamentComponentsPanel.setToolTip(Util.createToolTip("Search for ornament components.", "Select one or more elements to search for Ornamentations."));
