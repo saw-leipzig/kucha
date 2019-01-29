@@ -1615,14 +1615,14 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 		});
 
 		/**
-		 * URI
+		 * URI -> DOI
 		 */
 		TextField uriTF = new TextField();
 		FramedPanel uriFP = new FramedPanel();
-		uriFP.setHeading("URI");
+		uriFP.setHeading("DOI");
 		uriFP.add(uriTF);
 		uriTF.setValue(bibEntry.getUri());
-		uriTF.addValidator(new RegExValidator(Util.REGEX_URL_PATTERN, "Please enter valid URI"));
+		uriTF.addValidator(new RegExValidator(Util.REGEX_URL_PATTERN, "Please enter valid DOI (complete URL)"));
 		uriTF.addValidator(new MaxLengthValidator(256));
 		uriTF.addValueChangeHandler(new ValueChangeHandler<String>() {
 
