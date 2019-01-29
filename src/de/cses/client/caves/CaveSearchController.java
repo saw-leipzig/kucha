@@ -31,6 +31,7 @@ import de.cses.shared.AbstractEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveSearchEntry;
 import de.cses.shared.comparator.CaveEntryComparator;
+import javafx.scene.control.Button;
 
 /**
  * @author alingnau
@@ -44,8 +45,8 @@ public class CaveSearchController extends AbstractSearchController {
 	 * @param searchControllerTitle
 	 * @param caveResultView
 	 */
-	public CaveSearchController(String selectorTitle, CaveFilter filter, CaveResultView caveResultView) {
-		super(selectorTitle, filter, caveResultView);
+	public CaveSearchController(String selectorTitle, CaveFilter filter, CaveResultView caveResultView, ToolButton inactiveTB, ToolButton activeTB) {
+		super(selectorTitle, filter, caveResultView, inactiveTB, activeTB);
 	}
 
 	/*

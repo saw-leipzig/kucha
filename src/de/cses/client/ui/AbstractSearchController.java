@@ -13,10 +13,11 @@
  */
 package de.cses.client.ui;
 
-import java.util.ArrayList;
-
+import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.button.ToggleButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
@@ -31,19 +32,46 @@ import de.cses.client.user.UserLogin;
  *  
  * @author alingnau
  */
-public abstract class AbstractSearchController extends ToggleButton {
+public abstract class AbstractSearchController extends ContentPanel {
 	
 	private String searchControllerTitle;
 	private AbstractResultView resultView;
 	private AbstractFilter filter;
+	private ToolButton activeTB;
+	private ToolButton inactiveTB;
 		
 	/**
 	 * 
 	 * @param searchControllerTitle
-	 * @param resultView 
+	 * @param filter the related filter
+	 * @param resultView the related result view
+	 * @param inactiveTB ToolButton shown when result view is inactive
+	 * @param activeTB ToolButton shown when result view is active
 	 */
-	public AbstractSearchController(String searchControllerTitle, AbstractFilter filter, AbstractResultView resultView) {
-		super();
+	public AbstractSearchController(String searchControllerTitle, AbstractFilter filter, AbstractResultView resultView, ToolButton inactiveTB, ToolButton activeTB) {
+		setHeaderVisible(false);
+		setBorders(false);
+		setBodyBorder(false);
+		add(inactiveTB, new MarginData(2));
+		setToolTip(Util.createToolTip(searchControllerTitle));
+		// switching between buttons
+		inactiveTB.addSelectHandler(new SelectHandler() { 
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				setActive(true);
+			}
+		});
+		activeTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				setActive(false);
+			}
+		});
+		
+		this.activeTB = activeTB;
+		this.inactiveTB = inactiveTB;
 		this.searchControllerTitle = searchControllerTitle;
 		this.resultView = resultView;
 		this.filter = filter;
@@ -66,8 +94,17 @@ public abstract class AbstractSearchController extends ToggleButton {
 				}
 			}
 		});
-		setText(searchControllerTitle);
-		setSize("50px", "50px");
+//		setText(searchControllerTitle.substring(0, 1)); // this is temporary until the icons are ready
+//		setSize("70px", "70px");
+	}
+	
+	private void setActive(boolean active) {
+		clear();
+		if (active) {
+			add(activeTB, new MarginData(2));
+		} else {
+			add(inactiveTB, new MarginData(2));
+		}
 	}
 	
 	public String getSelectorTitle() {
@@ -99,5 +136,5 @@ public abstract class AbstractSearchController extends ToggleButton {
 	public AbstractFilter getFilter() {
 		return filter;
 	}
-	
+
 }

@@ -64,11 +64,11 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 		DepictionViewTemplates view = GWT.create(DepictionViewTemplates.class);
 		if (e.getCave() != null) {
 			if (e.getCave().getSiteID() > 0) {
-				cave += StaticTables.getInstance().getSiteEntries().get(e.getCave().getSiteID()).getShortName() + ": ";
+				cave += stab.getSiteEntries().get(e.getCave().getSiteID()).getShortName() + ": ";
 			}
 			cave += e.getCave().getOfficialNumber() + ((e.getCave().getHistoricName() != null && e.getCave().getHistoricName().length() > 0) ? " (" + e.getCave().getHistoricName() + ")" : ""); 
 			realCaveSketchUri = UriUtils.fromString("/resource?cavesketch=" + e.getCave().getOptionalCaveSketch() + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
-			wall = e.getWallID() > 0 ? StaticTables.getInstance().getWallLocationEntries().get(e.getCave().getWall(e.getWallID()).getWallLocationID()).getLabel() : "";
+			wall = e.getWallID() > 0 ? stab.getWallLocationEntries().get(e.getCave().getWall(e.getWallID()).getWallLocationID()).getLabel() : "";
 		}
 		String shortname = e.getShortName() != null ? e.getShortName() : "";
 		String expedition = e.getExpedition() != null ? e.getExpedition().getName() : "";
@@ -81,8 +81,8 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 		}
 		SafeUri imageUri = UriUtils.fromString("resource?imageID=" + e.getMasterImageID() + "&thumb=700" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 		SafeUri fullImageUri = UriUtils.fromString("resource?imageID=" + e.getMasterImageID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
-		String style = e.getStyleID() > 0 ? StaticTables.getInstance().getStyleEntries().get(e.getStyleID()).getStyleName() : "";
-		String modesOfRepresentation = e.getModeOfRepresentationID() > 0 ? StaticTables.getInstance().getModesOfRepresentationEntries().get(e.getModeOfRepresentationID()).getName() : "";
+		String style = e.getStyleID() > 0 ? stab.getStyleEntries().get(e.getStyleID()).getStyleName() : "";
+		String modesOfRepresentation = e.getModeOfRepresentationID() > 0 ? stab.getModesOfRepresentationEntries().get(e.getModeOfRepresentationID()).getName() : "";
 		ArrayList<AnnotatedBibliographyEntry> bibList = e.getRelatedBibliographyList();
 		// TODO ugly and hard wired but it will do the trick for now
 		iconographyList = new ArrayList<TextElement>();

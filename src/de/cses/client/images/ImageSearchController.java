@@ -44,8 +44,8 @@ public class ImageSearchController extends AbstractSearchController {
 	 * @param searchControllerTitle
 	 * @param resultView
 	 */
-	public ImageSearchController(String selectorTitle, ImageFilter filter, ImageResultView resultView) {
-		super(selectorTitle, filter, resultView);
+	public ImageSearchController(String selectorTitle, ImageFilter filter, ImageResultView resultView, ToolButton inactiveTB, ToolButton activeTB) {
+		super(selectorTitle, filter, resultView, inactiveTB, activeTB);
 	}
 
 	/*

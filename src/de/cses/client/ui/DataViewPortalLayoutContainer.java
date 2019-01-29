@@ -8,11 +8,11 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
-import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.container.PortalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
@@ -94,13 +94,15 @@ public class DataViewPortalLayoutContainer extends PortalLayoutContainer {
 			public void onSuccess(ArrayList<CollectionEntry> result) {
 				PopupPanel loadCollectionDialog = new PopupPanel();
 				FramedPanel loadCollectionFP = new FramedPanel();
+				loadCollectionFP.setHeaderVisible(true);
 				loadCollectionFP.setHeading("Select collection to load");
+				loadCollectionFP.getHeader().setStylePrimaryName("frame-header");
 				SimpleComboBox<CollectionEntry> collectionNameCB = new SimpleComboBox<CollectionEntry>(new LabelProvider<CollectionEntry>() {
 
 					@Override
 					public String getLabel(CollectionEntry item) {
 						return item.getCollectionName() + 
-								(UserLogin.getInstance().getUsername().equals(item.getUser().getUsername()) ? "(personal collection)" : "(" + item.getUser().getUsername() + ")");
+								(UserLogin.getInstance().getUsername().equals(item.getUser().getUsername()) ? " (personal collection)" : " (" + item.getUser().getUsername() + ")");
 					}
 				});
 				collectionNameCB.add(result);
@@ -108,7 +110,7 @@ public class DataViewPortalLayoutContainer extends PortalLayoutContainer {
 				collectionNameCB.setTypeAhead(false);
 				collectionNameCB.setTriggerAction(TriggerAction.ALL);
 				collectionNameCB.setWidth(450);
-				loadCollectionFP.add(collectionNameCB);
+				loadCollectionFP.add(collectionNameCB, new MarginData(5));
 				TextButton loadButton = new TextButton("load");
 				loadButton.addSelectHandler(new SelectHandler() {
 					
@@ -168,18 +170,20 @@ public class DataViewPortalLayoutContainer extends PortalLayoutContainer {
 		if (!entryList.isEmpty()) {
 			PopupPanel newCollectionNameDialog = new PopupPanel();
 			FramedPanel newCollectionNameFP = new FramedPanel();
+			newCollectionNameDialog.add(newCollectionNameFP);
+			newCollectionNameFP.getHeader().setStylePrimaryName("frame-header");
+			newCollectionNameFP.setHeaderVisible(true);
 			newCollectionNameFP.setHeading("Enter collection name");
 			TextField collectionNameField = new TextField();
 			collectionNameField.setAllowBlank(false);
 			collectionNameField.addValidator(new MaxLengthValidator(256));
-			collectionNameField.setWidth(450);
 			CheckBox groupCollectionCB = new CheckBox();
 			groupCollectionCB.setBoxLabel("group collection");
 			groupCollectionCB.setToolTip(Util.createToolTip("Check box if you want to share with other users.", "Users need at least ASSOCIATE rights to access collections."));
 			groupCollectionCB.setValue(false);
 			VerticalLayoutContainer groupCollectionDialogVLC = new VerticalLayoutContainer();
-			groupCollectionDialogVLC.add(collectionNameField, new VerticalLayoutData(1.0, .5, new Margins(5)));
-			groupCollectionDialogVLC.add(groupCollectionCB,  new VerticalLayoutData(1.0, .5, new Margins(5)));
+			groupCollectionDialogVLC.add(collectionNameField, new VerticalLayoutData(450, 30));
+			groupCollectionDialogVLC.add(groupCollectionCB,  new VerticalLayoutData(450, 30));
 			newCollectionNameFP.add(groupCollectionDialogVLC);
 			TextButton saveTB = new TextButton("save");
 			saveTB.addSelectHandler(new SelectHandler() {
@@ -215,8 +219,8 @@ public class DataViewPortalLayoutContainer extends PortalLayoutContainer {
 				}
 			});
 			newCollectionNameFP.addButton(cancelTB);
-//			newCollectionNameFP.setSize("450px", "250px");
-			newCollectionNameDialog.add(newCollectionNameFP);
+			newCollectionNameFP.getButtonBar().setWidth(450);
+//			newCollectionNameDialog.setSize("450px", "150px");
 			newCollectionNameDialog.setModal(true);
 			newCollectionNameDialog.center();
 		}

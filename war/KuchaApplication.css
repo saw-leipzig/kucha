@@ -223,6 +223,11 @@ div.frame-header {
 	line-height: 20px;
 }
 
+div.frame-body {
+	background: transparent;
+	background-image: none;
+}
+
 div.footer {
 	background-color: #9dc9b8; 
 	color: #234534;
@@ -231,6 +236,7 @@ div.footer {
 	font-weight: normal;
 	opacity: 0.85;
 	text-align: right;
+	vertical-align: middle;	
 }
 
 div.html-display {
@@ -545,6 +551,126 @@ div.collapseWindowButtonOver {
 	background-image: url(icons/open_window_mo.png);
 	width: 20px;
 	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.bibButton {
+	background-image: url(icons/bib.png);
+	width: 70px;
+	height: 70px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.bibButtonOver {
+	background-image: url(icons/bib_mo.png);
+	width: 70px;
+	height: 70px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.bibButtonActive {
+	background-image: url(icons/bib_active.png);
+	width: 70px;
+	height: 70px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.caveButton {
+	background-image: url(icons/cave.png);
+	width: 70px;
+	height: 70px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.caveButtonOver {
+	background-image: url(icons/cave_mo.png);
+	width: 70px;
+	height: 70px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.caveButtonActive {
+	background-image: url(icons/cave_active.png);
+	width: 70px;
+	height: 70px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.depictionButton {
+	background-image: url(icons/depiction.png);
+	width: 70px;
+	height: 70px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.depictionButtonOver {
+	background-image: url(icons/depiction_mo.png);
+	width: 70px;
+	height: 70px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.depictionButtonActive {
+	background-image: url(icons/depiction_active.png);
+	width: 70px;
+	height: 70px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.imagePoolButton {
+	background-image: url(icons/image_pool.png);
+	width: 70px;
+	height: 70px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.imagePoolButtonOver {
+	background-image: url(icons/image_pool_mo.png);
+	width: 70px;
+	height: 70px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.imagePoolButtonActive {
+	background-image: url(icons/image_pool_active.png);
+	width: 70px;
+	height: 70px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.ornamentationButton {
+	background-image: url(icons/ornamentation.png);
+	width: 70px;
+	height: 70px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.ornamentationButtonOver {
+	background-image: url(icons/ornamentation_mo.png);
+	width: 70px;
+	height: 70px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.ornamentationButtonActive {
+	background-image: url(icons/ornamentation_active.png);
+	width: 70px;
+	height: 70px;
 	background-repeat: no-repeat;
 	cursor: pointer;
 }

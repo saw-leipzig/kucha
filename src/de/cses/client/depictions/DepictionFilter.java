@@ -14,12 +14,10 @@
 package de.cses.client.depictions;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
-import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -27,21 +25,19 @@ import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.core.client.XTemplates;
-import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.data.shared.SortDir;
 import com.sencha.gxt.data.shared.Store;
-import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.dnd.core.client.DndDropEvent;
 import com.sencha.gxt.dnd.core.client.DropTarget;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.ListView;
-import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer.ExpandMode;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
@@ -245,6 +241,7 @@ public class DepictionFilter extends AbstractFilter {
 		cavePanel.setHeaderVisible(true);
 		cavePanel.setHeading("Cave search");
 		cavePanel.add(caveSelectionLV);
+		cavePanel.getHeader().setStylePrimaryName("frame-header");
 		
 		ToolButton caveSelectionResetTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		caveSelectionResetTB.setToolTip(Util.createToolTip("Reset selection"));
@@ -284,8 +281,9 @@ public class DepictionFilter extends AbstractFilter {
 		
 		ContentPanel iconographyPanel = new ContentPanel();
 		iconographyPanel.setHeaderVisible(true);
-		iconographyPanel.setHeading("Iconography & Pictorial Element search");
+		iconographyPanel.setHeading("Iconography search");
 		iconographyPanel.add(iconographyBLC);
+		iconographyPanel.getHeader().setStylePrimaryName("frame-header");
 
 		new DropTarget(iconographyPanel) {
 
@@ -378,6 +376,7 @@ public class DepictionFilter extends AbstractFilter {
 		currentLocationPanel.setHeaderVisible(true);
 		currentLocationPanel.setHeading("Location search");
 		currentLocationPanel.add(locationSelectionLV);
+		currentLocationPanel.getHeader().setStylePrimaryName("frame-header");
 		
 		ToolButton locationSelectionResetTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		locationSelectionResetTB.setToolTip(Util.createToolTip("Reset selection"));
