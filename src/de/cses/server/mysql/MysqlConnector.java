@@ -5672,4 +5672,25 @@ public class MysqlConnector {
 			e.printStackTrace();
 		}
 		return result;
-	}}
+	}
+
+	public int addPreservationClassification(PreservationClassificationEntry pcEntry) {
+		Connection dbc = getConnection();
+		PreparedStatement pStatement;
+		int preservationAttributeID = 0;
+		try {
+			pStatement = dbc.prepareStatement("INSERT INTO PreservationClassifications (Name) VALUES (?)", Statement.RETURN_GENERATED_KEYS);
+			pStatement.setString(1, pcEntry.getName());
+			pStatement.executeUpdate();
+			ResultSet keys = pStatement.getGeneratedKeys();
+			if (keys.next()) {
+				preservationAttributeID = keys.getInt(1);
+			}
+			keys.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return preservationAttributeID;
+	}
+	
+}

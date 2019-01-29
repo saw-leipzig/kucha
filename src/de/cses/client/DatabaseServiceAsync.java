@@ -341,4 +341,6 @@ public interface DatabaseServiceAsync {
 
 	void loadCollectedEntries(CollectionEntry value, AsyncCallback<ArrayList<AbstractEntry>> asyncCallback) throws IllegalArgumentException;
 
+	void addPreservationClassification(PreservationClassificationEntry pcEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
+
 }

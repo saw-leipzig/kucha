@@ -1004,4 +1004,9 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.loadCollectedEntries(value);
 	}
+	@Override
+	public int addPreservationClassification(PreservationClassificationEntry pcEntry) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.addPreservationClassification(pcEntry);
+	}
 }

@@ -1695,6 +1695,63 @@ public class CaveEditor extends AbstractEditor {
 		wallMeasureHLC.add(new FieldLabel(wallWidthNF, "Width in meter"), new HorizontalLayoutData(.5, 1.0, new Margins(0, 5, 0, 0)));
 		wallMeasureHLC.add(new FieldLabel(wallHeightNF, "Height in meter"), new HorizontalLayoutData(.5, 1.0, new Margins(0, 0, 0, 5)));
 		
+		ToolButton addPreservationStateTB = new ToolButton(new IconConfig("addButton", "addButtonOver"));
+		addPreservationStateTB.setToolTip(Util.createToolTip("add state of preservation"));
+		addPreservationStateTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				PopupPanel addPreservationStateDialog = new PopupPanel();
+				FramedPanel newPreservationStateFP = new FramedPanel();
+				newPreservationStateFP.setHeading("Add Preservation Classification");
+				TextField preservationNameField = new TextField();
+				preservationNameField.setAllowBlank(false);
+				preservationNameField.addValidator(new MaxLengthValidator(32));
+				preservationNameField.setValue("");
+				preservationNameField.setWidth(200);
+				newPreservationStateFP.add(preservationNameField);
+				TextButton saveButton = new TextButton("save");
+				saveButton.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						if (preservationNameField.validate()) {
+							PreservationClassificationEntry pcEntry = new PreservationClassificationEntry();
+							pcEntry.setName(preservationNameField.getCurrentValue());
+							dbService.addPreservationClassification(pcEntry, new AsyncCallback<Integer>() {
+
+								@Override
+								public void onFailure(Throwable caught) {
+									caught.printStackTrace();
+								}
+
+								@Override
+								public void onSuccess(Integer result) {
+									pcEntry.setPreservationClassificationID(result);
+									preservationClassificationEntryList.add(pcEntry);
+									StaticTables.getInstance().getPreservationClassificationEntries().put(result, pcEntry);
+								}
+							});
+							addPreservationStateDialog.hide();
+						}
+					}
+				});
+				newPreservationStateFP.addButton(saveButton);
+				TextButton cancelButton = new TextButton("cancel");
+				cancelButton.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						addPreservationStateDialog.hide();
+					}
+				});
+				newPreservationStateFP.addButton(cancelButton);
+				addPreservationStateDialog.add(newPreservationStateFP);
+				addPreservationStateDialog.setModal(true);
+				addPreservationStateDialog.center();
+			}
+		});
+		
 		VerticalLayoutContainer wallManagementVLC = new VerticalLayoutContainer();
 		wallManagementVLC.add(wallSelectorCB, new VerticalLayoutData(1.0, .35));
 		wallManagementVLC.add(selectedWallStateOfPreservationCB, new VerticalLayoutData(1.0, .35));
@@ -1712,7 +1769,8 @@ public class CaveEditor extends AbstractEditor {
 				Util.showWarning("Show Wall", "This feature will be implemented in a future version.");
 			}
 		});
-		wallManagementFP.addTool(showWallTB);
+//		wallManagementFP.addTool(showWallTB);
+		wallManagementFP.addTool(addPreservationStateTB);
 		wallManagementFP.add(wallManagementVLC);
 		
 		VerticalLayoutContainer floorStateOfPreservationVLC = new VerticalLayoutContainer();
