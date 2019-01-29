@@ -5549,9 +5549,10 @@ public class MysqlConnector {
 			} else {
 				rs.close();
 				pstmt.close();
-				pstmt = dbc.prepareStatement("INSERT INTO Collections (UserID, CollectionLabel, GroupCollection) VALUES (?,?, ?)", Statement.RETURN_GENERATED_KEYS);
+				pstmt = dbc.prepareStatement("INSERT INTO Collections (UserID, CollectionLabel, GroupCollection) VALUES (?,?,?)", Statement.RETURN_GENERATED_KEYS);
 				pstmt.setInt(1, ue.getUserID());
 				pstmt.setString(2, collectionLabel);
+				pstmt.setBoolean(3, isGroupCollection);
 				pstmt.executeQuery();
 				ResultSet keys = pstmt.getGeneratedKeys();
 				if (keys.first()) {
