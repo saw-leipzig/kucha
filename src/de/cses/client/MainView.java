@@ -16,10 +16,15 @@ package de.cses.client;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.i18n.client.Messages.Select;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.resources.client.ClientBundle.Source;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -62,6 +67,7 @@ import de.cses.client.ui.DataViewPortalLayoutContainer;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.UserEntry;
+import javafx.scene.image.Image;
 
 /**
  * @author alingnau
@@ -90,12 +96,22 @@ public class MainView implements IsWidget {
 //	private DataDisplayController dataDisplayController;
 	private ToolButton saveWorkspaceToolButton;
 	private ToolButton loadWorkspaceToolButton;
+	private Resources res;
 
+	interface Resources extends ClientBundle {
+		@Source("caves/cave.png")
+		ImageResource cave();
+		
+		@Source("caves/cave_active.png")
+		ImageResource cave_active();
+	}
+	
+	
 	/**
 	 * 
 	 */
 	public MainView() {
-		// TODO Auto-generated constructor stub
+		res = GWT.create(Resources.class);
 	}
 
 	/* (non-Javadoc)
@@ -112,93 +128,185 @@ public class MainView implements IsWidget {
 	private void initView() {
     boolean borders = true;
 
-		caveSearchController = new CaveSearchController("Caves", new CaveFilter("Caves"), new CaveResultView("Caves"));
-		caveSearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+    ToolButton caveInactiveTB = new ToolButton(new IconConfig("caveButton", "caveButtonOver"));
+    caveInactiveTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
-			public void onValueChange(ValueChangeEvent<Boolean> event) {
-				if (event.getValue()) {
-					filterView.add(caveSearchController.getFilter(), 0);
-					resultView.add(caveSearchController.getResultView(), 0);
-				} else {
-					caveSearchController.getResultView().removeFromParent();
-					caveSearchController.getFilter().asWidget().removeFromParent();
-				}
+			public void onSelect(SelectEvent event) {
+				filterView.add(caveSearchController.getFilter(), 0);
+				resultView.add(caveSearchController.getResultView(), 0);
 			}
 		});
-		
-		depictionSearchController = new DepictionSearchController("Painted Representation", new DepictionFilter("Painted Representations"), new DepictionResultView("Painted Representation"));
-		depictionSearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-
-			@Override
-			public void onValueChange(ValueChangeEvent<Boolean> event) {
-				if (event.getValue()) {
-					filterView.add(depictionSearchController.getFilter(), 0);
-					resultView.add(depictionSearchController.getResultView(), 0);
-				} else {
-					depictionSearchController.getFilter().asWidget().removeFromParent();
-					depictionSearchController.getResultView().removeFromParent();
-				}
-			}
-		});
-		
-		imageSearchController = new ImageSearchController("Image Pool", new ImageFilter("Image Filter"), new ImageResultView("Image Pool"));
-		imageSearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-
-			@Override
-			public void onValueChange(ValueChangeEvent<Boolean> event) {
-				if (event.getValue()) {
-					filterView.add(imageSearchController.getFilter(), 0);
-					resultView.add(imageSearchController.getResultView(), 0);
-				} else {
-					imageSearchController.getFilter().asWidget().removeFromParent();
-					imageSearchController.getResultView().removeFromParent();
-				}
-			}
+    ToolButton caveActiveTB = new ToolButton(new IconConfig("caveButtonActive", "caveButtonOver"));
+    caveActiveTB.addSelectHandler(new SelectHandler() {
 			
-		});
-		
-		ornamenticSearchController = new OrnamenticSearchController("Ornamentation", new OrnamenticFilter("Ornamentation"), new OrnamenticResultView("Ornamentation"));
-		ornamenticSearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-
 			@Override
-			public void onValueChange(ValueChangeEvent<Boolean> event) {
-				if (event.getValue()) {
-					filterView.add(ornamenticSearchController.getFilter(), 0);
-					resultView.add(ornamenticSearchController.getResultView(), 0);
-				} else {
-					ornamenticSearchController.getFilter().asWidget().removeFromParent();
-					ornamenticSearchController.getResultView().removeFromParent();
-				}
+			public void onSelect(SelectEvent event) {
+				caveSearchController.getResultView().removeFromParent();
+				caveSearchController.getFilter().asWidget().removeFromParent();
 			}
 		});
+		caveSearchController = new CaveSearchController("Caves", new CaveFilter("Caves"), new CaveResultView("Caves"), caveInactiveTB, caveActiveTB);
+//		caveSearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+//			
+//			@Override
+//			public void onValueChange(ValueChangeEvent<Boolean> event) {
+//				if (event.getValue()) {
+//					filterView.add(caveSearchController.getFilter(), 0);
+//					resultView.add(caveSearchController.getResultView(), 0);
+//					caveSearchController.setIcon(res.cave_active());
+//				} else {
+//					caveSearchController.getResultView().removeFromParent();
+//					caveSearchController.getFilter().asWidget().removeFromParent();
+//					caveSearchController.setIcon(res.cave());
+//				}
+//			}
+//		});
+		
+    ToolButton depictionInactiveTB = new ToolButton(new IconConfig("depictionButton", "depictionButtonOver"));
+    depictionInactiveTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				filterView.add(depictionSearchController.getFilter(), 0);
+				resultView.add(depictionSearchController.getResultView(), 0);
+			}
+		});
+    ToolButton depictionActiveTB = new ToolButton(new IconConfig("depictionButtonActive", "depictionButtonOver"));
+    depictionActiveTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				depictionSearchController.getFilter().asWidget().removeFromParent();
+				depictionSearchController.getResultView().removeFromParent();
+			}
+		});
+		depictionSearchController = new DepictionSearchController("Painted Representation", new DepictionFilter("Painted Representations"), new DepictionResultView("Painted Representation"), depictionInactiveTB, depictionActiveTB);
+//		depictionSearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+//
+//			@Override
+//			public void onValueChange(ValueChangeEvent<Boolean> event) {
+//				if (event.getValue()) {
+//					filterView.add(depictionSearchController.getFilter(), 0);
+//					resultView.add(depictionSearchController.getResultView(), 0);
+//				} else {
+//					depictionSearchController.getFilter().asWidget().removeFromParent();
+//					depictionSearchController.getResultView().removeFromParent();
+//				}
+//			}
+//		});
+		
+    ToolButton imageInactiveTB = new ToolButton(new IconConfig("imagePoolButton", "imagePoolButtonOver"));
+    imageInactiveTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				filterView.add(imageSearchController.getFilter(), 0);
+				resultView.add(imageSearchController.getResultView(), 0);
+			}
+		});
+    ToolButton imageActiveTB = new ToolButton(new IconConfig("imagePoolButtonActive", "imagePoolButtonOver"));
+    imageActiveTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				imageSearchController.getFilter().asWidget().removeFromParent();
+				imageSearchController.getResultView().removeFromParent();
+			}
+		});
+		imageSearchController = new ImageSearchController("Image Pool", new ImageFilter("Image Filter"), new ImageResultView("Image Pool"), imageInactiveTB, imageActiveTB);
+//		imageSearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+//
+//			@Override
+//			public void onValueChange(ValueChangeEvent<Boolean> event) {
+//				if (event.getValue()) {
+//					filterView.add(imageSearchController.getFilter(), 0);
+//					resultView.add(imageSearchController.getResultView(), 0);
+//				} else {
+//					imageSearchController.getFilter().asWidget().removeFromParent();
+//					imageSearchController.getResultView().removeFromParent();
+//				}
+//			}
+//			
+//		});
+		
+    ToolButton ornamenticInactiveTB = new ToolButton(new IconConfig("ornamentationButton", "ornamentationButtonOver"));
+    ornamenticInactiveTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				filterView.add(ornamenticSearchController.getFilter(), 0);
+				resultView.add(ornamenticSearchController.getResultView(), 0);
+			}
+		});
+    ToolButton ornamenticActiveTB = new ToolButton(new IconConfig("ornamentationButtonActive", "ornamentationButtonOver"));
+    ornamenticActiveTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				ornamenticSearchController.getFilter().asWidget().removeFromParent();
+				ornamenticSearchController.getResultView().removeFromParent();
+			}
+		});
+		ornamenticSearchController = new OrnamenticSearchController("Ornamentation", new OrnamenticFilter("Ornamentation"), new OrnamenticResultView("Ornamentation"), ornamenticInactiveTB, ornamenticActiveTB);
+//		ornamenticSearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+//
+//			@Override
+//			public void onValueChange(ValueChangeEvent<Boolean> event) {
+//				if (event.getValue()) {
+//					filterView.add(ornamenticSearchController.getFilter(), 0);
+//					resultView.add(ornamenticSearchController.getResultView(), 0);
+//				} else {
+//					ornamenticSearchController.getFilter().asWidget().removeFromParent();
+//					ornamenticSearchController.getResultView().removeFromParent();
+//				}
+//			}
+//		});
 		
 		// annotated bibliography
 		
-		annotatedBiblographySearchController = new AnnotatedBiblographySearchController("Annotated Biblography", new AnnotatedBibliographyFilter("Bibliography"), new AnnotatedBiblographyResultView("Annotated Biblography"));
-		annotatedBiblographySearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-
+    ToolButton bibInactiveTB = new ToolButton(new IconConfig("bibButton", "bibButtonOver"));
+    bibInactiveTB.addSelectHandler(new SelectHandler() {
+			
 			@Override
-			public void onValueChange(ValueChangeEvent<Boolean> event) {
-				if (event.getValue()) {
-					filterView.add(annotatedBiblographySearchController.getFilter(), 0);
-					resultView.add(annotatedBiblographySearchController.getResultView(), 0);
-				} else {
-					annotatedBiblographySearchController.getFilter().asWidget().removeFromParent();
-					annotatedBiblographySearchController.getResultView().removeFromParent();
-				}
+			public void onSelect(SelectEvent event) {
+				filterView.add(annotatedBiblographySearchController.getFilter(), 0);
+				resultView.add(annotatedBiblographySearchController.getResultView(), 0);
 			}
 		});
+    ToolButton bibActiveTB = new ToolButton(new IconConfig("bibButtonActive", "bibButtonOver"));
+    bibActiveTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				annotatedBiblographySearchController.getFilter().asWidget().removeFromParent();
+				annotatedBiblographySearchController.getResultView().removeFromParent();
+			}
+		});
+		annotatedBiblographySearchController = new AnnotatedBiblographySearchController("Annotated Biblography", new AnnotatedBibliographyFilter("Bibliography"), new AnnotatedBiblographyResultView("Annotated Biblography"), bibInactiveTB, bibActiveTB);
+//		annotatedBiblographySearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+//
+//			@Override
+//			public void onValueChange(ValueChangeEvent<Boolean> event) {
+//				if (event.getValue()) {
+//					filterView.add(annotatedBiblographySearchController.getFilter(), 0);
+//					resultView.add(annotatedBiblographySearchController.getResultView(), 0);
+//				} else {
+//					annotatedBiblographySearchController.getFilter().asWidget().removeFromParent();
+//					annotatedBiblographySearchController.getResultView().removeFromParent();
+//				}
+//			}
+//		});
 
 		
 		// ----------------------------------- assembling the menu bar ---------------------------------------------
 		
 		selectorLayoutContainer = new HorizontalLayoutContainer();
-		selectorLayoutContainer.add(caveSearchController, new HorizontalLayoutData(90, 75, new Margins(5, 0, 5, 5)));
-		selectorLayoutContainer.add(depictionSearchController, new HorizontalLayoutData(90, 75, new Margins(5, 0, 5, 5)));
-		selectorLayoutContainer.add(ornamenticSearchController, new HorizontalLayoutData(90, 75, new Margins(5, 0, 5, 5)));
-		selectorLayoutContainer.add(annotatedBiblographySearchController, new HorizontalLayoutData(90, 75, new Margins(5, 0, 5, 5)));
-		selectorLayoutContainer.add(imageSearchController, new HorizontalLayoutData(90, 75, new Margins(5, 0, 5, 5)));
+		selectorLayoutContainer.add(caveSearchController, new HorizontalLayoutData(75, 75, new Margins(5, 0, 5, 5)));
+		selectorLayoutContainer.add(depictionSearchController, new HorizontalLayoutData(75, 75, new Margins(5, 0, 5, 5)));
+		selectorLayoutContainer.add(ornamenticSearchController, new HorizontalLayoutData(75, 75, new Margins(5, 0, 5, 5)));
+		selectorLayoutContainer.add(annotatedBiblographySearchController, new HorizontalLayoutData(75, 75, new Margins(5, 0, 5, 5)));
+		selectorLayoutContainer.add(imageSearchController, new HorizontalLayoutData(75, 75, new Margins(5, 0, 5, 5)));
 		
     ContentPanel centerPanel = new ContentPanel();
     centerPanel.setHeading("Search Results");

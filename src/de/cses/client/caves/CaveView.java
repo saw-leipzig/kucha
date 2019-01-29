@@ -42,12 +42,6 @@ public class CaveView extends AbstractView {
 	interface Resources extends ClientBundle {
 		@Source("cave.png")
 		ImageResource logo();
-
-		@Source("lock-protection.png")
-		ImageResource locked();
-
-		@Source("photo.png")
-		ImageResource open();
 	}
 
 	interface CaveViewTemplates extends XTemplates {

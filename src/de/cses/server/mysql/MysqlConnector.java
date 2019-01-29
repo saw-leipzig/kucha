@@ -2657,7 +2657,8 @@ public class MysqlConnector {
 		if(search.getRelatedOrnaments().size()> 0) {
 			
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-			String mysqlquerry = "SELECT * FROM (Ornaments JOIN CaveOrnamentsRelation on Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID) JOIN RelatedOrnamentsRelation ON CaveOrnamentRelation.CaveOrnamentRelationID = RelatedOrnamentsRelation.CaveOrnamentRelationID WHERE OrnamentID IN (";
+			String mysqlquerry = "SELECT * FROM (Ornaments JOIN CaveOrnamentRelation on Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID) JOIN RelatedOrnamentsRelation "
+					+ "ON CaveOrnamentRelation.CaveOrnamentRelationID = RelatedOrnamentsRelation.CaveOrnamentRelationID WHERE RelatedOrnamentsRelation.OrnamentID IN (";
 			for(int i = 0; search.getRelatedOrnaments().size() > i; i++) {
 				mysqlquerry = mysqlquerry +  Integer.toString(search.getRelatedOrnaments().get(i).getOrnamentID());
 				if(search.getCaves().size() > i+1) {
@@ -2749,7 +2750,7 @@ public class MysqlConnector {
 		if(search.getSimilaritys() !=null) {
 			
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-			String mysqlquerry= "SELECT * FROM Ornaments JOIN CaveOrnamentsRelation on Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID WHERE SimilarElementsOfOtherCultures LIKE " + search.getSimilaritys();
+			String mysqlquerry= "SELECT * FROM Ornaments JOIN CaveOrnamentRelation on Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID WHERE SimilarElementsOfOtherCultures LIKE " + search.getSimilaritys();
 			try {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery(mysqlquerry);

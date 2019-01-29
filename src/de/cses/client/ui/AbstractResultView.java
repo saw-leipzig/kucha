@@ -62,7 +62,6 @@ public abstract class AbstractResultView extends Portlet {
 		setAnimCollapse(true);
 		setHeight(MIN_HEIGHT);
     getHeader().setStylePrimaryName("frame-header");
-    setStylePrimaryName("frame-body");
     addStyleName("transparent");
 		
 		searchToolButton = new ToolButton(new IconConfig("startSearchButton", "startSearchButtonOver", "searchActiveButton"));

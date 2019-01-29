@@ -182,8 +182,8 @@ public class DataViewPortalLayoutContainer extends PortalLayoutContainer {
 			groupCollectionCB.setToolTip(Util.createToolTip("Check box if you want to share with other users.", "Users need at least ASSOCIATE rights to access collections."));
 			groupCollectionCB.setValue(false);
 			VerticalLayoutContainer groupCollectionDialogVLC = new VerticalLayoutContainer();
-			groupCollectionDialogVLC.add(collectionNameField, new VerticalLayoutData(1.0, .35));
-			groupCollectionDialogVLC.add(groupCollectionCB,  new VerticalLayoutData(1.0, .35));
+			groupCollectionDialogVLC.add(collectionNameField, new VerticalLayoutData(450, 30));
+			groupCollectionDialogVLC.add(groupCollectionCB,  new VerticalLayoutData(450, 30));
 			newCollectionNameFP.add(groupCollectionDialogVLC);
 			TextButton saveTB = new TextButton("save");
 			saveTB.addSelectHandler(new SelectHandler() {
@@ -219,6 +219,7 @@ public class DataViewPortalLayoutContainer extends PortalLayoutContainer {
 				}
 			});
 			newCollectionNameFP.addButton(cancelTB);
+			newCollectionNameFP.getButtonBar().setWidth(450);
 //			newCollectionNameDialog.setSize("450px", "150px");
 			newCollectionNameDialog.setModal(true);
 			newCollectionNameDialog.center();

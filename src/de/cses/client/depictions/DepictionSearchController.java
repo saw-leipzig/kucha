@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -40,8 +41,8 @@ public class DepictionSearchController extends AbstractSearchController {
 	 * @param searchControllerTitle
 	 * @param resultView
 	 */
-	public DepictionSearchController(String selectorTitle, DepictionFilter filter, DepictionResultView resultView) {
-		super(selectorTitle, filter, resultView);
+	public DepictionSearchController(String selectorTitle, DepictionFilter filter, DepictionResultView resultView, ToolButton inactiveTB, ToolButton activeTB) {
+		super(selectorTitle, filter, resultView, inactiveTB, activeTB);
 	}
 
 	/* (non-Javadoc)

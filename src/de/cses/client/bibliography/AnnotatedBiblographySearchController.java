@@ -75,8 +75,8 @@ public class AnnotatedBiblographySearchController extends AbstractSearchControll
 	 * @param searchControllerTitle
 	 * @param resultView
 	 */
-	public AnnotatedBiblographySearchController(String selectorTitle, AnnotatedBibliographyFilter filter, AnnotatedBiblographyResultView resultView) {
-		super(selectorTitle, filter, resultView);
+	public AnnotatedBiblographySearchController(String selectorTitle, AnnotatedBibliographyFilter filter, AnnotatedBiblographyResultView resultView, ToolButton inactiveTB, ToolButton activeTB) {
+		super(selectorTitle, filter, resultView, inactiveTB, activeTB);
 		
 		publicationTypeProps = GWT.create(PublicationTypeProperties.class);
 		publicationTypeListStore = new ListStore<PublicationTypeEntry>(publicationTypeProps.publicationTypeID());
