@@ -285,7 +285,7 @@ public class DepictionFilter extends AbstractFilter {
 		
 		ContentPanel iconographyPanel = new ContentPanel();
 		iconographyPanel.setHeaderVisible(true);
-		iconographyPanel.setHeading("Iconography & Pictorial Element search");
+		iconographyPanel.setHeading("Iconography search");
 		iconographyPanel.add(iconographyBLC);
 		iconographyPanel.getHeader().setStylePrimaryName("frame-header");
 

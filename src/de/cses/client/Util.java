@@ -22,6 +22,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.sencha.gxt.core.client.XTemplates;
+import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
@@ -94,6 +95,8 @@ public class Util {
 	public static void showWarning(String header, String message) {
 		final PopupPanel dialog = new PopupPanel();
 		FramedPanel dialogPanel = new FramedPanel();
+		dialogPanel.setHeaderVisible(true);
+		dialogPanel.getHeader().setStylePrimaryName("frame-header");
 		dialog.getElement().getStyle().setBorderColor("#FF0000");
 		dialogPanel.setHeading(header);
 		dialogPanel.add(new HTML("<span style='font: 12px tahoma,arial,verdana,sans-serif;'>" + message + "</span>", true));
@@ -115,6 +118,7 @@ public class Util {
 	public static void showYesNo(String header, String message, SelectHandler yesHandler, SelectHandler noHandler) {
 		final PopupPanel dialog = new PopupPanel();
 		FramedPanel dialogPanel = new FramedPanel();
+		dialogPanel.getHeader().setStylePrimaryName("frame-header");
 		dialog.getElement().getStyle().setBorderColor("#FF0000");
 		dialogPanel.setHeading(header);
 		dialogPanel.add(new HTML("<div style='font: 12px tahoma,arial,verdana,sans-serif; width: 300px;'>" + message + "</div>", true));

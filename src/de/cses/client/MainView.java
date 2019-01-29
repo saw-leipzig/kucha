@@ -61,6 +61,7 @@ import de.cses.client.ui.AbstractSearchController;
 import de.cses.client.ui.DataViewPortalLayoutContainer;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
+import de.cses.shared.UserEntry;
 
 /**
  * @author alingnau
@@ -69,7 +70,7 @@ import de.cses.shared.AbstractEntry;
 public class MainView implements IsWidget {
 	
 	// this footer will be shown at the bottom of the WebApp
-	private static final String FOOTER_TEXT = "\u00A9 2019 Sächsische Akademie der Wissenschaften zu Leipzig (Version 0.9.2)";
+	private static final String FOOTER_TEXT = "\u00A9 2019 Sächsische Akademie der Wissenschaften zu Leipzig (Version 0.9.3)";
 	
 	private BorderLayoutContainer view = null;
 	private CaveSearchController caveSearchController;
@@ -252,8 +253,10 @@ public class MainView implements IsWidget {
 		    	north.setHeading("Welcome back, " + UserLogin.getInstance().getUsername());
 //		    	imageSearchController.setVisible(true);
 		    	imageSearchController.setEnabled(true);
-		    	loadWorkspaceToolButton.setEnabled(true);
-		    	saveWorkspaceToolButton.setEnabled(true);
+		    	if (UserLogin.getInstance().getAccessRights() >= UserEntry.ASSOCIATED) {
+		    		loadWorkspaceToolButton.setEnabled(true);
+		    		saveWorkspaceToolButton.setEnabled(true);
+		    	}
 		    } else {
 		    	north.setHeading("Welcome! Your are currently here as a guest!");
 		    	imageSearchController.setEnabled(false);
@@ -357,6 +360,7 @@ public class MainView implements IsWidget {
     westData.setCollapsible(true);
     westData.setCollapseHeaderVisible(true);
     westData.setSplit(true);
+    westData.setMinSize(220);
     
     BorderLayoutData eastData = new BorderLayoutData(500);
     eastData.setMaxSize(800);
