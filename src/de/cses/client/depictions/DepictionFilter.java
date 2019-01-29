@@ -14,12 +14,10 @@
 package de.cses.client.depictions;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
-import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -27,21 +25,19 @@ import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.core.client.XTemplates;
-import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.data.shared.SortDir;
 import com.sencha.gxt.data.shared.Store;
-import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.dnd.core.client.DndDropEvent;
 import com.sencha.gxt.dnd.core.client.DropTarget;
-import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
-import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer.ExpandMode;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
@@ -241,8 +237,7 @@ public class DepictionFilter extends AbstractFilter {
 //		caveBLC.setSouthWidget(filterField, south);
 //		caveBLC.setCenterWidget(caveSelectionLV, new MarginData(2));
 		
-		ContentPanel cavePanel = new ContentPanel();
-		cavePanel.setHeaderVisible(true);
+		FramedPanel cavePanel = new FramedPanel();
 		cavePanel.setHeading("Cave search");
 		cavePanel.add(caveSelectionLV);
 		cavePanel.getHeader().setStylePrimaryName("frame-header");
@@ -283,9 +278,8 @@ public class DepictionFilter extends AbstractFilter {
 		iconographyBLC.setSouthWidget(iconographyFieldLabel, new BorderLayoutData(25));
 		iconographyBLC.setCenterWidget(icoSelectionLV, new MarginData(2));
 		
-		ContentPanel iconographyPanel = new ContentPanel();
-		iconographyPanel.setHeaderVisible(true);
-		iconographyPanel.setHeading("Iconography search");
+		FramedPanel iconographyPanel = new FramedPanel();
+		iconographyPanel.setHeading("Iconography & Pictorial Element search");
 		iconographyPanel.add(iconographyBLC);
 		iconographyPanel.getHeader().setStylePrimaryName("frame-header");
 
@@ -376,8 +370,7 @@ public class DepictionFilter extends AbstractFilter {
 		}));
 		locationSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
 		
-		ContentPanel currentLocationPanel = new ContentPanel();
-		currentLocationPanel.setHeaderVisible(true);
+		FramedPanel currentLocationPanel = new FramedPanel();
 		currentLocationPanel.setHeading("Location search");
 		currentLocationPanel.add(locationSelectionLV);
 		currentLocationPanel.getHeader().setStylePrimaryName("frame-header");
