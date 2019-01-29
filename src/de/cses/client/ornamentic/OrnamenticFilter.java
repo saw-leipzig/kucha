@@ -134,6 +134,8 @@ public class OrnamenticFilter extends AbstractFilter {
 	private ListStore<OrnamentFunctionEntry> functionEntryList;
 	private FunctionProperties functionProps;
 	private ListView<OrnamentFunctionEntry, OrnamentFunctionEntry> functionSelectionLV;
+	private SiteProperties siteProps;
+	private ListStore<SiteEntry> siteEntryList;
 
 	interface OrnamentClassProperties extends PropertyAccess<OrnamentClassEntry> {
 		ModelKeyProvider<OrnamentClassEntry> ornamentClassID();
@@ -234,10 +236,22 @@ public class OrnamenticFilter extends AbstractFilter {
 //		SafeHtml caveLabel(String officialNumber);
 //	}
 //
-	interface DistrictsViewTemplates extends XTemplates {
-		@XTemplate("<div>{name}</div>")
-		SafeHtml districtsLabel(String name);
+
+	interface DistrictProperties extends PropertyAccess<DistrictEntry> {
+		ModelKeyProvider<DistrictEntry> districtID();
+		LabelProvider<DistrictEntry> uniqueID();
+		ValueProvider<DistrictEntry, String> name();
 	}
+	
+	interface DistrictViewTemplates extends XTemplates {
+		@XTemplate("<div style=\"border: 1px solid grey;\">{siteName}<br>{districtName}</div>")
+		SafeHtml districtLabel(String districtName, String siteName);
+	}
+	
+//	interface DistrictsViewTemplates extends XTemplates {
+//		@XTemplate("<div>{name}</div>")
+//		SafeHtml districtsLabel(String name);
+//	}
 
 	interface RelatedOrnamentsViewTemplates extends XTemplates {
 		@XTemplate("<div>{code}</div>")
@@ -259,6 +273,17 @@ public class OrnamenticFilter extends AbstractFilter {
 		SafeHtml functionLabel(String name);
 	}
 
+	interface SiteProperties extends PropertyAccess<SiteEntry> {
+		ModelKeyProvider<SiteEntry> siteID();
+		LabelProvider<SiteEntry> uniqueID();
+		ValueProvider<SiteEntry, String> name();
+	}
+	
+	interface SiteViewTemplates extends XTemplates {
+		@XTemplate("<div>{name}</div>")
+		SafeHtml siteLabel(String name);
+	}
+
 	public OrnamenticFilter(String filterName) {
 		super(filterName);
 
@@ -277,6 +302,10 @@ public class OrnamenticFilter extends AbstractFilter {
 		districtsProps = GWT.create(DistrictsProperties.class);
 		districtsEntryList = new ListStore<DistrictEntry>(districtsProps.districtID());
 		loadDistrictEntryList();
+
+		siteProps = GWT.create(SiteProperties.class);
+		siteEntryList = new ListStore<SiteEntry>(siteProps.siteID());
+		loadSites();
 
 		relatedOrnamentsProps = GWT.create(RelatedOrnamentsProperties.class);
 		relatedOrnamentsEntryList = new ListStore<OrnamentEntry>(relatedOrnamentsProps.ornamentID());
@@ -350,22 +379,34 @@ public class OrnamenticFilter extends AbstractFilter {
 		});
 	}
 
+	/**
+	 * 
+	 */
+	private void loadSites() {
+		for (SiteEntry se : StaticTables.getInstance().getSiteEntries().values()) {
+			siteEntryList.add(se);
+		}
+	}
+
 	private void loadDistrictEntryList() {
-		dbService.getDistricts(new AsyncCallback<ArrayList<DistrictEntry>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(ArrayList<DistrictEntry> result) {
-				districtsEntryList.clear();
-				for (DistrictEntry pe : result) {
-					districtsEntryList.add(pe);
-				}
-			}
-		});
+		for (DistrictEntry de : StaticTables.getInstance().getDistrictEntries().values()) {
+			districtsEntryList.add(de);
+		}
+//		dbService.getDistricts(new AsyncCallback<ArrayList<DistrictEntry>>() {
+//
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				caught.printStackTrace();
+//			}
+//
+//			@Override
+//			public void onSuccess(ArrayList<DistrictEntry> result) {
+//				districtsEntryList.clear();
+//				for (DistrictEntry pe : result) {
+//					districtsEntryList.add(pe);
+//				}
+//			}
+//		});
 	}
 
 	private void loadOrnamentEntryList() {
@@ -587,16 +628,27 @@ public class OrnamenticFilter extends AbstractFilter {
 
 		// Districts
 
-		districtsSelectionLV = new ListView<DistrictEntry, DistrictEntry>(districtsEntryList, new IdentityValueProvider<DistrictEntry>(),
-				new SimpleSafeHtmlCell<DistrictEntry>(new AbstractSafeHtmlRenderer<DistrictEntry>() {
-					final DistrictsViewTemplates ocvTemplates = GWT.create(DistrictsViewTemplates.class);
+//		districtsSelectionLV = new ListView<DistrictEntry, DistrictEntry>(districtsEntryList, new IdentityValueProvider<DistrictEntry>(),
+//				new SimpleSafeHtmlCell<DistrictEntry>(new AbstractSafeHtmlRenderer<DistrictEntry>() {
+//					final DistrictsViewTemplates ocvTemplates = GWT.create(DistrictsViewTemplates.class);
+//
+//					@Override
+//					public SafeHtml render(DistrictEntry entry) {
+//						return ocvTemplates.districtsLabel(entry.getName());
+//					}
+//
+//				}));
+		
+		districtsSelectionLV = new ListView<DistrictEntry, DistrictEntry>(districtsEntryList, new IdentityValueProvider<DistrictEntry>(), new SimpleSafeHtmlCell<DistrictEntry>(new AbstractSafeHtmlRenderer<DistrictEntry>() {
+			final DistrictViewTemplates dvTemplates = GWT.create(DistrictViewTemplates.class);
 
-					@Override
-					public SafeHtml render(DistrictEntry entry) {
-						return ocvTemplates.districtsLabel(entry.getName());
-					}
-
-				}));
+			@Override
+			public SafeHtml render(DistrictEntry entry) {
+				SiteEntry se = siteEntryList.findModelWithKey(Integer.toString(entry.getSiteID()));
+				return dvTemplates.districtLabel(entry.getName(), se.getName());
+			}}));
+		districtsSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+		
 		cavesSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
 
 		ContentPanel ornamentdistrictsPanel = new ContentPanel();
