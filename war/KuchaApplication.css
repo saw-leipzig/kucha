@@ -223,6 +223,11 @@ div.frame-header {
 	line-height: 20px;
 }
 
+div.frame-body {
+	background-color: #fff0a5;
+	background: none;
+}
+
 div.footer {
 	background-color: #9dc9b8; 
 	color: #234534;

@@ -1013,6 +1013,10 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 	public void setBibtexKey(String bibtexKey) {
 		this.bibtexKey = bibtexKey;
 	}
+	
+	public boolean isParentTitle() {
+		return !(parentTitleTR.isEmpty() && parentTitleEN.isEmpty() && parentTitleORG.isEmpty());  
+	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)

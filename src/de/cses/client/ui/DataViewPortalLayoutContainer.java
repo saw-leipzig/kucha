@@ -170,6 +170,7 @@ public class DataViewPortalLayoutContainer extends PortalLayoutContainer {
 		if (!entryList.isEmpty()) {
 			PopupPanel newCollectionNameDialog = new PopupPanel();
 			FramedPanel newCollectionNameFP = new FramedPanel();
+			newCollectionNameDialog.add(newCollectionNameFP);
 			newCollectionNameFP.getHeader().setStylePrimaryName("frame-header");
 			newCollectionNameFP.setHeaderVisible(true);
 			newCollectionNameFP.setHeading("Enter collection name");
@@ -218,8 +219,7 @@ public class DataViewPortalLayoutContainer extends PortalLayoutContainer {
 				}
 			});
 			newCollectionNameFP.addButton(cancelTB);
-			newCollectionNameDialog.add(newCollectionNameFP);
-			newCollectionNameDialog.setSize("450px", "150px");
+//			newCollectionNameDialog.setSize("450px", "150px");
 			newCollectionNameDialog.setModal(true);
 			newCollectionNameDialog.center();
 		}
