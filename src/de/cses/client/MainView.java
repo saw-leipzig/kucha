@@ -96,22 +96,11 @@ public class MainView implements IsWidget {
 //	private DataDisplayController dataDisplayController;
 	private ToolButton saveWorkspaceToolButton;
 	private ToolButton loadWorkspaceToolButton;
-	private Resources res;
 
-	interface Resources extends ClientBundle {
-		@Source("caves/cave.png")
-		ImageResource cave();
-		
-		@Source("caves/cave_active.png")
-		ImageResource cave_active();
-	}
-	
-	
 	/**
 	 * 
 	 */
 	public MainView() {
-		res = GWT.create(Resources.class);
 	}
 
 	/* (non-Javadoc)
