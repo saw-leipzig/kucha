@@ -26,7 +26,6 @@ import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.Style.SelectionMode;
-import com.sencha.gxt.core.client.XTemplates.XTemplate;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.data.shared.LabelProvider;
@@ -538,7 +537,7 @@ public class OrnamenticFilter extends AbstractFilter {
 					}
 
 				}));
-		ornamentComponentsSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+		ornamentComponentsSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
 		ContentPanel ornamentComponentsPanel = new ContentPanel();
 		ornamentComponentsPanel.setHeaderVisible(true);
@@ -594,7 +593,7 @@ public class OrnamenticFilter extends AbstractFilter {
 				}
 			}
 		}));
-		cavesSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+		cavesSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		cavesSelectionLV.getSelectionModel().addSelectionChangedHandler(new SelectionChangedHandler<CaveEntry>() {
 			
 			@Override
@@ -605,7 +604,7 @@ public class OrnamenticFilter extends AbstractFilter {
 		cavesEntryList.addSortInfo(new StoreSortInfo<CaveEntry>(new CaveEntryComparator(), SortDir.ASC));
 		
 
-		ornamentComponentsSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+		ornamentComponentsSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
 		ContentPanel ornamentCavesPanel = new ContentPanel();
 		ornamentCavesPanel.setHeaderVisible(true);
@@ -647,9 +646,9 @@ public class OrnamenticFilter extends AbstractFilter {
 				SiteEntry se = siteEntryList.findModelWithKey(Integer.toString(entry.getSiteID()));
 				return dvTemplates.districtLabel(entry.getName(), se.getName());
 			}}));
-		districtsSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+		districtsSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		
-		cavesSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+		cavesSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
 		ContentPanel ornamentdistrictsPanel = new ContentPanel();
 		ornamentdistrictsPanel.setHeaderVisible(true);
@@ -683,7 +682,7 @@ public class OrnamenticFilter extends AbstractFilter {
 					}
 
 				}));
-		innerSecondaryPatternsSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+		innerSecondaryPatternsSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
 		ContentPanel innerSecPanel = new ContentPanel();
 		innerSecPanel.setHeaderVisible(true);
@@ -715,7 +714,7 @@ public class OrnamenticFilter extends AbstractFilter {
 					}
 
 				}));
-		relatedOrnamentsSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+		relatedOrnamentsSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
 		ContentPanel relatedornamentPanel = new ContentPanel();
 		relatedornamentPanel.setHeaderVisible(true);
@@ -749,7 +748,7 @@ public class OrnamenticFilter extends AbstractFilter {
 					}
 
 				}));
-		positionSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+		positionSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
 		ContentPanel ornamentpositionPanel = new ContentPanel();
 		ornamentpositionPanel.setHeaderVisible(true);
@@ -783,7 +782,7 @@ public class OrnamenticFilter extends AbstractFilter {
 					}
 
 				}));
-		functionSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+		functionSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
 		ContentPanel ornamentFunctionPanel = new ContentPanel();
 		ornamentFunctionPanel.setHeaderVisible(true);
@@ -812,7 +811,7 @@ public class OrnamenticFilter extends AbstractFilter {
 		 * 
 		 * @Override public SafeHtml render(OrnamentComponentsEntry entry) { return ocvTemplates.ornamentComponentsLabel(entry.getName()); }
 		 * 
-		 * })); ornamentComponentsSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+		 * })); ornamentComponentsSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		 * 
 		 * ContentPanel ornamentComponentsPanel = new ContentPanel(); ornamentComponentsPanel.setHeaderVisible(true);
 		 * ornamentComponentsPanel.setToolTip(Util.createToolTip("Search for ornament components.", "Select one or more elements to search for Ornamentations."));
@@ -927,6 +926,8 @@ public class OrnamenticFilter extends AbstractFilter {
 		accordion.add(ornamentComponentsPanel);
 		// ornamentComponentsPanel.setHeight(200);
 		accordion.add(textSearch);
+
+		accordion.setActiveWidget(ornamentCavesPanel);
 
 		// iconography? accordion.add(iconographyPanel);
 

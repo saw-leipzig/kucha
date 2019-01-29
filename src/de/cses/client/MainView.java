@@ -112,7 +112,7 @@ public class MainView implements IsWidget {
 	private void initView() {
     boolean borders = true;
 
-		caveSearchController = new CaveSearchController("Caves", new CaveFilter("Caves"), new CaveResultView("C"));
+		caveSearchController = new CaveSearchController("Caves", new CaveFilter("Caves"), new CaveResultView("Caves"));
 		caveSearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 			
 			@Override
@@ -127,7 +127,7 @@ public class MainView implements IsWidget {
 			}
 		});
 		
-		depictionSearchController = new DepictionSearchController("Painted Representation", new DepictionFilter("Painted Representations"), new DepictionResultView("P R"));
+		depictionSearchController = new DepictionSearchController("Painted Representation", new DepictionFilter("Painted Representations"), new DepictionResultView("Painted Representation"));
 		depictionSearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
 			@Override
@@ -142,7 +142,7 @@ public class MainView implements IsWidget {
 			}
 		});
 		
-		imageSearchController = new ImageSearchController("Image Pool", new ImageFilter("Image Filter"), new ImageResultView("I P"));
+		imageSearchController = new ImageSearchController("Image Pool", new ImageFilter("Image Filter"), new ImageResultView("Image Pool"));
 		imageSearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
 			@Override
@@ -158,7 +158,7 @@ public class MainView implements IsWidget {
 			
 		});
 		
-		ornamenticSearchController = new OrnamenticSearchController("Ornamentation", new OrnamenticFilter("Ornamentation"), new OrnamenticResultView("O"));
+		ornamenticSearchController = new OrnamenticSearchController("Ornamentation", new OrnamenticFilter("Ornamentation"), new OrnamenticResultView("Ornamentation"));
 		ornamenticSearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
 			@Override
@@ -175,7 +175,7 @@ public class MainView implements IsWidget {
 		
 		// annotated bibliography
 		
-		annotatedBiblographySearchController = new AnnotatedBiblographySearchController("Annotated Biblography", new AnnotatedBibliographyFilter("Bibliography"), new AnnotatedBiblographyResultView("A B"));
+		annotatedBiblographySearchController = new AnnotatedBiblographySearchController("Annotated Biblography", new AnnotatedBibliographyFilter("Bibliography"), new AnnotatedBiblographyResultView("Annotated Biblography"));
 		annotatedBiblographySearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
 			@Override
@@ -368,22 +368,22 @@ public class MainView implements IsWidget {
 	/**
 	 * 
 	 */
-	protected ArrayList<AbstractSearchController> getActiveFilters() {
-		ArrayList<AbstractSearchController> activeSelectors = new ArrayList<AbstractSearchController>();
-		Widget w;
-		Iterator<Widget> it;
-		AbstractSearchController selector;
-		it = selectorLayoutContainer.iterator();
-		while (it.hasNext()) {
-			w = it.next();
-			if (w instanceof AbstractSearchController) {
-				selector = ((AbstractSearchController) w);
-				if (selector.getValue()) {
-					activeSelectors.add(selector);
-				}
-			}
-		}
-		return activeSelectors;
-	}
+//	protected ArrayList<AbstractSearchController> getActiveFilters() {
+//		ArrayList<AbstractSearchController> activeSelectors = new ArrayList<AbstractSearchController>();
+//		Widget w;
+//		Iterator<Widget> it;
+//		AbstractSearchController selector;
+//		it = selectorLayoutContainer.iterator();
+//		while (it.hasNext()) {
+//			w = it.next();
+//			if (w instanceof AbstractSearchController) {
+//				selector = ((AbstractSearchController) w);
+//				if (selector.getValue()) {
+//					activeSelectors.add(selector);
+//				}
+//			}
+//		}
+//		return activeSelectors;
+//	}
 
 }

@@ -68,7 +68,7 @@ public abstract class AbstractSearchController extends ToggleButton {
 				}
 			}
 		});
-		setText(searchControllerTitle);
+		setText(searchControllerTitle.substring(0, 1)); // this is temporary until the icons are ready
 		setSize("70px", "70px");
 	}
 	
