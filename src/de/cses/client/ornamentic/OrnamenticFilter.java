@@ -26,12 +26,15 @@ import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.Style.SelectionMode;
+import com.sencha.gxt.core.client.XTemplates.XTemplate;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
+import com.sencha.gxt.data.shared.SortDir;
+import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
@@ -43,9 +46,12 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
+import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.StaticTables;
 import de.cses.client.Util;
 import de.cses.client.ornamentic.OrnamentCaveRelationEditor.OrnamentViewTemplates;
 import de.cses.client.ornamentic.OrnamenticEditor.OrnamentClassViewTemplates;
@@ -63,12 +69,30 @@ import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamentFunctionEntry;
 import de.cses.shared.OrnamentPositionEntry;
 import de.cses.shared.OrnamenticSearchEntry;
+import de.cses.shared.RegionEntry;
+import de.cses.shared.SiteEntry;
+import de.cses.shared.comparator.CaveEntryComparator;
 
 /**
  * @author nina
  *
  */
 public class OrnamenticFilter extends AbstractFilter {
+	
+	class NameElement {
+		private String element;
+		
+		public NameElement(String element) {
+			super();
+			this.element = element;
+		}
+
+		public String getElement() {
+			return element;
+		}
+	}
+
+	
 	// Klasse zum erstellen aller Filter auf der Client Seite
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	private TextField ornamentCodeSearchTF;
@@ -179,6 +203,19 @@ public class OrnamenticFilter extends AbstractFilter {
 		ValueProvider<IconographyEntry, String> name();
 	}
 
+	interface CaveProperties extends PropertyAccess<CaveEntry> {
+		ModelKeyProvider<CaveEntry> caveID();
+		LabelProvider<CaveEntry> officialNumber();
+	}
+	
+	interface CaveViewTemplates extends XTemplates {
+		@XTemplate("<div style=\"border: 1px solid grey;\">{shortName} {officialNumber}<br> {districtRegion}<br><tpl for='name'> {element}<wbr> </tpl></div>")
+		SafeHtml caveLabel(String shortName, String officialNumber, String districtRegion, ArrayList<NameElement> name);
+
+		@XTemplate("<div style=\"border: 1px solid grey;\">{shortName} {officialNumber}<br> {districtRegion}</div>")
+		SafeHtml caveLabel(String shortName, String officialNumber, String districtRegion);
+	}
+
 	interface OrnamentComponentsViewTemplates extends XTemplates {
 		@XTemplate("<div>{name}</div>")
 		SafeHtml ornamentComponentsLabel(String name);
@@ -189,14 +226,14 @@ public class OrnamenticFilter extends AbstractFilter {
 		SafeHtml innerSecondaryPatternsLabel(String name);
 	}
 
-	interface CaveViewTemplates extends XTemplates {
-		@XTemplate("<div>{officialNumber}: {historicName}</div>")
-		SafeHtml caveLabel(String officialNumber, String historicName);
-
-		@XTemplate("<div>{officialNumber}</div>")
-		SafeHtml caveLabel(String officialNumber);
-	}
-
+//	interface CaveViewTemplates extends XTemplates {
+//		@XTemplate("<div>{officialNumber}: {historicName}</div>")
+//		SafeHtml caveLabel(String officialNumber, String historicName);
+//
+//		@XTemplate("<div>{officialNumber}</div>")
+//		SafeHtml caveLabel(String officialNumber);
+//	}
+//
 	interface DistrictsViewTemplates extends XTemplates {
 		@XTemplate("<div>{name}</div>")
 		SafeHtml districtsLabel(String name);
@@ -481,16 +518,52 @@ public class OrnamenticFilter extends AbstractFilter {
 		ornamentComponentsPanel.addTool(resetOrnamentComponentsPanelTB);
 
 		// caves
-		cavesSelectionLV = new ListView<CaveEntry, CaveEntry>(cavesEntryList, new IdentityValueProvider<CaveEntry>(),
-				new SimpleSafeHtmlCell<CaveEntry>(new AbstractSafeHtmlRenderer<CaveEntry>() {
-					final CaveViewTemplates ocvTemplates = GWT.create(CaveViewTemplates.class);
-
-					@Override
-					public SafeHtml render(CaveEntry entry) {
-						return ocvTemplates.caveLabel(Integer.toString(entry.getCaveID()));
+//		cavesSelectionLV = new ListView<CaveEntry, CaveEntry>(cavesEntryList, new IdentityValueProvider<CaveEntry>(),
+//				new SimpleSafeHtmlCell<CaveEntry>(new AbstractSafeHtmlRenderer<CaveEntry>() {
+//					final CaveViewTemplates ocvTemplates = GWT.create(CaveViewTemplates.class);
+//
+//					@Override
+//					public SafeHtml render(CaveEntry entry) {
+//						return ocvTemplates.caveLabel(Integer.toString(entry.getCaveID()));
+//					}
+//
+//				}));
+		
+		/**
+		 * assemble caveSelection
+		 */
+		cavesSelectionLV = new ListView<CaveEntry, CaveEntry>(cavesEntryList, new IdentityValueProvider<CaveEntry>(), new SimpleSafeHtmlCell<CaveEntry>(new AbstractSafeHtmlRenderer<CaveEntry>() {
+			
+			@Override
+			public SafeHtml render(CaveEntry entry) {
+				final CaveViewTemplates cvTemplates = GWT.create(CaveViewTemplates.class);
+				StaticTables st = StaticTables.getInstance();
+				DistrictEntry de = st.getDistrictEntries().get(entry.getDistrictID());
+				SiteEntry se = st.getSiteEntries().get(entry.getSiteID());
+				RegionEntry re = st.getRegionEntries().get(entry.getRegionID());
+				String districtRegionInformation = (de != null) ? de.getName() + (re != null ? " / " + re.getOriginalName() : "") : (re != null ? re.getOriginalName() : "");
+				if ((entry.getHistoricName() != null) && (entry.getHistoricName().length() > 0)) {
+					ArrayList<NameElement> historicNameList = new ArrayList<NameElement>();
+					for (String s : entry.getHistoricName().split(" ")) {
+						historicNameList.add(new NameElement(s));
 					}
+					return cvTemplates.caveLabel(se != null ? se.getShortName() : "", entry.getOfficialNumber(), districtRegionInformation, historicNameList);
+				} else {
+					return cvTemplates.caveLabel(se != null ? se.getShortName() : "", entry.getOfficialNumber(), districtRegionInformation);
+				}
+			}
+		}));
+		cavesSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+		cavesSelectionLV.getSelectionModel().addSelectionChangedHandler(new SelectionChangedHandler<CaveEntry>() {
+			
+			@Override
+			public void onSelectionChanged(SelectionChangedEvent<CaveEntry> event) {
+				cavesEntryList.applySort(false);
+			}
+		});
+		cavesEntryList.addSortInfo(new StoreSortInfo<CaveEntry>(new CaveEntryComparator(), SortDir.ASC));
+		
 
-				}));
 		ornamentComponentsSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
 
 		ContentPanel ornamentCavesPanel = new ContentPanel();
