@@ -44,6 +44,8 @@ public abstract class AbstractSearchController extends ToggleButton {
 	 */
 	public AbstractSearchController(String searchControllerTitle, AbstractFilter filter, AbstractResultView resultView) {
 		super();
+		setToolTip(Util.createToolTip(searchControllerTitle));
+
 		this.searchControllerTitle = searchControllerTitle;
 		this.resultView = resultView;
 		this.filter = filter;
