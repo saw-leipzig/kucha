@@ -222,12 +222,12 @@ public class MainView implements IsWidget {
 		// ----------------------------------- assembling the menu bar ---------------------------------------------
 		
 		selectorLayoutContainer = new HorizontalLayoutContainer();
-		selectorLayoutContainer.add(kuchaLogo, new HorizontalLayoutData(160, 1.0, new Margins(0)));
-		selectorLayoutContainer.add(caveSearchController, new HorizontalLayoutData(80, 75, new Margins(5, 0, 5, 5)));
-		selectorLayoutContainer.add(depictionSearchController, new HorizontalLayoutData(80, 75, new Margins(5, 0, 5, 5)));
-		selectorLayoutContainer.add(ornamenticSearchController, new HorizontalLayoutData(80, 75, new Margins(5, 0, 5, 5)));
-		selectorLayoutContainer.add(annotatedBiblographySearchController, new HorizontalLayoutData(80, 75, new Margins(5, 0, 5, 5)));
-		selectorLayoutContainer.add(imageSearchController, new HorizontalLayoutData(80, 75, new Margins(5, 0, 5, 5)));
+		selectorLayoutContainer.add(kuchaLogo, new HorizontalLayoutData(159, 91, new Margins(0)));
+		selectorLayoutContainer.add(caveSearchController, new HorizontalLayoutData(90, 90, new Margins(10)));
+		selectorLayoutContainer.add(depictionSearchController, new HorizontalLayoutData(90, 90, new Margins(10)));
+		selectorLayoutContainer.add(ornamenticSearchController, new HorizontalLayoutData(90, 90, new Margins(10)));
+		selectorLayoutContainer.add(annotatedBiblographySearchController, new HorizontalLayoutData(90, 90, new Margins(10)));
+		selectorLayoutContainer.add(imageSearchController, new HorizontalLayoutData(90, 90, new Margins(10)));
 		
     ContentPanel centerPanel = new ContentPanel();
     centerPanel.setHeading("Search Results");
@@ -240,10 +240,10 @@ public class MainView implements IsWidget {
     resultView.setColumnWidth(0, 1.0);
     centerPanel.add(resultView);
 
-    ContentPanel north = new ContentPanel();
-    north.addStyleName("transparent");
-    north.getHeader().setStylePrimaryName("frame-header");
-    north.add(selectorLayoutContainer);
+    ContentPanel northContentPanel = new ContentPanel();
+    northContentPanel.addStyleName("transparent");
+    northContentPanel.getHeader().setStylePrimaryName("frame-header");
+    northContentPanel.add(selectorLayoutContainer);
     
     // updating heading when user is logged in / out
     UserLogin.getInstance().addCloseHandler(new CloseHandler<PopupPanel>() {
@@ -251,7 +251,7 @@ public class MainView implements IsWidget {
 			@Override
 			public void onClose(CloseEvent<PopupPanel> event) {
 		    if (UserLogin.isLoggedIn()) {
-		    	north.setHeading("Welcome back, " + UserLogin.getInstance().getUsername());
+		    	northContentPanel.setHeading("Welcome back, " + UserLogin.getInstance().getUsername());
 //		    	imageSearchController.setVisible(true);
 		    	imageSearchController.setEnabled(true);
 		    	if (UserLogin.getInstance().getAccessRights() >= UserEntry.ASSOCIATED) {
@@ -259,7 +259,7 @@ public class MainView implements IsWidget {
 		    		saveWorkspaceToolButton.setEnabled(true);
 		    	}
 		    } else {
-		    	north.setHeading("Welcome! Your are currently here as a guest!");
+		    	northContentPanel.setHeading("Welcome! Your are currently here as a guest!");
 		    	imageSearchController.setEnabled(false);
 //		    	imageSearchController.setVisible(false);
 		    	loadWorkspaceToolButton.setEnabled(false);
@@ -278,7 +278,7 @@ public class MainView implements IsWidget {
 			}
 		});
     loginTB.setToolTip("login");
-    north.addTool(loginTB);
+    northContentPanel.addTool(loginTB);
 //    northPanel.add(north, new VerticalLayoutData(1.0, .6));
     
     filterView = new PortalLayoutContainer(1);
@@ -350,8 +350,8 @@ public class MainView implements IsWidget {
 		Label footerLabel = new Label(FOOTER_TEXT);
 		footerLabel.setStyleName("footer");
     
-    BorderLayoutData northData = new BorderLayoutData(100);
-    northData.setMinSize(100);
+    BorderLayoutData northData = new BorderLayoutData(120);
+    northData.setMinSize(120);
     northData.setMargins(new Margins(5, 5, 0, 5));
     
     BorderLayoutData southData = new BorderLayoutData(20);
@@ -376,7 +376,7 @@ public class MainView implements IsWidget {
 
     view = new BorderLayoutContainer();
     view.setBorders(borders);
-    view.setNorthWidget(north, northData);
+    view.setNorthWidget(northContentPanel, northData);
     view.setWestWidget(filterPanel, westData);
     view.setEastWidget(dataViewPanel, eastData);
     view.setSouthWidget(footerLabel, southData);
@@ -384,9 +384,9 @@ public class MainView implements IsWidget {
     view.setStyleName("");
     
     if (UserLogin.isLoggedIn()) {
-    	north.setHeading("Welcome back, " + UserLogin.getInstance().getUsername());
+    	northContentPanel.setHeading("Welcome back, " + UserLogin.getInstance().getUsername());
     } else {
-    	north.setHeading("Welcome! Your are currently here as a guest!");
+    	northContentPanel.setHeading("Welcome! Your are currently here as a guest!");
 //    	imageSearchController.setVisible(false);
     	imageSearchController.setEnabled(false);
     	saveWorkspaceToolButton.setEnabled(false);

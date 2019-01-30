@@ -478,11 +478,10 @@ public class MysqlConnector {
 			e.printStackTrace();
 			return null;
 		}
-		if (where.isEmpty() && results.size() > 100) {
+		if (where.startsWith("AccessLevel") && results.size() > 100) {
+			// when there is  not filter option selected the where clause only deals with AccessLevel
 			// limiting the number of search results to avoid slowing down the system
-			while (results.size() > 100) {
-				results.remove(0);
-			}
+			return (ArrayList<ImageEntry>) results.subList(0, 100);
 		}
 		return results;	
 	}
