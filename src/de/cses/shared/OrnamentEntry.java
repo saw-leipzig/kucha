@@ -24,7 +24,7 @@ public class OrnamentEntry extends AbstractEntry {
 	//private String annotations; wurde mal geloescht, evtl wird es irgendwann wieder gewollt
 	private String interpretation;
 	private String references;
-	private int ornamentClass; // hei�t jetzt motif, name wurde nur oberfl�chlich angepasst. 
+	private int ornamentClass; // hei�t jetzt motif, name wurde nur oberflaechlich angepasst. 
 	private int structureOrganizationID; // gibt es nicht mehr, wird evtl. mal wieder gewollt
 	private ArrayList<ImageEntry> images = new ArrayList<ImageEntry>();
 	private ArrayList<OrnamentCaveRelation> cavesRelations = new ArrayList<OrnamentCaveRelation>();
@@ -37,12 +37,10 @@ public class OrnamentEntry extends AbstractEntry {
 	}
 	@Override
 	public boolean equals(Object object) {
-		if (object == null || object.getClass() != getClass()) {
-			return false;
-		} else {
-			OrnamentEntry tiger = (OrnamentEntry) object;
-			return (this.ornamentID == tiger.getOrnamentID());
-			}
+		if (object != null && object instanceof OrnamentEntry) {
+			return (this.ornamentID == ((OrnamentEntry) object).getOrnamentID());
+		}
+		return false;
 	}
 
 	public OrnamentEntry(int ornamentID, String code) {

@@ -73,7 +73,7 @@ public class MainView implements IsWidget {
 	}
 
 	// this footer will be shown at the bottom of the WebApp
-	private static final String FOOTER_TEXT = "\u00A9 2019 Sächsische Akademie der Wissenschaften zu Leipzig (Version 1.0 RC1)";
+	private static final String FOOTER_TEXT = "\u00A9 2019 Sächsische Akademie der Wissenschaften zu Leipzig (Version 1.0 RC2)";
 	
 	private BorderLayoutContainer view = null;
 	private CaveSearchController caveSearchController;

@@ -2280,17 +2280,16 @@ public class MysqlConnector {
 		// Suche ueber einzelne SQL Querys, speichern in ArrayList "listen", anschliessend Schnittmenge bilden
 		Connection dbc = getConnection();
 		Statement stmt;
-		ArrayList<ArrayList<OrnamentEntry>> listen = new ArrayList<ArrayList<OrnamentEntry>>();
+		ArrayList<OrnamentEntry> resultList = new ArrayList<OrnamentEntry>();
+//		ArrayList<ArrayList<OrnamentEntry>> listen = new ArrayList<ArrayList<OrnamentEntry>>();
 
 		// if no filter has been set, we just select all
-		if (search.isEmpty() == true) {
-			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
+		if (search != null) {
 			String mysqlquerry = "SELECT * FROM Ornaments";
 			try {
 				stmt = dbc.createStatement();
 				ResultSet rs = stmt.executeQuery(mysqlquerry);
 				while (rs.next()) {
-
 					OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
 							rs.getString("Remarks"),
 							rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
@@ -2298,31 +2297,36 @@ public class MysqlConnector {
 							getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
 							getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
 							new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
-					result.add(entry);
+					resultList.add(entry);
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			return result;
+			System.err.println("general search no. of elements: " + resultList.size());
+//			return result;
 //			listen.add(result);
 		}
 		
 		// Ab hier suche nach den einzelnen Kriterien, bauen von einzelnen Listen und später eine Teilmengenbildung der Listen.
-		if (search.getCaves().size() > 0) {
+		if (!search.getCaves().isEmpty()) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-			String mysqlquerry = "SELECT * FROM (Ornaments JOIN CaveOrnamentRelation ON Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID) WHERE CaveID IN (";
-			for (int i = 0; search.getCaves().size() > i; i++) {
-				mysqlquerry = mysqlquerry + Integer.toString(search.getCaves().get(i).getCaveID());
-				if (search.getCaves().size() > i + 1) {
-					mysqlquerry = mysqlquerry + " , ";
-				}
+//			String mysqlquerry = "SELECT * FROM (Ornaments JOIN CaveOrnamentRelation ON Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID) WHERE CaveID IN (";
+//			for (int i = 0; search.getCaves().size() > i; i++) {
+//				mysqlquerry = mysqlquerry + Integer.toString(search.getCaves().get(i).getCaveID());
+//				if (search.getCaves().size() > i + 1) {
+//					mysqlquerry = mysqlquerry + " , ";
+//				}
+//			}
+//			mysqlquerry = mysqlquerry + ") GROUP BY Ornaments.OrnamentID HAVING COUNT(*) = " + search.getCaves().size();
+			String inCaveStatement = "";
+			for (CaveEntry ce : search.getCaves()) {
+				inCaveStatement += inCaveStatement.isEmpty() ? Integer.toString(ce.getCaveID()) : "," + ce.getCaveID();
 			}
-			mysqlquerry = mysqlquerry + ") GROUP BY Ornaments.OrnamentID HAVING COUNT(*) = " + search.getCaves().size();
+			String query = "SELECT * FROM Ornaments WHERE OrnamentID IN (SELECT OrnamentID FROM CaveOrnamentRelation WHERE CaveID IN (" + inCaveStatement + "))";
 			try {
 				stmt = dbc.createStatement();
-				ResultSet rs = stmt.executeQuery(mysqlquerry);
+				ResultSet rs = stmt.executeQuery(query);
 				while (rs.next()) {
-
 					OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
 							rs.getString("Remarks"),
 							// rs.getString("Annotation"),
@@ -2336,7 +2340,8 @@ public class MysqlConnector {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			listen.add(result);
+			System.err.println("cave search no. of elements: " + result.size());
+			resultList.retainAll(result); // we only keep the results 
 		}
 		
 		if (search.getGroup() != null && !search.getGroup().isEmpty()) {
@@ -2361,7 +2366,8 @@ public class MysqlConnector {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			listen.add(result);
+			System.err.println("group search no. of elements: " + result.size());
+			resultList.retainAll(result);
 		}
 
 		if (search.getCode() != null) {
@@ -2385,7 +2391,8 @@ public class MysqlConnector {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			listen.add(result);
+			System.err.println("code search no. of elements: " + result.size());
+			resultList.retainAll(result);
 		}
 
 		if (search.getComponents().size() > 0) {
@@ -2416,7 +2423,8 @@ public class MysqlConnector {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			listen.add(result);
+			System.err.println("component search no. of elements: " + result.size());
+			resultList.retainAll(result);
 		}
 		
 		if (search.getDescription() != null && !search.getDescription().isEmpty()) {
@@ -2440,7 +2448,8 @@ public class MysqlConnector {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			listen.add(result);
+			System.err.println("decription search no. of elements: " + result.size());
+			resultList.retainAll(result);
 		}
 
 		if (search.getDistricts().size() > 0) {
@@ -2457,7 +2466,6 @@ public class MysqlConnector {
 				stmt = dbc.createStatement();
 				ResultSet rs = stmt.executeQuery(mysqlquerry);
 				while (rs.next()) {
-
 					OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
 							rs.getString("Remarks"),
 							// rs.getString("Annotation"),
@@ -2471,7 +2479,8 @@ public class MysqlConnector {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			listen.add(result);
+			System.err.println("district search no. of elements: " + result.size());
+			resultList.retainAll(result);
 		}
 		
 		if (search.getFunction().size() > 0) {
@@ -2502,7 +2511,8 @@ public class MysqlConnector {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			listen.add(result);
+			System.err.println("function search no. of elements: " + result.size());
+			resultList.retainAll(result);
 		}
 		
 		if (search.getIconographys().size() > 0) {
@@ -2533,7 +2543,8 @@ public class MysqlConnector {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			listen.add(result);
+			System.err.println("iconography search no. of elements: " + result.size());
+			resultList.retainAll(result);
 		}
 
 		if (search.getInterpretation() != null && !search.getInterpretation().isEmpty()) {
@@ -2557,7 +2568,8 @@ public class MysqlConnector {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			listen.add(result);
+			System.err.println("interpretation search no. of elements: " + result.size());
+			resultList.retainAll(result);
 		}
 		
 		if (search.getPosition().size() > 0) {
@@ -2574,7 +2586,6 @@ public class MysqlConnector {
 				stmt = dbc.createStatement();
 				ResultSet rs = stmt.executeQuery(mysqlquerry);
 				while (rs.next()) {
-
 					OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
 							rs.getString("Remarks"),
 							// rs.getString("Annotation"),
@@ -2588,7 +2599,8 @@ public class MysqlConnector {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			listen.add(result);
+			System.err.println("position search no. of elements: " + result.size());
+			resultList.retainAll(result);
 		}
 
 		if (search.getOrnamentClass() != null) {
@@ -2601,7 +2613,6 @@ public class MysqlConnector {
 
 					OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
 							rs.getString("Remarks"),
-							// rs.getString("Annotation"),
 							rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
 							getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
 							getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
@@ -2612,7 +2623,8 @@ public class MysqlConnector {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			listen.add(result);
+			System.err.println("ornament class search no. of elements: " + result.size());
+			resultList.retainAll(result);
 		}
 
 		if (search.getReferences() != null && !search.getReferences().isEmpty()) {
@@ -2636,7 +2648,8 @@ public class MysqlConnector {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			listen.add(result);
+			System.err.println("references search no. of elements: " + result.size());
+			resultList.retainAll(result);
 		}
 
 		if (search.getRelatedOrnaments().size() > 0) {
@@ -2654,7 +2667,6 @@ public class MysqlConnector {
 				stmt = dbc.createStatement();
 				ResultSet rs = stmt.executeQuery(mysqlquerry);
 				while (rs.next()) {
-
 					OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
 							rs.getString("Remarks"),
 							rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
@@ -2667,7 +2679,8 @@ public class MysqlConnector {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			listen.add(result);
+			System.err.println("related ornaments search no. of elements: " + result.size());
+			resultList.retainAll(result);
 		}
 
 		if (search.getRemarks() != null && !search.getRemarks().isEmpty()) {
@@ -2691,7 +2704,8 @@ public class MysqlConnector {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			listen.add(result);
+			System.err.println("remarks search no. of elements: " + result.size());
+			resultList.retainAll(result);
 		}
 
 		if (search.getSecondarypatterns().size() > 0) {
@@ -2722,7 +2736,8 @@ public class MysqlConnector {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			listen.add(result);
+			System.err.println("secondary patterns search no. of elements: " + result.size());
+			resultList.retainAll(result);
 		}
 
 		if (search.getSimilaritys() != null && !search.getSimilaritys().isEmpty()) {
@@ -2747,7 +2762,8 @@ public class MysqlConnector {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			listen.add(result);
+			System.err.println("similarities search no. of elements: " + result.size());
+			resultList.retainAll(result);
 		}
 
 		if (search.getStyle() != null) {
@@ -2772,24 +2788,25 @@ public class MysqlConnector {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			listen.add(result);
+			System.err.println("styles search no. of elements: " + result.size());
+			resultList.retainAll(result);
 		}
 
-		Collection<OrnamentEntry> intersection = listen.get(0);
-		for (Collection<OrnamentEntry> col : listen) {
-			intersection.retainAll(col);
-			// setzen der ersten Liste auf die Teilmenge aller Listen
-		}
-
-		if (listen.size() == 0) {
-			// sollte nicht auftreten, falls Listen leer
-			ArrayList<OrnamentEntry> emptyList = new ArrayList<OrnamentEntry>();
-			return emptyList;
-		} else {
-			// rueckgabe der Teilmengenliste
-			return (ArrayList<OrnamentEntry>) intersection;
-		}
-
+//		ArrayList<OrnamentEntry> intersection = listen.get(0);
+//		for (ArrayList<OrnamentEntry> col : listen.subList(1, listen.size()-1)) {
+//			intersection.retainAll(col);
+//			// setzen der ersten Liste auf die Teilmenge aller Listen
+//		}
+//
+//		if (listen.size() == 0) {
+//			// sollte nicht auftreten, falls Listen leer
+//			ArrayList<OrnamentEntry> emptyList = new ArrayList<OrnamentEntry>();
+//			return emptyList;
+//		} else {
+//			// rueckgabe der Teilmengenliste
+//			return (ArrayList<OrnamentEntry>) intersection;
+//		}
+		return resultList;
 	}
 
 	public ArrayList<OrnamentEntry> getOrnamentsWhere(String sqlWhere) {
