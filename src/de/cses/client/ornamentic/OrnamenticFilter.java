@@ -41,6 +41,8 @@ import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer.ExpandMode;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
+import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
@@ -915,15 +917,15 @@ public class OrnamenticFilter extends AbstractFilter {
 		accordion.add(textSearch);
 
 		VerticalLayoutContainer codeMotifVLC = new VerticalLayoutContainer();
-		codeMotifVLC.add(ornamentCodeSearchTF, new VerticalLayoutData(1.0, .35));
-		codeMotifVLC.add(headerOrnamentClass, new VerticalLayoutData(1.0, .65));
+		codeMotifVLC.add(ornamentCodeSearchTF, new VerticalLayoutData(1.0, 20));
+		codeMotifVLC.add(headerOrnamentClass, new VerticalLayoutData(1.0, 45));
 		
 		// accordion.setActiveWidget(ornamentCavesPanel);
 
 		// iconography? accordion.add(iconographyPanel);
 		BorderLayoutContainer ornamentFilterBLC = new BorderLayoutContainer();
-		ornamentFilterBLC.setNorthWidget(codeMotifVLC);
-		ornamentFilterBLC.setCenterWidget(accordion);
+		ornamentFilterBLC.setNorthWidget(codeMotifVLC, new BorderLayoutData(65));
+		ornamentFilterBLC.setCenterWidget(accordion, new MarginData(5, 0, 0, 0));
 		ornamentFilterBLC.setHeight(550);
 		return ornamentFilterBLC;
 	}
