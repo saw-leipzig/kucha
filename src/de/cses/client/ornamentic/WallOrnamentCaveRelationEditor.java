@@ -135,7 +135,7 @@ public class WallOrnamentCaveRelationEditor {
 		ornamentPositionComboBox.setTriggerAction(TriggerAction.ALL);
 
 		FramedPanel ornamentPositionFP = new FramedPanel();
-		ornamentPositionFP.setHeading("Select ornament position");
+		ornamentPositionFP.setHeading("Select position");
 		ornamentPositionFP.add(ornamentPositionComboBox);
 
 		ornamentfunctionComboBox = new ComboBox<OrnamentFunctionEntry>(ornamentFunctionEntryLS, ornamentFunctionProps.name(),
@@ -151,7 +151,7 @@ public class WallOrnamentCaveRelationEditor {
 		ornamentfunctionComboBox.setEditable(false);
 		ornamentfunctionComboBox.setTriggerAction(TriggerAction.ALL);
 		FramedPanel ornamentFunctionFP = new FramedPanel();
-		ornamentFunctionFP.setHeading("Select the ornament function");
+		ornamentFunctionFP.setHeading("Select function");
 		ornamentFunctionFP.add(ornamentfunctionComboBox);
 		
 		ValueChangeHandler<OrnamentPositionEntry> positionSelectionHandler = new ValueChangeHandler<OrnamentPositionEntry>() {
@@ -203,7 +203,7 @@ public class WallOrnamentCaveRelationEditor {
 		wallRelationHLC.add(vlcWalls, new HorizontalLayoutData(.5, 1.0));
 
 		FramedPanel wallrelationFramedPanel = new FramedPanel();
-		wallrelationFramedPanel.setHeading("Select Walls");
+		wallrelationFramedPanel.setHeading("Add Position in Cave");
 		wallrelationFramedPanel.setSize("600px", "450px");
 		wallrelationFramedPanel.add(wallRelationHLC);
 		

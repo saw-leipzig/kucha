@@ -18,7 +18,6 @@ import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.resources.client.ClientBundle.Source;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
@@ -74,7 +73,7 @@ public class MainView implements IsWidget {
 	}
 
 	// this footer will be shown at the bottom of the WebApp
-	private static final String FOOTER_TEXT = "\u00A9 2019 Sächsische Akademie der Wissenschaften zu Leipzig (Version 0.9.4)";
+	private static final String FOOTER_TEXT = "\u00A9 2019 Sächsische Akademie der Wissenschaften zu Leipzig (Version 1.0 RC1)";
 	
 	private BorderLayoutContainer view = null;
 	private CaveSearchController caveSearchController;
@@ -222,8 +221,8 @@ public class MainView implements IsWidget {
 		// ----------------------------------- assembling the menu bar ---------------------------------------------
 		
 		selectorLayoutContainer = new HorizontalLayoutContainer();
-		selectorLayoutContainer.add(kuchaLogo, new HorizontalLayoutData(159, 91, new Margins(0)));
-		selectorLayoutContainer.add(caveSearchController, new HorizontalLayoutData(90, 90, new Margins(10)));
+		selectorLayoutContainer.add(kuchaLogo, new HorizontalLayoutData(159, 100, new Margins(5, 0, 5, 0)));
+		selectorLayoutContainer.add(caveSearchController, new HorizontalLayoutData(130, 90, new Margins(10, 10, 10, 50)));
 		selectorLayoutContainer.add(depictionSearchController, new HorizontalLayoutData(90, 90, new Margins(10)));
 		selectorLayoutContainer.add(ornamenticSearchController, new HorizontalLayoutData(90, 90, new Margins(10)));
 		selectorLayoutContainer.add(annotatedBiblographySearchController, new HorizontalLayoutData(90, 90, new Margins(10)));

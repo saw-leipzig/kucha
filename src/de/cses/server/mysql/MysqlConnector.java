@@ -481,7 +481,11 @@ public class MysqlConnector {
 		if (where.startsWith("AccessLevel") && results.size() > 100) {
 			// when there is  not filter option selected the where clause only deals with AccessLevel
 			// limiting the number of search results to avoid slowing down the system
-			return (ArrayList<ImageEntry>) results.subList(0, 100);
+			ArrayList<ImageEntry> subResultList = new ArrayList<ImageEntry>();
+			for (ImageEntry ie : results.subList(0, 100)) {
+				subResultList.add(ie);
+			}
+			return subResultList;
 		}
 		return results;	
 	}

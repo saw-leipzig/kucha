@@ -836,7 +836,7 @@ public class OrnamenticFilter extends AbstractFilter {
 				});
 
 		ContentPanel headerOrnamentClass = new ContentPanel();
-		headerOrnamentClass.setHeading("Ornament Motif");
+		headerOrnamentClass.setHeading("Motif");
 		ornamentClassComboBox.setTriggerAction(TriggerAction.ALL);
 		headerOrnamentClass.add(ornamentClassComboBox);
 		headerOrnamentClass.getHeader().setStylePrimaryName("frame-header");
