@@ -675,6 +675,14 @@ div.ornamentationButtonActive {
 	cursor: pointer;
 }
 
+div.kuchaLogo {
+	background-image: url(icons/kucha_logo_homepage.png);
+	width: 159px;
+	height: 91px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
 span.freeIconText {
 	background-image: url(icons/free_icon2.png);
 	width: 25px;
