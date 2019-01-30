@@ -422,8 +422,8 @@ public class MysqlConnector {
 		if (searchEntry.getCopyrightSearch() != null && !searchEntry.getCopyrightSearch().isEmpty()) {
 			where += where.isEmpty() ? "Copyright LIKE ?" : " AND Copyright LIKE ?";
 		}
-		if (searchEntry.getFilenameSearch() != null && !searchEntry.getFilenameSearch().isEmpty()) {
-			where += where.isEmpty() ? "Filename LIKE ?" : "AND Filename LIKE ?";
+		if (searchEntry.getCommentSearch() != null && !searchEntry.getCommentSearch().isEmpty()) {
+			where += where.isEmpty() ? "Comment LIKE ?" : "AND Comment LIKE ?";
 		}
 		if (searchEntry.getDaysSinceUploadSearch() > 0) {
 			where += where.isEmpty() ? "DATEDIFF(NOW(),ModifiedOn)<=" + searchEntry.getDaysSinceUploadSearch() : " AND DATEDIFF(NOW(),ModifiedOn)<=" + searchEntry.getDaysSinceUploadSearch();
@@ -462,8 +462,8 @@ public class MysqlConnector {
 			if (searchEntry.getCopyrightSearch() != null && !searchEntry.getCopyrightSearch().isEmpty()) {
 				pstmt.setString(i++, "%" + searchEntry.getCopyrightSearch() + "%");
 			}
-			if (searchEntry.getFilenameSearch() != null && !searchEntry.getFilenameSearch().isEmpty()) {
-				pstmt.setString(i++, "%" + searchEntry.getFilenameSearch() + "%");
+			if (searchEntry.getCommentSearch() != null && !searchEntry.getCommentSearch().isEmpty()) {
+				pstmt.setString(i++, "%" + searchEntry.getCommentSearch() + "%");
 			}
 			
 			ResultSet rs = pstmt.executeQuery();

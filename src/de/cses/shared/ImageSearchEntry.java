@@ -10,7 +10,7 @@ public class ImageSearchEntry extends AbstractSearchEntry {
 	
 	private String titleSearch = "";
 	private String copyrightSearch = "";
-	private String filenameSearch = "";
+	private String commentSearch = "";
 	private int daysSinceUploadSearch = 0;
 	ArrayList<Integer> imageTypeIdList = new ArrayList<Integer>();
 
@@ -48,12 +48,12 @@ public class ImageSearchEntry extends AbstractSearchEntry {
 		this.imageTypeIdList = imageTypeIdList;
 	}
 
-	public String getFilenameSearch() {
-		return filenameSearch;
+	public String getCommentSearch() {
+		return commentSearch;
 	}
 
-	public void setFilenameSearch(String filenameSearch) {
-		this.filenameSearch = filenameSearch;
+	public void setCommentSearch(String commentSearch) {
+		this.commentSearch = commentSearch;
 	}
 
 	public int getDaysSinceUploadSearch() {

@@ -58,7 +58,7 @@ public class ImageFilter extends AbstractFilter {
 //	private TextField shortnameSearch;
 	private TextField titleSearch;
 	private TextField copyrightSearch;
-	private TextField filenameSearch;
+	private TextField commentSearch;
 //	private Radio andSearch;
 //	private Radio orSearch;
 	private ImageTypeProperties imageTypeProps;
@@ -104,10 +104,10 @@ public class ImageFilter extends AbstractFilter {
 		titleSearch.setToolTip(Util.createToolTip("search in title or shortname", "Search if the title or shortname contains this sequence of characters."));
 		vlc.add(titleSearch, new VerticalLayoutData(1.0, .125));
 		
-		filenameSearch = new TextField();
-		filenameSearch.setEmptyText("search filename");
-		filenameSearch.setToolTip(Util.createToolTip("search in filename", "Search if the filename contains this sequence of characters."));
-		vlc.add(filenameSearch, new VerticalLayoutData(1.0, .125));
+		commentSearch = new TextField();
+		commentSearch.setEmptyText("search comment");
+		commentSearch.setToolTip(Util.createToolTip("search in comments", "Search if the comments contain this sequence of characters."));
+		vlc.add(commentSearch, new VerticalLayoutData(1.0, .125));
 
 		copyrightSearch = new TextField();
 		copyrightSearch.setEmptyText("search copyright");
@@ -153,8 +153,8 @@ public class ImageFilter extends AbstractFilter {
 			searchEntry.setCopyrightSearch(copyrightSearch.getValue());
 		}
 		
-		if (filenameSearch.getValue() != null && !filenameSearch.getValue().isEmpty()) {
-			searchEntry.setFilenameSearch(filenameSearch.getValue());
+		if (commentSearch.getValue() != null && !commentSearch.getValue().isEmpty()) {
+			searchEntry.setCommentSearch(commentSearch.getValue());
 		}
 		
 		if (daysSinceUploadSearch.getValue() != null && daysSinceUploadSearch.getValue() > 0) {

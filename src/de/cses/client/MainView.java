@@ -222,12 +222,12 @@ public class MainView implements IsWidget {
 		// ----------------------------------- assembling the menu bar ---------------------------------------------
 		
 		selectorLayoutContainer = new HorizontalLayoutContainer();
-		selectorLayoutContainer.add(kuchaLogo, new HorizontalLayoutData(160, 94, new Margins(0, 80, 0, 5)));
-		selectorLayoutContainer.add(caveSearchController, new HorizontalLayoutData(75, 75, new Margins(5, 0, 5, 5)));
-		selectorLayoutContainer.add(depictionSearchController, new HorizontalLayoutData(75, 75, new Margins(5, 0, 5, 5)));
-		selectorLayoutContainer.add(ornamenticSearchController, new HorizontalLayoutData(75, 75, new Margins(5, 0, 5, 5)));
-		selectorLayoutContainer.add(annotatedBiblographySearchController, new HorizontalLayoutData(75, 75, new Margins(5, 0, 5, 5)));
-		selectorLayoutContainer.add(imageSearchController, new HorizontalLayoutData(75, 75, new Margins(5, 0, 5, 5)));
+		selectorLayoutContainer.add(kuchaLogo, new HorizontalLayoutData(160, 1.0, new Margins(0)));
+		selectorLayoutContainer.add(caveSearchController, new HorizontalLayoutData(80, 75, new Margins(5, 0, 5, 5)));
+		selectorLayoutContainer.add(depictionSearchController, new HorizontalLayoutData(80, 75, new Margins(5, 0, 5, 5)));
+		selectorLayoutContainer.add(ornamenticSearchController, new HorizontalLayoutData(80, 75, new Margins(5, 0, 5, 5)));
+		selectorLayoutContainer.add(annotatedBiblographySearchController, new HorizontalLayoutData(80, 75, new Margins(5, 0, 5, 5)));
+		selectorLayoutContainer.add(imageSearchController, new HorizontalLayoutData(80, 75, new Margins(5, 0, 5, 5)));
 		
     ContentPanel centerPanel = new ContentPanel();
     centerPanel.setHeading("Search Results");
