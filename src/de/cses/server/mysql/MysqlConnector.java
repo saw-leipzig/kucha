@@ -5572,6 +5572,9 @@ public class MysqlConnector {
 					} else if (entry instanceof DepictionEntry) {
 						insertStatement.setInt(2, ((DepictionEntry)entry).getDepictionID());
 						insertStatement.setString(3, "DepictionEntry");
+					} else if (entry instanceof AnnotatedBibliographyEntry) {
+						insertStatement.setInt(1, ((AnnotatedBibliographyEntry)entry).getAnnotatedBibliographyID());
+						insertStatement.setString(2, "AnnotatedBibliographyEntry");
 					}
 					insertStatement.executeQuery();
 				}
@@ -5631,7 +5634,7 @@ public class MysqlConnector {
 					case "DepictionEntry":
 						resultList.add(getDepictionEntry(entryID, entry.getUser().getSessionID()));
 						break;
-					case "ErnamentEntry":
+					case "OrnamentEntry":
 						resultList.add(getOrnamentEntry(entryID));
 						break;
 					default:

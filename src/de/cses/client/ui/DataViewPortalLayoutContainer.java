@@ -26,6 +26,7 @@ import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.Util;
+import de.cses.client.bibliography.AnnotatedBibliographyDataDisplay;
 import de.cses.client.caves.CaveDataDisplay;
 import de.cses.client.depictions.DepictionDataDisplay;
 import de.cses.client.user.UserLogin;
@@ -62,7 +63,7 @@ public class DataViewPortalLayoutContainer extends PortalLayoutContainer {
 		} else if (entry instanceof OrnamentEntry) {
 			// TODO
 		} else if (entry instanceof AnnotatedBibliographyEntry) {
-			// TODO
+			add(new AnnotatedBibliographyDataDisplay((AnnotatedBibliographyEntry)entry), 0);
 		}
 	}
 	
