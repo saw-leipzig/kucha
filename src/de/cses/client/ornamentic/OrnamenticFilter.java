@@ -894,7 +894,7 @@ public class OrnamenticFilter extends AbstractFilter {
 		ContentPanel remarksPanel = new ContentPanel();
 		remarksPanel.setHeaderVisible(true);
 		remarksPanel.setToolTip(Util.createToolTip("Search for ornament remarks."));
-		remarksPanel.setHeading("Ornament Refmarks");
+		remarksPanel.setHeading("Ornament Remarks");
 		remarksPanel.add(ornamentRemarksSearchTF);
 		ornamenticFilterVLC.add(remarksPanel);
 
