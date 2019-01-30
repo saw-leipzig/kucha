@@ -13,8 +13,13 @@
  */
 package de.cses.client;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.resources.client.ClientBundle.Source;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -63,6 +68,11 @@ import de.cses.shared.UserEntry;
  */
 public class MainView implements IsWidget {
 	
+	interface Resources extends ClientBundle {
+		@Source("kucha_logo_homepage.png")
+		ImageResource logo();
+	}
+
 	// this footer will be shown at the bottom of the WebApp
 	private static final String FOOTER_TEXT = "\u00A9 2019 Sächsische Akademie der Wissenschaften zu Leipzig (Version 0.9.4)";
 	
@@ -206,14 +216,13 @@ public class MainView implements IsWidget {
 		});
 		annotatedBiblographySearchController = new AnnotatedBiblographySearchController("Annotated Biblography", new AnnotatedBibliographyFilter("Bibliography"), new AnnotatedBiblographyResultView("Annotated Biblography"), bibInactiveTB, bibActiveTB);
 
-		ContentPanel kuchaLogoPanel = new ContentPanel();
-		kuchaLogoPanel.setHeaderVisible(false);
-		kuchaLogoPanel.setStylePrimaryName("kuchaLogo");
+		Resources res = GWT.create(Resources.class);
+		Image kuchaLogo = new Image(res.logo());
 		
 		// ----------------------------------- assembling the menu bar ---------------------------------------------
 		
 		selectorLayoutContainer = new HorizontalLayoutContainer();
-		selectorLayoutContainer.add(kuchaLogoPanel, new HorizontalLayoutData(160, 94, new Margins(3, 20, 3, 5)));
+		selectorLayoutContainer.add(kuchaLogo, new HorizontalLayoutData(160, 94, new Margins(0, 80, 0, 5)));
 		selectorLayoutContainer.add(caveSearchController, new HorizontalLayoutData(75, 75, new Margins(5, 0, 5, 5)));
 		selectorLayoutContainer.add(depictionSearchController, new HorizontalLayoutData(75, 75, new Margins(5, 0, 5, 5)));
 		selectorLayoutContainer.add(ornamenticSearchController, new HorizontalLayoutData(75, 75, new Margins(5, 0, 5, 5)));
@@ -384,26 +393,5 @@ public class MainView implements IsWidget {
     	loadWorkspaceToolButton.setEnabled(false);
     }
 	}
-	
-	/**
-	 * 
-	 */
-//	protected ArrayList<AbstractSearchController> getActiveFilters() {
-//		ArrayList<AbstractSearchController> activeSelectors = new ArrayList<AbstractSearchController>();
-//		Widget w;
-//		Iterator<Widget> it;
-//		AbstractSearchController selector;
-//		it = selectorLayoutContainer.iterator();
-//		while (it.hasNext()) {
-//			w = it.next();
-//			if (w instanceof AbstractSearchController) {
-//				selector = ((AbstractSearchController) w);
-//				if (selector.getValue()) {
-//					activeSelectors.add(selector);
-//				}
-//			}
-//		}
-//		return activeSelectors;
-//	}
 
 }
