@@ -289,7 +289,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 				});
 
 		header = new FramedPanel();
-		header.setHeading("Ornament Motif");
+		header.setHeading("Motif");
 		ornamentClassComboBox.setTriggerAction(TriggerAction.ALL);
 		header.add(ornamentClassComboBox);
 		panel.add(header, new VerticalLayoutData(1.0, .125));
@@ -439,7 +439,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		remarks = new TextArea();
 		remarks.setAllowBlank(true);
 		header = new FramedPanel();
-		header.setHeading("Remarks");
+		header.setHeading("General Remarks");
 		header.add(remarks);
 		panel.add(header, new VerticalLayoutData(1.0, .3));
 		if (ornamentEntry != null) {
@@ -956,7 +956,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		horiPanel.setSize("650", "600");
 		backgroundPanel.add(horiPanel);
 		horiPanel.add(tabpanel);
-		backgroundPanel.setHeading("Ornamentic Editor");
+		backgroundPanel.setHeading("Ornamentation Editor");
 		backgroundPanel.addTool(saveButton);
 		backgroundPanel.addTool(closeButton);
 

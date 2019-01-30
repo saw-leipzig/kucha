@@ -422,8 +422,8 @@ public class MysqlConnector {
 		if (searchEntry.getCopyrightSearch() != null && !searchEntry.getCopyrightSearch().isEmpty()) {
 			where += where.isEmpty() ? "Copyright LIKE ?" : " AND Copyright LIKE ?";
 		}
-		if (searchEntry.getFilenameSearch() != null && !searchEntry.getFilenameSearch().isEmpty()) {
-			where += where.isEmpty() ? "Filename LIKE ?" : "AND Filename LIKE ?";
+		if (searchEntry.getCommentSearch() != null && !searchEntry.getCommentSearch().isEmpty()) {
+			where += where.isEmpty() ? "Comment LIKE ?" : "AND Comment LIKE ?";
 		}
 		if (searchEntry.getDaysSinceUploadSearch() > 0) {
 			where += where.isEmpty() ? "DATEDIFF(NOW(),ModifiedOn)<=" + searchEntry.getDaysSinceUploadSearch() : " AND DATEDIFF(NOW(),ModifiedOn)<=" + searchEntry.getDaysSinceUploadSearch();
@@ -462,8 +462,8 @@ public class MysqlConnector {
 			if (searchEntry.getCopyrightSearch() != null && !searchEntry.getCopyrightSearch().isEmpty()) {
 				pstmt.setString(i++, "%" + searchEntry.getCopyrightSearch() + "%");
 			}
-			if (searchEntry.getFilenameSearch() != null && !searchEntry.getFilenameSearch().isEmpty()) {
-				pstmt.setString(i++, "%" + searchEntry.getFilenameSearch() + "%");
+			if (searchEntry.getCommentSearch() != null && !searchEntry.getCommentSearch().isEmpty()) {
+				pstmt.setString(i++, "%" + searchEntry.getCommentSearch() + "%");
 			}
 			
 			ResultSet rs = pstmt.executeQuery();
@@ -478,11 +478,14 @@ public class MysqlConnector {
 			e.printStackTrace();
 			return null;
 		}
-		if (where.isEmpty() && results.size() > 100) {
+		if (where.startsWith("AccessLevel") && results.size() > 100) {
+			// when there is  not filter option selected the where clause only deals with AccessLevel
 			// limiting the number of search results to avoid slowing down the system
-			while (results.size() > 100) {
-				results.remove(0);
+			ArrayList<ImageEntry> subResultList = new ArrayList<ImageEntry>();
+			for (ImageEntry ie : results.subList(0, 100)) {
+				subResultList.add(ie);
 			}
+			return subResultList;
 		}
 		return results;	
 	}
@@ -1849,11 +1852,11 @@ public class MysqlConnector {
 			String editorTerm = "";
 			for (String name : searchEntry.getAuthorSearch().split("\\s+")) {
 				authorTerm += authorTerm.isEmpty() 
-						? "SELECT BibID FROM AuthorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (FirstName LIKE ?) OR (LastName LIKE ?) OR (Institution LIKE ?)))"
-						: " INTERSECT SELECT BibID FROM AuthorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (FirstName LIKE ?) OR (LastName LIKE ?) OR (Institution LIKE ?)))";
+						? "SELECT BibID FROM AuthorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (FirstName LIKE ?) OR (LastName LIKE ?) OR (Institution LIKE ?) OR (Alias LIKE ?)))"
+						: " INTERSECT SELECT BibID FROM AuthorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (FirstName LIKE ?) OR (LastName LIKE ?) OR (Institution LIKE ?) OR (Alias LIKE ?)))";
 				editorTerm += editorTerm.isEmpty() 
-						? "SELECT BibID FROM EditorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (FirstName LIKE ?) OR (LastName LIKE ?) OR (Institution LIKE ?)))"
-						: " INTERSECT SELECT BibID FROM EditorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (FirstName LIKE ?) OR (LastName LIKE ?) OR (Institution LIKE ?)))";
+						? "SELECT BibID FROM EditorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (FirstName LIKE ?) OR (LastName LIKE ?) OR (Institution LIKE ?) OR (Alias LIKE ?)))"
+						: " INTERSECT SELECT BibID FROM EditorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (FirstName LIKE ?) OR (LastName LIKE ?) OR (Institution LIKE ?) OR (Alias LIKE ?)))";
 			}
 			where = "BibID IN (" + authorTerm + ") OR BibID IN (" + editorTerm + ")";
 		}
@@ -1898,8 +1901,10 @@ public class MysqlConnector {
 					pstmt.setString(i++, "%" + name + "%");
 					pstmt.setString(i++, "%" + name + "%");
 					pstmt.setString(i++, "%" + name + "%");
+					pstmt.setString(i++, "%" + name + "%");
 				}
 				for (String name : searchEntry.getAuthorSearch().split("\\s+")) {
+					pstmt.setString(i++, "%" + name + "%");
 					pstmt.setString(i++, "%" + name + "%");
 					pstmt.setString(i++, "%" + name + "%");
 					pstmt.setString(i++, "%" + name + "%");
@@ -5572,6 +5577,9 @@ public class MysqlConnector {
 					} else if (entry instanceof DepictionEntry) {
 						insertStatement.setInt(2, ((DepictionEntry)entry).getDepictionID());
 						insertStatement.setString(3, "DepictionEntry");
+					} else if (entry instanceof AnnotatedBibliographyEntry) {
+						insertStatement.setInt(2, ((AnnotatedBibliographyEntry)entry).getAnnotatedBibliographyID());
+						insertStatement.setString(3, "AnnotatedBibliographyEntry");
 					}
 					insertStatement.executeQuery();
 				}
@@ -5631,7 +5639,7 @@ public class MysqlConnector {
 					case "DepictionEntry":
 						resultList.add(getDepictionEntry(entryID, entry.getUser().getSessionID()));
 						break;
-					case "ErnamentEntry":
+					case "OrnamentEntry":
 						resultList.add(getOrnamentEntry(entryID));
 						break;
 					default:
@@ -5672,4 +5680,25 @@ public class MysqlConnector {
 			e.printStackTrace();
 		}
 		return result;
-	}}
+	}
+
+	public int addPreservationClassification(PreservationClassificationEntry pcEntry) {
+		Connection dbc = getConnection();
+		PreparedStatement pStatement;
+		int preservationAttributeID = 0;
+		try {
+			pStatement = dbc.prepareStatement("INSERT INTO PreservationClassifications (Name) VALUES (?)", Statement.RETURN_GENERATED_KEYS);
+			pStatement.setString(1, pcEntry.getName());
+			pStatement.executeUpdate();
+			ResultSet keys = pStatement.getGeneratedKeys();
+			if (keys.next()) {
+				preservationAttributeID = keys.getInt(1);
+			}
+			keys.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return preservationAttributeID;
+	}
+	
+}

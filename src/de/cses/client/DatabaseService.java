@@ -317,4 +317,6 @@ public interface DatabaseService extends RemoteService {
 	ArrayList<CollectionEntry> getRelatedCollectionNames(String sessionID) throws IllegalArgumentException;
 
 	ArrayList<AbstractEntry> loadCollectedEntries(CollectionEntry value) throws IllegalArgumentException;
+
+	int addPreservationClassification(PreservationClassificationEntry pcEntry) throws IllegalArgumentException;
 }

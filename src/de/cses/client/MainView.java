@@ -13,18 +13,12 @@
  */
 package de.cses.client;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.i18n.client.Messages.Select;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.resources.client.ClientBundle.Source;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -62,12 +56,10 @@ import de.cses.client.images.ImageSearchController;
 import de.cses.client.ornamentic.OrnamenticFilter;
 import de.cses.client.ornamentic.OrnamenticResultView;
 import de.cses.client.ornamentic.OrnamenticSearchController;
-import de.cses.client.ui.AbstractSearchController;
 import de.cses.client.ui.DataViewPortalLayoutContainer;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.UserEntry;
-import javafx.scene.image.Image;
 
 /**
  * @author alingnau
@@ -75,8 +67,13 @@ import javafx.scene.image.Image;
  */
 public class MainView implements IsWidget {
 	
+	interface Resources extends ClientBundle {
+		@Source("kucha_logo_homepage.png")
+		ImageResource logo();
+	}
+
 	// this footer will be shown at the bottom of the WebApp
-	private static final String FOOTER_TEXT = "\u00A9 2019 Sächsische Akademie der Wissenschaften zu Leipzig (Version 0.9.3)";
+	private static final String FOOTER_TEXT = "\u00A9 2019 Sächsische Akademie der Wissenschaften zu Leipzig (Version 1.0 RC1)";
 	
 	private BorderLayoutContainer view = null;
 	private CaveSearchController caveSearchController;
@@ -136,21 +133,6 @@ public class MainView implements IsWidget {
 			}
 		});
 		caveSearchController = new CaveSearchController("Caves", new CaveFilter("Caves"), new CaveResultView("Caves"), caveInactiveTB, caveActiveTB);
-//		caveSearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-//			
-//			@Override
-//			public void onValueChange(ValueChangeEvent<Boolean> event) {
-//				if (event.getValue()) {
-//					filterView.add(caveSearchController.getFilter(), 0);
-//					resultView.add(caveSearchController.getResultView(), 0);
-//					caveSearchController.setIcon(res.cave_active());
-//				} else {
-//					caveSearchController.getResultView().removeFromParent();
-//					caveSearchController.getFilter().asWidget().removeFromParent();
-//					caveSearchController.setIcon(res.cave());
-//				}
-//			}
-//		});
 		
     ToolButton depictionInactiveTB = new ToolButton(new IconConfig("depictionButton", "depictionButtonOver"));
     depictionInactiveTB.addSelectHandler(new SelectHandler() {
@@ -171,19 +153,6 @@ public class MainView implements IsWidget {
 			}
 		});
 		depictionSearchController = new DepictionSearchController("Painted Representation", new DepictionFilter("Painted Representations"), new DepictionResultView("Painted Representation"), depictionInactiveTB, depictionActiveTB);
-//		depictionSearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-//
-//			@Override
-//			public void onValueChange(ValueChangeEvent<Boolean> event) {
-//				if (event.getValue()) {
-//					filterView.add(depictionSearchController.getFilter(), 0);
-//					resultView.add(depictionSearchController.getResultView(), 0);
-//				} else {
-//					depictionSearchController.getFilter().asWidget().removeFromParent();
-//					depictionSearchController.getResultView().removeFromParent();
-//				}
-//			}
-//		});
 		
     ToolButton imageInactiveTB = new ToolButton(new IconConfig("imagePoolButton", "imagePoolButtonOver"));
     imageInactiveTB.addSelectHandler(new SelectHandler() {
@@ -204,20 +173,6 @@ public class MainView implements IsWidget {
 			}
 		});
 		imageSearchController = new ImageSearchController("Image Pool", new ImageFilter("Image Filter"), new ImageResultView("Image Pool"), imageInactiveTB, imageActiveTB);
-//		imageSearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-//
-//			@Override
-//			public void onValueChange(ValueChangeEvent<Boolean> event) {
-//				if (event.getValue()) {
-//					filterView.add(imageSearchController.getFilter(), 0);
-//					resultView.add(imageSearchController.getResultView(), 0);
-//				} else {
-//					imageSearchController.getFilter().asWidget().removeFromParent();
-//					imageSearchController.getResultView().removeFromParent();
-//				}
-//			}
-//			
-//		});
 		
     ToolButton ornamenticInactiveTB = new ToolButton(new IconConfig("ornamentationButton", "ornamentationButtonOver"));
     ornamenticInactiveTB.addSelectHandler(new SelectHandler() {
@@ -238,22 +193,8 @@ public class MainView implements IsWidget {
 			}
 		});
 		ornamenticSearchController = new OrnamenticSearchController("Ornamentation", new OrnamenticFilter("Ornamentation"), new OrnamenticResultView("Ornamentation"), ornamenticInactiveTB, ornamenticActiveTB);
-//		ornamenticSearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-//
-//			@Override
-//			public void onValueChange(ValueChangeEvent<Boolean> event) {
-//				if (event.getValue()) {
-//					filterView.add(ornamenticSearchController.getFilter(), 0);
-//					resultView.add(ornamenticSearchController.getResultView(), 0);
-//				} else {
-//					ornamenticSearchController.getFilter().asWidget().removeFromParent();
-//					ornamenticSearchController.getResultView().removeFromParent();
-//				}
-//			}
-//		});
 		
 		// annotated bibliography
-		
     ToolButton bibInactiveTB = new ToolButton(new IconConfig("bibButton", "bibButtonOver"));
     bibInactiveTB.addSelectHandler(new SelectHandler() {
 			
@@ -263,7 +204,7 @@ public class MainView implements IsWidget {
 				resultView.add(annotatedBiblographySearchController.getResultView(), 0);
 			}
 		});
-    ToolButton bibActiveTB = new ToolButton(new IconConfig("bibButtonActive", "bibButtonOver"));
+    ToolButton bibActiveTB = new ToolButton(new IconConfig("bibButtonActive", "bibButtonOver2"));
     bibActiveTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
@@ -273,29 +214,19 @@ public class MainView implements IsWidget {
 			}
 		});
 		annotatedBiblographySearchController = new AnnotatedBiblographySearchController("Annotated Biblography", new AnnotatedBibliographyFilter("Bibliography"), new AnnotatedBiblographyResultView("Annotated Biblography"), bibInactiveTB, bibActiveTB);
-//		annotatedBiblographySearchController.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-//
-//			@Override
-//			public void onValueChange(ValueChangeEvent<Boolean> event) {
-//				if (event.getValue()) {
-//					filterView.add(annotatedBiblographySearchController.getFilter(), 0);
-//					resultView.add(annotatedBiblographySearchController.getResultView(), 0);
-//				} else {
-//					annotatedBiblographySearchController.getFilter().asWidget().removeFromParent();
-//					annotatedBiblographySearchController.getResultView().removeFromParent();
-//				}
-//			}
-//		});
 
+		Resources res = GWT.create(Resources.class);
+		Image kuchaLogo = new Image(res.logo());
 		
 		// ----------------------------------- assembling the menu bar ---------------------------------------------
 		
 		selectorLayoutContainer = new HorizontalLayoutContainer();
-		selectorLayoutContainer.add(caveSearchController, new HorizontalLayoutData(75, 75, new Margins(5, 0, 5, 5)));
-		selectorLayoutContainer.add(depictionSearchController, new HorizontalLayoutData(75, 75, new Margins(5, 0, 5, 5)));
-		selectorLayoutContainer.add(ornamenticSearchController, new HorizontalLayoutData(75, 75, new Margins(5, 0, 5, 5)));
-		selectorLayoutContainer.add(annotatedBiblographySearchController, new HorizontalLayoutData(75, 75, new Margins(5, 0, 5, 5)));
-		selectorLayoutContainer.add(imageSearchController, new HorizontalLayoutData(75, 75, new Margins(5, 0, 5, 5)));
+		selectorLayoutContainer.add(kuchaLogo, new HorizontalLayoutData(159, 100, new Margins(5, 0, 5, 0)));
+		selectorLayoutContainer.add(caveSearchController, new HorizontalLayoutData(130, 90, new Margins(10, 10, 10, 50)));
+		selectorLayoutContainer.add(depictionSearchController, new HorizontalLayoutData(90, 90, new Margins(10)));
+		selectorLayoutContainer.add(ornamenticSearchController, new HorizontalLayoutData(90, 90, new Margins(10)));
+		selectorLayoutContainer.add(annotatedBiblographySearchController, new HorizontalLayoutData(90, 90, new Margins(10)));
+		selectorLayoutContainer.add(imageSearchController, new HorizontalLayoutData(90, 90, new Margins(10)));
 		
     ContentPanel centerPanel = new ContentPanel();
     centerPanel.setHeading("Search Results");
@@ -308,10 +239,10 @@ public class MainView implements IsWidget {
     resultView.setColumnWidth(0, 1.0);
     centerPanel.add(resultView);
 
-    ContentPanel north = new ContentPanel();
-    north.addStyleName("transparent");
-    north.getHeader().setStylePrimaryName("frame-header");
-    north.add(selectorLayoutContainer);
+    ContentPanel northContentPanel = new ContentPanel();
+    northContentPanel.addStyleName("transparent");
+    northContentPanel.getHeader().setStylePrimaryName("frame-header");
+    northContentPanel.add(selectorLayoutContainer);
     
     // updating heading when user is logged in / out
     UserLogin.getInstance().addCloseHandler(new CloseHandler<PopupPanel>() {
@@ -319,7 +250,7 @@ public class MainView implements IsWidget {
 			@Override
 			public void onClose(CloseEvent<PopupPanel> event) {
 		    if (UserLogin.isLoggedIn()) {
-		    	north.setHeading("Welcome back, " + UserLogin.getInstance().getUsername());
+		    	northContentPanel.setHeading("Welcome back, " + UserLogin.getInstance().getUsername());
 //		    	imageSearchController.setVisible(true);
 		    	imageSearchController.setEnabled(true);
 		    	if (UserLogin.getInstance().getAccessRights() >= UserEntry.ASSOCIATED) {
@@ -327,7 +258,7 @@ public class MainView implements IsWidget {
 		    		saveWorkspaceToolButton.setEnabled(true);
 		    	}
 		    } else {
-		    	north.setHeading("Welcome! Your are currently here as a guest!");
+		    	northContentPanel.setHeading("Welcome! Your are currently here as a guest!");
 		    	imageSearchController.setEnabled(false);
 //		    	imageSearchController.setVisible(false);
 		    	loadWorkspaceToolButton.setEnabled(false);
@@ -346,7 +277,7 @@ public class MainView implements IsWidget {
 			}
 		});
     loginTB.setToolTip("login");
-    north.addTool(loginTB);
+    northContentPanel.addTool(loginTB);
 //    northPanel.add(north, new VerticalLayoutData(1.0, .6));
     
     filterView = new PortalLayoutContainer(1);
@@ -418,8 +349,8 @@ public class MainView implements IsWidget {
 		Label footerLabel = new Label(FOOTER_TEXT);
 		footerLabel.setStyleName("footer");
     
-    BorderLayoutData northData = new BorderLayoutData(100);
-    northData.setMinSize(100);
+    BorderLayoutData northData = new BorderLayoutData(120);
+    northData.setMinSize(120);
     northData.setMargins(new Margins(5, 5, 0, 5));
     
     BorderLayoutData southData = new BorderLayoutData(20);
@@ -444,7 +375,7 @@ public class MainView implements IsWidget {
 
     view = new BorderLayoutContainer();
     view.setBorders(borders);
-    view.setNorthWidget(north, northData);
+    view.setNorthWidget(northContentPanel, northData);
     view.setWestWidget(filterPanel, westData);
     view.setEastWidget(dataViewPanel, eastData);
     view.setSouthWidget(footerLabel, southData);
@@ -452,35 +383,14 @@ public class MainView implements IsWidget {
     view.setStyleName("");
     
     if (UserLogin.isLoggedIn()) {
-    	north.setHeading("Welcome back, " + UserLogin.getInstance().getUsername());
+    	northContentPanel.setHeading("Welcome back, " + UserLogin.getInstance().getUsername());
     } else {
-    	north.setHeading("Welcome! Your are currently here as a guest!");
+    	northContentPanel.setHeading("Welcome! Your are currently here as a guest!");
 //    	imageSearchController.setVisible(false);
     	imageSearchController.setEnabled(false);
     	saveWorkspaceToolButton.setEnabled(false);
     	loadWorkspaceToolButton.setEnabled(false);
     }
 	}
-	
-	/**
-	 * 
-	 */
-//	protected ArrayList<AbstractSearchController> getActiveFilters() {
-//		ArrayList<AbstractSearchController> activeSelectors = new ArrayList<AbstractSearchController>();
-//		Widget w;
-//		Iterator<Widget> it;
-//		AbstractSearchController selector;
-//		it = selectorLayoutContainer.iterator();
-//		while (it.hasNext()) {
-//			w = it.next();
-//			if (w instanceof AbstractSearchController) {
-//				selector = ((AbstractSearchController) w);
-//				if (selector.getValue()) {
-//					activeSelectors.add(selector);
-//				}
-//			}
-//		}
-//		return activeSelectors;
-//	}
 
 }

@@ -836,7 +836,7 @@ public class OrnamenticFilter extends AbstractFilter {
 				});
 
 		ContentPanel headerOrnamentClass = new ContentPanel();
-		headerOrnamentClass.setHeading("Ornament Motif");
+		headerOrnamentClass.setHeading("Motif");
 		ornamentClassComboBox.setTriggerAction(TriggerAction.ALL);
 		headerOrnamentClass.add(ornamentClassComboBox);
 		headerOrnamentClass.getHeader().setStylePrimaryName("frame-header");
@@ -894,7 +894,7 @@ public class OrnamenticFilter extends AbstractFilter {
 		ContentPanel remarksPanel = new ContentPanel();
 		remarksPanel.setHeaderVisible(true);
 		remarksPanel.setToolTip(Util.createToolTip("Search for ornament remarks."));
-		remarksPanel.setHeading("Ornament Refmarks");
+		remarksPanel.setHeading("Ornament Remarks");
 		remarksPanel.add(ornamentRemarksSearchTF);
 		ornamenticFilterVLC.add(remarksPanel);
 
@@ -927,7 +927,7 @@ public class OrnamenticFilter extends AbstractFilter {
 		// ornamentComponentsPanel.setHeight(200);
 		accordion.add(textSearch);
 
-		accordion.setActiveWidget(ornamentCavesPanel);
+//		accordion.setActiveWidget(ornamentCavesPanel);
 
 		// iconography? accordion.add(iconographyPanel);
 

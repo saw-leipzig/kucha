@@ -57,6 +57,12 @@ div.data-view {
 	margin: 0
 }
 
+div.bib-view {
+	font-size: 16px;
+	background-color: #ffcc66;
+	margin: 0
+}
+
 div.label {
 	font-size: 10px;
 	font-family: verdana;
@@ -571,6 +577,14 @@ div.bibButtonOver {
 	cursor: pointer;
 }
 
+div.bibButtonOver2 {
+	background-image: url(icons/bib_mo2.png);
+	width: 70px;
+	height: 70px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
 div.bibButtonActive {
 	background-image: url(icons/bib_active.png);
 	width: 70px;
@@ -671,6 +685,14 @@ div.ornamentationButtonActive {
 	background-image: url(icons/ornamentation_active.png);
 	width: 70px;
 	height: 70px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.kuchaLogo {
+	background-image: url(icons/kucha_logo_homepage.png);
+	width: 159px;
+	height: 91px;
 	background-repeat: no-repeat;
 	cursor: pointer;
 }

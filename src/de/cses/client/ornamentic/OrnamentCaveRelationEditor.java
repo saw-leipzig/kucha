@@ -318,7 +318,7 @@ public class OrnamentCaveRelationEditor {
 		header = new FramedPanel();
 
 		HorizontalPanel selectedWallsHorizontalPanel = new HorizontalPanel();
-		header.setHeading("Walls");
+		header.setHeading("Position in Caves");
 		header.add(selectedWallsHorizontalPanel, new VerticalLayoutData(1.0, 1.0));
 		vlcCave.add(header, new VerticalLayoutData(0.5, .125));
 
@@ -465,7 +465,7 @@ public class OrnamentCaveRelationEditor {
 		header.setHeading("Select related ornaments");
 		header.add(relatedOrnamentsHorizontalPanel);
 
-		vlcRelationToTherornaments1.add(header, new VerticalLayoutData(1.0, .4));
+		vlcRelationToTherornaments1.add(header, new VerticalLayoutData(1.0, .5));
 
 		HorizontalLayoutContainer similarOrnamentsHorizontalPanel = new HorizontalLayoutContainer();
 		ListView<OrnamentEntry, String> ornamentListViewSimilar = new ListView<OrnamentEntry, String>(
@@ -499,17 +499,17 @@ public class OrnamentCaveRelationEditor {
 			groupOfOrnaments.setText(ornamentCaveRelationEntry.getGroup());
 		}
 		header.add(groupOfOrnaments);
-		vlcRelationToTherornaments1.add(header, new VerticalLayoutData(1, .125));
+		vlcRelationToTherornaments1.add(header, new VerticalLayoutData(1, .5));
 
 		final TextArea similarElementsofOtherCultures = new TextArea();
 
-		header = new FramedPanel();
-		if (ornamentCaveRelationEntry != null) {
-			similarElementsofOtherCultures.setText(ornamentCaveRelationEntry.getSimilarelementsOfOtherCultures());
-		}
-		header.setHeading("Similarities with elements of other cultural areas");
-		header.add(similarElementsofOtherCultures);
-		vlcRelationToTherornaments1.add(header, new VerticalLayoutData(1, .3));
+//		header = new FramedPanel();
+//		if (ornamentCaveRelationEntry != null) {
+//			similarElementsofOtherCultures.setText(ornamentCaveRelationEntry.getSimilarelementsOfOtherCultures());
+//		}
+//		header.setHeading("Similarities with elements of other cultural areas");
+//		header.add(similarElementsofOtherCultures);
+//		vlcRelationToTherornaments1.add(header, new VerticalLayoutData(1, .3));
 
 		tabPanel.add(relationToOtherOrnamentsHLC, "Relations");
 

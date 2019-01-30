@@ -1,0 +1,67 @@
+<div class="bib-view">
+		<tpl if="!parentTitle">
+			<tpl if="authors != &quot;&quot;">
+				{authors} 
+				<tpl if="yearORG != &quot;&quot;">({yearORG})</tpl>. 
+				<tpl if="titleTR != &quot;&quot;">
+					{titleTR}<tpl if="subtitleTR != &quot;&quot;">: {subtitleTR}</tpl>
+				</tpl>
+				<tpl if="titleORG != &quot;&quot;">
+				<i><b>{titleORG}<tpl if="subtitleORG != &quot;&quot;">: {subtitleORG}</tpl></b></i>
+				</tpl>
+				<tpl if="titleEN != &quot;&quot;">
+					<tpl if="officialTitleTranslation"> ({titleEN}<tpl if="subtitleEN != &quot;&quot;">: {subtitleEN}</tpl></tpl>
+					<tpl if="officialTitleTranslation"> [{titleEN}<tpl if="subtitleEN != &quot;&quot;">: {subtitleEN}</tpl>]</tpl>
+				</tpl>.
+				<tpl if="editors != &quot;&quot;">{editors} ({editorType}).</tpl>
+			</tpl>
+			<tpl if="authors == &quot;&quot;">
+				{editors} 
+				<tpl if="editorType != &quot;&quot;">({editorType}) </tpl>
+				<tpl if="yearORG != &quot;&quot;">({yearORG})</tpl>. 
+				<tpl if="titleTR != &quot;&quot;">
+					{titleTR}
+						<tpl if="subtitleTR != &quot;&quot;">: {subtitleTR}</tpl>
+				</tpl>
+				<tpl if="titleORG != &quot;&quot;">
+				<i><b>{titleORG}<tpl if="subtitleORG != &quot;&quot;">: {subtitleORG}</tpl></b></i>
+				</tpl>
+				<tpl if="titleEN != &quot;&quot;">
+					<tpl if="officialTitleTranslation"> ({titleEN}<tpl if="subtitleEN != &quot;&quot;">: {subtitleEN}</tpl></tpl>
+					<tpl if="officialTitleTranslation"> [{titleEN}<tpl if="subtitleEN != &quot;&quot;">: {subtitleEN}</tpl>]</tpl>
+				</tpl>.
+			</tpl>
+		</tpl>
+		<tpl if="parentTitle">
+			{authors} 
+			<tpl if="yearORG != &quot;&quot;">({yearORG})</tpl>. 
+				<tpl if="titleTR != &quot;&quot;">
+					{titleTR}<tpl if="subtitleTR != &quot;&quot;">: {subtitleTR}</tpl>
+				</tpl>
+				<tpl if="titleORG != &quot;&quot;">
+				<i><b>{titleORG}<tpl if="subtitleORG != &quot;&quot;">: {subtitleORG}</tpl></b></i>
+				</tpl>
+				<tpl if="titleEN != &quot;&quot;">
+					<tpl if="officialTitleTranslation"> ({titleEN}<tpl if="subtitleEN != &quot;&quot;">: {subtitleEN}</tpl></tpl>
+					<tpl if="officialTitleTranslation"> [{titleEN}<tpl if="subtitleEN != &quot;&quot;">: {subtitleEN}</tpl>]</tpl>
+				</tpl>.
+			<tpl if="editorType != &quot;&quot;"> In: </tpl> 
+			<tpl if="editors != &quot;&quot;">{editors}<tpl if="editorType != &quot;&quot;"> ({editorType})</tpl>,</tpl>
+			 <tpl if="parentTitleTR != &quot;&quot;"><i>{parentTitleTR}</i>.</tpl>
+			<i>{parentTitleORG}</i>.
+			 <tpl if="parentTitleEN != &quot;&quot;"><i>{parentTitleEN}</i>.</tpl>
+	  </tpl>
+		<tpl if="thesisType != &quot;&quot;"> {thesisType} thesis.</tpl>
+		<tpl if="editionORG != &quot;&quot;"> Edition: {editionORG}.</tpl>
+		<tpl if="numberORG != &quot;&quot;"> No: {numberORG}.</tpl>
+	  <tpl if="publisher != &quot;&quot;">{publisher}.</tpl>
+		<tpl if="seriesORG != &quot;&quot;">Series: {seriesORG}.</tpl>
+		<tpl if="volumeORG != &quot;&quot;">Vol. {volumeORG}<tpl if="issueORG != &quot;&quot;"> / {issueORG}</tpl>.</tpl>  
+		<tpl if="pagesORG != &quot;&quot;">{pagesORG}.</tpl>
+	 	<tpl if="abstractText != &quot;&quot;">
+	 		<details class='data-display'>
+				<summary><i><b>Abstract: </b></i></summary>
+				{abstractText}
+	 		</details>
+	 	</tpl>
+</div>

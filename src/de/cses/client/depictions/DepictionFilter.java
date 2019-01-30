@@ -107,8 +107,11 @@ public class DepictionFilter extends AbstractFilter {
 	}
 
 	interface LocationViewTemplates extends XTemplates {
-		@XTemplate("<div style=\"border: 1px solid grey;\"><tpl for='name'> {element}<wbr> </tpl></div>")
-		SafeHtml locationLabel(ArrayList<NameElement> name);
+		@XTemplate("<div style=\"border: 1px solid grey;\">{name}</div>")
+		SafeHtml locationLabel(String name);
+
+		@XTemplate("<div style=\"border: 1px solid grey;\">{town}<br>{name}</div>")
+		SafeHtml locationLabel(String town, String name);
 	}
 	
 	interface IconographyViewTemplates extends XTemplates {
@@ -132,7 +135,6 @@ public class DepictionFilter extends AbstractFilter {
 	private ListView<LocationEntry, LocationEntry> locationSelectionLV;
 	private IconographySelector icoSelector;
 	private ListView<IconographyEntry, IconographyEntry> icoSelectionLV;
-	private StoreFilterField<CaveEntry> filterField;
 	private IntegerSpinnerField iconographySpinnerField;
 	private PopupPanel extendedFilterDialog = null;
 
@@ -206,7 +208,7 @@ public class DepictionFilter extends AbstractFilter {
 		});
 		caveEntryLS.addSortInfo(new StoreSortInfo<CaveEntry>(new CaveEntryComparator(), SortDir.ASC));
 		
-		filterField = new StoreFilterField<CaveEntry>() {
+		StoreFilterField<CaveEntry> filterField = new StoreFilterField<CaveEntry>() {
 
 			@Override
 			protected boolean doSelect(Store<CaveEntry> store, CaveEntry parent, CaveEntry item, String filter) {
@@ -351,23 +353,23 @@ public class DepictionFilter extends AbstractFilter {
 			@Override
 			public SafeHtml render(LocationEntry item) {
 				final LocationViewTemplates lvTemplates = GWT.create(LocationViewTemplates.class);
-				String label;
-				if ((item.getCounty() != null) && (!item.getCounty().isEmpty())) {
-					if ((item.getTown() != null) && (!item.getTown().isEmpty())) {
-						label = item.getName()+", " + (item.getRegion()!=null && !item.getRegion().isEmpty() ? item.getTown()+", " + item.getRegion() : item.getTown()) + ", " + item.getCounty();
-					} else if ((item.getRegion() != null) && (!item.getRegion().isEmpty())) {
-						label = item.getName() +", "+ (item.getTown()!=null && !item.getTown().isEmpty() ? item.getTown()+", "+ item.getRegion() : item.getRegion()) + ", " + item.getCounty();
-					} else {
-						label = item.getName() + ", " + item.getCounty();
-					}
+//				String label;
+//				if ((item.getCounty() != null) && (!item.getCounty().isEmpty())) {
+//					if ((item.getTown() != null) && (!item.getTown().isEmpty())) {
+//						label = item.getName()+", " + (item.getRegion()!=null && !item.getRegion().isEmpty() ? item.getTown()+", " + item.getRegion() : item.getTown()) + ", " + item.getCounty();
+//					} else if ((item.getRegion() != null) && (!item.getRegion().isEmpty())) {
+//						label = item.getName() +", "+ (item.getTown()!=null && !item.getTown().isEmpty() ? item.getTown()+", "+ item.getRegion() : item.getRegion()) + ", " + item.getCounty();
+//					} else {
+//						label = item.getName() + ", " + item.getCounty();
+//					}
+//				} else {
+//					label = item.getName();
+//				}
+				if (item.getTown() != null && !item.getTown().isEmpty()) {
+					return lvTemplates.locationLabel(item.getTown(), item.getName());
 				} else {
-					label = item.getName();
+					return lvTemplates.locationLabel(item.getName());
 				}
-				ArrayList<NameElement> labelList = new ArrayList<NameElement>();
-				for (String s : label.split(" ")) {
-					labelList.add(new NameElement(s));
-				}
-				return lvTemplates.locationLabel(labelList);
 			}
 		}));
 		locationSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
@@ -398,7 +400,7 @@ public class DepictionFilter extends AbstractFilter {
     depictionFilterALC.add(cavePanel);
     depictionFilterALC.add(currentLocationPanel);
     depictionFilterALC.add(iconographyPanel);
-    depictionFilterALC.setActiveWidget(cavePanel);
+//    depictionFilterALC.setActiveWidget(cavePanel);
 
     BorderLayoutContainer depictionFilterBLC = new BorderLayoutContainer();
     depictionFilterBLC.setNorthWidget(shortNameSearchTF, new BorderLayoutData(20));
