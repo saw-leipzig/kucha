@@ -44,7 +44,7 @@ public class OrnamenticView extends AbstractView {
 	//Klasse zur Darstellung des Bildes fuer die Ornamentik in der Suche
 	
 	interface Resources extends ClientBundle {
-		@Source("buddha.png")
+		@Source("ornamentation.png")
 		ImageResource logo();
 	}
 

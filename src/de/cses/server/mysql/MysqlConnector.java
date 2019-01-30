@@ -2280,551 +2280,533 @@ public class MysqlConnector {
 		// Suche ueber einzelne SQL Querys, speichern in ArrayList "listen", anschliessend Schnittmenge bilden
 		Connection dbc = getConnection();
 		Statement stmt;
-		ArrayList<ArrayList<OrnamentEntry>> listen = new ArrayList<ArrayList<OrnamentEntry>>();
-		
-		
-		if(search.isEmpty()== true) {
-			//falls keine Filter gesetzt sind
-			
-			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-			String mysqlquerry = "SELECT * FROM Ornaments ";
-			try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery(mysqlquerry);
-			while (rs.next()) {
+		ArrayList<OrnamentEntry> resultList = new ArrayList<OrnamentEntry>();
+//		ArrayList<ArrayList<OrnamentEntry>> listen = new ArrayList<ArrayList<OrnamentEntry>>();
 
-				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
-						//rs.getString("Annotation"),
-						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
-						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
-						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
-				result.add(entry);
-			}
-			}
-			catch(SQLException e){
-				e.printStackTrace();
-			}
-			listen.add(result);
-		}
-// Ab hier suche nach den einzelnen Kriterien, bauen von einzelnen Listen und sp�ter eine Teilmengenbildung der Listen.
-		if(search.getCaves().size() > 0) {
-			
-			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-			String mysqlquerry = "SELECT * FROM Ornaments JOIN CaveOrnamentRelation ON Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID WHERE CaveID IN (";
-			for(int i = 0; search.getCaves().size() > i; i++) {
-				mysqlquerry = mysqlquerry +  Integer.toString(search.getCaves().get(i).getCaveID());
-				if(search.getCaves().size() > i+1) {
-					mysqlquerry = mysqlquerry + " , ";
+		// if no filter has been set, we just select all
+		if (search != null) {
+			String mysqlquerry = "SELECT * FROM Ornaments";
+			try {
+				stmt = dbc.createStatement();
+				ResultSet rs = stmt.executeQuery(mysqlquerry);
+				while (rs.next()) {
+					OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
+							rs.getString("Remarks"),
+							rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
+							getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
+							getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
+							getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
+							new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
+					resultList.add(entry);
 				}
-			}
-			mysqlquerry = mysqlquerry + ") GROUP BY Ornaments.OrnamentID HAVING COUNT(*) =" + search.getCaves().size();
-			try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery(mysqlquerry);
-			while (rs.next()) {
-				
-				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
-						//rs.getString("Annotation"),
-						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
-						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
-						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
-				result.add(entry);
-			}
-			}
-			catch(SQLException e){
+			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			listen.add(result);
-		}
-		if(search.getGroup() != null) {
-			
-			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-			String mysqlquerry = "SELECT * FROM (Ornaments JOIN CaveOrnamentRelation ON Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID) WHERE GroupofOrnaments LIKE " + search.getGroup();
-			try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery(mysqlquerry);
-			while (rs.next()) {
-				
-
-				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
-						//rs.getString("Annotation"),
-						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
-						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
-						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
-				result.add(entry);
-			}
-			}
-			catch(SQLException e){
-				e.printStackTrace();
-			}
-			listen.add(result);
-			
+			System.err.println("general search no. of elements: " + resultList.size());
+//			return result;
+//			listen.add(result);
 		}
 		
-		if(search.getCode() != null) {
-			
+		// Ab hier suche nach den einzelnen Kriterien, bauen von einzelnen Listen und später eine Teilmengenbildung der Listen.
+		if (!search.getCaves().isEmpty()) {
+			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
+//			String mysqlquerry = "SELECT * FROM (Ornaments JOIN CaveOrnamentRelation ON Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID) WHERE CaveID IN (";
+//			for (int i = 0; search.getCaves().size() > i; i++) {
+//				mysqlquerry = mysqlquerry + Integer.toString(search.getCaves().get(i).getCaveID());
+//				if (search.getCaves().size() > i + 1) {
+//					mysqlquerry = mysqlquerry + " , ";
+//				}
+//			}
+//			mysqlquerry = mysqlquerry + ") GROUP BY Ornaments.OrnamentID HAVING COUNT(*) = " + search.getCaves().size();
+			String inCaveStatement = "";
+			for (CaveEntry ce : search.getCaves()) {
+				inCaveStatement += inCaveStatement.isEmpty() ? Integer.toString(ce.getCaveID()) : "," + ce.getCaveID();
+			}
+			String query = "SELECT * FROM Ornaments WHERE OrnamentID IN (SELECT OrnamentID FROM CaveOrnamentRelation WHERE CaveID IN (" + inCaveStatement + "))";
+			try {
+				stmt = dbc.createStatement();
+				ResultSet rs = stmt.executeQuery(query);
+				while (rs.next()) {
+					OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
+							rs.getString("Remarks"),
+							// rs.getString("Annotation"),
+							rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
+							getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
+							getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
+							getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
+							new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
+					result.add(entry);
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			System.err.println("cave search no. of elements: " + result.size());
+			resultList.retainAll(result); // we only keep the results 
+		}
+		
+		if (search.getGroup() != null && !search.getGroup().isEmpty()) {
+			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
+			String mysqlquerry = "SELECT * FROM (Ornaments JOIN CaveOrnamentRelation ON Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID) WHERE GroupofOrnaments LIKE "
+					+ search.getGroup();
+			try {
+				stmt = dbc.createStatement();
+				ResultSet rs = stmt.executeQuery(mysqlquerry);
+				while (rs.next()) {
+
+					OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
+							rs.getString("Remarks"),
+							// rs.getString("Annotation"),
+							rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
+							getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
+							getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
+							getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
+							new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
+					result.add(entry);
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			System.err.println("group search no. of elements: " + result.size());
+			resultList.retainAll(result);
+		}
+
+		if (search.getCode() != null) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
 			String mysqlquerry = "SELECT * FROM Ornaments LIKE OrnamentCode = " + search.getCode();
 			try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery(mysqlquerry);
-			while (rs.next()) {
-				
+				stmt = dbc.createStatement();
+				ResultSet rs = stmt.executeQuery(mysqlquerry);
+				while (rs.next()) {
 
-				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
-						//rs.getString("Annotation"),
-						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
-						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
-						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
-				result.add(entry);
-			}
-			}
-			catch(SQLException e){
+					OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
+							rs.getString("Remarks"),
+							// rs.getString("Annotation"),
+							rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
+							getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
+							getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
+							getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
+							new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
+					result.add(entry);
+				}
+			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			listen.add(result);
+			System.err.println("code search no. of elements: " + result.size());
+			resultList.retainAll(result);
 		}
-		
-		if(search.getComponents().size() > 0) {
-		
+
+		if (search.getComponents().size() > 0) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
 			String mysqlquerry = "SELECT * FROM Ornaments JOIN OrnamentComponentRelation ON Ornaments.OrnamentID = OrnamentComponentRelation.OrnamentID WHERE OrnamentComponentID IN (";
-			for(int i = 0; search.getComponents().size() > i; i++) {
-				mysqlquerry = mysqlquerry +  Integer.toString(search.getComponents().get(i).getOrnamentComponentsID());
-				if(search.getComponents().size() > i+1) {
+			for (int i = 0; search.getComponents().size() > i; i++) {
+				mysqlquerry = mysqlquerry + Integer.toString(search.getComponents().get(i).getOrnamentComponentsID());
+				if (search.getComponents().size() > i + 1) {
 					mysqlquerry = mysqlquerry + " , ";
 				}
 			}
 			mysqlquerry = mysqlquerry + ") GROUP BY Ornaments.OrnamentID HAVING COUNT(*) =" + search.getComponents().size();
 			try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery(mysqlquerry);
-			while (rs.next()) {
-			
+				stmt = dbc.createStatement();
+				ResultSet rs = stmt.executeQuery(mysqlquerry);
+				while (rs.next()) {
 
-				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
-						//rs.getString("Annotation"),
-						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
-						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
-						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
-				result.add(entry);
-			}
-			}
-			catch(SQLException e){
+					OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
+							rs.getString("Remarks"),
+							// rs.getString("Annotation"),
+							rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
+							getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
+							getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
+							getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
+							new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
+					result.add(entry);
+				}
+			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			listen.add(result);
+			System.err.println("component search no. of elements: " + result.size());
+			resultList.retainAll(result);
 		}
-		if(search.getDescription()!= null ) {
-			
+		
+		if (search.getDescription() != null && !search.getDescription().isEmpty()) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
 			String mysqlquerry = "SELECT * FROM Ornaments LIKE OrnamentCode = " + search.getCode();
 			try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery(mysqlquerry);
-			while (rs.next()) {
-				
+				stmt = dbc.createStatement();
+				ResultSet rs = stmt.executeQuery(mysqlquerry);
+				while (rs.next()) {
 
-				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
-						//rs.getString("Annotation"),
-						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
-						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
-						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
-				result.add(entry);
-			}
-			}
-			catch(SQLException e){
+					OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
+							rs.getString("Remarks"),
+							// rs.getString("Annotation"),
+							rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
+							getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
+							getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
+							getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
+							new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
+					result.add(entry);
+				}
+			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			listen.add(result);
+			System.err.println("decription search no. of elements: " + result.size());
+			resultList.retainAll(result);
 		}
-		if(search.getDistricts().size() > 0) {
-			
+
+		if (search.getDistricts().size() > 0) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
 			String mysqlquerry = "SELECT * FROM (Ornaments JOIN CaveOrnamentRelation ON Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID) JOIN Caves ON Caves.CaveID = CaveOrnamentRelation.CaveID WHERE Caves.DistrictID IN (";
-			for(int i = 0; search.getDistricts().size() > i; i++) {
-				mysqlquerry = mysqlquerry +  Integer.toString(search.getDistricts().get(i).getDistrictID());
-				if(search.getDistricts().size() > i+1) {
+			for (int i = 0; search.getDistricts().size() > i; i++) {
+				mysqlquerry = mysqlquerry + Integer.toString(search.getDistricts().get(i).getDistrictID());
+				if (search.getDistricts().size() > i + 1) {
 					mysqlquerry = mysqlquerry + " , ";
 				}
 			}
 			mysqlquerry = mysqlquerry + ") GROUP BY Ornaments.OrnamentID HAVING COUNT(*) =" + search.getDistricts().size();
 			try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery(mysqlquerry);
-			while (rs.next()) {
-				
-
-				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
-						//rs.getString("Annotation"),
-						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
-						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
-						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
-				result.add(entry);
-			}
-			}
-			catch(SQLException e){
+				stmt = dbc.createStatement();
+				ResultSet rs = stmt.executeQuery(mysqlquerry);
+				while (rs.next()) {
+					OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
+							rs.getString("Remarks"),
+							// rs.getString("Annotation"),
+							rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
+							getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
+							getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
+							getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
+							new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
+					result.add(entry);
+				}
+			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			listen.add(result);
+			System.err.println("district search no. of elements: " + result.size());
+			resultList.retainAll(result);
 		}
-		if(search.getFunction().size()>0) {
-			
+		
+		if (search.getFunction().size() > 0) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
 			String mysqlquerry = "SELECT * FROM (Ornaments JOIN CaveOrnamentRelation ON Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID) JOIN OrnamentCaveWallRelation ON OrnamentCaveWallRelation.OrnamentCaveRelationID = CaveOrnamentRelation.CaveOrnamentRelationID WHERE FunctionID IN (";
-			for(int i = 0; search.getFunction().size() > i; i++) {
-				mysqlquerry = mysqlquerry +  Integer.toString(search.getFunction().get(i).getOrnamentFunctionID());
-				if(search.getFunction().size()> i+1) {
+			for (int i = 0; search.getFunction().size() > i; i++) {
+				mysqlquerry = mysqlquerry + Integer.toString(search.getFunction().get(i).getOrnamentFunctionID());
+				if (search.getFunction().size() > i + 1) {
 					mysqlquerry = mysqlquerry + " , ";
 				}
 			}
 			mysqlquerry = mysqlquerry + ") GROUP BY Ornaments.OrnamentID HAVING COUNT(*) =" + search.getFunction().size();
 			try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery(mysqlquerry);
-			while (rs.next()) {
-				
+				stmt = dbc.createStatement();
+				ResultSet rs = stmt.executeQuery(mysqlquerry);
+				while (rs.next()) {
 
-				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
-						//rs.getString("Annotation"),
-						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
-						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
-						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
-				result.add(entry);
-			}
-			}
-			catch(SQLException e){
+					OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
+							rs.getString("Remarks"),
+							// rs.getString("Annotation"),
+							rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
+							getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
+							getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
+							getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
+							new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
+					result.add(entry);
+				}
+			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			listen.add(result);
-			
+			System.err.println("function search no. of elements: " + result.size());
+			resultList.retainAll(result);
 		}
-		if(search.getIconographys().size()> 0) {
-			
+		
+		if (search.getIconographys().size() > 0) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
 			String mysqlquerry = "SELECT * FROM (Ornaments JOIN CaveOrnamentRelation ON Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID) JOIN OrnamentCaveIconographyRelation ON OrnamentCaveIconographyRelation.OrnamentCaveRelationID = CaveOrnamentRelation.CaveOrnamentRelationID WHERE IconographyID IN (";
-			for(int i = 0; search.getIconographys().size() > i; i++) {
-				mysqlquerry = mysqlquerry +  Integer.toString(search.getIconographys().get(i).getIconographyID());
-				if(search.getIconographys().size() > i+1) {
+			for (int i = 0; search.getIconographys().size() > i; i++) {
+				mysqlquerry = mysqlquerry + Integer.toString(search.getIconographys().get(i).getIconographyID());
+				if (search.getIconographys().size() > i + 1) {
 					mysqlquerry = mysqlquerry + " , ";
 				}
 			}
 			mysqlquerry = mysqlquerry + ") GROUP BY Ornaments.OrnamentID HAVING COUNT(*) =" + search.getIconographys().size();
 			try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery(mysqlquerry);
-			while (rs.next()) {
-				
+				stmt = dbc.createStatement();
+				ResultSet rs = stmt.executeQuery(mysqlquerry);
+				while (rs.next()) {
 
-				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
-						//rs.getString("Annotation"),
-						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
-						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
-						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
-				result.add(entry);
-			}
-			}
-			catch(SQLException e){
+					OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
+							rs.getString("Remarks"),
+							// rs.getString("Annotation"),
+							rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
+							getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
+							getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
+							getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
+							new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
+					result.add(entry);
+				}
+			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			listen.add(result);
-			
+			System.err.println("iconography search no. of elements: " + result.size());
+			resultList.retainAll(result);
 		}
-		if(search.getInterpretation()!= null) {
-		
+
+		if (search.getInterpretation() != null && !search.getInterpretation().isEmpty()) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
 			String mysqlquerry = "SELECT * FROM Ornaments LIKE Interpretation = " + search.getInterpretation();
 			try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery(mysqlquerry);
-			while (rs.next()) {
-				
+				stmt = dbc.createStatement();
+				ResultSet rs = stmt.executeQuery(mysqlquerry);
+				while (rs.next()) {
 
-				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
-						//rs.getString("Annotation"),
-						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
-						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
-						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
-				result.add(entry);
-			}
-			}
-			catch(SQLException e){
+					OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
+							rs.getString("Remarks"),
+							// rs.getString("Annotation"),
+							rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
+							getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
+							getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
+							getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
+							new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
+					result.add(entry);
+				}
+			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			listen.add(result);
+			System.err.println("interpretation search no. of elements: " + result.size());
+			resultList.retainAll(result);
 		}
-		if(search.getPosition().size()> 0) {
-			
+		
+		if (search.getPosition().size() > 0) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
 			String mysqlquerry = "SELECT * FROM (Ornaments JOIN CaveOrnamentRelation ON Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID) JOIN OrnamentCaveWallRelation ON OrnamentCaveWallRelation.OrnamentCaveRelationID = CaveOrnamentRelation.CaveOrnamentRelationID WHERE PositionID IN (";
-			for(int i = 0; search.getPosition().size() > i; i++) {
-				mysqlquerry = mysqlquerry +  Integer.toString(search.getPosition().get(i).getOrnamentPositionID());
-				if(search.getPosition().size()> i+1) {
+			for (int i = 0; search.getPosition().size() > i; i++) {
+				mysqlquerry = mysqlquerry + Integer.toString(search.getPosition().get(i).getOrnamentPositionID());
+				if (search.getPosition().size() > i + 1) {
 					mysqlquerry = mysqlquerry + " , ";
 				}
 			}
 			mysqlquerry = mysqlquerry + ") GROUP BY Ornaments.OrnamentID HAVING COUNT(*) =" + search.getPosition().size();
 			try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery(mysqlquerry);
-			while (rs.next()) {
-				
-
-				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
-						//rs.getString("Annotation"),
-						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
-						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
-						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
-				result.add(entry);
-			}
-			}
-			catch(SQLException e){
+				stmt = dbc.createStatement();
+				ResultSet rs = stmt.executeQuery(mysqlquerry);
+				while (rs.next()) {
+					OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
+							rs.getString("Remarks"),
+							// rs.getString("Annotation"),
+							rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
+							getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
+							getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
+							getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
+							new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
+					result.add(entry);
+				}
+			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			listen.add(result);
-			
+			System.err.println("position search no. of elements: " + result.size());
+			resultList.retainAll(result);
 		}
-		if(search.getOrnamentClass()!= null) {
-			
+
+		if (search.getOrnamentClass() != null) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
 			String mysqlquerry = "SELECT * FROM Ornaments WHERE OrnamentClassID = " + search.getOrnamentClass().getOrnamentClassID();
 			try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery(mysqlquerry);
-			while (rs.next()) {
-				
+				stmt = dbc.createStatement();
+				ResultSet rs = stmt.executeQuery(mysqlquerry);
+				while (rs.next()) {
 
-				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
-						//rs.getString("Annotation"),
-						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
-						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
-						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
-				result.add(entry);
-			}
-			}
-			catch(SQLException e){
+					OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
+							rs.getString("Remarks"),
+							rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
+							getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
+							getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
+							getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
+							new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
+					result.add(entry);
+				}
+			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			listen.add(result);
-
+			System.err.println("ornament class search no. of elements: " + result.size());
+			resultList.retainAll(result);
 		}
-		
-		if(search.getReferences()!= null) {
-			
+
+		if (search.getReferences() != null && !search.getReferences().isEmpty()) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
 			String mysqlquerry = "SELECT * FROM Ornaments WHERE References LIKE " + search.getReferences();
 			try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery(mysqlquerry);
-			while (rs.next()) {
-				
+				stmt = dbc.createStatement();
+				ResultSet rs = stmt.executeQuery(mysqlquerry);
+				while (rs.next()) {
 
-				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
-						//rs.getString("Annotation"),
-						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
-						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
-						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
-				result.add(entry);
-			}
-			}
-			catch(SQLException e){
+					OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
+							rs.getString("Remarks"),
+							// rs.getString("Annotation"),
+							rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
+							getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
+							getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
+							getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
+							new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
+					result.add(entry);
+				}
+			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			listen.add(result);
-
+			System.err.println("references search no. of elements: " + result.size());
+			resultList.retainAll(result);
 		}
-		if(search.getRelatedOrnaments().size()> 0) {
-			
+
+		if (search.getRelatedOrnaments().size() > 0) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
 			String mysqlquerry = "SELECT * FROM (Ornaments JOIN CaveOrnamentRelation on Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID) JOIN RelatedOrnamentsRelation "
 					+ "ON CaveOrnamentRelation.CaveOrnamentRelationID = RelatedOrnamentsRelation.CaveOrnamentRelationID WHERE RelatedOrnamentsRelation.OrnamentID IN (";
-			for(int i = 0; search.getRelatedOrnaments().size() > i; i++) {
-				mysqlquerry = mysqlquerry +  Integer.toString(search.getRelatedOrnaments().get(i).getOrnamentID());
-				if(search.getCaves().size() > i+1) {
+			for (int i = 0; search.getRelatedOrnaments().size() > i; i++) {
+				mysqlquerry = mysqlquerry + Integer.toString(search.getRelatedOrnaments().get(i).getOrnamentID());
+				if (search.getCaves().size() > i + 1) {
 					mysqlquerry = mysqlquerry + " , ";
 				}
 			}
 			mysqlquerry = mysqlquerry + ") GROUP BY Ornaments.OrnamentID HAVING COUNT(*) =" + search.getRelatedOrnaments().size();
 			try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery(mysqlquerry);
-			while (rs.next()) {
-				
-
-				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
-						//rs.getString("Annotation"),
-						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
-						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
-						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
-				result.add(entry);
-			}
-			}
-			catch(SQLException e){
+				stmt = dbc.createStatement();
+				ResultSet rs = stmt.executeQuery(mysqlquerry);
+				while (rs.next()) {
+					OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
+							rs.getString("Remarks"),
+							rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
+							getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
+							getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
+							getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
+							new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
+					result.add(entry);
+				}
+			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			listen.add(result);
-			
+			System.err.println("related ornaments search no. of elements: " + result.size());
+			resultList.retainAll(result);
 		}
-		if(search.getRemarks()!= null) {
-			
+
+		if (search.getRemarks() != null && !search.getRemarks().isEmpty()) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
 			String mysqlquerry = "SELECT * FROM Ornaments WHERE Remarks LIKE " + search.getRemarks();
 			try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery(mysqlquerry);
-			while (rs.next()) {
-				
+				stmt = dbc.createStatement();
+				ResultSet rs = stmt.executeQuery(mysqlquerry);
+				while (rs.next()) {
 
-				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
-						//rs.getString("Annotation"),
-						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
-						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
-						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
-				result.add(entry);
-			}
-			}
-			catch(SQLException e){
+					OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
+							rs.getString("Remarks"),
+							// rs.getString("Annotation"),
+							rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
+							getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
+							getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
+							getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
+							new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
+					result.add(entry);
+				}
+			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			listen.add(result);
-
+			System.err.println("remarks search no. of elements: " + result.size());
+			resultList.retainAll(result);
 		}
-		if(search.getSecondarypatterns().size()> 0) {
-			
+
+		if (search.getSecondarypatterns().size() > 0) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
 			String mysqlquerry = "SELECT * FROM Ornaments JOIN InnerSecondaryPatternRelation ON Ornaments.OrnamentID = InnerSecondaryPatternRelation.OrnamentID WHERE InnerSecID IN (";
-			for(int i = 0; search.getSecondarypatterns().size() > i; i++) {
-				mysqlquerry = mysqlquerry +  Integer.toString(search.getSecondarypatterns().get(i).getInnerSecondaryPatternsID());
-				if(search.getSecondarypatterns().size() > i+1) {
+			for (int i = 0; search.getSecondarypatterns().size() > i; i++) {
+				mysqlquerry = mysqlquerry + Integer.toString(search.getSecondarypatterns().get(i).getInnerSecondaryPatternsID());
+				if (search.getSecondarypatterns().size() > i + 1) {
 					mysqlquerry = mysqlquerry + " , ";
 				}
 			}
 			mysqlquerry = mysqlquerry + ") GROUP BY Ornaments.OrnamentID HAVING COUNT(*) =" + search.getSecondarypatterns().size();
 			try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery(mysqlquerry);
-			while (rs.next()) {
-				
+				stmt = dbc.createStatement();
+				ResultSet rs = stmt.executeQuery(mysqlquerry);
+				while (rs.next()) {
 
-				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
-						//rs.getString("Annotation"),
-						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
-						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
-						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
-				result.add(entry);
-			}
-			}
-			catch(SQLException e){
+					OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
+							rs.getString("Remarks"),
+							// rs.getString("Annotation"),
+							rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
+							getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
+							getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
+							getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
+							new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
+					result.add(entry);
+				}
+			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			listen.add(result);
-			
+			System.err.println("secondary patterns search no. of elements: " + result.size());
+			resultList.retainAll(result);
 		}
-		if(search.getSimilaritys() !=null) {
-			
+
+		if (search.getSimilaritys() != null && !search.getSimilaritys().isEmpty()) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-			String mysqlquerry= "SELECT * FROM Ornaments JOIN CaveOrnamentRelation on Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID WHERE SimilarElementsOfOtherCultures LIKE " + search.getSimilaritys();
+			String mysqlquerry = "SELECT * FROM Ornaments JOIN CaveOrnamentRelation on Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID WHERE SimilarElementsOfOtherCultures LIKE "
+					+ search.getSimilaritys();
 			try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery(mysqlquerry);
-			while (rs.next()) {
-				
+				stmt = dbc.createStatement();
+				ResultSet rs = stmt.executeQuery(mysqlquerry);
+				while (rs.next()) {
 
-				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
-						//rs.getString("Annotation"),
-						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
-						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
-						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
-				result.add(entry);
-			}
-			}
-			catch(SQLException e){
+					OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
+							rs.getString("Remarks"),
+							// rs.getString("Annotation"),
+							rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
+							getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
+							getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
+							getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
+							new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
+					result.add(entry);
+				}
+			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			listen.add(result);
-			
+			System.err.println("similarities search no. of elements: " + result.size());
+			resultList.retainAll(result);
 		}
-		if(search.getStyle()!= null) {
-			
+
+		if (search.getStyle() != null) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-			String mysqlquerry = "SELECT * FROM Ornaments JOIN CaveOrnamentsRelation on Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID WHERE StyleID =" + search.getStyle().getStyleID();
+			String mysqlquerry = "SELECT * FROM Ornaments JOIN CaveOrnamentsRelation on Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID WHERE StyleID ="
+					+ search.getStyle().getStyleID();
 			try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery(mysqlquerry);
-			while (rs.next()) {
-				
+				stmt = dbc.createStatement();
+				ResultSet rs = stmt.executeQuery(mysqlquerry);
+				while (rs.next()) {
 
-				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
-						//rs.getString("Annotation"),
-						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
-						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
-						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
-				result.add(entry);
-			}
-			}
-			catch(SQLException e){
+					OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
+							rs.getString("Remarks"),
+							// rs.getString("Annotation"),
+							rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
+							getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
+							getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
+							getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
+							new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
+					result.add(entry);
+				}
+			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			listen.add(result);
-			
-		}
-			
-	
-		Collection<OrnamentEntry> intersection = listen.get(0);
-		for (Collection<OrnamentEntry> col : listen) {
-			intersection.retainAll(col);
-			// setzen der ersten Liste auf die Teilmenge aller Listen
+			System.err.println("styles search no. of elements: " + result.size());
+			resultList.retainAll(result);
 		}
 
-		
-		if(listen.size() == 0) {
-			// sollte nicht auftreten, falls Listen leer
-			ArrayList<OrnamentEntry> emptyList = new ArrayList<OrnamentEntry>();
-			
-			return emptyList;
-		}
-		else {
-			// r�ckgabe der Teilmengenliste
-			
-		return (ArrayList<OrnamentEntry>) intersection;
-		}
-		
+//		ArrayList<OrnamentEntry> intersection = listen.get(0);
+//		for (ArrayList<OrnamentEntry> col : listen.subList(1, listen.size()-1)) {
+//			intersection.retainAll(col);
+//			// setzen der ersten Liste auf die Teilmenge aller Listen
+//		}
+//
+//		if (listen.size() == 0) {
+//			// sollte nicht auftreten, falls Listen leer
+//			ArrayList<OrnamentEntry> emptyList = new ArrayList<OrnamentEntry>();
+//			return emptyList;
+//		} else {
+//			// rueckgabe der Teilmengenliste
+//			return (ArrayList<OrnamentEntry>) intersection;
+//		}
+		return resultList;
 	}
 
 	public ArrayList<OrnamentEntry> getOrnamentsWhere(String sqlWhere) {

@@ -41,6 +41,10 @@ import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer.ExpandMode;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
+import com.sencha.gxt.widget.core.client.container.MarginData;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
@@ -77,10 +81,10 @@ import de.cses.shared.comparator.CaveEntryComparator;
  *
  */
 public class OrnamenticFilter extends AbstractFilter {
-	
+
 	class NameElement {
 		private String element;
-		
+
 		public NameElement(String element) {
 			super();
 			this.element = element;
@@ -91,7 +95,6 @@ public class OrnamenticFilter extends AbstractFilter {
 		}
 	}
 
-	
 	// Klasse zum erstellen aller Filter auf der Client Seite
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	private TextField ornamentCodeSearchTF;
@@ -160,47 +163,36 @@ public class OrnamenticFilter extends AbstractFilter {
 
 	interface CaveEntryProperties extends PropertyAccess<CaveEntry> {
 		ModelKeyProvider<CaveEntry> caveID();
-
 		LabelProvider<CaveEntry> officialNumber();
 	}
 
 	interface DistrictsProperties extends PropertyAccess<DistrictEntry> {
 		ModelKeyProvider<DistrictEntry> districtID();
-
 		LabelProvider<DistrictEntry> uniqueID();
-
 		ValueProvider<DistrictEntry, String> name();
 	}
 
 	interface RelatedOrnamentsProperties extends PropertyAccess<OrnamentEntry> {
 		ModelKeyProvider<OrnamentEntry> ornamentID();
-
 		LabelProvider<OrnamentEntry> uniqueID();
-
 		ValueProvider<OrnamentEntry, String> code();
 	}
 
 	interface PositionProperties extends PropertyAccess<OrnamentPositionEntry> {
 		ModelKeyProvider<OrnamentPositionEntry> ornamentPositionID();
-
 		LabelProvider<OrnamentPositionEntry> uniqueID();
-
 		ValueProvider<OrnamentPositionEntry, String> name();
 	}
 
 	interface FunctionProperties extends PropertyAccess<OrnamentFunctionEntry> {
 		ModelKeyProvider<OrnamentFunctionEntry> ornamentFunctionID();
-
 		LabelProvider<OrnamentFunctionEntry> uniqueID();
-
 		ValueProvider<OrnamentFunctionEntry, String> name();
 	}
 
 	interface IconographyProperties extends PropertyAccess<IconographyEntry> {
 		ModelKeyProvider<IconographyEntry> iconographyID();
-
 		LabelProvider<IconographyEntry> uniqueID();
-
 		ValueProvider<IconographyEntry, String> name();
 	}
 
@@ -208,7 +200,7 @@ public class OrnamenticFilter extends AbstractFilter {
 		ModelKeyProvider<CaveEntry> caveID();
 		LabelProvider<CaveEntry> officialNumber();
 	}
-	
+
 	interface CaveViewTemplates extends XTemplates {
 		@XTemplate("<div style=\"border: 1px solid grey;\">{shortName} {officialNumber}<br> {districtRegion}<br><tpl for='name'> {element}<wbr> </tpl></div>")
 		SafeHtml caveLabel(String shortName, String officialNumber, String districtRegion, ArrayList<NameElement> name);
@@ -227,30 +219,32 @@ public class OrnamenticFilter extends AbstractFilter {
 		SafeHtml innerSecondaryPatternsLabel(String name);
 	}
 
-//	interface CaveViewTemplates extends XTemplates {
-//		@XTemplate("<div>{officialNumber}: {historicName}</div>")
-//		SafeHtml caveLabel(String officialNumber, String historicName);
-//
-//		@XTemplate("<div>{officialNumber}</div>")
-//		SafeHtml caveLabel(String officialNumber);
-//	}
-//
+	// interface CaveViewTemplates extends XTemplates {
+	// @XTemplate("<div>{officialNumber}: {historicName}</div>")
+	// SafeHtml caveLabel(String officialNumber, String historicName);
+	//
+	// @XTemplate("<div>{officialNumber}</div>")
+	// SafeHtml caveLabel(String officialNumber);
+	// }
+	//
 
 	interface DistrictProperties extends PropertyAccess<DistrictEntry> {
 		ModelKeyProvider<DistrictEntry> districtID();
+
 		LabelProvider<DistrictEntry> uniqueID();
+
 		ValueProvider<DistrictEntry, String> name();
 	}
-	
+
 	interface DistrictViewTemplates extends XTemplates {
 		@XTemplate("<div style=\"border: 1px solid grey;\">{siteName}<br>{districtName}</div>")
 		SafeHtml districtLabel(String districtName, String siteName);
 	}
-	
-//	interface DistrictsViewTemplates extends XTemplates {
-//		@XTemplate("<div>{name}</div>")
-//		SafeHtml districtsLabel(String name);
-//	}
+
+	// interface DistrictsViewTemplates extends XTemplates {
+	// @XTemplate("<div>{name}</div>")
+	// SafeHtml districtsLabel(String name);
+	// }
 
 	interface RelatedOrnamentsViewTemplates extends XTemplates {
 		@XTemplate("<div>{code}</div>")
@@ -274,10 +268,12 @@ public class OrnamenticFilter extends AbstractFilter {
 
 	interface SiteProperties extends PropertyAccess<SiteEntry> {
 		ModelKeyProvider<SiteEntry> siteID();
+
 		LabelProvider<SiteEntry> uniqueID();
+
 		ValueProvider<SiteEntry, String> name();
 	}
-	
+
 	interface SiteViewTemplates extends XTemplates {
 		@XTemplate("<div>{name}</div>")
 		SafeHtml siteLabel(String name);
@@ -391,21 +387,21 @@ public class OrnamenticFilter extends AbstractFilter {
 		for (DistrictEntry de : StaticTables.getInstance().getDistrictEntries().values()) {
 			districtsEntryList.add(de);
 		}
-//		dbService.getDistricts(new AsyncCallback<ArrayList<DistrictEntry>>() {
-//
-//			@Override
-//			public void onFailure(Throwable caught) {
-//				caught.printStackTrace();
-//			}
-//
-//			@Override
-//			public void onSuccess(ArrayList<DistrictEntry> result) {
-//				districtsEntryList.clear();
-//				for (DistrictEntry pe : result) {
-//					districtsEntryList.add(pe);
-//				}
-//			}
-//		});
+		// dbService.getDistricts(new AsyncCallback<ArrayList<DistrictEntry>>() {
+		//
+		// @Override
+		// public void onFailure(Throwable caught) {
+		// caught.printStackTrace();
+		// }
+		//
+		// @Override
+		// public void onSuccess(ArrayList<DistrictEntry> result) {
+		// districtsEntryList.clear();
+		// for (DistrictEntry pe : result) {
+		// districtsEntryList.add(pe);
+		// }
+		// }
+		// });
 	}
 
 	private void loadOrnamentEntryList() {
@@ -492,8 +488,7 @@ public class OrnamenticFilter extends AbstractFilter {
 
 		ornamentCodeSearchTF = new TextField();
 		ornamentCodeSearchTF.setEmptyText("search ornament code");
-		ornamentCodeSearchTF
-				.setToolTip(Util.createToolTip("search ornament code", "Search for this character sequence in the ornament code field."));
+		ornamentCodeSearchTF.setToolTip(Util.createToolTip("search ornament code", "Search for this character sequence in the ornament code field."));
 
 		ornamentInterpretationSearchTF = new TextField();
 		ornamentInterpretationSearchTF.setEmptyText("search ornament interpretation");
@@ -541,7 +536,8 @@ public class OrnamenticFilter extends AbstractFilter {
 
 		ContentPanel ornamentComponentsPanel = new ContentPanel();
 		ornamentComponentsPanel.setHeaderVisible(true);
-		ornamentComponentsPanel.setToolTip(Util.createToolTip("Search for ornament components.", "Select one or more elements to search for Ornamentations."));
+		ornamentComponentsPanel
+				.setToolTip(Util.createToolTip("Search for ornament components.", "Select one or more elements to search for Ornamentations."));
 		ornamentComponentsPanel.setHeading("Ornament Components");
 		ornamentComponentsPanel.add(ornamentComponentsSelectionLV);
 		ornamentComponentsPanel.getHeader().setStylePrimaryName("frame-header");
@@ -558,51 +554,53 @@ public class OrnamenticFilter extends AbstractFilter {
 		ornamentComponentsPanel.addTool(resetOrnamentComponentsPanelTB);
 
 		// caves
-//		cavesSelectionLV = new ListView<CaveEntry, CaveEntry>(cavesEntryList, new IdentityValueProvider<CaveEntry>(),
-//				new SimpleSafeHtmlCell<CaveEntry>(new AbstractSafeHtmlRenderer<CaveEntry>() {
-//					final CaveViewTemplates ocvTemplates = GWT.create(CaveViewTemplates.class);
-//
-//					@Override
-//					public SafeHtml render(CaveEntry entry) {
-//						return ocvTemplates.caveLabel(Integer.toString(entry.getCaveID()));
-//					}
-//
-//				}));
-		
+		// cavesSelectionLV = new ListView<CaveEntry, CaveEntry>(cavesEntryList, new IdentityValueProvider<CaveEntry>(),
+		// new SimpleSafeHtmlCell<CaveEntry>(new AbstractSafeHtmlRenderer<CaveEntry>() {
+		// final CaveViewTemplates ocvTemplates = GWT.create(CaveViewTemplates.class);
+		//
+		// @Override
+		// public SafeHtml render(CaveEntry entry) {
+		// return ocvTemplates.caveLabel(Integer.toString(entry.getCaveID()));
+		// }
+		//
+		// }));
+
 		/**
 		 * assemble caveSelection
 		 */
-		cavesSelectionLV = new ListView<CaveEntry, CaveEntry>(cavesEntryList, new IdentityValueProvider<CaveEntry>(), new SimpleSafeHtmlCell<CaveEntry>(new AbstractSafeHtmlRenderer<CaveEntry>() {
-			
-			@Override
-			public SafeHtml render(CaveEntry entry) {
-				final CaveViewTemplates cvTemplates = GWT.create(CaveViewTemplates.class);
-				StaticTables st = StaticTables.getInstance();
-				DistrictEntry de = st.getDistrictEntries().get(entry.getDistrictID());
-				SiteEntry se = st.getSiteEntries().get(entry.getSiteID());
-				RegionEntry re = st.getRegionEntries().get(entry.getRegionID());
-				String districtRegionInformation = (de != null) ? de.getName() + (re != null ? " / " + re.getOriginalName() : "") : (re != null ? re.getOriginalName() : "");
-				if ((entry.getHistoricName() != null) && (entry.getHistoricName().length() > 0)) {
-					ArrayList<NameElement> historicNameList = new ArrayList<NameElement>();
-					for (String s : entry.getHistoricName().split(" ")) {
-						historicNameList.add(new NameElement(s));
+		cavesSelectionLV = new ListView<CaveEntry, CaveEntry>(cavesEntryList, new IdentityValueProvider<CaveEntry>(),
+				new SimpleSafeHtmlCell<CaveEntry>(new AbstractSafeHtmlRenderer<CaveEntry>() {
+
+					@Override
+					public SafeHtml render(CaveEntry entry) {
+						final CaveViewTemplates cvTemplates = GWT.create(CaveViewTemplates.class);
+						StaticTables st = StaticTables.getInstance();
+						DistrictEntry de = st.getDistrictEntries().get(entry.getDistrictID());
+						SiteEntry se = st.getSiteEntries().get(entry.getSiteID());
+						RegionEntry re = st.getRegionEntries().get(entry.getRegionID());
+						String districtRegionInformation = (de != null) ? de.getName() + (re != null ? " / " + re.getOriginalName() : "")
+								: (re != null ? re.getOriginalName() : "");
+						if ((entry.getHistoricName() != null) && (entry.getHistoricName().length() > 0)) {
+							ArrayList<NameElement> historicNameList = new ArrayList<NameElement>();
+							for (String s : entry.getHistoricName().split(" ")) {
+								historicNameList.add(new NameElement(s));
+							}
+							return cvTemplates.caveLabel(se != null ? se.getShortName() : "", entry.getOfficialNumber(), districtRegionInformation,
+									historicNameList);
+						} else {
+							return cvTemplates.caveLabel(se != null ? se.getShortName() : "", entry.getOfficialNumber(), districtRegionInformation);
+						}
 					}
-					return cvTemplates.caveLabel(se != null ? se.getShortName() : "", entry.getOfficialNumber(), districtRegionInformation, historicNameList);
-				} else {
-					return cvTemplates.caveLabel(se != null ? se.getShortName() : "", entry.getOfficialNumber(), districtRegionInformation);
-				}
-			}
-		}));
+				}));
 		cavesSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
 		cavesSelectionLV.getSelectionModel().addSelectionChangedHandler(new SelectionChangedHandler<CaveEntry>() {
-			
+
 			@Override
 			public void onSelectionChanged(SelectionChangedEvent<CaveEntry> event) {
 				cavesEntryList.applySort(false);
 			}
 		});
 		cavesEntryList.addSortInfo(new StoreSortInfo<CaveEntry>(new CaveEntryComparator(), SortDir.ASC));
-		
 
 		ornamentComponentsSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
 
@@ -627,27 +625,29 @@ public class OrnamenticFilter extends AbstractFilter {
 
 		// Districts
 
-//		districtsSelectionLV = new ListView<DistrictEntry, DistrictEntry>(districtsEntryList, new IdentityValueProvider<DistrictEntry>(),
-//				new SimpleSafeHtmlCell<DistrictEntry>(new AbstractSafeHtmlRenderer<DistrictEntry>() {
-//					final DistrictsViewTemplates ocvTemplates = GWT.create(DistrictsViewTemplates.class);
-//
-//					@Override
-//					public SafeHtml render(DistrictEntry entry) {
-//						return ocvTemplates.districtsLabel(entry.getName());
-//					}
-//
-//				}));
-		
-		districtsSelectionLV = new ListView<DistrictEntry, DistrictEntry>(districtsEntryList, new IdentityValueProvider<DistrictEntry>(), new SimpleSafeHtmlCell<DistrictEntry>(new AbstractSafeHtmlRenderer<DistrictEntry>() {
-			final DistrictViewTemplates dvTemplates = GWT.create(DistrictViewTemplates.class);
+		// districtsSelectionLV = new ListView<DistrictEntry, DistrictEntry>(districtsEntryList, new IdentityValueProvider<DistrictEntry>(),
+		// new SimpleSafeHtmlCell<DistrictEntry>(new AbstractSafeHtmlRenderer<DistrictEntry>() {
+		// final DistrictsViewTemplates ocvTemplates = GWT.create(DistrictsViewTemplates.class);
+		//
+		// @Override
+		// public SafeHtml render(DistrictEntry entry) {
+		// return ocvTemplates.districtsLabel(entry.getName());
+		// }
+		//
+		// }));
 
-			@Override
-			public SafeHtml render(DistrictEntry entry) {
-				SiteEntry se = siteEntryList.findModelWithKey(Integer.toString(entry.getSiteID()));
-				return dvTemplates.districtLabel(entry.getName(), se.getName());
-			}}));
+		districtsSelectionLV = new ListView<DistrictEntry, DistrictEntry>(districtsEntryList, new IdentityValueProvider<DistrictEntry>(),
+				new SimpleSafeHtmlCell<DistrictEntry>(new AbstractSafeHtmlRenderer<DistrictEntry>() {
+					final DistrictViewTemplates dvTemplates = GWT.create(DistrictViewTemplates.class);
+
+					@Override
+					public SafeHtml render(DistrictEntry entry) {
+						SiteEntry se = siteEntryList.findModelWithKey(Integer.toString(entry.getSiteID()));
+						return dvTemplates.districtLabel(entry.getName(), se.getName());
+					}
+				}));
 		districtsSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
-		
+
 		cavesSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
 
 		ContentPanel ornamentdistrictsPanel = new ContentPanel();
@@ -834,28 +834,32 @@ public class OrnamenticFilter extends AbstractFilter {
 						return pvTemplates.ornamentClass(item.getName());
 					}
 				});
-
+		ornamentClassComboBox.setTypeAhead(true);
+		ornamentClassComboBox.setEditable(false);
+		ornamentClassComboBox.setTriggerAction(TriggerAction.ALL);
+		ornamentClassComboBox.setEmptyText("select motif");
+		
 		ContentPanel headerOrnamentClass = new ContentPanel();
 		headerOrnamentClass.setHeading("Motif");
-		ornamentClassComboBox.setTriggerAction(TriggerAction.ALL);
 		headerOrnamentClass.add(ornamentClassComboBox);
 		headerOrnamentClass.getHeader().setStylePrimaryName("frame-header");
+		ToolButton resetOrnamentClassComboBoxTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
+		resetOrnamentClassComboBoxTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				ornamentClassComboBox.clear();
+			}
+		});
+		headerOrnamentClass.addTool(resetOrnamentClassComboBoxTB);
 
-		AccordionLayoutContainer accordion = new AccordionLayoutContainer();
-		accordion.setExpandMode(ExpandMode.SINGLE_FILL);
-
-		BorderLayoutContainer ornamentFilterBLC = new BorderLayoutContainer();
-
-		ornamentFilterBLC.setCenterWidget(accordion);
-		ornamentFilterBLC.setHeight(550);
-
-		ContentPanel ornamentCodePanel = new ContentPanel();
-		ornamentCodePanel.setHeaderVisible(true);
-		ornamentCodePanel.setToolTip(Util.createToolTip("Search for ornament codes."));
-		ornamentCodePanel.setHeading("Ornament Code");
-		ornamentCodePanel.add(ornamentCodeSearchTF);
-		ornamentCodePanel.getHeader().setStylePrimaryName("frame-header");
-		accordion.add(ornamentCodePanel);
+//		ContentPanel ornamentCodePanel = new ContentPanel();
+//		ornamentCodePanel.setHeaderVisible(true);
+//		ornamentCodePanel.setToolTip(Util.createToolTip("Search for ornament codes."));
+//		ornamentCodePanel.setHeading("Ornament Code");
+//		ornamentCodePanel.add(ornamentCodeSearchTF);
+//		ornamentCodePanel.getHeader().setStylePrimaryName("frame-header");
+//		accordion.add(ornamentCodePanel);
 
 		VerticalPanel ornamenticFilterVLC = new VerticalPanel();
 
@@ -910,27 +914,30 @@ public class OrnamenticFilter extends AbstractFilter {
 		textSearch.add(ornamenticFilterVLC);
 		textSearch.getHeader().setStylePrimaryName("frame-header");
 
-		accordion.add(headerOrnamentClass);
+		AccordionLayoutContainer accordion = new AccordionLayoutContainer();
+		accordion.setExpandMode(ExpandMode.SINGLE_FILL);
+
+//		accordion.add(headerOrnamentClass);
 		accordion.add(ornamentCavesPanel);
-		// ornamentCavesPanel.setHeight(200);
 		accordion.add(ornamentFunctionPanel);
-		// ornamentFunctionPanel.setHeight(200);
 		accordion.add(ornamentpositionPanel);
-		// ornamentpositionPanel.setHeight(200);
 		accordion.add(ornamentdistrictsPanel);
-		// ornamentdistrictsPanel.setHeight(200);
 		accordion.add(innerSecPanel);
-		// innerSecPanel.setHeight(200);
 		accordion.add(relatedornamentPanel);
-		// relatedornamentPanel.setHeight(200);
 		accordion.add(ornamentComponentsPanel);
-		// ornamentComponentsPanel.setHeight(200);
 		accordion.add(textSearch);
 
-//		accordion.setActiveWidget(ornamentCavesPanel);
+		VerticalLayoutContainer codeMotifVLC = new VerticalLayoutContainer();
+		codeMotifVLC.add(ornamentCodeSearchTF, new VerticalLayoutData(1.0, 25));
+		codeMotifVLC.add(headerOrnamentClass, new VerticalLayoutData(1.0, 45));
+		
+		// accordion.setActiveWidget(ornamentCavesPanel);
 
 		// iconography? accordion.add(iconographyPanel);
-
+		BorderLayoutContainer ornamentFilterBLC = new BorderLayoutContainer();
+		ornamentFilterBLC.setNorthWidget(codeMotifVLC, new BorderLayoutData(70));
+		ornamentFilterBLC.setCenterWidget(accordion, new MarginData(5, 0, 0, 0));
+		ornamentFilterBLC.setHeight(550);
 		return ornamentFilterBLC;
 	}
 
@@ -945,79 +952,57 @@ public class OrnamenticFilter extends AbstractFilter {
 
 		if (ornamentCodeSearchTF.getValue() != null && !ornamentCodeSearchTF.getValue().isEmpty()) {
 			searchEntry.setCode(ornamentCodeSearchTF.getValue());
-			searchEntry.setEmpty(false);
-
 		}
 		if (ornamentDeskriptionSearchTF.getValue() != null && !ornamentDeskriptionSearchTF.getValue().isEmpty()) {
 			searchEntry.setDescription(ornamentDeskriptionSearchTF.getValue());
-			searchEntry.setEmpty(false);
 		}
 		if (ornamentInterpretationSearchTF.getValue() != null && !ornamentInterpretationSearchTF.getValue().isEmpty()) {
 			searchEntry.setInterpretation(ornamentInterpretationSearchTF.getValue());
-			searchEntry.setEmpty(false);
 		}
 		if (ornamentOrnamentalGroupSearchTF.getValue() != null && !ornamentOrnamentalGroupSearchTF.getValue().isEmpty()) {
 			searchEntry.setGroup(ornamentOrnamentalGroupSearchTF.getValue());
-			searchEntry.setEmpty(false);
 		}
 		if (ornamentReferencesSearchTF.getValue() != null && !ornamentReferencesSearchTF.getValue().isEmpty()) {
 			searchEntry.setReferences(ornamentReferencesSearchTF.getValue());
-			searchEntry.setEmpty(false);
 		}
 		if (ornamentRemarksSearchTF.getValue() != null && !ornamentRemarksSearchTF.getValue().isEmpty()) {
 			searchEntry.setRemarks(ornamentRemarksSearchTF.getValue());
-			searchEntry.setEmpty(false);
 		}
-
 		if (ornamentSimilaritiesSearchTF.getValue() != null && !ornamentSimilaritiesSearchTF.getValue().isEmpty()) {
 			searchEntry.setSimilaritys(ornamentSimilaritiesSearchTF.getValue());
-			searchEntry.setEmpty(false);
 		}
 
-		if (!ornamentComponentsSelectionLV.getSelectionModel().getSelectedItems().isEmpty()) {
-			for (OrnamentComponentsEntry oce : ornamentComponentsSelectionLV.getSelectionModel().getSelectedItems()) {
-				searchEntry.getComponents().add(oce);
-			}
-			searchEntry.setEmpty(false);
-		}
-		if (!innerSecondaryPatternsSelectionLV.getSelectionModel().getSelectedItems().isEmpty()) {
-			for (InnerSecondaryPatternsEntry oce : innerSecondaryPatternsSelectionLV.getSelectionModel().getSelectedItems()) {
-				searchEntry.getSecondarypatterns().add(oce);
-			}
-			searchEntry.setEmpty(false);
-		}
-		if (!districtsSelectionLV.getSelectionModel().getSelectedItems().isEmpty()) {
-			for (DistrictEntry oce : districtsSelectionLV.getSelectionModel().getSelectedItems()) {
-				searchEntry.getDistricts().add(oce);
-			}
-			searchEntry.setEmpty(false);
-		}
-		if (!relatedOrnamentsSelectionLV.getSelectionModel().getSelectedItems().isEmpty()) {
-			for (OrnamentEntry oce : relatedOrnamentsSelectionLV.getSelectionModel().getSelectedItems()) {
-				searchEntry.getRelatedOrnaments().add(oce);
-			}
-			searchEntry.setEmpty(false);
+		for (OrnamentComponentsEntry oce : ornamentComponentsSelectionLV.getSelectionModel().getSelectedItems()) {
+			searchEntry.getComponents().add(oce);
 		}
 
-		if (!positionSelectionLV.getSelectionModel().getSelectedItems().isEmpty()) {
-			for (OrnamentPositionEntry oce : positionSelectionLV.getSelectionModel().getSelectedItems()) {
-				searchEntry.getPosition().add(oce);
-			}
-			searchEntry.setEmpty(false);
+		for (InnerSecondaryPatternsEntry oce : innerSecondaryPatternsSelectionLV.getSelectionModel().getSelectedItems()) {
+			searchEntry.getSecondarypatterns().add(oce);
 		}
 
-		if (!functionSelectionLV.getSelectionModel().getSelectedItems().isEmpty()) {
-			for (OrnamentFunctionEntry oce : functionSelectionLV.getSelectionModel().getSelectedItems()) {
-				searchEntry.getFunction().add(oce);
-			}
-			searchEntry.setEmpty(false);
+		for (DistrictEntry oce : districtsSelectionLV.getSelectionModel().getSelectedItems()) {
+			searchEntry.getDistricts().add(oce);
 		}
 
+		for (OrnamentEntry oce : relatedOrnamentsSelectionLV.getSelectionModel().getSelectedItems()) {
+			searchEntry.getRelatedOrnaments().add(oce);
+		}
+
+		for (OrnamentPositionEntry oce : positionSelectionLV.getSelectionModel().getSelectedItems()) {
+			searchEntry.getPosition().add(oce);
+		}
+
+		for (OrnamentFunctionEntry oce : functionSelectionLV.getSelectionModel().getSelectedItems()) {
+			searchEntry.getFunction().add(oce);
+		}
+		
+		for (CaveEntry ce : cavesSelectionLV.getSelectionModel().getSelectedItems()) {
+			searchEntry.getCaves().add(ce);
+		}
+		
 		try {
 			if (!(ornamentClassComboBox.getValueOrThrow() == null)) {
-
 				searchEntry.setOrnamentClass(ornamentClassComboBox.getValue());
-				searchEntry.setEmpty(false);
 			}
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
