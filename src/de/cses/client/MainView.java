@@ -208,7 +208,7 @@ public class MainView implements IsWidget {
 
 		ContentPanel kuchaLogoPanel = new ContentPanel();
 		kuchaLogoPanel.setHeaderVisible(false);
-		kuchaLogoPanel.addStyleName("kuchaLogo");
+		kuchaLogoPanel.setStylePrimaryName("kuchaLogo");
 		
 		// ----------------------------------- assembling the menu bar ---------------------------------------------
 		

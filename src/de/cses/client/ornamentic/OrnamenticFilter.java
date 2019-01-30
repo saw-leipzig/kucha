@@ -927,7 +927,7 @@ public class OrnamenticFilter extends AbstractFilter {
 		// ornamentComponentsPanel.setHeight(200);
 		accordion.add(textSearch);
 
-		accordion.setActiveWidget(ornamentCavesPanel);
+//		accordion.setActiveWidget(ornamentCavesPanel);
 
 		// iconography? accordion.add(iconographyPanel);
 

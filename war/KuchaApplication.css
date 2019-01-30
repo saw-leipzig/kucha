@@ -57,6 +57,12 @@ div.data-view {
 	margin: 0
 }
 
+div.bib-view {
+	font-size: 16px;
+	background-color: #ffcc66;
+	margin: 0
+}
+
 div.label {
 	font-size: 10px;
 	font-family: verdana;

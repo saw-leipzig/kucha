@@ -308,7 +308,7 @@ public class CaveFilter extends AbstractFilter {
     locationALC.add(sitePanel);
     locationALC.add(districtPanel);
     locationALC.add(regionPanel);
-    locationALC.setActiveWidget(caveTypePanel);
+//    locationALC.setActiveWidget(caveTypePanel);
     
     VerticalLayoutContainer dfVLC = new VerticalLayoutContainer();
     dfVLC.add(searchNameTF, new VerticalLayoutData(1.0, .5));
