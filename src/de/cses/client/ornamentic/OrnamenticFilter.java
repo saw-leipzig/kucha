@@ -834,6 +834,8 @@ public class OrnamenticFilter extends AbstractFilter {
 						return pvTemplates.ornamentClass(item.getName());
 					}
 				});
+		ornamentClassComboBox.setTypeAhead(true);
+		ornamentClassComboBox.setEditable(false);
 		ornamentClassComboBox.setTriggerAction(TriggerAction.ALL);
 		ornamentClassComboBox.setEmptyText("select motif");
 		
@@ -841,6 +843,15 @@ public class OrnamenticFilter extends AbstractFilter {
 		headerOrnamentClass.setHeading("Motif");
 		headerOrnamentClass.add(ornamentClassComboBox);
 		headerOrnamentClass.getHeader().setStylePrimaryName("frame-header");
+		ToolButton resetOrnamentClassComboBoxTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
+		resetOrnamentClassComboBoxTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				ornamentClassComboBox.clear();
+			}
+		});
+		headerOrnamentClass.addTool(resetOrnamentClassComboBoxTB);
 
 //		ContentPanel ornamentCodePanel = new ContentPanel();
 //		ornamentCodePanel.setHeaderVisible(true);
@@ -917,14 +928,14 @@ public class OrnamenticFilter extends AbstractFilter {
 		accordion.add(textSearch);
 
 		VerticalLayoutContainer codeMotifVLC = new VerticalLayoutContainer();
-		codeMotifVLC.add(ornamentCodeSearchTF, new VerticalLayoutData(1.0, 20));
+		codeMotifVLC.add(ornamentCodeSearchTF, new VerticalLayoutData(1.0, 25));
 		codeMotifVLC.add(headerOrnamentClass, new VerticalLayoutData(1.0, 45));
 		
 		// accordion.setActiveWidget(ornamentCavesPanel);
 
 		// iconography? accordion.add(iconographyPanel);
 		BorderLayoutContainer ornamentFilterBLC = new BorderLayoutContainer();
-		ornamentFilterBLC.setNorthWidget(codeMotifVLC, new BorderLayoutData(65));
+		ornamentFilterBLC.setNorthWidget(codeMotifVLC, new BorderLayoutData(70));
 		ornamentFilterBLC.setCenterWidget(accordion, new MarginData(5, 0, 0, 0));
 		ornamentFilterBLC.setHeight(550);
 		return ornamentFilterBLC;

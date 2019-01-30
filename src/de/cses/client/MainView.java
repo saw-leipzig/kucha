@@ -221,12 +221,12 @@ public class MainView implements IsWidget {
 		// ----------------------------------- assembling the menu bar ---------------------------------------------
 		
 		selectorLayoutContainer = new HorizontalLayoutContainer();
-		selectorLayoutContainer.add(kuchaLogo, new HorizontalLayoutData(159, 100, new Margins(5, 0, 5, 0)));
-		selectorLayoutContainer.add(caveSearchController, new HorizontalLayoutData(130, 90, new Margins(10, 10, 10, 50)));
-		selectorLayoutContainer.add(depictionSearchController, new HorizontalLayoutData(90, 90, new Margins(10)));
-		selectorLayoutContainer.add(ornamenticSearchController, new HorizontalLayoutData(90, 90, new Margins(10)));
-		selectorLayoutContainer.add(annotatedBiblographySearchController, new HorizontalLayoutData(90, 90, new Margins(10)));
-		selectorLayoutContainer.add(imageSearchController, new HorizontalLayoutData(90, 90, new Margins(10)));
+		selectorLayoutContainer.add(kuchaLogo, new HorizontalLayoutData(179, 100, new Margins(5, 0, 5, 20)));
+		selectorLayoutContainer.add(caveSearchController, new HorizontalLayoutData(130, 100, new Margins(10, 10, 10, 40)));
+		selectorLayoutContainer.add(depictionSearchController, new HorizontalLayoutData(100, 100, new Margins(10)));
+		selectorLayoutContainer.add(ornamenticSearchController, new HorizontalLayoutData(100, 100, new Margins(10)));
+		selectorLayoutContainer.add(annotatedBiblographySearchController, new HorizontalLayoutData(100, 100, new Margins(10)));
+		selectorLayoutContainer.add(imageSearchController, new HorizontalLayoutData(100, 100, new Margins(10)));
 		
     ContentPanel centerPanel = new ContentPanel();
     centerPanel.setHeading("Search Results");
@@ -296,7 +296,6 @@ public class MainView implements IsWidget {
     filterPanel.getHeader().setStylePrimaryName("frame-header");
     filterPanel.add(filterView);
     
-    
     ContentPanel dataViewPanel = new ContentPanel();
     dataViewPanel.setResize(true);
     dataViewPanel.setHeading("View");
@@ -348,7 +347,7 @@ public class MainView implements IsWidget {
 		
 		Label footerLabel = new Label(FOOTER_TEXT);
 		footerLabel.setStyleName("footer");
-    
+		
     BorderLayoutData northData = new BorderLayoutData(120);
     northData.setMinSize(120);
     northData.setMargins(new Margins(5, 5, 0, 5));
