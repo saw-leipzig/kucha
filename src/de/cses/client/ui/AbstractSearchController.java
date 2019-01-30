@@ -53,7 +53,6 @@ public abstract class AbstractSearchController extends ContentPanel {
 		setBorders(false);
 		setBodyBorder(false);
 		add(inactiveTB, new MarginData(2));
-		add(activeTB, new MarginData(2));
 		setToolTip(Util.createToolTip(searchControllerTitle));
 		// switching between buttons
 		inactiveTB.addSelectHandler(new SelectHandler() { 
@@ -70,7 +69,6 @@ public abstract class AbstractSearchController extends ContentPanel {
 				setActive(false);
 			}
 		});
-		activeTB.hide();
 		
 		this.activeTB = activeTB;
 		this.inactiveTB = inactiveTB;
@@ -102,13 +100,13 @@ public abstract class AbstractSearchController extends ContentPanel {
 	
 	private void setActive(boolean active) {
 		if (active) {
-			inactiveTB.hide();
-//			add(activeTB, new MarginData(2));
-			activeTB.show();
+			inactiveTB.removeFromParent();
+			add(activeTB, new MarginData(2));
+//			activeTB.show();
 		} else {
-			activeTB.hide();
-//			add(inactiveTB, new MarginData(2));
-			inactiveTB.show();
+			activeTB.removeFromParent();
+			add(inactiveTB, new MarginData(2));
+//			inactiveTB.show();
 		}
 	}
 	

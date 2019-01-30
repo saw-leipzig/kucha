@@ -577,6 +577,14 @@ div.bibButtonOver {
 	cursor: pointer;
 }
 
+div.bibButtonOver2 {
+	background-image: url(icons/bib_mo2.png);
+	width: 70px;
+	height: 70px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
 div.bibButtonActive {
 	background-image: url(icons/bib_active.png);
 	width: 70px;

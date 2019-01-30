@@ -205,7 +205,7 @@ public class MainView implements IsWidget {
 				resultView.add(annotatedBiblographySearchController.getResultView(), 0);
 			}
 		});
-    ToolButton bibActiveTB = new ToolButton(new IconConfig("bibButtonActive", "bibButtonOver"));
+    ToolButton bibActiveTB = new ToolButton(new IconConfig("bibButtonActive", "bibButtonOver2"));
     bibActiveTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
