@@ -18,11 +18,16 @@ import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeUri;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.core.client.XTemplates;
+import com.sencha.gxt.core.client.XTemplates.XTemplate;
 import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.dnd.core.client.DndDropEvent;
 import com.sencha.gxt.dnd.core.client.DropTarget;
@@ -73,6 +78,14 @@ public class MainView implements IsWidget {
 
 		@Source("logo_saw_leipzig.png")
 		ImageResource logo_saw();
+	}
+
+	interface LogoTemplates extends XTemplates {
+		@XTemplate("<div style='text-align: left'><img src='{imgUri}' width='159px' height='91px' /></div>")
+		SafeHtml leftLogo(SafeUri imgUri);
+
+		@XTemplate("<div style='text-align: right'><img src='{imgUri}' width='180px' height='100px' /></div>")
+		SafeHtml rightLogo(SafeUri imgUri);
 	}
 
 	// this footer will be shown at the bottom of the WebApp
@@ -219,23 +232,26 @@ public class MainView implements IsWidget {
 		annotatedBiblographySearchController = new AnnotatedBiblographySearchController("Annotated Biblography", new AnnotatedBibliographyFilter("Bibliography"), new AnnotatedBiblographyResultView("Annotated Biblography"), bibInactiveTB, bibActiveTB);
 
 		Resources res = GWT.create(Resources.class);
-		Image kuchaLogo = new Image(res.logo_kucha());
-		Image sawLogo = new Image(res.logo_saw());
+//		Image kuchaLogo = new Image(res.logo_kucha());
+//		Image sawLogo = new Image(res.logo_saw());
+		LogoTemplates lt = GWT.create(LogoTemplates.class);
+		HTML leftLogoHTML = new HTML(lt.leftLogo(res.logo_kucha().getSafeUri()));
+		HTML rightLogoHTML = new HTML(lt.rightLogo(res.logo_saw().getSafeUri()));
 		
 		// ----------------------------------- assembling the menu bar ---------------------------------------------
 		
 		selectorLayoutContainer = new HorizontalLayoutContainer();
-		selectorLayoutContainer.add(kuchaLogo, new HorizontalLayoutData(159, 91, new Margins(5, 0, 5, 20)));
-		selectorLayoutContainer.add(caveSearchController, new HorizontalLayoutData(100, 100, new Margins(10)));
-		selectorLayoutContainer.add(depictionSearchController, new HorizontalLayoutData(100, 100, new Margins(10)));
-		selectorLayoutContainer.add(ornamenticSearchController, new HorizontalLayoutData(100, 100, new Margins(10)));
-		selectorLayoutContainer.add(annotatedBiblographySearchController, new HorizontalLayoutData(100, 100, new Margins(10)));
-		selectorLayoutContainer.add(imageSearchController, new HorizontalLayoutData(100, 100, new Margins(10)));
-		selectorLayoutContainer.add(sawLogo, new HorizontalLayoutData(450, 100, new Margins(5, 0, 5, 20)));
+		selectorLayoutContainer.add(leftLogoHTML, new HorizontalLayoutData(.25, 1.0, new Margins(0)));
+		selectorLayoutContainer.add(caveSearchController, new HorizontalLayoutData(.1, 1.0, new Margins(10)));
+		selectorLayoutContainer.add(depictionSearchController, new HorizontalLayoutData(.1, 1.0, new Margins(10)));
+		selectorLayoutContainer.add(ornamenticSearchController, new HorizontalLayoutData(.1, 1.0, new Margins(10)));
+		selectorLayoutContainer.add(annotatedBiblographySearchController, new HorizontalLayoutData(.1, 1.0, new Margins(10)));
+		selectorLayoutContainer.add(imageSearchController, new HorizontalLayoutData(.1, 1.0, new Margins(10)));
+		selectorLayoutContainer.add(rightLogoHTML, new HorizontalLayoutData(.25, 1.0, new Margins(0)));
 		
-		BorderLayoutContainer northBLC = new BorderLayoutContainer();
-		northBLC.setWestWidget(kuchaLogo, new BorderLayoutData(159));
-		northBLC.setCenterWidget(selectorLayoutContainer, new MarginData(0, 20, 0, 20));
+//		BorderLayoutContainer northBLC = new BorderLayoutContainer();
+//		northBLC.setWestWidget(kuchaLogo, new BorderLayoutData(159));
+//		northBLC.setCenterWidget(selectorLayoutContainer, new MarginData(0, 20, 0, 20));
 		
     ContentPanel centerPanel = new ContentPanel();
     centerPanel.setHeading("Search Results");
@@ -251,7 +267,7 @@ public class MainView implements IsWidget {
     ContentPanel northContentPanel = new ContentPanel();
     northContentPanel.addStyleName("transparent");
     northContentPanel.getHeader().setStylePrimaryName("frame-header");
-    northContentPanel.add(northBLC);
+    northContentPanel.add(selectorLayoutContainer);
     
     // updating heading when user is logged in / out
     UserLogin.getInstance().addCloseHandler(new CloseHandler<PopupPanel>() {
