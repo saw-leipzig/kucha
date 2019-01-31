@@ -76,7 +76,7 @@ public class MainView implements IsWidget {
 	}
 
 	// this footer will be shown at the bottom of the WebApp
-	private static final String FOOTER_TEXT = "\u00A9 2019 Sächsische Akademie der Wissenschaften zu Leipzig (Version 1.0 RC3)";
+	private static final String FOOTER_TEXT = "\u00A9 2019 Sächsische Akademie der Wissenschaften zu Leipzig (Version 1.0 RC4)";
 	
 	private BorderLayoutContainer view = null;
 	private CaveSearchController caveSearchController;
@@ -225,17 +225,17 @@ public class MainView implements IsWidget {
 		// ----------------------------------- assembling the menu bar ---------------------------------------------
 		
 		selectorLayoutContainer = new HorizontalLayoutContainer();
-//		selectorLayoutContainer.add(kuchaLogo, new HorizontalLayoutData(179, 100, new Margins(5, 0, 5, 20)));
+		selectorLayoutContainer.add(kuchaLogo, new HorizontalLayoutData(159, 91, new Margins(5, 0, 5, 20)));
 		selectorLayoutContainer.add(caveSearchController, new HorizontalLayoutData(100, 100, new Margins(10)));
 		selectorLayoutContainer.add(depictionSearchController, new HorizontalLayoutData(100, 100, new Margins(10)));
 		selectorLayoutContainer.add(ornamenticSearchController, new HorizontalLayoutData(100, 100, new Margins(10)));
 		selectorLayoutContainer.add(annotatedBiblographySearchController, new HorizontalLayoutData(100, 100, new Margins(10)));
 		selectorLayoutContainer.add(imageSearchController, new HorizontalLayoutData(100, 100, new Margins(10)));
+		selectorLayoutContainer.add(sawLogo, new HorizontalLayoutData(450, 100, new Margins(5, 0, 5, 20)));
 		
 		BorderLayoutContainer northBLC = new BorderLayoutContainer();
 		northBLC.setWestWidget(kuchaLogo, new BorderLayoutData(159));
 		northBLC.setCenterWidget(selectorLayoutContainer, new MarginData(0, 20, 0, 20));
-		northBLC.setEastWidget(sawLogo, new BorderLayoutData(144));
 		
     ContentPanel centerPanel = new ContentPanel();
     centerPanel.setHeading("Search Results");
