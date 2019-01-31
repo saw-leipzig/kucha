@@ -69,7 +69,10 @@ public class MainView implements IsWidget {
 	
 	interface Resources extends ClientBundle {
 		@Source("kucha_logo_homepage.png")
-		ImageResource logo();
+		ImageResource logo_kucha();
+
+		@Source("logo_saw_leipzig.png")
+		ImageResource logo_saw();
 	}
 
 	// this footer will be shown at the bottom of the WebApp
@@ -216,17 +219,23 @@ public class MainView implements IsWidget {
 		annotatedBiblographySearchController = new AnnotatedBiblographySearchController("Annotated Biblography", new AnnotatedBibliographyFilter("Bibliography"), new AnnotatedBiblographyResultView("Annotated Biblography"), bibInactiveTB, bibActiveTB);
 
 		Resources res = GWT.create(Resources.class);
-		Image kuchaLogo = new Image(res.logo());
+		Image kuchaLogo = new Image(res.logo_kucha());
+		Image sawLogo = new Image(res.logo_saw());
 		
 		// ----------------------------------- assembling the menu bar ---------------------------------------------
 		
 		selectorLayoutContainer = new HorizontalLayoutContainer();
-		selectorLayoutContainer.add(kuchaLogo, new HorizontalLayoutData(179, 100, new Margins(5, 0, 5, 20)));
-		selectorLayoutContainer.add(caveSearchController, new HorizontalLayoutData(130, 100, new Margins(10, 10, 10, 40)));
+//		selectorLayoutContainer.add(kuchaLogo, new HorizontalLayoutData(179, 100, new Margins(5, 0, 5, 20)));
+		selectorLayoutContainer.add(caveSearchController, new HorizontalLayoutData(100, 100, new Margins(10)));
 		selectorLayoutContainer.add(depictionSearchController, new HorizontalLayoutData(100, 100, new Margins(10)));
 		selectorLayoutContainer.add(ornamenticSearchController, new HorizontalLayoutData(100, 100, new Margins(10)));
 		selectorLayoutContainer.add(annotatedBiblographySearchController, new HorizontalLayoutData(100, 100, new Margins(10)));
 		selectorLayoutContainer.add(imageSearchController, new HorizontalLayoutData(100, 100, new Margins(10)));
+		
+		BorderLayoutContainer northBLC = new BorderLayoutContainer();
+		northBLC.setWestWidget(kuchaLogo, new BorderLayoutData(159));
+		northBLC.setCenterWidget(selectorLayoutContainer, new MarginData(0, 20, 0, 20));
+		northBLC.setEastWidget(sawLogo, new BorderLayoutData(144));
 		
     ContentPanel centerPanel = new ContentPanel();
     centerPanel.setHeading("Search Results");
@@ -242,7 +251,7 @@ public class MainView implements IsWidget {
     ContentPanel northContentPanel = new ContentPanel();
     northContentPanel.addStyleName("transparent");
     northContentPanel.getHeader().setStylePrimaryName("frame-header");
-    northContentPanel.add(selectorLayoutContainer);
+    northContentPanel.add(northBLC);
     
     // updating heading when user is logged in / out
     UserLogin.getInstance().addCloseHandler(new CloseHandler<PopupPanel>() {
