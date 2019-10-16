@@ -20,14 +20,19 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.editor.client.testing.MockEditorError;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
+import static com.google.gwt.event.dom.client.KeyCodes.KEY_ENTER;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
@@ -267,6 +272,7 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 		});
 		titleField = new TextField();
 		titleField.setWidth(300);
+
 		attributePanel.setHeading("Title");
 		attributePanel.add(titleField);
 		editPanel.add(attributePanel);
@@ -358,6 +364,7 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 		});
 
 		TextButton saveButton = new TextButton("save");
+
 		saveButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
@@ -427,9 +434,17 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 
 		hPanel.add(imgPanel);
 		hPanel.add(editPanel);
-
+		FocusPanel panel2 = new FocusPanel();
+		panel2.addKeyDownHandler(new KeyDownHandler() {
+	          @Override
+	          public void onKeyDown(KeyDownEvent e) {
+	        	  if ((e.isShiftKeyDown()) && (e.getNativeKeyCode() == KeyCodes.KEY_ENTER)) {
+	            	saveSelectedImageEntry();	            }
+	          }
+	        });
+		panel2.add(hPanel);
 		panel.setHeading("Image Editor");
-		panel.add(hPanel);
+		panel.add(panel2);
 		panel.addButton(closeButton);
 		panel.addButton(saveButton);
 		panel.addButton(deleteButton);

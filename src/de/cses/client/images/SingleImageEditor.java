@@ -20,6 +20,9 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.editor.client.testing.MockEditorError;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -31,7 +34,10 @@ import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -197,9 +203,9 @@ public class SingleImageEditor extends AbstractEditor {
 	 */
 	private void initPanel() {
 		panel = new FramedPanel();
-
 		titleField = new TextField();
 		titleField.addValidator(new MaxLengthValidator(128));
+
 		titleField.addValidator(new Validator<String>() {
 
 			@Override
@@ -225,6 +231,7 @@ public class SingleImageEditor extends AbstractEditor {
 
 		FramedPanel shortNamePanel = new FramedPanel();
 		shortNameField = new TextField();
+
 		shortNameField.addValidator(new MinLengthValidator(2));
 		shortNameField.addValidator(new MaxLengthValidator(12));
 		shortNamePanel.setHeading("Short Name");
@@ -485,13 +492,31 @@ public class SingleImageEditor extends AbstractEditor {
 		HorizontalLayoutContainer mainHLC = new HorizontalLayoutContainer();
 		mainHLC.add(imgFP, new HorizontalLayoutData(.4, 1.0));
 		mainHLC.add(editVLC, new HorizontalLayoutData(.6, 1.0));
-
+		FocusPanel panel2 = new FocusPanel();
+		panel2.addKeyDownHandler(new KeyDownHandler() {
+	          @Override
+	          public void onKeyDown(KeyDownEvent e) {
+	        	  if ((e.isShiftKeyDown()) && (e.getNativeKeyCode() == KeyCodes.KEY_ENTER)) {
+	            	saveImageEntry(true);
+	            }
+	          }
+	        });
+		FlowPanel flpanel = new FlowPanel();
+		flpanel.add(mainHLC);
+		panel2.add(flpanel);
+		ScrollPanel scrpanel = new ScrollPanel(panel2);
 		panel.setHeading("Image Editor (entry last modified on " + imgEntry.getModifiedOn() + ")");
-		panel.add(mainHLC);
+		panel.add(scrpanel);
 		panel.addTool(saveToolButton);
 		panel.addTool(closeToolButton);
-		panel.setSize("900px", "400px");
+		panel.setResize(true);
+		panel.add(scrpanel);
+		panel.setCollapsible(true);
+		//Info.display("ERROR", Integer.toString(Window.getClientHeight()));
+		panel.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
+		
 	}
+
 
 	/**
 	 * This method will save the currently selected ImageEntry from the left list of previews. In future versions, the missing fields will be added. Also, the
