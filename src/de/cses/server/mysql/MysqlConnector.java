@@ -12,7 +12,6 @@
  * If not, you can access it from here: <https://www.gnu.org/licenses/gpl-3.0.txt>.
  */
 package de.cses.server.mysql;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -27,6 +26,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+
+import org.eclipse.jetty.jndi.java.javaNameParser;
 
 import de.cses.server.ServerProperties;
 import de.cses.shared.AbstractEntry;
@@ -1880,18 +1881,18 @@ public class MysqlConnector {
 		 * What we can do is restricting the visibility of certain fields e.g. comments but this has to be done 
 		 * when the UI is build on the client side!
 		 */
-//		String inStatement = Integer.toString(AbstractEntry.ACCESS_LEVEL_PUBLIC); // public is always permitted
-//		switch (getAccessLevelForSessionID(searchEntry.getSessionID())) {
-//			case UserEntry.GUEST:
-//			case UserEntry.ASSOCIATED:
-//				inStatement += "," + AbstractEntry.ACCESS_LEVEL_COPYRIGHT;
-//				break; 
-//			case UserEntry.FULL:
-//			case UserEntry.ADMIN:
-//				inStatement += "," + AbstractEntry.ACCESS_LEVEL_COPYRIGHT + "," + AbstractEntry.ACCESS_LEVEL_PRIVATE;
-//				break;
-//		}
-//		where += where.isEmpty() ? "AccessLevel IN (" + inStatement + ")" : " AND AccessLevel IN (" + inStatement + ")";
+		String inStatement = Integer.toString(AbstractEntry.ACCESS_LEVEL_PUBLIC); // public is always permitted
+		switch (getAccessLevelForSessionID(searchEntry.getSessionID())) {
+			case UserEntry.GUEST:
+			case UserEntry.ASSOCIATED:
+				inStatement += "," + AbstractEntry.ACCESS_LEVEL_COPYRIGHT;
+				break; 
+			case UserEntry.FULL:
+			case UserEntry.ADMIN:
+				inStatement += "," + AbstractEntry.ACCESS_LEVEL_COPYRIGHT + "," + AbstractEntry.ACCESS_LEVEL_PRIVATE;
+				break;
+		}
+		where += where.isEmpty() ? "AccessLevel IN (" + inStatement + ")" : " AND AccessLevel IN (" + inStatement + ")";
 		
 		try {
 			int i = 1;
@@ -3308,6 +3309,7 @@ public class MysqlConnector {
 			e.printStackTrace(System.err);
 			return 0;
 		}
+
 		return accessRights;
 	}
 
@@ -5450,20 +5452,13 @@ public class MysqlConnector {
 		 * What we can do is restricting the visibility of certain fields e.g. comments but this has to be done 
 		 * when the UI is build on the client side!
 		 */
-//		String inStatement = Integer.toString(AbstractEntry.ACCESS_LEVEL_PUBLIC); // public is always permitted
-//		switch (getAccessLevelForSessionID(searchEntry.getSessionID())) {
-//			case UserEntry.GUEST:
-//			case UserEntry.ASSOCIATED:
-//				inStatement += "," + AbstractEntry.ACCESS_LEVEL_COPYRIGHT;
-//				break; 
-//			case UserEntry.FULL:
-//			case UserEntry.ADMIN:
-//				inStatement += "," + AbstractEntry.ACCESS_LEVEL_COPYRIGHT + "," + AbstractEntry.ACCESS_LEVEL_PRIVATE;
-//				break;
-//		}
-//		where += where.isEmpty() ? "AccessLevel IN (" + inStatement + ")" : " AND AccessLevel IN (" + inStatement + ")";
+		String inStatement  = Integer.toString(AbstractEntry.ACCESS_LEVEL_PUBLIC); // public is always permitted
+		
+		if (getAccessLevelForSessionID(searchEntry.getSessionID()) <= UserEntry.GUEST) {
+			where += where.isEmpty() ? "AccessLevel IN (" + inStatement + ")" : " AND AccessLevel IN (" + inStatement + ")";
+		}
 				
-		System.err.println(where.isEmpty() ? "SELECT * FROM Depictions" : "SELECT * FROM Depictions WHERE " + where);
+		System.err.println(where.isEmpty() ? "SELECT * FROM Depictions" : "hier?SELECT * FROM Depictions WHERE " + where);
 
 		try {
 			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Depictions" : "SELECT * FROM Depictions WHERE " + where);
