@@ -11,8 +11,7 @@
 				<i><b>{titleORG}<tpl if="subtitleORG != &quot;&quot;">: {subtitleORG}</tpl></b></i>
 				</tpl>
 				<tpl if="titleEN != &quot;&quot;">
-					<tpl if="officialTitleTranslation"> ({titleEN}<tpl if="subtitleEN != &quot;&quot;">: {subtitleEN}</tpl></tpl>
-					<tpl if="officialTitleTranslation"> [{titleEN}<tpl if="subtitleEN != &quot;&quot;">: {subtitleEN}</tpl>]</tpl>
+					<tpl if="officialTitleTranslation"> / {titleEN}<tpl if="subtitleEN != &quot;&quot;">: {subtitleEN}</tpl></tpl>
 				</tpl>.
 				<tpl if="editors != &quot;&quot;">{editors} ({editorType}).</tpl>
 			</tpl>
@@ -28,8 +27,7 @@
 				<i><b>{titleORG}<tpl if="subtitleORG != &quot;&quot;">: {subtitleORG}</tpl></b></i>
 				</tpl>
 				<tpl if="titleEN != &quot;&quot;">
-					<tpl if="officialTitleTranslation"> ({titleEN}<tpl if="subtitleEN != &quot;&quot;">: {subtitleEN}</tpl></tpl>
-					<tpl if="officialTitleTranslation"> [{titleEN}<tpl if="subtitleEN != &quot;&quot;">: {subtitleEN}</tpl>]</tpl>
+					<tpl if="officialTitleTranslation"> / {titleEN}<tpl if="subtitleEN != &quot;&quot;">: {subtitleEN}</tpl></tpl>
 				</tpl>.
 			</tpl>
 		</tpl>
@@ -43,8 +41,7 @@
 				<i><b>{titleORG}<tpl if="subtitleORG != &quot;&quot;">: {subtitleORG}</tpl></b></i>
 				</tpl>
 				<tpl if="titleEN != &quot;&quot;">
-					<tpl if="officialTitleTranslation"> ({titleEN}<tpl if="subtitleEN != &quot;&quot;">: {subtitleEN}</tpl></tpl>
-					<tpl if="officialTitleTranslation"> [{titleEN}<tpl if="subtitleEN != &quot;&quot;">: {subtitleEN}</tpl>]</tpl>
+					<tpl if="officialTitleTranslation"> / {titleEN}<tpl if="subtitleEN != &quot;&quot;">: {subtitleEN}</tpl></tpl>
 				</tpl>.
 			<tpl if="editorType != &quot;&quot;"> In: </tpl> 
 			<tpl if="editors != &quot;&quot;">{editors}<tpl if="editorType != &quot;&quot;"> ({editorType})</tpl>,</tpl>
