@@ -165,8 +165,9 @@ public class IconographySelector extends FramedPanel {
 		
 		iconographyTree.getSelectionModel().setSelectionMode(SelectionMode.MULTI);
 		iconographyTree.setCheckable(true);
+		iconographyTree.setCheckStyle(CheckCascade.PARENTS);;
 		iconographyTree.setAutoLoad(true);
-		iconographyTree.setCheckStyle(CheckCascade.NONE);
+		//iconographyTree.setCheckStyle(CheckCascade.NONE);
 		iconographyTree.setCheckNodes(CheckNodes.BOTH);
 
 		iconographyTree.addCheckChangeHandler(new CheckChangeHandler<IconographyEntry>() {
