@@ -19,6 +19,9 @@ import java.util.List;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.EditorError;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -28,11 +31,13 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.ValueProvider;
@@ -48,9 +53,11 @@ import com.sencha.gxt.data.shared.SortDir;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.Store.StoreFilter;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
+import com.sencha.gxt.fx.client.Draggable;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.PlainTabPanel;
+import com.sencha.gxt.widget.core.client.Resizable;
 import com.sencha.gxt.widget.core.client.TabItemConfig;
 import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.button.TextButton;
@@ -2585,16 +2592,43 @@ public class CaveEditor extends AbstractEditor {
 					public void onSelect(SelectEvent event) {
 						closeEditor(null);
 					}
+				}, new KeyDownHandler() {
+
+					@Override
+					public void onKeyDown(KeyDownEvent e) {
+						if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+						saveEntries(true);
+						closeEditor(null);
+					}}
+			
+					
 				});
 			}
 		});
 
 		mainPanel = new FramedPanel();
+		mainPanel.addDomHandler(new KeyDownHandler() {
+		    @Override
+		    public void onKeyDown(KeyDownEvent e) {
+	        	  if ((e.isShiftKeyDown()) && (e.getNativeKeyCode() == KeyCodes.KEY_ENTER)) {
+
+							saveEntries(true);
+	
+					}
+		        }
+		    			
+		}, KeyDownEvent.getType());
 		mainPanel.setHeading("Cave Editor (entry last modified on " + correspondingCaveEntry.getModifiedOn() + ")");
-		mainPanel.setSize("900px", "650px"); // here we set the size of the panel
-		mainPanel.add(mainHlContainer);
+		mainPanel.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
+		mainHlContainer.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80)); // here we set the size of the panel
+		
+		ScrollPanel scrpanel = new ScrollPanel();
+		scrpanel.add(mainHlContainer);
+		mainPanel.add(scrpanel);
 		mainPanel.addTool(saveToolButton);
 		mainPanel.addTool(closeToolButton);
+		new Resizable(mainPanel);
+		new Draggable(mainPanel);
 	}
 
 	/**

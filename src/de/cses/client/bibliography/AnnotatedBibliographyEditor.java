@@ -18,8 +18,14 @@ import java.util.List;
 
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.EditorError;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -27,9 +33,12 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -46,7 +55,9 @@ import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.data.shared.SortDir;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
+import com.sencha.gxt.fx.client.Draggable;
 import com.sencha.gxt.widget.core.client.FramedPanel;
+import com.sencha.gxt.widget.core.client.Resizable;
 import com.sencha.gxt.widget.core.client.TabPanel;
 import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.button.TextButton;
@@ -363,6 +374,9 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 				});
 	}
 
+	/**
+	 * 
+	 */
 	public void createForm() {
 
 		rebuildMainInput();
@@ -384,7 +398,18 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 					public void onSelect(SelectEvent event) {
 						closeEditor(null);
 					}
-				});
+				}, new KeyDownHandler() {
+
+					@Override
+					public void onKeyDown(KeyDownEvent e) {
+						if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+						save(true);
+						closeEditor(null);
+					}
+			
+					
+				}}
+						);
 				
 			}
 		});
@@ -401,11 +426,21 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 		});
 
 		mainFP = new FramedPanel();
+		mainFP.addDomHandler(new KeyDownHandler() {
+		    @Override
+		    public void onKeyDown(KeyDownEvent e) {
+	        	  if ((e.isShiftKeyDown()) && (e.getNativeKeyCode() == KeyCodes.KEY_ENTER)) {
+		            	save(true);
+		        }
+		    }			
+		}, KeyDownEvent.getType());
 		mainFP.setHeading("Annotated Bibliography (entry last modified on " + bibEntry.getModifiedOn() + ")");
-		mainFP.setSize("900px", "650px"); // here we set the size of the panel
+		mainFP.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
 		mainFP.add(tabpanel, new VerticalLayoutData(1.0, 1.0));
 		mainFP.addTool(saveToolButton);
 		mainFP.addTool(closeToolButton);
+		new Resizable(mainFP);
+		new Draggable(mainFP);
 
 	}
 
@@ -473,12 +508,13 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 		titleVLC.add(new FieldLabel(titleORG, "Original"), new VerticalLayoutData(1.0, 1.0 / 3));
 		titleVLC.add(new FieldLabel(titleEnHLC, "English Transl."), new VerticalLayoutData(1.0, 1.0 / 3));
 		titleVLC.add(new FieldLabel(titleTR, "Transcription"), new VerticalLayoutData(1.0, 1.0 / 3));
-
+		
 		FramedPanel titleFP = new FramedPanel();
 		titleFP.setHeading("Title");
 		titleFP.add(titleVLC);
 		firstTabInnerLeftVLC.add(titleFP, new VerticalLayoutData(1.0, 1.0 / 5));
-		
+
+
 		/**
 		 * Subtitle
 		 */
@@ -900,6 +936,9 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 					
 					@Override
 					public void onSelect(SelectEvent event) {
+					}},
+					new KeyDownHandler() {
+						public void onKeyDown(KeyDownEvent e) {
 					}
 				});
 			}
@@ -1069,14 +1108,23 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 										Util.showWarning("Delete Editor", selectedEntry.getName() + " couln't be deleted.\n It's probably used already.");
 									}
 								}
-							});
+							}
+									);
 						}
 					}, new SelectHandler() {
 						
 						@Override
 						public void onSelect(SelectEvent event) {
 						}
-					});
+					},
+						new KeyDownHandler() {
+						@Override
+						public void onKeyDown(KeyDownEvent e) {
+							
+						}
+					}
+					
+							);
 				}
 			});		
 			
@@ -1889,15 +1937,23 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 		 * now we assemble the TabPanel
 		 */
 		tabpanel = new TabPanel();
-
+		
 		HorizontalLayoutContainer firstTabHLC = new HorizontalLayoutContainer();
+		
 		firstTabHLC.add(firstTabInnerLeftVLC, new HorizontalLayoutData(.65, 1.0));
 		firstTabHLC.add(firstTabInnerRightVLC, new HorizontalLayoutData(.35, 1.0));
-		
-		tabpanel.add(firstTabHLC, "Basics (" + bibEntry.getPublicationType().getName() + ")");
-		tabpanel.add(secondTabVLC, "Authors and Editors");
-		tabpanel.add(thirdTabVLC, "Others");
+
+		ScrollPanel scrpanel1 = new ScrollPanel();
+		ScrollPanel scrpanel2 = new ScrollPanel();
+		ScrollPanel scrpanel3 = new ScrollPanel();
+		scrpanel1.add(firstTabHLC);
+		scrpanel2.add(secondTabVLC);
+		scrpanel3.add(thirdTabVLC);
+		tabpanel.add(scrpanel1, "Basics (" + bibEntry.getPublicationType().getName() + ")");
+		tabpanel.add(scrpanel2, "Authors and Editors");
+		tabpanel.add(scrpanel3, "Others");
 		tabpanel.setTabScroll(false);
+		//fpanel.add(tabpanel);
 	}
 
 }

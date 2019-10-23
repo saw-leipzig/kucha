@@ -14,14 +14,16 @@
 package de.cses.client.bibliography;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.widget.core.client.FramedPanel;
-import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
@@ -284,7 +286,13 @@ public class AuthorEditor implements IsWidget {
 					public void onSelect(SelectEvent event) {
 						closeEditor(false);
 					}
-				});
+				}, new KeyDownHandler() {
+					@Override
+					public void onKeyDown(KeyDownEvent e) {
+						
+					}
+				}
+				);
 			}
 		});
 		mainPanel.addTool(cancelToolButton);

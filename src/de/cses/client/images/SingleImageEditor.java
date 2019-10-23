@@ -33,11 +33,8 @@ import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -45,6 +42,8 @@ import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
+import com.sencha.gxt.core.client.dom.ScrollSupport;
+import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.core.client.util.Rectangle;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
@@ -52,19 +51,21 @@ import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.data.shared.SortDir;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
+import com.sencha.gxt.fx.client.Draggable;
 import com.sencha.gxt.widget.core.client.Dialog;
 import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.FramedPanel;
+import com.sencha.gxt.widget.core.client.Resizable;
+import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
-import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
+import com.sencha.gxt.widget.core.client.container.SimpleContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
-import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
 import com.sencha.gxt.widget.core.client.form.TextArea;
@@ -99,7 +100,7 @@ public class SingleImageEditor extends AbstractEditor {
 	private ComboBox<ImageTypeEntry> imageTypeSelection;
 	private ImageTypeProperties imageTypeProps;
 	private ListStore<ImageTypeEntry> imageTypeEntryList;
-
+	
 	/**
 	 * Create a remote service proxy to talk to the server-side service.
 	 */
@@ -451,7 +452,18 @@ public class SingleImageEditor extends AbstractEditor {
 					public void onSelect(SelectEvent event) {
 						 closeEditor(null);
 					}
-				});
+				}, new KeyDownHandler() {
+
+					@Override
+					public void onKeyDown(KeyDownEvent e) {
+						
+						saveImageEntry(true);
+						closeEditor(null);
+					}
+			
+					
+				}
+				);
 			}
 		});		
 
@@ -488,32 +500,35 @@ public class SingleImageEditor extends AbstractEditor {
 		editVLC.add(titlePanel, new VerticalLayoutData(1.0, .18));
 		editVLC.add(authorFP, new VerticalLayoutData(1.0, .18));
 		editVLC.add(editHLC, new VerticalLayoutData(1.0, .64));
-		
+	
 		HorizontalLayoutContainer mainHLC = new HorizontalLayoutContainer();
+		ScrollSupport scrContainer = mainHLC.getScrollSupport();
+		mainHLC.setScrollMode(ScrollMode.AUTO);
 		mainHLC.add(imgFP, new HorizontalLayoutData(.4, 1.0));
 		mainHLC.add(editVLC, new HorizontalLayoutData(.6, 1.0));
-		FocusPanel panel2 = new FocusPanel();
-		panel2.addKeyDownHandler(new KeyDownHandler() {
-	          @Override
-	          public void onKeyDown(KeyDownEvent e) {
+
+		panel.addDomHandler(new KeyDownHandler() {
+		    @Override
+		    public void onKeyDown(KeyDownEvent e) {
 	        	  if ((e.isShiftKeyDown()) && (e.getNativeKeyCode() == KeyCodes.KEY_ENTER)) {
-	            	saveImageEntry(true);
-	            }
-	          }
-	        });
-		FlowPanel flpanel = new FlowPanel();
-		flpanel.add(mainHLC);
-		panel2.add(flpanel);
-		ScrollPanel scrpanel = new ScrollPanel(panel2);
+	        		  saveImageEntry(true);
+		        }
+		    }			
+		}, KeyDownEvent.getType());
 		panel.setHeading("Image Editor (entry last modified on " + imgEntry.getModifiedOn() + ")");
-		panel.add(scrpanel);
+		panel.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
+		panel.add(mainHLC);
 		panel.addTool(saveToolButton);
 		panel.addTool(closeToolButton);
 		panel.setResize(true);
-		panel.add(scrpanel);
-		panel.setCollapsible(true);
-		//Info.display("ERROR", Integer.toString(Window.getClientHeight()));
-		panel.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
+		panel.setCollapsible(false);
+		//Info.display("ERROR", test);
+		//System.err.println(test);
+		//Info.display("test","test");
+		new Resizable(panel);
+		new Draggable(panel);
+		
+
 		
 	}
 
@@ -522,54 +537,111 @@ public class SingleImageEditor extends AbstractEditor {
 	 * This method will save the currently selected ImageEntry from the left list of previews. In future versions, the missing fields will be added. Also, the
 	 * Photographer ID us currently not mapped to the text entry in this box. (shows a yes/no dialog first)
 	 */
-	private void saveImageEntry(boolean closeEditorRequested) {
-		if (!verifyInputs()) {
-			return;
-		}
+	public void dohandle(boolean closeEditorRequested) {
+		updateImageEntry();
+		// only of the yes button is selected, we will perform the command
+		// to simplify we just ignore the no button event by doing nothing
 
-		Dialog simple = new Dialog();
-		simple.setHeading("Save");
-		simple.setWidth(300);
-		simple.setResizable(false);
-		simple.setHideOnButtonClick(true);
-		simple.setPredefinedButtons(PredefinedButton.YES, PredefinedButton.NO);
-		simple.setBodyStyleName("pad-text");
-		simple.getBody().addClassName("pad-text");
-		simple.add(
-				new Label("Saving will overwrite the existing information in the Database. This cannot be reversed! Do you want to continue?"));
-		simple.getButton(PredefinedButton.YES).addSelectHandler(new SelectHandler() {
+		dbService.updateImageEntry(imgEntry, new AsyncCallback<Boolean>() {
+			public void onFailure(Throwable caught) {
+				Info.display("ERROR", "Image information has NOT been updated!");
+				
+			}
 
 			@Override
-			public void onSelect(SelectEvent event) {
-				updateImageEntry();
-				// only of the yes button is selected, we will perform the command
-				// to simplify we just ignore the no button event by doing nothing
-
-				dbService.updateImageEntry(imgEntry, new AsyncCallback<Boolean>() {
-					public void onFailure(Throwable caught) {
-						Info.display("ERROR", "Image information has NOT been updated!");
+			public void onSuccess(Boolean result) {
+				if (result) {
+					if (closeEditorRequested) {
+						closeEditor(imgEntry);
 					}
-
-					@Override
-					public void onSuccess(Boolean result) {
-						if (result) {
-							if (closeEditorRequested) {
-								closeEditor(imgEntry);
-							}
-						} else {
-							Info.display("ERROR", "Image information has NOT been updated!");
-						}
-					}
-				});
+				} else {
+					Info.display("ERROR", "Image information has NOT been updated!");
+				}
+				if (closeEditorRequested) {
+					closeEditor(imgEntry);
+				}
+				
 			}
-		});
-		simple.show();
-		// constrain the dialog to the viewport (for small mobile screen sizes)
-		Rectangle bounds = simple.getElement().getBounds();
-		Rectangle adjusted = simple.getElement().adjustForConstraints(bounds);
-		if (adjusted.getWidth() != bounds.getWidth() || adjusted.getHeight() != bounds.getHeight()) {
-			simple.setPixelSize(adjusted.getWidth(), adjusted.getHeight());
 		}
+		);
+	}
+	private void saveImageEntry(boolean closeEditorRequested) {
+		if (!verifyInputs()) {
+			if (closeEditorRequested) {
+				closeEditor(imgEntry);
+			}
+			return;
+		}
+		Util.showYesNo("Save", "Saving will overwrite the existing information in the Database. This cannot be reversed! Do you want to continue?", new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				dohandle(closeEditorRequested);
+			}
+		}, new SelectHandler() {
+				
+			@Override
+			public void onSelect(SelectEvent event) {
+				if (closeEditorRequested) {
+					closeEditor(imgEntry);
+				}
+			}
+		}, new KeyDownHandler() {
+
+			@Override
+			public void onKeyDown(KeyDownEvent e) {
+				dohandle(closeEditorRequested);
+			}}
+	
+			
+		
+		);
+//		Dialog simple = new Dialog();
+//		simple.setHeading("Save");
+//		simple.setWidth(300);
+//		simple.setResizable(false);
+//		simple.setHideOnButtonClick(true);
+//		simple.setPredefinedButtons(PredefinedButton.YES, PredefinedButton.NO);
+//		simple.setBodyStyleName("pad-text");
+//		simple.getBody().addClassName("pad-text");
+//		simple.add(
+//				new Label("Saving will overwrite the existing information in the Database. This cannot be reversed! Do you want to continue?"));
+//		simple.getButton(PredefinedButton.YES).addSelectHandler(new SelectHandler() {
+//
+//			@Override
+//			public void onSelect(SelectEvent event) {
+//				updateImageEntry();
+//				// only of the yes button is selected, we will perform the command
+//				// to simplify we just ignore the no button event by doing nothing
+//
+//				dbService.updateImageEntry(imgEntry, new AsyncCallback<Boolean>() {
+//					public void onFailure(Throwable caught) {
+//						Info.display("ERROR", "Image information has NOT been updated!");
+//						simple.hide();
+//					}
+//
+//					@Override
+//					public void onSuccess(Boolean result) {
+//						if (result) {
+//							if (closeEditorRequested) {
+//								closeEditor(imgEntry);
+//							}
+//						} else {
+//							Info.display("ERROR", "Image information has NOT been updated!");
+//						}
+//						simple.hide();
+//					}
+//				}
+//				);
+//			}
+//		});
+//		simple.show();
+//		// constrain the dialog to the viewport (for small mobile screen sizes)
+//		Rectangle bounds = simple.getElement().getBounds();
+//		Rectangle adjusted = simple.getElement().adjustForConstraints(bounds);
+//		if (adjusted.getWidth() != bounds.getWidth() || adjusted.getHeight() != bounds.getHeight()) {
+//			simple.setPixelSize(adjusted.getWidth(), adjusted.getHeight());
+//		}
 
 	}
 

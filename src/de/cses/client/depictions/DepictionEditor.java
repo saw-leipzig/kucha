@@ -19,6 +19,9 @@ import java.util.List;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.EditorError;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -28,8 +31,10 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
@@ -44,8 +49,10 @@ import com.sencha.gxt.data.shared.SortDir;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.dnd.core.client.ListViewDragSource;
 import com.sencha.gxt.dnd.core.client.ListViewDropTarget;
+import com.sencha.gxt.fx.client.Draggable;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
+import com.sencha.gxt.widget.core.client.Resizable;
 import com.sencha.gxt.widget.core.client.TabPanel;
 import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.button.TextButton;
@@ -1373,11 +1380,18 @@ public class DepictionEditor extends AbstractEditor {
 
 		TabPanel tabPanel = new TabPanel();
 		tabPanel.setTabScroll(false);
-		tabPanel.add(basicsTabHLC, "Basics");
-		tabPanel.add(descriptionTabHLC, "Description");
-		tabPanel.add(iconographySelector, "Iconography & Pictorial Elements");
-		tabPanel.add(bibliographySelector, "Bibliography Selector");
-		
+		ScrollPanel scrpanel1 = new ScrollPanel();
+		ScrollPanel scrpanel2 = new ScrollPanel();
+		ScrollPanel scrpanel3 = new ScrollPanel();
+		ScrollPanel scrpanel4 = new ScrollPanel();
+		scrpanel1.add(basicsTabHLC);
+		scrpanel2.add(descriptionTabHLC);
+		scrpanel3.add(iconographySelector);
+		scrpanel4.add(bibliographySelector);
+		tabPanel.add(scrpanel1, "Basics");
+		tabPanel.add(scrpanel2, "Description");
+		tabPanel.add(scrpanel3, "Iconography & Pictorial Elements");
+		tabPanel.add(scrpanel4, "Bibliography Selector");
 		HorizontalLayoutContainer mainHLC = new HorizontalLayoutContainer();
 		mainHLC.add(tabPanel, new HorizontalLayoutData(.7, 1.0));
 		mainHLC.add(depictionImagesPanel, new HorizontalLayoutData(.3, 1.0));
@@ -1408,18 +1422,39 @@ public class DepictionEditor extends AbstractEditor {
 					public void onSelect(SelectEvent event) {
 						 closeEditor(null);
 					}
-				});
+				}, new KeyDownHandler() {
+
+					@Override
+					public void onKeyDown(KeyDownEvent e) {
+						if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+						saveDepictionEntry(true);
+						closeEditor(null);
+					}}
+			
+					
+				}
+			  );
 			}
 		});
 		
 		mainPanel = new FramedPanel();
+		mainPanel.addDomHandler(new KeyDownHandler() {
+		    @Override
+		    public void onKeyDown(KeyDownEvent e) {
+	        	  if ((e.isShiftKeyDown()) && (e.getNativeKeyCode() == KeyCodes.KEY_ENTER)) {
+	        		  saveDepictionEntry(true);
+		        }
+		    }			
+		}, KeyDownEvent.getType());
 		mainPanel.setHeading("Painted Representation Editor (entry last modified on " + correspondingDepictionEntry.getModifiedOn() + 
 				(!correspondingDepictionEntry.getLastChangedByUser().isEmpty() ? " by " + correspondingDepictionEntry.getLastChangedByUser() + ")" : ")"));
 
 		mainPanel.add(mainHLC);
-		mainPanel.setSize("900px", "650px");
+		mainPanel.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
 		mainPanel.addTool(saveToolButton);
 		mainPanel.addTool(closeToolButton);
+		new Resizable(mainPanel);
+		new Draggable(mainPanel);
 	}
 
 	/**

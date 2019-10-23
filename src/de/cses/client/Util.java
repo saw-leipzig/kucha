@@ -14,15 +14,18 @@
 package de.cses.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.sencha.gxt.core.client.XTemplates;
-import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
@@ -115,14 +118,25 @@ public class Util {
 		dialog.center();
 	}
 
-	public static void showYesNo(String header, String message, SelectHandler yesHandler, SelectHandler noHandler) {
-		final PopupPanel dialog = new PopupPanel();
+	public static void showYesNo(String header, String message, SelectHandler yesHandler, SelectHandler noHandler, KeyDownHandler enterHandler) {
+		final DialogBox dialog = new DialogBox();
 		FramedPanel dialogPanel = new FramedPanel();
 		dialogPanel.getHeader().setStyleName("frame-header");
 		dialog.getElement().getStyle().setBorderColor("#FF0000");
 		dialogPanel.setHeading(header);
+		KeyDownHandler doenter = new KeyDownHandler() {
+		    @Override
+		    public void onKeyDown(KeyDownEvent e) {
+	        	  if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+	  				dialog.hide();
+					enterHandler.onKeyDown(e);
+		        }
+		    }};			
+		dialogPanel.addDomHandler(doenter, KeyDownEvent.getType());
 		dialogPanel.add(new HTML("<div style='font: 12px tahoma,arial,verdana,sans-serif; width: 300px;'>" + message + "</div>", true));
 		TextButton yesButton = new TextButton("Yes");
+		yesButton.addDomHandler(doenter, KeyDownEvent.getType());
+		yesButton.getFocusSupport();
 		yesButton.addSelectHandler(new SelectHandler() {
 
 			@Override

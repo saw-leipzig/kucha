@@ -488,7 +488,7 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 						}
 					});
 				}
-			}, null);
+			}, null,null);
 //			Dialog simple = new Dialog();
 //			simple.setHeading("Delete");
 //			simple.setWidth(300);

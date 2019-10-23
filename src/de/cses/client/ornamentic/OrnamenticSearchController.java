@@ -16,21 +16,15 @@ package de.cses.client.ornamentic;
 import java.util.ArrayList;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.DialogBox;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
-import de.cses.client.caves.CaveEditor;
-import de.cses.client.caves.CaveView;
-import de.cses.client.ui.AbstractFilter;
-import de.cses.client.ui.AbstractResultView;
 import de.cses.client.ui.AbstractSearchController;
 import de.cses.client.ui.EditorListener;
 import de.cses.shared.AbstractEntry;
-import de.cses.shared.CaveEntry;
 import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamenticSearchEntry;
 
@@ -83,7 +77,7 @@ public class OrnamenticSearchController extends AbstractSearchController {
 	 */
 	@Override
 	public void addNewElement() {
-		PopupPanel ornamenticEditorPanel = new PopupPanel(false);
+		DialogBox ornamenticEditorPanel = new DialogBox(false);
 		OrnamenticEditor ornamenticEditor = new OrnamenticEditor(null);
 		ornamenticEditor.addEditorListener(new EditorListener() {
 			

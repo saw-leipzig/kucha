@@ -5,15 +5,18 @@ import java.util.ArrayList;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
@@ -28,15 +31,14 @@ import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.dnd.core.client.ListViewDragSource;
 import com.sencha.gxt.dnd.core.client.ListViewDropTarget;
-import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.fx.client.Draggable;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
+import com.sencha.gxt.widget.core.client.Resizable;
 import com.sencha.gxt.widget.core.client.TabPanel;
-import com.sencha.gxt.widget.core.client.button.ButtonBar;
 import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
-import com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutData;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.VBoxLayoutContainer;
@@ -70,6 +72,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	FramedPanel header;
+	private FramedPanel backgroundPanel;
 	private VBoxLayoutContainer widget;
 	FramedPanel cavesContentPanel;
 	private OrnamentCaveRelationProperties ornamentCaveRelationProps;
@@ -116,21 +119,19 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 	// Viele der Eigenschaften der Ornamenten wurden inzwischen umbenannt (siehe OrnamentEntry f�r Kommentare zu den Eigenschafen)
 	
 	// 
-	@Override
-	public Widget asWidget() {
-		if (widget == null) {
-			BoxLayoutData flex = new BoxLayoutData();
-			flex.setFlex(1);
-			widget = new VBoxLayoutContainer();
-			widget.add(createForm(), flex);
-		}
-		return widget;
-	}
+
 
 	public OrnamenticEditor(OrnamentEntry ornamentEntry) {
 		this.ornamentEntry = ornamentEntry;
 	}
+	@Override
+	public Widget asWidget() {
+		if (backgroundPanel == null) {
 
+			createForm();
+		}
+		return backgroundPanel;
+	}
 	public Widget createForm() {
 		// Aufbau der Listen welche geladen werden m�ssen aus der Datenbank
 		Util.doLogging("Create form von ornamenticeditor gestartet");
@@ -263,8 +264,9 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 		// Aufbau der Felder auf der Client Seite
 		TabPanel tabpanel = new TabPanel();
-		tabpanel.setWidth(620);
-		tabpanel.setHeight(600);
+		tabpanel.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
+		//tabpanel.setWidth(620);
+		//tabpanel.setHeight(600);
 
 		VerticalLayoutContainer panel = new VerticalLayoutContainer();
 		VerticalLayoutContainer panel2 = new VerticalLayoutContainer();
@@ -488,6 +490,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		addCaveTool.addHandler(addCaveClickHandler, ClickEvent.getType());
 
 		cavesContentPanel = new FramedPanel();
+
 		cavesPanel.add(cavesContentPanel);
 		caveOrnamentRelationList = new ListStore<OrnamentCaveRelation>(
 				ornamentCaveRelationProps.ornamentCaveRelationID());
@@ -544,7 +547,6 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 			} // end
 		};
 
-		FramedPanel framedpanelornamentic = new FramedPanel();
 
 		ClickHandler cancelHandler = new ClickHandler() {
 			// R�ckfrage �ber schlie�en ohne zu speichern
@@ -565,6 +567,19 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 					public void onSelect(SelectEvent event) {
 						closeEditor(null);
 					}
+			
+					
+				}
+				, new KeyDownHandler() {
+
+					@Override
+					public void onKeyDown(KeyDownEvent e) {
+						if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+						save();
+						closeEditor(null);
+					}}
+			
+					
 				});
 				
 //				
@@ -610,20 +625,23 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 		horizontBackground.add(panel, new HorizontalLayoutData(.5, 1.0));
 		horizontBackground.add(panel2, new HorizontalLayoutData(.5, 1.0));
-		framedpanelornamentic.setHeading("1. General");
-		framedpanelornamentic.add(horizontBackground);
+		ScrollPanel scrframedpanelornamentic = new ScrollPanel();
+		horizontBackground.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
 
-		tabpanel.add(framedpanelornamentic, "1. General");
+		scrframedpanelornamentic.add(horizontBackground);
 
-		FramedPanel general2FramedPanel = new FramedPanel();
-		general2FramedPanel.setHeading("2. General");
-		tabpanel.add(general2FramedPanel, "2. General");
-		general2FramedPanel.add(verticalgeneral2Background);
+		tabpanel.add(scrframedpanelornamentic, "1. General");
 
-		FramedPanel general3FramedPanel = new FramedPanel();
-		general3FramedPanel.setHeading("3. General");
-		tabpanel.add(general3FramedPanel, "3. General");
-		general3FramedPanel.add(verticalgeneral3Background);
+		ScrollPanel scrgeneral2FramedPanel = new ScrollPanel();
+		verticalgeneral2Background.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
+		
+		scrgeneral2FramedPanel.add(verticalgeneral2Background);
+		tabpanel.add(scrgeneral2FramedPanel, "2. General");
+
+		ScrollPanel scrgeneral3FramedPanel = new ScrollPanel();
+		verticalgeneral3Background.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
+		scrgeneral3FramedPanel.add(verticalgeneral3Background);
+		tabpanel.add(scrgeneral3FramedPanel, "3. General");
 
 		HorizontalLayoutContainer ornamentComponentsHorizontalPanel = new HorizontalLayoutContainer();
 
@@ -933,8 +951,12 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		hbp.add(addImageButton);
 		hbp.add(removeImageButton);
 		imagesVerticalPanel.add(hbp);
-		tabpanel.add(imagesFramedPanel, "Images");
 		imagesFramedPanel.add(imagesVerticalPanel);
+		imagesFramedPanel.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
+		
+		ScrollPanel scrimagesFramedPanel = new ScrollPanel();
+		scrimagesFramedPanel.add(imagesFramedPanel);
+		tabpanel.add(scrimagesFramedPanel, "Images");
 		tabpanel.setTabScroll(true);
 
 		ToolButton closeButton = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
@@ -949,17 +971,26 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		} else {
 			bibSelector = new BibliographySelector(new ArrayList<AnnotatedBibliographyEntry>());
 		}
+		
 		tabpanel.add(bibSelector, "Related Bibliography");
 
-		FramedPanel backgroundPanel = new FramedPanel();
-		HorizontalLayoutContainer horiPanel = new HorizontalLayoutContainer();
-		horiPanel.setSize("650", "600");
-		backgroundPanel.add(horiPanel);
-		horiPanel.add(tabpanel);
+		backgroundPanel = new FramedPanel();
+		
+		backgroundPanel.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
+		backgroundPanel.add(tabpanel);
 		backgroundPanel.setHeading("Ornamentation Editor");
 		backgroundPanel.addTool(saveButton);
 		backgroundPanel.addTool(closeButton);
-
+		backgroundPanel.addDomHandler(new KeyDownHandler() {
+		    @Override
+		    public void onKeyDown(KeyDownEvent e) {
+	        	  if ((e.isShiftKeyDown()) && (e.getNativeKeyCode() == KeyCodes.KEY_ENTER)) {
+						save();
+						closeEditor(null);		        }
+		    }			
+		}, KeyDownEvent.getType());
+		new Resizable(backgroundPanel);
+		new Draggable(backgroundPanel);
 		return backgroundPanel;
 
 	}

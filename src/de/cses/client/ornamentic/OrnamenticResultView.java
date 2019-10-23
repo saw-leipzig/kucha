@@ -38,7 +38,7 @@ public class OrnamenticResultView extends AbstractResultView{
 	
 	public OrnamenticResultView(String title) {
 		super(title);
-		setHeight(300);
+		//setHeight(300);
 
 		new DropTarget(this) {
 			@Override

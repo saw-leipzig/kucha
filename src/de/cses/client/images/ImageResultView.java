@@ -48,7 +48,7 @@ public class ImageResultView extends AbstractResultView {
 	 */
 	public ImageResultView(String title) {
 		super(title);
-		setHeight(300);
+		//setHeight(300);
 
 		new DropTarget(this) {
 

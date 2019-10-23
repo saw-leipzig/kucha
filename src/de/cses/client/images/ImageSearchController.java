@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.DialogBox;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.info.Info;
 
@@ -83,9 +83,9 @@ public class ImageSearchController extends AbstractSearchController {
 	 */
 	@Override
 	public void addNewElement() {
-		final PopupPanel imageUploadPanel = new PopupPanel(false);
-		final PopupPanel imageEditorPanel = new PopupPanel(false);
-
+		final DialogBox imageUploadPanel = new DialogBox(false);
+		final DialogBox imageEditorPanel = new DialogBox(false);
+		
 		ImageUploader iu = new ImageUploader(new ImageUploadListener() {
 
 			@Override
@@ -125,7 +125,10 @@ public class ImageSearchController extends AbstractSearchController {
 						});
 						imageEditorPanel.add(singleIE);
 						imageEditorPanel.setGlassEnabled(true);
-						imageEditorPanel.center();
+						imageEditorPanel.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
+						imageEditorPanel.setModal(true);
+						
+						//imageEditorPanel.center();
 						imageEditorPanel.show();
 					}
 

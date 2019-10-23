@@ -18,9 +18,9 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.Label;
 
-import de.cses.client.Util;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.UserEntry;
@@ -31,7 +31,7 @@ import de.cses.shared.UserEntry;
  */
 public abstract class AbstractView extends Button implements EditorListener {
 
-	private PopupPanel editorPanel;
+	private DialogBox editorPanel;
 	
 	/**
 	 * This is the general constructor that amongst other tasks initializes the PopupPanel for the editor
@@ -51,10 +51,11 @@ public abstract class AbstractView extends Button implements EditorListener {
 	private void showEditor() {
 		AbstractEditor editor = getEditor();
 		editor.addEditorListener(this);
-		editorPanel = new PopupPanel(false);
+		editorPanel = new DialogBox(false);
 		editorPanel.add(editor);
+		editorPanel.setModal(true);
 		editorPanel.setGlassEnabled(true);
-		editorPanel.center();
+		editorPanel.show();
 	}
 	
 	private void viewDataSet(String url) { // 

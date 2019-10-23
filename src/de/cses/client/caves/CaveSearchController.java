@@ -17,10 +17,12 @@ import java.util.ArrayList;
 import java.util.Comparator;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.DialogBox;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
-
+import com.google.gwt.user.client.ui.ScrollPanel;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
@@ -31,7 +33,7 @@ import de.cses.shared.AbstractEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveSearchEntry;
 import de.cses.shared.comparator.CaveEntryComparator;
-import javafx.scene.control.Button;
+//import javafx.scene.control.Button;
 
 /**
  * @author alingnau
@@ -89,7 +91,7 @@ public class CaveSearchController extends AbstractSearchController {
 	 */
 	@Override
 	public void addNewElement() {
-		PopupPanel caveEditorPanel = new PopupPanel(false);
+		DialogBox caveEditorPanel = new DialogBox();
 		CaveEditor ced = new CaveEditor(null);
 		ced.addEditorListener(new EditorListener() {
 
@@ -104,9 +106,14 @@ public class CaveSearchController extends AbstractSearchController {
 //			@Override
 //			public void updateEntryRequest(AbstractEntry updatedEntry) { }
 		});
+		ScrollPanel scrpanel = new ScrollPanel();
+//		scrpanel.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
+//		scrpanel.add(ced);
 		caveEditorPanel.add(ced);
+		caveEditorPanel.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
+		caveEditorPanel.setModal(true);
 		caveEditorPanel.setGlassEnabled(true);
-		caveEditorPanel.center();
+		
 	}
 
 }
