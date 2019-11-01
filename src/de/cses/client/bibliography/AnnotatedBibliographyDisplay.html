@@ -7,7 +7,9 @@
 					{titleTR}<tpl if="subtitleTR != &quot;&quot;">: {subtitleTR}</tpl>
 				</tpl>
 				<tpl if="titleORG != &quot;&quot;">
-				<i><b>{titleORG}<tpl if="subtitleORG != &quot;&quot;">: {subtitleORG}</tpl></b></i>
+				<tpl if="parentTitleORG == &quot;&quot;"><i></tpl>
+				<b>{titleORG}<tpl if="subtitleORG != &quot;&quot;">: {subtitleORG}</tpl></b>
+				<tpl if="parentTitleORG == &quot;&quot;"></i></tpl>
 				</tpl>
 				<tpl if="titleEN != &quot;&quot;">
 					<tpl if="officialTitleTranslation"> / {titleEN}<tpl if="subtitleEN != &quot;&quot;">: {subtitleEN}</tpl></tpl>
@@ -23,7 +25,9 @@
 						<tpl if="subtitleTR != &quot;&quot;">: {subtitleTR}</tpl>
 				</tpl>
 				<tpl if="titleORG != &quot;&quot;">
-				<i><b>{titleORG}<tpl if="subtitleORG != &quot;&quot;">: {subtitleORG}</tpl></b></i>
+				<tpl if="parentTitleORG == &quot;&quot;"><i></tpl>
+				<b>{titleORG}<tpl if="subtitleORG != &quot;&quot;">: {subtitleORG}</tpl></b>
+				<tpl if="parentTitleORG == &quot;&quot;"></i></tpl>
 				</tpl>
 				<tpl if="titleEN != &quot;&quot;">
 					<tpl if="officialTitleTranslation"> / {titleEN}<tpl if="subtitleEN != &quot;&quot;">: {subtitleEN}</tpl></tpl>
@@ -37,7 +41,9 @@
 					{titleTR}<tpl if="subtitleTR != &quot;&quot;">: {subtitleTR}</tpl>
 				</tpl>
 				<tpl if="titleORG != &quot;&quot;">
-				<i><b>{titleORG}<tpl if="subtitleORG != &quot;&quot;">: {subtitleORG}</tpl></b></i>
+				<tpl if="parentTitleORG == &quot;&quot;"><i></tpl>
+				<b>{titleORG}<tpl if="subtitleORG != &quot;&quot;">: {subtitleORG}</tpl></b>
+				<tpl if="parentTitleORG == &quot;&quot;"></i></tpl>
 				</tpl>
 				<tpl if="titleEN != &quot;&quot;">
 					<tpl if="officialTitleTranslation"> / {titleEN}<tpl if="subtitleEN != &quot;&quot;">: {subtitleEN}</tpl></tpl>
@@ -46,7 +52,7 @@
 			<tpl if="editors != &quot;&quot;">{editors}<tpl if="editorType != &quot;&quot;"> ({editorType})</tpl>,</tpl>
 			 <tpl if="parentTitleTR != &quot;&quot;"><i>{parentTitleTR}</i>.</tpl>
 			<i>{parentTitleORG}</i>.
-			 <tpl if="parentTitleEN != &quot;&quot;"><i>{parentTitleEN}</i>.</tpl>
+			 <tpl if="parentTitleEN != &quot;&quot;"></i>{parentTitleEN}</i>.</tpl>
 	  </tpl>
 		<tpl if="thesisType != &quot;&quot;"> {thesisType} thesis.</tpl>
 		<tpl if="editionORG != &quot;&quot;"> Edition: {editionORG}.</tpl>

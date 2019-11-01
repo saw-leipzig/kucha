@@ -8,7 +8,10 @@
 					{titleTR}<tpl if="subtitleTR != &quot;&quot;">: {subtitleTR}</tpl>
 				</tpl>
 				<tpl if="titleORG != &quot;&quot;">
-				<i><b>{titleORG}<tpl if="subtitleORG != &quot;&quot;">: {subtitleORG}</tpl></b></i>
+				<tpl if="parentTitleORG == &quot;&quot;"><i></tpl>
+								{hasHan}
+				<b>{titleORG}<tpl if="subtitleORG != &quot;&quot;">: {subtitleORG}</tpl></b>
+				<tpl if="parentTitleORG == &quot;&quot;"></i></tpl>
 				</tpl>
 				<tpl if="titleEN != &quot;&quot;">
 					<tpl if="officialTitleTranslation"> / {titleEN}<tpl if="subtitleEN != &quot;&quot;">: {subtitleEN}</tpl></tpl>
@@ -24,7 +27,10 @@
 						<tpl if="subtitleTR != &quot;&quot;">: {subtitleTR}</tpl>
 				</tpl>
 				<tpl if="titleORG != &quot;&quot;">
-				<i><b>{titleORG}<tpl if="subtitleORG != &quot;&quot;">: {subtitleORG}</tpl></b></i>
+				<tpl if="parentTitleORG == &quot;&quot;"><i></tpl>
+								{hasHan}
+				<b>{parentTitleORG}{titleORG}<tpl if="subtitleORG != &quot;&quot;">: {subtitleORG}</tpl></b>
+				<tpl if="parentTitleORG == &quot;&quot;"></i></tpl>
 				</tpl>
 				<tpl if="titleEN != &quot;&quot;">
 					<tpl if="officialTitleTranslation"> / {titleEN}<tpl if="subtitleEN != &quot;&quot;">: {subtitleEN}</tpl></tpl>
@@ -38,7 +44,10 @@
 					{titleTR}<tpl if="subtitleTR != &quot;&quot;">: {subtitleTR}</tpl>
 				</tpl>
 				<tpl if="titleORG != &quot;&quot;">
-				<i><b>{titleORG}<tpl if="subtitleORG != &quot;&quot;">: {subtitleORG}</tpl></b></i>
+				<tpl if="parentTitleORG == &quot;&quot;"><i></tpl>
+								{hasHan}
+				<b>{titleORG}<tpl if="subtitleORG != &quot;&quot;">: {subtitleORG}</tpl></b>
+				<tpl if="parentTitleORG == &quot;&quot;"></i></tpl>
 				</tpl>
 				<tpl if="titleEN != &quot;&quot;">
 					<tpl if="officialTitleTranslation"> / {titleEN}<tpl if="subtitleEN != &quot;&quot;">: {subtitleEN}</tpl></tpl>
