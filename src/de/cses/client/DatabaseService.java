@@ -96,6 +96,8 @@ public interface DatabaseService extends RemoteService {
 
 	ArrayList<OrnamentEntry> getOrnaments() throws IllegalArgumentException;
 
+	OrnamentEntry getOrnamentEntry(int OrnamentID) throws IllegalArgumentException;
+
 	ArrayList<OrnamentOfOtherCulturesEntry> getOrnamentsOfOtherCultures() throws IllegalArgumentException;
 
 //	ArrayList<DepictionEntry> getDepictions() throws IllegalArgumentException;
@@ -123,6 +125,8 @@ public interface DatabaseService extends RemoteService {
 	PublicationEntry getPublicationEntry(int id) throws IllegalArgumentException;
 
 	AuthorEntry getAuthorEntry(int id) throws IllegalArgumentException;
+	
+	boolean iconographyIDisUsed(int iconographyID, int OrnamentID) throws IllegalArgumentException;
 
 	@Deprecated
 	ImageEntry getMasterImageEntryForDepiction(int depictionID) throws IllegalArgumentException;

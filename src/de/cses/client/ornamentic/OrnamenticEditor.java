@@ -1,6 +1,8 @@
 package de.cses.client.ornamentic;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -14,6 +16,7 @@ import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
@@ -29,6 +32,7 @@ import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
+import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.dnd.core.client.ListViewDragSource;
 import com.sencha.gxt.dnd.core.client.ListViewDropTarget;
 import com.sencha.gxt.fx.client.Draggable;
@@ -44,23 +48,40 @@ import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.Hor
 import com.sencha.gxt.widget.core.client.container.VBoxLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
+import com.sencha.gxt.widget.core.client.event.BeforeCheckChangeEvent;
+import com.sencha.gxt.widget.core.client.event.BeforeCheckChangeEvent.BeforeCheckChangeHandler;
+import com.sencha.gxt.widget.core.client.event.CheckChangeEvent;
+import com.sencha.gxt.widget.core.client.event.CheckChangeEvent.CheckChangeHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.ListField;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.info.Info;
+import com.sencha.gxt.widget.core.client.tree.Tree;
+import com.sencha.gxt.widget.core.client.tree.TreeStyle;
+import com.sencha.gxt.widget.core.client.tree.Tree.CheckCascade;
+import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
+import com.sencha.gxt.widget.core.client.tree.Tree.TreeNode;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.StaticTables;
 import de.cses.client.Util;
 import de.cses.client.bibliography.BibliographySelector;
+import de.cses.client.depictions.IconographySelector.IconographyValueProvider;
+import de.cses.client.depictions.DepictionDataDisplay.Images;
+import de.cses.client.depictions.IconographySelector.IconographyKeyProvider;
 import de.cses.client.images.ImageSelector;
 import de.cses.client.images.ImageSelectorListener;
 import de.cses.client.ui.AbstractEditor;
+import de.cses.client.ui.EditorListener;
 import de.cses.client.user.UserLogin;
+import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.CaveEntry;
+import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.InnerSecondaryPatternsEntry;
 import de.cses.shared.OrnamentCaveRelation;
@@ -69,7 +90,18 @@ import de.cses.shared.OrnamentComponentsEntry;
 import de.cses.shared.OrnamentEntry;
 
 public class OrnamenticEditor extends AbstractEditor implements ImageSelectorListener {
-
+	private Tree<IconographyEntry, String> iconographyTree;
+	private TreeStore<IconographyEntry> iconographyTreeStore;
+	private Tree<IconographyEntry, String> selectedIconographyTree;
+	private TreeStore<IconographyEntry> selectedIconographyTreeStore;
+	protected Map<String, IconographyEntry> selectedIconographyMap;
+//	protected IconographySelector iconographySelector;
+	protected IconographyEntry ie = null;
+	protected IconographyEntry selectedie = null;
+	protected boolean iconographyIDUsed = false;
+	protected boolean dialogboxnotcalled = false;
+	protected int iconographyIDforOrnamentJump;
+	protected boolean closeThisEditor = false;
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	FramedPanel header;
 	private FramedPanel backgroundPanel;
@@ -80,6 +112,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 	private ListView<OrnamentCaveRelation, String> cavesList;
 	protected PopupPanel imageSelectionDialog;
 	protected ImageSelector imageSelector;
+	private DialogBox showTreeEdit = new DialogBox();
 	private ListView<ImageEntry, ImageEntry> imageListView;
 	private ListStore<ImageEntry> imageEntryList;
 	private ListStore<OrnamentClassEntry> ornamentClassEntryList;
@@ -99,9 +132,23 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 	private TextArea remarks;
 	private TextArea interpretation;
 	private TextArea references;
+	private FramedPanel ftree;
+	private FramedPanel ftreeedit;
 	public static OrnamentCaveRelationEditor ornamentCaveRelationEditor;
 	public static WallOrnamentCaveRelationEditor wallOrnamentCaveRelationEditor;
 	public static OrnamenticEditor ornamenticEditor;
+	private void addparent(IconographyEntry item) {
+		Util.doLogging(item.getText());
+		if(item.getParentID() != 0) {
+			addparent(iconographyTreeStore.getParent(item));
+			selectedIconographyTreeStore.add(iconographyTreeStore.getParent(item), item);
+			selectedIconographyTree.setExpanded(iconographyTreeStore.getParent(item),true);
+		}
+		else {
+			selectedIconographyTreeStore.add(item);
+		}
+		
+	}
 
 	//Hauptklasse zum Erstellen von Ornamenten. Gegliedert in 3 Hierarchie Ebenen: 
 	// 1. Eigenschaften die bei dem Ornament immer vorhanden sind
@@ -120,6 +167,14 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 	
 	// 
 
+	private void processParentIconographyEntry( IconographyEntry item) {
+		for (IconographyEntry child : item.getChildren()) {
+			iconographyTreeStore.add(item, child);
+			if (child.getChildren() != null) {
+				processParentIconographyEntry(child);
+			}
+		}
+	}
 
 	public OrnamenticEditor(OrnamentEntry ornamentEntry) {
 		this.ornamentEntry = ornamentEntry;
@@ -133,6 +188,8 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		return backgroundPanel;
 	}
 	public Widget createForm() {
+
+		dialogboxnotcalled=false;
 		// Aufbau der Listen welche geladen werden m�ssen aus der Datenbank
 		Util.doLogging("Create form von ornamenticeditor gestartet");
 		ornamentCaveRelationEditor = new OrnamentCaveRelationEditor();
@@ -159,108 +216,318 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		selectedOrnamentComponents = new ListStore<OrnamentComponentsEntry>(
 				ornamentComponentsProps.ornamentComponentsID());
 		ornamentComponents = new ListStore<OrnamentComponentsEntry>(ornamentComponentsProps.ornamentComponentsID());
+		//iconographySelector = new IconographySelector(StaticTables.getInstance().getIconographyEntries().values());
+//		iconographyTreeStore = IconographySelector.buildTreeStore(StaticTables.getInstance().getIconographyEntries().values(),true);
+		selectedIconographyTreeStore = new TreeStore<IconographyEntry>(new IconographyKeyProvider());
+		selectedIconographyTree = new Tree<IconographyEntry, String>(selectedIconographyTreeStore, new IconographyValueProvider());
+		selectedIconographyTreeStore.clear();
+		TreeStyle treeStyle = new TreeStyle(); 
+		treeStyle.setNodeCloseIcon(Images.INSTANCE.foo());
+		treeStyle.setNodeOpenIcon(Images.INSTANCE.foo());
+		selectedIconographyTree.setCheckable(false);
+		selectedIconographyTree.setStyle(treeStyle);
+		selectedIconographyTree.setAutoExpand(true);
+		iconographyTreeStore = new TreeStore<IconographyEntry>(new IconographyKeyProvider());
+		iconographyTreeStore.clear();
+		iconographyTree = new Tree<IconographyEntry, String>(iconographyTreeStore, new IconographyValueProvider());
+		for (IconographyEntry item : StaticTables.getInstance().getIconographyEntries().values()) {
+			if (item.getIconographyID()==3) {
+				iconographyTreeStore.add(item);
+				if (item.getChildren() != null) {
+					processParentIconographyEntry(item);
+				}
+		
+			}
+		}
+		iconographyTree.setCheckable(true);
+		//		iconographyTree = IconographySelector.buildTree(true);
+		iconographyTree.setCheckStyle(CheckCascade.PARENTS);
+		iconographyTree.addBeforeCheckChangeHandler(new BeforeCheckChangeHandler<IconographyEntry>(){
+			public void onBeforeCheckChange(BeforeCheckChangeEvent<IconographyEntry> event) {
+				iconographyIDUsed=false;
 
+				//Util.doLogging("BeforeChecked was called. "+event.getItem().getText());
+				if ((ie==null) && (!iconographyIDUsed)) {
+					Util.doLogging(Integer.toString(event.getItem().getIconographyID()));
+
+					//Util.doLogging("Checked are resetted.");					
+					ie=event.getItem();
+					iconographyTree.setCheckedSelection(null);
+					selectedie=event.getItem();
+				}
+				if (iconographyIDUsed) {
+//					event.setCancelled(true);				
+
+				}
+
+					if (iconographyTree.getStore().getRootItems().contains(event.getItem())) {
+						ie=null;
+					}
+				
+			}
+		});
+		iconographyTree.addCheckChangeHandler(new CheckChangeHandler<IconographyEntry>(){
+			public void onCheckChange(CheckChangeEvent<IconographyEntry> event) {
+				//Util.doLogging("OnCheckChange was called. "+event.getItem().getText());
+				dbService.iconographyIDisUsed(event.getItem().getIconographyID(), ornamentEntry.getOrnamentID(), new AsyncCallback<Boolean>(){
+
+					@Override
+					public void onFailure(Throwable caught) {
+						Util.doLogging(("Update failed"+ caught.getMessage()));
+						Info.display("Update failed", caught.getMessage());
+					}
+
+					@Override
+					public void onSuccess(Boolean result) {
+						//Util.doLogging("EventIconographyID is: "+event.getItem().getIconographyID());
+						//Util.doLogging("IconographyIDUsed: "+Boolean.toString(iconographyIDUsed));
+						iconographyIDUsed=result;
+						dialogboxnotcalled=result;
+						//Util.doLogging("set dialogboxnotcalled="+Boolean.toString(dialogboxnotcalled));
+						//Util.doLogging("IconographyIDUsed - after: "+Boolean.toString(iconographyIDUsed));					
+						
+						if ((iconographyIDUsed)&&(iconographyTree.isChecked(event.getItem()))) {
+							iconographyIDforOrnamentJump=event.getItem().getIconographyID();
+							//Util.doLogging("EventIconographyID is checked: "+Boolean.toString(iconographyTree.isChecked(event.getItem())));
+							iconographyTree.setCheckedSelection(null);		
+							if (dialogboxnotcalled) {
+								dialogboxnotcalled=false;
+
+								Util.showYesNo("Ornament already assigned", "Do you wish to open the ornament entry, to which it was assigned?", new SelectHandler() {
+									
+									@Override
+									public void onSelect(SelectEvent event) {
+										dialogboxnotcalled=false;
+										closeThisEditor=true;
+										dbService.getOrnamentsWHERE("IconographyID = "+Integer.toString(iconographyIDforOrnamentJump), new AsyncCallback<ArrayList<OrnamentEntry>>() {
+
+											public void onFailure(Throwable caught) {
+												caught.printStackTrace();
+											}
+
+											@Override
+											public void onSuccess(ArrayList<OrnamentEntry> result) {
+												Util.doLogging("Länge des Ergebnisses: "+Integer.toString(result.size()));
+												if (result.size()==1) {
+
+													if (closeThisEditor) {
+														closeThisEditor=false;
+														//closeEditor(ornamentEntry);	
+														DialogBox ornamenticEditorPanel = new DialogBox(false);
+														OrnamenticEditor oe = new OrnamenticEditor(result.remove(0));
+														oe.addEditorListener(new EditorListener() {
+															
+															@Override
+															public void closeRequest(AbstractEntry entry) {
+																ornamenticEditorPanel.hide();
+															}
+
+//															@Override
+//															public void updateEntryRequest(AbstractEntry updatedEntry) { }
+														});
+														ornamenticEditorPanel.add(oe);
+														ornamenticEditorPanel.center();
+													}
+													
+													
+												}
+											}
+										});
+									}
+								}, new SelectHandler() {
+				
+									@Override
+									public void onSelect(SelectEvent event) {
+										dialogboxnotcalled=false;
+										closeThisEditor=false;
+										
+									}}, new KeyDownHandler() {
+				
+									@Override
+									public void onKeyDown(KeyDownEvent e) {
+										if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+											dialogboxnotcalled=false;
+											closeThisEditor=false;
+
+									}}}
+								);
+								//Util.doLogging("reset dialogboxnotcalled="+Boolean.toString(dialogboxnotcalled));
+							}
+						}
+					}
+				
+				});
+
+			}
+		});
+
+		ftree = new FramedPanel();
+		ftreeedit = new FramedPanel();
+		ftreeedit.add(iconographyTree);
+		ftreeedit.setSize("400","400");
+		ToolButton cancelTreeEdit = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
+		cancelTreeEdit.setToolTip(Util.createToolTip("cancel"));
+		cancelTreeEdit.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				showTreeEdit.hide();
+				selectedIconographyTreeStore.clear();
+				addparent(selectedie);
+				
+			}
+		});
+		ftreeedit.addTool(cancelTreeEdit);
+		showTreeEdit.add(ftreeedit);
+//		ftree.add(selectedIconographyTree);
+		ToolButton changetree = new ToolButton(new IconConfig("editButton", "editButtonOver"));
+		changetree.setToolTip(Util.createToolTip("Change Treeentry.", "Select another Treeentry."));
+		changetree.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				showTreeEdit.setSize("400", "400");
+				showTreeEdit.center();
+			}
+		});
+		ftree.setHeading("Ornament Entry");
+		ftree.addTool(changetree);
+		ftree.add(selectedIconographyTree);
 		// laden der Daten aus der Datenbank
-		dbService.getOrnamentComponents(new AsyncCallback<ArrayList<OrnamentComponentsEntry>>() {
+		if (ornamentEntry!=null) {
+			dbService.getOrnamentEntry(ornamentEntry.getOrnamentID(), new AsyncCallback<OrnamentEntry>() {
 
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			public void onSuccess(ArrayList<OrnamentComponentsEntry> result) {
-
-				ornamentComponents.clear();
-				selectedOrnamentComponents.clear();
-				if (ornamentEntry != null) {
-					for (OrnamentComponentsEntry pe : result) {
-						int count = 0;
-						for (OrnamentComponentsEntry oe : ornamentEntry.getOrnamentComponents()) {
-							if (pe.getOrnamentComponentsID() != oe.getOrnamentComponentsID()) {
-								count++;
-							}
-							if (count == ornamentEntry.getOrnamentComponents().size()) {
-								ornamentComponents.add(pe);
-							}
-						}
-					}
-					for (OrnamentComponentsEntry oe : ornamentEntry.getOrnamentComponents()) {
-						selectedOrnamentComponents.add(oe);
-					}
-					if (ornamentEntry.getOrnamentComponents().size() == 0) {
-						for (OrnamentComponentsEntry nu : result) {
-							ornamentComponents.add(nu);
-						}
-					}
-				} else {
-					for (OrnamentComponentsEntry pe : result) {
-						ornamentComponents.add(pe);
-					}
+				@Override
+				public void onFailure(Throwable caught) {
+					caught.printStackTrace();
 				}
 
-			}
-		});
-
-		dbService.getInnerSecondaryPatterns(new AsyncCallback<ArrayList<InnerSecondaryPatternsEntry>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(ArrayList<InnerSecondaryPatternsEntry> result) {
-
-				innerSecondaryPatternsEntryList.clear();
-				selectedinnerSecondaryPatternsEntryList.clear();
-				if (ornamentEntry != null) {
-					for (InnerSecondaryPatternsEntry pe : result) {
-						int count = 0;
-						for (InnerSecondaryPatternsEntry oe : ornamentEntry.getInnerSecondaryPatterns()) {
-							if (pe.getInnerSecondaryPatternsID() != oe.getInnerSecondaryPatternsID()) {
-								count++;
-							}
-							if (count == ornamentEntry.getInnerSecondaryPatterns().size()) {
-								innerSecondaryPatternsEntryList.add(pe);
-							}
+				public void onSuccess(OrnamentEntry result) {
+					ornamentEntry=result;
+					ornamentCodeTextField.setValue(ornamentEntry.getCode());
+					discription.setValue(ornamentEntry.getDescription());
+					remarks.setValue(ornamentEntry.getRemarks());
+					interpretation.setValue(ornamentEntry.getInterpretation());
+					for (IconographyEntry ie: iconographyTreeStore.getAll()) {
+						if (ie.getIconographyID()==ornamentEntry.getIconographyID()) {
+							Util.doLogging("Set entry "+ie.getText()+" checked.");
+							List<IconographyEntry> checkedIconographyItems = new ArrayList<IconographyEntry>();
+//							checkedIconographyItems.add(ie);
+//							iconographyTree.getCheckedSelection().add(ie);
+							Util.doLogging(iconographyTree.getStore().getKeyProvider().getKey(ie));
+							Util.doLogging(Integer.toString(iconographyTree.getStore().getAll().size()));
+							iconographyTree.setChecked(ie, CheckState.CHECKED);
+							addparent(ie);
+							selectedie=ie;
+//							Util.doLogging(Integer.toString(checkedIconographyItems.size()));
+//							iconographyTree.setCheckedSelection(checkedIconographyItems);
+							Util.doLogging(Integer.toString(iconographyTree.getCheckedSelection().size()));
+							break;
 						}
+						
 					}
-					for (InnerSecondaryPatternsEntry oe : ornamentEntry.getInnerSecondaryPatterns()) {
-						selectedinnerSecondaryPatternsEntryList.add(oe);
-					}
-					if (ornamentEntry.getInnerSecondaryPatterns().size() == 0) {
-						for (InnerSecondaryPatternsEntry nu : result) {
-							innerSecondaryPatternsEntryList.add(nu);
+					dbService.getOrnamentClass(new AsyncCallback<ArrayList<OrnamentClassEntry>>() {
+
+						@Override
+						public void onFailure(Throwable caught) {
+							caught.printStackTrace();
 						}
-					}
-				} else {
-					for (InnerSecondaryPatternsEntry pe : result) {
-						innerSecondaryPatternsEntryList.add(pe);
-					}
+
+						@Override
+						public void onSuccess(ArrayList<OrnamentClassEntry> result) {
+							ornamentClassEntryList.clear();
+							for (OrnamentClassEntry pe : result) {
+								ornamentClassEntryList.add(pe);
+								}
+							ornamentClassComboBox.setValue(ornamentClassEntryList
+										.findModelWithKey(Integer.toString(ornamentEntry.getOrnamentClass())));
+							}
+					});
+					dbService.getOrnamentComponents(new AsyncCallback<ArrayList<OrnamentComponentsEntry>>() {
+
+						@Override
+						public void onFailure(Throwable caught) {
+							caught.printStackTrace();
+						}
+
+						public void onSuccess(ArrayList<OrnamentComponentsEntry> result) {
+
+							ornamentComponents.clear();
+							selectedOrnamentComponents.clear();
+							if (ornamentEntry != null) {
+								for (OrnamentComponentsEntry pe : result) {
+									int count = 0;
+									for (OrnamentComponentsEntry oe : ornamentEntry.getOrnamentComponents()) {
+										if (pe.getOrnamentComponentsID() != oe.getOrnamentComponentsID()) {
+											count++;
+										}
+										if (count == ornamentEntry.getOrnamentComponents().size()) {
+											ornamentComponents.add(pe);
+										}
+									}
+								}
+								for (OrnamentComponentsEntry oe : ornamentEntry.getOrnamentComponents()) {
+									selectedOrnamentComponents.add(oe);
+								}
+								if (ornamentEntry.getOrnamentComponents().size() == 0) {
+									for (OrnamentComponentsEntry nu : result) {
+										ornamentComponents.add(nu);
+									}
+								}
+							} else {
+								for (OrnamentComponentsEntry pe : result) {
+									ornamentComponents.add(pe);
+								}
+							}
+
+						}
+					});
+
+					dbService.getInnerSecondaryPatterns(new AsyncCallback<ArrayList<InnerSecondaryPatternsEntry>>() {
+
+						@Override
+						public void onFailure(Throwable caught) {
+							caught.printStackTrace();
+						}
+
+						@Override
+						public void onSuccess(ArrayList<InnerSecondaryPatternsEntry> result) {
+
+							innerSecondaryPatternsEntryList.clear();
+							selectedinnerSecondaryPatternsEntryList.clear();
+							if (ornamentEntry != null) {
+								for (InnerSecondaryPatternsEntry pe : result) {
+									int count = 0;
+									for (InnerSecondaryPatternsEntry oe : ornamentEntry.getInnerSecondaryPatterns()) {
+										if (pe.getInnerSecondaryPatternsID() != oe.getInnerSecondaryPatternsID()) {
+											count++;
+										}
+										if (count == ornamentEntry.getInnerSecondaryPatterns().size()) {
+											innerSecondaryPatternsEntryList.add(pe);
+										}
+									}
+								}
+								for (InnerSecondaryPatternsEntry oe : ornamentEntry.getInnerSecondaryPatterns()) {
+									selectedinnerSecondaryPatternsEntryList.add(oe);
+								}
+								if (ornamentEntry.getInnerSecondaryPatterns().size() == 0) {
+									for (InnerSecondaryPatternsEntry nu : result) {
+										innerSecondaryPatternsEntryList.add(nu);
+									}
+								}
+							} else {
+								for (InnerSecondaryPatternsEntry pe : result) {
+									innerSecondaryPatternsEntryList.add(pe);
+								}
+							}
+
+						}
+					});
+
 				}
+				});
+		}
 
-			}
-		});
-
-		dbService.getOrnamentClass(new AsyncCallback<ArrayList<OrnamentClassEntry>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(ArrayList<OrnamentClassEntry> result) {
-				ornamentClassEntryList.clear();
-				for (OrnamentClassEntry pe : result) {
-					ornamentClassEntryList.add(pe);
-				}
-				if (ornamentEntry != null) {
-					ornamentClassComboBox.setValue(ornamentClassEntryList
-							.findModelWithKey(Integer.toString(ornamentEntry.getOrnamentClass())));
-				}
-			}
-		});
 
 		// Aufbau der Felder auf der Client Seite
 		TabPanel tabpanel = new TabPanel();
@@ -277,9 +544,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		header.setHeading("Ornament Code");
 		header.add(ornamentCodeTextField);
 		panel.add(header, new VerticalLayoutData(1.0, .125));
-		if (ornamentEntry != null) {
-			ornamentCodeTextField.setValue(ornamentEntry.getCode());
-		}
+
 		ornamentClassComboBox = new ComboBox<OrnamentClassEntry>(ornamentClassEntryList, ornamentClassProps.name(),
 				new AbstractSafeHtmlRenderer<OrnamentClassEntry>() {
 
@@ -289,13 +554,13 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 						return pvTemplates.ornamentClass(item.getName());
 					}
 				});
-
+		panel.add(ftree, new VerticalLayoutData(1.0, 0.3));
 		header = new FramedPanel();
 		header.setHeading("Motif");
 		ornamentClassComboBox.setTriggerAction(TriggerAction.ALL);
 		header.add(ornamentClassComboBox);
+		//header.add(iconographySelector);
 		panel.add(header, new VerticalLayoutData(1.0, .125));
-
 		ToolButton addOrnamentClassButton = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		addOrnamentClassButton.setToolTip(Util.createToolTip("Add Ornament Motif"));
 
@@ -432,11 +697,9 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		header.setHeading("Description");
 		discription = new TextArea();
 		panel.add(header, new VerticalLayoutData(1.0, .3));
+
 		header.add(discription);
 		discription.setAllowBlank(true);
-		if (ornamentEntry != null) {
-			discription.setValue(ornamentEntry.getDescription());
-		}
 
 		remarks = new TextArea();
 		remarks.setAllowBlank(true);
@@ -444,10 +707,6 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		header.setHeading("General Remarks");
 		header.add(remarks);
 		panel.add(header, new VerticalLayoutData(1.0, .3));
-		if (ornamentEntry != null) {
-			remarks.setValue(ornamentEntry.getRemarks());
-		}
-
 		interpretation = new TextArea();
 		interpretation.setAllowBlank(true);
 		header = new FramedPanel();
@@ -455,10 +714,6 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		header.setHeading("Interpretation");
 		header.add(interpretation);
 		verticalgeneral2Background.add(header, new VerticalLayoutData(1.0, .3));
-		if (ornamentEntry != null) {
-			interpretation.setValue(ornamentEntry.getInterpretation());
-		}
-
 		references = new TextArea();
 		references.setAllowBlank(true);
 		header = new FramedPanel();
@@ -559,13 +814,13 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 					@Override
 					public void onSelect(SelectEvent event) {
 						save();
-						closeEditor(null);
+						closeEditor(ornamentEntry);
 					}
 				}, new SelectHandler() {
 
 					@Override
 					public void onSelect(SelectEvent event) {
-						closeEditor(null);
+						closeEditor(ornamentEntry);
 					}
 			
 					
@@ -576,7 +831,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 					public void onKeyDown(KeyDownEvent e) {
 						if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
 						save();
-						closeEditor(null);
+						closeEditor(ornamentEntry);
 					}}
 			
 					
@@ -1010,6 +1265,9 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 			corList.add(caveOrnamentRelationList.get(i));
 		}
 		ornamentEntry.setCavesRelations(corList);
+		Util.doLogging(Integer.toString(selectedie.getIconographyID()));
+		ornamentEntry.setIconographyID(selectedie.getIconographyID());
+		Util.doLogging(Integer.toString(ornamentEntry.getIconographyID()));
 
 		ArrayList<ImageEntry> ieList = new ArrayList<ImageEntry>();
 		for (int i = 0; i < imageEntryList.size(); i++) {
@@ -1025,7 +1283,6 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		if (ornamentClassComboBox.getValue() == null) {
 			ornamentEntry.setOrnamentClass(0);
 		} else {
-			Util.doLogging("ID gesetzt");
 			ornamentEntry.setOrnamentClass(ornamentClassComboBox.getValue().getOrnamentClassID());
 		}
 
@@ -1068,7 +1325,8 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 				@Override
 				public void onFailure(Throwable caught) {
-					Util.showWarning("Update failed", caught.getMessage());
+					Util.doLogging(("Update failed"+ caught.getMessage()));
+					Info.display("Update failed", caught.getMessage());
 				}
 
 				@Override

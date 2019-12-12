@@ -19,7 +19,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PopupPanel;
 
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
@@ -31,7 +31,7 @@ import de.cses.shared.UserEntry;
  */
 public abstract class AbstractView extends Button implements EditorListener {
 
-	private DialogBox editorPanel;
+	private static PopupPanel editorPanel;
 	
 	/**
 	 * This is the general constructor that amongst other tasks initializes the PopupPanel for the editor
@@ -42,27 +42,29 @@ public abstract class AbstractView extends Button implements EditorListener {
 			@Override
 			public void onClick(ClickEvent event) {
 				if (UserLogin.getInstance().getAccessRights() >= UserEntry.FULL) { // guests are not allowed to edit
-					showEditor();
+					showEditor(getEntry());
 				}
 			}
 		});
 	}
 
-	private void showEditor() {
-		AbstractEditor editor = getEditor();
+	public void showEditor(AbstractEntry entry) {
+		AbstractEditor editor = getEditor(entry);
 		editor.addEditorListener(this);
-		editorPanel = new DialogBox(false);
+		loadEditor(editor);
+	}
+	public static void loadEditor(AbstractEditor editor) {
+		
+		editorPanel = new PopupPanel(false);
 		editorPanel.add(editor);
 		editorPanel.setModal(true);
 		editorPanel.setGlassEnabled(true);
-		editorPanel.show();
-	}
-	
+		editorPanel.center();	}
 	private void viewDataSet(String url) { // 
 		Window.open(url,"_blank",null);
 	}
 	
-	abstract protected AbstractEditor getEditor();
+	abstract protected AbstractEditor getEditor(AbstractEntry entry);
 	
 	abstract protected AbstractEntry getEntry();
 	

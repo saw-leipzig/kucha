@@ -74,7 +74,11 @@ import de.cses.shared.WallLocationEntry;
  */
 @SuppressWarnings("serial")
 public class DatabaseServiceImpl extends RemoteServiceServlet implements DatabaseService {
-
+	@Override
+	public boolean iconographyIDisUsed(int iconographyID, int OrnamentID) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.iconographyIDisUsed(iconographyID, OrnamentID);
+	}
 	public ArrayList<DistrictEntry> getDistricts() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		ArrayList<DistrictEntry> districts = connector.getDistricts();
@@ -418,6 +422,10 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public ArrayList<OrnamentEntry> getOrnamentsWHERE(String sqlWhere) {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getOrnamentsWhere(sqlWhere);
+	}
+	public OrnamentEntry getOrnamentEntry(int OrnamentId) {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getOrnamentEntry(OrnamentId);
 	}
 	
 

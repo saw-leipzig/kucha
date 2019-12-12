@@ -1257,9 +1257,12 @@ public class DepictionEditor extends AbstractEditor {
 
 			@Override
 			public void imageSelected(ArrayList<ImageEntry> imgEntryList) {
-				for (ImageEntry imgEntry : imgEntryList) {
-					imageEntryLS.add(imgEntry); // TODO check if double adding possible and avoid!
+				if (imgEntryList!=null) {
+					for (ImageEntry imgEntry : imgEntryList) {
+						imageEntryLS.add(imgEntry); // TODO check if double adding possible and avoid!
+					}
 				}
+
 				imageSelectionDialog.hide();
 			}
 		});
@@ -1382,15 +1385,13 @@ public class DepictionEditor extends AbstractEditor {
 		tabPanel.setTabScroll(false);
 		ScrollPanel scrpanel1 = new ScrollPanel();
 		ScrollPanel scrpanel2 = new ScrollPanel();
-		ScrollPanel scrpanel3 = new ScrollPanel();
 		ScrollPanel scrpanel4 = new ScrollPanel();
 		scrpanel1.add(basicsTabHLC);
 		scrpanel2.add(descriptionTabHLC);
-		scrpanel3.add(iconographySelector);
 		scrpanel4.add(bibliographySelector);
 		tabPanel.add(scrpanel1, "Basics");
 		tabPanel.add(scrpanel2, "Description");
-		tabPanel.add(scrpanel3, "Iconography & Pictorial Elements");
+		tabPanel.add(iconographySelector, "Iconography & Pictorial Elements");
 		tabPanel.add(scrpanel4, "Bibliography Selector");
 		HorizontalLayoutContainer mainHLC = new HorizontalLayoutContainer();
 		mainHLC.add(tabPanel, new HorizontalLayoutData(.7, 1.0));

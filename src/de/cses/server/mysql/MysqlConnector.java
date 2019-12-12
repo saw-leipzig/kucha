@@ -1117,7 +1117,7 @@ public class MysqlConnector {
 			pstmt = dbc.prepareStatement("SELECT * FROM Iconography WHERE IconographyID IN (SELECT IconographyID FROM DepictionIconographyRelation) ORDER BY Text Asc");
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
-				result.add(new IconographyEntry(rs.getInt("IconographyID"), rs.getInt("ParentID"), rs.getString("Text")));
+				result.add(new IconographyEntry(rs.getInt("IconographyID"), rs.getInt("ParentID"), rs.getString("Text"), rs.getString("search")));
 			}
 			rs.close();
 			pstmt.close();
@@ -1135,7 +1135,7 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Iconography WHERE IconographyID=" + id + " ORDER BY Text Asc");
 			if (rs.first()) {
-				result = new IconographyEntry(rs.getInt("IconographyID"), rs.getInt("ParentID"), rs.getString("Text"));
+				result = new IconographyEntry(rs.getInt("IconographyID"), rs.getInt("ParentID"), rs.getString("Text"), rs.getString("search"));
 			}
 			rs.close();
 			stmt.close();
@@ -1153,7 +1153,7 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Iconography WHERE " + sqlWhere + " ORDER BY Text Asc");
 			while (rs.next()) {
-				result.add(new IconographyEntry(rs.getInt("IconographyID"), rs.getInt("ParentID"), rs.getString("Text")));
+				result.add(new IconographyEntry(rs.getInt("IconographyID"), rs.getInt("ParentID"), rs.getString("Text"), rs.getString("search")));
 			}
 			rs.close();
 			stmt.close();
@@ -1192,7 +1192,7 @@ public class MysqlConnector {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Iconography WHERE ParentID " + where + " ORDER BY Text Asc");
 			while (rs.next()) {
-				results.add(new IconographyEntry(rs.getInt("IconographyID"), rs.getInt("ParentID"), rs.getString("Text")));
+				results.add(new IconographyEntry(rs.getInt("IconographyID"), rs.getInt("ParentID"), rs.getString("Text"), rs.getString("search")));
 			}
 			rs.close();
 			stmt.close();
@@ -1216,9 +1216,10 @@ public class MysqlConnector {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
-			pstmt = dbc.prepareStatement("INSERT INTO Iconography (ParentID, Text) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
+			pstmt = dbc.prepareStatement("INSERT INTO Iconography (ParentID, Text, search) VALUES (?, ?,?)", Statement.RETURN_GENERATED_KEYS);
 			pstmt.setInt(1, entry.getParentID());
 			pstmt.setString(2, entry.getText());
+			pstmt.setString(3, entry.getSearch());
 			pstmt.executeUpdate();
 			ResultSet keys = pstmt.getGeneratedKeys();
 			if (keys.next()) { // there should only be 1 key returned here
@@ -1949,7 +1950,7 @@ public class MysqlConnector {
 						rs.getString("PagesTR"), rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"), rs.getString("URI"),
 						rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getInt("AccessLevel"), rs.getString("AbstractText"),
 						rs.getString("ThesisType"), rs.getString("EditorType"), rs.getBoolean("OfficialTitleTranslation"), rs.getString("BibTexKey"),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
+						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), AnnotatedBibliographyEntry.isHan(rs.getString("TitleORG")));
 				entry.setAuthorList(getAuthorBibRelation(entry.getAnnotatedBibliographyID()));
 				entry.setEditorList(getEditorBibRelation(entry.getAnnotatedBibliographyID()));
 				entry.setKeywordList(getRelatedBibKeywords(entry.getAnnotatedBibliographyID()));
@@ -2001,7 +2002,7 @@ public class MysqlConnector {
 						rs.getString("PagesTR"), rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"), rs.getString("URI"),
 						rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getInt("AccessLevel"), rs.getString("AbstractText"),
 						rs.getString("ThesisType"), rs.getString("EditorType"), rs.getBoolean("OfficialTitleTranslation"), rs.getString("BibTexKey"),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
+						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), AnnotatedBibliographyEntry.isHan(rs.getString("TitleORG")));
 				entry.setAuthorList(getAuthorBibRelation(entry.getAnnotatedBibliographyID()));
 				entry.setEditorList(getEditorBibRelation(entry.getAnnotatedBibliographyID()));
 				entry.setKeywordList(getRelatedBibKeywords(entry.getAnnotatedBibliographyID()));
@@ -2060,7 +2061,7 @@ public class MysqlConnector {
 						rs.getString("PagesTR"), rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"), rs.getString("URI"),
 						rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getInt("AccessLevel"), rs.getString("AbstractText"),
 						rs.getString("ThesisType"), rs.getString("EditorType"), rs.getBoolean("OfficialTitleTranslation"), rs.getString("BibTexKey"),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
+						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), AnnotatedBibliographyEntry.isHan(rs.getString("TitleORG")));
 				entry.setAuthorList(getAuthorBibRelation(entry.getAnnotatedBibliographyID()));
 				entry.setEditorList(getEditorBibRelation(entry.getAnnotatedBibliographyID()));
 				entry.setKeywordList(getRelatedBibKeywords(entry.getAnnotatedBibliographyID()));
@@ -2179,7 +2180,7 @@ public class MysqlConnector {
 						rs.getString("PagesTR"), rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"), rs.getString("URI"),
 						rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getInt("AccessLevel"), rs.getString("AbstractText"),
 						rs.getString("ThesisType"), rs.getString("EditorType"), rs.getBoolean("OfficialTitleTranslation"), rs.getString("BibTexKey"),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
+						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), AnnotatedBibliographyEntry.isHan(rs.getString("TitleORG")));
 				result.setAuthorList(getAuthorBibRelation(result.getAnnotatedBibliographyID()));
 				result.setEditorList(getEditorBibRelation(result.getAnnotatedBibliographyID()));
 				result.setKeywordList(getRelatedBibKeywords(result.getAnnotatedBibliographyID()));
@@ -4404,7 +4405,7 @@ public class MysqlConnector {
 			pstmt.setInt(1, depictionID);
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
-				result.add(new IconographyEntry(rs.getInt("IconographyID"), rs.getInt("ParentID"), rs.getString("Text")));
+				result.add(new IconographyEntry(rs.getInt("IconographyID"), rs.getInt("ParentID"), rs.getString("Text"), rs.getString("search")));
 			}
 			rs.close();
 			pstmt.close();
@@ -5090,7 +5091,7 @@ public class MysqlConnector {
 					"SELECT * FROM Iconography WHERE IconographyID IN (SELECT IconographyID FROM OrnamentCaveIconographyRelation WHERE OrnamentCaveRelationID="
 							+ ornamentCaveID + ")");
 			while (rs.next()) {
-				results.add(new IconographyEntry(rs.getInt("IconographyID"), rs.getInt("ParentID"), rs.getString("Text")));
+				results.add(new IconographyEntry(rs.getInt("IconographyID"), rs.getInt("ParentID"), rs.getString("Text"), rs.getString("search")));
 				System.err.println("getIconographyElementsbyOrnamentCaveID: IconographyID=" + rs.getInt("IconographyID"));
 			}
 			rs.close();

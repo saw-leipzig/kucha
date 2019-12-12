@@ -54,7 +54,17 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 	private ArrayList<AuthorEntry> authorList = new ArrayList<AuthorEntry>();
 	private ArrayList<AuthorEntry> editorList = new ArrayList<AuthorEntry>();
 	private ArrayList<BibKeywordEntry> keywordList = new ArrayList<BibKeywordEntry>();
-
+	private boolean hasHan;
+	public static boolean isHan(String s) {
+	    for (int i = 0; i < s.length(); ) {
+	        int codepoint = s.codePointAt(i);
+	        i += Character.charCount(codepoint);
+	        if ((codepoint>19967)&&(codepoint<40960)) {
+	        	return true;
+	        }
+	    }
+	    return false;
+	}
 	public AnnotatedBibliographyEntry(int annotatedBibliographyID, PublicationTypeEntry publicationType, 
 			String titleEN, String titleORG, String titleTR,
 			String parentTitleEN, String parentTitleORG, String parentTitleTR,
@@ -73,7 +83,7 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 			String pagesEN, String pagesORG, String pagesTR, 
 			String comments, String notes, String url, String uri, boolean unpublished, int firstEditionBibID, 
 			int accessLevel, String abstractText, String thesisType, String editorType, boolean officialTitleTranslation,
-			String bibtexKey, String lastChangedOn) {
+			String bibtexKey, String lastChangedOn, Boolean hasHan) {
 		super();
 		this.annotatedBibliographyID = annotatedBibliographyID;
 		this.publicationType = publicationType;
@@ -133,6 +143,7 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 		this.officialTitleTranslation = officialTitleTranslation;
 		this.bibtexKey = bibtexKey;
 		this.setModifiedOn(lastChangedOn);
+		this.hasHan=hasHan;
 	}
 
 	public AnnotatedBibliographyEntry() { }
@@ -155,7 +166,7 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 				monthEN, monthORG, monthTR,  
 				pagesEN, pagesORG, pagesTR, 
 				comments, notes, url, uri, unpublished, firstEditionBibID, accessLevel, 
-				abstractText, thesisType, editorType, officialTitleTranslation, bibtexKey, this.modifiedOn);
+				abstractText, thesisType, editorType, officialTitleTranslation, bibtexKey, this.modifiedOn, this.isHan(titleORG));
 		ArrayList<AuthorEntry> clonedAuthorList = new ArrayList<AuthorEntry>();
 		for (AuthorEntry ae : this.authorList) {
 			clonedAuthorList.add(ae);
@@ -229,6 +240,7 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 	 */
 	public void setTitleORG(String titleORG) {
 		this.titleORG = titleORG;
+		this.hasHan = isHan(titleORG);
 	}
 
 	/**

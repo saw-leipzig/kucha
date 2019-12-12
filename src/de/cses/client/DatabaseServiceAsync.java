@@ -88,6 +88,8 @@ public interface DatabaseServiceAsync {
 
 	void getOrnaments(AsyncCallback<ArrayList<OrnamentEntry>> callback) throws IllegalArgumentException;
 
+	void getOrnamentEntry(int OrnamentID, AsyncCallback<OrnamentEntry> callback) throws IllegalArgumentException;
+
 	void getAnnotatedBiblographybyID(int bibid, AsyncCallback<AnnotatedBibliographyEntry> callback) throws IllegalArgumentException;
 
 	void getOrnamentsOfOtherCultures(AsyncCallback<ArrayList<OrnamentOfOtherCulturesEntry>> callback) throws IllegalArgumentException;
@@ -137,6 +139,8 @@ public interface DatabaseServiceAsync {
 	void getStyles(AsyncCallback<ArrayList<StyleEntry>> callback) throws IllegalArgumentException;
 
 	void getExpeditions(AsyncCallback<ArrayList<ExpeditionEntry>> asyncCallback) throws IllegalArgumentException;
+
+	void iconographyIDisUsed(int iconographyID, int OrnamentID, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
 	void getPublicationEntry(int id, AsyncCallback<PublicationEntry> asyncCallback) throws IllegalArgumentException;
 
@@ -326,7 +330,7 @@ public interface DatabaseServiceAsync {
 	void searchOrnaments(OrnamenticSearchEntry searchEntry, AsyncCallback<ArrayList<OrnamentEntry>> asyncCallback) throws IllegalArgumentException;
 
 	void insertIconographyEntry(IconographyEntry iconographyEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
-
+	
 	void updateIconographyEntry(IconographyEntry iconographyEntryToEdit, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
 	void getUsers(AsyncCallback<ArrayList<UserEntry>> asyncCallback) throws IllegalArgumentException;

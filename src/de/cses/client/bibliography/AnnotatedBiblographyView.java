@@ -17,6 +17,7 @@ import com.google.gwt.core.client.GWT;
 import com.sencha.gxt.dnd.core.client.DndDragStartEvent;
 import com.sencha.gxt.dnd.core.client.DragSource;
 
+import de.cses.client.Util;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.client.ui.AbstractView;
 import de.cses.shared.AbstractEntry;
@@ -58,7 +59,7 @@ public class AnnotatedBiblographyView extends AbstractView {
 	/* (non-Javadoc)
 	 * @see de.cses.client.ui.AbstractView#getEditor()
 	 */
-	protected AbstractEditor getEditor() {
+	protected AbstractEditor getEditor(AbstractEntry entry) {
 		return new AnnotatedBibliographyEditor(annotatedBibliographyEntry.clone());
 	}
 

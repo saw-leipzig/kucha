@@ -94,8 +94,8 @@ public class OrnamenticView extends AbstractView {
 	 * @see de.cses.client.ui.AbstractView#getEditor()
 	 */
 	@Override
-	protected AbstractEditor getEditor() {
-		return new OrnamenticEditor(oEntry);
+	protected AbstractEditor getEditor(AbstractEntry entry) {
+		return new OrnamenticEditor((OrnamentEntry)entry);
 	}
 
 	/* (non-Javadoc)
