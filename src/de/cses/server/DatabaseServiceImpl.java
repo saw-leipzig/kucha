@@ -14,15 +14,16 @@
 package de.cses.server;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Map;
 
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 import de.cses.client.DatabaseService;
 import de.cses.server.mysql.MysqlConnector;
-import de.cses.shared.AnnotatedBibliographySearchEntry;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographyEntry;
+import de.cses.shared.AnnotatedBibliographySearchEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.BibKeywordEntry;
 import de.cses.shared.CaveAreaEntry;
@@ -82,6 +83,17 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public ArrayList<DistrictEntry> getDistricts() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		ArrayList<DistrictEntry> districts = connector.getDistricts();
+		return districts;
+	}
+
+	public Map<String,String> getPics(ArrayList<ImageEntry> imgSources, int tnSize) {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		Map<String,String>  districts = connector.getPics(imgSources, tnSize);
+		return districts;
+	}
+	public Map<Integer,String> getPicsByImageID(String imgSourceIds, int tnSize) {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		Map<Integer,String>  districts = connector.getPicsByImageID(imgSourceIds, tnSize);
 		return districts;
 	}
 	public ArrayList<AnnotatedBibliographyEntry> getAnnotatedBiblography() throws IllegalArgumentException {

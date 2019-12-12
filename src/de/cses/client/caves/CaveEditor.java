@@ -210,6 +210,7 @@ public class CaveEditor extends AbstractEditor {
 	private ListStore<WallEntry> wallEntryLS;
 	private ComboBox<WallEntry> wallSelectorCB;
 	private WallProperties wallProps;
+	private List<CaveAreaEntry> correspondingCaveAreas = null;
 	private WallViewTemplate wallVT;
 	protected WallEntry selectedWallEntry;
 	private ComboBox<PreservationClassificationEntry> selectedWallStateOfPreservationCB;
@@ -228,6 +229,9 @@ public class CaveEditor extends AbstractEditor {
 	private ComboBox<PreservationClassificationEntry> rightCorridorFloorPreservationSelectorCB;
 	private FramedPanel leftCorridorFloorStateOfPreservationFP;
 	private FramedPanel rightCorridorFloorStateOfPreservationFP;
+	private VerticalLayoutContainer expeditionMeasurementVLC;
+	private VerticalLayoutContainer modernMeasurementVLC;
+
 	private FlowLayoutContainer c14AnalysisLinksFLC;
 	private FlowLayoutContainer c14DocumentsFLC;
 	protected C14DocumentUploader uploader;
@@ -457,56 +461,350 @@ public class CaveEditor extends AbstractEditor {
 			ceilingTypeEntryList.add(cte);
 		}
 		if (correspondingCaveEntry.getCaveTypeID() > 0) {
-			rearAreaCeilingTypeSelector1.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).getCeilingType1());
-			rearAreaCeilingTypeSelector2.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).getCeilingType2());
+			dbService.getCaveAreas(correspondingCaveEntry.getCaveID(),new AsyncCallback<ArrayList<CaveAreaEntry>>() {
 
-			leftCorridorCeilingTypeSelector1.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).getCeilingType1());
-			leftCorridorCeilingTypeSelector2.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).getCeilingType2());
+				@Override
+				public void onFailure(Throwable caught) {
+					System.err.println("Problem loading CaveGroupEntry");
+				}
 
-			rightCorridorCeilingTypeSelector1.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).getCeilingType1());
-			rightCorridorCeilingTypeSelector2.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).getCeilingType2());
+				@Override
+				public void onSuccess(ArrayList<CaveAreaEntry> result) {
+					correspondingCaveEntry.setCaveAreaList(result);
+					rearAreaCeilingTypeSelector1.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).getCeilingType1());
+					rearAreaCeilingTypeSelector2.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).getCeilingType2());
 
-			mainChamberCeilingTypeSelector1.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).getCeilingType1());
-			mainChamberCeilingTypeSelector2.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).getCeilingType2());
+					leftCorridorCeilingTypeSelector1.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).getCeilingType1());
+					leftCorridorCeilingTypeSelector2.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).getCeilingType2());
 
-			corridorCeilingTypeSelector1.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).getCeilingType1());
-			corridorCeilingTypeSelector2.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).getCeilingType2());
+					rightCorridorCeilingTypeSelector1.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).getCeilingType1());
+					rightCorridorCeilingTypeSelector2.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).getCeilingType2());
 
-			antechamberCeilingTypeSelector1.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).getCeilingType1());
-			antechamberCeilingTypeSelector2.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).getCeilingType2());
-			rearAreaPreservationSelectorCB.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).getPreservationClassification());
-			rearAreaCeilingPreservationSelectorCB1.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).getCeilingPreservationClassification1());
-			rearAreaCeilingPreservationSelectorCB2.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).getCeilingPreservationClassification2());
-			rearAreaFloorPreservationSelectorCB.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).getFloorPreservationClassification());
+					mainChamberCeilingTypeSelector1.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).getCeilingType1());
+					mainChamberCeilingTypeSelector2.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).getCeilingType2());
 
-			leftCorridorPreservationSelectorCB.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).getPreservationClassification());
-			leftCorridorCeilingPreservationSelectorCB1.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).getCeilingPreservationClassification1());
-			leftCorridorCeilingPreservationSelectorCB2.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).getCeilingPreservationClassification2());
-			leftCorridorFloorPreservationSelectorCB.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).getFloorPreservationClassification());
+					corridorCeilingTypeSelector1.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).getCeilingType1());
+					corridorCeilingTypeSelector2.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).getCeilingType2());
+
+					antechamberCeilingTypeSelector1.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).getCeilingType1());
+					antechamberCeilingTypeSelector2.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).getCeilingType2());
+					rearAreaPreservationSelectorCB.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).getPreservationClassification());
+					rearAreaCeilingPreservationSelectorCB1.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).getCeilingPreservationClassification1());
+					rearAreaCeilingPreservationSelectorCB2.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).getCeilingPreservationClassification2());
+					rearAreaFloorPreservationSelectorCB.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).getFloorPreservationClassification());
+
+					leftCorridorPreservationSelectorCB.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).getPreservationClassification());
+					leftCorridorCeilingPreservationSelectorCB1.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).getCeilingPreservationClassification1());
+					leftCorridorCeilingPreservationSelectorCB2.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).getCeilingPreservationClassification2());
+					leftCorridorFloorPreservationSelectorCB.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).getFloorPreservationClassification());
+					for (PreservationClassificationEntry pce : StaticTables.getInstance().getPreservationClassificationEntries().values()) {
+						preservationClassificationEntryList.add(pce);
+					}
+					rightCorridorPreservationSelectorCB.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).getPreservationClassification());
+					rightCorridorCeilingPreservationSelectorCB1.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).getCeilingPreservationClassification1());
+					rightCorridorCeilingPreservationSelectorCB2.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).getCeilingPreservationClassification2());
+					rightCorridorFloorPreservationSelectorCB.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).getFloorPreservationClassification());
+
+					mainChamberPreservationSelectorCB.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).getPreservationClassification());
+					mainChamberCeilingPreservationSelectorCB1.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).getCeilingPreservationClassification1());
+					mainChamberCeilingPreservationSelectorCB2.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).getCeilingPreservationClassification2());
+					mainChamberFloorPreservationSelectorCB.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).getFloorPreservationClassification());
+
+					corridorPreservationSelectorCB.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).getPreservationClassification());
+					corridorCeilingPreservationSelectorCB1.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).getCeilingPreservationClassification1());
+					corridorCeilingPreservationSelectorCB2.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).getCeilingPreservationClassification2());
+					corridorFloorPreservationSelectorCB.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).getFloorPreservationClassification());
+
+					antechamberPreservationSelectorCB.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).getPreservationClassification());
+					antechamberCeilingPreservationSelectorCB1.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).getCeilingPreservationClassification1());
+					antechamberCeilingPreservationSelectorCB2.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).getCeilingPreservationClassification2());
+					antechamberFloorPreservationSelectorCB.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).getFloorPreservationClassification());
+					rearAreaCeilingPreservationSelectorCB1.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
+
+						@Override
+						public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
+							correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).setCeilingPreservationClassification1(event.getSelectedItem());
+						}
+					});
+					rearAreaPreservationSelectorCB.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
+
+						@Override
+						public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
+							correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).setPreservationClassification(event.getSelectedItem());
+						}
+					});
+					rearAreaCeilingPreservationSelectorCB2.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
+
+						@Override
+						public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
+							correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).setCeilingPreservationClassification2(event.getSelectedItem());
+						}
+					});
+					leftCorridorPreservationSelectorCB.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
+
+						@Override
+						public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
+							correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).setPreservationClassification(event.getSelectedItem());
+						}
+					});
+					leftCorridorCeilingPreservationSelectorCB1.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
+
+						@Override
+						public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
+							correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).setCeilingPreservationClassification1(event.getSelectedItem());
+						}
+					});
+					rightCorridorCeilingPreservationSelectorCB1.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
+
+						@Override
+						public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
+							correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).setCeilingPreservationClassification1(event.getSelectedItem());
+						}
+					});
+					rightCorridorCeilingPreservationSelectorCB2.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
+
+						@Override
+						public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
+							correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).setCeilingPreservationClassification2(event.getSelectedItem());
+						}
+					});
+					rightCorridorPreservationSelectorCB.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
+
+						@Override
+						public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
+							correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).setPreservationClassification(event.getSelectedItem());
+						}
+					});
+					mainChamberPreservationSelectorCB.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
+
+						@Override
+						public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
+							correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).setPreservationClassification(event.getSelectedItem());
+						}
+					});
+					corridorPreservationSelectorCB.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
+
+						@Override
+						public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
+							correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).setPreservationClassification(event.getSelectedItem());
+						}
+					});
+					mainChamberCeilingPreservationSelectorCB1.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
+
+						@Override
+						public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
+							correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).setCeilingPreservationClassification1(event.getSelectedItem());
+						}
+					});
+					corridorCeilingPreservationSelectorCB1.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
+
+						@Override
+						public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
+							correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).setCeilingPreservationClassification1(event.getSelectedItem());
+						}
+					});
+					corridorCeilingPreservationSelectorCB2.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
+
+						@Override
+						public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
+							correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).setCeilingPreservationClassification2(event.getSelectedItem());
+						}
+					});
+					mainChamberCeilingPreservationSelectorCB2.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
+
+						@Override
+						public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
+							correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).setCeilingPreservationClassification2(event.getSelectedItem());
+						}
+					});
+					antechamberCeilingPreservationSelectorCB2.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
+
+						@Override
+						public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
+							correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).setCeilingPreservationClassification2(event.getSelectedItem());
+						}
+					});
+					antechamberPreservationSelectorCB.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
+
+						@Override
+						public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
+							correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).setPreservationClassification(event.getSelectedItem());
+						}
+					});
+					antechamberFloorPreservationSelectorCB.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
+
+						@Override
+						public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
+							correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).setFloorPreservationClassification(event.getSelectedItem());
+						}
+					});
+					antechamberCeilingPreservationSelectorCB2.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
+
+						@Override
+						public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
+							correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).setCeilingPreservationClassification2(event.getSelectedItem());
+						}
+					});
+					corridorFloorPreservationSelectorCB.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
+
+						@Override
+						public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
+							correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).setFloorPreservationClassification(event.getSelectedItem());
+						}
+					});
+					mainChamberFloorPreservationSelectorCB.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
+
+						@Override
+						public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
+							correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).setFloorPreservationClassification(event.getSelectedItem());
+						}
+					});
+					leftCorridorFloorPreservationSelectorCB.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
+
+						@Override
+						public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
+							correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).setFloorPreservationClassification(event.getSelectedItem());
+						}
+					});
+					rightCorridorFloorPreservationSelectorCB.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
+
+						@Override
+						public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
+							correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).setFloorPreservationClassification(event.getSelectedItem());
+						}
+					});
+					rearAreaFloorPreservationSelectorCB.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
+
+						@Override
+						public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
+							correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).setFloorPreservationClassification(event.getSelectedItem());
+						}
+					});
+					rearAreaCeilingTypeSelector1.addSelectionHandler(new SelectionHandler<CeilingTypeEntry>() {
+
+						@Override
+						public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
+							correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).setCeilingType1(event.getSelectedItem());
+						}
+					});
+					rearAreaCeilingTypeSelector2.addSelectionHandler(new SelectionHandler<CeilingTypeEntry>() {
+
+						@Override
+						public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
+							correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).setCeilingType2(event.getSelectedItem());
+						}
+					});
+					mainChamberCeilingTypeSelector1.addSelectionHandler(new SelectionHandler<CeilingTypeEntry>() {
+
+						@Override
+						public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
+							correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).setCeilingType1(event.getSelectedItem());
+						}
+					});
+					mainChamberCeilingTypeSelector2.addSelectionHandler(new SelectionHandler<CeilingTypeEntry>() {
+
+						@Override
+						public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
+							correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).setCeilingType2(event.getSelectedItem());
+						}
+					});
+					antechamberCeilingTypeSelector1.addSelectionHandler(new SelectionHandler<CeilingTypeEntry>() {
+
+						@Override
+						public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
+							correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).setCeilingType1(event.getSelectedItem());
+						}
+					});
+					antechamberCeilingTypeSelector2.addSelectionHandler(new SelectionHandler<CeilingTypeEntry>() {
+
+						@Override
+						public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
+							correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).setCeilingType2(event.getSelectedItem());
+						}
+					});
+					corridorCeilingTypeSelector1.addSelectionHandler(new SelectionHandler<CeilingTypeEntry>() {
+
+						@Override
+						public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
+							correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).setCeilingType1(event.getSelectedItem());
+						}
+					});
+					leftCorridorCeilingTypeSelector1.addSelectionHandler(new SelectionHandler<CeilingTypeEntry>() {
+
+						@Override
+						public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
+							correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).setCeilingType1(event.getSelectedItem());
+						}
+					});
+					corridorCeilingTypeSelector2.addSelectionHandler(new SelectionHandler<CeilingTypeEntry>() {
+
+						@Override
+						public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
+							correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).setCeilingType2(event.getSelectedItem());
+						}
+					});
+					rightCorridorCeilingTypeSelector1.addSelectionHandler(new SelectionHandler<CeilingTypeEntry>() {
+
+						@Override
+						public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
+							correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).setCeilingType1(event.getSelectedItem());
+						}
+					});
+					rightCorridorCeilingTypeSelector2.addSelectionHandler(new SelectionHandler<CeilingTypeEntry>() {
+
+						@Override
+						public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
+							correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).setCeilingType2(event.getSelectedItem());
+						}
+
+					});
+					leftCorridorCeilingTypeSelector2.addSelectionHandler(new SelectionHandler<CeilingTypeEntry>() {
+
+						@Override
+						public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
+							correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).setCeilingType2(event.getSelectedItem());
+						}
+					});
+					leftCorridorCeilingTypeSelector2.addSelectionHandler(new SelectionHandler<CeilingTypeEntry>() {
+
+						@Override
+						public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
+							correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).setCeilingType2(event.getSelectedItem());
+						}
+					});
+					expeditionMeasurementVLC.add(createCaveAreaExpeditionMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER)),
+							new VerticalLayoutData(1.0, 1.0 / 6));
+					expeditionMeasurementVLC.add(createCaveAreaExpeditionMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER)),
+							new VerticalLayoutData(1.0, 1.0 / 6));
+					expeditionMeasurementVLC.add(
+							createCaveAreaExpeditionMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR)),
+							new VerticalLayoutData(1.0, 1.0 / 6));
+					expeditionMeasurementVLC.add(createCaveAreaExpeditionMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA)),
+							new VerticalLayoutData(1.0, 1.0 / 6));
+					expeditionMeasurementVLC.add(
+							createCaveAreaExpeditionMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR)),
+							new VerticalLayoutData(1.0, 1.0 / 6));
+					expeditionMeasurementVLC.add(
+							createCaveAreaExpeditionMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR)),
+							new VerticalLayoutData(1.0, 1.0 / 6));
+					modernMeasurementVLC.add(createCaveAreaModernMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER)),
+							new VerticalLayoutData(1.0, 1.0 / 6));
+					modernMeasurementVLC.add(createCaveAreaModernMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER)),
+							new VerticalLayoutData(1.0, 1.0 / 6));
+					modernMeasurementVLC.add(createCaveAreaModernMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR)),
+							new VerticalLayoutData(1.0, 1.0 / 6));
+					modernMeasurementVLC.add(createCaveAreaModernMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA)),
+							new VerticalLayoutData(1.0, 1.0 / 6));
+					modernMeasurementVLC.add(createCaveAreaModernMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR)),
+							new VerticalLayoutData(1.0, 1.0 / 6));
+					modernMeasurementVLC.add(createCaveAreaModernMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR)),
+							new VerticalLayoutData(1.0, 1.0 / 6));
+				}
+			});
+
 		}
 
-		for (PreservationClassificationEntry pce : StaticTables.getInstance().getPreservationClassificationEntries().values()) {
-			preservationClassificationEntryList.add(pce);
-		}
-		rightCorridorPreservationSelectorCB.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).getPreservationClassification());
-		rightCorridorCeilingPreservationSelectorCB1.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).getCeilingPreservationClassification1());
-		rightCorridorCeilingPreservationSelectorCB2.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).getCeilingPreservationClassification2());
-		rightCorridorFloorPreservationSelectorCB.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).getFloorPreservationClassification());
 
-		mainChamberPreservationSelectorCB.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).getPreservationClassification());
-		mainChamberCeilingPreservationSelectorCB1.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).getCeilingPreservationClassification1());
-		mainChamberCeilingPreservationSelectorCB2.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).getCeilingPreservationClassification2());
-		mainChamberFloorPreservationSelectorCB.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).getFloorPreservationClassification());
-
-		corridorPreservationSelectorCB.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).getPreservationClassification());
-		corridorCeilingPreservationSelectorCB1.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).getCeilingPreservationClassification1());
-		corridorCeilingPreservationSelectorCB2.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).getCeilingPreservationClassification2());
-		corridorFloorPreservationSelectorCB.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).getFloorPreservationClassification());
-
-		antechamberPreservationSelectorCB.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).getPreservationClassification());
-		antechamberCeilingPreservationSelectorCB1.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).getCeilingPreservationClassification1());
-		antechamberCeilingPreservationSelectorCB2.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).getCeilingPreservationClassification2());
-		antechamberFloorPreservationSelectorCB.setValue(correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).getFloorPreservationClassification());
 	}
 
 	/**
@@ -1131,13 +1429,6 @@ public class CaveEditor extends AbstractEditor {
 		rearAreaStateOfPreservationFP = new FramedPanel();
 		rearAreaStateOfPreservationFP.setHeading("Rear Area");
 		rearAreaPreservationSelectorCB = createStateOfPreservationSelector("state of preservation");
-		rearAreaPreservationSelectorCB.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
-
-			@Override
-			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).setPreservationClassification(event.getSelectedItem());
-			}
-		});
 		ToolButton rearAreaStateOfPreservationResetSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		rearAreaStateOfPreservationResetSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		rearAreaStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
@@ -1153,21 +1444,9 @@ public class CaveEditor extends AbstractEditor {
 		rearAreaCeilingStateOfPreservationFP = new FramedPanel();
 		rearAreaCeilingStateOfPreservationFP.setHeading("Rear Area");
 		rearAreaCeilingPreservationSelectorCB1 = createStateOfPreservationSelector("state of preservation");
-		rearAreaCeilingPreservationSelectorCB1.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
-			@Override
-			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).setCeilingPreservationClassification1(event.getSelectedItem());
-			}
-		});
 		rearAreaCeilingPreservationSelectorCB2 = createStateOfPreservationSelector("optional 2nd type");
-		rearAreaCeilingPreservationSelectorCB2.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
-			@Override
-			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).setCeilingPreservationClassification2(event.getSelectedItem());
-			}
-		});
 		HorizontalLayoutContainer rearAreaCeilingPreservationHLC = new HorizontalLayoutContainer();
 		rearAreaCeilingPreservationHLC.add(rearAreaCeilingPreservationSelectorCB1, new HorizontalLayoutData(.5, 1.0, new Margins(0, 5, 0, 0)));
 		rearAreaCeilingPreservationHLC.add(rearAreaCeilingPreservationSelectorCB2, new HorizontalLayoutData(.5, 1.0, new Margins(0)));
@@ -1187,13 +1466,7 @@ public class CaveEditor extends AbstractEditor {
 		leftCorridorStateOfPreservationFP = new FramedPanel();
 		leftCorridorStateOfPreservationFP.setHeading("Left Corridor");
 		leftCorridorPreservationSelectorCB = createStateOfPreservationSelector("state of preservation");
-		leftCorridorPreservationSelectorCB.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
-			@Override
-			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).setPreservationClassification(event.getSelectedItem());
-			}
-		});
 		ToolButton leftCorridorStateOfPreservationResetSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		leftCorridorStateOfPreservationResetSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		leftCorridorStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
@@ -1209,21 +1482,8 @@ public class CaveEditor extends AbstractEditor {
 		leftCorridorCeilingStateOfPreservationFP = new FramedPanel();
 		leftCorridorCeilingStateOfPreservationFP.setHeading("Left Corridor");
 		leftCorridorCeilingPreservationSelectorCB1 = createStateOfPreservationSelector("state of preservation");
-		leftCorridorCeilingPreservationSelectorCB1.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
-			@Override
-			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).setCeilingPreservationClassification1(event.getSelectedItem());
-			}
-		});
 		leftCorridorCeilingPreservationSelectorCB2 = createStateOfPreservationSelector("optional 2nd type");
-		leftCorridorCeilingPreservationSelectorCB2.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
-
-			@Override
-			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).setCeilingPreservationClassification2(event.getSelectedItem());
-			}
-		});
 		HorizontalLayoutContainer leftCorridorCeilingPreservationHLC = new HorizontalLayoutContainer();
 		leftCorridorCeilingPreservationHLC.add(leftCorridorCeilingPreservationSelectorCB1,
 				new HorizontalLayoutData(.5, 1.0, new Margins(0, 5, 0, 0)));
@@ -1244,13 +1504,7 @@ public class CaveEditor extends AbstractEditor {
 		rightCorridorStateOfPreservationFP = new FramedPanel();
 		rightCorridorStateOfPreservationFP.setHeading("Right Corridor");
 		rightCorridorPreservationSelectorCB = createStateOfPreservationSelector("state of preservation");
-		rightCorridorPreservationSelectorCB.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
-			@Override
-			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).setPreservationClassification(event.getSelectedItem());
-			}
-		});
 		ToolButton rightCorridorStateOfPreservationResetSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		rightCorridorStateOfPreservationResetSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		rightCorridorStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
@@ -1266,21 +1520,9 @@ public class CaveEditor extends AbstractEditor {
 		rightCorridorCeilingStateOfPreservationFP = new FramedPanel();
 		rightCorridorCeilingStateOfPreservationFP.setHeading("Right Corridor");
 		rightCorridorCeilingPreservationSelectorCB1 = createStateOfPreservationSelector("state of preservation");
-		rightCorridorCeilingPreservationSelectorCB1.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
-			@Override
-			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).setCeilingPreservationClassification1(event.getSelectedItem());
-			}
-		});
 		rightCorridorCeilingPreservationSelectorCB2 = createStateOfPreservationSelector("optional 2nd type");
-		rightCorridorCeilingPreservationSelectorCB2.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
-			@Override
-			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).setCeilingPreservationClassification2(event.getSelectedItem());
-			}
-		});
 		HorizontalLayoutContainer rightCorridorCeilingPreservationHLC = new HorizontalLayoutContainer();
 		rightCorridorCeilingPreservationHLC.add(rightCorridorCeilingPreservationSelectorCB1,
 				new HorizontalLayoutData(.5, 1.0, new Margins(0, 5, 0, 0)));
@@ -1301,13 +1543,7 @@ public class CaveEditor extends AbstractEditor {
 		mainChamberStateOfPreservationFP = new FramedPanel();
 		mainChamberStateOfPreservationFP.setHeading("Main Chamber");
 		mainChamberPreservationSelectorCB = createStateOfPreservationSelector("state of preservation");
-		mainChamberPreservationSelectorCB.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
-			@Override
-			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).setPreservationClassification(event.getSelectedItem());
-			}
-		});
 		ToolButton mainChamberStateOfPreservationResetSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		mainChamberStateOfPreservationResetSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		mainChamberStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
@@ -1323,21 +1559,9 @@ public class CaveEditor extends AbstractEditor {
 		mainChamberCeilingStateOfPreservationFP = new FramedPanel();
 		mainChamberCeilingStateOfPreservationFP.setHeading("Main Chamber");
 		mainChamberCeilingPreservationSelectorCB1 = createStateOfPreservationSelector("state of preservation");
-		mainChamberCeilingPreservationSelectorCB1.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
-			@Override
-			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).setCeilingPreservationClassification1(event.getSelectedItem());
-			}
-		});
 		mainChamberCeilingPreservationSelectorCB2 = createStateOfPreservationSelector("optional 2nd type");
-		mainChamberCeilingPreservationSelectorCB2.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
-			@Override
-			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).setCeilingPreservationClassification2(event.getSelectedItem());
-			}
-		});
 		HorizontalLayoutContainer mainChamberCeilingPreservationHLC = new HorizontalLayoutContainer();
 		mainChamberCeilingPreservationHLC.add(mainChamberCeilingPreservationSelectorCB1,
 				new HorizontalLayoutData(0.5, 1.0, new Margins(0, 5, 0, 0)));
@@ -1358,13 +1582,7 @@ public class CaveEditor extends AbstractEditor {
 		corridorStateOfPreservationFP = new FramedPanel();
 		corridorStateOfPreservationFP.setHeading("Main Corridor");
 		corridorPreservationSelectorCB = createStateOfPreservationSelector("state of preservation");
-		corridorPreservationSelectorCB.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
-			@Override
-			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).setPreservationClassification(event.getSelectedItem());
-			}
-		});
 		ToolButton corridorStateOfPreservationResetSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		corridorStateOfPreservationResetSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		corridorStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
@@ -1380,21 +1598,9 @@ public class CaveEditor extends AbstractEditor {
 		corridorCeilingStateOfPreservationFP = new FramedPanel();
 		corridorCeilingStateOfPreservationFP.setHeading("Main Corridor");
 		corridorCeilingPreservationSelectorCB1 = createStateOfPreservationSelector("state of preservation");
-		corridorCeilingPreservationSelectorCB1.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
-			@Override
-			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).setCeilingPreservationClassification1(event.getSelectedItem());
-			}
-		});
 		corridorCeilingPreservationSelectorCB2 = createStateOfPreservationSelector("optional 2nd type");
-		corridorCeilingPreservationSelectorCB2.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
-			@Override
-			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).setCeilingPreservationClassification2(event.getSelectedItem());
-			}
-		});
 		HorizontalLayoutContainer corridorCeilingPreservationHLC = new HorizontalLayoutContainer();
 		corridorCeilingPreservationHLC.add(corridorCeilingPreservationSelectorCB1, new HorizontalLayoutData(.5, 1.0, new Margins(0, 5, 0, 0)));
 		corridorCeilingPreservationHLC.add(corridorCeilingPreservationSelectorCB2, new HorizontalLayoutData(.5, 1.0, new Margins(0)));
@@ -1414,13 +1620,7 @@ public class CaveEditor extends AbstractEditor {
 		antechamberStateOfPreservationFP = new FramedPanel();
 		antechamberStateOfPreservationFP.setHeading("Antechamber");
 		antechamberPreservationSelectorCB = createStateOfPreservationSelector("state of preservation");
-		antechamberPreservationSelectorCB.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
-			@Override
-			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).setPreservationClassification(event.getSelectedItem());
-			}
-		});
 		ToolButton antechamberStateOfPreservationResetSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		antechamberStateOfPreservationResetSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		antechamberStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
@@ -1436,21 +1636,9 @@ public class CaveEditor extends AbstractEditor {
 		antechamberCeilingStateOfPreservationFP = new FramedPanel();
 		antechamberCeilingStateOfPreservationFP.setHeading("Antechamber");
 		antechamberCeilingPreservationSelectorCB1 = createStateOfPreservationSelector("state of preservation");
-		antechamberCeilingPreservationSelectorCB1.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
-			@Override
-			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).setCeilingPreservationClassification1(event.getSelectedItem());
-			}
-		});
 		antechamberCeilingPreservationSelectorCB2 = createStateOfPreservationSelector("optional 2nd type");
-		antechamberCeilingPreservationSelectorCB2.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
-			@Override
-			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).setCeilingPreservationClassification2(event.getSelectedItem());
-			}
-		});
 		HorizontalLayoutContainer antechamberCeilingPreservationHLC = new HorizontalLayoutContainer();
 		antechamberCeilingPreservationHLC.add(antechamberCeilingPreservationSelectorCB1,
 				new HorizontalLayoutData(.5, 1.0, new Margins(0, 5, 0, 0)));
@@ -1471,13 +1659,7 @@ public class CaveEditor extends AbstractEditor {
 		antechamberFloorStateOfPreservationFP = new FramedPanel();
 		antechamberFloorStateOfPreservationFP.setHeading("Antechamber");
 		antechamberFloorPreservationSelectorCB = createStateOfPreservationSelector("state of preservation");
-		antechamberFloorPreservationSelectorCB.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
-			@Override
-			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).setFloorPreservationClassification(event.getSelectedItem());
-			}
-		});
 		ToolButton antechamberFloorStateOfPreservationResetSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		antechamberFloorStateOfPreservationResetSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		antechamberFloorStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
@@ -1493,13 +1675,7 @@ public class CaveEditor extends AbstractEditor {
 		mainChamberFloorStateOfPreservationFP = new FramedPanel();
 		mainChamberFloorStateOfPreservationFP.setHeading("Main Chamber");
 		mainChamberFloorPreservationSelectorCB = createStateOfPreservationSelector("state of preservation");
-		mainChamberFloorPreservationSelectorCB.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
-			@Override
-			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).setFloorPreservationClassification(event.getSelectedItem());
-			}
-		});
 		ToolButton mainChamberFloorStateOfPreservationResetSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		mainChamberFloorStateOfPreservationResetSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		mainChamberFloorStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
@@ -1515,13 +1691,7 @@ public class CaveEditor extends AbstractEditor {
 		corridorFloorStateOfPreservationFP = new FramedPanel();
 		corridorFloorStateOfPreservationFP.setHeading("Main Corridor");
 		corridorFloorPreservationSelectorCB = createStateOfPreservationSelector("state of preservation");
-		corridorFloorPreservationSelectorCB.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
-			@Override
-			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).setFloorPreservationClassification(event.getSelectedItem());
-			}
-		});
 		ToolButton corridorFloorStateOfPreservationResetSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		corridorFloorStateOfPreservationResetSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		corridorFloorStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
@@ -1537,13 +1707,7 @@ public class CaveEditor extends AbstractEditor {
 		rearAreaFloorStateOfPreservationFP = new FramedPanel();
 		rearAreaFloorStateOfPreservationFP.setHeading("Rear Area");
 		rearAreaFloorPreservationSelectorCB = createStateOfPreservationSelector("state of preservation");
-		rearAreaFloorPreservationSelectorCB.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
-			@Override
-			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).setFloorPreservationClassification(event.getSelectedItem());
-			}
-		});
 		ToolButton rearAreaFloorStateOfPreservationResetSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		rearAreaFloorStateOfPreservationResetSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		rearAreaFloorStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
@@ -1559,13 +1723,7 @@ public class CaveEditor extends AbstractEditor {
 		leftCorridorFloorStateOfPreservationFP = new FramedPanel();
 		leftCorridorFloorStateOfPreservationFP.setHeading("Left Corridor");
 		leftCorridorFloorPreservationSelectorCB = createStateOfPreservationSelector("state of preservation");
-		leftCorridorFloorPreservationSelectorCB.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
-			@Override
-			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).setFloorPreservationClassification(event.getSelectedItem());
-			}
-		});
 		ToolButton leftCorridorFloorStateOfPreservationResetSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		leftCorridorFloorStateOfPreservationResetSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		leftCorridorFloorStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
@@ -1581,13 +1739,7 @@ public class CaveEditor extends AbstractEditor {
 		rightCorridorFloorStateOfPreservationFP = new FramedPanel();
 		rightCorridorFloorStateOfPreservationFP.setHeading("Right Corridor");
 		rightCorridorFloorPreservationSelectorCB = createStateOfPreservationSelector("state of preservation");
-		rightCorridorFloorPreservationSelectorCB.addSelectionHandler(new SelectionHandler<PreservationClassificationEntry>() {
 
-			@Override
-			public void onSelection(SelectionEvent<PreservationClassificationEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).setFloorPreservationClassification(event.getSelectedItem());
-			}
-		});
 		ToolButton rightCorridorFloorStateOfPreservationResetSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		rightCorridorFloorStateOfPreservationResetSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		rightCorridorFloorStateOfPreservationResetSelectionTB.addSelectHandler(new SelectHandler() {
@@ -1975,7 +2127,7 @@ public class CaveEditor extends AbstractEditor {
 					@Override
 					public void onSelect(SelectEvent event) {
 						if (c14AnalysisUrlTextField.validate() && c14AnalysisShortName.validate()) {
-							C14AnalysisUrlEntry c14aue = new C14AnalysisUrlEntry(c14AnalysisUrlTextField.getValue(), c14AnalysisShortName.getValue());
+							C14AnalysisUrlEntry c14aue = new C14AnalysisUrlEntry(c14AnalysisUrlTextField.getValue(), c14AnalysisShortName.getValue(), correspondingCaveEntry.getCaveID());
 							correspondingCaveEntry.getC14AnalysisUrlList().add(c14aue);
 							refreshC14AnalysisLinksFLC(correspondingCaveEntry.getC14AnalysisUrlList());
 							addNewC14LinkDialog.hide();
@@ -2024,7 +2176,7 @@ public class CaveEditor extends AbstractEditor {
 					@Override
 					public void uploadCompleted(String documentFilename) {
 						String origFilename = uploader.getUploadedFilename().substring(12);
-						correspondingCaveEntry.getC14DocumentList().add(new C14DocumentEntry(documentFilename, origFilename));
+						correspondingCaveEntry.getC14DocumentList().add(new C14DocumentEntry(documentFilename, origFilename, correspondingCaveEntry.getCaveID()));
 						refreshC14DocumentsFLC(correspondingCaveEntry.getC14DocumentList());
 						c14DocUploadPanel.hide();
 					}
@@ -2125,21 +2277,9 @@ public class CaveEditor extends AbstractEditor {
 		rearAreaCeilingTypeFP = new FramedPanel();
 		rearAreaCeilingTypeFP.setHeading("Rear Area Ceiling Type");
 		rearAreaCeilingTypeSelector1 = createCeilingTypeSelector("select ceiling type");
-		rearAreaCeilingTypeSelector1.addSelectionHandler(new SelectionHandler<CeilingTypeEntry>() {
 
-			@Override
-			public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).setCeilingType1(event.getSelectedItem());
-			}
-		});
 		rearAreaCeilingTypeSelector2 = createCeilingTypeSelector("optional 2nd type");
-		rearAreaCeilingTypeSelector2.addSelectionHandler(new SelectionHandler<CeilingTypeEntry>() {
 
-			@Override
-			public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA).setCeilingType2(event.getSelectedItem());
-			}
-		});
 		ToolButton resetRearAreaCeilingTypeSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetRearAreaCeilingTypeSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		rearAreaCeilingTypeFP.addTool(resetRearAreaCeilingTypeSelectionTB);
@@ -2162,21 +2302,9 @@ public class CaveEditor extends AbstractEditor {
 		mainChamberCeilingTypeFP = new FramedPanel();
 		mainChamberCeilingTypeFP.setHeading("Main Chamber Ceiling Type");
 		mainChamberCeilingTypeSelector1 = createCeilingTypeSelector("select ceiling type");
-		mainChamberCeilingTypeSelector1.addSelectionHandler(new SelectionHandler<CeilingTypeEntry>() {
 
-			@Override
-			public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).setCeilingType1(event.getSelectedItem());
-			}
-		});
 		mainChamberCeilingTypeSelector2 = createCeilingTypeSelector("optional 2nd type");
-		mainChamberCeilingTypeSelector2.addSelectionHandler(new SelectionHandler<CeilingTypeEntry>() {
 
-			@Override
-			public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER).setCeilingType2(event.getSelectedItem());
-			}
-		});
 		ToolButton resetMainChamberCeilingTypeSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetMainChamberCeilingTypeSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		mainChamberCeilingTypeFP.addTool(resetMainChamberCeilingTypeSelectionTB);
@@ -2199,21 +2327,9 @@ public class CaveEditor extends AbstractEditor {
 		antechamberCeilingTypeFP = new FramedPanel();
 		antechamberCeilingTypeFP.setHeading("Antechamber Ceiling Type");
 		antechamberCeilingTypeSelector1 = createCeilingTypeSelector("select ceiling type");
-		antechamberCeilingTypeSelector1.addSelectionHandler(new SelectionHandler<CeilingTypeEntry>() {
 
-			@Override
-			public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).setCeilingType1(event.getSelectedItem());
-			}
-		});
 		antechamberCeilingTypeSelector2 = createCeilingTypeSelector("optional 2nd type");
-		antechamberCeilingTypeSelector2.addSelectionHandler(new SelectionHandler<CeilingTypeEntry>() {
 
-			@Override
-			public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER).setCeilingType2(event.getSelectedItem());
-			}
-		});
 		ToolButton resetAntechamberCeilingTypeSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetAntechamberCeilingTypeSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		antechamberCeilingTypeFP.addTool(resetAntechamberCeilingTypeSelectionTB);
@@ -2236,21 +2352,9 @@ public class CaveEditor extends AbstractEditor {
 		corridorCeilingTypeFP = new FramedPanel();
 		corridorCeilingTypeFP.setHeading("Corridor Ceiling Type");
 		corridorCeilingTypeSelector1 = createCeilingTypeSelector("select ceiling type");
-		corridorCeilingTypeSelector1.addSelectionHandler(new SelectionHandler<CeilingTypeEntry>() {
 
-			@Override
-			public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).setCeilingType1(event.getSelectedItem());
-			}
-		});
 		corridorCeilingTypeSelector2 = createCeilingTypeSelector("optional 2nd type");
-		corridorCeilingTypeSelector2.addSelectionHandler(new SelectionHandler<CeilingTypeEntry>() {
 
-			@Override
-			public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR).setCeilingType2(event.getSelectedItem());
-			}
-		});
 		ToolButton resetCorridorCeilingTypeSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetCorridorCeilingTypeSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		corridorCeilingTypeFP.addTool(resetCorridorCeilingTypeSelectionTB);
@@ -2273,21 +2377,9 @@ public class CaveEditor extends AbstractEditor {
 		leftCorridorCeilingTypeFP = new FramedPanel();
 		leftCorridorCeilingTypeFP.setHeading("Left Corridor Ceiling Type");
 		leftCorridorCeilingTypeSelector1 = createCeilingTypeSelector("select ceiling type");
-		leftCorridorCeilingTypeSelector1.addSelectionHandler(new SelectionHandler<CeilingTypeEntry>() {
 
-			@Override
-			public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).setCeilingType1(event.getSelectedItem());
-			}
-		});
 		leftCorridorCeilingTypeSelector2 = createCeilingTypeSelector("optional 2nd type");
-		leftCorridorCeilingTypeSelector2.addSelectionHandler(new SelectionHandler<CeilingTypeEntry>() {
 
-			@Override
-			public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR).setCeilingType2(event.getSelectedItem());
-			}
-		});
 		ToolButton resetLeftCorridorCeilingTypeSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetLeftCorridorCeilingTypeSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		leftCorridorCeilingTypeFP.addTool(resetLeftCorridorCeilingTypeSelectionTB);
@@ -2310,22 +2402,9 @@ public class CaveEditor extends AbstractEditor {
 		rightCorridorCeilingTypeFP = new FramedPanel();
 		rightCorridorCeilingTypeFP.setHeading("Right Corridor Ceiling Type");
 		rightCorridorCeilingTypeSelector1 = createCeilingTypeSelector("select ceiling type");
-		rightCorridorCeilingTypeSelector1.addSelectionHandler(new SelectionHandler<CeilingTypeEntry>() {
 
-			@Override
-			public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).setCeilingType1(event.getSelectedItem());
-			}
-		});
 		rightCorridorCeilingTypeSelector2 = createCeilingTypeSelector("optional 2nd type");
-		rightCorridorCeilingTypeSelector2.addSelectionHandler(new SelectionHandler<CeilingTypeEntry>() {
 
-			@Override
-			public void onSelection(SelectionEvent<CeilingTypeEntry> event) {
-				correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR).setCeilingType2(event.getSelectedItem());
-			}
-
-		});
 		ToolButton resetRightCorridorCeilingTypeSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetRightCorridorCeilingTypeSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		rightCorridorCeilingTypeFP.addTool(resetRightCorridorCeilingTypeSelectionTB);
@@ -2510,36 +2589,11 @@ public class CaveEditor extends AbstractEditor {
 		 * --------------------------------- measurement tab ------------------------------------------
 		 */
 
-		VerticalLayoutContainer expeditionMeasurementVLC = new VerticalLayoutContainer();
-		expeditionMeasurementVLC.add(createCaveAreaExpeditionMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER)),
-				new VerticalLayoutData(1.0, 1.0 / 6));
-		expeditionMeasurementVLC.add(createCaveAreaExpeditionMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER)),
-				new VerticalLayoutData(1.0, 1.0 / 6));
-		expeditionMeasurementVLC.add(
-				createCaveAreaExpeditionMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR)),
-				new VerticalLayoutData(1.0, 1.0 / 6));
-		expeditionMeasurementVLC.add(createCaveAreaExpeditionMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA)),
-				new VerticalLayoutData(1.0, 1.0 / 6));
-		expeditionMeasurementVLC.add(
-				createCaveAreaExpeditionMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR)),
-				new VerticalLayoutData(1.0, 1.0 / 6));
-		expeditionMeasurementVLC.add(
-				createCaveAreaExpeditionMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR)),
-				new VerticalLayoutData(1.0, 1.0 / 6));
+		expeditionMeasurementVLC = new VerticalLayoutContainer();
 
-		VerticalLayoutContainer modernMeasurementVLC = new VerticalLayoutContainer();
-		modernMeasurementVLC.add(createCaveAreaModernMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.ANTECHAMBER)),
-				new VerticalLayoutData(1.0, 1.0 / 6));
-		modernMeasurementVLC.add(createCaveAreaModernMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER)),
-				new VerticalLayoutData(1.0, 1.0 / 6));
-		modernMeasurementVLC.add(createCaveAreaModernMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.MAIN_CHAMBER_CORRIDOR)),
-				new VerticalLayoutData(1.0, 1.0 / 6));
-		modernMeasurementVLC.add(createCaveAreaModernMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA)),
-				new VerticalLayoutData(1.0, 1.0 / 6));
-		modernMeasurementVLC.add(createCaveAreaModernMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_LEFT_CORRIDOR)),
-				new VerticalLayoutData(1.0, 1.0 / 6));
-		modernMeasurementVLC.add(createCaveAreaModernMeasurePanel(correspondingCaveEntry.getCaveArea(CaveAreaEntry.REAR_AREA_RIGHT_CORRIDOR)),
-				new VerticalLayoutData(1.0, 1.0 / 6));
+
+		modernMeasurementVLC = new VerticalLayoutContainer();
+
 
 		PlainTabPanel measurementPTP = new PlainTabPanel();
 		measurementPTP.setTabScroll(false);

@@ -136,6 +136,9 @@ public abstract class AbstractResultView extends Portlet {
 	 * 
 	 * @param enable
 	 */
+	public FlowLayoutContainer getContainer() {
+		return resultContainer;
+	}
 	public void setSearchEnabled(boolean enable) {
 		searchToolButton.setEnabled(enable);
 	}

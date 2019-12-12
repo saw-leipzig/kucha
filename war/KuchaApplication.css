@@ -128,7 +128,7 @@ td.image-view {
 
 
 html.data-display {
-	backround-color: #ffcc66;
+	backround-color: #ffcc99;
 }
 
 ul.simple-list {
@@ -280,6 +280,25 @@ div.searchActiveButton {
 	background-repeat: no-repeat;
 	cursor: pointer;
 }
+
+div.panel {
+	resize: both;
+	overflow: auto;
+}
+div.mainFP {
+	resize: both;
+	overflow: auto;
+}
+
+body.panel {
+	resize: both;
+	overflow: auto;
+}
+body.mainFP {
+	resize: both;
+	overflow: auto;
+}
+
 
 div.loginButton {
 	background-image: url(icons/login-activ2.png);

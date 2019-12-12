@@ -15,6 +15,7 @@ package de.cses.client.depictions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor;
@@ -33,6 +34,7 @@ import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -80,6 +82,7 @@ import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinNumberValidator;
+import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -138,6 +141,7 @@ public class DepictionEditor extends AbstractEditor {
 	private StyleProperties styleProps;
 	private ListStore<StyleEntry> styleEntryLS;
 	private CaveProperties caveProps;
+	private Map<String,String> imgdic;
 	private ListStore<CaveEntry> caveEntryLS;
 	private ComboBox<CaveEntry> caveSelectionCB;
 	private ExpeditionProperties expedProps;
@@ -170,6 +174,28 @@ public class DepictionEditor extends AbstractEditor {
 		public String getElement() {
 			return element;
 		}
+	}
+	public void loadiconogrpahy(int entry, long start) {
+	dbService.getRelatedIconography(entry, new AsyncCallback<ArrayList<IconographyEntry>>() {
+		@Override
+		public void onFailure(Throwable caught) {
+			long end = System.currentTimeMillis();
+			long diff = (end-start);
+			Util.doLogging("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getIconogrpahy brach nach "+diff + " Millisekunden ab."+caught.getMessage());
+			Util.doLogging(caught.getLocalizedMessage());
+			caught.printStackTrace();
+			Info.display("Failure", "Failed to load Iconography, retry.");
+			loadiconogrpahy(entry, start);
+		}
+
+		@Override
+		public void onSuccess(ArrayList<IconographyEntry> iconographyRelationList) {
+			long end = System.currentTimeMillis();
+			long diff = (end-start);
+			Util.doLogging("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getIconogrpahy wurde nach "+diff + " Millisekunden erfolgreich beendet.");
+			iconographySelector.setSelectedIconography(iconographyRelationList);
+			iconographySelector.IconographyTreeEnabled(true);
+	}});
 	}
 
 	interface DepictionProperties extends PropertyAccess<DepictionEntry> {
@@ -277,9 +303,7 @@ public class DepictionEditor extends AbstractEditor {
 
 		imgProperties = GWT.create(ImageProperties.class);
 		imageEntryLS = new ListStore<ImageEntry>(imgProperties.imageID());
-		if (correspondingDepictionEntry.getDepictionID() > 0) {
-			loadImages();
-		}
+		
 		vendorProps = GWT.create(VendorProperties.class);
 		vendorEntryLS = new ListStore<VendorEntry>(vendorProps.vendorID());
 
@@ -471,6 +495,28 @@ public class DepictionEditor extends AbstractEditor {
 	private void initPanel() {
 
 		// the images related with the depiction entry that will be shown on the right
+		dbService.getPics(correspondingDepictionEntry.getRelatedImages(), 300, new AsyncCallback<Map<String,String>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+				Info.display("getPics", "got bad response");
+			}
+
+			@Override
+			public void onSuccess(Map<String,String> result) {
+				//.display("getPics", "got good response");
+				//for (Map.Entry<String,String> entry : result.entrySet())  
+		        //    Util.doLogging("Key = " + entry.getKey() + 
+		        //                     ", Value = " + entry.getValue());
+				imgdic = result;
+				if (correspondingDepictionEntry.getDepictionID() > 0) {
+					loadImages();
+				}
+				
+			}
+		});
+		
 		imageListView = new ListView<ImageEntry, ImageEntry>(imageEntryLS, new IdentityValueProvider<ImageEntry>() {
 			@Override
 			public void setValue(ImageEntry object, ImageEntry value) {
@@ -481,7 +527,17 @@ public class DepictionEditor extends AbstractEditor {
 			final ImageViewTemplates imageViewTemplates = GWT.create(ImageViewTemplates.class);
 
 			public SafeHtml render(ImageEntry item) {
-				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=300" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
+				SafeUri imageUri;
+				//SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=300" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
+				if (imgdic.size()>0) {
+					//Util.doLogging(imgdic.get(item.getFilename()));
+					imageUri = UriUtils.fromTrustedString(imgdic.get(item.getFilename()));
+				}
+				else {
+					imageUri = UriUtils.fromTrustedString("icons/lloading.jpg");					
+				}
+				Image image = new Image("data:image/png;base64,"+imageUri);
+				//Util.doLogging( item.getFilename()+" / "+imageUri);
 				ArrayList<TextElement> titleList = new ArrayList<TextElement>();
 				for (String s : item.getTitle().split("_")) {
 					titleList.add(new TextElement(s));
@@ -500,6 +556,7 @@ public class DepictionEditor extends AbstractEditor {
 		}));
 
 //		imageListView.setSize("340", "290");
+		//Util.doLogging("Size of ImageListView: "+Integer.toString(imageEntryLS.size()));
 		ListField<ImageEntry, ImageEntry> imageViewLF = new ListField<ImageEntry, ImageEntry>(imageListView);
 //		imageViewLF.setSize("250px", "1.0");
 
@@ -1356,18 +1413,9 @@ public class DepictionEditor extends AbstractEditor {
 		 * ---------------------- content of third tab (Iconography & Pictorial Elements) starts here ---------------------
 		 */
 		iconographySelector = new IconographySelector(StaticTables.getInstance().getIconographyEntries().values());
-		dbService.getRelatedIconography(correspondingDepictionEntry.getDepictionID(), new AsyncCallback<ArrayList<IconographyEntry>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(ArrayList<IconographyEntry> iconographyRelationList) {
-				iconographySelector.setSelectedIconography(iconographyRelationList);
-			}
-		});
+		long start = System.currentTimeMillis();
+		Util.doLogging("Starte getIconogrpahy for Depitionentrie: "+Integer.toString(correspondingDepictionEntry.getDepictionID()));
+		loadiconogrpahy(correspondingDepictionEntry.getDepictionID(),start);
 
 		/**
 		 * ---------------------- content of fourth tab (Bibliography Selector) ---------------------

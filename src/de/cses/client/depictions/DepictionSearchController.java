@@ -14,11 +14,15 @@
 package de.cses.client.depictions;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.safehtml.shared.SafeUri;
+import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -48,6 +52,11 @@ public class DepictionSearchController extends AbstractSearchController {
 	/* (non-Javadoc)
 	 * @see de.cses.client.ui.AbstractSearchController#invokeSearch()
 	 */
+	
+	public void getPicsForSearch(ArrayList<DepictionEntry> result) {
+	
+
+	}
 	@Override
 	public void invokeSearch() {
 		DepictionSearchEntry searchEntry = (DepictionSearchEntry) getFilter().getSearchEntry();
@@ -62,13 +71,54 @@ public class DepictionSearchController extends AbstractSearchController {
 
 			@Override
 			public void onSuccess(ArrayList<DepictionEntry> result) {
+				String masterImageIDs = "";
+				int count = 0;
 				getResultView().reset();
-				for (DepictionEntry de : result) {
-					Util.doLogging("adding to view DepictionID = " + de.getDepictionID());
-					getResultView().addResult(new DepictionView(de));
-					Util.doLogging("done");
+				int x = result.size();
+				for (int i=0;i<x;i++){
+					DepictionEntry de = result.get(i);
+					count++;
+					if (masterImageIDs == "") {
+						masterImageIDs = Integer.toString(de.getMasterImageID());
+					}
+					else {
+						masterImageIDs = masterImageIDs + ","+Integer.toString(de.getMasterImageID());
+					}
+					getResultView().addResult(new DepictionView(de,UriUtils.fromTrustedString("icons/load_active.png")));
+//					Util.doLogging("Lade Depiction: "+de.getShortName());
+					if ((count==20 )||(i==result.size()-1)){
+						dbService.getPicsByImageID(masterImageIDs, 120, new AsyncCallback<Map<Integer,String>>() {
+							
+							@Override
+							public void onFailure(Throwable caught) {				Info.display("getPics", "got bad response");
+							}
+							
+							@Override
+							public void onSuccess(Map<Integer,String> imgdic) {
+								//Info.display("getPics", "got good response");
+								//for (DepictionEntry de : result) {
+								//	
+								//}
+								//Util.doLogging("Anzahl der Widgets: "+Integer.toString(getResultView().getContainer().getWidgetCount()));
+								for (int i = 0; i < getResultView().getContainer().getWidgetCount(); i++) {
+									//Util.doLogging("Überprüfe Eintrag: "+Integer.toString(((DepictionView)getResultView().getContainer().getWidget(i)).getDepictionEntry().getDepictionID()));
+									if (imgdic.containsKey(((DepictionView)getResultView().getContainer().getWidget(i)).getDepictionEntry().getMasterImageID())) {
+										//Util.doLogging("Got Match! Do refresh");
+										((DepictionView)getResultView().getContainer().getWidget(i)).refreshpic(UriUtils.fromTrustedString(imgdic.get(((DepictionView)getResultView().getContainer().getWidget(i)).getDepictionEntry().getMasterImageID())));
+									}
+								}
+								
+								
+							}
+									});
+						masterImageIDs="";
+						count=0;
+					}
+					
 				}
+				
 				getResultView().setSearchEnabled(true);
+				
 			}
 		});
 	}
@@ -85,8 +135,21 @@ public class DepictionSearchController extends AbstractSearchController {
 			@Override
 			public void closeRequest(AbstractEntry entry) {
 				depictionEditorPanel.hide();
-				if (entry != null) {
-					getResultView().addResult(new DepictionView((DepictionEntry)entry));
+				if (entry != null) {	
+					dbService.getPicsByImageID(Integer.toString(((DepictionEntry)entry).getMasterImageID()), 120, new AsyncCallback<Map<Integer,String>>() {
+				
+						@Override
+						public void onFailure(Throwable caught) {				
+							Info.display("getPics", "got bad response");
+						}
+						
+						@Override
+						public void onSuccess(Map<Integer,String> imgdic) {
+							Info.display("getPics", "got good response");
+							
+							getResultView().addResult(new DepictionView((DepictionEntry)entry, UriUtils.fromTrustedString(imgdic.get(((DepictionEntry)entry).getMasterImageID()))));
+						}
+					});
 				}
 			}
 

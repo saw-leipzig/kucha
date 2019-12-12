@@ -14,12 +14,14 @@
 package de.cses.client;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Image;
 
-import de.cses.shared.AnnotatedBibliographySearchEntry;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographyEntry;
+import de.cses.shared.AnnotatedBibliographySearchEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.BibKeywordEntry;
 import de.cses.shared.CaveAreaEntry;
@@ -79,6 +81,10 @@ public interface DatabaseServiceAsync {
 	void getImages(String sqlWhere, AsyncCallback<ArrayList<ImageEntry>> callback) throws IllegalArgumentException;
 
 	void getPhotographer(AsyncCallback<ArrayList<PhotographerEntry>> callback) throws IllegalArgumentException;
+
+	void getPics(ArrayList<ImageEntry> imgSources, int tnSize,AsyncCallback <Map<String,String>> callback) throws IllegalArgumentException;
+
+	void getPicsByImageID(String imgSourceIds, int tnSize,AsyncCallback <Map<Integer,String>> callback) throws IllegalArgumentException;
 
 	void getCaves(AsyncCallback<ArrayList<CaveEntry>> callback) throws IllegalArgumentException;
 

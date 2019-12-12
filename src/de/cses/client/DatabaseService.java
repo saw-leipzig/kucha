@@ -14,14 +14,15 @@
 package de.cses.client;
 
 import java.util.ArrayList;
+import java.util.Map;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.ui.Image;
 
-import de.cses.shared.AnnotatedBibliographySearchEntry;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographyEntry;
+import de.cses.shared.AnnotatedBibliographySearchEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.BibKeywordEntry;
 import de.cses.shared.CaveAreaEntry;
@@ -119,6 +120,10 @@ public interface DatabaseService extends RemoteService {
 	ArrayList<VendorEntry> getVendors() throws IllegalArgumentException;
 
 	ArrayList<StyleEntry> getStyles() throws IllegalArgumentException;
+	
+	Map<String,String> getPics(ArrayList<ImageEntry> imgSources,int tnSize) throws IllegalArgumentException; 
+
+	Map<Integer,String> getPicsByImageID(String imgSourceIds,int tnSize) throws IllegalArgumentException; 
 
 	ArrayList<ExpeditionEntry> getExpeditions() throws IllegalArgumentException;
 

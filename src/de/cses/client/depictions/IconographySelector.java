@@ -111,6 +111,9 @@ public class IconographySelector extends FramedPanel {
 			}
 		return iconographyTreeStore;
 	}
+	public void IconographyTreeEnabled(boolean enable) {
+		iconographyTree.setEnabled(enable);
+	}
 	public static Tree<IconographyEntry, String> buildTree( boolean ornament){
 		selectedIconographyMap = new HashMap<String, IconographyEntry>();
 
@@ -244,7 +247,7 @@ public class IconographySelector extends FramedPanel {
 		Util.doLogging("*** setSelectedIconography called - iconographyTree no. of items = " + iconographyTree.getStore().getAllItemsCount());
 		resetSelection();
 		for (IconographyEntry entry : iconographyRelationList) {
-			Util.doLogging("setSelectedIconography setting entry = " + entry.getIconographyID());
+			//Util.doLogging("setSelectedIconography setting entry = " + entry.getIconographyID());
 			iconographyTree.setChecked(entry, CheckState.CHECKED);
 			selectedIconographyMap.put(entry.getUniqueID(), entry);
 		}
@@ -252,6 +255,7 @@ public class IconographySelector extends FramedPanel {
 
 	private void initPanel(TreeStore<IconographyEntry> iconographyTreeStore) {
 		iconographyTree=buildTree(false);
+		iconographyTree.setEnabled(false);
 		BorderLayoutContainer iconographySelectorBLC = new BorderLayoutContainer();
 		iconographySelectorBLC.setCenterWidget(iconographyTree, new MarginData(0, 2, 5, 2));
 		iconographySelectorBLC.setSouthWidget(filterField, new BorderLayoutData(25.0));

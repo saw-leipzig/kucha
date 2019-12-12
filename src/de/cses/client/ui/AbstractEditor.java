@@ -30,7 +30,12 @@ public abstract class AbstractEditor implements IsWidget {
 	public void addEditorListener(EditorListener l) {
 		listenerList.add(l);
 	}
-	
+	public ArrayList<EditorListener> getListenerList() {
+		return listenerList;
+	}	
+	public void setlistenerList(ArrayList<EditorListener> l) {
+		listenerList =l;
+	}	
 	protected void closeEditor(AbstractEntry entry) {
 		for (EditorListener el : listenerList) {
 			el.closeRequest(entry);

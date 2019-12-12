@@ -279,8 +279,8 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 					@Override
 					public void onSuccess(Boolean result) {
-						//Util.doLogging("EventIconographyID is: "+event.getItem().getIconographyID());
-						//Util.doLogging("IconographyIDUsed: "+Boolean.toString(iconographyIDUsed));
+						Util.doLogging("EventIconographyID is: "+event.getItem().getIconographyID());
+						Util.doLogging("IconographyIDUsed: "+Boolean.toString(iconographyIDUsed));
 						iconographyIDUsed=result;
 						dialogboxnotcalled=result;
 						//Util.doLogging("set dialogboxnotcalled="+Boolean.toString(dialogboxnotcalled));
@@ -372,9 +372,11 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 			@Override
 			public void onSelect(SelectEvent event) {
 				showTreeEdit.hide();
+				Util.doLogging("Größe der Selection: "+Integer.toString(iconographyTree.getCheckedSelection().size()));
 				selectedIconographyTreeStore.clear();
-				addparent(selectedie);
-				
+				if (iconographyTree.getCheckedSelection().size()>0) {
+					addparent(selectedie);
+				}
 			}
 		});
 		ftreeedit.addTool(cancelTreeEdit);
@@ -411,17 +413,9 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 					for (IconographyEntry ie: iconographyTreeStore.getAll()) {
 						if (ie.getIconographyID()==ornamentEntry.getIconographyID()) {
 							Util.doLogging("Set entry "+ie.getText()+" checked.");
-							List<IconographyEntry> checkedIconographyItems = new ArrayList<IconographyEntry>();
-//							checkedIconographyItems.add(ie);
-//							iconographyTree.getCheckedSelection().add(ie);
-							Util.doLogging(iconographyTree.getStore().getKeyProvider().getKey(ie));
-							Util.doLogging(Integer.toString(iconographyTree.getStore().getAll().size()));
 							iconographyTree.setChecked(ie, CheckState.CHECKED);
 							addparent(ie);
 							selectedie=ie;
-//							Util.doLogging(Integer.toString(checkedIconographyItems.size()));
-//							iconographyTree.setCheckedSelection(checkedIconographyItems);
-							Util.doLogging(Integer.toString(iconographyTree.getCheckedSelection().size()));
 							break;
 						}
 						
@@ -755,8 +749,11 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		cavesList.setAllowTextSelection(true);
 
 		if (ornamentEntry != null) {
-			for (int i = 0; i < ornamentEntry.getCavesRelations().size(); i++) {
-				caveOrnamentRelationList.add(ornamentEntry.getCavesRelations().get(i));
+//			for (int i = 0; i < ornamentEntry.getCavesRelations().size(); i++) {
+//				caveOrnamentRelationList.add(ornamentEntry.getCavesRelations().get(i));
+//			}
+			for (OrnamentCaveRelation ocr : ornamentEntry.getCavesRelations()) {
+				caveOrnamentRelationList.add(ocr);
 			}
 		}
 

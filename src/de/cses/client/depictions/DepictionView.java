@@ -24,6 +24,7 @@ import com.sencha.gxt.dnd.core.client.DndDragStartEvent;
 import com.sencha.gxt.dnd.core.client.DragSource;
 
 import de.cses.client.StaticTables;
+import de.cses.client.Util;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.client.ui.AbstractView;
 import de.cses.client.user.UserLogin;
@@ -47,15 +48,20 @@ public class DepictionView extends AbstractView {
 		@XTemplate(source = "DepictionViewTemplate.html")
 		SafeHtml view(SafeUri imgUri, String officialCaveNumber, String historicCaveName, String shortName, String siteDistrictInformation, String wallLocation, boolean isPublic);
 	}
-
+	public DepictionEntry getDepictionEntry() {
+		return depictionEntry;
+	}
 	private DepictionEntry depictionEntry;
 	private DepictionViewTemplates dvTemplates;
+	private SafeUri imgUri;
 
 	/**
 	 * @param text
 	 */
-	public DepictionView(DepictionEntry entry) {
+	
+	public DepictionView(DepictionEntry entry, SafeUri uri ) {
 		depictionEntry = entry;
+		imgUri =uri;
 		dvTemplates = GWT.create(DepictionViewTemplates.class);
 
 		refreshHTML();
@@ -68,11 +74,17 @@ public class DepictionView extends AbstractView {
 				super.onDragStart(event);
 				event.setData(depictionEntry);
 				event.getStatusProxy().update(
-						dvTemplates.view(UriUtils.fromString("resource?imageID=" + depictionEntry.getMasterImageID() + "&thumb=120" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()))
+						dvTemplates.view(imgUri)
 					);
 			}
 			
 		};
+	}
+	public void refreshpic( SafeUri uri ) {
+		imgUri= uri;
+
+		refreshHTML();
+
 	}
 	
 	private void refreshHTML() {
@@ -88,7 +100,7 @@ public class DepictionView extends AbstractView {
 			wallLocation = wle.getLabel();
 		}
 		setHTML(dvTemplates.view(
-				UriUtils.fromString("resource?imageID=" + depictionEntry.getMasterImageID() + "&thumb=120" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), 
+				imgUri, 
 				officialCaveNumberStr, 
 				ce != null && ce.getHistoricName() != null ? ce.getHistoricName() : "",
 				depictionEntry.getShortName() != null ? depictionEntry.getShortName() : "",

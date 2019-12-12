@@ -16,10 +16,13 @@ package de.cses.client.depictions;
 import java.util.ArrayList;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.sencha.gxt.dnd.core.client.DndDropEvent;
 import com.sencha.gxt.dnd.core.client.DropTarget;
+import com.sencha.gxt.widget.core.client.info.Info;
 
+import java.util.Map;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.ui.AbstractResultView;
@@ -70,9 +73,31 @@ public class DepictionResultView extends AbstractResultView {
 					
 					@Override
 					public void onSuccess(ArrayList<DepictionEntry> result) {
+						String masterImageIDs = "";
 						for (DepictionEntry de : result) {
-							addResult(new DepictionView(de));
+							if (masterImageIDs == "") {
+								masterImageIDs = Integer.toString(de.getMasterImageID());
+							}
+							else {
+								masterImageIDs = masterImageIDs + ","+Integer.toString(de.getMasterImageID());
+							}
 						}
+					dbService.getPicsByImageID(masterImageIDs, 120, new AsyncCallback<Map<Integer,String>>() {
+					
+					@Override
+					public void onFailure(Throwable caught) {				Info.display("getPics", "got bad response");
+ }
+					
+					@Override
+					public void onSuccess(Map<Integer,String> imgdic) {
+						Info.display("getPics", "got good response");
+						for (DepictionEntry de : result) {
+							addResult(new DepictionView(de,UriUtils.fromTrustedString(imgdic.get(de.getMasterImageID()))));
+						}
+					}
+							});
+								
+							
 					}
 				});
 			}
