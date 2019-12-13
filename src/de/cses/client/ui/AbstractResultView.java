@@ -16,6 +16,7 @@ package de.cses.client.ui;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.core.client.util.Margins;
@@ -127,11 +128,14 @@ public abstract class AbstractResultView extends Portlet {
 			}
 		});
 		getHeader().addTool(resetButton);
-		
+		VerticalLayoutContainer vlc = new VerticalLayoutContainer();
+		ScrollPanel scrpanel1 = new ScrollPanel();
 		resultContainer = new FlowLayoutContainer();
 		resultContainer.setScrollMode(ScrollMode.AUTOY);
 		resultLayoutData = new MarginData(10);
-		this.add(resultContainer);
+		vlc.add(resultContainer);
+		scrpanel1.add(vlc);
+		this.add(scrpanel1);
 		
 	}
 	
@@ -176,9 +180,6 @@ public abstract class AbstractResultView extends Portlet {
 		}
 		if (view instanceof DepictionDataDisplay) {
 			resultContainer.add(view, new VerticalLayoutContainer.VerticalLayoutData(1.0, 300.0, new Margins(10)));
-		}
-		if (view instanceof TextButton) {
-				this.add(view);
 		} else {
 			resultContainer.add(view, resultLayoutData);
 		}
