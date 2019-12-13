@@ -16,6 +16,8 @@ package de.cses.shared;
 import java.sql.Date;
 import java.util.ArrayList;
 
+import de.cses.client.Util;
+
 public class DepictionEntry extends AbstractEntry {
 
 	private int depictionID = 0;
@@ -366,6 +368,7 @@ public class DepictionEntry extends AbstractEntry {
 	}
 
 	public ArrayList<ImageEntry> getRelatedImages() {
+		//Util.doLogging("Size of related Images: "+relatedImages.size());
 		return relatedImages;
 	}
 

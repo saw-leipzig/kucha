@@ -82,7 +82,7 @@ public class DepictionResultView extends AbstractResultView {
 								masterImageIDs = masterImageIDs + ","+Integer.toString(de.getMasterImageID());
 							}
 						}
-					dbService.getPicsByImageID(masterImageIDs, 120, new AsyncCallback<Map<Integer,String>>() {
+					dbService.getPicsByImageID(masterImageIDs, 120, UserLogin.getInstance().getSessionID(), new AsyncCallback<Map<Integer,String>>() {
 					
 					@Override
 					public void onFailure(Throwable caught) {				Info.display("getPics", "got bad response");

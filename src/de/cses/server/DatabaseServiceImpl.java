@@ -86,14 +86,14 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		return districts;
 	}
 
-	public Map<String,String> getPics(ArrayList<ImageEntry> imgSources, int tnSize) {
+	public Map<String,String> getPics(ArrayList<ImageEntry> imgSources, int tnSize, String sessionID) {
 		MysqlConnector connector = MysqlConnector.getInstance();
-		Map<String,String>  districts = connector.getPics(imgSources, tnSize);
+		Map<String,String>  districts = connector.getPics(imgSources, tnSize, sessionID);
 		return districts;
 	}
-	public Map<Integer,String> getPicsByImageID(String imgSourceIds, int tnSize) {
+	public Map<Integer,String> getPicsByImageID(String imgSourceIds, int tnSize, String sessionID) {
 		MysqlConnector connector = MysqlConnector.getInstance();
-		Map<Integer,String>  districts = connector.getPicsByImageID(imgSourceIds, tnSize);
+		Map<Integer,String>  districts = connector.getPicsByImageID(imgSourceIds, tnSize, sessionID);
 		return districts;
 	}
 	public ArrayList<AnnotatedBibliographyEntry> getAnnotatedBiblography() throws IllegalArgumentException {

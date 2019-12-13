@@ -60,15 +60,16 @@ public class ImageView extends AbstractView {
 	private ImageEntry imgEntry;
 	private ImageViewTemplates ivTemplates;
 	private ImageViewResources res;
-
+	SafeUri imgUri;
 	/**
 	 * @param text
 	 */
-	public ImageView(ImageEntry imgEntry) {
+	public ImageView(ImageEntry imgEntry, SafeUri uri) {
 		super();
 		ivTemplates = GWT.create(ImageViewTemplates.class);
 		res = GWT.create(ImageViewResources.class);
 		this.imgEntry = imgEntry;
+		this.imgUri = uri;
 
 		refreshHTML();
 		setSize("350px", "130px");
@@ -79,7 +80,7 @@ public class ImageView extends AbstractView {
 			protected void onDragStart(DndDragStartEvent event) {
 				super.onDragStart(event);
 				event.setData(imgEntry);
-				event.getStatusProxy().update(ivTemplates.view(UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri())));
+				event.getStatusProxy().update(ivTemplates.view(imgUri));
 			}
 			
 		};
@@ -87,7 +88,7 @@ public class ImageView extends AbstractView {
 
 	private void refreshHTML() {
 		setHTML(ivTemplates.view(
-				UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=120" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), 
+				imgUri, 
 				imgEntry.getTitle() != null ? imgEntry.getTitle() : "n/a", 
 				imgEntry.getShortName() != null ? imgEntry.getShortName() : "n/a", 
 				imgEntry.getImageAuthor() != null ? imgEntry.getImageAuthor().getLabel() : "n/a",
@@ -120,7 +121,11 @@ public class ImageView extends AbstractView {
 	protected AbstractEntry getEntry() {
 		return imgEntry;
 	}
+	public void refreshpic( SafeUri uri ) {
+		imgUri= uri;
 
+		refreshHTML();
+	}
 	/* (non-Javadoc)
 	 * @see de.cses.client.ui.AbstractView#getPermalink()
 	 */

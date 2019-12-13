@@ -82,9 +82,9 @@ public interface DatabaseServiceAsync {
 
 	void getPhotographer(AsyncCallback<ArrayList<PhotographerEntry>> callback) throws IllegalArgumentException;
 
-	void getPics(ArrayList<ImageEntry> imgSources, int tnSize,AsyncCallback <Map<String,String>> callback) throws IllegalArgumentException;
+	void getPics(ArrayList<ImageEntry> imgSources, int tnSize, String sessionID, AsyncCallback <Map<String,String>> callback) throws IllegalArgumentException;
 
-	void getPicsByImageID(String imgSourceIds, int tnSize,AsyncCallback <Map<Integer,String>> callback) throws IllegalArgumentException;
+	void getPicsByImageID(String imgSourceIds, int tnSize, String sessionID, AsyncCallback <Map<Integer,String>> callback) throws IllegalArgumentException;
 
 	void getCaves(AsyncCallback<ArrayList<CaveEntry>> callback) throws IllegalArgumentException;
 

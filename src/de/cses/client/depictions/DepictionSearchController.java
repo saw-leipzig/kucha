@@ -29,6 +29,7 @@ import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.Util;
 import de.cses.client.ui.AbstractSearchController;
 import de.cses.client.ui.EditorListener;
+import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DepictionSearchEntry;
@@ -87,10 +88,11 @@ public class DepictionSearchController extends AbstractSearchController {
 					getResultView().addResult(new DepictionView(de,UriUtils.fromTrustedString("icons/load_active.png")));
 //					Util.doLogging("Lade Depiction: "+de.getShortName());
 					if ((count==20 )||(i==result.size()-1)){
-						dbService.getPicsByImageID(masterImageIDs, 120, new AsyncCallback<Map<Integer,String>>() {
+						dbService.getPicsByImageID(masterImageIDs, 120, UserLogin.getInstance().getSessionID(), new AsyncCallback<Map<Integer,String>>() {
 							
 							@Override
-							public void onFailure(Throwable caught) {				Info.display("getPics", "got bad response");
+							public void onFailure(Throwable caught) {				
+								Info.display("getPics", "got bad response");
 							}
 							
 							@Override
@@ -136,7 +138,7 @@ public class DepictionSearchController extends AbstractSearchController {
 			public void closeRequest(AbstractEntry entry) {
 				depictionEditorPanel.hide();
 				if (entry != null) {	
-					dbService.getPicsByImageID(Integer.toString(((DepictionEntry)entry).getMasterImageID()), 120, new AsyncCallback<Map<Integer,String>>() {
+					dbService.getPicsByImageID(Integer.toString(((DepictionEntry)entry).getMasterImageID()), 120, UserLogin.getInstance().getSessionID(), new AsyncCallback<Map<Integer,String>>() {
 				
 						@Override
 						public void onFailure(Throwable caught) {				

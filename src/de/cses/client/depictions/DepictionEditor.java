@@ -495,7 +495,7 @@ public class DepictionEditor extends AbstractEditor {
 	private void initPanel() {
 
 		// the images related with the depiction entry that will be shown on the right
-		dbService.getPics(correspondingDepictionEntry.getRelatedImages(), 300, new AsyncCallback<Map<String,String>>() {
+		dbService.getPics(correspondingDepictionEntry.getRelatedImages(), 300, UserLogin.getInstance().getSessionID(), new AsyncCallback<Map<String,String>>() {
 
 			@Override
 			public void onFailure(Throwable caught) {

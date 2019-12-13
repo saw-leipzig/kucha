@@ -21,6 +21,8 @@ import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.editor.client.testing.MockEditorError;
 import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
@@ -30,9 +32,7 @@ import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
-import static com.google.gwt.event.dom.client.KeyCodes.KEY_ENTER;
-import com.google.gwt.event.dom.client.KeyDownEvent;
-import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
@@ -238,6 +238,7 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 				if (!event.getSelection().isEmpty()) {
 					ImageEntry selectedImageItem = event.getSelection().get(0);
 					titleField.setValue(selectedImageItem.getTitle());
+					Info.display("ImageEditor Tabindex",Integer.toString(titleField.getTabIndex()));
 					shortNameField.setValue(selectedImageItem.getShortName());
 					copyrightArea.setValue(selectedImageItem.getCopyright());
 					commentArea.setValue(selectedImageItem.getComment());
@@ -272,7 +273,6 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 		});
 		titleField = new TextField();
 		titleField.setWidth(300);
-
 		attributePanel.setHeading("Title");
 		attributePanel.add(titleField);
 		editPanel.add(attributePanel);

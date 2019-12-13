@@ -34,6 +34,7 @@ public class ServerProperties extends Properties {
 	public ServerProperties() {
 		File f = new File(getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
 		String propertyFileName = System.getProperty("user.dir") + "/lib/" + f.getParentFile().getParentFile().getName() + ".xml";
+		System.out.println(propertyFileName);
 		try {
 			loadFromXML(new FileInputStream(propertyFileName));
 		} catch (InvalidPropertiesFormatException e) {

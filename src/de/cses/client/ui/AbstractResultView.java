@@ -21,6 +21,7 @@ import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.widget.core.client.Portlet;
 import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
+import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.MarginData;
@@ -31,6 +32,7 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import de.cses.client.Util;
 import de.cses.client.depictions.DepictionDataDisplay;
 import de.cses.shared.AbstractEntry;
+import de.cses.shared.AbstractSearchEntry;
 
 /**
  * AbstractResultView is the base for the result views shown in MainView. Here the 
@@ -53,6 +55,7 @@ public abstract class AbstractResultView extends Portlet {
 	private String title;
 	private ToolButton minTB;
 	private ToolButton maxTB;
+	private AbstractSearchEntry searchEntry;
 	
 	public AbstractResultView(String title) {
 		super();
@@ -136,6 +139,16 @@ public abstract class AbstractResultView extends Portlet {
 	 * 
 	 * @param enable
 	 */
+	public void setSearchEntry(AbstractSearchEntry se) {
+		this.searchEntry = se;
+
+	}	
+	public AbstractSearchEntry getPics() {
+		return searchEntry;
+	}
+	public void getPics(String masterImageIDs , int res, String sessionID) {
+
+	}
 	public FlowLayoutContainer getContainer() {
 		return resultContainer;
 	}
@@ -163,6 +176,9 @@ public abstract class AbstractResultView extends Portlet {
 		}
 		if (view instanceof DepictionDataDisplay) {
 			resultContainer.add(view, new VerticalLayoutContainer.VerticalLayoutData(1.0, 300.0, new Margins(10)));
+		}
+		if (view instanceof TextButton) {
+				this.add(view);
 		} else {
 			resultContainer.add(view, resultLayoutData);
 		}

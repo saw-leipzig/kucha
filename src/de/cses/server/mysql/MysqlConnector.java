@@ -206,11 +206,47 @@ public class MysqlConnector implements IsSerializable {
 		return result;
 	}
 
-	public Map<String,String> getPics(ArrayList<ImageEntry> imgSources, int tnSize) {
+	public Map<String,String> getPics(ArrayList<ImageEntry> imgSources, int tnSize, String sessionID) {
+		int accessLevelOfSession = getAccessLevelForSessionID(sessionID);
+		ArrayList<Integer> authorizedAccessLevel = new ArrayList<Integer>();
+		switch (accessLevelOfSession) {
+			case UserEntry.GUEST:
+				break;
+			case UserEntry.ASSOCIATED:
+				authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_PUBLIC);
+				authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_COPYRIGHT);
+				//System.err.println("acess Level PUBLIC and COPYRIGHT");
+				break; 
+			case UserEntry.FULL:
+			case UserEntry.ADMIN:
+				authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_PUBLIC);
+				authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_COPYRIGHT);
+				authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_PRIVATE);
+				//System.err.println("acess Level PUBLIC, COPYRIGHT and PRIVATE");
+				break;
+			default:
+				authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_PUBLIC);
+				//System.err.println("acess Level PUBLIC");
+				break;
+		}
+		System.out.println(accessLevelOfSession+" - "+authorizedAccessLevel);
+		
+		String filename = "";
 		Map<String,String> result = new HashMap<String,String>();
 		for (ImageEntry imgEntry : imgSources) {
 			try {
-			URL imageURL = new URL("http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + imgEntry.getFilename() + "/full/!" + tnSize + "," + tnSize + "/0/default.png");
+				if (imgEntry!=null && authorizedAccessLevel.contains(imgEntry.getAccessLevel())) {
+					filename = imgEntry.getFilename();
+//					inputFile = new File(serverProperties.getProperty("home.images"), filename);
+				} else if ((accessLevelOfSession == UserEntry.GUEST) && (imgEntry.getAccessLevel() == AbstractEntry.ACCESS_LEVEL_COPYRIGHT)) {
+					// guests should be informed that there is an image
+					filename = "accessNotPermitted.png";
+				}
+				else {
+					// guests should be informed that there is an image
+					filename = "accessNotPermitted.png";
+				}
+			URL imageURL = new URL("http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/!" + tnSize + "," + tnSize + "/0/default.png");
 			InputStream in = imageURL.openStream();
 			ByteArrayOutputStream bab = new ByteArrayOutputStream();
 			//ByteArrayBuffer bab = new ByteArrayBuffer(0);
@@ -225,6 +261,7 @@ public class MysqlConnector implements IsSerializable {
 			}
 			catch (Exception e) {
 				System.out.println("                <><><>"+e.getMessage());
+				result.put(imgEntry.getFilename(), "icons/close_icon.png");
 			}
 			//System.out.println(imgEntry.getFilename()+" umgewandelt.");
 		}
@@ -232,7 +269,8 @@ public class MysqlConnector implements IsSerializable {
 	
 		return result;
 		}
-		public Map<Integer,String> getPicsByImageID(String imgSourceIds, int tnSize) {
+	
+	public Map<Integer,String> getPicsByImageID(String imgSourceIds, int tnSize, String sessionID) {
 			
 			
 			ArrayList<ImageEntry> imgSources = new ArrayList<ImageEntry>();
@@ -255,13 +293,48 @@ public class MysqlConnector implements IsSerializable {
 				System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 				return null;
 			}
+			int userAccessLevel = AbstractEntry.ACCESS_LEVEL_PUBLIC;
+			int accessLevelOfSession = getAccessLevelForSessionID(sessionID);
+			ArrayList<Integer> authorizedAccessLevel = new ArrayList<Integer>();
+			switch (accessLevelOfSession) {
+				case UserEntry.GUEST:
+					break;
+				case UserEntry.ASSOCIATED:
+					authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_PUBLIC);
+					authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_COPYRIGHT);
+					//System.err.println("acess Level PUBLIC and COPYRIGHT");
+					break; 
+				case UserEntry.FULL:
+				case UserEntry.ADMIN:
+					authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_PUBLIC);
+					authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_COPYRIGHT);
+					authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_PRIVATE);
+					//System.err.println("acess Level PUBLIC, COPYRIGHT and PRIVATE");
+					break;
+				default:
+					authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_PUBLIC);
+					//System.err.println("acess Level PUBLIC");
+					break;
+			}
+			System.out.println(accessLevelOfSession+" - "+authorizedAccessLevel);
 			
 			
-			
+			String filename = "";
 			Map<Integer,String> result = new HashMap<Integer,String>();
 			for (ImageEntry imgEntry : imgSources) {
 				try {
-				URL imageURL = new URL("http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + imgEntry.getFilename() + "/full/!" + tnSize + "," + tnSize + "/0/default.png");
+					if (imgEntry!=null && authorizedAccessLevel.contains(imgEntry.getAccessLevel())) {
+						filename = imgEntry.getFilename();
+//						inputFile = new File(serverProperties.getProperty("home.images"), filename);
+					} else if ((accessLevelOfSession == UserEntry.GUEST) && (imgEntry.getAccessLevel() == AbstractEntry.ACCESS_LEVEL_COPYRIGHT)) {
+						// guests should be informed that there is an image
+						filename = "accessNotPermitted.png";
+					}
+					else {
+						// all others shouldn't see anything
+						filename = "accessNotPermitted.png";
+					}
+				URL imageURL = new URL("http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/!" + tnSize + "," + tnSize + "/0/default.png");
 				InputStream in = imageURL.openStream();
 				ByteArrayOutputStream bab = new ByteArrayOutputStream();
 				//ByteArrayBuffer bab = new ByteArrayBuffer(0);
@@ -276,6 +349,7 @@ public class MysqlConnector implements IsSerializable {
 				}
 				catch (Exception e) {
 					System.out.println("                <><><>"+e.getMessage());
+					result.put(imgEntry.getImageID(), "icons/close_icon.png");
 				}
 			}
 				
@@ -4512,7 +4586,7 @@ public class MysqlConnector implements IsSerializable {
 		int accessRights = 0;
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
-		//System.err.println("getAccessLevelForSessionID(" + sessionID + ")");
+		System.err.println("getAccessLevelForSessionID(" + sessionID + ")");
 		try {
 			pstmt = dbc.prepareStatement("SELECT AccessLevel FROM Users WHERE SessionID=?");
 			pstmt.setString(1, sessionID);

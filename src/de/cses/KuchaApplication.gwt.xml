@@ -25,7 +25,7 @@
 	<!-- Other module inherits -->
 	<inherits name='com.sencha.gxt.ui.GXT' />
 	<inherits name='com.sencha.gxt.chart.Chart' />
-
+	
 	<!-- GXT Stylesheet -->
   <stylesheet src="reset.css" />
 	<stylesheet src="/KuchaApplication.css" />
