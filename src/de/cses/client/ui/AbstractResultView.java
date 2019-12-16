@@ -16,6 +16,8 @@ package de.cses.client.ui;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import com.google.gwt.safehtml.shared.UriUtils;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
@@ -24,7 +26,10 @@ import com.sencha.gxt.widget.core.client.Portlet;
 import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.container.CenterLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
@@ -32,8 +37,11 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
 import de.cses.client.Util;
 import de.cses.client.depictions.DepictionDataDisplay;
+import de.cses.client.images.ImageView;
+import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AbstractSearchEntry;
+import de.cses.shared.ImageEntry;
 
 /**
  * AbstractResultView is the base for the result views shown in MainView. Here the 
@@ -56,7 +64,8 @@ public abstract class AbstractResultView extends Portlet {
 	private String title;
 	private ToolButton minTB;
 	private ToolButton maxTB;
-	private AbstractSearchEntry searchEntry;
+	protected AbstractSearchEntry searchEntry;
+	protected TextButton addMoreResults;
 	
 	public AbstractResultView(String title) {
 		super();
@@ -65,8 +74,8 @@ public abstract class AbstractResultView extends Portlet {
 		setCollapsible(true);
 		setAnimCollapse(true);
 		setHeight(MIN_HEIGHT);
-    getHeader().setStylePrimaryName("frame-header");
-    addStyleName("transparent");
+		getHeader().setStylePrimaryName("frame-header");
+		addStyleName("transparent");
 		
 		searchToolButton = new ToolButton(new IconConfig("startSearchButton", "startSearchButtonOver", "searchActiveButton"));
 		searchToolButton.setToolTip(Util.createToolTip("start search"));
@@ -129,13 +138,21 @@ public abstract class AbstractResultView extends Portlet {
 		});
 		getHeader().addTool(resetButton);
 		VerticalLayoutContainer vlc = new VerticalLayoutContainer();
+		CenterLayoutContainer clc = new CenterLayoutContainer();
+		HorizontalLayoutContainer hlc = new HorizontalLayoutContainer();
+		addMoreResults = new TextButton("Add more Results");
+
+		hlc.add(addMoreResults,new HorizontalLayoutData(1,.1));
 		ScrollPanel scrpanel1 = new ScrollPanel();
 		resultContainer = new FlowLayoutContainer();
 		resultContainer.setScrollMode(ScrollMode.AUTOY);
 		resultLayoutData = new MarginData(10);
 		vlc.add(resultContainer);
+		vlc.add(hlc);
 		scrpanel1.add(vlc);
 		this.add(scrpanel1);
+		addMoreResults.hide();
+		
 		
 	}
 	
@@ -147,7 +164,7 @@ public abstract class AbstractResultView extends Portlet {
 		this.searchEntry = se;
 
 	}	
-	public AbstractSearchEntry getPics() {
+	public AbstractSearchEntry getSearchEntry() {
 		return searchEntry;
 	}
 	public void getPics(String masterImageIDs , int res, String sessionID) {
@@ -155,6 +172,12 @@ public abstract class AbstractResultView extends Portlet {
 	}
 	public FlowLayoutContainer getContainer() {
 		return resultContainer;
+	}
+	public void setSearchbuttonVisible() {
+		addMoreResults.show();
+	}
+	public void setSearchbuttonHide() {
+		addMoreResults.hide();
 	}
 	public void setSearchEnabled(boolean enable) {
 		searchToolButton.setEnabled(enable);

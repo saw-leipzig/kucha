@@ -57,7 +57,6 @@ public class ImageSearchController extends AbstractSearchController {
 	@Override
 	public void invokeSearch() {
 		ImageSearchEntry searchEntry = (ImageSearchEntry) getFilter().getSearchEntry();
-		getResultView().setSearchEntry(searchEntry);
 		dbService.searchImages(searchEntry, new AsyncCallback<ArrayList<ImageEntry>>() {
 
 			@Override
@@ -65,6 +64,17 @@ public class ImageSearchController extends AbstractSearchController {
 				getResultView().reset();
 				int count=0;
 				String imageIDs="";
+				searchEntry.setEntriesShowed(50);
+				getResultView().setSearchEntry(searchEntry);
+
+				if (result.size()==50) {
+					getResultView().setSearchbuttonVisible();
+				}
+				else {
+					getResultView().setSearchbuttonHide();
+				}
+				getResultView().setSearchEnabled(true);
+
 				for (ImageEntry ie : result) {
 					count++;
 					getResultView().addResult(new ImageView(ie,UriUtils.fromTrustedString("icons/load_active.png")));
@@ -80,12 +90,7 @@ public class ImageSearchController extends AbstractSearchController {
 						count=0;
 					}
 				}
-				getResultView().getPics(imageIDs, 120, UserLogin.getInstance().getSessionID());
-				if (result.size()>50) {
-					TextButton addMoreResults = new TextButton("Add more Results");
-					getResultView().addResult(addMoreResults);
-				}
-				getResultView().setSearchEnabled(true);
+				getResultView().getPics(imageIDs, 120, UserLogin.getInstance().getSessionID());				
 				
 			}
 

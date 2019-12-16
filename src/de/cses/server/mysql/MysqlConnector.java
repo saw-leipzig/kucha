@@ -713,10 +713,10 @@ public class MysqlConnector implements IsSerializable {
 		
 		where += where.isEmpty() ? "AccessLevel IN (" + inStatement + ")" : " AND AccessLevel IN (" + inStatement + ")";
 		
-		System.out.println("SELECT * FROM Images" + (!where.isEmpty() ? " WHERE " + where : "") + " ORDER BY Title Asc");
+		System.out.println(where.isEmpty() ? "SELECT * FROM Images ORDER BY Title Asc LIMIT "+Integer.toString(searchEntry.getEntriesShowed()+50)+" OFFSET "+Integer.toString(searchEntry.getEntriesShowed()) : "SELECT * FROM Images WHERE " + where + " ORDER BY Title Asc LIMIT "+Integer.toString(searchEntry.getEntriesShowed()+50)+" OFFSET "+Integer.toString(searchEntry.getEntriesShowed()));
 		
 		try {
-			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Images ORDER BY Title Asc" : "SELECT * FROM Images WHERE " + where + " ORDER BY Title Asc");
+			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Images ORDER BY Title Asc LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+ ", 50" : "SELECT * FROM Images WHERE " + where + " ORDER BY Title Asc LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+", 50");
 			int i = 1; // counter to fill ? in where clause
 			if (searchEntry.getTitleSearch() != null && !searchEntry.getTitleSearch().isEmpty()) {
 				pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");

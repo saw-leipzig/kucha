@@ -28,6 +28,7 @@ public abstract class AbstractSearchEntry implements IsSerializable {
 	protected boolean orSearch = false; // the default case is AND search
 	// we send sessionID with each request to allow for filtering of restricted information
 	private String sessionID = "";
+	int entriesShowed = 0;
 
 	/**
 	 * 
@@ -43,6 +44,12 @@ public abstract class AbstractSearchEntry implements IsSerializable {
 
 	public AbstractSearchEntry(String sessionID) {
 		this(false, sessionID);
+	}
+	public void setEntriesShowed(int number) {
+		this.entriesShowed=number;
+	}
+	public int getEntriesShowed() {
+		return this.entriesShowed;
 	}
 
 	public AbstractSearchEntry() { }
