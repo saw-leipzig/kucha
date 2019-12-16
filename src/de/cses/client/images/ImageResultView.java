@@ -181,7 +181,8 @@ public class ImageResultView extends AbstractResultView {
 			
 			@Override
 			public void onFailure(Throwable caught) {				
-				Info.display("getPics", "got bad response");
+				Info.display("getPics", "got bad response, retry");
+				getPics(masterImageIDs , res, sessionID);
 			}
 			
 			@Override
