@@ -7491,7 +7491,8 @@ public class MysqlConnector implements IsSerializable {
 		System.err.println(where.isEmpty() ? "SELECT * FROM Depictions" : "hier?SELECT * FROM Depictions WHERE " + where);
 
 		try {
-			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Depictions" : "SELECT * FROM Depictions WHERE " + where);
+			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Depictions LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+ ", 50" : "SELECT * FROM Depictions WHERE " + where+" LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+", 50");
+
 			if (!searchEntry.getShortName().isEmpty()) {
 				pstmt.setString(1, "%" + searchEntry.getShortName() + "%");
 			}

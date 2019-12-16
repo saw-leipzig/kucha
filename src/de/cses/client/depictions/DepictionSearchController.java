@@ -54,35 +54,7 @@ public class DepictionSearchController extends AbstractSearchController {
 	 * @see de.cses.client.ui.AbstractSearchController#invokeSearch()
 	 */
 	
-	public void getPicsForSearch(String masterImageIDs, int size, String userLogin) {
-		dbService.getPicsByImageID(masterImageIDs, size, userLogin, new AsyncCallback<Map<Integer,String>>() {
-			
-			@Override
-			public void onFailure(Throwable caught) {				
-				Info.display("getPics", "got bad response, retry");
-				getPicsForSearch(masterImageIDs, size, userLogin);
-			}
-			
-			@Override
-			public void onSuccess(Map<Integer,String> imgdic) {
-				//Info.display("getPics", "got good response");
-				//for (DepictionEntry de : result) {
-				//	
-				//}
-				//Util.doLogging("Anzahl der Widgets: "+Integer.toString(getResultView().getContainer().getWidgetCount()));
-				for (int i = 0; i < getResultView().getContainer().getWidgetCount(); i++) {
-					//Util.doLogging("Überprüfe Eintrag: "+Integer.toString(((DepictionView)getResultView().getContainer().getWidget(i)).getDepictionEntry().getDepictionID()));
-					if (imgdic.containsKey(((DepictionView)getResultView().getContainer().getWidget(i)).getDepictionEntry().getMasterImageID())) {
-						//Util.doLogging("Got Match! Do refresh");
-						((DepictionView)getResultView().getContainer().getWidget(i)).refreshpic(UriUtils.fromTrustedString(imgdic.get(((DepictionView)getResultView().getContainer().getWidget(i)).getDepictionEntry().getMasterImageID())));
-					}
-				}
-				
-				
-			}
-					});
 
-	}
 	@Override
 	public void invokeSearch() {
 		DepictionSearchEntry searchEntry = (DepictionSearchEntry) getFilter().getSearchEntry();
@@ -99,11 +71,20 @@ public class DepictionSearchController extends AbstractSearchController {
 			public void onSuccess(ArrayList<DepictionEntry> result) {
 				String masterImageIDs = "";
 				int count = 0;
+				searchEntry.setEntriesShowed(50);
 				getResultView().reset();
+				getResultView().setSearchEntry(searchEntry);
+				if (result.size()==50) {
+					getResultView().setSearchbuttonVisible();
+				}
+				else {
+					getResultView().setSearchbuttonHide();
+				}
+				getResultView().setSearchEnabled(true);
 				int x = result.size();
-				for (int i=0;i<x;i++){
-					DepictionEntry de = result.get(i);
+				for (DepictionEntry de : result){
 					count++;
+					getResultView().addResult(new DepictionView(de,UriUtils.fromTrustedString("icons/load_active.png")));
 					if (masterImageIDs == "") {
 						masterImageIDs = Integer.toString(de.getMasterImageID());
 					}
@@ -112,13 +93,14 @@ public class DepictionSearchController extends AbstractSearchController {
 					}
 					getResultView().addResult(new DepictionView(de,UriUtils.fromTrustedString("icons/load_active.png")));
 //					Util.doLogging("Lade Depiction: "+de.getShortName());
-					if ((count==20 )||(i==result.size()-1)){
-						getPicsForSearch(masterImageIDs, 120, UserLogin.getInstance().getSessionID()) ;
+					if (count==20 ){
+						getResultView().getPics(masterImageIDs, 120, UserLogin.getInstance().getSessionID()) ;
 						masterImageIDs="";
 						count=0;
 					}
 					
 				}
+				getResultView().getPics(masterImageIDs, 120, UserLogin.getInstance().getSessionID()) ;
 				
 				getResultView().setSearchEnabled(true);
 				

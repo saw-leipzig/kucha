@@ -192,11 +192,12 @@ public class ImageResultView extends AbstractResultView {
 				//	
 				//}
 				//Util.doLogging("Anzahl der Widgets: "+Integer.toString(getResultView().getContainer().getWidgetCount()));
-				for (int i = 0; i < getContainer().getWidgetCount(); i++) {
+				for (int i = getContainer().getWidgetCount(); i > -1; i--) {
 					//Util.doLogging("Überprüfe Eintrag: "+Integer.toString(((DepictionView)getResultView().getContainer().getWidget(i)).getDepictionEntry().getDepictionID()));
 					if (imgdic.containsKey(((ImageEntry)((ImageView)getContainer().getWidget(i)).getEntry()).getImageID())) {
 						//Util.doLogging("Got Match! Do refresh");
 						((ImageView)getContainer().getWidget(i)).refreshpic(UriUtils.fromTrustedString(imgdic.get(((ImageEntry)((ImageView)getContainer().getWidget(i)).getEntry()).getImageID())));
+						break;
 					}
 				}
 				
