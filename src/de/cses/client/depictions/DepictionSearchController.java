@@ -70,6 +70,7 @@ public class DepictionSearchController extends AbstractSearchController {
 			@Override
 			public void onSuccess(ArrayList<DepictionEntry> result) {
 				String masterImageIDs = "";
+				//Info.display("Result", "Größe = "+Integer.toString(result.size()));
 				int count = 0;
 				searchEntry.setEntriesShowed(50);
 				getResultView().reset();

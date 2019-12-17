@@ -371,7 +371,9 @@ public class DepictionEntry extends AbstractEntry {
 		//Util.doLogging("Size of related Images: "+relatedImages.size());
 		return relatedImages;
 	}
-
+	public void addRelatedImages(ImageEntry ie) {
+		relatedImages.add(ie);
+	}
 	public void setRelatedImages(ArrayList<ImageEntry> relatedImages) {
 		this.relatedImages = relatedImages;
 	}

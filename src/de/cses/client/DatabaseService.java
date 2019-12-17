@@ -121,7 +121,7 @@ public interface DatabaseService extends RemoteService {
 
 	ArrayList<StyleEntry> getStyles() throws IllegalArgumentException;
 	
-	Map<String,String> getPics(ArrayList<ImageEntry> imgSources,int tnSize, String sessionID) throws IllegalArgumentException; 
+	Map<Integer,String> getPics(ArrayList<ImageEntry> imgSources,int tnSize, String sessionID) throws IllegalArgumentException; 
 
 	Map<Integer,String> getPicsByImageID(String imgSourceIds,int tnSize, String sessionID) throws IllegalArgumentException; 
 

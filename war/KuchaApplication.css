@@ -754,3 +754,13 @@ figure.paintRepImgPreview {
 	padding: 2px; 
 	width: 95%'	
 }
+
+div.addResult {
+	width: 10000;
+	cursor: pointer;
+	background-position: center;
+}
+div.addResultOver {
+	width: 100%;
+	cursor: pointer;
+}

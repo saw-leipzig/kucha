@@ -16,8 +16,7 @@ package de.cses.client.ui;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import com.google.gwt.safehtml.shared.UriUtils;
-import com.google.gwt.user.client.rpc.AsyncCallback;
+
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
@@ -29,19 +28,16 @@ import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.CenterLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
 import de.cses.client.Util;
 import de.cses.client.depictions.DepictionDataDisplay;
-import de.cses.client.images.ImageView;
-import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AbstractSearchEntry;
-import de.cses.shared.ImageEntry;
 
 /**
  * AbstractResultView is the base for the result views shown in MainView. Here the 
@@ -141,16 +137,22 @@ public abstract class AbstractResultView extends Portlet {
 		CenterLayoutContainer clc = new CenterLayoutContainer();
 		HorizontalLayoutContainer hlc = new HorizontalLayoutContainer();
 		addMoreResults = new TextButton("Add more Results");
+		Util.doLogging(Boolean.toString(addMoreResults.isDeferHeight()));
 
-		hlc.add(addMoreResults,new HorizontalLayoutData(1,.1));
+	    addMoreResults.setStyleName("addResult");
+		//clc.add(addMoreResults);
+		//addMoreResults.set
+		//addMoreResults.setLayoutData("addResult");
+		//hlc.add(addMoreResults,new HorizontalLayoutData(1000,1));
 		ScrollPanel scrpanel1 = new ScrollPanel();
+		scrpanel1.add(vlc);
+		this.add(scrpanel1);
 		resultContainer = new FlowLayoutContainer();
 		resultContainer.setScrollMode(ScrollMode.AUTOY);
 		resultLayoutData = new MarginData(10);
 		vlc.add(resultContainer);
-		vlc.add(hlc);
-		scrpanel1.add(vlc);
-		this.add(scrpanel1);
+		vlc.add(addMoreResults,new VerticalLayoutData(1,-1));
+		addMoreResults.setWidth("100%");
 		addMoreResults.hide();
 		
 		

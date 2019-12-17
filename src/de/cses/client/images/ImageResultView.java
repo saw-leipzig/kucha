@@ -59,11 +59,12 @@ public class ImageResultView extends AbstractResultView {
 			
 			@Override
 			public void onSelect(SelectEvent event) {
+				//Info.display("Addmore ausgelöst.",Integer.toString(searchEntry.getEntriesShowed()));
 				dbService.searchImages((ImageSearchEntry)getSearchEntry(), new AsyncCallback<ArrayList<ImageEntry>>() {
 
 					@Override
 					public void onSuccess(ArrayList<ImageEntry> result) {
-						Util.doLogging("Größe des Results: "+Integer.toString(result.size()));
+						//Info.display("Größe des Results: ",Integer.toString(result.size()));
 						int count=0;
 						String imageIDs="";
 						searchEntry.setEntriesShowed(searchEntry.getEntriesShowed()+50);
@@ -181,23 +182,28 @@ public class ImageResultView extends AbstractResultView {
 			
 			@Override
 			public void onFailure(Throwable caught) {				
-				Info.display("getPics", "got bad response, retry");
+				//Info.display("getPics", "got bad response, retry");
 				getPics(masterImageIDs , res, sessionID);
 			}
 			
 			@Override
 			public void onSuccess(Map<Integer,String> imgdic) {
+				int count = 0;
+				int sizeres =imgdic.size();
 				//Info.display("getPics", "got good response");
 				//for (DepictionEntry de : result) {
 				//	
 				//}
 				//Util.doLogging("Anzahl der Widgets: "+Integer.toString(getResultView().getContainer().getWidgetCount()));
-				for (int i = getContainer().getWidgetCount(); i > -1; i--) {
-					//Util.doLogging("Überprüfe Eintrag: "+Integer.toString(((DepictionView)getResultView().getContainer().getWidget(i)).getDepictionEntry().getDepictionID()));
+				for (int i = getContainer().getWidgetCount()-1; i > -1; i--) {
 					if (imgdic.containsKey(((ImageEntry)((ImageView)getContainer().getWidget(i)).getEntry()).getImageID())) {
 						//Util.doLogging("Got Match! Do refresh");
+						count++;
 						((ImageView)getContainer().getWidget(i)).refreshpic(UriUtils.fromTrustedString(imgdic.get(((ImageEntry)((ImageView)getContainer().getWidget(i)).getEntry()).getImageID())));
-						break;
+						
+					}
+					if (count==sizeres) {
+						i=-1;
 					}
 				}
 				

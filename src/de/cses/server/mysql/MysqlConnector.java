@@ -206,7 +206,7 @@ public class MysqlConnector implements IsSerializable {
 		return result;
 	}
 
-	public Map<String,String> getPics(ArrayList<ImageEntry> imgSources, int tnSize, String sessionID) {
+	public Map<Integer,String> getPics(ArrayList<ImageEntry> imgSources, int tnSize, String sessionID) {
 		int accessLevelOfSession = getAccessLevelForSessionID(sessionID);
 		ArrayList<Integer> authorizedAccessLevel = new ArrayList<Integer>();
 		switch (accessLevelOfSession) {
@@ -232,7 +232,7 @@ public class MysqlConnector implements IsSerializable {
 		System.out.println(accessLevelOfSession+" - "+authorizedAccessLevel);
 		
 		String filename = "";
-		Map<String,String> result = new HashMap<String,String>();
+		Map<Integer,String> result = new HashMap<Integer,String>();
 		for (ImageEntry imgEntry : imgSources) {
 			try {
 				if (imgEntry!=null && authorizedAccessLevel.contains(imgEntry.getAccessLevel())) {
@@ -257,11 +257,11 @@ public class MysqlConnector implements IsSerializable {
 			}
 		    in.close();
 			String base64 = new BASE64Encoder().encode(bab.toByteArray());
-			result.put(imgEntry.getFilename(), "data:image/png;base64,"+base64);
+			result.put(imgEntry.getImageID(), "data:image/png;base64,"+base64);
 			}
 			catch (Exception e) {
 				System.out.println("                <><><>"+e.getMessage());
-				result.put(imgEntry.getFilename(), "icons/close_icon.png");
+				result.put(imgEntry.getImageID(), "icons/close_icon.png");
 			}
 			//System.out.println(imgEntry.getFilename()+" umgewandelt.");
 		}

@@ -141,7 +141,7 @@ public class DepictionEditor extends AbstractEditor {
 	private StyleProperties styleProps;
 	private ListStore<StyleEntry> styleEntryLS;
 	private CaveProperties caveProps;
-	private Map<String,String> imgdic;
+	private Map<Integer,String> imgdic;
 	private ListStore<CaveEntry> caveEntryLS;
 	private ComboBox<CaveEntry> caveSelectionCB;
 	private ExpeditionProperties expedProps;
@@ -476,7 +476,10 @@ public class DepictionEditor extends AbstractEditor {
 	 * 
 	 */
 	private void loadImages() {
+		imageEntryLS.clear();
 		for (ImageEntry ie : correspondingDepictionEntry.getRelatedImages()) {
+
+			Util.doLogging("adding "+Integer.toString((ie.getImageID()))+"to imageEntryLS");
 			imageEntryLS.add(ie);
 		}
 	}
@@ -492,10 +495,8 @@ public class DepictionEditor extends AbstractEditor {
 	/**
 	 * Here the view is created. This is only done once at the beginning!
 	 */
-	private void initPanel() {
-
-		// the images related with the depiction entry that will be shown on the right
-		dbService.getPics(correspondingDepictionEntry.getRelatedImages(), 300, UserLogin.getInstance().getSessionID(), new AsyncCallback<Map<String,String>>() {
+	private void getPics(ArrayList<ImageEntry> ies, int size, String login) {
+		dbService.getPics(ies, size, login, new AsyncCallback<Map<Integer,String>>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
@@ -504,19 +505,32 @@ public class DepictionEditor extends AbstractEditor {
 			}
 
 			@Override
-			public void onSuccess(Map<String,String> result) {
+			public void onSuccess(Map<Integer,String> result) {
 				//.display("getPics", "got good response");
 				//for (Map.Entry<String,String> entry : result.entrySet())  
 		        //    Util.doLogging("Key = " + entry.getKey() + 
 		        //                     ", Value = " + entry.getValue());
-				imgdic = result;
-				if (correspondingDepictionEntry.getDepictionID() > 0) {
-					loadImages();
+				for (Integer key : result.keySet()) {
+				Util.doLogging("Got response.");
+				try {
+					imgdic.put(key, result.get(key));
+					
 				}
-				
+				catch (Exception e){
+					Util.doLogging("Could not load image "+key+" Reason: "+e.getMessage());
+				}
+				}
+				//imageListView.refresh();
+				loadImages();
+			
 			}
 		});
-		
+	}
+	private void initPanel() {
+
+		// the images related with the depiction entry that will be shown on the right
+
+		getPics(correspondingDepictionEntry.getRelatedImages(), 300, UserLogin.getInstance().getSessionID());
 		imageListView = new ListView<ImageEntry, ImageEntry>(imageEntryLS, new IdentityValueProvider<ImageEntry>() {
 			@Override
 			public void setValue(ImageEntry object, ImageEntry value) {
@@ -528,16 +542,17 @@ public class DepictionEditor extends AbstractEditor {
 
 			public SafeHtml render(ImageEntry item) {
 				SafeUri imageUri;
+				Util.doLogging( item.getFilename()+" / "+Integer.toString(imgdic.size()));
 				//SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=300" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
-				if (imgdic.size()>0) {
-					//Util.doLogging(imgdic.get(item.getFilename()));
-					imageUri = UriUtils.fromTrustedString(imgdic.get(item.getFilename()));
+				try {
+					imageUri = UriUtils.fromTrustedString(imgdic.get(item.getImageID()));
+					
 				}
-				else {
-					imageUri = UriUtils.fromTrustedString("icons/lloading.jpg");					
+				catch (Exception e) {
+					Util.doLogging(Integer.toString(item.getImageID())+": "+e.getMessage());
+					imageUri = UriUtils.fromString("icons/load_active.png");	
 				}
-				Image image = new Image("data:image/png;base64,"+imageUri);
-				//Util.doLogging( item.getFilename()+" / "+imageUri);
+				
 				ArrayList<TextElement> titleList = new ArrayList<TextElement>();
 				for (String s : item.getTitle().split("_")) {
 					titleList.add(new TextElement(s));
@@ -558,6 +573,7 @@ public class DepictionEditor extends AbstractEditor {
 //		imageListView.setSize("340", "290");
 		//Util.doLogging("Size of ImageListView: "+Integer.toString(imageEntryLS.size()));
 		ListField<ImageEntry, ImageEntry> imageViewLF = new ListField<ImageEntry, ImageEntry>(imageListView);
+		
 //		imageViewLF.setSize("250px", "1.0");
 
 		/**
@@ -1316,8 +1332,9 @@ public class DepictionEditor extends AbstractEditor {
 			public void imageSelected(ArrayList<ImageEntry> imgEntryList) {
 				if (imgEntryList!=null) {
 					for (ImageEntry imgEntry : imgEntryList) {
-						imageEntryLS.add(imgEntry); // TODO check if double adding possible and avoid!
+						correspondingDepictionEntry.addRelatedImages(imgEntry); // TODO check if double adding possible and avoid!
 					}
+					getPics(imgEntryList, 300, UserLogin.getInstance().getSessionID());
 				}
 
 				imageSelectionDialog.hide();
