@@ -1303,6 +1303,7 @@ public class MysqlConnector implements IsSerializable {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Ornaments");
 			while (rs.next()) {
+				System.out.println("Durchlauf"+Integer.toString(rs.getInt("OrnamentID")));
 				results.add(new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
 						//rs.getString("Annotation"),
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
@@ -1854,8 +1855,11 @@ public class MysqlConnector implements IsSerializable {
 		try {
 			pstmt = dbc.prepareStatement("INSERT INTO Iconography (ParentID, Text, search) VALUES (?, ?,?)", Statement.RETURN_GENERATED_KEYS);
 			pstmt.setInt(1, entry.getParentID());
-			pstmt.setString(2, entry.getText().isEmpty() ? "" : entry.getText());
-			pstmt.setString(3, entry.getSearch().isEmpty() ? "" : entry.getSearch());
+			System.out.println("Erg:");
+			System.out.println(entry.getSearch()==null ? "<>" : entry.getSearch());
+			System.out.println("---");
+			pstmt.setString(2, entry.getText()==null ? "" : entry.getText());
+			pstmt.setString(3, entry.getSearch()==null ? "" : entry.getSearch());
 			pstmt.executeUpdate();
 			ResultSet keys = pstmt.getGeneratedKeys();
 			if (keys.next()) { // there should only be 1 key returned here
@@ -3331,6 +3335,7 @@ public class MysqlConnector implements IsSerializable {
 		if (dologgingbegin){
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von searchOrnaments wurde ausgelöst.");;
 		}
+		System.out.println("Search Ornaments wurde gestartet.");
 		// Suche ueber einzelne SQL Querys, speichern in ArrayList "listen", anschliessend Schnittmenge bilden
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -3347,70 +3352,6 @@ public class MysqlConnector implements IsSerializable {
 					OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
 							rs.getString("Remarks"),
 							rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
 							getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
 							getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
 							getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),

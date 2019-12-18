@@ -92,7 +92,6 @@ public class DepictionSearchController extends AbstractSearchController {
 					else {
 						masterImageIDs = masterImageIDs + ","+Integer.toString(de.getMasterImageID());
 					}
-					getResultView().addResult(new DepictionView(de,UriUtils.fromTrustedString("icons/load_active.png")));
 //					Util.doLogging("Lade Depiction: "+de.getShortName());
 					if (count==20 ){
 						getResultView().getPics(masterImageIDs, 120, UserLogin.getInstance().getSessionID()) ;
