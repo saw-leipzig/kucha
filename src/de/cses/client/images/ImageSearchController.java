@@ -64,10 +64,10 @@ public class ImageSearchController extends AbstractSearchController {
 				getResultView().reset();
 				int count=0;
 				String imageIDs="";
-				searchEntry.setEntriesShowed(50);
+				searchEntry.setEntriesShowed(searchEntry.getMaxentries());
 				getResultView().setSearchEntry(searchEntry);
 
-				if (result.size()==50) {
+				if (result.size()==searchEntry.getMaxentries()) {
 					getResultView().setSearchbuttonVisible();
 				}
 				else {

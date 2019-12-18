@@ -14,6 +14,7 @@
 package de.cses.client.depictions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,7 +35,6 @@ import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -529,7 +529,7 @@ public class DepictionEditor extends AbstractEditor {
 	private void initPanel() {
 
 		// the images related with the depiction entry that will be shown on the right
-
+		imgdic = new HashMap<Integer,String>();
 		getPics(correspondingDepictionEntry.getRelatedImages(), 300, UserLogin.getInstance().getSessionID());
 		imageListView = new ListView<ImageEntry, ImageEntry>(imageEntryLS, new IdentityValueProvider<ImageEntry>() {
 			@Override
@@ -544,13 +544,11 @@ public class DepictionEditor extends AbstractEditor {
 				SafeUri imageUri;
 				Util.doLogging( item.getFilename()+" / "+Integer.toString(imgdic.size()));
 				//SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=300" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
-				try {
+				imageUri = UriUtils.fromString("icons/load_active.png");	
+				if (imgdic.containsKey(item.getImageID())){
+					
 					imageUri = UriUtils.fromTrustedString(imgdic.get(item.getImageID()));
 					
-				}
-				catch (Exception e) {
-					Util.doLogging(Integer.toString(item.getImageID())+": "+e.getMessage());
-					imageUri = UriUtils.fromString("icons/load_active.png");	
 				}
 				
 				ArrayList<TextElement> titleList = new ArrayList<TextElement>();
@@ -573,6 +571,7 @@ public class DepictionEditor extends AbstractEditor {
 //		imageListView.setSize("340", "290");
 		//Util.doLogging("Size of ImageListView: "+Integer.toString(imageEntryLS.size()));
 		ListField<ImageEntry, ImageEntry> imageViewLF = new ListField<ImageEntry, ImageEntry>(imageListView);
+		loadImages();
 		
 //		imageViewLF.setSize("250px", "1.0");
 

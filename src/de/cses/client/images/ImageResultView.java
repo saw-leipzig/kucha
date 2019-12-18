@@ -67,7 +67,7 @@ public class ImageResultView extends AbstractResultView {
 						//Info.display("Größe des Results: ",Integer.toString(result.size()));
 						int count=0;
 						String imageIDs="";
-						searchEntry.setEntriesShowed(searchEntry.getEntriesShowed()+50);
+						searchEntry.setEntriesShowed(searchEntry.getEntriesShowed()+searchEntry.getMaxentries());
 						for (ImageEntry ie : result) {
 							count++;
 							addResult(new ImageView(ie,UriUtils.fromTrustedString("icons/load_active.png")));
@@ -84,7 +84,7 @@ public class ImageResultView extends AbstractResultView {
 							}
 						}
 						getPics(imageIDs, 120, UserLogin.getInstance().getSessionID());				
-						if (result.size()==50) {
+						if (result.size()==searchEntry.getMaxentries()) {
 							setSearchbuttonVisible();
 						}
 						else {
@@ -107,6 +107,7 @@ public class ImageResultView extends AbstractResultView {
 			@Override
 			protected void onDragDrop(DndDropEvent event) {
 				super.onDragDrop(event);
+				clear();
 				DepictionSearchEntry dse;
 				if (UserLogin.isLoggedIn()) {
 					dse = new DepictionSearchEntry(UserLogin.getInstance().getSessionID());
@@ -138,6 +139,7 @@ public class ImageResultView extends AbstractResultView {
 					int bibID = ((AnnotatedBibliographyEntry) event.getData()).getAnnotatedBibliographyID();
 					dse.getBibIdList().add(bibID);
 				}
+				searchEntry=dse;
 				dbService.searchDepictions(dse, new AsyncCallback<ArrayList<DepictionEntry>>() {
 
 					@Override
@@ -163,7 +165,12 @@ public class ImageResultView extends AbstractResultView {
 									imageIDs="";
 									count=0;
 								}
-								
+								if (result.size()==searchEntry.getMaxentries()) {
+									setSearchbuttonVisible();
+								}
+								else {
+									setSearchbuttonHide();
+								}
 							
 							}
 							getPics(imageIDs, 120, UserLogin.getInstance().getSessionID());

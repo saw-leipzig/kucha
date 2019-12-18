@@ -29,6 +29,7 @@ public abstract class AbstractSearchEntry implements IsSerializable {
 	// we send sessionID with each request to allow for filtering of restricted information
 	private String sessionID = "";
 	int entriesShowed = 0;
+	int maxEntries = 100;
 
 	/**
 	 * 
@@ -51,7 +52,9 @@ public abstract class AbstractSearchEntry implements IsSerializable {
 	public int getEntriesShowed() {
 		return this.entriesShowed;
 	}
-
+	public int getMaxentries() {
+		return this.maxEntries;
+	}
 	public AbstractSearchEntry() { }
 
 	public boolean isOrSearch() {

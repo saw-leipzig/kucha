@@ -89,7 +89,7 @@ public class DepictionResultView extends AbstractResultView {
 						Util.doLogging("Größe des Results: "+Integer.toString(result.size()));
 						int count=0;
 						String imageIDs="";
-						searchEntry.setEntriesShowed(searchEntry.getEntriesShowed()+50);
+						searchEntry.setEntriesShowed(searchEntry.getEntriesShowed()+searchEntry.getMaxentries());
 						for (DepictionEntry de : result) {
 							count++;
 							addResult(new DepictionView(de,UriUtils.fromTrustedString("icons/load_active.png")));
@@ -106,7 +106,7 @@ public class DepictionResultView extends AbstractResultView {
 							}
 						}
 						getPics(imageIDs, 120, UserLogin.getInstance().getSessionID());				
-						if (result.size()==50) {
+						if (result.size()==searchEntry.getMaxentries()) {
 							setSearchbuttonVisible();
 						}
 						else {

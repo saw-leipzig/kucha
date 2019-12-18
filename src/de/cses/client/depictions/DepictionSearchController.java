@@ -72,10 +72,10 @@ public class DepictionSearchController extends AbstractSearchController {
 				String masterImageIDs = "";
 				//Info.display("Result", "Größe = "+Integer.toString(result.size()));
 				int count = 0;
-				searchEntry.setEntriesShowed(50);
+				searchEntry.setEntriesShowed(searchEntry.getMaxentries());
 				getResultView().reset();
 				getResultView().setSearchEntry(searchEntry);
-				if (result.size()==50) {
+				if (result.size()==searchEntry.getMaxentries()) {
 					getResultView().setSearchbuttonVisible();
 				}
 				else {

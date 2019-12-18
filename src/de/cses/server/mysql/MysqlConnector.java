@@ -316,7 +316,7 @@ public class MysqlConnector implements IsSerializable {
 					//System.err.println("acess Level PUBLIC");
 					break;
 			}
-			System.out.println(accessLevelOfSession+" - "+authorizedAccessLevel);
+			//System.out.println(accessLevelOfSession+" - "+authorizedAccessLevel);
 			
 			
 			String filename = "";
@@ -716,7 +716,7 @@ public class MysqlConnector implements IsSerializable {
 		System.out.println(where.isEmpty() ? "SELECT * FROM Images ORDER BY Title Asc LIMIT "+Integer.toString(searchEntry.getEntriesShowed()+50)+" OFFSET "+Integer.toString(searchEntry.getEntriesShowed()) : "SELECT * FROM Images WHERE " + where + " ORDER BY Title Asc LIMIT "+Integer.toString(searchEntry.getEntriesShowed()+50)+" OFFSET "+Integer.toString(searchEntry.getEntriesShowed()));
 		
 		try {
-			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Images ORDER BY Title Asc LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+ ", 50" : "SELECT * FROM Images WHERE " + where + " ORDER BY Title Asc LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+", 50");
+			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Images ORDER BY Title Asc LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+ ", "+Integer.toString(searchEntry.getMaxentries()) : "SELECT * FROM Images WHERE " + where + " ORDER BY Title Asc LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+", "+Integer.toString(searchEntry.getMaxentries()));
 			int i = 1; // counter to fill ? in where clause
 			if (searchEntry.getTitleSearch() != null && !searchEntry.getTitleSearch().isEmpty()) {
 				pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");
@@ -1854,8 +1854,8 @@ public class MysqlConnector implements IsSerializable {
 		try {
 			pstmt = dbc.prepareStatement("INSERT INTO Iconography (ParentID, Text, search) VALUES (?, ?,?)", Statement.RETURN_GENERATED_KEYS);
 			pstmt.setInt(1, entry.getParentID());
-			pstmt.setString(2, entry.getText());
-			pstmt.setString(3, entry.getSearch());
+			pstmt.setString(2, entry.getText().isEmpty() ? "" : entry.getText());
+			pstmt.setString(3, entry.getSearch().isEmpty() ? "" : entry.getSearch());
 			pstmt.executeUpdate();
 			ResultSet keys = pstmt.getGeneratedKeys();
 			if (keys.next()) { // there should only be 1 key returned here
@@ -4586,7 +4586,7 @@ public class MysqlConnector implements IsSerializable {
 		int accessRights = 0;
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
-		System.err.println("getAccessLevelForSessionID(" + sessionID + ")");
+		//System.err.println("getAccessLevelForSessionID(" + sessionID + ")");
 		try {
 			pstmt = dbc.prepareStatement("SELECT AccessLevel FROM Users WHERE SessionID=?");
 			pstmt.setString(1, sessionID);
@@ -7491,7 +7491,7 @@ public class MysqlConnector implements IsSerializable {
 		System.err.println(where.isEmpty() ? "SELECT * FROM Depictions" : "hier?SELECT * FROM Depictions WHERE " + where);
 
 		try {
-			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Depictions LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+ ", 50" : "SELECT * FROM Depictions WHERE " + where+" LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+", 50");
+			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Depictions LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+ ", "+Integer.toString(searchEntry.getMaxentries()): "SELECT * FROM Depictions WHERE " + where+" LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+", "+Integer.toString(searchEntry.getMaxentries()));
 
 			if (!searchEntry.getShortName().isEmpty()) {
 				pstmt.setString(1, "%" + searchEntry.getShortName() + "%");
