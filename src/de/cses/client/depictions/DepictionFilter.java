@@ -146,6 +146,7 @@ public class DepictionFilter extends AbstractFilter {
 		caveProps = GWT.create(CaveProperties.class);
 		caveEntryLS = new ListStore<CaveEntry>(caveProps.caveID());
 		icoSelector = new IconographySelector(StaticTables.getInstance().getIconographyEntries().values());
+		icoSelector.enable();
 		icoProps = GWT.create(IconographyProperties.class);
 		selectedIconographyLS = new ListStore<>(icoProps.iconographyID());
 		loadCaves();

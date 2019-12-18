@@ -36,6 +36,8 @@ import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderL
 import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
+import com.sencha.gxt.widget.core.client.event.BeforeCheckChangeEvent.BeforeCheckChangeHandler;
+import com.sencha.gxt.widget.core.client.event.BeforeCheckChangeEvent;
 import com.sencha.gxt.widget.core.client.event.CheckChangeEvent;
 import com.sencha.gxt.widget.core.client.event.CheckChangeEvent.CheckChangeHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
@@ -59,14 +61,14 @@ import de.cses.shared.UserEntry;
 
 public class IconographySelector extends FramedPanel {
 
-	class IconographyKeyProvider implements ModelKeyProvider<IconographyEntry> {
+	public static class IconographyKeyProvider implements ModelKeyProvider<IconographyEntry> {
 		@Override
 		public String getKey(IconographyEntry item) {
 			return Integer.toString(item.getIconographyID());
 		}
 	}
 
-	class IconographyValueProvider implements ValueProvider<IconographyEntry, String> {
+	public static class IconographyValueProvider implements ValueProvider<IconographyEntry, String> {
 
 		@Override
 		public String getValue(IconographyEntry object) {
@@ -89,68 +91,33 @@ public class IconographySelector extends FramedPanel {
 	 */
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 
-	private TreeStore<IconographyEntry> iconographyTreeStore;
-	private Tree<IconographyEntry, String> iconographyTree;
+	private static TreeStore<IconographyEntry> iconographyTreeStore;
+	private static Tree<IconographyEntry, String> iconographyTree;
 //	private FramedPanel mainPanel = null;
 	private StoreFilterField<IconographyEntry> filterField;
-	protected Map<String, IconographyEntry> selectedIconographyMap;
-
-	public IconographySelector(Collection<IconographyEntry> elements) {
-		iconographyTreeStore = new TreeStore<IconographyEntry>(new IconographyKeyProvider());
-		filterField = new StoreFilterField<IconographyEntry>() {
-
-			@Override
-			protected boolean doSelect(Store<IconographyEntry> store, IconographyEntry parent, IconographyEntry item, String filter) {
-				TreeStore<IconographyEntry> treeStore = (TreeStore<IconographyEntry>) store;
-				do {
-					String name = item.getText().toLowerCase();
-					if (name.contains(filter.toLowerCase())) {
-						return true;
-					}
-					item = treeStore.getParent(item);
-				} while (item != null);
-				return false;
-			}
-		};
-		filterField.setEmptyText("enter a search term");
-		filterField.bind(iconographyTreeStore);
-		selectedIconographyMap = new HashMap<String, IconographyEntry>();
-		setIconographyStore(elements);
-		initPanel();
-	}
-
-	private void processParentIconographyEntry(TreeStore<IconographyEntry> store, IconographyEntry item) {
-		for (IconographyEntry child : item.getChildren()) {
-			store.add(item, child);
-			if (child.getChildren() != null) {
-				processParentIconographyEntry(store, child);
-			}
-		}
-	}
+	protected static Map<String, IconographyEntry> selectedIconographyMap;
 	
-	private void setIconographyStore(Collection<IconographyEntry> elements) {
+	public static TreeStore<IconographyEntry> buildTreeStore(Collection<IconographyEntry> elements, boolean ornaments){
+		iconographyTreeStore = new TreeStore<IconographyEntry>(new IconographyKeyProvider());
 		iconographyTreeStore.clear();
-		for (IconographyEntry item : elements) {
-			iconographyTreeStore.add(item);
-			if (item.getChildren() != null) {
-				processParentIconographyEntry(iconographyTreeStore, item);
+			for (IconographyEntry item : elements) {
+				if ((item.getIconographyID()==3)||(!ornaments)) {
+					iconographyTreeStore.add(item);
+					if (item.getChildren() != null) {
+						processParentIconographyEntry(item);
+					}
+			
+				}
 			}
-		}
+		return iconographyTreeStore;
 	}
-
-	public void setSelectedIconography(ArrayList<IconographyEntry> iconographyRelationList) {
-		Util.doLogging("*** setSelectedIconography called - iconographyTree no. of items = " + iconographyTree.getStore().getAllItemsCount());
-		resetSelection();
-		for (IconographyEntry entry : iconographyRelationList) {
-			Util.doLogging("setSelectedIconography setting entry = " + entry.getIconographyID());
-			iconographyTree.setChecked(entry, CheckState.CHECKED);
-			selectedIconographyMap.put(entry.getUniqueID(), entry);
-		}
+	public void IconographyTreeEnabled(boolean enable) {
+		iconographyTree.setEnabled(enable);
 	}
+	public static Tree<IconographyEntry, String> buildTree( boolean ornament){
+		selectedIconographyMap = new HashMap<String, IconographyEntry>();
 
-	private void initPanel() {
-		Util.doLogging("IconographySelector.init() has been called! " + this.getClass().toString());
-		
+			
 		iconographyTree = new Tree<IconographyEntry, String>(iconographyTreeStore, new IconographyValueProvider()) {
 
 			@Override
@@ -162,10 +129,26 @@ public class IconographySelector extends FramedPanel {
 			}
 
 		};
+
+
+//		BeforeCheckChangeHandler<IconographyEntry> beforechecked = new BeforeCheckChangeHandler<IconographyEntry>() {
+//			 public void onBeforeCheckChange(BeforeCheckChangeEvent<IconographyEntry> event) {
+//
+//		  }
+//		};
+//		iconographyTree.addBeforeCheckChangeHandler(beforechecked);
 		
-		iconographyTree.getSelectionModel().setSelectionMode(SelectionMode.MULTI);
+		if (ornament) {
+			iconographyTree.setCheckStyle(CheckCascade.NONE);;
+			iconographyTree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+			
+		}
+		else {
+			iconographyTree.setCheckStyle(CheckCascade.PARENTS);;
+			iconographyTree.getSelectionModel().setSelectionMode(SelectionMode.MULTI);
+
+		}
 		iconographyTree.setCheckable(true);
-		iconographyTree.setCheckStyle(CheckCascade.PARENTS);;
 		iconographyTree.setAutoLoad(true);
 		//iconographyTree.setCheckStyle(CheckCascade.NONE);
 		iconographyTree.setCheckNodes(CheckNodes.BOTH);
@@ -184,7 +167,95 @@ public class IconographySelector extends FramedPanel {
 				}
 			}
 		});
-		
+		return iconographyTree;
+	}
+	private static void processParentIconographyEntry_select(IconographyEntry item, ArrayList<IconographyEntry> l) {	
+		for (IconographyEntry child : item.getChildren()) {
+			Boolean found =new Boolean(false);
+			for (IconographyEntry entry : l) {
+				if (entry.getIconographyID()==child.getIconographyID()){
+					found=true;
+					break;}}
+			if (found){
+				//Info.display(child.getText(), child.getText());
+				iconographyTreeStore.add(item, child);
+			if (child.getChildren() != null) {
+				processParentIconographyEntry_select(child,l);
+			}
+		}}
+	}
+	public static TreeStore<IconographyEntry> setIconographyStore(Collection<IconographyEntry> elements, ArrayList<IconographyEntry> l, boolean dropunselected) {
+		iconographyTreeStore = buildTreeStore(elements, false);
+		iconographyTreeStore.clear();
+		for (IconographyEntry item : elements) {
+			iconographyTreeStore.add(item);
+			if (item.getChildren() != null) {
+				if (dropunselected) {
+					processParentIconographyEntry_select(item,l);
+					
+				}
+				else
+				{
+					processParentIconographyEntry(item);
+				}
+			}
+
+	  }
+	return iconographyTreeStore;
+	}
+	public IconographySelector(Collection<IconographyEntry> elements) {
+		iconographyTreeStore=buildTreeStore(elements,false);
+		filterField = new StoreFilterField<IconographyEntry>() {
+
+			@Override
+			protected boolean doSelect(Store<IconographyEntry> store, IconographyEntry parent, IconographyEntry item, String filter) {
+				TreeStore<IconographyEntry> treeStore = (TreeStore<IconographyEntry>) store;
+				do {
+					String treename = "";
+					String treesearch = "";
+					if (item.getText()!=null) {
+						treename = item.getText().toLowerCase().replaceAll("\\p{M}", "");						
+					};
+					if(item.getSearch()!=null){
+						treesearch = item.getSearch().toLowerCase().replaceAll("\\p{M}", "");						
+					};
+					filter = filter.toLowerCase().replaceAll("\\p{M}", "");
+
+					if ((treename.contains(filter))||(treesearch.contains(filter))) {
+						return true;
+					}
+					item = treeStore.getParent(item);
+				} while (item != null);
+				return false;
+			}
+		};
+		filterField.setEmptyText("enter a search term");
+		filterField.bind(iconographyTreeStore);
+		initPanel(iconographyTreeStore);
+	}
+
+	private static void processParentIconographyEntry( IconographyEntry item) {
+		for (IconographyEntry child : item.getChildren()) {
+			iconographyTreeStore.add(item, child);
+			if (child.getChildren() != null) {
+				processParentIconographyEntry(child);
+			}
+		}
+	}
+
+	public void setSelectedIconography(ArrayList<IconographyEntry> iconographyRelationList) {
+		Util.doLogging("*** setSelectedIconography called - iconographyTree no. of items = " + iconographyTree.getStore().getAllItemsCount());
+		resetSelection();
+		for (IconographyEntry entry : iconographyRelationList) {
+			//Util.doLogging("setSelectedIconography setting entry = " + entry.getIconographyID());
+			iconographyTree.setChecked(entry, CheckState.CHECKED);
+			selectedIconographyMap.put(entry.getUniqueID(), entry);
+		}
+	}
+
+	private void initPanel(TreeStore<IconographyEntry> iconographyTreeStore) {
+		iconographyTree=buildTree(false);
+		iconographyTree.setEnabled(false);
 		BorderLayoutContainer iconographySelectorBLC = new BorderLayoutContainer();
 		iconographySelectorBLC.setCenterWidget(iconographyTree, new MarginData(0, 2, 5, 2));
 		iconographySelectorBLC.setSouthWidget(filterField, new BorderLayoutData(25.0));
@@ -238,9 +309,19 @@ public class IconographySelector extends FramedPanel {
 				TextArea ieTextArea = new TextArea();
 				ieTextArea.addValidator(new MinLengthValidator(2));
 				ieTextArea.addValidator(new MaxLengthValidator(256));
+				FramedPanel fpanelText = new FramedPanel();
+				fpanelText.setHeading("Name");
+				fpanelText.add(ieTextArea);
+				TextArea ieTextAreaSearch = new TextArea();
+				ieTextAreaSearch.addValidator(new MinLengthValidator(2));
+				ieTextAreaSearch.addValidator(new MaxLengthValidator(256));
+				FramedPanel fpanelSearch = new FramedPanel();
+				fpanelSearch.setHeading("Alternative Names");
+				fpanelSearch.add(ieTextAreaSearch);
 				VerticalLayoutContainer newIconogryphyVLC = new VerticalLayoutContainer();
-				newIconogryphyVLC.add(html, new VerticalLayoutData(1.0, .5));
-				newIconogryphyVLC.add(ieTextArea, new VerticalLayoutData(1.0, .5));
+				newIconogryphyVLC.add(html, new VerticalLayoutData(1.0, .2));
+				newIconogryphyVLC.add(fpanelText, new VerticalLayoutData(1.0, .4));
+				newIconogryphyVLC.add(fpanelSearch, new VerticalLayoutData(1.0, .4));
 				newIconographyEntryFP.add(newIconogryphyVLC);
 				newIconographyEntryFP.setSize("300px", "280px");
 				newIconographyEntryFP.setHeading("add child element to");
@@ -250,7 +331,7 @@ public class IconographySelector extends FramedPanel {
 					@Override
 					public void onSelect(SelectEvent event) {
 						if (ieTextArea.isValid()) {
-							IconographyEntry iconographyEntry = new IconographyEntry(0, iconographyTree.getSelectionModel().getSelectedItem().getIconographyID(), ieTextArea.getValue());
+							IconographyEntry iconographyEntry = new IconographyEntry(0, iconographyTree.getSelectionModel().getSelectedItem().getIconographyID(), ieTextArea.getValue(), ieTextAreaSearch.getValue());
 							dbService.insertIconographyEntry(iconographyEntry, new AsyncCallback<Integer>() {
 
 								@Override
@@ -303,9 +384,23 @@ public class IconographySelector extends FramedPanel {
 				ieTextArea.addValidator(new MinLengthValidator(2));
 				ieTextArea.addValidator(new MaxLengthValidator(256));
 				ieTextArea.setValue(iconographyEntryToEdit.getText());
-				newIconographyEntryFP.add(ieTextArea);
+				FramedPanel fpanelText = new FramedPanel();
+				fpanelText.setHeading("Name");
+				fpanelText.add(ieTextArea);
+				TextArea ieTextAreaSearch = new TextArea();
+				ieTextAreaSearch.addValidator(new MinLengthValidator(2));
+				ieTextAreaSearch.addValidator(new MaxLengthValidator(256));
+				ieTextAreaSearch.setValue(iconographyEntryToEdit.getSearch());
+				FramedPanel fpanelSearch = new FramedPanel();
+				fpanelSearch.setHeading("Alternative Names");
+				fpanelSearch.add(ieTextAreaSearch);
+				VerticalLayoutContainer editIconogryphyVLC = new VerticalLayoutContainer();
+				editIconogryphyVLC.add(fpanelText, new VerticalLayoutData(1.0, .5));
+				editIconogryphyVLC.add(fpanelSearch, new VerticalLayoutData(1.0, .5));
+
+				newIconographyEntryFP.add(editIconogryphyVLC);
 				newIconographyEntryFP.setHeading("edit text");
-				newIconographyEntryFP.setSize("300px", "150px");
+				newIconographyEntryFP.setSize("300px", "250px");
 				ToolButton saveTB = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 				saveTB.addSelectHandler(new SelectHandler() {
 
@@ -313,6 +408,7 @@ public class IconographySelector extends FramedPanel {
 					public void onSelect(SelectEvent event) {
 						if (ieTextArea.isValid()) {
 							iconographyEntryToEdit.setText(ieTextArea.getValue());
+							iconographyEntryToEdit.setSearch(ieTextAreaSearch.getValue());
 							iconographyTreeStore.update(iconographyEntryToEdit);
 							dbService.updateIconographyEntry(iconographyEntryToEdit, new AsyncCallback<Boolean>() {
 

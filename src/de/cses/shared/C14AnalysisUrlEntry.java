@@ -22,16 +22,18 @@ public class C14AnalysisUrlEntry extends AbstractEntry {
 	private int c14AnalysisUrlID;
 	private String c14Url;
 	private String c14ShortName;
+	private int caveID;
 
 	/**
 	 * @param c14AnalysisUrlID
 	 * @param c14Url
 	 * @param c14ShortName
 	 */
-	public C14AnalysisUrlEntry(int c14AnalysisUrlID, String c14Url, String c14ShortName) {
+	public C14AnalysisUrlEntry(int c14AnalysisUrlID, String c14Url, String c14ShortName, int caveID) {
 		this.c14AnalysisUrlID = c14AnalysisUrlID;
 		this.c14Url = c14Url;
 		this.c14ShortName = c14ShortName;
+		this.caveID=caveID;
 	}
 
 	/**
@@ -42,8 +44,8 @@ public class C14AnalysisUrlEntry extends AbstractEntry {
 	/**
 	 * 
 	 */
-	public C14AnalysisUrlEntry(String c14Url, String c14ShortName) {
-		this(0, c14Url, c14ShortName);
+	public C14AnalysisUrlEntry(String c14Url, String c14ShortName, int caveID) {
+		this(0, c14Url, c14ShortName, caveID);
 	}
 
 	/* (non-Javadoc)
@@ -53,7 +55,13 @@ public class C14AnalysisUrlEntry extends AbstractEntry {
 	public String getUniqueID() {
 		return "C14AnalysisUrl" + c14AnalysisUrlID;
 	}
+	public int getCaveID() {
+		return caveID;
+	}
 
+	public void setCaveID(int caveID) {
+		this.caveID = caveID;
+	}
 	public int getC14AnalysisUrlID() {
 		return c14AnalysisUrlID;
 	}

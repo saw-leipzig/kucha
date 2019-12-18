@@ -210,6 +210,11 @@ public class ImageSelector implements IsWidget {
 
 			@Override
 			public void onSelect(SelectEvent event) {
+				Util.doLogging("Size of selectedListener: "+Integer.toString(selectorListener.size()));
+				//while (selectorListener!=null) {
+				//	ImageSelectorListener listener=selectorListener.remove(0);
+				//	listener.imageSelected(null);
+				//}
 				for (ImageSelectorListener listener : selectorListener) {
 					listener.imageSelected(null);
 				}
@@ -305,7 +310,7 @@ public class ImageSelector implements IsWidget {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				Info.display("Refresh Image List", "failed");
+				Info.display("Refresh Image List", "failed: "+caught.getMessage());
 			}
 
 			@Override

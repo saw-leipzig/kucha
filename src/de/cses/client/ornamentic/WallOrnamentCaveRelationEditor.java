@@ -344,38 +344,58 @@ public class WallOrnamentCaveRelationEditor {
 			});
 		}
 		else if( wallOrCeiling.contains("ceiling"))  {
-			ArrayList<CaveAreaEntry> result = caveEntry.getCaveAreaList();
-			String cavearealabel = StaticTables.getInstance().getWallLocationEntries().get(wallselector.getSelectedWallEntry().getWallLocationID()).getCaveAreaLabel();
-			for(int i = 0; i < result.size(); i++){
-				if(result.get(i).getCaveAreaLabel().contains(cavearealabel)) {
-					CaveAreaEntry cavearea = result.get(i);
-					int ceiling1 = cavearea.getCeilingType1() != null ? cavearea.getCeilingType1().getCeilingTypeID() : 0;
-					int ceiling2 = cavearea.getCeilingType2() != null ? cavearea.getCeilingType2().getCeilingTypeID() : 0;
-					if(ceiling1 == 0 && ceiling2 == 0) {
-						ceiling1 = 11;
+			dbService.getCaveAreas(caveEntry.getCaveID(),new AsyncCallback<ArrayList<CaveAreaEntry>>() {
+
+				@Override
+				public void onFailure(Throwable caught) {
+					System.err.println("Problem loading CaveGroupEntry");
+				}
+
+				@Override
+				public void onSuccess(ArrayList<CaveAreaEntry> result) {
+					caveEntry.setCaveAreaList(result);
+					String cavearealabel = StaticTables.getInstance().getWallLocationEntries().get(wallselector.getSelectedWallEntry().getWallLocationID()).getCaveAreaLabel();//.getLabel();
+					Util.doLogging(Integer.toString(wallselector.getSelectedWallEntry().getWallLocationID()));
+					for (CaveAreaEntry cae : result){
+						Util.doLogging(cae.getCaveAreaLabel()+" - "+cavearealabel);
+						if(cae.getCaveAreaLabel().contains(cavearealabel)) {
+							CaveAreaEntry cavearea = cae;
+							int ceiling1 = cavearea.getCeilingType1() != null ? cavearea.getCeilingType1().getCeilingTypeID() : 0;
+							int ceiling2 = cavearea.getCeilingType2() != null ? cavearea.getCeilingType2().getCeilingTypeID() : 0;
+							if(ceiling1 == 0 && ceiling2 == 0) {
+								ceiling1 = 11;
+							}
+							dbService.getPositionbyCeiling(ceiling1, ceiling2, new AsyncCallback<ArrayList<OrnamentPositionEntry>>() {
+		
+								@Override
+								public void onFailure(Throwable caught) {
+									caught.printStackTrace();
+								}
+		
+								@Override
+								public void onSuccess(ArrayList<OrnamentPositionEntry> result) {
+									ListStore<OrnamentPositionEntry> test = ornamentPositionEntryLS;
+		//							Util.doLogging("Nina: in create form step 4.2 variante 2 wallornamenteditor");
+									for (OrnamentPositionEntry pe : result) {
+										try {
+										ornamentPositionEntryLS.add(pe);
+										}
+										catch(Exception e) {
+											Util.doLogging(e.getMessage());
+										}
+									}
+									if(wallOrnamentCaveRelation != null && init == 1) {
+										ornamentPositionComboBox.setValue(ornamentPositionEntryLS.findModelWithKey(Integer.toString(wallOrnamentCaveRelation.getOrnamenticPositionID())),true);
+									}
+									
 					}
-					dbService.getPositionbyCeiling(ceiling1, ceiling2, new AsyncCallback<ArrayList<OrnamentPositionEntry>>() {
-
-						@Override
-						public void onFailure(Throwable caught) {
-							caught.printStackTrace();
-						}
-
-						@Override
-						public void onSuccess(ArrayList<OrnamentPositionEntry> result) {
-//							Util.doLogging("Nina: in create form step 4.2 variante 2 wallornamenteditor");
-							for (OrnamentPositionEntry pe : result) {
-								ornamentPositionEntryLS.add(pe);
-							}
-							if(wallOrnamentCaveRelation != null && init == 1) {
-								ornamentPositionComboBox.setValue(ornamentPositionEntryLS.findModelWithKey(Integer.toString(wallOrnamentCaveRelation.getOrnamenticPositionID())),true);
-							}
-			}
+						
+			});
+						
+					}
+					}
 				
-	});
-				
-			}
-			}
+				}});
 		}
 		else if(wallOrCeiling.contains("reveal")){
 			dbService.getPositionbyReveal(wallselector.getSelectedWallEntry(), new AsyncCallback<ArrayList<OrnamentPositionEntry>>() {

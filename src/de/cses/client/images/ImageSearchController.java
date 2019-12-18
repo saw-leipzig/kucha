@@ -16,18 +16,19 @@ package de.cses.client.images;
 import java.util.ArrayList;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DialogBox;
+import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
-import de.cses.client.ui.AbstractFilter;
-import de.cses.client.ui.AbstractResultView;
 import de.cses.client.ui.AbstractSearchController;
 import de.cses.client.ui.EditorListener;
+import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageSearchEntry;
@@ -56,16 +57,41 @@ public class ImageSearchController extends AbstractSearchController {
 	@Override
 	public void invokeSearch() {
 		ImageSearchEntry searchEntry = (ImageSearchEntry) getFilter().getSearchEntry();
-
 		dbService.searchImages(searchEntry, new AsyncCallback<ArrayList<ImageEntry>>() {
 
 			@Override
 			public void onSuccess(ArrayList<ImageEntry> result) {
 				getResultView().reset();
-				for (ImageEntry ie : result) {
-					getResultView().addResult(new ImageView(ie));
+				int count=0;
+				String imageIDs="";
+				searchEntry.setEntriesShowed(searchEntry.getMaxentries());
+				getResultView().setSearchEntry(searchEntry);
+
+				if (result.size()==searchEntry.getMaxentries()) {
+					getResultView().setSearchbuttonVisible();
+				}
+				else {
+					getResultView().setSearchbuttonHide();
 				}
 				getResultView().setSearchEnabled(true);
+
+				for (ImageEntry ie : result) {
+					count++;
+					getResultView().addResult(new ImageView(ie,UriUtils.fromTrustedString("icons/load_active.png")));
+					if (imageIDs == "") {
+						imageIDs = Integer.toString(ie.getImageID());
+					}
+					else {
+						imageIDs = imageIDs + ","+Integer.toString(ie.getImageID());
+					}
+					if (count==20 ){
+						getResultView().getPics(imageIDs, 120, UserLogin.getInstance().getSessionID());
+						imageIDs="";
+						count=0;
+					}
+				}
+				getResultView().getPics(imageIDs, 120, UserLogin.getInstance().getSessionID());				
+				
 			}
 
 			@Override
@@ -104,14 +130,16 @@ public class ImageSearchController extends AbstractSearchController {
 							public void closeRequest(AbstractEntry entry) {
 								imageEditorPanel.hide();
 								if (entry != null) {
-									getResultView().addResult(new ImageView((ImageEntry)entry));
+									getResultView().addResult(new ImageView((ImageEntry)entry,UriUtils.fromTrustedString("icons/load_active.png")));
+									String imageIDs = Integer.toString(((ImageEntry)entry).getImageID());
+									getResultView().getPics(imageIDs, 120, UserLogin.getInstance().getSessionID());
 								} else {
 									// we should at least save the title of the image!
 									dbService.updateImageEntry(imgEntry, new AsyncCallback<Boolean>() {
 										
 										@Override
 										public void onSuccess(Boolean result) { 
-											getResultView().addResult(new ImageView(imgEntry));
+											getResultView().addResult(new ImageView(imgEntry,UriUtils.fromTrustedString("icons/close_icon.png")));
 										}
 										
 										@Override

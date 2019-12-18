@@ -35,6 +35,7 @@ import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
+import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.StaticTables;
 import de.cses.client.user.UserLogin;
@@ -110,7 +111,7 @@ public class WallSelector implements IsWidget {
 	 */
 	private void createUI() {
 		caveSketchContainer = new FlowLayoutContainer();
-		caveSketchContainer.setScrollMode(ScrollMode.AUTOY);
+		caveSketchContainer.setScrollMode(ScrollMode.NONE);
 
 		LabelProvider<WallEntry> wallSelectorLP = new LabelProvider<WallEntry>() {
 			@Override
@@ -145,6 +146,7 @@ public class WallSelector implements IsWidget {
 		mainBLC = new BorderLayoutContainer();
 		mainBLC.setCenterWidget(caveSketchContainer, new BorderLayoutData());
 		mainBLC.setSouthWidget(wallSelectorCB, southBLD);
+		mainBLC.setHeight(caveSketchContainer.getOffsetHeight()+wallSelectorCB.getOffsetHeight());
 
 	}
 
@@ -166,6 +168,7 @@ public class WallSelector implements IsWidget {
 							.fromString("resource?background=" + ctEntry.getSketchName() + UserLogin.getInstance().getUsernameSessionIDParameterForUri()))));
 //					,SafeStylesUtils.forWidth(defaultCaveSketchWidth, Unit.PX))));
 		}
+		//Info.display(Integer.toString(caveSketchContainer.getOffsetHeight()), Integer.toString(caveSketchContainer.getOffsetHeight()));
 		wallEntryLS.clear();
 		switch (ctEntry.getCaveTypeID()) {
 

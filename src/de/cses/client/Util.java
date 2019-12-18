@@ -141,8 +141,10 @@ public class Util {
 
 			@Override
 			public void onSelect(SelectEvent event) {
+				dialog.setAutoHideEnabled(true);
 				dialog.hide();
 				yesHandler.onSelect(event);
+				dialog.hide(true);
 			}
 		});
 		dialogPanel.addButton(yesButton);

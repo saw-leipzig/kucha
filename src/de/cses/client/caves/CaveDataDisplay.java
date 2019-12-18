@@ -5,14 +5,17 @@ import java.util.ArrayList;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
-import com.google.gwt.thirdparty.guava.common.collect.Multiset.Entry;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.sencha.gxt.widget.core.client.container.MarginData;
 
+import de.cses.client.DatabaseService;
+import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
 import de.cses.client.ui.AbstractDataDisplay;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
+import de.cses.shared.CaveAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveSketchEntry;
 import de.cses.shared.CaveTypeEntry;
@@ -21,7 +24,9 @@ import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 
 public class CaveDataDisplay extends AbstractDataDisplay {
-	
+	private HTML htmlWidget;
+	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
+
 	class CaveSketchUri {
 		
 		SafeUri uri;
@@ -51,7 +56,17 @@ public class CaveDataDisplay extends AbstractDataDisplay {
 		SiteEntry se = stab.getSiteEntries().get(entry.getSiteID());
 		DistrictEntry de = stab.getDistrictEntries().get(entry.getDistrictID());
 		RegionEntry re = stab.getRegionEntries().get(entry.getRegionID());
-		HTML htmlWidget = new HTML(view.display(
+		dbService.getCaveAreas(ce.getCaveID(),new AsyncCallback<ArrayList<CaveAreaEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				System.err.println("Problem loading CaveGroupEntry");
+			}
+
+			@Override
+			public void onSuccess(ArrayList<CaveAreaEntry> result) {
+				entry.setCaveAreaList(result);
+				htmlWidget = new HTML(view.display(
 				entry.getOfficialNumber(), 
 				entry.getHistoricName(), 
 				entry.getOptionalHistoricName(), 
@@ -76,6 +91,7 @@ public class CaveDataDisplay extends AbstractDataDisplay {
 				entry.isHasHolesForFixationOfPlasticalItems(),
 				entry.isHasWoodenConstruction()
 			));
+			}});
 		htmlWidget.addStyleName("html-data-display");
 		add(htmlWidget, new MarginData(0, 0, 0, 0));
 		setHeading((se != null ? se.getShortName() : "Site Unknown") + " " + entry.getOfficialNumber() + (!entry.getHistoricName().isEmpty() ? " (" + entry.getHistoricName() + ")" : ""));

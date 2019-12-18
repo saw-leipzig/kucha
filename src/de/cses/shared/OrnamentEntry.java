@@ -21,6 +21,7 @@ public class OrnamentEntry extends AbstractEntry {
 	private String code;
 	private String description;
 	private String remarks;
+	private int iconographyID;
 	//private String annotations; wurde mal geloescht, evtl wird es irgendwann wieder gewollt
 	private String interpretation;
 	private String references;
@@ -53,7 +54,7 @@ public class OrnamentEntry extends AbstractEntry {
 			String interpretation,
 			String references, int ornamentClassID, ArrayList<ImageEntry> images, ArrayList<OrnamentCaveRelation> cavesRelations,
 			ArrayList<OrnamentComponentsEntry> ornamentComponents, ArrayList<InnerSecondaryPatternsEntry> innerSecondaryPatterns,
-			ArrayList<AnnotatedBibliographyEntry> relatedBibliographyList, String modifiedOn) {
+			ArrayList<AnnotatedBibliographyEntry> relatedBibliographyList, String modifiedOn, int iconographyID) {
 		this.ornamentID = ornamentID;
 		this.code = code;
 		this.description = description;
@@ -68,6 +69,7 @@ public class OrnamentEntry extends AbstractEntry {
 		this.ornamentComponents = ornamentComponents;
 		this.relatedBibliographyList = relatedBibliographyList;
 		this.setModifiedOn(modifiedOn);
+		this.iconographyID=iconographyID;
 	}
 
 	public OrnamentEntry(int ornamentID, String code, String description, String remarks, 
@@ -91,6 +93,13 @@ public class OrnamentEntry extends AbstractEntry {
 
 	public void setOrnamentID(int ornamentID) {
 		this.ornamentID = ornamentID;
+	}
+	public int getIconographyID() {
+		return iconographyID;
+	}
+
+	public void setIconographyID(int iconographyID) {
+		this.iconographyID = iconographyID;
 	}
 
 	public String getCode() {

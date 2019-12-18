@@ -52,6 +52,7 @@ import de.cses.client.Util;
 import de.cses.client.depictions.IconographySelector;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DistrictEntry;
+import de.cses.shared.IconographyEntry;
 import de.cses.shared.OrientationEntry;
 import de.cses.shared.OrnamentCaveRelation;
 import de.cses.shared.OrnamentCaveType;
@@ -93,7 +94,12 @@ public class OrnamentCaveRelationEditor {
 
 		// Zweite Ebene der Ornamentik. Eigenschaften, die von der Hoehle abhaengen.
 		// Erstellen aller Listen und Properties
-
+		class WallOrnamentCaveRelationKeyProvider implements ModelKeyProvider<WallOrnamentCaveRelation> {
+			@Override
+			public String getKey(WallOrnamentCaveRelation item) {
+				return Integer.toString(item.getWallOrnamentCaveRelationID());
+			}
+		}
 		caveEntryProps = GWT.create(CaveEntryProperties.class);
 		styleProps = GWT.create(StyleProperties.class);
 		ornamentEntryProps = GWT.create(OrnamentEntryProperties.class);
@@ -106,7 +112,8 @@ public class OrnamentCaveRelationEditor {
 		selectedSimilarOrnaments = new ListStore<OrnamentEntry>(ornamentEntryProps.OrnamentID());
 		selectedRedlatedOrnaments = new ListStore<OrnamentEntry>(ornamentEntryProps.OrnamentID());
 		styleEntryList = new ListStore<StyleEntry>(styleProps.styleID());
-		wallsListStore = new ListStore<WallOrnamentCaveRelation>(wallRelationProps.wallLocationID());
+
+		wallsListStore = new ListStore<WallOrnamentCaveRelation>(new WallOrnamentCaveRelationKeyProvider());
 
 		for (DistrictEntry pe : StaticTables.getInstance().getDistrictEntries().values()) {
 			districtEntryList.add(pe);
@@ -326,6 +333,7 @@ public class OrnamentCaveRelationEditor {
 			Util.doLogging(
 					this.getClass().getName() + " Walls list laenge: " + ornamentCaveRelationEntry.getWalls().size());
 			wallsListStore.clear();
+			List<WallOrnamentCaveRelation> test = ornamentCaveRelationEntry.getWalls();
 			for (WallOrnamentCaveRelation pe : ornamentCaveRelationEntry.getWalls()) {
 				wallsListStore.add(pe);
 				Util.doLogging(this.getClass().getName() + "added wall");
@@ -676,7 +684,7 @@ public class OrnamentCaveRelationEditor {
 
 	interface WallRelationProperties extends PropertyAccess<WallOrnamentCaveRelation> {
 		@Path("wall.wallLocationID")
-		ModelKeyProvider<WallOrnamentCaveRelation> wallLocationID();
+		ModelKeyProvider<WallOrnamentCaveRelation> wallOrnamentCaveRelationID();
 	}
 
 	interface OrientationProperties extends PropertyAccess<OrientationEntry> {

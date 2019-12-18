@@ -14,14 +14,15 @@
 package de.cses.client;
 
 import java.util.ArrayList;
+import java.util.Map;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.ui.Image;
 
-import de.cses.shared.AnnotatedBibliographySearchEntry;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographyEntry;
+import de.cses.shared.AnnotatedBibliographySearchEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.BibKeywordEntry;
 import de.cses.shared.CaveAreaEntry;
@@ -96,6 +97,8 @@ public interface DatabaseService extends RemoteService {
 
 	ArrayList<OrnamentEntry> getOrnaments() throws IllegalArgumentException;
 
+	OrnamentEntry getOrnamentEntry(int OrnamentID) throws IllegalArgumentException;
+
 	ArrayList<OrnamentOfOtherCulturesEntry> getOrnamentsOfOtherCultures() throws IllegalArgumentException;
 
 //	ArrayList<DepictionEntry> getDepictions() throws IllegalArgumentException;
@@ -117,12 +120,18 @@ public interface DatabaseService extends RemoteService {
 	ArrayList<VendorEntry> getVendors() throws IllegalArgumentException;
 
 	ArrayList<StyleEntry> getStyles() throws IllegalArgumentException;
+	
+	Map<Integer,String> getPics(ArrayList<ImageEntry> imgSources,int tnSize, String sessionID) throws IllegalArgumentException; 
+
+	Map<Integer,String> getPicsByImageID(String imgSourceIds,int tnSize, String sessionID) throws IllegalArgumentException; 
 
 	ArrayList<ExpeditionEntry> getExpeditions() throws IllegalArgumentException;
 
 	PublicationEntry getPublicationEntry(int id) throws IllegalArgumentException;
 
 	AuthorEntry getAuthorEntry(int id) throws IllegalArgumentException;
+	
+	boolean iconographyIDisUsed(int iconographyID, int OrnamentID) throws IllegalArgumentException;
 
 	@Deprecated
 	ImageEntry getMasterImageEntryForDepiction(int depictionID) throws IllegalArgumentException;

@@ -270,7 +270,7 @@ public class CaveEntry extends AbstractEntry {
 		caveAreaList.add(newEntry);
 		return newEntry;
 	}
-	
+
 	public void addCaveArea(CaveAreaEntry entry) {
 		caveAreaList.remove(getCaveArea(entry.caveAreaLabel));
 		caveAreaList.add(entry);

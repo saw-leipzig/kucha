@@ -235,7 +235,9 @@ public class JsonServlet extends HttpServlet {
 		} else {
 			caveEntries = connector.getCaves("CaveID IN (" + caveIDStr + ")");			
 		}
-
+		for (CaveEntry ce : caveEntries) {
+			ce.setCaveAreaList(connector.getCaveAreas(ce.getCaveID()));
+		}
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		gsonBuilder.registerTypeAdapter(CaveEntry.class, new CaveEntrySerializer());
 		Gson gson = gsonBuilder.create();		

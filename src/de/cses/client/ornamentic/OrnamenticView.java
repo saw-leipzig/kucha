@@ -43,10 +43,7 @@ import de.cses.shared.OrnamentEntry;
 public class OrnamenticView extends AbstractView {
 	//Klasse zur Darstellung des Bildes fuer die Ornamentik in der Suche
 	
-	interface Resources extends ClientBundle {
-		@Source("ornamentation.png")
-		ImageResource logo();
-	}
+
 
 	interface OrnamentationViewTemplates extends XTemplates {
 //		@XTemplate("<div><center><img src='{imgUri}' height='16px' width='16px'> <b style='font-size: 20px'> {officialNumber} </b></center><label style='font-size:9px'> {officialName} <br> {historicName} </label></div>")
@@ -61,21 +58,22 @@ public class OrnamenticView extends AbstractView {
 
 	private OrnamentEntry oEntry;
 	private OrnamentationViewTemplates ovTemplate;
-	private Resources resources;
+	private SafeUri imageUri;
 
 	/**
 	 * @param text
 	 */
-	public OrnamenticView(OrnamentEntry oe) {
+	
+	public OrnamenticView(OrnamentEntry oe,SafeUri uri) {
 		super();
 		oEntry = oe;
-		resources = GWT.create(Resources.class);
+		imageUri = uri;
 		ovTemplate = GWT.create(OrnamentationViewTemplates.class);
-		SafeUri imageUri = null;
-		if ((oEntry.getImages() != null) && (!oEntry.getImages().isEmpty())) {
-			imageUri = UriUtils.fromString("resource?imageID=" + oEntry.getImages().get(0).getImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
-		}
-		setHTML(ovTemplate.view(imageUri != null ? imageUri : resources.logo().getSafeUri(), "Ornament Code: " + oEntry.getCode()));
+		//SafeUri imageUri = null;
+		//if ((oEntry.getImages() != null) && (!oEntry.getImages().isEmpty())) {
+		//	imageUri = UriUtils.fromString("resource?imageID=" + oEntry.getImages().get(0).getImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
+		//}
+		setHTML(ovTemplate.view(imageUri, "Ornament Code: " + oEntry.getCode()));
 		setPixelSize(110, 110);
 
 		DragSource source = new DragSource(this) {
@@ -84,7 +82,7 @@ public class OrnamenticView extends AbstractView {
 			protected void onDragStart(DndDragStartEvent event) {
 				super.onDragStart(event);
 				event.setData(oEntry);
-				event.getStatusProxy().update(ovTemplate.view(resources.logo().getSafeUri(), "ID = " + oEntry.getOrnamentID()));
+				event.getStatusProxy().update(ovTemplate.view(imageUri, "ID = " + oEntry.getOrnamentID()));
 			}
 			
 		};
@@ -94,8 +92,8 @@ public class OrnamenticView extends AbstractView {
 	 * @see de.cses.client.ui.AbstractView#getEditor()
 	 */
 	@Override
-	protected AbstractEditor getEditor() {
-		return new OrnamenticEditor(oEntry);
+	protected AbstractEditor getEditor(AbstractEntry entry) {
+		return new OrnamenticEditor((OrnamentEntry)entry);
 	}
 
 	/* (non-Javadoc)
@@ -113,7 +111,12 @@ public class OrnamenticView extends AbstractView {
 			oEntry = (OrnamentEntry) entry;
 		}
 	}
+	public void refreshpic( SafeUri uri ) {
+		imageUri= uri;
 
+		setHTML(ovTemplate.view(imageUri, "Ornament Code: " + oEntry.getCode()));
+
+	}
 //	/* (non-Javadoc)
 //	 * @see de.cses.client.ui.EditorListener#updateEntryRequest(de.cses.shared.AbstractEntry)
 //	 */

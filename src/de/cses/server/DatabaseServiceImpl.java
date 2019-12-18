@@ -14,15 +14,16 @@
 package de.cses.server;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Map;
 
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 import de.cses.client.DatabaseService;
 import de.cses.server.mysql.MysqlConnector;
-import de.cses.shared.AnnotatedBibliographySearchEntry;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographyEntry;
+import de.cses.shared.AnnotatedBibliographySearchEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.BibKeywordEntry;
 import de.cses.shared.CaveAreaEntry;
@@ -74,10 +75,25 @@ import de.cses.shared.WallLocationEntry;
  */
 @SuppressWarnings("serial")
 public class DatabaseServiceImpl extends RemoteServiceServlet implements DatabaseService {
-
+	@Override
+	public boolean iconographyIDisUsed(int iconographyID, int OrnamentID) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.iconographyIDisUsed(iconographyID, OrnamentID);
+	}
 	public ArrayList<DistrictEntry> getDistricts() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		ArrayList<DistrictEntry> districts = connector.getDistricts();
+		return districts;
+	}
+
+	public Map<Integer,String> getPics(ArrayList<ImageEntry> imgSources, int tnSize, String sessionID) {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		Map<Integer,String>  districts = connector.getPics(imgSources, tnSize, sessionID);
+		return districts;
+	}
+	public Map<Integer,String> getPicsByImageID(String imgSourceIds, int tnSize, String sessionID) {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		Map<Integer,String>  districts = connector.getPicsByImageID(imgSourceIds, tnSize, sessionID);
 		return districts;
 	}
 	public ArrayList<AnnotatedBibliographyEntry> getAnnotatedBiblography() throws IllegalArgumentException {
@@ -418,6 +434,10 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public ArrayList<OrnamentEntry> getOrnamentsWHERE(String sqlWhere) {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getOrnamentsWhere(sqlWhere);
+	}
+	public OrnamentEntry getOrnamentEntry(int OrnamentId) {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getOrnamentEntry(OrnamentId);
 	}
 	
 

@@ -14,17 +14,22 @@
 package de.cses.client.depictions;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.safehtml.shared.SafeUri;
+import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.Util;
 import de.cses.client.ui.AbstractSearchController;
 import de.cses.client.ui.EditorListener;
+import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DepictionSearchEntry;
@@ -48,6 +53,8 @@ public class DepictionSearchController extends AbstractSearchController {
 	/* (non-Javadoc)
 	 * @see de.cses.client.ui.AbstractSearchController#invokeSearch()
 	 */
+	
+
 	@Override
 	public void invokeSearch() {
 		DepictionSearchEntry searchEntry = (DepictionSearchEntry) getFilter().getSearchEntry();
@@ -62,13 +69,41 @@ public class DepictionSearchController extends AbstractSearchController {
 
 			@Override
 			public void onSuccess(ArrayList<DepictionEntry> result) {
+				String masterImageIDs = "";
+				//Info.display("Result", "Größe = "+Integer.toString(result.size()));
+				int count = 0;
+				searchEntry.setEntriesShowed(searchEntry.getMaxentries());
 				getResultView().reset();
-				for (DepictionEntry de : result) {
-					Util.doLogging("adding to view DepictionID = " + de.getDepictionID());
-					getResultView().addResult(new DepictionView(de));
-					Util.doLogging("done");
+				getResultView().setSearchEntry(searchEntry);
+				if (result.size()==searchEntry.getMaxentries()) {
+					getResultView().setSearchbuttonVisible();
+				}
+				else {
+					getResultView().setSearchbuttonHide();
 				}
 				getResultView().setSearchEnabled(true);
+				int x = result.size();
+				for (DepictionEntry de : result){
+					count++;
+					getResultView().addResult(new DepictionView(de,UriUtils.fromTrustedString("icons/load_active.png")));
+					if (masterImageIDs == "") {
+						masterImageIDs = Integer.toString(de.getMasterImageID());
+					}
+					else {
+						masterImageIDs = masterImageIDs + ","+Integer.toString(de.getMasterImageID());
+					}
+//					Util.doLogging("Lade Depiction: "+de.getShortName());
+					if (count==20 ){
+						getResultView().getPics(masterImageIDs, 120, UserLogin.getInstance().getSessionID()) ;
+						masterImageIDs="";
+						count=0;
+					}
+					
+				}
+				getResultView().getPics(masterImageIDs, 120, UserLogin.getInstance().getSessionID()) ;
+				
+				getResultView().setSearchEnabled(true);
+				
 			}
 		});
 	}
@@ -85,8 +120,21 @@ public class DepictionSearchController extends AbstractSearchController {
 			@Override
 			public void closeRequest(AbstractEntry entry) {
 				depictionEditorPanel.hide();
-				if (entry != null) {
-					getResultView().addResult(new DepictionView((DepictionEntry)entry));
+				if (entry != null) {	
+					dbService.getPicsByImageID(Integer.toString(((DepictionEntry)entry).getMasterImageID()), 120, UserLogin.getInstance().getSessionID(), new AsyncCallback<Map<Integer,String>>() {
+				
+						@Override
+						public void onFailure(Throwable caught) {				
+							Info.display("getPics", "got bad response");
+						}
+						
+						@Override
+						public void onSuccess(Map<Integer,String> imgdic) {
+							Info.display("getPics", "got good response");
+							
+							getResultView().addResult(new DepictionView((DepictionEntry)entry, UriUtils.fromTrustedString(imgdic.get(((DepictionEntry)entry).getMasterImageID()))));
+						}
+					});
 				}
 			}
 

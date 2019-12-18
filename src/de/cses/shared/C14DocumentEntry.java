@@ -21,15 +21,17 @@ public class C14DocumentEntry extends AbstractEntry {
 	
 	private String c14DocumentName;
 	private String c14OriginalDocumentName;
+	private int caveID;
 
 	/**
 	 * 
 	 * @param c14DocumentName
 	 * @param c14OriginalDocumentName
 	 */
-	public C14DocumentEntry(String c14DocumentName, String c14OriginalDocumentName) {
+	public C14DocumentEntry(String c14DocumentName, String c14OriginalDocumentName, int caveID) {
 		this.c14DocumentName = c14DocumentName;
 		this.c14OriginalDocumentName = c14OriginalDocumentName;
+		this.caveID = caveID;
 	}
 
 	/**
@@ -50,7 +52,13 @@ public class C14DocumentEntry extends AbstractEntry {
 	public String getC14DocumentName() {
 		return c14DocumentName;
 	}
+	public int getCaveID() {
+		return caveID;
+	}
 
+	public void setCaveID(int caveID) {
+		this.caveID = caveID;
+	}
 	public void setC14DocumentName(String c14DocumentName) {
 		this.c14DocumentName = c14DocumentName;
 	}

@@ -14,20 +14,23 @@
 package de.cses.shared;
 
 import java.util.ArrayList;
+import java.text.Normalizer;
 
 public class IconographyEntry extends AbstractEntry {
 	
 	private int iconographyID, parentID;
 	private String text;
+	private String search;
 	private ArrayList<IconographyEntry> children;
 	
 	public IconographyEntry() { }
 
-	public IconographyEntry(int iconographyID, int parentID, String text) {
+	public IconographyEntry(int iconographyID, int parentID, String text, String search) {
 		super();
 		this.iconographyID = iconographyID;
 		this.parentID = parentID;
 		this.text = text;
+		this.search = search;
 	}
 
 	public int getIconographyID() {
@@ -53,6 +56,13 @@ public class IconographyEntry extends AbstractEntry {
 	public void setText(String text) {
 		this.text = text;
 	}
+	public String getSearch() {
+		return search;
+	}	
+
+	public void setSearch(String search) {
+		this.search = search;
+	}
 
 	public ArrayList<IconographyEntry> getChildren() {
 		return children;
@@ -68,6 +78,15 @@ public class IconographyEntry extends AbstractEntry {
 	@Override
 	public String getUniqueID() {
 		return "IconographyEntry-" + iconographyID;
+	}
+	
+	public Boolean equals(IconographyEntry entry) {
+		if (iconographyID == entry.getIconographyID()) {
+			return true;
+		}
+		else{
+			return false;
+		}
 	}
 
 }

@@ -2,7 +2,7 @@
 <project default="war" name="KUCHA" xmlns:if="ant:if">
 	<!-- Configure path to GWT SDK -->
 	<!-- <property name="GWT_HOME" value="/Users/alingnau/.p2/pool/plugins/com.gwtplugins.gwt.eclipse.sdkbundle.gwt28_2.8.0.201803211650/gwt-2.8.2" /> -->
-	<property name="GWT_HOME" value="/Applications/Eclipse.app/Contents/Eclipse/plugins/com.gwtplugins.gwt.eclipse.sdkbundle.gwt28_2.8.0.201808130607/gwt-2.8.2/" />
+	<property name="GWT_HOME" value="/home/erik/.p2/pool/plugins/com.gwtplugins.gwt.eclipse.sdkbundle.gwt28_2.8.0.201710131939/gwt-2.8.1" />
 	
 	<!-- enable the following property for devmode debugging in an IDE; for Eclipse create an "Remote Java Application" launcher conneting to port 8000 -->
 	<property name="enable.debug.port" value="false" />
@@ -44,7 +44,7 @@
 	<target name="deploy" depends="war">
 		<available file="kis.war" property="war_created" />
 		<fail unless="war_created">WAR file must be created first!</fail>
-		<scp file="kis.war" todir="${saw_username}@talentix.saw-leipzig.de:/var/lib/tomcat8/webapps/kistest.war" password="${saw_password}" port="22104"/>
+		<scp file="kis.war" todir="radische@talentix.saw-leipzig.de:/var/lib/tomcat8/webapps/kistest.war" password="${saw_password}" port="22104"/>
   </target>
 	<target name="gwtc" description="GWT compile to JavaScript (production mode)">
 		<java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler">

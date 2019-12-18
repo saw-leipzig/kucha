@@ -14,12 +14,14 @@
 package de.cses.client;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Image;
 
-import de.cses.shared.AnnotatedBibliographySearchEntry;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographyEntry;
+import de.cses.shared.AnnotatedBibliographySearchEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.BibKeywordEntry;
 import de.cses.shared.CaveAreaEntry;
@@ -80,6 +82,10 @@ public interface DatabaseServiceAsync {
 
 	void getPhotographer(AsyncCallback<ArrayList<PhotographerEntry>> callback) throws IllegalArgumentException;
 
+	void getPics(ArrayList<ImageEntry> imgSources, int tnSize, String sessionID, AsyncCallback <Map<Integer,String>> callback) throws IllegalArgumentException;
+
+	void getPicsByImageID(String imgSourceIds, int tnSize, String sessionID, AsyncCallback <Map<Integer,String>> callback) throws IllegalArgumentException;
+
 	void getCaves(AsyncCallback<ArrayList<CaveEntry>> callback) throws IllegalArgumentException;
 
 	void getCaves(String sqlWhere, AsyncCallback<ArrayList<CaveEntry>> callback) throws IllegalArgumentException;
@@ -87,6 +93,8 @@ public interface DatabaseServiceAsync {
 	void getCavesbyDistrictID(int DistrictID, AsyncCallback<ArrayList<CaveEntry>> callback) throws IllegalArgumentException;
 
 	void getOrnaments(AsyncCallback<ArrayList<OrnamentEntry>> callback) throws IllegalArgumentException;
+
+	void getOrnamentEntry(int OrnamentID, AsyncCallback<OrnamentEntry> callback) throws IllegalArgumentException;
 
 	void getAnnotatedBiblographybyID(int bibid, AsyncCallback<AnnotatedBibliographyEntry> callback) throws IllegalArgumentException;
 
@@ -137,6 +145,8 @@ public interface DatabaseServiceAsync {
 	void getStyles(AsyncCallback<ArrayList<StyleEntry>> callback) throws IllegalArgumentException;
 
 	void getExpeditions(AsyncCallback<ArrayList<ExpeditionEntry>> asyncCallback) throws IllegalArgumentException;
+
+	void iconographyIDisUsed(int iconographyID, int OrnamentID, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
 	void getPublicationEntry(int id, AsyncCallback<PublicationEntry> asyncCallback) throws IllegalArgumentException;
 
@@ -326,7 +336,7 @@ public interface DatabaseServiceAsync {
 	void searchOrnaments(OrnamenticSearchEntry searchEntry, AsyncCallback<ArrayList<OrnamentEntry>> asyncCallback) throws IllegalArgumentException;
 
 	void insertIconographyEntry(IconographyEntry iconographyEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
-
+	
 	void updateIconographyEntry(IconographyEntry iconographyEntryToEdit, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
 	void getUsers(AsyncCallback<ArrayList<UserEntry>> asyncCallback) throws IllegalArgumentException;

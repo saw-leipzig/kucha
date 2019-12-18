@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -50,6 +51,10 @@ public class ResourceDownloadServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String sessionID = request.getParameter("sessionID");
+		//System.out.println("doGetParameters: ");
+		//for (String key : request.getParameterMap().keySet()) {
+		//	System.out.println("   " +key+ " - "+request.getParameter(key));
+		//}
 		if (request.getParameter("imageID") != null) {
 			String imageID = request.getParameter("imageID");
 			ImageEntry imgEntry = connector.getImageEntry(Integer.parseInt(imageID));
@@ -63,21 +68,21 @@ public class ResourceDownloadServlet extends HttpServlet {
 				case UserEntry.ASSOCIATED:
 					authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_PUBLIC);
 					authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_COPYRIGHT);
-					System.err.println("acess Level PUBLIC and COPYRIGHT");
+					//System.err.println("acess Level PUBLIC and COPYRIGHT");
 					break; 
 				case UserEntry.FULL:
 				case UserEntry.ADMIN:
 					authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_PUBLIC);
 					authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_COPYRIGHT);
 					authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_PRIVATE);
-					System.err.println("acess Level PUBLIC, COPYRIGHT and PRIVATE");
+					//System.err.println("acess Level PUBLIC, COPYRIGHT and PRIVATE");
 					break;
 				default:
 					authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_PUBLIC);
-					System.err.println("acess Level PUBLIC");
+					//System.err.println("acess Level PUBLIC");
 					break;
 			}
-			System.err.println("sessionID=" + sessionID + ", userAccessLevel=" + connector.getAccessLevelForSessionID(sessionID) + ", ImageEntry accessLevel=" + imgEntry.getAccessLevel());
+			//System.err.println("sessionID=" + sessionID + ", userAccessLevel=" + connector.getAccessLevelForSessionID(sessionID) + ", ImageEntry accessLevel=" + imgEntry.getAccessLevel());
 			
 			if (imgEntry!=null && authorizedAccessLevel.contains(imgEntry.getAccessLevel())) {
 				filename = imgEntry.getFilename();
@@ -101,12 +106,14 @@ public class ResourceDownloadServlet extends HttpServlet {
 						"http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/max/0/default.png"
 					);
 			}
+//			System.out.println("Öffne Stream");
 			InputStream in = imageURL.openStream();
 			response.setContentType("image/png");
 			byte buffer[] = new byte[4096];
 			int bytesRead = 0;
 			while ((bytesRead = in.read(buffer)) > 0) {
 				out.write(buffer, 0, bytesRead);
+//				System.out.println("ImageID: "+imageID+"Bytes Übertragen: "+bytesRead);
 			}
 			in.close();
 			out.close();

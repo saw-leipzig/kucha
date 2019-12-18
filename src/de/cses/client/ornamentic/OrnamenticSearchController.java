@@ -14,16 +14,23 @@
 package de.cses.client.ornamentic;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.resources.client.ClientBundle.Source;
+import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.Util;
 import de.cses.client.ui.AbstractSearchController;
 import de.cses.client.ui.EditorListener;
+import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamenticSearchEntry;
@@ -35,7 +42,11 @@ import de.cses.shared.OrnamenticSearchEntry;
 public class OrnamenticSearchController extends AbstractSearchController {
 	
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
-
+	interface Resources extends ClientBundle {
+		@Source("ornamentation.png")
+		ImageResource logo();
+	}
+	Resources resources;
 	/**
 	 * @param searchControllerTitle
 	 * @param resultView
@@ -50,7 +61,7 @@ public class OrnamenticSearchController extends AbstractSearchController {
 	@Override
 	public void invokeSearch() {
 		OrnamenticSearchEntry searchEntry = (OrnamenticSearchEntry) getFilter().getSearchEntry();
-		
+		resources = GWT.create(Resources.class);
 		dbService.searchOrnaments(searchEntry, new AsyncCallback<ArrayList<OrnamentEntry>>() {
 
 			@Override
@@ -62,12 +73,37 @@ public class OrnamenticSearchController extends AbstractSearchController {
 
 			@Override
 			public void onSuccess(ArrayList<OrnamentEntry> result) {
-				
+				String masterImageIDs = "";
+				int count = 0;
+				searchEntry.setEntriesShowed(searchEntry.getMaxentries());
 				getResultView().reset();
-				for (OrnamentEntry de : result) {
-					getResultView().addResult(new OrnamenticView(de));
+				if (result.size()==searchEntry.getMaxentries()) {
+					getResultView().setSearchbuttonVisible();
 				}
-				getResultView().setSearchEnabled(true);
+				else {
+					getResultView().setSearchbuttonHide();
+				}
+			int x = result.size();
+			getResultView().setSearchEnabled(true);
+			for (OrnamentEntry oe : result) {
+				if ((oe.getImages() != null) && (!oe.getImages().isEmpty())) {
+				count++;
+				if (masterImageIDs == "") {
+					masterImageIDs = Integer.toString(oe.getImages().get(0).getImageID());
+				}
+				else {
+					masterImageIDs = masterImageIDs + ","+Integer.toString(oe.getImages().get(0).getImageID());
+				}
+				}
+				getResultView().addResult(new OrnamenticView(oe,resources.logo().getSafeUri()));
+				if (count==20 ){
+					getResultView().getPics(masterImageIDs, 80, UserLogin.getInstance().getSessionID()) ;
+					masterImageIDs="";
+					count=0;
+				}
+
+			}
+			getResultView().getPics(masterImageIDs, 80, UserLogin.getInstance().getSessionID()) ;
 			}
 		});
 	}
@@ -85,12 +121,22 @@ public class OrnamenticSearchController extends AbstractSearchController {
 			public void closeRequest(AbstractEntry entry) {
 				ornamenticEditorPanel.hide();
 				if (entry != null) {
-					getResultView().addResult(new OrnamenticView((OrnamentEntry)entry));
+					getResultView().addResult(new OrnamenticView((OrnamentEntry)entry,resources.logo().getSafeUri()));
+					dbService.getPicsByImageID(Integer.toString(((OrnamentEntry)entry).getImages().get(0).getImageID()), 80, UserLogin.getInstance().getSessionID(), new AsyncCallback<Map<Integer,String>>() {
+						
+						@Override
+						public void onFailure(Throwable caught) {				
+							Util.doLogging(caught.getMessage());
+						}
+						
+						@Override
+						public void onSuccess(Map<Integer,String> imgdic) {
+							getResultView().addResult(new OrnamenticView((OrnamentEntry)entry, UriUtils.fromTrustedString(imgdic.get(((OrnamentEntry)entry).getImages().get(0).getImageID()))));
+						}
+
+						});
 				}
 			}
-
-//			@Override
-//			public void updateEntryRequest(AbstractEntry updatedEntry) { }
 		});
 		ornamenticEditorPanel.add(ornamenticEditor);
 		ornamenticEditorPanel.setGlassEnabled(true);
