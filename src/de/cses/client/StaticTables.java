@@ -34,6 +34,7 @@ import de.cses.shared.ModeOfRepresentationEntry;
 import de.cses.shared.OrientationEntry;
 import de.cses.shared.OrnamentFunctionEntry;
 import de.cses.shared.OrnamentPositionEntry;
+import de.cses.shared.PositionEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.PublicationTypeEntry;
 import de.cses.shared.RegionEntry;
@@ -70,6 +71,7 @@ public class StaticTables {
 	protected HashMap<Integer, OrnamentPositionEntry> ornamentPositionMap;
 	protected HashMap<Integer, OrnamentFunctionEntry> ornamentFunctionMap;
 	protected HashMap<Integer, CurrentLocationEntry> currentLocationMap;
+	protected HashMap<Integer, PositionEntry> PositionMap;
 	protected HashMap<Integer, LocationEntry> locationMap;
 	protected HashMap<Integer, VendorEntry> vendorMap;
 	protected HashMap<Integer, PublicationTypeEntry> publicationTypeMap;
@@ -124,6 +126,7 @@ public class StaticTables {
 		loadCaves();
 		loadOrientation();
 		loadWallEntries();
+		loadPositionTable();
 	}
 
 	private void listLoaded() {
@@ -435,6 +438,25 @@ public class StaticTables {
 			public void onSuccess(ArrayList<OrnamentPositionEntry> result) {
 				for (OrnamentPositionEntry ope : result) {
 					ornamentPositionMap.put(ope.getOrnamentPositionID(), ope);
+				}
+				listLoaded();
+			}
+		});
+	}
+	
+	private void loadPositionTable() {
+		PositionMap = new HashMap<Integer, PositionEntry>();
+		dbService.getPositions(new AsyncCallback<ArrayList<PositionEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				listLoaded();
+			}
+
+			@Override
+			public void onSuccess(ArrayList<PositionEntry> result) {
+				for (PositionEntry ope : result) {
+					PositionMap.put(ope.getOrnamentPositionID(), ope);
 				}
 				listLoaded();
 			}

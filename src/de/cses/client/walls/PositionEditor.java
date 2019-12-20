@@ -86,7 +86,7 @@ public class PositionEditor {
 		
 		PositionEntryLS = new ListStore<PositionEntry>(positionProps.PositionID());
 	
-		for (PositionEntry ope : StaticTables.getInstance().getOrnamentPositionEntries().values()) {
+		for (PositionEntry ope : StaticTables.getInstance().getPositionEntries().values()) {
 			PositionEntryLS.add(ope);
 		}
 
