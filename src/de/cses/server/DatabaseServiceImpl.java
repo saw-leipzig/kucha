@@ -16,7 +16,6 @@ package de.cses.server;
 import java.util.ArrayList;
 import java.util.Map;
 
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 import de.cses.client.DatabaseService;
@@ -69,6 +68,7 @@ import de.cses.shared.UserEntry;
 import de.cses.shared.VendorEntry;
 import de.cses.shared.WallEntry;
 import de.cses.shared.WallLocationEntry;
+import de.cses.shared.WallTreeEntry;
 
 /**
  * The server-side implementation of the RPC service.
@@ -227,6 +227,11 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		return connector.getIconography(0); // root index =0 so we load them all
 	}
 
+	@Override
+	public ArrayList<WallTreeEntry> getWallTree() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getWallTree(0); // root index =0 so we load them all
+	}
 
 
 	@Override

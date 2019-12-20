@@ -1,4 +1,4 @@
-package de.cses.client.ui;
+package de.cses.client.walls;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,7 +16,7 @@ import de.cses.shared.WallTreeEntry;
 
 
 
-public class WalltTree {
+public class WallTree {
 	public TreeStore<WallTreeEntry> wallTreeStore;
 	public Tree<WallTreeEntry, String> wallTree;
 	public Map<String, WallTreeEntry> selectedwallMap;
@@ -44,7 +44,7 @@ public class WalltTree {
 			return "name";
 		}
 	}
-	public WalltTree(Collection<WallTreeEntry> elements, ArrayList<WallTreeEntry> l, boolean dropunselected) {
+	public WallTree(Collection<WallTreeEntry> elements, ArrayList<WallTreeEntry> l, boolean dropunselected) {
 		setWallTreeStore(elements,l,dropunselected);
 		buildTree(false);
 	}

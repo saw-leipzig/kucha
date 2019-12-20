@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Image;
 
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographyEntry;
@@ -67,6 +66,7 @@ import de.cses.shared.UserEntry;
 import de.cses.shared.VendorEntry;
 import de.cses.shared.WallEntry;
 import de.cses.shared.WallLocationEntry;
+import de.cses.shared.WallTreeEntry;
 
 public interface DatabaseServiceAsync {
 
@@ -132,7 +132,9 @@ public interface DatabaseServiceAsync {
 //	void getDepictions(AsyncCallback<ArrayList<DepictionEntry>> callback) throws IllegalArgumentException;
 
 	void getIconography(AsyncCallback<ArrayList<IconographyEntry>> callback) throws IllegalArgumentException;
-
+	
+	void getWallTree(AsyncCallback<ArrayList<WallTreeEntry>> callback) throws IllegalArgumentException;
+	
 
 	void getCaveTypebyID(int caveTypeID, AsyncCallback<CaveTypeEntry> callback) throws IllegalArgumentException;
 

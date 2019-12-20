@@ -77,6 +77,7 @@ import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.OrnamentPositionEntry;
 import de.cses.shared.OrnamenticSearchEntry;
 import de.cses.shared.PhotographerEntry;
+import de.cses.shared.PositionEntry;
 import de.cses.shared.PreservationAttributeEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.PublicationEntry;
@@ -91,6 +92,7 @@ import de.cses.shared.VendorEntry;
 import de.cses.shared.WallEntry;
 import de.cses.shared.WallLocationEntry;
 import de.cses.shared.WallOrnamentCaveRelation;
+import de.cses.shared.WallTreeEntry;
 import sun.misc.BASE64Encoder;
 
 /**
@@ -1303,7 +1305,7 @@ public class MysqlConnector implements IsSerializable {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Ornaments");
 			while (rs.next()) {
-				System.out.println("Durchlauf"+Integer.toString(rs.getInt("OrnamentID")));
+				//System.out.println("Durchlauf"+Integer.toString(rs.getInt("OrnamentID")));
 				results.add(new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
 						//rs.getString("Annotation"),
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
@@ -1820,6 +1822,62 @@ public class MysqlConnector implements IsSerializable {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Iconography WHERE ParentID " + where + " ORDER BY Text Asc");
 			while (rs.next()) {
 				results.add(new IconographyEntry(rs.getInt("IconographyID"), rs.getInt("ParentID"), rs.getString("Text"), rs.getString("search")));
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+			return null;
+		}
+		if (dologging){
+		long end = System.currentTimeMillis();
+		long diff = (end-start);
+		if (diff>100){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getIconographyEntries brauchte "+diff + " Millisekunden.");;}}
+		return results;
+	}
+	public ArrayList<WallTreeEntry> getWallTree(int rootIndex) {
+		long start = System.currentTimeMillis();
+		if (dologgingbegin){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getIconography wurde ausgelöst.");;
+		}
+		ArrayList<WallTreeEntry> root = getWallTreeEntries(rootIndex);
+
+		for (WallTreeEntry item : root) {
+			processWallEntryTree(item);
+		}
+		if (dologging){
+		long end = System.currentTimeMillis();
+		long diff = (end-start);
+		if (diff>100){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getIconography brauchte "+diff + " Millisekunden.");;}}
+		return root;
+	}
+	protected void processWallEntryTree(WallTreeEntry parent) {
+		ArrayList<WallTreeEntry> children = getWallTreeEntries(parent.getWallLocationID());
+		if (children != null) {
+			parent.setChildren(children);
+			for (WallTreeEntry child : children) {
+				processWallEntryTree(child);
+			}
+		}
+	}
+	protected ArrayList<WallTreeEntry> getWallTreeEntries(int parentID) {
+		long start = System.currentTimeMillis();
+		if (dologgingbegin){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getIconographyEntries wurde ausgelöst.");;
+		}
+		ArrayList<WallTreeEntry> results = new ArrayList<WallTreeEntry>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		String where = (parentID == 0) ? "IS NULL" : "= " + parentID;
+//		System.out.println("SELECT * FROM Iconography WHERE ParentID " + where + " ORDER BY Text Asc");
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM WallLocationsTree WHERE ParentID " + where + " ORDER BY Text Asc");
+			while (rs.next()) {
+				results.add(new WallTreeEntry(rs.getInt("WallLocationID"), rs.getInt("ParentID"), rs.getString("Text"), rs.getString("search")));
 			}
 			rs.close();
 			stmt.close();
@@ -3264,7 +3322,35 @@ public class MysqlConnector implements IsSerializable {
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getOrnamentPosition brauchte "+diff + " Millisekunden.");;}}
 		return positions;
 	}
-
+	public ArrayList<PositionEntry> getPosition() {
+		long start = System.currentTimeMillis();
+		if (dologgingbegin){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getOrnamentPosition wurde ausgelöst.");;
+		}
+		PositionEntry result = null;
+		ArrayList<PositionEntry> positions = new ArrayList<PositionEntry>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Position");
+			while (rs.next()) {
+				result = new PositionEntry(rs.getInt("PositionID"), rs.getString("Name"));
+				positions.add(result);
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+		}
+		if (dologging){
+		long end = System.currentTimeMillis();
+		long diff = (end-start);
+		if (diff>100){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getOrnamentPosition brauchte "+diff + " Millisekunden.");;}}
+		return positions;
+	}
 	public ArrayList<OrnamentFunctionEntry> getOrnamentFunction() {
 		long start = System.currentTimeMillis();
 		if (dologgingbegin){

@@ -95,6 +95,7 @@ import de.cses.client.ui.AbstractEditor;
 import de.cses.client.ui.TextElement;
 import de.cses.client.user.UserLogin;
 import de.cses.client.walls.WallSelector;
+import de.cses.client.walls.WallTree;
 import de.cses.client.walls.Walls;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.CaveEntry;
@@ -108,6 +109,7 @@ import de.cses.shared.PreservationAttributeEntry;
 import de.cses.shared.StyleEntry;
 import de.cses.shared.VendorEntry;
 import de.cses.shared.WallEntry;
+import de.cses.shared.WallTreeEntry;
 import de.cses.shared.comparator.CaveEntryComparator;
 
 public class DepictionEditor extends AbstractEditor {
@@ -424,6 +426,9 @@ public class DepictionEditor extends AbstractEditor {
 					caveSelectionCB.setValue(ce);
 					wallSelectorPanel.setCave(ce);
 					wallSelectorPanel.selectWall(correspondingDepictionEntry.getWallID());
+					for (WallEntry we : ce.getWallList()) {
+						Util.doLogging(Integer.toString(we.getWallLocationID()));
+					}
 				}
 			}
 		});
@@ -479,7 +484,7 @@ public class DepictionEditor extends AbstractEditor {
 		imageEntryLS.clear();
 		for (ImageEntry ie : correspondingDepictionEntry.getRelatedImages()) {
 
-			Util.doLogging("adding "+Integer.toString((ie.getImageID()))+"to imageEntryLS");
+			//Util.doLogging("adding "+Integer.toString((ie.getImageID()))+"to imageEntryLS");
 			imageEntryLS.add(ie);
 		}
 	}
@@ -542,7 +547,7 @@ public class DepictionEditor extends AbstractEditor {
 
 			public SafeHtml render(ImageEntry item) {
 				SafeUri imageUri;
-				Util.doLogging( item.getFilename()+" / "+Integer.toString(imgdic.size()));
+				//Util.doLogging( item.getFilename()+" / "+Integer.toString(imgdic.size()));
 				//SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=300" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 				imageUri = UriUtils.fromString("icons/load_active.png");	
 				if (imgdic.containsKey(item.getImageID())){
@@ -1063,7 +1068,7 @@ public class DepictionEditor extends AbstractEditor {
 		wallEditorTB.setToolTip(Util.createToolTip("set position on wall"));
 		
 //		TextButton wallEditorButton = new TextButton("set position on wall");
-		wallEditor = new Walls(1, false);
+		wallEditor = new Walls(1, true);
 		wallEditorTB.addSelectHandler(new SelectHandler() {
 
 			@Override
@@ -1076,6 +1081,8 @@ public class DepictionEditor extends AbstractEditor {
 				wallEditorDialog.center();
 			}
 		});
+		ArrayList<WallTreeEntry> test= new ArrayList<WallTreeEntry>();
+		WallTree wallTree = new WallTree(StaticTables.getInstance().getWallTreeEntries().values(), test, false);
 		/**
 		 * the wall visualisation will be implemented at a later time
 		 */
@@ -1088,7 +1095,7 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		wallSelectorFP.add(wallSelectorPanel);
-
+		//wallSelectorFP.add(wallEditorTB);
 		FramedPanel positionNoteFP = new FramedPanel();
 		positionNoteFP.setHeading("Position Notes");
 		TextArea positionNotesTA = new TextArea();
@@ -1105,6 +1112,7 @@ public class DepictionEditor extends AbstractEditor {
 		VerticalLayoutContainer basicsRightVLC = new VerticalLayoutContainer();
 		basicsRightVLC.add(wallSelectorFP, new VerticalLayoutData(1.0, .85));
 		basicsRightVLC.add(positionNoteFP, new VerticalLayoutData(1.0, .15));
+		basicsRightVLC.add(wallTree.wallTree, new VerticalLayoutData(1.0, .50));
 
 		HorizontalLayoutContainer basicsTabHLC = new HorizontalLayoutContainer();
 		basicsTabHLC.add(basicsLeftVLC, new HorizontalLayoutData(.4, 1.0));

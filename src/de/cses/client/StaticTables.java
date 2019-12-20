@@ -41,6 +41,7 @@ import de.cses.shared.SiteEntry;
 import de.cses.shared.StyleEntry;
 import de.cses.shared.VendorEntry;
 import de.cses.shared.WallLocationEntry;
+import de.cses.shared.WallTreeEntry;
 
 /**
  * @author alingnau
@@ -62,6 +63,7 @@ public class StaticTables {
 	protected HashMap<Integer, ExpeditionEntry> expeditionEntryMap;
 	protected HashMap<Integer, StyleEntry> styleEntryMap;
 	protected HashMap<Integer, IconographyEntry> iconographyEntryMap;
+	protected HashMap<Integer, WallTreeEntry> wallEntryMap;
 	protected HashMap<Integer, IconographyEntry> iconographyForOrnamenticEntryMap;
 	protected HashMap<Integer, ModeOfRepresentationEntry> modesOfRepresentationEntryMap;
 	protected HashMap<Integer, WallLocationEntry> wallLocationEntryMap;
@@ -121,6 +123,7 @@ public class StaticTables {
 		loadBiliography();
 		loadCaves();
 		loadOrientation();
+		loadWallEntries();
 	}
 
 	private void listLoaded() {
@@ -338,6 +341,24 @@ public class StaticTables {
 			public void onSuccess(ArrayList<IconographyEntry> result) {
 				for (IconographyEntry ie : result) {
 					iconographyEntryMap.put(ie.getIconographyID(), ie);
+				}
+				listLoaded();
+			}
+		});
+	}
+	private void loadWallEntries() {
+		wallEntryMap = new HashMap<Integer, WallTreeEntry>();
+		dbService.getWallTree(new AsyncCallback<ArrayList<WallTreeEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				listLoaded();
+			}
+
+			@Override
+			public void onSuccess(ArrayList<WallTreeEntry> result) {
+				for (WallTreeEntry ie : result) {
+					wallEntryMap.put(ie.getWallLocationID(), ie);
 				}
 				listLoaded();
 			}
@@ -611,6 +632,10 @@ public class StaticTables {
 
 	public Map<Integer, IconographyEntry> getIconographyEntries() {
 		return iconographyEntryMap;
+	}
+	
+	public Map<Integer, WallTreeEntry> getWallTreeEntries() {
+		return wallEntryMap;
 	}
 
 	public Map<Integer, IconographyEntry> getIconographyForOrnamenticEntries() {
