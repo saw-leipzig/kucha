@@ -68,7 +68,7 @@ public class PositionEditor {
 	private ListStore<PositionEntry> PositionEntryLS;
 	private ComboBox<PositionEntry> PositionComboBox;
 	private PositionProperties positionProps;
-	private AbstractEntry Entry;
+	private CaveEntry entry;
 	int init= 0;
 	PopupPanel popup = new PopupPanel();
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
@@ -81,7 +81,8 @@ public class PositionEditor {
 
 	private WallSelector wallselector;
 
-	public PositionEditor() {
+	public PositionEditor(CaveEntry entry) {
+		this.entry=entry;
 		positionProps = GWT.create(PositionProperties.class);
 		
 		PositionEntryLS = new ListStore<PositionEntry>(positionProps.PositionID());
@@ -94,33 +95,29 @@ public class PositionEditor {
 
 	private FramedPanel createForm() {
 		
-		Util.doLogging("WallOrnamentCaveRelationEditor.createForm()");
 		wallselector = new WallSelector(new SelectionHandler<WallEntry>() {
 			
 			@Override
 			public void onSelection(SelectionEvent<WallEntry> event) {
-				ornamentPositionComboBox.clear();
-				ornamentfunctionComboBox.clear();
-				ornamentPositionComboBox.disable();
-				ornamentfunctionComboBox.disable();
-				ornamentPositionEntryLS.clear();
-				ornamentFunctionEntryLS.clear();
-				filterPositionbyCaveArea();
-				ornamentPositionComboBox.setEnabled(true);
+				PositionComboBox.clear();
+				PositionComboBox.disable();
+				PositionEntryLS.clear();
+				//filterPositionbyCaveArea();
+				PositionComboBox.setEnabled(true);
 			}
 		});
-		wallselector.setCave(caveEntry);
+		wallselector.setCave(entry);
 
 		FramedPanel selectWallFP = new FramedPanel();
 		selectWallFP.setHeading("Select Wall");
 		selectWallFP.add(wallselector);
 	
 
-		ornamentPositionComboBox = new ComboBox<OrnamentPositionEntry>(ornamentPositionEntryLS, ornamentPositionProps.name(),
-				new AbstractSafeHtmlRenderer<OrnamentPositionEntry>() {
+		PositionComboBox = new ComboBox<PositionEntry>(PositionEntryLS, positionProps.name(),
+				new AbstractSafeHtmlRenderer<PositionEntry>() {
 
 					@Override
-					public SafeHtml render(OrnamentPositionEntry item) {
+					public SafeHtml render(PositionEntry item) {
 						final OrnamentPositionViewTemplates pvTemplates = GWT.create(OrnamentPositionViewTemplates.class);
 						return pvTemplates.ornamentPosition(item.getName());
 					}

@@ -55,6 +55,7 @@ import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.OrnamentPositionEntry;
 import de.cses.shared.OrnamenticSearchEntry;
 import de.cses.shared.PhotographerEntry;
+import de.cses.shared.PositionEntry;
 import de.cses.shared.PreservationAttributeEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.PublicationEntry;
@@ -426,6 +427,12 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		return connector.getOrnamentPosition();
 	}
 
+	public ArrayList<PositionEntry> getPositions() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getPosition();
+	}
+
+	
 	public ArrayList<OrnamentCaveType> getOrnamentCaveTypes() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getOrnamentCaveTypes();

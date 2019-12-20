@@ -53,6 +53,7 @@ import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.OrnamentPositionEntry;
 import de.cses.shared.OrnamenticSearchEntry;
 import de.cses.shared.PhotographerEntry;
+import de.cses.shared.PositionEntry;
 import de.cses.shared.PreservationAttributeEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.PublicationEntry;
@@ -199,6 +200,8 @@ public interface DatabaseServiceAsync {
 //	void getWall(int caveID, String locationLabel, AsyncCallback<WallEntry> callback);
 
 	void getOrnamentPositions(AsyncCallback<ArrayList<OrnamentPositionEntry>> asyncCallback) throws IllegalArgumentException;
+
+	void getPositions(AsyncCallback<ArrayList<PositionEntry>> asyncCallback) throws IllegalArgumentException;
 
 	void getOrnamentFunctions(AsyncCallback<ArrayList<OrnamentFunctionEntry>> asyncCallback) throws IllegalArgumentException;
 

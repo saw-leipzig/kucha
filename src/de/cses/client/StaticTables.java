@@ -676,6 +676,10 @@ public class StaticTables {
 		return ornamentPositionMap;
 	}
 	
+	public Map<Integer, PositionEntry> getPositionEntries() {
+		return PositionMap;
+	}
+	
 	public Map<Integer, OrnamentFunctionEntry> getOrmanemtFunctionEntries() {
 		return ornamentFunctionMap;
 	}
