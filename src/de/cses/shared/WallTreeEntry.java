@@ -33,11 +33,11 @@ public class WallTreeEntry extends AbstractEntry {
 		this.search = search;
 	}
 
-	public int getIconographyID() {
+	public int getWallLocationID() {
 		return wallLocationID;
 	}
 
-	public void setIconographyID(int iconographyID) {
+	public void setWallLocationID(int iconographyID) {
 		this.wallLocationID = iconographyID;
 	}
 
@@ -81,7 +81,7 @@ public class WallTreeEntry extends AbstractEntry {
 	}
 	
 	public Boolean equals(WallTreeEntry entry) {
-		if (wallLocationID == entry.getIconographyID()) {
+		if (wallLocationID == entry.getWallLocationID()) {
 			return true;
 		}
 		else{
