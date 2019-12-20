@@ -125,68 +125,25 @@ public class PositionEditor {
 		
 		
 		
-		ornamentPositionComboBox.setTypeAhead(false);
-		ornamentPositionComboBox.setEditable(false);
-		ornamentPositionComboBox.setTriggerAction(TriggerAction.ALL);
+		PositionComboBox.setTypeAhead(false);
+		PositionComboBox.setEditable(false);
+		PositionComboBox.setTriggerAction(TriggerAction.ALL);
 
 		FramedPanel ornamentPositionFP = new FramedPanel();
 		ornamentPositionFP.setHeading("Select position");
-		ornamentPositionFP.add(ornamentPositionComboBox);
+		ornamentPositionFP.add(PositionComboBox);
 
-		ornamentfunctionComboBox = new ComboBox<OrnamentFunctionEntry>(ornamentFunctionEntryLS, ornamentFunctionProps.name(),
-				new AbstractSafeHtmlRenderer<OrnamentFunctionEntry>() {
-
-					@Override
-					public SafeHtml render(OrnamentFunctionEntry item) {
-						final OrnamentFunctionViewTemplates pvTemplates = GWT.create(OrnamentFunctionViewTemplates.class);
-						return pvTemplates.ornamentFunction(item.getName());
-					}
-				});
-		ornamentfunctionComboBox.setTypeAhead(false);
-		ornamentfunctionComboBox.setEditable(false);
-		ornamentfunctionComboBox.setTriggerAction(TriggerAction.ALL);
-		FramedPanel ornamentFunctionFP = new FramedPanel();
-		ornamentFunctionFP.setHeading("Select function");
-		ornamentFunctionFP.add(ornamentfunctionComboBox);
-		
-		ValueChangeHandler<OrnamentPositionEntry> positionSelectionHandler = new ValueChangeHandler<OrnamentPositionEntry>() {
+	
+		ValueChangeHandler<PositionEntry> positionSelectionHandler = new ValueChangeHandler<PositionEntry>() {
 
 			@Override
-			public void onValueChange(ValueChangeEvent<OrnamentPositionEntry> event) {
-				ornamentFunctionEntryLS.clear();
-				
-				dbService.getFunctionbyPosition(event.getValue(), new AsyncCallback<ArrayList<OrnamentFunctionEntry>>() {
+			public void onValueChange(ValueChangeEvent<PositionEntry> event) {
+					
 
-					@Override
-					public void onFailure(Throwable caught) {
-						caught.printStackTrace();
-					}
-
-					@Override
-					public void onSuccess(ArrayList<OrnamentFunctionEntry> result) {
-						for (OrnamentFunctionEntry pe : result) {
-							ornamentFunctionEntryLS.add(pe);
-						}
-						if(wallOrnamentCaveRelation != null && init == 1) {
-							ornamentfunctionComboBox.setValue(ornamentFunctionEntryLS.findModelWithKey(Integer.toString(wallOrnamentCaveRelation.getOrnamenticFunctionID())));
-							init = 0;
-						}
-						ornamentfunctionComboBox.setEnabled(true);
-					}
-				});
 			}
 
 		};
-		ornamentPositionComboBox.addValueChangeHandler(positionSelectionHandler);
-		
-		notes = new TextArea();
-		notes.setAllowBlank(true);
-		FramedPanel notesFP = new FramedPanel();
-		if (wallOrnamentCaveRelation != null) {
-			notes.setText(wallOrnamentCaveRelation.getNotes());
-		}
-		notesFP.setHeading("Notes");
-		notesFP.add(notes);
+		PositionComboBox.addValueChangeHandler(positionSelectionHandler);
 
 		VerticalLayoutContainer vlcWalls = new VerticalLayoutContainer();
 		vlcWalls.add(ornamentPositionFP, new VerticalLayoutData(1.0, .15));
