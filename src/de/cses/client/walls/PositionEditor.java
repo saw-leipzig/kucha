@@ -65,8 +65,8 @@ import de.cses.shared.WallOrnamentCaveRelation;
 public class PositionEditor {
 
 
-	private ListStore<PositionEntry> PositionEntryLS;
-	private ComboBox<PositionEntry> PositionComboBox;
+	private ListStore<PositionEntry> positionEntryLS;
+	private ComboBox<PositionEntry> positionComboBox;
 	private PositionProperties positionProps;
 	private CaveEntry entry;
 	int init= 0;
@@ -85,10 +85,10 @@ public class PositionEditor {
 		this.entry=entry;
 		positionProps = GWT.create(PositionProperties.class);
 		
-		PositionEntryLS = new ListStore<PositionEntry>(positionProps.PositionID());
+		positionEntryLS = new ListStore<PositionEntry>(positionProps.PositionID());
 	
 		for (PositionEntry ope : StaticTables.getInstance().getPositionEntries().values()) {
-			PositionEntryLS.add(ope);
+			positionEntryLS.add(ope);
 		}
 
 	}
@@ -99,11 +99,11 @@ public class PositionEditor {
 			
 			@Override
 			public void onSelection(SelectionEvent<WallEntry> event) {
-				PositionComboBox.clear();
-				PositionComboBox.disable();
-				PositionEntryLS.clear();
+				positionComboBox.clear();
+				positionComboBox.disable();
+				positionEntryLS.clear();
 				//filterPositionbyCaveArea();
-				PositionComboBox.setEnabled(true);
+				positionComboBox.setEnabled(true);
 			}
 		});
 		wallselector.setCave(entry);
@@ -113,7 +113,7 @@ public class PositionEditor {
 		selectWallFP.add(wallselector);
 	
 
-		PositionComboBox = new ComboBox<PositionEntry>(PositionEntryLS, positionProps.name(),
+		positionComboBox = new ComboBox<PositionEntry>(positionEntryLS, positionProps.name(),
 				new AbstractSafeHtmlRenderer<PositionEntry>() {
 
 					@Override
@@ -125,13 +125,13 @@ public class PositionEditor {
 		
 		
 		
-		PositionComboBox.setTypeAhead(false);
-		PositionComboBox.setEditable(false);
-		PositionComboBox.setTriggerAction(TriggerAction.ALL);
+		positionComboBox.setTypeAhead(false);
+		positionComboBox.setEditable(false);
+		positionComboBox.setTriggerAction(TriggerAction.ALL);
 
-		FramedPanel ornamentPositionFP = new FramedPanel();
-		ornamentPositionFP.setHeading("Select position");
-		ornamentPositionFP.add(PositionComboBox);
+		FramedPanel positionFP = new FramedPanel();
+		positionFP.setHeading("Select position");
+		positionFP.add(positionComboBox);
 
 	
 		ValueChangeHandler<PositionEntry> positionSelectionHandler = new ValueChangeHandler<PositionEntry>() {
@@ -143,12 +143,10 @@ public class PositionEditor {
 			}
 
 		};
-		PositionComboBox.addValueChangeHandler(positionSelectionHandler);
+		positionComboBox.addValueChangeHandler(positionSelectionHandler);
 
 		VerticalLayoutContainer vlcWalls = new VerticalLayoutContainer();
-		vlcWalls.add(ornamentPositionFP, new VerticalLayoutData(1.0, .15));
-		vlcWalls.add(ornamentFunctionFP, new VerticalLayoutData(1.0, .15));
-		vlcWalls.add(notesFP, new VerticalLayoutData(1.0, .7));
+		vlcWalls.add(positionFP, new VerticalLayoutData(1.0, .15));
 		
 		HorizontalLayoutContainer wallRelationHLC = new HorizontalLayoutContainer();
 		wallRelationHLC.add(selectWallFP, new HorizontalLayoutData(.5, 1.0));
@@ -189,34 +187,14 @@ public class PositionEditor {
 
 	protected void save() {
 		//Speicherung der Wand und der zugehoerigen Eigenschaften
-		WallOrnamentCaveRelation caveWallOrnamentRelation = new WallOrnamentCaveRelation(caveEntry.getCaveID(), wallselector.getSelectedWallEntry());
 		Util.doLogging(this.getClass().getName() + " cavewallornamentrelation wurde erstellt");
-		if (ornamentfunctionComboBox.getValue() == null) {
-			caveWallOrnamentRelation.setOrnamenticFunctionID(18); // 18 = unknown
-		} else {
-			caveWallOrnamentRelation.setOrnamenticFunctionID(ornamentfunctionComboBox.getValue().getOrnamentFunctionID());
-		}
-		if (ornamentPositionComboBox.getValue() == null) {
-			caveWallOrnamentRelation.setOrnamenticPositionID(19); // 19 = unknwon
-		} else {
-			caveWallOrnamentRelation.setOrnamenticPositionID(ornamentPositionComboBox.getValue().getOrnamentPositionID());
-		}
-		caveWallOrnamentRelation.setNotes(notes.getText());
-		
-		
-		if(wallOrnamentCaveRelation != null) {
-			//OrnamenticEditor.ornamentCaveRelationEditor.getWallsListStore().remove(wallOrnamentCaveRelation);
-		}
-		//OrnamenticEditor.ornamentCaveRelationEditor.getWallsListStore().add(caveWallOrnamentRelation);
-		//OrnamenticEditor.ornamentCaveRelationEditor.getWallsListView().refresh();
 	}
-
 	public CaveEntry getCave() {
-		return caveEntry;
+		return entry;
 	}
 
 	public void setCave(CaveEntry cave) {
-		this.caveEntry = cave;
+		this.entry = cave;
 	}
 
 
@@ -270,110 +248,6 @@ public class PositionEditor {
 	
 	// Die eigentliche Filterung uebernimmt die Datenbank mit den Tabellen OrnamentPosition, OrnamentFunction und den 
 	// dazugehoerigen Relationen Tabellen
-	public void filterPositionbyCaveArea() {
-		ornamentPositionEntryLS.clear();
-		String wallOrCeiling = StaticTables.getInstance().getWallLocationEntries().get(wallselector.getSelectedWallEntry().getWallLocationID()).getLabel();
-
-		if( wallOrCeiling.contains("wall")) {
-
-	
-			dbService.getPositionbyWall(wallselector.getSelectedWallEntry(), new AsyncCallback<ArrayList<OrnamentPositionEntry>>() {
-
-				@Override
-				public void onFailure(Throwable caught) {
-					caught.printStackTrace();
-				}
-
-				@Override
-				public void onSuccess(ArrayList<OrnamentPositionEntry> result) {
-					for (OrnamentPositionEntry pe : result) {
-						ornamentPositionEntryLS.add(pe);
-					}
-					if(wallOrnamentCaveRelation != null && init == 1) {
-						ornamentPositionComboBox.setValue(ornamentPositionEntryLS.findModelWithKey(Integer.toString(wallOrnamentCaveRelation.getOrnamenticPositionID())),true);
-					}
-				}
-			});
-		}
-		else if( wallOrCeiling.contains("ceiling"))  {
-			dbService.getCaveAreas(caveEntry.getCaveID(),new AsyncCallback<ArrayList<CaveAreaEntry>>() {
-
-				@Override
-				public void onFailure(Throwable caught) {
-					System.err.println("Problem loading CaveGroupEntry");
-				}
-
-				@Override
-				public void onSuccess(ArrayList<CaveAreaEntry> result) {
-					caveEntry.setCaveAreaList(result);
-					String cavearealabel = StaticTables.getInstance().getWallLocationEntries().get(wallselector.getSelectedWallEntry().getWallLocationID()).getCaveAreaLabel();//.getLabel();
-					Util.doLogging(Integer.toString(wallselector.getSelectedWallEntry().getWallLocationID()));
-					for (CaveAreaEntry cae : result){
-						Util.doLogging(cae.getCaveAreaLabel()+" - "+cavearealabel);
-						if(cae.getCaveAreaLabel().contains(cavearealabel)) {
-							CaveAreaEntry cavearea = cae;
-							int ceiling1 = cavearea.getCeilingType1() != null ? cavearea.getCeilingType1().getCeilingTypeID() : 0;
-							int ceiling2 = cavearea.getCeilingType2() != null ? cavearea.getCeilingType2().getCeilingTypeID() : 0;
-							if(ceiling1 == 0 && ceiling2 == 0) {
-								ceiling1 = 11;
-							}
-							dbService.getPositionbyCeiling(ceiling1, ceiling2, new AsyncCallback<ArrayList<OrnamentPositionEntry>>() {
-		
-								@Override
-								public void onFailure(Throwable caught) {
-									caught.printStackTrace();
-								}
-		
-								@Override
-								public void onSuccess(ArrayList<OrnamentPositionEntry> result) {
-									ListStore<OrnamentPositionEntry> test = ornamentPositionEntryLS;
-		//							Util.doLogging("Nina: in create form step 4.2 variante 2 wallornamenteditor");
-									for (OrnamentPositionEntry pe : result) {
-										try {
-										ornamentPositionEntryLS.add(pe);
-										}
-										catch(Exception e) {
-											Util.doLogging(e.getMessage());
-										}
-									}
-									if(wallOrnamentCaveRelation != null && init == 1) {
-										ornamentPositionComboBox.setValue(ornamentPositionEntryLS.findModelWithKey(Integer.toString(wallOrnamentCaveRelation.getOrnamenticPositionID())),true);
-									}
-									
-					}
-						
-			});
-						
-					}
-					}
-				
-				}});
-		}
-		else if(wallOrCeiling.contains("reveal")){
-			dbService.getPositionbyReveal(wallselector.getSelectedWallEntry(), new AsyncCallback<ArrayList<OrnamentPositionEntry>>() {
-
-				@Override
-				public void onFailure(Throwable caught) {
-					caught.printStackTrace();
-				}
-
-				@Override
-				public void onSuccess(ArrayList<OrnamentPositionEntry> result) {
-					for (OrnamentPositionEntry pe : result) {
-						ornamentPositionEntryLS.add(pe);
-					}
-					if(wallOrnamentCaveRelation != null && init == 1) {
-						ornamentPositionComboBox.setValue(ornamentPositionEntryLS.findModelWithKey(Integer.toString(wallOrnamentCaveRelation.getOrnamenticPositionID())),true);
-					}
-				}
-			});
-			
-		}
-		else {
-//			Util.doLogging("keinen Case gefunden!");
-		}
-		}
-	
 	
 	public void show() {
 		//Aufruf mit leeren Feldern f�r die Eingabe
@@ -385,17 +259,16 @@ public class PositionEditor {
 
 	}
 	
-	public void show(WallOrnamentCaveRelation wallOrnamentCaveRelation) {
+	public void show(CaveEntry entry) {
 		//Afruf mit Entry zum Bearbeiten
 		init = 1;
 //		this.caveEntry = OrnamenticEditor.ornamentCaveRelationEditor.getCaveEntryComboBox().getValue();
 
-		this.wallOrnamentCaveRelation = wallOrnamentCaveRelation;
+		this.entry = entry;
 		popup = new PopupPanel();
 		
 		popup.setWidget(createForm());
-			wallselector.selectWall(wallOrnamentCaveRelation.getWall().getWallLocationID());
-			filterPositionbyCaveArea();
+			wallselector.setCave(entry);;
 			popup.center();
 		
 	}

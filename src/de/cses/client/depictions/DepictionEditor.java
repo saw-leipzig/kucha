@@ -109,8 +109,10 @@ import de.cses.shared.PreservationAttributeEntry;
 import de.cses.shared.StyleEntry;
 import de.cses.shared.VendorEntry;
 import de.cses.shared.WallEntry;
+import de.cses.client.walls.PositionEditor;
 import de.cses.shared.WallTreeEntry;
 import de.cses.shared.comparator.CaveEntryComparator;
+
 
 public class DepictionEditor extends AbstractEditor {
 
@@ -329,7 +331,8 @@ public class DepictionEditor extends AbstractEditor {
 		preservationAttributesLS = new ListStore<PreservationAttributeEntry>(presAttributeProps.preservationAttributeID());
 		
 		selectedPreservationAttributesLS = new ListStore<PreservationAttributeEntry>(presAttributeProps.preservationAttributeID());
-
+		//PositionEditor pe =new PositionEditor(correspondingDepictionEntry.getCave());
+		//pe.show();
 		initPanel();
 		loadCaves();
 		loadLocations();
