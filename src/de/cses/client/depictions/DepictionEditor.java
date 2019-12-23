@@ -331,8 +331,6 @@ public class DepictionEditor extends AbstractEditor {
 		preservationAttributesLS = new ListStore<PreservationAttributeEntry>(presAttributeProps.preservationAttributeID());
 		
 		selectedPreservationAttributesLS = new ListStore<PreservationAttributeEntry>(presAttributeProps.preservationAttributeID());
-		//PositionEditor pe =new PositionEditor(correspondingDepictionEntry.getCave());
-		//pe.show();
 		initPanel();
 		loadCaves();
 		loadLocations();
@@ -1084,8 +1082,26 @@ public class DepictionEditor extends AbstractEditor {
 				wallEditorDialog.center();
 			}
 		});
-		ArrayList<WallTreeEntry> test= new ArrayList<WallTreeEntry>();
-		WallTree wallTree = new WallTree(StaticTables.getInstance().getWallTreeEntries().values(), test, false);
+		ArrayList<WallTreeEntry> wallTreeEntries = new ArrayList<WallTreeEntry>();
+		WallTree wallTree = new WallTree(StaticTables.getInstance().getWallTreeEntries().values(), wallTreeEntries, false);
+		FramedPanel wallTreeFP = new FramedPanel();
+		wallTreeFP.add(wallTree.wallTree);
+		ToolButton newPositionPlusTool = new ToolButton(new IconConfig("addButton", "addButtonOver"));
+		newPositionPlusTool.setToolTip(Util.createToolTip("add Position"));
+		newPositionPlusTool.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				PositionEditor pe = new PositionEditor(correspondingDepictionEntry.getCave());
+				pe.show();
+				//PopupPanel positionEditorPopUp = new PopupPanel();
+				//positionEditorPopUp.add(pe);
+				//positionEditorPopUp.setModal(true);
+				//positionEditorPopUp.center();
+
+			}
+		});				
+		wallTreeFP.addTool(newPositionPlusTool);
 		/**
 		 * the wall visualisation will be implemented at a later time
 		 */
@@ -1115,8 +1131,8 @@ public class DepictionEditor extends AbstractEditor {
 		VerticalLayoutContainer basicsRightVLC = new VerticalLayoutContainer();
 		basicsRightVLC.add(wallSelectorFP, new VerticalLayoutData(1.0, .85));
 		basicsRightVLC.add(positionNoteFP, new VerticalLayoutData(1.0, .15));
-		basicsRightVLC.add(wallTree.wallTree, new VerticalLayoutData(1.0, .50));
-
+		basicsRightVLC.add(wallTreeFP, new VerticalLayoutData(1.0, .50));
+		
 		HorizontalLayoutContainer basicsTabHLC = new HorizontalLayoutContainer();
 		basicsTabHLC.add(basicsLeftVLC, new HorizontalLayoutData(.4, 1.0));
 		basicsTabHLC.add(basicsRightVLC, new HorizontalLayoutData(.6, 1.0));

@@ -456,7 +456,7 @@ public class StaticTables {
 			@Override
 			public void onSuccess(ArrayList<PositionEntry> result) {
 				for (PositionEntry ope : result) {
-					PositionMap.put(ope.getOrnamentPositionID(), ope);
+					PositionMap.put(ope.getPositionID(), ope);
 				}
 				listLoaded();
 			}

@@ -2,11 +2,11 @@ package de.cses.shared;
 
 public class PositionEntry extends AbstractEntry {
 
-	private int ornamentPositionID;
+	private int positionID;
 	private String name;
 
 	public PositionEntry(int positionID, String name) {
-		this.ornamentPositionID = positionID;
+		this.positionID = positionID;
 		this.name = name;
 	}
 
@@ -14,12 +14,12 @@ public class PositionEntry extends AbstractEntry {
 		this(0, "");
 	}
 
-	public int getOrnamentPositionID() {
-		return ornamentPositionID;
+	public int getPositionID() {
+		return positionID;
 	}
 
-	public void setOrnamentPositionID(int ornamentPositionID) {
-		this.ornamentPositionID = ornamentPositionID;
+	public void setpositionID(int ornamentPositionID) {
+		this.positionID = ornamentPositionID;
 	}
 
 	public String getName() {
@@ -37,7 +37,7 @@ public class PositionEntry extends AbstractEntry {
 	 */
 	@Override
 	public String getUniqueID() {
-		return "OrnamentPositionEntry" + ornamentPositionID;
+		return "OrnamentPositionEntry" + positionID;
 	}
 
 }

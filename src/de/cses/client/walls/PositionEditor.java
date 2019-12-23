@@ -74,7 +74,8 @@ public class PositionEditor {
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 
 	interface PositionProperties extends PropertyAccess<PositionEntry> {
-		ModelKeyProvider<PositionEntry> PositionID();
+		ModelKeyProvider<PositionEntry> positionID();
+										
 
 		LabelProvider<PositionEntry> name();
 	}
@@ -85,9 +86,11 @@ public class PositionEditor {
 		this.entry=entry;
 		positionProps = GWT.create(PositionProperties.class);
 		
-		positionEntryLS = new ListStore<PositionEntry>(positionProps.PositionID());
+		positionEntryLS = new ListStore<PositionEntry>(positionProps.positionID());
 	
 		for (PositionEntry ope : StaticTables.getInstance().getPositionEntries().values()) {
+			Util.doLogging(ope.getName());
+			Util.doLogging(Integer.toString(ope.getPositionID()));
 			positionEntryLS.add(ope);
 		}
 
