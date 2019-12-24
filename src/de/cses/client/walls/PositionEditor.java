@@ -57,6 +57,7 @@ import de.cses.shared.OrnamentPositionEntry;
 import de.cses.shared.PositionEntry;
 import de.cses.shared.WallEntry;
 import de.cses.shared.WallOrnamentCaveRelation;
+import de.cses.shared.WallTreeEntry;
 
 /**
  * @author Erik
@@ -68,6 +69,7 @@ public class PositionEditor {
 	private ListStore<PositionEntry> positionEntryLS;
 	private ComboBox<PositionEntry> positionComboBox;
 	private PositionProperties positionProps;
+	private WallTree wallTree;
 	private CaveEntry entry;
 	int init= 0;
 	PopupPanel popup = new PopupPanel();
@@ -113,7 +115,9 @@ public class PositionEditor {
 
 		FramedPanel selectWallFP = new FramedPanel();
 		selectWallFP.setHeading("Select Wall");
-		selectWallFP.add(wallselector);
+		ArrayList<WallTreeEntry> wallTreeEntries = new ArrayList<WallTreeEntry>();
+		WallTree wallTree = new WallTree(StaticTables.getInstance().getWallTreeEntries().values(), wallTreeEntries, false, true);
+		selectWallFP.add(wallTree.wallTree);
 	
 
 		positionComboBox = new ComboBox<PositionEntry>(positionEntryLS, positionProps.name(),
@@ -135,7 +139,9 @@ public class PositionEditor {
 		FramedPanel positionFP = new FramedPanel();
 		positionFP.setHeading("Select position");
 		positionFP.add(positionComboBox);
-
+		//FramedPanel wallFP = new FramedPanel();
+		//wallFP.setHeading("Select wall");
+		//wallFP.add(positionComboBox);
 	
 		ValueChangeHandler<PositionEntry> positionSelectionHandler = new ValueChangeHandler<PositionEntry>() {
 

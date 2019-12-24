@@ -1,0 +1,14 @@
+Welcome to Ubuntu 16.04.6 LTS (GNU/Linux 4.4.0-139-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+
+ * Overheard at KubeCon: "microk8s.status just blew my mind".
+
+     https://microk8s.io/docs/commands#microk8s.status
+New release '18.04.3 LTS' available.
+Run 'do-release-upgrade' to upgrade to it.
+
+Last login: Mon Dec  2 13:00:18 2019 from 139.18.114.25
+]0;radische@dh-3: ~[01;32mradische@dh-3[00m:[01;34m~[00m$ 
