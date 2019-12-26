@@ -44,9 +44,9 @@ public class WallTree {
 			return "name";
 		}
 	}
-	public WallTree(Collection<WallTreeEntry> elements, ArrayList<WallTreeEntry> l, boolean dropunselected) {
+	public WallTree(Collection<WallTreeEntry> elements, ArrayList<WallTreeEntry> l, boolean dropunselected, boolean editable) {
 		setWallTreeStore(elements,l,dropunselected);
-		buildTree(false);
+		buildTree(editable);
 	}
 	private void processParentWallTreeEntry( WallTreeEntry item) {
 		for (WallTreeEntry child : item.getChildren()) {
@@ -102,7 +102,7 @@ public class WallTree {
 
 	  }
 	}
-	public void buildTree( boolean ornament){
+	public void buildTree( boolean editable){
 		selectedwallMap = new HashMap<String, WallTreeEntry>();
 
 			
@@ -117,6 +117,9 @@ public class WallTree {
 			}
 
 		};
+		wallTree.setCheckable(editable);
+
+
 	}
 
 	

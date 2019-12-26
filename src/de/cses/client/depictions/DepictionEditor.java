@@ -1083,7 +1083,7 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		ArrayList<WallTreeEntry> wallTreeEntries = new ArrayList<WallTreeEntry>();
-		WallTree wallTree = new WallTree(StaticTables.getInstance().getWallTreeEntries().values(), wallTreeEntries, false);
+		WallTree wallTree = new WallTree(StaticTables.getInstance().getWallTreeEntries().values(), wallTreeEntries, false, false);
 		FramedPanel wallTreeFP = new FramedPanel();
 		wallTreeFP.add(wallTree.wallTree);
 		ToolButton newPositionPlusTool = new ToolButton(new IconConfig("addButton", "addButtonOver"));
