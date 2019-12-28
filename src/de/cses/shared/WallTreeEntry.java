@@ -18,6 +18,14 @@ import java.text.Normalizer;
 
 public class WallTreeEntry extends AbstractEntry {
 	
+	public static final int ANTECHAMBER_LABEL = 101;
+	public static final int MAIN_CHAMBER_LABEL = 102;
+	public static final int MAIN_CHAMBER_CORRIDOR_LABEL = 105;
+	public static final int REAR_AREA_LABEL = 103;
+	public static final int REAR_AREA_LEFT_CORRIDOR_LABEL = 107;
+	public static final int REAR_AREA_RIGHT_CORRIDOR_LABEL = 111;
+	
+
 	private int wallLocationID, parentID;
 	private String text;
 	private String search;

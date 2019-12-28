@@ -5,21 +5,23 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.data.shared.event.StoreFilterEvent;
 import com.sencha.gxt.widget.core.client.tree.Tree;
 
-import de.cses.shared.WallEntry;
+import de.cses.shared.CaveEntry;
 import de.cses.shared.WallTreeEntry;
-
+import de.cses.client.Util;
 
 
 public class WallTree {
 	public TreeStore<WallTreeEntry> wallTreeStore;
 	public Tree<WallTreeEntry, String> wallTree;
 	public Map<String, WallTreeEntry> selectedwallMap;
+	private CaveEntry cEntry;
 	class WallTreeEntryKeyProvider implements ModelKeyProvider<WallTreeEntry> {
 		@Override
 		public String getKey(WallTreeEntry item) {
@@ -44,18 +46,64 @@ public class WallTree {
 			return "name";
 		}
 	}
-	public WallTree(Collection<WallTreeEntry> elements, ArrayList<WallTreeEntry> l, boolean dropunselected, boolean editable) {
+	public WallTree(Collection<WallTreeEntry> elements, ArrayList<WallTreeEntry> l, boolean dropunselected, boolean editable, CaveEntry entry) {
+		cEntry= entry;
 		setWallTreeStore(elements,l,dropunselected);
 		buildTree(editable);
 	}
 	private void processParentWallTreeEntry( WallTreeEntry item) {
-		for (WallTreeEntry child : item.getChildren()) {
-			wallTreeStore.add(item, child);
-			if (child.getChildren() != null) {
-				processParentWallTreeEntry(child);
+		
+			
+			
+			switch (cEntry.getCaveTypeID()) {
+
+			case 2: // square cave
+				for (WallTreeEntry child : item.getChildren()) {
+					if ((child.getWallLocationID() == WallTreeEntry.ANTECHAMBER_LABEL)
+							|| (child.getWallLocationID() == WallTreeEntry.MAIN_CHAMBER_LABEL)||(child.getWallLocationID()<100)) {
+							Util.doLogging(child.getText());
+							wallTreeStore.add(item, child);
+							if (child.getChildren() != null) {
+								processParentWallTreeEntry(child);
+							}
+						}
+					}
+				
+			case 3: // residential cave
+				for (WallTreeEntry child : item.getChildren()) {
+					if ((child.getWallLocationID() == WallTreeEntry.ANTECHAMBER_LABEL)
+							|| (child.getWallLocationID() == WallTreeEntry.MAIN_CHAMBER_LABEL)
+							|| (child.getWallLocationID() == WallTreeEntry.MAIN_CHAMBER_CORRIDOR_LABEL)
+							|| (child.getWallLocationID() == WallTreeEntry.REAR_AREA_LABEL)||(child.getWallLocationID()<100)) {
+						wallTreeStore.add(item, child);
+						if (child.getChildren() != null) {
+							processParentWallTreeEntry(child);
+						}
+						}
+				}
+
+			case 4: // central-pillar cave
+			case 6: // monumental image cave
+				for (WallTreeEntry child : item.getChildren()) {
+					if ((child.getWallLocationID() == WallTreeEntry.ANTECHAMBER_LABEL)
+							|| (child.getWallLocationID() == WallTreeEntry.MAIN_CHAMBER_LABEL)
+							|| (child.getWallLocationID() == WallTreeEntry.REAR_AREA_LABEL)
+							|| (child.getWallLocationID() == WallTreeEntry.REAR_AREA_LEFT_CORRIDOR_LABEL)
+							|| (child.getWallLocationID() == WallTreeEntry.REAR_AREA_RIGHT_CORRIDOR_LABEL)||(child.getWallLocationID()<100)) {
+						wallTreeStore.add(item, child);
+						if (child.getChildren() != null) {
+							processParentWallTreeEntry(child);
+						}
+					}
+				}
+			default:
+				break;
 			}
-		}
 	}
+	
+	
+
+	
 	private void processParentWallTreeEntry_select(WallTreeEntry item, ArrayList<WallTreeEntry> l) {	
 		for (WallTreeEntry child : item.getChildren()) {
 			Boolean found =new Boolean(false);
@@ -74,17 +122,10 @@ public class WallTree {
 	private void buildTreeStore(Collection<WallTreeEntry> elements, boolean ornaments){
 		wallTreeStore = new TreeStore<WallTreeEntry>(new WallTreeEntryKeyProvider());
 		wallTreeStore.clear();
-			for (WallTreeEntry item : elements) {
-				if ((item.getWallLocationID()==3)||(!ornaments)) {
-					wallTreeStore.add(item);
-					if (item.getChildren() != null) {
-						processParentWallTreeEntry(item);
-					}
-			
-				}
-			}
 	}
+
 	public void setWallTreeStore(Collection<WallTreeEntry> elements, ArrayList<WallTreeEntry> l, boolean dropunselected) {
+		Util.doLogging("Länge von Elements:"+ Integer.toString(elements.size()));
 		buildTreeStore(elements, false);
 		wallTreeStore.clear();
 		for (WallTreeEntry item : elements) {
@@ -96,6 +137,7 @@ public class WallTree {
 				}
 				else
 				{
+					//if (item.getParentID()==null) {
 					processParentWallTreeEntry(item);
 				}
 			}

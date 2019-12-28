@@ -116,7 +116,7 @@ public class PositionEditor {
 		FramedPanel selectWallFP = new FramedPanel();
 		selectWallFP.setHeading("Select Wall");
 		ArrayList<WallTreeEntry> wallTreeEntries = new ArrayList<WallTreeEntry>();
-		WallTree wallTree = new WallTree(StaticTables.getInstance().getWallTreeEntries().values(), wallTreeEntries, false, true);
+		WallTree wallTree = new WallTree(StaticTables.getInstance().getWallTreeEntries().values(), wallTreeEntries, false, true, entry);
 		selectWallFP.add(wallTree.wallTree);
 	
 
