@@ -123,6 +123,15 @@ public class WallTree {
 		wallTreeStore = new TreeStore<WallTreeEntry>(new WallTreeEntryKeyProvider());
 		wallTreeStore.clear();
 	}
+	public void setWall(int wallKey) {
+		Util.doLogging("Starte Suche nach WallTreeEntry");
+		for (WallTreeEntry wall : wallTreeStore.getAll()) {
+			Util.doLogging("Vergleiche: "+Integer.toString(wall.getWallLocationID())+" mit "+Integer.toString(wallKey));
+			if (wall.getWallLocationID()==wallKey) {
+				Util.doLogging("WallTreeEntry: "+wall.getText());
+			}
+		}
+	}
 
 	public void setWallTreeStore(Collection<WallTreeEntry> elements, ArrayList<WallTreeEntry> l, boolean dropunselected) {
 		Util.doLogging("Länge von Elements:"+ Integer.toString(elements.size()));

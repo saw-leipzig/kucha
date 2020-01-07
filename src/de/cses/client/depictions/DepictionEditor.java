@@ -1085,6 +1085,7 @@ public class DepictionEditor extends AbstractEditor {
 		ArrayList<WallTreeEntry> wallTreeEntries = new ArrayList<WallTreeEntry>();
 		WallTree wallTree = new WallTree(StaticTables.getInstance().getWallTreeEntries().values(), wallTreeEntries, false, false, correspondingDepictionEntry.getCave());
 		FramedPanel wallTreeFP = new FramedPanel();
+		//wallTree.setWall(correspondingDepictionEntry.getWallID());
 		wallTreeFP.add(wallTree.wallTree);
 		ToolButton newPositionPlusTool = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		newPositionPlusTool.setToolTip(Util.createToolTip("add Position"));
