@@ -22,6 +22,8 @@ public class WallTree {
 	public Tree<WallTreeEntry, String> wallTree;
 	public Map<String, WallTreeEntry> selectedwallMap;
 	private CaveEntry cEntry;
+	private boolean dropunselected;
+	private boolean editable;
 	class WallTreeEntryKeyProvider implements ModelKeyProvider<WallTreeEntry> {
 		@Override
 		public String getKey(WallTreeEntry item) {
@@ -46,9 +48,11 @@ public class WallTree {
 			return "name";
 		}
 	}
-	public WallTree(Collection<WallTreeEntry> elements, ArrayList<WallTreeEntry> l, boolean dropunselected, boolean editable, CaveEntry entry) {
+	public WallTree(Collection<WallTreeEntry> elements, int wallID, boolean dropunselected, boolean editable, CaveEntry entry) {
 		cEntry= entry;
-		setWallTreeStore(elements,l,dropunselected);
+		dropunselected = dropunselected;
+		editable=editable;
+		setWallTreeStore(elements,wallID,dropunselected);
 		buildTree(editable);
 	}
 	private void processParentWallTreeEntry( WallTreeEntry item) {
@@ -58,44 +62,52 @@ public class WallTree {
 			switch (cEntry.getCaveTypeID()) {
 
 			case 2: // square cave
+				//Util.doLogging("cEntry.getCaveTypeID: "+Integer.toString(cEntry.getCaveTypeID()));
 				for (WallTreeEntry child : item.getChildren()) {
 					if ((child.getWallLocationID() == WallTreeEntry.ANTECHAMBER_LABEL)
 							|| (child.getWallLocationID() == WallTreeEntry.MAIN_CHAMBER_LABEL)||(child.getWallLocationID()<100)) {
-							Util.doLogging(child.getText());
+							//Util.doLogging(item.getText()+" - "+child.getText()+" /1");
 							wallTreeStore.add(item, child);
 							if (child.getChildren() != null) {
 								processParentWallTreeEntry(child);
 							}
 						}
 					}
+				break;
 				
 			case 3: // residential cave
+				//Util.doLogging("cEntry.getCaveTypeID: "+Integer.toString(cEntry.getCaveTypeID()));
 				for (WallTreeEntry child : item.getChildren()) {
 					if ((child.getWallLocationID() == WallTreeEntry.ANTECHAMBER_LABEL)
 							|| (child.getWallLocationID() == WallTreeEntry.MAIN_CHAMBER_LABEL)
 							|| (child.getWallLocationID() == WallTreeEntry.MAIN_CHAMBER_CORRIDOR_LABEL)
 							|| (child.getWallLocationID() == WallTreeEntry.REAR_AREA_LABEL)||(child.getWallLocationID()<100)) {
+						//Util.doLogging(item.getText()+" - "+child.getText()+" /2");
 						wallTreeStore.add(item, child);
 						if (child.getChildren() != null) {
 							processParentWallTreeEntry(child);
 						}
 						}
 				}
+				break;
 
 			case 4: // central-pillar cave
 			case 6: // monumental image cave
+				//Util.doLogging("cEntry.getCaveTypeID: "+Integer.toString(cEntry.getCaveTypeID()));
 				for (WallTreeEntry child : item.getChildren()) {
 					if ((child.getWallLocationID() == WallTreeEntry.ANTECHAMBER_LABEL)
 							|| (child.getWallLocationID() == WallTreeEntry.MAIN_CHAMBER_LABEL)
 							|| (child.getWallLocationID() == WallTreeEntry.REAR_AREA_LABEL)
 							|| (child.getWallLocationID() == WallTreeEntry.REAR_AREA_LEFT_CORRIDOR_LABEL)
 							|| (child.getWallLocationID() == WallTreeEntry.REAR_AREA_RIGHT_CORRIDOR_LABEL)||(child.getWallLocationID()<100)) {
+						//Util.doLogging(item.getText()+" - "+child.getText()+" /3");
 						wallTreeStore.add(item, child);
 						if (child.getChildren() != null) {
 							processParentWallTreeEntry(child);
 						}
 					}
 				}
+				break;
 			default:
 				break;
 			}
@@ -132,27 +144,57 @@ public class WallTree {
 			}
 		}
 	}
+	public void findParent(WallTreeEntry child) {
+		if (child.getParentID()==0) {
+			wallTreeStore.clear();
+		    Util.doLogging("Found: "+Integer.toString(child.getParentID())+" - "+Integer.toString(child.getWallLocationID()));
+			wallTreeStore.add(child);
+		}
+		else {
+		for (WallTreeEntry wall : wallTreeStore.getAll()) {
+			if (wall.getWallLocationID()==child.getParentID()) {
 
-	public void setWallTreeStore(Collection<WallTreeEntry> elements, ArrayList<WallTreeEntry> l, boolean dropunselected) {
+					findParent(wall);
+					Util.doLogging("Found: "+Integer.toString(child.getParentID())+" - "+Integer.toString(child.getWallLocationID()));
+					wallTreeStore.add(wall, child);
+				}
+				
+			
+			}
+		};
+	}
+
+	public void setWallTreeStore(Collection<WallTreeEntry> elements, int wallID, boolean dropunselected) {
 		Util.doLogging("Länge von Elements:"+ Integer.toString(elements.size()));
 		buildTreeStore(elements, false);
 		wallTreeStore.clear();
 		for (WallTreeEntry item : elements) {
 			wallTreeStore.add(item);
 			if (item.getChildren() != null) {
-				if (dropunselected) {
-					processParentWallTreeEntry_select(item,l);
-					
-				}
-				else
-				{
+
 					//if (item.getParentID()==null) {
 					processParentWallTreeEntry(item);
-				}
 			}
-
-	  }
+		}
+		if (dropunselected) {
+			dropunselected(wallID);
+		}
 	}
+	public void dropunselected(int wallID) {
+			Boolean found = new Boolean(false);
+			for (WallTreeEntry wall : wallTreeStore.getAll()) {
+				if (wall.getWallLocationID()==wallID) {
+					findParent(wall);
+					found=true;
+				}
+			
+			}
+			if (!found) {
+				wallTreeStore.clear();
+			}
+		}
+		
+
 	public void buildTree( boolean editable){
 		selectedwallMap = new HashMap<String, WallTreeEntry>();
 

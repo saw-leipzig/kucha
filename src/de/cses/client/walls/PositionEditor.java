@@ -16,16 +16,12 @@ package de.cses.client.walls;
 import java.util.ArrayList;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
-import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
@@ -41,22 +37,17 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.Verti
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
-import com.sencha.gxt.widget.core.client.form.TextArea;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
 import de.cses.client.Util;
-import de.cses.shared.AbstractEntry;
-import de.cses.shared.CaveAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CavePart;
-import de.cses.shared.ImageEntry;
 import de.cses.shared.OrnamentFunctionEntry;
 import de.cses.shared.OrnamentPositionEntry;
 import de.cses.shared.PositionEntry;
 import de.cses.shared.WallEntry;
-import de.cses.shared.WallOrnamentCaveRelation;
 import de.cses.shared.WallTreeEntry;
 
 /**
@@ -82,41 +73,39 @@ public class PositionEditor {
 		LabelProvider<PositionEntry> name();
 	}
 
-	private WallSelector wallselector;
-
-	public PositionEditor(CaveEntry entry) {
+	public PositionEditor(CaveEntry entry, ArrayList<Integer> entries) {
 		this.entry=entry;
 		positionProps = GWT.create(PositionProperties.class);
 		
 		positionEntryLS = new ListStore<PositionEntry>(positionProps.positionID());
 	
 		for (PositionEntry ope : StaticTables.getInstance().getPositionEntries().values()) {
-			Util.doLogging(ope.getName());
-			Util.doLogging(Integer.toString(ope.getPositionID()));
 			positionEntryLS.add(ope);
 		}
 
 	}
+	public ArrayList<WallTreeEntry> getSelectedWalls() {
+		ArrayList<WallTreeEntry> result = new ArrayList<WallTreeEntry>();
+		if (wallTree.wallTree != null) {
+			for (WallTreeEntry entry : wallTree.wallTree.getCheckedSelection()) {
+				if (entry.getChildren()==null) {
+					Util.doLogging("Add Entry: "+entry.getText());
+					result.add(entry);
+				}
+				
+			}
+		}
+		return result;	
+	}
+	
 
 	private FramedPanel createForm() {
 		
-		wallselector = new WallSelector(new SelectionHandler<WallEntry>() {
-			
-			@Override
-			public void onSelection(SelectionEvent<WallEntry> event) {
-				positionComboBox.clear();
-				positionComboBox.disable();
-				positionEntryLS.clear();
-				//filterPositionbyCaveArea();
-				positionComboBox.setEnabled(true);
-			}
-		});
-		wallselector.setCave(entry);
+
 
 		FramedPanel selectWallFP = new FramedPanel();
 		selectWallFP.setHeading("Select Wall");
-		ArrayList<WallTreeEntry> wallTreeEntries = new ArrayList<WallTreeEntry>();
-		WallTree wallTree = new WallTree(StaticTables.getInstance().getWallTreeEntries().values(), wallTreeEntries, false, true, entry);
+		wallTree = new WallTree(StaticTables.getInstance().getWallTreeEntries().values(), 0, false, true, entry);
 		selectWallFP.add(wallTree.wallTree);
 	
 
@@ -182,7 +171,7 @@ public class PositionEditor {
 
 			@Override
 			public void onSelect(SelectEvent event) {
-				save();
+				save(getSelectedWalls());
 				popup.hide();
 			}
 		});
@@ -194,7 +183,7 @@ public class PositionEditor {
 		return wallrelationFramedPanel;
 	}
 
-	protected void save() {
+	protected void save(ArrayList<WallTreeEntry> results ) {
 		//Speicherung der Wand und der zugehoerigen Eigenschaften
 		Util.doLogging(this.getClass().getName() + " cavewallornamentrelation wurde erstellt");
 	}
@@ -277,7 +266,6 @@ public class PositionEditor {
 		popup = new PopupPanel();
 		
 		popup.setWidget(createForm());
-			wallselector.setCave(entry);;
 			popup.center();
 		
 	}

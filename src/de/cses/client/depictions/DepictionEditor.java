@@ -166,6 +166,7 @@ public class DepictionEditor extends AbstractEditor {
 	private ListStore<PreservationAttributeEntry> preservationAttributesLS, selectedPreservationAttributesLS;
 	private TextField shortNameTF;
 	private BibliographySelector bibliographySelector;
+	private WallTree wallTree;
 
 	class NameElement {
 		private String element;
@@ -427,6 +428,7 @@ public class DepictionEditor extends AbstractEditor {
 					caveSelectionCB.setValue(ce);
 					wallSelectorPanel.setCave(ce);
 					wallSelectorPanel.selectWall(correspondingDepictionEntry.getWallID());
+					wallTree.dropunselected(correspondingDepictionEntry.getWallID());
 					for (WallEntry we : ce.getWallList()) {
 						Util.doLogging(Integer.toString(we.getWallLocationID()));
 					}
@@ -1082,10 +1084,9 @@ public class DepictionEditor extends AbstractEditor {
 				wallEditorDialog.center();
 			}
 		});
-		ArrayList<WallTreeEntry> wallTreeEntries = new ArrayList<WallTreeEntry>();
-		WallTree wallTree = new WallTree(StaticTables.getInstance().getWallTreeEntries().values(), wallTreeEntries, false, false, correspondingDepictionEntry.getCave());
+		wallTree = new WallTree(StaticTables.getInstance().getWallTreeEntries().values(), correspondingDepictionEntry.getWallID(), true, false, correspondingDepictionEntry.getCave());
 		FramedPanel wallTreeFP = new FramedPanel();
-		//wallTree.setWall(correspondingDepictionEntry.getWallID());
+		wallTree.setWall(correspondingDepictionEntry.getWallID());
 		wallTreeFP.add(wallTree.wallTree);
 		ToolButton newPositionPlusTool = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		newPositionPlusTool.setToolTip(Util.createToolTip("add Position"));
@@ -1093,7 +1094,14 @@ public class DepictionEditor extends AbstractEditor {
 
 			@Override
 			public void onSelect(SelectEvent event) {
-				PositionEditor pe = new PositionEditor(correspondingDepictionEntry.getCave());
+				ArrayList<Integer> entries = new ArrayList<Integer>();
+				entries.add(correspondingDepictionEntry.getWallID());
+				PositionEditor pe = new PositionEditor(correspondingDepictionEntry.getCave(), entries) {
+					@Override
+					protected void save(ArrayList<WallTreeEntry> results ) {
+						
+						}
+					};
 				pe.show();
 				//PopupPanel positionEditorPopUp = new PopupPanel();
 				//positionEditorPopUp.add(pe);
