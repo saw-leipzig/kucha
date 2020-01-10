@@ -1,0 +1,87 @@
+<div class="data-view">
+		<figure style='text-align: center; margin: 0;'>
+				<a href='{fullImageUri}' target='_blank'> <img src='{imageUri}'
+						style='position: relative; width: 100%; height: auto;'>
+				</a>
+				<figcaption style='font-family: verdana; font-size: 12px;'>
+						{shortName}
+						<tpl if="width &gt; 0"> (width: {width} cm, height: {height}
+						cm)</tpl>
+				</figcaption>
+		</figure>
+
+		<h4 class="data-display">Summary</h4>
+		<table class="data-view">
+				<tpl if="inventoryNumber != &quot;&quot;">
+				<tr style="border-bottom: 1px solid black">
+						<td class="data-view-left"><i>Inventory No.</i></td>
+						<td class="data-view-right">{inventoryNumber}</td>
+				</tr>
+				</tpl>
+				<tpl if="cave != &quot;&quot;">
+				<tr style="border-bottom: 1px solid black">
+						<td class="data-view-left"><i>Located in Cave</i></td>
+						<td class="data-view-right">{cave}</td>
+	 			</tr>
+				</tpl>
+				<tpl if="wall != &quot;&quot;">
+				<tr style="border-bottom: 1px solid black">
+						<td class="data-view-left"><i>Position in cave</i></td>
+						<td class="data-view-right">{wall}</td>
+				</tr>
+				</tpl>
+				<tpl if="expedition != &quot;&quot;">
+				<tr style="border-bottom: 1px solid black">
+						<td class="data-view-left"><i>Acquired by expedition</i></td>
+						<td class="data-view-right">{expedition}</td>
+				</tr>
+				</tpl>
+				<tpl if="vendor != &quot;&quot;">
+				<tr style="border-bottom: 1px solid black">
+						<td class="data-view-left"><i>Vendor</i></td>
+						<td class="data-view-right">{vendor}</td>
+				</tr>
+				</tpl>
+				<tpl if="purchaseDate != &quot;&quot;">
+				<tr style="border-bottom: 1px solid black">
+						<td class="data-view-left"><i>Purchase Date</i></td>
+						<td class="data-view-right">{purchaseDate}</td>
+				</tr>
+				</tpl>
+				<tpl if="currentLocation != &quot;&quot;">
+				<tr style="border-bottom: 1px solid black">
+						<td class="data-view-left"><i>Current location</i></td>
+						<td class="data-view-right">{currentLocation}</td>
+				</tr>
+				</tpl>
+				<tpl if="stateOfPreservation != &quot;&quot;">
+				<tr style="border-bottom: 1px solid black">
+						<td class="data-view-left"><i>State of preservation</i></td>
+						<td class="data-view-right">{stateOfPreservation}</td>
+				</tr>
+				</tpl>
+				<tpl if="style != &quot;&quot;">
+				<tr style="border-bottom: 1px solid black">
+						<td class="data-view-left"><i>Style</i></td>
+						<td class="data-view-right">{style}</td>
+				</tr>
+				</tpl>
+				<tpl if="modeOfRepresentation != &quot;&quot;">
+				<tr style="border-bottom: 1px solid black">
+						<td class="data-view-left"><i>Mode of representation</i></td>
+						<td class="data-view-right">{modeOfRepresentation}</td>
+				</tr>
+				</tpl>
+		</table>
+		<tpl if="cave != &quot;&quot;">
+		<figure style='text-align: center; margin: 10px;'>
+				<img src='{realCaveSketchUri}'
+						style='position: relative; width: 300px; height: auto;'>
+				<figcaption style='font-size: 14px;'>Cave sketch</figcaption>
+		</figure>
+		</tpl>
+
+		<h4 class="data-display">Indexing</h4>
+
+
+</div>
