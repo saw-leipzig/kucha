@@ -38,7 +38,7 @@ public class DepictionEntry extends AbstractEntry {
 	private int storyID = 0;
 	private CaveEntry cave;
 	private int wallID = 0;
-	private ArrayList<Integer> wallIDs ;
+	private ArrayList<WallTreeEntry> wallIDs ;
 	private int absoluteLeft = -1;
 	private int absoluteTop = -1;
 	private int modeOfRepresentationID = 0;
@@ -79,7 +79,7 @@ public class DepictionEntry extends AbstractEntry {
 	 */
 	public DepictionEntry(int depictionID, int styleID, String inscriptions, String separateAksaras, String dating, String description,
 			String backgroundColour, String generalRemarks, String otherSuggestedIdentifications, double width, double height, ExpeditionEntry expedition,
-			Date purchaseDate, LocationEntry location, String inventoryNumber, VendorEntry vendor, int storyID, CaveEntry cave, ArrayList<Integer> wallIDs, int absoluteLeft,
+			Date purchaseDate, LocationEntry location, String inventoryNumber, VendorEntry vendor, int storyID, CaveEntry cave, ArrayList<WallTreeEntry> wallIDs, int absoluteLeft,
 			int absoluteTop, int modeOfRepresentationID, String shortName, String positionNotes, int masterImageID, int accessLevel, String lastChangedByUser, 
 			String lastChangedOnDate) {
 		super();
@@ -103,7 +103,7 @@ public class DepictionEntry extends AbstractEntry {
 		this.cave = cave;
 		this.wallIDs = wallIDs;
 		if (this.wallIDs.size()>0) {
-			this.wallID= wallIDs.get(0);
+			this.wallID= wallIDs.get(0).getWallLocationID();
 		}
 		else {
 			this.wallID=0;
@@ -378,11 +378,11 @@ public class DepictionEntry extends AbstractEntry {
 		//Util.doLogging("Size of related Images: "+relatedImages.size());
 		return relatedImages;
 	}
-	public ArrayList<Integer> getWalls() {
+	public ArrayList<WallTreeEntry> getWalls() {
 		//Util.doLogging("Size of related Images: "+relatedImages.size());
 		return wallIDs;
 	}
-	public void setWalls(ArrayList<Integer> walls) {
+	public void setWalls(ArrayList<WallTreeEntry> walls) {
 		wallIDs= walls;
 	}
 	public void addRelatedImages(ImageEntry ie) {

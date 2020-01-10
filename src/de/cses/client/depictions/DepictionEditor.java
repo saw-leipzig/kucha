@@ -428,7 +428,7 @@ public class DepictionEditor extends AbstractEditor {
 					caveSelectionCB.setValue(ce);
 					wallSelectorPanel.setCave(ce);
 					wallSelectorPanel.selectWall(correspondingDepictionEntry.getWallID());
-					wallTree.dropunselected(correspondingDepictionEntry.getWallID());
+					wallTree.dropunselected(correspondingDepictionEntry.getWalls());
 					for (WallEntry we : ce.getWallList()) {
 						Util.doLogging(Integer.toString(we.getWallLocationID()));
 					}
@@ -1084,22 +1084,22 @@ public class DepictionEditor extends AbstractEditor {
 				wallEditorDialog.center();
 			}
 		});
-		wallTree = new WallTree(StaticTables.getInstance().getWallTreeEntries().values(), correspondingDepictionEntry.getWallID(), true, false, correspondingDepictionEntry.getCave());
+		wallTree = new WallTree(StaticTables.getInstance().getWallTreeEntries().values(), correspondingDepictionEntry.getWalls(), true, false, correspondingDepictionEntry.getCave());
 		FramedPanel wallTreeFP = new FramedPanel();
-		wallTree.setWall(correspondingDepictionEntry.getWallID());
+		wallTree.setWall(correspondingDepictionEntry.getWalls());
 		wallTreeFP.add(wallTree.wallTree);
-		ToolButton newPositionPlusTool = new ToolButton(new IconConfig("addButton", "addButtonOver"));
-		newPositionPlusTool.setToolTip(Util.createToolTip("add Position"));
+		ToolButton newPositionPlusTool = new ToolButton(new IconConfig("editButton", "editButtonOver"));
+		newPositionPlusTool.setToolTip(Util.createToolTip("edit walls"));
 		newPositionPlusTool.addSelectHandler(new SelectHandler() {
 
 			@Override
 			public void onSelect(SelectEvent event) {
-				ArrayList<Integer> entries = new ArrayList<Integer>();
-				entries.add(correspondingDepictionEntry.getWallID());
-				PositionEditor pe = new PositionEditor(correspondingDepictionEntry.getCave(), entries) {
+
+				PositionEditor pe = new PositionEditor(correspondingDepictionEntry.getCave(), correspondingDepictionEntry.getWalls()) {
 					@Override
 					protected void save(ArrayList<WallTreeEntry> results ) {
-						
+							correspondingDepictionEntry.setWalls(getSelectedWalls());
+							wallTree.setWall(correspondingDepictionEntry.getWalls());
 						}
 					};
 				pe.show();
@@ -1121,8 +1121,9 @@ public class DepictionEditor extends AbstractEditor {
 			public void onSelection(SelectionEvent<WallEntry> event) {
 				correspondingDepictionEntry.setWallID(event.getSelectedItem().getWallLocationID());
 			}
-		});
+		}, false);
 		wallSelectorFP.add(wallSelectorPanel);
+		//wallSelectorFP.add(wallTreeFP);
 		//wallSelectorFP.add(wallEditorTB);
 		FramedPanel positionNoteFP = new FramedPanel();
 		positionNoteFP.setHeading("Position Notes");
@@ -1138,9 +1139,9 @@ public class DepictionEditor extends AbstractEditor {
 		positionNoteFP.add(positionNotesTA);
 		
 		VerticalLayoutContainer basicsRightVLC = new VerticalLayoutContainer();
-		basicsRightVLC.add(wallSelectorFP, new VerticalLayoutData(1.0, .85));
-		basicsRightVLC.add(positionNoteFP, new VerticalLayoutData(1.0, .15));
-		basicsRightVLC.add(wallTreeFP, new VerticalLayoutData(1.0, .50));
+		basicsRightVLC.add(wallSelectorFP, new VerticalLayoutData(1.0, .65));
+		basicsRightVLC.add(wallTreeFP, new VerticalLayoutData(1.0, .25));
+		basicsRightVLC.add(positionNoteFP, new VerticalLayoutData(1.0, .10));
 		
 		HorizontalLayoutContainer basicsTabHLC = new HorizontalLayoutContainer();
 		basicsTabHLC.add(basicsLeftVLC, new HorizontalLayoutData(.4, 1.0));

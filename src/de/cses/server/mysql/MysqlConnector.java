@@ -4980,7 +4980,7 @@ public class MysqlConnector implements IsSerializable {
 		if (diff>100){
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertDepictionImageRelation brauchte "+diff + " Millisekunden.");;}}
 	}
-	private synchronized void insertDepictionWallsRelation(int depictionID, ArrayList<Integer> wallsEntryList) {
+	private synchronized void insertDepictionWallsRelation(int depictionID, ArrayList<WallTreeEntry> wallsEntryList) {
 		long start = System.currentTimeMillis();
 		if (dologgingbegin){
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertDepictionImageRelation wurde ausgelöst.");;
@@ -4989,10 +4989,19 @@ public class MysqlConnector implements IsSerializable {
 		PreparedStatement pstmt;
 		// System.err.println("==> updateDepictionImageRelation called");
 		try {
-			pstmt = dbc.prepareStatement("INSERT INTO DepictionWallsRelation VALUES (?, ?)");
-			for (Integer entry : wallsEntryList) {
+			pstmt = dbc.prepareStatement("INSERT INTO DepictionWallsRelation VALUES (?, ?,?,?)");
+			for (WallTreeEntry entry : wallsEntryList) {
 				pstmt.setInt(1, depictionID);
-				pstmt.setInt(2, entry);
+				pstmt.setInt(2, entry.getWallLocationID());
+				if (entry.getPosition()==null) {
+					pstmt.setInt(3, -1);
+					pstmt.setString(4, "");
+				}
+				else {
+					pstmt.setInt(3, entry.getPosition().getPositionID());
+					pstmt.setString(4, entry.getPosition().getName());
+					
+				}
 				pstmt.executeUpdate();
 			}
 			pstmt.close();
@@ -7583,16 +7592,19 @@ public class MysqlConnector implements IsSerializable {
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von searchDepictions brauchte "+diff + " Millisekunden. where-Klausel: "+where);;}}
 		return results;
 	}
-	private ArrayList<Integer> getwallsbyDepictionID (Integer depictionID){
+	private ArrayList<WallTreeEntry> getwallsbyDepictionID (Integer depictionID){
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
-		ArrayList<Integer> results = new ArrayList<Integer>();
+		ArrayList<WallTreeEntry> results = new ArrayList<WallTreeEntry>();
 		try {
-			pstmt = dbc.prepareStatement("SELECT * FROM DepictionWallsRelation WHERE DepictionID ="+Integer.toString(depictionID) );
+			pstmt = dbc.prepareStatement("SELECT * FROM infosys.DepictionWallsRelation inner join infosys.WallLocationsTree on (WallLocationsTree.WallLocationID = DepictionWallsRelation.WallID) WHERE DepictionID ="+Integer.toString(depictionID) );
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
-				System.out.println("Added "+Integer.toString(rs.getInt("WallID"))+" to DepictionID "+Integer.toString(rs.getInt("DepictionID")));
-				results.add(rs.getInt("WallID"));
+				if (rs.getInt("PositionID")==-1){
+					results.add(new WallTreeEntry(rs.getInt("WallID"),rs.getInt("ParentID"),rs.getString("Text"),rs.getString("search") ));
+				}else{
+				results.add(new WallTreeEntry(rs.getInt("WallID"),rs.getInt("ParentID"),rs.getString("Text"),rs.getString("search"),rs.getInt("PositionID"),rs.getString("PositionName") ));
+				}
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

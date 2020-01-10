@@ -34,9 +34,12 @@ import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
+import com.sencha.gxt.widget.core.client.event.CheckChangedEvent;
+import com.sencha.gxt.widget.core.client.event.CheckChangedEvent.CheckChangedHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
+import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -62,6 +65,7 @@ public class PositionEditor {
 	private PositionProperties positionProps;
 	private WallTree wallTree;
 	private CaveEntry entry;
+	private ArrayList<WallTreeEntry> walls;
 	int init= 0;
 	PopupPanel popup = new PopupPanel();
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
@@ -73,8 +77,9 @@ public class PositionEditor {
 		LabelProvider<PositionEntry> name();
 	}
 
-	public PositionEditor(CaveEntry entry, ArrayList<Integer> entries) {
+	public PositionEditor(CaveEntry entry, ArrayList<WallTreeEntry> entries) {
 		this.entry=entry;
+		this.walls=entries;
 		positionProps = GWT.create(PositionProperties.class);
 		
 		positionEntryLS = new ListStore<PositionEntry>(positionProps.positionID());
@@ -88,7 +93,8 @@ public class PositionEditor {
 		ArrayList<WallTreeEntry> result = new ArrayList<WallTreeEntry>();
 		if (wallTree.wallTree != null) {
 			for (WallTreeEntry entry : wallTree.wallTree.getCheckedSelection()) {
-				if (entry.getChildren()==null) {
+				Util.doLogging(entry.getText()+"getchildren: "+Integer.toString(entry.getChildren().size()));
+				if (entry.getChildren().size()==0) {
 					Util.doLogging("Add Entry: "+entry.getText());
 					result.add(entry);
 				}
@@ -105,7 +111,10 @@ public class PositionEditor {
 
 		FramedPanel selectWallFP = new FramedPanel();
 		selectWallFP.setHeading("Select Wall");
-		wallTree = new WallTree(StaticTables.getInstance().getWallTreeEntries().values(), 0, false, true, entry);
+		wallTree = new WallTree(StaticTables.getInstance().getWallTreeEntries().values(), walls, false, true, entry);
+
+				//Info.display("Ausgewählt: ",wallTree.wallTree.getSelectionModel().getSelectedItem().getText());
+
 		selectWallFP.add(wallTree.wallTree);
 	
 
@@ -125,9 +134,7 @@ public class PositionEditor {
 		positionComboBox.setEditable(false);
 		positionComboBox.setTriggerAction(TriggerAction.ALL);
 
-		FramedPanel positionFP = new FramedPanel();
-		positionFP.setHeading("Select position");
-		positionFP.add(positionComboBox);
+
 		//FramedPanel wallFP = new FramedPanel();
 		//wallFP.setHeading("Select wall");
 		//wallFP.add(positionComboBox);
@@ -143,25 +150,65 @@ public class PositionEditor {
 		};
 		positionComboBox.addValueChangeHandler(positionSelectionHandler);
 
-		VerticalLayoutContainer vlcWalls = new VerticalLayoutContainer();
-		vlcWalls.add(positionFP, new VerticalLayoutData(1.0, .15));
 		
-		HorizontalLayoutContainer wallRelationHLC = new HorizontalLayoutContainer();
-		wallRelationHLC.add(selectWallFP, new HorizontalLayoutData(.5, 1.0));
-		wallRelationHLC.add(vlcWalls, new HorizontalLayoutData(.5, 1.0));
 
-		FramedPanel wallrelationFramedPanel = new FramedPanel();
-		wallrelationFramedPanel.setHeading("Add Position in Cave");
-		wallrelationFramedPanel.setSize("600px", "450px");
-		wallrelationFramedPanel.add(wallRelationHLC);
+
+		selectWallFP.setSize("600px", "450px");
 		
 		ToolButton cancelTB = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
 		cancelTB.setToolTip(Util.createToolTip("close"));
+		selectWallFP.setHeading("Add Position in Cave");
 		cancelTB.addSelectHandler(new SelectHandler() {
 
 			@Override
 			public void onSelect(SelectEvent event) {
 				popup.hide();
+			}
+		});
+
+		ToolButton editTB = new ToolButton(new IconConfig("editButton", "editButtonOver"));
+		editTB.setToolTip(Util.createToolTip("Add Position to Wall"));
+		editTB.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				PopupPanel editWallPosition = new PopupPanel();
+				FramedPanel positionFP = new FramedPanel();
+				positionFP.setHeading("Select position");
+				if (wallTree.wallTree.getSelectionModel().getSelectedItem().getPosition()==null) {
+					positionComboBox.clear();
+				}
+				else {
+					positionComboBox.setValue(wallTree.wallTree.getSelectionModel().getSelectedItem().getPosition());
+				}
+				
+				positionFP.add(positionComboBox);
+				editWallPosition.add(positionFP);
+				ToolButton cancelpositionTB = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
+				cancelpositionTB.setToolTip(Util.createToolTip("close"));
+				cancelpositionTB.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						editWallPosition.hide();
+					};
+				});
+				ToolButton savepositionTB = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
+				savepositionTB.setToolTip(Util.createToolTip("save Position for"+wallTree.wallTree.getSelectionModel().getSelectedItem().getText()));
+				savepositionTB.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						wallTree.wallTree.getSelectionModel().getSelectedItem().setPosition(positionComboBox.getCurrentValue());;
+						Info.display("Test: ", wallTree.wallTree.getSelectionModel().getSelectedItem().getText());
+						wallTree.wallTree.refresh(wallTree.wallTree.getSelectionModel().getSelectedItem());
+						wallTree.wallTree.setAutoExpand(true);
+						editWallPosition.hide();
+					};
+				});
+				positionFP.addTool(savepositionTB);
+				positionFP.addTool(cancelpositionTB);
+				editWallPosition.center();
 			}
 		});
 
@@ -175,12 +222,13 @@ public class PositionEditor {
 				popup.hide();
 			}
 		});
-		wallrelationFramedPanel.addTool(saveTB);
-		wallrelationFramedPanel.addTool(cancelTB);
+		selectWallFP.addTool(editTB);
+		selectWallFP.addTool(saveTB);
+		selectWallFP.addTool(cancelTB);
 
 
 		Util.doLogging("WallOrnamentCaveRelationEditor.createForm() finished");
-		return wallrelationFramedPanel;
+		return selectWallFP;
 	}
 
 	protected void save(ArrayList<WallTreeEntry> results ) {

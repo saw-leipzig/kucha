@@ -11,10 +11,14 @@ import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.data.shared.event.StoreFilterEvent;
 import com.sencha.gxt.widget.core.client.tree.Tree;
+import com.sencha.gxt.widget.core.client.tree.TreeStyle;
+import com.sencha.gxt.widget.core.client.tree.Tree.CheckCascade;
+import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
 
 import de.cses.shared.CaveEntry;
 import de.cses.shared.WallTreeEntry;
 import de.cses.client.Util;
+import de.cses.client.depictions.DepictionDataDisplay.Images;
 
 
 public class WallTree {
@@ -22,6 +26,7 @@ public class WallTree {
 	public Tree<WallTreeEntry, String> wallTree;
 	public Map<String, WallTreeEntry> selectedwallMap;
 	private CaveEntry cEntry;
+	private ArrayList<WallTreeEntry> allEntries;
 	private boolean dropunselected;
 	private boolean editable;
 	class WallTreeEntryKeyProvider implements ModelKeyProvider<WallTreeEntry> {
@@ -48,12 +53,12 @@ public class WallTree {
 			return "name";
 		}
 	}
-	public WallTree(Collection<WallTreeEntry> elements, int wallID, boolean dropunselected, boolean editable, CaveEntry entry) {
-		cEntry= entry;
-		dropunselected = dropunselected;
-		editable=editable;
-		setWallTreeStore(elements,wallID,dropunselected);
+	public WallTree(Collection<WallTreeEntry> elements, ArrayList<WallTreeEntry> wallIDs, boolean dropunselected, boolean editable, CaveEntry entry) {
+		this.cEntry= entry;
+		this.dropunselected = dropunselected;
+		this.editable=editable;
 		buildTree(editable);
+		setWallTreeStore(elements, dropunselected, wallIDs);
 	}
 	private void processParentWallTreeEntry( WallTreeEntry item) {
 		
@@ -67,8 +72,9 @@ public class WallTree {
 					if ((child.getWallLocationID() == WallTreeEntry.ANTECHAMBER_LABEL)
 							|| (child.getWallLocationID() == WallTreeEntry.MAIN_CHAMBER_LABEL)||(child.getWallLocationID()<100)) {
 							//Util.doLogging(item.getText()+" - "+child.getText()+" /1");
-							wallTreeStore.add(item, child);
-							if (child.getChildren() != null) {
+						wallTreeStore.add(item, child);
+						allEntries.add(child);
+						if (child.getChildren() != null) {
 								processParentWallTreeEntry(child);
 							}
 						}
@@ -84,6 +90,7 @@ public class WallTree {
 							|| (child.getWallLocationID() == WallTreeEntry.REAR_AREA_LABEL)||(child.getWallLocationID()<100)) {
 						//Util.doLogging(item.getText()+" - "+child.getText()+" /2");
 						wallTreeStore.add(item, child);
+						allEntries.add(child);
 						if (child.getChildren() != null) {
 							processParentWallTreeEntry(child);
 						}
@@ -102,6 +109,7 @@ public class WallTree {
 							|| (child.getWallLocationID() == WallTreeEntry.REAR_AREA_RIGHT_CORRIDOR_LABEL)||(child.getWallLocationID()<100)) {
 						//Util.doLogging(item.getText()+" - "+child.getText()+" /3");
 						wallTreeStore.add(item, child);
+						allEntries.add(child);
 						if (child.getChildren() != null) {
 							processParentWallTreeEntry(child);
 						}
@@ -131,32 +139,31 @@ public class WallTree {
 			}
 		}}
 	}
-	private void buildTreeStore(Collection<WallTreeEntry> elements, boolean ornaments){
+
+	private void buildTreeStore( boolean ornaments){
 		wallTreeStore = new TreeStore<WallTreeEntry>(new WallTreeEntryKeyProvider());
 		wallTreeStore.clear();
+		allEntries = new ArrayList<WallTreeEntry>();
 	}
-	public void setWall(int wallKey) {
-		Util.doLogging("Starte Suche nach WallTreeEntry");
-		for (WallTreeEntry wall : wallTreeStore.getAll()) {
-			Util.doLogging("Vergleiche: "+Integer.toString(wall.getWallLocationID())+" mit "+Integer.toString(wallKey));
-			if (wall.getWallLocationID()==wallKey) {
-				Util.doLogging("WallTreeEntry: "+wall.getText());
-			}
-		}
+	public void setWall(ArrayList<WallTreeEntry> wallKeys) {
+		dropunselected(wallKeys);
 	}
 	public void findParent(WallTreeEntry child) {
 		if (child.getParentID()==0) {
-			wallTreeStore.clear();
 		    Util.doLogging("Found: "+Integer.toString(child.getParentID())+" - "+Integer.toString(child.getWallLocationID()));
-			wallTreeStore.add(child);
+		    if (wallTreeStore.findModel(child)==null) {
+		    	wallTreeStore.add(child);
+		    }
 		}
 		else {
-		for (WallTreeEntry wall : wallTreeStore.getAll()) {
+		for (WallTreeEntry wall : allEntries) {
 			if (wall.getWallLocationID()==child.getParentID()) {
 
 					findParent(wall);
 					Util.doLogging("Found: "+Integer.toString(child.getParentID())+" - "+Integer.toString(child.getWallLocationID()));
-					wallTreeStore.add(wall, child);
+				    if (wallTreeStore.findModel(child)==null) {
+				    	wallTreeStore.add(wall, child);
+				    }
 				}
 				
 			
@@ -164,12 +171,12 @@ public class WallTree {
 		};
 	}
 
-	public void setWallTreeStore(Collection<WallTreeEntry> elements, int wallID, boolean dropunselected) {
+
+	public void setWallTreeStore(Collection<WallTreeEntry> elements, boolean dropunselected, ArrayList<WallTreeEntry> wallIDs) {
 		Util.doLogging("Länge von Elements:"+ Integer.toString(elements.size()));
-		buildTreeStore(elements, false);
-		wallTreeStore.clear();
 		for (WallTreeEntry item : elements) {
 			wallTreeStore.add(item);
+			allEntries.add(item);
 			if (item.getChildren() != null) {
 
 					//if (item.getParentID()==null) {
@@ -177,28 +184,38 @@ public class WallTree {
 			}
 		}
 		if (dropunselected) {
-			dropunselected(wallID);
+			dropunselected(wallIDs);
+		}
+		else {
+			selectitems(wallIDs);
+		}
+
+	}
+	public void dropunselected(ArrayList<WallTreeEntry> wallIDs) {
+		wallTreeStore.clear();
+		for (WallTreeEntry wall : wallIDs) {
+					findParent(wall);
+			
 		}
 	}
-	public void dropunselected(int wallID) {
-			Boolean found = new Boolean(false);
-			for (WallTreeEntry wall : wallTreeStore.getAll()) {
-				if (wall.getWallLocationID()==wallID) {
-					findParent(wall);
-					found=true;
+		
+	public void selectitems(ArrayList<WallTreeEntry> wallIDs) {
+		wallTree.setCheckStyle(CheckCascade.PARENTS);
+		for (WallTreeEntry wall : wallIDs) {
+					wallTreeStore.remove(wall);
+					wallTreeStore.add(wallTreeStore.findModelWithKey(Integer.toString(wall.getParentID())), wall);
+					wallTree.setChecked(wall, CheckState.CHECKED);
 				}
-			
-			}
-			if (!found) {
-				wallTreeStore.clear();
-			}
-		}
+
+	}
 		
 
 	public void buildTree( boolean editable){
 		selectedwallMap = new HashMap<String, WallTreeEntry>();
-
-			
+		buildTreeStore(false);
+		wallTreeStore.clear();
+		allEntries.clear();
+		
 		wallTree = new Tree<WallTreeEntry, String>(wallTreeStore, new WallTreeEntryValueProvider()) {
 
 			@Override
@@ -211,6 +228,12 @@ public class WallTree {
 
 		};
 		wallTree.setCheckable(editable);
+		TreeStyle treeStyle = new TreeStyle(); 
+		treeStyle.setNodeCloseIcon(Images.INSTANCE.foo());
+		treeStyle.setNodeOpenIcon(Images.INSTANCE.foo());	
+		wallTree.setStyle(treeStyle);
+		wallTree.setAutoExpand(true);
+
 
 
 	}

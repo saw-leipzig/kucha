@@ -58,6 +58,7 @@ public class WallSelector implements IsWidget {
 	private CaveEntry currentCave;
 	private WallViewTemplate wallVT;
 	private ListStore<WallEntry> wallEntryLS;
+	boolean withCB;
 //	private VerticalLayoutContainer mainVLC = null;
 	private BorderLayoutContainer mainBLC;
 
@@ -83,14 +84,18 @@ public class WallSelector implements IsWidget {
 	 * @param defaultCaveSketchWidth
 	 *          string representing the default sketch width in pixel (px)
 	 */
-	public WallSelector(SelectionHandler<WallEntry> wallSelectionHandler) {
+	
+	public WallSelector(SelectionHandler<WallEntry> wallSelectionHandler, boolean withCB) {
 		caveLayoutViewTemplates = GWT.create(CaveLayoutViewTemplates.class);
 		wallProps = GWT.create(WallProperties.class);
 		wallVT = GWT.create(WallViewTemplate.class);
 		wallEntryLS = new ListStore<WallEntry>(wallProps.wallLocationID());
+		this.withCB=withCB;
 
 		createUI();
-		wallSelectorCB.addSelectionHandler(wallSelectionHandler);
+		if (withCB) {
+			wallSelectorCB.addSelectionHandler(wallSelectionHandler);
+		}
 	}
 
 	/*
@@ -111,7 +116,7 @@ public class WallSelector implements IsWidget {
 	 */
 	private void createUI() {
 		caveSketchContainer = new FlowLayoutContainer();
-		caveSketchContainer.setScrollMode(ScrollMode.NONE);
+		caveSketchContainer.setScrollMode(ScrollMode.AUTOY);
 
 		LabelProvider<WallEntry> wallSelectorLP = new LabelProvider<WallEntry>() {
 			@Override
@@ -126,12 +131,13 @@ public class WallSelector implements IsWidget {
 				return wallVT.wallLabel(StaticTables.getInstance().getWallLocationEntries().get(entry.getWallLocationID()).getLabel());
 			}
 		};
-		
+		if (withCB) {
 		wallSelectorCB = new ComboBox<WallEntry>(wallEntryLS, wallSelectorLP, wallSelectorRenderer);
 		wallSelectorCB.setEditable(false);
 		wallSelectorCB.setTypeAhead(false);
 		wallSelectorCB.setTriggerAction(TriggerAction.ALL);
 		wallSelectorCB.setEmptyText("select wall");
+		}
 //		wallSelectorCB.addSelectionHandler(new SelectionHandler<WallEntry>() {
 //
 //			@Override
@@ -145,8 +151,10 @@ public class WallSelector implements IsWidget {
 		
 		mainBLC = new BorderLayoutContainer();
 		mainBLC.setCenterWidget(caveSketchContainer, new BorderLayoutData());
-		mainBLC.setSouthWidget(wallSelectorCB, southBLD);
-		mainBLC.setHeight(caveSketchContainer.getOffsetHeight()+wallSelectorCB.getOffsetHeight());
+		if (withCB) {
+			mainBLC.setSouthWidget(wallSelectorCB, southBLD);
+			mainBLC.setHeight(caveSketchContainer.getOffsetHeight()+wallSelectorCB.getOffsetHeight());
+		}
 
 	}
 
