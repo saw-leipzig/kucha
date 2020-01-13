@@ -223,7 +223,25 @@ public class MysqlConnector implements IsSerializable {
 			}
 
 		}
+		else if (entry instanceof ImageEntry) {
+			Connection dbc = getConnection();
+			PreparedStatement pstmt;
+			try {
+				System.out.println(" UPDATE Images SET deleted = 1 WHERE ImageID = " +((ImageEntry)entry).getImageID()  + ";");
+				pstmt = dbc.prepareStatement( " UPDATE Images SET deleted = 1 WHERE ImageID = " +((ImageEntry)entry).getImageID()  + ";");
+				ResultSet rs = pstmt.executeQuery();
+				rs.close();
+				pstmt.close();
+				return true;
+			} catch (SQLException e) {
+				e.printStackTrace();
+				System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+				return false;
+			}
+
+		}
 		else {
+			System.out.println("Problem bei der Erkennung der Klasse es Abstract Entries...");
 			return false;
 		}
 		
@@ -300,8 +318,8 @@ public class MysqlConnector implements IsSerializable {
 			Connection dbc = getConnection();
 			PreparedStatement pstmt;
 			try {
-				System.out.println("SELECT * FROM Images WHERE ImageID in (" + imgSourceIds + ");");
-				pstmt = dbc.prepareStatement( "SELECT * FROM Images WHERE ImageID in (" + imgSourceIds + ");");
+				System.out.println("SELECT * FROM Images WHERE ImageID in (" + imgSourceIds + ") and deleted=0;");
+				pstmt = dbc.prepareStatement( "SELECT * FROM Images WHERE ImageID in (" + imgSourceIds + ") and deleted=0;");
 
 				
 				ResultSet rs = pstmt.executeQuery();
@@ -502,7 +520,7 @@ public class MysqlConnector implements IsSerializable {
 
 		try {
 			pstmt = dbc.prepareStatement(
-					"INSERT INTO Images (Filename, Title, ShortName, Copyright, PhotographerID, Comment, Date, ImageTypeID, AccessLevel) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+					"INSERT INTO Images (Filename, Title, ShortName, Copyright, PhotographerID, Comment, Date, ImageTypeID, AccessLevel, deleted) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)",
 					Statement.RETURN_GENERATED_KEYS);
 			pstmt.setString(1, "");
 			pstmt.setString(2, entry.getTitle());
@@ -513,6 +531,7 @@ public class MysqlConnector implements IsSerializable {
 			pstmt.setString(7, entry.getDate());
 			pstmt.setInt(8, entry.getImageTypeID());
 			pstmt.setInt(9, entry.getAccessLevel());
+			pstmt.setBoolean(9, entry.isdeleted());
 			pstmt.executeUpdate();
 			ResultSet keys = pstmt.getGeneratedKeys();
 			if (keys.next()) { // there should only be 1 key returned here
@@ -737,10 +756,10 @@ public class MysqlConnector implements IsSerializable {
 		
 		where += where.isEmpty() ? "AccessLevel IN (" + inStatement + ")" : " AND AccessLevel IN (" + inStatement + ")";
 		
-		System.out.println(where.isEmpty() ? "SELECT * FROM Images ORDER BY Title Asc LIMIT "+Integer.toString(searchEntry.getEntriesShowed()+50)+" OFFSET "+Integer.toString(searchEntry.getEntriesShowed()) : "SELECT * FROM Images WHERE " + where + " ORDER BY Title Asc LIMIT "+Integer.toString(searchEntry.getEntriesShowed()+50)+" OFFSET "+Integer.toString(searchEntry.getEntriesShowed()));
+		System.out.println(where.isEmpty() ? "SELECT * FROM Images where deleted=0 ORDER BY Title Asc LIMIT "+Integer.toString(searchEntry.getEntriesShowed()+50)+" OFFSET "+Integer.toString(searchEntry.getEntriesShowed()) : "SELECT * FROM Images WHERE deleted=0 and " + where + " ORDER BY Title Asc LIMIT "+Integer.toString(searchEntry.getEntriesShowed()+50)+" OFFSET "+Integer.toString(searchEntry.getEntriesShowed()));
 		
 		try {
-			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Images ORDER BY Title Asc LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+ ", "+Integer.toString(searchEntry.getMaxentries()) : "SELECT * FROM Images WHERE " + where + " ORDER BY Title Asc LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+", "+Integer.toString(searchEntry.getMaxentries()));
+			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Images where deleted=0 ORDER BY Title Asc LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+ ", "+Integer.toString(searchEntry.getMaxentries()) : "SELECT * FROM Images WHERE deleted=0 and " + where + " ORDER BY Title Asc LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+", "+Integer.toString(searchEntry.getMaxentries()));
 			int i = 1; // counter to fill ? in where clause
 			if (searchEntry.getTitleSearch() != null && !searchEntry.getTitleSearch().isEmpty()) {
 				pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");
@@ -801,9 +820,9 @@ public class MysqlConnector implements IsSerializable {
 		PreparedStatement pstmt;
 		try {
 			if (sqlWhere != null) {
-				pstmt = dbc.prepareStatement("SELECT * FROM Images WHERE " + sqlWhere + " ORDER BY Title Asc");
+				pstmt = dbc.prepareStatement("SELECT * FROM Images WHERE deleted=0 and " + sqlWhere + " ORDER BY Title Asc");
 			} else {
-				pstmt = dbc.prepareStatement("SELECT * FROM Images ORDER BY Title Asc");
+				pstmt = dbc.prepareStatement("SELECT * FROM Images WHERE deleted=0 ORDER BY Title Asc");
 			}
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
@@ -841,7 +860,7 @@ public class MysqlConnector implements IsSerializable {
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Images WHERE ImageID=" + imageID);
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Images WHERE deleted=0 and ImageID=" + imageID);
 			if (rs.first()) {
 				result = new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
 						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), 
@@ -2395,7 +2414,7 @@ public class MysqlConnector implements IsSerializable {
 
 		PreparedStatement pstmt;
 		try {
-			pstmt = dbc.prepareStatement("SELECT * FROM Images WHERE ImageID IN (SELECT ImageID FROM DepictionImageRelation WHERE DepictionID=?) AND AccessLevel IN (" + inStatement + ")");
+			pstmt = dbc.prepareStatement("SELECT * FROM Images WHERE deleted=0 and ImageID IN (SELECT ImageID FROM DepictionImageRelation WHERE DepictionID=?) AND AccessLevel IN (" + inStatement + ")");
 			//System.out.println("SELECT * FROM Images WHERE ImageID IN (SELECT ImageID FROM DepictionImageRelation WHERE DepictionID="+depictionID+") AND AccessLevel IN (" + inStatement + ")");
 			pstmt.setInt(1, depictionID);
 			ResultSet rs = pstmt.executeQuery();
@@ -2495,7 +2514,7 @@ public class MysqlConnector implements IsSerializable {
 		PreparedStatement pstmt;
 		try {
 			pstmt = dbc.prepareStatement(
-					"UPDATE Images SET Filename=?, Title=?, ShortName=?, Copyright=?, PhotographerID=?, Comment=?, Date=?, ImageTypeID=?, AccessLevel=? WHERE ImageID=?");
+					"UPDATE Images SET Filename=?, Title=?, ShortName=?, Copyright=?, PhotographerID=?, Comment=?, Date=?, ImageTypeID=?, AccessLevel=?, deleted=? WHERE ImageID=?");
 			pstmt.setString(1, entry.getFilename());
 			pstmt.setString(2, entry.getTitle());
 			pstmt.setString(3, entry.getShortName());
@@ -2505,7 +2524,8 @@ public class MysqlConnector implements IsSerializable {
 			pstmt.setString(7, entry.getDate());
 			pstmt.setInt(8, entry.getImageTypeID());
 			pstmt.setInt(9, entry.getAccessLevel());
-			pstmt.setInt(10, entry.getImageID());
+			pstmt.setBoolean(10, entry.isdeleted());
+			pstmt.setInt(11, entry.getImageID());
 			pstmt.execute();
 			pstmt.close();
 		} catch (SQLException e) {
@@ -6804,7 +6824,7 @@ public class MysqlConnector implements IsSerializable {
 		PreparedStatement pstmt;
 		try {
 			pstmt = dbc.prepareStatement(
-					"SELECT * FROM Images JOIN OrnamentImageRelation ON OrnamentImageRelation.ImageID = Images.ImageID WHERE OrnamentID ="
+					"SELECT * FROM Images where deleted=0 JOIN OrnamentImageRelation ON OrnamentImageRelation.ImageID = Images.ImageID WHERE OrnamentID ="
 							+ ornamentID + " ORDER BY Title Asc");
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {

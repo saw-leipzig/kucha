@@ -90,8 +90,9 @@ public class ImageSearchController extends AbstractSearchController {
 						count=0;
 					}
 				}
-				getResultView().getPics(imageIDs, 120, UserLogin.getInstance().getSessionID());				
-				
+				if (imageIDs != "") {
+					getResultView().getPics(imageIDs, 120, UserLogin.getInstance().getSessionID());				
+				}
 			}
 
 			@Override

@@ -130,7 +130,9 @@ public class ImageResultView extends AbstractResultView {
 							imageIDs="";
 							count=0;
 						}
-						getPics(imageIDs, 120, UserLogin.getInstance().getSessionID());
+					}
+					if (imageIDs != "") {
+						getPics(imageIDs, 120, UserLogin.getInstance().getSessionID());				
 					}
 					return;
 				} else if (event.getData() instanceof CaveEntry) {
