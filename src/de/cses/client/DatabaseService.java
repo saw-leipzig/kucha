@@ -109,6 +109,8 @@ public interface DatabaseService extends RemoteService {
 
 	boolean deleteEntry(String sqlDelete) throws IllegalArgumentException;
 
+	boolean deleteAbstractEntry(AbstractEntry entry) throws IllegalArgumentException;
+
 	ArrayList<IconographyEntry> getIconography() throws IllegalArgumentException;
 
 	int saveOrnamentEntry(OrnamentEntry ornamentEntry) throws IllegalArgumentException;

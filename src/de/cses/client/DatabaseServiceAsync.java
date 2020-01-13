@@ -118,6 +118,8 @@ public interface DatabaseServiceAsync {
 	 */
 	void deleteEntry(String sqlDelete, AsyncCallback<Boolean> callback) throws IllegalArgumentException;
 
+	void deleteAbstractEntry(AbstractEntry entry, AsyncCallback<Boolean> callback) throws IllegalArgumentException;
+
 	void saveOrnamentEntry(OrnamentEntry ornamentEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 
 	/**

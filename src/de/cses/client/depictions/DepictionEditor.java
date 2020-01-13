@@ -1469,6 +1469,36 @@ public class DepictionEditor extends AbstractEditor {
 				saveDepictionEntry(false);
 			}
 		});
+		ToolButton deleteToolButton = new ToolButton(new IconConfig("removeButton", "removeButtonOver"));
+		deleteToolButton.setToolTip(Util.createToolTip("delete"));
+		deleteToolButton.addSelectHandler(new SelectHandler() {
+			@Override
+			public void onSelect(SelectEvent event) {
+				de.cses.client.Util.showYesNo("Delete Warning!", "Proceeding will remove this Entry from the Database, are you sure?", new SelectHandler() {
+					
+					@Override
+					public void onSelect(SelectEvent event) {
+						deleteEntry(correspondingDepictionEntry);
+						closeEditor(null);
+					}
+				}, new SelectHandler() {
+						
+					@Override
+					public void onSelect(SelectEvent event) {
+						 
+					}
+				}, new KeyDownHandler() {
+
+					@Override
+					public void onKeyDown(KeyDownEvent e) {
+						
+					}}
+			
+					
+			
+			  );
+			}
+		});
 		
 		ToolButton closeToolButton = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
 		closeToolButton.setToolTip(Util.createToolTip("close"));
@@ -1516,6 +1546,7 @@ public class DepictionEditor extends AbstractEditor {
 
 		mainPanel.add(mainHLC);
 		mainPanel.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
+		mainPanel.addTool(deleteToolButton);
 		mainPanel.addTool(saveToolButton);
 		mainPanel.addTool(closeToolButton);
 		new Resizable(mainPanel);

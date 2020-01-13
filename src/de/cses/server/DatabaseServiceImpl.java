@@ -497,6 +497,11 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.insertCaveEntry(caveEntry);
 	}
+	@Override
+	public boolean deleteAbstractEntry(AbstractEntry entry) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.deleteAbstractEntry(entry);
+	}
 
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getCaveGroups()

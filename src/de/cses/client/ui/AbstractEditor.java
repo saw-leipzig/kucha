@@ -15,15 +15,22 @@ package de.cses.client.ui;
 
 import java.util.ArrayList;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.Widget;
 
+import de.cses.client.DatabaseService;
+import de.cses.client.DatabaseServiceAsync;
 import de.cses.shared.AbstractEntry;
+import de.cses.shared.CaveEntry;
 
 /**
  * @author alingnau
  *
  */
 public abstract class AbstractEditor implements IsWidget {
+	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 
 	private ArrayList<EditorListener> listenerList = new ArrayList<EditorListener>();
 	
@@ -39,6 +46,23 @@ public abstract class AbstractEditor implements IsWidget {
 	protected void closeEditor(AbstractEntry entry) {
 		for (EditorListener el : listenerList) {
 			el.closeRequest(entry);
+		}
+	}
+	protected void deleteEntry(AbstractEntry entry) {
+		for (EditorListener el : listenerList) {
+			((Widget)el).removeFromParent();
+			dbService.deleteAbstractEntry(entry, new AsyncCallback<Boolean>() {			
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(Boolean result) {
+					
+				}
+		
+		});
 		}
 	}
 	

@@ -206,6 +206,29 @@ public class MysqlConnector implements IsSerializable {
 		return result;
 	}
 
+	public boolean deleteAbstractEntry(AbstractEntry entry) {
+		if (entry instanceof DepictionEntry) {
+			Connection dbc = getConnection();
+			PreparedStatement pstmt;
+			try {
+				pstmt = dbc.prepareStatement( " UPDATE Depictions SET deleted = 1 WHERE DepictionID = " +((DepictionEntry)entry).getDepictionID()  + ";");
+				ResultSet rs = pstmt.executeQuery();
+				rs.close();
+				pstmt.close();
+				return true;
+			} catch (SQLException e) {
+				e.printStackTrace();
+				System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+				return false;
+			}
+
+		}
+		else {
+			return false;
+		}
+		
+	}
+
 	public Map<Integer,String> getPics(ArrayList<ImageEntry> imgSources, int tnSize, String sessionID) {
 		int accessLevelOfSession = getAccessLevelForSessionID(sessionID);
 		ArrayList<Integer> authorizedAccessLevel = new ArrayList<Integer>();
@@ -277,6 +300,7 @@ public class MysqlConnector implements IsSerializable {
 			Connection dbc = getConnection();
 			PreparedStatement pstmt;
 			try {
+				System.out.println("SELECT * FROM Images WHERE ImageID in (" + imgSourceIds + ");");
 				pstmt = dbc.prepareStatement( "SELECT * FROM Images WHERE ImageID in (" + imgSourceIds + ");");
 
 				
@@ -961,7 +985,7 @@ public class MysqlConnector implements IsSerializable {
 		}
 
 		if (searchEntry.isDecoratedOnly()) {
-			where += where.isEmpty() ? "CaveID IN (SELECT CaveID FROM Depictions)" : " AND CaveID IN (SELECT CaveID FROM Depictions)";
+			where += where.isEmpty() ? "CaveID IN (SELECT CaveID FROM Depictions where Depictions.deleted=0 )" : " AND CaveID IN (SELECT CaveID FROM Depictions where Depictions.deleted=0 )";
 		}
 
 		/**
@@ -1303,7 +1327,7 @@ public class MysqlConnector implements IsSerializable {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Ornaments");
 			while (rs.next()) {
-				System.out.println("Durchlauf"+Integer.toString(rs.getInt("OrnamentID")));
+				//System.out.println("Durchlauf"+Integer.toString(rs.getInt("OrnamentID")));
 				results.add(new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
 						//rs.getString("Annotation"),
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
@@ -1702,7 +1726,7 @@ public class MysqlConnector implements IsSerializable {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
-			pstmt = dbc.prepareStatement("SELECT * FROM Iconography WHERE IconographyID IN (SELECT IconographyID FROM DepictionIconographyRelation) ORDER BY Text Asc");
+			pstmt = dbc.prepareStatement("SELECT * FROM Iconography WHERE IconographyID IN (SELECT DepictionIconographyRelation.IconographyID FROM DepictionIconographyRelation inner join Depictions on (DepictionIconographyRelation.DepictionID = Depictions.DepictionID) where Depictions.deleted=0) ORDER BY Text Asc");
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
 				result.add(new IconographyEntry(rs.getInt("IconographyID"), rs.getInt("ParentID"), rs.getString("Text"), rs.getString("search")));
@@ -2407,7 +2431,7 @@ public class MysqlConnector implements IsSerializable {
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT DepictionID, AbsoluteLeft, AbsoluteTop FROM Depictions WHERE WallID = " + wallID);
+			ResultSet rs = stmt.executeQuery("SELECT DepictionID, AbsoluteLeft, AbsoluteTop FROM Depictions WHERE WallID = " + wallID +" and deleted=0");
 			while (rs.next()) {
 				DepictionEntry depiction = new DepictionEntry();
 				depiction.setDepictionID(rs.getInt("DepictionID"));
@@ -4806,7 +4830,7 @@ public class MysqlConnector implements IsSerializable {
 					"UPDATE Depictions SET StyleID=?, Inscriptions=?, SeparateAksaras=?, Dating=?, Description=?, BackgroundColour=?, GeneralRemarks=?, "
 							+ "OtherSuggestedIdentifications=?, Width=?, Height=?, ExpeditionID=?, PurchaseDate=?, CurrentLocationID=?, InventoryNumber=?, VendorID=?, "
 							+ "StoryID=?, CaveID=?, WallID=?, AbsoluteLeft=?, AbsoluteTop=?, ModeOfRepresentationID=?, ShortName=?, PositionNotes=?, MasterImageID=?, AccessLevel=?, LastChangedByUser=?, "
-							+ "LastChangedOnDate=? WHERE DepictionID=?");
+							+ "LastChangedOnDate=?, deleted=? WHERE DepictionID=?");
 			pstmt.setInt(1, de.getStyleID());
 			pstmt.setString(2, de.getInscriptions());
 			pstmt.setString(3, de.getSeparateAksaras());
@@ -4834,7 +4858,8 @@ public class MysqlConnector implements IsSerializable {
 			pstmt.setInt(25, de.getAccessLevel());
 			pstmt.setString(26, de.getLastChangedByUser());
 			pstmt.setString(27, de.getModifiedOn());
-			pstmt.setInt(28, de.getDepictionID());
+			pstmt.setBoolean(28, de.isdeleted());
+			pstmt.setInt(29, de.getDepictionID());
 			pstmt.executeUpdate();
 			pstmt.close();
 		} catch (SQLException ex) {
@@ -5015,7 +5040,7 @@ public class MysqlConnector implements IsSerializable {
 		if (diff>100){
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von writeCaveBibliographyRelation brauchte "+diff + " Millisekunden.");;}}
 	}
-
+	
 	private synchronized void writeOrnamenticBibliographyRelation(int OrnamentID, ArrayList<AnnotatedBibliographyEntry> relatedBibliographyList) {
 		long start = System.currentTimeMillis();
 		if (dologgingbegin){
@@ -7379,7 +7404,7 @@ public class MysqlConnector implements IsSerializable {
 		if (searchEntry.getShortName() != null && !searchEntry.getShortName().isEmpty()) {
 			where = "ShortName LIKE ?";
 		}
-
+		where += where.isEmpty() ? "deleted=0" : " AND deleted=0";
 		String caveIDs="";
 		for (int caveID : searchEntry.getCaveIdList()) {
 			caveIDs += caveIDs.isEmpty() ? Integer.toString(caveID) : "," + caveID;
@@ -7468,6 +7493,13 @@ public class MysqlConnector implements IsSerializable {
 		if (diff>100){
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von searchDepictions brauchte "+diff + " Millisekunden. where-Klausel: "+where);;}}
 		return results;
+	}
+	
+	public boolean deleteEntry(AbstractEntry entry) {
+		if (entry instanceof DepictionEntry) {
+			System.out.println("gut!");
+		}
+		return true;
 	}
 
 	public ArrayList<UserEntry> getUsers() {
@@ -7661,7 +7693,7 @@ public class MysqlConnector implements IsSerializable {
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Depictions WHERE DepictionID=" + depictionID);
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Depictions WHERE DepictionID=" + depictionID +" and deleted=0");
 			int accessLevel=-1;
 			accessLevel = getAccessLevelForSessionID(sessionID);
 			// we only need to call this once, since we do not expect more than 1 result!
