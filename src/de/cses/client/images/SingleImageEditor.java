@@ -428,8 +428,10 @@ public class SingleImageEditor extends AbstractEditor {
 					
 					@Override
 					public void onSelect(SelectEvent event) {
+						imgEntry.delete();
+						if (imgEntry==null) {Util.doLogging("imgEntry is null!");}
+						closeEditor(imgEntry);
 						deleteEntry(imgEntry);
-						closeEditor(null);
 					}
 				}, new SelectHandler() {
 						

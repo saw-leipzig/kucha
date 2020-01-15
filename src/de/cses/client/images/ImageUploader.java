@@ -36,6 +36,7 @@ import com.sencha.gxt.widget.core.client.form.FileUploadField;
 import com.sencha.gxt.widget.core.client.form.FormPanel;
 import com.sencha.gxt.widget.core.client.form.FormPanel.Encoding;
 import com.sencha.gxt.widget.core.client.form.FormPanel.Method;
+import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.Util;
 
@@ -93,6 +94,7 @@ public class ImageUploader implements IsWidget {
 				} else {
 					int startIdx = Math.max(selectedFile.lastIndexOf("\\"), selectedFile.lastIndexOf("/"));
 					filename = selectedFile.substring(startIdx>0 ? startIdx+1 : 0, selectedFile.lastIndexOf("."));
+					Util.doLogging( selectedFile+"- "+filename);
 					form.setAction("imgUpload?origImageFileName="+filename);
 				}
 			}
@@ -105,6 +107,7 @@ public class ImageUploader implements IsWidget {
 			public void onSubmitComplete(SubmitCompleteEvent event) {
 				uploadInfoWindow.hide();
 				Document doc = XMLParser.parse(event.getResults());
+				Util.doLogging(event.getResults());
 				NodeList nodelist = doc.getElementsByTagName("pre");
 				Node node = nodelist.item(0);
 				int newImageID = Integer.parseInt(node.getFirstChild().toString());

@@ -19,9 +19,11 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.Util;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.CaveEntry;
 
@@ -50,7 +52,6 @@ public abstract class AbstractEditor implements IsWidget {
 	}
 	protected void deleteEntry(AbstractEntry entry) {
 		for (EditorListener el : listenerList) {
-			((Widget)el).removeFromParent();
 			dbService.deleteAbstractEntry(entry, new AsyncCallback<Boolean>() {			
 			@Override
 			public void onFailure(Throwable caught) {
@@ -59,10 +60,17 @@ public abstract class AbstractEditor implements IsWidget {
 
 			@Override
 			public void onSuccess(Boolean result) {
-					
+					//Info.display("Delete", "Finished with result:"+Boolean.toString(result));
 				}
 		
 		});
+		try {
+			((Widget)el).removeFromParent();
+		}
+		catch (Exception e){
+			Util.doLogging("There was a problem deleting the Image: "+e.getMessage());
+		}
+
 		}
 	}
 	

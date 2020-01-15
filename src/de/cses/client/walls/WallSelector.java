@@ -111,7 +111,7 @@ public class WallSelector implements IsWidget {
 	 */
 	private void createUI() {
 		caveSketchContainer = new FlowLayoutContainer();
-		caveSketchContainer.setScrollMode(ScrollMode.NONE);
+		caveSketchContainer.setScrollMode(ScrollMode.AUTOY);
 
 		LabelProvider<WallEntry> wallSelectorLP = new LabelProvider<WallEntry>() {
 			@Override

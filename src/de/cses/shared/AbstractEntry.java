@@ -74,6 +74,9 @@ public abstract class AbstractEntry implements IsSerializable {
 	public boolean isdeleted() {
 		return deleted;
 	}
+	public void delete() {
+		deleted=true;
+	}
 
 	public void setAccessLevel(int accessLevel) {
 		this.accessLevel = accessLevel;

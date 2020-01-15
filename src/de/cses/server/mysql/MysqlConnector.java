@@ -241,7 +241,7 @@ public class MysqlConnector implements IsSerializable {
 
 		}
 		else {
-			System.out.println("Problem bei der Erkennung der Klasse es Abstract Entries...");
+			System.out.println("Problem bei der Erkennung der Klasse des AbstractEntries...");
 			return false;
 		}
 		
@@ -531,7 +531,7 @@ public class MysqlConnector implements IsSerializable {
 			pstmt.setString(7, entry.getDate());
 			pstmt.setInt(8, entry.getImageTypeID());
 			pstmt.setInt(9, entry.getAccessLevel());
-			pstmt.setBoolean(9, entry.isdeleted());
+			pstmt.setBoolean(10, entry.isdeleted());
 			pstmt.executeUpdate();
 			ResultSet keys = pstmt.getGeneratedKeys();
 			if (keys.next()) { // there should only be 1 key returned here
@@ -876,6 +876,9 @@ public class MysqlConnector implements IsSerializable {
 		if (dologging){
 		long end = System.currentTimeMillis();
 		long diff = (end-start);
+		if (result==null) {
+			System.out.println("getImageEntry: Kein passendes Image gefunden!");
+		}
 		if (diff>100){
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getImageEntry brauchte "+diff + " Millisekunden.");;}}
 		return result;
@@ -1935,10 +1938,11 @@ public class MysqlConnector implements IsSerializable {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
-			pstmt = dbc.prepareStatement("UPDATE Iconography SET ParentID=?, Text=? WHERE IconographyID =?");
+			pstmt = dbc.prepareStatement("UPDATE Iconography SET ParentID=?, Text=?, search=? WHERE IconographyID =?");
 			pstmt.setInt(1, iconographyEntryToEdit.getParentID());
 			pstmt.setString(2, iconographyEntryToEdit.getText());
-			pstmt.setInt(3, iconographyEntryToEdit.getIconographyID());
+			pstmt.setString(3, iconographyEntryToEdit.getSearch());
+			pstmt.setInt(4, iconographyEntryToEdit.getIconographyID());
 			pstmt.executeUpdate();
 			pstmt.close();
 		} catch (SQLException e) {
@@ -2513,6 +2517,7 @@ public class MysqlConnector implements IsSerializable {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
+			System.out.println("UPDATE Images SET Filename="+entry.getFilename()+", Title="+entry.getTitle()+", ShortName="+entry.getShortName()+", Copyright="+entry.getCopyright()+", PhotographerID=?, Comment=?, Date=?, ImageTypeID=?, AccessLevel=?, deleted="+entry.isdeleted()+" WHERE ImageID=?");
 			pstmt = dbc.prepareStatement(
 					"UPDATE Images SET Filename=?, Title=?, ShortName=?, Copyright=?, PhotographerID=?, Comment=?, Date=?, ImageTypeID=?, AccessLevel=?, deleted=? WHERE ImageID=?");
 			pstmt.setString(1, entry.getFilename());
@@ -6824,7 +6829,7 @@ public class MysqlConnector implements IsSerializable {
 		PreparedStatement pstmt;
 		try {
 			pstmt = dbc.prepareStatement(
-					"SELECT * FROM Images where deleted=0 JOIN OrnamentImageRelation ON OrnamentImageRelation.ImageID = Images.ImageID WHERE OrnamentID ="
+					"SELECT * FROM Images JOIN OrnamentImageRelation ON OrnamentImageRelation.ImageID = Images.ImageID WHERE Images.deleted=0 and OrnamentID ="
 							+ ornamentID + " ORDER BY Title Asc");
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
