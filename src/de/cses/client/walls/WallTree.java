@@ -3,22 +3,22 @@ package de.cses.client.walls;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-
 
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.data.shared.event.StoreFilterEvent;
 import com.sencha.gxt.widget.core.client.tree.Tree;
-import com.sencha.gxt.widget.core.client.tree.TreeStyle;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckCascade;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
+import com.sencha.gxt.widget.core.client.tree.TreeStyle;
 
-import de.cses.shared.CaveEntry;
-import de.cses.shared.WallTreeEntry;
 import de.cses.client.Util;
 import de.cses.client.depictions.DepictionDataDisplay.Images;
+import de.cses.shared.CaveEntry;
+import de.cses.shared.WallTreeEntry;
 
 
 public class WallTree {
@@ -53,7 +53,7 @@ public class WallTree {
 			return "name";
 		}
 	}
-	public WallTree(Collection<WallTreeEntry> elements, ArrayList<WallTreeEntry> wallIDs, boolean dropunselected, boolean editable, CaveEntry entry) {
+	public WallTree(Collection<WallTreeEntry> elements, List<WallTreeEntry> wallIDs, boolean dropunselected, boolean editable, CaveEntry entry) {
 		this.cEntry= entry;
 		this.dropunselected = dropunselected;
 		this.editable=editable;
@@ -69,8 +69,8 @@ public class WallTree {
 			case 2: // square cave
 				//Util.doLogging("cEntry.getCaveTypeID: "+Integer.toString(cEntry.getCaveTypeID()));
 				for (WallTreeEntry child : item.getChildren()) {
-					if ((child.getWallLocationID() == WallTreeEntry.ANTECHAMBER_LABEL)
-							|| (child.getWallLocationID() == WallTreeEntry.MAIN_CHAMBER_LABEL)||(child.getWallLocationID()<100)) {
+					if (( WallTreeEntry.ANTECHAMBER_LABEL.contains(child.getWallLocationID()))
+							|| (WallTreeEntry.MAIN_CHAMBER_LABEL.contains(child.getWallLocationID()))||(child.getWallLocationID()<100)) {
 							//Util.doLogging(item.getText()+" - "+child.getText()+" /1");
 						wallTreeStore.add(item, child);
 						allEntries.add(child);
@@ -84,10 +84,10 @@ public class WallTree {
 			case 3: // residential cave
 				//Util.doLogging("cEntry.getCaveTypeID: "+Integer.toString(cEntry.getCaveTypeID()));
 				for (WallTreeEntry child : item.getChildren()) {
-					if ((child.getWallLocationID() == WallTreeEntry.ANTECHAMBER_LABEL)
-							|| (child.getWallLocationID() == WallTreeEntry.MAIN_CHAMBER_LABEL)
-							|| (child.getWallLocationID() == WallTreeEntry.MAIN_CHAMBER_CORRIDOR_LABEL)
-							|| (child.getWallLocationID() == WallTreeEntry.REAR_AREA_LABEL)||(child.getWallLocationID()<100)) {
+					if ((WallTreeEntry.ANTECHAMBER_LABEL.contains(child.getWallLocationID()))
+							|| (WallTreeEntry.MAIN_CHAMBER_LABEL.contains(child.getWallLocationID()))
+							|| (WallTreeEntry.MAIN_CHAMBER_CORRIDOR_LABEL.contains(child.getWallLocationID()))
+							|| (WallTreeEntry.REAR_AREA_LABEL.contains(child.getWallLocationID()))||(child.getWallLocationID()<100)) {
 						//Util.doLogging(item.getText()+" - "+child.getText()+" /2");
 						wallTreeStore.add(item, child);
 						allEntries.add(child);
@@ -102,11 +102,11 @@ public class WallTree {
 			case 6: // monumental image cave
 				//Util.doLogging("cEntry.getCaveTypeID: "+Integer.toString(cEntry.getCaveTypeID()));
 				for (WallTreeEntry child : item.getChildren()) {
-					if ((child.getWallLocationID() == WallTreeEntry.ANTECHAMBER_LABEL)
-							|| (child.getWallLocationID() == WallTreeEntry.MAIN_CHAMBER_LABEL)
-							|| (child.getWallLocationID() == WallTreeEntry.REAR_AREA_LABEL)
-							|| (child.getWallLocationID() == WallTreeEntry.REAR_AREA_LEFT_CORRIDOR_LABEL)
-							|| (child.getWallLocationID() == WallTreeEntry.REAR_AREA_RIGHT_CORRIDOR_LABEL)||(child.getWallLocationID()<100)) {
+					if ((WallTreeEntry.ANTECHAMBER_LABEL.contains(child.getWallLocationID()))
+							|| (WallTreeEntry.MAIN_CHAMBER_LABEL.contains(child.getWallLocationID()))
+							|| (WallTreeEntry.REAR_AREA_LABEL.contains(child.getWallLocationID()))
+							|| (WallTreeEntry.REAR_AREA_LEFT_CORRIDOR_LABEL.contains(child.getWallLocationID()))
+							|| (WallTreeEntry.REAR_AREA_RIGHT_CORRIDOR_LABEL.contains(child.getWallLocationID()))||(child.getWallLocationID()<100)) {
 						//Util.doLogging(item.getText()+" - "+child.getText()+" /3");
 						wallTreeStore.add(item, child);
 						allEntries.add(child);
@@ -145,7 +145,7 @@ public class WallTree {
 		wallTreeStore.clear();
 		allEntries = new ArrayList<WallTreeEntry>();
 	}
-	public void setWall(ArrayList<WallTreeEntry> wallKeys) {
+	public void setWall(List<WallTreeEntry> wallKeys) {
 		dropunselected(wallKeys);
 	}
 	public void findParent(WallTreeEntry child) {
@@ -172,7 +172,7 @@ public class WallTree {
 	}
 
 
-	public void setWallTreeStore(Collection<WallTreeEntry> elements, boolean dropunselected, ArrayList<WallTreeEntry> wallIDs) {
+	public void setWallTreeStore(Collection<WallTreeEntry> elements, boolean dropunselected, List<WallTreeEntry> wallIDs) {
 		Util.doLogging("Länge von Elements:"+ Integer.toString(elements.size()));
 		for (WallTreeEntry item : elements) {
 			wallTreeStore.add(item);
@@ -191,7 +191,7 @@ public class WallTree {
 		}
 
 	}
-	public void dropunselected(ArrayList<WallTreeEntry> wallIDs) {
+	public void dropunselected(List<WallTreeEntry> wallIDs) {
 		wallTreeStore.clear();
 		for (WallTreeEntry wall : wallIDs) {
 					findParent(wall);
@@ -199,11 +199,11 @@ public class WallTree {
 		}
 	}
 		
-	public void selectitems(ArrayList<WallTreeEntry> wallIDs) {
+	public void selectitems(List<WallTreeEntry> wallIDs) {
 		wallTree.setCheckStyle(CheckCascade.PARENTS);
 		for (WallTreeEntry wall : wallIDs) {
-					wallTreeStore.remove(wall);
-					wallTreeStore.add(wallTreeStore.findModelWithKey(Integer.toString(wall.getParentID())), wall);
+					Util.doLogging(Integer.toString(wall.getWallLocationID()));
+					wallTreeStore.findModelWithKey(Integer.toString(wall.getWallLocationID())).setPosition(wall.getPosition());
 					wallTree.setChecked(wall, CheckState.CHECKED);
 				}
 

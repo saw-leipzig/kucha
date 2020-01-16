@@ -11,7 +11,7 @@ public class PositionEntry extends AbstractEntry {
 	}
 
 	public PositionEntry() {
-		this(0, "");
+		this(-1, "");
 	}
 
 	public int getPositionID() {

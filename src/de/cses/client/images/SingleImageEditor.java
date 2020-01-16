@@ -521,13 +521,16 @@ public class SingleImageEditor extends AbstractEditor {
 		//Info.display("test","test");
 		new Resizable(panel);
 		new Draggable(panel);
-		titleField.getFocusSupport().setIgnore(false);
-		titleField.focus();
 		
 
 		
 	}
 
+	@Override
+	public void setfocus() {
+		titleField.getFocusSupport().setIgnore(false);
+		titleField.focus();
+	}
 
 	/**
 	 * This method will save the currently selected ImageEntry from the left list of previews. In future versions, the missing fields will be added. Also, the

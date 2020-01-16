@@ -14,12 +14,14 @@
 package de.cses.client.walls;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
+import com.google.gwt.user.client.rpc.core.java.util.Arrays;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.XTemplates;
@@ -30,12 +32,6 @@ import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
-import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
-import com.sencha.gxt.widget.core.client.event.CheckChangedEvent;
-import com.sencha.gxt.widget.core.client.event.CheckChangedEvent.CheckChangedHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
@@ -65,7 +61,7 @@ public class PositionEditor {
 	private PositionProperties positionProps;
 	private WallTree wallTree;
 	private CaveEntry entry;
-	private ArrayList<WallTreeEntry> walls;
+	private List<WallTreeEntry> walls;
 	int init= 0;
 	PopupPanel popup = new PopupPanel();
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
@@ -77,7 +73,7 @@ public class PositionEditor {
 		LabelProvider<PositionEntry> name();
 	}
 
-	public PositionEditor(CaveEntry entry, ArrayList<WallTreeEntry> entries) {
+	public PositionEditor(CaveEntry entry, List<WallTreeEntry> entries) {
 		this.entry=entry;
 		this.walls=entries;
 		positionProps = GWT.create(PositionProperties.class);
@@ -89,19 +85,10 @@ public class PositionEditor {
 		}
 
 	}
-	public ArrayList<WallTreeEntry> getSelectedWalls() {
+	public List<WallTreeEntry> getSelectedWalls() {
 		ArrayList<WallTreeEntry> result = new ArrayList<WallTreeEntry>();
-		if (wallTree.wallTree != null) {
-			for (WallTreeEntry entry : wallTree.wallTree.getCheckedSelection()) {
-				Util.doLogging(entry.getText()+"getchildren: "+Integer.toString(entry.getChildren().size()));
-				if (entry.getChildren().size()==0) {
-					Util.doLogging("Add Entry: "+entry.getText());
-					result.add(entry);
-				}
-				
-			}
-		}
-		return result;	
+		return wallTree.wallTree.getCheckedSelection();	
+		
 	}
 	
 
@@ -199,7 +186,13 @@ public class PositionEditor {
 
 					@Override
 					public void onSelect(SelectEvent event) {
-						wallTree.wallTree.getSelectionModel().getSelectedItem().setPosition(positionComboBox.getCurrentValue());;
+						if (positionComboBox.getCurrentValue().getPositionID()>0){
+							wallTree.wallTree.getSelectionModel().getSelectedItem().setPosition(positionComboBox.getCurrentValue());
+						}
+						else{
+							wallTree.wallTree.getSelectionModel().getSelectedItem().setPosition(new PositionEntry());
+							
+						};
 						Info.display("Test: ", wallTree.wallTree.getSelectionModel().getSelectedItem().getText());
 						wallTree.wallTree.refresh(wallTree.wallTree.getSelectionModel().getSelectedItem());
 						wallTree.wallTree.setAutoExpand(true);
@@ -231,7 +224,7 @@ public class PositionEditor {
 		return selectWallFP;
 	}
 
-	protected void save(ArrayList<WallTreeEntry> results ) {
+	protected void save(List<WallTreeEntry> results ) {
 		//Speicherung der Wand und der zugehoerigen Eigenschaften
 		Util.doLogging(this.getClass().getName() + " cavewallornamentrelation wurde erstellt");
 	}

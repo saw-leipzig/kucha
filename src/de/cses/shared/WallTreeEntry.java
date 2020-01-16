@@ -14,16 +14,16 @@
 package de.cses.shared;
 
 import java.util.ArrayList;
-import java.text.Normalizer;
+import java.util.Arrays;
 
 public class WallTreeEntry extends AbstractEntry {
 	
-	public static final int ANTECHAMBER_LABEL = 101;
-	public static final int MAIN_CHAMBER_LABEL = 102;
-	public static final int MAIN_CHAMBER_CORRIDOR_LABEL = 105;
-	public static final int REAR_AREA_LABEL = 103;
-	public static final int REAR_AREA_LEFT_CORRIDOR_LABEL = 107;
-	public static final int REAR_AREA_RIGHT_CORRIDOR_LABEL = 111;
+	public static final ArrayList<Integer> ANTECHAMBER_LABEL = new ArrayList<Integer>(Arrays.asList(101,104));
+	public static final ArrayList<Integer>  MAIN_CHAMBER_LABEL = new ArrayList<Integer>(Arrays.asList(102,106));
+	public static final ArrayList<Integer>  MAIN_CHAMBER_CORRIDOR_LABEL= new ArrayList<Integer>(Arrays.asList( 105));
+	public static final ArrayList<Integer>  REAR_AREA_LABEL = new ArrayList<Integer>(Arrays.asList( 103,110,113));
+	public static final ArrayList<Integer>  REAR_AREA_LEFT_CORRIDOR_LABEL= new ArrayList<Integer>(Arrays.asList(107,108));
+	public static final ArrayList<Integer>  REAR_AREA_RIGHT_CORRIDOR_LABEL = new ArrayList<Integer>(Arrays.asList( 111,112));
 	
 
 	private int wallLocationID, parentID;

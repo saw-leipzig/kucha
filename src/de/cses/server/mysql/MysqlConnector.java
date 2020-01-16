@@ -3337,6 +3337,7 @@ public class MysqlConnector implements IsSerializable {
 			while (rs.next()) {
 				result = new PositionEntry(rs.getInt("PositionID"), rs.getString("Name"));
 				positions.add(result);
+				System.out.print(result.getPositionID()+" - "+result.getName());
 			}
 			rs.close();
 			stmt.close();
@@ -3348,7 +3349,7 @@ public class MysqlConnector implements IsSerializable {
 		long end = System.currentTimeMillis();
 		long diff = (end-start);
 		if (diff>100){
-		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getOrnamentPosition brauchte "+diff + " Millisekunden.");;}}
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getPosition brauchte "+diff + " Millisekunden.");;}}
 		return positions;
 	}
 	public ArrayList<OrnamentFunctionEntry> getOrnamentFunction() {
@@ -4980,7 +4981,7 @@ public class MysqlConnector implements IsSerializable {
 		if (diff>100){
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertDepictionImageRelation brauchte "+diff + " Millisekunden.");;}}
 	}
-	private synchronized void insertDepictionWallsRelation(int depictionID, ArrayList<WallTreeEntry> wallsEntryList) {
+	private synchronized void insertDepictionWallsRelation(int depictionID, List<WallTreeEntry> wallsEntryList) {
 		long start = System.currentTimeMillis();
 		if (dologgingbegin){
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertDepictionImageRelation wurde ausgelöst.");;
@@ -7611,7 +7612,7 @@ public class MysqlConnector implements IsSerializable {
 			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		System.out.println("Größe des Resultats von DepictionWallsRealtion "+Integer.toString(results.size())+" für "+Integer.toString(depictionID));
+		//System.out.println("Größe des Resultats von DepictionWallsRealtion "+Integer.toString(results.size())+" für "+Integer.toString(depictionID));
 		return results;
 	}
 	public ArrayList<UserEntry> getUsers() {

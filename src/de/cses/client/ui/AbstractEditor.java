@@ -30,6 +30,8 @@ public abstract class AbstractEditor implements IsWidget {
 	public void addEditorListener(EditorListener l) {
 		listenerList.add(l);
 	}
+	public void setfocus() {
+	}
 	public ArrayList<EditorListener> getListenerList() {
 		return listenerList;
 	}	

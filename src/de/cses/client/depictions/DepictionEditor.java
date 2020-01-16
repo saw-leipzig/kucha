@@ -427,7 +427,7 @@ public class DepictionEditor extends AbstractEditor {
 //					CaveEntry ce = caveEntryLS.findModelWithKey(Integer.toString(correspondingDepictionEntry.getCaveID()));
 					caveSelectionCB.setValue(ce);
 					wallSelectorPanel.setCave(ce);
-					wallSelectorPanel.selectWall(correspondingDepictionEntry.getWallID());
+					//wallSelectorPanel.selectWall(correspondingDepictionEntry.getWallID());
 					wallTree.dropunselected(correspondingDepictionEntry.getWalls());
 					for (WallEntry we : ce.getWallList()) {
 						Util.doLogging(Integer.toString(we.getWallLocationID()));
@@ -1097,7 +1097,7 @@ public class DepictionEditor extends AbstractEditor {
 
 				PositionEditor pe = new PositionEditor(correspondingDepictionEntry.getCave(), correspondingDepictionEntry.getWalls()) {
 					@Override
-					protected void save(ArrayList<WallTreeEntry> results ) {
+					protected void save(List<WallTreeEntry> results ) {
 							correspondingDepictionEntry.setWalls(getSelectedWalls());
 							wallTree.setWall(correspondingDepictionEntry.getWalls());
 						}
