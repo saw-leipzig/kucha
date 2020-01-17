@@ -84,6 +84,7 @@ import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MaxNumberValidator;
 import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
+import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -259,6 +260,7 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 				@Override
 				public void onSuccess(AnnotatedBibliographyEntry result) {
 					bibEntry.setAnnotatedBibliographyID(result.getAnnotatedBibliographyID());
+					Info.display("BibliographyID:",Integer.toString(result.getAnnotatedBibliographyID()));
 					bibtexKeyTF.setValue(result.getBibtexKey(), true);
 //					updateEntry(bibEntry);
 					if (close) {

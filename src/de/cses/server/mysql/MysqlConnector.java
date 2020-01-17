@@ -5674,6 +5674,7 @@ public class MysqlConnector implements IsSerializable {
 			ResultSet keys = pstmt.getGeneratedKeys();
 			if (keys.next()) {
 				newBibID = keys.getInt(1);
+				bibEntry.setAnnotatedBibliographyID(newBibID);
 			}
 			keys.close();
 
