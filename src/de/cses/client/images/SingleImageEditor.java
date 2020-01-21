@@ -110,6 +110,7 @@ public class SingleImageEditor extends AbstractEditor {
 
 	interface ImageViewTemplates extends XTemplates {
 		@XTemplate("<figure style='text-align: center; margin: 0;'>"
+			
 				+ "<img src='{imgUri}' style='position: relative; padding: 5px; background: black;'>"
 				+ "</figure>")
 		SafeHtml view(SafeUri imgUri);

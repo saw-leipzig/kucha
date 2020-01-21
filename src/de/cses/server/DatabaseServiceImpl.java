@@ -91,6 +91,11 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		Map<Integer,String>  districts = connector.getPics(imgSources, tnSize, sessionID);
 		return districts;
 	}
+	public boolean isHan(String title) {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		Boolean  hasHan = connector.isHan(title);
+		return hasHan;
+	}
 	public Map<Integer,String> getPicsByImageID(String imgSourceIds, int tnSize, String sessionID) {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		Map<Integer,String>  districts = connector.getPicsByImageID(imgSourceIds, tnSize, sessionID);

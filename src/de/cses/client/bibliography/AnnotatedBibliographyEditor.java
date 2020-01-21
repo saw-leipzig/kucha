@@ -307,9 +307,9 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 			@Override
 			public void onSuccess(ArrayList<AuthorEntry> result) {
 				for (AuthorEntry ae : result) {
-					if (!ae.isInstitutionEnabled()) {
-						authorListStore.add(ae);
-					}
+					//if (!ae.isInstitutionEnabled()) {
+					authorListStore.add(ae);
+					//}
 					editorListStore.add(ae);
 				}
 				// now we shuffle the authors to the left in the correct order
@@ -843,9 +843,9 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 					
 					@Override
 					public void authorSaved(AuthorEntry authorEntry) {
-						if (!authorEntry.isInstitutionEnabled()) {
-							authorListStore.add(authorEntry);
-						}
+						//if (!authorEntry.isInstitutionEnabled()) {
+						authorListStore.add(authorEntry);
+						//}
 						editorListStore.add(authorEntry);
 						addAuthorDialog.hide();
 					}

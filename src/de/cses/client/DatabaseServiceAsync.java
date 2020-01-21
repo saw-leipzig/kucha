@@ -109,6 +109,8 @@ public interface DatabaseServiceAsync {
 	 */
 	void updateEntry(String sqlUpdate, AsyncCallback<Boolean> callback) throws IllegalArgumentException;
 
+	void isHan(String title, AsyncCallback<Boolean> callback) throws IllegalArgumentException;
+
 	/**
 	 * Executes a SQL delete using a predefined SQL DELETE string
 	 * 

@@ -16,6 +16,13 @@ package de.cses.shared;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+
+import de.cses.client.DatabaseService;
+import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.Util;
+
 /**
  * @author Nina
  *
@@ -55,16 +62,7 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 	private ArrayList<AuthorEntry> editorList = new ArrayList<AuthorEntry>();
 	private ArrayList<BibKeywordEntry> keywordList = new ArrayList<BibKeywordEntry>();
 	private boolean hasHan;
-	public static boolean isHan(String s) {
-	    for (int i = 0; i < s.length(); ) {
-	        int codepoint = s.codePointAt(i);
-	        i += Character.charCount(codepoint);
-	        if ((codepoint>19967)&&(codepoint<40960)) {
-	        	return true;
-	        }
-	    }
-	    return false;
-	}
+
 	public AnnotatedBibliographyEntry(int annotatedBibliographyID, PublicationTypeEntry publicationType, 
 			String titleEN, String titleORG, String titleTR,
 			String parentTitleEN, String parentTitleORG, String parentTitleTR,
@@ -166,7 +164,7 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 				monthEN, monthORG, monthTR,  
 				pagesEN, pagesORG, pagesTR, 
 				comments, notes, url, uri, unpublished, firstEditionBibID, accessLevel, 
-				abstractText, thesisType, editorType, officialTitleTranslation, bibtexKey, this.modifiedOn, this.isHan(titleORG));
+				abstractText, thesisType, editorType, officialTitleTranslation, bibtexKey, this.modifiedOn, this.hasHan);
 		ArrayList<AuthorEntry> clonedAuthorList = new ArrayList<AuthorEntry>();
 		for (AuthorEntry ae : this.authorList) {
 			clonedAuthorList.add(ae);
@@ -240,7 +238,8 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 	 */
 	public void setTitleORG(String titleORG) {
 		this.titleORG = titleORG;
-		this.hasHan = isHan(titleORG);
+
+		
 	}
 
 	/**
