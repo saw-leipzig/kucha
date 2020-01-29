@@ -1,14 +1,15 @@
 <div style='font-size:12px; text-align: left;'> 
-	<p>
+	<p>{publicationTypeID}
 		<tpl if="!parentTitle">
 			<tpl if="authors != &quot;&quot;">
 				{authors} 
-				<tpl if="yearORG != &quot;&quot;">({yearORG})</tpl>. 
+				<tpl if="yearORG != &quot;&quot;">, {yearORG}</tpl> 
 				<tpl if="titleTR != &quot;&quot;">
-					{titleTR}<tpl if="subtitleTR != &quot;&quot;">: {subtitleTR}</tpl>
+					, {titleTR}<tpl if="subtitleTR != &quot;&quot;">: {subtitleTR}</tpl>
 				</tpl>
 				<tpl if="titleORG != &quot;&quot;">
-				<tpl if="parentTitleORG == &quot;&quot;"><i></tpl>
+				<tpl if="parentTitleORG == &quot;&quot;">
+				<i></tpl>
 				<b>{titleORG}<tpl if="subtitleORG != &quot;&quot;">: {subtitleORG}</tpl></b>
 				<tpl if="parentTitleORG == &quot;&quot;"></i></tpl>
 				</tpl>
@@ -20,24 +21,31 @@
 			<tpl if="authors == &quot;&quot;">
 				{editors} 
 				<tpl if="editorType != &quot;&quot;">({editorType}) </tpl>
-				<tpl if="yearORG != &quot;&quot;">({yearORG})</tpl>. 
-				<tpl if="titleTR != &quot;&quot;">
-					{titleTR}
-						<tpl if="subtitleTR != &quot;&quot;">: {subtitleTR}</tpl>
+				<tpl if="yearORG != &quot;&quot;"> ,{yearORG}</tpl>
+				<tpl if="titleTR != &quot;&quot;">, {titleTR}
+						<tpl if="subtitleTR != &quot;&quot;">: {subtitleTR}
+						</tpl>
 				</tpl>
 				<tpl if="titleORG != &quot;&quot;">
-				<tpl if="parentTitleORG == &quot;&quot;"><i></tpl>
-				<b>{titleORG}<tpl if="subtitleORG != &quot;&quot;">: {subtitleORG}</tpl></b>
-				<tpl if="parentTitleORG == &quot;&quot;"></i></tpl>
+					<tpl if="parentTitleORG == &quot;&quot;">
+						<tpl if="!hasHan">ups<i>
+						</tpl>
+					</tpl>
+					<b>{titleORG}<tpl if="subtitleORG != &quot;&quot;">: {subtitleORG}</tpl></b>
+				<tpl if="parentTitleORG == &quot;&quot;">
+					<tpl if="!hasHan">ups<i>
+					</tpl>
+				
+				</tpl>
 				</tpl>
 				<tpl if="titleEN != &quot;&quot;">
-					<tpl if="officialTitleTranslation"> / {titleEN}<tpl if="subtitleEN != &quot;&quot;">: {subtitleEN}</tpl></tpl>
-				</tpl>.
+					<tpl if="officialTitleTranslation">  [{titleEN}<tpl if="subtitleEN != &quot;&quot;">: {subtitleEN}</tpl>]</tpl>
+				</tpl>
 			</tpl>
 		</tpl>
-		<tpl if="parentTitle">
-			{authors} 
-			<tpl if="yearORG != &quot;&quot;">({yearORG})</tpl>. 
+<tpl if="parentTitle">
+{authors} 
+			<tpl if="yearORG != &quot;&quot;">, {yearORG}</tpl>. 
 				<tpl if="titleTR != &quot;&quot;">
 					{titleTR}<tpl if="subtitleTR != &quot;&quot;">: {subtitleTR}</tpl>
 				</tpl>
@@ -55,12 +63,12 @@
 			<i>{parentTitleORG}</i>.
 			 <tpl if="parentTitleEN != &quot;&quot;"><i>{parentTitleEN}</i>.</tpl>
 	  </tpl>
-		<tpl if="thesisType != &quot;&quot;"> {thesisType} thesis.</tpl>
-		<tpl if="editionORG != &quot;&quot;"> Edition: {editionORG}.</tpl>
-		<tpl if="numberORG != &quot;&quot;"> No: {numberORG}.</tpl>
-	  <tpl if="publisher != &quot;&quot;">{publisher}.</tpl>
-		<tpl if="seriesORG != &quot;&quot;">Series: {seriesORG}.</tpl>
-		<tpl if="volumeORG != &quot;&quot;">Vol. {volumeORG}<tpl if="issueORG != &quot;&quot;"> / {issueORG}</tpl>.</tpl>  
-		<tpl if="pagesORG != &quot;&quot;">{pagesORG}.</tpl>
+<tpl if="thesisType != &quot;&quot;"> {thesisType} thesis.</tpl>
+<tpl if="editionORG != &quot;&quot;"> Edition: {editionORG}.</tpl>
+<tpl if="numberORG != &quot;&quot;"> No: {numberORG}.</tpl>
+<tpl if="publisher != &quot;&quot;">. {publisher}.</tpl>
+<tpl if="seriesORG != &quot;&quot;">Series: {seriesORG}.</tpl>
+<tpl if="volumeORG != &quot;&quot;">Vol. {volumeORG}<tpl if="issueORG != &quot;&quot;"> / {issueORG}</tpl>.</tpl>  
+<tpl if="pagesORG != &quot;&quot;">{pagesORG}.</tpl>
 	</p>
 </div>

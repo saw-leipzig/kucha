@@ -93,7 +93,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	}
 	public boolean isHan(String title) {
 		MysqlConnector connector = MysqlConnector.getInstance();
-		Boolean  hasHan = connector.isHan(title);
+		boolean  hasHan = connector.isHan(title);
 		return hasHan;
 	}
 	public Map<Integer,String> getPicsByImageID(String imgSourceIds, int tnSize, String sessionID) {

@@ -48,6 +48,8 @@ import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.data.shared.SortDir;
+import com.sencha.gxt.data.shared.Store;
+import com.sencha.gxt.data.shared.Store.StoreFilter;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.dnd.core.client.ListViewDragSource;
 import com.sencha.gxt.dnd.core.client.ListViewDropTarget;
@@ -230,10 +232,10 @@ public class DepictionEditor extends AbstractEditor {
 	}
 
 	interface LocationViewTemplates extends XTemplates {
-		@XTemplate("<div>{name}<br>{town}, {country}</div>")
+		@XTemplate("<div>{country}, {town}<br>{name}</div>")
 		SafeHtml caveLabel(String name, String town, String country);
 
-		@XTemplate("<div>{name}<br>{country}</div>")
+		@XTemplate("<div>{country}<br>{name}</div>")
 		SafeHtml caveLabel(String name, String country);
 
 		@XTemplate("<div>{name}</div>")
@@ -313,10 +315,37 @@ public class DepictionEditor extends AbstractEditor {
 		caveProps = GWT.create(CaveProperties.class);
 		caveEntryLS = new ListStore<CaveEntry>(caveProps.caveID());
 		caveEntryLS.addSortInfo(new StoreSortInfo<CaveEntry>(new CaveEntryComparator(), SortDir.ASC));
-		
 		locationProps = GWT.create(LocationProperties.class);
 		locationEntryLS = new ListStore<LocationEntry>(locationProps.locationID());
-		
+		StoreFilter<LocationEntry> filter = new StoreFilter<LocationEntry>() {
+		    @Override
+		    public boolean select(Store<LocationEntry> store, LocationEntry parent, LocationEntry item) {
+		    	
+		      boolean canView = false; 
+		      
+		      if ((item.getCounty()!=null)) {
+		    	  if (item.getCounty().toLowerCase().contains(locationSelectionCB.getText().toLowerCase())) {
+		    	  canView = true;
+		    	  }
+		      };
+		      if ((item.getTown()!=null)) {
+		    	  if (item.getTown().toLowerCase().contains(locationSelectionCB.getText().toLowerCase())) {
+		    	  canView = true;
+		    	  }
+		      };
+		      if ((item.getName()!=null)) {
+		    	  if (item.getName().toLowerCase().contains(locationSelectionCB.getText().toLowerCase())) {
+		    	  canView = true;
+		    	  }
+		      };
+		      //if (canView) {
+	    	  //Util.doLogging("Found: "+item.getName()+", gesucht wurde: "+locationSelectionCB.getText());
+		      //};
+		      return canView;
+		    }
+		  };
+		  locationEntryLS.addFilter(filter);
+
 		expedProps = GWT.create(ExpeditionProperties.class);
 		expedEntryLS = new ListStore<ExpeditionEntry>(expedProps.expeditionID());
 		
@@ -437,7 +466,7 @@ public class DepictionEditor extends AbstractEditor {
 
 				@Override
 				public String getValue(LocationEntry object) {
-					return object.getName();
+					return object.getCounty()+" "+object.getTown()+" "+object.getName();
 				}
 
 				@Override
@@ -446,7 +475,7 @@ public class DepictionEditor extends AbstractEditor {
 				@Override
 				public String getPath() {
 					return "name";
-				}}, SortDir.DESC));
+				}}, SortDir.ASC));
 			
 			if (correspondingDepictionEntry.getLocation() != null) {
 				locationSelectionCB.setValue(correspondingDepictionEntry.getLocation());
@@ -856,7 +885,8 @@ public class DepictionEditor extends AbstractEditor {
 		});
 		locationSelectionCB.setEmptyText("select current location");
 		locationSelectionCB.setTypeAhead(false);
-		locationSelectionCB.setEditable(false);
+		locationSelectionCB.setEditable(true);
+	
 		locationSelectionCB.setTriggerAction(TriggerAction.ALL);
 		locationSelectionCB.addValueChangeHandler(new ValueChangeHandler<LocationEntry>() {
 

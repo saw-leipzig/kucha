@@ -32,6 +32,11 @@ public class AnnotatedBiblographyView extends AbstractView {
 	
 	private AnnotatedBibliographyEntry annotatedBibliographyEntry;
 	private AnnotatedBibliographyViewTemplates dvTemplates;
+	private String bib="";
+	private String translit="";
+	private String bold="";
+	private String translat="";
+	private String tail="";
 
 	/**
 	 * @param text
@@ -39,9 +44,12 @@ public class AnnotatedBiblographyView extends AbstractView {
 	public AnnotatedBiblographyView(AnnotatedBibliographyEntry annotatedBibliographyEntry) {
 		this.annotatedBibliographyEntry = annotatedBibliographyEntry;
 		dvTemplates = GWT.create(AnnotatedBibliographyViewTemplates.class);
-		setHTML(dvTemplates.view(annotatedBibliographyEntry));
+		//
+	//setHTML(dvTemplates.view(annotatedBibliographyEntry));
 //		setHTML(dvTemplates.extendedView(annotatedBibliographyEntry));
-		setSize("95%", "80px");
+		processtoview(annotatedBibliographyEntry);
+		setSize("95%", "5em");
+		Integer.toString(getHTML().length());
 
 		DragSource source = new DragSource(this) {
 
@@ -63,6 +71,169 @@ public class AnnotatedBiblographyView extends AbstractView {
 		return new AnnotatedBibliographyEditor(annotatedBibliographyEntry.clone());
 	}
 
+	public void processtoview(AnnotatedBibliographyEntry annotatedBibliographyEntry) {
+		if ((annotatedBibliographyEntry.getPublicationTypeID()==1) || (annotatedBibliographyEntry.getPublicationTypeID()==3)) {
+			if (annotatedBibliographyEntry.getAuthors()=="") {
+
+			}
+			else {
+					bib=bib+annotatedBibliographyEntry.getAuthors();
+			}
+			if (annotatedBibliographyEntry.getYearORG()!="") {
+				bib=bib+", "+annotatedBibliographyEntry.getYearORG()+",";
+			}
+			if (annotatedBibliographyEntry.getTitleTRFull()!="") {
+				translit=" "+annotatedBibliographyEntry.getTitleTRFull();
+			}
+			if (annotatedBibliographyEntry.getTitleORGFull()!="") {
+				bold=" "+annotatedBibliographyEntry.getTitleORGFull();
+			}
+			if (annotatedBibliographyEntry.getTitleENFull()!="") {
+				translat=" "+annotatedBibliographyEntry.getTitleENFull();
+			}
+			if (annotatedBibliographyEntry.getVolumeORG()!="") {
+				tail=tail+", Vol."+annotatedBibliographyEntry.getVolumeORG();
+			}
+			if (annotatedBibliographyEntry.getEditionORG()!="") {
+				tail=tail+", Edition: "+annotatedBibliographyEntry.getEditionORG();
+			}
+			if (annotatedBibliographyEntry.getSeriesORG()!="") {
+				tail=tail+", Series: "+annotatedBibliographyEntry.getSeriesORG();
+			}
+			tail=tail+". ";
+			if (annotatedBibliographyEntry.getPublisher()!="") {
+				tail=tail+annotatedBibliographyEntry.getPublisher();
+					}
+			if (annotatedBibliographyEntry.getEditors()!="") {
+				if (annotatedBibliographyEntry.getPublisher()!="") {
+					tail= tail+", "+annotatedBibliographyEntry.getEditors();
+				}
+				else{
+					tail= tail+annotatedBibliographyEntry.getEditors();
+				}
+				if (annotatedBibliographyEntry.getEditorType()=="") {
+					bib=bib+" ("+annotatedBibliographyEntry.getEditorType()+")";
+					}
+			}
+			if (annotatedBibliographyEntry.getThesisType()!="") {
+				if (annotatedBibliographyEntry.getPublisher()=="") {
+					tail=tail+annotatedBibliographyEntry.getThesisType()+" thesis";
+					}
+				else {
+					tail=tail+", "+annotatedBibliographyEntry.getThesisType();
+				}
+			}
+			tail=tail+". ";
+			if (annotatedBibliographyEntry.getHasHan()) {
+
+				setHTML(dvTemplates.bibViewHasHan(bib, translit, bold, translat, tail));
+			}
+			else {
+				setHTML(dvTemplates.bibView(bib, translit, bold, translat, tail));
+			}
+			
+		}
+		else if ((annotatedBibliographyEntry.getPublicationTypeID()==4)||(annotatedBibliographyEntry.getPublicationTypeID()==7)) {
+			bib=bib+annotatedBibliographyEntry.getAuthors();
+			if (annotatedBibliographyEntry.getYearORG()!="") {
+				bib=bib+", "+annotatedBibliographyEntry.getYearORG()+",";
+			}
+			if (annotatedBibliographyEntry.getTitleTRFull()!="") {
+				bib=bib+" "+annotatedBibliographyEntry.getTitleTRFull();
+			}
+			if (annotatedBibliographyEntry.getTitleORGFull()!="") {
+				bib=bib+" "+annotatedBibliographyEntry.getTitleORGFull();
+			}
+			if (annotatedBibliographyEntry.getTitleENFull()!="") {
+				bib=bib+" "+annotatedBibliographyEntry.getTitleENFull();
+			}
+			bib=bib+". In: ";
+			if (annotatedBibliographyEntry.getEditors()!="") {
+				bib= bib+annotatedBibliographyEntry.getEditors();
+				if (annotatedBibliographyEntry.getEditorType()=="") {
+					bib=bib+" ("+annotatedBibliographyEntry.getEditorType()+")";
+					}
+			}
+			if (annotatedBibliographyEntry.getParentTitleTR()!="") {
+				translit=translit+" "+annotatedBibliographyEntry.getTitleTRFull();
+			}
+			if (annotatedBibliographyEntry.getParentTitleORG()!="") {
+				bold=bold+" "+annotatedBibliographyEntry.getParentTitleORG();
+			}
+			if (annotatedBibliographyEntry.getParentTitleEN()!="") {
+				translat=translat+" "+annotatedBibliographyEntry.getParentTitleEN();
+			}
+			tail=tail+". ";
+			if (annotatedBibliographyEntry.getPublisher()!="") {
+				tail=tail+annotatedBibliographyEntry.getPublisher();
+					}
+			if (annotatedBibliographyEntry.getPagesORG()!="") {
+				if (annotatedBibliographyEntry.getPublisher()=="") {
+					tail=tail+". "+annotatedBibliographyEntry.getPagesORG();
+					}
+				else {
+					tail=tail+", "+annotatedBibliographyEntry.getPagesORG();
+				}
+			}
+			if (annotatedBibliographyEntry.getUrl()!="") {
+				tail=tail+", "+annotatedBibliographyEntry.getUrl();
+				if (annotatedBibliographyEntry.getAccessdateORG()!="") {
+					tail=tail+" ["+annotatedBibliographyEntry.getAccessdateORG()+"]";
+				}
+			}
+			tail=tail+". ";
+			if (annotatedBibliographyEntry.getHasHan()) {
+
+				setHTML(dvTemplates.bibViewHasHan(bib, translit, bold, translat, tail));
+			}
+			else {
+				setHTML(dvTemplates.bibView(bib, translit, bold, translat, tail));
+			}
+		}
+		else if (annotatedBibliographyEntry.getPublicationTypeID()==8) {
+			bib=bib+annotatedBibliographyEntry.getAuthors();
+			if (annotatedBibliographyEntry.getYearORG()!="") {
+				bib=bib+", "+annotatedBibliographyEntry.getYearORG()+",";
+			}
+			if (annotatedBibliographyEntry.getTitleTRFull()!="") {
+				translit=" "+annotatedBibliographyEntry.getTitleTRFull();
+			}
+			if (annotatedBibliographyEntry.getTitleORGFull()!="") {
+				bold=" "+annotatedBibliographyEntry.getTitleORGFull();
+			}
+			if (annotatedBibliographyEntry.getTitleENFull()!="") {
+				translat=" "+annotatedBibliographyEntry.getTitleENFull();
+			}
+			if (annotatedBibliographyEntry.getParentTitleORG()!="") {
+				tail=tail+", "+annotatedBibliographyEntry.getParentTitleORG();
+			}
+			if (annotatedBibliographyEntry.getVolumeORG()!="") {
+				tail=tail+" "+annotatedBibliographyEntry.getVolumeORG();
+			}
+			if (annotatedBibliographyEntry.getIssueORG()!="") {
+				tail=tail+" "+annotatedBibliographyEntry.getIssueORG();
+			}
+			if (annotatedBibliographyEntry.getPagesORG()!="") {
+				if (annotatedBibliographyEntry.getPublisher()=="") {
+					tail=tail+". "+annotatedBibliographyEntry.getPagesORG();
+					}
+				else {
+					tail=tail+", "+annotatedBibliographyEntry.getPagesORG();
+				}
+			}
+			if (annotatedBibliographyEntry.getHasHan()) {
+
+				setHTML(dvTemplates.bibViewHasHan(bib, translit, bold, translat, tail));
+			}
+			else {
+				setHTML(dvTemplates.bibView(bib, translit, bold, translat, tail));
+			}
+
+		}
+		else {
+			setHTML(dvTemplates.view(annotatedBibliographyEntry));
+		}
+	}
 	/* (non-Javadoc)
 	 * @see de.cses.client.ui.AbstractView#getEntry()
 	 */
@@ -82,11 +253,15 @@ public class AnnotatedBiblographyView extends AbstractView {
 		super.closeRequest(entry);
 		if (entry != null && entry instanceof AnnotatedBibliographyEntry) { // refresh view
 			annotatedBibliographyEntry = (AnnotatedBibliographyEntry) entry;
-			setHTML(dvTemplates.view(annotatedBibliographyEntry));
+//			setHTML(dvTemplates.view(annotatedBibliographyEntry));
 //			setHTML(dvTemplates.extendedView(annotatedBibliographyEntry));
+			processtoview(annotatedBibliographyEntry);
 		}
 	}
-
+	public String getLabel() {
+		String result = bib + translit + bold + translat + tail;
+		return result;
+	}
 	/* (non-Javadoc)
 	 * @see de.cses.client.ui.AbstractView#getPermalink()
 	 */

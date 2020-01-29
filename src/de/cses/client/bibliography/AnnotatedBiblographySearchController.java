@@ -108,6 +108,7 @@ public class AnnotatedBiblographySearchController extends AbstractSearchControll
 					getResultView().addResult(new AnnotatedBiblographyView(abe));
 				}
 				getResultView().setSearchEnabled(true);
+				getResultView().doResize();
 			}
 		});
 	}
@@ -189,6 +190,7 @@ public class AnnotatedBiblographySearchController extends AbstractSearchControll
 		publicationTypeDialog.add(publicationTypeSelectorFP);
 		publicationTypeDialog.setGlassEnabled(true);
 		publicationTypeDialog.center();
+		getResultView().doResize();
 	}
 
 }
