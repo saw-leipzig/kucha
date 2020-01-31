@@ -13,6 +13,9 @@
  */
 package de.cses.client.ui;
 
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.widget.core.client.Portlet;
@@ -26,18 +29,28 @@ import de.cses.shared.AbstractSearchEntry;
  * 
  * @author alingnau
  */
-public abstract class AbstractFilter implements IsWidget {
+public abstract class AbstractFilter implements IsWidget{
 
 	private Portlet panel = null;
 	private String filterName;
-
+	private AbstractSearchController parent;
+	private KeyPressHandler shortkey;
 	/**
 	 * 
 	 */
 	public AbstractFilter(String filterName) {
 		this.filterName = filterName;
+		this.shortkey = new KeyPressHandler() {
+			public void onKeyPress(KeyPressEvent event) {
+	        	  if (event.getCharCode() == KeyCodes.KEY_ENTER) {
+	        		  invokeSearch();
+	        	  }
+			}
+		};
 	}
-
+	public void invokeSearch() {
+		parent.invokeSearch();
+	}
 	/* (non-Javadoc)
 	 * @see com.google.gwt.user.client.ui.IsWidget#asWidget()
 	 */
@@ -52,6 +65,13 @@ public abstract class AbstractFilter implements IsWidget {
 		}
     panel.getHeader().setStylePrimaryName("frame-header");
 		return panel;
+	}
+	public void setParent(AbstractSearchController asc) {
+		this.parent=asc;
+	}
+
+	public KeyPressHandler getShortkey() {
+		return this.shortkey;
 	}
 	
 	/**

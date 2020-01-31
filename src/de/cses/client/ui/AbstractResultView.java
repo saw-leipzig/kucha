@@ -16,6 +16,7 @@ package de.cses.client.ui;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.ui.ScrollPanel;
@@ -237,10 +238,20 @@ public abstract class AbstractResultView extends Portlet {
 	public void doResize() {
 		for (int i=0; i<resultContainer.getWidgetCount(); i++){
 			TextMetrics t = TextMetrics.get();
+			((AnnotatedBiblographyView)resultContainer.getWidget(i)).getElement().getStyle().setFontSize(12, Unit.PX);
+			((AnnotatedBiblographyView)resultContainer.getWidget(i)).getElement().getStyle().setLineHeight(140, Unit.PCT);
+			//((AnnotatedBiblographyView)resultContainer.getWidget(i)).getElement().getStyle().setFontWeight(FONT_WEIGHT_BOLD);;
+			((AnnotatedBiblographyView)resultContainer.getWidget(i)).getElement().getStyle().setProperty("font", "Verdana");;
 			t.bind(((AnnotatedBiblographyView)resultContainer.getWidget(i)).getElement());
 			t.setFixedWidth(((AnnotatedBiblographyView)resultContainer.getWidget(i)).getElement().getClientWidth());
-			//Util.doLogging(Integer.toString(((int)(t.getHeight(((AnnotatedBiblographyView)resultContainer.getWidget(i)).getHTML())*0.8)))+"px");
-			((AnnotatedBiblographyView)resultContainer.getWidget(i)).setHeight(Integer.toString(((int)(t.getHeight(((AnnotatedBiblographyView)resultContainer.getWidget(i)).getHTML())*0.85)))+"px");
+			//Util.doLogging(Integer.toString(((t.getHeight(((AnnotatedBiblographyView)resultContainer.getWidget(i)).getHTML()))))+"px");
+			if (t.getHeight(((AnnotatedBiblographyView)resultContainer.getWidget(i)).getHTML())<36) {
+				((AnnotatedBiblographyView)resultContainer.getWidget(i)).setHeight("36px");
+					
+			}
+			else {
+				((AnnotatedBiblographyView)resultContainer.getWidget(i)).setHeight(Integer.toString(((int)(t.getHeight(((AnnotatedBiblographyView)resultContainer.getWidget(i)).getHTML())*1.1)))+"px");
+			}
 		}
 	}
 	/**

@@ -16,6 +16,7 @@ package de.cses.client.depictions;
 import java.util.ArrayList;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -201,6 +202,7 @@ public class DepictionFilter extends AbstractFilter {
 			}
 		}));
 		caveSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+		caveSelectionLV.addDomHandler(getShortkey(), KeyPressEvent.getType());
 		caveSelectionLV.getSelectionModel().addSelectionChangedHandler(new SelectionChangedHandler<CaveEntry>() {
 			
 			@Override
@@ -276,6 +278,8 @@ public class DepictionFilter extends AbstractFilter {
 		iconographySpinnerField.setIncrement(1);
 		iconographySpinnerField.setEnabled(false);
 		iconographySpinnerField.setEditable(false);
+		iconographySpinnerField.addKeyPressHandler(getShortkey());
+		
 		FieldLabel iconographyFieldLabel = new FieldLabel(iconographySpinnerField, "Matching elements");
 		iconographyFieldLabel.setLabelWidth(120);
 		
@@ -340,6 +344,7 @@ public class DepictionFilter extends AbstractFilter {
 		
 		shortNameSearchTF = new TextField();
 		shortNameSearchTF.setEmptyText("search short name");
+		shortNameSearchTF.addKeyPressHandler(getShortkey());
 
 		/**
 		 * assemble current location selection
@@ -375,6 +380,7 @@ public class DepictionFilter extends AbstractFilter {
 			}
 		}));
 		locationSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+		locationSelectionLV.addDomHandler(getShortkey(), KeyPressEvent.getType());
 		
 		ContentPanel currentLocationPanel = new ContentPanel();
 		currentLocationPanel.setHeaderVisible(true);
@@ -431,6 +437,7 @@ public class DepictionFilter extends AbstractFilter {
 						iconographySpinnerField.setEnabled(false);
 					}
 					extendedFilterDialog.hide();
+					invokeSearch();
 				}
 			});
 			icoSelector.addTool(closeTB);

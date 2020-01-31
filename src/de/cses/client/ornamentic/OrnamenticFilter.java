@@ -17,6 +17,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 
 import com.google.gwt.core.shared.GWT;
+import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -489,33 +490,40 @@ public class OrnamenticFilter extends AbstractFilter {
 		ornamentCodeSearchTF = new TextField();
 		ornamentCodeSearchTF.setEmptyText("search ornament code");
 		ornamentCodeSearchTF.setToolTip(Util.createToolTip("search ornament code", "Search for this character sequence in the ornament code field."));
+		ornamentCodeSearchTF.addDomHandler(getShortkey(), KeyPressEvent.getType());
 
 		ornamentInterpretationSearchTF = new TextField();
+		ornamentInterpretationSearchTF.addDomHandler(getShortkey(), KeyPressEvent.getType());
 		ornamentInterpretationSearchTF.setEmptyText("search ornament interpretation");
 		ornamentInterpretationSearchTF.setToolTip(
 				Util.createToolTip("search ornament interpretation", "Search for this character sequence in the ornament interpretation field."));
 
 		ornamentDeskriptionSearchTF = new TextField();
+		ornamentDeskriptionSearchTF.addDomHandler(getShortkey(), KeyPressEvent.getType());
 		ornamentDeskriptionSearchTF.setEmptyText("search ornament deskription");
 		ornamentDeskriptionSearchTF.setToolTip(
 				Util.createToolTip("search ornament deskription", "Search for this character sequence in the ornament deskription field."));
 
 		ornamentOrnamentalGroupSearchTF = new TextField();
+		ornamentOrnamentalGroupSearchTF.addDomHandler(getShortkey(), KeyPressEvent.getType());
 		ornamentOrnamentalGroupSearchTF.setEmptyText("search ornamental unit");
 		ornamentOrnamentalGroupSearchTF
 				.setToolTip(Util.createToolTip("search ornament unit", "Search for this character sequence in the ornament unit field."));
 
 		ornamentReferencesSearchTF = new TextField();
+		ornamentReferencesSearchTF.addDomHandler(getShortkey(), KeyPressEvent.getType());
 		ornamentReferencesSearchTF.setEmptyText("search ornament references");
 		ornamentReferencesSearchTF
 				.setToolTip(Util.createToolTip("search ornament references", "Search for this character sequence in the ornament code field."));
 
 		ornamentRemarksSearchTF = new TextField();
+		ornamentRemarksSearchTF.addDomHandler(getShortkey(), KeyPressEvent.getType());
 		ornamentRemarksSearchTF.setEmptyText("search ornament remarks");
 		ornamentRemarksSearchTF
 				.setToolTip(Util.createToolTip("search ornament remarks", "Search for this character sequence in the ornament remarks field."));
 
 		ornamentSimilaritiesSearchTF = new TextField();
+		ornamentSimilaritiesSearchTF.addDomHandler(getShortkey(), KeyPressEvent.getType());
 		ornamentSimilaritiesSearchTF.setEmptyText("search similar ornaments");
 		ornamentSimilaritiesSearchTF.setToolTip(Util.createToolTip("search similar ornaments or elements of other cultural areas",
 				"Search for this character sequence in the similar ornaments field."));
@@ -532,6 +540,7 @@ public class OrnamenticFilter extends AbstractFilter {
 					}
 
 				}));
+		ornamentComponentsSelectionLV.addDomHandler(getShortkey(), KeyPressEvent.getType());
 		ornamentComponentsSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
 
 		ContentPanel ornamentComponentsPanel = new ContentPanel();
@@ -593,6 +602,7 @@ public class OrnamenticFilter extends AbstractFilter {
 					}
 				}));
 		cavesSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+		cavesSelectionLV.addDomHandler(getShortkey(), KeyPressEvent.getType());
 		cavesSelectionLV.getSelectionModel().addSelectionChangedHandler(new SelectionChangedHandler<CaveEntry>() {
 
 			@Override
@@ -611,6 +621,7 @@ public class OrnamenticFilter extends AbstractFilter {
 		ornamentCavesPanel.setHeading("Caves");
 		ornamentCavesPanel.add(cavesSelectionLV);
 		ornamentCavesPanel.getHeader().setStylePrimaryName("frame-header");
+		ornamentCavesPanel.addDomHandler(getShortkey(), KeyPressEvent.getType());
 
 		ToolButton resetOrnamentCavesPanelTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetOrnamentCavesPanelTB.setToolTip(Util.createToolTip("Reset selection"));
@@ -647,6 +658,7 @@ public class OrnamenticFilter extends AbstractFilter {
 					}
 				}));
 		districtsSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+		districtsSelectionLV.addDomHandler(getShortkey(), KeyPressEvent.getType());
 
 		cavesSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
 
@@ -683,6 +695,7 @@ public class OrnamenticFilter extends AbstractFilter {
 
 				}));
 		innerSecondaryPatternsSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+		innerSecondaryPatternsSelectionLV.addDomHandler(getShortkey(), KeyPressEvent.getType());
 
 		ContentPanel innerSecPanel = new ContentPanel();
 		innerSecPanel.setHeaderVisible(true);
@@ -715,6 +728,7 @@ public class OrnamenticFilter extends AbstractFilter {
 
 				}));
 		relatedOrnamentsSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+		relatedOrnamentsSelectionLV.addDomHandler(getShortkey(), KeyPressEvent.getType());
 
 		ContentPanel relatedornamentPanel = new ContentPanel();
 		relatedornamentPanel.setHeaderVisible(true);
@@ -749,6 +763,7 @@ public class OrnamenticFilter extends AbstractFilter {
 
 				}));
 		positionSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+		positionSelectionLV.addDomHandler(getShortkey(), KeyPressEvent.getType());
 
 		ContentPanel ornamentpositionPanel = new ContentPanel();
 		ornamentpositionPanel.setHeaderVisible(true);
@@ -783,6 +798,7 @@ public class OrnamenticFilter extends AbstractFilter {
 
 				}));
 		functionSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+		functionSelectionLV.addDomHandler(getShortkey(), KeyPressEvent.getType());
 
 		ContentPanel ornamentFunctionPanel = new ContentPanel();
 		ornamentFunctionPanel.setHeaderVisible(true);
@@ -838,6 +854,7 @@ public class OrnamenticFilter extends AbstractFilter {
 		ornamentClassComboBox.setEditable(false);
 		ornamentClassComboBox.setTriggerAction(TriggerAction.ALL);
 		ornamentClassComboBox.setEmptyText("select motif");
+		ornamentClassComboBox.addDomHandler(getShortkey(), KeyPressEvent.getType());
 		
 		ContentPanel headerOrnamentClass = new ContentPanel();
 		headerOrnamentClass.setHeading("Motif");
@@ -870,6 +887,7 @@ public class OrnamenticFilter extends AbstractFilter {
 		ornamentDeskriptionPanel.add(ornamentDeskriptionSearchTF);
 		ornamentDeskriptionPanel.getHeader().setStylePrimaryName("frame-header");
 		ornamenticFilterVLC.add(ornamentDeskriptionPanel);
+		ornamenticFilterVLC.addDomHandler(getShortkey(), KeyPressEvent.getType());
 
 		ContentPanel ornamentInterpretationPanel = new ContentPanel();
 		ornamentInterpretationPanel.setHeaderVisible(true);
@@ -913,6 +931,7 @@ public class OrnamenticFilter extends AbstractFilter {
 		textSearch.setHeading("Text Search");
 		textSearch.add(ornamenticFilterVLC);
 		textSearch.getHeader().setStylePrimaryName("frame-header");
+		textSearch.addDomHandler(getShortkey(), KeyPressEvent.getType());
 
 		AccordionLayoutContainer accordion = new AccordionLayoutContainer();
 		accordion.setExpandMode(ExpandMode.SINGLE_FILL);
@@ -928,6 +947,7 @@ public class OrnamenticFilter extends AbstractFilter {
 		accordion.add(textSearch);
 
 		VerticalLayoutContainer codeMotifVLC = new VerticalLayoutContainer();
+		codeMotifVLC.addDomHandler(getShortkey(), KeyPressEvent.getType());
 		codeMotifVLC.add(ornamentCodeSearchTF, new VerticalLayoutData(1.0, 25));
 		codeMotifVLC.add(headerOrnamentClass, new VerticalLayoutData(1.0, 45));
 		
@@ -935,6 +955,7 @@ public class OrnamenticFilter extends AbstractFilter {
 
 		// iconography? accordion.add(iconographyPanel);
 		BorderLayoutContainer ornamentFilterBLC = new BorderLayoutContainer();
+		ornamentFilterBLC.addDomHandler(getShortkey(), KeyPressEvent.getType());
 		ornamentFilterBLC.setNorthWidget(codeMotifVLC, new BorderLayoutData(70));
 		ornamentFilterBLC.setCenterWidget(accordion, new MarginData(5, 0, 0, 0));
 		ornamentFilterBLC.setHeight(550);

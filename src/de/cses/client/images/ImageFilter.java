@@ -15,6 +15,10 @@ package de.cses.client.images;
 
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.ui.HTML;
@@ -102,22 +106,33 @@ public class ImageFilter extends AbstractFilter {
 		titleSearch = new TextField();
 		titleSearch.setEmptyText("search title / shortname");
 		titleSearch.setToolTip(Util.createToolTip("search in title or shortname", "Search if the title or shortname contains this sequence of characters."));
+		titleSearch.addDomHandler(getShortkey(), KeyPressEvent.getType());
 		vlc.add(titleSearch, new VerticalLayoutData(1.0, .125));
 		
 		commentSearch = new TextField();
 		commentSearch.setEmptyText("search comment");
 		commentSearch.setToolTip(Util.createToolTip("search in comments", "Search if the comments contain this sequence of characters."));
+		commentSearch.addDomHandler(getShortkey(), KeyPressEvent.getType());
 		vlc.add(commentSearch, new VerticalLayoutData(1.0, .125));
 
 		copyrightSearch = new TextField();
 		copyrightSearch.setEmptyText("search copyright");
 		copyrightSearch.setToolTip(Util.createToolTip("search in copyright", "Search if the copyright contains this sequence of characters."));
+		copyrightSearch.addDomHandler(getShortkey(), KeyPressEvent.getType());
 		vlc.add(copyrightSearch, new VerticalLayoutData(1.0, .125));
 		
 		daysSinceUploadSearch = new NumberField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
 		daysSinceUploadSearch.setAllowNegative(false);
 		daysSinceUploadSearch.setEmptyText("last X days");
 		daysSinceUploadSearch.setToolTip(Util.createToolTip("Search in last X days.", "Searches for images uploaded in the last X days."));
+		daysSinceUploadSearch.addDomHandler(getShortkey(), KeyPressEvent.getType());
+		daysSinceUploadSearch.addDomHandler(new KeyDownHandler() {
+			public void onKeyDown(KeyDownEvent event) {
+	        	  if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+	        		  invokeSearch();
+	        	  }
+			}
+		}, KeyDownEvent.getType());
 		HorizontalLayoutContainer uploadedSinceHLC = new HorizontalLayoutContainer();
 		uploadedSinceHLC.add(daysSinceUploadSearch, new HorizontalLayoutData(.7, 1.0, new Margins(0, 10, 0, 0)));
 		uploadedSinceHLC.add(new HTML(lt.label("days")), new HorizontalLayoutData(.3, 1.0));
@@ -126,11 +141,19 @@ public class ImageFilter extends AbstractFilter {
 		DualListField<ImageTypeEntry, String> dualListField = new DualListField<ImageTypeEntry, String>(imageTypeEntryList,
 				selectedImagesTypesList, imageTypeProps.name(), new TextCell());
 		dualListField.setEnableDnd(true);
+		dualListField.addDomHandler(new KeyDownHandler() {
+			public void onKeyDown(KeyDownEvent event) {
+	        	  if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+	        		  invokeSearch();
+	        	  }
+			}
+		}, KeyDownEvent.getType());
 		dualListField.getDownButton().removeFromParent();
 		dualListField.getUpButton().removeFromParent();
 		dualListField.setMode(DualListField.Mode.INSERT);
 
 		vlc.add(dualListField, new VerticalLayoutData(1.0, .50));
+		vlc.addDomHandler(getShortkey(), KeyPressEvent.getType());
 
 		vlc.setHeight("300px");
 		return vlc;

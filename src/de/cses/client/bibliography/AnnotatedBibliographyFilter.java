@@ -12,17 +12,18 @@
  * If not, you can access it from here: <https://www.gnu.org/licenses/gpl-3.0.txt>.
  */
 package de.cses.client.bibliography;
-
-import java.util.ArrayList;
-
-import com.google.gwt.user.client.Cookies;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.TextField;
-import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
+import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.Util;
 import de.cses.client.ui.AbstractFilter;
@@ -52,25 +53,39 @@ public class AnnotatedBibliographyFilter extends AbstractFilter {
 	/* (non-Javadoc)
 	 * @see de.cses.client.ui.AbstractFilter#getFilterUI()
 	 */
+	
+
 	@Override
 	protected Widget getFilterUI() {
+
 		authorNameTF = new TextField();
 		authorNameTF.setEmptyText("search author / editor / institute");
 		authorNameTF.setToolTip(Util.createToolTip("searches all authors / editors / institutes"));
+		authorNameTF.addKeyPressHandler(getShortkey());
 		
 		titleTF = new TextField();
 		titleTF.setEmptyText("search title (orig./eng./trans.)");
 		titleTF.setToolTip(Util.createToolTip("Searches in all sorts of titles.", "Includes Parent Title, Subtitle, Collection Title, Titleaddon, Book Title, etc."));
+		titleTF.addKeyPressHandler(getShortkey());
 		
 		publisherTF = new TextField();
 		publisherTF.setEmptyText("search publisher & address");
 		publisherTF.setToolTip(Util.createToolTip("Search for publishers & addresses.", "Please note: publisher is a free text field. Due to diffent spelling or typos, searing can become difficult."));
+		publisherTF.addKeyPressHandler(getShortkey());
 		
 		yearSearch = new NumberField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
 		yearSearch.setAllowNegative(false);
 		yearSearch.setEmptyText("year");
 		yearSearch.setToolTip(Util.createToolTip("search year", "will be extended into searching for range of years in next version"));
- 
+		yearSearch.addKeyDownHandler( new KeyDownHandler() {
+			public void onKeyDown(KeyDownEvent event) {
+	        	  if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+	        		  yearSearch.finishEditing();
+	        		  invokeSearch();
+	        	  }
+			}
+		});
+
 		VerticalLayoutContainer bibFilterVLC = new VerticalLayoutContainer();
 		bibFilterVLC.add(authorNameTF, new VerticalLayoutData(1.0, .25));
 		bibFilterVLC.add(titleTF, new VerticalLayoutData(1.0, .25));

@@ -16,6 +16,7 @@ package de.cses.client.caves;
 import java.util.Comparator;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
@@ -171,6 +172,7 @@ public class CaveFilter extends AbstractFilter {
 		
 		searchNameTF = new TextField();
 		searchNameTF.setEmptyText("search historical names");
+		searchNameTF.addKeyPressHandler(getShortkey());
 		
 		decoratedOnlyCB = new CheckBox();
 		decoratedOnlyCB.setBoxLabel("decorated caves only");
@@ -186,6 +188,7 @@ public class CaveFilter extends AbstractFilter {
 			
 		}));
 		caveTypeSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+		caveTypeSelectionLV.addDomHandler(getShortkey(), KeyPressEvent.getType());
 		
 		ContentPanel caveTypePanel = new ContentPanel();
 		caveTypePanel.setHeaderVisible(true);
@@ -214,6 +217,7 @@ public class CaveFilter extends AbstractFilter {
 			}
 		}));
 		siteSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+		siteSelectionLV.addDomHandler(getShortkey(), KeyPressEvent.getType());
 		
 		ContentPanel sitePanel = new ContentPanel();
 		sitePanel.setHeaderVisible(true);
@@ -242,6 +246,7 @@ public class CaveFilter extends AbstractFilter {
 				return dvTemplates.districtLabel(entry.getName(), se.getName());
 			}}));
 		districtSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+		districtSelectionLV.addDomHandler(getShortkey(), KeyPressEvent.getType());
 		
 		ContentPanel districtPanel = new ContentPanel();
 		districtPanel.setHeaderVisible(true);
@@ -279,6 +284,7 @@ public class CaveFilter extends AbstractFilter {
 			}
 		}));
 		regionSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+		regionSelectionLV.addDomHandler(getShortkey(), KeyPressEvent.getType());
 		
 		ContentPanel regionPanel = new ContentPanel();
 		regionPanel.setHeaderVisible(true);
