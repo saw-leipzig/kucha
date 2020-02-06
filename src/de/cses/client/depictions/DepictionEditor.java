@@ -654,6 +654,7 @@ public class DepictionEditor extends AbstractEditor {
 				String district = item.getDistrictID() > 0 ? st.getDistrictEntries().get(item.getDistrictID()).getName() : "";
 				String region = item.getRegionID() > 0 ? st.getRegionEntries().get(item.getRegionID()).getEnglishName() : "";
 				return site  + " " + item.getOfficialNumber() + (!district.isEmpty() ? " / " + district : "") + (!region.isEmpty() ? " / " + region : "");
+
 			}
 		}, new AbstractSafeHtmlRenderer<CaveEntry>() {
 

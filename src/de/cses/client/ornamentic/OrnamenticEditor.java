@@ -1,7 +1,6 @@
 package de.cses.client.ornamentic;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
@@ -60,24 +59,25 @@ import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.info.Info;
 import com.sencha.gxt.widget.core.client.tree.Tree;
-import com.sencha.gxt.widget.core.client.tree.TreeStyle;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckCascade;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
-import com.sencha.gxt.widget.core.client.tree.Tree.TreeNode;
+import com.sencha.gxt.widget.core.client.tree.TreeStyle;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
 import de.cses.client.Util;
 import de.cses.client.bibliography.BibliographySelector;
-import de.cses.client.depictions.IconographySelector.IconographyValueProvider;
 import de.cses.client.depictions.DepictionDataDisplay.Images;
 import de.cses.client.depictions.IconographySelector.IconographyKeyProvider;
+import de.cses.client.depictions.IconographySelector.IconographyValueProvider;
 import de.cses.client.images.ImageSelector;
 import de.cses.client.images.ImageSelectorListener;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.client.ui.EditorListener;
 import de.cses.client.user.UserLogin;
+import de.cses.client.walls.CaveWallsTree;
+import de.cses.client.walls.WallTree;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.CaveEntry;
@@ -88,6 +88,7 @@ import de.cses.shared.OrnamentCaveRelation;
 import de.cses.shared.OrnamentClassEntry;
 import de.cses.shared.OrnamentComponentsEntry;
 import de.cses.shared.OrnamentEntry;
+import de.cses.shared.WallTreeEntry;
 
 public class OrnamenticEditor extends AbstractEditor implements ImageSelectorListener {
 	private Tree<IconographyEntry, String> iconographyTree;
@@ -134,6 +135,8 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 	private TextArea references;
 	private FramedPanel ftree;
 	private FramedPanel ftreeedit;
+	private CaveWallsTree wallTree;
+
 	public static OrnamentCaveRelationEditor ornamentCaveRelationEditor;
 	public static WallOrnamentCaveRelationEditor wallOrnamentCaveRelationEditor;
 	public static OrnamenticEditor ornamenticEditor;
@@ -366,7 +369,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		ftreeedit.add(iconographyTree);
 		ftreeedit.setSize("400","400");
 		ToolButton cancelTreeEdit = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
-		cancelTreeEdit.setToolTip(Util.createToolTip("cancel"));
+		cancelTreeEdit.setToolTip(Util.createToolTip("close"));
 		cancelTreeEdit.addSelectHandler(new SelectHandler() {
 
 			@Override
@@ -376,6 +379,19 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 				selectedIconographyTreeStore.clear();
 				if (iconographyTree.getCheckedSelection().size()>0) {
 					addparent(selectedie);
+					Util.doLogging(Integer.toString(selectedie.getIconographyID()));
+					
+					dbService.getWallTreeEntriesByIconographyID(selectedie.getIconographyID(),UserLogin.getInstance().getSessionID(), new AsyncCallback<ArrayList<WallTreeEntry>>() {
+
+						@Override
+						public void onFailure(Throwable caught) {
+							caught.printStackTrace();
+						}
+
+						public void onSuccess(ArrayList<WallTreeEntry> result) {
+							wallTree.setWallTreeStore(result);
+						}
+					});
 				}
 			}
 		});
@@ -416,6 +432,17 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 							iconographyTree.setChecked(ie, CheckState.CHECKED);
 							addparent(ie);
 							selectedie=ie;
+							dbService.getWallTreeEntriesByIconographyID(selectedie.getIconographyID(),UserLogin.getInstance().getSessionID(), new AsyncCallback<ArrayList<WallTreeEntry>>() {
+
+								@Override
+								public void onFailure(Throwable caught) {
+									caught.printStackTrace();
+								}
+
+								public void onSuccess(ArrayList<WallTreeEntry> result) {
+									wallTree.setWallTreeStore(result);
+								}
+							});
 							break;
 						}
 						
@@ -720,6 +747,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 		ToolButton addCaveTool = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		addCaveTool.setToolTip(Util.createToolTip("Add Cave"));
+		wallTree = new CaveWallsTree( null);
 
 		VerticalPanel cavesPanel = new VerticalPanel();
 		header = new FramedPanel();
@@ -759,7 +787,8 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 		cavesContentPanel.setHeading("Added caves");
 		cavesContentPanel.add(cavesList);
-
+		cavesContentPanel.add(wallTree.wallTree);
+		
 		ToolButton edit = new ToolButton(new IconConfig("editButton", "editButtonOver"));
 		edit.setToolTip(Util.createToolTip("Edit Cave"));
 

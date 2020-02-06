@@ -119,6 +119,8 @@ public interface DatabaseServiceAsync {
 	 */
 	void deleteEntry(String sqlDelete, AsyncCallback<Boolean> callback) throws IllegalArgumentException;
 
+	void getWallTreeEntriesByIconographyID(int IconographyID, String SessionID, AsyncCallback<ArrayList<WallTreeEntry>> callback) throws IllegalArgumentException;
+	
 	void saveOrnamentEntry(OrnamentEntry ornamentEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 
 	/**

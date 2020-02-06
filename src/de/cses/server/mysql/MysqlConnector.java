@@ -37,6 +37,7 @@ import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 
+import de.cses.client.StaticTables;
 import de.cses.server.ServerProperties;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographyEntry;
@@ -638,6 +639,86 @@ public class MysqlConnector implements IsSerializable {
 		if (diff>100){
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateEntry brauchte "+diff + " Millisekunden.");;}}
 		return true;
+	}
+	
+	/**
+	 * Executes an SQL update using a pre-defined SQL UPDATE string
+	 * 
+	 * @param int IconographyID
+	 */
+	public ArrayList<WallTreeEntry> getWallTreeEntriesByIconographyID(int IconographyID, String sessionID) {
+		long start = System.currentTimeMillis();
+		if (dologgingbegin){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateEntry wurde ausgelöst.");;
+		}
+		ArrayList<WallTreeEntry> results = new ArrayList<WallTreeEntry>();
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM DepictionIconographyRelation where IconographyID="+Integer.toString(IconographyID));
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				DepictionEntry de= getDepictionEntry(rs.getInt("DepictionID"),sessionID);
+				CaveEntry item = de.getCave();
+				String site = item.getSiteID() > 0 ? getSites(" SiteID="+item.getSiteID()).get(0).getShortName() : "";
+				String district = item.getDistrictID() > 0 ? getDistricts(" DistrictID="+item.getDistrictID()).get(0).getName() : "";
+				String region = item.getRegionID() > 0 ? getRegions(" RegionID="+item.getRegionID()).get(0).getEnglishName() : "";
+				String name=site  + " " + item.getOfficialNumber() + (!district.isEmpty() ? " / " + district : "") + (!region.isEmpty() ? " / " + region : "");
+				WallTreeEntry result = new WallTreeEntry(item.getCaveID()+1000,0,name,name );
+				boolean found = false;
+				for (WallTreeEntry res : results) {
+					if (result.getWallLocationID()==res.getWallLocationID()) {
+						found=true;
+						break;
+					}
+				}
+				if (!found){ 
+					System.out.println("add WallTreeEntry: "+result.getWallLocationID()+" - "+result.getParentID());
+					results.add(result);
+				}
+				ArrayList<WallTreeEntry> resultsWallsByDe = getwallsbyDepictionID(de.getDepictionID());
+				System.out.println("Länge der gefundenen Wall-Elemente: "+resultsWallsByDe.size());
+				for (WallTreeEntry resWallByDe : resultsWallsByDe) {
+					boolean found2 = false;
+					resWallByDe.setWallLocationID(Integer.parseInt(Integer.toString(resWallByDe.getWallLocationID())+Integer.toString(item.getCaveID())));
+					if ((resWallByDe.getParentID()==0)) {
+						resWallByDe.setParentID(result.getWallLocationID());
+					}
+					else {
+						resWallByDe.setParentID(Integer.parseInt(Integer.toString(resWallByDe.getParentID())+Integer.toString(item.getCaveID())));
+					}
+					for (WallTreeEntry res : results) {
+						if (resWallByDe.getWallLocationID()==res.getWallLocationID()) {
+							found2=true;
+							break;
+						}
+					}
+					if (!found2){ 
+						System.out.println("add WallTreeEntry: "+resWallByDe.getWallLocationID()+" - "+resWallByDe.getParentID());
+						results.add(resWallByDe);
+					}
+					else {
+						System.out.println("did not add WallTreeEntry: "+resWallByDe.getWallLocationID()+" - "+resWallByDe.getParentID());
+					}
+						
+					
+				}
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+			return null;
+		}
+
+		if (dologging){
+		long end = System.currentTimeMillis();
+		long diff = (end-start);
+		if (diff>100){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateEntry brauchte "+diff + " Millisekunden.");;}}
+		return results;
 	}
 
 	/**
@@ -2578,8 +2659,9 @@ public class MysqlConnector implements IsSerializable {
 		try {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery(
-					sqlWhere != null ? "SELECT * FROM Regions WHERE " + sqlWhere + "ORDER BY EnglishName Asc, PhoneticName Asc, OriginalName Asc"
+					sqlWhere != null ? "SELECT * FROM Regions WHERE " + sqlWhere + " ORDER BY EnglishName Asc, PhoneticName Asc, OriginalName Asc"
 							: "SELECT * FROM Regions ORDER BY EnglishName Asc, PhoneticName Asc, OriginalName Asc");
+
 			while (rs.next()) {
 				result.add(new RegionEntry(rs.getInt("RegionID"), rs.getString("PhoneticName"), rs.getString("OriginalName"),
 						rs.getString("EnglishName"), rs.getInt("SiteID")));

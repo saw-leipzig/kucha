@@ -105,16 +105,7 @@ public class WallTreeEntry extends AbstractEntry {
 	 */
 	@Override
 	public String getUniqueID() {
-		return "IconographyEntry-" + wallLocationID;
-	}
-	
-	public Boolean equals(WallTreeEntry entry) {
-		if (wallLocationID == entry.getWallLocationID()) {
-			return true;
-		}
-		else{
-			return false;
-		}
+		return "WallTreeEntry-" + wallLocationID;
 	}
 
 }

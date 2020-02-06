@@ -75,4 +75,14 @@ public abstract class AbstractEntry implements IsSerializable {
 		this.accessLevel = accessLevel;
 	}
 
+	public boolean equals(WallTreeEntry entry) {
+		if (this.getUniqueID() == entry.getUniqueID()) {
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+
+
 }

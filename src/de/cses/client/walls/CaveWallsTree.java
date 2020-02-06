@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gwt.dom.client.Style.FontWeight;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.TreeStore;
@@ -21,14 +22,13 @@ import de.cses.shared.CaveEntry;
 import de.cses.shared.WallTreeEntry;
 
 
-public class WallTree {
+public class CaveWallsTree {
 	public TreeStore<WallTreeEntry> wallTreeStore;
 	public Tree<WallTreeEntry, String> wallTree;
 	public Map<String, WallTreeEntry> selectedwallMap;
 	private CaveEntry cEntry;
 	private ArrayList<WallTreeEntry> allEntries;
-	private boolean dropunselected;
-	private boolean editable;
+
 	class WallTreeEntryKeyProvider implements ModelKeyProvider<WallTreeEntry> {
 		@Override
 		public String getKey(WallTreeEntry item) {
@@ -53,20 +53,11 @@ public class WallTree {
 			return "name";
 		}
 	}
-	public WallTree(Collection<WallTreeEntry> elements, List<WallTreeEntry> wallIDs, boolean dropunselected, boolean editable, CaveEntry entry) {
-		this.cEntry= entry;
-		this.dropunselected = dropunselected;
-		this.editable=editable;
-		buildTree(editable);
-		setWallTreeStore(elements, dropunselected, wallIDs);
+	public CaveWallsTree(List<WallTreeEntry> wallIDs) {
+		buildTree(wallIDs);
+		setWallTreeStore( wallIDs);
 	}
-	public WallTree(ArrayList<WallTreeEntry> elements, List<WallTreeEntry> wallIDs, boolean dropunselected, boolean editable, CaveEntry entry) {
-		this.cEntry= entry;
-		this.dropunselected = dropunselected;
-		this.editable=editable;
-		buildTree(editable);
-		setWallTreeStore(elements, dropunselected, wallIDs);
-	}
+
 	private void processParentWallTreeEntry( WallTreeEntry item) {
 		
 			
@@ -147,14 +138,12 @@ public class WallTree {
 		}}
 	}
 
-	private void buildTreeStore( boolean ornaments){
+	private void buildTreeStore(){
 		wallTreeStore = new TreeStore<WallTreeEntry>(new WallTreeEntryKeyProvider());
 		wallTreeStore.clear();
 		allEntries = new ArrayList<WallTreeEntry>();
 	}
-	public void setWall(List<WallTreeEntry> wallKeys) {
-		dropunselected(wallKeys);
-	}
+
 	public void findParent(WallTreeEntry child) {
 		if (child.getParentID()==0) {
 		    Util.doLogging("Found: "+Integer.toString(child.getParentID())+" - "+Integer.toString(child.getWallLocationID()));
@@ -177,49 +166,44 @@ public class WallTree {
 			}
 		};
 	}
-
-
-	public void setWallTreeStore(Collection<WallTreeEntry> elements, boolean dropunselected, List<WallTreeEntry> wallIDs) {
-		Util.doLogging("Länge von Elements:"+ Integer.toString(elements.size()));
-		for (WallTreeEntry item : elements) {
-			wallTreeStore.add(item);
-			allEntries.add(item);
-			if (item.getChildren() != null) {
-
-					//if (item.getParentID()==null) {
-					processParentWallTreeEntry(item);
+	void addnext(WallTreeEntry wte, List<WallTreeEntry> wallIDs) {
+		for (WallTreeEntry item : wallIDs) {
+			if (item.getParentID()==wte.getWallLocationID()) {
+				boolean notInTree=false;
+				if (wallTreeStore.findModel(item)!=null) {
+					if (wallTreeStore.findModel(item).getPosition()==null)
+						wallTreeStore.remove(item);
+						wallTreeStore.add(wte, item);
+				}
+				else {
+					wallTreeStore.add(wte, item);
+				}
+					
+										
+				addnext(item, wallIDs);
 			}
 		}
-		if (dropunselected) {
-			dropunselected(wallIDs);
-		}
-		else {
-			selectitems(wallIDs);
-		}
+	}
 
-	}
-	public void dropunselected(List<WallTreeEntry> wallIDs) {
-		wallTreeStore.clear();
-		for (WallTreeEntry wall : wallIDs) {
-					findParent(wall);
-			
-		}
-	}
-		
-	public void selectitems(List<WallTreeEntry> wallIDs) {
-		wallTree.setCheckStyle(CheckCascade.PARENTS);
-		for (WallTreeEntry wall : wallIDs) {
-					Util.doLogging(Integer.toString(wall.getWallLocationID()));
-					wallTreeStore.findModelWithKey(Integer.toString(wall.getWallLocationID())).setPosition(wall.getPosition());
-					wallTree.setChecked(wall, CheckState.CHECKED);
+	public void setWallTreeStore( List<WallTreeEntry> wallIDs) {
+		if (wallIDs != null){
+			Util.doLogging("Länge von Elements:"+ Integer.toString(wallIDs.size()));
+			for (WallTreeEntry item : wallIDs) {
+				if ((item.getParentID()==0)) {
+					wallTreeStore.add(item);
+					addnext(item,wallIDs);
 				}
+				}
+			}
 
-	}
-		
+		}
 
-	public void buildTree( boolean editable){
-		selectedwallMap = new HashMap<String, WallTreeEntry>();
-		buildTreeStore(false);
+
+			
+
+
+	public void buildTree(List<WallTreeEntry> wallIDs){
+		buildTreeStore();
 		wallTreeStore.clear();
 		allEntries.clear();
 		
@@ -232,9 +216,27 @@ public class WallTree {
 					wallTree.setChecked(entry, CheckState.CHECKED);
 				}
 			}
+            @Override
+            protected void update() {
+                super.update();
+                for (WallTreeEntry item : this.getStore().getAll()) {
+                    // Put your condition here
+                    if (item.getParentID()==0) {
+                        // Severe nullchecking is important. Soon after adding items to store, there might not be corresponding nodes. If there are nodes, there might not be Elements or they have no Style yet.
+                        if (this.findNode(item) != null) {
+                            if (this.getView().getIconElement(this.findNode(item)) != null && this.getView().getIconElement(this.findNode(item)).getStyle() != null) {
+                                this.getView().getIconElement(this.findNode(item)).getStyle().setFontWeight(FontWeight.BOLDER);
+                            }
+                            if (this.getView().getTextElement(this.findNode(item)) != null && this.getView().getTextElement(this.findNode(item)).getStyle() != null) {
+                                this.getView().getTextElement(this.findNode(item)).getStyle().setFontWeight(FontWeight.BOLDER);
+                            }
+                        }
+                    }
+                }
+            }
 
 		};
-		wallTree.setCheckable(editable);
+		wallTree.setCheckable(false);
 		TreeStyle treeStyle = new TreeStyle(); 
 		treeStyle.setNodeCloseIcon(Images.INSTANCE.foo());
 		treeStyle.setNodeOpenIcon(Images.INSTANCE.foo());	

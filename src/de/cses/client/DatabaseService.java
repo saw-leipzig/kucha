@@ -120,6 +120,8 @@ public interface DatabaseService extends RemoteService {
 
 	ArrayList<CaveTypeEntry> getCaveTypes() throws IllegalArgumentException;
 
+	ArrayList<WallTreeEntry> getWallTreeEntriesByIconographyID(int IconographyID, String SessionID) throws IllegalArgumentException;
+	
 	ArrayList<VendorEntry> getVendors() throws IllegalArgumentException;
 
 	ArrayList<StyleEntry> getStyles() throws IllegalArgumentException;
