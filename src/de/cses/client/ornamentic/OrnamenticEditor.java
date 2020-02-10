@@ -389,6 +389,9 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 						}
 
 						public void onSuccess(ArrayList<WallTreeEntry> result) {
+							for (WallTreeEntry we : result){
+								Util.doLogging("Erhalten Wall:"+we.getText()+" Positions: "+Integer.toString(we.getPosition().size()));
+							}
 							wallTree.setWallTreeStore(result);
 						}
 					});
@@ -440,6 +443,15 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 								}
 
 								public void onSuccess(ArrayList<WallTreeEntry> result) {
+									for (WallTreeEntry we : result){
+										if (we.getPosition()!=null){
+											Util.doLogging("Erhalten Wall:"+we.getText()+" Positions: "+Integer.toString(we.getPosition().size()));											
+										}
+										else {
+											Util.doLogging("Erhalten Wall:"+we.getText()+" Positions:  - ");
+											
+										}
+									}
 									wallTree.setWallTreeStore(result);
 								}
 							});
@@ -767,8 +779,10 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		addCaveTool.addHandler(addCaveClickHandler, ClickEvent.getType());
 
 		cavesContentPanel = new FramedPanel();
+		FramedPanel cavesContentPanel2 = new FramedPanel();
 
 		cavesPanel.add(cavesContentPanel);
+		cavesPanel.add(cavesContentPanel2);
 		caveOrnamentRelationList = new ListStore<OrnamentCaveRelation>(
 				ornamentCaveRelationProps.ornamentCaveRelationID());
 
@@ -786,8 +800,9 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		}
 
 		cavesContentPanel.setHeading("Added caves");
+		cavesContentPanel2.setHeading("Ornamentation detected in Caves:");
 		cavesContentPanel.add(cavesList);
-		cavesContentPanel.add(wallTree.wallTree);
+		cavesContentPanel2.add(wallTree.wallTree);
 		
 		ToolButton edit = new ToolButton(new IconConfig("editButton", "editButtonOver"));
 		edit.setToolTip(Util.createToolTip("Edit Cave"));

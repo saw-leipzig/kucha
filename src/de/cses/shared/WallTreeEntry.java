@@ -30,7 +30,7 @@ public class WallTreeEntry extends AbstractEntry {
 	private String text;
 	private String search;
 	private ArrayList<WallTreeEntry> children;
-	private PositionEntry position;
+	private ArrayList<PositionEntry> position;
 	
 	public WallTreeEntry() { }
 
@@ -42,14 +42,14 @@ public class WallTreeEntry extends AbstractEntry {
 		this.search = search;
 		this.children = null;
 	}
-	public WallTreeEntry(int wallLocationID, int parentID, String text, String search, int positionID, String positionText) {
+	public WallTreeEntry(int wallLocationID, int parentID, String text, String search, ArrayList<PositionEntry> position) {
 		super();
 		this.wallLocationID = wallLocationID;
 		this.parentID = parentID;
 		this.text = text;
 		this.search = search;
 		this.children = null;
-		this.position=new PositionEntry(positionID, positionText);
+		this.position=position;
 	}
 	public int getWallLocationID() {
 		return wallLocationID;
@@ -68,11 +68,25 @@ public class WallTreeEntry extends AbstractEntry {
 	}
 
 	public String getText() {
+		String name="";
+		String posNames ="";
 		if (position == null) {
 		return text;
 		}
 		else {
-			return text+" - "+position.getName();
+			name=text;
+			for (PositionEntry pos : position) {
+				if (posNames=="") {
+					posNames=pos.getName();
+				}
+				else {
+					posNames=posNames+", "+pos.getName();
+				}
+			}
+			if (posNames!="") {
+				name=name+" - "+posNames;
+			}
+			return name;
 		}
 	}
 
@@ -90,11 +104,14 @@ public class WallTreeEntry extends AbstractEntry {
 	public ArrayList<WallTreeEntry> getChildren() {
 		return children;
 	}
-	public void setPosition(PositionEntry pe) {
+	public void setPosition(ArrayList<PositionEntry> pe) {
 		this.position=pe;
 	}
-	public PositionEntry getPosition() {
+	public ArrayList<PositionEntry> getPosition() {
 		return this.position;
+	}
+	public void addPosition(PositionEntry pe) {
+		this.position.add(pe);
 	}
 	public void setChildren(ArrayList<WallTreeEntry> children) {
 		this.children = children;

@@ -26,7 +26,6 @@ public class CaveWallsTree {
 	public TreeStore<WallTreeEntry> wallTreeStore;
 	public Tree<WallTreeEntry, String> wallTree;
 	public Map<String, WallTreeEntry> selectedwallMap;
-	private CaveEntry cEntry;
 	private ArrayList<WallTreeEntry> allEntries;
 
 	class WallTreeEntryKeyProvider implements ModelKeyProvider<WallTreeEntry> {
@@ -58,85 +57,6 @@ public class CaveWallsTree {
 		setWallTreeStore( wallIDs);
 	}
 
-	private void processParentWallTreeEntry( WallTreeEntry item) {
-		
-			
-			
-			switch (cEntry.getCaveTypeID()) {
-
-			case 2: // square cave
-				//Util.doLogging("cEntry.getCaveTypeID: "+Integer.toString(cEntry.getCaveTypeID()));
-				for (WallTreeEntry child : item.getChildren()) {
-					if (( WallTreeEntry.ANTECHAMBER_LABEL.contains(child.getWallLocationID()))
-							|| (WallTreeEntry.MAIN_CHAMBER_LABEL.contains(child.getWallLocationID()))||(child.getWallLocationID()<100)) {
-							//Util.doLogging(item.getText()+" - "+child.getText()+" /1");
-						wallTreeStore.add(item, child);
-						allEntries.add(child);
-						if (child.getChildren() != null) {
-								processParentWallTreeEntry(child);
-							}
-						}
-					}
-				break;
-				
-			case 3: // residential cave
-				//Util.doLogging("cEntry.getCaveTypeID: "+Integer.toString(cEntry.getCaveTypeID()));
-				for (WallTreeEntry child : item.getChildren()) {
-					if ((WallTreeEntry.ANTECHAMBER_LABEL.contains(child.getWallLocationID()))
-							|| (WallTreeEntry.MAIN_CHAMBER_LABEL.contains(child.getWallLocationID()))
-							|| (WallTreeEntry.MAIN_CHAMBER_CORRIDOR_LABEL.contains(child.getWallLocationID()))
-							|| (WallTreeEntry.REAR_AREA_LABEL.contains(child.getWallLocationID()))||(child.getWallLocationID()<100)) {
-						//Util.doLogging(item.getText()+" - "+child.getText()+" /2");
-						wallTreeStore.add(item, child);
-						allEntries.add(child);
-						if (child.getChildren() != null) {
-							processParentWallTreeEntry(child);
-						}
-						}
-				}
-				break;
-
-			case 4: // central-pillar cave
-			case 6: // monumental image cave
-				//Util.doLogging("cEntry.getCaveTypeID: "+Integer.toString(cEntry.getCaveTypeID()));
-				for (WallTreeEntry child : item.getChildren()) {
-					if ((WallTreeEntry.ANTECHAMBER_LABEL.contains(child.getWallLocationID()))
-							|| (WallTreeEntry.MAIN_CHAMBER_LABEL.contains(child.getWallLocationID()))
-							|| (WallTreeEntry.REAR_AREA_LABEL.contains(child.getWallLocationID()))
-							|| (WallTreeEntry.REAR_AREA_LEFT_CORRIDOR_LABEL.contains(child.getWallLocationID()))
-							|| (WallTreeEntry.REAR_AREA_RIGHT_CORRIDOR_LABEL.contains(child.getWallLocationID()))||(child.getWallLocationID()<100)) {
-						//Util.doLogging(item.getText()+" - "+child.getText()+" /3");
-						wallTreeStore.add(item, child);
-						allEntries.add(child);
-						if (child.getChildren() != null) {
-							processParentWallTreeEntry(child);
-						}
-					}
-				}
-				break;
-			default:
-				break;
-			}
-	}
-	
-	
-
-	
-	private void processParentWallTreeEntry_select(WallTreeEntry item, ArrayList<WallTreeEntry> l) {	
-		for (WallTreeEntry child : item.getChildren()) {
-			Boolean found =new Boolean(false);
-			for (WallTreeEntry entry : l) {
-				if (entry.getWallLocationID()==child.getWallLocationID()){
-					found=true;
-					break;}}
-			if (found){
-				//Info.display(child.getText(), child.getText());
-				wallTreeStore.add(item, child);
-			if (child.getChildren() != null) {
-				processParentWallTreeEntry_select(child,l);
-			}
-		}}
-	}
 
 	private void buildTreeStore(){
 		wallTreeStore = new TreeStore<WallTreeEntry>(new WallTreeEntryKeyProvider());

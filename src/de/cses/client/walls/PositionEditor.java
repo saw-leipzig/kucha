@@ -21,15 +21,19 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
-import com.google.gwt.user.client.rpc.core.java.util.Arrays;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
+import com.sencha.gxt.core.client.IdentityValueProvider;
+import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.widget.core.client.FramedPanel;
+import com.sencha.gxt.widget.core.client.ListView;
+import com.sencha.gxt.widget.core.client.ListViewSelectionModel;
 import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
@@ -57,12 +61,14 @@ public class PositionEditor {
 
 
 	private ListStore<PositionEntry> positionEntryLS;
-	private ComboBox<PositionEntry> positionComboBox;
+	private ListView<PositionEntry, PositionEntry> PositionSelectionLV;
 	private PositionProperties positionProps;
 	private WallTree wallTree;
 	private CaveEntry entry;
 	private List<WallTreeEntry> walls;
 	int init= 0;
+	final PositionViewTemplates pvTemplates = GWT.create(PositionViewTemplates.class);
+
 	PopupPanel popup = new PopupPanel();
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 
@@ -71,6 +77,10 @@ public class PositionEditor {
 										
 
 		LabelProvider<PositionEntry> name();
+	}
+	interface PositionViewTemplates extends XTemplates {
+		@XTemplate("<div>{name}</div>")
+		SafeHtml positionView(String name);
 	}
 
 	public PositionEditor(CaveEntry entry, List<WallTreeEntry> entries) {
@@ -104,24 +114,20 @@ public class PositionEditor {
 
 		selectWallFP.add(wallTree.wallTree);
 	
-
-		positionComboBox = new ComboBox<PositionEntry>(positionEntryLS, positionProps.name(),
-				new AbstractSafeHtmlRenderer<PositionEntry>() {
+		PositionSelectionLV = new ListView<PositionEntry, PositionEntry>(positionEntryLS,
+				new IdentityValueProvider<PositionEntry>(),
+				new SimpleSafeHtmlCell<PositionEntry>(new AbstractSafeHtmlRenderer<PositionEntry>() {
 
 					@Override
-					public SafeHtml render(PositionEntry item) {
-						final OrnamentPositionViewTemplates pvTemplates = GWT.create(OrnamentPositionViewTemplates.class);
-						return pvTemplates.ornamentPosition(item.getName());
+					public SafeHtml render(PositionEntry entry) {
+						return pvTemplates.positionView(entry.getName());
 					}
-				});
-		
-		
-		
-		positionComboBox.setTypeAhead(false);
-		positionComboBox.setEditable(false);
-		positionComboBox.setTriggerAction(TriggerAction.ALL);
 
-
+				}));
+		PositionSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+		//PositionSelectionLV.set;
+		
+	
 		//FramedPanel wallFP = new FramedPanel();
 		//wallFP.setHeading("Select wall");
 		//wallFP.add(positionComboBox);
@@ -135,7 +141,6 @@ public class PositionEditor {
 			}
 
 		};
-		positionComboBox.addValueChangeHandler(positionSelectionHandler);
 
 		
 
@@ -163,13 +168,14 @@ public class PositionEditor {
 				FramedPanel positionFP = new FramedPanel();
 				positionFP.setHeading("Select position");
 				if (wallTree.wallTree.getSelectionModel().getSelectedItem().getPosition()==null) {
-					positionComboBox.clear();
+					PositionSelectionLV.getSelectionModel().deselectAll();
 				}
 				else {
-					positionComboBox.setValue(wallTree.wallTree.getSelectionModel().getSelectedItem().getPosition());
+					PositionSelectionLV.getSelectionModel().deselectAll();
+					PositionSelectionLV.getSelectionModel().setSelection(wallTree.wallTree.getSelectionModel().getSelectedItem().getPosition());
 				}
-				
-				positionFP.add(positionComboBox);
+				PositionSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+				positionFP.add(PositionSelectionLV);
 				editWallPosition.add(positionFP);
 				ToolButton cancelpositionTB = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
 				cancelpositionTB.setToolTip(Util.createToolTip("close"));
@@ -186,13 +192,13 @@ public class PositionEditor {
 
 					@Override
 					public void onSelect(SelectEvent event) {
-						if (positionComboBox.getCurrentValue().getPositionID()>0){
-							wallTree.wallTree.getSelectionModel().getSelectedItem().setPosition(positionComboBox.getCurrentValue());
-						}
-						else{
-							wallTree.wallTree.getSelectionModel().getSelectedItem().setPosition(new PositionEntry());
-							
+						ArrayList<PositionEntry> positions = new ArrayList<PositionEntry>();
+						for (PositionEntry pe : PositionSelectionLV.getSelectionModel().getSelectedItems()) {
+							positions.add(pe);
 						};
+						
+						wallTree.wallTree.getSelectionModel().getSelectedItem().setPosition(positions);
+				
 						Info.display("Test: ", wallTree.wallTree.getSelectionModel().getSelectedItem().getText());
 						wallTree.wallTree.refresh(wallTree.wallTree.getSelectionModel().getSelectedItem());
 						wallTree.wallTree.setAutoExpand(true);

@@ -76,6 +76,7 @@ public class WallTree {
 			case 2: // square cave
 				//Util.doLogging("cEntry.getCaveTypeID: "+Integer.toString(cEntry.getCaveTypeID()));
 				for (WallTreeEntry child : item.getChildren()) {
+					child.setPosition(null);
 					if (( WallTreeEntry.ANTECHAMBER_LABEL.contains(child.getWallLocationID()))
 							|| (WallTreeEntry.MAIN_CHAMBER_LABEL.contains(child.getWallLocationID()))||(child.getWallLocationID()<100)) {
 							//Util.doLogging(item.getText()+" - "+child.getText()+" /1");
@@ -91,6 +92,7 @@ public class WallTree {
 			case 3: // residential cave
 				//Util.doLogging("cEntry.getCaveTypeID: "+Integer.toString(cEntry.getCaveTypeID()));
 				for (WallTreeEntry child : item.getChildren()) {
+					child.setPosition(null);
 					if ((WallTreeEntry.ANTECHAMBER_LABEL.contains(child.getWallLocationID()))
 							|| (WallTreeEntry.MAIN_CHAMBER_LABEL.contains(child.getWallLocationID()))
 							|| (WallTreeEntry.MAIN_CHAMBER_CORRIDOR_LABEL.contains(child.getWallLocationID()))
@@ -109,6 +111,7 @@ public class WallTree {
 			case 6: // monumental image cave
 				//Util.doLogging("cEntry.getCaveTypeID: "+Integer.toString(cEntry.getCaveTypeID()));
 				for (WallTreeEntry child : item.getChildren()) {
+					child.setPosition(null);
 					if ((WallTreeEntry.ANTECHAMBER_LABEL.contains(child.getWallLocationID()))
 							|| (WallTreeEntry.MAIN_CHAMBER_LABEL.contains(child.getWallLocationID()))
 							|| (WallTreeEntry.REAR_AREA_LABEL.contains(child.getWallLocationID()))
@@ -182,6 +185,7 @@ public class WallTree {
 	public void setWallTreeStore(Collection<WallTreeEntry> elements, boolean dropunselected, List<WallTreeEntry> wallIDs) {
 		Util.doLogging("Länge von Elements:"+ Integer.toString(elements.size()));
 		for (WallTreeEntry item : elements) {
+			item.setPosition(null);
 			wallTreeStore.add(item);
 			allEntries.add(item);
 			if (item.getChildren() != null) {
