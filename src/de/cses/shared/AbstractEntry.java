@@ -32,6 +32,7 @@ public abstract class AbstractEntry implements IsSerializable {
 	protected int accessLevel = ACCESS_LEVEL_PRIVATE;
 	protected String lastChangedByUser = "";
 	protected String modifiedOn = "";
+	protected boolean deleted = false;
 
 	/**
 	 * 
@@ -69,6 +70,12 @@ public abstract class AbstractEntry implements IsSerializable {
 
 	public int getAccessLevel() {
 		return accessLevel;
+	}
+	public boolean isdeleted() {
+		return deleted;
+	}
+	public void delete() {
+		deleted=true;
 	}
 
 	public void setAccessLevel(int accessLevel) {

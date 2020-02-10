@@ -110,6 +110,8 @@ public interface DatabaseServiceAsync {
 	 */
 	void updateEntry(String sqlUpdate, AsyncCallback<Boolean> callback) throws IllegalArgumentException;
 
+	void isHan(String title, AsyncCallback<Boolean> callback) throws IllegalArgumentException;
+
 	/**
 	 * Executes a SQL delete using a predefined SQL DELETE string
 	 * 
@@ -119,8 +121,10 @@ public interface DatabaseServiceAsync {
 	 */
 	void deleteEntry(String sqlDelete, AsyncCallback<Boolean> callback) throws IllegalArgumentException;
 
-	void getWallTreeEntriesByIconographyID(int IconographyID, String SessionID, AsyncCallback<ArrayList<WallTreeEntry>> callback) throws IllegalArgumentException;
-	
+  void getWallTreeEntriesByIconographyID(int IconographyID, String SessionID, AsyncCallback<ArrayList<WallTreeEntry>> callback) throws IllegalArgumentException;
+ 
+  void deleteAbstractEntry(AbstractEntry entry, AsyncCallback<Boolean> callback) throws IllegalArgumentException;
+
 	void saveOrnamentEntry(OrnamentEntry ornamentEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 
 	/**

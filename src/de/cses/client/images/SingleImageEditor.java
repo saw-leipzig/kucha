@@ -110,6 +110,7 @@ public class SingleImageEditor extends AbstractEditor {
 
 	interface ImageViewTemplates extends XTemplates {
 		@XTemplate("<figure style='text-align: center; margin: 0;'>"
+			
 				+ "<img src='{imgUri}' style='position: relative; padding: 5px; background: black;'>"
 				+ "</figure>")
 		SafeHtml view(SafeUri imgUri);
@@ -419,6 +420,38 @@ public class SingleImageEditor extends AbstractEditor {
 		HorizontalLayoutContainer imageAccessLevelHLC = new HorizontalLayoutContainer();
 		imageAccessLevelHLC.add(imageTypeSelectionPanel, new HorizontalLayoutData(.5, 1.0));
 		imageAccessLevelHLC.add(accessLevelFP, new HorizontalLayoutData(.5, 1.0));
+		ToolButton deleteToolButton = new ToolButton(new IconConfig("removeButton", "removeButtonOver"));
+		deleteToolButton.setToolTip(Util.createToolTip("delete"));
+		deleteToolButton.addSelectHandler(new SelectHandler() {
+			@Override
+			public void onSelect(SelectEvent event) {
+				de.cses.client.Util.showYesNo("Delete Warning!", "Proceeding will remove this Entry from the Database, are you sure?", new SelectHandler() {
+					
+					@Override
+					public void onSelect(SelectEvent event) {
+						imgEntry.delete();
+						if (imgEntry==null) {Util.doLogging("imgEntry is null!");}
+						closeEditor(imgEntry);
+						deleteEntry(imgEntry);
+					}
+				}, new SelectHandler() {
+						
+					@Override
+					public void onSelect(SelectEvent event) {
+						 
+					}
+				}, new KeyDownHandler() {
+
+					@Override
+					public void onKeyDown(KeyDownEvent e) {
+						
+					}}
+			
+					
+			
+			  );
+			}
+		});
 		
 		ToolButton saveToolButton = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 		saveToolButton.setToolTip(Util.createToolTip("save"));
@@ -512,6 +545,7 @@ public class SingleImageEditor extends AbstractEditor {
 		panel.setHeading("Image Editor (entry last modified on " + imgEntry.getModifiedOn() + ")");
 		panel.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
 		panel.add(mainHLC);
+		panel.addTool(deleteToolButton);
 		panel.addTool(saveToolButton);
 		panel.addTool(closeToolButton);
 		panel.setResize(true);

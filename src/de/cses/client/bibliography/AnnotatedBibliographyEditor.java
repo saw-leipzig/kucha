@@ -84,6 +84,7 @@ import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MaxNumberValidator;
 import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
+import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -259,6 +260,7 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 				@Override
 				public void onSuccess(AnnotatedBibliographyEntry result) {
 					bibEntry.setAnnotatedBibliographyID(result.getAnnotatedBibliographyID());
+					Info.display("BibliographyID:",Integer.toString(result.getAnnotatedBibliographyID()));
 					bibtexKeyTF.setValue(result.getBibtexKey(), true);
 //					updateEntry(bibEntry);
 					if (close) {
@@ -305,9 +307,9 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 			@Override
 			public void onSuccess(ArrayList<AuthorEntry> result) {
 				for (AuthorEntry ae : result) {
-					if (!ae.isInstitutionEnabled()) {
-						authorListStore.add(ae);
-					}
+					//if (!ae.isInstitutionEnabled()) {
+					authorListStore.add(ae);
+					//}
 					editorListStore.add(ae);
 				}
 				// now we shuffle the authors to the left in the correct order
@@ -841,9 +843,9 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 					
 					@Override
 					public void authorSaved(AuthorEntry authorEntry) {
-						if (!authorEntry.isInstitutionEnabled()) {
-							authorListStore.add(authorEntry);
-						}
+						//if (!authorEntry.isInstitutionEnabled()) {
+						authorListStore.add(authorEntry);
+						//}
 						editorListStore.add(authorEntry);
 						addAuthorDialog.hide();
 					}

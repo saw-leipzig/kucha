@@ -32,7 +32,6 @@ import de.cses.shared.UserEntry;
 public abstract class AbstractView extends Button implements EditorListener {
 
 	private static PopupPanel editorPanel;
-	
 	/**
 	 * This is the general constructor that amongst other tasks initializes the PopupPanel for the editor
 	 */

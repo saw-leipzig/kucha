@@ -16,11 +16,13 @@ package de.cses.client.ui;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.core.client.util.Margins;
+import com.sencha.gxt.core.client.util.TextMetrics;
 import com.sencha.gxt.widget.core.client.Portlet;
 import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.button.TextButton;
@@ -35,10 +37,11 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
 import de.cses.client.Util;
+import de.cses.client.bibliography.AnnotatedBiblographyResultView;
+import de.cses.client.bibliography.AnnotatedBiblographyView;
 import de.cses.client.depictions.DepictionDataDisplay;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AbstractSearchEntry;
-
 /**
  * AbstractResultView is the base for the result views shown in MainView. Here the 
  * search results are added using the method {@link #addResult(Widget)}.
@@ -62,6 +65,7 @@ public abstract class AbstractResultView extends Portlet {
 	private ToolButton maxTB;
 	protected AbstractSearchEntry searchEntry;
 	protected TextButton addMoreResults;
+	private VerticalLayoutContainer vlc;
 	
 	public AbstractResultView(String title) {
 		super();
@@ -72,7 +76,6 @@ public abstract class AbstractResultView extends Portlet {
 		setHeight(MIN_HEIGHT);
 		getHeader().setStylePrimaryName("frame-header");
 		addStyleName("transparent");
-		
 		searchToolButton = new ToolButton(new IconConfig("startSearchButton", "startSearchButtonOver", "searchActiveButton"));
 		searchToolButton.setToolTip(Util.createToolTip("start search"));
 		getHeader().addTool(searchToolButton);
@@ -133,7 +136,7 @@ public abstract class AbstractResultView extends Portlet {
 			}
 		});
 		getHeader().addTool(resetButton);
-		VerticalLayoutContainer vlc = new VerticalLayoutContainer();
+		vlc = new VerticalLayoutContainer();
 		CenterLayoutContainer clc = new CenterLayoutContainer();
 		HorizontalLayoutContainer hlc = new HorizontalLayoutContainer();
 		addMoreResults = new TextButton("Add more Results");
@@ -150,6 +153,15 @@ public abstract class AbstractResultView extends Portlet {
 		resultContainer = new FlowLayoutContainer();
 		resultContainer.setScrollMode(ScrollMode.AUTOY);
 		resultLayoutData = new MarginData(10);
+		if (this instanceof AnnotatedBiblographyResultView) {
+			vlc.addResizeHandler(new ResizeHandler() {
+				@Override
+				public void onResize(ResizeEvent event) {
+					doResize();
+				}
+			});
+			
+		 }
 		vlc.add(resultContainer);
 		vlc.add(addMoreResults,new VerticalLayoutData(1,-1));
 		addMoreResults.setWidth("100%");
@@ -157,7 +169,6 @@ public abstract class AbstractResultView extends Portlet {
 		
 		
 	}
-	
 	/**
 	 * 
 	 * @param enable
@@ -205,10 +216,15 @@ public abstract class AbstractResultView extends Portlet {
 		}
 		if (view instanceof DepictionDataDisplay) {
 			resultContainer.add(view, new VerticalLayoutContainer.VerticalLayoutData(1.0, 300.0, new Margins(10)));
-		} else {
+		}
+		else if (view instanceof AnnotatedBiblographyView) {
+			resultContainer.add(view, new VerticalLayoutContainer.VerticalLayoutData(-1, -1, new Margins(10)));
+		}
+		else {
 			resultContainer.add(view, resultLayoutData);
 		}
-		setHeading(title + " (" + resultContainer.getWidgetCount() + " elements)");
+		
+
 	}
 	
 	/**
@@ -218,7 +234,15 @@ public abstract class AbstractResultView extends Portlet {
 	public void addSearchSelectHandler(SelectHandler handler) {
 		searchToolButton.addSelectHandler(handler);
 	}
-	
+	public void doResize() {
+		for (int i=0; i<resultContainer.getWidgetCount(); i++){
+			TextMetrics t = TextMetrics.get();
+			t.bind(((AnnotatedBiblographyView)resultContainer.getWidget(i)).getElement());
+			t.setFixedWidth(((AnnotatedBiblographyView)resultContainer.getWidget(i)).getElement().getClientWidth());
+			//Util.doLogging(Integer.toString(((int)(t.getHeight(((AnnotatedBiblographyView)resultContainer.getWidget(i)).getHTML())*0.8)))+"px");
+			((AnnotatedBiblographyView)resultContainer.getWidget(i)).setHeight(Integer.toString(((int)(t.getHeight(((AnnotatedBiblographyView)resultContainer.getWidget(i)).getHTML())*0.85)))+"px");
+		}
+	}
 	/**
 	 * adds a handler to the PLUS ToolButton
 	 * @param handler

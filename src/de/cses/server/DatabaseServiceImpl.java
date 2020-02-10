@@ -97,6 +97,11 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		Map<Integer,String>  districts = connector.getPics(imgSources, tnSize, sessionID);
 		return districts;
 	}
+	public boolean isHan(String title) {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		boolean  hasHan = connector.isHan(title);
+		return hasHan;
+	}
 	public Map<Integer,String> getPicsByImageID(String imgSourceIds, int tnSize, String sessionID) {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		Map<Integer,String>  districts = connector.getPicsByImageID(imgSourceIds, tnSize, sessionID);
@@ -513,6 +518,11 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public int insertCaveEntry(CaveEntry caveEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.insertCaveEntry(caveEntry);
+	}
+	@Override
+	public boolean deleteAbstractEntry(AbstractEntry entry) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.deleteAbstractEntry(entry);
 	}
 
 	/* (non-Javadoc)

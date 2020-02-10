@@ -48,6 +48,8 @@ import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.data.shared.SortDir;
+import com.sencha.gxt.data.shared.Store;
+import com.sencha.gxt.data.shared.Store.StoreFilter;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.dnd.core.client.ListViewDragSource;
 import com.sencha.gxt.dnd.core.client.ListViewDropTarget;
@@ -235,10 +237,10 @@ public class DepictionEditor extends AbstractEditor {
 	}
 
 	interface LocationViewTemplates extends XTemplates {
-		@XTemplate("<div>{name}<br>{town}, {country}</div>")
+		@XTemplate("<div>{country}, {town}<br>{name}</div>")
 		SafeHtml caveLabel(String name, String town, String country);
 
-		@XTemplate("<div>{name}<br>{country}</div>")
+		@XTemplate("<div>{country}<br>{name}</div>")
 		SafeHtml caveLabel(String name, String country);
 
 		@XTemplate("<div>{name}</div>")
@@ -318,10 +320,37 @@ public class DepictionEditor extends AbstractEditor {
 		caveProps = GWT.create(CaveProperties.class);
 		caveEntryLS = new ListStore<CaveEntry>(caveProps.caveID());
 		caveEntryLS.addSortInfo(new StoreSortInfo<CaveEntry>(new CaveEntryComparator(), SortDir.ASC));
-		
 		locationProps = GWT.create(LocationProperties.class);
 		locationEntryLS = new ListStore<LocationEntry>(locationProps.locationID());
-		
+		StoreFilter<LocationEntry> filter = new StoreFilter<LocationEntry>() {
+		    @Override
+		    public boolean select(Store<LocationEntry> store, LocationEntry parent, LocationEntry item) {
+		    	
+		      boolean canView = false; 
+		      
+		      if ((item.getCounty()!=null)) {
+		    	  if (item.getCounty().toLowerCase().contains(locationSelectionCB.getText().toLowerCase())) {
+		    	  canView = true;
+		    	  }
+		      };
+		      if ((item.getTown()!=null)) {
+		    	  if (item.getTown().toLowerCase().contains(locationSelectionCB.getText().toLowerCase())) {
+		    	  canView = true;
+		    	  }
+		      };
+		      if ((item.getName()!=null)) {
+		    	  if (item.getName().toLowerCase().contains(locationSelectionCB.getText().toLowerCase())) {
+		    	  canView = true;
+		    	  }
+		      };
+		      //if (canView) {
+	    	  //Util.doLogging("Found: "+item.getName()+", gesucht wurde: "+locationSelectionCB.getText());
+		      //};
+		      return canView;
+		    }
+		  };
+		  locationEntryLS.addFilter(filter);
+
 		expedProps = GWT.create(ExpeditionProperties.class);
 		expedEntryLS = new ListStore<ExpeditionEntry>(expedProps.expeditionID());
 		
@@ -441,20 +470,20 @@ public class DepictionEditor extends AbstractEditor {
 			for (LocationEntry locEntry : StaticTables.getInstance().getLocationEntries().values()) {
 				locationEntryLS.add(locEntry);
 			}
-//			locationEntryLS.addSortInfo(new StoreSortInfo<LocationEntry>(new ValueProvider<LocationEntry, String>(){
-//
-//				@Override
-//				public String getValue(LocationEntry object) {
-//					return object.getName();
-//				}
-//
-//				@Override
-//				public void setValue(LocationEntry object, String value) {}
-//
-//				@Override
-//				public String getPath() {
-//					return "name";
-//				}}, SortDir.ASC));
+			locationEntryLS.addSortInfo(new StoreSortInfo<LocationEntry>(new ValueProvider<LocationEntry, String>(){
+
+				@Override
+				public String getValue(LocationEntry object) {
+					return object.getCounty()+" "+object.getTown()+" "+object.getName();
+				}
+
+				@Override
+				public void setValue(LocationEntry object, String value) {}
+
+				@Override
+				public String getPath() {
+					return "name";
+				}}, SortDir.ASC));
 			
 			if (correspondingDepictionEntry.getLocation() != null) {
 				locationSelectionCB.setValue(correspondingDepictionEntry.getLocation());
@@ -567,11 +596,11 @@ public class DepictionEditor extends AbstractEditor {
 				String copyrightStr = (item.getCopyright() != null && item.getCopyright().length() > 0) ? "\u00A9 " + item.getCopyright() : ""; 
 				
 				if (item.getImageID() == correspondingDepictionEntry.getMasterImageID()) {
-					return imageViewTemplates.masterImage(imageUri, item.getShortName(), titleList, item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase(), imageAuthor, copyrightStr);
+					return imageViewTemplates.masterImage(imageUri, item.getShortName(), titleList, item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase(), imageAuthor, copyrightStr, UriUtils.fromString("resource?imageID=" + item.getImageID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri()));
 				} else if (item.getAccessLevel() == AbstractEntry.ACCESS_LEVEL_PUBLIC) {
-					return imageViewTemplates.publicImage(imageUri, item.getShortName(), titleList, item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase(), imageAuthor, copyrightStr);
+					return imageViewTemplates.publicImage(imageUri, item.getShortName(), titleList, item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase(), imageAuthor, copyrightStr, UriUtils.fromString("resource?imageID=" + item.getImageID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri()));
 				} else {
-					return imageViewTemplates.nonPublicImage(imageUri, item.getShortName(), titleList, item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase(), imageAuthor, copyrightStr);
+					return imageViewTemplates.nonPublicImage(imageUri, item.getShortName(), titleList, item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase(), imageAuthor, copyrightStr, UriUtils.fromString("resource?imageID=" + item.getImageID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri()));
 				}
 			}
 		}));
@@ -865,7 +894,8 @@ public class DepictionEditor extends AbstractEditor {
 		});
 		locationSelectionCB.setEmptyText("select current location");
 		locationSelectionCB.setTypeAhead(false);
-		locationSelectionCB.setEditable(false);
+		locationSelectionCB.setEditable(true);
+	
 		locationSelectionCB.setTriggerAction(TriggerAction.ALL);
 		locationSelectionCB.addValueChangeHandler(new ValueChangeHandler<LocationEntry>() {
 
@@ -1507,6 +1537,36 @@ public class DepictionEditor extends AbstractEditor {
 				saveDepictionEntry(false);
 			}
 		});
+		ToolButton deleteToolButton = new ToolButton(new IconConfig("removeButton", "removeButtonOver"));
+		deleteToolButton.setToolTip(Util.createToolTip("delete"));
+		deleteToolButton.addSelectHandler(new SelectHandler() {
+			@Override
+			public void onSelect(SelectEvent event) {
+				de.cses.client.Util.showYesNo("Delete Warning!", "Proceeding will remove this Entry from the Database, are you sure?", new SelectHandler() {
+					
+					@Override
+					public void onSelect(SelectEvent event) {
+						deleteEntry(correspondingDepictionEntry);
+						closeEditor(null);
+					}
+				}, new SelectHandler() {
+						
+					@Override
+					public void onSelect(SelectEvent event) {
+						 
+					}
+				}, new KeyDownHandler() {
+
+					@Override
+					public void onKeyDown(KeyDownEvent e) {
+						
+					}}
+			
+					
+			
+			  );
+			}
+		});
 		
 		ToolButton closeToolButton = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
 		closeToolButton.setToolTip(Util.createToolTip("close"));
@@ -1554,6 +1614,7 @@ public class DepictionEditor extends AbstractEditor {
 
 		mainPanel.add(mainHLC);
 		mainPanel.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
+		mainPanel.addTool(deleteToolButton);
 		mainPanel.addTool(saveToolButton);
 		mainPanel.addTool(closeToolButton);
 		new Resizable(mainPanel);

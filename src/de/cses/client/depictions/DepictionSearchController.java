@@ -100,11 +100,11 @@ public class DepictionSearchController extends AbstractSearchController {
 					}
 					
 				}
-				if (masterImageIDs!="") {
-					getResultView().getPics(masterImageIDs, 120, UserLogin.getInstance().getSessionID()) ;					
+
+				if (masterImageIDs != "") {
+					getResultView().getPics(masterImageIDs, 120, UserLogin.getInstance().getSessionID()) ;
 				}
-				
-				getResultView().setSearchEnabled(true);
+    getResultView().setSearchEnabled(true);
 				
 			}
 		});

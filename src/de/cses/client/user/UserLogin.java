@@ -69,6 +69,7 @@ public class UserLogin extends PopupPanel {
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	public static final String SESSION_ID = "sessionID";
 	public static final String USERNAME = "username";
+	public static final String ISLOGGEDIN = "islogged";
 
 	private static UserLogin instance = null;
 	private TextField usernameField;
@@ -118,6 +119,7 @@ public class UserLogin extends PopupPanel {
 				if (result != null) {
 					Cookies.setCookie(SESSION_ID, result.getSessionID());
 					Cookies.setCookie(USERNAME, result.getUsername());
+					Cookies.setCookie(ISLOGGEDIN, "true");
 					currentUser = result;
 					hide();
 					clear();
@@ -148,6 +150,7 @@ public class UserLogin extends PopupPanel {
 				} else {
 					Cookies.removeCookie(SESSION_ID);
 					Cookies.removeCookie(USERNAME);
+					Cookies.removeCookie(ISLOGGEDIN);
 					currentUser = null;
 					usernameField.reset();
 					passwordField.reset();
@@ -159,6 +162,7 @@ public class UserLogin extends PopupPanel {
 	private void logout() {
 		Cookies.removeCookie(SESSION_ID);
 		Cookies.removeCookie(USERNAME);
+		Cookies.removeCookie(ISLOGGEDIN);
 		usernameField.setValue(currentUser.getUsername());
 		passwordField.reset();
 		currentUser = null;

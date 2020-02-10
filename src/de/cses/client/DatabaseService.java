@@ -108,7 +108,11 @@ public interface DatabaseService extends RemoteService {
 
 	boolean updateEntry(String sqlUpdate) throws IllegalArgumentException;
 
+	boolean isHan(String title) throws IllegalArgumentException;
+
 	boolean deleteEntry(String sqlDelete) throws IllegalArgumentException;
+
+	boolean deleteAbstractEntry(AbstractEntry entry) throws IllegalArgumentException;
 
 	ArrayList<IconographyEntry> getIconography() throws IllegalArgumentException;
 

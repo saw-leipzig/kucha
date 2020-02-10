@@ -105,7 +105,9 @@ public class DepictionResultView extends AbstractResultView {
 								count=0;
 							}
 						}
-						getPics(imageIDs, 120, UserLogin.getInstance().getSessionID());				
+						if (imageIDs !="") {
+							getPics(imageIDs, 120, UserLogin.getInstance().getSessionID());
+						}
 						if (result.size()==searchEntry.getMaxentries()) {
 							setSearchbuttonVisible();
 						}
@@ -163,8 +165,9 @@ public class DepictionResultView extends AbstractResultView {
 					dbService.getPicsByImageID(masterImageIDs, 120, UserLogin.getInstance().getSessionID(), new AsyncCallback<Map<Integer,String>>() {
 					
 					@Override
-					public void onFailure(Throwable caught) {				Info.display("getPics", "got bad response");
- }
+					public void onFailure(Throwable caught) {				
+						Info.display("getPics", "got bad response");
+						}
 					
 					@Override
 					public void onSuccess(Map<Integer,String> imgdic) {

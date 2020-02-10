@@ -90,8 +90,9 @@ public class ImageSearchController extends AbstractSearchController {
 						count=0;
 					}
 				}
-				if (imageIDs!="") {
-				getResultView().getPics(imageIDs, 120, UserLogin.getInstance().getSessionID());				
+
+				if (imageIDs != "") {
+					getResultView().getPics(imageIDs, 120, UserLogin.getInstance().getSessionID());				
 				}
 			}
 
@@ -131,16 +132,20 @@ public class ImageSearchController extends AbstractSearchController {
 							public void closeRequest(AbstractEntry entry) {
 								imageEditorPanel.hide();
 								if (entry != null) {
-									getResultView().addResult(new ImageView((ImageEntry)entry,UriUtils.fromTrustedString("icons/load_active.png")));
-									String imageIDs = Integer.toString(((ImageEntry)entry).getImageID());
-									getResultView().getPics(imageIDs, 120, UserLogin.getInstance().getSessionID());
+									if (!imgEntry.isdeleted()) {
+										getResultView().addResult(new ImageView((ImageEntry)entry,UriUtils.fromTrustedString("icons/load_active.png")));
+										String imageIDs = Integer.toString(((ImageEntry)entry).getImageID());
+										getResultView().getPics(imageIDs, 120, UserLogin.getInstance().getSessionID());
+									}
 								} else {
 									// we should at least save the title of the image!
 									dbService.updateImageEntry(imgEntry, new AsyncCallback<Boolean>() {
 										
 										@Override
 										public void onSuccess(Boolean result) { 
-											getResultView().addResult(new ImageView(imgEntry,UriUtils.fromTrustedString("icons/close_icon.png")));
+											if (!imgEntry.isdeleted()) {
+												getResultView().addResult(new ImageView(imgEntry,UriUtils.fromTrustedString("icons/close_icon.png")));
+											}
 										}
 										
 										@Override

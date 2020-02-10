@@ -482,6 +482,16 @@ public class IconographySelector extends FramedPanel {
 			}
 		}
 	}
+	public void selectNoParents(boolean noParents) {
+		if (noParents) {
+			
+				iconographyTree.setCheckStyle(CheckCascade.NONE);
+		
+		}
+		else {
+			iconographyTree.setCheckStyle(CheckCascade.PARENTS);
+		}
+	}
 
 
 }

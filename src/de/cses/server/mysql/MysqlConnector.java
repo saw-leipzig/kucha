@@ -211,6 +211,47 @@ public class MysqlConnector implements IsSerializable {
 		return result;
 	}
 
+	public boolean deleteAbstractEntry(AbstractEntry entry) {
+		if (entry instanceof DepictionEntry) {
+			Connection dbc = getConnection();
+			PreparedStatement pstmt;
+			try {
+				pstmt = dbc.prepareStatement( " UPDATE Depictions SET deleted = 1 WHERE DepictionID = " +((DepictionEntry)entry).getDepictionID()  + ";");
+				ResultSet rs = pstmt.executeQuery();
+				rs.close();
+				pstmt.close();
+				return true;
+			} catch (SQLException e) {
+				e.printStackTrace();
+				System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+				return false;
+			}
+
+		}
+		else if (entry instanceof ImageEntry) {
+			Connection dbc = getConnection();
+			PreparedStatement pstmt;
+			try {
+				System.out.println(" UPDATE Images SET deleted = 1 WHERE ImageID = " +((ImageEntry)entry).getImageID()  + ";");
+				pstmt = dbc.prepareStatement( " UPDATE Images SET deleted = 1 WHERE ImageID = " +((ImageEntry)entry).getImageID()  + ";");
+				ResultSet rs = pstmt.executeQuery();
+				rs.close();
+				pstmt.close();
+				return true;
+			} catch (SQLException e) {
+				e.printStackTrace();
+				System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+				return false;
+			}
+
+		}
+		else {
+			System.out.println("Problem bei der Erkennung der Klasse des AbstractEntries...");
+			return false;
+		}
+		
+	}
+
 	public Map<Integer,String> getPics(ArrayList<ImageEntry> imgSources, int tnSize, String sessionID) {
 		int accessLevelOfSession = getAccessLevelForSessionID(sessionID);
 		ArrayList<Integer> authorizedAccessLevel = new ArrayList<Integer>();
@@ -282,7 +323,8 @@ public class MysqlConnector implements IsSerializable {
 			Connection dbc = getConnection();
 			PreparedStatement pstmt;
 			try {
-				pstmt = dbc.prepareStatement( "SELECT * FROM Images WHERE ImageID in (" + imgSourceIds + ");");
+				System.out.println("SELECT * FROM Images WHERE ImageID in (" + imgSourceIds + ") and deleted=0;");
+				pstmt = dbc.prepareStatement( "SELECT * FROM Images WHERE ImageID in (" + imgSourceIds + ") and deleted=0;");
 
 				
 				ResultSet rs = pstmt.executeQuery();
@@ -483,7 +525,7 @@ public class MysqlConnector implements IsSerializable {
 
 		try {
 			pstmt = dbc.prepareStatement(
-					"INSERT INTO Images (Filename, Title, ShortName, Copyright, PhotographerID, Comment, Date, ImageTypeID, AccessLevel) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+					"INSERT INTO Images (Filename, Title, ShortName, Copyright, PhotographerID, Comment, Date, ImageTypeID, AccessLevel, deleted) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)",
 					Statement.RETURN_GENERATED_KEYS);
 			pstmt.setString(1, "");
 			pstmt.setString(2, entry.getTitle());
@@ -494,6 +536,7 @@ public class MysqlConnector implements IsSerializable {
 			pstmt.setString(7, entry.getDate());
 			pstmt.setInt(8, entry.getImageTypeID());
 			pstmt.setInt(9, entry.getAccessLevel());
+			pstmt.setBoolean(10, entry.isdeleted());
 			pstmt.executeUpdate();
 			ResultSet keys = pstmt.getGeneratedKeys();
 			if (keys.next()) { // there should only be 1 key returned here
@@ -821,10 +864,10 @@ public class MysqlConnector implements IsSerializable {
 		
 		where += where.isEmpty() ? "AccessLevel IN (" + inStatement + ")" : " AND AccessLevel IN (" + inStatement + ")";
 		
-		System.out.println(where.isEmpty() ? "SELECT * FROM Images ORDER BY Title Asc LIMIT "+Integer.toString(searchEntry.getEntriesShowed()+50)+" OFFSET "+Integer.toString(searchEntry.getEntriesShowed()) : "SELECT * FROM Images WHERE " + where + " ORDER BY Title Asc LIMIT "+Integer.toString(searchEntry.getEntriesShowed()+50)+" OFFSET "+Integer.toString(searchEntry.getEntriesShowed()));
+		System.out.println(where.isEmpty() ? "SELECT * FROM Images where deleted=0 ORDER BY Title Asc LIMIT "+Integer.toString(searchEntry.getEntriesShowed()+50)+" OFFSET "+Integer.toString(searchEntry.getEntriesShowed()) : "SELECT * FROM Images WHERE deleted=0 and " + where + " ORDER BY Title Asc LIMIT "+Integer.toString(searchEntry.getEntriesShowed()+50)+" OFFSET "+Integer.toString(searchEntry.getEntriesShowed()));
 		
 		try {
-			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Images ORDER BY Title Asc LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+ ", "+Integer.toString(searchEntry.getMaxentries()) : "SELECT * FROM Images WHERE " + where + " ORDER BY Title Asc LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+", "+Integer.toString(searchEntry.getMaxentries()));
+			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Images where deleted=0 ORDER BY Title Asc LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+ ", "+Integer.toString(searchEntry.getMaxentries()) : "SELECT * FROM Images WHERE deleted=0 and " + where + " ORDER BY Title Asc LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+", "+Integer.toString(searchEntry.getMaxentries()));
 			int i = 1; // counter to fill ? in where clause
 			if (searchEntry.getTitleSearch() != null && !searchEntry.getTitleSearch().isEmpty()) {
 				pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");
@@ -885,9 +928,9 @@ public class MysqlConnector implements IsSerializable {
 		PreparedStatement pstmt;
 		try {
 			if (sqlWhere != null) {
-				pstmt = dbc.prepareStatement("SELECT * FROM Images WHERE " + sqlWhere + " ORDER BY Title Asc");
+				pstmt = dbc.prepareStatement("SELECT * FROM Images WHERE deleted=0 and " + sqlWhere + " ORDER BY Title Asc");
 			} else {
-				pstmt = dbc.prepareStatement("SELECT * FROM Images ORDER BY Title Asc");
+				pstmt = dbc.prepareStatement("SELECT * FROM Images WHERE deleted=0 ORDER BY Title Asc");
 			}
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
@@ -925,7 +968,7 @@ public class MysqlConnector implements IsSerializable {
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Images WHERE ImageID=" + imageID);
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Images WHERE deleted=0 and ImageID=" + imageID);
 			if (rs.first()) {
 				result = new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
 						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), 
@@ -941,6 +984,9 @@ public class MysqlConnector implements IsSerializable {
 		if (dologging){
 		long end = System.currentTimeMillis();
 		long diff = (end-start);
+		if (result==null) {
+			System.out.println("getImageEntry: Kein passendes Image gefunden!");
+		}
 		if (diff>100){
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getImageEntry brauchte "+diff + " Millisekunden.");;}}
 		return result;
@@ -1069,7 +1115,7 @@ public class MysqlConnector implements IsSerializable {
 		}
 
 		if (searchEntry.isDecoratedOnly()) {
-			where += where.isEmpty() ? "CaveID IN (SELECT CaveID FROM Depictions)" : " AND CaveID IN (SELECT CaveID FROM Depictions)";
+			where += where.isEmpty() ? "CaveID IN (SELECT CaveID FROM Depictions where Depictions.deleted=0 )" : " AND CaveID IN (SELECT CaveID FROM Depictions where Depictions.deleted=0 )";
 		}
 
 		/**
@@ -1810,7 +1856,7 @@ public class MysqlConnector implements IsSerializable {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
-			pstmt = dbc.prepareStatement("SELECT * FROM Iconography WHERE IconographyID IN (SELECT IconographyID FROM DepictionIconographyRelation) ORDER BY Text Asc");
+			pstmt = dbc.prepareStatement("SELECT * FROM Iconography WHERE IconographyID IN (SELECT DepictionIconographyRelation.IconographyID FROM DepictionIconographyRelation inner join Depictions on (DepictionIconographyRelation.DepictionID = Depictions.DepictionID) where Depictions.deleted=0) ORDER BY Text Asc");
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
 				result.add(new IconographyEntry(rs.getInt("IconographyID"), rs.getInt("ParentID"), rs.getString("Text"), rs.getString("search")));
@@ -1943,7 +1989,7 @@ public class MysqlConnector implements IsSerializable {
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getIconographyEntries brauchte "+diff + " Millisekunden.");;}}
 		return results;
 	}
-	public ArrayList<WallTreeEntry> getWallTree(int rootIndex) {
+  	public ArrayList<WallTreeEntry> getWallTree(int rootIndex) {
 		long start = System.currentTimeMillis();
 		if (dologgingbegin){
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getIconography wurde ausgelöst.");;
@@ -1998,6 +2044,16 @@ public class MysqlConnector implements IsSerializable {
 		if (diff>100){
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getIconographyEntries brauchte "+diff + " Millisekunden.");;}}
 		return results;
+	}
+public boolean isHan(String s) {
+	    for (int i = 0; i < s.length(); ) {
+	        int codepoint = s.codePointAt(i);
+	        i += Character.charCount(codepoint);
+	        if ((codepoint>19967)&&(codepoint<40960)) {
+	        	return true;
+	        }
+	    }
+	    return false;
 	}
 
 	/**
@@ -2056,10 +2112,15 @@ public class MysqlConnector implements IsSerializable {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
-			pstmt = dbc.prepareStatement("UPDATE Iconography SET ParentID=?, Text=? WHERE IconographyID =?");
-			pstmt.setInt(1, iconographyEntryToEdit.getParentID());
+			pstmt = dbc.prepareStatement("UPDATE Iconography SET ParentID=?, Text=?, search=? WHERE IconographyID =?");
+			if (iconographyEntryToEdit.getParentID()==0) {
+				pstmt.setNull(1, java.sql.Types.INTEGER);}
+			else {
+				pstmt.setInt(1, iconographyEntryToEdit.getParentID());
+			}
 			pstmt.setString(2, iconographyEntryToEdit.getText());
-			pstmt.setInt(3, iconographyEntryToEdit.getIconographyID());
+			pstmt.setString(3, iconographyEntryToEdit.getSearch());
+			pstmt.setInt(4, iconographyEntryToEdit.getIconographyID());
 			pstmt.executeUpdate();
 			pstmt.close();
 		} catch (SQLException e) {
@@ -2535,7 +2596,7 @@ public class MysqlConnector implements IsSerializable {
 
 		PreparedStatement pstmt;
 		try {
-			pstmt = dbc.prepareStatement("SELECT * FROM Images WHERE ImageID IN (SELECT ImageID FROM DepictionImageRelation WHERE DepictionID=?) AND AccessLevel IN (" + inStatement + ")");
+			pstmt = dbc.prepareStatement("SELECT * FROM Images WHERE deleted=0 and ImageID IN (SELECT ImageID FROM DepictionImageRelation WHERE DepictionID=?) AND AccessLevel IN (" + inStatement + ")");
 			//System.out.println("SELECT * FROM Images WHERE ImageID IN (SELECT ImageID FROM DepictionImageRelation WHERE DepictionID="+depictionID+") AND AccessLevel IN (" + inStatement + ")");
 			pstmt.setInt(1, depictionID);
 			ResultSet rs = pstmt.executeQuery();
@@ -2571,7 +2632,7 @@ public class MysqlConnector implements IsSerializable {
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT DepictionID, AbsoluteLeft, AbsoluteTop FROM Depictions WHERE WallID = " + wallID);
+			ResultSet rs = stmt.executeQuery("SELECT DepictionID, AbsoluteLeft, AbsoluteTop FROM Depictions WHERE WallID = " + wallID +" and deleted=0");
 			while (rs.next()) {
 				DepictionEntry depiction = new DepictionEntry();
 				depiction.setDepictionID(rs.getInt("DepictionID"));
@@ -2634,8 +2695,9 @@ public class MysqlConnector implements IsSerializable {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
+			System.out.println("UPDATE Images SET Filename="+entry.getFilename()+", Title="+entry.getTitle()+", ShortName="+entry.getShortName()+", Copyright="+entry.getCopyright()+", PhotographerID=?, Comment=?, Date=?, ImageTypeID=?, AccessLevel=?, deleted="+entry.isdeleted()+" WHERE ImageID=?");
 			pstmt = dbc.prepareStatement(
-					"UPDATE Images SET Filename=?, Title=?, ShortName=?, Copyright=?, PhotographerID=?, Comment=?, Date=?, ImageTypeID=?, AccessLevel=? WHERE ImageID=?");
+					"UPDATE Images SET Filename=?, Title=?, ShortName=?, Copyright=?, PhotographerID=?, Comment=?, Date=?, ImageTypeID=?, AccessLevel=?, deleted=? WHERE ImageID=?");
 			pstmt.setString(1, entry.getFilename());
 			pstmt.setString(2, entry.getTitle());
 			pstmt.setString(3, entry.getShortName());
@@ -2645,7 +2707,8 @@ public class MysqlConnector implements IsSerializable {
 			pstmt.setString(7, entry.getDate());
 			pstmt.setInt(8, entry.getImageTypeID());
 			pstmt.setInt(9, entry.getAccessLevel());
-			pstmt.setInt(10, entry.getImageID());
+			pstmt.setBoolean(10, entry.isdeleted());
+			pstmt.setInt(11, entry.getImageID());
 			pstmt.execute();
 			pstmt.close();
 		} catch (SQLException e) {
@@ -3061,7 +3124,7 @@ public class MysqlConnector implements IsSerializable {
 						rs.getString("PagesTR"), rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"), rs.getString("URI"),
 						rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getInt("AccessLevel"), rs.getString("AbstractText"),
 						rs.getString("ThesisType"), rs.getString("EditorType"), rs.getBoolean("OfficialTitleTranslation"), rs.getString("BibTexKey"),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), AnnotatedBibliographyEntry.isHan(rs.getString("TitleORG")));
+						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), isHan(rs.getString("TitleORG")));
 				entry.setAuthorList(getAuthorBibRelation(entry.getAnnotatedBibliographyID()));
 				entry.setEditorList(getEditorBibRelation(entry.getAnnotatedBibliographyID()));
 				entry.setKeywordList(getRelatedBibKeywords(entry.getAnnotatedBibliographyID()));
@@ -3123,7 +3186,7 @@ public class MysqlConnector implements IsSerializable {
 						rs.getString("PagesTR"), rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"), rs.getString("URI"),
 						rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getInt("AccessLevel"), rs.getString("AbstractText"),
 						rs.getString("ThesisType"), rs.getString("EditorType"), rs.getBoolean("OfficialTitleTranslation"), rs.getString("BibTexKey"),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), AnnotatedBibliographyEntry.isHan(rs.getString("TitleORG")));
+						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), isHan(rs.getString("TitleORG")));
 				entry.setAuthorList(getAuthorBibRelation(entry.getAnnotatedBibliographyID()));
 				entry.setEditorList(getEditorBibRelation(entry.getAnnotatedBibliographyID()));
 				entry.setKeywordList(getRelatedBibKeywords(entry.getAnnotatedBibliographyID()));
@@ -3192,7 +3255,7 @@ public class MysqlConnector implements IsSerializable {
 						rs.getString("PagesTR"), rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"), rs.getString("URI"),
 						rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getInt("AccessLevel"), rs.getString("AbstractText"),
 						rs.getString("ThesisType"), rs.getString("EditorType"), rs.getBoolean("OfficialTitleTranslation"), rs.getString("BibTexKey"),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), AnnotatedBibliographyEntry.isHan(rs.getString("TitleORG")));
+						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), isHan(rs.getString("TitleORG")));
 				entry.setAuthorList(getAuthorBibRelation(entry.getAnnotatedBibliographyID()));
 				entry.setEditorList(getEditorBibRelation(entry.getAnnotatedBibliographyID()));
 				entry.setKeywordList(getRelatedBibKeywords(entry.getAnnotatedBibliographyID()));
@@ -3351,7 +3414,7 @@ public class MysqlConnector implements IsSerializable {
 						rs.getString("PagesTR"), rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"), rs.getString("URI"),
 						rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getInt("AccessLevel"), rs.getString("AbstractText"),
 						rs.getString("ThesisType"), rs.getString("EditorType"), rs.getBoolean("OfficialTitleTranslation"), rs.getString("BibTexKey"),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), AnnotatedBibliographyEntry.isHan(rs.getString("TitleORG")));
+						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), isHan(rs.getString("TitleORG")));
 				result.setAuthorList(getAuthorBibRelation(result.getAnnotatedBibliographyID()));
 				result.setEditorList(getEditorBibRelation(result.getAnnotatedBibliographyID()));
 				result.setKeywordList(getRelatedBibKeywords(result.getAnnotatedBibliographyID()));
@@ -5000,7 +5063,7 @@ public class MysqlConnector implements IsSerializable {
 					"UPDATE Depictions SET StyleID=?, Inscriptions=?, SeparateAksaras=?, Dating=?, Description=?, BackgroundColour=?, GeneralRemarks=?, "
 							+ "OtherSuggestedIdentifications=?, Width=?, Height=?, ExpeditionID=?, PurchaseDate=?, CurrentLocationID=?, InventoryNumber=?, VendorID=?, "
 							+ "StoryID=?, CaveID=?, WallID=?, AbsoluteLeft=?, AbsoluteTop=?, ModeOfRepresentationID=?, ShortName=?, PositionNotes=?, MasterImageID=?, AccessLevel=?, LastChangedByUser=?, "
-							+ "LastChangedOnDate=? WHERE DepictionID=?");
+							+ "LastChangedOnDate=?, deleted=? WHERE DepictionID=?");
 			pstmt.setInt(1, de.getStyleID());
 			pstmt.setString(2, de.getInscriptions());
 			pstmt.setString(3, de.getSeparateAksaras());
@@ -5028,7 +5091,8 @@ public class MysqlConnector implements IsSerializable {
 			pstmt.setInt(25, de.getAccessLevel());
 			pstmt.setString(26, de.getLastChangedByUser());
 			pstmt.setString(27, de.getModifiedOn());
-			pstmt.setInt(28, de.getDepictionID());
+			pstmt.setBoolean(28, de.isdeleted());
+			pstmt.setInt(29, de.getDepictionID());
 			pstmt.executeUpdate();
 			pstmt.close();
 		} catch (SQLException ex) {
@@ -5277,7 +5341,7 @@ public class MysqlConnector implements IsSerializable {
 		if (diff>100){
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von writeCaveBibliographyRelation brauchte "+diff + " Millisekunden.");;}}
 	}
-
+	
 	private synchronized void writeOrnamenticBibliographyRelation(int OrnamentID, ArrayList<AnnotatedBibliographyEntry> relatedBibliographyList) {
 		long start = System.currentTimeMillis();
 		if (dologgingbegin){
@@ -5886,6 +5950,7 @@ public class MysqlConnector implements IsSerializable {
 			ResultSet keys = pstmt.getGeneratedKeys();
 			if (keys.next()) {
 				newBibID = keys.getInt(1);
+				bibEntry.setAnnotatedBibliographyID(newBibID);
 			}
 			keys.close();
 
@@ -7041,7 +7106,7 @@ public class MysqlConnector implements IsSerializable {
 		PreparedStatement pstmt;
 		try {
 			pstmt = dbc.prepareStatement(
-					"SELECT * FROM Images JOIN OrnamentImageRelation ON OrnamentImageRelation.ImageID = Images.ImageID WHERE OrnamentID ="
+					"SELECT * FROM Images JOIN OrnamentImageRelation ON OrnamentImageRelation.ImageID = Images.ImageID WHERE Images.deleted=0 and OrnamentID ="
 							+ ornamentID + " ORDER BY Title Asc");
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
@@ -7641,7 +7706,7 @@ public class MysqlConnector implements IsSerializable {
 		if (searchEntry.getShortName() != null && !searchEntry.getShortName().isEmpty()) {
 			where = "ShortName LIKE ?";
 		}
-
+		where += where.isEmpty() ? "deleted=0" : " AND deleted=0";
 		String caveIDs="";
 		for (int caveID : searchEntry.getCaveIdList()) {
 			caveIDs += caveIDs.isEmpty() ? Integer.toString(caveID) : "," + caveID;
@@ -7731,7 +7796,7 @@ public class MysqlConnector implements IsSerializable {
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von searchDepictions brauchte "+diff + " Millisekunden. where-Klausel: "+where);;}}
 		return results;
 	}
-	private ArrayList<WallTreeEntry> getwallsbyDepictionID (Integer depictionID){
+  	private ArrayList<WallTreeEntry> getwallsbyDepictionID (Integer depictionID){
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		ArrayList<WallTreeEntry> results = new ArrayList<WallTreeEntry>();
@@ -7778,6 +7843,13 @@ public class MysqlConnector implements IsSerializable {
 		//System.out.println("Größe des Resultats von DepictionWallsRealtion "+Integer.toString(results.size())+" für "+Integer.toString(depictionID));
 		return results;
 	}
+  public boolean deleteEntry(AbstractEntry entry) {
+		if (entry instanceof DepictionEntry) {
+			System.out.println("gut!");
+		}
+		return true;
+	}
+
 	public ArrayList<UserEntry> getUsers() {
 		long start = System.currentTimeMillis();
 		if (dologgingbegin){
@@ -7969,7 +8041,7 @@ public class MysqlConnector implements IsSerializable {
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Depictions WHERE DepictionID=" + depictionID);
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Depictions WHERE DepictionID=" + depictionID +" and deleted=0");
 			int accessLevel=-1;
 			accessLevel = getAccessLevelForSessionID(sessionID);
 			// we only need to call this once, since we do not expect more than 1 result!

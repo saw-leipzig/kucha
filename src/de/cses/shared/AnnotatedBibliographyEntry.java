@@ -16,6 +16,13 @@ package de.cses.shared;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+
+import de.cses.client.DatabaseService;
+import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.Util;
+
 /**
  * @author Nina
  *
@@ -54,17 +61,8 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 	private ArrayList<AuthorEntry> authorList = new ArrayList<AuthorEntry>();
 	private ArrayList<AuthorEntry> editorList = new ArrayList<AuthorEntry>();
 	private ArrayList<BibKeywordEntry> keywordList = new ArrayList<BibKeywordEntry>();
-	private boolean hasHan;
-	public static boolean isHan(String s) {
-	    for (int i = 0; i < s.length(); ) {
-	        int codepoint = s.codePointAt(i);
-	        i += Character.charCount(codepoint);
-	        if ((codepoint>19967)&&(codepoint<40960)) {
-	        	return true;
-	        }
-	    }
-	    return false;
-	}
+	private boolean hasHan = false;
+
 	public AnnotatedBibliographyEntry(int annotatedBibliographyID, PublicationTypeEntry publicationType, 
 			String titleEN, String titleORG, String titleTR,
 			String parentTitleEN, String parentTitleORG, String parentTitleTR,
@@ -83,7 +81,7 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 			String pagesEN, String pagesORG, String pagesTR, 
 			String comments, String notes, String url, String uri, boolean unpublished, int firstEditionBibID, 
 			int accessLevel, String abstractText, String thesisType, String editorType, boolean officialTitleTranslation,
-			String bibtexKey, String lastChangedOn, Boolean hasHan) {
+			String bibtexKey, String lastChangedOn, boolean hasHan) {
 		super();
 		this.annotatedBibliographyID = annotatedBibliographyID;
 		this.publicationType = publicationType;
@@ -166,7 +164,7 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 				monthEN, monthORG, monthTR,  
 				pagesEN, pagesORG, pagesTR, 
 				comments, notes, url, uri, unpublished, firstEditionBibID, accessLevel, 
-				abstractText, thesisType, editorType, officialTitleTranslation, bibtexKey, this.modifiedOn, this.isHan(titleORG));
+				abstractText, thesisType, editorType, officialTitleTranslation, bibtexKey, this.modifiedOn, this.hasHan);
 		ArrayList<AuthorEntry> clonedAuthorList = new ArrayList<AuthorEntry>();
 		for (AuthorEntry ae : this.authorList) {
 			clonedAuthorList.add(ae);
@@ -193,6 +191,18 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 	 * @param titleEN
 	 *          the titleEN to set
 	 */
+	public void setHasHan(boolean hasHan) {
+		this.hasHan = hasHan;
+	}
+
+	public boolean getHasHan() {
+		return hasHan;
+	}
+
+	/**
+	 * @param titleEN
+	 *          the titleEN to set
+	 */
 	public void setTitleEN(String titleEN) {
 		this.titleEN = titleEN;
 	}
@@ -211,7 +221,9 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 	public void setPublicationType(PublicationTypeEntry publicationType) {
 		this.publicationType = publicationType;
 	}
-
+	public int getPublicationTypeID() {
+		return this.publicationType.getPublicationTypeID();
+	}
 	/**
 	 * @return the titleTR
 	 */
@@ -240,7 +252,8 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 	 */
 	public void setTitleORG(String titleORG) {
 		this.titleORG = titleORG;
-		this.hasHan = isHan(titleORG);
+
+		
 	}
 
 	/**
@@ -1014,6 +1027,26 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 		if (!titleEN.isEmpty()) {
 			String translation = subtitleEN.isEmpty() ? titleEN : titleEN + ": " + subtitleEN;
 			result += officialTitleTranslation ? " (" + translation + ")" : " [" + translation + "]";
+		}
+		return result;
+	}
+	public String getTitleORGFull() {
+		String result = subtitleORG.isEmpty() ? titleORG : titleORG + ": " + subtitleORG;
+
+		return result;
+	}
+	public String getTitleTRFull() {
+		String result = subtitleTR.isEmpty() ? titleTR : titleTR + ": " + subtitleTR;
+
+		return result;
+	}
+	public String getTitleENFull() {
+		String result="";
+		if (titleEN.isEmpty()) {
+			result="";			
+		}
+		else {
+			result = subtitleEN.isEmpty() ? "["+titleEN+"]" : "["+titleEN + ": " + subtitleEN+"]";
 		}
 		return result;
 	}
