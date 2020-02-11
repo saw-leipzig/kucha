@@ -26,7 +26,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Dictionary;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -77,6 +80,7 @@ import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.OrnamentPositionEntry;
 import de.cses.shared.OrnamenticSearchEntry;
 import de.cses.shared.PhotographerEntry;
+import de.cses.shared.PositionEntry;
 import de.cses.shared.PreservationAttributeEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.PublicationEntry;
@@ -91,6 +95,7 @@ import de.cses.shared.VendorEntry;
 import de.cses.shared.WallEntry;
 import de.cses.shared.WallLocationEntry;
 import de.cses.shared.WallOrnamentCaveRelation;
+import de.cses.shared.WallTreeEntry;
 import sun.misc.BASE64Encoder;
 
 /**
@@ -679,6 +684,109 @@ public class MysqlConnector implements IsSerializable {
 		if (diff>100){
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateEntry brauchte "+diff + " Millisekunden.");;}}
 		return true;
+	}
+	
+	/**
+	 * Executes an SQL update using a pre-defined SQL UPDATE string
+	 * 
+	 * @param int IconographyID
+	 */
+	public ArrayList<WallTreeEntry> getWallTreeEntriesByIconographyID(int IconographyID, String sessionID) {
+		long start = System.currentTimeMillis();
+		if (dologgingbegin){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateEntry wurde ausgelöst.");;
+		}
+		ArrayList<WallTreeEntry> results = new ArrayList<WallTreeEntry>();
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM DepictionIconographyRelation where IconographyID="+Integer.toString(IconographyID));
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				DepictionEntry de= getDepictionEntry(rs.getInt("DepictionID"),sessionID);
+				CaveEntry item = de.getCave();
+				String site = item.getSiteID() > 0 ? getSites(" SiteID="+item.getSiteID()).get(0).getShortName() : "";
+				String district = item.getDistrictID() > 0 ? getDistricts(" DistrictID="+item.getDistrictID()).get(0).getName() : "";
+				String region = item.getRegionID() > 0 ? getRegions(" RegionID="+item.getRegionID()).get(0).getEnglishName() : "";
+				String name=site  + " " + item.getOfficialNumber() + (!district.isEmpty() ? " / " + district : "") + (!region.isEmpty() ? " / " + region : "");
+				WallTreeEntry result = new WallTreeEntry(item.getCaveID()+1000,0,name,name );
+				boolean found = false;
+				for (WallTreeEntry res : results) {
+					if (result.getWallLocationID()==res.getWallLocationID()) {
+						found=true;
+						break;
+					}
+				}
+				if (!found){ 
+					System.out.println("add WallTreeEntry: "+result.getWallLocationID()+" - "+result.getParentID());
+					results.add(result);
+				}
+				ArrayList<WallTreeEntry> resultsWallsByDe = getwallsbyDepictionID(de.getDepictionID());
+				System.out.println("Länge der gefundenen Wall-Elemente: "+resultsWallsByDe.size());
+				for (WallTreeEntry resWallByDe : resultsWallsByDe) {
+					boolean found2 = false;
+					resWallByDe.setWallLocationID(Integer.parseInt(Integer.toString(resWallByDe.getWallLocationID())+Integer.toString(item.getCaveID())));
+					if ((resWallByDe.getParentID()==0)) {
+						resWallByDe.setParentID(result.getWallLocationID());
+					}
+					else {
+						resWallByDe.setParentID(Integer.parseInt(Integer.toString(resWallByDe.getParentID())+Integer.toString(item.getCaveID())));
+					}
+					Dictionary<Integer,PositionEntry> newPositions = new Hashtable();
+					int i = 0;
+					for (WallTreeEntry res : results) {
+						if (resWallByDe.getWallLocationID()==res.getWallLocationID()) {
+							found2=true;
+							if (resWallByDe.getPosition()!=null) {
+								for (PositionEntry pe : resWallByDe.getPosition()) {
+									boolean foundPos = false;
+									for (PositionEntry posOld : res.getPosition()) {
+										if (pe.getPositionID()==posOld.getPositionID()) {
+											foundPos=true;
+											break;
+										}
+										if (!foundPos) {
+											newPositions.put(i,pe);
+										}
+									}
+								}
+							}
+							break;
+						}
+						i+=1;
+					}
+					Enumeration<Integer> e = newPositions.keys();
+					while (e.hasMoreElements()) {
+						int key = e.nextElement();
+						results.get(key).addPosition(newPositions.get(key));
+					}
+				
+					if (!found2){ 
+						System.out.println("add WallTreeEntry: "+resWallByDe.getWallLocationID()+" - "+resWallByDe.getParentID());
+						results.add(resWallByDe);
+					}
+					else {
+						System.out.println("did not add WallTreeEntry: "+resWallByDe.getWallLocationID()+" - "+resWallByDe.getParentID());
+					}
+						
+					
+				}
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+			return null;
+		}
+
+		if (dologging){
+		long end = System.currentTimeMillis();
+		long diff = (end-start);
+		if (diff>100){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateEntry brauchte "+diff + " Millisekunden.");;}}
+		return results;
 	}
 
 	/**
@@ -1881,7 +1989,63 @@ public class MysqlConnector implements IsSerializable {
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getIconographyEntries brauchte "+diff + " Millisekunden.");;}}
 		return results;
 	}
-	public boolean isHan(String s) {
+  	public ArrayList<WallTreeEntry> getWallTree(int rootIndex) {
+		long start = System.currentTimeMillis();
+		if (dologgingbegin){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getIconography wurde ausgelöst.");;
+		}
+		ArrayList<WallTreeEntry> root = getWallTreeEntries(rootIndex);
+
+		for (WallTreeEntry item : root) {
+			processWallEntryTree(item);
+		}
+		if (dologging){
+		long end = System.currentTimeMillis();
+		long diff = (end-start);
+		if (diff>100){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getIconography brauchte "+diff + " Millisekunden.");;}}
+		return root;
+	}
+	protected void processWallEntryTree(WallTreeEntry parent) {
+		ArrayList<WallTreeEntry> children = getWallTreeEntries(parent.getWallLocationID());
+		if (children != null) {
+			parent.setChildren(children);
+			for (WallTreeEntry child : children) {
+				processWallEntryTree(child);
+			}
+		}
+	}
+	protected ArrayList<WallTreeEntry> getWallTreeEntries(int parentID) {
+		long start = System.currentTimeMillis();
+		if (dologgingbegin){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getIconographyEntries wurde ausgelöst.");;
+		}
+		ArrayList<WallTreeEntry> results = new ArrayList<WallTreeEntry>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		String where = (parentID == 0) ? "IS NULL" : "= " + parentID;
+//		System.out.println("SELECT * FROM Iconography WHERE ParentID " + where + " ORDER BY Text Asc");
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM WallLocationsTree WHERE ParentID " + where + " ORDER BY Text Asc");
+			while (rs.next()) {
+				results.add(new WallTreeEntry(rs.getInt("WallLocationID"), rs.getInt("ParentID"), rs.getString("Text"), rs.getString("search")));
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+			return null;
+		}
+		if (dologging){
+		long end = System.currentTimeMillis();
+		long diff = (end-start);
+		if (diff>100){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getIconographyEntries brauchte "+diff + " Millisekunden.");;}}
+		return results;
+	}
+public boolean isHan(String s) {
 	    for (int i = 0; i < s.length(); ) {
 	        int codepoint = s.codePointAt(i);
 	        i += Character.charCount(codepoint);
@@ -1891,6 +2055,7 @@ public class MysqlConnector implements IsSerializable {
 	    }
 	    return false;
 	}
+
 	/**
 	 * insert new IconogrpahyEntry in tree structure
 	 * @param iconographyEntry
@@ -2582,8 +2747,9 @@ public class MysqlConnector implements IsSerializable {
 		try {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery(
-					sqlWhere != null ? "SELECT * FROM Regions WHERE " + sqlWhere + "ORDER BY EnglishName Asc, PhoneticName Asc, OriginalName Asc"
+					sqlWhere != null ? "SELECT * FROM Regions WHERE " + sqlWhere + " ORDER BY EnglishName Asc, PhoneticName Asc, OriginalName Asc"
 							: "SELECT * FROM Regions ORDER BY EnglishName Asc, PhoneticName Asc, OriginalName Asc");
+
 			while (rs.next()) {
 				result.add(new RegionEntry(rs.getInt("RegionID"), rs.getString("PhoneticName"), rs.getString("OriginalName"),
 						rs.getString("EnglishName"), rs.getInt("SiteID")));
@@ -3326,7 +3492,36 @@ public class MysqlConnector implements IsSerializable {
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getOrnamentPosition brauchte "+diff + " Millisekunden.");;}}
 		return positions;
 	}
-
+	public ArrayList<PositionEntry> getPosition() {
+		long start = System.currentTimeMillis();
+		if (dologgingbegin){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getOrnamentPosition wurde ausgelöst.");;
+		}
+		PositionEntry result = null;
+		ArrayList<PositionEntry> positions = new ArrayList<PositionEntry>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Position");
+			while (rs.next()) {
+				result = new PositionEntry(rs.getInt("PositionID"), rs.getString("Name"));
+				positions.add(result);
+				System.out.print(result.getPositionID()+" - "+result.getName());
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+		}
+		if (dologging){
+		long end = System.currentTimeMillis();
+		long diff = (end-start);
+		if (diff>100){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getPosition brauchte "+diff + " Millisekunden.");;}}
+		return positions;
+	}
 	public ArrayList<OrnamentFunctionEntry> getOrnamentFunction() {
 		long start = System.currentTimeMillis();
 		if (dologgingbegin){
@@ -4909,7 +5104,16 @@ public class MysqlConnector implements IsSerializable {
 		if (de.getRelatedImages().size() > 0) {
 			insertDepictionImageRelation(de.getDepictionID(), de.getRelatedImages());
 		}
-//		System.err.println("DELETE FROM DepictionIconographyRelation WHERE DepictionID=" + de.getDepictionID());
+		deleteEntry("DELETE FROM DepictionWallsRelation WHERE DepictionID=" + de.getDepictionID());
+		if (de.getRelatedImages().size() > 0) {
+			insertDepictionWallsRelation(de.getDepictionID(), de.getWalls());
+		}//		System.err.println("DELETE FROM DepictionIconographyRelation WHERE DepictionID=" + de.getDepictionID());
+//		deleteEntry("DELETE FROM WallPositionsRelation WHERE DepictionID=" + de.getDepictionID());
+//		for ( WallTreeEntry wall : de.getWalls()) {
+//			if (wall.getPosition().size() > 0) {
+//				insertDepictionWallsRelation(de.getDepictionID(), wall.getWallLocationID(), wall.getPosition());
+//			}//		System.err.println("DELETE FROM DepictionIconographyRelation WHERE DepictionID=" + de.getDepictionID());
+//		}
 		deleteEntry("DELETE FROM DepictionIconographyRelation WHERE DepictionID=" + de.getDepictionID());
 		if (iconographyList.size() > 0) {
 			insertDepictionIconographyRelation(de.getDepictionID(), iconographyList);
@@ -4954,7 +5158,66 @@ public class MysqlConnector implements IsSerializable {
 		if (diff>100){
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertDepictionImageRelation brauchte "+diff + " Millisekunden.");;}}
 	}
+	private synchronized void insertWallPositionsRelation(int depictionID, int wallID, ArrayList<PositionEntry> positions) {
+		long start = System.currentTimeMillis();
+		if (dologgingbegin){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertDepictionImageRelation wurde ausgelöst.");;
+		}
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		System.out.println("Setze Position für DepictionID: "+depictionID+" WallID:"+wallID);
+		// System.err.println("==> updateDepictionImageRelation called");
+		try {
+			pstmt = dbc.prepareStatement("INSERT INTO WallPositionsRelation VALUES (?, ?,?)");
+			for (PositionEntry entry : positions) {
+				pstmt.setInt(1, depictionID);
+				pstmt.setInt(2, wallID);
+				pstmt.setInt(3, entry.getPositionID());
+				pstmt.executeUpdate();
+			}
+			pstmt.close();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			return;
+		}
+		if (dologging){
+		long end = System.currentTimeMillis();
+		long diff = (end-start);
+		if (diff>100){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertDepictionImageRelation brauchte "+diff + " Millisekunden.");;}}
+	}
+	private synchronized void insertDepictionWallsRelation(int depictionID, List<WallTreeEntry> wallsEntryList) {
+		long start = System.currentTimeMillis();
+		if (dologgingbegin){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertDepictionImageRelation wurde ausgelöst.");;
+		}
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		// System.err.println("==> updateDepictionImageRelation called");
+		try {
+			deleteEntry("DELETE FROM WallPositionsRelation WHERE DepictionID=" + depictionID);
+			pstmt = dbc.prepareStatement("INSERT INTO DepictionWallsRelation VALUES (?, ?)");
+			for (WallTreeEntry entry : wallsEntryList) {
+				pstmt.setInt(1, depictionID);
+				pstmt.setInt(2, entry.getWallLocationID());
+				pstmt.executeUpdate();
+				if (entry.getPosition() !=null) {
+					insertWallPositionsRelation(depictionID, entry.getWallLocationID(), entry.getPosition());
+				}
 
+
+			}
+			pstmt.close();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			return;
+		}
+		if (dologging){
+		long end = System.currentTimeMillis();
+		long diff = (end-start);
+		if (diff>100){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertDepictionImageRelation brauchte "+diff + " Millisekunden.");;}}
+	}
 	private synchronized void insertDepictionIconographyRelation(int depictionID, ArrayList<IconographyEntry> iconographyList) {
 		long start = System.currentTimeMillis();
 		if (dologgingbegin){
@@ -7511,7 +7774,7 @@ public class MysqlConnector implements IsSerializable {
 						rs.getString("SeparateAksaras"), rs.getString("Dating"), rs.getString("Description"), rs.getString("BackgroundColour"),
 						rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"), rs.getDouble("Width"), rs.getDouble("Height"),
 						getExpedition(rs.getInt("ExpeditionID")), rs.getDate("PurchaseDate"), getLocation(rs.getInt("CurrentLocationID")), rs.getString("InventoryNumber"),
-						getVendor(rs.getInt("VendorID")), rs.getInt("StoryID"), getCave(rs.getInt("CaveID")), rs.getInt("WallID"), rs.getInt("AbsoluteLeft"),
+						getVendor(rs.getInt("VendorID")), rs.getInt("StoryID"), getCave(rs.getInt("CaveID")), getwallsbyDepictionID(rs.getInt("DepictionID")), rs.getInt("AbsoluteLeft"),
 						rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes"),
 						rs.getInt("MasterImageID"), rs.getInt("AccessLevel"), rs.getString("LastChangedByUser"), rs.getString("LastChangedOnDate"));
 				de.setRelatedImages(getRelatedImages(de.getDepictionID(), searchEntry.getSessionID(),accessLevel));
@@ -7533,8 +7796,54 @@ public class MysqlConnector implements IsSerializable {
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von searchDepictions brauchte "+diff + " Millisekunden. where-Klausel: "+where);;}}
 		return results;
 	}
-	
-	public boolean deleteEntry(AbstractEntry entry) {
+  	private ArrayList<WallTreeEntry> getwallsbyDepictionID (Integer depictionID){
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		ArrayList<WallTreeEntry> results = new ArrayList<WallTreeEntry>();
+		int zaehler1 =0;
+		int zaehler2 =0;
+		try {
+			zaehler2=0;
+			System.out.println("Suche Walls für depicionID: "+depictionID);
+			pstmt = dbc.prepareStatement("SELECT * FROM infosys.DepictionWallsRelation left join infosys.WallLocationsTree on (WallLocationsTree.WallLocationID = DepictionWallsRelation.WallID) WHERE DepictionID ="+Integer.toString(depictionID) );
+			ResultSet rs = pstmt.executeQuery();
+			zaehler1+=1;
+			while (rs.next()) {
+				System.out.println("Suche Positions für wallID: "+rs.getInt("WallID"));
+				ArrayList<PositionEntry> positions = getPositionsbyWallrelation(depictionID, rs.getInt("WallID"));
+				results.add(new WallTreeEntry(rs.getInt("WallID"),rs.getInt("ParentID"),rs.getString("Text"),rs.getString("search"),positions ));
+				zaehler2+=1;
+				}
+			System.out.println("Anzahl der Positions von Wall "+zaehler1 +": "+zaehler2);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+			return null;
+		}
+		//System.out.println("Größe des Resultats von DepictionWallsRealtion "+Integer.toString(results.size())+" für "+Integer.toString(depictionID));
+		return results;
+	}	
+	private ArrayList<PositionEntry> getPositionsbyWallrelation (int depictionID, int wallID){
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		ArrayList<PositionEntry> results = new ArrayList<PositionEntry>();
+		try {
+			pstmt = dbc.prepareStatement("SELECT DepictionID, WallID, Position.PositionID, Name FROM infosys.WallPositionsRelation inner join infosys.Position on (WallPositionsRelation.PositionID=Position.PositionID) WHERE DepictionID = "+depictionID+" and WallID = "+wallID);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				if (rs.getInt("PositionID")!=-1){
+					results.add(new PositionEntry(rs.getInt("PositionID"),rs.getString("Name")));
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+			return null;
+		}
+		//System.out.println("Größe des Resultats von DepictionWallsRealtion "+Integer.toString(results.size())+" für "+Integer.toString(depictionID));
+		return results;
+	}
+  public boolean deleteEntry(AbstractEntry entry) {
 		if (entry instanceof DepictionEntry) {
 			System.out.println("gut!");
 		}
@@ -7741,7 +8050,7 @@ public class MysqlConnector implements IsSerializable {
 						rs.getString("SeparateAksaras"), rs.getString("Dating"), rs.getString("Description"), rs.getString("BackgroundColour"),
 						rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"), rs.getDouble("Width"), rs.getDouble("Height"),
 						getExpedition(rs.getInt("ExpeditionID")), rs.getDate("PurchaseDate"), getLocation(rs.getInt("CurrentLocationID")), rs.getString("InventoryNumber"),
-						getVendor(rs.getInt("VendorID")), rs.getInt("StoryID"), getCave(rs.getInt("CaveID")), rs.getInt("WallID"), rs.getInt("AbsoluteLeft"),
+						getVendor(rs.getInt("VendorID")), rs.getInt("StoryID"), getCave(rs.getInt("CaveID")), getwallsbyDepictionID(rs.getInt("WallID")), rs.getInt("AbsoluteLeft"),
 						rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes"),
 						rs.getInt("MasterImageID"), rs.getInt("AccessLevel"), rs.getString("LastChangedByUser"), rs.getString("LastChangedOnDate"));
 				result.setRelatedImages(getRelatedImages(result.getDepictionID(), sessionID,accessLevel));

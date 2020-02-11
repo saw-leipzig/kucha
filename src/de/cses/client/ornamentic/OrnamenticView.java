@@ -49,7 +49,7 @@ public class OrnamenticView extends AbstractView {
 //		@XTemplate("<div><center><img src='{imgUri}' height='16px' width='16px'> <b style='font-size: 20px'> {officialNumber} </b></center><label style='font-size:9px'> {officialName} <br> {historicName} </label></div>")
 //		SafeHtml view(SafeUri imgUri, String officialNumber, String officialName, String historicName);
 
-		@XTemplate("<div><center><img src='{imgUri}'></img></center><label style='font-size:9px' >{shortName}</label></div>")
+		@XTemplate("<div><center><img src='{imgUri}' style='max-height: 80px; max-width: 120px; margin: 0 5px 0 0;'></img></center><label style='font-size:9px' >{shortName}</label></div>")
 		SafeHtml view(SafeUri imgUri, String shortName);
 
 //		@XTemplate("<div><center><img src='{imgUri}' height='16px' width='16px' > <b style='font-size: 12px'> {name} </b></center></div>")

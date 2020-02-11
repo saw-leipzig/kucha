@@ -34,6 +34,7 @@ import de.cses.shared.ModeOfRepresentationEntry;
 import de.cses.shared.OrientationEntry;
 import de.cses.shared.OrnamentFunctionEntry;
 import de.cses.shared.OrnamentPositionEntry;
+import de.cses.shared.PositionEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.PublicationTypeEntry;
 import de.cses.shared.RegionEntry;
@@ -41,6 +42,7 @@ import de.cses.shared.SiteEntry;
 import de.cses.shared.StyleEntry;
 import de.cses.shared.VendorEntry;
 import de.cses.shared.WallLocationEntry;
+import de.cses.shared.WallTreeEntry;
 
 /**
  * @author alingnau
@@ -62,12 +64,14 @@ public class StaticTables {
 	protected HashMap<Integer, ExpeditionEntry> expeditionEntryMap;
 	protected HashMap<Integer, StyleEntry> styleEntryMap;
 	protected HashMap<Integer, IconographyEntry> iconographyEntryMap;
+	protected HashMap<Integer, WallTreeEntry> wallEntryMap;
 	protected HashMap<Integer, IconographyEntry> iconographyForOrnamenticEntryMap;
 	protected HashMap<Integer, ModeOfRepresentationEntry> modesOfRepresentationEntryMap;
 	protected HashMap<Integer, WallLocationEntry> wallLocationEntryMap;
 	protected HashMap<Integer, OrnamentPositionEntry> ornamentPositionMap;
 	protected HashMap<Integer, OrnamentFunctionEntry> ornamentFunctionMap;
 	protected HashMap<Integer, CurrentLocationEntry> currentLocationMap;
+	protected HashMap<Integer, PositionEntry> PositionMap;
 	protected HashMap<Integer, LocationEntry> locationMap;
 	protected HashMap<Integer, VendorEntry> vendorMap;
 	protected HashMap<Integer, PublicationTypeEntry> publicationTypeMap;
@@ -121,6 +125,8 @@ public class StaticTables {
 		loadBiliography();
 		loadCaves();
 		loadOrientation();
+		loadWallEntries();
+		loadPositionTable();
 	}
 
 	private void listLoaded() {
@@ -343,6 +349,24 @@ public class StaticTables {
 			}
 		});
 	}
+	private void loadWallEntries() {
+		wallEntryMap = new HashMap<Integer, WallTreeEntry>();
+		dbService.getWallTree(new AsyncCallback<ArrayList<WallTreeEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				listLoaded();
+			}
+
+			@Override
+			public void onSuccess(ArrayList<WallTreeEntry> result) {
+				for (WallTreeEntry ie : result) {
+					wallEntryMap.put(ie.getWallLocationID(), ie);
+				}
+				listLoaded();
+			}
+		});
+	}
 
 	private void loadIconographyForOrnamentic() {
 		iconographyForOrnamenticEntryMap = new HashMap<Integer, IconographyEntry>();
@@ -414,6 +438,25 @@ public class StaticTables {
 			public void onSuccess(ArrayList<OrnamentPositionEntry> result) {
 				for (OrnamentPositionEntry ope : result) {
 					ornamentPositionMap.put(ope.getOrnamentPositionID(), ope);
+				}
+				listLoaded();
+			}
+		});
+	}
+	
+	private void loadPositionTable() {
+		PositionMap = new HashMap<Integer, PositionEntry>();
+		dbService.getPositions(new AsyncCallback<ArrayList<PositionEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				listLoaded();
+			}
+
+			@Override
+			public void onSuccess(ArrayList<PositionEntry> result) {
+				for (PositionEntry ope : result) {
+					PositionMap.put(ope.getPositionID(), ope);
 				}
 				listLoaded();
 			}
@@ -612,6 +655,10 @@ public class StaticTables {
 	public Map<Integer, IconographyEntry> getIconographyEntries() {
 		return iconographyEntryMap;
 	}
+	
+	public Map<Integer, WallTreeEntry> getWallTreeEntries() {
+		return wallEntryMap;
+	}
 
 	public Map<Integer, IconographyEntry> getIconographyForOrnamenticEntries() {
 		return iconographyForOrnamenticEntryMap;
@@ -627,6 +674,10 @@ public class StaticTables {
 	
 	public Map<Integer, OrnamentPositionEntry> getOrnamentPositionEntries() {
 		return ornamentPositionMap;
+	}
+	
+	public Map<Integer, PositionEntry> getPositionEntries() {
+		return PositionMap;
 	}
 	
 	public Map<Integer, OrnamentFunctionEntry> getOrmanemtFunctionEntries() {

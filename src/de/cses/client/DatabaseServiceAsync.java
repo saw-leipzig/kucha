@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Image;
 
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographyEntry;
@@ -54,6 +53,7 @@ import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.OrnamentPositionEntry;
 import de.cses.shared.OrnamenticSearchEntry;
 import de.cses.shared.PhotographerEntry;
+import de.cses.shared.PositionEntry;
 import de.cses.shared.PreservationAttributeEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.PublicationEntry;
@@ -67,6 +67,7 @@ import de.cses.shared.UserEntry;
 import de.cses.shared.VendorEntry;
 import de.cses.shared.WallEntry;
 import de.cses.shared.WallLocationEntry;
+import de.cses.shared.WallTreeEntry;
 
 public interface DatabaseServiceAsync {
 
@@ -120,7 +121,9 @@ public interface DatabaseServiceAsync {
 	 */
 	void deleteEntry(String sqlDelete, AsyncCallback<Boolean> callback) throws IllegalArgumentException;
 
-	void deleteAbstractEntry(AbstractEntry entry, AsyncCallback<Boolean> callback) throws IllegalArgumentException;
+  void getWallTreeEntriesByIconographyID(int IconographyID, String SessionID, AsyncCallback<ArrayList<WallTreeEntry>> callback) throws IllegalArgumentException;
+ 
+  void deleteAbstractEntry(AbstractEntry entry, AsyncCallback<Boolean> callback) throws IllegalArgumentException;
 
 	void saveOrnamentEntry(OrnamentEntry ornamentEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 
@@ -136,7 +139,9 @@ public interface DatabaseServiceAsync {
 //	void getDepictions(AsyncCallback<ArrayList<DepictionEntry>> callback) throws IllegalArgumentException;
 
 	void getIconography(AsyncCallback<ArrayList<IconographyEntry>> callback) throws IllegalArgumentException;
-
+	
+	void getWallTree(AsyncCallback<ArrayList<WallTreeEntry>> callback) throws IllegalArgumentException;
+	
 
 	void getCaveTypebyID(int caveTypeID, AsyncCallback<CaveTypeEntry> callback) throws IllegalArgumentException;
 
@@ -201,6 +206,8 @@ public interface DatabaseServiceAsync {
 //	void getWall(int caveID, String locationLabel, AsyncCallback<WallEntry> callback);
 
 	void getOrnamentPositions(AsyncCallback<ArrayList<OrnamentPositionEntry>> asyncCallback) throws IllegalArgumentException;
+
+	void getPositions(AsyncCallback<ArrayList<PositionEntry>> asyncCallback) throws IllegalArgumentException;
 
 	void getOrnamentFunctions(AsyncCallback<ArrayList<OrnamentFunctionEntry>> asyncCallback) throws IllegalArgumentException;
 

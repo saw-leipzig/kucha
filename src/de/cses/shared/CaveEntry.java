@@ -15,6 +15,8 @@ package de.cses.shared;
 
 import java.util.ArrayList;
 
+import de.cses.client.StaticTables;
+
 public class CaveEntry extends AbstractEntry {
 	private int caveID = 0;
 	private String officialNumber; 

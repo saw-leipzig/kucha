@@ -16,7 +16,6 @@ package de.cses.server;
 import java.util.ArrayList;
 import java.util.Map;
 
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 import de.cses.client.DatabaseService;
@@ -56,6 +55,7 @@ import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.OrnamentPositionEntry;
 import de.cses.shared.OrnamenticSearchEntry;
 import de.cses.shared.PhotographerEntry;
+import de.cses.shared.PositionEntry;
 import de.cses.shared.PreservationAttributeEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.PublicationEntry;
@@ -69,6 +69,7 @@ import de.cses.shared.UserEntry;
 import de.cses.shared.VendorEntry;
 import de.cses.shared.WallEntry;
 import de.cses.shared.WallLocationEntry;
+import de.cses.shared.WallTreeEntry;
 
 /**
  * The server-side implementation of the RPC service.
@@ -83,6 +84,11 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public ArrayList<DistrictEntry> getDistricts() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		ArrayList<DistrictEntry> districts = connector.getDistricts();
+		return districts;
+	}
+	public ArrayList<WallTreeEntry> getWallTreeEntriesByIconographyID(int IconographyID, String SessionID) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		ArrayList<WallTreeEntry> districts = connector.getWallTreeEntriesByIconographyID(IconographyID, SessionID);
 		return districts;
 	}
 
@@ -232,6 +238,11 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		return connector.getIconography(0); // root index =0 so we load them all
 	}
 
+	@Override
+	public ArrayList<WallTreeEntry> getWallTree() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getWallTree(0); // root index =0 so we load them all
+	}
 
 
 	@Override
@@ -426,6 +437,12 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		return connector.getOrnamentPosition();
 	}
 
+	public ArrayList<PositionEntry> getPositions() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getPosition();
+	}
+
+	
 	public ArrayList<OrnamentCaveType> getOrnamentCaveTypes() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getOrnamentCaveTypes();
