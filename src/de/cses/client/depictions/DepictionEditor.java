@@ -97,6 +97,7 @@ import de.cses.client.ui.AbstractEditor;
 import de.cses.client.ui.TextElement;
 import de.cses.client.user.UserLogin;
 import de.cses.client.walls.WallSelector;
+import de.cses.client.walls.WallTree;
 import de.cses.client.walls.Walls;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.CaveEntry;
@@ -110,7 +111,10 @@ import de.cses.shared.PreservationAttributeEntry;
 import de.cses.shared.StyleEntry;
 import de.cses.shared.VendorEntry;
 import de.cses.shared.WallEntry;
+import de.cses.client.walls.PositionEditor;
+import de.cses.shared.WallTreeEntry;
 import de.cses.shared.comparator.CaveEntryComparator;
+
 
 public class DepictionEditor extends AbstractEditor {
 
@@ -164,6 +168,7 @@ public class DepictionEditor extends AbstractEditor {
 	private ListStore<PreservationAttributeEntry> preservationAttributesLS, selectedPreservationAttributesLS;
 	private TextField shortNameTF;
 	private BibliographySelector bibliographySelector;
+	private WallTree wallTree;
 
 	class NameElement {
 		private String element;
@@ -356,7 +361,6 @@ public class DepictionEditor extends AbstractEditor {
 		preservationAttributesLS = new ListStore<PreservationAttributeEntry>(presAttributeProps.preservationAttributeID());
 		
 		selectedPreservationAttributesLS = new ListStore<PreservationAttributeEntry>(presAttributeProps.preservationAttributeID());
-
 		initPanel();
 		loadCaves();
 		loadLocations();
@@ -452,7 +456,11 @@ public class DepictionEditor extends AbstractEditor {
 //					CaveEntry ce = caveEntryLS.findModelWithKey(Integer.toString(correspondingDepictionEntry.getCaveID()));
 					caveSelectionCB.setValue(ce);
 					wallSelectorPanel.setCave(ce);
-					wallSelectorPanel.selectWall(correspondingDepictionEntry.getWallID());
+					//wallSelectorPanel.selectWall(correspondingDepictionEntry.getWallID());
+					wallTree.dropunselected(correspondingDepictionEntry.getWalls());
+					for (WallEntry we : ce.getWallList()) {
+						Util.doLogging(Integer.toString(we.getWallLocationID()));
+					}
 				}
 			}
 		});
@@ -508,7 +516,7 @@ public class DepictionEditor extends AbstractEditor {
 		imageEntryLS.clear();
 		for (ImageEntry ie : correspondingDepictionEntry.getRelatedImages()) {
 
-			Util.doLogging("adding "+Integer.toString((ie.getImageID()))+"to imageEntryLS");
+			//Util.doLogging("adding "+Integer.toString((ie.getImageID()))+"to imageEntryLS");
 			imageEntryLS.add(ie);
 		}
 	}
@@ -571,7 +579,7 @@ public class DepictionEditor extends AbstractEditor {
 
 			public SafeHtml render(ImageEntry item) {
 				SafeUri imageUri;
-				Util.doLogging( item.getFilename()+" / "+Integer.toString(imgdic.size()));
+				//Util.doLogging( item.getFilename()+" / "+Integer.toString(imgdic.size()));
 				//SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=300" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 				imageUri = UriUtils.fromString("icons/load_active.png");	
 				if (imgdic.containsKey(item.getImageID())){
@@ -675,6 +683,7 @@ public class DepictionEditor extends AbstractEditor {
 				String district = item.getDistrictID() > 0 ? st.getDistrictEntries().get(item.getDistrictID()).getName() : "";
 				String region = item.getRegionID() > 0 ? st.getRegionEntries().get(item.getRegionID()).getEnglishName() : "";
 				return site  + " " + item.getOfficialNumber() + (!district.isEmpty() ? " / " + district : "") + (!region.isEmpty() ? " / " + region : "");
+
 			}
 		}, new AbstractSafeHtmlRenderer<CaveEntry>() {
 
@@ -1093,7 +1102,7 @@ public class DepictionEditor extends AbstractEditor {
 		wallEditorTB.setToolTip(Util.createToolTip("set position on wall"));
 		
 //		TextButton wallEditorButton = new TextButton("set position on wall");
-		wallEditor = new Walls(1, false);
+		wallEditor = new Walls(1, true);
 		wallEditorTB.addSelectHandler(new SelectHandler() {
 
 			@Override
@@ -1106,6 +1115,33 @@ public class DepictionEditor extends AbstractEditor {
 				wallEditorDialog.center();
 			}
 		});
+		wallTree = new WallTree(StaticTables.getInstance().getWallTreeEntries().values(), correspondingDepictionEntry.getWalls(), true, false, correspondingDepictionEntry.getCave());
+		FramedPanel wallTreeFP = new FramedPanel();
+		wallTree.setWall(correspondingDepictionEntry.getWalls());
+		wallTreeFP.add(wallTree.wallTree);
+		ToolButton newPositionPlusTool = new ToolButton(new IconConfig("editButton", "editButtonOver"));
+		newPositionPlusTool.setToolTip(Util.createToolTip("edit walls"));
+		newPositionPlusTool.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+
+				PositionEditor pe = new PositionEditor(correspondingDepictionEntry.getCave(), correspondingDepictionEntry.getWalls()) {
+					@Override
+					protected void save(List<WallTreeEntry> results ) {
+							correspondingDepictionEntry.setWalls(getSelectedWalls());
+							wallTree.setWall(correspondingDepictionEntry.getWalls());
+						}
+					};
+				pe.show();
+				//PopupPanel positionEditorPopUp = new PopupPanel();
+				//positionEditorPopUp.add(pe);
+				//positionEditorPopUp.setModal(true);
+				//positionEditorPopUp.center();
+
+			}
+		});				
+		wallTreeFP.addTool(newPositionPlusTool);
 		/**
 		 * the wall visualisation will be implemented at a later time
 		 */
@@ -1116,9 +1152,10 @@ public class DepictionEditor extends AbstractEditor {
 			public void onSelection(SelectionEvent<WallEntry> event) {
 				correspondingDepictionEntry.setWallID(event.getSelectedItem().getWallLocationID());
 			}
-		});
+		}, false);
 		wallSelectorFP.add(wallSelectorPanel);
-
+		//wallSelectorFP.add(wallTreeFP);
+		//wallSelectorFP.add(wallEditorTB);
 		FramedPanel positionNoteFP = new FramedPanel();
 		positionNoteFP.setHeading("Position Notes");
 		TextArea positionNotesTA = new TextArea();
@@ -1133,9 +1170,10 @@ public class DepictionEditor extends AbstractEditor {
 		positionNoteFP.add(positionNotesTA);
 		
 		VerticalLayoutContainer basicsRightVLC = new VerticalLayoutContainer();
-		basicsRightVLC.add(wallSelectorFP, new VerticalLayoutData(1.0, .85));
-		basicsRightVLC.add(positionNoteFP, new VerticalLayoutData(1.0, .15));
-
+		basicsRightVLC.add(wallSelectorFP, new VerticalLayoutData(1.0, .65));
+		basicsRightVLC.add(wallTreeFP, new VerticalLayoutData(1.0, .25));
+		basicsRightVLC.add(positionNoteFP, new VerticalLayoutData(1.0, .10));
+		
 		HorizontalLayoutContainer basicsTabHLC = new HorizontalLayoutContainer();
 		basicsTabHLC.add(basicsLeftVLC, new HorizontalLayoutData(.4, 1.0));
 		basicsTabHLC.add(basicsRightVLC, new HorizontalLayoutData(.6, 1.0));

@@ -110,9 +110,8 @@ public class WallOrnamentCaveRelationEditor {
 				filterPositionbyCaveArea();
 				ornamentPositionComboBox.setEnabled(true);
 			}
-		});
+		},true);
 		wallselector.setCave(caveEntry);
-
 		FramedPanel selectWallFP = new FramedPanel();
 		selectWallFP.setHeading("Select Wall");
 		selectWallFP.add(wallselector);

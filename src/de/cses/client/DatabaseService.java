@@ -18,7 +18,6 @@ import java.util.Map;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
-import com.google.gwt.user.client.ui.Image;
 
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographyEntry;
@@ -55,6 +54,7 @@ import de.cses.shared.OrnamentOfOtherCulturesEntry;
 import de.cses.shared.OrnamentPositionEntry;
 import de.cses.shared.OrnamenticSearchEntry;
 import de.cses.shared.PhotographerEntry;
+import de.cses.shared.PositionEntry;
 import de.cses.shared.PreservationAttributeEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.PublicationEntry;
@@ -68,6 +68,7 @@ import de.cses.shared.UserEntry;
 import de.cses.shared.VendorEntry;
 import de.cses.shared.WallEntry;
 import de.cses.shared.WallLocationEntry;
+import de.cses.shared.WallTreeEntry;
 
 /**
  * The client-side stub for the RPC service.
@@ -115,12 +116,16 @@ public interface DatabaseService extends RemoteService {
 
 	ArrayList<IconographyEntry> getIconography() throws IllegalArgumentException;
 
+	ArrayList<WallTreeEntry> getWallTree() throws IllegalArgumentException;
+	
 	int saveOrnamentEntry(OrnamentEntry ornamentEntry) throws IllegalArgumentException;
 
 	CaveTypeEntry getCaveTypebyID(int caveTypeID) throws IllegalArgumentException;
 
 	ArrayList<CaveTypeEntry> getCaveTypes() throws IllegalArgumentException;
 
+	ArrayList<WallTreeEntry> getWallTreeEntriesByIconographyID(int IconographyID, String SessionID) throws IllegalArgumentException;
+	
 	ArrayList<VendorEntry> getVendors() throws IllegalArgumentException;
 
 	ArrayList<StyleEntry> getStyles() throws IllegalArgumentException;
@@ -179,6 +184,8 @@ public interface DatabaseService extends RemoteService {
 	ArrayList<OrnamentFunctionEntry> getOrnamentFunctions() throws IllegalArgumentException;
 	
 	ArrayList<OrnamentPositionEntry> getOrnamentPositions() throws IllegalArgumentException;
+	
+	ArrayList<PositionEntry> getPositions() throws IllegalArgumentException;
 	
 	ArrayList<StructureOrganization> getStructureOrganizations() throws IllegalArgumentException;
 	

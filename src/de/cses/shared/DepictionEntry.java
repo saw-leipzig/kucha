@@ -15,8 +15,7 @@ package de.cses.shared;
 
 import java.sql.Date;
 import java.util.ArrayList;
-
-import de.cses.client.Util;
+import java.util.List;
 
 public class DepictionEntry extends AbstractEntry {
 
@@ -38,6 +37,7 @@ public class DepictionEntry extends AbstractEntry {
 	private int storyID = 0;
 	private CaveEntry cave;
 	private int wallID = 0;
+	private List<WallTreeEntry> wallIDs ;
 	private int absoluteLeft = -1;
 	private int absoluteTop = -1;
 	private int modeOfRepresentationID = 0;
@@ -78,7 +78,7 @@ public class DepictionEntry extends AbstractEntry {
 	 */
 	public DepictionEntry(int depictionID, int styleID, String inscriptions, String separateAksaras, String dating, String description,
 			String backgroundColour, String generalRemarks, String otherSuggestedIdentifications, double width, double height, ExpeditionEntry expedition,
-			Date purchaseDate, LocationEntry location, String inventoryNumber, VendorEntry vendor, int storyID, CaveEntry cave, int wallID, int absoluteLeft,
+			Date purchaseDate, LocationEntry location, String inventoryNumber, VendorEntry vendor, int storyID, CaveEntry cave,List<WallTreeEntry> wallIDs, int absoluteLeft,
 			int absoluteTop, int modeOfRepresentationID, String shortName, String positionNotes, int masterImageID, int accessLevel, String lastChangedByUser, 
 			String lastChangedOnDate) {
 		super();
@@ -100,7 +100,13 @@ public class DepictionEntry extends AbstractEntry {
 		this.vendor = vendor;
 		this.storyID = storyID;
 		this.cave = cave;
-		this.wallID = wallID;
+		this.wallIDs = wallIDs;
+		if (this.wallIDs.size()>0) {
+			this.wallID= wallIDs.get(0).getWallLocationID();
+		}
+		else {
+			this.wallID=0;
+		}
 		this.absoluteLeft = absoluteLeft;
 		this.absoluteTop = absoluteTop;
 		this.modeOfRepresentationID = modeOfRepresentationID;
@@ -115,7 +121,7 @@ public class DepictionEntry extends AbstractEntry {
 	public DepictionEntry clone() {
 		DepictionEntry clonedDepictionEntry = new DepictionEntry(depictionID, styleID, inscriptions, separateAksaras, dating, description, backgroundColour, generalRemarks,
 				otherSuggestedIdentifications, width, height, expedition, purchaseDate, location, inventoryNumber, vendor, storyID,
-				cave, wallID, absoluteLeft, absoluteTop, modeOfRepresentationID, shortName, positionNotes, masterImageID, accessLevel, lastChangedByUser, modifiedOn);
+				cave, wallIDs, absoluteLeft, absoluteTop, modeOfRepresentationID, shortName, positionNotes, masterImageID, accessLevel, lastChangedByUser, modifiedOn);
 		ArrayList<ImageEntry> clonedRelatedImages = new ArrayList<ImageEntry>();
 		for (ImageEntry ie : this.relatedImages) {
 			clonedRelatedImages.add(ie);
@@ -370,6 +376,13 @@ public class DepictionEntry extends AbstractEntry {
 	public ArrayList<ImageEntry> getRelatedImages() {
 		//Util.doLogging("Size of related Images: "+relatedImages.size());
 		return relatedImages;
+	}
+	public List<WallTreeEntry> getWalls() {
+		//Util.doLogging("Size of related Images: "+relatedImages.size());
+		return wallIDs;
+	}
+	public void setWalls(List<WallTreeEntry> walls) {
+		wallIDs= walls;
 	}
 	public void addRelatedImages(ImageEntry ie) {
 		relatedImages.add(ie);
