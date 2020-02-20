@@ -305,7 +305,7 @@ public class ImageSelector implements IsWidget {
 	 */
 	private void refreshImages() {
 		ImageSearchEntry searchEntry = (ImageSearchEntry) imgFilter.getSearchEntry();
-		
+		searchEntry.setMaxentries(1000000);
 		dbService.searchImages(searchEntry, new AsyncCallback<ArrayList<ImageEntry>>() {
 
 			@Override

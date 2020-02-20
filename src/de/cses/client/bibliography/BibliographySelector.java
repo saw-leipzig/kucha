@@ -16,18 +16,29 @@ package de.cses.client.bibliography;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.cses.client.Util;
+
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.editor.client.Editor.Path;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.IdentityValueProvider;
+import com.sencha.gxt.core.client.Style.HideMode;
 import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
+import com.sencha.gxt.data.shared.Store;
+import com.sencha.gxt.data.shared.TreeStore;
+import com.sencha.gxt.data.shared.Store.StoreFilter;
+import com.sencha.gxt.widget.core.client.FramedPanel;
+import com.sencha.gxt.widget.core.client.form.StoreFilterField;
+import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.grid.CheckBoxSelectionModel;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
@@ -38,6 +49,8 @@ import com.sencha.gxt.widget.core.client.grid.filters.StringFilter;
 
 import de.cses.client.StaticTables;
 import de.cses.shared.AnnotatedBibliographyEntry;
+import de.cses.shared.AuthorEntry;
+import de.cses.shared.IconographyEntry;
 
 /**
  * @author alingnau
@@ -63,6 +76,11 @@ public class BibliographySelector implements IsWidget {
 	private Grid<AnnotatedBibliographyEntry> grid = null;
 	private CheckBoxSelectionModel<AnnotatedBibliographyEntry> selectionModel;
 	private List<AnnotatedBibliographyEntry> selectedEntries;
+	private StoreFilterField<AnnotatedBibliographyEntry> titleField;
+	private StoreFilterField<AnnotatedBibliographyEntry> AuthorsField;
+	private StoreFilterField<AnnotatedBibliographyEntry> yearField;
+    VerticalPanel gridVP; 
+    HorizontalPanel gridHP;
 
 	/**
 	 * 
@@ -79,7 +97,7 @@ public class BibliographySelector implements IsWidget {
 		if (grid == null) {
 			createUI();
 		}
-		return grid;
+		return gridVP;
 	}
 
 	/**
@@ -102,31 +120,152 @@ public class BibliographySelector implements IsWidget {
 		ColumnConfig<AnnotatedBibliographyEntry, String> yearColumn = new ColumnConfig<AnnotatedBibliographyEntry, String>(bibProps.year(), 50, "Year");
 //		yearColumn.setHideable(false);
 //		yearColumn.setHorizontalHeaderAlignment(HorizontalAlignmentConstant.startOf(Direction.DEFAULT));
-		
+		yearColumn.setMenuDisabled(false);
+		authorsCol.setMenuDisabled(false);
+		titleOrgCol.setMenuDisabled(false);
     List<ColumnConfig<AnnotatedBibliographyEntry, ?>> sourceColumns = new ArrayList<ColumnConfig<AnnotatedBibliographyEntry, ?>>();
     sourceColumns.add(selectionModel.getColumn());
     sourceColumns.add(rowExpander);
     sourceColumns.add(titleOrgCol);
     sourceColumns.add(authorsCol);
     sourceColumns.add(yearColumn);
-
-    ColumnModel<AnnotatedBibliographyEntry> sourceColumnModel = new ColumnModel<AnnotatedBibliographyEntry>(sourceColumns);
-    
+     ColumnModel<AnnotatedBibliographyEntry> sourceColumnModel = new ColumnModel<AnnotatedBibliographyEntry>(sourceColumns);
     ListStore<AnnotatedBibliographyEntry> sourceStore = new ListStore<AnnotatedBibliographyEntry>(bibProps.key());
 //    sourceStore.addSortInfo(new StoreSortInfo<AnnotatedBibliographyEntry>(bibProps.titleORG(), SortDir.ASC));
     for (AnnotatedBibliographyEntry abe : StaticTables.getInstance().getBibliographyEntries().values()) {
     	sourceStore.add(abe);
     }
-    
+    FramedPanel fpGrid = new FramedPanel();
     grid = new Grid<AnnotatedBibliographyEntry>(sourceStore, sourceColumnModel);
+
+    grid.setHideMode(HideMode.OFFSETS);
     grid.setSelectionModel(selectionModel);
 //    grid.setColumnReordering(true);
-    grid.getView().setAutoExpandColumn(titleOrgCol);
+    //grid.getView().setAutoExpandColumn(titleOrgCol);
     grid.setBorders(false);
     grid.getView().setStripeRows(true);
     grid.getView().setColumnLines(true);
     grid.getView().setForceFit(true);
-    
+    gridVP = new VerticalPanel();
+    gridHP = new HorizontalPanel();
+    titleField = new StoreFilterField<AnnotatedBibliographyEntry>(){
+
+		@Override
+		protected boolean doSelect(Store<AnnotatedBibliographyEntry> store, AnnotatedBibliographyEntry parent, AnnotatedBibliographyEntry item, String filter) {
+				if (filter.isEmpty()){
+					return true;
+				}
+				else {
+		        	  if (item.getTitleEN().toLowerCase().contains(filter.toLowerCase())) {
+		        		  return true;
+		        	  }
+		        	  else if (item.getTitleORG().toLowerCase().contains(filter.toLowerCase())) {
+		        		  return true;
+		        	  }
+		        	  else if (item.getTitleTR().toLowerCase().contains(filter.toLowerCase())) {
+		        		  return true;
+		        	  }
+		        	  else if (item.getSubtitleEN().toLowerCase().contains(filter.toLowerCase())) {
+		        		  return true;
+		        	  }
+		        	  else if (item.getSubtitleORG().toLowerCase().contains(filter.toLowerCase())) {
+		        		  return true;
+		        	  }
+		        	  else if (item.getSubtitleTR().toLowerCase().contains(filter.toLowerCase())) {
+		        		  return true;
+		        	  }
+				}
+			return false;
+		}
+	};
+	FramedPanel fpTitleField = new FramedPanel();
+	fpTitleField.add(titleField);
+	fpTitleField.setHeading("Title");
+	fpTitleField.setWidth(400);
+    AuthorsField= new StoreFilterField<AnnotatedBibliographyEntry>(){
+
+		@Override
+		protected boolean doSelect(Store<AnnotatedBibliographyEntry> store, AnnotatedBibliographyEntry parent, AnnotatedBibliographyEntry item, String filter) {
+				if (filter.isEmpty()){
+					return true;
+				}
+				else {
+		        	  for (AuthorEntry ae : item.getAuthorList()) {
+		        		  try {
+		        		  if ((!ae.getName().isEmpty())&(!filter.isEmpty())) {
+			        		  if (ae.getName().toLowerCase().contains(filter.toLowerCase())) {
+			        			  return true;
+			        		  }		        			  
+		        		  }
+		        		  if ((!ae.getAlias().isEmpty())&(!filter.isEmpty())) {
+		        			  if (ae.getAlias().toLowerCase().contains(filter.toLowerCase())) {
+		        				  return true;
+		        			  }
+		        		  }}
+			        	  catch(Exception e) {
+			        		  Util.doLogging(e.getLocalizedMessage());
+			        		  Util.doLogging(ae.getName());
+
+			        	  }
+		        	  }
+		        	  for (AuthorEntry ae : item.getEditorList()) {
+						try {
+		        		  if ((!ae.getName().isEmpty())&(!filter.isEmpty())) {
+			        		  if (ae.getName().toLowerCase().contains(filter.toLowerCase())) {
+			        			  return true;
+			        		  }		        			  
+		        		  }
+		        		  if ((!ae.getAlias().isEmpty())&(!filter.isEmpty())) {
+		        			  if (ae.getAlias().toLowerCase().contains(filter.toLowerCase())) {
+		        				  return true;
+		        			  }
+		        		  }
+		        	  }		        	  catch(Exception e) {
+		        		  Util.doLogging(e.getLocalizedMessage());
+		        		  Util.doLogging(ae.getName());
+
+		        	  }
+					}
+
+				}
+			return false;
+		}
+	};
+	FramedPanel fpAuthorsField = new FramedPanel();
+	fpAuthorsField.setHeading("Authors");
+	fpAuthorsField.add(AuthorsField);
+	fpAuthorsField.setWidth(350);
+	yearField= new StoreFilterField<AnnotatedBibliographyEntry>(){
+
+		@Override
+		protected boolean doSelect(Store<AnnotatedBibliographyEntry> store, AnnotatedBibliographyEntry parent, AnnotatedBibliographyEntry item, String filter) {
+				if (filter.isEmpty()){
+					return true;
+				}
+				else {
+		        	  if (Integer.toString(item.getYearEN()).contains(filter)) {
+		        		  return true;
+		        	  }
+		        	  else if (item.getYearORG().contains(filter)) {
+		        		  return true;
+		        	  }
+				}
+
+			return false;
+		}
+	};
+	FramedPanel fpYearField = new FramedPanel();
+	fpYearField.setHeading("Year");
+	fpYearField.add(yearField);
+	fpYearField.setWidth(50);
+ 	titleField.bind(sourceStore);
+	AuthorsField.bind(sourceStore);
+	yearField.bind(sourceStore);
+    gridHP.add(fpTitleField);
+    gridHP.add(fpAuthorsField);
+    gridHP.add(fpYearField);
+    gridVP.add(gridHP);
+    gridVP.add(grid);
     // State manager, make this grid stateful
 //    grid.setStateful(true);
 //    grid.setStateId("bibSelector");
@@ -141,6 +280,49 @@ public class BibliographySelector implements IsWidget {
     filters.addFilter(titleFilter);
     filters.addFilter(authorFilter);
     filters.addFilter(yearFilter);
+    StoreFilter<AnnotatedBibliographyEntry> filter = new StoreFilter<AnnotatedBibliographyEntry>() {
+        @Override
+        public boolean select(Store<AnnotatedBibliographyEntry> store, AnnotatedBibliographyEntry parent, AnnotatedBibliographyEntry item) {
+          boolean filter = false;
+          if (!titleField.getText().isEmpty()) {
+        	  if (item.getTitleEN().toLowerCase().contains(titleField.getText().toLowerCase())) {
+        		  filter=true;
+        	  }
+        	  if (item.getTitleORG().toLowerCase().contains(titleField.getText().toLowerCase())) {
+        		  filter=true;
+        	  }
+        	  if (item.getTitleTR().toLowerCase().contains(titleField.getText().toLowerCase())) {
+        		  filter=true;
+        	  }
+        	  if (item.getSubtitleEN().toLowerCase().contains(titleField.getText().toLowerCase())) {
+        		  filter=true;
+        	  }
+        	  if (item.getSubtitleORG().toLowerCase().contains(titleField.getText().toLowerCase())) {
+        		  filter=true;
+        	  }
+        	  if (item.getSubtitleTR().toLowerCase().contains(titleField.getText().toLowerCase())) {
+        		  filter=true;
+        	  }
+          }
+          if (!AuthorsField.getText().isEmpty()) {
+        	  for (AuthorEntry ae : item.getAuthorList()) {
+        		  if (ae.getName().toLowerCase().contains(AuthorsField.getText().toLowerCase())) {
+        			  filter=true;
+        		  }
+        		  if (ae.getAlias().toLowerCase().contains(AuthorsField.getText().toLowerCase())) {
+        			  filter=true;
+        		  }
+        	  }
+          }
+          if (!yearField.getText().isEmpty()) {
+        	  if (Integer.toString(item.getYearEN()).toLowerCase().contains(yearField.getText().toLowerCase())) {
+        		  filter=true;
+        	  }
+          }
+          
+          return filter;
+        }
+      };
     
     rowExpander.initPlugin(grid);
     

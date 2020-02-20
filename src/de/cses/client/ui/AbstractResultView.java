@@ -268,6 +268,8 @@ public abstract class AbstractResultView extends Portlet {
 	public void reset() {
 		resultContainer.clear();
 		setHeading(title);
+		addMoreResults.hide();
+
 	}
 	
 	public ArrayList<AbstractEntry> getEntriesOnDisplay() {

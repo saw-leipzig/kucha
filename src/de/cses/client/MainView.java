@@ -292,6 +292,12 @@ public class MainView implements IsWidget {
 //		    	imageSearchController.setVisible(false);
 		    	loadWorkspaceToolButton.setEnabled(false);
 		    	saveWorkspaceToolButton.setEnabled(false);
+				caveSearchController.getResultView().getContainer().clear();;
+				depictionSearchController.getResultView().getContainer().clear();
+				ornamenticSearchController.getResultView().getContainer().clear();
+				annotatedBiblographySearchController.getResultView().getContainer().clear();
+				imageSearchController.getResultView().getContainer().clear();
+			
 		    }
 			}
 		});

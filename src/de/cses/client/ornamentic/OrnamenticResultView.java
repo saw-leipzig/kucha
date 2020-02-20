@@ -25,10 +25,10 @@ import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
-import de.cses.client.depictions.DepictionView;
 import de.cses.client.ui.AbstractResultView;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.CaveEntry;
+import de.cses.shared.DepictionEntry;
 import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamenticSearchEntry;
 
@@ -79,41 +79,45 @@ public class OrnamenticResultView extends AbstractResultView{
 			@Override
 			protected void onDragDrop(DndDropEvent event) {
 				super.onDragDrop(event);
+				OrnamenticSearchEntry searchEntry = new OrnamenticSearchEntry();
 				if (event.getData() instanceof CaveEntry) {
-					OrnamenticSearchEntry searchEntry = new OrnamenticSearchEntry();
 					searchEntry.getCaves().add((CaveEntry) event.getData());
-					dbService.searchOrnaments(searchEntry, new AsyncCallback<ArrayList<OrnamentEntry>>() {
-						
-						@Override
-						public void onSuccess(ArrayList<OrnamentEntry> result) {
-							int count =0;
-							String masterImageIDs = "";
-							for (OrnamentEntry oe : result) {
-								if ((oe.getImages() != null) && (!oe.getImages().isEmpty())) {
-								count++;
-								if (masterImageIDs == "") {
-									masterImageIDs = Integer.toString(oe.getImages().get(0).getImageID());
-								}
-								else {
-									masterImageIDs = masterImageIDs + ","+Integer.toString(oe.getImages().get(0).getImageID());
-								}
-								}
-								addResult(new OrnamenticView(oe,UriUtils.fromTrustedString("icons/load_active.png")));
-								if (count==20 ){
-									getPics(masterImageIDs, 80, UserLogin.getInstance().getSessionID()) ;
-									masterImageIDs="";
-									count=0;
-								}
 
-							}
-							getPics(masterImageIDs, 80, UserLogin.getInstance().getSessionID()) ;
-						}
-						
-						@Override
-						public void onFailure(Throwable caught) {
-						}
-					});
 				}
+				else if (event.getData() instanceof DepictionEntry) {
+					searchEntry.setIconographys(((DepictionEntry) event.getData()).getRelatedIconographyList());
+				}
+				dbService.searchOrnaments(searchEntry, new AsyncCallback<ArrayList<OrnamentEntry>>() {
+					
+					@Override
+					public void onSuccess(ArrayList<OrnamentEntry> result) {
+						int count =0;
+						String masterImageIDs = "";
+						for (OrnamentEntry oe : result) {
+							if ((oe.getImages() != null) && (!oe.getImages().isEmpty())) {
+							count++;
+							if (masterImageIDs == "") {
+								masterImageIDs = Integer.toString(oe.getImages().get(0).getImageID());
+							}
+							else {
+								masterImageIDs = masterImageIDs + ","+Integer.toString(oe.getImages().get(0).getImageID());
+							}
+							}
+							addResult(new OrnamenticView(oe,UriUtils.fromTrustedString("icons/load_active.png")));
+							if (count==20 ){
+								getPics(masterImageIDs, 80, UserLogin.getInstance().getSessionID()) ;
+								masterImageIDs="";
+								count=0;
+							}
+
+						}
+						getPics(masterImageIDs, 80, UserLogin.getInstance().getSessionID()) ;
+					}
+					
+					@Override
+					public void onFailure(Throwable caught) {
+					}
+				});
 			}
 		};
 	}

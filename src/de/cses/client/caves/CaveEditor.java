@@ -54,6 +54,7 @@ import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.Store.StoreFilter;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.fx.client.Draggable;
+import com.sencha.gxt.fx.client.Draggable.DraggableAppearance;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.PlainTabPanel;
@@ -2682,7 +2683,8 @@ public class CaveEditor extends AbstractEditor {
 		mainPanel.addTool(saveToolButton);
 		mainPanel.addTool(closeToolButton);
 		new Resizable(mainPanel);
-		new Draggable(mainPanel);
+		new Draggable(mainPanel, mainPanel.getHeader(), GWT.<DraggableAppearance> create(DraggableAppearance.class));
+
 	}
 
 	/**

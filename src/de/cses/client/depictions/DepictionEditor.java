@@ -54,6 +54,7 @@ import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.dnd.core.client.ListViewDragSource;
 import com.sencha.gxt.dnd.core.client.ListViewDropTarget;
 import com.sencha.gxt.fx.client.Draggable;
+import com.sencha.gxt.fx.client.Draggable.DraggableAppearance;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.Resizable;
@@ -191,7 +192,7 @@ public class DepictionEditor extends AbstractEditor {
 			Util.doLogging("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getIconogrpahy brach nach "+diff + " Millisekunden ab."+caught.getMessage());
 			Util.doLogging(caught.getLocalizedMessage());
 			caught.printStackTrace();
-			Info.display("Failure", "Failed to load Iconography, retry.");
+			//Info.display("Failure", "Failed to load Iconography, retry.");
 			loadiconogrpahy(entry, start);
 		}
 
@@ -307,7 +308,10 @@ public class DepictionEditor extends AbstractEditor {
 		} else {
 			correspondingDepictionEntry = new DepictionEntry();
 		}
-
+		Util.doLogging("Große von walls:"+Integer.toString(correspondingDepictionEntry.getWalls().size()));
+		for (WallTreeEntry wte : correspondingDepictionEntry.getWalls()) {
+			Util.doLogging(wte.getText()+" - "+wte.getWallLocationID());
+		}
 		imgProperties = GWT.create(ImageProperties.class);
 		imageEntryLS = new ListStore<ImageEntry>(imgProperties.imageID());
 		
@@ -458,9 +462,9 @@ public class DepictionEditor extends AbstractEditor {
 					wallSelectorPanel.setCave(ce);
 					//wallSelectorPanel.selectWall(correspondingDepictionEntry.getWallID());
 					wallTree.dropunselected(correspondingDepictionEntry.getWalls());
-					for (WallEntry we : ce.getWallList()) {
-						Util.doLogging(Integer.toString(we.getWallLocationID()));
-					}
+//					for (WallEntry we : ce.getWallList()) {
+//						Util.doLogging(Integer.toString(we.getWallLocationID()));
+//					}
 				}
 			}
 		});
@@ -538,7 +542,7 @@ public class DepictionEditor extends AbstractEditor {
 			@Override
 			public void onFailure(Throwable caught) {
 				caught.printStackTrace();
-				Info.display("getPics", "got bad response");
+				//Info.display("getPics", "got bad response");
 			}
 
 			@Override
@@ -705,6 +709,7 @@ public class DepictionEditor extends AbstractEditor {
 				}
 			}
 		});
+		caveSelectionCB.setTypeAhead(true);
 		caveSelectionCB.setEmptyText("nothing selected");
 		caveSelectionCB.setTypeAhead(true);
 		caveSelectionCB.setEditable(true);
@@ -1183,20 +1188,6 @@ public class DepictionEditor extends AbstractEditor {
 		 */
 
 		HorizontalLayoutContainer dimensionHLC = new HorizontalLayoutContainer();
-		FramedPanel widthFP = new FramedPanel();
-		widthFP.setHeading("Width");
-		widthNF = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
-		widthNF.addValidator(new MinNumberValidator<Double>((double) 0));
-		widthNF.setValue(correspondingDepictionEntry.getWidth());
-		widthNF.addValueChangeHandler(new ValueChangeHandler<Double>() {
-
-			@Override
-			public void onValueChange(ValueChangeEvent<Double> event) {
-				correspondingDepictionEntry.setWidth(event.getValue());
-			}
-		});
-		widthFP.add(widthNF);
-		dimensionHLC.add(widthFP, new HorizontalLayoutData(.5	, 1.0));
 		
 		FramedPanel heightFP = new FramedPanel();
 		heightFP.setHeading("Height");
@@ -1213,6 +1204,23 @@ public class DepictionEditor extends AbstractEditor {
 		heightFP.add(heightNF);
 		dimensionHLC.add(heightFP, new HorizontalLayoutData(.5, 1.0));
 
+
+		
+		FramedPanel widthFP = new FramedPanel();
+		widthFP.setHeading("Width");
+		widthNF = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
+		widthNF.addValidator(new MinNumberValidator<Double>((double) 0));
+		widthNF.setValue(correspondingDepictionEntry.getWidth());
+		widthNF.addValueChangeHandler(new ValueChangeHandler<Double>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Double> event) {
+				correspondingDepictionEntry.setWidth(event.getValue());
+			}
+		});
+		widthFP.add(widthNF);
+		dimensionHLC.add(widthFP, new HorizontalLayoutData(.5	, 1.0));
+		
 		FramedPanel styleFP = new FramedPanel();
 		styleFP.setHeading("Style");
 		styleSelection = new ComboBox<StyleEntry>(styleEntryLS, styleProps.styleName(), new AbstractSafeHtmlRenderer<StyleEntry>() {
@@ -1618,7 +1626,7 @@ public class DepictionEditor extends AbstractEditor {
 		mainPanel.addTool(saveToolButton);
 		mainPanel.addTool(closeToolButton);
 		new Resizable(mainPanel);
-		new Draggable(mainPanel);
+		new Draggable(mainPanel, mainPanel.getHeader(), GWT.<DraggableAppearance> create(DraggableAppearance.class));
 	}
 
 	/**

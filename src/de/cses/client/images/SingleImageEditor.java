@@ -50,6 +50,7 @@ import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.data.shared.SortDir;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.fx.client.Draggable;
+import com.sencha.gxt.fx.client.Draggable.DraggableAppearance;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.Resizable;
 import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
@@ -554,8 +555,8 @@ public class SingleImageEditor extends AbstractEditor {
 		//System.err.println(test);
 		//Info.display("test","test");
 		new Resizable(panel);
-		new Draggable(panel);
-		
+		new Draggable(panel, panel.getHeader(), GWT.<DraggableAppearance> create(DraggableAppearance.class));
+
 
 		
 	}

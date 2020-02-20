@@ -85,6 +85,7 @@ public class DepictionSearchController extends AbstractSearchController {
 				int x = result.size();
 				for (DepictionEntry de : result){
 					count++;
+					Util.doLogging("Anzahl der Wallentries bei DepictionID "+Integer.toString(de.getDepictionID())+": "+Integer.toString(de.getWalls().size()));
 					getResultView().addResult(new DepictionView(de,UriUtils.fromTrustedString("icons/load_active.png")));
 					if (masterImageIDs == "") {
 						masterImageIDs = Integer.toString(de.getMasterImageID());
@@ -127,12 +128,12 @@ public class DepictionSearchController extends AbstractSearchController {
 				
 						@Override
 						public void onFailure(Throwable caught) {				
-							Info.display("getPics", "got bad response");
+							//Info.display("getPics", "got bad response");
 						}
 						
 						@Override
 						public void onSuccess(Map<Integer,String> imgdic) {
-							Info.display("getPics", "got good response");
+							//Info.display("getPics", "got good response");
 							
 							getResultView().addResult(new DepictionView((DepictionEntry)entry, UriUtils.fromTrustedString(imgdic.get(((DepictionEntry)entry).getMasterImageID()))));
 						}

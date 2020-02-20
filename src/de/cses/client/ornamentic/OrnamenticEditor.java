@@ -32,9 +32,11 @@ import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.data.shared.TreeStore;
+import com.sencha.gxt.dnd.core.client.DragSource;
 import com.sencha.gxt.dnd.core.client.ListViewDragSource;
 import com.sencha.gxt.dnd.core.client.ListViewDropTarget;
 import com.sencha.gxt.fx.client.Draggable;
+import com.sencha.gxt.fx.client.Draggable.DraggableAppearance;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.Resizable;
@@ -77,7 +79,6 @@ import de.cses.client.ui.AbstractEditor;
 import de.cses.client.ui.EditorListener;
 import de.cses.client.user.UserLogin;
 import de.cses.client.walls.CaveWallsTree;
-import de.cses.client.walls.WallTree;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.CaveEntry;
@@ -1286,7 +1287,11 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		    }			
 		}, KeyDownEvent.getType());
 		new Resizable(backgroundPanel);
-		new Draggable(backgroundPanel);
+		DragSource d = new DragSource(backgroundPanel);
+		DraggableAppearance dragAp = GWT.<DraggableAppearance> create(DraggableAppearance.class);
+		dragAp.addUnselectableStyle(tabpanel.getElement());
+		Draggable drag = new Draggable(backgroundPanel,backgroundPanel.getHeader(),  dragAp);
+		//Draggable drag2 = new Draggable(tabpanel, dragAp);
 		return backgroundPanel;
 
 	}

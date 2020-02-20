@@ -55,6 +55,9 @@ public abstract class AbstractSearchEntry implements IsSerializable {
 	public int getMaxentries() {
 		return this.maxEntries;
 	}
+	public void setMaxentries(int maxEntries) {
+		this.maxEntries = maxEntries;
+	}
 	public AbstractSearchEntry() { }
 
 	public boolean isOrSearch() {

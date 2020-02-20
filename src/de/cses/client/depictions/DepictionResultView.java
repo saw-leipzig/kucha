@@ -34,6 +34,7 @@ import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DepictionSearchEntry;
+import de.cses.shared.OrnamentEntry;
 
 /**
  * @author alingnau
@@ -46,13 +47,12 @@ public class DepictionResultView extends AbstractResultView {
 	/**
 	 * @param title
 	 */
-	
 	public void getPics(String masterImageIDs, int size, String userLogin) {
 		dbService.getPicsByImageID(masterImageIDs, size, userLogin, new AsyncCallback<Map<Integer,String>>() {
 			
 			@Override
 			public void onFailure(Throwable caught) {				
-				Info.display("getPics", "got bad response, retry");
+				//Info.display("getPics", "got bad response, retry");
 				getPics(masterImageIDs, size, userLogin);
 			}
 			
@@ -92,6 +92,8 @@ public class DepictionResultView extends AbstractResultView {
 						searchEntry.setEntriesShowed(searchEntry.getEntriesShowed()+searchEntry.getMaxentries());
 						for (DepictionEntry de : result) {
 							count++;
+							Util.doLogging("Anzahl der Wallentries bei DepictionID "+Integer.toString(de.getDepictionID())+": "+Integer.toString(de.getWalls().size()));
+
 							addResult(new DepictionView(de,UriUtils.fromTrustedString("icons/load_active.png")));
 							if (imageIDs == "") {
 								imageIDs = Integer.toString(de.getMasterImageID());
@@ -143,6 +145,9 @@ public class DepictionResultView extends AbstractResultView {
 				} else if (event.getData() instanceof AnnotatedBibliographyEntry) {
 					int bibID = ((AnnotatedBibliographyEntry) event.getData()).getAnnotatedBibliographyID();
 					searchEntry.getBibIdList().add(bibID);
+				} else if (event.getData() instanceof OrnamentEntry) {
+					int bibID = ((OrnamentEntry) event.getData()).getIconographyID();
+					searchEntry.getIconographyIdList().add(bibID);
 				} else {
 					return;
 				}
@@ -166,12 +171,12 @@ public class DepictionResultView extends AbstractResultView {
 					
 					@Override
 					public void onFailure(Throwable caught) {				
-						Info.display("getPics", "got bad response");
+						//Info.display("getPics", "got bad response");
 						}
 					
 					@Override
 					public void onSuccess(Map<Integer,String> imgdic) {
-						Info.display("getPics", "got good response");
+						//Info.display("getPics", "got good response");
 						for (DepictionEntry de : result) {
 							addResult(new DepictionView(de,UriUtils.fromTrustedString(imgdic.get(de.getMasterImageID()))));
 						}

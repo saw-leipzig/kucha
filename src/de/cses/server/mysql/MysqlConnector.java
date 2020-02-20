@@ -704,7 +704,9 @@ public class MysqlConnector implements IsSerializable {
 			pstmt = dbc.prepareStatement("SELECT * FROM DepictionIconographyRelation where IconographyID="+Integer.toString(IconographyID));
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
+				System.out.println("DepictionID is here: "+rs.getInt("DepictionID"));
 				DepictionEntry de= getDepictionEntry(rs.getInt("DepictionID"),sessionID);
+				System.out.println("Found Depiction"+de.getDepictionID());
 				CaveEntry item = de.getCave();
 				String site = item.getSiteID() > 0 ? getSites(" SiteID="+item.getSiteID()).get(0).getShortName() : "";
 				String district = item.getDistrictID() > 0 ? getDistricts(" DistrictID="+item.getDistrictID()).get(0).getName() : "";
@@ -3842,14 +3844,18 @@ public boolean isHan(String s) {
 		
 		if (search.getIconographys().size() > 0) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-			String mysqlquerry = "SELECT * FROM (Ornaments JOIN CaveOrnamentRelation ON Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID) JOIN OrnamentCaveIconographyRelation ON OrnamentCaveIconographyRelation.OrnamentCaveRelationID = CaveOrnamentRelation.CaveOrnamentRelationID WHERE IconographyID IN (";
-			for (int i = 0; search.getIconographys().size() > i; i++) {
-				mysqlquerry = mysqlquerry + Integer.toString(search.getIconographys().get(i).getIconographyID());
-				if (search.getIconographys().size() > i + 1) {
-					mysqlquerry = mysqlquerry + " , ";
+			String mysqlquerry = "SELECT * FROM Ornaments  WHERE IconographyID IN (";
+			String backets = "";
+			for (IconographyEntry iconography : search.getIconographys()) {
+				if (backets =="") {
+					backets = Integer.toString(iconography.getIconographyID());
 				}
+				else {
+					backets = backets+" , "+Integer.toString(iconography.getIconographyID());
+				}
+
 			}
-			mysqlquerry = mysqlquerry + ") GROUP BY Ornaments.OrnamentID HAVING COUNT(*) =" + search.getIconographys().size();
+			mysqlquerry = mysqlquerry+backets + ") GROUP BY Ornaments.OrnamentID";
 			try {
 				stmt = dbc.createStatement();
 				ResultSet rs = stmt.executeQuery(mysqlquerry);
@@ -7781,6 +7787,7 @@ public boolean isHan(String s) {
 				de.setRelatedBibliographyList(getRelatedBibliographyFromDepiction(de.getDepictionID()));
 				de.setRelatedIconographyList(getRelatedIconography(de.getDepictionID()));
 				results.add(de);
+				System.out.println("Anzahl der Wallentries bei DepictionID "+de.getDepictionID()+": "+de.getWalls().size());
 			}
 			rs.close();
 			pstmt.close();
@@ -7805,13 +7812,20 @@ public boolean isHan(String s) {
 		try {
 			zaehler2=0;
 			System.out.println("Suche Walls für depicionID: "+depictionID);
-			pstmt = dbc.prepareStatement("SELECT * FROM infosys.DepictionWallsRelation left join infosys.WallLocationsTree on (WallLocationsTree.WallLocationID = DepictionWallsRelation.WallID) WHERE DepictionID ="+Integer.toString(depictionID) );
+			pstmt = dbc.prepareStatement("SELECT * FROM DepictionWallsRelation left join WallLocationsTree on (WallLocationsTree.WallLocationID = DepictionWallsRelation.WallID) WHERE DepictionID ="+Integer.toString(depictionID) );
 			ResultSet rs = pstmt.executeQuery();
 			zaehler1+=1;
 			while (rs.next()) {
-				System.out.println("Suche Positions für wallID: "+rs.getInt("WallID"));
+				System.out.println("Suche Positions für wallID: "+rs.getInt("WallID")+", DepictionID: "+depictionID);
 				ArrayList<PositionEntry> positions = getPositionsbyWallrelation(depictionID, rs.getInt("WallID"));
-				results.add(new WallTreeEntry(rs.getInt("WallID"),rs.getInt("ParentID"),rs.getString("Text"),rs.getString("search"),positions ));
+				if (positions!=null) {
+					for (PositionEntry pe : positions){
+						System.out.println("Gefundene Position: "+pe.getName());
+					}
+				}
+				WallTreeEntry wte = new WallTreeEntry(rs.getInt("WallID"),rs.getInt("ParentID"),rs.getString("Text"),rs.getString("search"),positions );
+				System.out.println("Added Wall to DepictionID: "+depictionID+" - "+wte.getWallLocationID()+" - "+wte.getText());
+				results.add(wte);
 				zaehler2+=1;
 				}
 			System.out.println("Anzahl der Positions von Wall "+zaehler1 +": "+zaehler2);
@@ -7828,7 +7842,7 @@ public boolean isHan(String s) {
 		PreparedStatement pstmt;
 		ArrayList<PositionEntry> results = new ArrayList<PositionEntry>();
 		try {
-			pstmt = dbc.prepareStatement("SELECT DepictionID, WallID, Position.PositionID, Name FROM infosys.WallPositionsRelation inner join infosys.Position on (WallPositionsRelation.PositionID=Position.PositionID) WHERE DepictionID = "+depictionID+" and WallID = "+wallID);
+			pstmt = dbc.prepareStatement("SELECT DepictionID, WallID, Position.PositionID, Name FROM WallPositionsRelation inner join Position on (WallPositionsRelation.PositionID=Position.PositionID) WHERE DepictionID = "+depictionID+" and WallID = "+wallID);
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
 				if (rs.getInt("PositionID")!=-1){
@@ -8042,20 +8056,23 @@ public boolean isHan(String s) {
 		try {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Depictions WHERE DepictionID=" + depictionID +" and deleted=0");
+			System.out.println("Start Select");
 			int accessLevel=-1;
 			accessLevel = getAccessLevelForSessionID(sessionID);
 			// we only need to call this once, since we do not expect more than 1 result!
 			if (rs.next()) { 
+				System.out.println("got result");				
 				result = new DepictionEntry(rs.getInt("DepictionID"), rs.getInt("StyleID"), rs.getString("Inscriptions"),
 						rs.getString("SeparateAksaras"), rs.getString("Dating"), rs.getString("Description"), rs.getString("BackgroundColour"),
 						rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"), rs.getDouble("Width"), rs.getDouble("Height"),
 						getExpedition(rs.getInt("ExpeditionID")), rs.getDate("PurchaseDate"), getLocation(rs.getInt("CurrentLocationID")), rs.getString("InventoryNumber"),
-						getVendor(rs.getInt("VendorID")), rs.getInt("StoryID"), getCave(rs.getInt("CaveID")), getwallsbyDepictionID(rs.getInt("WallID")), rs.getInt("AbsoluteLeft"),
+						getVendor(rs.getInt("VendorID")), rs.getInt("StoryID"), getCave(rs.getInt("CaveID")), getwallsbyDepictionID(rs.getInt("DepictionID")), rs.getInt("AbsoluteLeft"),
 						rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes"),
 						rs.getInt("MasterImageID"), rs.getInt("AccessLevel"), rs.getString("LastChangedByUser"), rs.getString("LastChangedOnDate"));
 				result.setRelatedImages(getRelatedImages(result.getDepictionID(), sessionID,accessLevel));
 				result.setRelatedBibliographyList(getRelatedBibliographyFromDepiction(result.getDepictionID()));
 				result.setRelatedIconographyList(getRelatedIconography(result.getDepictionID()));
+				System.out.println("Depiction found: "+result.getDepictionID());
 			}
 			rs.close();
 			stmt.close();

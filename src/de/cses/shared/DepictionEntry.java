@@ -17,6 +17,8 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sencha.gxt.widget.core.client.info.Info;
+
 public class DepictionEntry extends AbstractEntry {
 
 	private int depictionID = 0;

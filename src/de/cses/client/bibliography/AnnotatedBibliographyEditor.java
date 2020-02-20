@@ -56,6 +56,7 @@ import com.sencha.gxt.data.shared.SortDir;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.fx.client.Draggable;
+import com.sencha.gxt.fx.client.Draggable.DraggableAppearance;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.Resizable;
 import com.sencha.gxt.widget.core.client.TabPanel;
@@ -442,7 +443,7 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 		mainFP.addTool(saveToolButton);
 		mainFP.addTool(closeToolButton);
 		new Resizable(mainFP);
-		new Draggable(mainFP);
+		new Draggable(mainFP, mainFP.getHeader(), GWT.<DraggableAppearance> create(DraggableAppearance.class));
 
 	}
 

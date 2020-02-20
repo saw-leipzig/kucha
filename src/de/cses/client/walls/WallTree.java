@@ -214,8 +214,10 @@ public class WallTree {
 		wallTree.setCheckStyle(CheckCascade.PARENTS);
 		for (WallTreeEntry wall : wallIDs) {
 					Util.doLogging(Integer.toString(wall.getWallLocationID()));
-					wallTreeStore.findModelWithKey(Integer.toString(wall.getWallLocationID())).setPosition(wall.getPosition());
-					wallTree.setChecked(wall, CheckState.CHECKED);
+					if (wall.getWallLocationID()!=0) {
+						wallTreeStore.findModelWithKey(Integer.toString(wall.getWallLocationID())).setPosition(wall.getPosition());
+						wallTree.setChecked(wall, CheckState.CHECKED);
+					}
 				}
 
 	}
