@@ -713,8 +713,27 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 								@Override
 								public void onSuccess(OrnamentClassEntry result) {
-									Util.doLogging(this.getClass().getName() + " renamed " + result.getName());
+									Util.doLogging(this.getClass().getName() + " renamed ");
 									renameOrnamentClassPopup.hide();
+									dbService.getOrnamentClass(new AsyncCallback<ArrayList<OrnamentClassEntry>>() {
+
+										@Override
+										public void onFailure(Throwable caught) {
+											caught.printStackTrace();
+										}
+
+										@Override
+										public void onSuccess(ArrayList<OrnamentClassEntry> result) {
+											ornamentClassEntryList.clear();
+											for (OrnamentClassEntry pe : result) {
+												ornamentClassEntryList.add(pe);
+												}
+											ornamentClassComboBox.setValue(ornamentClassEntryList
+														.findModelWithKey(Integer.toString(ornamentEntry.getOrnamentClass())));
+											ornamentClassComboBox.setValue(ornamentClassEntryList
+													.findModelWithKey(Integer.toString(ornamentEntry.getOrnamentClass())));
+											}
+									});
 								}
 							});
 							renameOrnamentClassPopup.hide();
@@ -1080,8 +1099,8 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 						@Override
 						public void onSelect(SelectEvent event) {
-							OrnamentComponentsEntry entry = new OrnamentComponentsEntry();
-							entry.setName(renameComponentTextField.getText());
+							OrnamentComponentsEntry entry = ornamentComponentView.getSelectionModel().getSelectedItem();
+							entry.setName(renameComponentTextField.getValue());
 
 							dbService.renameOrnamentComponents(entry, new AsyncCallback<OrnamentComponentsEntry>() {
 
@@ -1093,6 +1112,23 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 								public void onSuccess(OrnamentComponentsEntry result) {
 									Util.doLogging(this.getClass().getName() + " renaming sucessful");
 									renameComponentPopup.hide();
+									dbService.getOrnamentClass(new AsyncCallback<ArrayList<OrnamentClassEntry>>() {
+
+										@Override
+										public void onFailure(Throwable caught) {
+											caught.printStackTrace();
+										}
+
+										@Override
+										public void onSuccess(ArrayList<OrnamentClassEntry> result) {
+											ornamentClassEntryList.clear();
+											for (OrnamentClassEntry pe : result) {
+												ornamentClassEntryList.add(pe);
+												}
+											ornamentClassComboBox.setValue(ornamentClassEntryList
+														.findModelWithKey(Integer.toString(ornamentEntry.getOrnamentClass())));
+											}
+									});
 								}
 							});
 						}
