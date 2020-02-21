@@ -747,7 +747,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		header.addTool(renameOrnamentClassButton);
 
 		header = new FramedPanel();
-		header.setHeading("Description");
+		header.setHeading("Type Description");
 		discription = new TextArea();
 		panel.add(header, new VerticalLayoutData(1.0, .3));
 
@@ -946,18 +946,18 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 		scrframedpanelornamentic.add(horizontBackground);
 
-		tabpanel.add(scrframedpanelornamentic, "1. General");
+		tabpanel.add(scrframedpanelornamentic, "Basics");
 
 		ScrollPanel scrgeneral2FramedPanel = new ScrollPanel();
 		verticalgeneral2Background.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
 		
 		scrgeneral2FramedPanel.add(verticalgeneral2Background);
-		tabpanel.add(scrgeneral2FramedPanel, "2. General");
+		//tabpanel.add(scrgeneral2FramedPanel, "2. General");
 
 		ScrollPanel scrgeneral3FramedPanel = new ScrollPanel();
 		verticalgeneral3Background.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
 		scrgeneral3FramedPanel.add(verticalgeneral3Background);
-		tabpanel.add(scrgeneral3FramedPanel, "3. General");
+		tabpanel.add(scrgeneral3FramedPanel, "Components");
 
 		HorizontalLayoutContainer ornamentComponentsHorizontalPanel = new HorizontalLayoutContainer();
 
@@ -985,7 +985,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		}
 		header.add(ornamentComponentsHorizontalPanel);
 
-		verticalgeneral3Background.add(header, new VerticalLayoutData(1.0, .3));
+		verticalgeneral3Background.add(header, new VerticalLayoutData(1.0, 1));
 
 		ToolButton addComponentButton = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		addComponentButton.setToolTip(Util.createToolTip("New Component"));
@@ -1226,7 +1226,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		header.add(innerSecondaryPatternsHorizontalPanel);
 		header.addTool(addInnerSecondaryPatternsButton);
 
-		verticalgeneral3Background.add(header, new VerticalLayoutData(1.0, .3));
+		//verticalgeneral3Background.add(header, new VerticalLayoutData(1.0, .3));
 
 		FramedPanel imagesFramedPanel = new FramedPanel();
 		imagesFramedPanel.setHeading("Images");
@@ -1254,6 +1254,8 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		}));
 
 		imageListView.setSize("500", "290");
+		
+		
 		ListField<ImageEntry, ImageEntry> lf = new ListField<ImageEntry, ImageEntry>(imageListView);
 		lf.setSize("500", "300");
 
@@ -1298,7 +1300,37 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		saveButton.setToolTip(Util.createToolTip("save"));
 		closeButton.addHandler(cancelHandler, ClickEvent.getType());
 		saveButton.addHandler(saveClickHandler, ClickEvent.getType());
-		
+		ToolButton deleteToolButton = new ToolButton(new IconConfig("removeButton", "removeButtonOver"));
+		deleteToolButton.setToolTip(Util.createToolTip("delete"));
+		deleteToolButton.addSelectHandler(new SelectHandler() {
+			@Override
+			public void onSelect(SelectEvent event) {
+				de.cses.client.Util.showYesNo("Delete Warning!", "Proceeding will remove this Entry from the Database, are you sure?", new SelectHandler() {
+					
+					@Override
+					public void onSelect(SelectEvent event) {
+						deleteEntry(ornamentEntry);
+						closeEditor(null);
+					}
+				}, new SelectHandler() {
+						
+					@Override
+					public void onSelect(SelectEvent event) {
+						 
+					}
+				}, new KeyDownHandler() {
+
+					@Override
+					public void onKeyDown(KeyDownEvent e) {
+						
+					}}
+			
+					
+			
+			  );
+			}
+		});
+
 		if (ornamentEntry!=null) {
 			bibSelector = new BibliographySelector(ornamentEntry.getRelatedBibliographyList());
 		} else {
@@ -1312,6 +1344,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		backgroundPanel.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
 		backgroundPanel.add(tabpanel);
 		backgroundPanel.setHeading("Ornamentation Editor");
+		backgroundPanel.addTool(deleteToolButton);
 		backgroundPanel.addTool(saveButton);
 		backgroundPanel.addTool(closeButton);
 		backgroundPanel.addDomHandler(new KeyDownHandler() {

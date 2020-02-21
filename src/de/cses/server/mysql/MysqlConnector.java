@@ -244,6 +244,23 @@ public class MysqlConnector implements IsSerializable {
 				return false;
 			}
 
+		}		
+		else if (entry instanceof OrnamentEntry) {
+			Connection dbc = getConnection();
+			PreparedStatement pstmt;
+			try {
+				System.out.println(" UPDATE Ornaments SET deleted = 1 WHERE OrnamentID = " +((OrnamentEntry)entry).getOrnamentID()  + ";");
+				pstmt = dbc.prepareStatement( " UPDATE Ornaments SET deleted = 1 WHERE OrnamentID = " +((OrnamentEntry)entry).getOrnamentID()  + ";");
+				ResultSet rs = pstmt.executeQuery();
+				rs.close();
+				pstmt.close();
+				return true;
+			} catch (SQLException e) {
+				e.printStackTrace();
+				System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+				return false;
+			}
+
 		}
 		else {
 			System.out.println("Problem bei der Erkennung der Klasse des AbstractEntries...");
@@ -1457,7 +1474,7 @@ public class MysqlConnector implements IsSerializable {
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Ornaments");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Ornaments where  Ornaments.deleted =0");
 			while (rs.next()) {
 				//System.out.println("Durchlauf"+Integer.toString(rs.getInt("OrnamentID")));
 				results.add(new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
@@ -2146,7 +2163,7 @@ public boolean isHan(String s) {
 		PreparedStatement pstmt;
 		try {
 			System.out.println(Integer.toString(iconographyID)+" - "+Integer.toString(OrnamentID));
-			pstmt = dbc.prepareStatement("SELECT IconographyID FROM Ornaments WHERE IconographyID=? and OrnamentID<>?");
+			pstmt = dbc.prepareStatement("SELECT IconographyID FROM Ornaments WHERE  Ornaments.deleted =0 and IconographyID=? and OrnamentID<>?");
 			pstmt.setInt(1, iconographyID);
 			pstmt.setInt(2, OrnamentID);
 			ResultSet rs = pstmt.executeQuery();
@@ -3603,7 +3620,7 @@ public boolean isHan(String s) {
 
 		// if no filter has been set, we just select all
 		if (search != null) {
-			String mysqlquerry = "SELECT * FROM Ornaments";
+			String mysqlquerry = "SELECT * FROM Ornaments where Ornaments.deleted =0";
 			try {
 				stmt = dbc.createStatement();
 				ResultSet rs = stmt.executeQuery(mysqlquerry);
@@ -3642,7 +3659,7 @@ public boolean isHan(String s) {
 			for (CaveEntry ce : search.getCaves()) {
 				inCaveStatement += inCaveStatement.isEmpty() ? Integer.toString(ce.getCaveID()) : "," + ce.getCaveID();
 			}
-			String query = "SELECT * FROM Ornaments WHERE OrnamentID IN (SELECT OrnamentID FROM CaveOrnamentRelation WHERE CaveID IN (" + inCaveStatement + "))";
+			String query = "SELECT * FROM Ornaments WHERE  Ornaments.deleted =0 and OrnamentID IN (SELECT OrnamentID FROM CaveOrnamentRelation WHERE CaveID IN (" + inCaveStatement + "))";
 			try {
 				stmt = dbc.createStatement();
 				ResultSet rs = stmt.executeQuery(query);
@@ -3720,7 +3737,7 @@ public boolean isHan(String s) {
 
 		if (search.getComponents().size() > 0) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-			String mysqlquerry = "SELECT * FROM Ornaments JOIN OrnamentComponentRelation ON Ornaments.OrnamentID = OrnamentComponentRelation.OrnamentID WHERE OrnamentComponentID IN (";
+			String mysqlquerry = "SELECT * FROM Ornaments JOIN OrnamentComponentRelation ON Ornaments.OrnamentID = OrnamentComponentRelation.OrnamentID WHERE  Ornaments.deleted =0 and OrnamentComponentID IN (";
 			for (int i = 0; search.getComponents().size() > i; i++) {
 				mysqlquerry = mysqlquerry + Integer.toString(search.getComponents().get(i).getOrnamentComponentsID());
 				if (search.getComponents().size() > i + 1) {
@@ -3753,7 +3770,7 @@ public boolean isHan(String s) {
 		
 		if (search.getDescription() != null && !search.getDescription().isEmpty()) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-			String mysqlquerry = "SELECT * FROM Ornaments LIKE OrnamentCode = " + search.getCode();
+			String mysqlquerry = "SELECT * FROM Ornaments WHERE  Ornaments.deleted =0 and  Description Like " + search.getDescription();
 			try {
 				stmt = dbc.createStatement();
 				ResultSet rs = stmt.executeQuery(mysqlquerry);
@@ -3844,7 +3861,7 @@ public boolean isHan(String s) {
 		
 		if (search.getIconographys().size() > 0) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-			String mysqlquerry = "SELECT * FROM Ornaments  WHERE IconographyID IN (";
+			String mysqlquerry = "SELECT * FROM Ornaments  WHERE  Ornaments.deleted =0 and  IconographyID IN (";
 			String backets = "";
 			for (IconographyEntry iconography : search.getIconographys()) {
 				if (backets =="") {
@@ -3881,7 +3898,7 @@ public boolean isHan(String s) {
 
 		if (search.getInterpretation() != null && !search.getInterpretation().isEmpty()) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-			String mysqlquerry = "SELECT * FROM Ornaments LIKE Interpretation = " + search.getInterpretation();
+			String mysqlquerry = "SELECT * FROM Ornaments WHERE  Ornaments.deleted =0 and  Interpretation LIKE " + search.getInterpretation();
 			try {
 				stmt = dbc.createStatement();
 				ResultSet rs = stmt.executeQuery(mysqlquerry);
@@ -3939,7 +3956,7 @@ public boolean isHan(String s) {
 
 		if (search.getOrnamentClass() != null) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-			String mysqlquerry = "SELECT * FROM Ornaments WHERE OrnamentClassID = " + search.getOrnamentClass().getOrnamentClassID();
+			String mysqlquerry = "SELECT * FROM Ornaments WHERE  Ornaments.deleted =0 and  OrnamentClassID = " + search.getOrnamentClass().getOrnamentClassID();
 			try {
 				stmt = dbc.createStatement();
 				ResultSet rs = stmt.executeQuery(mysqlquerry);
@@ -3964,7 +3981,7 @@ public boolean isHan(String s) {
 
 		if (search.getReferences() != null && !search.getReferences().isEmpty()) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-			String mysqlquerry = "SELECT * FROM Ornaments WHERE References LIKE " + search.getReferences();
+			String mysqlquerry = "SELECT * FROM Ornaments WHERE  Ornaments.deleted =0 and  References LIKE " + search.getReferences();
 			try {
 				stmt = dbc.createStatement();
 				ResultSet rs = stmt.executeQuery(mysqlquerry);
@@ -4022,7 +4039,7 @@ public boolean isHan(String s) {
 
 		if (search.getRemarks() != null && !search.getRemarks().isEmpty()) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-			String mysqlquerry = "SELECT * FROM Ornaments WHERE Remarks LIKE " + search.getRemarks();
+			String mysqlquerry = "SELECT * FROM Ornaments WHERE  Ornaments.deleted =0 and  Remarks LIKE " + search.getRemarks();
 			try {
 				stmt = dbc.createStatement();
 				ResultSet rs = stmt.executeQuery(mysqlquerry);
@@ -4048,7 +4065,7 @@ public boolean isHan(String s) {
 
 		if (search.getSecondarypatterns().size() > 0) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-			String mysqlquerry = "SELECT * FROM Ornaments JOIN InnerSecondaryPatternRelation ON Ornaments.OrnamentID = InnerSecondaryPatternRelation.OrnamentID WHERE InnerSecID IN (";
+			String mysqlquerry = "SELECT * FROM Ornaments JOIN InnerSecondaryPatternRelation ON Ornaments.OrnamentID = InnerSecondaryPatternRelation.OrnamentID WHERE  Ornaments.deleted =0 and  InnerSecID IN (";
 			for (int i = 0; search.getSecondarypatterns().size() > i; i++) {
 				mysqlquerry = mysqlquerry + Integer.toString(search.getSecondarypatterns().get(i).getInnerSecondaryPatternsID());
 				if (search.getSecondarypatterns().size() > i + 1) {
@@ -4081,7 +4098,7 @@ public boolean isHan(String s) {
 
 		if (search.getSimilaritys() != null && !search.getSimilaritys().isEmpty()) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-			String mysqlquerry = "SELECT * FROM Ornaments JOIN CaveOrnamentRelation on Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID WHERE SimilarElementsOfOtherCultures LIKE "
+			String mysqlquerry = "SELECT * FROM Ornaments JOIN CaveOrnamentRelation on Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID WHERE  Ornaments.deleted =0 and  SimilarElementsOfOtherCultures LIKE "
 					+ search.getSimilaritys();
 			try {
 				stmt = dbc.createStatement();
@@ -4108,7 +4125,7 @@ public boolean isHan(String s) {
 
 		if (search.getStyle() != null) {
 			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-			String mysqlquerry = "SELECT * FROM Ornaments JOIN CaveOrnamentsRelation on Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID WHERE StyleID ="
+			String mysqlquerry = "SELECT * FROM Ornaments JOIN CaveOrnamentsRelation on Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID WHERE Ornaments.deleted =0 and  StyleID ="
 					+ search.getStyle().getStyleID();
 			try {
 				stmt = dbc.createStatement();
@@ -4166,7 +4183,7 @@ public boolean isHan(String s) {
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery((sqlWhere == null) ? "SELECT * FROM Ornaments" : "SELECT * FROM Ornaments WHERE " + sqlWhere);
+			ResultSet rs = stmt.executeQuery((sqlWhere == null) ? "SELECT * FROM Ornaments" : "SELECT * FROM Ornaments WHERE Ornaments.deleted =0 and  " + sqlWhere);
 			while (rs.next()) {
 				results.add(new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
 						//rs.getString("Annotation"),
@@ -4203,7 +4220,7 @@ public boolean isHan(String s) {
 			return result;
 		}
 		try {
-			pstmt = dbc.prepareStatement("SELECT * FROM Ornaments WHERE OrnamentID=?");
+			pstmt = dbc.prepareStatement("SELECT * FROM Ornaments WHERE Ornaments.deleted =0 and  OrnamentID=?");
 			pstmt.setInt(1, id);
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.first()) {
@@ -6646,7 +6663,7 @@ public boolean isHan(String s) {
 
 		PreparedStatement stmt;
 		try {
-			stmt = dbc.prepareStatement("UPDATE OrnamentClass SET Name=? WHERE VALUES OrnamentClassID=?");
+			stmt = dbc.prepareStatement("UPDATE OrnamentClass SET Name=? WHERE OrnamentClassID=?");
 			stmt.setString(1, ornamentClass.getName());
 			stmt.setInt(2, ornamentClass.getOrnamentClassID());
 			stmt.executeUpdate();
@@ -7303,7 +7320,7 @@ public boolean isHan(String s) {
 		try {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery(
-					"SELECT * FROM Ornaments JOIN RelatedOrnamentsRelation ON Ornaments.OrnamentID = RelatedOrnamentsRelation.OrnamentID WHERE OrnamentCaveRelationID = "
+					"SELECT * FROM Ornaments JOIN RelatedOrnamentsRelation ON Ornaments.OrnamentID = RelatedOrnamentsRelation.OrnamentID WHERE Ornaments.deleted =0 and OrnamentCaveRelationID = "
 							+ ornamentCaveID);
 			while (rs.next()) {
 				results.add(new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code")));
