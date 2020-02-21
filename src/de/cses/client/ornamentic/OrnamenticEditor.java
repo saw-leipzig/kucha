@@ -1,6 +1,7 @@
 package de.cses.client.ornamentic;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
@@ -70,6 +71,7 @@ import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
 import de.cses.client.Util;
 import de.cses.client.bibliography.BibliographySelector;
+import de.cses.client.depictions.ImageViewTemplates;
 import de.cses.client.depictions.DepictionDataDisplay.Images;
 import de.cses.client.depictions.IconographySelector.IconographyKeyProvider;
 import de.cses.client.depictions.IconographySelector.IconographyValueProvider;
@@ -77,6 +79,7 @@ import de.cses.client.images.ImageSelector;
 import de.cses.client.images.ImageSelectorListener;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.client.ui.EditorListener;
+import de.cses.client.ui.TextElement;
 import de.cses.client.user.UserLogin;
 import de.cses.client.walls.CaveWallsTree;
 import de.cses.shared.AbstractEntry;
@@ -116,10 +119,11 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 	protected ImageSelector imageSelector;
 	private DialogBox showTreeEdit = new DialogBox();
 	private ListView<ImageEntry, ImageEntry> imageListView;
-	private ListStore<ImageEntry> imageEntryList;
+	private ListStore<ImageEntry> imageEntryLS;
 	private ListStore<OrnamentClassEntry> ornamentClassEntryList;
 	private ImageProperties imgProperties;
 	private OrnamentEntry ornamentEntry = null;;
+	private Map<Integer,String> imgdic;
 	private ComboBox<OrnamentClassEntry> ornamentClassComboBox;
 	private OrnamentClassProperties ornamentClassProps;
 	private InnerSecondaryPatternsProperties innerSecondaryPatternsProps;
@@ -209,7 +213,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		ornamentClassProps = GWT.create(OrnamentClassProperties.class);
 		innerSecondaryPatternsProps = GWT.create(InnerSecondaryPatternsProperties.class);
 		ornamentComponentsProps = GWT.create(OrnamentComponentsProperties.class);
-		imageEntryList = new ListStore<ImageEntry>(imgProperties.imageID());
+		//imageEntryList = new ListStore<ImageEntry>(imgProperties.imageID());
 		ornamentCaveRelationProps = GWT.create(OrnamentCaveRelationProperties.class);
 		ornamentClassEntryList = new ListStore<OrnamentClassEntry>(ornamentClassProps.ornamentClassID());
 		innerSecondaryPatternsEntryList = new ListStore<InnerSecondaryPatternsEntry>(
@@ -1228,41 +1232,42 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 		//verticalgeneral3Background.add(header, new VerticalLayoutData(1.0, .3));
 
-		FramedPanel imagesFramedPanel = new FramedPanel();
-		imagesFramedPanel.setHeading("Images");
+		
+		
+		
+		
+		
+		
+		
+		/**
+		 * --------------------- definition of image panel on right side starts here --------------------------------
+		 */
+		imageEntryLS = new ListStore<ImageEntry>(imgProperties.imageID());
+		imgdic = new HashMap<Integer,String>();
+		getPics(ornamentEntry.getImages(), 600, UserLogin.getInstance().getSessionID());
 
-		imageListView = new ListView<ImageEntry, ImageEntry>(imageEntryList, new IdentityValueProvider<ImageEntry>() {
+		imageSelector = new ImageSelector(new ImageSelectorListener() {
+
 			@Override
-			public void setValue(ImageEntry object, ImageEntry value) {
+			public void imageSelected(ArrayList<ImageEntry> imgEntryList) {
+				if (imgEntryList!=null) {
+					for (ImageEntry imgEntry : imgEntryList) {
+						ornamentEntry.addRelatedImages(imgEntry); // TODO check if double adding possible and avoid!
+					}
+					getPics(imgEntryList, 600, UserLogin.getInstance().getSessionID());
+					loadImages();
+
+					
+				}
+
+				imageSelectionDialog.hide();
 			}
 		});
-
-		if (ornamentEntry != null) {
-			for (int i = 0; i < ornamentEntry.getImages().size(); i++) {
-				imageEntryList.add(ornamentEntry.getImages().get(i));
-			}
-		}
-
-		imageListView.setCell(new SimpleSafeHtmlCell<ImageEntry>(new AbstractSafeHtmlRenderer<ImageEntry>() {
-			final ImageViewTemplates imageViewTemplates = GWT.create(ImageViewTemplates.class);
-
-			public SafeHtml render(ImageEntry item) {
-				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=150"
-						+ UserLogin.getInstance().getUsernameSessionIDParameterForUri());
-				return imageViewTemplates.image(imageUri, item.getTitle());
-			}
-		}));
-
-		imageListView.setSize("500", "290");
 		
-		
-		ListField<ImageEntry, ImageEntry> lf = new ListField<ImageEntry, ImageEntry>(imageListView);
-		lf.setSize("500", "300");
-
-		imageSelector = new ImageSelector(this);
-		TextButton addImageButton = new TextButton("Select Image");
-		addImageButton.addSelectHandler(new SelectHandler() {
-
+		ToolButton addImageTB = new ToolButton(new IconConfig("addButton", "addButtonOver"));
+		addImageTB.setToolTip(Util.createToolTip("add image"));
+		addImageTB.addSelectHandler(new SelectHandler() {
+			
 			@Override
 			public void onSelect(SelectEvent event) {
 				imageSelectionDialog = new PopupPanel();
@@ -1271,23 +1276,164 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 				imageSelectionDialog.center();
 			}
 		});
-		TextButton removeImageButton = new TextButton("Remove Image");
-		removeImageButton.addSelectHandler(new SelectHandler() {
 
+		ToolButton removeImageTB = new ToolButton(new IconConfig("removeButton", "removeButtonOver"));
+		removeImageTB.setToolTip(Util.createToolTip("remove image"));
+		removeImageTB.addSelectHandler(new SelectHandler() {
+			
 			@Override
 			public void onSelect(SelectEvent event) {
-				imageEntryList.remove(imageListView.getSelectionModel().getSelectedItem());
+				imageEntryLS.remove(imageListView.getSelectionModel().getSelectedItem());
+			}
+		});
+		
+		ToolButton setMasterTB = new ToolButton(new IconConfig("favouriteButton", "favouriteButtonOver"));
+		setMasterTB.setToolTip(Util.createToolTip("Set master image.", "The master image will be displayed on top of this list and used for previews in the system (e.g. thumbnails)."));
+		setMasterTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				ImageEntry entry = imageListView.getSelectionModel().getSelectedItem();
+				ornamentEntry.setMasterImageID(entry.getImageID());
+				imageListView.refresh();
+			}
+		});
+		
+//		ToolButton infoTB = new ToolButton(ToolButton.QUESTION);
+//		infoTB.addSelectHandler(new SelectHandler() {
+//			
+//			@Override
+//			public void onSelect(SelectEvent event) {
+//				PopupPanel dialog = new PopupPanel();
+//				FramedPanel infoDialogFP = new FramedPanel();
+//				infoDialogFP.setHeading("Colour schema");
+//				VerticalPanel infoVP = new VerticalPanel();
+//				infoVP.add(new HTML("<div><label style='font-size: 12px; color: #0073e6;'>Master Image</label></div>"));
+//				infoVP.add(new HTML("<div><label style='font-size: 12px; color: #99ff66;'>Open Access Image</label></div>"));
+//				infoVP.add(new HTML("<div><label style='font-size: 12px; color: #ff1a1a;'>Non Open Access Image</label></div>"));
+//				infoDialogFP.add(infoVP);
+//				TextButton okButton = new TextButton("OK");
+//				okButton.addSelectHandler(new SelectHandler() {
+//					
+//					@Override
+//					public void onSelect(SelectEvent event) {
+//						dialog.hide();
+//					}
+//				});
+//				infoDialogFP.addButton(okButton);
+//				dialog.add(infoDialogFP);
+//				dialog.setModal(true);
+//				dialog.setGlassEnabled(true);
+//				dialog.center();
+//			}
+//		});
+
+		ToolButton zoomTB = new ToolButton(new IconConfig("expandButton", "expandButtonOver"));
+		zoomTB.addSelectHandler(new SelectHandler() {
+			@Override
+			public void onSelect(SelectEvent event) {
+				ImageEntry ie = imageListView.getSelectionModel().getSelectedItem();
+				if (ie != null) {
+					com.google.gwt.user.client.Window.open("/resource?imageID=" + ie.getImageID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri(),"_blank",null);
+				}
+			}
+		});
+		zoomTB.setToolTip(Util.createToolTip("View selected image in full size.", "This will open a new browser tab."));
+
+		FramedPanel imagesFramedPanel = new FramedPanel();
+		imagesFramedPanel.setHeading("Images");
+		imageListView = new ListView<ImageEntry, ImageEntry>(imageEntryLS, new IdentityValueProvider<ImageEntry>() {
+			@Override
+			public void setValue(ImageEntry object, ImageEntry value) {
 			}
 		});
 
-		VerticalPanel imagesVerticalPanel = new VerticalPanel();
-		imagesVerticalPanel.add(lf);
-		HorizontalPanel hbp = new HorizontalPanel();
-		hbp.add(addImageButton);
-		hbp.add(removeImageButton);
-		imagesVerticalPanel.add(hbp);
-		imagesFramedPanel.add(imagesVerticalPanel);
-		imagesFramedPanel.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
+		imageListView.setCell(new SimpleSafeHtmlCell<ImageEntry>(new AbstractSafeHtmlRenderer<ImageEntry>() {
+			final ImageViewTemplates imageViewTemplates = GWT.create(ImageViewTemplates.class);
+
+			public SafeHtml render(ImageEntry item) {
+				SafeUri imageUri;
+				//Util.doLogging( item.getFilename()+" / "+Integer.toString(imgdic.size()));
+				//SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=300" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
+				imageUri = UriUtils.fromString("icons/load_active.png");	
+				if (imgdic.containsKey(item.getImageID())){
+					
+					imageUri = UriUtils.fromTrustedString(imgdic.get(item.getImageID()));
+					
+				}
+				
+				ArrayList<TextElement> titleList = new ArrayList<TextElement>();
+				for (String s : item.getTitle().split("_")) {
+					titleList.add(new TextElement(s));
+				}
+				String imageAuthor = item.getImageAuthor() != null ? "Author: " + item.getImageAuthor().getLabel() : "";
+				String copyrightStr = (item.getCopyright() != null && item.getCopyright().length() > 0) ? "\u00A9 " + item.getCopyright() : ""; 
+				
+				if (item.getImageID() == ornamentEntry.getMasterImageID()) {
+					return imageViewTemplates.masterImage(imageUri, item.getShortName(), titleList, item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase(), imageAuthor, copyrightStr, UriUtils.fromString("resource?imageID=" + item.getImageID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri()));
+				} else if (item.getAccessLevel() == AbstractEntry.ACCESS_LEVEL_PUBLIC) {
+					return imageViewTemplates.publicImage(imageUri, item.getShortName(), titleList, item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase(), imageAuthor, copyrightStr, UriUtils.fromString("resource?imageID=" + item.getImageID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri()));
+				} else {
+					return imageViewTemplates.nonPublicImage(imageUri, item.getShortName(), titleList, item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase(), imageAuthor, copyrightStr, UriUtils.fromString("resource?imageID=" + item.getImageID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri()));
+				}
+			}
+		}));
+
+
+		ListField<ImageEntry, ImageEntry> imageViewLF = new ListField<ImageEntry, ImageEntry>(imageListView);
+		loadImages();
+
+		imagesFramedPanel.add(imageViewLF);
+//		depictionImagesPanel.addTool(infoTB);
+		imagesFramedPanel.addTool(zoomTB);
+		imagesFramedPanel.addTool(addImageTB);
+		imagesFramedPanel.addTool(removeImageTB);
+		imagesFramedPanel.addTool(setMasterTB);
+
+		
+		
+		
+		
+		
+		
+		
+		
+
+//			imageListView.setSize("500", "290");
+//		
+//		
+//		ListField<ImageEntry, ImageEntry> lf = new ListField<ImageEntry, ImageEntry>(imageListView);
+//		lf.setSize("500", "300");
+//
+//		imageSelector = new ImageSelector(this);
+//		TextButton addImageButton = new TextButton("Select Image");
+//		addImageButton.addSelectHandler(new SelectHandler() {
+//
+//			@Override
+//			public void onSelect(SelectEvent event) {
+//				imageSelectionDialog = new PopupPanel();
+//				imageSelectionDialog.add(imageSelector);
+//				imageSelectionDialog.setModal(true);
+//				imageSelectionDialog.center();
+//			}
+//		});
+//		TextButton removeImageButton = new TextButton("Remove Image");
+//		removeImageButton.addSelectHandler(new SelectHandler() {
+//
+//			@Override
+//			public void onSelect(SelectEvent event) {
+//				imageEntryLS.remove(imageListView.getSelectionModel().getSelectedItem());
+//			}
+//		});
+//
+//		VerticalPanel imagesVerticalPanel = new VerticalPanel();
+//		imagesVerticalPanel.add(lf);
+//		HorizontalPanel hbp = new HorizontalPanel();
+//		hbp.add(addImageButton);
+//		hbp.add(removeImageButton);
+//		imagesVerticalPanel.add(hbp);
+//		imagesFramedPanel.add(imagesVerticalPanel);
+//		imagesFramedPanel.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
 		
 		ScrollPanel scrimagesFramedPanel = new ScrollPanel();
 		scrimagesFramedPanel.add(imagesFramedPanel);
@@ -1385,8 +1531,8 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		Util.doLogging(Integer.toString(ornamentEntry.getIconographyID()));
 
 		ArrayList<ImageEntry> ieList = new ArrayList<ImageEntry>();
-		for (int i = 0; i < imageEntryList.size(); i++) {
-			ieList.add(imageEntryList.get(i));
+		for (int i = 0; i < imageEntryLS.size(); i++) {
+			ieList.add(imageEntryLS.get(i));
 		}
 		ornamentEntry.setImages(ieList);
 
@@ -1458,11 +1604,6 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		LabelProvider<ImageEntry> title();
 	}
 
-	interface ImageViewTemplates extends XTemplates {
-		@XTemplate("<img align=\"center\" margin=\"20\" src=\"{imageUri}\"><br> {title}")
-		SafeHtml image(SafeUri imageUri, String title);
-
-	}
 
 	interface OrnamentClassViewTemplates extends XTemplates {
 		@XTemplate("<div>{name}</div>")
@@ -1512,9 +1653,48 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 	@Override
 	public void imageSelected(ArrayList<ImageEntry> entryList) {
 		for (ImageEntry ie : entryList) {
-			imageEntryList.add(ie);
+			imageEntryLS.add(ie);
 		}
 		imageSelectionDialog.hide();
+	}
+	private void getPics(ArrayList<ImageEntry> ies, int size, String login) {
+		dbService.getPics(ies, size, login, new AsyncCallback<Map<Integer,String>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+				//Info.display("getPics", "got bad response");
+			}
+
+			@Override
+			public void onSuccess(Map<Integer,String> result) {
+				//.display("getPics", "got good response");
+				//for (Map.Entry<String,String> entry : result.entrySet())  
+		        //    Util.doLogging("Key = " + entry.getKey() + 
+		        //                     ", Value = " + entry.getValue());
+				for (Integer key : result.keySet()) {
+				Util.doLogging("Got response.");
+				try {
+					imgdic.put(key, result.get(key));
+					
+				}
+				catch (Exception e){
+					Util.doLogging("Could not load image "+key+" Reason: "+e.getMessage());
+				}
+				}
+				//imageListView.refresh();
+				loadImages();
+			
+			}
+		});
+	}
+	private void loadImages() {
+		imageEntryLS.clear();
+		for (ImageEntry ie : ornamentEntry.getImages()) {
+
+			//Util.doLogging("adding "+Integer.toString((ie.getImageID()))+"to imageEntryLS");
+			imageEntryLS.add(ie);
+		}
 	}
 
 }

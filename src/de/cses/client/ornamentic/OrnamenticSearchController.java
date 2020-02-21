@@ -89,10 +89,10 @@ public class OrnamenticSearchController extends AbstractSearchController {
 				if ((oe.getImages() != null) && (!oe.getImages().isEmpty())) {
 				count++;
 				if (masterImageIDs == "") {
-					masterImageIDs = Integer.toString(oe.getImages().get(0).getImageID());
+					masterImageIDs = Integer.toString(oe.getMasterImageID());
 				}
 				else {
-					masterImageIDs = masterImageIDs + ","+Integer.toString(oe.getImages().get(0).getImageID());
+					masterImageIDs = masterImageIDs + ","+Integer.toString(oe.getMasterImageID());
 				}
 				}
 				getResultView().addResult(new OrnamenticView(oe,resources.logo().getSafeUri()));
@@ -122,7 +122,7 @@ public class OrnamenticSearchController extends AbstractSearchController {
 				ornamenticEditorPanel.hide();
 				if (entry != null) {
 					getResultView().addResult(new OrnamenticView((OrnamentEntry)entry,resources.logo().getSafeUri()));
-					dbService.getPicsByImageID(Integer.toString(((OrnamentEntry)entry).getImages().get(0).getImageID()), 80, UserLogin.getInstance().getSessionID(), new AsyncCallback<Map<Integer,String>>() {
+					dbService.getPicsByImageID(Integer.toString(((OrnamentEntry)entry).getMasterImageID()), 80, UserLogin.getInstance().getSessionID(), new AsyncCallback<Map<Integer,String>>() {
 						
 						@Override
 						public void onFailure(Throwable caught) {				
@@ -131,7 +131,7 @@ public class OrnamenticSearchController extends AbstractSearchController {
 						
 						@Override
 						public void onSuccess(Map<Integer,String> imgdic) {
-							getResultView().addResult(new OrnamenticView((OrnamentEntry)entry, UriUtils.fromTrustedString(imgdic.get(((OrnamentEntry)entry).getImages().get(0).getImageID()))));
+							getResultView().addResult(new OrnamenticView((OrnamentEntry)entry, UriUtils.fromTrustedString(imgdic.get(((OrnamentEntry)entry).getMasterImageID()))));
 						}
 
 						});

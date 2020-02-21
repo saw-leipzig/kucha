@@ -32,6 +32,7 @@ public class OrnamentEntry extends AbstractEntry {
 	private ArrayList<OrnamentComponentsEntry> ornamentComponents = new ArrayList<OrnamentComponentsEntry>();
 	private ArrayList<InnerSecondaryPatternsEntry> innerSecondaryPatterns = new ArrayList<InnerSecondaryPatternsEntry>();
 	private ArrayList<AnnotatedBibliographyEntry> relatedBibliographyList = new ArrayList<AnnotatedBibliographyEntry>();
+	private int masterImageID;
 
 	public OrnamentEntry() {
 		ornamentID = 0;
@@ -54,7 +55,7 @@ public class OrnamentEntry extends AbstractEntry {
 			String interpretation,
 			String references, int ornamentClassID, ArrayList<ImageEntry> images, ArrayList<OrnamentCaveRelation> cavesRelations,
 			ArrayList<OrnamentComponentsEntry> ornamentComponents, ArrayList<InnerSecondaryPatternsEntry> innerSecondaryPatterns,
-			ArrayList<AnnotatedBibliographyEntry> relatedBibliographyList, String modifiedOn, int iconographyID) {
+			ArrayList<AnnotatedBibliographyEntry> relatedBibliographyList, String modifiedOn, int iconographyID, int masterImageID) {
 		this.ornamentID = ornamentID;
 		this.code = code;
 		this.description = description;
@@ -70,6 +71,7 @@ public class OrnamentEntry extends AbstractEntry {
 		this.relatedBibliographyList = relatedBibliographyList;
 		this.setModifiedOn(modifiedOn);
 		this.iconographyID=iconographyID;
+		this.masterImageID=masterImageID;
 	}
 
 	public OrnamentEntry(int ornamentID, String code, String description, String remarks, 
@@ -145,9 +147,18 @@ public class OrnamentEntry extends AbstractEntry {
 	public List<OrnamentCaveRelation> getCavesRelations() {
 		return cavesRelations;
 	}
-
+	public void addRelatedImages(ImageEntry ie) {
+		images.add(ie);
+	}
 	public void setCavesRelations(ArrayList<OrnamentCaveRelation> list) {
 		this.cavesRelations = list;
+	}
+	public int getMasterImageID() {
+		return masterImageID != 0 ? masterImageID : (!images.isEmpty() ? images.get(0).getImageID() : 0);
+	}
+
+	public void setMasterImageID(int masterImageID) {
+		this.masterImageID = masterImageID;
 	}
 
 	/*public String getAnnotations() {

@@ -59,9 +59,9 @@ public class OrnamenticResultView extends AbstractResultView{
 				for (int i = 0; i < getContainer().getWidgetCount(); i++) {
 					//Util.doLogging("Überprüfe Eintrag: "+Integer.toString(((DepictionView)getResultView().getContainer().getWidget(i)).getDepictionEntry().getDepictionID()));
 					if (((OrnamentEntry)((OrnamenticView)getContainer().getWidget(i)).getEntry()).getImages().size()>0){
-						if (imgdic.containsKey(((OrnamentEntry)((OrnamenticView)getContainer().getWidget(i)).getEntry()).getImages().get(0).getImageID())) {
+						if (imgdic.containsKey(((OrnamentEntry)((OrnamenticView)getContainer().getWidget(i)).getEntry()).getMasterImageID())) {
 							//Util.doLogging("Got Match! Do refresh");
-							((OrnamenticView)getContainer().getWidget(i)).refreshpic(UriUtils.fromTrustedString(imgdic.get(((OrnamentEntry)((OrnamenticView)getContainer().getWidget(i)).getEntry()).getImages().get(0).getImageID())));
+							((OrnamenticView)getContainer().getWidget(i)).refreshpic(UriUtils.fromTrustedString(imgdic.get(((OrnamentEntry)((OrnamenticView)getContainer().getWidget(i)).getEntry()).getMasterImageID())));
 						}
 					}
 				}
@@ -97,10 +97,10 @@ public class OrnamenticResultView extends AbstractResultView{
 							if ((oe.getImages() != null) && (!oe.getImages().isEmpty())) {
 							count++;
 							if (masterImageIDs == "") {
-								masterImageIDs = Integer.toString(oe.getImages().get(0).getImageID());
+								masterImageIDs = Integer.toString(oe.getMasterImageID());
 							}
 							else {
-								masterImageIDs = masterImageIDs + ","+Integer.toString(oe.getImages().get(0).getImageID());
+								masterImageIDs = masterImageIDs + ","+Integer.toString(oe.getMasterImageID());
 							}
 							}
 							addResult(new OrnamenticView(oe,UriUtils.fromTrustedString("icons/load_active.png")));
