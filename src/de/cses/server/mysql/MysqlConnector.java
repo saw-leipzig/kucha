@@ -7724,7 +7724,7 @@ public boolean isHan(String s) {
 			pstmt.setString(5, userEntry.getEmail());
 			pstmt.setString(6, userEntry.getAffiliation());
 			pstmt.setInt(7, userEntry.getAccessLevel());
-			sendMail("radisch@saw-leipzig.de",userEntry.getEmail(),userEntry.getLastname()+", "+userEntry.getFirstname(),"An account has been created for you at kucha.saw-leipzig.de","Dear "+userEntry.getFirstname()+ " "+userEntry.getLastname()+",\n the Admin has created an Account in kucha.saw-leipzig.de for you. Your password is:  \""+pwd+"\"\n");
+			sendMail("radisch@saw-leipzig.de",userEntry.getEmail(),userEntry.getLastname()+", "+userEntry.getFirstname(),"An account has been created for you at kucha.saw-leipzig.de","Dear "+userEntry.getFirstname()+ " "+userEntry.getLastname()+",\n the Admin has created an Account in kucha.saw-leipzig.de for you.\nYour username is:"+userEntry.getUsername()+"\nYour password is:  \""+pwd+"\"\n");
 
 			pstmt.executeUpdate();
 			ResultSet keys = pstmt.getGeneratedKeys();

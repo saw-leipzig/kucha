@@ -127,6 +127,23 @@ public class UserManager extends PopupPanel {
 	/**
 	 * 
 	 */
+	private void loadUsers() {
+		sourceStore.clear();
+	    dbService.getUsers(new AsyncCallback<ArrayList<UserEntry>>() {
+			
+				@Override
+				public void onSuccess(ArrayList<UserEntry> result) {
+					for (UserEntry entry : result) {
+						sourceStore.add(entry);
+					}
+				}
+				
+				@Override
+				public void onFailure(Throwable caught) {
+				}
+			});
+	 
+	}
 	private void createUI() {
 //    IdentityValueProvider<UserEntry> identity = new IdentityValueProvider<UserEntry>();
 //    selectionModel = new CheckBoxSelectionModel<UserEntry>(identity);
@@ -160,20 +177,7 @@ public class UserManager extends PopupPanel {
     
     sourceStore = new ListStore<UserEntry>(userProps.key());
 
-    dbService.getUsers(new AsyncCallback<ArrayList<UserEntry>>() {
-			
-			@Override
-			public void onSuccess(ArrayList<UserEntry> result) {
-				for (UserEntry entry : result) {
-					sourceStore.add(entry);
-				}
-			}
-			
-			@Override
-			public void onFailure(Throwable caught) {
-			}
-		});
-    
+    loadUsers();
     grid = new Grid<UserEntry>(sourceStore, sourceColumnModel);
 //    grid.setSelectionModel(selectionModel);
 //    grid.setColumnReordering(true);
@@ -291,7 +295,7 @@ public class UserManager extends PopupPanel {
 						} else {
 							// Once the changes have been dealt with, commit them to the local store.
 							// This will add the changed values to the model in the local store.
-							record.commit(true);
+							loadUsers();
 							hide();
 						}
 					}
@@ -310,7 +314,7 @@ public class UserManager extends PopupPanel {
 							entry.setUserID(result);
 							// Once the changes have been dealt with, commit them to the local store.
 							// This will add the changed values to the model in the local store.
-							record.commit(true);
+							loadUsers();
 							hide();
 						} else {
 							Util.showWarning("Server Error", entry.getUsername() + " could not be created!");
