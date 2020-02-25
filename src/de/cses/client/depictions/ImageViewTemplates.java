@@ -52,4 +52,28 @@ public interface ImageViewTemplates extends XTemplates {
 			+ "<p style='font-size: 8px; text-align: right;'>{imageAuthor}<br>{copyright}</p></figcaption></figure>")
 	SafeHtml masterImage(SafeUri imageUri, String shortName, ArrayList<TextElement> titleList, String imageFormat, String imageAuthor, String copyright, SafeUri fullImageUri);
 
+	@XTemplate("<figure class='paintRepImgPreview'>"
+			+ "<a href='{fullImageUri}' target='_blank'><img src='{imageUri}' style='border-radius: 10px; position: relative; margin-left: 2px; width: 100%; background: white;'></a>"
+			+ "<figcaption style='font-size:12px; padding: 10px; text-align: center;'>"
+			+ "<span class='freeIconText'>{shortName} ({imageFormat})</span>"
+			+ "<p style='font-size:10px;'> <tpl for='titleList'> {element}<wbr> </tpl> </p>"
+			+ "<p style='font-size: 8px; text-align: right;'>{imageAuthor}<br>{copyright}</p></figcaption></figure>")
+	SafeHtml publicImage(SafeUri imageUri, String shortName, ArrayList<TextElement> titleList, String imageFormat, String imageAuthor, String copyright, SafeUri fullImageUri, String diemensions);
+
+	@XTemplate("<figure class='paintRepImgPreview'>"
+			+ "<a href='{fullImageUri}' target='_blank'><img src='{imageUri}' style='border-radius: 10px; position: relative; margin-left: 2px; width: 100%; background: white;'></a>"
+			+ "<figcaption style='font-size:12px; padding: 10px; text-align: center;'>"
+			+ "<span class='blockedIconText'>{shortName} ({imageFormat})</span>"
+			+ "<p style='font-size:10px;'> <tpl for='titleList'> {element}<wbr> </tpl> </p>"
+			+ "<p style='font-size: 8px; text-align: right;'>{imageAuthor}<br>{copyright}</p></figcaption></figure>")
+	SafeHtml nonPublicImage(SafeUri imageUri, String shortName, ArrayList<TextElement> titleList, String imageFormat, String imageAuthor, String copyright, SafeUri fullImageUri, String diemensions);
+
+	@XTemplate("<figure class='paintRepImgPreview'>"
+			+ "<a href='{fullImageUri}' target='_blank'><img src='{imageUri}' style='border-radius: 10px; position: relative; margin-left: 2px; width: 100%; background: white;'></a>"
+			+ "<figcaption style='font-size:12px; padding: 10px; text-align: center;'>"
+			+ "<span class='favouriteIconText'>{shortName} ({imageFormat})</span>"
+			+ "<p style='font-size:10px;'> <tpl for='titleList'> {element}<wbr> </tpl> </p>"
+			+ "<p style='font-size: 8px; text-align: right;'>{imageAuthor}<br>{copyright}</p></figcaption></figure>")
+	SafeHtml masterImage(SafeUri imageUri, String shortName, ArrayList<TextElement> titleList, String imageFormat, String imageAuthor, String copyright, SafeUri fullImageUri, String diemensions);
+
 }

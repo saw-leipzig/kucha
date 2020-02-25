@@ -220,8 +220,10 @@ public class UserManager extends PopupPanel {
 			@Override
 			public void onCancelEdit(CancelEditEvent<UserEntry> event) {
 				UserEntry entry = event.getSource().getEditableGrid().getSelectionModel().getSelectedItem();
-				if (entry.getUserID() == 0 && (!usernameTF.isValid() || !firstnameTF.isValid() || !lastnameTF.isValid() || !emailTF.isValid())) {
-					sourceStore.remove(entry);
+				if (entry!=null) {
+					if (entry.getUserID() == 0 && (!usernameTF.isValid() || !firstnameTF.isValid() || !lastnameTF.isValid() || !emailTF.isValid())) {
+						sourceStore.remove(entry);
+					}
 				}
 			}
 		});
@@ -230,8 +232,10 @@ public class UserManager extends PopupPanel {
 			@Override
 			public void onCompleteEdit(CompleteEditEvent<UserEntry> event) {
 				UserEntry entry = event.getSource().getEditableGrid().getSelectionModel().getSelectedItem();
-				if (entry.getUserID() == 0 && (!usernameTF.isValid() || !firstnameTF.isValid() || !lastnameTF.isValid() || !emailTF.isValid())) {
-					sourceStore.remove(entry);
+				if (entry!=null) {
+					if (entry.getUserID() == 0 && (!usernameTF.isValid() || !firstnameTF.isValid() || !lastnameTF.isValid() || !emailTF.isValid())) {
+						sourceStore.remove(entry);
+					}
 				}
 			}
 		});
@@ -277,7 +281,7 @@ public class UserManager extends PopupPanel {
 					
 					@Override
 					public void onFailure(Throwable caught) {
-						Util.showWarning("Server Error", "The changes for " + entry.getUsername() + " could not be saved!");
+						Util.showWarning("Server Error", "The changes for " + entry.getUsername() + " could not be saved! Error: "+caught.getMessage());
 					}
 					
 					@Override
@@ -297,7 +301,7 @@ public class UserManager extends PopupPanel {
 
 					@Override
 					public void onFailure(Throwable caught) {
-						Util.showWarning("Server Error", entry.getUsername() + " could not be created!");
+						Util.showWarning("Server Error", entry.getUsername() + " could not be created!! Error: "+caught.getMessage());
 					}
 
 					@Override

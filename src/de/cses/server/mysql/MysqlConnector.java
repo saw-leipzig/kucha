@@ -15,6 +15,8 @@ package de.cses.server.mysql;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -32,7 +34,18 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.UUID;
+
+import javax.mail.Authenticator;
+import javax.mail.Message;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+
+import org.apache.commons.lang3.RandomStringUtils;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 import com.sencha.gxt.core.client.ValueProvider;
@@ -7630,12 +7643,68 @@ public boolean isHan(String s) {
 		return rowsChangedCount > 0;
 	}
 
+	public String sendMail(String from, String to, String toName, String subject, String message) {
+        String output=null;
+        Properties props = System.getProperties();
+	    String smtpHostServer = "zimbra.saw-leipzig.de";
+	    System.out.println("TLSEmail Start");
+	    props.put("mail.smtp.host", smtpHostServer);
+		props.put("mail.smtp.port", "465"); //TLS Port
+		props.put("mail.smtp.auth", "true"); //enable authentication
+		props.put("mail.smtp.starttls.enable", "true"); //enable STARTTLS
+		props.put("mail.smtp.socketFactory.port", "465"); //SSL Port
+		props.put("mail.smtp.socketFactory.class",
+				"javax.net.ssl.SSLSocketFactory"); //SSL Factory Class
+		
+                //create Authenticator object to pass in Session.getInstance argument
+		Authenticator auth = new Authenticator() {
+			//override the getPasswordAuthentication method
+			protected PasswordAuthentication getPasswordAuthentication() {
+				return new PasswordAuthentication("radisch@saw-leipzig.de", "KarlLie1\"");
+			}
+		};
+        try {
+            Session session = Session.getDefaultInstance(props, auth);
+            Message msg = new MimeMessage(session);
+            msg.setFrom(new InternetAddress(from, "Kucha-Admin"));
+            msg.addRecipient(Message.RecipientType.TO,
+                             new InternetAddress(to, toName));
+            msg.setSubject(subject);
+            msg.setText(message);
+            msg.setReplyTo(new InternetAddress[]{new InternetAddress("radisch@saw-leipzig.de")});
+            Transport.send(msg);
+
+        } catch (Exception e) {
+            output=e.toString();                
+        }   
+        return output;
+    }
+	private static String cryptWithMD5(String pass) {
+		if (pass == null || pass.isEmpty()) {
+			return null;
+		}
+		try {
+			MessageDigest md = MessageDigest.getInstance("MD5");
+			byte[] passBytes = pass.getBytes();
+			md.reset();
+			byte[] digested = md.digest(passBytes);
+			StringBuffer sb = new StringBuffer();
+			for (int i = 0; i < digested.length; i++) {
+				sb.append(Integer.toHexString(0xff & digested[i]));
+			}
+			return sb.toString();
+		} catch (NoSuchAlgorithmException ex) {
+			ex.printStackTrace();
+		}
+		return null;
+	}
 
 	public int insertUserEntry(UserEntry userEntry) {
 		long start = System.currentTimeMillis();
 		if (dologgingbegin){
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
 		}
+		System.out.println(userEntry.getUserID());
 		if (userEntry == null || userEntry.getUserID() > 0) {
 			return 0;
 		}
@@ -7646,12 +7715,17 @@ public boolean isHan(String s) {
 		try {
 			pstmt = dbc.prepareStatement("INSERT INTO Users (Username, Password, Firstname, Lastname, Email, Affiliation, AccessLevel) VALUES (?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
 			pstmt.setString(1, userEntry.getUsername());
-			pstmt.setString(2, "ff4ea6b28f247ccdd4a03321dc2bd1a");
+			String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~`!@#$%^&*()-_=+[{]}\\|;:\'\",<.>/?";
+			String pwd = RandomStringUtils.random( 15, characters );
+//			pstmt.setString(2, "ff4ea6b28f247ccdd4a03321dc2bd1a");
+			pstmt.setString(2, cryptWithMD5(pwd));
 			pstmt.setString(3, userEntry.getFirstname());
 			pstmt.setString(4, userEntry.getLastname());
 			pstmt.setString(5, userEntry.getEmail());
 			pstmt.setString(6, userEntry.getAffiliation());
 			pstmt.setInt(7, userEntry.getAccessLevel());
+			sendMail("radisch@saw-leipzig.de",userEntry.getEmail(),userEntry.getLastname()+", "+userEntry.getFirstname(),"An account has been created for you at kucha.saw-leipzig.de","Dear "+userEntry.getFirstname()+ " "+userEntry.getLastname()+",\n the Admin has created an Account in kucha.saw-leipzig.de for you. Your password is:  \""+pwd+"\"\n");
+
 			pstmt.executeUpdate();
 			ResultSet keys = pstmt.getGeneratedKeys();
 			if (keys.first()) {

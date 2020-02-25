@@ -46,6 +46,7 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.Validator;
 import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
 import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
+import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -323,7 +324,7 @@ public class UserLogin extends PopupPanel {
 				}
 			});
 		}
-		
+
 		ToolButton closeTB = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
 		closeTB.setToolTip(Util.createToolTip("close"));
 		closeTB.addSelectHandler(new SelectHandler() {
@@ -348,6 +349,10 @@ public class UserLogin extends PopupPanel {
 		userFP.add(userHL);
 		userFP.addButton(updateButton);
 		userFP.addButton(logoutButton);
+		
+//		if (sendTB != null) {
+//			userFP.addTool(sendTB);
+//		}
 		if (adminTB != null) {
 			userFP.addTool(adminTB);
 		}
