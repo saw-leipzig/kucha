@@ -1244,7 +1244,9 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		 */
 		imageEntryLS = new ListStore<ImageEntry>(imgProperties.imageID());
 		imgdic = new HashMap<Integer,String>();
-		getPics(ornamentEntry.getImages(), 600, UserLogin.getInstance().getSessionID());
+		if (ornamentEntry != null) {
+			getPics(ornamentEntry.getImages(), 600, UserLogin.getInstance().getSessionID());
+		}
 
 		imageSelector = new ImageSelector(new ImageSelectorListener() {
 
@@ -1690,10 +1692,12 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 	}
 	private void loadImages() {
 		imageEntryLS.clear();
-		for (ImageEntry ie : ornamentEntry.getImages()) {
+		if (ornamentEntry != null) {
+			for (ImageEntry ie : ornamentEntry.getImages()) {
 
-			//Util.doLogging("adding "+Integer.toString((ie.getImageID()))+"to imageEntryLS");
-			imageEntryLS.add(ie);
+				//Util.doLogging("adding "+Integer.toString((ie.getImageID()))+"to imageEntryLS");
+				imageEntryLS.add(ie);
+			}
 		}
 	}
 

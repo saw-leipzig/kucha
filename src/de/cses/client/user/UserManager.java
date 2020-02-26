@@ -47,6 +47,7 @@ import com.sencha.gxt.widget.core.client.grid.Grid.GridCell;
 import com.sencha.gxt.widget.core.client.grid.editing.GridRowEditing;
 import com.sencha.gxt.widget.core.client.grid.filters.GridFilters;
 import com.sencha.gxt.widget.core.client.grid.filters.StringFilter;
+import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -106,6 +107,29 @@ public class UserManager extends PopupPanel {
 			}
 		});
 		saveTB.setToolTip(Util.createToolTip("save & exit"));
+		ToolButton resetPwTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
+		resetPwTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				for (UserEntry user :grid.getSelectionModel().getSelectedItems()) {
+					dbService.resetPassword(user, new AsyncCallback<Boolean>() {
+						
+						@Override
+						public void onSuccess(Boolean result) {
+							
+							Info.display("reset password for user: "+user.getUsername()+ " success?",Boolean.toString(result));
+						}
+						
+						@Override
+						public void onFailure(Throwable caught) {
+						}
+					});
+				}
+	
+			}
+		});
+		resetPwTB.setToolTip(Util.createToolTip("reset password of selected user."));
 		ToolButton addUserTB = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		addUserTB.addSelectHandler(new SelectHandler() {
 			
@@ -118,6 +142,7 @@ public class UserManager extends PopupPanel {
 		});
 		createUI();
 		userManagerFP.add(grid);
+		userManagerFP.addTool(resetPwTB);
 		userManagerFP.addTool(saveTB);
 		userManagerFP.addTool(addUserTB);
 		userManagerFP.addTool(closeTB);

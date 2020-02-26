@@ -308,7 +308,7 @@ public class DepictionEditor extends AbstractEditor {
 		} else {
 			correspondingDepictionEntry = new DepictionEntry();
 		}
-		Util.doLogging("Große von walls:"+Integer.toString(correspondingDepictionEntry.getWalls().size()));
+		//Util.doLogging("Große von walls:"+Integer.toString(correspondingDepictionEntry.getWalls().size()));
 		for (WallTreeEntry wte : correspondingDepictionEntry.getWalls()) {
 			Util.doLogging(wte.getText()+" - "+wte.getWallLocationID());
 		}

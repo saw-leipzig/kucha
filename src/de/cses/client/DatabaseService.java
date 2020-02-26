@@ -81,7 +81,9 @@ public interface DatabaseService extends RemoteService {
 	ArrayList<DistrictEntry> getDistricts() throws IllegalArgumentException;
 	
 	String sendMail(String from, String to, String toName, String subject, String message) throws IllegalArgumentException;
-
+	
+	boolean resetPassword(UserEntry currentUser) throws IllegalArgumentException;
+	
 	ArrayList<ImageEntry> getImages() throws IllegalArgumentException;
 
 	AnnotatedBibliographyEntry getAnnotatedBiblographybyID(int bibid) throws IllegalArgumentException;

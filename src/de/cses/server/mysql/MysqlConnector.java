@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -27,6 +28,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Dictionary;
 import java.util.Enumeration;
@@ -36,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.mail.Authenticator;
 import javax.mail.Message;
@@ -45,8 +48,7 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import org.apache.commons.lang3.RandomStringUtils;
-
+//import javax.mail.Authenticator;
 import com.google.gwt.user.client.rpc.IsSerializable;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.LabelProvider;
@@ -4198,7 +4200,7 @@ public boolean isHan(String s) {
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery((sqlWhere == null) ? "SELECT * FROM Ornaments" : "SELECT * FROM Ornaments WHERE Ornaments.deleted =0 and  " + sqlWhere);
+			ResultSet rs = stmt.executeQuery((sqlWhere == null) ? "SELECT * FROM Ornaments" : "SELECT * FROM Ornaments WHERE Ornaments.deleted =0 and  " + sqlWhere+" order by Code");
 			while (rs.next()) {
 				results.add(new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
 						//rs.getString("Annotation"),
@@ -7642,6 +7644,69 @@ public boolean isHan(String s) {
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateUserEntry brauchte "+diff + " Millisekunden.");;}}
 		return rowsChangedCount > 0;
 	}
+    private String shuffleString(String string) {
+        List<String> letters = Arrays.asList(string.split(""));
+        Collections.shuffle(letters);
+        return letters.stream().collect(Collectors.joining());
+    }
+    private String generate_password(int length) {
+    	SecureRandom random = new SecureRandom();
+    	String CHAR_LOWER = "abcdefghijklmnopqrstuvwxyz";
+        String CHAR_UPPER = CHAR_LOWER.toUpperCase();
+        String NUMBER = "0123456789";
+        String OTHER_CHAR = "!@#$%&*()_+-=[]?";
+        String PASSWORD_ALLOW_BASE = CHAR_LOWER + CHAR_UPPER + NUMBER + OTHER_CHAR;
+        String PASSWORD_ALLOW_BASE_SHUFFLE = shuffleString(PASSWORD_ALLOW_BASE);
+        String PASSWORD_ALLOW = PASSWORD_ALLOW_BASE_SHUFFLE;
+        if (length < 1) throw new IllegalArgumentException();
+
+        StringBuilder sb = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+
+            int rndCharAt = random.nextInt(PASSWORD_ALLOW.length());
+            char rndChar = PASSWORD_ALLOW.charAt(rndCharAt);
+
+            // debug
+            System.out.format("%d\t:\t%c%n", rndCharAt, rndChar);
+
+            sb.append(rndChar);
+
+        }
+
+        return sb.toString();
+
+    }
+	public boolean resetPassword(UserEntry currentUser) {
+		long start = System.currentTimeMillis();
+		if (dologgingbegin){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
+		}
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		int rowsChangedCount;
+		
+		try {
+			String pwd = generate_password(9);
+//			pstmt.setString(2, "ff4ea6b28f247ccdd4a03321dc2bd1a");
+			
+			pstmt = dbc.prepareStatement("UPDATE Users SET Password=? WHERE UserID=?");
+			pstmt.setString(1, cryptWithMD5(pwd));
+			pstmt.setInt(2, currentUser.getUserID());
+			rowsChangedCount = pstmt.executeUpdate();
+			sendMail("radisch@saw-leipzig.de",currentUser.getEmail(),currentUser.getLastname()+", "+currentUser.getFirstname(),"Your Password for kucha.saw-leipzig.de was reseted.","Dear "+currentUser.getFirstname()+ " "+currentUser.getLastname()+",\n the Admin has reseted the password of your account in kucha.saw-leipzig.de for you.\nYour username is:"+currentUser.getUsername()+"\nYour password is:  \""+pwd+"\"\n");
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+			return false;
+		}
+		if (dologging){
+		long end = System.currentTimeMillis();
+		long diff = (end-start);
+		if (diff>100){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateUserEntry brauchte "+diff + " Millisekunden.");;}}
+		return rowsChangedCount > 0;
+	}
 
 	public String sendMail(String from, String to, String toName, String subject, String message) {
         String output=null;
@@ -7663,8 +7728,8 @@ public boolean isHan(String s) {
 				return new PasswordAuthentication("radisch@saw-leipzig.de", "KarlLie1\"");
 			}
 		};
-        try {
-            Session session = Session.getDefaultInstance(props, auth);
+       try {
+           Session session = Session.getDefaultInstance(props, auth);
             Message msg = new MimeMessage(session);
             msg.setFrom(new InternetAddress(from, "Kucha-Admin"));
             msg.addRecipient(Message.RecipientType.TO,
@@ -7676,7 +7741,7 @@ public boolean isHan(String s) {
 
         } catch (Exception e) {
             output=e.toString();                
-        }   
+       }   
         return output;
     }
 	private static String cryptWithMD5(String pass) {
@@ -7715,8 +7780,7 @@ public boolean isHan(String s) {
 		try {
 			pstmt = dbc.prepareStatement("INSERT INTO Users (Username, Password, Firstname, Lastname, Email, Affiliation, AccessLevel) VALUES (?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
 			pstmt.setString(1, userEntry.getUsername());
-			String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~`!@#$%^&*()-_=+[{]}\\|;:\'\",<.>/?";
-			String pwd = RandomStringUtils.random( 15, characters );
+			String pwd = generate_password(9);
 //			pstmt.setString(2, "ff4ea6b28f247ccdd4a03321dc2bd1a");
 			pstmt.setString(2, cryptWithMD5(pwd));
 			pstmt.setString(3, userEntry.getFirstname());

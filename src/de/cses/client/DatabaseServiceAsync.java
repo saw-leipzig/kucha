@@ -213,6 +213,8 @@ public interface DatabaseServiceAsync {
 
 	void getOrnamentsWHERE(String sqlWhere, AsyncCallback<ArrayList<OrnamentEntry>> asyncCallback) throws IllegalArgumentException;
 
+	void resetPassword(UserEntry currentUser, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
+
 	void getCeilingTypes(AsyncCallback<ArrayList<CeilingTypeEntry>> asyncCallback) throws IllegalArgumentException;
 
 	void getPreservationClassifications(AsyncCallback<ArrayList<PreservationClassificationEntry>> asyncCallback)
