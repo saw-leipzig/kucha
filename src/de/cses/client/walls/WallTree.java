@@ -69,65 +69,75 @@ public class WallTree {
 	}
 	private void processParentWallTreeEntry( WallTreeEntry item) {
 		
-			
-			
-			switch (cEntry.getCaveTypeID()) {
-
-			case 2: // square cave
-				//Util.doLogging("cEntry.getCaveTypeID: "+Integer.toString(cEntry.getCaveTypeID()));
+			if (cEntry==null) {
 				for (WallTreeEntry child : item.getChildren()) {
 					child.setPosition(null);
-					if (( WallTreeEntry.ANTECHAMBER_LABEL.contains(child.getWallLocationID()))
+					wallTreeStore.add(item, child);	
+					allEntries.add(child);
+					if (child.getChildren() != null) {
+						processParentWallTreeEntry(child);
+					}
+				}
+			}
+			else {
+				switch (cEntry.getCaveTypeID()) {
+				
+				case 2: // square cave
+					//Util.doLogging("cEntry.getCaveTypeID: "+Integer.toString(cEntry.getCaveTypeID()));
+					for (WallTreeEntry child : item.getChildren()) {
+						child.setPosition(null);
+						if (( WallTreeEntry.ANTECHAMBER_LABEL.contains(child.getWallLocationID()))
 							|| (WallTreeEntry.MAIN_CHAMBER_LABEL.contains(child.getWallLocationID()))||(child.getWallLocationID()<100)) {
 							//Util.doLogging(item.getText()+" - "+child.getText()+" /1");
-						wallTreeStore.add(item, child);
-						allEntries.add(child);
-						if (child.getChildren() != null) {
+							wallTreeStore.add(item, child);
+							allEntries.add(child);
+							if (child.getChildren() != null) {
+								processParentWallTreeEntry(child);
+								}
+							}
+						}
+					break;
+					
+				case 3: // residential cave
+					//Util.doLogging("cEntry.getCaveTypeID: "+Integer.toString(cEntry.getCaveTypeID()));
+					for (WallTreeEntry child : item.getChildren()) {
+						child.setPosition(null);
+						if ((WallTreeEntry.ANTECHAMBER_LABEL.contains(child.getWallLocationID()))
+								|| (WallTreeEntry.MAIN_CHAMBER_LABEL.contains(child.getWallLocationID()))
+								|| (WallTreeEntry.MAIN_CHAMBER_CORRIDOR_LABEL.contains(child.getWallLocationID()))
+								|| (WallTreeEntry.REAR_AREA_LABEL.contains(child.getWallLocationID()))||(child.getWallLocationID()<100)) {
+							//Util.doLogging(item.getText()+" - "+child.getText()+" /2");
+							wallTreeStore.add(item, child);
+							allEntries.add(child);
+							if (child.getChildren() != null) {
+								processParentWallTreeEntry(child);
+							}
+							}
+					}
+					break;
+	
+				case 4: // central-pillar cave
+				case 6: // monumental image cave
+					//Util.doLogging("cEntry.getCaveTypeID: "+Integer.toString(cEntry.getCaveTypeID()));
+					for (WallTreeEntry child : item.getChildren()) {
+						child.setPosition(null);
+						if ((WallTreeEntry.ANTECHAMBER_LABEL.contains(child.getWallLocationID()))
+								|| (WallTreeEntry.MAIN_CHAMBER_LABEL.contains(child.getWallLocationID()))
+								|| (WallTreeEntry.REAR_AREA_LABEL.contains(child.getWallLocationID()))
+								|| (WallTreeEntry.REAR_AREA_LEFT_CORRIDOR_LABEL.contains(child.getWallLocationID()))
+								|| (WallTreeEntry.REAR_AREA_RIGHT_CORRIDOR_LABEL.contains(child.getWallLocationID()))||(child.getWallLocationID()<100)) {
+							//Util.doLogging(item.getText()+" - "+child.getText()+" /3");
+							wallTreeStore.add(item, child);
+							allEntries.add(child);
+							if (child.getChildren() != null) {
 								processParentWallTreeEntry(child);
 							}
 						}
 					}
-				break;
-				
-			case 3: // residential cave
-				//Util.doLogging("cEntry.getCaveTypeID: "+Integer.toString(cEntry.getCaveTypeID()));
-				for (WallTreeEntry child : item.getChildren()) {
-					child.setPosition(null);
-					if ((WallTreeEntry.ANTECHAMBER_LABEL.contains(child.getWallLocationID()))
-							|| (WallTreeEntry.MAIN_CHAMBER_LABEL.contains(child.getWallLocationID()))
-							|| (WallTreeEntry.MAIN_CHAMBER_CORRIDOR_LABEL.contains(child.getWallLocationID()))
-							|| (WallTreeEntry.REAR_AREA_LABEL.contains(child.getWallLocationID()))||(child.getWallLocationID()<100)) {
-						//Util.doLogging(item.getText()+" - "+child.getText()+" /2");
-						wallTreeStore.add(item, child);
-						allEntries.add(child);
-						if (child.getChildren() != null) {
-							processParentWallTreeEntry(child);
-						}
-						}
+					break;
+				default:
+					break;
 				}
-				break;
-
-			case 4: // central-pillar cave
-			case 6: // monumental image cave
-				//Util.doLogging("cEntry.getCaveTypeID: "+Integer.toString(cEntry.getCaveTypeID()));
-				for (WallTreeEntry child : item.getChildren()) {
-					child.setPosition(null);
-					if ((WallTreeEntry.ANTECHAMBER_LABEL.contains(child.getWallLocationID()))
-							|| (WallTreeEntry.MAIN_CHAMBER_LABEL.contains(child.getWallLocationID()))
-							|| (WallTreeEntry.REAR_AREA_LABEL.contains(child.getWallLocationID()))
-							|| (WallTreeEntry.REAR_AREA_LEFT_CORRIDOR_LABEL.contains(child.getWallLocationID()))
-							|| (WallTreeEntry.REAR_AREA_RIGHT_CORRIDOR_LABEL.contains(child.getWallLocationID()))||(child.getWallLocationID()<100)) {
-						//Util.doLogging(item.getText()+" - "+child.getText()+" /3");
-						wallTreeStore.add(item, child);
-						allEntries.add(child);
-						if (child.getChildren() != null) {
-							processParentWallTreeEntry(child);
-						}
-					}
-				}
-				break;
-			default:
-				break;
 			}
 	}
 	

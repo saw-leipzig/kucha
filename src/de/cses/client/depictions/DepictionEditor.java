@@ -1120,7 +1120,9 @@ public class DepictionEditor extends AbstractEditor {
 				wallEditorDialog.center();
 			}
 		});
+
 		wallTree = new WallTree(StaticTables.getInstance().getWallTreeEntries().values(), correspondingDepictionEntry.getWalls(), true, false, correspondingDepictionEntry.getCave());
+
 		FramedPanel wallTreeFP = new FramedPanel();
 		wallTree.setWall(correspondingDepictionEntry.getWalls());
 		wallTreeFP.add(wallTree.wallTree);

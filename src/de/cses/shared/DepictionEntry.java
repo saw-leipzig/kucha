@@ -39,7 +39,7 @@ public class DepictionEntry extends AbstractEntry {
 	private int storyID = 0;
 	private CaveEntry cave;
 	private int wallID = 0;
-	private List<WallTreeEntry> wallIDs ;
+	private List<WallTreeEntry> wallIDs = new ArrayList<WallTreeEntry>();
 	private int absoluteLeft = -1;
 	private int absoluteTop = -1;
 	private int modeOfRepresentationID = 0;
