@@ -7667,7 +7667,7 @@ public boolean isHan(String s) {
             char rndChar = PASSWORD_ALLOW.charAt(rndCharAt);
 
             // debug
-            System.out.format("%d\t:\t%c%n", rndCharAt, rndChar);
+            //System.out.format("%d\t:\t%c%n", rndCharAt, rndChar);
 
             sb.append(rndChar);
 
@@ -7708,11 +7708,13 @@ public boolean isHan(String s) {
 		return rowsChangedCount > 0;
 	}
 
-	public String sendMail(String from, String to, String toName, String subject, String message) {
+	private String sendMail(String from, String to, String toName, String subject, String message) {
         String output=null;
         Properties props = System.getProperties();
 	    String smtpHostServer = "zimbra.saw-leipzig.de";
 	    System.out.println("TLSEmail Start");
+		System.out.println(serverProperties.getProperty("mail.user"));
+		System.out.println(serverProperties.getProperty("mail.pw"));
 	    props.put("mail.smtp.host", smtpHostServer);
 		props.put("mail.smtp.port", "465"); //TLS Port
 		props.put("mail.smtp.auth", "true"); //enable authentication
@@ -7725,7 +7727,7 @@ public boolean isHan(String s) {
 		Authenticator auth = new Authenticator() {
 			//override the getPasswordAuthentication method
 			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication("radisch@saw-leipzig.de", "KarlLie1\"");
+				return new PasswordAuthentication(serverProperties.getProperty("mail.user"), serverProperties.getProperty("mail.pw"));
 			}
 		};
        try {
