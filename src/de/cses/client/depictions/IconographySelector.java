@@ -17,15 +17,22 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Comparator;
 
+import com.google.gwt.cell.client.AbstractCell;
+import com.google.gwt.cell.client.Cell;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
+import com.sencha.gxt.data.shared.PropertyAccess;
+import com.sencha.gxt.data.shared.SortDir;
 import com.sencha.gxt.data.shared.Store;
+import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.data.shared.event.StoreFilterEvent;
 import com.sencha.gxt.widget.core.client.FramedPanel;
@@ -36,8 +43,6 @@ import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderL
 import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
-import com.sencha.gxt.widget.core.client.event.BeforeCheckChangeEvent.BeforeCheckChangeHandler;
-import com.sencha.gxt.widget.core.client.event.BeforeCheckChangeEvent;
 import com.sencha.gxt.widget.core.client.event.CheckChangeEvent;
 import com.sencha.gxt.widget.core.client.event.CheckChangeEvent.CheckChangeHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
@@ -46,6 +51,7 @@ import com.sencha.gxt.widget.core.client.form.StoreFilterField;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
+import com.sencha.gxt.widget.core.client.tips.QuickTip;
 import com.sencha.gxt.widget.core.client.tree.Tree;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckCascade;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckNodes;
@@ -56,6 +62,7 @@ import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
 import de.cses.client.Util;
 import de.cses.client.user.UserLogin;
+import de.cses.shared.AuthorEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.UserEntry;
 
@@ -66,6 +73,10 @@ public class IconographySelector extends FramedPanel {
 		public String getKey(IconographyEntry item) {
 			return Integer.toString(item.getIconographyID());
 		}
+	}
+	interface IcoProperties extends PropertyAccess<IconographyEntry> {
+		ModelKeyProvider<AuthorEntry> IconographyID();
+		ValueProvider<AuthorEntry, String> text();
 	}
 
 	public static class IconographyValueProvider implements ValueProvider<IconographyEntry, String> {
@@ -116,7 +127,6 @@ public class IconographySelector extends FramedPanel {
 	}
 	public static Tree<IconographyEntry, String> buildTree( boolean ornament){
 		selectedIconographyMap = new HashMap<String, IconographyEntry>();
-
 			
 		iconographyTree = new Tree<IconographyEntry, String>(iconographyTreeStore, new IconographyValueProvider()) {
 
@@ -129,15 +139,18 @@ public class IconographySelector extends FramedPanel {
 			}
 
 		};
-
-
-//		BeforeCheckChangeHandler<IconographyEntry> beforechecked = new BeforeCheckChangeHandler<IconographyEntry>() {
-//			 public void onBeforeCheckChange(BeforeCheckChangeEvent<IconographyEntry> event) {
-//
-//		  }
-//		};
-//		iconographyTree.addBeforeCheckChangeHandler(beforechecked);
-		
+		class CustomImageCell extends AbstractCell<String> {
+		    private ImageXTemplate imageTemplate = GWT.create(ImageXTemplate.class);
+		    
+		    @Override
+		    public void render(Context context, String ie, SafeHtmlBuilder sb) {
+		    	sb.appendHtmlConstant("<span  qtitle='Change' qtip='To see a describing picture, click on the element.'>" +ie+"<br></span>");
+		    	//sb.append(imageTemplate.createImage(""));
+		    }
+		}
+	    Cell<String> cCell = new CustomImageCell();
+	    iconographyTree.setCell(cCell);
+	    QuickTip qt = new QuickTip(iconographyTree);
 		if (ornament) {
 			iconographyTree.setCheckStyle(CheckCascade.NONE);;
 			iconographyTree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
@@ -199,9 +212,29 @@ public class IconographySelector extends FramedPanel {
 					processParentIconographyEntry(item);
 				}
 			}
-
-	  }
+			
+		}
+		Comparator<? super IconographyEntry> itemComparator = new Comparator<IconographyEntry>() {
+			@Override
+			public int compare(IconographyEntry o1, IconographyEntry o2) {
+				return ((Integer)o1.getIconographyID()).compareTo(o2.getIconographyID());
+			}
+		};
+		StoreSortInfo<IconographyEntry> sortInfo = new StoreSortInfo<IconographyEntry>(itemComparator, SortDir.DESC);
+		iconographyTreeStore.addSortInfo(sortInfo);
+		iconographyTreeStore.applySort(true);
 	return iconographyTreeStore;
+	}
+	public ArrayList<IconographyEntry> setSelectionByIDList(ArrayList<Integer> ids) {
+		ArrayList<IconographyEntry> ies = new ArrayList<IconographyEntry>();
+		for (int id : ids) {
+			if (id > 0) {
+				IconographyEntry ie = iconographyTree.getStore().findModelWithKey(Integer.toString(id));
+				ies.add(ie);
+			}
+		}
+		//iconographyTree.getSelectionModel().setSelection(ies);
+		return ies;
 	}
 	public IconographySelector(Collection<IconographyEntry> elements) {
 		iconographyTreeStore=buildTreeStore(elements,false);

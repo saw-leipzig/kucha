@@ -93,8 +93,8 @@ public class DepictionFilter extends AbstractFilter {
 		ModelKeyProvider<LocationEntry> locationID();
 		LabelProvider<LocationEntry> name();
 	}
-	
-	interface IconographyProperties extends PropertyAccess<IconographyEntry> {
+
+	public interface IconographyProperties extends PropertyAccess<IconographyEntry> {
 		ModelKeyProvider<IconographyEntry> iconographyID();
 		LabelProvider<IconographyEntry> text();
 	}
@@ -131,14 +131,50 @@ public class DepictionFilter extends AbstractFilter {
 	private CaveProperties caveProps;
 	private IconographyProperties icoProps;
 	private ListStore<CaveEntry> caveEntryLS;
-	private ListStore<IconographyEntry> selectedIconographyLS;
 	private ListView<CaveEntry, CaveEntry> caveSelectionLV;
 	private ListView<LocationEntry, LocationEntry> locationSelectionLV;
+	private ListStore<IconographyEntry> selectedIconographyLS;
 	private IconographySelector icoSelector;
 	private ListView<IconographyEntry, IconographyEntry> icoSelectionLV;
 	private IntegerSpinnerField iconographySpinnerField;
 	private PopupPanel extendedFilterDialog = null;
-
+	@Override
+	public void setSearchEntry(AbstractSearchEntry searchEntry, boolean reset) {
+		if (reset) {
+			clear();			
+		}
+		if (((DepictionSearchEntry)searchEntry).getShortName()!= null && !((DepictionSearchEntry)searchEntry).getShortName().isEmpty()) {
+			shortNameSearchTF.setValue(((DepictionSearchEntry)searchEntry).getShortName());
+		}
+		
+		for (int cID : ((DepictionSearchEntry)searchEntry).getCaveIdList()) {
+			caveSelectionLV.getSelectionModel().select(caveSelectionLV.getStore().findModelWithKey(Integer.toString(cID)),true);
+		}
+		
+		for (int lID : ((DepictionSearchEntry)searchEntry).getLocationIdList()) {
+			locationSelectionLV.getSelectionModel().select(locationSelectionLV.getStore().findModelWithKey(Integer.toString(lID)), true);
+		}
+		if (((DepictionSearchEntry)searchEntry).getCorrelationFactor()>= 0 ) {
+			iconographySpinnerField.setValue(((DepictionSearchEntry)searchEntry).getCorrelationFactor());
+		}
+		selectedIconographyLS.addAll(icoSelector.setSelectionByIDList(((DepictionSearchEntry)searchEntry).getIconographyIdList()));
+//		icoSelector.setSelectedIconography(de.getRelatedIconographyList());
+		if ((((DepictionSearchEntry)searchEntry).getIconographyIdList() != null) && (((DepictionSearchEntry)searchEntry).getIconographyIdList().size()>0)) {
+			iconographySpinnerField.setEnabled(true);
+			iconographySpinnerField.setValue(selectedIconographyLS.size());
+			iconographySpinnerField.setMaxValue(selectedIconographyLS.size());
+		} else {
+			iconographySpinnerField.setEnabled(false);
+		}
+		
+	}
+	public void clear() {
+		shortNameSearchTF.reset();
+		caveSelectionLV.getSelectionModel().deselectAll();
+		locationSelectionLV.getSelectionModel().deselectAll();
+		selectedIconographyLS.clear();
+		iconographySpinnerField.setValue(0);
+	}
 	/**
 	 * @param filterName
 	 */
@@ -153,7 +189,6 @@ public class DepictionFilter extends AbstractFilter {
 		selectedIconographyLS = new ListStore<>(icoProps.iconographyID());
 		loadCaves();
 	}
-
 	private void loadCaves() {
 		dbService.getCaves(new AsyncCallback<ArrayList<CaveEntry>>() {
 
@@ -480,5 +515,6 @@ public class DepictionFilter extends AbstractFilter {
 		
 		return searchEntry;
 	}
+
 
 }

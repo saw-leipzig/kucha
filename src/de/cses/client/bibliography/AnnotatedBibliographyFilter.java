@@ -94,7 +94,10 @@ public class AnnotatedBibliographyFilter extends AbstractFilter {
 		bibFilterVLC.setHeight("120px");
 		return bibFilterVLC;
 	}
-
+	@Override
+	public void setSearchEntry(AbstractSearchEntry SearchEntry, boolean reset) {
+		
+	}
 	@Override
 	public AbstractSearchEntry getSearchEntry() {
 		AnnotatedBibliographySearchEntry searchEntry;

@@ -45,6 +45,7 @@ import de.cses.client.Util;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractSearchEntry;
+import de.cses.shared.DepictionSearchEntry;
 import de.cses.shared.ImageSearchEntry;
 import de.cses.shared.ImageTypeEntry;
 
@@ -157,6 +158,10 @@ public class ImageFilter extends AbstractFilter {
 
 		vlc.setHeight("300px");
 		return vlc;
+	}
+	@Override
+	public void setSearchEntry(AbstractSearchEntry searchEntry, boolean reset) {
+		
 	}
 
 	@Override

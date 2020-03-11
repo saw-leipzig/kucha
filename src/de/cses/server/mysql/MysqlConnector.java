@@ -823,6 +823,46 @@ public class MysqlConnector implements IsSerializable {
 		return results;
 	}
 
+	public Map<Integer,String> getMasterImageFromOrnament(int tnSize, String sessionID) {
+		long start = System.currentTimeMillis();
+		if (dologgingbegin){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateEntry wurde ausgelöst.");;
+		}
+		String result = "";
+		Map<Integer,String> images =null;
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		
+		try {
+			pstmt = dbc.prepareStatement("SELECT MasterImageID FROM Ornaments");
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				System.out.println("DepictionID is here: "+rs.getInt("DepictionID"));
+				if (result=="") {
+					result = rs.getString("MasterImageID");
+				}
+				else {
+					result=result+";"+rs.getString("MasterImageID");
+				}
+				
+			}
+			
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+			return null;
+		}
+		images=getPicsByImageID(result, tnSize, sessionID);
+		if (dologging){
+		long end = System.currentTimeMillis();
+		long diff = (end-start);
+		if (diff>100){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateEntry brauchte "+diff + " Millisekunden.");;}}
+		return images;
+	}
+
 	/**
 	 * Executes a SQL delete using a predefined SQL DELETE string
 	 * 
@@ -2007,7 +2047,7 @@ public class MysqlConnector implements IsSerializable {
 //		System.out.println("SELECT * FROM Iconography WHERE ParentID " + where + " ORDER BY Text Asc");
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Iconography WHERE ParentID " + where + " ORDER BY Text Asc");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Iconography WHERE ParentID " + where + " ORDER BY IconographyID Asc");
 			while (rs.next()) {
 				results.add(new IconographyEntry(rs.getInt("IconographyID"), rs.getInt("ParentID"), rs.getString("Text"), rs.getString("search")));
 			}

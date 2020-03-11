@@ -239,13 +239,13 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		iconographyTreeStore.clear();
 		iconographyTree = new Tree<IconographyEntry, String>(iconographyTreeStore, new IconographyValueProvider());
 		for (IconographyEntry item : StaticTables.getInstance().getIconographyEntries().values()) {
-			if (item.getIconographyID()==3) {
+			//if (item.getIconographyID()==3) {
 				iconographyTreeStore.add(item);
 				if (item.getChildren() != null) {
 					processParentIconographyEntry(item);
 				}
 		
-			}
+			//}
 		}
 		iconographyTree.setCheckable(true);
 		//		iconographyTree = IconographySelector.buildTree(true);

@@ -54,6 +54,7 @@ import de.cses.client.StaticTables;
 import de.cses.client.Util;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.client.user.UserLogin;
+import de.cses.shared.AbstractSearchEntry;
 import de.cses.shared.CaveSearchEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.DistrictEntry;
@@ -362,6 +363,10 @@ public class CaveFilter extends AbstractFilter {
 		for (DistrictEntry de : StaticTables.getInstance().getDistrictEntries().values()) {
 			districtEntryList.add(de);
 		}
+	}
+	@Override
+	public void setSearchEntry(AbstractSearchEntry SearchEntry, boolean reset) {
+		
 	}
 
 	@Override

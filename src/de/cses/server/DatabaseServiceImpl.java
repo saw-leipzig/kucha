@@ -96,6 +96,12 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		ArrayList<WallTreeEntry> districts = connector.getWallTreeEntriesByIconographyID(IconographyID, SessionID);
 		return districts;
 	}
+	
+	public Map<Integer,String> getMasterImageFromOrnament(int tnSize,String sessionID) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		Map<Integer,String> result = connector.getMasterImageFromOrnament(tnSize,sessionID);
+		return result;
+	}
 
 	public Map<Integer,String> getPics(ArrayList<ImageEntry> imgSources, int tnSize, String sessionID) {
 		MysqlConnector connector = MysqlConnector.getInstance();

@@ -17,18 +17,24 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.sencha.gxt.dnd.core.client.DndDropEvent;
 import com.sencha.gxt.dnd.core.client.DropTarget;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.Util;
 import de.cses.client.ui.AbstractResultView;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
+import de.cses.shared.DepictionSearchEntry;
 import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamenticSearchEntry;
 
@@ -60,7 +66,7 @@ public class OrnamenticResultView extends AbstractResultView{
 					//Util.doLogging("Überprüfe Eintrag: "+Integer.toString(((DepictionView)getResultView().getContainer().getWidget(i)).getDepictionEntry().getDepictionID()));
 					if (((OrnamentEntry)((OrnamenticView)getContainer().getWidget(i)).getEntry()).getImages().size()>0){
 						if (imgdic.containsKey(((OrnamentEntry)((OrnamenticView)getContainer().getWidget(i)).getEntry()).getMasterImageID())) {
-							//Util.doLogging("Got Match! Do refresh");
+							//Util.doLogging(imgdic.get(((OrnamentEntry)((OrnamenticView)getContainer().getWidget(i)).getEntry()).getMasterImageID()));
 							((OrnamenticView)getContainer().getWidget(i)).refreshpic(UriUtils.fromTrustedString(imgdic.get(((OrnamentEntry)((OrnamenticView)getContainer().getWidget(i)).getEntry()).getMasterImageID())));
 						}
 					}
@@ -79,45 +85,71 @@ public class OrnamenticResultView extends AbstractResultView{
 			@Override
 			protected void onDragDrop(DndDropEvent event) {
 				super.onDragDrop(event);
-				OrnamenticSearchEntry searchEntry = new OrnamenticSearchEntry();
+				OrnamenticSearchEntry searchEntry;
+				if (UserLogin.isLoggedIn()) {
+					searchEntry = new OrnamenticSearchEntry(UserLogin.getInstance().getSessionID());
+				} else {
+					searchEntry = new OrnamenticSearchEntry();
+				}
 				if (event.getData() instanceof CaveEntry) {
 					searchEntry.getCaves().add((CaveEntry) event.getData());
-
 				}
 				else if (event.getData() instanceof DepictionEntry) {
 					searchEntry.setIconographys(((DepictionEntry) event.getData()).getRelatedIconographyList());
 				}
-				dbService.searchOrnaments(searchEntry, new AsyncCallback<ArrayList<OrnamentEntry>>() {
+				else {
+					return;
+				}
+				boolean startsearch=(searchEntry.getCaves().size()>0)||(searchEntry.getIconographys().size()>0);
+				Util.showYesNo("Delete old filters?", "Do you whisch to delete old filters?", new SelectHandler() {
 					
 					@Override
-					public void onSuccess(ArrayList<OrnamentEntry> result) {
-						int count =0;
-						String masterImageIDs = "";
-						for (OrnamentEntry oe : result) {
-							if ((oe.getImages() != null) && (!oe.getImages().isEmpty())) {
-							count++;
-							if (masterImageIDs == "") {
-								masterImageIDs = Integer.toString(oe.getMasterImageID());
-							}
-							else {
-								masterImageIDs = masterImageIDs + ","+Integer.toString(oe.getMasterImageID());
-							}
-							}
-							addResult(new OrnamenticView(oe,UriUtils.fromTrustedString("icons/load_active.png")));
-							if (count==20 ){
-								getPics(masterImageIDs, 80, UserLogin.getInstance().getSessionID()) ;
-								masterImageIDs="";
-								count=0;
-							}
-
-						}
-						getPics(masterImageIDs, 80, UserLogin.getInstance().getSessionID()) ;
+					public void onSelect(SelectEvent event) {
+						initiateSearch(searchEntry,startsearch,true);
 					}
+				}, new SelectHandler() {
 					
 					@Override
-					public void onFailure(Throwable caught) {
+					public void onSelect(SelectEvent event) {
+						initiateSearch(searchEntry,startsearch,false);
+					}},
+					new KeyDownHandler() {
+						public void onKeyDown(KeyDownEvent e) {
+							initiateSearch(searchEntry,startsearch,true);
 					}
 				});
+				
+//				dbService.searchOrnaments(searchEntry, new AsyncCallback<ArrayList<OrnamentEntry>>() {
+//					
+//					@Override
+//					public void onSuccess(ArrayList<OrnamentEntry> result) {
+//						int count =0;
+//						String masterImageIDs = "";
+//						for (OrnamentEntry oe : result) {
+//							if ((oe.getImages() != null) && (!oe.getImages().isEmpty())) {
+//							count++;
+//							if (masterImageIDs == "") {
+//								masterImageIDs = Integer.toString(oe.getMasterImageID());
+//							}
+//							else {
+//								masterImageIDs = masterImageIDs + ","+Integer.toString(oe.getMasterImageID());
+//							}
+//							}
+//							addResult(new OrnamenticView(oe,UriUtils.fromTrustedString("icons/load_active.png")));
+//							if (count==20 ){
+//								getPics(masterImageIDs, 80, UserLogin.getInstance().getSessionID()) ;
+//								masterImageIDs="";
+//								count=0;
+//							}
+//
+//						}
+//						getPics(masterImageIDs, 80, UserLogin.getInstance().getSessionID()) ;
+//					}
+//					
+//					@Override
+//					public void onFailure(Throwable caught) {
+//					}
+//				});
 			}
 		};
 	}

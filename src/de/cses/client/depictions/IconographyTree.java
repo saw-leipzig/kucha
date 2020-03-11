@@ -5,23 +5,47 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.gwt.cell.client.AbstractCell;
+import com.google.gwt.cell.client.Cell;
+import com.google.gwt.cell.client.Cell.Context;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.data.shared.event.StoreFilterEvent;
 import com.sencha.gxt.widget.core.client.tree.Tree;
-import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
 
-import de.cses.client.depictions.IconographySelector.IconographyKeyProvider;
-import de.cses.client.depictions.IconographySelector.IconographyValueProvider;
+import de.cses.client.DatabaseService;
+import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.user.UserLogin;
 import de.cses.shared.IconographyEntry;
 
 
+
 public class IconographyTree {
+	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	public TreeStore<IconographyEntry> iconographyTreeStore;
 	public Tree<IconographyEntry, String> iconographyTree;
 	public Map<String, IconographyEntry> selectedIconographyMap;
-	class IconographyKeyProvider implements ModelKeyProvider<IconographyEntry> {
+	private Integer ImageID;
+	private Map<Integer, String> imageMap =null;
+	private void initpics() {
+    	dbService.getMasterImageFromOrnament(300, UserLogin.getInstance().getUsernameSessionIDParameterForUri(),  new AsyncCallback<Map<Integer,String>>() {
+    		@Override
+    		public void onFailure(Throwable caught) {
+    			
+    		}
+
+    		@Override
+    		public void onSuccess(Map<Integer,String> imageID) {
+    			imageMap=imageID;
+    	}});
+      }
+   	class IconographyKeyProvider implements ModelKeyProvider<IconographyEntry> {
 		@Override
 		public String getKey(IconographyEntry item) {
 			return Integer.toString(item.getIconographyID());
@@ -46,6 +70,7 @@ public class IconographyTree {
 		}
 	}
 	public IconographyTree(Collection<IconographyEntry> elements, ArrayList<IconographyEntry> l, boolean dropunselected) {
+		initpics();
 		setIconographyStore(elements,l,dropunselected);
 		buildTree(false);
 	}
@@ -106,7 +131,8 @@ public class IconographyTree {
 	public void buildTree( boolean ornament){
 		selectedIconographyMap = new HashMap<String, IconographyEntry>();
 
-			
+
+
 		iconographyTree = new Tree<IconographyEntry, String>(iconographyTreeStore, new IconographyValueProvider()) {
 
 			@Override
@@ -118,6 +144,7 @@ public class IconographyTree {
 			}
 
 		};
+
 	}
 
 	

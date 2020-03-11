@@ -1152,7 +1152,7 @@ public class DepictionEditor extends AbstractEditor {
 		/**
 		 * the wall visualisation will be implemented at a later time
 		 */
-//		wallSelectorFP.addTool(wallEditorTB);
+		//wallSelectorFP.addTool(wallEditorTB);
 		wallSelectorPanel = new WallSelector(new SelectionHandler<WallEntry>() {
 
 			@Override
@@ -1508,7 +1508,7 @@ public class DepictionEditor extends AbstractEditor {
 		 */
 		iconographySelector = new IconographySelector(StaticTables.getInstance().getIconographyEntries().values());
 		long start = System.currentTimeMillis();
-		Util.doLogging("Starte getIconogrpahy for Depitionentrie: "+Integer.toString(correspondingDepictionEntry.getDepictionID()));
+		Util.doLogging("Starte getIconogrpahy for Depictionentry: "+Integer.toString(correspondingDepictionEntry.getDepictionID()));
 		loadiconogrpahy(correspondingDepictionEntry.getDepictionID(),start);
 
 		/**

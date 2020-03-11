@@ -56,6 +56,7 @@ public abstract class AbstractResultView extends Portlet {
 	protected static final int MAX_HEIGHT = 700;
 	protected static final int MIN_HEIGHT = 300;
 	private ToolButton searchToolButton;
+	protected AbstractSearchController searchParent;
 	private ToolButton saveToolButton;
 	private ToolButton plusToolButton;
 	private ToolButton resetButton;
@@ -196,7 +197,19 @@ public abstract class AbstractResultView extends Portlet {
 	public void setSearchEnabled(boolean enable) {
 		searchToolButton.setEnabled(enable);
 	}
-
+	public void setSearchParent(AbstractSearchController asc) {
+		this.searchParent=asc;
+	}
+	public AbstractSearchController getSearchParent() {
+		return searchParent;
+	}
+	public void initiateSearch(AbstractSearchEntry searchEntry, boolean startsearch,boolean reset) {
+		getSearchParent().getFilter().setSearchEntry(searchEntry, reset);
+		setSearchEnabled(false);
+		if (startsearch) {
+			getSearchParent().getFilter().invokeSearch();
+		}
+	}
 	/**
 	 * Adds an element that is not contained in the result view
 	 * @param w
@@ -234,6 +247,9 @@ public abstract class AbstractResultView extends Portlet {
 	 */
 	public void addSearchSelectHandler(SelectHandler handler) {
 		searchToolButton.addSelectHandler(handler);
+	}
+	public ToolButton getSearchToolButton() {
+		return searchToolButton;
 	}
 	public void doResize() {
 		for (int i=0; i<resultContainer.getWidgetCount(); i++){

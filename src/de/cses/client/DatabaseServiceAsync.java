@@ -79,6 +79,8 @@ public interface DatabaseServiceAsync {
 
 	void getImages(AsyncCallback<ArrayList<ImageEntry>> callback) throws IllegalArgumentException;
 
+	void getMasterImageFromOrnament(int tnSize,String sessionID,AsyncCallback<Map<Integer,String>> callback) throws IllegalArgumentException;	
+	
 	void getImages(String sqlWhere, AsyncCallback<ArrayList<ImageEntry>> callback) throws IllegalArgumentException;
 
 	void getPhotographer(AsyncCallback<ArrayList<PhotographerEntry>> callback) throws IllegalArgumentException;

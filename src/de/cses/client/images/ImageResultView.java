@@ -108,52 +108,33 @@ public class ImageResultView extends AbstractResultView {
 			protected void onDragDrop(DndDropEvent event) {
 				super.onDragDrop(event);
 				clear();
-				DepictionSearchEntry dse;
 				if (UserLogin.isLoggedIn()) {
-					dse = new DepictionSearchEntry(UserLogin.getInstance().getSessionID());
+					searchEntry = new ImageSearchEntry(UserLogin.getInstance().getSessionID());
 				} else {
-					dse = new DepictionSearchEntry();
+					searchEntry = new ImageSearchEntry();
 				}
 				if (event.getData() instanceof DepictionEntry) {
 					String imageIDs="";
+					Util.doLogging("Instance is DepictionEntry, will extract images.");
 					int count=0;
+					String where = "";
 					for (ImageEntry ie : ((DepictionEntry) event.getData()).getRelatedImages()) {
-						addResult(new ImageView(ie,UriUtils.fromTrustedString("icons/load_active.png")));
-						if (imageIDs == "") {
-							imageIDs = Integer.toString(ie.getImageID());
+						if (where=="") {
+							where=Integer.toString(ie.getImageID());
 						}
 						else {
-							imageIDs = imageIDs + ","+Integer.toString(ie.getImageID());
-						}
-						if (count==20 ){
-							getPics(imageIDs, 120, UserLogin.getInstance().getSessionID());
-							imageIDs="";
-							count=0;
+							where=where+","+Integer.toString(ie.getImageID());
 						}
 					}
-					if (imageIDs != "") {
-						getPics(imageIDs, 120, UserLogin.getInstance().getSessionID());				
-					}
-					return;
-				} else if (event.getData() instanceof CaveEntry) {
-					dse.getCaveIdList().add(((CaveEntry) event.getData()).getCaveID());
-				} else if (event.getData() instanceof AnnotatedBibliographyEntry) {
-					int bibID = ((AnnotatedBibliographyEntry) event.getData()).getAnnotatedBibliographyID();
-					dse.getBibIdList().add(bibID);
-				}
-				searchEntry=dse;
-				dbService.searchDepictions(dse, new AsyncCallback<ArrayList<DepictionEntry>>() {
+					dbService.getImages("ImageID in ("+where+")", new AsyncCallback<ArrayList<ImageEntry>>() {
 
-					@Override
-					public void onFailure(Throwable caught) {
-					}
-
-					@Override
-					public void onSuccess(ArrayList<DepictionEntry> result) {
-						String imageIDs = "";
-						int count = 0;
-						for (DepictionEntry de : result) {
-							for (ImageEntry ie : de.getRelatedImages()) {
+						@Override
+						public void onSuccess(ArrayList<ImageEntry> result) {
+							Info.display("Größe des Results: ",Integer.toString(result.size()));
+							int count=0;
+							String imageIDs="";
+							searchEntry.setEntriesShowed(searchEntry.getEntriesShowed()+searchEntry.getMaxentries());
+							for (ImageEntry ie : result) {
 								count++;
 								addResult(new ImageView(ie,UriUtils.fromTrustedString("icons/load_active.png")));
 								if (imageIDs == "") {
@@ -167,20 +148,35 @@ public class ImageResultView extends AbstractResultView {
 									imageIDs="";
 									count=0;
 								}
-								if (result.size()==searchEntry.getMaxentries()) {
-									setSearchbuttonVisible();
-								}
-								else {
-									setSearchbuttonHide();
-								}
-							
 							}
-							getPics(imageIDs, 120, UserLogin.getInstance().getSessionID());
+							getPics(imageIDs, 120, UserLogin.getInstance().getSessionID());				
+
+							setSearchbuttonHide();
 							
 						}
-					}
-				});
 
+						@Override
+						public void onFailure(Throwable caught) {
+							caught.printStackTrace();
+							setSearchEnabled(true);
+						}
+					});
+						//addResult(new ImageView(ie,UriUtils.fromTrustedString("icons/load_active.png")));
+						//if (imageIDs == "") {
+						//	imageIDs = Integer.toString(ie.getImageID());
+						//}
+						//else {
+						//	imageIDs = imageIDs + ","+Integer.toString(ie.getImageID());
+						//}
+						//if (count==20 ){
+						//	getPics(imageIDs, 120, UserLogin.getInstance().getSessionID());
+						//	imageIDs="";
+						//	count=0;
+						//}
+					if (imageIDs != "") {
+						getPics(imageIDs, 120, UserLogin.getInstance().getSessionID());				
+					}
+				}
 			}
 		};
 	}

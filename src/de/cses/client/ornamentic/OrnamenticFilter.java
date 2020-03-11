@@ -21,12 +21,14 @@ import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.Style.SelectionMode;
+import com.sencha.gxt.core.client.XTemplates.XTemplate;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.data.shared.LabelProvider;
@@ -35,6 +37,8 @@ import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.data.shared.SortDir;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
+import com.sencha.gxt.dnd.core.client.DndDropEvent;
+import com.sencha.gxt.dnd.core.client.DropTarget;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
@@ -49,6 +53,8 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.Verti
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
+import com.sencha.gxt.widget.core.client.form.FieldLabel;
+import com.sencha.gxt.widget.core.client.form.IntegerSpinnerField;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
@@ -57,6 +63,8 @@ import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
 import de.cses.client.Util;
+import de.cses.client.depictions.IconographySelector;
+import de.cses.client.depictions.DepictionFilter.IconographyProperties;
 import de.cses.client.ornamentic.OrnamentCaveRelationEditor.OrnamentViewTemplates;
 import de.cses.client.ornamentic.OrnamenticEditor.OrnamentClassViewTemplates;
 import de.cses.client.ornamentic.WallOrnamentCaveRelationEditor.OrnamentFunctionViewTemplates;
@@ -64,6 +72,8 @@ import de.cses.client.ornamentic.WallOrnamentCaveRelationEditor.OrnamentPosition
 import de.cses.client.ui.AbstractFilter;
 import de.cses.shared.AbstractSearchEntry;
 import de.cses.shared.CaveEntry;
+import de.cses.shared.DepictionEntry;
+import de.cses.shared.DepictionSearchEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.InnerSecondaryPatternsEntry;
@@ -105,6 +115,12 @@ public class OrnamenticFilter extends AbstractFilter {
 	private TextField ornamentReferencesSearchTF;
 	private TextField ornamentOrnamentalGroupSearchTF;
 	private TextField ornamentSimilaritiesSearchTF;
+	private ListStore<IconographyEntry> selectedIconographyLS;
+	private IconographySelector icoSelector;
+	private ListView<IconographyEntry, IconographyEntry> icoSelectionLV;
+	private IconographyProperties icoProps;
+	private IntegerSpinnerField iconographySpinnerField;
+	private PopupPanel extendedFilterDialog = null;
 
 	private ComboBox<OrnamentClassEntry> ornamentClassComboBox;
 	private OrnamentClassProperties ornamentClassProps;
@@ -251,6 +267,10 @@ public class OrnamenticFilter extends AbstractFilter {
 		@XTemplate("<div>{code}</div>")
 		SafeHtml relatedOrnamentsLabel(String code);
 	}
+	interface IconographyTreeViewTemplates extends XTemplates {
+		@XTemplate("<div style=\"border: 1px solid grey;\"><tpl for='name'> {element}<wbr> </tpl></div>")
+		SafeHtml iconographyLabel(ArrayList<NameElement> name);
+	}
 
 	interface IconographyViewTemplates extends XTemplates {
 		@XTemplate("<div>{name}</div>")
@@ -318,6 +338,12 @@ public class OrnamenticFilter extends AbstractFilter {
 		ornamentClassProps = GWT.create(OrnamentClassProperties.class);
 		ornamentClassEntryList = new ListStore<OrnamentClassEntry>(ornamentClassProps.ornamentClassID());
 		loadOrnamentClassEntryList();
+		icoSelector = new IconographySelector(StaticTables.getInstance().getIconographyEntries().values());
+		icoSelector.enable();
+		icoSelector.selectNoParents(true);
+		icoProps = GWT.create(IconographyProperties.class);
+		selectedIconographyLS = new ListStore<>(icoProps.iconographyID());
+
 	}
 
 	// Laden aller Daten aus der Datenbank
@@ -457,6 +483,25 @@ public class OrnamenticFilter extends AbstractFilter {
 				}
 			}
 		});
+	}
+	@Override
+	public void setSearchEntry(AbstractSearchEntry searchEntry, boolean reset) {
+		// Versenden der Eintraege an den Server nach erfolgter Suche
+
+		
+		for (CaveEntry ce : cavesSelectionLV.getSelectionModel().getSelectedItems()) {
+			((OrnamenticSearchEntry)searchEntry).getCaves().add(ce);
+		}
+		
+		try {
+			if (!(ornamentClassComboBox.getValueOrThrow() == null)) {
+				((OrnamenticSearchEntry)searchEntry).setOrnamentClass(ornamentClassComboBox.getValue());
+			}
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	private void loadInnerSecondaryPatternsEntryList() {
@@ -959,6 +1004,82 @@ public class OrnamenticFilter extends AbstractFilter {
 		ornamentFilterBLC.setNorthWidget(codeMotifVLC, new BorderLayoutData(70));
 		ornamentFilterBLC.setCenterWidget(accordion, new MarginData(5, 0, 0, 0));
 		ornamentFilterBLC.setHeight(550);
+		icoSelectionLV = new ListView<IconographyEntry, IconographyEntry>(selectedIconographyLS, new IdentityValueProvider<IconographyEntry>(), new SimpleSafeHtmlCell<IconographyEntry>(new AbstractSafeHtmlRenderer<IconographyEntry>() {
+
+			@Override
+			public SafeHtml render(IconographyEntry item) {
+				IconographyTreeViewTemplates icTemplates = GWT.create(IconographyTreeViewTemplates.class);
+				ArrayList<NameElement> name = new ArrayList<NameElement>();
+				for (String s : item.getText().split(" ")) {
+					name.add(new NameElement(s));
+				}
+				return icTemplates.iconographyLabel(name);
+			}
+		}));
+		iconographySpinnerField = new IntegerSpinnerField();
+		iconographySpinnerField.setMinValue(1);
+		iconographySpinnerField.setIncrement(1);
+		iconographySpinnerField.setEnabled(false);
+		iconographySpinnerField.setEditable(false);
+		iconographySpinnerField.addKeyPressHandler(getShortkey());
+		
+		FieldLabel iconographyFieldLabel = new FieldLabel(iconographySpinnerField, "Matching elements");
+		iconographyFieldLabel.setLabelWidth(120);
+		
+		BorderLayoutContainer iconographyBLC = new BorderLayoutContainer();
+		iconographyBLC.setSouthWidget(iconographyFieldLabel, new BorderLayoutData(25));
+		iconographyBLC.setCenterWidget(icoSelectionLV, new MarginData(2));
+		
+		ContentPanel iconographyPanel = new ContentPanel();
+		iconographyPanel.setHeaderVisible(true);
+		iconographyPanel.setHeading("Iconography search");
+		iconographyPanel.add(iconographyBLC);
+		iconographyPanel.getHeader().setStylePrimaryName("frame-header");
+
+		new DropTarget(iconographyPanel) {
+
+			@Override
+			protected void onDragDrop(DndDropEvent event) {
+				super.onDragDrop(event);
+				if (event.getData() instanceof DepictionEntry) {
+					DepictionEntry de = (DepictionEntry) event.getData();
+					selectedIconographyLS.clear();
+					selectedIconographyLS.addAll(de.getRelatedIconographyList());
+//					icoSelector.setSelectedIconography(de.getRelatedIconographyList());
+					if ((de.getRelatedIconographyList() != null) && (selectedIconographyLS.size() > 0)) {
+						iconographySpinnerField.setEnabled(true);
+						iconographySpinnerField.setValue(selectedIconographyLS.size());
+						iconographySpinnerField.setMaxValue(selectedIconographyLS.size());
+					} else {
+						iconographySpinnerField.setEnabled(false);
+					}
+				}
+			}
+			
+		};
+		
+		ToolButton selectorTB = new ToolButton(new IconConfig("editButton", "editButtonOver"));
+		selectorTB.setToolTip(Util.createToolTip("Open Iconography & Pictorial Element selection"));
+		selectorTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				showIconographySelection();
+			}
+		});
+		iconographyPanel.addTool(selectorTB);
+
+		ToolButton iconographySelectionResetTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
+		iconographySelectionResetTB.setToolTip(Util.createToolTip("Reset selection"));
+		iconographySelectionResetTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				selectedIconographyLS.clear();
+				icoSelector.resetSelection();
+			}
+		});
+		iconographyPanel.addTool(iconographySelectionResetTB);
 		return ornamentFilterBLC;
 	}
 
@@ -1031,6 +1152,38 @@ public class OrnamenticFilter extends AbstractFilter {
 		}
 
 		return searchEntry;
+	}
+	private void showIconographySelection() {
+		if (extendedFilterDialog == null) {
+			extendedFilterDialog = new PopupPanel();
+			ToolButton closeTB = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
+			closeTB.setToolTip(Util.createToolTip("Close selection.", "Currently selected items will be used in the filter."));
+			closeTB.addSelectHandler(new SelectHandler() {
+				
+				@Override
+				public void onSelect(SelectEvent event) {
+					selectedIconographyLS.clear();
+					selectedIconographyLS.addAll(icoSelector.getSelectedIconography());
+					if ((icoSelector.getSelectedIconography() != null) && (selectedIconographyLS.size() > 0)) {
+						iconographySpinnerField.setEnabled(true);
+						iconographySpinnerField.setValue(selectedIconographyLS.size());
+						iconographySpinnerField.setMaxValue(selectedIconographyLS.size());
+					} else {
+						iconographySpinnerField.setEnabled(false);
+					}
+					extendedFilterDialog.hide();
+					invokeSearch();
+				}
+			});
+			icoSelector.addTool(closeTB);
+			extendedFilterDialog.add(icoSelector);
+			extendedFilterDialog.setSize("750", "500");
+			extendedFilterDialog.setModal(true);
+		}
+		extendedFilterDialog.center();
+		ArrayList<IconographyEntry> list = new ArrayList<IconographyEntry>();
+		list.addAll(selectedIconographyLS.getAll());
+		icoSelector.setSelectedIconography(list);
 	}
 
 }

@@ -33,7 +33,7 @@ public abstract class AbstractFilter implements IsWidget{
 
 	private Portlet panel = null;
 	private String filterName;
-	private AbstractSearchController parent;
+	private AbstractSearchController saerchparent;
 	private KeyPressHandler shortkey;
 	/**
 	 * 
@@ -49,7 +49,7 @@ public abstract class AbstractFilter implements IsWidget{
 		};
 	}
 	public void invokeSearch() {
-		parent.invokeSearch();
+		saerchparent.invokeSearch();
 	}
 	/* (non-Javadoc)
 	 * @see com.google.gwt.user.client.ui.IsWidget#asWidget()
@@ -66,8 +66,11 @@ public abstract class AbstractFilter implements IsWidget{
     panel.getHeader().setStylePrimaryName("frame-header");
 		return panel;
 	}
-	public void setParent(AbstractSearchController asc) {
-		this.parent=asc;
+	public void setSerchParent(AbstractSearchController asc) {
+		this.saerchparent=asc;
+	}
+	public AbstractSearchController getSearchParent() {
+		return saerchparent;
 	}
 
 	public KeyPressHandler getShortkey() {
@@ -87,5 +90,5 @@ public abstract class AbstractFilter implements IsWidget{
 	 * @return
 	 */
 	public abstract AbstractSearchEntry getSearchEntry();
-
+	public abstract void setSearchEntry(AbstractSearchEntry searchEntry, boolean reset);
 }

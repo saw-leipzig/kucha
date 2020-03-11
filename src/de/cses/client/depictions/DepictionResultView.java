@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.sencha.gxt.dnd.core.client.DndDropEvent;
@@ -146,46 +148,67 @@ public class DepictionResultView extends AbstractResultView {
 					int bibID = ((AnnotatedBibliographyEntry) event.getData()).getAnnotatedBibliographyID();
 					searchEntry.getBibIdList().add(bibID);
 				} else if (event.getData() instanceof OrnamentEntry) {
-					int bibID = ((OrnamentEntry) event.getData()).getIconographyID();
-					searchEntry.getIconographyIdList().add(bibID);
+					int icoID = ((OrnamentEntry) event.getData()).getIconographyID();
+					if (icoID>0) {
+						searchEntry.getIconographyIdList().add(icoID);
+					}
 				} else {
 					return;
 				}
-				dbService.searchDepictions(searchEntry, new AsyncCallback<ArrayList<DepictionEntry>>() {
+				boolean startsearch=(searchEntry.getCaveIdList().size()>0)||(searchEntry.getBibIdList().size()>0)||(searchEntry.getIconographyIdList().size()>0);
+				Util.doLogging(Boolean.toString(startsearch));
+				Util.showYesNo("Delete old filters?", "Do you whisch to delete old filters?", new SelectHandler() {
 					
 					@Override
-					public void onFailure(Throwable caught) { }
-					
-					@Override
-					public void onSuccess(ArrayList<DepictionEntry> result) {
-						String masterImageIDs = "";
-						for (DepictionEntry de : result) {
-							if (masterImageIDs == "") {
-								masterImageIDs = Integer.toString(de.getMasterImageID());
-							}
-							else {
-								masterImageIDs = masterImageIDs + ","+Integer.toString(de.getMasterImageID());
-							}
-						}
-					dbService.getPicsByImageID(masterImageIDs, 120, UserLogin.getInstance().getSessionID(), new AsyncCallback<Map<Integer,String>>() {
-					
-					@Override
-					public void onFailure(Throwable caught) {				
-						//Info.display("getPics", "got bad response");
-						}
-					
-					@Override
-					public void onSuccess(Map<Integer,String> imgdic) {
-						//Info.display("getPics", "got good response");
-						for (DepictionEntry de : result) {
-							addResult(new DepictionView(de,UriUtils.fromTrustedString(imgdic.get(de.getMasterImageID()))));
-						}
+					public void onSelect(SelectEvent event) {
+						initiateSearch(searchEntry,startsearch,true);
 					}
-							});
-								
-							
+				}, new SelectHandler() {
+					
+					@Override
+					public void onSelect(SelectEvent event) {
+						initiateSearch(searchEntry,startsearch,false);
+					}},
+					new KeyDownHandler() {
+						public void onKeyDown(KeyDownEvent e) {
+							initiateSearch(searchEntry,startsearch,true);
 					}
 				});
+				//dbService.searchDepictions(searchEntry, new AsyncCallback<ArrayList<DepictionEntry>>() {
+				//	
+				//	@Override
+				//	public void onFailure(Throwable caught) { }
+				//	
+				//	@Override
+				//	public void onSuccess(ArrayList<DepictionEntry> result) {
+				//		String masterImageIDs = "";
+				//		for (DepictionEntry de : result) {
+				//			if (masterImageIDs == "") {
+				//				masterImageIDs = Integer.toString(de.getMasterImageID());
+				//			}
+				//			else {
+				//				masterImageIDs = masterImageIDs + ","+Integer.toString(de.getMasterImageID());
+				//			}
+				//		}
+				//	dbService.getPicsByImageID(masterImageIDs, 120, UserLogin.getInstance().getSessionID(), new AsyncCallback<Map<Integer,String>>() {
+				//	
+				//	@Override
+				//	public void onFailure(Throwable caught) {				
+				//		//Info.display("getPics", "got bad response");
+				//		}
+				//	
+				//	@Override
+				//	public void onSuccess(Map<Integer,String> imgdic) {
+				//		//Info.display("getPics", "got good response");
+				//		for (DepictionEntry de : result) {
+				//			addResult(new DepictionView(de,UriUtils.fromTrustedString(imgdic.get(de.getMasterImageID()))));
+				//		}
+				//	}
+				//			});
+				//				
+				//			
+				//	}
+				//});
 			}
 		};
 	

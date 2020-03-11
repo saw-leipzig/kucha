@@ -82,6 +82,8 @@ public interface DatabaseService extends RemoteService {
 		
 	boolean resetPassword(UserEntry currentUser) throws IllegalArgumentException;
 	
+	Map<Integer,String> getMasterImageFromOrnament(int tnSize,String sessionID) throws IllegalArgumentException;
+
 	ArrayList<ImageEntry> getImages() throws IllegalArgumentException;
 
 	AnnotatedBibliographyEntry getAnnotatedBiblographybyID(int bibid) throws IllegalArgumentException;
