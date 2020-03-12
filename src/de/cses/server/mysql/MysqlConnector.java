@@ -3663,564 +3663,90 @@ public boolean isHan(String s) {
 	 * @param searchEntry
 	 * @return
 	 */
-	public ArrayList<OrnamentEntry> searchOrnaments(OrnamenticSearchEntry search) {
+	public ArrayList<OrnamentEntry> searchOrnaments(OrnamenticSearchEntry searchEntry) {
 		long start = System.currentTimeMillis();
 		if (dologgingbegin){
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von searchOrnaments wurde ausgelöst.");;
 		}
 		System.out.println("Search Ornaments wurde gestartet.");
-		// Suche ueber einzelne SQL Querys, speichern in ArrayList "listen", anschliessend Schnittmenge bilden
 		Connection dbc = getConnection();
-		Statement stmt;
+		PreparedStatement pstmt;
 		ArrayList<OrnamentEntry> resultList = new ArrayList<OrnamentEntry>();
-//		ArrayList<ArrayList<OrnamentEntry>> listen = new ArrayList<ArrayList<OrnamentEntry>>();
-
-		// if no filter has been set, we just select all
-		if (search != null) {
-			String mysqlquerry = "SELECT * FROM Ornaments where Ornaments.deleted =0";
-			try {
-				stmt = dbc.createStatement();
-				ResultSet rs = stmt.executeQuery(mysqlquerry);
-				while (rs.next()) {
-					OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
-							rs.getString("Remarks"),
-							rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-							getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
-							getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
-							getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
-							new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getInt("IconographyID"),rs.getInt("MasterImageID"));
-					resultList.add(entry);
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
-			}
-			
-			System.err.println("general search no. of elements: " + resultList.size());
-//			return result;
-//			listen.add(result);
+		String where = "";
+		if (searchEntry.getCode() != null && !searchEntry.getCode().isEmpty()) {
+			where = "Code LIKE ?";
+		}
+		where += where.isEmpty() ? "Ornaments.deleted=0" : " AND Ornaments.deleted=0 AND Depictions.deleted=0";
+		String caveIDs="";
+		DepictionSearchEntry depictionSearchEntry=new DepictionSearchEntry(searchEntry.getSessionID());
+		for (CaveEntry cave : searchEntry.getCaves()) {
+			caveIDs += caveIDs.isEmpty() ? Integer.toString(cave.getCaveID()) : "," + Integer.toString(cave.getCaveID());
 		}
 		
-		// Ab hier suche nach den einzelnen Kriterien, bauen von einzelnen Listen und später eine Teilmengenbildung der Listen.
-		if (!search.getCaves().isEmpty()) {
-			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-//			String mysqlquerry = "SELECT * FROM (Ornaments JOIN CaveOrnamentRelation ON Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID) WHERE CaveID IN (";
-//			for (int i = 0; search.getCaves().size() > i; i++) {
-//				mysqlquerry = mysqlquerry + Integer.toString(search.getCaves().get(i).getCaveID());
-//				if (search.getCaves().size() > i + 1) {
-//					mysqlquerry = mysqlquerry + " , ";
-//				}
-//			}
-//			mysqlquerry = mysqlquerry + ") GROUP BY Ornaments.OrnamentID HAVING COUNT(*) = " + search.getCaves().size();
-			String inCaveStatement = "";
-			for (CaveEntry ce : search.getCaves()) {
-				inCaveStatement += inCaveStatement.isEmpty() ? Integer.toString(ce.getCaveID()) : "," + ce.getCaveID();
-			}
-			String query = "SELECT * FROM Ornaments WHERE  Ornaments.deleted =0 and OrnamentID IN (SELECT OrnamentID FROM CaveOrnamentRelation WHERE CaveID IN (" + inCaveStatement + "))";
-			try {
-				stmt = dbc.createStatement();
-				ResultSet rs = stmt.executeQuery(query);
-				while (rs.next()) {
-					OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
-							rs.getString("Remarks"),
-							// rs.getString("Annotation"),
-							rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-							getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
-							getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
-							getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
-							new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getInt("IconographyID"),rs.getInt("MasterImageID"));
-					result.add(entry);
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
-			}
-			System.err.println("cave search no. of elements: " + result.size());
-			resultList.retainAll(result); // we only keep the results 
+		if (!caveIDs.isEmpty()) {
+			where += where.isEmpty() ? "CaveID IN (" + caveIDs + ")" : " AND CaveID IN (" + caveIDs + ")";
+		}		
+		String iconographyIDs = "";
+		for (IconographyEntry iconography : searchEntry.getIconography()) {
+			iconographyIDs += iconographyIDs.isEmpty() ? Integer.toString(iconography.getIconographyID()) : "," + iconography.getIconographyID();
 		}
-		
-		if (search.getGroup() != null && !search.getGroup().isEmpty()) {
-			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-			String mysqlquerry = "SELECT * FROM (Ornaments JOIN CaveOrnamentRelation ON Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID) WHERE GroupofOrnaments LIKE "
-					+ search.getGroup();
-			try {
-				stmt = dbc.createStatement();
-				ResultSet rs = stmt.executeQuery(mysqlquerry);
-				while (rs.next()) {
-
-					OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
-							rs.getString("Remarks"),
-							// rs.getString("Annotation"),
-							rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-							getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
-							getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
-							getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
-							new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getInt("IconographyID"),rs.getInt("MasterImageID"));
-					result.add(entry);
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
-			}
-			System.err.println("group search no. of elements: " + result.size());
-			resultList.retainAll(result);
+		if (!iconographyIDs.isEmpty()) {
+			where += where.isEmpty() 
+					? " Ornaments.IconographyID IN ("+ iconographyIDs + ")"
+					: " AND Ornaments.IconographyID IN ("+ iconographyIDs + ")";
 		}
-
-		if (search.getCode() != null) {
-			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-			String mysqlquerry = "SELECT * FROM Ornaments LIKE OrnamentCode = " + search.getCode();
-			try {
-				stmt = dbc.createStatement();
-				ResultSet rs = stmt.executeQuery(mysqlquerry);
-				while (rs.next()) {
-
-					OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
-							rs.getString("Remarks"),
-							// rs.getString("Annotation"),
-							rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-							getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
-							getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
-							getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
-							new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getInt("IconographyID"),rs.getInt("MasterImageID"));
-					result.add(entry);
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
-			}
-			System.err.println("code search no. of elements: " + result.size());
-			resultList.retainAll(result);
-		}
-
-		if (search.getComponents().size() > 0) {
-			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-			String mysqlquerry = "SELECT * FROM Ornaments JOIN OrnamentComponentRelation ON Ornaments.OrnamentID = OrnamentComponentRelation.OrnamentID WHERE  Ornaments.deleted =0 and OrnamentComponentID IN (";
-			for (int i = 0; search.getComponents().size() > i; i++) {
-				mysqlquerry = mysqlquerry + Integer.toString(search.getComponents().get(i).getOrnamentComponentsID());
-				if (search.getComponents().size() > i + 1) {
-					mysqlquerry = mysqlquerry + " , ";
-				}
-			}
-			mysqlquerry = mysqlquerry + ") GROUP BY Ornaments.OrnamentID HAVING COUNT(*) =" + search.getComponents().size();
-			try {
-				stmt = dbc.createStatement();
-				ResultSet rs = stmt.executeQuery(mysqlquerry);
-				while (rs.next()) {
-
-					OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
-							rs.getString("Remarks"),
-							// rs.getString("Annotation"),
-							rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-							getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
-							getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
-							getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
-							new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getInt("IconographyID"),rs.getInt("MasterImageID"));
-					result.add(entry);
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
-			}
-			System.err.println("component search no. of elements: " + result.size());
-			resultList.retainAll(result);
-		}
-		
-		if (search.getDescription() != null && !search.getDescription().isEmpty()) {
-			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-			String mysqlquerry = "SELECT * FROM Ornaments WHERE  Ornaments.deleted =0 and  Description Like " + search.getDescription();
-			try {
-				stmt = dbc.createStatement();
-				ResultSet rs = stmt.executeQuery(mysqlquerry);
-				while (rs.next()) {
-
-					OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
-							rs.getString("Remarks"),
-							// rs.getString("Annotation"),
-							rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-							getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
-							getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
-							getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
-							new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getInt("IconographyID"),rs.getInt("MasterImageID"));
-					result.add(entry);
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
-			}
-			System.err.println("decription search no. of elements: " + result.size());
-			resultList.retainAll(result);
-		}
-
-		if (search.getDistricts().size() > 0) {
-			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-			String mysqlquerry = "SELECT * FROM (Ornaments JOIN CaveOrnamentRelation ON Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID) JOIN Caves ON Caves.CaveID = CaveOrnamentRelation.CaveID WHERE Caves.DistrictID IN (";
-			for (int i = 0; search.getDistricts().size() > i; i++) {
-				mysqlquerry = mysqlquerry + Integer.toString(search.getDistricts().get(i).getDistrictID());
-				if (search.getDistricts().size() > i + 1) {
-					mysqlquerry = mysqlquerry + " , ";
-				}
-			}
-			mysqlquerry = mysqlquerry + ") GROUP BY Ornaments.OrnamentID HAVING COUNT(*) =" + search.getDistricts().size();
-			try {
-				stmt = dbc.createStatement();
-				ResultSet rs = stmt.executeQuery(mysqlquerry);
-				while (rs.next()) {
-					OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
-							rs.getString("Remarks"),
-							// rs.getString("Annotation"),
-							rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-							getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
-							getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
-							getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
-							new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getInt("IconographyID"),rs.getInt("MasterImageID"));
-					result.add(entry);
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
-			}
-			System.err.println("district search no. of elements: " + result.size());
-			resultList.retainAll(result);
-		}
-		
-		if (search.getFunction().size() > 0) {
-			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-			String mysqlquerry = "SELECT * FROM (Ornaments JOIN CaveOrnamentRelation ON Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID) JOIN OrnamentCaveWallRelation ON OrnamentCaveWallRelation.OrnamentCaveRelationID = CaveOrnamentRelation.CaveOrnamentRelationID WHERE FunctionID IN (";
-			for (int i = 0; search.getFunction().size() > i; i++) {
-				mysqlquerry = mysqlquerry + Integer.toString(search.getFunction().get(i).getOrnamentFunctionID());
-				if (search.getFunction().size() > i + 1) {
-					mysqlquerry = mysqlquerry + " , ";
-				}
-			}
-			mysqlquerry = mysqlquerry + ") GROUP BY Ornaments.OrnamentID HAVING COUNT(*) =" + search.getFunction().size();
-			try {
-				stmt = dbc.createStatement();
-				ResultSet rs = stmt.executeQuery(mysqlquerry);
-				while (rs.next()) {
-
-					OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
-							rs.getString("Remarks"),
-							// rs.getString("Annotation"),
-							rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-							getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
-							getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
-							getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
-							new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getInt("IconographyID"),rs.getInt("MasterImageID"));
-					result.add(entry);
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
-			}
-			System.err.println("function search no. of elements: " + result.size());
-			resultList.retainAll(result);
-		}
-		
-		if (search.getIconographys().size() > 0) {
-			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-			String mysqlquerry = "SELECT * FROM Ornaments  WHERE  Ornaments.deleted =0 and  IconographyID IN (";
-			String backets = "";
-			for (IconographyEntry iconography : search.getIconographys()) {
-				if (backets =="") {
-					backets = Integer.toString(iconography.getIconographyID());
-				}
-				else {
-					backets = backets+" , "+Integer.toString(iconography.getIconographyID());
-				}
-
-			}
-			mysqlquerry = mysqlquerry+backets + ") GROUP BY Ornaments.OrnamentID";
-			try {
-				stmt = dbc.createStatement();
-				ResultSet rs = stmt.executeQuery(mysqlquerry);
-				while (rs.next()) {
-
-					OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
-							rs.getString("Remarks"),
-							// rs.getString("Annotation"),
-							rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-							getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
-							getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
-							getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
-							new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getInt("IconographyID"),rs.getInt("MasterImageID"));
-					result.add(entry);
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
-			}
-			System.err.println("iconography search no. of elements: " + result.size());
-			resultList.retainAll(result);
-		}
-
-		if (search.getInterpretation() != null && !search.getInterpretation().isEmpty()) {
-			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-			String mysqlquerry = "SELECT * FROM Ornaments WHERE  Ornaments.deleted =0 and  Interpretation LIKE " + search.getInterpretation();
-			try {
-				stmt = dbc.createStatement();
-				ResultSet rs = stmt.executeQuery(mysqlquerry);
-				while (rs.next()) {
-
-					OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
-							rs.getString("Remarks"),
-							// rs.getString("Annotation"),
-							rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-							getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
-							getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
-							getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
-							new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getInt("IconographyID"),rs.getInt("MasterImageID"));
-					result.add(entry);
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
-			}
-			System.err.println("interpretation search no. of elements: " + result.size());
-			resultList.retainAll(result);
-		}
-		
-		if (search.getPosition().size() > 0) {
-			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-			String mysqlquerry = "SELECT * FROM (Ornaments JOIN CaveOrnamentRelation ON Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID) JOIN OrnamentCaveWallRelation ON OrnamentCaveWallRelation.OrnamentCaveRelationID = CaveOrnamentRelation.CaveOrnamentRelationID WHERE PositionID IN (";
-			for (int i = 0; search.getPosition().size() > i; i++) {
-				mysqlquerry = mysqlquerry + Integer.toString(search.getPosition().get(i).getOrnamentPositionID());
-				if (search.getPosition().size() > i + 1) {
-					mysqlquerry = mysqlquerry + " , ";
-				}
-			}
-			mysqlquerry = mysqlquerry + ") GROUP BY Ornaments.OrnamentID HAVING COUNT(*) =" + search.getPosition().size();
-			try {
-				stmt = dbc.createStatement();
-				ResultSet rs = stmt.executeQuery(mysqlquerry);
-				while (rs.next()) {
-					OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
-							rs.getString("Remarks"),
-							// rs.getString("Annotation"),
-							rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-							getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
-							getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
-							getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
-							new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getInt("IconographyID"),rs.getInt("MasterImageID"));
-					result.add(entry);
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
-			}
-			System.err.println("position search no. of elements: " + result.size());
-			resultList.retainAll(result);
-		}
-
-		if (search.getOrnamentClass() != null) {
-			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-			String mysqlquerry = "SELECT * FROM Ornaments WHERE  Ornaments.deleted =0 and  OrnamentClassID = " + search.getOrnamentClass().getOrnamentClassID();
-			try {
-				stmt = dbc.createStatement();
-				ResultSet rs = stmt.executeQuery(mysqlquerry);
-				while (rs.next()) {
-
-					OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
-							rs.getString("Remarks"),
-							rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-							getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
-							getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
-							getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
-							new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getInt("IconographyID"),rs.getInt("MasterImageID"));
-					result.add(entry);
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
-			}
-			System.err.println("ornament class search no. of elements: " + result.size());
-			resultList.retainAll(result);
-		}
-
-		if (search.getReferences() != null && !search.getReferences().isEmpty()) {
-			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-			String mysqlquerry = "SELECT * FROM Ornaments WHERE  Ornaments.deleted =0 and  References LIKE " + search.getReferences();
-			try {
-				stmt = dbc.createStatement();
-				ResultSet rs = stmt.executeQuery(mysqlquerry);
-				while (rs.next()) {
-
-					OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
-							rs.getString("Remarks"),
-							// rs.getString("Annotation"),
-							rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-							getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
-							getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
-							getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
-							new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getInt("IconographyID"),rs.getInt("MasterImageID"));
-					result.add(entry);
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
-			}
-			System.err.println("references search no. of elements: " + result.size());
-			resultList.retainAll(result);
-		}
-
-		if (search.getRelatedOrnaments().size() > 0) {
-			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-			String mysqlquerry = "SELECT * FROM (Ornaments JOIN CaveOrnamentRelation on Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID) JOIN RelatedOrnamentsRelation "
-					+ "ON CaveOrnamentRelation.CaveOrnamentRelationID = RelatedOrnamentsRelation.CaveOrnamentRelationID WHERE RelatedOrnamentsRelation.OrnamentID IN (";
-			for (int i = 0; search.getRelatedOrnaments().size() > i; i++) {
-				mysqlquerry = mysqlquerry + Integer.toString(search.getRelatedOrnaments().get(i).getOrnamentID());
-				if (search.getCaves().size() > i + 1) {
-					mysqlquerry = mysqlquerry + " , ";
-				}
-			}
-			mysqlquerry = mysqlquerry + ") GROUP BY Ornaments.OrnamentID HAVING COUNT(*) =" + search.getRelatedOrnaments().size();
-			try {
-				stmt = dbc.createStatement();
-				ResultSet rs = stmt.executeQuery(mysqlquerry);
-				while (rs.next()) {
-					OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
-							rs.getString("Remarks"),
-							rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-							getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
-							getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
-							getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
-							new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getInt("IconographyID"),rs.getInt("MasterImageID"));
-					result.add(entry);
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
-			}
-			System.err.println("related ornaments search no. of elements: " + result.size());
-			resultList.retainAll(result);
-		}
-
-		if (search.getRemarks() != null && !search.getRemarks().isEmpty()) {
-			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-			String mysqlquerry = "SELECT * FROM Ornaments WHERE  Ornaments.deleted =0 and  Remarks LIKE " + search.getRemarks();
-			try {
-				stmt = dbc.createStatement();
-				ResultSet rs = stmt.executeQuery(mysqlquerry);
-				while (rs.next()) {
-
-					OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
-							rs.getString("Remarks"),
-							// rs.getString("Annotation"),
-							rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-							getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
-							getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
-							getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
-							new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getInt("IconographyID"),rs.getInt("MasterImageID"));
-					result.add(entry);
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
-			}
-			System.err.println("remarks search no. of elements: " + result.size());
-			resultList.retainAll(result);
-		}
-
-		if (search.getSecondarypatterns().size() > 0) {
-			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-			String mysqlquerry = "SELECT * FROM Ornaments JOIN InnerSecondaryPatternRelation ON Ornaments.OrnamentID = InnerSecondaryPatternRelation.OrnamentID WHERE  Ornaments.deleted =0 and  InnerSecID IN (";
-			for (int i = 0; search.getSecondarypatterns().size() > i; i++) {
-				mysqlquerry = mysqlquerry + Integer.toString(search.getSecondarypatterns().get(i).getInnerSecondaryPatternsID());
-				if (search.getSecondarypatterns().size() > i + 1) {
-					mysqlquerry = mysqlquerry + " , ";
-				}
-			}
-			mysqlquerry = mysqlquerry + ") GROUP BY Ornaments.OrnamentID HAVING COUNT(*) =" + search.getSecondarypatterns().size();
-			try {
-				stmt = dbc.createStatement();
-				ResultSet rs = stmt.executeQuery(mysqlquerry);
-				while (rs.next()) {
-
-					OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
-							rs.getString("Remarks"),
-							// rs.getString("Annotation"),
-							rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-							getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
-							getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
-							getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
-							new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getInt("IconographyID"),rs.getInt("MasterImageID"));
-					result.add(entry);
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
-			}
-			System.err.println("secondary patterns search no. of elements: " + result.size());
-			resultList.retainAll(result);
-		}
-
-		if (search.getSimilaritys() != null && !search.getSimilaritys().isEmpty()) {
-			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-			String mysqlquerry = "SELECT * FROM Ornaments JOIN CaveOrnamentRelation on Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID WHERE  Ornaments.deleted =0 and  SimilarElementsOfOtherCultures LIKE "
-					+ search.getSimilaritys();
-			try {
-				stmt = dbc.createStatement();
-				ResultSet rs = stmt.executeQuery(mysqlquerry);
-				while (rs.next()) {
-
-					OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
-							rs.getString("Remarks"),
-							// rs.getString("Annotation"),
-							rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-							getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
-							getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
-							getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
-							new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getInt("IconographyID"),rs.getInt("MasterImageID"));
-					result.add(entry);
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
-			}
-			System.err.println("similarities search no. of elements: " + result.size());
-			resultList.retainAll(result);
-		}
-
-		if (search.getStyle() != null) {
-			ArrayList<OrnamentEntry> result = new ArrayList<OrnamentEntry>();
-			String mysqlquerry = "SELECT * FROM Ornaments JOIN CaveOrnamentsRelation on Ornaments.OrnamentID = CaveOrnamentRelation.OrnamentID WHERE Ornaments.deleted =0 and  StyleID ="
-					+ search.getStyle().getStyleID();
-			try {
-				stmt = dbc.createStatement();
-				ResultSet rs = stmt.executeQuery(mysqlquerry);
-				while (rs.next()) {
-
-					OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
-							rs.getString("Remarks"),
-							// rs.getString("Annotation"),
-							rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-							getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
-							getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
-							getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
-							new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getInt("IconographyID"),rs.getInt("MasterImageID"));
-					result.add(entry);
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
-			}
-			System.err.println("styles search no. of elements: " + result.size());
-			resultList.retainAll(result);
-		}
-
-//		ArrayList<OrnamentEntry> intersection = listen.get(0);
-//		for (ArrayList<OrnamentEntry> col : listen.subList(1, listen.size()-1)) {
-//			intersection.retainAll(col);
-//			// setzen der ersten Liste auf die Teilmenge aller Listen
+		String bibIDs = "";
+//		for (int bibID : searchEntry.getBibIdList()) {
+//			bibIDs += bibIDs.isEmpty() ? Integer.toString(bibID) : "," + bibID;
+// 		}
+//		if (!bibIDs.isEmpty()) {
+//			where += where.isEmpty() 
+//					? "DepictionID IN (SELECT DISTINCT DepictionID FROM DepictionBibliographyRelation WHERE BibID IN (" + bibIDs + "))" 
+//					: " AND DepictionID IN (SELECT DISTINCT DepictionID FROM DepictionBibliographyRelation WHERE BibID IN (" + bibIDs + "))";
 //		}
-//
-//		if (listen.size() == 0) {
-//			// sollte nicht auftreten, falls Listen leer
-//			ArrayList<OrnamentEntry> emptyList = new ArrayList<OrnamentEntry>();
-//			return emptyList;
-//		} else {
-//			// rueckgabe der Teilmengenliste
-//			return (ArrayList<OrnamentEntry>) intersection;
-//		}
+
+		/**
+		 * We cannot filter the accessLevel because that would create problems e.g. when choosing a cave for a depiction.
+		 * What we can do is restricting the visibility of certain fields e.g. comments but this has to be done 
+		 * when the UI is build on the client side!
+		 */
+		String inStatement  = Integer.toString(AbstractEntry.ACCESS_LEVEL_PUBLIC); // public is always permitted
+		System.err.println("Accesslevel ist: "+getAccessLevelForSessionID(searchEntry.getSessionID()));
+		if (getAccessLevelForSessionID(searchEntry.getSessionID()) <= UserEntry.GUEST) {
+			where += where.isEmpty() ? "AccessLevel IN (" + inStatement + ")" : " AND AccessLevel IN (" + inStatement + ")";
+		}
+				
+		System.err.println(where.isEmpty() ? "SELECT * FROM infosys.Ornaments left join infosys.DepictionIconographyRelation on (Ornaments.IconographyID=DepictionIconographyRelation.IconographyID) left join (Select * from Depictions where Depictions.deleted=0) as Depictionsall on (DepictionIconographyRelation.DepictionID=Depictionsall.DepictionID)" : "SELECT * FROM infosys.Ornaments left join infosys.DepictionIconographyRelation on (Ornaments.IconographyID=DepictionIconographyRelation.IconographyID) left join (Select * from Depictions where Depictions.deleted=0) as Depictionsall on (DepictionIconographyRelation.DepictionID=Depictionsall.DepictionID) WHERE " + where);
+
+		try {
+			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM infosys.Ornaments left join infosys.DepictionIconographyRelation on (Ornaments.IconographyID=DepictionIconographyRelation.IconographyID) left join (Select * from Depictions where Depictions.deleted=0) as Depictionsall on (DepictionIconographyRelation.DepictionID=Depictionsall.DepictionID) LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+ ", "+Integer.toString(searchEntry.getMaxentries()): "SELECT * FROM infosys.Ornaments left join infosys.DepictionIconographyRelation on (Ornaments.IconographyID=DepictionIconographyRelation.IconographyID) left join (Select * from Depictions where Depictions.deleted=0) as Depictionsall on (DepictionIconographyRelation.DepictionID=Depictionsall.DepictionID) WHERE " + where+" LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+", "+Integer.toString(searchEntry.getMaxentries()));
+
+			if (!searchEntry.getCode().isEmpty()) {
+				pstmt.setString(1, "%" + searchEntry.getCode() + "%");
+			}
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				boolean found = false;
+				for (OrnamentEntry oe : resultList) {
+					if (oe.getOrnamentID()==rs.getInt("OrnamentID")){
+						found=true;
+						break;
+					}
+				}
+				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
+						rs.getString("Remarks"),
+						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
+						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
+						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
+						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
+						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getInt("IconographyID"),rs.getInt("MasterImageID"));
+				resultList.add(entry);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+			return null;
+		}
 		if (dologging){
 		long end = System.currentTimeMillis();
 		long diff = (end-start);

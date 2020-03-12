@@ -28,7 +28,6 @@ import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.Style.SelectionMode;
-import com.sencha.gxt.core.client.XTemplates.XTemplate;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.data.shared.LabelProvider;
@@ -53,8 +52,6 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.Verti
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
-import com.sencha.gxt.widget.core.client.form.FieldLabel;
-import com.sencha.gxt.widget.core.client.form.IntegerSpinnerField;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
@@ -64,12 +61,12 @@ import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
 import de.cses.client.Util;
 import de.cses.client.depictions.IconographySelector;
-import de.cses.client.depictions.DepictionFilter.IconographyProperties;
 import de.cses.client.ornamentic.OrnamentCaveRelationEditor.OrnamentViewTemplates;
 import de.cses.client.ornamentic.OrnamenticEditor.OrnamentClassViewTemplates;
 import de.cses.client.ornamentic.WallOrnamentCaveRelationEditor.OrnamentFunctionViewTemplates;
 import de.cses.client.ornamentic.WallOrnamentCaveRelationEditor.OrnamentPositionViewTemplates;
 import de.cses.client.ui.AbstractFilter;
+import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractSearchEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
@@ -119,7 +116,7 @@ public class OrnamenticFilter extends AbstractFilter {
 	private IconographySelector icoSelector;
 	private ListView<IconographyEntry, IconographyEntry> icoSelectionLV;
 	private IconographyProperties icoProps;
-	private IntegerSpinnerField iconographySpinnerField;
+//	private IntegerSpinnerField iconographySpinnerField;
 	private PopupPanel extendedFilterDialog = null;
 
 	private ComboBox<OrnamentClassEntry> ornamentClassComboBox;
@@ -150,9 +147,9 @@ public class OrnamenticFilter extends AbstractFilter {
 	private PositionProperties positionProps;
 	private ListView<OrnamentPositionEntry, OrnamentPositionEntry> positionSelectionLV;
 
-	private ListStore<OrnamentFunctionEntry> functionEntryList;
-	private FunctionProperties functionProps;
-	private ListView<OrnamentFunctionEntry, OrnamentFunctionEntry> functionSelectionLV;
+	//private ListStore<OrnamentFunctionEntry> functionEntryList;
+	//private FunctionProperties functionProps;
+	//private ListView<OrnamentFunctionEntry, OrnamentFunctionEntry> functionSelectionLV;
 	private SiteProperties siteProps;
 	private ListStore<SiteEntry> siteEntryList;
 
@@ -327,9 +324,9 @@ public class OrnamenticFilter extends AbstractFilter {
 		relatedOrnamentsEntryList = new ListStore<OrnamentEntry>(relatedOrnamentsProps.ornamentID());
 		loadOrnamentEntryList();
 
-		functionProps = GWT.create(FunctionProperties.class);
-		functionEntryList = new ListStore<OrnamentFunctionEntry>(functionProps.ornamentFunctionID());
-		loadFunctionEntryList();
+//		functionProps = GWT.create(FunctionProperties.class);
+//		functionEntryList = new ListStore<OrnamentFunctionEntry>(functionProps.ornamentFunctionID());
+//		loadFunctionEntryList();
 
 		positionProps = GWT.create(PositionProperties.class);
 		positionEntryList = new ListStore<OrnamentPositionEntry>(positionProps.ornamentPositionID());
@@ -449,23 +446,23 @@ public class OrnamenticFilter extends AbstractFilter {
 		});
 	}
 
-	private void loadFunctionEntryList() {
-		dbService.getOrnamentFunctions(new AsyncCallback<ArrayList<OrnamentFunctionEntry>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(ArrayList<OrnamentFunctionEntry> result) {
-				functionEntryList.clear();
-				for (OrnamentFunctionEntry pe : result) {
-					functionEntryList.add(pe);
-				}
-			}
-		});
-	}
+//	private void loadFunctionEntryList() {
+//		dbService.getOrnamentFunctions(new AsyncCallback<ArrayList<OrnamentFunctionEntry>>() {
+//
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				caught.printStackTrace();
+//			}
+//
+//			@Override
+//			public void onSuccess(ArrayList<OrnamentFunctionEntry> result) {
+//				functionEntryList.clear();
+//				for (OrnamentFunctionEntry pe : result) {
+//					functionEntryList.add(pe);
+//				}
+//			}
+//		});
+//	}
 
 	private void loadPositionEntryList() {
 		dbService.getOrnamentPositions(new AsyncCallback<ArrayList<OrnamentPositionEntry>>() {
@@ -831,38 +828,38 @@ public class OrnamenticFilter extends AbstractFilter {
 
 		// function
 
-		functionSelectionLV = new ListView<OrnamentFunctionEntry, OrnamentFunctionEntry>(functionEntryList,
-				new IdentityValueProvider<OrnamentFunctionEntry>(),
-				new SimpleSafeHtmlCell<OrnamentFunctionEntry>(new AbstractSafeHtmlRenderer<OrnamentFunctionEntry>() {
-					final OrnamentFunctionViewTemplates ocvTemplates = GWT.create(OrnamentFunctionViewTemplates.class);
+//		functionSelectionLV = new ListView<OrnamentFunctionEntry, OrnamentFunctionEntry>(functionEntryList,
+//				new IdentityValueProvider<OrnamentFunctionEntry>(),
+//				new SimpleSafeHtmlCell<OrnamentFunctionEntry>(new AbstractSafeHtmlRenderer<OrnamentFunctionEntry>() {
+//					final OrnamentFunctionViewTemplates ocvTemplates = GWT.create(OrnamentFunctionViewTemplates.class);
+//
+//					@Override
+//					public SafeHtml render(OrnamentFunctionEntry entry) {
+//						return ocvTemplates.ornamentFunction(entry.getName());
+//					}
+//
+//				}));
+//		functionSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+//		functionSelectionLV.addDomHandler(getShortkey(), KeyPressEvent.getType());
 
-					@Override
-					public SafeHtml render(OrnamentFunctionEntry entry) {
-						return ocvTemplates.ornamentFunction(entry.getName());
-					}
-
-				}));
-		functionSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
-		functionSelectionLV.addDomHandler(getShortkey(), KeyPressEvent.getType());
-
-		ContentPanel ornamentFunctionPanel = new ContentPanel();
-		ornamentFunctionPanel.setHeaderVisible(true);
-		ornamentFunctionPanel
-				.setToolTip(Util.createToolTip("Search for ornament functions.", "Select one or more elements to search for Ornamentations."));
-		ornamentFunctionPanel.setHeading("Ornament Function");
-		ornamentFunctionPanel.add(functionSelectionLV);
-		ornamentFunctionPanel.getHeader().setStylePrimaryName("frame-header");
-
-		ToolButton resetOrnamentFunctionPanelTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
-		resetOrnamentFunctionPanelTB.setToolTip(Util.createToolTip("Reset selection"));
-		resetOrnamentFunctionPanelTB.addSelectHandler(new SelectHandler() {
-
-			@Override
-			public void onSelect(SelectEvent event) {
-				functionSelectionLV.getSelectionModel().deselectAll();
-			}
-		});
-		ornamentFunctionPanel.addTool(resetOrnamentFunctionPanelTB);
+//		ContentPanel ornamentFunctionPanel = new ContentPanel();
+//		ornamentFunctionPanel.setHeaderVisible(true);
+//		ornamentFunctionPanel
+//				.setToolTip(Util.createToolTip("Search for ornament functions.", "Select one or more elements to search for Ornamentations."));
+//		ornamentFunctionPanel.setHeading("Ornament Function");
+//		ornamentFunctionPanel.add(functionSelectionLV);
+//		ornamentFunctionPanel.getHeader().setStylePrimaryName("frame-header");
+//
+//		ToolButton resetOrnamentFunctionPanelTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
+//		resetOrnamentFunctionPanelTB.setToolTip(Util.createToolTip("Reset selection"));
+//		resetOrnamentFunctionPanelTB.addSelectHandler(new SelectHandler() {
+//
+//			@Override
+//			public void onSelect(SelectEvent event) {
+//				functionSelectionLV.getSelectionModel().deselectAll();
+//			}
+//		});
+//		ornamentFunctionPanel.addTool(resetOrnamentFunctionPanelTB);
 
 		// iconographys? muesste noch bearbeitet werden, soll die Iconography hinzugefuegt werden. Hier bloss ein Platzhalter mit Copy-Paste
 		/*
@@ -983,7 +980,7 @@ public class OrnamenticFilter extends AbstractFilter {
 
 //		accordion.add(headerOrnamentClass);
 		accordion.add(ornamentCavesPanel);
-		accordion.add(ornamentFunctionPanel);
+//		accordion.add(ornamentFunctionPanel);
 		accordion.add(ornamentpositionPanel);
 		accordion.add(ornamentdistrictsPanel);
 		accordion.add(innerSecPanel);
@@ -1003,9 +1000,8 @@ public class OrnamenticFilter extends AbstractFilter {
 		ornamentFilterBLC.addDomHandler(getShortkey(), KeyPressEvent.getType());
 		ornamentFilterBLC.setNorthWidget(codeMotifVLC, new BorderLayoutData(70));
 		ornamentFilterBLC.setCenterWidget(accordion, new MarginData(5, 0, 0, 0));
-		ornamentFilterBLC.setHeight(550);
+		ornamentFilterBLC.setHeight(600);
 		icoSelectionLV = new ListView<IconographyEntry, IconographyEntry>(selectedIconographyLS, new IdentityValueProvider<IconographyEntry>(), new SimpleSafeHtmlCell<IconographyEntry>(new AbstractSafeHtmlRenderer<IconographyEntry>() {
-
 			@Override
 			public SafeHtml render(IconographyEntry item) {
 				IconographyTreeViewTemplates icTemplates = GWT.create(IconographyTreeViewTemplates.class);
@@ -1016,18 +1012,19 @@ public class OrnamenticFilter extends AbstractFilter {
 				return icTemplates.iconographyLabel(name);
 			}
 		}));
-		iconographySpinnerField = new IntegerSpinnerField();
-		iconographySpinnerField.setMinValue(1);
-		iconographySpinnerField.setIncrement(1);
-		iconographySpinnerField.setEnabled(false);
-		iconographySpinnerField.setEditable(false);
-		iconographySpinnerField.addKeyPressHandler(getShortkey());
 		
-		FieldLabel iconographyFieldLabel = new FieldLabel(iconographySpinnerField, "Matching elements");
-		iconographyFieldLabel.setLabelWidth(120);
+//		iconographySpinnerField = new IntegerSpinnerField();
+//		iconographySpinnerField.setMinValue(1);
+//		iconographySpinnerField.setIncrement(1);
+//		iconographySpinnerField.setEnabled(false);
+//		iconographySpinnerField.setEditable(false);
+//		iconographySpinnerField.addKeyPressHandler(getShortkey());
+		
+//		FieldLabel iconographyFieldLabel = new FieldLabel(iconographySpinnerField, "Matching elements");
+//		iconographyFieldLabel.setLabelWidth(120);
 		
 		BorderLayoutContainer iconographyBLC = new BorderLayoutContainer();
-		iconographyBLC.setSouthWidget(iconographyFieldLabel, new BorderLayoutData(25));
+//		iconographyBLC.setSouthWidget(iconographyFieldLabel, new BorderLayoutData(25));
 		iconographyBLC.setCenterWidget(icoSelectionLV, new MarginData(2));
 		
 		ContentPanel iconographyPanel = new ContentPanel();
@@ -1046,13 +1043,6 @@ public class OrnamenticFilter extends AbstractFilter {
 					selectedIconographyLS.clear();
 					selectedIconographyLS.addAll(de.getRelatedIconographyList());
 //					icoSelector.setSelectedIconography(de.getRelatedIconographyList());
-					if ((de.getRelatedIconographyList() != null) && (selectedIconographyLS.size() > 0)) {
-						iconographySpinnerField.setEnabled(true);
-						iconographySpinnerField.setValue(selectedIconographyLS.size());
-						iconographySpinnerField.setMaxValue(selectedIconographyLS.size());
-					} else {
-						iconographySpinnerField.setEnabled(false);
-					}
 				}
 			}
 			
@@ -1080,6 +1070,7 @@ public class OrnamenticFilter extends AbstractFilter {
 			}
 		});
 		iconographyPanel.addTool(iconographySelectionResetTB);
+		ornamentFilterBLC.setSouthWidget(iconographyPanel);
 		return ornamentFilterBLC;
 	}
 
@@ -1091,7 +1082,12 @@ public class OrnamenticFilter extends AbstractFilter {
 
 		// Versenden der Eintraege an den Server nach erfolgter Suche
 		OrnamenticSearchEntry searchEntry = new OrnamenticSearchEntry();
-
+		if (UserLogin.isLoggedIn()) {
+			searchEntry = new OrnamenticSearchEntry(UserLogin.getInstance().getSessionID());
+		} else {
+			searchEntry = new OrnamenticSearchEntry();
+		}
+	
 		if (ornamentCodeSearchTF.getValue() != null && !ornamentCodeSearchTF.getValue().isEmpty()) {
 			searchEntry.setCode(ornamentCodeSearchTF.getValue());
 		}
@@ -1134,9 +1130,9 @@ public class OrnamenticFilter extends AbstractFilter {
 			searchEntry.getPosition().add(oce);
 		}
 
-		for (OrnamentFunctionEntry oce : functionSelectionLV.getSelectionModel().getSelectedItems()) {
-			searchEntry.getFunction().add(oce);
-		}
+//		for (OrnamentFunctionEntry oce : functionSelectionLV.getSelectionModel().getSelectedItems()) {
+//			searchEntry.getFunction().add(oce);
+//		}
 		
 		for (CaveEntry ce : cavesSelectionLV.getSelectionModel().getSelectedItems()) {
 			searchEntry.getCaves().add(ce);
@@ -1150,6 +1146,11 @@ public class OrnamenticFilter extends AbstractFilter {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		for (IconographyEntry ie : selectedIconographyLS.getAll()) {
+			searchEntry.getIconography().add(ie);
+		}
+		
+
 
 		return searchEntry;
 	}
@@ -1164,13 +1165,6 @@ public class OrnamenticFilter extends AbstractFilter {
 				public void onSelect(SelectEvent event) {
 					selectedIconographyLS.clear();
 					selectedIconographyLS.addAll(icoSelector.getSelectedIconography());
-					if ((icoSelector.getSelectedIconography() != null) && (selectedIconographyLS.size() > 0)) {
-						iconographySpinnerField.setEnabled(true);
-						iconographySpinnerField.setValue(selectedIconographyLS.size());
-						iconographySpinnerField.setMaxValue(selectedIconographyLS.size());
-					} else {
-						iconographySpinnerField.setEnabled(false);
-					}
 					extendedFilterDialog.hide();
 					invokeSearch();
 				}

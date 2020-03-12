@@ -4,13 +4,13 @@ import java.util.ArrayList;
 
 public class OrnamenticSearchEntry extends AbstractSearchEntry {
 
-	private String code;
-	private String description;
-	private String remarks;
-	private String interpretation;
-	private String references;
-	private String similaritys;
-	private String group; // heisst mittlerweile unit
+	private String code ="";
+	private String description="";
+	private String remarks="";
+	private String interpretation="";
+	private String references="";
+	private String similaritys="";
+	private String group=""; // heisst mittlerweile unit
 	private OrnamentClassEntry ornamentClass; // heisst mittlerweile motif
 	private StyleEntry style; // fehlt noch, wurde bisher nicht gewuenscht.
 	private ArrayList<CaveEntry> caves = new ArrayList<CaveEntry>();
@@ -21,6 +21,7 @@ public class OrnamenticSearchEntry extends AbstractSearchEntry {
 	private ArrayList<IconographyEntry> iconographys = new ArrayList<IconographyEntry>();
 	private ArrayList<OrnamentPositionEntry> position = new ArrayList<OrnamentPositionEntry>();
 	private ArrayList<OrnamentFunctionEntry> function = new ArrayList<OrnamentFunctionEntry>();
+	private ArrayList<IconographyEntry> iconography = new ArrayList<IconographyEntry>();
 
 	/**
 	 * 
@@ -49,6 +50,17 @@ public class OrnamenticSearchEntry extends AbstractSearchEntry {
 	 */
 	public String getCode() {
 		return code;
+	}
+
+	/**
+	 * @param code
+	 *          the code to set
+	 */
+	public void setIconography(ArrayList<IconographyEntry> iconography) {
+		this.iconography = iconography;
+	}
+	public ArrayList<IconographyEntry> getIconography() {
+		return iconography;
 	}
 
 	/**
