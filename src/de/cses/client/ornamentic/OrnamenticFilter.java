@@ -135,13 +135,13 @@ public class OrnamenticFilter extends AbstractFilter {
 	private DistrictsProperties districtsProps;
 	private ListView<DistrictEntry, DistrictEntry> districtsSelectionLV;
 
-	private ListStore<InnerSecondaryPatternsEntry> innerSecondaryPatternsEntryList;
-	private InnerSecondaryPatternsProperties innerSecondaryPatternsProps;
-	private ListView<InnerSecondaryPatternsEntry, InnerSecondaryPatternsEntry> innerSecondaryPatternsSelectionLV;
+//	private ListStore<InnerSecondaryPatternsEntry> innerSecondaryPatternsEntryList;
+//	private InnerSecondaryPatternsProperties innerSecondaryPatternsProps;
+//	private ListView<InnerSecondaryPatternsEntry, InnerSecondaryPatternsEntry> innerSecondaryPatternsSelectionLV;
 
-	private ListStore<OrnamentEntry> relatedOrnamentsEntryList;
-	private RelatedOrnamentsProperties relatedOrnamentsProps;
-	private ListView<OrnamentEntry, OrnamentEntry> relatedOrnamentsSelectionLV;
+//	private ListStore<OrnamentEntry> relatedOrnamentsEntryList;
+//	private RelatedOrnamentsProperties relatedOrnamentsProps;
+//	private ListView<OrnamentEntry, OrnamentEntry> relatedOrnamentsSelectionLV;
 
 	private ListStore<OrnamentPositionEntry> positionEntryList;
 	private PositionProperties positionProps;
@@ -304,9 +304,9 @@ public class OrnamenticFilter extends AbstractFilter {
 		ornamentComponentsEntryList = new ListStore<OrnamentComponentsEntry>(ornamentComponentsProps.ornamentComponentsID());
 		loadOrnamentComponentsEntryList();
 
-		innerSecondaryPatternsProps = GWT.create(InnerSecondaryPatternsProperties.class);
-		innerSecondaryPatternsEntryList = new ListStore<InnerSecondaryPatternsEntry>(innerSecondaryPatternsProps.innerSecondaryPatternsID());
-		loadInnerSecondaryPatternsEntryList();
+//		innerSecondaryPatternsProps = GWT.create(InnerSecondaryPatternsProperties.class);
+//		innerSecondaryPatternsEntryList = new ListStore<InnerSecondaryPatternsEntry>(innerSecondaryPatternsProps.innerSecondaryPatternsID());
+//		loadInnerSecondaryPatternsEntryList();
 
 		cavesProps = GWT.create(CaveEntryProperties.class);
 		cavesEntryList = new ListStore<CaveEntry>(cavesProps.caveID());
@@ -320,9 +320,9 @@ public class OrnamenticFilter extends AbstractFilter {
 		siteEntryList = new ListStore<SiteEntry>(siteProps.siteID());
 		loadSites();
 
-		relatedOrnamentsProps = GWT.create(RelatedOrnamentsProperties.class);
-		relatedOrnamentsEntryList = new ListStore<OrnamentEntry>(relatedOrnamentsProps.ornamentID());
-		loadOrnamentEntryList();
+//		relatedOrnamentsProps = GWT.create(RelatedOrnamentsProperties.class);
+//		relatedOrnamentsEntryList = new ListStore<OrnamentEntry>(relatedOrnamentsProps.ornamentID());
+//		loadOrnamentEntryList();
 
 //		functionProps = GWT.create(FunctionProperties.class);
 //		functionEntryList = new ListStore<OrnamentFunctionEntry>(functionProps.ornamentFunctionID());
@@ -428,23 +428,23 @@ public class OrnamenticFilter extends AbstractFilter {
 		// });
 	}
 
-	private void loadOrnamentEntryList() {
-		dbService.getOrnaments(new AsyncCallback<ArrayList<OrnamentEntry>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(ArrayList<OrnamentEntry> result) {
-				relatedOrnamentsEntryList.clear();
-				for (OrnamentEntry pe : result) {
-					relatedOrnamentsEntryList.add(pe);
-				}
-			}
-		});
-	}
+//	private void loadOrnamentEntryList() {
+//		dbService.getOrnaments(new AsyncCallback<ArrayList<OrnamentEntry>>() {
+//
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				caught.printStackTrace();
+//			}
+//
+//			@Override
+//			public void onSuccess(ArrayList<OrnamentEntry> result) {
+//				relatedOrnamentsEntryList.clear();
+//				for (OrnamentEntry pe : result) {
+//					relatedOrnamentsEntryList.add(pe);
+//				}
+//			}
+//		});
+//	}
 
 //	private void loadFunctionEntryList() {
 //		dbService.getOrnamentFunctions(new AsyncCallback<ArrayList<OrnamentFunctionEntry>>() {
@@ -501,23 +501,23 @@ public class OrnamenticFilter extends AbstractFilter {
 
 	}
 
-	private void loadInnerSecondaryPatternsEntryList() {
-		dbService.getInnerSecondaryPatterns(new AsyncCallback<ArrayList<InnerSecondaryPatternsEntry>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(ArrayList<InnerSecondaryPatternsEntry> result) {
-				innerSecondaryPatternsEntryList.clear();
-				for (InnerSecondaryPatternsEntry pe : result) {
-					innerSecondaryPatternsEntryList.add(pe);
-				}
-			}
-		});
-	}
+//	private void loadInnerSecondaryPatternsEntryList() {
+//		dbService.getInnerSecondaryPatterns(new AsyncCallback<ArrayList<InnerSecondaryPatternsEntry>>() {
+//
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				caught.printStackTrace();
+//			}
+//
+//			@Override
+//			public void onSuccess(ArrayList<InnerSecondaryPatternsEntry> result) {
+//				innerSecondaryPatternsEntryList.clear();
+//				for (InnerSecondaryPatternsEntry pe : result) {
+//					innerSecondaryPatternsEntryList.add(pe);
+//				}
+//			}
+//		});
+//	}
 
 	/*
 	 * (non-Javadoc)
@@ -725,71 +725,71 @@ public class OrnamenticFilter extends AbstractFilter {
 
 		// seconpary patterns
 
-		innerSecondaryPatternsSelectionLV = new ListView<InnerSecondaryPatternsEntry, InnerSecondaryPatternsEntry>(
-				innerSecondaryPatternsEntryList, new IdentityValueProvider<InnerSecondaryPatternsEntry>(),
-				new SimpleSafeHtmlCell<InnerSecondaryPatternsEntry>(new AbstractSafeHtmlRenderer<InnerSecondaryPatternsEntry>() {
-					final InnerSecondaryPatternsViewTemplates ocvTemplates = GWT.create(InnerSecondaryPatternsViewTemplates.class);
+//		innerSecondaryPatternsSelectionLV = new ListView<InnerSecondaryPatternsEntry, InnerSecondaryPatternsEntry>(
+//				innerSecondaryPatternsEntryList, new IdentityValueProvider<InnerSecondaryPatternsEntry>(),
+//				new SimpleSafeHtmlCell<InnerSecondaryPatternsEntry>(new AbstractSafeHtmlRenderer<InnerSecondaryPatternsEntry>() {
+//					final InnerSecondaryPatternsViewTemplates ocvTemplates = GWT.create(InnerSecondaryPatternsViewTemplates.class);
+//
+//					@Override
+//					public SafeHtml render(InnerSecondaryPatternsEntry entry) {
+//						return ocvTemplates.innerSecondaryPatternsLabel(entry.getName());
+//					}
+//
+//				}));
+//		innerSecondaryPatternsSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+//		innerSecondaryPatternsSelectionLV.addDomHandler(getShortkey(), KeyPressEvent.getType());
 
-					@Override
-					public SafeHtml render(InnerSecondaryPatternsEntry entry) {
-						return ocvTemplates.innerSecondaryPatternsLabel(entry.getName());
-					}
-
-				}));
-		innerSecondaryPatternsSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
-		innerSecondaryPatternsSelectionLV.addDomHandler(getShortkey(), KeyPressEvent.getType());
-
-		ContentPanel innerSecPanel = new ContentPanel();
-		innerSecPanel.setHeaderVisible(true);
-		innerSecPanel.setToolTip(
-				Util.createToolTip("Search for inner secondary patterns.", "Select one or more elements to search for Ornamentations."));
-		innerSecPanel.setHeading("InnerSecondary Pattern");
-		innerSecPanel.add(innerSecondaryPatternsSelectionLV);
-		innerSecPanel.getHeader().setStylePrimaryName("frame-header");
-
-		ToolButton resetInnerSecPanelTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
-		resetInnerSecPanelTB.setToolTip(Util.createToolTip("Reset selection"));
-		resetInnerSecPanelTB.addSelectHandler(new SelectHandler() {
-
-			@Override
-			public void onSelect(SelectEvent event) {
-				innerSecondaryPatternsSelectionLV.getSelectionModel().deselectAll();
-			}
-		});
-		innerSecPanel.addTool(resetInnerSecPanelTB);
+//		ContentPanel innerSecPanel = new ContentPanel();
+//		innerSecPanel.setHeaderVisible(true);
+//		innerSecPanel.setToolTip(
+//				Util.createToolTip("Search for inner secondary patterns.", "Select one or more elements to search for Ornamentations."));
+//		innerSecPanel.setHeading("InnerSecondary Pattern");
+//		innerSecPanel.add(innerSecondaryPatternsSelectionLV);
+//		innerSecPanel.getHeader().setStylePrimaryName("frame-header");
+//
+//		ToolButton resetInnerSecPanelTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
+//		resetInnerSecPanelTB.setToolTip(Util.createToolTip("Reset selection"));
+//		resetInnerSecPanelTB.addSelectHandler(new SelectHandler() {
+//
+//			@Override
+//			public void onSelect(SelectEvent event) {
+//				innerSecondaryPatternsSelectionLV.getSelectionModel().deselectAll();
+//			}
+//		});
+//		innerSecPanel.addTool(resetInnerSecPanelTB);
 
 		// related ornaments
-		relatedOrnamentsSelectionLV = new ListView<OrnamentEntry, OrnamentEntry>(relatedOrnamentsEntryList,
-				new IdentityValueProvider<OrnamentEntry>(), new SimpleSafeHtmlCell<OrnamentEntry>(new AbstractSafeHtmlRenderer<OrnamentEntry>() {
-					final OrnamentViewTemplates ocvTemplates = GWT.create(OrnamentViewTemplates.class);
+//		relatedOrnamentsSelectionLV = new ListView<OrnamentEntry, OrnamentEntry>(relatedOrnamentsEntryList,
+//				new IdentityValueProvider<OrnamentEntry>(), new SimpleSafeHtmlCell<OrnamentEntry>(new AbstractSafeHtmlRenderer<OrnamentEntry>() {
+//					final OrnamentViewTemplates ocvTemplates = GWT.create(OrnamentViewTemplates.class);
+//
+//					@Override
+//					public SafeHtml render(OrnamentEntry entry) {
+//						return ocvTemplates.ornament(entry.getCode());
+//					}
+//
+//				}));
+//		relatedOrnamentsSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+//		relatedOrnamentsSelectionLV.addDomHandler(getShortkey(), KeyPressEvent.getType());
 
-					@Override
-					public SafeHtml render(OrnamentEntry entry) {
-						return ocvTemplates.ornament(entry.getCode());
-					}
-
-				}));
-		relatedOrnamentsSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
-		relatedOrnamentsSelectionLV.addDomHandler(getShortkey(), KeyPressEvent.getType());
-
-		ContentPanel relatedornamentPanel = new ContentPanel();
-		relatedornamentPanel.setHeaderVisible(true);
-		relatedornamentPanel
-				.setToolTip(Util.createToolTip("Search for related ornaments.", "Select one or more elements to search for Ornamentations."));
-		relatedornamentPanel.setHeading("Related Ornaments");
-		relatedornamentPanel.add(relatedOrnamentsSelectionLV);
-		relatedornamentPanel.getHeader().setStylePrimaryName("frame-header");
-
-		ToolButton resetrelatedOrnamentsPanelTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
-		resetrelatedOrnamentsPanelTB.setToolTip(Util.createToolTip("Reset selection"));
-		resetrelatedOrnamentsPanelTB.addSelectHandler(new SelectHandler() {
-
-			@Override
-			public void onSelect(SelectEvent event) {
-				relatedOrnamentsSelectionLV.getSelectionModel().deselectAll();
-			}
-		});
-		relatedornamentPanel.addTool(resetrelatedOrnamentsPanelTB);
+//		ContentPanel relatedornamentPanel = new ContentPanel();
+//		relatedornamentPanel.setHeaderVisible(true);
+//		relatedornamentPanel
+//				.setToolTip(Util.createToolTip("Search for related ornaments.", "Select one or more elements to search for Ornamentations."));
+//		relatedornamentPanel.setHeading("Related Ornaments");
+//		relatedornamentPanel.add(relatedOrnamentsSelectionLV);
+//		relatedornamentPanel.getHeader().setStylePrimaryName("frame-header");
+//
+//		ToolButton resetrelatedOrnamentsPanelTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
+//		resetrelatedOrnamentsPanelTB.setToolTip(Util.createToolTip("Reset selection"));
+//		resetrelatedOrnamentsPanelTB.addSelectHandler(new SelectHandler() {
+//
+//			@Override
+//			public void onSelect(SelectEvent event) {
+//				relatedOrnamentsSelectionLV.getSelectionModel().deselectAll();
+//			}
+//		});
+//		relatedornamentPanel.addTool(resetrelatedOrnamentsPanelTB);
 
 		// position
 
@@ -983,8 +983,8 @@ public class OrnamenticFilter extends AbstractFilter {
 //		accordion.add(ornamentFunctionPanel);
 		accordion.add(ornamentpositionPanel);
 		accordion.add(ornamentdistrictsPanel);
-		accordion.add(innerSecPanel);
-		accordion.add(relatedornamentPanel);
+//		accordion.add(innerSecPanel);
+//		accordion.add(relatedornamentPanel);
 		accordion.add(ornamentComponentsPanel);
 		accordion.add(textSearch);
 
@@ -1114,17 +1114,17 @@ public class OrnamenticFilter extends AbstractFilter {
 			searchEntry.getComponents().add(oce);
 		}
 
-		for (InnerSecondaryPatternsEntry oce : innerSecondaryPatternsSelectionLV.getSelectionModel().getSelectedItems()) {
-			searchEntry.getSecondarypatterns().add(oce);
-		}
+//		for (InnerSecondaryPatternsEntry oce : innerSecondaryPatternsSelectionLV.getSelectionModel().getSelectedItems()) {
+//			searchEntry.getSecondarypatterns().add(oce);
+//		}
 
 		for (DistrictEntry oce : districtsSelectionLV.getSelectionModel().getSelectedItems()) {
 			searchEntry.getDistricts().add(oce);
 		}
 
-		for (OrnamentEntry oce : relatedOrnamentsSelectionLV.getSelectionModel().getSelectedItems()) {
-			searchEntry.getRelatedOrnaments().add(oce);
-		}
+//		for (OrnamentEntry oce : relatedOrnamentsSelectionLV.getSelectionModel().getSelectedItems()) {
+//			searchEntry.getRelatedOrnaments().add(oce);
+//		}
 
 		for (OrnamentPositionEntry oce : positionSelectionLV.getSelectionModel().getSelectedItems()) {
 			searchEntry.getPosition().add(oce);
