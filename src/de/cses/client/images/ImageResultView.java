@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.sencha.gxt.dnd.core.client.DndDropEvent;
@@ -36,6 +38,7 @@ import de.cses.shared.DepictionEntry;
 import de.cses.shared.DepictionSearchEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageSearchEntry;
+import de.cses.shared.OrnamentEntry;
 
 /**
  * @author alingnau
@@ -107,76 +110,57 @@ public class ImageResultView extends AbstractResultView {
 			@Override
 			protected void onDragDrop(DndDropEvent event) {
 				super.onDragDrop(event);
-				clear();
+				ImageSearchEntry searchEntry;
 				if (UserLogin.isLoggedIn()) {
 					searchEntry = new ImageSearchEntry(UserLogin.getInstance().getSessionID());
 				} else {
 					searchEntry = new ImageSearchEntry();
 				}
-				if (event.getData() instanceof DepictionEntry) {
-					String imageIDs="";
-					Util.doLogging("Instance is DepictionEntry, will extract images.");
-					int count=0;
-					String where = "";
-					for (ImageEntry ie : ((DepictionEntry) event.getData()).getRelatedImages()) {
-						if (where=="") {
-							where=Integer.toString(ie.getImageID());
-						}
-						else {
-							where=where+","+Integer.toString(ie.getImageID());
+				if (event.getData() instanceof CaveEntry) {
+					int caveID = ((CaveEntry) event.getData()).getCaveID();
+					DepictionSearchEntry depictionSearchEntry = new DepictionSearchEntry();
+					depictionSearchEntry.getCaveIdList().add(caveID);
+					
+				} else if (event.getData() instanceof AnnotatedBibliographyEntry) {
+					int bibID = ((AnnotatedBibliographyEntry) event.getData()).getAnnotatedBibliographyID();
+					searchEntry.getBibIdList().add(bibID);
+				} else if (event.getData() instanceof DepictionEntry) {
+					for (ImageEntry img : ((DepictionEntry)event.getData()).getRelatedImages()) {
+						searchEntry.getImageIdList().add(img.getImageID());						
+					}
+				} else if (event.getData() instanceof OrnamentEntry) {
+					ArrayList<ImageEntry> imgIDs = ((OrnamentEntry) event.getData()).getImages();
+					if (imgIDs!=null) {
+						if (imgIDs.size()>0) {
+							for (ImageEntry img: imgIDs) {
+								searchEntry.getImageIdList().add(img.getImageID());
+							}	
 						}
 					}
-					dbService.getImages("ImageID in ("+where+")", new AsyncCallback<ArrayList<ImageEntry>>() {
-
-						@Override
-						public void onSuccess(ArrayList<ImageEntry> result) {
-							Info.display("Größe des Results: ",Integer.toString(result.size()));
-							int count=0;
-							String imageIDs="";
-							searchEntry.setEntriesShowed(searchEntry.getEntriesShowed()+searchEntry.getMaxentries());
-							for (ImageEntry ie : result) {
-								count++;
-								addResult(new ImageView(ie,UriUtils.fromTrustedString("icons/load_active.png")));
-								if (imageIDs == "") {
-									imageIDs = Integer.toString(ie.getImageID());
-								}
-								else {
-									imageIDs = imageIDs + ","+Integer.toString(ie.getImageID());
-								}
-								if (count==20 ){
-									getPics(imageIDs, 120, UserLogin.getInstance().getSessionID());
-									imageIDs="";
-									count=0;
-								}
-							}
-							getPics(imageIDs, 120, UserLogin.getInstance().getSessionID());				
-
-							setSearchbuttonHide();
-							
-						}
-
-						@Override
-						public void onFailure(Throwable caught) {
-							caught.printStackTrace();
-							setSearchEnabled(true);
-						}
-					});
-						//addResult(new ImageView(ie,UriUtils.fromTrustedString("icons/load_active.png")));
-						//if (imageIDs == "") {
-						//	imageIDs = Integer.toString(ie.getImageID());
-						//}
-						//else {
-						//	imageIDs = imageIDs + ","+Integer.toString(ie.getImageID());
-						//}
-						//if (count==20 ){
-						//	getPics(imageIDs, 120, UserLogin.getInstance().getSessionID());
-						//	imageIDs="";
-						//	count=0;
-						//}
-					if (imageIDs != "") {
-						getPics(imageIDs, 120, UserLogin.getInstance().getSessionID());				
-					}
+				} else {
+					return;
 				}
+				boolean startsearch=(searchEntry.getCaveIdList().size()>0)||(searchEntry.getBibIdList().size()>0)||(searchEntry.getImageIdList().size()>0);
+				Util.doLogging(Boolean.toString(startsearch));
+				Util.showYesNo("Delete old filters?", "Do you whisch to delete old filters?", new SelectHandler() {
+					
+					@Override
+					public void onSelect(SelectEvent event) {
+						initiateSearch(searchEntry,startsearch,true);
+					}
+				}, new SelectHandler() {
+					
+					@Override
+					public void onSelect(SelectEvent event) {
+						initiateSearch(searchEntry,startsearch,false);
+					}},
+					new KeyDownHandler() {
+						public void onKeyDown(KeyDownEvent e) {
+							initiateSearch(searchEntry,startsearch,true);
+					}
+				});
+
+//				}
 			}
 		};
 	}

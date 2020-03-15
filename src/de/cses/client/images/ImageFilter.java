@@ -13,6 +13,8 @@
  */
 package de.cses.client.images;
 
+import java.util.ArrayList;
+
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -20,12 +22,10 @@ import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
-import com.sencha.gxt.core.client.XTemplates.XTemplate;
 import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
@@ -69,6 +69,9 @@ public class ImageFilter extends AbstractFilter {
 	private ImageTypeProperties imageTypeProps;
 	private ListStore<ImageTypeEntry> imageTypeEntryList, selectedImagesTypesList;
 	private NumberField<Integer> daysSinceUploadSearch;
+	private ArrayList<Integer> ImgIDs = new ArrayList<Integer>();
+	private ArrayList<Integer> caveIDs = new ArrayList<Integer>();
+	private ArrayList<Integer> BibIDs = new ArrayList<Integer>();
 
 	interface ImageTypeProperties extends PropertyAccess<ImageTypeEntry> {
 		ModelKeyProvider<ImageTypeEntry> imageTypeID();
@@ -159,9 +162,43 @@ public class ImageFilter extends AbstractFilter {
 		vlc.setHeight("300px");
 		return vlc;
 	}
+	private void clear() {
+		titleSearch.clear();;
+		copyrightSearch.clear();;
+		commentSearch.clear();
+		daysSinceUploadSearch.clear();
+		ImgIDs.clear();
+		caveIDs.clear();
+		BibIDs.clear();
+
+	}
 	@Override
 	public void setSearchEntry(AbstractSearchEntry searchEntry, boolean reset) {
-		
+		if (reset) {
+			clear();			
+		}
+		if (((ImageSearchEntry)searchEntry).getImageIdList()!= null && !((ImageSearchEntry)searchEntry).getImageIdList().isEmpty()) {
+			for (int img :((ImageSearchEntry)searchEntry).getImageIdList()) {
+				ImgIDs.add(img);
+			}
+		}
+		if (((ImageSearchEntry)searchEntry).getCaveIdList()!= null && !((ImageSearchEntry)searchEntry).getCaveIdList().isEmpty()) {
+			for (int img :((ImageSearchEntry)searchEntry).getCaveIdList()) {
+				caveIDs.add(img);
+			}
+		}
+		if (((ImageSearchEntry)searchEntry).getCaveIdList()!= null && !((ImageSearchEntry)searchEntry).getCaveIdList().isEmpty()) {
+			for (int img :((ImageSearchEntry)searchEntry).getCaveIdList()) {
+				caveIDs.add(img);
+			}
+		}
+		if (((ImageSearchEntry)searchEntry).getBibIdList()!= null && !((ImageSearchEntry)searchEntry).getBibIdList().isEmpty()) {
+			for (int img :((ImageSearchEntry)searchEntry).getBibIdList()) {
+				BibIDs.add(img);
+			}
+		}
+				
+
 	}
 
 	@Override
@@ -179,6 +216,9 @@ public class ImageFilter extends AbstractFilter {
 		
 		if (copyrightSearch.getValue() != null && !copyrightSearch.getValue().isEmpty()) {
 			searchEntry.setCopyrightSearch(copyrightSearch.getValue());
+		}
+		if ( !ImgIDs.isEmpty()) {
+			searchEntry.setImageIdList(ImgIDs);
 		}
 		
 		if (commentSearch.getValue() != null && !commentSearch.getValue().isEmpty()) {

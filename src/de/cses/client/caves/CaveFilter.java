@@ -13,15 +13,12 @@
  */
 package de.cses.client.caves;
 
-import java.util.Comparator;
+import java.util.ArrayList;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
-import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
 import com.sencha.gxt.core.client.IdentityValueProvider;
@@ -57,6 +54,7 @@ import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractSearchEntry;
 import de.cses.shared.CaveSearchEntry;
 import de.cses.shared.CaveTypeEntry;
+import de.cses.shared.DepictionSearchEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
@@ -85,6 +83,7 @@ public class CaveFilter extends AbstractFilter {
 	private ListView<SiteEntry, SiteEntry> siteSelectionLV;
 	private TextField searchNameTF;
 	private CheckBox decoratedOnlyCB;
+	private ArrayList<Integer> CaveIDs = new ArrayList<Integer>();
 
 	interface DistrictProperties extends PropertyAccess<DistrictEntry> {
 		ModelKeyProvider<DistrictEntry> districtID();
@@ -365,8 +364,25 @@ public class CaveFilter extends AbstractFilter {
 		}
 	}
 	@Override
-	public void setSearchEntry(AbstractSearchEntry SearchEntry, boolean reset) {
+	public void setSearchEntry(AbstractSearchEntry searchEntry, boolean reset) {
+		if (reset) {
+			clear();			
+		}
+		if (((CaveSearchEntry)searchEntry).getCaveIdList()!= null && !((CaveSearchEntry)searchEntry).getCaveIdList().isEmpty()) {
+			for ( Integer caveID :((CaveSearchEntry)searchEntry).getCaveIdList()) {
+				CaveIDs.add(caveID);
+			}
+		}
 		
+		
+	}
+	public void clear() {
+		districtSelectionLV.getSelectionModel().deselectAll();
+		regionSelectionLV.getSelectionModel().deselectAll();;
+		siteSelectionLV.getSelectionModel().deselectAll();;
+		searchNameTF.clear();;
+		decoratedOnlyCB.clear();
+		CaveIDs.clear();
 	}
 
 	@Override

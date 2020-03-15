@@ -19,7 +19,7 @@ public class OrnamenticSearchEntry extends AbstractSearchEntry {
 	private ArrayList<DistrictEntry> districts = new ArrayList<DistrictEntry>();
 	private ArrayList<OrnamentEntry> relatedOrnaments = new ArrayList<OrnamentEntry>();
 	private ArrayList<IconographyEntry> iconographys = new ArrayList<IconographyEntry>();
-	private ArrayList<OrnamentPositionEntry> position = new ArrayList<OrnamentPositionEntry>();
+	private ArrayList<PositionEntry> position = new ArrayList<PositionEntry>();
 	private ArrayList<OrnamentFunctionEntry> function = new ArrayList<OrnamentFunctionEntry>();
 	private ArrayList<IconographyEntry> iconography = new ArrayList<IconographyEntry>();
 
@@ -269,7 +269,7 @@ public class OrnamenticSearchEntry extends AbstractSearchEntry {
 	/**
 	 * @return the position
 	 */
-	public ArrayList<OrnamentPositionEntry> getPosition() {
+	public ArrayList<PositionEntry> getPosition() {
 		return position;
 	}
 
@@ -277,7 +277,7 @@ public class OrnamenticSearchEntry extends AbstractSearchEntry {
 	 * @param position
 	 *          the position to set
 	 */
-	public void setPosition(ArrayList<OrnamentPositionEntry> position) {
+	public void setPosition(ArrayList<PositionEntry> position) {
 		this.position = position;
 	}
 

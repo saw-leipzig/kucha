@@ -37,12 +37,13 @@ public class CaveResultView extends AbstractResultView {
 
 			@Override
 			protected void onDragDrop(DndDropEvent event) {
-				super.onDragDrop(event);
-				if (event.getData() instanceof OrnamentEntry) {
-					for (OrnamentCaveRelation ocr : ((OrnamentEntry)event.getData()).getCavesRelations()) {
-						addResult(new CaveView(ocr.getCaveEntry()));
-					}
-				}
+//				super.onDragDrop(event);
+//				if (event.getData() instanceof OrnamentEntry) {
+//					for (OrnamentCaveRelation ocr : ((OrnamentEntry)event.getData()).getCavesRelations()) {
+//						addResult(new CaveView(ocr.getCaveEntry()));
+//					}
+//				}
+				
 			}
 		};
 	}
