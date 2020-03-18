@@ -75,7 +75,6 @@ import de.cses.shared.OrnamentClassEntry;
 import de.cses.shared.OrnamentComponentsEntry;
 import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamentFunctionEntry;
-import de.cses.shared.OrnamentPositionEntry;
 import de.cses.shared.OrnamenticSearchEntry;
 import de.cses.shared.PositionEntry;
 import de.cses.shared.RegionEntry;
@@ -132,6 +131,7 @@ public class OrnamenticFilter extends AbstractFilter {
 	private ListStore<DistrictEntry> districtsEntryList;
 	private DistrictsProperties districtsProps;
 	private ListView<DistrictEntry, DistrictEntry> districtsSelectionLV;
+
 
 //	private ListStore<InnerSecondaryPatternsEntry> innerSecondaryPatternsEntryList;
 //	private InnerSecondaryPatternsProperties innerSecondaryPatternsProps;
@@ -340,6 +340,24 @@ public class OrnamenticFilter extends AbstractFilter {
 		selectedIconographyLS = new ListStore<>(icoProps.iconographyID());
 
 	}
+	@Override
+	public void clear() {
+		ornamentCodeSearchTF.clear();
+		ornamentDeskriptionSearchTF.clear();
+		ornamentRemarksSearchTF.clear();;
+		ornamentInterpretationSearchTF.clear();;
+		ornamentReferencesSearchTF.clear();;
+		ornamentOrnamentalGroupSearchTF.clear();;
+		ornamentSimilaritiesSearchTF.clear();;
+		icoSelectionLV.getSelectionModel().deselectAll();;
+		ornamentClassComboBox.clear();;
+		ornamentComponentsSelectionLV.getSelectionModel().deselectAll();;
+		cavesEntryList.clear();;
+		cavesSelectionLV.getSelectionModel().deselectAll();;
+		districtsSelectionLV.getSelectionModel().deselectAll();;
+		positionSelectionLV.getSelectionModel().deselectAll();;
+
+	}
 
 	// Laden aller Daten aus der Datenbank
 	private void loadOrnamentClassEntryList() {
@@ -482,19 +500,45 @@ public class OrnamenticFilter extends AbstractFilter {
 	@Override
 	public void setSearchEntry(AbstractSearchEntry searchEntry, boolean reset) {
 		// Versenden der Eintraege an den Server nach erfolgter Suche
-
-		
-		for (CaveEntry ce : cavesSelectionLV.getSelectionModel().getSelectedItems()) {
-			((OrnamenticSearchEntry)searchEntry).getCaves().add(ce);
+		if (reset) {
+			clear();
 		}
-		
-		try {
-			if (!(ornamentClassComboBox.getValueOrThrow() == null)) {
-				((OrnamenticSearchEntry)searchEntry).setOrnamentClass(ornamentClassComboBox.getValue());
+		if (((OrnamenticSearchEntry)searchEntry).getCaves()!=null) {
+			if (((OrnamenticSearchEntry)searchEntry).getCaves().isEmpty()) {
+				for (CaveEntry ce : ((OrnamenticSearchEntry)searchEntry).getCaves()) {
+					cavesSelectionLV.getSelectionModel().select(true, ce);
+				}
 			}
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		}
+		if (((OrnamenticSearchEntry)searchEntry).getCode().isEmpty()) {
+			ornamentCodeSearchTF.setValue(((OrnamenticSearchEntry)searchEntry).getCode(), true);
+		}
+		if (((OrnamenticSearchEntry)searchEntry).getDescription().isEmpty()) {
+			ornamentDeskriptionSearchTF.setValue(((OrnamenticSearchEntry)searchEntry).getDescription(), true);
+		}
+		if (((OrnamenticSearchEntry)searchEntry).getInterpretation().isEmpty()) {
+			ornamentInterpretationSearchTF.setValue(((OrnamenticSearchEntry)searchEntry).getInterpretation(), true);
+		}
+		if ((((OrnamenticSearchEntry)searchEntry).getComponents()!=null)&&(((OrnamenticSearchEntry)searchEntry).getComponents().isEmpty())) {
+			for (OrnamentComponentsEntry oce :((OrnamenticSearchEntry)searchEntry).getComponents()) {
+				ornamentComponentsSelectionLV.getSelectionModel().select(oce, true);
+			}
+		}
+
+		if ((((OrnamenticSearchEntry)searchEntry).getPosition()!=null)&&(((OrnamenticSearchEntry)searchEntry).getPosition().isEmpty())) {
+			for (PositionEntry pe :((OrnamenticSearchEntry)searchEntry).getPosition()) {
+				positionSelectionLV.getSelectionModel().select(pe, true);
+			}
+		}
+
+		if ((((OrnamenticSearchEntry)searchEntry).getOrnamentClass()!=null)) {
+			ornamentClassComboBox.setValue(((OrnamenticSearchEntry)searchEntry).getOrnamentClass());
+		}
+
+		if ((((OrnamenticSearchEntry)searchEntry).getIconography()!=null)&&(((OrnamenticSearchEntry)searchEntry).getIconography().isEmpty())) {
+			for (IconographyEntry ie :((OrnamenticSearchEntry)searchEntry).getIconography()) {
+				selectedIconographyLS.add(ie);
+			}
 		}
 
 	}

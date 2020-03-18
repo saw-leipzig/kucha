@@ -13,12 +13,23 @@
  */
 package de.cses.client.caves;
 
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.sencha.gxt.dnd.core.client.DndDropEvent;
 import com.sencha.gxt.dnd.core.client.DropTarget;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
+import de.cses.client.StaticTables;
+import de.cses.client.Util;
 import de.cses.client.ui.AbstractResultView;
-import de.cses.shared.OrnamentCaveRelation;
+import de.cses.client.user.UserLogin;
+import de.cses.shared.AnnotatedBibliographyEntry;
+import de.cses.shared.CaveSearchEntry;
+import de.cses.shared.DepictionEntry;
+import de.cses.shared.ImageEntry;
 import de.cses.shared.OrnamentEntry;
+import de.cses.shared.SiteEntry;
 
 /**
  * @author alingnau
@@ -37,15 +48,56 @@ public class CaveResultView extends AbstractResultView {
 
 			@Override
 			protected void onDragDrop(DndDropEvent event) {
-//				super.onDragDrop(event);
-//				if (event.getData() instanceof OrnamentEntry) {
-//					for (OrnamentCaveRelation ocr : ((OrnamentEntry)event.getData()).getCavesRelations()) {
-//						addResult(new CaveView(ocr.getCaveEntry()));
-//					}
-//				}
-				
+				super.onDragDrop(event);
+				CaveSearchEntry searchEntry;
+				if (UserLogin.isLoggedIn()) {
+					searchEntry = new CaveSearchEntry(UserLogin.getInstance().getSessionID());
+				} else {
+					searchEntry = new CaveSearchEntry();
+				}
+				if (event.getData() instanceof DepictionEntry) {
+					searchEntry.getCaveIdList().add(((DepictionEntry) event.getData()).getCave().getCaveID());
+				}
+				else if (event.getData() instanceof OrnamentEntry) {
+					searchEntry.geticonographyIDList().add(((OrnamentEntry) event.getData()).getIconographyID());
+				}
+				else if (event.getData() instanceof ImageEntry) {
+					String[] splitted = ((ImageEntry) event.getData()).getShortName().split(" ");
+					Util.doLogging(splitted[0]+" - "+splitted[1]);
+					searchEntry.getOfficialNumberList().add(splitted[1]);
+					for (SiteEntry se : StaticTables.getInstance().getSiteEntries().values()) {
+						if (se.getShortName()==splitted[0]) {
+							searchEntry.getSiteIdList().add(se.getSiteID());
+							break;
+						}
+					}
+				}
+				else if (event.getData() instanceof AnnotatedBibliographyEntry) {
+					int bibID = ((AnnotatedBibliographyEntry) event.getData()).getAnnotatedBibliographyID();
+					searchEntry.getBibIdList().add(bibID);
+				}
+				else {
+					return;
+				}
+				boolean startsearch=(searchEntry.getCaveIdList().size()>0)||(searchEntry.geticonographyIDList().size()>0)||(searchEntry.getBibIdList().size()>0)||(searchEntry.getOfficialNumberList().size()>0)||(searchEntry.getSiteIdList().size()>0);
+				Util.showYesNo("Delete old filters?", "Do you whisch to delete old filters?", new SelectHandler() {
+					
+					@Override
+					public void onSelect(SelectEvent event) {
+						initiateSearch(searchEntry,startsearch,true);
+					}
+				}, new SelectHandler() {
+					
+					@Override
+					public void onSelect(SelectEvent event) {
+						initiateSearch(searchEntry,startsearch,false);
+					}},
+					new KeyDownHandler() {
+						public void onKeyDown(KeyDownEvent e) {
+							initiateSearch(searchEntry,startsearch,true);
+					}
+				});
 			}
 		};
 	}
-
 }

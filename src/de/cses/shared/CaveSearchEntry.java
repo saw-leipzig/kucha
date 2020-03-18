@@ -15,6 +15,9 @@ public class CaveSearchEntry extends AbstractSearchEntry {
 	private ArrayList<Integer> districtIdList = new ArrayList<Integer>();
 	private ArrayList<Integer> regionIdList = new ArrayList<Integer>();
 	private ArrayList<Integer> caveIdList = new ArrayList<Integer>(); // we need this to search in certain caves only
+	private ArrayList<Integer> iconographyIDList = new ArrayList<Integer>(); // we need this to search for the caves conected to a certain OrnamentEntry
+	private ArrayList<String> officialNumberIDList = new ArrayList<String>(); 
+	
 
 	public CaveSearchEntry(boolean orSearch, String sessionID) {
 		super(orSearch, sessionID);
@@ -81,5 +84,20 @@ public class CaveSearchEntry extends AbstractSearchEntry {
 	public void setCaveIdList(ArrayList<Integer> caveIdList) {
 		this.caveIdList = caveIdList;
 	}
+	public ArrayList<Integer> geticonographyIDList() {
+		return iconographyIDList;
+	}
+
+	public void setOrnamentIDList(ArrayList<Integer> iconographyID) {
+		this.iconographyIDList = iconographyID;
+	}
+	public ArrayList<String> getOfficialNumberList() {
+		return officialNumberIDList;
+	}
+	public void setOfficialNumberList(ArrayList<String> officialNumberIDList) {
+		this.officialNumberIDList = officialNumberIDList;
+	}
+
+
 
 }

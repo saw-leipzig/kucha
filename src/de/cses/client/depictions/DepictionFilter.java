@@ -168,6 +168,7 @@ public class DepictionFilter extends AbstractFilter {
 		}
 		
 	}
+	@Override
 	public void clear() {
 		shortNameSearchTF.reset();
 		caveSelectionLV.getSelectionModel().deselectAll();

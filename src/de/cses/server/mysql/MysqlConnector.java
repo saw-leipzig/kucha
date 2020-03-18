@@ -1156,7 +1156,6 @@ public class MysqlConnector implements IsSerializable {
 		PreparedStatement pstmt;
 		String where = "";
 		UserEntry ue = checkSessionID(searchEntry.getSessionID());
-
 		for (int caveTypeID : searchEntry.getCaveTypeIdList()) {
 			caveTypeIdSet += caveTypeIdSet.isEmpty() ? Integer.toString(caveTypeID) : "," + caveTypeID;
 		}
@@ -1188,18 +1187,47 @@ public class MysqlConnector implements IsSerializable {
 		for (int caveID : searchEntry.getCaveIdList()) {
 			caveIdSet += caveIdSet.isEmpty() ? Integer.toString(caveID) : "," + caveID;
 		}
-		if (!caveIdSet.isEmpty()) {
-			where += where.isEmpty() ? "CaveID IN (" + caveIdSet + ")" : " AND CaveID IN (" + caveIdSet + ")";
+		if (!searchEntry.geticonographyIDList().isEmpty()) {
+			DepictionSearchEntry dse = new DepictionSearchEntry(searchEntry.getSessionID());
+			for (int icoID : searchEntry.geticonographyIDList()) {
+					dse.getIconographyIdList().add(icoID);
+			}
+			ArrayList<DepictionEntry> des = searchDepictions(dse);
+			if (!des.isEmpty()) {
+				for (DepictionEntry de : des) {
+					caveIdSet += caveIdSet.isEmpty() ? Integer.toString(de.getCave().getCaveID()) : "," + de.getCave().getCaveID();
+				}
+			}
 		}
-		
+		if (!caveIdSet.isEmpty()) {
+			where += where.isEmpty() ? "Caves.CaveID IN (" + caveIdSet + ")" : " AND Caves.CaveID IN (" + caveIdSet + ")";
+		}
 		if (!searchEntry.getHistoricalName().isEmpty()) {
 			where += where.isEmpty() ? "(HistoricName LIKE ? OR OptionalHistoricName LIKE ?)" : " AND (HistoricName LIKE ? OR OptionalHistoricName LIKE ?)";
 		}
 
 		if (searchEntry.isDecoratedOnly()) {
-			where += where.isEmpty() ? "CaveID IN (SELECT CaveID FROM Depictions where Depictions.deleted=0 )" : " AND CaveID IN (SELECT CaveID FROM Depictions where Depictions.deleted=0 )";
+			where += where.isEmpty() ? "Caves.CaveID IN (SELECT CaveID FROM Depictions where Depictions.deleted=0 )" : " AND Caves.CaveID IN (SELECT CaveID FROM Depictions where Depictions.deleted=0 )";
 		}
-
+		String bibIDs ="";
+		if (!searchEntry.getBibIdList().isEmpty()) {
+			for (int bibID : searchEntry.getBibIdList()) {
+				bibIDs += bibIDs.isEmpty() ? Integer.toString(bibID) : "," + bibID;
+			}
+		}
+		if (!bibIDs.isEmpty()) {
+			where += where.isEmpty() ? "BibID IN (" + bibIDs + ")" : " AND BibID IN (" + bibIDs + ")";
+		}
+		String officialNumbers ="";
+		if (!searchEntry.getOfficialNumberList().isEmpty()) {
+			for (String officialNumber : searchEntry.getOfficialNumberList()) {
+				officialNumbers += officialNumbers.isEmpty() ? officialNumber : "," + officialNumber;
+			}
+		}
+		if (!officialNumbers.isEmpty()) {
+			where += where.isEmpty() ? "OfficialNumber IN (" + officialNumbers + ")" : " AND OfficialNumber IN (" + officialNumbers + ")";
+		}
+	
 		/**
 		 * We cannot filter the accessLevel because that would create problems e.g. when choosing a cave for a depiction.
 		 * What we can do is restricting the visibility of certain fields e.g. comments but this has to be done 
@@ -1222,7 +1250,7 @@ public class MysqlConnector implements IsSerializable {
 		
 		try {
 			int i=1; // counter for ? insert
-			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Caves" : "SELECT * FROM Caves WHERE " + where);
+			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT Caves.*, CaveBibliographyRelation.BibID FROM Caves left Join CaveBibliographyRelation on (Caves.CaveID = CaveBibliographyRelation.CaveID)" : "SELECT Caves.*, CaveBibliographyRelation.BibID FROM Caves left Join CaveBibliographyRelation on (Caves.CaveID = CaveBibliographyRelation.CaveID) WHERE " + where);
 			if (!searchEntry.getHistoricalName().isEmpty()) {
 				pstmt.setString(i++, "%" + searchEntry.getHistoricalName() + "%");
 				pstmt.setString(i++, "%" + searchEntry.getHistoricalName() + "%");
@@ -3762,13 +3790,13 @@ public boolean isHan(String s) {
 			where += where.isEmpty() ? "AccessLevel IN (" + inStatement + ")" : " AND AccessLevel IN (" + inStatement + ")";
 		}
 				
-		System.err.println(where.isEmpty() ? "SELECT * FROM infosys.Ornaments left join infosys.DepictionIconographyRelation on (Ornaments.IconographyID=DepictionIconographyRelation.IconographyID) left join (Select * from Depictions where Depictions.deleted=0) as Depictionsall on (DepictionIconographyRelation.DepictionID=Depictionsall.DepictionID) left join DepictionWallsRelation on (Depictionsall.DepictionID=DepictionWallsRelation.DepictionID) left join WallLocationsTree on (WallLocationsTree.WallLocationID = DepictionWallsRelation.WallID) \r\n" + 
-				"left join WallPositionsRelation on (WallLocationsTree.WallLocationID=WallPositionsRelation.WallID and Depictionsall.DepictionID=WallPositionsRelation.DepictionID) left join Position on (WallPositionsRelation.PositionID=Position.PositionID) left join OrnamentComponentRelation on (OrnamentComponentRelation.OrnamentID = Ornaments.OrnamentID)" : "SELECT * FROM infosys.Ornaments left join infosys.DepictionIconographyRelation on (Ornaments.IconographyID=DepictionIconographyRelation.IconographyID) left join (Select * from Depictions where Depictions.deleted=0) as Depictionsall on (DepictionIconographyRelation.DepictionID=Depictionsall.DepictionID) left join DepictionWallsRelation on (Depictionsall.DepictionID=DepictionWallsRelation.DepictionID) left join WallLocationsTree on (WallLocationsTree.WallLocationID = DepictionWallsRelation.WallID) \r\n" + 
+		System.err.println(where.isEmpty() ? "SELECT * FROM Ornaments left join DepictionIconographyRelation on (Ornaments.IconographyID=DepictionIconographyRelation.IconographyID) left join (Select * from Depictions where Depictions.deleted=0) as Depictionsall on (DepictionIconographyRelation.DepictionID=Depictionsall.DepictionID) left join DepictionWallsRelation on (Depictionsall.DepictionID=DepictionWallsRelation.DepictionID) left join WallLocationsTree on (WallLocationsTree.WallLocationID = DepictionWallsRelation.WallID) \r\n" + 
+				"left join WallPositionsRelation on (WallLocationsTree.WallLocationID=WallPositionsRelation.WallID and Depictionsall.DepictionID=WallPositionsRelation.DepictionID) left join Position on (WallPositionsRelation.PositionID=Position.PositionID) left join OrnamentComponentRelation on (OrnamentComponentRelation.OrnamentID = Ornaments.OrnamentID)" : "SELECT * FROM Ornaments left join DepictionIconographyRelation on (Ornaments.IconographyID=DepictionIconographyRelation.IconographyID) left join (Select * from Depictions where Depictions.deleted=0) as Depictionsall on (DepictionIconographyRelation.DepictionID=Depictionsall.DepictionID) left join DepictionWallsRelation on (Depictionsall.DepictionID=DepictionWallsRelation.DepictionID) left join WallLocationsTree on (WallLocationsTree.WallLocationID = DepictionWallsRelation.WallID) \r\n" + 
 						"left join WallPositionsRelation on (WallLocationsTree.WallLocationID=WallPositionsRelation.WallID and Depictionsall.DepictionID=WallPositionsRelation.DepictionID) left join Position on (WallPositionsRelation.PositionID=Position.PositionID) left join OrnamentComponentRelation on (OrnamentComponentRelation.OrnamentID = Ornaments.OrnamentID) WHERE " + where);
 
 		try {
-			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM infosys.Ornaments left join infosys.DepictionIconographyRelation on (Ornaments.IconographyID=DepictionIconographyRelation.IconographyID) left join (Select * from Depictions where Depictions.deleted=0) as Depictionsall on (DepictionIconographyRelation.DepictionID=Depictionsall.DepictionID) left join DepictionWallsRelation on (Depictionsall.DepictionID=DepictionWallsRelation.DepictionID) left join WallLocationsTree on (WallLocationsTree.WallLocationID = DepictionWallsRelation.WallID) \r\n" + 
-					"left join WallPositionsRelation on (WallLocationsTree.WallLocationID=WallPositionsRelation.WallID and Depictionsall.DepictionID=WallPositionsRelation.DepictionID) left join Position on (WallPositionsRelation.PositionID=Position.PositionID) left join OrnamentComponentRelation on (OrnamentComponentRelation.OrnamentID = Ornaments.OrnamentID) LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+ ", "+Integer.toString(searchEntry.getMaxentries()): "SELECT * FROM infosys.Ornaments left join infosys.DepictionIconographyRelation on (Ornaments.IconographyID=DepictionIconographyRelation.IconographyID) left join (Select * from Depictions where Depictions.deleted=0) as Depictionsall on (DepictionIconographyRelation.DepictionID=Depictionsall.DepictionID) left join DepictionWallsRelation on (Depictionsall.DepictionID=DepictionWallsRelation.DepictionID) left join WallLocationsTree on (WallLocationsTree.WallLocationID = DepictionWallsRelation.WallID) \r\n" + 
+			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Ornaments left join DepictionIconographyRelation on (Ornaments.IconographyID=DepictionIconographyRelation.IconographyID) left join (Select * from Depictions where Depictions.deleted=0) as Depictionsall on (DepictionIconographyRelation.DepictionID=Depictionsall.DepictionID) left join DepictionWallsRelation on (Depictionsall.DepictionID=DepictionWallsRelation.DepictionID) left join WallLocationsTree on (WallLocationsTree.WallLocationID = DepictionWallsRelation.WallID) \r\n" + 
+					"left join WallPositionsRelation on (WallLocationsTree.WallLocationID=WallPositionsRelation.WallID and Depictionsall.DepictionID=WallPositionsRelation.DepictionID) left join Position on (WallPositionsRelation.PositionID=Position.PositionID) left join OrnamentComponentRelation on (OrnamentComponentRelation.OrnamentID = Ornaments.OrnamentID) LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+ ", "+Integer.toString(searchEntry.getMaxentries()): "SELECT * FROM Ornaments left join DepictionIconographyRelation on (Ornaments.IconographyID=DepictionIconographyRelation.IconographyID) left join (Select * from Depictions where Depictions.deleted=0) as Depictionsall on (DepictionIconographyRelation.DepictionID=Depictionsall.DepictionID) left join DepictionWallsRelation on (Depictionsall.DepictionID=DepictionWallsRelation.DepictionID) left join WallLocationsTree on (WallLocationsTree.WallLocationID = DepictionWallsRelation.WallID) \r\n" + 
 							"left join WallPositionsRelation on (WallLocationsTree.WallLocationID=WallPositionsRelation.WallID and Depictionsall.DepictionID=WallPositionsRelation.DepictionID) left join Position on (WallPositionsRelation.PositionID=Position.PositionID) left join OrnamentComponentRelation on (OrnamentComponentRelation.OrnamentID = Ornaments.OrnamentID) WHERE " + where+" LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+", "+Integer.toString(searchEntry.getMaxentries()));
 
 			if (!searchEntry.getCode().isEmpty()) {

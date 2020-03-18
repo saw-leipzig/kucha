@@ -52,10 +52,14 @@ import de.cses.client.Util;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractSearchEntry;
+import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.CaveSearchEntry;
 import de.cses.shared.CaveTypeEntry;
+import de.cses.shared.DepictionEntry;
 import de.cses.shared.DepictionSearchEntry;
 import de.cses.shared.DistrictEntry;
+import de.cses.shared.ImageEntry;
+import de.cses.shared.OrnamentEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 import de.cses.shared.comparator.DistrictEntryComparator;
@@ -84,6 +88,9 @@ public class CaveFilter extends AbstractFilter {
 	private TextField searchNameTF;
 	private CheckBox decoratedOnlyCB;
 	private ArrayList<Integer> CaveIDs = new ArrayList<Integer>();
+	private ArrayList<Integer> iconographyIDs = new ArrayList<Integer>();
+	private ArrayList<String>officialNumberList = new ArrayList<String>();
+	private ArrayList<Integer> bibIDs = new ArrayList<Integer>();
 
 	interface DistrictProperties extends PropertyAccess<DistrictEntry> {
 		ModelKeyProvider<DistrictEntry> districtID();
@@ -373,9 +380,28 @@ public class CaveFilter extends AbstractFilter {
 				CaveIDs.add(caveID);
 			}
 		}
-		
-		
+		if (((CaveSearchEntry)searchEntry).geticonographyIDList()!= null && !((CaveSearchEntry)searchEntry).geticonographyIDList().isEmpty()) {
+			for ( Integer OrnamentID :((CaveSearchEntry)searchEntry).geticonographyIDList()) {
+				iconographyIDs.add(OrnamentID);
+			}
+		}
+		if (((CaveSearchEntry)searchEntry).getOfficialNumberList()!= null && !((CaveSearchEntry)searchEntry).getOfficialNumberList().isEmpty()) {
+			for ( String OfficialNumber :((CaveSearchEntry)searchEntry).getOfficialNumberList()) {
+				officialNumberList.add(OfficialNumber);
+			}
+		}
+		if (((CaveSearchEntry)searchEntry).getSiteIdList()!= null && !((CaveSearchEntry)searchEntry).getSiteIdList().isEmpty()) {
+			for ( int siteID :((CaveSearchEntry)searchEntry).getSiteIdList()) {
+				siteSelectionLV.getSelectionModel().select(siteSelectionLV.getStore().findModelWithKey(Integer.toString(siteID)), true);
+			}
+		}
+		if (((CaveSearchEntry)searchEntry).getBibIdList()!= null && !((CaveSearchEntry)searchEntry).getBibIdList().isEmpty()) {
+			for ( int bibID :((CaveSearchEntry)searchEntry).getBibIdList()) {
+				bibIDs.add(bibID);
+			}
+		}
 	}
+	
 	public void clear() {
 		districtSelectionLV.getSelectionModel().deselectAll();
 		regionSelectionLV.getSelectionModel().deselectAll();;
@@ -383,6 +409,9 @@ public class CaveFilter extends AbstractFilter {
 		searchNameTF.clear();;
 		decoratedOnlyCB.clear();
 		CaveIDs.clear();
+		bibIDs.clear();
+		officialNumberList.clear();
+		iconographyIDs.clear();
 	}
 
 	@Override
@@ -423,7 +452,26 @@ public class CaveFilter extends AbstractFilter {
 				result.getRegionIdList().add(re.getRegionID());
 			}
 		}
-
+		if (!CaveIDs.isEmpty()) {
+			for (int caveID : CaveIDs) {
+				result.getCaveIdList().add(caveID);
+			}
+		}
+		if (!bibIDs.isEmpty()) {
+			for (int bibID : bibIDs) {
+				result.getBibIdList().add(bibID);
+			}
+		}
+		if (!officialNumberList.isEmpty()) {
+			for (String officialNumber : officialNumberList) {
+				result.getOfficialNumberList().add(officialNumber);
+			}
+		}
+		if (!iconographyIDs.isEmpty()) {
+			for (int officialNumber : iconographyIDs) {
+				result.geticonographyIDList().add(officialNumber);
+			}
+		}
 		return result;
 	}
 

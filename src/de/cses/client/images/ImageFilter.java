@@ -162,7 +162,8 @@ public class ImageFilter extends AbstractFilter {
 		vlc.setHeight("300px");
 		return vlc;
 	}
-	private void clear() {
+	@Override
+	public void clear() {
 		titleSearch.clear();;
 		copyrightSearch.clear();;
 		commentSearch.clear();

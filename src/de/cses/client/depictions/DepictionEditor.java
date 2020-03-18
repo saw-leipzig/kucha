@@ -1588,6 +1588,7 @@ public class DepictionEditor extends AbstractEditor {
 					@Override
 					public void onSelect(SelectEvent event) {
 						saveDepictionEntry(true);
+						closeEditor(null);
 					}
 				}, new SelectHandler() {
 						

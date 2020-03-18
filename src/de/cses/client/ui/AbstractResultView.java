@@ -135,6 +135,7 @@ public abstract class AbstractResultView extends Portlet {
 			@Override
 			public void onSelect(SelectEvent event) {
 				reset();
+				getSearchParent().getFilter().clear();
 			}
 		});
 		getHeader().addTool(resetButton);

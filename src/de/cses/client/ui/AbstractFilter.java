@@ -76,7 +76,9 @@ public abstract class AbstractFilter implements IsWidget{
 	public KeyPressHandler getShortkey() {
 		return this.shortkey;
 	}
-	
+	public void clear() {
+		
+	}
 	/**
 	 * 
 	 * @return 

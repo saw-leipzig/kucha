@@ -13,6 +13,8 @@
  */
 package de.cses.shared;
 
+import java.util.ArrayList;
+
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -30,6 +32,7 @@ public abstract class AbstractSearchEntry implements IsSerializable {
 	private String sessionID = "";
 	int entriesShowed = 0;
 	int maxEntries = 100;
+	private ArrayList<Integer> bibIdList = new ArrayList<Integer>();
 
 	/**
 	 * 
@@ -74,6 +77,13 @@ public abstract class AbstractSearchEntry implements IsSerializable {
 
 	public void setSessionID(String sessionID) {
 		this.sessionID = sessionID;
+	}
+	public ArrayList<Integer> getBibIdList() {
+		return bibIdList;
+	}
+
+	public void setBibIdList(ArrayList<Integer> bibIdList) {
+		this.bibIdList = bibIdList;
 	}
 
 }
