@@ -25,7 +25,6 @@ import com.sencha.gxt.dnd.core.client.DndDropEvent;
 import com.sencha.gxt.dnd.core.client.DropTarget;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
-import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -36,6 +35,7 @@ import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DepictionSearchEntry;
+import de.cses.shared.ImageEntry;
 import de.cses.shared.OrnamentEntry;
 
 /**
@@ -152,10 +152,15 @@ public class DepictionResultView extends AbstractResultView {
 					if (icoID>0) {
 						searchEntry.getIconographyIdList().add(icoID);
 					}
+				} else if (event.getData() instanceof ImageEntry) {
+					int imgID = ((ImageEntry) event.getData()).getImageID();
+					if (imgID>0) {
+						searchEntry.getImageIdList().add(imgID);
+					}
 				} else {
 					return;
 				}
-				boolean startsearch=(searchEntry.getCaveIdList().size()>0)||(searchEntry.getBibIdList().size()>0)||(searchEntry.getIconographyIdList().size()>0);
+				boolean startsearch=(searchEntry.getCaveIdList().size()>0)||(searchEntry.getBibIdList().size()>0)||(searchEntry.getIconographyIdList().size()>0)||(searchEntry.getImageIdList().size()>0);
 				Util.doLogging(Boolean.toString(startsearch));
 				Util.showYesNo("Delete old filters?", "Do you whisch to delete old filters?", new SelectHandler() {
 					

@@ -150,6 +150,8 @@ public class OrnamenticFilter extends AbstractFilter {
 	//private ListView<OrnamentFunctionEntry, OrnamentFunctionEntry> functionSelectionLV;
 	private SiteProperties siteProps;
 	private ListStore<SiteEntry> siteEntryList;
+	private ArrayList<Integer> imgIDs = new ArrayList<Integer>();
+	private ArrayList<Integer> bibIDs = new ArrayList<Integer>();
 
 	interface OrnamentClassProperties extends PropertyAccess<OrnamentClassEntry> {
 		ModelKeyProvider<OrnamentClassEntry> ornamentClassID();
@@ -356,6 +358,8 @@ public class OrnamenticFilter extends AbstractFilter {
 		cavesSelectionLV.getSelectionModel().deselectAll();;
 		districtsSelectionLV.getSelectionModel().deselectAll();;
 		positionSelectionLV.getSelectionModel().deselectAll();;
+		imgIDs.clear();
+		bibIDs.clear();
 
 	}
 
@@ -510,18 +514,29 @@ public class OrnamenticFilter extends AbstractFilter {
 				}
 			}
 		}
-		if (((OrnamenticSearchEntry)searchEntry).getCode().isEmpty()) {
+		if (!((OrnamenticSearchEntry)searchEntry).getCode().isEmpty()) {
 			ornamentCodeSearchTF.setValue(((OrnamenticSearchEntry)searchEntry).getCode(), true);
 		}
-		if (((OrnamenticSearchEntry)searchEntry).getDescription().isEmpty()) {
+		if (!((OrnamenticSearchEntry)searchEntry).getDescription().isEmpty()) {
 			ornamentDeskriptionSearchTF.setValue(((OrnamenticSearchEntry)searchEntry).getDescription(), true);
 		}
-		if (((OrnamenticSearchEntry)searchEntry).getInterpretation().isEmpty()) {
+		if (!((OrnamenticSearchEntry)searchEntry).getInterpretation().isEmpty()) {
 			ornamentInterpretationSearchTF.setValue(((OrnamenticSearchEntry)searchEntry).getInterpretation(), true);
 		}
-		if ((((OrnamenticSearchEntry)searchEntry).getComponents()!=null)&&(((OrnamenticSearchEntry)searchEntry).getComponents().isEmpty())) {
+		if ((((OrnamenticSearchEntry)searchEntry).getComponents()!=null)&&(!((OrnamenticSearchEntry)searchEntry).getComponents().isEmpty())) {
 			for (OrnamentComponentsEntry oce :((OrnamenticSearchEntry)searchEntry).getComponents()) {
 				ornamentComponentsSelectionLV.getSelectionModel().select(oce, true);
+			}
+		}
+		if ((((OrnamenticSearchEntry)searchEntry).getImageIDList()!=null)&&(!((OrnamenticSearchEntry)searchEntry).getImageIDList().isEmpty())) {
+			for (Integer imgID :((OrnamenticSearchEntry)searchEntry).getImageIDList()) {
+				imgIDs.add(imgID);
+			}
+		}
+
+		if ((((OrnamenticSearchEntry)searchEntry).getBibIdList()!=null)&&(((OrnamenticSearchEntry)searchEntry).getImageIDList().isEmpty())) {
+			for (Integer bibID :((OrnamenticSearchEntry)searchEntry).getBibIdList()) {
+				bibIDs.add(bibID);
 			}
 		}
 
@@ -1155,6 +1170,14 @@ public class OrnamenticFilter extends AbstractFilter {
 
 		for (OrnamentComponentsEntry oce : ornamentComponentsSelectionLV.getSelectionModel().getSelectedItems()) {
 			searchEntry.getComponents().add(oce);
+		}
+
+		for (Integer imgID : imgIDs) {
+			searchEntry.getImageIDList().add(imgID);
+		}
+
+		for (Integer bibID : bibIDs) {
+			searchEntry.getBibIdList().add(bibID);
 		}
 
 //		for (InnerSecondaryPatternsEntry oce : innerSecondaryPatternsSelectionLV.getSelectionModel().getSelectedItems()) {

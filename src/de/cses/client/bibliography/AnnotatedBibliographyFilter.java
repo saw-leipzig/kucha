@@ -12,24 +12,27 @@
  * If not, you can access it from here: <https://www.gnu.org/licenses/gpl-3.0.txt>.
  */
 package de.cses.client.bibliography;
+import java.util.ArrayList;
+
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
-import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.TextField;
-import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.Util;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractSearchEntry;
 import de.cses.shared.AnnotatedBibliographySearchEntry;
+import de.cses.shared.IconographyEntry;
+import de.cses.shared.OrnamentComponentsEntry;
+import de.cses.shared.OrnamenticSearchEntry;
+import de.cses.shared.PositionEntry;
 
 /**
  * @author alingnau
@@ -41,6 +44,7 @@ public class AnnotatedBibliographyFilter extends AbstractFilter {
 	public TextField titleTF;
 	private TextField publisherTF;
 	private NumberField<Integer> yearSearch;
+	private ArrayList<Integer> bibIDs = new ArrayList<Integer>();
 
 	/**
 	 * @param filterName
@@ -95,9 +99,29 @@ public class AnnotatedBibliographyFilter extends AbstractFilter {
 		return bibFilterVLC;
 	}
 	@Override
-	public void setSearchEntry(AbstractSearchEntry SearchEntry, boolean reset) {
-		
+	public void clear() {
+		authorNameTF.clear();
+		titleTF.clear();
+		publisherTF.clear();
+		yearSearch.clear();
+		bibIDs.clear();
 	}
+	@Override
+	public void setSearchEntry(AbstractSearchEntry searchEntry, boolean reset) {
+		// Versenden der Eintraege an den Server nach erfolgter Suche
+		if (reset) {
+			clear();
+		}
+		if (((AnnotatedBibliographySearchEntry)searchEntry).getBibIdList()!=null) {
+			if (!((AnnotatedBibliographySearchEntry)searchEntry).getBibIdList().isEmpty()) {
+				for (Integer bibID : ((AnnotatedBibliographySearchEntry)searchEntry).getBibIdList()) {
+					bibIDs.add(bibID);
+				}
+			}
+		}
+
+	}
+		
 	@Override
 	public AbstractSearchEntry getSearchEntry() {
 		AnnotatedBibliographySearchEntry searchEntry;
@@ -121,6 +145,9 @@ public class AnnotatedBibliographyFilter extends AbstractFilter {
 		
 		if (yearSearch.getValue() != null && yearSearch.getValue() > 0) {
 			searchEntry.setYearSearch(yearSearch.getValue());
+		}
+		for (Integer bibID :bibIDs) {
+			searchEntry.getBibIdList().add(bibID);
 		}
 		
 		return searchEntry;

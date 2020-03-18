@@ -12,6 +12,7 @@ public class DepictionSearchEntry extends AbstractSearchEntry {
 	private ArrayList<Integer> caveIdList = new ArrayList<Integer>();
 	private ArrayList<Integer> locationIdList = new ArrayList<Integer>();
 	private ArrayList<Integer> iconographyIdList = new ArrayList<Integer>();
+	private ArrayList<Integer> imageIdList = new ArrayList<Integer>();
 	private int correlationFactor = 0;
 
 	public DepictionSearchEntry(boolean orSearch, String sessionID) {
@@ -54,6 +55,14 @@ public class DepictionSearchEntry extends AbstractSearchEntry {
 
 	public void setIconographyIdList(ArrayList<Integer> iconographyIdList) {
 		this.iconographyIdList = iconographyIdList;
+	}
+
+	public ArrayList<Integer> getImageIdList() {
+		return imageIdList;
+	}
+
+	public void setImageIdList(ArrayList<Integer> imageIdList) {
+		this.imageIdList = imageIdList;
 	}
 
 	public int getCorrelationFactor() {

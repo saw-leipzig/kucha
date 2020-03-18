@@ -13,7 +13,6 @@
  */
 package de.cses.client.ornamentic;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
@@ -32,9 +31,10 @@ import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.Util;
 import de.cses.client.ui.AbstractResultView;
 import de.cses.client.user.UserLogin;
+import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
-import de.cses.shared.DepictionSearchEntry;
+import de.cses.shared.ImageEntry;
 import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamenticSearchEntry;
 
@@ -97,10 +97,16 @@ public class OrnamenticResultView extends AbstractResultView{
 				else if (event.getData() instanceof DepictionEntry) {
 					searchEntry.setIconographys(((DepictionEntry) event.getData()).getRelatedIconographyList());
 				}
+				else if (event.getData() instanceof AnnotatedBibliographyEntry) {
+					searchEntry.getBibIdList().add(((AnnotatedBibliographyEntry) event.getData()).getAnnotatedBibliographyID());
+				}
+				else if (event.getData() instanceof ImageEntry) {
+					searchEntry.getImageIDList().add(((ImageEntry) event.getData()).getImageID());
+				}
 				else {
 					return;
 				}
-				boolean startsearch=(searchEntry.getCaves().size()>0)||(searchEntry.getIconographys().size()>0);
+				boolean startsearch=(searchEntry.getCaves().size()>0)||(searchEntry.getIconographys().size()>0)||(searchEntry.getBibIdList().size()>0)||(searchEntry.getImageIDList().size()>0);
 				Util.showYesNo("Delete old filters?", "Do you whisch to delete old filters?", new SelectHandler() {
 					
 					@Override

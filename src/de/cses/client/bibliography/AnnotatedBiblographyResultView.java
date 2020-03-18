@@ -13,9 +13,8 @@
  */
 package de.cses.client.bibliography;
 
-import java.util.ArrayList;
-
-import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.sencha.gxt.dnd.core.client.DndDropEvent;
 import com.sencha.gxt.dnd.core.client.DropTarget;
 import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
@@ -24,15 +23,15 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
 import de.cses.client.Util;
-import de.cses.client.images.ImageView;
 import de.cses.client.ui.AbstractResultView;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographyEntry;
+import de.cses.shared.AnnotatedBibliographySearchEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
-import de.cses.shared.DepictionSearchEntry;
 import de.cses.shared.ImageEntry;
+import de.cses.shared.OrnamentEntry;
 
 /**
  * @author Nina
@@ -69,15 +68,51 @@ public class AnnotatedBiblographyResultView extends AbstractResultView {
 			@Override
 			protected void onDragDrop(DndDropEvent event) {
 				super.onDragDrop(event);
-				if (event.getData() instanceof DepictionEntry) {
-					for (AnnotatedBibliographyEntry bibEntry : ((DepictionEntry) event.getData()).getRelatedBibliographyList()) {
-						addResult(new AnnotatedBiblographyView(bibEntry));
-					}
-				} else if (event.getData() instanceof CaveEntry) {
-					for (AnnotatedBibliographyEntry bibEntry : ((CaveEntry) event.getData()).getRelatedBibliographyList()) {
-						addResult(new AnnotatedBiblographyView(bibEntry));
+				AnnotatedBibliographySearchEntry searchEntry;
+				if (UserLogin.isLoggedIn()) {
+					searchEntry = new AnnotatedBibliographySearchEntry(UserLogin.getInstance().getSessionID());
+				} else {
+					searchEntry = new AnnotatedBibliographySearchEntry();
+				}
+				if (event.getData() instanceof CaveEntry) {
+					for (AnnotatedBibliographyEntry abe : ((CaveEntry) event.getData()).getRelatedBibliographyList()) {
+						searchEntry.getBibIdList().add(abe.getAnnotatedBibliographyID());
 					}
 				}
+				else if (event.getData() instanceof DepictionEntry) {
+					for (AnnotatedBibliographyEntry abe : ((DepictionEntry) event.getData()).getRelatedBibliographyList()) {
+						searchEntry.getBibIdList().add(abe.getAnnotatedBibliographyID());
+					}
+				}
+				else if (event.getData() instanceof OrnamentEntry) {
+					for (AnnotatedBibliographyEntry abe : ((OrnamentEntry) event.getData()).getRelatedBibliographyList()) {
+						searchEntry.getBibIdList().add(abe.getAnnotatedBibliographyID());
+					}
+				}
+				else if (event.getData() instanceof ImageEntry) {
+					return;
+				}
+				else {
+					return;
+				}
+				boolean startsearch=(searchEntry.getBibIdList().size()>0);
+				Util.showYesNo("Delete old filters?", "Do you whisch to delete old filters?", new SelectHandler() {
+					
+					@Override
+					public void onSelect(SelectEvent event) {
+						initiateSearch(searchEntry,startsearch,true);
+					}
+				}, new SelectHandler() {
+					
+					@Override
+					public void onSelect(SelectEvent event) {
+						initiateSearch(searchEntry,startsearch,false);
+					}},
+					new KeyDownHandler() {
+						public void onKeyDown(KeyDownEvent e) {
+							initiateSearch(searchEntry,startsearch,true);
+					}
+				});
 			}
 		};
 	

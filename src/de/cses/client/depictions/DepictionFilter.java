@@ -138,6 +138,8 @@ public class DepictionFilter extends AbstractFilter {
 	private ListView<IconographyEntry, IconographyEntry> icoSelectionLV;
 	private IntegerSpinnerField iconographySpinnerField;
 	private PopupPanel extendedFilterDialog = null;
+	private ArrayList<Integer> imgIDs = new ArrayList<Integer>();
+	private ArrayList<Integer> bibIDs = new ArrayList<Integer>();
 	@Override
 	public void setSearchEntry(AbstractSearchEntry searchEntry, boolean reset) {
 		if (reset) {
@@ -149,6 +151,14 @@ public class DepictionFilter extends AbstractFilter {
 		
 		for (int cID : ((DepictionSearchEntry)searchEntry).getCaveIdList()) {
 			caveSelectionLV.getSelectionModel().select(caveSelectionLV.getStore().findModelWithKey(Integer.toString(cID)),true);
+		}
+		for (int bibID : ((DepictionSearchEntry)searchEntry).getBibIdList()) {
+			bibIDs.add(bibID);
+		}
+		if (((DepictionSearchEntry)searchEntry).getImageIdList().size()>0) {
+			for (int imgID : ((DepictionSearchEntry)searchEntry).getImageIdList()) {
+				imgIDs.add(imgID);
+			}
 		}
 		
 		for (int lID : ((DepictionSearchEntry)searchEntry).getLocationIdList()) {
@@ -175,6 +185,8 @@ public class DepictionFilter extends AbstractFilter {
 		locationSelectionLV.getSelectionModel().deselectAll();
 		selectedIconographyLS.clear();
 		iconographySpinnerField.setValue(0);
+		imgIDs.clear();
+		bibIDs.clear();
 	}
 	/**
 	 * @param filterName
@@ -502,6 +514,16 @@ public class DepictionFilter extends AbstractFilter {
 		
 		for (CaveEntry ce : caveSelectionLV.getSelectionModel().getSelectedItems()) {
 			searchEntry.getCaveIdList().add(ce.getCaveID());
+		}
+		if (imgIDs.size()>0) {
+			for (int img : imgIDs) {
+				searchEntry.getImageIdList().add(img);
+			}	
+		}
+		if (bibIDs.size()>0) {
+			for (int img : bibIDs) {
+				searchEntry.getBibIdList().add(img);
+			}	
 		}
 		
 		for (LocationEntry le : locationSelectionLV.getSelectionModel().getSelectedItems()) {

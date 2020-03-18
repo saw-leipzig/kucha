@@ -206,7 +206,7 @@ public abstract class AbstractResultView extends Portlet {
 	}
 	public void initiateSearch(AbstractSearchEntry searchEntry, boolean startsearch,boolean reset) {
 		getSearchParent().getFilter().setSearchEntry(searchEntry, reset);
-		setSearchEnabled(false);
+		setSearchEnabled(!startsearch);
 		if (startsearch) {
 			getSearchParent().getFilter().invokeSearch();
 		}

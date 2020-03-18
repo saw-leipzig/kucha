@@ -3162,6 +3162,13 @@ public boolean isHan(String s) {
 		if (searchEntry.getYearSearch() > 0) {
 			where += where.isEmpty() ? "YearORG LIKE ?" : " AND YearORG LIKE ?";
 		}
+		String bibIDs = "";
+		for (Integer bibID : searchEntry.getBibIdList()) {
+			bibIDs += bibIDs.isEmpty() ? Integer.toString(bibID) : "," + bibID;
+		}
+		if (!bibIDs.isEmpty()) {
+			where += where.isEmpty() ? "BibID IN ("+bibIDs+") " : " AND BibID IN ("+bibIDs+") ";
+		}
 
 		/**
 		 * We cannot filter the accessLevel because that would create problems e.g. when choosing a cave for a depiction.
@@ -3180,7 +3187,7 @@ public boolean isHan(String s) {
 				break;
 		}
 		where += where.isEmpty() ? "AccessLevel IN (" + inStatement + ")" : " AND AccessLevel IN (" + inStatement + ")";
-		
+		System.err.println(where.isEmpty() ? "SELECT * FROM AnnotatedBibliography" : "SELECT * FROM AnnotatedBibliography WHERE " + where);
 		try {
 			int i = 1;
 			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM AnnotatedBibliography" : "SELECT * FROM AnnotatedBibliography WHERE " + where);
@@ -3731,7 +3738,25 @@ public boolean isHan(String s) {
 					? " Ornaments.IconographyID IN ("+ iconographyIDs + ")"
 					: " AND Ornaments.IconographyID IN ("+ iconographyIDs + ")";
 		}
+		String imgIDs = "";
+		for (int imgID : searchEntry.getImageIDList()) {
+			imgIDs += imgIDs.isEmpty() ? Integer.toString(imgID) : "," + imgID;
+		}
+		if (!imgIDs.isEmpty()) {
+			where += where.isEmpty() 
+					? "Ornaments.OrnamentID IN (SELECT OrnamentID FROM OrnamentImageRelation WHERE ImageID IN (" + imgIDs + ")) "
+					: " AND Ornaments.OrnamentID IN (SELECT OrnamentID FROM OrnamentImageRelation WHERE ImageID IN (" + imgIDs + ")) " ;
+		}
 		String bibIDs = "";
+		for (int bibID : searchEntry.getBibIdList()) {
+			bibIDs += bibIDs.isEmpty() ? Integer.toString(bibID) : "," + bibID;
+		}
+		if (!bibIDs.isEmpty()) {
+			where += where.isEmpty() 
+					? "Ornaments.OrnamentID IN (SELECT OrnamentID FROM OrnamentBibliographyRelation WHERE BibID IN (" + bibIDs + ")) "
+					: " AND Ornaments.OrnamentID IN (SELECT OrnamentID FROM OrnamentBibliographyRelation WHERE BibID IN (" + bibIDs + ")) " ;
+		}
+		
 //		for (int bibID : searchEntry.getBibIdList()) {
 //			bibIDs += bibIDs.isEmpty() ? Integer.toString(bibID) : "," + bibID;
 // 		}
@@ -7544,6 +7569,16 @@ public boolean isHan(String s) {
 						+ searchEntry.getCorrelationFactor() + "))";
 		}
 		
+		String imgIDs = "";
+		for (int imgID : searchEntry.getImageIdList()) {
+			imgIDs += imgIDs.isEmpty() ? Integer.toString(imgID) : "," + imgID;
+		}
+		if (!imgIDs.isEmpty()) {
+			where += where.isEmpty() 
+					? "DepictionID IN (SELECT DepictionID FROM DepictionImageRelation WHERE ImageID IN (" + imgIDs + ")) "
+					: " AND DepictionID IN (SELECT DepictionID FROM DepictionImageRelation WHERE ImageID IN (" + imgIDs + ")) " ;
+		}
+		
 		String bibIDs = "";
 		for (int bibID : searchEntry.getBibIdList()) {
 			bibIDs += bibIDs.isEmpty() ? Integer.toString(bibID) : "," + bibID;
@@ -7565,7 +7600,7 @@ public boolean isHan(String s) {
 			where += where.isEmpty() ? "AccessLevel IN (" + inStatement + ")" : " AND AccessLevel IN (" + inStatement + ")";
 		}
 				
-		System.err.println(where.isEmpty() ? "SELECT * FROM Depictions" : "hier?SELECT * FROM Depictions WHERE " + where);
+		System.err.println(where.isEmpty() ? "SELECT * FROM Depictions" : "SELECT * FROM Depictions WHERE " + where);
 
 		try {
 			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Depictions LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+ ", "+Integer.toString(searchEntry.getMaxentries()): "SELECT * FROM Depictions WHERE " + where+" LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+", "+Integer.toString(searchEntry.getMaxentries()));
