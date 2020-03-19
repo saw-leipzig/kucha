@@ -48,6 +48,7 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 	private String monthEN="", monthTR="", monthORG="";
 	private String pagesEN="", pagesORG="", pagesTR="";
 	private String comments="";
+	private String quotedPages="";
 	private String notes="";
 	private String url="";
 	private String uri="";
@@ -734,6 +735,21 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 	 */
 	public void setComments(String comments) {
 		this.comments = comments;
+	}
+
+	/**
+	 * @return the quotedPages
+	 */
+	public String getQuotedPages() {
+		return quotedPages;
+	}
+
+	/**
+	 * @param comments
+	 *          the quotedPaged to set
+	 */
+	public void setQuotedPages(String quotedPages) {
+		this.quotedPages = quotedPages;
 	}
 
 	/**

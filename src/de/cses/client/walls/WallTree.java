@@ -8,8 +8,13 @@ import java.util.Map;
 
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
+import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.data.shared.event.StoreFilterEvent;
+import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.MarginData;
+import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
+import com.sencha.gxt.widget.core.client.form.StoreFilterField;
 import com.sencha.gxt.widget.core.client.tree.Tree;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckCascade;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
@@ -18,6 +23,7 @@ import com.sencha.gxt.widget.core.client.tree.TreeStyle;
 import de.cses.client.Util;
 import de.cses.client.depictions.DepictionDataDisplay.Images;
 import de.cses.shared.CaveEntry;
+import de.cses.shared.IconographyEntry;
 import de.cses.shared.WallTreeEntry;
 
 
@@ -29,6 +35,9 @@ public class WallTree {
 	private ArrayList<WallTreeEntry> allEntries;
 	private boolean dropunselected;
 	private boolean editable;
+	private StoreFilterField<WallTreeEntry> filterField;
+	public BorderLayoutContainer wallSelectorBLC = new BorderLayoutContainer();
+
 	class WallTreeEntryKeyProvider implements ModelKeyProvider<WallTreeEntry> {
 		@Override
 		public String getKey(WallTreeEntry item) {
@@ -250,12 +259,41 @@ public class WallTree {
 			}
 
 		};
+		filterField = new StoreFilterField<WallTreeEntry>() {
+
+			@Override
+			protected boolean doSelect(Store<WallTreeEntry> store, WallTreeEntry parent, WallTreeEntry item, String filter) {
+				TreeStore<WallTreeEntry> treeStore = (TreeStore<WallTreeEntry>) store;
+				do {
+					String treename = "";
+					String treesearch = "";
+					if (item.getText()!=null) {
+						treename = item.getText().toLowerCase().replaceAll("\\p{M}", "");						
+					};
+					if(item.getSearch()!=null){
+						treesearch = item.getSearch().toLowerCase().replaceAll("\\p{M}", "");						
+					};
+					filter = filter.toLowerCase().replaceAll("\\p{M}", "");
+
+					if ((treename.contains(filter))||(treesearch.contains(filter))) {
+						return true;
+					}
+					item = treeStore.getParent(item);
+				} while (item != null);
+				return false;
+			}
+		};
+		filterField.setEmptyText("enter a search term");
+		filterField.bind(wallTreeStore);
+
 		wallTree.setCheckable(editable);
 		TreeStyle treeStyle = new TreeStyle(); 
 		treeStyle.setNodeCloseIcon(Images.INSTANCE.foo());
 		treeStyle.setNodeOpenIcon(Images.INSTANCE.foo());	
 		wallTree.setStyle(treeStyle);
 		wallTree.setAutoExpand(true);
+		wallSelectorBLC.setCenterWidget(wallTree, new MarginData(0, 2, 5, 2));
+		wallSelectorBLC.setSouthWidget(filterField, new BorderLayoutData(25.0));
 
 
 

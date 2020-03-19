@@ -981,7 +981,7 @@ public class OrnamenticFilter extends AbstractFilter {
 		ornamenticFilterVLC.setHeight("100px");
 		ContentPanel ornamentDeskriptionPanel = new ContentPanel();
 		ornamentDeskriptionPanel.setHeaderVisible(true);
-		ornamentDeskriptionPanel.setToolTip(Util.createToolTip("Search for ornament deskription."));
+		ornamentDeskriptionPanel.setToolTip(Util.createToolTip("Search for ornament description."));
 		ornamentDeskriptionPanel.setHeading("Description");
 		ornamentDeskriptionPanel.add(ornamentDeskriptionSearchTF);
 		ornamentDeskriptionPanel.getHeader().setStylePrimaryName("frame-header");

@@ -162,7 +162,7 @@ public class DepictionResultView extends AbstractResultView {
 				}
 				boolean startsearch=(searchEntry.getCaveIdList().size()>0)||(searchEntry.getBibIdList().size()>0)||(searchEntry.getIconographyIdList().size()>0)||(searchEntry.getImageIdList().size()>0);
 				Util.doLogging(Boolean.toString(startsearch));
-				Util.showYesNo("Delete old filters?", "Do you whisch to delete old filters?", new SelectHandler() {
+				Util.showYesNo("Delete old filters?", "Do you wish to delete old filters?", new SelectHandler() {
 					
 					@Override
 					public void onSelect(SelectEvent event) {

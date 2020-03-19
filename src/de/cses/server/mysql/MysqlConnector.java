@@ -4766,6 +4766,8 @@ public boolean isHan(String s) {
 		Date date = new Date(System.currentTimeMillis());
 		DateFormat df = DateFormat.getDateTimeInstance();
 		de.setModifiedOn(df.format(date));
+		System.err.println("Description ist hier: ");
+		System.err.println(de.getDescription());
 		try {
 			System.err.println("===> updateDepictionEntry ID = " + de.getDepictionID());
 			pstmt = dbc.prepareStatement(

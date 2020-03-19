@@ -16,14 +16,14 @@ package de.cses.client.bibliography;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.cses.client.Util;
-
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.editor.client.Editor.Path;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.IdentityValueProvider;
@@ -34,11 +34,15 @@ import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.data.shared.Store;
-import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.data.shared.Store.StoreFilter;
 import com.sencha.gxt.widget.core.client.FramedPanel;
+import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.StoreFilterField;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
+import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
 import com.sencha.gxt.widget.core.client.grid.CheckBoxSelectionModel;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
@@ -46,11 +50,15 @@ import com.sencha.gxt.widget.core.client.grid.Grid;
 import com.sencha.gxt.widget.core.client.grid.RowExpander;
 import com.sencha.gxt.widget.core.client.grid.filters.GridFilters;
 import com.sencha.gxt.widget.core.client.grid.filters.StringFilter;
+import com.sencha.gxt.widget.core.client.info.Info;
+import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
+import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 
 import de.cses.client.StaticTables;
+import de.cses.client.Util;
 import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.AuthorEntry;
-import de.cses.shared.IconographyEntry;
+import de.cses.shared.VendorEntry;
 
 /**
  * @author alingnau
@@ -68,6 +76,8 @@ public class BibliographySelector implements IsWidget {
 		ValueProvider<AnnotatedBibliographyEntry, String> authors();
 		@Path("yearORG")
 		ValueProvider<AnnotatedBibliographyEntry, String> year();
+		@Path("quotedPages")
+		ValueProvider<AnnotatedBibliographyEntry, String> pages();
 	}
 	
 //	private ContentPanel mainPanel = null;
@@ -107,6 +117,61 @@ public class BibliographySelector implements IsWidget {
     IdentityValueProvider<AnnotatedBibliographyEntry> identity = new IdentityValueProvider<AnnotatedBibliographyEntry>();
     selectionModel = new CheckBoxSelectionModel<AnnotatedBibliographyEntry>(identity);
     selectionModel.setSelectionMode(SelectionMode.SIMPLE);
+    selectionModel.addSelectionChangedHandler(new SelectionChangedHandler<AnnotatedBibliographyEntry>() {
+				@Override
+				public void onSelectionChanged(SelectionChangedEvent<AnnotatedBibliographyEntry> event) {
+					List<AnnotatedBibliographyEntry> selected = event.getSelection();
+					if (grid.getSelectionModel().getSelectedItem()!=null) {
+						PopupPanel addPageDialog = new PopupPanel();
+						FramedPanel pageFP = new FramedPanel();
+						pageFP.setHeading("Set Pages");
+						TextField pageField = new TextField();
+						pageField.setValue("");
+						pageField.setWidth(200);
+						pageFP.add(pageField);
+						TextButton saveButton = new TextButton("save");
+						saveButton.addSelectHandler(new SelectHandler() {
+
+							@Override
+							public void onSelect(SelectEvent event) {
+									grid.getSelectionModel().getSelectedItem().setQuotedPages(pageField.getValue());
+//									dbService.insertVendorEntry(vEntry, new AsyncCallback<Integer>() {
+	//
+//										@Override
+//										public void onFailure(Throwable caught) {
+//											caught.printStackTrace();
+//										}
+	//
+//										@Override
+//										public void onSuccess(Integer result) {
+//											vEntry.setVendorID(result);
+//											vendorEntryLS.add(vEntry);
+//										}
+//									});
+									addPageDialog.hide();
+									Info.display("gehwähltes Item",grid.getSelectionModel().getSelectedItem().getQuotedPages());
+									//grid.sync(true);
+									grid.getView().refresh(true);
+							}
+						});
+						pageFP.addButton(saveButton);
+						TextButton cancelButton = new TextButton("cancel");
+						cancelButton.addSelectHandler(new SelectHandler() {
+
+							@Override
+							public void onSelect(SelectEvent event) {
+								addPageDialog.hide();
+							}
+						});
+						pageFP.addButton(cancelButton);
+						addPageDialog.add(pageFP);
+						addPageDialog.setModal(true);
+						addPageDialog.center();
+						
+					}
+						
+				}
+			});
 		
     RowExpander<AnnotatedBibliographyEntry> rowExpander = new RowExpander<AnnotatedBibliographyEntry>(new AbstractCell<AnnotatedBibliographyEntry>() {
 			@Override
@@ -118,6 +183,8 @@ public class BibliographySelector implements IsWidget {
 		ColumnConfig<AnnotatedBibliographyEntry, String> titleOrgCol = new ColumnConfig<AnnotatedBibliographyEntry, String>(bibProps.title(), 350, "Title");
 		ColumnConfig<AnnotatedBibliographyEntry, String> authorsCol = new ColumnConfig<AnnotatedBibliographyEntry, String>(bibProps.authors(), 300, "Authors");
 		ColumnConfig<AnnotatedBibliographyEntry, String> yearColumn = new ColumnConfig<AnnotatedBibliographyEntry, String>(bibProps.year(), 50, "Year");
+		ColumnConfig<AnnotatedBibliographyEntry, String> pageColumn = new ColumnConfig<AnnotatedBibliographyEntry, String>(bibProps.pages(), 50, "Pages");
+		pageColumn.setFixed(false);
 //		yearColumn.setHideable(false);
 //		yearColumn.setHorizontalHeaderAlignment(HorizontalAlignmentConstant.startOf(Direction.DEFAULT));
 		yearColumn.setMenuDisabled(false);
@@ -129,8 +196,10 @@ public class BibliographySelector implements IsWidget {
     sourceColumns.add(titleOrgCol);
     sourceColumns.add(authorsCol);
     sourceColumns.add(yearColumn);
+    sourceColumns.add(pageColumn);
      ColumnModel<AnnotatedBibliographyEntry> sourceColumnModel = new ColumnModel<AnnotatedBibliographyEntry>(sourceColumns);
     ListStore<AnnotatedBibliographyEntry> sourceStore = new ListStore<AnnotatedBibliographyEntry>(bibProps.key());
+
 //    sourceStore.addSortInfo(new StoreSortInfo<AnnotatedBibliographyEntry>(bibProps.titleORG(), SortDir.ASC));
     for (AnnotatedBibliographyEntry abe : StaticTables.getInstance().getBibliographyEntries().values()) {
     	sourceStore.add(abe);

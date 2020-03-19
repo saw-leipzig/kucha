@@ -112,7 +112,7 @@ public class PositionEditor {
 
 				//Info.display("Ausgewählt: ",wallTree.wallTree.getSelectionModel().getSelectedItem().getText());
 
-		selectWallFP.add(wallTree.wallTree);
+		selectWallFP.add(wallTree.wallSelectorBLC);
 	
 		PositionSelectionLV = new ListView<PositionEntry, PositionEntry>(positionEntryLS,
 				new IdentityValueProvider<PositionEntry>(),
