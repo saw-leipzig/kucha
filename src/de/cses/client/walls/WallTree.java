@@ -68,6 +68,7 @@ public class WallTree {
 		this.editable=editable;
 		buildTree(editable);
 		setWallTreeStore(elements, dropunselected, wallIDs);
+		Util.doLogging("Setting wallTreeStore compleated.");
 	}
 	public WallTree(ArrayList<WallTreeEntry> elements, List<WallTreeEntry> wallIDs, boolean dropunselected, boolean editable, CaveEntry entry) {
 		this.cEntry= entry;

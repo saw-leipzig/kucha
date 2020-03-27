@@ -186,6 +186,12 @@ public abstract class AbstractResultView extends Portlet {
 	public void getPics(String masterImageIDs , int res, String sessionID) {
 
 	}
+	
+	public void setSelectorTitle(String title) {
+		
+		this.setHeading(this.title+title);
+	}
+
 	public FlowLayoutContainer getContainer() {
 		return resultContainer;
 	}
@@ -206,8 +212,10 @@ public abstract class AbstractResultView extends Portlet {
 	}
 	public void initiateSearch(AbstractSearchEntry searchEntry, boolean startsearch,boolean reset) {
 		getSearchParent().getFilter().setSearchEntry(searchEntry, reset);
+		Util.doLogging(Boolean.toString(startsearch));
 		setSearchEnabled(!startsearch);
 		if (startsearch) {
+			Util.doLogging("Start search");
 			getSearchParent().getFilter().invokeSearch();
 		}
 	}

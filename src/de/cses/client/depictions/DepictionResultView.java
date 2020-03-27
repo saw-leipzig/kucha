@@ -94,7 +94,7 @@ public class DepictionResultView extends AbstractResultView {
 						searchEntry.setEntriesShowed(searchEntry.getEntriesShowed()+searchEntry.getMaxentries());
 						for (DepictionEntry de : result) {
 							count++;
-							Util.doLogging("Anzahl der Wallentries bei DepictionID "+Integer.toString(de.getDepictionID())+": "+Integer.toString(de.getWalls().size()));
+							//Util.doLogging("Anzahl der Wallentries bei DepictionID "+Integer.toString(de.getDepictionID())+": "+Integer.toString(de.getWalls().size()));
 
 							addResult(new DepictionView(de,UriUtils.fromTrustedString("icons/load_active.png")));
 							if (imageIDs == "") {
@@ -149,6 +149,7 @@ public class DepictionResultView extends AbstractResultView {
 					searchEntry.getBibIdList().add(bibID);
 				} else if (event.getData() instanceof OrnamentEntry) {
 					int icoID = ((OrnamentEntry) event.getData()).getIconographyID();
+					Util.doLogging(Integer.toString(icoID));
 					if (icoID>0) {
 						searchEntry.getIconographyIdList().add(icoID);
 					}
@@ -161,7 +162,7 @@ public class DepictionResultView extends AbstractResultView {
 					return;
 				}
 				boolean startsearch=(searchEntry.getCaveIdList().size()>0)||(searchEntry.getBibIdList().size()>0)||(searchEntry.getIconographyIdList().size()>0)||(searchEntry.getImageIdList().size()>0);
-				Util.doLogging(Boolean.toString(startsearch));
+				Util.doLogging("Search is starting:"+Boolean.toString(startsearch));
 				Util.showYesNo("Delete old filters?", "Do you wish to delete old filters?", new SelectHandler() {
 					
 					@Override

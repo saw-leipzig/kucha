@@ -320,7 +320,7 @@ public interface DatabaseService extends RemoteService {
 
 	ArrayList<DepictionEntry> searchDepictions(DepictionSearchEntry searchEntry) throws IllegalArgumentException;
 
-	ArrayList<ImageEntry> searchImages(ImageSearchEntry searchEntry) throws IllegalArgumentException;
+	Map<Integer,ArrayList<ImageEntry>> searchImages(ImageSearchEntry searchEntry) throws IllegalArgumentException;
 
 	ArrayList<AnnotatedBibliographyEntry> searchAnnotatedBibliography(AnnotatedBibliographySearchEntry searchEntry) throws IllegalArgumentException;
 

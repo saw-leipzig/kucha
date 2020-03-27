@@ -97,6 +97,7 @@ import de.cses.client.images.ImageSelectorListener;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.client.ui.TextElement;
 import de.cses.client.user.UserLogin;
+import de.cses.client.walls.PositionEditor;
 import de.cses.client.walls.WallSelector;
 import de.cses.client.walls.WallTree;
 import de.cses.client.walls.Walls;
@@ -108,11 +109,11 @@ import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.LocationEntry;
 import de.cses.shared.ModeOfRepresentationEntry;
+import de.cses.shared.PositionEntry;
 import de.cses.shared.PreservationAttributeEntry;
 import de.cses.shared.StyleEntry;
 import de.cses.shared.VendorEntry;
 import de.cses.shared.WallEntry;
-import de.cses.client.walls.PositionEditor;
 import de.cses.shared.WallTreeEntry;
 import de.cses.shared.comparator.CaveEntryComparator;
 
@@ -308,7 +309,7 @@ public class DepictionEditor extends AbstractEditor {
 		} else {
 			correspondingDepictionEntry = new DepictionEntry();
 		}
-		//Util.doLogging("Große von walls:"+Integer.toString(correspondingDepictionEntry.getWalls().size()));
+		Util.doLogging("Große von ImageList:"+Integer.toString(correspondingDepictionEntry.getRelatedImages().size()));
 		for (WallTreeEntry wte : correspondingDepictionEntry.getWalls()) {
 			Util.doLogging(wte.getText()+" - "+wte.getWallLocationID());
 		}
@@ -1121,7 +1122,7 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 
-		wallTree = new WallTree(StaticTables.getInstance().getWallTreeEntries().values(), correspondingDepictionEntry.getWalls(), true, false, correspondingDepictionEntry.getCave());
+		wallTree = new WallTree(StaticTables.getInstance().getWallTreeEntries().values(), correspondingDepictionEntry.getWalls(), true, false, null);//correspondingDepictionEntry.getCave());
 
 		FramedPanel wallTreeFP = new FramedPanel();
 		wallTree.setWall(correspondingDepictionEntry.getWalls());
@@ -1132,12 +1133,19 @@ public class DepictionEditor extends AbstractEditor {
 
 			@Override
 			public void onSelect(SelectEvent event) {
-
-				PositionEditor pe = new PositionEditor(correspondingDepictionEntry.getCave(), correspondingDepictionEntry.getWalls()) {
+				PositionEditor pe = new PositionEditor(correspondingDepictionEntry.getCave(), correspondingDepictionEntry.getWalls(), false) {
 					@Override
 					protected void save(List<WallTreeEntry> results ) {
+							Util.doLogging("Ausgewählte Walls:");
+							for (WallTreeEntry wte : getSelectedWalls()) {
+								Util.doLogging("  "+wte.getText());
+								for (PositionEntry pe : wte.getPosition()) {
+									Util.doLogging("    - "+pe.getName());
+								}
+							}
+
 							correspondingDepictionEntry.setWalls(getSelectedWalls());
-							wallTree.setWall(correspondingDepictionEntry.getWalls());
+							wallTree.setWall(getSelectedWalls());
 						}
 					};
 				pe.show();
@@ -1588,19 +1596,22 @@ public class DepictionEditor extends AbstractEditor {
 					@Override
 					public void onSelect(SelectEvent event) {
 						saveDepictionEntry(true);
+						bibliographySelector.clearPages();
 						closeEditor(null);
 					}
 				}, new SelectHandler() {
 						
 					@Override
 					public void onSelect(SelectEvent event) {
-						 closeEditor(null);
+						bibliographySelector.clearPages(); 
+						closeEditor(null);
 					}
 				}, new KeyDownHandler() {
 
 					@Override
 					public void onKeyDown(KeyDownEvent e) {
 						if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+						bibliographySelector.clearPages();
 						saveDepictionEntry(true);
 						closeEditor(null);
 					}}
@@ -1620,7 +1631,7 @@ public class DepictionEditor extends AbstractEditor {
 		        }
 		    }			
 		}, KeyDownEvent.getType());
-		mainPanel.setHeading("Painted Representation Editor (entry last modified on " + correspondingDepictionEntry.getModifiedOn() + 
+		mainPanel.setHeading("Painted Representation Editor (entry "+correspondingDepictionEntry.getDepictionID()+" last modified on " + correspondingDepictionEntry.getModifiedOn() + 
 				(!correspondingDepictionEntry.getLastChangedByUser().isEmpty() ? " by " + correspondingDepictionEntry.getLastChangedByUser() + ")" : ")"));
 
 		mainPanel.add(mainHLC);
@@ -1646,6 +1657,7 @@ public class DepictionEditor extends AbstractEditor {
 		}
 		correspondingDepictionEntry.setRelatedImages(relatedImageEntryList);
 		correspondingDepictionEntry.setRelatedBibliographyList(bibliographySelector.getSelectedEntries());
+		Info.display("Anzahl der ausgewählten Bibliographien: ",Integer.toString(correspondingDepictionEntry.getRelatedBibliographyList().size()));
 		correspondingDepictionEntry.setLastChangedByUser(UserLogin.getInstance().getUsername());
 		
 		if (correspondingDepictionEntry.getDepictionID() == 0) {

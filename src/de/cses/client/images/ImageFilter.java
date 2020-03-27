@@ -183,6 +183,9 @@ public class ImageFilter extends AbstractFilter {
 				ImgIDs.add(img);
 			}
 		}
+		if (((ImageSearchEntry)searchEntry).getTitleSearch()!= null && !((ImageSearchEntry)searchEntry).getTitleSearch().isEmpty()) {
+			titleSearch.setValue(((ImageSearchEntry)searchEntry).getTitleSearch());
+		}
 		if (((ImageSearchEntry)searchEntry).getCaveIdList()!= null && !((ImageSearchEntry)searchEntry).getCaveIdList().isEmpty()) {
 			for (int img :((ImageSearchEntry)searchEntry).getCaveIdList()) {
 				caveIDs.add(img);

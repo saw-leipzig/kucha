@@ -126,7 +126,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	
 	public AnnotatedBibliographyEntry getAnnotatedBiblographybyID(int id) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
-		AnnotatedBibliographyEntry biblographyEntry = connector.getAnnotatedBiblographybyID(id);
+		AnnotatedBibliographyEntry biblographyEntry = connector.getAnnotatedBiblographybyID(id, null);
 		return biblographyEntry;
 	}
 
@@ -998,7 +998,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	}
 	
 	@Override
-	public ArrayList<ImageEntry> searchImages(ImageSearchEntry searchEntry) throws IllegalArgumentException {
+	public Map<Integer,ArrayList<ImageEntry>> searchImages(ImageSearchEntry searchEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.searchImages(searchEntry);
 	}

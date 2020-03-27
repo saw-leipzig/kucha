@@ -91,7 +91,8 @@ public class BibliographySelector implements IsWidget {
 	private StoreFilterField<AnnotatedBibliographyEntry> yearField;
     VerticalPanel gridVP; 
     HorizontalPanel gridHP;
-
+    ListStore<AnnotatedBibliographyEntry> sourceStore;
+    boolean showdialog = false;
 	/**
 	 * 
 	 */
@@ -107,9 +108,27 @@ public class BibliographySelector implements IsWidget {
 		if (grid == null) {
 			createUI();
 		}
+		else{
+				//sourceStore.clear();
+				for (AnnotatedBibliographyEntry abe : selectedEntries) {
+					sourceStore.findModel(abe).setQuotedPages(abe.getQuotedPages());
+				}
+			}
+
 		return gridVP;
 	}
+	private void loadentries() {
+		showdialog=false;
+	    for (AnnotatedBibliographyEntry abe : StaticTables.getInstance().getBibliographyEntries().values()) {
+	    		abe.setQuotedPages(null);
+	    		sourceStore.add(abe);
+	    }
+	    for (AnnotatedBibliographyEntry selectedabe: selectedEntries) {
+	    	sourceStore.findModel(selectedabe).setQuotedPages(selectedabe.getQuotedPages());
+	    }
+    	showdialog=true;
 
+	}
 	/**
 	 * 
 	 */
@@ -121,7 +140,7 @@ public class BibliographySelector implements IsWidget {
 				@Override
 				public void onSelectionChanged(SelectionChangedEvent<AnnotatedBibliographyEntry> event) {
 					List<AnnotatedBibliographyEntry> selected = event.getSelection();
-					if (grid.getSelectionModel().getSelectedItem()!=null) {
+					if ((grid.getSelectionModel().getSelectedItem()!=null)&(showdialog)) {
 						PopupPanel addPageDialog = new PopupPanel();
 						FramedPanel pageFP = new FramedPanel();
 						pageFP.setHeading("Set Pages");
@@ -191,6 +210,7 @@ public class BibliographySelector implements IsWidget {
 		authorsCol.setMenuDisabled(false);
 		titleOrgCol.setMenuDisabled(false);
     List<ColumnConfig<AnnotatedBibliographyEntry, ?>> sourceColumns = new ArrayList<ColumnConfig<AnnotatedBibliographyEntry, ?>>();
+   
     sourceColumns.add(selectionModel.getColumn());
     sourceColumns.add(rowExpander);
     sourceColumns.add(titleOrgCol);
@@ -198,15 +218,13 @@ public class BibliographySelector implements IsWidget {
     sourceColumns.add(yearColumn);
     sourceColumns.add(pageColumn);
      ColumnModel<AnnotatedBibliographyEntry> sourceColumnModel = new ColumnModel<AnnotatedBibliographyEntry>(sourceColumns);
-    ListStore<AnnotatedBibliographyEntry> sourceStore = new ListStore<AnnotatedBibliographyEntry>(bibProps.key());
+    sourceStore = new ListStore<AnnotatedBibliographyEntry>(bibProps.key());
 
 //    sourceStore.addSortInfo(new StoreSortInfo<AnnotatedBibliographyEntry>(bibProps.titleORG(), SortDir.ASC));
-    for (AnnotatedBibliographyEntry abe : StaticTables.getInstance().getBibliographyEntries().values()) {
-    	sourceStore.add(abe);
-    }
+    loadentries();
     FramedPanel fpGrid = new FramedPanel();
+    showdialog=false;
     grid = new Grid<AnnotatedBibliographyEntry>(sourceStore, sourceColumnModel);
-
     grid.setHideMode(HideMode.OFFSETS);
     grid.setSelectionModel(selectionModel);
 //    grid.setColumnReordering(true);
@@ -272,7 +290,7 @@ public class BibliographySelector implements IsWidget {
 		        			  }
 		        		  }}
 			        	  catch(Exception e) {
-			        		  Util.doLogging(e.getLocalizedMessage());
+			        		  Util.doLogging(e.getMessage());
 			        		  Util.doLogging(ae.getName());
 
 			        	  }
@@ -290,7 +308,7 @@ public class BibliographySelector implements IsWidget {
 		        			  }
 		        		  }
 		        	  }		        	  catch(Exception e) {
-		        		  Util.doLogging(e.getLocalizedMessage());
+		        		  Util.doLogging(e.getMessage());
 		        		  Util.doLogging(ae.getName());
 
 		        	  }
@@ -398,13 +416,18 @@ public class BibliographySelector implements IsWidget {
     if (selectedEntries != null && selectedEntries.size() > 0) {
     	selectionModel.setSelection(selectedEntries);
     }
+    showdialog=true;
     
     // Stage manager, load the previous state
 //    GridFilterStateHandler<AnnotatedBibliographyEntry> handler = new GridFilterStateHandler<AnnotatedBibliographyEntry>(grid, filters);
 //    handler.loadState();
     
 	}
-	
+	public void clearPages() {
+		for (AnnotatedBibliographyEntry abe:selectionModel.getSelectedItems()) {
+			grid.getStore().findModel(abe).setQuotedPages("");
+		}
+	}
 	public ArrayList<AnnotatedBibliographyEntry> getSelectedEntries() {
 		return new ArrayList<AnnotatedBibliographyEntry>(selectionModel.getSelectedItems());
 	}

@@ -150,6 +150,7 @@ public class Util {
 		dialogPanel.addButton(yesButton);
 		if (noHandler != null) {
 			TextButton noButton = new TextButton("No");
+			noButton.setTabIndex(2);
 			noButton.addSelectHandler(new SelectHandler() {
 				
 				@Override
@@ -173,6 +174,14 @@ public class Util {
 		dialog.setModal(true);
 		dialog.setGlassEnabled(true);
 		dialog.center();
+		yesButton.focus();
+		yesButton.setTabIndex(1);
+		if (noHandler == null) {
+			cancelButton.setTabIndex(3);
+		}
+		else {
+			cancelButton.setTabIndex(2);			
+		}
 	}
 
 	public static void doLogging(String message) {

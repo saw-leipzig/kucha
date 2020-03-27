@@ -14,13 +14,13 @@
 package de.cses.client.images;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DialogBox;
-import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.info.Info;
 
@@ -57,37 +57,43 @@ public class ImageSearchController extends AbstractSearchController {
 	@Override
 	public void invokeSearch() {
 		ImageSearchEntry searchEntry = (ImageSearchEntry) getFilter().getSearchEntry();
-		dbService.searchImages(searchEntry, new AsyncCallback<ArrayList<ImageEntry>>() {
+		dbService.searchImages(searchEntry, new AsyncCallback<Map<Integer,ArrayList<ImageEntry>>>() {
 
 			@Override
-			public void onSuccess(ArrayList<ImageEntry> result) {
+			public void onSuccess(Map<Integer,ArrayList<ImageEntry>> result) {
 				getResultView().reset();
 				int count=0;
 				String imageIDs="";
 				searchEntry.setEntriesShowed(searchEntry.getMaxentries());
 				getResultView().setSearchEntry(searchEntry);
-
-				if (result.size()==searchEntry.getMaxentries()) {
-					getResultView().setSearchbuttonVisible();
-				}
-				else {
-					getResultView().setSearchbuttonHide();
-				}
 				getResultView().setSearchEnabled(true);
-
-				for (ImageEntry ie : result) {
-					count++;
-					getResultView().addResult(new ImageView(ie,UriUtils.fromTrustedString("icons/load_active.png")));
-					if (imageIDs == "") {
-						imageIDs = Integer.toString(ie.getImageID());
+				for (Integer key : result.keySet()) {
+					if (result.get(key).size()<=searchEntry.getMaxentries()) {
+						getResultView().setSearchbuttonVisible();
 					}
 					else {
-						imageIDs = imageIDs + ","+Integer.toString(ie.getImageID());
+						getResultView().setSearchbuttonHide();
 					}
-					if (count==20 ){
-						getResultView().getPics(imageIDs, 120, UserLogin.getInstance().getSessionID());
-						imageIDs="";
-						count=0;
+					if (searchEntry.getMaxentries()>key) {
+						getResultView().setSelectorTitle(" ("+Integer.toString(key)+"/"+Integer.toString(key)+")");
+					}
+					else{
+						getResultView().setSelectorTitle(" ("+Integer.toString(searchEntry.getMaxentries())+"/"+Integer.toString(key)+")");
+					}
+					for (ImageEntry ie: result.get(key)) {
+						count++;
+						getResultView().addResult(new ImageView(ie,UriUtils.fromTrustedString("icons/load_active.png")));
+						if (imageIDs == "") {
+							imageIDs = Integer.toString(ie.getImageID());
+						}
+						else {
+							imageIDs = imageIDs + ","+Integer.toString(ie.getImageID());
+						}
+						if (count==20 ){
+							getResultView().getPics(imageIDs, 120, UserLogin.getInstance().getSessionID());
+							imageIDs="";
+							count=0;
+						}
 					}
 				}
 
@@ -164,6 +170,7 @@ public class ImageSearchController extends AbstractSearchController {
 						
 						//imageEditorPanel.center();
 						imageEditorPanel.show();
+						singleIE.setfocus();
 					}
 
 					@Override

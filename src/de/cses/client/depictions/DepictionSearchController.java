@@ -57,19 +57,22 @@ public class DepictionSearchController extends AbstractSearchController {
 
 	@Override
 	public void invokeSearch() {
+		Util.doLogging("?");
 		DepictionSearchEntry searchEntry = (DepictionSearchEntry) getFilter().getSearchEntry();
+		Util.doLogging("?");
 
 		dbService.searchDepictions(searchEntry, new AsyncCallback<ArrayList<DepictionEntry>>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
+				Util.doLogging("Oh-oh"+caught.getMessage());
 				caught.printStackTrace();
 				getResultView().setSearchEnabled(true);
 			}
 
 			@Override
 			public void onSuccess(ArrayList<DepictionEntry> result) {
-				Info.display("Gefundene DepictionEntries:",Integer.toString(result.size()));
+				//Info.display("Gefundene DepictionEntries:",Integer.toString(result.size()));
 				String masterImageIDs = "";
 				//Info.display("Result", "Größe = "+Integer.toString(result.size()));
 				int count = 0;

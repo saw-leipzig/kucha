@@ -525,6 +525,16 @@ public class IconographySelector extends FramedPanel {
 			iconographyTree.setCheckStyle(CheckCascade.PARENTS);
 		}
 	}
+	public void selectChildren(boolean Children) {
+		if (Children) {
+			
+				iconographyTree.setCheckStyle(CheckCascade.CHILDREN);
+		
+		}
+		else {
+			iconographyTree.setCheckStyle(CheckCascade.NONE);
+		}
+	}
 
 
 }

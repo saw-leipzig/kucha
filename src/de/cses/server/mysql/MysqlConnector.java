@@ -894,7 +894,7 @@ public class MysqlConnector implements IsSerializable {
 		return true;
 	}
 	
-	public ArrayList<ImageEntry> searchImages(ImageSearchEntry searchEntry) {
+	public Map<Integer,ArrayList<ImageEntry>> searchImages(ImageSearchEntry searchEntry) {
 		long start = System.currentTimeMillis();
 		if (dologgingbegin){
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von searchImages wurde ausgelöst.");;
@@ -947,19 +947,36 @@ public class MysqlConnector implements IsSerializable {
 		where += where.isEmpty() ? "AccessLevel IN (" + inStatement + ")" : " AND AccessLevel IN (" + inStatement + ")";
 		
 		System.out.println(where.isEmpty() ? "SELECT * FROM Images where deleted=0 ORDER BY Title Asc LIMIT "+Integer.toString(searchEntry.getEntriesShowed()+50)+" OFFSET "+Integer.toString(searchEntry.getEntriesShowed()) : "SELECT * FROM Images WHERE deleted=0 and " + where + " ORDER BY Title Asc LIMIT "+Integer.toString(searchEntry.getEntriesShowed()+50)+" OFFSET "+Integer.toString(searchEntry.getEntriesShowed()));
-		
+		int anzahl=0;
+		int i=1;
 		try {
-			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Images where deleted=0 ORDER BY Title Asc LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+ ", "+Integer.toString(searchEntry.getMaxentries()) : "SELECT * FROM Images WHERE deleted=0 and " + where + " ORDER BY Title Asc LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+", "+Integer.toString(searchEntry.getMaxentries()));
-			int i = 1; // counter to fill ? in where clause
+			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT count(ImageID) as Anzahl FROM Images where deleted=0 ORDER BY Title Asc" : "SELECT count(ImageID) as Anzahl FROM Images WHERE deleted=0 and " + where +" ORDER BY Title Asc ");			
 			if (searchEntry.getTitleSearch() != null && !searchEntry.getTitleSearch().isEmpty()) {
 				pstmt.setString(i++, searchEntry.getTitleSearch().replace("*", "%"));
 				pstmt.setString(i++, searchEntry.getTitleSearch().replace("*", "%"));
 			}
 			if (searchEntry.getCopyrightSearch() != null && !searchEntry.getCopyrightSearch().isEmpty()) {
-				pstmt.setString(i++, "%" + searchEntry.getCopyrightSearch() + "%");
+				pstmt.setString(i++, searchEntry.getCopyrightSearch().replace("*", "%"));
 			}
 			if (searchEntry.getCommentSearch() != null && !searchEntry.getCommentSearch().isEmpty()) {
-				pstmt.setString(i++, "%" + searchEntry.getCommentSearch() + "%");
+				pstmt.setString(i++, searchEntry.getCommentSearch().replace("*", "%"));
+			}
+			
+			ResultSet rsAnz = pstmt.executeQuery();
+			while (rsAnz.next()) {
+				anzahl= rsAnz.getInt("Anzahl");
+			}
+			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Images where deleted=0 ORDER BY Title Asc LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+ ", "+Integer.toString(searchEntry.getMaxentries()) : "SELECT * FROM Images WHERE deleted=0 and " + where + " ORDER BY Title Asc LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+", "+Integer.toString(searchEntry.getMaxentries()));
+			i = 1; // counter to fill ? in where clause
+			if (searchEntry.getTitleSearch() != null && !searchEntry.getTitleSearch().isEmpty()) {
+				pstmt.setString(i++, searchEntry.getTitleSearch().replace("*", "%"));
+				pstmt.setString(i++, searchEntry.getTitleSearch().replace("*", "%"));
+			}
+			if (searchEntry.getCopyrightSearch() != null && !searchEntry.getCopyrightSearch().isEmpty()) {
+				pstmt.setString(i++,searchEntry.getCopyrightSearch().replace("*", "%"));
+			}
+			if (searchEntry.getCommentSearch() != null && !searchEntry.getCommentSearch().isEmpty()) {
+				pstmt.setString(i++,searchEntry.getCommentSearch().replace("*", "%"));
 			}
 			
 			ResultSet rs = pstmt.executeQuery();
@@ -975,21 +992,23 @@ public class MysqlConnector implements IsSerializable {
 			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (where.startsWith("AccessLevel") && results.size() > 100) {
-			// when there is  not filter option selected the where clause only deals with AccessLevel
-			// limiting the number of search results to avoid slowing down the system
-			ArrayList<ImageEntry> subResultList = new ArrayList<ImageEntry>();
-			for (ImageEntry ie : results.subList(0, 100)) {
-				subResultList.add(ie);
-			}
-			return subResultList;
-		}
+//		if (where.startsWith("AccessLevel") && results.size() > 100) {
+//			// when there is  not filter option selected the where clause only deals with AccessLevel
+//			// limiting the number of search results to avoid slowing down the system
+//			ArrayList<ImageEntry> subResultList = new ArrayList<ImageEntry>();
+//			for (ImageEntry ie : results.subList(0, 100)) {
+//				subResultList.add(ie);
+//			}
+//			return subResultList;
+//		}
 		if (dologging){
 		long end = System.currentTimeMillis();
 		long diff = (end-start);
 		if (diff>100){
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von searchImages brauchte "+diff + " Millisekunden.");;}}
-		return results;	
+		Map <Integer,ArrayList<ImageEntry>> endRes = new HashMap <Integer,ArrayList<ImageEntry>>();
+		endRes.put(anzahl, results);
+		return endRes;	
 	}
 
 	/**
@@ -1203,7 +1222,7 @@ public class MysqlConnector implements IsSerializable {
 			where += where.isEmpty() ? "Caves.CaveID IN (" + caveIdSet + ")" : " AND Caves.CaveID IN (" + caveIdSet + ")";
 		}
 		if (!searchEntry.getHistoricalName().isEmpty()) {
-			where += where.isEmpty() ? "(HistoricName LIKE ? OR OptionalHistoricName LIKE ?)" : " AND (HistoricName LIKE ? OR OptionalHistoricName LIKE ?)";
+			where += where.isEmpty() ? "(HistoricName LIKE ? OR OptionalHistoricName LIKE ? OR CONCAT(Sites.ShortName, \" \",Caves.OfficialNumber) LIKE ?)" : " AND (HistoricName LIKE ? OR OptionalHistoricName LIKE ? OR CONCAT(Sites.ShortName, \" \",Caves.OfficialNumber) LIKE ?)";
 		}
 
 		if (searchEntry.isDecoratedOnly()) {
@@ -1250,10 +1269,11 @@ public class MysqlConnector implements IsSerializable {
 		
 		try {
 			int i=1; // counter for ? insert
-			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT Caves.*, CaveBibliographyRelation.BibID FROM Caves left Join CaveBibliographyRelation on (Caves.CaveID = CaveBibliographyRelation.CaveID)" : "SELECT Caves.*, CaveBibliographyRelation.BibID FROM Caves left Join CaveBibliographyRelation on (Caves.CaveID = CaveBibliographyRelation.CaveID) WHERE " + where);
+			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT Caves.*, CaveBibliographyRelation.BibID FROM Caves left Join CaveBibliographyRelation on (Caves.CaveID = CaveBibliographyRelation.CaveID) inner join Sites on (Caves.SiteID = Sites.SiteID)" : "SELECT Caves.*, CaveBibliographyRelation.BibID FROM Caves left Join CaveBibliographyRelation on (Caves.CaveID = CaveBibliographyRelation.CaveID) inner join Sites on (Caves.SiteID = Sites.SiteID) WHERE " + where);
 			if (!searchEntry.getHistoricalName().isEmpty()) {
-				pstmt.setString(i++, "%" + searchEntry.getHistoricalName() + "%");
-				pstmt.setString(i++, "%" + searchEntry.getHistoricalName() + "%");
+				pstmt.setString(i++, searchEntry.getHistoricalName().replace("*","%"));
+				pstmt.setString(i++, searchEntry.getHistoricalName().replace("*","%"));
+				pstmt.setString(i++, searchEntry.getHistoricalName().replace("*","%"));
 			}
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
@@ -1383,11 +1403,18 @@ public class MysqlConnector implements IsSerializable {
 				}
 			ResultSet rsKlauselRelatedBibliographyList = stmt.executeQuery(sqlKlauselRelatedBibliographyList);
 			
-			List<int[]> ABEs = new ArrayList<int[]>();
+			Map<Integer, ArrayList<AnnotatedBibliographyEntry>> ABEs = new HashMap<Integer, ArrayList<AnnotatedBibliographyEntry>>();
 
 			while (rsKlauselRelatedBibliographyList.next()) {
-				ABEs.add(new int[]{rsKlauselRelatedBibliographyList.getInt("BibID"), rsKlauselRelatedBibliographyList.getInt("CaveID")});
-			}
+				if (ABEs.containsKey(rsKlauselRelatedBibliographyList.getInt("CaveID"))){
+					ABEs.get(rsKlauselRelatedBibliographyList.getInt("CaveID")).add(getAnnotatedBiblographybyID(rsKlauselRelatedBibliographyList.getInt("BibID"),rsKlauselRelatedBibliographyList.getString("Page")));
+				}
+				else {
+					ArrayList<AnnotatedBibliographyEntry> BibEntries = new ArrayList<AnnotatedBibliographyEntry>();
+					BibEntries.add(getAnnotatedBiblographybyID(rsKlauselRelatedBibliographyList.getInt("BibID"),rsKlauselRelatedBibliographyList.getString("Page")));
+					ABEs.put(rsKlauselRelatedBibliographyList.getInt("CaveID"),BibEntries);
+				}
+							}
 			System.out.println(sqlKlauselCaveAreas);
 			while (rs.next()) {
 				CaveEntry ce = new CaveEntry(rs.getInt("CaveID"), rs.getString("OfficialNumber"), rs.getString("HistoricName"),
@@ -1441,13 +1468,11 @@ public class MysqlConnector implements IsSerializable {
 //				ce.setCaveSketchList(getCaveSketchEntriesFromCave(ce.getCaveID()));
 				ce.setCaveSketchList(caveSketchesSelect);
 				ArrayList<AnnotatedBibliographyEntry> ABEsSelect = new ArrayList<AnnotatedBibliographyEntry>();
-				for (int[] abe : ABEs) {
-					if (abe[1]==ce.getCaveID()) {
-						ABEsSelect.add(getAnnotatedBiblographybyID(abe[0]));
-					}
-				}				
+				if (ABEs.containsKey(ce.getCaveID())){
+					ce.setRelatedBibliographyList(ABEs.get(ce.getCaveID()));
+				}
 //				ce.setRelatedBibliographyList(getRelatedBibliographyFromCave(ce.getCaveID()));
-				ce.setRelatedBibliographyList(ABEsSelect);
+				
 				results.add(ce);
 			}
 			System.out.println(caveIDs);
@@ -3193,37 +3218,37 @@ public boolean isHan(String s) {
 			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM AnnotatedBibliography" : "SELECT * FROM AnnotatedBibliography WHERE " + where);
 			if ((searchEntry.getAuthorSearch() != null) && !searchEntry.getAuthorSearch().isEmpty()) {
 				for (String name : searchEntry.getAuthorSearch().split("\\s+")) {
-					pstmt.setString(i++, "%" + name + "%");
-					pstmt.setString(i++, "%" + name + "%");
-					pstmt.setString(i++, "%" + name + "%");
-					pstmt.setString(i++, "%" + name + "%");
+					pstmt.setString(i++,name.replace("*", "%"));
+					pstmt.setString(i++,name.replace("*", "%"));
+					pstmt.setString(i++,name.replace("*", "%"));
+					pstmt.setString(i++,name.replace("*", "%"));
 				}
 				for (String name : searchEntry.getAuthorSearch().split("\\s+")) {
-					pstmt.setString(i++, "%" + name + "%");
-					pstmt.setString(i++, "%" + name + "%");
-					pstmt.setString(i++, "%" + name + "%");
-					pstmt.setString(i++, "%" + name + "%");
+					pstmt.setString(i++, name.replace("*", "%"));
+					pstmt.setString(i++, name.replace("*", "%"));
+					pstmt.setString(i++, name.replace("*", "%"));
+					pstmt.setString(i++, name.replace("*", "%"));
 				}
 			}
 			if (searchEntry.getPublisherSearch() != null && !searchEntry.getPublisherSearch().isEmpty()) {
-				pstmt.setString(i++, "%" + searchEntry.getPublisherSearch() + "%");
+				pstmt.setString(i++, searchEntry.getPublisherSearch().replace("*", "%"));
 			}
 			if (searchEntry.getTitleSearch() != null && !searchEntry.getTitleSearch().isEmpty()) {
-				pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");
-				pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");
-				pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");
-				pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");
-				pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");
-				pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");
-				pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");
-				pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");
-				pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");
-				pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");
-				pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");
-				pstmt.setString(i++, "%" + searchEntry.getTitleSearch() + "%");
+				pstmt.setString(i++, searchEntry.getTitleSearch().replace("*", "%"));
+				pstmt.setString(i++,searchEntry.getTitleSearch().replace("*", "%"));
+				pstmt.setString(i++,searchEntry.getTitleSearch().replace("*", "%"));
+				pstmt.setString(i++,searchEntry.getTitleSearch().replace("*", "%"));
+				pstmt.setString(i++,searchEntry.getTitleSearch().replace("*", "%"));
+				pstmt.setString(i++,searchEntry.getTitleSearch().replace("*", "%"));
+				pstmt.setString(i++,searchEntry.getTitleSearch().replace("*", "%"));
+				pstmt.setString(i++,searchEntry.getTitleSearch().replace("*", "%"));
+				pstmt.setString(i++,searchEntry.getTitleSearch().replace("*", "%"));
+				pstmt.setString(i++,searchEntry.getTitleSearch().replace("*", "%"));
+				pstmt.setString(i++,searchEntry.getTitleSearch().replace("*", "%"));
+				pstmt.setString(i++,searchEntry.getTitleSearch().replace("*", "%"));
 			}
 			if (searchEntry.getYearSearch() > 0) {
-				pstmt.setString(i++, "%" + searchEntry.getYearSearch() + "%");
+				pstmt.setString(i++,Integer.toString(searchEntry.getYearSearch()).replace("*", "%"));
 			}
 			System.out.println(where.isEmpty() ? "SELECT * FROM AnnotatedBibliography" : "SELECT * FROM AnnotatedBibliography WHERE " + where);
 			
@@ -3243,7 +3268,7 @@ public boolean isHan(String s) {
 						rs.getString("PagesTR"), rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"), rs.getString("URI"),
 						rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getInt("AccessLevel"), rs.getString("AbstractText"),
 						rs.getString("ThesisType"), rs.getString("EditorType"), rs.getBoolean("OfficialTitleTranslation"), rs.getString("BibTexKey"),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), isHan(rs.getString("TitleORG")));
+						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), isHan(rs.getString("TitleORG")),null);
 				entry.setAuthorList(getAuthorBibRelation(entry.getAnnotatedBibliographyID()));
 				entry.setEditorList(getEditorBibRelation(entry.getAnnotatedBibliographyID()));
 				entry.setKeywordList(getRelatedBibKeywords(entry.getAnnotatedBibliographyID()));
@@ -3305,7 +3330,7 @@ public boolean isHan(String s) {
 						rs.getString("PagesTR"), rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"), rs.getString("URI"),
 						rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getInt("AccessLevel"), rs.getString("AbstractText"),
 						rs.getString("ThesisType"), rs.getString("EditorType"), rs.getBoolean("OfficialTitleTranslation"), rs.getString("BibTexKey"),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), isHan(rs.getString("TitleORG")));
+						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), isHan(rs.getString("TitleORG")),null);
 				entry.setAuthorList(getAuthorBibRelation(entry.getAnnotatedBibliographyID()));
 				entry.setEditorList(getEditorBibRelation(entry.getAnnotatedBibliographyID()));
 				entry.setKeywordList(getRelatedBibKeywords(entry.getAnnotatedBibliographyID()));
@@ -3374,7 +3399,7 @@ public boolean isHan(String s) {
 						rs.getString("PagesTR"), rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"), rs.getString("URI"),
 						rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getInt("AccessLevel"), rs.getString("AbstractText"),
 						rs.getString("ThesisType"), rs.getString("EditorType"), rs.getBoolean("OfficialTitleTranslation"), rs.getString("BibTexKey"),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), isHan(rs.getString("TitleORG")));
+						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), isHan(rs.getString("TitleORG")), null);
 				entry.setAuthorList(getAuthorBibRelation(entry.getAnnotatedBibliographyID()));
 				entry.setEditorList(getEditorBibRelation(entry.getAnnotatedBibliographyID()));
 				entry.setKeywordList(getRelatedBibKeywords(entry.getAnnotatedBibliographyID()));
@@ -3413,7 +3438,7 @@ public boolean isHan(String s) {
 			pstmt.setInt(1, depictionID);
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
-				entry = getAnnotatedBiblographybyID(rs.getInt("BibID"));
+				entry = getAnnotatedBiblographybyID(rs.getInt("BibID"), rs.getString("Page"));
 				result.add(entry);
 			}
 			rs.close();
@@ -3507,7 +3532,7 @@ public boolean isHan(String s) {
 		return result;
 	}
 	
-	public AnnotatedBibliographyEntry getAnnotatedBiblographybyID(int bibID) {
+	public AnnotatedBibliographyEntry getAnnotatedBiblographybyID(int bibID, String page) {
 		long start = System.currentTimeMillis();
 		if (dologgingbegin){
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getAnnotatedBiblographybyID wurde ausgelöst.");;
@@ -3533,7 +3558,7 @@ public boolean isHan(String s) {
 						rs.getString("PagesTR"), rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"), rs.getString("URI"),
 						rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getInt("AccessLevel"), rs.getString("AbstractText"),
 						rs.getString("ThesisType"), rs.getString("EditorType"), rs.getBoolean("OfficialTitleTranslation"), rs.getString("BibTexKey"),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), isHan(rs.getString("TitleORG")));
+						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), isHan(rs.getString("TitleORG")), page);
 				result.setAuthorList(getAuthorBibRelation(result.getAnnotatedBibliographyID()));
 				result.setEditorList(getEditorBibRelation(result.getAnnotatedBibliographyID()));
 				result.setKeywordList(getRelatedBibKeywords(result.getAnnotatedBibliographyID()));
@@ -3738,6 +3763,24 @@ public boolean isHan(String s) {
 					? " Ornaments.IconographyID IN ("+ iconographyIDs + ")"
 					: " AND Ornaments.IconographyID IN ("+ iconographyIDs + ")";
 		}
+		String wallIDs = "";
+		for (WallTreeEntry wall : searchEntry.getWalls()) {
+			wallIDs += wallIDs.isEmpty() ? Integer.toString(wall.getWallLocationID()) : "," + wall.getWallLocationID();
+		}
+		if (!wallIDs.isEmpty()) {
+			where += where.isEmpty() 
+					? " DepictionWallsRelation.WallID IN ("+ wallIDs + ")"
+					: " AND DepictionWallsRelation.WallID IN ("+ wallIDs + ")";
+		}
+		String districtsIDs = "";
+		for (DistrictEntry district : searchEntry.getDistricts()) {
+			districtsIDs += districtsIDs.isEmpty() ? Integer.toString(district.getDistrictID()) : "," + district.getDistrictID();
+		}
+		if (!districtsIDs.isEmpty()) {
+			where += where.isEmpty() 
+					? " Depictionsall.CaveID IN (Select CaveID from Caves where DistrictID in ("+districtsIDs+"))"
+					: " AND Depictionsall.CaveID IN (Select CaveID from Caves where DistrictID in ("+districtsIDs+"))";
+		}
 		String imgIDs = "";
 		for (int imgID : searchEntry.getImageIDList()) {
 			imgIDs += imgIDs.isEmpty() ? Integer.toString(imgID) : "," + imgID;
@@ -3825,7 +3868,7 @@ public boolean isHan(String s) {
 							"left join WallPositionsRelation on (WallLocationsTree.WallLocationID=WallPositionsRelation.WallID and Depictionsall.DepictionID=WallPositionsRelation.DepictionID) left join Position on (WallPositionsRelation.PositionID=Position.PositionID) left join OrnamentComponentRelation on (OrnamentComponentRelation.OrnamentID = Ornaments.OrnamentID) WHERE " + where+" LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+", "+Integer.toString(searchEntry.getMaxentries()));
 
 			if (!searchEntry.getCode().isEmpty()) {
-				pstmt.setString(1, "%" + searchEntry.getCode() + "%");
+				pstmt.setString(1,searchEntry.getCode().replace("*", "%"));
 			}
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
@@ -4816,6 +4859,7 @@ public boolean isHan(String s) {
 			insertDepictionImageRelation(de.getDepictionID(), de.getRelatedImages());
 		}
 		deleteEntry("DELETE FROM DepictionWallsRelation WHERE DepictionID=" + de.getDepictionID());
+		deleteEntry("DELETE FROM WallPositionsRelation WHERE DepictionID=" + de.getDepictionID());
 		if (de.getRelatedImages().size() > 0) {
 			insertDepictionWallsRelation(de.getDepictionID(), de.getWalls());
 		}//		System.err.println("DELETE FROM DepictionIconographyRelation WHERE DepictionID=" + de.getDepictionID());
@@ -4906,7 +4950,6 @@ public boolean isHan(String s) {
 		PreparedStatement pstmt;
 		// System.err.println("==> updateDepictionImageRelation called");
 		try {
-			deleteEntry("DELETE FROM WallPositionsRelation WHERE DepictionID=" + depictionID);
 			pstmt = dbc.prepareStatement("INSERT INTO DepictionWallsRelation VALUES (?, ?)");
 			for (WallTreeEntry entry : wallsEntryList) {
 				pstmt.setInt(1, depictionID);
@@ -4971,10 +5014,11 @@ public boolean isHan(String s) {
 		}
 
 		try {
-			relationStatement = dbc.prepareStatement("INSERT INTO DepictionBibliographyRelation VALUES (?, ?)");
+			relationStatement = dbc.prepareStatement("INSERT INTO DepictionBibliographyRelation VALUES (?, ?, ?)");
 			for (AnnotatedBibliographyEntry entry : relatedBibliographyList) {
 				relationStatement.setInt(1, depictionID);
-				relationStatement.setInt(2, entry.getAnnotatedBibliographyID());
+				relationStatement.setInt(2, entry.getAnnotatedBibliographyID()); 
+				relationStatement.setString(3, entry.getQuotedPages());
 				relationStatement.executeUpdate();
 			}
 			relationStatement.close();
@@ -5003,7 +5047,7 @@ public boolean isHan(String s) {
 			relationStatement.setInt(1, depictionID);
 			ResultSet rs = relationStatement.executeQuery();
 			while (rs.next()) {
-				result.add(getAnnotatedBiblographybyID(rs.getInt("BibID")));
+				result.add(getAnnotatedBiblographybyID(rs.getInt("BibID"), rs.getString("Page")));
 			}
 			rs.close();
 			relationStatement.close();
@@ -5034,10 +5078,11 @@ public boolean isHan(String s) {
 		if (caveID > 0 && relatedBibliographyList.size() > 0) {
 			deleteEntry("DELETE FROM CaveBibliographyRelation WHERE CaveID=" + caveID);
 			try {
-				relationStatement = dbc.prepareStatement("INSERT INTO CaveBibliographyRelation VALUES (?, ?)");
+				relationStatement = dbc.prepareStatement("INSERT INTO CaveBibliographyRelation VALUES (?, ?, ?)");
 				relationStatement.setInt(1, caveID);
 				for (AnnotatedBibliographyEntry entry : relatedBibliographyList) {
 					relationStatement.setInt(2, entry.getAnnotatedBibliographyID());
+					relationStatement.setString(3, entry.getQuotedPages());
 					relationStatement.executeUpdate();
 				}
 				relationStatement.close();
@@ -5064,10 +5109,11 @@ public boolean isHan(String s) {
 		if (OrnamentID > 0 && relatedBibliographyList.size() > 0) {
 			deleteEntry("DELETE FROM OrnamentBibliographyRelation WHERE OrnamentID=" + OrnamentID);
 			try {
-				relationStatement = dbc.prepareStatement("INSERT INTO OrnamentBibliographyRelation VALUES (?, ?)");
+				relationStatement = dbc.prepareStatement("INSERT INTO OrnamentBibliographyRelation VALUES (?, ?, ?)");
 				relationStatement.setInt(1, OrnamentID);
 				for (AnnotatedBibliographyEntry entry : relatedBibliographyList) {
 					relationStatement.setInt(2, entry.getAnnotatedBibliographyID());
+					relationStatement.setString(3, entry.getQuotedPages());
 					relationStatement.executeUpdate();
 				}
 				relationStatement.close();
@@ -5102,7 +5148,7 @@ public boolean isHan(String s) {
 			relationStatement.setInt(1, caveID);
 			ResultSet rs = relationStatement.executeQuery();
 			while (rs.next()) {
-				result.add(getAnnotatedBiblographybyID(rs.getInt("BibID")));
+				result.add(getAnnotatedBiblographybyID(rs.getInt("BibID"),rs.getString("Page")));
 			}
 			rs.close();
 			relationStatement.close();
@@ -5132,7 +5178,7 @@ public boolean isHan(String s) {
 			relationStatement.setInt(1, ornamentID);
 			ResultSet rs = relationStatement.executeQuery();
 			while (rs.next()) {
-				result.add(getAnnotatedBiblographybyID(rs.getInt("BibID")));
+				result.add(getAnnotatedBiblographybyID(rs.getInt("BibID"), rs.getString("Page")));
 			}
 			rs.close();
 			relationStatement.close();
@@ -7570,7 +7616,26 @@ public boolean isHan(String s) {
 					: " AND DepictionID IN (SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (" + iconographyIDs + ") GROUP BY DepictionID HAVING (COUNT(DepictionID) >= " 
 						+ searchEntry.getCorrelationFactor() + "))";
 		}
-		
+		String wallTreeIDs = "";
+		for (int wallTreeID : searchEntry.getWallIDList()) {
+			wallTreeIDs += wallTreeIDs.isEmpty() ? Integer.toString(wallTreeID) : "," + wallTreeID;
+		}
+		if (!wallTreeIDs.isEmpty()) {
+			where += where.isEmpty() 
+					? "DepictionID IN (SELECT DepictionID FROM DepictionWallsRelation WHERE WallID IN (" + wallTreeIDs + ") GROUP BY DepictionID HAVING (COUNT(DepictionID) >= " 
+						+ searchEntry.getCorrelationFactorWT() + "))"
+					: " AND DepictionID IN (SELECT DepictionID FROM DepictionWallsRelation WHERE WallID IN (" + wallTreeIDs + ") GROUP BY DepictionID HAVING (COUNT(DepictionID) >= " 
+						+ searchEntry.getCorrelationFactorWT() + "))";
+		}
+		String positionIDs = "";
+		for (int positionID : searchEntry.getPositionIDList()) {
+			positionIDs += positionIDs.isEmpty() ? Integer.toString(positionID) : "," + positionID;
+		}
+		if (!positionIDs.isEmpty()) {
+			where += where.isEmpty() 
+					? "DepictionID IN (SELECT DepictionID FROM WallPositionsRelation WHERE PositionID IN (" + positionIDs + ")) "
+					: " AND DepictionID IN (SELECT DepictionID FROM WallPositionsRelation WHERE PositionID IN (" + positionIDs + ")) ";
+		}
 		String imgIDs = "";
 		for (int imgID : searchEntry.getImageIdList()) {
 			imgIDs += imgIDs.isEmpty() ? Integer.toString(imgID) : "," + imgID;
@@ -7608,7 +7673,7 @@ public boolean isHan(String s) {
 			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Depictions LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+ ", "+Integer.toString(searchEntry.getMaxentries()): "SELECT * FROM Depictions WHERE " + where+" LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+", "+Integer.toString(searchEntry.getMaxentries()));
 
 			if (!searchEntry.getShortName().isEmpty()) {
-				pstmt.setString(1, "%" + searchEntry.getShortName() + "%");
+				pstmt.setString(1,searchEntry.getShortName().replace("*", "%"));
 			}
 			
 			
@@ -7856,7 +7921,7 @@ public boolean isHan(String s) {
 				String entryClass = rs.getString("EntryClass");
 				switch (entryClass) {
 					case "AnnotatedBibliographyEntry":
-						resultList.add(getAnnotatedBiblographybyID(entryID));
+						resultList.add(getAnnotatedBiblographybyID(entryID, ""));
 						break;
 					case "CaveEntry":
 						resultList.add(getCave(entryID));

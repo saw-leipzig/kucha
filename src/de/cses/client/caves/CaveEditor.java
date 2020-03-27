@@ -2640,11 +2640,13 @@ public class CaveEditor extends AbstractEditor {
 					@Override
 					public void onSelect(SelectEvent event) {
 						saveEntries(true);
+						bibliographySelector.clearPages();
 					}
 				}, new SelectHandler() {
 
 					@Override
 					public void onSelect(SelectEvent event) {
+						bibliographySelector.clearPages();
 						closeEditor(null);
 					}
 				}, new KeyDownHandler() {

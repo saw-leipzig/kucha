@@ -13,7 +13,10 @@ public class DepictionSearchEntry extends AbstractSearchEntry {
 	private ArrayList<Integer> locationIdList = new ArrayList<Integer>();
 	private ArrayList<Integer> iconographyIdList = new ArrayList<Integer>();
 	private ArrayList<Integer> imageIdList = new ArrayList<Integer>();
+	private ArrayList<Integer> wallIdList = new ArrayList<Integer>();
+	private ArrayList<Integer> positionIdList = new ArrayList<Integer>();
 	private int correlationFactor = 0;
+	private int correlationFactorWT = 0;
 
 	public DepictionSearchEntry(boolean orSearch, String sessionID) {
 		super(orSearch, sessionID);
@@ -49,6 +52,22 @@ public class DepictionSearchEntry extends AbstractSearchEntry {
 		this.locationIdList = locationIdList;
 	}
 
+	public ArrayList<Integer> getWallIDList() {
+		return wallIdList;
+	}
+
+	public void setWallIdList(ArrayList<Integer> wallIdList) {
+		this.wallIdList = wallIdList;
+	}
+	
+	public ArrayList<Integer> getPositionIDList() {
+		return positionIdList;
+	}
+
+	public void setPositionIDList(ArrayList<Integer> positionIdList) {
+		this.positionIdList = positionIdList;
+	}
+
 	public ArrayList<Integer> getIconographyIdList() {
 		return iconographyIdList;
 	}
@@ -71,6 +90,13 @@ public class DepictionSearchEntry extends AbstractSearchEntry {
 
 	public void setCorrelationFactor(int correlationFactor) {
 		this.correlationFactor = correlationFactor;
+	}
+	public int getCorrelationFactorWT() {
+		return correlationFactorWT;
+	}
+
+	public void setCorrelationFactorWT(int correlationFactorWT) {
+		this.correlationFactorWT = correlationFactorWT;
 	}
 
 

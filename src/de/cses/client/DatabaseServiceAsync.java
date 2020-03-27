@@ -344,7 +344,7 @@ public interface DatabaseServiceAsync {
 
 	void searchDepictions(DepictionSearchEntry searchEntry, AsyncCallback<ArrayList<DepictionEntry>> asyncCallback) throws IllegalArgumentException;
 
-	void searchImages(ImageSearchEntry searchEntry, AsyncCallback<ArrayList<ImageEntry>> asyncCallback) throws IllegalArgumentException;
+	void searchImages(ImageSearchEntry searchEntry, AsyncCallback<Map<Integer,ArrayList<ImageEntry>>> asyncCallback) throws IllegalArgumentException;
 	
 	void searchAnnotatedBibliography(AnnotatedBibliographySearchEntry searchEntry, AsyncCallback<ArrayList<AnnotatedBibliographyEntry>> asyncCallback) throws IllegalArgumentException;
 

@@ -879,12 +879,14 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 					@Override
 					public void onSelect(SelectEvent event) {
 						save();
+						bibSelector.clearPages();
 						closeEditor(ornamentEntry);
 					}
 				}, new SelectHandler() {
 
 					@Override
 					public void onSelect(SelectEvent event) {
+						bibSelector.clearPages();
 						closeEditor(ornamentEntry);
 					}
 			
