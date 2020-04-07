@@ -95,6 +95,9 @@ public class OrnamenticView extends AbstractView {
 	protected AbstractEditor getEditor(AbstractEntry entry) {
 		return new OrnamenticEditor((OrnamentEntry)entry);
 	}
+	public void setEditor(OrnamentEntry entry) {
+		this.oEntry=entry;
+	}
 
 	/* (non-Javadoc)
 	 * @see de.cses.client.ui.AbstractView#getEntry()

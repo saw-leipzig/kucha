@@ -70,7 +70,7 @@ public class IconographyTree {
 		}
 	}
 	public IconographyTree(Collection<IconographyEntry> elements, ArrayList<IconographyEntry> l, boolean dropunselected) {
-		initpics();
+		//initpics();
 		setIconographyStore(elements,l,dropunselected);
 		buildTree(false);
 	}

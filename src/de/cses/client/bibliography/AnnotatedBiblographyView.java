@@ -70,6 +70,10 @@ public class AnnotatedBiblographyView extends AbstractView {
 	protected AbstractEditor getEditor(AbstractEntry entry) {
 		return new AnnotatedBibliographyEditor(annotatedBibliographyEntry.clone());
 	}
+	
+	public void setEditor(AnnotatedBibliographyEntry entry) {
+		this.annotatedBibliographyEntry=entry;
+	}
 
 	public void processtoview(AnnotatedBibliographyEntry annotatedBibliographyEntry) {
 		if ((annotatedBibliographyEntry.getPublicationTypeID()==1) || (annotatedBibliographyEntry.getPublicationTypeID()==3)) {

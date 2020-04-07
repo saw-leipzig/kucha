@@ -52,6 +52,7 @@ public class ImageResultView extends AbstractResultView {
 	 * Create a remote service proxy to talk to the server-side service.
 	 */
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
+	ImageResultView irv;
 
 	/**
 	 * @param title
@@ -60,6 +61,7 @@ public class ImageResultView extends AbstractResultView {
 	public ImageResultView(String title) {
 		super(title);
 		//setHeight(300);
+		irv=this;
 		addMoreResults.addSelectHandler(new SelectHandler() {
 			
 			@Override
@@ -83,7 +85,7 @@ public class ImageResultView extends AbstractResultView {
 							for (ImageEntry ie: result.get(key)) {
 								
 								count++;
-								addResult(new ImageView(ie,UriUtils.fromTrustedString("icons/load_active.png")));
+								addResult(new ImageView(ie,UriUtils.fromTrustedString("icons/load_active.png"), irv));
 								if (imageIDs == "") {
 									imageIDs = Integer.toString(ie.getImageID());
 								}

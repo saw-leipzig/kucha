@@ -51,6 +51,9 @@ public class DepictionView extends AbstractView {
 	public DepictionEntry getDepictionEntry() {
 		return depictionEntry;
 	}
+	public void setDepictionEntry(DepictionEntry entry) {
+		this.depictionEntry= entry;
+	}
 	private DepictionEntry depictionEntry;
 	private DepictionViewTemplates dvTemplates;
 	private SafeUri imgUri;
@@ -97,7 +100,9 @@ public class DepictionView extends AbstractView {
 		String officialCaveNumberStr = (se != null && ce != null) ? se.getShortName() + " " + ce.getOfficialNumber() : "";
 		if (depictionEntry.getWallID() > 0) {
 			WallLocationEntry wle = st.getWallLocationEntries().get(depictionEntry.getWallID());
-			wallLocation = wle.getLabel();
+			if (wle!=null) {
+				wallLocation = wle.getLabel();
+			}
 		}
 		setHTML(dvTemplates.view(
 				imgUri, 

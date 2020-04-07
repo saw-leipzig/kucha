@@ -419,7 +419,6 @@ public class MainView implements IsWidget {
     view.setSouthWidget(footerLabel, southData);
     view.setCenterWidget(centerPanel, centerData);
     view.setStyleName("");
-    
     if (UserLogin.isLoggedIn()) {
     	northContentPanel.setHeading("Welcome back, " + UserLogin.getInstance().getUsername());
     } else {

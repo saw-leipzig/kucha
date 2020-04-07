@@ -17,6 +17,9 @@ import java.util.ArrayList;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.xml.client.Document;
@@ -36,9 +39,9 @@ import com.sencha.gxt.widget.core.client.form.FileUploadField;
 import com.sencha.gxt.widget.core.client.form.FormPanel;
 import com.sencha.gxt.widget.core.client.form.FormPanel.Encoding;
 import com.sencha.gxt.widget.core.client.form.FormPanel.Method;
-import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.Util;
+import de.cses.shared.ImageEntry;
 
 public class ImageUploader implements IsWidget {
 
@@ -50,11 +53,31 @@ public class ImageUploader implements IsWidget {
 	private ArrayList<String> typeList;
 	protected String selectedFile;
 	private String filename;
+	int imageID = -1;
+	ImageEntry imgEntry;
 
 
 	public ImageUploader(ImageUploadListener listener) {
 		uploadListener = new ArrayList<ImageUploadListener>();
 		uploadListener.add(listener);
+		imageID=-1;
+	}
+	public ImageUploader(ImageUploadListener listener, ImageEntry imgEntry) {
+		uploadListener = new ArrayList<ImageUploadListener>();
+		uploadListener.add(listener);
+		this.imageID=imgEntry.getImageID();
+		this.imgEntry=imgEntry;
+	}
+	private void proceed() {
+		int startIdx = Math.max(selectedFile.lastIndexOf("\\"), selectedFile.lastIndexOf("/"));
+		filename = selectedFile.substring(startIdx>0 ? startIdx+1 : 0, selectedFile.lastIndexOf("."));
+		Util.doLogging( selectedFile+"- "+filename);
+		if (imageID<0) {
+			form.setAction("imgUpload?origImageFileName="+filename);
+		}
+		else {
+			form.setAction("imgUpload?origImageFileName="+filename+"&hasID="+Integer.toString(imageID));
+		}
 	}
 
 	@Override
@@ -92,10 +115,40 @@ public class ImageUploader implements IsWidget {
 					Util.showWarning("Unsopported Image Type", "Please select JPG, PNG or TIFF!");
 					file.reset();
 				} else {
-					int startIdx = Math.max(selectedFile.lastIndexOf("\\"), selectedFile.lastIndexOf("/"));
-					filename = selectedFile.substring(startIdx>0 ? startIdx+1 : 0, selectedFile.lastIndexOf("."));
-					Util.doLogging( selectedFile+"- "+filename);
-					form.setAction("imgUpload?origImageFileName="+filename);
+					if (imageID>0) {
+						int startIdx = Math.max(selectedFile.lastIndexOf("\\"), selectedFile.lastIndexOf("/"));
+						if (imgEntry.getFilename()!=selectedFile.substring(startIdx>0 ? startIdx+1 : 0, selectedFile.lastIndexOf("."))) {
+			  				de.cses.client.Util.showYesNo("File names not identical!", "Choosing a wrong image will overwrite the old filename. Changes will be irreversible. Do only proceed, if you are certain.", new SelectHandler() {
+								
+								@Override
+								public void onSelect(SelectEvent event) {
+					        		proceed();
+								}
+							}, new SelectHandler() {
+									
+								@Override
+								public void onSelect(SelectEvent event) {
+									for (ImageUploadListener listener : uploadListener) {
+										// ToDo: send information after image upload for database
+										listener.uploadCanceled();
+									}
+								}
+							}, new KeyDownHandler() {
+
+								@Override
+								public void onKeyDown(KeyDownEvent e) {
+									for (ImageUploadListener listener : uploadListener) {
+										// ToDo: send information after image upload for database
+										listener.uploadCanceled();
+									}
+								}
+							}
+						  );
+						}
+					}
+					else {
+						proceed();
+					}
 				}
 			}
 		});
@@ -110,12 +163,12 @@ public class ImageUploader implements IsWidget {
 				Util.doLogging(event.getResults());
 				NodeList nodelist = doc.getElementsByTagName("pre");
 				Node node = nodelist.item(0);
-				int newImageID = Integer.parseInt(node.getFirstChild().toString());
-				if (newImageID == 0) {
+				imageID = Integer.parseInt(node.getFirstChild().toString());
+				if (imageID == 0) {
 					Util.showWarning("Duplicate Image Error", "This image has already been uploaded!");
 				} else {
 					for (ImageUploadListener listener : uploadListener) {
-						listener.uploadCompleted(newImageID, filename);
+						listener.uploadCompleted(imageID, filename);
 					}
 				}
 			}

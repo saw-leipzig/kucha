@@ -126,6 +126,10 @@ public class CaveView extends AbstractView {
 	protected AbstractEntry getEntry() {
 		return cEntry;
 	}
+	
+	protected void setEntry(CaveEntry entry) {
+		this.cEntry=entry;
+	}
 
 	/*
 	 * (non-Javadoc)

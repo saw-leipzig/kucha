@@ -82,7 +82,7 @@ public class ImageSearchController extends AbstractSearchController {
 					}
 					for (ImageEntry ie: result.get(key)) {
 						count++;
-						getResultView().addResult(new ImageView(ie,UriUtils.fromTrustedString("icons/load_active.png")));
+						getResultView().addResult(new ImageView(ie,UriUtils.fromTrustedString("icons/load_active.png"),((ImageResultView)getResultView())));
 						if (imageIDs == "") {
 							imageIDs = Integer.toString(ie.getImageID());
 						}
@@ -139,7 +139,7 @@ public class ImageSearchController extends AbstractSearchController {
 								imageEditorPanel.hide();
 								if (entry != null) {
 									if (!imgEntry.isdeleted()) {
-										getResultView().addResult(new ImageView((ImageEntry)entry,UriUtils.fromTrustedString("icons/load_active.png")));
+										getResultView().addResult(new ImageView((ImageEntry)entry,UriUtils.fromTrustedString("icons/load_active.png"),((ImageResultView)getResultView())));
 										String imageIDs = Integer.toString(((ImageEntry)entry).getImageID());
 										getResultView().getPics(imageIDs, 120, UserLogin.getInstance().getSessionID());
 									}
@@ -150,7 +150,7 @@ public class ImageSearchController extends AbstractSearchController {
 										@Override
 										public void onSuccess(Boolean result) { 
 											if (!imgEntry.isdeleted()) {
-												getResultView().addResult(new ImageView(imgEntry,UriUtils.fromTrustedString("icons/close_icon.png")));
+												getResultView().addResult(new ImageView(imgEntry,UriUtils.fromTrustedString("icons/close_icon.png"),((ImageResultView)getResultView())));
 											}
 										}
 										

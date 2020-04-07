@@ -57,9 +57,7 @@ public class DepictionSearchController extends AbstractSearchController {
 
 	@Override
 	public void invokeSearch() {
-		Util.doLogging("?");
 		DepictionSearchEntry searchEntry = (DepictionSearchEntry) getFilter().getSearchEntry();
-		Util.doLogging("?");
 
 		dbService.searchDepictions(searchEntry, new AsyncCallback<ArrayList<DepictionEntry>>() {
 
@@ -72,7 +70,6 @@ public class DepictionSearchController extends AbstractSearchController {
 
 			@Override
 			public void onSuccess(ArrayList<DepictionEntry> result) {
-				//Info.display("Gefundene DepictionEntries:",Integer.toString(result.size()));
 				String masterImageIDs = "";
 				//Info.display("Result", "Größe = "+Integer.toString(result.size()));
 				int count = 0;
@@ -89,7 +86,7 @@ public class DepictionSearchController extends AbstractSearchController {
 				int x = result.size();
 				for (DepictionEntry de : result){
 					count++;
-					Util.doLogging("Anzahl der Wallentries bei DepictionID "+Integer.toString(de.getDepictionID())+": "+Integer.toString(de.getWalls().size()));
+					Util.doLogging("DepictionID "+Integer.toString(de.getDepictionID()));
 					getResultView().addResult(new DepictionView(de,UriUtils.fromTrustedString("icons/load_active.png")));
 					if (masterImageIDs == "") {
 						masterImageIDs = Integer.toString(de.getMasterImageID());

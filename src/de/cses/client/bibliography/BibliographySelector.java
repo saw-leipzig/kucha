@@ -14,17 +14,21 @@
 package de.cses.client.bibliography;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.editor.client.Editor.Path;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.Style.HideMode;
@@ -35,14 +39,18 @@ import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.Store.StoreFilter;
+import com.sencha.gxt.data.shared.event.StoreFilterEvent;
+import com.sencha.gxt.data.shared.event.StoreFilterEvent.StoreFilterHandler;
 import com.sencha.gxt.widget.core.client.FramedPanel;
+import com.sencha.gxt.widget.core.client.Resizable;
 import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.StoreFilterField;
 import com.sencha.gxt.widget.core.client.form.TextField;
-import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
-import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
 import com.sencha.gxt.widget.core.client.grid.CheckBoxSelectionModel;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
@@ -50,7 +58,6 @@ import com.sencha.gxt.widget.core.client.grid.Grid;
 import com.sencha.gxt.widget.core.client.grid.RowExpander;
 import com.sencha.gxt.widget.core.client.grid.filters.GridFilters;
 import com.sencha.gxt.widget.core.client.grid.filters.StringFilter;
-import com.sencha.gxt.widget.core.client.info.Info;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 
@@ -58,7 +65,6 @@ import de.cses.client.StaticTables;
 import de.cses.client.Util;
 import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.AuthorEntry;
-import de.cses.shared.VendorEntry;
 
 /**
  * @author alingnau
@@ -89,10 +95,15 @@ public class BibliographySelector implements IsWidget {
 	private StoreFilterField<AnnotatedBibliographyEntry> titleField;
 	private StoreFilterField<AnnotatedBibliographyEntry> AuthorsField;
 	private StoreFilterField<AnnotatedBibliographyEntry> yearField;
-    VerticalPanel gridVP; 
+	protected Map<Integer, AnnotatedBibliographyEntry> selectedBibMap= new HashMap<Integer, AnnotatedBibliographyEntry>();
+	VerticalLayoutContainer gridVP; 
+    HorizontalLayoutContainer gridHLC;
     HorizontalPanel gridHP;
+    //FramedPanel mainGrid = new FramedPanel();
     ListStore<AnnotatedBibliographyEntry> sourceStore;
     boolean showdialog = false;
+    boolean itemSelected = false;
+    AnnotatedBibliographyEntry selectedEntry = null;
 	/**
 	 * 
 	 */
@@ -110,12 +121,25 @@ public class BibliographySelector implements IsWidget {
 		}
 		else{
 				//sourceStore.clear();
-				for (AnnotatedBibliographyEntry abe : selectedEntries) {
-					sourceStore.findModel(abe).setQuotedPages(abe.getQuotedPages());
-				}
+		    if (selectedEntries != null && selectedEntries.size() > 0) {
+		    	selectionModel.setSelection(selectedEntries);
+		    	selectedBibMap.clear();
+		    	for (AnnotatedBibliographyEntry abe : selectedEntries) {
+		    		grid.getStore().findModel(abe).setQuotedPages(abe.getQuotedPages());
+		    		selectedBibMap.put(abe.getAnnotatedBibliographyID(), abe);
+		    	}
 			}
-
+		}
 		return gridVP;
+	}
+	public void setwidth(int width) {
+		//gridVP.setWidth(width);
+	 	titleField.setWidth(((int)width/100*50));;
+		AuthorsField.setWidth(((int)width/100*40));
+		yearField.setWidth(((int)width/100*10));
+		Util.doLogging("Width: "+Integer.toString(width)+" - "+Integer.toString(((int)width/100*50))+" - "+Integer.toString(((int)width/100*40))+" - "+Integer.toString(((int)width/100*10)));
+
+		
 	}
 	private void loadentries() {
 		showdialog=false;
@@ -136,59 +160,124 @@ public class BibliographySelector implements IsWidget {
     IdentityValueProvider<AnnotatedBibliographyEntry> identity = new IdentityValueProvider<AnnotatedBibliographyEntry>();
     selectionModel = new CheckBoxSelectionModel<AnnotatedBibliographyEntry>(identity);
     selectionModel.setSelectionMode(SelectionMode.SIMPLE);
+    SelectionHandler<AnnotatedBibliographyEntry> sh = new SelectionHandler<AnnotatedBibliographyEntry>() {
+		
+		@Override
+		public void onSelection(SelectionEvent<AnnotatedBibliographyEntry> event) {
+			if (showdialog) {
+				
+				Util.doLogging("selectedItem: "+event.getSelectedItem().getTitleORG());;
+				selectedBibMap.put(event.getSelectedItem().getAnnotatedBibliographyID(), event.getSelectedItem());
+				Util.doLogging("selectedBibMap: ");
+				for (AnnotatedBibliographyEntry abe2 : selectedBibMap.values()) {
+	    			Util.doLogging(abe2.getTitleORG());
+	    		}
+	 
+				PopupPanel addPageDialog = new PopupPanel();
+				FramedPanel pageFP = new FramedPanel();
+				pageFP.setHeading("Set Pages");
+				TextField pageField = new TextField();
+				pageField.setValue("");
+				pageField.setWidth(200);
+				pageFP.add(pageField);
+				TextButton saveButton = new TextButton("save");
+				selectedEntry=event.getSelectedItem();
+				saveButton.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+							selectedEntry.setQuotedPages(pageField.getValue());
+//							dbService.insertVendorEntry(vEntry, new AsyncCallback<Integer>() {
+//
+//								@Override
+//								public void onFailure(Throwable caught) {
+//									caught.printStackTrace();
+//								}
+//
+//								@Override
+//								public void onSuccess(Integer result) {
+//									vEntry.setVendorID(result);
+//									vendorEntryLS.add(vEntry);
+//								}
+//							});
+							addPageDialog.hide();
+							//Info.display("gehwähltes Item",event.getSelectedItem().getQuotedPages());
+							//grid.sync(true);
+							grid.getView().refresh(true);
+					}
+				});
+				pageFP.addButton(saveButton);
+				TextButton cancelButton = new TextButton("cancel");
+				cancelButton.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						addPageDialog.hide();
+					}
+				});
+				pageFP.addButton(cancelButton);
+				addPageDialog.add(pageFP);
+				addPageDialog.setModal(true);
+				addPageDialog.center();
+				saveButton.getFocusSupport();
+				saveButton.focus();
+				saveButton.setTabIndex(0);
+				cancelButton.setTabIndex(1);
+
+				itemSelected=true;
+				
+			}
+				
+
+			//AnnotatedBibliographyEntry ie = event.getSelectedItem();
+//			Info.display("Called", "onSelecetion");
+//			for (AnnotatedBibliographyEntry abe : selectedIconographyMap.values()) {
+//				Util.doLogging(abe.getTitleORG()+ " - "+Boolean.toString(event.getSelection().contains(abe)));
+//			}
+			
+			
+//			if (event.getChecked() == CheckState.CHECKED) {
+//				if (!selectedIconographyMap.containsKey(ie.getUniqueID())) {
+//					selectedIconographyMap.put(ie.getUniqueID(), ie);
+//				}
+//			} else {
+//				selectedIconographyMap.remove(ie.getUniqueID());
+//			}
+		}};
+    selectionModel.addSelectionHandler(sh);
     selectionModel.addSelectionChangedHandler(new SelectionChangedHandler<AnnotatedBibliographyEntry>() {
 				@Override
 				public void onSelectionChanged(SelectionChangedEvent<AnnotatedBibliographyEntry> event) {
-					List<AnnotatedBibliographyEntry> selected = event.getSelection();
-					if ((grid.getSelectionModel().getSelectedItem()!=null)&(showdialog)) {
-						PopupPanel addPageDialog = new PopupPanel();
-						FramedPanel pageFP = new FramedPanel();
-						pageFP.setHeading("Set Pages");
-						TextField pageField = new TextField();
-						pageField.setValue("");
-						pageField.setWidth(200);
-						pageFP.add(pageField);
-						TextButton saveButton = new TextButton("save");
-						saveButton.addSelectHandler(new SelectHandler() {
-
-							@Override
-							public void onSelect(SelectEvent event) {
-									grid.getSelectionModel().getSelectedItem().setQuotedPages(pageField.getValue());
-//									dbService.insertVendorEntry(vEntry, new AsyncCallback<Integer>() {
-	//
-//										@Override
-//										public void onFailure(Throwable caught) {
-//											caught.printStackTrace();
-//										}
-	//
-//										@Override
-//										public void onSuccess(Integer result) {
-//											vEntry.setVendorID(result);
-//											vendorEntryLS.add(vEntry);
-//										}
-//									});
-									addPageDialog.hide();
-									Info.display("gehwähltes Item",grid.getSelectionModel().getSelectedItem().getQuotedPages());
-									//grid.sync(true);
+					Util.doLogging("");
+					if ((!itemSelected)&(showdialog)){
+						for (Map.Entry<Integer, AnnotatedBibliographyEntry> entry : selectedBibMap.entrySet()) {
+							Util.doLogging(Integer.toString(entry.getKey()));
+							boolean found=false;
+							for (AnnotatedBibliographyEntry abe:grid.getSelectionModel().getSelectedItems()) {
+								if (abe.getAnnotatedBibliographyID()==entry.getKey()) {
+									found=true;
+									break;
+								}
+							}
+							if (!found) {
+								//Util.doLogging(abe.getTitleORG()+" noch vorhanden.");
+	//							}
+	//						else {
+								if (grid.getStore().findModelWithKey(Integer.toString(entry.getKey()))!=null) {
+									//Util.doLogging(abe.getTitleORG()+" wird gelöscht.");
+									selectedBibMap.remove(entry.getKey());
+									grid.getStore().findModelWithKey(Integer.toString(entry.getKey())).setQuotedPages("");
 									grid.getView().refresh(true);
+									}
+	//							else {
+	//								
+	//								//Util.doLogging(abe.getTitleORG()+" noch vorhanden.");
+	//								}
+								}
 							}
-						});
-						pageFP.addButton(saveButton);
-						TextButton cancelButton = new TextButton("cancel");
-						cancelButton.addSelectHandler(new SelectHandler() {
-
-							@Override
-							public void onSelect(SelectEvent event) {
-								addPageDialog.hide();
-							}
-						});
-						pageFP.addButton(cancelButton);
-						addPageDialog.add(pageFP);
-						addPageDialog.setModal(true);
-						addPageDialog.center();
-						
+					
 					}
-						
+				itemSelected=false;
 				}
 			});
 		
@@ -203,6 +292,8 @@ public class BibliographySelector implements IsWidget {
 		ColumnConfig<AnnotatedBibliographyEntry, String> authorsCol = new ColumnConfig<AnnotatedBibliographyEntry, String>(bibProps.authors(), 300, "Authors");
 		ColumnConfig<AnnotatedBibliographyEntry, String> yearColumn = new ColumnConfig<AnnotatedBibliographyEntry, String>(bibProps.year(), 50, "Year");
 		ColumnConfig<AnnotatedBibliographyEntry, String> pageColumn = new ColumnConfig<AnnotatedBibliographyEntry, String>(bibProps.pages(), 50, "Pages");
+		ColumnConfig<AnnotatedBibliographyEntry, AnnotatedBibliographyEntry> selected = selectionModel.getColumn();
+		selected.setSortable(true);
 		pageColumn.setFixed(false);
 //		yearColumn.setHideable(false);
 //		yearColumn.setHorizontalHeaderAlignment(HorizontalAlignmentConstant.startOf(Direction.DEFAULT));
@@ -211,7 +302,7 @@ public class BibliographySelector implements IsWidget {
 		titleOrgCol.setMenuDisabled(false);
     List<ColumnConfig<AnnotatedBibliographyEntry, ?>> sourceColumns = new ArrayList<ColumnConfig<AnnotatedBibliographyEntry, ?>>();
    
-    sourceColumns.add(selectionModel.getColumn());
+    sourceColumns.add(selected);
     sourceColumns.add(rowExpander);
     sourceColumns.add(titleOrgCol);
     sourceColumns.add(authorsCol);
@@ -219,27 +310,50 @@ public class BibliographySelector implements IsWidget {
     sourceColumns.add(pageColumn);
      ColumnModel<AnnotatedBibliographyEntry> sourceColumnModel = new ColumnModel<AnnotatedBibliographyEntry>(sourceColumns);
     sourceStore = new ListStore<AnnotatedBibliographyEntry>(bibProps.key());
-
-//    sourceStore.addSortInfo(new StoreSortInfo<AnnotatedBibliographyEntry>(bibProps.titleORG(), SortDir.ASC));
+    StoreFilterHandler stf = new StoreFilterHandler<AnnotatedBibliographyEntry>() {
+        @Override
+        public void onFilter(StoreFilterEvent<AnnotatedBibliographyEntry> event) {
+        	if (selectedBibMap.values().size()>0) {
+            	showdialog=false;
+//    			for (AnnotatedBibliographyEntry abe : selectedBibMap.values()) {
+//    				selectionModel.select(abe, true);
+//    			}
+    			showdialog=true;
+        		
+        	}
+          }
+    };
+    sourceStore.addStoreFilterHandler(stf);
+    //    sourceStore.addSortInfo(new StoreSortInfo<AnnotatedBibliographyEntry>(bibProps.titleORG(), SortDir.ASC));
+    //sourceStore.sor
     loadentries();
     FramedPanel fpGrid = new FramedPanel();
     showdialog=false;
     grid = new Grid<AnnotatedBibliographyEntry>(sourceStore, sourceColumnModel);
     grid.setHideMode(HideMode.OFFSETS);
+
     grid.setSelectionModel(selectionModel);
+
+    //grid.getStore().clearSortInfo();
+    //grid.getStore().addSortInfo(new Store.StoreSortInfo<AnnotatedBibliographyEntry>(bibProps..titleORG(), SortDir.ASC));
 //    grid.setColumnReordering(true);
     //grid.getView().setAutoExpandColumn(titleOrgCol);
     grid.setBorders(false);
+    //grid.getStore().addSortInfo(new Store.StoreSortInfo<AnnotatedBibliographyEntry>(bibProps., SortDir.ASC));
     grid.getView().setStripeRows(true);
     grid.getView().setColumnLines(true);
     grid.getView().setForceFit(true);
-    gridVP = new VerticalPanel();
+    gridVP = new VerticalLayoutContainer();
+    gridHLC = new HorizontalLayoutContainer();
     gridHP = new HorizontalPanel();
     titleField = new StoreFilterField<AnnotatedBibliographyEntry>(){
 
 		@Override
 		protected boolean doSelect(Store<AnnotatedBibliographyEntry> store, AnnotatedBibliographyEntry parent, AnnotatedBibliographyEntry item, String filter) {
 				if (filter.isEmpty()){
+					return true;
+				}
+				else if (selectionModel.getSelectedItems().contains(item)){
 					return true;
 				}
 				else {
@@ -266,9 +380,9 @@ public class BibliographySelector implements IsWidget {
 		}
 	};
 	FramedPanel fpTitleField = new FramedPanel();
+	//fpTitleField.setWidth(350);
 	fpTitleField.add(titleField);
 	fpTitleField.setHeading("Title");
-	fpTitleField.setWidth(400);
     AuthorsField= new StoreFilterField<AnnotatedBibliographyEntry>(){
 
 		@Override
@@ -276,43 +390,69 @@ public class BibliographySelector implements IsWidget {
 				if (filter.isEmpty()){
 					return true;
 				}
+				else if (selectionModel.getSelectedItems().contains(item)){
+					return true;
+				}
 				else {
-		        	  for (AuthorEntry ae : item.getAuthorList()) {
-		        		  try {
-		        		  if ((!ae.getName().isEmpty())&(!filter.isEmpty())) {
-			        		  if (ae.getName().toLowerCase().contains(filter.toLowerCase())) {
-			        			  return true;
-			        		  }		        			  
-		        		  }
-		        		  if ((!ae.getAlias().isEmpty())&(!filter.isEmpty())) {
-		        			  if (ae.getAlias().toLowerCase().contains(filter.toLowerCase())) {
-		        				  return true;
-		        			  }
-		        		  }}
-			        	  catch(Exception e) {
+					if (item.getAuthorList()!=null) {
+						if (!item.getAuthorList().isEmpty()) {
+			        	  for (AuthorEntry ae : item.getAuthorList()) {
+			        		  try {	
+			        			  if (ae.getName()!=null) {
+					        		  if ((!ae.getName().isEmpty())&(!filter.isEmpty())) {
+						        		  if (ae.getName().toLowerCase().contains(filter.toLowerCase())) {
+						        			  return true;
+						        		  }		        			  
+					        		  }			        				  
+			        			  }
+			        			  if (ae.getAlias()!=null) {
+					        		  if ((!ae.getAlias().isEmpty())&(!filter.isEmpty())) {
+					        			  if (ae.getAlias().toLowerCase().contains(filter.toLowerCase())) {
+					        				  return true;
+					        			  }
+					        		  }
+			        				  
+			        			  }
+			        		  }
+				        	  catch(Exception e) {
+				        		  Util.doLogging(e.getMessage());
+				        		  Util.doLogging(ae.getName());
+	
+				        	  }
+			        	  }
+							
+						}
+					}
+					if (item.getAuthorList()!=null) {
+						if (!item.getAuthorList().isEmpty()) {
+			        	  for (AuthorEntry ae : item.getEditorList()) {
+							try {
+			        			  if (ae.getName()!=null) {
+					        		  if ((!ae.getName().isEmpty())&(!filter.isEmpty())) {
+						        		  if (ae.getName().toLowerCase().contains(filter.toLowerCase())) {
+						        			  return true;
+						        		  }		        			  
+					        		  }			        				  
+			        			  }
+			        			  if (ae.getAlias()!=null) {
+					        		  if ((!ae.getAlias().isEmpty())&(!filter.isEmpty())) {
+					        			  if (ae.getAlias().toLowerCase().contains(filter.toLowerCase())) {
+					        				  return true;
+					        			  }
+					        		  }
+			        				  
+			        			  }
+			        	  }		        	  
+							catch(Exception e) {
 			        		  Util.doLogging(e.getMessage());
 			        		  Util.doLogging(ae.getName());
-
-			        	  }
-		        	  }
-		        	  for (AuthorEntry ae : item.getEditorList()) {
-						try {
-		        		  if ((!ae.getName().isEmpty())&(!filter.isEmpty())) {
-			        		  if (ae.getName().toLowerCase().contains(filter.toLowerCase())) {
-			        			  return true;
-			        		  }		        			  
-		        		  }
-		        		  if ((!ae.getAlias().isEmpty())&(!filter.isEmpty())) {
-		        			  if (ae.getAlias().toLowerCase().contains(filter.toLowerCase())) {
-		        				  return true;
-		        			  }
-		        		  }
-		        	  }		        	  catch(Exception e) {
-		        		  Util.doLogging(e.getMessage());
-		        		  Util.doLogging(ae.getName());
-
-		        	  }
+	
+			        	    }
+						  }
+							
+						}
 					}
+
 
 				}
 			return false;
@@ -320,13 +460,22 @@ public class BibliographySelector implements IsWidget {
 	};
 	FramedPanel fpAuthorsField = new FramedPanel();
 	fpAuthorsField.setHeading("Authors");
-	fpAuthorsField.add(AuthorsField);
-	fpAuthorsField.setWidth(350);
+	//fpAuthorsField.setWidth(-1);
+	fpAuthorsField.add(AuthorsField, new VerticalLayoutData(1,1));
+	fpAuthorsField.addResizeHandler(new ResizeHandler() {
+			public void onResize(ResizeEvent event) {
+				AuthorsField.setWidth(fpAuthorsField.getOffsetWidth());
+				//bibliographySelector.setwidth(Integer.toString(mainHLC.getWidget(0).getOffsetWidth()));
+			}
+		});
 	yearField= new StoreFilterField<AnnotatedBibliographyEntry>(){
 
 		@Override
 		protected boolean doSelect(Store<AnnotatedBibliographyEntry> store, AnnotatedBibliographyEntry parent, AnnotatedBibliographyEntry item, String filter) {
 				if (filter.isEmpty()){
+					return true;
+				}
+				else if (selectionModel.getSelectedItems().contains(item)){
 					return true;
 				}
 				else {
@@ -342,17 +491,24 @@ public class BibliographySelector implements IsWidget {
 		}
 	};
 	FramedPanel fpYearField = new FramedPanel();
+
 	fpYearField.setHeading("Year");
+	//fpYearField.setWidth(50);
 	fpYearField.add(yearField);
-	fpYearField.setWidth(50);
  	titleField.bind(sourceStore);
 	AuthorsField.bind(sourceStore);
 	yearField.bind(sourceStore);
     gridHP.add(fpTitleField);
     gridHP.add(fpAuthorsField);
     gridHP.add(fpYearField);
-    gridVP.add(gridHP);
-    gridVP.add(grid);
+
+    //gridHP.add(gridHLC);
+    gridVP.add(gridHP, new VerticalLayoutData(1,-1));
+    gridVP.add(grid, new VerticalLayoutData(1,-1));
+	//mainGrid.add(gridVP);
+	Resizable rs = new Resizable(grid);
+	rs.setDynamic(true);
+
     // State manager, make this grid stateful
 //    grid.setStateful(true);
 //    grid.setStateId("bibSelector");
@@ -360,7 +516,6 @@ public class BibliographySelector implements IsWidget {
     StringFilter<AnnotatedBibliographyEntry> titleFilter = new StringFilter<AnnotatedBibliographyEntry>(bibProps.title());
     StringFilter<AnnotatedBibliographyEntry> authorFilter = new StringFilter<AnnotatedBibliographyEntry>(bibProps.authors());
     StringFilter<AnnotatedBibliographyEntry> yearFilter = new StringFilter<AnnotatedBibliographyEntry>(bibProps.year());
-
     GridFilters<AnnotatedBibliographyEntry> filters = new GridFilters<AnnotatedBibliographyEntry>();
     filters.initPlugin(grid);
     filters.setLocal(true);
@@ -415,6 +570,16 @@ public class BibliographySelector implements IsWidget {
     
     if (selectedEntries != null && selectedEntries.size() > 0) {
     	selectionModel.setSelection(selectedEntries);
+    	selectedBibMap.clear();
+    	for (AnnotatedBibliographyEntry abe : selectedEntries) {
+    		grid.getStore().findModel(abe).setQuotedPages(abe.getQuotedPages());
+    		selectedBibMap.put(abe.getAnnotatedBibliographyID(), abe);
+    	}
+ //   	Util.doLogging("selectedBibMap: ");
+//		for (AnnotatedBibliographyEntry abe2 : selectedBibMap.values()) {
+//			Util.doLogging(abe2.getTitleORG());
+//		}
+    		
     }
     showdialog=true;
     
@@ -429,7 +594,14 @@ public class BibliographySelector implements IsWidget {
 		}
 	}
 	public ArrayList<AnnotatedBibliographyEntry> getSelectedEntries() {
-		return new ArrayList<AnnotatedBibliographyEntry>(selectionModel.getSelectedItems());
+		//for (AnnotatedBibliographyEntry ab : selectionModel.getSelection()) {
+		//	Util.doLogging(ab.getTitleORG());
+		//}
+		ArrayList<AnnotatedBibliographyEntry> results = new ArrayList<AnnotatedBibliographyEntry>();
+		for (AnnotatedBibliographyEntry abe : selectionModel.getSelectedItems()) {
+			results.add(abe.clone());
+		}
+		return results;
 	}
 	
 //	public void setSelectedEntries(List<AnnotatedBibliographyEntry> list) {

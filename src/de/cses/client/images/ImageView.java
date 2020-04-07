@@ -61,15 +61,17 @@ public class ImageView extends AbstractView {
 	private ImageViewTemplates ivTemplates;
 	private ImageViewResources res;
 	SafeUri imgUri;
+	ImageResultView irv;
 	/**
 	 * @param text
 	 */
-	public ImageView(ImageEntry imgEntry, SafeUri uri) {
+	public ImageView(ImageEntry imgEntry, SafeUri uri, ImageResultView irv) {
 		super();
 		ivTemplates = GWT.create(ImageViewTemplates.class);
 		res = GWT.create(ImageViewResources.class);
 		this.imgEntry = imgEntry;
 		this.imgUri = uri;
+		this.irv=irv;
 
 		refreshHTML();
 		setSize("350px", "130px");
@@ -104,6 +106,9 @@ public class ImageView extends AbstractView {
 	protected AbstractEditor getEditor(AbstractEntry entry) {
 		return new SingleImageEditor(imgEntry.clone());
 	}
+	public void setEditor(ImageEntry entry) {
+		this.imgEntry=entry;
+	}
 
 	@Override
 	public void closeRequest(AbstractEntry entry) {
@@ -113,7 +118,9 @@ public class ImageView extends AbstractView {
 		}
 		refreshHTML();
 	}
-
+	public ImageResultView getImageResultView() {
+		return irv;
+	}
 	/* (non-Javadoc)
 	 * @see de.cses.client.ui.AbstractView#getEntry()
 	 */

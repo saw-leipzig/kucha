@@ -93,7 +93,9 @@ import de.cses.client.Util;
 import de.cses.client.bibliography.BibliographySelector;
 import de.cses.client.caves.C14DocumentUploader.C14DocumentUploadListener;
 import de.cses.client.caves.CaveSketchUploader.CaveSketchUploadListener;
+import de.cses.client.depictions.DepictionView;
 import de.cses.client.ui.AbstractEditor;
+import de.cses.client.ui.EditorListener;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.C14AnalysisUrlEntry;
@@ -2668,8 +2670,30 @@ public class CaveEditor extends AbstractEditor {
 		    @Override
 		    public void onKeyDown(KeyDownEvent e) {
 	        	  if ((e.isShiftKeyDown()) && (e.getNativeKeyCode() == KeyCodes.KEY_ENTER)) {
+		  				de.cses.client.Util.showYesNo("Exit Warning!", "Do you wish to save before exiting?", new SelectHandler() {
+							
+							@Override
+							public void onSelect(SelectEvent event) {
+								saveEntries(true);
+								closeEditor(null);
+							}
+						}, new SelectHandler() {
+								
+							@Override
+							public void onSelect(SelectEvent event) {
+								closeEditor(null);
+							}
+						}, new KeyDownHandler() {
 
-							saveEntries(true);
+							@Override
+							public void onKeyDown(KeyDownEvent e) {
+								if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+								closeEditor(null);
+							}}
+					
+							
+						}
+					  );
 	
 					}
 		        }
@@ -3277,6 +3301,12 @@ public class CaveEditor extends AbstractEditor {
 	 * Will be called when the save button is selected. After saving <code>CaveEditorListener.closeRequest()</code> is called to inform all listener.
 	 */
 	protected void saveEntries(boolean close) {
+		for (EditorListener el :getListenerList()) {
+			if (el instanceof CaveView) {
+				((CaveView)el).setEntry(correspondingCaveEntry);
+			}
+		}
+
 		if (siteSelection.validate() && officialNumberField.validate()) {
 			correspondingCaveEntry.setRelatedBibliographyList(bibliographySelector.getSelectedEntries());
 			

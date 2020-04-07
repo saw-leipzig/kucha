@@ -68,6 +68,8 @@ import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
+import com.sencha.gxt.widget.core.client.event.ResizeEndEvent;
+import com.sencha.gxt.widget.core.client.event.ResizeEndEvent.ResizeEndHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
@@ -95,6 +97,7 @@ import de.cses.client.bibliography.BibliographySelector;
 import de.cses.client.images.ImageSelector;
 import de.cses.client.images.ImageSelectorListener;
 import de.cses.client.ui.AbstractEditor;
+import de.cses.client.ui.EditorListener;
 import de.cses.client.ui.TextElement;
 import de.cses.client.user.UserLogin;
 import de.cses.client.walls.PositionEditor;
@@ -102,6 +105,7 @@ import de.cses.client.walls.WallSelector;
 import de.cses.client.walls.WallTree;
 import de.cses.client.walls.Walls;
 import de.cses.shared.AbstractEntry;
+import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.ExpeditionEntry;
@@ -171,6 +175,7 @@ public class DepictionEditor extends AbstractEditor {
 	private TextField shortNameTF;
 	private BibliographySelector bibliographySelector;
 	private WallTree wallTree;
+	boolean saveSuccess;
 
 	class NameElement {
 		private String element;
@@ -193,7 +198,7 @@ public class DepictionEditor extends AbstractEditor {
 			Util.doLogging("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getIconogrpahy brach nach "+diff + " Millisekunden ab."+caught.getMessage());
 			Util.doLogging(caught.getLocalizedMessage());
 			caught.printStackTrace();
-			//Info.display("Failure", "Failed to load Iconography, retry.");
+			Info.display("Failure", "Failed to load Iconography, retry.");
 			loadiconogrpahy(entry, start);
 		}
 
@@ -462,7 +467,17 @@ public class DepictionEditor extends AbstractEditor {
 					caveSelectionCB.setValue(ce);
 					wallSelectorPanel.setCave(ce);
 					//wallSelectorPanel.selectWall(correspondingDepictionEntry.getWallID());
-					wallTree.dropunselected(correspondingDepictionEntry.getWalls());
+//					Util.doLogging("Ausgewählte Walls:");
+//					for (WallTreeEntry wte : correspondingDepictionEntry.getWalls()) {
+//						Util.doLogging("  "+wte.getText());
+//						if (wte.getPosition()!=null) {
+//							for (PositionEntry pe : wte.getPosition()) {
+//								Util.doLogging("    - "+pe.getName());
+//							}									
+//						}
+//					}
+
+					//wallTree.setWall(correspondingDepictionEntry.getWalls());
 //					for (WallEntry we : ce.getWallList()) {
 //						Util.doLogging(Integer.toString(we.getWallLocationID()));
 //					}
@@ -1125,7 +1140,7 @@ public class DepictionEditor extends AbstractEditor {
 		wallTree = new WallTree(StaticTables.getInstance().getWallTreeEntries().values(), correspondingDepictionEntry.getWalls(), true, false, null);//correspondingDepictionEntry.getCave());
 
 		FramedPanel wallTreeFP = new FramedPanel();
-		wallTree.setWall(correspondingDepictionEntry.getWalls());
+		//wallTree.setWall(correspondingDepictionEntry.getWalls());
 		wallTreeFP.add(wallTree.wallTree);
 		ToolButton newPositionPlusTool = new ToolButton(new IconConfig("editButton", "editButtonOver"));
 		newPositionPlusTool.setToolTip(Util.createToolTip("edit walls"));
@@ -1136,14 +1151,6 @@ public class DepictionEditor extends AbstractEditor {
 				PositionEditor pe = new PositionEditor(correspondingDepictionEntry.getCave(), correspondingDepictionEntry.getWalls(), false) {
 					@Override
 					protected void save(List<WallTreeEntry> results ) {
-							Util.doLogging("Ausgewählte Walls:");
-							for (WallTreeEntry wte : getSelectedWalls()) {
-								Util.doLogging("  "+wte.getText());
-								for (PositionEntry pe : wte.getPosition()) {
-									Util.doLogging("    - "+pe.getName());
-								}
-							}
-
 							correspondingDepictionEntry.setWalls(getSelectedWalls());
 							wallTree.setWall(getSelectedWalls());
 						}
@@ -1530,12 +1537,12 @@ public class DepictionEditor extends AbstractEditor {
 		/**
 		 * --------------------------- next the editor as a whole will be assembled -------------------
 		 */
-
 		TabPanel tabPanel = new TabPanel();
 		tabPanel.setTabScroll(false);
 		ScrollPanel scrpanel1 = new ScrollPanel();
 		ScrollPanel scrpanel2 = new ScrollPanel();
 		ScrollPanel scrpanel4 = new ScrollPanel();
+
 		scrpanel1.add(basicsTabHLC);
 		scrpanel2.add(descriptionTabHLC);
 		scrpanel4.add(bibliographySelector);
@@ -1596,7 +1603,6 @@ public class DepictionEditor extends AbstractEditor {
 					@Override
 					public void onSelect(SelectEvent event) {
 						saveDepictionEntry(true);
-						bibliographySelector.clearPages();
 						closeEditor(null);
 					}
 				}, new SelectHandler() {
@@ -1611,8 +1617,6 @@ public class DepictionEditor extends AbstractEditor {
 					@Override
 					public void onKeyDown(KeyDownEvent e) {
 						if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
-						bibliographySelector.clearPages();
-						saveDepictionEntry(true);
 						closeEditor(null);
 					}}
 			
@@ -1627,7 +1631,31 @@ public class DepictionEditor extends AbstractEditor {
 		    @Override
 		    public void onKeyDown(KeyDownEvent e) {
 	        	  if ((e.isShiftKeyDown()) && (e.getNativeKeyCode() == KeyCodes.KEY_ENTER)) {
-	        		  saveDepictionEntry(true);
+	  				de.cses.client.Util.showYesNo("Exit Warning!", "Do you wish to save before exiting?", new SelectHandler() {
+						
+						@Override
+						public void onSelect(SelectEvent event) {
+							saveDepictionEntry(true);
+							closeEditor(null);
+						}
+					}, new SelectHandler() {
+							
+						@Override
+						public void onSelect(SelectEvent event) {
+							bibliographySelector.clearPages(); 
+							closeEditor(null);
+						}
+					}, new KeyDownHandler() {
+
+						@Override
+						public void onKeyDown(KeyDownEvent e) {
+							if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+							closeEditor(null);
+						}}
+				
+						
+					}
+				  );
 		        }
 		    }			
 		}, KeyDownEvent.getType());
@@ -1635,12 +1663,19 @@ public class DepictionEditor extends AbstractEditor {
 				(!correspondingDepictionEntry.getLastChangedByUser().isEmpty() ? " by " + correspondingDepictionEntry.getLastChangedByUser() + ")" : ")"));
 
 		mainPanel.add(mainHLC);
-		mainPanel.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
+		mainPanel.setSize( Integer.toString(Window.getClientWidth()/100*90),Integer.toString(Window.getClientHeight()/100*90));
 		mainPanel.addTool(deleteToolButton);
 		mainPanel.addTool(saveToolButton);
 		mainPanel.addTool(closeToolButton);
-		new Resizable(mainPanel);
+		Resizable rs = new Resizable(mainPanel);
+		rs.addResizeEndHandler(new ResizeEndHandler() {
+			public void onResizeEnd(ResizeEndEvent event) {
+				bibliographySelector.setwidth(tabPanel.getOffsetWidth());
+			}
+		});
+		bibliographySelector.setwidth((int)((Window.getClientWidth()/100*90)/100*70));
 		new Draggable(mainPanel, mainPanel.getHeader(), GWT.<DraggableAppearance> create(DraggableAppearance.class));
+		
 	}
 
 	/**
@@ -1657,7 +1692,12 @@ public class DepictionEditor extends AbstractEditor {
 		}
 		correspondingDepictionEntry.setRelatedImages(relatedImageEntryList);
 		correspondingDepictionEntry.setRelatedBibliographyList(bibliographySelector.getSelectedEntries());
-		Info.display("Anzahl der ausgewählten Bibliographien: ",Integer.toString(correspondingDepictionEntry.getRelatedBibliographyList().size()));
+		Util.doLogging("Geqählte Seiten: ");
+		for (AnnotatedBibliographyEntry abe: correspondingDepictionEntry.getRelatedBibliographyList()) {
+			Util.doLogging(abe.getQuotedPages());
+		}
+		
+		//Info.display("Anzahl der ausgewählten Bibliographien: ",Integer.toString(correspondingDepictionEntry.getRelatedBibliographyList().size()));
 		correspondingDepictionEntry.setLastChangedByUser(UserLogin.getInstance().getUsername());
 		
 		if (correspondingDepictionEntry.getDepictionID() == 0) {
@@ -1665,16 +1705,26 @@ public class DepictionEditor extends AbstractEditor {
 
 				@Override
 				public void onSuccess(Integer newDepictionID) {
+					
 					correspondingDepictionEntry.setDepictionID(newDepictionID.intValue());
+					for (EditorListener el :getListenerList()) {
+						if (el instanceof DepictionView) {
+							((DepictionView)el).setDepictionEntry(correspondingDepictionEntry);
+						}
+					}
+					saveSuccess=true;
+					doretry(close);
 //					updateEntry(correspondingDepictionEntry);
 					if (close) {
 						closeEditor(correspondingDepictionEntry);
+						bibliographySelector.clearPages(); 
 					}
 				}
 
 				@Override
 				public void onFailure(Throwable caught) {
 					de.cses.client.Util.doLogging(caught.getLocalizedMessage());
+					doretry(close);
 				}
 			});
 		} else {
@@ -1683,17 +1733,58 @@ public class DepictionEditor extends AbstractEditor {
 				@Override
 				public void onFailure(Throwable caught) {
 					de.cses.client.Util.doLogging(caught.getLocalizedMessage());
+					doretry(close);
 				}
 
 				@Override
 				public void onSuccess(Boolean updateSucessful) {
 //					updateEntry(correspondingDepictionEntry);
-					if (close) {
-						closeEditor(correspondingDepictionEntry);
-					}
+						if (updateSucessful) {
+							saveSuccess=updateSucessful;
+							doretry(close);
+							for (EditorListener el :getListenerList()) {
+								if (el instanceof DepictionView) {
+									((DepictionView)el).setDepictionEntry(correspondingDepictionEntry);
+								}
+							}
+							if (close) {
+								closeEditor(correspondingDepictionEntry);
+								bibliographySelector.clearPages(); 
+							}
+						}
 				}
 			});
 		}
+		
 	}
+private void doretry(boolean close) {
+	if (saveSuccess) {
+		Info.display("Depiction saved","sucessfully!");
+	}
+	else {
+		Util.showYesNo("Saving Process finished with errors!", "Do you want to retray saving?", new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				saveDepictionEntry(close);
+			}
+		}, new SelectHandler() {
+				
+			@Override
+			public void onSelect(SelectEvent event) {
+				if (close) {
+					closeEditor(correspondingDepictionEntry);
+					bibliographySelector.clearPages(); 
+				}
+				 
+			}
+		}, new KeyDownHandler() {
 
+			@Override
+			public void onKeyDown(KeyDownEvent e) {
+				
+			}}		
+	  );
+	}
+}
 }

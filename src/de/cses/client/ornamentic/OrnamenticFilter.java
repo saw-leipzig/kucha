@@ -225,7 +225,7 @@ public class OrnamenticFilter extends AbstractFilter {
 	interface IconographyProperties extends PropertyAccess<IconographyEntry> {
 		ModelKeyProvider<IconographyEntry> iconographyID();
 		LabelProvider<IconographyEntry> uniqueID();
-		ValueProvider<IconographyEntry, String> name();
+		ValueProvider<IconographyEntry, String> text();
 	}
 
 	interface CaveProperties extends PropertyAccess<CaveEntry> {

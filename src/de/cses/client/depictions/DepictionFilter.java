@@ -269,6 +269,7 @@ public class DepictionFilter extends AbstractFilter {
 		caveProps = GWT.create(CaveProperties.class);
 		caveEntryLS = new ListStore<CaveEntry>(caveProps.caveID());
 		icoSelector = new IconographySelector(StaticTables.getInstance().getIconographyEntries().values());
+		icoSelector.selectChildren(true);
 		wallProps = GWT.create(WallTreeProperties.class);
 		selectedWallsLS = new ListStore<>(wallProps.wallLocationID());
 		Map<Integer, WallTreeEntry> entries = StaticTables.getInstance().getWallTreeEntries();
@@ -277,7 +278,7 @@ public class DepictionFilter extends AbstractFilter {
 		//	wallEntries.add(wte);
 		//}
 		icoSelector.enable();
-		icoSelector.selectNoParents(true);
+		//icoSelector.selectNoParents(true);
 		icoProps = GWT.create(IconographyProperties.class);
 		selectedIconographyLS = new ListStore<>(icoProps.iconographyID());
 		loadCaves();
@@ -681,6 +682,8 @@ public class DepictionFilter extends AbstractFilter {
 				}
 			});
 			icoSelector.addTool(closeTB);
+			//icoSelector.selectChildren(true);
+			//icoSelector.selectNoParents(true);
 			extendedFilterDialog.add(icoSelector);
 			extendedFilterDialog.setSize("750", "500");
 			extendedFilterDialog.setModal(true);

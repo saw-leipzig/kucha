@@ -34,6 +34,7 @@ import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -70,14 +71,18 @@ import com.sencha.gxt.widget.core.client.form.Validator;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
 import com.sencha.gxt.widget.core.client.info.Info;
+import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
 import de.cses.client.Util;
+import de.cses.client.depictions.DepictionView;
 import de.cses.client.ui.AbstractEditor;
+import de.cses.client.ui.EditorListener;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
+import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageTypeEntry;
 import de.cses.shared.PhotographerEntry;
@@ -96,6 +101,7 @@ public class SingleImageEditor extends AbstractEditor {
 	private ComboBox<ImageTypeEntry> imageTypeSelection;
 	private ImageTypeProperties imageTypeProps;
 	private ListStore<ImageTypeEntry> imageTypeEntryList;
+	private HTMLPanel imgHP;
 	
 	/**
 	 * Create a remote service proxy to talk to the server-side service.
@@ -503,12 +509,46 @@ public class SingleImageEditor extends AbstractEditor {
 			}
 		});
 		viewFullSizeTB.setToolTip(Util.createToolTip("View image full size.", "A new tab will be opened in the browser."));
-		
+		ToolButton resetTB = new ToolButton(ToolButton.REFRESH);
+		resetTB.setToolTip(Util.createToolTip("Reload this image.", "This will delete the former picture!"));
+		resetTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				final DialogBox imageUploadPanel = new DialogBox(false);
+				ImageUploader iu = new ImageUploader(new ImageUploadListener() {
+
+					@Override
+					public void uploadCompleted(int newImageID, final String filename) {
+						imageUploadPanel.hide();
+						for (EditorListener el :getListenerList()) {
+							((ImageView)el).getImageResultView().addResult(new ImageView(imgEntry,UriUtils.fromTrustedString("icons/load_active.png"),((ImageView)el).getImageResultView()));
+							String imageIDs = Integer.toString(imgEntry.getImageID());
+							((ImageView)el).getImageResultView().getPics(imageIDs, 120, UserLogin.getInstance().getSessionID());
+							}
+							SafeUri imageUri = UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=300" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
+							imgHP = new HTMLPanel(imgViewTemplates.view(imageUri));
+							}
+
+					@Override
+					public void uploadCanceled() {
+						imageUploadPanel.hide();
+					}
+				}, imgEntry);
+				imageUploadPanel.add(iu);
+				imageUploadPanel.setGlassEnabled(true);
+				imageUploadPanel.center();
+				imageUploadPanel.show();
+			}
+
+			});
+
 		SafeUri imageUri = UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=300" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
-		HTMLPanel imgHP = new HTMLPanel(imgViewTemplates.view(imageUri));
+		imgHP = new HTMLPanel(imgViewTemplates.view(imageUri));
 		FramedPanel imgFP = new FramedPanel();
 		imgFP.setHeading("Image format: " + imgEntry.getFilename().substring(imgEntry.getFilename().lastIndexOf(".")+1).toUpperCase());
 		imgFP.add(imgHP);
+		imgFP.addTool(resetTB);
 		imgFP.addTool(viewFullSizeTB);
 		
 		VerticalLayoutContainer leftEditVLC = new VerticalLayoutContainer();
@@ -539,7 +579,31 @@ public class SingleImageEditor extends AbstractEditor {
 		    @Override
 		    public void onKeyDown(KeyDownEvent e) {
 	        	  if ((e.isShiftKeyDown()) && (e.getNativeKeyCode() == KeyCodes.KEY_ENTER)) {
-	        		  saveImageEntry(true);
+		  				de.cses.client.Util.showYesNo("Exit Warning!", "Do you wish to save before exiting?", new SelectHandler() {
+							
+							@Override
+							public void onSelect(SelectEvent event) {
+				        		saveImageEntry(true);
+								closeEditor(null);
+							}
+						}, new SelectHandler() {
+								
+							@Override
+							public void onSelect(SelectEvent event) {
+								closeEditor(null);
+							}
+						}, new KeyDownHandler() {
+
+							@Override
+							public void onKeyDown(KeyDownEvent e) {
+								if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+								closeEditor(null);
+							}}
+					
+							
+						}
+					  );
+
 		        }
 		    }			
 		}, KeyDownEvent.getType());
@@ -600,6 +664,11 @@ public class SingleImageEditor extends AbstractEditor {
 		);
 	}
 	private void saveImageEntry(boolean closeEditorRequested) {
+		for (EditorListener el :getListenerList()) {
+			if (el instanceof ImageView) {
+				((ImageView)el).setEditor(imgEntry);
+			}
+		}
 		if (!verifyInputs()) {
 			if (closeEditorRequested) {
 				closeEditor(imgEntry);

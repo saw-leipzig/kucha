@@ -102,14 +102,13 @@ public class IconographySelector extends FramedPanel {
 	 */
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 
-	private static TreeStore<IconographyEntry> iconographyTreeStore;
-	private static Tree<IconographyEntry, String> iconographyTree;
+	private TreeStore<IconographyEntry> iconographyTreeStore = iconographyTreeStore = new TreeStore<IconographyEntry>(new IconographyKeyProvider());;
+	private Tree<IconographyEntry, String> iconographyTree;
 //	private FramedPanel mainPanel = null;
 	private StoreFilterField<IconographyEntry> filterField;
 	protected static Map<String, IconographyEntry> selectedIconographyMap;
 	
-	public static TreeStore<IconographyEntry> buildTreeStore(Collection<IconographyEntry> elements, boolean ornaments){
-		iconographyTreeStore = new TreeStore<IconographyEntry>(new IconographyKeyProvider());
+	public void buildTreeStore(Collection<IconographyEntry> elements, boolean ornaments){
 		iconographyTreeStore.clear();
 			for (IconographyEntry item : elements) {
 				if ((item.getIconographyID()==3)||(!ornaments)) {
@@ -120,12 +119,11 @@ public class IconographySelector extends FramedPanel {
 			
 				}
 			}
-		return iconographyTreeStore;
 	}
 	public void IconographyTreeEnabled(boolean enable) {
 		iconographyTree.setEnabled(enable);
 	}
-	public static Tree<IconographyEntry, String> buildTree( boolean ornament){
+	public Tree<IconographyEntry, String> buildTree( boolean ornament){
 		selectedIconographyMap = new HashMap<String, IconographyEntry>();
 			
 		iconographyTree = new Tree<IconographyEntry, String>(iconographyTreeStore, new IconographyValueProvider()) {
@@ -182,7 +180,7 @@ public class IconographySelector extends FramedPanel {
 		});
 		return iconographyTree;
 	}
-	private static void processParentIconographyEntry_select(IconographyEntry item, ArrayList<IconographyEntry> l) {	
+	private void processParentIconographyEntry_select(IconographyEntry item, ArrayList<IconographyEntry> l) {	
 		for (IconographyEntry child : item.getChildren()) {
 			Boolean found =new Boolean(false);
 			for (IconographyEntry entry : l) {
@@ -197,8 +195,15 @@ public class IconographySelector extends FramedPanel {
 			}
 		}}
 	}
-	public static TreeStore<IconographyEntry> setIconographyStore(Collection<IconographyEntry> elements, ArrayList<IconographyEntry> l, boolean dropunselected) {
-		iconographyTreeStore = buildTreeStore(elements, false);
+	public TreeStore<IconographyEntry> setIconographyStore(Collection<IconographyEntry> elements, ArrayList<IconographyEntry> l, boolean dropunselected) {
+		TreeStore<IconographyEntry> iconographyTreeStore = iconographyTreeStore = new TreeStore<IconographyEntry>(new IconographyKeyProvider());;
+		iconographyTreeStore.clear();
+		for (IconographyEntry item : elements) {
+				iconographyTreeStore.add(item);
+				if (item.getChildren() != null) {
+					processParentIconographyEntry(item);
+				}		
+		}
 		iconographyTreeStore.clear();
 		for (IconographyEntry item : elements) {
 			iconographyTreeStore.add(item);
@@ -237,7 +242,7 @@ public class IconographySelector extends FramedPanel {
 		return ies;
 	}
 	public IconographySelector(Collection<IconographyEntry> elements) {
-		iconographyTreeStore=buildTreeStore(elements,false);
+
 		filterField = new StoreFilterField<IconographyEntry>() {
 
 			@Override
@@ -264,10 +269,10 @@ public class IconographySelector extends FramedPanel {
 		};
 		filterField.setEmptyText("enter a search term");
 		filterField.bind(iconographyTreeStore);
-		initPanel(iconographyTreeStore);
+		initPanel(iconographyTreeStore, elements);
 	}
 
-	private static void processParentIconographyEntry( IconographyEntry item) {
+	private void processParentIconographyEntry( IconographyEntry item) {
 		for (IconographyEntry child : item.getChildren()) {
 			iconographyTreeStore.add(item, child);
 			if (child.getChildren() != null) {
@@ -286,8 +291,9 @@ public class IconographySelector extends FramedPanel {
 		}
 	}
 
-	private void initPanel(TreeStore<IconographyEntry> iconographyTreeStore) {
+	private void initPanel(TreeStore<IconographyEntry> iconographyTreeStore, Collection<IconographyEntry> elements) {
 		iconographyTree=buildTree(false);
+		buildTreeStore(elements,false);
 		iconographyTree.setEnabled(false);
 		BorderLayoutContainer iconographySelectorBLC = new BorderLayoutContainer();
 		iconographySelectorBLC.setCenterWidget(iconographyTree, new MarginData(0, 2, 5, 2));
@@ -500,8 +506,10 @@ public class IconographySelector extends FramedPanel {
 		filterField.validate();
 		ArrayList<IconographyEntry> result = new ArrayList<IconographyEntry>();
 		if (iconographyTree != null) {
-			for (IconographyEntry entry : iconographyTree.getCheckedSelection()) {
+			int i =0;
+			for (IconographyEntry entry : selectedIconographyMap.values()) {
 				result.add(entry);
+				Util.doLogging("Added "+Integer.toString(i++)+" items to iconographyresult");
 			}
 		}
 		return result;	

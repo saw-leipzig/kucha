@@ -1085,9 +1085,13 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 	 */
 	@Override
 	public int compareTo(AnnotatedBibliographyEntry bibEntry) {
-		String toString = !bibEntry.authorList.isEmpty() ? bibEntry.getAuthors() : (!bibEntry.getEditorList().isEmpty() ? bibEntry.getEditors(): "");
-		String fromString = !authorList.isEmpty() ? getAuthors() : (!getEditorList().isEmpty() ? getEditors(): "");
+		//String toString = !bibEntry.authorList.isEmpty() ? bibEntry.getAuthors() : (!bibEntry.getEditorList().isEmpty() ? bibEntry.getEditors(): "");
+		//String fromString = !authorList.isEmpty() ? getAuthors() : (!getEditorList().isEmpty() ? getEditors(): "");
+		String toString = Integer.toString(bibEntry.getAnnotatedBibliographyID());
+		String fromString = Integer.toString(getAnnotatedBibliographyID());
+		
 		return fromString.compareTo(toString);
 	}
+	
 
 }

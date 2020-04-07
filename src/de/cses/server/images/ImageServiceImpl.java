@@ -67,12 +67,7 @@ public class ImageServiceImpl extends HttpServlet {
 		response.setContentType("text/plain");
 		
 		String origUploadFileName = request.getParameter("origImageFileName");
-		if (!connector.getImageEntries("Title=\"" + origUploadFileName + "\"").isEmpty()) { // filename already exists
-			System.err.println(origUploadFileName + " already exists in database!");
-			response.getWriter().write(String.valueOf(0));
-			response.getWriter().close();
-			return;
-		}
+		String hasID = request.getParameter("hasID");
 		File imgHomeDir = new File(serverProperties.getProperty("home.images"));
 		if (!imgHomeDir.exists()) {
 			imgHomeDir.mkdirs();
@@ -80,6 +75,14 @@ public class ImageServiceImpl extends HttpServlet {
 		FileItemFactory factory = new DiskFileItemFactory(1000000, imgHomeDir);
 		ServletFileUpload upload = new ServletFileUpload(factory);
 		File target = null;
+		if (hasID==null){
+			if (!connector.getImageEntries("Title=\"" + origUploadFileName + "\"").isEmpty()) { // filename already exists
+				System.err.println(origUploadFileName + " already exists in database!");
+				response.getWriter().write(String.valueOf(0));
+				response.getWriter().close();
+				return;
+			}
+		}
 		try {
 			try {
 				List<?> items = upload.parseRequest(request);
@@ -95,14 +98,21 @@ public class ImageServiceImpl extends HttpServlet {
 					if (item.isFormField()) {
 						throw new ServletException("Unsupported non-file property [" + item.getFieldName() + "] with value: " + item.getString());
 					} else {
-						System.err.println("requesting new imageID");
-						newImageID = connector.createNewImageEntry().getImageID();
-						System.err.println("newImageID = " + newImageID);
-						if (newImageID > 0) {
+						if (hasID==null){
+							System.err.println("requesting new imageID");
+							newImageID = connector.createNewImageEntry().getImageID();
+							System.err.println("newImageID = " + newImageID);
 							filename = newImageID + fileType;
+						}
+						else {
+							newImageID= Integer.parseInt(hasID);
+							filename = hasID + fileType;
+						}
+						if (newImageID > 0) {
 							System.err.println("filename = " + filename);
 							ie = connector.getImageEntry(newImageID);
 							ie.setFilename(filename);
+							
 							connector.updateImageEntry(ie);
 							target = new File(imgHomeDir, filename);
 							item.write(target);
@@ -125,7 +135,7 @@ public class ImageServiceImpl extends HttpServlet {
 				response.getWriter().write(String.valueOf(newImageID));
 				response.getWriter().close();
 			}
-		}
+		}	
 	}
 
 	/**

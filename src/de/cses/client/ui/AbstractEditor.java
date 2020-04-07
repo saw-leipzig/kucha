@@ -70,7 +70,7 @@ public abstract class AbstractEditor implements IsWidget {
 			((Widget)el).removeFromParent();
 		}
 		catch (Exception e){
-			Util.doLogging("There was a problem deleting the Image: "+e.getMessage());
+			Util.doLogging("There was a problem deleting the Entry: "+e.getMessage());
 		}
 
 		}

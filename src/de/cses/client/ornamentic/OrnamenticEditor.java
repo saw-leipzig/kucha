@@ -77,6 +77,7 @@ import de.cses.client.depictions.IconographySelector.IconographyKeyProvider;
 import de.cses.client.depictions.IconographySelector.IconographyValueProvider;
 import de.cses.client.images.ImageSelector;
 import de.cses.client.images.ImageSelectorListener;
+import de.cses.client.images.ImageView;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.client.ui.EditorListener;
 import de.cses.client.ui.TextElement;
@@ -1516,6 +1517,12 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 	}
 
 	protected void save() {
+		for (EditorListener el :getListenerList()) {
+			if (el instanceof OrnamenticView) {
+				((OrnamenticView)el).setEditor(ornamentEntry);
+			}
+		}
+
 		if (!ornamentCodeTextField.validate()) {
 			Util.showWarning("Missing information", "Please insert Ornamentation Code!");
 			return;

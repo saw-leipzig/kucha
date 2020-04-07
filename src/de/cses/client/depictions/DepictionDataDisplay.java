@@ -26,15 +26,11 @@ import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.user.client.ui.HTML;
-import com.sencha.gxt.core.client.ValueProvider;
-import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.SortDir;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
-import com.sencha.gxt.widget.core.client.info.Info;
-import com.sencha.gxt.widget.core.client.tree.Tree;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
 import com.sencha.gxt.widget.core.client.tree.TreeStyle;
 
@@ -51,8 +47,8 @@ import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.PreservationAttributeEntry;
+import de.cses.shared.WallLocationEntry;
 import de.cses.shared.comparator.BibEntryComparator;
-import de.cses.client.depictions.IconographySelector.IconographyValueProvider;
 
 /**
  * @author alingnau
@@ -66,9 +62,8 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 	private ArrayList<TextElement> pictorialElementsList;
 	private ArrayList<TextElement> decorationOrnamentsList;
 	private StaticTables stab = StaticTables.getInstance();
-	private Tree<IconographyEntry, String> iconographyTree;
-	private TreeStore<IconographyEntry> iconographyTreeStore;
 	protected Map<String, IconographyEntry> selectedIconographyMap;
+	IconographyTree icoTree;
 	protected IconographySelector iconographySelector;
 	private HashMap<Integer, IconographyEntry> allIconographyEntriesList = new HashMap<Integer, IconographyEntry>();
 	public interface Images extends ClientBundle {
@@ -83,18 +78,18 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 		}
 	public void resetSelection() {
 		selectedIconographyMap.clear();
-		if (iconographyTree != null) {
-			for (IconographyEntry entry : iconographyTree.getCheckedSelection()) {
-				iconographyTree.setChecked(entry, CheckState.UNCHECKED);
+		if (icoTree.iconographyTree != null) {
+			for (IconographyEntry entry : icoTree.iconographyTree.getCheckedSelection()) {
+				icoTree.iconographyTree.setChecked(entry, CheckState.UNCHECKED);
 			}
 		}
 	}
 	public void setSelectedIconography(ArrayList<IconographyEntry> iconographyRelationList) {
-		Util.doLogging("*** setSelectedIconography called - iconographyTree no. of items = " + iconographyTree.getStore().getAllItemsCount());
+		Util.doLogging("*** setSelectedIconography called - icoTree.iconographyTree no. of items = " + icoTree.iconographyTree.getStore().getAllItemsCount());
 		resetSelection();
 		for (IconographyEntry entry : iconographyRelationList) {
 			Util.doLogging("setSelectedIconography setting entry = " + entry.getIconographyID());
-			iconographyTree.setChecked(entry, CheckState.CHECKED);
+			icoTree.iconographyTree.setChecked(entry, CheckState.CHECKED);
 			selectedIconographyMap.put(entry.getUniqueID(), entry);
 		}
 	}
@@ -108,9 +103,9 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 		}
 	}
 	private void expandchildren(IconographyEntry item) {
-		for (IconographyEntry child : iconographyTreeStore.getChildren(item)) {
-			iconographyTree.setExpanded(child, true);
-			if (iconographyTreeStore.getChildren(item) != null) {
+		for (IconographyEntry child : icoTree.iconographyTreeStore.getChildren(item)) {
+			icoTree.iconographyTree.setExpanded(child, true);
+			if (icoTree.iconographyTreeStore.getChildren(item) != null) {
 				expandchildren(child);
 			}
 		}
@@ -131,11 +126,11 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 		}}
 	}
 	private void setIconographyStore(Collection<IconographyEntry> elements, ArrayList<IconographyEntry> l) {
-		iconographyTreeStore.clear();
+		icoTree.iconographyTreeStore.clear();
 		for (IconographyEntry item : elements) {
-			iconographyTreeStore.add(item);
+			icoTree.iconographyTreeStore.add(item);
 			if (item.getChildren() != null) {
-				processParentIconographyEntry_select(iconographyTreeStore, item,l);
+				processParentIconographyEntry_select(icoTree.iconographyTreeStore, item,l);
 			}
 
 	  }
@@ -159,7 +154,14 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 			}
 			cave += e.getCave().getOfficialNumber() + ((e.getCave().getHistoricName() != null && e.getCave().getHistoricName().length() > 0) ? " (" + e.getCave().getHistoricName() + ")" : ""); 
 			realCaveSketchUri = UriUtils.fromString("/resource?cavesketch=" + e.getCave().getOptionalCaveSketch() + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
-			wall = e.getWallID() > 0 ? stab.getWallLocationEntries().get(e.getCave().getWall(e.getWallID()).getWallLocationID()).getLabel() : "";
+			if ( e.getWallID() > 0) {
+				WallLocationEntry dummy = stab.getWallLocationEntries().get(e.getCave().getWall(e.getWallID()).getWallLocationID());
+				if (dummy!=null) {
+					
+				wall =dummy.getLabel();
+				}
+						
+			}
 		}
 		String shortname = e.getShortName() != null ? e.getShortName() : "";
 		String expedition = e.getExpedition() != null ? e.getExpedition().getName() : "";
@@ -178,23 +180,23 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 		// TODO ugly and hard wired but it will do the trick for now
 
 		selectedIconographyMap = new HashMap<String, IconographyEntry>();
-		iconographyTreeStore=iconographySelector.setIconographyStore(StaticTables.getInstance().getIconographyEntries().values(),e.getRelatedIconographyList(),true);
-		iconographyTree = new Tree<IconographyEntry, String>(iconographyTreeStore, new IconographyValueProvider());
+		icoTree= new IconographyTree(StaticTables.getInstance().getIconographyEntries().values(),e.getRelatedIconographyList(), true);
+
 		TreeStyle treeStyle = new TreeStyle(); 
 		treeStyle.setNodeCloseIcon(Images.INSTANCE.foo());
 		treeStyle.setNodeOpenIcon(Images.INSTANCE.foo());
-		iconographyTree.setCheckable(false);
-		iconographyTree.setVisible(true);
-		iconographyTree.setStyle(treeStyle);
+		icoTree.iconographyTree.setCheckable(false);
+		icoTree.iconographyTree.setVisible(true);
+		icoTree.iconographyTree.setStyle(treeStyle);
 
 		
 		setIconographyStore(StaticTables.getInstance().getIconographyEntries().values(),e.getRelatedIconographyList());
-		for (IconographyEntry ie : iconographyTreeStore.getRootItems()) {
+		for (IconographyEntry ie : icoTree.iconographyTreeStore.getRootItems()) {
 			expandchildren(ie);
-			iconographyTree.setExpanded(ie, false);
+			icoTree.iconographyTree.setExpanded(ie, false);
 			Util.doLogging(ie.getText());
 		}
-		Util.doLogging("Treegröße: "+Integer.toString(iconographyTree.getStore().getAllItemsCount()));
+		Util.doLogging("Treegröße: "+Integer.toString(icoTree.iconographyTree.getStore().getAllItemsCount()));
 	
 		if (!bibList.isEmpty()) {
 			bibList.sort(new BibEntryComparator());
@@ -259,7 +261,7 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 		StyleInjector.inject(".myCustomStyle {font-family: verdana;background:#ffcc66; font-size: 16px; }");
 		htmlWidget.addStyleName("html-data-view");
 		htmlWidget2.addStyleName("html-data-view");
-		iconographyTreeStore.addSortInfo(new StoreSortInfo<IconographyEntry>(new Comparator<IconographyEntry>() {
+		icoTree.iconographyTreeStore.addSortInfo(new StoreSortInfo<IconographyEntry>(new Comparator<IconographyEntry>() {
 		      @Override
 		      public int compare(IconographyEntry o1, IconographyEntry o2) {
 		    	  return Integer.compare(o1.getIconographyID(),o2.getIconographyID());
@@ -270,7 +272,7 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 		VerticalLayoutContainer decriptionVLC = new VerticalLayoutContainer();
 		decriptionVLC.addStyleName("myCustomStyle");
 		decriptionVLC.add(htmlWidget);
-		decriptionVLC.add(iconographyTree);
+		decriptionVLC.add(icoTree.iconographyTree);
 		decriptionVLC.add(htmlWidget2);
 //		shortNameVLC.add(pictoralTree);
 //		shortNameVLC.add(ornamentTree);
