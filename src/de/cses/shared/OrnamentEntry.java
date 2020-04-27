@@ -32,7 +32,7 @@ public class OrnamentEntry extends AbstractEntry {
 	private ArrayList<OrnamentComponentsEntry> ornamentComponents = new ArrayList<OrnamentComponentsEntry>();
 	private ArrayList<InnerSecondaryPatternsEntry> innerSecondaryPatterns = new ArrayList<InnerSecondaryPatternsEntry>();
 	private ArrayList<AnnotatedBibliographyEntry> relatedBibliographyList = new ArrayList<AnnotatedBibliographyEntry>();
-	private int masterImageID;
+	private int masterImageID = 0;
 
 	public OrnamentEntry() {
 		ornamentID = 0;

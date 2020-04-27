@@ -114,8 +114,7 @@ public class OrnamenticSearchController extends AbstractSearchController {
 	@Override
 	public void addNewElement() {
 		DialogBox ornamenticEditorPanel = new DialogBox(false);
-		OrnamenticEditor ornamenticEditor = new OrnamenticEditor(null);
-		ornamenticEditor.addEditorListener(new EditorListener() {
+		EditorListener el = new EditorListener() {
 			
 			@Override
 			public void closeRequest(AbstractEntry entry) {
@@ -137,7 +136,9 @@ public class OrnamenticSearchController extends AbstractSearchController {
 						});
 				}
 			}
-		});
+		};
+		OrnamenticEditor ornamenticEditor = new OrnamenticEditor(null, el);
+		//ornamenticEditor.addEditorListener();
 		ornamenticEditorPanel.add(ornamenticEditor);
 		ornamenticEditorPanel.setGlassEnabled(true);
 		ornamenticEditorPanel.center();

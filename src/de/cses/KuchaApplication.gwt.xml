@@ -20,10 +20,11 @@
 	<!-- Be sure to include Neptunes gxt-theme-neptune.jar in the classpath -->
 	<!-- <inherits name='com.sencha.gxt.theme.neptune.Theme' />   -->
 	<!-- <inherits name='com.sencha.gxt.theme.triton.Theme' />  -->
-
 	<!-- Other module inherits -->
 	<inherits name='com.sencha.gxt.ui.GXT' />
 	<inherits name='com.sencha.gxt.chart.Chart' />
+	<add-linker name="xsiframe" />
+	<set-configuration-property name='xsiframe.failIfScriptTag' value='FALSE' />
 	
 	<!-- GXT Stylesheet -->
   <stylesheet src="reset.css" />
@@ -35,9 +36,11 @@
 	<!-- Specify the app entry point class. -->
 	<entry-point class='de.cses.client.KuchaApplication' />
 
+
 	<!-- Specify the paths for translatable code -->
 	<source path='client' />
 	<source path='shared' />
+	<public path="scripts" />
 
 	<collapse-property name="gxt.device" values="*" />
 

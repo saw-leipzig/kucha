@@ -365,7 +365,9 @@ public class MysqlConnector implements IsSerializable {
 		}
 	
 	public Map<Integer,String> getPicsByImageID(String imgSourceIds, int tnSize, String sessionID) {
+		Map<Integer,String> result = new HashMap<Integer,String>();
 			
+		if (imgSourceIds!="") {
 			
 			ArrayList<ImageEntry> imgSources = new ArrayList<ImageEntry>();
 			Connection dbc = getConnection();
@@ -415,7 +417,6 @@ public class MysqlConnector implements IsSerializable {
 			
 			
 			String filename = "";
-			Map<Integer,String> result = new HashMap<Integer,String>();
 			for (ImageEntry imgEntry : imgSources) {
 				try {
 					if (imgEntry!=null && authorizedAccessLevel.contains(imgEntry.getAccessLevel())) {
@@ -447,9 +448,9 @@ public class MysqlConnector implements IsSerializable {
 					result.put(imgEntry.getImageID(), "icons/close_icon.png");
 				}
 			}
-				
+		}
 		
-			return result;
+		return result;
 	}	
 	
 	/**
@@ -752,9 +753,9 @@ public class MysqlConnector implements IsSerializable {
 			pstmt = dbc.prepareStatement("SELECT * FROM DepictionIconographyRelation where IconographyID="+Integer.toString(IconographyID));
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
-				System.out.println("DepictionID is here: "+rs.getInt("DepictionID"));
+				//System.out.println("DepictionID is here: "+rs.getInt("DepictionID"));
 				DepictionEntry de= getDepictionEntry(rs.getInt("DepictionID"),sessionID);
-				System.out.println("Found Depiction"+de.getDepictionID());
+				//System.out.println("Found Depiction"+de.getDepictionID());
 				CaveEntry item = de.getCave();
 				String site = item.getSiteID() > 0 ? getSites(" SiteID="+item.getSiteID()).get(0).getShortName() : "";
 				String district = item.getDistrictID() > 0 ? getDistricts(" DistrictID="+item.getDistrictID()).get(0).getName() : "";
@@ -1742,7 +1743,7 @@ public class MysqlConnector implements IsSerializable {
 		PreparedStatement ornamentStatement;
 		// deleteEntry("DELETE FROM Ornaments WHERE OrnamentID=" + ornamentEntry.getCode());
 		try {
-			ornamentStatement = dbc.prepareStatement("INSERT INTO Ornaments (Code, Description, Remarks, Interpretation, OrnamentReferences, OrnamentClassID, StructureOrganizationID, IconographyID, MasterImageID() VALUES (?, ?, ?, ?, ?, ?, ?,?,?)",
+			ornamentStatement = dbc.prepareStatement("INSERT INTO Ornaments (Code, Description, Remarks, Interpretation, OrnamentReferences, OrnamentClassID, StructureOrganizationID, IconographyID, MasterImageID) VALUES (?, ?, ?, ?, ?, ?, ?,?,?)",
 //					ornamentStatement = dbc.prepareStatement("INSERT INTO Ornaments (Code, Description, Remarks, Interpretation, OrnamentReferences, Annotation , OrnamentClassID, StructureOrganizationID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
 					Statement.RETURN_GENERATED_KEYS);
 			ornamentStatement.setString(1, ornamentEntry.getCode());
@@ -1754,7 +1755,7 @@ public class MysqlConnector implements IsSerializable {
 			ornamentStatement.setInt(6, ornamentEntry.getOrnamentClass());
 			ornamentStatement.setInt(7, ornamentEntry.getStructureOrganizationID());
 			ornamentStatement.setInt(8, ornamentEntry.getIconographyID());
-			ornamentStatement.setInt(8, ornamentEntry.getMasterImageID());
+			ornamentStatement.setInt(9, ornamentEntry.getMasterImageID());
 			ornamentStatement.executeUpdate();
 			ResultSet keys = ornamentStatement.getGeneratedKeys();
 			if (keys.next()) { // there should only be 1 key returned here

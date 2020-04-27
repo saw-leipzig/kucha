@@ -31,7 +31,7 @@ import de.cses.shared.UserEntry;
  */
 public abstract class AbstractView extends Button implements EditorListener {
 
-	private static PopupPanel editorPanel;
+	private static PopupPanel editorPanel = new PopupPanel(false);
 	/**
 	 * This is the general constructor that amongst other tasks initializes the PopupPanel for the editor
 	 */
@@ -48,13 +48,12 @@ public abstract class AbstractView extends Button implements EditorListener {
 	}
 
 	public void showEditor(AbstractEntry entry) {
-		AbstractEditor editor = getEditor(entry);
-		editor.addEditorListener(this);
+		AbstractEditor editor = getEditor(entry, this);
 		loadEditor(editor);
 	}
 	public static void loadEditor(AbstractEditor editor) {
 		
-		editorPanel = new PopupPanel(false);
+		editorPanel.clear();
 		editorPanel.add(editor);
 		editorPanel.setModal(true);
 		editorPanel.setGlassEnabled(true);
@@ -65,9 +64,13 @@ public abstract class AbstractView extends Button implements EditorListener {
 		Window.open(url,"_blank",null);
 	}
 	
-	abstract protected AbstractEditor getEditor(AbstractEntry entry);
+	abstract protected AbstractEditor getEditor(AbstractEntry entry,AbstractView av);
 	
 	abstract protected AbstractEntry getEntry();
+	
+	public PopupPanel getEditorPanel() {
+		return editorPanel;
+	}
 	
 	abstract protected String getPermalink(); // this will be the URI for the server request...
 	 

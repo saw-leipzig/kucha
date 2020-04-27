@@ -67,8 +67,8 @@ public class AnnotatedBiblographyView extends AbstractView {
 	/* (non-Javadoc)
 	 * @see de.cses.client.ui.AbstractView#getEditor()
 	 */
-	protected AbstractEditor getEditor(AbstractEntry entry) {
-		return new AnnotatedBibliographyEditor(annotatedBibliographyEntry.clone());
+	protected AbstractEditor getEditor(AbstractEntry entry, AbstractView av) {
+		return new AnnotatedBibliographyEditor(annotatedBibliographyEntry.clone(), av);
 	}
 	
 	public void setEditor(AnnotatedBibliographyEntry entry) {
@@ -78,7 +78,9 @@ public class AnnotatedBiblographyView extends AbstractView {
 	public void processtoview(AnnotatedBibliographyEntry annotatedBibliographyEntry) {
 		if ((annotatedBibliographyEntry.getPublicationTypeID()==1) || (annotatedBibliographyEntry.getPublicationTypeID()==3)) {
 			if (annotatedBibliographyEntry.getAuthors()=="") {
-
+				if (annotatedBibliographyEntry.getEditors()!="") {
+					bib=bib+annotatedBibliographyEntry.getEditors()+" (ed.)";
+				}
 			}
 			else {
 					bib=bib+annotatedBibliographyEntry.getAuthors();
@@ -108,17 +110,17 @@ public class AnnotatedBiblographyView extends AbstractView {
 			if (annotatedBibliographyEntry.getPublisher()!="") {
 				tail=tail+annotatedBibliographyEntry.getPublisher();
 					}
-			if (annotatedBibliographyEntry.getEditors()!="") {
-				if (annotatedBibliographyEntry.getPublisher()!="") {
-					tail= tail+", "+annotatedBibliographyEntry.getEditors();
-				}
-				else{
-					tail= tail+annotatedBibliographyEntry.getEditors();
-				}
-				if (annotatedBibliographyEntry.getEditorType()=="") {
-					bib=bib+" ("+annotatedBibliographyEntry.getEditorType()+")";
-					}
-			}
+//			if (annotatedBibliographyEntry.getEditors()!="") {
+//				if (annotatedBibliographyEntry.getPublisher()!="") {
+//					tail= tail+", "+annotatedBibliographyEntry.getEditors();
+//				}
+//				else{
+//					tail= tail+annotatedBibliographyEntry.getEditors();
+//				}
+//				if (annotatedBibliographyEntry.getEditorType()=="") {
+//					bib=bib+" ("+annotatedBibliographyEntry.getEditorType()+")";
+//					}
+//			}
 			if (annotatedBibliographyEntry.getThesisType()!="") {
 				if (annotatedBibliographyEntry.getPublisher()=="") {
 					tail=tail+annotatedBibliographyEntry.getThesisType()+" thesis";

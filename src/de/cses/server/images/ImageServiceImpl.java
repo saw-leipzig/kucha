@@ -15,6 +15,9 @@ package de.cses.server.images;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -65,7 +68,6 @@ public class ImageServiceImpl extends HttpServlet {
 		String fileType, filename=null;
 
 		response.setContentType("text/plain");
-		
 		String origUploadFileName = request.getParameter("origImageFileName");
 		String hasID = request.getParameter("hasID");
 		File imgHomeDir = new File(serverProperties.getProperty("home.images"));
@@ -112,9 +114,33 @@ public class ImageServiceImpl extends HttpServlet {
 							System.err.println("filename = " + filename);
 							ie = connector.getImageEntry(newImageID);
 							ie.setFilename(filename);
-							
+							ie.setTitle(uploadFileName);
+							File oldImageFile = new File(imgHomeDir,filename);
+							oldImageFile.delete();
+							System.out.println("deleting file success: "+Boolean.toString(oldImageFile.exists()));
 							connector.updateImageEntry(ie);
 							target = new File(imgHomeDir, filename);
+							try {	
+								URL imageURL = new URL(
+										"http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/max/0/default.png"
+									);
+								InputStream in = imageURL.openStream();
+								in.close();	
+								ArrayList<String> sizes = new ArrayList<String>();
+								sizes.add("700");
+								sizes.add("300");
+								sizes.add("180");
+								for (String tnSize:sizes) {
+									imageURL = new URL(
+											"http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/!" + tnSize + "," + tnSize + "/0/default.png"
+										);
+									in = imageURL.openStream();
+									in.close();																	
+								}
+							}
+							catch (Exception e) {
+								System.err.println("IllegalStateException"+e.getLocalizedMessage());
+							}
 							item.write(target);
 							item.delete();
 						}
@@ -123,7 +149,7 @@ public class ImageServiceImpl extends HttpServlet {
 			} catch (ServletException e) {
 				System.err.println("ServletException");
 			} catch (Exception e) {
-				System.err.println("IllegalStateException");
+				System.err.println("IllegalStateException"+e.getLocalizedMessage());
 				throw new IllegalStateException(e);
 			}
 		} finally {

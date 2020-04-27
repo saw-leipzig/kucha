@@ -960,7 +960,7 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 			result = ae.getName() + ", et al.";
 		} else {
 			for (AuthorEntry ae : authorList) {
-				result = result.concat(!result.isEmpty() ? "; " + ae.getName() : ae.getName());
+				result = result.concat(!result.isEmpty() ? "/ " + ae.getName() : ae.getName());
 			}
 		}
 		return result;
@@ -977,7 +977,7 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 			result = ae.getName() + ", et al.";
 		} else {
 			for (AuthorEntry ae : editorList) {
-				result = result.concat(!result.isEmpty() ? "; " + ae.getName() : ae.getName());
+				result = result.concat(!result.isEmpty() ? "/ " + ae.getName() : ae.getName());
 			}
 		}
 		return result;
@@ -1063,7 +1063,12 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 			result="";			
 		}
 		else {
-			result = subtitleEN.isEmpty() ? "["+titleEN+"]" : "["+titleEN + ": " + subtitleEN+"]";
+			if (officialTitleTranslation) {
+				result = subtitleEN.isEmpty() ? "/ "+titleEN+"" : "/ "+titleEN + ": " + subtitleEN+"";
+			}
+			else {
+				result = subtitleEN.isEmpty() ? "["+titleEN+"]" : "["+titleEN + ": " + subtitleEN+"]";
+			}
 		}
 		return result;
 	}
@@ -1092,6 +1097,16 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 		
 		return fromString.compareTo(toString);
 	}
+    @Override
+    public boolean equals(Object object) {
+		//String toString = !bibEntry.authorList.isEmpty() ? bibEntry.getAuthors() : (!bibEntry.getEditorList().isEmpty() ? bibEntry.getEditors(): "");
+		//String fromString = !authorList.isEmpty() ? getAuthors() : (!getEditorList().isEmpty() ? getEditors(): "");
+		Integer ID1 = ((AnnotatedBibliographyEntry)object).getAnnotatedBibliographyID();
+		Integer ID2 = getAnnotatedBibliographyID();
+		
+		return ID1==ID2;
+	}
+	
 	
 
 }

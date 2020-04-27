@@ -173,7 +173,8 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 		SafeHtml documentLink(SafeUri documentUri, String documentDescription);
 	}
 
-	public AnnotatedBibliographyEditor(AnnotatedBibliographyEntry entry) {
+	public AnnotatedBibliographyEditor(AnnotatedBibliographyEntry entry, EditorListener av) {
+		this.addEditorListener(av);
 		this.bibEntry = entry;
 		documentLinkTemplate = GWT.create(DocumentLinkTemplate.class);
 	}

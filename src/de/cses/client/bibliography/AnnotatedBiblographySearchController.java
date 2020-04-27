@@ -150,8 +150,7 @@ public class AnnotatedBiblographySearchController extends AbstractSearchControll
 					PopupPanel depictionEditorPanel = new PopupPanel(false);
 					AnnotatedBibliographyEntry newBibEntry = new AnnotatedBibliographyEntry();
 					newBibEntry.setPublicationType(publicationType);
-					AnnotatedBibliographyEditor abe = new AnnotatedBibliographyEditor(newBibEntry);
-					abe.addEditorListener(new EditorListener() {
+					EditorListener el = new EditorListener() {
 						
 						@Override
 						public void closeRequest(AbstractEntry entry) {
@@ -163,7 +162,9 @@ public class AnnotatedBiblographySearchController extends AbstractSearchControll
 
 //						@Override
 //						public void updateEntryRequest(AbstractEntry updatedEntry) { }
-					});
+					}; 
+					AnnotatedBibliographyEditor abe = new AnnotatedBibliographyEditor(newBibEntry, el);
+					//abe.addEditorListener();
 					depictionEditorPanel.add(abe);
 					depictionEditorPanel.setGlassEnabled(true);
 					depictionEditorPanel.center();

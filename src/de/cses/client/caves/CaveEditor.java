@@ -357,7 +357,8 @@ public class CaveEditor extends AbstractEditor {
 		SafeHtml wallLabel(String label);
 	}
 
-	public CaveEditor(CaveEntry caveEntry) {
+	public CaveEditor(CaveEntry caveEntry, EditorListener av) {
+		this.addEditorListener(av);
 		if (caveEntry == null) {
 			correspondingCaveEntry = new CaveEntry();
 		} else {

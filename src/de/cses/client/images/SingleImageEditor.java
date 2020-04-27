@@ -13,11 +13,14 @@
  */
 package de.cses.client.images;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.ScriptElement;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.editor.client.testing.MockEditorError;
@@ -71,18 +74,16 @@ import com.sencha.gxt.widget.core.client.form.Validator;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
 import com.sencha.gxt.widget.core.client.info.Info;
-import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
 import de.cses.client.Util;
-import de.cses.client.depictions.DepictionView;
 import de.cses.client.ui.AbstractEditor;
+import de.cses.client.ui.AbstractView;
 import de.cses.client.ui.EditorListener;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
-import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageTypeEntry;
 import de.cses.shared.PhotographerEntry;
@@ -102,6 +103,7 @@ public class SingleImageEditor extends AbstractEditor {
 	private ImageTypeProperties imageTypeProps;
 	private ListStore<ImageTypeEntry> imageTypeEntryList;
 	private HTMLPanel imgHP;
+	private FramedPanel imgFP;
 	
 	/**
 	 * Create a remote service proxy to talk to the server-side service.
@@ -137,11 +139,21 @@ public class SingleImageEditor extends AbstractEditor {
 		@XTemplate("<div>{name}</div>")
 		SafeHtml imageTypeLabel(String name);
 	}
+    public static void activatePanel(PopupPanel popup) {
+    	popup.center();
+    	
+    }
+    public static native void exportStaticMethod() /*-{
+		$wnd.activatepanel = $entry(@de.cses.client.images.SingleImageEditor::activatePanel(*));
+	}-*/;
 
-	/**
+
+    
+    /**
 	 * This widget allows to edit the information of an ImageEntry, i.e. an image in the database. It also allows for uploading new images to the database.
 	 */
-	public SingleImageEditor(ImageEntry imgEntry) {
+	public SingleImageEditor(ImageEntry imgEntry, EditorListener av) {
+		this.addEditorListener(av);
 		this.imgEntry = imgEntry;
 
 		imgViewTemplates = GWT.create(ImageViewTemplates.class);
@@ -187,7 +199,7 @@ public class SingleImageEditor extends AbstractEditor {
 				}
 			}
 		});
-
+		
 		for (ImageTypeEntry ite : StaticTables.getInstance().getImageTypeEntries().values()) {
 			imageTypeEntryList.add(ite);
 		}
@@ -205,6 +217,34 @@ public class SingleImageEditor extends AbstractEditor {
 	/**
 	 * Initializes the editor's panel if it this has not already been done. Should usually only be called once a session is started!
 	 */
+
+	public native void createZoomeImage(String ressource, Element where, SingleImageEditor sie)
+	/*-{
+	    var viewer =  $wnd.OpenSeadragon({
+	        element: where,
+	        showRotationControl: true,
+	        showFlipControl: true,
+	        maxZoomLevel: 100,
+			prefixUrl: "scripts/openseadragon-bin-2.4.2/images/",
+			tileSources: ressource,
+		});
+		viewer.addHandler("pre-full-page", function (data) {
+				data.preventDefaultAction=true;
+				openFullscreen();
+		});
+		function openFullscreen() {
+  			if (where.requestFullscreen) {
+    			where.requestFullscreen();
+  			} else if (where.mozRequestFullScreen) { 
+    			where.mozRequestFullScreen();
+  			} else if (where.webkitRequestFullscreen) { 
+    			where.webkitRequestFullscreen();
+  			} else if (where.msRequestFullscreen) {
+    			where.msRequestFullscreen();
+  			}
+		}
+	}-*/;
+
 	private void initPanel() {
 		panel = new FramedPanel();
 		titleField = new TextField();
@@ -479,6 +519,7 @@ public class SingleImageEditor extends AbstractEditor {
 					@Override
 					public void onSelect(SelectEvent event) {
 						saveImageEntry(true);
+						 closeEditor(null);
 					}
 				}, new SelectHandler() {
 						
@@ -526,8 +567,10 @@ public class SingleImageEditor extends AbstractEditor {
 							String imageIDs = Integer.toString(imgEntry.getImageID());
 							((ImageView)el).getImageResultView().getPics(imageIDs, 120, UserLogin.getInstance().getSessionID());
 							}
-							SafeUri imageUri = UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=300" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
+							SafeUri imageUri = UriUtils.fromString("http://127.0.0.1:8182/iiif/2/kucha%2Fimages%2F" + imgEntry.getFilename() + "/info.json");
 							imgHP = new HTMLPanel(imgViewTemplates.view(imageUri));
+							imgFP.clear();
+							imgFP.add(imgHP);
 							}
 
 					@Override
@@ -543,11 +586,38 @@ public class SingleImageEditor extends AbstractEditor {
 
 			});
 
-		SafeUri imageUri = UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=300" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
+///		SafeUri imageUri = UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=300" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
+		SafeUri imageUri = UriUtils.fromString("http://127.0.0.1:8182/iiif/2/kucha%2Fimages%2F" + imgEntry.getFilename() + "/info.json" );
 		imgHP = new HTMLPanel(imgViewTemplates.view(imageUri));
-		FramedPanel imgFP = new FramedPanel();
-		imgFP.setHeading("Image format: " + imgEntry.getFilename().substring(imgEntry.getFilename().lastIndexOf(".")+1).toUpperCase());
-		imgFP.add(imgHP);
+
+	    Document doc = Document.get();
+	    ScriptElement script = doc.createScriptElement();
+	    script.setSrc("scripts/openseadragon-bin-2.4.2/openseadragon.min.js");
+	    script.setType("text/javascript");
+	    doc.getBody().appendChild(script);
+
+		
+		Util.doLogging(imageUri.asString());
+
+		//imgFP.setId("openseadragon1");
+		//imgHP = createZoomeImage(imageUri.asString());
+		imgFP = new FramedPanel();
+		try {
+			imgFP.setHeading("Image format: " + imgEntry.getFilename().substring(imgEntry.getFilename().lastIndexOf(".")+1).toUpperCase());			
+		} catch (Exception e) {
+			imgFP.setHeading("Error accured, assembling titel: "+e.getMessage());			
+
+		}
+		VerticalLayoutContainer zoomPanel = new VerticalLayoutContainer();
+		zoomPanel.clear();
+		imgFP.clear();
+		imgFP.add(zoomPanel);
+		Util.doLogging(Integer.toString(getListenerList().size()));
+		EditorListener el = getListenerList().get(0);
+		PopupPanel popP = ((ImageView)(el)).getEditorPanel();
+		exportStaticMethod();
+		createZoomeImage(imageUri.asString(),zoomPanel.getElement(), this);
+		
 		imgFP.addTool(resetTB);
 		imgFP.addTool(viewFullSizeTB);
 		
@@ -699,52 +769,7 @@ public class SingleImageEditor extends AbstractEditor {
 			
 		
 		);
-//		Dialog simple = new Dialog();
-//		simple.setHeading("Save");
-//		simple.setWidth(300);
-//		simple.setResizable(false);
-//		simple.setHideOnButtonClick(true);
-//		simple.setPredefinedButtons(PredefinedButton.YES, PredefinedButton.NO);
-//		simple.setBodyStyleName("pad-text");
-//		simple.getBody().addClassName("pad-text");
-//		simple.add(
-//				new Label("Saving will overwrite the existing information in the Database. This cannot be reversed! Do you want to continue?"));
-//		simple.getButton(PredefinedButton.YES).addSelectHandler(new SelectHandler() {
-//
-//			@Override
-//			public void onSelect(SelectEvent event) {
-//				updateImageEntry();
-//				// only of the yes button is selected, we will perform the command
-//				// to simplify we just ignore the no button event by doing nothing
-//
-//				dbService.updateImageEntry(imgEntry, new AsyncCallback<Boolean>() {
-//					public void onFailure(Throwable caught) {
-//						Info.display("ERROR", "Image information has NOT been updated!");
-//						simple.hide();
-//					}
-//
-//					@Override
-//					public void onSuccess(Boolean result) {
-//						if (result) {
-//							if (closeEditorRequested) {
-//								closeEditor(imgEntry);
-//							}
-//						} else {
-//							Info.display("ERROR", "Image information has NOT been updated!");
-//						}
-//						simple.hide();
-//					}
-//				}
-//				);
-//			}
-//		});
-//		simple.show();
-//		// constrain the dialog to the viewport (for small mobile screen sizes)
-//		Rectangle bounds = simple.getElement().getBounds();
-//		Rectangle adjusted = simple.getElement().adjustForConstraints(bounds);
-//		if (adjusted.getWidth() != bounds.getWidth() || adjusted.getHeight() != bounds.getHeight()) {
-//			simple.setPixelSize(adjusted.getWidth(), adjusted.getHeight());
-//		}
+
 
 	}
 
@@ -762,7 +787,12 @@ public class SingleImageEditor extends AbstractEditor {
 	 * @return
 	 */
 	private boolean verifyInputs() {
-		return titleField.isValid() && shortNameField.isValid() && copyrightArea.validate() && dateField.validate();
+		try {
+			return titleField.isValid() && shortNameField.isValid() && copyrightArea.validate() && dateField.validate();
+
+		}catch (Exception e) {
+			return false;
+		}
 	}
 
 }

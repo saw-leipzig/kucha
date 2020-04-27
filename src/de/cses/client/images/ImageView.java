@@ -103,8 +103,8 @@ public class ImageView extends AbstractView {
 	 * @see de.cses.client.ui.AbstractView#getEditor()
 	 */
 	@Override
-	protected AbstractEditor getEditor(AbstractEntry entry) {
-		return new SingleImageEditor(imgEntry.clone());
+	protected AbstractEditor getEditor(AbstractEntry entry, AbstractView av) {
+		return new SingleImageEditor(imgEntry.clone(), av);
 	}
 	public void setEditor(ImageEntry entry) {
 		this.imgEntry=entry;

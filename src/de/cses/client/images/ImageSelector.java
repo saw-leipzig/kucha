@@ -36,6 +36,7 @@ import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
+import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
@@ -43,10 +44,13 @@ import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ListField;
+import com.sencha.gxt.widget.core.client.form.StoreFilterField;
 import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
@@ -71,6 +75,8 @@ public class ImageSelector implements IsWidget {
 	private FlowLayoutContainer imageContainer;
 	private ImageFilter imgFilter;
 	private FramedPanel mainPanel = null;
+	private StoreFilterField<ImageEntry> filterField;
+
 //	private PopupPanel zoomPanel;
 //	protected String zoomImageUri;
 //	protected Window loadZoomInfoWindow;
@@ -166,6 +172,20 @@ public class ImageSelector implements IsWidget {
 //		});
 //
 		imageListView.setSize("1.0", "1.0");
+		filterField = new StoreFilterField<ImageEntry>() {
+
+			@Override
+			protected boolean doSelect(Store<ImageEntry> store, ImageEntry parent, ImageEntry item, String filter) {
+				ListStore<ImageEntry> ImageStore = (ListStore<ImageEntry>) store;
+//				Util.doLogging(item.getTitle()+" - "+filter+" = "+Boolean.toString(item.getFilename().contains(filter)));
+					if (item.getTitle().toLowerCase().contains(filter.toLowerCase())) {
+						return true;
+					}
+					return false;
+			}
+		};
+		filterField.setEmptyText("enter a search term");
+		filterField.bind(imageEntryList);
 
 		ListField<ImageEntry, ImageEntry> lf = new ListField<ImageEntry, ImageEntry>(imageListView);
 		
@@ -230,7 +250,7 @@ public class ImageSelector implements IsWidget {
 				imageEntryList.clear();
 			}
 		});
-
+		
 		HorizontalLayoutContainer hlc = new HorizontalLayoutContainer();
 
 		ContentPanel cp = new ContentPanel();
@@ -279,7 +299,11 @@ public class ImageSelector implements IsWidget {
 
 		FramedPanel imageListViewFP = new FramedPanel();
 		imageListViewFP.setHeading("Images");
-		imageListViewFP.add(lf);
+		VerticalLayoutContainer filtercontainer = new VerticalLayoutContainer();
+		filtercontainer.add(filterField, new VerticalLayoutData(1.0, .05));
+		filtercontainer.add(lf, new VerticalLayoutData(1.0, .95));
+
+		imageListViewFP.add(filtercontainer);
 //		imageListViewFP.addTool(zoomTB);
 		imageListViewFP.addTool(infoTB);
 		hlc.add(imageListViewFP, new HorizontalLayoutData(.6, 1.0));
@@ -316,6 +340,9 @@ public class ImageSelector implements IsWidget {
 				imageListView.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
 			}
 		});
+	}
+	public void resetSelection() {
+		imageEntryList.clear();
 	}
 
 }

@@ -49,6 +49,7 @@ import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.data.shared.SortDir;
 import com.sencha.gxt.data.shared.Store;
+import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.data.shared.Store.StoreFilter;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.dnd.core.client.ListViewDragSource;
@@ -80,6 +81,7 @@ import com.sencha.gxt.widget.core.client.form.ListField;
 import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
+import com.sencha.gxt.widget.core.client.form.StoreFilterField;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.Validator;
@@ -174,6 +176,8 @@ public class DepictionEditor extends AbstractEditor {
 	private ListStore<PreservationAttributeEntry> preservationAttributesLS, selectedPreservationAttributesLS;
 	private TextField shortNameTF;
 	private BibliographySelector bibliographySelector;
+	private StoreFilterField<ImageEntry> filterField;
+
 	private WallTree wallTree;
 	boolean saveSuccess;
 
@@ -308,13 +312,14 @@ public class DepictionEditor extends AbstractEditor {
 		ValueProvider<ImageEntry, String> shortName();
 	}
 	
-	public DepictionEditor(DepictionEntry entry) {
+	public DepictionEditor(DepictionEntry entry, EditorListener av) {
+		this.addEditorListener(av);
 		if (entry != null) {
 			correspondingDepictionEntry = entry;
 		} else {
 			correspondingDepictionEntry = new DepictionEntry();
 		}
-		Util.doLogging("Große von ImageList:"+Integer.toString(correspondingDepictionEntry.getRelatedImages().size()));
+		//Util.doLogging("Große von ImageList:"+Integer.toString(correspondingDepictionEntry.getRelatedImages().size()));
 		for (WallTreeEntry wte : correspondingDepictionEntry.getWalls()) {
 			Util.doLogging(wte.getText()+" - "+wte.getWallLocationID());
 		}
@@ -535,9 +540,10 @@ public class DepictionEditor extends AbstractEditor {
 	private void loadImages() {
 		imageEntryLS.clear();
 		for (ImageEntry ie : correspondingDepictionEntry.getRelatedImages()) {
-
-			//Util.doLogging("adding "+Integer.toString((ie.getImageID()))+"to imageEntryLS");
-			imageEntryLS.add(ie);
+			if (imageEntryLS.findModelWithKey(Integer.toString(ie.getImageID()))==null) {
+				imageEntryLS.add(ie);
+			}
+			
 		}
 	}
 
@@ -568,9 +574,11 @@ public class DepictionEditor extends AbstractEditor {
 		        //    Util.doLogging("Key = " + entry.getKey() + 
 		        //                     ", Value = " + entry.getValue());
 				for (Integer key : result.keySet()) {
-				Util.doLogging("Got response.");
 				try {
-					imgdic.put(key, result.get(key));
+					if (!imgdic.containsKey(key)) {
+						imgdic.put(key, result.get(key));
+					}
+					
 					
 				}
 				catch (Exception e){
@@ -588,6 +596,7 @@ public class DepictionEditor extends AbstractEditor {
 		// the images related with the depiction entry that will be shown on the right
 		imgdic = new HashMap<Integer,String>();
 		getPics(correspondingDepictionEntry.getRelatedImages(), 300, UserLogin.getInstance().getSessionID());
+		
 		imageListView = new ListView<ImageEntry, ImageEntry>(imageEntryLS, new IdentityValueProvider<ImageEntry>() {
 			@Override
 			public void setValue(ImageEntry object, ImageEntry value) {
@@ -624,7 +633,20 @@ public class DepictionEditor extends AbstractEditor {
 				}
 			}
 		}));
+		filterField = new StoreFilterField<ImageEntry>() {
 
+			@Override
+			protected boolean doSelect(Store<ImageEntry> store, ImageEntry parent, ImageEntry item, String filter) {
+				ListStore<ImageEntry> ImageStore = (ListStore<ImageEntry>) store;
+//				Util.doLogging(item.getTitle()+" - "+filter+" = "+Boolean.toString(item.getFilename().contains(filter)));
+					if (item.getTitle().toLowerCase().contains(filter.toLowerCase())) {
+						return true;
+					}
+					return false;
+			}
+		};
+		filterField.setEmptyText("enter a search term");
+		filterField.bind(imageEntryLS);
 //		imageListView.setSize("340", "290");
 		//Util.doLogging("Size of ImageListView: "+Integer.toString(imageEntryLS.size()));
 		ListField<ImageEntry, ImageEntry> imageViewLF = new ListField<ImageEntry, ImageEntry>(imageListView);
@@ -1424,7 +1446,10 @@ public class DepictionEditor extends AbstractEditor {
 			public void imageSelected(ArrayList<ImageEntry> imgEntryList) {
 				if (imgEntryList!=null) {
 					for (ImageEntry imgEntry : imgEntryList) {
-						correspondingDepictionEntry.addRelatedImages(imgEntry); // TODO check if double adding possible and avoid!
+						if (!correspondingDepictionEntry.getRelatedImages().contains(imgEntry)) {
+							correspondingDepictionEntry.addRelatedImages(imgEntry); // TODO check if double adding possible and avoid!
+						}
+						
 					}
 					getPics(imgEntryList, 300, UserLogin.getInstance().getSessionID());
 				}
@@ -1441,6 +1466,7 @@ public class DepictionEditor extends AbstractEditor {
 			public void onSelect(SelectEvent event) {
 				imageSelectionDialog = new PopupPanel();
 				imageSelectionDialog.add(imageSelector);
+				imageSelector.resetSelection();
 				imageSelectionDialog.setModal(true);
 				imageSelectionDialog.center();
 			}
@@ -1511,7 +1537,10 @@ public class DepictionEditor extends AbstractEditor {
 
 		FramedPanel depictionImagesPanel = new FramedPanel();
 		depictionImagesPanel.setHeading("Images");
-		depictionImagesPanel.add(imageViewLF);
+		VerticalLayoutContainer filtercontainer = new VerticalLayoutContainer();
+		filtercontainer.add(filterField, new VerticalLayoutData(1.0, .05));
+		filtercontainer.add(imageViewLF, new VerticalLayoutData(1.0, .95));
+		depictionImagesPanel.add(filtercontainer);
 //		depictionImagesPanel.addTool(infoTB);
 		depictionImagesPanel.addTool(zoomTB);
 		depictionImagesPanel.addTool(addImageTB);

@@ -174,7 +174,21 @@ public class ImageEntry extends AbstractEntry {
 	public void setImageAuthor(PhotographerEntry imageAuthor) {
 		this.imageAuthor = imageAuthor;
 	}
-
+	public int compareTo(ImageEntry secondEntry) {
+		String toString = Integer.toString(secondEntry.getImageID());
+		String fromString = Integer.toString(getImageID());
+		
+		return fromString.compareTo(toString);
+	}
+    @Override
+    public boolean equals(Object object) {
+		//String toString = !bibEntry.authorList.isEmpty() ? bibEntry.getAuthors() : (!bibEntry.getEditorList().isEmpty() ? bibEntry.getEditors(): "");
+		//String fromString = !authorList.isEmpty() ? getAuthors() : (!getEditorList().isEmpty() ? getEditors(): "");
+		Integer ID1 = ((ImageEntry)object).getImageID();
+		Integer ID2 = getImageID();
+		
+		return ID1==ID2;
+	}
 //	/**
 //	 * @return the publicImage
 //	 */

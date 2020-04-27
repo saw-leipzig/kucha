@@ -185,7 +185,8 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		}
 	}
 
-	public OrnamenticEditor(OrnamentEntry ornamentEntry) {
+	public OrnamenticEditor(OrnamentEntry ornamentEntry, EditorListener av) {
+		this.addEditorListener(av);
 		this.ornamentEntry = ornamentEntry;
 	}
 	@Override
@@ -277,95 +278,97 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		});
 		iconographyTree.addCheckChangeHandler(new CheckChangeHandler<IconographyEntry>(){
 			public void onCheckChange(CheckChangeEvent<IconographyEntry> event) {
-				//Util.doLogging("OnCheckChange was called. "+event.getItem().getText());
-				dbService.iconographyIDisUsed(event.getItem().getIconographyID(), ornamentEntry.getOrnamentID(), new AsyncCallback<Boolean>(){
+				Util.doLogging("OnCheckChange was called. "+event.getItem().getText());
+					dbService.iconographyIDisUsed(event.getItem().getIconographyID(), ornamentEntry!=null ? ornamentEntry.getOrnamentID() : 0, new AsyncCallback<Boolean>(){
 
-					@Override
-					public void onFailure(Throwable caught) {
-						Util.doLogging(("Update failed"+ caught.getMessage()));
-						Info.display("Update failed", caught.getMessage());
-					}
+						@Override
+						public void onFailure(Throwable caught) {
+							Util.doLogging(("Update failed"+ caught.getMessage()));
+							Info.display("Update failed", caught.getMessage());
+						}
 
-					@Override
-					public void onSuccess(Boolean result) {
-						Util.doLogging("EventIconographyID is: "+event.getItem().getIconographyID());
-						Util.doLogging("IconographyIDUsed: "+Boolean.toString(iconographyIDUsed));
-						iconographyIDUsed=result;
-						dialogboxnotcalled=result;
-						//Util.doLogging("set dialogboxnotcalled="+Boolean.toString(dialogboxnotcalled));
-						//Util.doLogging("IconographyIDUsed - after: "+Boolean.toString(iconographyIDUsed));					
-						
-						if ((iconographyIDUsed)&&(iconographyTree.isChecked(event.getItem()))) {
-							iconographyIDforOrnamentJump=event.getItem().getIconographyID();
-							//Util.doLogging("EventIconographyID is checked: "+Boolean.toString(iconographyTree.isChecked(event.getItem())));
-							iconographyTree.setCheckedSelection(null);		
-							if (dialogboxnotcalled) {
-								dialogboxnotcalled=false;
+						@Override
+						public void onSuccess(Boolean result) {
+							Util.doLogging("EventIconographyID is: "+event.getItem().getIconographyID());
+							Util.doLogging("IconographyIDUsed: "+Boolean.toString(iconographyIDUsed));
+							iconographyIDUsed=result;
+							dialogboxnotcalled=result;
+							//Util.doLogging("set dialogboxnotcalled="+Boolean.toString(dialogboxnotcalled));
+							//Util.doLogging("IconographyIDUsed - after: "+Boolean.toString(iconographyIDUsed));					
+							
+							if ((iconographyIDUsed)&&(iconographyTree.isChecked(event.getItem()))) {
+								iconographyIDforOrnamentJump=event.getItem().getIconographyID();
+								//Util.doLogging("EventIconographyID is checked: "+Boolean.toString(iconographyTree.isChecked(event.getItem())));
+								iconographyTree.setCheckedSelection(null);		
+								if (dialogboxnotcalled) {
+									dialogboxnotcalled=false;
 
-								Util.showYesNo("Ornament already assigned", "Do you wish to open the ornament entry, to which it was assigned?", new SelectHandler() {
-									
-									@Override
-									public void onSelect(SelectEvent event) {
-										dialogboxnotcalled=false;
-										closeThisEditor=true;
-										dbService.getOrnamentsWHERE("IconographyID = "+Integer.toString(iconographyIDforOrnamentJump), new AsyncCallback<ArrayList<OrnamentEntry>>() {
-
-											public void onFailure(Throwable caught) {
-												caught.printStackTrace();
-											}
-
-											@Override
-											public void onSuccess(ArrayList<OrnamentEntry> result) {
-												Util.doLogging("Länge des Ergebnisses: "+Integer.toString(result.size()));
-												if (result.size()==1) {
-
-													if (closeThisEditor) {
-														closeThisEditor=false;
-														//closeEditor(ornamentEntry);	
-														DialogBox ornamenticEditorPanel = new DialogBox(false);
-														OrnamenticEditor oe = new OrnamenticEditor(result.remove(0));
-														oe.addEditorListener(new EditorListener() {
-															
-															@Override
-															public void closeRequest(AbstractEntry entry) {
-																ornamenticEditorPanel.hide();
-															}
-
-//															@Override
-//															public void updateEntryRequest(AbstractEntry updatedEntry) { }
-														});
-														ornamenticEditorPanel.add(oe);
-														ornamenticEditorPanel.center();
-													}
-													
-													
-												}
-											}
-										});
-									}
-								}, new SelectHandler() {
-				
-									@Override
-									public void onSelect(SelectEvent event) {
-										dialogboxnotcalled=false;
-										closeThisEditor=false;
+									Util.showYesNo("Ornament already assigned", "Do you wish to open the ornament entry, to which it was assigned?", new SelectHandler() {
 										
-									}}, new KeyDownHandler() {
-				
-									@Override
-									public void onKeyDown(KeyDownEvent e) {
-										if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+										@Override
+										public void onSelect(SelectEvent event) {
+											dialogboxnotcalled=false;
+											closeThisEditor=true;
+											dbService.getOrnamentsWHERE("IconographyID = "+Integer.toString(iconographyIDforOrnamentJump), new AsyncCallback<ArrayList<OrnamentEntry>>() {
+
+												public void onFailure(Throwable caught) {
+													caught.printStackTrace();
+												}
+
+												@Override
+												public void onSuccess(ArrayList<OrnamentEntry> result) {
+													Util.doLogging("Länge des Ergebnisses: "+Integer.toString(result.size()));
+													if (result.size()==1) {
+
+														if (closeThisEditor) {
+															closeThisEditor=false;
+															//closeEditor(ornamentEntry);	
+															DialogBox ornamenticEditorPanel = new DialogBox(false);
+															EditorListener el = new EditorListener() {
+																
+																@Override
+																public void closeRequest(AbstractEntry entry) {
+																	ornamenticEditorPanel.hide();
+																}
+
+//																@Override
+//																public void updateEntryRequest(AbstractEntry updatedEntry) { }
+															};
+															OrnamenticEditor oe = new OrnamenticEditor(result.remove(0), el);
+															//oe.addEditorListener( );
+															ornamenticEditorPanel.add(oe);
+															ornamenticEditorPanel.center();
+														}
+														
+														
+													}
+												}
+											});
+										}
+									}, new SelectHandler() {
+					
+										@Override
+										public void onSelect(SelectEvent event) {
 											dialogboxnotcalled=false;
 											closeThisEditor=false;
+											
+										}}, new KeyDownHandler() {
+					
+										@Override
+										public void onKeyDown(KeyDownEvent e) {
+											if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+												dialogboxnotcalled=false;
+												closeThisEditor=false;
 
-									}}}
-								);
-								//Util.doLogging("reset dialogboxnotcalled="+Boolean.toString(dialogboxnotcalled));
+										}}}
+									);
+									//Util.doLogging("reset dialogboxnotcalled="+Boolean.toString(dialogboxnotcalled));
+								}
 							}
 						}
-					}
-				
-				});
+					
+					});					
+
 
 			}
 		});
@@ -395,9 +398,9 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 						}
 
 						public void onSuccess(ArrayList<WallTreeEntry> result) {
-							for (WallTreeEntry we : result){
-								Util.doLogging("Erhalten Wall:"+we.getText()+" Positions: "+Integer.toString(we.getPosition().size()));
-							}
+//							for (WallTreeEntry we : result){
+//								Util.doLogging("Erhalten Wall:"+we.getText()+" Positions: "+Integer.toString(we.getPosition().size()));
+//							}
 							wallTree.setWallTreeStore(result);
 						}
 					});

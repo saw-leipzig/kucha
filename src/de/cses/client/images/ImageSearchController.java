@@ -131,8 +131,7 @@ public class ImageSearchController extends AbstractSearchController {
 					public void onSuccess(ImageEntry result) {
 						ImageEntry imgEntry = result;
 						imgEntry.setTitle(filename);
-						SingleImageEditor singleIE = new SingleImageEditor(imgEntry);
-						singleIE.addEditorListener(new EditorListener() {
+						EditorListener el = new EditorListener() {
 							
 							@Override
 							public void closeRequest(AbstractEntry entry) {
@@ -162,7 +161,9 @@ public class ImageSearchController extends AbstractSearchController {
 								}
 							}
 
-						});
+						};
+						SingleImageEditor singleIE = new SingleImageEditor(imgEntry, el);
+						//singleIE.addEditorListener(
 						imageEditorPanel.add(singleIE);
 						imageEditorPanel.setGlassEnabled(true);
 						imageEditorPanel.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
