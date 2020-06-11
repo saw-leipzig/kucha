@@ -609,7 +609,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		FramedPanel ornamentClassFramedPanel = new FramedPanel();
 		ornamentClassFramedPanel.setHeading("New Ornament Motif");
 
-		ToolButton saveOrnamentClass = new ToolButton(new IconConfig("safeButton", "safeButtonOver"));
+		ToolButton saveOrnamentClass = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 		saveOrnamentClass.setToolTip(Util.createToolTip("save"));
 		ornamentClassFramedPanel.add(saveOrnamentClass);
 

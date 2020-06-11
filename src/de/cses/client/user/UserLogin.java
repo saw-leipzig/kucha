@@ -70,7 +70,7 @@ public class UserLogin extends PopupPanel {
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	public static final String SESSION_ID = "sessionID";
 	public static final String USERNAME = "username";
-	public static final String ISLOGGEDIN = "islogged";
+	public static final String ISLOGGEDIN = "islogged_SAW_LEIPZIG_2016";
 
 	private static UserLogin instance = null;
 	private TextField usernameField;

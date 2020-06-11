@@ -69,6 +69,10 @@ public class KuchaApplication implements EntryPoint {
 	    ((ScriptElement)script).setSrc("scripts/openseadragon-bin-2.4.2/openseadragon.min.js");
 	    ((ScriptElement)script).setType("text/javascript");
 		bodyElement.appendChild(script);
+		Element script2 = DOM.createElement("script");
+	    ((ScriptElement)script2).setSrc("scripts/openseadragon-bin-2.4.2/openseadragonimagefilter.js");
+	    ((ScriptElement)script2).setType("text/javascript");
+		bodyElement.appendChild(script2);
 
 		RootPanel.get().add(v, 0, 0); // use RootPanel, not RootLayoutPanel here!
 	}

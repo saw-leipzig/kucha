@@ -45,6 +45,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
+import com.sencha.gxt.core.client.XTemplates.XTemplate;
 import com.sencha.gxt.core.client.dom.ScrollSupport;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.data.shared.LabelProvider;
@@ -52,6 +53,8 @@ import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.data.shared.SortDir;
+import com.sencha.gxt.data.shared.Store;
+import com.sencha.gxt.data.shared.Store.StoreFilter;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.fx.client.Draggable;
 import com.sencha.gxt.fx.client.Draggable.DraggableAppearance;
@@ -67,6 +70,7 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.Verti
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
+import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
@@ -79,6 +83,7 @@ import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
 import de.cses.client.Util;
+
 import de.cses.client.ui.AbstractEditor;
 import de.cses.client.ui.AbstractView;
 import de.cses.client.ui.EditorListener;
@@ -86,6 +91,7 @@ import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageTypeEntry;
+import de.cses.shared.LocationEntry;
 import de.cses.shared.PhotographerEntry;
 
 public class SingleImageEditor extends AbstractEditor {
@@ -104,6 +110,9 @@ public class SingleImageEditor extends AbstractEditor {
 	private ListStore<ImageTypeEntry> imageTypeEntryList;
 	private HTMLPanel imgHP;
 	private FramedPanel imgFP;
+	private ComboBox<LocationEntry> locationSelectionCB;
+	private LocationProperties locationProps;
+	private ListStore<LocationEntry> locationEntryLS;
 	
 	/**
 	 * Create a remote service proxy to talk to the server-side service.
@@ -116,6 +125,16 @@ public class SingleImageEditor extends AbstractEditor {
 		ModelKeyProvider<PhotographerEntry> photographerID();
 		LabelProvider<PhotographerEntry> label();
 	}
+	interface LocationViewTemplates extends XTemplates {
+		@XTemplate("<div>{country}, {town}<br>{name}</div>")
+		SafeHtml caveLabel(String name, String town, String country);
+
+		@XTemplate("<div>{country}<br>{name}</div>")
+		SafeHtml caveLabel(String name, String country);
+
+		@XTemplate("<div>{name}</div>")
+		SafeHtml caveLabel(String name);
+	}
 
 	interface ImageViewTemplates extends XTemplates {
 		@XTemplate("<figure style='text-align: center; margin: 0;'>"
@@ -124,6 +143,11 @@ public class SingleImageEditor extends AbstractEditor {
 				+ "</figure>")
 		SafeHtml view(SafeUri imgUri);
 	}
+	interface LocationProperties extends PropertyAccess<LocationEntry> {
+		ModelKeyProvider<LocationEntry> locationID();
+		LabelProvider<LocationEntry> name();
+	}
+
 
 	interface PhotographerViewTemplates extends XTemplates {
 		@XTemplate("<div>{name}</div>")
@@ -146,6 +170,29 @@ public class SingleImageEditor extends AbstractEditor {
     public static native void exportStaticMethod() /*-{
 		$wnd.activatepanel = $entry(@de.cses.client.images.SingleImageEditor::activatePanel(*));
 	}-*/;
+	 private void loadLocations() {
+			for (LocationEntry locEntry : StaticTables.getInstance().getLocationEntries().values()) {
+				locationEntryLS.add(locEntry);
+			}
+			locationEntryLS.addSortInfo(new StoreSortInfo<LocationEntry>(new ValueProvider<LocationEntry, String>(){
+
+				@Override
+				public String getValue(LocationEntry object) {
+					return object.getCounty()+" "+object.getTown()+" "+object.getName();
+				}
+
+				@Override
+				public void setValue(LocationEntry object, String value) {}
+
+				@Override
+				public String getPath() {
+					return "name";
+				}}, SortDir.ASC));
+			
+			if (imgEntry.getLocation() != null) {
+				locationSelectionCB.setValue(imgEntry.getLocation());
+			}
+	 }
 
 
     
@@ -204,6 +251,7 @@ public class SingleImageEditor extends AbstractEditor {
 			imageTypeEntryList.add(ite);
 		}
 		imageTypeSelection.setValue(imageTypeEntryList.findModelWithKey(Integer.toString(imgEntry.getImageTypeID())));
+		loadLocations();
 	}
 
 	@Override
@@ -218,7 +266,7 @@ public class SingleImageEditor extends AbstractEditor {
 	 * Initializes the editor's panel if it this has not already been done. Should usually only be called once a session is started!
 	 */
 
-	public native void createZoomeImage(String ressource, Element where, SingleImageEditor sie)
+	public static native void createZoomeImage(String ressource, Element where)
 	/*-{
 	    var viewer =  $wnd.OpenSeadragon({
 	        element: where,
@@ -395,7 +443,37 @@ public class SingleImageEditor extends AbstractEditor {
 				addPhotoAuthorDialog.center();
 			}
 		});
-		
+		locationProps = GWT.create(LocationProperties.class);
+		locationEntryLS = new ListStore<LocationEntry>(locationProps.locationID());
+		StoreFilter<LocationEntry> filter = new StoreFilter<LocationEntry>() {
+		    @Override
+		    public boolean select(Store<LocationEntry> store, LocationEntry parent, LocationEntry item) {
+		    	
+		      boolean canView = false; 
+		      
+		      if ((item.getCounty()!=null)) {
+		    	  if (item.getCounty().toLowerCase().contains(locationSelectionCB.getText().toLowerCase())) {
+		    	  canView = true;
+		    	  }
+		      };
+		      if ((item.getTown()!=null)) {
+		    	  if (item.getTown().toLowerCase().contains(locationSelectionCB.getText().toLowerCase())) {
+		    	  canView = true;
+		    	  }
+		      };
+		      if ((item.getName()!=null)) {
+		    	  if (item.getName().toLowerCase().contains(locationSelectionCB.getText().toLowerCase())) {
+		    	  canView = true;
+		    	  }
+		      };
+		      //if (canView) {
+	    	  //Util.doLogging("Found: "+item.getName()+", gesucht wurde: "+locationSelectionCB.getText());
+		      //};
+		      return canView;
+		    }
+		  };
+		  locationEntryLS.addFilter(filter);
+
 		ToolButton resetSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		resetSelectionTB.addSelectHandler(new SelectHandler() {
@@ -409,6 +487,128 @@ public class SingleImageEditor extends AbstractEditor {
 		authorFP.addTool(addPhotoAuthorTB);
 		authorFP.add(authorSelectionCB);
 		authorFP.setHeading("Author");
+		
+		FramedPanel currentLocationFP = new FramedPanel();
+		currentLocationFP.setHeading("Current Location");
+		locationSelectionCB = new ComboBox<LocationEntry>(locationEntryLS, locationProps.name(), new AbstractSafeHtmlRenderer<LocationEntry>() {
+
+			@Override
+			public SafeHtml render(LocationEntry item) {
+				final LocationViewTemplates lvTemplates = GWT.create(LocationViewTemplates.class);
+				if ((item.getCounty() != null) && (!item.getCounty().isEmpty())) {
+					if ((item.getTown() != null) && (!item.getTown().isEmpty())) {
+						return lvTemplates.caveLabel(item.getName(), item.getRegion()!=null && !item.getRegion().isEmpty() ? item.getTown()+" ("+item.getRegion()+")" : item.getTown(), item.getCounty());
+					} else if ((item.getRegion() != null) && (!item.getRegion().isEmpty())) {
+						return lvTemplates.caveLabel(item.getName(), item.getTown()!=null && !item.getTown().isEmpty() ? item.getTown()+" ("+item.getRegion()+")" : item.getRegion(), item.getCounty());
+					} else {
+						return lvTemplates.caveLabel(item.getName(), item.getCounty());
+					}
+				} else {
+					return lvTemplates.caveLabel(item.getName());
+				}
+			}
+		});
+		locationSelectionCB.setEmptyText("select current location");
+		locationSelectionCB.setTypeAhead(false);
+		locationSelectionCB.setEditable(true);
+	
+		locationSelectionCB.setTriggerAction(TriggerAction.ALL);
+		locationSelectionCB.addValueChangeHandler(new ValueChangeHandler<LocationEntry>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<LocationEntry> event) {
+				imgEntry.setLocation(event.getValue());
+			}
+		});
+		ToolButton resetLocationSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
+		resetLocationSelectionTB.setToolTip(Util.createToolTip("reset selection"));
+		resetLocationSelectionTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				locationSelectionCB.setValue(null, true);
+			}
+		});
+		// adding new locations
+		ToolButton newLocationPlusTool = new ToolButton(new IconConfig("addButton", "addButtonOver"));
+		newLocationPlusTool.setToolTip(Util.createToolTip("add Location"));
+		newLocationPlusTool.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				PopupPanel addLocationDialog = new PopupPanel();
+				FramedPanel newLocationFP = new FramedPanel();
+				newLocationFP.setHeading("Add Location");
+				VerticalLayoutContainer locationVLC = new VerticalLayoutContainer();
+				TextField locationNameField = new TextField();
+				locationNameField.addValidator(new MinLengthValidator(2));
+				locationNameField.addValidator(new MaxLengthValidator(64));
+				locationVLC.add(new FieldLabel(locationNameField, "Name"));
+				TextField locationTownField = new TextField();
+				locationTownField.addValidator(new MinLengthValidator(2));
+				locationTownField.addValidator(new MaxLengthValidator(64));
+				locationVLC.add(new FieldLabel(locationTownField, "Town"));
+				TextField locationRegionField = new TextField();
+				locationRegionField.addValidator(new MinLengthValidator(2));
+				locationRegionField.addValidator(new MaxLengthValidator(64));
+				locationVLC.add(new FieldLabel(locationRegionField, "Region"));
+				TextField locationCountryField = new TextField();
+				locationCountryField.addValidator(new MinLengthValidator(2));
+				locationCountryField.addValidator(new MaxLengthValidator(64));
+				locationVLC.add(new FieldLabel(locationCountryField, "Country"));
+				TextField locationUrlField = new TextField();
+				locationUrlField.addValidator(new MinLengthValidator(2));
+				locationUrlField.addValidator(new MaxLengthValidator(256));
+				locationVLC.add(new FieldLabel(locationUrlField, "URL"));
+				newLocationFP.add(locationVLC);
+				TextButton saveButton = new TextButton("save");
+				saveButton.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						if (locationNameField.isValid()) {
+							LocationEntry lEntry = new LocationEntry();
+							lEntry.setName(locationNameField.getCurrentValue());
+							lEntry.setTown(locationTownField.getCurrentValue());
+							lEntry.setRegion(locationRegionField.getCurrentValue());
+							lEntry.setCounty(locationCountryField.getCurrentValue());
+							lEntry.setUrl(locationUrlField.getCurrentValue());
+							dbService.insertLocationEntry(lEntry, new AsyncCallback<Integer>() {
+
+								@Override
+								public void onFailure(Throwable caught) {
+									caught.printStackTrace();
+								}
+
+								@Override
+								public void onSuccess(Integer result) {
+									lEntry.setLocationID(result);
+									locationEntryLS.add(lEntry);
+								}
+							});
+							addLocationDialog.hide();
+						}
+					}
+				});
+				newLocationFP.addButton(saveButton);
+				TextButton cancelButton = new TextButton("cancel");
+				cancelButton.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						addLocationDialog.hide();
+					}
+				});
+				newLocationFP.addButton(cancelButton);
+				addLocationDialog.add(newLocationFP);
+				addLocationDialog.setModal(true);
+				addLocationDialog.center();
+			}
+		});				
+		currentLocationFP.addTool(newLocationPlusTool);
+		currentLocationFP.addTool(resetLocationSelectionTB);
+		currentLocationFP.add(locationSelectionCB);
+
 		
 		FramedPanel imageTypeSelectionPanel = new FramedPanel();
 		imageTypeSelection = new ComboBox<ImageTypeEntry>(imageTypeEntryList, imageTypeProps.name(),
@@ -589,7 +789,6 @@ public class SingleImageEditor extends AbstractEditor {
 ///		SafeUri imageUri = UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=300" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 		SafeUri imageUri = UriUtils.fromString("http://127.0.0.1:8182/iiif/2/kucha%2Fimages%2F" + imgEntry.getFilename() + "/info.json" );
 		imgHP = new HTMLPanel(imgViewTemplates.view(imageUri));
-
 	    Document doc = Document.get();
 	    ScriptElement script = doc.createScriptElement();
 	    script.setSrc("scripts/openseadragon-bin-2.4.2/openseadragon.min.js");
@@ -616,7 +815,7 @@ public class SingleImageEditor extends AbstractEditor {
 		EditorListener el = getListenerList().get(0);
 		PopupPanel popP = ((ImageView)(el)).getEditorPanel();
 		exportStaticMethod();
-		createZoomeImage(imageUri.asString(),zoomPanel.getElement(), this);
+		createZoomeImage(imageUri.asString(),zoomPanel.getElement());
 		
 		imgFP.addTool(resetTB);
 		imgFP.addTool(viewFullSizeTB);
@@ -635,8 +834,9 @@ public class SingleImageEditor extends AbstractEditor {
 		editHLC.add(rightEditVLC, new HorizontalLayoutData(.5, 1.0));
 				
 		VerticalLayoutContainer editVLC = new VerticalLayoutContainer();
-		editVLC.add(titlePanel, new VerticalLayoutData(1.0, .18));
-		editVLC.add(authorFP, new VerticalLayoutData(1.0, .18));
+		editVLC.add(titlePanel, new VerticalLayoutData(1.0, .12));
+		editVLC.add(authorFP, new VerticalLayoutData(1.0, .12));
+		editVLC.add(currentLocationFP, new VerticalLayoutData(1.0, .12));
 		editVLC.add(editHLC, new VerticalLayoutData(1.0, .64));
 	
 		HorizontalLayoutContainer mainHLC = new HorizontalLayoutContainer();

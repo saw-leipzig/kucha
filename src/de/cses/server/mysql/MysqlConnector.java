@@ -194,6 +194,92 @@ public class MysqlConnector implements IsSerializable {
 	 * 
 	 * @return
 	 */
+	private LocationEntry searchLocationByFilename(String filename) {
+		int CurrentLocationID = -1;
+		if (filename.contains("BritishMuseum")){
+			CurrentLocationID=26;
+		}
+		else if(filename.contains("VandA")){
+			CurrentLocationID=12;
+		}
+		else if(filename.contains("AshmoleanMuseum")){
+			CurrentLocationID=11;
+		}
+		else if(filename.contains("MuseeGuimet")){
+			CurrentLocationID=10;
+		}
+		else if(filename.contains("HoppFerenceMuseum")){
+			CurrentLocationID=13;
+		}
+		else if(filename.contains("IkuoHirayamaSilkRoadMuseum")){
+			CurrentLocationID=7;
+		}
+		else if(filename.contains("TokyoNationalMuseum")){
+			CurrentLocationID=9;
+		}
+		else if(filename.contains("TokyoUniversity")){
+			CurrentLocationID=28;
+		}
+		else if(filename.contains("MWoods")){
+			CurrentLocationID=37;
+		}
+		else if(filename.contains("Eremitage")){
+			CurrentLocationID=5;
+		}
+		else if(filename.contains("NMK")){
+			CurrentLocationID=15;
+		}
+		else if(filename.contains("AcademiaSinica_Taipei")){
+			CurrentLocationID=25;
+		}
+		else if(filename.contains("SeattleAsianArtMuseum")){
+			CurrentLocationID=22;
+		}
+		else if(filename.contains("BostonMFA")){
+			CurrentLocationID=20;
+		}
+		else if(filename.contains("MuseumofArt_Cleveland")){
+			CurrentLocationID=17;
+		}
+		else if(filename.contains("HarvardFoggArtMuseum")){
+			CurrentLocationID=34;
+		}
+		else if(filename.contains("Nelson-AtkinsMuseum")){
+			CurrentLocationID=36;
+		}
+		else if(filename.contains("BrooklynArtMuseum")){
+			CurrentLocationID=27;
+		}
+		else if(filename.contains("MetropolitanMuseum")){
+			CurrentLocationID=19;
+		}
+		else if(filename.contains("MetropolitanMuseumNY")){
+			CurrentLocationID=19;
+		}
+		else if(filename.contains("NYC_Metropolitan")){
+			CurrentLocationID=19;
+		}
+		else if(filename.contains("MetNY")){
+			CurrentLocationID=19;
+		}
+		else if(filename.contains("PennMuseum")){
+			CurrentLocationID=21;
+		}
+		else if(filename.contains("AsianArtMuseumSanFrancisco")){
+			CurrentLocationID=16;
+		}
+		else if(filename.contains("SmithsonianAmericanArtMuseum")){
+			CurrentLocationID=23;
+		}
+		else if(filename.matches(".*III\\d{3}.*")){
+			CurrentLocationID=4;
+		}
+		else if(filename.matches(".*TA\\d{3}.*")){
+			CurrentLocationID=4;
+		}
+		//System.out.println("For filename: "+filename+" found locationID: "+Integer.toString(CurrentLocationID));
+		return getLocation(CurrentLocationID);
+	}
 	public ArrayList<DistrictEntry> getDistricts(String sqlWhere) {
 		ArrayList<DistrictEntry> result = new ArrayList<DistrictEntry>();
 		Connection dbc = getConnection();
@@ -379,9 +465,15 @@ public class MysqlConnector implements IsSerializable {
 				
 				ResultSet rs = pstmt.executeQuery();
 				while (rs.next()) {
-					imgSources.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
+					ImageEntry image = new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
 							rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
-							rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn"))));
+							rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("CurrentLocationID")));
+					if (image.getLocation()==null) {
+						if (rs.getString("Title")!=null){
+							image.setLocation(searchLocationByFilename(image.getTitle()));
+						}
+					}
+					imgSources.add(image);
 				}
 				rs.close();
 				pstmt.close();
@@ -574,7 +666,7 @@ public class MysqlConnector implements IsSerializable {
 
 		try {
 			pstmt = dbc.prepareStatement(
-					"INSERT INTO Images (Filename, Title, ShortName, Copyright, PhotographerID, Comment, Date, ImageTypeID, AccessLevel, deleted) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)",
+					"INSERT INTO Images (Filename, Title, ShortName, Copyright, PhotographerID, Comment, Date, ImageTypeID, AccessLevel, deleted, CurrentLocationID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 					Statement.RETURN_GENERATED_KEYS);
 			pstmt.setString(1, "");
 			pstmt.setString(2, entry.getTitle());
@@ -586,6 +678,7 @@ public class MysqlConnector implements IsSerializable {
 			pstmt.setInt(8, entry.getImageTypeID());
 			pstmt.setInt(9, entry.getAccessLevel());
 			pstmt.setBoolean(10, entry.isdeleted());
+			pstmt.setInt(11, entry.getLocation().getLocationID());
 			pstmt.executeUpdate();
 			ResultSet keys = pstmt.getGeneratedKeys();
 			if (keys.next()) { // there should only be 1 key returned here
@@ -998,9 +1091,16 @@ public class MysqlConnector implements IsSerializable {
 			
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
-				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
+				ImageEntry image = new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
 						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
-						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn"))));
+						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("CurrentLocationID")));
+				if (image.getLocation()==null) {
+					if (rs.getString("Title")!=null){
+						image.setLocation(searchLocationByFilename(image.getTitle()));
+					}
+					
+				}
+				results.add(image);
 			}
 			rs.close();
 			pstmt.close();
@@ -1052,9 +1152,15 @@ public class MysqlConnector implements IsSerializable {
 			}
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
-				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
-						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), 
-						rs.getInt("ImageTypeID"), rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn"))));
+				ImageEntry image = new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
+						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
+						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("CurrentLocationID")));
+				if (image.getLocation()==null) {
+					if (rs.getString("Title")!=null){
+						image.setLocation(searchLocationByFilename(image.getTitle()));
+					}
+				}
+				results.add(image);
 			}
 			rs.close();
 			pstmt.close();
@@ -1090,7 +1196,13 @@ public class MysqlConnector implements IsSerializable {
 			if (rs.first()) {
 				result = new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
 						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), 
-						rs.getInt("ImageTypeID"), rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
+						rs.getInt("ImageTypeID"), rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("CurrentLocationID")));
+				if (result.getLocation()==null) {
+					if (rs.getString("Title")!=null){
+						result.setLocation(searchLocationByFilename(result.getTitle()));
+					}
+				}
+
 			}
 			rs.close();
 			stmt.close();
@@ -2756,9 +2868,15 @@ public boolean isHan(String s) {
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
 				//System.out.println("ImageID = "+Integer.toString(depictionID)+" ImageID = "+Integer.toString(rs.getInt("ImageID")));
-				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
-						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), 
-						rs.getInt("ImageTypeID"), rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn"))));
+				ImageEntry image = new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
+						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
+						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("CurrentLocationID")));
+				if (image.getLocation()==null) {
+					if (rs.getString("Title")!=null){
+						image.setLocation(searchLocationByFilename(image.getTitle()));
+					}
+				}
+				results.add(image);
 			}
 			rs.close();
 			pstmt.close();
@@ -2849,7 +2967,7 @@ public boolean isHan(String s) {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
-			System.out.println("UPDATE Images SET Filename="+entry.getFilename()+", Title="+entry.getTitle()+", ShortName="+entry.getShortName()+", Copyright="+entry.getCopyright()+", PhotographerID=?, Comment=?, Date=?, ImageTypeID=?, AccessLevel=?, deleted="+entry.isdeleted()+" WHERE ImageID=?");
+			System.out.println("UPDATE Images SET Filename="+entry.getFilename()+", Title="+entry.getTitle()+", ShortName="+entry.getShortName()+", Copyright="+entry.getCopyright()+", PhotographerID=?, Comment=?, Date=?, ImageTypeID=?, AccessLevel=?, deleted="+entry.isdeleted()+" CurrentLocationID="+entry.getLocation().getLocationID()+"  WHERE ImageID=?");
 			pstmt = dbc.prepareStatement(
 					"UPDATE Images SET Filename=?, Title=?, ShortName=?, Copyright=?, PhotographerID=?, Comment=?, Date=?, ImageTypeID=?, AccessLevel=?, deleted=? WHERE ImageID=?");
 			pstmt.setString(1, entry.getFilename());
@@ -6886,9 +7004,15 @@ public boolean isHan(String s) {
 							+ ornamentID + " ORDER BY Title Asc");
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
-				results.add(new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
-						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), 
-						rs.getInt("ImageTypeID"), rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn"))));
+				ImageEntry image = new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
+						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
+						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("CurrentLocationID")));
+				if (image.getLocation()==null) {
+					if (rs.getString("Title")!=null){
+						image.setLocation(searchLocationByFilename(image.getTitle()));
+					}
+				}
+				results.add(image);
 			}
 			rs.close();
 			pstmt.close();
