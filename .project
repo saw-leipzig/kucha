@@ -35,8 +35,11 @@
 			<arguments>
 			</arguments>
 		</buildCommand>
-
-
+		<buildCommand>
+			<name>com.github.sdbg.integration.jdt.gwtsdmbuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
 	</buildSpec>
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
@@ -44,5 +47,6 @@
 		<nature>org.eclipse.wst.common.project.facet.core.nature</nature>
 		<nature>com.gwtplugins.gwt.eclipse.core.gwtNature</nature>
 		<nature>org.jkiss.dbeaver.DBeaverNature</nature>
+		<nature>com.github.sdbg.integration.jdt.gwtsdmnature</nature>
 	</natures>
 </projectDescription>

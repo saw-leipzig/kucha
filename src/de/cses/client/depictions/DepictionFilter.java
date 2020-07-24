@@ -668,6 +668,7 @@ public class DepictionFilter extends AbstractFilter {
 				
 				@Override
 				public void onSelect(SelectEvent event) {
+					icoSelector.imgPopHide();
 					selectedIconographyLS.clear();
 					selectedIconographyLS.addAll(icoSelector.getSelectedIconography());
 					if ((icoSelector.getSelectedIconography() != null) && (selectedIconographyLS.size() > 0)) {
@@ -788,7 +789,7 @@ public class DepictionFilter extends AbstractFilter {
 			searchEntry.getPositionIDList().add(oce.getPositionID());
 		}
 
-		Util.doLogging(Boolean.toString(wallSpinnerField.isEnabled()));
+		//Util.doLogging(Boolean.toString(wallSpinnerField.isEnabled()));
 		searchEntry.setCorrelationFactorWT(wallSpinnerField.isEnabled() ? wallSpinnerField.getValue() : 0);
 		
 		return searchEntry;

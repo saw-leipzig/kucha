@@ -15,11 +15,13 @@ package de.cses.client;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import de.cses.client.user.UserLogin;
 import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveTypeEntry;
@@ -32,6 +34,7 @@ import de.cses.shared.ImageTypeEntry;
 import de.cses.shared.LocationEntry;
 import de.cses.shared.ModeOfRepresentationEntry;
 import de.cses.shared.OrientationEntry;
+import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamentFunctionEntry;
 import de.cses.shared.OrnamentPositionEntry;
 import de.cses.shared.PositionEntry;
@@ -78,6 +81,8 @@ public class StaticTables {
 	protected HashMap<Integer, AnnotatedBibliographyEntry> bibEntryMap;
 	protected HashMap<Integer, CaveEntry> caveEntryMap;
 	protected HashMap<Integer, OrientationEntry> orientationEntryMap;
+	protected Map<Integer,String> ornamentMasterPics = new HashMap<Integer,String>();
+	private ArrayList<OrnamentEntry> ornamentEntries;
 
 	private int loadCounter;
 
@@ -349,6 +354,15 @@ public class StaticTables {
 			}
 		});
 	}
+	public String getChildIDies(String where, IconographyEntry ie) {
+		for (IconographyEntry child : ie.getChildren()) {
+			where=where+", "+Integer.toString(child.getIconographyID());
+			where=getChildIDies(where, child);
+		}
+		return where;
+	}
+
+
 	private void loadWallEntries() {
 		wallEntryMap = new HashMap<Integer, WallTreeEntry>();
 		dbService.getWallTree(new AsyncCallback<ArrayList<WallTreeEntry>>() {
@@ -654,6 +668,13 @@ public class StaticTables {
 
 	public Map<Integer, IconographyEntry> getIconographyEntries() {
 		return iconographyEntryMap;
+	}
+	public Map<Integer,String> getOrnamentMasterPics() {
+		return ornamentMasterPics;
+	}
+	
+	public void setOrnamentMasterPics(Map<Integer,String> ornamentMasterPics) {
+		this.ornamentMasterPics =ornamentMasterPics;
 	}
 	
 	public Map<Integer, WallTreeEntry> getWallTreeEntries() {

@@ -19,6 +19,7 @@ import java.util.Map;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
+import de.cses.server.mysql.MysqlConnector;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.AnnotatedBibliographySearchEntry;
@@ -270,6 +271,8 @@ public interface DatabaseService extends RemoteService {
 	
 	OrnamentClassEntry addOrnamentClass(OrnamentClassEntry entry)  throws IllegalArgumentException;
 	
+	String getContext() throws IllegalArgumentException;
+
 	OrnamentClassEntry renameOrnamentClass(OrnamentClassEntry entry)  throws IllegalArgumentException;
 	
 	OrnamentComponentsEntry renameOrnamentComponents(OrnamentComponentsEntry entry)  throws IllegalArgumentException;

@@ -32,7 +32,7 @@ public class OrnamentEntry extends AbstractEntry {
 	private ArrayList<OrnamentComponentsEntry> ornamentComponents = new ArrayList<OrnamentComponentsEntry>();
 	private ArrayList<InnerSecondaryPatternsEntry> innerSecondaryPatterns = new ArrayList<InnerSecondaryPatternsEntry>();
 	private ArrayList<AnnotatedBibliographyEntry> relatedBibliographyList = new ArrayList<AnnotatedBibliographyEntry>();
-	private int masterImageID = 0;
+	private Integer masterImageID = 0;
 
 	public OrnamentEntry() {
 		ornamentID = 0;
@@ -153,11 +153,11 @@ public class OrnamentEntry extends AbstractEntry {
 	public void setCavesRelations(ArrayList<OrnamentCaveRelation> list) {
 		this.cavesRelations = list;
 	}
-	public int getMasterImageID() {
+	public Integer getMasterImageID() {
 		return masterImageID != 0 ? masterImageID : (!images.isEmpty() ? images.get(0).getImageID() : 0);
 	}
 
-	public void setMasterImageID(int masterImageID) {
+	public void setMasterImageID(Integer masterImageID) {
 		this.masterImageID = masterImageID;
 	}
 

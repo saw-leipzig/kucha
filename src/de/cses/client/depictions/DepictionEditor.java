@@ -21,10 +21,6 @@ import java.util.Map;
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.ScriptElement;
-import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -44,7 +40,6 @@ import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -53,7 +48,6 @@ import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
-import com.sencha.gxt.core.client.dom.DomHelper;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
@@ -110,6 +104,7 @@ import de.cses.client.images.ImageSelector;
 import de.cses.client.images.ImageSelectorListener;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.client.ui.EditorListener;
+import de.cses.client.ui.OSDLoader;
 import de.cses.client.ui.TextElement;
 import de.cses.client.user.UserLogin;
 import de.cses.client.walls.PositionEditor;
@@ -189,6 +184,7 @@ public class DepictionEditor extends AbstractEditor {
 	private VerticalLayoutContainer zoomPanel;
 	private Map<String, HTML> imgannotations= new HashMap<String, HTML>();
 	private JavaScriptObject osdDic;
+	private OSDLoader osdLoader;
 
 
 	private WallTree wallTree;
@@ -401,141 +397,6 @@ public class DepictionEditor extends AbstractEditor {
 		loadPreservationAttributes();
 	}
 	
-	public static native JavaScriptObject createZoomeImage(JavaScriptObject tiles,JavaScriptObject wheres, JavaScriptObject source, JavaScriptObject dic)
-	/*-{
-	 
-	 function openFullscreen(where) {
-  			if (where.requestFullscreen) {
-    			where.requestFullscreen();
-  			} else if (where.mozRequestFullScreen) { 
-    			where.mozRequestFullScreen();
-  			} else if (where.webkitRequestFullscreen) { 
-    			where.webkitRequestFullscreen();
-  			} else if (where.msRequestFullscreen) {
-    			where.msRequestFullscreen();
-  			}
-		}
-	    $wnd.OpenSeadragon.setString('Tooltips.SelectionToggle','Selection Demo');
-	    $wnd.OpenSeadragon.setString('Tooltips.SelectionConfirm','Ok');
-	    $wnd.OpenSeadragon.setString('Tooltips.ImageTools','Image tools');
-	    $wnd.OpenSeadragon.setString('Tool.brightness','Brightness');
-	    $wnd.OpenSeadragon.setString('Tool.contrast','Contrast');
-	    $wnd.OpenSeadragon.setString('Tool.thresholding','Thresholding');
-	    $wnd.OpenSeadragon.setString('Tool.invert','Invert');
-	    $wnd.OpenSeadragon.setString('Tool.gamma','Gamma');
-	    $wnd.OpenSeadragon.setString('Tool.greyscale','Greyscale');
-	    $wnd.OpenSeadragon.setString('Tool.reset','Reset');
-	    $wnd.OpenSeadragon.setString('Tooltips.HorizontalGuide', 'Add Horizontal Guide');
-	    $wnd.OpenSeadragon.setString('Tooltips.VerticalGuide', 'Add Vertical Guide');
-	    $wnd.OpenSeadragon.setString('Tool.rotate', 'Rotate');
-	    $wnd.OpenSeadragon.setString('Tool.close', 'Close');
-
-	 for (var i = 0, length = wheres.length; i < length; i++){
-	 	if (!(wheres[i] in dic)){
-	 	
-		 	dic[wheres[i]] =  $wnd.OpenSeadragon({
-		        id: wheres[i],
-		        showRotationControl: true,
-		        showFlipControl: true,
-		        maxZoomLevel: 100,
-		        crossOriginPolicy: "Anonymous",
-				prefixUrl: "scripts/openseadragon-bin-2.4.2/images/",
-				tileSources: tiles[wheres[i]]
-				
-			});
-			for (var i = 0, length = $doc.scripts.length; i < length; i++){
-				$wnd.alert($doc.scripts[i].src);  
-			}
-					  
-			
-			dic[wheres[i]].imagefilters({menuId:"menu"+wheres[i],
-		    							 toolsLeft: 270
-		    							});
-			dic[wheres[i]].addHandler("pre-full-page", function (data) {
-					data.preventDefaultAction=true;
-					openFullscreen(data.eventSource.element);
-			});
-
-		}
-	 }
-	    
-		
-		return dic
-	}-*/;
-	public static native JavaScriptObject createDic()
-	/*-{	
-	 var dic = {};
-		return dic
-	}-*/;	
-	public static native JavaScriptObject addZoomeImage(JavaScriptObject tiles, String source, String fileName)
-	/*-{
-		if (tiles==null){
-			
-			tiles={};
-		}
-		tiles[fileName]=source;
-		return tiles
-	}-*/;	
-	public static native JavaScriptObject addImageFileNames(JavaScriptObject ifn,  String source)
-	/*-{
-	if (ifn==null){
-		
-		ifn=[source];
-		        
-	}
-	else{
-		ifn.push(source);
-	}
-	return ifn
-}-*/;
-	public static native JavaScriptObject addImageDic(JavaScriptObject imgElDic, String source, Element imgEl)
-	/*-{
-	if (imgElDic==null){
-		
-		imgElDic={};
-		        
-	}
-	imgElDic[source]=imgEl;
-	return imgElDic
-}-*/;
-	public static native JavaScriptObject addOverlays(JavaScriptObject overlays, Element source)
-	/*-{
-		if (overlays==null){
-			overlays=[{
-		        element: source,
-		        px: 0,
-		        py: 0,
-		        width: 200,
-		        height: 200,			
-			}];
-		}
-		else{
-			overlays.push({
-		        element: source,
-		        px: 0,
-		        py: 0,
-		        width: 200,
-		        height: 200,			
-			});
-		}
-		return overlays
-	}-*/;
-//    viewer.addTiledImage({
-//		tileSource: source
-//		});
-
-	public static native void addMetadata(JavaScriptObject viewer, Element html)
-	/*-{
-		var point = new $wnd.OpenSeadragon.Point(0, 0)
-	    viewer.addOverlay(
-            html,
-            point
-        );
-	}-*/;
-
-	/**
-	 * 
-	 */
 	private void loadExpeditions() {
 		for (ExpeditionEntry exped : StaticTables.getInstance().getExpeditionEntries().values()) {
 			expedEntryLS.add(exped);
@@ -697,22 +558,7 @@ public class DepictionEditor extends AbstractEditor {
 		/**
 		 * 
 		 */
-			private ArrayList<JavaScriptObject> loadTiles(JavaScriptObject list,JavaScriptObject ifn, JavaScriptObject imgDic, ArrayList<ImageEntry> images) {
 
-				if (!images.isEmpty()){
-					ImageEntry ie=images.remove(0);
-					Element imgEl = Document.get().getElementById(ie.getFilename());
-					list = addZoomeImage(list , "http://127.0.0.1:8182/iiif/2/kucha%2Fimages%2F" + ie.getFilename() + "/info.json",ie.getFilename());
-					ifn=addImageFileNames(ifn,ie.getFilename());
-					imgDic=addImageDic(imgDic,ie.getFilename(), imgEl );
-					loadTiles(list, ifn,imgDic, images);
-				}
-				ArrayList<JavaScriptObject> result= new ArrayList<JavaScriptObject>(); 
-				result.add(list);
-				result.add(imgDic);
-				result.add(ifn);
-				return result;
-			}
 
 
 
@@ -778,7 +624,7 @@ public class DepictionEditor extends AbstractEditor {
 		  }
 		}
 	private void initPanel() {
-		osdDic = createDic();
+		osdDic = OSDLoader.createDic();
 		// the images related with the depiction entry that will be shown on the right
 		imgdic = new HashMap<Integer,String>();
 		getPics(correspondingDepictionEntry.getRelatedImages(), 300, UserLogin.getInstance().getSessionID());
@@ -793,19 +639,6 @@ public class DepictionEditor extends AbstractEditor {
 
 			public SafeHtml render(ImageEntry item) {
 				SafeUri imageUri;
-				//Util.doLogging( item.getFilename()+" / "+Integer.toString(imgdic.size()));
-				//SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=300" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
-				//imageUri = UriUtils.fromString("icons/load_active.png");	
-
-			    
-				imageUri = UriUtils.fromString("http://127.0.0.1:8182/iiif/2/kucha%2Fimages%2F" + item.getFilename() + "/info.json" );
-
-//				if (imgdic.containsKey(item.getImageID())){
-//					
-//					imageUri = UriUtils.fromTrustedString(imgdic.get(item.getImageID()));
-//					
-//				}
-				
 				ArrayList<TextElement> titleList = new ArrayList<TextElement>();
 				for (String s : item.getTitle().split("_")) {
 					titleList.add(new TextElement(s));
@@ -822,7 +655,7 @@ public class DepictionEditor extends AbstractEditor {
 				} else {
 					sb= imageViewTemplates.nonPublicImage(item.getFilename(), item.getShortName(), titleList, item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase(), imageAuthor, copyrightStr, UriUtils.fromString("resource?imageID=" + item.getImageID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri()));
 				}
-				SafeHtml s = SafeHtmlUtils.fromTrustedString("<figure class='paintRepImgPreview'><div id= '"+item.getFilename()+"' style='width: "+Integer.toString(Window.getClientWidth()/100*30)+"px; height: "+Integer.toString(Window.getClientHeight()/100*35)+"px;text-align: center;'></div>");
+				SafeHtml s = SafeHtmlUtils.fromTrustedString("<figure class='paintRepImgPreview'><div id= '"+item.getFilename().split(";")[0]+"' style='width: "+Integer.toString(Window.getClientWidth()/100*30)+"px; height: "+Integer.toString(Window.getClientHeight()/100*35)+"px;text-align: center;'></div>");
 				SafeHtmlBuilder sblast = new SafeHtmlBuilder();
 				sblast.append(s);
 				sblast.append(sb);
@@ -1800,6 +1633,7 @@ public class DepictionEditor extends AbstractEditor {
 					
 					@Override
 					public void onSelect(SelectEvent event) {
+						iconographySelector.imgPopHide();
 						deleteEntry(correspondingDepictionEntry);
 						closeEditor(null);
 					}
@@ -1807,12 +1641,14 @@ public class DepictionEditor extends AbstractEditor {
 						
 					@Override
 					public void onSelect(SelectEvent event) {
+						iconographySelector.imgPopHide();
 						 
 					}
 				}, new KeyDownHandler() {
 
 					@Override
 					public void onKeyDown(KeyDownEvent e) {
+						iconographySelector.imgPopHide();
 						
 					}}
 			
@@ -1831,6 +1667,7 @@ public class DepictionEditor extends AbstractEditor {
 					
 					@Override
 					public void onSelect(SelectEvent event) {
+						iconographySelector.imgPopHide();
 						saveDepictionEntry(true);
 						closeEditor(null);
 					}
@@ -1838,6 +1675,7 @@ public class DepictionEditor extends AbstractEditor {
 						
 					@Override
 					public void onSelect(SelectEvent event) {
+						iconographySelector.imgPopHide();
 						bibliographySelector.clearPages(); 
 						closeEditor(null);
 					}
@@ -1845,6 +1683,7 @@ public class DepictionEditor extends AbstractEditor {
 
 					@Override
 					public void onKeyDown(KeyDownEvent e) {
+						iconographySelector.imgPopHide();
 						if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
 						closeEditor(null);
 					}}
@@ -1909,16 +1748,24 @@ public class DepictionEditor extends AbstractEditor {
 		
 	}
 	private void setosd() {
-		ArrayList<JavaScriptObject> results = loadTiles(null, null,null, correspondingDepictionEntry.getRelatedImages());
-		JavaScriptObject tiles = results.remove(0);
-		JavaScriptObject imgDic=results.remove(0);
-		JavaScriptObject ifn=results.remove(0);
-		ArrayList<String> filenames = new ArrayList<String>();
-		for (ImageEntry ie : correspondingDepictionEntry.getRelatedImages()) {
-			filenames.add(ie.getFilename());
+		 dbService.getContext(new AsyncCallback<String>() {
 
-		}
-		JavaScriptObject jso= createZoomeImage(tiles,ifn,imgDic, osdDic);
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(String result) {
+				ArrayList<JavaScriptObject> results = OSDLoader.loadTiles(null, null,null, correspondingDepictionEntry.getRelatedImages(), result);
+				JavaScriptObject tiles = results.remove(0);
+				JavaScriptObject imgDic=results.remove(0);
+				JavaScriptObject ifn=results.remove(0);
+				ArrayList<String> filenames = new ArrayList<String>();
+				JavaScriptObject jso= OSDLoader.createZoomeImage(tiles,ifn,imgDic, osdDic,UserLogin.getInstance().getSessionID());
+
+			}
+		});
 	}
 	public void setfocus() {
 		setosd();

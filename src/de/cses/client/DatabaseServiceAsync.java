@@ -18,6 +18,7 @@ import java.util.Map;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import de.cses.server.mysql.MysqlConnector;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.AnnotatedBibliographySearchEntry;
@@ -72,6 +73,8 @@ import de.cses.shared.WallTreeEntry;
 public interface DatabaseServiceAsync {
 
 	void getDistricts(AsyncCallback<ArrayList<DistrictEntry>> callback) throws IllegalArgumentException;
+	
+	void getContext(AsyncCallback<String> callback) throws IllegalArgumentException;
 
 	void getImage(int imageID, AsyncCallback<ImageEntry> callback) throws IllegalArgumentException;
 

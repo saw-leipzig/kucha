@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ScriptElement;
@@ -87,6 +88,7 @@ import de.cses.client.Util;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.client.ui.AbstractView;
 import de.cses.client.ui.EditorListener;
+import de.cses.client.ui.OSDLoader;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.ImageEntry;
@@ -113,7 +115,8 @@ public class SingleImageEditor extends AbstractEditor {
 	private ComboBox<LocationEntry> locationSelectionCB;
 	private LocationProperties locationProps;
 	private ListStore<LocationEntry> locationEntryLS;
-	
+	private JavaScriptObject osdDic;
+
 	/**
 	 * Create a remote service proxy to talk to the server-side service.
 	 */
@@ -266,34 +269,16 @@ public class SingleImageEditor extends AbstractEditor {
 	 * Initializes the editor's panel if it this has not already been done. Should usually only be called once a session is started!
 	 */
 
-	public static native void createZoomeImage(String ressource, Element where)
-	/*-{
-	    var viewer =  $wnd.OpenSeadragon({
-	        element: where,
-	        showRotationControl: true,
-	        showFlipControl: true,
-	        maxZoomLevel: 100,
-			prefixUrl: "scripts/openseadragon-bin-2.4.2/images/",
-			tileSources: ressource,
-		});
-		viewer.addHandler("pre-full-page", function (data) {
-				data.preventDefaultAction=true;
-				openFullscreen();
-		});
-		function openFullscreen() {
-  			if (where.requestFullscreen) {
-    			where.requestFullscreen();
-  			} else if (where.mozRequestFullScreen) { 
-    			where.mozRequestFullScreen();
-  			} else if (where.webkitRequestFullscreen) { 
-    			where.webkitRequestFullscreen();
-  			} else if (where.msRequestFullscreen) {
-    			where.msRequestFullscreen();
-  			}
-		}
-	}-*/;
 
+	private void addOSDPanel() {
+		VerticalLayoutContainer zoomPanel = new VerticalLayoutContainer();
+		zoomPanel.clear();
+		zoomPanel.setId(imgEntry.getFilename());
+		imgFP.clear();
+		imgFP.add(zoomPanel);
+	}
 	private void initPanel() {
+		osdDic = OSDLoader.createDic();
 		panel = new FramedPanel();
 		titleField = new TextField();
 		titleField.addValidator(new MaxLengthValidator(128));
@@ -718,8 +703,10 @@ public class SingleImageEditor extends AbstractEditor {
 					
 					@Override
 					public void onSelect(SelectEvent event) {
-						saveImageEntry(true);
-						 closeEditor(null);
+						 saveImageEntry(true);
+						if (verifyInputs()) {
+							closeEditor(null);
+						}
 					}
 				}, new SelectHandler() {
 						
@@ -766,12 +753,8 @@ public class SingleImageEditor extends AbstractEditor {
 							((ImageView)el).getImageResultView().addResult(new ImageView(imgEntry,UriUtils.fromTrustedString("icons/load_active.png"),((ImageView)el).getImageResultView()));
 							String imageIDs = Integer.toString(imgEntry.getImageID());
 							((ImageView)el).getImageResultView().getPics(imageIDs, 120, UserLogin.getInstance().getSessionID());
-							}
-							SafeUri imageUri = UriUtils.fromString("http://127.0.0.1:8182/iiif/2/kucha%2Fimages%2F" + imgEntry.getFilename() + "/info.json");
-							imgHP = new HTMLPanel(imgViewTemplates.view(imageUri));
-							imgFP.clear();
-							imgFP.add(imgHP);
-							}
+							
+							}							}
 
 					@Override
 					public void uploadCanceled() {
@@ -786,17 +769,13 @@ public class SingleImageEditor extends AbstractEditor {
 
 			});
 
-///		SafeUri imageUri = UriUtils.fromString("resource?imageID=" + imgEntry.getImageID() + "&thumb=300" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
-		SafeUri imageUri = UriUtils.fromString("http://127.0.0.1:8182/iiif/2/kucha%2Fimages%2F" + imgEntry.getFilename() + "/info.json" );
-		imgHP = new HTMLPanel(imgViewTemplates.view(imageUri));
-	    Document doc = Document.get();
-	    ScriptElement script = doc.createScriptElement();
-	    script.setSrc("scripts/openseadragon-bin-2.4.2/openseadragon.min.js");
-	    script.setType("text/javascript");
-	    doc.getBody().appendChild(script);
+//	    Document doc = Document.get();
+//	    ScriptElement script = doc.createScriptElement();
+//	    script.setSrc("scripts/openseadragon-bin-2.4.2/openseadragon.min.js");
+//	    script.setType("text/javascript");
+//	    doc.getBody().appendChild(script);
 
 		
-		Util.doLogging(imageUri.asString());
 
 		//imgFP.setId("openseadragon1");
 		//imgHP = createZoomeImage(imageUri.asString());
@@ -807,15 +786,12 @@ public class SingleImageEditor extends AbstractEditor {
 			imgFP.setHeading("Error accured, assembling titel: "+e.getMessage());			
 
 		}
-		VerticalLayoutContainer zoomPanel = new VerticalLayoutContainer();
-		zoomPanel.clear();
-		imgFP.clear();
-		imgFP.add(zoomPanel);
-		Util.doLogging(Integer.toString(getListenerList().size()));
-		EditorListener el = getListenerList().get(0);
-		PopupPanel popP = ((ImageView)(el)).getEditorPanel();
-		exportStaticMethod();
-		createZoomeImage(imageUri.asString(),zoomPanel.getElement());
+		addOSDPanel();
+		//Util.doLogging(Integer.toString(getListenerList().size()));
+		//EditorListener el = getListenerList().get(0);
+		//PopupPanel popP = ((ImageView)(el)).getEditorPanel();
+		//exportStaticMethod();
+		//createZoomeImage(imageUri.asString(),zoomPanel.getElement());
 		
 		imgFP.addTool(resetTB);
 		imgFP.addTool(viewFullSizeTB);
@@ -897,8 +873,29 @@ public class SingleImageEditor extends AbstractEditor {
 
 	@Override
 	public void setfocus() {
+		setosd();
 		titleField.getFocusSupport().setIgnore(false);
 		titleField.focus();
+	}
+	private void setosd() {
+		 dbService.getContext(new AsyncCallback<String>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(String result) {
+				ArrayList<JavaScriptObject> results = OSDLoader.loadTile(null, null,null, imgEntry, result);
+				JavaScriptObject tiles = results.remove(0);
+				JavaScriptObject imgDic=results.remove(0);
+				JavaScriptObject ifn=results.remove(0);
+				ArrayList<String> filenames = new ArrayList<String>();
+				JavaScriptObject jso= OSDLoader.createZoomeImage(tiles,ifn,imgDic, osdDic,UserLogin.getInstance().getSessionID());
+
+			}
+		});
 	}
 
 	/**
@@ -913,12 +910,14 @@ public class SingleImageEditor extends AbstractEditor {
 		dbService.updateImageEntry(imgEntry, new AsyncCallback<Boolean>() {
 			public void onFailure(Throwable caught) {
 				Info.display("ERROR", "Image information has NOT been updated!");
+				Util.doLogging(caught.getLocalizedMessage());
 				
 			}
 
 			@Override
 			public void onSuccess(Boolean result) {
 				if (result) {
+					Info.display("Successfully saved!", "Image information has been updated!");
 					if (closeEditorRequested) {
 						closeEditor(imgEntry);
 					}
@@ -940,8 +939,31 @@ public class SingleImageEditor extends AbstractEditor {
 			}
 		}
 		if (!verifyInputs()) {
+			Info.display("Warning!","Saving aborted, due to incorrectly filled form.");
 			if (closeEditorRequested) {
-				closeEditor(imgEntry);
+				Util.showYesNo("Warning", "Saving cancelled due to incorrectly filled forms! Do you want to continue closing the form? All changed data will be lost!", new SelectHandler() {
+					
+					@Override
+					public void onSelect(SelectEvent event) {
+						closeEditor(imgEntry);
+					}
+				}, new SelectHandler() {
+						
+					@Override
+					public void onSelect(SelectEvent event) {
+						
+					}
+				}, new KeyDownHandler() {
+
+					@Override
+					public void onKeyDown(KeyDownEvent e) {
+						}}
+			
+					
+				
+				);
+
+				
 			}
 			return;
 		}

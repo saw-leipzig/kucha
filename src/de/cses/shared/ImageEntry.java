@@ -30,7 +30,7 @@ public class ImageEntry extends AbstractEntry {
 	public static final int FILENAME = 2;
 
 	public ImageEntry() {
-		this(0, "", "", "", "", null, "", "", 1, AbstractEntry.ACCESS_LEVEL_PRIVATE, "", null);
+		this(0, "", "", "", "", null, "", "", 1, AbstractEntry.ACCESS_LEVEL_PRIVATE, "");
 	}
 	
 	/**
@@ -44,7 +44,7 @@ public class ImageEntry extends AbstractEntry {
 	 * @param captureDate
 	 */
 	public ImageEntry(int imageID, String filename, String title, String shortName, String copyright,
-			PhotographerEntry imageAuthor, String comment, String date, int imageTypeID, int accessLevel, String modifiedOn, LocationEntry location) {
+			PhotographerEntry imageAuthor, String comment, String date, int imageTypeID, int accessLevel, String modifiedOns) {
 		super(accessLevel);
 		this.imageID = imageID;
 		this.filename = filename;
@@ -56,11 +56,11 @@ public class ImageEntry extends AbstractEntry {
 		this.date = date;
 		this.setImageTypeID(imageTypeID);
 		this.setModifiedOn(modifiedOn);
-		this.location=location;
+		this.deleted=false;
 	}
 	
 	public ImageEntry clone() {
-		ImageEntry clonedImageEntry = new ImageEntry(imageID, filename, title, shortName, copyright, imageAuthor, comment, date, imageTypeID, this.getAccessLevel(), super.modifiedOn, this.location);
+		ImageEntry clonedImageEntry = new ImageEntry(imageID, filename, title, shortName, copyright, imageAuthor, comment, date, imageTypeID, this.getAccessLevel(), super.modifiedOn);
 		return clonedImageEntry;
 	}
 

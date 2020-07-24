@@ -1332,6 +1332,7 @@ public class OrnamenticFilter extends AbstractFilter {
 				
 				@Override
 				public void onSelect(SelectEvent event) {
+					icoSelector.imgPopHide();
 					selectedIconographyLS.clear();
 					selectedIconographyLS.addAll(icoSelector.getSelectedIconography());
 					extendedFilterDialog.hide();

@@ -385,6 +385,9 @@ public class MysqlConnector implements IsSerializable {
 		}
 		
 	}
+	public String getContext() {
+		return serverProperties.getProperty("iiif.images");
+	}
 
 	public Map<Integer,String> getPics(ArrayList<ImageEntry> imgSources, int tnSize, String sessionID) {
 		int accessLevelOfSession = getAccessLevelForSessionID(sessionID);
@@ -440,7 +443,7 @@ public class MysqlConnector implements IsSerializable {
 			result.put(imgEntry.getImageID(), "data:image/png;base64,"+base64);
 			}
 			catch (Exception e) {
-				System.out.println("                <><><>"+e.getMessage());
+				//System.out.println("                <><><>"+e.getMessage());
 				result.put(imgEntry.getImageID(), "icons/close_icon.png");
 			}
 			//System.out.println(imgEntry.getFilename()+" umgewandelt.");
@@ -467,7 +470,7 @@ public class MysqlConnector implements IsSerializable {
 				while (rs.next()) {
 					ImageEntry image = new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
 							rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
-							rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("CurrentLocationID")));
+							rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
 					if (image.getLocation()==null) {
 						if (rs.getString("Title")!=null){
 							image.setLocation(searchLocationByFilename(image.getTitle()));
@@ -533,10 +536,11 @@ public class MysqlConnector implements IsSerializable {
 				}
 			    in.close();
 				String base64 = new BASE64Encoder().encode(bab.toByteArray());
+				//System.out.println("------"+Integer.toString(imgEntry.getImageID())+"-----"+base64);
 				result.put(imgEntry.getImageID(), "data:image/png;base64,"+base64);
 				}
 				catch (Exception e) {
-					System.out.println("                <><><>"+e.getMessage());
+					//System.out.println("                <><><>"+e.getMessage());
 					result.put(imgEntry.getImageID(), "icons/close_icon.png");
 				}
 			}
@@ -665,20 +669,38 @@ public class MysqlConnector implements IsSerializable {
 		PreparedStatement pstmt;
 
 		try {
+			System.err.println("Preparing statement.");
 			pstmt = dbc.prepareStatement(
-					"INSERT INTO Images (Filename, Title, ShortName, Copyright, PhotographerID, Comment, Date, ImageTypeID, AccessLevel, deleted, CurrentLocationID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+					"INSERT INTO Images (Filename, Title, ShortName, Copyright, PhotographerID, Comment, Date, ImageTypeID, AccessLevel, deleted) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 					Statement.RETURN_GENERATED_KEYS);
+			System.err.println("Preparing statement.");
 			pstmt.setString(1, "");
+			System.err.println("Preparing statement. ");
 			pstmt.setString(2, entry.getTitle());
+			System.err.println("Preparing statement. "+entry.getTitle());
 			pstmt.setString(3, entry.getShortName());
+			System.err.println("Preparing statement. "+entry.getShortName());
 			pstmt.setString(4, entry.getCopyright());
-			pstmt.setInt(5, entry.getImageAuthor() != null ? entry.getImageAuthor().getPhotographerID() : 0);
+			System.err.println("Preparing statement. "+entry.getCopyright());
+			System.err.println(entry.getImageAuthor());
+			if (entry.getImageAuthor() != null) {
+				System.out.println("imgAuthor");
+				pstmt.setInt(5, entry.getImageAuthor().getPhotographerID());				
+			}
+			else {
+				System.out.println("imgAuthor == 0");
+				pstmt.setInt(5, 0);
+			}
 			pstmt.setString(6, entry.getComment());
+			System.err.println("Preparing statement. "+entry.getComment());
 			pstmt.setString(7, entry.getDate());
+			System.err.println("Preparing statement. "+entry.getDate());
 			pstmt.setInt(8, entry.getImageTypeID());
+			System.err.println("Preparing statement. "+entry.getImageTypeID());
 			pstmt.setInt(9, entry.getAccessLevel());
+			System.err.println("Preparing statement. "+entry.getAccessLevel());
 			pstmt.setBoolean(10, entry.isdeleted());
-			pstmt.setInt(11, entry.getLocation().getLocationID());
+			System.err.println("Statement prepared, Deploying.");
 			pstmt.executeUpdate();
 			ResultSet keys = pstmt.getGeneratedKeys();
 			if (keys.next()) { // there should only be 1 key returned here
@@ -687,6 +709,7 @@ public class MysqlConnector implements IsSerializable {
 			keys.close();
 			pstmt.close();
 		} catch (SQLException e) {
+			System.err.println(e.getMessage());
 			return null;
 		}
 		if (dologging){
@@ -1093,7 +1116,7 @@ public class MysqlConnector implements IsSerializable {
 			while (rs.next()) {
 				ImageEntry image = new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
 						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
-						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("CurrentLocationID")));
+						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
 				if (image.getLocation()==null) {
 					if (rs.getString("Title")!=null){
 						image.setLocation(searchLocationByFilename(image.getTitle()));
@@ -1154,7 +1177,7 @@ public class MysqlConnector implements IsSerializable {
 			while (rs.next()) {
 				ImageEntry image = new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
 						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
-						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("CurrentLocationID")));
+						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
 				if (image.getLocation()==null) {
 					if (rs.getString("Title")!=null){
 						image.setLocation(searchLocationByFilename(image.getTitle()));
@@ -1196,7 +1219,7 @@ public class MysqlConnector implements IsSerializable {
 			if (rs.first()) {
 				result = new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
 						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), 
-						rs.getInt("ImageTypeID"), rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("CurrentLocationID")));
+						rs.getInt("ImageTypeID"), rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
 				if (result.getLocation()==null) {
 					if (rs.getString("Title")!=null){
 						result.setLocation(searchLocationByFilename(result.getTitle()));
@@ -1315,7 +1338,7 @@ public class MysqlConnector implements IsSerializable {
 			siteIdSet += siteIdSet.isEmpty() ? Integer.toString(siteID) : "," + siteID;
 		}
 		if (!siteIdSet.isEmpty()) {
-			where += where.isEmpty() ? "SiteID IN (" + siteIdSet + ")" : " AND SiteID IN (" + siteIdSet + ")";
+			where += where.isEmpty() ? "Caves.SiteID IN (" + siteIdSet + ")" : " AND Caves.SiteID IN (" + siteIdSet + ")";
 		}
 		
 		for (int districtID : searchEntry.getDistrictIdList()) { 
@@ -2870,7 +2893,7 @@ public boolean isHan(String s) {
 				//System.out.println("ImageID = "+Integer.toString(depictionID)+" ImageID = "+Integer.toString(rs.getInt("ImageID")));
 				ImageEntry image = new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
 						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
-						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("CurrentLocationID")));
+						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
 				if (image.getLocation()==null) {
 					if (rs.getString("Title")!=null){
 						image.setLocation(searchLocationByFilename(image.getTitle()));
@@ -2964,17 +2987,23 @@ public boolean isHan(String s) {
 		if (dologgingbegin){
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateImageEntry wurde ausgelöst.");;
 		}
+		System.out.println("Starting UpdateImageEntry");
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
-			System.out.println("UPDATE Images SET Filename="+entry.getFilename()+", Title="+entry.getTitle()+", ShortName="+entry.getShortName()+", Copyright="+entry.getCopyright()+", PhotographerID=?, Comment=?, Date=?, ImageTypeID=?, AccessLevel=?, deleted="+entry.isdeleted()+" CurrentLocationID="+entry.getLocation().getLocationID()+"  WHERE ImageID=?");
+			//System.out.println("UPDATE Images SET Filename="+entry.getFilename()+", Title="+entry.getTitle()+", ShortName="+entry.getShortName()+", Copyright="+entry.getCopyright()+", PhotographerID=?, Comment=?, Date=?, ImageTypeID=?, AccessLevel=?, deleted="+entry.isdeleted()+" CurrentLocationID="+entry.getLocation().getLocationID()+"  WHERE ImageID=?");
 			pstmt = dbc.prepareStatement(
 					"UPDATE Images SET Filename=?, Title=?, ShortName=?, Copyright=?, PhotographerID=?, Comment=?, Date=?, ImageTypeID=?, AccessLevel=?, deleted=? WHERE ImageID=?");
 			pstmt.setString(1, entry.getFilename());
 			pstmt.setString(2, entry.getTitle());
 			pstmt.setString(3, entry.getShortName());
 			pstmt.setString(4, entry.getCopyright());
-			pstmt.setInt(5, entry.getImageAuthor() != null ? entry.getImageAuthor().getPhotographerID() : 0);
+			if (entry.getImageAuthor() != null) {
+				pstmt.setInt(5, entry.getImageAuthor().getPhotographerID());				
+			}
+			else {
+				pstmt.setInt(5, 0);
+			}
 			pstmt.setString(6, entry.getComment());
 			pstmt.setString(7, entry.getDate());
 			pstmt.setInt(8, entry.getImageTypeID());
@@ -3876,9 +3905,9 @@ public boolean isHan(String s) {
 		ArrayList<OrnamentEntry> resultList = new ArrayList<OrnamentEntry>();
 		String where = "";
 		if (searchEntry.getCode() != null && !searchEntry.getCode().isEmpty()) {
-			where = "Code LIKE ?";
+			where = "Code LIKE '"+searchEntry.getCode().replace("*", "%")+"'";
 		}
-		where += where.isEmpty() ? "Ornaments.deleted=0" : " AND Ornaments.deleted=0 AND Depictions.deleted=0";
+		where += where.isEmpty() ? "Ornaments.deleted=0" : " AND Ornaments.deleted=0";
 		String caveIDs="";
 		DepictionSearchEntry depictionSearchEntry=new DepictionSearchEntry(searchEntry.getSessionID());
 		for (CaveEntry cave : searchEntry.getCaves()) {
@@ -3992,18 +4021,16 @@ public boolean isHan(String s) {
 			where += where.isEmpty() ? "AccessLevel IN (" + inStatement + ")" : " AND AccessLevel IN (" + inStatement + ")";
 		}
 				
-		System.err.println(where.isEmpty() ? "SELECT * FROM Ornaments left join DepictionIconographyRelation on (Ornaments.IconographyID=DepictionIconographyRelation.IconographyID) left join (Select * from Depictions where Depictions.deleted=0) as Depictionsall on (DepictionIconographyRelation.DepictionID=Depictionsall.DepictionID) left join DepictionWallsRelation on (Depictionsall.DepictionID=DepictionWallsRelation.DepictionID) left join WallLocationsTree on (WallLocationsTree.WallLocationID = DepictionWallsRelation.WallID) \r\n" + 
-				"left join WallPositionsRelation on (WallLocationsTree.WallLocationID=WallPositionsRelation.WallID and Depictionsall.DepictionID=WallPositionsRelation.DepictionID) left join Position on (WallPositionsRelation.PositionID=Position.PositionID) left join OrnamentComponentRelation on (OrnamentComponentRelation.OrnamentID = Ornaments.OrnamentID)" : "SELECT * FROM Ornaments left join DepictionIconographyRelation on (Ornaments.IconographyID=DepictionIconographyRelation.IconographyID) left join (Select * from Depictions where Depictions.deleted=0) as Depictionsall on (DepictionIconographyRelation.DepictionID=Depictionsall.DepictionID) left join DepictionWallsRelation on (Depictionsall.DepictionID=DepictionWallsRelation.DepictionID) left join WallLocationsTree on (WallLocationsTree.WallLocationID = DepictionWallsRelation.WallID) \r\n" + 
+		System.err.println(where.isEmpty() ? "SELECT DISTINCT Ornaments.* FROM Ornaments left join DepictionIconographyRelation on (Ornaments.IconographyID=DepictionIconographyRelation.IconographyID) left join (Select * from Depictions where Depictions.deleted=0) as Depictionsall on (DepictionIconographyRelation.DepictionID=Depictionsall.DepictionID) left join DepictionWallsRelation on (Depictionsall.DepictionID=DepictionWallsRelation.DepictionID) left join WallLocationsTree on (WallLocationsTree.WallLocationID = DepictionWallsRelation.WallID) \r\n" + 
+				"left join WallPositionsRelation on (WallLocationsTree.WallLocationID=WallPositionsRelation.WallID and Depictionsall.DepictionID=WallPositionsRelation.DepictionID) left join Position on (WallPositionsRelation.PositionID=Position.PositionID) left join OrnamentComponentRelation on (OrnamentComponentRelation.OrnamentID = Ornaments.OrnamentID)" : "SELECT DISTINCT Ornaments.* FROM Ornaments left join DepictionIconographyRelation on (Ornaments.IconographyID=DepictionIconographyRelation.IconographyID) left join (Select * from Depictions where Depictions.deleted=0) as Depictionsall on (DepictionIconographyRelation.DepictionID=Depictionsall.DepictionID) left join DepictionWallsRelation on (Depictionsall.DepictionID=DepictionWallsRelation.DepictionID) left join WallLocationsTree on (WallLocationsTree.WallLocationID = DepictionWallsRelation.WallID) \r\n" + 
 						"left join WallPositionsRelation on (WallLocationsTree.WallLocationID=WallPositionsRelation.WallID and Depictionsall.DepictionID=WallPositionsRelation.DepictionID) left join Position on (WallPositionsRelation.PositionID=Position.PositionID) left join OrnamentComponentRelation on (OrnamentComponentRelation.OrnamentID = Ornaments.OrnamentID) WHERE " + where);
 
 		try {
-			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Ornaments left join DepictionIconographyRelation on (Ornaments.IconographyID=DepictionIconographyRelation.IconographyID) left join (Select * from Depictions where Depictions.deleted=0) as Depictionsall on (DepictionIconographyRelation.DepictionID=Depictionsall.DepictionID) left join DepictionWallsRelation on (Depictionsall.DepictionID=DepictionWallsRelation.DepictionID) left join WallLocationsTree on (WallLocationsTree.WallLocationID = DepictionWallsRelation.WallID) \r\n" + 
-					"left join WallPositionsRelation on (WallLocationsTree.WallLocationID=WallPositionsRelation.WallID and Depictionsall.DepictionID=WallPositionsRelation.DepictionID) left join Position on (WallPositionsRelation.PositionID=Position.PositionID) left join OrnamentComponentRelation on (OrnamentComponentRelation.OrnamentID = Ornaments.OrnamentID) LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+ ", "+Integer.toString(searchEntry.getMaxentries()): "SELECT * FROM Ornaments left join DepictionIconographyRelation on (Ornaments.IconographyID=DepictionIconographyRelation.IconographyID) left join (Select * from Depictions where Depictions.deleted=0) as Depictionsall on (DepictionIconographyRelation.DepictionID=Depictionsall.DepictionID) left join DepictionWallsRelation on (Depictionsall.DepictionID=DepictionWallsRelation.DepictionID) left join WallLocationsTree on (WallLocationsTree.WallLocationID = DepictionWallsRelation.WallID) \r\n" + 
-							"left join WallPositionsRelation on (WallLocationsTree.WallLocationID=WallPositionsRelation.WallID and Depictionsall.DepictionID=WallPositionsRelation.DepictionID) left join Position on (WallPositionsRelation.PositionID=Position.PositionID) left join OrnamentComponentRelation on (OrnamentComponentRelation.OrnamentID = Ornaments.OrnamentID) WHERE " + where+" LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+", "+Integer.toString(searchEntry.getMaxentries()));
+			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT DISTINCT Ornaments.* FROM Ornaments left join DepictionIconographyRelation on (Ornaments.IconographyID=DepictionIconographyRelation.IconographyID) left join (Select * from Depictions where Depictions.deleted=0) as Depictionsall on (DepictionIconographyRelation.DepictionID=Depictionsall.DepictionID) left join DepictionWallsRelation on (Depictionsall.DepictionID=DepictionWallsRelation.DepictionID) left join WallLocationsTree on (WallLocationsTree.WallLocationID = DepictionWallsRelation.WallID) \r\n" + 
+					"left join WallPositionsRelation on (WallLocationsTree.WallLocationID=WallPositionsRelation.WallID and Depictionsall.DepictionID=WallPositionsRelation.DepictionID) left join Position on (WallPositionsRelation.PositionID=Position.PositionID) left join OrnamentComponentRelation on (OrnamentComponentRelation.OrnamentID = Ornaments.OrnamentID) ORDER BY Ornaments.Code LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+ ", "+Integer.toString(searchEntry.getMaxentries()): "SELECT DISTINCT Ornaments.* FROM Ornaments left join DepictionIconographyRelation on (Ornaments.IconographyID=DepictionIconographyRelation.IconographyID) left join (Select * from Depictions where Depictions.deleted=0) as Depictionsall on (DepictionIconographyRelation.DepictionID=Depictionsall.DepictionID) left join DepictionWallsRelation on (Depictionsall.DepictionID=DepictionWallsRelation.DepictionID) left join WallLocationsTree on (WallLocationsTree.WallLocationID = DepictionWallsRelation.WallID) \r\n" + 
+							"left join WallPositionsRelation on (WallLocationsTree.WallLocationID=WallPositionsRelation.WallID and Depictionsall.DepictionID=WallPositionsRelation.DepictionID) left join Position on (WallPositionsRelation.PositionID=Position.PositionID) left join OrnamentComponentRelation on (OrnamentComponentRelation.OrnamentID = Ornaments.OrnamentID) WHERE " + where+" ORDER BY Ornaments.Code LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+", "+Integer.toString(searchEntry.getMaxentries()));
 
-			if (!searchEntry.getCode().isEmpty()) {
-				pstmt.setString(1,searchEntry.getCode().replace("*", "%"));
-			}
+
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
 				boolean found = false;
@@ -4046,7 +4073,8 @@ public boolean isHan(String s) {
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery((sqlWhere == null) ? "SELECT * FROM Ornaments" : "SELECT * FROM Ornaments WHERE Ornaments.deleted =0 and  " + sqlWhere+" order by Code");
+			ResultSet rs = stmt.executeQuery((sqlWhere == null) ? "SELECT * FROM Ornaments WHERE Ornaments.deleted =0" : "SELECT * FROM Ornaments WHERE Ornaments.deleted =0 and  " + sqlWhere+" order by Code");
+			//System.out.println((sqlWhere == null) ? "SELECT * FROM Ornaments WHERE Ornaments.deleted =0" : "SELECT * FROM Ornaments WHERE Ornaments.deleted =0 and  " + sqlWhere+" order by Code");
 			while (rs.next()) {
 				results.add(new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
 						//rs.getString("Annotation"),
@@ -7006,7 +7034,7 @@ public boolean isHan(String s) {
 			while (rs.next()) {
 				ImageEntry image = new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
 						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
-						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("CurrentLocationID")));
+						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
 				if (image.getLocation()==null) {
 					if (rs.getString("Title")!=null){
 						image.setLocation(searchLocationByFilename(image.getTitle()));
@@ -7572,9 +7600,6 @@ public boolean isHan(String s) {
         String output=null;
         Properties props = System.getProperties();
 	    String smtpHostServer = "zimbra.saw-leipzig.de";
-	    System.out.println("TLSEmail Start");
-		System.out.println(serverProperties.getProperty("mail.user"));
-		System.out.println(serverProperties.getProperty("mail.pw"));
 	    props.put("mail.smtp.host", smtpHostServer);
 		props.put("mail.smtp.port", "465"); //TLS Port
 		props.put("mail.smtp.auth", "true"); //enable authentication

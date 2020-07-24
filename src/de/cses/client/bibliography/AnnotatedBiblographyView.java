@@ -167,7 +167,7 @@ public class AnnotatedBiblographyView extends AbstractView {
 				bold=bold+" "+annotatedBibliographyEntry.getParentTitleORG();
 			}
 			if (annotatedBibliographyEntry.getParentTitleEN()!="") {
-				translat=translat+" "+annotatedBibliographyEntry.getParentTitleEN();
+				translat=translat+" ["+annotatedBibliographyEntry.getParentTitleEN()+"]";
 			}
 			tail=tail+". ";
 			if (annotatedBibliographyEntry.getPublisher()!="") {
