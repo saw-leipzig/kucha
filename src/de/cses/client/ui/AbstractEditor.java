@@ -16,12 +16,16 @@ package de.cses.client.ui;
 import java.util.ArrayList;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
+import com.sencha.gxt.widget.core.client.event.CellClickEvent;
+import com.sencha.gxt.widget.core.client.event.CellClickEvent.CellClickHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
@@ -39,7 +43,13 @@ public abstract class AbstractEditor implements IsWidget {
 	protected ToolButton nextToolButton;
 	protected ToolButton prevToolButton;
 	private ArrayList<EditorListener> listenerList = new ArrayList<EditorListener>();
-	
+	private void doslide(AbstractView el, int where) {
+		closeEditor(el.getEntry());
+		AbstractView nextChild = (AbstractView)(((FlowLayoutContainer)el.getParent()).getWidget(((FlowLayoutContainer)el.getParent()).getWidgetIndex(el)+where));;
+		nextChild.showEditor(nextChild.getEntry());
+
+	}
+
 	protected void createNextPrevButtons() {
 		nextToolButton = new ToolButton(new IconConfig("leftButton", "leftButtonOver"));
 		nextToolButton.setToolTip(Util.createToolTip("next entry"));
@@ -49,11 +59,43 @@ public abstract class AbstractEditor implements IsWidget {
 			public void onSelect(SelectEvent event) {
 //				Util.doLogging("Start caling next item.");
 					AbstractView el = (AbstractView)listenerList.get(0);
-					closeEditor(el.getEntry());
-					AbstractView nextChild = (AbstractView)(((FlowLayoutContainer)el.getParent()).getWidget(((FlowLayoutContainer)el.getParent()).getWidgetIndex(el)+1));;
-					nextChild.showEditor(nextChild.getEntry());
+					Util.doLogging(Integer.toString(el.getClickNumber()));
+					if (el.getClickNumber()>0) {
+						
+						Util.showYesNo("Possible unsaved Changes!", "You may have changed values of this Entry. Do you whish to save them before openening another Entry?", new SelectHandler() {
+
+							@Override
+							public void onSelect(SelectEvent event) {
+								save(false);
+								doslide(el,1);
+							}
+						}, new SelectHandler() {
+
+							@Override
+							public void onSelect(SelectEvent event) {
+								doslide(el,1);
+							}
+					
+							
+						}
+						, new KeyDownHandler() {
+
+							@Override
+							public void onKeyDown(KeyDownEvent e) {
+								save(false);
+								doslide(el,1);								
+							}}
+					
+							
+						);
+
+					}
+					else {
+						doslide(el,1);
+					}
 				}
 		});
+
 		prevToolButton = new ToolButton(new IconConfig("rightButton", "rightButtonOver"));
 		prevToolButton.setToolTip(Util.createToolTip("previous entry"));	
 		prevToolButton.addSelectHandler(new SelectHandler() {
@@ -62,9 +104,38 @@ public abstract class AbstractEditor implements IsWidget {
 			public void onSelect(SelectEvent event) {
 //				Util.doLogging("Start caling next item.");
 					AbstractView el = (AbstractView)listenerList.get(0);
-					closeEditor(el.getEntry());
-					AbstractView nextChild = (AbstractView)(((FlowLayoutContainer)el.getParent()).getWidget(((FlowLayoutContainer)el.getParent()).getWidgetIndex(el)-1));;
-					nextChild.showEditor(nextChild.getEntry());
+					if (el.getClickNumber()>0) {
+						Util.showYesNo("Possible unsaved Changes!", "You may have changed values of this Entry. Do you whish to save them before openening another Entry?", new SelectHandler() {
+
+							@Override
+							public void onSelect(SelectEvent event) {
+								save(false);
+								doslide(el,-1);
+							}
+						}, new SelectHandler() {
+
+							@Override
+							public void onSelect(SelectEvent event) {
+								doslide(el,-1);
+							}
+					
+							
+						}
+						, new KeyDownHandler() {
+
+							@Override
+							public void onKeyDown(KeyDownEvent e) {
+								save(false);
+								doslide(el,-1);								
+							}}
+					
+							
+						);
+
+					}
+					else {
+						doslide(el,-1);
+					}
 				}
 		});
 
@@ -75,6 +146,8 @@ public abstract class AbstractEditor implements IsWidget {
 		listenerList.add(l);
 	}
 	public void setfocus() {
+	}
+	protected void save(boolean close) {
 	}
 	public ArrayList<EditorListener> getListenerList() {
 		return listenerList;

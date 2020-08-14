@@ -188,8 +188,8 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 		}
 		return mainFP;
 	}
-
-	public synchronized void save(boolean close) {
+	@Override
+	protected void save(boolean close) {
 		for (EditorListener el :getListenerList()) {
 			if (el instanceof AnnotatedBiblographyView) {
 				((AnnotatedBiblographyView)el).setEditor(bibEntry);

@@ -23,6 +23,8 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.EditorError;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
@@ -34,7 +36,6 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
-import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.Window;
@@ -103,6 +104,7 @@ import de.cses.client.bibliography.BibliographySelector;
 import de.cses.client.images.ImageSelector;
 import de.cses.client.images.ImageSelectorListener;
 import de.cses.client.ui.AbstractEditor;
+import de.cses.client.ui.AbstractView;
 import de.cses.client.ui.EditorListener;
 import de.cses.client.ui.OSDLoader;
 import de.cses.client.ui.TextElement;
@@ -223,6 +225,7 @@ public class DepictionEditor extends AbstractEditor {
 			Util.doLogging("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getIconogrpahy wurde nach "+diff + " Millisekunden erfolgreich beendet.");
 			iconographySelector.setSelectedIconography(iconographyRelationList);
 			iconographySelector.IconographyTreeEnabled(true);
+			((AbstractView)getListenerList().get(0)).setClickNumber(0);
 	}});
 	}
 
@@ -1204,6 +1207,7 @@ public class DepictionEditor extends AbstractEditor {
 				PositionEditor pe = new PositionEditor(correspondingDepictionEntry.getCave(), correspondingDepictionEntry.getWalls(), false) {
 					@Override
 					protected void save(List<WallTreeEntry> results ) {
+							((AbstractView)getListenerList().get(0)).addClickNumber();
 							correspondingDepictionEntry.setWalls(getSelectedWalls());
 							wallTree.setWall(getSelectedWalls());
 						}
@@ -1301,6 +1305,11 @@ public class DepictionEditor extends AbstractEditor {
 				return svTemplates.styleName(item.getStyleName());
 			}
 		});
+		styleSelection.addChangeHandler(new ChangeHandler() {
+			public void onChange(ChangeEvent event) {
+				((AbstractView)getListenerList().get(0)).addClickNumber();
+			}
+		});
 		styleSelection.setEmptyText("nothing selected");
 		styleSelection.setTypeAhead(false);
 		styleSelection.setEditable(false);
@@ -1334,6 +1343,11 @@ public class DepictionEditor extends AbstractEditor {
 				return morTemplates.morLabel(morEntry.getName());
 			}
 			
+		});
+		modeOfRepresentationSelectionCB.addChangeHandler(new ChangeHandler() {
+			public void onChange(ChangeEvent event) {
+				((AbstractView)getListenerList().get(0)).addClickNumber();
+			}
 		});
 		modeOfRepresentationSelectionCB.setEmptyText("nothing selected");
 		modeOfRepresentationSelectionCB.setTypeAhead(false);
@@ -1497,6 +1511,7 @@ public class DepictionEditor extends AbstractEditor {
 			
 			@Override
 			public void onSelect(SelectEvent event) {
+				((AbstractView)getListenerList().get(0)).addClickNumber();
 				imageSelectionDialog = new PopupPanel();
 				imageSelectionDialog.add(imageSelector);
 				imageSelector.resetSelection();
@@ -1511,6 +1526,7 @@ public class DepictionEditor extends AbstractEditor {
 			
 			@Override
 			public void onSelect(SelectEvent event) {
+				((AbstractView)getListenerList().get(0)).addClickNumber();
 				imageEntryLS.remove(imageListView.getSelectionModel().getSelectedItem());
 			}
 		});
@@ -1521,6 +1537,7 @@ public class DepictionEditor extends AbstractEditor {
 			
 			@Override
 			public void onSelect(SelectEvent event) {
+				((AbstractView)getListenerList().get(0)).addClickNumber();
 				ImageEntry entry = imageListView.getSelectionModel().getSelectedItem();
 				correspondingDepictionEntry.setMasterImageID(entry.getImageID());
 				imageListView.getStore().clear();
@@ -1586,7 +1603,7 @@ public class DepictionEditor extends AbstractEditor {
 		/**
 		 * ---------------------- content of third tab (Iconography & Pictorial Elements) starts here ---------------------
 		 */
-		iconographySelector = new IconographySelector(StaticTables.getInstance().getIconographyEntries().values());
+		iconographySelector = new IconographySelector(StaticTables.getInstance().getIconographyEntries().values(),(AbstractView)getListenerList().get(0));
 		long start = System.currentTimeMillis();
 		Util.doLogging("Starte getIconogrpahy for Depictionentry: "+Integer.toString(correspondingDepictionEntry.getDepictionID()));
 		loadiconogrpahy(correspondingDepictionEntry.getDepictionID(),start);
@@ -1594,7 +1611,7 @@ public class DepictionEditor extends AbstractEditor {
 		/**
 		 * ---------------------- content of fourth tab (Bibliography Selector) ---------------------
 		 */
-		bibliographySelector = new BibliographySelector(correspondingDepictionEntry.getRelatedBibliographyList());
+		bibliographySelector = new BibliographySelector(correspondingDepictionEntry.getRelatedBibliographyList(),(AbstractView)getListenerList().get(0));
 //		if (correspondingDepictionEntry.getRelatedBibliographyList().size() > 0) {
 //			bibliographySelector.setSelectedEntries(correspondingDepictionEntry.getRelatedBibliographyList());
 //		}
@@ -1624,7 +1641,7 @@ public class DepictionEditor extends AbstractEditor {
 		saveToolButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-				saveDepictionEntry(false);
+				save(false);
 			}
 		});
 		ToolButton deleteToolButton = new ToolButton(new IconConfig("removeButton", "removeButtonOver"));
@@ -1671,7 +1688,7 @@ public class DepictionEditor extends AbstractEditor {
 					@Override
 					public void onSelect(SelectEvent event) {
 						iconographySelector.imgPopHide();
-						saveDepictionEntry(true);
+						save(true);
 						closeEditor(null);
 					}
 				}, new SelectHandler() {
@@ -1706,7 +1723,7 @@ public class DepictionEditor extends AbstractEditor {
 						
 						@Override
 						public void onSelect(SelectEvent event) {
-							saveDepictionEntry(true);
+							save(true);
 							closeEditor(null);
 						}
 					}, new SelectHandler() {
@@ -1782,7 +1799,7 @@ public class DepictionEditor extends AbstractEditor {
 	 * Called when the save button is pressed. Calls <code>DepictionEditorListener.depictionSaved(correspondingDepictionEntry)<code>
 	 * @param close 
 	 */
-	protected void saveDepictionEntry(boolean close) {
+	protected void save(boolean close) {
 		if (!shortNameTF.validate()) {
 			return;
 		}
@@ -1866,7 +1883,7 @@ private void doretry(boolean close) {
 			
 			@Override
 			public void onSelect(SelectEvent event) {
-				saveDepictionEntry(close);
+				save(close);
 			}
 		}, new SelectHandler() {
 				

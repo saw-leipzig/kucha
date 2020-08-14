@@ -79,6 +79,7 @@ import de.cses.client.images.ImageSelector;
 import de.cses.client.images.ImageSelectorListener;
 import de.cses.client.images.ImageView;
 import de.cses.client.ui.AbstractEditor;
+import de.cses.client.ui.AbstractView;
 import de.cses.client.ui.EditorListener;
 import de.cses.client.ui.TextElement;
 import de.cses.client.user.UserLogin;
@@ -220,6 +221,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 			@Override
 			public void onSelect(SelectEvent event) {
+				((AbstractView)getListenerList().get(0)).addClickNumber();
 				showTreeEdit.setSize("400", "400");
 				showTreeEdit.center();
 			}
@@ -640,7 +642,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 			@Override
 			public void onClick(ClickEvent event) {
-				save();
+				save(false);
 
 			} // end
 		};
@@ -656,7 +658,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 					@Override
 					public void onSelect(SelectEvent event) {
-						save();
+						save(false);
 						bibSelector.clearPages();
 						closeEditor(ornamentEntry);
 					}
@@ -675,7 +677,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 					@Override
 					public void onKeyDown(KeyDownEvent e) {
 						if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
-						save();
+						save(false);
 						closeEditor(ornamentEntry);
 					}}
 			
@@ -1052,6 +1054,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 			
 			@Override
 			public void onSelect(SelectEvent event) {
+				((AbstractView)getListenerList().get(0)).addClickNumber();
 				imageSelectionDialog = new PopupPanel();
 				imageSelectionDialog.add(imageSelector);
 				imageSelectionDialog.setModal(true);
@@ -1065,6 +1068,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 			
 			@Override
 			public void onSelect(SelectEvent event) {
+				((AbstractView)getListenerList().get(0)).addClickNumber();
 				imageEntryLS.remove(imageListView.getSelectionModel().getSelectedItem());
 			}
 		});
@@ -1075,6 +1079,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 			
 			@Override
 			public void onSelect(SelectEvent event) {
+				((AbstractView)getListenerList().get(0)).addClickNumber();
 				ImageEntry entry = imageListView.getSelectionModel().getSelectedItem();
 				ornamentEntry.setMasterImageID(entry.getImageID());
 				imageListView.refresh();
@@ -1258,11 +1263,11 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 			  );
 			}
 		});
-
+		AbstractView el = (AbstractView)getListenerList().get(0);
 		if (ornamentEntry!=null) {
-			bibSelector = new BibliographySelector(ornamentEntry.getRelatedBibliographyList());
+			bibSelector = new BibliographySelector(ornamentEntry.getRelatedBibliographyList(),el);
 		} else {
-			bibSelector = new BibliographySelector(new ArrayList<AnnotatedBibliographyEntry>());
+			bibSelector = new BibliographySelector(new ArrayList<AnnotatedBibliographyEntry>(),el);
 		}
 		
 		tabpanel.add(bibSelector, "Related Bibliography");
@@ -1282,7 +1287,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		    @Override
 		    public void onKeyDown(KeyDownEvent e) {
 	        	  if ((e.isShiftKeyDown()) && (e.getNativeKeyCode() == KeyCodes.KEY_ENTER)) {
-						save();
+						save(false);
 						closeEditor(null);		        }
 		    }			
 		}, KeyDownEvent.getType());
@@ -1295,8 +1300,8 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		return backgroundPanel;
 
 	}
-
-	protected void save() {
+	@Override
+	protected void save(boolean close) {
 		for (EditorListener el :getListenerList()) {
 			if (el instanceof OrnamenticView) {
 				((OrnamenticView)el).setEditor(ornamentEntry);
@@ -1364,7 +1369,9 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 						Util.doLogging(this.getClass().getName() + " saving sucessful");
 						ornamentEntry.setOrnamentID(result);
 						// updateEntry(ornamentEntry);
-						closeEditor(ornamentEntry);
+						if (close) {
+							closeEditor(ornamentEntry);
+						}
 					} else {
 						Util.showWarning("Saving failed", "ornamentID == 0");
 					}
@@ -1381,7 +1388,9 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 				@Override
 				public void onSuccess(Boolean result) {
-					closeEditor(ornamentEntry);
+					if (close) {
+						closeEditor(ornamentEntry);
+					}
 				}
 			});
 		}

@@ -58,11 +58,13 @@ import com.sencha.gxt.widget.core.client.grid.Grid;
 import com.sencha.gxt.widget.core.client.grid.RowExpander;
 import com.sencha.gxt.widget.core.client.grid.filters.GridFilters;
 import com.sencha.gxt.widget.core.client.grid.filters.StringFilter;
+import com.sencha.gxt.widget.core.client.info.Info;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 
 import de.cses.client.StaticTables;
 import de.cses.client.Util;
+import de.cses.client.ui.AbstractView;
 import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.AuthorEntry;
 
@@ -104,11 +106,16 @@ public class BibliographySelector implements IsWidget {
     boolean showdialog = false;
     boolean itemSelected = false;
     AnnotatedBibliographyEntry selectedEntry = null;
+    AbstractView el = null;
 	/**
 	 * 
 	 */
 	public BibliographySelector(List<AnnotatedBibliographyEntry> selectedEntries) {
 		this.selectedEntries = selectedEntries;
+	}
+	public BibliographySelector(List<AnnotatedBibliographyEntry> selectedEntries,AbstractView el) {
+		this.selectedEntries = selectedEntries;
+		this.el=el;
 	}
 	
 	/* (non-Javadoc)
@@ -128,6 +135,9 @@ public class BibliographySelector implements IsWidget {
 		    		grid.getStore().findModel(abe).setQuotedPages(abe.getQuotedPages());
 		    		selectedBibMap.put(abe.getAnnotatedBibliographyID(), abe);
 		    	}
+		    	if (el!=null) {
+		    		el.setClickNumber(0);
+		    	}
 			}
 		}
 		return gridVP;
@@ -137,7 +147,7 @@ public class BibliographySelector implements IsWidget {
 	 	titleField.setWidth(((int)width/100*50));;
 		AuthorsField.setWidth(((int)width/100*40));
 		yearField.setWidth(((int)width/100*10));
-		Util.doLogging("Width: "+Integer.toString(width)+" - "+Integer.toString(((int)width/100*50))+" - "+Integer.toString(((int)width/100*40))+" - "+Integer.toString(((int)width/100*10)));
+		//Util.doLogging("Width: "+Integer.toString(width)+" - "+Integer.toString(((int)width/100*50))+" - "+Integer.toString(((int)width/100*40))+" - "+Integer.toString(((int)width/100*10)));
 
 		
 	}
@@ -164,14 +174,18 @@ public class BibliographySelector implements IsWidget {
 		
 		@Override
 		public void onSelection(SelectionEvent<AnnotatedBibliographyEntry> event) {
+			if (el!=null) {
+				el.addClickNumber();
+				//Info.display("Click",Integer.toString(el.getClickNumber()));
+			}
 			if (showdialog) {
 				
-				Util.doLogging("selectedItem: "+event.getSelectedItem().getTitleORG());;
+				//Util.doLogging("selectedItem: "+event.getSelectedItem().getTitleORG());;
 				selectedBibMap.put(event.getSelectedItem().getAnnotatedBibliographyID(), event.getSelectedItem());
-				Util.doLogging("selectedBibMap: ");
-				for (AnnotatedBibliographyEntry abe2 : selectedBibMap.values()) {
-	    			Util.doLogging(abe2.getTitleORG());
-	    		}
+				//Util.doLogging("selectedBibMap: ");
+				//for (AnnotatedBibliographyEntry abe2 : selectedBibMap.values()) {
+	    			//Util.doLogging(abe2.getTitleORG());
+	    		//}
 	 
 				PopupPanel addPageDialog = new PopupPanel();
 				FramedPanel pageFP = new FramedPanel();
@@ -248,10 +262,10 @@ public class BibliographySelector implements IsWidget {
     selectionModel.addSelectionChangedHandler(new SelectionChangedHandler<AnnotatedBibliographyEntry>() {
 				@Override
 				public void onSelectionChanged(SelectionChangedEvent<AnnotatedBibliographyEntry> event) {
-					Util.doLogging("");
+					//Util.doLogging("");
 					if ((!itemSelected)&(showdialog)){
 						for (Map.Entry<Integer, AnnotatedBibliographyEntry> entry : selectedBibMap.entrySet()) {
-							Util.doLogging(Integer.toString(entry.getKey()));
+							//Util.doLogging(Integer.toString(entry.getKey()));
 							boolean found=false;
 							for (AnnotatedBibliographyEntry abe:grid.getSelectionModel().getSelectedItems()) {
 								if (abe.getAnnotatedBibliographyID()==entry.getKey()) {
@@ -505,6 +519,7 @@ public class BibliographySelector implements IsWidget {
     //gridHP.add(gridHLC);
     gridVP.add(gridHP, new VerticalLayoutData(1,-1));
     gridVP.add(grid, new VerticalLayoutData(1,-1));
+
 	//mainGrid.add(gridVP);
 	Resizable rs = new Resizable(grid);
 	rs.setDynamic(true);
@@ -582,6 +597,9 @@ public class BibliographySelector implements IsWidget {
     		
     }
     showdialog=true;
+    if (el!=null) {
+    	el.setClickNumber(0);
+    }
     
     // Stage manager, load the previous state
 //    GridFilterStateHandler<AnnotatedBibliographyEntry> handler = new GridFilterStateHandler<AnnotatedBibliographyEntry>(grid, filters);

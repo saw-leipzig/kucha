@@ -18,6 +18,8 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
@@ -27,6 +29,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.info.Info;
 
+import de.cses.client.Util;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.UserEntry;
@@ -36,16 +39,18 @@ import de.cses.shared.UserEntry;
  *
  */
 public abstract class AbstractView extends Button implements EditorListener {
-
-	private static PopupPanel editorPanel = new PopupPanel(false) {
-		@Override
-	    public void onBrowserEvent(Event be) {
-	        
-			int eventType = DOM.eventGetType(be);
-	        Info.display("Event", be.getString());
-	              super.onBrowserEvent(be);      
-	        }
-	}
+	private static Integer clicks =0;
+	private static PopupPanel editorPanel = new PopupPanel(false) //{
+//		@Override
+//	    public void onBrowserEvent(Event be) {
+//			int eventType = DOM.eventGetType(be);
+////	        Info.display("test",Integer.toString(eventType));
+//	        if (eventType == Event.ONCHANGE){
+//	                  Util.doLogging("Change,Now");
+//	        }
+//	              super.onBrowserEvent(be);      
+//	        }
+//	}
 			;
 	/**
 	 * This is the general constructor that amongst other tasks initializes the PopupPanel for the editor
@@ -74,15 +79,29 @@ public abstract class AbstractView extends Button implements EditorListener {
 	}
 
 	public static void loadEditor(AbstractEditor editor) {
-		
+		clicks=0;
 		editorPanel.clear();
-		editorPanel.addHandler(new ChangeHandler() {
+		editorPanel.addDomHandler(new ChangeHandler() {
 		    @Override
 		    public void onChange(ChangeEvent event) {
-		    	 Info.display("Change","Now");
-		  		
+		    	 clicks+=1;		  		
 		    }
 		  }, ChangeEvent.getType());
+		editorPanel.addDomHandler(new ClickHandler() {
+		    @Override
+		    public void onClick(ClickEvent event) {
+		    	 clicks+=1;
+		  		
+		    }
+		  }, ClickEvent.getType());
+		editorPanel.addDomHandler(new KeyPressHandler() {
+		    @Override
+		    public void onKeyPress(KeyPressEvent event) {
+		    	 clicks+=1;
+		  		
+		    }
+		  }, KeyPressEvent.getType());
+
 		editorPanel.add(editor);
 		editorPanel.setModal(true);
 		editorPanel.setGlassEnabled(true);
@@ -99,6 +118,15 @@ public abstract class AbstractView extends Button implements EditorListener {
 	
 	public PopupPanel getEditorPanel() {
 		return editorPanel;
+	}
+	public Integer getClickNumber() {
+		return clicks;
+	}
+	public void addClickNumber() {
+		clicks+=1;
+	}
+	public void setClickNumber(int clicks) {
+		this.clicks=clicks;
 	}
 	
 	abstract protected String getPermalink(); // this will be the URI for the server request...

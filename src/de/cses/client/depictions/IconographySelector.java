@@ -86,6 +86,7 @@ import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
 import de.cses.client.Util;
+import de.cses.client.ui.AbstractView;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.IconographyEntry;
@@ -143,6 +144,7 @@ public class IconographySelector extends FramedPanel {
 	private Map<Integer,String> imgdDic =StaticTables.getInstance().getOrnamentMasterPics();
 	private ArrayList<OrnamentEntry> ornamentEntries;
 	private Context currentContext;
+	protected AbstractView el=null;
 	
 	public void buildTreeStore(Collection<IconographyEntry> elements, boolean ornaments){
 		iconographyTreeStore.clear();
@@ -177,6 +179,7 @@ public class IconographySelector extends FramedPanel {
 					iconographyTree.setChecked(entry, CheckState.CHECKED);
 				}
 			}
+		
 
 		};
 		MasterImg masterImg = GWT.create(MasterImg.class);
@@ -202,7 +205,7 @@ public class IconographySelector extends FramedPanel {
 		    	    // Special case the ENTER key for a unified user experience.
 		    	    if (BrowserEvents.MOUSEOVER.equals(eventType) ) {
 		    	    	currentContext=context;
-			    	    showPOPUP(context, event.getClientX(),event.getClientY());
+			    	    showPOPUP(context, event.getClientX()+10,event.getClientY()+10);
 			    	    }
 		    	    if (BrowserEvents.MOUSEOUT.equals(eventType)& (currentContext==context)) {
 		    	    	
@@ -223,7 +226,7 @@ public class IconographySelector extends FramedPanel {
 			    	info.setTitle((String)context.getKey());
 			    	imgPop.add(info);
 			    	imgPop.show();
-		    		
+			    			    		
 		    	}
 		    }
 		    private void hidePOPUP() {
@@ -257,6 +260,9 @@ public class IconographySelector extends FramedPanel {
 			
 			@Override
 			public void onCheckChange(CheckChangeEvent<IconographyEntry> event) {
+				if (el!=null) {
+					el.addClickNumber();
+				}
 				IconographyEntry ie = event.getItem();
 				if (event.getChecked() == CheckState.CHECKED) {
 					if (!selectedIconographyMap.containsKey(ie.getUniqueID())) {
@@ -396,8 +402,36 @@ public class IconographySelector extends FramedPanel {
 	public void imgPopHide() {
 		imgPop.hide();
 	}
-	public IconographySelector(Collection<IconographyEntry> elements) {
+	public IconographySelector(Collection<IconographyEntry> elements,AbstractView el) {
+		this.el=el;
+		initPanel(iconographyTreeStore, elements);
+	}
 
+	public IconographySelector(Collection<IconographyEntry> elements) {
+		initPanel(iconographyTreeStore, elements);
+		this.el=null;
+	}
+
+	private void processParentIconographyEntry( IconographyEntry item) {
+		for (IconographyEntry child : item.getChildren()) {
+			iconographyTreeStore.add(item, child);
+			if (child.getChildren() != null) {
+				processParentIconographyEntry(child);
+			}
+		}
+	}
+
+	public void setSelectedIconography(ArrayList<IconographyEntry> iconographyRelationList) {
+		Util.doLogging("*** setSelectedIconography called - iconographyTree no. of items = " + iconographyTree.getStore().getAllItemsCount());
+		resetSelection();
+		for (IconographyEntry entry : iconographyRelationList) {
+			//Util.doLogging("setSelectedIconography setting entry = " + entry.getIconographyID());
+			iconographyTree.setChecked(entry, CheckState.CHECKED);
+			selectedIconographyMap.put(entry.getUniqueID(), entry);
+		}
+	}
+
+	private void initPanel(TreeStore<IconographyEntry> iconographyTreeStore, Collection<IconographyEntry> elements) {
 		filterField = new StoreFilterField<IconographyEntry>() {
 
 			@Override
@@ -464,30 +498,6 @@ public class IconographySelector extends FramedPanel {
 			}
 			
 		});
-		
-		initPanel(iconographyTreeStore, elements);
-	}
-
-	private void processParentIconographyEntry( IconographyEntry item) {
-		for (IconographyEntry child : item.getChildren()) {
-			iconographyTreeStore.add(item, child);
-			if (child.getChildren() != null) {
-				processParentIconographyEntry(child);
-			}
-		}
-	}
-
-	public void setSelectedIconography(ArrayList<IconographyEntry> iconographyRelationList) {
-		Util.doLogging("*** setSelectedIconography called - iconographyTree no. of items = " + iconographyTree.getStore().getAllItemsCount());
-		resetSelection();
-		for (IconographyEntry entry : iconographyRelationList) {
-			//Util.doLogging("setSelectedIconography setting entry = " + entry.getIconographyID());
-			iconographyTree.setChecked(entry, CheckState.CHECKED);
-			selectedIconographyMap.put(entry.getUniqueID(), entry);
-		}
-	}
-
-	private void initPanel(TreeStore<IconographyEntry> iconographyTreeStore, Collection<IconographyEntry> elements) {
 		iconographyTree=buildTree(false);
 		buildTreeStore(elements,false);
 		imgdDic =StaticTables.getInstance().getOrnamentMasterPics();
@@ -694,6 +704,9 @@ public class IconographySelector extends FramedPanel {
 			addTool(renameEntryTB);
 		}
 		addTool(resetTB);
+		if (el!=null) {
+			el.setClickNumber(0);
+		}
 	}
 	
 	private void addChildIconographyEntry(TreeStore<IconographyEntry> store, IconographyEntry child) {

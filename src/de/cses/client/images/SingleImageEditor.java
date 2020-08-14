@@ -443,6 +443,14 @@ public class SingleImageEditor extends AbstractEditor {
 		authorSelectionCB.setTypeAhead(false);
 		authorSelectionCB.setEditable(false);
 		authorSelectionCB.setTriggerAction(TriggerAction.ALL);
+		authorSelectionCB.addValueChangeHandler(new ValueChangeHandler<PhotographerEntry>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<PhotographerEntry> event) {
+				imgEntry.setImageAuthor(event.getValue());
+			}
+		});
+
 		authorSelectionCB.addSelectionHandler(new SelectionHandler<PhotographerEntry>() {
 
 			@Override
@@ -776,7 +784,7 @@ public class SingleImageEditor extends AbstractEditor {
 		saveToolButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-				saveImageEntry(false);
+				save(false);
 			}
 		});
 		
@@ -789,7 +797,7 @@ public class SingleImageEditor extends AbstractEditor {
 					
 					@Override
 					public void onSelect(SelectEvent event) {
-						 saveImageEntry(true);
+						 save(true);
 						if (verifyInputs()) {
 							closeEditor(null);
 						}
@@ -805,7 +813,7 @@ public class SingleImageEditor extends AbstractEditor {
 					@Override
 					public void onKeyDown(KeyDownEvent e) {
 						
-						saveImageEntry(true);
+						save(true);
 						closeEditor(null);
 					}
 			
@@ -915,7 +923,7 @@ public class SingleImageEditor extends AbstractEditor {
 							
 							@Override
 							public void onSelect(SelectEvent event) {
-				        		saveImageEntry(true);
+				        		save(true);
 								closeEditor(null);
 							}
 						}, new SelectHandler() {
@@ -1021,7 +1029,8 @@ public class SingleImageEditor extends AbstractEditor {
 		}
 		);
 	}
-	private void saveImageEntry(boolean closeEditorRequested) {
+	@Override
+	protected void save(boolean closeEditorRequested) {
 		for (EditorListener el :getListenerList()) {
 			if (el instanceof ImageView) {
 				((ImageView)el).setEditor(imgEntry);
