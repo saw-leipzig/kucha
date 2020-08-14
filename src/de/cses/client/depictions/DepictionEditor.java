@@ -638,7 +638,6 @@ public class DepictionEditor extends AbstractEditor {
 			final ImageViewTemplates imageViewTemplates = GWT.create(ImageViewTemplates.class);
 
 			public SafeHtml render(ImageEntry item) {
-				SafeUri imageUri;
 				ArrayList<TextElement> titleList = new ArrayList<TextElement>();
 				for (String s : item.getTitle().split("_")) {
 					titleList.add(new TextElement(s));
@@ -678,7 +677,7 @@ public class DepictionEditor extends AbstractEditor {
 		filterField.setEmptyText("enter a search term");
 		filterField.bind(imageEntryLS);
 		imageListView.setSize("340", "290");
-		Util.doLogging("Size of ImageListView: "+Integer.toString(imageEntryLS.size()));
+//		Util.doLogging("Size of ImageListView: "+Integer.toString(imageEntryLS.size()));
 		ListField<ImageEntry, ImageEntry> imageViewLF = new ListField<ImageEntry, ImageEntry>(imageListView);
 		loadImages();
 		
@@ -858,6 +857,7 @@ public class DepictionEditor extends AbstractEditor {
 			}
 
 		});
+		
 		vendorSelection.setEmptyText("nothing selected");
 		vendorSelection.setTypeAhead(false);
 		vendorSelection.setEditable(false);
@@ -1523,7 +1523,10 @@ public class DepictionEditor extends AbstractEditor {
 			public void onSelect(SelectEvent event) {
 				ImageEntry entry = imageListView.getSelectionModel().getSelectedItem();
 				correspondingDepictionEntry.setMasterImageID(entry.getImageID());
-				imageListView.refresh();
+				imageListView.getStore().clear();
+				OSDLoader.destroyAllViewers(osdDic);
+				loadImages();
+				setosd();
 			}
 		});
 		
@@ -1732,6 +1735,9 @@ public class DepictionEditor extends AbstractEditor {
 
 		mainPanel.add(mainHLC);
 		mainPanel.setSize( Integer.toString(Window.getClientWidth()/100*90),Integer.toString(Window.getClientHeight()/100*90));
+		createNextPrevButtons();
+		mainPanel.addTool(prevToolButton);
+		mainPanel.addTool(nextToolButton);
 		mainPanel.addTool(deleteToolButton);
 		mainPanel.addTool(saveToolButton);
 		mainPanel.addTool(closeToolButton);

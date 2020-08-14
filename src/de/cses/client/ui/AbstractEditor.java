@@ -19,13 +19,16 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
-import com.sencha.gxt.widget.core.client.info.Info;
+import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.Util;
 import de.cses.shared.AbstractEntry;
-import de.cses.shared.CaveEntry;
 
 /**
  * @author alingnau
@@ -33,8 +36,40 @@ import de.cses.shared.CaveEntry;
  */
 public abstract class AbstractEditor implements IsWidget {
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
-
+	protected ToolButton nextToolButton;
+	protected ToolButton prevToolButton;
 	private ArrayList<EditorListener> listenerList = new ArrayList<EditorListener>();
+	
+	protected void createNextPrevButtons() {
+		nextToolButton = new ToolButton(new IconConfig("leftButton", "leftButtonOver"));
+		nextToolButton.setToolTip(Util.createToolTip("next entry"));
+		nextToolButton.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+//				Util.doLogging("Start caling next item.");
+					AbstractView el = (AbstractView)listenerList.get(0);
+					closeEditor(el.getEntry());
+					AbstractView nextChild = (AbstractView)(((FlowLayoutContainer)el.getParent()).getWidget(((FlowLayoutContainer)el.getParent()).getWidgetIndex(el)+1));;
+					nextChild.showEditor(nextChild.getEntry());
+				}
+		});
+		prevToolButton = new ToolButton(new IconConfig("rightButton", "rightButtonOver"));
+		prevToolButton.setToolTip(Util.createToolTip("previous entry"));	
+		prevToolButton.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+//				Util.doLogging("Start caling next item.");
+					AbstractView el = (AbstractView)listenerList.get(0);
+					closeEditor(el.getEntry());
+					AbstractView nextChild = (AbstractView)(((FlowLayoutContainer)el.getParent()).getWidget(((FlowLayoutContainer)el.getParent()).getWidgetIndex(el)-1));;
+					nextChild.showEditor(nextChild.getEntry());
+				}
+		});
+
+	}
+
 	
 	public void addEditorListener(EditorListener l) {
 		listenerList.add(l);

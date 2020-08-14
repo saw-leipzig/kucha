@@ -278,7 +278,13 @@ public class MysqlConnector implements IsSerializable {
 			CurrentLocationID=4;
 		}
 		//System.out.println("For filename: "+filename+" found locationID: "+Integer.toString(CurrentLocationID));
-		return getLocation(CurrentLocationID);
+		if (CurrentLocationID>0) {
+			return getLocation(CurrentLocationID);
+		}
+		else {
+			return null;
+		}
+		
 	}
 	public ArrayList<DistrictEntry> getDistricts(String sqlWhere) {
 		ArrayList<DistrictEntry> result = new ArrayList<DistrictEntry>();
@@ -470,7 +476,7 @@ public class MysqlConnector implements IsSerializable {
 				while (rs.next()) {
 					ImageEntry image = new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
 							rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
-							rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
+							rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("location")));
 					if (image.getLocation()==null) {
 						if (rs.getString("Title")!=null){
 							image.setLocation(searchLocationByFilename(image.getTitle()));
@@ -673,34 +679,22 @@ public class MysqlConnector implements IsSerializable {
 			pstmt = dbc.prepareStatement(
 					"INSERT INTO Images (Filename, Title, ShortName, Copyright, PhotographerID, Comment, Date, ImageTypeID, AccessLevel, deleted) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 					Statement.RETURN_GENERATED_KEYS);
-			System.err.println("Preparing statement.");
 			pstmt.setString(1, "");
-			System.err.println("Preparing statement. ");
 			pstmt.setString(2, entry.getTitle());
-			System.err.println("Preparing statement. "+entry.getTitle());
 			pstmt.setString(3, entry.getShortName());
-			System.err.println("Preparing statement. "+entry.getShortName());
 			pstmt.setString(4, entry.getCopyright());
-			System.err.println("Preparing statement. "+entry.getCopyright());
 			System.err.println(entry.getImageAuthor());
 			if (entry.getImageAuthor() != null) {
-				System.out.println("imgAuthor");
 				pstmt.setInt(5, entry.getImageAuthor().getPhotographerID());				
 			}
 			else {
-				System.out.println("imgAuthor == 0");
 				pstmt.setInt(5, 0);
 			}
 			pstmt.setString(6, entry.getComment());
-			System.err.println("Preparing statement. "+entry.getComment());
 			pstmt.setString(7, entry.getDate());
-			System.err.println("Preparing statement. "+entry.getDate());
 			pstmt.setInt(8, entry.getImageTypeID());
-			System.err.println("Preparing statement. "+entry.getImageTypeID());
 			pstmt.setInt(9, entry.getAccessLevel());
-			System.err.println("Preparing statement. "+entry.getAccessLevel());
 			pstmt.setBoolean(10, entry.isdeleted());
-			System.err.println("Statement prepared, Deploying.");
 			pstmt.executeUpdate();
 			ResultSet keys = pstmt.getGeneratedKeys();
 			if (keys.next()) { // there should only be 1 key returned here
@@ -1116,17 +1110,23 @@ public class MysqlConnector implements IsSerializable {
 			while (rs.next()) {
 				ImageEntry image = new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
 						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
-						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
+						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("location")));
 				if (image.getLocation()==null) {
 					if (rs.getString("Title")!=null){
 						image.setLocation(searchLocationByFilename(image.getTitle()));
 					}
 					
 				}
+//				if (image.getLocation()!=null) {
+//					System.out.println("imagelocationID= "+image.getLocation().getLocationID());					
+//				}
+//				else {
+//					System.out.println("Imaglocation not set. filename= "+image.getTitle());										
+//				}
 				results.add(image);
 			}
 			rs.close();
-			pstmt.close();
+		 	pstmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
@@ -1177,7 +1177,7 @@ public class MysqlConnector implements IsSerializable {
 			while (rs.next()) {
 				ImageEntry image = new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
 						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
-						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
+						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("location")));
 				if (image.getLocation()==null) {
 					if (rs.getString("Title")!=null){
 						image.setLocation(searchLocationByFilename(image.getTitle()));
@@ -1219,7 +1219,7 @@ public class MysqlConnector implements IsSerializable {
 			if (rs.first()) {
 				result = new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
 						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), 
-						rs.getInt("ImageTypeID"), rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
+						rs.getInt("ImageTypeID"), rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("location")));
 				if (result.getLocation()==null) {
 					if (rs.getString("Title")!=null){
 						result.setLocation(searchLocationByFilename(result.getTitle()));
@@ -2893,7 +2893,7 @@ public boolean isHan(String s) {
 				//System.out.println("ImageID = "+Integer.toString(depictionID)+" ImageID = "+Integer.toString(rs.getInt("ImageID")));
 				ImageEntry image = new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
 						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
-						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
+						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("location")));
 				if (image.getLocation()==null) {
 					if (rs.getString("Title")!=null){
 						image.setLocation(searchLocationByFilename(image.getTitle()));
@@ -2991,9 +2991,14 @@ public boolean isHan(String s) {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
-			//System.out.println("UPDATE Images SET Filename="+entry.getFilename()+", Title="+entry.getTitle()+", ShortName="+entry.getShortName()+", Copyright="+entry.getCopyright()+", PhotographerID=?, Comment=?, Date=?, ImageTypeID=?, AccessLevel=?, deleted="+entry.isdeleted()+" CurrentLocationID="+entry.getLocation().getLocationID()+"  WHERE ImageID=?");
+			if (entry.getImageAuthor() != null) {
+				System.out.println("UPDATE Images SET Filename="+entry.getFilename()+", Title="+entry.getTitle()+", ShortName="+entry.getShortName()+", Copy+++right="+entry.getCopyright()+", PhotographerID="+Integer.toString(entry.getImageAuthor().getPhotographerID())+", Comment="+entry.getComment()+", Date="+entry.getDate()+", ImageTypeID="+Integer.toString(entry.getImageTypeID())+", AccessLevel="+Integer.toString(entry.getAccessLevel())+", deleted="+entry.isdeleted()+"  WHERE ImageID="+entry.getImageID());
+			}
+				else {
+					System.out.println("UPDATE Images SET Filename="+entry.getFilename()+", Title="+entry.getTitle()+", ShortName="+entry.getShortName()+", Copy+++right="+entry.getCopyright()+", PhotographerID=0, Comment="+entry.getComment()+", Date="+entry.getDate()+", ImageTypeID="+Integer.toString(entry.getImageTypeID())+", AccessLevel="+Integer.toString(entry.getAccessLevel())+", deleted="+entry.isdeleted()+"  WHERE ImageID="+entry.getImageID());
+				}
 			pstmt = dbc.prepareStatement(
-					"UPDATE Images SET Filename=?, Title=?, ShortName=?, Copyright=?, PhotographerID=?, Comment=?, Date=?, ImageTypeID=?, AccessLevel=?, deleted=? WHERE ImageID=?");
+					"UPDATE Images SET Filename=?, Title=?, ShortName=?, Copyright=?, PhotographerID=?, Comment=?, Date=?, ImageTypeID=?, AccessLevel=?, location=?, deleted=? WHERE ImageID=?");
 			pstmt.setString(1, entry.getFilename());
 			pstmt.setString(2, entry.getTitle());
 			pstmt.setString(3, entry.getShortName());
@@ -3008,8 +3013,9 @@ public boolean isHan(String s) {
 			pstmt.setString(7, entry.getDate());
 			pstmt.setInt(8, entry.getImageTypeID());
 			pstmt.setInt(9, entry.getAccessLevel());
-			pstmt.setBoolean(10, entry.isdeleted());
-			pstmt.setInt(11, entry.getImageID());
+			pstmt.setInt(10, entry.getLocation().getLocationID());
+			pstmt.setBoolean(11, entry.isdeleted());
+			pstmt.setInt(12, entry.getImageID());
 			pstmt.execute();
 			pstmt.close();
 		} catch (SQLException e) {
@@ -6301,29 +6307,35 @@ public boolean isHan(String s) {
 		if (dologgingbegin){
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getLocation wurde ausgelöst.");;
 		}
-		LocationEntry result = null;
-		Connection dbc = getConnection();
-		PreparedStatement pstmt;
-		try {
-			pstmt = dbc.prepareStatement("SELECT * FROM Locations WHERE LocationID=?");
-			pstmt.setInt(1, id);
-			ResultSet rs = pstmt.executeQuery();
-			if (rs.first()) {
-				result = new LocationEntry(rs.getInt("LocationID"), rs.getString("Name"), rs.getString("Town"), rs.getString("Region"), rs.getString("Country"), rs.getString("URL"));
+		if (id>-1) {
+		
+			LocationEntry result = null;
+			Connection dbc = getConnection();
+			PreparedStatement pstmt;
+			try {
+				pstmt = dbc.prepareStatement("SELECT * FROM Locations WHERE LocationID=?");
+				pstmt.setInt(1, id);
+				ResultSet rs = pstmt.executeQuery();
+				if (rs.first()) {
+					result = new LocationEntry(rs.getInt("LocationID"), rs.getString("Name"), rs.getString("Town"), rs.getString("Region"), rs.getString("Country"), rs.getString("URL"));
+				}
+				rs.close();
+				pstmt.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+				System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+				return null;
 			}
-			rs.close();
-			pstmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+			if (dologging){
+			long end = System.currentTimeMillis();
+			long diff = (end-start);
+			if (diff>100){
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getLocation brauchte "+diff + " Millisekunden.");;}}
+			return result;
+		}
+		else {
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getLocation brauchte "+diff + " Millisekunden.");;}}
-		return result;
 	}
 
 	/**
@@ -7034,7 +7046,7 @@ public boolean isHan(String s) {
 			while (rs.next()) {
 				ImageEntry image = new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
 						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
-						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
+						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("location")));
 				if (image.getLocation()==null) {
 					if (rs.getString("Title")!=null){
 						image.setLocation(searchLocationByFilename(image.getTitle()));
@@ -7596,7 +7608,7 @@ public boolean isHan(String s) {
 		return rowsChangedCount > 0;
 	}
 
-	private String sendMail(String from, String to, String toName, String subject, String message) {
+	private void sendMail(String from, String to, String toName, String subject, String message) {
         String output=null;
         Properties props = System.getProperties();
 	    String smtpHostServer = "zimbra.saw-leipzig.de";
@@ -7627,9 +7639,8 @@ public boolean isHan(String s) {
             Transport.send(msg);
 
         } catch (Exception e) {
-            output=e.toString();                
+            System.err.println(e.toString());                
        }   
-        return output;
     }
 	private static String cryptWithMD5(String pass) {
 		if (pass == null || pass.isEmpty()) {

@@ -495,6 +495,9 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 		mainFP.setHeading("Annotated Bibliography (entry last modified on " + bibEntry.getModifiedOn() + ")");
 		mainFP.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
 		mainFP.add(tabpanel, new VerticalLayoutData(1.0, 1.0));
+		createNextPrevButtons();
+		mainFP.addTool(prevToolButton);
+		mainFP.addTool(nextToolButton);		
 		mainFP.addTool(deleteToolButton);
 		mainFP.addTool(saveToolButton);
 		mainFP.addTool(closeToolButton);

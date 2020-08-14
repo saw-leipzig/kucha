@@ -500,6 +500,36 @@ div.editButtonOver {
 	cursor: pointer;
 }
 
+div.leftButton {
+	background-image: url(icons/next.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.leftButtonOver {
+	background-image: url(icons/next_mo.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+div.rightButton {
+	background-image: url(icons/prev.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.rightButtonOver {
+	background-image: url(icons/prev_mo.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
 div.saveButton {
 	background-image: url(icons/save.png);
 	width: 20px;

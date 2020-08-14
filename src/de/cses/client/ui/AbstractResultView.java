@@ -172,6 +172,12 @@ public abstract class AbstractResultView extends Portlet {
 		
 		
 	}
+	public Widget getNextChild(Widget child) {
+		return resultContainer.getWidget(resultContainer.getWidgetIndex(child)+1);
+	}
+	public Widget getPrevChild(Widget child) {
+		return resultContainer.getWidget(resultContainer.getWidgetIndex(child)+1);
+	}
 	/**
 	 * 
 	 * @param enable

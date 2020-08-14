@@ -14,12 +14,18 @@
 package de.cses.client.ui;
 
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
+import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
@@ -31,7 +37,16 @@ import de.cses.shared.UserEntry;
  */
 public abstract class AbstractView extends Button implements EditorListener {
 
-	private static PopupPanel editorPanel = new PopupPanel(false);
+	private static PopupPanel editorPanel = new PopupPanel(false) {
+		@Override
+	    public void onBrowserEvent(Event be) {
+	        
+			int eventType = DOM.eventGetType(be);
+	        Info.display("Event", be.getString());
+	              super.onBrowserEvent(be);      
+	        }
+	}
+			;
 	/**
 	 * This is the general constructor that amongst other tasks initializes the PopupPanel for the editor
 	 */
@@ -51,9 +66,23 @@ public abstract class AbstractView extends Button implements EditorListener {
 		AbstractEditor editor = getEditor(entry, this);
 		loadEditor(editor);
 	}
+	public Widget getNextChild(Widget child) {
+		return ((FlowLayoutContainer)this.getParent()).getWidget(((FlowLayoutContainer)this.getParent()).getWidgetIndex(child)+1);
+	}
+	public Widget getPrevChild(Widget child) {
+		return ((FlowLayoutContainer)this.getParent()).getWidget(((FlowLayoutContainer)this.getParent()).getWidgetIndex(child)-1);
+	}
+
 	public static void loadEditor(AbstractEditor editor) {
 		
 		editorPanel.clear();
+		editorPanel.addHandler(new ChangeHandler() {
+		    @Override
+		    public void onChange(ChangeEvent event) {
+		    	 Info.display("Change","Now");
+		  		
+		    }
+		  }, ChangeEvent.getType());
 		editorPanel.add(editor);
 		editorPanel.setModal(true);
 		editorPanel.setGlassEnabled(true);

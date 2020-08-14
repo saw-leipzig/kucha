@@ -445,6 +445,7 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 		panel2.add(hPanel);
 		panel.setHeading("Image Editor");
 		panel.add(panel2);
+		
 		panel.addButton(closeButton);
 		panel.addButton(saveButton);
 		panel.addButton(deleteButton);

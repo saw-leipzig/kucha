@@ -22,5 +22,6 @@ import de.cses.shared.AbstractEntry;
 public interface EditorListener {
 
 	public void closeRequest(AbstractEntry updatedEntry);
+		
 //	public void updateEntryRequest(AbstractEntry updatedEntry);
 }

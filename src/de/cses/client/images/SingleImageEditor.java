@@ -191,10 +191,96 @@ public class SingleImageEditor extends AbstractEditor {
 				public String getPath() {
 					return "name";
 				}}, SortDir.ASC));
-			
+			ImageEntry ry2 = imgEntry;
 			if (imgEntry.getLocation() != null) {
 				locationSelectionCB.setValue(imgEntry.getLocation());
 			}
+//			else {
+//				if (imgEntry.getTitle().toLowerCase().contains("britishmuseum")) {
+//					locationSelectionCB.setValue(locationEntryLS.findModelWithKey("26"));
+//				}
+//				else if (imgEntry.getTitle().toLowerCase().contains("_vanda_")) {
+//					locationSelectionCB.setValue(locationEntryLS.findModelWithKey("12"));
+//				}
+//				else if (imgEntry.getTitle().toLowerCase().contains("ashmoleanmuseum")) {
+//					locationSelectionCB.setValue(locationEntryLS.findModelWithKey("11"));
+//				}
+//				else if (imgEntry.getTitle().toLowerCase().matches(".*[t][a][0-9]{4}.*")) {
+//					locationSelectionCB.setValue(locationEntryLS.findModelWithKey("4"));
+//				}
+//				else if (imgEntry.getTitle().toLowerCase().matches(".*[i]{3}[0-9]{4}.*")) {
+//					locationSelectionCB.setValue(locationEntryLS.findModelWithKey("4"));
+//				}
+//				else if (imgEntry.getTitle().toLowerCase().contains("_hoppferencemuseum_")) {
+//					locationSelectionCB.setValue(locationEntryLS.findModelWithKey("13"));
+//				}
+//				else if (imgEntry.getTitle().toLowerCase().contains("_ikuohirayamasilkroadmuseum_")) {
+//					locationSelectionCB.setValue(locationEntryLS.findModelWithKey("7"));
+//				}
+//				else if (imgEntry.getTitle().toLowerCase().contains("_tokyonationalmuseum_")) {
+//					locationSelectionCB.setValue(locationEntryLS.findModelWithKey("9"));
+//				}
+//				else if (imgEntry.getTitle().toLowerCase().contains("_tokyouniversity_")) {
+//					locationSelectionCB.setValue(locationEntryLS.findModelWithKey("28"));
+//				}
+//				else if (imgEntry.getTitle().toLowerCase().contains("_mwoods_")) {
+//					locationSelectionCB.setValue(locationEntryLS.findModelWithKey("37"));
+//				}
+//				else if (imgEntry.getTitle().toLowerCase().contains("_eremitage_")) {
+//					locationSelectionCB.setValue(locationEntryLS.findModelWithKey("5"));
+//				}
+//				else if (imgEntry.getTitle().toLowerCase().contains("_nmk_")) {
+//					locationSelectionCB.setValue(locationEntryLS.findModelWithKey("15"));
+//				}
+//				else if (imgEntry.getTitle().toLowerCase().contains("_academiasinica_taipei_")) {
+//					locationSelectionCB.setValue(locationEntryLS.findModelWithKey("25"));
+//				}
+//				else if (imgEntry.getTitle().toLowerCase().contains("_seattleasianartmuseum_")) {
+//					locationSelectionCB.setValue(locationEntryLS.findModelWithKey("22"));
+//				}
+//				else if (imgEntry.getTitle().toLowerCase().contains("_bostonmfa_")) {
+//					locationSelectionCB.setValue(locationEntryLS.findModelWithKey("20"));
+//				}
+//				else if (imgEntry.getTitle().toLowerCase().contains("_museumofart_cleveland_")) {
+//					locationSelectionCB.setValue(locationEntryLS.findModelWithKey("17"));
+//				}
+//				else if (imgEntry.getTitle().toLowerCase().contains("_detroitinstituteofarts_")) {
+//					locationSelectionCB.setValue(locationEntryLS.findModelWithKey("35"));
+//				}
+//				else if (imgEntry.getTitle().toLowerCase().contains("_harvardfoggartmuseum_")) {
+//					locationSelectionCB.setValue(locationEntryLS.findModelWithKey("34"));
+//				}
+//				else if (imgEntry.getTitle().toLowerCase().contains("_nelson-atkinsmuseum_")) {
+//					locationSelectionCB.setValue(locationEntryLS.findModelWithKey("36"));
+//				}
+//				else if (imgEntry.getTitle().toLowerCase().contains("_brooklynartmuseum_")) {
+//					locationSelectionCB.setValue(locationEntryLS.findModelWithKey("27"));
+//				}
+//				else if (imgEntry.getTitle().toLowerCase().contains("_metropolitanmuseum_")) {
+//					locationSelectionCB.setValue(locationEntryLS.findModelWithKey("19"));
+//				}
+//				else if (imgEntry.getTitle().toLowerCase().contains("_metropolitanmuseumny_")) {
+//					locationSelectionCB.setValue(locationEntryLS.findModelWithKey("19"));
+//				}
+//				else if (imgEntry.getTitle().toLowerCase().contains("_metropolitanmuseumny_")) {
+//					locationSelectionCB.setValue(locationEntryLS.findModelWithKey("19"));
+//				}
+//				else if (imgEntry.getTitle().toLowerCase().contains("_nyc_metropolitan_")) {
+//					locationSelectionCB.setValue(locationEntryLS.findModelWithKey("19"));
+//				}
+//				else if (imgEntry.getTitle().toLowerCase().contains("_metny_")) {
+//					locationSelectionCB.setValue(locationEntryLS.findModelWithKey("19"));
+//				}
+//				else if (imgEntry.getTitle().toLowerCase().contains("_pennmuseum_")) {
+//					locationSelectionCB.setValue(locationEntryLS.findModelWithKey("21"));
+//				}
+//				else if (imgEntry.getTitle().toLowerCase().contains("_asianartmuseumsanfrancisco_")) {
+//					locationSelectionCB.setValue(locationEntryLS.findModelWithKey("16"));
+//				}
+//				else if (imgEntry.getTitle().toLowerCase().contains("_smithsonianamericanartmuseum_")) {
+//					locationSelectionCB.setValue(locationEntryLS.findModelWithKey("23"));
+//				}
+//			}
 	 }
 
 
@@ -856,6 +942,9 @@ public class SingleImageEditor extends AbstractEditor {
 		panel.setHeading("Image Editor (entry last modified on " + imgEntry.getModifiedOn() + ")");
 		panel.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
 		panel.add(mainHLC);
+		createNextPrevButtons();
+		panel.addTool(prevToolButton);
+		panel.addTool(nextToolButton);
 		panel.addTool(deleteToolButton);
 		panel.addTool(saveToolButton);
 		panel.addTool(closeToolButton);

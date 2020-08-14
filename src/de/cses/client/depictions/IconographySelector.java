@@ -195,23 +195,23 @@ public class IconographySelector extends FramedPanel {
 				
 		    	//sb.append(imageTemplate.createImage(""));
 		    }
-//		    @Override
-//		    public void onBrowserEvent(Context context, Element parent, String value,
-//		    	      NativeEvent event, ValueUpdater<String> valueUpdater) {
-//		    	    String eventType = event.getType();
-//		    	    // Special case the ENTER key for a unified user experience.
-//		    	    if (BrowserEvents.MOUSEOVER.equals(eventType) ) {
-//		    	    	currentContext=context;
-//			    	    showPOPUP(context, event.getClientX(),event.getClientY());
-//			    	    }
-//		    	    if (BrowserEvents.MOUSEOUT.equals(eventType)& (currentContext==context)) {
-//		    	    	
-//			    	      hidePOPUP();
-//			    	    }
-//		    	    if (BrowserEvents.KEYDOWN.equals(eventType) && event.getKeyCode() == KeyCodes.KEY_ENTER) {
-//			    	      onEnterKeyDown(context, parent, value, event, valueUpdater);
-//			    	    }
-//		    }
+		    @Override
+		    public void onBrowserEvent(Context context, Element parent, String value,
+		    	      NativeEvent event, ValueUpdater<String> valueUpdater) {
+		    	    String eventType = event.getType();
+		    	    // Special case the ENTER key for a unified user experience.
+		    	    if (BrowserEvents.MOUSEOVER.equals(eventType) ) {
+		    	    	currentContext=context;
+			    	    showPOPUP(context, event.getClientX(),event.getClientY());
+			    	    }
+		    	    if (BrowserEvents.MOUSEOUT.equals(eventType)& (currentContext==context)) {
+		    	    	
+			    	      hidePOPUP();
+			    	    }
+		    	    if (BrowserEvents.KEYDOWN.equals(eventType) && event.getKeyCode() == KeyCodes.KEY_ENTER) {
+			    	      onEnterKeyDown(context, parent, value, event, valueUpdater);
+			    	    }
+		    }
 		    private void showPOPUP(Context context,int x,int y) {
 		    	imgPop.clear();
 		    	if (imgdDic.containsKey(Integer.parseInt((String)context.getKey()))) {

@@ -973,7 +973,7 @@ public class CaveEditor extends AbstractEditor {
 		FramedPanel historicalNamePanel = new FramedPanel();
 		historicalNamePanel.setHeading("Historical Name");
 		historicalNameField = new TextField();
-		historicalNameField.addValidator(new MaxLengthValidator(64));
+		historicalNameField.addValidator(new MaxLengthValidator(256));
 		historicalNameField.setEmptyText("historic cave name");
 		historicalNameField.setValue(correspondingCaveEntry.getHistoricName());
 		historicalNameField.addValueChangeHandler(new ValueChangeHandler<String>() {
@@ -2707,6 +2707,9 @@ public class CaveEditor extends AbstractEditor {
 		ScrollPanel scrpanel = new ScrollPanel();
 		scrpanel.add(mainHlContainer);
 		mainPanel.add(scrpanel);
+		createNextPrevButtons();
+		mainPanel.addTool(prevToolButton);
+		mainPanel.addTool(nextToolButton);		
 		mainPanel.addTool(saveToolButton);
 		mainPanel.addTool(closeToolButton);
 		new Resizable(mainPanel);
