@@ -14,48 +14,44 @@
 package de.cses.client.images;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Document;
-import com.google.gwt.event.dom.client.LoadEvent;
-import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
 import com.sencha.gxt.core.client.IdentityValueProvider;
-import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.core.client.Style.SelectionMode;
-import com.sencha.gxt.core.client.XTemplates.XTemplate;
+import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
+import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
-import com.sencha.gxt.widget.core.client.ListViewSelectionModel;
-import com.sencha.gxt.widget.core.client.Window;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ListField;
+import com.sencha.gxt.widget.core.client.form.StoreFilterField;
 import com.sencha.gxt.widget.core.client.info.Info;
-import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
-import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -79,6 +75,8 @@ public class ImageSelector implements IsWidget {
 	private FlowLayoutContainer imageContainer;
 	private ImageFilter imgFilter;
 	private FramedPanel mainPanel = null;
+	private StoreFilterField<ImageEntry> filterField;
+
 //	private PopupPanel zoomPanel;
 //	protected String zoomImageUri;
 //	protected Window loadZoomInfoWindow;
@@ -174,6 +172,20 @@ public class ImageSelector implements IsWidget {
 //		});
 //
 		imageListView.setSize("1.0", "1.0");
+		filterField = new StoreFilterField<ImageEntry>() {
+
+			@Override
+			protected boolean doSelect(Store<ImageEntry> store, ImageEntry parent, ImageEntry item, String filter) {
+				ListStore<ImageEntry> ImageStore = (ListStore<ImageEntry>) store;
+//				Util.doLogging(item.getTitle()+" - "+filter+" = "+Boolean.toString(item.getFilename().contains(filter)));
+					if (item.getTitle().toLowerCase().contains(filter.toLowerCase())) {
+						return true;
+					}
+					return false;
+			}
+		};
+		filterField.setEmptyText("enter a search term");
+		filterField.bind(imageEntryList);
 
 		ListField<ImageEntry, ImageEntry> lf = new ListField<ImageEntry, ImageEntry>(imageListView);
 		
@@ -238,7 +250,7 @@ public class ImageSelector implements IsWidget {
 				imageEntryList.clear();
 			}
 		});
-
+		
 		HorizontalLayoutContainer hlc = new HorizontalLayoutContainer();
 
 		ContentPanel cp = new ContentPanel();
@@ -287,7 +299,11 @@ public class ImageSelector implements IsWidget {
 
 		FramedPanel imageListViewFP = new FramedPanel();
 		imageListViewFP.setHeading("Images");
-		imageListViewFP.add(lf);
+		VerticalLayoutContainer filtercontainer = new VerticalLayoutContainer();
+		filtercontainer.add(filterField, new VerticalLayoutData(1.0, .05));
+		filtercontainer.add(lf, new VerticalLayoutData(1.0, .95));
+
+		imageListViewFP.add(filtercontainer);
 //		imageListViewFP.addTool(zoomTB);
 		imageListViewFP.addTool(infoTB);
 		hlc.add(imageListViewFP, new HorizontalLayoutData(.6, 1.0));
@@ -306,7 +322,7 @@ public class ImageSelector implements IsWidget {
 	private void refreshImages() {
 		ImageSearchEntry searchEntry = (ImageSearchEntry) imgFilter.getSearchEntry();
 		searchEntry.setMaxentries(1000000);
-		dbService.searchImages(searchEntry, new AsyncCallback<ArrayList<ImageEntry>>() {
+		dbService.searchImages(searchEntry, new AsyncCallback<Map<Integer, ArrayList<ImageEntry>>>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
@@ -314,14 +330,19 @@ public class ImageSelector implements IsWidget {
 			}
 
 			@Override
-			public void onSuccess(ArrayList<ImageEntry> result) {
+			public void onSuccess(Map<Integer,ArrayList<ImageEntry>> result) {
 				imageEntryList.clear();
-				for (ImageEntry ie : result) {
-					imageEntryList.add(ie);
+				for (Integer key : result.keySet()) {
+					for (ImageEntry ie: result.get(key)) {
+						imageEntryList.add(ie);
+					}
 				}
 				imageListView.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
 			}
 		});
+	}
+	public void resetSelection() {
+		imageEntryList.clear();
 	}
 
 }

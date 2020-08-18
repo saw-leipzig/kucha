@@ -14,6 +14,10 @@
 package de.cses.client;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.ScriptElement;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.sencha.gxt.widget.core.client.ProgressBar;
 import com.sencha.gxt.widget.core.client.container.CenterLayoutContainer;
@@ -60,6 +64,16 @@ public class KuchaApplication implements EntryPoint {
 				}
 			}
 		});
+		Element bodyElement = RootPanel.getBodyElement();
+//		Element script = DOM.createElement("script");
+//	    ((ScriptElement)script).setSrc("scripts/openseadragon-bin-2.4.2/openseadragon.min.js");
+//	    ((ScriptElement)script).setType("text/javascript");
+//		bodyElement.appendChild(script);
+//		Element script2 = DOM.createElement("script");
+//	    ((ScriptElement)script2).setSrc("scripts/openseadragon-bin-2.4.2/openseadragonimagefilter.js");
+//	    ((ScriptElement)script2).setType("text/javascript");
+//		bodyElement.appendChild(script2);
+
 		RootPanel.get().add(v, 0, 0); // use RootPanel, not RootLayoutPanel here!
 	}
 

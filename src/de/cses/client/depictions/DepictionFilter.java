@@ -14,6 +14,8 @@
 package de.cses.client.depictions;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.KeyPressEvent;
@@ -24,7 +26,9 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
 import com.sencha.gxt.core.client.IdentityValueProvider;
+import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.Style.SelectionMode;
+import com.sencha.gxt.core.client.XTemplates.XTemplate;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
@@ -36,6 +40,7 @@ import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.dnd.core.client.DndDropEvent;
 import com.sencha.gxt.dnd.core.client.DropTarget;
 import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
@@ -59,6 +64,8 @@ import de.cses.client.StaticTables;
 import de.cses.client.Util;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.client.user.UserLogin;
+import de.cses.client.walls.PositionEditor;
+import de.cses.client.walls.WallTree;
 import de.cses.shared.AbstractSearchEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
@@ -66,8 +73,11 @@ import de.cses.shared.DepictionSearchEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.LocationEntry;
+import de.cses.shared.OrnamenticSearchEntry;
+import de.cses.shared.PositionEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
+import de.cses.shared.WallTreeEntry;
 import de.cses.shared.comparator.CaveEntryComparator;
 
 /**
@@ -99,6 +109,11 @@ public class DepictionFilter extends AbstractFilter {
 		LabelProvider<IconographyEntry> text();
 	}
 
+	public interface WallTreeProperties extends PropertyAccess<WallTreeEntry> {
+		ModelKeyProvider<WallTreeEntry> wallLocationID();
+		LabelProvider<WallTreeEntry> text();
+	}
+
 	interface CaveViewTemplates extends XTemplates {
 		@XTemplate("<div style=\"border: 1px solid grey;\">{shortName} {officialNumber}<br> {districtRegion}<br><tpl for='name'> {element}<wbr> </tpl></div>")
 		SafeHtml caveLabel(String shortName, String officialNumber, String districtRegion, ArrayList<NameElement> name);
@@ -115,7 +130,23 @@ public class DepictionFilter extends AbstractFilter {
 		SafeHtml locationLabel(String town, String name);
 	}
 	
+	interface PositionProperties extends PropertyAccess<PositionEntry> {
+		ModelKeyProvider<PositionEntry> PositionID();
+		LabelProvider<PositionEntry> uniqueID();
+		ValueProvider<PositionEntry, String> name();
+	}
+	interface PositionViewTemplates extends XTemplates {
+		@XTemplate("<div>{name}</div>")
+		SafeHtml positionLabel(String name);
+	}
+
+
+	
 	interface IconographyViewTemplates extends XTemplates {
+		@XTemplate("<div style=\"border: 1px solid grey;\"><tpl for='name'> {element}<wbr> </tpl></div>")
+		SafeHtml iconographyLabel(ArrayList<NameElement> name);
+	}
+	interface WallTreeViewTemplates extends XTemplates {
 		@XTemplate("<div style=\"border: 1px solid grey;\"><tpl for='name'> {element}<wbr> </tpl></div>")
 		SafeHtml iconographyLabel(ArrayList<NameElement> name);
 	}
@@ -137,7 +168,19 @@ public class DepictionFilter extends AbstractFilter {
 	private IconographySelector icoSelector;
 	private ListView<IconographyEntry, IconographyEntry> icoSelectionLV;
 	private IntegerSpinnerField iconographySpinnerField;
+	private WallTreeProperties wallProps;
+	private ListStore<WallTreeEntry> selectedWallsLS;
+	private ListView<WallTreeEntry, WallTreeEntry> wallSelectionLV;
+	private IntegerSpinnerField wallSpinnerField;
 	private PopupPanel extendedFilterDialog = null;
+	private ArrayList<Integer> imgIDs = new ArrayList<Integer>();
+	private ArrayList<Integer> bibIDs = new ArrayList<Integer>();
+	private PositionEditor pe;
+	
+	private ListStore<PositionEntry> positionEntryList;
+	private PositionProperties positionProps;
+	private ListView<PositionEntry, PositionEntry> positionSelectionLV;
+
 	@Override
 	public void setSearchEntry(AbstractSearchEntry searchEntry, boolean reset) {
 		if (reset) {
@@ -149,6 +192,14 @@ public class DepictionFilter extends AbstractFilter {
 		
 		for (int cID : ((DepictionSearchEntry)searchEntry).getCaveIdList()) {
 			caveSelectionLV.getSelectionModel().select(caveSelectionLV.getStore().findModelWithKey(Integer.toString(cID)),true);
+		}
+		for (int bibID : ((DepictionSearchEntry)searchEntry).getBibIdList()) {
+			bibIDs.add(bibID);
+		}
+		if (((DepictionSearchEntry)searchEntry).getImageIdList().size()>0) {
+			for (int imgID : ((DepictionSearchEntry)searchEntry).getImageIdList()) {
+				imgIDs.add(imgID);
+			}
 		}
 		
 		for (int lID : ((DepictionSearchEntry)searchEntry).getLocationIdList()) {
@@ -166,8 +217,33 @@ public class DepictionFilter extends AbstractFilter {
 		} else {
 			iconographySpinnerField.setEnabled(false);
 		}
+//		Util.doLogging("Hier");
+//		for (PositionEntry pe :((OrnamenticSearchEntry)searchEntry).getPosition()) {
+//			Util.doLogging("Hier loop");
+//			positionSelectionLV.getSelectionModel().select(true, pe);
+//		}
+
+
 		
 	}
+	private void loadPositionEntryList() {
+		dbService.getPositions(new AsyncCallback<ArrayList<PositionEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(ArrayList<PositionEntry> result) {
+				positionEntryList.clear();
+				for (PositionEntry pe : result) {
+					positionEntryList.add(pe);
+				}
+			}
+		});
+	}
+
 	@Override
 	public void clear() {
 		shortNameSearchTF.reset();
@@ -175,17 +251,34 @@ public class DepictionFilter extends AbstractFilter {
 		locationSelectionLV.getSelectionModel().deselectAll();
 		selectedIconographyLS.clear();
 		iconographySpinnerField.setValue(0);
+		imgIDs.clear();
+		bibIDs.clear();
+		positionSelectionLV.getSelectionModel().deselectAll();;
+		wallSelectionLV.getSelectionModel().deselectAll();;
+
 	}
 	/**
 	 * @param filterName
 	 */
 	public DepictionFilter(String filterName) {
 		super(filterName);
+		positionProps = GWT.create(PositionProperties.class);
+		positionEntryList = new ListStore<PositionEntry>(positionProps.PositionID());
+		loadPositionEntryList();
+
 		caveProps = GWT.create(CaveProperties.class);
 		caveEntryLS = new ListStore<CaveEntry>(caveProps.caveID());
 		icoSelector = new IconographySelector(StaticTables.getInstance().getIconographyEntries().values());
+		icoSelector.selectChildren(true);
+		wallProps = GWT.create(WallTreeProperties.class);
+		selectedWallsLS = new ListStore<>(wallProps.wallLocationID());
+		Map<Integer, WallTreeEntry> entries = StaticTables.getInstance().getWallTreeEntries();
+		ArrayList<WallTreeEntry> wallEntries = new ArrayList<WallTreeEntry>();
+		//for (WallTreeEntry wte :  entries.values()){
+		//	wallEntries.add(wte);
+		//}
 		icoSelector.enable();
-		icoSelector.selectNoParents(true);
+		//icoSelector.selectNoParents(true);
 		icoProps = GWT.create(IconographyProperties.class);
 		selectedIconographyLS = new ListStore<>(icoProps.iconographyID());
 		loadCaves();
@@ -308,7 +401,6 @@ public class DepictionFilter extends AbstractFilter {
 				return icTemplates.iconographyLabel(name);
 			}
 		}));
-		
 		iconographySpinnerField = new IntegerSpinnerField();
 		iconographySpinnerField.setMinValue(1);
 		iconographySpinnerField.setIncrement(1);
@@ -373,7 +465,118 @@ public class DepictionFilter extends AbstractFilter {
 			}
 		});
 		iconographyPanel.addTool(iconographySelectionResetTB);
+
+		//WallTree
+		wallSelectionLV = new ListView<WallTreeEntry, WallTreeEntry>(selectedWallsLS, new IdentityValueProvider<WallTreeEntry>(), new SimpleSafeHtmlCell<WallTreeEntry>(new AbstractSafeHtmlRenderer<WallTreeEntry>() {
+
+			@Override
+			public SafeHtml render(WallTreeEntry item) {
+				WallTreeViewTemplates wtTemplates = GWT.create(WallTreeViewTemplates.class);
+				ArrayList<NameElement> name = new ArrayList<NameElement>();
+				for (String s : item.getText().split(" ")) {
+					name.add(new NameElement(s));
+				}
+				return wtTemplates.iconographyLabel(name);
+			}
+		}));
 		
+		wallSpinnerField = new IntegerSpinnerField();
+		wallSpinnerField.setMinValue(1);
+		wallSpinnerField.setIncrement(1);
+		wallSpinnerField.setEnabled(false);
+		wallSpinnerField.setEditable(false);
+		wallSpinnerField.addKeyPressHandler(getShortkey());
+		
+		FieldLabel wallFieldLabel = new FieldLabel(wallSpinnerField, "Matching elements");
+		wallFieldLabel.setLabelWidth(120);
+		
+		BorderLayoutContainer wallBLC = new BorderLayoutContainer();
+		wallBLC.setSouthWidget(wallFieldLabel, new BorderLayoutData(25));
+		wallBLC.setCenterWidget(wallSelectionLV, new MarginData(2));
+		
+		ContentPanel wallPanel = new ContentPanel();
+		wallPanel.setHeaderVisible(true);
+		wallPanel.setHeading("Wall search");
+		wallPanel.add(wallBLC);
+		wallPanel.getHeader().setStylePrimaryName("frame-header");
+
+		new DropTarget(wallPanel) {
+
+			@Override
+			protected void onDragDrop(DndDropEvent event) {
+				super.onDragDrop(event);
+				if (event.getData() instanceof DepictionEntry) {
+					DepictionEntry de = (DepictionEntry) event.getData();
+					selectedWallsLS.clear();
+					selectedWallsLS.addAll(de.getWalls());
+//					icoSelector.setSelectedIconography(de.getRelatedIconographyList());
+					if ((de.getWalls() != null) && (selectedWallsLS.size() > 0)) {
+						wallSpinnerField.setEnabled(true);
+						wallSpinnerField.setMaxValue(selectedWallsLS.size());
+					} else {
+						wallSpinnerField.setEnabled(false);
+					}
+				}
+			}
+			
+		};
+		
+		ToolButton wallSelectorTB = new ToolButton(new IconConfig("editButton", "editButtonOver"));
+		wallSelectorTB.setToolTip(Util.createToolTip("Open Wall Element selection"));
+		wallSelectorTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				showWallSelection();
+			}
+		});
+		wallPanel.addTool(wallSelectorTB);
+
+		ToolButton wallSelectionResetTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
+		wallSelectionResetTB.setToolTip(Util.createToolTip("Reset selection"));
+		wallSelectionResetTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				selectedWallsLS.clear();
+			}
+		});
+		wallPanel.addTool(wallSelectionResetTB);
+		// position
+
+		positionSelectionLV = new ListView<PositionEntry, PositionEntry>(positionEntryList,
+				new IdentityValueProvider<PositionEntry>(),
+				new SimpleSafeHtmlCell<PositionEntry>(new AbstractSafeHtmlRenderer<PositionEntry>() {
+					final PositionViewTemplates ocvTemplates = GWT.create(PositionViewTemplates.class);
+
+					@Override
+					public SafeHtml render(PositionEntry entry) {
+						return ocvTemplates.positionLabel(entry.getName());
+					}
+
+				}));
+		positionSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+		positionSelectionLV.addDomHandler(getShortkey(), KeyPressEvent.getType());
+
+		ContentPanel positionPanel = new ContentPanel();
+		positionPanel.setHeaderVisible(true);
+		positionPanel
+				.setToolTip(Util.createToolTip("Search for positions.", "Select one or more elements to search for Ornamentations."));
+		positionPanel.setHeading("Position");
+		positionPanel.add(positionSelectionLV);
+		positionPanel.getHeader().setStylePrimaryName("frame-header");
+
+		ToolButton resetOrnamentPositionPanelTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
+		resetOrnamentPositionPanelTB.setToolTip(Util.createToolTip("Reset selection"));
+		resetOrnamentPositionPanelTB.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				positionSelectionLV.getSelectionModel().deselectAll();
+			}
+		});
+		positionPanel.addTool(resetOrnamentPositionPanelTB);
+
 		/**
 		 * assemble shortNameSearchTF
 		 */
@@ -444,13 +647,15 @@ public class DepictionFilter extends AbstractFilter {
     depictionFilterALC.add(cavePanel);
     depictionFilterALC.add(currentLocationPanel);
     depictionFilterALC.add(iconographyPanel);
+    depictionFilterALC.add(wallPanel);
+    depictionFilterALC.add(positionPanel);
+
 //    depictionFilterALC.setActiveWidget(cavePanel);
 
     BorderLayoutContainer depictionFilterBLC = new BorderLayoutContainer();
     depictionFilterBLC.setNorthWidget(shortNameSearchTF, new BorderLayoutData(20));
     depictionFilterBLC.setCenterWidget(depictionFilterALC, new MarginData(5, 0, 0, 0));
     depictionFilterBLC.setHeight(450);
-
     return depictionFilterBLC;
 	}
 
@@ -463,6 +668,7 @@ public class DepictionFilter extends AbstractFilter {
 				
 				@Override
 				public void onSelect(SelectEvent event) {
+					icoSelector.imgPopHide();
 					selectedIconographyLS.clear();
 					selectedIconographyLS.addAll(icoSelector.getSelectedIconography());
 					if ((icoSelector.getSelectedIconography() != null) && (selectedIconographyLS.size() > 0)) {
@@ -477,6 +683,8 @@ public class DepictionFilter extends AbstractFilter {
 				}
 			});
 			icoSelector.addTool(closeTB);
+			//icoSelector.selectChildren(true);
+			//icoSelector.selectNoParents(true);
 			extendedFilterDialog.add(icoSelector);
 			extendedFilterDialog.setSize("750", "500");
 			extendedFilterDialog.setModal(true);
@@ -485,6 +693,57 @@ public class DepictionFilter extends AbstractFilter {
 		ArrayList<IconographyEntry> list = new ArrayList<IconographyEntry>();
 		list.addAll(selectedIconographyLS.getAll());
 		icoSelector.setSelectedIconography(list);
+	}
+	private void showWallSelection() {
+//		if (extendedWallFilterDialog == null) {
+//			extendedWallFilterDialog = new PopupPanel();
+//			ToolButton closeWallTB = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
+//			closeWallTB.setToolTip(Util.createToolTip("Close selection.", "Currently selected items will be used in the filter."));
+//			closeWallTB.addSelectHandler(new SelectHandler() {
+//				
+//				@Override
+//				public void onSelect(SelectEvent event) {
+//					selectedWallsLS.clear();
+//					selectedWallsLS.addAll(wallTree.wallTree.getSelectionModel().getSelectedItems());
+//					if ((wallTree.wallTree.getSelectionModel().getSelectedItems() != null) && (selectedWallsLS.size() > 0)) {
+//						wallSpinnerField.setEnabled(true);
+//						wallSpinnerField.setMaxValue(selectedWallsLS.size());
+//					} else {
+//						wallSpinnerField.setEnabled(false);
+//					}
+//					extendedWallFilterDialog.hide();
+//					invokeSearch();
+//				}
+//			});
+//			FramedPanel wallEditPanel = new FramedPanel();
+//			wallEditPanel.addTool(closeWallTB);
+//			Util.doLogging("Größe von wallTree: "+Integer.toString(wallTree.wallTree.getStore().getAllItemsCount()));
+//			wallTree.wallTree.setVisible(true);
+//			wallEditPanel.add(wallTree.wallSelectorBLC);
+//			extendedWallFilterDialog.add(wallEditPanel);
+//			extendedWallFilterDialog.setSize("750", "500");
+//			extendedWallFilterDialog.setModal(true);
+//		}
+		pe = new PositionEditor(null, selectedWallsLS.getAll(), true) {
+			@Override
+			protected void save(List<WallTreeEntry> results ) {
+				selectedWallsLS.clear();
+				selectedWallsLS.addAll(getSelectedWalls());
+				if ((pe.getSelectedItems() != null) && (selectedWallsLS.size() > 0)) {
+					wallSpinnerField.setEnabled(true);
+					wallSpinnerField.setValue(1);
+					wallSpinnerField.setMaxValue(selectedWallsLS.size());
+				} else {
+					wallSpinnerField.setEnabled(false);
+					wallSpinnerField.setValue(1);
+				}
+
+				invokeSearch();
+				}
+			};
+		pe.selectChildren(true);
+		pe.show();
+//		extendedWallFilterDialog.center();
 	}
 
 	@Override
@@ -503,6 +762,16 @@ public class DepictionFilter extends AbstractFilter {
 		for (CaveEntry ce : caveSelectionLV.getSelectionModel().getSelectedItems()) {
 			searchEntry.getCaveIdList().add(ce.getCaveID());
 		}
+		if (imgIDs.size()>0) {
+			for (int img : imgIDs) {
+				searchEntry.getImageIdList().add(img);
+			}	
+		}
+		if (bibIDs.size()>0) {
+			for (int img : bibIDs) {
+				searchEntry.getBibIdList().add(img);
+			}	
+		}
 		
 		for (LocationEntry le : locationSelectionLV.getSelectionModel().getSelectedItems()) {
 			searchEntry.getLocationIdList().add(le.getLocationID());
@@ -513,6 +782,15 @@ public class DepictionFilter extends AbstractFilter {
 		}
 		
 		searchEntry.setCorrelationFactor(iconographySpinnerField.isEnabled() ? iconographySpinnerField.getValue() : 0);
+		for (WallTreeEntry wte : selectedWallsLS.getAll()) {
+			searchEntry.getWallIDList().add(wte.getWallLocationID());
+		}
+		for (PositionEntry oce : positionSelectionLV.getSelectionModel().getSelectedItems()) {
+			searchEntry.getPositionIDList().add(oce.getPositionID());
+		}
+
+		//Util.doLogging(Boolean.toString(wallSpinnerField.isEnabled()));
+		searchEntry.setCorrelationFactorWT(wallSpinnerField.isEnabled() ? wallSpinnerField.getValue() : 0);
 		
 		return searchEntry;
 	}

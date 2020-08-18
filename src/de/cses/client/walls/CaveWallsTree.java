@@ -66,7 +66,7 @@ public class CaveWallsTree {
 
 	public void findParent(WallTreeEntry child) {
 		if (child.getParentID()==0) {
-		    Util.doLogging("Found: "+Integer.toString(child.getParentID())+" - "+Integer.toString(child.getWallLocationID()));
+		    //Util.doLogging("Found: "+Integer.toString(child.getParentID())+" - "+Integer.toString(child.getWallLocationID()));
 		    if (wallTreeStore.findModel(child)==null) {
 		    	wallTreeStore.add(child);
 		    }
@@ -76,7 +76,7 @@ public class CaveWallsTree {
 			if (wall.getWallLocationID()==child.getParentID()) {
 
 					findParent(wall);
-					Util.doLogging("Found: "+Integer.toString(child.getParentID())+" - "+Integer.toString(child.getWallLocationID()));
+					//Util.doLogging("Found: "+Integer.toString(child.getParentID())+" - "+Integer.toString(child.getWallLocationID()));
 				    if (wallTreeStore.findModel(child)==null) {
 				    	wallTreeStore.add(wall, child);
 				    }
@@ -107,7 +107,6 @@ public class CaveWallsTree {
 
 	public void setWallTreeStore( List<WallTreeEntry> wallIDs) {
 		if (wallIDs != null){
-			Util.doLogging("Länge von Elements:"+ Integer.toString(wallIDs.size()));
 			for (WallTreeEntry item : wallIDs) {
 				if ((item.getParentID()==0)) {
 					wallTreeStore.add(item);

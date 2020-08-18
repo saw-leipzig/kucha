@@ -48,6 +48,7 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 	private String monthEN="", monthTR="", monthORG="";
 	private String pagesEN="", pagesORG="", pagesTR="";
 	private String comments="";
+	private String quotedPages="";
 	private String notes="";
 	private String url="";
 	private String uri="";
@@ -81,7 +82,7 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 			String pagesEN, String pagesORG, String pagesTR, 
 			String comments, String notes, String url, String uri, boolean unpublished, int firstEditionBibID, 
 			int accessLevel, String abstractText, String thesisType, String editorType, boolean officialTitleTranslation,
-			String bibtexKey, String lastChangedOn, boolean hasHan) {
+			String bibtexKey, String lastChangedOn, boolean hasHan, String quotedPage) {
 		super();
 		this.annotatedBibliographyID = annotatedBibliographyID;
 		this.publicationType = publicationType;
@@ -142,6 +143,7 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 		this.bibtexKey = bibtexKey;
 		this.setModifiedOn(lastChangedOn);
 		this.hasHan=hasHan;
+		this.quotedPages=quotedPage;
 	}
 
 	public AnnotatedBibliographyEntry() { }
@@ -164,7 +166,7 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 				monthEN, monthORG, monthTR,  
 				pagesEN, pagesORG, pagesTR, 
 				comments, notes, url, uri, unpublished, firstEditionBibID, accessLevel, 
-				abstractText, thesisType, editorType, officialTitleTranslation, bibtexKey, this.modifiedOn, this.hasHan);
+				abstractText, thesisType, editorType, officialTitleTranslation, bibtexKey, this.modifiedOn, this.hasHan, this.quotedPages);
 		ArrayList<AuthorEntry> clonedAuthorList = new ArrayList<AuthorEntry>();
 		for (AuthorEntry ae : this.authorList) {
 			clonedAuthorList.add(ae);
@@ -737,6 +739,21 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 	}
 
 	/**
+	 * @return the quotedPages
+	 */
+	public String getQuotedPages() {
+		return quotedPages;
+	}
+
+	/**
+	 * @param comments
+	 *          the quotedPaged to set
+	 */
+	public void setQuotedPages(String quotedPages) {
+		this.quotedPages = quotedPages;
+	}
+
+	/**
 	 * @return the notes
 	 */
 	public String getNotes() {
@@ -943,7 +960,7 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 			result = ae.getName() + ", et al.";
 		} else {
 			for (AuthorEntry ae : authorList) {
-				result = result.concat(!result.isEmpty() ? "; " + ae.getName() : ae.getName());
+				result = result.concat(!result.isEmpty() ? "/ " + ae.getName() : ae.getName());
 			}
 		}
 		return result;
@@ -960,7 +977,7 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 			result = ae.getName() + ", et al.";
 		} else {
 			for (AuthorEntry ae : editorList) {
-				result = result.concat(!result.isEmpty() ? "; " + ae.getName() : ae.getName());
+				result = result.concat(!result.isEmpty() ? "/ " + ae.getName() : ae.getName());
 			}
 		}
 		return result;
@@ -1046,7 +1063,12 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 			result="";			
 		}
 		else {
-			result = subtitleEN.isEmpty() ? "["+titleEN+"]" : "["+titleEN + ": " + subtitleEN+"]";
+			if (officialTitleTranslation) {
+				result = subtitleEN.isEmpty() ? "/ "+titleEN+"" : "/ "+titleEN + ": " + subtitleEN+"";
+			}
+			else {
+				result = subtitleEN.isEmpty() ? "["+titleEN+"]" : "["+titleEN + ": " + subtitleEN+"]";
+			}
 		}
 		return result;
 	}
@@ -1068,9 +1090,23 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 	 */
 	@Override
 	public int compareTo(AnnotatedBibliographyEntry bibEntry) {
-		String toString = !bibEntry.authorList.isEmpty() ? bibEntry.getAuthors() : (!bibEntry.getEditorList().isEmpty() ? bibEntry.getEditors(): "");
-		String fromString = !authorList.isEmpty() ? getAuthors() : (!getEditorList().isEmpty() ? getEditors(): "");
+		//String toString = !bibEntry.authorList.isEmpty() ? bibEntry.getAuthors() : (!bibEntry.getEditorList().isEmpty() ? bibEntry.getEditors(): "");
+		//String fromString = !authorList.isEmpty() ? getAuthors() : (!getEditorList().isEmpty() ? getEditors(): "");
+		String toString = Integer.toString(bibEntry.getAnnotatedBibliographyID());
+		String fromString = Integer.toString(getAnnotatedBibliographyID());
+		
 		return fromString.compareTo(toString);
 	}
+    @Override
+    public boolean equals(Object object) {
+		//String toString = !bibEntry.authorList.isEmpty() ? bibEntry.getAuthors() : (!bibEntry.getEditorList().isEmpty() ? bibEntry.getEditors(): "");
+		//String fromString = !authorList.isEmpty() ? getAuthors() : (!getEditorList().isEmpty() ? getEditors(): "");
+		Integer ID1 = ((AnnotatedBibliographyEntry)object).getAnnotatedBibliographyID();
+		Integer ID2 = getAnnotatedBibliographyID();
+		
+		return ID1==ID2;
+	}
+	
+	
 
 }

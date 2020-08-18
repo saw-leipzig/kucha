@@ -92,8 +92,7 @@ public class CaveSearchController extends AbstractSearchController {
 	@Override
 	public void addNewElement() {
 		DialogBox caveEditorPanel = new DialogBox();
-		CaveEditor ced = new CaveEditor(null);
-		ced.addEditorListener(new EditorListener() {
+		EditorListener el = new EditorListener() {
 
 			@Override
 			public void closeRequest(AbstractEntry entry) {
@@ -105,7 +104,8 @@ public class CaveSearchController extends AbstractSearchController {
 
 //			@Override
 //			public void updateEntryRequest(AbstractEntry updatedEntry) { }
-		});
+		};
+		CaveEditor ced = new CaveEditor(null, el);
 		ScrollPanel scrpanel = new ScrollPanel();
 //		scrpanel.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
 //		scrpanel.add(ced);

@@ -14,6 +14,7 @@
 package de.cses.client.depictions;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
@@ -21,6 +22,7 @@ import com.sencha.gxt.core.client.XTemplates;
 
 import de.cses.client.ui.TextElement;
 import de.cses.shared.AnnotatedBibliographyEntry;
+import de.cses.shared.WallTreeEntry;
 
 /**
  * @author alingnau

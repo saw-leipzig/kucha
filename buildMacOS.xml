@@ -24,6 +24,7 @@
 		<fileset dir="lib" includes="*.jar" />
 <!--		<fileset dir="lib" includes="gxt-chart.jar" />  -->
 	</path>
+
 	<target name="compile-servlets" description="Compiles the servlets source">
 		<delete dir="war/WEB-INF/classes" failonerror="false" />
 		<mkdir dir="war/WEB-INF/classes" />

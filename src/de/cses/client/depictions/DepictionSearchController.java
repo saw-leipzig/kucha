@@ -63,13 +63,13 @@ public class DepictionSearchController extends AbstractSearchController {
 
 			@Override
 			public void onFailure(Throwable caught) {
+				Util.doLogging("Oh-oh"+caught.getMessage());
 				caught.printStackTrace();
 				getResultView().setSearchEnabled(true);
 			}
 
 			@Override
 			public void onSuccess(ArrayList<DepictionEntry> result) {
-				Info.display("Gefundene DepictionEntries:",Integer.toString(result.size()));
 				String masterImageIDs = "";
 				//Info.display("Result", "Größe = "+Integer.toString(result.size()));
 				int count = 0;
@@ -86,7 +86,7 @@ public class DepictionSearchController extends AbstractSearchController {
 				int x = result.size();
 				for (DepictionEntry de : result){
 					count++;
-					Util.doLogging("Anzahl der Wallentries bei DepictionID "+Integer.toString(de.getDepictionID())+": "+Integer.toString(de.getWalls().size()));
+					//Util.doLogging("DepictionID "+Integer.toString(de.getDepictionID()));
 					getResultView().addResult(new DepictionView(de,UriUtils.fromTrustedString("icons/load_active.png")));
 					if (masterImageIDs == "") {
 						masterImageIDs = Integer.toString(de.getMasterImageID());
@@ -118,8 +118,7 @@ public class DepictionSearchController extends AbstractSearchController {
 	@Override
 	public void addNewElement() {
 		final PopupPanel depictionEditorPanel = new PopupPanel(false);
-		DepictionEditor de = new DepictionEditor(null);
-		de.addEditorListener(new EditorListener() {
+		EditorListener el = new EditorListener() {
 			
 			@Override
 			public void closeRequest(AbstractEntry entry) {
@@ -144,7 +143,8 @@ public class DepictionSearchController extends AbstractSearchController {
 
 //			@Override
 //			public void updateEntryRequest(AbstractEntry updatedEntry) { }
-		});
+		};
+		DepictionEditor de = new DepictionEditor(null, el);
 		depictionEditorPanel.add(de);
 		depictionEditorPanel.setGlassEnabled(true);
 		depictionEditorPanel.center();

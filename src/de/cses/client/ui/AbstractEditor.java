@@ -16,16 +16,23 @@ package de.cses.client.ui;
 import java.util.ArrayList;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
-import com.sencha.gxt.widget.core.client.info.Info;
+import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
+import com.sencha.gxt.widget.core.client.event.CellClickEvent;
+import com.sencha.gxt.widget.core.client.event.CellClickEvent.CellClickHandler;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.Util;
 import de.cses.shared.AbstractEntry;
-import de.cses.shared.CaveEntry;
 
 /**
  * @author alingnau
@@ -33,13 +40,113 @@ import de.cses.shared.CaveEntry;
  */
 public abstract class AbstractEditor implements IsWidget {
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
-
+	protected ToolButton nextToolButton;
+	protected ToolButton prevToolButton;
 	private ArrayList<EditorListener> listenerList = new ArrayList<EditorListener>();
+	protected void doslide( int where) {
+		AbstractView el = (AbstractView)listenerList.get(0);
+		closeEditor(el.getEntry());
+		AbstractView nextChild = (AbstractView)(((FlowLayoutContainer)el.getParent()).getWidget(((FlowLayoutContainer)el.getParent()).getWidgetIndex(el)+where));;
+		nextChild.showEditor(nextChild.getEntry());
+
+	}
+
+	protected void createNextPrevButtons() {
+		nextToolButton = new ToolButton(new IconConfig("leftButton", "leftButtonOver"));
+		nextToolButton.setToolTip(Util.createToolTip("next entry"));
+		nextToolButton.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+//				Util.doLogging("Start caling next item.");
+					AbstractView el = (AbstractView)listenerList.get(0);
+					Util.doLogging(Integer.toString(el.getClickNumber()));
+					if (el.getClickNumber()>0) {
+						
+						Util.showYesNo("Possible unsaved Changes!", "You may have changed values of this Entry. Do you whish to save them before openening another Entry?", new SelectHandler() {
+
+							@Override
+							public void onSelect(SelectEvent event) {
+								save(false,1);
+
+							}
+						}, new SelectHandler() {
+
+							@Override
+							public void onSelect(SelectEvent event) {
+								doslide(1);
+							}
+					
+							
+						}
+						, new KeyDownHandler() {
+
+							@Override
+							public void onKeyDown(KeyDownEvent e) {
+								save(false,1);
+							}}
+					
+							
+						);
+
+					}
+					else {
+						doslide(1);
+					}
+				}
+		});
+
+		prevToolButton = new ToolButton(new IconConfig("rightButton", "rightButtonOver"));
+		prevToolButton.setToolTip(Util.createToolTip("previous entry"));	
+		prevToolButton.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+//				Util.doLogging("Start caling next item.");
+				AbstractView el = (AbstractView)listenerList.get(0);
+					if (el.getClickNumber()>0) {
+						Util.showYesNo("Possible unsaved Changes!", "You may have changed values of this Entry. Do you whish to save them before openening another Entry?", new SelectHandler() {
+
+							@Override
+							public void onSelect(SelectEvent event) {
+								save(false,-1);
+							}
+						}, new SelectHandler() {
+
+							@Override
+							public void onSelect(SelectEvent event) {
+								doslide(-1);
+							}
+					
+							
+						}
+						, new KeyDownHandler() {
+
+							@Override
+							public void onKeyDown(KeyDownEvent e) {
+								save(false,-1);
+								
+							}}
+					
+							
+						);
+
+					}
+					else {
+						doslide(-1);
+					}
+				}
+		});
+
+	}
+
 	
 	public void addEditorListener(EditorListener l) {
 		listenerList.add(l);
 	}
 	public void setfocus() {
+	}
+	protected void save(boolean close, int slide) {
 	}
 	public ArrayList<EditorListener> getListenerList() {
 		return listenerList;
@@ -70,7 +177,7 @@ public abstract class AbstractEditor implements IsWidget {
 			((Widget)el).removeFromParent();
 		}
 		catch (Exception e){
-			Util.doLogging("There was a problem deleting the Image: "+e.getMessage());
+			Util.doLogging("There was a problem deleting the Entry: "+e.getMessage());
 		}
 
 		}

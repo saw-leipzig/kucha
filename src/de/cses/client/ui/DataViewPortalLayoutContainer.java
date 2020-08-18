@@ -29,6 +29,8 @@ import de.cses.client.Util;
 import de.cses.client.bibliography.AnnotatedBibliographyDataDisplay;
 import de.cses.client.caves.CaveDataDisplay;
 import de.cses.client.depictions.DepictionDataDisplay;
+import de.cses.client.images.ImageDataDisplay;
+import de.cses.client.ornamentic.OrnamentDataDisplay;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographyEntry;
@@ -59,9 +61,9 @@ public class DataViewPortalLayoutContainer extends PortalLayoutContainer {
 		} else if (entry instanceof DepictionEntry) {
 			add(new DepictionDataDisplay((DepictionEntry) entry), 0);
 		} else if (entry instanceof ImageEntry) {
-			// TODO
+			add(new ImageDataDisplay((ImageEntry) entry), 0);
 		} else if (entry instanceof OrnamentEntry) {
-			// TODO
+			add(new OrnamentDataDisplay((OrnamentEntry) entry), 0);
 		} else if (entry instanceof AnnotatedBibliographyEntry) {
 			add(new AnnotatedBibliographyDataDisplay((AnnotatedBibliographyEntry)entry), 0);
 		}

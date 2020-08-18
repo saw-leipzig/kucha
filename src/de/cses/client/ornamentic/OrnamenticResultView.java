@@ -30,11 +30,14 @@ import com.sencha.gxt.widget.core.client.info.Info;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.Util;
+import de.cses.client.depictions.DepictionView;
 import de.cses.client.ui.AbstractResultView;
 import de.cses.client.user.UserLogin;
+import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DepictionSearchEntry;
+import de.cses.shared.ImageEntry;
 import de.cses.shared.OrnamentEntry;
 import de.cses.shared.OrnamenticSearchEntry;
 
@@ -80,7 +83,57 @@ public class OrnamenticResultView extends AbstractResultView{
 	public OrnamenticResultView(String title) {
 		super(title);
 		//setHeight(300);
+		addMoreResults.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				OrnamenticSearchEntry oes = (OrnamenticSearchEntry)getSearchEntry();
+				dbService.searchOrnaments((OrnamenticSearchEntry)getSearchEntry(), new AsyncCallback<ArrayList<OrnamentEntry>>() {
 
+					@Override
+					public void onSuccess(ArrayList<OrnamentEntry> result) {
+						Util.doLogging("Größe des Results: "+Integer.toString(result.size()));
+						int count=0;
+						String imageIDs="";
+						searchEntry.setEntriesShowed(searchEntry.getEntriesShowed()+searchEntry.getMaxentries());
+						for (OrnamentEntry de : result) {
+							count++;
+							//Util.doLogging("Anzahl der Wallentries bei DepictionID "+Integer.toString(de.getDepictionID())+": "+Integer.toString(de.getWalls().size()));
+
+							addResult(new OrnamenticView(de,UriUtils.fromTrustedString("icons/load_active.png")));
+							if (imageIDs == "") {
+								imageIDs = Integer.toString(de.getMasterImageID());
+							}
+							else {
+								imageIDs = imageIDs + ","+Integer.toString(de.getMasterImageID());
+							}
+							if (count==20 ){
+								getPics(imageIDs, 120, UserLogin.getInstance().getSessionID());
+								imageIDs="";
+								count=0;
+							}
+						}
+						if (imageIDs !="") {
+							getPics(imageIDs, 120, UserLogin.getInstance().getSessionID());
+						}
+						if (result.size()==searchEntry.getMaxentries()) {
+							setSearchbuttonVisible();
+						}
+						else {
+							setSearchbuttonHide();
+						}
+						setSearchEnabled(true);
+						
+					}
+
+					@Override
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+						setSearchEnabled(true);
+					}
+				});
+			}
+		});
 		new DropTarget(this) {
 			@Override
 			protected void onDragDrop(DndDropEvent event) {
@@ -97,10 +150,16 @@ public class OrnamenticResultView extends AbstractResultView{
 				else if (event.getData() instanceof DepictionEntry) {
 					searchEntry.setIconographys(((DepictionEntry) event.getData()).getRelatedIconographyList());
 				}
+				else if (event.getData() instanceof AnnotatedBibliographyEntry) {
+					searchEntry.getBibIdList().add(((AnnotatedBibliographyEntry) event.getData()).getAnnotatedBibliographyID());
+				}
+				else if (event.getData() instanceof ImageEntry) {
+					searchEntry.getImageIDList().add(((ImageEntry) event.getData()).getImageID());
+				}
 				else {
 					return;
 				}
-				boolean startsearch=(searchEntry.getCaves().size()>0)||(searchEntry.getIconographys().size()>0);
+				boolean startsearch=(searchEntry.getCaves().size()>0)||(searchEntry.getIconographys().size()>0)||(searchEntry.getBibIdList().size()>0)||(searchEntry.getImageIDList().size()>0);
 				Util.showYesNo("Delete old filters?", "Do you whisch to delete old filters?", new SelectHandler() {
 					
 					@Override

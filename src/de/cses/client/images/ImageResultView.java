@@ -29,6 +29,7 @@ import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.StaticTables;
 import de.cses.client.Util;
 import de.cses.client.ui.AbstractResultView;
 import de.cses.client.user.UserLogin;
@@ -39,6 +40,7 @@ import de.cses.shared.DepictionSearchEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageSearchEntry;
 import de.cses.shared.OrnamentEntry;
+import de.cses.shared.SiteEntry;
 
 /**
  * @author alingnau
@@ -50,6 +52,7 @@ public class ImageResultView extends AbstractResultView {
 	 * Create a remote service proxy to talk to the server-side service.
 	 */
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
+	ImageResultView irv;
 
 	/**
 	 * @param title
@@ -58,41 +61,52 @@ public class ImageResultView extends AbstractResultView {
 	public ImageResultView(String title) {
 		super(title);
 		//setHeight(300);
+		irv=this;
 		addMoreResults.addSelectHandler(new SelectHandler() {
 			
 			@Override
 			public void onSelect(SelectEvent event) {
 				//Info.display("Addmore ausgelöst.",Integer.toString(searchEntry.getEntriesShowed()));
-				dbService.searchImages((ImageSearchEntry)getSearchEntry(), new AsyncCallback<ArrayList<ImageEntry>>() {
+				dbService.searchImages((ImageSearchEntry)getSearchEntry(), new AsyncCallback<Map<Integer, ArrayList<ImageEntry>>>() {
 
 					@Override
-					public void onSuccess(ArrayList<ImageEntry> result) {
+					public void onSuccess(Map<Integer,ArrayList<ImageEntry>> result) {
 						//Info.display("Größe des Results: ",Integer.toString(result.size()));
 						int count=0;
 						String imageIDs="";
 						searchEntry.setEntriesShowed(searchEntry.getEntriesShowed()+searchEntry.getMaxentries());
-						for (ImageEntry ie : result) {
-							count++;
-							addResult(new ImageView(ie,UriUtils.fromTrustedString("icons/load_active.png")));
-							if (imageIDs == "") {
-								imageIDs = Integer.toString(ie.getImageID());
+						for (Integer key : result.keySet()) {
+							if (searchEntry.getMaxentries()>key) {
+								setSelectorTitle(" ("+Integer.toString(key)+"/"+Integer.toString(key)+")");
+							}
+							else{
+								setSelectorTitle(" ("+Integer.toString(searchEntry.getMaxentries())+"/"+Integer.toString(key)+")");
+							}
+							for (ImageEntry ie: result.get(key)) {
+								
+								count++;
+								addResult(new ImageView(ie,UriUtils.fromTrustedString("icons/load_active.png"), irv));
+								if (imageIDs == "") {
+									imageIDs = Integer.toString(ie.getImageID());
+								}
+								else {
+									imageIDs = imageIDs + ","+Integer.toString(ie.getImageID());
+								}
+								if (count==20 ){
+									getPics(imageIDs, 120, UserLogin.getInstance().getSessionID());
+									imageIDs="";
+									count=0;
+								}
+							}
+							if (result.get(key).size()==searchEntry.getMaxentries()) {
+								setSearchbuttonVisible();
 							}
 							else {
-								imageIDs = imageIDs + ","+Integer.toString(ie.getImageID());
+								setSearchbuttonHide();
 							}
-							if (count==20 ){
-								getPics(imageIDs, 120, UserLogin.getInstance().getSessionID());
-								imageIDs="";
-								count=0;
-							}
+
 						}
 						getPics(imageIDs, 120, UserLogin.getInstance().getSessionID());				
-						if (result.size()==searchEntry.getMaxentries()) {
-							setSearchbuttonVisible();
-						}
-						else {
-							setSearchbuttonHide();
-						}
 						setSearchEnabled(true);
 						
 					}
@@ -116,12 +130,18 @@ public class ImageResultView extends AbstractResultView {
 				} else {
 					searchEntry = new ImageSearchEntry();
 				}
+				String shortName="";
 				if (event.getData() instanceof CaveEntry) {
-					int caveID = ((CaveEntry) event.getData()).getCaveID();
-					DepictionSearchEntry depictionSearchEntry = new DepictionSearchEntry();
-					depictionSearchEntry.getCaveIdList().add(caveID);
-					
-				} else if (event.getData() instanceof AnnotatedBibliographyEntry) {
+					for (SiteEntry se : StaticTables.getInstance().getSiteEntries().values()) {
+						if (se.getSiteID()==((CaveEntry) event.getData()).getSiteID()) {
+							shortName=se.getShortName();
+							break;
+						}
+
+					}
+				searchEntry.setTitleSearch(shortName+" "+((CaveEntry) event.getData()).getOfficialNumber());
+				}
+				else if (event.getData() instanceof AnnotatedBibliographyEntry) {
 					int bibID = ((AnnotatedBibliographyEntry) event.getData()).getAnnotatedBibliographyID();
 					searchEntry.getBibIdList().add(bibID);
 				} else if (event.getData() instanceof DepictionEntry) {
@@ -140,7 +160,7 @@ public class ImageResultView extends AbstractResultView {
 				} else {
 					return;
 				}
-				boolean startsearch=(searchEntry.getCaveIdList().size()>0)||(searchEntry.getBibIdList().size()>0)||(searchEntry.getImageIdList().size()>0);
+				boolean startsearch=(searchEntry.getCaveIdList().size()>0)||(searchEntry.getBibIdList().size()>0)||(searchEntry.getImageIdList().size()>0||(searchEntry.getTitleSearch()!=""));
 				Util.doLogging(Boolean.toString(startsearch));
 				Util.showYesNo("Delete old filters?", "Do you whisch to delete old filters?", new SelectHandler() {
 					

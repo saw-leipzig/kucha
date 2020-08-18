@@ -40,6 +40,7 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.info.Info;
+import com.sencha.gxt.widget.core.client.tree.Tree.CheckCascade;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -66,10 +67,11 @@ public class PositionEditor {
 	private WallTree wallTree;
 	private CaveEntry entry;
 	private List<WallTreeEntry> walls;
+	private boolean setSearch;
 	int init= 0;
 	final PositionViewTemplates pvTemplates = GWT.create(PositionViewTemplates.class);
 
-	PopupPanel popup = new PopupPanel();
+	public PopupPanel popup = new PopupPanel();
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 
 	interface PositionProperties extends PropertyAccess<PositionEntry> {
@@ -83,9 +85,10 @@ public class PositionEditor {
 		SafeHtml positionView(String name);
 	}
 
-	public PositionEditor(CaveEntry entry, List<WallTreeEntry> entries) {
+	public PositionEditor(CaveEntry entry, List<WallTreeEntry> entries, boolean setSearch) {
 		this.entry=entry;
 		this.walls=entries;
+		this.setSearch=setSearch;
 		positionProps = GWT.create(PositionProperties.class);
 		
 		positionEntryLS = new ListStore<PositionEntry>(positionProps.positionID());
@@ -93,10 +96,10 @@ public class PositionEditor {
 		for (PositionEntry ope : StaticTables.getInstance().getPositionEntries().values()) {
 			positionEntryLS.add(ope);
 		}
+		wallTree = new WallTree(StaticTables.getInstance().getWallTreeEntries().values(), walls, false, true, entry);
 
 	}
 	public List<WallTreeEntry> getSelectedWalls() {
-		ArrayList<WallTreeEntry> result = new ArrayList<WallTreeEntry>();
 		return wallTree.wallTree.getCheckedSelection();	
 		
 	}
@@ -108,11 +111,10 @@ public class PositionEditor {
 
 		FramedPanel selectWallFP = new FramedPanel();
 		selectWallFP.setHeading("Select Wall");
-		wallTree = new WallTree(StaticTables.getInstance().getWallTreeEntries().values(), walls, false, true, entry);
 
 				//Info.display("Ausgewählt: ",wallTree.wallTree.getSelectionModel().getSelectedItem().getText());
 
-		selectWallFP.add(wallTree.wallTree);
+		selectWallFP.add(wallTree.wallSelectorBLC);
 	
 		PositionSelectionLV = new ListView<PositionEntry, PositionEntry>(positionEntryLS,
 				new IdentityValueProvider<PositionEntry>(),
@@ -148,12 +150,26 @@ public class PositionEditor {
 		selectWallFP.setSize("600px", "450px");
 		
 		ToolButton cancelTB = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
-		cancelTB.setToolTip(Util.createToolTip("close"));
-		selectWallFP.setHeading("Add Position in Cave");
+		if (setSearch) {
+			cancelTB.setToolTip(Util.createToolTip("Close selection.", "Currently selected items will be used in the filter."));			
+		}
+		else {
+			cancelTB.setToolTip(Util.createToolTip("close"));			
+		}
+		if (setSearch) {
+			selectWallFP.setHeading("Select walls for search.");
+		}
+		else {
+			selectWallFP.setHeading("Add Position in Cave");
+		}
+		
 		cancelTB.addSelectHandler(new SelectHandler() {
 
 			@Override
 			public void onSelect(SelectEvent event) {
+				if (setSearch) {
+					save(getSelectedWalls());
+				}
 				popup.hide();
 			}
 		});
@@ -167,14 +183,18 @@ public class PositionEditor {
 				PopupPanel editWallPosition = new PopupPanel();
 				FramedPanel positionFP = new FramedPanel();
 				positionFP.setHeading("Select position");
+				PositionSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
 				if (wallTree.wallTree.getSelectionModel().getSelectedItem().getPosition()==null) {
 					PositionSelectionLV.getSelectionModel().deselectAll();
 				}
 				else {
 					PositionSelectionLV.getSelectionModel().deselectAll();
-					PositionSelectionLV.getSelectionModel().setSelection(wallTree.wallTree.getSelectionModel().getSelectedItem().getPosition());
+//					PositionSelectionLV.getSelectionModel().setSelection(wallTree.wallTree.getSelectionModel().getSelectedItem().getPosition());
+					for (PositionEntry pe : wallTree.wallTree.getSelectionModel().getSelectedItem().getPosition()) {
+						PositionSelectionLV.getSelectionModel().select(true, pe);
+					}
+					
 				}
-				PositionSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
 				positionFP.add(PositionSelectionLV);
 				editWallPosition.add(positionFP);
 				ToolButton cancelpositionTB = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
@@ -221,8 +241,10 @@ public class PositionEditor {
 				popup.hide();
 			}
 		});
-		selectWallFP.addTool(editTB);
-		selectWallFP.addTool(saveTB);
+		if (!setSearch) {
+			selectWallFP.addTool(editTB);
+			selectWallFP.addTool(saveTB);			
+		}
 		selectWallFP.addTool(cancelTB);
 
 
@@ -303,7 +325,18 @@ public class PositionEditor {
 		popup.center();
 
 	}
-	
+	public List<WallTreeEntry> getSelectedItems(){
+		return wallTree.wallTree.getSelectionModel().getSelectedItems();
+	}
+	public void selectChildren(boolean Children) {
+		if (Children) {
+				wallTree.wallTree.setCheckStyle(CheckCascade.CHILDREN);
+		
+		}
+		else {
+			wallTree.wallTree.setCheckStyle(CheckCascade.NONE);
+		}
+	}
 	public void show(CaveEntry entry) {
 		//Afruf mit Entry zum Bearbeiten
 		init = 1;

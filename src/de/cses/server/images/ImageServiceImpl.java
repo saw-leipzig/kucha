@@ -15,6 +15,9 @@ package de.cses.server.images;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -65,14 +68,8 @@ public class ImageServiceImpl extends HttpServlet {
 		String fileType, filename=null;
 
 		response.setContentType("text/plain");
-		
 		String origUploadFileName = request.getParameter("origImageFileName");
-		if (!connector.getImageEntries("Title=\"" + origUploadFileName + "\"").isEmpty()) { // filename already exists
-			System.err.println(origUploadFileName + " already exists in database!");
-			response.getWriter().write(String.valueOf(0));
-			response.getWriter().close();
-			return;
-		}
+		String hasID = request.getParameter("hasID");
 		File imgHomeDir = new File(serverProperties.getProperty("home.images"));
 		if (!imgHomeDir.exists()) {
 			imgHomeDir.mkdirs();
@@ -80,6 +77,14 @@ public class ImageServiceImpl extends HttpServlet {
 		FileItemFactory factory = new DiskFileItemFactory(1000000, imgHomeDir);
 		ServletFileUpload upload = new ServletFileUpload(factory);
 		File target = null;
+		if (hasID==null){
+			if (!connector.getImageEntries("Title=\"" + origUploadFileName + "\"").isEmpty()) { // filename already exists
+				System.err.println(origUploadFileName + " already exists in database!");
+				response.getWriter().write(String.valueOf(0));
+				response.getWriter().close();
+				return;
+			}
+		}
 		try {
 			try {
 				List<?> items = upload.parseRequest(request);
@@ -95,16 +100,47 @@ public class ImageServiceImpl extends HttpServlet {
 					if (item.isFormField()) {
 						throw new ServletException("Unsupported non-file property [" + item.getFieldName() + "] with value: " + item.getString());
 					} else {
-						System.err.println("requesting new imageID");
-						newImageID = connector.createNewImageEntry().getImageID();
-						System.err.println("newImageID = " + newImageID);
-						if (newImageID > 0) {
+						if (hasID==null){
+							System.err.println("requesting new imageID");
+							newImageID = connector.createNewImageEntry().getImageID();
+							System.err.println("newImageID = " + newImageID);
 							filename = newImageID + fileType;
+						}
+						else {
+							newImageID= Integer.parseInt(hasID);
+							filename = hasID + fileType;
+						}
+						if (newImageID > 0) {
 							System.err.println("filename = " + filename);
 							ie = connector.getImageEntry(newImageID);
 							ie.setFilename(filename);
+							ie.setTitle(uploadFileName);
+							File oldImageFile = new File(imgHomeDir,filename);
+							oldImageFile.delete();
+							System.out.println("deleting file success: "+Boolean.toString(oldImageFile.exists()));
 							connector.updateImageEntry(ie);
 							target = new File(imgHomeDir, filename);
+							try {	
+								URL imageURL = new URL(
+										"http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/max/0/default.png"
+									);
+								InputStream in = imageURL.openStream();
+								in.close();	
+								ArrayList<String> sizes = new ArrayList<String>();
+								sizes.add("700");
+								sizes.add("300");
+								sizes.add("180");
+								for (String tnSize:sizes) {
+									imageURL = new URL(
+											"http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/!" + tnSize + "," + tnSize + "/0/default.png"
+										);
+									in = imageURL.openStream();
+									in.close();																	
+								}
+							}
+							catch (Exception e) {
+								System.err.println("IllegalStateException"+e.getLocalizedMessage());
+							}
 							item.write(target);
 							item.delete();
 						}
@@ -113,7 +149,7 @@ public class ImageServiceImpl extends HttpServlet {
 			} catch (ServletException e) {
 				System.err.println("ServletException");
 			} catch (Exception e) {
-				System.err.println("IllegalStateException");
+				System.err.println("IllegalStateException"+e.getLocalizedMessage());
 				throw new IllegalStateException(e);
 			}
 		} finally {
@@ -125,7 +161,7 @@ public class ImageServiceImpl extends HttpServlet {
 				response.getWriter().write(String.valueOf(newImageID));
 				response.getWriter().close();
 			}
-		}
+		}	
 	}
 
 	/**

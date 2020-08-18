@@ -113,8 +113,8 @@ public class CaveView extends AbstractView {
 	 * @see de.cses.client.ui.AbstractView#getEditor()
 	 */
 	@Override
-	protected AbstractEditor getEditor(AbstractEntry entry) {
-		return new CaveEditor(cEntry.clone()); // we are cloning the entry and only update it if changes are saved
+	protected AbstractEditor getEditor(AbstractEntry entry, AbstractView av) {
+		return new CaveEditor(cEntry.clone(), av); // we are cloning the entry and only update it if changes are saved
 	}
 
 	/*
@@ -125,6 +125,10 @@ public class CaveView extends AbstractView {
 	@Override
 	protected AbstractEntry getEntry() {
 		return cEntry;
+	}
+	
+	protected void setEntry(CaveEntry entry) {
+		this.cEntry=entry;
 	}
 
 	/*

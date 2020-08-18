@@ -172,6 +172,12 @@ public abstract class AbstractResultView extends Portlet {
 		
 		
 	}
+	public Widget getNextChild(Widget child) {
+		return resultContainer.getWidget(resultContainer.getWidgetIndex(child)+1);
+	}
+	public Widget getPrevChild(Widget child) {
+		return resultContainer.getWidget(resultContainer.getWidgetIndex(child)+1);
+	}
 	/**
 	 * 
 	 * @param enable
@@ -186,6 +192,12 @@ public abstract class AbstractResultView extends Portlet {
 	public void getPics(String masterImageIDs , int res, String sessionID) {
 
 	}
+	
+	public void setSelectorTitle(String title) {
+		
+		this.setHeading(this.title+title);
+	}
+
 	public FlowLayoutContainer getContainer() {
 		return resultContainer;
 	}
@@ -206,8 +218,10 @@ public abstract class AbstractResultView extends Portlet {
 	}
 	public void initiateSearch(AbstractSearchEntry searchEntry, boolean startsearch,boolean reset) {
 		getSearchParent().getFilter().setSearchEntry(searchEntry, reset);
-		setSearchEnabled(false);
+		Util.doLogging(Boolean.toString(startsearch));
+		setSearchEnabled(!startsearch);
 		if (startsearch) {
+			Util.doLogging("Start search");
 			getSearchParent().getFilter().invokeSearch();
 		}
 	}
@@ -223,6 +237,7 @@ public abstract class AbstractResultView extends Portlet {
 			while (widgetIterator.hasNext()) {
 				Widget w = widgetIterator.next();
 				if (w instanceof AbstractView && ((AbstractView)w).getEntry() instanceof AbstractEntry) {
+//					Util.doLogging(((AbstractEntry)((AbstractView)w).getEntry()).getUniqueID()+" - "+droppedEntry.getUniqueID());
 					if (((AbstractEntry)((AbstractView)w).getEntry()).getUniqueID().equals(droppedEntry.getUniqueID())) {
 						return;
 					}

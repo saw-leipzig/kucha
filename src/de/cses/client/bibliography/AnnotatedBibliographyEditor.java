@@ -18,9 +18,6 @@ import java.util.List;
 
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.KeyDownHandler;
-import com.google.gwt.event.dom.client.KeyDownEvent;
-
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -33,15 +30,13 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
-import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.ValueProvider;
@@ -91,7 +86,10 @@ import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.Util;
 import de.cses.client.bibliography.BibDocumentUploader.BibDocumentUploadListener;
+import de.cses.client.ornamentic.OrnamenticView;
 import de.cses.client.ui.AbstractEditor;
+import de.cses.client.ui.AbstractView;
+import de.cses.client.ui.EditorListener;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographyEntry;
@@ -176,7 +174,8 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 		SafeHtml documentLink(SafeUri documentUri, String documentDescription);
 	}
 
-	public AnnotatedBibliographyEditor(AnnotatedBibliographyEntry entry) {
+	public AnnotatedBibliographyEditor(AnnotatedBibliographyEntry entry, EditorListener av) {
+		this.addEditorListener(av);
 		this.bibEntry = entry;
 		documentLinkTemplate = GWT.create(DocumentLinkTemplate.class);
 	}
@@ -190,8 +189,13 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 		}
 		return mainFP;
 	}
-
-	public synchronized void save(boolean close) {
+	@Override
+	protected void save(boolean close,int slide) {
+		for (EditorListener el :getListenerList()) {
+			if (el instanceof AnnotatedBiblographyView) {
+				((AnnotatedBiblographyView)el).setEditor(bibEntry);
+			}
+		}
 
 		if (authorListFilterField != null) {
 			authorListFilterField.clear();
@@ -235,7 +239,7 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 				@Override
 				public void onFailure(Throwable caught) {
 					caught.printStackTrace();
-					Util.showWarning("Error", "A problem occured while saving!");
+					Util.showWarning("Error", "A problem occured while saving! "+caught.getMessage());
 				}
 
 				@Override
@@ -244,6 +248,9 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 						bibtexKeyTF.setValue(result.getBibtexKey(), true);
 						if (close) {
 							closeEditor(bibEntry);
+						}
+						if (slide!=0) {
+							doslide(slide);
 						}
 					}
 				}
@@ -383,6 +390,36 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 	public void createForm() {
 
 		rebuildMainInput();
+		ToolButton deleteToolButton = new ToolButton(new IconConfig("removeButton", "removeButtonOver"));
+		deleteToolButton.setToolTip(Util.createToolTip("delete"));
+		deleteToolButton.addSelectHandler(new SelectHandler() {
+			@Override
+			public void onSelect(SelectEvent event) {
+				de.cses.client.Util.showYesNo("Delete Warning!", "Proceeding will remove this Entry from the Database, are you sure?", new SelectHandler() {
+					
+					@Override
+					public void onSelect(SelectEvent event) {
+						deleteEntry(bibEntry);
+						closeEditor(null);
+					}
+				}, new SelectHandler() {
+						
+					@Override
+					public void onSelect(SelectEvent event) {
+						 
+					}
+				}, new KeyDownHandler() {
+
+					@Override
+					public void onKeyDown(KeyDownEvent e) {
+						
+					}}
+			
+					
+			
+			  );
+			}
+		});
 
 		ToolButton closeToolButton = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
 		closeToolButton.setToolTip(Util.createToolTip("close"));
@@ -393,7 +430,7 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 
 					@Override
 					public void onSelect(SelectEvent event) {
-						save(true);
+						save(true,0);
 					}
 				}, new SelectHandler() {
 
@@ -406,7 +443,7 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 					@Override
 					public void onKeyDown(KeyDownEvent e) {
 						if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
-						save(true);
+						save(true,0);
 						closeEditor(null);
 					}
 			
@@ -423,7 +460,7 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 
 			@Override
 			public void onSelect(SelectEvent event) {
-				save(false);
+				save(false,0);
 			}
 
 		});
@@ -433,13 +470,39 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 		    @Override
 		    public void onKeyDown(KeyDownEvent e) {
 	        	  if ((e.isShiftKeyDown()) && (e.getNativeKeyCode() == KeyCodes.KEY_ENTER)) {
-		            	save(true);
-		        }
+		  				de.cses.client.Util.showYesNo("Exit Warning!", "Do you wish to save before exiting?", new SelectHandler() {
+							
+							@Override
+							public void onSelect(SelectEvent event) {
+								save(true,0);
+								closeEditor(null);
+							}
+						}, new SelectHandler() {
+								
+							@Override
+							public void onSelect(SelectEvent event) {
+								closeEditor(null);
+							}
+						}, new KeyDownHandler() {
+
+							@Override
+							public void onKeyDown(KeyDownEvent e) {
+								if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+								closeEditor(null);
+							}}
+					
+							
+						}
+					  );		        }
 		    }			
 		}, KeyDownEvent.getType());
 		mainFP.setHeading("Annotated Bibliography (entry last modified on " + bibEntry.getModifiedOn() + ")");
 		mainFP.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
 		mainFP.add(tabpanel, new VerticalLayoutData(1.0, 1.0));
+		createNextPrevButtons();
+		mainFP.addTool(prevToolButton);
+		mainFP.addTool(nextToolButton);		
+		mainFP.addTool(deleteToolButton);
 		mainFP.addTool(saveToolButton);
 		mainFP.addTool(closeToolButton);
 		new Resizable(mainFP);

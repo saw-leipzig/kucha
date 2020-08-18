@@ -24,12 +24,13 @@ public class ImageEntry extends AbstractEntry {
 	private String title = "";
 	private String shortName = "";
 	private String date = "";
+	private LocationEntry location = null;
 //	private boolean publicImage;
 
 	public static final int FILENAME = 2;
 
 	public ImageEntry() {
-		this(0, "", "", "", "", null, "", "", 1, AbstractEntry.ACCESS_LEVEL_PRIVATE, "");
+		this(0, "", "", "", "", null, "", "", 1, AbstractEntry.ACCESS_LEVEL_PRIVATE, "", null);
 	}
 	
 	/**
@@ -43,7 +44,7 @@ public class ImageEntry extends AbstractEntry {
 	 * @param captureDate
 	 */
 	public ImageEntry(int imageID, String filename, String title, String shortName, String copyright,
-			PhotographerEntry imageAuthor, String comment, String date, int imageTypeID, int accessLevel, String modifiedOn) {
+			PhotographerEntry imageAuthor, String comment, String date, int imageTypeID, int accessLevel, String modifiedOns, LocationEntry location) {
 		super(accessLevel);
 		this.imageID = imageID;
 		this.filename = filename;
@@ -55,10 +56,12 @@ public class ImageEntry extends AbstractEntry {
 		this.date = date;
 		this.setImageTypeID(imageTypeID);
 		this.setModifiedOn(modifiedOn);
+		this.deleted=false;
+		this.location=location;
 	}
 	
 	public ImageEntry clone() {
-		ImageEntry clonedImageEntry = new ImageEntry(imageID, filename, title, shortName, copyright, imageAuthor, comment, date, imageTypeID, this.getAccessLevel(), super.modifiedOn);
+		ImageEntry clonedImageEntry = new ImageEntry(imageID, filename, title, shortName, copyright, imageAuthor, comment, date, imageTypeID, this.getAccessLevel(), super.modifiedOn, location);
 		return clonedImageEntry;
 	}
 
@@ -100,6 +103,13 @@ public class ImageEntry extends AbstractEntry {
 
 	public void setComment(String comment) {
 		this.comment = comment;
+	}
+	public LocationEntry getLocation() {
+		return location;
+	}
+
+	public void setLocation(LocationEntry location) {
+		this.location = location;
 	}
 
 	/**
@@ -174,7 +184,21 @@ public class ImageEntry extends AbstractEntry {
 	public void setImageAuthor(PhotographerEntry imageAuthor) {
 		this.imageAuthor = imageAuthor;
 	}
-
+	public int compareTo(ImageEntry secondEntry) {
+		String toString = Integer.toString(secondEntry.getImageID());
+		String fromString = Integer.toString(getImageID());
+		
+		return fromString.compareTo(toString);
+	}
+    @Override
+    public boolean equals(Object object) {
+		//String toString = !bibEntry.authorList.isEmpty() ? bibEntry.getAuthors() : (!bibEntry.getEditorList().isEmpty() ? bibEntry.getEditors(): "");
+		//String fromString = !authorList.isEmpty() ? getAuthors() : (!getEditorList().isEmpty() ? getEditors(): "");
+		Integer ID1 = ((ImageEntry)object).getImageID();
+		Integer ID2 = getImageID();
+		
+		return ID1==ID2;
+	}
 //	/**
 //	 * @return the publicImage
 //	 */

@@ -93,7 +93,10 @@ import de.cses.client.Util;
 import de.cses.client.bibliography.BibliographySelector;
 import de.cses.client.caves.C14DocumentUploader.C14DocumentUploadListener;
 import de.cses.client.caves.CaveSketchUploader.CaveSketchUploadListener;
+import de.cses.client.depictions.DepictionView;
 import de.cses.client.ui.AbstractEditor;
+import de.cses.client.ui.AbstractView;
+import de.cses.client.ui.EditorListener;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.C14AnalysisUrlEntry;
@@ -355,7 +358,8 @@ public class CaveEditor extends AbstractEditor {
 		SafeHtml wallLabel(String label);
 	}
 
-	public CaveEditor(CaveEntry caveEntry) {
+	public CaveEditor(CaveEntry caveEntry, EditorListener av) {
+		this.addEditorListener(av);
 		if (caveEntry == null) {
 			correspondingCaveEntry = new CaveEntry();
 		} else {
@@ -970,7 +974,7 @@ public class CaveEditor extends AbstractEditor {
 		FramedPanel historicalNamePanel = new FramedPanel();
 		historicalNamePanel.setHeading("Historical Name");
 		historicalNameField = new TextField();
-		historicalNameField.addValidator(new MaxLengthValidator(64));
+		historicalNameField.addValidator(new MaxLengthValidator(256));
 		historicalNameField.setEmptyText("historic cave name");
 		historicalNameField.setValue(correspondingCaveEntry.getHistoricName());
 		historicalNameField.addValueChangeHandler(new ValueChangeHandler<String>() {
@@ -2605,7 +2609,7 @@ public class CaveEditor extends AbstractEditor {
 		/**
 		 * ----------------------------- Annotated Bibliography Connection ------------------------------------------------------------
 		 */
-		bibliographySelector = new BibliographySelector(correspondingCaveEntry.getRelatedBibliographyList());
+		bibliographySelector = new BibliographySelector(correspondingCaveEntry.getRelatedBibliographyList(),(AbstractView)getListenerList().get(0));
 
 		/**
 		 * ------------------------------ now we are assembling the tabs and add them to the main hlc ----------------------------------
@@ -2626,7 +2630,7 @@ public class CaveEditor extends AbstractEditor {
 		saveToolButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-				saveEntries(false);
+				save(false,0);
 			}
 		});
 
@@ -2639,12 +2643,14 @@ public class CaveEditor extends AbstractEditor {
 
 					@Override
 					public void onSelect(SelectEvent event) {
-						saveEntries(true);
+						save(true,0);
+						bibliographySelector.clearPages();
 					}
 				}, new SelectHandler() {
 
 					@Override
 					public void onSelect(SelectEvent event) {
+						bibliographySelector.clearPages();
 						closeEditor(null);
 					}
 				}, new KeyDownHandler() {
@@ -2652,7 +2658,7 @@ public class CaveEditor extends AbstractEditor {
 					@Override
 					public void onKeyDown(KeyDownEvent e) {
 						if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
-						saveEntries(true);
+						save(true,0);
 						closeEditor(null);
 					}}
 			
@@ -2666,8 +2672,30 @@ public class CaveEditor extends AbstractEditor {
 		    @Override
 		    public void onKeyDown(KeyDownEvent e) {
 	        	  if ((e.isShiftKeyDown()) && (e.getNativeKeyCode() == KeyCodes.KEY_ENTER)) {
+		  				de.cses.client.Util.showYesNo("Exit Warning!", "Do you wish to save before exiting?", new SelectHandler() {
+							
+							@Override
+							public void onSelect(SelectEvent event) {
+								save(true,0);
+								closeEditor(null);
+							}
+						}, new SelectHandler() {
+								
+							@Override
+							public void onSelect(SelectEvent event) {
+								closeEditor(null);
+							}
+						}, new KeyDownHandler() {
 
-							saveEntries(true);
+							@Override
+							public void onKeyDown(KeyDownEvent e) {
+								if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+								closeEditor(null);
+							}}
+					
+							
+						}
+					  );
 	
 					}
 		        }
@@ -2680,6 +2708,9 @@ public class CaveEditor extends AbstractEditor {
 		ScrollPanel scrpanel = new ScrollPanel();
 		scrpanel.add(mainHlContainer);
 		mainPanel.add(scrpanel);
+		createNextPrevButtons();
+		mainPanel.addTool(prevToolButton);
+		mainPanel.addTool(nextToolButton);
 		mainPanel.addTool(saveToolButton);
 		mainPanel.addTool(closeToolButton);
 		new Resizable(mainPanel);
@@ -3274,7 +3305,13 @@ public class CaveEditor extends AbstractEditor {
 	/**
 	 * Will be called when the save button is selected. After saving <code>CaveEditorListener.closeRequest()</code> is called to inform all listener.
 	 */
-	protected void saveEntries(boolean close) {
+	protected void save(boolean close, int slide) {
+		for (EditorListener el :getListenerList()) {
+			if (el instanceof CaveView) {
+				((CaveView)el).setEntry(correspondingCaveEntry);
+			}
+		}
+
 		if (siteSelection.validate() && officialNumberField.validate()) {
 			correspondingCaveEntry.setRelatedBibliographyList(bibliographySelector.getSelectedEntries());
 			
@@ -3292,6 +3329,10 @@ public class CaveEditor extends AbstractEditor {
 						if (close) {
 							closeEditor(correspondingCaveEntry);
 						}
+						if (slide!=0) {
+							doslide(slide);
+						}
+
 					}
 				});
 
@@ -3310,6 +3351,10 @@ public class CaveEditor extends AbstractEditor {
 						if (close) {
 							closeEditor(correspondingCaveEntry);
 						}
+						if (slide!=0) {
+							doslide(slide);
+						}
+
 					}
 				});
 				

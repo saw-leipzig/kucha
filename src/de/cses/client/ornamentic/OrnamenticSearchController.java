@@ -77,6 +77,7 @@ public class OrnamenticSearchController extends AbstractSearchController {
 				int count = 0;
 				searchEntry.setEntriesShowed(searchEntry.getMaxentries());
 				getResultView().reset();
+				getResultView().setSearchEntry(searchEntry);
 				if (result.size()==searchEntry.getMaxentries()) {
 					getResultView().setSearchbuttonVisible();
 				}
@@ -88,6 +89,7 @@ public class OrnamenticSearchController extends AbstractSearchController {
 			for (OrnamentEntry oe : result) {
 				if ((oe.getImages() != null) && (!oe.getImages().isEmpty())) {
 				count++;
+				//Util.doLogging("adding onrament Entry with ID:"+Integer.toString(oe.getOrnamentID())+" Code: "+oe.getCode());
 				if (masterImageIDs == "") {
 					masterImageIDs = Integer.toString(oe.getMasterImageID());
 				}
@@ -103,7 +105,9 @@ public class OrnamenticSearchController extends AbstractSearchController {
 				}
 
 			}
-			getResultView().getPics(masterImageIDs, 80, UserLogin.getInstance().getSessionID()) ;
+			if (masterImageIDs !="") {	
+				getResultView().getPics(masterImageIDs, 80, UserLogin.getInstance().getSessionID()) ;
+				}
 			}
 		});
 	}
@@ -114,8 +118,7 @@ public class OrnamenticSearchController extends AbstractSearchController {
 	@Override
 	public void addNewElement() {
 		DialogBox ornamenticEditorPanel = new DialogBox(false);
-		OrnamenticEditor ornamenticEditor = new OrnamenticEditor(null);
-		ornamenticEditor.addEditorListener(new EditorListener() {
+		EditorListener el = new EditorListener() {
 			
 			@Override
 			public void closeRequest(AbstractEntry entry) {
@@ -137,7 +140,9 @@ public class OrnamenticSearchController extends AbstractSearchController {
 						});
 				}
 			}
-		});
+		};
+		OrnamenticEditor ornamenticEditor = new OrnamenticEditor(null, el);
+		//ornamenticEditor.addEditorListener();
 		ornamenticEditorPanel.add(ornamenticEditor);
 		ornamenticEditorPanel.setGlassEnabled(true);
 		ornamenticEditorPanel.center();
