@@ -1641,7 +1641,7 @@ public class DepictionEditor extends AbstractEditor {
 		saveToolButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-				save(false);
+				save(false,0);
 			}
 		});
 		ToolButton deleteToolButton = new ToolButton(new IconConfig("removeButton", "removeButtonOver"));
@@ -1688,7 +1688,7 @@ public class DepictionEditor extends AbstractEditor {
 					@Override
 					public void onSelect(SelectEvent event) {
 						iconographySelector.imgPopHide();
-						save(true);
+						save(true,0);
 						closeEditor(null);
 					}
 				}, new SelectHandler() {
@@ -1723,7 +1723,7 @@ public class DepictionEditor extends AbstractEditor {
 						
 						@Override
 						public void onSelect(SelectEvent event) {
-							save(true);
+							save(true,0);
 							closeEditor(null);
 						}
 					}, new SelectHandler() {
@@ -1799,7 +1799,7 @@ public class DepictionEditor extends AbstractEditor {
 	 * Called when the save button is pressed. Calls <code>DepictionEditorListener.depictionSaved(correspondingDepictionEntry)<code>
 	 * @param close 
 	 */
-	protected void save(boolean close) {
+	protected void save(boolean close,int slide) {
 		if (!shortNameTF.validate()) {
 			return;
 		}
@@ -1836,6 +1836,10 @@ public class DepictionEditor extends AbstractEditor {
 						closeEditor(correspondingDepictionEntry);
 						bibliographySelector.clearPages(); 
 					}
+					if (slide!=0) {
+						doslide(slide);
+					}
+
 				}
 
 				@Override
@@ -1869,6 +1873,10 @@ public class DepictionEditor extends AbstractEditor {
 								bibliographySelector.clearPages(); 
 							}
 						}
+						if (slide!=0) {
+							doslide(slide);
+						}
+
 				}
 			});
 		}
@@ -1883,7 +1891,7 @@ private void doretry(boolean close) {
 			
 			@Override
 			public void onSelect(SelectEvent event) {
-				save(close);
+				save(close,0);
 			}
 		}, new SelectHandler() {
 				

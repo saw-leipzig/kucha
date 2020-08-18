@@ -116,6 +116,7 @@ public class SingleImageEditor extends AbstractEditor {
 	private LocationProperties locationProps;
 	private ListStore<LocationEntry> locationEntryLS;
 	private JavaScriptObject osdDic;
+	private int numSave;
 
 	/**
 	 * Create a remote service proxy to talk to the server-side service.
@@ -364,6 +365,7 @@ public class SingleImageEditor extends AbstractEditor {
 		imgFP.add(zoomPanel);
 	}
 	private void initPanel() {
+		numSave=0;
 		osdDic = OSDLoader.createDic();
 		panel = new FramedPanel();
 		titleField = new TextField();
@@ -784,7 +786,8 @@ public class SingleImageEditor extends AbstractEditor {
 		saveToolButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-				save(false);
+				Util.doLogging("Save-Button hit");
+				save(false,0);
 			}
 		});
 		
@@ -797,10 +800,10 @@ public class SingleImageEditor extends AbstractEditor {
 					
 					@Override
 					public void onSelect(SelectEvent event) {
-						 save(true);
-						if (verifyInputs()) {
-							closeEditor(null);
-						}
+						 save(true,0);
+//						if (verifyInputs()) {
+//							closeEditor(null);
+//						}
 					}
 				}, new SelectHandler() {
 						
@@ -813,7 +816,7 @@ public class SingleImageEditor extends AbstractEditor {
 					@Override
 					public void onKeyDown(KeyDownEvent e) {
 						
-						save(true);
+						save(true,0);
 						closeEditor(null);
 					}
 			
@@ -918,12 +921,14 @@ public class SingleImageEditor extends AbstractEditor {
 		panel.addDomHandler(new KeyDownHandler() {
 		    @Override
 		    public void onKeyDown(KeyDownEvent e) {
+				Util.doLogging("Shift-Enter hit");
+
 	        	  if ((e.isShiftKeyDown()) && (e.getNativeKeyCode() == KeyCodes.KEY_ENTER)) {
 		  				de.cses.client.Util.showYesNo("Exit Warning!", "Do you wish to save before exiting?", new SelectHandler() {
 							
 							@Override
 							public void onSelect(SelectEvent event) {
-				        		save(true);
+				        		save(true,0);
 								closeEditor(null);
 							}
 						}, new SelectHandler() {
@@ -999,7 +1004,7 @@ public class SingleImageEditor extends AbstractEditor {
 	 * This method will save the currently selected ImageEntry from the left list of previews. In future versions, the missing fields will be added. Also, the
 	 * Photographer ID us currently not mapped to the text entry in this box. (shows a yes/no dialog first)
 	 */
-	public void dohandle(boolean closeEditorRequested) {
+	public void dohandle(boolean closeEditorRequested, int slide) {
 		updateImageEntry();
 		// only of the yes button is selected, we will perform the command
 		// to simplify we just ignore the no button event by doing nothing
@@ -1018,19 +1023,25 @@ public class SingleImageEditor extends AbstractEditor {
 					if (closeEditorRequested) {
 						closeEditor(imgEntry);
 					}
+					if (slide!=0) {
+						doslide(slide);
+					}
+					if (closeEditorRequested) {
+						closeEditor(imgEntry);
+					}
 				} else {
 					Info.display("ERROR", "Image information has NOT been updated!");
 				}
-				if (closeEditorRequested) {
-					closeEditor(imgEntry);
-				}
+
 				
 			}
 		}
 		);
 	}
 	@Override
-	protected void save(boolean closeEditorRequested) {
+	protected void save(boolean closeEditorRequested, int slide) {
+		Util.doLogging("number of saves:"+Integer.toString(numSave));
+		numSave+=1;
 		for (EditorListener el :getListenerList()) {
 			if (el instanceof ImageView) {
 				((ImageView)el).setEditor(imgEntry);
@@ -1069,7 +1080,7 @@ public class SingleImageEditor extends AbstractEditor {
 			
 			@Override
 			public void onSelect(SelectEvent event) {
-				dohandle(closeEditorRequested);
+				dohandle(closeEditorRequested,slide);
 			}
 		}, new SelectHandler() {
 				
@@ -1083,7 +1094,7 @@ public class SingleImageEditor extends AbstractEditor {
 
 			@Override
 			public void onKeyDown(KeyDownEvent e) {
-				dohandle(closeEditorRequested);
+				dohandle(closeEditorRequested, slide);
 			}}
 	
 			

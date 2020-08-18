@@ -43,7 +43,8 @@ public abstract class AbstractEditor implements IsWidget {
 	protected ToolButton nextToolButton;
 	protected ToolButton prevToolButton;
 	private ArrayList<EditorListener> listenerList = new ArrayList<EditorListener>();
-	private void doslide(AbstractView el, int where) {
+	protected void doslide( int where) {
+		AbstractView el = (AbstractView)listenerList.get(0);
 		closeEditor(el.getEntry());
 		AbstractView nextChild = (AbstractView)(((FlowLayoutContainer)el.getParent()).getWidget(((FlowLayoutContainer)el.getParent()).getWidgetIndex(el)+where));;
 		nextChild.showEditor(nextChild.getEntry());
@@ -66,14 +67,14 @@ public abstract class AbstractEditor implements IsWidget {
 
 							@Override
 							public void onSelect(SelectEvent event) {
-								save(false);
-								doslide(el,1);
+								save(false,1);
+
 							}
 						}, new SelectHandler() {
 
 							@Override
 							public void onSelect(SelectEvent event) {
-								doslide(el,1);
+								doslide(1);
 							}
 					
 							
@@ -82,8 +83,7 @@ public abstract class AbstractEditor implements IsWidget {
 
 							@Override
 							public void onKeyDown(KeyDownEvent e) {
-								save(false);
-								doslide(el,1);								
+								save(false,1);
 							}}
 					
 							
@@ -91,7 +91,7 @@ public abstract class AbstractEditor implements IsWidget {
 
 					}
 					else {
-						doslide(el,1);
+						doslide(1);
 					}
 				}
 		});
@@ -103,20 +103,19 @@ public abstract class AbstractEditor implements IsWidget {
 			@Override
 			public void onSelect(SelectEvent event) {
 //				Util.doLogging("Start caling next item.");
-					AbstractView el = (AbstractView)listenerList.get(0);
+				AbstractView el = (AbstractView)listenerList.get(0);
 					if (el.getClickNumber()>0) {
 						Util.showYesNo("Possible unsaved Changes!", "You may have changed values of this Entry. Do you whish to save them before openening another Entry?", new SelectHandler() {
 
 							@Override
 							public void onSelect(SelectEvent event) {
-								save(false);
-								doslide(el,-1);
+								save(false,-1);
 							}
 						}, new SelectHandler() {
 
 							@Override
 							public void onSelect(SelectEvent event) {
-								doslide(el,-1);
+								doslide(-1);
 							}
 					
 							
@@ -125,8 +124,8 @@ public abstract class AbstractEditor implements IsWidget {
 
 							@Override
 							public void onKeyDown(KeyDownEvent e) {
-								save(false);
-								doslide(el,-1);								
+								save(false,-1);
+								
 							}}
 					
 							
@@ -134,7 +133,7 @@ public abstract class AbstractEditor implements IsWidget {
 
 					}
 					else {
-						doslide(el,-1);
+						doslide(-1);
 					}
 				}
 		});
@@ -147,7 +146,7 @@ public abstract class AbstractEditor implements IsWidget {
 	}
 	public void setfocus() {
 	}
-	protected void save(boolean close) {
+	protected void save(boolean close, int slide) {
 	}
 	public ArrayList<EditorListener> getListenerList() {
 		return listenerList;

@@ -642,7 +642,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 			@Override
 			public void onClick(ClickEvent event) {
-				save(false);
+				save(false,0);
 
 			} // end
 		};
@@ -658,7 +658,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 					@Override
 					public void onSelect(SelectEvent event) {
-						save(false);
+						save(false,0);
 						bibSelector.clearPages();
 						closeEditor(ornamentEntry);
 					}
@@ -677,7 +677,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 					@Override
 					public void onKeyDown(KeyDownEvent e) {
 						if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
-						save(false);
+						save(false,0);
 						closeEditor(ornamentEntry);
 					}}
 			
@@ -1287,7 +1287,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		    @Override
 		    public void onKeyDown(KeyDownEvent e) {
 	        	  if ((e.isShiftKeyDown()) && (e.getNativeKeyCode() == KeyCodes.KEY_ENTER)) {
-						save(false);
+						save(false,0);
 						closeEditor(null);		        }
 		    }			
 		}, KeyDownEvent.getType());
@@ -1301,7 +1301,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 	}
 	@Override
-	protected void save(boolean close) {
+	protected void save(boolean close,int slide) {
 		for (EditorListener el :getListenerList()) {
 			if (el instanceof OrnamenticView) {
 				((OrnamenticView)el).setEditor(ornamentEntry);
@@ -1372,6 +1372,10 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 						if (close) {
 							closeEditor(ornamentEntry);
 						}
+						if (slide!=0) {
+							doslide(slide);
+						}
+
 					} else {
 						Util.showWarning("Saving failed", "ornamentID == 0");
 					}

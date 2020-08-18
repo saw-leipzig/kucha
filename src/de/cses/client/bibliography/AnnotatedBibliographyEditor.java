@@ -88,6 +88,7 @@ import de.cses.client.Util;
 import de.cses.client.bibliography.BibDocumentUploader.BibDocumentUploadListener;
 import de.cses.client.ornamentic.OrnamenticView;
 import de.cses.client.ui.AbstractEditor;
+import de.cses.client.ui.AbstractView;
 import de.cses.client.ui.EditorListener;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
@@ -189,7 +190,7 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 		return mainFP;
 	}
 	@Override
-	protected void save(boolean close) {
+	protected void save(boolean close,int slide) {
 		for (EditorListener el :getListenerList()) {
 			if (el instanceof AnnotatedBiblographyView) {
 				((AnnotatedBiblographyView)el).setEditor(bibEntry);
@@ -247,6 +248,9 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 						bibtexKeyTF.setValue(result.getBibtexKey(), true);
 						if (close) {
 							closeEditor(bibEntry);
+						}
+						if (slide!=0) {
+							doslide(slide);
 						}
 					}
 				}
@@ -426,7 +430,7 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 
 					@Override
 					public void onSelect(SelectEvent event) {
-						save(true);
+						save(true,0);
 					}
 				}, new SelectHandler() {
 
@@ -439,7 +443,7 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 					@Override
 					public void onKeyDown(KeyDownEvent e) {
 						if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
-						save(true);
+						save(true,0);
 						closeEditor(null);
 					}
 			
@@ -456,7 +460,7 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 
 			@Override
 			public void onSelect(SelectEvent event) {
-				save(false);
+				save(false,0);
 			}
 
 		});
@@ -470,7 +474,7 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 							
 							@Override
 							public void onSelect(SelectEvent event) {
-								save(true);
+								save(true,0);
 								closeEditor(null);
 							}
 						}, new SelectHandler() {

@@ -2630,7 +2630,7 @@ public class CaveEditor extends AbstractEditor {
 		saveToolButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-				save(false);
+				save(false,0);
 			}
 		});
 
@@ -2643,7 +2643,7 @@ public class CaveEditor extends AbstractEditor {
 
 					@Override
 					public void onSelect(SelectEvent event) {
-						save(true);
+						save(true,0);
 						bibliographySelector.clearPages();
 					}
 				}, new SelectHandler() {
@@ -2658,7 +2658,7 @@ public class CaveEditor extends AbstractEditor {
 					@Override
 					public void onKeyDown(KeyDownEvent e) {
 						if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
-						save(true);
+						save(true,0);
 						closeEditor(null);
 					}}
 			
@@ -2676,7 +2676,7 @@ public class CaveEditor extends AbstractEditor {
 							
 							@Override
 							public void onSelect(SelectEvent event) {
-								save(true);
+								save(true,0);
 								closeEditor(null);
 							}
 						}, new SelectHandler() {
@@ -3305,7 +3305,7 @@ public class CaveEditor extends AbstractEditor {
 	/**
 	 * Will be called when the save button is selected. After saving <code>CaveEditorListener.closeRequest()</code> is called to inform all listener.
 	 */
-	protected void save(boolean close) {
+	protected void save(boolean close, int slide) {
 		for (EditorListener el :getListenerList()) {
 			if (el instanceof CaveView) {
 				((CaveView)el).setEntry(correspondingCaveEntry);
@@ -3329,6 +3329,10 @@ public class CaveEditor extends AbstractEditor {
 						if (close) {
 							closeEditor(correspondingCaveEntry);
 						}
+						if (slide!=0) {
+							doslide(slide);
+						}
+
 					}
 				});
 
@@ -3347,6 +3351,10 @@ public class CaveEditor extends AbstractEditor {
 						if (close) {
 							closeEditor(correspondingCaveEntry);
 						}
+						if (slide!=0) {
+							doslide(slide);
+						}
+
 					}
 				});
 				
