@@ -81,7 +81,11 @@ public class ImageServiceImpl extends HttpServlet {
 			if (!connector.getImageEntries("Title=\"" + origUploadFileName + "\"").isEmpty()) { // filename already exists
 				System.err.println(origUploadFileName + " already exists in database!");
 				response.getWriter().write(String.valueOf(0));
+				System.err.println("Response: "+response.toString());
+				System.err.println("Response Status: "+response.getStatus());
+//				System.err.println("response written!");
 				response.getWriter().close();
+//				System.err.println("response closed!");
 				return;
 			}
 		}

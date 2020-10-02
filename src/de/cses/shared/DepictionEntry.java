@@ -50,6 +50,7 @@ public class DepictionEntry extends AbstractEntry {
 	private ArrayList<PreservationAttributeEntry> preservationAttributesList = new ArrayList<PreservationAttributeEntry>();
 	private ArrayList<AnnotatedBibliographyEntry> relatedBibliographyList = new ArrayList<AnnotatedBibliographyEntry>();
 	private ArrayList<IconographyEntry> relatedIconographyList = new ArrayList<IconographyEntry>();
+	private ArrayList<AnnotationEntry> relatedAnnotationList = new ArrayList<AnnotationEntry>();
 
 	public DepictionEntry() { }
 
@@ -82,7 +83,7 @@ public class DepictionEntry extends AbstractEntry {
 			String backgroundColour, String generalRemarks, String otherSuggestedIdentifications, double width, double height, ExpeditionEntry expedition,
 			Date purchaseDate, LocationEntry location, String inventoryNumber, VendorEntry vendor, int storyID, CaveEntry cave,List<WallTreeEntry> wallIDs, int absoluteLeft,
 			int absoluteTop, int modeOfRepresentationID, String shortName, String positionNotes, int masterImageID, int accessLevel, String lastChangedByUser, 
-			String lastChangedOnDate) {
+			String lastChangedOnDate, ArrayList<AnnotationEntry> relatedAnnotationList) {
 		super();
 		this.depictionID = depictionID;
 		this.styleID = styleID;
@@ -118,12 +119,13 @@ public class DepictionEntry extends AbstractEntry {
 		this.setAccessLevel(accessLevel);
 		this.setLastChangedByUser(lastChangedByUser);
 		this.setModifiedOn(lastChangedOnDate);
+		this.relatedAnnotationList=relatedAnnotationList;
 	}
 
 	public DepictionEntry clone() {
 		DepictionEntry clonedDepictionEntry = new DepictionEntry(depictionID, styleID, inscriptions, separateAksaras, dating, description, backgroundColour, generalRemarks,
 				otherSuggestedIdentifications, width, height, expedition, purchaseDate, location, inventoryNumber, vendor, storyID,
-				cave, wallIDs, absoluteLeft, absoluteTop, modeOfRepresentationID, shortName, positionNotes, masterImageID, accessLevel, lastChangedByUser, modifiedOn);
+				cave, wallIDs, absoluteLeft, absoluteTop, modeOfRepresentationID, shortName, positionNotes, masterImageID, accessLevel, lastChangedByUser, modifiedOn, relatedAnnotationList);
 		ArrayList<ImageEntry> clonedRelatedImages = new ArrayList<ImageEntry>();
 		for (ImageEntry ie : this.relatedImages) {
 			clonedRelatedImages.add(ie);
@@ -144,6 +146,11 @@ public class DepictionEntry extends AbstractEntry {
 			clonedRelatedIconographyList.add(ie);
 		}
 		clonedDepictionEntry.setRelatedIconographyList(clonedRelatedIconographyList);
+		ArrayList<AnnotationEntry> clonedRelatedAnnotationList = new ArrayList<AnnotationEntry>();
+		for (AnnotationEntry ie : this.relatedAnnotationList) {
+			clonedRelatedAnnotationList.add(ie);
+		}
+		clonedDepictionEntry.setRelatedAnnotationList(clonedRelatedAnnotationList);
 		return clonedDepictionEntry;
 	}
 
@@ -415,6 +422,16 @@ public class DepictionEntry extends AbstractEntry {
 
 	public void setRelatedIconographyList(ArrayList<IconographyEntry> relatedIconographyList) {
 		this.relatedIconographyList = relatedIconographyList;
+	}
+	public ArrayList<AnnotationEntry> getRelatedAnnotationList() {
+		return relatedAnnotationList;
+	}
+	public void addAnnotation(AnnotationEntry ae) {
+		this.relatedAnnotationList.add(ae);
+	}
+
+	public void setRelatedAnnotationList(ArrayList<AnnotationEntry> relatedAnnotationList) {
+		this.relatedAnnotationList = relatedAnnotationList;
 	}
 
 }

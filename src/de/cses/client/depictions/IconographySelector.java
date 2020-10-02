@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.sound.sampled.Port.Info;
+
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.Cell.Context;
@@ -44,12 +46,14 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.sencha.gxt.core.client.Style.SelectionMode;
+import com.sencha.gxt.core.client.dom.XElement;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.data.shared.SortDir;
 import com.sencha.gxt.data.shared.Store;
+import com.sencha.gxt.data.shared.Store.StoreFilter;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.data.shared.event.StoreFilterEvent;
@@ -75,7 +79,6 @@ import com.sencha.gxt.widget.core.client.form.StoreFilterField;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
-import com.sencha.gxt.widget.core.client.info.Info;
 import com.sencha.gxt.widget.core.client.tips.QuickTip;
 import com.sencha.gxt.widget.core.client.tree.Tree;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckCascade;
@@ -86,8 +89,9 @@ import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
 import de.cses.client.Util;
-import de.cses.client.ui.AbstractView;
+import de.cses.client.ui.EditorListener;
 import de.cses.client.user.UserLogin;
+import de.cses.shared.AnnotationEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.OrnamentEntry;
@@ -144,13 +148,64 @@ public class IconographySelector extends FramedPanel {
 	private Map<Integer,String> imgdDic =StaticTables.getInstance().getOrnamentMasterPics();
 	private ArrayList<OrnamentEntry> ornamentEntries;
 	private Context currentContext;
-	protected AbstractView el=null;
+	protected EditorListener el=null;
+	private Boolean dropUnselected = false;
+	private List<IconographyEntry> allEntries;
+	private ArrayList<IconographyEntry> allAnnotationEntries = new ArrayList<IconographyEntry>();
+	private ArrayList<AnnotationEntry> relatedAnnotationList;
+	private IconographySelectorListener icoSelectorListener;
+	private List<IconographyEntry> beforeSelection;
+
+	public IconographySelector(Collection<IconographyEntry> elements,EditorListener el,boolean dropunselected, ArrayList<AnnotationEntry> relatedAnnotationList, IconographySelectorListener icoSelectorListener) {
+		this.el=el;
+		this.dropUnselected=dropunselected;
+		this.relatedAnnotationList=relatedAnnotationList;
+		this.icoSelectorListener=icoSelectorListener;
+		initPanel(iconographyTreeStore, elements);
+		fillAllAnnotationEntries();
+	}
+	private void fillAllAnnotationEntries() {
+		allAnnotationEntries.clear();
+		for (AnnotationEntry ae : relatedAnnotationList) {
+			for (IconographyEntry ie : ae.getTags()) {
+				addWithParents(ie);
+			}
+		}
+	}
+	public void setRelatedAnnotationList(ArrayList<AnnotationEntry> relatedAnnotationList) {
+		this.relatedAnnotationList=relatedAnnotationList;
+		fillAllAnnotationEntries();
+		iconographyTreeStore.setEnableFilters(false);
+		iconographyTreeStore.setEnableFilters(true);
+	}
+	private void addWithParents(IconographyEntry ie) {
+		if (!allAnnotationEntries.contains(ie)) {
+			allAnnotationEntries.add(ie);
+			iconographyTree.refresh(ie);
+			if (ie.getParentID()!=0) {
+				IconographyEntry parent = iconographyTreeStore.findModelWithKey(Integer.toString(ie.getParentID()));
+				addWithParents(parent);
+			}
+		}
+	}
+	public IconographySelector(Collection<IconographyEntry> elements,EditorListener el) {
+		this.el=el;
+		initPanel(iconographyTreeStore, elements);
+	}
+
+	public IconographySelector(Collection<IconographyEntry> elements) {
+		initPanel(iconographyTreeStore, elements);
+		this.el=null;
+	}
+
 	
-	public void buildTreeStore(Collection<IconographyEntry> elements, boolean ornaments){
+	public void buildTreeStore(Collection<IconographyEntry> elements, boolean ornaments, boolean dropUnselected){
+		allEntries = new ArrayList<IconographyEntry>();
 		iconographyTreeStore.clear();
 			for (IconographyEntry item : elements) {
 				if ((item.getIconographyID()==3)||(!ornaments)) {
 					iconographyTreeStore.add(item);
+					allEntries.add(item);
 					if (item.getChildren() != null) {
 						processParentIconographyEntry(item);
 					}
@@ -167,6 +222,9 @@ public class IconographySelector extends FramedPanel {
 		}
 
 	}
+	public TreeStore<IconographyEntry> getIconographyStroe() {
+		return iconographyTreeStore;
+	}
 	public Tree<IconographyEntry, String> buildTree( boolean ornament){
 		selectedIconographyMap = new HashMap<String, IconographyEntry>();
 			
@@ -179,8 +237,11 @@ public class IconographySelector extends FramedPanel {
 					iconographyTree.setChecked(entry, CheckState.CHECKED);
 				}
 			}
+			
+			void onSelect(XElement node, boolean select) {
+				Util.doLogging("Selected");
+			}
 		
-
 		};
 		MasterImg masterImg = GWT.create(MasterImg.class);
 		class CustomImageCell extends AbstractCell<String> {
@@ -194,9 +255,19 @@ public class IconographySelector extends FramedPanel {
 
 		    @Override
 		    public void render(Context context, String ie, SafeHtmlBuilder sb) {
-		    	sb.append(SafeHtmlUtils.fromTrustedString(ie));
+		    	boolean found = false;
+		    	for (IconographyEntry icoEntry : allAnnotationEntries) {
+		    			if (Integer.toString(icoEntry.getIconographyID())==context.getKey()) {
+		    				found=true;
+		    			}
+		    	}
+		    	if (found) {
+		    		sb.append(SafeHtmlUtils.fromTrustedString("<p style=\"color:green;\">"+ie+"</p>"));
+		    	}else {
+		    		sb.append(SafeHtmlUtils.fromTrustedString("<p style=\"color:red;\">"+ie+"</p>"));
+		    	}
+		    	
 				
-		    	//sb.append(imageTemplate.createImage(""));
 		    }
 		    @Override
 		    public void onBrowserEvent(Context context, Element parent, String value,
@@ -204,21 +275,36 @@ public class IconographySelector extends FramedPanel {
 		    	    String eventType = event.getType();
 		    	    // Special case the ENTER key for a unified user experience.
 		    	    if (BrowserEvents.MOUSEOVER.equals(eventType) ) {
+		    	    	beforeSelection=iconographyTree.getSelectionModel().getSelectedItems();
 		    	    	currentContext=context;
 			    	    showPOPUP(context, event.getClientX()+10,event.getClientY()+10);
 			    	    }
-		    	    if (BrowserEvents.MOUSEOUT.equals(eventType)& (currentContext==context)) {
-		    	    	
-			    	      hidePOPUP();
-			    	    }
+		    	    
+		    	    if (BrowserEvents.MOUSEOUT.equals(eventType)) {
+				    	if (currentContext==context) {
+				    	    hidePOPUP();				    		
+				    	}
+		    	    	icoSelectorListener.icoDeHighlighter(Integer.parseInt((String)context.getKey()));
+			    	}
+		    	    if (BrowserEvents.MOUSEUP.equals(eventType)) {
+		    	    	Util.doLogging("Clicked "+context.getKey());
+		    	    	IconographyEntry ie = iconographyTree.getStore().findModelWithKey((String)context.getKey());
+		    	    	for (IconographyEntry selectedIE : beforeSelection) {
+		    	    		if (selectedIE.getIconographyID()==ie.getIconographyID()) {
+		    	    			iconographyTree.getSelectionModel().deselect(ie);
+		    	    			return;
+		    	    		}
+		    	    	}
+			    	 }
+
 		    	    if (BrowserEvents.KEYDOWN.equals(eventType) && event.getKeyCode() == KeyCodes.KEY_ENTER) {
 			    	      onEnterKeyDown(context, parent, value, event, valueUpdater);
-			    	    }
+			    	}
 		    }
 		    private void showPOPUP(Context context,int x,int y) {
 		    	imgPop.clear();
+		    	icoSelectorListener.icoHighlighter(Integer.parseInt((String)context.getKey()));
 		    	if (imgdDic.containsKey(Integer.parseInt((String)context.getKey()))) {
-		    		
 			    	imgPop.setPopupPosition(x,y);
 			    	//imgPop.setSize(300, 300);
 			    	//Info.display("imgdDic sice", Integer.toString(imgdDic.size()));
@@ -238,8 +324,10 @@ public class IconographySelector extends FramedPanel {
 		Set<String> events = new HashSet<String>();
 	    events.add(BrowserEvents.MOUSEOVER);
 	    events.add(BrowserEvents.MOUSEOUT);
+	    events.add(BrowserEvents.MOUSEUP);
 		Cell<String> cCell = new CustomImageCell(events);
 	    iconographyTree.setCell(cCell);
+	    
 	    QuickTip qt = new QuickTip(iconographyTree);
 		if (ornament) {
 			iconographyTree.setCheckStyle(CheckCascade.NONE);;
@@ -251,7 +339,14 @@ public class IconographySelector extends FramedPanel {
 			iconographyTree.getSelectionModel().setSelectionMode(SelectionMode.MULTI);
 
 		}
-		iconographyTree.setCheckable(true);
+		if (dropUnselected) {
+			iconographyTree.setCheckable(false);			
+		}
+		else {
+			iconographyTree.setCheckable(true);
+
+		}
+//		iconographyTree.setCheckable(true);
 		iconographyTree.setAutoLoad(true);
 		//iconographyTree.setCheckStyle(CheckCascade.NONE);
 		iconographyTree.setCheckNodes(CheckNodes.BOTH);
@@ -402,32 +497,87 @@ public class IconographySelector extends FramedPanel {
 	public void imgPopHide() {
 		imgPop.hide();
 	}
-	public IconographySelector(Collection<IconographyEntry> elements,AbstractView el) {
-		this.el=el;
-		initPanel(iconographyTreeStore, elements);
-	}
-
-	public IconographySelector(Collection<IconographyEntry> elements) {
-		initPanel(iconographyTreeStore, elements);
-		this.el=null;
-	}
 
 	private void processParentIconographyEntry( IconographyEntry item) {
 		for (IconographyEntry child : item.getChildren()) {
 			iconographyTreeStore.add(item, child);
+			allEntries.add(item);
 			if (child.getChildren() != null) {
 				processParentIconographyEntry(child);
 			}
 		}
 	}
+	public void findParent(IconographyEntry child) {
+		if (child.getParentID()==0) {
+			if (iconographyTreeStore.findModel(child)==null) {
+				Util.doLogging("Found: "+Integer.toString(child.getParentID())+" - "+Integer.toString(child.getIconographyID()));
+		    	iconographyTreeStore.add(child);
+			}
+		}
+		else {
+		for (IconographyEntry ie : allEntries) {
+			if (ie.getIconographyID()==child.getParentID()) {
 
+					findParent(ie);
+					Util.doLogging("Found: "+child.getText()+" - "+child.getText());
+				    if (iconographyTreeStore.findModel(child)==null) {
+				    	iconographyTreeStore.add(ie, child);
+				    }
+				}
+				
+			
+			}
+		};
+	}
+
+	public void dropunselected(List<IconographyEntry> ies) {
+		allEntries = ies;
+		StoreFilter<IconographyEntry> filterFieldDropUnselected = new StoreFilter<IconographyEntry>() {
+
+			@Override
+			public boolean select(Store<IconographyEntry> store, IconographyEntry parent, IconographyEntry item) {
+				TreeStore<IconographyEntry> treeStore = (TreeStore<IconographyEntry>) store;
+//				do {
+//					boolean found = false;
+					for (IconographyEntry ie : allEntries) {
+						//Util.doLogging("found "+item.getText()+" at old selected items ");
+						if (item.getIconographyID()==ie.getIconographyID()) {
+							return true;
+						}
+					}
+					for (IconographyEntry ie : allAnnotationEntries) {
+						//Util.doLogging(item.getText()+" - "+ie.getText());
+						//Util.doLogging("found "+item.getText()+" at Annotated items ");
+						if (item.getIconographyID()==ie.getIconographyID()) {
+							return true;
+						}
+					}
+//					item = treeStore.getParent(item);
+//				} while (item != null);
+				return false;
+			}
+			};
+		
+		iconographyTreeStore.addFilter(filterFieldDropUnselected);
+		iconographyTreeStore.setEnableFilters(true);
+//		iconographyTreeStore.clear();
+//		for (IconographyEntry ie : ies) {
+//					findParent(ie);
+//			
+//		}
+	}
 	public void setSelectedIconography(ArrayList<IconographyEntry> iconographyRelationList) {
 		Util.doLogging("*** setSelectedIconography called - iconographyTree no. of items = " + iconographyTree.getStore().getAllItemsCount());
 		resetSelection();
-		for (IconographyEntry entry : iconographyRelationList) {
-			//Util.doLogging("setSelectedIconography setting entry = " + entry.getIconographyID());
-			iconographyTree.setChecked(entry, CheckState.CHECKED);
-			selectedIconographyMap.put(entry.getUniqueID(), entry);
+		if (!dropUnselected) {
+			for (IconographyEntry entry : iconographyRelationList) {
+				//Util.doLogging("setSelectedIconography setting entry = " + entry.getIconographyID());
+				iconographyTree.setChecked(entry, CheckState.CHECKED);
+				selectedIconographyMap.put(entry.getUniqueID(), entry);
+			}			
+		}
+		else {
+				dropunselected(iconographyRelationList);
 		}
 	}
 
@@ -458,18 +608,6 @@ public class IconographySelector extends FramedPanel {
 		};
 		filterField.setEmptyText("enter a search term");
 		filterField.bind(iconographyTreeStore);
-		MouseOutHandler handle = new MouseOutHandler() {
-
-			@Override
-			public void onMouseOut(MouseOutEvent event) {
-				// TODO Auto-generated method stub
-				
-				Info.display("eventsource",event.getRelatedTarget().toString());
-				imgPop.hide();
-			}
-			
-		};
-		//this.addDomHandler(handle, MouseOutEvent.getType());
 		this.addHideHandler(new HideHandler() {
 
 			@Override
@@ -499,7 +637,7 @@ public class IconographySelector extends FramedPanel {
 			
 		});
 		iconographyTree=buildTree(false);
-		buildTreeStore(elements,false);
+		buildTreeStore(elements,false, dropUnselected);
 		imgdDic =StaticTables.getInstance().getOrnamentMasterPics();
 		if (imgdDic.size()==0) {
 			loadOrnamentMasterPics(iconographyTree.getStore().getAll());
@@ -715,6 +853,9 @@ public class IconographySelector extends FramedPanel {
 				store.add(entry, child);
 			}
 		}
+	}
+	public List<IconographyEntry> getCLickedItems(){
+		return iconographyTree.getSelectionModel().getSelectedItems();
 	}
 	
 	public ArrayList<IconographyEntry> getSelectedIconography() {

@@ -73,6 +73,7 @@ public class ImageUploader implements IsWidget {
 		filename = selectedFile.substring(startIdx>0 ? startIdx+1 : 0, selectedFile.lastIndexOf("."));
 		Util.doLogging( selectedFile+"- "+filename);
 		if (imageID<0) {
+			Util.doLogging("Image submiting triggered.");
 			form.setAction("imgUpload?origImageFileName="+filename);
 		}
 		else {
@@ -158,19 +159,36 @@ public class ImageUploader implements IsWidget {
 
 		form.addSubmitCompleteHandler(new SubmitCompleteHandler() {
 			public void onSubmitComplete(SubmitCompleteEvent event) {
+//				Util.doLogging("Image submitting compleated!");
 				uploadInfoWindow.hide();
-				Document doc = XMLParser.parse(event.getResults());
-				Util.doLogging(event.getResults());
-				NodeList nodelist = doc.getElementsByTagName("pre");
-				Node node = nodelist.item(0);
-				imageID = Integer.parseInt(node.getFirstChild().toString());
-				if (imageID == 0) {
-					Util.showWarning("Duplicate Image Error", "This image has already been uploaded!");
-				} else {
-					for (ImageUploadListener listener : uploadListener) {
-						listener.uploadCompleted(imageID, filename);
-					}
+//				Util.doLogging("hidden!");
+//				Util.doLogging(event.getResults());
+				if (event.getResults().contains("invalid")) {
+					Util.showWarning("Image Upload Error", "The Upload of the Image aborted due to Error: "+event.getResults());
 				}
+				else {
+					Document doc = XMLParser.parse(event.getResults());
+//					Util.doLogging("parsed");
+//					Util.doLogging(event.getResults());
+//					Util.doLogging("getresults");
+					NodeList nodelist = doc.getElementsByTagName("pre");
+//					Util.doLogging("pre");
+					Node node = nodelist.item(0);
+//					Util.doLogging("node");
+
+					imageID = Integer.parseInt(node.getFirstChild().toString());
+//					Util.doLogging("imageid:"+Integer.toString(imageID));
+					if (imageID == 0) {
+//						Util.doLogging("imageid:"+Integer.toString(imageID));
+						Util.showWarning("Duplicate Image Error", "This image has already been uploaded!");
+					} else {
+//						Util.doLogging("imageID not 0");
+						for (ImageUploadListener listener : uploadListener) {
+							listener.uploadCompleted(imageID, filename);
+						}
+					}					
+				}
+
 			}
 		});
 		form.add(file);

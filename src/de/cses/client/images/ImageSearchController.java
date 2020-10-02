@@ -160,6 +160,13 @@ public class ImageSearchController extends AbstractSearchController {
 									});
 								}
 							}
+							public Integer getClickNumber() {
+								return 0;
+							}
+							public void addClickNumber() {
+							}
+							public void setClickNumber(int clicks) {
+							}
 
 						};
 						SingleImageEditor singleIE = new SingleImageEditor(imgEntry, el);
@@ -169,8 +176,8 @@ public class ImageSearchController extends AbstractSearchController {
 						imageEditorPanel.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
 						imageEditorPanel.setModal(true);
 						
-						//imageEditorPanel.center();
-						imageEditorPanel.show();
+						imageEditorPanel.center();
+						//imageEditorPanel.show();
 						singleIE.setfocus();
 					}
 

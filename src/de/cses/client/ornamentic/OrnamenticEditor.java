@@ -221,7 +221,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 			@Override
 			public void onSelect(SelectEvent event) {
-				((AbstractView)getListenerList().get(0)).addClickNumber();
+				getListenerList().get(0).addClickNumber();
 				showTreeEdit.setSize("400", "400");
 				showTreeEdit.center();
 			}
@@ -1054,7 +1054,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 			
 			@Override
 			public void onSelect(SelectEvent event) {
-				((AbstractView)getListenerList().get(0)).addClickNumber();
+				getListenerList().get(0).addClickNumber();
 				imageSelectionDialog = new PopupPanel();
 				imageSelectionDialog.add(imageSelector);
 				imageSelectionDialog.setModal(true);
@@ -1068,7 +1068,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 			
 			@Override
 			public void onSelect(SelectEvent event) {
-				((AbstractView)getListenerList().get(0)).addClickNumber();
+				getListenerList().get(0).addClickNumber();
 				imageEntryLS.remove(imageListView.getSelectionModel().getSelectedItem());
 			}
 		});
@@ -1079,7 +1079,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 			
 			@Override
 			public void onSelect(SelectEvent event) {
-				((AbstractView)getListenerList().get(0)).addClickNumber();
+				getListenerList().get(0).addClickNumber();
 				ImageEntry entry = imageListView.getSelectionModel().getSelectedItem();
 				ornamentEntry.setMasterImageID(entry.getImageID());
 				imageListView.refresh();
@@ -1263,7 +1263,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 			  );
 			}
 		});
-		AbstractView el = (AbstractView)getListenerList().get(0);
+		EditorListener el = getListenerList().get(0);
 		if (ornamentEntry!=null) {
 			bibSelector = new BibliographySelector(ornamentEntry.getRelatedBibliographyList(),el);
 		} else {

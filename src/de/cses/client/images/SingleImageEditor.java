@@ -13,26 +13,25 @@
  */
 package de.cses.client.images;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.ScriptElement;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.editor.client.testing.MockEditorError;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
@@ -41,12 +40,12 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
-import com.sencha.gxt.core.client.XTemplates.XTemplate;
 import com.sencha.gxt.core.client.dom.ScrollSupport;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.data.shared.LabelProvider;
@@ -84,9 +83,7 @@ import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
 import de.cses.client.Util;
-
 import de.cses.client.ui.AbstractEditor;
-import de.cses.client.ui.AbstractView;
 import de.cses.client.ui.EditorListener;
 import de.cses.client.ui.OSDLoader;
 import de.cses.client.user.UserLogin;
@@ -117,6 +114,7 @@ public class SingleImageEditor extends AbstractEditor {
 	private ListStore<LocationEntry> locationEntryLS;
 	private JavaScriptObject osdDic;
 	private int numSave;
+	private OSDLoader osdLoader;
 
 	/**
 	 * Create a remote service proxy to talk to the server-side service.
@@ -357,16 +355,21 @@ public class SingleImageEditor extends AbstractEditor {
 	 */
 
 
-	private void addOSDPanel() {
-		VerticalLayoutContainer zoomPanel = new VerticalLayoutContainer();
-		zoomPanel.clear();
-		zoomPanel.setId(imgEntry.getFilename());
+	private void addOSDPanel(int clwidth, int clheight) {
+		int width = (clwidth/100*59);
+		Info.display("ImageWidth",Integer.toString(width));
+		if (width<640) {
+			width=640;
+		}
+		HTMLPanel zoomPanel = new HTMLPanel(SafeHtmlUtils.fromTrustedString("<figure class='paintRepImgPreview' style='height: "+Integer.toString(clheight/100*90)+"px;width: "+Integer.toString(width)+"px;text-align: center;'><div id= '"+imgEntry.getFilename()+"' style='width: 100%; height: 100%;text-align: center;'></div></fugure>"));
+
 		imgFP.clear();
 		imgFP.add(zoomPanel);
+		
 	}
 	private void initPanel() {
 		numSave=0;
-		osdDic = OSDLoader.createDic();
+		osdLoader = new OSDLoader(imgEntry);
 		panel = new FramedPanel();
 		titleField = new TextField();
 		titleField.addValidator(new MaxLengthValidator(128));
@@ -816,8 +819,8 @@ public class SingleImageEditor extends AbstractEditor {
 					@Override
 					public void onKeyDown(KeyDownEvent e) {
 						
-						save(true,0);
-						closeEditor(null);
+						//save(true,0);
+						//closeEditor(null);
 					}
 			
 					
@@ -883,7 +886,7 @@ public class SingleImageEditor extends AbstractEditor {
 			imgFP.setHeading("Error accured, assembling titel: "+e.getMessage());			
 
 		}
-		addOSDPanel();
+		//addOSDPanel();
 		//Util.doLogging(Integer.toString(getListenerList().size()));
 		//EditorListener el = getListenerList().get(0);
 		//PopupPanel popP = ((ImageView)(el)).getEditorPanel();
@@ -915,21 +918,25 @@ public class SingleImageEditor extends AbstractEditor {
 		HorizontalLayoutContainer mainHLC = new HorizontalLayoutContainer();
 		ScrollSupport scrContainer = mainHLC.getScrollSupport();
 		mainHLC.setScrollMode(ScrollMode.AUTO);
-		mainHLC.add(imgFP, new HorizontalLayoutData(.4, 1.0));
-		mainHLC.add(editVLC, new HorizontalLayoutData(.6, 1.0));
+		HorizontalLayoutContainer imgScroll = new HorizontalLayoutContainer();
+		imgScroll.setScrollMode(ScrollMode.AUTOX);
+
+		imgScroll.add(imgFP);
+		mainHLC.add(imgScroll, new HorizontalLayoutData(.6, 1.0));
+		mainHLC.add(editVLC, new HorizontalLayoutData(.4, 1.0));
 
 		panel.addDomHandler(new KeyDownHandler() {
 		    @Override
 		    public void onKeyDown(KeyDownEvent e) {
-				Util.doLogging("Shift-Enter hit");
 
 	        	  if ((e.isShiftKeyDown()) && (e.getNativeKeyCode() == KeyCodes.KEY_ENTER)) {
+	        		  	Util.doLogging("Shift-Enter hit");
 		  				de.cses.client.Util.showYesNo("Exit Warning!", "Do you wish to save before exiting?", new SelectHandler() {
 							
 							@Override
 							public void onSelect(SelectEvent event) {
 				        		save(true,0);
-								closeEditor(null);
+								//closeEditor(null);
 							}
 						}, new SelectHandler() {
 								
@@ -941,9 +948,9 @@ public class SingleImageEditor extends AbstractEditor {
 
 							@Override
 							public void onKeyDown(KeyDownEvent e) {
-								if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
-								closeEditor(null);
-							}}
+								//if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+								//closeEditor(null);
+							}
 					
 							
 						}
@@ -962,6 +969,17 @@ public class SingleImageEditor extends AbstractEditor {
 		panel.addTool(saveToolButton);
 		panel.addTool(closeToolButton);
 		panel.setResize(true);
+		panel.addResizeHandler(new ResizeHandler() {
+			@Override
+			public void onResize(ResizeEvent event) {
+				
+				Util.doLogging("Broser-Dimensions: " +Integer.toString(Window.getClientWidth())+" x "+Integer.toString(Window.getClientHeight()));
+				addOSDPanel(event.getWidth(),event.getHeight());
+				osdDic = OSDLoader.createDic();
+				setosd();
+				
+			}
+		});
 		panel.setCollapsible(false);
 		//Info.display("ERROR", test);
 		//System.err.println(test);
@@ -989,13 +1007,7 @@ public class SingleImageEditor extends AbstractEditor {
 
 			@Override
 			public void onSuccess(String result) {
-				ArrayList<JavaScriptObject> results = OSDLoader.loadTile(null, null,null, imgEntry, result);
-				JavaScriptObject tiles = results.remove(0);
-				JavaScriptObject imgDic=results.remove(0);
-				JavaScriptObject ifn=results.remove(0);
-				ArrayList<String> filenames = new ArrayList<String>();
-				JavaScriptObject jso= OSDLoader.createZoomeImage(tiles,ifn,imgDic, osdDic,UserLogin.getInstance().getSessionID());
-
+				osdLoader.startLoadingTiles(result);
 			}
 		});
 	}
@@ -1005,7 +1017,8 @@ public class SingleImageEditor extends AbstractEditor {
 	 * Photographer ID us currently not mapped to the text entry in this box. (shows a yes/no dialog first)
 	 */
 	public void dohandle(boolean closeEditorRequested, int slide) {
-		updateImageEntry();
+		Util.doLogging("dohandöe triggered");
+		updateImageEntryInForm();
 		// only of the yes button is selected, we will perform the command
 		// to simplify we just ignore the no button event by doing nothing
 
@@ -1080,6 +1093,7 @@ public class SingleImageEditor extends AbstractEditor {
 			
 			@Override
 			public void onSelect(SelectEvent event) {
+				Util.doLogging("hier");
 				dohandle(closeEditorRequested,slide);
 			}
 		}, new SelectHandler() {
@@ -1094,7 +1108,7 @@ public class SingleImageEditor extends AbstractEditor {
 
 			@Override
 			public void onKeyDown(KeyDownEvent e) {
-				dohandle(closeEditorRequested, slide);
+				//dohandle(closeEditorRequested, slide);
 			}}
 	
 			
@@ -1104,7 +1118,7 @@ public class SingleImageEditor extends AbstractEditor {
 
 	}
 
-	private void updateImageEntry() {
+	private void updateImageEntryInForm() {
 		imgEntry.setTitle(titleField.getCurrentValue());
 		imgEntry.setShortName(shortNameField.getCurrentValue());
 		imgEntry.setCopyright(copyrightArea.getCurrentValue());

@@ -2609,7 +2609,7 @@ public class CaveEditor extends AbstractEditor {
 		/**
 		 * ----------------------------- Annotated Bibliography Connection ------------------------------------------------------------
 		 */
-		bibliographySelector = new BibliographySelector(correspondingCaveEntry.getRelatedBibliographyList(),(AbstractView)getListenerList().get(0));
+		bibliographySelector = new BibliographySelector(correspondingCaveEntry.getRelatedBibliographyList(),getListenerList().get(0));
 
 		/**
 		 * ------------------------------ now we are assembling the tabs and add them to the main hlc ----------------------------------

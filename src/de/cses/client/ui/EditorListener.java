@@ -22,6 +22,9 @@ import de.cses.shared.AbstractEntry;
 public interface EditorListener {
 
 	public void closeRequest(AbstractEntry updatedEntry);
+
+	public void addClickNumber() ;
+	public void setClickNumber(int clicks);
 		
 //	public void updateEntryRequest(AbstractEntry updatedEntry);
 }

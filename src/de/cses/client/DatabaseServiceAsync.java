@@ -18,10 +18,10 @@ import java.util.Map;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-import de.cses.server.mysql.MysqlConnector;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.AnnotatedBibliographySearchEntry;
+import de.cses.shared.AnnotationEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.BibKeywordEntry;
 import de.cses.shared.CaveAreaEntry;
@@ -347,6 +347,10 @@ public interface DatabaseServiceAsync {
 
 	void searchDepictions(DepictionSearchEntry searchEntry, AsyncCallback<ArrayList<DepictionEntry>> asyncCallback) throws IllegalArgumentException;
 
+	void getAnnotations(int depictionEntry,AsyncCallback<ArrayList<AnnotationEntry>> asyncCallback) throws IllegalArgumentException;
+	
+	void setAnnotationResults(AnnotationEntry annoEntry,AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
+	
 	void searchImages(ImageSearchEntry searchEntry, AsyncCallback<Map<Integer,ArrayList<ImageEntry>>> asyncCallback) throws IllegalArgumentException;
 	
 	void searchAnnotatedBibliography(AnnotatedBibliographySearchEntry searchEntry, AsyncCallback<ArrayList<AnnotatedBibliographyEntry>> asyncCallback) throws IllegalArgumentException;
@@ -369,6 +373,8 @@ public interface DatabaseServiceAsync {
 
 	void loadCollectedEntries(CollectionEntry value, AsyncCallback<ArrayList<AbstractEntry>> asyncCallback) throws IllegalArgumentException;
 
+	void delCollectedEntries(CollectionEntry value, AsyncCallback<CollectionEntry> asyncCallback) throws IllegalArgumentException;
+	
 	void addPreservationClassification(PreservationClassificationEntry pcEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 
 }

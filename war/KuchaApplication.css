@@ -307,7 +307,10 @@ div.loginButton {
 	background-repeat: no-repeat;
 	cursor: pointer;
 }
-
+div.openseadragon-container {
+	min-height: 290px;
+	min-width: 340px;
+}
 div.loginButtonOver {
 	background-image: url(icons/login-mo.png);
 	width: 20px;
@@ -315,7 +318,9 @@ div.loginButtonOver {
 	background-repeat: no-repeat;
 	cursor: pointer;
 }
-
+div.com-sencha-gxt-theme-base-client-tree-TreeBaseAppearance-TreeBaseStyle-selected {
+    background-color: lightblue!important;
+}
 div.addButton {
 	background-image: url(icons/add_new.png);
 	width: 20px;

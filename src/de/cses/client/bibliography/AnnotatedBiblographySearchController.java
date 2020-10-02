@@ -159,6 +159,13 @@ public class AnnotatedBiblographySearchController extends AbstractSearchControll
 								getResultView().addResult(new AnnotatedBiblographyView((AnnotatedBibliographyEntry)entry));
 							}
 						}
+						public Integer getClickNumber() {
+							return 0;
+						}
+						public void addClickNumber() {
+						}
+						public void setClickNumber(int clicks) {
+						}
 
 //						@Override
 //						public void updateEntryRequest(AbstractEntry updatedEntry) { }

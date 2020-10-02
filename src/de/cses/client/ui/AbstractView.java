@@ -40,18 +40,7 @@ import de.cses.shared.UserEntry;
  */
 public abstract class AbstractView extends Button implements EditorListener {
 	private static Integer clicks =0;
-	private static PopupPanel editorPanel = new PopupPanel(false) //{
-//		@Override
-//	    public void onBrowserEvent(Event be) {
-//			int eventType = DOM.eventGetType(be);
-////	        Info.display("test",Integer.toString(eventType));
-//	        if (eventType == Event.ONCHANGE){
-//	                  Util.doLogging("Change,Now");
-//	        }
-//	              super.onBrowserEvent(be);      
-//	        }
-//	}
-			;
+	private static PopupPanel editorPanel = new PopupPanel(false);
 	/**
 	 * This is the general constructor that amongst other tasks initializes the PopupPanel for the editor
 	 */

@@ -140,6 +140,13 @@ public class DepictionSearchController extends AbstractSearchController {
 					});
 				}
 			}
+			public Integer getClickNumber() {
+				return 0;
+			}
+			public void addClickNumber() {
+			}
+			public void setClickNumber(int clicks) {
+			}
 
 //			@Override
 //			public void updateEntryRequest(AbstractEntry updatedEntry) { }

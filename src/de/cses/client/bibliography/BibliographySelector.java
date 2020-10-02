@@ -58,13 +58,13 @@ import com.sencha.gxt.widget.core.client.grid.Grid;
 import com.sencha.gxt.widget.core.client.grid.RowExpander;
 import com.sencha.gxt.widget.core.client.grid.filters.GridFilters;
 import com.sencha.gxt.widget.core.client.grid.filters.StringFilter;
-import com.sencha.gxt.widget.core.client.info.Info;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 
 import de.cses.client.StaticTables;
 import de.cses.client.Util;
 import de.cses.client.ui.AbstractView;
+import de.cses.client.ui.EditorListener;
 import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.AuthorEntry;
 
@@ -106,14 +106,14 @@ public class BibliographySelector implements IsWidget {
     boolean showdialog = false;
     boolean itemSelected = false;
     AnnotatedBibliographyEntry selectedEntry = null;
-    AbstractView el = null;
+    EditorListener el = null;
 	/**
 	 * 
 	 */
 	public BibliographySelector(List<AnnotatedBibliographyEntry> selectedEntries) {
 		this.selectedEntries = selectedEntries;
 	}
-	public BibliographySelector(List<AnnotatedBibliographyEntry> selectedEntries,AbstractView el) {
+	public BibliographySelector(List<AnnotatedBibliographyEntry> selectedEntries,EditorListener el) {
 		this.selectedEntries = selectedEntries;
 		this.el=el;
 	}
@@ -262,7 +262,7 @@ public class BibliographySelector implements IsWidget {
     selectionModel.addSelectionChangedHandler(new SelectionChangedHandler<AnnotatedBibliographyEntry>() {
 				@Override
 				public void onSelectionChanged(SelectionChangedEvent<AnnotatedBibliographyEntry> event) {
-					//Util.doLogging("");
+					Util.doLogging("");
 					if ((!itemSelected)&(showdialog)){
 						for (Map.Entry<Integer, AnnotatedBibliographyEntry> entry : selectedBibMap.entrySet()) {
 							//Util.doLogging(Integer.toString(entry.getKey()));

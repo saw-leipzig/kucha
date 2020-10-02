@@ -138,7 +138,15 @@ public class OrnamenticSearchController extends AbstractSearchController {
 						}
 
 						});
+					
 				}
+			}
+			public Integer getClickNumber() {
+				return 0;
+			}
+			public void addClickNumber() {
+			}
+			public void setClickNumber(int clicks) {
 			}
 		};
 		OrnamenticEditor ornamenticEditor = new OrnamenticEditor(null, el);

@@ -21,7 +21,9 @@ import de.cses.shared.IconographyEntry;
  */
 public interface IconographySelectorListener {
 	
-	public void iconographySelected(IconographyEntry entry);
-	public void cancel();
+	//public void iconographySelected(IconographyEntry entry);
+	//public void cancel();
+	public void icoHighlighter(int icoID);
+	public void icoDeHighlighter(int icoID);
 
 }

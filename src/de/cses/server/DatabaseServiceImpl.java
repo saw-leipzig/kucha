@@ -23,6 +23,7 @@ import de.cses.server.mysql.MysqlConnector;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.AnnotatedBibliographySearchEntry;
+import de.cses.shared.AnnotationEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.BibKeywordEntry;
 import de.cses.shared.CaveAreaEntry;
@@ -1043,7 +1044,18 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.updateUserEntry(userEntry);
 	}
+	@Override
+	public boolean setAnnotationResults(AnnotationEntry annoEntry) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.setAnnotationResults(annoEntry);
+		}
 	
+	@Override
+	public ArrayList<AnnotationEntry> getAnnotations(int depictionID) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getAnnotations(depictionID);
+		}
+
 	@Override
 	public int insertUserEntry(UserEntry entry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
@@ -1065,6 +1077,11 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public ArrayList<AbstractEntry> loadCollectedEntries(CollectionEntry value) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.loadCollectedEntries(value);
+	}
+	@Override
+	public CollectionEntry delCollectedEntries(CollectionEntry value) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.delCollectedEntries(value);
 	}
 	@Override
 	public int addPreservationClassification(PreservationClassificationEntry pcEntry) throws IllegalArgumentException {

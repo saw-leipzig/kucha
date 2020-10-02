@@ -26,6 +26,8 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.sencha.gxt.core.client.XTemplates;
+import com.sencha.gxt.fx.client.Draggable;
+import com.sencha.gxt.fx.client.Draggable.DraggableAppearance;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
@@ -115,6 +117,8 @@ public class Util {
 		dialog.add(dialogPanel);
 		dialog.setModal(true);
 		dialog.setGlassEnabled(true);
+		new Draggable(dialog, dialogPanel.getHeader(), GWT.<DraggableAppearance> create(DraggableAppearance.class));
+
 		dialog.center();
 	}
 

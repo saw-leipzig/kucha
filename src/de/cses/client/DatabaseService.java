@@ -19,10 +19,10 @@ import java.util.Map;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
-import de.cses.server.mysql.MysqlConnector;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.AnnotatedBibliographySearchEntry;
+import de.cses.shared.AnnotationEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.BibKeywordEntry;
 import de.cses.shared.CaveAreaEntry;
@@ -319,6 +319,10 @@ public interface DatabaseService extends RemoteService {
 
 	boolean updateUserEntry(UserEntry currentUser, String passwordHash, String newPasswordHash) throws IllegalArgumentException;
 
+	boolean setAnnotationResults(AnnotationEntry annoEntry) throws IllegalArgumentException;
+	
+	ArrayList<AnnotationEntry> getAnnotations(int depictionEntry) throws IllegalArgumentException;
+
 	ArrayList<CaveEntry> searchCaves(CaveSearchEntry searchEntry) throws IllegalArgumentException;
 
 	ArrayList<DepictionEntry> searchDepictions(DepictionSearchEntry searchEntry) throws IllegalArgumentException;
@@ -344,6 +348,8 @@ public interface DatabaseService extends RemoteService {
 	ArrayList<CollectionEntry> getRelatedCollectionNames(String sessionID) throws IllegalArgumentException;
 
 	ArrayList<AbstractEntry> loadCollectedEntries(CollectionEntry value) throws IllegalArgumentException;
+
+	CollectionEntry delCollectedEntries(CollectionEntry value) throws IllegalArgumentException;
 
 	int addPreservationClassification(PreservationClassificationEntry pcEntry) throws IllegalArgumentException;
 }
