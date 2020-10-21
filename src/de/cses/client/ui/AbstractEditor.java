@@ -14,34 +14,52 @@
 package de.cses.client.ui;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.editor.client.Editor.Path;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.core.client.ValueProvider;
+import com.sencha.gxt.data.shared.ListStore;
+import com.sencha.gxt.data.shared.ModelKeyProvider;
+import com.sencha.gxt.data.shared.PropertyAccess;
+import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
+import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
-import com.sencha.gxt.widget.core.client.event.CellClickEvent;
-import com.sencha.gxt.widget.core.client.event.CellClickEvent.CellClickHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
+import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
+import com.sencha.gxt.widget.core.client.grid.ColumnModel;
+import com.sencha.gxt.widget.core.client.grid.Grid;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.Util;
 import de.cses.shared.AbstractEntry;
+import de.cses.shared.ModifiedEntry;
 
 /**
  * @author alingnau
  *
  */
+
+
+
 public abstract class AbstractEditor implements IsWidget {
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
+	protected ToolButton modifiedToolButton;
 	protected ToolButton nextToolButton;
 	protected ToolButton prevToolButton;
+	protected ModifiedProperties modifiedProps = GWT.create(ModifiedProperties.class);
+	private Grid<ModifiedEntry> grid = null;
+	protected ListStore<ModifiedEntry> sourceStore;
 	private ArrayList<EditorListener> listenerList = new ArrayList<EditorListener>();
 	protected void doslide( int where) {
 		AbstractView el = (AbstractView)listenerList.get(0);
@@ -50,8 +68,63 @@ public abstract class AbstractEditor implements IsWidget {
 		nextChild.showEditor(nextChild.getEntry());
 
 	}
+	protected abstract void loadModifiedEntries() ;
 
 	protected void createNextPrevButtons() {
+		modifiedToolButton = new ToolButton(new IconConfig("foldButton", "foldButtonOver"));
+		modifiedToolButton.setToolTip(Util.createToolTip("show modification history"));
+		modifiedToolButton.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+			ColumnConfig<ModifiedEntry, String> modifiedByCol = new ColumnConfig<ModifiedEntry, String>(modifiedProps.modifiedBy(), 300, "Modified By");
+			ColumnConfig<ModifiedEntry, String> modifiedOColn = new ColumnConfig<ModifiedEntry, String>(modifiedProps.modifiedOn(), 300, "Modified On");
+//			ColumnConfig<ModifiedEntry, String> changes = new ColumnConfig<ModifiedEntry, String>(modifiedProps.tags(), 300, "Changed Values");
+			
+//				yearColumn.setHideable(false);
+//				yearColumn.setHorizontalHeaderAlignment(HorizontalAlignmentConstant.startOf(Direction.DEFAULT));
+			
+		    List<ColumnConfig<ModifiedEntry, ?>> sourceColumns = new ArrayList<ColumnConfig<ModifiedEntry, ?>>();
+//		    sourceColumns.add(selectionModel.getColumn());
+		    sourceColumns.add(modifiedByCol);
+		    sourceColumns.add(modifiedOColn);
+//		    sourceColumns.add(changes);
+
+		    ColumnModel<ModifiedEntry> sourceColumnModel = new ColumnModel<ModifiedEntry>(sourceColumns);
+		    
+		    sourceStore = new ListStore<ModifiedEntry>(modifiedProps.key());
+
+		    loadModifiedEntries();
+
+		    grid = new Grid<ModifiedEntry>(sourceStore, sourceColumnModel);
+//			    grid.setSelectionModel(selectionModel);
+//			    grid.setColumnReordering(true);
+		    grid.setBorders(false);
+		    grid.getView().setStripeRows(true);
+		    grid.getView().setColumnLines(true);
+		    grid.getView().setForceFit(true);
+
+			PopupPanel modifiedPopUp = new PopupPanel();
+			FramedPanel modifiedFP = new FramedPanel();
+			modifiedFP.setHeading("Modification Protocoll");
+			modifiedFP.setHeight(500);
+			modifiedFP.add(grid);
+			modifiedPopUp.add(modifiedFP);
+			ToolButton closeToolButton = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
+			closeToolButton.setToolTip(Util.createToolTip("close"));
+			closeToolButton.addSelectHandler(new SelectHandler() {
+				@Override
+				public void onSelect(SelectEvent event) {
+					modifiedPopUp.hide();
+				}
+			});
+			modifiedFP.addTool(closeToolButton);
+			modifiedPopUp.setModal(true);
+			modifiedPopUp.center();
+
+			}
+		});
+
 		nextToolButton = new ToolButton(new IconConfig("leftButton", "leftButtonOver"));
 		nextToolButton.setToolTip(Util.createToolTip("next entry"));
 		nextToolButton.addSelectHandler(new SelectHandler() {

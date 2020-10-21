@@ -106,8 +106,17 @@ public class ImageResultView extends AbstractResultView {
 							}
 
 						}
-						getPics(imageIDs, 120, UserLogin.getInstance().getSessionID());				
+						if (imageIDs.length()>0) {
+							getPics(imageIDs, 120, UserLogin.getInstance().getSessionID());				
+							
+						}
 						setSearchEnabled(true);
+						if (result.size()==searchEntry.getMaxentries()) {
+							setSearchbuttonVisible();
+						}
+						else {
+							setSearchbuttonHide();
+						}
 						
 					}
 

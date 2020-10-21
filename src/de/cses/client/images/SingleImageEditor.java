@@ -91,6 +91,7 @@ import de.cses.shared.AbstractEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageTypeEntry;
 import de.cses.shared.LocationEntry;
+import de.cses.shared.ModifiedEntry;
 import de.cses.shared.PhotographerEntry;
 
 public class SingleImageEditor extends AbstractEditor {
@@ -169,6 +170,25 @@ public class SingleImageEditor extends AbstractEditor {
     	popup.center();
     	
     }
+	@Override
+	protected void loadModifiedEntries() {
+		sourceStore.clear();
+	    dbService.getModifiedAbstractEntry((AbstractEntry)imgEntry, new AsyncCallback<ArrayList<ModifiedEntry>>() {
+			
+				@Override
+				public void onSuccess(ArrayList<ModifiedEntry> result) {
+					for (ModifiedEntry entry : result) {
+						sourceStore.add(entry);
+					}
+				}
+				
+				@Override
+				public void onFailure(Throwable caught) {
+				}
+			});
+	 
+	}
+
     public static native void exportStaticMethod() /*-{
 		$wnd.activatepanel = $entry(@de.cses.client.images.SingleImageEditor::activatePanel(*));
 	}-*/;
@@ -290,7 +310,7 @@ public class SingleImageEditor extends AbstractEditor {
 	public SingleImageEditor(ImageEntry imgEntry, EditorListener av) {
 		this.addEditorListener(av);
 		this.imgEntry = imgEntry;
-
+		this.imgEntry.setLastChangedByUser(UserLogin.getInstance().getUsername());
 		imgViewTemplates = GWT.create(ImageViewTemplates.class);
 		
 		photographerProps = GWT.create(PhotographerProperties.class);
@@ -357,7 +377,7 @@ public class SingleImageEditor extends AbstractEditor {
 
 	private void addOSDPanel(int clwidth, int clheight) {
 		int width = (clwidth/100*59);
-		Info.display("ImageWidth",Integer.toString(width));
+//		Info.display("ImageWidth",Integer.toString(width));
 		if (width<640) {
 			width=640;
 		}
@@ -963,6 +983,7 @@ public class SingleImageEditor extends AbstractEditor {
 		panel.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
 		panel.add(mainHLC);
 		createNextPrevButtons();
+		panel.addTool(modifiedToolButton);
 		panel.addTool(prevToolButton);
 		panel.addTool(nextToolButton);
 		panel.addTool(deleteToolButton);
@@ -975,6 +996,7 @@ public class SingleImageEditor extends AbstractEditor {
 				
 				Util.doLogging("Broser-Dimensions: " +Integer.toString(Window.getClientWidth())+" x "+Integer.toString(Window.getClientHeight()));
 				addOSDPanel(event.getWidth(),event.getHeight());
+				osdLoader.destroyAllViewers();
 				osdDic = OSDLoader.createDic();
 				setosd();
 				
@@ -998,7 +1020,7 @@ public class SingleImageEditor extends AbstractEditor {
 		titleField.focus();
 	}
 	private void setosd() {
-		 dbService.getContext(new AsyncCallback<String>() {
+		 dbService.getOSDContext(new AsyncCallback<String>() {
 
 			@Override
 			public void onFailure(Throwable caught) {

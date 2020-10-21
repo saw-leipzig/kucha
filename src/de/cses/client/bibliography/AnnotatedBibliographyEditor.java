@@ -86,15 +86,14 @@ import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.Util;
 import de.cses.client.bibliography.BibDocumentUploader.BibDocumentUploadListener;
-import de.cses.client.ornamentic.OrnamenticView;
 import de.cses.client.ui.AbstractEditor;
-import de.cses.client.ui.AbstractView;
 import de.cses.client.ui.EditorListener;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.BibKeywordEntry;
+import de.cses.shared.ModifiedEntry;
 import de.cses.shared.PublicationTypeEntry;
 
 /**
@@ -177,6 +176,7 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 	public AnnotatedBibliographyEditor(AnnotatedBibliographyEntry entry, EditorListener av) {
 		this.addEditorListener(av);
 		this.bibEntry = entry;
+		this.bibEntry.setLastChangedByUser(UserLogin.getInstance().getUsername());
 		documentLinkTemplate = GWT.create(DocumentLinkTemplate.class);
 	}
 
@@ -214,7 +214,7 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 			Util.showWarning("No author of editor selected", "Please select either an author or an editor before saving!");
 			return;
 		}
-
+		bibEntry.setLastChangedByUser(UserLogin.getInstance().getUsername());
 		ArrayList<AuthorEntry> selectedAuthorsList = new ArrayList<AuthorEntry>();
 		for (AuthorEntry ae : selectedAuthorListStore.getAll()) {
 			selectedAuthorsList.add(ae);
@@ -234,6 +234,7 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 		bibEntry.setKeywordList(selectedBibKeywordsList);
 
 		if (bibEntry.getAnnotatedBibliographyID() > 0) {
+			Util.doLogging("updateAnnotatedBiblographyEntry triggered");
 			dbService.updateAnnotatedBiblographyEntry(bibEntry, new AsyncCallback<AnnotatedBibliographyEntry>() {
 
 				@Override
@@ -278,6 +279,24 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 			});
 		}
 
+	}
+	@Override
+	protected void loadModifiedEntries() {
+		sourceStore.clear();
+	    dbService.getModifiedAbstractEntry((AbstractEntry)bibEntry, new AsyncCallback<ArrayList<ModifiedEntry>>() {
+			
+				@Override
+				public void onSuccess(ArrayList<ModifiedEntry> result) {
+					for (ModifiedEntry entry : result) {
+						sourceStore.add(entry);
+					}
+				}
+				
+				@Override
+				public void onFailure(Throwable caught) {
+				}
+			});
+	 
 	}
 
 	public void init() {
@@ -500,6 +519,7 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 		mainFP.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
 		mainFP.add(tabpanel, new VerticalLayoutData(1.0, 1.0));
 		createNextPrevButtons();
+		mainFP.addTool(modifiedToolButton);
 		mainFP.addTool(prevToolButton);
 		mainFP.addTool(nextToolButton);		
 		mainFP.addTool(deleteToolButton);

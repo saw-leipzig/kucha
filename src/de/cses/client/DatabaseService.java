@@ -45,6 +45,7 @@ import de.cses.shared.InnerSecondaryPatternsEntry;
 import de.cses.shared.LocationEntry;
 import de.cses.shared.MainTypologicalClass;
 import de.cses.shared.ModeOfRepresentationEntry;
+import de.cses.shared.ModifiedEntry;
 import de.cses.shared.OrientationEntry;
 import de.cses.shared.OrnamentCaveType;
 import de.cses.shared.OrnamentClassEntry;
@@ -222,7 +223,7 @@ public interface DatabaseService extends RemoteService {
 
 	int insertDepictionEntry(DepictionEntry depictionEntry, ArrayList<IconographyEntry> iconographyList);
 
-	boolean updateDepictionEntry(DepictionEntry correspondingDepictionEntry, ArrayList<IconographyEntry> iconographyList);
+	boolean updateDepictionEntry(DepictionEntry correspondingDepictionEntry, ArrayList<IconographyEntry> iconographyList, String sessionID);
 
 	ArrayList<ModeOfRepresentationEntry> getModesOfRepresentation() throws IllegalArgumentException;
 
@@ -271,6 +272,8 @@ public interface DatabaseService extends RemoteService {
 	
 	OrnamentClassEntry addOrnamentClass(OrnamentClassEntry entry)  throws IllegalArgumentException;
 	
+	String getOSDContext() throws IllegalArgumentException;
+
 	String getContext() throws IllegalArgumentException;
 
 	OrnamentClassEntry renameOrnamentClass(OrnamentClassEntry entry)  throws IllegalArgumentException;
@@ -352,4 +355,8 @@ public interface DatabaseService extends RemoteService {
 	CollectionEntry delCollectedEntries(CollectionEntry value) throws IllegalArgumentException;
 
 	int addPreservationClassification(PreservationClassificationEntry pcEntry) throws IllegalArgumentException;
+
+	ArrayList<ModifiedEntry> getModifiedAbstractEntry(AbstractEntry Entry) throws IllegalArgumentException;
+
+	ArrayList<ModifiedEntry> getModifiedAnnoEntry(DepictionEntry Entry) throws IllegalArgumentException;
 }

@@ -55,7 +55,14 @@ public class AnnotationEntry extends AbstractEntry {
 	public ArrayList<IconographyEntry> getTags() {
 		return tags;
 	}
-
+	public String getTagsAsString() {
+		String stringTags = "";
+		for (IconographyEntry ie : tags)
+		{
+			stringTags += ie.getText() + "; ";
+		}
+		return stringTags;
+	}
 	public void setTags(ArrayList<IconographyEntry> IconographyEntry) {
 		this.tags = IconographyEntry;
 	}

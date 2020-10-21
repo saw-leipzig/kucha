@@ -90,6 +90,7 @@ import de.cses.shared.CaveEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.InnerSecondaryPatternsEntry;
+import de.cses.shared.ModifiedEntry;
 import de.cses.shared.OrnamentCaveRelation;
 import de.cses.shared.OrnamentClassEntry;
 import de.cses.shared.OrnamentComponentsEntry;
@@ -157,6 +158,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 	public OrnamenticEditor(OrnamentEntry ornamentEntry, EditorListener av) {
 		this.addEditorListener(av);
 		this.ornamentEntry = ornamentEntry;
+
 	}
 	@Override
 	public Widget asWidget() {
@@ -166,6 +168,25 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		}
 		return backgroundPanel;
 	}
+	@Override
+	protected void loadModifiedEntries() {
+		sourceStore.clear();
+	    dbService.getModifiedAbstractEntry((AbstractEntry)ornamentEntry, new AsyncCallback<ArrayList<ModifiedEntry>>() {
+			
+				@Override
+				public void onSuccess(ArrayList<ModifiedEntry> result) {
+					for (ModifiedEntry entry : result) {
+						sourceStore.add(entry);
+					}
+				}
+				
+				@Override
+				public void onFailure(Throwable caught) {
+				}
+			});
+	 
+	}
+
 	public Widget createForm() {
 		ornamentTrees= new 	OrnamenticIconographyTree(ornamentEntry);
 		ornamentTrees.setDialogboxnotcalled(false);
@@ -1278,6 +1299,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		backgroundPanel.add(tabpanel);
 		backgroundPanel.setHeading("Ornamentation Editor");
 		createNextPrevButtons();
+		backgroundPanel.addTool(modifiedToolButton);
 		backgroundPanel.addTool(prevToolButton);
 		backgroundPanel.addTool(nextToolButton);		
 		backgroundPanel.addTool(deleteToolButton);
@@ -1316,13 +1338,15 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		if (ornamentEntry == null) {
 			ornamentEntry = new OrnamentEntry();
 		}
-
+		ornamentEntry.setLastChangedByUser(UserLogin.getInstance().getUsername());
 		ArrayList<OrnamentCaveRelation> corList = new ArrayList<OrnamentCaveRelation>();
 		for (int i = 0; i < caveOrnamentRelationList.size(); i++) {
 			corList.add(caveOrnamentRelationList.get(i));
 		}
 		ornamentEntry.setCavesRelations(corList);
-		ornamentEntry.setIconographyID(ornamentTrees.getSelectedie().getIconographyID());
+		if (ornamentTrees.getSelectedie()!=null) {
+			ornamentEntry.setIconographyID(ornamentTrees.getSelectedie().getIconographyID());			
+		}
 
 		ArrayList<ImageEntry> ieList = new ArrayList<ImageEntry>();
 		for (int i = 0; i < imageEntryLS.size(); i++) {

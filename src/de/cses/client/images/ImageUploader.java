@@ -41,6 +41,7 @@ import com.sencha.gxt.widget.core.client.form.FormPanel.Encoding;
 import com.sencha.gxt.widget.core.client.form.FormPanel.Method;
 
 import de.cses.client.Util;
+import de.cses.client.user.UserLogin;
 import de.cses.shared.ImageEntry;
 
 public class ImageUploader implements IsWidget {
@@ -74,10 +75,10 @@ public class ImageUploader implements IsWidget {
 		Util.doLogging( selectedFile+"- "+filename);
 		if (imageID<0) {
 			Util.doLogging("Image submiting triggered.");
-			form.setAction("imgUpload?origImageFileName="+filename);
+			form.setAction("imgUpload?origImageFileName="+filename+"&modifiedBy="+UserLogin.getInstance().getUsername());
 		}
 		else {
-			form.setAction("imgUpload?origImageFileName="+filename+"&hasID="+Integer.toString(imageID));
+			form.setAction("imgUpload?origImageFileName="+filename+"&hasID="+Integer.toString(imageID)+"&modifiedBy="+UserLogin.getInstance().getUsername());
 		}
 	}
 

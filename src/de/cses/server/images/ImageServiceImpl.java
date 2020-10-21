@@ -70,6 +70,7 @@ public class ImageServiceImpl extends HttpServlet {
 		response.setContentType("text/plain");
 		String origUploadFileName = request.getParameter("origImageFileName");
 		String hasID = request.getParameter("hasID");
+		String modifiedBy = request.getParameter("modifiedBy");
 		File imgHomeDir = new File(serverProperties.getProperty("home.images"));
 		if (!imgHomeDir.exists()) {
 			imgHomeDir.mkdirs();
@@ -118,6 +119,7 @@ public class ImageServiceImpl extends HttpServlet {
 							System.err.println("filename = " + filename);
 							ie = connector.getImageEntry(newImageID);
 							ie.setFilename(filename);
+							ie.setLastChangedByUser(modifiedBy);
 							ie.setTitle(uploadFileName);
 							File oldImageFile = new File(imgHomeDir,filename);
 							oldImageFile.delete();

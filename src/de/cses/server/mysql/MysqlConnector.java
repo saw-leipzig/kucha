@@ -85,6 +85,7 @@ import de.cses.shared.InnerSecondaryPatternsEntry;
 import de.cses.shared.LocationEntry;
 import de.cses.shared.MainTypologicalClass;
 import de.cses.shared.ModeOfRepresentationEntry;
+import de.cses.shared.ModifiedEntry;
 import de.cses.shared.OrientationEntry;
 import de.cses.shared.OrnamentCaveRelation;
 import de.cses.shared.OrnamentCaveType;
@@ -319,6 +320,96 @@ public class MysqlConnector implements IsSerializable {
 		return result;
 	}
 
+	public boolean protocollModifiedAbstractEntry(AbstractEntry entry, String changes) {
+			Connection dbc = getConnection();
+			PreparedStatement pstmt;
+			try {
+				pstmt = dbc.prepareStatement( "INSERT INTO Modified (EntryID, ModifiedBy, ModifiedOn,Tags) VALUES (?, ?, ?, ?)");
+				pstmt.setString(1, entry.getUniqueID());
+				pstmt.setString(2, entry.getLastChangedByUser());
+				pstmt.setString(3, entry.getModifiedOn());
+				pstmt.setString(4, changes);
+				ResultSet rs = pstmt.executeQuery();
+				rs.close();
+				pstmt.close();
+				return true;
+			} catch (SQLException e) {
+				e.printStackTrace();
+				System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+				return false;
+			}		
+	}
+	public boolean protocollModifiedAnnoEntry(AnnotationEntry entry) {
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement( "INSERT INTO Modified (EntryID, ModifiedBy, ModifiedOn,AnnoID,Tags) VALUES (?, ?, ?, ?, ?)");
+			pstmt.setString(1, Integer.toString(entry.getDepictionID()));
+			pstmt.setString(2, entry.getLastChangedByUser());
+			pstmt.setString(3, entry.getModifiedOn());
+			pstmt.setString(4, entry.getAnnotoriousID());
+			if (entry.getTagsAsString().length()<513) {
+				pstmt.setString(5, entry.getTagsAsString());
+			}
+			else {
+				pstmt.setString(5, entry.getTagsAsString().substring(0, 512));
+			}
+			ResultSet rs = pstmt.executeQuery();
+			rs.close();
+			pstmt.close();
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+			return false;
+		}		
+	}
+
+	public ArrayList<ModifiedEntry> getModifiedAbstractEntry(AbstractEntry entry) {
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		ArrayList<ModifiedEntry> results = new ArrayList<ModifiedEntry>(); 
+		try {
+			pstmt = dbc.prepareStatement( "SELECT * FROM Modified WHERE EntryID = ?");
+			pstmt.setString(1, entry.getUniqueID());
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) { 
+				ModifiedEntry result = new ModifiedEntry(rs.getInt("id"),rs.getString("EntryID"), rs.getString("ModifiedBy"), rs.getString("ModifiedOn"), rs.getString("AnnoID"), rs.getString("Tags"));
+				results.add(result);
+			}
+			rs.close();
+			pstmt.close();
+			return results;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+			return null;
+		}		
+}
+	public ArrayList<ModifiedEntry> getModifiedAnnoEntry(DepictionEntry entry) {
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		ArrayList<ModifiedEntry> results = new ArrayList<ModifiedEntry>(); 
+		try {
+			pstmt = dbc.prepareStatement( "SELECT * FROM Modified WHERE EntryID = ?");
+			pstmt.setString(1, Integer.toString(entry.getDepictionID()));
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) { 
+				ModifiedEntry result = new ModifiedEntry(rs.getInt("id"),rs.getString("EntryID"), rs.getString("ModifiedBy"), rs.getString("ModifiedOn"), rs.getString("AnnoID"), rs.getString("Tags"));
+				results.add(result);
+			}
+			rs.close();
+			pstmt.close();
+			return results;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+			return null;
+		}		
+}
+	
+	
+	
 	public boolean deleteAbstractEntry(AbstractEntry entry) {
 		if (entry instanceof DepictionEntry) {
 			Connection dbc = getConnection();
@@ -341,6 +432,16 @@ public class MysqlConnector implements IsSerializable {
 			PreparedStatement pstmt;
 			try {
 				pstmt = dbc.prepareStatement( "UPDATE Polygon SET deleted = 1 WHERE AnnotoriousID = '" +((AnnotationEntry)entry).getAnnotoriousID()  + "';");
+				ResultSet rs = pstmt.executeQuery();
+				rs.close();
+				pstmt.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+				System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+				return false;
+			}
+			try {
+				pstmt = dbc.prepareStatement( "UPDATE Annotations SET deleted = 1 WHERE AnnotoriousID = '" +((AnnotationEntry)entry).getAnnotoriousID()  + "';");
 				ResultSet rs = pstmt.executeQuery();
 				rs.close();
 				pstmt.close();
@@ -411,6 +512,9 @@ public class MysqlConnector implements IsSerializable {
 	}
 	public String getContext() {
 		return serverProperties.getProperty("iiif.images");
+	}
+	public String getOSDContext() {
+		return serverProperties.getProperty("iiif.osd");
 	}
 
 	public Map<Integer,String> getPics(ArrayList<ImageEntry> imgSources, int tnSize, String sessionID) {
@@ -987,7 +1091,7 @@ public class MysqlConnector implements IsSerializable {
 					result = rs.getString("MasterImageID");
 				}
 				else {
-					result=result+";"+rs.getString("MasterImageID");
+					result=result+","+rs.getString("MasterImageID");
 				}
 				
 			}
@@ -1322,6 +1426,7 @@ public class MysqlConnector implements IsSerializable {
 			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
+		
 		if (dologging){
 		long end = System.currentTimeMillis();
 		long diff = (end-start);
@@ -1929,6 +2034,12 @@ public class MysqlConnector implements IsSerializable {
 		}
 		if (dologging){
 		long end = System.currentTimeMillis();
+		ornamentEntry.setOrnamentID(newOrnamentID);
+		Date date = new Date(System.currentTimeMillis());
+		DateFormat df = DateFormat.getDateTimeInstance();
+		ornamentEntry.setModifiedOn(df.format(date));
+		protocollModifiedAbstractEntry(ornamentEntry,"");
+
 		long diff = (end-start);
 		if (diff>100){
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von saveOrnamentEntry brauchte "+diff + " Millisekunden.");;}}
@@ -1972,6 +2083,10 @@ public class MysqlConnector implements IsSerializable {
 			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return false;
 		}
+		Date date = new Date(System.currentTimeMillis());
+		DateFormat df = DateFormat.getDateTimeInstance();
+		ornamentEntry.setModifiedOn(df.format(date));
+		protocollModifiedAbstractEntry(ornamentEntry,"");
 		if (dologging){
 		long end = System.currentTimeMillis();
 		long diff = (end-start);
@@ -3046,6 +3161,10 @@ public boolean isHan(String s) {
 			System.err.println(e.getMessage());
 			return false;
 		}
+		Date date = new Date(System.currentTimeMillis());
+		DateFormat df = DateFormat.getDateTimeInstance();
+		entry.setModifiedOn(df.format(date));
+		protocollModifiedAbstractEntry(entry,"");
 		if (dologging){
 		long end = System.currentTimeMillis();
 		long diff = (end-start);
@@ -3466,12 +3585,13 @@ public boolean isHan(String s) {
 				entry.setAuthorList(getAuthorBibRelation(entry.getAnnotatedBibliographyID()));
 				entry.setEditorList(getEditorBibRelation(entry.getAnnotatedBibliographyID()));
 				entry.setKeywordList(getRelatedBibKeywords(entry.getAnnotatedBibliographyID()));
-				if (entry.getBibtexKey().isEmpty()) {
+				if ((entry.getBibtexKey().isEmpty())&(entry.getAuthorList().size()>0)) {
 					if (!entry.getAuthorList().isEmpty()) {
 						entry.setBibtexKey(createBibtexKey(entry.getAuthorList().get(0), entry.getYearORG()));
 					} else if (!entry.getEditorList().isEmpty()) {
 						entry.setBibtexKey(createBibtexKey(entry.getEditorList().get(0), entry.getYearORG()));
 					}
+					System.err.println("started Update updateAnnotatedBiblographyEntry due to updating BibtexKey");
 					updateAnnotatedBiblographyEntry(entry);
 				}
 				result.add(entry);
@@ -3528,12 +3648,13 @@ public boolean isHan(String s) {
 				entry.setAuthorList(getAuthorBibRelation(entry.getAnnotatedBibliographyID()));
 				entry.setEditorList(getEditorBibRelation(entry.getAnnotatedBibliographyID()));
 				entry.setKeywordList(getRelatedBibKeywords(entry.getAnnotatedBibliographyID()));
-				if (entry.getBibtexKey().isEmpty()) {
+				if ((entry.getBibtexKey().isEmpty())&(entry.getAuthorList().size()>0)) {
 					if (!entry.getAuthorList().isEmpty()) {
 						entry.setBibtexKey(createBibtexKey(entry.getAuthorList().get(0), entry.getYearORG()));
 					} else if (!entry.getEditorList().isEmpty()) {
 						entry.setBibtexKey(createBibtexKey(entry.getEditorList().get(0), entry.getYearORG()));
 					}
+					System.err.println("started Update updateAnnotatedBiblographyEntry due to updating BibtexKey");
 					updateAnnotatedBiblographyEntry(entry);
 				}
 				result.add(entry);
@@ -3845,7 +3966,7 @@ public boolean isHan(String s) {
 			while (rs.next()) {
 				result = new PositionEntry(rs.getInt("PositionID"), rs.getString("Name"));
 				positions.add(result);
-				System.out.print(result.getPositionID()+" - "+result.getName());
+				//System.out.print(result.getPositionID()+" - "+result.getName());
 			}
 			rs.close();
 			stmt.close();
@@ -4360,6 +4481,10 @@ public boolean isHan(String s) {
 			ex.printStackTrace();
 			return false;
 		}
+		Date date = new Date(System.currentTimeMillis());
+		DateFormat df = DateFormat.getDateTimeInstance();
+		caveEntry.setModifiedOn(df.format(date));
+		protocollModifiedAbstractEntry(caveEntry,"");
 		if (dologging){
 		long end = System.currentTimeMillis();
 		long diff = (end-start);
@@ -4440,6 +4565,11 @@ public boolean isHan(String s) {
 		if (dologging){
 		long end = System.currentTimeMillis();
 		long diff = (end-start);
+		caveEntry.setCaveID(newCaveID);
+		Date date = new Date(System.currentTimeMillis());
+		DateFormat df = DateFormat.getDateTimeInstance();
+		caveEntry.setModifiedOn(df.format(date));
+		protocollModifiedAbstractEntry(caveEntry,"");
 		if (diff>100){
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertCaveEntry brauchte "+diff + " Millisekunden.");;}}
 		return newCaveID;
@@ -4957,8 +5087,8 @@ public boolean isHan(String s) {
 				de.setDepictionID(newDepictionID);
 			}
 			keys.close();
-
 			pstmt.close();
+			protocollModifiedAbstractEntry(de,"");
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 			return 0;
@@ -4994,7 +5124,7 @@ public boolean isHan(String s) {
 	 * @param iconographyList
 	 * @return <code>true</code> when operation is successful
 	 */
-	public synchronized boolean updateDepictionEntry(DepictionEntry de, ArrayList<IconographyEntry> iconographyList) {
+	public synchronized boolean updateDepictionEntry(DepictionEntry de, ArrayList<IconographyEntry> iconographyList, String sessionID) {
 		long start = System.currentTimeMillis();
 		if (dologgingbegin){
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateDepictionEntry wurde ausgelöst.");;
@@ -5005,8 +5135,11 @@ public boolean isHan(String s) {
 		Date date = new Date(System.currentTimeMillis());
 		DateFormat df = DateFormat.getDateTimeInstance();
 		de.setModifiedOn(df.format(date));
-//		System.err.println("Description ist hier: ");
-		System.err.println(de.getDescription());
+//		DepictionEntry oldDe = getDepictionEntry(de.getDepictionID(), sessionID);
+		String changes="";
+//		changes= de.getchanges(oldDe);
+
+//		System.err.println("Tracked Changes are: "+changes);
 		try {
 			System.err.println("===> updateDepictionEntry ID = " + de.getDepictionID());
 			pstmt = dbc.prepareStatement(
@@ -5074,6 +5207,7 @@ public boolean isHan(String s) {
 		if (de.getRelatedBibliographyList().size() > 0) {
 			insertDepictionBibliographyRelation(de.getDepictionID(), de.getRelatedBibliographyList());
 		}
+		protocollModifiedAbstractEntry(de, changes);
 		System.err.println("==> updateDepictionEntry finished");
 		if (dologging){
 		long end = System.currentTimeMillis();
@@ -5680,17 +5814,17 @@ public boolean isHan(String s) {
 		Statement stmt2 = null;
 		try {
 			stmt = dbc.createStatement();
-			String sqlText = "SELECT * FROM Polygon left join Images on( Polygon.ImageID=Images.ImageID) WHERE Polygon.DepictionID="+depictionID+" and Polygon.deleted=0";
+			String sqlText = "SELECT PolygoneID,AnnotoriousID,ST_AsWKT(Polygon.Polygon) as \"Polygon\",Images.ImageID,Images.Filename,DepictionID,Polygon.deleted FROM Polygon left join Images on( Polygon.ImageID=Images.ImageID) WHERE Polygon.DepictionID="+depictionID+" and Polygon.deleted=0 and Polygon.Polygon is not null";
 			//System.err.println(sqlText);
 			ResultSet rs = stmt.executeQuery(sqlText);
 			while (rs.next()) {
 				//System.err.println("Entering Iteration 1");
-				AnnotationEntry newAnno = new AnnotationEntry(rs.getInt("DepictionID"), rs.getString("AnnotoriousID"), null,rs.getString("Polygon"), rs.getString("Filename"), false,false);
+				AnnotationEntry newAnno = new AnnotationEntry(rs.getInt("DepictionID"), rs.getString("AnnotoriousID"), null,rs.getString("Polygon").substring(9,rs.getString("Polygon").indexOf(")")), rs.getString("Filename"), false,false);
 				ArrayList<IconographyEntry> icoResults = new ArrayList<IconographyEntry>();
 				try {
 					stmt2 = dbc2.createStatement();
 					ResultSet rs2 = stmt2.executeQuery(
-							"SELECT * FROM Iconography WHERE IconographyID IN (SELECT IconographyID FROM Annotations WHERE AnnotoriousID='"
+							"SELECT * FROM Iconography WHERE IconographyID IN (SELECT IconographyID FROM Annotations WHERE deleted=0 and AnnotoriousID='"
 									+ newAnno.getAnnotoriousID() + "')");
 					while (rs2.next()) {
 						//System.err.println("Entering Iteration 2");
@@ -5732,7 +5866,7 @@ public boolean isHan(String s) {
 			PreparedStatement annoStatement;
 			try {
 				for (IconographyEntry tag : annoEntry.getTags()) {
-					System.err.println("Annotation (for Depiction: "+Integer.toString(annoEntry.getDepictionID())+") recieved: Tag: "+tag+", Polygon: "+annoEntry.getPolygone()+", Image: "+annoEntry.getImage()+", delete: "+Boolean.toString(annoEntry.getDelete())+", update: "+Boolean.toString(annoEntry.getUpdate()));
+					System.err.println("Annotation (for Depiction: "+Integer.toString(annoEntry.getDepictionID())+") recieved: Tag: "+tag.getText()+", Polygon: "+annoEntry.getPolygone()+", Image: "+annoEntry.getImage()+", delete: "+Boolean.toString(annoEntry.getDelete())+", update: "+Boolean.toString(annoEntry.getUpdate()));
 					annoStatement = dbc.prepareStatement(
 							"INSERT INTO Annotations ( AnnotoriousID, iconographyID) VALUES ( ?, ?)",
 							Statement.RETURN_GENERATED_KEYS);
@@ -5747,13 +5881,24 @@ public boolean isHan(String s) {
 					keys.close();
 				}
 				PreparedStatement polygoneStatement;
-				polygoneStatement = dbc.prepareStatement(
-						"INSERT INTO Polygon (DepictionID, AnnotoriousID, Polygon, ImageID) VALUES (?, ?, ?,?)");
-				polygoneStatement.setInt(1, annoEntry.getDepictionID());
-				polygoneStatement.setString(2, annoEntry.getAnnotoriousID());
-				polygoneStatement.setString(3, annoEntry.getPolygone().substring(22,annoEntry.getPolygone().indexOf("\"></polygon></svg>")));
 				String parts[]=annoEntry.getImage().split("\\.",-1);
 	            String part1=parts[0];
+				String poly=annoEntry.getPolygone();
+				if (annoEntry.getPolygone().indexOf(" ")>annoEntry.getPolygone().indexOf(",")) {
+					poly=poly.replace(" ", "|");
+					poly=poly.replace(",", " ");
+					poly=poly.replace("|", ",");					
+				}
+				System.err.println("INSERT INTO Polygon (DepictionID, AnnotoriousID, Polygon, ImageID) VALUES ("+Integer.toString(annoEntry.getDepictionID())+", "+annoEntry.getAnnotoriousID()+", PolygonFromText(Polygon(("+poly+"))),"+part1+")");
+				polygoneStatement = dbc.prepareStatement("INSERT INTO Polygon (DepictionID, AnnotoriousID, Polygon, ImageID) VALUES (?, ?, PolygonFromText(?),?)");
+				polygoneStatement.setInt(1, annoEntry.getDepictionID());
+				polygoneStatement.setString(2, annoEntry.getAnnotoriousID());
+				if (annoEntry.getPolygone().indexOf("\"></polygon></svg>")>0) {
+					polygoneStatement.setString(3, "POLYGON(("+poly.substring(22,annoEntry.getPolygone().indexOf("\"></polygon></svg>"))+"))");					
+				}
+				else {
+					polygoneStatement.setString(3, "POLYGON(("+poly+"))");
+				}
 				polygoneStatement.setInt(4, Integer.parseInt(part1));
 				polygoneStatement.executeUpdate();
 				polygoneStatement.close();
@@ -5768,6 +5913,10 @@ public boolean isHan(String s) {
 		else {
 			deleteAbstractEntry(annoEntry);
 		}
+		Date date = new Date(System.currentTimeMillis());
+		DateFormat df = DateFormat.getDateTimeInstance();
+		annoEntry.setModifiedOn(df.format(date));
+		protocollModifiedAnnoEntry(annoEntry);
 		System.out.println("Leaving setAnnotation");
 		return true;
 		
@@ -5912,6 +6061,7 @@ public boolean isHan(String s) {
 	 */
 	public AnnotatedBibliographyEntry insertAnnotatedBiblographyEntry(AnnotatedBibliographyEntry bibEntry) {
 		long start = System.currentTimeMillis();
+		System.err.println("insertAnnotatedBiblographyEntry triggered");
 		if (dologgingbegin){
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertAnnotatedBiblographyEntry wurde ausgelöst.");;
 		}
@@ -6024,6 +6174,12 @@ public boolean isHan(String s) {
 			ex.printStackTrace();
 			return null;
 		}
+		bibEntry.setAnnotatedBibliographyID(newBibID);
+		Date date = new Date(System.currentTimeMillis());
+		DateFormat df = DateFormat.getDateTimeInstance();
+		bibEntry.setModifiedOn(df.format(date));
+		protocollModifiedAbstractEntry(bibEntry,"");
+
 		if (dologging){
 		long end = System.currentTimeMillis();
 		long diff = (end-start);
@@ -7122,6 +7278,10 @@ public boolean isHan(String s) {
 			ex.printStackTrace();
 			return null;
 		}
+		Date date = new Date(System.currentTimeMillis());
+		DateFormat df = DateFormat.getDateTimeInstance();
+		bibEntry.setModifiedOn(df.format(date));
+		protocollModifiedAbstractEntry(bibEntry,"");
 		if (dologging){
 		long end = System.currentTimeMillis();
 		long diff = (end-start);
@@ -7932,9 +8092,9 @@ public boolean isHan(String s) {
 		if (!iconographyIDs.isEmpty()) {
 			where += where.isEmpty() 
 					? "DepictionID IN (SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (" + iconographyIDs + ") GROUP BY DepictionID HAVING (COUNT(DepictionID) >= " 
-						+ searchEntry.getCorrelationFactor() + "))"
+						+ searchEntry.getCorrelationFactor() + ")) or DepictionID in (SELECT Polygon.DepictionID FROM infosys.Annotations inner join infosys.Polygon on (Polygon.AnnotoriousID=Annotations.AnnotoriousID) WHERE Annotations.IconographyID IN ("+iconographyIDs+") GROUP BY DepictionID HAVING (COUNT(DepictionID) >= "+searchEntry.getCorrelationFactor()+"))"
 					: " AND DepictionID IN (SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (" + iconographyIDs + ") GROUP BY DepictionID HAVING (COUNT(DepictionID) >= " 
-						+ searchEntry.getCorrelationFactor() + "))";
+						+ searchEntry.getCorrelationFactor() + ")) or DepictionID in (SELECT Polygon.DepictionID FROM infosys.Annotations inner join infosys.Polygon on (Polygon.AnnotoriousID=Annotations.AnnotoriousID) WHERE Annotations.IconographyID IN ("+iconographyIDs+") GROUP BY DepictionID HAVING (COUNT(DepictionID) >= "+searchEntry.getCorrelationFactor()+"))";
 		}
 		String wallTreeIDs = "";
 		for (int wallTreeID : searchEntry.getWallIDList()) {
@@ -8200,7 +8360,8 @@ public boolean isHan(String s) {
 			return resultList;
 		}
 		try {
-			pstmt = dbc.prepareStatement("SELECT * FROM Collections WHERE deleted = 0 and UserID=? OR GroupCollection=TRUE");
+			pstmt = dbc.prepareStatement(""
+					+ "");
 			pstmt.setInt(1, ue.getUserID());
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {

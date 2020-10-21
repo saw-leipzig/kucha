@@ -58,6 +58,7 @@ public class OSDLoader {
 			newTags.add(icoEntry);
 		}
 		AnnotationEntry annoEntry = new AnnotationEntry(osdListener.getDepictionID(), id, newTags, polygon.substring(22,polygon.indexOf("\"></polygon></svg>")), image, delete, update);
+		annoEntry.setLastChangedByUser(UserLogin.getInstance().getUsername());		
 		if (!update && !delete) {
 			osdListener.addAnnotation(annoEntry);
 		}
@@ -75,35 +76,45 @@ public class OSDLoader {
 			
 		}
 		osdListener.setAnnotationsInParent(osdListener.getAnnotations());
-		dbService.setAnnotationResults(annoEntry, new AsyncCallback<Boolean>() {
-			@Override
-			public void onFailure(Throwable caught) {
-				Util.doLogging(caught.getLocalizedMessage());
-				caught.printStackTrace();
-			}
+		if (osdListener.getDepictionID()>0) {
+			dbService.setAnnotationResults(annoEntry, new AsyncCallback<Boolean>() {
+				@Override
+				public void onFailure(Throwable caught) {
+					Util.doLogging(caught.getLocalizedMessage());
+					caught.printStackTrace();
+				}
 
-			@Override
-			public void onSuccess(Boolean result) {
-				Info.display("Annotation Saved",Boolean.toString(result));
-			}
-		});
+				@Override
+				public void onSuccess(Boolean result) {
+					Info.display("Annotation Saved",Boolean.toString(result));
+				}
+			});			
+		}
 		
 	}
 	public void startLoadingTiles(String context) {
-		loadTiles(images, context, annoation, icoTree.getRootItems());
+		List<IconographyEntry> test = null;
+		if (icoTree!=null) {
+			icoTree.setEnableFilters(false);
+			test = icoTree.getRootItems();
+			icoTree.setEnableFilters(true);
+		}
+		loadTiles(images, context, annoation, test);			
 	}
 	public JavaScriptObject listConverter(List<IconographyEntry> icoTree) {
 		JavaScriptObject list = null;
-		for (IconographyEntry ie : icoTree) {
-			JavaScriptObject icoResult = null;
-			if (ie.getChildren()==null) {
-				icoResult = addIcoEntry(ie.getIconographyID(), ie.getParentID(), ie.getText(), ie.getSearch(), null);
-			}
-			else {
-				JavaScriptObject children = listConverter(ie.getChildren());
-				icoResult = addIcoEntry(ie.getIconographyID(), ie.getParentID(), ie.getText(), ie.getSearch(), children);
-			}
-			list = addToList(list, icoResult);
+		if (icoTree!=null) {
+			for (IconographyEntry ie : icoTree) {
+				JavaScriptObject icoResult = null;
+				if (ie.getChildren()==null) {
+					icoResult = addIcoEntry(ie.getIconographyID(), ie.getParentID(), ie.getText(), ie.getSearch(), null);
+				}
+				else {
+					JavaScriptObject children = listConverter(ie.getChildren());
+					icoResult = addIcoEntry(ie.getIconographyID(), ie.getParentID(), ie.getText(), ie.getSearch(), children);
+				}
+				list = addToList(list, icoResult);
+			}			
 		}
 		return list;
 	}
@@ -123,27 +134,11 @@ public class OSDLoader {
 		JavaScriptObject imgDic=results.remove(0);
 		JavaScriptObject ifn=results.remove(0);
 		JavaScriptObject icos = listConverter(icoTree);
-		JavaScriptObject annos= generateW3CAnnotations(osdListener.getAnnotations());
-		jso= createZoomeImage(tiles,ifn,imgDic, osdDic,UserLogin.getInstance().getSessionID(), annotation, icos, this, annos);
-
-//		if (depictionID>0) {
-//			dbService.getAnnotations(depictionID,new AsyncCallback<ArrayList<AnnotationEntry>>() {
-//
-//				@Override
-//				public void onFailure(Throwable caught) {
-//					caught.printStackTrace();
-//				}
-//
-//				@Override
-//				public void onSuccess(ArrayList<AnnotationEntry> result) {
-//					
-//					JavaScriptObject annos= generateW3CAnnotations(result);
-//					jso= createZoomeImage(tiles,ifn,imgDic, osdDic,UserLogin.getInstance().getSessionID(), annotation, icos, osdLoader, annos);
-//				}
-//			});
-//
-//		}
-		
+		JavaScriptObject annos = null;
+		if (osdListener!=null) {
+			annos= generateW3CAnnotations(osdListener.getAnnotations());			
+		}
+		jso= createZoomeImage(tiles,ifn,imgDic, osdDic,UserLogin.getInstance().getSessionID(), annotation, icos, this, annos);	
 	}
 	
 	public void destroyAllViewers() {
@@ -151,12 +146,14 @@ public class OSDLoader {
 	}
 	private JavaScriptObject generateW3CAnnotations(ArrayList<AnnotationEntry> annoEntries) {
 		JavaScriptObject w3cAnnotation = createList();
-		for (AnnotationEntry annoEntry : annoEntries) {
-			JavaScriptObject bodies = createList();
-			for (IconographyEntry ie : annoEntry.getTags()) {
-				bodies = addToBody(bodies,ie.getIconographyID(), ie.getText(), annoEntry.getImage());
-			}
-			w3cAnnotation = addAnnotation(w3cAnnotation,annoEntry.getAnnotoriousID(), bodies, annoEntry.getPolygone(), annoEntry.getImage());
+		if (annoEntries!=null) {
+			for (AnnotationEntry annoEntry : annoEntries) {
+				JavaScriptObject bodies = createList();
+				for (IconographyEntry ie : annoEntry.getTags()) {
+					bodies = addToBody(bodies,ie.getIconographyID(), ie.getText(), annoEntry.getImage());
+				}
+				w3cAnnotation = addAnnotation(w3cAnnotation,annoEntry.getAnnotoriousID(), bodies, annoEntry.getPolygone(), annoEntry.getImage());
+			}			
 		}
 		return w3cAnnotation;
 	}
@@ -198,7 +195,8 @@ public class OSDLoader {
 	public static native void removeOrAddAnnotationsJS(JavaScriptObject viewers, JavaScriptObject annos, Boolean add) 
 	/*-{
 	    $wnd.console.log("Adding Annotation: ", annos)
-		for (var v in viewers["annotorious"]) {
+	    if (viewers["annotorious"]!=null){
+	    			for (var v in viewers["annotorious"]) {
 				var savedAnnos=[];
 				var foundAnno=false;
 				for (var k = 0, length2 = annos.length; k < length2; k++){
@@ -216,12 +214,15 @@ public class OSDLoader {
 				}
 				
 		}
+	    	
+	    }
 	}-*/;
 	public void removeAllAnnotations() {
 		removeAllAnnotationsJS(jso);
 	}
 	public static native void removeAllAnnotationsJS(JavaScriptObject viewers) 
 	/*-{
+		$wnd.console.log("removeAllAnnotationsJS started.")
 		for (var v in viewers["annotorious"]) {
 				var emptyAnnos=[];
 				viewers["annotorious"][v].setAnnotations(emptyAnnos);
@@ -233,17 +234,23 @@ public class OSDLoader {
 //	}-*/;
 	public static native JavaScriptObject destroyAllViewersJava(JavaScriptObject viewers)
 	/*-{
-		//$wnd.console.log(viewers);
-		for (var k in viewers["dic"]) {
-    		viewers["dic"][k].destroy();
-    		viewers["dic"][k]=null;
-    		delete viewers["dic"][k];
-		};		
-		for (var k in viewers["annotorious"]) {
-    		viewers["annotorious"][k].destroy();
-    		viewers["annotorious"][k]=null;
-    		delete viewers["annotorious"][k];
-		};
+		$wnd.console.log("destroy all viewers Started");
+		if (viewers!=null){
+			if (viewers["dic"]!=null){					
+				for (var k in viewers["dic"]) {
+		    		viewers["dic"][k].destroy();
+		    		viewers["dic"][k]=null;
+		    		delete viewers["dic"][k];
+				};
+			}
+			if (viewers["annotorious"]!=null){				
+				for (var k in viewers["annotorious"]) {
+		    		viewers["annotorious"][k].destroy();
+		    		viewers["annotorious"][k]=null;
+		    		delete viewers["annotorious"][k];
+				};
+			}
+		}
 
 	}-*/;
 	public void highlightAnnotation(String annoID) {
@@ -251,7 +258,7 @@ public class OSDLoader {
 	}
 	public static native void highlightAnnotationJS(JavaScriptObject viewers, String annoID)
 	/*-{
-	 	//$wnd.console.log(viewers["annotorious"])
+	 	$wnd.console.log("highlightAnnotationsJS started")
 		for (var k in viewers["annotorious"]) {
     		viewers["annotorious"][k].highlightAnnotation(annoID);
 		};
@@ -262,7 +269,7 @@ public class OSDLoader {
 	}
 	public static native void deHighlightAnnotationJS(JavaScriptObject viewers, String annoID)
 	/*-{
-	 	//$wnd.console.log(viewers["annotorious"])
+	 	$wnd.console.log("deHighlightAnnotationsJS started");
 		for (var k in viewers["annotorious"]) {
     		viewers["annotorious"][k].dehighlightAnnotation(annoID);
 		};
@@ -523,11 +530,11 @@ public class OSDLoader {
 	public ArrayList<JavaScriptObject> processTiles(JavaScriptObject list,JavaScriptObject ifn, JavaScriptObject imgDic, ArrayList<ImageEntry> images, String context, boolean annotation) {		
 		if (!images.isEmpty()){
 			ImageEntry ie=images.remove(0);
-			String url="https://iiif.saw-leipzig.de/";
+//			String url="https://iiif.saw-leipzig.de/";
 //			String url="http://127.0.0.1:8182/";
 //			String url = "resource?imageID=" + ie.getImageID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri();
 			//Util.doLogging(url+"iiif/2/kucha%2Fimages%2F" + ie.getFilename())
-			list = addZoomeImage(list , url+"iiif/2/"+context + ie.getFilename() + "/info.json",ie.getFilename());
+			list = addZoomeImage(list , context + ie.getFilename() + "/info.json",ie.getFilename());
 //			list = addZoomeImage(list , url,ie.getFilename());
 			ifn=addImageFileNames(ifn,ie.getFilename());
 			String dummy = ie.getFilename();

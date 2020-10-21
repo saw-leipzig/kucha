@@ -124,5 +124,19 @@ public class WallTreeEntry extends AbstractEntry {
 	public String getUniqueID() {
 		return "WallTreeEntry-" + wallLocationID;
 	}
+    @Override
+    public boolean equals(Object anObject) {
+    	boolean isEqual=false;
+    	if (anObject instanceof WallTreeEntry){
+    		ArrayList<PositionEntry> compPos = new ArrayList<PositionEntry>(position);
+    		compPos.removeAll(((WallTreeEntry)anObject).getPosition());
+        	if (this.wallLocationID==((WallTreeEntry)anObject).getWallLocationID()) {
+        		if (compPos.size()==0) {
+        			isEqual=true;
+        		}
+        	}
+    	}
+        return isEqual;
+    }
 
 }

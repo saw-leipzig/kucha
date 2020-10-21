@@ -44,6 +44,7 @@ import de.cses.shared.InnerSecondaryPatternsEntry;
 import de.cses.shared.LocationEntry;
 import de.cses.shared.MainTypologicalClass;
 import de.cses.shared.ModeOfRepresentationEntry;
+import de.cses.shared.ModifiedEntry;
 import de.cses.shared.OrientationEntry;
 import de.cses.shared.OrnamentCaveType;
 import de.cses.shared.OrnamentClassEntry;
@@ -76,10 +77,16 @@ public interface DatabaseServiceAsync {
 	
 	void getContext(AsyncCallback<String> callback) throws IllegalArgumentException;
 
+	void getOSDContext(AsyncCallback<String> callback) throws IllegalArgumentException;
+
 	void getImage(int imageID, AsyncCallback<ImageEntry> callback) throws IllegalArgumentException;
 
 	void getPublicationTypes(AsyncCallback<ArrayList<PublicationTypeEntry>> callback) throws IllegalArgumentException;
 
+	void getModifiedAnnoEntry( DepictionEntry Entry,AsyncCallback<ArrayList<ModifiedEntry>> callback) throws IllegalArgumentException;
+		
+	void getModifiedAbstractEntry( AbstractEntry Entry,AsyncCallback<ArrayList<ModifiedEntry>> callback) throws IllegalArgumentException;
+	
 	void getImages(AsyncCallback<ArrayList<ImageEntry>> callback) throws IllegalArgumentException;
 
 	void getMasterImageFromOrnament(int tnSize,String sessionID,AsyncCallback<Map<Integer,String>> callback) throws IllegalArgumentException;	
@@ -239,7 +246,7 @@ public interface DatabaseServiceAsync {
 
 	void insertDepictionEntry(DepictionEntry depictionEntry, ArrayList<IconographyEntry> iconographyList, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 
-	void updateDepictionEntry(DepictionEntry correspondingDepictionEntry, ArrayList<IconographyEntry> iconographyList, AsyncCallback<Boolean> asyncCallback)
+	void updateDepictionEntry(DepictionEntry correspondingDepictionEntry, ArrayList<IconographyEntry> iconographyList, String sessionID, AsyncCallback<Boolean> asyncCallback)
 			throws IllegalArgumentException;
 
 	void getModesOfRepresentation(AsyncCallback<ArrayList<ModeOfRepresentationEntry>> asyncCallback) throws IllegalArgumentException;

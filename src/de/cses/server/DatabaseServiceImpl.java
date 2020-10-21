@@ -46,6 +46,7 @@ import de.cses.shared.InnerSecondaryPatternsEntry;
 import de.cses.shared.LocationEntry;
 import de.cses.shared.MainTypologicalClass;
 import de.cses.shared.ModeOfRepresentationEntry;
+import de.cses.shared.ModifiedEntry;
 import de.cses.shared.OrientationEntry;
 import de.cses.shared.OrnamentCaveType;
 import de.cses.shared.OrnamentClassEntry;
@@ -85,6 +86,10 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public String getContext() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getContext();
+	}
+	public String getOSDContext() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getOSDContext();
 	}
 	public boolean resetPassword(UserEntry currentUser) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
@@ -590,9 +595,9 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	 * @see de.cses.client.DatabaseService#updateDepictionEntry(de.cses.shared.DepictionEntry, java.util.List, java.util.List)
 	 */
 	@Override
-	public boolean updateDepictionEntry(DepictionEntry correspondingDepictionEntry, ArrayList<IconographyEntry> iconographyList) {
+	public boolean updateDepictionEntry(DepictionEntry correspondingDepictionEntry, ArrayList<IconographyEntry> iconographyList, String sessionID) {
 		MysqlConnector connector = MysqlConnector.getInstance();
-		return connector.updateDepictionEntry(correspondingDepictionEntry, iconographyList);
+		return connector.updateDepictionEntry(correspondingDepictionEntry, iconographyList, sessionID);
 	}
 
 	/* (non-Javadoc)
@@ -1000,6 +1005,17 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public ArrayList<DepictionEntry> searchDepictions(DepictionSearchEntry searchEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.searchDepictions(searchEntry);
+	}
+	@Override
+	public ArrayList<ModifiedEntry> getModifiedAbstractEntry(AbstractEntry Entry) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getModifiedAbstractEntry(Entry);
+	}
+	
+	@Override
+	public ArrayList<ModifiedEntry> getModifiedAnnoEntry(DepictionEntry Entry) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getModifiedAnnoEntry(Entry);
 	}
 	
 	@Override

@@ -101,6 +101,9 @@ import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinNumberValidator;
+import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
+import com.sencha.gxt.widget.core.client.grid.ColumnModel;
+import com.sencha.gxt.widget.core.client.grid.Grid;
 import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
@@ -129,6 +132,7 @@ import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.LocationEntry;
 import de.cses.shared.ModeOfRepresentationEntry;
+import de.cses.shared.ModifiedEntry;
 import de.cses.shared.PreservationAttributeEntry;
 import de.cses.shared.StyleEntry;
 import de.cses.shared.VendorEntry;
@@ -214,107 +218,107 @@ public class DepictionEditor extends AbstractEditor {
 		}
 	}
 
-	public static JavaScriptObject AddAnnoTile(JavaScriptObject list, ImageEntry ie, String context) {
-//			String url="https://iiif.saw-leipzig.de/";
-		String url = "http://127.0.0.1:8182/";
-//			String url = "resource?imageID=" + ie.getImageID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri();
-		// Util.doLogging(url+"iiif/2/kucha%2Fimages%2F" + ie.getFilename())
-		list = OSDLoader.addZoomeImage(list, url + "iiif/2/" + context + ie.getFilename() + "/info.json",
-				ie.getFilename());
-//			list = addZoomeImage(list , url,ie.getFilename());
-		String dummy = ie.getFilename();
-		Util.doLogging("anno_" + dummy);
-		Element imgEl = Document.get().getElementById("anno_" + dummy);
-		return addAnnoTileJava(imgEl, list, UserLogin.getInstance().getSessionID(), ie.getFilename());
-	}
+//	public static JavaScriptObject AddAnnoTile(JavaScriptObject list, ImageEntry ie, String context) {
+////			String url="https://iiif.saw-leipzig.de/";
+//		String url = "http://127.0.0.1:8182/";
+////			String url = "resource?imageID=" + ie.getImageID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri();
+//		// Util.doLogging(url+"iiif/2/kucha%2Fimages%2F" + ie.getFilename())
+//		list = OSDLoader.addZoomeImage(list, url + "iiif/2/" + context + ie.getFilename() + "/info.json",
+//				ie.getFilename());
+////			list = addZoomeImage(list , url,ie.getFilename());
+//		String dummy = ie.getFilename();
+//		Util.doLogging("anno_" + dummy);
+//		Element imgEl = Document.get().getElementById("anno_" + dummy);
+//		return addAnnoTileJava(imgEl, list, UserLogin.getInstance().getSessionID(), ie.getFilename());
+//	}
 
-	public static native JavaScriptObject addAnnoTileJava(Element imgEl, JavaScriptObject list, String sessionID,
-			String imgName)
-	/*-{
-	
-	function openFullscreen(where) {
-		if (where.requestFullscreen) {
-			where.requestFullscreen();
-		} else if (where.mozRequestFullScreen) { 
-			where.mozRequestFullScreen();
-		} else if (where.webkitRequestFullscreen) { 
-			where.webkitRequestFullscreen();
-		} else if (where.msRequestFullscreen) {
-			where.msRequestFullscreen();
-		}
-		else {
-			var el = $doc.documentElement;
-			el.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-		}
-		
-	}
-	$wnd.OpenSeadragon.setString('Tooltips.SelectionToggle','Selection Demo');
-	$wnd.OpenSeadragon.setString('Tooltips.SelectionConfirm','Ok');
-	$wnd.OpenSeadragon.setString('Tooltips.ImageTools','Image tools');
-	$wnd.OpenSeadragon.setString('Tool.brightness','Brightness');
-	$wnd.OpenSeadragon.setString('Tool.contrast','Contrast');
-	$wnd.OpenSeadragon.setString('Tool.thresholding','Thresholding');
-	$wnd.OpenSeadragon.setString('Tool.invert','Invert');
-	$wnd.OpenSeadragon.setString('Tool.gamma','Gamma');
-	$wnd.OpenSeadragon.setString('Tool.greyscale','Greyscale');
-	$wnd.OpenSeadragon.setString('Tool.reset','Reset');
-	$wnd.OpenSeadragon.setString('Tooltips.HorizontalGuide', 'Add Horizontal Guide');
-	$wnd.OpenSeadragon.setString('Tooltips.VerticalGuide', 'Add Vertical Guide');
-	$wnd.OpenSeadragon.setString('Tool.rotate', 'Rotate');
-	$wnd.OpenSeadragon.setString('Tool.close', 'Close');
-	
-	 	viewer =  $wnd.OpenSeadragon({
-	        element: imgEl,
-	        showRotationControl: true,
-	        showFlipControl: true,
-	        maxZoomLevel: 100,
-	        ajaxWithCredentials: true,
-	        ajaxHeaders: {"SessionID": sessionID},
-	        loadTilesWithAjax:true,
-	        crossOriginPolicy: "Anonymous",
-			prefixUrl: "scripts/openseadragon-bin-2.4.2/images/",
-			tileSources: list[imgName]
-			
-		}); 
-		
-		var anno = $wnd.OpenSeadragon.Annotorious(viewer);
-		anno.setDrawingTool("polygon");
-		anno.on('createAnnotation',function(annotation) {
-			$wnd.console.log("annotation created");
-	//				$wnd.console.log(annotation.id);
-	//				$wnd.console.log(annotation.target.selector.value);
-			$wnd.alert(annotation.target.selector.value);
-	//
-		});
-		anno.on('deleteAnnotation', function(annotation) {
-			$wnd.console.log("annotation deleted. Length of anno.getAnnotations(): "+anno.getAnnotations().length);
-			anno.handleAnnotationDeleted(annotation);
-			$wnd.console.log("Length of anno.getAnnotations(): "+anno.getAnnotations().length);
-		});
-		anno.on('selectAnnotation', function(annotation) {
-			$wnd.console.log("annotation selected.");
-		});
-		anno.on('mouseEnterAnnotation', function(annotation, event) {
-			$wnd.console.log("annotation entered.");
-		});
-		anno.on('mouseLeaveAnnotation', function(annotation, event) {
-			$wnd.console.log("annotation left.");
-		});
-		anno.on('updateAnnotation', function(annotation, previous) {
-			$wnd.console.log("annotation updated.");
-		});
-					
-		viewer.imagefilters({menuId:"menu"+viewer,
-	    							 toolsLeft: 270
-	    							});
-		viewer.addHandler("pre-full-page", function (data) {
-				data.preventDefaultAction=true;
-				openFullscreen(data.eventSource.element);
-		});
-	
-	
-	return viewer
-	}-*/;
+//	public static native JavaScriptObject addAnnoTileJava(Element imgEl, JavaScriptObject list, String sessionID,
+//			String imgName)
+//	/*-{
+//	
+//	function openFullscreen(where) {
+//		if (where.requestFullscreen) {
+//			where.requestFullscreen();
+//		} else if (where.mozRequestFullScreen) { 
+//			where.mozRequestFullScreen();
+//		} else if (where.webkitRequestFullscreen) { 
+//			where.webkitRequestFullscreen();
+//		} else if (where.msRequestFullscreen) {
+//			where.msRequestFullscreen();
+//		}
+//		else {
+//			var el = $doc.documentElement;
+//			el.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+//		}
+//		
+//	}
+//	$wnd.OpenSeadragon.setString('Tooltips.SelectionToggle','Selection Demo');
+//	$wnd.OpenSeadragon.setString('Tooltips.SelectionConfirm','Ok');
+//	$wnd.OpenSeadragon.setString('Tooltips.ImageTools','Image tools');
+//	$wnd.OpenSeadragon.setString('Tool.brightness','Brightness');
+//	$wnd.OpenSeadragon.setString('Tool.contrast','Contrast');
+//	$wnd.OpenSeadragon.setString('Tool.thresholding','Thresholding');
+//	$wnd.OpenSeadragon.setString('Tool.invert','Invert');
+//	$wnd.OpenSeadragon.setString('Tool.gamma','Gamma');
+//	$wnd.OpenSeadragon.setString('Tool.greyscale','Greyscale');
+//	$wnd.OpenSeadragon.setString('Tool.reset','Reset');
+//	$wnd.OpenSeadragon.setString('Tooltips.HorizontalGuide', 'Add Horizontal Guide');
+//	$wnd.OpenSeadragon.setString('Tooltips.VerticalGuide', 'Add Vertical Guide');
+//	$wnd.OpenSeadragon.setString('Tool.rotate', 'Rotate');
+//	$wnd.OpenSeadragon.setString('Tool.close', 'Close');
+//	
+//	 	viewer =  $wnd.OpenSeadragon({
+//	        element: imgEl,
+//	        showRotationControl: true,
+//	        showFlipControl: true,
+//	        maxZoomLevel: 100,
+//	        ajaxWithCredentials: true,
+//	        ajaxHeaders: {"SessionID": sessionID},
+//	        loadTilesWithAjax:true,
+//	        crossOriginPolicy: "Anonymous",
+//			prefixUrl: "scripts/openseadragon-bin-2.4.2/images/",
+//			tileSources: list[imgName]
+//			
+//		}); 
+//		
+//		var anno = $wnd.OpenSeadragon.Annotorious(viewer);
+//		anno.setDrawingTool("polygon");
+//		anno.on('createAnnotation',function(annotation) {
+//			$wnd.console.log("annotation created");
+//	//				$wnd.console.log(annotation.id);
+//	//				$wnd.console.log(annotation.target.selector.value);
+//			$wnd.alert(annotation.target.selector.value);
+//	//
+//		});
+//		anno.on('deleteAnnotation', function(annotation) {
+//			$wnd.console.log("annotation deleted. Length of anno.getAnnotations(): "+anno.getAnnotations().length);
+//			anno.handleAnnotationDeleted(annotation);
+//			$wnd.console.log("Length of anno.getAnnotations(): "+anno.getAnnotations().length);
+//		});
+//		anno.on('selectAnnotation', function(annotation) {
+//			$wnd.console.log("annotation selected.");
+//		});
+//		anno.on('mouseEnterAnnotation', function(annotation, event) {
+//			$wnd.console.log("annotation entered.");
+//		});
+//		anno.on('mouseLeaveAnnotation', function(annotation, event) {
+//			$wnd.console.log("annotation left.");
+//		});
+//		anno.on('updateAnnotation', function(annotation, previous) {
+//			$wnd.console.log("annotation updated.");
+//		});
+//					
+//		viewer.imagefilters({menuId:"menu"+viewer,
+//	    							 toolsLeft: 270
+//	    							});
+//		viewer.addHandler("pre-full-page", function (data) {
+//				data.preventDefaultAction=true;
+//				openFullscreen(data.eventSource.element);
+//		});
+//	
+//	
+//	return viewer
+//	}-*/;
 
 	public void loadiconogrpahy(int entry, long start) {
 		dbService.getRelatedIconography(entry, new AsyncCallback<ArrayList<IconographyEntry>>() {
@@ -457,6 +461,7 @@ public class DepictionEditor extends AbstractEditor {
 		} else {
 			correspondingDepictionEntry = new DepictionEntry();
 		}
+		this.correspondingDepictionEntry.setLastChangedByUser(UserLogin.getInstance().getUsername());
 		// Util.doLogging("Große von
 		// ImageList:"+Integer.toString(correspondingDepictionEntry.getRelatedImages().size()));
 		for (WallTreeEntry wte : correspondingDepictionEntry.getWalls()) {
@@ -1824,21 +1829,8 @@ public class DepictionEditor extends AbstractEditor {
 						}
 					});
 					FPAnno.addTool(closeToolButton);
-					dbService.getContext(new AsyncCallback<String>() {
-
-						@Override
-						public void onFailure(Throwable caught) {
-							caught.printStackTrace();
-						}
-
-						@Override
-						public void onSuccess(String result) {
-							AnnoPanel.center();
-							// AddAnnoTile(null,selectedImgEntry, result );
-
-						}
-					});
-
+					AnnoPanel.center();
+					
 				} else {
 					Info.display("Annotation aborded.", "No image selected!");
 				}
@@ -1857,6 +1849,75 @@ public class DepictionEditor extends AbstractEditor {
 		});
 		showAnnotationTB
 				.setToolTip(Util.createToolTip("Show or Hide Annotations.", "This will show or hide all Annotations."));
+		ToolButton modifiedToolButtonImage = new ToolButton(new IconConfig("foldButton", "foldButtonOver"));
+		modifiedToolButtonImage.setToolTip(Util.createToolTip("show modification history"));
+		modifiedToolButtonImage.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+			ColumnConfig<ModifiedEntry, String> modifiedByCol = new ColumnConfig<ModifiedEntry, String>(modifiedProps.modifiedBy(), 300, "Modified By");
+			ColumnConfig<ModifiedEntry, String> modifiedOColn = new ColumnConfig<ModifiedEntry, String>(modifiedProps.modifiedOn(), 300, "Midified On");
+			ColumnConfig<ModifiedEntry, String> annoIDColn = new ColumnConfig<ModifiedEntry, String>(modifiedProps.annoID(), 300, "Annotation ID");
+			ColumnConfig<ModifiedEntry, String> tagsColn = new ColumnConfig<ModifiedEntry, String>(modifiedProps.tags(), 300, "Tags");
+			
+//				yearColumn.setHideable(false);
+//				yearColumn.setHorizontalHeaderAlignment(HorizontalAlignmentConstant.startOf(Direction.DEFAULT));
+			
+		    List<ColumnConfig<ModifiedEntry, ?>> sourceColumns = new ArrayList<ColumnConfig<ModifiedEntry, ?>>();
+//		    sourceColumns.add(selectionModel.getColumn());
+		    sourceColumns.add(modifiedByCol);
+		    sourceColumns.add(modifiedOColn);
+		    sourceColumns.add(annoIDColn);
+		    sourceColumns.add(tagsColn);
+
+		    ColumnModel<ModifiedEntry> sourceColumnModel = new ColumnModel<ModifiedEntry>(sourceColumns);
+		    
+		    sourceStore = new ListStore<ModifiedEntry>(modifiedProps.key());
+
+			sourceStore.clear();
+		    dbService.getModifiedAnnoEntry(correspondingDepictionEntry, new AsyncCallback<ArrayList<ModifiedEntry>>() {
+				
+					@Override
+					public void onSuccess(ArrayList<ModifiedEntry> result) {
+						for (ModifiedEntry entry : result) {
+							sourceStore.add(entry);
+						}
+					}
+					
+					@Override
+					public void onFailure(Throwable caught) {
+					}
+				});
+
+
+		    Grid<ModifiedEntry> grid = new Grid<ModifiedEntry>(sourceStore, sourceColumnModel);
+//			    grid.setSelectionModel(selectionModel);
+//			    grid.setColumnReordering(true);
+		    grid.setBorders(false);
+		    grid.getView().setStripeRows(true);
+		    grid.getView().setColumnLines(true);
+		    grid.getView().setForceFit(true);
+
+			PopupPanel modifiedPopUp = new PopupPanel();
+			FramedPanel modifiedFP = new FramedPanel();
+			modifiedFP.setHeading("Modification Protocoll");
+			modifiedFP.setHeight(500);
+			modifiedFP.add(grid);
+			modifiedPopUp.add(modifiedFP);
+			ToolButton closeToolButton = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
+			closeToolButton.setToolTip(Util.createToolTip("close"));
+			closeToolButton.addSelectHandler(new SelectHandler() {
+				@Override
+				public void onSelect(SelectEvent event) {
+					modifiedPopUp.hide();
+				}
+			});
+			modifiedFP.addTool(closeToolButton);
+			modifiedPopUp.setModal(true);
+			modifiedPopUp.center();
+
+			}
+		});
 
 		FramedPanel depictionImagesPanel = new FramedPanel();
 		depictionImagesPanel.setHeading("Images");
@@ -1865,7 +1926,7 @@ public class DepictionEditor extends AbstractEditor {
 		filtercontainer.add(imageViewLF, new VerticalLayoutData(1.0, .95));
 		depictionImagesPanel.add(filtercontainer);
 //		depictionImagesPanel.addTool(infoTB);
-		// depictionImagesPanel.addTool(zoomTB);
+		depictionImagesPanel.addTool(modifiedToolButtonImage);
 		depictionImagesPanel.addTool(addImageTB);
 		depictionImagesPanel.addTool(removeImageTB);
 		depictionImagesPanel.addTool(setMasterTB);
@@ -1890,36 +1951,6 @@ public class DepictionEditor extends AbstractEditor {
 
 			@Override
 			public void icoDeHighlighter(int icoID) {
-//				List<IconographyEntry> selectedIcos = iconographySelector.getCLickedItems();
-//				IconographyEntry selectedIE = iconographySelector.getIconographyStroe()
-//						.findModelWithKey(Integer.toString(icoID));
-//				highlightIcoEntry(selectedIE, true, selectedIcos);
-//				ArrayList<AnnotationEntry> newAnnos = new ArrayList<AnnotationEntry>();
-//				ArrayList<AnnotationEntry> oldAnnos = new ArrayList<AnnotationEntry>();
-//				List<IconographyEntry> test = iconographySelector.getCLickedItems();
-//				if (iconographySelector.getCLickedItems().size()==0) {
-//					oldAnnos=correspondingDepictionEntry.getRelatedAnnotationList();
-//				}
-//				else {
-//					for (AnnotationEntry ae : correspondingDepictionEntry.getRelatedAnnotationList()) {
-//						osdLoader.highlightAnnotation(ae.getAnnotoriousID());
-//						for (IconographyEntry ie : ae.getTags()) {
-//							for (IconographyEntry ieClicked : iconographySelector.getCLickedItems()) {
-//								if (ie.getIconographyID() == ieClicked.getIconographyID()) {
-//										newAnnos.add(ae);
-//								}
-//								else {
-//									oldAnnos.add(ae);
-//								}							
-//							}
-//						}
-//					}					
-//				}
-//				osdLoader.removeAllAnnotations();
-//				osdLoader.removeOrAddAnnotations(newAnnos,true);
-//				for (AnnotationEntry aeSelected : newAnnos){
-//					highlightIcoEntry(aeSelected.getAnnotoriousID());
-//				}
 				List<IconographyEntry> selectedIcos = iconographySelector.getCLickedItems();
 				IconographyEntry selectedIE = iconographySelector.getIconographyStroe()
 				.findModelWithKey(Integer.toString(icoID));
@@ -2157,6 +2188,7 @@ public class DepictionEditor extends AbstractEditor {
 		mainPanel.setSize(Integer.toString(Window.getClientWidth() / 100 * 90),
 				Integer.toString(Window.getClientHeight() / 100 * 90));
 		createNextPrevButtons();
+		mainPanel.addTool(modifiedToolButton);
 		mainPanel.addTool(prevToolButton);
 		mainPanel.addTool(nextToolButton);
 		mainPanel.addTool(deleteToolButton);
@@ -2179,7 +2211,7 @@ public class DepictionEditor extends AbstractEditor {
 	}
 
 	private void setosd() {
-		dbService.getContext(new AsyncCallback<String>() {
+		dbService.getOSDContext(new AsyncCallback<String>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
@@ -2191,6 +2223,24 @@ public class DepictionEditor extends AbstractEditor {
 				osdLoader.startLoadingTiles(result);
 			}
 		});
+	}
+	@Override
+	protected void loadModifiedEntries() {
+		sourceStore.clear();
+	    dbService.getModifiedAbstractEntry((AbstractEntry)correspondingDepictionEntry, new AsyncCallback<ArrayList<ModifiedEntry>>() {
+			
+				@Override
+				public void onSuccess(ArrayList<ModifiedEntry> result) {
+					for (ModifiedEntry entry : result) {
+						sourceStore.add(entry);
+					}
+				}
+				
+				@Override
+				public void onFailure(Throwable caught) {
+				}
+			});
+	 
 	}
 
 	public void setfocus() {
@@ -2205,7 +2255,6 @@ public class DepictionEditor extends AbstractEditor {
 	 * @param close
 	 */
 	protected void save(boolean close, int slide) {
-		Util.doLogging("Started Depiction Save");
 		if (!shortNameTF.validate()) {
 			return;
 		}
@@ -2213,6 +2262,9 @@ public class DepictionEditor extends AbstractEditor {
 		for (int i = 0; i < imageEntryLS.size(); ++i) {
 			relatedImageEntryList.add(imageEntryLS.get(i));
 		}
+		List<WallTreeEntry> test = new ArrayList<WallTreeEntry>(correspondingDepictionEntry.getWalls());
+		List<WallTreeEntry> test2 = new ArrayList<WallTreeEntry>(correspondingDepictionEntry.getWalls());
+		test.removeAll(test2);
 		correspondingDepictionEntry.setRelatedImages(relatedImageEntryList);
 		correspondingDepictionEntry.setRelatedBibliographyList(bibliographySelector.getSelectedEntries());
 		correspondingDepictionEntry.setLastChangedByUser(UserLogin.getInstance().getUsername());
@@ -2220,7 +2272,6 @@ public class DepictionEditor extends AbstractEditor {
 				+ Integer.toString(correspondingDepictionEntry.getDepictionID()));
 
 		if (correspondingDepictionEntry.getDepictionID() == 0) {
-			Util.doLogging("Went to insertDepictionEntry");
 
 			dbService.insertDepictionEntry(correspondingDepictionEntry, iconographySelector.getSelectedIconography(),
 					new AsyncCallback<Integer>() {
@@ -2259,9 +2310,8 @@ public class DepictionEditor extends AbstractEditor {
 						}
 					});
 		} else {
-			Util.doLogging("Went to updateDepictionEntry");
 			dbService.updateDepictionEntry(correspondingDepictionEntry,
-					correspondingDepictionEntry.getRelatedIconographyList(), new AsyncCallback<Boolean>() {
+					correspondingDepictionEntry.getRelatedIconographyList(), UserLogin.getInstance().getSessionID(), new AsyncCallback<Boolean>() {
 
 						@Override
 						public void onFailure(Throwable caught) {

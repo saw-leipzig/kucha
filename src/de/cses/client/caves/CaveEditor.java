@@ -108,6 +108,7 @@ import de.cses.shared.CaveSketchEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
 import de.cses.shared.DistrictEntry;
+import de.cses.shared.ModifiedEntry;
 import de.cses.shared.OrientationEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.RegionEntry;
@@ -357,6 +358,24 @@ public class CaveEditor extends AbstractEditor {
 		@XTemplate("<div>{label}</div>")
 		SafeHtml wallLabel(String label);
 	}
+	@Override
+	protected void loadModifiedEntries() {
+		sourceStore.clear();
+	    dbService.getModifiedAbstractEntry((AbstractEntry)correspondingCaveEntry, new AsyncCallback<ArrayList<ModifiedEntry>>() {
+			
+				@Override
+				public void onSuccess(ArrayList<ModifiedEntry> result) {
+					for (ModifiedEntry entry : result) {
+						sourceStore.add(entry);
+					}
+				}
+				
+				@Override
+				public void onFailure(Throwable caught) {
+				}
+			});
+	 
+	}
 
 	public CaveEditor(CaveEntry caveEntry, EditorListener av) {
 		this.addEditorListener(av);
@@ -365,6 +384,7 @@ public class CaveEditor extends AbstractEditor {
 		} else {
 			correspondingCaveEntry = caveEntry;
 		}
+		this.correspondingCaveEntry.setLastChangedByUser(UserLogin.getInstance().getUsername());
 		caveTypeProps = GWT.create(CaveTypeProperties.class);
 		caveTypeEntryListStore = new ListStore<CaveTypeEntry>(caveTypeProps.caveTypeID());
 		ceilingTypeProps = GWT.create(CeilingTypeProperties.class);
@@ -2709,6 +2729,7 @@ public class CaveEditor extends AbstractEditor {
 		scrpanel.add(mainHlContainer);
 		mainPanel.add(scrpanel);
 		createNextPrevButtons();
+		mainPanel.addTool(modifiedToolButton);
 		mainPanel.addTool(prevToolButton);
 		mainPanel.addTool(nextToolButton);
 		mainPanel.addTool(saveToolButton);
