@@ -243,6 +243,7 @@ public class CaveEditor extends AbstractEditor {
 	private NumberField<Double> wallWidthNF;
 	private NumberField<Double> wallHeightNF;
 	private BibliographySelector bibliographySelector;
+	private ToolButton saveToolButton;
 
 	interface CaveTypeProperties extends PropertyAccess<CaveTypeEntry> {
 		ModelKeyProvider<CaveTypeEntry> caveTypeID();
@@ -2645,11 +2646,12 @@ public class CaveEditor extends AbstractEditor {
 
 		mainHlContainer.add(tabPanel, new HorizontalLayoutData(.7, 1.0));
 
-		ToolButton saveToolButton = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
+		saveToolButton = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 		saveToolButton.setToolTip(Util.createToolTip("save"));
 		saveToolButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
+				saveToolButton.disable();
 				save(false,0);
 			}
 		});
@@ -2721,7 +2723,7 @@ public class CaveEditor extends AbstractEditor {
 		        }
 		    			
 		}, KeyDownEvent.getType());
-		mainPanel.setHeading("Cave Editor (entry last modified on " + correspondingCaveEntry.getModifiedOn() + ")");
+		mainPanel.setHeading("Cave Editor (entry number: "+Integer.toString(correspondingCaveEntry.getCaveID())+")");
 		mainPanel.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
 		mainHlContainer.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80)); // here we set the size of the panel
 		
@@ -3346,6 +3348,7 @@ public class CaveEditor extends AbstractEditor {
 
 					@Override
 					public void onSuccess(Boolean result) {
+						saveToolButton.enable();
 //						updateEntry(correspondingCaveEntry);
 						if (close) {
 							closeEditor(correspondingCaveEntry);
@@ -3367,6 +3370,7 @@ public class CaveEditor extends AbstractEditor {
 
 					@Override
 					public void onSuccess(Integer result) {
+						saveToolButton.enable();
 						correspondingCaveEntry.setCaveID(result.intValue());
 //						updateEntry(correspondingCaveEntry);
 						if (close) {

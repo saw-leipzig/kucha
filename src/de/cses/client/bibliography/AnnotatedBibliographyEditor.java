@@ -130,6 +130,7 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 	private ComboBox<AnnotatedBibliographyEntry> firstEditionComboBox;
 	private DualListField<AuthorEntry, String> editorSelection;
 	private TextField bibtexKeyTF;
+	private ToolButton saveToolButton;
 
 //	interface PublisherViewTemplates extends XTemplates {
 //		@XTemplate("<div>{name}</div>")
@@ -239,12 +240,14 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 
 				@Override
 				public void onFailure(Throwable caught) {
+					saveToolButton.enable();
 					caught.printStackTrace();
 					Util.showWarning("Error", "A problem occured while saving! "+caught.getMessage());
 				}
 
 				@Override
 				public void onSuccess(AnnotatedBibliographyEntry result) {
+					saveToolButton.enable();
 					if (result!=null) {
 						bibtexKeyTF.setValue(result.getBibtexKey(), true);
 						if (close) {
@@ -262,12 +265,14 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 
 				@Override
 				public void onFailure(Throwable caught) {
+					saveToolButton.enable();
 					caught.printStackTrace();
 					Util.showWarning("Error", "A problem occured while saving!");
 				}
 
 				@Override
 				public void onSuccess(AnnotatedBibliographyEntry result) {
+					saveToolButton.enable();
 					bibEntry.setAnnotatedBibliographyID(result.getAnnotatedBibliographyID());
 					Info.display("BibliographyID:",Integer.toString(result.getAnnotatedBibliographyID()));
 					bibtexKeyTF.setValue(result.getBibtexKey(), true);
@@ -473,12 +478,13 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 			}
 		});
 
-		ToolButton saveToolButton = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
+		saveToolButton = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 		saveToolButton.setToolTip(Util.createToolTip("save"));
 		saveToolButton.addSelectHandler(new SelectHandler() {
 
 			@Override
 			public void onSelect(SelectEvent event) {
+				saveToolButton.disable();
 				save(false,0);
 			}
 
@@ -515,7 +521,7 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 					  );		        }
 		    }			
 		}, KeyDownEvent.getType());
-		mainFP.setHeading("Annotated Bibliography (entry last modified on " + bibEntry.getModifiedOn() + ")");
+		mainFP.setHeading("Annotated Bibliography (entry number: " + Integer.toString(bibEntry.getAnnotatedBibliographyID()) + ")");
 		mainFP.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
 		mainFP.add(tabpanel, new VerticalLayoutData(1.0, 1.0));
 		createNextPrevButtons();

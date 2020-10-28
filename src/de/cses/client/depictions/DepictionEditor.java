@@ -201,9 +201,12 @@ public class DepictionEditor extends AbstractEditor {
 	private ImageEntry selectedImgEntry;
 	private boolean annotationsLoaded = true;
 	private double imageWindowRelation;
-
+	private OSDListener osdListener;
 	private WallTree wallTree;
-	boolean saveSuccess;
+	private boolean saveSuccess;
+	private IconographySelectorListener icoSelectorListener;
+	private ArrayList<IconographyEntry> iconographyRelationList;
+	private ToolButton saveToolButton;
 
 	class NameElement {
 		private String element;
@@ -218,135 +221,11 @@ public class DepictionEditor extends AbstractEditor {
 		}
 	}
 
-//	public static JavaScriptObject AddAnnoTile(JavaScriptObject list, ImageEntry ie, String context) {
-////			String url="https://iiif.saw-leipzig.de/";
-//		String url = "http://127.0.0.1:8182/";
-////			String url = "resource?imageID=" + ie.getImageID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri();
-//		// Util.doLogging(url+"iiif/2/kucha%2Fimages%2F" + ie.getFilename())
-//		list = OSDLoader.addZoomeImage(list, url + "iiif/2/" + context + ie.getFilename() + "/info.json",
-//				ie.getFilename());
-////			list = addZoomeImage(list , url,ie.getFilename());
-//		String dummy = ie.getFilename();
-//		Util.doLogging("anno_" + dummy);
-//		Element imgEl = Document.get().getElementById("anno_" + dummy);
-//		return addAnnoTileJava(imgEl, list, UserLogin.getInstance().getSessionID(), ie.getFilename());
-//	}
-
-//	public static native JavaScriptObject addAnnoTileJava(Element imgEl, JavaScriptObject list, String sessionID,
-//			String imgName)
-//	/*-{
-//	
-//	function openFullscreen(where) {
-//		if (where.requestFullscreen) {
-//			where.requestFullscreen();
-//		} else if (where.mozRequestFullScreen) { 
-//			where.mozRequestFullScreen();
-//		} else if (where.webkitRequestFullscreen) { 
-//			where.webkitRequestFullscreen();
-//		} else if (where.msRequestFullscreen) {
-//			where.msRequestFullscreen();
-//		}
-//		else {
-//			var el = $doc.documentElement;
-//			el.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-//		}
-//		
-//	}
-//	$wnd.OpenSeadragon.setString('Tooltips.SelectionToggle','Selection Demo');
-//	$wnd.OpenSeadragon.setString('Tooltips.SelectionConfirm','Ok');
-//	$wnd.OpenSeadragon.setString('Tooltips.ImageTools','Image tools');
-//	$wnd.OpenSeadragon.setString('Tool.brightness','Brightness');
-//	$wnd.OpenSeadragon.setString('Tool.contrast','Contrast');
-//	$wnd.OpenSeadragon.setString('Tool.thresholding','Thresholding');
-//	$wnd.OpenSeadragon.setString('Tool.invert','Invert');
-//	$wnd.OpenSeadragon.setString('Tool.gamma','Gamma');
-//	$wnd.OpenSeadragon.setString('Tool.greyscale','Greyscale');
-//	$wnd.OpenSeadragon.setString('Tool.reset','Reset');
-//	$wnd.OpenSeadragon.setString('Tooltips.HorizontalGuide', 'Add Horizontal Guide');
-//	$wnd.OpenSeadragon.setString('Tooltips.VerticalGuide', 'Add Vertical Guide');
-//	$wnd.OpenSeadragon.setString('Tool.rotate', 'Rotate');
-//	$wnd.OpenSeadragon.setString('Tool.close', 'Close');
-//	
-//	 	viewer =  $wnd.OpenSeadragon({
-//	        element: imgEl,
-//	        showRotationControl: true,
-//	        showFlipControl: true,
-//	        maxZoomLevel: 100,
-//	        ajaxWithCredentials: true,
-//	        ajaxHeaders: {"SessionID": sessionID},
-//	        loadTilesWithAjax:true,
-//	        crossOriginPolicy: "Anonymous",
-//			prefixUrl: "scripts/openseadragon-bin-2.4.2/images/",
-//			tileSources: list[imgName]
-//			
-//		}); 
-//		
-//		var anno = $wnd.OpenSeadragon.Annotorious(viewer);
-//		anno.setDrawingTool("polygon");
-//		anno.on('createAnnotation',function(annotation) {
-//			$wnd.console.log("annotation created");
-//	//				$wnd.console.log(annotation.id);
-//	//				$wnd.console.log(annotation.target.selector.value);
-//			$wnd.alert(annotation.target.selector.value);
-//	//
-//		});
-//		anno.on('deleteAnnotation', function(annotation) {
-//			$wnd.console.log("annotation deleted. Length of anno.getAnnotations(): "+anno.getAnnotations().length);
-//			anno.handleAnnotationDeleted(annotation);
-//			$wnd.console.log("Length of anno.getAnnotations(): "+anno.getAnnotations().length);
-//		});
-//		anno.on('selectAnnotation', function(annotation) {
-//			$wnd.console.log("annotation selected.");
-//		});
-//		anno.on('mouseEnterAnnotation', function(annotation, event) {
-//			$wnd.console.log("annotation entered.");
-//		});
-//		anno.on('mouseLeaveAnnotation', function(annotation, event) {
-//			$wnd.console.log("annotation left.");
-//		});
-//		anno.on('updateAnnotation', function(annotation, previous) {
-//			$wnd.console.log("annotation updated.");
-//		});
-//					
-//		viewer.imagefilters({menuId:"menu"+viewer,
-//	    							 toolsLeft: 270
-//	    							});
-//		viewer.addHandler("pre-full-page", function (data) {
-//				data.preventDefaultAction=true;
-//				openFullscreen(data.eventSource.element);
-//		});
-//	
-//	
-//	return viewer
-//	}-*/;
-
-	public void loadiconogrpahy(int entry, long start) {
-		dbService.getRelatedIconography(entry, new AsyncCallback<ArrayList<IconographyEntry>>() {
-			@Override
-			public void onFailure(Throwable caught) {
-				long end = System.currentTimeMillis();
-				long diff = (end - start);
-				Util.doLogging("                -->  " + System.currentTimeMillis()
-						+ "  SQL-Statement von getIconogrpahy brach nach " + diff + " Millisekunden ab."
-						+ caught.getMessage());
-				Util.doLogging(caught.getLocalizedMessage());
-				caught.printStackTrace();
-				Info.display("Failure", "Failed to load Iconography, retry.");
-				loadiconogrpahy(entry, start);
-			}
-
-			@Override
-			public void onSuccess(ArrayList<IconographyEntry> iconographyRelationList) {
-				long end = System.currentTimeMillis();
-				long diff = (end - start);
-				Util.doLogging("                -->  " + System.currentTimeMillis()
-						+ "  SQL-Statement von getIconogrpahy wurde nach " + diff
-						+ " Millisekunden erfolgreich beendet.");
+	public void loadiconogrpahy(ArrayList<IconographyEntry> iconographyRelationList) {
+				this.iconographyRelationList = iconographyRelationList;
 				iconographySelector.setSelectedIconography(iconographyRelationList);
 				iconographySelector.IconographyTreeEnabled(true);
 				getListenerList().get(0).setClickNumber(0);
-			}
-		});
 	}
 
 	interface DepictionProperties extends PropertyAccess<DepictionEntry> {
@@ -876,7 +755,7 @@ public class DepictionEditor extends AbstractEditor {
 		ListField<ImageEntry, ImageEntry> imageViewLF = new ListField<ImageEntry, ImageEntry>(imageListView);
 		loadImages();
 
-		imageViewLF.setSize("300px", "1.0");
+		//imageViewLF.setSize("300px", "1.0");
 
 		/**
 		 * --------------------- content of first tab (BASICS) starts here
@@ -1760,10 +1639,7 @@ public class DepictionEditor extends AbstractEditor {
 				getListenerList().get(0).addClickNumber();
 				ImageEntry entry = imageListView.getSelectionModel().getSelectedItem();
 				correspondingDepictionEntry.setMasterImageID(entry.getImageID());
-				imageListView.getStore().clear();
-				osdLoader.destroyAllViewers();
-				loadImages();
-				setosd();
+				reloadPics();
 			}
 		});
 
@@ -1939,7 +1815,7 @@ public class DepictionEditor extends AbstractEditor {
 		Collection<IconographyEntry> elements = StaticTables.getInstance().getIconographyEntries().values();
 		ArrayList<EditorListener> el = getListenerList();
 
-		IconographySelectorListener icoSelectorListener = new IconographySelectorListener() {
+		icoSelectorListener = new IconographySelectorListener() {
 
 			@Override
 			public void icoHighlighter(int icoID) {
@@ -1964,7 +1840,16 @@ public class DepictionEditor extends AbstractEditor {
 					highlightIcoEntry(clickedIE, false,selectedIcos);					
 				}
 
-			};
+			}
+			public void reloadIconography(IconographyEntry iconographyEntry) {
+				iconographySelector = null;
+				iconographySelector = new IconographySelector(StaticTables.getInstance().getIconographyEntries().values(),
+						getListenerList().get(0), true, correspondingDepictionEntry.getRelatedAnnotationList(),
+						icoSelectorListener);
+			}
+			public void reloadOSD() {
+				reloadPics();
+			}
 		};
 		iconographySelector = new IconographySelector(StaticTables.getInstance().getIconographyEntries().values(),
 				getListenerList().get(0), true, correspondingDepictionEntry.getRelatedAnnotationList(),
@@ -1972,8 +1857,8 @@ public class DepictionEditor extends AbstractEditor {
 		long start = System.currentTimeMillis();
 		Util.doLogging("Starte getIconogrpahy for Depictionentry: "
 				+ Integer.toString(correspondingDepictionEntry.getDepictionID()));
-		loadiconogrpahy(correspondingDepictionEntry.getDepictionID(), start);
-		OSDListener osdListener = new OSDListener() {
+		loadiconogrpahy(correspondingDepictionEntry.getRelatedIconographyList());
+		osdListener = new OSDListener() {
 
 			@Override
 			public void setAnnotationsInParent(ArrayList<AnnotationEntry> relatedAnnotationList) {
@@ -1996,6 +1881,12 @@ public class DepictionEditor extends AbstractEditor {
 			@Override
 			public void addAnnotation(AnnotationEntry ae) {
 				correspondingDepictionEntry.addAnnotation(ae);
+				for (EditorListener el : getListenerList()) {
+					if (el instanceof DepictionView) {
+						((DepictionView) el).setDepictionEntry(correspondingDepictionEntry);
+					}
+				}
+
 				
 			};
 			
@@ -2037,14 +1928,11 @@ public class DepictionEditor extends AbstractEditor {
 			public void onResizeEnd(ResizeEndEvent event) {
 				imageWindowRelation = (double) imageListView.getOffsetWidth(true)
 						/ (double) mainPanel.getOffsetWidth(true);
-				imageListView.getStore().clear();
-				osdLoader.destroyAllViewers();
-				loadImages();
-				setosd();
-				Util.doLogging(
-						"Width depictionImagesPanel: " + Integer.toString(depictionImagesPanel.getOffsetWidth()));
-				Util.doLogging("Width mainPanel: " + Integer.toString(mainPanel.getOffsetWidth()));
-
+				reloadPics();
+//				Util.doLogging(
+//						"Width depictionImagesPanel: " + Integer.toString(depictionImagesPanel.getOffsetWidth()));
+//				Util.doLogging("Width mainPanel: " + Integer.toString(mainPanel.getOffsetWidth()));
+//
 			}
 		});
 		depictionImagesPanel.addResizeHandler(new ResizeHandler() {
@@ -2064,11 +1952,12 @@ public class DepictionEditor extends AbstractEditor {
 		mainHLC.add(tabPanel, new HorizontalLayoutData(1 - imageWindowRelation, 1.0));
 		mainHLC.add(depictionImagesPanel, new HorizontalLayoutData(imageWindowRelation, 1.0));
 
-		ToolButton saveToolButton = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
+		saveToolButton = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 		saveToolButton.setToolTip(Util.createToolTip("save"));
 		saveToolButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
+				saveToolButton.disable();
 				Util.doLogging("Depiction Save triggert by Savie-Button");
 				save(false, 0);
 			}
@@ -2178,11 +2067,7 @@ public class DepictionEditor extends AbstractEditor {
 				}
 			}
 		}, KeyDownEvent.getType());
-		mainPanel.setHeading("Painted Representation Editor (entry " + correspondingDepictionEntry.getDepictionID()
-				+ " last modified on " + correspondingDepictionEntry.getModifiedOn()
-				+ (!correspondingDepictionEntry.getLastChangedByUser().isEmpty()
-						? " by " + correspondingDepictionEntry.getLastChangedByUser() + ")"
-						: ")"));
+		mainPanel.setHeading("Painted Representation Editor (entry " + Integer.toString(correspondingDepictionEntry.getDepictionID())+")");
 
 		mainPanel.add(mainHLC);
 		mainPanel.setSize(Integer.toString(Window.getClientWidth() / 100 * 90),
@@ -2198,10 +2083,6 @@ public class DepictionEditor extends AbstractEditor {
 		rs.addResizeEndHandler(new ResizeEndHandler() {
 			public void onResizeEnd(ResizeEndEvent event) {
 				bibliographySelector.setwidth(tabPanel.getOffsetWidth());
-				Info.display("Broser-Dimensions: ",
-						Integer.toString(Window.getClientWidth()) + " x " + Integer.toString(Window.getClientHeight()));
-				Info.display("Broser-Dimensions: ", Integer.toString(imageListView.getOffsetWidth()) + " x "
-						+ Integer.toString(imageListView.getOffsetHeight()));
 
 			}
 		});
@@ -2265,6 +2146,7 @@ public class DepictionEditor extends AbstractEditor {
 		List<WallTreeEntry> test = new ArrayList<WallTreeEntry>(correspondingDepictionEntry.getWalls());
 		List<WallTreeEntry> test2 = new ArrayList<WallTreeEntry>(correspondingDepictionEntry.getWalls());
 		test.removeAll(test2);
+		correspondingDepictionEntry.setRelatedIconographyList(iconographySelector.getSelectedIconography());
 		correspondingDepictionEntry.setRelatedImages(relatedImageEntryList);
 		correspondingDepictionEntry.setRelatedBibliographyList(bibliographySelector.getSelectedEntries());
 		correspondingDepictionEntry.setLastChangedByUser(UserLogin.getInstance().getUsername());
@@ -2278,6 +2160,7 @@ public class DepictionEditor extends AbstractEditor {
 
 						@Override
 						public void onSuccess(Integer newDepictionID) {
+							saveToolButton.enable();
 							Util.doLogging("Saving Depiction successfull!");
 							Util.doLogging("correspondingDepictionEntry.getDepictionID() = "
 									+ Integer.toString(correspondingDepictionEntry.getDepictionID()));
@@ -2311,7 +2194,7 @@ public class DepictionEditor extends AbstractEditor {
 					});
 		} else {
 			dbService.updateDepictionEntry(correspondingDepictionEntry,
-					correspondingDepictionEntry.getRelatedIconographyList(), UserLogin.getInstance().getSessionID(), new AsyncCallback<Boolean>() {
+					 iconographySelector.getSelectedIconography(), UserLogin.getInstance().getSessionID(), new AsyncCallback<Boolean>() {
 
 						@Override
 						public void onFailure(Throwable caught) {
@@ -2322,6 +2205,7 @@ public class DepictionEditor extends AbstractEditor {
 
 						@Override
 						public void onSuccess(Boolean updateSucessful) {
+							saveToolButton.enable();
 							Util.doLogging("Updating Depiction successfull!");
 //					updateEntry(correspondingDepictionEntry);
 							if (updateSucessful) {
@@ -2349,7 +2233,7 @@ public class DepictionEditor extends AbstractEditor {
 
 	private void doretry(boolean close) {
 		if (saveSuccess) {
-			Info.display("Depiction saved", "sucessfully!");
+			Util.doLogging("Depiction saved sucessfully!");
 		} else {
 			Util.showYesNo("Saving Process finished with errors!", "Do you want to retray saving?",
 					new SelectHandler() {
@@ -2363,6 +2247,7 @@ public class DepictionEditor extends AbstractEditor {
 
 						@Override
 						public void onSelect(SelectEvent event) {
+							saveToolButton.enable();
 							if (close) {
 								closeEditor(correspondingDepictionEntry);
 								bibliographySelector.clearPages();
@@ -2377,5 +2262,11 @@ public class DepictionEditor extends AbstractEditor {
 						}
 					});
 		}
+	}
+	private void reloadPics() {
+		imageListView.getStore().clear();
+		osdLoader.destroyAllViewers();
+		loadImages();
+		setosd();
 	}
 }

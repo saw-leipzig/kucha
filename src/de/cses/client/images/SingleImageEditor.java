@@ -116,6 +116,7 @@ public class SingleImageEditor extends AbstractEditor {
 	private JavaScriptObject osdDic;
 	private int numSave;
 	private OSDLoader osdLoader;
+	private ToolButton saveToolButton;
 
 	/**
 	 * Create a remote service proxy to talk to the server-side service.
@@ -804,11 +805,12 @@ public class SingleImageEditor extends AbstractEditor {
 			}
 		});
 		
-		ToolButton saveToolButton = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
+		saveToolButton = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 		saveToolButton.setToolTip(Util.createToolTip("save"));
 		saveToolButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
+				saveToolButton.disable();
 				Util.doLogging("Save-Button hit");
 				save(false,0);
 			}
@@ -979,7 +981,7 @@ public class SingleImageEditor extends AbstractEditor {
 		        }
 		    }			
 		}, KeyDownEvent.getType());
-		panel.setHeading("Image Editor (entry last modified on " + imgEntry.getModifiedOn() + ")");
+		panel.setHeading("Image Editor (entry number: " + Integer.toString(imgEntry.getImageID()) + ")");
 		panel.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
 		panel.add(mainHLC);
 		createNextPrevButtons();
@@ -1046,6 +1048,7 @@ public class SingleImageEditor extends AbstractEditor {
 
 		dbService.updateImageEntry(imgEntry, new AsyncCallback<Boolean>() {
 			public void onFailure(Throwable caught) {
+				saveToolButton.enable();
 				Info.display("ERROR", "Image information has NOT been updated!");
 				Util.doLogging(caught.getLocalizedMessage());
 				
@@ -1053,6 +1056,7 @@ public class SingleImageEditor extends AbstractEditor {
 
 			@Override
 			public void onSuccess(Boolean result) {
+				saveToolButton.enable();
 				if (result) {
 					Info.display("Successfully saved!", "Image information has been updated!");
 					if (closeEditorRequested) {
@@ -1083,6 +1087,7 @@ public class SingleImageEditor extends AbstractEditor {
 			}
 		}
 		if (!verifyInputs()) {
+			saveToolButton.enable();
 			Info.display("Warning!","Saving aborted, due to incorrectly filled form.");
 			if (closeEditorRequested) {
 				Util.showYesNo("Warning", "Saving cancelled due to incorrectly filled forms! Do you want to continue closing the form? All changed data will be lost!", new SelectHandler() {
@@ -1095,7 +1100,6 @@ public class SingleImageEditor extends AbstractEditor {
 						
 					@Override
 					public void onSelect(SelectEvent event) {
-						
 					}
 				}, new KeyDownHandler() {
 
@@ -1115,13 +1119,13 @@ public class SingleImageEditor extends AbstractEditor {
 			
 			@Override
 			public void onSelect(SelectEvent event) {
-				Util.doLogging("hier");
 				dohandle(closeEditorRequested,slide);
 			}
 		}, new SelectHandler() {
 				
 			@Override
 			public void onSelect(SelectEvent event) {
+				saveToolButton.enable();
 				if (closeEditorRequested) {
 					closeEditor(imgEntry);
 				}

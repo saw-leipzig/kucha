@@ -667,7 +667,7 @@ public class StaticTables {
 	}
 
 	public Map<Integer, IconographyEntry> getIconographyEntries() {
-		return iconographyEntryMap;
+			return iconographyEntryMap;
 	}
 	public Map<Integer,String> getOrnamentMasterPics() {
 		return ornamentMasterPics;

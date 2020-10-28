@@ -5307,6 +5307,7 @@ public boolean isHan(String s) {
 		if (dologgingbegin){
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertDepictionIconographyRelation wurde ausgelöst.");;
 		}
+		System.err.println("InsertIconography started");
 		Connection dbc = getConnection();
 		PreparedStatement relationStatement;
 

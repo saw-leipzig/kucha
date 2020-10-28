@@ -1,6 +1,8 @@
 package de.cses.client.ui;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 import com.google.gwt.core.client.JavaScriptObject;
@@ -15,6 +17,7 @@ import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.StaticTables;
 import de.cses.client.Util;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AnnotationEntry;
@@ -28,6 +31,7 @@ public class OSDLoader {
 	ArrayList<ImageEntry> images;
 	private boolean annoation;
 	private TreeStore<IconographyEntry> icoTree =null;
+	private Collection<IconographyEntry> icoEntries = null;
 	//private Object osdLoader;
 	private OSDListener osdListener;
 	DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
@@ -36,6 +40,12 @@ public class OSDLoader {
 		this.images=images;
 		this.annoation =annotation;
 		this.icoTree=icoTree;
+		if (icoTree!=null) {
+			icoTree.setEnableFilters(false);
+			icoEntries = icoTree.getRootItems();
+			icoTree.setEnableFilters(true);
+		}
+
 		//this.osdLoader=this;
 		this.osdListener=osdListener;
 	}
@@ -86,22 +96,41 @@ public class OSDLoader {
 
 				@Override
 				public void onSuccess(Boolean result) {
-					Info.display("Annotation Saved",Boolean.toString(result));
+					Util.doLogging("Annotation Saved: "+Boolean.toString(result));
 				}
 			});			
 		}
 		
 	}
+
 	public void startLoadingTiles(String context) {
-		List<IconographyEntry> test = null;
-		if (icoTree!=null) {
-			icoTree.setEnableFilters(false);
-			test = icoTree.getRootItems();
-			icoTree.setEnableFilters(true);
+		Util.doLogging("1");
+		Collection<IconographyEntry> icos = StaticTables.getInstance().getIconographyEntries().values();
+		if (icos.size()>0) {
+			loadTiles(images, context, annoation, icos);
 		}
-		loadTiles(images, context, annoation, test);			
+		//It might happen, that Static tables is not fast enough fetching tables and loading getIconographyEntries seems to corrupt the fetching process if  
+		else {
+			StaticTables.getInstance().reloadIconography();
+			dbService.getIconography(new AsyncCallback<ArrayList<IconographyEntry>>() {
+
+				@Override
+				public void onFailure(Throwable caught) {
+				}
+
+				@Override
+				public void onSuccess(ArrayList<IconographyEntry> result) {
+					HashMap<Integer, IconographyEntry> iconographyEntryMap = new HashMap<Integer, IconographyEntry>();
+					for (IconographyEntry ie : result) {
+						iconographyEntryMap.put(ie.getIconographyID(), ie);
+					}
+					loadTiles(images, context, annoation, iconographyEntryMap.values());
+				}
+			});			
+		}
+					
 	}
-	public JavaScriptObject listConverter(List<IconographyEntry> icoTree) {
+	public JavaScriptObject listConverter(Collection<IconographyEntry> icoTree) {
 		JavaScriptObject list = null;
 		if (icoTree!=null) {
 			for (IconographyEntry ie : icoTree) {
@@ -128,7 +157,7 @@ public class OSDLoader {
 		JavaScriptObject icos = listConverter(icoTree);
 		jso= createZoomeImage(tiles,ifn,imgDic, osdDic, UserLogin.getInstance().getSessionID(), annotation, icos, this,null);
 	}
-	public void loadTiles(ArrayList<ImageEntry> images, String context, boolean annotation, List<IconographyEntry> icoTree) {
+	public void loadTiles(ArrayList<ImageEntry> images, String context, boolean annotation, Collection<IconographyEntry> icoTree) {
 		ArrayList<JavaScriptObject> results = loadTiles(null, null,null, images, context, annotation);
 		JavaScriptObject tiles = results.remove(0);
 		JavaScriptObject imgDic=results.remove(0);
@@ -194,7 +223,7 @@ public class OSDLoader {
 	}
 	public static native void removeOrAddAnnotationsJS(JavaScriptObject viewers, JavaScriptObject annos, Boolean add) 
 	/*-{
-	    $wnd.console.log("Adding Annotation: ", annos)
+	    //$wnd.console.log("Adding Annotation: ", annos)
 	    if (viewers["annotorious"]!=null){
 	    			for (var v in viewers["annotorious"]) {
 				var savedAnnos=[];
@@ -222,7 +251,7 @@ public class OSDLoader {
 	}
 	public static native void removeAllAnnotationsJS(JavaScriptObject viewers) 
 	/*-{
-		$wnd.console.log("removeAllAnnotationsJS started.")
+		//$wnd.console.log("removeAllAnnotationsJS started.")
 		for (var v in viewers["annotorious"]) {
 				var emptyAnnos=[];
 				viewers["annotorious"][v].setAnnotations(emptyAnnos);
@@ -258,7 +287,7 @@ public class OSDLoader {
 	}
 	public static native void highlightAnnotationJS(JavaScriptObject viewers, String annoID)
 	/*-{
-	 	$wnd.console.log("highlightAnnotationsJS started")
+	 	//$wnd.console.log("highlightAnnotationsJS started")
 		for (var k in viewers["annotorious"]) {
     		viewers["annotorious"][k].highlightAnnotation(annoID);
 		};
@@ -269,7 +298,7 @@ public class OSDLoader {
 	}
 	public static native void deHighlightAnnotationJS(JavaScriptObject viewers, String annoID)
 	/*-{
-	 	$wnd.console.log("deHighlightAnnotationsJS started");
+	 	//$wnd.console.log("deHighlightAnnotationsJS started");
 		for (var k in viewers["annotorious"]) {
     		viewers["annotorious"][k].dehighlightAnnotation(annoID);
 		};
@@ -508,7 +537,7 @@ public class OSDLoader {
 		}
 		
 		imgElDic[source]=imgEl;
-		$wnd.console.log("Adding image: ",source);
+		//$wnd.console.log("Adding image: ",source);
 		return imgElDic
 	}-*/;
 	public ArrayList<JavaScriptObject> loadTile(JavaScriptObject list,JavaScriptObject ifn, JavaScriptObject imgDic,ImageEntry image, String context, boolean annotation) {
@@ -527,6 +556,10 @@ public class OSDLoader {
 	public ArrayList<AnnotationEntry> getAnnotations(){
 		return osdListener.getAnnotations();
 	}
+//	public void setIconography(TreeStore<IconographyEntry> icoTree) {
+//		this.icoTree =icoTree;
+//
+//	}
 	public ArrayList<JavaScriptObject> processTiles(JavaScriptObject list,JavaScriptObject ifn, JavaScriptObject imgDic, ArrayList<ImageEntry> images, String context, boolean annotation) {		
 		if (!images.isEmpty()){
 			ImageEntry ie=images.remove(0);

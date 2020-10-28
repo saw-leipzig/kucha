@@ -156,23 +156,35 @@ public class IconographySelector extends FramedPanel {
 	private IconographySelectorListener icoSelectorListener;
 	private List<IconographyEntry> beforeSelection;
 	private VerticalLayoutContainer iconographySelectorBLC;
+	private ToolButton minTB;
+	private ToolButton maxTB;
+	public ToolButton closeTB = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
+	private ToolButton addEntryTB;
+	private ToolButton renameEntryTB;
+	
 
+	ArrayList<IconographyEntry> iconographyRelationList;
 	public IconographySelector(Collection<IconographyEntry> elements,EditorListener el,boolean dropunselected, ArrayList<AnnotationEntry> relatedAnnotationList, IconographySelectorListener icoSelectorListener) {
 		this.el=el;
 		this.dropUnselected=dropunselected;
 		this.relatedAnnotationList=relatedAnnotationList;
 		this.icoSelectorListener=icoSelectorListener;
-		initPanel(iconographyTreeStore, elements);
+		initPanel(elements);
 		fillAllAnnotationEntries();
 	}
 	public IconographySelector(Collection<IconographyEntry> elements,EditorListener el) {
 		this.el=el;
-		initPanel(iconographyTreeStore, elements);
+		initPanel(elements);
 	}
 
 	public IconographySelector(Collection<IconographyEntry> elements) {
-		initPanel(iconographyTreeStore, elements);
+		initPanel(elements);
 		this.el=null;
+	}
+	public IconographySelector(Collection<IconographyEntry> elements, IconographySelectorListener icoSelectorListener) {
+		initPanel(elements);
+		this.el=null;
+		this.icoSelectorListener=icoSelectorListener;
 	}
 	private void fillAllAnnotationEntries() {
 		allAnnotationEntries.clear();
@@ -348,7 +360,7 @@ public class IconographySelector extends FramedPanel {
 
 		}
 //		iconographyTree.setCheckable(true);
-		iconographyTree.setAutoLoad(true);
+		//iconographyTree.setAutoLoad(true);
 		//iconographyTree.setCheckStyle(CheckCascade.NONE);
 		iconographyTree.setCheckNodes(CheckNodes.BOTH);
 
@@ -531,8 +543,7 @@ public class IconographySelector extends FramedPanel {
 		};
 	}
 
-	public void dropunselected(List<IconographyEntry> ies) {
-		allEntries = ies;
+	public void dropunselected() {
 		StoreFilter<IconographyEntry> filterFieldDropUnselected = new StoreFilter<IconographyEntry>() {
 
 			@Override
@@ -540,7 +551,7 @@ public class IconographySelector extends FramedPanel {
 				TreeStore<IconographyEntry> treeStore = (TreeStore<IconographyEntry>) store;
 //				do {
 //					boolean found = false;
-					for (IconographyEntry ie : allEntries) {
+					for (IconographyEntry ie : iconographyRelationList) {
 						//Util.doLogging("found "+item.getText()+" at old selected items ");
 						if (item.getIconographyID()==ie.getIconographyID()) {
 							return true;
@@ -569,20 +580,19 @@ public class IconographySelector extends FramedPanel {
 	}
 	public void setSelectedIconography(ArrayList<IconographyEntry> iconographyRelationList) {
 		Util.doLogging("*** setSelectedIconography called - iconographyTree no. of items = " + iconographyTree.getStore().getAllItemsCount());
+		this.iconographyRelationList=iconographyRelationList;
+		iconographyTree.expandAll();
 		resetSelection();
-		if (!dropUnselected) {
-			for (IconographyEntry entry : iconographyRelationList) {
-				//Util.doLogging("setSelectedIconography setting entry = " + entry.getIconographyID());
-				iconographyTree.setChecked(entry, CheckState.CHECKED);
-				selectedIconographyMap.put(entry.getUniqueID(), entry);
-			}			
-		}
-		else {
-				dropunselected(iconographyRelationList);
+		for (IconographyEntry entry : iconographyRelationList) {
+			//Util.doLogging("setSelectedIconography setting entry = " + entry.getIconographyID());
+			iconographyTree.setChecked(entry, CheckState.CHECKED);
+			selectedIconographyMap.put(entry.getUniqueID(), entry);
+		}			
+		if (dropUnselected) {
+				dropunselected();
 		}
 	}
-
-	private void initPanel(TreeStore<IconographyEntry> iconographyTreeStore, Collection<IconographyEntry> elements) {
+	private void initPanel(Collection<IconographyEntry> elements) {
 		filterField = new StoreFilterField<IconographyEntry>() {
 
 			@Override
@@ -643,7 +653,7 @@ public class IconographySelector extends FramedPanel {
 		if (imgdDic.size()==0) {
 			loadOrnamentMasterPics(iconographyTree.getStore().getAll());
 		}
-		iconographyTree.setEnabled(true);
+		iconographyTree.setEnabled(false);
 		iconographySelectorBLC = new VerticalLayoutContainer();
 
 		iconographySelectorBLC.add(iconographyTree, new VerticalLayoutData(1.0, .95));
@@ -678,35 +688,8 @@ public class IconographySelector extends FramedPanel {
 				iconographyTree.collapseAll();
 			}
 		});
-		ToolButton addEntryTBdopUnselected = new ToolButton(new IconConfig("addButton", "addButtonOver"));
-		addEntryTBdopUnselected.setToolTip(Util.createToolTip("Add new entry to tree.", "Select parent entry first (selection indicated by shade) and click here."));
-		addEntryTBdopUnselected.addSelectHandler(new SelectHandler() {
 
-			@Override
-			public void onSelect(SelectEvent event) {
-			IconographySelector entryAddIcoSelector = new IconographySelector(StaticTables.getInstance().getIconographyEntries().values());
-			entryAddIcoSelector.iconographyTree.setCheckable(false);
-//			entryAddIcoSelector.enable();
-			entryAddIcoSelector.IconographyTreeEnabled(true);
-			PopupPanel addIconographyEntryDialog = new PopupPanel();
-			addIconographyEntryDialog.add(entryAddIcoSelector);
-			ToolButton closeTB = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
-			closeTB.setToolTip(Util.createToolTip("Close selection.", "Currently selected items will be used in the filter."));
-			closeTB.addSelectHandler(new SelectHandler() {
-				
-				@Override
-				public void onSelect(SelectEvent event) {
-					addIconographyEntryDialog.hide();
-				}
-			});
-			entryAddIcoSelector.addTool(closeTB);
-			addIconographyEntryDialog.setSize("750", "500");
-			addIconographyEntryDialog.center();
-			
-			}
-		});
-
-		ToolButton addEntryTB = new ToolButton(new IconConfig("addButton", "addButtonOver"));
+		addEntryTB = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		addEntryTB.setToolTip(Util.createToolTip("Add new entry to tree.", "Select parent entry first (selection indicated by shade) and click here."));
 		addEntryTB.addSelectHandler(new SelectHandler() {
 
@@ -761,8 +744,9 @@ public class IconographySelector extends FramedPanel {
 										iconographyEntry.setIconographyID(result);
 										StaticTables.getInstance().reloadIconography(); // we need to reload the whole tree otherwise this won't work
 										imgdDic = StaticTables.getInstance().getOrnamentMasterPics();
-										
-										addChildIconographyEntry(iconographyTreeStore, iconographyEntry);
+										addChildIconographyEntry(iconographyEntry);
+										//icoSelectorListener.reloadIconography(iconographyEntry);
+										icoSelectorListener.reloadOSD();
 									}
 								}
 							});
@@ -786,7 +770,7 @@ public class IconographySelector extends FramedPanel {
 			}
 		});
 
-		ToolButton renameEntryTB = new ToolButton(new IconConfig("editButton", "editButtonOver"));
+		renameEntryTB = new ToolButton(new IconConfig("editButton", "editButtonOver"));
 		renameEntryTB.setToolTip(Util.createToolTip("Edit entry text.", "Select entry first (selection indicated by shade) and click here."));
 		renameEntryTB.addSelectHandler(new SelectHandler() {
 
@@ -860,34 +844,84 @@ public class IconographySelector extends FramedPanel {
 				addIconographyEntryDialog.center();
 			}
 		});
+		minTB = new ToolButton(new IconConfig("minimizeButton", "minimizeButtonOver"));
+		minTB.setToolTip(Util.createToolTip("Show only selected in tree"));
+		maxTB= new ToolButton(new IconConfig("maximizeButton", "maximizeButtonOver"));
+		maxTB.setToolTip(Util.createToolTip("Show whole tree"));
+		minTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				iconographyRelationList = getSelectedIconography();
+				dropUnselected = true;
+				iconographyTree.setCheckable(false);			
+				iconographyTreeStore.setEnableFilters(true);
+				minTB.setVisible(false);
+				maxTB.setVisible(true);
+			}
+		});
+		//getHeader().addTool(minTB);
+
+		maxTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				dropUnselected = false;
+				iconographyTree.setCheckable(true);	
+				iconographyTreeStore.setEnableFilters(false);
+				setSelectedIconography(iconographyRelationList);
+				maxTB.setVisible(false);
+				minTB.setVisible(true);
+			}
+		});
 
 //		mainPanel = new FramedPanel();
 		setHeading("Iconography Selector");
-		TextArea test = new TextArea();
-		test.setWidth(500);
-		//iconographySelectorBLC.setNorthWidget(test);
 		add(iconographySelectorBLC);
 		addTool(iconographyExpandTB);
 		addTool(iconographyCollapseTB);
-		if (UserLogin.getInstance().getAccessRights() >= UserEntry.FULL) {
-			if (dropUnselected) {
-				addTool(addEntryTBdopUnselected);
-			}
-			else {
-				addTool(addEntryTB);				
-			}
-			addTool(renameEntryTB);
-		}
-		addTool(resetTB);
+		addTool(addEntryTB);				
+		addTool(renameEntryTB);
+		addTool(maxTB);
+		addTool(minTB);
+		addTool(closeTB);
+		
+		//addTool(resetTB);
 		if (el!=null) {
 			el.setClickNumber(0);
 		}
+		minTB.setVisible(false);
+		closeTB.setVisible(false);
+		testforUserRights();
 	}
-	
-	private void addChildIconographyEntry(TreeStore<IconographyEntry> store, IconographyEntry child) {
-		for (IconographyEntry entry : store.getAll()) {
+	public void testforUserRights() {
+		if (UserLogin.getInstance().getAccessRights() >= UserEntry.FULL) {
+			Util.doLogging("adding edit fields for iconography");
+			addEntryTB.enable();				
+			renameEntryTB.enable();
+		}
+		else {
+			Util.doLogging("not adding edit fields for iconography due to rights");
+			addEntryTB.disable();				
+			renameEntryTB.disable();
+		}
+
+	}
+	public void setVisibleMaxMinTB() {
+		minTB.setVisible(true);
+		maxTB.setVisible(true);
+	}
+	public void setVisibleMaxMinTBbyDropUnselected() {
+		minTB.setVisible(!dropUnselected);
+		maxTB.setVisible(dropUnselected);
+	}
+	public void addChildIconographyEntry(IconographyEntry child) {
+		for (IconographyEntry entry : iconographyTreeStore.getAll()) {
 			if (entry.getIconographyID() == child.getParentID()) {
-				store.add(entry, child);
+				iconographyTreeStore.setEnableFilters(false);
+				iconographyTreeStore.add(entry, child);
+				iconographyTreeStore.setEnableFilters(true);
+				
 			}
 		}
 	}
@@ -896,17 +930,22 @@ public class IconographySelector extends FramedPanel {
 	}
 	
 	public ArrayList<IconographyEntry> getSelectedIconography() {
-		filterField.clear();
-		filterField.validate();
-		ArrayList<IconographyEntry> result = new ArrayList<IconographyEntry>();
-		if (iconographyTree != null) {
-			int i =0;
-			for (IconographyEntry entry : selectedIconographyMap.values()) {
-				result.add(entry);
-				//Util.doLogging("Added "+Integer.toString(i++)+" items to iconographyresult");
-			}
+		if (dropUnselected) {
+			return iconographyRelationList;
 		}
-		return result;	
+		else {
+			filterField.clear();
+			filterField.validate();
+			ArrayList<IconographyEntry> result = new ArrayList<IconographyEntry>();
+			if (iconographyTree != null) {
+				int i =0;
+				for (IconographyEntry entry : selectedIconographyMap.values()) {
+					result.add(entry);
+					Util.doLogging("Added "+Integer.toString(i++)+" items to iconographyresult");
+				}
+			}
+			return result;	
+		}
 	}
 	
 	public void resetSelection() {

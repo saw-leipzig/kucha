@@ -133,6 +133,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 	private FramedPanel ftree;
 	private FramedPanel ftreeedit;
 	private OrnamenticIconographyTree ornamentTrees;
+	private ToolButton saveButton;
 
 	public static OrnamentCaveRelationEditor ornamentCaveRelationEditor;
 	public static WallOrnamentCaveRelationEditor wallOrnamentCaveRelationEditor;
@@ -663,6 +664,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 			@Override
 			public void onClick(ClickEvent event) {
+				saveButton.disable();
 				save(false,0);
 
 			} // end
@@ -1250,7 +1252,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 		ToolButton closeButton = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
 		closeButton.setToolTip(Util.createToolTip("close"));
-		ToolButton saveButton = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
+		saveButton = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 		saveButton.setToolTip(Util.createToolTip("save"));
 		closeButton.addHandler(cancelHandler, ClickEvent.getType());
 		saveButton.addHandler(saveClickHandler, ClickEvent.getType());
@@ -1297,7 +1299,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		
 		backgroundPanel.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
 		backgroundPanel.add(tabpanel);
-		backgroundPanel.setHeading("Ornamentation Editor");
+		backgroundPanel.setHeading("Ornamentation Editor (entry number: "+ornamentEntry.getOrnamentID()+")");
 		createNextPrevButtons();
 		backgroundPanel.addTool(modifiedToolButton);
 		backgroundPanel.addTool(prevToolButton);
@@ -1384,11 +1386,13 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 				@Override
 				public void onFailure(Throwable caught) {
+					saveButton.enable();
 					Util.showWarning("Saving failed", caught.getMessage());
 				}
 
 				@Override
 				public void onSuccess(Integer result) {
+					saveButton.enable();
 					if (result > 0) {
 						Util.doLogging(this.getClass().getName() + " saving sucessful");
 						ornamentEntry.setOrnamentID(result);
@@ -1410,12 +1414,14 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 				@Override
 				public void onFailure(Throwable caught) {
+					saveButton.enable();
 					Util.doLogging(("Update failed"+ caught.getMessage()));
 					Info.display("Update failed", caught.getMessage());
 				}
 
 				@Override
 				public void onSuccess(Boolean result) {
+					saveButton.enable();
 					if (close) {
 						closeEditor(ornamentEntry);
 					}

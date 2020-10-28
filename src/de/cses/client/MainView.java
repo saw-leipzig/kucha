@@ -129,7 +129,6 @@ public class MainView implements IsWidget {
 	
 	private void initView() {
     boolean borders = true;
-    Util.doLogging("1");
     ToolButton caveInactiveTB = new ToolButton(new IconConfig("caveButton", "caveButtonOver"));
     caveInactiveTB.addSelectHandler(new SelectHandler() {
 			
@@ -139,7 +138,6 @@ public class MainView implements IsWidget {
 				resultView.add(caveSearchController.getResultView(), 0);
 			}
 		});
-    Util.doLogging("2");
     ToolButton caveActiveTB = new ToolButton(new IconConfig("caveButtonActive", "caveButtonOver"));
     caveActiveTB.addSelectHandler(new SelectHandler() {
 			
@@ -152,7 +150,6 @@ public class MainView implements IsWidget {
 	caveSearchController = new CaveSearchController("Caves", new CaveFilter("Caves"), new CaveResultView("Caves"), caveInactiveTB, caveActiveTB);
 	caveSearchController.getFilter().setSerchParent(caveSearchController);
 	caveSearchController.getResultView().setSearchParent(caveSearchController);
-    Util.doLogging("3");
     ToolButton depictionInactiveTB = new ToolButton(new IconConfig("depictionButton", "depictionButtonOver"));
     depictionInactiveTB.addSelectHandler(new SelectHandler() {
 			
@@ -162,7 +159,6 @@ public class MainView implements IsWidget {
 				resultView.add(depictionSearchController.getResultView(), 0);
 			}
 		});
-    Util.doLogging("4");
     ToolButton depictionActiveTB = new ToolButton(new IconConfig("depictionButtonActive", "depictionButtonOver"));
     depictionActiveTB.addSelectHandler(new SelectHandler() {
 			
@@ -175,7 +171,6 @@ public class MainView implements IsWidget {
 	depictionSearchController = new DepictionSearchController("Painted Representation", new DepictionFilter("Painted Representations"), new DepictionResultView("Painted Representation"), depictionInactiveTB, depictionActiveTB);
 	depictionSearchController.getFilter().setSerchParent(depictionSearchController);
 	depictionSearchController.getResultView().setSearchParent(depictionSearchController);
-    Util.doLogging("5");
 		
     ToolButton imageInactiveTB = new ToolButton(new IconConfig("imagePoolButton", "imagePoolButtonOver"));
     imageInactiveTB.addSelectHandler(new SelectHandler() {
@@ -186,7 +181,6 @@ public class MainView implements IsWidget {
 				resultView.add(imageSearchController.getResultView(), 0);
 			}
 		});
-    Util.doLogging("6");
     ToolButton imageActiveTB = new ToolButton(new IconConfig("imagePoolButtonActive", "imagePoolButtonOver"));
     imageActiveTB.addSelectHandler(new SelectHandler() {
 			
@@ -199,7 +193,6 @@ public class MainView implements IsWidget {
 	imageSearchController = new ImageSearchController("Image Pool", new ImageFilter("Image Filter"), new ImageResultView("Image Pool"), imageInactiveTB, imageActiveTB);
 	imageSearchController.getFilter().setSerchParent(imageSearchController);
 	imageSearchController.getResultView().setSearchParent(imageSearchController);
-    Util.doLogging("7");
 		
     ToolButton ornamenticInactiveTB = new ToolButton(new IconConfig("ornamentationButton", "ornamentationButtonOver"));
     ornamenticInactiveTB.addSelectHandler(new SelectHandler() {
@@ -210,7 +203,6 @@ public class MainView implements IsWidget {
 				resultView.add(ornamenticSearchController.getResultView(), 0);
 			}
 		});
-    Util.doLogging("8");
     ToolButton ornamenticActiveTB = new ToolButton(new IconConfig("ornamentationButtonActive", "ornamentationButtonOver"));
     ornamenticActiveTB.addSelectHandler(new SelectHandler() {
 			
@@ -225,7 +217,6 @@ public class MainView implements IsWidget {
 		ornamenticSearchController.getResultView().setSearchParent(ornamenticSearchController);
 		
 		// annotated bibliography
-	Util.doLogging("9");
     ToolButton bibInactiveTB = new ToolButton(new IconConfig("bibButton", "bibButtonOver"));
     bibInactiveTB.addSelectHandler(new SelectHandler() {
 			
@@ -235,7 +226,6 @@ public class MainView implements IsWidget {
 				resultView.add(annotatedBiblographySearchController.getResultView(), 0);
 			}
 		});
-	Util.doLogging("10");
     ToolButton bibActiveTB = new ToolButton(new IconConfig("bibButtonActive", "bibButtonOver2"));
     bibActiveTB.addSelectHandler(new SelectHandler() {
 			
@@ -248,7 +238,6 @@ public class MainView implements IsWidget {
 	annotatedBiblographySearchController = new AnnotatedBiblographySearchController("Annotated Biblography", new AnnotatedBibliographyFilter("Bibliography"), new AnnotatedBiblographyResultView("Annotated Biblography"), bibInactiveTB, bibActiveTB);
 	annotatedBiblographySearchController.getFilter().setSerchParent(annotatedBiblographySearchController);
 	annotatedBiblographySearchController.getResultView().setSearchParent(annotatedBiblographySearchController);
-	Util.doLogging("11");
 	Resources res = GWT.create(Resources.class);
 //		Image kuchaLogo = new Image(res.logo_kucha());
 //		Image sawLogo = new Image(res.logo_saw());
@@ -258,7 +247,6 @@ public class MainView implements IsWidget {
 		
 		// ----------------------------------- assembling the menu bar ---------------------------------------------
 		
-		Util.doLogging("2");
 		selectorLayoutContainer = new HorizontalLayoutContainer();
 		selectorLayoutContainer.add(leftLogoHTML, new HorizontalLayoutData(.25, 1.0, new Margins(0)));
 		selectorLayoutContainer.add(caveSearchController, new HorizontalLayoutData(.1, 1.0, new Margins(10)));
@@ -283,7 +271,6 @@ public class MainView implements IsWidget {
     resultView.setColumnWidth(0, 1.0);
     centerPanel.add(resultView);
 
-    Util.doLogging("3");
     ContentPanel northContentPanel = new ContentPanel();
     northContentPanel.addStyleName("transparent");
     northContentPanel.getHeader().setStylePrimaryName("frame-header");
@@ -330,7 +317,6 @@ public class MainView implements IsWidget {
     loginTB.setToolTip("login");
     northContentPanel.addTool(loginTB);
 //    northPanel.add(north, new VerticalLayoutData(1.0, .6));
-    Util.doLogging("4");
     
     filterView = new PortalLayoutContainer(1);
     filterView.setSpacing(10);
@@ -374,7 +360,6 @@ public class MainView implements IsWidget {
 				dataViewPLC.load();
 			}
 		});
-    Util.doLogging("5");
     dataViewPanel.addTool(loadWorkspaceToolButton);
     ToolButton resetWorkspaceToolButton = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
     resetWorkspaceToolButton.setToolTip(Util.createToolTip("Reset to create new colection.", "Click here to delete content and start fresh collection."));
@@ -422,7 +407,6 @@ public class MainView implements IsWidget {
     eastData.setCollapsible(true);
     eastData.setCollapseHeaderVisible(true);
     eastData.setSplit(true);
-    Util.doLogging("6");
 
     MarginData centerData = new MarginData(5, 0, 5, 0);
 
