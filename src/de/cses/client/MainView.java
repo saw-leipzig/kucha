@@ -128,6 +128,7 @@ public class MainView implements IsWidget {
 	}
 	
 	private void initView() {
+		
     boolean borders = true;
     ToolButton caveInactiveTB = new ToolButton(new IconConfig("caveButton", "caveButtonOver"));
     caveInactiveTB.addSelectHandler(new SelectHandler() {

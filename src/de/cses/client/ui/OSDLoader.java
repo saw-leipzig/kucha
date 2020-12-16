@@ -20,6 +20,7 @@ import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
 import de.cses.client.Util;
 import de.cses.client.user.UserLogin;
+import de.cses.server.WKT2SVG;
 import de.cses.shared.AnnotationEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
@@ -59,7 +60,7 @@ public class OSDLoader {
 		//this.osdLoader=this;
 	}
 	public void getResults(String id ,String tags, String polygon, String image, Boolean delete, Boolean update) {
-		Util.doLogging("Annotation recieved: Tag: "+tags+", Polygone: "+polygon+", Image: "+image+", delete: "+Boolean.toString(delete)+", update: "+Boolean.toString(update));
+		Util.doLogging("Annotation recieved: Tag: "+tags+", Polygone: "+polygon+", Image: "+image+", delete: "+Boolean.toString(delete)+", update: "+Boolean.toString(update)+", DepictionID: "+osdListener.getDepictionID());
 		ArrayList<IconographyEntry> newTags = new ArrayList<IconographyEntry>();
 		String dummy[] = tags.split(";", -1);
 		for (String tag : dummy) {
@@ -67,7 +68,8 @@ public class OSDLoader {
 			//Util.doLogging("found tag value: "+icoEntry.getText());
 			newTags.add(icoEntry);
 		}
-		AnnotationEntry annoEntry = new AnnotationEntry(osdListener.getDepictionID(), id, newTags, polygon.substring(22,polygon.indexOf("\"></polygon></svg>")), image, delete, update);
+		//AnnotationEntry annoEntry = new AnnotationEntry(osdListener.getDepictionID(), id, newTags, polygon.substring(22,polygon.indexOf("\"></polygon></svg>")), image, delete, update);
+		AnnotationEntry annoEntry = new AnnotationEntry(osdListener.getDepictionID(), id, newTags, polygon.replace("<svg><path d=\"","").replace("\"></path></svg>",""), image, delete, update);
 		annoEntry.setLastChangedByUser(UserLogin.getInstance().getUsername());		
 		if (!update && !delete) {
 			osdListener.addAnnotation(annoEntry);
@@ -86,8 +88,11 @@ public class OSDLoader {
 			
 		}
 		osdListener.setAnnotationsInParent(osdListener.getAnnotations());
-		if (osdListener.getDepictionID()>0) {
-			dbService.setAnnotationResults(annoEntry, new AsyncCallback<Boolean>() {
+		String newPoly=toWKT(annoEntry.getPolygone());
+		Util.doLogging(newPoly);
+		AnnotationEntry annoEntryDB = new AnnotationEntry(annoEntry.getDepictionID(), annoEntry.getAnnotoriousID(), annoEntry.getTags(), newPoly, annoEntry.getImage(), annoEntry.getDelete(), annoEntry.getUpdate());
+		if (osdListener.getDepictionID()>0) {			
+			dbService.setAnnotationResults(annoEntryDB, new AsyncCallback<Boolean>() {
 				@Override
 				public void onFailure(Throwable caught) {
 					Util.doLogging(caught.getLocalizedMessage());
@@ -208,7 +213,7 @@ public class OSDLoader {
 		var selector={};
 		selector["type"]="SvgSelector";
 		selector["conformsTo"]="http://www.w3.org/TR/media-frags/";
-		selector["value"]="<svg><polygon points=\""+polygone+"\"></polygon></svg>";
+		selector["value"]="<svg><path d=\""+polygone+"\"></path></svg>";
 		annos.push(anno);
 		target["selector"]=selector;
 		target["id"]= image,
@@ -223,7 +228,7 @@ public class OSDLoader {
 	}
 	public static native void removeOrAddAnnotationsJS(JavaScriptObject viewers, JavaScriptObject annos, Boolean add) 
 	/*-{
-	    //$wnd.console.log("Adding Annotation: ", annos)
+	    $wnd.console.log("Adding Annotation: ", annos)
 	    if (viewers["annotorious"]!=null){
 	    			for (var v in viewers["annotorious"]) {
 				var savedAnnos=[];
@@ -304,21 +309,61 @@ public class OSDLoader {
 		};
 
 	}-*/;
-
+	public static native String toWKT(String polygon)
+	/*-{
+        var union =null;
+        $wnd.console.log("polygon: ",polygon);
+        var results =polygon.split('M');
+        $wnd.console.log("results: ",results);
+        results.forEach(function (result, index) {
+          if (result.length>0){
+            result=result.replace(/ Z/g,"Z")
+            result=result.replace(/Z /g,"Z")
+            result=result.replace(/Z/g,"")
+            result=result.replace(/L /g,"L")
+            result=result.replace(/ L/g,"L")
+            var coords = result.split("L")
+            poly="POLYGON(("
+            var first=true;
+            coords.forEach(function(coord, index){
+              if (!first){
+                poly+=", ";
+              }
+              first=false;
+              poly+=coord.replace(","," ");
+            });
+            poly+="))";
+        	$wnd.console.log("poly: ",poly);
+            var leser = new $wnd.jsts.io.WKTReader();
+            if (!union){
+              union=leser.read(poly);
+            }
+            else {
+              union =union.symDifference(leser.read(poly))
+            }
+          }
+        });
+        var schreiber = new $wnd.jsts.io.WKTWriter();
+        var polygonRes = schreiber.write(union);
+		return polygonRes;
+	}-*/;
 	
 	public static native JavaScriptObject createZoomeImage(JavaScriptObject tiles,JavaScriptObject wheres, JavaScriptObject source, JavaScriptObject dic, String sessionID, boolean anno, JavaScriptObject icoTree, OSDLoader osdLoader, JavaScriptObject annos)
 	/*-{
 	 annotorious={};
+	 $doc.cookie = "sessionID="+sessionID+";SameSite=Lax;"; 
 	 function openFullscreen(where) {
   			if (where.requestFullscreen) {
     			where.requestFullscreen();
   			} else if (where.mozRequestFullScreen) { 
     			where.mozRequestFullScreen();
   			} else if (where.webkitRequestFullscreen) { 
-    			where.webkitRequestFullscreen();
+    			where.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
   			} else if (where.msRequestFullscreen) {
     			where.msRequestFullscreen();
-  			}
+  			} else if (where.webkitEnterFullScreen) {
+  				where.webkitEnterFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+			}
   			else {
       			var el = $doc.documentElement;
       			el.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
@@ -339,11 +384,10 @@ public class OSDLoader {
 	    $wnd.OpenSeadragon.setString('Tooltips.VerticalGuide', 'Add Vertical Guide');
 	    $wnd.OpenSeadragon.setString('Tool.rotate', 'Rotate');
 	    $wnd.OpenSeadragon.setString('Tool.close', 'Close');
-	
 	 for (var i = 0, length = wheres.length; i < length; i++){
-		//$wnd.console.log("Processing image: ",wheres[i]," of ",wheres);
+		//$wnd.console.log("Processing image, request header: ",$wnd.request.headers);
 	 	if (!(wheres[i] in dic)){  
-			//$wnd.console.log(wheres[i], "not in dic");
+			//$wnd.console.log(wheres[i], tiles[wheres[i]);
 			
 		 	dic[wheres[i]] =  $wnd.OpenSeadragon({
 		        id: wheres[i],
@@ -352,14 +396,19 @@ public class OSDLoader {
 		        maxZoomLevel: 100,
 		        minZoomLevel: 0.001,
 		        ajaxWithCredentials: true,
+		        loadTilesWithAjax: true,
+		        tileRequestHeaders:{"SessionID": sessionID},
 		        ajaxHeaders: {"SessionID": sessionID},
 		        loadTilesWithAjax:true,
-		        crossOriginPolicy: "Anonymous",
 				prefixUrl: "scripts/openseadragon-bin-2.4.2/images/",
-				tileSources: tiles[wheres[i]]
+//				tileSources: tiles[wheres[i]]
 				
 			}); 
-			
+        dic[wheres[i]].addTiledImage({
+            // The headers specified here will be combined with those in the Viewer object (if any)
+            ajaxHeaders:  {"SessionID": sessionID},
+            tileSource: tiles[wheres[i]]
+        });			
 			if (anno){
 				var savedAnnos=[];
 				var foundAnno=false;
@@ -382,11 +431,10 @@ public class OSDLoader {
 				annotorious[wheres[i]].setDrawingTool("polygon");
 				//$wnd.console.log("Adding Handler");
 				annotorious[wheres[i]].on('createAnnotation',function(annotation) {
-					//$wnd.console.log("annotation created");
-					//$wnd.console.log(annotation);
-					results="";
-					var image = "";
-					for (var key in annotation.body){
+			          results="";
+			          polygonRes=annotation.target.selector.value
+			          var image = "";
+			          for (var key in annotation.body){
 						if (results===""){
 							results=annotation.body[key].id;
 						}
@@ -396,7 +444,7 @@ public class OSDLoader {
 					 	image=annotation.body[key].image;
 					}		
 					//$wnd.console.log("results: ",results);
-					osdLoader.@de.cses.client.ui.OSDLoader::getResults(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;)(annotation.id,results,annotation.target.selector.value,image, false, false);
+					osdLoader.@de.cses.client.ui.OSDLoader::getResults(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;)(annotation.id,results,polygonRes,image, false, false);
 				});
 				annotorious[wheres[i]].on('deleteAnnotation', function(annotation) {
 					"deleteAnnotation Triggered"
@@ -514,6 +562,7 @@ public class OSDLoader {
 			tiles={};
 		}
 		tiles[fileName]=source;
+		
 		return tiles
 	}-*/;	
 	public static native JavaScriptObject addImageFileNames(JavaScriptObject ifn,  String source)
@@ -567,6 +616,7 @@ public class OSDLoader {
 //			String url="http://127.0.0.1:8182/";
 //			String url = "resource?imageID=" + ie.getImageID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri();
 			//Util.doLogging(url+"iiif/2/kucha%2Fimages%2F" + ie.getFilename())
+			Util.doLogging("Adding URL: "+context + ie.getFilename() + "/info.json");
 			list = addZoomeImage(list , context + ie.getFilename() + "/info.json",ie.getFilename());
 //			list = addZoomeImage(list , url,ie.getFilename());
 			ifn=addImageFileNames(ifn,ie.getFilename());

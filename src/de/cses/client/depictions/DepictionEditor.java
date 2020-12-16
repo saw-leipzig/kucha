@@ -16,6 +16,7 @@ package de.cses.client.depictions;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,6 +65,8 @@ import com.sencha.gxt.data.shared.SortDir;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.Store.StoreFilter;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
+import com.sencha.gxt.data.shared.event.StoreFilterEvent;
+import com.sencha.gxt.data.shared.event.StoreFilterEvent.StoreFilterHandler;
 import com.sencha.gxt.dnd.core.client.ListViewDragSource;
 import com.sencha.gxt.dnd.core.client.ListViewDropTarget;
 import com.sencha.gxt.fx.client.Draggable;
@@ -678,7 +681,26 @@ public class DepictionEditor extends AbstractEditor {
 		// the images related with the depiction entry that will be shown on the right
 		imgdic = new HashMap<Integer, String>();
 		getPics(correspondingDepictionEntry.getRelatedImages(), 300, UserLogin.getInstance().getSessionID());
-
+		Comparator<? super ImageEntry> itemComparator = new Comparator<ImageEntry>() {
+			@Override
+			public int compare(ImageEntry o1, ImageEntry o2) {
+				String one = "";
+				String two = "";
+				if (correspondingDepictionEntry.getMasterImageID()==o1.getImageID()) {
+					one="aaaaaaaaaaaaaaaaaa"+o1.getTitle();
+				}
+				else {
+					one=o1.getTitle();
+				}
+				if (correspondingDepictionEntry.getMasterImageID()==o2.getImageID()) {
+					two="aaaaaaaaaaaaaaaaaa"+o2.getTitle();
+				}
+				else {
+					two=o2.getTitle();
+				}
+				return one.compareTo(two);
+			}
+		};
 		imageListView = new ListView<ImageEntry, ImageEntry>(imageEntryLS, new IdentityValueProvider<ImageEntry>() {
 			@Override
 			public void setValue(ImageEntry object, ImageEntry value) {
@@ -748,12 +770,34 @@ public class DepictionEditor extends AbstractEditor {
 				return false;
 			}
 		};
+		filterField.addChangeHandler(new ChangeHandler() {
+
+			@Override
+			public void onChange(ChangeEvent event) {
+				Util.doLogging("onValueChange triggered");
+				reloadPics();
+				
+			}
+			
+		});
 		filterField.setEmptyText("enter a search term");
 		filterField.bind(imageEntryLS);
+		imageEntryLS.addStoreFilterHandler(new StoreFilterHandler<ImageEntry>() {
+
+			@Override
+			public void onFilter(StoreFilterEvent<ImageEntry> event) {
+				Util.doLogging("StoreFilterHandler triggered");
+				reloadPics();
+				
+			}
+			
+		});
 		// imageListView.setSize("340", "290");
 //		Util.doLogging("Size of ImageListView: "+Integer.toString(imageEntryLS.size()));
 		ListField<ImageEntry, ImageEntry> imageViewLF = new ListField<ImageEntry, ImageEntry>(imageListView);
 		loadImages();
+		imageEntryLS.addSortInfo(new StoreSortInfo(itemComparator,SortDir.DESC));
+		imageEntryLS.applySort(true);
 
 		//imageViewLF.setSize("300px", "1.0");
 
@@ -1672,48 +1716,6 @@ public class DepictionEditor extends AbstractEditor {
 //			}
 //		});
 
-		ToolButton zoomTB = new ToolButton(new IconConfig("expandButton", "expandButtonOver"));
-		zoomTB.addSelectHandler(new SelectHandler() {
-			@Override
-			public void onSelect(SelectEvent event) {
-				selectedImgEntry = null;
-				selectedImgEntry = imageListView.getSelectionModel().getSelectedItem();
-				if (selectedImgEntry != null) {
-					AnnoPanel.clear();
-					Util.doLogging("DivID= " + "anno_" + selectedImgEntry.getFilename().split(";")[0]);
-					HTMLPanel hp = new HTMLPanel(
-							SafeHtmlUtils.fromTrustedString("<figure class='paintRepImgAnno'><div id= 'anno_"
-									+ selectedImgEntry.getFilename().split(";")[0] + "' style='width: "
-									+ Integer.toString(Window.getClientWidth() / 100 * 80) + "px; height: "
-									+ Integer.toString(Window.getClientHeight() / 100 * 80)
-									+ "px;text-align: center;'></div>"));
-					AnnoPanel.setTitle("Annotation of Picture");
-					FramedPanel FPAnno = new FramedPanel();
-					FPAnno.add(hp);
-					AnnoPanel.add(FPAnno);
-
-					FPAnno.setSize(Integer.toString(Window.getClientWidth()),
-							Integer.toString(Window.getClientHeight()));
-					AnnoPanel.setSize(Integer.toString(Window.getClientWidth()),
-							Integer.toString(Window.getClientHeight()));
-					ToolButton closeToolButton = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
-					closeToolButton.setToolTip(Util.createToolTip("close"));
-					closeToolButton.addSelectHandler(new SelectHandler() {
-						@Override
-						public void onSelect(SelectEvent event) {
-							AnnoPanel.hide();
-						}
-					});
-					FPAnno.addTool(closeToolButton);
-					AnnoPanel.center();
-					
-				} else {
-					Info.display("Annotation aborded.", "No image selected!");
-				}
-			}
-		});
-		zoomTB.setToolTip(
-				Util.createToolTip("View selected image in full size for Annotation.", "This will open a new Popup."));
 		ToolButton showAnnotationTB = new ToolButton(new IconConfig("editButton", "editButtonOver"));
 		showAnnotationTB.addSelectHandler(new SelectHandler() {
 			@Override
@@ -2070,8 +2072,8 @@ public class DepictionEditor extends AbstractEditor {
 		mainPanel.setHeading("Painted Representation Editor (entry " + Integer.toString(correspondingDepictionEntry.getDepictionID())+")");
 
 		mainPanel.add(mainHLC);
-		mainPanel.setSize(Integer.toString(Window.getClientWidth() / 100 * 90),
-				Integer.toString(Window.getClientHeight() / 100 * 90));
+		mainPanel.setSize(Integer.toString(Window.getClientWidth() / 100 * 95),
+				Integer.toString(Window.getClientHeight() / 100 * 95));
 		createNextPrevButtons();
 		mainPanel.addTool(modifiedToolButton);
 		mainPanel.addTool(prevToolButton);
@@ -2136,16 +2138,39 @@ public class DepictionEditor extends AbstractEditor {
 	 * @param close
 	 */
 	protected void save(boolean close, int slide) {
+		ArrayList<IconographyEntry> icolist = new ArrayList<IconographyEntry>();
+		icolist.add(iconographySelector.getIconographyStroe().findModelWithKey("2152"));
+//		icolist.add(iconographySelector.getIconographyStroe().findModelWithKey("2247"));
+		String poly = "POLYGON((1403.597412109375,3109.902099609375 1407.431884765625,3305.460205078125 1806.21728515625,3282.453369140625 1994.106689453125,3267.115478515625 2289.361328125,3274.784423828125 2841.52587890625,3267.115478515625 2891.3740234375,3267.115478515625 2876.0361328125,2883.66796875 2899.04296875,2787.80615234375 2952.7255859375,2730.2890625 2964.22900390625,2638.261474609375 2918.21533203125,2557.737548828125 2879.87060546875,2534.730712890625 2837.69140625,2576.909912109375 2745.663818359375,2596.082275390625 2695.815673828125,2592.247802734375 2688.146728515625,2622.923583984375 2649.802001953125,2703.447509765625 2553.940185546875,2726.45458984375 2442.740234375,2722.6201171875 2389.0576171875,2703.447509765625 2343.0439453125,2688.109619140625 2362.21630859375,2741.79248046875 2419.7333984375,2776.302734375 2442.740234375,2803.14404296875 2454.24365234375,2810.81298828125 2454.24365234375,2860.6611328125 2400.56103515625,2914.34375 2366.05078125,2906.6748046875 2331.54052734375,2902.84033203125 2285.52685546875,2875.9990234375 2266.3544921875,2837.654296875 2228.009765625,2810.81298828125 2174.326904296875,2776.302734375 2135.982177734375,2753.2958984375 2112.975341796875,2749.46142578125 2093.802978515625,2772.46826171875 2059.292724609375,2783.9716796875 1928.9205322265625,2818.48193359375 1917.4171142578125,2902.84033203125 1833.0587158203125,2918.17822265625 1744.86572265625,2837.654296875 1741.03125,2795.47509765625 1741.03125,2757.13037109375 1744.86572265625,2703.447509765625 1537.8040771484375,2630.592529296875 1541.6385498046875,2672.771728515625 1545.4730224609375,2699.613037109375 1537.8040771484375,2730.2890625 1507.128173828125,2745.626953125 1422.769775390625,2783.9716796875 1384.425048828125,2806.978515625 1349.9146728515625,2818.48193359375 1349.9146728515625,2833.81982421875 1399.762939453125,2868.330078125 1403.597412109375,3109.902099609375))";
+		poly=poly.replace(" ", "|");
+		poly=poly.replace(",", " ");
+		poly=poly.replace("|", ",");					
+
+		AnnotationEntry annoEntryDB = new AnnotationEntry(correspondingDepictionEntry.getDepictionID(), "restoredAnnotation9",icolist , poly, "21", false, false);
+		dbService.setAnnotationResults(annoEntryDB, new AsyncCallback<Boolean>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				Util.doLogging(caught.getLocalizedMessage());
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(Boolean result) {
+				Util.doLogging("Annotation Saved: "+Boolean.toString(result));
+			}
+		});			
+
 		if (!shortNameTF.validate()) {
+			saveToolButton.enable();			
 			return;
 		}
 		ArrayList<ImageEntry> relatedImageEntryList = new ArrayList<ImageEntry>();
 		for (int i = 0; i < imageEntryLS.size(); ++i) {
 			relatedImageEntryList.add(imageEntryLS.get(i));
 		}
-		List<WallTreeEntry> test = new ArrayList<WallTreeEntry>(correspondingDepictionEntry.getWalls());
-		List<WallTreeEntry> test2 = new ArrayList<WallTreeEntry>(correspondingDepictionEntry.getWalls());
-		test.removeAll(test2);
+//		List<WallTreeEntry> test = new ArrayList<WallTreeEntry>(correspondingDepictionEntry.getWalls());
+//		List<WallTreeEntry> test2 = new ArrayList<WallTreeEntry>(correspondingDepictionEntry.getWalls());
+//		test.removeAll(test2);
 		correspondingDepictionEntry.setRelatedIconographyList(iconographySelector.getSelectedIconography());
 		correspondingDepictionEntry.setRelatedImages(relatedImageEntryList);
 		correspondingDepictionEntry.setRelatedBibliographyList(bibliographySelector.getSelectedEntries());
@@ -2270,3 +2295,4 @@ public class DepictionEditor extends AbstractEditor {
 		setosd();
 	}
 }
+

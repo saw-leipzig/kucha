@@ -76,9 +76,8 @@ import de.cses.shared.WallTreeEntry;
 /**
  * The server-side implementation of the RPC service.
  */
-@SuppressWarnings("serial")
+
 public class DatabaseServiceImpl extends RemoteServiceServlet implements DatabaseService {
-	@Override
 	public boolean iconographyIDisUsed(int iconographyID, int OrnamentID) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.iconographyIDisUsed(iconographyID, OrnamentID);
@@ -198,87 +197,87 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 //		return connector.insertEntry(sqlInsert);
 //	}
 
-	@Override
+
 	public ArrayList<CaveEntry> getCaves() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getCaves();
 	}
 
-	@Override
+
 	public ArrayList<CaveEntry> getCavesbyDistrictID(int DistrictID) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getCavesbyDistrictID(DistrictID);
 	}
 
-	@Override
+
 	public ArrayList<OrnamentEntry> getOrnaments() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getOrnaments();
 	}
 
-	@Override
+
 	public ArrayList<OrnamentOfOtherCulturesEntry> getOrnamentsOfOtherCultures() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getOrnametsOfOtherCultures();
 	}
 
-	@Override
+
 	public int saveOrnamentEntry(OrnamentEntry ornamentEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.saveOrnamentEntry(ornamentEntry);
 	}
 
-	@Override
+
 	public CaveTypeEntry getCaveTypebyID(int caveTypeID) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getCaveTypebyID(caveTypeID);
 	}
 
-	@Override
+
 	public ArrayList<CaveTypeEntry> getCaveTypes() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getCaveTypes();
 	}
 
-//	@Override
+//
 //	public ArrayList<DepictionEntry> getDepictions() throws IllegalArgumentException {
 //		MysqlConnector connector = MysqlConnector.getInstance();
 //		return connector.getDepictions();
 //	}
 
-//	@Override
+//
 //	public DepictionEntry getDepictionEntry(int depictionID) throws IllegalArgumentException {
 //		MysqlConnector connector = MysqlConnector.getInstance();
 //		return connector.getDepictionEntry(depictionID);
 //		// this.getThreadLocalRequest().getAttribute("user");
 //	}
 
-	@Override
+
 	public ArrayList<IconographyEntry> getIconography() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getIconography(0); // root index =0 so we load them all
 	}
 
-	@Override
+
 	public ArrayList<WallTreeEntry> getWallTree() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getWallTree(0); // root index =0 so we load them all
 	}
 
 
-	@Override
+
 	public ArrayList<VendorEntry> getVendors() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getVendors();
 	}
 
-	@Override
+
 	public ArrayList<StyleEntry> getStyles() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getStyles();
 	}
 
-	@Override
+
 	public ArrayList<ExpeditionEntry> getExpeditions() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getExpeditions();
@@ -289,7 +288,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	 * 
 	 * @see de.cses.client.DatabaseService#getPublicationEntry(int)
 	 */
-	@Override
+
 	public PublicationEntry getPublicationEntry(int id) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getPublicationEntry(id);
@@ -300,7 +299,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	 * 
 	 * @see de.cses.client.DatabaseService#getAuthorEntry(int)
 	 */
-	@Override
+
 	public AuthorEntry getAuthorEntry(int id) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getAuthorEntry(id);
@@ -311,7 +310,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	 * 
 	 * @see de.cses.client.DatabaseService#getMasterImageEntryForDepiction(int)
 	 */
-	@Override
+
 	@Deprecated
 	public ImageEntry getMasterImageEntryForDepiction(int depictionID) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
@@ -324,7 +323,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	 * 
 	 * @see de.cses.client.DatabaseService#getCaveEntry(int)
 	 */
-	@Override
+
 	public CaveEntry getCaveEntry(int id) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getCave(id);
@@ -335,7 +334,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 //	 * 
 //	 * @see de.cses.client.DatabaseService#getAntechamberEntry(int)
 //	 */
-//	@Override
+//
 //	public AntechamberEntry getAntechamberEntry(int publicationTypeID) throws IllegalArgumentException {
 //		MysqlConnector connector = MysqlConnector.getInstance();
 //		return connector.getAntechamberEntry(publicationTypeID);
@@ -344,7 +343,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 //	/* (non-Javadoc)
 //	 * @see de.cses.client.DatabaseService#getMainChamberEntry(int)
 //	 */
-//	@Override
+//
 //	public MainChamberEntry getMainChamberEntry(int publicationTypeID) throws IllegalArgumentException {
 //		MysqlConnector connector = MysqlConnector.getInstance();
 //		return connector.getMainChamber(publicationTypeID);
@@ -353,7 +352,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 //	/* (non-Javadoc)
 //	 * @see de.cses.client.DatabaseService#getRearAreaEntry(int)
 //	 */
-//	@Override
+//
 //	public RearAreaEntry getRearAreaEntry(int publicationTypeID) throws IllegalArgumentException {
 //		MysqlConnector connector = MysqlConnector.getInstance();
 //		return connector.getRearArea(publicationTypeID);
@@ -362,7 +361,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getRegions()
 	 */
-	@Override
+
 	public ArrayList<RegionEntry> getRegions() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getRegions();
@@ -371,7 +370,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getSites()
 	 */
-	@Override
+
 	public ArrayList<SiteEntry> getSites() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getSites();
@@ -380,7 +379,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getSite(int)
 	 */
-	@Override
+
 	public SiteEntry getSite(int id) {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getSite(id);
@@ -389,7 +388,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getCaves(java.lang.String)
 	 */
-	@Override
+
 	public ArrayList<CaveEntry> getCaves(String sqlWhere) {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getCaves(sqlWhere);
@@ -398,7 +397,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getDepictions(java.lang.String)
 	 */
-//	@Override
+//
 //	public ArrayList<DepictionEntry> getDepictions(String sqlWhere) {
 //		MysqlConnector connector = MysqlConnector.getInstance();
 //		return connector.getDepictions(sqlWhere);
@@ -407,7 +406,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getDepictionsbyWallID(int)
 	 */
-	@Override
+
 	public ArrayList<DepictionEntry> getDepictionsbyWallID(int wallID) {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		ArrayList<DepictionEntry> depictions = connector.getAllDepictionsbyWall(wallID);
@@ -422,7 +421,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getRelatedImages(int)
 	 */
-	@Override
+
 //	public ArrayList<ImageEntry> getRelatedImages(int depictionID) throws IllegalArgumentException {
 //		MysqlConnector connector = MysqlConnector.getInstance();
 //		return connector.getRelatedImages(depictionID);
@@ -489,7 +488,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getOrientationInformation()
 	 */
-	@Override
+
 	public ArrayList<OrientationEntry> getOrientationInformation() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getOrientationInformation();
@@ -498,7 +497,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getIconographyEntry(int)
 	 */
-	@Override
+
 	public IconographyEntry getIconographyEntry(int iconographyID) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getIconographyEntry(iconographyID);
@@ -508,7 +507,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getCeilingTypes()
 	 */
-	@Override
+
 	public ArrayList<CeilingTypeEntry> getCeilingTypes() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getCeilingTypes();
@@ -517,7 +516,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getPreservationClassifications()
 	 */
-	@Override
+
 	public ArrayList<PreservationClassificationEntry> getPreservationClassifications() {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getPreservationClassifications();
@@ -526,7 +525,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#updateCaveEntry(de.cses.shared.CaveEntry)
 	 */
-	@Override
+
 	public boolean updateCaveEntry(CaveEntry caveEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.updateCaveEntry(caveEntry);
@@ -535,12 +534,12 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#insertCaveEntry(de.cses.shared.CaveEntry)
 	 */
-	@Override
+
 	public int insertCaveEntry(CaveEntry caveEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.insertCaveEntry(caveEntry);
 	}
-	@Override
+
 	public boolean deleteAbstractEntry(AbstractEntry entry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.deleteAbstractEntry(entry);
@@ -549,7 +548,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getCaveGroups()
 	 */
-	@Override
+
 	public ArrayList<CaveGroupEntry> getCaveGroups() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getCaveGroups();
@@ -558,7 +557,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#userLogin(java.lang.String, java.lang.String)
 	 */
-	@Override
+
 	public UserEntry userLogin(String username, String password) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.userLogin(username, password);
@@ -567,7 +566,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#updateImageEntry(de.cses.shared.ImageEntry)
 	 */
-	@Override
+
 	public boolean updateImageEntry(ImageEntry imgEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.updateImageEntry(imgEntry);
@@ -576,7 +575,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getImageTypes()
 	 */
-	@Override
+
 	public ArrayList<ImageTypeEntry> getImageTypes() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getImageTypes();
@@ -585,7 +584,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#insertDepictionEntry(de.cses.shared.DepictionEntry, java.util.List)
 	 */
-	@Override
+
 	public int insertDepictionEntry(DepictionEntry depictionEntry, ArrayList<IconographyEntry> iconographyLists) {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.insertDepictionEntry(depictionEntry, iconographyLists);
@@ -594,7 +593,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#updateDepictionEntry(de.cses.shared.DepictionEntry, java.util.List, java.util.List)
 	 */
-	@Override
+
 	public boolean updateDepictionEntry(DepictionEntry correspondingDepictionEntry, ArrayList<IconographyEntry> iconographyList, String sessionID) {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.updateDepictionEntry(correspondingDepictionEntry, iconographyList, sessionID);
@@ -603,7 +602,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getModesOfRepresentation()
 	 */
-	@Override
+
 	public ArrayList<ModeOfRepresentationEntry> getModesOfRepresentation() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getModesOfRepresentations();
@@ -612,7 +611,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 //	/* (non-Javadoc)
 //	 * @see de.cses.client.DatabaseService#getWall(int, int)
 //	 */
-//	@Override
+//
 //	public WallEntry getWall(int caveID, String locationLabel) throws IllegalArgumentException {
 //		MysqlConnector connector = MysqlConnector.getInstance();
 //		return connector.getWall(caveID, locationLabel);
@@ -621,7 +620,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getWalls(int)
 	 */
-	@Override
+
 	public ArrayList<WallEntry> getWalls(int caveID) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getWalls(caveID);
@@ -630,7 +629,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getWallLocations()
 	 */
-	@Override
+
 	public ArrayList<WallLocationEntry> getWallLocations() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getWallLocations();
@@ -639,19 +638,19 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#updateAuthorEntry(de.cses.shared.AuthorEntry)
 	 */
-	@Override
+
 	public boolean updateAuthorEntry(AuthorEntry currentAuthorEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.updateAuthorEntry(currentAuthorEntry);
 	}
 	
-	@Override
+
 	public int insertAuthorEntry(AuthorEntry currentAuthorEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.insertAuthorEntry(currentAuthorEntry);
 	}
 
-	@Override
+
 	public AnnotatedBibliographyEntry insertAnnotatedBiblographyEntry(AnnotatedBibliographyEntry bibEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.insertAnnotatedBiblographyEntry(bibEntry);
@@ -675,7 +674,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#writePhotographerEntry(de.cses.shared.PhotographerEntry)
 	 */
-	@Override
+
 	public int insertPhotographerEntry(PhotographerEntry photographerEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.insertPhotographerEntry(photographerEntry);
@@ -684,7 +683,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#insertCaveGroupEntry(de.cses.shared.CaveGroupEntry)
 	 */
-	@Override
+
 	public int insertCaveGroupEntry(CaveGroupEntry cgEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.insertCaveGroupEntry(cgEntry);
@@ -693,7 +692,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#insertDistrictEntry(de.cses.shared.DistrictEntry)
 	 */
-	@Override
+
 	public int insertDistrictEntry(DistrictEntry de) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.insertDistrictEntry(de);
@@ -702,7 +701,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#insertRegionEntry(de.cses.shared.RegionEntry)
 	 */
-	@Override
+
 	public int insertRegionEntry(RegionEntry re) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.insertRegionEntry(re);
@@ -711,7 +710,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#insertCeilingTypeEntry(de.cses.shared.CeilingTypeEntry)
 	 */
-	@Override
+
 	public int insertCeilingTypeEntry(CeilingTypeEntry ctEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.insertCeilingTypeEntry(ctEntry);
@@ -721,7 +720,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getCurrentLocations()
 	 */
-	@Override
+
 	public ArrayList<CurrentLocationEntry> getCurrentLocations() {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getCurrentLocations();
@@ -730,7 +729,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getRelatedIconography(int)
 	 */
-	@Override
+
 	public ArrayList<IconographyEntry> getRelatedIconography(int depictionID) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getRelatedIconography(depictionID);
@@ -739,7 +738,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getLocations()
 	 */
-	@Override
+
 	public ArrayList<LocationEntry> getLocations() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getLocations();
@@ -748,7 +747,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#insertVendorEntry(de.cses.shared.VendorEntry)
 	 */
-	@Override
+
 	public int insertVendorEntry(VendorEntry vEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.inserVendorEntry(vEntry);
@@ -757,7 +756,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#insertLocationEntry(de.cses.shared.LocationEntry)
 	 */
-	@Override
+
 	public int insertLocationEntry(LocationEntry lEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.insertLocationEntry(lEntry);
@@ -766,7 +765,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#checkSessionID(java.lang.String)
 	 */
-	@Override
+
 	public UserEntry checkSessionID(String sessionID, String username) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.checkSessionID(sessionID, username);
@@ -775,7 +774,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getInnerSecondaryPatterns()
 	 */
-	@Override
+
 	public ArrayList<InnerSecondaryPatternsEntry> getInnerSecondaryPatterns() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getInnerSecondaryPatterns();
@@ -784,7 +783,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getOrnamentComponents()
 	 */
-	@Override
+
 	public ArrayList<OrnamentComponentsEntry> getOrnamentComponents() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getOrnamentComponents();
@@ -793,7 +792,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getOrnamentClass()
 	 */
-	@Override
+
 	public ArrayList<OrnamentClassEntry> getOrnamentClass() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getOrnamentClass();
@@ -817,7 +816,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getPreservationAttributes()
 	 */
-	@Override
+
 	public ArrayList<PreservationAttributeEntry> getPreservationAttributes() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getPreservationAttributes();
@@ -826,7 +825,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#insertPreservationAttributeEntry(de.cses.shared.PreservationAttributeEntry)
 	 */
-	@Override
+
 	public int insertPreservationAttributeEntry(PreservationAttributeEntry paEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.insertPreservationAttributeEntry(paEntry);
@@ -835,7 +834,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#insertPublisherEntry(de.cses.shared.PublisherEntry)
 	 */
-	@Override
+
 	public int insertPublisherEntry(PublisherEntry publisherEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.insertPublisherEntry(publisherEntry);
@@ -844,7 +843,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getAnnotatedBibliography(java.lang.String)
 	 */
-	@Override
+
 	public ArrayList<AnnotatedBibliographyEntry> getAnnotatedBibliography(String sqlWhere) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getAnnotatedBibliography(sqlWhere);
@@ -853,7 +852,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#updateAnnotatedBiblographyEntry(de.cses.shared.AnnotatedBibliographyEntry)
 	 */
-	@Override
+
 	public AnnotatedBibliographyEntry updateAnnotatedBiblographyEntry(AnnotatedBibliographyEntry bibEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.updateAnnotatedBiblographyEntry(bibEntry);
@@ -862,7 +861,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getIconography(java.lang.String)
 	 */
-	@Override
+
 	public ArrayList<Integer> getDepictionFromIconography(String sqlWhere) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getDepictionFromIconography(sqlWhere);
@@ -871,7 +870,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getPositionbyWall(de.cses.shared.WallEntry)
 	 */
-	@Override
+
 	public ArrayList<OrnamentPositionEntry> getPositionbyWall(WallEntry wall) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getPositionbyWall(wall);
@@ -884,7 +883,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getFunctionbyPosition(de.cses.shared.OrnamentPositionEntry)
 	 */
-	@Override
+
 	public ArrayList<OrnamentFunctionEntry> getFunctionbyPosition(OrnamentPositionEntry position) throws IllegalArgumentException {
 	MysqlConnector connector = MysqlConnector.getInstance();
 	return connector.getFunctionbyPosition(position);
@@ -898,7 +897,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getRelatedDepictions(java.lang.String)
 	 */
-//	@Override
+//
 //	public ArrayList<Integer> getRelatedDepictionIDs(String iconographyIDs, int correlationFactor) throws IllegalArgumentException {
 //		MysqlConnector connector = MysqlConnector.getInstance();
 //		ArrayList<Integer> resultList = new ArrayList<Integer>();
@@ -912,7 +911,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	 * @see de.cses.client.DatabaseService#getIconography(int)
 	 */
 
-	@Override
+
 	public ArrayList<IconographyEntry> getIconography(int rootIndex) {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getIconography(rootIndex);
@@ -921,7 +920,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#doLogging(java.lang.String, java.lang.String)
 	 */
-	@Override
+
 	public void doLogging(String usertag, String message) {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		connector.doLogging(usertag, message);
@@ -930,7 +929,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#updateOrnamentEntry(de.cses.shared.OrnamentEntry)
 	 */
-	@Override
+
 	public boolean updateOrnamentEntry(OrnamentEntry oEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.updateOrnamentEntry(oEntry);
@@ -938,7 +937,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getAnnotatedBibliographyFromAuthors(java.util.ArrayList)
 	 */
-	@Override
+
 	public ArrayList<AnnotatedBibliographyEntry> getAnnotatedBibliographyFromAuthors(ArrayList<AuthorEntry> authorList) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getAnnotatedBibliographyFromAuthors(authorList);
@@ -946,7 +945,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#getBibKeywords()
 	 */
-	@Override
+
 	public ArrayList<BibKeywordEntry> getBibKeywords() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getBibKeywords();
@@ -954,7 +953,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#insertBibKeyword(de.cses.shared.BibKeywordEntry)
 	 */
-	@Override
+
 	public int insertBibKeyword(BibKeywordEntry bkEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.insertBibKeyword(bkEntry);
@@ -962,7 +961,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#deleteAuthorEntry(de.cses.shared.AuthorEntry)
 	 */
-	@Override
+
 	public boolean deleteAuthorEntry(AuthorEntry selectedEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.deleteAuthorEntry(selectedEntry);
@@ -971,7 +970,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#renameOrnamentClass(de.cses.shared.OrnamentClassEntry)
 	 */
-	@Override
+
 	public OrnamentClassEntry renameOrnamentClass(OrnamentClassEntry entry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.renameOrnamentClass(entry);
@@ -980,7 +979,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#renameOrnamentComponents(de.cses.shared.OrnamentComponentsEntry)
 	 */
-	@Override
+
 	public OrnamentComponentsEntry renameOrnamentComponents(OrnamentComponentsEntry entry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.renameOrnamentComponents(entry);
@@ -989,117 +988,117 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#updateUserEntry(de.cses.shared.UserEntry)
 	 */
-	@Override
+
 	public boolean updateUserEntry(UserEntry currentUser, String passwordHash, String newPasswordHash) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.updateUserEntry(currentUser, passwordHash, newPasswordHash);
 	}
 	
-	@Override
+
 	public ArrayList<CaveEntry> searchCaves(CaveSearchEntry searchEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.searchCaves(searchEntry);
 	}
 	
-	@Override
+
 	public ArrayList<DepictionEntry> searchDepictions(DepictionSearchEntry searchEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.searchDepictions(searchEntry);
 	}
-	@Override
+
 	public ArrayList<ModifiedEntry> getModifiedAbstractEntry(AbstractEntry Entry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getModifiedAbstractEntry(Entry);
 	}
 	
-	@Override
+
 	public ArrayList<ModifiedEntry> getModifiedAnnoEntry(DepictionEntry Entry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getModifiedAnnoEntry(Entry);
 	}
 	
-	@Override
+
 	public Map<Integer,ArrayList<ImageEntry>> searchImages(ImageSearchEntry searchEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.searchImages(searchEntry);
 	}
 	
-	@Override
+
 	public ArrayList<AnnotatedBibliographyEntry> searchAnnotatedBibliography(AnnotatedBibliographySearchEntry searchEntry)
 			throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.searchAnnotatedBibliography(searchEntry);
 	}
 	
-	@Override
+
 	public ArrayList<OrnamentEntry> searchOrnaments(OrnamenticSearchEntry searchEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.searchOrnaments(searchEntry);
 	}
 	
-	@Override
+
 	public int insertIconographyEntry(IconographyEntry iconographyEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.insertIconographyEntry(iconographyEntry);
 	}
 
-	@Override
+
 	public boolean updateIconographyEntry(IconographyEntry iconographyEntryToEdit) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.updateIconographyEntry(iconographyEntryToEdit);
 	}
 
-	@Override
+
 	public ArrayList<UserEntry> getUsers() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getUsers();
 	}
 	
-	@Override
+
 	public boolean updateUserEntry(UserEntry userEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.updateUserEntry(userEntry);
 	}
-	@Override
+
 	public boolean setAnnotationResults(AnnotationEntry annoEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.setAnnotationResults(annoEntry);
 		}
 	
-	@Override
+
 	public ArrayList<AnnotationEntry> getAnnotations(int depictionID) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getAnnotations(depictionID);
 		}
 
-	@Override
+
 	public int insertUserEntry(UserEntry entry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.insertUserEntry(entry);
 	}
 	
-	@Override
+
 	public boolean saveCollectedEntries(String sessionID, String collectionLabel, Boolean isGroupCollection, ArrayList<AbstractEntry> entryList) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.saveCollectedEntries(sessionID, collectionLabel, isGroupCollection, entryList);
 	}
 	
-	@Override
+
 	public ArrayList<CollectionEntry> getRelatedCollectionNames(String sessionID) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getRelatedCollectionNames(sessionID);
 	}
-	@Override
+
 	public ArrayList<AbstractEntry> loadCollectedEntries(CollectionEntry value) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.loadCollectedEntries(value);
 	}
-	@Override
+
 	public CollectionEntry delCollectedEntries(CollectionEntry value) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.delCollectedEntries(value);
 	}
-	@Override
+
 	public int addPreservationClassification(PreservationClassificationEntry pcEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.addPreservationClassification(pcEntry);

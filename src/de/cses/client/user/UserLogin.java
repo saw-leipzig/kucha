@@ -15,6 +15,7 @@ package de.cses.client.user;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -118,9 +119,16 @@ public class UserLogin extends PopupPanel {
 			@Override
 			public void onSuccess(UserEntry result) { // we get the sessionID
 				if (result != null) {
+					Date d = new Date(System.currentTimeMillis());
+					d.setDate(d.getDate() + 5);
 					Cookies.setCookie(SESSION_ID, result.getSessionID());
+					//Cookies.setCookie(SESSION_ID, result.getSessionID(), null,"127.0.0.1",null, false);
+					//Cookies.setCookie(SESSION_ID, result.getSessionID(), null,"saw-leipzig.de",null, false);
 					Cookies.setCookie(USERNAME, result.getUsername());
 					Cookies.setCookie(ISLOGGEDIN, "true");
+					for (String name: Cookies.getCookieNames()) {
+						Util.doLogging("Cookie: "+name+": "+Cookies.getCookie(name));
+					}
 					currentUser = result;
 					hide();
 					clear();
@@ -149,6 +157,7 @@ public class UserLogin extends PopupPanel {
 				if (result != null) {
 					currentUser = result;
 				} else {
+					Cookies.removeCookie("testCookie");
 					Cookies.removeCookie(SESSION_ID);
 					Cookies.removeCookie(USERNAME);
 					Cookies.removeCookie(ISLOGGEDIN);

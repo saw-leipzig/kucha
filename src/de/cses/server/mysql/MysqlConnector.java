@@ -12,7 +12,11 @@
  * If not, you can access it from here: <https://www.gnu.org/licenses/gpl-3.0.txt>.
  */
 package de.cses.server.mysql;
+
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.security.MessageDigest;
@@ -48,6 +52,8 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 //import javax.mail.Authenticator;
 import com.google.gwt.user.client.rpc.IsSerializable;
 import com.sencha.gxt.core.client.ValueProvider;
@@ -56,6 +62,7 @@ import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 
 import de.cses.server.ServerProperties;
+import de.cses.server.WKT2SVG;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.AnnotatedBibliographySearchEntry;
@@ -113,7 +120,7 @@ import de.cses.shared.WallEntry;
 import de.cses.shared.WallLocationEntry;
 import de.cses.shared.WallOrnamentCaveRelation;
 import de.cses.shared.WallTreeEntry;
-import sun.misc.BASE64Encoder;
+import java.util.Base64;
 
 /**
  * This is the central Database connector. Here are all methods that we need for standard database operations, including user login and access management.
@@ -557,7 +564,7 @@ public class MysqlConnector implements IsSerializable {
 					// guests should be informed that there is an image
 					filename = "accessNotPermitted.png";
 				}
-			URL imageURL = new URL("http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/!" + tnSize + "," + tnSize + "/0/default.png");
+			URL imageURL = new URL("http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/!" + tnSize + "," + tnSize + "/0/default.jpg");
 			InputStream in = imageURL.openStream();
 			ByteArrayOutputStream bab = new ByteArrayOutputStream();
 			//ByteArrayBuffer bab = new ByteArrayBuffer(0);
@@ -567,8 +574,8 @@ public class MysqlConnector implements IsSerializable {
 				bab.write(buffer, 0, eof);
 			}
 		    in.close();
-			String base64 = new BASE64Encoder().encode(bab.toByteArray());
-			result.put(imgEntry.getImageID(), "data:image/png;base64,"+base64);
+			String base64 = Base64.getEncoder().encodeToString(bab.toByteArray());
+			result.put(imgEntry.getImageID(), "data:image/jpg;base64,"+base64);
 			}
 			catch (Exception e) {
 				//System.out.println("                <><><>"+e.getMessage());
@@ -580,7 +587,51 @@ public class MysqlConnector implements IsSerializable {
 	
 		return result;
 		}
-	
+	private void serializeAllDepictionEntries(String sessionID) {
+		Connection dbc = getConnection();
+		DepictionEntry result = null;
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Depictions WHERE deleted=0");
+			System.out.println("Start Select");
+			int accessLevel=-1;
+			accessLevel = getAccessLevelForSessionID(sessionID);
+			// we only need to call this once, since we do not expect more than 1 result!
+			String filename=serverProperties.getProperty("home.jsons")+"result.json";
+		    try {
+		        FileWriter myWriter = new FileWriter(filename);
+				while (rs.next()) { 
+					//System.out.println("got result");				
+					result = new DepictionEntry(rs.getInt("DepictionID"), rs.getInt("StyleID"), rs.getString("Inscriptions"),
+							rs.getString("SeparateAksaras"), rs.getString("Dating"), rs.getString("Description"), rs.getString("BackgroundColour"),
+							rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"), rs.getDouble("Width"), rs.getDouble("Height"),
+							getExpedition(rs.getInt("ExpeditionID")), rs.getDate("PurchaseDate"), getLocation(rs.getInt("CurrentLocationID")), rs.getString("InventoryNumber"),
+							getVendor(rs.getInt("VendorID")), rs.getInt("StoryID"), getCave(rs.getInt("CaveID")), getwallsbyDepictionID(rs.getInt("DepictionID")), rs.getInt("AbsoluteLeft"),
+							rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes"),
+							rs.getInt("MasterImageID"), rs.getInt("AccessLevel"), rs.getString("LastChangedByUser"), rs.getString("LastChangedOnDate"),getAnnotations(rs.getInt("DepictionID")));
+					result.setRelatedImages(getRelatedImages(result.getDepictionID(), sessionID,accessLevel));
+					result.setRelatedBibliographyList(getRelatedBibliographyFromDepiction(result.getDepictionID()));
+					result.setRelatedIconographyList(getRelatedIconography(result.getDepictionID()));
+					//Gson gson = new GsonBuilder().create();//.setPrettyPrinting().create();
+					Gson gson = new Gson();
+					String json = gson.toJson(result);
+					//System.out.println(filename);
+				    myWriter.write(json+String.format("%n"));
+				}
+		        myWriter.close();
+		      } catch (IOException e) {
+			        System.out.println("An error occurred.");
+			        e.printStackTrace();
+			      }
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+		}
+
+	}
 	public Map<Integer,String> getPicsByImageID(String imgSourceIds, int tnSize, String sessionID) {
 		Map<Integer,String> result = new HashMap<Integer,String>();
 			
@@ -653,7 +704,7 @@ public class MysqlConnector implements IsSerializable {
 						// all others shouldn't see anything
 						filename = "accessNotPermitted.png";
 					}
-				URL imageURL = new URL("http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/!" + tnSize + "," + tnSize + "/0/default.png");
+				URL imageURL = new URL("http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/!" + tnSize + "," + tnSize + "/0/default.jpg");
 				InputStream in = imageURL.openStream();
 				ByteArrayOutputStream bab = new ByteArrayOutputStream();
 				//ByteArrayBuffer bab = new ByteArrayBuffer(0);
@@ -663,9 +714,9 @@ public class MysqlConnector implements IsSerializable {
 					bab.write(buffer, 0, eof);
 				}
 			    in.close();
-				String base64 = new BASE64Encoder().encode(bab.toByteArray());
+				String base64 = Base64.getEncoder().encodeToString(bab.toByteArray());
 				//System.out.println("------"+Integer.toString(imgEntry.getImageID())+"-----"+base64);
-				result.put(imgEntry.getImageID(), "data:image/png;base64,"+base64);
+				result.put(imgEntry.getImageID(), "data:image/jpg;base64,"+base64);
 				}
 				catch (Exception e) {
 					//System.out.println("                <><><>"+e.getMessage());
@@ -1195,7 +1246,7 @@ public class MysqlConnector implements IsSerializable {
 		
 		where += where.isEmpty() ? "AccessLevel IN (" + inStatement + ")" : " AND AccessLevel IN (" + inStatement + ")";
 		
-		System.out.println(where.isEmpty() ? "SELECT * FROM Images where deleted=0 ORDER BY Title Asc LIMIT "+Integer.toString(searchEntry.getEntriesShowed()+50)+" OFFSET "+Integer.toString(searchEntry.getEntriesShowed()) : "SELECT * FROM Images WHERE deleted=0 and " + where + " ORDER BY Title Asc LIMIT "+Integer.toString(searchEntry.getEntriesShowed()+50)+" OFFSET "+Integer.toString(searchEntry.getEntriesShowed()));
+		System.out.println(where.isEmpty() ? "SELECT * FROM Images where deleted=0 ORDER BY Title Asc LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+" OFFSET "+Integer.toString(searchEntry.getMaxentries()) : "SELECT * FROM Images WHERE deleted=0 and " + where + " ORDER BY Title Asc LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+" OFFSET "+Integer.toString(searchEntry.getMaxentries()));
 		int anzahl=0;
 		int i=1;
 		try {
@@ -2935,7 +2986,7 @@ public boolean isHan(String s) {
 			if (rs.first()) {
 				result = new AuthorEntry(rs.getInt("AuthorID"), rs.getString("Lastname"), rs.getString("Firstname"), rs.getString("Institution"),
 						rs.getBoolean("KuchaVisitor"), rs.getString("Affiliation"), rs.getString("Email"), rs.getString("Homepage"), rs.getString("Alias"), 
-						rs.getBoolean("InstitutionEnabled"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
+						rs.getBoolean("InstitutionEnabled"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), rs.getString("altSpelling"));
 			}
 			rs.close();
 			stmt.close();
@@ -3478,11 +3529,11 @@ public boolean isHan(String s) {
 			String editorTerm = "";
 			for (String name : searchEntry.getAuthorSearch().split("\\s+")) {
 				authorTerm += authorTerm.isEmpty() 
-						? "SELECT BibID FROM AuthorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (FirstName LIKE ?) OR (LastName LIKE ?) OR (Institution LIKE ?) OR (Alias LIKE ?)))"
-						: " INTERSECT SELECT BibID FROM AuthorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (FirstName LIKE ?) OR (LastName LIKE ?) OR (Institution LIKE ?) OR (Alias LIKE ?)))";
+						? "SELECT BibID FROM AuthorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (FirstName LIKE ?) OR (LastName LIKE ?) OR (Institution LIKE ?) OR (Alias LIKE ?) OR (altSpelling LIKE ?)))"
+						: " INTERSECT SELECT BibID FROM AuthorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (FirstName LIKE ?) OR (LastName LIKE ?) OR (Institution LIKE ?) OR (Alias LIKE ?) OR (altSpelling LIKE ?)))";
 				editorTerm += editorTerm.isEmpty() 
-						? "SELECT BibID FROM EditorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (FirstName LIKE ?) OR (LastName LIKE ?) OR (Institution LIKE ?) OR (Alias LIKE ?)))"
-						: " INTERSECT SELECT BibID FROM EditorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (FirstName LIKE ?) OR (LastName LIKE ?) OR (Institution LIKE ?) OR (Alias LIKE ?)))";
+						? "SELECT BibID FROM EditorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (FirstName LIKE ?) OR (LastName LIKE ?) OR (Institution LIKE ?) OR (Alias LIKE ?) OR (altSpelling LIKE ?)))"
+						: " INTERSECT SELECT BibID FROM EditorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (FirstName LIKE ?) OR (LastName LIKE ?) OR (Institution LIKE ?) OR (Alias LIKE ?) OR (altSpelling LIKE ?)))";
 			}
 			where = where + " and BibID IN (" + authorTerm + ") OR BibID IN (" + editorTerm + ")";
 		}
@@ -3535,8 +3586,10 @@ public boolean isHan(String s) {
 					pstmt.setString(i++,name.replace("*", "%"));
 					pstmt.setString(i++,name.replace("*", "%"));
 					pstmt.setString(i++,name.replace("*", "%"));
+					pstmt.setString(i++,name.replace("*", "%"));
 				}
 				for (String name : searchEntry.getAuthorSearch().split("\\s+")) {
+					pstmt.setString(i++, name.replace("*", "%"));
 					pstmt.setString(i++, name.replace("*", "%"));
 					pstmt.setString(i++, name.replace("*", "%"));
 					pstmt.setString(i++, name.replace("*", "%"));
@@ -5208,6 +5261,7 @@ public boolean isHan(String s) {
 			insertDepictionBibliographyRelation(de.getDepictionID(), de.getRelatedBibliographyList());
 		}
 		protocollModifiedAbstractEntry(de, changes);
+		serializeAllDepictionEntries(sessionID);
 		System.err.println("==> updateDepictionEntry finished");
 		if (dologging){
 		long end = System.currentTimeMillis();
@@ -5819,8 +5873,8 @@ public boolean isHan(String s) {
 			//System.err.println(sqlText);
 			ResultSet rs = stmt.executeQuery(sqlText);
 			while (rs.next()) {
-				//System.err.println("Entering Iteration 1");
-				AnnotationEntry newAnno = new AnnotationEntry(rs.getInt("DepictionID"), rs.getString("AnnotoriousID"), null,rs.getString("Polygon").substring(9,rs.getString("Polygon").indexOf(")")), rs.getString("Filename"), false,false);
+				AnnotationEntry newAnno = new AnnotationEntry(rs.getInt("DepictionID"), rs.getString("AnnotoriousID"), null,WKT2SVG.convertWkt2Svg(rs.getString("Polygon")), rs.getString("Filename"), false,false);
+				//System.err.println("Found Annotation for Depiction "+depictionID+ " - "+newAnno.getAnnotoriousID());
 				ArrayList<IconographyEntry> icoResults = new ArrayList<IconographyEntry>();
 				try {
 					stmt2 = dbc2.createStatement();
@@ -5830,6 +5884,7 @@ public boolean isHan(String s) {
 					while (rs2.next()) {
 						//System.err.println("Entering Iteration 2");
 						icoResults.add(new IconographyEntry(rs2.getInt("IconographyID"), rs2.getInt("ParentID"), rs2.getString("Text")==null ? "" : rs2.getString("Text"), rs2.getString("search")==null ? "" : rs2.getString("search")));
+						//System.err.println("IconographyID for AnnoID "+newAnno.getAnnotoriousID()+": "+Integer.toString(rs2.getInt("IconographyID")));
 					}
 					rs2.close();
 					stmt2.close();
@@ -5838,8 +5893,9 @@ public boolean isHan(String s) {
 					System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 				}
 				newAnno.setTags(icoResults);
+				
 				results.add(newAnno);
-				//System.err.println("Found "+Integer.toString(results.size())+" Annotations for Depiction nr."+Integer.toString(depictionID));
+				//System.err.println("Polygon2SVG:"+newAnno.getPolygone());
 			}
 			rs.close();
 			stmt.close();
@@ -5885,21 +5941,22 @@ public boolean isHan(String s) {
 				String parts[]=annoEntry.getImage().split("\\.",-1);
 	            String part1=parts[0];
 				String poly=annoEntry.getPolygone();
-				if (annoEntry.getPolygone().indexOf(" ")>annoEntry.getPolygone().indexOf(",")) {
-					poly=poly.replace(" ", "|");
-					poly=poly.replace(",", " ");
-					poly=poly.replace("|", ",");					
-				}
-				System.err.println("INSERT INTO Polygon (DepictionID, AnnotoriousID, Polygon, ImageID) VALUES ("+Integer.toString(annoEntry.getDepictionID())+", "+annoEntry.getAnnotoriousID()+", PolygonFromText(Polygon(("+poly+"))),"+part1+")");
+//				if (annoEntry.getPolygone().indexOf(" ")>annoEntry.getPolygone().indexOf(",")) {
+//					poly=poly.replace(" ", "|");
+//					poly=poly.replace(",", " ");
+//					poly=poly.replace("|", ",");					
+//				}
+				System.err.println("INSERT INTO Polygon (DepictionID, AnnotoriousID, Polygon, ImageID) VALUES ("+Integer.toString(annoEntry.getDepictionID())+", "+annoEntry.getAnnotoriousID()+", PolygonFromText(\""+poly+"\"),"+part1+")");
 				polygoneStatement = dbc.prepareStatement("INSERT INTO Polygon (DepictionID, AnnotoriousID, Polygon, ImageID) VALUES (?, ?, PolygonFromText(?),?)");
 				polygoneStatement.setInt(1, annoEntry.getDepictionID());
 				polygoneStatement.setString(2, annoEntry.getAnnotoriousID());
-				if (annoEntry.getPolygone().indexOf("\"></polygon></svg>")>0) {
-					polygoneStatement.setString(3, "POLYGON(("+poly.substring(22,annoEntry.getPolygone().indexOf("\"></polygon></svg>"))+"))");					
-				}
-				else {
-					polygoneStatement.setString(3, "POLYGON(("+poly+"))");
-				}
+//				if (annoEntry.getPolygone().indexOf("\"></polygon></svg>")>0) {
+//					polygoneStatement.setString(3, "POLYGON(("+poly.substring(22,annoEntry.getPolygone().indexOf("\"></polygon></svg>"))+"))");					
+//				}
+//				else {
+//					polygoneStatement.setString(3, "POLYGON(("+poly+"))");
+//				}
+				polygoneStatement.setString(3, poly);
 				polygoneStatement.setInt(4, Integer.parseInt(part1));
 				polygoneStatement.executeUpdate();
 				polygoneStatement.close();
@@ -5967,7 +6024,7 @@ public boolean isHan(String s) {
 		int rowCount = 0;
 		try {
 			authorStatement = dbc.prepareStatement(
-					"UPDATE Authors SET LastName=?, FirstName=?, Institution=?, KuchaVisitor=?, Affiliation=?, Email=?, Homepage=?, Alias=?, InstitutionEnabled=? WHERE AuthorID=?");
+					"UPDATE Authors SET LastName=?, FirstName=?, Institution=?, KuchaVisitor=?, Affiliation=?, Email=?, Homepage=?, Alias=?, InstitutionEnabled=?, altSpelling=? WHERE AuthorID=?");
 			authorStatement.setString(1, authorEntry.getLastname());
 			authorStatement.setString(2, authorEntry.getFirstname());
 			authorStatement.setString(3, authorEntry.getInstitution());
@@ -5977,7 +6034,8 @@ public boolean isHan(String s) {
 			authorStatement.setString(7, authorEntry.getHomepage());
 			authorStatement.setString(8, authorEntry.getAlias());
 			authorStatement.setBoolean(9, authorEntry.isInstitutionEnabled());
-			authorStatement.setInt(10, authorEntry.getAuthorID());
+			authorStatement.setString(10, authorEntry.getAltSpelling());
+			authorStatement.setInt(11, authorEntry.getAuthorID());
 			rowCount = authorStatement.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -6005,7 +6063,7 @@ public boolean isHan(String s) {
 		int authorID = 0;
 		try {
 			authorStatement = dbc.prepareStatement(
-					"INSERT INTO Authors (LastName, FirstName, Institution, KuchaVisitor, Affiliation, Email, Homepage, Alias, InstitutionEnabled) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+					"INSERT INTO Authors (LastName, FirstName, Institution, KuchaVisitor, Affiliation, Email, Homepage, Alias, InstitutionEnabled, altSpelling) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 					Statement.RETURN_GENERATED_KEYS);
 			authorStatement.setString(1, authorEntry.getLastname());
 			authorStatement.setString(2, authorEntry.getFirstname());
@@ -6016,6 +6074,7 @@ public boolean isHan(String s) {
 			authorStatement.setString(7, authorEntry.getHomepage());
 			authorStatement.setString(8, authorEntry.getAlias());
 			authorStatement.setBoolean(9, authorEntry.isInstitutionEnabled());
+			authorStatement.setString(10, authorEntry.getAltSpelling());
 			authorStatement.executeUpdate();
 			ResultSet keys = authorStatement.getGeneratedKeys();
 			if (keys.next()) {
@@ -6331,7 +6390,7 @@ public boolean isHan(String s) {
 			while (rs.next()) {
 				result.add(new AuthorEntry(rs.getInt("AuthorID"), rs.getString("Lastname"), rs.getString("Firstname"), rs.getString("Institution"),
 						rs.getBoolean("KuchaVisitor"), rs.getString("Affiliation"), rs.getString("Email"), rs.getString("Homepage"), rs.getString("Alias"), 
-						rs.getBoolean("InstitutionEnabled"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn"))));
+						rs.getBoolean("InstitutionEnabled"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), rs.getString("altSpelling")));
 			}
 			rs.close();
 			stmt.close();
@@ -8055,6 +8114,7 @@ public boolean isHan(String s) {
 	 * 
 	 * @param searchEntry
 	 * @return
+	 * @throws IOException 
 	 */
 	public ArrayList<DepictionEntry> searchDepictions(DepictionSearchEntry searchEntry) {
 		long start = System.currentTimeMillis();
@@ -8093,9 +8153,9 @@ public boolean isHan(String s) {
 		if (!iconographyIDs.isEmpty()) {
 			where += where.isEmpty() 
 					? "DepictionID IN (SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (" + iconographyIDs + ") GROUP BY DepictionID HAVING (COUNT(DepictionID) >= " 
-						+ searchEntry.getCorrelationFactor() + ")) or DepictionID in (SELECT Polygon.DepictionID FROM infosys.Annotations inner join infosys.Polygon on (Polygon.AnnotoriousID=Annotations.AnnotoriousID) WHERE Annotations.IconographyID IN ("+iconographyIDs+") GROUP BY DepictionID HAVING (COUNT(DepictionID) >= "+searchEntry.getCorrelationFactor()+"))"
+						+ searchEntry.getCorrelationFactor() + ")) or DepictionID in (SELECT Polygon.DepictionID FROM Annotations inner join Polygon on (Polygon.AnnotoriousID=Annotations.AnnotoriousID) WHERE Annotations.IconographyID IN ("+iconographyIDs+") and Polygon.deleted=0 and Polygon.Polygon is not null and Annotations.deleted=0  GROUP BY DepictionID HAVING (COUNT(DepictionID) >= "+searchEntry.getCorrelationFactor()+"))"
 					: " AND DepictionID IN (SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (" + iconographyIDs + ") GROUP BY DepictionID HAVING (COUNT(DepictionID) >= " 
-						+ searchEntry.getCorrelationFactor() + ")) or DepictionID in (SELECT Polygon.DepictionID FROM infosys.Annotations inner join infosys.Polygon on (Polygon.AnnotoriousID=Annotations.AnnotoriousID) WHERE Annotations.IconographyID IN ("+iconographyIDs+") GROUP BY DepictionID HAVING (COUNT(DepictionID) >= "+searchEntry.getCorrelationFactor()+"))";
+						+ searchEntry.getCorrelationFactor() + ")) or DepictionID in (SELECT Polygon.DepictionID FROM Annotations inner join Polygon on (Polygon.AnnotoriousID=Annotations.AnnotoriousID) WHERE Annotations.IconographyID IN ("+iconographyIDs+") and Polygon.deleted=0 and Polygon.Polygon is not null and Annotations.deleted=0  GROUP BY DepictionID HAVING (COUNT(DepictionID) >= "+searchEntry.getCorrelationFactor()+"))";
 		}
 		String wallTreeIDs = "";
 		for (int wallTreeID : searchEntry.getWallIDList()) {

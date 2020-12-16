@@ -99,16 +99,16 @@ public class ResourceDownloadServlet extends HttpServlet {
 			if (request.getParameter("thumb") != null) {
 				int tnSize = Integer.valueOf(request.getParameter("thumb")); // the requested size is given as a parameter
 				imageURL = new URL(
-						"http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/!" + tnSize + "," + tnSize + "/0/default.png"
+						"http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/!" + tnSize + "," + tnSize + "/0/default.jpg"
 					);
 			} else {
 				imageURL = new URL(
-						"http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/max/0/default.png"
+						"http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/max/0/default.jpg"
 					);
 			}
 //			System.out.println("Öffne Stream");
 			InputStream in = imageURL.openStream();
-			response.setContentType("image/png");
+			response.setContentType("image/jpg");
 			byte buffer[] = new byte[4096];
 			int bytesRead = 0;
 			while ((bytesRead = in.read(buffer)) > 0) {
@@ -126,7 +126,7 @@ public class ResourceDownloadServlet extends HttpServlet {
 				File inputFile = new File(serverProperties.getProperty("home.backgrounds"), filename);
 				if (inputFile.exists()) {
 					FileInputStream fis = new FileInputStream(inputFile);
-					response.setContentType(filename.toLowerCase().endsWith("png") ? "image/png" : "image/jpeg");
+					response.setContentType(filename.toLowerCase().endsWith("png") ? "image/jpg" : "image/jpeg");
 					ServletOutputStream out = response.getOutputStream();
 					byte buffer[] = new byte[4096];
 					int bytesRead = 0;
@@ -149,7 +149,7 @@ public class ResourceDownloadServlet extends HttpServlet {
 				File inputFile = new File(serverProperties.getProperty("home.cavesketches"), filename);
 				if (inputFile.exists()) {
 					FileInputStream fis = new FileInputStream(inputFile);
-					response.setContentType(filename.toLowerCase().endsWith("png") ? "image/png" : "image/jpeg");
+					response.setContentType(filename.toLowerCase().endsWith("png") ? "image/jpg" : "image/jpeg");
 					ServletOutputStream out = response.getOutputStream();
 					byte buffer[] = new byte[4096];
 					int bytesRead = 0;

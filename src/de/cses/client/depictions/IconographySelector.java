@@ -161,6 +161,7 @@ public class IconographySelector extends FramedPanel {
 	public ToolButton closeTB = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
 	private ToolButton addEntryTB;
 	private ToolButton renameEntryTB;
+	private StoreFilter<IconographyEntry> filterFieldDropUnselected;
 	
 
 	ArrayList<IconographyEntry> iconographyRelationList;
@@ -297,7 +298,9 @@ public class IconographySelector extends FramedPanel {
 				    	if (currentContext==context) {
 				    	    hidePOPUP();				    		
 				    	}
-		    	    	icoSelectorListener.icoDeHighlighter(Integer.parseInt((String)context.getKey()));
+				    	if (icoSelectorListener!=null) {
+			    	    	icoSelectorListener.icoDeHighlighter(Integer.parseInt((String)context.getKey()));
+				    	}
 			    	}
 		    	    if (BrowserEvents.MOUSEUP.equals(eventType)) {
 		    	    	Util.doLogging("Clicked "+context.getKey());
@@ -316,7 +319,10 @@ public class IconographySelector extends FramedPanel {
 		    }
 		    private void showPOPUP(Context context,int x,int y) {
 		    	imgPop.clear();
-		    	icoSelectorListener.icoHighlighter(Integer.parseInt((String)context.getKey()));
+		    	if (icoSelectorListener!=null) {
+
+		    		icoSelectorListener.icoHighlighter(Integer.parseInt((String)context.getKey()));
+		    	}
 		    	if (imgdDic.containsKey(Integer.parseInt((String)context.getKey()))) {
 			    	imgPop.setPopupPosition(x,y);
 			    	//imgPop.setSize(300, 300);
@@ -544,7 +550,7 @@ public class IconographySelector extends FramedPanel {
 	}
 
 	public void dropunselected() {
-		StoreFilter<IconographyEntry> filterFieldDropUnselected = new StoreFilter<IconographyEntry>() {
+		filterFieldDropUnselected = new StoreFilter<IconographyEntry>() {
 
 			@Override
 			public boolean select(Store<IconographyEntry> store, IconographyEntry parent, IconographyEntry item) {
@@ -856,6 +862,7 @@ public class IconographySelector extends FramedPanel {
 				dropUnselected = true;
 				iconographyTree.setCheckable(false);			
 				iconographyTreeStore.setEnableFilters(true);
+				iconographyTreeStore.addFilter(filterFieldDropUnselected);
 				minTB.setVisible(false);
 				maxTB.setVisible(true);
 			}
@@ -868,6 +875,7 @@ public class IconographySelector extends FramedPanel {
 			public void onSelect(SelectEvent event) {
 				dropUnselected = false;
 				iconographyTree.setCheckable(true);	
+				iconographyTreeStore.removeFilter(filterFieldDropUnselected);
 				iconographyTreeStore.setEnableFilters(false);
 				setSelectedIconography(iconographyRelationList);
 				maxTB.setVisible(false);

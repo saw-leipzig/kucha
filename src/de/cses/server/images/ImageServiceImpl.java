@@ -128,7 +128,7 @@ public class ImageServiceImpl extends HttpServlet {
 							target = new File(imgHomeDir, filename);
 							try {	
 								URL imageURL = new URL(
-										"http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/max/0/default.png"
+										"http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/max/0/default.jpg"
 									);
 								InputStream in = imageURL.openStream();
 								in.close();	
@@ -138,8 +138,9 @@ public class ImageServiceImpl extends HttpServlet {
 								sizes.add("180");
 								for (String tnSize:sizes) {
 									imageURL = new URL(
-											"http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/!" + tnSize + "," + tnSize + "/0/default.png"
+											"http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/!" + tnSize + "," + tnSize + "/0/default.jpg"
 										);
+									System.out.println(imageURL);
 									in = imageURL.openStream();
 									in.close();																	
 								}
