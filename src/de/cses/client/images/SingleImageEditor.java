@@ -71,6 +71,8 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
+import com.sencha.gxt.widget.core.client.form.NumberField;
+import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
@@ -98,6 +100,9 @@ public class SingleImageEditor extends AbstractEditor {
 
 	private TextField titleField;
 	private TextField shortNameField;
+	private TextField inventoryNumberField;
+	private NumberField<Double> widthField;
+	private NumberField<Double> heightField;
 	private TextArea copyrightArea;
 	private TextArea commentArea;
 	private TextField dateField;
@@ -425,6 +430,37 @@ public class SingleImageEditor extends AbstractEditor {
 		shortNamePanel.setHeading("Short Name");
 		shortNameField.setValue(imgEntry.getShortName());
 		shortNamePanel.add(shortNameField);
+
+		FramedPanel inventoryNumberPanel = new FramedPanel();
+		inventoryNumberField = new TextField();
+		inventoryNumberPanel.setHeading("Inventory Number");
+		inventoryNumberField.setValue(imgEntry.getInventoryNumber());
+		inventoryNumberPanel.add(inventoryNumberField);
+		
+		FramedPanel widthPanel = new FramedPanel();
+		widthField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
+
+		widthPanel.setHeading("Width");
+		if (imgEntry.getWidth()>0) {
+			widthField.setValue(imgEntry.getWidth());			
+		}
+		else {
+			widthField.setValue(0.0);
+		}
+
+		widthPanel.add(widthField);
+		
+		FramedPanel heightPanel = new FramedPanel();
+		heightField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
+
+		heightPanel.setHeading("Height");
+		if (imgEntry.getHeight()>0) {
+			heightField.setValue(imgEntry.getHeight());			
+		}
+		else {
+			heightField.setValue(0.0);
+		}
+		heightPanel.add(heightField);
 		
 		FramedPanel copyrightPanel = new FramedPanel();
 		copyrightArea = new TextArea();
@@ -772,6 +808,9 @@ public class SingleImageEditor extends AbstractEditor {
 		HorizontalLayoutContainer imageAccessLevelHLC = new HorizontalLayoutContainer();
 		imageAccessLevelHLC.add(imageTypeSelectionPanel, new HorizontalLayoutData(.5, 1.0));
 		imageAccessLevelHLC.add(accessLevelFP, new HorizontalLayoutData(.5, 1.0));
+		HorizontalLayoutContainer imageDimensionslHLC = new HorizontalLayoutContainer();
+		imageDimensionslHLC.add(widthPanel, new HorizontalLayoutData(.5, 1.0));
+		imageDimensionslHLC.add(heightPanel, new HorizontalLayoutData(.5, 1.0));
 		ToolButton deleteToolButton = new ToolButton(new IconConfig("removeButton", "removeButtonOver"));
 		deleteToolButton.setToolTip(Util.createToolTip("delete"));
 		deleteToolButton.addSelectHandler(new SelectHandler() {
@@ -919,13 +958,15 @@ public class SingleImageEditor extends AbstractEditor {
 		imgFP.addTool(viewFullSizeTB);
 		
 		VerticalLayoutContainer leftEditVLC = new VerticalLayoutContainer();
-		leftEditVLC.add(shortNamePanel, new VerticalLayoutData(1.0, .25));
-		leftEditVLC.add(copyrightPanel, new VerticalLayoutData(1.0, .5));
-		leftEditVLC.add(datePanel, new VerticalLayoutData(1.0, .25));
+		leftEditVLC.add(inventoryNumberPanel, new VerticalLayoutData(1.0, .20));
+		leftEditVLC.add(shortNamePanel, new VerticalLayoutData(1.0, .20));
+		leftEditVLC.add(copyrightPanel, new VerticalLayoutData(1.0, .4));
+		leftEditVLC.add(datePanel, new VerticalLayoutData(1.0, .20));
 
 		VerticalLayoutContainer rightEditVLC = new VerticalLayoutContainer();
-		rightEditVLC.add(imageAccessLevelHLC, new VerticalLayoutData(1.0, .25));
-		rightEditVLC.add(commentPanel, new VerticalLayoutData(1.0, .75));
+		rightEditVLC.add(imageDimensionslHLC, new VerticalLayoutData(1.0, .20));
+		rightEditVLC.add(imageAccessLevelHLC, new VerticalLayoutData(1.0, .20));
+		rightEditVLC.add(commentPanel, new VerticalLayoutData(1.0, .6));
 
 		HorizontalLayoutContainer editHLC = new HorizontalLayoutContainer();
 		editHLC.add(leftEditVLC, new HorizontalLayoutData(.5, 1.0));
@@ -982,7 +1023,7 @@ public class SingleImageEditor extends AbstractEditor {
 		    }			
 		}, KeyDownEvent.getType());
 		panel.setHeading("Image Editor (entry number: " + Integer.toString(imgEntry.getImageID()) + ")");
-		panel.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
+		panel.setSize( Integer.toString(Window.getClientWidth()/100*90),Integer.toString(Window.getClientHeight()/100*90));
 		panel.add(mainHLC);
 		createNextPrevButtons();
 		panel.addTool(modifiedToolButton);
@@ -996,7 +1037,7 @@ public class SingleImageEditor extends AbstractEditor {
 			@Override
 			public void onResize(ResizeEvent event) {
 				
-				Util.doLogging("Broser-Dimensions: " +Integer.toString(Window.getClientWidth())+" x "+Integer.toString(Window.getClientHeight()));
+				//Util.doLogging("Broser-Dimensions: " +Integer.toString(Window.getClientWidth())+" x "+Integer.toString(Window.getClientHeight()));
 				addOSDPanel(event.getWidth(),event.getHeight());
 				osdLoader.destroyAllViewers();
 				osdDic = OSDLoader.createDic();
@@ -1041,7 +1082,7 @@ public class SingleImageEditor extends AbstractEditor {
 	 * Photographer ID us currently not mapped to the text entry in this box. (shows a yes/no dialog first)
 	 */
 	public void dohandle(boolean closeEditorRequested, int slide) {
-		Util.doLogging("dohandöe triggered");
+		Util.doLogging("dohandle triggered");
 		updateImageEntryInForm();
 		// only of the yes button is selected, we will perform the command
 		// to simplify we just ignore the no button event by doing nothing
@@ -1152,6 +1193,9 @@ public class SingleImageEditor extends AbstractEditor {
 		imgEntry.setDate(dateField.getCurrentValue());
 		imgEntry.setImageAuthor(authorSelectionCB.getCurrentValue());
 		imgEntry.setImageTypeID(imageTypeSelection.getCurrentValue().getImageTypeID());
+		imgEntry.setWidth(widthField.getCurrentValue());
+		imgEntry.setHeight(heightField.getCurrentValue());
+		imgEntry.setInventoryNumber(inventoryNumberField.getCurrentValue());
 	}
 
 	/**

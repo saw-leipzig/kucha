@@ -1020,7 +1020,8 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 
 	public Map<Integer,ArrayList<ImageEntry>> searchImages(ImageSearchEntry searchEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
-		return connector.searchImages(searchEntry);
+		Map<Integer,ArrayList<ImageEntry>> res = connector.searchImages(searchEntry);
+		return res;
 	}
 	
 

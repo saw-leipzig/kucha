@@ -14,18 +14,14 @@
 package de.cses.shared;
 
 import java.sql.Date;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.sencha.gxt.widget.core.client.info.Info;
-
-import de.cses.client.Util;
 
 public class DepictionEntry extends AbstractEntry {
 
 	private int depictionID = 0;
 	private int styleID = 0;
+	private StyleEntry style = null;
 	private String inscriptions="";
 	private String separateAksaras="";
 	private String dating="";
@@ -46,6 +42,7 @@ public class DepictionEntry extends AbstractEntry {
 	private int absoluteLeft = -1;
 	private int absoluteTop = -1;
 	private int modeOfRepresentationID = 0;
+	private ModeOfRepresentationEntry modeOfRepresentation = null;
 	private String shortName;
 	private String positionNotes;
 	private int masterImageID;
@@ -156,7 +153,14 @@ public class DepictionEntry extends AbstractEntry {
 		clonedDepictionEntry.setRelatedAnnotationList(clonedRelatedAnnotationList);
 		return clonedDepictionEntry;
 	}
-
+	public void setStyle(StyleEntry se) {
+		this.style=se;
+	}
+	
+	public void setModeOfRepresentation(ModeOfRepresentationEntry mre) {
+		this.modeOfRepresentation=mre;
+	}
+	
 	public int getDepictionID() {
 		return depictionID;
 	}

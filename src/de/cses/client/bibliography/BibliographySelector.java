@@ -14,6 +14,7 @@
 package de.cses.client.bibliography;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +64,6 @@ import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.Selecti
 
 import de.cses.client.StaticTables;
 import de.cses.client.Util;
-import de.cses.client.ui.AbstractView;
 import de.cses.client.ui.EditorListener;
 import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.AuthorEntry;
@@ -132,8 +132,10 @@ public class BibliographySelector implements IsWidget {
 		    	selectionModel.setSelection(selectedEntries);
 		    	selectedBibMap.clear();
 		    	for (AnnotatedBibliographyEntry abe : selectedEntries) {
-		    		grid.getStore().findModel(abe).setQuotedPages(abe.getQuotedPages());
-		    		selectedBibMap.put(abe.getAnnotatedBibliographyID(), abe);
+		    		if (grid.getStore().findModel(abe)!=null) {
+			    		grid.getStore().findModel(abe).setQuotedPages(abe.getQuotedPages());
+			    		selectedBibMap.put(abe.getAnnotatedBibliographyID(), abe);		    			
+		    		}
 		    	}
 		    	if (el!=null) {
 		    		el.setClickNumber(0);
@@ -153,12 +155,16 @@ public class BibliographySelector implements IsWidget {
 	}
 	private void loadentries() {
 		showdialog=false;
-	    for (AnnotatedBibliographyEntry abe : StaticTables.getInstance().getBibliographyEntries().values()) {
+		Collection<AnnotatedBibliographyEntry> anBibs = StaticTables.getInstance().getBibliographyEntries().values();
+	    for (AnnotatedBibliographyEntry abe : anBibs) {
+	    		//Util.doLogging("hier?");
 	    		abe.setQuotedPages(null);
 	    		sourceStore.add(abe);
 	    }
 	    for (AnnotatedBibliographyEntry selectedabe: selectedEntries) {
-	    	sourceStore.findModel(selectedabe).setQuotedPages(selectedabe.getQuotedPages());
+	    	if (sourceStore.findModel(selectedabe)!=null) {
+		    	sourceStore.findModel(selectedabe).setQuotedPages(selectedabe.getQuotedPages());	    		
+	    	}
 	    }
     	showdialog=true;
 
@@ -200,6 +206,7 @@ public class BibliographySelector implements IsWidget {
 
 					@Override
 					public void onSelect(SelectEvent event) {
+						Util.doLogging("jier??");
 							selectedEntry.setQuotedPages(pageField.getValue());
 //							dbService.insertVendorEntry(vEntry, new AsyncCallback<Integer>() {
 //
@@ -587,8 +594,10 @@ public class BibliographySelector implements IsWidget {
     	selectionModel.setSelection(selectedEntries);
     	selectedBibMap.clear();
     	for (AnnotatedBibliographyEntry abe : selectedEntries) {
-    		grid.getStore().findModel(abe).setQuotedPages(abe.getQuotedPages());
-    		selectedBibMap.put(abe.getAnnotatedBibliographyID(), abe);
+    		if (grid.getStore().findModel(abe)!=null) {
+	    		grid.getStore().findModel(abe).setQuotedPages(abe.getQuotedPages());
+	    		selectedBibMap.put(abe.getAnnotatedBibliographyID(), abe);
+    		}
     	}
  //   	Util.doLogging("selectedBibMap: ");
 //		for (AnnotatedBibliographyEntry abe2 : selectedBibMap.values()) {
@@ -608,7 +617,9 @@ public class BibliographySelector implements IsWidget {
 	}
 	public void clearPages() {
 		for (AnnotatedBibliographyEntry abe:selectionModel.getSelectedItems()) {
-			grid.getStore().findModel(abe).setQuotedPages("");
+			if (grid.getStore().findModel(abe)!=null) {
+				grid.getStore().findModel(abe).setQuotedPages("");
+			}
 		}
 	}
 	public ArrayList<AnnotatedBibliographyEntry> getSelectedEntries() {

@@ -89,7 +89,7 @@ public class OSDLoader {
 		}
 		osdListener.setAnnotationsInParent(osdListener.getAnnotations());
 		String newPoly=toWKT(annoEntry.getPolygone());
-		Util.doLogging(newPoly);
+		//Util.doLogging(newPoly);
 		AnnotationEntry annoEntryDB = new AnnotationEntry(annoEntry.getDepictionID(), annoEntry.getAnnotoriousID(), annoEntry.getTags(), newPoly, annoEntry.getImage(), annoEntry.getDelete(), annoEntry.getUpdate());
 		if (osdListener.getDepictionID()>0) {			
 			dbService.setAnnotationResults(annoEntryDB, new AsyncCallback<Boolean>() {
@@ -182,6 +182,7 @@ public class OSDLoader {
 		JavaScriptObject w3cAnnotation = createList();
 		if (annoEntries!=null) {
 			for (AnnotationEntry annoEntry : annoEntries) {
+				//Util.doLogging(annoEntry.getPolygone());
 				JavaScriptObject bodies = createList();
 				for (IconographyEntry ie : annoEntry.getTags()) {
 					bodies = addToBody(bodies,ie.getIconographyID(), ie.getText(), annoEntry.getImage());
@@ -213,12 +214,15 @@ public class OSDLoader {
 		var selector={};
 		selector["type"]="SvgSelector";
 		selector["conformsTo"]="http://www.w3.org/TR/media-frags/";
-		selector["value"]="<svg><path d=\""+polygone+"\"></path></svg>";
+		var root = $wnd.JSON.parse(polygone);
+		//$wnd.console.log(root);
+		var geoGenerator=$wnd.d3.geoPath()
+		selector["value"]="<svg><path d=\""+geoGenerator(root)+"\"></path></svg>";
 		annos.push(anno);
 		target["selector"]=selector;
 		target["id"]= image,
 		anno["target"]=target;
-		//$wnd.console.log(annos);
+		$wnd.console.log(anno);
 	    return annos;
 	}-*/;
 	public void removeOrAddAnnotations(ArrayList<AnnotationEntry> annos, boolean add) {
@@ -228,7 +232,7 @@ public class OSDLoader {
 	}
 	public static native void removeOrAddAnnotationsJS(JavaScriptObject viewers, JavaScriptObject annos, Boolean add) 
 	/*-{
-	    $wnd.console.log("Adding Annotation: ", annos)
+	    //$wnd.console.log("Adding Annotation: ", annos)
 	    if (viewers["annotorious"]!=null){
 	    			for (var v in viewers["annotorious"]) {
 				var savedAnnos=[];
@@ -238,10 +242,10 @@ public class OSDLoader {
 					if (annos[k].target.id===v)
 						if (add){
 							viewers["annotorious"][v].addAnnotation(annos[k]);
-							$wnd.console.log("Adding ",annos[k]," to ",v)
+							//$wnd.console.log("Adding ",annos[k]," to ",v)
 						}
 						else{
-							$wnd.console.log("removing ",annos[k]," from ",v)
+							//$wnd.console.log("removing ",annos[k]," from ",v)
 							viewers["annotorious"][v].removeAnnotation(annos[k]);
 						}
 					
@@ -323,15 +327,25 @@ public class OSDLoader {
             result=result.replace(/L /g,"L")
             result=result.replace(/ L/g,"L")
             var coords = result.split("L")
+          	$wnd.console.log("coords", coords);
             poly="POLYGON(("
             var first=true;
+            var firstCoord = ""
+            var lastCoord=""
             coords.forEach(function(coord, index){
               if (!first){
                 poly+=", ";
+                lastCoord=coord.replace(","," ")
               }
+              else{
+              	firstCoord=coord.replace(","," ")
+              	} 
               first=false;
               poly+=coord.replace(","," ");
             });
+            if (firstCoord!=lastCoord){
+            	poly+=", "+firstCoord
+            }
             poly+="))";
         	$wnd.console.log("poly: ",poly);
             var leser = new $wnd.jsts.io.WKTReader();
@@ -352,24 +366,6 @@ public class OSDLoader {
 	/*-{
 	 annotorious={};
 	 $doc.cookie = "sessionID="+sessionID+";SameSite=Lax;"; 
-	 function openFullscreen(where) {
-  			if (where.requestFullscreen) {
-    			where.requestFullscreen();
-  			} else if (where.mozRequestFullScreen) { 
-    			where.mozRequestFullScreen();
-  			} else if (where.webkitRequestFullscreen) { 
-    			where.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-  			} else if (where.msRequestFullscreen) {
-    			where.msRequestFullscreen();
-  			} else if (where.webkitEnterFullScreen) {
-  				where.webkitEnterFullScreen(Element.ALLOW_KEYBOARD_INPUT);
-			}
-  			else {
-      			var el = $doc.documentElement;
-      			el.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-    		}
-  			
-		}
 	    $wnd.OpenSeadragon.setString('Tooltips.SelectionToggle','Selection Demo');
 	    $wnd.OpenSeadragon.setString('Tooltips.SelectionConfirm','Ok');
 	    $wnd.OpenSeadragon.setString('Tooltips.ImageTools','Image tools');
@@ -500,7 +496,21 @@ public class OSDLoader {
 		    							});
 			dic[wheres[i]].addHandler("pre-full-page", function (data) {
 					data.preventDefaultAction=true;
-					openFullscreen(data.eventSource.element);
+  					if (data.eventSource.element.requestFullscreen) {
+    					data.eventSource.element.requestFullscreen();
+  					} else if (data.eventSource.element.mozRequestFullScreen) { 
+    					data.eventSource.element.mozRequestFullScreen();
+  					} else if (data.eventSource.element.webkitRequestFullscreen) { 
+    					data.eventSource.element.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+  					} else if (data.eventSource.element.msRequestFullscreen) {
+    					data.eventSource.element.msRequestFullscreen();
+  					} else if (data.eventSource.element.webkitEnterFullScreen) {
+  						data.eventSource.element.webkitEnterFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+					}
+  					else {
+      					var el = $doc.documentElement;
+      					el.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+    				}
 			});
 
 			//$wnd.console.log("Processing ended, i=",i, wheres.length);
@@ -616,7 +626,7 @@ public class OSDLoader {
 //			String url="http://127.0.0.1:8182/";
 //			String url = "resource?imageID=" + ie.getImageID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri();
 			//Util.doLogging(url+"iiif/2/kucha%2Fimages%2F" + ie.getFilename())
-			Util.doLogging("Adding URL: "+context + ie.getFilename() + "/info.json");
+			//Util.doLogging("Adding URL: "+context + ie.getFilename() + "/info.json");
 			list = addZoomeImage(list , context + ie.getFilename() + "/info.json",ie.getFilename());
 //			list = addZoomeImage(list , url,ie.getFilename());
 			ifn=addImageFileNames(ifn,ie.getFilename());

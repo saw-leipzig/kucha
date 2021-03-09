@@ -213,6 +213,7 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 		
 		if (selectedAuthorListStore.size() < 1 && selectedEditorListStore.size() < 1) {
 			Util.showWarning("No author of editor selected", "Please select either an author or an editor before saving!");
+			saveToolButton.enable();
 			return;
 		}
 		bibEntry.setLastChangedByUser(UserLogin.getInstance().getUsername());
@@ -1891,9 +1892,11 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 		 */
 		FramedPanel bibDocPaperFP = new FramedPanel();
 		bibDocPaperFP.setHeading("paper");
-		bibDocPaperFP.add(new HTMLPanel(documentLinkTemplate.documentLink(UriUtils.fromString(
-				"resource?document=" + bibEntry.getUniqueID() + "-paper.pdf" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()),
-				"paper")));
+		if (bibEntry.getArticle()) {
+			bibDocPaperFP.add(new HTMLPanel(documentLinkTemplate.documentLink(UriUtils.fromString(
+					"resource?document=" + bibEntry.getUniqueID() + "-paper.pdf" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()),
+					"paper")));			
+		}
 		ToolButton paperUploadButton = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		paperUploadButton.setToolTip(Util.createToolTip("upload paper as PDF"));
 		paperUploadButton.addSelectHandler(new SelectHandler() {
@@ -1910,6 +1913,9 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 					@Override
 					public void uploadCompleted(String documentFilename) {
 						bibDocUploadPanel.hide();
+						bibDocPaperFP.add(new HTMLPanel(documentLinkTemplate.documentLink(UriUtils.fromString(
+								"resource?document=" + bibEntry.getUniqueID() + "-paper.pdf" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()),"paper")));			
+
 					}
 
 					@Override
@@ -1966,9 +1972,12 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 		 */
 		FramedPanel bibDocAnnotationFP = new FramedPanel();
 		bibDocAnnotationFP.setHeading("annotation");
-		bibDocAnnotationFP.add(new HTMLPanel(documentLinkTemplate.documentLink(UriUtils.fromString(
-				"resource?document=" + bibEntry.getUniqueID() + "-annotation.pdf" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()),
-				"annotation")));
+		if (bibEntry.getAnnotation()) {
+			bibDocAnnotationFP.add(new HTMLPanel(documentLinkTemplate.documentLink(UriUtils.fromString(
+					"resource?document=" + bibEntry.getUniqueID() + "-annotation.pdf" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()),
+					"annotation")));			
+		}
+
 		ToolButton annotationUploadButton = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		annotationUploadButton.setToolTip(Util.createToolTip("upload annotation as PDF"));
 		annotationUploadButton.addSelectHandler(new SelectHandler() {
@@ -1985,6 +1994,10 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 					@Override
 					public void uploadCompleted(String documentFilename) {
 						bibDocUploadPanel.hide();
+						bibEntry.setAnnotation(true);
+						bibDocAnnotationFP.add(new HTMLPanel(documentLinkTemplate.documentLink(UriUtils.fromString(
+								"resource?document=" + bibEntry.getUniqueID() + "-annotation.pdf" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()),
+								"annotation")));	
 					}
 
 					@Override

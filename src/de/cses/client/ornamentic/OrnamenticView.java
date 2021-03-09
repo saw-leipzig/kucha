@@ -73,7 +73,7 @@ public class OrnamenticView extends AbstractView {
 		//if ((oEntry.getImages() != null) && (!oEntry.getImages().isEmpty())) {
 		//	imageUri = UriUtils.fromString("resource?imageID=" + oEntry.getImages().get(0).getImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 		//}
-		setHTML(ovTemplate.view(imageUri, "Ornament Code: " + oEntry.getCode()));
+		setHTML(ovTemplate.view(imageUri, "IcdealTypical Code: " + oEntry.getCode()));
 		setPixelSize(110, 110);
 
 		DragSource source = new DragSource(this) {

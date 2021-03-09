@@ -50,6 +50,7 @@ public class ResourceDownloadServlet extends HttpServlet {
 	 */
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		System.out.println("got request: "+ request);
 		String sessionID = request.getParameter("sessionID");
 		//System.out.println("doGetParameters: ");
 		//for (String key : request.getParameterMap().keySet()) {
@@ -164,14 +165,20 @@ public class ResourceDownloadServlet extends HttpServlet {
 				}
 			}
 		} else if (request.getParameter("document") != null) {
-			if (connector.getAccessLevelForSessionID(sessionID) == UserEntry.FULL) {
+			System.out.println("is document");
+			System.out.println(connector.getAccessLevelForSessionID(sessionID));
+			if (connector.getAccessLevelForSessionID(sessionID) >= UserEntry.FULL) {
+				System.out.println("User has rights.");
 				String filename = request.getParameter("document");
+				System.out.println(filename);
 				if (filename.startsWith(".")) {
 					response.setStatus(400);
 					return;
 				} else {
 					File inputFile = new File(serverProperties.getProperty("home.documents"), filename);
+					System.out.println("Document: "+filename+" providing.");
 					if (inputFile.exists()) {
+						System.out.println("Document: "+filename+" found.");
 						FileInputStream fis = new FileInputStream(inputFile);
 						response.setContentType(filename.toLowerCase().endsWith("pdf") ? "application/pdf" : "text/html");
 						ServletOutputStream out = response.getOutputStream();
@@ -182,12 +189,14 @@ public class ResourceDownloadServlet extends HttpServlet {
 						}
 						out.close();
 						fis.close();
+						System.out.println("Document: "+filename+" provided.");
 					} else {
 						response.setStatus(404);
 						return;
 					}
 				}
 			} else {
+				System.out.println("User rights not sufficent.");
 				response.setStatus(403);
 				return;
 			}

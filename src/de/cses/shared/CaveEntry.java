@@ -14,21 +14,26 @@
 package de.cses.shared;
 
 import java.util.ArrayList;
-
-import de.cses.client.StaticTables;
-
+import de.cses.shared.DistrictEntry;
 public class CaveEntry extends AbstractEntry {
 	private int caveID = 0;
 	private String officialNumber; 
 	private String historicName;
 	private String optionalHistoricName;
 	private int caveTypeID = 0;
+	private CaveTypeEntry caveType = null;
 	private int siteID = 0;
+	private SiteEntry site = null;
 	private int districtID = 0;
+	private DistrictEntry district = null;
 	private int regionID = 0;
+	private RegionEntry region = null;
 	private int orientationID = 0;
+	private OrientationEntry oriantation = null;
 	private int preservationClassificationID = 0;
+	private PreservationClassificationEntry preservationClassification = null;
 	private int caveGroupID = 0;
+	private CaveGroupEntry caveGroup = null;
 	private String stateOfPerservation;
 	private String findings;
 	private String notes;
@@ -119,6 +124,27 @@ public class CaveEntry extends AbstractEntry {
 		}
 		clonedCE.setRelatedBibliographyList(clonedRelatedBibliographyList);
 		return clonedCE;
+	}
+	public void setCaveType(CaveTypeEntry cte) {
+		this.caveType = cte;
+	}
+	public 	void setSiteType(SiteEntry se) {
+		this.site = se;
+	}
+	public 	void setDistrictEntry(DistrictEntry de) {
+		this.district = de;
+	}
+	public 	void setRegionEntry(RegionEntry re) {
+		this.region = re;
+	}
+	public 	void setOrientatioType(OrientationEntry oe) {
+		this.oriantation = oe;
+	}
+	public 	void setPreservationClassificationEntryType(PreservationClassificationEntry pce) {
+		this.preservationClassification = pce;
+	}
+	public 	void setcaveGroupType(CaveGroupEntry cg) {
+		this.caveGroup = cg;
 	}
 
 	public int getCaveID() {

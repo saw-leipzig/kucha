@@ -14,12 +14,16 @@
 package de.cses.client.bibliography;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.sencha.gxt.dnd.core.client.DndDragStartEvent;
 import com.sencha.gxt.dnd.core.client.DragSource;
 
 import de.cses.client.Util;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.client.ui.AbstractView;
+import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.AuthorEntry;
@@ -37,6 +41,7 @@ public class AnnotatedBiblographyView extends AbstractView {
 	private String bold="";
 	private String translat="";
 	private String tail="";
+	private SafeHtml pdf;
 
 	/**
 	 * @param text
@@ -76,6 +81,16 @@ public class AnnotatedBiblographyView extends AbstractView {
 	}
 
 	public void processtoview(AnnotatedBibliographyEntry annotatedBibliographyEntry) {
+		SafeHtmlBuilder shb = new SafeHtmlBuilder();
+		if (annotatedBibliographyEntry.getAnnotation()) {
+			String uri="resource?document=" + annotatedBibliographyEntry.getUniqueID() + "-annotation.pdf" + UserLogin.getInstance().getUsernameSessionIDParameterForUri();
+			shb.append(SafeHtmlUtils.fromTrustedString("<a href="+uri+" target=\"_blank\"><img src=\"icons/pdf_annotation.gif\" alt=\"has pdf\"></img></a> "));
+		}
+		if (annotatedBibliographyEntry.getArticle()) {
+			String uri="resource?document=" + annotatedBibliographyEntry.getUniqueID() + "-paper.pdf" + UserLogin.getInstance().getUsernameSessionIDParameterForUri();
+			shb.append(SafeHtmlUtils.fromTrustedString("<a href="+uri+" target=\"_blank\"><img src=\"icons/pdf_paper.gif\" alt=\"has pdf\"></img></a> "));
+		}
+		pdf=shb.toSafeHtml();
 		if ((annotatedBibliographyEntry.getPublicationTypeID()==1) || (annotatedBibliographyEntry.getPublicationTypeID()==3)) {
 			if (annotatedBibliographyEntry.getAuthors()=="") {
 				if (annotatedBibliographyEntry.getEditors()!="") {
@@ -132,10 +147,10 @@ public class AnnotatedBiblographyView extends AbstractView {
 			tail=tail+". ";
 			if (annotatedBibliographyEntry.getHasHan()) {
 
-				setHTML(dvTemplates.bibViewHasHan(bib, translit, bold, translat, tail));
+				setHTML(dvTemplates.bibViewHasHan(bib, translit, bold, translat, tail,pdf));
 			}
 			else {
-				setHTML(dvTemplates.bibView(bib, translit, bold, translat, tail));
+				setHTML(dvTemplates.bibView(bib, translit, bold, translat, tail,pdf));
 			}
 			
 		}
@@ -190,10 +205,10 @@ public class AnnotatedBiblographyView extends AbstractView {
 			tail=tail+". ";
 			if (annotatedBibliographyEntry.getHasHan()) {
 
-				setHTML(dvTemplates.bibViewHasHan(bib, translit, bold, translat, tail));
+				setHTML(dvTemplates.bibViewHasHan(bib, translit, bold, translat, tail,pdf));
 			}
 			else {
-				setHTML(dvTemplates.bibView(bib, translit, bold, translat, tail));
+				setHTML(dvTemplates.bibView(bib, translit, bold, translat, tail,pdf));
 			}
 		}
 		else if (annotatedBibliographyEntry.getPublicationTypeID()==8) {
@@ -229,10 +244,10 @@ public class AnnotatedBiblographyView extends AbstractView {
 			}
 			if (annotatedBibliographyEntry.getHasHan()) {
 
-				setHTML(dvTemplates.bibViewHasHan(bib, translit, bold, translat, tail));
+				setHTML(dvTemplates.bibViewHasHan(bib, translit, bold, translat, tail,pdf));
 			}
 			else {
-				setHTML(dvTemplates.bibView(bib, translit, bold, translat, tail));
+				setHTML(dvTemplates.bibView(bib, translit, bold, translat, tail,pdf));
 			}
 
 		}

@@ -213,7 +213,7 @@ public class MainView implements IsWidget {
 				ornamenticSearchController.getResultView().removeFromParent();
 			}
 		});
-		ornamenticSearchController = new OrnamenticSearchController("Ornamentation", new OrnamenticFilter("Ornamentation"), new OrnamenticResultView("Ornamentation"), ornamenticInactiveTB, ornamenticActiveTB);
+		ornamenticSearchController = new OrnamenticSearchController("Ideal Typical Picture", new OrnamenticFilter("Ideal Typical Pictures"), new OrnamenticResultView("Ideal Typical Pictures"), ornamenticInactiveTB, ornamenticActiveTB);
 		ornamenticSearchController.getFilter().setSerchParent(ornamenticSearchController);
 		ornamenticSearchController.getResultView().setSearchParent(ornamenticSearchController);
 		

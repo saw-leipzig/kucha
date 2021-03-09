@@ -17,7 +17,6 @@ import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -32,7 +31,6 @@ import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
-import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.dnd.core.client.DragSource;
 import com.sencha.gxt.dnd.core.client.ListViewDragSource;
 import com.sencha.gxt.dnd.core.client.ListViewDropTarget;
@@ -43,17 +41,12 @@ import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.Resizable;
 import com.sencha.gxt.widget.core.client.TabPanel;
 import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
-import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.VBoxLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
-import com.sencha.gxt.widget.core.client.event.BeforeCheckChangeEvent;
-import com.sencha.gxt.widget.core.client.event.BeforeCheckChangeEvent.BeforeCheckChangeHandler;
-import com.sencha.gxt.widget.core.client.event.CheckChangeEvent;
-import com.sencha.gxt.widget.core.client.event.CheckChangeEvent.CheckChangeHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
@@ -61,29 +54,20 @@ import com.sencha.gxt.widget.core.client.form.ListField;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.info.Info;
-import com.sencha.gxt.widget.core.client.tree.Tree;
-import com.sencha.gxt.widget.core.client.tree.Tree.CheckCascade;
-import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
-import com.sencha.gxt.widget.core.client.tree.TreeStyle;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
 import de.cses.client.Util;
 import de.cses.client.bibliography.BibliographySelector;
+import de.cses.client.depictions.IconographySelector;
 import de.cses.client.depictions.ImageViewTemplates;
-import de.cses.client.depictions.DepictionDataDisplay.Images;
-import de.cses.client.depictions.IconographySelector.IconographyKeyProvider;
-import de.cses.client.depictions.IconographySelector.IconographyValueProvider;
 import de.cses.client.images.ImageSelector;
 import de.cses.client.images.ImageSelectorListener;
-import de.cses.client.images.ImageView;
 import de.cses.client.ui.AbstractEditor;
-import de.cses.client.ui.AbstractView;
 import de.cses.client.ui.EditorListener;
 import de.cses.client.ui.TextElement;
 import de.cses.client.user.UserLogin;
-import de.cses.client.walls.CaveWallsTree;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.CaveEntry;
@@ -95,10 +79,9 @@ import de.cses.shared.OrnamentCaveRelation;
 import de.cses.shared.OrnamentClassEntry;
 import de.cses.shared.OrnamentComponentsEntry;
 import de.cses.shared.OrnamentEntry;
-import de.cses.shared.WallTreeEntry;
 
 public class OrnamenticEditor extends AbstractEditor implements ImageSelectorListener {
-//	protected IconographySelector iconographySelector;
+	protected IconographySelector iconographySelector;
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	FramedPanel header;
 	private FramedPanel backgroundPanel;
@@ -134,6 +117,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 	private FramedPanel ftreeedit;
 	private OrnamenticIconographyTree ornamentTrees;
 	private ToolButton saveButton;
+	private ArrayList<IconographyEntry> iconographyRelationList;
 
 	public static OrnamentCaveRelationEditor ornamentCaveRelationEditor;
 	public static WallOrnamentCaveRelationEditor wallOrnamentCaveRelationEditor;
@@ -187,6 +171,12 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 			});
 	 
 	}
+	public void loadiconogrpahy(ArrayList<IconographyEntry> iconographyRelationList) {
+		this.iconographyRelationList = iconographyRelationList;
+		iconographySelector.setSelectedIconography(iconographyRelationList);
+		iconographySelector.IconographyTreeEnabled(true);
+		getListenerList().get(0).setClickNumber(0);
+}
 
 	public Widget createForm() {
 		ornamentTrees= new 	OrnamenticIconographyTree(ornamentEntry);
@@ -217,8 +207,8 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		selectedOrnamentComponents = new ListStore<OrnamentComponentsEntry>(
 				ornamentComponentsProps.ornamentComponentsID());
 		ornamentComponents = new ListStore<OrnamentComponentsEntry>(ornamentComponentsProps.ornamentComponentsID());
-		//iconographySelector = new IconographySelector(StaticTables.getInstance().getIconographyEntries().values());
-//		iconographyTreeStore = IconographySelector.buildTreeStore(StaticTables.getInstance().getIconographyEntries().values(),true);
+		iconographySelector = new IconographySelector(StaticTables.getInstance().getIconographyEntries().values());
+		loadiconogrpahy(ornamentEntry.getRelatedIconographyList());
 
 		ftree = new FramedPanel();
 		ftreeedit = new FramedPanel();
@@ -626,8 +616,8 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		}
 
 		cavesContentPanel.setHeading("Added caves");
-		cavesContentPanel2.setHeading("Ornamentation detected in Caves:");
 		cavesContentPanel.add(cavesList);
+		cavesContentPanel2.setHeading("Ornamentation detected in Caves:");
 		cavesContentPanel2.add(ornamentTrees.getWalls().wallTree);
 		
 		ToolButton edit = new ToolButton(new IconConfig("editButton", "editButtonOver"));
@@ -774,10 +764,10 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 				ornamentComponents, ornamentComponentsProps.name());
 		ListView<OrnamentComponentsEntry, String> selectedOrnamentComponentView = new ListView<OrnamentComponentsEntry, String>(
 				selectedOrnamentComponents, ornamentComponentsProps.name());
-		ornamentComponentsHorizontalPanel.add(ornamentComponentView, new HorizontalLayoutData(.5, 1.0, new Margins(1)));
-		ornamentComponentsHorizontalPanel.add(selectedOrnamentComponentView,
-				new HorizontalLayoutData(.5, 1.0, new Margins(1)));
-
+		//ornamentComponentsHorizontalPanel.add(ornamentComponentView, new HorizontalLayoutData(.5, 1.0, new Margins(1)));
+		//ornamentComponentsHorizontalPanel.add(selectedOrnamentComponentView,
+		//		new HorizontalLayoutData(.5, 1.0, new Margins(1)));
+		ornamentComponentsHorizontalPanel.add(iconographySelector);
 		new ListViewDragSource<OrnamentComponentsEntry>(ornamentComponentView).setGroup("Components");
 		new ListViewDragSource<OrnamentComponentsEntry>(selectedOrnamentComponentView).setGroup("Components");
 
@@ -794,7 +784,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		}
 		header.add(ornamentComponentsHorizontalPanel);
 
-		verticalgeneral3Background.add(header, new VerticalLayoutData(1.0, 1));
+		verticalgeneral3Background.add(iconographySelector, new VerticalLayoutData(1.0, 1));
 
 		ToolButton addComponentButton = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		addComponentButton.setToolTip(Util.createToolTip("New Component"));
@@ -1299,7 +1289,12 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		
 		backgroundPanel.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
 		backgroundPanel.add(tabpanel);
-		backgroundPanel.setHeading("Ornamentation Editor (entry number: "+ornamentEntry.getOrnamentID()+")");
+		if (ornamentEntry!=null) {
+			backgroundPanel.setHeading("Ornamentation Editor (entry number: "+ornamentEntry.getOrnamentID()+")");
+		}
+		else {
+			backgroundPanel.setHeading("Ornamentation Editor (new entry)");
+		}
 		createNextPrevButtons();
 		backgroundPanel.addTool(modifiedToolButton);
 		backgroundPanel.addTool(prevToolButton);
@@ -1361,6 +1356,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		ornamentEntry.setRemarks(remarks.getText());
 		ornamentEntry.setInterpretation(interpretation.getText());
 		ornamentEntry.setReferences(references.getText());
+		ornamentEntry.setRelatedIconographyList(iconographySelector.getSelectedIconography());;;
 		if (ornamentClassComboBox.getValue() == null) {
 			ornamentEntry.setOrnamentClass(0);
 		} else {

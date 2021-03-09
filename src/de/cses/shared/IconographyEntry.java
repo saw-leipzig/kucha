@@ -22,6 +22,7 @@ public class IconographyEntry extends AbstractEntry {
 	private String text;
 	private String search;
 	private ArrayList<IconographyEntry> children;
+	private int root = 0;
 	
 	public IconographyEntry() { }
 
@@ -47,6 +48,14 @@ public class IconographyEntry extends AbstractEntry {
 
 	public void setParentID(int parentID) {
 		this.parentID = parentID;
+	}
+
+	public int getRoot() {
+		return root;
+	}
+
+	public void setRoot(int root) {
+		this.root = root;
 	}
 
 	public String getText() {

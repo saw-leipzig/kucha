@@ -84,7 +84,7 @@ import com.sencha.gxt.widget.core.client.tree.Tree;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckCascade;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckNodes;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
-
+import com.google.gwt.user.client.Timer;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
@@ -331,7 +331,16 @@ public class IconographySelector extends FramedPanel {
 			    	info.setTitle((String)context.getKey());
 			    	imgPop.add(info);
 			    	imgPop.show();
-			    			    		
+			        Timer timer = new Timer()
+			        {
+			            @Override
+			            public void run()
+			            {
+			            	imgPop.hide();
+			            }
+			        };
+
+			        timer.schedule(5000);
 		    	}
 		    }
 		    private void hidePOPUP() {
@@ -464,6 +473,7 @@ public class IconographySelector extends FramedPanel {
 			}
 			
 			where=wherefirst+where+")";
+			Util.doLogging("where for getOrnamentsWhere: "+where);
 			dbService.getOrnamentsWHERE(where, new AsyncCallback<ArrayList<OrnamentEntry>>() {
 	
 				@Override
@@ -499,17 +509,14 @@ public class IconographySelector extends FramedPanel {
 											//Util.doLogging(imgdic.get(oe.getMasterImageID()));
 											imgdDic.put(oe.getIconographyID(), imgdic.get(oe.getMasterImageID()));
 											StaticTables.getInstance().setOrnamentMasterPics(imgdDic);
-										}
-										
+											}	
 									}
-								 
 								}
 							}
 						});
-						
 					}
 			});
-			Util.doLogging("OrnamentMasterPics sucsessfull loaded.");
+
 		}
 
 	}
