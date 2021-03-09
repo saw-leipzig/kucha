@@ -128,8 +128,8 @@ public class MainView implements IsWidget {
 	}
 	
 	private void initView() {
+		
     boolean borders = true;
-
     ToolButton caveInactiveTB = new ToolButton(new IconConfig("caveButton", "caveButtonOver"));
     caveInactiveTB.addSelectHandler(new SelectHandler() {
 			
@@ -148,9 +148,9 @@ public class MainView implements IsWidget {
 				caveSearchController.getFilter().asWidget().removeFromParent();
 			}
 		});
-		caveSearchController = new CaveSearchController("Caves", new CaveFilter("Caves"), new CaveResultView("Caves"), caveInactiveTB, caveActiveTB);
-		caveSearchController.getFilter().setSerchParent(caveSearchController);
-		caveSearchController.getResultView().setSearchParent(caveSearchController);
+	caveSearchController = new CaveSearchController("Caves", new CaveFilter("Caves"), new CaveResultView("Caves"), caveInactiveTB, caveActiveTB);
+	caveSearchController.getFilter().setSerchParent(caveSearchController);
+	caveSearchController.getResultView().setSearchParent(caveSearchController);
     ToolButton depictionInactiveTB = new ToolButton(new IconConfig("depictionButton", "depictionButtonOver"));
     depictionInactiveTB.addSelectHandler(new SelectHandler() {
 			
@@ -169,9 +169,9 @@ public class MainView implements IsWidget {
 				depictionSearchController.getResultView().removeFromParent();
 			}
 		});
-		depictionSearchController = new DepictionSearchController("Painted Representation", new DepictionFilter("Painted Representations"), new DepictionResultView("Painted Representation"), depictionInactiveTB, depictionActiveTB);
-		depictionSearchController.getFilter().setSerchParent(depictionSearchController);
-		depictionSearchController.getResultView().setSearchParent(depictionSearchController);
+	depictionSearchController = new DepictionSearchController("Painted Representation", new DepictionFilter("Painted Representations"), new DepictionResultView("Painted Representation"), depictionInactiveTB, depictionActiveTB);
+	depictionSearchController.getFilter().setSerchParent(depictionSearchController);
+	depictionSearchController.getResultView().setSearchParent(depictionSearchController);
 		
     ToolButton imageInactiveTB = new ToolButton(new IconConfig("imagePoolButton", "imagePoolButtonOver"));
     imageInactiveTB.addSelectHandler(new SelectHandler() {
@@ -191,9 +191,9 @@ public class MainView implements IsWidget {
 				imageSearchController.getResultView().removeFromParent();
 			}
 		});
-		imageSearchController = new ImageSearchController("Image Pool", new ImageFilter("Image Filter"), new ImageResultView("Image Pool"), imageInactiveTB, imageActiveTB);
-		imageSearchController.getFilter().setSerchParent(imageSearchController);
-		imageSearchController.getResultView().setSearchParent(imageSearchController);
+	imageSearchController = new ImageSearchController("Image Pool", new ImageFilter("Image Filter"), new ImageResultView("Image Pool"), imageInactiveTB, imageActiveTB);
+	imageSearchController.getFilter().setSerchParent(imageSearchController);
+	imageSearchController.getResultView().setSearchParent(imageSearchController);
 		
     ToolButton ornamenticInactiveTB = new ToolButton(new IconConfig("ornamentationButton", "ornamentationButtonOver"));
     ornamenticInactiveTB.addSelectHandler(new SelectHandler() {
@@ -213,7 +213,7 @@ public class MainView implements IsWidget {
 				ornamenticSearchController.getResultView().removeFromParent();
 			}
 		});
-		ornamenticSearchController = new OrnamenticSearchController("Ornamentation", new OrnamenticFilter("Ornamentation"), new OrnamenticResultView("Ornamentation"), ornamenticInactiveTB, ornamenticActiveTB);
+		ornamenticSearchController = new OrnamenticSearchController("Ideal Typical Picture", new OrnamenticFilter("Ideal Typical Pictures"), new OrnamenticResultView("Ideal Typical Pictures"), ornamenticInactiveTB, ornamenticActiveTB);
 		ornamenticSearchController.getFilter().setSerchParent(ornamenticSearchController);
 		ornamenticSearchController.getResultView().setSearchParent(ornamenticSearchController);
 		
@@ -236,15 +236,15 @@ public class MainView implements IsWidget {
 				annotatedBiblographySearchController.getResultView().removeFromParent();
 			}
 		});
-		annotatedBiblographySearchController = new AnnotatedBiblographySearchController("Annotated Biblography", new AnnotatedBibliographyFilter("Bibliography"), new AnnotatedBiblographyResultView("Annotated Biblography"), bibInactiveTB, bibActiveTB);
-		annotatedBiblographySearchController.getFilter().setSerchParent(annotatedBiblographySearchController);
-		annotatedBiblographySearchController.getResultView().setSearchParent(annotatedBiblographySearchController);
-		Resources res = GWT.create(Resources.class);
+	annotatedBiblographySearchController = new AnnotatedBiblographySearchController("Annotated Biblography", new AnnotatedBibliographyFilter("Bibliography"), new AnnotatedBiblographyResultView("Annotated Biblography"), bibInactiveTB, bibActiveTB);
+	annotatedBiblographySearchController.getFilter().setSerchParent(annotatedBiblographySearchController);
+	annotatedBiblographySearchController.getResultView().setSearchParent(annotatedBiblographySearchController);
+	Resources res = GWT.create(Resources.class);
 //		Image kuchaLogo = new Image(res.logo_kucha());
 //		Image sawLogo = new Image(res.logo_saw());
-		LogoTemplates lt = GWT.create(LogoTemplates.class);
-		HTML leftLogoHTML = new HTML(lt.leftLogo(res.logo_kucha().getSafeUri()));
-		HTML rightLogoHTML = new HTML(lt.rightLogo(res.logo_saw().getSafeUri()));
+	LogoTemplates lt = GWT.create(LogoTemplates.class);
+	HTML leftLogoHTML = new HTML(lt.leftLogo(res.logo_kucha().getSafeUri()));
+	HTML rightLogoHTML = new HTML(lt.rightLogo(res.logo_saw().getSafeUri()));
 		
 		// ----------------------------------- assembling the menu bar ---------------------------------------------
 		

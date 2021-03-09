@@ -107,6 +107,7 @@ public class StaticTables {
 	 * 
 	 */
 	public StaticTables(ListsLoadedListener l) {
+		Util.doLogging("loading Bibliogrsaphy");
 		listener = l;
 		loadCounter = 21;
 		loadDistricts();
@@ -554,6 +555,7 @@ public class StaticTables {
 	}
 	
 	private void loadBiliography() {
+		Util.doLogging("loading Bibliography");
 		bibEntryMap = new HashMap<Integer, AnnotatedBibliographyEntry>();
 		dbService.getAnnotatedBibliography(new AsyncCallback<ArrayList<AnnotatedBibliographyEntry>>() {
 
@@ -565,6 +567,7 @@ public class StaticTables {
 			@Override
 			public void onSuccess(ArrayList<AnnotatedBibliographyEntry> result) {
 				for (AnnotatedBibliographyEntry abe : result) {
+					//Util.doLogging("putting bib Entry into static table");
 					bibEntryMap.put(abe.getAnnotatedBibliographyID(), abe);
 				}
 				listLoaded();
@@ -667,7 +670,7 @@ public class StaticTables {
 	}
 
 	public Map<Integer, IconographyEntry> getIconographyEntries() {
-		return iconographyEntryMap;
+			return iconographyEntryMap;
 	}
 	public Map<Integer,String> getOrnamentMasterPics() {
 		return ornamentMasterPics;

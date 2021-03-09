@@ -86,15 +86,14 @@ import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.Util;
 import de.cses.client.bibliography.BibDocumentUploader.BibDocumentUploadListener;
-import de.cses.client.ornamentic.OrnamenticView;
 import de.cses.client.ui.AbstractEditor;
-import de.cses.client.ui.AbstractView;
 import de.cses.client.ui.EditorListener;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.BibKeywordEntry;
+import de.cses.shared.ModifiedEntry;
 import de.cses.shared.PublicationTypeEntry;
 
 /**
@@ -131,6 +130,7 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 	private ComboBox<AnnotatedBibliographyEntry> firstEditionComboBox;
 	private DualListField<AuthorEntry, String> editorSelection;
 	private TextField bibtexKeyTF;
+	private ToolButton saveToolButton;
 
 //	interface PublisherViewTemplates extends XTemplates {
 //		@XTemplate("<div>{name}</div>")
@@ -177,6 +177,7 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 	public AnnotatedBibliographyEditor(AnnotatedBibliographyEntry entry, EditorListener av) {
 		this.addEditorListener(av);
 		this.bibEntry = entry;
+		this.bibEntry.setLastChangedByUser(UserLogin.getInstance().getUsername());
 		documentLinkTemplate = GWT.create(DocumentLinkTemplate.class);
 	}
 
@@ -212,9 +213,10 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 		
 		if (selectedAuthorListStore.size() < 1 && selectedEditorListStore.size() < 1) {
 			Util.showWarning("No author of editor selected", "Please select either an author or an editor before saving!");
+			saveToolButton.enable();
 			return;
 		}
-
+		bibEntry.setLastChangedByUser(UserLogin.getInstance().getUsername());
 		ArrayList<AuthorEntry> selectedAuthorsList = new ArrayList<AuthorEntry>();
 		for (AuthorEntry ae : selectedAuthorListStore.getAll()) {
 			selectedAuthorsList.add(ae);
@@ -234,16 +236,19 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 		bibEntry.setKeywordList(selectedBibKeywordsList);
 
 		if (bibEntry.getAnnotatedBibliographyID() > 0) {
+			Util.doLogging("updateAnnotatedBiblographyEntry triggered");
 			dbService.updateAnnotatedBiblographyEntry(bibEntry, new AsyncCallback<AnnotatedBibliographyEntry>() {
 
 				@Override
 				public void onFailure(Throwable caught) {
+					saveToolButton.enable();
 					caught.printStackTrace();
 					Util.showWarning("Error", "A problem occured while saving! "+caught.getMessage());
 				}
 
 				@Override
 				public void onSuccess(AnnotatedBibliographyEntry result) {
+					saveToolButton.enable();
 					if (result!=null) {
 						bibtexKeyTF.setValue(result.getBibtexKey(), true);
 						if (close) {
@@ -261,12 +266,14 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 
 				@Override
 				public void onFailure(Throwable caught) {
+					saveToolButton.enable();
 					caught.printStackTrace();
 					Util.showWarning("Error", "A problem occured while saving!");
 				}
 
 				@Override
 				public void onSuccess(AnnotatedBibliographyEntry result) {
+					saveToolButton.enable();
 					bibEntry.setAnnotatedBibliographyID(result.getAnnotatedBibliographyID());
 					Info.display("BibliographyID:",Integer.toString(result.getAnnotatedBibliographyID()));
 					bibtexKeyTF.setValue(result.getBibtexKey(), true);
@@ -278,6 +285,24 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 			});
 		}
 
+	}
+	@Override
+	protected void loadModifiedEntries() {
+		sourceStore.clear();
+	    dbService.getModifiedAbstractEntry((AbstractEntry)bibEntry, new AsyncCallback<ArrayList<ModifiedEntry>>() {
+			
+				@Override
+				public void onSuccess(ArrayList<ModifiedEntry> result) {
+					for (ModifiedEntry entry : result) {
+						sourceStore.add(entry);
+					}
+				}
+				
+				@Override
+				public void onFailure(Throwable caught) {
+				}
+			});
+	 
 	}
 
 	public void init() {
@@ -454,12 +479,13 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 			}
 		});
 
-		ToolButton saveToolButton = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
+		saveToolButton = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 		saveToolButton.setToolTip(Util.createToolTip("save"));
 		saveToolButton.addSelectHandler(new SelectHandler() {
 
 			@Override
 			public void onSelect(SelectEvent event) {
+				saveToolButton.disable();
 				save(false,0);
 			}
 
@@ -496,10 +522,11 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 					  );		        }
 		    }			
 		}, KeyDownEvent.getType());
-		mainFP.setHeading("Annotated Bibliography (entry last modified on " + bibEntry.getModifiedOn() + ")");
+		mainFP.setHeading("Annotated Bibliography (entry number: " + Integer.toString(bibEntry.getAnnotatedBibliographyID()) + ")");
 		mainFP.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
 		mainFP.add(tabpanel, new VerticalLayoutData(1.0, 1.0));
 		createNextPrevButtons();
+		mainFP.addTool(modifiedToolButton);
 		mainFP.addTool(prevToolButton);
 		mainFP.addTool(nextToolButton);		
 		mainFP.addTool(deleteToolButton);
@@ -1865,9 +1892,11 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 		 */
 		FramedPanel bibDocPaperFP = new FramedPanel();
 		bibDocPaperFP.setHeading("paper");
-		bibDocPaperFP.add(new HTMLPanel(documentLinkTemplate.documentLink(UriUtils.fromString(
-				"resource?document=" + bibEntry.getUniqueID() + "-paper.pdf" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()),
-				"paper")));
+		if (bibEntry.getArticle()) {
+			bibDocPaperFP.add(new HTMLPanel(documentLinkTemplate.documentLink(UriUtils.fromString(
+					"resource?document=" + bibEntry.getUniqueID() + "-paper.pdf" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()),
+					"paper")));			
+		}
 		ToolButton paperUploadButton = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		paperUploadButton.setToolTip(Util.createToolTip("upload paper as PDF"));
 		paperUploadButton.addSelectHandler(new SelectHandler() {
@@ -1884,6 +1913,9 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 					@Override
 					public void uploadCompleted(String documentFilename) {
 						bibDocUploadPanel.hide();
+						bibDocPaperFP.add(new HTMLPanel(documentLinkTemplate.documentLink(UriUtils.fromString(
+								"resource?document=" + bibEntry.getUniqueID() + "-paper.pdf" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()),"paper")));			
+
 					}
 
 					@Override
@@ -1940,9 +1972,12 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 		 */
 		FramedPanel bibDocAnnotationFP = new FramedPanel();
 		bibDocAnnotationFP.setHeading("annotation");
-		bibDocAnnotationFP.add(new HTMLPanel(documentLinkTemplate.documentLink(UriUtils.fromString(
-				"resource?document=" + bibEntry.getUniqueID() + "-annotation.pdf" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()),
-				"annotation")));
+		if (bibEntry.getAnnotation()) {
+			bibDocAnnotationFP.add(new HTMLPanel(documentLinkTemplate.documentLink(UriUtils.fromString(
+					"resource?document=" + bibEntry.getUniqueID() + "-annotation.pdf" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()),
+					"annotation")));			
+		}
+
 		ToolButton annotationUploadButton = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		annotationUploadButton.setToolTip(Util.createToolTip("upload annotation as PDF"));
 		annotationUploadButton.addSelectHandler(new SelectHandler() {
@@ -1959,6 +1994,10 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 					@Override
 					public void uploadCompleted(String documentFilename) {
 						bibDocUploadPanel.hide();
+						bibEntry.setAnnotation(true);
+						bibDocAnnotationFP.add(new HTMLPanel(documentLinkTemplate.documentLink(UriUtils.fromString(
+								"resource?document=" + bibEntry.getUniqueID() + "-annotation.pdf" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()),
+								"annotation")));	
 					}
 
 					@Override

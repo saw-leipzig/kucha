@@ -20,16 +20,18 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Event;
+import com.google.gwt.event.dom.client.TouchEndEvent;
+import com.google.gwt.event.dom.client.TouchEndHandler;
+import com.google.gwt.event.dom.client.TouchMoveEvent;
+import com.google.gwt.event.dom.client.TouchMoveHandler;
+import com.google.gwt.event.dom.client.TouchStartEvent;
+import com.google.gwt.event.dom.client.TouchStartHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
-import com.sencha.gxt.widget.core.client.info.Info;
 
-import de.cses.client.Util;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.UserEntry;
@@ -40,18 +42,8 @@ import de.cses.shared.UserEntry;
  */
 public abstract class AbstractView extends Button implements EditorListener {
 	private static Integer clicks =0;
-	private static PopupPanel editorPanel = new PopupPanel(false) //{
-//		@Override
-//	    public void onBrowserEvent(Event be) {
-//			int eventType = DOM.eventGetType(be);
-////	        Info.display("test",Integer.toString(eventType));
-//	        if (eventType == Event.ONCHANGE){
-//	                  Util.doLogging("Change,Now");
-//	        }
-//	              super.onBrowserEvent(be);      
-//	        }
-//	}
-			;
+	private static PopupPanel editorPanel = new PopupPanel(false);
+	private Boolean hasMoved=false;
 	/**
 	 * This is the general constructor that amongst other tasks initializes the PopupPanel for the editor
 	 */
@@ -64,6 +56,36 @@ public abstract class AbstractView extends Button implements EditorListener {
 					showEditor(getEntry());
 				}
 			}
+		});
+		this.addTouchEndHandler(new TouchEndHandler() {
+
+			@Override
+			public void onTouchEnd(TouchEndEvent event) {
+				if (!hasMoved){
+					if (UserLogin.getInstance().getAccessRights() >= UserEntry.FULL) { // guests are not allowed to edit
+						showEditor(getEntry());
+					}					
+				}
+			}
+		});
+		this.addTouchMoveHandler(new TouchMoveHandler() {
+
+			@Override
+			public void onTouchMove(TouchMoveEvent event) {
+				hasMoved=true;
+				
+			}
+			
+		});
+		this.addTouchStartHandler(new TouchStartHandler() {
+
+
+			@Override
+			public void onTouchStart(TouchStartEvent event) {
+				hasMoved=false;
+				
+			}
+			
 		});
 	}
 

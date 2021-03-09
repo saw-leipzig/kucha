@@ -20,12 +20,14 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.InvocationException;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
+import de.cses.client.Util;
 import de.cses.client.ui.AbstractSearchController;
 import de.cses.client.ui.EditorListener;
 import de.cses.client.user.UserLogin;
@@ -104,7 +106,19 @@ public class ImageSearchController extends AbstractSearchController {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
+			     try {
+			         throw caught;
+			       } catch (Exception e) {
+			         // this client is not compatible with the server; cleanup and refresh the 
+			         // browser
+			    	   Throwable cause = e.getCause();
+			    	   Util.doLogging(cause.getMessage());
+
+			       } catch (Throwable e) {
+			         // last resort -- a very unexpected exception
+			    	   Util.doLogging(e.getMessage());
+			       }
+				
 				getResultView().setSearchEnabled(true);
 			}
 		});
@@ -160,6 +174,13 @@ public class ImageSearchController extends AbstractSearchController {
 									});
 								}
 							}
+							public Integer getClickNumber() {
+								return 0;
+							}
+							public void addClickNumber() {
+							}
+							public void setClickNumber(int clicks) {
+							}
 
 						};
 						SingleImageEditor singleIE = new SingleImageEditor(imgEntry, el);
@@ -169,8 +190,8 @@ public class ImageSearchController extends AbstractSearchController {
 						imageEditorPanel.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
 						imageEditorPanel.setModal(true);
 						
-						//imageEditorPanel.center();
-						imageEditorPanel.show();
+						imageEditorPanel.center();
+						//imageEditorPanel.show();
 						singleIE.setfocus();
 					}
 

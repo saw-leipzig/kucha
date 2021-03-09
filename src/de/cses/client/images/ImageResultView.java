@@ -66,21 +66,21 @@ public class ImageResultView extends AbstractResultView {
 			
 			@Override
 			public void onSelect(SelectEvent event) {
-				//Info.display("Addmore ausgelöst.",Integer.toString(searchEntry.getEntriesShowed()));
+//				Info.display("Addmore ausgelöst.",Integer.toString(searchEntry.getEntriesShowed()));
 				dbService.searchImages((ImageSearchEntry)getSearchEntry(), new AsyncCallback<Map<Integer, ArrayList<ImageEntry>>>() {
 
 					@Override
 					public void onSuccess(Map<Integer,ArrayList<ImageEntry>> result) {
-						//Info.display("Größe des Results: ",Integer.toString(result.size()));
+						//Info.display("Größe des Results: ",Integer.toString(result.size())+", Größe der MaxRes: "+searchEntry.getMaxentries());
 						int count=0;
 						String imageIDs="";
 						searchEntry.setEntriesShowed(searchEntry.getEntriesShowed()+searchEntry.getMaxentries());
 						for (Integer key : result.keySet()) {
 							if (searchEntry.getMaxentries()>key) {
-								setSelectorTitle(" ("+Integer.toString(key)+"/"+Integer.toString(key)+")");
+								setSelectorTitle(" ("+Integer.toString(getNumberofentries())+"/"+Integer.toString(key)+")");
 							}
 							else{
-								setSelectorTitle(" ("+Integer.toString(searchEntry.getMaxentries())+"/"+Integer.toString(key)+")");
+								setSelectorTitle(" ("+Integer.toString(getNumberofentries())+"/"+Integer.toString(key)+")");
 							}
 							for (ImageEntry ie: result.get(key)) {
 								
@@ -98,7 +98,8 @@ public class ImageResultView extends AbstractResultView {
 									count=0;
 								}
 							}
-							if (result.get(key).size()==searchEntry.getMaxentries()) {
+							//Info.display("Größe des Results: ",Integer.toString(result.size())+", Größe der MaxRes: "+searchEntry.getMaxentries());
+							if (result.get(key).size()>=searchEntry.getMaxentries()) {
 								setSearchbuttonVisible();
 							}
 							else {
@@ -106,8 +107,18 @@ public class ImageResultView extends AbstractResultView {
 							}
 
 						}
-						getPics(imageIDs, 120, UserLogin.getInstance().getSessionID());				
+						if (imageIDs.length()>0) {
+							getPics(imageIDs, 120, UserLogin.getInstance().getSessionID());				
+							
+						}
 						setSearchEnabled(true);
+//						Info.display("Größe des Results: ",Integer.toString(result.size())+", Größe der MaxRes: "+searchEntry.getMaxentries());
+//						if (result.size()==searchEntry.getMaxentries()) {
+//							setSearchbuttonVisible();
+//						}
+//						else {
+//							setSearchbuttonHide();
+//						}
 						
 					}
 

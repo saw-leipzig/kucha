@@ -108,6 +108,7 @@ import de.cses.shared.CaveSketchEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
 import de.cses.shared.DistrictEntry;
+import de.cses.shared.ModifiedEntry;
 import de.cses.shared.OrientationEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.RegionEntry;
@@ -242,6 +243,7 @@ public class CaveEditor extends AbstractEditor {
 	private NumberField<Double> wallWidthNF;
 	private NumberField<Double> wallHeightNF;
 	private BibliographySelector bibliographySelector;
+	private ToolButton saveToolButton;
 
 	interface CaveTypeProperties extends PropertyAccess<CaveTypeEntry> {
 		ModelKeyProvider<CaveTypeEntry> caveTypeID();
@@ -357,6 +359,24 @@ public class CaveEditor extends AbstractEditor {
 		@XTemplate("<div>{label}</div>")
 		SafeHtml wallLabel(String label);
 	}
+	@Override
+	protected void loadModifiedEntries() {
+		sourceStore.clear();
+	    dbService.getModifiedAbstractEntry((AbstractEntry)correspondingCaveEntry, new AsyncCallback<ArrayList<ModifiedEntry>>() {
+			
+				@Override
+				public void onSuccess(ArrayList<ModifiedEntry> result) {
+					for (ModifiedEntry entry : result) {
+						sourceStore.add(entry);
+					}
+				}
+				
+				@Override
+				public void onFailure(Throwable caught) {
+				}
+			});
+	 
+	}
 
 	public CaveEditor(CaveEntry caveEntry, EditorListener av) {
 		this.addEditorListener(av);
@@ -365,6 +385,7 @@ public class CaveEditor extends AbstractEditor {
 		} else {
 			correspondingCaveEntry = caveEntry;
 		}
+		this.correspondingCaveEntry.setLastChangedByUser(UserLogin.getInstance().getUsername());
 		caveTypeProps = GWT.create(CaveTypeProperties.class);
 		caveTypeEntryListStore = new ListStore<CaveTypeEntry>(caveTypeProps.caveTypeID());
 		ceilingTypeProps = GWT.create(CeilingTypeProperties.class);
@@ -2609,7 +2630,7 @@ public class CaveEditor extends AbstractEditor {
 		/**
 		 * ----------------------------- Annotated Bibliography Connection ------------------------------------------------------------
 		 */
-		bibliographySelector = new BibliographySelector(correspondingCaveEntry.getRelatedBibliographyList(),(AbstractView)getListenerList().get(0));
+		bibliographySelector = new BibliographySelector(correspondingCaveEntry.getRelatedBibliographyList(),getListenerList().get(0));
 
 		/**
 		 * ------------------------------ now we are assembling the tabs and add them to the main hlc ----------------------------------
@@ -2625,11 +2646,12 @@ public class CaveEditor extends AbstractEditor {
 
 		mainHlContainer.add(tabPanel, new HorizontalLayoutData(.7, 1.0));
 
-		ToolButton saveToolButton = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
+		saveToolButton = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 		saveToolButton.setToolTip(Util.createToolTip("save"));
 		saveToolButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
+				saveToolButton.disable();
 				save(false,0);
 			}
 		});
@@ -2701,7 +2723,7 @@ public class CaveEditor extends AbstractEditor {
 		        }
 		    			
 		}, KeyDownEvent.getType());
-		mainPanel.setHeading("Cave Editor (entry last modified on " + correspondingCaveEntry.getModifiedOn() + ")");
+		mainPanel.setHeading("Cave Editor (entry number: "+Integer.toString(correspondingCaveEntry.getCaveID())+")");
 		mainPanel.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
 		mainHlContainer.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80)); // here we set the size of the panel
 		
@@ -2709,6 +2731,7 @@ public class CaveEditor extends AbstractEditor {
 		scrpanel.add(mainHlContainer);
 		mainPanel.add(scrpanel);
 		createNextPrevButtons();
+		mainPanel.addTool(modifiedToolButton);
 		mainPanel.addTool(prevToolButton);
 		mainPanel.addTool(nextToolButton);
 		mainPanel.addTool(saveToolButton);
@@ -3325,6 +3348,7 @@ public class CaveEditor extends AbstractEditor {
 
 					@Override
 					public void onSuccess(Boolean result) {
+						saveToolButton.enable();
 //						updateEntry(correspondingCaveEntry);
 						if (close) {
 							closeEditor(correspondingCaveEntry);
@@ -3346,6 +3370,7 @@ public class CaveEditor extends AbstractEditor {
 
 					@Override
 					public void onSuccess(Integer result) {
+						saveToolButton.enable();
 						correspondingCaveEntry.setCaveID(result.intValue());
 //						updateEntry(correspondingCaveEntry);
 						if (close) {

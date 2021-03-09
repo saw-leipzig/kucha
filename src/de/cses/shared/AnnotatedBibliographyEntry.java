@@ -63,6 +63,8 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 	private ArrayList<AuthorEntry> editorList = new ArrayList<AuthorEntry>();
 	private ArrayList<BibKeywordEntry> keywordList = new ArrayList<BibKeywordEntry>();
 	private boolean hasHan = false;
+	private boolean annotation = false;
+	private boolean hasArticle = false;
 
 	public AnnotatedBibliographyEntry(int annotatedBibliographyID, PublicationTypeEntry publicationType, 
 			String titleEN, String titleORG, String titleTR,
@@ -82,7 +84,7 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 			String pagesEN, String pagesORG, String pagesTR, 
 			String comments, String notes, String url, String uri, boolean unpublished, int firstEditionBibID, 
 			int accessLevel, String abstractText, String thesisType, String editorType, boolean officialTitleTranslation,
-			String bibtexKey, String lastChangedOn, boolean hasHan, String quotedPage) {
+			String bibtexKey, String lastChangedOn, boolean hasHan, String quotedPage, boolean annotation) {
 		super();
 		this.annotatedBibliographyID = annotatedBibliographyID;
 		this.publicationType = publicationType;
@@ -144,6 +146,7 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 		this.setModifiedOn(lastChangedOn);
 		this.hasHan=hasHan;
 		this.quotedPages=quotedPage;
+		this.annotation=annotation;
 	}
 
 	public AnnotatedBibliographyEntry() { }
@@ -166,7 +169,7 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 				monthEN, monthORG, monthTR,  
 				pagesEN, pagesORG, pagesTR, 
 				comments, notes, url, uri, unpublished, firstEditionBibID, accessLevel, 
-				abstractText, thesisType, editorType, officialTitleTranslation, bibtexKey, this.modifiedOn, this.hasHan, this.quotedPages);
+				abstractText, thesisType, editorType, officialTitleTranslation, bibtexKey, this.modifiedOn, this.hasHan, this.quotedPages, this.annotation);
 		ArrayList<AuthorEntry> clonedAuthorList = new ArrayList<AuthorEntry>();
 		for (AuthorEntry ae : this.authorList) {
 			clonedAuthorList.add(ae);
@@ -182,6 +185,7 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 			clonedKeywordList.add(bke);
 		}
 		clonedEntry.setKeywordList(clonedKeywordList);
+		clonedEntry.setArticle(this.getArticle());
 		return clonedEntry;
 	}
 
@@ -199,6 +203,20 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 
 	public boolean getHasHan() {
 		return hasHan;
+	}
+	public void setAnnotation(boolean annotation) {
+		this.annotation = annotation;
+	}
+
+	public boolean getAnnotation() {
+		return annotation;
+	}
+	public void setArticle(boolean article) {
+		this.hasArticle = article;
+	}
+
+	public boolean getArticle() {
+		return hasArticle;
 	}
 
 	/**

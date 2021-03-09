@@ -143,7 +143,7 @@ public abstract class AbstractResultView extends Portlet {
 		CenterLayoutContainer clc = new CenterLayoutContainer();
 		HorizontalLayoutContainer hlc = new HorizontalLayoutContainer();
 		addMoreResults = new TextButton("Add more Results");
-		Util.doLogging(Boolean.toString(addMoreResults.isDeferHeight()));
+		//Util.doLogging(Boolean.toString(addMoreResults.isDeferHeight()));
 
 	    addMoreResults.setStyleName("addResult");
 		//clc.add(addMoreResults);
@@ -186,6 +186,11 @@ public abstract class AbstractResultView extends Portlet {
 		this.searchEntry = se;
 
 	}	
+	public Integer getNumberofentries() {
+		return resultContainer.getWidgetCount();
+
+	}	
+	
 	public AbstractSearchEntry getSearchEntry() {
 		return searchEntry;
 	}

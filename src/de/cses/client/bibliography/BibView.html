@@ -1,5 +1,9 @@
 <div style='font-size:12px; text-align: left;'> 
 	<p>
+		<tpl if="annotation">
+			<img src="icons/pdf.png" alt="has pdf"></img>
+		</tpl>
+		
 		<tpl if="!parentTitle">
 			<tpl if="authors != &quot;&quot;">
 				{authors} 

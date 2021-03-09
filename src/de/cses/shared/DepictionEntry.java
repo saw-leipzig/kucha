@@ -17,19 +17,18 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sencha.gxt.widget.core.client.info.Info;
-
 public class DepictionEntry extends AbstractEntry {
 
 	private int depictionID = 0;
 	private int styleID = 0;
-	private String inscriptions;
-	private String separateAksaras;
-	private String dating;
-	private String description;
-	private String backgroundColour;
-	private String generalRemarks;
-	private String otherSuggestedIdentifications;
+	private StyleEntry style = null;
+	private String inscriptions="";
+	private String separateAksaras="";
+	private String dating="";
+	private String description="";
+	private String backgroundColour="";
+	private String generalRemarks="";
+	private String otherSuggestedIdentifications="";
 	private double width = 0, height = 0;
 	private ExpeditionEntry expedition;
 	private Date purchaseDate;
@@ -43,6 +42,7 @@ public class DepictionEntry extends AbstractEntry {
 	private int absoluteLeft = -1;
 	private int absoluteTop = -1;
 	private int modeOfRepresentationID = 0;
+	private ModeOfRepresentationEntry modeOfRepresentation = null;
 	private String shortName;
 	private String positionNotes;
 	private int masterImageID;
@@ -50,6 +50,7 @@ public class DepictionEntry extends AbstractEntry {
 	private ArrayList<PreservationAttributeEntry> preservationAttributesList = new ArrayList<PreservationAttributeEntry>();
 	private ArrayList<AnnotatedBibliographyEntry> relatedBibliographyList = new ArrayList<AnnotatedBibliographyEntry>();
 	private ArrayList<IconographyEntry> relatedIconographyList = new ArrayList<IconographyEntry>();
+	private ArrayList<AnnotationEntry> relatedAnnotationList = new ArrayList<AnnotationEntry>();
 
 	public DepictionEntry() { }
 
@@ -82,7 +83,7 @@ public class DepictionEntry extends AbstractEntry {
 			String backgroundColour, String generalRemarks, String otherSuggestedIdentifications, double width, double height, ExpeditionEntry expedition,
 			Date purchaseDate, LocationEntry location, String inventoryNumber, VendorEntry vendor, int storyID, CaveEntry cave,List<WallTreeEntry> wallIDs, int absoluteLeft,
 			int absoluteTop, int modeOfRepresentationID, String shortName, String positionNotes, int masterImageID, int accessLevel, String lastChangedByUser, 
-			String lastChangedOnDate) {
+			String lastChangedOnDate, ArrayList<AnnotationEntry> relatedAnnotationList) {
 		super();
 		this.depictionID = depictionID;
 		this.styleID = styleID;
@@ -118,12 +119,13 @@ public class DepictionEntry extends AbstractEntry {
 		this.setAccessLevel(accessLevel);
 		this.setLastChangedByUser(lastChangedByUser);
 		this.setModifiedOn(lastChangedOnDate);
+		this.relatedAnnotationList=relatedAnnotationList;
 	}
 
 	public DepictionEntry clone() {
 		DepictionEntry clonedDepictionEntry = new DepictionEntry(depictionID, styleID, inscriptions, separateAksaras, dating, description, backgroundColour, generalRemarks,
 				otherSuggestedIdentifications, width, height, expedition, purchaseDate, location, inventoryNumber, vendor, storyID,
-				cave, wallIDs, absoluteLeft, absoluteTop, modeOfRepresentationID, shortName, positionNotes, masterImageID, accessLevel, lastChangedByUser, modifiedOn);
+				cave, wallIDs, absoluteLeft, absoluteTop, modeOfRepresentationID, shortName, positionNotes, masterImageID, accessLevel, lastChangedByUser, modifiedOn, relatedAnnotationList);
 		ArrayList<ImageEntry> clonedRelatedImages = new ArrayList<ImageEntry>();
 		for (ImageEntry ie : this.relatedImages) {
 			clonedRelatedImages.add(ie);
@@ -144,9 +146,21 @@ public class DepictionEntry extends AbstractEntry {
 			clonedRelatedIconographyList.add(ie);
 		}
 		clonedDepictionEntry.setRelatedIconographyList(clonedRelatedIconographyList);
+		ArrayList<AnnotationEntry> clonedRelatedAnnotationList = new ArrayList<AnnotationEntry>();
+		for (AnnotationEntry ie : this.relatedAnnotationList) {
+			clonedRelatedAnnotationList.add(ie);
+		}
+		clonedDepictionEntry.setRelatedAnnotationList(clonedRelatedAnnotationList);
 		return clonedDepictionEntry;
 	}
-
+	public void setStyle(StyleEntry se) {
+		this.style=se;
+	}
+	
+	public void setModeOfRepresentation(ModeOfRepresentationEntry mre) {
+		this.modeOfRepresentation=mre;
+	}
+	
 	public int getDepictionID() {
 		return depictionID;
 	}
@@ -416,5 +430,187 @@ public class DepictionEntry extends AbstractEntry {
 	public void setRelatedIconographyList(ArrayList<IconographyEntry> relatedIconographyList) {
 		this.relatedIconographyList = relatedIconographyList;
 	}
+	public ArrayList<AnnotationEntry> getRelatedAnnotationList() {
+		return relatedAnnotationList;
+	}
+	public void addAnnotation(AnnotationEntry ae) {
+		this.relatedAnnotationList.add(ae);
+	}
 
+	public void setRelatedAnnotationList(ArrayList<AnnotationEntry> relatedAnnotationList) {
+		this.relatedAnnotationList = relatedAnnotationList;
+	}
+	public String compareStrings(String oldString, String newString, String name) {
+		String changedValues="";
+		if ((newString!=null)&(!newString.isEmpty())) {
+			if((oldString!=null)&(!oldString.isEmpty())) {
+				if (!newString.equals(oldString)) {
+					changedValues+="Changed "+name+" from "+oldString+" to "+newString+". ";
+				}
+			}
+			else {
+				changedValues+="removed "+name+": "+newString;
+			}
+		}
+		else {
+			if (oldString==null) {
+				changedValues+="added "+name+": "+oldString;
+			}
+		}
+		return changedValues;
+
+	}
+	public String getchanges(DepictionEntry oldDe) {
+		String changedValues = "";
+//		try {
+			if (depictionID!=oldDe.getDepictionID()) {
+				changedValues+="Changed depictionID from "+Integer.toString(oldDe.getDepictionID())+" to "+Integer.toString(depictionID)+". ";
+			}
+			if (styleID!=oldDe.getStyleID()) {
+				changedValues+="Changed styleID from "+Integer.toString(oldDe.getStyleID())+" to "+Integer.toString(styleID)+". ";
+			}
+			if (storyID!=oldDe.getStoryID()) {
+				changedValues+="Changed storyID from "+Integer.toString(oldDe.getStoryID())+" to "+Integer.toString(storyID)+". ";
+			}
+			if (wallID!=oldDe.getWallID()) {
+				changedValues+="Changed wallID from "+Integer.toString(oldDe.getWallID())+" to "+Integer.toString(wallID)+". ";
+			}
+			if (absoluteLeft!=oldDe.getAbsoluteLeft()) {
+				changedValues+="Changed absoluteLeft from "+Integer.toString(oldDe.getAbsoluteLeft())+" to "+Integer.toString(absoluteLeft)+". ";
+			}
+			if (modeOfRepresentationID!=oldDe.getModeOfRepresentationID()) {
+				changedValues+="Changed modeOfRepresentationID from "+Integer.toString(oldDe.getModeOfRepresentationID())+" to "+Integer.toString(modeOfRepresentationID)+". ";
+			}
+			if (masterImageID!=oldDe.getMasterImageID()) {
+				changedValues+="Changed masterImageID from "+Integer.toString(oldDe.getMasterImageID())+" to "+Integer.toString(masterImageID)+". ";
+			}
+			if (width!=oldDe.getWidth()) {
+				changedValues+="Changed width from "+Double.toString(oldDe.getWidth())+" to "+Double.toString(width)+". ";
+			}
+			if (height!=oldDe.getHeight()) {
+				changedValues+="Changed height from "+Double.toString(oldDe.getHeight())+" to "+Double.toString(height)+". ";
+			}
+			changedValues+=compareStrings(oldDe.getInscriptions(),inscriptions, "inscriptions");
+			changedValues+=compareStrings(oldDe.getSeparateAksaras(),separateAksaras,"separateAksaras");
+			changedValues+=compareStrings(oldDe.getDating(),dating,"dating");
+			changedValues+=compareStrings(oldDe.getDescription(),description,"description");
+			changedValues+=compareStrings(oldDe.getBackgroundColour(),backgroundColour,"backgroundColour");
+			changedValues+=compareStrings(oldDe.getGeneralRemarks(),generalRemarks,"generalRemarks");
+			changedValues+=compareStrings(oldDe.getOtherSuggestedIdentifications(),otherSuggestedIdentifications,"otherSuggestedIdentifications");
+			changedValues+=compareStrings(oldDe.getInventoryNumber(),inventoryNumber,"inventoryNumber");
+			changedValues+=compareStrings(oldDe.getShortName(),shortName,"shortName");
+			changedValues+=compareStrings(oldDe.getPositionNotes(),positionNotes,"positionNotes");
+			if (purchaseDate!=oldDe.getPurchaseDate()) {
+				changedValues+="Changed purchaseDate from "+oldDe.getPurchaseDate()+" to "+purchaseDate+". ";
+			}
+			if (location.getLocationID()!=oldDe.getLocation().getLocationID()) {
+				changedValues+="Changed location from "+oldDe.getLocation().getName()+" to "+location.getName()+". ";
+			}
+			if (vendor!=null) {
+				if(oldDe.getVendor()!=null) {
+					if (vendor.getVendorID()!=oldDe.getVendor().getVendorID()) {
+						changedValues+="Changed vendor from "+oldDe.getVendor().getVendorName()+" to "+vendor.getVendorName()+". ";
+					}
+				}
+				else {
+					changedValues+="added vendor: "+vendor.getVendorName();
+				}
+			}
+			else {
+				if (oldDe.getVendor()!=null) {
+					changedValues+="removed vendor: "+oldDe.getVendor().getVendorName();
+				}
+			}
+			if (cave!=null) {
+				if(oldDe.getCave()!=null) {
+					if (cave.getCaveID()!=oldDe.getCave().getCaveID()) {
+						changedValues+="Changed vendor from "+oldDe.getCave().getOfficialNumber()+" to "+cave.getOfficialNumber()+". ";
+					}
+				}
+				else {
+					changedValues+="added vendor: "+cave.getOfficialNumber();
+				}
+			}
+			else {
+				if (oldDe.getVendor()!=null) {
+					changedValues+="removed vendor: "+oldDe.getCave().getOfficialNumber();
+				}
+			}
+			if (expedition!=null) {
+				if(oldDe.getVendor()!=null) {
+					if (expedition.getExpeditionID()!=oldDe.getExpedition().getExpeditionID()) {
+						changedValues+="Changed vendor from "+oldDe.getExpedition().getName()+" to "+expedition.getName()+". ";
+					}
+				}
+				else {
+					changedValues+="added vendor: "+expedition.getName();
+				}
+			}
+			else {
+				if (oldDe.getVendor()!=null) {
+					changedValues+="removed expedition: "+oldDe.getExpedition().getName();
+				}
+			}
+	
+			List<WallTreeEntry> newWalls = new ArrayList<WallTreeEntry>(wallIDs);
+			List<WallTreeEntry> oldWalls = new ArrayList<WallTreeEntry>(oldDe.getWalls());
+			System.err.println("newWalls before: "+Integer.toString(newWalls.size()));
+			System.err.println("oldWalls before: "+Integer.toString(oldWalls.size()));
+			newWalls.removeAll(oldDe.getWalls());
+			oldWalls.removeAll(wallIDs);
+			System.err.println("newWalls after: "+Integer.toString(newWalls.size()));
+			System.err.println("oldWalls after: "+Integer.toString(oldWalls.size()));
+			for (WallTreeEntry wte : newWalls) {
+				changedValues+="Added wall: "+wte.getText()+". ";
+			}
+			for (WallTreeEntry wte : oldWalls) {
+				changedValues+="Removed wall: "+wte.getText()+". ";
+			}
+			List<ImageEntry> newImages = new ArrayList<ImageEntry>(relatedImages);
+			List<ImageEntry> oldImages = new ArrayList<ImageEntry>(oldDe.getRelatedImages());
+			newImages.removeAll(oldDe.getRelatedImages());
+			oldImages.removeAll(relatedImages);
+			for (ImageEntry wte : newImages) {
+				changedValues+="Added image: "+wte.getTitle()+". ";
+			}
+			for (ImageEntry wte : oldImages) {
+				changedValues+="Removed image: "+wte.getTitle()+". ";
+			}
+			List<PreservationAttributeEntry> newPAEs = new ArrayList<PreservationAttributeEntry>(preservationAttributesList);
+			List<PreservationAttributeEntry> oldPAEs = new ArrayList<PreservationAttributeEntry>(oldDe.getPreservationAttributesList());
+			newPAEs.removeAll(oldDe.getRelatedImages());
+			oldPAEs.removeAll(relatedImages);
+			for (PreservationAttributeEntry wte : newPAEs) {
+				changedValues+="Added PreservationAttributeEntry: "+wte.getName()+". ";
+			}
+			for (PreservationAttributeEntry wte : oldPAEs) {
+				changedValues+="Removed PreservationAttributeEntry: "+wte.getName()+". ";
+			}
+			List<AnnotatedBibliographyEntry> newABEs = new ArrayList<AnnotatedBibliographyEntry>(relatedBibliographyList);
+			List<AnnotatedBibliographyEntry> oldABEs = new ArrayList<AnnotatedBibliographyEntry>(oldDe.getRelatedBibliographyList());
+			newABEs.removeAll(oldDe.getRelatedBibliographyList());
+			oldABEs.removeAll(relatedBibliographyList);
+			for (AnnotatedBibliographyEntry wte : newABEs) {
+				changedValues+="Added AnnotatedBibliographyEntry: "+wte.getLabel()+". ";
+			}
+			for (AnnotatedBibliographyEntry wte : oldABEs) {
+				changedValues+="Removed AnnotatedBibliographyEntry: "+wte.getLabel()+". ";
+			}
+			List<IconographyEntry> newRILs = new ArrayList<IconographyEntry>(relatedIconographyList);
+			List<IconographyEntry> oldRILs = new ArrayList<IconographyEntry>(oldDe.getRelatedIconographyList());
+			newRILs.removeAll(oldDe.getRelatedBibliographyList());
+			oldRILs.removeAll(relatedBibliographyList);
+			for (IconographyEntry wte : newRILs) {
+				changedValues+="Added IconographyEntry: "+wte.getText()+". ";
+			}
+			for (IconographyEntry wte : oldRILs) {
+				changedValues+="Removed IconographyEntry: "+wte.getText()+". ";
+			}
+//		}
+//		catch (Exception e) {
+//			return changedValues+ "protocolling abborted due to error: "+ e.getMessage();
+//		}
+		System.err.println("returning: "+changedValues);
+		return changedValues;
+	}
 }

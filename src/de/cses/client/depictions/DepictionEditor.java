@@ -14,6 +14,9 @@
 package de.cses.client.depictions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +24,8 @@ import java.util.Map;
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -28,6 +33,8 @@ import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -41,6 +48,7 @@ import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -57,6 +65,8 @@ import com.sencha.gxt.data.shared.SortDir;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.Store.StoreFilter;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
+import com.sencha.gxt.data.shared.event.StoreFilterEvent;
+import com.sencha.gxt.data.shared.event.StoreFilterEvent.StoreFilterHandler;
 import com.sencha.gxt.dnd.core.client.ListViewDragSource;
 import com.sencha.gxt.dnd.core.client.ListViewDropTarget;
 import com.sencha.gxt.fx.client.Draggable;
@@ -94,6 +104,9 @@ import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinNumberValidator;
+import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
+import com.sencha.gxt.widget.core.client.grid.ColumnModel;
+import com.sencha.gxt.widget.core.client.grid.Grid;
 import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
@@ -104,8 +117,8 @@ import de.cses.client.bibliography.BibliographySelector;
 import de.cses.client.images.ImageSelector;
 import de.cses.client.images.ImageSelectorListener;
 import de.cses.client.ui.AbstractEditor;
-import de.cses.client.ui.AbstractView;
 import de.cses.client.ui.EditorListener;
+import de.cses.client.ui.OSDListener;
 import de.cses.client.ui.OSDLoader;
 import de.cses.client.ui.TextElement;
 import de.cses.client.user.UserLogin;
@@ -114,7 +127,7 @@ import de.cses.client.walls.WallSelector;
 import de.cses.client.walls.WallTree;
 import de.cses.client.walls.Walls;
 import de.cses.shared.AbstractEntry;
-import de.cses.shared.AnnotatedBibliographyEntry;
+import de.cses.shared.AnnotationEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.ExpeditionEntry;
@@ -122,13 +135,13 @@ import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.LocationEntry;
 import de.cses.shared.ModeOfRepresentationEntry;
+import de.cses.shared.ModifiedEntry;
 import de.cses.shared.PreservationAttributeEntry;
 import de.cses.shared.StyleEntry;
 import de.cses.shared.VendorEntry;
 import de.cses.shared.WallEntry;
 import de.cses.shared.WallTreeEntry;
 import de.cses.shared.comparator.CaveEntryComparator;
-
 
 public class DepictionEditor extends AbstractEditor {
 
@@ -161,7 +174,7 @@ public class DepictionEditor extends AbstractEditor {
 	private StyleProperties styleProps;
 	private ListStore<StyleEntry> styleEntryLS;
 	private CaveProperties caveProps;
-	private Map<Integer,String> imgdic;
+	private Map<Integer, String> imgdic;
 	private ListStore<CaveEntry> caveEntryLS;
 	private ComboBox<CaveEntry> caveSelectionCB;
 	private ExpeditionProperties expedProps;
@@ -184,17 +197,23 @@ public class DepictionEditor extends AbstractEditor {
 	private BibliographySelector bibliographySelector;
 	private StoreFilterField<ImageEntry> filterField;
 	private VerticalLayoutContainer zoomPanel;
-	private Map<String, HTML> imgannotations= new HashMap<String, HTML>();
+	private Map<String, HTML> imgannotations = new HashMap<String, HTML>();
 	private JavaScriptObject osdDic;
 	private OSDLoader osdLoader;
-
-
+	private static PopupPanel AnnoPanel = new PopupPanel(false);
+	private ImageEntry selectedImgEntry;
+	private boolean annotationsLoaded = true;
+	private double imageWindowRelation;
+	private OSDListener osdListener;
 	private WallTree wallTree;
-	boolean saveSuccess;
+	private boolean saveSuccess;
+	private IconographySelectorListener icoSelectorListener;
+	private ArrayList<IconographyEntry> iconographyRelationList;
+	private ToolButton saveToolButton;
 
 	class NameElement {
 		private String element;
-		
+
 		public NameElement(String element) {
 			super();
 			this.element = element;
@@ -205,32 +224,16 @@ public class DepictionEditor extends AbstractEditor {
 		}
 	}
 
-	public void loadiconogrpahy(int entry, long start) {
-	dbService.getRelatedIconography(entry, new AsyncCallback<ArrayList<IconographyEntry>>() {
-		@Override
-		public void onFailure(Throwable caught) {
-			long end = System.currentTimeMillis();
-			long diff = (end-start);
-			Util.doLogging("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getIconogrpahy brach nach "+diff + " Millisekunden ab."+caught.getMessage());
-			Util.doLogging(caught.getLocalizedMessage());
-			caught.printStackTrace();
-			Info.display("Failure", "Failed to load Iconography, retry.");
-			loadiconogrpahy(entry, start);
-		}
-
-		@Override
-		public void onSuccess(ArrayList<IconographyEntry> iconographyRelationList) {
-			long end = System.currentTimeMillis();
-			long diff = (end-start);
-			Util.doLogging("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getIconogrpahy wurde nach "+diff + " Millisekunden erfolgreich beendet.");
-			iconographySelector.setSelectedIconography(iconographyRelationList);
-			iconographySelector.IconographyTreeEnabled(true);
-			((AbstractView)getListenerList().get(0)).setClickNumber(0);
-	}});
+	public void loadiconogrpahy(ArrayList<IconographyEntry> iconographyRelationList) {
+				this.iconographyRelationList = iconographyRelationList;
+				iconographySelector.setSelectedIconography(iconographyRelationList);
+				iconographySelector.IconographyTreeEnabled(true);
+				getListenerList().get(0).setClickNumber(0);
 	}
 
 	interface DepictionProperties extends PropertyAccess<DepictionEntry> {
 		ModelKeyProvider<DepictionEntry> depictionID();
+
 		LabelProvider<DepictionEntry> name();
 	}
 
@@ -241,6 +244,7 @@ public class DepictionEditor extends AbstractEditor {
 
 	interface CaveProperties extends PropertyAccess<CaveEntry> {
 		ModelKeyProvider<CaveEntry> caveID();
+
 		LabelProvider<CaveEntry> officialNumber();
 	}
 
@@ -253,10 +257,11 @@ public class DepictionEditor extends AbstractEditor {
 
 		@XTemplate("<div style=\"border: 1px solid grey;\">{shortName} {officialNumber}<br> {district}</div>")
 		SafeHtml caveLabel(String shortName, String officialNumber, String district);
-}
+	}
 
 	interface LocationProperties extends PropertyAccess<LocationEntry> {
 		ModelKeyProvider<LocationEntry> locationID();
+
 		LabelProvider<LocationEntry> name();
 	}
 
@@ -273,6 +278,7 @@ public class DepictionEditor extends AbstractEditor {
 
 	interface ExpeditionProperties extends PropertyAccess<ExpeditionEntry> {
 		ModelKeyProvider<ExpeditionEntry> expeditionID();
+
 		LabelProvider<ExpeditionEntry> name();
 	}
 
@@ -280,12 +286,13 @@ public class DepictionEditor extends AbstractEditor {
 		@XTemplate("<div>{expedName}<br>Leader: {leaderName}<br>{startYear} - {endYear}</div>")
 		SafeHtml expedLabel(String expedName, String leaderName, String startYear, String endYear);
 	}
-	
+
 	interface ModesOfRepresentationProperties extends PropertyAccess<ModeOfRepresentationEntry> {
 		ModelKeyProvider<ModeOfRepresentationEntry> modeOfRepresentationID();
+
 		LabelProvider<ModeOfRepresentationEntry> name();
 	}
-	
+
 	interface ModesOfRepresentationViewTemplates extends XTemplates {
 		@XTemplate("<div>{name}</div>")
 		SafeHtml morLabel(String name);
@@ -312,20 +319,23 @@ public class DepictionEditor extends AbstractEditor {
 		@XTemplate("<div>{name}</div>")
 		SafeHtml styleName(String name);
 	}
-	
+
 	interface PreservationAttributeProperties extends PropertyAccess<PreservationAttributeEntry> {
 		ModelKeyProvider<PreservationAttributeEntry> preservationAttributeID();
+
 		LabelProvider<PreservationAttributeEntry> uniqueID();
+
 		ValueProvider<PreservationAttributeEntry, String> name();
 	}
 
 	interface ImageProperties extends PropertyAccess<ImageEntry> {
 		ModelKeyProvider<ImageEntry> imageID();
+
 		LabelProvider<ImageEntry> title();
+
 		ValueProvider<ImageEntry, String> shortName();
 	}
-	
-	
+
 	public DepictionEditor(DepictionEntry entry, EditorListener av) {
 		this.addEditorListener(av);
 		if (entry != null) {
@@ -333,63 +343,71 @@ public class DepictionEditor extends AbstractEditor {
 		} else {
 			correspondingDepictionEntry = new DepictionEntry();
 		}
-		//Util.doLogging("Große von ImageList:"+Integer.toString(correspondingDepictionEntry.getRelatedImages().size()));
+		this.correspondingDepictionEntry.setLastChangedByUser(UserLogin.getInstance().getUsername());
+		// Util.doLogging("Große von
+		// ImageList:"+Integer.toString(correspondingDepictionEntry.getRelatedImages().size()));
 		for (WallTreeEntry wte : correspondingDepictionEntry.getWalls()) {
-			Util.doLogging(wte.getText()+" - "+wte.getWallLocationID());
+			Util.doLogging(wte.getText() + " - " + wte.getWallLocationID());
 		}
 		imgProperties = GWT.create(ImageProperties.class);
 		imageEntryLS = new ListStore<ImageEntry>(imgProperties.imageID());
-		
+
 		vendorProps = GWT.create(VendorProperties.class);
 		vendorEntryLS = new ListStore<VendorEntry>(vendorProps.vendorID());
 
 		styleProps = GWT.create(StyleProperties.class);
 		styleEntryLS = new ListStore<StyleEntry>(styleProps.styleID());
-		
+
 		caveProps = GWT.create(CaveProperties.class);
 		caveEntryLS = new ListStore<CaveEntry>(caveProps.caveID());
 		caveEntryLS.addSortInfo(new StoreSortInfo<CaveEntry>(new CaveEntryComparator(), SortDir.ASC));
 		locationProps = GWT.create(LocationProperties.class);
 		locationEntryLS = new ListStore<LocationEntry>(locationProps.locationID());
 		StoreFilter<LocationEntry> filter = new StoreFilter<LocationEntry>() {
-		    @Override
-		    public boolean select(Store<LocationEntry> store, LocationEntry parent, LocationEntry item) {
-		    	
-		      boolean canView = false; 
-		      
-		      if ((item.getCounty()!=null)) {
-		    	  if (item.getCounty().toLowerCase().contains(locationSelectionCB.getText().toLowerCase())) {
-		    	  canView = true;
-		    	  }
-		      };
-		      if ((item.getTown()!=null)) {
-		    	  if (item.getTown().toLowerCase().contains(locationSelectionCB.getText().toLowerCase())) {
-		    	  canView = true;
-		    	  }
-		      };
-		      if ((item.getName()!=null)) {
-		    	  if (item.getName().toLowerCase().contains(locationSelectionCB.getText().toLowerCase())) {
-		    	  canView = true;
-		    	  }
-		      };
-		      //if (canView) {
-	    	  //Util.doLogging("Found: "+item.getName()+", gesucht wurde: "+locationSelectionCB.getText());
-		      //};
-		      return canView;
-		    }
-		  };
-		  locationEntryLS.addFilter(filter);
+			@Override
+			public boolean select(Store<LocationEntry> store, LocationEntry parent, LocationEntry item) {
+
+				boolean canView = false;
+
+				if ((item.getCounty() != null)) {
+					if (item.getCounty().toLowerCase().contains(locationSelectionCB.getText().toLowerCase())) {
+						canView = true;
+					}
+				}
+				;
+				if ((item.getTown() != null)) {
+					if (item.getTown().toLowerCase().contains(locationSelectionCB.getText().toLowerCase())) {
+						canView = true;
+					}
+				}
+				;
+				if ((item.getName() != null)) {
+					if (item.getName().toLowerCase().contains(locationSelectionCB.getText().toLowerCase())) {
+						canView = true;
+					}
+				}
+				;
+				// if (canView) {
+				// Util.doLogging("Found: "+item.getName()+", gesucht wurde:
+				// "+locationSelectionCB.getText());
+				// };
+				return canView;
+			}
+		};
+		locationEntryLS.addFilter(filter);
 
 		expedProps = GWT.create(ExpeditionProperties.class);
 		expedEntryLS = new ListStore<ExpeditionEntry>(expedProps.expeditionID());
-		
+
 		morProps = GWT.create(ModesOfRepresentationProperties.class);
 		modeOfRepresentationLS = new ListStore<ModeOfRepresentationEntry>(morProps.modeOfRepresentationID());
-		
+
 		presAttributeProps = GWT.create(PreservationAttributeProperties.class);
-		preservationAttributesLS = new ListStore<PreservationAttributeEntry>(presAttributeProps.preservationAttributeID());
-		
-		selectedPreservationAttributesLS = new ListStore<PreservationAttributeEntry>(presAttributeProps.preservationAttributeID());
+		preservationAttributesLS = new ListStore<PreservationAttributeEntry>(
+				presAttributeProps.preservationAttributeID());
+
+		selectedPreservationAttributesLS = new ListStore<PreservationAttributeEntry>(
+				presAttributeProps.preservationAttributeID());
 		initPanel();
 		loadCaves();
 		loadLocations();
@@ -399,7 +417,40 @@ public class DepictionEditor extends AbstractEditor {
 		loadModesOfRepresentation();
 		loadPreservationAttributes();
 	}
-	
+
+	private void highlightIcoEntry(IconographyEntry selectedIE, boolean deselect, List<IconographyEntry>clickedIcos) {
+		//Util.doLogging("Started highlighting for Iconography: "+selectedIE.getText());
+		ArrayList<AnnotationEntry> newAnnos = new ArrayList<AnnotationEntry>();
+		for (AnnotationEntry ae : correspondingDepictionEntry.getRelatedAnnotationList()) {
+			for (IconographyEntry ie : ae.getTags()) {
+				if (ie.getIconographyID() == selectedIE.getIconographyID()) {
+								//Util.doLogging("found annotation for: "+ie.getText());
+								newAnnos.add(ae);
+				}
+			}
+		}
+		if (newAnnos.size()>0) {
+			if (annotationsLoaded) {
+				osdLoader.removeOrAddAnnotations(newAnnos,!deselect);
+			}				
+		}
+		for (AnnotationEntry aeSelected : newAnnos) {
+			if (deselect) {
+				osdLoader.deHighlightAnnotation(aeSelected.getAnnotoriousID());
+			}
+			else {
+				osdLoader.highlightAnnotation(aeSelected.getAnnotoriousID());
+			}
+			
+		}
+		if (selectedIE.getChildren() != null) {
+			for (IconographyEntry children : selectedIE.getChildren()) {
+				highlightIcoEntry(children, deselect,clickedIcos);
+			}
+		}
+
+	}
+
 	private void loadExpeditions() {
 		for (ExpeditionEntry exped : StaticTables.getInstance().getExpeditionEntries().values()) {
 			expedEntryLS.add(exped);
@@ -436,16 +487,18 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		}, SortDir.ASC));
 	}
-	
+
 	/**
 	 * 
 	 */
 	private void loadModesOfRepresentation() {
-		for (ModeOfRepresentationEntry morEntry : StaticTables.getInstance().getModesOfRepresentationEntries().values()) {
+		for (ModeOfRepresentationEntry morEntry : StaticTables.getInstance().getModesOfRepresentationEntries()
+				.values()) {
 			modeOfRepresentationLS.add(morEntry);
 		}
 		if (correspondingDepictionEntry.getModeOfRepresentationID() > 0) {
-			modeOfRepresentationSelectionCB.setValue(modeOfRepresentationLS.findModelWithKey(Integer.toString(correspondingDepictionEntry.getModeOfRepresentationID())));
+			modeOfRepresentationSelectionCB.setValue(modeOfRepresentationLS
+					.findModelWithKey(Integer.toString(correspondingDepictionEntry.getModeOfRepresentationID())));
 		}
 	}
 
@@ -457,7 +510,8 @@ public class DepictionEditor extends AbstractEditor {
 			styleEntryLS.add(se);
 		}
 		if (correspondingDepictionEntry.getStyleID() > 0) {
-			styleSelection.setValue(styleEntryLS.findModelWithKey(Integer.toString(correspondingDepictionEntry.getStyleID())));
+			styleSelection.setValue(
+					styleEntryLS.findModelWithKey(Integer.toString(correspondingDepictionEntry.getStyleID())));
 		}
 	}
 
@@ -482,7 +536,7 @@ public class DepictionEditor extends AbstractEditor {
 //					CaveEntry ce = caveEntryLS.findModelWithKey(Integer.toString(correspondingDepictionEntry.getCaveID()));
 					caveSelectionCB.setValue(ce);
 					wallSelectorPanel.setCave(ce);
-					//wallSelectorPanel.selectWall(correspondingDepictionEntry.getWallID());
+					// wallSelectorPanel.selectWall(correspondingDepictionEntry.getWallID());
 //					Util.doLogging("Ausgewählte Walls:");
 //					for (WallTreeEntry wte : correspondingDepictionEntry.getWalls()) {
 //						Util.doLogging("  "+wte.getText());
@@ -493,7 +547,7 @@ public class DepictionEditor extends AbstractEditor {
 //						}
 //					}
 
-					//wallTree.setWall(correspondingDepictionEntry.getWalls());
+					// wallTree.setWall(correspondingDepictionEntry.getWalls());
 //					for (WallEntry we : ce.getWallList()) {
 //						Util.doLogging(Integer.toString(we.getWallLocationID()));
 //					}
@@ -501,33 +555,35 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 	}
-	
-	 private void loadLocations() {
-			for (LocationEntry locEntry : StaticTables.getInstance().getLocationEntries().values()) {
-				locationEntryLS.add(locEntry);
+
+	private void loadLocations() {
+		for (LocationEntry locEntry : StaticTables.getInstance().getLocationEntries().values()) {
+			locationEntryLS.add(locEntry);
+		}
+		locationEntryLS.addSortInfo(new StoreSortInfo<LocationEntry>(new ValueProvider<LocationEntry, String>() {
+
+			@Override
+			public String getValue(LocationEntry object) {
+				return object.getCounty() + " " + object.getTown() + " " + object.getName();
 			}
-			locationEntryLS.addSortInfo(new StoreSortInfo<LocationEntry>(new ValueProvider<LocationEntry, String>(){
 
-				@Override
-				public String getValue(LocationEntry object) {
-					return object.getCounty()+" "+object.getTown()+" "+object.getName();
-				}
-
-				@Override
-				public void setValue(LocationEntry object, String value) {}
-
-				@Override
-				public String getPath() {
-					return "name";
-				}}, SortDir.ASC));
-			
-			if (correspondingDepictionEntry.getLocation() != null) {
-				locationSelectionCB.setValue(correspondingDepictionEntry.getLocation());
+			@Override
+			public void setValue(LocationEntry object, String value) {
 			}
-	 }
-	 
-	 private void loadPreservationAttributes() {
-		 dbService.getPreservationAttributes(new AsyncCallback<ArrayList<PreservationAttributeEntry>>() {
+
+			@Override
+			public String getPath() {
+				return "name";
+			}
+		}, SortDir.ASC));
+
+		if (correspondingDepictionEntry.getLocation() != null) {
+			locationSelectionCB.setValue(correspondingDepictionEntry.getLocation());
+		}
+	}
+
+	private void loadPreservationAttributes() {
+		dbService.getPreservationAttributes(new AsyncCallback<ArrayList<PreservationAttributeEntry>>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
@@ -540,30 +596,27 @@ public class DepictionEditor extends AbstractEditor {
 				for (PreservationAttributeEntry pae : result) {
 					preservationAttributesLS.add(pae);
 				}
-				preservationAttributesLS.addSortInfo(new StoreSortInfo<PreservationAttributeEntry>(presAttributeProps.name(), SortDir.ASC));
+				preservationAttributesLS.addSortInfo(
+						new StoreSortInfo<PreservationAttributeEntry>(presAttributeProps.name(), SortDir.ASC));
 			}
 		});
-	 }
+	}
 
 	/**
 	 * 
 	 */
-		private void loadImages() {
-			for (ImageEntry ie : correspondingDepictionEntry.getRelatedImages()) {
-				if (imageEntryLS.findModelWithKey(Integer.toString(ie.getImageID()))==null) {
-					imageEntryLS.add(ie);
-				}
-				
+	private void loadImages() {
+		for (ImageEntry ie : correspondingDepictionEntry.getRelatedImages()) {
+			if (imageEntryLS.findModelWithKey(Integer.toString(ie.getImageID())) == null) {
+				imageEntryLS.add(ie);
 			}
+
 		}
-		
+	}
 
-		/**
-		 * 
-		 */
-
-
-
+	/**
+	 * 
+	 */
 
 	@Override
 	public Widget asWidget() {
@@ -577,61 +630,77 @@ public class DepictionEditor extends AbstractEditor {
 	 * Here the view is created. This is only done once at the beginning!
 	 */
 	private void getPics(ArrayList<ImageEntry> ies, int size, String login) {
-		dbService.getPics(ies, size, login, new AsyncCallback<Map<Integer,String>>() {
+		dbService.getPics(ies, size, login, new AsyncCallback<Map<Integer, String>>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
 				caught.printStackTrace();
-				//Info.display("getPics", "got bad response");
+				// Info.display("getPics", "got bad response");
 			}
 
 			@Override
-			public void onSuccess(Map<Integer,String> result) {
-				//.display("getPics", "got good response");
-				//for (Map.Entry<String,String> entry : result.entrySet())  
-		        //    Util.doLogging("Key = " + entry.getKey() + 
-		        //                     ", Value = " + entry.getValue());
+			public void onSuccess(Map<Integer, String> result) {
+				// .display("getPics", "got good response");
+				// for (Map.Entry<String,String> entry : result.entrySet())
+				// Util.doLogging("Key = " + entry.getKey() +
+				// ", Value = " + entry.getValue());
 				for (Integer key : result.keySet()) {
-				try {
-					if (!imgdic.containsKey(key)) {
-						imgdic.put(key, result.get(key));
+					try {
+						if (!imgdic.containsKey(key)) {
+							imgdic.put(key, result.get(key));
+						}
+
+					} catch (Exception e) {
+						Util.doLogging("Could not load image " + key + " Reason: " + e.getMessage());
 					}
-					
-					
 				}
-				catch (Exception e){
-					Util.doLogging("Could not load image "+key+" Reason: "+e.getMessage());
-				}
-				}
-				//imageListView.refresh();
-				//loadImages();
-			
+				// imageListView.refresh();
+				// loadImages();
+
 			}
 		});
 	}
+
 	public class WidgetGridCell extends AbstractCell<Widget> {
 
-		  Widget widget;
+		Widget widget;
 
-		  public WidgetGridCell(Widget widget) {
-		      this.widget = widget;
-		  }
-
-		  @Override
-		  public void render(Context paramContext,
-		          Widget param, SafeHtmlBuilder pb) {
-			  
-		    
-		    // add text to the button, etc...
-		    pb.append(SafeHtmlUtils.fromTrustedString(widget.toString()));
-		  }
+		public WidgetGridCell(Widget widget) {
+			this.widget = widget;
 		}
+
+		@Override
+		public void render(Context paramContext, Widget param, SafeHtmlBuilder pb) {
+
+			// add text to the button, etc...
+			pb.append(SafeHtmlUtils.fromTrustedString(widget.toString()));
+		}
+	}
+
 	private void initPanel() {
-		osdDic = OSDLoader.createDic();
 		// the images related with the depiction entry that will be shown on the right
-		imgdic = new HashMap<Integer,String>();
+		imgdic = new HashMap<Integer, String>();
 		getPics(correspondingDepictionEntry.getRelatedImages(), 300, UserLogin.getInstance().getSessionID());
-		
+		Comparator<? super ImageEntry> itemComparator = new Comparator<ImageEntry>() {
+			@Override
+			public int compare(ImageEntry o1, ImageEntry o2) {
+				String one = "";
+				String two = "";
+				if (correspondingDepictionEntry.getMasterImageID()==o1.getImageID()) {
+					one="aaaaaaaaaaaaaaaaaa"+o1.getTitle();
+				}
+				else {
+					one=o1.getTitle();
+				}
+				if (correspondingDepictionEntry.getMasterImageID()==o2.getImageID()) {
+					two="aaaaaaaaaaaaaaaaaa"+o2.getTitle();
+				}
+				else {
+					two=o2.getTitle();
+				}
+				return one.compareTo(two);
+			}
+		};
 		imageListView = new ListView<ImageEntry, ImageEntry>(imageEntryLS, new IdentityValueProvider<ImageEntry>() {
 			@Override
 			public void setValue(ImageEntry object, ImageEntry value) {
@@ -646,22 +715,46 @@ public class DepictionEditor extends AbstractEditor {
 					titleList.add(new TextElement(s));
 				}
 				String imageAuthor = item.getImageAuthor() != null ? "Author: " + item.getImageAuthor().getLabel() : "";
-				String copyrightStr = (item.getCopyright() != null && item.getCopyright().length() > 0) ? "\u00A9 " + item.getCopyright() : ""; 
+				String copyrightStr = (item.getCopyright() != null && item.getCopyright().length() > 0)
+						? "\u00A9 " + item.getCopyright()
+						: "";
 				SafeHtml sb;
-
-
 				if (item.getImageID() == correspondingDepictionEntry.getMasterImageID()) {
-					sb= imageViewTemplates.masterImage(item.getFilename(), item.getShortName(), titleList, item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase(), imageAuthor, copyrightStr, UriUtils.fromString("resource?imageID=" + item.getImageID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri()));
+					sb = imageViewTemplates.masterImage(item.getFilename(), item.getShortName(), titleList,
+							item.getFilename().substring(item.getFilename().lastIndexOf(".") + 1).toUpperCase(),
+							imageAuthor, copyrightStr, UriUtils.fromString("resource?imageID=" + item.getImageID()
+									+ UserLogin.getInstance().getUsernameSessionIDParameterForUri()));
 				} else if (item.getAccessLevel() == AbstractEntry.ACCESS_LEVEL_PUBLIC) {
-					sb= imageViewTemplates.publicImage(item.getFilename(), item.getShortName(), titleList, item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase(), imageAuthor, copyrightStr, UriUtils.fromString("resource?imageID=" + item.getImageID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri()));
+					sb = imageViewTemplates.publicImage(item.getFilename(), item.getShortName(), titleList,
+							item.getFilename().substring(item.getFilename().lastIndexOf(".") + 1).toUpperCase(),
+							imageAuthor, copyrightStr, UriUtils.fromString("resource?imageID=" + item.getImageID()
+									+ UserLogin.getInstance().getUsernameSessionIDParameterForUri()));
 				} else {
-					sb= imageViewTemplates.nonPublicImage(item.getFilename(), item.getShortName(), titleList, item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase(), imageAuthor, copyrightStr, UriUtils.fromString("resource?imageID=" + item.getImageID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri()));
+					sb = imageViewTemplates.nonPublicImage(item.getFilename(), item.getShortName(), titleList,
+							item.getFilename().substring(item.getFilename().lastIndexOf(".") + 1).toUpperCase(),
+							imageAuthor, copyrightStr, UriUtils.fromString("resource?imageID=" + item.getImageID()
+									+ UserLogin.getInstance().getUsernameSessionIDParameterForUri()));
 				}
-				SafeHtml s = SafeHtmlUtils.fromTrustedString("<figure class='paintRepImgPreview'><div id= '"+item.getFilename().split(";")[0]+"' style='width: "+Integer.toString(Window.getClientWidth()/100*30)+"px; height: "+Integer.toString(Window.getClientHeight()/100*35)+"px;text-align: center;'></div>");
+				SafeHtml s = null;
+				// Util.doLogging("ImageListView:
+				// "+Double.toString(Window.getClientWidth()*0.8*imageWindowRelation));
+				if (Window.getClientWidth() * 0.8 * imageWindowRelation > 300) {
+					s = SafeHtmlUtils.fromTrustedString("<figure class='paintRepImgPreview' style='height: "
+							+ Integer.toString((int) (Window.getClientHeight() * (imageWindowRelation)))
+							+ "px;width:98%;text-align: center;'><div id= '" + item.getFilename().split(";")[0]
+							+ "' style='overflow:hidden;width: 100%; height: "
+							+ Integer.toString((int) (Window.getClientHeight() * (imageWindowRelation) - 60))
+							+ "px;text-align: center;' ></div>");
+				} else {
+					s = SafeHtmlUtils.fromTrustedString(
+							"<figure class='paintRepImgPreview' style='width: 340px;height:290px;text-align: center;'><div id= '"
+									+ item.getFilename().split(";")[0]
+									+ "' Style='width: 340px;height:290px;text-align: center;' ></div>");
+				}
 				SafeHtmlBuilder sblast = new SafeHtmlBuilder();
 				sblast.append(s);
 				sblast.append(sb);
-				
+
 				return sblast.toSafeHtml();
 			}
 		}));
@@ -671,26 +764,48 @@ public class DepictionEditor extends AbstractEditor {
 			protected boolean doSelect(Store<ImageEntry> store, ImageEntry parent, ImageEntry item, String filter) {
 				ListStore<ImageEntry> ImageStore = (ListStore<ImageEntry>) store;
 //				Util.doLogging(item.getTitle()+" - "+filter+" = "+Boolean.toString(item.getFilename().contains(filter)));
-					if (item.getTitle().toLowerCase().contains(filter.toLowerCase())) {
-						return true;
-					}
-					return false;
+				if (item.getTitle().toLowerCase().contains(filter.toLowerCase())) {
+					return true;
+				}
+				return false;
 			}
 		};
+		filterField.addChangeHandler(new ChangeHandler() {
+
+			@Override
+			public void onChange(ChangeEvent event) {
+				Util.doLogging("onValueChange triggered");
+				reloadPics();
+				
+			}
+			
+		});
 		filterField.setEmptyText("enter a search term");
 		filterField.bind(imageEntryLS);
-		imageListView.setSize("340", "290");
+		imageEntryLS.addStoreFilterHandler(new StoreFilterHandler<ImageEntry>() {
+
+			@Override
+			public void onFilter(StoreFilterEvent<ImageEntry> event) {
+				Util.doLogging("StoreFilterHandler triggered");
+				reloadPics();
+				
+			}
+			
+		});
+		// imageListView.setSize("340", "290");
 //		Util.doLogging("Size of ImageListView: "+Integer.toString(imageEntryLS.size()));
 		ListField<ImageEntry, ImageEntry> imageViewLF = new ListField<ImageEntry, ImageEntry>(imageListView);
 		loadImages();
-		
-//		imageViewLF.setSize("250px", "1.0");
+		imageEntryLS.addSortInfo(new StoreSortInfo(itemComparator,SortDir.DESC));
+		imageEntryLS.applySort(true);
 
+		//imageViewLF.setSize("300px", "1.0");
 
 		/**
-		 * --------------------- content of first tab (BASICS) starts here --------------------------------
+		 * --------------------- content of first tab (BASICS) starts here
+		 * --------------------------------
 		 */
-		
+
 		FramedPanel shortNameFP = new FramedPanel();
 		shortNameFP.setHeading("Short Name");
 		shortNameTF = new TextField();
@@ -698,11 +813,12 @@ public class DepictionEditor extends AbstractEditor {
 		shortNameTF.setValue(correspondingDepictionEntry.getShortName());
 		shortNameTF.addValidator(new MaxLengthValidator(32));
 		shortNameTF.addValidator(new Validator<String>() {
-			
+
 			@Override
 			public List<EditorError> validate(Editor<String> editor, String value) {
 				List<EditorError> l = new ArrayList<EditorError>();
-				if ((caveSelectionCB.getCurrentValue() == null) && ((shortNameTF.getCurrentValue() == null) || (shortNameTF.getCurrentValue().isEmpty()))) {
+				if ((caveSelectionCB.getCurrentValue() == null)
+						&& ((shortNameTF.getCurrentValue() == null) || (shortNameTF.getCurrentValue().isEmpty()))) {
 					l.add(new DefaultEditorError(editor, "please select either Cave or enter short name", value));
 				}
 				return l;
@@ -731,8 +847,7 @@ public class DepictionEditor extends AbstractEditor {
 		accessRightsCB.setTriggerAction(TriggerAction.ALL);
 		accessRightsCB.setToolTip(Util.createToolTip(
 				"The acccess rights for the painted representation will influence which fields are visible.",
-				"There are no restrictions at the moment but this might be implemented in the future."
-			));
+				"There are no restrictions at the moment but this might be implemented in the future."));
 		accessRightsCB.setValue(AbstractEntry.ACCESS_LEVEL_LABEL.get(correspondingDepictionEntry.getAccessLevel()));
 		accessRightsCB.addValueChangeHandler(new ValueChangeHandler<String>() {
 
@@ -746,7 +861,6 @@ public class DepictionEditor extends AbstractEditor {
 		shortNameVLC.add(new FieldLabel(accessRightsCB, "Access Level"), new VerticalLayoutData(1.0, .5));
 		shortNameFP.add(shortNameVLC);
 
-		
 		FramedPanel caveSelectionFP = new FramedPanel();
 		caveSelectionFP.setHeading("Located in Cave");
 		caveSelectionCB = new ComboBox<CaveEntry>(caveEntryLS, new LabelProvider<CaveEntry>() {
@@ -755,9 +869,12 @@ public class DepictionEditor extends AbstractEditor {
 			public String getLabel(CaveEntry item) {
 				StaticTables st = StaticTables.getInstance();
 				String site = item.getSiteID() > 0 ? st.getSiteEntries().get(item.getSiteID()).getShortName() : "";
-				String district = item.getDistrictID() > 0 ? st.getDistrictEntries().get(item.getDistrictID()).getName() : "";
-				String region = item.getRegionID() > 0 ? st.getRegionEntries().get(item.getRegionID()).getEnglishName() : "";
-				return site  + " " + item.getOfficialNumber() + (!district.isEmpty() ? " / " + district : "") + (!region.isEmpty() ? " / " + region : "");
+				String district = item.getDistrictID() > 0 ? st.getDistrictEntries().get(item.getDistrictID()).getName()
+						: "";
+				String region = item.getRegionID() > 0 ? st.getRegionEntries().get(item.getRegionID()).getEnglishName()
+						: "";
+				return site + " " + item.getOfficialNumber() + (!district.isEmpty() ? " / " + district : "")
+						+ (!region.isEmpty() ? " / " + region : "");
 
 			}
 		}, new AbstractSafeHtmlRenderer<CaveEntry>() {
@@ -767,10 +884,13 @@ public class DepictionEditor extends AbstractEditor {
 				final CaveViewTemplates cvTemplates = GWT.create(CaveViewTemplates.class);
 				StaticTables st = StaticTables.getInstance();
 				String site = item.getSiteID() > 0 ? st.getSiteEntries().get(item.getSiteID()).getShortName() : "";
-				String district = item.getDistrictID() > 0 ? st.getDistrictEntries().get(item.getDistrictID()).getName() : "";
-				String region = item.getRegionID() > 0 ? st.getRegionEntries().get(item.getRegionID()).getEnglishName() : "";
+				String district = item.getDistrictID() > 0 ? st.getDistrictEntries().get(item.getDistrictID()).getName()
+						: "";
+				String region = item.getRegionID() > 0 ? st.getRegionEntries().get(item.getRegionID()).getEnglishName()
+						: "";
 				if (!region.isEmpty() && (item.getHistoricName() != null) && (item.getHistoricName().isEmpty())) {
-					return cvTemplates.caveLabel(site, item.getOfficialNumber(), district, region, item.getHistoricName());
+					return cvTemplates.caveLabel(site, item.getOfficialNumber(), district, region,
+							item.getHistoricName());
 				} else if (!region.isEmpty()) {
 					return cvTemplates.caveLabel(site, item.getOfficialNumber(), district, region);
 				} else if ((item.getHistoricName() != null) && (item.getHistoricName().isEmpty())) {
@@ -799,7 +919,7 @@ public class DepictionEditor extends AbstractEditor {
 		ToolButton resetCaveSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetCaveSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		resetCaveSelectionTB.addSelectHandler(new SelectHandler() {
-			
+
 			@Override
 			public void onSelect(SelectEvent event) {
 				caveSelectionCB.setValue(null, true);
@@ -810,15 +930,17 @@ public class DepictionEditor extends AbstractEditor {
 
 		FramedPanel acquiredByExpeditionFP = new FramedPanel();
 		acquiredByExpeditionFP.setHeading("Acquired by expedition");
-		expedSelectionCB = new ComboBox<ExpeditionEntry>(expedEntryLS, expedProps.name(), new AbstractSafeHtmlRenderer<ExpeditionEntry>() {
+		expedSelectionCB = new ComboBox<ExpeditionEntry>(expedEntryLS, expedProps.name(),
+				new AbstractSafeHtmlRenderer<ExpeditionEntry>() {
 
-			@Override
-			public SafeHtml render(ExpeditionEntry item) {
-				final ExpeditionViewTemplates expedTemplates = GWT.create(ExpeditionViewTemplates.class);
-				DateTimeFormat dtf = DateTimeFormat.getFormat("yyyy");
-				return expedTemplates.expedLabel(item.getName(), item.getLeader(), dtf.format(item.getStartDate()), dtf.format(item.getEndDate()));
-			}
-		});
+					@Override
+					public SafeHtml render(ExpeditionEntry item) {
+						final ExpeditionViewTemplates expedTemplates = GWT.create(ExpeditionViewTemplates.class);
+						DateTimeFormat dtf = DateTimeFormat.getFormat("yyyy");
+						return expedTemplates.expedLabel(item.getName(), item.getLeader(),
+								dtf.format(item.getStartDate()), dtf.format(item.getEndDate()));
+					}
+				});
 		expedSelectionCB.setEmptyText("nothing selected");
 		expedSelectionCB.addSelectionHandler(new SelectionHandler<ExpeditionEntry>() {
 
@@ -840,7 +962,7 @@ public class DepictionEditor extends AbstractEditor {
 		ToolButton expedSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		expedSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		expedSelectionTB.addSelectHandler(new SelectHandler() {
-			
+
 			@Override
 			public void onSelect(SelectEvent event) {
 				expedSelectionCB.setValue(null, true);
@@ -848,19 +970,20 @@ public class DepictionEditor extends AbstractEditor {
 		});
 		acquiredByExpeditionFP.addTool(expedSelectionTB);
 		acquiredByExpeditionFP.add(expedSelectionCB);
-		
+
 		FramedPanel vendorFP = new FramedPanel();
 		vendorFP.setHeading("Vendor");
-		vendorSelection = new ComboBox<VendorEntry>(vendorEntryLS, vendorProps.vendorName(), new AbstractSafeHtmlRenderer<VendorEntry>() {
+		vendorSelection = new ComboBox<VendorEntry>(vendorEntryLS, vendorProps.vendorName(),
+				new AbstractSafeHtmlRenderer<VendorEntry>() {
 
-			@Override
-			public SafeHtml render(VendorEntry item) {
-				final VendorViewTemplates vTemplates = GWT.create(VendorViewTemplates.class);
-				return vTemplates.vendorName(item.getVendorName());
-			}
+					@Override
+					public SafeHtml render(VendorEntry item) {
+						final VendorViewTemplates vTemplates = GWT.create(VendorViewTemplates.class);
+						return vTemplates.vendorName(item.getVendorName());
+					}
 
-		});
-		
+				});
+
 		vendorSelection.setEmptyText("nothing selected");
 		vendorSelection.setTypeAhead(false);
 		vendorSelection.setEditable(false);
@@ -875,7 +998,7 @@ public class DepictionEditor extends AbstractEditor {
 		ToolButton resetVendorSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetVendorSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		resetVendorSelectionTB.addSelectHandler(new SelectHandler() {
-			
+
 			@Override
 			public void onSelect(SelectEvent event) {
 				vendorSelection.setValue(null, true);
@@ -936,7 +1059,7 @@ public class DepictionEditor extends AbstractEditor {
 				addVendorDialog.setModal(true);
 				addVendorDialog.center();
 			}
-		});		
+		});
 		vendorFP.addTool(newVendorPlusTool);
 		vendorFP.addTool(resetVendorSelectionTB);
 		vendorFP.add(vendorSelection);
@@ -948,31 +1071,40 @@ public class DepictionEditor extends AbstractEditor {
 		purchaseDateField.setEmptyText("nothing selected");
 		// TODO add change handler
 		datePurchasedFP.add(purchaseDateField);
-		
+
 		FramedPanel currentLocationFP = new FramedPanel();
 		currentLocationFP.setHeading("Current Location");
-		locationSelectionCB = new ComboBox<LocationEntry>(locationEntryLS, locationProps.name(), new AbstractSafeHtmlRenderer<LocationEntry>() {
+		locationSelectionCB = new ComboBox<LocationEntry>(locationEntryLS, locationProps.name(),
+				new AbstractSafeHtmlRenderer<LocationEntry>() {
 
-			@Override
-			public SafeHtml render(LocationEntry item) {
-				final LocationViewTemplates lvTemplates = GWT.create(LocationViewTemplates.class);
-				if ((item.getCounty() != null) && (!item.getCounty().isEmpty())) {
-					if ((item.getTown() != null) && (!item.getTown().isEmpty())) {
-						return lvTemplates.caveLabel(item.getName(), item.getRegion()!=null && !item.getRegion().isEmpty() ? item.getTown()+" ("+item.getRegion()+")" : item.getTown(), item.getCounty());
-					} else if ((item.getRegion() != null) && (!item.getRegion().isEmpty())) {
-						return lvTemplates.caveLabel(item.getName(), item.getTown()!=null && !item.getTown().isEmpty() ? item.getTown()+" ("+item.getRegion()+")" : item.getRegion(), item.getCounty());
-					} else {
-						return lvTemplates.caveLabel(item.getName(), item.getCounty());
+					@Override
+					public SafeHtml render(LocationEntry item) {
+						final LocationViewTemplates lvTemplates = GWT.create(LocationViewTemplates.class);
+						if ((item.getCounty() != null) && (!item.getCounty().isEmpty())) {
+							if ((item.getTown() != null) && (!item.getTown().isEmpty())) {
+								return lvTemplates.caveLabel(item.getName(),
+										item.getRegion() != null && !item.getRegion().isEmpty()
+												? item.getTown() + " (" + item.getRegion() + ")"
+												: item.getTown(),
+										item.getCounty());
+							} else if ((item.getRegion() != null) && (!item.getRegion().isEmpty())) {
+								return lvTemplates.caveLabel(item.getName(),
+										item.getTown() != null && !item.getTown().isEmpty()
+												? item.getTown() + " (" + item.getRegion() + ")"
+												: item.getRegion(),
+										item.getCounty());
+							} else {
+								return lvTemplates.caveLabel(item.getName(), item.getCounty());
+							}
+						} else {
+							return lvTemplates.caveLabel(item.getName());
+						}
 					}
-				} else {
-					return lvTemplates.caveLabel(item.getName());
-				}
-			}
-		});
+				});
 		locationSelectionCB.setEmptyText("select current location");
 		locationSelectionCB.setTypeAhead(false);
 		locationSelectionCB.setEditable(true);
-	
+
 		locationSelectionCB.setTriggerAction(TriggerAction.ALL);
 		locationSelectionCB.addValueChangeHandler(new ValueChangeHandler<LocationEntry>() {
 
@@ -984,7 +1116,7 @@ public class DepictionEditor extends AbstractEditor {
 		ToolButton resetLocationSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetLocationSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		resetLocationSelectionTB.addSelectHandler(new SelectHandler() {
-			
+
 			@Override
 			public void onSelect(SelectEvent event) {
 				locationSelectionCB.setValue(null, true);
@@ -1065,7 +1197,7 @@ public class DepictionEditor extends AbstractEditor {
 				addLocationDialog.setModal(true);
 				addLocationDialog.center();
 			}
-		});				
+		});
 		currentLocationFP.addTool(newLocationPlusTool);
 		currentLocationFP.addTool(resetLocationSelectionTB);
 		currentLocationFP.add(locationSelectionCB);
@@ -1083,14 +1215,14 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		inventoryNumberFP.add(inventoryNumberTF);
-		
+
 		FramedPanel stateOfPreservationFP = new FramedPanel();
 		stateOfPreservationFP.setHeading("State of Preservation");
 		ToolButton addPreservationAttributeTB = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		addPreservationAttributeTB.setToolTip(Util.createToolTip("Add Preservation Attribute"));
 		stateOfPreservationFP.addTool(addPreservationAttributeTB);
 		addPreservationAttributeTB.addSelectHandler(new SelectHandler() {
-			
+
 			@Override
 			public void onSelect(SelectEvent event) {
 				PopupPanel addPreservationAttributeDialog = new PopupPanel();
@@ -1143,25 +1275,27 @@ public class DepictionEditor extends AbstractEditor {
 				addPreservationAttributeDialog.center();
 			}
 		});
-		ListView<PreservationAttributeEntry, String> preservationAttributesListView = new ListView<PreservationAttributeEntry, String>(preservationAttributesLS, presAttributeProps.name());
+		ListView<PreservationAttributeEntry, String> preservationAttributesListView = new ListView<PreservationAttributeEntry, String>(
+				preservationAttributesLS, presAttributeProps.name());
 		preservationAttributesListView.setToolTip("to select attributes drag right");
-		ListView<PreservationAttributeEntry, String> selectedPreservationAttributesListView = new ListView<PreservationAttributeEntry, String>(selectedPreservationAttributesLS, presAttributeProps.name());
+		ListView<PreservationAttributeEntry, String> selectedPreservationAttributesListView = new ListView<PreservationAttributeEntry, String>(
+				selectedPreservationAttributesLS, presAttributeProps.name());
 		selectedPreservationAttributesListView.setToolTip("to deselect attributes drag left");
-		
+
 		new ListViewDragSource<PreservationAttributeEntry>(preservationAttributesListView).setGroup("paGroup");
 		new ListViewDragSource<PreservationAttributeEntry>(selectedPreservationAttributesListView).setGroup("paGroup");
-		
+
 		new ListViewDropTarget<PreservationAttributeEntry>(preservationAttributesListView).setGroup("paGroup");
 		new ListViewDropTarget<PreservationAttributeEntry>(selectedPreservationAttributesListView).setGroup("paGroup");
 
 		BorderLayoutContainer borderLayoutContainer = new BorderLayoutContainer();
-    borderLayoutContainer.setWestWidget(preservationAttributesListView, new BorderLayoutData(0.5));
-    borderLayoutContainer.setCenterWidget(selectedPreservationAttributesListView, new BorderLayoutData(0.5));
+		borderLayoutContainer.setWestWidget(preservationAttributesListView, new BorderLayoutData(0.5));
+		borderLayoutContainer.setCenterWidget(selectedPreservationAttributesListView, new BorderLayoutData(0.5));
 
-    stateOfPreservationFP.add(borderLayoutContainer);
-    
+		stateOfPreservationFP.add(borderLayoutContainer);
+
 		VerticalLayoutContainer basicsLeftVLC = new VerticalLayoutContainer();
-		
+
 		basicsLeftVLC.add(shortNameFP, new VerticalLayoutData(1.0, .15));
 		basicsLeftVLC.add(caveSelectionFP, new VerticalLayoutData(1.0, .11));
 		basicsLeftVLC.add(acquiredByExpeditionFP, new VerticalLayoutData(1.0, .11));
@@ -1177,7 +1311,7 @@ public class DepictionEditor extends AbstractEditor {
 		ToolButton wallEditorTB = new ToolButton(ToolButton.PIN);
 		wallEditorTB.setEnabled(false);
 		wallEditorTB.setToolTip(Util.createToolTip("set position on wall"));
-		
+
 //		TextButton wallEditorButton = new TextButton("set position on wall");
 		wallEditor = new Walls(1, true);
 		wallEditorTB.addSelectHandler(new SelectHandler() {
@@ -1193,10 +1327,11 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 
-		wallTree = new WallTree(StaticTables.getInstance().getWallTreeEntries().values(), correspondingDepictionEntry.getWalls(), true, false, null);//correspondingDepictionEntry.getCave());
+		wallTree = new WallTree(StaticTables.getInstance().getWallTreeEntries().values(),
+				correspondingDepictionEntry.getWalls(), true, false, null);// correspondingDepictionEntry.getCave());
 
 		FramedPanel wallTreeFP = new FramedPanel();
-		//wallTree.setWall(correspondingDepictionEntry.getWalls());
+		// wallTree.setWall(correspondingDepictionEntry.getWalls());
 		wallTreeFP.add(wallTree.wallTree);
 		ToolButton newPositionPlusTool = new ToolButton(new IconConfig("editButton", "editButtonOver"));
 		newPositionPlusTool.setToolTip(Util.createToolTip("edit walls"));
@@ -1204,27 +1339,28 @@ public class DepictionEditor extends AbstractEditor {
 
 			@Override
 			public void onSelect(SelectEvent event) {
-				PositionEditor pe = new PositionEditor(correspondingDepictionEntry.getCave(), correspondingDepictionEntry.getWalls(), false) {
+				PositionEditor pe = new PositionEditor(correspondingDepictionEntry.getCave(),
+						correspondingDepictionEntry.getWalls(), false) {
 					@Override
-					protected void save(List<WallTreeEntry> results ) {
-							((AbstractView)getListenerList().get(0)).addClickNumber();
-							correspondingDepictionEntry.setWalls(getSelectedWalls());
-							wallTree.setWall(getSelectedWalls());
-						}
-					};
+					protected void save(List<WallTreeEntry> results) {
+						getListenerList().get(0).addClickNumber();
+						correspondingDepictionEntry.setWalls(getSelectedWalls());
+						wallTree.setWall(getSelectedWalls());
+					}
+				};
 				pe.show();
-				//PopupPanel positionEditorPopUp = new PopupPanel();
-				//positionEditorPopUp.add(pe);
-				//positionEditorPopUp.setModal(true);
-				//positionEditorPopUp.center();
+				// PopupPanel positionEditorPopUp = new PopupPanel();
+				// positionEditorPopUp.add(pe);
+				// positionEditorPopUp.setModal(true);
+				// positionEditorPopUp.center();
 
 			}
-		});				
+		});
 		wallTreeFP.addTool(newPositionPlusTool);
 		/**
 		 * the wall visualisation will be implemented at a later time
 		 */
-		//wallSelectorFP.addTool(wallEditorTB);
+		// wallSelectorFP.addTool(wallEditorTB);
 		wallSelectorPanel = new WallSelector(new SelectionHandler<WallEntry>() {
 
 			@Override
@@ -1233,8 +1369,8 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		}, false);
 		wallSelectorFP.add(wallSelectorPanel);
-		//wallSelectorFP.add(wallTreeFP);
-		//wallSelectorFP.add(wallEditorTB);
+		// wallSelectorFP.add(wallTreeFP);
+		// wallSelectorFP.add(wallEditorTB);
 		FramedPanel positionNoteFP = new FramedPanel();
 		positionNoteFP.setHeading("Position Notes");
 		TextArea positionNotesTA = new TextArea();
@@ -1247,22 +1383,23 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		positionNoteFP.add(positionNotesTA);
-		
+
 		VerticalLayoutContainer basicsRightVLC = new VerticalLayoutContainer();
 		basicsRightVLC.add(wallSelectorFP, new VerticalLayoutData(1.0, .65));
 		basicsRightVLC.add(wallTreeFP, new VerticalLayoutData(1.0, .25));
 		basicsRightVLC.add(positionNoteFP, new VerticalLayoutData(1.0, .10));
-		
+
 		HorizontalLayoutContainer basicsTabHLC = new HorizontalLayoutContainer();
 		basicsTabHLC.add(basicsLeftVLC, new HorizontalLayoutData(.4, 1.0));
 		basicsTabHLC.add(basicsRightVLC, new HorizontalLayoutData(.6, 1.0));
 
 		/**
-		 * --------------------- content of second tab (Descriptions) starts here --------------------------------
+		 * --------------------- content of second tab (Descriptions) starts here
+		 * --------------------------------
 		 */
 
 		HorizontalLayoutContainer dimensionHLC = new HorizontalLayoutContainer();
-		
+
 		FramedPanel heightFP = new FramedPanel();
 		heightFP.setHeading("Height");
 		heightNF = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
@@ -1278,8 +1415,6 @@ public class DepictionEditor extends AbstractEditor {
 		heightFP.add(heightNF);
 		dimensionHLC.add(heightFP, new HorizontalLayoutData(.5, 1.0));
 
-
-		
 		FramedPanel widthFP = new FramedPanel();
 		widthFP.setHeading("Width");
 		widthNF = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
@@ -1293,21 +1428,22 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		widthFP.add(widthNF);
-		dimensionHLC.add(widthFP, new HorizontalLayoutData(.5	, 1.0));
-		
+		dimensionHLC.add(widthFP, new HorizontalLayoutData(.5, 1.0));
+
 		FramedPanel styleFP = new FramedPanel();
 		styleFP.setHeading("Style");
-		styleSelection = new ComboBox<StyleEntry>(styleEntryLS, styleProps.styleName(), new AbstractSafeHtmlRenderer<StyleEntry>() {
+		styleSelection = new ComboBox<StyleEntry>(styleEntryLS, styleProps.styleName(),
+				new AbstractSafeHtmlRenderer<StyleEntry>() {
 
-			@Override
-			public SafeHtml render(StyleEntry item) {
-				final StyleViewTemplates svTemplates = GWT.create(StyleViewTemplates.class);
-				return svTemplates.styleName(item.getStyleName());
-			}
-		});
+					@Override
+					public SafeHtml render(StyleEntry item) {
+						final StyleViewTemplates svTemplates = GWT.create(StyleViewTemplates.class);
+						return svTemplates.styleName(item.getStyleName());
+					}
+				});
 		styleSelection.addChangeHandler(new ChangeHandler() {
 			public void onChange(ChangeEvent event) {
-				((AbstractView)getListenerList().get(0)).addClickNumber();
+				getListenerList().get(0).addClickNumber();
 			}
 		});
 		styleSelection.setEmptyText("nothing selected");
@@ -1324,7 +1460,7 @@ public class DepictionEditor extends AbstractEditor {
 		ToolButton resetStyleSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
 		resetStyleSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		resetStyleSelectionTB.addSelectHandler(new SelectHandler() {
-			
+
 			@Override
 			public void onSelect(SelectEvent event) {
 				styleSelection.setValue(null, true);
@@ -1335,18 +1471,20 @@ public class DepictionEditor extends AbstractEditor {
 
 		FramedPanel modesOfRepresentationFP = new FramedPanel();
 		modesOfRepresentationFP.setHeading("Modes of Representation");
-		modeOfRepresentationSelectionCB = new ComboBox<ModeOfRepresentationEntry>(modeOfRepresentationLS, morProps.name(), new AbstractSafeHtmlRenderer<ModeOfRepresentationEntry>() {
+		modeOfRepresentationSelectionCB = new ComboBox<ModeOfRepresentationEntry>(modeOfRepresentationLS,
+				morProps.name(), new AbstractSafeHtmlRenderer<ModeOfRepresentationEntry>() {
 
-			@Override
-			public SafeHtml render(ModeOfRepresentationEntry morEntry) {
-				ModesOfRepresentationViewTemplates morTemplates = GWT.create(ModesOfRepresentationViewTemplates.class);
-				return morTemplates.morLabel(morEntry.getName());
-			}
-			
-		});
+					@Override
+					public SafeHtml render(ModeOfRepresentationEntry morEntry) {
+						ModesOfRepresentationViewTemplates morTemplates = GWT
+								.create(ModesOfRepresentationViewTemplates.class);
+						return morTemplates.morLabel(morEntry.getName());
+					}
+
+				});
 		modeOfRepresentationSelectionCB.addChangeHandler(new ChangeHandler() {
 			public void onChange(ChangeEvent event) {
-				((AbstractView)getListenerList().get(0)).addClickNumber();
+				getListenerList().get(0).addClickNumber();
 			}
 		});
 		modeOfRepresentationSelectionCB.setEmptyText("nothing selected");
@@ -1357,13 +1495,15 @@ public class DepictionEditor extends AbstractEditor {
 
 			@Override
 			public void onSelection(SelectionEvent<ModeOfRepresentationEntry> event) {
-				correspondingDepictionEntry.setModeOfRepresentationID(event.getSelectedItem().getModeOfRepresentationID());
+				correspondingDepictionEntry
+						.setModeOfRepresentationID(event.getSelectedItem().getModeOfRepresentationID());
 			}
 		});
-		ToolButton resetModeOfRepresentationSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
+		ToolButton resetModeOfRepresentationSelectionTB = new ToolButton(
+				new IconConfig("resetButton", "resetButtonOver"));
 		resetModeOfRepresentationSelectionTB.setToolTip(Util.createToolTip("reset selection"));
 		resetModeOfRepresentationSelectionTB.addSelectHandler(new SelectHandler() {
-			
+
 			@Override
 			public void onSelect(SelectEvent event) {
 				modeOfRepresentationSelectionCB.setValue(null, true);
@@ -1411,7 +1551,7 @@ public class DepictionEditor extends AbstractEditor {
 		});
 		separateAksarasFP.add(separateAksarasTextArea);
 
-		FramedPanel datingFP  = new FramedPanel();
+		FramedPanel datingFP = new FramedPanel();
 		datingFP.setHeading("Dating");
 		datingField = new TextField();
 		// datingField.setWidth(130);
@@ -1483,18 +1623,20 @@ public class DepictionEditor extends AbstractEditor {
 		descriptionTabHLC.add(descriptionRightVLC, new HorizontalLayoutData(.65, 1.0));
 
 		/**
-		 * --------------------- definition of image panel on right side starts here --------------------------------
+		 * --------------------- definition of image panel on right side starts here
+		 * --------------------------------
 		 */
 		imageSelector = new ImageSelector(new ImageSelectorListener() {
 
 			@Override
 			public void imageSelected(ArrayList<ImageEntry> imgEntryList) {
-				if (imgEntryList!=null) {
+				if (imgEntryList != null) {
 					for (ImageEntry imgEntry : imgEntryList) {
 						if (!correspondingDepictionEntry.getRelatedImages().contains(imgEntry)) {
-							correspondingDepictionEntry.addRelatedImages(imgEntry); // TODO check if double adding possible and avoid!
+							correspondingDepictionEntry.addRelatedImages(imgEntry); // TODO check if double adding
+																					// possible and avoid!
 						}
-						
+
 					}
 					getPics(imgEntryList, 300, UserLogin.getInstance().getSessionID());
 					loadImages();
@@ -1504,14 +1646,14 @@ public class DepictionEditor extends AbstractEditor {
 				imageSelectionDialog.hide();
 			}
 		});
-		
+
 		ToolButton addImageTB = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		addImageTB.setToolTip(Util.createToolTip("add image"));
 		addImageTB.addSelectHandler(new SelectHandler() {
-			
+
 			@Override
 			public void onSelect(SelectEvent event) {
-				((AbstractView)getListenerList().get(0)).addClickNumber();
+				getListenerList().get(0).addClickNumber();
 				imageSelectionDialog = new PopupPanel();
 				imageSelectionDialog.add(imageSelector);
 				imageSelector.resetSelection();
@@ -1523,30 +1665,28 @@ public class DepictionEditor extends AbstractEditor {
 		ToolButton removeImageTB = new ToolButton(new IconConfig("removeButton", "removeButtonOver"));
 		removeImageTB.setToolTip(Util.createToolTip("remove image"));
 		removeImageTB.addSelectHandler(new SelectHandler() {
-			
+
 			@Override
 			public void onSelect(SelectEvent event) {
-				((AbstractView)getListenerList().get(0)).addClickNumber();
+				getListenerList().get(0).addClickNumber();
 				imageEntryLS.remove(imageListView.getSelectionModel().getSelectedItem());
 			}
 		});
-		
+
 		ToolButton setMasterTB = new ToolButton(new IconConfig("favouriteButton", "favouriteButtonOver"));
-		setMasterTB.setToolTip(Util.createToolTip("Set master image.", "The master image will be displayed on top of this list and used for previews in the system (e.g. thumbnails)."));
+		setMasterTB.setToolTip(Util.createToolTip("Set master image.",
+				"The master image will be displayed on top of this list and used for previews in the system (e.g. thumbnails)."));
 		setMasterTB.addSelectHandler(new SelectHandler() {
-			
+
 			@Override
 			public void onSelect(SelectEvent event) {
-				((AbstractView)getListenerList().get(0)).addClickNumber();
+				getListenerList().get(0).addClickNumber();
 				ImageEntry entry = imageListView.getSelectionModel().getSelectedItem();
 				correspondingDepictionEntry.setMasterImageID(entry.getImageID());
-				imageListView.getStore().clear();
-				OSDLoader.destroyAllViewers(osdDic);
-				loadImages();
-				setosd();
+				reloadPics();
 			}
 		});
-		
+
 //		ToolButton infoTB = new ToolButton(ToolButton.QUESTION);
 //		infoTB.addSelectHandler(new SelectHandler() {
 //			
@@ -1576,17 +1716,86 @@ public class DepictionEditor extends AbstractEditor {
 //			}
 //		});
 
-		ToolButton zoomTB = new ToolButton(new IconConfig("expandButton", "expandButtonOver"));
-		zoomTB.addSelectHandler(new SelectHandler() {
+		ToolButton showAnnotationTB = new ToolButton(new IconConfig("editButton", "editButtonOver"));
+		showAnnotationTB.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-				ImageEntry ie = imageListView.getSelectionModel().getSelectedItem();
-				if (ie != null) {
-					com.google.gwt.user.client.Window.open("/resource?imageID=" + ie.getImageID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri(),"_blank",null);
-				}
+				osdLoader.removeOrAddAnnotations(correspondingDepictionEntry.getRelatedAnnotationList(),
+						annotationsLoaded);
+				annotationsLoaded = !annotationsLoaded;
 			}
 		});
-		zoomTB.setToolTip(Util.createToolTip("View selected image in full size.", "This will open a new browser tab."));
+		showAnnotationTB
+				.setToolTip(Util.createToolTip("Show or Hide Annotations.", "This will show or hide all Annotations."));
+		ToolButton modifiedToolButtonImage = new ToolButton(new IconConfig("foldButton", "foldButtonOver"));
+		modifiedToolButtonImage.setToolTip(Util.createToolTip("show modification history"));
+		modifiedToolButtonImage.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+			ColumnConfig<ModifiedEntry, String> modifiedByCol = new ColumnConfig<ModifiedEntry, String>(modifiedProps.modifiedBy(), 300, "Modified By");
+			ColumnConfig<ModifiedEntry, String> modifiedOColn = new ColumnConfig<ModifiedEntry, String>(modifiedProps.modifiedOn(), 300, "Midified On");
+			ColumnConfig<ModifiedEntry, String> annoIDColn = new ColumnConfig<ModifiedEntry, String>(modifiedProps.annoID(), 300, "Annotation ID");
+			ColumnConfig<ModifiedEntry, String> tagsColn = new ColumnConfig<ModifiedEntry, String>(modifiedProps.tags(), 300, "Tags");
+			
+//				yearColumn.setHideable(false);
+//				yearColumn.setHorizontalHeaderAlignment(HorizontalAlignmentConstant.startOf(Direction.DEFAULT));
+			
+		    List<ColumnConfig<ModifiedEntry, ?>> sourceColumns = new ArrayList<ColumnConfig<ModifiedEntry, ?>>();
+//		    sourceColumns.add(selectionModel.getColumn());
+		    sourceColumns.add(modifiedByCol);
+		    sourceColumns.add(modifiedOColn);
+		    sourceColumns.add(annoIDColn);
+		    sourceColumns.add(tagsColn);
+
+		    ColumnModel<ModifiedEntry> sourceColumnModel = new ColumnModel<ModifiedEntry>(sourceColumns);
+		    
+		    sourceStore = new ListStore<ModifiedEntry>(modifiedProps.key());
+
+			sourceStore.clear();
+		    dbService.getModifiedAnnoEntry(correspondingDepictionEntry, new AsyncCallback<ArrayList<ModifiedEntry>>() {
+				
+					@Override
+					public void onSuccess(ArrayList<ModifiedEntry> result) {
+						for (ModifiedEntry entry : result) {
+							sourceStore.add(entry);
+						}
+					}
+					
+					@Override
+					public void onFailure(Throwable caught) {
+					}
+				});
+
+
+		    Grid<ModifiedEntry> grid = new Grid<ModifiedEntry>(sourceStore, sourceColumnModel);
+//			    grid.setSelectionModel(selectionModel);
+//			    grid.setColumnReordering(true);
+		    grid.setBorders(false);
+		    grid.getView().setStripeRows(true);
+		    grid.getView().setColumnLines(true);
+		    grid.getView().setForceFit(true);
+
+			PopupPanel modifiedPopUp = new PopupPanel();
+			FramedPanel modifiedFP = new FramedPanel();
+			modifiedFP.setHeading("Modification Protocoll");
+			modifiedFP.setHeight(500);
+			modifiedFP.add(grid);
+			modifiedPopUp.add(modifiedFP);
+			ToolButton closeToolButton = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
+			closeToolButton.setToolTip(Util.createToolTip("close"));
+			closeToolButton.addSelectHandler(new SelectHandler() {
+				@Override
+				public void onSelect(SelectEvent event) {
+					modifiedPopUp.hide();
+				}
+			});
+			modifiedFP.addTool(closeToolButton);
+			modifiedPopUp.setModal(true);
+			modifiedPopUp.center();
+
+			}
+		});
 
 		FramedPanel depictionImagesPanel = new FramedPanel();
 		depictionImagesPanel.setHeading("Images");
@@ -1595,29 +1804,112 @@ public class DepictionEditor extends AbstractEditor {
 		filtercontainer.add(imageViewLF, new VerticalLayoutData(1.0, .95));
 		depictionImagesPanel.add(filtercontainer);
 //		depictionImagesPanel.addTool(infoTB);
-		depictionImagesPanel.addTool(zoomTB);
+		depictionImagesPanel.addTool(modifiedToolButtonImage);
 		depictionImagesPanel.addTool(addImageTB);
 		depictionImagesPanel.addTool(removeImageTB);
 		depictionImagesPanel.addTool(setMasterTB);
+		depictionImagesPanel.addTool(showAnnotationTB);
 
 		/**
-		 * ---------------------- content of third tab (Iconography & Pictorial Elements) starts here ---------------------
+		 * ---------------------- content of third tab (Iconography & Pictorial
+		 * Elements) starts here ---------------------
 		 */
-		iconographySelector = new IconographySelector(StaticTables.getInstance().getIconographyEntries().values(),(AbstractView)getListenerList().get(0));
+		Collection<IconographyEntry> elements = StaticTables.getInstance().getIconographyEntries().values();
+		ArrayList<EditorListener> el = getListenerList();
+
+		icoSelectorListener = new IconographySelectorListener() {
+
+			@Override
+			public void icoHighlighter(int icoID) {
+				List<IconographyEntry> selectedIcos = iconographySelector.getCLickedItems();
+				IconographyEntry selectedIE = iconographySelector.getIconographyStroe()
+						.findModelWithKey(Integer.toString(icoID));
+				highlightIcoEntry(selectedIE, false,selectedIcos);
+			};
+
+			@Override
+			public void icoDeHighlighter(int icoID) {
+				List<IconographyEntry> selectedIcos = iconographySelector.getCLickedItems();
+				IconographyEntry selectedIE = iconographySelector.getIconographyStroe()
+				.findModelWithKey(Integer.toString(icoID));
+				if (annotationsLoaded) {
+					osdLoader.removeAllAnnotations();					
+				}
+				else {
+					highlightIcoEntry(selectedIE, true,selectedIcos);										
+				}
+				for (IconographyEntry clickedIE : iconographySelector.getCLickedItems()) {
+					highlightIcoEntry(clickedIE, false,selectedIcos);					
+				}
+
+			}
+			public void reloadIconography(IconographyEntry iconographyEntry) {
+				iconographySelector = null;
+				iconographySelector = new IconographySelector(StaticTables.getInstance().getIconographyEntries().values(),
+						getListenerList().get(0), true, correspondingDepictionEntry.getRelatedAnnotationList(),
+						icoSelectorListener);
+			}
+			public void reloadOSD() {
+				reloadPics();
+			}
+		};
+		iconographySelector = new IconographySelector(StaticTables.getInstance().getIconographyEntries().values(),
+				getListenerList().get(0), true, correspondingDepictionEntry.getRelatedAnnotationList(),
+				icoSelectorListener);
 		long start = System.currentTimeMillis();
-		Util.doLogging("Starte getIconogrpahy for Depictionentry: "+Integer.toString(correspondingDepictionEntry.getDepictionID()));
-		loadiconogrpahy(correspondingDepictionEntry.getDepictionID(),start);
+		Util.doLogging("Starte getIconogrpahy for Depictionentry: "
+				+ Integer.toString(correspondingDepictionEntry.getDepictionID()));
+		loadiconogrpahy(correspondingDepictionEntry.getRelatedIconographyList());
+		osdListener = new OSDListener() {
 
+			@Override
+			public void setAnnotationsInParent(ArrayList<AnnotationEntry> relatedAnnotationList) {
+				correspondingDepictionEntry.setRelatedAnnotationList(relatedAnnotationList);
+				iconographySelector.setRelatedAnnotationList(relatedAnnotationList);
+				
+			};
+
+			@Override
+			public int getDepictionID() {
+				return correspondingDepictionEntry.getDepictionID();
+			}
+
+			@Override
+			public ArrayList<AnnotationEntry> getAnnotations() {
+				// TODO Auto-generated method stub
+				return correspondingDepictionEntry.getRelatedAnnotationList();
+			}
+
+			@Override
+			public void addAnnotation(AnnotationEntry ae) {
+				correspondingDepictionEntry.addAnnotation(ae);
+				for (EditorListener el : getListenerList()) {
+					if (el instanceof DepictionView) {
+						((DepictionView) el).setDepictionEntry(correspondingDepictionEntry);
+					}
+				}
+
+				
+			};
+			
+
+		};
+		osdLoader = new OSDLoader(correspondingDepictionEntry.getRelatedImages(), true,
+				iconographySelector.getIconographyStroe(),
+				osdListener);
 		/**
-		 * ---------------------- content of fourth tab (Bibliography Selector) ---------------------
+		 * ---------------------- content of fourth tab (Bibliography Selector)
+		 * ---------------------
 		 */
-		bibliographySelector = new BibliographySelector(correspondingDepictionEntry.getRelatedBibliographyList(),(AbstractView)getListenerList().get(0));
+		bibliographySelector = new BibliographySelector(correspondingDepictionEntry.getRelatedBibliographyList(),
+				getListenerList().get(0));
 //		if (correspondingDepictionEntry.getRelatedBibliographyList().size() > 0) {
 //			bibliographySelector.setSelectedEntries(correspondingDepictionEntry.getRelatedBibliographyList());
 //		}
-		
+
 		/**
-		 * --------------------------- next the editor as a whole will be assembled -------------------
+		 * --------------------------- next the editor as a whole will be assembled
+		 * -------------------
 		 */
 		TabPanel tabPanel = new TabPanel();
 		tabPanel.setTabScroll(false);
@@ -1632,16 +1924,44 @@ public class DepictionEditor extends AbstractEditor {
 		tabPanel.add(scrpanel2, "Description");
 		tabPanel.add(iconographySelector, "Iconography & Pictorial Elements");
 		tabPanel.add(scrpanel4, "Bibliography Selector");
+		// Resizable tabResize = new Resizable(tabPanel);
+		Resizable imgResize = new Resizable(depictionImagesPanel);
+		imgResize.addResizeEndHandler(new ResizeEndHandler() {
+			public void onResizeEnd(ResizeEndEvent event) {
+				imageWindowRelation = (double) imageListView.getOffsetWidth(true)
+						/ (double) mainPanel.getOffsetWidth(true);
+				reloadPics();
+//				Util.doLogging(
+//						"Width depictionImagesPanel: " + Integer.toString(depictionImagesPanel.getOffsetWidth()));
+//				Util.doLogging("Width mainPanel: " + Integer.toString(mainPanel.getOffsetWidth()));
+//
+			}
+		});
+		depictionImagesPanel.addResizeHandler(new ResizeHandler() {
+
+			@Override
+			public void onResize(ResizeEvent event) {
+				// TODO Auto-generated method stub
+				imageWindowRelation = (double) imageListView.getOffsetWidth(true)
+						/ (double) mainPanel.getOffsetWidth(true);
+
+				tabPanel.setWidth((int) (((double) mainPanel.getOffsetWidth()) - event.getWidth() - 10));
+			}
+
+		});
 		HorizontalLayoutContainer mainHLC = new HorizontalLayoutContainer();
-		mainHLC.add(tabPanel, new HorizontalLayoutData(.7, 1.0));
-		mainHLC.add(depictionImagesPanel, new HorizontalLayoutData(.3, 1.0));
-		
-		ToolButton saveToolButton = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
+		imageWindowRelation = 0.35;
+		mainHLC.add(tabPanel, new HorizontalLayoutData(1 - imageWindowRelation, 1.0));
+		mainHLC.add(depictionImagesPanel, new HorizontalLayoutData(imageWindowRelation, 1.0));
+
+		saveToolButton = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 		saveToolButton.setToolTip(Util.createToolTip("save"));
 		saveToolButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-				save(false,0);
+				saveToolButton.disable();
+				Util.doLogging("Depiction Save triggert by Savie-Button");
+				save(false, 0);
 			}
 		});
 		ToolButton deleteToolButton = new ToolButton(new IconConfig("removeButton", "removeButtonOver"));
@@ -1649,110 +1969,113 @@ public class DepictionEditor extends AbstractEditor {
 		deleteToolButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-				de.cses.client.Util.showYesNo("Delete Warning!", "Proceeding will remove this Entry from the Database, are you sure?", new SelectHandler() {
-					
-					@Override
-					public void onSelect(SelectEvent event) {
-						iconographySelector.imgPopHide();
-						deleteEntry(correspondingDepictionEntry);
-						closeEditor(null);
-					}
-				}, new SelectHandler() {
-						
-					@Override
-					public void onSelect(SelectEvent event) {
-						iconographySelector.imgPopHide();
-						 
-					}
-				}, new KeyDownHandler() {
+				de.cses.client.Util.showYesNo("Delete Warning!",
+						"Proceeding will remove this Entry from the Database, are you sure?", new SelectHandler() {
 
-					@Override
-					public void onKeyDown(KeyDownEvent e) {
-						iconographySelector.imgPopHide();
-						
-					}}
-			
-					
-			
-			  );
+							@Override
+							public void onSelect(SelectEvent event) {
+								iconographySelector.imgPopHide();
+								deleteEntry(correspondingDepictionEntry);
+								closeEditor(null);
+							}
+						}, new SelectHandler() {
+
+							@Override
+							public void onSelect(SelectEvent event) {
+								iconographySelector.imgPopHide();
+
+							}
+						}, new KeyDownHandler() {
+
+							@Override
+							public void onKeyDown(KeyDownEvent e) {
+								iconographySelector.imgPopHide();
+
+							}
+						}
+
+				);
 			}
 		});
-		
+
 		ToolButton closeToolButton = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
 		closeToolButton.setToolTip(Util.createToolTip("close"));
 		closeToolButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-				de.cses.client.Util.showYesNo("Exit Warning!", "Do you wish to save before exiting?", new SelectHandler() {
-					
-					@Override
-					public void onSelect(SelectEvent event) {
-						iconographySelector.imgPopHide();
-						save(true,0);
-						closeEditor(null);
-					}
-				}, new SelectHandler() {
-						
-					@Override
-					public void onSelect(SelectEvent event) {
-						iconographySelector.imgPopHide();
-						bibliographySelector.clearPages(); 
-						closeEditor(null);
-					}
-				}, new KeyDownHandler() {
+				de.cses.client.Util.showYesNo("Exit Warning!", "Do you wish to save before exiting?",
+						new SelectHandler() {
 
-					@Override
-					public void onKeyDown(KeyDownEvent e) {
-						iconographySelector.imgPopHide();
-						if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
-						closeEditor(null);
-					}}
-			
-					
-				}
-			  );
+							@Override
+							public void onSelect(SelectEvent event) {
+								iconographySelector.imgPopHide();
+								Util.doLogging("Depiction Save triggert by Close-Button");
+								save(true, 0);
+								closeEditor(null);
+							}
+						}, new SelectHandler() {
+
+							@Override
+							public void onSelect(SelectEvent event) {
+								iconographySelector.imgPopHide();
+								bibliographySelector.clearPages();
+								closeEditor(null);
+							}
+						}, new KeyDownHandler() {
+
+							@Override
+							public void onKeyDown(KeyDownEvent e) {
+								iconographySelector.imgPopHide();
+								if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+									closeEditor(null);
+								}
+							}
+
+						});
 			}
 		});
-		
+
 		mainPanel = new FramedPanel();
 		mainPanel.addDomHandler(new KeyDownHandler() {
-		    @Override
-		    public void onKeyDown(KeyDownEvent e) {
-	        	  if ((e.isShiftKeyDown()) && (e.getNativeKeyCode() == KeyCodes.KEY_ENTER)) {
-	  				de.cses.client.Util.showYesNo("Exit Warning!", "Do you wish to save before exiting?", new SelectHandler() {
-						
-						@Override
-						public void onSelect(SelectEvent event) {
-							save(true,0);
-							closeEditor(null);
-						}
-					}, new SelectHandler() {
-							
-						@Override
-						public void onSelect(SelectEvent event) {
-							bibliographySelector.clearPages(); 
-							closeEditor(null);
-						}
-					}, new KeyDownHandler() {
+			@Override
+			public void onKeyDown(KeyDownEvent e) {
+				if ((e.isShiftKeyDown()) && (e.getNativeKeyCode() == KeyCodes.KEY_ENTER)) {
+					de.cses.client.Util.showYesNo("Exit Warning!", "Do you wish to save before exiting?",
+							new SelectHandler() {
 
-						@Override
-						public void onKeyDown(KeyDownEvent e) {
-							if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
-							closeEditor(null);
-						}}
-				
-						
-					}
-				  );
-		        }
-		    }			
+								@Override
+								public void onSelect(SelectEvent event) {
+									Util.doLogging("Depiction Save triggert by Key-Combination");
+									save(true, 0);
+									closeEditor(null);
+								}
+							}, new SelectHandler() {
+
+								@Override
+								public void onSelect(SelectEvent event) {
+									bibliographySelector.clearPages();
+									closeEditor(null);
+								}
+							}, new KeyDownHandler() {
+
+								@Override
+								public void onKeyDown(KeyDownEvent e) {
+									if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+										closeEditor(null);
+									}
+								}
+
+							});
+				}
+			}
 		}, KeyDownEvent.getType());
-		mainPanel.setHeading("Painted Representation Editor (entry "+correspondingDepictionEntry.getDepictionID()+" last modified on " + correspondingDepictionEntry.getModifiedOn() + 
-				(!correspondingDepictionEntry.getLastChangedByUser().isEmpty() ? " by " + correspondingDepictionEntry.getLastChangedByUser() + ")" : ")"));
+		mainPanel.setHeading("Painted Representation Editor (entry " + Integer.toString(correspondingDepictionEntry.getDepictionID())+")");
 
 		mainPanel.add(mainHLC);
-		mainPanel.setSize( Integer.toString(Window.getClientWidth()/100*90),Integer.toString(Window.getClientHeight()/100*90));
+		mainPanel.setSize(Integer.toString(Window.getClientWidth() / 100 * 95),
+				Integer.toString(Window.getClientHeight() / 100 * 95));
 		createNextPrevButtons();
+		mainPanel.addTool(modifiedToolButton);
 		mainPanel.addTool(prevToolButton);
 		mainPanel.addTool(nextToolButton);
 		mainPanel.addTool(deleteToolButton);
@@ -1762,16 +2085,16 @@ public class DepictionEditor extends AbstractEditor {
 		rs.addResizeEndHandler(new ResizeEndHandler() {
 			public void onResizeEnd(ResizeEndEvent event) {
 				bibliographySelector.setwidth(tabPanel.getOffsetWidth());
+
 			}
 		});
-		bibliographySelector.setwidth((int)((Window.getClientWidth()/100*90)/100*70));
-		new Draggable(mainPanel, mainPanel.getHeader(), GWT.<DraggableAppearance> create(DraggableAppearance.class));
+		bibliographySelector.setwidth((int) ((Window.getClientWidth() / 100 * 90) / ((1 - imageWindowRelation) * 10)));
+		new Draggable(mainPanel, mainPanel.getHeader(), GWT.<DraggableAppearance>create(DraggableAppearance.class));
 
-
-		
 	}
+
 	private void setosd() {
-		 dbService.getContext(new AsyncCallback<String>() {
+		dbService.getOSDContext(new AsyncCallback<String>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
@@ -1780,136 +2103,197 @@ public class DepictionEditor extends AbstractEditor {
 
 			@Override
 			public void onSuccess(String result) {
-				ArrayList<JavaScriptObject> results = OSDLoader.loadTiles(null, null,null, correspondingDepictionEntry.getRelatedImages(), result);
-				JavaScriptObject tiles = results.remove(0);
-				JavaScriptObject imgDic=results.remove(0);
-				JavaScriptObject ifn=results.remove(0);
-				ArrayList<String> filenames = new ArrayList<String>();
-				JavaScriptObject jso= OSDLoader.createZoomeImage(tiles,ifn,imgDic, osdDic,UserLogin.getInstance().getSessionID());
-
+				osdLoader.startLoadingTiles(result);
 			}
 		});
 	}
+	@Override
+	protected void loadModifiedEntries() {
+		sourceStore.clear();
+	    dbService.getModifiedAbstractEntry((AbstractEntry)correspondingDepictionEntry, new AsyncCallback<ArrayList<ModifiedEntry>>() {
+			
+				@Override
+				public void onSuccess(ArrayList<ModifiedEntry> result) {
+					for (ModifiedEntry entry : result) {
+						sourceStore.add(entry);
+					}
+				}
+				
+				@Override
+				public void onFailure(Throwable caught) {
+				}
+			});
+	 
+	}
+
 	public void setfocus() {
 		setosd();
-		
+
 	}
 
 	/**
-	 * Called when the save button is pressed. Calls <code>DepictionEditorListener.depictionSaved(correspondingDepictionEntry)<code>
-	 * @param close 
+	 * Called when the save button is pressed. Calls
+	 * <code>DepictionEditorListener.depictionSaved(correspondingDepictionEntry)<code>
+	 * 
+	 * @param close
 	 */
-	protected void save(boolean close,int slide) {
+	protected void save(boolean close, int slide) {
+//		ArrayList<IconographyEntry> icolist = new ArrayList<IconographyEntry>();
+//		icolist.add(iconographySelector.getIconographyStroe().findModelWithKey("2152"));
+////		icolist.add(iconographySelector.getIconographyStroe().findModelWithKey("2247"));
+//		String poly = "POLYGON((1403.597412109375,3109.902099609375 1407.431884765625,3305.460205078125 1806.21728515625,3282.453369140625 1994.106689453125,3267.115478515625 2289.361328125,3274.784423828125 2841.52587890625,3267.115478515625 2891.3740234375,3267.115478515625 2876.0361328125,2883.66796875 2899.04296875,2787.80615234375 2952.7255859375,2730.2890625 2964.22900390625,2638.261474609375 2918.21533203125,2557.737548828125 2879.87060546875,2534.730712890625 2837.69140625,2576.909912109375 2745.663818359375,2596.082275390625 2695.815673828125,2592.247802734375 2688.146728515625,2622.923583984375 2649.802001953125,2703.447509765625 2553.940185546875,2726.45458984375 2442.740234375,2722.6201171875 2389.0576171875,2703.447509765625 2343.0439453125,2688.109619140625 2362.21630859375,2741.79248046875 2419.7333984375,2776.302734375 2442.740234375,2803.14404296875 2454.24365234375,2810.81298828125 2454.24365234375,2860.6611328125 2400.56103515625,2914.34375 2366.05078125,2906.6748046875 2331.54052734375,2902.84033203125 2285.52685546875,2875.9990234375 2266.3544921875,2837.654296875 2228.009765625,2810.81298828125 2174.326904296875,2776.302734375 2135.982177734375,2753.2958984375 2112.975341796875,2749.46142578125 2093.802978515625,2772.46826171875 2059.292724609375,2783.9716796875 1928.9205322265625,2818.48193359375 1917.4171142578125,2902.84033203125 1833.0587158203125,2918.17822265625 1744.86572265625,2837.654296875 1741.03125,2795.47509765625 1741.03125,2757.13037109375 1744.86572265625,2703.447509765625 1537.8040771484375,2630.592529296875 1541.6385498046875,2672.771728515625 1545.4730224609375,2699.613037109375 1537.8040771484375,2730.2890625 1507.128173828125,2745.626953125 1422.769775390625,2783.9716796875 1384.425048828125,2806.978515625 1349.9146728515625,2818.48193359375 1349.9146728515625,2833.81982421875 1399.762939453125,2868.330078125 1403.597412109375,3109.902099609375))";
+//		poly=poly.replace(" ", "|");
+//		poly=poly.replace(",", " ");
+//		poly=poly.replace("|", ",");					
+//
+//		AnnotationEntry annoEntryDB = new AnnotationEntry(correspondingDepictionEntry.getDepictionID(), "restoredAnnotation9",icolist , poly, "21", false, false);
+//		dbService.setAnnotationResults(annoEntryDB, new AsyncCallback<Boolean>() {
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				Util.doLogging(caught.getLocalizedMessage());
+//				caught.printStackTrace();
+//			}
+//
+//			@Override
+//			public void onSuccess(Boolean result) {
+//				Util.doLogging("Annotation Saved: "+Boolean.toString(result));
+//			}
+//		});			
+
 		if (!shortNameTF.validate()) {
+			saveToolButton.enable();			
 			return;
 		}
 		ArrayList<ImageEntry> relatedImageEntryList = new ArrayList<ImageEntry>();
 		for (int i = 0; i < imageEntryLS.size(); ++i) {
 			relatedImageEntryList.add(imageEntryLS.get(i));
 		}
+//		List<WallTreeEntry> test = new ArrayList<WallTreeEntry>(correspondingDepictionEntry.getWalls());
+//		List<WallTreeEntry> test2 = new ArrayList<WallTreeEntry>(correspondingDepictionEntry.getWalls());
+//		test.removeAll(test2);
+		correspondingDepictionEntry.setRelatedIconographyList(iconographySelector.getSelectedIconography());
 		correspondingDepictionEntry.setRelatedImages(relatedImageEntryList);
 		correspondingDepictionEntry.setRelatedBibliographyList(bibliographySelector.getSelectedEntries());
-		Util.doLogging("Geqählte Seiten: ");
-		for (AnnotatedBibliographyEntry abe: correspondingDepictionEntry.getRelatedBibliographyList()) {
-			Util.doLogging(abe.getQuotedPages());
-		}
-		
-		//Info.display("Anzahl der ausgewählten Bibliographien: ",Integer.toString(correspondingDepictionEntry.getRelatedBibliographyList().size()));
 		correspondingDepictionEntry.setLastChangedByUser(UserLogin.getInstance().getUsername());
-		
+		Util.doLogging("correspondingDepictionEntry.getDepictionID() = "
+				+ Integer.toString(correspondingDepictionEntry.getDepictionID()));
+
 		if (correspondingDepictionEntry.getDepictionID() == 0) {
-			dbService.insertDepictionEntry(correspondingDepictionEntry, iconographySelector.getSelectedIconography(), new AsyncCallback<Integer>() {
 
-				@Override
-				public void onSuccess(Integer newDepictionID) {
-					
-					correspondingDepictionEntry.setDepictionID(newDepictionID.intValue());
-					for (EditorListener el :getListenerList()) {
-						if (el instanceof DepictionView) {
-							((DepictionView)el).setDepictionEntry(correspondingDepictionEntry);
-						}
-					}
-					saveSuccess=true;
-					doretry(close);
-//					updateEntry(correspondingDepictionEntry);
-					if (close) {
-						closeEditor(correspondingDepictionEntry);
-						bibliographySelector.clearPages(); 
-					}
-					if (slide!=0) {
-						doslide(slide);
-					}
+			dbService.insertDepictionEntry(correspondingDepictionEntry, iconographySelector.getSelectedIconography(),
+					new AsyncCallback<Integer>() {
 
-				}
-
-				@Override
-				public void onFailure(Throwable caught) {
-					de.cses.client.Util.doLogging(caught.getLocalizedMessage());
-					doretry(close);
-				}
-			});
-		} else {
-			dbService.updateDepictionEntry(correspondingDepictionEntry, iconographySelector.getSelectedIconography(), new AsyncCallback<Boolean>() {
-
-				@Override
-				public void onFailure(Throwable caught) {
-					de.cses.client.Util.doLogging(caught.getLocalizedMessage());
-					doretry(close);
-				}
-
-				@Override
-				public void onSuccess(Boolean updateSucessful) {
-//					updateEntry(correspondingDepictionEntry);
-						if (updateSucessful) {
-							saveSuccess=updateSucessful;
-							doretry(close);
-							for (EditorListener el :getListenerList()) {
+						@Override
+						public void onSuccess(Integer newDepictionID) {
+							saveToolButton.enable();
+							Util.doLogging("Saving Depiction successfull!");
+							Util.doLogging("correspondingDepictionEntry.getDepictionID() = "
+									+ Integer.toString(correspondingDepictionEntry.getDepictionID()));
+							correspondingDepictionEntry.setDepictionID(newDepictionID.intValue());
+							Util.doLogging("correspondingDepictionEntry.getDepictionID() = "
+									+ Integer.toString(correspondingDepictionEntry.getDepictionID()));
+							for (EditorListener el : getListenerList()) {
 								if (el instanceof DepictionView) {
-									((DepictionView)el).setDepictionEntry(correspondingDepictionEntry);
+									((DepictionView) el).setDepictionEntry(correspondingDepictionEntry);
 								}
 							}
+							saveSuccess = true;
+							doretry(close);
+//					updateEntry(correspondingDepictionEntry);
 							if (close) {
 								closeEditor(correspondingDepictionEntry);
-								bibliographySelector.clearPages(); 
+								bibliographySelector.clearPages();
 							}
-						}
-						if (slide!=0) {
-							doslide(slide);
+							if (slide != 0) {
+								doslide(slide);
+							}
+
 						}
 
-				}
-			});
+						@Override
+						public void onFailure(Throwable caught) {
+							Util.doLogging("Saving Depiction failed!");
+							de.cses.client.Util.doLogging(caught.getLocalizedMessage());
+							doretry(close);
+						}
+					});
+		} else {
+			Util.doLogging("Starting UpdateDepictionEntry");
+			dbService.updateDepictionEntry(correspondingDepictionEntry,
+					 iconographySelector.getSelectedIconography(), UserLogin.getInstance().getSessionID(), new AsyncCallback<Boolean>() {
+
+						@Override
+						public void onFailure(Throwable caught) {
+							Util.doLogging("Saving Depiction failed!");
+							de.cses.client.Util.doLogging(caught.getLocalizedMessage());
+							doretry(close);
+						}
+
+						@Override
+						public void onSuccess(Boolean updateSucessful) {
+							saveToolButton.enable();
+							Util.doLogging("Updating Depiction successfull!");
+//					updateEntry(correspondingDepictionEntry);
+							if (updateSucessful) {
+								saveSuccess = updateSucessful;
+								doretry(close);
+								for (EditorListener el : getListenerList()) {
+									if (el instanceof DepictionView) {
+										((DepictionView) el).setDepictionEntry(correspondingDepictionEntry);
+									}
+								}
+								if (close) {
+									closeEditor(correspondingDepictionEntry);
+									bibliographySelector.clearPages();
+								}
+							}
+							if (slide != 0) {
+								doslide(slide);
+							}
+
+						}
+					});
 		}
-		
-	}
-private void doretry(boolean close) {
-	if (saveSuccess) {
-		Info.display("Depiction saved","sucessfully!");
-	}
-	else {
-		Util.showYesNo("Saving Process finished with errors!", "Do you want to retray saving?", new SelectHandler() {
-			
-			@Override
-			public void onSelect(SelectEvent event) {
-				save(close,0);
-			}
-		}, new SelectHandler() {
-				
-			@Override
-			public void onSelect(SelectEvent event) {
-				if (close) {
-					closeEditor(correspondingDepictionEntry);
-					bibliographySelector.clearPages(); 
-				}
-				 
-			}
-		}, new KeyDownHandler() {
 
-			@Override
-			public void onKeyDown(KeyDownEvent e) {
-				
-			}}		
-	  );
+	}
+
+	private void doretry(boolean close) {
+		if (saveSuccess) {
+			Util.doLogging("Depiction saved sucessfully!");
+		} else {
+			Util.showYesNo("Saving Process finished with errors!", "Do you want to retray saving?",
+					new SelectHandler() {
+
+						@Override
+						public void onSelect(SelectEvent event) {
+							Util.doLogging("Depiction Save triggert by Dialog Saving Retry");
+							save(close, 0);
+						}
+					}, new SelectHandler() {
+
+						@Override
+						public void onSelect(SelectEvent event) {
+							saveToolButton.enable();
+							if (close) {
+								closeEditor(correspondingDepictionEntry);
+								bibliographySelector.clearPages();
+							}
+
+						}
+					}, new KeyDownHandler() {
+
+						@Override
+						public void onKeyDown(KeyDownEvent e) {
+
+						}
+					});
+		}
+	}
+	private void reloadPics() {
+		imageListView.getStore().clear();
+		osdLoader.destroyAllViewers();
+		loadImages();
+		setosd();
 	}
 }
-}
+

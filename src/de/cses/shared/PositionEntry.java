@@ -39,5 +39,15 @@ public class PositionEntry extends AbstractEntry {
 	public String getUniqueID() {
 		return "OrnamentPositionEntry" + positionID;
 	}
+    @Override
+    public boolean equals(Object anObject) {
+    	boolean isEqual=false;
+    	if (anObject instanceof PositionEntry){
+        	if (this.getPositionID()==((PositionEntry)anObject).getPositionID()) {
+        		isEqual=true;
+        	}
+    	}
+        return isEqual;
+    }
 
 }

@@ -661,10 +661,10 @@ public class DepictionFilter extends AbstractFilter {
 
 	private void showIconographySelection() {
 		if (extendedFilterDialog == null) {
+			icoSelector.testforUserRights();
 			extendedFilterDialog = new PopupPanel();
-			ToolButton closeTB = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
-			closeTB.setToolTip(Util.createToolTip("Close selection.", "Currently selected items will be used in the filter."));
-			closeTB.addSelectHandler(new SelectHandler() {
+			icoSelector.closeTB.setToolTip(Util.createToolTip("Close selection.", "Currently selected items will be used in the filter."));
+			icoSelector.closeTB.addSelectHandler(new SelectHandler() {
 				
 				@Override
 				public void onSelect(SelectEvent event) {
@@ -682,7 +682,7 @@ public class DepictionFilter extends AbstractFilter {
 					invokeSearch();
 				}
 			});
-			icoSelector.addTool(closeTB);
+			icoSelector.closeTB.setVisible(true);
 			//icoSelector.selectChildren(true);
 			//icoSelector.selectNoParents(true);
 			extendedFilterDialog.add(icoSelector);

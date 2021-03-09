@@ -70,6 +70,7 @@ public class ImageServiceImpl extends HttpServlet {
 		response.setContentType("text/plain");
 		String origUploadFileName = request.getParameter("origImageFileName");
 		String hasID = request.getParameter("hasID");
+		String modifiedBy = request.getParameter("modifiedBy");
 		File imgHomeDir = new File(serverProperties.getProperty("home.images"));
 		if (!imgHomeDir.exists()) {
 			imgHomeDir.mkdirs();
@@ -81,7 +82,11 @@ public class ImageServiceImpl extends HttpServlet {
 			if (!connector.getImageEntries("Title=\"" + origUploadFileName + "\"").isEmpty()) { // filename already exists
 				System.err.println(origUploadFileName + " already exists in database!");
 				response.getWriter().write(String.valueOf(0));
+				System.err.println("Response: "+response.toString());
+				System.err.println("Response Status: "+response.getStatus());
+//				System.err.println("response written!");
 				response.getWriter().close();
+//				System.err.println("response closed!");
 				return;
 			}
 		}
@@ -114,6 +119,7 @@ public class ImageServiceImpl extends HttpServlet {
 							System.err.println("filename = " + filename);
 							ie = connector.getImageEntry(newImageID);
 							ie.setFilename(filename);
+							ie.setLastChangedByUser(modifiedBy);
 							ie.setTitle(uploadFileName);
 							File oldImageFile = new File(imgHomeDir,filename);
 							oldImageFile.delete();
@@ -122,7 +128,7 @@ public class ImageServiceImpl extends HttpServlet {
 							target = new File(imgHomeDir, filename);
 							try {	
 								URL imageURL = new URL(
-										"http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/max/0/default.png"
+										"http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/max/0/default.jpg"
 									);
 								InputStream in = imageURL.openStream();
 								in.close();	
@@ -132,8 +138,9 @@ public class ImageServiceImpl extends HttpServlet {
 								sizes.add("180");
 								for (String tnSize:sizes) {
 									imageURL = new URL(
-											"http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/!" + tnSize + "," + tnSize + "/0/default.png"
+											"http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/!" + tnSize + "," + tnSize + "/0/default.jpg"
 										);
+									System.out.println(imageURL);
 									in = imageURL.openStream();
 									in.close();																	
 								}

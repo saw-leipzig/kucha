@@ -67,6 +67,7 @@ public class ImageSelector implements IsWidget {
 	private ImageProperties properties;
 	private ListView<ImageEntry, ImageEntry> imageListView;
 	private ArrayList<ImageSelectorListener> selectorListener;
+	private int maxEntries;
 
 	/**
 	 * Create a remote service proxy to talk to the server-side service.
@@ -259,6 +260,15 @@ public class ImageSelector implements IsWidget {
 		cp.addButton(searchButton);
 		cp.addButton(resetButton);
 		hlc.add(cp, new HorizontalLayoutData(.4, 1.0));
+		ToolButton refreshTB = new ToolButton(ToolButton.PLUS);
+		refreshTB.setToolTip("Add more results.");
+		refreshTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				addImages();
+			}
+		});
 		
 		ToolButton infoTB = new ToolButton(ToolButton.QUESTION);
 		infoTB.addSelectHandler(new SelectHandler() {
@@ -305,6 +315,7 @@ public class ImageSelector implements IsWidget {
 
 		imageListViewFP.add(filtercontainer);
 //		imageListViewFP.addTool(zoomTB);
+		imageListViewFP.addTool(refreshTB);
 		imageListViewFP.addTool(infoTB);
 		hlc.add(imageListViewFP, new HorizontalLayoutData(.6, 1.0));
 
@@ -321,7 +332,8 @@ public class ImageSelector implements IsWidget {
 	 */
 	private void refreshImages() {
 		ImageSearchEntry searchEntry = (ImageSearchEntry) imgFilter.getSearchEntry();
-		searchEntry.setMaxentries(1000000);
+		maxEntries=100;
+		searchEntry.setMaxentries(maxEntries);
 		dbService.searchImages(searchEntry, new AsyncCallback<Map<Integer, ArrayList<ImageEntry>>>() {
 
 			@Override
@@ -335,6 +347,31 @@ public class ImageSelector implements IsWidget {
 				for (Integer key : result.keySet()) {
 					for (ImageEntry ie: result.get(key)) {
 						imageEntryList.add(ie);
+					}
+				}
+				imageListView.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+			}
+		});
+	}
+	private void addImages() {
+		ImageSearchEntry searchEntry = (ImageSearchEntry) imgFilter.getSearchEntry();
+		searchEntry.setEntriesShowed(maxEntries);
+		maxEntries+=100;
+		searchEntry.setMaxentries(maxEntries);		
+		dbService.searchImages(searchEntry, new AsyncCallback<Map<Integer, ArrayList<ImageEntry>>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				Info.display("add Images to List", "failed: "+caught.getMessage());
+			}
+
+			@Override
+			public void onSuccess(Map<Integer,ArrayList<ImageEntry>> result) {
+				for (Integer key : result.keySet()) {
+					for (ImageEntry ie: result.get(key)) {
+						if (imageEntryList.findModel(ie)==null) {
+							imageEntryList.add(ie);							
+						}
 					}
 				}
 				imageListView.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);

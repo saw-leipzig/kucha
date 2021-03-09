@@ -20,7 +20,7 @@ package de.cses.shared;
 public class AuthorEntry extends AbstractEntry {
 
 	private int authorID = 0;
-	private String lastname, firstname, institution, alias;
+	private String lastname, firstname, institution, alias, altSpelling;
 	private boolean kuchaVisitor;
 	private String affiliation, email, homepage;
 	private boolean institutionEnabled;
@@ -33,7 +33,7 @@ public class AuthorEntry extends AbstractEntry {
 	public AuthorEntry() {	}
 
 	public AuthorEntry(int authorID, String lastname, String firstname, String institution, boolean kuchaVisitor, String affiliation, String email,
-			String homepage, String alias, boolean institutionEnabled, String lastChangedOn) {
+			String homepage, String alias, boolean institutionEnabled, String lastChangedOn, String altSpelling) {
 		this.authorID = authorID;
 		this.lastname = lastname;
 		this.setInstitution(institution);
@@ -45,6 +45,7 @@ public class AuthorEntry extends AbstractEntry {
 		this.alias = alias;
 		this.institutionEnabled = institutionEnabled;
 		this.setModifiedOn(lastChangedOn);
+		this.altSpelling=altSpelling;
 	}
 	
 	public int getAuthorID() {
@@ -65,6 +66,13 @@ public class AuthorEntry extends AbstractEntry {
 
 	public String getFirstname() {
 		return firstname;
+	}
+
+	public void setAltSpelling(String altSpelling) {
+		this.altSpelling = altSpelling;
+	}
+	public String getAltSpelling() {
+		return altSpelling;
 	}
 
 	public void setFirstname(String firstname) {

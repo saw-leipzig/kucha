@@ -49,7 +49,9 @@ public abstract class AbstractFilter implements IsWidget{
 		};
 	}
 	public void invokeSearch() {
+		if (saerchparent!=null) {
 		saerchparent.invokeSearch();
+		}
 	}
 	/* (non-Javadoc)
 	 * @see com.google.gwt.user.client.ui.IsWidget#asWidget()

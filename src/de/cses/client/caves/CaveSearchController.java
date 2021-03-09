@@ -101,6 +101,13 @@ public class CaveSearchController extends AbstractSearchController {
 					getResultView().addResult(new CaveView((CaveEntry)entry));
 				}
 			}
+			public Integer getClickNumber() {
+				return 0;
+			}
+			public void addClickNumber() {
+			}
+			public void setClickNumber(int clicks) {
+			}
 
 //			@Override
 //			public void updateEntryRequest(AbstractEntry updatedEntry) { }
@@ -113,6 +120,8 @@ public class CaveSearchController extends AbstractSearchController {
 		caveEditorPanel.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
 		caveEditorPanel.setModal(true);
 		caveEditorPanel.setGlassEnabled(true);
+		caveEditorPanel.center();
+
 		
 	}
 

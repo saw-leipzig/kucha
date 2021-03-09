@@ -42,6 +42,7 @@ import com.sencha.gxt.dnd.core.client.DndDropEvent;
 import com.sencha.gxt.dnd.core.client.DropTarget;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.ListView;
+import com.sencha.gxt.widget.core.client.ListViewSelectionModel;
 import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer;
@@ -379,7 +380,7 @@ public class OrnamenticFilter extends AbstractFilter {
 		icoSelectionLV.getSelectionModel().deselectAll();;
 		ornamentClassComboBox.clear();;
 		ornamentComponentsSelectionLV.getSelectionModel().deselectAll();;
-		cavesEntryList.clear();;
+		//cavesEntryList.clear();;
 		cavesSelectionLV.getSelectionModel().deselectAll();;
 		districtsSelectionLV.getSelectionModel().deselectAll();;
 		positionSelectionLV.getSelectionModel().deselectAll();;
@@ -533,10 +534,12 @@ public class OrnamenticFilter extends AbstractFilter {
 			clear();
 		}
 		if (((OrnamenticSearchEntry)searchEntry).getCaves()!=null) {
-			if (((OrnamenticSearchEntry)searchEntry).getCaves().isEmpty()) {
+			if (((OrnamenticSearchEntry)searchEntry).getCaves().size()>0) {
+				List<CaveEntry> caves=new ArrayList<CaveEntry>();
 				for (CaveEntry ce : ((OrnamenticSearchEntry)searchEntry).getCaves()) {
-					cavesSelectionLV.getSelectionModel().select(true, ce);
+					cavesSelectionLV.getSelectionModel().select(ce,true);
 				}
+				ListViewSelectionModel<CaveEntry> test =cavesSelectionLV.getSelectionModel();
 			}
 		}
 		if (!((OrnamenticSearchEntry)searchEntry).getCode().isEmpty()) {
@@ -548,24 +551,24 @@ public class OrnamenticFilter extends AbstractFilter {
 		if (!((OrnamenticSearchEntry)searchEntry).getInterpretation().isEmpty()) {
 			ornamentInterpretationSearchTF.setValue(((OrnamenticSearchEntry)searchEntry).getInterpretation(), true);
 		}
-		if ((((OrnamenticSearchEntry)searchEntry).getComponents()!=null)&&(!((OrnamenticSearchEntry)searchEntry).getComponents().isEmpty())) {
+		if ((((OrnamenticSearchEntry)searchEntry).getComponents()!=null)&&(((OrnamenticSearchEntry)searchEntry).getComponents().size()>0)) {
 			for (OrnamentComponentsEntry oce :((OrnamenticSearchEntry)searchEntry).getComponents()) {
 				ornamentComponentsSelectionLV.getSelectionModel().select(oce, true);
 			}
 		}
-		if ((((OrnamenticSearchEntry)searchEntry).getImageIDList()!=null)&&(!((OrnamenticSearchEntry)searchEntry).getImageIDList().isEmpty())) {
+		if ((((OrnamenticSearchEntry)searchEntry).getImageIDList()!=null)&&(((OrnamenticSearchEntry)searchEntry).getImageIDList().size()>0)) {
 			for (Integer imgID :((OrnamenticSearchEntry)searchEntry).getImageIDList()) {
 				imgIDs.add(imgID);
 			}
 		}
 
-		if ((((OrnamenticSearchEntry)searchEntry).getBibIdList()!=null)&&(((OrnamenticSearchEntry)searchEntry).getImageIDList().isEmpty())) {
+		if ((((OrnamenticSearchEntry)searchEntry).getBibIdList()!=null)&&(((OrnamenticSearchEntry)searchEntry).getImageIDList().size()>0)) {
 			for (Integer bibID :((OrnamenticSearchEntry)searchEntry).getBibIdList()) {
 				bibIDs.add(bibID);
 			}
 		}
 
-		if ((((OrnamenticSearchEntry)searchEntry).getPosition()!=null)&&(((OrnamenticSearchEntry)searchEntry).getPosition().isEmpty())) {
+		if ((((OrnamenticSearchEntry)searchEntry).getPosition()!=null)&&(((OrnamenticSearchEntry)searchEntry).getPosition().size()>0)) {
 			for (PositionEntry pe :((OrnamenticSearchEntry)searchEntry).getPosition()) {
 				positionSelectionLV.getSelectionModel().select(pe, true);
 			}
@@ -575,8 +578,9 @@ public class OrnamenticFilter extends AbstractFilter {
 			ornamentClassComboBox.setValue(((OrnamenticSearchEntry)searchEntry).getOrnamentClass());
 		}
 
-		if ((((OrnamenticSearchEntry)searchEntry).getIconography()!=null)&&(((OrnamenticSearchEntry)searchEntry).getIconography().isEmpty())) {
-			for (IconographyEntry ie :((OrnamenticSearchEntry)searchEntry).getIconography()) {
+		if (((OrnamenticSearchEntry)searchEntry).getIconographys().size()>0){
+			ArrayList<IconographyEntry> icos = ((OrnamenticSearchEntry)searchEntry).getIconographys();
+			for (IconographyEntry ie : icos) {
 				selectedIconographyLS.add(ie);
 			}
 		}
@@ -670,8 +674,8 @@ public class OrnamenticFilter extends AbstractFilter {
 		ContentPanel ornamentComponentsPanel = new ContentPanel();
 		ornamentComponentsPanel.setHeaderVisible(true);
 		ornamentComponentsPanel
-				.setToolTip(Util.createToolTip("Search for ornament components.", "Select one or more elements to search for Ornamentations."));
-		ornamentComponentsPanel.setHeading("Ornament Components");
+				.setToolTip(Util.createToolTip("Search for components of Iconography.", "Select one or more elements to search for Ideal Typical Pictures."));
+		ornamentComponentsPanel.setHeading("Iconography Components");
 		ornamentComponentsPanel.add(ornamentComponentsSelectionLV);
 		ornamentComponentsPanel.getHeader().setStylePrimaryName("frame-header");
 
@@ -731,6 +735,7 @@ public class OrnamenticFilter extends AbstractFilter {
 
 			@Override
 			public void onSelectionChanged(SelectionChangedEvent<CaveEntry> event) {
+				Util.doLogging("selected!");
 				cavesEntryList.applySort(false);
 			}
 		});

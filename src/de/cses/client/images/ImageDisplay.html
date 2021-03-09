@@ -1,0 +1,70 @@
+<div class="data-view">
+		<figure style='text-align: center; margin: 0;'>
+				<a href='{fullImageUri}' target='_blank'> <img src='{imageUri}'
+						style='position: relative; width: 100%; height: auto;'>
+				</a>
+				<figcaption style='font-family: verdana; font-size: 12px;'>
+						{title}
+				</figcaption>
+		</figure>
+
+		<h4 class="data-display">Summary</h4>
+		<table class="data-view">
+				<tpl if="title != &quot;&quot;">
+				<tr style="border-bottom: 1px solid black">
+						<td class="data-view-left"><i>Title</i></td>
+						<td class="data-view-right">{title}</td>
+				</tr>
+				</tpl>
+				<tpl if="author != &quot;&quot;">
+				<tr style="border-bottom: 1px solid black">
+						<td class="data-view-left"><i>Author</i></td>
+						<td class="data-view-right">{author}</td>
+				</tr>
+				</tpl>
+				<tpl if="shortname != &quot;&quot;">
+				<tr style="border-bottom: 1px solid black">
+						<td class="data-view-left"><i>Short Name</i></td>
+						<td class="data-view-right">{shortname}</td>
+				</tr>
+				</tpl>
+				<tpl if="imgType != &quot;&quot;">
+				<tr style="border-bottom: 1px solid black">
+						<td class="data-view-left"><i>Image Type</i></td>
+						<td class="data-view-right">{imgType}</td>
+				</tr>
+				</tpl>
+				<tpl if="location != &quot;&quot;">
+				<tr style="border-bottom: 1px solid black">
+						<td class="data-view-left"><i>Current Location</i></td>
+						<td class="data-view-right">{location}</td>
+				</tr>
+				</tpl>
+				<tpl if="accessLvl != &quot;&quot;">
+				<tr style="border-bottom: 1px solid black">
+						<td class="data-view-left"><i>Access Level</i></td>
+						<td class="data-view-right">{accessLvl}</td>
+				</tr>
+				</tpl>
+				<tpl if="copyright != &quot;&quot;">
+				<tr style="border-bottom: 1px solid black">
+						<td class="data-view-left"><i>Copyright</i></td>
+						<td class="data-view-right">{copyright}</td>
+				</tr>
+				</tpl>
+				<tpl if="comment != &quot;&quot;">
+				<tr style="border-bottom: 1px solid black">
+						<td class="data-view-left"><i>Comment</i></td>
+						<td class="data-view-right">{comment}</td>
+				</tr>
+				</tpl>
+				<tpl if="date != &quot;&quot;">
+				<tr style="border-bottom: 1px solid black">
+						<td class="data-view-left"><i>Date</i></td>
+						<td class="data-view-right">{date}</td>
+				</tr>
+				</tpl>
+		</table>
+
+		
+</div>

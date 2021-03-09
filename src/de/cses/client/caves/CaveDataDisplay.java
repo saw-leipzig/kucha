@@ -91,10 +91,11 @@ public class CaveDataDisplay extends AbstractDataDisplay {
 				entry.isHasHolesForFixationOfPlasticalItems(),
 				entry.isHasWoodenConstruction()
 			));
+				htmlWidget.addStyleName("html-data-display");
+				add(htmlWidget, new MarginData(0, 0, 0, 0));
+				setHeading((se != null ? se.getShortName() : "Site Unknown") + " " + entry.getOfficialNumber() + (!entry.getHistoricName().isEmpty() ? " (" + entry.getHistoricName() + ")" : ""));
+
 			}});
-		htmlWidget.addStyleName("html-data-display");
-		add(htmlWidget, new MarginData(0, 0, 0, 0));
-		setHeading((se != null ? se.getShortName() : "Site Unknown") + " " + entry.getOfficialNumber() + (!entry.getHistoricName().isEmpty() ? " (" + entry.getHistoricName() + ")" : ""));
 	}
 	
 	private ArrayList<CaveSketchUri> getCaveSketchURIs() {

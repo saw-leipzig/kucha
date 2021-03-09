@@ -50,6 +50,7 @@ public class ResourceDownloadServlet extends HttpServlet {
 	 */
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		System.out.println("got request: "+ request);
 		String sessionID = request.getParameter("sessionID");
 		//System.out.println("doGetParameters: ");
 		//for (String key : request.getParameterMap().keySet()) {
@@ -99,16 +100,16 @@ public class ResourceDownloadServlet extends HttpServlet {
 			if (request.getParameter("thumb") != null) {
 				int tnSize = Integer.valueOf(request.getParameter("thumb")); // the requested size is given as a parameter
 				imageURL = new URL(
-						"http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/!" + tnSize + "," + tnSize + "/0/default.png"
+						"http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/!" + tnSize + "," + tnSize + "/0/default.jpg"
 					);
 			} else {
 				imageURL = new URL(
-						"http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/max/0/default.png"
+						"http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/max/0/default.jpg"
 					);
 			}
 //			System.out.println("Öffne Stream");
 			InputStream in = imageURL.openStream();
-			response.setContentType("image/png");
+			response.setContentType("image/jpg");
 			byte buffer[] = new byte[4096];
 			int bytesRead = 0;
 			while ((bytesRead = in.read(buffer)) > 0) {
@@ -126,7 +127,7 @@ public class ResourceDownloadServlet extends HttpServlet {
 				File inputFile = new File(serverProperties.getProperty("home.backgrounds"), filename);
 				if (inputFile.exists()) {
 					FileInputStream fis = new FileInputStream(inputFile);
-					response.setContentType(filename.toLowerCase().endsWith("png") ? "image/png" : "image/jpeg");
+					response.setContentType(filename.toLowerCase().endsWith("png") ? "image/jpg" : "image/jpeg");
 					ServletOutputStream out = response.getOutputStream();
 					byte buffer[] = new byte[4096];
 					int bytesRead = 0;
@@ -149,7 +150,7 @@ public class ResourceDownloadServlet extends HttpServlet {
 				File inputFile = new File(serverProperties.getProperty("home.cavesketches"), filename);
 				if (inputFile.exists()) {
 					FileInputStream fis = new FileInputStream(inputFile);
-					response.setContentType(filename.toLowerCase().endsWith("png") ? "image/png" : "image/jpeg");
+					response.setContentType(filename.toLowerCase().endsWith("png") ? "image/jpg" : "image/jpeg");
 					ServletOutputStream out = response.getOutputStream();
 					byte buffer[] = new byte[4096];
 					int bytesRead = 0;
@@ -164,14 +165,20 @@ public class ResourceDownloadServlet extends HttpServlet {
 				}
 			}
 		} else if (request.getParameter("document") != null) {
-			if (connector.getAccessLevelForSessionID(sessionID) == UserEntry.FULL) {
+			System.out.println("is document");
+			System.out.println(connector.getAccessLevelForSessionID(sessionID));
+			if (connector.getAccessLevelForSessionID(sessionID) >= UserEntry.FULL) {
+				System.out.println("User has rights.");
 				String filename = request.getParameter("document");
+				System.out.println(filename);
 				if (filename.startsWith(".")) {
 					response.setStatus(400);
 					return;
 				} else {
 					File inputFile = new File(serverProperties.getProperty("home.documents"), filename);
+					System.out.println("Document: "+filename+" providing.");
 					if (inputFile.exists()) {
+						System.out.println("Document: "+filename+" found.");
 						FileInputStream fis = new FileInputStream(inputFile);
 						response.setContentType(filename.toLowerCase().endsWith("pdf") ? "application/pdf" : "text/html");
 						ServletOutputStream out = response.getOutputStream();
@@ -182,12 +189,14 @@ public class ResourceDownloadServlet extends HttpServlet {
 						}
 						out.close();
 						fis.close();
+						System.out.println("Document: "+filename+" provided.");
 					} else {
 						response.setStatus(404);
 						return;
 					}
 				}
 			} else {
+				System.out.println("User rights not sufficent.");
 				response.setStatus(403);
 				return;
 			}

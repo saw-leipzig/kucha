@@ -139,6 +139,32 @@ public class DataViewPortalLayoutContainer extends PortalLayoutContainer {
 					}
 				});
 				loadCollectionFP.addButton(loadButton);
+				TextButton deleteButton = new TextButton("delete");
+				deleteButton.addSelectHandler(new SelectHandler() {
+					
+					@Override
+					public void onSelect(SelectEvent event) {
+						dbService.delCollectedEntries(collectionNameCB.getValue(), new AsyncCallback<CollectionEntry>() {
+
+							@Override
+							public void onFailure(Throwable caught) {
+								Util.showWarning("Error while deletint", "Collection could not be deleted.");
+							}
+
+							@Override
+							public void onSuccess(CollectionEntry result) {
+								collectionNameCB.clear();
+								Util.doLogging(Integer.toString(collectionNameCB.getStore().size()));
+								collectionNameCB.getStore().remove(result);
+								Util.doLogging(Integer.toString(collectionNameCB.getStore().size()));
+								collectionNameCB.redraw();
+								loadCollectionDialog.hide();
+								
+							}
+						});
+					}
+				});
+				loadCollectionFP.addButton(deleteButton);
 				TextButton cancelButton = new TextButton("cancel");
 				cancelButton.addSelectHandler(new SelectHandler() {
 					

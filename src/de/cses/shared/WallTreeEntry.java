@@ -29,8 +29,8 @@ public class WallTreeEntry extends AbstractEntry {
 	private int wallLocationID, parentID;
 	private String text;
 	private String search;
-	private ArrayList<WallTreeEntry> children;
-	private ArrayList<PositionEntry> position;
+	private ArrayList<WallTreeEntry> children = new ArrayList<WallTreeEntry>();
+	private ArrayList<PositionEntry> position = new ArrayList<PositionEntry>();
 	
 	public WallTreeEntry() { }
 
@@ -49,7 +49,9 @@ public class WallTreeEntry extends AbstractEntry {
 		this.text = text;
 		this.search = search;
 		this.children = null;
-		this.position=position;
+		if (position!=null) {
+			this.position=position;			
+		}
 	}
 	public int getWallLocationID() {
 		return wallLocationID;
@@ -124,5 +126,24 @@ public class WallTreeEntry extends AbstractEntry {
 	public String getUniqueID() {
 		return "WallTreeEntry-" + wallLocationID;
 	}
+    @Override
+    public boolean equals(Object anObject) {
+    	boolean isEqual=false;
+    	if (anObject instanceof WallTreeEntry){
+    		ArrayList<PositionEntry> compPos = new ArrayList<PositionEntry>();
+    		if (position!=null) {
+        		compPos = new ArrayList<PositionEntry>(position);    			
+    		}
+    		if (((WallTreeEntry)anObject).getPosition()!=null) {
+        		compPos.removeAll(((WallTreeEntry)anObject).getPosition());    			
+    		}
+        	if (this.wallLocationID==((WallTreeEntry)anObject).getWallLocationID()) {
+        		if (compPos.size()==0) {
+        			isEqual=true;
+        		}
+        	}
+    	}
+        return isEqual;
+    }
 
 }

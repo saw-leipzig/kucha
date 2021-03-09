@@ -56,6 +56,7 @@ public class AuthorEditor implements IsWidget {
 	private TextField authorHomepageTF;
 	private TextField authorEmailTF;
 	private TextField authorAliasTF;
+	private TextField authorAltSpellingTF;
 	
 	public AuthorEditor(AuthorEditorListener listener) {
 		this(new AuthorEntry(), listener);
@@ -142,7 +143,19 @@ public class AuthorEditor implements IsWidget {
 				authorEntry.setAlias(event.getValue());
 			}
 		});
+		authorAltSpellingTF = new TextField();
+		authorAltSpellingTF.addValidator(new MaxLengthValidator(128));
+		authorAltSpellingTF.setAutoValidate(true);
+		authorAltSpellingTF.setWidth(300);
+		authorAltSpellingTF.setValue(authorEntry.getAltSpelling());
+		authorAltSpellingTF.addValueChangeHandler(new ValueChangeHandler<String>() {
 
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				authorEntry.setAltSpelling(event.getValue());
+			}
+		});
+		
 		CheckBox kuchaVisitorCB = new CheckBox();
 		kuchaVisitorCB.setBoxLabel("has visited Kucha");
 		kuchaVisitorCB.setValue(authorEntry.isKuchaVisitor());
@@ -248,6 +261,7 @@ public class AuthorEditor implements IsWidget {
 		newAuthorVLC.add(new FieldLabel(authorLastNameTF, "Family name"), new VerticalLayoutData(1.0, 1.0 / 9));
 		newAuthorVLC.add(new FieldLabel(authorFirstNameTF, "Given Name"), new VerticalLayoutData(1.0, 1.0 / 9));
 		newAuthorVLC.add(new FieldLabel(authorAliasTF, "Alias"), new VerticalLayoutData(1.0, 1.0 / 9));
+		newAuthorVLC.add(new FieldLabel(authorAltSpellingTF, "Alt. Spelling"), new VerticalLayoutData(1.0, 1.0 / 9));
 		newAuthorVLC.add(new FieldLabel(authorAffiliation, "Affiliation"), new VerticalLayoutData(1.0, 1.0 / 9));
 		newAuthorVLC.add(new FieldLabel(authorEmailTF, "E-mail"), new VerticalLayoutData(1.0, 1.0 / 9));
 		newAuthorVLC.add(institutionCB, new VerticalLayoutData(1.0, 1.0 / 9));
