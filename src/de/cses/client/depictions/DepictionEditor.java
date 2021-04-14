@@ -196,12 +196,7 @@ public class DepictionEditor extends AbstractEditor {
 	private TextField shortNameTF;
 	private BibliographySelector bibliographySelector;
 	private StoreFilterField<ImageEntry> filterField;
-	private VerticalLayoutContainer zoomPanel;
-	private Map<String, HTML> imgannotations = new HashMap<String, HTML>();
-	private JavaScriptObject osdDic;
 	private OSDLoader osdLoader;
-	private static PopupPanel AnnoPanel = new PopupPanel(false);
-	private ImageEntry selectedImgEntry;
 	private boolean annotationsLoaded = true;
 	private double imageWindowRelation;
 	private OSDListener osdListener;
@@ -417,7 +412,7 @@ public class DepictionEditor extends AbstractEditor {
 		loadModesOfRepresentation();
 		loadPreservationAttributes();
 	}
-
+	// this method should be added to osdLader
 	private void highlightIcoEntry(IconographyEntry selectedIE, boolean deselect, List<IconographyEntry>clickedIcos) {
 		//Util.doLogging("Started highlighting for Iconography: "+selectedIE.getText());
 		ArrayList<AnnotationEntry> newAnnos = new ArrayList<AnnotationEntry>();
@@ -1753,7 +1748,7 @@ public class DepictionEditor extends AbstractEditor {
 		    sourceStore = new ListStore<ModifiedEntry>(modifiedProps.key());
 
 			sourceStore.clear();
-		    dbService.getModifiedAnnoEntry(correspondingDepictionEntry, new AsyncCallback<ArrayList<ModifiedEntry>>() {
+		    dbService.getModifiedAnnoEntry(correspondingDepictionEntry.getDepictionID(), false, new AsyncCallback<ArrayList<ModifiedEntry>>() {
 				
 					@Override
 					public void onSuccess(ArrayList<ModifiedEntry> result) {
@@ -1872,6 +1867,10 @@ public class DepictionEditor extends AbstractEditor {
 			@Override
 			public int getDepictionID() {
 				return correspondingDepictionEntry.getDepictionID();
+			}
+			@Override
+			public boolean isOrnament() {
+				return false;
 			}
 
 			@Override

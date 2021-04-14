@@ -83,7 +83,7 @@ public interface DatabaseServiceAsync {
 
 	void getPublicationTypes(AsyncCallback<ArrayList<PublicationTypeEntry>> callback) throws IllegalArgumentException;
 
-	void getModifiedAnnoEntry( DepictionEntry Entry,AsyncCallback<ArrayList<ModifiedEntry>> callback) throws IllegalArgumentException;
+	void getModifiedAnnoEntry( int ID, boolean isOrnament, AsyncCallback<ArrayList<ModifiedEntry>> callback) throws IllegalArgumentException;
 		
 	void getModifiedAbstractEntry( AbstractEntry Entry,AsyncCallback<ArrayList<ModifiedEntry>> callback) throws IllegalArgumentException;
 	
@@ -356,7 +356,7 @@ public interface DatabaseServiceAsync {
 
 	void getAnnotations(int depictionEntry,AsyncCallback<ArrayList<AnnotationEntry>> asyncCallback) throws IllegalArgumentException;
 	
-	void setAnnotationResults(AnnotationEntry annoEntry,AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
+	void setAnnotationResults(AnnotationEntry annoEntry, boolean isOrnament,AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 	
 	void searchImages(ImageSearchEntry searchEntry, AsyncCallback<Map<Integer,ArrayList<ImageEntry>>> asyncCallback) throws IllegalArgumentException;
 	

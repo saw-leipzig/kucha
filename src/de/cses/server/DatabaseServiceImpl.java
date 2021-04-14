@@ -1012,9 +1012,9 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	}
 	
 
-	public ArrayList<ModifiedEntry> getModifiedAnnoEntry(DepictionEntry Entry) throws IllegalArgumentException {
+	public ArrayList<ModifiedEntry> getModifiedAnnoEntry(int ID, boolean isOrnament) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
-		return connector.getModifiedAnnoEntry(Entry);
+		return connector.getModifiedAnnoEntry(ID, isOrnament);
 	}
 	
 
@@ -1061,9 +1061,9 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		return connector.updateUserEntry(userEntry);
 	}
 
-	public boolean setAnnotationResults(AnnotationEntry annoEntry) throws IllegalArgumentException {
+	public boolean setAnnotationResults(AnnotationEntry annoEntry, boolean isOrnament) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
-		return connector.setAnnotationResults(annoEntry);
+		return connector.setAnnotationResults(annoEntry, isOrnament);
 		}
 	
 

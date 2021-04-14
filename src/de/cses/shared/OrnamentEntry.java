@@ -34,6 +34,7 @@ public class OrnamentEntry extends AbstractEntry {
 	private ArrayList<AnnotatedBibliographyEntry> relatedBibliographyList = new ArrayList<AnnotatedBibliographyEntry>();
 	private Integer masterImageID = 0;
 	private ArrayList<IconographyEntry> relatedIconographyList = new ArrayList<IconographyEntry>();
+	private ArrayList<AnnotationEntry> relatedAnnotationList = new ArrayList<AnnotationEntry>();
 
 	public OrnamentEntry() {
 		ornamentID = 0;
@@ -56,7 +57,8 @@ public class OrnamentEntry extends AbstractEntry {
 			String interpretation,
 			String references, int ornamentClassID, ArrayList<ImageEntry> images, ArrayList<OrnamentCaveRelation> cavesRelations,
 			ArrayList<OrnamentComponentsEntry> ornamentComponents, ArrayList<InnerSecondaryPatternsEntry> innerSecondaryPatterns,
-			ArrayList<AnnotatedBibliographyEntry> relatedBibliographyList, String modifiedOn, int iconographyID, int masterImageID,ArrayList<IconographyEntry> relatedIconographyList) {
+			ArrayList<AnnotatedBibliographyEntry> relatedBibliographyList, String modifiedOn, int iconographyID, int masterImageID,
+			ArrayList<IconographyEntry> relatedIconographyList, ArrayList<AnnotationEntry> relatedAnnotationList) {
 		this.ornamentID = ornamentID;
 		this.code = code;
 		this.description = description;
@@ -74,12 +76,14 @@ public class OrnamentEntry extends AbstractEntry {
 		this.iconographyID=iconographyID;
 		this.masterImageID=masterImageID;
 		this.relatedIconographyList=relatedIconographyList;
+		this.relatedAnnotationList=relatedAnnotationList;
 	}
 
 	public OrnamentEntry(int ornamentID, String code, String description, String remarks, 
 			//String annotations, 
 			String interpretation,
-			String references, int ornamentClassID, String modifiedOn, ArrayList<IconographyEntry> relatedIconographyList) {
+			String references, int ornamentClassID, String modifiedOn, ArrayList<IconographyEntry> relatedIconographyList,
+			ArrayList<AnnotationEntry> relatedAnnotationList) {
 		this.ornamentID = ornamentID;
 		this.code = code;
 		this.description = description;
@@ -90,6 +94,17 @@ public class OrnamentEntry extends AbstractEntry {
 		this.ornamentClass = ornamentClassID;
 		this.setModifiedOn(modifiedOn);
 		this.relatedIconographyList=relatedIconographyList;
+		this.relatedAnnotationList=relatedAnnotationList;
+	}
+	public ArrayList<AnnotationEntry> getRelatedAnnotationList() {
+		return relatedAnnotationList;
+	}
+	public void addAnnotation(AnnotationEntry ae) {
+		this.relatedAnnotationList.add(ae);
+	}
+
+	public void setRelatedAnnotationList(ArrayList<AnnotationEntry> relatedAnnotationList) {
+		this.relatedAnnotationList = relatedAnnotationList;
 	}
 
 	public int getOrnamentID() {

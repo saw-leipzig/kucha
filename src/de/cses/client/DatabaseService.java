@@ -322,7 +322,7 @@ public interface DatabaseService extends RemoteService {
 
 	boolean updateUserEntry(UserEntry currentUser, String passwordHash, String newPasswordHash) throws IllegalArgumentException;
 
-	boolean setAnnotationResults(AnnotationEntry annoEntry) throws IllegalArgumentException;
+	boolean setAnnotationResults(AnnotationEntry annoEntry, boolean isOrnament) throws IllegalArgumentException;
 	
 	ArrayList<AnnotationEntry> getAnnotations(int depictionEntry) throws IllegalArgumentException;
 
@@ -358,5 +358,5 @@ public interface DatabaseService extends RemoteService {
 
 	ArrayList<ModifiedEntry> getModifiedAbstractEntry(AbstractEntry Entry) throws IllegalArgumentException;
 
-	ArrayList<ModifiedEntry> getModifiedAnnoEntry(DepictionEntry Entry) throws IllegalArgumentException;
+	ArrayList<ModifiedEntry> getModifiedAnnoEntry(int ID, boolean isOrnament) throws IllegalArgumentException;
 }

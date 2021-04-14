@@ -91,8 +91,9 @@ public class OSDLoader {
 		String newPoly=toWKT(annoEntry.getPolygone());
 		//Util.doLogging(newPoly);
 		AnnotationEntry annoEntryDB = new AnnotationEntry(annoEntry.getDepictionID(), annoEntry.getAnnotoriousID(), annoEntry.getTags(), newPoly, annoEntry.getImage(), annoEntry.getDelete(), annoEntry.getUpdate());
+		annoEntryDB.setLastChangedByUser(UserLogin.getInstance().getUsername());		
 		if (osdListener.getDepictionID()>0) {			
-			dbService.setAnnotationResults(annoEntryDB, new AsyncCallback<Boolean>() {
+			dbService.setAnnotationResults(annoEntryDB, osdListener.isOrnament(), new AsyncCallback<Boolean>() {
 				@Override
 				public void onFailure(Throwable caught) {
 					Util.doLogging(caught.getLocalizedMessage());
@@ -109,7 +110,7 @@ public class OSDLoader {
 	}
 
 	public void startLoadingTiles(String context) {
-		Util.doLogging("1");
+		Util.doLogging("start loading osd");
 		Collection<IconographyEntry> icos = StaticTables.getInstance().getIconographyEntries().values();
 		if (icos.size()>0) {
 			loadTiles(images, context, annoation, icos);
@@ -222,7 +223,7 @@ public class OSDLoader {
 		target["selector"]=selector;
 		target["id"]= image,
 		anno["target"]=target;
-		$wnd.console.log(anno);
+		// $wnd.console.log(anno);
 	    return annos;
 	}-*/;
 	public void removeOrAddAnnotations(ArrayList<AnnotationEntry> annos, boolean add) {

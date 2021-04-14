@@ -34,6 +34,7 @@ import de.cses.client.ui.AbstractEditor;
 import de.cses.client.ui.AbstractView;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
+import de.cses.shared.DepictionEntry;
 import de.cses.shared.OrnamentEntry;
 
 /**
@@ -97,6 +98,9 @@ public class OrnamenticView extends AbstractView {
 	}
 	public void setEditor(OrnamentEntry entry) {
 		this.oEntry=entry;
+	}
+	public void setOrnamentEntry(OrnamentEntry entry) {
+		this.oEntry= entry;
 	}
 
 	/* (non-Javadoc)

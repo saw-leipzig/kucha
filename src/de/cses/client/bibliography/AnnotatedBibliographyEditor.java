@@ -1061,7 +1061,11 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 
 				@Override
 				protected boolean doSelect(Store<AuthorEntry> store, AuthorEntry parent, AuthorEntry item, String filter) {
-					return item.getName().toLowerCase().contains(filter.toLowerCase()); 
+					if (item.getName() != null) {
+						return item.getName().toLowerCase().contains(filter.toLowerCase()); 						
+					} else {
+						return false;						
+					}
 				}
 			};
 			authorListFilterField.bind(authorListStore);
@@ -1085,8 +1089,8 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 			filterBibTexKeyHLC.add(bibtexKeyTF, new HorizontalLayoutData(.35, 1.0, new Margins(0, 0, 0, 0)));
 
 			VerticalLayoutContainer authorVLC = new VerticalLayoutContainer();
-			authorVLC.add(authorSelection, new VerticalLayoutData(1.0, .85));
-			authorVLC.add(filterBibTexKeyHLC, new VerticalLayoutData(1.0, .15, new Margins(10, 0, 0, 0)));
+			authorVLC.add(authorSelection, new VerticalLayoutData(1.0, .80));
+			authorVLC.add(filterBibTexKeyHLC, new VerticalLayoutData(1.0, .20, new Margins(10, 0, 0, 0)));
 
 			FramedPanel authorFP = new FramedPanel();
 			authorFP.setHeading("Author");
@@ -1094,7 +1098,11 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 			authorFP.addTool(addAuthorTB);
 			authorFP.addTool(deleteAuthorTB);
 			authorFP.addTool(editAuthorTB);
-			secondTabVLC.add(authorFP, new VerticalLayoutData(1.0, .45));
+			if (pubType.isEditorEnabled()) {
+				secondTabVLC.add(authorFP, new VerticalLayoutData(1.0, .45));
+			} else {
+				secondTabVLC.add(authorFP, new VerticalLayoutData(1.0, .90));				
+			}
 		}
 
 		/**
@@ -1111,7 +1119,11 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 
 				@Override
 				protected boolean doSelect(Store<AuthorEntry> store, AuthorEntry parent, AuthorEntry item, String filter) {
-					return item.getName().toLowerCase().contains(filter.toLowerCase()) ? true : false; 
+					if (item.getName() != null) {
+						return item.getName().toLowerCase().contains(filter.toLowerCase()); 						
+					} else {
+						return false;						
+					}
 				}
 			};
 			editorListFilterField.bind(editorListStore);

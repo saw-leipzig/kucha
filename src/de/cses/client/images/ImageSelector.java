@@ -338,7 +338,7 @@ public class ImageSelector implements IsWidget {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				Info.display("Refresh Image List", "failed: "+caught.getMessage());
+				Info.display("Refresh Image List", "failed: "+caught.getLocalizedMessage());
 			}
 
 			@Override
