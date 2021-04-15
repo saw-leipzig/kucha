@@ -1152,7 +1152,7 @@ public class MysqlConnector implements IsSerializable {
 						String json2 = gson2.toJson(dic);
 						json2 = json2.replace("\"text\"", "\"name\"");
 						System.out.println(dicFilename);
-						doUploadToElastic("dic", json2, url,"kucha_dic", Integer.toString(port), elastic_user,elastic_pw);
+						doUploadToElastic("dic", json2, url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw);
 						myWriter2.write(json2+String.format("%n"));
 				        System.out.println("Kucha-Dictionary is written to json.");
 					}
@@ -4301,7 +4301,7 @@ public boolean isHan(String s) {
 						rs.getString("PagesTR"), rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"), rs.getString("URI"),
 						rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getInt("AccessLevel"), rs.getString("AbstractText"),
 						rs.getString("ThesisType"), rs.getString("EditorType"), rs.getBoolean("OfficialTitleTranslation"), rs.getString("BibTexKey"),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), isHan(rs.getString("TitleORG")),null, rs.getBoolean("Annotation"));
+						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), isHan(rs.getString("TitleORG")),null, rs.getBoolean("Annotation"), rs.getBoolean("hasOtherAuthors"), rs.getBoolean("hasOtherEditors"));
 				entry.setAuthorList(getAuthorBibRelation(entry.getAnnotatedBibliographyID()));
 				entry.setEditorList(getEditorBibRelation(entry.getAnnotatedBibliographyID()));
 				entry.setKeywordList(getRelatedBibKeywords(entry.getAnnotatedBibliographyID()));
@@ -4383,7 +4383,7 @@ public boolean isHan(String s) {
 						rs.getString("PagesTR"), rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"), rs.getString("URI"),
 						rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getInt("AccessLevel"), rs.getString("AbstractText"),
 						rs.getString("ThesisType"), rs.getString("EditorType"), rs.getBoolean("OfficialTitleTranslation"), rs.getString("BibTexKey"),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), isHan(rs.getString("TitleORG")),null, rs.getBoolean("Annotation"));
+						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), isHan(rs.getString("TitleORG")),null, rs.getBoolean("Annotation"), rs.getBoolean("hasOtherAuthors"), rs.getBoolean("hasOtherEditors"));
 				entry.setAuthorList(getAuthorBibRelation(entry.getAnnotatedBibliographyID()));
 				entry.setEditorList(getEditorBibRelation(entry.getAnnotatedBibliographyID()));
 				entry.setKeywordList(getRelatedBibKeywords(entry.getAnnotatedBibliographyID()));
@@ -4455,7 +4455,7 @@ public boolean isHan(String s) {
 						rs.getString("PagesTR"), rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"), rs.getString("URI"),
 						rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getInt("AccessLevel"), rs.getString("AbstractText"),
 						rs.getString("ThesisType"), rs.getString("EditorType"), rs.getBoolean("OfficialTitleTranslation"), rs.getString("BibTexKey"),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), isHan(rs.getString("TitleORG")), null, rs.getBoolean("Annotation"));
+						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), isHan(rs.getString("TitleORG")), null, rs.getBoolean("Annotation"), rs.getBoolean("hasOtherAuthors"), rs.getBoolean("hasOtherEditors"));
 				entry.setAuthorList(getAuthorBibRelation(entry.getAnnotatedBibliographyID()));
 				entry.setEditorList(getEditorBibRelation(entry.getAnnotatedBibliographyID()));
 				entry.setKeywordList(getRelatedBibKeywords(entry.getAnnotatedBibliographyID()));
@@ -4618,7 +4618,7 @@ public boolean isHan(String s) {
 						rs.getString("PagesTR"), rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"), rs.getString("URI"),
 						rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getInt("AccessLevel"), rs.getString("AbstractText"),
 						rs.getString("ThesisType"), rs.getString("EditorType"), rs.getBoolean("OfficialTitleTranslation"), rs.getString("BibTexKey"),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), isHan(rs.getString("TitleORG")), page, rs.getBoolean("Annotation"));
+						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), isHan(rs.getString("TitleORG")), page, rs.getBoolean("Annotation"), rs.getBoolean("hasOtherAuthors"), rs.getBoolean("hasOtherEditors"));
 				if (result.getAnnotatedBibliographyID() == 417) {
 					System.out.println("Bibliography nummer 417:");
 					System.out.println(result);
@@ -6965,8 +6965,9 @@ public boolean isHan(String s) {
 					+ "VolumeEN, VolumeORG, VolumeTR, "
 					+ "IssueEN, IssueORG, IssueTR, " 
 					+ "YearEN, YearORG, YearTR, " 
-					+ "Unpublished, AccessLevel, AbstractText, ThesisType, EditorType, OfficialTitleTranslation, BibTexKey,Annotation) "
-					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+					+ "Unpublished, AccessLevel, AbstractText, ThesisType, EditorType,"
+					+ " OfficialTitleTranslation, BibTexKey, Annotation, hasOtherAuthors, hasOtherEditors) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 					Statement.RETURN_GENERATED_KEYS);
 			pstmt.setInt(1, bibEntry.getPublicationType().getPublicationTypeID());
 			pstmt.setString(2, bibEntry.getAccessdateEN());
@@ -7025,6 +7026,8 @@ public boolean isHan(String s) {
 			pstmt.setBoolean(55, bibEntry.isOfficialTitleTranslation());
 			pstmt.setString(56, bibEntry.getBibtexKey());
 			pstmt.setBoolean(57, bibEntry.getAnnotation());
+			pstmt.setBoolean(58, bibEntry.getHasOtherAuthors());
+			pstmt.setBoolean(59, bibEntry.getHasOtherEditors());
 			pstmt.executeUpdate();
 
 			ResultSet keys = pstmt.getGeneratedKeys();
@@ -8131,7 +8134,7 @@ public boolean isHan(String s) {
 					+ "VolumeEN=?, VolumeORG=?, VolumeTR=?, " 
 					+ "IssueEN=?, IssueORG=?, IssueTR=?, " 
 					+ "YearEN=?, YearORG=?, YearTR=?, "
-					+ "Unpublished=?, AccessLevel=?, AbstractText=?, ThesisType=?, EditorType=?, OfficialTitleTranslation=?, BibTexKey=?, Annotation=? WHERE BibID=?");
+					+ "Unpublished=?, AccessLevel=?, AbstractText=?, ThesisType=?, EditorType=?, OfficialTitleTranslation=?, BibTexKey=?, Annotation=?, hasOtherauthors=?, hasOtherEditors=? WHERE BibID=?");
 			pstmt.setInt(1, bibEntry.getPublicationType().getPublicationTypeID());
 			pstmt.setString(2, bibEntry.getAccessdateEN());
 			pstmt.setString(3, bibEntry.getAccessdateORG());
@@ -8189,7 +8192,9 @@ public boolean isHan(String s) {
 			pstmt.setBoolean(55, bibEntry.isOfficialTitleTranslation());
 			pstmt.setString(56, bibEntry.getBibtexKey());
 			pstmt.setBoolean(57, bibEntry.getAnnotation());
-			pstmt.setInt(58, bibEntry.getAnnotatedBibliographyID());
+			pstmt.setBoolean(58, bibEntry.getHasOtherAuthors());
+			pstmt.setBoolean(59, bibEntry.getHasOtherEditors());
+			pstmt.setInt(60, bibEntry.getAnnotatedBibliographyID());
 			pstmt.executeUpdate();
 
 			updateAuthorBibRelation(bibEntry.getAnnotatedBibliographyID(), bibEntry.getAuthorList());
