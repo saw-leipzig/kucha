@@ -19,7 +19,7 @@ import com.sencha.gxt.core.client.XTemplates;
 import de.cses.shared.AnnotatedBibliographyEntry;
 
 /**
- * @author alingnau
+ * @author alingnau; Erik Radisch
  *
  */
 public interface AnnotatedBibliographyViewTemplates extends XTemplates {

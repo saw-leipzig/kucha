@@ -29,7 +29,7 @@ import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.AuthorEntry;
 
 /**
- * @author Nina
+ * @author Nina; Erik Radisch
  *
  */
 public class AnnotatedBiblographyView extends AbstractView {

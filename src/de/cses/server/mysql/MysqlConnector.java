@@ -9005,7 +9005,9 @@ public boolean isHan(String s) {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		String where = "";
-		
+		if (searchEntry.getID()>0) {
+			where = "DepictionID = "+ Integer.toString(searchEntry.getID());
+		}
 		if (searchEntry.getShortName() != null && !searchEntry.getShortName().isEmpty()) {
 			where = "ShortName LIKE ?";
 		}

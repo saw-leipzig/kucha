@@ -1600,20 +1600,54 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 			backgroundPanel.setHeading("Ornamentation Editor (new entry)");
 		}
 		createNextPrevButtons();
+		backgroundPanel.addDomHandler(new KeyDownHandler() {
+			@Override
+			public void onKeyDown(KeyDownEvent e) {
+				if ((e.isShiftKeyDown()) && (e.getNativeKeyCode() == KeyCodes.KEY_ENTER)) {
+					de.cses.client.Util.showYesNo("Exit Warning!", "Do you wish to save before exiting?",
+							new SelectHandler() {
+
+								@Override
+								public void onSelect(SelectEvent event) {
+									Util.doLogging("Ornament Save triggert by Key-Combination");
+									save(true, 0);
+									closeEditor(null);
+								}
+							}, new SelectHandler() {
+
+								@Override
+								public void onSelect(SelectEvent event) {
+									bibSelector.clearPages();
+									closeEditor(null);
+								}
+							}, new KeyDownHandler() {
+
+								@Override
+								public void onKeyDown(KeyDownEvent e) {
+									if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+										closeEditor(null);
+									}
+								}
+
+							});
+				}
+			}
+		}, KeyDownEvent.getType());
+
 		backgroundPanel.addTool(modifiedToolButton);
 		backgroundPanel.addTool(prevToolButton);
 		backgroundPanel.addTool(nextToolButton);		
 		backgroundPanel.addTool(deleteToolButton);
 		backgroundPanel.addTool(saveButton);
 		backgroundPanel.addTool(closeButton);
-		backgroundPanel.addDomHandler(new KeyDownHandler() {
-		    @Override
-		    public void onKeyDown(KeyDownEvent e) {
-	        	  if ((e.isShiftKeyDown()) && (e.getNativeKeyCode() == KeyCodes.KEY_ENTER)) {
-						save(false,0);
-						closeEditor(null);		        }
-		    }			
-		}, KeyDownEvent.getType());
+//		backgroundPanel.addDomHandler(new KeyDownHandler() {
+//		    @Override
+//		    public void onKeyDown(KeyDownEvent e) {
+//	        	  if ((e.isShiftKeyDown()) && (e.getNativeKeyCode() == KeyCodes.KEY_ENTER)) {
+//						save(false,0);
+//						closeEditor(null);		        }
+//		    }			
+//		}, KeyDownEvent.getType());
 		new Resizable(backgroundPanel);
 		DragSource d = new DragSource(backgroundPanel);
 		DraggableAppearance dragAp = GWT.<DraggableAppearance> create(DraggableAppearance.class);

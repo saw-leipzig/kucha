@@ -69,8 +69,13 @@ public class OSDLoader {
 			newTags.add(icoEntry);
 		}
 		//AnnotationEntry annoEntry = new AnnotationEntry(osdListener.getDepictionID(), id, newTags, polygon.substring(22,polygon.indexOf("\"></polygon></svg>")), image, delete, update);
-		AnnotationEntry annoEntry = new AnnotationEntry(osdListener.getDepictionID(), id, newTags, polygon.replace("<svg><path d=\"","").replace("\"></path></svg>",""), image, delete, update);
+		String svgRaw = polygon.replace("<svg><path d=\"","").replace("\"></path></svg>","");
+		String newPoly = toWKT(svgRaw);
+		String newPolyGeoJson=toGeopJson(newPoly);
+		AnnotationEntry annoEntry = new AnnotationEntry(osdListener.getDepictionID(), id, newTags, newPolyGeoJson, image, delete, update);
 		annoEntry.setLastChangedByUser(UserLogin.getInstance().getUsername());		
+		Util.doLogging("Poly after toGeoJson"+newPoly);
+		AnnotationEntry annoEntryDB = new AnnotationEntry(annoEntry.getDepictionID(), annoEntry.getAnnotoriousID(), annoEntry.getTags(), newPoly, annoEntry.getImage(), annoEntry.getDelete(), annoEntry.getUpdate());
 		if (!update && !delete) {
 			osdListener.addAnnotation(annoEntry);
 		}
@@ -88,9 +93,6 @@ public class OSDLoader {
 			
 		}
 		osdListener.setAnnotationsInParent(osdListener.getAnnotations());
-		String newPoly=toWKT(annoEntry.getPolygone());
-		//Util.doLogging(newPoly);
-		AnnotationEntry annoEntryDB = new AnnotationEntry(annoEntry.getDepictionID(), annoEntry.getAnnotoriousID(), annoEntry.getTags(), newPoly, annoEntry.getImage(), annoEntry.getDelete(), annoEntry.getUpdate());
 		annoEntryDB.setLastChangedByUser(UserLogin.getInstance().getUsername());		
 		if (osdListener.getDepictionID()>0) {			
 			dbService.setAnnotationResults(annoEntryDB, osdListener.isOrnament(), new AsyncCallback<Boolean>() {
@@ -361,6 +363,14 @@ public class OSDLoader {
         var schreiber = new $wnd.jsts.io.WKTWriter();
         var polygonRes = schreiber.write(union);
 		return polygonRes;
+	}-*/;
+	public static native String toGeopJson(String polygon)
+	/*-{
+        $wnd.console.log("WKT: ",polygon);
+        var leser = new $wnd.wellknown(polygon);
+        var res = JSON.stringify(leser)
+		$wnd.console.log("result: ",res);
+		return res
 	}-*/;
 	
 	public static native JavaScriptObject createZoomeImage(JavaScriptObject tiles,JavaScriptObject wheres, JavaScriptObject source, JavaScriptObject dic, String sessionID, boolean anno, JavaScriptObject icoTree, OSDLoader osdLoader, JavaScriptObject annos)
