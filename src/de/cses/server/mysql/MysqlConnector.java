@@ -1765,6 +1765,9 @@ public class MysqlConnector implements IsSerializable {
 		if (searchEntry.getTitleSearch() != null && !searchEntry.getTitleSearch().isEmpty()) {
 			where = "(Title LIKE ? OR ShortName LIKE ?)";
 		}
+		if (searchEntry.getID() > 0) {
+			where += where.isEmpty() ? "Images.ImageID = '"+Integer.toString(searchEntry.getID())+"'": " AND Images.ImageID = '"+Integer.toString(searchEntry.getID())+"'";
+		}
 		if (searchEntry.getCopyrightSearch() != null && !searchEntry.getCopyrightSearch().isEmpty()) {
 			where += where.isEmpty() ? "Copyright LIKE ?" : " AND Copyright LIKE ?";
 		}
@@ -2661,7 +2664,7 @@ public class MysqlConnector implements IsSerializable {
 			updateOrnamentImageRelations(newOrnamentID, ornamentEntry.getImages());
 			updateCaveOrnamentRelation(newOrnamentID, ornamentEntry.getCavesRelations());
 			writeOrnamenticBibliographyRelation(newOrnamentID, ornamentEntry.getRelatedBibliographyList());
-			deleteEntry("DELETE FROM OrnamentIconographyRelation WHERE DepictionID=" + ornamentEntry.getOrnamentID());
+			deleteEntry("DELETE FROM OrnamentIconographyRelation WHERE OrnamentID =" + ornamentEntry.getOrnamentID());
 			if (ornamentEntry.getRelatedIconographyList().size() > 0) {
 				insertOrnamentIconographyRelation(ornamentEntry.getOrnamentID(), ornamentEntry.getRelatedIconographyList());
 			}
@@ -2709,7 +2712,7 @@ public class MysqlConnector implements IsSerializable {
 			ornamentStatement.setInt(9, ornamentEntry.getMasterImageID());
 			ornamentStatement.setInt(10, ornamentEntry.getOrnamentID());
 			ornamentStatement.executeUpdate();
-			deleteEntry("DELETE FROM OrnamentIconographyRelation WHERE DepictionID=" + ornamentEntry.getOrnamentID());
+			deleteEntry("DELETE FROM OrnamentIconographyRelation WHERE OrnamentID =" + ornamentEntry.getOrnamentID());
 			if (ornamentEntry.getRelatedIconographyList().size() > 0) {
 				insertOrnamentIconographyRelation(ornamentEntry.getOrnamentID(), ornamentEntry.getRelatedIconographyList());
 			}
@@ -4810,6 +4813,9 @@ public boolean isHan(String s) {
 		if (searchEntry.getCode() != null && !searchEntry.getCode().isEmpty()) {
 			where = "Code LIKE '"+searchEntry.getCode().replace("*", "%")+"'";
 		}
+		if (searchEntry.getID() > 0) {
+			where += where.isEmpty() ? "Ornaments.OrnamentID = '"+Integer.toString(searchEntry.getID())+"'": " AND Ornaments.OrnamentID = '"+Integer.toString(searchEntry.getID())+"'";
+		}
 		where += where.isEmpty() ? "Ornaments.deleted=0" : " AND Ornaments.deleted=0";
 		String caveIDs="";
 		DepictionSearchEntry depictionSearchEntry=new DepictionSearchEntry(searchEntry.getSessionID());
@@ -5960,7 +5966,7 @@ public boolean isHan(String s) {
 			insertDepictionBibliographyRelation(de.getDepictionID(), de.getRelatedBibliographyList());
 		}
 		protocollModifiedAbstractEntry(de, changes);
-		serializeAllDepictionEntries("");
+		//serializeAllDepictionEntries("");
 		System.err.println("==> updateDepictionEntry finished");
 		if (dologging){
 		long end = System.currentTimeMillis();
@@ -9005,11 +9011,11 @@ public boolean isHan(String s) {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		String where = "";
-		if (searchEntry.getID()>0) {
-			where = "DepictionID = "+ Integer.toString(searchEntry.getID());
-		}
 		if (searchEntry.getShortName() != null && !searchEntry.getShortName().isEmpty()) {
 			where = "ShortName LIKE ?";
+		}
+		if (searchEntry.getID() > 0) {
+			where += where.isEmpty() ? "DepictionID = '"+Integer.toString(searchEntry.getID())+"'": " AND DepictionID = '"+Integer.toString(searchEntry.getID())+"'";
 		}
 		where += where.isEmpty() ? "deleted=0" : " AND deleted=0";
 		String caveIDs="";

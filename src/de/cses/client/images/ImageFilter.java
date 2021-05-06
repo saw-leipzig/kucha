@@ -39,6 +39,7 @@ import com.sencha.gxt.widget.core.client.form.DualListField;
 import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 
 import de.cses.client.StaticTables;
 import de.cses.client.Util;
@@ -61,6 +62,7 @@ public class ImageFilter extends AbstractFilter {
 	}
 
 //	private TextField shortnameSearch;
+	private TextField IDSearchTF;
 	private TextField titleSearch;
 	private TextField copyrightSearch;
 	private TextField commentSearch;
@@ -107,23 +109,29 @@ public class ImageFilter extends AbstractFilter {
 		VerticalLayoutContainer vlc = new VerticalLayoutContainer();
 		LabelTemplate lt = GWT.create(LabelTemplate.class); 
 
+		IDSearchTF = new TextField();
+		IDSearchTF.addValidator(new RegExValidator("[0-9]", "Only numbers allowed"));
+		IDSearchTF.setEmptyText("search ID");
+		IDSearchTF.addDomHandler(getShortkey() , KeyPressEvent.getType());		
+		vlc.add(IDSearchTF, new VerticalLayoutData(1.0, .1));
+		
 		titleSearch = new TextField();
 		titleSearch.setEmptyText("search title / shortname");
 		titleSearch.setToolTip(Util.createToolTip("search in title or shortname", "Search if the title or shortname contains this sequence of characters."));
 		titleSearch.addDomHandler(getShortkey(), KeyPressEvent.getType());
-		vlc.add(titleSearch, new VerticalLayoutData(1.0, .125));
+		vlc.add(titleSearch, new VerticalLayoutData(1.0, .1));
 		
 		commentSearch = new TextField();
 		commentSearch.setEmptyText("search comment");
 		commentSearch.setToolTip(Util.createToolTip("search in comments", "Search if the comments contain this sequence of characters."));
 		commentSearch.addDomHandler(getShortkey(), KeyPressEvent.getType());
-		vlc.add(commentSearch, new VerticalLayoutData(1.0, .125));
+		vlc.add(commentSearch, new VerticalLayoutData(1.0, .1));
 
 		copyrightSearch = new TextField();
 		copyrightSearch.setEmptyText("search copyright");
 		copyrightSearch.setToolTip(Util.createToolTip("search in copyright", "Search if the copyright contains this sequence of characters."));
 		copyrightSearch.addDomHandler(getShortkey(), KeyPressEvent.getType());
-		vlc.add(copyrightSearch, new VerticalLayoutData(1.0, .125));
+		vlc.add(copyrightSearch, new VerticalLayoutData(1.0, .1));
 		
 		daysSinceUploadSearch = new NumberField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
 		daysSinceUploadSearch.setAllowNegative(false);
@@ -140,7 +148,7 @@ public class ImageFilter extends AbstractFilter {
 		HorizontalLayoutContainer uploadedSinceHLC = new HorizontalLayoutContainer();
 		uploadedSinceHLC.add(daysSinceUploadSearch, new HorizontalLayoutData(.7, 1.0, new Margins(0, 10, 0, 0)));
 		uploadedSinceHLC.add(new HTML(lt.label("days")), new HorizontalLayoutData(.3, 1.0));
-		vlc.add(uploadedSinceHLC, new VerticalLayoutData(1.0, .125));
+		vlc.add(uploadedSinceHLC, new VerticalLayoutData(1.0, .1));
 
 		DualListField<ImageTypeEntry, String> dualListField = new DualListField<ImageTypeEntry, String>(imageTypeEntryList,
 				selectedImagesTypesList, imageTypeProps.name(), new TextCell());
@@ -164,6 +172,7 @@ public class ImageFilter extends AbstractFilter {
 	}
 	@Override
 	public void clear() {
+		IDSearchTF.reset();
 		titleSearch.clear();;
 		copyrightSearch.clear();;
 		commentSearch.clear();
@@ -182,6 +191,9 @@ public class ImageFilter extends AbstractFilter {
 			for (int img :((ImageSearchEntry)searchEntry).getImageIdList()) {
 				ImgIDs.add(img);
 			}
+		}
+		if (((DepictionSearchEntry)searchEntry).getID() > 0) {
+			IDSearchTF.setValue(Integer.toString(((DepictionSearchEntry)searchEntry).getID()));
 		}
 		if (((ImageSearchEntry)searchEntry).getTitleSearch()!= null && !((ImageSearchEntry)searchEntry).getTitleSearch().isEmpty()) {
 			titleSearch.setValue(((ImageSearchEntry)searchEntry).getTitleSearch());
@@ -216,6 +228,9 @@ public class ImageFilter extends AbstractFilter {
 
 		if (titleSearch.getValue() != null && !titleSearch.getValue().isEmpty()) {
 			searchEntry.setTitleSearch(titleSearch.getValue());
+		}
+		if (IDSearchTF.getValue() != null ) {
+			searchEntry.setID(Integer.parseInt(IDSearchTF.getValue()));
 		}
 		
 		if (copyrightSearch.getValue() != null && !copyrightSearch.getValue().isEmpty()) {

@@ -287,6 +287,7 @@ public class IconographySelector extends FramedPanel {
 		    public void onBrowserEvent(Context context, Element parent, String value,
 		    	      NativeEvent event, ValueUpdater<String> valueUpdater) {
 		    	    String eventType = event.getType();
+		    	    Util.doLogging("Mouse ober Ico triggered");
 		    	    // Special case the ENTER key for a unified user experience.
 		    	    if (BrowserEvents.MOUSEOVER.equals(eventType) ) {
 		    	    	beforeSelection=iconographyTree.getSelectionModel().getSelectedItems();

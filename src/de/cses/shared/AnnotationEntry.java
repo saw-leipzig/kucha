@@ -111,6 +111,14 @@ public class AnnotationEntry extends AbstractEntry {
 	public String getUniqueID() {
 		return "Annotation-" + annotoriousID;
 	}
+	public Boolean equals(AnnotationEntry entry) {
+		if (annotoriousID == entry.getAnnotoriousID()) {
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
 
 
 }

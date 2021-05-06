@@ -412,18 +412,37 @@ public class DepictionEditor extends AbstractEditor {
 		loadModesOfRepresentation();
 		loadPreservationAttributes();
 	}
-	// this method should be added to osdLader
-	private void highlightIcoEntry(IconographyEntry selectedIE, boolean deselect, List<IconographyEntry>clickedIcos) {
-		//Util.doLogging("Started highlighting for Iconography: "+selectedIE.getText());
-		ArrayList<AnnotationEntry> newAnnos = new ArrayList<AnnotationEntry>();
+	private ArrayList<AnnotationEntry> findAllIcos(IconographyEntry selectedIE, ArrayList<AnnotationEntry> collectedEntries) {
 		for (AnnotationEntry ae : correspondingDepictionEntry.getRelatedAnnotationList()) {
 			for (IconographyEntry ie : ae.getTags()) {
 				if (ie.getIconographyID() == selectedIE.getIconographyID()) {
-								//Util.doLogging("found annotation for: "+ie.getText());
-								newAnnos.add(ae);
+					boolean found = false;
+					for (AnnotationEntry collectedAe : collectedEntries) {
+						if (collectedAe.getAnnotoriousID() == ae.getAnnotoriousID()) {
+							found = true;
+							break;
+						}
+					}
+					if (!found) {
+						collectedEntries.add(ae);									
+					}
 				}
 			}
 		}
+		if (selectedIE.getChildren() != null) {
+			for (IconographyEntry child : selectedIE.getChildren()) {
+				collectedEntries = findAllIcos(child, collectedEntries);
+			}
+		}
+		return collectedEntries;
+	}
+	// this method should be added to osdLader
+	private void highlightIcoEntry(IconographyEntry selectedIE, boolean deselect, List<IconographyEntry>clickedIcos) {
+		Util.doLogging("triggered highlightIcoEntry");
+		//Util.doLogging("Started highlighting for Iconography: "+selectedIE.getText());
+		ArrayList<AnnotationEntry> newAnnos = new ArrayList<AnnotationEntry>();
+		newAnnos = findAllIcos(selectedIE, newAnnos);
+		Util.doLogging("found "+Integer.toString(newAnnos.size())+" annos");
 		if (newAnnos.size()>0) {
 			if (annotationsLoaded) {
 				osdLoader.removeOrAddAnnotations(newAnnos,!deselect);
@@ -437,11 +456,6 @@ public class DepictionEditor extends AbstractEditor {
 				osdLoader.highlightAnnotation(aeSelected.getAnnotoriousID());
 			}
 			
-		}
-		if (selectedIE.getChildren() != null) {
-			for (IconographyEntry children : selectedIE.getChildren()) {
-				highlightIcoEntry(children, deselect,clickedIcos);
-			}
 		}
 
 	}
@@ -1816,6 +1830,7 @@ public class DepictionEditor extends AbstractEditor {
 
 			@Override
 			public void icoHighlighter(int icoID) {
+				Util.doLogging("triggered icoHighlighter");
 				List<IconographyEntry> selectedIcos = iconographySelector.getCLickedItems();
 				IconographyEntry selectedIE = iconographySelector.getIconographyStroe()
 						.findModelWithKey(Integer.toString(icoID));
