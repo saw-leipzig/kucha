@@ -27,6 +27,7 @@ import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -48,6 +49,9 @@ import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
+import com.sencha.gxt.widget.core.client.event.CellDoubleClickEvent;
+import com.sencha.gxt.widget.core.client.event.CellDoubleClickEvent.CellDoubleClickHandler;
+import com.sencha.gxt.widget.core.client.event.GridEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.StoreFilterField;
@@ -59,6 +63,7 @@ import com.sencha.gxt.widget.core.client.grid.Grid;
 import com.sencha.gxt.widget.core.client.grid.RowExpander;
 import com.sencha.gxt.widget.core.client.grid.filters.GridFilters;
 import com.sencha.gxt.widget.core.client.grid.filters.StringFilter;
+import com.sencha.gxt.widget.core.client.info.Info;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 
@@ -153,6 +158,63 @@ public class BibliographySelector implements IsWidget {
 
 		
 	}
+	private void setPage(AnnotatedBibliographyEntry bibEntry) {
+		PopupPanel addPageDialog = new PopupPanel();
+		FramedPanel pageFP = new FramedPanel();
+		pageFP.setHeading("Set Pages");
+		TextField pageField = new TextField();
+		pageField.setValue("");
+		pageField.setWidth(200);
+		pageFP.add(pageField);
+		TextButton saveButton = new TextButton("save");
+		selectedEntry=bibEntry;
+		if (bibEntry.getQuotedPages() != "") {
+			pageField.setText(bibEntry.getQuotedPages());
+		}
+		saveButton.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				Util.doLogging("jier??");
+					selectedEntry.setQuotedPages(pageField.getValue());
+//					dbService.insertVendorEntry(vEntry, new AsyncCallback<Integer>() {
+//
+//						@Override
+//						public void onFailure(Throwable caught) {
+//							caught.printStackTrace();
+//						}
+//
+//						@Override
+//						public void onSuccess(Integer result) {
+//							vEntry.setVendorID(result);
+//							vendorEntryLS.add(vEntry);
+//						}
+//					});
+					addPageDialog.hide();
+					//Info.display("gehwähltes Item",event.getSelectedItem().getQuotedPages());
+					//grid.sync(true);
+					grid.getView().refresh(true);
+			}
+		});
+		pageFP.addButton(saveButton);
+		TextButton cancelButton = new TextButton("cancel");
+		cancelButton.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				addPageDialog.hide();
+			}
+		});
+		pageFP.addButton(cancelButton);
+		addPageDialog.add(pageFP);
+		addPageDialog.setModal(true);
+		addPageDialog.center();
+		saveButton.getFocusSupport();
+		saveButton.focus();
+		saveButton.setTabIndex(0);
+		cancelButton.setTabIndex(1);
+
+	}
 	private void loadentries() {
 		showdialog=false;
 		Collection<AnnotatedBibliographyEntry> anBibs = StaticTables.getInstance().getBibliographyEntries().values();
@@ -193,58 +255,7 @@ public class BibliographySelector implements IsWidget {
 	    			//Util.doLogging(abe2.getTitleORG());
 	    		//}
 	 
-				PopupPanel addPageDialog = new PopupPanel();
-				FramedPanel pageFP = new FramedPanel();
-				pageFP.setHeading("Set Pages");
-				TextField pageField = new TextField();
-				pageField.setValue("");
-				pageField.setWidth(200);
-				pageFP.add(pageField);
-				TextButton saveButton = new TextButton("save");
-				selectedEntry=event.getSelectedItem();
-				saveButton.addSelectHandler(new SelectHandler() {
-
-					@Override
-					public void onSelect(SelectEvent event) {
-						Util.doLogging("jier??");
-							selectedEntry.setQuotedPages(pageField.getValue());
-//							dbService.insertVendorEntry(vEntry, new AsyncCallback<Integer>() {
-//
-//								@Override
-//								public void onFailure(Throwable caught) {
-//									caught.printStackTrace();
-//								}
-//
-//								@Override
-//								public void onSuccess(Integer result) {
-//									vEntry.setVendorID(result);
-//									vendorEntryLS.add(vEntry);
-//								}
-//							});
-							addPageDialog.hide();
-							//Info.display("gehwähltes Item",event.getSelectedItem().getQuotedPages());
-							//grid.sync(true);
-							grid.getView().refresh(true);
-					}
-				});
-				pageFP.addButton(saveButton);
-				TextButton cancelButton = new TextButton("cancel");
-				cancelButton.addSelectHandler(new SelectHandler() {
-
-					@Override
-					public void onSelect(SelectEvent event) {
-						addPageDialog.hide();
-					}
-				});
-				pageFP.addButton(cancelButton);
-				addPageDialog.add(pageFP);
-				addPageDialog.setModal(true);
-				addPageDialog.center();
-				saveButton.getFocusSupport();
-				saveButton.focus();
-				saveButton.setTabIndex(0);
-				cancelButton.setTabIndex(1);
-
+				setPage(event.getSelectedItem());
 				itemSelected=true;
 				
 			}
@@ -352,7 +363,16 @@ public class BibliographySelector implements IsWidget {
     showdialog=false;
     grid = new Grid<AnnotatedBibliographyEntry>(sourceStore, sourceColumnModel);
     grid.setHideMode(HideMode.OFFSETS);
+    CellDoubleClickHandler doubleClick = new CellDoubleClickHandler() {
 
+		@Override
+		public void onCellClick(CellDoubleClickEvent event) {
+			setPage(grid.getStore().get(event.getRowIndex()));
+			Util.doLogging(Integer.toString(event.getRowIndex()));
+			Util.doLogging(grid.getStore().get(event.getRowIndex()).getTitleORGFull());
+		}
+    };
+    grid.addCellDoubleClickHandler(doubleClick);
     grid.setSelectionModel(selectionModel);
 
     //grid.getStore().clearSortInfo();
