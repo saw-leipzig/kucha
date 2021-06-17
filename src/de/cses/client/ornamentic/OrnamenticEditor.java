@@ -258,6 +258,9 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 	}
 
 	public Widget createForm() {
+		if (ornamentEntry == null) {
+			ornamentEntry = new OrnamentEntry();
+		}
 		ornamentTrees= new 	OrnamenticIconographyTree(ornamentEntry);
 		ornamentTrees.setDialogboxnotcalled(false);
 		// Aufbau der Listen welche geladen werden m�ssen aus der Datenbank
@@ -291,7 +294,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 			@Override
 			public void icoHighlighter(int icoID) {
 				List<IconographyEntry> selectedIcos = iconographySelector.getCLickedItems();
-				IconographyEntry selectedIE = iconographySelector.getIconographyStroe()
+				IconographyEntry selectedIE = iconographySelector.getIconographyStore()
 						.findModelWithKey(Integer.toString(icoID));
 				highlightIcoEntry(selectedIE, false,selectedIcos);
 			};
@@ -299,7 +302,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 			@Override
 			public void icoDeHighlighter(int icoID) {
 				List<IconographyEntry> selectedIcos = iconographySelector.getCLickedItems();
-				IconographyEntry selectedIE = iconographySelector.getIconographyStroe()
+				IconographyEntry selectedIE = iconographySelector.getIconographyStore()
 				.findModelWithKey(Integer.toString(icoID));
 				if (annotationsLoaded) {
 					osdLoader.removeAllAnnotations();					
@@ -325,10 +328,21 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		
 		//iconographySelector = new IconographySelector(StaticTables.getInstance().getIconographyEntries().values());
 		//loadiconogrpahy(ornamentEntry.getRelatedIconographyList());
+		ArrayList<AnnotationEntry> annos;
+		if (ornamentEntry!=null) {
+			annos = ornamentEntry.getRelatedAnnotationList();			
+		} else {
+			annos = new ArrayList<AnnotationEntry>();
+		}
 		iconographySelector = new IconographySelector(StaticTables.getInstance().getIconographyEntries().values(),
-				getListenerList().get(0), true, ornamentEntry.getRelatedAnnotationList(),
+				getListenerList().get(0), true, annos,
 				icoSelectorListener);
-		loadiconogrpahy(ornamentEntry.getRelatedIconographyList());
+		if (ornamentEntry!=null) {
+			loadiconogrpahy(ornamentEntry.getRelatedIconographyList());
+		} else {
+			loadiconogrpahy(new ArrayList<IconographyEntry>());
+		}
+
 		osdListener = new OSDListener() {
 
 			@Override
@@ -350,7 +364,11 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 			@Override
 			public ArrayList<AnnotationEntry> getAnnotations() {
 				// TODO Auto-generated method stub
-				return ornamentEntry.getRelatedAnnotationList();
+				if (ornamentEntry!=null) {
+					return ornamentEntry.getRelatedAnnotationList();			
+				} else {
+					return new ArrayList<AnnotationEntry>();
+				}
 			}
 
 			@Override
@@ -368,7 +386,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 		};
 		osdLoader = new OSDLoader(ornamentEntry.getImages(), true,
-				iconographySelector.getIconographyStroe(),
+				iconographySelector.getIconographyStore(),
 				osdListener);
 		/**
 		 * ---------------------- content of fourth tab (Bibliography Selector)
@@ -407,6 +425,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		ftree.addTool(changetree);
 		ftree.add(ornamentTrees.getSelectedIcoTree());
 		// laden der Daten aus der Datenbank
+		Util.doLogging("Create form von ornamenticeditor gestartet");
 		if (ornamentEntry!=null) {
 			dbService.getOrnamentEntry(ornamentEntry.getOrnamentID(), new AsyncCallback<OrnamentEntry>() {
 
@@ -566,6 +585,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		ToolButton saveOrnamentClass = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 		saveOrnamentClass.setToolTip(Util.createToolTip("save"));
 		ornamentClassFramedPanel.add(saveOrnamentClass);
+		Util.doLogging("Create form von ornamenticeditor gestartet");
 
 		ToolButton cancelOrnamentClass = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
 		cancelOrnamentClass.setToolTip(Util.createToolTip("cancel"));
@@ -712,6 +732,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		header.setHeading("Type Description");
 		discription = new TextArea();
 		panel.add(header, new VerticalLayoutData(1.0, .3));
+		Util.doLogging("Create form von ornamenticeditor gestartet");
 
 		header.add(discription);
 		discription.setAllowBlank(true);
@@ -784,6 +805,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		cavesContentPanel.add(cavesList);
 		cavesContentPanel2.setHeading("Ornamentation detected in Caves:");
 		cavesContentPanel2.add(ornamentTrees.getWalls().wallTree);
+		Util.doLogging("Create form von ornamenticeditor gestartet");
 		
 		ToolButton edit = new ToolButton(new IconConfig("editButton", "editButtonOver"));
 		edit.setToolTip(Util.createToolTip("Edit Cave"));
@@ -1004,7 +1026,6 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 							@Override
 							public void onSuccess(OrnamentComponentsEntry result) {
 								ornamentComponents.add(entry);
-								Util.doLogging(this.getClass().getName() + " saving sucessful");
 								newComponentPopup.hide();
 							}
 						});
@@ -1018,6 +1039,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 				.setToolTip(Util.createToolTip("Rename Component", "Select entry and click here to edit."));
 
 		header.addTool(renameComponentButton);
+		Util.doLogging("Create form von ornamenticeditor gestartet");
 		renameComponentButton.addSelectHandler(new SelectHandler() {
 
 			@Override
@@ -1074,7 +1096,6 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 								@Override
 								public void onSuccess(OrnamentComponentsEntry result) {
-									Util.doLogging(this.getClass().getName() + " renaming sucessful");
 									renameComponentPopup.hide();
 									dbService.getOrnamentClass(new AsyncCallback<ArrayList<OrnamentClassEntry>>() {
 
@@ -1169,7 +1190,6 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 							@Override
 							public void onSuccess(InnerSecondaryPatternsEntry result) {
-								Util.doLogging(this.getClass().getName() + "saving sucessful");
 								innerSecondaryPatternsEntryList.add(result);
 								newInnerSecondaryPatternPopup.hide();
 							}
@@ -1522,7 +1542,6 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 			@Override
 			public void onShow(ShowEvent event) {
-				Util.doLogging("test");
 				scrimagesFramedPanel.setPixelSize(-1, (int) (Window.getClientHeight()));
 			}
 
