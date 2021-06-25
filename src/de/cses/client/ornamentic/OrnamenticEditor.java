@@ -13,6 +13,8 @@ import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
@@ -64,6 +66,7 @@ import com.sencha.gxt.widget.core.client.event.ShowEvent;
 import com.sencha.gxt.widget.core.client.event.ShowEvent.ShowHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.ListField;
+import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
@@ -552,6 +555,34 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 		VerticalLayoutContainer panel = new VerticalLayoutContainer();
 		VerticalLayoutContainer panel2 = new VerticalLayoutContainer();
+		SimpleComboBox<String> accessRightsCB = new SimpleComboBox<String>(new LabelProvider<String>() {
+
+			@Override
+			public String getLabel(String item) {
+				return item;
+			}
+		});
+		accessRightsCB.add(AbstractEntry.ACCESS_LEVEL_LABEL.get(0));
+		accessRightsCB.add(AbstractEntry.ACCESS_LEVEL_LABEL.get(1));
+		accessRightsCB.add(AbstractEntry.ACCESS_LEVEL_LABEL.get(2));
+		accessRightsCB.setEditable(false);
+		accessRightsCB.setTypeAhead(false);
+		accessRightsCB.setTriggerAction(TriggerAction.ALL);
+		accessRightsCB.setToolTip(Util.createToolTip(
+				"The acccess rights for the painted representation will influence which fields are visible.",
+				"There are no restrictions at the moment but this might be implemented in the future."));
+		accessRightsCB.setValue(AbstractEntry.ACCESS_LEVEL_LABEL.get(ornamentEntry.getAccessLevel()));
+		accessRightsCB.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				ornamentEntry.setAccessLevel(accessRightsCB.getSelectedIndex());
+			}
+		});
+		FramedPanel accessRightsCBFP = new FramedPanel();
+		accessRightsCBFP.setHeading("Access Level");
+		accessRightsCBFP.add(accessRightsCB);
+		panel.add(accessRightsCBFP, new VerticalLayoutData(1.0, .125));
 
 		ornamentCodeTextField = new TextField();
 		ornamentCodeTextField.setAllowBlank(false);
@@ -569,7 +600,8 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 						return pvTemplates.ornamentClass(item.getName());
 					}
 				});
-		panel.add(ftree, new VerticalLayoutData(1.0, 0.3));
+		panel.add(ftree, new VerticalLayoutData(1.0, 0.275));
+		panel.add(accessRightsCBFP, new VerticalLayoutData(1.0, .125));
 		header = new FramedPanel();
 		header.setHeading("Motif");
 		ornamentClassComboBox.setTriggerAction(TriggerAction.ALL);
@@ -731,7 +763,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		header = new FramedPanel();
 		header.setHeading("Type Description");
 		discription = new TextArea();
-		panel.add(header, new VerticalLayoutData(1.0, .3));
+		panel.add(header, new VerticalLayoutData(1.0, .25));
 		Util.doLogging("Create form von ornamenticeditor gestartet");
 
 		header.add(discription);
@@ -742,7 +774,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		header = new FramedPanel();
 		header.setHeading("General Remarks");
 		header.add(remarks);
-		panel.add(header, new VerticalLayoutData(1.0, .3));
+		panel.add(header, new VerticalLayoutData(1.0, .25));
 		interpretation = new TextArea();
 		interpretation.setAllowBlank(true);
 		header = new FramedPanel();
