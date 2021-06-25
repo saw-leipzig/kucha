@@ -75,10 +75,10 @@ public class OSDLoader {
 		if (newPoly != "") {
 			Util.doLogging("Starting Converter for WKT to GeoJSON");
 			String newPolyGeoJson=toGeopJson(newPoly);
-			Util.doLogging("Writing Annotation");
+			//Util.doLogging("Writing Annotation");
 			AnnotationEntry annoEntry = new AnnotationEntry(osdListener.getDepictionID(), id, newTags, newPolyGeoJson, image, delete, update);
 			annoEntry.setLastChangedByUser(UserLogin.getInstance().getUsername());		
-			Util.doLogging("Poly after toGeoJson"+newPoly);
+			//Util.doLogging("Poly after toGeoJson"+newPoly);
 			AnnotationEntry annoEntryDB = new AnnotationEntry(annoEntry.getDepictionID(), annoEntry.getAnnotoriousID(), annoEntry.getTags(), newPoly, annoEntry.getImage(), annoEntry.getDelete(), annoEntry.getUpdate());
 			if (!update && !delete) {
 				osdListener.addAnnotation(annoEntry);
@@ -261,7 +261,7 @@ public class OSDLoader {
 					}	
 				}
 				
-				viewers["annotorious"][v].loadAnnotationsfromObject(annosForViewer);	
+				viewers["annotorious"][v].loadAnnotationsfromObject(annosForViewer, true);	
 			}	
 	    }
 	}-*/;
@@ -455,8 +455,8 @@ public class OSDLoader {
 				$wnd.console.log("Adding Annotorious",config);
 				annotorious[wheres[i]] = $wnd.OpenSeadragon.Annotorious(dic[wheres[i]],config);
 				annotorious[wheres[i]].setDrawingTool("polygon");
-				annotorious[wheres[i]].setDrawingEnabled(true);
-				$wnd.console.log("Adding Handler");
+				//annotorious[wheres[i]].setDrawingEnabled(true);
+				//$wnd.console.log("Adding Handler");
 				annotorious[wheres[i]].on('createAnnotation',function(annotation) {
 					  $wnd.console.log("annotation",annotation);
 						
@@ -470,8 +470,8 @@ public class OSDLoader {
 						else{
 							results=results+";"+annotation.body[key].id;
 						}
-						if (annotation.target.source.includes("kucha%2Fimages%2F")){
-					 		image=annotation.target.source.split("kucha%2Fimages%2F")[1]
+						if (annotation.target.source.includes("%2Fimages%2F")){
+					 		image=annotation.target.source.split("%2Fimages%2F")[1]
 						} else {
 							image=annotation.target.source
 						}
@@ -491,8 +491,8 @@ public class OSDLoader {
 						else{
 							results=results+";"+annotation.body[key].id;
 						}
-						if (annotation.target.source.includes("kucha%2Fimages%2F")){
-					 		image=annotation.target.source.split("kucha%2Fimages%2F")[1]
+						if (annotation.target.source.includes("%2Fimages%2F")){
+					 		image=annotation.target.source.split("%2Fimages%2F")[1]
 						} else {
 							image=annotation.target.source
 						}
@@ -520,8 +520,8 @@ public class OSDLoader {
 						else{
 							results=results+";"+annotation.body[key].id;
 						}
-						if (annotation.target.source.includes("kucha%2Fimages%2F")){
-					 		image=annotation.target.source.split("kucha%2Fimages%2F")[1]
+						if (annotation.target.source.includes("%2Fimages%2F")){
+					 		image=annotation.target.source.split("%2Fimages%2F")[1]
 						} else {
 							image=annotation.target.source
 						}
