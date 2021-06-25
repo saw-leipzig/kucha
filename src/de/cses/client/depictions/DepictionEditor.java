@@ -438,11 +438,11 @@ public class DepictionEditor extends AbstractEditor {
 	}
 	// this method should be added to osdLader
 	private void highlightIcoEntry(IconographyEntry selectedIE, boolean deselect, List<IconographyEntry>clickedIcos) {
-		Util.doLogging("triggered highlightIcoEntry");
+		//Util.doLogging("triggered highlightIcoEntry");
 		//Util.doLogging("Started highlighting for Iconography: "+selectedIE.getText());
 		ArrayList<AnnotationEntry> newAnnos = new ArrayList<AnnotationEntry>();
 		newAnnos = findAllIcos(selectedIE, newAnnos);
-		Util.doLogging("found "+Integer.toString(newAnnos.size())+" annos");
+		// Util.doLogging("found "+Integer.toString(newAnnos.size())+" annos");
 		if (newAnnos.size()>0) {
 			if (annotationsLoaded) {
 				osdLoader.removeOrAddAnnotations(newAnnos,!deselect);
@@ -1830,9 +1830,9 @@ public class DepictionEditor extends AbstractEditor {
 
 			@Override
 			public void icoHighlighter(int icoID) {
-				Util.doLogging("triggered icoHighlighter");
+				//Util.doLogging("triggered icoHighlighter");
 				List<IconographyEntry> selectedIcos = iconographySelector.getCLickedItems();
-				IconographyEntry selectedIE = iconographySelector.getIconographyStroe()
+				IconographyEntry selectedIE = iconographySelector.getIconographyStore()
 						.findModelWithKey(Integer.toString(icoID));
 				highlightIcoEntry(selectedIE, false,selectedIcos);
 			};
@@ -1840,7 +1840,7 @@ public class DepictionEditor extends AbstractEditor {
 			@Override
 			public void icoDeHighlighter(int icoID) {
 				List<IconographyEntry> selectedIcos = iconographySelector.getCLickedItems();
-				IconographyEntry selectedIE = iconographySelector.getIconographyStroe()
+				IconographyEntry selectedIE = iconographySelector.getIconographyStore()
 				.findModelWithKey(Integer.toString(icoID));
 				if (annotationsLoaded) {
 					osdLoader.removeAllAnnotations();					
@@ -1909,7 +1909,7 @@ public class DepictionEditor extends AbstractEditor {
 
 		};
 		osdLoader = new OSDLoader(correspondingDepictionEntry.getRelatedImages(), true,
-				iconographySelector.getIconographyStroe(),
+				iconographySelector.getIconographyStore(),
 				osdListener);
 		/**
 		 * ---------------------- content of fourth tab (Bibliography Selector)

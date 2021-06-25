@@ -45,7 +45,7 @@ public class OrnamenticIconographyTree {
 
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	protected int iconographyIDforOrnamentJump;
-
+	private IconographyEntry prevCheckedEntry;
 	protected IconographyEntry ie = null;
 	protected IconographyEntry selectedie = null;
 	private Tree<IconographyEntry, String> iconographyTree;
@@ -76,6 +76,7 @@ public class OrnamenticIconographyTree {
 	}
 
 	public OrnamenticIconographyTree(OrnamentEntry oe) {
+		
 		ornamentEntry = oe;;
 
 		selectedIconographyTreeStore = new TreeStore<IconographyEntry>(new IconographyKeyProvider());
@@ -126,105 +127,125 @@ public class OrnamenticIconographyTree {
 				
 			}
 		});
+
 		iconographyTree.addCheckChangeHandler(new CheckChangeHandler<IconographyEntry>(){
 			public void onCheckChange(CheckChangeEvent<IconographyEntry> event) {
-				Util.doLogging("OnCheckChange was called. "+event.getItem().getText());
-					dbService.iconographyIDisUsed(event.getItem().getIconographyID(), ornamentEntry!=null ? ornamentEntry.getOrnamentID() : 0, new AsyncCallback<Boolean>(){
-
-						@Override
-						public void onFailure(Throwable caught) {
-							Util.doLogging(("Update failed"+ caught.getMessage()));
-							Info.display("Update failed", caught.getMessage());
+				boolean found = false;
+				if (prevCheckedEntry != null) {
+					for (IconographyEntry ie: event.getItem().getChildren()) {
+						if (ie.getIconographyID() == prevCheckedEntry.getIconographyID()) {
+							found = true;
 						}
+					}
+				
+				}
+				prevCheckedEntry = event.getItem();
+				if (!found) {
+					if (event.getChecked() == Tree.CheckState.CHECKED ) {
+						Util.doLogging("OnCheckChange was called. "+event.getItem().getText());
+						Util.doLogging("Checkstate was. "+event.getChecked() );
+						dbService.iconographyIDisUsed(event.getItem().getIconographyID(), ornamentEntry!=null ? ornamentEntry.getOrnamentID() : 0, new AsyncCallback<Boolean>(){
 
-						@Override
-						public void onSuccess(Boolean result) {
-							Util.doLogging("EventIconographyID is: "+event.getItem().getIconographyID());
-							Util.doLogging("IconographyIDUsed: "+Boolean.toString(iconographyIDUsed));
-							iconographyIDUsed=result;
-							dialogboxnotcalled=result;
-							//Util.doLogging("set dialogboxnotcalled="+Boolean.toString(dialogboxnotcalled));
-							//Util.doLogging("IconographyIDUsed - after: "+Boolean.toString(iconographyIDUsed));					
-							
-							if ((iconographyIDUsed)&&(iconographyTree.isChecked(event.getItem()))) {
-								iconographyIDforOrnamentJump=event.getItem().getIconographyID();
-								//Util.doLogging("EventIconographyID is checked: "+Boolean.toString(iconographyTree.isChecked(event.getItem())));
-								iconographyTree.setCheckedSelection(null);		
-								if (dialogboxnotcalled) {
-									dialogboxnotcalled=false;
+							@Override
+							public void onFailure(Throwable caught) {
+								// Util.doLogging(("Update failed"+ caught.getMessage()));
+								Info.display("Update failed", caught.getMessage());
+							}
 
-									Util.showYesNo("Ornament already assigned", "Do you wish to open the ornament entry, to which it was assigned?", new SelectHandler() {
-										
-										@Override
-										public void onSelect(SelectEvent event) {
-											dialogboxnotcalled=false;
-											closeThisEditor=true;
-											dbService.getOrnamentsWHERE("IconographyID = "+Integer.toString(iconographyIDforOrnamentJump), new AsyncCallback<ArrayList<OrnamentEntry>>() {
+							@Override
+							public void onSuccess(Boolean result) {
+//								Util.doLogging("EventIconographyID is: "+event.getItem().getIconographyID());
+//								Util.doLogging("IconographyIDUsed: "+Boolean.toString(iconographyIDUsed));
+								iconographyIDUsed=result;
+								dialogboxnotcalled=result;
+								//Util.doLogging("set dialogboxnotcalled="+Boolean.toString(dialogboxnotcalled));
+								//Util.doLogging("IconographyIDUsed - after: "+Boolean.toString(iconographyIDUsed));					
+								
+								if ((iconographyIDUsed)&&(iconographyTree.isChecked(event.getItem()))) {
+									iconographyIDforOrnamentJump=event.getItem().getIconographyID();
+									//Util.doLogging("EventIconographyID is checked: "+Boolean.toString(iconographyTree.isChecked(event.getItem())));
+									iconographyTree.setCheckedSelection(null);		
+									if (dialogboxnotcalled) {
+										dialogboxnotcalled=false;
 
-												public void onFailure(Throwable caught) {
-													caught.printStackTrace();
-												}
-
-												@Override
-												public void onSuccess(ArrayList<OrnamentEntry> result) {
-													Util.doLogging("Länge des Ergebnisses: "+Integer.toString(result.size()));
-													if (result.size()==1) {
-
-														if (closeThisEditor) {
-															closeThisEditor=false;
-															//closeEditor(ornamentEntry);	
-															DialogBox ornamenticEditorPanel = new DialogBox(false);
-															EditorListener el = new EditorListener() {
-																
-																@Override
-																public void closeRequest(AbstractEntry entry) {
-																	ornamenticEditorPanel.hide();
-																}
-																public Integer getClickNumber() {
-																	return 0;
-																}
-																public void addClickNumber() {
-																}
-																public void setClickNumber(int clicks) {
-																}
-
-//																@Override
-//																public void updateEntryRequest(AbstractEntry updatedEntry) { }
-															};
-															OrnamenticEditor oe = new OrnamenticEditor(result.remove(0), el);
-															//oe.addEditorListener( );
-															ornamenticEditorPanel.add(oe);
-															ornamenticEditorPanel.center();
-														}
-														
-														
-													}
-												}
-											});
-										}
-									}, new SelectHandler() {
-					
-										@Override
-										public void onSelect(SelectEvent event) {
-											dialogboxnotcalled=false;
-											closeThisEditor=false;
+										Util.showYesNo("Ornament already assigned", "Do you wish to open the ornament entry, to which it was assigned?", new SelectHandler() {
 											
-										}}, new KeyDownHandler() {
-					
-										@Override
-										public void onKeyDown(KeyDownEvent e) {
-											if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+											@Override
+											public void onSelect(SelectEvent event) {
+												dialogboxnotcalled=false;
+												closeThisEditor=true;
+												dbService.getOrnamentsWHERE("IconographyID = "+Integer.toString(iconographyIDforOrnamentJump), new AsyncCallback<ArrayList<OrnamentEntry>>() {
+
+													public void onFailure(Throwable caught) {
+														caught.printStackTrace();
+													}
+
+													@Override
+													public void onSuccess(ArrayList<OrnamentEntry> result) {
+														Util.doLogging("Länge des Ergebnisses: "+Integer.toString(result.size()));
+														if (result.size()==1) {
+
+															if (closeThisEditor) {
+																closeThisEditor=false;
+																//closeEditor(ornamentEntry);	
+																DialogBox ornamenticEditorPanel = new DialogBox(false);
+																EditorListener el = new EditorListener() {
+																	
+																	@Override
+																	public void closeRequest(AbstractEntry entry) {
+																		ornamenticEditorPanel.hide();
+																	}
+																	public Integer getClickNumber() {
+																		return 0;
+																	}
+																	public void addClickNumber() {
+																	}
+																	public void setClickNumber(int clicks) {
+																	}
+
+//																	@Override
+//																	public void updateEntryRequest(AbstractEntry updatedEntry) { }
+																};
+																OrnamenticEditor oe = new OrnamenticEditor(result.remove(0), el);
+																//oe.addEditorListener( );
+																ornamenticEditorPanel.add(oe);
+																ornamenticEditorPanel.center();
+															}
+															
+															
+														}
+													}
+												});
+											}
+										}, new SelectHandler() {
+						
+											@Override
+											public void onSelect(SelectEvent event) {
 												dialogboxnotcalled=false;
 												closeThisEditor=false;
+												
+											}}, new KeyDownHandler() {
+						
+											@Override
+											public void onKeyDown(KeyDownEvent e) {
+												if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+													dialogboxnotcalled=false;
+													closeThisEditor=false;
 
-										}}}
-									);
-									//Util.doLogging("reset dialogboxnotcalled="+Boolean.toString(dialogboxnotcalled));
+											}}}
+										);
+										//Util.doLogging("reset dialogboxnotcalled="+Boolean.toString(dialogboxnotcalled));
+									}
+								} else {
+									selectedie = event.getItem();
 								}
 							}
-						}
-					
-					});					
+						
+						});								
+						
+					}
+				}
+		
 
 
 			}
@@ -234,6 +255,7 @@ public class OrnamenticIconographyTree {
 
 	}
 	public void refreshTrees() {
+		Util.doLogging("refreshTree started with selectedIE: "+selectedie.getText());
 		selectedIconographyTreeStore.clear();
 		wallTree.wallTreeStore.clear();
 		if (iconographyTree.getCheckedSelection().size()>0) {
@@ -251,6 +273,7 @@ public class OrnamenticIconographyTree {
 //						Util.doLogging("Erhalten Wall:"+we.getText()+" Positions: "+Integer.toString(we.getPosition().size()));
 //					}
 					wallTree.setWallTreeStore(result);
+					
 				}
 			});
 			
@@ -260,7 +283,7 @@ public class OrnamenticIconographyTree {
 	public void setTreeStore() {
 		for (IconographyEntry ie: iconographyTreeStore.getAll()) {
 			if (ie.getIconographyID()==ornamentEntry.getIconographyID()) {
-				//Util.doLogging("Set entry "+ie.getText()+" checked.");
+				Util.doLogging("Set entry "+ie.getText()+" checked.");
 				iconographyTree.setChecked(ie, CheckState.CHECKED);
 				addparent(ie);
 				selectedie=ie;
@@ -272,15 +295,15 @@ public class OrnamenticIconographyTree {
 					}
 
 					public void onSuccess(ArrayList<WallTreeEntry> result) {
-						for (WallTreeEntry we : result){
-							if (we.getPosition()!=null){
-								Util.doLogging("Erhalten Wall:"+we.getText()+" Positions: "+Integer.toString(we.getPosition().size()));											
-							}
-							else {
-								Util.doLogging("Erhalten Wall:"+we.getText()+" Positions:  - ");
-								
-							}
-						}
+//						for (WallTreeEntry we : result){
+//							if (we.getPosition()!=null){
+//								Util.doLogging("Erhalten Wall:"+we.getText()+" Positions: "+Integer.toString(we.getPosition().size()));											
+//							}
+//							else {
+//								Util.doLogging("Erhalten Wall:"+we.getText()+" Positions:  - ");
+//								
+//							}
+//						}
 						wallTree.setWallTreeStore(result);
 					}
 				});

@@ -546,7 +546,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 		// Aufbau der Felder auf der Client Seite
 		TabPanel tabpanel = new TabPanel();
-		tabpanel.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
+		tabpanel.setSize( Integer.toString(Window.getClientWidth()/100*95),Integer.toString(Window.getClientHeight()/100*95));
 		//tabpanel.setWidth(620);
 		//tabpanel.setHeight(600);
 
@@ -763,12 +763,6 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		ToolButton addCaveTool = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		addCaveTool.setToolTip(Util.createToolTip("Add Cave"));
 
-		VerticalPanel cavesPanel = new VerticalPanel();
-		header = new FramedPanel();
-		header.setHeading("Cave");
-
-		header.add(cavesPanel);
-		panel2.add(header, new VerticalLayoutData(1.0, 1.0));
 
 		ClickHandler addCaveClickHandler = new ClickHandler() {
 
@@ -784,7 +778,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		FramedPanel cavesContentPanel2 = new FramedPanel();
 
 		//cavesPanel.add(cavesContentPanel);
-		cavesPanel.add(cavesContentPanel2);
+		cavesContentPanel2.setHeight(Integer.toString(Window.getClientHeight()/100*95));
 		caveOrnamentRelationList = new ListStore<OrnamentCaveRelation>(
 				ornamentCaveRelationProps.ornamentCaveRelationID());
 
@@ -805,6 +799,8 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		cavesContentPanel.add(cavesList);
 		cavesContentPanel2.setHeading("Ornamentation detected in Caves:");
 		cavesContentPanel2.add(ornamentTrees.getWalls().wallTree);
+		cavesContentPanel2.setHeight(Integer.toString(Window.getClientHeight()/100*95));
+		panel2.add(cavesContentPanel2, new VerticalLayoutData(1.0, 1.0));
 		Util.doLogging("Create form von ornamenticeditor gestartet");
 		
 		ToolButton edit = new ToolButton(new IconConfig("editButton", "editButtonOver"));
@@ -928,20 +924,20 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		horizontBackground.add(panel, new HorizontalLayoutData(.5, 1.0));
 		horizontBackground.add(panel2, new HorizontalLayoutData(.5, 1.0));
 		ScrollPanel scrframedpanelornamentic = new ScrollPanel();
-		horizontBackground.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
+		horizontBackground.setSize( Integer.toString(Window.getClientWidth()/100*95),Integer.toString(Window.getClientHeight()/100*95));
 
 		scrframedpanelornamentic.add(horizontBackground);
 
 		tabpanel.add(scrframedpanelornamentic, "Basics");
 
 		ScrollPanel scrgeneral2FramedPanel = new ScrollPanel();
-		verticalgeneral2Background.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
+		verticalgeneral2Background.setSize( Integer.toString(Window.getClientWidth()/100*95),Integer.toString(Window.getClientHeight()/100*95));
 		
 		scrgeneral2FramedPanel.add(verticalgeneral2Background);
 		//tabpanel.add(scrgeneral2FramedPanel, "2. General");
 
 		ScrollPanel scrgeneral3FramedPanel = new ScrollPanel();
-		verticalgeneral3Background.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
+		verticalgeneral3Background.setSize( Integer.toString(Window.getClientWidth()/100*95),Integer.toString(Window.getClientHeight()/100*95));
 		scrgeneral3FramedPanel.add(verticalgeneral3Background);
 		//tabpanel.add(scrgeneral3FramedPanel, "Components");
 
@@ -1555,7 +1551,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 			@Override
 			public void onSelection(SelectionEvent event) {
 				if (event.getSelectedItem() == componentsImages) {
-					String height = Integer.toString(Window.getClientHeight()/100*80)+"px";
+					String height = Integer.toString(Window.getClientHeight()/100*95)+"px";
 					reloadPics();				
 					scrimagesFramedPanel.setPixelSize(-1, (int) (Window.getClientHeight()));
 				}
@@ -1610,7 +1606,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 		backgroundPanel = new FramedPanel();
 		
-		backgroundPanel.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
+		backgroundPanel.setSize( Integer.toString(Window.getClientWidth()/100*95),Integer.toString(Window.getClientHeight()/100*95));
 		backgroundPanel.add(tabpanel);
 		if (ornamentEntry!=null) {
 			backgroundPanel.setHeading("Ornamentation Editor (entry number: "+ornamentEntry.getOrnamentID()+")");

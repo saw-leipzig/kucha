@@ -236,7 +236,7 @@ public class IconographySelector extends FramedPanel {
 		}
 
 	}
-	public TreeStore<IconographyEntry> getIconographyStroe() {
+	public TreeStore<IconographyEntry> getIconographyStore() {
 		return iconographyTreeStore;
 	}
 	public Tree<IconographyEntry, String> buildTree( boolean ornament){
