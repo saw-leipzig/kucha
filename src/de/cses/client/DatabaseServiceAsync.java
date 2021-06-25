@@ -74,6 +74,8 @@ import de.cses.shared.WallTreeEntry;
 public interface DatabaseServiceAsync {
 
 	void getDistricts(AsyncCallback<ArrayList<DistrictEntry>> callback) throws IllegalArgumentException;
+
+	void serializeAllDepictionEntries(String sessionId, AsyncCallback<Boolean> callback) throws IllegalArgumentException;
 	
 	void getContext(AsyncCallback<String> callback) throws IllegalArgumentException;
 

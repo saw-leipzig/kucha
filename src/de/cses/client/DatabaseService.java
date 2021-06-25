@@ -81,6 +81,8 @@ public interface DatabaseService extends RemoteService {
 //	String dbServer(String name) throws IllegalArgumentException;
 
 	ArrayList<DistrictEntry> getDistricts() throws IllegalArgumentException;
+
+	boolean serializeAllDepictionEntries(String sessionId) throws IllegalArgumentException;
 		
 	boolean resetPassword(UserEntry currentUser) throws IllegalArgumentException;
 	

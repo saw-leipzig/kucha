@@ -78,6 +78,10 @@ import de.cses.shared.WallTreeEntry;
  */
 
 public class DatabaseServiceImpl extends RemoteServiceServlet implements DatabaseService {
+	public boolean serializeAllDepictionEntries(String sessionId) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.serializeAllDepictionEntries(sessionId);
+	}
 	public boolean iconographyIDisUsed(int iconographyID, int OrnamentID) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.iconographyIDisUsed(iconographyID, OrnamentID);

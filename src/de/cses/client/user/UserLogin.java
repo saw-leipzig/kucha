@@ -333,6 +333,30 @@ public class UserLogin extends PopupPanel {
 				}
 			});
 		}
+		ToolButton exportDBTB = null;
+		if (getAccessRights() == UserEntry.ADMIN) {
+			exportDBTB = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
+			exportDBTB.addSelectHandler(new SelectHandler() {
+				
+				@Override
+				public void onSelect(SelectEvent event) {
+					dbService.serializeAllDepictionEntries(currentUser.getSessionID(), new AsyncCallback<Boolean>() {
+
+						@Override
+						public void onFailure(Throwable caught) {
+							Util.showWarning("Login Message", "A problem occurred during login.\n Please check username / password!");
+							passwordField.reset();
+						}
+
+						@Override
+						public void onSuccess(Boolean result) {
+							Info.display("Finished database export", "See logs for details.");
+						}
+					});
+
+				}
+			});
+		}
 
 		ToolButton closeTB = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
 		closeTB.setToolTip(Util.createToolTip("close"));
@@ -362,6 +386,9 @@ public class UserLogin extends PopupPanel {
 //		if (sendTB != null) {
 //			userFP.addTool(sendTB);
 //		}
+		if (adminTB != null) {
+			userFP.addTool(exportDBTB);
+		}
 		if (adminTB != null) {
 			userFP.addTool(adminTB);
 		}

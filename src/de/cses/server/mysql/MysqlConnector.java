@@ -235,7 +235,6 @@ public class MysqlConnector implements IsSerializable {
 		} catch (Exception e) {
 			e.printStackTrace();			
 		}
-		initShedule();
 	}
 
 	private Connection getConnection() {
@@ -260,9 +259,6 @@ public class MysqlConnector implements IsSerializable {
 
 
 
-    public void ScheduledSendLog() {
-        initShedule();
-    }
 
     public void destroy() {
         this.scheduledExecutorService.shutdown();
@@ -271,7 +267,6 @@ public class MysqlConnector implements IsSerializable {
     private void initShedule() {
         scheduledExecutorService =
                 Executors.newScheduledThreadPool(1);
-        System.out.println("---ScheduledSendLog created " + LocalDateTime.now());
         startSchedule(LocalTime.of(03, 45));
     }
 
@@ -867,8 +862,8 @@ public class MysqlConnector implements IsSerializable {
 		}
 	private void doRequest(String method,String url, int port, String index, String json, String elastic_user, String elastic_pw) {
 		try {
-			System.out.println("executing request http://"+ url+":"+port+index);
-			URL target = new URL ("http://"+url+":"+port+index);
+			System.out.println("executing request https://"+ url+index);
+			URL target = new URL ("https://"+url+":"+port+index);
             String encoding = Base64.getEncoder().encodeToString((elastic_user+":"+ elastic_pw).getBytes("utf-8"));
             HttpURLConnection connection = (HttpURLConnection) target.openConnection();
             connection.setDoOutput(true);
@@ -901,8 +896,8 @@ public class MysqlConnector implements IsSerializable {
 	}
 	private void doUploadToElastic(String ID, String json,String url, String index, String port, String elastic_user, String elastic_pw) {
 		try {
-			System.out.println("executing request http://" + url+":"+port+index+"/_doc/"+ID);
-			URL target = new URL ("http://"+url+":"+port+index+"/_doc/"+ID);
+			System.out.println("executing request https://" + url+":"+port+index+"/_doc/"+ID);
+			URL target = new URL ("https://"+url+index+"/_doc/"+ID);
 	        String encoding = Base64.getEncoder().encodeToString((elastic_user+":"+ elastic_pw).getBytes("utf-8"));
 	        HttpURLConnection connection = (HttpURLConnection) target.openConnection();
 	        connection.setDoOutput(true);
@@ -972,7 +967,7 @@ public class MysqlConnector implements IsSerializable {
 //		}
 
 	}
-	private void serializeAllDepictionEntries(String sessionID) {
+	public boolean serializeAllDepictionEntries(String sessionID) {
 		long start = System.currentTimeMillis();
 		if (!serverProperties.getProperty("MysqlConnector.db.url").contains("test")) {
 			String url = serverProperties.getProperty("home.elastic.url");
@@ -989,7 +984,7 @@ public class MysqlConnector implements IsSerializable {
 			doRequest("DELETE", url, port, index_dic, "",elastic_user,elastic_pw);
 			doRequest("PUT", url, port, index_data, mapping_data,elastic_user,elastic_pw);
 			doRequest("PUT", url, port, index_dic, mapping_dic,elastic_user,elastic_pw);
-			doRequest("PUT", url, port, "/_xpack/security/role/my_admin_role", elastic_role,elastic_user,elastic_pw);
+			doRequest("PUT", url, port, "/_xpack/security/role/read_only_role", elastic_role,elastic_user,elastic_pw);
 			doRequest("PUT", url, port, "/_xpack/security/user/read_only_user", elasticReadOnlyUser,elastic_user,elastic_pw);
 			Connection dbc = getConnection();
 			DepictionEntry result = null;
@@ -1020,16 +1015,16 @@ public class MysqlConnector implements IsSerializable {
 								rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes"),
 								rs.getInt("MasterImageID"), rs.getInt("AccessLevel"), rs.getString("LastChangedByUser"), rs.getString("LastChangedOnDate"),getAnnotations(rs.getInt("DepictionID")));
 						if (result.getAccessLevel() == 2) {
-							result.setRelatedImages(getRelatedImages(result.getDepictionID(), sessionID,accessLevel));
+							result.setRelatedImages(getRelatedPublicImages(result.getDepictionID()));
 							result.setRelatedBibliographyList(getRelatedBibliographyFromDepiction(result.getDepictionID()));
 							result.setRelatedIconographyList(getRelatedIconography(result.getDepictionID()));
-//							ArrayList<ImageEntry> publicImmages = new ArrayList<ImageEntry>();
-//							for (ImageEntry ie : result.getRelatedImages()) {
-//								if (ie.getAccessLevel()>1) {
-//									publicImmages.add(ie);
-//								}
-//							}
-//							result.setRelatedImages(publicImmages);
+							ArrayList<ImageEntry> publicImmages = new ArrayList<ImageEntry>();
+							for (ImageEntry ie : result.getRelatedImages()) {
+								if (ie.getAccessLevel()>0) {
+									publicImmages.add(ie);
+								}
+							}
+							result.setRelatedImages(publicImmages);
 							if (result.getStyleID()>0) {
 								result.setStyle(getStyles("StyleID = "+Integer.toString(result.getStyleID())).get(0));						
 							}
@@ -1179,6 +1174,7 @@ public class MysqlConnector implements IsSerializable {
 		long end = System.currentTimeMillis();
 		long diff = (end-start);
 		System.out.println("Writing Elastic Indices took "+diff + " Milliseconds.");
+		return true;
 	}
 	public Map<Integer,String> getPicsByImageID(String imgSourceIds, int tnSize, String sessionID) {
 		Map<Integer,String> result = new HashMap<Integer,String>();
@@ -1590,13 +1586,13 @@ public class MysqlConnector implements IsSerializable {
 		
 		try {
 			ArrayList<Integer> des = new ArrayList<Integer>();
-			System.out.println("SELECT DepictionID FROM DepictionIconographyRelation where IconographyID="+Integer.toString(IconographyID) + " UNION SELECT Polygon.DepictionID FROM Annotations inner join Polygon on (Annotations.AnnotoriousID=Polygon.AnnotoriousID) where IconographyID="+Integer.toString(IconographyID));
-			pstmt = dbc.prepareStatement("SELECT DepictionID FROM DepictionIconographyRelation where IconographyID="+Integer.toString(IconographyID) + " UNION SELECT Polygon.DepictionID FROM Annotations inner join Polygon on (Annotations.AnnotoriousID=Polygon.AnnotoriousID) where IconographyID="+Integer.toString(IconographyID));
+			System.out.println("SELECT DepictionID FROM DepictionIconographyRelation INNER JOIN depictions  where depictions.deleted=0 and DepictionIconographyRelation.IconographyID="+Integer.toString(IconographyID) + " UNION SELECT Polygon.DepictionID FROM Annotations inner join Polygon on (Annotations.AnnotoriousID=Polygon.AnnotoriousID) inner join Depictions (on Polygon.DepictionID=Depictions.DepictionID) where Polygon.deleted = 0 and Depiction.deleted = 0 and IconographyID="+Integer.toString(IconographyID));
+			pstmt = dbc.prepareStatement("SELECT DepictionIconographyRelation.DepictionID FROM DepictionIconographyRelation INNER JOIN Depictions on (Depictions.DepictionID = DepictionIconographyRelation.DepictionID) where Depictions.deleted=0 and DepictionIconographyRelation.IconographyID="+Integer.toString(IconographyID) + " UNION SELECT Polygon.DepictionID FROM Annotations inner join Polygon on (Annotations.AnnotoriousID=Polygon.AnnotoriousID)  inner join Depictions on ( Polygon.DepictionID=Depictions.DepictionID) where Polygon.deleted = 0 and Depictions.deleted = 0 and IconographyID="+Integer.toString(IconographyID));
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
-				//System.out.println("DepictionID is here: "+rs.getInt("DepictionID"));
+				System.out.println("DepictionID is here: "+rs.getInt("DepictionID"));
 				DepictionEntry de= getDepictionEntry(rs.getInt("DepictionID"),sessionID);
-				//System.out.println("Found Depiction"+de.getDepictionID());
+				System.out.println("Found Depiction"+de.getDepictionID());
 				CaveEntry item = de.getCave();
 				String site = item.getSiteID() > 0 ? getSites(" SiteID="+item.getSiteID()).get(0).getShortName() : "";
 				String district = item.getDistrictID() > 0 ? getDistricts(" DistrictID="+item.getDistrictID()).get(0).getName() : "";
@@ -1867,7 +1863,7 @@ public class MysqlConnector implements IsSerializable {
 //				else {
 //					System.out.println("Imaglocation not set. filename= "+image.getTitle());										
 //				}
-				System.out.println("added result:" + image.getUniqueID());
+				//System.out.println("added result:" + image.getUniqueID());
 				results.add(image);
 			}
 			rs.close();
@@ -3726,7 +3722,7 @@ public boolean isHan(String s) {
 
 		PreparedStatement pstmt;
 		try {
-			String sqlTxt = "SELECT * FROM Images WHERE deleted=0 and ImageID IN (SELECT ImageID FROM DepictionImageRelation WHERE DepictionID=?) AND AccessLevel IN (" + inStatement + ")";
+			String sqlTxt = "SELECT * FROM Images WHERE deleted=0 and ImageID IN (SELECT ImageID FROM DepictionImageRelation WHERE DepictionID=?)";
 			if (depictionID == 779) {
 				System.out.println("SQL-Text für DepictionID 779");
 				System.out.println(sqlTxt);
@@ -3752,6 +3748,56 @@ public boolean isHan(String s) {
 				}
 
 				results.add(image);
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+			return null;
+		}
+		if (dologging){
+		long end = System.currentTimeMillis();
+		long diff = (end-start);
+		if (diff>100){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getRelatedImages brauchte "+diff + " Millisekunden.");;}}
+//		System.out.println("Größe von relatedimages: "+results.size());
+		return results;
+	}
+	private ArrayList<ImageEntry> getRelatedPublicImages(int depictionID) {
+		long start = System.currentTimeMillis();
+		if (dologgingbegin){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getRelatedImages wurde ausgelöst.");;
+		}
+		ArrayList<ImageEntry> results = new ArrayList<ImageEntry>();
+		Connection dbc = getConnection();
+
+		PreparedStatement pstmt;
+		try {
+			String sqlTxt = "SELECT * FROM Images WHERE deleted=0 and ImageID IN (SELECT ImageID FROM DepictionImageRelation WHERE DepictionID=?)";
+			pstmt = dbc.prepareStatement(sqlTxt);
+			pstmt.setInt(1, depictionID);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				ImageEntry image = new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
+						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
+						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("location")),rs.getString("InventoryNumber"),rs.getDouble("Height"),rs.getDouble("Width"));
+				if (image.getLocation()==null) {
+					if (rs.getString("Title")!=null){
+						image.setLocation(searchLocationByFilename(image.getTitle()));
+					}
+				}
+				if (image.getInventoryNumber()==null||image.getInventoryNumber()=="") {
+					if (rs.getString("Title")!=null) {
+						image.setInventoryNumber(searchInventoryNumberByFilename(image.getTitle()));
+					}
+				}
+				if (image.getAccessLevel()==1) {
+					image.setFilename("accessNotPermitted.png");
+				}
+				if (image.getAccessLevel()>0) {
+					results.add(image);					
+				}
 			}
 			rs.close();
 			pstmt.close();
