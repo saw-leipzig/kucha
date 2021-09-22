@@ -15,8 +15,8 @@ package de.cses.client.bibliography;
 import java.util.ArrayList;
 
 import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyDownEvent;
-import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
@@ -81,9 +81,9 @@ public class AnnotatedBibliographyFilter extends AbstractFilter {
 		yearSearch.setAllowNegative(false);
 		yearSearch.setEmptyText("year");
 		yearSearch.setToolTip(Util.createToolTip("search year", "will be extended into searching for range of years in next version"));
-		yearSearch.addKeyDownHandler( new KeyDownHandler() {
-			public void onKeyDown(KeyDownEvent event) {
-	        	  if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+		yearSearch.addKeyPressHandler( new KeyPressHandler() {
+			public void onKeyPress(KeyPressEvent event) {
+	        	  if (event.getCharCode() == KeyCodes.KEY_ENTER) {
 	        		  yearSearch.finishEditing();
 	        		  invokeSearch();
 	        	  }

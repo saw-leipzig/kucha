@@ -19,6 +19,7 @@ import java.util.List;
 
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -57,6 +58,8 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.IntegerSpinnerField;
+import com.sencha.gxt.widget.core.client.form.NumberField;
+import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
@@ -685,7 +688,7 @@ public class OrnamenticFilter extends AbstractFilter {
 		ContentPanel ornamentComponentsPanel = new ContentPanel();
 		ornamentComponentsPanel.setHeaderVisible(true);
 		ornamentComponentsPanel
-				.setToolTip(Util.createToolTip("Search for components of Iconography.", "Select one or more elements to search for Ideal Typical Pictures."));
+				.setToolTip(Util.createToolTip("Search for components of Iconography.", "Select one or more elements to search for Typical Pictures."));
 		ornamentComponentsPanel.setHeading("Iconography Components");
 		ornamentComponentsPanel.add(ornamentComponentsSelectionLV);
 		ornamentComponentsPanel.getHeader().setStylePrimaryName("frame-header");
