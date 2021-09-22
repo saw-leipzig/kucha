@@ -214,13 +214,11 @@ public class UserLogin extends PopupPanel {
 	}
 
 	private void showUserView() { // all Information about the user and the possibility to change it
-		
 		PasswordField passwordField = new PasswordField();
 		passwordField.setWidth(200);
 		FramedPanel passwordFP = new FramedPanel();
 		passwordFP.setHeading("Password (for update/change password only)");
 		passwordFP.add(passwordField);
-		
 		TextField emailTF = new TextField();
 		emailTF.setWidth(300);
 		emailTF.setValue(currentUser.getEmail());
@@ -284,7 +282,6 @@ public class UserLogin extends PopupPanel {
 		FramedPanel changePasswordFP = new FramedPanel();
 		changePasswordFP.setHeading("Change password (optional)");
 		changePasswordFP.add(changePasswordVLC);
-		
 		TextButton updateButton = new TextButton("update");
 		updateButton.addSelectHandler(new SelectHandler() {
 			
@@ -309,7 +306,6 @@ public class UserLogin extends PopupPanel {
 				}
 			}
 		});
-		
 		TextButton logoutButton = new TextButton("logout");
 		logoutButton.addSelectHandler(new SelectHandler() {
 
@@ -318,7 +314,6 @@ public class UserLogin extends PopupPanel {
 				logout();
 			}
 		});
-
 		ToolButton adminTB = null;
 		if (getAccessRights() == UserEntry.ADMIN) {
 			adminTB = new ToolButton(new IconConfig("editButton", "editButtonOver"));
@@ -334,7 +329,7 @@ public class UserLogin extends PopupPanel {
 			});
 		}
 		ToolButton exportDBTB = null;
-		if (getAccessRights() == UserEntry.ADMIN) {
+		if (getAccessRights() == UserEntry.FULL || getAccessRights() == UserEntry.ADMIN) {
 			exportDBTB = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 			exportDBTB.addSelectHandler(new SelectHandler() {
 				
@@ -357,7 +352,6 @@ public class UserLogin extends PopupPanel {
 				}
 			});
 		}
-
 		ToolButton closeTB = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
 		closeTB.setToolTip(Util.createToolTip("close"));
 		closeTB.addSelectHandler(new SelectHandler() {
@@ -368,7 +362,6 @@ public class UserLogin extends PopupPanel {
 				clear();
 			}
 		});
-		
 		VerticalLayoutContainer userVL = new VerticalLayoutContainer();
 		userVL.add(new HTML(uiTemplate.userLabel(currentUser.getFirstname() + " " + currentUser.getLastname(), currentUser.getUsername())), new VerticalLayoutData(1.0, .2));
 		userVL.add(emailFP, new VerticalLayoutData(1.0, .14));
@@ -386,7 +379,7 @@ public class UserLogin extends PopupPanel {
 //		if (sendTB != null) {
 //			userFP.addTool(sendTB);
 //		}
-		if (adminTB != null) {
+		if (exportDBTB != null) {
 			userFP.addTool(exportDBTB);
 		}
 		if (adminTB != null) {

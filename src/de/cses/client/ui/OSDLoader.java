@@ -20,7 +20,6 @@ import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
 import de.cses.client.Util;
 import de.cses.client.user.UserLogin;
-import de.cses.server.WKT2SVG;
 import de.cses.shared.AnnotationEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
