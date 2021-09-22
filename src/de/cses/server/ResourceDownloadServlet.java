@@ -19,7 +19,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Map;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -27,6 +31,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.sencha.gxt.widget.core.client.info.Info;
+
+import de.cses.client.Util;
 import de.cses.server.mysql.MysqlConnector;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.ImageEntry;
@@ -195,10 +203,63 @@ public class ResourceDownloadServlet extends HttpServlet {
 						return;
 					}
 				}
+			} 
+			else {
+				String filename = request.getParameter("document");
+				if (filename.contains("-annotation")) {
+					System.out.println("Request for annotations atre grented without rights");
+					System.out.println(filename);
+					if (filename.startsWith(".")) {
+						response.setStatus(400);
+						return;
+					} else {
+						File inputFile = new File(serverProperties.getProperty("home.documents"), filename);
+						System.out.println("Document: "+filename+" providing.");
+						if (inputFile.exists()) {
+							System.out.println("Document: "+filename+" found.");
+							FileInputStream fis = new FileInputStream(inputFile);
+							response.setContentType(filename.toLowerCase().endsWith("pdf") ? "application/pdf" : "text/html");
+							ServletOutputStream out = response.getOutputStream();
+							byte buffer[] = new byte[4096];
+							int bytesRead = 0;
+							while ((bytesRead = fis.read(buffer)) > 0) {
+								out.write(buffer, 0, bytesRead);
+							}
+							out.close();
+							fis.close();
+							System.out.println("Document: "+filename+" provided.");
+						} else {
+							response.setStatus(404);
+							return;
+						}
+					}
+				} else {
+					System.out.println("User rights not sufficent.");
+					response.setStatus(403);
+					return;					
+				}
+			}
+		} else if (request.getParameter("dataexport") != null)  {
+	        Map<String, String> map = new HashMap<String, String>();
+
+	        Enumeration headerNames = request.getHeaderNames();
+	        while (headerNames.hasMoreElements()) {
+	            String key = (String) headerNames.nextElement();
+	            String value = request.getHeader(key);
+	            System.out.println(key+": "+value);
+	        }
+	        String ip = "";
+	        try(final DatagramSocket socket = new DatagramSocket()){
+	        	  socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
+	        	  ip = socket.getLocalAddress().getHostAddress();
+	        	}
+	        System.out.println("IP Address: '" + ip+"'");
+	        System.out.println("x-forwarded-for: '" + request.getHeader("x-forwarded-for")+"'");
+			if (request.getHeader("x-forwarded-for").equals(ip)) {
+				System.out.println("initiate dataexport");				
+				connector.serializeAllDepictionEntries("");
 			} else {
-				System.out.println("User rights not sufficent.");
-				response.setStatus(403);
-				return;
+				System.out.println("request for dataexport blocked!");
 			}
 		} else {
 			response.setStatus(400);
