@@ -48,13 +48,18 @@ import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer.ExpandMode;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.container.MarginData;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.IntegerSpinnerField;
+import com.sencha.gxt.widget.core.client.form.NumberField;
+import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.StoreFilterField;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 
@@ -158,6 +163,7 @@ public class DepictionFilter extends AbstractFilter {
 	
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 
+	private TextField IDSearchTF;
 	private TextField shortNameSearchTF;
 	private CaveProperties caveProps;
 	private IconographyProperties icoProps;
@@ -188,6 +194,9 @@ public class DepictionFilter extends AbstractFilter {
 		}
 		if (((DepictionSearchEntry)searchEntry).getShortName()!= null && !((DepictionSearchEntry)searchEntry).getShortName().isEmpty()) {
 			shortNameSearchTF.setValue(((DepictionSearchEntry)searchEntry).getShortName());
+		}
+		if (((DepictionSearchEntry)searchEntry).getID() > 0) {
+			IDSearchTF.setValue(Integer.toString(((DepictionSearchEntry)searchEntry).getID()));
 		}
 		
 		for (int cID : ((DepictionSearchEntry)searchEntry).getCaveIdList()) {
@@ -246,6 +255,7 @@ public class DepictionFilter extends AbstractFilter {
 
 	@Override
 	public void clear() {
+		IDSearchTF.reset();
 		shortNameSearchTF.reset();
 		caveSelectionLV.getSelectionModel().deselectAll();
 		locationSelectionLV.getSelectionModel().deselectAll();
@@ -584,6 +594,10 @@ public class DepictionFilter extends AbstractFilter {
 		shortNameSearchTF = new TextField();
 		shortNameSearchTF.setEmptyText("search short name");
 		shortNameSearchTF.addKeyPressHandler(getShortkey());
+		IDSearchTF = new TextField();
+		IDSearchTF.addValidator(new RegExValidator("[0-9]", "Only numbers allowed"));
+		IDSearchTF.setEmptyText("search ID");
+		IDSearchTF.addDomHandler(getShortkey() , KeyPressEvent.getType());
 
 		/**
 		 * assemble current location selection
@@ -653,7 +667,12 @@ public class DepictionFilter extends AbstractFilter {
 //    depictionFilterALC.setActiveWidget(cavePanel);
 
     BorderLayoutContainer depictionFilterBLC = new BorderLayoutContainer();
-    depictionFilterBLC.setNorthWidget(shortNameSearchTF, new BorderLayoutData(20));
+    VerticalLayoutContainer SearchFieldsVLC = new VerticalLayoutContainer();
+    SearchFieldsVLC.add(IDSearchTF , new VerticalLayoutData(1.0, .50));
+    SearchFieldsVLC.add(shortNameSearchTF , new VerticalLayoutData(1.0, .50));
+    SearchFieldsVLC.setHeight("150px");
+    depictionFilterBLC.setNorthWidget(SearchFieldsVLC, new BorderLayoutData(60));
+    
     depictionFilterBLC.setCenterWidget(depictionFilterALC, new MarginData(5, 0, 0, 0));
     depictionFilterBLC.setHeight(450);
     return depictionFilterBLC;
@@ -757,6 +776,9 @@ public class DepictionFilter extends AbstractFilter {
 		
 		if (shortNameSearchTF.getValue() != null && !shortNameSearchTF.getValue().isEmpty()) {
 			searchEntry.setShortName(shortNameSearchTF.getValue());
+		}
+		if (IDSearchTF.getValue() != null ) {
+			searchEntry.setID(Integer.parseInt(IDSearchTF.getValue()));
 		}
 		
 		for (CaveEntry ce : caveSelectionLV.getSelectionModel().getSelectedItems()) {

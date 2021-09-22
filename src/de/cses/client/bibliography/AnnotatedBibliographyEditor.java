@@ -1061,7 +1061,11 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 
 				@Override
 				protected boolean doSelect(Store<AuthorEntry> store, AuthorEntry parent, AuthorEntry item, String filter) {
-					return item.getName().toLowerCase().contains(filter.toLowerCase()); 
+					if (item.getName() != null) {
+						return item.getName().toLowerCase().contains(filter.toLowerCase()); 						
+					} else {
+						return false;						
+					}
 				}
 			};
 			authorListFilterField.bind(authorListStore);
@@ -1077,16 +1081,28 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 					bibEntry.setBibtexKey(event.getValue());
 				}
 			});
+			CheckBox hasOtherAuthors = new CheckBox();
+			hasOtherAuthors.setBoxLabel("et al.");
+			hasOtherAuthors.setToolTip("Only set if other Authors are unknown!");
+			hasOtherAuthors.setValue(bibEntry.getHasOtherAuthors());
+			hasOtherAuthors.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+
+				@Override
+				public void onValueChange(ValueChangeEvent<Boolean> event) {
+					bibEntry.setHasOtherAuthors(event.getValue());
+				}
+			});
 			
 			HorizontalLayoutContainer filterBibTexKeyHLC = new HorizontalLayoutContainer();
-			filterBibTexKeyHLC.add(new HTML("<span style='font: 12px tahoma,arial,verdana,sans-serif;'>Filter:</span>", true), new HorizontalLayoutData(.15, 1.0, new Margins(0, 0, 0, 0)));
+			filterBibTexKeyHLC.add(hasOtherAuthors, new HorizontalLayoutData(.10, 1.0, new Margins(0, 0, 0, 0)));
+			filterBibTexKeyHLC.add(new HTML("<span style='font: 12px tahoma,arial,verdana,sans-serif;'>Filter:</span>", true), new HorizontalLayoutData(.05, 1.0, new Margins(0, 0, 0, 0)));
 			filterBibTexKeyHLC.add(authorListFilterField, new HorizontalLayoutData(.35, 1.0, new Margins(0, 20, 0, 0)));
 			filterBibTexKeyHLC.add(new HTML("<span style='font: 12px tahoma,arial,verdana,sans-serif;'>BibTex key:</span>", true), new HorizontalLayoutData(.15, 1.0, new Margins(0, 0, 0, 20)));
-			filterBibTexKeyHLC.add(bibtexKeyTF, new HorizontalLayoutData(.35, 1.0, new Margins(0, 0, 0, 0)));
+			filterBibTexKeyHLC.add(bibtexKeyTF, new HorizontalLayoutData(.30, 1.0, new Margins(0, 0, 0, 0)));
 
 			VerticalLayoutContainer authorVLC = new VerticalLayoutContainer();
-			authorVLC.add(authorSelection, new VerticalLayoutData(1.0, .85));
-			authorVLC.add(filterBibTexKeyHLC, new VerticalLayoutData(1.0, .15, new Margins(10, 0, 0, 0)));
+			authorVLC.add(authorSelection, new VerticalLayoutData(1.0, .80));
+			authorVLC.add(filterBibTexKeyHLC, new VerticalLayoutData(1.0, .20, new Margins(10, 0, 0, 0)));
 
 			FramedPanel authorFP = new FramedPanel();
 			authorFP.setHeading("Author");
@@ -1094,7 +1110,11 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 			authorFP.addTool(addAuthorTB);
 			authorFP.addTool(deleteAuthorTB);
 			authorFP.addTool(editAuthorTB);
-			secondTabVLC.add(authorFP, new VerticalLayoutData(1.0, .45));
+			if (pubType.isEditorEnabled()) {
+				secondTabVLC.add(authorFP, new VerticalLayoutData(1.0, .45));
+			} else {
+				secondTabVLC.add(authorFP, new VerticalLayoutData(1.0, .90));				
+			}
 		}
 
 		/**
@@ -1111,7 +1131,11 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 
 				@Override
 				protected boolean doSelect(Store<AuthorEntry> store, AuthorEntry parent, AuthorEntry item, String filter) {
-					return item.getName().toLowerCase().contains(filter.toLowerCase()) ? true : false; 
+					if (item.getName() != null) {
+						return item.getName().toLowerCase().contains(filter.toLowerCase()); 						
+					} else {
+						return false;						
+					}
 				}
 			};
 			editorListFilterField.bind(editorListStore);
@@ -1126,12 +1150,25 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 					bibEntry.setEditorType(event.getValue());
 				}
 			});
+			CheckBox hasOtherAuthors = new CheckBox();
+			hasOtherAuthors.setBoxLabel("et al.");
+			hasOtherAuthors.setToolTip("Only set if other Editors are unknown!");
+			hasOtherAuthors.setValue(bibEntry.getHasOtherEditors());
+			hasOtherAuthors.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+
+				@Override
+				public void onValueChange(ValueChangeEvent<Boolean> event) {
+					bibEntry.setHasOtherEditors(event.getValue());
+				}
+			});
+			
 			
 			HorizontalLayoutContainer filterEditorTypeHLC = new HorizontalLayoutContainer();
-			filterEditorTypeHLC.add(new HTML("<span style='font: 12px tahoma,arial,verdana,sans-serif;'>Filter:</span>", true), new HorizontalLayoutData(.15, 1.0, new Margins(0, 0, 0, 0)));
+			filterEditorTypeHLC.add(hasOtherAuthors, new HorizontalLayoutData(.10, 1.0, new Margins(0, 0, 0, 0)));
+			filterEditorTypeHLC.add(new HTML("<span style='font: 12px tahoma,arial,verdana,sans-serif;'>Filter:</span>", true), new HorizontalLayoutData(.05, 1.0, new Margins(0, 0, 0, 0)));
 			filterEditorTypeHLC.add(editorListFilterField, new HorizontalLayoutData(.35, 1.0, new Margins(0, 20, 0, 0)));
 			filterEditorTypeHLC.add(new HTML("<span style='font: 12px tahoma,arial,verdana,sans-serif;'>Editor type:</span>", true), new HorizontalLayoutData(.15, 1.0, new Margins(0, 0, 0, 20)));
-			filterEditorTypeHLC.add(editorTypeTF, new HorizontalLayoutData(.35, 1.0, new Margins(0, 0, 0, 0)));
+			filterEditorTypeHLC.add(editorTypeTF, new HorizontalLayoutData(.30, 1.0, new Margins(0, 0, 0, 0)));
 			
 			editorVLC.add(filterEditorTypeHLC, new VerticalLayoutData(1.0, .15, new Margins(10, 0, 0, 0)));
 

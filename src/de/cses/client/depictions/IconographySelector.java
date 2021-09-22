@@ -236,7 +236,7 @@ public class IconographySelector extends FramedPanel {
 		}
 
 	}
-	public TreeStore<IconographyEntry> getIconographyStroe() {
+	public TreeStore<IconographyEntry> getIconographyStore() {
 		return iconographyTreeStore;
 	}
 	public Tree<IconographyEntry, String> buildTree( boolean ornament){
@@ -287,7 +287,6 @@ public class IconographySelector extends FramedPanel {
 		    public void onBrowserEvent(Context context, Element parent, String value,
 		    	      NativeEvent event, ValueUpdater<String> valueUpdater) {
 		    	    String eventType = event.getType();
-		    	    // Special case the ENTER key for a unified user experience.
 		    	    if (BrowserEvents.MOUSEOVER.equals(eventType) ) {
 		    	    	beforeSelection=iconographyTree.getSelectionModel().getSelectedItems();
 		    	    	currentContext=context;
@@ -303,7 +302,7 @@ public class IconographySelector extends FramedPanel {
 				    	}
 			    	}
 		    	    if (BrowserEvents.MOUSEUP.equals(eventType)) {
-		    	    	Util.doLogging("Clicked "+context.getKey());
+		    	    	//Util.doLogging("Clicked "+context.getKey());
 		    	    	IconographyEntry ie = iconographyTree.getStore().findModelWithKey((String)context.getKey());
 		    	    	for (IconographyEntry selectedIE : beforeSelection) {
 		    	    		if (selectedIE.getIconographyID()==ie.getIconographyID()) {
@@ -606,6 +605,7 @@ public class IconographySelector extends FramedPanel {
 		}
 	}
 	private void initPanel(Collection<IconographyEntry> elements) {
+		Util.doLogging("init panel");
 		filterField = new StoreFilterField<IconographyEntry>() {
 
 			@Override

@@ -58,6 +58,7 @@ import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.IntegerSpinnerField;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 
@@ -76,6 +77,7 @@ import de.cses.client.walls.WallTree;
 import de.cses.shared.AbstractSearchEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
+import de.cses.shared.DepictionSearchEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.InnerSecondaryPatternsEntry;
@@ -111,6 +113,7 @@ public class OrnamenticFilter extends AbstractFilter {
 
 	// Klasse zum erstellen aller Filter auf der Client Seite
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
+	private TextField IDSearchTF;
 	private TextField ornamentCodeSearchTF;
 	private TextField ornamentDeskriptionSearchTF;
 	private TextField ornamentRemarksSearchTF;
@@ -370,6 +373,7 @@ public class OrnamenticFilter extends AbstractFilter {
 	}
 	@Override
 	public void clear() {
+		IDSearchTF.reset();
 		ornamentCodeSearchTF.clear();
 		ornamentDeskriptionSearchTF.clear();
 		ornamentRemarksSearchTF.clear();;
@@ -542,6 +546,9 @@ public class OrnamenticFilter extends AbstractFilter {
 				ListViewSelectionModel<CaveEntry> test =cavesSelectionLV.getSelectionModel();
 			}
 		}
+		if (((DepictionSearchEntry)searchEntry).getID() > 0) {
+			IDSearchTF.setValue(Integer.toString(((DepictionSearchEntry)searchEntry).getID()));
+		}
 		if (!((OrnamenticSearchEntry)searchEntry).getCode().isEmpty()) {
 			ornamentCodeSearchTF.setValue(((OrnamenticSearchEntry)searchEntry).getCode(), true);
 		}
@@ -614,6 +621,10 @@ public class OrnamenticFilter extends AbstractFilter {
 	protected Widget getFilterUI() {
 
 		// Erstellen der Felder und ListViews auf der Client Seite
+		IDSearchTF = new TextField();
+		IDSearchTF.addValidator(new RegExValidator("[0-9]", "Only numbers allowed"));
+		IDSearchTF.setEmptyText("search ID");
+		IDSearchTF.addDomHandler(getShortkey() , KeyPressEvent.getType());
 
 		ornamentCodeSearchTF = new TextField();
 		ornamentCodeSearchTF.setEmptyText("search ornament code");
@@ -1212,6 +1223,7 @@ public class OrnamenticFilter extends AbstractFilter {
 
 		VerticalLayoutContainer codeMotifVLC = new VerticalLayoutContainer();
 		codeMotifVLC.addDomHandler(getShortkey(), KeyPressEvent.getType());
+		codeMotifVLC.add(IDSearchTF, new VerticalLayoutData(1.0, 25));
 		codeMotifVLC.add(ornamentCodeSearchTF, new VerticalLayoutData(1.0, 25));
 		codeMotifVLC.add(headerOrnamentClass, new VerticalLayoutData(1.0, 45));
 		
@@ -1248,6 +1260,9 @@ public class OrnamenticFilter extends AbstractFilter {
 			searchEntry = new OrnamenticSearchEntry(UserLogin.getInstance().getSessionID());
 		} else {
 			searchEntry = new OrnamenticSearchEntry();
+		}
+		if (IDSearchTF.getValue() != null ) {
+			searchEntry.setID(Integer.parseInt(IDSearchTF.getValue()));
 		}
 	
 		if (ornamentCodeSearchTF.getValue() != null && !ornamentCodeSearchTF.getValue().isEmpty()) {

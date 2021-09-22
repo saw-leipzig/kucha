@@ -1,7 +1,8 @@
 <table class='image-view'>
 	<tr>
 		<td rowspan='4' style='width: 130px; text-align: center; vertical-align: middle;'><img src='{imgUri}' style='max-height: 90px; max-width: 120px; margin: 0 5px 0 0;'></td>
-		<td class='image-view'><i>Shortname:</i> {shortName}</td>
+		<td colspan='1' class='image-view'><i>Shortname:</i> {shortName}</td>
+		<td colspan='1' class='image-view'>ID: {imageID}</td>
 		<tpl if="isPublic"> <td rowspan='4'><span class='freeIconText'></span></td>  </tpl>
 		<tpl if="!isPublic"> <td rowspan='4'><span class='blockedIconText'></span></td>  </tpl>
 	</tr>

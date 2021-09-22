@@ -196,12 +196,7 @@ public class DepictionEditor extends AbstractEditor {
 	private TextField shortNameTF;
 	private BibliographySelector bibliographySelector;
 	private StoreFilterField<ImageEntry> filterField;
-	private VerticalLayoutContainer zoomPanel;
-	private Map<String, HTML> imgannotations = new HashMap<String, HTML>();
-	private JavaScriptObject osdDic;
 	private OSDLoader osdLoader;
-	private static PopupPanel AnnoPanel = new PopupPanel(false);
-	private ImageEntry selectedImgEntry;
 	private boolean annotationsLoaded = true;
 	private double imageWindowRelation;
 	private OSDListener osdListener;
@@ -417,18 +412,37 @@ public class DepictionEditor extends AbstractEditor {
 		loadModesOfRepresentation();
 		loadPreservationAttributes();
 	}
-
-	private void highlightIcoEntry(IconographyEntry selectedIE, boolean deselect, List<IconographyEntry>clickedIcos) {
-		//Util.doLogging("Started highlighting for Iconography: "+selectedIE.getText());
-		ArrayList<AnnotationEntry> newAnnos = new ArrayList<AnnotationEntry>();
+	private ArrayList<AnnotationEntry> findAllIcos(IconographyEntry selectedIE, ArrayList<AnnotationEntry> collectedEntries) {
 		for (AnnotationEntry ae : correspondingDepictionEntry.getRelatedAnnotationList()) {
 			for (IconographyEntry ie : ae.getTags()) {
 				if (ie.getIconographyID() == selectedIE.getIconographyID()) {
-								//Util.doLogging("found annotation for: "+ie.getText());
-								newAnnos.add(ae);
+					boolean found = false;
+					for (AnnotationEntry collectedAe : collectedEntries) {
+						if (collectedAe.getAnnotoriousID() == ae.getAnnotoriousID()) {
+							found = true;
+							break;
+						}
+					}
+					if (!found) {
+						collectedEntries.add(ae);									
+					}
 				}
 			}
 		}
+		if (selectedIE.getChildren() != null) {
+			for (IconographyEntry child : selectedIE.getChildren()) {
+				collectedEntries = findAllIcos(child, collectedEntries);
+			}
+		}
+		return collectedEntries;
+	}
+	// this method should be added to osdLader
+	private void highlightIcoEntry(IconographyEntry selectedIE, boolean deselect, List<IconographyEntry>clickedIcos) {
+		//Util.doLogging("triggered highlightIcoEntry");
+		//Util.doLogging("Started highlighting for Iconography: "+selectedIE.getText());
+		ArrayList<AnnotationEntry> newAnnos = new ArrayList<AnnotationEntry>();
+		newAnnos = findAllIcos(selectedIE, newAnnos);
+		// Util.doLogging("found "+Integer.toString(newAnnos.size())+" annos");
 		if (newAnnos.size()>0) {
 			if (annotationsLoaded) {
 				osdLoader.removeOrAddAnnotations(newAnnos,!deselect);
@@ -442,11 +456,6 @@ public class DepictionEditor extends AbstractEditor {
 				osdLoader.highlightAnnotation(aeSelected.getAnnotoriousID());
 			}
 			
-		}
-		if (selectedIE.getChildren() != null) {
-			for (IconographyEntry children : selectedIE.getChildren()) {
-				highlightIcoEntry(children, deselect,clickedIcos);
-			}
 		}
 
 	}
@@ -1753,7 +1762,7 @@ public class DepictionEditor extends AbstractEditor {
 		    sourceStore = new ListStore<ModifiedEntry>(modifiedProps.key());
 
 			sourceStore.clear();
-		    dbService.getModifiedAnnoEntry(correspondingDepictionEntry, new AsyncCallback<ArrayList<ModifiedEntry>>() {
+		    dbService.getModifiedAnnoEntry(correspondingDepictionEntry.getDepictionID(), false, new AsyncCallback<ArrayList<ModifiedEntry>>() {
 				
 					@Override
 					public void onSuccess(ArrayList<ModifiedEntry> result) {
@@ -1821,8 +1830,9 @@ public class DepictionEditor extends AbstractEditor {
 
 			@Override
 			public void icoHighlighter(int icoID) {
+				//Util.doLogging("triggered icoHighlighter");
 				List<IconographyEntry> selectedIcos = iconographySelector.getCLickedItems();
-				IconographyEntry selectedIE = iconographySelector.getIconographyStroe()
+				IconographyEntry selectedIE = iconographySelector.getIconographyStore()
 						.findModelWithKey(Integer.toString(icoID));
 				highlightIcoEntry(selectedIE, false,selectedIcos);
 			};
@@ -1830,7 +1840,7 @@ public class DepictionEditor extends AbstractEditor {
 			@Override
 			public void icoDeHighlighter(int icoID) {
 				List<IconographyEntry> selectedIcos = iconographySelector.getCLickedItems();
-				IconographyEntry selectedIE = iconographySelector.getIconographyStroe()
+				IconographyEntry selectedIE = iconographySelector.getIconographyStore()
 				.findModelWithKey(Integer.toString(icoID));
 				if (annotationsLoaded) {
 					osdLoader.removeAllAnnotations();					
@@ -1873,6 +1883,10 @@ public class DepictionEditor extends AbstractEditor {
 			public int getDepictionID() {
 				return correspondingDepictionEntry.getDepictionID();
 			}
+			@Override
+			public boolean isOrnament() {
+				return false;
+			}
 
 			@Override
 			public ArrayList<AnnotationEntry> getAnnotations() {
@@ -1895,7 +1909,7 @@ public class DepictionEditor extends AbstractEditor {
 
 		};
 		osdLoader = new OSDLoader(correspondingDepictionEntry.getRelatedImages(), true,
-				iconographySelector.getIconographyStroe(),
+				iconographySelector.getIconographyStore(),
 				osdListener);
 		/**
 		 * ---------------------- content of fourth tab (Bibliography Selector)

@@ -34,6 +34,7 @@ import de.cses.client.ui.AbstractEditor;
 import de.cses.client.ui.AbstractView;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
+import de.cses.shared.DepictionEntry;
 import de.cses.shared.OrnamentEntry;
 
 /**
@@ -49,8 +50,8 @@ public class OrnamenticView extends AbstractView {
 //		@XTemplate("<div><center><img src='{imgUri}' height='16px' width='16px'> <b style='font-size: 20px'> {officialNumber} </b></center><label style='font-size:9px'> {officialName} <br> {historicName} </label></div>")
 //		SafeHtml view(SafeUri imgUri, String officialNumber, String officialName, String historicName);
 
-		@XTemplate("<div><center><img src='{imgUri}' style='max-height: 60px; max-width: 100px; margin: 0 5px 0 0;'></img></center><label style='font-size:9px' >{shortName}</label></div>")
-		SafeHtml view(SafeUri imgUri, String shortName);
+		@XTemplate("<div><center><img src='{imgUri}' style='max-height: 60px; max-width: 100px; margin: 0 5px 0 0;'></img></center><label style='font-size:9px' > ID: {ornamentID} <br> {shortName}</label></div>")
+		SafeHtml view(SafeUri imgUri, String shortName, int ornamentID);
 
 //		@XTemplate("<div><center><img src='{imgUri}' height='16px' width='16px' > <b style='font-size: 12px'> {name} </b></center></div>")
 //		SafeHtml view(SafeUri imgUri, String name);
@@ -73,7 +74,7 @@ public class OrnamenticView extends AbstractView {
 		//if ((oEntry.getImages() != null) && (!oEntry.getImages().isEmpty())) {
 		//	imageUri = UriUtils.fromString("resource?imageID=" + oEntry.getImages().get(0).getImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 		//}
-		setHTML(ovTemplate.view(imageUri, "IcdealTypical Code: " + oEntry.getCode()));
+		setHTML(ovTemplate.view(imageUri, oEntry.getCode(),oEntry.getOrnamentID()));
 		setPixelSize(110, 110);
 
 		DragSource source = new DragSource(this) {
@@ -82,7 +83,7 @@ public class OrnamenticView extends AbstractView {
 			protected void onDragStart(DndDragStartEvent event) {
 				super.onDragStart(event);
 				event.setData(oEntry);
-				event.getStatusProxy().update(ovTemplate.view(imageUri, "ID = " + oEntry.getOrnamentID()));
+				event.getStatusProxy().update(ovTemplate.view(imageUri,  oEntry.getCode(),oEntry.getOrnamentID()));
 			}
 			
 		};
@@ -97,6 +98,9 @@ public class OrnamenticView extends AbstractView {
 	}
 	public void setEditor(OrnamentEntry entry) {
 		this.oEntry=entry;
+	}
+	public void setOrnamentEntry(OrnamentEntry entry) {
+		this.oEntry= entry;
 	}
 
 	/* (non-Javadoc)
@@ -117,7 +121,7 @@ public class OrnamenticView extends AbstractView {
 	public void refreshpic( SafeUri uri ) {
 		imageUri= uri;
 
-		setHTML(ovTemplate.view(imageUri, "Ornament Code: " + oEntry.getCode()));
+		setHTML(ovTemplate.view(imageUri, oEntry.getCode(),oEntry.getOrnamentID()));
 
 	}
 //	/* (non-Javadoc)

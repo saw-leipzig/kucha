@@ -2,6 +2,7 @@ package de.cses.client.ornamentic;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
@@ -10,7 +11,13 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
@@ -47,12 +54,24 @@ import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.Hor
 import com.sencha.gxt.widget.core.client.container.VBoxLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
+import com.sencha.gxt.widget.core.client.event.BeforeAddEvent;
+import com.sencha.gxt.widget.core.client.event.BeforeAddEvent.BeforeAddHandler;
+import com.sencha.gxt.widget.core.client.event.BeforeShowEvent;
+import com.sencha.gxt.widget.core.client.event.BeforeShowEvent.BeforeShowHandler;
+import com.sencha.gxt.widget.core.client.event.EnableEvent;
+import com.sencha.gxt.widget.core.client.event.EnableEvent.EnableHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
+import com.sencha.gxt.widget.core.client.event.ShowEvent;
+import com.sencha.gxt.widget.core.client.event.ShowEvent.ShowHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.ListField;
+import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
+import com.sencha.gxt.widget.core.client.grid.ColumnModel;
+import com.sencha.gxt.widget.core.client.grid.Grid;
 import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
@@ -60,16 +79,21 @@ import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
 import de.cses.client.Util;
 import de.cses.client.bibliography.BibliographySelector;
+import de.cses.client.depictions.DepictionView;
 import de.cses.client.depictions.IconographySelector;
+import de.cses.client.depictions.IconographySelectorListener;
 import de.cses.client.depictions.ImageViewTemplates;
 import de.cses.client.images.ImageSelector;
 import de.cses.client.images.ImageSelectorListener;
 import de.cses.client.ui.AbstractEditor;
 import de.cses.client.ui.EditorListener;
+import de.cses.client.ui.OSDListener;
+import de.cses.client.ui.OSDLoader;
 import de.cses.client.ui.TextElement;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographyEntry;
+import de.cses.shared.AnnotationEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
@@ -118,11 +142,14 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 	private OrnamenticIconographyTree ornamentTrees;
 	private ToolButton saveButton;
 	private ArrayList<IconographyEntry> iconographyRelationList;
+	private OSDLoader osdLoader;
+	private boolean annotationsLoaded = true;
+	private OSDListener osdListener;
+	private IconographySelectorListener icoSelectorListener;
 
 	public static OrnamentCaveRelationEditor ornamentCaveRelationEditor;
 	public static WallOrnamentCaveRelationEditor wallOrnamentCaveRelationEditor;
 	public static OrnamenticEditor ornamenticEditor;
-
 	//Hauptklasse zum Erstellen von Ornamenten. Gegliedert in 3 Hierarchie Ebenen: 
 	// 1. Eigenschaften die bei dem Ornament immer vorhanden sind
 	// 2. Eigenschaften die von der H�hle abh�ngen in dem sich das Ornament befindet
@@ -153,6 +180,28 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		}
 		return backgroundPanel;
 	}
+
+	private void reloadPics() {
+		imageListView.getStore().clear();
+		osdLoader.destroyAllViewers();
+		loadImages();
+		setosd();
+	}
+	private void setosd() {
+		dbService.getOSDContext(new AsyncCallback<String>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(String result) {
+				osdLoader.startLoadingTiles(result);
+			}
+		});
+	}
+
 	@Override
 	protected void loadModifiedEntries() {
 		sourceStore.clear();
@@ -177,8 +226,44 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		iconographySelector.IconographyTreeEnabled(true);
 		getListenerList().get(0).setClickNumber(0);
 }
+	// this method should be added to osdLader
+	private void highlightIcoEntry(IconographyEntry selectedIE, boolean deselect, List<IconographyEntry>clickedIcos) {
+		//Util.doLogging("Started highlighting for Iconography: "+selectedIE.getText());
+		ArrayList<AnnotationEntry> newAnnos = new ArrayList<AnnotationEntry>();
+		for (AnnotationEntry ae : ornamentEntry.getRelatedAnnotationList()) {
+			for (IconographyEntry ie : ae.getTags()) {
+				if (ie.getIconographyID() == selectedIE.getIconographyID()) {
+								//Util.doLogging("found annotation for: "+ie.getText());
+								newAnnos.add(ae);
+				}
+			}
+		}
+		if (newAnnos.size()>0) {
+			if (annotationsLoaded) {
+				osdLoader.removeOrAddAnnotations(newAnnos,!deselect);
+			}				
+		}
+		for (AnnotationEntry aeSelected : newAnnos) {
+			if (deselect) {
+				osdLoader.deHighlightAnnotation(aeSelected.getAnnotoriousID());
+			}
+			else {
+				osdLoader.highlightAnnotation(aeSelected.getAnnotoriousID());
+			}
+			
+		}
+		if (selectedIE.getChildren() != null) {
+			for (IconographyEntry children : selectedIE.getChildren()) {
+				highlightIcoEntry(children, deselect,clickedIcos);
+			}
+		}
+
+	}
 
 	public Widget createForm() {
+		if (ornamentEntry == null) {
+			ornamentEntry = new OrnamentEntry();
+		}
 		ornamentTrees= new 	OrnamenticIconographyTree(ornamentEntry);
 		ornamentTrees.setDialogboxnotcalled(false);
 		// Aufbau der Listen welche geladen werden m�ssen aus der Datenbank
@@ -207,8 +292,109 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		selectedOrnamentComponents = new ListStore<OrnamentComponentsEntry>(
 				ornamentComponentsProps.ornamentComponentsID());
 		ornamentComponents = new ListStore<OrnamentComponentsEntry>(ornamentComponentsProps.ornamentComponentsID());
-		iconographySelector = new IconographySelector(StaticTables.getInstance().getIconographyEntries().values());
-		loadiconogrpahy(ornamentEntry.getRelatedIconographyList());
+		icoSelectorListener = new IconographySelectorListener() {
+
+			@Override
+			public void icoHighlighter(int icoID) {
+				List<IconographyEntry> selectedIcos = iconographySelector.getCLickedItems();
+				IconographyEntry selectedIE = iconographySelector.getIconographyStore()
+						.findModelWithKey(Integer.toString(icoID));
+				highlightIcoEntry(selectedIE, false,selectedIcos);
+			};
+
+			@Override
+			public void icoDeHighlighter(int icoID) {
+				List<IconographyEntry> selectedIcos = iconographySelector.getCLickedItems();
+				IconographyEntry selectedIE = iconographySelector.getIconographyStore()
+				.findModelWithKey(Integer.toString(icoID));
+				if (annotationsLoaded) {
+					osdLoader.removeAllAnnotations();					
+				}
+				else {
+					highlightIcoEntry(selectedIE, true,selectedIcos);										
+				}
+				for (IconographyEntry clickedIE : iconographySelector.getCLickedItems()) {
+					highlightIcoEntry(clickedIE, false,selectedIcos);					
+				}
+
+			}
+			public void reloadIconography(IconographyEntry iconographyEntry) {
+				iconographySelector = null;
+				iconographySelector = new IconographySelector(StaticTables.getInstance().getIconographyEntries().values(),
+						getListenerList().get(0), true, ornamentEntry.getRelatedAnnotationList(),
+						icoSelectorListener);
+			}
+			public void reloadOSD() {
+				reloadPics();
+			}
+		};
+		
+		//iconographySelector = new IconographySelector(StaticTables.getInstance().getIconographyEntries().values());
+		//loadiconogrpahy(ornamentEntry.getRelatedIconographyList());
+		ArrayList<AnnotationEntry> annos;
+		if (ornamentEntry!=null) {
+			annos = ornamentEntry.getRelatedAnnotationList();			
+		} else {
+			annos = new ArrayList<AnnotationEntry>();
+		}
+		iconographySelector = new IconographySelector(StaticTables.getInstance().getIconographyEntries().values(),
+				getListenerList().get(0), true, annos,
+				icoSelectorListener);
+		if (ornamentEntry!=null) {
+			loadiconogrpahy(ornamentEntry.getRelatedIconographyList());
+		} else {
+			loadiconogrpahy(new ArrayList<IconographyEntry>());
+		}
+
+		osdListener = new OSDListener() {
+
+			@Override
+			public void setAnnotationsInParent(ArrayList<AnnotationEntry> relatedAnnotationList) {
+				ornamentEntry.setRelatedAnnotationList(relatedAnnotationList);
+				iconographySelector.setRelatedAnnotationList(relatedAnnotationList);
+				
+			};
+
+			@Override
+			public int getDepictionID() {
+				return ornamentEntry.getOrnamentID();
+			}
+			@Override
+			public boolean isOrnament() {
+				return true;
+			}
+
+			@Override
+			public ArrayList<AnnotationEntry> getAnnotations() {
+				// TODO Auto-generated method stub
+				if (ornamentEntry!=null) {
+					return ornamentEntry.getRelatedAnnotationList();			
+				} else {
+					return new ArrayList<AnnotationEntry>();
+				}
+			}
+
+			@Override
+			public void addAnnotation(AnnotationEntry ae) {
+				ornamentEntry.addAnnotation(ae);
+				for (EditorListener el : getListenerList()) {
+					if (el instanceof OrnamenticView) {
+						((OrnamenticView) el).setOrnamentEntry(ornamentEntry);
+					}
+				}
+
+				
+			};
+			
+
+		};
+		osdLoader = new OSDLoader(ornamentEntry.getImages(), true,
+				iconographySelector.getIconographyStore(),
+				osdListener);
+		/**
+		 * ---------------------- content of fourth tab (Bibliography Selector)
+		 * ---------------------
+		 */
 
 		ftree = new FramedPanel();
 		ftreeedit = new FramedPanel();
@@ -242,6 +428,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		ftree.addTool(changetree);
 		ftree.add(ornamentTrees.getSelectedIcoTree());
 		// laden der Daten aus der Datenbank
+		Util.doLogging("Create form von ornamenticeditor gestartet");
 		if (ornamentEntry!=null) {
 			dbService.getOrnamentEntry(ornamentEntry.getOrnamentID(), new AsyncCallback<OrnamentEntry>() {
 
@@ -362,12 +549,40 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 		// Aufbau der Felder auf der Client Seite
 		TabPanel tabpanel = new TabPanel();
-		tabpanel.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
+		tabpanel.setSize( Integer.toString(Window.getClientWidth()/100*95),Integer.toString(Window.getClientHeight()/100*95));
 		//tabpanel.setWidth(620);
 		//tabpanel.setHeight(600);
 
 		VerticalLayoutContainer panel = new VerticalLayoutContainer();
 		VerticalLayoutContainer panel2 = new VerticalLayoutContainer();
+		SimpleComboBox<String> accessRightsCB = new SimpleComboBox<String>(new LabelProvider<String>() {
+
+			@Override
+			public String getLabel(String item) {
+				return item;
+			}
+		});
+		accessRightsCB.add(AbstractEntry.ACCESS_LEVEL_LABEL.get(0));
+		accessRightsCB.add(AbstractEntry.ACCESS_LEVEL_LABEL.get(1));
+		accessRightsCB.add(AbstractEntry.ACCESS_LEVEL_LABEL.get(2));
+		accessRightsCB.setEditable(false);
+		accessRightsCB.setTypeAhead(false);
+		accessRightsCB.setTriggerAction(TriggerAction.ALL);
+		accessRightsCB.setToolTip(Util.createToolTip(
+				"The acccess rights for the painted representation will influence which fields are visible.",
+				"There are no restrictions at the moment but this might be implemented in the future."));
+		accessRightsCB.setValue(AbstractEntry.ACCESS_LEVEL_LABEL.get(ornamentEntry.getAccessLevel()));
+		accessRightsCB.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				ornamentEntry.setAccessLevel(accessRightsCB.getSelectedIndex());
+			}
+		});
+		FramedPanel accessRightsCBFP = new FramedPanel();
+		accessRightsCBFP.setHeading("Access Level");
+		accessRightsCBFP.add(accessRightsCB);
+		panel.add(accessRightsCBFP, new VerticalLayoutData(1.0, .125));
 
 		ornamentCodeTextField = new TextField();
 		ornamentCodeTextField.setAllowBlank(false);
@@ -385,7 +600,8 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 						return pvTemplates.ornamentClass(item.getName());
 					}
 				});
-		panel.add(ftree, new VerticalLayoutData(1.0, 0.3));
+		panel.add(ftree, new VerticalLayoutData(1.0, 0.275));
+		panel.add(accessRightsCBFP, new VerticalLayoutData(1.0, .125));
 		header = new FramedPanel();
 		header.setHeading("Motif");
 		ornamentClassComboBox.setTriggerAction(TriggerAction.ALL);
@@ -401,6 +617,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		ToolButton saveOrnamentClass = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 		saveOrnamentClass.setToolTip(Util.createToolTip("save"));
 		ornamentClassFramedPanel.add(saveOrnamentClass);
+		Util.doLogging("Create form von ornamenticeditor gestartet");
 
 		ToolButton cancelOrnamentClass = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
 		cancelOrnamentClass.setToolTip(Util.createToolTip("cancel"));
@@ -546,7 +763,8 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		header = new FramedPanel();
 		header.setHeading("Type Description");
 		discription = new TextArea();
-		panel.add(header, new VerticalLayoutData(1.0, .3));
+		panel.add(header, new VerticalLayoutData(1.0, .25));
+		Util.doLogging("Create form von ornamenticeditor gestartet");
 
 		header.add(discription);
 		discription.setAllowBlank(true);
@@ -556,7 +774,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		header = new FramedPanel();
 		header.setHeading("General Remarks");
 		header.add(remarks);
-		panel.add(header, new VerticalLayoutData(1.0, .3));
+		panel.add(header, new VerticalLayoutData(1.0, .25));
 		interpretation = new TextArea();
 		interpretation.setAllowBlank(true);
 		header = new FramedPanel();
@@ -577,12 +795,6 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		ToolButton addCaveTool = new ToolButton(new IconConfig("addButton", "addButtonOver"));
 		addCaveTool.setToolTip(Util.createToolTip("Add Cave"));
 
-		VerticalPanel cavesPanel = new VerticalPanel();
-		header = new FramedPanel();
-		header.setHeading("Cave");
-
-		header.add(cavesPanel);
-		panel2.add(header, new VerticalLayoutData(1.0, 1.0));
 
 		ClickHandler addCaveClickHandler = new ClickHandler() {
 
@@ -598,7 +810,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		FramedPanel cavesContentPanel2 = new FramedPanel();
 
 		//cavesPanel.add(cavesContentPanel);
-		cavesPanel.add(cavesContentPanel2);
+		cavesContentPanel2.setHeight(Integer.toString(Window.getClientHeight()/100*95));
 		caveOrnamentRelationList = new ListStore<OrnamentCaveRelation>(
 				ornamentCaveRelationProps.ornamentCaveRelationID());
 
@@ -619,6 +831,9 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		cavesContentPanel.add(cavesList);
 		cavesContentPanel2.setHeading("Ornamentation detected in Caves:");
 		cavesContentPanel2.add(ornamentTrees.getWalls().wallTree);
+		cavesContentPanel2.setHeight(Integer.toString(Window.getClientHeight()/100*95));
+		panel2.add(cavesContentPanel2, new VerticalLayoutData(1.0, 1.0));
+		Util.doLogging("Create form von ornamenticeditor gestartet");
 		
 		ToolButton edit = new ToolButton(new IconConfig("editButton", "editButtonOver"));
 		edit.setToolTip(Util.createToolTip("Edit Cave"));
@@ -741,22 +956,22 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		horizontBackground.add(panel, new HorizontalLayoutData(.5, 1.0));
 		horizontBackground.add(panel2, new HorizontalLayoutData(.5, 1.0));
 		ScrollPanel scrframedpanelornamentic = new ScrollPanel();
-		horizontBackground.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
+		horizontBackground.setSize( Integer.toString(Window.getClientWidth()/100*95),Integer.toString(Window.getClientHeight()/100*95));
 
 		scrframedpanelornamentic.add(horizontBackground);
 
 		tabpanel.add(scrframedpanelornamentic, "Basics");
 
 		ScrollPanel scrgeneral2FramedPanel = new ScrollPanel();
-		verticalgeneral2Background.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
+		verticalgeneral2Background.setSize( Integer.toString(Window.getClientWidth()/100*95),Integer.toString(Window.getClientHeight()/100*95));
 		
 		scrgeneral2FramedPanel.add(verticalgeneral2Background);
 		//tabpanel.add(scrgeneral2FramedPanel, "2. General");
 
 		ScrollPanel scrgeneral3FramedPanel = new ScrollPanel();
-		verticalgeneral3Background.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
+		verticalgeneral3Background.setSize( Integer.toString(Window.getClientWidth()/100*95),Integer.toString(Window.getClientHeight()/100*95));
 		scrgeneral3FramedPanel.add(verticalgeneral3Background);
-		tabpanel.add(scrgeneral3FramedPanel, "Components");
+		//tabpanel.add(scrgeneral3FramedPanel, "Components");
 
 		HorizontalLayoutContainer ornamentComponentsHorizontalPanel = new HorizontalLayoutContainer();
 
@@ -839,7 +1054,6 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 							@Override
 							public void onSuccess(OrnamentComponentsEntry result) {
 								ornamentComponents.add(entry);
-								Util.doLogging(this.getClass().getName() + " saving sucessful");
 								newComponentPopup.hide();
 							}
 						});
@@ -853,6 +1067,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 				.setToolTip(Util.createToolTip("Rename Component", "Select entry and click here to edit."));
 
 		header.addTool(renameComponentButton);
+		Util.doLogging("Create form von ornamenticeditor gestartet");
 		renameComponentButton.addSelectHandler(new SelectHandler() {
 
 			@Override
@@ -909,7 +1124,6 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 								@Override
 								public void onSuccess(OrnamentComponentsEntry result) {
-									Util.doLogging(this.getClass().getName() + " renaming sucessful");
 									renameComponentPopup.hide();
 									dbService.getOrnamentClass(new AsyncCallback<ArrayList<OrnamentClassEntry>>() {
 
@@ -1004,7 +1218,6 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 							@Override
 							public void onSuccess(InnerSecondaryPatternsEntry result) {
-								Util.doLogging(this.getClass().getName() + "saving sucessful");
 								innerSecondaryPatternsEntryList.add(result);
 								newInnerSecondaryPatternPopup.hide();
 							}
@@ -1053,7 +1266,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 					}
 					getPics(imgEntryList, 600, UserLogin.getInstance().getSessionID());
 					loadImages();
-
+					setosd();
 					
 				}
 
@@ -1095,7 +1308,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 				getListenerList().get(0).addClickNumber();
 				ImageEntry entry = imageListView.getSelectionModel().getSelectedItem();
 				ornamentEntry.setMasterImageID(entry.getImageID());
-				imageListView.refresh();
+				reloadPics();
 			}
 		});
 		
@@ -1127,6 +1340,87 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 //				dialog.center();
 //			}
 //		});
+		ToolButton showAnnotationTB = new ToolButton(new IconConfig("editButton", "editButtonOver"));
+		showAnnotationTB.addSelectHandler(new SelectHandler() {
+			@Override
+			public void onSelect(SelectEvent event) {
+				osdLoader.removeOrAddAnnotations(ornamentEntry.getRelatedAnnotationList(),
+						annotationsLoaded);
+				annotationsLoaded = !annotationsLoaded;
+			}
+		});
+		showAnnotationTB
+				.setToolTip(Util.createToolTip("Show or Hide Annotations.", "This will show or hide all Annotations."));
+		ToolButton modifiedToolButtonImage = new ToolButton(new IconConfig("foldButton", "foldButtonOver"));
+		modifiedToolButtonImage.setToolTip(Util.createToolTip("show modification history"));
+		modifiedToolButtonImage.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+			ColumnConfig<ModifiedEntry, String> modifiedByCol = new ColumnConfig<ModifiedEntry, String>(modifiedProps.modifiedBy(), 300, "Modified By");
+			ColumnConfig<ModifiedEntry, String> modifiedOColn = new ColumnConfig<ModifiedEntry, String>(modifiedProps.modifiedOn(), 300, "Midified On");
+			ColumnConfig<ModifiedEntry, String> annoIDColn = new ColumnConfig<ModifiedEntry, String>(modifiedProps.annoID(), 300, "Annotation ID");
+			ColumnConfig<ModifiedEntry, String> tagsColn = new ColumnConfig<ModifiedEntry, String>(modifiedProps.tags(), 300, "Tags");
+			
+//				yearColumn.setHideable(false);
+//				yearColumn.setHorizontalHeaderAlignment(HorizontalAlignmentConstant.startOf(Direction.DEFAULT));
+			
+		    List<ColumnConfig<ModifiedEntry, ?>> sourceColumns = new ArrayList<ColumnConfig<ModifiedEntry, ?>>();
+//		    sourceColumns.add(selectionModel.getColumn());
+		    sourceColumns.add(modifiedByCol);
+		    sourceColumns.add(modifiedOColn);
+		    sourceColumns.add(annoIDColn);
+		    sourceColumns.add(tagsColn);
+
+		    ColumnModel<ModifiedEntry> sourceColumnModel = new ColumnModel<ModifiedEntry>(sourceColumns);
+		    
+		    sourceStore = new ListStore<ModifiedEntry>(modifiedProps.key());
+
+			sourceStore.clear();
+		    dbService.getModifiedAnnoEntry(ornamentEntry.getOrnamentID(), true, new AsyncCallback<ArrayList<ModifiedEntry>>() {
+				
+					@Override
+					public void onSuccess(ArrayList<ModifiedEntry> result) {
+						for (ModifiedEntry entry : result) {
+							sourceStore.add(entry);
+						}
+					}
+					
+					@Override
+					public void onFailure(Throwable caught) {
+					}
+				});
+
+
+		    Grid<ModifiedEntry> grid = new Grid<ModifiedEntry>(sourceStore, sourceColumnModel);
+//			    grid.setSelectionModel(selectionModel);
+//			    grid.setColumnReordering(true);
+		    grid.setBorders(false);
+		    grid.getView().setStripeRows(true);
+		    grid.getView().setColumnLines(true);
+		    grid.getView().setForceFit(true);
+
+			PopupPanel modifiedPopUp = new PopupPanel();
+			FramedPanel modifiedFP = new FramedPanel();
+			modifiedFP.setHeading("Modification Protocoll");
+			modifiedFP.setHeight(500);
+			modifiedFP.add(grid);
+			modifiedPopUp.add(modifiedFP);
+			ToolButton closeToolButton = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
+			closeToolButton.setToolTip(Util.createToolTip("close"));
+			closeToolButton.addSelectHandler(new SelectHandler() {
+				@Override
+				public void onSelect(SelectEvent event) {
+					modifiedPopUp.hide();
+				}
+			});
+			modifiedFP.addTool(closeToolButton);
+			modifiedPopUp.setModal(true);
+			modifiedPopUp.center();
+
+			}
+		});
+
 
 		ToolButton zoomTB = new ToolButton(new IconConfig("expandButton", "expandButtonOver"));
 		zoomTB.addSelectHandler(new SelectHandler() {
@@ -1169,19 +1463,49 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 				String imageAuthor = item.getImageAuthor() != null ? "Author: " + item.getImageAuthor().getLabel() : "";
 				String copyrightStr = (item.getCopyright() != null && item.getCopyright().length() > 0) ? "\u00A9 " + item.getCopyright() : ""; 
 				
+				SafeHtml sb;
 				if (item.getImageID() == ornamentEntry.getMasterImageID()) {
-					return imageViewTemplates.masterImage(imageUri, item.getShortName(), titleList, item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase(), imageAuthor, copyrightStr, UriUtils.fromString("resource?imageID=" + item.getImageID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), "600px");
+					sb = imageViewTemplates.masterImage(item.getFilename(), item.getShortName(), titleList,
+							item.getFilename().substring(item.getFilename().lastIndexOf(".") + 1).toUpperCase(),
+							imageAuthor, copyrightStr, UriUtils.fromString("resource?imageID=" + item.getImageID()
+									+ UserLogin.getInstance().getUsernameSessionIDParameterForUri()));
 				} else if (item.getAccessLevel() == AbstractEntry.ACCESS_LEVEL_PUBLIC) {
-					return imageViewTemplates.publicImage(imageUri, item.getShortName(), titleList, item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase(), imageAuthor, copyrightStr, UriUtils.fromString("resource?imageID=" + item.getImageID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), "600px");
+					sb = imageViewTemplates.publicImage(item.getFilename(), item.getShortName(), titleList,
+							item.getFilename().substring(item.getFilename().lastIndexOf(".") + 1).toUpperCase(),
+							imageAuthor, copyrightStr, UriUtils.fromString("resource?imageID=" + item.getImageID()
+									+ UserLogin.getInstance().getUsernameSessionIDParameterForUri()));
 				} else {
-					return imageViewTemplates.nonPublicImage(imageUri, item.getShortName(), titleList, item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase(), imageAuthor, copyrightStr, UriUtils.fromString("resource?imageID=" + item.getImageID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri()), "600px");
+					sb = imageViewTemplates.nonPublicImage(item.getFilename(), item.getShortName(), titleList,
+							item.getFilename().substring(item.getFilename().lastIndexOf(".") + 1).toUpperCase(),
+							imageAuthor, copyrightStr, UriUtils.fromString("resource?imageID=" + item.getImageID()
+									+ UserLogin.getInstance().getUsernameSessionIDParameterForUri()));
 				}
+				SafeHtml s = null;
+				// Util.doLogging("ImageListView:
+				// "+Double.toString(Window.getClientWidth()*0.8*imageWindowRelation));
+				if (Window.getClientWidth() * 0.8 > 300) {
+					s = SafeHtmlUtils.fromTrustedString("<figure class='paintRepImgPreview' style='height: 98%;width:98%;text-ali<fgn: center;'><div id= '" + item.getFilename().split(";")[0]
+							+ "' style='overflow:hidden;width: 100%; height: "
+							+ Integer.toString((int) (Window.getClientHeight() * - 60))
+							+ "px;text-align: center;' ></div>");
+				} else {
+					s = SafeHtmlUtils.fromTrustedString(
+							"<figure class='paintRepImgPreview' style='width: 340px;height:290px;text-align: center;'><div id= '"
+									+ item.getFilename().split(";")[0]
+									+ "' Style='width: 340px;height:290px;text-align: center;' ></div>");
+				}
+				SafeHtmlBuilder sblast = new SafeHtmlBuilder();
+				sblast.append(s);
+				sblast.append(sb);
+
+				return sblast.toSafeHtml();
 			}
 		}));
 
 
 		ListField<ImageEntry, ImageEntry> imageViewLF = new ListField<ImageEntry, ImageEntry>(imageListView);
 		loadImages();
+		setosd();
 
 		imagesFramedPanel.add(imageViewLF);
 //		depictionImagesPanel.addTool(infoTB);
@@ -1189,6 +1513,8 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		imagesFramedPanel.addTool(addImageTB);
 		imagesFramedPanel.addTool(removeImageTB);
 		imagesFramedPanel.addTool(setMasterTB);
+		imagesFramedPanel.addTool(showAnnotationTB);
+		imagesFramedPanel.addTool(modifiedToolButtonImage);
 
 		
 		
@@ -1236,10 +1562,35 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 //		imagesFramedPanel.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
 		
 		ScrollPanel scrimagesFramedPanel = new ScrollPanel();
+		HorizontalLayoutContainer componentsImages = new HorizontalLayoutContainer();
+		componentsImages.add(scrgeneral3FramedPanel, new HorizontalLayoutData(.5, 1.0));
 		scrimagesFramedPanel.add(imagesFramedPanel);
-		tabpanel.add(scrimagesFramedPanel, "Images");
-		tabpanel.setTabScroll(true);
+		componentsImages.add(imagesFramedPanel, new HorizontalLayoutData(.5, 1.0));
+		componentsImages.addShowHandler(new ShowHandler() {
 
+			@Override
+			public void onShow(ShowEvent event) {
+				scrimagesFramedPanel.setPixelSize(-1, (int) (Window.getClientHeight()));
+			}
+
+
+			
+		});
+		tabpanel.add(componentsImages, "Images");
+		tabpanel.setTabScroll(true);
+		tabpanel.addSelectionHandler(new  SelectionHandler<Widget>() {
+
+			@Override
+			public void onSelection(SelectionEvent event) {
+				if (event.getSelectedItem() == componentsImages) {
+					String height = Integer.toString(Window.getClientHeight()/100*95)+"px";
+					reloadPics();				
+					scrimagesFramedPanel.setPixelSize(-1, (int) (Window.getClientHeight()));
+				}
+			}
+
+		});
+		
 		ToolButton closeButton = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
 		closeButton.setToolTip(Util.createToolTip("close"));
 		saveButton = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
@@ -1287,7 +1638,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 		backgroundPanel = new FramedPanel();
 		
-		backgroundPanel.setSize( Integer.toString(Window.getClientWidth()/100*80),Integer.toString(Window.getClientHeight()/100*80));
+		backgroundPanel.setSize( Integer.toString(Window.getClientWidth()/100*95),Integer.toString(Window.getClientHeight()/100*95));
 		backgroundPanel.add(tabpanel);
 		if (ornamentEntry!=null) {
 			backgroundPanel.setHeading("Ornamentation Editor (entry number: "+ornamentEntry.getOrnamentID()+")");
@@ -1296,20 +1647,54 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 			backgroundPanel.setHeading("Ornamentation Editor (new entry)");
 		}
 		createNextPrevButtons();
+		backgroundPanel.addDomHandler(new KeyDownHandler() {
+			@Override
+			public void onKeyDown(KeyDownEvent e) {
+				if ((e.isShiftKeyDown()) && (e.getNativeKeyCode() == KeyCodes.KEY_ENTER)) {
+					de.cses.client.Util.showYesNo("Exit Warning!", "Do you wish to save before exiting?",
+							new SelectHandler() {
+
+								@Override
+								public void onSelect(SelectEvent event) {
+									Util.doLogging("Ornament Save triggert by Key-Combination");
+									save(true, 0);
+									closeEditor(null);
+								}
+							}, new SelectHandler() {
+
+								@Override
+								public void onSelect(SelectEvent event) {
+									bibSelector.clearPages();
+									closeEditor(null);
+								}
+							}, new KeyDownHandler() {
+
+								@Override
+								public void onKeyDown(KeyDownEvent e) {
+									if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+										closeEditor(null);
+									}
+								}
+
+							});
+				}
+			}
+		}, KeyDownEvent.getType());
+
 		backgroundPanel.addTool(modifiedToolButton);
 		backgroundPanel.addTool(prevToolButton);
 		backgroundPanel.addTool(nextToolButton);		
 		backgroundPanel.addTool(deleteToolButton);
 		backgroundPanel.addTool(saveButton);
 		backgroundPanel.addTool(closeButton);
-		backgroundPanel.addDomHandler(new KeyDownHandler() {
-		    @Override
-		    public void onKeyDown(KeyDownEvent e) {
-	        	  if ((e.isShiftKeyDown()) && (e.getNativeKeyCode() == KeyCodes.KEY_ENTER)) {
-						save(false,0);
-						closeEditor(null);		        }
-		    }			
-		}, KeyDownEvent.getType());
+//		backgroundPanel.addDomHandler(new KeyDownHandler() {
+//		    @Override
+//		    public void onKeyDown(KeyDownEvent e) {
+//	        	  if ((e.isShiftKeyDown()) && (e.getNativeKeyCode() == KeyCodes.KEY_ENTER)) {
+//						save(false,0);
+//						closeEditor(null);		        }
+//		    }			
+//		}, KeyDownEvent.getType());
 		new Resizable(backgroundPanel);
 		DragSource d = new DragSource(backgroundPanel);
 		DraggableAppearance dragAp = GWT.<DraggableAppearance> create(DraggableAppearance.class);
@@ -1318,6 +1703,10 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		//Draggable drag2 = new Draggable(tabpanel, dragAp);
 		return backgroundPanel;
 
+	}
+	private SelectionHandler<Widget> SelectionHandler() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	@Override
 	protected void save(boolean close,int slide) {
@@ -1512,10 +1901,12 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 				}
 				//imageListView.refresh();
 				loadImages();
+				setosd();
 			
 			}
 		});
 	}
+
 	private void loadImages() {
 		imageEntryLS.clear();
 		if (ornamentEntry != null) {

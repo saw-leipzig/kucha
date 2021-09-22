@@ -27,6 +27,7 @@ import de.cses.client.user.UserLogin;
  */
 public abstract class AbstractSearchEntry implements IsSerializable {
 	
+	private Integer ID=-1;
 	protected boolean orSearch = false; // the default case is AND search
 	// we send sessionID with each request to allow for filtering of restricted information
 	private String sessionID = "";
@@ -54,6 +55,12 @@ public abstract class AbstractSearchEntry implements IsSerializable {
 	}
 	public int getEntriesShowed() {
 		return this.entriesShowed;
+	}
+	public void setID(int number) {
+		this.ID=number;
+	}
+	public int getID() {
+		return this.ID;
 	}
 	public int getMaxentries() {
 		return this.maxEntries;

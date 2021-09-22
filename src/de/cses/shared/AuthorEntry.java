@@ -13,6 +13,8 @@
  */
 package de.cses.shared;
 
+import de.cses.client.Util;
+
 /**
  * @author alingnau
  *
@@ -104,7 +106,9 @@ public class AuthorEntry extends AbstractEntry {
 	}
 
 	public String getName() {
-		return institutionEnabled ? institution : lastname + (firstname!=null && !firstname.isEmpty() ? ", " + firstname : "") + (alias != null && !alias.isEmpty() ? " " + alias + "" : ""); 
+		String name = institutionEnabled ? institution : lastname + (firstname!=null && !firstname.isEmpty() ? ", " + firstname : "") + (alias != null && !alias.isEmpty() ? " " + alias + "" : ""); 
+		// Util.doLogging(name);
+		return name;
 	}
 
 	/* (non-Javadoc)
