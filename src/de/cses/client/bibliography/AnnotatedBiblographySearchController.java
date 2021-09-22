@@ -38,6 +38,7 @@ import com.sencha.gxt.widget.core.client.form.ComboBox;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
+import de.cses.client.Util;
 import de.cses.client.images.ImageView;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.client.ui.AbstractResultView;
@@ -96,17 +97,24 @@ public class AnnotatedBiblographySearchController extends AbstractSearchControll
 
 			@Override
 			public void onFailure(Throwable caught) {
+				Util.doLogging("Failor!");
+				Util.doLogging(caught.getLocalizedMessage());
 				caught.printStackTrace();
 				getResultView().setSearchEnabled(true);
 			}
 
 			@Override
 			public void onSuccess(ArrayList<AnnotatedBibliographyEntry> result) {
+				// Util.doLogging("got result");
 				getResultView().reset();
+				// Util.doLogging("reset resultview");
 				result.sort(new BibEntryComparator());
+				// Util.doLogging("sorted result");
 				for (AnnotatedBibliographyEntry abe : result) {
+					// Util.doLogging("adding result"+Integer.toString(abe.getAnnotatedBibliographyID()));
 					getResultView().addResult(new AnnotatedBiblographyView(abe));
 				}
+				// Util.doLogging("added results");
 				getResultView().setSearchEnabled(true);
 				getResultView().doResize();
 			}

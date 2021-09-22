@@ -236,7 +236,7 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 		bibEntry.setKeywordList(selectedBibKeywordsList);
 
 		if (bibEntry.getAnnotatedBibliographyID() > 0) {
-			Util.doLogging("updateAnnotatedBiblographyEntry triggered");
+			// Util.doLogging("updateAnnotatedBiblographyEntry triggered");
 			dbService.updateAnnotatedBiblographyEntry(bibEntry, new AsyncCallback<AnnotatedBibliographyEntry>() {
 
 				@Override

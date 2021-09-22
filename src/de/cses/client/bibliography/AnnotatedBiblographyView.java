@@ -53,7 +53,7 @@ public class AnnotatedBiblographyView extends AbstractView {
 	//setHTML(dvTemplates.view(annotatedBibliographyEntry));
 //		setHTML(dvTemplates.extendedView(annotatedBibliographyEntry));
 		processtoview(annotatedBibliographyEntry);
-		setSize("95%", "5em");
+		setSize("95%", "90%");
 		Integer.toString(getHTML().length());
 
 		DragSource source = new DragSource(this) {
@@ -84,11 +84,13 @@ public class AnnotatedBiblographyView extends AbstractView {
 		SafeHtmlBuilder shb = new SafeHtmlBuilder();
 		if (annotatedBibliographyEntry.getAnnotation()) {
 			String uri="resource?document=" + annotatedBibliographyEntry.getUniqueID() + "-annotation.pdf" + UserLogin.getInstance().getUsernameSessionIDParameterForUri();
-			shb.append(SafeHtmlUtils.fromTrustedString("<a href="+uri+" target=\"_blank\"><img src=\"icons/pdf_annotation.gif\" alt=\"has pdf\"></img></a> "));
+			shb.append(SafeHtmlUtils.fromTrustedString("<a href="+uri+" target=\"_blank\"><img width=\"24\" height=\"24\" src=\"icons/annotated pdf-button.ai.svg\" onmouseover=\"this.src='icons/annotated pdf-mouse over.ai.svg'\"\r\n"
+					+ "onmouseout=\"this.src='icons/annotated pdf-button.ai.svg'\" alt=\"has annotation\"></img></a> "));
 		}
 		if (annotatedBibliographyEntry.getArticle()) {
 			String uri="resource?document=" + annotatedBibliographyEntry.getUniqueID() + "-paper.pdf" + UserLogin.getInstance().getUsernameSessionIDParameterForUri();
-			shb.append(SafeHtmlUtils.fromTrustedString("<a href="+uri+" target=\"_blank\"><img src=\"icons/pdf_paper.gif\" alt=\"has pdf\"></img></a> "));
+			shb.append(SafeHtmlUtils.fromTrustedString("<a href="+uri+" target=\"_blank\"><img width=\"24\" height=\"24\" src=\"icons/artikel pdf-button.ai.svg\" onmouseover=\"this.src='icons/artikel pdf-mouse over.ai.svg'\"\r\n"
+					+ "onmouseout=\"this.src='icons/artikel pdf-button.ai.svg'\" alt=\"has pdf\"></img></a> "));
 		}
 		pdf=shb.toSafeHtml();
 		if ((annotatedBibliographyEntry.getPublicationTypeID()==1) || (annotatedBibliographyEntry.getPublicationTypeID()==3)) {
@@ -202,7 +204,9 @@ public class AnnotatedBiblographyView extends AbstractView {
 					tail=tail+" ["+annotatedBibliographyEntry.getAccessdateORG()+"]";
 				}
 			}
-			tail=tail+". ";
+			if (tail != ". ") {
+				tail=tail+". ";				
+			}
 			if (annotatedBibliographyEntry.getHasHan()) {
 
 				setHTML(dvTemplates.bibViewHasHan(bib, translit, bold, translat, tail,pdf));
