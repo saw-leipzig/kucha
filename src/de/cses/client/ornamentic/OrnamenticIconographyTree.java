@@ -9,13 +9,17 @@ import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DialogBox;
+import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.data.shared.TreeStore;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.BeforeCheckChangeEvent;
 import com.sencha.gxt.widget.core.client.event.CheckChangeEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.BeforeCheckChangeEvent.BeforeCheckChangeHandler;
 import com.sencha.gxt.widget.core.client.event.CheckChangeEvent.CheckChangeHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
+import com.sencha.gxt.widget.core.client.form.StoreFilterField;
 import com.sencha.gxt.widget.core.client.info.Info;
 import com.sencha.gxt.widget.core.client.tree.Tree;
 import com.sencha.gxt.widget.core.client.tree.TreeStyle;
@@ -41,8 +45,9 @@ public class OrnamenticIconographyTree {
 	protected boolean dialogboxnotcalled = false;
 	private OrnamentEntry ornamentEntry = null;
 	protected boolean closeThisEditor = false;
+	private VerticalLayoutContainer iconographySelectorBLC;
 	private CaveWallsTree wallTree;
-
+	private StoreFilterField<IconographyEntry> filterField;
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	protected int iconographyIDforOrnamentJump;
 	private IconographyEntry prevCheckedEntry;
@@ -55,6 +60,7 @@ public class OrnamenticIconographyTree {
 	protected Map<String, IconographyEntry> selectedIconographyMap;
 	protected boolean iconographyIDUsed = false;
 	private void addparent(IconographyEntry item) {
+	
 		//Util.doLogging(item.getText());
 		if(item.getParentID() != 0) {
 			addparent(iconographyTreeStore.getParent(item));
@@ -250,6 +256,37 @@ public class OrnamenticIconographyTree {
 
 			}
 		});
+		iconographySelectorBLC = new VerticalLayoutContainer();
+		filterField = new StoreFilterField<IconographyEntry>() {
+
+			@Override
+			protected boolean doSelect(Store<IconographyEntry> store, IconographyEntry parent, IconographyEntry item, String filter) {
+				TreeStore<IconographyEntry> treeStore = (TreeStore<IconographyEntry>) store;
+				do {
+					String treename = "";
+					String treesearch = "";
+					if (item.getText()!=null) {
+						treename = item.getText().toLowerCase().replaceAll("\\p{M}", "");						
+					};
+					if(item.getSearch()!=null){
+						treesearch = item.getSearch().toLowerCase().replaceAll("\\p{M}", "");						
+					};
+					filter = filter.toLowerCase().replaceAll("\\p{M}", "");
+
+					if ((treename.contains(filter))||(treesearch.contains(filter))) {
+						return true;
+					}
+					item = treeStore.getParent(item);
+				} while (item != null);
+				return false;
+			}
+		};
+		filterField.setEmptyText("enter a search term");
+		filterField.bind(iconographyTreeStore);
+		iconographySelectorBLC.add(iconographyTree, new VerticalLayoutData(1.0, .95));
+		iconographySelectorBLC.add(filterField, new VerticalLayoutData(1.0, .05));
+
+		
 		wallTree = new CaveWallsTree( null);
 
 
@@ -317,8 +354,8 @@ public class OrnamenticIconographyTree {
 		return selectedie;
 		
 	}
-	public Tree<IconographyEntry, String> getIcoTree() {
-		return iconographyTree;
+	public VerticalLayoutContainer getIcoTree() {
+		return iconographySelectorBLC;
 		
 	}
 	public Tree<IconographyEntry, String> getSelectedIcoTree() {
