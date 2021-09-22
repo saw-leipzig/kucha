@@ -36,8 +36,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -141,8 +143,10 @@ public class MysqlConnector implements IsSerializable {
 	private String user; // MysqlConnector.db.user
 	private String password; // MysqlConnector.db.password
 	private boolean dologging = false;
+	private boolean isSerializing = false;
 	private ScheduledExecutorService scheduledExecutorService;
 	private boolean dologgingbegin = false;
+	private ScheduledExecutorService scheduler = null;
 	private Map<Integer,Integer> rootItems = new HashMap<Integer,Integer>();
 	public class KuchaDic{ 
 		public ArrayList<DistrictEntry> districts; 
@@ -192,7 +196,7 @@ public class MysqlConnector implements IsSerializable {
 			this.orientation=orientation;
 			this.position=position;
 			this.bibKeyWords = bibKeyWords;
-		}
+			}
 		}
 
 
@@ -229,17 +233,17 @@ public class MysqlConnector implements IsSerializable {
 			e.printStackTrace();
 			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		try  {
-			initShedule();
-			
-		} catch (Exception e) {
-			e.printStackTrace();			
-		}
+//		try  {
+//			initShedule();
+//			
+//		} catch (Exception e) {
+//			e.printStackTrace();			
+//		}
 	}
 
 	private Connection getConnection() {
 		try {
-			if (connection == null || !connection.isValid(5)) {
+			if (connection == null || !connection.isValid(10)) {
 				connection = DriverManager.getConnection(url, user, password);
 			}
 		} catch (SQLException e) {
@@ -258,41 +262,28 @@ public class MysqlConnector implements IsSerializable {
 	}
 
 
+//    private void initShedule() {
+//    	if (scheduler == null) {
+//        	scheduler = Executors.newScheduledThreadPool(0);
+//        	System.out.println("new sheduling");
+//        	//Change here for the hour you want ----------------------------------.at()
+//        	// long midnight = TimeUnit.MINUTES.toMillis(1);
+//        	Long midnight=LocalDateTime.now().until(LocalDate.now().plusDays(1).atTime(05, 25), ChronoUnit.MINUTES);
+//        	TimerTask t = new TimerTask () {
+//        	    @Override
+//        	    public void run () {
+//        	    	System.out.println("dataexport started");
+//        	    	serializeAllDepictionEntries("");
+//        	    }
+//        	};
+//        	
+//        	scheduler.scheduleAtFixedRate(t, midnight, 1440, TimeUnit.MINUTES);
+//        	System.out.println("sheduled");    		
+//    	}
+//    }
 
 
-    public void destroy() {
-        this.scheduledExecutorService.shutdown();
-    }
 
-    private void initShedule() {
-        scheduledExecutorService =
-                Executors.newScheduledThreadPool(1);
-        startSchedule(LocalTime.of(03, 45));
-    }
-
-
-    private void startSchedule(LocalTime atTime) {
-        this.scheduledExecutorService.scheduleWithFixedDelay(() -> {
-                    System.out.println(Thread.currentThread().getName() +
-                            " |  scheduleWithFixedDelay | " + LocalDateTime.now());
-                    System.out.println("Started JasonBuild");
-                    try {
-                        serializeAllDepictionEntries("");                    	
-                    } catch (Exception e) {
-            			e.printStackTrace();
-            		}
-                }, calculateInitialDelayInSec(atTime),
-                LocalTime.MAX.toSecondOfDay(),
-                TimeUnit.SECONDS);
-    }
-
-    private long calculateInitialDelayInSec(LocalTime atTime) {
-        int currSec = LocalTime.now().toSecondOfDay();
-        int atSec = atTime.toSecondOfDay();
-        return (currSec < atSec) ?
-                atSec - currSec : (LocalTime.MAX.toSecondOfDay() + atSec - currSec);
-
-    }  	
 	
 	/**
 	 * Selects all districts from the table 'Districts' in the database
@@ -790,6 +781,35 @@ public class MysqlConnector implements IsSerializable {
 		}
 		
 	}
+	public boolean deleteAnnotationEntry(AnnotationEntry entry, boolean isOrnament) {
+			Connection dbc = getConnection();
+			PreparedStatement pstmt;
+			try {
+				if (isOrnament) {
+					pstmt = dbc.prepareStatement( "UPDATE PolygonOrnament SET deleted = 1 WHERE AnnotoriousID = '" +((AnnotationEntry)entry).getAnnotoriousID()  + "';");					
+				} else {
+					pstmt = dbc.prepareStatement( "UPDATE Polygon SET deleted = 1 WHERE AnnotoriousID = '" +((AnnotationEntry)entry).getAnnotoriousID()  + "';");										
+				}
+				ResultSet rs = pstmt.executeQuery();
+				rs.close();
+				pstmt.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+				System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+				return false;
+			}
+			try {
+				pstmt = dbc.prepareStatement( "UPDATE Annotations SET deleted = 1 WHERE AnnotoriousID = '" +((AnnotationEntry)entry).getAnnotoriousID()  + "';");
+				ResultSet rs = pstmt.executeQuery();
+				rs.close();
+				pstmt.close();
+				return true;
+			} catch (SQLException e) {
+				e.printStackTrace();
+				System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+				return false;
+			}
+	}
 	public String getContext() {
 		return serverProperties.getProperty("iiif.images");
 	}
@@ -863,6 +883,7 @@ public class MysqlConnector implements IsSerializable {
 	private void doRequest(String method,String url, int port, String index, String json, String elastic_user, String elastic_pw) {
 		try {
 			System.out.println("executing request https://"+ url+index);
+			
 			URL target = new URL ("https://"+url+":"+port+index);
             String encoding = Base64.getEncoder().encodeToString((elastic_user+":"+ elastic_pw).getBytes("utf-8"));
             HttpURLConnection connection = (HttpURLConnection) target.openConnection();
@@ -879,7 +900,13 @@ public class MysqlConnector implements IsSerializable {
                     os.write(input, 0, input.length);			
                 }
             }
-            InputStream content = (InputStream)connection.getInputStream();
+            InputStream content;
+            if (connection.getResponseCode() < HttpURLConnection.HTTP_BAD_REQUEST) {
+            	content = connection.getInputStream();
+            } else {
+                 /* error from server */
+            	content = connection.getErrorStream();
+            }
             BufferedReader in   = 
                 new BufferedReader (new InputStreamReader (content));
             String line;
@@ -897,6 +924,7 @@ public class MysqlConnector implements IsSerializable {
 	private void doUploadToElastic(String ID, String json,String url, String index, String port, String elastic_user, String elastic_pw) {
 		try {
 			System.out.println("executing request https://" + url+":"+port+index+"/_doc/"+ID);
+			// System.out.println("Body:"+ json);
 			URL target = new URL ("https://"+url+index+"/_doc/"+ID);
 	        String encoding = Base64.getEncoder().encodeToString((elastic_user+":"+ elastic_pw).getBytes("utf-8"));
 	        HttpURLConnection connection = (HttpURLConnection) target.openConnection();
@@ -910,7 +938,13 @@ public class MysqlConnector implements IsSerializable {
 	            byte[] input = json.getBytes("utf-8");
 	            os.write(input, 0, input.length);			
 	        }
-	        InputStream content = (InputStream)connection.getInputStream();
+            InputStream content;
+            if (connection.getResponseCode() < HttpURLConnection.HTTP_BAD_REQUEST) {
+            	content = connection.getInputStream();
+            } else {
+                 /* error from server */
+            	content = connection.getErrorStream();
+            }
 	        BufferedReader in   = 
 	            new BufferedReader (new InputStreamReader (content));
 	        String line;
@@ -919,7 +953,7 @@ public class MysqlConnector implements IsSerializable {
 	        }
 		} catch (Exception ex) {
 			System.out.println("Failed to do request ");
-			System.out.println(ex.getMessage() );
+			System.out.println(ex.getLocalizedMessage() );
 		} finally {
 		    // @Deprecated httpClient.getConnectionManager().shutdown(); 
 		}
@@ -968,34 +1002,38 @@ public class MysqlConnector implements IsSerializable {
 
 	}
 	public boolean serializeAllDepictionEntries(String sessionID) {
+		this.isSerializing = true;
 		long start = System.currentTimeMillis();
 		if (!serverProperties.getProperty("MysqlConnector.db.url").contains("test")) {
-			String url = serverProperties.getProperty("home.elastic.url");
-			int port = Integer.parseInt(serverProperties.getProperty("home.elastic.port"));
-			String index_data = serverProperties.getProperty("home.elastic.index_data");
-			String index_dic = serverProperties.getProperty("home.elastic.index_dic");
-			String elastic_user = serverProperties.getProperty("home.elastic.login");
-			String elastic_pw = serverProperties.getProperty("home.elastic.pw");
-			String mapping_data = serverProperties.getProperty("home.elastic.mapping.kucha_data");
-			String mapping_dic = serverProperties.getProperty("home.elastic.mapping.kucha_dic");
-			String elastic_role = serverProperties.getProperty("home.elastic.role");
-			String elasticReadOnlyUser = serverProperties.getProperty("home.elastic.user");
-			doRequest("DELETE", url, port, index_data, "",elastic_user,elastic_pw);
-			doRequest("DELETE", url, port, index_dic, "",elastic_user,elastic_pw);
-			doRequest("PUT", url, port, index_data, mapping_data,elastic_user,elastic_pw);
-			doRequest("PUT", url, port, index_dic, mapping_dic,elastic_user,elastic_pw);
-			doRequest("PUT", url, port, "/_xpack/security/role/read_only_role", elastic_role,elastic_user,elastic_pw);
-			doRequest("PUT", url, port, "/_xpack/security/user/read_only_user", elasticReadOnlyUser,elastic_user,elastic_pw);
-			Connection dbc = getConnection();
-			DepictionEntry result = null;
-			Statement stmt;
-			ArrayList<OrientationEntry> orientations = getOrientationInformation();
-			ArrayList<CaveGroupEntry> caveGroupes = getCaveGroups();
-			ArrayList<ModeOfRepresentationEntry> moRep = getModesOfRepresentations();
 			try {
+				System.out.println("Started Dataexport!");
+				DepictionEntry result = null;
+				Statement stmt;
+				ArrayList<OrientationEntry> orientations = getOrientationInformation();
+				ArrayList<CaveGroupEntry> caveGroupes = getCaveGroups();
+				ArrayList<ModeOfRepresentationEntry> moRep = getModesOfRepresentations();
+				Connection dbc = getConnection();
 				stmt = dbc.createStatement();
 				ResultSet rs = stmt.executeQuery("SELECT * FROM Depictions WHERE deleted=0");
 				System.out.println("Start Select");
+				System.out.println("Starting serialization for: "+serverProperties.getProperty("MysqlConnector.db.url"));
+				String url = serverProperties.getProperty("home.elastic.url");
+				int port = Integer.parseInt(serverProperties.getProperty("home.elastic.port"));
+				String index_data = serverProperties.getProperty("home.elastic.index_data");
+				String index_dic = serverProperties.getProperty("home.elastic.index_dic");
+				String elastic_user = serverProperties.getProperty("home.elastic.login");
+				String elastic_pw = serverProperties.getProperty("home.elastic.pw");
+				String mapping_data = serverProperties.getProperty("home.elastic.mapping.kucha_data");
+				String mapping_dic = serverProperties.getProperty("home.elastic.mapping.kucha_dic");
+				String elastic_role = serverProperties.getProperty("home.elastic.role");
+				String elasticReadOnlyUser = serverProperties.getProperty("home.elastic.user");
+				doRequest("DELETE", url, port, index_data, "",elastic_user,elastic_pw);
+				doRequest("DELETE", url, port, index_dic, "",elastic_user,elastic_pw);
+				doRequest("PUT", url, port, index_data, mapping_data,elastic_user,elastic_pw);
+				doRequest("PUT", url, port, index_dic, mapping_dic,elastic_user,elastic_pw);
+				doRequest("PUT", url, port, "/_xpack/security/role/read_only_role", elastic_role,elastic_user,elastic_pw);
+				doRequest("PUT", url, port, "/_xpack/security/user/read_only_user", elasticReadOnlyUser,elastic_user,elastic_pw);
+				doRequest("PUT", url, port, index_data+"/_settings", "{\"index.mapping.total_fields.limit\": 2000}",elastic_user,elastic_pw);
 				int accessLevel=-1;
 				accessLevel = getAccessLevelForSessionID(sessionID);
 				// we only need to call this once, since we do not expect more than 1 result!
@@ -1019,12 +1057,41 @@ public class MysqlConnector implements IsSerializable {
 							result.setRelatedBibliographyList(getRelatedBibliographyFromDepiction(result.getDepictionID()));
 							result.setRelatedIconographyList(getRelatedIconography(result.getDepictionID()));
 							ArrayList<ImageEntry> publicImmages = new ArrayList<ImageEntry>();
+							Map<String, Integer> imgAccessLevel = new HashMap<String, Integer>();
+							System.out.println("Length of relasted images befor filtering: " + Integer.toString(result.getRelatedImages().size()));
 							for (ImageEntry ie : result.getRelatedImages()) {
+								// System.out.println("put "+ie.getFilename() +", "+ Integer.toString(ie.getAccessLevel()));
+								imgAccessLevel.put(ie.getFilename(), ie.getAccessLevel());
 								if (ie.getAccessLevel()>0) {
 									publicImmages.add(ie);
+								} else {
+									ie.setCopyright("");
+									ie.setTitle("No_Picture_Available");
+									ie.setFilename("no_picture_available.jpg");
+									publicImmages.add(ie);									
 								}
 							}
 							result.setRelatedImages(publicImmages);
+							System.out.println("Length of relasted images befor filtering: " + Integer.toString(result.getRelatedImages().size()));
+							ArrayList<AnnotationEntry> newAEs = new ArrayList<AnnotationEntry>();
+							for (AnnotationEntry ae : result.getRelatedAnnotationList()) {
+							 //System.out.println("checking "+ae.getImage());
+							 Integer img = imgAccessLevel.get(ae.getImage());
+								if (img != null) {
+									if (imgAccessLevel.get(ae.getImage())>0) {
+										newAEs.add(ae);
+									} else {
+										ae.setPolygon("{\"type\": \"Polygon\", \"coordinates\": [[[0, 0], [0, 0]]]}");
+										ae.setImage("no_picture_available.jpg");
+										newAEs.add(ae);
+									}
+								} else {
+									ae.setPolygon("{\"type\": \"Polygon\", \"coordinates\": [[[0, 0], [0, 0]]]}");
+									ae.setImage("no_picture_available.jpg");
+									newAEs.add(ae);
+								}
+							}
+							result.setRelatedAnnotationList(newAEs);
 							if (result.getStyleID()>0) {
 								result.setStyle(getStyles("StyleID = "+Integer.toString(result.getStyleID())).get(0));						
 							}
@@ -1116,7 +1183,10 @@ public class MysqlConnector implements IsSerializable {
 					    myWriter.write(json+String.format("%n"));
 					
 					}
-					
+					ArrayList<OrnamentEntry> ornaments = getOrnaments();
+					for (OrnamentEntry orn: ornaments) {
+						orn.setIconographyEntry(getIconographyEntry(orn.getIconographyID()));
+					}
 			        myWriter.close();
 			        System.out.println("Starting praparing Kucha-Dictionary");
 			        FileWriter myWriter2 = new FileWriter(dicFilename);
@@ -1136,7 +1206,7 @@ public class MysqlConnector implements IsSerializable {
 							getLocations(),
 							getVendors(), 
 							getPublicationTypes(),
-							getOrnaments(), 
+							ornaments, 
 							getOrientationInformation(), 
 							getPosition(),
 							getBibKeywords());
@@ -1174,6 +1244,7 @@ public class MysqlConnector implements IsSerializable {
 		long end = System.currentTimeMillis();
 		long diff = (end-start);
 		System.out.println("Writing Elastic Indices took "+diff + " Milliseconds.");
+		this.isSerializing = false;
 		return true;
 	}
 	public Map<Integer,String> getPicsByImageID(String imgSourceIds, int tnSize, String sessionID) {
@@ -2508,7 +2579,7 @@ public class MysqlConnector implements IsSerializable {
 						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")), 
 						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getInt("IconographyID"),rs.getInt("MasterImageID"), getOrnamentRelatedIconography(rs.getInt("OrnamentID")),
-						getOrnamentAnnotations(rs.getInt("OrnamentID")),rs.getInt("AccessLevel")));
+						getOrnamentAnnotations(rs.getInt("OrnamentID")),rs.getInt("AccessLevel"),rs.getDouble("TourOrder")));
 				// Aufruf der h�heren Hierarchie Ebenen der Ornamentik mittels getCaveRelation
 				// Aufruf der Tabellen OrnamentComponentsRelation, OrnamentImageRelation und InnerSecondaryPatternRelation
 			}
@@ -2635,7 +2706,7 @@ public class MysqlConnector implements IsSerializable {
 		PreparedStatement ornamentStatement;
 		// deleteEntry("DELETE FROM Ornaments WHERE OrnamentID=" + ornamentEntry.getCode());
 		try {
-			ornamentStatement = dbc.prepareStatement("INSERT INTO Ornaments (Code, Description, Remarks, Interpretation, OrnamentReferences, OrnamentClassID, StructureOrganizationID, IconographyID, MasterImageID, AccessLevel) VALUES (?, ?, ?, ?, ?, ?, ?,?,?,?)",
+			ornamentStatement = dbc.prepareStatement("INSERT INTO Ornaments (Code, Description, Remarks, Interpretation, OrnamentReferences, OrnamentClassID, StructureOrganizationID, IconographyID, MasterImageID, AccessLevel, TourOrder) VALUES (?, ?, ?, ?, ?, ?, ?,?,?,?,?)",
 //					ornamentStatement = dbc.prepareStatement("INSERT INTO Ornaments (Code, Description, Remarks, Interpretation, OrnamentReferences, Annotation , OrnamentClassID, StructureOrganizationID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
 					Statement.RETURN_GENERATED_KEYS);
 			ornamentStatement.setString(1, ornamentEntry.getCode());
@@ -2649,6 +2720,7 @@ public class MysqlConnector implements IsSerializable {
 			ornamentStatement.setInt(8, ornamentEntry.getIconographyID());
 			ornamentStatement.setInt(9, ornamentEntry.getMasterImageID());
 			ornamentStatement.setInt(10, ornamentEntry.getAccessLevel());
+			ornamentStatement.setDouble(11, ornamentEntry.getVirtualTourOrder());
 			ornamentStatement.executeUpdate();
 			ResultSet keys = ornamentStatement.getGeneratedKeys();
 			if (keys.next()) { // there should only be 1 key returned here
@@ -2697,7 +2769,7 @@ public class MysqlConnector implements IsSerializable {
 		Connection dbc = getConnection();
 		PreparedStatement ornamentStatement;
 		try {
-			ornamentStatement = dbc.prepareStatement("UPDATE Ornaments SET Code=?, Description=?, Remarks=?, Interpretation=?, OrnamentReferences=?, OrnamentClassID=?, StructureOrganizationID=?, IconographyID=?, MasterImageID=?, AccessLevel=? WHERE OrnamentID=?");
+			ornamentStatement = dbc.prepareStatement("UPDATE Ornaments SET Code=?, Description=?, Remarks=?, Interpretation=?, OrnamentReferences=?, OrnamentClassID=?, StructureOrganizationID=?, IconographyID=?, MasterImageID=?, AccessLevel=?, TourOrder=? WHERE OrnamentID=?");
 			ornamentStatement.setString(1, ornamentEntry.getCode());
 			ornamentStatement.setString(2, ornamentEntry.getDescription());
 			ornamentStatement.setString(3, ornamentEntry.getRemarks());
@@ -2708,7 +2780,8 @@ public class MysqlConnector implements IsSerializable {
 			ornamentStatement.setInt(8, ornamentEntry.getIconographyID());
 			ornamentStatement.setInt(9, ornamentEntry.getMasterImageID());
 			ornamentStatement.setInt(10, ornamentEntry.getAccessLevel());
-			ornamentStatement.setInt(11, ornamentEntry.getOrnamentID());
+			ornamentStatement.setDouble(11, ornamentEntry.getVirtualTourOrder());
+			ornamentStatement.setInt(12, ornamentEntry.getOrnamentID());
 			ornamentStatement.executeUpdate();
 			deleteEntry("DELETE FROM OrnamentIconographyRelation WHERE OrnamentID =" + ornamentEntry.getOrnamentID());
 			if (ornamentEntry.getRelatedIconographyList().size() > 0) {
@@ -3794,9 +3867,9 @@ public boolean isHan(String s) {
 						image.setInventoryNumber(searchInventoryNumberByFilename(image.getTitle()));
 					}
 				}
-				if (image.getAccessLevel()==1) {
-					image.setFilename("accessNotPermitted.png");
-				}
+//				if (image.getAccessLevel()==1) {
+//					image.setFilename("accessNotPermitted.png");
+//				}
 				if (image.getAccessLevel()>0) {
 					results.add(image);					
 				}
@@ -4381,6 +4454,7 @@ public boolean isHan(String s) {
 		long diff = (end-start);
 		if (diff>100){
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von searchAnnotatedBibliography brauchte "+diff + " Millisekunden.");;}}
+		System.out.println("Length of AnnotatedBibliography results:"+Integer.toString(result.size()));
 		return result;
 	}
 	public boolean bibHasAnnotation(String filename) {
@@ -4976,7 +5050,7 @@ public boolean isHan(String s) {
 		String inStatement  = Integer.toString(AbstractEntry.ACCESS_LEVEL_PUBLIC); // public is always permitted
 		System.err.println("Accesslevel ist: "+getAccessLevelForSessionID(searchEntry.getSessionID()));
 		if (getAccessLevelForSessionID(searchEntry.getSessionID()) <= UserEntry.GUEST) {
-			where += where.isEmpty() ? "AccessLevel IN (" + inStatement + ")" : " AND AccessLevel IN (" + inStatement + ")";
+			where += where.isEmpty() ? "Ornaments.AccessLevel IN (" + inStatement + ")" : " AND AccessLevel IN (" + inStatement + ")";
 		}
 		String sqlStatement=where.isEmpty() ? "SELECT DISTINCT Ornaments.* FROM Ornaments left join DepictionIconographyRelation on (Ornaments.IconographyID=DepictionIconographyRelation.IconographyID) left join (Select * from Depictions where Depictions.deleted=0) as Depictionsall on (DepictionIconographyRelation.DepictionID=Depictionsall.DepictionID) left join DepictionWallsRelation on (Depictionsall.DepictionID=DepictionWallsRelation.DepictionID) left join WallLocationsTree on (WallLocationsTree.WallLocationID = DepictionWallsRelation.WallID) \r\n" + 
 				"left join WallPositionsRelation on (WallLocationsTree.WallLocationID=WallPositionsRelation.WallID and Depictionsall.DepictionID=WallPositionsRelation.DepictionID) left join Position on (WallPositionsRelation.PositionID=Position.PositionID) left join OrnamentComponentRelation on (OrnamentComponentRelation.OrnamentID = Ornaments.OrnamentID) ORDER BY Ornaments.Code LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+ ", "+Integer.toString(searchEntry.getMaxentries()): "SELECT DISTINCT Ornaments.* FROM Ornaments left join DepictionIconographyRelation on (Ornaments.IconographyID=DepictionIconographyRelation.IconographyID) left join (Select * from Depictions where Depictions.deleted=0) as Depictionsall on (DepictionIconographyRelation.DepictionID=Depictionsall.DepictionID) left join DepictionWallsRelation on (Depictionsall.DepictionID=DepictionWallsRelation.DepictionID) left join WallLocationsTree on (WallLocationsTree.WallLocationID = DepictionWallsRelation.WallID) \r\n" + 
@@ -5002,7 +5076,7 @@ public boolean isHan(String s) {
 						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
 						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
 						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getInt("IconographyID"),rs.getInt("MasterImageID"), getOrnamentRelatedIconography(rs.getInt("OrnamentID")), getOrnamentAnnotations(rs.getInt("OrnamentID")),rs.getInt("AccessLevel"));
+						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getInt("IconographyID"),rs.getInt("MasterImageID"), getOrnamentRelatedIconography(rs.getInt("OrnamentID")), getOrnamentAnnotations(rs.getInt("OrnamentID")),rs.getInt("AccessLevel"),rs.getDouble("TourOrder"));
 				resultList.add(entry);
 			}
 		} catch (SQLException e) {
@@ -5039,7 +5113,7 @@ public boolean isHan(String s) {
 						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
 						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getInt("IconographyID"),rs.getInt("MasterImageID"), getOrnamentRelatedIconography(rs.getInt("OrnamentID")),
-						getOrnamentAnnotations(rs.getInt("OrnamentID")),rs.getInt("AccessLevel")));
+						getOrnamentAnnotations(rs.getInt("OrnamentID")),rs.getInt("AccessLevel"),rs.getDouble("TourOrder")));
 			}
 			rs.close();
 			stmt.close();
@@ -5078,7 +5152,7 @@ public boolean isHan(String s) {
 						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
 						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getInt("IconographyID"),rs.getInt("MasterImageID"), getOrnamentRelatedIconography(rs.getInt("OrnamentID")),
-						getOrnamentAnnotations(rs.getInt("OrnamentID")),rs.getInt("AccessLevel"));
+						getOrnamentAnnotations(rs.getInt("OrnamentID")),rs.getInt("AccessLevel"),rs.getDouble("TourOrder"));
 			}
 			rs.close();
 			pstmt.close();
@@ -6775,7 +6849,7 @@ public boolean isHan(String s) {
 	public boolean setAnnotationResults(AnnotationEntry annoEntry, boolean isOrnament) {
 		if (!annoEntry.getDelete()) {
 			if (annoEntry.getUpdate()) {
-				deleteAbstractEntry(annoEntry);
+				deleteAnnotationEntry(annoEntry, isOrnament);
 			}
 			Connection dbc = getConnection();
 			PreparedStatement annoStatement;
@@ -6804,12 +6878,21 @@ public boolean isHan(String s) {
 //					poly=poly.replace(",", " ");
 //					poly=poly.replace("|", ",");					
 //				}
+//				if (annoEntry.getUpdate()) {
+//					if (isOrnament) {
+//						polygoneStatement = dbc.prepareStatement("Update PolygonOrnament set OrnamentID = ?, AnnotoriousID = ?, Polygon = PolygonFromText(?), ImageID = ? where AnnotoriousID = '"+annoEntry.getAnnotoriousID()+"'");					
+//					} else {
+//						polygoneStatement = dbc.prepareStatement("Update Polygon set OrnamentID = ?, AnnotoriousID = ?, Polygon = PolygonFromText(?), ImageID = ? where AnnotoriousID = '"+annoEntry.getAnnotoriousID()+"'");					
+//					}					
+//				} else {
 				System.err.println("INSERT INTO Polygon (DepictionID, AnnotoriousID, Polygon, ImageID) VALUES ("+Integer.toString(annoEntry.getDepictionID())+", "+annoEntry.getAnnotoriousID()+", PolygonFromText(\""+poly+"\"),"+part1+")");
 				if (isOrnament) {
 					polygoneStatement = dbc.prepareStatement("INSERT INTO PolygonOrnament (OrnamentID, AnnotoriousID, Polygon, ImageID) VALUES (?, ?, PolygonFromText(?),?)");					
 				} else {
 					polygoneStatement = dbc.prepareStatement("INSERT INTO Polygon (DepictionID, AnnotoriousID, Polygon, ImageID) VALUES (?, ?, PolygonFromText(?),?)");					
-				}
+				}					
+					
+//				}
 				polygoneStatement.setInt(1, annoEntry.getDepictionID());
 				polygoneStatement.setString(2, annoEntry.getAnnotoriousID());
 //				if (annoEntry.getPolygone().indexOf("\"></polygon></svg>")>0) {
@@ -8908,7 +8991,7 @@ public boolean isHan(String s) {
 		props.put("mail.smtp.socketFactory.port", "465"); //SSL Port
 		props.put("mail.smtp.socketFactory.class",
 				"javax.net.ssl.SSLSocketFactory"); //SSL Factory Class
-		
+		props.put("mail.smtp.ssl.protocols", "TLSv1.2");		
                 //create Authenticator object to pass in Session.getInstance argument
 		Authenticator auth = new Authenticator() {
 			//override the getPasswordAuthentication method
@@ -8917,7 +9000,9 @@ public boolean isHan(String s) {
 			}
 		};
        try {
+    	   System.out.println("1");
            Session session = Session.getDefaultInstance(props, auth);
+    	   System.out.println("2");
             Message msg = new MimeMessage(session);
             msg.setFrom(new InternetAddress(from, "Kucha-Admin"));
             msg.addRecipient(Message.RecipientType.TO,
@@ -8925,11 +9010,14 @@ public boolean isHan(String s) {
             msg.setSubject(subject);
             msg.setText(message);
             msg.setReplyTo(new InternetAddress[]{new InternetAddress("radisch@saw-leipzig.de")});
+     	   System.out.println("3");
             Transport.send(msg);
 
         } catch (Exception e) {
-            System.err.println(e.toString());                
-       }   
+            System.err.println(e.getLocalizedMessage());                
+            System.err.println(e.getSuppressed());                
+            System.err.println(e.getCause());                
+       }
     }
 	private static String cryptWithMD5(String pass) {
 		if (pass == null || pass.isEmpty()) {
@@ -9055,6 +9143,7 @@ public boolean isHan(String s) {
 		if (dologgingbegin){
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
 		}
+		System.out.println("invoked Search in mysql");
 		ArrayList<DepictionEntry> results = new ArrayList<DepictionEntry>();
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
