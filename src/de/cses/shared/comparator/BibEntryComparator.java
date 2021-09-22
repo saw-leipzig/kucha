@@ -14,14 +14,18 @@ public class BibEntryComparator implements Comparator<AnnotatedBibliographyEntry
 	String getComparisonString(AnnotatedBibliographyEntry entry) {
 		String result = "";
 		if (entry != null) {
-			if (!entry.getAuthorList().isEmpty()) {
-				for (AuthorEntry ae : entry.getAuthorList()) {
-					result += ae.getLastname() + " ";
+			if (entry.getAuthorList() != null) {
+				if (!entry.getAuthorList().isEmpty()) {
+					for (AuthorEntry ae : entry.getAuthorList()) {
+						result += ae.getLastname() + " ";
+					}				
 				}
-			} else if (!entry.getEditorList().isEmpty()) {
-				for (AuthorEntry ae : entry.getEditorList()) {
-					result += ae.getLastname() + " ";
-				}
+			} else if (entry.getEditorList() != null) {
+				if (!entry.getEditorList().isEmpty()) {
+					for (AuthorEntry ae : entry.getEditorList()) {
+						result += ae.getLastname() + " ";
+					}
+				}				
 			}
 			result += entry.getYearORG() != null ? entry.getYearORG() + " " : "";
 			result += entry.getTitleFull();
