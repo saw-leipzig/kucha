@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.sound.sampled.Port.Info;
 
+import com.sencha.gxt.widget.core.client.info.Info;
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.Cell.Context;
@@ -481,7 +481,6 @@ public class IconographySelector extends FramedPanel {
 				}
 				@Override
 				public void onSuccess(ArrayList<OrnamentEntry> result) {
-					Util.doLogging("Größe von Ornaments:"+Integer.toString(result.size()));
 					String where= "";
 						ornamentEntries = result;
 						for (OrnamentEntry oe :result) {
@@ -708,78 +707,82 @@ public class IconographySelector extends FramedPanel {
 
 			@Override
 			public void onSelect(SelectEvent event) {
-				if (iconographyTree.getSelectionModel().getSelectedItem() == null) { // we can only add a new entry if there is a parent selected
-					return;
-				}				
-				PopupPanel addIconographyEntryDialog = new PopupPanel();
-				FramedPanel newIconographyEntryFP = new FramedPanel();
-				HTML html = new HTML(iconographyTree.getSelectionModel().getSelectedItem().getText());
-				html.setWidth("100%");
-				html.setWordWrap(true);
-				html.setStylePrimaryName("html-display");
-				html.setWidth("280px");
-				TextArea ieTextArea = new TextArea();
-				ieTextArea.addValidator(new MinLengthValidator(2));
-				ieTextArea.addValidator(new MaxLengthValidator(256));
-				FramedPanel fpanelText = new FramedPanel();
-				fpanelText.setHeading("Name");
-				fpanelText.add(ieTextArea);
-				TextArea ieTextAreaSearch = new TextArea();
-				ieTextAreaSearch.addValidator(new MinLengthValidator(2));
-				ieTextAreaSearch.addValidator(new MaxLengthValidator(256));
-				FramedPanel fpanelSearch = new FramedPanel();
-				fpanelSearch.setHeading("Alternative Names");
-				fpanelSearch.add(ieTextAreaSearch);
-				VerticalLayoutContainer newIconogryphyVLC = new VerticalLayoutContainer();
-				newIconogryphyVLC.add(html, new VerticalLayoutData(1.0, .2));
-				newIconogryphyVLC.add(fpanelText, new VerticalLayoutData(1.0, .4));
-				newIconogryphyVLC.add(fpanelSearch, new VerticalLayoutData(1.0, .4));
-				newIconographyEntryFP.add(newIconogryphyVLC);
-				newIconographyEntryFP.setSize("300px", "280px");
-				newIconographyEntryFP.setHeading("add child element to");
-				ToolButton saveTB = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
-				saveTB.addSelectHandler(new SelectHandler() {
+				if (UserLogin.getInstance().getAccessRights() > UserEntry.FULL) {
+					if (iconographyTree.getSelectionModel().getSelectedItem() == null) { // we can only add a new entry if there is a parent selected
+						return;
+					}				
+					PopupPanel addIconographyEntryDialog = new PopupPanel();
+					FramedPanel newIconographyEntryFP = new FramedPanel();
+					HTML html = new HTML(iconographyTree.getSelectionModel().getSelectedItem().getText());
+					html.setWidth("100%");
+					html.setWordWrap(true);
+					html.setStylePrimaryName("html-display");
+					html.setWidth("280px");
+					TextArea ieTextArea = new TextArea();
+					ieTextArea.addValidator(new MinLengthValidator(2));
+					ieTextArea.addValidator(new MaxLengthValidator(256));
+					FramedPanel fpanelText = new FramedPanel();
+					fpanelText.setHeading("Name");
+					fpanelText.add(ieTextArea);
+					TextArea ieTextAreaSearch = new TextArea();
+					ieTextAreaSearch.addValidator(new MinLengthValidator(2));
+					ieTextAreaSearch.addValidator(new MaxLengthValidator(256));
+					FramedPanel fpanelSearch = new FramedPanel();
+					fpanelSearch.setHeading("Alternative Names");
+					fpanelSearch.add(ieTextAreaSearch);
+					VerticalLayoutContainer newIconogryphyVLC = new VerticalLayoutContainer();
+					newIconogryphyVLC.add(html, new VerticalLayoutData(1.0, .2));
+					newIconogryphyVLC.add(fpanelText, new VerticalLayoutData(1.0, .4));
+					newIconogryphyVLC.add(fpanelSearch, new VerticalLayoutData(1.0, .4));
+					newIconographyEntryFP.add(newIconogryphyVLC);
+					newIconographyEntryFP.setSize("300px", "280px");
+					newIconographyEntryFP.setHeading("add child element to");
+					ToolButton saveTB = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
+					saveTB.addSelectHandler(new SelectHandler() {
 
-					@Override
-					public void onSelect(SelectEvent event) {
-						if (ieTextArea.isValid()) {
-							IconographyEntry iconographyEntry = new IconographyEntry(0, iconographyTree.getSelectionModel().getSelectedItem().getIconographyID(), ieTextArea.getValue(), ieTextAreaSearch.getValue());
-							dbService.insertIconographyEntry(iconographyEntry, new AsyncCallback<Integer>() {
+						@Override
+						public void onSelect(SelectEvent event) {
+							if (ieTextArea.isValid()) {
+								IconographyEntry iconographyEntry = new IconographyEntry(0, iconographyTree.getSelectionModel().getSelectedItem().getIconographyID(), ieTextArea.getValue(), ieTextAreaSearch.getValue());
+								dbService.insertIconographyEntry(iconographyEntry, new AsyncCallback<Integer>() {
 
-								@Override
-								public void onFailure(Throwable caught) {
-									caught.printStackTrace();
-								}
-
-								@Override
-								public void onSuccess(Integer result) {
-									if (result > 0) { // otherwise there has been a problem adding the entry
-										iconographyEntry.setIconographyID(result);
-										StaticTables.getInstance().reloadIconography(); // we need to reload the whole tree otherwise this won't work
-										imgdDic = StaticTables.getInstance().getOrnamentMasterPics();
-										addChildIconographyEntry(iconographyEntry);
-										//icoSelectorListener.reloadIconography(iconographyEntry);
-										icoSelectorListener.reloadOSD();
+									@Override
+									public void onFailure(Throwable caught) {
+										caught.printStackTrace();
 									}
-								}
-							});
+
+									@Override
+									public void onSuccess(Integer result) {
+										if (result > 0) { // otherwise there has been a problem adding the entry
+											iconographyEntry.setIconographyID(result);
+											StaticTables.getInstance().reloadIconography(); // we need to reload the whole tree otherwise this won't work
+											imgdDic = StaticTables.getInstance().getOrnamentMasterPics();
+											addChildIconographyEntry(iconographyEntry);
+											//icoSelectorListener.reloadIconography(iconographyEntry);
+											icoSelectorListener.reloadOSD();
+										}
+									}
+								});
+								addIconographyEntryDialog.hide();
+							}
+						}
+					});
+					newIconographyEntryFP.addTool(saveTB);
+					ToolButton cancelTB = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
+					cancelTB.addSelectHandler(new SelectHandler() {
+
+						@Override
+						public void onSelect(SelectEvent event) {
 							addIconographyEntryDialog.hide();
 						}
-					}
-				});
-				newIconographyEntryFP.addTool(saveTB);
-				ToolButton cancelTB = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
-				cancelTB.addSelectHandler(new SelectHandler() {
-
-					@Override
-					public void onSelect(SelectEvent event) {
-						addIconographyEntryDialog.hide();
-					}
-				});
-				newIconographyEntryFP.addTool(cancelTB);
-				addIconographyEntryDialog.add(newIconographyEntryFP);				
-				addIconographyEntryDialog.setModal(true);
-				addIconographyEntryDialog.center();
+					});
+					newIconographyEntryFP.addTool(cancelTB);
+					addIconographyEntryDialog.add(newIconographyEntryFP);				
+					addIconographyEntryDialog.setModal(true);
+					addIconographyEntryDialog.center();					
+				} else {
+					Info.display("you are not permitted to add Entries in the Tree!","Ask Project responsibles, if you need to add an Entry.");
+				}
 			}
 		});
 
