@@ -14,7 +14,11 @@
 package de.cses.client.ui;
 
 
+import java.text.ParseException;
+
 import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -37,6 +41,7 @@ public abstract class AbstractFilter implements IsWidget{
 	private String filterName;
 	private AbstractSearchController saerchparent;
 	private KeyPressHandler shortkey;
+	int lastKeyCode = -1;
 	/**
 	 * 
 	 */
@@ -44,10 +49,13 @@ public abstract class AbstractFilter implements IsWidget{
 		this.filterName = filterName;
 		this.shortkey = new KeyPressHandler() {
 			public void onKeyPress(KeyPressEvent event) {
-				Util.doLogging("Key Down registered");
-	        	  if (event.getCharCode() == KeyCodes.KEY_ENTER) {
-	        		  invokeSearch();
-	        	  }
+				if (lastKeyCode != event.getCharCode()) {
+					Util.doLogging("Key Down registered");
+		        	  if (event.getCharCode() == KeyCodes.KEY_ENTER) {
+		        		  invokeSearch();
+		        	  }					
+				}
+				lastKeyCode = event.getCharCode();
 			}
 		};
 	}
@@ -95,7 +103,8 @@ public abstract class AbstractFilter implements IsWidget{
 	/**
 	 * Every filter needs to implement a SearchEntry which will be used to request filtered searches from the server side.
 	 * @return
+	 * @throws ParseException 
 	 */
-	public abstract AbstractSearchEntry getSearchEntry();
+	public abstract AbstractSearchEntry getSearchEntry() ;
 	public abstract void setSearchEntry(AbstractSearchEntry searchEntry, boolean reset);
 }
