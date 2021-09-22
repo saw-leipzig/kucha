@@ -13,6 +13,7 @@
  */
 package de.cses.client.images;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Map;
 

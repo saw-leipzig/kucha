@@ -19,6 +19,7 @@ import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -51,6 +52,8 @@ import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderL
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.event.InvalidEvent;
+import com.sencha.gxt.widget.core.client.event.InvalidEvent.InvalidHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
@@ -60,6 +63,7 @@ import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.StoreFilterField;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
+import com.sencha.gxt.widget.core.client.info.Info;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 
@@ -596,6 +600,13 @@ public class DepictionFilter extends AbstractFilter {
 		shortNameSearchTF.addKeyPressHandler(getShortkey());
 		IDSearchTF = new TextField();
 		IDSearchTF.addValidator(new RegExValidator("[0-9]", "Only numbers allowed"));
+		IDSearchTF.addInvalidHandler(new InvalidHandler() {
+		      @Override
+		      public void onInvalid(InvalidEvent event) {
+		    	  Info.display("Search field for Ids deleted!", "Due to invalid Input.");
+		    	  IDSearchTF.clear();
+		      }
+		    });
 		IDSearchTF.setEmptyText("search ID");
 		IDSearchTF.addDomHandler(getShortkey() , KeyPressEvent.getType());
 
@@ -777,10 +788,14 @@ public class DepictionFilter extends AbstractFilter {
 		if (shortNameSearchTF.getValue() != null && !shortNameSearchTF.getValue().isEmpty()) {
 			searchEntry.setShortName(shortNameSearchTF.getValue());
 		}
-		if (IDSearchTF.getValue() != null ) {
-			searchEntry.setID(Integer.parseInt(IDSearchTF.getValue()));
-		}
-		
+		try {
+			if (IDSearchTF.getValue() != null ) {			
+				searchEntry.setID(Integer.parseInt(IDSearchTF.getValue()));
+			}
+		} catch (Exception e) {
+			Info.display("Error", "Only numeric IDs are valid");
+			return null;
+		}		
 		for (CaveEntry ce : caveSelectionLV.getSelectionModel().getSelectedItems()) {
 			searchEntry.getCaveIdList().add(ce.getCaveID());
 		}

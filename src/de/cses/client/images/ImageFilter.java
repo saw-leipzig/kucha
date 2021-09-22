@@ -18,8 +18,8 @@ import java.util.ArrayList;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyDownEvent;
-import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.user.client.ui.HTML;
@@ -38,6 +38,7 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.Verti
 import com.sencha.gxt.widget.core.client.form.DualListField;
 import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
+import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor.IntegerPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 
@@ -138,13 +139,13 @@ public class ImageFilter extends AbstractFilter {
 		daysSinceUploadSearch.setEmptyText("last X days");
 		daysSinceUploadSearch.setToolTip(Util.createToolTip("Search in last X days.", "Searches for images uploaded in the last X days."));
 		daysSinceUploadSearch.addDomHandler(getShortkey(), KeyPressEvent.getType());
-		daysSinceUploadSearch.addDomHandler(new KeyDownHandler() {
-			public void onKeyDown(KeyDownEvent event) {
-	        	  if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+		daysSinceUploadSearch.addDomHandler(new KeyPressHandler() {
+			public void onKeyPress(KeyPressEvent event) {
+	        	  if (event.getCharCode() == KeyCodes.KEY_ENTER) {
 	        		  invokeSearch();
 	        	  }
 			}
-		}, KeyDownEvent.getType());
+		}, KeyPressEvent.getType());
 		HorizontalLayoutContainer uploadedSinceHLC = new HorizontalLayoutContainer();
 		uploadedSinceHLC.add(daysSinceUploadSearch, new HorizontalLayoutData(.7, 1.0, new Margins(0, 10, 0, 0)));
 		uploadedSinceHLC.add(new HTML(lt.label("days")), new HorizontalLayoutData(.3, 1.0));
@@ -153,13 +154,13 @@ public class ImageFilter extends AbstractFilter {
 		DualListField<ImageTypeEntry, String> dualListField = new DualListField<ImageTypeEntry, String>(imageTypeEntryList,
 				selectedImagesTypesList, imageTypeProps.name(), new TextCell());
 		dualListField.setEnableDnd(true);
-		dualListField.addDomHandler(new KeyDownHandler() {
-			public void onKeyDown(KeyDownEvent event) {
-	        	  if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+		dualListField.addDomHandler(new KeyPressHandler() {
+			public void onKeyPress(KeyPressEvent event) {
+	        	  if (event.getCharCode() == KeyCodes.KEY_ENTER) {
 	        		  invokeSearch();
 	        	  }
 			}
-		}, KeyDownEvent.getType());
+		}, KeyPressEvent.getType());
 		dualListField.getDownButton().removeFromParent();
 		dualListField.getUpButton().removeFromParent();
 		dualListField.setMode(DualListField.Mode.INSERT);
@@ -228,11 +229,10 @@ public class ImageFilter extends AbstractFilter {
 
 		if (titleSearch.getValue() != null && !titleSearch.getValue().isEmpty()) {
 			searchEntry.setTitleSearch(titleSearch.getValue());
-		}
+		} 
 		if (IDSearchTF.getValue() != null ) {
 			searchEntry.setID(Integer.parseInt(IDSearchTF.getValue()));
 		}
-		
 		if (copyrightSearch.getValue() != null && !copyrightSearch.getValue().isEmpty()) {
 			searchEntry.setCopyrightSearch(copyrightSearch.getValue());
 		}

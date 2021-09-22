@@ -66,6 +66,8 @@ import com.sencha.gxt.widget.core.client.event.ShowEvent;
 import com.sencha.gxt.widget.core.client.event.ShowEvent.ShowHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.ListField;
+import com.sencha.gxt.widget.core.client.form.NumberField;
+import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
@@ -132,6 +134,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 	private ListStore<OrnamentComponentsEntry> selectedOrnamentComponents;
 	private OrnamentComponentsProperties ornamentComponentsProps;
 	private TextField ornamentCodeTextField;
+	private NumberField tourOrderField;
 	private BibliographySelector bibSelector;
 	private TextArea discription;
 	private TextArea remarks;
@@ -197,7 +200,9 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 			@Override
 			public void onSuccess(String result) {
-				osdLoader.startLoadingTiles(result);
+				if (ornamentEntry != null) {
+					osdLoader.startLoadingTiles(result);					
+				}
 			}
 		});
 	}
@@ -227,17 +232,37 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		getListenerList().get(0).setClickNumber(0);
 }
 	// this method should be added to osdLader
-	private void highlightIcoEntry(IconographyEntry selectedIE, boolean deselect, List<IconographyEntry>clickedIcos) {
-		//Util.doLogging("Started highlighting for Iconography: "+selectedIE.getText());
-		ArrayList<AnnotationEntry> newAnnos = new ArrayList<AnnotationEntry>();
+	private ArrayList<AnnotationEntry> findAllIcos(IconographyEntry selectedIE, ArrayList<AnnotationEntry> collectedEntries) {
 		for (AnnotationEntry ae : ornamentEntry.getRelatedAnnotationList()) {
 			for (IconographyEntry ie : ae.getTags()) {
 				if (ie.getIconographyID() == selectedIE.getIconographyID()) {
-								//Util.doLogging("found annotation for: "+ie.getText());
-								newAnnos.add(ae);
+					boolean found = false;
+					for (AnnotationEntry collectedAe : collectedEntries) {
+						if (collectedAe.getAnnotoriousID() == ae.getAnnotoriousID()) {
+							found = true;
+							break;
+						}
+					}
+					if (!found) {
+						Util.doLogging("found entry for: "+selectedIE.getText());
+						collectedEntries.add(ae);									
+					}
 				}
 			}
 		}
+		if (selectedIE.getChildren() != null) {
+			for (IconographyEntry child : selectedIE.getChildren()) {
+				collectedEntries = findAllIcos(child, collectedEntries);
+			}
+		}
+		return collectedEntries;
+	}
+
+	private void highlightIcoEntry(IconographyEntry selectedIE, boolean deselect, List<IconographyEntry>clickedIcos) {
+		Util.doLogging("Started highlighting for Iconography: "+selectedIE.getText());
+		ArrayList<AnnotationEntry> newAnnos = new ArrayList<AnnotationEntry>();
+		newAnnos = findAllIcos(selectedIE, newAnnos);	
+		
 		if (newAnnos.size()>0) {
 			if (annotationsLoaded) {
 				osdLoader.removeOrAddAnnotations(newAnnos,!deselect);
@@ -252,16 +277,11 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 			}
 			
 		}
-		if (selectedIE.getChildren() != null) {
-			for (IconographyEntry children : selectedIE.getChildren()) {
-				highlightIcoEntry(children, deselect,clickedIcos);
-			}
-		}
-
 	}
 
 	public Widget createForm() {
 		if (ornamentEntry == null) {
+			Util.doLogging("do create new OE");
 			ornamentEntry = new OrnamentEntry();
 		}
 		ornamentTrees= new 	OrnamenticIconographyTree(ornamentEntry);
@@ -430,120 +450,123 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		// laden der Daten aus der Datenbank
 		Util.doLogging("Create form von ornamenticeditor gestartet");
 		if (ornamentEntry!=null) {
-			dbService.getOrnamentEntry(ornamentEntry.getOrnamentID(), new AsyncCallback<OrnamentEntry>() {
+			if (ornamentEntry.getOrnamentID() > 0){
+				dbService.getOrnamentEntry(ornamentEntry.getOrnamentID(), new AsyncCallback<OrnamentEntry>() {
 
-				@Override
-				public void onFailure(Throwable caught) {
-					caught.printStackTrace();
-				}
+					@Override
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+					}
 
-				public void onSuccess(OrnamentEntry result) {
-					ornamentEntry=result;
-					ornamentCodeTextField.setValue(ornamentEntry.getCode());
-					discription.setValue(ornamentEntry.getDescription());
-					remarks.setValue(ornamentEntry.getRemarks());
-					interpretation.setValue(ornamentEntry.getInterpretation());
-					ornamentTrees.setTreeStore();
-					dbService.getOrnamentClass(new AsyncCallback<ArrayList<OrnamentClassEntry>>() {
+					public void onSuccess(OrnamentEntry result) {
+						ornamentEntry=result;
+						ornamentCodeTextField.setValue(ornamentEntry.getCode());
+						discription.setValue(ornamentEntry.getDescription());
+						remarks.setValue(ornamentEntry.getRemarks());
+						interpretation.setValue(ornamentEntry.getInterpretation());
+						ornamentTrees.setTreeStore();
+						dbService.getOrnamentClass(new AsyncCallback<ArrayList<OrnamentClassEntry>>() {
 
-						@Override
-						public void onFailure(Throwable caught) {
-							caught.printStackTrace();
-						}
-
-						@Override
-						public void onSuccess(ArrayList<OrnamentClassEntry> result) {
-							ornamentClassEntryList.clear();
-							for (OrnamentClassEntry pe : result) {
-								ornamentClassEntryList.add(pe);
-								}
-							ornamentClassComboBox.setValue(ornamentClassEntryList
-										.findModelWithKey(Integer.toString(ornamentEntry.getOrnamentClass())));
+							@Override
+							public void onFailure(Throwable caught) {
+								caught.printStackTrace();
 							}
-					});
-					dbService.getOrnamentComponents(new AsyncCallback<ArrayList<OrnamentComponentsEntry>>() {
 
-						@Override
-						public void onFailure(Throwable caught) {
-							caught.printStackTrace();
-						}
+							@Override
+							public void onSuccess(ArrayList<OrnamentClassEntry> result) {
+								ornamentClassEntryList.clear();
+								for (OrnamentClassEntry pe : result) {
+									ornamentClassEntryList.add(pe);
+									}
+								ornamentClassComboBox.setValue(ornamentClassEntryList
+											.findModelWithKey(Integer.toString(ornamentEntry.getOrnamentClass())));
+								}
+						});
+						dbService.getOrnamentComponents(new AsyncCallback<ArrayList<OrnamentComponentsEntry>>() {
 
-						public void onSuccess(ArrayList<OrnamentComponentsEntry> result) {
+							@Override
+							public void onFailure(Throwable caught) {
+								caught.printStackTrace();
+							}
 
-							ornamentComponents.clear();
-							selectedOrnamentComponents.clear();
-							if (ornamentEntry != null) {
-								for (OrnamentComponentsEntry pe : result) {
-									int count = 0;
+							public void onSuccess(ArrayList<OrnamentComponentsEntry> result) {
+
+								ornamentComponents.clear();
+								selectedOrnamentComponents.clear();
+								if (ornamentEntry != null) {
+									for (OrnamentComponentsEntry pe : result) {
+										int count = 0;
+										for (OrnamentComponentsEntry oe : ornamentEntry.getOrnamentComponents()) {
+											if (pe.getOrnamentComponentsID() != oe.getOrnamentComponentsID()) {
+												count++;
+											}
+											if (count == ornamentEntry.getOrnamentComponents().size()) {
+												ornamentComponents.add(pe);
+											}
+										}
+									}
 									for (OrnamentComponentsEntry oe : ornamentEntry.getOrnamentComponents()) {
-										if (pe.getOrnamentComponentsID() != oe.getOrnamentComponentsID()) {
-											count++;
-										}
-										if (count == ornamentEntry.getOrnamentComponents().size()) {
-											ornamentComponents.add(pe);
+										selectedOrnamentComponents.add(oe);
+									}
+									if (ornamentEntry.getOrnamentComponents().size() == 0) {
+										for (OrnamentComponentsEntry nu : result) {
+											ornamentComponents.add(nu);
 										}
 									}
-								}
-								for (OrnamentComponentsEntry oe : ornamentEntry.getOrnamentComponents()) {
-									selectedOrnamentComponents.add(oe);
-								}
-								if (ornamentEntry.getOrnamentComponents().size() == 0) {
-									for (OrnamentComponentsEntry nu : result) {
-										ornamentComponents.add(nu);
+								} else {
+									for (OrnamentComponentsEntry pe : result) {
+										ornamentComponents.add(pe);
 									}
 								}
-							} else {
-								for (OrnamentComponentsEntry pe : result) {
-									ornamentComponents.add(pe);
-								}
+
+							}
+						});
+
+						dbService.getInnerSecondaryPatterns(new AsyncCallback<ArrayList<InnerSecondaryPatternsEntry>>() {
+
+							@Override
+							public void onFailure(Throwable caught) {
+								caught.printStackTrace();
 							}
 
-						}
-					});
+							@Override
+							public void onSuccess(ArrayList<InnerSecondaryPatternsEntry> result) {
 
-					dbService.getInnerSecondaryPatterns(new AsyncCallback<ArrayList<InnerSecondaryPatternsEntry>>() {
-
-						@Override
-						public void onFailure(Throwable caught) {
-							caught.printStackTrace();
-						}
-
-						@Override
-						public void onSuccess(ArrayList<InnerSecondaryPatternsEntry> result) {
-
-							innerSecondaryPatternsEntryList.clear();
-							selectedinnerSecondaryPatternsEntryList.clear();
-							if (ornamentEntry != null) {
-								for (InnerSecondaryPatternsEntry pe : result) {
-									int count = 0;
+								innerSecondaryPatternsEntryList.clear();
+								selectedinnerSecondaryPatternsEntryList.clear();
+								if (ornamentEntry != null) {
+									for (InnerSecondaryPatternsEntry pe : result) {
+										int count = 0;
+										for (InnerSecondaryPatternsEntry oe : ornamentEntry.getInnerSecondaryPatterns()) {
+											if (pe.getInnerSecondaryPatternsID() != oe.getInnerSecondaryPatternsID()) {
+												count++;
+											}
+											if (count == ornamentEntry.getInnerSecondaryPatterns().size()) {
+												innerSecondaryPatternsEntryList.add(pe);
+											}
+										}
+									}
 									for (InnerSecondaryPatternsEntry oe : ornamentEntry.getInnerSecondaryPatterns()) {
-										if (pe.getInnerSecondaryPatternsID() != oe.getInnerSecondaryPatternsID()) {
-											count++;
-										}
-										if (count == ornamentEntry.getInnerSecondaryPatterns().size()) {
-											innerSecondaryPatternsEntryList.add(pe);
+										selectedinnerSecondaryPatternsEntryList.add(oe);
+									}
+									if (ornamentEntry.getInnerSecondaryPatterns().size() == 0) {
+										for (InnerSecondaryPatternsEntry nu : result) {
+											innerSecondaryPatternsEntryList.add(nu);
 										}
 									}
-								}
-								for (InnerSecondaryPatternsEntry oe : ornamentEntry.getInnerSecondaryPatterns()) {
-									selectedinnerSecondaryPatternsEntryList.add(oe);
-								}
-								if (ornamentEntry.getInnerSecondaryPatterns().size() == 0) {
-									for (InnerSecondaryPatternsEntry nu : result) {
-										innerSecondaryPatternsEntryList.add(nu);
+								} else {
+									for (InnerSecondaryPatternsEntry pe : result) {
+										innerSecondaryPatternsEntryList.add(pe);
 									}
 								}
-							} else {
-								for (InnerSecondaryPatternsEntry pe : result) {
-									innerSecondaryPatternsEntryList.add(pe);
-								}
+
 							}
+						});
 
-						}
-					});
+					}
+					});				
+			}
 
-				}
-				});
 		}
 
 
@@ -582,7 +605,16 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		FramedPanel accessRightsCBFP = new FramedPanel();
 		accessRightsCBFP.setHeading("Access Level");
 		accessRightsCBFP.add(accessRightsCB);
-		panel.add(accessRightsCBFP, new VerticalLayoutData(1.0, .125));
+		tourOrderField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
+		tourOrderField.setValue(ornamentEntry.getVirtualTourOrder());
+		FramedPanel tourOrder = new FramedPanel();
+		tourOrder.setHeading("Virtual Tour Order");
+		tourOrder.add(tourOrderField);
+		HorizontalLayoutContainer horizonttourData = new HorizontalLayoutContainer();
+		horizonttourData.add(accessRightsCBFP, new HorizontalLayoutData(.5, 1.0));
+		horizonttourData.add(tourOrder, new HorizontalLayoutData(.5, 1.0));
+		
+		panel.add(horizonttourData, new VerticalLayoutData(1.0, .125));
 
 		ornamentCodeTextField = new TextField();
 		ornamentCodeTextField.setAllowBlank(false);
@@ -601,7 +633,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 					}
 				});
 		panel.add(ftree, new VerticalLayoutData(1.0, 0.275));
-		panel.add(accessRightsCBFP, new VerticalLayoutData(1.0, .125));
+		panel.add(horizonttourData, new VerticalLayoutData(1.0, .125));
 		header = new FramedPanel();
 		header.setHeading("Motif");
 		ornamentClassComboBox.setTriggerAction(TriggerAction.ALL);
@@ -767,6 +799,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		Util.doLogging("Create form von ornamenticeditor gestartet");
 
 		header.add(discription);
+		discription.setAllowTextSelection(true);
 		discription.setAllowBlank(true);
 
 		remarks = new TextArea();
@@ -1260,13 +1293,21 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 			@Override
 			public void imageSelected(ArrayList<ImageEntry> imgEntryList) {
+				Util.doLogging("Image Selected");
+				if (ornamentEntry == null) {
+					ornamentEntry = new OrnamentEntry();
+				}
 				if (imgEntryList!=null) {
 					for (ImageEntry imgEntry : imgEntryList) {
+						Util.doLogging("Image added: "+Integer.toString(ornamentEntry.getOrnamentID()));
 						ornamentEntry.addRelatedImages(imgEntry); // TODO check if double adding possible and avoid!
 					}
+					Util.doLogging("getPics");
 					getPics(imgEntryList, 600, UserLogin.getInstance().getSessionID());
+					Util.doLogging("loadImages");
 					loadImages();
-					setosd();
+					//Util.doLogging("setosd");
+					//setosd();
 					
 				}
 
@@ -1739,7 +1780,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 			ieList.add(imageEntryLS.get(i));
 		}
 		ornamentEntry.setImages(ieList);
-
+		ornamentEntry.setVirtualTourOrder((double) this.tourOrderField.getValue());
 		ornamentEntry.setCode(ornamentCodeTextField.getText());
 		ornamentEntry.setDescription(discription.getText());
 		ornamentEntry.setRemarks(remarks.getText());

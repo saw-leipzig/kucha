@@ -1010,12 +1010,18 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 	 */
 	public String getEditors() {
 		String result = "";
-		if ((editorList.size() > 3) || (hasOtherAuthors)) {
-			AuthorEntry ae = editorList.get(0);
-			result = ae.getName() + ", et al.";
-		} else {
-			for (AuthorEntry ae : editorList) {
-				result = result.concat(!result.isEmpty() ? "/ " + ae.getName() : ae.getName());
+		if (editorList != null) {
+			if (!editorList.isEmpty()) {
+				if ((editorList.size() > 3) || (hasOtherAuthors)) {
+					AuthorEntry ae = editorList.get(0);
+					result = ae.getName() + ", et al.";
+				} else {
+					for (AuthorEntry ae : editorList) {
+						if (ae != null) {
+							result = result.concat(!result.isEmpty() ? "/ " + ae.getName() : ae.getName());							
+						}
+					}
+				}							
 			}
 		}
 		return result;

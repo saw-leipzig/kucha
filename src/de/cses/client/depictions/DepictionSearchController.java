@@ -57,59 +57,62 @@ public class DepictionSearchController extends AbstractSearchController {
 
 	@Override
 	public void invokeSearch() {
+		Util.doLogging("search invoked.");
 		DepictionSearchEntry searchEntry = (DepictionSearchEntry) getFilter().getSearchEntry();
+		if (searchEntry != null) {
+			dbService.searchDepictions(searchEntry, new AsyncCallback<ArrayList<DepictionEntry>>() {
 
-		dbService.searchDepictions(searchEntry, new AsyncCallback<ArrayList<DepictionEntry>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				Util.doLogging("Oh-oh"+caught.getMessage());
-				caught.printStackTrace();
-				getResultView().setSearchEnabled(true);
-			}
-
-			@Override
-			public void onSuccess(ArrayList<DepictionEntry> result) {
-				String masterImageIDs = "";
-				//Info.display("Result", "Größe = "+Integer.toString(result.size()));
-				int count = 0;
-				searchEntry.setEntriesShowed(searchEntry.getMaxentries());
-				getResultView().reset();
-				getResultView().setSearchEntry(searchEntry);
-				if (result.size()==searchEntry.getMaxentries()) {
-					getResultView().setSearchbuttonVisible();
+				@Override
+				public void onFailure(Throwable caught) {
+					Util.doLogging("Oh-oh"+caught.getMessage());
+					caught.printStackTrace();
+					getResultView().setSearchEnabled(true);
+					Info.display("Search failed with Error: ", caught.getMessage());
 				}
-				else {
-					getResultView().setSearchbuttonHide();
-				}
-				getResultView().setSearchEnabled(true);
-				int x = result.size();
-				for (DepictionEntry de : result){
-					count++;
-					//Util.doLogging("DepictionID "+Integer.toString(de.getDepictionID()));
-					getResultView().addResult(new DepictionView(de,UriUtils.fromTrustedString("icons/load_active.png")));
-					if (masterImageIDs == "") {
-						masterImageIDs = Integer.toString(de.getMasterImageID());
+
+				@Override
+				public void onSuccess(ArrayList<DepictionEntry> result) {
+					String masterImageIDs = "";
+					//Info.display("Result", "Größe = "+Integer.toString(result.size()));
+					int count = 0;
+					searchEntry.setEntriesShowed(searchEntry.getMaxentries());
+					getResultView().reset();
+					getResultView().setSearchEntry(searchEntry);
+					if (result.size()==searchEntry.getMaxentries()) {
+						getResultView().setSearchbuttonVisible();
 					}
 					else {
-						masterImageIDs = masterImageIDs + ","+Integer.toString(de.getMasterImageID());
+						getResultView().setSearchbuttonHide();
 					}
-//					Util.doLogging("Lade Depiction: "+de.getShortName());
-					if (count==20 ){
+					getResultView().setSearchEnabled(true);
+					int x = result.size();
+					for (DepictionEntry de : result){
+						count++;
+						//Util.doLogging("DepictionID "+Integer.toString(de.getDepictionID()));
+						getResultView().addResult(new DepictionView(de,UriUtils.fromTrustedString("icons/load_active.png")));
+						if (masterImageIDs == "") {
+							masterImageIDs = Integer.toString(de.getMasterImageID());
+						}
+						else {
+							masterImageIDs = masterImageIDs + ","+Integer.toString(de.getMasterImageID());
+						}
+//						Util.doLogging("Lade Depiction: "+de.getShortName());
+						if (count==20 ){
+							getResultView().getPics(masterImageIDs, 120, UserLogin.getInstance().getSessionID()) ;
+							masterImageIDs="";
+							count=0;
+						}
+						
+					}
+
+					if (masterImageIDs != "") {
 						getResultView().getPics(masterImageIDs, 120, UserLogin.getInstance().getSessionID()) ;
-						masterImageIDs="";
-						count=0;
 					}
+	    getResultView().setSearchEnabled(true);
 					
 				}
-
-				if (masterImageIDs != "") {
-					getResultView().getPics(masterImageIDs, 120, UserLogin.getInstance().getSessionID()) ;
-				}
-    getResultView().setSearchEnabled(true);
-				
-			}
-		});
+			});			
+		}
 	}
 	
 	/* (non-Javadoc)

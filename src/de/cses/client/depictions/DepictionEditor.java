@@ -430,6 +430,7 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		}
 		if (selectedIE.getChildren() != null) {
+			// Util.doLogging("selectedIE has children");
 			for (IconographyEntry child : selectedIE.getChildren()) {
 				collectedEntries = findAllIcos(child, collectedEntries);
 			}
