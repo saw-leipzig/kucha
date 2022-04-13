@@ -30,10 +30,10 @@ public interface AnnotatedBibliographyViewTemplates extends XTemplates {
 	@XTemplate(source = "ExtendedBibView.html")
 	SafeHtml extendedView(AnnotatedBibliographyEntry bibEntry);
 	
-	@XTemplate("<div style=\"font-size:12px; overflow: hidden; text-align: left; text-overflow: ellipsis;\"><p>{pdf}{bibliography}<i>{translit}<b>{bold}</b></i>{translat}{tail}<p></div>")
+	@XTemplate("<div style=\"font-size:12px; overflow: hidden; text-align: left; text-overflow: ellipsis;\"><p>{pdf}{bibliography}<i>{translit}{bold}</i>{translat}{tail}<p></div>")
 	SafeHtml bibView(String bibliography, String translit, String bold, String translat, String tail,SafeHtml pdf);
 	
-	@XTemplate("<div style=\"font-size:12px; overflow: hidden; text-align: left; text-overflow: ellipsis;\"><p>{pdf}{bibliography}<i>{translit}</i><b>{bold}</b> {translat}{tail}<p></div>")
+	@XTemplate("<div style=\"font-size:12px; overflow: hidden; text-align: left; text-overflow: ellipsis;\"><p>{pdf}{bibliography}<i>{translit}</i>{bold} {translat}{tail}<p></div>")
 	SafeHtml bibViewHasHan(String bibliography, String translit, String bold, String translat, String tail,SafeHtml pdf);
 	
 }
