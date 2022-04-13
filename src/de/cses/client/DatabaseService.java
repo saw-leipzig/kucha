@@ -88,6 +88,10 @@ public interface DatabaseService extends RemoteService {
 	
 	Map<Integer,String> getMasterImageFromOrnament(int tnSize,String sessionID) throws IllegalArgumentException;
 
+	boolean saveWallDimension(ArrayList<WallTreeEntry> pe, Integer caveID) throws IllegalArgumentException;
+	
+	Map<Integer,ArrayList<PositionEntry>> getWallDimension(Integer caveID) throws IllegalArgumentException;
+
 	ArrayList<ImageEntry> getImages() throws IllegalArgumentException;
 
 	AnnotatedBibliographyEntry getAnnotatedBiblographybyID(int bibid) throws IllegalArgumentException;
@@ -319,6 +323,8 @@ public interface DatabaseService extends RemoteService {
 	ArrayList<BibKeywordEntry> getBibKeywords() throws IllegalArgumentException;
 
 	int insertBibKeyword(BibKeywordEntry bkEntry) throws IllegalArgumentException;
+
+	Boolean updateBibKeyword(BibKeywordEntry bkEntry) throws IllegalArgumentException;
 
 	boolean deleteAuthorEntry(AuthorEntry selectedEntry) throws IllegalArgumentException;
 

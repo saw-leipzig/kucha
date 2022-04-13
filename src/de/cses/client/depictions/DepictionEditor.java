@@ -71,6 +71,7 @@ import com.sencha.gxt.dnd.core.client.ListViewDragSource;
 import com.sencha.gxt.dnd.core.client.ListViewDropTarget;
 import com.sencha.gxt.fx.client.Draggable;
 import com.sencha.gxt.fx.client.Draggable.DraggableAppearance;
+import com.sencha.gxt.widget.core.client.ContentPanel.ContentPanelAppearance;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.Resizable;
@@ -205,6 +206,13 @@ public class DepictionEditor extends AbstractEditor {
 	private IconographySelectorListener icoSelectorListener;
 	private ArrayList<IconographyEntry> iconographyRelationList;
 	private ToolButton saveToolButton;
+	private FramedPanel depictionImagesPanel;
+	private TabPanel tabPanel;
+	private HorizontalLayoutData tabLayout;
+	private HorizontalLayoutData imageLayout;
+	private Resizable imgResize;
+	private HorizontalLayoutContainer mainHLC;
+
 
 	class NameElement {
 		private String element;
@@ -449,15 +457,15 @@ public class DepictionEditor extends AbstractEditor {
 				osdLoader.removeOrAddAnnotations(newAnnos,!deselect);
 			}				
 		}
-		for (AnnotationEntry aeSelected : newAnnos) {
-			if (deselect) {
-				osdLoader.deHighlightAnnotation(aeSelected.getAnnotoriousID());
-			}
-			else {
-				osdLoader.highlightAnnotation(aeSelected.getAnnotoriousID());
-			}
-			
-		}
+//		for (AnnotationEntry aeSelected : newAnnos) {
+//			if (deselect) {
+//				osdLoader.deHighlightAnnotation(aeSelected.getAnnotoriousID());
+//			}
+//			else {
+//				osdLoader.highlightAnnotation(aeSelected.getAnnotoriousID());
+//			}
+//			
+//		}
 
 	}
 
@@ -748,12 +756,17 @@ public class DepictionEditor extends AbstractEditor {
 				SafeHtml s = null;
 				// Util.doLogging("ImageListView:
 				// "+Double.toString(Window.getClientWidth()*0.8*imageWindowRelation));
+				if (depictionImagesPanel.isVisible()) {
+					imageWindowRelation = ((double) depictionImagesPanel.getOffsetWidth(true)
+							/ (double) mainPanel.getOffsetWidth(true));
+					
+				}
 				if (Window.getClientWidth() * 0.8 * imageWindowRelation > 300) {
 					s = SafeHtmlUtils.fromTrustedString("<figure class='paintRepImgPreview' style='height: "
 							+ Integer.toString((int) (Window.getClientHeight() * (imageWindowRelation)))
 							+ "px;width:98%;text-align: center;'><div id= '" + item.getFilename().split(";")[0]
 							+ "' style='overflow:hidden;width: 100%; height: "
-							+ Integer.toString((int) (Window.getClientHeight() * (imageWindowRelation) - 60))
+							+ Integer.toString((int) (Window.getClientHeight() * (imageWindowRelation))-65)
 							+ "px;text-align: center;' ></div>");
 				} else {
 					s = SafeHtmlUtils.fromTrustedString(
@@ -821,7 +834,7 @@ public class DepictionEditor extends AbstractEditor {
 		shortNameTF = new TextField();
 		shortNameTF.setEmptyText("optional short name");
 		shortNameTF.setValue(correspondingDepictionEntry.getShortName());
-		shortNameTF.addValidator(new MaxLengthValidator(32));
+		shortNameTF.addValidator(new MaxLengthValidator(128));
 		shortNameTF.addValidator(new Validator<String>() {
 
 			@Override
@@ -1344,7 +1357,7 @@ public class DepictionEditor extends AbstractEditor {
 		// wallTree.setWall(correspondingDepictionEntry.getWalls());
 		wallTreeFP.add(wallTree.wallTree);
 		ToolButton newPositionPlusTool = new ToolButton(new IconConfig("editButton", "editButtonOver"));
-		newPositionPlusTool.setToolTip(Util.createToolTip("edit walls"));
+		newPositionPlusTool.setToolTip(Util.createToolTip("edit wall Position"));
 		newPositionPlusTool.addSelectHandler(new SelectHandler() {
 
 			@Override
@@ -1352,7 +1365,7 @@ public class DepictionEditor extends AbstractEditor {
 				PositionEditor pe = new PositionEditor(correspondingDepictionEntry.getCave(),
 						correspondingDepictionEntry.getWalls(), false) {
 					@Override
-					protected void save(List<WallTreeEntry> results) {
+					protected void save(ArrayList<WallTreeEntry> results) {
 						getListenerList().get(0).addClickNumber();
 						correspondingDepictionEntry.setWalls(getSelectedWalls());
 						wallTree.setWall(getSelectedWalls());
@@ -1807,7 +1820,7 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 
-		FramedPanel depictionImagesPanel = new FramedPanel();
+		depictionImagesPanel = new FramedPanel();
 		depictionImagesPanel.setHeading("Images");
 		VerticalLayoutContainer filtercontainer = new VerticalLayoutContainer();
 		filtercontainer.add(filterField, new VerticalLayoutData(1.0, .05));
@@ -1863,6 +1876,19 @@ public class DepictionEditor extends AbstractEditor {
 			public void reloadOSD() {
 				reloadPics();
 			}
+
+			@Override
+			public void reduceTree() {
+				imageWindowRelation= 0.8;
+				mainHLC.clear();
+				Object test = depictionImagesPanel.getLayoutData();
+				mainHLC.add(tabPanel, new HorizontalLayoutData(0.2, 1));
+				mainHLC.add(depictionImagesPanel, new HorizontalLayoutData(0.8, 1));
+				mainHLC.forceLayout();
+
+				reloadPics();			
+			}
+			
 		};
 		iconographySelector = new IconographySelector(StaticTables.getInstance().getIconographyEntries().values(),
 				getListenerList().get(0), true, correspondingDepictionEntry.getRelatedAnnotationList(),
@@ -1926,7 +1952,7 @@ public class DepictionEditor extends AbstractEditor {
 		 * --------------------------- next the editor as a whole will be assembled
 		 * -------------------
 		 */
-		TabPanel tabPanel = new TabPanel();
+		tabPanel = new TabPanel();
 		tabPanel.setTabScroll(false);
 		ScrollPanel scrpanel1 = new ScrollPanel();
 		ScrollPanel scrpanel2 = new ScrollPanel();
@@ -1940,10 +1966,10 @@ public class DepictionEditor extends AbstractEditor {
 		tabPanel.add(iconographySelector, "Iconography & Pictorial Elements");
 		tabPanel.add(scrpanel4, "Bibliography Selector");
 		// Resizable tabResize = new Resizable(tabPanel);
-		Resizable imgResize = new Resizable(depictionImagesPanel);
+		imgResize = new Resizable(depictionImagesPanel);
 		imgResize.addResizeEndHandler(new ResizeEndHandler() {
 			public void onResizeEnd(ResizeEndEvent event) {
-				imageWindowRelation = (double) imageListView.getOffsetWidth(true)
+				imageWindowRelation = (double) depictionImagesPanel.getOffsetWidth(true)
 						/ (double) mainPanel.getOffsetWidth(true);
 				reloadPics();
 //				Util.doLogging(
@@ -1952,23 +1978,28 @@ public class DepictionEditor extends AbstractEditor {
 //
 			}
 		});
+
 		depictionImagesPanel.addResizeHandler(new ResizeHandler() {
 
 			@Override
 			public void onResize(ResizeEvent event) {
 				// TODO Auto-generated method stub
-				imageWindowRelation = (double) imageListView.getOffsetWidth(true)
-						/ (double) mainPanel.getOffsetWidth(true);
 
 				tabPanel.setWidth((int) (((double) mainPanel.getOffsetWidth()) - event.getWidth() - 10));
+				imageWindowRelation = (double) depictionImagesPanel.getOffsetWidth(true)
+						/ (double) mainPanel.getOffsetWidth(true);
+
 			}
 
 		});
-		HorizontalLayoutContainer mainHLC = new HorizontalLayoutContainer();
+		
+		mainHLC = new HorizontalLayoutContainer();
 		imageWindowRelation = 0.35;
-		mainHLC.add(tabPanel, new HorizontalLayoutData(1 - imageWindowRelation, 1.0));
-		mainHLC.add(depictionImagesPanel, new HorizontalLayoutData(imageWindowRelation, 1.0));
-
+		tabLayout = new HorizontalLayoutData(1 - imageWindowRelation, 1.0);
+		imageLayout =  new HorizontalLayoutData(imageWindowRelation, 1.0);
+		mainHLC.add(tabPanel, tabLayout);
+		mainHLC.add(depictionImagesPanel, imageLayout);
+		
 		saveToolButton = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 		saveToolButton.setToolTip(Util.createToolTip("save"));
 		saveToolButton.addSelectHandler(new SelectHandler() {
@@ -2190,7 +2221,9 @@ public class DepictionEditor extends AbstractEditor {
 		correspondingDepictionEntry.setRelatedImages(relatedImageEntryList);
 		correspondingDepictionEntry.setRelatedBibliographyList(bibliographySelector.getSelectedEntries());
 		correspondingDepictionEntry.setLastChangedByUser(UserLogin.getInstance().getUsername());
-		Util.doLogging("correspondingDepictionEntry.getDepictionID() = "
+		correspondingDepictionEntry.setCave(caveSelectionCB.getValue());
+			
+		Util.doLogging("correspondingDepictionEntry.getDepictionI.getD() = "
 				+ Integer.toString(correspondingDepictionEntry.getDepictionID()));
 
 		if (correspondingDepictionEntry.getDepictionID() == 0) {

@@ -15,6 +15,8 @@ package de.cses.client.caves;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor;
@@ -85,6 +87,7 @@ import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MaxNumberValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
+import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -98,6 +101,8 @@ import de.cses.client.ui.AbstractEditor;
 import de.cses.client.ui.AbstractView;
 import de.cses.client.ui.EditorListener;
 import de.cses.client.user.UserLogin;
+import de.cses.client.walls.PositionEditor;
+import de.cses.client.walls.WallTree;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.C14AnalysisUrlEntry;
 import de.cses.shared.C14DocumentEntry;
@@ -110,11 +115,13 @@ import de.cses.shared.CeilingTypeEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ModifiedEntry;
 import de.cses.shared.OrientationEntry;
+import de.cses.shared.PositionEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
 import de.cses.shared.WallEntry;
 import de.cses.shared.WallLocationEntry;
+import de.cses.shared.WallTreeEntry;
 import de.cses.shared.comparator.CeilingTypeEntryComparator;
 import de.cses.shared.comparator.WallEntryComparator;
 
@@ -244,6 +251,7 @@ public class CaveEditor extends AbstractEditor {
 	private NumberField<Double> wallHeightNF;
 	private BibliographySelector bibliographySelector;
 	private ToolButton saveToolButton;
+	private WallTree wallTree;
 
 	interface CaveTypeProperties extends PropertyAccess<CaveTypeEntry> {
 		ModelKeyProvider<CaveTypeEntry> caveTypeID();
@@ -2603,14 +2611,50 @@ public class CaveEditor extends AbstractEditor {
 		caveSketchFP.setHeading("Cave Sketch");
 		caveSketchFLC = new FlowLayoutContainer();
 		caveSketchFLC.setScrollMode(ScrollMode.AUTOY);
+		PositionEditor pe = new PositionEditor(correspondingCaveEntry,
+				new ArrayList<WallTreeEntry>(), false, "Add Wall Layout", false, true) {
+			@Override
+			protected void save(ArrayList<WallTreeEntry> results) {
+				Util.doLogging("test");
+				dbService.saveWallDimension(results, correspondingCaveEntry.getCaveID() , new AsyncCallback<Boolean>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						// TODO Auto-generated method stub
+						Util.doLogging(caught.getLocalizedMessage());
+					}
+
+					@Override
+					public void onSuccess(Boolean result) {
+						if (result) {
+							Info.display("Walls saved", "Success!");
+						} else {
+							Info.display("Walls saved", "Failed!");
+						}
+					}
+				});
+			}
+		};
+		for (Entry<Integer, ArrayList<PositionEntry>> pair: correspondingCaveEntry.getWallPositions().entrySet()) {
+			Integer key = pair.getKey();
+			ArrayList<PositionEntry> value = pair.getValue();
+			WallTreeEntry wte = pe.getWallByID(key);
+			wte.setPosition(value);
+			pe.setWall(wte);
+		}
+		pe.enablePoistionVisualization();
+		VerticalLayoutContainer wallLayoutHlC = new VerticalLayoutContainer();
+
 		caveSketchFP.add(caveSketchFLC);
+		wallLayoutHlC.add(caveSketchFP, new VerticalLayoutData(1, 1));
+		// wallLayoutHlC.add(pe.getPE(), new VerticalLayoutData(1, 0.5));
 		
 //		VerticalLayoutContainer caveLayoutRightVLC = new VerticalLayoutContainer();
 //		caveLayoutRightVLC.add(caveSketchFP, new VerticalLayoutData(1.0, .85));
 //		caveLayoutRightVLC.add(wallManagementFP, new VerticalLayoutData(1.0, .15));
 
-		caveTypeHLC.add(caveSketchFP, new HorizontalLayoutData(.5, 1.0));
-
+		//caveTypeHLC.add(caveSketchFP, new HorizontalLayoutData(1, .5));
+		caveTypeHLC.add(wallLayoutHlC, new HorizontalLayoutData(.5, 1));
 		/**
 		 * --------------------------------- measurement tab ------------------------------------------
 		 */

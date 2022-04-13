@@ -14,8 +14,60 @@
 package de.cses.shared;
 
 public class RegisterEntry {
-	int registerID;
-	boolean rightToLeftOrder;
+	private int caveID;
+	private int depictionID;
+	private int register;
+	private int number;
+	private boolean rightToLeftOrder;
 	
+	public RegisterEntry() {	}
 
+	public RegisterEntry(int caveID, int depictionID, int register, int number, boolean rightToLeftOrder) {
+		this.caveID = caveID;
+		this.depictionID = depictionID;
+		this.register = register;
+		this.number = number;
+		this.rightToLeftOrder = rightToLeftOrder;
+	}
+
+	public int getCaveID() {
+		return caveID;
+	}
+
+	public void setCaveID(int caveID) {
+		this.caveID = caveID;
+	}
+
+	public int getDepictionID() {
+		return depictionID;
+	}
+
+	public void setDepictionID(int depictionID) {
+		this.depictionID = depictionID;
+	}
+
+	public int getRegister() {
+		return register;
+	}
+
+	public void setRegister(int register) {
+		this.register = register;
+	}
+
+	public int getNumber() {
+		return number;
+	}
+
+	public void setNumber(int number) {
+		this.number = number;
+	}
+
+	public boolean getRightToLeftOrder() {
+		return rightToLeftOrder;
+	}
+
+	public void setRightToLeftOrder(boolean rightToLeftOrder) {
+		this.rightToLeftOrder = rightToLeftOrder;
+	}
+	
 }

@@ -93,6 +93,10 @@ public interface DatabaseServiceAsync {
 
 	void getMasterImageFromOrnament(int tnSize,String sessionID,AsyncCallback<Map<Integer,String>> callback) throws IllegalArgumentException;	
 	
+	void saveWallDimension(ArrayList<WallTreeEntry> pe, Integer caveID, AsyncCallback<Boolean> callback) throws IllegalArgumentException;	
+	
+	void getWallDimension(Integer caveID, AsyncCallback<Map<Integer,ArrayList<PositionEntry>>> callback) throws IllegalArgumentException;	
+	
 	void getImages(String sqlWhere, AsyncCallback<ArrayList<ImageEntry>> callback) throws IllegalArgumentException;
 
 	void getPhotographer(AsyncCallback<ArrayList<PhotographerEntry>> callback) throws IllegalArgumentException;

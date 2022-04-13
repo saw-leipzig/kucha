@@ -2695,6 +2695,88 @@ public class MysqlConnector implements IsSerializable {
 		return results;
 
 	}
+	public Boolean saveWallDimension(ArrayList<WallTreeEntry> wtes, Integer caveID) {
+		long start = System.currentTimeMillis();
+		if (dologgingbegin){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von saveWallDimension wurde ausgelöst.");;
+		}
+		Connection dbc = getConnection();
+		PreparedStatement ornamentStatement;	
+		deleteEntry("DELETE FROM CavePositionRelation WHERE CaveID = "+Integer.toString(caveID));
+		try {
+			for (WallTreeEntry wte: wtes) {
+				if (wte.getPosition() != null) {
+					for (PositionEntry pe: wte.getPosition()) {
+						ornamentStatement = dbc.prepareStatement("INSERT INTO CavePositionRelation (CaveID, WallID, PositionID, Type, Direction, Registers, Columns) VALUES (?, ?, ?, ?, ?, ?, ?)",
+//								ornamentStatement = dbc.prepareStatement("INSERT INTO Ornaments (Code, Description, Remarks, Interpretation, OrnamentReferences, Annotation , OrnamentClassID, StructureOrganizationID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+								Statement.RETURN_GENERATED_KEYS);
+						ornamentStatement.setInt(1, caveID);
+						ornamentStatement.setInt(2, wte.getWallLocationID());
+						ornamentStatement.setInt(3, pe.getPositionID());
+						ornamentStatement.setInt(4, pe.getType());
+						ornamentStatement.setInt(5, pe.getDirection());
+						ornamentStatement.setInt(6, pe.getRegisters());
+						ornamentStatement.setInt(7, pe.getColumns());
+						ornamentStatement.executeUpdate();
+						ornamentStatement.close();
+					}
+				}
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+			return false;
+		}
+		if (dologging){
+		long end = System.currentTimeMillis();
+		Date date = new Date(System.currentTimeMillis());
+		DateFormat df = DateFormat.getDateTimeInstance();
+
+		long diff = (end-start);
+		if (diff>100){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von saveOrnamentEntry brauchte "+diff + " Millisekunden.");;}}
+		return true;
+
+	}
+	public Map<Integer,ArrayList<PositionEntry>> getWallDimension(Integer caveID) {
+		long start = System.currentTimeMillis();
+		if (dologgingbegin){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von saveWallDimension wurde ausgelöst.");;
+		}
+		Connection dbc = getConnection();
+		Statement stmt;	
+		Map<Integer,ArrayList<PositionEntry>> result = new HashMap<Integer,ArrayList<PositionEntry>>();
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("Select * from CavePositionRelation inner join Position on (CavePositionRelation.PositionID = Position.PositionID) where CaveID = "+Integer.toString(caveID));
+			while (rs.next()) { 
+				//System.out.println("got result");				
+				PositionEntry pe = new PositionEntry(rs.getInt("Position.PositionID"), rs.getString("Position.Name"), rs.getInt("CavePositionRelation.Type"),rs.getInt("CavePositionRelation.Direction"), rs.getInt("CavePositionRelation.Registers"),rs.getInt("CavePositionRelation.Columns"), null);
+				Integer wallID = rs.getInt("CavePositionRelation.WallID");
+				if (result.containsKey(wallID)) {
+					result.get(wallID).add(pe);
+				} else {
+					ArrayList<PositionEntry> pes = new ArrayList<PositionEntry>();
+					pes.add(pe);
+					result.put(wallID, pes);
+				}
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+		}
+		if (dologging){
+		long end = System.currentTimeMillis();
+		Date date = new Date(System.currentTimeMillis());
+		DateFormat df = DateFormat.getDateTimeInstance();
+
+		long diff = (end-start);
+		if (diff>100){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von saveOrnamentEntry brauchte "+diff + " Millisekunden.");;}}
+		return result;
+	}
 
 	public int saveOrnamentEntry(OrnamentEntry ornamentEntry) {
 		long start = System.currentTimeMillis();
