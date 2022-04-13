@@ -58,7 +58,7 @@ import de.cses.shared.UserEntry;
  * @author alingnau
  *
  */
-public class UserManager extends PopupPanel {
+public class UserManagerFrontEnd extends PopupPanel {
 
 	/**
 	 * Create a remote service proxy to talk to the server-side service.
@@ -69,11 +69,11 @@ public class UserManager extends PopupPanel {
 		@Path("userID")
 		ModelKeyProvider<UserEntry> key();
 
-		ValueProvider<UserEntry, String> username();
 		ValueProvider<UserEntry, String> firstname();
 		ValueProvider<UserEntry, String> lastname();
 		ValueProvider<UserEntry, String> email();
 		ValueProvider<UserEntry, Integer> accessLevel(); 
+		ValueProvider<UserEntry, Boolean> granted(); 
 	}
 	
 //	private ContentPanel mainPanel = null;
@@ -86,9 +86,9 @@ public class UserManager extends PopupPanel {
 	/**
 	 * 
 	 */
-	public UserManager() {
+	public UserManagerFrontEnd() {
 		FramedPanel userManagerFP = new FramedPanel();
-		userManagerFP.setHeading("User Manager");
+		userManagerFP.setHeading("User Manager of Frontend Website");
 		ToolButton closeTB = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
 		closeTB.addSelectHandler(new SelectHandler() {
 			
@@ -97,19 +97,7 @@ public class UserManager extends PopupPanel {
 				hide();
 			}
 		});
-		ToolButton userManagerFrontendTB = new ToolButton(new IconConfig("editButton", "editButtonOver"));
-		userManagerFrontendTB.addSelectHandler(new SelectHandler() {
-			
-			@Override
-			public void onSelect(SelectEvent event) {
-				UserManagerFrontEnd userManagerDialog = new UserManagerFrontEnd();
-				userManagerDialog.setSize("900px", "450px");
-				userManagerDialog.setModal(true);
-				userManagerDialog.center();
-
-			}
-		});
-		userManagerFrontendTB.setToolTip(Util.createToolTip("Edit Users of Frontend"));
+		closeTB.setToolTip(Util.createToolTip("Exit without saving"));
 		ToolButton saveTB = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 		saveTB.addSelectHandler(new SelectHandler() {
 			
@@ -154,7 +142,6 @@ public class UserManager extends PopupPanel {
 		});
 		createUI();
 		userManagerFP.add(grid);
-		userManagerFP.addTool(userManagerFrontendTB);
 		userManagerFP.addTool(resetPwTB);
 		userManagerFP.addTool(saveTB);
 		userManagerFP.addTool(addUserTB);
@@ -167,7 +154,7 @@ public class UserManager extends PopupPanel {
 	 */
 	private void loadUsers() {
 		sourceStore.clear();
-	    dbService.getUsers(new AsyncCallback<ArrayList<UserEntry>>() {
+	    dbService.getUsersFrontEnd(new AsyncCallback<ArrayList<UserEntry>>() {
 			
 				@Override
 				public void onSuccess(ArrayList<UserEntry> result) {
@@ -194,22 +181,21 @@ public class UserManager extends PopupPanel {
 //			}
 //    });		
 		
-		ColumnConfig<UserEntry, String> usernameCol = new ColumnConfig<UserEntry, String>(userProps.username(), 300, "Username");
 		ColumnConfig<UserEntry, String> firstnameCol = new ColumnConfig<UserEntry, String>(userProps.firstname(), 300, "Firstname");
 		ColumnConfig<UserEntry, String> lastnameCol = new ColumnConfig<UserEntry, String>(userProps.lastname(), 300, "Lastname");
 		ColumnConfig<UserEntry, String> emailCol = new ColumnConfig<UserEntry, String>(userProps.email(), 300, "Email");
 		ColumnConfig<UserEntry, Integer> accessLevelCol = new ColumnConfig<UserEntry, Integer>(userProps.accessLevel(), 150, "Access Level");
+		ColumnConfig<UserEntry, Boolean> grantedCol = new ColumnConfig<UserEntry, Boolean>(userProps.granted(), 150, "granted");
 		
 //		yearColumn.setHideable(false);
 //		yearColumn.setHorizontalHeaderAlignment(HorizontalAlignmentConstant.startOf(Direction.DEFAULT));
 		
     List<ColumnConfig<UserEntry, ?>> sourceColumns = new ArrayList<ColumnConfig<UserEntry, ?>>();
 //    sourceColumns.add(selectionModel.getColumn());
-    sourceColumns.add(usernameCol);
     sourceColumns.add(firstnameCol);
     sourceColumns.add(lastnameCol);
     sourceColumns.add(emailCol);
-    sourceColumns.add(accessLevelCol);
+    sourceColumns.add(grantedCol);
 
     ColumnModel<UserEntry> sourceColumnModel = new ColumnModel<UserEntry>(sourceColumns);
     
@@ -219,32 +205,46 @@ public class UserManager extends PopupPanel {
     grid = new Grid<UserEntry>(sourceStore, sourceColumnModel);
 //    grid.setSelectionModel(selectionModel);
 //    grid.setColumnReordering(true);
-    grid.getView().setAutoExpandColumn(usernameCol);
     grid.setBorders(false);
     grid.getView().setStripeRows(true);
     grid.getView().setColumnLines(true);
     grid.getView().setForceFit(true);
     
-		SimpleComboBox<Integer> accessRightsCB = new SimpleComboBox<Integer>(new LabelProvider<Integer>() {
+	SimpleComboBox<Integer> accessRightsCB = new SimpleComboBox<Integer>(new LabelProvider<Integer>() {
 
-			@Override
-			public String getLabel(Integer item) {
-				return UserEntry.ACCESS_RIGHTS_LABEL.get(item-1);
+		@Override
+		public String getLabel(Integer item) {
+			return UserEntry.ACCESS_RIGHTS_LABEL.get(item-1);
+		}
+	});
+	accessRightsCB.add(UserEntry.GUEST);
+	accessRightsCB.add(UserEntry.ASSOCIATED);
+	accessRightsCB.add(UserEntry.FULL);
+	accessRightsCB.add(UserEntry.ADMIN);
+	accessRightsCB.setEditable(false);
+	accessRightsCB.setTypeAhead(false);
+	accessRightsCB.setTriggerAction(TriggerAction.ALL);
+
+	SimpleComboBox<Boolean> grantedCB = new SimpleComboBox<Boolean>(new LabelProvider<Boolean>() {
+
+		@Override
+		public String getLabel(Boolean item) {
+			
+			if (item) {
+				return UserEntry.granted_LABEL.get(0);
+			} else {
+				return UserEntry.granted_LABEL.get(1);				
 			}
-		});
-		accessRightsCB.add(UserEntry.GUEST);
-		accessRightsCB.add(UserEntry.ASSOCIATED);
-		accessRightsCB.add(UserEntry.FULL);
-		accessRightsCB.add(UserEntry.ADMIN);
-		accessRightsCB.setEditable(false);
-		accessRightsCB.setTypeAhead(false);
-		accessRightsCB.setTriggerAction(TriggerAction.ALL);
+		}
+	});
+	grantedCB.add(UserEntry.yes);
+	grantedCB.add(UserEntry.no);
+	grantedCB.setEditable(false);
+	grantedCB.setTypeAhead(false);
+	grantedCB.setTriggerAction(TriggerAction.ALL);
 
 		// Setup the editors. Designate the input type per column.
     editing = new GridRowEditing<UserEntry>(grid);
-    TextField usernameTF = new TextField();
-    usernameTF.setAllowBlank(false);
-    editing.addEditor(usernameCol, usernameTF);
     TextField firstnameTF = new TextField();
     firstnameTF.setAllowBlank(false);
     editing.addEditor(firstnameCol, firstnameTF);
@@ -255,7 +255,7 @@ public class UserManager extends PopupPanel {
     emailTF.setAllowBlank(false);
     emailTF.addValidator(new RegExValidator(Util.REGEX_EMAIL_PATTERN, "please enter valid email"));
     editing.addEditor(emailCol, emailTF);
-    editing.addEditor(accessLevelCol, accessRightsCB);
+    editing.addEditor(grantedCol, grantedCB);
     
     editing.addCancelEditHandler(new CancelEditHandler<UserEntry>() {
 			
@@ -263,7 +263,7 @@ public class UserManager extends PopupPanel {
 			public void onCancelEdit(CancelEditEvent<UserEntry> event) {
 				UserEntry entry = event.getSource().getEditableGrid().getSelectionModel().getSelectedItem();
 				if (entry!=null) {
-					if (entry.getUserID() == 0 && (!usernameTF.isValid() || !firstnameTF.isValid() || !lastnameTF.isValid() || !emailTF.isValid())) {
+					if (entry.getUserID() == 0 && ( !firstnameTF.isValid() || !lastnameTF.isValid() || !emailTF.isValid())) {
 						sourceStore.remove(entry);
 					}
 				}
@@ -275,14 +275,14 @@ public class UserManager extends PopupPanel {
 			public void onCompleteEdit(CompleteEditEvent<UserEntry> event) {
 				UserEntry entry = event.getSource().getEditableGrid().getSelectionModel().getSelectedItem();
 				if (entry!=null) {
-					if (entry.getUserID() == 0 && (!usernameTF.isValid() || !firstnameTF.isValid() || !lastnameTF.isValid() || !emailTF.isValid())) {
+					if (entry.getUserID() == 0 && ( !firstnameTF.isValid() || !lastnameTF.isValid() || !emailTF.isValid())) {
 						sourceStore.remove(entry);
 					}
 				}
 			}
 		});
     
-    StringFilter<UserEntry> usernameFilter = new StringFilter<UserEntry>(userProps.username());
+    StringFilter<UserEntry> usernameFilter = new StringFilter<UserEntry>(userProps.email());
 
     GridFilters<UserEntry> filters = new GridFilters<UserEntry>();
     filters.initPlugin(grid);
@@ -297,10 +297,7 @@ public class UserManager extends PopupPanel {
 		for (Store<UserEntry>.Record record : recordsModified) {
 			UserEntry entry = record.getModel();
 			// record.getValue(...) will return null if it has not been changed
-			String username = record.getValue(userProps.username());
-			if (username != null) {
-				entry.setUsername(username);
-			}
+			entry.setUsername("");
 			String firstname = record.getValue(userProps.firstname());
 			if (firstname != null) {
 				entry.setFirstname(firstname);
@@ -313,13 +310,13 @@ public class UserManager extends PopupPanel {
 			if (email != null) {
 				entry.setEmail(email);
 			}
-			Integer userAccessLevel = record.getValue(userProps.accessLevel());
-			if (userAccessLevel != null) {
-				entry.setAccessLevel(userAccessLevel);
+			Boolean granted = record.getValue(userProps.granted());
+			if (granted != null) {
+				entry.setGranted(granted);
 			}
 
 			if (entry.getUserID() > 0) {
-				dbService.updateUserEntry(entry, new AsyncCallback<Boolean>() {
+				dbService.updateUserEntryFrontEnd(entry, new AsyncCallback<Boolean>() {
 					
 					@Override
 					public void onFailure(Throwable caught) {

@@ -78,7 +78,7 @@ public class UserLogin extends PopupPanel {
 	private PasswordField passwordField;
 	private UserEntry currentUser = null;
 	private UserInformationTemplate uiTemplate;
-
+	private ToolButton exportDBTB = null;
 	/**
 	 * 
 	 */
@@ -328,24 +328,26 @@ public class UserLogin extends PopupPanel {
 				}
 			});
 		}
-		ToolButton exportDBTB = null;
 		if (getAccessRights() == UserEntry.FULL || getAccessRights() == UserEntry.ADMIN) {
 			exportDBTB = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 			exportDBTB.addSelectHandler(new SelectHandler() {
 				
 				@Override
 				public void onSelect(SelectEvent event) {
+					exportDBTB.disable();
 					dbService.serializeAllDepictionEntries(currentUser.getSessionID(), new AsyncCallback<Boolean>() {
 
 						@Override
 						public void onFailure(Throwable caught) {
 							Util.showWarning("Login Message", "A problem occurred during login.\n Please check username / password!");
 							passwordField.reset();
+							exportDBTB.enable();
 						}
 
 						@Override
 						public void onSuccess(Boolean result) {
 							Info.display("Finished database export", "See logs for details.");
+							exportDBTB.enable();
 						}
 					});
 

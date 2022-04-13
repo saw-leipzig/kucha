@@ -756,7 +756,7 @@ public class DepictionFilter extends AbstractFilter {
 //		}
 		pe = new PositionEditor(null, selectedWallsLS.getAll(), true) {
 			@Override
-			protected void save(List<WallTreeEntry> results ) {
+			protected void save(ArrayList<WallTreeEntry> results ) {
 				selectedWallsLS.clear();
 				selectedWallsLS.addAll(getSelectedWalls());
 				if ((pe.getSelectedItems() != null) && (selectedWallsLS.size() > 0)) {

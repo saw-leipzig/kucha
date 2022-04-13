@@ -156,6 +156,7 @@ public class ImageResultView extends AbstractResultView {
 					int bibID = ((AnnotatedBibliographyEntry) event.getData()).getAnnotatedBibliographyID();
 					searchEntry.getBibIdList().add(bibID);
 				} else if (event.getData() instanceof DepictionEntry) {
+					ArrayList<ImageEntry> test = ((DepictionEntry)event.getData()).getRelatedImages();
 					for (ImageEntry img : ((DepictionEntry)event.getData()).getRelatedImages()) {
 						searchEntry.getImageIdList().add(img.getImageID());						
 					}

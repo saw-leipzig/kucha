@@ -14,6 +14,7 @@
 package de.cses.client;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -348,9 +349,15 @@ public interface DatabaseService extends RemoteService {
 
 	boolean updateIconographyEntry(IconographyEntry iconographyEntryToEdit) throws IllegalArgumentException;
 
+	boolean updateWallTreeEntry(WallTreeEntry wte) throws IllegalArgumentException;
+
 	ArrayList<UserEntry> getUsers() throws IllegalArgumentException;
 
+	ArrayList<UserEntry> getUsersFrontEnd() throws IllegalArgumentException;
+
 	boolean updateUserEntry(UserEntry userEntry) throws IllegalArgumentException;
+
+	boolean updateUserEntryFrontEnd(UserEntry userEntry) throws IllegalArgumentException;
 
 	int insertUserEntry(UserEntry entry) throws IllegalArgumentException;
 

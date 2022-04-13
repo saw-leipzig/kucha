@@ -150,7 +150,7 @@ public class OrnamenticIconographyTree {
 					if (event.getChecked() == Tree.CheckState.CHECKED ) {
 						Util.doLogging("OnCheckChange was called. "+event.getItem().getText());
 						Util.doLogging("Checkstate was. "+event.getChecked() );
-						dbService.iconographyIDisUsed(event.getItem().getIconographyID(), ornamentEntry!=null ? ornamentEntry.getOrnamentID() : 0, new AsyncCallback<Boolean>(){
+						dbService.iconographyIDisUsed(event.getItem().getIconographyID(), ornamentEntry!=null ? ornamentEntry.getTypicalID() : 0, new AsyncCallback<Boolean>(){
 
 							@Override
 							public void onFailure(Throwable caught) {

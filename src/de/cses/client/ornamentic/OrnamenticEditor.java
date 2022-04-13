@@ -347,6 +347,12 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 			public void reloadOSD() {
 				reloadPics();
 			}
+
+			@Override
+			public void reduceTree() {
+				// TODO Auto-generated method stub
+				
+			}
 		};
 		
 		//iconographySelector = new IconographySelector(StaticTables.getInstance().getIconographyEntries().values());
@@ -377,7 +383,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 			@Override
 			public int getDepictionID() {
-				return ornamentEntry.getOrnamentID();
+				return ornamentEntry.getTypicalID();
 			}
 			@Override
 			public boolean isOrnament() {
@@ -450,8 +456,8 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		// laden der Daten aus der Datenbank
 		Util.doLogging("Create form von ornamenticeditor gestartet");
 		if (ornamentEntry!=null) {
-			if (ornamentEntry.getOrnamentID() > 0){
-				dbService.getOrnamentEntry(ornamentEntry.getOrnamentID(), new AsyncCallback<OrnamentEntry>() {
+			if (ornamentEntry.getTypicalID() > 0){
+				dbService.getOrnamentEntry(ornamentEntry.getTypicalID(), new AsyncCallback<OrnamentEntry>() {
 
 					@Override
 					public void onFailure(Throwable caught) {
@@ -1299,7 +1305,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 				}
 				if (imgEntryList!=null) {
 					for (ImageEntry imgEntry : imgEntryList) {
-						Util.doLogging("Image added: "+Integer.toString(ornamentEntry.getOrnamentID()));
+						Util.doLogging("Image added: "+Integer.toString(ornamentEntry.getTypicalID()));
 						ornamentEntry.addRelatedImages(imgEntry); // TODO check if double adding possible and avoid!
 					}
 					Util.doLogging("getPics");
@@ -1418,7 +1424,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		    sourceStore = new ListStore<ModifiedEntry>(modifiedProps.key());
 
 			sourceStore.clear();
-		    dbService.getModifiedAnnoEntry(ornamentEntry.getOrnamentID(), true, new AsyncCallback<ArrayList<ModifiedEntry>>() {
+		    dbService.getModifiedAnnoEntry(ornamentEntry.getTypicalID(), true, new AsyncCallback<ArrayList<ModifiedEntry>>() {
 				
 					@Override
 					public void onSuccess(ArrayList<ModifiedEntry> result) {
@@ -1682,7 +1688,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		backgroundPanel.setSize( Integer.toString(Window.getClientWidth()/100*95),Integer.toString(Window.getClientHeight()/100*95));
 		backgroundPanel.add(tabpanel);
 		if (ornamentEntry!=null) {
-			backgroundPanel.setHeading("Ornamentation Editor (entry number: "+ornamentEntry.getOrnamentID()+")");
+			backgroundPanel.setHeading("Ornamentation Editor (entry number: "+ornamentEntry.getTypicalID()+")");
 		}
 		else {
 			backgroundPanel.setHeading("Ornamentation Editor (new entry)");
@@ -1807,7 +1813,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		ornamentEntry.setRelatedBibliographyList(bibSelector.getSelectedEntries());
 
 		// send ornament to server
-		if (ornamentEntry.getOrnamentID() == 0) {
+		if (ornamentEntry.getTypicalID() == 0) {
 			dbService.saveOrnamentEntry(ornamentEntry, new AsyncCallback<Integer>() {
 
 				@Override

@@ -633,6 +633,23 @@ public class StaticTables {
 		});
 	}
 
+	public void reloadWallTree() {
+		wallEntryMap.clear();;
+		dbService.getWallTree(new AsyncCallback<ArrayList<WallTreeEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+			}
+
+			@Override
+			public void onSuccess(ArrayList<WallTreeEntry> result) {
+				for (WallTreeEntry ie : result) {
+					wallEntryMap.put(ie.getWallLocationID(), ie);
+				}
+			}
+		});
+	}
+
 	public Map<Integer, DistrictEntry> getDistrictEntries() {
 		return districtEntryMap;
 	}

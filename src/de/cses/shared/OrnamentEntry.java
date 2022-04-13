@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OrnamentEntry extends AbstractEntry {
-	private int ornamentID;
+	private int typicalID;
 	private String code;
 	private String description;
 	private String remarks;
@@ -39,29 +39,29 @@ public class OrnamentEntry extends AbstractEntry {
 	private ArrayList<AnnotationEntry> relatedAnnotationList = new ArrayList<AnnotationEntry>();
 
 	public OrnamentEntry() {
-		ornamentID = 0;
+		typicalID = 0;
 	}
 	@Override
 	public boolean equals(Object object) {
 		if (object != null && object instanceof OrnamentEntry) {
-			return (this.ornamentID == ((OrnamentEntry) object).getOrnamentID());
+			return (this.typicalID == ((OrnamentEntry) object).getTypicalID());
 		}
 		return false;
 	}
 
-	public OrnamentEntry(int ornamentID, String code) {
-		this.ornamentID = ornamentID;
+	public OrnamentEntry(int typicalID, String code) {
+		this.typicalID = typicalID;
 		this.code = code;
 	}
 
-	public OrnamentEntry(int ornamentID, String code, String description, String remarks, 
+	public OrnamentEntry(int typicalID, String code, String description, String remarks, 
 			//String annotations,
 			String interpretation,
 			String references, int ornamentClassID, ArrayList<ImageEntry> images, ArrayList<OrnamentCaveRelation> cavesRelations,
 			ArrayList<OrnamentComponentsEntry> ornamentComponents, ArrayList<InnerSecondaryPatternsEntry> innerSecondaryPatterns,
 			ArrayList<AnnotatedBibliographyEntry> relatedBibliographyList, String modifiedOn, int iconographyID, int masterImageID,
 			ArrayList<IconographyEntry> relatedIconographyList, ArrayList<AnnotationEntry> relatedAnnotationList, int accessLevel, double tourOrder) {
-		this.ornamentID = ornamentID;
+		this.typicalID = typicalID;
 		this.code = code;
 		this.description = description;
 		this.remarks = remarks;
@@ -83,12 +83,12 @@ public class OrnamentEntry extends AbstractEntry {
 		this.virtualTourOrder=tourOrder;
 	}
 
-	public OrnamentEntry(int ornamentID, String code, String description, String remarks, 
+	public OrnamentEntry(int typicalID, String code, String description, String remarks, 
 			//String annotations, 
 			String interpretation,
 			String references, int ornamentClassID, String modifiedOn, ArrayList<IconographyEntry> relatedIconographyList,
 			ArrayList<AnnotationEntry> relatedAnnotationList, int accessLevel) {
-		this.ornamentID = ornamentID;
+		this.typicalID = typicalID;
 		this.code = code;
 		this.description = description;
 		this.remarks = remarks;
@@ -112,12 +112,12 @@ public class OrnamentEntry extends AbstractEntry {
 		this.relatedAnnotationList = relatedAnnotationList;
 	}
 
-	public int getOrnamentID() {
-		return ornamentID;
+	public int getTypicalID() {
+		return typicalID;
 	}
 
-	public void setOrnamentID(int ornamentID) {
-		this.ornamentID = ornamentID;
+	public void setOrnamentID(int typicalID) {
+		this.typicalID = typicalID;
 	}
 	public IconographyEntry getIconographyEntry() {
 		return ie;
@@ -235,7 +235,7 @@ public class OrnamentEntry extends AbstractEntry {
 	 */
 	@Override
 	public String getUniqueID() {
-		return "OrnamentEntry" + ornamentID;
+		return "Typical-" + typicalID;
 	}
 
 	/**

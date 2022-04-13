@@ -1,6 +1,18 @@
 /** Add css rules here for your application. */
 @charset "utf-8";
+.a9s-annotation.highlight .a9s-inner {
+	stroke: rgb(246, 0, 0);
+	fill: rgba(0, 128, 0,0.55);
+	stroke-width:3px;
+	transition: fill 1s, stroke-width 0.7s;
+}
 
+.a9s-annotation.highlight .a9s-inner:hover {
+	stroke: #fff000;
+	fill: rgba(0, 128, 0,0.55);
+	stroke-width:3px;
+	transition: fill 1s, stroke-width 0.7s
+}
 body {
 	background-image: url(backgroundKIS.jpg);
 	background-size: cover;

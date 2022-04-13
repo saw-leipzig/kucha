@@ -23,6 +23,7 @@ public class IconographyEntry extends AbstractEntry {
 	private String search;
 	private ArrayList<IconographyEntry> children;
 	private int root = 0;
+	private OrnamentEntry oe;
 	
 	public IconographyEntry() { }
 
@@ -80,13 +81,20 @@ public class IconographyEntry extends AbstractEntry {
 	public void setChildren(ArrayList<IconographyEntry> children) {
 		this.children = children;
 	}
+	public OrnamentEntry getOrnamentEntry() {
+		return oe;
+	}
+
+	public void setOrnamentEntry(OrnamentEntry oe) {
+		this.oe = oe;
+	}
 
 	/* (non-Javadoc)
 	 * @see de.cses.shared.AbstractEntry#getUniqueID()
 	 */
 	@Override
 	public String getUniqueID() {
-		return "IconographyEntry-" + iconographyID;
+		return "Iconography-" + iconographyID;
 	}
 	
 	public Boolean equals(IconographyEntry entry) {

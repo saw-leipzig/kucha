@@ -1041,7 +1041,7 @@ public class SingleImageEditor extends AbstractEditor {
 				addOSDPanel(event.getWidth(),event.getHeight());
 				osdLoader.destroyAllViewers();
 				osdDic = OSDLoader.createDic();
-				setosd();
+				osdLoader.setosd();
 				
 			}
 		});
@@ -1058,23 +1058,9 @@ public class SingleImageEditor extends AbstractEditor {
 
 	@Override
 	public void setfocus() {
-		setosd();
+		osdLoader.setosd();
 		titleField.getFocusSupport().setIgnore(false);
 		titleField.focus();
-	}
-	private void setosd() {
-		 dbService.getOSDContext(new AsyncCallback<String>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-			}
-
-			@Override
-			public void onSuccess(String result) {
-				osdLoader.startLoadingTiles(result);
-			}
-		});
 	}
 
 	/**

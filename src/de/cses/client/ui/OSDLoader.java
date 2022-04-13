@@ -23,6 +23,7 @@ import de.cses.client.user.UserLogin;
 import de.cses.shared.AnnotationEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
+import de.cses.shared.PositionEntry;
 import de.cses.shared.PreservationAttributeEntry;
 
 public class OSDLoader {
@@ -32,10 +33,15 @@ public class OSDLoader {
 	private boolean annoation;
 	private TreeStore<IconographyEntry> icoTree =null;
 	private Collection<IconographyEntry> icoEntries = null;
+	private boolean isWall=false;
+	private HashMap<String, JavaScriptObject> peAnnos = new HashMap<String, JavaScriptObject>();
 	//private Object osdLoader;
 	private OSDListener osdListener;
+	JavaScriptObject annos = null;
 	DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	public OSDLoader(ArrayList<ImageEntry> images, boolean annotation, TreeStore<IconographyEntry> icoTree, OSDListener osdListener) {
+		// Constructor for DepictionEntry
+		// We need to initiate a Javascript Object in Javascript Code
 		this.osdDic = createDic();
 		this.images=images;
 		this.annoation =annotation;
@@ -50,6 +56,8 @@ public class OSDLoader {
 		this.osdListener=osdListener;
 	}
 	public OSDLoader(ImageEntry image) {
+		// Constructor for ImageEntry
+		// We need to initiate a Javascript Object in Javascript Code
 		this.osdDic = createDic();
 		ArrayList<ImageEntry> images = new ArrayList<ImageEntry>();
 		images.add(image);
@@ -58,8 +66,29 @@ public class OSDLoader {
 		this.icoTree=null;
 		//this.osdLoader=this;
 	}
+	public OSDLoader(ArrayList<PositionEntry> pes) {
+		// Constructor for PositionEntry
+		// We need to initiate a Javascript Object in Javascript Code
+		this.osdDic = createDic();
+		this.isWall=true;
+		this.annos = null;
+		ArrayList<ImageEntry> images = new ArrayList<ImageEntry>();
+		for (PositionEntry pe : pes) {
+			ImageEntry image = new ImageEntry();
+			image.setFilename(pe.getName());
+			images.add(image);
+			boolean isRect = (pe.getType() == 0? false: true );
+			annos = ConcatList(annos, createMap(pe.getRegisters(),pe.getColumns(), 1000 , 1000, isRect, pe.getName()));
+		}
+		this.images=images;
+		this.annoation =true;
+		this.icoTree=null;
+		//this.osdLoader=this;
+	}
 	public void getResults(String id ,String tags, String polygon, String image, Boolean delete, Boolean update) {
+		// Function for sending the Annotations to MYSQL-Backend
 		Util.doLogging("Annotation recieved: Tag: "+tags+", Polygone: "+polygon+", Image: "+image+", delete: "+Boolean.toString(delete)+", update: "+Boolean.toString(update)+", DepictionID: "+osdListener.getDepictionID());
+		// Even JS-Arrays are not usable in Java-Code, so we have to use a String to get all the tags, which are than associated with a Iconography Entry
 		ArrayList<IconographyEntry> newTags = new ArrayList<IconographyEntry>();
 		String dummy[] = tags.split(";", -1);
 		for (String tag : dummy) {
@@ -67,7 +96,7 @@ public class OSDLoader {
 			//Util.doLogging("found tag value: "+icoEntry.getText());
 			newTags.add(icoEntry);
 		}
-		//AnnotationEntry annoEntry = new AnnotationEntry(osdListener.getDepictionID(), id, newTags, polygon.substring(22,polygon.indexOf("\"></polygon></svg>")), image, delete, update);
+		// As we want our MySQL-DB to understand the Polygons, we need to convert them into WKT and then into a GeoJSON
 		String svgRaw = polygon.replace("<svg><path d=\"","").replace("\"></path></svg>","");
 		Util.doLogging("Starting Converter for SVG to WKT");
 		String newPoly = toWKT(svgRaw);
@@ -77,7 +106,7 @@ public class OSDLoader {
 			//Util.doLogging("Writing Annotation");
 			AnnotationEntry annoEntry = new AnnotationEntry(osdListener.getDepictionID(), id, newTags, newPolyGeoJson, image, delete, update);
 			annoEntry.setLastChangedByUser(UserLogin.getInstance().getUsername());		
-			//Util.doLogging("Poly after toGeoJson"+newPoly);
+			// Create a new annotation and decide, what to do with it.
 			AnnotationEntry annoEntryDB = new AnnotationEntry(annoEntry.getDepictionID(), annoEntry.getAnnotoriousID(), annoEntry.getTags(), newPoly, annoEntry.getImage(), annoEntry.getDelete(), annoEntry.getUpdate());
 			if (!update && !delete) {
 				osdListener.addAnnotation(annoEntry);
@@ -117,6 +146,20 @@ public class OSDLoader {
 						
 		}
 
+	}
+	public void setosd() {
+		 dbService.getOSDContext(new AsyncCallback<String>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(String result) {
+				startLoadingTiles(result);
+			}
+		});
 	}
 
 	public void startLoadingTiles(String context) {
@@ -167,25 +210,42 @@ public class OSDLoader {
 	public void loadTiles(ImageEntry image, String context, boolean annotation, List<IconographyEntry> icoTree) {
 		ArrayList<ImageEntry> images = new ArrayList<ImageEntry>();
 		images.add(image);
-		ArrayList<JavaScriptObject> results = loadTiles(null, null,null, images, context, annotation);
+		ArrayList<JavaScriptObject> results = loadTiles(null, null,null, images, context, annotation, false);
 		JavaScriptObject tiles = results.remove(0);
 		JavaScriptObject imgDic=results.remove(0);
 		JavaScriptObject ifn=results.remove(0);
 		JavaScriptObject icos = listConverter(icoTree);
-		jso= createZoomeImage(tiles,ifn,imgDic, osdDic, UserLogin.getInstance().getSessionID(), annotation, icos, this,null);
+		jso= createZoomeImage(tiles,ifn,imgDic, osdDic, UserLogin.getInstance().getSessionID(), annotation, icos, this,null, isWall);
 	}
 	public void loadTiles(ArrayList<ImageEntry> images, String context, boolean annotation, Collection<IconographyEntry> icoTree) {
 		Util.doLogging("load tiles javascript");
-		ArrayList<JavaScriptObject> results = loadTiles(null, null,null, images, context, annotation);
+		ArrayList<JavaScriptObject> results = loadTiles(null, null,null, images, context, annotation, isWall);
 		JavaScriptObject tiles = results.remove(0);
 		JavaScriptObject imgDic=results.remove(0);
 		JavaScriptObject ifn=results.remove(0);
 		JavaScriptObject icos = listConverter(icoTree);
+		if (osdListener!=null) {
+			annos= generateW3CAnnotations(osdListener.getAnnotations());			
+		}
+		jso= createZoomeImage(tiles,ifn,imgDic, osdDic,UserLogin.getInstance().getSessionID(), annotation, icos, this, annos, isWall);	
+	}
+	public void loadTilesForWallPositions(ArrayList<PositionEntry> pes, String context) {
+		Util.doLogging("load tiles javascript");
+		ArrayList<ImageEntry> images = new ArrayList<ImageEntry>();
+		for (PositionEntry pe : pes) {
+			ImageEntry image = new ImageEntry();
+			image.setFilename(pe.getName());
+		}
+		ArrayList<JavaScriptObject> results = loadTiles(null, null,null, images, context, true, true);
+		JavaScriptObject tiles = results.remove(0);
+		JavaScriptObject imgDic=results.remove(0);
+		JavaScriptObject ifn=results.remove(0);
+		JavaScriptObject icos = null;
 		JavaScriptObject annos = null;
 		if (osdListener!=null) {
 			annos= generateW3CAnnotations(osdListener.getAnnotations());			
 		}
-		jso= createZoomeImage(tiles,ifn,imgDic, osdDic,UserLogin.getInstance().getSessionID(), annotation, icos, this, annos);	
+		jso= createZoomeImage(tiles,ifn,imgDic, osdDic,UserLogin.getInstance().getSessionID(), true, icos, this, annos, isWall);	
 	}
 	
 	public void destroyAllViewers() {
@@ -261,8 +321,14 @@ public class OSDLoader {
 						}
 					}	
 				}
-				
-				viewers["annotorious"][v].loadAnnotationsfromObject(annosForViewer, true);	
+				// $wnd.console.log("Adding ",annosForViewer)
+//				if (annosForViewer.length > 0){
+//				    var a = $doc.createElement("a");
+//				    a.href = $wnd.URL.createObjectURL(new Blob([JSON.stringify(annosForViewer)], {type: "text/plain"}));
+//				    a.download = "demo.txt";
+//				    a.click(); 
+//				}
+				viewers["annotorious"][v].setAnnotations(annosForViewer);	
 			}	
 	    }
 	}-*/;
@@ -306,10 +372,27 @@ public class OSDLoader {
 		highlightAnnotationJS(jso, annoID);
 	}
 	public static native void highlightAnnotationJS(JavaScriptObject viewers, String annoID)
-	/*-{
-		for (var k in viewers["annotorious"]) {
-    		viewers["annotorious"][k].highlightAnnotation(annoID);
-		};
+	/*-{          
+//		var annoStyle = {
+//            style:{
+//              outer: {
+//                "vector-effect": "none",
+//                "stroke": "#f00",
+//                "fill": "rgba(0, 128, 0,0.55)",
+//                "stroke-width":"3px",
+//                "transition": "fill 1s, stroke-width 0.7s"
+//              },
+//              inner: {
+//                "vector-effect": "none",
+//                "stroke": "#f00",
+//                "stroke-width": "3px",
+//                "transition": "stroke-width 0.7s"
+//              }
+//            }
+//          }
+//		for (var k in viewers["annotorious"]) {
+//    		viewers["annotorious"][k].setAnnotationStyle(annoID, annoStyle);
+//		};
 
 	}-*/;
 	public void deHighlightAnnotation(String annoID) {
@@ -319,12 +402,13 @@ public class OSDLoader {
 	/*-{
 	 	//$wnd.console.log("deHighlightAnnotationsJS started");
 		for (var k in viewers["annotorious"]) {
-    		viewers["annotorious"][k].dehighlightAnnotation(annoID);
+    		viewers["annotorious"][k].removeAnnotation(annoID);
 		};
 
 	}-*/;
 	public static native String toWKT(String polygon)
 	/*-{
+	    $wnd.console.log("polygon", polygon);		
 		try {
 	        var union =null;
 	        // $wnd.console.log("toWKT triggered");
@@ -332,7 +416,7 @@ public class OSDLoader {
 	        // $wnd.console.log("polygon: ",polygon);
 	        var results =polygon.split('M');
 	        // $wnd.console.log("results: ");
-	        // $wnd.console.log("results: ",results);
+	        $wnd.console.log("results: ",results);
 	        results.forEach(function (result, index) {
 	          // $wnd.console.log("result: ",result);
 	          if (result.length>0){
@@ -342,7 +426,7 @@ public class OSDLoader {
 	            result=result.replace(/L /g,"L")
 	            result=result.replace(/ L/g,"L")
 	            var coords = result.split("L")
-	          	// $wnd.console.log("coords", coords);
+	          	$wnd.console.log("coords", coords);
 	            poly="POLYGON(("
 	            var first=true;
 	            var firstCoord = ""
@@ -365,9 +449,11 @@ public class OSDLoader {
 	            	poly+=", "+firstCoord
 	            }
 	            poly+="))";
-	        	// $wnd.console.log("poly: ",poly);
-	        	
-	            var leser = new $wnd.jsts.io.WKTReader();
+	        	$wnd.console.log("poly: ",poly);
+	        	var precisionModel = new $wnd.jsts.geom.PrecisionModel($wnd.jsts.geom.PrecisionModel.FLOATING)
+    			var geometryPrecisionReducer = new $wnd.jsts.precision.GeometryPrecisionReducer(precisionModel)
+    			var geomFactoryJSTS = new $wnd.jsts.geom.GeometryFactory(precisionModel)
+	            var leser = new $wnd.jsts.io.WKTReader(geomFactoryJSTS);
 	            if (!union){
 	              union=leser.read(poly);
 	            }
@@ -380,6 +466,7 @@ public class OSDLoader {
 	        var polygonRes = schreiber.write(union);
 			return polygonRes;
 		} catch (e) {
+		   $wnd.console.log("Failed to convert polygon.",e, polygon);
 		   $wnd.alert("Failed to convert polygon.");
 		   return "";
 		}			
@@ -392,8 +479,90 @@ public class OSDLoader {
 		// $wnd.console.log("result: ",res);
 		return res
 	}-*/;
-	
-	public static native JavaScriptObject createZoomeImage(JavaScriptObject tiles,JavaScriptObject wheres, JavaScriptObject source, JavaScriptObject dic, String sessionID, boolean anno, JavaScriptObject icoTree, OSDLoader osdLoader, JavaScriptObject annos)
+	public static native JavaScriptObject createMap(int rows, int cols, int height, int width, boolean isRect, String filename) 
+	/*-{	
+        function isOdd(num) { return num % 2;}
+        function addRhombus(row,col, rows, cols, height, width){
+          var heightRhomb = 0; 
+          heightRhomb = (rows>1 ? (height*2)/(rows-1) : (height*2)/(1))*(((row)/2));
+          var heightrow = rows>1 ? (height*2)/(rows-1) : (height*2)/(1);
+          var newPath = "";
+          if (isOdd(row) === 0){
+            newPath = "M"+((width*((2*col)-1)) / ((2*cols) - 2)) +"," + ((row === 1) ? "0" : (heightRhomb-heightrow))+"L" + ((col === cols) ? width : ((((col * width) / ((cols) - 1))))) + "," + ((row === 1) ? "0" : (heightRhomb-heightrow+(heightrow/2)))+"L"+ (((col) / ((cols) - 1) * width)-((((1) / ((cols) - 1) * width))/2)) +"," + ((row === rows) ? height : (heightRhomb))+"L" + ((((col+1) / ((cols) - 1) * width))-((((1) / ((cols) - 1) * width))*2)) + "," + ((heightrow/2)+heightRhomb-heightrow)+"L"+(((col) / ((cols) - 1) * width)-((((1) / ((cols) - 1) * width))/2)) +"," + (heightRhomb-heightrow)+"z"; 
+          } else {
+            newPath = "M"+((col === 1) ? "0" : (((col-1) / ((cols) - 1) * width))) +"," + ((row === 1) ? "0" : (heightRhomb-heightrow))+"L" + ((col === cols) ? width : ((((width * (2*col-1)) / ((2 * cols) - 2))))) + "," + ((row === 1) ? "0" : (heightRhomb-heightrow+(heightrow/2)))+"L"+((col === 1) ? "0" : (((col-1) / ((cols) - 1) * width))) +"," + ((row === rows) ? height : (heightRhomb))+"L" + ((col === 1) ? "0" : ((((col) / ((cols) - 1) * width))-((((1) / ((cols) - 1) * width)))-((((1) / ((cols) - 1) * width)/2)))) + "," + ((heightrow/2)+heightRhomb-heightrow)+"L"+((col === 1) ? "0" : (((col-1) / ((cols) - 1) * width))) +"," + ((row === 1) ? "0" : (heightRhomb-heightrow))+"z";
+          }
+          var annotation = {
+            "@context": "http://www.w3.org/ns/anno.jsonld",
+            "id": "Reg. "+row+", No. "+col,
+            "type": "Annotation",
+            "body": [
+              {
+                  "type": "TextualBody",
+                  "value": "nimbus around the head",
+                  "id": 2255,
+                  "image": filename
+              }
+            ],
+            "target": {
+                "selector": {
+                    "type": "SvgSelector",
+                    "conformsTo": "http://www.w3.org/TR/media-frags/",
+                    "value": "<svg><path d=\""+newPath+"\"></path></svg>"
+                },
+                "source": filename
+            }
+          }
+          return annotation;
+        }
+        function addRect(row,col, rows, cols, height, width){
+          var heightRhomb = (rows>1 ? (height)/(rows+1) : (height)/(1));
+          var heightrow = (rows>1 ? (height)/(rows+1) : (height)/(1));
+          var newPath = "";
+          newPath = "xywh=pixel:"+(width-((width/cols)*col))+","+(height-((height/rows)*row))+","+(width/cols)+","+(height/rows);
+          var annotation = {
+            "@context": "http://www.w3.org/ns/anno.jsonld",
+            "id": "Reg. "+row+", No. "+col,
+            "type": "Annotation",
+            "body": [
+              {
+                  "type": "TextualBody",
+                  "value": "nimbus around the head",
+                  "id": 2255,
+                  "image": filename
+              }
+            ],
+            "target": {
+                "selector": {
+                    "type": "FragmentSelector", 
+                    "conformsTo": "http://www.w3.org/TR/media-frags/",
+                    "value": newPath
+                },
+                "source": filename
+            }
+          }
+          return annotation;
+        }
+        var annotations = [];
+        for (var j = 1; j< rows+1; j++){
+          for(var i = 1; i < (cols+1); i+=1){
+  			$wnd.console.log("started loop: ",i,j, rows, cols);	      	
+          	var annotationObject = {};
+            if (isRect){
+                annotationObject = addRect(j,i,rows,cols,height, width);
+            } else {
+              if (!((i === cols) && (isOdd(j) === 0))){
+                annotationObject = addRhombus(j,i,rows,cols,height, width);
+              }
+            }
+            if (Object.keys(annotationObject).length > 0){
+            	annotations.push(annotationObject);
+            }
+          }
+        }
+        return annotations;
+	}-*/;
+	public static native JavaScriptObject createZoomeImage(JavaScriptObject tiles,JavaScriptObject wheres, JavaScriptObject source, JavaScriptObject dic, String sessionID, boolean anno, JavaScriptObject icoTree, OSDLoader osdLoader, JavaScriptObject annos, boolean isWall)
 	/*-{
 	 annotorious={};
 	 $doc.cookie = "sessionID="+sessionID+";SameSite=Lax;"; 
@@ -412,6 +581,9 @@ public class OSDLoader {
 	    $wnd.OpenSeadragon.setString('Tool.rotate', 'Rotate');
 	    $wnd.OpenSeadragon.setString('Tool.close', 'Close');
 	 if (wheres){
+	 	  	MyHighlightFormatter = function(annotation) {
+            	return 'highlight';
+        	}
 	 	// $wnd.console.log("wheres:",wheres);
 	 		 for (var i = 0, length = wheres.length; i < length; i++){
 		// $wnd.console.log("Processing image, request header: ",wheres[i]);
@@ -437,25 +609,33 @@ public class OSDLoader {
             tileSource: tiles[wheres[i]]
         });			
 			if (anno){
+				$wnd.console.log("Starting annotation for:",wheres[i]);	
+				
 				var savedAnnos=[];
 				var foundAnno=false;
 				for (var k = 0, length2 = annos.length; k < length2; k++){
+					//$wnd.console.log("annotation", annos[k]);	
 					if (annos[k].target.source===wheres[i]){
+						//$wnd.console.log("foundAnnotation");	
 						savedAnnos.push(annos[k]);
 						foundAnno=true;
 					}
-					
 				}
-				
 				//$wnd.console.log("config");
 				var config = {};
 				config["locale"] = 'auto',
 				config["readOnly"]=false;
-				config["widgets"]=[{ widget: 'TREE', tree: icoTree }];
+				var tw = $wnd.TreeWidget;
+				config["widgets"]=[{ widget: tw, tree: icoTree }];
 				config["image"]=wheres[i];
+				config["formatter"] = [MyHighlightFormatter];
 				// $wnd.console.log("Adding Annotorious",config);
 				annotorious[wheres[i]] = $wnd.OpenSeadragon.Annotorious(dic[wheres[i]],config);
-				annotorious[wheres[i]].setDrawingTool("polygon");
+		        $wnd.Annotorious.SelectorPack(annotorious[wheres[i]]);
+		        console.log(annotorious[wheres[i]].listDrawingTools());
+		        annotorious[wheres[i]].setDrawingTool('multipolygon');
+
+				//annotorious[wheres[i]].setDrawingTool("polygon");
 				//annotorious[wheres[i]].setDrawingEnabled(true);
 				//$wnd.console.log("Adding Handler");
 				annotorious[wheres[i]].on('createAnnotation',function(annotation) {
@@ -502,12 +682,12 @@ public class OSDLoader {
 					//$wnd.console.log("results: ",results);
 					osdLoader.@de.cses.client.ui.OSDLoader::getResults(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;)(annotation.id,results,annotation.target.selector.value,image, true, false);
 				});
-				annotorious[wheres[i]].on('selectAnnotation', function(annotation) {
-				});
-				annotorious[wheres[i]].on('mouseEnterAnnotation', function(annotation, event) {
-				});
-				annotorious[wheres[i]].on('mouseLeaveAnnotation', function(annotation, event) {
-				});
+//				annotorious[wheres[i]].on('selectAnnotation', function(annotation) {
+//				});
+//				annotorious[wheres[i]].on('mouseEnterAnnotation', function(annotation, event) {
+//				});
+//				annotorious[wheres[i]].on('mouseLeaveAnnotation', function(annotation, event) {
+//				});
 				annotorious[wheres[i]].on('updateAnnotation', function(annotation, previous) {
 					results=""
 					var image = "";
@@ -529,10 +709,34 @@ public class OSDLoader {
 					osdLoader.@de.cses.client.ui.OSDLoader::getResults(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;)(annotation.id,results,annotation.target.selector.value,image, false, true);
 				});
 				//$wnd.console.log("Adding Annotations");
-//				if (foundAnno){
-//					$wnd.console.log("Found Annotation for picture ",wheres[i],": ",savedAnnos);
-//					annotorious[wheres[i]].setAnnotations(savedAnnos);
-//				}
+				if (isWall){
+					if (foundAnno){
+//						$wnd.console.log("Found Annotation for picture ",wheres[i],": ",savedAnnos);
+//						annotorious[wheres[i]].setAnnotations(savedAnnos);
+//						var annoStyle = {
+//				            style:{
+//				              outer: {
+//				                "vector-effect": "none",
+//				                "stroke": "#f00",
+//				                "fill": "rgba(0, 128, 0,0.55)",
+//				                "stroke-width":"3px",
+//				                "transition": "fill 1s, stroke-width 0.7s"
+//				              },
+//				              inner: {
+//				                "vector-effect": "none",
+//				                "stroke": "#fff",
+//				                "stroke-width": "1px",
+//				                "transition": "stroke-width 0.7s"
+//				              }
+//				            }
+//				          }
+//						for (var k in annos) {
+//							$wnd.console.log("Setting Style for:", anno[k].id);
+//				    		annotorious[wheres[i]].setAnnotationStyle(anno[k].id, annoStyle);
+//						};
+
+					}					
+				}
 			}		
 			$wnd.console.log("Adding Imagefilters");
 			
@@ -578,6 +782,14 @@ public class OSDLoader {
 	 var list = [];
 	}
 	list.push(ie);	
+		return list;
+	}-*/;	
+	public static native JavaScriptObject ConcatList(JavaScriptObject list, JavaScriptObject ie)
+	/*-{
+	if (list==null){
+	 var list = [];
+	}
+	list = list.concat(ie);
 		return list;
 	}-*/;	
 	public static native JavaScriptObject createDic()
@@ -648,18 +860,18 @@ public class OSDLoader {
 		//$wnd.console.log("Adding image: ",source);
 		return imgElDic
 	}-*/;
-	public ArrayList<JavaScriptObject> loadTile(JavaScriptObject list,JavaScriptObject ifn, JavaScriptObject imgDic,ImageEntry image, String context, boolean annotation) {
+	public ArrayList<JavaScriptObject> loadTile(JavaScriptObject list,JavaScriptObject ifn, JavaScriptObject imgDic,ImageEntry image, String context, boolean annotation, boolean isWall) {
 		ArrayList<ImageEntry> images = new ArrayList<ImageEntry>();
 		images.add(image);			
-		return loadTiles(list, ifn,imgDic, images, context,annotation);
+		return loadTiles(list, ifn,imgDic, images, context,annotation, isWall);
 	}
 
-	public ArrayList<JavaScriptObject> loadTiles(JavaScriptObject list,JavaScriptObject ifn, JavaScriptObject imgDic, ArrayList<ImageEntry> images, String context, boolean annotation) {
+	public ArrayList<JavaScriptObject> loadTiles(JavaScriptObject list,JavaScriptObject ifn, JavaScriptObject imgDic, ArrayList<ImageEntry> images, String context, boolean annotation, boolean isWall) {
 		ArrayList<ImageEntry> imagesclone = new ArrayList<ImageEntry>();
 		for (ImageEntry ie : images) {
 			imagesclone.add(ie);
 		}
-		return processTiles(list, ifn,imgDic, imagesclone, context, annotation);
+		return processTiles(list, ifn,imgDic, imagesclone, context, annotation, isWall);
 	}
 	public ArrayList<AnnotationEntry> getAnnotations(){
 		return osdListener.getAnnotations();
@@ -668,7 +880,7 @@ public class OSDLoader {
 //		this.icoTree =icoTree;
 //
 //	}
-	public ArrayList<JavaScriptObject> processTiles(JavaScriptObject list,JavaScriptObject ifn, JavaScriptObject imgDic, ArrayList<ImageEntry> images, String context, boolean annotation) {		
+	public ArrayList<JavaScriptObject> processTiles(JavaScriptObject list,JavaScriptObject ifn, JavaScriptObject imgDic, ArrayList<ImageEntry> images, String context, boolean annotation, boolean isWall) {		
 		if (!images.isEmpty()){
 			ImageEntry ie=images.remove(0);
 //			String url="https://iiif.saw-leipzig.de/";
@@ -676,7 +888,11 @@ public class OSDLoader {
 //			String url = "resource?imageID=" + ie.getImageID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri();
 			//Util.doLogging(url+"iiif/2/kucha%2Fimages%2F" + ie.getFilename())
 			//Util.doLogging("Adding URL: "+context + ie.getFilename() + "/info.json");
-			list = addZoomeImage(list , context + ie.getFilename() + "/info.json",ie.getFilename());
+			if (isWall) {
+				list = addZoomeImage(list , context + "blank.png/info.json",ie.getFilename());
+			} else {
+				list = addZoomeImage(list , context + ie.getFilename() + "/info.json",ie.getFilename());
+			}
 //			list = addZoomeImage(list , url,ie.getFilename());
 			ifn=addImageFileNames(ifn,ie.getFilename());
 			String dummy = ie.getFilename();
@@ -691,7 +907,7 @@ public class OSDLoader {
 				Element imgEl = Document.get().getElementById(dummy);
 				imgDic=addImageDic(imgDic,ie.getFilename(), imgEl );
 			}
-			processTiles(list, ifn,imgDic, images, context, annotation);
+			processTiles(list, ifn,imgDic, images, context, annotation, isWall);
 		}
 		ArrayList<JavaScriptObject> result= new ArrayList<JavaScriptObject>(); 
 		result.add(list);//http://marketplace.eclipse.org/marketplace-client-intro?mpc_install=3321165

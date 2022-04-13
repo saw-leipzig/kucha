@@ -14,6 +14,7 @@
 package de.cses.client;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -352,6 +353,8 @@ public interface DatabaseServiceAsync {
 
 	void insertBibKeyword(BibKeywordEntry bkEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 
+	void updateBibKeyword(BibKeywordEntry bkEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
+
 	void deleteAuthorEntry(AuthorEntry selectedEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
 	void updateUserEntry(UserEntry currentUser, String passwordHash, String newPasswordHash, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
@@ -374,9 +377,15 @@ public interface DatabaseServiceAsync {
 	
 	void updateIconographyEntry(IconographyEntry iconographyEntryToEdit, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
+	void updateWallTreeEntry(WallTreeEntry wte, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
+
 	void getUsers(AsyncCallback<ArrayList<UserEntry>> asyncCallback) throws IllegalArgumentException;
 
+	void getUsersFrontEnd(AsyncCallback<ArrayList<UserEntry>> asyncCallback) throws IllegalArgumentException;
+
 	void updateUserEntry(UserEntry userEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
+
+	void updateUserEntryFrontEnd(UserEntry userEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
 	void insertUserEntry(UserEntry entry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 

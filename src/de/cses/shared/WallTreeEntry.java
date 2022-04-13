@@ -68,6 +68,9 @@ public class WallTreeEntry extends AbstractEntry {
 	public void setParentID(int parentID) {
 		this.parentID = parentID;
 	}
+	public String getWallName() {
+		return text;
+	}
 
 	public String getText() {
 		String name="";

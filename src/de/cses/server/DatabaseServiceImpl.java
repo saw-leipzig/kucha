@@ -14,6 +14,7 @@
 package de.cses.server;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -972,6 +973,11 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.insertBibKeyword(bkEntry);
 	}
+
+	public Boolean updateBibKeyword(BibKeywordEntry bkEntry) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.updateBibKeyword(bkEntry);
+	}
 	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#deleteAuthorEntry(de.cses.shared.AuthorEntry)
 	 */
@@ -1063,16 +1069,31 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		return connector.updateIconographyEntry(iconographyEntryToEdit);
 	}
 
+	public boolean updateWallTreeEntry(WallTreeEntry wte) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.updateWallTreeEntry(wte);
+	}
+
 
 	public ArrayList<UserEntry> getUsers() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getUsers();
 	}
 	
+	public ArrayList<UserEntry> getUsersFrontEnd() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getUsersFrontEnd();
+	}
+	
 
 	public boolean updateUserEntry(UserEntry userEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.updateUserEntry(userEntry);
+	}
+
+	public boolean updateUserEntryFrontEnd(UserEntry userEntry) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.updateUserEntryFrontEnd(userEntry);
 	}
 
 	public boolean setAnnotationResults(AnnotationEntry annoEntry, boolean isOrnament) throws IllegalArgumentException {

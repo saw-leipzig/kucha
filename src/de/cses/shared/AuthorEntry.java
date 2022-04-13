@@ -13,16 +13,18 @@
  */
 package de.cses.shared;
 
+import java.util.Comparator;
+
 import de.cses.client.Util;
 
 /**
  * @author alingnau
  *
  */
-public class AuthorEntry extends AbstractEntry {
+public class AuthorEntry extends AbstractEntry implements Comparable<AuthorEntry> {
 
 	private int authorID = 0;
-	private String lastname, firstname, institution, alias, altSpelling;
+	private String lastname, firstname, institution, alias, altSpelling = "";
 	private boolean kuchaVisitor;
 	private String affiliation, email, homepage;
 	private boolean institutionEnabled;
@@ -150,5 +152,11 @@ public class AuthorEntry extends AbstractEntry {
 	public void setInstitutionEnabled(boolean institutionEnabled) {
 		this.institutionEnabled = institutionEnabled;
 	}
+	 
+    @Override
+    public int compareTo(AuthorEntry ae)
+    {
+    	return getLastname().compareTo(ae.getLastname());
+    }
 
 }
