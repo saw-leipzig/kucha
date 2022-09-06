@@ -87,6 +87,8 @@ public interface DatabaseService extends RemoteService {
 		
 	boolean resetPassword(UserEntry currentUser) throws IllegalArgumentException;
 	
+	boolean resetPasswordFrontEnd(UserEntry currentUser) throws IllegalArgumentException;
+	
 	Map<Integer,String> getMasterImageFromOrnament(int tnSize,String sessionID) throws IllegalArgumentException;
 
 	boolean saveWallDimension(ArrayList<WallTreeEntry> pe, Integer caveID) throws IllegalArgumentException;
@@ -154,6 +156,8 @@ public interface DatabaseService extends RemoteService {
 	AuthorEntry getAuthorEntry(int id) throws IllegalArgumentException;
 	
 	boolean iconographyIDisUsed(int iconographyID, int OrnamentID) throws IllegalArgumentException;
+
+	boolean isGoodDimension(int caveID, int register, int number) throws IllegalArgumentException;
 
 	@Deprecated
 	ImageEntry getMasterImageEntryForDepiction(int depictionID) throws IllegalArgumentException;
@@ -360,6 +364,8 @@ public interface DatabaseService extends RemoteService {
 	boolean updateUserEntryFrontEnd(UserEntry userEntry) throws IllegalArgumentException;
 
 	int insertUserEntry(UserEntry entry) throws IllegalArgumentException;
+
+	int saveWebPageUser(UserEntry entry) throws IllegalArgumentException;
 
 	boolean saveCollectedEntries(String sessionID, String collectionLabel, Boolean isGroupCollection, ArrayList<AbstractEntry> entryList) throws IllegalArgumentException;
 

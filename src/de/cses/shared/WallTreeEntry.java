@@ -76,16 +76,16 @@ public class WallTreeEntry extends AbstractEntry {
 		String name="";
 		String posNames ="";
 		if (position == null) {
-		return text;
+			return text;
 		}
 		else {
 			name=text;
 			for (PositionEntry pos : position) {
 				if (posNames=="") {
-					posNames=pos.getName();
+					posNames = pos.getNameWithPosition();
 				}
 				else {
-					posNames=posNames+", "+pos.getName();
+					posNames = posNames+", "+pos.getNameWithPosition();
 				}
 			}
 			if (posNames!="") {

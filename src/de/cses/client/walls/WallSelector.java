@@ -163,58 +163,62 @@ public class WallSelector implements IsWidget {
 	 */
 	public void setCave(CaveEntry selectedCave) {
 		currentCave = selectedCave;
-		CaveTypeEntry ctEntry = StaticTables.getInstance().getCaveTypeEntries().get(selectedCave.getCaveTypeID());
 		caveSketchContainer.clear();
-		if ((selectedCave.getOptionalCaveSketch() != null) && !selectedCave.getOptionalCaveSketch().isEmpty()) {
-			caveSketchContainer.add(new HTMLPanel(caveLayoutViewTemplates.image(
-					UriUtils.fromString("resource?cavesketch=" + selectedCave.getOptionalCaveSketch()
-							+ UserLogin.getInstance().getUsernameSessionIDParameterForUri()))));
-		}
-		if ((ctEntry.getSketchName() != null) && !ctEntry.getSketchName().isEmpty()) {
-			caveSketchContainer.add(new HTMLPanel(caveLayoutViewTemplates.image(
-					UriUtils
-							.fromString("resource?background=" + ctEntry.getSketchName() + UserLogin.getInstance().getUsernameSessionIDParameterForUri()))));
-//					,SafeStylesUtils.forWidth(defaultCaveSketchWidth, Unit.PX))));
-		}
-		//Info.display(Integer.toString(caveSketchContainer.getOffsetHeight()), Integer.toString(caveSketchContainer.getOffsetHeight()));
 		wallEntryLS.clear();
-		switch (ctEntry.getCaveTypeID()) {
+		if (selectedCave.getCaveID() != -1) {
+			currentCave = selectedCave;
+			CaveTypeEntry ctEntry = StaticTables.getInstance().getCaveTypeEntries().get(selectedCave.getCaveTypeID());
+			if ((selectedCave.getOptionalCaveSketch() != null) && !selectedCave.getOptionalCaveSketch().isEmpty()) {
+				caveSketchContainer.add(new HTMLPanel(caveLayoutViewTemplates.image(
+						UriUtils.fromString("resource?cavesketch=" + selectedCave.getOptionalCaveSketch()
+								+ UserLogin.getInstance().getUsernameSessionIDParameterForUri()))));
+			}
+			if ((ctEntry.getSketchName() != null) && !ctEntry.getSketchName().isEmpty()) {
+				caveSketchContainer.add(new HTMLPanel(caveLayoutViewTemplates.image(
+						UriUtils
+								.fromString("resource?background=" + ctEntry.getSketchName() + UserLogin.getInstance().getUsernameSessionIDParameterForUri()))));
+//						,SafeStylesUtils.forWidth(defaultCaveSketchWidth, Unit.PX))));
+			}
+			//Info.display(Integer.toString(caveSketchContainer.getOffsetHeight()), Integer.toString(caveSketchContainer.getOffsetHeight()));
+			switch (ctEntry.getCaveTypeID()) {
 
-			case 2: // square cave
-				for (WallLocationEntry wle : StaticTables.getInstance().getWallLocationEntries().values()) {
-					if ((wle.getCaveAreaLabel() == WallLocationEntry.ANTECHAMBER_LABEL)
-							|| (wle.getCaveAreaLabel() == WallLocationEntry.MAIN_CHAMBER_LABEL)) {
-						wallEntryLS.add(currentCave.getWall(wle.getWallLocationID()));
+				case 2: // square cave
+					for (WallLocationEntry wle : StaticTables.getInstance().getWallLocationEntries().values()) {
+						if ((wle.getCaveAreaLabel() == WallLocationEntry.ANTECHAMBER_LABEL)
+								|| (wle.getCaveAreaLabel() == WallLocationEntry.MAIN_CHAMBER_LABEL)) {
+							wallEntryLS.add(currentCave.getWall(wle.getWallLocationID()));
+						}
 					}
-				}
-				break;
+					break;
 
-			case 3: // residential cave
-				for (WallLocationEntry wle : StaticTables.getInstance().getWallLocationEntries().values()) {
-					if ((wle.getCaveAreaLabel() == WallLocationEntry.ANTECHAMBER_LABEL)
-							|| (wle.getCaveAreaLabel() == WallLocationEntry.MAIN_CHAMBER_LABEL)
-							|| (wle.getCaveAreaLabel() == WallLocationEntry.MAIN_CHAMBER_CORRIDOR_LABEL)
-							|| (wle.getCaveAreaLabel() == WallLocationEntry.REAR_AREA_LABEL)) {
-						wallEntryLS.add(currentCave.getWall(wle.getWallLocationID()));
+				case 3: // residential cave
+					for (WallLocationEntry wle : StaticTables.getInstance().getWallLocationEntries().values()) {
+						if ((wle.getCaveAreaLabel() == WallLocationEntry.ANTECHAMBER_LABEL)
+								|| (wle.getCaveAreaLabel() == WallLocationEntry.MAIN_CHAMBER_LABEL)
+								|| (wle.getCaveAreaLabel() == WallLocationEntry.MAIN_CHAMBER_CORRIDOR_LABEL)
+								|| (wle.getCaveAreaLabel() == WallLocationEntry.REAR_AREA_LABEL)) {
+							wallEntryLS.add(currentCave.getWall(wle.getWallLocationID()));
+						}
 					}
-				}
-				break;
+					break;
 
-			case 4: // central-pillar cave
-			case 6: // monumental image cave
-				for (WallLocationEntry wle : StaticTables.getInstance().getWallLocationEntries().values()) {
-					if ((wle.getCaveAreaLabel() == WallLocationEntry.ANTECHAMBER_LABEL)
-							|| (wle.getCaveAreaLabel() == WallLocationEntry.MAIN_CHAMBER_LABEL)
-							|| (wle.getCaveAreaLabel() == WallLocationEntry.REAR_AREA_LABEL)
-							|| (wle.getCaveAreaLabel() == WallLocationEntry.REAR_AREA_LEFT_CORRIDOR_LABEL)
-							|| (wle.getCaveAreaLabel() == WallLocationEntry.REAR_AREA_RIGHT_CORRIDOR_LABEL)) {
-						wallEntryLS.add(currentCave.getWall(wle.getWallLocationID()));
+				case 4: // central-pillar cave
+				case 6: // monumental image cave
+					for (WallLocationEntry wle : StaticTables.getInstance().getWallLocationEntries().values()) {
+						if ((wle.getCaveAreaLabel() == WallLocationEntry.ANTECHAMBER_LABEL)
+								|| (wle.getCaveAreaLabel() == WallLocationEntry.MAIN_CHAMBER_LABEL)
+								|| (wle.getCaveAreaLabel() == WallLocationEntry.REAR_AREA_LABEL)
+								|| (wle.getCaveAreaLabel() == WallLocationEntry.REAR_AREA_LEFT_CORRIDOR_LABEL)
+								|| (wle.getCaveAreaLabel() == WallLocationEntry.REAR_AREA_RIGHT_CORRIDOR_LABEL)) {
+							wallEntryLS.add(currentCave.getWall(wle.getWallLocationID()));
+						}
 					}
-				}
-				break;
+					break;
 
-			default:
-				break;
+				default:
+					break;
+			}
+
 		}
 	}
 	

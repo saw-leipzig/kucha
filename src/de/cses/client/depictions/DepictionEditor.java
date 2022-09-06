@@ -30,6 +30,7 @@ import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.DragStartEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
@@ -67,6 +68,10 @@ import com.sencha.gxt.data.shared.Store.StoreFilter;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.data.shared.event.StoreFilterEvent;
 import com.sencha.gxt.data.shared.event.StoreFilterEvent.StoreFilterHandler;
+import com.sencha.gxt.dnd.core.client.DndDragStartEvent;
+import com.sencha.gxt.dnd.core.client.DndDragStartEvent.DndDragStartHandler;
+import com.sencha.gxt.dnd.core.client.DndDropEvent;
+import com.sencha.gxt.dnd.core.client.DndDropEvent.DndDropHandler;
 import com.sencha.gxt.dnd.core.client.ListViewDragSource;
 import com.sencha.gxt.dnd.core.client.ListViewDropTarget;
 import com.sencha.gxt.fx.client.Draggable;
@@ -85,10 +90,14 @@ import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
+import com.sencha.gxt.widget.core.client.event.BeforeShowEvent;
+import com.sencha.gxt.widget.core.client.event.BeforeShowEvent.BeforeShowHandler;
 import com.sencha.gxt.widget.core.client.event.ResizeEndEvent;
 import com.sencha.gxt.widget.core.client.event.ResizeEndEvent.ResizeEndHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
+import com.sencha.gxt.widget.core.client.event.ShowEvent;
+import com.sencha.gxt.widget.core.client.event.ShowEvent.ShowHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.DateField;
 import com.sencha.gxt.widget.core.client.form.DateTimePropertyEditor;
@@ -137,6 +146,7 @@ import de.cses.shared.ImageEntry;
 import de.cses.shared.LocationEntry;
 import de.cses.shared.ModeOfRepresentationEntry;
 import de.cses.shared.ModifiedEntry;
+import de.cses.shared.PositionEntry;
 import de.cses.shared.PreservationAttributeEntry;
 import de.cses.shared.StyleEntry;
 import de.cses.shared.VendorEntry;
@@ -703,37 +713,17 @@ public class DepictionEditor extends AbstractEditor {
 	}
 
 	private void initPanel() {
+		System.out.println("Length bibliographyEntries of Depiction " + Integer.toString(correspondingDepictionEntry.getDepictionID()) + "at load: " + Integer.toString(correspondingDepictionEntry.getRelatedBibliographyList().size()));
 		// the images related with the depiction entry that will be shown on the right
 		imgdic = new HashMap<Integer, String>();
 		getPics(correspondingDepictionEntry.getRelatedImages(), 300, UserLogin.getInstance().getSessionID());
-		Comparator<? super ImageEntry> itemComparator = new Comparator<ImageEntry>() {
-			@Override
-			public int compare(ImageEntry o1, ImageEntry o2) {
-				String one = "";
-				String two = "";
-				if (correspondingDepictionEntry.getMasterImageID()==o1.getImageID()) {
-					one="aaaaaaaaaaaaaaaaaa"+o1.getTitle();
-				}
-				else {
-					one=o1.getTitle();
-				}
-				if (correspondingDepictionEntry.getMasterImageID()==o2.getImageID()) {
-					two="aaaaaaaaaaaaaaaaaa"+o2.getTitle();
-				}
-				else {
-					two=o2.getTitle();
-				}
-				return one.compareTo(two);
-			}
-		};
 		imageListView = new ListView<ImageEntry, ImageEntry>(imageEntryLS, new IdentityValueProvider<ImageEntry>() {
 			@Override
 			public void setValue(ImageEntry object, ImageEntry value) {
 			}
 		});
-		imageListView.setCell(new SimpleSafeHtmlCell<ImageEntry>(new AbstractSafeHtmlRenderer<ImageEntry>() {
+		SimpleSafeHtmlCell<ImageEntry> imageCell = new SimpleSafeHtmlCell<ImageEntry>(new AbstractSafeHtmlRenderer<ImageEntry>() {
 			final ImageViewTemplates imageViewTemplates = GWT.create(ImageViewTemplates.class);
-
 			public SafeHtml render(ImageEntry item) {
 				ArrayList<TextElement> titleList = new ArrayList<TextElement>();
 				for (String s : item.getTitle().split("_")) {
@@ -787,7 +777,8 @@ public class DepictionEditor extends AbstractEditor {
 
 				return sblast.toSafeHtml();
 			}
-		}));
+		});
+		imageListView.setCell(imageCell);
 		filterField = new StoreFilterField<ImageEntry>() {
 
 			@Override
@@ -1434,8 +1425,10 @@ public class DepictionEditor extends AbstractEditor {
 						getListenerList().get(0).addClickNumber();
 						correspondingDepictionEntry.setWalls(getSelectedWalls());
 						wallTree.setWall(getSelectedWalls());
+
 					}
 				};
+				Util.doLogging("Wall Position showing");
 				pe.show();
 				// PopupPanel positionEditorPopUp = new PopupPanel();
 				// positionEditorPopUp.add(pe);
@@ -1814,7 +1807,6 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 		showAnnotationTB.setToolTip(Util.createToolTip("Show or Hide Annotations.", "This will show or hide all Annotations."));
-				.setToolTip(Util.createToolTip("Show or Hide Annotations.", "This will show or hide all Annotations."));
 		ToolButton modifiedToolButtonImage = new ToolButton(new IconConfig("foldButton", "foldButtonOver"));
 		modifiedToolButtonImage.setToolTip(Util.createToolTip("show modification history"));
 		modifiedToolButtonImage.addSelectHandler(new SelectHandler() {
@@ -2163,39 +2155,43 @@ public class DepictionEditor extends AbstractEditor {
 		});
 
 		ToolButton closeToolButton = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
-		closeToolButton.setToolTip(Util.createToolTip("close"));
+		closeToolButton.setToolTip(Util.createToolTip("close editor"));
 		closeToolButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-				de.cses.client.Util.showYesNo("Exit Warning!", "Do you wish to save before exiting?",
-						new SelectHandler() {
-
-							@Override
-							public void onSelect(SelectEvent event) {
-								iconographySelector.imgPopHide();
-								Util.doLogging("Depiction Save triggert by Close-Button");
-								save(true, 0);
-								closeEditor(null);
-							}
-						}, new SelectHandler() {
-
-							@Override
-							public void onSelect(SelectEvent event) {
-								iconographySelector.imgPopHide();
-								bibliographySelector.clearPages();
-								closeEditor(null);
-							}
-						}, new KeyDownHandler() {
-
-							@Override
-							public void onKeyDown(KeyDownEvent e) {
-								iconographySelector.imgPopHide();
-								if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+				if (saveToolButton.isEnabled()) {
+					de.cses.client.Util.showYesNo("Exit Warning!", "Do you wish to save before exiting?",
+							new SelectHandler() {
+	
+								@Override
+								public void onSelect(SelectEvent event) {
+									iconographySelector.imgPopHide();
+									Util.doLogging("Depiction Save triggert by Close-Button");
+									save(true, 0);
 									closeEditor(null);
 								}
-							}
-
-						});
+							}, new SelectHandler() {
+	
+								@Override
+								public void onSelect(SelectEvent event) {
+									iconographySelector.imgPopHide();
+									bibliographySelector.clearPages();
+									closeEditor(null);
+								}
+							}, new KeyDownHandler() {
+	
+								@Override
+								public void onKeyDown(KeyDownEvent e) {
+									iconographySelector.imgPopHide();
+									if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+										closeEditor(null);
+									}
+								}
+	
+							});
+				} else {
+					Info.display("Warning", "Wait for Saving-Process to finish");
+				}
 			}
 		});
 
@@ -2203,33 +2199,39 @@ public class DepictionEditor extends AbstractEditor {
 		mainPanel.addDomHandler(new KeyDownHandler() {
 			@Override
 			public void onKeyDown(KeyDownEvent e) {
-				if ((e.isShiftKeyDown()) && (e.getNativeKeyCode() == KeyCodes.KEY_ENTER)) {
-					de.cses.client.Util.showYesNo("Exit Warning!", "Do you wish to save before exiting?",
-							new SelectHandler() {
-
-								@Override
-								public void onSelect(SelectEvent event) {
-									Util.doLogging("Depiction Save triggert by Key-Combination");
-									save(true, 0);
+				if (saveToolButton.isEnabled()) {
+					if ((e.isShiftKeyDown()) && (e.getNativeKeyCode() == KeyCodes.KEY_ENTER)) {
+						de.cses.client.Util.showYesNo("Exit Warning!", "Do you wish to save before exiting?",
+						new SelectHandler() {
+	
+							@Override
+							public void onSelect(SelectEvent event) {
+								saveToolButton.disable();
+								Util.doLogging("Depiction Save triggert by Key-Combination");
+								save(true, 0);
+								closeEditor(null);
+							}
+						}, new SelectHandler() {
+	
+							@Override
+							public void onSelect(SelectEvent event) {
+								bibliographySelector.clearPages();
+								closeEditor(null);
+							}
+						}, new KeyDownHandler() {
+	
+							@Override
+							public void onKeyDown(KeyDownEvent e) {
+								if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
 									closeEditor(null);
 								}
-							}, new SelectHandler() {
-
-								@Override
-								public void onSelect(SelectEvent event) {
-									bibliographySelector.clearPages();
-									closeEditor(null);
-								}
-							}, new KeyDownHandler() {
-
-								@Override
-								public void onKeyDown(KeyDownEvent e) {
-									if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
-										closeEditor(null);
-									}
-								}
-
-							});
+							}
+	
+						});
+					}
+					
+				} else {
+					Info.display("Hotkey-Save canceled", "Saving already in process");
 				}
 			}
 		}, KeyDownEvent.getType());
@@ -2245,14 +2247,24 @@ public class DepictionEditor extends AbstractEditor {
 		mainPanel.addTool(deleteToolButton);
 		mainPanel.addTool(saveToolButton);
 		mainPanel.addTool(closeToolButton);
+		mainPanel.addBeforeShowHandler(new BeforeShowHandler() {
+
+			@Override
+			public void onBeforeShow(BeforeShowEvent event) {
+				Util.doLogging("showing");
+				bibliographySelector.setwidth(tabPanel.getOffsetWidth(),tabPanel.getOffsetHeight());
+				
+			}
+			
+		});
 		Resizable rs = new Resizable(mainPanel);
 		rs.addResizeEndHandler(new ResizeEndHandler() {
 			public void onResizeEnd(ResizeEndEvent event) {
-				bibliographySelector.setwidth(tabPanel.getOffsetWidth());
+				bibliographySelector.setwidth(tabPanel.getOffsetWidth(),tabPanel.getOffsetHeight());
 
 			}
 		});
-		bibliographySelector.setwidth((int) ((Window.getClientWidth() / 100 * 90) / ((1 - imageWindowRelation) * 10)));
+		bibliographySelector.setwidth(tabPanel.getOffsetWidth(),tabPanel.getOffsetHeight());
 		new Draggable(mainPanel, mainPanel.getHeader(), GWT.<DraggableAppearance>create(DraggableAppearance.class));
 
 	}
@@ -2291,6 +2303,8 @@ public class DepictionEditor extends AbstractEditor {
 	}
 
 	public void setfocus() {
+		Util.doLogging("focusing" + Integer.toString(mainPanel.getOffsetHeight()));
+		bibliographySelector.setwidth(tabPanel.getOffsetWidth(),mainPanel.getOffsetHeight());
 		setosd();
 
 	}
@@ -2302,6 +2316,7 @@ public class DepictionEditor extends AbstractEditor {
 	 * @param close
 	 */
 	protected void save(boolean close, int slide) {
+		System.out.println("depictionSave triggered");
 //		ArrayList<IconographyEntry> icolist = new ArrayList<IconographyEntry>();
 //		icolist.add(iconographySelector.getIconographyStroe().findModelWithKey("2152"));
 ////		icolist.add(iconographySelector.getIconographyStroe().findModelWithKey("2247"));
@@ -2329,6 +2344,7 @@ public class DepictionEditor extends AbstractEditor {
 			return;
 		}
 		ArrayList<ImageEntry> relatedImageEntryList = new ArrayList<ImageEntry>();
+		System.out.println("Length bibliographyEntries of Depiction " + Integer.toString(correspondingDepictionEntry.getDepictionID()) + "after save triggered, but before adding new updated entries: " + Integer.toString(correspondingDepictionEntry.getRelatedBibliographyList().size()));
 		for (int i = 0; i < imageEntryLS.size(); ++i) {
 			relatedImageEntryList.add(imageEntryLS.get(i));
 		}
@@ -2340,6 +2356,7 @@ public class DepictionEditor extends AbstractEditor {
 		correspondingDepictionEntry.setRelatedBibliographyList(bibliographySelector.getSelectedEntries());
 		correspondingDepictionEntry.setLastChangedByUser(UserLogin.getInstance().getUsername());
 		correspondingDepictionEntry.setCave(caveSelectionCB.getValue());
+		System.out.println("Length bibliographyEntries of Depiction " + Integer.toString(correspondingDepictionEntry.getDepictionID()) + "after save triggered, after adding new updated entries: " + Integer.toString(correspondingDepictionEntry.getRelatedBibliographyList().size()));
 			
 		Util.doLogging("correspondingDepictionEntry.getDepictionI.getD() = "
 				+ Integer.toString(correspondingDepictionEntry.getDepictionID()));

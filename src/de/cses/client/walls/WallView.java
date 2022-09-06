@@ -43,6 +43,7 @@ public class WallView {
 		this.wte = wte;
 		mainFP.setHeading("Layouts of Wall: "+ wte.getWallName());
 		mainFP.setSize("100%", "100%");
+		tabPanel.clear();
 		if (wte.getPosition() != null) {
 			osdLoader = new OSDLoader(wte.getPosition());
 			for (PositionEntry pe: wte.getPosition()) {

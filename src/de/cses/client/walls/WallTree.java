@@ -3,9 +3,25 @@ package de.cses.client.walls;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import com.google.gwt.cell.client.AbstractCell;
+import com.google.gwt.cell.client.Cell;
+import com.google.gwt.cell.client.ValueUpdater;
+import com.google.gwt.cell.client.Cell.Context;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.BrowserEvents;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.safehtml.shared.UriUtils;
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.Store;
@@ -21,8 +37,10 @@ import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
 import com.sencha.gxt.widget.core.client.tree.TreeStyle;
 
 import de.cses.client.Util;
+import de.cses.client.depictions.ImageXTemplate;
 import de.cses.client.depictions.DepictionDataDisplay.Images;
 import de.cses.shared.CaveEntry;
+import de.cses.shared.IconographyEntry;
 import de.cses.shared.WallTreeEntry;
 
 
@@ -37,6 +55,35 @@ public class WallTree {
 	private StoreFilterField<WallTreeEntry> filterField;
 	Collection<WallTreeEntry> elements;
 	public BorderLayoutContainer wallSelectorBLC = new BorderLayoutContainer();
+	
+	class CustomWallCell extends AbstractCell<String> {
+	    private ImageXTemplate imageTemplate = GWT.create(ImageXTemplate.class);
+	    public CustomWallCell(String... consumedEvents) {
+	        super(consumedEvents);
+	      }
+	    public CustomWallCell(Set<String> consumedEvents) {
+	        super(consumedEvents);
+	      }
+
+	    @Override
+	    public void render(Context context, String ie, SafeHtmlBuilder sb) {
+	    	boolean found = false;
+	    	WallTreeEntry wall = null;
+	    	for (WallTreeEntry wallEntry : allEntries) {
+	    			if (Integer.toString(wallEntry.getWallLocationID())==context.getKey()) {
+	    				found=true;
+	    				wall = wallEntry;
+	    				break;
+	    			}
+	    	}
+	    	if (found) {
+	    		sb.append(SafeHtmlUtils.fromTrustedString("<details><summary>"+ie + "</summary>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</details>"));
+	    	}else {
+	    		sb.append(SafeHtmlUtils.fromTrustedString("<p style=\"color:red;\">"+ie + " (" + context.getKey()+")</p>"));
+	    	}
+	    }
+
+	}
 
 	class WallTreeEntryKeyProvider implements ModelKeyProvider<WallTreeEntry> {
 		@Override
@@ -79,7 +126,6 @@ public class WallTree {
 		setWallTreeStore(elements, dropunselected, wallIDs);
 	}
 	private void processParentWallTreeEntry( WallTreeEntry item) {
-		
 			if (cEntry==null) {
 				for (WallTreeEntry child : item.getChildren()) {
 //					child.setPosition(null);
@@ -147,7 +193,14 @@ public class WallTree {
 					}
 					break;
 				default:
-					break;
+					for (WallTreeEntry child : item.getChildren()) {
+//						child.setPosition(null);
+						wallTreeStore.add(item, child);	
+						allEntries.add(child);
+						if (child.getChildren() != null) {
+							processParentWallTreeEntry(child);
+						}
+					}
 				}
 			}
 	}
@@ -207,7 +260,7 @@ public class WallTree {
 	}
 	public void findParent(WallTreeEntry child) {
 		if (child.getParentID()==0) {
-		    Util.doLogging("Found: "+Integer.toString(child.getParentID())+" - "+Integer.toString(child.getWallLocationID()));
+		    // Util.doLogging("Found: "+Integer.toString(child.getParentID())+" - "+Integer.toString(child.getWallLocationID()));
 		    if (wallTreeStore.findModel(child)==null) {
 		    	wallTreeStore.add(child);
 		    }
@@ -220,7 +273,7 @@ public class WallTree {
 			if (wall.getWallLocationID()==child.getParentID()) {
 
 					findParent(wall);
-					Util.doLogging("Found: "+child.getText()+" - "+child.getText());
+					// Util.doLogging("Found: "+child.getText()+" - "+child.getText());
 				    if (wallTreeStore.findModel(child)==null) {
 				    	wallTreeStore.add(wall, child);
 				    }
@@ -236,13 +289,12 @@ public class WallTree {
 
 
 	public void setWallTreeStore(Collection<WallTreeEntry> elements, boolean dropunselected, List<WallTreeEntry> wallIDs) {
-		Util.doLogging("Länge von Elements:"+ Integer.toString(elements.size()));
 		for (WallTreeEntry item : elements) {
 			
 			wallTreeStore.add(item);
 			allEntries.add(item);
 			if (item.getChildren() != null) {
-
+				Util.doLogging("here");
 					//if (item.getParentID()==null) {
 					processParentWallTreeEntry(item);
 			}
@@ -253,6 +305,7 @@ public class WallTree {
 		else {
 			selectitems(wallIDs);
 		}
+		Util.doLogging("finished");
 
 	}
 	public void dropunselected(List<WallTreeEntry> wallIDs) {
@@ -263,10 +316,8 @@ public class WallTree {
 			
 		}
 	}
-		
-	public void selectitems(List<WallTreeEntry> wallIDs) {
-		wallTree.setCheckStyle(CheckCascade.PARENTS);
-		for (WallTreeEntry wte : wallTree.getStore().getAll()) {
+	private void selectChildren(WallTreeEntry wte, List<WallTreeEntry> wallIDs) {
+		for (WallTreeEntry children : wte.getChildren()) {
 			Boolean found = false;
 			for (WallTreeEntry wall : wallIDs) {
 				if (wall.getWallLocationID()==wte.getWallLocationID()) {
@@ -279,13 +330,35 @@ public class WallTree {
 				wallTree.getStore().findModel(wte).setPosition(null);
 			}
 		}
-		for (WallTreeEntry wall : wallIDs) {
-					Util.doLogging(Integer.toString(wall.getWallLocationID()));
-					if (wall.getWallLocationID()!=0) {
-						wallTreeStore.findModelWithKey(Integer.toString(wall.getWallLocationID())).setPosition(wall.getPosition());
-						wallTree.setChecked(wall, CheckState.CHECKED);
-					}
+
+	}
+	public void selectitems(List<WallTreeEntry> wallIDs) {
+		wallTree.setCheckStyle(CheckCascade.PARENTS);
+		for (WallTreeEntry wte : allEntries) {
+			Boolean found = false;
+			for (WallTreeEntry wall : wallIDs) {
+				if (wall.getWallLocationID()==wte.getWallLocationID()) {
+					found=true;
+					WallTreeEntry foundWte = wallTree.getStore().findModel(wte);
+					foundWte.setPosition(wall.getPosition());
+					wallTree.setChecked(foundWte, CheckState.CHECKED);
+					break;
 				}
+			}
+			if (!found) {
+				WallTreeEntry wall = wallTree.getStore().findModelWithKey(Integer.toString(wte.getWallLocationID()));
+				//wall.setPosition(null);
+			}
+		}
+//		for (WallTreeEntry wall : wallIDs) {
+//					Util.doLogging("walllocation "+ Integer.toString(wall.getWallLocationID()));
+//					if (wall.getWallLocationID()!=0) {
+//						WallTreeEntry wte = wallTree.getStore().findModelWithKey("16");
+//						wte = wallTree.getStore().findModelWithKey(Integer.toString(wall.getWallLocationID()));
+//						wte.setPosition(wall.getPosition());
+//						wallTree.setChecked(wall, CheckState.CHECKED);
+//					}
+//				}
 
 	}
 		
@@ -307,6 +380,10 @@ public class WallTree {
 			}
 
 		};
+		Set<String> events = new HashSet<String>();
+		Cell<String> cCell = new CustomWallCell(events);
+		wallTree.setCell(cCell);
+
 		filterField = new StoreFilterField<WallTreeEntry>() {
 
 			@Override

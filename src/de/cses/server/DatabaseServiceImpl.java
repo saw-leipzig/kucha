@@ -87,6 +87,10 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.iconographyIDisUsed(iconographyID, OrnamentID);
 	}
+	public boolean isGoodDimension(int caveID, int register, int number) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.isGoodDimension(caveID, register, number);
+	}
 	public String getContext() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getContext();

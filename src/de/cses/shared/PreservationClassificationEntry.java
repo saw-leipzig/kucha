@@ -13,7 +13,6 @@
  */
 package de.cses.shared;
 
-import org.w3c.dom.views.AbstractView;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 

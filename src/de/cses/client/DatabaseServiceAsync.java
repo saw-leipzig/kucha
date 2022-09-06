@@ -176,6 +176,8 @@ public interface DatabaseServiceAsync {
 
 	void iconographyIDisUsed(int iconographyID, int OrnamentID, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
+	void isGoodDimension(int caveID, int register, int number, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
+
 	void getPublicationEntry(int id, AsyncCallback<PublicationEntry> asyncCallback) throws IllegalArgumentException;
 
 	void getAuthorEntry(int id, AsyncCallback<AuthorEntry> asyncCallback) throws IllegalArgumentException;
@@ -233,6 +235,8 @@ public interface DatabaseServiceAsync {
 	void getOrnamentsWHERE(String sqlWhere, AsyncCallback<ArrayList<OrnamentEntry>> asyncCallback) throws IllegalArgumentException;
 
 	void resetPassword(UserEntry currentUser, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
+
+	void resetPasswordFrontEnd(UserEntry currentUser, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
 	void getCeilingTypes(AsyncCallback<ArrayList<CeilingTypeEntry>> asyncCallback) throws IllegalArgumentException;
 
@@ -388,6 +392,8 @@ public interface DatabaseServiceAsync {
 	void updateUserEntryFrontEnd(UserEntry userEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
 	void insertUserEntry(UserEntry entry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
+
+	void saveWebPageUser(UserEntry entry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 
 	void saveCollectedEntries(String sessionID, String collectionLabel, Boolean isGroupCollection, ArrayList<AbstractEntry> entryList, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 

@@ -33,6 +33,8 @@ import com.google.gwt.editor.client.Editor.Path;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
@@ -70,6 +72,8 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.CancelEditEvent.CancelEditHandler;
 import com.sencha.gxt.widget.core.client.event.CompleteEditEvent.CompleteEditHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
+import com.sencha.gxt.widget.core.client.event.StartEditEvent;
+import com.sencha.gxt.widget.core.client.event.StartEditEvent.StartEditHandler;
 import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.NumberField;
@@ -124,6 +128,7 @@ public class PositionEditor {
 	private WallView wv = new WallView();
 	private List<WallTreeEntry> walls;
 	private boolean setSearch;
+	private CheckBox exact;
 	int init= 0;
 	final PositionViewTemplates pvTemplates = GWT.create(PositionViewTemplates.class);
 	private FramedPanel selectWallFP = null;
@@ -137,6 +142,7 @@ public class PositionEditor {
 	private SimpleComboBox<String> positionEntriesCB;
 	private GridRowEditing<PositionEntry> editing;
 	private boolean isCheckable = true;
+	PositionEntry peEdit = null;
 	NumberField<Integer> register = new NumberField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
 	NumberField<Integer> number = new NumberField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
 	private SimpleComboBox<PositionEntry> selectedPosition = new SimpleComboBox<PositionEntry>(new LabelProvider<PositionEntry>() {
@@ -521,14 +527,43 @@ public class PositionEditor {
 					}
 				}
 			});
+	    editing.addStartEditHandler(new StartEditHandler<PositionEntry>() {
+
+			@Override
+			public void onStartEdit(StartEditEvent<PositionEntry> event) {
+				// TODO Auto-generated method stub
+				peEdit = event.getSource().getEditableGrid().getSelectionModel().getSelectedItem();
+			}
+	    	
+	    });
 	    editing.addCompleteEditHandler(new CompleteEditHandler<PositionEntry>() {
 				
 				@Override
 				public void onCompleteEdit(CompleteEditEvent<PositionEntry> event) {
-					PositionEntry entry = event.getSource().getEditableGrid().getSelectionModel().getSelectedItem();
-					if (entry!=null) {
-						if (entry.getPositionID() == 0 && (!positionEntriesCB.isValid() || !directionNF.isValid() || !typeNF.isValid() || !registerNF.isValid())) {
-							sourceStore.remove(entry);
+					PositionEntry peNew = event.getSource().getEditableGrid().getSelectionModel().getSelectedItem();
+					if (peNew!=null) {
+						if (peNew.getPositionID() == 0 && (!positionEntriesCB.isValid() || !directionNF.isValid() || !typeNF.isValid() || !registerNF.isValid())) {
+							sourceStore.remove(peNew);
+						} else {
+							dbService.isGoodDimension(entry.getCaveID(), peNew.getRegisters(), peNew.getColumns(), new AsyncCallback<Boolean>() {
+
+								@Override
+								public void onFailure(Throwable caught) {
+									// TODO Auto-generated method stub
+									Util.doLogging(caught.getLocalizedMessage());
+								}
+
+								@Override
+								public void onSuccess(Boolean result) {
+									if (result) {
+										Info.display("New Walldimensions", "good");
+									} else {
+										Info.display("New Walldimensions declined!", "there are Entries, which would be outside the new dimensions.");
+										sourceStore.remove(peNew);
+										sourceStore.add(peEdit);
+									}
+								}
+							});
 						}
 					}
 				}
@@ -547,7 +582,7 @@ public class PositionEditor {
 			};
 		});
 		ToolButton savepositionTB = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
-		savepositionTB.setToolTip(Util.createToolTip("Edit Wall Position"));
+		savepositionTB.setToolTip(Util.createToolTip("Save Wall Positions"));
 		savepositionTB.addSelectHandler(new SelectHandler() {
 
 			@Override
@@ -576,6 +611,30 @@ public class PositionEditor {
 					for (PositionEntry pe: oldPositions) {
 						if (!positions.contains(pe)) {
 							newPositions.add(pe);
+						} else {
+							for (PositionEntry peNew: positions) {
+								if (peNew.getPositionID() == pe.getPositionID()) {
+									if ((peNew.getRegisters() < pe.getRegisters())||(peNew.getColumns() < pe.getColumns())) {
+										dbService.isGoodDimension(entry.getCaveID(), peNew.getRegisters(), peNew.getColumns(), new AsyncCallback<Boolean>() {
+
+											@Override
+											public void onFailure(Throwable caught) {
+												// TODO Auto-generated method stub
+												Util.doLogging(caught.getLocalizedMessage());
+											}
+
+											@Override
+											public void onSuccess(Boolean result) {
+												if (result) {
+													Info.display("New Walldimensions", "good");
+												} else {
+													Info.display("New Walldimensions", "bad");
+												}
+											}
+										});
+									}
+								}
+							}
 						}
 					}
 				}
@@ -703,22 +762,70 @@ public class PositionEditor {
 						@Override
 						public void onValueChange(ValueChangeEvent event) {
 							coordinatesEntryLS.clear();
-
-							for (PositionEntry pe: entry.getWallPositions().get(wallTree.wallTree.getSelectionModel().getSelectedItem().getWallLocationID())) {
+							CaveEntry cEntry = entry;
+							Map<Integer,ArrayList<PositionEntry>> map = cEntry.getWallPositions();
+							WallTreeEntry wall = wallTree.wallTree.getSelectionModel().getSelectedItem();
+							Integer wallLocationID = wall.getWallLocationID();
+							ArrayList<PositionEntry> peList = map.get(wallLocationID);
+							if (peList == null) {
+								peList = new ArrayList<PositionEntry>();
+							}
+							Boolean found = false;
+							for (PositionEntry pe: peList) {
 								PositionEntry changedPosition = (PositionEntry)(event.getValue());
+								PositionEntry depictionPositionChosen = null;
+								for (PositionEntry depictionPosition: wallTree.wallTree.getSelectionModel().getSelectedItem().getPosition()) {
+									if (depictionPosition.getPositionID() == changedPosition.getPositionID()) {
+										depictionPositionChosen =  depictionPosition;
+										exact.setValue(depictionPositionChosen.getExact());
+										break;
+									}
+								}
 								if (changedPosition.getPositionID()== pe.getPositionID()) {
+									found = true;
 									if ((pe.getColumns()>-1)&&(pe.getRegisters()>-1)) {
 										for (int i=1;i<=pe.getRegisters();i++) {
 											for (int j=1;j<=pe.getColumns();j++) {
 												CoordinatesEntry ce = new CoordinatesEntry(i, j);
 												coordinatesEntryLS.add(ce);
+												if (depictionPositionChosen != null) {
+													for (CoordinatesEntry ceSelected: depictionPositionChosen.getCoodinates()) {
+														if ((ce.getRegister() == ceSelected.getRegister()) && (ce.getNumber() == ceSelected.getNumber())) {
+															coordinatesLV.getSelectionModel().select(ce, true);
+														}
+													}	
+												}
 											}
 										}
 										break;	
 									}
 								}
 							}
+							if (found != true) {
+								Util.showYesNo("No Dimensions are stored for this position!", "Do you wish to store dimensions now?", new SelectHandler() {
+									@Override
+									public void onSelect(SelectEvent event) {
+										editWallGrid.clear();
+										editWallGrid.add(positionFP);
+										editWallGrid.center();
+									}
+								}, new SelectHandler() {
+
+									@Override
+									public void onSelect(SelectEvent event) {
+									}
+								}, new KeyDownHandler() {
+
+									@Override
+									public void onKeyDown(KeyDownEvent e) {
+										editWallGrid.clear();
+										editWallGrid.add(positionFP);
+										editWallGrid.center();
+									}
 							
+									
+								});
+							}
 						}
 						
 					});
@@ -726,11 +833,12 @@ public class PositionEditor {
 
 						@Override
 						public void onSelectionChanged(SelectionChangedEvent<PositionEntry> event) {
-//							selectedPosition.getStore().clear();
-//							for (PositionEntry pe: event.getSelection()) {
-//								selectedPosition.add(pe);
-//							}
-//							selectedPosition.select(0);
+							selectedPosition.clear();
+							selectedPosition.getStore().clear();
+							for (PositionEntry pe: event.getSelection()) {
+								selectedPosition.add(pe);
+								selectedPosition.select(pe);
+							}
 						}
 						
 					});
@@ -743,7 +851,7 @@ public class PositionEditor {
 					FramedPanel fpSelectedPosition = new FramedPanel();
 					fpSelectedPosition.setHeading("Selected Position");
 					fpSelectedPosition.add(selectedPosition);
-					CheckBox exact = new CheckBox();
+					exact = new CheckBox();
 					exact.setBoxLabel("exact");
 					//exact.setValue(bibEntry.isOfficialTitleTranslation());
 					FramedPanel coordinatesFP = new FramedPanel();
@@ -761,14 +869,26 @@ public class PositionEditor {
 
 							}));
 					coordinatesLV.getSelectionModel().setSelectionMode(SelectionMode.MULTI);
+					coordinatesLV.getSelectionModel().addSelectionChangedHandler(new SelectionChangedHandler<CoordinatesEntry>() {
 
+						@Override
+						public void onSelectionChanged(SelectionChangedEvent<CoordinatesEntry> event) {
+							ArrayList<CoordinatesEntry> coordinates = new ArrayList<CoordinatesEntry>();
+							for (CoordinatesEntry pe: event.getSelection()) {
+								coordinates.add(pe);
+							}
+							PositionEntry pos = selectedPosition.getStore().get(selectedPosition.getSelectedIndex());
+							pos.setCoodinates(coordinates);
+						}
+						
+					});
 					coordinatesFP.add(coordinatesLV);
 
 					dimensionVLC.setHeight(600);
 					dimensionVLC.setWidth(400);
-					dimensionVLC.add(fpSelectedPosition, new VerticalLayoutData(1.0, 1));
-					// dimensionVLC.add(exact, new VerticalLayoutData(1.0, 0.1));
-					// dimensionVLC.add(coordinatesFP, new VerticalLayoutData(1.0, 0.7));
+					dimensionVLC.add(fpSelectedPosition, new VerticalLayoutData(1.0, 0.2));
+					dimensionVLC.add(exact, new VerticalLayoutData(1.0, 0.1));
+					dimensionVLC.add(coordinatesFP, new VerticalLayoutData(1.0, 0.7));
 					
 					fpDimension.add(dimensionVLC);
 					VerticalLayoutContainer positionVLC = new VerticalLayoutContainer();
@@ -797,7 +917,6 @@ public class PositionEditor {
 							for (PositionEntry pe : PositionSelectionLV.getSelectionModel().getSelectedItems()) {
 								positions.add(pe);
 							};
-							
 							wallTree.wallTree.getSelectionModel().getSelectedItem().setPosition(positions);
 					
 							Info.display("Test: ", wallTree.wallTree.getSelectionModel().getSelectedItem().getText());
@@ -902,6 +1021,7 @@ public class PositionEditor {
 	// dazugehoerigen Relationen Tabellen
 	
 	public void show() {
+		Util.doLogging("blubb");
 		//Aufruf mit leeren Feldern f�r die Eingabe
 		popup = new PopupPanel();
 		//this.caveEntry = OrnamenticEditor.ornamentCaveRelationEditor.getCaveEntryComboBox().getValue();

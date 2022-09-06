@@ -52,6 +52,7 @@ public class DepictionEntry extends AbstractEntry {
 	private ArrayList<AnnotatedBibliographyEntry> relatedBibliographyList = new ArrayList<AnnotatedBibliographyEntry>();
 	private ArrayList<IconographyEntry> relatedIconographyList = new ArrayList<IconographyEntry>();
 	private ArrayList<AnnotationEntry> relatedAnnotationList = new ArrayList<AnnotationEntry>();
+	private HashMap<Integer, Integer> imageSortInfo = null;
 
 	public DepictionEntry() { }
 
@@ -84,7 +85,7 @@ public class DepictionEntry extends AbstractEntry {
 			String backgroundColour, String generalRemarks, String otherSuggestedIdentifications, double width, double height, ExpeditionEntry expedition,
 			Date purchaseDate, LocationEntry location, String inventoryNumber, VendorEntry vendor, int storyID, CaveEntry cave,List<WallTreeEntry> wallIDs, int absoluteLeft,
 			int absoluteTop, int modeOfRepresentationID, String shortName, String positionNotes, int masterImageID, int accessLevel, String lastChangedByUser, 
-			String lastChangedOnDate, ArrayList<AnnotationEntry> relatedAnnotationList) {
+			String lastChangedOnDate, ArrayList<AnnotationEntry> relatedAnnotationList, HashMap<Integer, Integer> imageSortInfo) {
 		super();
 		this.depictionID = depictionID;
 		this.styleID = styleID;
@@ -121,12 +122,13 @@ public class DepictionEntry extends AbstractEntry {
 		this.setLastChangedByUser(lastChangedByUser);
 		this.setModifiedOn(lastChangedOnDate);
 		this.relatedAnnotationList=relatedAnnotationList;
+		this.imageSortInfo= imageSortInfo;
 	}
 
 	public DepictionEntry clone() {
 		DepictionEntry clonedDepictionEntry = new DepictionEntry(depictionID, styleID, inscriptions, separateAksaras, dating, description, backgroundColour, generalRemarks,
 				otherSuggestedIdentifications, width, height, expedition, purchaseDate, location, inventoryNumber, vendor, storyID,
-				cave, wallIDs, absoluteLeft, absoluteTop, modeOfRepresentationID, shortName, positionNotes, masterImageID, accessLevel, lastChangedByUser, modifiedOn, relatedAnnotationList);
+				cave, wallIDs, absoluteLeft, absoluteTop, modeOfRepresentationID, shortName, positionNotes, masterImageID, accessLevel, lastChangedByUser, modifiedOn, relatedAnnotationList, imageSortInfo);
 		ArrayList<ImageEntry> clonedRelatedImages = new ArrayList<ImageEntry>();
 		for (ImageEntry ie : this.relatedImages) {
 			clonedRelatedImages.add(ie);
@@ -168,6 +170,14 @@ public class DepictionEntry extends AbstractEntry {
 
 	public void setDepictionID(int depictionID) {
 		this.depictionID = depictionID;
+	}
+
+	public HashMap<Integer, Integer> getImageSortInfo() {
+		return imageSortInfo;
+	}
+
+	public void setImageSortInfo(HashMap<Integer, Integer> imageSortInfo) {
+		this.imageSortInfo = imageSortInfo;
 	}
 
 	public int getStyleID() {

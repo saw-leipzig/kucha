@@ -11,6 +11,8 @@ public class PositionEntry extends AbstractEntry {
 	public static final int RIGHT = 1;
 	public static final int RHOMBUS = 0;
 	public static final int SQHARE = 1;
+	public static final int EXACT = 0;
+	public static final int VAGUE = 1;
 	public static final List<String> DIRECTION_LABEL = Arrays.asList("left", "right");
 	public static final List<String> TYPE_LABEL = Arrays.asList("rhombus", "square");
 	
@@ -20,12 +22,14 @@ public class PositionEntry extends AbstractEntry {
 	private int columns = -1;
 	private int type;
 	private int direction;
+	private boolean exact;
+	
 	private ArrayList<CoordinatesEntry> coordinates;
 	public PositionEntry(int positionID, String name) {
 		this.positionID = positionID;
 		this.name = name;
 	}
-	public PositionEntry(int positionID, String name, Integer type, Integer direction, Integer registers, Integer columns, ArrayList<CoordinatesEntry> coordinates) {
+	public PositionEntry(int positionID, String name, Integer type, Integer direction, Integer registers, Integer columns, ArrayList<CoordinatesEntry> coordinates, boolean exact) {
 		this.positionID = positionID;
 		this.name = name;
 		this.type = type;
@@ -42,6 +46,12 @@ public class PositionEntry extends AbstractEntry {
 	}
 	public int getType() {
 		return this.type;
+	}
+	public void setExact(boolean exact) {
+		this.exact = exact;
+	}
+	public boolean getExact() {
+		return this.exact;
 	}
 	public void setType(int type) {
 		this.type = type;
@@ -72,6 +82,26 @@ public class PositionEntry extends AbstractEntry {
 
 	public String getName() {
 		return name;
+	}
+	
+	public String getNameWithPosition() {
+		String position = " (";
+		if (coordinates != null) {
+			Boolean first = true;
+			for (CoordinatesEntry ce: coordinates) {
+				if (first) {
+					position = position + "Reg. " + Integer.toString(ce.getRegister()) + ", No. " + Integer.toString(ce.getNumber());
+					first = false;
+				} else {
+					position = position + "; Reg. " + Integer.toString(ce.getRegister()) + ", No. " + Integer.toString(ce.getNumber());
+				}
+			}
+			position = position + ")";
+			return name+position;
+		} else {
+			return name;
+		}
+		
 	}
 
 	public void setName(String name) {

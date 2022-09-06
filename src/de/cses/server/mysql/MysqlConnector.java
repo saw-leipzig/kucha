@@ -196,11 +196,7 @@ public class MysqlConnector implements IsSerializable {
 			this.iconography=iconography;
 			this.wallLocation=wallLocation;
 			this.location=location;
-			this.vendor=vendor;
-			this.publicationType=publicationType;
 			this.ornaments=ornaments;
-			this.orientation=orientation;
-			this.position=position;
 			this.bibKeyWords = bibKeyWords;
 			}
 		}
@@ -1274,6 +1270,47 @@ public class MysqlConnector implements IsSerializable {
 		this.isSerializing = false;
 		return true;
 	}
+	public HashMap<Integer, Integer> getImageSortInfo(Integer depictionID){
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		HashMap<Integer, Integer> sortInfo = new HashMap<Integer, Integer>();
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM DepictionImageSortInfo where DepictionID=?;");
+			pstmt.setInt(1, depictionID);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				System.out.println("ImageID: " + Integer.toString(rs.getInt("ImageID")) + ", SortInfo: " + Integer.toString(rs.getInt("SortInfo")));
+				sortInfo.put(rs.getInt("ImageID"), rs.getInt("SortInfo"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+			return null;
+		}
+		if (sortInfo.size() > 0) {
+			return sortInfo;			
+		} else {
+			return null;
+		}
+	}
+	public void setImageSortInfo(Integer depictionID, HashMap<Integer, Integer> sortInfo){
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try{
+			for (Integer imageID: sortInfo.keySet()) {
+				System.out.println("writing sortinfo");
+				pstmt = dbc.prepareStatement("INSERT INTO DepictionImageSortInfo (DepictionId, ImageID, SortInfo) VALUES (?, ?, ?);");
+				pstmt.setInt(1, depictionID);
+				pstmt.setInt(2, imageID);
+				pstmt.setInt(3, sortInfo.get(imageID));
+				pstmt.executeUpdate();
+				pstmt.close();
+			}			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+		}
+	}
 	public String saveWebPageUser(UserEntry user) {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -1789,72 +1826,77 @@ public class MysqlConnector implements IsSerializable {
 				DepictionEntry de= getDepictionEntry(rs.getInt("DepictionID"),sessionID);
 				System.out.println("Found Depiction"+de.getDepictionID());
 				CaveEntry item = de.getCave();
-				String site = item.getSiteID() > 0 ? getSites(" SiteID="+item.getSiteID()).get(0).getShortName() : "";
-				String district = item.getDistrictID() > 0 ? getDistricts(" DistrictID="+item.getDistrictID()).get(0).getName() : "";
-				String region = item.getRegionID() > 0 ? getRegions(" RegionID="+item.getRegionID()).get(0).getEnglishName() : "";
-				String name=site  + " " + item.getOfficialNumber() + (!district.isEmpty() ? " / " + district : "") + (!region.isEmpty() ? " / " + region : "");
-				WallTreeEntry result = new WallTreeEntry(item.getCaveID()+1000,0,name,name );
-				boolean found = false;
-				for (WallTreeEntry res : results) {
-					if (result.getWallLocationID()==res.getWallLocationID()) {
-						found=true;
-						break;
-					}
-				}
-				if (!found){ 
-					System.out.println("add WallTreeEntry: "+result.getWallLocationID()+" - "+result.getParentID());
-					results.add(result);
-				}
-				ArrayList<WallTreeEntry> resultsWallsByDe = getwallsbyDepictionID(de.getDepictionID());
-				System.out.println("Länge der gefundenen Wall-Elemente: "+resultsWallsByDe.size());
-				for (WallTreeEntry resWallByDe : resultsWallsByDe) {
-					boolean found2 = false;
-					resWallByDe.setWallLocationID(Integer.parseInt(Integer.toString(resWallByDe.getWallLocationID())+Integer.toString(item.getCaveID())));
-					if ((resWallByDe.getParentID()==0)) {
-						resWallByDe.setParentID(result.getWallLocationID());
-					}
-					else {
-						resWallByDe.setParentID(Integer.parseInt(Integer.toString(resWallByDe.getParentID())+Integer.toString(item.getCaveID())));
-					}
-					Dictionary<Integer,PositionEntry> newPositions = new Hashtable();
-					int i = 0;
+				if (item != null) {
+					String site = "";
+					System.out.println(item.getSiteID());
+					site = item.getSiteID() > 0 ? getSites(" SiteID="+item.getSiteID()).get(0).getShortName() : "";					
+					String district = item.getDistrictID() > 0 ? getDistricts(" DistrictID="+item.getDistrictID()).get(0).getName() : "";
+					String region = item.getRegionID() > 0 ? getRegions(" RegionID="+item.getRegionID()).get(0).getEnglishName() : "";
+					String name=site  + " " + item.getOfficialNumber() + (!district.isEmpty() ? " / " + district : "") + (!region.isEmpty() ? " / " + region : "");
+					WallTreeEntry result = new WallTreeEntry(item.getCaveID()+1000,0,name,name );
+					boolean found = false;
 					for (WallTreeEntry res : results) {
-						if (resWallByDe.getWallLocationID()==res.getWallLocationID()) {
-							found2=true;
-							if (resWallByDe.getPosition()!=null) {
-								for (PositionEntry pe : resWallByDe.getPosition()) {
-									boolean foundPos = false;
-									for (PositionEntry posOld : res.getPosition()) {
-										if (pe.getPositionID()==posOld.getPositionID()) {
-											foundPos=true;
-											break;
-										}
-										if (!foundPos) {
-											newPositions.put(i,pe);
+						if (result.getWallLocationID()==res.getWallLocationID()) {
+							found=true;
+							break;
+						}
+					}
+					if (!found){ 
+						System.out.println("add WallTreeEntry: "+result.getWallLocationID()+" - "+result.getParentID());
+						results.add(result);
+					}
+					ArrayList<WallTreeEntry> resultsWallsByDe = getwallsbyDepictionID(de.getDepictionID());
+					System.out.println("Länge der gefundenen Wall-Elemente: "+resultsWallsByDe.size());
+					for (WallTreeEntry resWallByDe : resultsWallsByDe) {
+						boolean found2 = false;
+						resWallByDe.setWallLocationID(Integer.parseInt(Integer.toString(resWallByDe.getWallLocationID())+Integer.toString(item.getCaveID())));
+						if ((resWallByDe.getParentID()==0)) {
+							resWallByDe.setParentID(result.getWallLocationID());
+						}
+						else {
+							resWallByDe.setParentID(Integer.parseInt(Integer.toString(resWallByDe.getParentID())+Integer.toString(item.getCaveID())));
+						}
+						Dictionary<Integer,PositionEntry> newPositions = new Hashtable();
+						int i = 0;
+						for (WallTreeEntry res : results) {
+							if (resWallByDe.getWallLocationID()==res.getWallLocationID()) {
+								found2=true;
+								if (resWallByDe.getPosition()!=null) {
+									for (PositionEntry pe : resWallByDe.getPosition()) {
+										boolean foundPos = false;
+										for (PositionEntry posOld : res.getPosition()) {
+											if (pe.getPositionID()==posOld.getPositionID()) {
+												foundPos=true;
+												break;
+											}
+											if (!foundPos) {
+												newPositions.put(i,pe);
+											}
 										}
 									}
 								}
+								break;
 							}
-							break;
+							i+=1;
 						}
-						i+=1;
-					}
-					Enumeration<Integer> e = newPositions.keys();
-					while (e.hasMoreElements()) {
-						int key = e.nextElement();
-						results.get(key).addPosition(newPositions.get(key));
-					}
-				
-					if (!found2){ 
-						System.out.println("add WallTreeEntry: "+resWallByDe.getWallLocationID()+" - "+resWallByDe.getParentID());
-						results.add(resWallByDe);
-					}
-					else {
-						System.out.println("did not add WallTreeEntry: "+resWallByDe.getWallLocationID()+" - "+resWallByDe.getParentID());
-					}
-						
+						Enumeration<Integer> e = newPositions.keys();
+						while (e.hasMoreElements()) {
+							int key = e.nextElement();
+							results.get(key).addPosition(newPositions.get(key));
+						}
 					
+						if (!found2){ 
+							System.out.println("add WallTreeEntry: "+resWallByDe.getWallLocationID()+" - "+resWallByDe.getParentID());
+							results.add(resWallByDe);
+						}
+						else {
+							System.out.println("did not add WallTreeEntry: "+resWallByDe.getWallLocationID()+" - "+resWallByDe.getParentID());
+						}
+							
+						
+					}
 				}
+
 			}
 			rs.close();
 			pstmt.close();
@@ -2389,7 +2431,7 @@ public class MysqlConnector implements IsSerializable {
 						rs.getString("CaveLayoutComments"), rs.getBoolean("HasVolutedHorseShoeArch"), rs.getBoolean("HasSculptures"),
 						rs.getBoolean("HasClayFigures"), rs.getBoolean("HasImmitationOfMountains"),
 						rs.getBoolean("HasHolesForFixationOfPlasticalItems"), rs.getBoolean("HasWoodenConstruction"), rs.getInt("AccessLevel"),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
+						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), getWallDimension(rs.getInt("CaveID")));
 				ce.setCaveAreaList(getCaveAreas(ce.getCaveID()));
 				ce.setWallList(getWalls(ce.getCaveID()));
 				ce.setC14AnalysisUrlList(getC14AnalysisEntries(ce.getCaveID()));
@@ -2529,7 +2571,7 @@ public class MysqlConnector implements IsSerializable {
 						rs.getString("CaveLayoutComments"), rs.getBoolean("HasVolutedHorseShoeArch"), rs.getBoolean("HasSculptures"),
 						rs.getBoolean("HasClayFigures"), rs.getBoolean("HasImmitationOfMountains"),
 						rs.getBoolean("HasHolesForFixationOfPlasticalItems"), rs.getBoolean("HasWoodenConstruction"), rs.getInt("AccessLevel"), 
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
+						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), getWallDimension(rs.getInt("CaveID")));
 				ArrayList<CaveAreaEntry> caEntriesSelect = new ArrayList<CaveAreaEntry>();
 				for (CaveAreaEntry cae : caEntries) {
 					if (cae.getCaveID()==ce.getCaveID()) {
@@ -2600,35 +2642,40 @@ public class MysqlConnector implements IsSerializable {
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getCave wurde ausgelöst.");;
 		}
 		CaveEntry result = null;
-		Connection dbc = getConnection();
-		Statement stmt;
-		try {
-			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Caves WHERE CaveID=" + id);
-			if (rs.first()) {
-				result = new CaveEntry(rs.getInt("CaveID"), rs.getString("OfficialNumber"), rs.getString("HistoricName"),
-						rs.getString("OptionalHistoricName"), rs.getInt("CaveTypeID"), rs.getInt("SiteID"), rs.getInt("DistrictID"),
-						rs.getInt("RegionID"),	rs.getInt("OrientationID"),
-						rs.getString("StateOfPreservation"), rs.getString("Findings"),
-						rs.getString("Notes"), rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedInYear"),
-						rs.getInt("PreservationClassificationID"), rs.getInt("CaveGroupID"), rs.getString("OptionalCaveSketch"),
-						rs.getString("CaveLayoutComments"), rs.getBoolean("HasVolutedHorseShoeArch"), rs.getBoolean("HasSculptures"),
-						rs.getBoolean("HasClayFigures"), rs.getBoolean("HasImmitationOfMountains"),
-						rs.getBoolean("HasHolesForFixationOfPlasticalItems"), rs.getBoolean("HasWoodenConstruction"), rs.getInt("AccessLevel"),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
-				result.setCaveAreaList(getCaveAreas(result.getCaveID()));
-				result.setWallList(getWalls(result.getCaveID()));
-				result.setC14AnalysisUrlList(getC14AnalysisEntries(result.getCaveID()));
-				result.setC14DocumentList(getC14Documents(result.getCaveID()));
-				result.setCaveSketchList(getCaveSketchEntriesFromCave(result.getCaveID()));
-				result.setRelatedBibliographyList(getRelatedBibliographyFromCave(result.getCaveID()));
-			}
-			rs.close();
-			stmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
-			return null;
+		if (id == -1) {
+			result = new CaveEntry();
+			result.setCaveID(-1);
+		} else {
+			Connection dbc = getConnection();
+			Statement stmt;
+			try {
+				stmt = dbc.createStatement();
+				ResultSet rs = stmt.executeQuery("SELECT * FROM Caves WHERE CaveID=" + id);
+				if (rs.first()) {
+					result = new CaveEntry(rs.getInt("CaveID"), rs.getString("OfficialNumber"), rs.getString("HistoricName"),
+							rs.getString("OptionalHistoricName"), rs.getInt("CaveTypeID"), rs.getInt("SiteID"), rs.getInt("DistrictID"),
+							rs.getInt("RegionID"),	rs.getInt("OrientationID"),
+							rs.getString("StateOfPreservation"), rs.getString("Findings"),
+							rs.getString("Notes"), rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedInYear"),
+							rs.getInt("PreservationClassificationID"), rs.getInt("CaveGroupID"), rs.getString("OptionalCaveSketch"),
+							rs.getString("CaveLayoutComments"), rs.getBoolean("HasVolutedHorseShoeArch"), rs.getBoolean("HasSculptures"),
+							rs.getBoolean("HasClayFigures"), rs.getBoolean("HasImmitationOfMountains"),
+							rs.getBoolean("HasHolesForFixationOfPlasticalItems"), rs.getBoolean("HasWoodenConstruction"), rs.getInt("AccessLevel"),
+							new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), getWallDimension(rs.getInt("CaveID")));
+					result.setCaveAreaList(getCaveAreas(result.getCaveID()));
+					result.setWallList(getWalls(result.getCaveID()));
+					result.setC14AnalysisUrlList(getC14AnalysisEntries(result.getCaveID()));
+					result.setC14DocumentList(getC14Documents(result.getCaveID()));
+					result.setCaveSketchList(getCaveSketchEntriesFromCave(result.getCaveID()));
+					result.setRelatedBibliographyList(getRelatedBibliographyFromCave(result.getCaveID()));
+				}
+				rs.close();
+				stmt.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+				System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+				return null;
+			}			
 		}
 		if (dologging){
 		long end = System.currentTimeMillis();
@@ -2659,7 +2706,7 @@ public class MysqlConnector implements IsSerializable {
 						rs.getString("CaveLayoutComments"), rs.getBoolean("HasVolutedHorseShoeArch"), rs.getBoolean("HasSculptures"),
 						rs.getBoolean("HasClayFigures"), rs.getBoolean("HasImmitationOfMountains"),
 						rs.getBoolean("HasHolesForFixationOfPlasticalItems"), rs.getBoolean("HasWoodenConstruction"), rs.getInt("AccessLevel"),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
+						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), getWallDimension(rs.getInt("CaveID")));
 				ce.setCaveAreaList(getCaveAreas(ce.getCaveID()));
 				ce.setWallList(getWalls(ce.getCaveID()));
 				ce.setC14AnalysisUrlList(getC14AnalysisEntries(ce.getCaveID()));
@@ -2876,7 +2923,7 @@ public class MysqlConnector implements IsSerializable {
 			ResultSet rs = stmt.executeQuery("Select * from CavePositionRelation inner join Position on (CavePositionRelation.PositionID = Position.PositionID) where CaveID = "+Integer.toString(caveID));
 			while (rs.next()) { 
 				//System.out.println("got result");				
-				PositionEntry pe = new PositionEntry(rs.getInt("Position.PositionID"), rs.getString("Position.Name"), rs.getInt("CavePositionRelation.Type"),rs.getInt("CavePositionRelation.Direction"), rs.getInt("CavePositionRelation.Registers"),rs.getInt("CavePositionRelation.Columns"), null);
+				PositionEntry pe = new PositionEntry(rs.getInt("Position.PositionID"), rs.getString("Position.Name"), rs.getInt("CavePositionRelation.Type"),rs.getInt("CavePositionRelation.Direction"), rs.getInt("CavePositionRelation.Registers"),rs.getInt("CavePositionRelation.Columns"), null, rs.getBoolean("Position.Name"));
 				Integer wallID = rs.getInt("CavePositionRelation.WallID");
 				if (result.containsKey(wallID)) {
 					result.get(wallID).add(pe);
@@ -2901,7 +2948,6 @@ public class MysqlConnector implements IsSerializable {
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von saveOrnamentEntry brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
-
 	public int saveOrnamentEntry(OrnamentEntry ornamentEntry) {
 		long start = System.currentTimeMillis();
 		if (dologgingbegin){
@@ -2910,7 +2956,6 @@ public class MysqlConnector implements IsSerializable {
 		int newOrnamentID = 0;
 		Connection dbc = getConnection();
 		PreparedStatement ornamentStatement;
-		// deleteEntry("DELETE FROM Ornaments WHERE OrnamentID=" + ornamentEntry.getCode());
 		try {
 			ornamentStatement = dbc.prepareStatement("INSERT INTO Ornaments (Code, Description, Remarks, Interpretation, OrnamentReferences, OrnamentClassID, StructureOrganizationID, IconographyID, MasterImageID, AccessLevel, TourOrder) VALUES (?, ?, ?, ?, ?, ?, ?,?,?,?,?)",
 //					ornamentStatement = dbc.prepareStatement("INSERT INTO Ornaments (Code, Description, Remarks, Interpretation, OrnamentReferences, Annotation , OrnamentClassID, StructureOrganizationID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
@@ -3618,6 +3663,51 @@ public boolean isHan(String s) {
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateIconographyEntry brauchte "+diff + " Millisekunden.");;}}
 		return true;
 	}
+	public boolean updateWallTreeEntry(WallTreeEntry wte) {
+		System.out.println("Update WallTree Entry");
+		long start = System.currentTimeMillis();
+		if (dologgingbegin){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateWallTreeEntry wurde ausgelöst.");;
+		}
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("UPDATE WallLocationsTree SET ParentID=?, Text=?, search=? WHERE WallLocationID =?");
+			if (wte.getParentID()==0) {
+				pstmt.setNull(1, java.sql.Types.INTEGER);}
+			else {
+				pstmt.setInt(1, wte.getParentID());
+			}
+			pstmt.setString(2, wte.getText());
+			pstmt.setString(3, wte.getSearch());
+			pstmt.setInt(4, wte.getWallLocationID());
+			pstmt.executeUpdate();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+			return false;
+		}
+
+		wte.setModifiedOn("");
+		Gson gson = new Gson();
+		Date date = new Date(System.currentTimeMillis());
+		DateFormat df = DateFormat.getDateTimeInstance();
+
+		String url = serverProperties.getProperty("home.elastic.url");
+		int port = Integer.parseInt(serverProperties.getProperty("home.elastic.port"));
+		String elastic_user = serverProperties.getProperty("home.elastic.login");
+		String elastic_pw = serverProperties.getProperty("home.elastic.pw");
+		String json2 = gson.toJson(getWallTree(0));
+		json2 = json2.replace("\"text\"", "\"name\"");
+		String updateResult = doUploadToElastic("wallTree","{\"doc\":{\"wallTree\":" + json2 + "}}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, true);
+		ElasticResult er = gson.fromJson(updateResult, ElasticResult.class);
+		System.out.println(er.result + " "+ updateResult);
+		if (er.result != "noop") {
+			System.out.println(doUploadToElastic("wallTree-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"wallTree\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+		}
+	    wte.setModifiedOn(df.format(date));			
+				
 		if (dologging){
 		long end = System.currentTimeMillis();
 		long diff = (end-start);
@@ -3655,6 +3745,40 @@ public boolean isHan(String s) {
 			long diff = (end-start);
 		if (diff>100){
 			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von iconographyIDisUsed brauchte "+diff + " Millisekunden.");;}}
+			return false;
+		}
+	}
+	public boolean isGoodDimension(int caveID, int register, int number) {
+		long start = System.currentTimeMillis();
+		if (dologgingbegin){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von isGoodDimension wurde ausgelöst.");;
+		}
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("SELECT MAX(Register) as maxRegister, MAX(Number) maxNumber from PositionCoordinatesRelation inner join Depictions  on (PositionCoordinatesRelation.DepictionID = Depictions.DepictionID) WHERE Depictions.CaveID = ? and Depictions.deleted = 0 ");
+			pstmt.setInt(1, caveID);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()){
+				if ((rs.getInt("maxRegister") < register) && (rs.getInt("maxNumber") < number)  ) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+			else{
+				System.out.println("no registers set so far.");
+				return true;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+			System.out.println("error");
+			if (dologging){
+		long end = System.currentTimeMillis();
+			long diff = (end-start);
+		if (diff>100){
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von isGoodDimension brauchte "+diff + " Millisekunden.");;}}
 			return false;
 		}
 	}
@@ -4773,7 +4897,6 @@ public boolean isHan(String s) {
 		if (dologgingbegin){
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getAnnotatedBibliography wurde ausgelöst.");;
 		}
-
 		AnnotatedBibliographyEntry entry = null;
 		ArrayList<AnnotatedBibliographyEntry> result = new ArrayList<AnnotatedBibliographyEntry>();
 		Connection dbc = getConnection();
@@ -6595,9 +6718,13 @@ public boolean isHan(String s) {
 		}
 		deleteEntry("DELETE FROM DepictionWallsRelation WHERE DepictionID=" + de.getDepictionID());
 		deleteEntry("DELETE FROM WallPositionsRelation WHERE DepictionID=" + de.getDepictionID());
+		deleteEntry("DELETE FROM PositionCoordinatesRelation WHERE DepictionID=" + de.getDepictionID());
 		if (de.getWalls().size() > 0) {
+			System.err.println("saving walls");
 			insertDepictionWallsRelation(de.getDepictionID(), de.getWalls());
 		}//		System.err.println("DELETE FROM DepictionIconographyRelation WHERE DepictionID=" + de.getDepictionID());
+		deleteEntry("DELETE FROM DepictionImageSortInfo WHERE DepictionID=" + de.getDepictionID());
+		setImageSortInfo(de.getDepictionID(), de.getImageSortInfo());
 //		deleteEntry("DELETE FROM WallPositionsRelation WHERE DepictionID=" + de.getDepictionID());
 //		for ( WallTreeEntry wall : de.getWalls()) {
 //			if (wall.getPosition().size() > 0) {
@@ -6613,8 +6740,38 @@ public boolean isHan(String s) {
 		if (de.getRelatedBibliographyList().size() > 0) {
 			insertDepictionBibliographyRelation(de.getDepictionID(), de.getRelatedBibliographyList());
 		}
+		Date date = new Date(System.currentTimeMillis());
+		DateFormat df = DateFormat.getDateTimeInstance();
+		de.setModifiedOn(df.format(date));
 		protocollModifiedAbstractEntry(de, changes);
 		//serializeAllDepictionEntries("");
+		System.out.println("Depiction Entry Access-Level:" + Integer.toString(de.getAccessLevel()));
+		if (de.getAccessLevel() == 2) {
+			de.setModifiedOn("");
+			String json = prepareDepictionForElastic(de);
+			String filename=serverProperties.getProperty("home.jsons")+"result.json";		
+
+			String url = serverProperties.getProperty("home.elastic.url");
+			int port = Integer.parseInt(serverProperties.getProperty("home.elastic.port"));
+			String elastic_user = serverProperties.getProperty("home.elastic.login");
+			String elastic_pw = serverProperties.getProperty("home.elastic.pw");
+			
+			Gson gson = new Gson();
+			try {
+				String updateResult = doUploadToElastic(de.getUniqueID(),   "{\"doc\":"+json+"}", url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, true);
+				ElasticResult er = gson.fromJson(updateResult, ElasticResult.class);
+				System.out.println(er.result + " "+ updateResult);
+			    if (er.result == null || er.result != "noop") {
+			    	doUploadToElastic(de.getUniqueID()+"-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false);
+			    }
+			} catch (Exception ex){
+				String updateResult = doUploadToElastic(de.getUniqueID(),  json, url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, false);
+				System.out.println("exception:" + ex.getLocalizedMessage());
+				System.out.println("depictionentry was written new:" + updateResult);
+			}
+			de.setModifiedOn(df.format(date));			
+		}
+
 		System.err.println("==> updateDepictionEntry finished");
 		if (dologging){
 		long end = System.currentTimeMillis();
@@ -6661,13 +6818,17 @@ public boolean isHan(String s) {
 		PreparedStatement pstmt;
 		System.err.println("==> WallPositionsRelation called for DepictionID "+Integer.toString(depictionID)+" WallID "+Integer.toString(wallID)+" Size of Positions: "+Integer.toString(positions.size()));
 		try {
-			pstmt = dbc.prepareStatement("INSERT INTO WallPositionsRelation VALUES (?, ?,?)");
+			pstmt = dbc.prepareStatement("INSERT INTO WallPositionsRelation (DepictionID, WallID, PositionID, Exact) VALUES (?, ?,?, ?)");
 			for (PositionEntry entry : positions) {
 				System.out.println("Setze Position für DepictionID: "+depictionID+" WallID:"+wallID+ " Position: "+entry.getName());
 				pstmt.setInt(1, depictionID);
 				pstmt.setInt(2, wallID);
 				pstmt.setInt(3, entry.getPositionID());
+				pstmt.setBoolean(4, entry.getExact());
 				pstmt.executeUpdate();
+				if (entry.getCoodinates() != null) {
+					insertPositionsCoordinatesRelation(depictionID, wallID, entry.getPositionID(), entry.getCoodinates());
+				}
 			}
 			pstmt.close();
 		} catch (SQLException ex) {
@@ -6679,6 +6840,36 @@ public boolean isHan(String s) {
 		long diff = (end-start);
 		if (diff>100){
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertDepictionImageRelation brauchte "+diff + " Millisekunden.");;}}
+	}
+	private synchronized void insertPositionsCoordinatesRelation(int depictionID, int wallID, int positionID, ArrayList<CoordinatesEntry> coordinates) {
+		long start = System.currentTimeMillis();
+		if (dologgingbegin){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertPositionsCoordinatesRelation wurde ausgelöst.");;
+		}
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		System.err.println("==> insertPositionsCoordinatesRelation called for DepictionID "+Integer.toString(depictionID)+" WallID "+Integer.toString(wallID)+" Position: "+Integer.toString(positionID));
+		try {
+			pstmt = dbc.prepareStatement("INSERT INTO PositionCoordinatesRelation  (DepictionID, WallID, PositionID, Register, Number) VALUES (?, ?,?, ?, ?)");
+			for (CoordinatesEntry entry : coordinates) {
+				System.out.println("Setze Coordinates für DepictionID: "+depictionID+" WallID:"+wallID+ " Position: "+positionID+ "auf: Reg.: "+entry.getRegister()+", No.:"+entry.getNumber());
+				pstmt.setInt(1, depictionID);
+				pstmt.setInt(2, wallID);
+				pstmt.setInt(3, positionID);
+				pstmt.setInt(4, entry.getRegister());
+				pstmt.setInt(5, entry.getNumber());
+				pstmt.executeUpdate();
+			}
+			pstmt.close();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			return;
+		}
+		if (dologging){
+		long end = System.currentTimeMillis();
+		long diff = (end-start);
+		if (diff>100){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertPositionsCoordinatesRelation brauchte "+diff + " Millisekunden.");;}}
 	}
 	private synchronized void insertDepictionWallsRelation(int depictionID, List<WallTreeEntry> wallsEntryList) {
 		long start = System.currentTimeMillis();
@@ -10068,11 +10259,35 @@ public boolean isHan(String s) {
 		PreparedStatement pstmt;
 		ArrayList<PositionEntry> results = new ArrayList<PositionEntry>();
 		try {
-			pstmt = dbc.prepareStatement("SELECT DepictionID, WallID, Position.PositionID, Name FROM WallPositionsRelation inner join Position on (WallPositionsRelation.PositionID=Position.PositionID) WHERE DepictionID = "+depictionID+" and WallID = "+wallID);
+			pstmt = dbc.prepareStatement("SELECT DepictionID, WallID, Position.PositionID, Name, Exact FROM WallPositionsRelation inner join Position on (WallPositionsRelation.PositionID=Position.PositionID) WHERE DepictionID = "+depictionID+" and WallID = "+wallID);
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
 				if (rs.getInt("PositionID")!=-1){
-					results.add(new PositionEntry(rs.getInt("PositionID"),rs.getString("Name")));
+					PositionEntry pe = new PositionEntry(rs.getInt("PositionID"),rs.getString("Name"));
+					pe.setExact(rs.getBoolean("Exact"));
+					pe.setCoodinates(getCoordinatesbyPositionRelation(depictionID, wallID, pe.getPositionID()));
+					results.add(pe);
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+			return null;
+		}
+		//System.out.println("Größe des Resultats von DepictionWallsRealtion "+Integer.toString(results.size())+" für "+Integer.toString(depictionID));
+		return results;
+	}
+	private ArrayList<CoordinatesEntry> getCoordinatesbyPositionRelation (int depictionID, int wallID, int positionID){
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		ArrayList<CoordinatesEntry> results = new ArrayList<CoordinatesEntry>();
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM PositionCoordinatesRelation WHERE DepictionID = "+depictionID+" and WallID = "+wallID + " and PositionID = " + positionID);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				if (rs.getInt("PositionID")!=-1){
+					CoordinatesEntry ce = new CoordinatesEntry(rs.getInt("Register"),rs.getInt("Number"));
+					results.add(ce);
 				}
 			}
 		} catch (SQLException e) {
@@ -10105,6 +10320,35 @@ public boolean isHan(String s) {
 				result.add(new UserEntry(rs.getInt("UserID"), rs.getString("Username"), rs.getString("Firstname"), rs.getString("Lastname"),
 						rs.getString("Email"), rs.getString("Affiliation"), rs.getInt("AccessLevel"), rs.getString("SessionID"), 
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn"))));
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+		}
+		if (dologging){
+		long end = System.currentTimeMillis();
+		long diff = (end-start);
+		if (diff>100){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getUsers brauchte "+diff + " Millisekunden.");;}}
+		return result;
+	}
+	public ArrayList<UserEntry> getUsersFrontEnd() {
+		long start = System.currentTimeMillis();
+		if (dologgingbegin){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
+		}
+		ArrayList<UserEntry> result = new ArrayList<UserEntry>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Webusers ORDER BY Lastname Asc");
+			while (rs.next()) {
+				result.add(new UserEntry(rs.getInt("UserID"), "", rs.getString("Firstname"), rs.getString("Lastname"),
+						rs.getString("Email"), rs.getString("Affiliation"), rs.getInt("AccessLevel"), rs.getString("SessionID"), 
+						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), rs.getBoolean("granted")));
 			}
 			rs.close();
 			stmt.close();

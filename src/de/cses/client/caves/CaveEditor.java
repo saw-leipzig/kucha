@@ -142,7 +142,6 @@ public class CaveEditor extends AbstractEditor {
 	private CaveTypeViewTemplates ctvTemplates;
 	private CaveTypeViewTemplates ctvt;
 	private PreservationClassificationViewTemplates pcvt;
-
 	private TextField officialNumberField;
 	private TextField historicalNameField;
 	private TextField optionalHistoricNameField;
@@ -274,11 +273,6 @@ public class CaveEditor extends AbstractEditor {
 		@XTemplate("<div>{name}</div>")
 		SafeHtml ceilingTypeLabel(String name);
 	}
-
-	// interface CaveAreaProperties extends PropertyAccess<CaveAreaEntry> {
-	// ModelKeyProvider<CaveAreaEntry> caveAreaID();
-	// LabelProvider<CaveAreaEntry> caveAreaLabel();
-	// }
 
 	interface PreservationClassificationProperties extends PropertyAccess<PreservationClassificationEntry> {
 		ModelKeyProvider<PreservationClassificationEntry> preservationClassificationID();
@@ -2646,8 +2640,8 @@ public class CaveEditor extends AbstractEditor {
 		VerticalLayoutContainer wallLayoutHlC = new VerticalLayoutContainer();
 
 		caveSketchFP.add(caveSketchFLC);
-		wallLayoutHlC.add(caveSketchFP, new VerticalLayoutData(1, 1));
-		// wallLayoutHlC.add(pe.getPE(), new VerticalLayoutData(1, 0.5));
+		wallLayoutHlC.add(caveSketchFP, new VerticalLayoutData(1, 0.5));
+		wallLayoutHlC.add(pe.getPE(), new VerticalLayoutData(1, 0.5));
 		
 //		VerticalLayoutContainer caveLayoutRightVLC = new VerticalLayoutContainer();
 //		caveLayoutRightVLC.add(caveSketchFP, new VerticalLayoutData(1.0, .85));

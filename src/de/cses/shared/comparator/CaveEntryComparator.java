@@ -12,18 +12,24 @@ public class CaveEntryComparator implements Comparator<CaveEntry> {
 
 	private String getComparisonLabel(CaveEntry ce) {
 		StaticTables stab = StaticTables.getInstance();
-		String shortName = stab.getSiteEntries().get(ce.getSiteID()).getShortName();
-		int len = 0;
-		while ((len < ce.getOfficialNumber().length()) && isInteger(ce.getOfficialNumber().substring(0, len + 1))) {
-			++len;
-		}
-		switch (len) {
-			case 1:
-				return shortName + "  " + ce.getOfficialNumber();
-			case 2:
-				return shortName + " " + ce.getOfficialNumber();
-			default:
-				return shortName + ce.getOfficialNumber();
+		String shortName = "";
+		if (ce.getCaveID() == -1) {
+			shortName = "aaa";
+			return shortName;
+		} else {
+			shortName = stab.getSiteEntries().get(ce.getSiteID()).getShortName();
+			int len = 0;
+			while ((len < ce.getOfficialNumber().length()) && isInteger(ce.getOfficialNumber().substring(0, len + 1))) {
+				++len;
+			}
+			switch (len) {
+				case 1:
+					return shortName + "  " + ce.getOfficialNumber();
+				case 2:
+					return shortName + " " + ce.getOfficialNumber();
+				default:
+					return shortName + ce.getOfficialNumber();
+			}
 		}
 	}
 
