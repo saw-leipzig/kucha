@@ -270,18 +270,19 @@ public class IconographySelector extends FramedPanel {
 		    @Override
 		    public void render(Context context, String ie, SafeHtmlBuilder sb) {
 		    	boolean found = false;
+		    	IconographyEntry ico = null;
 		    	for (IconographyEntry icoEntry : allAnnotationEntries) {
 		    			if (Integer.toString(icoEntry.getIconographyID())==context.getKey()) {
 		    				found=true;
+		    				ico = icoEntry;
+		    				break;
 		    			}
 		    	}
 		    	if (found) {
-		    		sb.append(SafeHtmlUtils.fromTrustedString("<p style=\"color:green;\">"+ie+"</p>"));
+		    		sb.append(SafeHtmlUtils.fromTrustedString("<p style=\"color:green;\">"+ie + " (" + context.getKey()+")</p>"));
 		    	}else {
-		    		sb.append(SafeHtmlUtils.fromTrustedString("<p style=\"color:red;\">"+ie+"</p>"));
+		    		sb.append(SafeHtmlUtils.fromTrustedString("<p style=\"color:red;\">"+ie + " (" + context.getKey()+")</p>"));
 		    	}
-		    	
-				
 		    }
 		    @Override
 		    public void onBrowserEvent(Context context, Element parent, String value,

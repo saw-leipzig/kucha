@@ -419,7 +419,7 @@ public class DepictionFilter extends AbstractFilter {
 		iconographySpinnerField.setMinValue(1);
 		iconographySpinnerField.setIncrement(1);
 		iconographySpinnerField.setEnabled(false);
-		iconographySpinnerField.setEditable(false);
+		iconographySpinnerField.setEditable(true);
 		iconographySpinnerField.addKeyPressHandler(getShortkey());
 		
 		FieldLabel iconographyFieldLabel = new FieldLabel(iconographySpinnerField, "Matching elements");

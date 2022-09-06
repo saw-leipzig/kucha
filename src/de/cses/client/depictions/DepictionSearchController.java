@@ -159,6 +159,7 @@ public class DepictionSearchController extends AbstractSearchController {
 		depictionEditorPanel.setGlassEnabled(true);
 		depictionEditorPanel.center();
 		depictionEditorPanel.show();
+		de.setfocus();
 	}
 
 }
