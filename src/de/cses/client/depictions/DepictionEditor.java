@@ -260,6 +260,9 @@ public class DepictionEditor extends AbstractEditor {
 
 		@XTemplate("<div style=\"border: 1px solid grey;\">{shortName} {officialNumber}<br> {district}</div>")
 		SafeHtml caveLabel(String shortName, String officialNumber, String district);
+
+		@XTemplate("<div style=\"border: 1px solid grey;\">{shortName}</div>")
+		SafeHtml caveLabel(String shortName);
 	}
 
 	interface LocationProperties extends PropertyAccess<LocationEntry> {
@@ -546,9 +549,13 @@ public class DepictionEditor extends AbstractEditor {
 
 			@Override
 			public void onSuccess(ArrayList<CaveEntry> caveResults) {
+				CaveEntry unknownCave = new CaveEntry();
+				unknownCave.setCaveID(-1);
+				caveEntryLS.add(unknownCave);
 				for (CaveEntry ce : caveResults) {
 					caveEntryLS.add(ce);
 				}
+				
 				if (correspondingDepictionEntry.getCave() != null) {
 					CaveEntry ce = correspondingDepictionEntry.getCave();
 //					CaveEntry ce = caveEntryLS.findModelWithKey(Integer.toString(correspondingDepictionEntry.getCaveID()));
@@ -942,6 +949,9 @@ public class DepictionEditor extends AbstractEditor {
 
 			@Override
 			public String getLabel(CaveEntry item) {
+				if (item.getCaveID() == -1) {
+					return "unknown";
+				}
 				StaticTables st = StaticTables.getInstance();
 				String site = item.getSiteID() > 0 ? st.getSiteEntries().get(item.getSiteID()).getShortName() : "";
 				String district = item.getDistrictID() > 0 ? st.getDistrictEntries().get(item.getDistrictID()).getName()
@@ -957,6 +967,9 @@ public class DepictionEditor extends AbstractEditor {
 			@Override
 			public SafeHtml render(CaveEntry item) {
 				final CaveViewTemplates cvTemplates = GWT.create(CaveViewTemplates.class);
+				if (item.getCaveID() == -1) {
+					return cvTemplates.caveLabel("unknown");
+				}
 				StaticTables st = StaticTables.getInstance();
 				String site = item.getSiteID() > 0 ? st.getSiteEntries().get(item.getSiteID()).getShortName() : "";
 				String district = item.getDistrictID() > 0 ? st.getDistrictEntries().get(item.getDistrictID()).getName()
@@ -985,7 +998,7 @@ public class DepictionEditor extends AbstractEditor {
 			@Override
 			public void onSelection(SelectionEvent<CaveEntry> event) {
 				correspondingDepictionEntry.setCave(event.getSelectedItem());
-				wallSelectorPanel.setCave(event.getSelectedItem());
+				wallSelectorPanel.setCave(event.getSelectedItem());	
 				shortNameTF.validate();
 			}
 		});
@@ -1800,7 +1813,7 @@ public class DepictionEditor extends AbstractEditor {
 				annotationsLoaded = !annotationsLoaded;
 			}
 		});
-		showAnnotationTB
+		showAnnotationTB.setToolTip(Util.createToolTip("Show or Hide Annotations.", "This will show or hide all Annotations."));
 				.setToolTip(Util.createToolTip("Show or Hide Annotations.", "This will show or hide all Annotations."));
 		ToolButton modifiedToolButtonImage = new ToolButton(new IconConfig("foldButton", "foldButtonOver"));
 		modifiedToolButtonImage.setToolTip(Util.createToolTip("show modification history"));
@@ -1936,6 +1949,7 @@ public class DepictionEditor extends AbstractEditor {
 		depictionImagesPanel.addTool(removeImageTB);
 		depictionImagesPanel.addTool(setMasterTB);
 		depictionImagesPanel.addTool(showAnnotationTB);
+		
 
 		/**
 		 * ---------------------- content of third tab (Iconography & Pictorial
