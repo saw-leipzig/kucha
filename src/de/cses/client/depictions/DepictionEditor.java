@@ -819,7 +819,59 @@ public class DepictionEditor extends AbstractEditor {
 //		Util.doLogging("Size of ImageListView: "+Integer.toString(imageEntryLS.size()));
 		ListField<ImageEntry, ImageEntry> imageViewLF = new ListField<ImageEntry, ImageEntry>(imageListView);
 		loadImages();
-		imageEntryLS.addSortInfo(new StoreSortInfo(itemComparator,SortDir.DESC));
+		if (correspondingDepictionEntry.getImageSortInfo() == null) {
+			Comparator<? super ImageEntry> defaultItemComparator = new Comparator<ImageEntry>() {
+				@Override
+				public int compare(ImageEntry o1, ImageEntry o2) {
+					String one = "";
+					String two = "";
+					if (correspondingDepictionEntry.getMasterImageID()==o1.getImageID()) {
+						one="aaaaaaaaaaaaaaaaaa"+o1.getTitle();
+					}
+					else {
+						one=o1.getTitle();
+					}
+					if (correspondingDepictionEntry.getMasterImageID()==o2.getImageID()) {
+						two="aaaaaaaaaaaaaaaaaa"+o2.getTitle();
+					}
+					else {
+						two=o2.getTitle();
+					}
+					return one.compareTo(two);
+				}
+			};
+			imageEntryLS.addSortInfo(new StoreSortInfo(defaultItemComparator,SortDir.DESC));
+			imageEntryLS.applySort(true);
+			HashMap<Integer, Integer> sortInfo = new HashMap<Integer, Integer>();
+			Integer sortPos = 0;
+			for (ImageEntry ie: imageEntryLS.getAll()) {
+				sortInfo.put(ie.getImageID(), sortPos);
+				sortPos += 1;
+			}
+			correspondingDepictionEntry.setImageSortInfo(sortInfo);
+			
+		}
+		Comparator<? super ImageEntry> customItemComparator = new Comparator<ImageEntry>() {
+			@Override
+			public int compare(ImageEntry o1, ImageEntry o2) {
+				if (correspondingDepictionEntry.getImageSortInfo().get(o1.getImageID()) == null) {
+					if (correspondingDepictionEntry.getImageSortInfo().get(o2.getImageID()) == null) {
+						return 0;
+					} else {
+						return -1;
+					}
+				} else {
+					if (correspondingDepictionEntry.getImageSortInfo().get(o2.getImageID()) == null) {
+						return 1;
+					} else {
+						return correspondingDepictionEntry.getImageSortInfo().get(o1.getImageID()).compareTo(correspondingDepictionEntry.getImageSortInfo().get(o2.getImageID()));					}
+				}	
+			}
+		};
+		for (Integer key: correspondingDepictionEntry.getImageSortInfo().keySet()) {
+			Util.doLogging("sort: " + Integer.toString(key) + ", " + Integer.toString(correspondingDepictionEntry.getImageSortInfo().get(key)));
+		}
+		imageEntryLS.addSortInfo(new StoreSortInfo<ImageEntry>(customItemComparator,SortDir.ASC));
 		imageEntryLS.applySort(true);
 
 		//imageViewLF.setSize("300px", "1.0");
@@ -1819,12 +1871,64 @@ public class DepictionEditor extends AbstractEditor {
 
 			}
 		});
+		showAnnotationTB.setToolTip(Util.createToolTip("Show or Hide Annotations.", "This will show or hide all Annotations."));
+		ToolButton sortUpToolButtonImage = new ToolButton(new IconConfig("collapseWindowButton", "collapseWindowButtonOver"));
+		sortUpToolButtonImage.setToolTip(Util.createToolTip("SortSelected Picture Up"));
+		sortUpToolButtonImage.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				ImageEntry entry = imageListView.getSelectionModel().getSelectedItem();
+				Integer sortNumber = correspondingDepictionEntry.getImageSortInfo().get(entry.getImageID());
+				if (sortNumber > 0) {
+					for (Integer key: correspondingDepictionEntry.getImageSortInfo().keySet()) {
+						if (correspondingDepictionEntry.getImageSortInfo().get(key) == sortNumber-1) {
+							correspondingDepictionEntry.getImageSortInfo().replace(key, sortNumber);
+							break;
+						}
+					}
+					correspondingDepictionEntry.getImageSortInfo().replace(entry.getImageID(), sortNumber-1);
+					imageEntryLS.applySort(false);
+					//					reloadPics();					
+//					imageListView.getSelectionModel().select(entry, false);
+				} else {
+					Info.display("Sorting Up Failed!", "Element is already on highest position.");
+				}
+			}
+		});
+		ToolButton sortDownToolButtonImage = new ToolButton(new IconConfig("expandWindowButton", "expandWindowButtonOver"));
+		sortDownToolButtonImage.setToolTip(Util.createToolTip("SortSelected Picture Down"));
+		sortDownToolButtonImage.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				ImageEntry entry = imageListView.getSelectionModel().getSelectedItem();
+				Integer sortNumber = correspondingDepictionEntry.getImageSortInfo().get(entry.getImageID());
+				if (sortNumber < correspondingDepictionEntry.getImageSortInfo().size()) {
+					for (Integer key: correspondingDepictionEntry.getImageSortInfo().keySet()) {
+						if (correspondingDepictionEntry.getImageSortInfo().get(key) == sortNumber+1) {
+							correspondingDepictionEntry.getImageSortInfo().replace(key, sortNumber);
+							break;
+						}
+					}
+					correspondingDepictionEntry.getImageSortInfo().replace(entry.getImageID(), sortNumber+1);
+					imageEntryLS.applySort(false);
+					reloadPics();
+					imageListView.getSelectionModel().select(entry, false);
+					
+				} else {
+					Info.display("Sorting Up Failed!", "Element is already on lowest position.");
+				}
+			}
+		});
 
 		depictionImagesPanel = new FramedPanel();
 		depictionImagesPanel.setHeading("Images");
 		VerticalLayoutContainer filtercontainer = new VerticalLayoutContainer();
 		filtercontainer.add(filterField, new VerticalLayoutData(1.0, .05));
 		filtercontainer.add(imageViewLF, new VerticalLayoutData(1.0, .95));
+		depictionImagesPanel.addTool(sortUpToolButtonImage);
+		depictionImagesPanel.addTool(sortDownToolButtonImage);
 		depictionImagesPanel.add(filtercontainer);
 //		depictionImagesPanel.addTool(infoTB);
 		depictionImagesPanel.addTool(modifiedToolButtonImage);
