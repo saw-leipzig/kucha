@@ -109,7 +109,7 @@ public class StaticTables {
 	public StaticTables(ListsLoadedListener l) {
 		Util.doLogging("loading Bibliogrsaphy");
 		listener = l;
-		loadCounter = 21;
+		loadCounter = 23;
 		loadDistricts();
 		loadSites();
 		loadRegions();
@@ -137,7 +137,9 @@ public class StaticTables {
 
 	private void listLoaded() {
 		--loadCounter;
-		listener.listsLoaded((21.0 - loadCounter) / 21.0);
+		listener.listsLoaded((23.0 - loadCounter) / 23.0);
+		Double loaded = (23.0 - loadCounter) / 23.0;
+		Util.doLogging("list loaded:" + Double.toString(loaded));
 	}
 
 	/**
@@ -555,7 +557,7 @@ public class StaticTables {
 	}
 	
 	private void loadBiliography() {
-		Util.doLogging("loading Bibliography");
+		Util.doLogging("loading Bibliography!");
 		bibEntryMap = new HashMap<Integer, AnnotatedBibliographyEntry>();
 		dbService.getAnnotatedBibliography(new AsyncCallback<ArrayList<AnnotatedBibliographyEntry>>() {
 
@@ -567,7 +569,6 @@ public class StaticTables {
 			@Override
 			public void onSuccess(ArrayList<AnnotatedBibliographyEntry> result) {
 				for (AnnotatedBibliographyEntry abe : result) {
-					//Util.doLogging("putting bib Entry into static table");
 					bibEntryMap.put(abe.getAnnotatedBibliographyID(), abe);
 				}
 				listLoaded();
