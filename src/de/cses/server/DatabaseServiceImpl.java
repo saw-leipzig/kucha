@@ -100,6 +100,11 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		return connector.resetPassword(currentUser);
 	}
 	
+	public boolean resetPasswordFrontEnd(UserEntry currentUser) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.resetPasswordFrontEnd(currentUser);
+	}
+	
 	public ArrayList<DistrictEntry> getDistricts() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		ArrayList<DistrictEntry> districts = connector.getDistricts();
@@ -1109,6 +1114,11 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 
 
 	public int insertUserEntry(UserEntry entry) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.insertUserEntry(entry);
+	}
+	
+	public int saveWebPageUser(UserEntry entry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.insertUserEntry(entry);
 	}

@@ -36,7 +36,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.gargoylesoftware.htmlunit.javascript.host.dom.Comment;
 import com.google.gson.Gson;
+import com.google.gwt.thirdparty.json.JSONException;
+import com.google.gwt.thirdparty.json.JSONObject;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.sencha.gxt.widget.core.client.info.Info;
 
@@ -87,6 +90,8 @@ public class ResourceDownloadServlet extends HttpServlet {
 			    	response.addHeader("message", answer);
 			    	response.setStatus(405);
 			    	response.getWriter().flush();
+			    } else {
+			    	connector.sendMail("kucha-admin@saw-leipzig.de","e.radisch@gmx.de", "Kucha-Admin","An account has been created at kuchatest.saw-leipzig.de","Dear Administartor,\n A new User needs to be granted rights for discussions. Details: \n First Name: "+newUser.getFirstname()+"\n Last Name: "+ newUser.getLastname() + "\n Email: "+newUser.getEmail()+"\n Affiliation: " + newUser.getAffiliation()+ "\n Sincerely, \n Kucha-Admin");
 			    }
 			    
 			} else if (request.getParameter("validateUser") != null) {
@@ -171,6 +176,14 @@ public class ResourceDownloadServlet extends HttpServlet {
 		        pw = credentials.split(":", 2)[1];
 		    }
 		    UserEntry updatedUser = gson.fromJson(sb.toString(), UserEntry.class);
+		    try {
+				JSONObject comment = new JSONObject(sb.toString());
+				Boolean granted = comment.getBoolean("granted");
+				updatedUser.setGranted(granted);
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		    System.out.println(pw);
 		    boolean answer = connector.updateUserEntryFrontEnd(updatedUser, pw, updatedUser.getSessionID(), email);
 		    System.out.println("Usersession:" + gson.toJson(answer));
@@ -430,26 +443,21 @@ public class ResourceDownloadServlet extends HttpServlet {
 		//}
 		
 		if (request.getParameter("putComment") != null)  {
-	        Map<String, String> map = new HashMap<String, String>();
-
-	        Enumeration headerNames = request.getParameterNames();
-	        while (headerNames.hasMoreElements()) {
-	            String key = (String) headerNames.nextElement();
-	            String value = request.getHeader(key);
-	            System.out.println(key+": "+value);
-	        }
-	        System.out.println(request.getLocalAddr());
-	        String ip = "";
 	        String discussion = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
 	        System.out.println("body");
 	        System.out.println(discussion);
 	        String uuid = request.getParameter("uuid");
-	        System.out.println(uuid);
-	        if (connector.putComment("", "", discussion, uuid)) {
-		        response.setStatus(200);	        	
-	        } else {
-		        response.setStatus(400);
-	        };
+	        String sendMail = request.getParameter("sendMail");
+	        String messageText = request.getParameter("message");
+	        System.out.println(sessionID);
+	        
+	        if (connector.checkSessionIDFrontEnd(sessionID) != null) {
+		        if (connector.putComment("", "", discussion, uuid, sendMail, messageText)) {
+			        response.setStatus(200);	        	
+		        } else {
+			        response.setStatus(400);
+		        };	        	
+	        }
 		} else {
 			response.setStatus(400);
 		}
