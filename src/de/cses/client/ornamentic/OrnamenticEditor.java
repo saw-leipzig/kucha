@@ -920,37 +920,37 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 			@Override
 			public void onClick(ClickEvent event) {
+				if (saveButton.isEnabled()) {
+					Util.showYesNo("Exit Warning!", "Do you wish to save before exiting?", new SelectHandler() {
+	
+						@Override
+						public void onSelect(SelectEvent event) {
+							save(false,0);
+							bibSelector.clearPages();
+							closeEditor(ornamentEntry);
+						}
+					}, new SelectHandler() {
+	
+						@Override
+						public void onSelect(SelectEvent event) {
+							bibSelector.clearPages();
+							closeEditor(ornamentEntry);
+						}
 				
-				Util.showYesNo("Exit Warning!", "Do you wish to save before exiting?", new SelectHandler() {
-
-					@Override
-					public void onSelect(SelectEvent event) {
-						save(false,0);
-						bibSelector.clearPages();
-						closeEditor(ornamentEntry);
+						
 					}
-				}, new SelectHandler() {
-
-					@Override
-					public void onSelect(SelectEvent event) {
-						bibSelector.clearPages();
-						closeEditor(ornamentEntry);
-					}
-			
-					
-				}
-				, new KeyDownHandler() {
-
-					@Override
-					public void onKeyDown(KeyDownEvent e) {
-						if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
-						save(false,0);
-						closeEditor(ornamentEntry);
-					}}
-			
-					
-				});
+					, new KeyDownHandler() {
+	
+						@Override
+						public void onKeyDown(KeyDownEvent e) {
+							if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+							save(false,0);
+							closeEditor(ornamentEntry);
+						}}
 				
+						
+					});
+				}				
 //				
 //				PopupPanel security = new PopupPanel();
 //				ContentPanel securityContent = new ContentPanel();
@@ -1697,33 +1697,36 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		backgroundPanel.addDomHandler(new KeyDownHandler() {
 			@Override
 			public void onKeyDown(KeyDownEvent e) {
-				if ((e.isShiftKeyDown()) && (e.getNativeKeyCode() == KeyCodes.KEY_ENTER)) {
-					de.cses.client.Util.showYesNo("Exit Warning!", "Do you wish to save before exiting?",
-							new SelectHandler() {
+				if (saveButton.isEnabled()) {
+					if ((e.isShiftKeyDown()) && (e.getNativeKeyCode() == KeyCodes.KEY_ENTER)) {
+						de.cses.client.Util.showYesNo("Exit Warning!", "Do you wish to save before exiting?",
+						new SelectHandler() {
 
-								@Override
-								public void onSelect(SelectEvent event) {
-									Util.doLogging("Ornament Save triggert by Key-Combination");
-									save(true, 0);
+							@Override
+							public void onSelect(SelectEvent event) {
+								saveButton.disable();
+								Util.doLogging("Ornament Save triggert by Key-Combination");
+								save(true, 0);
+								closeEditor(null);
+							}
+						}, new SelectHandler() {
+
+							@Override
+							public void onSelect(SelectEvent event) {
+								bibSelector.clearPages();
+								closeEditor(null);
+							}
+						}, new KeyDownHandler() {
+
+							@Override
+							public void onKeyDown(KeyDownEvent e) {
+								if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
 									closeEditor(null);
 								}
-							}, new SelectHandler() {
+							}
 
-								@Override
-								public void onSelect(SelectEvent event) {
-									bibSelector.clearPages();
-									closeEditor(null);
-								}
-							}, new KeyDownHandler() {
-
-								@Override
-								public void onKeyDown(KeyDownEvent e) {
-									if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
-										closeEditor(null);
-									}
-								}
-
-							});
+						});
+					}					
 				}
 			}
 		}, KeyDownEvent.getType());

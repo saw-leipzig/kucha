@@ -1022,7 +1022,6 @@ public class OrnamenticFilter extends AbstractFilter {
 //		accordion.add(ornamentCodePanel);
 
 		VerticalPanel ornamenticFilterVLC = new VerticalPanel();
-		ornamenticFilterVLC.setHeight("100px");
 		ContentPanel ornamentDeskriptionPanel = new ContentPanel();
 		ornamentDeskriptionPanel.setHeaderVisible(true);
 		ornamentDeskriptionPanel.setToolTip(Util.createToolTip("Search for ornament description."));
@@ -1030,6 +1029,7 @@ public class OrnamenticFilter extends AbstractFilter {
 		ornamentDeskriptionPanel.add(ornamentDeskriptionSearchTF);
 		ornamentDeskriptionPanel.getHeader().setStylePrimaryName("frame-header");
 		ornamenticFilterVLC.add(ornamentDeskriptionPanel);
+		ornamenticFilterVLC.setHeight("100px");
 		ornamenticFilterVLC.addDomHandler(getShortkey(), KeyPressEvent.getType());
 
 //		ContentPanel ornamentInterpretationPanel = new ContentPanel();
@@ -1219,7 +1219,7 @@ public class OrnamenticFilter extends AbstractFilter {
 		accordion.add(ornamentdistrictsPanel);
 //		accordion.add(innerSecPanel);
 //		accordion.add(relatedornamentPanel);
-		accordion.add(ornamentComponentsPanel);
+//		accordion.add(ornamentComponentsPanel);
 		accordion.add(textSearch);
 		accordion.add(iconographyPanel);
 		accordion.add(wallPanel);
@@ -1228,7 +1228,7 @@ public class OrnamenticFilter extends AbstractFilter {
 		codeMotifVLC.addDomHandler(getShortkey(), KeyPressEvent.getType());
 		codeMotifVLC.add(IDSearchTF, new VerticalLayoutData(1.0, 25));
 		codeMotifVLC.add(ornamentCodeSearchTF, new VerticalLayoutData(1.0, 25));
-		codeMotifVLC.add(headerOrnamentClass, new VerticalLayoutData(1.0, 45));
+		// codeMotifVLC.add(headerOrnamentClass, new VerticalLayoutData(1.0, 45));
 		
 		// accordion.setActiveWidget(ornamentCavesPanel);
 

@@ -37,6 +37,11 @@ import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.data.shared.Store;
+import com.sencha.gxt.dnd.core.client.DndDragStartEvent;
+import com.sencha.gxt.dnd.core.client.DragSource;
+import com.sencha.gxt.dnd.core.client.ListViewDragSource;
+import com.sencha.gxt.fx.client.Draggable;
+import com.sencha.gxt.fx.client.Draggable.DraggableAppearance;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
@@ -146,8 +151,7 @@ public class ImageSelector implements IsWidget {
 
 		
 		imgFilter = new ImageFilter("Selector Filter");
-		
-		imageListView = new ListView<ImageEntry, ImageEntry>(imageEntryList, new IdentityValueProvider<ImageEntry>(), new SimpleSafeHtmlCell<ImageEntry>(new AbstractSafeHtmlRenderer<ImageEntry>() {
+		SimpleSafeHtmlCell<ImageEntry> imageCell = new SimpleSafeHtmlCell<ImageEntry>(new AbstractSafeHtmlRenderer<ImageEntry>() {
 			final ImageViewTemplates imageViewTemplates = GWT.create(ImageViewTemplates.class);
 
 			public SafeHtml render(ImageEntry item) {
@@ -159,9 +163,9 @@ public class ImageSelector implements IsWidget {
 				}
 			}
 
-		}));
+		});
+		imageListView = new ListView<ImageEntry, ImageEntry>(imageEntryList, new IdentityValueProvider<ImageEntry>(), imageCell);
 		imageListView.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
-
 		// we need to remove this due to multiple seleciton!!
 //		imageListView.getSelectionModel().addSelectionChangedHandler(new SelectionChangedHandler<ImageEntry>() {
 //
