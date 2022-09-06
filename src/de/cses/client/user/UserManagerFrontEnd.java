@@ -113,7 +113,7 @@ public class UserManagerFrontEnd extends PopupPanel {
 			@Override
 			public void onSelect(SelectEvent event) {
 				for (UserEntry user :grid.getSelectionModel().getSelectedItems()) {
-					dbService.resetPassword(user, new AsyncCallback<Boolean>() {
+					dbService.resetPasswordFrontEnd(user, new AsyncCallback<Boolean>() {
 						
 						@Override
 						public void onSuccess(Boolean result) {
@@ -131,11 +131,12 @@ public class UserManagerFrontEnd extends PopupPanel {
 		});
 		resetPwTB.setToolTip(Util.createToolTip("reset password of selected user."));
 		ToolButton addUserTB = new ToolButton(new IconConfig("addButton", "addButtonOver"));
+		addUserTB.setToolTip(Util.createToolTip("Add a new user."));
 		addUserTB.addSelectHandler(new SelectHandler() {
 			
 			@Override
 			public void onSelect(SelectEvent event) {
-				UserEntry newUser = new UserEntry(0, "", "", "", "", "Affiliation", 1, "", "");
+				UserEntry newUser = new UserEntry(0, "", "", "", "", "", 1, "", "");
 				sourceStore.add(newUser);
 				editing.startEditing(new GridCell(sourceStore.size()-1, 0));
 			}
@@ -195,6 +196,7 @@ public class UserManagerFrontEnd extends PopupPanel {
     sourceColumns.add(firstnameCol);
     sourceColumns.add(lastnameCol);
     sourceColumns.add(emailCol);
+    sourceColumns.add(accessLevelCol);
     sourceColumns.add(grantedCol);
 
     ColumnModel<UserEntry> sourceColumnModel = new ColumnModel<UserEntry>(sourceColumns);
@@ -255,6 +257,7 @@ public class UserManagerFrontEnd extends PopupPanel {
     emailTF.setAllowBlank(false);
     emailTF.addValidator(new RegExValidator(Util.REGEX_EMAIL_PATTERN, "please enter valid email"));
     editing.addEditor(emailCol, emailTF);
+    editing.addEditor(accessLevelCol, accessRightsCB);
     editing.addEditor(grantedCol, grantedCB);
     
     editing.addCancelEditHandler(new CancelEditHandler<UserEntry>() {
@@ -310,6 +313,10 @@ public class UserManagerFrontEnd extends PopupPanel {
 			if (email != null) {
 				entry.setEmail(email);
 			}
+			Integer accessLevel = record.getValue(userProps.accessLevel());
+			if (email != null) {
+				entry.setAccessLevel(accessLevel);
+			}
 			Boolean granted = record.getValue(userProps.granted());
 			if (granted != null) {
 				entry.setGranted(granted);
@@ -328,6 +335,7 @@ public class UserManagerFrontEnd extends PopupPanel {
 						if (!result) {
 							Util.showWarning("Server Error", "The changes for " + entry.getUsername() + " could not be saved!");
 						} else {
+							Info.display("User", "Updated");
 							// Once the changes have been dealt with, commit them to the local store.
 							// This will add the changed values to the model in the local store.
 							loadUsers();
@@ -336,7 +344,7 @@ public class UserManagerFrontEnd extends PopupPanel {
 					}
 				});
 			} else {
-				dbService.insertUserEntry(entry, new AsyncCallback<Integer>() {
+				dbService.saveWebPageUser(entry, new AsyncCallback<Integer>() {
 
 					@Override
 					public void onFailure(Throwable caught) {

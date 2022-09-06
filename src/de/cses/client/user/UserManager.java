@@ -97,19 +97,6 @@ public class UserManager extends PopupPanel {
 				hide();
 			}
 		});
-		ToolButton userManagerFrontendTB = new ToolButton(new IconConfig("editButton", "editButtonOver"));
-		userManagerFrontendTB.addSelectHandler(new SelectHandler() {
-			
-			@Override
-			public void onSelect(SelectEvent event) {
-				UserManagerFrontEnd userManagerDialog = new UserManagerFrontEnd();
-				userManagerDialog.setSize("900px", "450px");
-				userManagerDialog.setModal(true);
-				userManagerDialog.center();
-
-			}
-		});
-		userManagerFrontendTB.setToolTip(Util.createToolTip("Edit Users of Frontend"));
 		ToolButton saveTB = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 		saveTB.addSelectHandler(new SelectHandler() {
 			
@@ -154,7 +141,6 @@ public class UserManager extends PopupPanel {
 		});
 		createUI();
 		userManagerFP.add(grid);
-		userManagerFP.addTool(userManagerFrontendTB);
 		userManagerFP.addTool(resetPwTB);
 		userManagerFP.addTool(saveTB);
 		userManagerFP.addTool(addUserTB);

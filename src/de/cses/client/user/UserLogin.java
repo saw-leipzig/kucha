@@ -315,6 +315,7 @@ public class UserLogin extends PopupPanel {
 			}
 		});
 		ToolButton adminTB = null;
+		ToolButton userManagerFrontendTB = null;
 		if (getAccessRights() == UserEntry.ADMIN) {
 			adminTB = new ToolButton(new IconConfig("editButton", "editButtonOver"));
 			adminTB.addSelectHandler(new SelectHandler() {
@@ -327,8 +328,21 @@ public class UserLogin extends PopupPanel {
 					userManagerDialog.center();
 				}
 			});
+			userManagerFrontendTB = new ToolButton(new IconConfig("foldButton", "foldButtonOver"));
+			userManagerFrontendTB.addSelectHandler(new SelectHandler() {
+				
+				@Override
+				public void onSelect(SelectEvent event) {
+					UserManagerFrontEnd userManagerDialog = new UserManagerFrontEnd();
+					userManagerDialog.setSize("900px", "450px");
+					userManagerDialog.setModal(true);
+					userManagerDialog.center();
+	
+				}
+			});
+			userManagerFrontendTB.setToolTip(Util.createToolTip("Edit Users of Frontend"));
 		}
-		if (getAccessRights() == UserEntry.FULL || getAccessRights() == UserEntry.ADMIN) {
+		if (currentUser.getUserID() == 14) {
 			exportDBTB = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 			exportDBTB.addSelectHandler(new SelectHandler() {
 				
@@ -350,7 +364,6 @@ public class UserLogin extends PopupPanel {
 							exportDBTB.enable();
 						}
 					});
-
 				}
 			});
 		}
@@ -386,6 +399,7 @@ public class UserLogin extends PopupPanel {
 		}
 		if (adminTB != null) {
 			userFP.addTool(adminTB);
+			userFP.addTool(userManagerFrontendTB);
 		}
 		userFP.addTool(closeTB);
 		userFP.setHeight(500);

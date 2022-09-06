@@ -163,9 +163,9 @@ public class OSDLoader {
 	}
 
 	public void startLoadingTiles(String context) {
-		// Util.doLogging("start loading osd 2");
+		Util.doLogging("start loading osd 2");
 		Collection<IconographyEntry> icos = StaticTables.getInstance().getIconographyEntries().values();
-		// Util.doLogging("load tiles");
+		Util.doLogging("load tiles");
 		if (icos.size()>0) {
 			loadTiles(images, context, annoation, icos);
 		}
@@ -225,7 +225,7 @@ public class OSDLoader {
 		JavaScriptObject ifn=results.remove(0);
 		JavaScriptObject icos = listConverter(icoTree);
 		if (osdListener!=null) {
-			annos= generateW3CAnnotations(osdListener.getAnnotations());			
+			annos= generateW3CAnnotations(osdListener.getAnnotations());
 		}
 		jso= createZoomeImage(tiles,ifn,imgDic, osdDic,UserLogin.getInstance().getSessionID(), annotation, icos, this, annos, isWall);	
 	}
@@ -263,6 +263,7 @@ public class OSDLoader {
 				w3cAnnotation = addAnnotation(w3cAnnotation,annoEntry.getAnnotoriousID(), bodies, annoEntry.getPolygone(), annoEntry.getImage());
 			}			
 		}
+		Util.doLogging("w3cAnnotation "+w3cAnnotation);
 		return w3cAnnotation;
 	}
 
@@ -560,6 +561,7 @@ public class OSDLoader {
             }
           }
         }
+        $wnd.console.log("annotations:",annotations);
         return annotations;
 	}-*/;
 	public static native JavaScriptObject createZoomeImage(JavaScriptObject tiles,JavaScriptObject wheres, JavaScriptObject source, JavaScriptObject dic, String sessionID, boolean anno, JavaScriptObject icoTree, OSDLoader osdLoader, JavaScriptObject annos, boolean isWall)
@@ -632,7 +634,7 @@ public class OSDLoader {
 				// $wnd.console.log("Adding Annotorious",config);
 				annotorious[wheres[i]] = $wnd.OpenSeadragon.Annotorious(dic[wheres[i]],config);
 		        $wnd.Annotorious.SelectorPack(annotorious[wheres[i]]);
-		        console.log(annotorious[wheres[i]].listDrawingTools());
+		        // console.log(annotorious[wheres[i]].listDrawingTools());
 		        annotorious[wheres[i]].setDrawingTool('multipolygon');
 
 				//annotorious[wheres[i]].setDrawingTool("polygon");
@@ -711,34 +713,33 @@ public class OSDLoader {
 				//$wnd.console.log("Adding Annotations");
 				if (isWall){
 					if (foundAnno){
-//						$wnd.console.log("Found Annotation for picture ",wheres[i],": ",savedAnnos);
-//						annotorious[wheres[i]].setAnnotations(savedAnnos);
-//						var annoStyle = {
-//				            style:{
-//				              outer: {
-//				                "vector-effect": "none",
-//				                "stroke": "#f00",
-//				                "fill": "rgba(0, 128, 0,0.55)",
-//				                "stroke-width":"3px",
-//				                "transition": "fill 1s, stroke-width 0.7s"
-//				              },
-//				              inner: {
-//				                "vector-effect": "none",
-//				                "stroke": "#fff",
-//				                "stroke-width": "1px",
-//				                "transition": "stroke-width 0.7s"
-//				              }
-//				            }
-//				          }
-//						for (var k in annos) {
-//							$wnd.console.log("Setting Style for:", anno[k].id);
-//				    		annotorious[wheres[i]].setAnnotationStyle(anno[k].id, annoStyle);
-//						};
+						// $wnd.console.log("Found Annotation for picture ",wheres[i],": ",savedAnnos);
+						annotorious[wheres[i]].setAnnotations(savedAnnos);
+						var annoStyle = {
+				            style:{
+				              outer: {
+				                "vector-effect": "none",
+				                "stroke": "#f00",
+				                "fill": "rgba(0, 128, 0,0.55)",
+				                "stroke-width":"5px",
+				                "transition": "fill 1s, stroke-width 0.7s"
+				              },
+				              inner: {
+				                "vector-effect": "none",
+				                "stroke": "#fff",
+				                "stroke-width": "1px",
+				                "transition": "stroke-width 0.7s"
+				              }
+				            }
+				          }
+						for (var k in savedAnnos) {
+							annotorious[wheres[i]].setAnnotationStyle(savedAnnos[k].id, annoStyle);
+						};
 
 					}					
 				}
 			}		
-			$wnd.console.log("Adding Imagefilters");
+			// $wnd.console.log("Adding Imagefilters");
 			
 			dic[wheres[i]].imagefilters({menuId:"menu"+wheres[i],
 		    							 toolsLeft: 270
