@@ -31,6 +31,7 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.Style.HideMode;
@@ -47,6 +48,7 @@ import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.Resizable;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.CellDoubleClickEvent;
@@ -85,6 +87,9 @@ public class BibliographySelector implements IsWidget {
 
 		@Path("titleORG")
 		ValueProvider<AnnotatedBibliographyEntry, String> title();
+
+		ValueProvider<AnnotatedBibliographyEntry, String> getTitleFull();
+
 		
 		ValueProvider<AnnotatedBibliographyEntry, String> authors();
 		@Path("yearORG")
@@ -104,8 +109,8 @@ public class BibliographySelector implements IsWidget {
 	private StoreFilterField<AnnotatedBibliographyEntry> yearField;
 	protected Map<Integer, AnnotatedBibliographyEntry> selectedBibMap= new HashMap<Integer, AnnotatedBibliographyEntry>();
 	VerticalLayoutContainer gridVP; 
-    HorizontalLayoutContainer gridHLC;
-    HorizontalPanel gridHP;
+	ScrollPanel gridVLC;
+    HorizontalLayoutContainer gridHP;
     //FramedPanel mainGrid = new FramedPanel();
     ListStore<AnnotatedBibliographyEntry> sourceStore;
     boolean showdialog = false;
@@ -149,11 +154,12 @@ public class BibliographySelector implements IsWidget {
 		}
 		return gridVP;
 	}
-	public void setwidth(int width) {
-		//gridVP.setWidth(width);
-	 	titleField.setWidth(((int)width/100*50));;
-		AuthorsField.setWidth(((int)width/100*40));
-		yearField.setWidth(((int)width/100*10));
+	public void setwidth(int width, int height) {
+		gridVP.setWidth(width);
+		gridVP.setHeight((height/100)*95);
+	 	//titleField.setWidth(((int)width/100*50));;
+		//AuthorsField.setWidth(((int)width/100*40));
+		//yearField.setWidth(((int)width/100*10));
 		//Util.doLogging("Width: "+Integer.toString(width)+" - "+Integer.toString(((int)width/100*50))+" - "+Integer.toString(((int)width/100*40))+" - "+Integer.toString(((int)width/100*10)));
 
 		
@@ -219,7 +225,6 @@ public class BibliographySelector implements IsWidget {
 		showdialog=false;
 		Collection<AnnotatedBibliographyEntry> anBibs = StaticTables.getInstance().getBibliographyEntries().values();
 	    for (AnnotatedBibliographyEntry abe : anBibs) {
-	    		//Util.doLogging("hier?");
 	    		abe.setQuotedPages(null);
 	    		sourceStore.add(abe);
 	    }
@@ -320,7 +325,7 @@ public class BibliographySelector implements IsWidget {
 			}
     });		
 		
-		ColumnConfig<AnnotatedBibliographyEntry, String> titleOrgCol = new ColumnConfig<AnnotatedBibliographyEntry, String>(bibProps.title(), 350, "Title");
+		ColumnConfig<AnnotatedBibliographyEntry, String> titleOrgCol = new ColumnConfig<AnnotatedBibliographyEntry, String>(bibProps.getTitleFull(), 350, "Title");
 		ColumnConfig<AnnotatedBibliographyEntry, String> authorsCol = new ColumnConfig<AnnotatedBibliographyEntry, String>(bibProps.authors(), 300, "Authors");
 		ColumnConfig<AnnotatedBibliographyEntry, String> yearColumn = new ColumnConfig<AnnotatedBibliographyEntry, String>(bibProps.year(), 50, "Year");
 		ColumnConfig<AnnotatedBibliographyEntry, String> pageColumn = new ColumnConfig<AnnotatedBibliographyEntry, String>(bibProps.pages(), 50, "Pages");
@@ -374,7 +379,6 @@ public class BibliographySelector implements IsWidget {
     };
     grid.addCellDoubleClickHandler(doubleClick);
     grid.setSelectionModel(selectionModel);
-
     //grid.getStore().clearSortInfo();
     //grid.getStore().addSortInfo(new Store.StoreSortInfo<AnnotatedBibliographyEntry>(bibProps..titleORG(), SortDir.ASC));
 //    grid.setColumnReordering(true);
@@ -385,8 +389,8 @@ public class BibliographySelector implements IsWidget {
     grid.getView().setColumnLines(true);
     grid.getView().setForceFit(true);
     gridVP = new VerticalLayoutContainer();
-    gridHLC = new HorizontalLayoutContainer();
-    gridHP = new HorizontalPanel();
+    gridVLC = new ScrollPanel();
+    gridHP = new HorizontalLayoutContainer();
     titleField = new StoreFilterField<AnnotatedBibliographyEntry>(){
 
 		@Override
@@ -422,8 +426,8 @@ public class BibliographySelector implements IsWidget {
 	};
 	FramedPanel fpTitleField = new FramedPanel();
 	//fpTitleField.setWidth(350);
-	fpTitleField.add(titleField);
 	fpTitleField.setHeading("Title");
+	fpTitleField.add(titleField);
     AuthorsField= new StoreFilterField<AnnotatedBibliographyEntry>(){
 
 		@Override
@@ -501,14 +505,13 @@ public class BibliographySelector implements IsWidget {
 	};
 	FramedPanel fpAuthorsField = new FramedPanel();
 	fpAuthorsField.setHeading("Authors");
-	//fpAuthorsField.setWidth(-1);
 	fpAuthorsField.add(AuthorsField, new VerticalLayoutData(1,1));
-	fpAuthorsField.addResizeHandler(new ResizeHandler() {
-			public void onResize(ResizeEvent event) {
-				AuthorsField.setWidth(fpAuthorsField.getOffsetWidth());
-				//bibliographySelector.setwidth(Integer.toString(mainHLC.getWidget(0).getOffsetWidth()));
-			}
-		});
+	//fpAuthorsField.addResizeHandler(new ResizeHandler() {
+	//		public void onResize(ResizeEvent event) {
+	//			AuthorsField.setWidth(fpAuthorsField.getOffsetWidth());
+	//			//bibliographySelector.setwidth(Integer.toString(mainHLC.getWidget(0).getOffsetWidth()));
+	//		}
+	//	});
 	yearField= new StoreFilterField<AnnotatedBibliographyEntry>(){
 
 		@Override
@@ -539,23 +542,23 @@ public class BibliographySelector implements IsWidget {
  	titleField.bind(sourceStore);
 	AuthorsField.bind(sourceStore);
 	yearField.bind(sourceStore);
-    gridHP.add(fpTitleField);
-    gridHP.add(fpAuthorsField);
-    gridHP.add(fpYearField);
-
+    gridHP.add(fpTitleField, new HorizontalLayoutData(0.4,1));
+    gridHP.add(fpAuthorsField, new HorizontalLayoutData(0.4,1));
+    gridHP.add(fpYearField, new HorizontalLayoutData(0.2,1));
+    //gridVLC.add(grid);
     //gridHP.add(gridHLC);
-    gridVP.add(gridHP, new VerticalLayoutData(1,-1));
-    gridVP.add(grid, new VerticalLayoutData(1,-1));
+    gridVP.add(gridHP, new VerticalLayoutData(1,0.1));
+    gridVP.add(grid, new VerticalLayoutData(1,0.9));
 
 	//mainGrid.add(gridVP);
-	Resizable rs = new Resizable(grid);
+	Resizable rs = new Resizable(gridVP);
 	rs.setDynamic(true);
 
     // State manager, make this grid stateful
 //    grid.setStateful(true);
 //    grid.setStateId("bibSelector");
 
-    StringFilter<AnnotatedBibliographyEntry> titleFilter = new StringFilter<AnnotatedBibliographyEntry>(bibProps.title());
+    StringFilter<AnnotatedBibliographyEntry> titleFilter = new StringFilter<AnnotatedBibliographyEntry>(bibProps.getTitleFull());
     StringFilter<AnnotatedBibliographyEntry> authorFilter = new StringFilter<AnnotatedBibliographyEntry>(bibProps.authors());
     StringFilter<AnnotatedBibliographyEntry> yearFilter = new StringFilter<AnnotatedBibliographyEntry>(bibProps.year());
     GridFilters<AnnotatedBibliographyEntry> filters = new GridFilters<AnnotatedBibliographyEntry>();
