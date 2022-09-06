@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.math.BigInteger;
 import java.util.Base64;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -68,10 +69,18 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpHost;
+
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gwt.thirdparty.json.JSONArray;
+import com.google.gwt.thirdparty.json.JSONException;
+import com.google.gwt.thirdparty.json.JSONObject;
 //import javax.mail.Authenticator;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+import de.cses.client.caves.CaveType;
 import de.cses.server.ServerProperties;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographyEntry;
@@ -89,6 +98,8 @@ import de.cses.shared.CaveSketchEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
 import de.cses.shared.CollectionEntry;
+import de.cses.shared.CommentEntry;
+import de.cses.shared.CoordinatesEntry;
 import de.cses.shared.CurrentLocationEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DepictionSearchEntry;
@@ -148,31 +159,32 @@ public class MysqlConnector implements IsSerializable {
 	private boolean dologgingbegin = false;
 	private ScheduledExecutorService scheduler = null;
 	private Map<Integer,Integer> rootItems = new HashMap<Integer,Integer>();
+	public class ElasticResult{
+		public String _index;
+		public String _type;
+		public String _id;
+		public Integer _version;
+		public String result;
+		public Object _shards;
+		public Integer _seq_no;
+		public Integer _primary_term;
+		public ElasticResult() {};
+	}
 	public class KuchaDic{ 
 		public ArrayList<DistrictEntry> districts; 
 		public ArrayList<SiteEntry> sites; 
-		public ArrayList<RegionEntry> region; 
-		public ArrayList<CaveTypeEntry> caveType; 
-		public ArrayList<CeilingTypeEntry> ceilingType; 
-		public ArrayList<PreservationClassificationEntry> preservationClassification; 
-		public ArrayList<ImageTypeEntry> imageTypes; 
-		public ArrayList<ExpeditionEntry> expeditions; 
-		public ArrayList<StyleEntry> style; 
+		public ArrayList<RegionEntry> region;
+		public ArrayList<CaveTypeEntry> caveTypes;
 		public ArrayList<IconographyEntry> iconography; 
-		public ArrayList<ModeOfRepresentationEntry> modesOfRepresentation; 
 		public ArrayList<WallTreeEntry> wallLocation; 
 		public ArrayList<LocationEntry> location; 
-		public ArrayList<VendorEntry> vendor; 
-		public ArrayList<PublicationTypeEntry> publicationType;  
 		public ArrayList<OrnamentEntry> ornaments;
 		public ArrayList<OrientationEntry> orientation; 
 		public ArrayList<PositionEntry> position; 
 		public ArrayList<BibKeywordEntry> bibKeyWords;
-		public KuchaDic( ArrayList<DistrictEntry> districts, ArrayList<SiteEntry> sites, ArrayList<RegionEntry> region, ArrayList<CaveTypeEntry> caveType, ArrayList<CeilingTypeEntry> ceilingType, ArrayList<PreservationClassificationEntry> preservationClassification, ArrayList<ImageTypeEntry> imageTypes, 
-				ArrayList<ExpeditionEntry> expeditions, ArrayList<StyleEntry> style, 
-				ArrayList<IconographyEntry> iconography, ArrayList<ModeOfRepresentationEntry> modesOfRepresentation, 
+		public KuchaDic( ArrayList<DistrictEntry> districts, ArrayList<SiteEntry> sites, ArrayList<RegionEntry> region,ArrayList<CaveTypeEntry> caveTypes, 
+				ArrayList<IconographyEntry> iconography,  
 				ArrayList<WallTreeEntry> wallLocation, ArrayList<LocationEntry> location, 
-				ArrayList<VendorEntry> vendor,ArrayList<PublicationTypeEntry> publicationType,
 				ArrayList<OrnamentEntry> ornaments, 
 				ArrayList<OrientationEntry> orientation,
 				ArrayList<PositionEntry> position,
@@ -180,14 +192,8 @@ public class MysqlConnector implements IsSerializable {
 			this.districts = districts;
 			this.sites = sites;
 			this.region=region;
-			this.caveType=caveType;
-			this.ceilingType=ceilingType;
-			this.preservationClassification=preservationClassification;
-			this.imageTypes=imageTypes;
-			this.expeditions=expeditions;
-			this.style=style;
+			this.caveTypes=caveTypes;
 			this.iconography=iconography;
-			this.modesOfRepresentation=modesOfRepresentation;
 			this.wallLocation=wallLocation;
 			this.location=location;
 			this.vendor=vendor;
@@ -685,6 +691,13 @@ public class MysqlConnector implements IsSerializable {
 		if (entry instanceof DepictionEntry) {
 			Connection dbc = getConnection();
 			PreparedStatement pstmt;
+			String url = serverProperties.getProperty("home.elastic.url");
+			int port = Integer.parseInt(serverProperties.getProperty("home.elastic.port"));
+			String index_data = serverProperties.getProperty("home.elastic.index_data");
+			String index_backup = serverProperties.getProperty("home.elastic.index_backup");
+			String elastic_user = serverProperties.getProperty("home.elastic.login");
+			String elastic_pw = serverProperties.getProperty("home.elastic.pw");
+			doRequest("DELETE",url, port, index_data + "/_doc/" + entry.getUniqueID(),  "", elastic_user, elastic_pw);
 			try {
 				pstmt = dbc.prepareStatement( " UPDATE Depictions SET deleted = 1 WHERE DepictionID = " +((DepictionEntry)entry).getDepictionID()  + ";");
 				ResultSet rs = pstmt.executeQuery();
@@ -762,8 +775,8 @@ public class MysqlConnector implements IsSerializable {
 			Connection dbc = getConnection();
 			PreparedStatement pstmt;
 			try {
-				System.out.println(" UPDATE Ornaments SET deleted = 1 WHERE OrnamentID = " +((OrnamentEntry)entry).getOrnamentID()  + ";");
-				pstmt = dbc.prepareStatement( " UPDATE Ornaments SET deleted = 1 WHERE OrnamentID = " +((OrnamentEntry)entry).getOrnamentID()  + ";");
+				System.out.println(" UPDATE Ornaments SET deleted = 1 WHERE OrnamentID = " +((OrnamentEntry)entry).getTypicalID()  + ";");
+				pstmt = dbc.prepareStatement( " UPDATE Ornaments SET deleted = 1 WHERE OrnamentID = " +((OrnamentEntry)entry).getTypicalID()  + ";");
 				ResultSet rs = pstmt.executeQuery();
 				rs.close();
 				pstmt.close();
@@ -882,16 +895,15 @@ public class MysqlConnector implements IsSerializable {
 		}
 	private void doRequest(String method,String url, int port, String index, String json, String elastic_user, String elastic_pw) {
 		try {
-			System.out.println("executing request https://"+ url+index);
-			
-			URL target = new URL ("https://"+url+":"+port+index);
-            String encoding = Base64.getEncoder().encodeToString((elastic_user+":"+ elastic_pw).getBytes("utf-8"));
+			System.out.println("executing request: "+url+index);
+			URL target = new URL (url+":"+port+index);
+            String encoding = Base64.getEncoder().encodeToString((elastic_user+":"+ elastic_pw).getBytes("utf-8")); 
             HttpURLConnection connection = (HttpURLConnection) target.openConnection();
             connection.setDoOutput(true);
             connection.setRequestProperty  ("Authorization", "Basic " + encoding);
             if (method == "DELETE") {
             	connection.setRequestMethod("DELETE");
-            } else {
+            } else if (method == "PUT")  {
             	connection.setRequestMethod("PUT");
                 connection.setRequestProperty("Content-Type", "application/json; utf-8");
                 connection.setRequestProperty("Accept", "application/json");
@@ -899,6 +911,14 @@ public class MysqlConnector implements IsSerializable {
                     byte[] input = json.getBytes("utf-8");
                     os.write(input, 0, input.length);			
                 }
+            } else {
+            	connection.setRequestMethod("GET");
+                connection.setRequestProperty("Content-Type", "application/json; utf-8");
+                connection.setRequestProperty("Accept", "application/json");
+                try(OutputStream os = connection.getOutputStream()) {
+                    byte[] input = json.getBytes("utf-8");
+                    os.write(input, 0, input.length);			
+                }            	
             }
             InputStream content;
             if (connection.getResponseCode() < HttpURLConnection.HTTP_BAD_REQUEST) {
@@ -921,11 +941,18 @@ public class MysqlConnector implements IsSerializable {
 		}
 
 	}
-	private void doUploadToElastic(String ID, String json,String url, String index, String port, String elastic_user, String elastic_pw) {
+	private String doUploadToElastic(String ID, String json,String url, String index, String port, String elastic_user, String elastic_pw, boolean update) {
+        String output = "";
 		try {
-			System.out.println("executing request https://" + url+":"+port+index+"/_doc/"+ID);
 			// System.out.println("Body:"+ json);
-			URL target = new URL ("https://"+url+index+"/_doc/"+ID);
+			URL target;
+			if (update) {
+				// System.out.println("executing request: "+ url+":"+port+index+"/_doc/"+ID+"/_update"+json);
+				target = new URL (url+":"+port+index+"/_doc/"+ID+"/_update");				
+			} else {
+				// System.out.println("executing request: "+ url+":"+port+index+"/_doc/"+ID);
+				target = new URL (url+":"+port+index+"/_doc/"+ID);
+			}
 	        String encoding = Base64.getEncoder().encodeToString((elastic_user+":"+ elastic_pw).getBytes("utf-8"));
 	        HttpURLConnection connection = (HttpURLConnection) target.openConnection();
 	        connection.setDoOutput(true);
@@ -949,57 +976,138 @@ public class MysqlConnector implements IsSerializable {
 	            new BufferedReader (new InputStreamReader (content));
 	        String line;
 	        while ((line = in.readLine()) != null) {
-	            System.out.println(line);
+	            output +=line;
 	        }
 		} catch (Exception ex) {
-			System.out.println("Failed to do request ");
-			System.out.println(ex.getLocalizedMessage() );
+			output += "Failed to do request ";
+			output += ex.getLocalizedMessage();
 		} finally {
 		    // @Deprecated httpClient.getConnectionManager().shutdown(); 
 		}
-
-//		try {
-//			HttpClient httpClient = HttpClientBuilder.create().build();
-//			System.out.println("Starting to upload depiction Entry:"+ID);
-//            HttpHost targetHost = new HttpHost("127.0.0.1", 9200, "http");
-//
-//            CredentialsProvider credsProvider = new BasicCredentialsProvider();
-//            credsProvider.setCredentials(
-//                    new AuthScope(targetHost.getHostName(), targetHost.getPort()),
-//                    new UsernamePasswordCredentials("elastic", "0dT0uJHBt2hSyTUOZBcs"));
-//
-//            // Create AuthCache instance
-//            AuthCache authCache = new BasicAuthCache();
-//            // Generate BASIC scheme object and add it to the local auth cache
-//            BasicScheme basicAuth = new BasicScheme();
-//            authCache.put(targetHost, basicAuth);
-//            HttpClientContext context = HttpClientContext.create();
-//            context.setCredentialsProvider(credsProvider);
-//            context.setAuthCache(authCache);
-//            HttpPost post = new HttpPost("/"+index+"/_doc/"+ID);
-//            StringEntity postingString = new StringEntity(json, "UTF-8");
-//            post.setEntity(postingString);
-//            post.setHeader("Content-type", "application/json");
-//            HttpResponse response = httpClient.execute(
-//                    targetHost, post, context);
-//            BufferedReader br = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-//            String inputLine;
-//            try {
-//                  while ((inputLine = br.readLine()) != null) {
-//                         System.out.println(inputLine);
-//                  }
-//                  br.close();
-//             } catch (IOException e) {
-//                  e.printStackTrace();
-//             }
-//			System.out.println("uploaded depiction Entry:"+ID);
-//		} catch (Exception ex) {
-//			System.out.println("Failed to upload depiction Entry:"+ID);
-//			System.out.println(ex.getLocalizedMessage());
-//		} finally {
-//		    // @Deprecated httpClient.getConnectionManager().shutdown(); 
-//		}
-
+		return output;
+	}
+	String prepareCaveEntryForElastic(CaveEntry cave) {
+		ArrayList<OrientationEntry> orientations = getOrientationInformation();
+		ArrayList<CaveGroupEntry> caveGroupes = getCaveGroups();
+		if (cave.getCaveTypeID()>0) {
+			cave.setCaveType(getCaveTypes("CaveTypeID = " +Integer.toString(cave.getCaveTypeID())).get(0));						
+		}
+		if (cave.getSiteID()>0) {
+			cave.setSiteType(getSites("SiteID = " +Integer.toString(cave.getSiteID())).get(0));
+		}
+		if (cave.getDistrictID()>0) {
+			cave.setDistrictEntry(getDistricts("DistrictID = " +Integer.toString(cave.getDistrictID())).get(0));
+		}
+		if (cave.getRegionID()>0) {
+			cave.setRegionEntry(getRegions("RegionID = " +Integer.toString(cave.getRegionID())).get(0));
+		}
+		for (OrientationEntry oe : orientations) {
+			if (oe.getOrientationID()==cave.getOrientationID()) {
+				cave.setOrientatioType(oe);
+			}
+		}
+		cave.setPreservationClassificationEntryType(getPreservationClassification(cave.getSiteID()));
+		for (CaveGroupEntry cge : caveGroupes) {
+			if(cge.getCaveGroupID()==cave.getCaveGroupID()) {
+				cave.setcaveGroupType(cge);
+			}
+		}
+		Gson gson = new Gson();
+		String json = gson.toJson(cave);
+		return json;
+	}
+	String prepareDepictionForElastic(DepictionEntry result) {
+		ArrayList<OrientationEntry> orientations = getOrientationInformation();
+		ArrayList<CaveGroupEntry> caveGroupes = getCaveGroups();
+		ArrayList<ModeOfRepresentationEntry> moRep = getModesOfRepresentations();
+		Gson gson = new Gson();
+		result.setRelatedImages(getRelatedPublicImages(result.getDepictionID()));
+		result.setRelatedBibliographyList(getRelatedBibliographyFromDepiction(result.getDepictionID()));
+		result.setRelatedIconographyList(getRelatedIconography(result.getDepictionID()));
+		ArrayList<ImageEntry> publicImmages = new ArrayList<ImageEntry>();
+		Map<String, Integer> imgAccessLevel = new HashMap<String, Integer>();
+		// System.out.println("Length of relasted images befor filtering: " + Integer.toString(result.getRelatedImages().size()));
+		for (ImageEntry ie : result.getRelatedImages()) {
+			// System.out.println("put "+ie.getFilename() +", "+ Integer.toString(ie.getAccessLevel()));
+			imgAccessLevel.put(ie.getFilename(), ie.getAccessLevel());
+			if (ie.getAccessLevel()>0) {
+				publicImmages.add(ie);
+			} else {
+				ie.setCopyright("");
+				ie.setTitle("No_Picture_Available");
+				ie.setFilename("no_picture_available.jpg");
+				publicImmages.add(ie);									
+			}
+		}
+		result.setRelatedImages(publicImmages);
+		// System.out.println("Length of relasted images befor filtering: " + Integer.toString(result.getRelatedImages().size()));
+		ArrayList<AnnotationEntry> newAEs = new ArrayList<AnnotationEntry>();
+		for (AnnotationEntry ae : result.getRelatedAnnotationList()) {
+		 //System.out.println("checking "+ae.getImage());
+		 Integer img = imgAccessLevel.get(ae.getImage());
+			if (img != null) {
+				if (imgAccessLevel.get(ae.getImage())>0) {
+					newAEs.add(ae);
+				} else {
+					ae.setPolygon("{\"type\": \"Polygon\", \"coordinates\": [[[0, 0], [0, 0]]]}");
+					ae.setImage("no_picture_available.jpg");
+					newAEs.add(ae);
+				}
+			} else {
+				ae.setPolygon("{\"type\": \"Polygon\", \"coordinates\": [[[0, 0], [0, 0]]]}");
+				ae.setImage("no_picture_available.jpg");
+				newAEs.add(ae);
+			}
+		}
+		result.setRelatedAnnotationList(newAEs);
+		if (result.getStyleID()>0) {
+			result.setStyle(getStyles("StyleID = "+Integer.toString(result.getStyleID())).get(0));						
+		}
+		for (ModeOfRepresentationEntry mr : moRep) {
+			if (mr.getModeOfRepresentationID()==result.getModeOfRepresentationID()) {
+				result.setModeOfRepresentation(mr);
+			}
+		};
+		if (result.getCave() != null) {
+			if (result.getCave().getCaveTypeID()>0) {
+				result.getCave().setCaveType(getCaveTypes("CaveTypeID = " +Integer.toString(result.getCave().getCaveTypeID())).get(0));						
+			}
+			if (result.getCave().getSiteID()>0) {
+				result.getCave().setSiteType(getSites("SiteID = " +Integer.toString(result.getCave().getSiteID())).get(0));
+			}
+			if (result.getCave().getDistrictID()>0) {
+				result.getCave().setDistrictEntry(getDistricts("DistrictID = " +Integer.toString(result.getCave().getDistrictID())).get(0));
+			}
+			if (result.getCave().getRegionID()>0) {
+				result.getCave().setRegionEntry(getRegions("RegionID = " +Integer.toString(result.getCave().getRegionID())).get(0));
+			}
+			for (OrientationEntry oe : orientations) {
+				if (oe.getOrientationID()==result.getCave().getOrientationID()) {
+					result.getCave().setOrientatioType(oe);
+				}
+			}
+			result.getCave().setPreservationClassificationEntryType(getPreservationClassification(result.getCave().getSiteID()));
+			for (CaveGroupEntry cge : caveGroupes) {
+				if(cge.getCaveGroupID()==result.getCave().getCaveGroupID()) {
+					result.getCave().setcaveGroupType(cge);
+				}
+			}						
+		}
+		for (AnnotationEntry ae: result.getRelatedAnnotationList()) {
+			for (IconographyEntry tag: ae.getTags()) {
+				boolean found = false;
+				for (IconographyEntry ie: result.getRelatedIconographyList()) {
+					if (ie.getIconographyID() == tag.getIconographyID()) {
+						found = true;
+					}
+				}
+				if (!found) {
+					result.getRelatedIconographyList().add(tag);
+				}
+			}
+		}
+		String json = gson.toJson(result);
+		return json;
 	}
 	public boolean serializeAllDepictionEntries(String sessionID) {
 		this.isSerializing = true;
@@ -1017,19 +1125,23 @@ public class MysqlConnector implements IsSerializable {
 				ResultSet rs = stmt.executeQuery("SELECT * FROM Depictions WHERE deleted=0");
 				System.out.println("Start Select");
 				System.out.println("Starting serialization for: "+serverProperties.getProperty("MysqlConnector.db.url"));
-				String url = serverProperties.getProperty("home.elastic.url");
 				int port = Integer.parseInt(serverProperties.getProperty("home.elastic.port"));
+				String url = serverProperties.getProperty("home.elastic.url");
 				String index_data = serverProperties.getProperty("home.elastic.index_data");
 				String index_dic = serverProperties.getProperty("home.elastic.index_dic");
+				String index_backup = serverProperties.getProperty("home.elastic.index_backup");
 				String elastic_user = serverProperties.getProperty("home.elastic.login");
 				String elastic_pw = serverProperties.getProperty("home.elastic.pw");
 				String mapping_data = serverProperties.getProperty("home.elastic.mapping.kucha_data");
 				String mapping_dic = serverProperties.getProperty("home.elastic.mapping.kucha_dic");
+				String mapping_backup = serverProperties.getProperty("home.elastic.mapping.kucha_backup");
 				String elastic_role = serverProperties.getProperty("home.elastic.role");
 				String elasticReadOnlyUser = serverProperties.getProperty("home.elastic.user");
 				doRequest("DELETE", url, port, index_data, "",elastic_user,elastic_pw);
 				doRequest("DELETE", url, port, index_dic, "",elastic_user,elastic_pw);
+				doRequest("DELETE", url, port, index_backup, "",elastic_user,elastic_pw);
 				doRequest("PUT", url, port, index_data, mapping_data,elastic_user,elastic_pw);
+				doRequest("PUT", url, port, index_backup, mapping_backup,elastic_user,elastic_pw);
 				doRequest("PUT", url, port, index_dic, mapping_dic,elastic_user,elastic_pw);
 				doRequest("PUT", url, port, "/_xpack/security/role/read_only_role", elastic_role,elastic_user,elastic_pw);
 				doRequest("PUT", url, port, "/_xpack/security/user/read_only_user", elasticReadOnlyUser,elastic_user,elastic_pw);
@@ -1040,93 +1152,100 @@ public class MysqlConnector implements IsSerializable {
 				String filename=serverProperties.getProperty("home.jsons")+"result.json";
 				String dicFilename=serverProperties.getProperty("home.jsons")+"dic.json";
 				Gson gson = new Gson();
+				Date date = new Date(System.currentTimeMillis());
+				DateFormat df = DateFormat.getDateInstance();
+		        System.out.println("Starting praparing Kucha-Dictionary");
+				Gson gson2 = new Gson();
+				String json2 = gson2.toJson(getDistricts());
+				json2 = json2.replace("\"text\"", "\"name\"");
+				System.out.println(doUploadToElastic("districts", "{\"districts\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false));
+				System.out.println(doUploadToElastic("districts-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\":"+json2+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+				json2 = gson2.toJson(getLocations());
+				json2 = json2.replace("\"text\"", "\"name\"");
+				System.out.println(doUploadToElastic("locations", "{\"locations\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false));
+				System.out.println(doUploadToElastic("locations-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\":"+json2+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+				json2 = gson2.toJson(getSites());
+				json2 = json2.replace("\"text\"", "\"name\"");
+				System.out.println(doUploadToElastic("sites",  "{\"sites\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false));
+				System.out.println(doUploadToElastic("sites-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\":"+json2+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+				json2 = gson2.toJson(getRegions());
+				json2 = json2.replace("\"text\"", "\"name\"");
+				System.out.println(doUploadToElastic("regions",  "{\"regions\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false));
+				System.out.println(doUploadToElastic("regions-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\":"+json2+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+				json2 = gson2.toJson(getCaveTypes());
+				json2 = json2.replace("\"text\"", "\"name\"");
+				System.out.println(doUploadToElastic("caveTypes",  "{\"caveTypes\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false));
+				System.out.println(doUploadToElastic("caveTypes-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\":"+json2+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+				json2 = gson2.toJson(getIconography(0));
+				json2 = json2.replace("\"text\"", "\"name\"");
+				System.out.println(doUploadToElastic("iconographyTree",  "{\"iconography\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false));
+				System.out.println(doUploadToElastic("iconographyTree-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\": {\"iconography\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+				json2 = gson2.toJson(getWallTree(0));
+				json2 = json2.replace("\"text\"", "\"name\"");
+				System.out.println(doUploadToElastic("wallTree", "{\"wallTree\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false));
+				System.out.println(doUploadToElastic("wallTree-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\": {\"wallTree\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+				json2 = gson2.toJson(getPosition());
+				json2 = json2.replace("\"text\"", "\"name\"");
+				System.out.println(doUploadToElastic("positions", "{\"positions\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false));
+				System.out.println(doUploadToElastic("positions-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\":"+json2+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+				json2 = gson2.toJson(getBibKeywords());
+				json2 = json2.replace("\"text\"", "\"name\"");
+				System.out.println(doUploadToElastic("bibKeywords", "{\"bibKeywords\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false));
+				System.out.println(doUploadToElastic("bibKeywords-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\":"+json2+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
 
 			    try {
 			        FileWriter myWriter = new FileWriter(filename);
+					ArrayList<CaveEntry> caves = getCaves();
+					for (CaveEntry cave : caves) {
+						//System.out.println(filename);
+						String json = prepareCaveEntryForElastic(cave);
+						doUploadToElastic(cave.getUniqueID(), json, url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, false);
+						System.out.println(doUploadToElastic(cave.getUniqueID()+"-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+						myWriter.write(json+String.format("%n"));
+					
+					}
+					ArrayList<AnnotatedBibliographyEntry> bibs = getAnnotatedBiblography();
+					for (AnnotatedBibliographyEntry bib : bibs) {
+						bib.setAuthorString();
+						String json = gson.toJson(bib);
+						//System.out.println(filename);
+						doUploadToElastic(bib.getUniqueID(), json, url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, false);
+						System.out.println(doUploadToElastic(bib.getUniqueID()+"-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+					    myWriter.write(json+String.format("%n"));
+					
+					}
+					ArrayList<IconographyEntry> icos = getIconographyEntries("IconographyID > -1");
+					ArrayList<OrnamentEntry> ornaments = getOrnaments();
+					for (IconographyEntry ico : icos) {
+						for (OrnamentEntry orn: ornaments) {
+							if (orn.getIconographyID() == ico.getIconographyID()) {
+								ico.setOrnamentEntry(orn);
+								System.out.println("Found Ornamententry for:"+ Integer.toString(ico.getIconographyID())+", ornament:" +Integer.toString(ico.getOrnamentEntry().getTypicalID()));
+							}
+						}
+						String json = gson.toJson(ico);
+						//System.out.println(filename);
+						doUploadToElastic(ico.getUniqueID(), json, url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, false);
+						System.out.println(doUploadToElastic(ico.getUniqueID()+"-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+					    myWriter.write(json+String.format("%n"));
+					
+					}
+					date = new Date(System.currentTimeMillis());
 					while (rs.next()) { 
 						//System.out.println("got result");				
 						result = new DepictionEntry(rs.getInt("DepictionID"), rs.getInt("StyleID"), rs.getString("Inscriptions"),
-								rs.getString("SeparateAksaras"), rs.getString("Dating"), rs.getString("Description"), rs.getString("BackgroundColour"),
+								rs.getString("SeparateAksaras"), rs.getString("Dating"), stripAccents(rs.getString("Description")), rs.getString("BackgroundColour"),
 								rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"), rs.getDouble("Width"), rs.getDouble("Height"),
 								getExpedition(rs.getInt("ExpeditionID")), rs.getDate("PurchaseDate"), getLocation(rs.getInt("CurrentLocationID")), rs.getString("InventoryNumber"),
 								getVendor(rs.getInt("VendorID")), rs.getInt("StoryID"), getCave(rs.getInt("CaveID")), getwallsbyDepictionID(rs.getInt("DepictionID")), rs.getInt("AbsoluteLeft"),
-								rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes"),
-								rs.getInt("MasterImageID"), rs.getInt("AccessLevel"), rs.getString("LastChangedByUser"), rs.getString("LastChangedOnDate"),getAnnotations(rs.getInt("DepictionID")));
+								rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), stripAccents(rs.getString("ShortName")), rs.getString("PositionNotes"),
+								rs.getInt("MasterImageID"), rs.getInt("AccessLevel"), rs.getString("LastChangedByUser"), rs.getString("LastChangedOnDate"),getAnnotations(rs.getInt("DepictionID")), getImageSortInfo(rs.getInt("DepictionID")));
 						if (result.getAccessLevel() == 2) {
-							result.setRelatedImages(getRelatedPublicImages(result.getDepictionID()));
-							result.setRelatedBibliographyList(getRelatedBibliographyFromDepiction(result.getDepictionID()));
-							result.setRelatedIconographyList(getRelatedIconography(result.getDepictionID()));
-							ArrayList<ImageEntry> publicImmages = new ArrayList<ImageEntry>();
-							Map<String, Integer> imgAccessLevel = new HashMap<String, Integer>();
-							System.out.println("Length of relasted images befor filtering: " + Integer.toString(result.getRelatedImages().size()));
-							for (ImageEntry ie : result.getRelatedImages()) {
-								// System.out.println("put "+ie.getFilename() +", "+ Integer.toString(ie.getAccessLevel()));
-								imgAccessLevel.put(ie.getFilename(), ie.getAccessLevel());
-								if (ie.getAccessLevel()>0) {
-									publicImmages.add(ie);
-								} else {
-									ie.setCopyright("");
-									ie.setTitle("No_Picture_Available");
-									ie.setFilename("no_picture_available.jpg");
-									publicImmages.add(ie);									
-								}
-							}
-							result.setRelatedImages(publicImmages);
-							System.out.println("Length of relasted images befor filtering: " + Integer.toString(result.getRelatedImages().size()));
-							ArrayList<AnnotationEntry> newAEs = new ArrayList<AnnotationEntry>();
-							for (AnnotationEntry ae : result.getRelatedAnnotationList()) {
-							 //System.out.println("checking "+ae.getImage());
-							 Integer img = imgAccessLevel.get(ae.getImage());
-								if (img != null) {
-									if (imgAccessLevel.get(ae.getImage())>0) {
-										newAEs.add(ae);
-									} else {
-										ae.setPolygon("{\"type\": \"Polygon\", \"coordinates\": [[[0, 0], [0, 0]]]}");
-										ae.setImage("no_picture_available.jpg");
-										newAEs.add(ae);
-									}
-								} else {
-									ae.setPolygon("{\"type\": \"Polygon\", \"coordinates\": [[[0, 0], [0, 0]]]}");
-									ae.setImage("no_picture_available.jpg");
-									newAEs.add(ae);
-								}
-							}
-							result.setRelatedAnnotationList(newAEs);
-							if (result.getStyleID()>0) {
-								result.setStyle(getStyles("StyleID = "+Integer.toString(result.getStyleID())).get(0));						
-							}
-							for (ModeOfRepresentationEntry mr : moRep) {
-								if (mr.getModeOfRepresentationID()==result.getModeOfRepresentationID()) {
-									result.setModeOfRepresentation(mr);
-								}
-							};
-							if (result.getCave() != null) {
-								if (result.getCave().getCaveTypeID()>0) {
-									result.getCave().setCaveType(getCaveTypes("CaveTypeID = " +Integer.toString(result.getCave().getCaveTypeID())).get(0));						
-								}
-								if (result.getCave().getSiteID()>0) {
-									result.getCave().setSiteType(getSites("SiteID = " +Integer.toString(result.getCave().getSiteID())).get(0));
-								}
-								if (result.getCave().getDistrictID()>0) {
-									result.getCave().setDistrictEntry(getDistricts("DistrictID = " +Integer.toString(result.getCave().getDistrictID())).get(0));
-								}
-								if (result.getCave().getRegionID()>0) {
-									result.getCave().setRegionEntry(getRegions("RegionID = " +Integer.toString(result.getCave().getRegionID())).get(0));
-								}
-								for (OrientationEntry oe : orientations) {
-									if (oe.getOrientationID()==result.getCave().getOrientationID()) {
-										result.getCave().setOrientatioType(oe);
-									}
-								}
-								result.getCave().setPreservationClassificationEntryType(getPreservationClassification(result.getCave().getSiteID()));
-								for (CaveGroupEntry cge : caveGroupes) {
-									if(cge.getCaveGroupID()==result.getCave().getCaveGroupID()) {
-										result.getCave().setcaveGroupType(cge);
-									}
-								}						
-							}						
-							String json = gson.toJson(result);
-							doUploadToElastic(result.getUniqueID(), json, url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw);
+							result.setModifiedOn("");
+							String json = prepareDepictionForElastic(result);
+   						    System.out.println(doUploadToElastic(result.getUniqueID(),   json, url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, false));
+   						    System.out.println(doUploadToElastic(result.getUniqueID()+"-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+   						    //System.out.println(doUploadToElastic(result.getUniqueID(),   "{\"versions\":[{\"timestamp\":\""+df.format(date)+"\", \"content\":"+json+"}]}", url,index_backup, Integer.toString(port), elastic_user,elastic_pw, false));
 						    myWriter.write(json+String.format("%n"));
 						}
 
@@ -1134,99 +1253,7 @@ public class MysqlConnector implements IsSerializable {
 						// System.out.println("Amount of related Images:"+Integer.toString(result.getRelatedImages().size()));
 						//System.out.println(filename);
 					}
-					ArrayList<CaveEntry> caves = getCaves();
-					for (CaveEntry cave : caves) {
-						if (cave.getCaveTypeID()>0) {
-							cave.setCaveType(getCaveTypes("CaveTypeID = " +Integer.toString(cave.getCaveTypeID())).get(0));						
-						}
-						if (cave.getSiteID()>0) {
-							cave.setSiteType(getSites("SiteID = " +Integer.toString(cave.getSiteID())).get(0));
-						}
-						if (cave.getDistrictID()>0) {
-							cave.setDistrictEntry(getDistricts("DistrictID = " +Integer.toString(cave.getDistrictID())).get(0));
-						}
-						if (cave.getRegionID()>0) {
-							cave.setRegionEntry(getRegions("RegionID = " +Integer.toString(cave.getRegionID())).get(0));
-						}
-						for (OrientationEntry oe : orientations) {
-							if (oe.getOrientationID()==cave.getOrientationID()) {
-								cave.setOrientatioType(oe);
-							}
-						}
-						cave.setPreservationClassificationEntryType(getPreservationClassification(cave.getSiteID()));
-						for (CaveGroupEntry cge : caveGroupes) {
-							if(cge.getCaveGroupID()==cave.getCaveGroupID()) {
-								cave.setcaveGroupType(cge);
-							}
-						}
-						String json = gson.toJson(cave);
-						//System.out.println(filename);
-						doUploadToElastic(cave.getUniqueID(), json, url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw);
-					    myWriter.write(json+String.format("%n"));
-					
-					}
-					ArrayList<AnnotatedBibliographyEntry> bibs = getAnnotatedBiblography();
-					for (AnnotatedBibliographyEntry bib : bibs) {
-
-						String json = gson.toJson(bib);
-						//System.out.println(filename);
-						doUploadToElastic(bib.getUniqueID(), json, url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw);
-					    myWriter.write(json+String.format("%n"));
-					
-					}
-					ArrayList<IconographyEntry> icos = getIconographyEntries("IconographyID > -1");
-					for (IconographyEntry ico : icos) {
-
-						String json = gson.toJson(ico);
-						//System.out.println(filename);
-						doUploadToElastic(ico.getUniqueID(), json, url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw);
-					    myWriter.write(json+String.format("%n"));
-					
-					}
-					ArrayList<OrnamentEntry> ornaments = getOrnaments();
-					for (OrnamentEntry orn: ornaments) {
-						orn.setIconographyEntry(getIconographyEntry(orn.getIconographyID()));
-					}
 			        myWriter.close();
-			        System.out.println("Starting praparing Kucha-Dictionary");
-			        FileWriter myWriter2 = new FileWriter(dicFilename);
-			        KuchaDic dic = new KuchaDic( 
-			        		getDistricts(), 
-			        		getSites(), 
-			        		getRegions(), 
-			        		getCaveTypes(), 
-			        		getCeilingTypes(), 
-			        		getPreservationClassifications(), 
-			        		getImageTypes(), 
-							getExpeditions(), 
-							getStyles(),
-							getIconography(0), 
-							getModesOfRepresentations(), 
-							getWallTree(0), 
-							getLocations(),
-							getVendors(), 
-							getPublicationTypes(),
-							ornaments, 
-							getOrientationInformation(), 
-							getPosition(),
-							getBibKeywords());
-			        System.out.println("Kucha-Dictionary created, preparing to write to json");
-					Gson gson2 = new Gson();
-					System.out.println("Gson-object created.");
-					try {
-						String json2 = gson2.toJson(dic);
-						json2 = json2.replace("\"text\"", "\"name\"");
-						System.out.println(dicFilename);
-						doUploadToElastic("dic", json2, url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw);
-						myWriter2.write(json2+String.format("%n"));
-				        System.out.println("Kucha-Dictionary is written to json.");
-					}
-				    catch (Exception e) {
-				    	System.out.println(e);
-				    }
-
-
-			        myWriter2.close();
 			      } catch (IOException e) {
 				        System.out.println("An error occurred.");
 				        e.printStackTrace();
@@ -1246,6 +1273,103 @@ public class MysqlConnector implements IsSerializable {
 		System.out.println("Writing Elastic Indices took "+diff + " Milliseconds.");
 		this.isSerializing = false;
 		return true;
+	}
+	public String saveWebPageUser(UserEntry user) {
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM Webusers where Email=?;");
+			pstmt.setString(1, user.getEmail());
+			ResultSet rs = pstmt.executeQuery();
+			pstmt.close();
+			if (!rs.next()) {
+				String pwd = generate_password(9);
+				String pwHash = "";
+				try {
+					MessageDigest m=MessageDigest.getInstance("MD5");
+					m.update(pwd.getBytes(),0,pwd.length());
+					BigInteger number = new BigInteger(1,m.digest());
+					pwHash = String.format("%032x", number);
+				} catch (Exception e) {
+					System.out.println("An Error accured while decrypting"+e.getLocalizedMessage());
+				}
+				pstmt = dbc.prepareStatement("INSERT INTO Webusers (firstname, lastname, email, affiliation, password) VALUES (?, ?, ?, ?, ?);");
+				pstmt.setString(1, user.getFirstname());
+				pstmt.setString(2, user.getLastname());
+				pstmt.setString(3, user.getEmail());
+				pstmt.setString(4, user.getAffiliation());
+
+				pstmt.setString(5, pwHash);
+				pstmt.executeUpdate();
+				pstmt.close();
+				sendMail("kucha-admin@saw-leipzig.de",user.getEmail(),"Kucha-Admin","An account has been created for you at kucha.saw-leipzig.de","Dear "+user.getFirstname()+ " "+user.getLastname()+",\n the Admin has created an Account in kuchatest.saw-leipzig.de for you.\nYour username is:"+user.getEmail()+"\nYour password is:  \""+pwd+"\"\n However, you do not yet have commenting privileges. These are still to be assigned by the administrators. We ask for a little patience.");
+			} else {
+				System.out.println("Email already exists!");
+				return "Email already exists!";
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+			return e.getLocalizedMessage();
+		}
+		return "";
+	}
+	public Boolean putComment(String user, String passwordHash, String comments, String uuid, String sendMail, String messageText) {
+		String url = serverProperties.getProperty("home.elastic.url");
+		String index_data = serverProperties.getProperty("home.elastic.index_data");
+		String index_dic = serverProperties.getProperty("home.elastic.index_dic");
+		String index_backup = serverProperties.getProperty("home.elastic.index_backup");
+		String elastic_user = serverProperties.getProperty("home.elastic.login");
+		String elastic_pw = serverProperties.getProperty("home.elastic.pw");
+		String mapping_data = serverProperties.getProperty("home.elastic.mapping.kucha_data");
+		String mapping_dic = serverProperties.getProperty("home.elastic.mapping.kucha_dic");
+		String mapping_backup = serverProperties.getProperty("home.elastic.mapping.kucha_backup");
+		String elastic_role = serverProperties.getProperty("home.elastic.role");
+		String elasticReadOnlyUser = serverProperties.getProperty("home.elastic.user");
+		int port = Integer.parseInt(serverProperties.getProperty("home.elastic.port"));
+		System.out.println(doUploadToElastic(uuid,comments, url,"/kucha_discussion", Integer.toString(port), elastic_user,elastic_pw, false));
+		System.out.println("sendmail:'"+sendMail+"'");
+		try{
+			String title = "";
+			JSONArray userIDs;
+			JSONObject comment = new JSONObject(comments);
+			title = comment.getString("title");
+			if (sendMail.equals("true")) {
+				System.out.println("sending Mail");
+	
+					userIDs = comment.getJSONArray("subscribed");
+					System.out.println(userIDs);
+					for (int i = 0 ; i < userIDs.length(); i++) {
+						UserEntry ue = getUserFrontEnd(userIDs.getInt(i));
+						System.out.println("sending Email to: " + ue.getEmail());
+						sendMail("kucha-admin@saw-leipzig.de",ue.getEmail(),"Kucha-Admin","The Discussion \""+title+"\" has a new Answer.","Dear "+ue.getFirstname()+ " "+ue.getLastname()+",\n The Discussion\""+title+"\" has a new Answer: \\n\\t"+messageText);
+					}
+			} else {
+				sendMail("kucha-Admin@saw-leipzig.de","kucha-admin@saw-leipzig.de","Kucha-Admin","The Discussion \""+title+"\" has been updated.","Dear Erik,\n The Discussion\""+title+"\" has been updated.");
+			}
+			
+        }catch(JSONException ex){
+            System.out.println("Error parsing json " + ex.getMessage());
+        }						
+
+		return true;
+	}
+	private ArrayList<Integer> gothroughComments(JSONArray comments, ArrayList<Integer> userIDs){
+        try{
+            for(int i = 0; i<comments.length();i++){
+                JSONObject comment = comments.getJSONObject(i);
+                System.out.println(comment);
+                System.out.println(comment.getJSONArray("comments"));
+                Integer userID = comment.getInt("userID");
+    			Integer index = userIDs.indexOf(userID);
+    			if (index == -1) userIDs.add(userID);
+                userIDs = gothroughComments(comment.getJSONArray("comments"), userIDs);
+          }
+        }catch(JSONException ex){
+            System.out.println("Error parsing json " + ex.getMessage());
+        }
+        return userIDs;
 	}
 	public Map<Integer,String> getPicsByImageID(String imgSourceIds, int tnSize, String sessionID) {
 		Map<Integer,String> result = new HashMap<Integer,String>();
@@ -1915,14 +2039,14 @@ public class MysqlConnector implements IsSerializable {
 						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
 						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("location")),rs.getString("InventoryNumber"),rs.getDouble("Width"),rs.getDouble("Height"));
 				if (image.getLocation()==null) {
-					System.out.println("setting location");
+					//System.out.println("setting location");
 					if (rs.getString("Title")!=null){
 						image.setLocation(searchLocationByFilename(image.getTitle()));
 					}
 					
 				}
 				if (image.getInventoryNumber() == null) {
-					System.out.println("setting Inventory Number");
+					//System.out.println("setting Inventory Number");
 					if (rs.getString("Title")!=null) {
 						image.setInventoryNumber(searchInventoryNumberByFilename(image.getTitle()));
 					}
@@ -1939,7 +2063,7 @@ public class MysqlConnector implements IsSerializable {
 			}
 			rs.close();
 		 	pstmt.close();
-			System.out.println("image query finished");
+			// System.out.println("image query finished");
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
@@ -1961,7 +2085,7 @@ public class MysqlConnector implements IsSerializable {
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von searchImages brauchte "+diff + " Millisekunden.");;}}
 		Map <Integer,ArrayList<ImageEntry>> endRes = new HashMap <Integer,ArrayList<ImageEntry>>();
 		endRes.put(anzahl, results);
-		System.out.println(endRes);
+		//System.out.println(endRes);
 		return endRes;	
 	}
 
@@ -2815,9 +2939,9 @@ public class MysqlConnector implements IsSerializable {
 			updateOrnamentImageRelations(newOrnamentID, ornamentEntry.getImages());
 			updateCaveOrnamentRelation(newOrnamentID, ornamentEntry.getCavesRelations());
 			writeOrnamenticBibliographyRelation(newOrnamentID, ornamentEntry.getRelatedBibliographyList());
-			deleteEntry("DELETE FROM OrnamentIconographyRelation WHERE OrnamentID =" + ornamentEntry.getOrnamentID());
+			deleteEntry("DELETE FROM OrnamentIconographyRelation WHERE OrnamentID =" + ornamentEntry.getTypicalID());
 			if (ornamentEntry.getRelatedIconographyList().size() > 0) {
-				insertOrnamentIconographyRelation(ornamentEntry.getOrnamentID(), ornamentEntry.getRelatedIconographyList());
+				insertOrnamentIconographyRelation(ornamentEntry.getTypicalID(), ornamentEntry.getRelatedIconographyList());
 			}
 			ornamentStatement.close();
 		} catch (SQLException e) {
@@ -2863,29 +2987,49 @@ public class MysqlConnector implements IsSerializable {
 			ornamentStatement.setInt(9, ornamentEntry.getMasterImageID());
 			ornamentStatement.setInt(10, ornamentEntry.getAccessLevel());
 			ornamentStatement.setDouble(11, ornamentEntry.getVirtualTourOrder());
-			ornamentStatement.setInt(12, ornamentEntry.getOrnamentID());
+			ornamentStatement.setInt(12, ornamentEntry.getTypicalID());
 			ornamentStatement.executeUpdate();
-			deleteEntry("DELETE FROM OrnamentIconographyRelation WHERE OrnamentID =" + ornamentEntry.getOrnamentID());
+			deleteEntry("DELETE FROM OrnamentIconographyRelation WHERE OrnamentID =" + ornamentEntry.getTypicalID());
 			if (ornamentEntry.getRelatedIconographyList().size() > 0) {
-				insertOrnamentIconographyRelation(ornamentEntry.getOrnamentID(), ornamentEntry.getRelatedIconographyList());
+				insertOrnamentIconographyRelation(ornamentEntry.getTypicalID(), ornamentEntry.getRelatedIconographyList());
 			}
-			updateInnerSecondaryPatternsRelations(ornamentEntry.getOrnamentID(), ornamentEntry.getInnerSecondaryPatterns());
-			updateOrnamentComponentsRelations(ornamentEntry.getOrnamentID(), ornamentEntry.getOrnamentComponents());
-			updateOrnamentImageRelations(ornamentEntry.getOrnamentID(), ornamentEntry.getImages());
-			updateCaveOrnamentRelation(ornamentEntry.getOrnamentID(), ornamentEntry.getCavesRelations());
+			updateInnerSecondaryPatternsRelations(ornamentEntry.getTypicalID(), ornamentEntry.getInnerSecondaryPatterns());
+			updateOrnamentComponentsRelations(ornamentEntry.getTypicalID(), ornamentEntry.getOrnamentComponents());
+			updateOrnamentImageRelations(ornamentEntry.getTypicalID(), ornamentEntry.getImages());
+			updateCaveOrnamentRelation(ornamentEntry.getTypicalID(), ornamentEntry.getCavesRelations());
 			
 			System.err.println("writeOrnamenticBibliographyRelation triggered");
-			writeOrnamenticBibliographyRelation(ornamentEntry.getOrnamentID(), ornamentEntry.getRelatedBibliographyList());
+			writeOrnamenticBibliographyRelation(ornamentEntry.getTypicalID(), ornamentEntry.getRelatedBibliographyList());
 			ornamentStatement.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return false;
 		}
-		Date date = new Date(System.currentTimeMillis());
-		DateFormat df = DateFormat.getDateTimeInstance();
-		ornamentEntry.setModifiedOn(df.format(date));
-		protocollModifiedAbstractEntry(ornamentEntry,"");
+		if (ornamentEntry.getAccessLevel() == 2) {
+			IconographyEntry ico = getIconographyEntry(ornamentEntry.getIconographyID());
+			ico.setOrnamentEntry(ornamentEntry);
+			ico.setModifiedOn("");
+			Gson gson = new Gson();
+			String json = gson.toJson(ico);	
+			Date date = new Date(System.currentTimeMillis());
+			DateFormat df = DateFormat.getDateTimeInstance();
+
+			String url = serverProperties.getProperty("home.elastic.url");
+			int port = Integer.parseInt(serverProperties.getProperty("home.elastic.port"));
+			String elastic_user = serverProperties.getProperty("home.elastic.login");
+			String elastic_pw = serverProperties.getProperty("home.elastic.pw");
+			System.err.println("test");
+			String updateResult = doUploadToElastic(ico.getUniqueID(),   "{\"doc\":"+json+"}", url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, true);
+			System.err.println("elastic request: " + updateResult);
+			ElasticResult er = gson.fromJson(updateResult, ElasticResult.class);
+			System.out.println(er.result + " "+ updateResult);
+		    if (er.result != "noop") {
+		    	doUploadToElastic(ico.getUniqueID()+"-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false);
+		    }
+		    ico.setModifiedOn(df.format(date));			
+		}
+
 		if (dologging){
 		long end = System.currentTimeMillis();
 		long diff = (end-start);
@@ -3006,7 +3150,7 @@ public class MysqlConnector implements IsSerializable {
 				PreparedStatement relatedOrnamentsRelationStatement = dbc.prepareStatement("INSERT INTO RelatedOrnamentsRelation (OrnamentID, OrnamentCaveRelationID) VALUES (?, ?)");
 				relatedOrnamentsRelationStatement.setInt(2, newCaveOrnamentRelationID);
 				for (OrnamentEntry ornamentEntry : ornamentCaveR.getRelatedOrnamentsRelations()) {
-					relatedOrnamentsRelationStatement.setInt(1, ornamentEntry.getOrnamentID());
+					relatedOrnamentsRelationStatement.setInt(1, ornamentEntry.getTypicalID());
 					relatedOrnamentsRelationStatement.executeUpdate();
 				}
 				deleteEntry("DELETE FROM OrnamentCaveWallRelation WHERE OrnamentCaveRelationID=" + newCaveOrnamentRelationID);
@@ -3374,6 +3518,21 @@ public boolean isHan(String s) {
 			ex.printStackTrace();
 			return 0;
 		}
+		Date date = new Date(System.currentTimeMillis());
+		DateFormat df = DateFormat.getDateInstance();
+		entry.setModifiedOn(df.format(date));
+		entry.setModifiedOn("");
+		Gson gson = new Gson();
+		String json = gson.toJson(entry);
+		int port = Integer.parseInt(serverProperties.getProperty("home.elastic.port"));
+		String url = serverProperties.getProperty("home.elastic.url");
+		String index_data = serverProperties.getProperty("home.elastic.index_data");
+		String index_backup = serverProperties.getProperty("home.elastic.index_backup");
+		String elastic_user = serverProperties.getProperty("home.elastic.login");
+		String elastic_pw = serverProperties.getProperty("home.elastic.pw");
+		System.out.println(doUploadToElastic(entry.getUniqueID(),   json, url,index_data, Integer.toString(port), elastic_user,elastic_pw, false));
+	    System.out.println(doUploadToElastic(entry.getUniqueID(),   "{\"versions\":[{\"timestamp\":\""+df.format(date)+"\", \"content\":"+json+"}]}", url,index_backup, Integer.toString(port), elastic_user,elastic_pw, false));
+
 		if (dologging){
 		long end = System.currentTimeMillis();
 		long diff = (end-start);
@@ -3388,6 +3547,7 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public boolean updateIconographyEntry(IconographyEntry iconographyEntryToEdit) {
+		System.out.println("Update Iconography Entry");
 		long start = System.currentTimeMillis();
 		if (dologgingbegin){
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateIconographyEntry wurde ausgelöst.");;
@@ -3411,6 +3571,53 @@ public boolean isHan(String s) {
 			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return false;
 		}
+
+		iconographyEntryToEdit.setModifiedOn("");
+		OrnamenticSearchEntry oe = new OrnamenticSearchEntry();
+		ArrayList<IconographyEntry> icos = new ArrayList<IconographyEntry>();
+		icos.add(iconographyEntryToEdit);
+		oe.setIconography(icos);
+		ArrayList<OrnamentEntry> oes = searchOrnaments(oe);
+		if (oes.size() > 0) {
+			iconographyEntryToEdit.setOrnamentEntry(oes.get(0));			
+		}
+		Gson gson = new Gson();
+		String json = gson.toJson(iconographyEntryToEdit);	
+		Date date = new Date(System.currentTimeMillis());
+		DateFormat df = DateFormat.getDateTimeInstance();
+
+		String url = serverProperties.getProperty("home.elastic.url");
+		int port = Integer.parseInt(serverProperties.getProperty("home.elastic.port"));
+		String elastic_user = serverProperties.getProperty("home.elastic.login");
+		String elastic_pw = serverProperties.getProperty("home.elastic.pw");
+		if (iconographyEntryToEdit.getOrnamentEntry() != null) {
+			if (iconographyEntryToEdit.getOrnamentEntry().getAccessLevel() == 2) {
+				String updateResult = doUploadToElastic(iconographyEntryToEdit.getUniqueID(),   "{\"doc\":"+json+"}", url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, true);
+
+				ElasticResult er = gson.fromJson(updateResult, ElasticResult.class);
+				System.out.println(er.result + " "+ updateResult);
+				if (er.result != "noop") {
+					doUploadToElastic(iconographyEntryToEdit.getUniqueID()+"-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false);		    	
+				}
+			}		
+		}
+		String json2 = gson.toJson(getIconography(0));
+		json2 = json2.replace("\"text\"", "\"name\"");
+		String updateResult = doUploadToElastic("iconographyTree","{\"doc\":{\"iconography\":" + json2 + "}}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, true);
+		ElasticResult er = gson.fromJson(updateResult, ElasticResult.class);
+		System.out.println(er.result + " "+ updateResult);
+		if (er.result != "noop") {
+			System.out.println(doUploadToElastic("iconographyTree-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"iconography\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+		}
+	    iconographyEntryToEdit.setModifiedOn(df.format(date));			
+				
+		if (dologging){
+		long end = System.currentTimeMillis();
+		long diff = (end-start);
+		if (diff>100){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateIconographyEntry brauchte "+diff + " Millisekunden.");;}}
+		return true;
+	}
 		if (dologging){
 		long end = System.currentTimeMillis();
 		long diff = (end-start);
@@ -4455,36 +4662,36 @@ public boolean isHan(String s) {
 			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM AnnotatedBibliography" : "SELECT * FROM AnnotatedBibliography WHERE " + where);
 			if ((searchEntry.getAuthorSearch() != null) && !searchEntry.getAuthorSearch().isEmpty()) {
 				for (String name : searchEntry.getAuthorSearch().split("\\s+")) {
-					pstmt.setString(i++,name.replace("*", "%"));
-					pstmt.setString(i++,name.replace("*", "%"));
-					pstmt.setString(i++,name.replace("*", "%"));
-					pstmt.setString(i++,name.replace("*", "%"));
-					pstmt.setString(i++,name.replace("*", "%"));
+					pstmt.setString(i++,"%" + name.replace("*", "%") + "%");
+					pstmt.setString(i++,"%" + name.replace("*", "%") + "%");
+					pstmt.setString(i++,"%" + name.replace("*", "%") + "%");
+					pstmt.setString(i++,"%" + name.replace("*", "%") + "%");
+					pstmt.setString(i++,"%" + name.replace("*", "%") + "%");
 				}
 				for (String name : searchEntry.getAuthorSearch().split("\\s+")) {
-					pstmt.setString(i++, name.replace("*", "%"));
-					pstmt.setString(i++, name.replace("*", "%"));
-					pstmt.setString(i++, name.replace("*", "%"));
-					pstmt.setString(i++, name.replace("*", "%"));
-					pstmt.setString(i++, name.replace("*", "%"));
+					pstmt.setString(i++, "%" + name.replace("*", "%") + "%");
+					pstmt.setString(i++, "%" + name.replace("*", "%") + "%");
+					pstmt.setString(i++, "%" + name.replace("*", "%") + "%");
+					pstmt.setString(i++, "%" + name.replace("*", "%") + "%");
+					pstmt.setString(i++, "%" + name.replace("*", "%") + "%");
 				}
 			}
 			if (searchEntry.getPublisherSearch() != null && !searchEntry.getPublisherSearch().isEmpty()) {
 				pstmt.setString(i++, searchEntry.getPublisherSearch().replace("*", "%"));
 			}
 			if (searchEntry.getTitleSearch() != null && !searchEntry.getTitleSearch().isEmpty()) {
-				pstmt.setString(i++, searchEntry.getTitleSearch().replace("*", "%"));
-				pstmt.setString(i++,searchEntry.getTitleSearch().replace("*", "%"));
-				pstmt.setString(i++,searchEntry.getTitleSearch().replace("*", "%"));
-				pstmt.setString(i++,searchEntry.getTitleSearch().replace("*", "%"));
-				pstmt.setString(i++,searchEntry.getTitleSearch().replace("*", "%"));
-				pstmt.setString(i++,searchEntry.getTitleSearch().replace("*", "%"));
-				pstmt.setString(i++,searchEntry.getTitleSearch().replace("*", "%"));
-				pstmt.setString(i++,searchEntry.getTitleSearch().replace("*", "%"));
-				pstmt.setString(i++,searchEntry.getTitleSearch().replace("*", "%"));
-				pstmt.setString(i++,searchEntry.getTitleSearch().replace("*", "%"));
-				pstmt.setString(i++,searchEntry.getTitleSearch().replace("*", "%"));
-				pstmt.setString(i++,searchEntry.getTitleSearch().replace("*", "%"));
+				pstmt.setString(i++, "%" + searchEntry.getTitleSearch().replace("*", "%") + "%");
+				pstmt.setString(i++, "%" + searchEntry.getTitleSearch().replace("*", "%") + "%");
+				pstmt.setString(i++, "%" + searchEntry.getTitleSearch().replace("*", "%") + "%");
+				pstmt.setString(i++, "%" + searchEntry.getTitleSearch().replace("*", "%") + "%");
+				pstmt.setString(i++, "%" + searchEntry.getTitleSearch().replace("*", "%") + "%");
+				pstmt.setString(i++, "%" + searchEntry.getTitleSearch().replace("*", "%") + "%");
+				pstmt.setString(i++, "%" + searchEntry.getTitleSearch().replace("*", "%") + "%");
+				pstmt.setString(i++, "%" + searchEntry.getTitleSearch().replace("*", "%") + "%");
+				pstmt.setString(i++, "%" + searchEntry.getTitleSearch().replace("*", "%") + "%");
+				pstmt.setString(i++, "%" + searchEntry.getTitleSearch().replace("*", "%") + "%");
+				pstmt.setString(i++, "%" + searchEntry.getTitleSearch().replace("*", "%") + "%");
+				pstmt.setString(i++, "%" + searchEntry.getTitleSearch().replace("*", "%") + "%");
 			}
 			if (searchEntry.getYearSearch() > 0) {
 				pstmt.setString(i++,Integer.toString(searchEntry.getYearSearch()).replace("*", "%"));
@@ -5114,14 +5321,14 @@ public boolean isHan(String s) {
 			}
 		if (!searchEntry.getDescription().isEmpty()) {
 			where += where.isEmpty() 
-					? " Ornaments.Description like '"+searchEntry.getDescription().replace("*", "%")+"'"
-					: " AND Ornaments.Description like '"+searchEntry.getDescription().replace("*", "%")+"'";
+					? " Ornaments.Description like '%"+searchEntry.getDescription().replace("*", "%")+"%'"
+					: " AND Ornaments.Description like '%"+searchEntry.getDescription().replace("*", "%")+"%'";
 			
 		}
 		if (!searchEntry.getRemarks().isEmpty()) {
 			where += where.isEmpty() 
-					? " Ornaments.Remarks like '"+searchEntry.getRemarks().replace("*", "%")+"'"
-					: " AND Ornaments.Remarks like '"+searchEntry.getRemarks().replace("*", "%")+"'";
+					? " Ornaments.Remarks like '%"+searchEntry.getRemarks().replace("*", "%")+"%'"
+					: " AND Ornaments.Remarks like '%"+searchEntry.getRemarks().replace("*", "%")+"%'";
 			
 		}
 		/**
@@ -5132,7 +5339,7 @@ public boolean isHan(String s) {
 		String inStatement  = Integer.toString(AbstractEntry.ACCESS_LEVEL_PUBLIC); // public is always permitted
 		System.err.println("Accesslevel ist: "+getAccessLevelForSessionID(searchEntry.getSessionID()));
 		if (getAccessLevelForSessionID(searchEntry.getSessionID()) <= UserEntry.GUEST) {
-			where += where.isEmpty() ? "Ornaments.AccessLevel IN (" + inStatement + ")" : " AND AccessLevel IN (" + inStatement + ")";
+			where += where.isEmpty() ? "Ornaments.AccessLevel IN (" + inStatement + ")" : " AND Ornaments.AccessLevel IN (" + inStatement + ")";
 		}
 		String sqlStatement=where.isEmpty() ? "SELECT DISTINCT Ornaments.* FROM Ornaments left join DepictionIconographyRelation on (Ornaments.IconographyID=DepictionIconographyRelation.IconographyID) left join (Select * from Depictions where Depictions.deleted=0) as Depictionsall on (DepictionIconographyRelation.DepictionID=Depictionsall.DepictionID) left join DepictionWallsRelation on (Depictionsall.DepictionID=DepictionWallsRelation.DepictionID) left join WallLocationsTree on (WallLocationsTree.WallLocationID = DepictionWallsRelation.WallID) \r\n" + 
 				"left join WallPositionsRelation on (WallLocationsTree.WallLocationID=WallPositionsRelation.WallID and Depictionsall.DepictionID=WallPositionsRelation.DepictionID) left join Position on (WallPositionsRelation.PositionID=Position.PositionID) left join OrnamentComponentRelation on (OrnamentComponentRelation.OrnamentID = Ornaments.OrnamentID) ORDER BY Ornaments.Code LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+ ", "+Integer.toString(searchEntry.getMaxentries()): "SELECT DISTINCT Ornaments.* FROM Ornaments left join DepictionIconographyRelation on (Ornaments.IconographyID=DepictionIconographyRelation.IconographyID) left join (Select * from Depictions where Depictions.deleted=0) as Depictionsall on (DepictionIconographyRelation.DepictionID=Depictionsall.DepictionID) left join DepictionWallsRelation on (Depictionsall.DepictionID=DepictionWallsRelation.DepictionID) left join WallLocationsTree on (WallLocationsTree.WallLocationID = DepictionWallsRelation.WallID) \r\n" + 
@@ -5147,7 +5354,7 @@ public boolean isHan(String s) {
 			while (rs.next()) {
 				boolean found = false;
 				for (OrnamentEntry oe : resultList) {
-					if (oe.getOrnamentID()==rs.getInt("OrnamentID")){
+					if (oe.getTypicalID()==rs.getInt("OrnamentID")){
 						found=true;
 						break;
 					}
@@ -5185,7 +5392,7 @@ public boolean isHan(String s) {
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery((sqlWhere == null) ? "SELECT * FROM Ornaments WHERE Ornaments.deleted =0" : "SELECT * FROM Ornaments WHERE Ornaments.deleted =0 and  " + sqlWhere+" order by Code");
+			ResultSet rs = stmt.executeQuery(((sqlWhere == null) || (sqlWhere.isEmpty()) ) ? "SELECT * FROM Ornaments WHERE Ornaments.deleted =0" : "SELECT * FROM Ornaments WHERE Ornaments.deleted =0 and  " + sqlWhere+" order by Code");
 			//System.out.println((sqlWhere == null) ? "SELECT * FROM Ornaments WHERE Ornaments.deleted =0" : "SELECT * FROM Ornaments WHERE Ornaments.deleted =0 and  " + sqlWhere+" order by Code");
 			while (rs.next()) {
 				results.add(new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
@@ -5443,9 +5650,26 @@ public boolean isHan(String s) {
 			ex.printStackTrace();
 			return false;
 		}
-		Date date = new Date(System.currentTimeMillis());
-		DateFormat df = DateFormat.getDateTimeInstance();
-		caveEntry.setModifiedOn(df.format(date));
+		if (caveEntry.getAccessLevel() == 2) {
+			caveEntry.setModifiedOn("");
+			Gson gson = new Gson();
+			String json = prepareCaveEntryForElastic(caveEntry);
+			Date date = new Date(System.currentTimeMillis());
+			DateFormat df = DateFormat.getDateTimeInstance();
+
+			String url = serverProperties.getProperty("home.elastic.url");
+			int port = Integer.parseInt(serverProperties.getProperty("home.elastic.port"));
+			String elastic_user = serverProperties.getProperty("home.elastic.login");
+			String elastic_pw = serverProperties.getProperty("home.elastic.pw");
+			String updateResult = doUploadToElastic(caveEntry.getUniqueID(),   "{\"doc\":"+json+"}", url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, true);
+
+			ElasticResult er = gson.fromJson(updateResult, ElasticResult.class);
+			System.out.println(er.result + " "+ updateResult);
+		    if (er.result != "noop") {
+		    	doUploadToElastic(caveEntry.getUniqueID()+"-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false);
+		    }
+		    caveEntry.setModifiedOn(df.format(date));			
+		}
 		protocollModifiedAbstractEntry(caveEntry,"");
 		if (dologging){
 		long end = System.currentTimeMillis();
@@ -5524,12 +5748,25 @@ public boolean isHan(String s) {
 			ex.printStackTrace();
 			return 0;
 		}
+		Date date = new Date(System.currentTimeMillis());
+		DateFormat df = DateFormat.getDateInstance();
+		caveEntry.setModifiedOn(df.format(date));
+		caveEntry.setModifiedOn("");
+		Gson gson = new Gson();
+		String json = prepareCaveEntryForElastic(caveEntry);
+		int port = Integer.parseInt(serverProperties.getProperty("home.elastic.port"));
+		String url = serverProperties.getProperty("home.elastic.url");
+		String index_data = serverProperties.getProperty("home.elastic.index_data");
+		String index_backup = serverProperties.getProperty("home.elastic.index_backup");
+		String elastic_user = serverProperties.getProperty("home.elastic.login");
+		String elastic_pw = serverProperties.getProperty("home.elastic.pw");
+		System.out.println(doUploadToElastic(caveEntry.getUniqueID(),   json, url,index_data, Integer.toString(port), elastic_user,elastic_pw, false));
+	    System.out.println(doUploadToElastic(caveEntry.getUniqueID(),   "{\"versions\":[{\"timestamp\":\""+df.format(date)+"\", \"content\":"+json+"}]}", url,index_backup, Integer.toString(port), elastic_user,elastic_pw, false));
+
 		if (dologging){
 		long end = System.currentTimeMillis();
 		long diff = (end-start);
 		caveEntry.setCaveID(newCaveID);
-		Date date = new Date(System.currentTimeMillis());
-		DateFormat df = DateFormat.getDateTimeInstance();
 		caveEntry.setModifiedOn(df.format(date));
 		protocollModifiedAbstractEntry(caveEntry,"");
 		if (diff>100){
@@ -5691,6 +5928,51 @@ public boolean isHan(String s) {
 	 * @param password
 	 * @return
 	 */
+	public synchronized UserEntry userLoginFrontEnd(String username, String password) {
+		long start = System.currentTimeMillis();
+		if (dologgingbegin){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von userLogin wurde ausgelöst.");;
+		}
+		String newSessionID = null;
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		UserEntry result = null;
+		
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM Webusers WHERE Email=? AND Password=? AND granted");
+			pstmt.setString(1, username);
+			pstmt.setString(2, password);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.first()) {
+				System.err.println("user logged in sucessfully");
+				newSessionID = UUID.randomUUID().toString();
+				updateSessionIDforUserFrontEnd(username, newSessionID);
+				result = new UserEntry(rs.getInt("UserID"), "", rs.getString("Firstname"), rs.getString("Lastname"),
+						rs.getString("Email"), rs.getString("Affiliation"), rs.getInt("AccessLevel"), newSessionID, 
+						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getBoolean("granted"));
+			} else {
+				System.err.println("wrong password for user " + username + ": hash = " + password);
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+			return null;
+		}
+		if (dologging){
+		long end = System.currentTimeMillis();
+		long diff = (end-start);
+		if (diff>100){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von userLogin brauchte "+diff + " Millisekunden.");;}}
+		return result;
+	}
+
+	/**
+	 * @param username
+	 * @param password
+	 * @return
+	 */
 	public UserEntry getUser(String username) {
 		long start = System.currentTimeMillis();
 		if (dologgingbegin){
@@ -5711,6 +5993,50 @@ public boolean isHan(String s) {
 				result = new UserEntry(rs.getInt("UserID"), rs.getString("Username"), rs.getString("Firstname"), rs.getString("Lastname"),
 						rs.getString("Email"), rs.getString("Affiliation"), rs.getInt("AccessLevel"), rs.getString("SessionID"),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
+			} else {
+				System.err.println("no user " + username + " existing");
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+			return null;
+		}
+		if (dologging){
+		long end = System.currentTimeMillis();
+		long diff = (end-start);
+		if (diff>100){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getUser brauchte "+diff + " Millisekunden.");;}}
+		return result;
+	}
+
+
+	/**
+	 * @param username
+	 * @return
+	 */
+	public UserEntry getUserFrontend(String username) {
+		long start = System.currentTimeMillis();
+		if (dologgingbegin){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getUser wurde ausgelöst.");;
+		}
+		System.out.println("getUser called for username = " + username);
+		if (username == null || username.isEmpty()) {
+			return null;
+		}
+		UserEntry result = null;
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM Webusers WHERE Email = ?");
+			pstmt.setString(1, username);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.first()) {
+				result = new UserEntry(rs.getInt("UserID"), "", rs.getString("Firstname"), rs.getString("Lastname"),
+						rs.getString("Email"), rs.getString("Affiliation"), rs.getInt("AccessLevel"), rs.getString("SessionID"),
+						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
+				result.setGranted(rs.getBoolean("granted"));
 			} else {
 				System.err.println("no user " + username + " existing");
 			}
@@ -5753,6 +6079,43 @@ public boolean isHan(String s) {
 				result = new UserEntry(rs.getInt("UserID"), rs.getString("Username"), rs.getString("Firstname"), rs.getString("Lastname"),
 						rs.getString("Email"), rs.getString("Affiliation"), rs.getInt("AccessLevel"), rs.getString("SessionID"),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
+			} else {
+				System.err.println("no user " + userID + " existing");
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+			return null;
+		}
+		if (dologging){
+		long end = System.currentTimeMillis();
+		long diff = (end-start);
+		if (diff>100){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getUser brauchte "+diff + " Millisekunden.");;}}
+		return result;
+	}
+
+	private UserEntry getUserFrontEnd(int userID) {
+		long start = System.currentTimeMillis();
+		if (dologgingbegin){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getUser wurde ausgelöst.");;
+		}
+		if (userID == 0) {
+			return null;
+		}
+		UserEntry result = null;
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM Webusers WHERE UserID = ?");
+			pstmt.setInt(1, userID);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.first()) {
+				result = new UserEntry(rs.getInt("UserID"), "", rs.getString("Firstname"), rs.getString("Lastname"),
+						rs.getString("Email"), rs.getString("Affiliation"), rs.getInt("AccessLevel"), rs.getString("SessionID"),
+						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), rs.getBoolean("granted"));
 			} else {
 				System.err.println("no user " + userID + " existing");
 			}
@@ -5880,6 +6243,37 @@ public boolean isHan(String s) {
 
 	}
 	
+	/**
+	 * 
+	 * @param username
+	 * @param sessionID
+	 */
+	public void updateSessionIDforUserFrontEnd(String username, String sessionID) {
+		long start = System.currentTimeMillis();
+		if (dologgingbegin){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateSessionIDforUser wurde ausgelöst.");;
+		}
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("UPDATE Webusers SET SessionID=? WHERE Email=?");
+			pstmt.setString(1, sessionID);
+			pstmt.setString(2, username);
+//			pstmt.executeUpdate();
+			if (pstmt.executeUpdate() > 0) // temporary check 
+				System.err.println("updated sessionID for user " + username + " to " + sessionID);
+			pstmt.close();
+		} catch (SQLException e) {
+			System.err.println(e.getLocalizedMessage());
+		}
+		if (dologging){
+		long end = System.currentTimeMillis();
+		long diff = (end-start);
+		if (diff>100){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateSessionIDforUser brauchte "+diff + " Millisekunden.");;}}
+
+	}
+	
 	public UserEntry checkSessionID(String sessionID) {
 		long start = System.currentTimeMillis();
 		if (dologgingbegin){
@@ -5900,6 +6294,41 @@ public boolean isHan(String s) {
 				result = new UserEntry(rs.getInt("UserID"), rs.getString("Username"), rs.getString("Firstname"), rs.getString("Lastname"),
 						rs.getString("Email"), rs.getString("Affiliation"), rs.getInt("AccessLevel"), rs.getString("SessionID"),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")));
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+		}
+		if (dologging){
+		long end = System.currentTimeMillis();
+		long diff = (end-start);
+		if (diff>100){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von checkSessionID brauchte "+diff + " Millisekunden.");;}}
+		return result;
+	}
+ 
+	public UserEntry checkSessionIDFrontEnd(String sessionID) {
+		long start = System.currentTimeMillis();
+		if (dologgingbegin){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von checkSessionID wurde ausgelöst.");;
+		}
+		if (sessionID == null) {
+			return null;
+		}
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		UserEntry result = null;
+		
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM Webusers WHERE SessionID=?");
+			pstmt.setString(1, sessionID);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.first()) {
+				result = new UserEntry(rs.getInt("UserID"), "", rs.getString("Firstname"), rs.getString("Lastname"),
+						rs.getString("Email"), rs.getString("Affiliation"), rs.getInt("AccessLevel"), rs.getString("SessionID"),
+						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getBoolean("granted"));
 			}
 			rs.close();
 			pstmt.close();
@@ -6002,11 +6431,12 @@ public boolean isHan(String s) {
 		if (dologgingbegin){
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertDepictionEntry wurde ausgelöst.");;
 		}
+		System.out.println("Insert Depiction Entry triggered. Length of images: " + Integer.toString(de.getRelatedImages().size()) + ", length of bibliographyEntries: " + Integer.toString(de.getRelatedBibliographyList().size()));
 		int newDepictionID = 0;
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		Date date = new Date(System.currentTimeMillis());
-		DateFormat df = DateFormat.getDateTimeInstance();
+		DateFormat df = DateFormat.getDateInstance();
 		de.setModifiedOn(df.format(date));
 		try {
 			pstmt = dbc.prepareStatement(
@@ -6050,7 +6480,7 @@ public boolean isHan(String s) {
 			}
 			keys.close();
 			pstmt.close();
-			protocollModifiedAbstractEntry(de,"");
+			
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 			return 0;
@@ -6069,8 +6499,24 @@ public boolean isHan(String s) {
 		}
 		deleteEntry("DELETE FROM DepictionWallsRelation WHERE DepictionID=" + de.getDepictionID());
 		deleteEntry("DELETE FROM WallPositionsRelation WHERE DepictionID=" + de.getDepictionID());
+		deleteEntry("DELETE FROM PositionCoordinatesRelation WHERE DepictionID=" + de.getDepictionID());
 		if (de.getWalls().size() > 0) {
 			insertDepictionWallsRelation(de.getDepictionID(), de.getWalls());
+		}
+		deleteEntry("DELETE FROM DepictionImageSortInfo WHERE DepictionID=" + de.getDepictionID());
+		setImageSortInfo(de.getDepictionID(), de.getImageSortInfo());
+		if (de.getAccessLevel() == 2) {
+			int port = Integer.parseInt(serverProperties.getProperty("home.elastic.port"));
+			String url = serverProperties.getProperty("home.elastic.url");
+			String index_data = serverProperties.getProperty("home.elastic.index_data");
+			String index_backup = serverProperties.getProperty("home.elastic.index_backup");
+			String elastic_user = serverProperties.getProperty("home.elastic.login");
+			String elastic_pw = serverProperties.getProperty("home.elastic.pw");
+			protocollModifiedAbstractEntry(de,"");
+			de.setModifiedOn("");
+			String json = prepareDepictionForElastic(de);	
+			System.out.println(doUploadToElastic(de.getUniqueID(),   json, url,index_data, Integer.toString(port), elastic_user,elastic_pw, false));
+		    System.out.println(doUploadToElastic(de.getUniqueID(),   "{\"versions\":[{\"timestamp\":\""+df.format(date)+"\", \"content\":"+json+"}]}", url,index_backup, Integer.toString(port), elastic_user,elastic_pw, false));
 		}
 		if (dologging){
 		long end = System.currentTimeMillis();
@@ -6094,12 +6540,10 @@ public boolean isHan(String s) {
 		System.err.println("==> updateDepictionEntry called");
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
-		Date date = new Date(System.currentTimeMillis());
-		DateFormat df = DateFormat.getDateTimeInstance();
-		de.setModifiedOn(df.format(date));
 //		DepictionEntry oldDe = getDepictionEntry(de.getDepictionID(), sessionID);
 		String changes="";
-//		changes= de.getchanges(oldDe);
+		// And create the API client
+	
 
 //		System.err.println("Tracked Changes are: "+changes);
 		try {
@@ -6144,8 +6588,8 @@ public boolean isHan(String s) {
 			System.err.println(ex.getLocalizedMessage());
 			return false;
 		}
-//		System.err.println("DELETE FROM DepictionImageRelation WHERE DepictionID=" + de.getDepictionID());
 		deleteEntry("DELETE FROM DepictionImageRelation WHERE DepictionID=" + de.getDepictionID());
+		System.err.println("Amount of related images:" + de.getRelatedImages().size());
 		if (de.getRelatedImages().size() > 0) {
 			insertDepictionImageRelation(de.getDepictionID(), de.getRelatedImages());
 		}
@@ -6186,11 +6630,13 @@ public boolean isHan(String s) {
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertDepictionImageRelation wurde ausgelöst.");;
 		}
 		Connection dbc = getConnection();
+		System.out.println("insertDepictionImageRelation");
 		PreparedStatement pstmt;
-		// System.err.println("==> updateDepictionImageRelation called");
 		try {
+
 			pstmt = dbc.prepareStatement("INSERT INTO DepictionImageRelation VALUES (?, ?)");
 			for (ImageEntry entry : imgEntryList) {
+				System.err.println("==> updateDepictionImageRelation called"+ entry.getImageID());				
 				pstmt.setInt(1, depictionID);
 				pstmt.setInt(2, entry.getImageID());
 				pstmt.executeUpdate();
@@ -7156,10 +7602,10 @@ public boolean isHan(String s) {
 		PreparedStatement pstmt;
 		int newBibID = 0;
 		if (bibEntry.getBibtexKey().isEmpty() || !getAnnotatedBibliography("BibTexKey='"+bibEntry.getBibtexKey()+"'").isEmpty()) {
-			if (bibEntry.getAuthorList().get(0) != null) {
+			if (!bibEntry.getAuthorList().isEmpty()) {
 				bibEntry.setBibtexKey(createBibtexKey(bibEntry.getAuthorList().get(0), bibEntry.getYearORG()));
-			} else if (bibEntry.getEditorList().get(0) != null) {
-				bibEntry.setBibtexKey(createBibtexKey(bibEntry.getAuthorList().get(0), bibEntry.getYearORG()));
+			} else if (!bibEntry.getEditorList().isEmpty()) {
+				bibEntry.setBibtexKey(createBibtexKey(bibEntry.getEditorList().get(0), bibEntry.getYearORG()));
 			}
 		}
 		System.err.println("insertAnnotatedBiblographyEntry - saving");
@@ -7267,9 +7713,20 @@ public boolean isHan(String s) {
 		}
 		bibEntry.setAnnotatedBibliographyID(newBibID);
 		Date date = new Date(System.currentTimeMillis());
-		DateFormat df = DateFormat.getDateTimeInstance();
+		DateFormat df = DateFormat.getDateInstance();
 		bibEntry.setModifiedOn(df.format(date));
 		protocollModifiedAbstractEntry(bibEntry,"");
+		bibEntry.setModifiedOn("");
+		Gson gson = new Gson();
+		String json = gson.toJson(bibEntry);
+		int port = Integer.parseInt(serverProperties.getProperty("home.elastic.port"));
+		String url = serverProperties.getProperty("home.elastic.url");
+		String index_data = serverProperties.getProperty("home.elastic.index_data");
+		String index_backup = serverProperties.getProperty("home.elastic.index_backup");
+		String elastic_user = serverProperties.getProperty("home.elastic.login");
+		String elastic_pw = serverProperties.getProperty("home.elastic.pw");
+		System.out.println(doUploadToElastic(bibEntry.getUniqueID(),   json, url,index_data, Integer.toString(port), elastic_user,elastic_pw, false));
+	    System.out.println(doUploadToElastic(bibEntry.getUniqueID(),   "{\"versions\":[{\"timestamp\":\""+df.format(date)+"\", \"content\":"+json+"}]}", url,index_backup, Integer.toString(port), elastic_user,elastic_pw, false));
 
 		if (dologging){
 		long end = System.currentTimeMillis();
@@ -7534,6 +7991,19 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
+		de.setModifiedOn("");
+		Gson gson = new Gson();
+		String json = gson.toJson(de);	
+		Date date = new Date(System.currentTimeMillis());
+		DateFormat df = DateFormat.getDateTimeInstance();
+		String url = serverProperties.getProperty("home.elastic.url");
+		int port = Integer.parseInt(serverProperties.getProperty("home.elastic.port"));
+		String elastic_user = serverProperties.getProperty("home.elastic.login");
+		String elastic_pw = serverProperties.getProperty("home.elastic.pw");
+		System.out.println(doUploadToElastic(de.getUniqueID(),   "{\"doc\":"+json+"}", url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, true));
+	    System.out.println(doUploadToElastic(de.getUniqueID()+"-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+	    de.setModifiedOn(df.format(date));			
+
 		if (dologging){
 		long end = System.currentTimeMillis();
 		long diff = (end-start);
@@ -7571,6 +8041,19 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
+		re.setModifiedOn("");
+		Gson gson = new Gson();
+		String json = gson.toJson(re);	
+		Date date = new Date(System.currentTimeMillis());
+		DateFormat df = DateFormat.getDateTimeInstance();
+		String url = serverProperties.getProperty("home.elastic.url");
+		int port = Integer.parseInt(serverProperties.getProperty("home.elastic.port"));
+		String elastic_user = serverProperties.getProperty("home.elastic.login");
+		String elastic_pw = serverProperties.getProperty("home.elastic.pw");
+		System.out.println(doUploadToElastic(re.getUniqueID(),   "{\"doc\":"+json+"}", url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, true));
+	    System.out.println(doUploadToElastic(re.getUniqueID()+"-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+	    re.setModifiedOn(df.format(date));			
+
 		if (dologging){
 		long end = System.currentTimeMillis();
 		long diff = (end-start);
@@ -7832,6 +8315,18 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
+		lEntry.setModifiedOn("");
+		Gson gson = new Gson();
+		String json = gson.toJson(lEntry);	
+		Date date = new Date(System.currentTimeMillis());
+		DateFormat df = DateFormat.getDateTimeInstance();
+		String url = serverProperties.getProperty("home.elastic.url");
+		int port = Integer.parseInt(serverProperties.getProperty("home.elastic.port"));
+		String elastic_user = serverProperties.getProperty("home.elastic.login");
+		String elastic_pw = serverProperties.getProperty("home.elastic.pw");
+		System.out.println(doUploadToElastic(lEntry.getUniqueID(),   "{\"doc\":"+json+"}", url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, true));
+	    System.out.println(doUploadToElastic(lEntry.getUniqueID()+"-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+	    lEntry.setModifiedOn(df.format(date));		
 		if (dologging){
 		long end = System.currentTimeMillis();
 		long diff = (end-start);
@@ -8423,9 +8918,25 @@ public boolean isHan(String s) {
 			ex.printStackTrace();
 			return null;
 		}
-		Date date = new Date(System.currentTimeMillis());
-		DateFormat df = DateFormat.getDateTimeInstance();
-		bibEntry.setModifiedOn(df.format(date));
+		if (bibEntry.getAccessLevel() == 2) {
+			bibEntry.setModifiedOn("");
+			Gson gson = new Gson();
+			String json = gson.toJson(bibEntry);	
+			Date date = new Date(System.currentTimeMillis());
+			DateFormat df = DateFormat.getDateTimeInstance();
+			String url = serverProperties.getProperty("home.elastic.url");
+			int port = Integer.parseInt(serverProperties.getProperty("home.elastic.port"));
+			String elastic_user = serverProperties.getProperty("home.elastic.login");
+			String elastic_pw = serverProperties.getProperty("home.elastic.pw");
+			String updateResult = doUploadToElastic(bibEntry.getUniqueID(),   "{\"doc\":"+json+"}", url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, true);
+
+			ElasticResult er = gson.fromJson(updateResult, ElasticResult.class);
+			System.out.println(er.result + " "+ updateResult);
+		    if (er.result != "noop") {
+		    	System.out.println(doUploadToElastic(bibEntry.getUniqueID()+"-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+		    }
+		    bibEntry.setModifiedOn(df.format(date));			
+		}
 		protocollModifiedAbstractEntry(bibEntry,"");
 		if (dologging){
 		long end = System.currentTimeMillis();
@@ -8915,7 +9426,40 @@ public boolean isHan(String s) {
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertBibKeyword brauchte "+diff + " Millisekunden.");;}}
 		return bibKeywordID;
 	}
+	public Boolean updateBibKeyword(BibKeywordEntry keyword) {
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		
+		try {
+			pstmt = dbc.prepareStatement("UPDATE BibKeywords SET Keyword = ? WHERE BibKeywordID = ?");
+			pstmt.setString(1, keyword.getBibKeyword());
+			pstmt.setInt(2, keyword.getBibKeywordID());
+			pstmt.executeUpdate();
+			pstmt.close();
+			Gson gson = new Gson();
+			Date date = new Date(System.currentTimeMillis());
+			DateFormat df = DateFormat.getDateTimeInstance();
 
+			String url = serverProperties.getProperty("home.elastic.url");
+			int port = Integer.parseInt(serverProperties.getProperty("home.elastic.port"));
+			String elastic_user = serverProperties.getProperty("home.elastic.login");
+			String elastic_pw = serverProperties.getProperty("home.elastic.pw");
+			String json2 = gson.toJson(getBibKeywords());
+			json2 = json2.replace("\"text\"", "\"name\"");
+			String updateResult = doUploadToElastic("bibKeywords","{\"doc\":{\"wallTree\":" + json2 + "}}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, true);
+			ElasticResult er = gson.fromJson(updateResult, ElasticResult.class);
+			System.out.println(er.result + " "+ updateResult);
+			if (er.result != "noop") {
+				System.out.println(doUploadToElastic("bibKeywords-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"wallTree\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+			}
+			keyword.setModifiedOn(df.format(date));			
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+			return false;
+		}
+	}
 	/**
 	 * @param selectedEntry
 	 * @return
@@ -8998,6 +9542,56 @@ public boolean isHan(String s) {
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateUserEntry brauchte "+diff + " Millisekunden.");;}}
 		return rowsChangedCount > 0;
 	}
+	/**
+	 * @param currentUser
+	 * @param newPasswordHash 
+	 * @return
+	 */
+	public boolean updateUserEntryFrontEnd(UserEntry currentUser, String passwordHash, String newPasswordHash, String currentEmail) {
+		long start = System.currentTimeMillis();
+		if (dologgingbegin){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
+		}
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;		
+		try {
+			if (newPasswordHash != null && !newPasswordHash.isEmpty()) {
+				pstmt = dbc.prepareStatement("UPDATE Webusers SET Firstname=?, Lastname=?, Email=?, Affiliation=?, AccessLevel=?, granted=?, Password=? WHERE Email=? AND Password=?");
+				pstmt.setString(1, currentUser.getFirstname());
+				pstmt.setString(2, currentUser.getLastname());
+				pstmt.setString(3, currentUser.getEmail());
+				pstmt.setString(4, currentUser.getAffiliation());
+				pstmt.setInt(5, currentUser.getAccessLevel());
+				pstmt.setBoolean(6, currentUser.getGranted());
+				pstmt.setString(7, newPasswordHash);
+				pstmt.setString(8, currentEmail);
+				pstmt.setString(9, passwordHash);
+			} else {
+				pstmt = dbc.prepareStatement("UPDATE Webusers SET Firstname=?, Lastname=?, Email=?, Affiliation=?, AccessLevel=?, granted=? WHERE Email=? AND Password=?");
+				pstmt.setString(1, currentUser.getFirstname());
+				pstmt.setString(2, currentUser.getLastname());
+				pstmt.setString(3, currentUser.getEmail());
+				pstmt.setString(4, currentUser.getAffiliation());
+				pstmt.setInt(5, currentUser.getAccessLevel());
+				pstmt.setBoolean(6, currentUser.getGranted());
+				pstmt.setString(7, currentEmail);
+				pstmt.setString(8, passwordHash);
+			}
+			System.out.println(pstmt);
+			pstmt.executeUpdate();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+			return false;
+		}
+		if (dologging){
+		long end = System.currentTimeMillis();
+		long diff = (end-start);
+		if (diff>100){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateUserEntry brauchte "+diff + " Millisekunden.");;}}
+		return true;
+	}
     private String shuffleString(String string) {
         List<String> letters = Arrays.asList(string.split(""));
         Collections.shuffle(letters);
@@ -9062,18 +9656,58 @@ public boolean isHan(String s) {
 		return rowsChangedCount > 0;
 	}
 
-	private void sendMail(String from, String to, String toName, String subject, String message) {
+	public boolean resetPasswordFrontEnd(UserEntry currentUser) {
+		long start = System.currentTimeMillis();
+		if (dologgingbegin){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
+		}
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		int rowsChangedCount;
+		
+		try {
+			String pwd = generate_password(9);
+			System.out.println(pwd);
+//			pstmt.setString(2, "ff4ea6b28f247ccdd4a03321dc2bd1a");
+			String pwHash = "";
+			try {
+				MessageDigest m=MessageDigest.getInstance("MD5");
+				m.update(pwd.getBytes(),0,pwd.length());
+				pwHash = new BigInteger(1,m.digest()).toString(16); 
+			} catch (Exception e) {
+				System.out.println("An Error accured while decrypting"+e.getLocalizedMessage());
+			}
+
+			pstmt = dbc.prepareStatement("UPDATE Webusers SET Password=? WHERE UserID=?");
+			pstmt.setString(1, pwHash);
+			pstmt.setInt(2, currentUser.getUserID());
+			rowsChangedCount = pstmt.executeUpdate();
+			sendMail("kucha-admin@saw-leipzig.de",currentUser.getEmail(),"Kucha-Admin","Your Password for kucha.saw-leipzig.de was reseted.","Dear "+currentUser.getFirstname()+ " "+currentUser.getLastname()+",\n the Admin has reseted the password of your account in kucha.saw-leipzig.de for you.\nYour username is:"+currentUser.getUsername()+"\nYour password is:  \""+pwd+"\"\n");
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+			return false;
+		}
+		if (dologging){
+		long end = System.currentTimeMillis();
+		long diff = (end-start);
+		if (diff>100){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateUserEntry brauchte "+diff + " Millisekunden.");;}}
+		return rowsChangedCount > 0;
+	}
+
+	public void sendMail(String from, String to, String toName, String subject, String message) {
         String output=null;
         Properties props = System.getProperties();
 	    String smtpHostServer = "zimbra.saw-leipzig.de";
+	    smtpHostServer = "mail.gmx.net";
 	    props.put("mail.smtp.host", smtpHostServer);
-		props.put("mail.smtp.port", "465"); //TLS Port
+		props.put("mail.smtp.port", "587"); //TLS Port
 		props.put("mail.smtp.auth", "true"); //enable authentication
 		props.put("mail.smtp.starttls.enable", "true"); //enable STARTTLS
-		props.put("mail.smtp.socketFactory.port", "465"); //SSL Port
-		props.put("mail.smtp.socketFactory.class",
-				"javax.net.ssl.SSLSocketFactory"); //SSL Factory Class
-		props.put("mail.smtp.ssl.protocols", "TLSv1.2");		
+		props.put("mail.smtp.starttls.required", "true");
+		props.put("mail.smtp.ssl.protocols", "TLSv1.2");
                 //create Authenticator object to pass in Session.getInstance argument
 		Authenticator auth = new Authenticator() {
 			//override the getPasswordAuthentication method
@@ -9082,23 +9716,22 @@ public boolean isHan(String s) {
 			}
 		};
        try {
-    	   System.out.println("1");
            Session session = Session.getDefaultInstance(props, auth);
-    	   System.out.println("2");
-            Message msg = new MimeMessage(session);
-            msg.setFrom(new InternetAddress(from, "Kucha-Admin"));
-            msg.addRecipient(Message.RecipientType.TO,
+           Message msg = new MimeMessage(session);
+           msg.setFrom(new InternetAddress(serverProperties.getProperty("mail.user"), "Kucha-Admin"));
+           msg.addRecipient(Message.RecipientType.TO,
                              new InternetAddress(to, toName));
-            msg.setSubject(subject);
-            msg.setText(message);
-            msg.setReplyTo(new InternetAddress[]{new InternetAddress("radisch@saw-leipzig.de")});
-     	   System.out.println("3");
-            Transport.send(msg);
+           msg.setSubject(subject);
+           msg.setText(message);
+           msg.setReplyTo(new InternetAddress[]{new InternetAddress("radisch@saw-leipzig.de")});
+           Transport.send(msg);
+           System.out.println("Message sent!");
 
         } catch (Exception e) {
-            System.err.println(e.getLocalizedMessage());                
-            System.err.println(e.getSuppressed());                
-            System.err.println(e.getCause());                
+           System.err.println(e.getLocalizedMessage());                
+           System.err.println(e.getSuppressed());                
+           System.err.println(e.getCause());                
+           System.err.println(e.getMessage());                
        }
     }
 	private static String cryptWithMD5(String pass) {
@@ -9146,10 +9779,10 @@ public boolean isHan(String s) {
 			pstmt.setString(6, userEntry.getAffiliation());
 			pstmt.setInt(7, userEntry.getAccessLevel());
 			if (url.contains("infotest")) {
-				sendMail("radisch@saw-leipzig.de",userEntry.getEmail(),userEntry.getLastname()+", "+userEntry.getFirstname(),"An account has been created for you at kuchatest.saw-leipzig.de","Dear "+userEntry.getFirstname()+ " "+userEntry.getLastname()+",\n the Admin has created an Account in kuchatest.saw-leipzig.de for you.\nYour username is:"+userEntry.getUsername()+"\nYour password is:  \""+pwd+"\"\n");
+				sendMail("kucha-admin@saw-leipzig.de",userEntry.getEmail(),"Kucha-Admin","An account has been created for you at kuchatest.saw-leipzig.de","Dear "+userEntry.getFirstname()+ " "+userEntry.getLastname()+",\n the Admin has created an Account in kuchatest.saw-leipzig.de for you.\nYour username is:"+userEntry.getUsername()+"\nYour password is:  \""+pwd+"\"\n");
 			}
 			else {
-				sendMail("radisch@saw-leipzig.de",userEntry.getEmail(),userEntry.getLastname()+", "+userEntry.getFirstname(),"An account has been created for you at kucha.saw-leipzig.de","Dear "+userEntry.getFirstname()+ " "+userEntry.getLastname()+",\n the Admin has created an Account in kucha.saw-leipzig.de for you.\nYour username is:"+userEntry.getUsername()+"\nYour password is:  \""+pwd+"\"\n");
+				sendMail("kucha-admin@saw-leipzig.de",userEntry.getEmail(),"Kucha-Admin","An account has been created for you at kucha.saw-leipzig.de","Dear "+userEntry.getFirstname()+ " "+userEntry.getLastname()+",\n the Admin has created an Account in kucha.saw-leipzig.de for you.\nYour username is:"+userEntry.getUsername()+"\nYour password is:  \""+pwd+"\"\n");
 
 			}
 			
@@ -9216,6 +9849,57 @@ public boolean isHan(String s) {
 
 	/**
 	 * 
+	 * @param userEntry
+	 * @return
+	 */
+	public boolean updateUserEntryFrontEnd(UserEntry userEntry) {
+		long start = System.currentTimeMillis();
+		if (dologgingbegin){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
+		}
+		if (userEntry == null) {
+			return false;
+		}
+		UserEntry oldUserEntry = getUserFrontend(userEntry.getEmail());
+		if (oldUserEntry != null) {
+			if (oldUserEntry.getGranted() != userEntry.getGranted()) {
+				if (userEntry.getGranted()) {
+					sendMail("kucha-admin@saw-leipzig.de",userEntry.getEmail(),"Kucha-Admin","Your Account has been granted comment privileges at kucha.saw-leipzig.de","Dear "+userEntry.getFirstname()+ " "+userEntry.getLastname()+",\n the Admin has granted you comment privileges at kuchatest.saw-leipzig.de for you.\nSicerely,\n Kucha-Project");
+				} else {
+					sendMail("kucha-admin@saw-leipzig.de",userEntry.getEmail(),"Kucha-Admin","Your account has been revoked from commenting privileges","Dear "+userEntry.getFirstname()+ " "+userEntry.getLastname()+",\n the Admin has Your account has revoked your commenting privileges at kuchatest.saw-leipzig.de.\nSicerely,\n Kucha-Project");
+				}			
+			}			
+		} else sendMail("kucha-admin@saw-leipzig.de",userEntry.getEmail(),"Kucha-Admin","Your Account has been granted comment privileges at kucha.saw-leipzig.de","Dear "+userEntry.getFirstname()+ " "+userEntry.getLastname()+",\n the Admin has granted you comment privileges at kuchatest.saw-leipzig.de for you.\nSicerely,\n Kucha-Project");
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		int rowsChangedCount;
+		
+		try {
+			pstmt = dbc.prepareStatement("UPDATE Webusers SET Firstname=?, Lastname=?, Email=?, Affiliation=?, AccessLevel=?, granted=? WHERE UserID=?");
+			pstmt.setString(1, userEntry.getFirstname());
+			pstmt.setString(2, userEntry.getLastname());
+			pstmt.setString(3, userEntry.getEmail());
+			pstmt.setString(4, userEntry.getAffiliation());
+			pstmt.setInt(5, userEntry.getAccessLevel());
+			pstmt.setBoolean(6, userEntry.getGranted());
+			pstmt.setInt(7, userEntry.getUserID());
+			rowsChangedCount = pstmt.executeUpdate();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+			return false;
+		}
+		if (dologging){
+		long end = System.currentTimeMillis();
+		long diff = (end-start);
+		if (diff>100){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateUserEntry brauchte "+diff + " Millisekunden.");;}}
+		return rowsChangedCount > 0;
+	}
+
+	/**
+	 * 
 	 * @param searchEntry
 	 * @return
 	 * @throws IOException 
@@ -9259,10 +9943,10 @@ public boolean isHan(String s) {
 		}
 		if (!iconographyIDs.isEmpty()) {
 			where += where.isEmpty() 
-					? "DepictionID IN (SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (" + iconographyIDs + ") GROUP BY DepictionID HAVING (COUNT(DepictionID) >= " 
-						+ searchEntry.getCorrelationFactor() + ")) or DepictionID in (SELECT Polygon.DepictionID FROM Annotations inner join Polygon on (Polygon.AnnotoriousID=Annotations.AnnotoriousID) WHERE Annotations.IconographyID IN ("+iconographyIDs+") and Polygon.deleted=0 and Polygon.Polygon is not null and Annotations.deleted=0  GROUP BY DepictionID HAVING (COUNT(DepictionID) >= "+searchEntry.getCorrelationFactor()+"))"
-					: " AND DepictionID IN (SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (" + iconographyIDs + ") GROUP BY DepictionID HAVING (COUNT(DepictionID) >= " 
-						+ searchEntry.getCorrelationFactor() + ")) or DepictionID in (SELECT Polygon.DepictionID FROM Annotations inner join Polygon on (Polygon.AnnotoriousID=Annotations.AnnotoriousID) WHERE Annotations.IconographyID IN ("+iconographyIDs+") and Polygon.deleted=0 and Polygon.Polygon is not null and Annotations.deleted=0  GROUP BY DepictionID HAVING (COUNT(DepictionID) >= "+searchEntry.getCorrelationFactor()+"))";
+					? "(DepictionID IN (SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (" + iconographyIDs + ") GROUP BY DepictionID HAVING (COUNT(DepictionID) >= " 
+						+ searchEntry.getCorrelationFactor() + ")) or DepictionID in (SELECT Polygon.DepictionID FROM Annotations inner join Polygon on (Polygon.AnnotoriousID=Annotations.AnnotoriousID) WHERE Annotations.IconographyID IN ("+iconographyIDs+") and Polygon.deleted=0 and Polygon.Polygon is not null and Annotations.deleted=0  GROUP BY DepictionID HAVING (COUNT(DepictionID) >= "+searchEntry.getCorrelationFactor()+")))"
+					: " AND (DepictionID IN (SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (" + iconographyIDs + ") GROUP BY DepictionID HAVING (COUNT(DepictionID) >= " 
+						+ searchEntry.getCorrelationFactor() + ")) or DepictionID in (SELECT Polygon.DepictionID FROM Annotations inner join Polygon on (Polygon.AnnotoriousID=Annotations.AnnotoriousID) WHERE Annotations.IconographyID IN ("+iconographyIDs+") and Polygon.deleted=0 and Polygon.Polygon is not null and Annotations.deleted=0  GROUP BY DepictionID HAVING (COUNT(DepictionID) >= "+searchEntry.getCorrelationFactor()+")))";
 		}
 		String wallTreeIDs = "";
 		for (int wallTreeID : searchEntry.getWallIDList()) {
@@ -9330,12 +10014,12 @@ public boolean isHan(String s) {
 			accessLevel = getAccessLevelForSessionID(searchEntry.getSessionID());
 			while (rs.next()) {
 				DepictionEntry de = new DepictionEntry(rs.getInt("DepictionID"), rs.getInt("StyleID"), rs.getString("Inscriptions"),
-						rs.getString("SeparateAksaras"), rs.getString("Dating"), rs.getString("Description"), rs.getString("BackgroundColour"),
+						rs.getString("SeparateAksaras"), rs.getString("Dating"), stripAccents(rs.getString("Description")), rs.getString("BackgroundColour"),
 						rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"), rs.getDouble("Width"), rs.getDouble("Height"),
 						getExpedition(rs.getInt("ExpeditionID")), rs.getDate("PurchaseDate"), getLocation(rs.getInt("CurrentLocationID")), rs.getString("InventoryNumber"),
 						getVendor(rs.getInt("VendorID")), rs.getInt("StoryID"), getCave(rs.getInt("CaveID")), getwallsbyDepictionID(rs.getInt("DepictionID")), rs.getInt("AbsoluteLeft"),
-						rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes"),
-						rs.getInt("MasterImageID"), rs.getInt("AccessLevel"), rs.getString("LastChangedByUser"), rs.getString("LastChangedOnDate"),getAnnotations(rs.getInt("DepictionID")));
+						rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), stripAccents(rs.getString("ShortName")), rs.getString("PositionNotes"),
+						rs.getInt("MasterImageID"), rs.getInt("AccessLevel"), rs.getString("LastChangedByUser"), rs.getString("LastChangedOnDate"),getAnnotations(rs.getInt("DepictionID")), getImageSortInfo(rs.getInt("DepictionID")));
 				de.setRelatedImages(getRelatedImages(de.getDepictionID(), searchEntry.getSessionID(),accessLevel));
 				de.setRelatedBibliographyList(getRelatedBibliographyFromDepiction(de.getDepictionID()));
 				de.setRelatedIconographyList(getRelatedIconography(de.getDepictionID()));
@@ -9368,10 +10052,6 @@ public boolean isHan(String s) {
 			zaehler1+=1;
 			while (rs.next()) {
 				ArrayList<PositionEntry> positions = getPositionsbyWallrelation(depictionID, rs.getInt("WallID"));
-				if (positions!=null) {
-					for (PositionEntry pe : positions){
-					}
-				}
 				WallTreeEntry wte = new WallTreeEntry(rs.getInt("WallID"),rs.getInt("ParentID"),rs.getString("Text"),rs.getString("search"),positions );
 				results.add(wte);
 				zaehler2+=1;
@@ -9492,7 +10172,7 @@ public boolean isHan(String s) {
 						insertStatement.setInt(2, ((AnnotatedBibliographyEntry)entry).getAnnotatedBibliographyID());
 						insertStatement.setString(3, "AnnotatedBibliographyEntry");
 					} else if (entry instanceof OrnamentEntry) {
-						insertStatement.setInt(2, ((OrnamentEntry)entry).getOrnamentID());
+						insertStatement.setInt(2, ((OrnamentEntry)entry).getTypicalID());
 						insertStatement.setString(3, "OrnamentEntry");
 					} else if (entry instanceof ImageEntry) {
 						insertStatement.setInt(2, ((ImageEntry)entry).getImageID());
@@ -9629,7 +10309,25 @@ public boolean isHan(String s) {
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von loadCollectedEntries brauchte "+diff + " Millisekunden.");;}}
 		return resultList;
 	}
-
+	private String stripAccents(String input) {
+		if (input != null) {
+			input = input.replace("ö", "U+00F6");
+			input = input.replace("Ö", "U+022A");
+			input = input.replace("ä", "U+00E4");
+			input = input.replace("Ä", "U+00C4");
+			input = input.replace("ü", "U+00FC");
+			input = input.replace("Ü", "U+00FC");
+			input = StringUtils.stripAccents(input);
+			input = input.replace("U+00F6","ö");
+			input = input.replace("U+022A","Ö");
+			input = input.replace("U+00E4","ä");
+			input = input.replace("U+00C4","Ä");
+			input = input.replace("U+00FC","ü");
+			input = input.replace("U+00FC","Ü");			
+		}
+		return input;
+		
+	}
 	private DepictionEntry getDepictionEntry(int depictionID, String sessionID) {
 		long start = System.currentTimeMillis();
 		if (dologgingbegin){
@@ -9640,24 +10338,21 @@ public boolean isHan(String s) {
 		Statement stmt;
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Depictions WHERE DepictionID=" + depictionID +" and deleted=0");
-			System.out.println("Start Select");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Depictions WHERE DepictionID=" + depictionID +" and deleted=0;");
 			int accessLevel=-1;
 			accessLevel = getAccessLevelForSessionID(sessionID);
 			// we only need to call this once, since we do not expect more than 1 result!
 			if (rs.next()) { 
-				System.out.println("got result");				
 				result = new DepictionEntry(rs.getInt("DepictionID"), rs.getInt("StyleID"), rs.getString("Inscriptions"),
-						rs.getString("SeparateAksaras"), rs.getString("Dating"), rs.getString("Description"), rs.getString("BackgroundColour"),
+						rs.getString("SeparateAksaras"), rs.getString("Dating"), stripAccents(rs.getString("Description")), rs.getString("BackgroundColour"),
 						rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"), rs.getDouble("Width"), rs.getDouble("Height"),
 						getExpedition(rs.getInt("ExpeditionID")), rs.getDate("PurchaseDate"), getLocation(rs.getInt("CurrentLocationID")), rs.getString("InventoryNumber"),
 						getVendor(rs.getInt("VendorID")), rs.getInt("StoryID"), getCave(rs.getInt("CaveID")), getwallsbyDepictionID(rs.getInt("DepictionID")), rs.getInt("AbsoluteLeft"),
-						rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), rs.getString("ShortName"), rs.getString("PositionNotes"),
-						rs.getInt("MasterImageID"), rs.getInt("AccessLevel"), rs.getString("LastChangedByUser"), rs.getString("LastChangedOnDate"),getAnnotations(rs.getInt("DepictionID")));
+						rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), stripAccents(rs.getString("ShortName")), rs.getString("PositionNotes"),
+						rs.getInt("MasterImageID"), rs.getInt("AccessLevel"), rs.getString("LastChangedByUser"), rs.getString("LastChangedOnDate"),getAnnotations(rs.getInt("DepictionID")), getImageSortInfo(rs.getInt("DepictionID")));
 				result.setRelatedImages(getRelatedImages(result.getDepictionID(), sessionID,accessLevel));
 				result.setRelatedBibliographyList(getRelatedBibliographyFromDepiction(result.getDepictionID()));
 				result.setRelatedIconographyList(getRelatedIconography(result.getDepictionID()));
-				System.out.println("Depiction found: "+result.getDepictionID());
 			}
 			rs.close();
 			stmt.close();
