@@ -940,14 +940,16 @@ public class MysqlConnector implements IsSerializable {
 	private String doUploadToElastic(String ID, String json,String url, String index, String port, String elastic_user, String elastic_pw, boolean update) {
         String output = "";
 		try {
-			// System.out.println("Body:"+ json);
 			URL target;
+			json = json.replaceAll(",\"lastChangedByUser\":\"\"", "");
+			json = json.replaceAll(",\"modifiedOn\":\"\"", "");
+			json = json.replaceAll(",\"deleted\":false}", "}");
 			if (update) {
-				// System.out.println("executing request: "+ url+":"+port+index+"/_doc/"+ID+"/_update"+json);
 				target = new URL (url+":"+port+index+"/_doc/"+ID+"/_update");				
+				// System.out.println("executing update request: "+ target);
 			} else {
-				// System.out.println("executing request: "+ url+":"+port+index+"/_doc/"+ID);
 				target = new URL (url+":"+port+index+"/_doc/"+ID);
+				// System.out.println("executing update request: "+ target);
 			}
 	        String encoding = Base64.getEncoder().encodeToString((elastic_user+":"+ elastic_pw).getBytes("utf-8"));
 	        HttpURLConnection connection = (HttpURLConnection) target.openConnection();
@@ -1016,6 +1018,7 @@ public class MysqlConnector implements IsSerializable {
 		ArrayList<OrientationEntry> orientations = getOrientationInformation();
 		ArrayList<CaveGroupEntry> caveGroupes = getCaveGroups();
 		ArrayList<ModeOfRepresentationEntry> moRep = getModesOfRepresentations();
+		result.setImageSortInfo(null);
 		Gson gson = new Gson();
 		result.setRelatedImages(getRelatedPublicImages(result.getDepictionID()));
 		result.setRelatedBibliographyList(getRelatedBibliographyFromDepiction(result.getDepictionID()));
@@ -1032,8 +1035,9 @@ public class MysqlConnector implements IsSerializable {
 				ie.setCopyright("");
 				ie.setTitle("No_Picture_Available");
 				ie.setFilename("no_picture_available.jpg");
-				publicImmages.add(ie);									
+				publicImmages.add(ie);							
 			}
+			
 		}
 		result.setRelatedImages(publicImmages);
 		// System.out.println("Length of relasted images befor filtering: " + Integer.toString(result.getRelatedImages().size()));
@@ -1150,63 +1154,176 @@ public class MysqlConnector implements IsSerializable {
 				Gson gson = new Gson();
 				Date date = new Date(System.currentTimeMillis());
 				DateFormat df = DateFormat.getDateInstance();
-		        System.out.println("Starting praparing Kucha-Dictionary");
+		        System.out.println("Starting preparing Kucha-Dictionary");
 				Gson gson2 = new Gson();
 				String json2 = gson2.toJson(getDistricts());
+
 				json2 = json2.replace("\"text\"", "\"name\"");
-				System.out.println(doUploadToElastic("districts", "{\"districts\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false));
-				System.out.println(doUploadToElastic("districts-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\":"+json2+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+				String updateResult = doUploadToElastic("districts","{\"doc\":{\"districts\":" + json2 + "}}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, true);
+				ElasticResult er = gson.fromJson(updateResult, ElasticResult.class);
+				System.out.println(er.result + " "+ updateResult);
+				if (er.result != null) {
+					if (!er.result.equals("noop")) {
+						System.out.println(doUploadToElastic("districts-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"districts\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+					}
+				} else {
+					doUploadToElastic("districts","{\"districts\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false);
+					System.out.println(doUploadToElastic("districts-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\": {\"districts\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+				}
 				json2 = gson2.toJson(getLocations());
 				json2 = json2.replace("\"text\"", "\"name\"");
-				System.out.println(doUploadToElastic("locations", "{\"locations\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false));
-				System.out.println(doUploadToElastic("locations-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\":"+json2+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+				updateResult = doUploadToElastic("locations","{\"doc\":{\"locations\":" + json2 + "}}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, true);
+				er = gson.fromJson(updateResult, ElasticResult.class);
+				System.out.println(er.result + " "+ updateResult);
+				if (er.result != null) {
+					if (!er.result.equals("noop")) {
+						System.out.println(doUploadToElastic("locations-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"locations\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+					}
+				} else {
+					doUploadToElastic("locations","{\"locations\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false);
+					System.out.println(doUploadToElastic("locations-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\": {\"locations\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+				}
 				json2 = gson2.toJson(getSites());
 				json2 = json2.replace("\"text\"", "\"name\"");
-				System.out.println(doUploadToElastic("sites",  "{\"sites\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false));
-				System.out.println(doUploadToElastic("sites-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\":"+json2+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+				updateResult = doUploadToElastic("sites","{\"doc\":{\"sites\":" + json2 + "}}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, true);
+				er = gson.fromJson(updateResult, ElasticResult.class);
+				System.out.println(er.result + " "+ updateResult);
+				if (er.result != null) {				
+					if (!er.result.equals("noop")) {
+						System.out.println(doUploadToElastic("sites-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"sites\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+					}
+				} else {
+					updateResult = doUploadToElastic("sites","{\"sites\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false);
+					System.out.println(doUploadToElastic("sites-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\": {\"sites\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));					
+				}
 				json2 = gson2.toJson(getRegions());
 				json2 = json2.replace("\"text\"", "\"name\"");
-				System.out.println(doUploadToElastic("regions",  "{\"regions\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false));
-				System.out.println(doUploadToElastic("regions-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\":"+json2+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+				updateResult = doUploadToElastic("regions","{\"doc\":{\"regions\":" + json2 + "}}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, true);
+				er = gson.fromJson(updateResult, ElasticResult.class);
+				System.out.println(er.result + " "+ updateResult);
+				if (er.result != null) {
+					if (!er.result.equals("noop")) {
+						System.out.println(doUploadToElastic("regions-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"regions\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+					}
+				} else {
+					updateResult = doUploadToElastic("regions","{\"regions\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false);
+					System.out.println(doUploadToElastic("regions-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\": {\"regions\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));					
+				}
 				json2 = gson2.toJson(getCaveTypes());
 				json2 = json2.replace("\"text\"", "\"name\"");
-				System.out.println(doUploadToElastic("caveTypes",  "{\"caveTypes\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false));
-				System.out.println(doUploadToElastic("caveTypes-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\":"+json2+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+				updateResult = doUploadToElastic("caveTypes","{\"doc\":{\"caveTypes\":" + json2 + "}}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, true);
+				er = gson.fromJson(updateResult, ElasticResult.class);
+				System.out.println(er.result + " "+ updateResult);
+				if (er.result != null) {
+					if (!er.result.equals("noop")) {
+						System.out.println(doUploadToElastic("caveTypes-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"caveTypes\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+					}
+				} else {
+					updateResult = doUploadToElastic("caveTypes","{\"caveTypes\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false);
+					System.out.println(doUploadToElastic("caveTypes-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\": {\"caveTypes\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));					
+				}
 				json2 = gson2.toJson(getIconography(0));
 				json2 = json2.replace("\"text\"", "\"name\"");
-				System.out.println(doUploadToElastic("iconographyTree",  "{\"iconography\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false));
-				System.out.println(doUploadToElastic("iconographyTree-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\": {\"iconography\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+				updateResult = doUploadToElastic("iconographyTree","{\"doc\":{\"iconographyTree\":" + json2 + "}}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, true);
+				er = gson.fromJson(updateResult, ElasticResult.class);
+				System.out.println(er.result + " "+ updateResult);
+				if (er.result != null) {
+					if (!er.result.equals("noop")) {
+						System.out.println(doUploadToElastic("iconographyTree-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"iconographyTree\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+					}
+				} else {
+					updateResult = doUploadToElastic("iconographyTree","{\"iconography\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false);
+					System.out.println(doUploadToElastic("iconographyTree-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\": {\"iconographyTree\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+					
+				}
 				json2 = gson2.toJson(getWallTree(0));
 				json2 = json2.replace("\"text\"", "\"name\"");
-				System.out.println(doUploadToElastic("wallTree", "{\"wallTree\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false));
-				System.out.println(doUploadToElastic("wallTree-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\": {\"wallTree\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+				updateResult = doUploadToElastic("wallTree","{\"doc\":{\"wallTree\":" + json2 + "}}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, true);
+				er = gson.fromJson(updateResult, ElasticResult.class);
+				System.out.println(er.result + " "+ updateResult);
+				if (er.result != null) {
+					if (!er.result.equals("noop")) {
+						System.out.println(doUploadToElastic("wallTree-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"wallTree\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+					}
+				} else {
+					doUploadToElastic("wallTree","{\"wallTree\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false);
+					System.out.println(doUploadToElastic("wallTree-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\": {\"wallTree\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));					
+				}
 				json2 = gson2.toJson(getPosition());
 				json2 = json2.replace("\"text\"", "\"name\"");
-				System.out.println(doUploadToElastic("positions", "{\"positions\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false));
-				System.out.println(doUploadToElastic("positions-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\":"+json2+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+				updateResult = doUploadToElastic("positions","{\"doc\":{\"positions\":" + json2 + "}}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, true);
+				er = gson.fromJson(updateResult, ElasticResult.class);
+				System.out.println(er.result + " "+ updateResult);
+				if (er.result != null) {
+					if (!er.result.equals("noop")) {
+						System.out.println(doUploadToElastic("positions-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"positions\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+					}
+				} else {
+					updateResult = doUploadToElastic("positions","{\"positions\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false);					
+					System.out.println(doUploadToElastic("positions-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\": {\"positions\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+				}
 				json2 = gson2.toJson(getBibKeywords());
 				json2 = json2.replace("\"text\"", "\"name\"");
-				System.out.println(doUploadToElastic("bibKeywords", "{\"bibKeywords\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false));
-				System.out.println(doUploadToElastic("bibKeywords-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\":"+json2+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
-
+				updateResult = doUploadToElastic("bibKeywords","{\"bibKeywords\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, true);
+				er = gson.fromJson(updateResult, ElasticResult.class);
+				System.out.println(er.result + " "+ updateResult);
+				if (er.result != null) {
+					if (!er.result.equals("noop")) {
+						System.out.println(doUploadToElastic("bibKeywords-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"bibKeywords\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+					}
+				} else {
+					updateResult = doUploadToElastic("bibKeywords","{\"bibKeywords\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false);
+					System.out.println(doUploadToElastic("bibKeywords-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\": {\"bibKeywords\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));					
+				}
 			    try {
 			        FileWriter myWriter = new FileWriter(filename);
 					ArrayList<CaveEntry> caves = getCaves();
 					for (CaveEntry cave : caves) {
 						//System.out.println(filename);
 						String json = prepareCaveEntryForElastic(cave);
-						doUploadToElastic(cave.getUniqueID(), json, url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, false);
-						System.out.println(doUploadToElastic(cave.getUniqueID()+"-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
 						myWriter.write(json+String.format("%n"));
-					
+						try {
+							updateResult = doUploadToElastic(cave.getUniqueID(), "{\"doc\":"+json+"}", url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, true);
+						} catch (Exception ex){
+							updateResult = doUploadToElastic(cave.getUniqueID(), json, url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, false);
+							System.out.println("exception:" + ex.getLocalizedMessage());
+							System.out.println("depictionentry was written new:" + updateResult);
+						}
+
+						er = gson.fromJson(updateResult, ElasticResult.class);
+						System.out.println(er.result + " "+ updateResult);
+						if (er.result != null) {
+							if (!er.result.equals("noop")) {
+								System.out.println(doUploadToElastic(cave.getUniqueID()+"-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+							}					
+						} else {
+							updateResult = doUploadToElastic(cave.getUniqueID(), json, url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, false);							
+							System.out.println(doUploadToElastic(cave.getUniqueID()+"-1","{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+						}
 					}
 					ArrayList<AnnotatedBibliographyEntry> bibs = getAnnotatedBiblography();
 					for (AnnotatedBibliographyEntry bib : bibs) {
 						bib.setAuthorString();
 						String json = gson.toJson(bib);
 						//System.out.println(filename);
-						doUploadToElastic(bib.getUniqueID(), json, url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, false);
-						System.out.println(doUploadToElastic(bib.getUniqueID()+"-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+						try {
+							updateResult = doUploadToElastic(bib.getUniqueID(), "{\"doc\":"+json+"}", url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, true);
+						} catch (Exception ex){
+							updateResult = doUploadToElastic(bib.getUniqueID(), json, url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, false);
+							System.out.println("exception:" + ex.getLocalizedMessage());
+							System.out.println("depictionentry was written new:" + updateResult);
+						}							
+						er = gson.fromJson(updateResult, ElasticResult.class);
+						System.out.println(er.result + " "+ updateResult);
+						if (er.result != null) {
+							if (!er.result.equals("noop")) {
+								System.out.println(doUploadToElastic(bib.getUniqueID()+"-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+							}
+							
+						} else {
+							updateResult = doUploadToElastic(bib.getUniqueID(), json, url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, false);							
+							System.out.println(doUploadToElastic(bib.getUniqueID()+"-1","{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+						}
 					    myWriter.write(json+String.format("%n"));
 					
 					}
@@ -1215,14 +1332,32 @@ public class MysqlConnector implements IsSerializable {
 					for (IconographyEntry ico : icos) {
 						for (OrnamentEntry orn: ornaments) {
 							if (orn.getIconographyID() == ico.getIconographyID()) {
-								ico.setOrnamentEntry(orn);
-								System.out.println("Found Ornamententry for:"+ Integer.toString(ico.getIconographyID())+", ornament:" +Integer.toString(ico.getOrnamentEntry().getTypicalID()));
+								if (orn.getAccessLevel() == 2) {
+									ico.setOrnamentEntry(orn);
+									System.out.println("Found Ornamententry for:"+ Integer.toString(ico.getIconographyID())+", ornament:" +Integer.toString(ico.getOrnamentEntry().getTypicalID()));									
+								}
 							}
 						}
 						String json = gson.toJson(ico);
 						//System.out.println(filename);
-						doUploadToElastic(ico.getUniqueID(), json, url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, false);
-						System.out.println(doUploadToElastic(ico.getUniqueID()+"-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+						try {
+							updateResult = doUploadToElastic(ico.getUniqueID(), "{\"doc\":"+json+"}", url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, true);
+						} catch (Exception ex){
+							updateResult = doUploadToElastic(ico.getUniqueID(), json, url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, false);
+							System.out.println("exception:" + ex.getLocalizedMessage());
+							System.out.println("depictionentry was written new:" + updateResult);
+						}							
+
+						er = gson.fromJson(updateResult, ElasticResult.class);
+						System.out.println(er.result + " "+ updateResult);
+						if (er.result != null) {
+							if (!er.result.equals("noop")) {
+								System.out.println(doUploadToElastic(ico.getUniqueID()+"-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+							}							
+						} else {
+							updateResult = doUploadToElastic(ico.getUniqueID(), json, url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, false);							
+							System.out.println(doUploadToElastic(ico.getUniqueID()+"-1","{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+						}
 					    myWriter.write(json+String.format("%n"));
 					
 					}
@@ -1239,8 +1374,24 @@ public class MysqlConnector implements IsSerializable {
 						if (result.getAccessLevel() == 2) {
 							result.setModifiedOn("");
 							String json = prepareDepictionForElastic(result);
-   						    System.out.println(doUploadToElastic(result.getUniqueID(),   json, url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, false));
-   						    System.out.println(doUploadToElastic(result.getUniqueID()+"-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+							try {
+								updateResult = doUploadToElastic(result.getUniqueID(),"{\"doc\":"+json+"}", url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, true);
+							} catch (Exception ex){
+								updateResult = doUploadToElastic(result.getUniqueID(),json, url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, false);
+								System.out.println("exception:" + ex.getLocalizedMessage());
+								System.out.println("depictionentry was written new:" + updateResult);
+							}															
+							er = gson.fromJson(updateResult, ElasticResult.class);
+							System.out.println(er.result + " "+ updateResult);
+							if (er.result != null) {
+								if (!er.result.equals("noop")) {
+									System.out.println(doUploadToElastic(result.getUniqueID()+"-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+								}								
+							} else {
+								System.out.println(doUploadToElastic(result.getUniqueID(), json, url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, false));							
+								System.out.println(doUploadToElastic(result.getUniqueID()+"-1","{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+							}
+   						    
    						    //System.out.println(doUploadToElastic(result.getUniqueID(),   "{\"versions\":[{\"timestamp\":\""+df.format(date)+"\", \"content\":"+json+"}]}", url,index_backup, Integer.toString(port), elastic_user,elastic_pw, false));
 						    myWriter.write(json+String.format("%n"));
 						}
@@ -1279,7 +1430,7 @@ public class MysqlConnector implements IsSerializable {
 			pstmt.setInt(1, depictionID);
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
-				System.out.println("ImageID: " + Integer.toString(rs.getInt("ImageID")) + ", SortInfo: " + Integer.toString(rs.getInt("SortInfo")));
+				// System.out.println("ImageID: " + Integer.toString(rs.getInt("ImageID")) + ", SortInfo: " + Integer.toString(rs.getInt("SortInfo")));
 				sortInfo.put(rs.getInt("ImageID"), rs.getInt("SortInfo"));
 			}
 		} catch (SQLException e) {
@@ -1298,7 +1449,7 @@ public class MysqlConnector implements IsSerializable {
 		PreparedStatement pstmt;
 		try{
 			for (Integer imageID: sortInfo.keySet()) {
-				System.out.println("writing sortinfo");
+				// System.out.println("writing sortinfo");
 				pstmt = dbc.prepareStatement("INSERT INTO DepictionImageSortInfo (DepictionId, ImageID, SortInfo) VALUES (?, ?, ?);");
 				pstmt.setInt(1, depictionID);
 				pstmt.setInt(2, imageID);
@@ -1822,9 +1973,7 @@ public class MysqlConnector implements IsSerializable {
 			pstmt = dbc.prepareStatement("SELECT DepictionIconographyRelation.DepictionID FROM DepictionIconographyRelation INNER JOIN Depictions on (Depictions.DepictionID = DepictionIconographyRelation.DepictionID) where Depictions.deleted=0 and DepictionIconographyRelation.IconographyID="+Integer.toString(IconographyID) + " UNION SELECT Polygon.DepictionID FROM Annotations inner join Polygon on (Annotations.AnnotoriousID=Polygon.AnnotoriousID)  inner join Depictions on ( Polygon.DepictionID=Depictions.DepictionID) where Polygon.deleted = 0 and Depictions.deleted = 0 and IconographyID="+Integer.toString(IconographyID));
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
-				System.out.println("DepictionID is here: "+rs.getInt("DepictionID"));
 				DepictionEntry de= getDepictionEntry(rs.getInt("DepictionID"),sessionID);
-				System.out.println("Found Depiction"+de.getDepictionID());
 				CaveEntry item = de.getCave();
 				if (item != null) {
 					String site = "";
@@ -2746,8 +2895,7 @@ public class MysqlConnector implements IsSerializable {
 				results.add(new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
 						//rs.getString("Annotation"),
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
-						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")), 
+						getImagesbyOrnamentID(rs.getInt("OrnamentID")), 
 						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getInt("IconographyID"),rs.getInt("MasterImageID"), getOrnamentRelatedIconography(rs.getInt("OrnamentID")),
 						getOrnamentAnnotations(rs.getInt("OrnamentID")),rs.getInt("AccessLevel"),rs.getDouble("TourOrder")));
@@ -2957,21 +3105,16 @@ public class MysqlConnector implements IsSerializable {
 		Connection dbc = getConnection();
 		PreparedStatement ornamentStatement;
 		try {
-			ornamentStatement = dbc.prepareStatement("INSERT INTO Ornaments (Code, Description, Remarks, Interpretation, OrnamentReferences, OrnamentClassID, StructureOrganizationID, IconographyID, MasterImageID, AccessLevel, TourOrder) VALUES (?, ?, ?, ?, ?, ?, ?,?,?,?,?)",
+			ornamentStatement = dbc.prepareStatement("INSERT INTO Ornaments (Code, Description, Remarks, IconographyID, MasterImageID, AccessLevel, TourOrder) VALUES (?, ?, ?, ?, ?, ?, ?)",
 //					ornamentStatement = dbc.prepareStatement("INSERT INTO Ornaments (Code, Description, Remarks, Interpretation, OrnamentReferences, Annotation , OrnamentClassID, StructureOrganizationID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
 					Statement.RETURN_GENERATED_KEYS);
 			ornamentStatement.setString(1, ornamentEntry.getCode());
 			ornamentStatement.setString(2, ornamentEntry.getDescription());
 			ornamentStatement.setString(3, ornamentEntry.getRemarks());
-			ornamentStatement.setString(4, ornamentEntry.getInterpretation());
-			ornamentStatement.setString(5, ornamentEntry.getReferences());
-			//ornamentStatement.setString(6, ornamentEntry.getAnnotations());
-			ornamentStatement.setInt(6, ornamentEntry.getOrnamentClass());
-			ornamentStatement.setInt(7, ornamentEntry.getStructureOrganizationID());
-			ornamentStatement.setInt(8, ornamentEntry.getIconographyID());
-			ornamentStatement.setInt(9, ornamentEntry.getMasterImageID());
-			ornamentStatement.setInt(10, ornamentEntry.getAccessLevel());
-			ornamentStatement.setDouble(11, ornamentEntry.getVirtualTourOrder());
+			ornamentStatement.setInt(4, ornamentEntry.getIconographyID());
+			ornamentStatement.setInt(5, ornamentEntry.getMasterImageID());
+			ornamentStatement.setInt(6, ornamentEntry.getAccessLevel());
+			ornamentStatement.setDouble(7, ornamentEntry.getVirtualTourOrder());
 			ornamentStatement.executeUpdate();
 			ResultSet keys = ornamentStatement.getGeneratedKeys();
 			if (keys.next()) { // there should only be 1 key returned here
@@ -2979,10 +3122,7 @@ public class MysqlConnector implements IsSerializable {
 			}
 			keys.close();
 
-			updateInnerSecondaryPatternsRelations(newOrnamentID, ornamentEntry.getInnerSecondaryPatterns());
-			updateOrnamentComponentsRelations(newOrnamentID, ornamentEntry.getOrnamentComponents());
 			updateOrnamentImageRelations(newOrnamentID, ornamentEntry.getImages());
-			updateCaveOrnamentRelation(newOrnamentID, ornamentEntry.getCavesRelations());
 			writeOrnamenticBibliographyRelation(newOrnamentID, ornamentEntry.getRelatedBibliographyList());
 			deleteEntry("DELETE FROM OrnamentIconographyRelation WHERE OrnamentID =" + ornamentEntry.getTypicalID());
 			if (ornamentEntry.getRelatedIconographyList().size() > 0) {
@@ -3020,28 +3160,21 @@ public class MysqlConnector implements IsSerializable {
 		Connection dbc = getConnection();
 		PreparedStatement ornamentStatement;
 		try {
-			ornamentStatement = dbc.prepareStatement("UPDATE Ornaments SET Code=?, Description=?, Remarks=?, Interpretation=?, OrnamentReferences=?, OrnamentClassID=?, StructureOrganizationID=?, IconographyID=?, MasterImageID=?, AccessLevel=?, TourOrder=? WHERE OrnamentID=?");
+			ornamentStatement = dbc.prepareStatement("UPDATE Ornaments SET Code=?, Description=?, Remarks=?, IconographyID=?, MasterImageID=?, AccessLevel=?, TourOrder=? WHERE OrnamentID=?");
 			ornamentStatement.setString(1, ornamentEntry.getCode());
 			ornamentStatement.setString(2, ornamentEntry.getDescription());
 			ornamentStatement.setString(3, ornamentEntry.getRemarks());
-			ornamentStatement.setString(4, ornamentEntry.getInterpretation());
-			ornamentStatement.setString(5, ornamentEntry.getReferences());
-			ornamentStatement.setInt(6, ornamentEntry.getOrnamentClass());
-			ornamentStatement.setInt(7, ornamentEntry.getStructureOrganizationID());
-			ornamentStatement.setInt(8, ornamentEntry.getIconographyID());
-			ornamentStatement.setInt(9, ornamentEntry.getMasterImageID());
-			ornamentStatement.setInt(10, ornamentEntry.getAccessLevel());
-			ornamentStatement.setDouble(11, ornamentEntry.getVirtualTourOrder());
-			ornamentStatement.setInt(12, ornamentEntry.getTypicalID());
+			ornamentStatement.setInt(4, ornamentEntry.getIconographyID());
+			ornamentStatement.setInt(5, ornamentEntry.getMasterImageID());
+			ornamentStatement.setInt(6, ornamentEntry.getAccessLevel());
+			ornamentStatement.setDouble(7, ornamentEntry.getVirtualTourOrder());
+			ornamentStatement.setInt(8, ornamentEntry.getTypicalID());
 			ornamentStatement.executeUpdate();
 			deleteEntry("DELETE FROM OrnamentIconographyRelation WHERE OrnamentID =" + ornamentEntry.getTypicalID());
 			if (ornamentEntry.getRelatedIconographyList().size() > 0) {
 				insertOrnamentIconographyRelation(ornamentEntry.getTypicalID(), ornamentEntry.getRelatedIconographyList());
 			}
-			updateInnerSecondaryPatternsRelations(ornamentEntry.getTypicalID(), ornamentEntry.getInnerSecondaryPatterns());
-			updateOrnamentComponentsRelations(ornamentEntry.getTypicalID(), ornamentEntry.getOrnamentComponents());
 			updateOrnamentImageRelations(ornamentEntry.getTypicalID(), ornamentEntry.getImages());
-			updateCaveOrnamentRelation(ornamentEntry.getTypicalID(), ornamentEntry.getCavesRelations());
 			
 			System.err.println("writeOrnamenticBibliographyRelation triggered");
 			writeOrnamenticBibliographyRelation(ornamentEntry.getTypicalID(), ornamentEntry.getRelatedBibliographyList());
@@ -3069,7 +3202,7 @@ public class MysqlConnector implements IsSerializable {
 			System.err.println("elastic request: " + updateResult);
 			ElasticResult er = gson.fromJson(updateResult, ElasticResult.class);
 			System.out.println(er.result + " "+ updateResult);
-		    if (er.result != "noop") {
+		    if (!er.result.equals("noop")) {
 		    	doUploadToElastic(ico.getUniqueID()+"-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false);
 		    }
 		    ico.setModifiedOn(df.format(date));			
@@ -3576,7 +3709,13 @@ public boolean isHan(String s) {
 		String elastic_user = serverProperties.getProperty("home.elastic.login");
 		String elastic_pw = serverProperties.getProperty("home.elastic.pw");
 		System.out.println(doUploadToElastic(entry.getUniqueID(),   json, url,index_data, Integer.toString(port), elastic_user,elastic_pw, false));
-	    System.out.println(doUploadToElastic(entry.getUniqueID(),   "{\"versions\":[{\"timestamp\":\""+df.format(date)+"\", \"content\":"+json+"}]}", url,index_backup, Integer.toString(port), elastic_user,elastic_pw, false));
+	    System.out.println(doUploadToElastic(entry.getUniqueID()+"-1",   "{\"versions\":[{\"timestamp\":\""+df.format(date)+"\", \"content\":"+json+"}]}", url,index_backup, Integer.toString(port), elastic_user,elastic_pw, false));
+		String updateResult = doUploadToElastic("iconographyTree","{\"doc\":{\"iconographyTree\":" + json + "}}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, true);
+		ElasticResult er = gson.fromJson(updateResult, ElasticResult.class);
+		System.out.println(er.result + " "+ updateResult);
+		if (!er.result.equals("noop")) {
+			System.out.println(doUploadToElastic("iconographyTree-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"iconographyTree\":"+json+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+		}
 
 		if (dologging){
 		long end = System.currentTimeMillis();
@@ -3641,7 +3780,7 @@ public boolean isHan(String s) {
 
 				ElasticResult er = gson.fromJson(updateResult, ElasticResult.class);
 				System.out.println(er.result + " "+ updateResult);
-				if (er.result != "noop") {
+				if (!er.result.equals("noop")) {
 					doUploadToElastic(iconographyEntryToEdit.getUniqueID()+"-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false);		    	
 				}
 			}		
@@ -3651,7 +3790,7 @@ public boolean isHan(String s) {
 		String updateResult = doUploadToElastic("iconographyTree","{\"doc\":{\"iconography\":" + json2 + "}}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, true);
 		ElasticResult er = gson.fromJson(updateResult, ElasticResult.class);
 		System.out.println(er.result + " "+ updateResult);
-		if (er.result != "noop") {
+		if (!er.result.equals("noop")) {
 			System.out.println(doUploadToElastic("iconographyTree-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"iconography\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
 		}
 	    iconographyEntryToEdit.setModifiedOn(df.format(date));			
@@ -3703,7 +3842,7 @@ public boolean isHan(String s) {
 		String updateResult = doUploadToElastic("wallTree","{\"doc\":{\"wallTree\":" + json2 + "}}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, true);
 		ElasticResult er = gson.fromJson(updateResult, ElasticResult.class);
 		System.out.println(er.result + " "+ updateResult);
-		if (er.result != "noop") {
+		if (!er.result.equals("noop")) {
 			System.out.println(doUploadToElastic("wallTree-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"wallTree\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
 		}
 	    wte.setModifiedOn(df.format(date));			
@@ -5485,8 +5624,7 @@ public boolean isHan(String s) {
 				OrnamentEntry entry = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"),
 						rs.getString("Remarks"),
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
-						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
+						getImagesbyOrnamentID(rs.getInt("OrnamentID")),
 						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getInt("IconographyID"),rs.getInt("MasterImageID"), getOrnamentRelatedIconography(rs.getInt("OrnamentID")), getOrnamentAnnotations(rs.getInt("OrnamentID")),rs.getInt("AccessLevel"),rs.getDouble("TourOrder"));
 				resultList.add(entry);
@@ -5521,8 +5659,7 @@ public boolean isHan(String s) {
 				results.add(new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
 						//rs.getString("Annotation"),
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
-						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
+						getImagesbyOrnamentID(rs.getInt("OrnamentID")),
 						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getInt("IconographyID"),rs.getInt("MasterImageID"), getOrnamentRelatedIconography(rs.getInt("OrnamentID")),
 						getOrnamentAnnotations(rs.getInt("OrnamentID")),rs.getInt("AccessLevel"),rs.getDouble("TourOrder")));
@@ -5560,8 +5697,7 @@ public boolean isHan(String s) {
 			if (rs.first()) {
 				result = new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-						getImagesbyOrnamentID(rs.getInt("OrnamentID")), getCaveRelationbyOrnamentID(rs.getInt("OrnamentID")),
-						getOrnamentComponentsbyOrnamentID(rs.getInt("OrnamentID")), getInnerSecPatternsbyOrnamentID(rs.getInt("OrnamentID")),
+						getImagesbyOrnamentID(rs.getInt("OrnamentID")),
 						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getInt("IconographyID"),rs.getInt("MasterImageID"), getOrnamentRelatedIconography(rs.getInt("OrnamentID")),
 						getOrnamentAnnotations(rs.getInt("OrnamentID")),rs.getInt("AccessLevel"),rs.getDouble("TourOrder"));
@@ -5788,7 +5924,7 @@ public boolean isHan(String s) {
 
 			ElasticResult er = gson.fromJson(updateResult, ElasticResult.class);
 			System.out.println(er.result + " "+ updateResult);
-		    if (er.result != "noop") {
+		    if (!er.result.equals("noop")) {
 		    	doUploadToElastic(caveEntry.getUniqueID()+"-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false);
 		    }
 		    caveEntry.setModifiedOn(df.format(date));			
@@ -6761,7 +6897,7 @@ public boolean isHan(String s) {
 				String updateResult = doUploadToElastic(de.getUniqueID(),   "{\"doc\":"+json+"}", url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, true);
 				ElasticResult er = gson.fromJson(updateResult, ElasticResult.class);
 				System.out.println(er.result + " "+ updateResult);
-			    if (er.result == null || er.result != "noop") {
+			    if (er.result == null || !er.result.equals("noop")) {
 			    	doUploadToElastic(de.getUniqueID()+"-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false);
 			    }
 			} catch (Exception ex){
@@ -8234,15 +8370,19 @@ public boolean isHan(String s) {
 		}
 		re.setModifiedOn("");
 		Gson gson = new Gson();
-		String json = gson.toJson(re);	
+		String json = gson.toJson(getRegions());	
 		Date date = new Date(System.currentTimeMillis());
 		DateFormat df = DateFormat.getDateTimeInstance();
 		String url = serverProperties.getProperty("home.elastic.url");
 		int port = Integer.parseInt(serverProperties.getProperty("home.elastic.port"));
 		String elastic_user = serverProperties.getProperty("home.elastic.login");
 		String elastic_pw = serverProperties.getProperty("home.elastic.pw");
-		System.out.println(doUploadToElastic(re.getUniqueID(),   "{\"doc\":"+json+"}", url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, true));
-	    System.out.println(doUploadToElastic(re.getUniqueID()+"-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+		String updateResult = doUploadToElastic("regions","{\"doc\":{\"regions\":" + json + "}}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, true);
+		ElasticResult er = gson.fromJson(updateResult, ElasticResult.class);
+		System.out.println(er.result + " "+ updateResult);
+		if (!er.result.equals("noop")) {
+			System.out.println(doUploadToElastic("regions-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"regions\":"+json+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+		}
 	    re.setModifiedOn(df.format(date));			
 
 		if (dologging){
@@ -8508,16 +8648,19 @@ public boolean isHan(String s) {
 		}
 		lEntry.setModifiedOn("");
 		Gson gson = new Gson();
-		String json = gson.toJson(lEntry);	
+		String json = gson.toJson(getLocations());	
 		Date date = new Date(System.currentTimeMillis());
 		DateFormat df = DateFormat.getDateTimeInstance();
 		String url = serverProperties.getProperty("home.elastic.url");
 		int port = Integer.parseInt(serverProperties.getProperty("home.elastic.port"));
 		String elastic_user = serverProperties.getProperty("home.elastic.login");
 		String elastic_pw = serverProperties.getProperty("home.elastic.pw");
-		System.out.println(doUploadToElastic(lEntry.getUniqueID(),   "{\"doc\":"+json+"}", url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, true));
-	    System.out.println(doUploadToElastic(lEntry.getUniqueID()+"-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
-	    lEntry.setModifiedOn(df.format(date));		
+		String updateResult = doUploadToElastic("locations","{\"doc\":{\"location\":" + json + "}}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, true);
+		ElasticResult er = gson.fromJson(updateResult, ElasticResult.class);
+		System.out.println(er.result + " "+ updateResult);
+		if (!er.result.equals("noop")) {
+			System.out.println(doUploadToElastic("locations-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"locations\":"+json+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+		}
 		if (dologging){
 		long end = System.currentTimeMillis();
 		long diff = (end-start);
@@ -9123,7 +9266,7 @@ public boolean isHan(String s) {
 
 			ElasticResult er = gson.fromJson(updateResult, ElasticResult.class);
 			System.out.println(er.result + " "+ updateResult);
-		    if (er.result != "noop") {
+		    if (!er.result.equals("noop")) {
 		    	System.out.println(doUploadToElastic(bibEntry.getUniqueID()+"-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
 		    }
 		    bibEntry.setModifiedOn(df.format(date));			
@@ -9637,10 +9780,10 @@ public boolean isHan(String s) {
 			String elastic_pw = serverProperties.getProperty("home.elastic.pw");
 			String json2 = gson.toJson(getBibKeywords());
 			json2 = json2.replace("\"text\"", "\"name\"");
-			String updateResult = doUploadToElastic("bibKeywords","{\"doc\":{\"wallTree\":" + json2 + "}}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, true);
+			String updateResult = doUploadToElastic("bibKeywords","{\"doc\":{\"bibKeywords\":" + json2 + "}}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, true);
 			ElasticResult er = gson.fromJson(updateResult, ElasticResult.class);
 			System.out.println(er.result + " "+ updateResult);
-			if (er.result != "noop") {
+			if (!er.result.equals("noop")) {
 				System.out.println(doUploadToElastic("bibKeywords-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"wallTree\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
 			}
 			keyword.setModifiedOn(df.format(date));			
