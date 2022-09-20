@@ -930,6 +930,17 @@ public class SingleImageEditor extends AbstractEditor {
 
 			});
 
+		ToolButton zoomTB = new ToolButton(ToolButton.DOUBLEDOWN);
+		zoomTB.addSelectHandler(new SelectHandler() {
+			@Override
+			public void onSelect(SelectEvent event) {
+				if (imgEntry != null) {
+					Window.open("/resource?imageFile=" + imgEntry.getFilename() + UserLogin.getInstance().getUsernameSessionIDParameterForUri(), "_self", "status=0,toolbar=0,menubar=0,location=0");
+				}
+			}
+		});
+		zoomTB.setToolTip(Util.createToolTip("Download  original image.", "This will automatically download the original uploaded image."));
+
 //	    Document doc = Document.get();
 //	    ScriptElement script = doc.createScriptElement();
 //	    script.setSrc("scripts/openseadragon-bin-2.4.2/openseadragon.min.js");
@@ -954,6 +965,7 @@ public class SingleImageEditor extends AbstractEditor {
 		//exportStaticMethod();
 		//createZoomeImage(imageUri.asString(),zoomPanel.getElement());
 		
+		imgFP.addTool(zoomTB);
 		imgFP.addTool(resetTB);
 		imgFP.addTool(viewFullSizeTB);
 		
