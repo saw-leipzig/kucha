@@ -48,6 +48,7 @@ import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.core.java.util.Collections;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -235,6 +236,16 @@ public class DepictionEditor extends AbstractEditor {
 		public String getElement() {
 			return element;
 		}
+	}
+	public static Integer maxUsingIteration(Map<Integer, Integer> map) {
+		Map.Entry<Integer, Integer> maxEntry = null;
+	    for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+	        if (maxEntry == null || entry.getValue()
+	            .compareTo(maxEntry.getValue()) > 0) {
+	            maxEntry = entry;
+	        }
+	    }
+	    return maxEntry.getValue();
 	}
 
 	public void loadiconogrpahy(ArrayList<IconographyEntry> iconographyRelationList) {
@@ -854,16 +865,14 @@ public class DepictionEditor extends AbstractEditor {
 			public int compare(ImageEntry o1, ImageEntry o2) {
 				if (correspondingDepictionEntry.getImageSortInfo().get(o1.getImageID()) == null) {
 					if (correspondingDepictionEntry.getImageSortInfo().get(o2.getImageID()) == null) {
-						return 0;
-					} else {
-						return -1;
-					}
-				} else {
-					if (correspondingDepictionEntry.getImageSortInfo().get(o2.getImageID()) == null) {
+					correspondingDepictionEntry.getImageSortInfo().put(o1.getImageID(), maxUsingIteration(correspondingDepictionEntry.getImageSortInfo())); 
+				}
+				if (correspondingDepictionEntry.getImageSortInfo().get(o2.getImageID()) == null) {
 						return 1;
 					} else {
-						return correspondingDepictionEntry.getImageSortInfo().get(o1.getImageID()).compareTo(correspondingDepictionEntry.getImageSortInfo().get(o2.getImageID()));					}
-				}	
+					correspondingDepictionEntry.getImageSortInfo().put(o2.getImageID(), maxUsingIteration(correspondingDepictionEntry.getImageSortInfo())+1); 
+				}
+				return correspondingDepictionEntry.getImageSortInfo().get(o1.getImageID()).compareTo(correspondingDepictionEntry.getImageSortInfo().get(o2.getImageID()));
 			}
 		};
 		for (Integer key: correspondingDepictionEntry.getImageSortInfo().keySet()) {
