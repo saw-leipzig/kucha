@@ -14,6 +14,7 @@
 package de.cses.server;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -266,6 +267,7 @@ public class ResourceDownloadServlet extends HttpServlet {
 						"http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/!" + tnSize + "," + tnSize + "/0/default.jpg"
 					);
 			} else {
+
 				imageURL = new URL(
 						"http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/max/0/default.jpg"
 					);
@@ -427,6 +429,70 @@ public class ResourceDownloadServlet extends HttpServlet {
 	        System.out.println(request.getLocalAddr());
 	        String ip = "";
 
+		} else if (request.getParameter("imageFile") != null) {
+			String filename = request.getParameter("imageFile");
+			String parts[]=filename.split("\\.");
+			System.out.println("filename "+parts);
+            String part1=parts[0];
+			ImageEntry imgEntry = connector.getImageEntry(Integer.parseInt(part1));
+			File inputFile;
+			int userAccessLevel = AbstractEntry.ACCESS_LEVEL_PUBLIC;
+			ArrayList<Integer> authorizedAccessLevel = new ArrayList<Integer>();
+			switch (connector.getAccessLevelForSessionID(sessionID)) {
+				case UserEntry.GUEST:
+					break;
+				case UserEntry.ASSOCIATED:
+					authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_PUBLIC);
+					authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_COPYRIGHT);
+					//System.err.println("acess Level PUBLIC and COPYRIGHT");
+					break; 
+				case UserEntry.FULL:
+				case UserEntry.ADMIN:
+					authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_PUBLIC);
+					authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_COPYRIGHT);
+					authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_PRIVATE);
+					//System.err.println("acess Level PUBLIC, COPYRIGHT and PRIVATE");
+					break;
+				default:
+					authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_PUBLIC);
+					//System.err.println("acess Level PUBLIC");
+					break;
+			}
+			//System.err.println("sessionID=" + sessionID + ", userAccessLevel=" + connector.getAccessLevelForSessionID(sessionID) + ", ImageEntry accessLevel=" + imgEntry.getAccessLevel());
+			
+			if (imgEntry!=null && authorizedAccessLevel.contains(imgEntry.getAccessLevel())) {
+				filename = imgEntry.getFilename();
+//				inputFile = new File(serverProperties.getProperty("home.images"), filename);
+			} else if ((connector.getAccessLevelForSessionID(sessionID) == UserEntry.GUEST) && (imgEntry.getAccessLevel() == AbstractEntry.ACCESS_LEVEL_COPYRIGHT)) {
+				// guests should be informed that there is an image
+				filename = "accessNotPermitted.png";
+			} else {
+				response.setStatus(403);
+				return;
+			}
+
+			
+			File imgHomeDir = new File(serverProperties.getProperty("home.images"));
+			File f = new File(imgHomeDir,filename);
+	        String imgFilename = f.getName();
+	        int length = 0;
+	        try {
+	            ServletOutputStream op = response.getOutputStream();
+	            response.setContentType("application/octet-stream");
+	            response.setContentLength((int) f.length());
+	            response.setHeader("Content-Disposition", "attachment; filename*=\"utf-8''" + imgEntry.getTitle()+"."+parts[1] + "");
+	            byte[] bbuf = new byte[1024];
+	            DataInputStream in = new DataInputStream(new FileInputStream(f));
+	            while ((in != null) && ((length = in.read(bbuf)) != -1)) {
+	                op.write(bbuf, 0, length);
+	            }
+	            in.close();
+	            op.flush();
+	            op.close();
+	        }
+	        catch (Exception ex) {
+	            ex.printStackTrace();
+	        }
 		} else {
 			response.setStatus(400);
 		}

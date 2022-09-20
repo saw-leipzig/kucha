@@ -148,6 +148,7 @@ public class ImageServiceImpl extends HttpServlet {
 							catch (Exception e) {
 								System.err.println("IllegalStateException"+e.getLocalizedMessage());
 							}
+							target.createNewFile();
 							item.write(target);
 							item.delete();
 						}
