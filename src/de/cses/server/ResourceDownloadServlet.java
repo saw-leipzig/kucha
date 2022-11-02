@@ -501,6 +501,9 @@ public class ResourceDownloadServlet extends HttpServlet {
 	@Override
 	protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		System.out.println("got request: "+ request);
+	    if (request.getCharacterEncoding() == null) {
+	        request.setCharacterEncoding("UTF-8");
+	    }
 		setAccessControlHeaders(response);
 		String sessionID = request.getParameter("sessionID");
 		//System.out.println("doGetParameters: ");

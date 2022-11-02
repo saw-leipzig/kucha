@@ -14,7 +14,9 @@
 package de.cses.client.bibliography;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
@@ -101,6 +103,9 @@ import de.cses.shared.DistrictEntry;
 import de.cses.shared.ModifiedEntry;
 import de.cses.shared.PublicationTypeEntry;
 import com.google.gwt.user.client.Event;
+import de.cses.client.StaticTables;
+
+
 /**
  * @author Nina
  *
@@ -121,7 +126,6 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 	private ListStore<BibKeywordEntry> selectedBibKeywordsStore;
 	private BibKeywordProperties bibKeywordProps;
 	private BibKeywordPropertiesCB bibKeywordPropsCB;
-
 	private AnnotatedBibliographyEntryProperties annotatedBibliographyEntryProps;
 	private AuthorProperties authorProps;
 
@@ -1081,7 +1085,7 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 				@Override
 				protected boolean doSelect(Store<AuthorEntry> store, AuthorEntry parent, AuthorEntry item, String filter) {
 					if (item.getName() != null) {
-						return item.getName().toLowerCase().contains(filter.toLowerCase()); 						
+						return StaticTables.getInstance().removeAccents(item.getName().toLowerCase()).contains(StaticTables.getInstance().removeAccents(filter.toLowerCase())); 						
 					} else {
 						return false;						
 					}
@@ -1151,9 +1155,9 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 				@Override
 				protected boolean doSelect(Store<AuthorEntry> store, AuthorEntry parent, AuthorEntry item, String filter) {
 					if (item.getName() != null) {
-						return item.getName().toLowerCase().contains(filter.toLowerCase()); 						
+						return StaticTables.getInstance().removeAccents(item.getName().toLowerCase()).contains(StaticTables.getInstance().removeAccents(filter.toLowerCase()).replaceAll("\\p{M}", "")); 						
 					} else {
-						return false;						
+						return false;
 					}
 				}
 			};
@@ -1303,7 +1307,7 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 			
 			@Override
 			protected boolean doSelect(Store<BibKeywordEntry> store, BibKeywordEntry parent, BibKeywordEntry item, String filter) {
-				return item.getBibKeyword().toLowerCase().contains(filter.toLowerCase()) ? true : false;
+				return StaticTables.getInstance().removeAccents(item.getBibKeyword().toLowerCase()).contains(StaticTables.getInstance().removeAccents(filter.toLowerCase())) ? true : false;
 			}
 			
 		};

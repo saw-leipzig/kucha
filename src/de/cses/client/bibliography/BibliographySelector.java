@@ -402,22 +402,22 @@ public class BibliographySelector implements IsWidget {
 					return true;
 				}
 				else {
-		        	  if (item.getTitleEN().toLowerCase().contains(filter.toLowerCase())) {
+		        	  if (StaticTables.getInstance().removeAccents(item.getTitleEN().toLowerCase()).contains(StaticTables.getInstance().removeAccents(filter.toLowerCase()))) {
 		        		  return true;
 		        	  }
-		        	  else if (item.getTitleORG().toLowerCase().contains(filter.toLowerCase())) {
+		        	  else if (StaticTables.getInstance().removeAccents(item.getTitleORG().toLowerCase()).contains(StaticTables.getInstance().removeAccents(filter.toLowerCase()))) {
 		        		  return true;
 		        	  }
-		        	  else if (item.getTitleTR().toLowerCase().contains(filter.toLowerCase())) {
+		        	  else if (StaticTables.getInstance().removeAccents(item.getTitleTR().toLowerCase()).contains(StaticTables.getInstance().removeAccents(filter.toLowerCase()))) {
 		        		  return true;
 		        	  }
-		        	  else if (item.getSubtitleEN().toLowerCase().contains(filter.toLowerCase())) {
+		        	  else if (StaticTables.getInstance().removeAccents(item.getSubtitleEN().toLowerCase()).contains(StaticTables.getInstance().removeAccents(filter.toLowerCase()))) {
 		        		  return true;
 		        	  }
-		        	  else if (item.getSubtitleORG().toLowerCase().contains(filter.toLowerCase())) {
+		        	  else if (StaticTables.getInstance().removeAccents(item.getSubtitleORG().toLowerCase()).contains(StaticTables.getInstance().removeAccents(filter.toLowerCase()))) {
 		        		  return true;
 		        	  }
-		        	  else if (item.getSubtitleTR().toLowerCase().contains(filter.toLowerCase())) {
+		        	  else if (StaticTables.getInstance().removeAccents(item.getSubtitleTR().toLowerCase()).contains(StaticTables.getInstance().removeAccents(filter.toLowerCase()))) {
 		        		  return true;
 		        	  }
 				}
@@ -445,14 +445,14 @@ public class BibliographySelector implements IsWidget {
 			        		  try {	
 			        			  if (ae.getName()!=null) {
 					        		  if ((!ae.getName().isEmpty())&(!filter.isEmpty())) {
-						        		  if (ae.getName().toLowerCase().contains(filter.toLowerCase())) {
+						        		  if (StaticTables.getInstance().removeAccents(ae.getName().toLowerCase()).contains(StaticTables.getInstance().removeAccents(filter.toLowerCase()))) {
 						        			  return true;
 						        		  }		        			  
 					        		  }			        				  
 			        			  }
 			        			  if (ae.getAlias()!=null) {
 					        		  if ((!ae.getAlias().isEmpty())&(!filter.isEmpty())) {
-					        			  if (ae.getAlias().toLowerCase().contains(filter.toLowerCase())) {
+					        			  if (StaticTables.getInstance().removeAccents(ae.getAlias().toLowerCase()).contains(StaticTables.getInstance().removeAccents(filter.toLowerCase()))) {
 					        				  return true;
 					        			  }
 					        		  }
@@ -474,14 +474,14 @@ public class BibliographySelector implements IsWidget {
 							try {
 			        			  if (ae.getName()!=null) {
 					        		  if ((!ae.getName().isEmpty())&(!filter.isEmpty())) {
-						        		  if (ae.getName().toLowerCase().contains(filter.toLowerCase())) {
+						        		  if (StaticTables.getInstance().removeAccents(ae.getName().toLowerCase()).contains(StaticTables.getInstance().removeAccents(filter.toLowerCase()))) {
 						        			  return true;
 						        		  }		        			  
 					        		  }			        				  
 			        			  }
 			        			  if (ae.getAlias()!=null) {
 					        		  if ((!ae.getAlias().isEmpty())&(!filter.isEmpty())) {
-					        			  if (ae.getAlias().toLowerCase().contains(filter.toLowerCase())) {
+					        			  if (StaticTables.getInstance().removeAccents(ae.getAlias().toLowerCase()).contains(StaticTables.getInstance().removeAccents(filter.toLowerCase()))) {
 					        				  return true;
 					        			  }
 					        		  }

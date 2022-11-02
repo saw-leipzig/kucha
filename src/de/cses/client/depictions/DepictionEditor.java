@@ -829,6 +829,7 @@ public class DepictionEditor extends AbstractEditor {
 		ListField<ImageEntry, ImageEntry> imageViewLF = new ListField<ImageEntry, ImageEntry>(imageListView);
 		loadImages();
 		if (correspondingDepictionEntry.getImageSortInfo() == null) {
+			Util.doLogging("setting simple sort modus");
 			Comparator<? super ImageEntry> defaultItemComparator = new Comparator<ImageEntry>() {
 				@Override
 				public int compare(ImageEntry o1, ImageEntry o2) {
@@ -864,20 +865,14 @@ public class DepictionEditor extends AbstractEditor {
 			@Override
 			public int compare(ImageEntry o1, ImageEntry o2) {
 				if (correspondingDepictionEntry.getImageSortInfo().get(o1.getImageID()) == null) {
-					if (correspondingDepictionEntry.getImageSortInfo().get(o2.getImageID()) == null) {
-					correspondingDepictionEntry.getImageSortInfo().put(o1.getImageID(), maxUsingIteration(correspondingDepictionEntry.getImageSortInfo())); 
+					correspondingDepictionEntry.getImageSortInfo().put(o1.getImageID(), maxUsingIteration(correspondingDepictionEntry.getImageSortInfo())+1); 
 				}
 				if (correspondingDepictionEntry.getImageSortInfo().get(o2.getImageID()) == null) {
-						return 1;
-					} else {
 					correspondingDepictionEntry.getImageSortInfo().put(o2.getImageID(), maxUsingIteration(correspondingDepictionEntry.getImageSortInfo())+1); 
 				}
 				return correspondingDepictionEntry.getImageSortInfo().get(o1.getImageID()).compareTo(correspondingDepictionEntry.getImageSortInfo().get(o2.getImageID()));
 			}
 		};
-		for (Integer key: correspondingDepictionEntry.getImageSortInfo().keySet()) {
-			Util.doLogging("sort: " + Integer.toString(key) + ", " + Integer.toString(correspondingDepictionEntry.getImageSortInfo().get(key)));
-		}
 		imageEntryLS.addSortInfo(new StoreSortInfo<ImageEntry>(customItemComparator,SortDir.ASC));
 		imageEntryLS.applySort(true);
 

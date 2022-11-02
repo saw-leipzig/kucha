@@ -294,9 +294,7 @@ public class WallTree {
 			wallTreeStore.add(item);
 			allEntries.add(item);
 			if (item.getChildren() != null) {
-				Util.doLogging("here");
-					//if (item.getParentID()==null) {
-					processParentWallTreeEntry(item);
+				processParentWallTreeEntry(item);
 			}
 		}
 		if (dropunselected) {

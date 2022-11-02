@@ -263,7 +263,7 @@ public class OSDLoader {
 				w3cAnnotation = addAnnotation(w3cAnnotation,annoEntry.getAnnotoriousID(), bodies, annoEntry.getPolygone(), annoEntry.getImage());
 			}			
 		}
-		Util.doLogging("w3cAnnotation "+w3cAnnotation);
+		// Util.doLogging("w3cAnnotation "+w3cAnnotation);
 		return w3cAnnotation;
 	}
 
@@ -628,7 +628,12 @@ public class OSDLoader {
 				config["locale"] = 'auto',
 				config["readOnly"]=false;
 				var tw = $wnd.TreeWidget;
-				config["widgets"]=[{ widget: tw, tree: icoTree }];
+				if (isWall){
+					config["widgets"]=[{ widget: 'TAG', vocabulary: [ 'lost'] }];
+					config["readOnly"]=true;
+				} else {
+					config["widgets"]=[{ widget: tw, tree: icoTree }];
+				}
 				config["image"]=wheres[i];
 				config["formatter"] = [MyHighlightFormatter];
 				// $wnd.console.log("Adding Annotorious",config);
