@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -745,12 +746,13 @@ public class DepictionEditor extends AbstractEditor {
 						? "\u00A9 " + item.getCopyright()
 						: "";
 				SafeHtml sb;
+				long now = new Date().getTime();  
 				if (item.getImageID() == correspondingDepictionEntry.getMasterImageID()) {
 					sb = imageViewTemplates.masterImage(item.getFilename(), item.getShortName(), titleList,
 							item.getFilename().substring(item.getFilename().lastIndexOf(".") + 1).toUpperCase(),
 							imageAuthor, copyrightStr, UriUtils.fromString("resource?imageID=" + item.getImageID()
 									+ UserLogin.getInstance().getUsernameSessionIDParameterForUri()));
-				} else if (item.getAccessLevel() == AbstractEntry.ACCESS_LEVEL_PUBLIC) {
+				} else if (((item.getAccessLevel() == AbstractEntry.ACCESS_LEVEL_PUBLIC) && (!item.getIsExpiring()))|| ((item.getAccessLevel() == AbstractEntry.ACCESS_LEVEL_PUBLIC) && (item.getIsExpiring())&&(now < item.getExpiriesAt()))) {
 					sb = imageViewTemplates.publicImage(item.getFilename(), item.getShortName(), titleList,
 							item.getFilename().substring(item.getFilename().lastIndexOf(".") + 1).toUpperCase(),
 							imageAuthor, copyrightStr, UriUtils.fromString("resource?imageID=" + item.getImageID()

@@ -13,6 +13,8 @@
  */
 package de.cses.client.images;
 
+import java.util.Date;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
@@ -89,6 +91,7 @@ public class ImageView extends AbstractView {
 	}
 
 	private void refreshHTML() {
+		long now = new Date().getTime();
 		setHTML(ivTemplates.view(
 				imgUri, 
 				imgEntry.getTitle() != null ? imgEntry.getTitle() : "n/a", 
@@ -96,7 +99,7 @@ public class ImageView extends AbstractView {
 				imgEntry.getImageAuthor() != null ? imgEntry.getImageAuthor().getLabel() : "n/a",
 				imgEntry.getImageTypeID() > 0 ? StaticTables.getInstance().getImageTypeEntries().get(imgEntry.getImageTypeID()).getName() : "n/a", 
 				imgEntry.getDate(),
-				imgEntry.getAccessLevel() == AbstractEntry.ACCESS_LEVEL_PUBLIC,
+				(((imgEntry.getAccessLevel() == AbstractEntry.ACCESS_LEVEL_PUBLIC) && (!imgEntry.getIsExpiring()))|| ((imgEntry.getAccessLevel() == AbstractEntry.ACCESS_LEVEL_PUBLIC) && (imgEntry.getIsExpiring())&&(now < imgEntry.getExpiriesAt()))),
 				imgEntry.getImageID()));
 	}
 

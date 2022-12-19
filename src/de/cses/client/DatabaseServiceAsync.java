@@ -251,7 +251,7 @@ public interface DatabaseServiceAsync {
 
 	void userLogin(String username, String password, AsyncCallback<UserEntry> asyncCallback);
 
-	void updateImageEntry(ImageEntry imgEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
+	void updateImageEntry(ImageEntry imgEntry, String sessionID, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
 	void getImageTypes(AsyncCallback<ArrayList<ImageTypeEntry>> asyncCallback) throws IllegalArgumentException;
 

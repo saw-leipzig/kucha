@@ -1490,7 +1490,7 @@ public class MysqlConnector implements IsSerializable {
 				pstmt.setString(5, pwHash);
 				pstmt.executeUpdate();
 				pstmt.close();
-				sendMail("kucha-admin@saw-leipzig.de",user.getEmail(),"Kucha-Admin","An account has been created for you at kucha.saw-leipzig.de","Dear "+user.getFirstname()+ " "+user.getLastname()+",\n the Admin has created an Account in kuchatest.saw-leipzig.de for you.\nYour username is:"+user.getEmail()+"\nYour password is:  \""+pwd+"\"\n However, you do not yet have commenting privileges. These are still to be assigned by the administrators. We ask for a little patience.");
+				sendMail("kuchaadmin@saw-leipzig.de",user.getEmail(),"Kucha-Admin","An account has been created for you at kucha.saw-leipzig.de","Dear "+user.getFirstname()+ " "+user.getLastname()+",\n the Admin has created an Account in kuchatest.saw-leipzig.de for you.\nYour username is: "+user.getEmail()+"\nYour password is:  \""+pwd+"\" (without quotes)\n However, you do not yet have commenting privileges. These are still to be assigned by the administrators. We ask for a little patience.");
 			} else {
 				System.out.println("Email already exists!");
 				return "Email already exists!";
@@ -1531,10 +1531,10 @@ public class MysqlConnector implements IsSerializable {
 					for (int i = 0 ; i < userIDs.length(); i++) {
 						UserEntry ue = getUserFrontEnd(userIDs.getInt(i));
 						System.out.println("sending Email to: " + ue.getEmail());
-						sendMail("kucha-admin@saw-leipzig.de",ue.getEmail(),"Kucha-Admin","The Discussion \""+title+"\" has a new Answer.","Dear "+ue.getFirstname()+ " "+ue.getLastname()+",\n The Discussion\""+title+"\" has a new Answer: \\n\\t"+messageText);
+						sendMail("kuchaadmin@saw-leipzig.de",ue.getEmail(),"Kucha-Admin","The Discussion \""+title+"\" has a new Answer.","Dear "+ue.getFirstname()+ " "+ue.getLastname()+",\n The Discussion\""+title+"\" has a new Answer: \\n\\t"+messageText);
 					}
 			} else {
-				sendMail("kucha-Admin@saw-leipzig.de","kucha-admin@saw-leipzig.de","Kucha-Admin","The Discussion \""+title+"\" has been updated.","Dear Erik,\n The Discussion\""+title+"\" has been updated.");
+				sendMail("kuchaadmin@saw-leipzig.de","kuchaadmin@saw-leipzig.de","Kucha-Admin","The Discussion \""+title+"\" has been updated.","Dear Erik,\n The Discussion\""+title+"\" has been updated.");
 			}
 			
         }catch(JSONException ex){
@@ -1576,7 +1576,7 @@ public class MysqlConnector implements IsSerializable {
 				while (rs.next()) {
 					ImageEntry image = new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
 							rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
-							rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("location")),rs.getString("InventoryNumber"),rs.getDouble("Height"),rs.getDouble("Width"));
+							rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("location")),rs.getString("InventoryNumber"),rs.getDouble("Height"),rs.getDouble("Width"), rs.getBoolean("IsExpiring"),rs.getLong("ExpiresAt"));
 					if (image.getLocation()==null) {
 						if (rs.getString("Title")!=null){
 							image.setLocation(searchLocationByFilename(image.getTitle()));
@@ -1782,7 +1782,7 @@ public class MysqlConnector implements IsSerializable {
 		try {
 			System.err.println("Preparing statement.");
 			pstmt = dbc.prepareStatement(
-					"INSERT INTO Images (Filename, Title, ShortName, Copyright, PhotographerID, Comment, Date, ImageTypeID, AccessLevel, deleted, InventoryNumber, Width, Height) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+					"INSERT INTO Images (Filename, Title, ShortName, Copyright, PhotographerID, Comment, Date, ImageTypeID, AccessLevel, deleted, InventoryNumber, Width, Height, IsExpiring, ExpiresAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 					Statement.RETURN_GENERATED_KEYS);
 			pstmt.setString(1, "");
 			pstmt.setString(2, entry.getTitle());
@@ -1803,6 +1803,8 @@ public class MysqlConnector implements IsSerializable {
 			pstmt.setString(11, entry.getInventoryNumber());
 			pstmt.setDouble(12, entry.getWidth());
 			pstmt.setDouble(13, entry.getHeight());
+			pstmt.setBoolean(14, entry.getIsExpiring());
+			pstmt.setLong(15, entry.getExpiriesAt());
 			pstmt.executeUpdate();
 			ResultSet keys = pstmt.getGeneratedKeys();
 			if (keys.next()) { // there should only be 1 key returned here
@@ -2228,7 +2230,7 @@ public class MysqlConnector implements IsSerializable {
 			while (rs.next()) {
 				ImageEntry image = new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
 						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
-						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("location")),rs.getString("InventoryNumber"),rs.getDouble("Width"),rs.getDouble("Height"));
+						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("location")),rs.getString("InventoryNumber"),rs.getDouble("Width"),rs.getDouble("Height"), rs.getBoolean("IsExpiring"),rs.getLong("ExpiresAt"));
 				if (image.getLocation()==null) {
 					//System.out.println("setting location");
 					if (rs.getString("Title")!=null){
@@ -2306,7 +2308,7 @@ public class MysqlConnector implements IsSerializable {
 			while (rs.next()) {
 				ImageEntry image = new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
 						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
-						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("location")),rs.getString("InventoryNumber"),rs.getDouble("Height"),rs.getDouble("Width"));
+						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("location")),rs.getString("InventoryNumber"),rs.getDouble("Height"),rs.getDouble("Width"), rs.getBoolean("IsExpiring"),rs.getLong("ExpiresAt"));
 				if (image.getLocation()==null) {
 					if (rs.getString("Title")!=null){
 						image.setLocation(searchLocationByFilename(image.getTitle()));
@@ -2354,7 +2356,7 @@ public class MysqlConnector implements IsSerializable {
 			if (rs.first()) {
 				result = new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
 						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), 
-						rs.getInt("ImageTypeID"), rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("location")),rs.getString("InventoryNumber"),rs.getDouble("Height"),rs.getDouble("Width"));
+						rs.getInt("ImageTypeID"), rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("location")),rs.getString("InventoryNumber"),rs.getDouble("Height"),rs.getDouble("Width"), rs.getBoolean("IsExpiring"),rs.getLong("ExpiresAt"));
 				if (result.getLocation()==null) {
 					if (rs.getString("Title")!=null){
 						result.setLocation(searchLocationByFilename(result.getTitle()));
@@ -2898,7 +2900,7 @@ public class MysqlConnector implements IsSerializable {
 						getImagesbyOrnamentID(rs.getInt("OrnamentID")), 
 						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getInt("IconographyID"),rs.getInt("MasterImageID"), getOrnamentRelatedIconography(rs.getInt("OrnamentID")),
-						getOrnamentAnnotations(rs.getInt("OrnamentID")),rs.getInt("AccessLevel"),rs.getDouble("TourOrder")));
+						getOrnamentAnnotations(rs.getInt("OrnamentID")),rs.getInt("AccessLevel"),rs.getDouble("TourOrder"),rs.getBoolean("IsVirtualTour")));
 				// Aufruf der h�heren Hierarchie Ebenen der Ornamentik mittels getCaveRelation
 				// Aufruf der Tabellen OrnamentComponentsRelation, OrnamentImageRelation und InnerSecondaryPatternRelation
 			}
@@ -3093,7 +3095,7 @@ public class MysqlConnector implements IsSerializable {
 
 		long diff = (end-start);
 		if (diff>100){
-		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von saveOrnamentEntry brauchte "+diff + " Millisekunden.");;}}
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getWallDimension brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 	public int saveOrnamentEntry(OrnamentEntry ornamentEntry) {
@@ -3105,7 +3107,7 @@ public class MysqlConnector implements IsSerializable {
 		Connection dbc = getConnection();
 		PreparedStatement ornamentStatement;
 		try {
-			ornamentStatement = dbc.prepareStatement("INSERT INTO Ornaments (Code, Description, Remarks, IconographyID, MasterImageID, AccessLevel, TourOrder) VALUES (?, ?, ?, ?, ?, ?, ?)",
+			ornamentStatement = dbc.prepareStatement("INSERT INTO Ornaments (Code, Description, Remarks, IconographyID, MasterImageID, AccessLevel, IsVirtualTour, TourOrder) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
 //					ornamentStatement = dbc.prepareStatement("INSERT INTO Ornaments (Code, Description, Remarks, Interpretation, OrnamentReferences, Annotation , OrnamentClassID, StructureOrganizationID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
 					Statement.RETURN_GENERATED_KEYS);
 			ornamentStatement.setString(1, ornamentEntry.getCode());
@@ -3114,7 +3116,8 @@ public class MysqlConnector implements IsSerializable {
 			ornamentStatement.setInt(4, ornamentEntry.getIconographyID());
 			ornamentStatement.setInt(5, ornamentEntry.getMasterImageID());
 			ornamentStatement.setInt(6, ornamentEntry.getAccessLevel());
-			ornamentStatement.setDouble(7, ornamentEntry.getVirtualTourOrder());
+			ornamentStatement.setBoolean(7, ornamentEntry.getisVirtualTour());
+			ornamentStatement.setDouble(8, ornamentEntry.getVirtualTourOrder());
 			ornamentStatement.executeUpdate();
 			ResultSet keys = ornamentStatement.getGeneratedKeys();
 			if (keys.next()) { // there should only be 1 key returned here
@@ -3160,7 +3163,7 @@ public class MysqlConnector implements IsSerializable {
 		Connection dbc = getConnection();
 		PreparedStatement ornamentStatement;
 		try {
-			ornamentStatement = dbc.prepareStatement("UPDATE Ornaments SET Code=?, Description=?, Remarks=?, IconographyID=?, MasterImageID=?, AccessLevel=?, TourOrder=? WHERE OrnamentID=?");
+			ornamentStatement = dbc.prepareStatement("UPDATE Ornaments SET Code=?, Description=?, Remarks=?, IconographyID=?, MasterImageID=?, AccessLevel=?, TourOrder=?, IsVirtualTour=? WHERE OrnamentID=?");
 			ornamentStatement.setString(1, ornamentEntry.getCode());
 			ornamentStatement.setString(2, ornamentEntry.getDescription());
 			ornamentStatement.setString(3, ornamentEntry.getRemarks());
@@ -3168,7 +3171,8 @@ public class MysqlConnector implements IsSerializable {
 			ornamentStatement.setInt(5, ornamentEntry.getMasterImageID());
 			ornamentStatement.setInt(6, ornamentEntry.getAccessLevel());
 			ornamentStatement.setDouble(7, ornamentEntry.getVirtualTourOrder());
-			ornamentStatement.setInt(8, ornamentEntry.getTypicalID());
+			ornamentStatement.setBoolean(8, ornamentEntry.getisVirtualTour());
+			ornamentStatement.setInt(9, ornamentEntry.getTypicalID());
 			ornamentStatement.executeUpdate();
 			deleteEntry("DELETE FROM OrnamentIconographyRelation WHERE OrnamentID =" + ornamentEntry.getTypicalID());
 			if (ornamentEntry.getRelatedIconographyList().size() > 0) {
@@ -4362,7 +4366,7 @@ public boolean isHan(String s) {
 				//System.out.println("ImageID = "+Integer.toString(depictionID)+" ImageID = "+Integer.toString(rs.getInt("ImageID")));
 				ImageEntry image = new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
 						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
-						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("location")),rs.getString("InventoryNumber"),rs.getDouble("Height"),rs.getDouble("Width"));
+						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("location")),rs.getString("InventoryNumber"),rs.getDouble("Height"),rs.getDouble("Width"), rs.getBoolean("IsExpiring"),rs.getLong("ExpiresAt"));
 				if (image.getLocation()==null) {
 					if (rs.getString("Title")!=null){
 						image.setLocation(searchLocationByFilename(image.getTitle()));
@@ -4408,7 +4412,7 @@ public boolean isHan(String s) {
 			while (rs.next()) {
 				ImageEntry image = new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
 						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
-						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("location")),rs.getString("InventoryNumber"),rs.getDouble("Height"),rs.getDouble("Width"));
+						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("location")),rs.getString("InventoryNumber"),rs.getDouble("Height"),rs.getDouble("Width"), rs.getBoolean("IsExpiring"),rs.getLong("ExpiresAt"));
 				if (image.getLocation()==null) {
 					if (rs.getString("Title")!=null){
 						image.setLocation(searchLocationByFilename(image.getTitle()));
@@ -4507,7 +4511,7 @@ public boolean isHan(String s) {
 	 * @param entry
 	 * @return
 	 */
-	public synchronized boolean updateImageEntry(ImageEntry entry) {
+	public synchronized boolean updateImageEntry(ImageEntry entry, String sessionID) {
 		long start = System.currentTimeMillis();
 		if (dologgingbegin){
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateImageEntry wurde ausgelöst.");;
@@ -4523,7 +4527,7 @@ public boolean isHan(String s) {
 					System.out.println("UPDATE Images SET Filename="+entry.getFilename()+", Title="+entry.getTitle()+", ShortName="+entry.getShortName()+", Copyright="+entry.getCopyright()+", PhotographerID=0, Comment="+entry.getComment()+", Date="+entry.getDate()+", ImageTypeID="+Integer.toString(entry.getImageTypeID())+", AccessLevel="+Integer.toString(entry.getAccessLevel())+", deleted="+entry.isdeleted()+"  WHERE ImageID="+entry.getImageID());
 				}
 			pstmt = dbc.prepareStatement(
-					"UPDATE Images SET Filename=?, Title=?, ShortName=?, Copyright=?, PhotographerID=?, Comment=?, Date=?, ImageTypeID=?, AccessLevel=?, location=?, deleted=?, InventoryNumber=?, Width=?, Height=? WHERE ImageID=?");
+					"UPDATE Images SET Filename=?, Title=?, ShortName=?, Copyright=?, PhotographerID=?, Comment=?, Date=?, ImageTypeID=?, AccessLevel=?, location=?, deleted=?, InventoryNumber=?, Width=?, Height=?, IsExpiring=?, ExpiresAt=?  WHERE ImageID=?");
 			pstmt.setString(1, entry.getFilename());
 			pstmt.setString(2, entry.getTitle());
 			pstmt.setString(3, entry.getShortName());
@@ -4548,7 +4552,9 @@ public boolean isHan(String s) {
 			pstmt.setString(12, entry.getInventoryNumber());
 			pstmt.setDouble(13, entry.getWidth());
 			pstmt.setDouble(14, entry.getHeight());
-			pstmt.setInt(15, entry.getImageID());
+			pstmt.setBoolean(15, entry.getIsExpiring());
+			pstmt.setLong(16, entry.getExpiriesAt());
+			pstmt.setInt(17, entry.getImageID());
 			pstmt.execute();
 			pstmt.close();
 		} catch (SQLException e) {
@@ -4559,6 +4565,15 @@ public boolean isHan(String s) {
 		DateFormat df = DateFormat.getDateTimeInstance();
 		entry.setModifiedOn(df.format(date));
 		protocollModifiedAbstractEntry(entry,"");
+		DepictionSearchEntry searchEntry = new DepictionSearchEntry();
+		ArrayList<Integer> imageIdList = new ArrayList<Integer>();
+		imageIdList.add(entry.getImageID());
+		searchEntry.setImageIdList(imageIdList);
+		searchEntry.setSessionID(sessionID);
+		ArrayList<DepictionEntry> des = searchDepictions(searchEntry);
+		for(DepictionEntry de: des) {
+			doUploadDepictionEntryToElastic(de);
+		}
 		if (dologging){
 		long end = System.currentTimeMillis();
 		long diff = (end-start);
@@ -4878,7 +4893,7 @@ public boolean isHan(String s) {
 						? "SELECT BibID FROM EditorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (FirstName LIKE ?) OR (LastName LIKE ?) OR (Institution LIKE ?) OR (Alias LIKE ?) OR (altSpelling LIKE ?)))"
 						: " INTERSECT SELECT BibID FROM EditorBibliographyRelation WHERE (AuthorID IN (SELECT DISTINCT AuthorID FROM Authors WHERE (FirstName LIKE ?) OR (LastName LIKE ?) OR (Institution LIKE ?) OR (Alias LIKE ?) OR (altSpelling LIKE ?)))";
 			}
-			where = where + " and BibID IN (" + authorTerm + ") OR BibID IN (" + editorTerm + ")";
+			where = where + " and (BibID IN (" + authorTerm + ") OR BibID IN (" + editorTerm + "))";
 		}
 		
 		if (searchEntry.getPublisherSearch() != null && !searchEntry.getPublisherSearch().isEmpty()) {
@@ -5602,6 +5617,14 @@ public boolean isHan(String s) {
 		System.err.println("Accesslevel ist: "+getAccessLevelForSessionID(searchEntry.getSessionID()));
 		if (getAccessLevelForSessionID(searchEntry.getSessionID()) <= UserEntry.GUEST) {
 			where += where.isEmpty() ? "Ornaments.AccessLevel IN (" + inStatement + ")" : " AND Ornaments.AccessLevel IN (" + inStatement + ")";
+		} else if (searchEntry.getAccessLevel() == 2) {
+			where += where.isEmpty() ? "Ornaments.AccessLevel IN (2)" : " AND Ornaments.AccessLevel IN (2)";			
+		} else if ((searchEntry.getAccessLevel() == 1) || (searchEntry.getAccessLevel() == 0)) {
+			where += where.isEmpty() ? "Ornaments.AccessLevel IN (0,1)" : " AND Ornaments.AccessLevel IN (0,1)";			
+		}
+		System.out.println("Searchentry.virtualTour: "+Integer.toString(searchEntry.getIsVirtualTour()));
+		if (searchEntry.getIsVirtualTour()>-1) {
+			where += where.isEmpty() ? "Ornaments.IsVirtualTour = " + Integer.toString(searchEntry.getIsVirtualTour()) : " AND Ornaments.IsVirtualTour  = " + Integer.toString(searchEntry.getIsVirtualTour()) ;						
 		}
 		String sqlStatement=where.isEmpty() ? "SELECT DISTINCT Ornaments.* FROM Ornaments left join DepictionIconographyRelation on (Ornaments.IconographyID=DepictionIconographyRelation.IconographyID) left join (Select * from Depictions where Depictions.deleted=0) as Depictionsall on (DepictionIconographyRelation.DepictionID=Depictionsall.DepictionID) left join DepictionWallsRelation on (Depictionsall.DepictionID=DepictionWallsRelation.DepictionID) left join WallLocationsTree on (WallLocationsTree.WallLocationID = DepictionWallsRelation.WallID) \r\n" + 
 				"left join WallPositionsRelation on (WallLocationsTree.WallLocationID=WallPositionsRelation.WallID and Depictionsall.DepictionID=WallPositionsRelation.DepictionID) left join Position on (WallPositionsRelation.PositionID=Position.PositionID) left join OrnamentComponentRelation on (OrnamentComponentRelation.OrnamentID = Ornaments.OrnamentID) ORDER BY Ornaments.Code LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+ ", "+Integer.toString(searchEntry.getMaxentries()): "SELECT DISTINCT Ornaments.* FROM Ornaments left join DepictionIconographyRelation on (Ornaments.IconographyID=DepictionIconographyRelation.IconographyID) left join (Select * from Depictions where Depictions.deleted=0) as Depictionsall on (DepictionIconographyRelation.DepictionID=Depictionsall.DepictionID) left join DepictionWallsRelation on (Depictionsall.DepictionID=DepictionWallsRelation.DepictionID) left join WallLocationsTree on (WallLocationsTree.WallLocationID = DepictionWallsRelation.WallID) \r\n" + 
@@ -5626,7 +5649,8 @@ public boolean isHan(String s) {
 						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
 						getImagesbyOrnamentID(rs.getInt("OrnamentID")),
 						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getInt("IconographyID"),rs.getInt("MasterImageID"), getOrnamentRelatedIconography(rs.getInt("OrnamentID")), getOrnamentAnnotations(rs.getInt("OrnamentID")),rs.getInt("AccessLevel"),rs.getDouble("TourOrder"));
+						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getInt("IconographyID"),
+						rs.getInt("MasterImageID"), getOrnamentRelatedIconography(rs.getInt("OrnamentID")), getOrnamentAnnotations(rs.getInt("OrnamentID")),rs.getInt("AccessLevel"),rs.getDouble("TourOrder"),rs.getBoolean("IsVirtualTour"));
 				resultList.add(entry);
 			}
 		} catch (SQLException e) {
@@ -5662,7 +5686,7 @@ public boolean isHan(String s) {
 						getImagesbyOrnamentID(rs.getInt("OrnamentID")),
 						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getInt("IconographyID"),rs.getInt("MasterImageID"), getOrnamentRelatedIconography(rs.getInt("OrnamentID")),
-						getOrnamentAnnotations(rs.getInt("OrnamentID")),rs.getInt("AccessLevel"),rs.getDouble("TourOrder")));
+						getOrnamentAnnotations(rs.getInt("OrnamentID")),rs.getInt("AccessLevel"),rs.getDouble("TourOrder"),rs.getBoolean("IsVirtualTour")));
 			}
 			rs.close();
 			stmt.close();
@@ -5700,7 +5724,7 @@ public boolean isHan(String s) {
 						getImagesbyOrnamentID(rs.getInt("OrnamentID")),
 						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getInt("IconographyID"),rs.getInt("MasterImageID"), getOrnamentRelatedIconography(rs.getInt("OrnamentID")),
-						getOrnamentAnnotations(rs.getInt("OrnamentID")),rs.getInt("AccessLevel"),rs.getDouble("TourOrder"));
+						getOrnamentAnnotations(rs.getInt("OrnamentID")),rs.getInt("AccessLevel"),rs.getDouble("TourOrder"),rs.getBoolean("IsVirtualTour"));
 			}
 			rs.close();
 			pstmt.close();
@@ -5902,6 +5926,9 @@ public boolean isHan(String s) {
 			for (WallEntry wEntry : caveEntry.getWallList()) {
 				writeWall(wEntry);
 			}
+			for (CaveAreaEntry caEntry : caveEntry.getCaveAreaList()) {
+				writeCaveArea(caEntry);
+			}
 			writeC14AnalysisUrlEntry(caveEntry.getCaveID(), caveEntry.getC14AnalysisUrlList());
 			writeC14DocumentEntry(caveEntry.getCaveID(), caveEntry.getC14DocumentList());
 			writeCaveBibliographyRelation(caveEntry.getCaveID(), caveEntry.getRelatedBibliographyList());
@@ -5915,7 +5942,6 @@ public boolean isHan(String s) {
 			String json = prepareCaveEntryForElastic(caveEntry);
 			Date date = new Date(System.currentTimeMillis());
 			DateFormat df = DateFormat.getDateTimeInstance();
-
 			String url = serverProperties.getProperty("home.elastic.url");
 			int port = Integer.parseInt(serverProperties.getProperty("home.elastic.port"));
 			String elastic_user = serverProperties.getProperty("home.elastic.login");
@@ -6802,8 +6828,13 @@ public boolean isHan(String s) {
 //		DepictionEntry oldDe = getDepictionEntry(de.getDepictionID(), sessionID);
 		String changes="";
 		// And create the API client
-	
-
+		DepictionSearchEntry searchEntry = new DepictionSearchEntry();
+		searchEntry.setID(de.getDepictionID());
+		searchEntry.setSessionID(sessionID);
+		DepictionEntry oldDe = searchDepictions(searchEntry).get(0);
+		if (de.getAccessLevel() == 2 && oldDe.getAccessLevel() < 2) {
+			sendMail("kuchaadmin@saw-leipzig.de","kienzler@saw-leipzig.de", "Kienzler, Olga","A new Painted Representation (ID "+Integer.toString(de.getDepictionID())+") was set public.","Dear Olga,\n A new Painted Representation (ID "+Integer.toString(de.getDepictionID())+") was set public.\n It can be found here: https://kuchatest.saw-leipzig.de/pr"+Integer.toString(de.getDepictionID())+".");
+		}
 //		System.err.println("Tracked Changes are: "+changes);
 		try {
 			System.err.println("===> updateDepictionEntry ID = " + de.getDepictionID());
@@ -6880,9 +6911,21 @@ public boolean isHan(String s) {
 		DateFormat df = DateFormat.getDateTimeInstance();
 		de.setModifiedOn(df.format(date));
 		protocollModifiedAbstractEntry(de, changes);
+		doUploadDepictionEntryToElastic(de);
+		de.setModifiedOn(df.format(date));			
+		System.err.println("==> updateDepictionEntry finished");
+		if (dologging){
+		long end = System.currentTimeMillis();
+		long diff = (end-start);
+		if (diff>100){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateDepictionEntry brauchte "+diff + " Millisekunden.");;}}
+		return true;
+	}
+	private void doUploadDepictionEntryToElastic(DepictionEntry de) {
 		//serializeAllDepictionEntries("");
 		System.out.println("Depiction Entry Access-Level:" + Integer.toString(de.getAccessLevel()));
 		if (de.getAccessLevel() == 2) {
+			Date date = new Date(System.currentTimeMillis());
 			de.setModifiedOn("");
 			String json = prepareDepictionForElastic(de);
 			String filename=serverProperties.getProperty("home.jsons")+"result.json";		
@@ -6905,18 +6948,10 @@ public boolean isHan(String s) {
 				System.out.println("exception:" + ex.getLocalizedMessage());
 				System.out.println("depictionentry was written new:" + updateResult);
 			}
-			de.setModifiedOn(df.format(date));			
 		}
 
-		System.err.println("==> updateDepictionEntry finished");
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateDepictionEntry brauchte "+diff + " Millisekunden.");;}}
-		return true;
+		
 	}
-
 	private synchronized void insertDepictionImageRelation(int depictionID, ArrayList<ImageEntry> imgEntryList) {
 		long start = System.currentTimeMillis();
 		if (dologgingbegin){
@@ -9329,7 +9364,7 @@ public boolean isHan(String s) {
 			while (rs.next()) {
 				ImageEntry image = new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
 						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
-						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("location")),rs.getString("InventoryNumber"),rs.getDouble("Height"),rs.getDouble("Width"));
+						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("location")),rs.getString("InventoryNumber"),rs.getDouble("Height"),rs.getDouble("Width"), rs.getBoolean("IsExpiring"),rs.getLong("ExpiresAt"));
 				if (image.getLocation()==null) {
 					if (rs.getString("Title")!=null){
 						image.setLocation(searchLocationByFilename(image.getTitle()));
@@ -9969,13 +10004,14 @@ public boolean isHan(String s) {
 		
 		try {
 			String pwd = generate_password(9);
+			System.out.println("New PW is: " + pwd);
 //			pstmt.setString(2, "ff4ea6b28f247ccdd4a03321dc2bd1a");
 			
 			pstmt = dbc.prepareStatement("UPDATE Users SET Password=? WHERE UserID=?");
 			pstmt.setString(1, cryptWithMD5(pwd));
 			pstmt.setInt(2, currentUser.getUserID());
 			rowsChangedCount = pstmt.executeUpdate();
-			sendMail("radisch@saw-leipzig.de",currentUser.getEmail(),currentUser.getLastname()+", "+currentUser.getFirstname(),"Your Password for kucha.saw-leipzig.de was reseted.","Dear "+currentUser.getFirstname()+ " "+currentUser.getLastname()+",\n the Admin has reseted the password of your account in kucha.saw-leipzig.de for you.\nYour username is:"+currentUser.getUsername()+"\nYour password is:  \""+pwd+"\"\n");
+			sendMail("kuchaadmin@saw-leipzig.de",currentUser.getEmail(),currentUser.getLastname()+", "+currentUser.getFirstname(),"Your Password for kucha.saw-leipzig.de was reseted.","Dear "+currentUser.getFirstname()+ " "+currentUser.getLastname()+",\n the Admin has reseted the password of your account in kucha.saw-leipzig.de for you.\nYour username is:"+currentUser.getUsername()+"\nYour password is:  \""+pwd+"\"\n");
 			pstmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -10016,7 +10052,7 @@ public boolean isHan(String s) {
 			pstmt.setString(1, pwHash);
 			pstmt.setInt(2, currentUser.getUserID());
 			rowsChangedCount = pstmt.executeUpdate();
-			sendMail("kucha-admin@saw-leipzig.de",currentUser.getEmail(),"Kucha-Admin","Your Password for kucha.saw-leipzig.de was reseted.","Dear "+currentUser.getFirstname()+ " "+currentUser.getLastname()+",\n the Admin has reseted the password of your account in kucha.saw-leipzig.de for you.\nYour username is:"+currentUser.getUsername()+"\nYour password is:  \""+pwd+"\"\n");
+			sendMail("kuchaadmin@saw-leipzig.de",currentUser.getEmail(),"Kucha-Admin","Your Password for kuchatest.saw-leipzig.de was reseted.","Dear "+currentUser.getFirstname()+ " "+currentUser.getLastname()+",\n the Admin has reseted the password of your account in kuchatest.saw-leipzig.de for you.\nYour username is:"+currentUser.getEmail()+"\nYour password is:  \""+pwd+"\"\n");
 			pstmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -10113,10 +10149,10 @@ public boolean isHan(String s) {
 			pstmt.setString(6, userEntry.getAffiliation());
 			pstmt.setInt(7, userEntry.getAccessLevel());
 			if (url.contains("infotest")) {
-				sendMail("kucha-admin@saw-leipzig.de",userEntry.getEmail(),"Kucha-Admin","An account has been created for you at kuchatest.saw-leipzig.de","Dear "+userEntry.getFirstname()+ " "+userEntry.getLastname()+",\n the Admin has created an Account in kuchatest.saw-leipzig.de for you.\nYour username is:"+userEntry.getUsername()+"\nYour password is:  \""+pwd+"\"\n");
+				sendMail("kuchaadmin@saw-leipzig.de",userEntry.getEmail(),"Kucha-Admin","An account has been created for you at kuchatest.saw-leipzig.de","Dear "+userEntry.getFirstname()+ " "+userEntry.getLastname()+",\n the Admin has created an Account in kuchatest.saw-leipzig.de for you.\nYour username is:"+userEntry.getUsername()+"\nYour password is:  \""+pwd+"\"\n");
 			}
 			else {
-				sendMail("kucha-admin@saw-leipzig.de",userEntry.getEmail(),"Kucha-Admin","An account has been created for you at kucha.saw-leipzig.de","Dear "+userEntry.getFirstname()+ " "+userEntry.getLastname()+",\n the Admin has created an Account in kucha.saw-leipzig.de for you.\nYour username is:"+userEntry.getUsername()+"\nYour password is:  \""+pwd+"\"\n");
+				sendMail("kuchaadmin@saw-leipzig.de",userEntry.getEmail(),"Kucha-Admin","An account has been created for you at kucha.saw-leipzig.de","Dear "+userEntry.getFirstname()+ " "+userEntry.getLastname()+",\n the Admin has created an Account in kucha.saw-leipzig.de for you.\nYour username is:"+userEntry.getUsername()+"\nYour password is:  \""+pwd+"\"\n");
 
 			}
 			
@@ -10198,12 +10234,12 @@ public boolean isHan(String s) {
 		if (oldUserEntry != null) {
 			if (oldUserEntry.getGranted() != userEntry.getGranted()) {
 				if (userEntry.getGranted()) {
-					sendMail("kucha-admin@saw-leipzig.de",userEntry.getEmail(),"Kucha-Admin","Your Account has been granted comment privileges at kucha.saw-leipzig.de","Dear "+userEntry.getFirstname()+ " "+userEntry.getLastname()+",\n the Admin has granted you comment privileges at kuchatest.saw-leipzig.de for you.\nSicerely,\n Kucha-Project");
+					sendMail("kuchaadmin@saw-leipzig.de",userEntry.getEmail(),"Kucha-Admin","Your Account has been granted comment privileges at kucha.saw-leipzig.de","Dear "+userEntry.getFirstname()+ " "+userEntry.getLastname()+",\n the Admin has granted you comment privileges at kuchatest.saw-leipzig.de for you.\nSicerely,\n Kucha-Project");
 				} else {
-					sendMail("kucha-admin@saw-leipzig.de",userEntry.getEmail(),"Kucha-Admin","Your account has been revoked from commenting privileges","Dear "+userEntry.getFirstname()+ " "+userEntry.getLastname()+",\n the Admin has Your account has revoked your commenting privileges at kuchatest.saw-leipzig.de.\nSicerely,\n Kucha-Project");
+					sendMail("kuchaadmin@saw-leipzig.de",userEntry.getEmail(),"Kucha-Admin","Your account has been revoked from commenting privileges","Dear "+userEntry.getFirstname()+ " "+userEntry.getLastname()+",\n the Admin has Your account has revoked your commenting privileges at kuchatest.saw-leipzig.de.\nSicerely,\n Kucha-Project");
 				}			
 			}			
-		} else sendMail("kucha-admin@saw-leipzig.de",userEntry.getEmail(),"Kucha-Admin","Your Account has been granted comment privileges at kucha.saw-leipzig.de","Dear "+userEntry.getFirstname()+ " "+userEntry.getLastname()+",\n the Admin has granted you comment privileges at kuchatest.saw-leipzig.de for you.\nSicerely,\n Kucha-Project");
+		} else sendMail("kuchaadmin@saw-leipzig.de",userEntry.getEmail(),"Kucha-Admin","Your Account has been granted comment privileges at kucha.saw-leipzig.de","Dear "+userEntry.getFirstname()+ " "+userEntry.getLastname()+",\n the Admin has granted you comment privileges at kuchatest.saw-leipzig.de for you.\nSicerely,\n Kucha-Project");
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		int rowsChangedCount;
@@ -10331,6 +10367,10 @@ public boolean isHan(String s) {
 		
 		if (getAccessLevelForSessionID(searchEntry.getSessionID()) <= UserEntry.GUEST) {
 			where += where.isEmpty() ? "AccessLevel IN (" + inStatement + ")" : " AND AccessLevel IN (" + inStatement + ")";
+		} else if (searchEntry.getAccessLevel() == 2) {
+			where += where.isEmpty() ? "AccessLevel IN (2)" : " AND AccessLevel IN (2)";			
+		} else if ((searchEntry.getAccessLevel() == 1) || (searchEntry.getAccessLevel() == 0)) {
+			where += where.isEmpty() ? "AccessLevel IN (0,1)" : " AND AccessLevel IN (0,1)";			
 		}
 				
 		System.err.println(where.isEmpty() ? "SELECT * FROM Depictions" : "SELECT * FROM Depictions WHERE " + where);

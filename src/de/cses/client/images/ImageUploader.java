@@ -75,10 +75,10 @@ public class ImageUploader implements IsWidget {
 		Util.doLogging( selectedFile+"- "+filename);
 		if (imageID<0) {
 			Util.doLogging("Image submiting triggered.");
-			form.setAction("imgUpload?origImageFileName="+filename+"&modifiedBy="+UserLogin.getInstance().getUsername());
+			form.setAction("imgUpload?origImageFileName="+filename+"&modifiedBy="+UserLogin.getInstance().getUsername()+"&sessionID="+UserLogin.getInstance().getSessionID());
 		}
 		else {
-			form.setAction("imgUpload?origImageFileName="+filename+"&hasID="+Integer.toString(imageID)+"&modifiedBy="+UserLogin.getInstance().getUsername());
+			form.setAction("imgUpload?origImageFileName="+filename+"&hasID="+Integer.toString(imageID)+"&modifiedBy="+UserLogin.getInstance().getUsername()+"&sessionID="+UserLogin.getInstance().getSessionID());
 		}
 	}
 

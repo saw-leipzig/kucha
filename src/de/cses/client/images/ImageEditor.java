@@ -596,7 +596,7 @@ public class ImageEditor implements IsWidget, ImageUploadListener {
 				selectedItem.setDate(dateField.getCurrentValue());
 				selectedItem.setImageAuthor(photographerSelection.getCurrentValue());
 				selectedItem.setImageTypeID(imageTypeSelection.getCurrentValue().getImageTypeID());
-				dbService.updateImageEntry(selectedItem, new AsyncCallback<Boolean>() {
+				dbService.updateImageEntry(selectedItem, UserLogin.getInstance().getSessionID(), new AsyncCallback<Boolean>() {
 					public void onFailure(Throwable caught) {
 						Info.display("Error", "Problem with database connection!");
 					}

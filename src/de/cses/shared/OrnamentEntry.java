@@ -22,6 +22,7 @@ public class OrnamentEntry extends AbstractEntry {
 	private String description;
 	private String remarks;
 	private int iconographyID;
+	private boolean isVirtualTour;
 	private double virtualTourOrder;
 	private IconographyEntry ie;
 	//private String annotations; wurde mal geloescht, evtl wird es irgendwann wieder gewollt
@@ -52,7 +53,7 @@ public class OrnamentEntry extends AbstractEntry {
 			String interpretation,
 			String references, int ornamentClassID, ArrayList<ImageEntry> images,
 			ArrayList<AnnotatedBibliographyEntry> relatedBibliographyList, String modifiedOn, int iconographyID, int masterImageID,
-			ArrayList<IconographyEntry> relatedIconographyList, ArrayList<AnnotationEntry> relatedAnnotationList, int accessLevel, double tourOrder) {
+			ArrayList<IconographyEntry> relatedIconographyList, ArrayList<AnnotationEntry> relatedAnnotationList, int accessLevel, double tourOrder, boolean isVirtualTour) {
 		this.typicalID = typicalID;
 		this.code = code;
 		this.description = description;
@@ -67,6 +68,7 @@ public class OrnamentEntry extends AbstractEntry {
 		this.relatedAnnotationList=relatedAnnotationList;
 		this.accessLevel=accessLevel;
 		this.virtualTourOrder=tourOrder;
+		this.isVirtualTour = isVirtualTour;
 	}
 
 	public OrnamentEntry(int typicalID, String code, String description, String remarks, 
@@ -109,6 +111,13 @@ public class OrnamentEntry extends AbstractEntry {
 	}
 	public double getVirtualTourOrder() {
 		return virtualTourOrder;
+	}
+
+	public void setIsVirtualTour(boolean isVirtualTour) {
+		this.isVirtualTour = isVirtualTour;
+	}
+	public boolean getisVirtualTour() {
+		return isVirtualTour;
 	}
 
 	public void setIconographyEntry(IconographyEntry ie) {

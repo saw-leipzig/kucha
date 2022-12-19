@@ -228,7 +228,7 @@ public interface DatabaseService extends RemoteService {
 
 	UserEntry userLogin(String username, String password);
 
-	boolean updateImageEntry(ImageEntry imgEntry) throws IllegalArgumentException;
+	boolean updateImageEntry(ImageEntry imgEntry, String sessionID) throws IllegalArgumentException;
 
 	ArrayList<ImageTypeEntry> getImageTypes() throws IllegalArgumentException;
 

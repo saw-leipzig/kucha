@@ -23,6 +23,7 @@ import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
@@ -149,7 +150,13 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 	private boolean annotationsLoaded = true;
 	private OSDListener osdListener;
 	private IconographySelectorListener icoSelectorListener;
-
+	private CheckBox isVirtualTour;
+	private FramedPanel tourOrder;
+	private FramedPanel isVirtualTourFP;
+	private FramedPanel accessRightsCBFP;
+	private SimpleComboBox<String> accessRightsCB;
+	private HorizontalLayoutContainer horizonttourData;
+	
 	public static OrnamentCaveRelationEditor ornamentCaveRelationEditor;
 	public static WallOrnamentCaveRelationEditor wallOrnamentCaveRelationEditor;
 	public static OrnamenticEditor ornamenticEditor;
@@ -450,7 +457,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 				showTreeEdit.center();
 			}
 		});
-		ftree.setHeading("Ornament Entry");
+		ftree.setHeading("Typical Entry");
 		ftree.addTool(changetree);
 		ftree.add(ornamentTrees.getSelectedIcoTree());
 		// laden der Daten aus der Datenbank
@@ -508,7 +515,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 		VerticalLayoutContainer panel = new VerticalLayoutContainer();
 		VerticalLayoutContainer panel2 = new VerticalLayoutContainer();
-		SimpleComboBox<String> accessRightsCB = new SimpleComboBox<String>(new LabelProvider<String>() {
+		accessRightsCB = new SimpleComboBox<String>(new LabelProvider<String>() {
 
 			@Override
 			public String getLabel(String item) {
@@ -524,34 +531,60 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		accessRightsCB.setToolTip(Util.createToolTip(
 				"The acccess rights for the painted representation will influence which fields are visible.",
 				"There are no restrictions at the moment but this might be implemented in the future."));
-		accessRightsCB.setValue(AbstractEntry.ACCESS_LEVEL_LABEL.get(ornamentEntry.getAccessLevel()));
 		accessRightsCB.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<String> event) {
+				Util.doLogging("changing value: "+event.getValue());
 				ornamentEntry.setAccessLevel(accessRightsCB.getSelectedIndex());
+				if (event.getValue().equals(AbstractEntry.ACCESS_LEVEL_LABEL.get(2))) {
+					isVirtualTour.setEnabled(true);
+					tourOrderField.setEnabled(false);
+				} else {
+					isVirtualTour.setEnabled(false);
+					tourOrderField.setEnabled(false);
+					ornamentEntry.setIsVirtualTour(false);
+				}
 			}
 		});
-		FramedPanel accessRightsCBFP = new FramedPanel();
+		isVirtualTour = new CheckBox();
+		isVirtualTour.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+					tourOrder.setEnabled(event.getValue());
+					
+			}
+			
+		});
+		accessRightsCBFP = new FramedPanel();
 		accessRightsCBFP.setHeading("Access Level");
 		accessRightsCBFP.add(accessRightsCB);
+		isVirtualTourFP = new FramedPanel();
+		isVirtualTourFP.setHeading("Show in Virtual Tour");
+		isVirtualTourFP.add(isVirtualTour);
 		tourOrderField = new NumberField<Double>(new NumberPropertyEditor.DoublePropertyEditor());
 		tourOrderField.setValue(ornamentEntry.getVirtualTourOrder());
-		FramedPanel tourOrder = new FramedPanel();
+		tourOrder = new FramedPanel();
 		tourOrder.setHeading("Virtual Tour Order");
 		tourOrder.add(tourOrderField);
-		HorizontalLayoutContainer horizonttourData = new HorizontalLayoutContainer();
-		horizonttourData.add(accessRightsCBFP, new HorizontalLayoutData(.5, 1.0));
-		horizonttourData.add(tourOrder, new HorizontalLayoutData(.5, 1.0));
+		horizonttourData = new HorizontalLayoutContainer();
+		horizonttourData.add(accessRightsCBFP, new HorizontalLayoutData(.4, 1.0));
+		horizonttourData.add(isVirtualTourFP, new HorizontalLayoutData(.3, 1.0));
+		horizonttourData.add(tourOrder, new HorizontalLayoutData(.3, 1.0));
 		
 		panel.add(horizonttourData, new VerticalLayoutData(1.0, .125));
 
 		ornamentCodeTextField = new TextField();
 		ornamentCodeTextField.setAllowBlank(false);
 		header = new FramedPanel();
-		header.setHeading("Ornament Code");
+		header.setHeading("Typical Code / Short Name");
 		header.add(ornamentCodeTextField);
 		panel.add(header, new VerticalLayoutData(1.0, .125));
+		accessRightsCB.setValue(AbstractEntry.ACCESS_LEVEL_LABEL.get(ornamentEntry.getAccessLevel()), true);
+		if (accessRightsCB.getValue().equals(AbstractEntry.ACCESS_LEVEL_LABEL.get(2))) {
+			isVirtualTour.setValue(ornamentEntry.getisVirtualTour(), true);
+		}
 
 		ornamentClassComboBox = new ComboBox<OrnamentClassEntry>(ornamentClassEntryList, ornamentClassProps.name(),
 				new AbstractSafeHtmlRenderer<OrnamentClassEntry>() {
@@ -750,7 +783,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 		cavesContentPanel.setHeading("Added caves");
 		cavesContentPanel.add(cavesList);
-		cavesContentPanel2.setHeading("Ornamentation detected in Caves:");
+		cavesContentPanel2.setHeading("Typical detected in Caves:");
 		cavesContentPanel2.add(ornamentTrees.getWalls().wallTree);
 		cavesContentPanel2.setHeight(Integer.toString(Window.getClientHeight()/100*95));
 		panel2.add(cavesContentPanel2, new VerticalLayoutData(1.0, 1.0));
@@ -1541,10 +1574,10 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		backgroundPanel.setSize( Integer.toString(Window.getClientWidth()/100*95),Integer.toString(Window.getClientHeight()/100*95));
 		backgroundPanel.add(tabpanel);
 		if (ornamentEntry!=null) {
-			backgroundPanel.setHeading("Ornamentation Editor (entry number: "+ornamentEntry.getTypicalID()+")");
+			backgroundPanel.setHeading("Typical Editor (entry number: "+ornamentEntry.getTypicalID()+")");
 		}
 		else {
-			backgroundPanel.setHeading("Ornamentation Editor (new entry)");
+			backgroundPanel.setHeading("Typical Editor (new entry)");
 		}
 		createNextPrevButtons();
 		backgroundPanel.addDomHandler(new KeyDownHandler() {
@@ -1558,7 +1591,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 							@Override
 							public void onSelect(SelectEvent event) {
 								saveButton.disable();
-								Util.doLogging("Ornament Save triggert by Key-Combination");
+								Util.doLogging("Typical Save triggert by Key-Combination");
 								save(true, 0);
 								closeEditor(null);
 							}
@@ -1643,6 +1676,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		}
 		ornamentEntry.setImages(ieList);
 		ornamentEntry.setVirtualTourOrder((double) this.tourOrderField.getValue());
+		ornamentEntry.setIsVirtualTour(this.isVirtualTour.getValue());
 		ornamentEntry.setCode(ornamentCodeTextField.getText());
 		ornamentEntry.setDescription(discription.getText());
 		ornamentEntry.setRemarks(remarks.getText());

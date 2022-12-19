@@ -56,10 +56,12 @@ import com.sencha.gxt.widget.core.client.event.InvalidEvent;
 import com.sencha.gxt.widget.core.client.event.InvalidEvent.InvalidHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
+import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.IntegerSpinnerField;
 import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
+import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
 import com.sencha.gxt.widget.core.client.form.StoreFilterField;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
@@ -75,6 +77,7 @@ import de.cses.client.ui.AbstractFilter;
 import de.cses.client.user.UserLogin;
 import de.cses.client.walls.PositionEditor;
 import de.cses.client.walls.WallTree;
+import de.cses.shared.AbstractEntry;
 import de.cses.shared.AbstractSearchEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.DepictionEntry;
@@ -186,7 +189,7 @@ public class DepictionFilter extends AbstractFilter {
 	private ArrayList<Integer> imgIDs = new ArrayList<Integer>();
 	private ArrayList<Integer> bibIDs = new ArrayList<Integer>();
 	private PositionEditor pe;
-	
+	private SimpleComboBox<String> publishedFilter;
 	private ListStore<PositionEntry> positionEntryList;
 	private PositionProperties positionProps;
 	private ListView<PositionEntry, PositionEntry> positionSelectionLV;
@@ -230,6 +233,13 @@ public class DepictionFilter extends AbstractFilter {
 		} else {
 			iconographySpinnerField.setEnabled(false);
 		}
+		if ((((DepictionSearchEntry)searchEntry).getAccessLevel() == 2)) {
+			publishedFilter.setValue("Published");
+		} else if ((((DepictionSearchEntry)searchEntry).getAccessLevel() == 0) || (((DepictionSearchEntry)searchEntry).getAccessLevel() == 1)) {
+			publishedFilter.setValue("Unpublished");			
+		} else {
+			publishedFilter.reset();
+		}
 //		Util.doLogging("Hier");
 //		for (PositionEntry pe :((OrnamenticSearchEntry)searchEntry).getPosition()) {
 //			Util.doLogging("Hier loop");
@@ -268,7 +278,8 @@ public class DepictionFilter extends AbstractFilter {
 		imgIDs.clear();
 		bibIDs.clear();
 		positionSelectionLV.getSelectionModel().deselectAll();;
-		wallSelectionLV.getSelectionModel().deselectAll();;
+		wallSelectionLV.getSelectionModel().deselectAll();
+		publishedFilter.clear();
 
 	}
 	/**
@@ -493,7 +504,7 @@ public class DepictionFilter extends AbstractFilter {
 				return wtTemplates.iconographyLabel(name);
 			}
 		}));
-		
+
 		wallSpinnerField = new IntegerSpinnerField();
 		wallSpinnerField.setMinValue(1);
 		wallSpinnerField.setIncrement(1);
@@ -609,7 +620,17 @@ public class DepictionFilter extends AbstractFilter {
 		    });
 		IDSearchTF.setEmptyText("search ID");
 		IDSearchTF.addDomHandler(getShortkey() , KeyPressEvent.getType());
+		publishedFilter = new SimpleComboBox<String>(new LabelProvider<String>() {
 
+			@Override
+			public String getLabel(String item) {
+				return item;
+			}
+		});
+		publishedFilter.setName("Access Level Filter");
+		publishedFilter.add("Published");
+		publishedFilter.add("Unpublished");
+		publishedFilter.setEmptyText("Access Level Filter");
 		/**
 		 * assemble current location selection
 		 */
@@ -679,8 +700,9 @@ public class DepictionFilter extends AbstractFilter {
 
     BorderLayoutContainer depictionFilterBLC = new BorderLayoutContainer();
     VerticalLayoutContainer SearchFieldsVLC = new VerticalLayoutContainer();
-    SearchFieldsVLC.add(IDSearchTF , new VerticalLayoutData(1.0, .50));
-    SearchFieldsVLC.add(shortNameSearchTF , new VerticalLayoutData(1.0, .50));
+    SearchFieldsVLC.add(IDSearchTF , new VerticalLayoutData(1.0, .333));
+    SearchFieldsVLC.add(shortNameSearchTF , new VerticalLayoutData(1.0, .333));
+    SearchFieldsVLC.add(publishedFilter , new VerticalLayoutData(1.0, .333));
     SearchFieldsVLC.setHeight("150px");
     depictionFilterBLC.setNorthWidget(SearchFieldsVLC, new BorderLayoutData(60));
     
@@ -809,7 +831,16 @@ public class DepictionFilter extends AbstractFilter {
 				searchEntry.getBibIdList().add(img);
 			}	
 		}
-		
+		if (publishedFilter.getValue() != null) {
+			if (publishedFilter.getValue().equals("Published")) {
+				searchEntry.setAccessLevel(2);
+			} else if (publishedFilter.getValue().equals("Unpublished")) {
+				searchEntry.setAccessLevel(1);
+			} else {
+				searchEntry.setAccessLevel(-1);			
+			}			
+		}
+
 		for (LocationEntry le : locationSelectionLV.getSelectionModel().getSelectedItems()) {
 			searchEntry.getLocationIdList().add(le.getLocationID());
 		}

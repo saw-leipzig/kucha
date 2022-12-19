@@ -83,6 +83,14 @@ div.label {
 	position: absolute;
 	bottom: 5px;
 }
+div.gwt-DatePicker {
+	background:white;
+}
+
+div.dateBoxPopup {
+	background:white;
+}
+
 
 div.text {
 	margin-left: 45px;

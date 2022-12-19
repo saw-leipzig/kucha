@@ -159,7 +159,7 @@ public class ImageSearchController extends AbstractSearchController {
 									}
 								} else {
 									// we should at least save the title of the image!
-									dbService.updateImageEntry(imgEntry, new AsyncCallback<Boolean>() {
+									dbService.updateImageEntry(imgEntry, UserLogin.getInstance().getSessionID(), new AsyncCallback<Boolean>() {
 										
 										@Override
 										public void onSuccess(Boolean result) { 

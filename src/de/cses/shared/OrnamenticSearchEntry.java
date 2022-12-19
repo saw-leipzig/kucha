@@ -24,7 +24,7 @@ public class OrnamenticSearchEntry extends AbstractSearchEntry {
 	private ArrayList<IconographyEntry> iconography = new ArrayList<IconographyEntry>();
 	private ArrayList<WallTreeEntry> walls = new ArrayList<WallTreeEntry>();
 	private ArrayList<Integer> imageIDs = new ArrayList<Integer>();
-	
+	private int isVirtualTour;
 	/**
 	 * 
 	 */
@@ -93,6 +93,20 @@ public class OrnamenticSearchEntry extends AbstractSearchEntry {
 	 */
 	public String getRemarks() {
 		return remarks;
+	}
+
+	/**
+	 * @param isVirtualTour
+	 *          the isVirtualTour to set
+	 */
+	public void setIsVirtualTour(int isVirtualTour) {
+		this.isVirtualTour = isVirtualTour;
+	}
+	/**
+	 * @return the remarks
+	 */
+	public int getIsVirtualTour() {
+		return isVirtualTour;
 	}
 
 	/**

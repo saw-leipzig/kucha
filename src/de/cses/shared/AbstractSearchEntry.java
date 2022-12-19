@@ -33,6 +33,7 @@ public abstract class AbstractSearchEntry implements IsSerializable {
 	private String sessionID = "";
 	int entriesShowed = 0;
 	int maxEntries = 100;
+	int accessLevel = -1;
 	private ArrayList<Integer> bibIdList = new ArrayList<Integer>();
 
 	/**
@@ -52,6 +53,12 @@ public abstract class AbstractSearchEntry implements IsSerializable {
 	}
 	public void setEntriesShowed(int number) {
 		this.entriesShowed=number;
+	}
+	public int getAccessLevel() {
+		return this.accessLevel;
+	}
+	public void setAccessLevel(int accessLevel) {
+		this.accessLevel=accessLevel;
 	}
 	public int getEntriesShowed() {
 		return this.entriesShowed;

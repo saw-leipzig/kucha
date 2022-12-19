@@ -639,8 +639,9 @@ public class OSDLoader {
 				// $wnd.console.log("Adding Annotorious",config);
 				annotorious[wheres[i]] = $wnd.OpenSeadragon.Annotorious(dic[wheres[i]],config);
 		        $wnd.Annotorious.SelectorPack(annotorious[wheres[i]]);
-		        // console.log(annotorious[wheres[i]].listDrawingTools());
-		        annotorious[wheres[i]].setDrawingTool('multipolygon');
+		        console.log(annotorious[wheres[i]].listDrawingTools());
+		        // annotorious[wheres[i]].setDrawingTool('bettermultipolygon');
+		        annotorious[wheres[i]].setDrawingTool('bettermultipolygon');
 
 				//annotorious[wheres[i]].setDrawingTool("polygon");
 				//annotorious[wheres[i]].setDrawingEnabled(true);

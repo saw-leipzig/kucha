@@ -14,6 +14,7 @@
 package de.cses.client.images;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
@@ -156,7 +157,10 @@ public class ImageSelector implements IsWidget {
 
 			public SafeHtml render(ImageEntry item) {
 				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=700" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
-				if (item.getAccessLevel() == AbstractEntry.ACCESS_LEVEL_PUBLIC) {
+				long now = new Date().getTime();  
+				if (((item.getAccessLevel() == AbstractEntry.ACCESS_LEVEL_PUBLIC) && (!item.getIsExpiring()))|| ((item.getAccessLevel() == AbstractEntry.ACCESS_LEVEL_PUBLIC) && (item.getIsExpiring())&&(now < item.getExpiriesAt()))) {
+					Util.doLogging("now: "+Long.toString(now));
+					Util.doLogging("getExpiriesAt: "+Long.toString(item.getExpiriesAt()));
 					return imageViewTemplates.publicImage(imageUri, item.getTitle(), item.getShortName(), item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase());
 				} else {
 					return imageViewTemplates.nonPublicImage(imageUri, item.getTitle(), item.getShortName(), item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase());

@@ -14,6 +14,7 @@
 package de.cses.client.images;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
@@ -21,6 +22,8 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.editor.client.testing.MockEditorError;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
@@ -37,12 +40,14 @@ import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.datepicker.client.DateBox;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
@@ -122,7 +127,8 @@ public class SingleImageEditor extends AbstractEditor {
 	private int numSave;
 	private OSDLoader osdLoader;
 	private ToolButton saveToolButton;
-
+	private CheckBox cbAccessLevelIsExpiring;
+	private DateBox dateBoxAccessLevelExpiringAt;
 	/**
 	 * Create a remote service proxy to talk to the server-side service.
 	 */
@@ -801,13 +807,48 @@ public class SingleImageEditor extends AbstractEditor {
 				imgEntry.setAccessLevel(accessLevelCB.getSelectedIndex());
 			}
 		});
+		cbAccessLevelIsExpiring = new CheckBox("is expiring");
+		cbAccessLevelIsExpiring.setValue(imgEntry.getIsExpiring());
+	    dateBoxAccessLevelExpiringAt = new DateBox();
 		FramedPanel accessLevelFP = new FramedPanel();
 		accessLevelFP.setHeading("Access Level");
 		accessLevelFP.add(accessLevelCB);
+		FramedPanel accessLevelexpiresFP = new FramedPanel();
+		accessLevelexpiresFP.setHeading("Access Level expires");
+		accessLevelexpiresFP.add(cbAccessLevelIsExpiring);
+		FramedPanel accessLevelexpiresDateFP = new FramedPanel();
+		accessLevelexpiresDateFP.setHeading("Access Level at");
+		accessLevelexpiresDateFP.add(dateBoxAccessLevelExpiringAt);
+		if (imgEntry.getIsExpiring()) {
+			dateBoxAccessLevelExpiringAt.setValue(new Date(imgEntry.getExpiriesAt()));
+		}
+		cbAccessLevelIsExpiring.addClickHandler(new ClickHandler() {
 
+			@Override
+			public void onClick(ClickEvent event) {
+					accessLevelexpiresDateFP.setVisible(cbAccessLevelIsExpiring.getValue());
+					Date now = new Date();
+					dateBoxAccessLevelExpiringAt.setValue(now);
+					imgEntry.setIsExpiring(cbAccessLevelIsExpiring.getValue());
+				
+			}
+			
+		});
+		dateBoxAccessLevelExpiringAt.addValueChangeHandler(new ValueChangeHandler<java.util.Date>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Date> event) {
+				imgEntry.setExpiriesAt(dateBoxAccessLevelExpiringAt.getValue().getTime());
+				
+			}
+			
+		});
 		HorizontalLayoutContainer imageAccessLevelHLC = new HorizontalLayoutContainer();
 		imageAccessLevelHLC.add(imageTypeSelectionPanel, new HorizontalLayoutData(.5, 1.0));
 		imageAccessLevelHLC.add(accessLevelFP, new HorizontalLayoutData(.5, 1.0));
+		HorizontalLayoutContainer imageAccessLevelExpiringHLC = new HorizontalLayoutContainer();
+		imageAccessLevelExpiringHLC.add(accessLevelexpiresFP, new HorizontalLayoutData(.5, 1.0));
+		imageAccessLevelExpiringHLC.add(accessLevelexpiresDateFP, new HorizontalLayoutData(.5, 1.0));
 		HorizontalLayoutContainer imageDimensionslHLC = new HorizontalLayoutContainer();
 		imageDimensionslHLC.add(widthPanel, new HorizontalLayoutData(.5, 1.0));
 		imageDimensionslHLC.add(heightPanel, new HorizontalLayoutData(.5, 1.0));
@@ -976,13 +1017,14 @@ public class SingleImageEditor extends AbstractEditor {
 		leftEditVLC.add(datePanel, new VerticalLayoutData(1.0, .20));
 
 		VerticalLayoutContainer rightEditVLC = new VerticalLayoutContainer();
-		rightEditVLC.add(imageDimensionslHLC, new VerticalLayoutData(1.0, .20));
-		rightEditVLC.add(imageAccessLevelHLC, new VerticalLayoutData(1.0, .20));
-		rightEditVLC.add(commentPanel, new VerticalLayoutData(1.0, .6));
+		rightEditVLC.add(imageDimensionslHLC, new VerticalLayoutData(1.0, .15));
+		rightEditVLC.add(imageAccessLevelHLC, new VerticalLayoutData(1.0, .15));
+		rightEditVLC.add(imageAccessLevelExpiringHLC, new VerticalLayoutData(1.0, .15));
+		rightEditVLC.add(commentPanel, new VerticalLayoutData(1.0, .55));
 
 		HorizontalLayoutContainer editHLC = new HorizontalLayoutContainer();
-		editHLC.add(leftEditVLC, new HorizontalLayoutData(.5, 1.0));
-		editHLC.add(rightEditVLC, new HorizontalLayoutData(.5, 1.0));
+		editHLC.add(leftEditVLC, new HorizontalLayoutData(.4, 1.0));
+		editHLC.add(rightEditVLC, new HorizontalLayoutData(.6, 1.0));
 				
 		VerticalLayoutContainer editVLC = new VerticalLayoutContainer();
 		editVLC.add(titlePanel, new VerticalLayoutData(1.0, .12));
@@ -1085,7 +1127,7 @@ public class SingleImageEditor extends AbstractEditor {
 		// only of the yes button is selected, we will perform the command
 		// to simplify we just ignore the no button event by doing nothing
 
-		dbService.updateImageEntry(imgEntry, new AsyncCallback<Boolean>() {
+		dbService.updateImageEntry(imgEntry,UserLogin.getInstance().getSessionID(), new AsyncCallback<Boolean>() {
 			public void onFailure(Throwable caught) {
 				saveToolButton.enable();
 				Info.display("ERROR", "Image information has NOT been updated!");
