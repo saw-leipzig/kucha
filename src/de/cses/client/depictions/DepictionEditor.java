@@ -1303,95 +1303,95 @@ public class DepictionEditor extends AbstractEditor {
 		});
 		inventoryNumberFP.add(inventoryNumberTF);
 
-		FramedPanel stateOfPreservationFP = new FramedPanel();
-		stateOfPreservationFP.setHeading("State of Preservation");
-		ToolButton addPreservationAttributeTB = new ToolButton(new IconConfig("addButton", "addButtonOver"));
-		addPreservationAttributeTB.setToolTip(Util.createToolTip("Add Preservation Attribute"));
-		stateOfPreservationFP.addTool(addPreservationAttributeTB);
-		addPreservationAttributeTB.addSelectHandler(new SelectHandler() {
-
-			@Override
-			public void onSelect(SelectEvent event) {
-				PopupPanel addPreservationAttributeDialog = new PopupPanel();
-				FramedPanel newPreservationAttributeFP = new FramedPanel();
-				newPreservationAttributeFP.setHeading("Add Preservation Attribute");
-				TextField preservationAttributeNameField = new TextField();
-				preservationAttributeNameField.addValidator(new MinLengthValidator(2));
-				preservationAttributeNameField.addValidator(new MaxLengthValidator(32));
-				preservationAttributeNameField.setValue("");
-				preservationAttributeNameField.setWidth(200);
-				newPreservationAttributeFP.add(preservationAttributeNameField);
-				TextButton saveButton = new TextButton("save");
-				saveButton.addSelectHandler(new SelectHandler() {
-
-					@Override
-					public void onSelect(SelectEvent event) {
-						if (preservationAttributeNameField.isValid()) {
-							PreservationAttributeEntry paEntry = new PreservationAttributeEntry();
-							paEntry.setName(preservationAttributeNameField.getCurrentValue());
-							dbService.insertPreservationAttributeEntry(paEntry, new AsyncCallback<Integer>() {
-
-								@Override
-								public void onFailure(Throwable caught) {
-									caught.printStackTrace();
-									newPreservationAttributeFP.hide();
-								}
-
-								@Override
-								public void onSuccess(Integer result) {
-									paEntry.setPreservationAttributeID(result);
-									preservationAttributesLS.add(paEntry);
-									addPreservationAttributeDialog.hide();
-								}
-							});
-						}
-					}
-				});
-				newPreservationAttributeFP.addButton(saveButton);
-				TextButton cancelButton = new TextButton("cancel");
-				cancelButton.addSelectHandler(new SelectHandler() {
-
-					@Override
-					public void onSelect(SelectEvent event) {
-						addPreservationAttributeDialog.hide();
-					}
-				});
-				newPreservationAttributeFP.addButton(cancelButton);
-				addPreservationAttributeDialog.add(newPreservationAttributeFP);
-				addPreservationAttributeDialog.setModal(true);
-				addPreservationAttributeDialog.center();
-			}
-		});
-		ListView<PreservationAttributeEntry, String> preservationAttributesListView = new ListView<PreservationAttributeEntry, String>(
-				preservationAttributesLS, presAttributeProps.name());
-		preservationAttributesListView.setToolTip("to select attributes drag right");
-		ListView<PreservationAttributeEntry, String> selectedPreservationAttributesListView = new ListView<PreservationAttributeEntry, String>(
-				selectedPreservationAttributesLS, presAttributeProps.name());
-		selectedPreservationAttributesListView.setToolTip("to deselect attributes drag left");
-
-		new ListViewDragSource<PreservationAttributeEntry>(preservationAttributesListView).setGroup("paGroup");
-		new ListViewDragSource<PreservationAttributeEntry>(selectedPreservationAttributesListView).setGroup("paGroup");
-
-		new ListViewDropTarget<PreservationAttributeEntry>(preservationAttributesListView).setGroup("paGroup");
-		new ListViewDropTarget<PreservationAttributeEntry>(selectedPreservationAttributesListView).setGroup("paGroup");
-
-		BorderLayoutContainer borderLayoutContainer = new BorderLayoutContainer();
-		borderLayoutContainer.setWestWidget(preservationAttributesListView, new BorderLayoutData(0.5));
-		borderLayoutContainer.setCenterWidget(selectedPreservationAttributesListView, new BorderLayoutData(0.5));
-
-		stateOfPreservationFP.add(borderLayoutContainer);
+//		FramedPanel stateOfPreservationFP = new FramedPanel();
+//		stateOfPreservationFP.setHeading("State of Preservation");
+//		ToolButton addPreservationAttributeTB = new ToolButton(new IconConfig("addButton", "addButtonOver"));
+//		addPreservationAttributeTB.setToolTip(Util.createToolTip("Add Preservation Attribute"));
+//		stateOfPreservationFP.addTool(addPreservationAttributeTB);
+//		addPreservationAttributeTB.addSelectHandler(new SelectHandler() {
+//
+//			@Override
+//			public void onSelect(SelectEvent event) {
+//				PopupPanel addPreservationAttributeDialog = new PopupPanel();
+//				FramedPanel newPreservationAttributeFP = new FramedPanel();
+//				newPreservationAttributeFP.setHeading("Add Preservation Attribute");
+//				TextField preservationAttributeNameField = new TextField();
+//				preservationAttributeNameField.addValidator(new MinLengthValidator(2));
+//				preservationAttributeNameField.addValidator(new MaxLengthValidator(32));
+//				preservationAttributeNameField.setValue("");
+//				preservationAttributeNameField.setWidth(200);
+//				newPreservationAttributeFP.add(preservationAttributeNameField);
+//				TextButton saveButton = new TextButton("save");
+//				saveButton.addSelectHandler(new SelectHandler() {
+//
+//					@Override
+//					public void onSelect(SelectEvent event) {
+//						if (preservationAttributeNameField.isValid()) {
+//							PreservationAttributeEntry paEntry = new PreservationAttributeEntry();
+//							paEntry.setName(preservationAttributeNameField.getCurrentValue());
+//							dbService.insertPreservationAttributeEntry(paEntry, new AsyncCallback<Integer>() {
+//
+//								@Override
+//								public void onFailure(Throwable caught) {
+//									caught.printStackTrace();
+//									newPreservationAttributeFP.hide();
+//								}
+//
+//								@Override
+//								public void onSuccess(Integer result) {
+//									paEntry.setPreservationAttributeID(result);
+//									preservationAttributesLS.add(paEntry);
+//									addPreservationAttributeDialog.hide();
+//								}
+//							});
+//						}
+//					}
+//				});
+//				newPreservationAttributeFP.addButton(saveButton);
+//				TextButton cancelButton = new TextButton("cancel");
+//				cancelButton.addSelectHandler(new SelectHandler() {
+//
+//					@Override
+//					public void onSelect(SelectEvent event) {
+//						addPreservationAttributeDialog.hide();
+//					}
+//				});
+//				newPreservationAttributeFP.addButton(cancelButton);
+//				addPreservationAttributeDialog.add(newPreservationAttributeFP);
+//				addPreservationAttributeDialog.setModal(true);
+//				addPreservationAttributeDialog.center();
+//			}
+//		});
+//		ListView<PreservationAttributeEntry, String> preservationAttributesListView = new ListView<PreservationAttributeEntry, String>(
+//				preservationAttributesLS, presAttributeProps.name());
+//		preservationAttributesListView.setToolTip("to select attributes drag right");
+//		ListView<PreservationAttributeEntry, String> selectedPreservationAttributesListView = new ListView<PreservationAttributeEntry, String>(
+//				selectedPreservationAttributesLS, presAttributeProps.name());
+//		selectedPreservationAttributesListView.setToolTip("to deselect attributes drag left");
+//
+//		new ListViewDragSource<PreservationAttributeEntry>(preservationAttributesListView).setGroup("paGroup");
+//		new ListViewDragSource<PreservationAttributeEntry>(selectedPreservationAttributesListView).setGroup("paGroup");
+//
+//		new ListViewDropTarget<PreservationAttributeEntry>(preservationAttributesListView).setGroup("paGroup");
+//		new ListViewDropTarget<PreservationAttributeEntry>(selectedPreservationAttributesListView).setGroup("paGroup");
+//
+//		BorderLayoutContainer borderLayoutContainer = new BorderLayoutContainer();
+//		borderLayoutContainer.setWestWidget(preservationAttributesListView, new BorderLayoutData(0.5));
+//		borderLayoutContainer.setCenterWidget(selectedPreservationAttributesListView, new BorderLayoutData(0.5));
+//
+//		stateOfPreservationFP.add(borderLayoutContainer);
 
 		VerticalLayoutContainer basicsLeftVLC = new VerticalLayoutContainer();
 
-		basicsLeftVLC.add(shortNameFP, new VerticalLayoutData(1.0, .15));
-		basicsLeftVLC.add(caveSelectionFP, new VerticalLayoutData(1.0, .11));
-		basicsLeftVLC.add(acquiredByExpeditionFP, new VerticalLayoutData(1.0, .11));
-		basicsLeftVLC.add(vendorFP, new VerticalLayoutData(1.0, .11));
-		basicsLeftVLC.add(datePurchasedFP, new VerticalLayoutData(1.0, .11));
-		basicsLeftVLC.add(currentLocationFP, new VerticalLayoutData(1.0, .11));
-		basicsLeftVLC.add(inventoryNumberFP, new VerticalLayoutData(1.0, .10));
+		basicsLeftVLC.add(shortNameFP, new VerticalLayoutData(1.0, .19));
+		basicsLeftVLC.add(caveSelectionFP, new VerticalLayoutData(1.0, .14));
+		basicsLeftVLC.add(acquiredByExpeditionFP, new VerticalLayoutData(1.0, .14));
+		basicsLeftVLC.add(vendorFP, new VerticalLayoutData(1.0, .14));
+		basicsLeftVLC.add(datePurchasedFP, new VerticalLayoutData(1.0, .13));
+		basicsLeftVLC.add(currentLocationFP, new VerticalLayoutData(1.0, .13));
+		basicsLeftVLC.add(inventoryNumberFP, new VerticalLayoutData(1.0, .13));
 //		basicsLeftVLC.add(positionNoteFP, new VerticalLayoutData(1.0, .15));
-		basicsLeftVLC.add(stateOfPreservationFP, new VerticalLayoutData(1.0, .2));
+//		basicsLeftVLC.add(stateOfPreservationFP, new VerticalLayoutData(1.0, .2));
 
 		FramedPanel wallSelectorFP = new FramedPanel();
 		wallSelectorFP.setHeading("Wall");
