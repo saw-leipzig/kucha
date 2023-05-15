@@ -7684,7 +7684,7 @@ public boolean isHan(String s) {
 		ResultSet proposedAnnosRS2;
 		for (ImageEntry ie: images) {
 			try {
-				proposedAnnosStatement = dbc.prepareStatement("SELECT PolygoneID,AnnotoriousID,ST_AsGeoJSON(ProposedPolygon.Polygon) as \"Polygon\",Images.ImageID,Images.Filename,ProposedPolygon.deleted, IconographyID FROM ProposedPolygon left join Images on( ProposedPolygon.ImageID=Images.ImageID) WHERE ProposedPolygon.ImageID=?");
+				proposedAnnosStatement = dbc.prepareStatement("SELECT PolygonID,AnnotoriousID,ST_AsGeoJSON(ProposedPolygon.Polygon) as \"Polygon\",Images.ImageID,Images.Filename,ProposedPolygon.deleted, IconographyID FROM ProposedPolygon left join Images on( ProposedPolygon.ImageID=Images.ImageID) WHERE ProposedPolygon.ImageID=?");
 				proposedAnnosStatement.setInt(1, ie.getImageID());
 				proposedAnnosRS = proposedAnnosStatement.executeQuery();
 				while (proposedAnnosRS.next()) {
@@ -7820,7 +7820,7 @@ public boolean isHan(String s) {
 		Statement stmt2 = null;
 		try {
 			stmt = dbc.createStatement();
-			String sqlText = "SELECT PolygoneID, AnnotoriousID, ST_AsGeoJSON(Polygon.Polygon) as \"Polygon\", Images.ImageID, Images.Filename, DepictionID, Polygon.deleted, CreationTime, ModificationTime, IsProposed FROM Polygon left join Images on(Polygon.ImageID=Images.ImageID) WHERE Polygon.DepictionID="+depictionID+" and Polygon.deleted=0 and Polygon.Polygon is not null";
+			String sqlText = "SELECT PolygonID, AnnotoriousID, ST_AsGeoJSON(Polygon.Polygon) as \"Polygon\", Images.ImageID, Images.Filename, DepictionID, Polygon.deleted, CreationTime, ModificationTime, IsProposed FROM Polygon left join Images on(Polygon.ImageID=Images.ImageID) WHERE Polygon.DepictionID="+depictionID+" and Polygon.deleted=0 and Polygon.Polygon is not null";
 			//System.err.println(sqlText);
 			ResultSet rs = stmt.executeQuery(sqlText);
 			while (rs.next()) {
@@ -7897,7 +7897,7 @@ public boolean isHan(String s) {
 		Statement stmt2 = null;
 		try {
 			stmt = dbc.createStatement();
-			String sqlText = "SELECT PolygoneID, Polygon.AnnotoriousID, ST_AsGeoJSON(Polygon.Polygon) as \"Polygon\", Images.ImageID,Images.Filename, DepictionID, Polygon.deleted FROM Polygon inner join Annotations on (Annotations.AnnotoriousID = Polygon.AnnotoriousID) left join Images on( Polygon.ImageID=Images.ImageID) WHERE Polygon.DepictionID = " + depictionID + " and Polygon.ImageID = " + imageID + " and Annotations.IconographyID =" + iconographyID + " and Polygon.deleted=0 and Polygon.Polygon is not null";
+			String sqlText = "SELECT PolygonID, Polygon.AnnotoriousID, ST_AsGeoJSON(Polygon.Polygon) as \"Polygon\", Images.ImageID,Images.Filename, DepictionID, Polygon.deleted FROM Polygon inner join Annotations on (Annotations.AnnotoriousID = Polygon.AnnotoriousID) left join Images on( Polygon.ImageID=Images.ImageID) WHERE Polygon.DepictionID = " + depictionID + " and Polygon.ImageID = " + imageID + " and Annotations.IconographyID =" + iconographyID + " and Polygon.deleted=0 and Polygon.Polygon is not null";
 			System.err.println(sqlText);
 			ResultSet rs = stmt.executeQuery(sqlText);
 			while (rs.next()) {
@@ -7959,7 +7959,7 @@ public boolean isHan(String s) {
 		Statement stmt2 = null;
 		try {
 			stmt = dbc.createStatement();
-			String sqlText = "SELECT PolygoneID,AnnotoriousID,ST_AsGeoJSON(PolygonOrnament.Polygon) as \"Polygon\",Images.ImageID,Images.Filename,OrnamentID,PolygonOrnament.deleted, CreationTime, ModificationTime, IsProposed FROM PolygonOrnament left join Images on( PolygonOrnament.ImageID=Images.ImageID) WHERE PolygonOrnament.OrnamentID="+depictionID+" and PolygonOrnament.deleted=0 and PolygonOrnament.Polygon is not null";
+			String sqlText = "SELECT PolygonID,AnnotoriousID,ST_AsGeoJSON(PolygonOrnament.Polygon) as \"Polygon\",Images.ImageID,Images.Filename,OrnamentID,PolygonOrnament.deleted, CreationTime, ModificationTime, IsProposed FROM PolygonOrnament left join Images on( PolygonOrnament.ImageID=Images.ImageID) WHERE PolygonOrnament.OrnamentID="+depictionID+" and PolygonOrnament.deleted=0 and PolygonOrnament.Polygon is not null";
 			//System.err.println(sqlText);
 			ResultSet rs = stmt.executeQuery(sqlText);
 			while (rs.next()) {
